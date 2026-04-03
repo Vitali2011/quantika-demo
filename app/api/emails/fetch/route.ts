@@ -1,0 +1,39 @@
+import { NextRequest, NextResponse } from 'next/server';
+
+import { EMAIL_FETCH_COUNT, MAX_EMAIL_BODY_CHARS } from '@/lib/constants';
+import { fetchGmailEmails } from '@/lib/google';
+import { getSession, updateSession } from '@/lib/session';
+import { truncateText } from '@/lib/utils';
+
+export const maxDuration = 30;
+
+export async function POST(request: NextRequest) {
+  const sessionId = request.cookies.get('session_id')?.value;
+  if (!sessionId) {
+    return NextResponse.json({ error: 'No session' }, { status: 401 });
+  }
+
+  const session = getSession(sessionId);
+  if (!session) {
+    return NextResponse.json({ error: 'Session expired' }, { status: 401 });
+  }
+
+  try {
+    const emails = await fetchGmailEmails(session.accessToken, EMAIL_FETCH_COUNT);
+
+    const truncatedEmails = emails.map((email) => ({
+      ...email,
+      body: truncateText(email.body, MAX_EMAIL_BODY_CHARS * 2),
+    }));
+
+    updateSession(sessionId, { emails: truncatedEmails });
+
+    return NextResponse.json({
+      count: truncatedEmails.length,
+      message: `Loaded ${truncatedEmails.length} emails`,
+    });
+  } catch (err) {
+    console.error('Email fetch error:', err);
+    return NextResponse.json({ error: 'Failed to fetch emails' }, { status: 500 });
+  }
+}
