@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession, updateSession } from '@/lib/session';
 import { callAiJson } from '@/lib/openai';

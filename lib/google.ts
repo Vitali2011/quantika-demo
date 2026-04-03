@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { google } from 'googleapis';
 
 import type { Email } from './types';
