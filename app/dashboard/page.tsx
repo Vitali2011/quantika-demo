@@ -130,6 +130,16 @@ export default async function DashboardPage() {
         </Card>
 
         {/* Negotiations */}
+        {recaps.length === 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Active Negotiations (recap ready)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">No active negotiations found. Recaps are generated for email threads with 5+ messages.</p>
+            </CardContent>
+          </Card>
+        )}
         {recaps.length > 0 && (
           <Card>
             <CardHeader>

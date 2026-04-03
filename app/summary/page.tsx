@@ -98,7 +98,7 @@ export default async function SummaryPage() {
         {/* Security note */}
         <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
           <Lock className="h-4 w-4" />
-          <span>Your email data has been deleted from our servers.</span>
+          <span>Your email data will be automatically deleted from our servers within 1 hour.</span>
         </div>
 
         <div className="text-center">

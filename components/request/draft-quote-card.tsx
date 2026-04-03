@@ -15,9 +15,12 @@ export function DraftQuoteCard({ emailId }: DraftQuoteCardProps) {
   const [loadingQuote, setLoadingQuote] = useState(false);
   const [loadingReply, setLoadingReply] = useState(false);
   const [copied, setCopied] = useState<'quote' | 'reply' | null>(null);
+  const [quoteError, setQuoteError] = useState('');
+  const [replyError, setReplyError] = useState('');
 
   async function generateQuote() {
     setLoadingQuote(true);
+    setQuoteError('');
     try {
       const res = await fetch('/api/ai/draft-quote', {
         method: 'POST',
@@ -25,7 +28,10 @@ export function DraftQuoteCard({ emailId }: DraftQuoteCardProps) {
         body: JSON.stringify({ emailId }),
       });
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to generate quote');
       setQuoteDraft(data.draft || '');
+    } catch (err) {
+      setQuoteError(err instanceof Error ? err.message : 'Failed to generate quote');
     } finally {
       setLoadingQuote(false);
     }
@@ -33,6 +39,7 @@ export function DraftQuoteCard({ emailId }: DraftQuoteCardProps) {
 
   async function generateReply() {
     setLoadingReply(true);
+    setReplyError('');
     try {
       const res = await fetch('/api/ai/draft-reply', {
         method: 'POST',
@@ -40,7 +47,10 @@ export function DraftQuoteCard({ emailId }: DraftQuoteCardProps) {
         body: JSON.stringify({ emailId }),
       });
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to generate reply');
       setReplyDraft(data.draft || '');
+    } catch (err) {
+      setReplyError(err instanceof Error ? err.message : 'Failed to generate reply');
     } finally {
       setLoadingReply(false);
     }
@@ -59,10 +69,12 @@ export function DraftQuoteCard({ emailId }: DraftQuoteCardProps) {
           {loadingQuote ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
           Draft Quote
         </Button>
+        {quoteError && <p className="text-sm text-red-600">{quoteError}</p>}
         <Button onClick={generateReply} disabled={loadingReply} variant="outline">
           {loadingReply ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
           Ask Client for Missing Info
         </Button>
+        {replyError && <p className="text-sm text-red-600">{replyError}</p>}
       </div>
 
       {quoteDraft && (

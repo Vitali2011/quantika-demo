@@ -53,6 +53,11 @@ export default async function RequestDetailPage({ params }: Props) {
         </Card>
 
         {/* AI Analysis */}
+        {!parsed && (
+          <div className="rounded-md bg-yellow-50 border border-yellow-200 p-3 text-sm text-yellow-700">
+            AI analysis is not available for this request. Use the buttons below to generate a draft manually.
+          </div>
+        )}
         {parsed && (
           <Card>
             <CardHeader className="pb-2">
