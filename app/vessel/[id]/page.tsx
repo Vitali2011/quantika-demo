@@ -1,0 +1,191 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { cookies } from 'next/headers';
+import { redirect, notFound } from 'next/navigation';
+import Link from 'next/link';
+import { getSession } from '@/lib/session';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Ship, MapPin, Calendar, ChevronLeft } from 'lucide-react';
+import { cfValue } from '@/lib/types';
+
+function safeRender(v: any): string {
+  if (v == null) return '';
+  if (typeof v === 'string') return v;
+  if (typeof v === 'number') return String(v);
+  if (typeof v === 'boolean') return v ? 'Yes' : 'No';
+  if (Array.isArray(v)) return v.map(safeRender).join(', ');
+  if (typeof v === 'object' && 'value' in v) return safeRender(v.value);
+  return JSON.stringify(v);
+}
+
+function getConf(v: any): string | undefined {
+  if (v && typeof v === 'object' && 'confidence' in v) return v.confidence;
+  return undefined;
+}
+
+function ConfIcon({ confidence }: { confidence?: string }) {
+  if (confidence === 'uncertain') return <span title="Uncertain">❓</span>;
+  if (confidence === 'interpreted') return <span title="Interpreted">⚠️</span>;
+  return <span title="Confirmed">✅</span>;
+}
+
+function Spec({ label, value, unit, confidence }: { label: string; value: any; unit?: string; confidence?: string }) {
+  const rendered = safeRender(value);
+  if (!rendered || rendered === 'NaN') return null;
+  return (
+    <div className="flex justify-between text-sm py-1 border-b border-gray-100">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="font-medium">
+        {rendered}{unit ? ` ${unit}` : ''}
+        {confidence && <> <ConfIcon confidence={confidence} /></>}
+      </span>
+    </div>
+  );
+}
+
+interface Props {
+  params: Promise<{ id: string }>;
+}
+
+export default async function VesselDetailPage({ params }: Props) {
+  const { id } = await params;
+  const cookieStore = await cookies();
+  const sessionId = cookieStore.get('session_id')?.value;
+  if (!sessionId) redirect('/');
+
+  const session = getSession(sessionId);
+  if (!session) redirect('/');
+
+  const email = session.emails.find(e => e.id === id);
+  if (!email) notFound();
+
+  const vessels = session.parsedVessels.filter(v => v.emailId === id);
+  const processed = session.processedEmails.find(p => p.emailId === id);
+  const matchingCargo = session.matches.filter(m => m.vesselEmailId === id);
+
+  return (
+    <main className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="max-w-3xl mx-auto space-y-6">
+        <Link href="/dashboard" className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+          <ChevronLeft className="h-4 w-4" /> Back to Dashboard
+        </Link>
+
+        <div>
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary" className="bg-blue-100 text-blue-800">VESSEL POSITION</Badge>
+            {processed && (
+              <span className="text-xs text-muted-foreground">
+                {processed.freshness === 'stale' ? '⚠️ STALE — open date passed' : '🟢 Active'}
+              </span>
+            )}
+          </div>
+          <h1 className="text-xl font-bold mt-2">{email.subject}</h1>
+          <p className="text-sm text-muted-foreground">From: {email.from} · {new Date(email.date).toLocaleDateString()}</p>
+          {processed?.expiryDate && <p className="text-xs text-muted-foreground">Active until {processed.expiryDate}</p>}
+        </div>
+
+        {/* Original email */}
+        <Card>
+          <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Original Email</CardTitle></CardHeader>
+          <CardContent>
+            <pre className="text-sm whitespace-pre-wrap font-sans">{email.body || email.snippet}</pre>
+          </CardContent>
+        </Card>
+
+        {/* Parsed vessels */}
+        {vessels.map((vessel, idx) => (
+          <Card key={idx}>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <Ship className="h-4 w-4" />
+                {safeRender(vessel.vesselName) || 'Unknown Vessel'}
+                {vessels.length > 1 ? ` (#${idx + 1})` : ''}
+                {vessel.vesselName && <ConfIcon confidence={getConf(vessel.vesselName)} />}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Open position */}
+              {(vessel.openPosition || vessel.openDate) && (
+                <div className="rounded-md bg-blue-50 border border-blue-200 p-3">
+                  <p className="text-sm font-medium text-blue-800">
+                    <MapPin className="h-4 w-4 inline mr-1" />
+                    Open: {safeRender(vessel.openPosition) || '?'}
+                    {vessel.openPosition && <> <ConfIcon confidence={getConf(vessel.openPosition)} /></>}
+                  </p>
+                  {vessel.openDate && (
+                    <p className="text-sm text-blue-700">
+                      <Calendar className="h-4 w-4 inline mr-1" />
+                      Date: {safeRender(vessel.openDate)}
+                      <> <ConfIcon confidence={getConf(vessel.openDate)} /></>
+                    </p>
+                  )}
+                  {vessel.direction && <p className="text-xs text-blue-600">Direction: {safeRender(vessel.direction)}</p>}
+                </div>
+              )}
+
+              {/* Specs */}
+              <div>
+                <h4 className="text-xs font-medium text-muted-foreground mb-1">Specifications</h4>
+                <Spec label="DWT (summer)" value={vessel.dwtSummer} unit="MT" confidence={getConf(vessel.dwtSummer)} />
+                <Spec label="DWCC" value={vessel.dwcc} unit="MT" confidence={getConf(vessel.dwcc)} />
+                <Spec label="Draft (max)" value={vessel.draftMax} unit="m" confidence={getConf(vessel.draftMax)} />
+                <Spec label="LOA" value={vessel.loa} unit="m" />
+                <Spec label="Beam" value={vessel.beam} unit="m" />
+                <Spec label="Built" value={vessel.built} />
+                <Spec label="Flag" value={vessel.flag} />
+                <Spec label="Type" value={vessel.vesselType} />
+                <Spec label="Holds/Hatches" value={vessel.holdsCount != null ? `${safeRender(vessel.holdsCount)} HO / ${safeRender(vessel.hatchesCount) || '?'} HA` : null} />
+                <Spec label="Grain Capacity" value={vessel.grainCapacity} unit={safeRender(vessel.grainCapacityUnit) || 'cbm'} />
+                <Spec label="Geared" value={vessel.geared != null ? (safeRender(vessel.geared) === 'Yes' ? 'Yes' : 'No (gearless)') : null} />
+                {(vessel.geared === true || safeRender(vessel.geared) === 'Yes') && <Spec label="Crane Capacity" value={vessel.craneCapacity} />}
+                <Spec label="GRT/NRT" value={vessel.grt != null ? `${safeRender(vessel.grt)} / ${safeRender(vessel.nrt) || '?'}` : null} />
+              </div>
+
+              {/* Restrictions & features */}
+              {vessel.restrictions.length > 0 && (
+                <div>
+                  <h4 className="text-xs font-medium text-muted-foreground mb-1">Restrictions</h4>
+                  <div className="flex flex-wrap gap-1">
+                    {vessel.restrictions.map((r: any, i: number) => <Badge key={i} variant="destructive" className="text-xs">{safeRender(r)}</Badge>)}
+                  </div>
+                </div>
+              )}
+              {vessel.lastCargoes && (
+                <div className="text-sm"><span className="font-medium">Last cargoes:</span> {safeRender(vessel.lastCargoes)}</div>
+              )}
+            </CardContent>
+          </Card>
+        ))}
+
+        {/* Matching cargo */}
+        {matchingCargo.length > 0 && (
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">🔗 Matching Cargo Inquiries</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {matchingCargo.map((match, i) => {
+                const cargo = session.parsedCargos.find(c => c.emailId === match.cargoEmailId && c.itemIndex === match.cargoItemIndex);
+                const levelLabel = match.matchLevel === 'good' ? '✅ GOOD' : match.matchLevel === 'possible' ? '🟡 POSSIBLE' : '⚠️ WEAK';
+                return (
+                  <Link key={i} href={`/match/${session.matches.indexOf(match)}`}>
+                    <div className="p-3 rounded-lg border hover:bg-muted transition-colors cursor-pointer">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="text-sm font-medium">{cargo ? safeRender(cargo.cargoDescription) || 'Cargo' : 'Cargo'}</p>
+                          <p className="text-xs text-muted-foreground">{match.matchReasons[0] || ''}</p>
+                        </div>
+                        <Badge variant="outline" className="text-xs">{levelLabel}</Badge>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </main>
+  );
+}

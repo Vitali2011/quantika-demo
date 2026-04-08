@@ -16,19 +16,25 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const { emailId } = body;
   
-  const parsedRequest = session.parsedRequests.find(r => r.emailId === emailId);
-  if (!parsedRequest) return NextResponse.json({ error: 'Parsed request not found' }, { status: 404 });
+  const parsedCargo = session.parsedCargos.find(r => r.emailId === emailId);
+  if (!parsedCargo) return NextResponse.json({ error: 'Parsed request not found' }, { status: 404 });
   
   const email = session.emails.find(e => e.id === emailId);
   
+  // Extract sender name from "Name <email>" or "Name" format
+  const fromRaw = email?.from || '';
+  const fromName = fromRaw.match(/^([^<]+)</)?.[1]?.trim() || fromRaw.split('@')[0] || 'Sir/Madam';
+
   const userPrompt = `
-Parsed rate request data:
-${JSON.stringify(parsedRequest, null, 2)}
+Parsed cargo inquiry data:
+${JSON.stringify(parsedCargo, null, 2)}
 
 Original email:
 From: ${email?.from || ''}
 Subject: ${email?.subject || ''}
 Body: ${email?.body?.slice(0, 1500) || ''}
+
+Address the reply to: ${fromName}
 
 Generate a professional draft quote email.`;
   

@@ -6,6 +6,16 @@ import { AI_MODEL_LIGHT } from '@/lib/constants';
 
 export const maxDuration = 30;
 
+function extractClientName(email: { from: string; fromName: string | null; snippet: string; body: string }): string {
+  // 1. Use parsed fromName if available and not an email address
+  if (email.fromName && !email.fromName.includes('@')) {
+    return email.fromName;
+  }
+  // 2. Fallback to email local part
+  const match = email.from.match(/([^@<\s]+)@/);
+  return match ? match[1] : 'the client';
+}
+
 export async function POST(request: NextRequest) {
   const sessionId = request.cookies.get('session_id')?.value;
   if (!sessionId) return NextResponse.json({ error: 'No session' }, { status: 401 });
@@ -18,15 +28,23 @@ export async function POST(request: NextRequest) {
   
   // Case 1: missing info request for rate request
   if (emailId) {
-    const parsedRequest = session.parsedRequests.find(r => r.emailId === emailId);
+    const parsedCargo = session.parsedCargos.find(r => r.emailId === emailId);
     const email = session.emails.find(e => e.id === emailId);
-    
-    const userPrompt = `
-Client name/email: ${email?.from || 'the client'}
-Original subject: ${email?.subject || ''}
-Missing information: ${JSON.stringify(parsedRequest?.missingInfo || [])}
 
-Write a follow-up email asking for the missing information.`;
+    const clientName = extractClientName({
+      from: email?.from || '',
+      fromName: email?.fromName || null,
+      snippet: email?.snippet || '',
+      body: email?.body || '',
+    });
+
+    const userPrompt = `
+Client name: ${clientName}
+Client email: ${email?.fromEmail || email?.from || ''}
+Original subject: ${email?.subject || ''}
+Missing information: ${JSON.stringify(parsedCargo?.missingInfo || [])}
+
+Write a follow-up email addressing the client by their first name. Ask for the missing information listed above.`;
     
     const draft = await callAiText(userPrompt, DRAFT_REPLY_SYSTEM_PROMPT, AI_MODEL_LIGHT);
     return NextResponse.json({ draft });

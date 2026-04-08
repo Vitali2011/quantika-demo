@@ -1,5 +1,5 @@
-import { ConnectGmailButton } from '@/components/connect-gmail-button';
-import { Lock } from 'lucide-react';
+import { ConnectGmailButton } from "@/components/connect-gmail-button";
+import { Lock, Trash2, EyeOff } from "lucide-react";
 
 export default function LandingPage() {
   return (
@@ -11,15 +11,42 @@ export default function LandingPage() {
             See how AI handles your<br />freight email in 2 minutes
           </h2>
           <p className="text-muted-foreground">
-            Connect your Gmail — get instant analysis of rate requests, negotiations, and unanswered quotes.
+            Connect your Gmail — get instant analysis of rate requests, vessel positions, fixture recaps, and cargo-vessel matching.
           </p>
         </div>
 
-        <ConnectGmailButton />
+        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+          <ConnectGmailButton />
+          <a
+            href="/api/sample"
+            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-6 py-3 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors"
+          >
+            Try with Sample Data
+          </a>
+        </div>
 
-        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-          <Lock className="h-4 w-4" />
-          <span>Read-only access. We never send emails from your account. Your data is deleted after the demo.</span>
+        <div className="rounded-lg border bg-gray-50 p-5 text-left space-y-3">
+          <div className="flex items-start gap-3">
+            <Lock className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium">Read-only access</p>
+              <p className="text-xs text-muted-foreground">We CANNOT send emails from your account</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <Trash2 className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium">Data deleted after demo</p>
+              <p className="text-xs text-muted-foreground">Your data is processed in memory and deleted automatically</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <EyeOff className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium">No storage</p>
+              <p className="text-xs text-muted-foreground">We don&apos;t store your emails, rates, or client contacts</p>
+            </div>
+          </div>
         </div>
       </div>
     </main>

@@ -8,7 +8,8 @@ export const ai = new OpenAI({
 
 export { AI_MODEL_HEAVY, AI_MODEL_LIGHT };
 
-// Helper: call AI and parse JSON response
+// Helper: call AI with streaming and parse JSON response
+// ClipProxy returns content:null in non-streaming mode, so we use streaming
 export async function callAiJson<T>(
   prompt: string,
   systemPrompt: string,
@@ -16,40 +17,62 @@ export async function callAiJson<T>(
   fallback: T
 ): Promise<T> {
   try {
-    const response = await ai.chat.completions.create({
+    const stream = await ai.chat.completions.create({
       model,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: prompt },
       ],
-      response_format: { type: 'json_object' },
+      stream: true,
       temperature: 0.1,
+      max_tokens: 16000,
     });
-    
-    const content = response.choices[0]?.message?.content || '';
-    return JSON.parse(content) as T;
+
+    let content = '';
+    for await (const chunk of stream) {
+      const delta = chunk.choices[0]?.delta?.content;
+      if (delta) content += delta;
+    }
+
+    console.log(`[AI] model=${model} content_length=${content.length}`);
+
+    // Strip markdown fences if present
+    const cleaned = content.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/,'').trim();
+    if (!cleaned) {
+      console.error('[AI] Empty response after streaming');
+      return fallback;
+    }
+    return JSON.parse(cleaned) as T;
   } catch (err) {
     console.error('AI JSON call failed:', err);
     return fallback;
   }
 }
 
-// Helper: call AI and get plain text response
+// Helper: call AI with streaming and get plain text response
 export async function callAiText(
   prompt: string,
   systemPrompt: string,
   model: string = AI_MODEL_LIGHT
 ): Promise<string> {
   try {
-    const response = await ai.chat.completions.create({
+    const stream = await ai.chat.completions.create({
       model,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: prompt },
       ],
+      stream: true,
       temperature: 0.3,
     });
-    return response.choices[0]?.message?.content || '';
+
+    let content = '';
+    for await (const chunk of stream) {
+      const delta = chunk.choices[0]?.delta?.content;
+      if (delta) content += delta;
+    }
+
+    return content;
   } catch (err) {
     console.error('AI text call failed:', err);
     return '';

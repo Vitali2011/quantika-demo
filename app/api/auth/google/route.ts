@@ -9,7 +9,8 @@ export async function GET(request: NextRequest) {
   const error = searchParams.get('error');
 
   if (error) {
-    return NextResponse.redirect(new URL('/?error=access_denied', request.url));
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `https://${request.headers.get('host')}`;
+    return NextResponse.redirect(new URL('/?error=access_denied', baseUrl));
   }
 
   if (!code) {
@@ -21,7 +22,8 @@ export async function GET(request: NextRequest) {
     const accessToken = await exchangeCodeForToken(code);
     const sessionId = createSession(accessToken);
 
-    const response = NextResponse.redirect(new URL('/processing', request.url));
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `https://${request.headers.get('host')}`;
+    const response = NextResponse.redirect(new URL('/processing', baseUrl));
     response.cookies.set('session_id', sessionId, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -33,6 +35,7 @@ export async function GET(request: NextRequest) {
     return response;
   } catch (err) {
     console.error('OAuth error:', err);
-    return NextResponse.redirect(new URL('/?error=auth_failed', request.url));
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `https://${request.headers.get('host')}`;
+    return NextResponse.redirect(new URL('/?error=auth_failed', baseUrl));
   }
 }

@@ -5,52 +5,79 @@ import { getSession } from '@/lib/session';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
-  REVENUE_PER_UNANSWERED,
-  REVENUE_PER_UNANSWERED_HIGH,
   MINUTES_SAVED_PER_RATE_REQUEST,
   MINUTES_SAVED_PER_RECAP,
+  MINUTES_SAVED_PER_MATCHING,
   CALENDLY_URL,
-  UNANSWERED_THRESHOLD_DAYS,
 } from '@/lib/constants';
-import { Lock, Phone } from 'lucide-react';
+import { Lock, MessageCircle, ChevronLeft } from 'lucide-react';
 
 export default async function SummaryPage() {
   const cookieStore = await cookies();
   const sessionId = cookieStore.get('session_id')?.value;
   if (!sessionId) redirect('/');
-
   const session = getSession(sessionId);
   if (!session) redirect('/');
 
-  const { classifications, recaps } = session;
+  const { parsedCargos, parsedVessels, parsedFixtureRecaps, matches, recaps, commissionSummary, processedEmails, emails } = session;
 
-  const totalRateRequests = classifications.filter(c => c.category === 'RATE_REQUEST').length;
-  const unanswered = classifications.filter(
-    c => c.category === 'RATE_REQUEST' && c.isUnanswered && (c.daysWithoutReply ?? 0) >= UNANSWERED_THRESHOLD_DAYS
-  ).length;
-  const documents = classifications.filter(c => c.category === 'DOCUMENT').length;
-  const carrierUpdates = classifications.filter(c => c.category === 'CARRIER_UPDATE').length;
+  const unanswered = processedEmails.filter(p => p.status === 'NEEDS_ACTION').length;
+  const documents = processedEmails.filter(p => p.type === 'DOCUMENT').length;
 
-  const lostRevLow = unanswered * REVENUE_PER_UNANSWERED;
-  const lostRevHigh = unanswered * REVENUE_PER_UNANSWERED_HIGH;
-
-  const minSaved = totalRateRequests * MINUTES_SAVED_PER_RATE_REQUEST + recaps.length * MINUTES_SAVED_PER_RECAP;
+  const minSaved =
+    parsedCargos.length * MINUTES_SAVED_PER_RATE_REQUEST +
+    recaps.length * MINUTES_SAVED_PER_RECAP +
+    matches.length * MINUTES_SAVED_PER_MATCHING;
   const hoursSaved = (minSaved / 60).toFixed(1);
+
+  const commissionTotal = commissionSummary?.totalByCurrency
+    .map(t => `${t.currency === 'EUR' ? '€' : '$'}${t.amount.toLocaleString()}`)
+    .join(' + ') || '$0';
 
   return (
     <main className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-2xl mx-auto space-y-6">
+        <Link href="/dashboard" className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4">
+          <ChevronLeft className="h-4 w-4" /> Back to Dashboard
+        </Link>
         <h1 className="text-2xl font-bold text-center">YOUR RESULTS</h1>
-        <p className="text-center text-muted-foreground">In your last {session.emails.length} emails, Quantika found:</p>
+        <p className="text-center text-muted-foreground">In your last {emails.length} emails, Quantika found:</p>
 
         {/* Metrics */}
         <Card>
           <CardContent className="pt-6 space-y-2">
-            <p className="flex justify-between text-sm"><span>📬 Rate requests identified</span><strong>{totalRateRequests}</strong></p>
-            <p className="flex justify-between text-sm"><span>⚠️ Unanswered for more than 24 hours</span><strong>{unanswered}</strong></p>
-            <p className="flex justify-between text-sm"><span>📝 Negotiations with auto-recap ready</span><strong>{recaps.length}</strong></p>
-            <p className="flex justify-between text-sm"><span>📄 Documents auto-tagged</span><strong>{documents}</strong></p>
-            <p className="flex justify-between text-sm"><span>🟠 Carrier updates classified</span><strong>{carrierUpdates}</strong></p>
+            <Link href="/dashboard" className="flex justify-between text-sm hover:underline cursor-pointer">
+              <span>📬 Cargo inquiries parsed</span>
+              <strong>{parsedCargos.length} items</strong>
+            </Link>
+            <Link href="/dashboard" className="flex justify-between text-sm hover:underline cursor-pointer">
+              <span>🚢 Vessel positions parsed</span>
+              <strong>{parsedVessels.length} items</strong>
+            </Link>
+            <Link href="/dashboard" className="flex justify-between text-sm hover:underline cursor-pointer">
+              <span>📋 Fixture recaps extracted</span>
+              <strong>{parsedFixtureRecaps.length}</strong>
+            </Link>
+            <Link href="/dashboard" className="flex justify-between text-sm hover:underline cursor-pointer">
+              <span>🔗 Cargo-vessel matches identified</span>
+              <strong>{matches.length}</strong>
+            </Link>
+            <div className="flex justify-between text-sm">
+              <span>⚠️ Unanswered for more than 48 hours</span>
+              <strong>{unanswered}</strong>
+            </div>
+            <Link href="/dashboard" className="flex justify-between text-sm hover:underline cursor-pointer">
+              <span>📝 Negotiations with auto-recap ready</span>
+              <strong>{recaps.length}</strong>
+            </Link>
+            <div className="flex justify-between text-sm">
+              <span>📄 Documents auto-tagged</span>
+              <strong>{documents}</strong>
+            </div>
+            <Link href="/commission" className="flex justify-between text-sm hover:underline cursor-pointer font-medium">
+              <span>💰 Commission</span>
+              <strong>{commissionTotal}</strong>
+            </Link>
           </CardContent>
         </Card>
 
@@ -60,22 +87,27 @@ export default async function SummaryPage() {
             <CardTitle className="text-base">💰 Estimated impact</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            {unanswered > 0 && (
+            {matches.length > 0 && (
               <p>
-                <strong>{unanswered} unanswered {unanswered === 1 ? 'quote' : 'quotes'} ≈ ${lostRevLow.toLocaleString()}–${lostRevHigh.toLocaleString()}</strong>
-                <br /><span className="text-muted-foreground">in potentially lost revenue</span>
+                <strong>{matches.length} {matches.length === 1 ? 'match' : 'matches'} found automatically</strong>
+                <br /><span className="text-muted-foreground">normally takes 2-4 hours of manual search</span>
+              </p>
+            )}
+            {parsedFixtureRecaps.length > 0 && (
+              <p>
+                <strong>{parsedFixtureRecaps.length} {parsedFixtureRecaps.length === 1 ? 'recap' : 'recaps'} parsed in seconds</strong>
+                <br /><span className="text-muted-foreground">normally 30-40 min each to compile manually</span>
+              </p>
+            )}
+            {commissionSummary && commissionSummary.details.length > 0 && (
+              <p>
+                <strong>Commission calculated automatically from {commissionSummary.details.length} fixture {commissionSummary.details.length === 1 ? 'recap' : 'recaps'}</strong>
               </p>
             )}
             <p>
               <strong>~{hoursSaved} hours/day saved</strong>
-              <br /><span className="text-muted-foreground">on email classification &amp; recap</span>
+              <br /><span className="text-muted-foreground">on email triage + matching</span>
             </p>
-            {recaps.length > 0 && (
-              <p>
-                <strong>{recaps.length} negotiation {recaps.length === 1 ? 'recap' : 'recaps'} generated automatically</strong>
-                <br /><span className="text-muted-foreground">(normally 30–40 min each)</span>
-              </p>
-            )}
           </CardContent>
         </Card>
 
@@ -88,7 +120,7 @@ export default async function SummaryPage() {
             </p>
             <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer">
               <Button size="lg" className="gap-2">
-                <Phone className="h-4 w-4" />
+                <MessageCircle className="h-4 w-4" />
                 Book a Call with Our Team
               </Button>
             </a>
@@ -98,10 +130,10 @@ export default async function SummaryPage() {
         {/* Security note */}
         <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
           <Lock className="h-4 w-4" />
-          <span>Your email data will be automatically deleted from our servers within 1 hour.</span>
+          <span>Your email data has been deleted from our servers.</span>
         </div>
 
-        <div className="text-center">
+        <div className="text-center space-x-3">
           <Link href="/">
             <Button variant="ghost" size="sm">Start a new demo →</Button>
           </Link>

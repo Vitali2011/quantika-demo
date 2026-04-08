@@ -2,8 +2,6 @@ import { SessionData } from './types';
 import { SESSION_TTL_MS } from './constants';
 import { randomUUID } from 'crypto';
 
-// Global in-memory session store
-// Note: sessions are lost on process restart (acceptable for demo)
 const sessions = new Map<string, SessionData>();
 
 export function createSession(accessToken: string): string {
@@ -14,12 +12,17 @@ export function createSession(accessToken: string): string {
     createdAt: new Date(),
     emails: [],
     classifications: [],
-    parsedRequests: [],
+    processedEmails: [],
+    parsedCargos: [],
+    parsedVessels: [],
+    parsedFixtureRecaps: [],
+    matches: [],
     recaps: [],
+    commissionSummary: null,
+    counterparties: [],
   };
   sessions.set(id, session);
 
-  // Auto-expire after TTL
   setTimeout(() => {
     sessions.delete(id);
   }, SESSION_TTL_MS);
@@ -31,7 +34,6 @@ export function getSession(id: string): SessionData | null {
   const session = sessions.get(id);
   if (!session) return null;
 
-  // Lazy expiration check
   const ageMs = Date.now() - session.createdAt.getTime();
   if (ageMs > SESSION_TTL_MS) {
     sessions.delete(id);

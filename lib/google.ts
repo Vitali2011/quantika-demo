@@ -71,17 +71,33 @@ function parseGmailMessage(message: any): Email {
   const getHeader = (name: string) =>
     headers.find((header: any) => header.name.toLowerCase() === name.toLowerCase())?.value || '';
 
+  // Parse "Name <email@domain.com>" format
+  function parseFromHeader(from: string): { fromName: string | null; fromEmail: string | null } {
+    const match = from.match(/^"?([^"<]*)"?\s*<?([^>]*)>?$/);
+    if (match) {
+      const name = match[1].trim() || null;
+      const email = match[2].trim() || null;
+      return { fromName: name || null, fromEmail: email || from };
+    }
+    return { fromName: null, fromEmail: from };
+  }
+
   const body = extractBody(message.payload);
+  const from = getHeader('From');
+  const { fromName, fromEmail } = parseFromHeader(from);
 
   return {
     id: message.id || '',
     threadId: message.threadId || '',
-    from: getHeader('From'),
+    from,
+    fromName,
+    fromEmail,
     to: getHeader('To'),
     subject: getHeader('Subject'),
     date: getHeader('Date'),
     body,
     snippet: message.snippet || '',
+    labelIds: message.labelIds || [],
   };
 }
 

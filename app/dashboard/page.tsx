@@ -1,27 +1,141 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
-import {
-  CATEGORY_LABELS,
-  UNANSWERED_THRESHOLD_DAYS,
-  REVENUE_PER_UNANSWERED,
-  REVENUE_PER_UNANSWERED_HIGH,
-} from '@/lib/constants';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle, Mail, ArrowRight } from 'lucide-react';
-import type { EmailCategory } from '@/lib/types';
+import { CATEGORY_LABELS, STATUS_CONFIG, CATEGORY_COLORS } from '@/lib/constants';
+import type { EmailCategory, EmailStatus, ProcessedEmail, Email } from '@/lib/types';
 
-const CATEGORY_EMOJI: Record<EmailCategory, string> = {
-  RATE_REQUEST: '🟢',
-  CLIENT_REPLY: '🔵',
-  DOCUMENT: '🟡',
-  CARRIER_UPDATE: '🟠',
-  OTHER: '⚪',
-};
+// STATUS ordering for display
+const STATUS_ORDER: EmailStatus[] = ['NEEDS_ACTION', 'PENDING', 'RESPONDED', 'INFO_ONLY'];
+
+// Map STALE freshness to a display group
+const STALE_LABEL = 'STALE';
+
+type StatusGroup = EmailStatus | typeof STALE_LABEL;
+
+interface EmailRow {
+  email: Email;
+  processed: ProcessedEmail;
+  statusGroup: StatusGroup;
+}
+
+function groupByStatus(rows: EmailRow[]): Record<StatusGroup, EmailRow[]> {
+  const groups: Record<string, EmailRow[]> = {};
+  for (const row of rows) {
+    const key = row.statusGroup;
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(row);
+  }
+  return groups as Record<StatusGroup, EmailRow[]>;
+}
+
+const STATUS_GROUPS_ORDER: StatusGroup[] = ['NEEDS_ACTION', 'PENDING', 'RESPONDED', 'INFO_ONLY', STALE_LABEL];
+
+function StatusBadge({ status }: { status: StatusGroup }) {
+  if (status === STALE_LABEL) {
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-500">
+        🕳️ Stale
+      </span>
+    );
+  }
+  const cfg = STATUS_CONFIG[status];
+  if (!cfg) return null;
+  return (
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${cfg.color}`}>
+      {cfg.emoji} {cfg.label}
+    </span>
+  );
+}
+
+function EmailListItem({
+  row,
+  href,
+}: {
+  row: EmailRow;
+  href: string;
+}) {
+  const isStale = row.statusGroup === STALE_LABEL;
+  const days = row.processed.daysWithoutReply;
+  return (
+    <Link href={href}>
+      <div
+        className={`flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200 ${isStale ? 'opacity-50' : ''}`}
+      >
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium truncate text-gray-900">
+            {row.email.fromName || row.email.fromEmail || row.email.from}
+          </p>
+          <p className="text-xs text-gray-500 truncate">{row.email.subject}</p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0 ml-3">
+          <StatusBadge status={row.statusGroup} />
+          {days !== null && days > 0 && !isStale && row.processed.status === 'NEEDS_ACTION' && (
+            <span className="text-xs text-red-600 font-medium">{days}d</span>
+          )}
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function CategorySection({
+  category,
+  rows,
+  totalCount,
+}: {
+  category: EmailCategory;
+  rows: EmailRow[];
+  totalCount: number;
+}) {
+  const grouped = groupByStatus(rows);
+  const colorClass = CATEGORY_COLORS[category] || 'bg-gray-100 text-gray-800';
+
+  return (
+    <details className="border border-gray-200 rounded-lg overflow-hidden">
+      <summary className="flex items-center justify-between px-4 py-3 bg-white cursor-pointer hover:bg-gray-50 list-none">
+        <span className="font-medium text-gray-800">
+          {CATEGORY_LABELS[category] || category}
+        </span>
+        <span className={`ml-2 px-2 py-0.5 rounded text-xs font-semibold ${colorClass}`}>
+          {totalCount}
+        </span>
+      </summary>
+      <div className="bg-white px-4 pb-4 space-y-4">
+        {STATUS_GROUPS_ORDER.map((statusGroup) => {
+          const groupRows = grouped[statusGroup];
+          if (!groupRows || groupRows.length === 0) return null;
+          const isStaleGroup = statusGroup === STALE_LABEL;
+          const groupLabel =
+            statusGroup === STALE_LABEL
+              ? '🕳️ Stale'
+              : `${STATUS_CONFIG[statusGroup]?.emoji || ''} ${STATUS_CONFIG[statusGroup]?.label || statusGroup}`;
+          return (
+            <div key={statusGroup}>
+              <p className={`text-xs font-semibold uppercase tracking-wide mb-2 mt-3 ${isStaleGroup ? 'text-gray-400' : 'text-gray-600'}`}>
+                {groupLabel} ({groupRows.length})
+              </p>
+              <div className="space-y-1">
+                {groupRows.map((row) => {
+                  let href = '#';
+                  if (category === 'CARGO_INQUIRY') href = `/cargo/${row.email.id}`;
+                  else if (category === 'VESSEL_POSITION') href = `/vessel/${row.email.id}`;
+                  else if (category === 'FIXTURE_RECAP') href = `/fixture/${row.email.id}`;
+                  else href = `/cargo/${row.email.id}`;
+                  return <EmailListItem key={row.email.id} row={row} href={href} />;
+                })}
+              </div>
+            </div>
+          );
+        })}
+        {rows.length === 0 && (
+          <p className="text-sm text-gray-400 pt-2">No emails in this category.</p>
+        )}
+      </div>
+    </details>
+  );
+}
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
@@ -31,144 +145,424 @@ export default async function DashboardPage() {
   const session = getSession(sessionId);
   if (!session) redirect('/');
 
-  const { emails, classifications, recaps } = session;
+  const {
+    emails,
+    processedEmails,
+    matches,
+    recaps,
+    commissionSummary,
+    counterparties,
+    parsedFixtureRecaps,
+  } = session;
 
-  // Count by category
-  const counts: Record<string, number> = {};
-  for (const c of classifications) {
-    counts[c.category] = (counts[c.category] || 0) + 1;
+  // Build a map: emailId -> ProcessedEmail
+  const processedMap = new Map<string, ProcessedEmail>();
+  for (const pe of processedEmails) {
+    processedMap.set(pe.emailId, pe);
   }
 
-  // Unanswered rate requests
-  const unanswered = classifications.filter(
-    c => c.category === 'RATE_REQUEST' && c.isUnanswered && (c.daysWithoutReply ?? 0) >= UNANSWERED_THRESHOLD_DAYS
-  );
+  // Build a map: emailId -> Email
+  const emailMap = new Map<string, Email>();
+  for (const e of emails) {
+    emailMap.set(e.id, e);
+  }
 
-  const estLow = unanswered.length * REVENUE_PER_UNANSWERED;
-  const estHigh = unanswered.length * REVENUE_PER_UNANSWERED_HIGH;
+  // Build EmailRow list
+  function buildRows(category: EmailCategory): EmailRow[] {
+    const rows: EmailRow[] = [];
+    for (const pe of processedEmails) {
+      if (pe.type !== category) continue;
+      const email = emailMap.get(pe.emailId);
+      if (!email) continue;
+      const isStale = pe.freshness === 'stale';
+      const statusGroup: StatusGroup = isStale ? STALE_LABEL : pe.status;
+      rows.push({ email, processed: pe, statusGroup });
+    }
+    // Sort: NEEDS_ACTION first, then PENDING, RESPONDED, INFO_ONLY, STALE
+    rows.sort((a, b) => {
+      const orderA = STATUS_GROUPS_ORDER.indexOf(a.statusGroup);
+      const orderB = STATUS_GROUPS_ORDER.indexOf(b.statusGroup);
+      if (orderA !== orderB) return orderA - orderB;
+      // Within NEEDS_ACTION, sort by daysWithoutReply desc
+      if (a.statusGroup === 'NEEDS_ACTION') {
+        return (b.processed.daysWithoutReply || 0) - (a.processed.daysWithoutReply || 0);
+      }
+      return 0;
+    });
+    return rows;
+  }
 
-  // Rate request emails
-  const rateRequestIds = new Set(
-    classifications.filter(c => c.category === 'RATE_REQUEST').map(c => c.emailId)
-  );
-  const rateEmails = emails.filter(e => rateRequestIds.has(e.id));
+  const cargoRows = buildRows('CARGO_INQUIRY');
+  const vesselRows = buildRows('VESSEL_POSITION');
+  const fixtureRows = buildRows('FIXTURE_RECAP');
+  const clientReplyRows = buildRows('CLIENT_REPLY');
+  const documentRows = buildRows('DOCUMENT');
+  const otherOnlyRows = buildRows('OTHER');
+  const otherRows = [
+    ...clientReplyRows,
+    ...documentRows,
+    ...otherOnlyRows,
+  ];
 
-  const categories: EmailCategory[] = ['RATE_REQUEST', 'CLIENT_REPLY', 'DOCUMENT', 'CARRIER_UPDATE', 'OTHER'];
+  // Action block: unanswered inquiries
+  const needsActionCargo = cargoRows.filter((r) => r.statusGroup === 'NEEDS_ACTION');
+  const oldestDays =
+    needsActionCargo.length > 0
+      ? Math.max(...needsActionCargo.map((r) => r.processed.daysWithoutReply || 0))
+      : 0;
+
+  // Good/possible matches
+  const goodMatches = matches.filter((m) => m.matchLevel === 'good' || m.matchLevel === 'possible');
+
+  // Commission totals
+  const commissionLines =
+    commissionSummary?.totalByCurrency
+      .map((t) => `~${t.currency} ${t.amount.toLocaleString(undefined, { maximumFractionDigits: 0 })}`)
+      .join(' + ') || null;
+
+  // Active negotiations (recaps)
+  const activeRecaps = recaps;
+
+  // Category counts (all statuses including stale)
+  const categoryCounts: Record<string, number> = {
+    CARGO_INQUIRY: cargoRows.length,
+    VESSEL_POSITION: vesselRows.length,
+    FIXTURE_RECAP: fixtureRows.length,
+    CLIENT_REPLY: clientReplyRows.length,
+    DOCUMENT: documentRows.length,
+    OTHER: otherOnlyRows.length,
+  };
+
+  const isSample = session.isSampleData === true;
+
+  // Compute top contacts from emails (grouped by fromEmail)
+  const senderMap = new Map<string, { name: string; count: number }>();
+  for (const email of emails) {
+    const key = (email.fromEmail || email.from || '').toLowerCase().trim();
+    if (!key) continue;
+    const existing = senderMap.get(key);
+    if (existing) {
+      existing.count += 1;
+    } else {
+      senderMap.set(key, { name: email.fromName || email.fromEmail || email.from || key, count: 1 });
+    }
+  }
+  const topContacts = Array.from(senderMap.values())
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
+  const maxContactEmails = topContacts.length > 0 ? topContacts[0].count : 1;
 
   return (
     <main className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-3xl mx-auto space-y-6">
+        {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold">YOUR INBOX — analyzed by Quantika</h1>
-          <p className="text-muted-foreground text-sm mt-1">{emails.length} emails processed</p>
+          <h1 className="text-xl font-bold text-gray-900">
+            Good morning. Here&apos;s what needs your attention:
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">{emails.length} emails processed</p>
+          {isSample && (
+            <span className="inline-block mt-1 px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+              Sample data
+            </span>
+          )}
         </div>
 
-        {/* Category cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-          {categories.map(cat => (
-            <Card key={cat} className="cursor-pointer hover:shadow-md transition-shadow">
-              <CardHeader className="pb-1 pt-4 px-4">
-                <CardTitle className="text-xs font-medium text-muted-foreground">
-                  {CATEGORY_EMOJI[cat]} {CATEGORY_LABELS[cat]}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="px-4 pb-4">
-                <p className="text-3xl font-bold">{counts[cat] ?? 0}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {/* ── ACTION BLOCKS ── */}
+        <div className="space-y-3">
+          {/* Unanswered inquiries */}
+          {needsActionCargo.length > 0 ? (
+            <details className="rounded-lg border bg-red-50 border-red-200 overflow-hidden">
+              <summary className="flex items-center gap-3 p-4 cursor-pointer hover:bg-red-100 list-none">
+                <span className="text-2xl">🔴</span>
+                <div className="flex-1">
+                  <p className="font-semibold text-red-800">
+                    {needsActionCargo.length} {needsActionCargo.length === 1 ? 'inquiry' : 'inquiries'} waiting for your reply
+                  </p>
+                  {oldestDays > 0 && (
+                    <p className="text-sm text-red-600">Oldest: {oldestDays} days without reply · tap to expand</p>
+                  )}
+                </div>
+                <span className="shrink-0 text-red-400 text-sm">▼</span>
+              </summary>
+              <div className="bg-white px-4 pb-4 pt-2 space-y-1">
+                {needsActionCargo.map((row) => (
+                  <EmailListItem key={row.email.id} row={row} href={`/cargo/${row.email.id}`} />
+                ))}
+              </div>
+            </details>
+          ) : (
+            <div className="flex items-center p-4 rounded-lg border bg-white border-gray-200">
+              <span className="text-2xl mr-3">🔴</span>
+              <p className="font-medium text-gray-600">No unanswered inquiries — all clear</p>
+            </div>
+          )}
 
-        {/* Alert */}
-        {unanswered.length > 0 && (
-          <Alert className="border-orange-200 bg-orange-50">
-            <AlertTriangle className="h-4 w-4 text-orange-500" />
-            <AlertDescription>
-              <strong>⚠️ {unanswered.length} rate {unanswered.length === 1 ? 'request' : 'requests'} unanswered &gt;24h</strong>
-              <br />
-              <span className="text-sm">
-                💰 Estimated: ${estLow.toLocaleString()}–${estHigh.toLocaleString()} in pending quotes
-              </span>
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {/* Rate Requests */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Rate Requests</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {rateEmails.length === 0 && (
-              <p className="text-sm text-muted-foreground">No rate requests found.</p>
-            )}
-            {rateEmails.map(email => {
-              const cls = classifications.find(c => c.emailId === email.id);
-              return (
-                <Link key={email.id} href={`/request/${email.id}`}>
-                  <div className="flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors cursor-pointer border">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium truncate">{email.from}</p>
-                        <p className="text-xs text-muted-foreground truncate">{email.subject}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      {cls?.isUnanswered ? (
-                        <Badge variant="destructive" className="text-xs">⚠️ No reply</Badge>
-                      ) : (
-                        <Badge variant="secondary" className="text-xs">✅ Replied</Badge>
-                      )}
-                      <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </CardContent>
-        </Card>
-
-        {/* Negotiations */}
-        {recaps.length === 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Active Negotiations (recap ready)</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">No active negotiations found. Recaps are generated for email threads with 5+ messages.</p>
-            </CardContent>
-          </Card>
-        )}
-        {recaps.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Active Negotiations (recap ready)</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {recaps.map(recap => {
-                const agreed = recap.points.filter(p => p.status === 'AGREED').length;
-                return (
-                  <Link key={recap.threadId} href={`/recap/${recap.threadId}`}>
-                    <div className="flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors cursor-pointer border">
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium truncate">{recap.subject}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {recap.emailCount} emails · {agreed}/{recap.points.length} terms agreed
+          {/* Matches */}
+          {goodMatches.length > 0 ? (
+            <details className="rounded-lg border bg-blue-50 border-blue-200 overflow-hidden">
+              <summary className="flex items-center gap-3 p-4 cursor-pointer hover:bg-blue-100 list-none">
+                <span className="text-2xl">🔗</span>
+                <div className="flex-1">
+                  <p className="font-semibold text-blue-800">
+                    {goodMatches.length} vessel-cargo {goodMatches.length === 1 ? 'match' : 'matches'} found
+                  </p>
+                  <p className="text-sm text-blue-600">tap to expand</p>
+                </div>
+                <span className="shrink-0 text-blue-400 text-sm">▼</span>
+              </summary>
+              <div className="bg-white px-4 pb-4 pt-2 space-y-1">
+                {goodMatches.map((match, i) => (
+                  <Link key={i} href={`/match/${i}`}>
+                    <div className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200 bg-white">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-gray-900 truncate">
+                          {match.matchReasons[0] || `Match #${i + 1}`}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Level: {match.matchLevel} · {match.matchReasons.length} reasons
                         </p>
                       </div>
-                      <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                      <span className={`shrink-0 ml-3 px-2 py-0.5 rounded text-xs font-semibold ${match.matchLevel === 'good' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                        {match.matchLevel}
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </details>
+          ) : (
+            <div className="flex items-center p-4 rounded-lg border bg-white border-gray-200">
+              <span className="text-2xl mr-3">🔗</span>
+              <p className="font-medium text-gray-500">No vessel-cargo matches found</p>
+            </div>
+          )}
+
+          {/* Fixture recaps */}
+          {fixtureRows.length > 0 ? (
+            <details className="rounded-lg border bg-purple-50 border-purple-200 overflow-hidden">
+              <summary className="flex items-center gap-3 p-4 cursor-pointer hover:bg-purple-100 list-none">
+                <span className="text-2xl">📋</span>
+                <div className="flex-1">
+                  <p className="font-semibold text-purple-800">
+                    {fixtureRows.length} fixture {fixtureRows.length === 1 ? 'recap' : 'recaps'} extracted
+                  </p>
+                  <p className="text-sm text-purple-600">tap to expand</p>
+                </div>
+                <span className="shrink-0 text-purple-400 text-sm">▼</span>
+              </summary>
+              <div className="bg-white px-4 pb-4 pt-2 space-y-1">
+                {fixtureRows.map((row) => (
+                  <EmailListItem key={row.email.id} row={row} href={`/fixture/${row.email.id}`} />
+                ))}
+              </div>
+            </details>
+          ) : (
+            <div className="flex items-center p-4 rounded-lg border bg-white border-gray-200">
+              <span className="text-2xl mr-3">📋</span>
+              <p className="font-medium text-gray-500">No fixture recaps found</p>
+            </div>
+          )}
+
+          {/* Commission */}
+          <div className={`flex items-center justify-between p-4 rounded-lg border ${commissionSummary && commissionSummary.details.length > 0 ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'}`}>
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">💰</span>
+              <div>
+                {commissionSummary && commissionSummary.details.length > 0 ? (
+                  <p className="font-semibold text-green-800">
+                    Commission from recaps: {commissionLines}
+                  </p>
+                ) : (
+                  <p className="font-medium text-gray-500">No commission data from recaps</p>
+                )}
+              </div>
+            </div>
+            {commissionSummary && commissionSummary.details.length > 0 && (
+              <Link
+                href="/commission"
+                className="shrink-0 ml-4 px-3 py-1.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
+              >
+                See Breakdown
+              </Link>
+            )}
+          </div>
+        </div>
+
+        {/* ── FULL INBOX BREAKDOWN (collapsed) ── */}
+        <details className="border border-gray-300 rounded-xl overflow-hidden">
+          <summary className="px-5 py-4 bg-white cursor-pointer hover:bg-gray-50 list-none">
+            <div className="flex items-center justify-between mb-3">
+              <span className="font-semibold text-gray-900">Full Inbox Breakdown</span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-500">{emails.length} emails total</span>
+                <span className="text-gray-400 text-xs select-none">▼</span>
+              </div>
+            </div>
+            <div className="space-y-1">
+              {([
+                { key: 'CARGO_INQUIRY', emoji: '📦', label: 'Cargo Inquiries', count: categoryCounts.CARGO_INQUIRY },
+                { key: 'VESSEL_POSITION', emoji: '🚢', label: 'Vessel Positions', count: categoryCounts.VESSEL_POSITION },
+                { key: 'FIXTURE_RECAP', emoji: '📋', label: 'Fixture Recaps', count: categoryCounts.FIXTURE_RECAP },
+                { key: 'DOCUMENT', emoji: '📄', label: 'Documents', count: categoryCounts.DOCUMENT },
+                { key: 'CLIENT_REPLY', emoji: '💬', label: 'Client Replies', count: categoryCounts.CLIENT_REPLY },
+                { key: 'OTHER', emoji: '📁', label: 'Other', count: categoryCounts.OTHER },
+              ] as { key: string; emoji: string; label: string; count: number }[]).filter(item => item.count > 0).map(({ key, emoji, label, count }) => (
+                <div key={key} className="flex items-center justify-between py-0.5 px-2">
+                  <span className="text-sm text-gray-600">{emoji} {label}</span>
+                  <span className="text-sm font-semibold text-gray-800 tabular-nums">{count}</span>
+                </div>
+              ))}
+            </div>
+          </summary>
+          <div className="bg-gray-50 px-4 py-4 space-y-3" id="inbox">
+            <div id="cargo">
+              <CategorySection
+                category="CARGO_INQUIRY"
+                rows={cargoRows}
+                totalCount={categoryCounts.CARGO_INQUIRY}
+              />
+            </div>
+            <div>
+              <CategorySection
+                category="VESSEL_POSITION"
+                rows={vesselRows}
+                totalCount={categoryCounts.VESSEL_POSITION}
+              />
+            </div>
+            <div id="fixture">
+              <CategorySection
+                category="FIXTURE_RECAP"
+                rows={fixtureRows}
+                totalCount={categoryCounts.FIXTURE_RECAP}
+              />
+            </div>
+            {(categoryCounts.DOCUMENT + categoryCounts.CLIENT_REPLY + categoryCounts.OTHER) > 0 && (
+              <details className="border border-gray-200 rounded-lg overflow-hidden">
+                <summary className="flex items-center justify-between px-4 py-3 bg-white cursor-pointer hover:bg-gray-50 list-none">
+                  <span className="font-medium text-gray-800">Other</span>
+                  <span className="ml-2 px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-700">
+                    {categoryCounts.DOCUMENT + categoryCounts.CLIENT_REPLY + categoryCounts.OTHER}
+                  </span>
+                </summary>
+                <div className="bg-white px-4 pb-4 pt-2 space-y-1">
+                  {otherRows.map((row) => (
+                    <EmailListItem key={row.email.id} row={row} href={`/cargo/${row.email.id}`} />
+                  ))}
+                </div>
+              </details>
+            )}
+          </div>
+        </details>
+
+        {/* ── MATCHES ── */}
+        {goodMatches.length > 0 && (
+          <div id="matches">
+            <h2 className="text-base font-semibold text-gray-900 mb-3">
+              🔗 Vessel-Cargo Matches ({goodMatches.length})
+            </h2>
+            <div className="space-y-2">
+              {goodMatches.map((match, i) => (
+                <Link key={i} href={`/match/${i}`}>
+                  <div className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200 bg-white">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        {match.matchReasons[0] || `Match #${i + 1}`}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        Level: {match.matchLevel} · {match.matchReasons.length} reasons
+                      </p>
+                    </div>
+                    <span className={`shrink-0 ml-3 px-2 py-0.5 rounded text-xs font-semibold ${match.matchLevel === 'good' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                      {match.matchLevel}
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── ACTIVE NEGOTIATIONS ── */}
+        <div>
+          <h2 className="text-base font-semibold text-gray-900 mb-3">
+            Active Negotiations (recap ready)
+          </h2>
+          {activeRecaps.length === 0 ? (
+            <p className="text-sm text-gray-400 bg-white border border-gray-200 rounded-lg px-4 py-3">
+              No active negotiations found. Recaps are generated for threads with 5+ messages.
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {activeRecaps.map((recap) => {
+                const agreed = recap.points.filter((p) => p.status === 'AGREED').length;
+                return (
+                  <Link key={recap.threadId} href={`/recap/${recap.threadId}`}>
+                    <div className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200 bg-white">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-gray-900 truncate">{recap.subject}</p>
+                        <p className="text-xs text-gray-500">
+                          {recap.emailCount} emails · {recap.dateRange} · {agreed}/{recap.points.length} terms agreed
+                        </p>
+                      </div>
+                      <span className="shrink-0 ml-3 text-xs text-gray-400">→</span>
                     </div>
                   </Link>
                 );
               })}
-            </CardContent>
-          </Card>
+            </div>
+          )}
+        </div>
+
+        {/* ── YOUR NETWORK ── */}
+        {topContacts.length > 0 && (
+          <details className="border border-gray-300 rounded-xl overflow-hidden">
+            <summary className="flex items-center justify-between px-5 py-4 bg-white cursor-pointer hover:bg-gray-50 list-none">
+              <span className="font-semibold text-gray-900">Your Network</span>
+              <span className="text-sm text-gray-500">from {emails.length} emails</span>
+            </summary>
+            <div className="bg-white px-4 pb-4 pt-2">
+              {topContacts.map((contact, idx) => {
+                const barWidth = Math.round((contact.count / maxContactEmails) * 100);
+                return (
+                  <div key={idx} className="flex items-center gap-3 py-2 border-b border-gray-100 last:border-0">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-sm font-medium text-gray-900 truncate">{contact.name}</p>
+                        <span className="shrink-0 ml-3 text-xs font-semibold text-gray-600">
+                          {contact.count} {contact.count === 1 ? 'email' : 'emails'}
+                        </span>
+                      </div>
+                      <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-blue-400 rounded-full"
+                          style={{ width: `${barWidth}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </details>
         )}
 
+        {/* ── DISCLAIMER ── */}
+        <div className="rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3">
+          <p className="text-xs text-yellow-800">
+            <strong>⚠️ Disclaimer:</strong> This analysis is generated by AI and may contain errors or omissions.
+            All information should be independently verified before making business decisions.
+            Commission estimates are based on extracted recap data and may not reflect final agreed amounts.
+          </p>
+        </div>
+
+        {/* ── FOOTER CTA ── */}
         <div className="flex justify-end">
-          <Link href="/summary">
-            <Button>View Summary &amp; Impact →</Button>
+          <Link
+            href="/summary"
+            className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors"
+          >
+            View Summary &amp; Impact →
           </Link>
         </div>
       </div>

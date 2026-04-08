@@ -43,3 +43,13 @@ export function safeJsonParse<T>(text: string, fallback: T): T {
     return fallback;
   }
 }
+
+export function sanitizeEmailBody(body: string): string {
+  return body
+    .replace(/<file:\/\/\/[^>]*>/gi, '')
+    .replace(/<mailto:([^>]+)>/gi, '$1')
+    .replace(/<(https?:\/\/[^>]+)>/gi, '$1')
+    .replace(/^.*(AVG|Avast|Norton|Kaspersky|ESET|McAfee).*virus.*$/gim, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}

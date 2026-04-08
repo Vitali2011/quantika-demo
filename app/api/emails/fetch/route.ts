@@ -18,6 +18,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Session expired' }, { status: 401 });
   }
 
+  // Skip fetch for sample data sessions — emails already loaded
+  if (session.isSampleData) {
+    return NextResponse.json({
+      count: session.emails.length,
+      message: `Sample data: ${session.emails.length} emails`,
+    });
+  }
+
   try {
     const emails = await fetchGmailEmails(session.accessToken, EMAIL_FETCH_COUNT);
 
