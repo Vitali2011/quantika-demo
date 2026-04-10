@@ -47,3 +47,21 @@ export const STATUS_CONFIG: Record<string, { label: string; color: string; emoji
 };
 
 export const CALENDLY_URL = 'https://wa.me/971528429812';
+
+// ── TZ-015: Bunker Defaults by Vessel Class ──
+
+export type VesselClassName = "handysize" | "supramax" | "panamax" | "capesize";
+
+export const BUNKER_DEFAULTS: Record<VesselClassName, { speed: number; consumption: number; bunkerPrice: number }> = {
+  handysize:  { speed: 12.5, consumption: 22, bunkerPrice: 550 },
+  supramax:   { speed: 13.5, consumption: 28, bunkerPrice: 550 },
+  panamax:    { speed: 14.0, consumption: 32, bunkerPrice: 550 },
+  capesize:   { speed: 14.5, consumption: 45, bunkerPrice: 550 },
+};
+
+export const VESSEL_CLASS: Record<VesselClassName, { minDwt: number; maxDwt: number }> = {
+  handysize:  { minDwt: 15000, maxDwt: 35000 },
+  supramax:   { minDwt: 50000, maxDwt: 65000 },
+  panamax:    { minDwt: 65000, maxDwt: 90000 },
+  capesize:   { minDwt: 100000, maxDwt: 400000 },
+};
