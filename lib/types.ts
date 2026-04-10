@@ -281,3 +281,92 @@ export interface SessionData {
   counterparties: Counterparty[];
   isSampleData?: boolean;
 }
+
+// ── TZ-008: Subs Tracking ──
+
+export interface SubjectItem {
+  text: string;
+  status: "pending" | "lifted" | "expired" | "failed";
+  party?: string;
+  deadline?: {
+    hours: number;
+    workingHours: boolean;
+    calculatedExpiry?: string;
+  };
+}
+
+// ── TZ-014: Rate Intelligence ──
+
+export interface FreightRateRecord {
+  route: string;
+  loadRegion: string;
+  dischargeRegion: string;
+  rateValue: number;
+  rateBasis: "LUMPSUM" | "PER_MT" | "PER_DAY";
+  currency: string;
+  vesselClass?: string;
+  date: string;
+  source: "parsed_recap" | "manual";
+}
+
+export interface RateIntelligence {
+  currentRate?: number;
+  historicalRecords: FreightRateRecord[];
+  trend: "rising" | "falling" | "stable" | "insufficient_data";
+  suggestion: string;
+}
+
+// ── TZ-015: Voyage Calculator ──
+
+export interface VoyageEstimation {
+  grossFreight: number;
+  commission: number;
+  netFreight: number;
+  totalDays: number;
+  seaDays: number;
+  portDays: number;
+  canalDays: number;
+  bunkerCost: number;
+  portCosts: number;
+  canalTolls: number;
+  euEts?: number;
+  tce: number;
+  verdict: "profitable" | "marginal" | "loss";
+  currency: string;
+}
+
+// ── TZ-016: Multi-Currency ──
+
+export interface CurrencyConversion {
+  originalAmount: number;
+  originalCurrency: string;
+  targetAmount: number;
+  targetCurrency: string;
+  exchangeRate: number;
+  rateDate: string;
+  source: "ecb" | "exchangerate_api" | "manual";
+}
+
+// ── TZ-010: FCL/LCL ──
+
+export interface ContainerSpec {
+  type: string;
+  quantity: number;
+  weight?: number;
+  cbm?: number;
+  payload?: number;
+}
+
+// ── TZ-011: Time Charter ──
+
+export interface ParsedTimeCharterRecap {
+  vessel: string;
+  owners: string;
+  charterers: string;
+  deliveryPort: string;
+  redeliveryPort: string;
+  duration: { min: number; max: number; unit: string };
+  hireRate: { value: number; currency: string; unit: string };
+  cargoExclusions?: string[];
+  commission: string;
+}
