@@ -37,3 +37,8 @@ next-env.d.ts
 
 # session database
 /data/
+
+# wave-pipeline artifacts (never commit)
+/.wave/
+/.specs/
+/.claude/analysis/
