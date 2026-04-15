@@ -1,79 +1,102 @@
-/**
- * Tests for parsing utility functions used in AI route handlers.
- * These utilities are defined inline (not yet extracted to a shared module).
- */
-
-// ---------------------------------------------------------------------------
-// toConfidence — maps a numeric AI confidence value to a categorical label
-// ---------------------------------------------------------------------------
-
-function toConfidence(value: number | null | undefined): 'LOW' | 'MEDIUM' | 'HIGH' | null {
-  if (value === null || value === undefined) return null;
-  if (value <= 0.3) return 'LOW';
-  if (value < 0.7) return 'MEDIUM';
-  return 'HIGH';
-}
-
-describe('toConfidence', () => {
-  it('returns null for null input', () => {
-    expect(toConfidence(null)).toBeNull();
-  });
-
-  it('returns LOW for 0.0', () => {
-    expect(toConfidence(0.0)).toBe('LOW');
-  });
-
-  it('returns LOW for 0.3 (inclusive boundary)', () => {
-    expect(toConfidence(0.3)).toBe('LOW');
-  });
-
-  it('returns MEDIUM for 0.5', () => {
-    expect(toConfidence(0.5)).toBe('MEDIUM');
-  });
-
-  it('returns HIGH for 0.7 (exclusive boundary)', () => {
-    expect(toConfidence(0.7)).toBe('HIGH');
-  });
-
-  it('returns HIGH for 1.0', () => {
-    expect(toConfidence(1.0)).toBe('HIGH');
-  });
-});
-
-// ---------------------------------------------------------------------------
-// extractNum — extracts a numeric value from a string, ignoring formatting
-// ---------------------------------------------------------------------------
-
-function extractNum(s: string): number | null {
-  if (!s || !s.trim()) return null;
-  const m = s.trim().match(/([\d,]+(?:\.[\d]+)?)/);
-  if (!m) return null;
-  const n = parseFloat(m[1].replace(/,/g, ''));
-  return isNaN(n) ? null : n;
-}
+import { extractNum, toConfidence } from '../parsing-utils';
 
 describe('extractNum', () => {
-  it('returns null for empty string', () => {
-    expect(extractNum('')).toBeNull();
+  it('returns null for null', () => {
+    expect(extractNum(null)).toBeNull();
   });
 
-  it('parses a plain numeric string', () => {
-    expect(extractNum('42')).toBe(42);
+  it('returns null for undefined', () => {
+    expect(extractNum(undefined)).toBeNull();
   });
 
-  it('handles string with leading/trailing spaces', () => {
-    expect(extractNum('  15  ')).toBe(15);
+  it('returns the number for a valid number', () => {
+    expect(extractNum(42)).toBe(42);
+    expect(extractNum(3.14)).toBe(3.14);
+  });
+
+  it('returns null for NaN', () => {
+    expect(extractNum(NaN)).toBeNull();
+  });
+
+  it('parses a numeric string', () => {
+    expect(extractNum('123')).toBe(123);
+    expect(extractNum('45.6')).toBe(45.6);
   });
 
   it('returns null for a non-numeric string', () => {
-    expect(extractNum('hello')).toBeNull();
+    expect(extractNum('abc')).toBeNull();
+    expect(extractNum('')).toBeNull();
   });
 
-  it('parses a formatted number with comma separators', () => {
-    expect(extractNum('1,234.56')).toBe(1234.56);
+  it('extracts number from object with value field (number)', () => {
+    expect(extractNum({ value: 99 })).toBe(99);
   });
 
-  it('extracts number embedded in a string with extra text', () => {
-    expect(extractNum('price: 500 USD')).toBe(500);
+  it('extracts number from object with value field (string)', () => {
+    expect(extractNum({ value: '77' })).toBe(77);
+  });
+
+  it('returns null for object with non-numeric value', () => {
+    expect(extractNum({ value: 'bad' })).toBeNull();
+  });
+
+  it('returns null for other types (boolean, array)', () => {
+    expect(extractNum(true)).toBeNull();
+    expect(extractNum([1, 2])).toBeNull();
+  });
+});
+
+describe('toConfidence', () => {
+  it('returns null for null', () => {
+    expect(toConfidence(null)).toBeNull();
+  });
+
+  it('returns null for falsy values (0, empty string, false)', () => {
+    expect(toConfidence(0)).toBeNull();
+    expect(toConfidence('')).toBeNull();
+    expect(toConfidence(false)).toBeNull();
+  });
+
+  it('returns ConfidenceField with confirmed for a primitive string', () => {
+    expect(toConfidence<string>('Rotterdam')).toEqual({
+      value: 'Rotterdam',
+      confidence: 'confirmed',
+    });
+  });
+
+  it('returns ConfidenceField with confirmed for a primitive number', () => {
+    expect(toConfidence<number>(42)).toEqual({
+      value: 42,
+      confidence: 'confirmed',
+    });
+  });
+
+  it('maps object with value to ConfidenceField, defaults confidence to confirmed', () => {
+    expect(toConfidence<string>({ value: 'Hamburg' })).toEqual({
+      value: 'Hamburg',
+      confidence: 'confirmed',
+      sourceText: undefined,
+    });
+  });
+
+  it('maps object with value and confidence', () => {
+    expect(toConfidence<string>({ value: 'Genoa', confidence: 'interpreted' })).toEqual({
+      value: 'Genoa',
+      confidence: 'interpreted',
+      sourceText: undefined,
+    });
+  });
+
+  it('maps object with value, confidence and source_text', () => {
+    expect(toConfidence<string>({ value: 'Lagos', confidence: 'uncertain', source_text: 'may be Lagos' })).toEqual({
+      value: 'Lagos',
+      confidence: 'uncertain',
+      sourceText: 'may be Lagos',
+    });
+  });
+
+  it('ignores source_text if not a string', () => {
+    const result = toConfidence<string>({ value: 'Dubai', source_text: 123 });
+    expect(result?.sourceText).toBeUndefined();
   });
 });
