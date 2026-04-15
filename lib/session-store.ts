@@ -18,7 +18,8 @@ function ensureDir(filePath: string): void {
 }
 
 function serializeData(session: SessionData): string {
-  const { id: _id, accessToken: _at, createdAt: _ca, ...rest } = session;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { id, accessToken, createdAt, ...rest } = session;
   return JSON.stringify(rest);
 }
 

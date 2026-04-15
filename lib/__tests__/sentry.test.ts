@@ -2,6 +2,7 @@
  * Tests for Sentry no-op guard behavior (spec-13).
  * Verifies Sentry.init is NOT called when DSN env vars are absent.
  */
+/* eslint-disable @typescript-eslint/no-require-imports */
 
 const mockInit = jest.fn();
 
