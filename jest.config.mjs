@@ -1,13 +1,11 @@
-/** @type {import('jest').Config} */
-const config = {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
+import nextJest from 'next/jest.js';
+
+const createJestConfig = nextJest({ dir: './' });
+
+export default createJestConfig({
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
-  transform: {
-    '^.+\\.tsx?$': ['ts-jest', { tsconfig: { isolatedModules: true } }],
-  },
-};
-
-export default config;
+  testEnvironment: 'node',
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+});
