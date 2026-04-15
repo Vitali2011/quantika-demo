@@ -1,7 +1,7 @@
 {
   "plan_path": "/Users/jarvis/work/quantika-demo/.wave/wave_plan.yaml",
   "started_at": "2026-04-15T18:30:28.417229+00:00",
-  "updated_at": "2026-04-15T18:51:58.993101+00:00",
+  "updated_at": "2026-04-15T19:02:48.240050+00:00",
   "current_wave": 1,
   "specs": {
     "spec-01": {
@@ -83,9 +83,9 @@
     },
     "spec-08": {
       "id": "spec-08",
-      "status": "done",
+      "status": "merged",
       "attempt": 1,
-      "sha": null,
+      "sha": "0ed542ea8e1622388e77bed6fd2ac9bad4311146",
       "pid": null,
       "cost_usd": 0.9289723500000003,
       "started_at": "2026-04-15T18:30:29.232268+00:00",
@@ -94,9 +94,9 @@
     },
     "spec-09": {
       "id": "spec-09",
-      "status": "done",
+      "status": "merged",
       "attempt": 1,
-      "sha": null,
+      "sha": "11817f7ce9b9c90d0789fbba2c48b9a4ee08c40a",
       "pid": null,
       "cost_usd": 1.2109093499999999,
       "started_at": "2026-04-15T18:30:29.338175+00:00",
@@ -105,9 +105,9 @@
     },
     "spec-10": {
       "id": "spec-10",
-      "status": "done",
+      "status": "merged",
       "attempt": 1,
-      "sha": null,
+      "sha": "ad6a00321b6188618b066975d6623992a69ce087",
       "pid": null,
       "cost_usd": 1.1111854500000002,
       "started_at": "2026-04-15T18:30:29.625459+00:00",
@@ -116,9 +116,9 @@
     },
     "spec-11": {
       "id": "spec-11",
-      "status": "done",
+      "status": "merged",
       "attempt": 1,
-      "sha": null,
+      "sha": "df54a5ec472c033f837aa38bec94b9a4914b79ed",
       "pid": null,
       "cost_usd": 1.5662053500000002,
       "started_at": "2026-04-15T18:30:29.920931+00:00",
@@ -127,9 +127,9 @@
     },
     "spec-12": {
       "id": "spec-12",
-      "status": "done",
+      "status": "merged",
       "attempt": 1,
-      "sha": null,
+      "sha": "71bf5fac19c418fbd1509246a2f056db13527006",
       "pid": null,
       "cost_usd": 1.1137808999999996,
       "started_at": "2026-04-15T18:30:30.429302+00:00",
