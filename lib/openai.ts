@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import { CLIPROXY_BASE_URL, CLIPROXY_API_KEY, AI_MODEL_HEAVY, AI_MODEL_LIGHT } from './constants';
+import { logger } from '@/lib/logger';
 
 export const ai = new OpenAI({
   apiKey: CLIPROXY_API_KEY,
@@ -34,17 +35,17 @@ export async function callAiJson<T>(
       if (delta) content += delta;
     }
 
-    console.log(`[AI] model=${model} content_length=${content.length}`);
+    logger.debug({ model, contentLength: content.length }, '[AI] response received');
 
     // Strip markdown fences if present
     const cleaned = content.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/,'').trim();
     if (!cleaned) {
-      console.error('[AI] Empty response after streaming');
+      logger.error('[AI] Empty response after streaming');
       return fallback;
     }
     return JSON.parse(cleaned) as T;
   } catch (err) {
-    console.error('AI JSON call failed:', err);
+    logger.error({ err }, 'AI JSON call failed');
     return fallback;
   }
 }
@@ -74,7 +75,7 @@ export async function callAiText(
 
     return content;
   } catch (err) {
-    console.error('AI text call failed:', err);
+    logger.error({ err }, 'AI text call failed');
     return '';
   }
 }

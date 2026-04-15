@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { EMAIL_FETCH_COUNT, MAX_EMAIL_BODY_CHARS } from '@/lib/constants';
 import { fetchGmailEmails } from '@/lib/google';
+import { logger } from '@/lib/logger';
 import { getSession, updateSession } from '@/lib/session';
 import { truncateText } from '@/lib/utils';
 
@@ -41,7 +42,7 @@ export async function POST(request: NextRequest) {
       message: `Loaded ${truncatedEmails.length} emails`,
     });
   } catch (err) {
-    console.error('Email fetch error:', err);
+    logger.error({ err }, 'Email fetch error');
     return NextResponse.json({ error: 'Failed to fetch emails' }, { status: 500 });
   }
 }
