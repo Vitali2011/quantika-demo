@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { exchangeCodeForToken, getAuthUrl } from '@/lib/google';
 import { createSession } from '@/lib/session';
+import { generateCsrfToken } from '@/lib/csrf';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -21,6 +22,7 @@ export async function GET(request: NextRequest) {
   try {
     const accessToken = await exchangeCodeForToken(code);
     const sessionId = createSession(accessToken);
+    const csrfToken = generateCsrfToken();
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `https://${request.headers.get('host')}`;
     const response = NextResponse.redirect(new URL('/processing', baseUrl));
@@ -31,6 +33,14 @@ export async function GET(request: NextRequest) {
       maxAge: 60 * 60,
       path: '/',
     });
+    response.cookies.set('csrf_token', csrfToken, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60,
+      path: '/',
+    });
+    response.headers.set('X-CSRF-Token', csrfToken);
 
     return response;
   } catch (err) {
