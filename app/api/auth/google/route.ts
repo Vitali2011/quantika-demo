@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { exchangeCodeForToken, getAuthUrl } from '@/lib/google';
+import { logger } from '@/lib/logger';
 import { createSession } from '@/lib/session';
 
 export async function GET(request: NextRequest) {
@@ -34,7 +35,7 @@ export async function GET(request: NextRequest) {
 
     return response;
   } catch (err) {
-    console.error('OAuth error:', err);
+    logger.error({ err }, 'OAuth error');
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `https://${request.headers.get('host')}`;
     return NextResponse.redirect(new URL('/?error=auth_failed', baseUrl));
   }
