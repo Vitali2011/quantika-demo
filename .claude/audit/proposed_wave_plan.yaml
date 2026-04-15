@@ -1,0 +1,179 @@
+# Proposed wave-plan для quantika-demo
+# Источник: .claude/audit/AUDIT_REPORT.md (2026-04-15)
+# НЕ копировать в .wave/ до явного approval пользователя.
+#
+# Структура: 3 волны, 8 specs. Wave-1 чисто defensive (P0 безопасность
+# и сборка). Wave-2 — рефакторинг и тесты для безопасных дальнейших
+# правок. Wave-3 — наблюдаемость + CI.
+#
+# Cost cap: $60 на весь pipeline.
+
+project: quantika-demo
+budget_usd: 60
+description: |
+  Foundation pass на основе аудита 2026-04-15. Закрывает 5 P0/P1 рисков
+  безопасности и качества + базовая наблюдаемость + CI. UX/mobile/a11y
+  и крупные рефакторинги вынесены в backlog (waves 4-7).
+
+waves:
+  - id: wave-1-foundation
+    description: P0/P1 безопасность и сборка. Без этих specs дальше идти опасно.
+    parallel: true
+    specs:
+      - id: spec-001-fix-build-errors
+        title: Убрать ignoreBuildErrors и починить TypeScript
+        finding: finding-020
+        priority: P1
+        complexity: M
+        estimated_hours: 3-5
+        files:
+          - next.config.mjs
+          - "**/*.ts"
+          - "**/*.tsx"
+        acceptance:
+          - next.config.mjs не содержит ignoreBuildErrors:true
+          - npm run build проходит без TS-ошибок
+          - типы: any не увеличены против baseline (36 случаев)
+
+      - id: spec-002-security-deps
+        title: npm audit fix + bump eslint-config-next
+        finding: finding-019
+        priority: P1
+        complexity: S
+        estimated_hours: 1-2
+        files:
+          - package.json
+          - package-lock.json
+        acceptance:
+          - npm audit показывает 0 HIGH/CRITICAL
+          - eslint-config-next >= 16.2.3
+          - npm run build всё ещё проходит
+
+      - id: spec-003-csrf-protection
+        title: CSRF-защита на /api/ai/* и /api/sample
+        finding: finding-018
+        priority: P0
+        complexity: M
+        estimated_hours: 3-4
+        files:
+          - app/api/**/route.ts
+          - lib/csrf.ts (новый)
+          - middleware.ts (возможно новый)
+        acceptance:
+          - все state-changing роуты требуют X-CSRF-Token header
+          - CSRF-токен выдаётся при создании сессии
+          - тест на отказ при отсутствии токена
+          - sample-роут переведён с GET на POST + CSRF
+
+  - id: wave-2-reliability
+    description: Persistent сессии + дедупликация + первые тесты.
+    parallel: true
+    depends_on: [wave-1-foundation]
+    specs:
+      - id: spec-004-session-persistence
+        title: Persistent сессии через SQLite (better-sqlite3)
+        finding: finding-017
+        priority: P0
+        complexity: M
+        estimated_hours: 4-6
+        files:
+          - lib/session.ts
+          - lib/session-store.ts (новый)
+          - package.json (+better-sqlite3)
+        acceptance:
+          - сессии переживают рестарт процесса
+          - TTL 1 час сохраняется
+          - совместимо с PM2 (один writer, файл на диске)
+          - есть тесты на create/get/update/expire
+          - data/sessions.db в .gitignore
+
+      - id: spec-005-dedup-helpers
+        title: Извлечь дубли safeRender/getConf/extractNum в lib/
+        finding: finding-002, finding-003
+        priority: P1
+        complexity: S
+        estimated_hours: 1-2
+        files:
+          - lib/ui-render.ts (новый)
+          - lib/parsing-utils.ts (новый)
+          - app/{fixture,match,cargo,vessel}/[id]/page.tsx
+          - app/api/ai/parse-{vessel,recap,cargo}/route.ts
+        acceptance:
+          - safeRender/getConf/ConfIcon в одном месте
+          - extractNum/toConfidence в одном месте
+          - 4 detail-страницы и 3 parse-роута используют импорт
+          - тесты на extractNum (минимум 5 кейсов) и toConfidence
+
+      - id: spec-006-tests-foundation
+        title: Jest setup под Next.js + тесты на session/parsing/2 API
+        finding: finding-009, finding-010
+        priority: P0
+        complexity: L
+        estimated_hours: 8-12
+        files:
+          - jest.config.mjs (новый)
+          - jest.setup.ts (новый)
+          - lib/__tests__/session.test.ts (новый)
+          - lib/__tests__/parsing-utils.test.ts (новый)
+          - app/api/ai/__tests__/classify.test.ts (новый)
+          - app/api/ai/__tests__/parse-cargo.test.ts (новый)
+          - package.json
+        acceptance:
+          - jest.config с next/jest и module-aliases для @/
+          - npm test проходит
+          - минимум 30 тестов
+          - покрытие критических путей (session, parsing, 2 API) ≥80%
+          - общее покрытие ≥20%
+
+  - id: wave-3-observability
+    description: Health endpoint, structured logging, базовый Sentry, CI.
+    parallel: true
+    depends_on: [wave-2-reliability]
+    specs:
+      - id: spec-007-health-and-logging
+        title: /api/health endpoint + pino logger + Sentry
+        finding: finding-022, finding-023, finding-025
+        priority: P1
+        complexity: M
+        estimated_hours: 4-6
+        files:
+          - app/api/health/route.ts (новый)
+          - lib/logger.ts (новый)
+          - sentry.client.config.ts (новый)
+          - sentry.server.config.ts (новый)
+          - package.json (+@sentry/nextjs, pino)
+          - .env.local.example (+SENTRY_DSN)
+        acceptance:
+          - GET /api/health → {status, sessions, uptime, version}
+          - все API-routes используют structured logger с request-id
+          - Sentry интегрирован (только если SENTRY_DSN задан)
+          - тесты на health-endpoint
+
+      - id: spec-008-ci-pipeline
+        title: GitHub Actions CI (lint + test + audit + build)
+        finding: finding-026
+        priority: P0
+        complexity: S
+        estimated_hours: 1-2
+        files:
+          - .github/workflows/ci.yml (новый)
+        acceptance:
+          - "CI запускается на PR в main"
+          - "проверяет шаги: npm ci, npm run lint, npm test, npm audit (--audit-level=high), npm run build"
+          - "падает если хоть один шаг fails"
+          - "badge статуса в README"
+
+# Что НЕ включено в эту итерацию (выносится в backlog):
+backlog:
+  - "wave-4-ux — mobile-адаптив (finding-012), empty/loading/error states (finding-013), a11y (finding-014), better error messages (finding-015)"
+  - "wave-5-refactor — dashboard разделение (finding-001), убрать any (finding-004), детальные страницы по компонентам (finding-008), sample-data в JSON (finding-007)"
+  - "wave-6-ops — Dockerfile (finding-030), rollback-doc (finding-029), аналитика (finding-024), убрать хардкод путей (finding-028)"
+  - "wave-7-polish — README (finding-027), dead code (finding-005), magic numbers (finding-006), убрать debug console.log (finding-021)"
+
+# Метаданные
+meta:
+  audit_report: .claude/audit/AUDIT_REPORT.md
+  audit_date: "2026-04-15"
+  total_specs: 8
+  total_estimated_hours: "25-40"
+  cost_cap_usd: 60
