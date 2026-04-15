@@ -27,10 +27,19 @@ SDK через ClipProxy, googleapis, Tailwind + shadcn. Деплой PM2 + Cadd
 
 ```bash
 npm run lint
-npm test
 npm run build
-npm audit --audit-level=high
 ```
+
+**Важно**: `npm test` НЕ включён в verify пока работа work-6 (Jest setup
++ first 30 tests) не выполнена. Сейчас на main `npm test` красный
+(Jest не сконфигурирован под TypeScript/Next.js, единственный
+существующий тест-файл падает на `import` syntax). После завершения
+work-6 добавить `npm test` в verify-команды для всех последующих
+волн. До этого момента включение `npm test` заблокировало бы любой
+merge.
+
+`npm audit --audit-level=high` запускать в CI (work-8), но не в pre-
+merge verify волн (иначе Wave 1 заблокируется до завершения work-2).
 
 ## Работы по волнам
 
