@@ -4,29 +4,8 @@ import { getSession, updateSession } from '@/lib/session';
 import { callAiJson } from '@/lib/openai';
 import { VESSEL_POSITION_PARSER_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_LIGHT } from '@/lib/constants';
-import { ParsedVessel, ConfidenceField } from '@/lib/types';
-
-export const maxDuration = 120;
-
-function extractNum(v: any): number | null {
-  if (v == null) return null;
-  if (typeof v === 'number') return isNaN(v) ? null : v;
-  if (typeof v === 'string') { const n = parseFloat(v); return isNaN(n) ? null : n; }
-  if (typeof v === 'object' && 'value' in v) return extractNum(v.value);
-  return null;
-}
-
-function toConfidence<T>(field: any): ConfidenceField<T> | null {
-  if (!field) return null;
-  if (typeof field === 'object' && 'value' in field) {
-    return {
-      value: field.value,
-      confidence: field.confidence || 'confirmed',
-      sourceText: field.source_text || undefined,
-    };
-  }
-  return { value: field as T, confidence: 'confirmed' };
-}
+import { ParsedVessel } from '@/lib/types';
+import { extractNum, toConfidence } from '@/lib/parsing-utils';
 
 export async function POST(request: NextRequest) {
   const sessionId = request.cookies.get('session_id')?.value;

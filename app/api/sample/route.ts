@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from 'next/server';
 import { createSession, updateSession } from '@/lib/session';
+import { generateCsrfToken } from '@/lib/csrf';
 export const dynamic = "force-dynamic";
 
 const SAMPLE_EMAILS = [
@@ -272,13 +273,14 @@ const SAMPLE_EMAILS = [
   },
 ];
 
-export async function GET() {
+export async function POST() {
   const sessionId = createSession('sample-data-token');
   updateSession(sessionId, {
     emails: SAMPLE_EMAILS as any,
     isSampleData: true,
   });
 
+  const csrfToken = generateCsrfToken();
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://demo.quantika.org';
 
   const response = NextResponse.redirect(baseUrl + '/processing');
@@ -289,6 +291,14 @@ export async function GET() {
     maxAge: 3600,
     path: '/',
   });
+  response.cookies.set('csrf_token', csrfToken, {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 3600,
+    path: '/',
+  });
+  response.headers.set('X-CSRF-Token', csrfToken);
 
   return response;
 }
