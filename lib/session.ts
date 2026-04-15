@@ -1,59 +1,22 @@
 import { SessionData } from './types';
-import { SESSION_TTL_MS } from './constants';
-import { randomUUID } from 'crypto';
-
-const sessions = new Map<string, SessionData>();
+import { getStore } from './session-store';
 
 export function createSession(accessToken: string): string {
-  const id = randomUUID();
-  const session: SessionData = {
-    id,
-    accessToken,
-    createdAt: new Date(),
-    emails: [],
-    classifications: [],
-    processedEmails: [],
-    parsedCargos: [],
-    parsedVessels: [],
-    parsedFixtureRecaps: [],
-    matches: [],
-    recaps: [],
-    commissionSummary: null,
-    counterparties: [],
-  };
-  sessions.set(id, session);
-
-  setTimeout(() => {
-    sessions.delete(id);
-  }, SESSION_TTL_MS);
-
-  return id;
+  return getStore().createSession(accessToken);
 }
 
 export function getSession(id: string): SessionData | null {
-  const session = sessions.get(id);
-  if (!session) return null;
-
-  const ageMs = Date.now() - session.createdAt.getTime();
-  if (ageMs > SESSION_TTL_MS) {
-    sessions.delete(id);
-    return null;
-  }
-
-  return session;
+  return getStore().getSession(id);
 }
 
 export function updateSession(id: string, updates: Partial<SessionData>): boolean {
-  const session = sessions.get(id);
-  if (!session) return false;
-  Object.assign(session, updates);
-  return true;
+  return getStore().updateSession(id, updates);
 }
 
 export function deleteSession(id: string): void {
-  sessions.delete(id);
+  getStore().deleteSession(id);
 }
 
 export function getSessionCount(): number {
-  return sessions.size;
+  return getStore().getSessionCount();
 }
