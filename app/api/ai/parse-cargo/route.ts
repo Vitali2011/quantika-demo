@@ -4,21 +4,10 @@ import { getSession, updateSession } from '@/lib/session';
 import { callAiJson } from '@/lib/openai';
 import { CARGO_INQUIRY_PARSER_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_LIGHT } from '@/lib/constants';
-import { ParsedCargo, ConfidenceField } from '@/lib/types';
+import { ParsedCargo } from '@/lib/types';
+import { toConfidence } from '@/lib/parsing-utils';
 
 export const maxDuration = 120;
-
-function toConfidence<T>(field: any): ConfidenceField<T> | null {
-  if (!field) return null;
-  if (typeof field === 'object' && 'value' in field) {
-    return {
-      value: field.value,
-      confidence: field.confidence || 'confirmed',
-      sourceText: field.source_text || undefined,
-    };
-  }
-  return { value: field as T, confidence: 'confirmed' };
-}
 
 export async function POST(request: NextRequest) {
   const sessionId = request.cookies.get('session_id')?.value;

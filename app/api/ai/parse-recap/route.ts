@@ -4,23 +4,11 @@ import { getSession, updateSession } from '@/lib/session';
 import { callAiJson } from '@/lib/openai';
 import { FIXTURE_RECAP_PARSER_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_HEAVY } from '@/lib/constants';
-import { ParsedFixtureRecap, ConfidenceField } from '@/lib/types';
+import { ParsedFixtureRecap } from '@/lib/types';
 import { summarizeCommissions } from '@/lib/commission';
+import { extractNum, toConfidence } from '@/lib/parsing-utils';
 
 export const maxDuration = 120;
-
-function extractNum(v: any): number | null {  if (v == null) return null;  if (typeof v === "number") return v;  if (typeof v === "string") { const n = parseFloat(v); return isNaN(n) ? null : n; }  if (typeof v === "object" && "value" in v) return extractNum(v.value);  return null;}
-function toConfidence<T>(field: any): ConfidenceField<T> | null {
-  if (!field) return null;
-  if (typeof field === 'object' && 'value' in field) {
-    return {
-      value: field.value,
-      confidence: field.confidence || 'confirmed',
-      sourceText: field.source_text || undefined,
-    };
-  }
-  return { value: field as T, confidence: 'confirmed' };
-}
 
 export async function POST(request: NextRequest) {
   const sessionId = request.cookies.get('session_id')?.value;
@@ -99,7 +87,6 @@ export async function POST(request: NextRequest) {
   );
 
   // Calculate commission summary
-console.log("[RECAP] commissionPercent values:", parsedFixtureRecaps.map(r => r.commissionPercent));  console.log("[RECAP] freightRate values:", parsedFixtureRecaps.map(r => r.freightRate));
   const commissionSummary = summarizeCommissions(parsedFixtureRecaps);
 
   updateSession(sessionId, { parsedFixtureRecaps, commissionSummary });
