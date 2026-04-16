@@ -14,13 +14,21 @@
 /** Canonical port names used as map keys. */
 export const KNOWN_PORTS = [
   // Black Sea
-  'Karasu', 'Istanbul', 'Mykolaiv', 'Odesa', 'Constanta', 'Varna', 'Burgas', 'Novorossiysk',
+  'Karasu', 'Istanbul', 'Mykolaiv', 'Odesa', 'Chornomorsk', 'Constanta', 'Varna', 'Burgas', 'Novorossiysk',
   // Aegean / Eastern Med
-  'Piraeus', 'Aliaga',
+  'Piraeus', 'Aliaga', 'Marmara',
+  // Eastern Med / Suez
+  'Alexandria', 'Suez',
   // Central / Western Med
-  'Alexandria', 'Ravenna', 'Skikda', 'Casablanca',
+  'Ravenna', 'Marghera', 'Skikda', 'Casablanca',
+  // Northern Europe
+  'Antwerp', 'Hamburg', 'Rotterdam', 'Bremen', 'Halsvik', 'Gdansk',
   // Atlantic
-  'Bayonne',
+  'Bayonne', 'Dakar', 'Lagos', 'Nacala',
+  // Americas
+  'Veracruz', 'NewOrleans', 'Houston', 'Santos',
+  // Asia
+  'Singapore', 'Tokyo', 'Shanghai',
 ] as const;
 
 export type KnownPort = typeof KNOWN_PORTS[number];
@@ -37,8 +45,13 @@ const PORT_ALIASES: Record<string, KnownPort> = {
   'tuzla': 'Istanbul',
   'mykolaiv': 'Mykolaiv',
   'nikolaev': 'Mykolaiv',       // former Russian name
+  'mykolayiv': 'Mykolaiv',
   'odesa': 'Odesa',
   'odessa': 'Odesa',            // common English spelling
+  'chornomorsk': 'Chornomorsk',
+  'chernomorsk': 'Chornomorsk',
+  'ilichivsk': 'Chornomorsk',   // former name
+  'illichivsk': 'Chornomorsk',
   'constanta': 'Constanta',
   'constantza': 'Constanta',
   'konstanta': 'Constanta',
@@ -53,15 +66,55 @@ const PORT_ALIASES: Record<string, KnownPort> = {
   'aliaga': 'Aliaga',
   'efesan': 'Aliaga',           // Efesan terminal in Aliaga bay
   'izmir': 'Aliaga',            // izmir bay — use Aliaga as proxy
-  // Mediterranean
+  'marmara': 'Marmara',
+  'marmara island': 'Marmara',
+  'bandirma': 'Marmara',        // same Sea of Marmara region
+  // Eastern Med / Suez
   'alexandria': 'Alexandria',
+  'el dekheila': 'Alexandria',  // Alexandria El Dekheila terminal
+  'eldekheila': 'Alexandria',
+  'dekheila': 'Alexandria',
+  'suez': 'Suez',
+  'port suez': 'Suez',
+  // Mediterranean
   'ravenna': 'Ravenna',
+  'marghera': 'Marghera',
+  'porto marghera': 'Marghera',
+  'venice': 'Marghera',         // Venice/Marghera — same port complex
+  'venezia': 'Marghera',
   'skikda': 'Skikda',
-  // Atlantic
+  // Atlantic / Northern Europe
   'casablanca': 'Casablanca',
+  'antwerp': 'Antwerp',
+  'port of antwerp': 'Antwerp',
+  'hamburg': 'Hamburg',
+  'rotterdam': 'Rotterdam',
+  'bremen': 'Bremen',
+  'bremerhaven': 'Bremen',      // same port region
+  'halsvik': 'Halsvik',
+  'gdansk': 'Gdansk',
+  'danzig': 'Gdansk',
+  'gdynia': 'Gdansk',           // nearby Polish port
   'bayonne': 'Bayonne',
   'bilbao': 'Bayonne',          // same Biscay region
   'biscay': 'Bayonne',
+  // West Africa
+  'dakar': 'Dakar',
+  'lagos': 'Lagos',
+  'apapa': 'Lagos',             // Lagos Apapa terminal
+  'nacala': 'Nacala',
+  // Americas
+  'veracruz': 'Veracruz',
+  'new orleans': 'NewOrleans',
+  'neworleans': 'NewOrleans',
+  'houston': 'Houston',
+  'santos': 'Santos',
+  'sao paulo': 'Santos',        // Santos is SP's port
+  // Asia
+  'singapore': 'Singapore',
+  'tokyo': 'Tokyo',
+  'yokohama': 'Tokyo',          // same Tokyo Bay port complex
+  'shanghai': 'Shanghai',
 };
 
 /**
@@ -162,6 +215,157 @@ const DISTANCES_NM: Record<string, number> = {
 
   // ── Atlantic ──
   'Bayonne|Casablanca': 900,
+
+  // ── Chornomorsk (Black Sea, near Odesa) ──
+  'Chornomorsk|Odesa': 25,
+  'Chornomorsk|Mykolaiv': 75,
+  'Chornomorsk|Constanta': 160,
+  'Chornomorsk|Karasu': 305,
+  'Chornomorsk|Istanbul': 355,
+  'Chornomorsk|Varna': 270,
+  'Chornomorsk|Burgas': 310,
+  'Chornomorsk|Novorossiysk': 470,
+  'Chornomorsk|Piraeus': 790,
+  'Chornomorsk|Aliaga': 635,
+  'Chornomorsk|Alexandria': 1230,
+  'Chornomorsk|Ravenna': 1445,
+  'Chornomorsk|Skikda': 1700,
+
+  // ── Marmara (Sea of Marmara) ──
+  'Istanbul|Marmara': 70,
+  'Karasu|Marmara': 160,
+  'Marmara|Piraeus': 360,
+  'Aliaga|Marmara': 205,
+  'Alexandria|Marmara': 800,
+  'Marmara|Mykolaiv': 485,
+  'Constanta|Marmara': 270,
+  'Marmara|Odesa': 440,
+
+  // ── Suez (southern end of Suez Canal) ──
+  'Alexandria|Suez': 200,
+  'Suez|Piraeus': 760,
+  'Aliaga|Suez': 820,
+  'Istanbul|Suez': 1070,
+  'Karasu|Suez': 1165,
+  'Mykolaiv|Suez': 1485,
+  'Odesa|Suez': 1440,
+  'Constanta|Suez': 1270,
+  'Ravenna|Suez': 1350,
+  'Marghera|Suez': 1370,
+  'Skikda|Suez': 1550,
+  'Casablanca|Suez': 2300,
+
+  // ── Marghera / Venice (Northern Adriatic) ──
+  'Marghera|Ravenna': 90,
+  'Istanbul|Marghera': 1060,
+  'Karasu|Marghera': 1155,
+  'Mykolaiv|Marghera': 1475,
+  'Odesa|Marghera': 1430,
+  'Chornomorsk|Marghera': 1455,
+  'Constanta|Marghera': 1260,
+  'Piraeus|Marghera': 710,
+  'Aliaga|Marghera': 920,
+  'Alexandria|Marghera': 1160,
+  'Casablanca|Marghera': 1650,
+  'Bayonne|Marghera': 1830,
+  'Skikda|Marghera': 780,
+
+  // ── Northern Europe cluster ──
+  'Antwerp|Hamburg': 310,
+  'Antwerp|Rotterdam': 80,
+  'Bremen|Hamburg': 130,
+  'Antwerp|Bremen': 260,
+  'Rotterdam|Hamburg': 250,
+  'Rotterdam|Bremen': 230,
+  'Antwerp|Gdansk': 810,
+  'Hamburg|Gdansk': 570,
+  'Rotterdam|Gdansk': 760,
+  'Antwerp|Halsvik': 930,
+  'Hamburg|Halsvik': 700,
+  'Rotterdam|Halsvik': 900,
+  'Bremen|Gdansk': 510,
+  'Gdansk|Halsvik': 840,
+  'Bremen|Halsvik': 650,
+
+  // Northern Europe ↔ Med / Atlantic
+  'Antwerp|Bayonne': 730,
+  'Antwerp|Casablanca': 1400,
+  'Hamburg|Casablanca': 1700,
+  'Rotterdam|Casablanca': 1450,
+  'Antwerp|Skikda': 2100,
+  'Antwerp|Ravenna': 2350,
+  'Antwerp|Marghera': 2360,
+  'Antwerp|Piraeus': 2820,
+  'Hamburg|Piraeus': 2950,
+  'Antwerp|Alexandria': 3380,
+  'Hamburg|Alexandria': 3500,
+  'Rotterdam|Piraeus': 2850,
+  'Rotterdam|Alexandria': 3400,
+  'Antwerp|Suez': 3580,
+  'Hamburg|Suez': 3700,
+
+  // Northern Europe ↔ Black Sea
+  'Antwerp|Istanbul': 3300,
+  'Hamburg|Istanbul': 3430,
+  'Rotterdam|Istanbul': 3330,
+  'Antwerp|Constanta': 3680,
+  'Antwerp|Odesa': 3870,
+  'Antwerp|Mykolaiv': 3950,
+  'Hamburg|Constanta': 3800,
+  'Gdansk|Istanbul': 3050,
+  'Halsvik|Istanbul': 3950,
+
+  // ── West Africa ──
+  'Casablanca|Dakar': 1400,
+  'Bayonne|Dakar': 2000,
+  'Antwerp|Dakar': 3300,
+  'Hamburg|Dakar': 3600,
+  'Dakar|Lagos': 2400,
+  'Casablanca|Lagos': 3500,
+  'Dakar|Nacala': 5600,
+  'Lagos|Nacala': 3800,
+  'Alexandria|Dakar': 4500,
+  'Piraeus|Dakar': 4100,
+
+  // ── Americas ──
+  'Casablanca|Veracruz': 4400,
+  'Bayonne|Veracruz': 4900,
+  'Antwerp|Veracruz': 5200,
+  'Hamburg|Veracruz': 5400,
+  'Houston|Veracruz': 680,
+  'NewOrleans|Veracruz': 600,
+  'Houston|NewOrleans': 400,
+  'Houston|Santos': 5700,
+  'NewOrleans|Santos': 5400,
+  'Santos|Veracruz': 6100,
+  'Dakar|Santos': 4200,
+  'Casablanca|Santos': 5500,
+  'Antwerp|Santos': 5800,
+  'Hamburg|Santos': 6000,
+  'Dakar|Veracruz': 4700,
+  'Dakar|Houston': 5500,
+  'Dakar|NewOrleans': 5200,
+
+  // ── Asia ──
+  'Singapore|Tokyo': 3300,
+  'Shanghai|Tokyo': 1100,
+  'Shanghai|Singapore': 2200,
+  'Suez|Singapore': 5200,
+  'Suez|Shanghai': 7100,
+  'Suez|Tokyo': 8200,
+  'Antwerp|Singapore': 9800,
+  'Hamburg|Singapore': 9900,
+  'Rotterdam|Singapore': 9820,
+  'Alexandria|Singapore': 5400,
+  'Piraeus|Singapore': 5800,
+  'Piraeus|Shanghai': 7600,
+  'Piraeus|Tokyo': 8700,
+  'Nacala|Singapore': 4000,
+  'Nacala|Shanghai': 5800,
+  'Lagos|Singapore': 7600,
+  'Houston|Singapore': 10800,
+  'Veracruz|Singapore': 10500,
+  'Santos|Singapore': 11500,
 };
 
 function stripCountry(raw: string): string {
@@ -171,7 +375,13 @@ function stripCountry(raw: string): string {
 
 function stripParenthetical(raw: string): string {
   // "Bay of Biscay (Bayonne/Bilbao range)" → "Bay of Biscay"
+  // Also strips parenthetical country codes like "(EG)" or "(TR)"
   return raw.replace(/\([^)]*\)/g, '').trim();
+}
+
+function stripPortPrefix(raw: string): string {
+  // "Port of Antwerp" → "Antwerp", "Port Hamburg" → "Hamburg"
+  return raw.replace(/^port\s+of\s+/i, '').replace(/^port\s+/i, '').trim();
 }
 
 /**
@@ -182,11 +392,14 @@ function stripParenthetical(raw: string): string {
  *   - Case variation: "karasu" / "KARASU" / "Karasu"
  *   - Country suffix: "Karasu, Turkey" / "Alexandria Egypt"
  *   - Parenthetical range: "Bay of Biscay (Bayonne/Bilbao range)" → Bayonne via alias
- *   - Legacy aliases: "Odessa" → "Odesa", "Efesan" → "Aliaga"
+ *   - Parenthetical country codes: "Alexandria (EG)" → Alexandria
+ *   - "Port of" prefix: "Port of Antwerp, Belgium" → Antwerp
+ *   - Legacy aliases: "Odessa" → "Odesa", "Efesan" → "Aliaga", "Nikolaev" → "Mykolaiv"
+ *   - Partial substring fallback: tries longest alias key that appears in the input
  */
 export function normalizePortName(raw: string | null | undefined): KnownPort | null {
   if (!raw || typeof raw !== 'string') return null;
-  const s = stripCountry(stripParenthetical(raw)).trim();
+  const s = stripPortPrefix(stripCountry(stripParenthetical(raw))).trim();
   if (!s) return null;
 
   // Direct lowercase alias lookup
@@ -199,6 +412,18 @@ export function normalizePortName(raw: string | null | undefined): KnownPort | n
     const hit = PORT_ALIASES[part.toLowerCase()];
     if (hit) return hit;
   }
+
+  // Partial substring fallback: find the longest alias key that appears in the input
+  const lc = s.toLowerCase();
+  let bestKey = '';
+  let bestPort: KnownPort | null = null;
+  for (const [key, port] of Object.entries(PORT_ALIASES)) {
+    if (lc.includes(key) && key.length > bestKey.length) {
+      bestKey = key;
+      bestPort = port;
+    }
+  }
+  if (bestPort) return bestPort;
 
   return null;
 }

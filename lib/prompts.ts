@@ -167,6 +167,10 @@ IMPORTANT CLASSIFICATION HINTS:
 - If subject starts with "RE:" but contains cargo quantity/route → still CARGO_INQUIRY, not CLIENT_REPLY
 - Emails starting with "RE:" that contain cargo quantities, routes, ports, or rate requests should be classified as CARGO_INQUIRY, not CLIENT_REPLY. "RE:" only indicates it's a reply in a thread — the content determines the category.
 - "dwcc" in subject can mean either vessel spec (if about a specific vessel) or cargo requirement (if asking for tonnage). Look at the body to decide.
+- TIME CHARTER TRIP (TCT): If the email is a time-charter trip request — look for keywords TCT, "Time Charter Trip", "trip charter", "period charter", daily hire rate (e.g. "USD X/day"), delivery/redelivery ports, or charter duration in months (e.g. "3-4 mos") — classify as TCT_REQUEST, NOT CARGO_INQUIRY. TCT is a vessel hire for a period, not a single cargo lifting.
+- VESSEL CERTIFICATE: If the email or attachment is a certificate document (P&I club certificate, Class certificate, Safety certificate, Insurance certificate, Classification society document) without an open position offer, classify as VESSEL_CERTIFICATE. These are informational and should not enter the matching pipeline.
+
+Categories now include: CARGO_INQUIRY | VESSEL_POSITION | FIXTURE_RECAP | CLIENT_REPLY | DOCUMENT | TCT_REQUEST | VESSEL_CERTIFICATE | OTHER
 
 Also determine:
 - urgency: "high" (deadline within 24h or explicit urgency), "medium" (normal business), "low" (informational only)
@@ -186,9 +190,22 @@ ${SHIPPING_GLOSSARY}
 MULTI-ITEM: One email may contain MULTIPLE separate cargo inquiries (e.g., different routes, different cargoes). Return ALL of them as separate items in the array.
 
 CONFIDENCE LEVELS AND MANDATORY SOURCE QUOTING:
-- "confirmed": explicitly stated in the email — MUST include source_text
-- "interpreted": inferred from context or abbreviations (e.g., port code resolved to full name) — MUST include source_text
-- "uncertain": possible interpretation but not clear — MUST include source_text if any text supports it
+- "confirmed": value is literally quoted or directly extracted from the email — no inference or derivation needed. Use confirmed even when the value is embedded in a compound phrase (e.g. "DWCC 3600 at 4.9m draft" → draft_max confirmed as 4.9). MUST include source_text.
+- "interpreted": value required calculation, resolving an abbreviation, or inferring from context (e.g. "abt 45,000 mt" → hedge makes it interpreted; "built 15 years ago" → you computed the year). MUST include source_text.
+- "uncertain": genuinely ambiguous or inferred from weak signals (e.g. cargo type guessed without explicit mention; destination given as a range "Singapore / Japan range"). MUST include source_text if any text supports it.
+
+CONFIDENCE RUBRIC:
+| Situation | Confidence |
+|---|---|
+| Email says "Built: 2003" → built=2003 | confirmed |
+| Email says "DWCC 3600 at 4.9m draft" → draft=4.9 | confirmed |
+| Email says "DWT: 45,000 mt" → dwt=45000 | confirmed |
+| Email says "abt 45,000 mt" (hedge) → dwt≈45000 | interpreted |
+| Email says "built 15 years ago" → you compute year | interpreted |
+| Cargo type guessed without explicit mention | uncertain |
+| Range "Singapore / Japan" → single destination | uncertain |
+
+Rule: when the source text contains the exact value — even embedded in a compound phrase — use "confirmed". Only use "interpreted" when you actually derived or calculated the value.
 
 CRITICAL: source_text is REQUIRED for every ConfidenceField. It MUST be a verbatim
 substring copied character-for-character from the email body. Omitting source_text is
@@ -202,18 +219,22 @@ WRONG:     { "value": 5000, "confidence": "confirmed", "source_text": "approxima
 Each field must be returned as: { value: ..., confidence: "confirmed" | "interpreted" | "uncertain", source_text: "exact quote from email" }
 If a field is set to null (information not present), source_text is not needed.
 
+TCT GUARD: If the email describes a time-charter trip (contains TCT, "trip charter", "period charter", daily hire rate, delivery/redelivery ports, or charter duration in months) rather than a specific cargo lifting, do NOT attempt to extract cargo fields. Return empty items array and set missing_info: ["This appears to be a TCT/period charter request, not a voyage cargo inquiry"].
+
 Extract per inquiry item:
 - origin_port: full port name
 - origin_country
 - destination_port: full port name
 - destination_country
 - cargo_description: full description of goods
-- weight_mt: number (metric tons)
+- weight_mt: number (metric tons). RANGE RULE: If cargo weight is given as a range (e.g. "4000/4800 MT", "5000-5500 MT", "8000–8500 mts MOLOO", "abt 10000 mt"), return the MIDDLE of the range as weight_mt (confidence='interpreted'). Also populate weight_mt_min and weight_mt_max. If a single definite number is given, use confidence='confirmed'. Quote the original range text verbatim in source_text.
+- weight_mt_min: lower bound of weight range if given as a range, else null
+- weight_mt_max: upper bound of weight range if given as a range, else null
 - volume_cbm: number (cubic meters)
 - dimensions: e.g. "12m x 3m x 2.5m"
 - cargo_type: one of FCL / LCL / BREAK_BULK / BULK / PROJECT / AIR / RORO / OTHER
 - container_type: e.g. 20GP, 40HC, 40RF (null if not containerized)
-- quantity: number and unit (e.g. "2 x 40HC", "500 MT")
+- quantity: number of discrete units or lots (e.g. number of containers, reels, big bags). CRITICAL: Do NOT put cargo weight (MT) into quantity. If the email says "quantity 3500mt" treat it as weight_mt=3500, not quantity=3500. If no discrete unit count is given, leave quantity null. Example: "2 x 40HC" → quantity=2; "8000mt bulk" → quantity=null, weight_mt=8000.
 - incoterms: e.g. FOB, CFR, CIF, EXW, DDP
 - preferred_dates: loading or shipping dates mentioned
 - laycan: laycan window if specified (e.g. "1/5 May 2025")
@@ -238,9 +259,21 @@ ${SHIPPING_GLOSSARY}
 MULTI-ITEM: One email may contain MULTIPLE vessel positions (e.g., a fleet list or multiple vessels from the same owner). Return ALL vessels as separate items.
 
 CONFIDENCE LEVELS AND MANDATORY SOURCE QUOTING:
-- "confirmed": explicitly stated — MUST include source_text
-- "interpreted": inferred from abbreviations or context — MUST include source_text
-- "uncertain": possible but not clear — MUST include source_text if any text supports it
+- "confirmed": value is literally quoted or directly extracted from the email — no inference or derivation needed. Use confirmed even when the value is embedded in a compound phrase (e.g. "DWCC 3600 at 4.9m draft" → draft_max=4.9 is confirmed; "Built: 2003" → built=2003 is confirmed). MUST include source_text.
+- "interpreted": value required calculation, resolving an abbreviation, or inferring from context (e.g. "abt 45,000 mt"; "built 15 years ago" → you computed the year). MUST include source_text.
+- "uncertain": genuinely ambiguous or inferred from weak signals (e.g. vessel type guessed without explicit mention). MUST include source_text if any text supports it.
+
+CONFIDENCE RUBRIC:
+| Situation | Confidence |
+|---|---|
+| Email says "Built: 2003" → built=2003 | confirmed |
+| Email says "DWCC 3600 at 4.9m draft" → draft_max=4.9 | confirmed |
+| Email says "DWT: 45,000 mt" → dwt=45000 | confirmed |
+| Email says "abt 45,000 mt" (hedge) → dwt≈45000 | interpreted |
+| Email says "built 15 years ago" → you compute year | interpreted |
+| Vessel type guessed from cargo without explicit mention | uncertain |
+
+Rule: when the source text contains the exact value — even embedded in a compound phrase — use "confirmed". Only use "interpreted" when you actually derived or calculated the value.
 
 CRITICAL: source_text is REQUIRED for every ConfidenceField. It MUST be a verbatim
 substring copied character-for-character from the email body. Omitting source_text is
@@ -284,12 +317,12 @@ Extract per vessel:
 - open_date: date vessel is available
 - direction: intended trading direction (e.g. "seeking Far East", "open for Middle East/India")
 - restrictions: array of restrictions (e.g. "no Ukraine", "no IMO cargo", "no grain")
-- last_cargoes: array of recent cargoes (L5C)
+- last_cargoes: comma-separated string of recent cargoes. MANDATORY: MUST be populated from ANY of these markers (all equivalent): "L/C:", "Last cargoes:", "Prev. cargoes:", "Last 3 cargoes:", "Last loads:", "L5C:". Also extract from prose like "last voyages: X, Y, Z". Return as a comma-separated string (e.g. "steel, fertilizer, bagged cargo"). Use confidence='confirmed' when an explicit L/C: or equivalent marker is present. Do NOT leave last_cargoes null when any of these markers appear in the email.
 - speed_laden: speed in knots laden
 - speed_ballast: speed in knots ballast
 - consumption: fuel consumption details
 - deck_capacity: deck cargo capacity (MT or sqm)
-- special_features: array (e.g. "box-shaped holds", "ice class 1A", "CO2 fitted")
+- special_features: array of notable vessel features. MUST be populated from any of: onboard equipment notes (grabs, bulldozers, tank-cleaning capability), suitability declarations ("Suitable for: X, Y, Z"), exclusions ("No grabs", "No tank-cleaning", "Food-grade only"), and standout characteristics ("Laker-dimensioned", "Ice-class 1A", "Box-shaped holds", "CO2 fitted"). Extract each as a separate array element. Do NOT leave special_features empty when such information is present in the email.
 
 Output: { "items": [ ...one object per vessel... ] }`;
 

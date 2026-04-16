@@ -183,3 +183,187 @@ describe('computeScoreBreakdown', () => {
     );
   });
 });
+
+// ────────────────────────────────────────────────────────────────────────────
+// Cargo type match scoring — tiered differentiation
+// ────────────────────────────────────────────────────────────────────────────
+
+function cargoTypeComponent(breakdown: ReturnType<typeof computeScoreBreakdown>) {
+  const c = breakdown.components.find(c => c.label === 'Cargo type match');
+  if (!c) throw new Error('Cargo type match component missing');
+  return c;
+}
+
+describe('Cargo type match scoring', () => {
+  const sanctions = { risk: 'NONE', blocking: false } as MatchSanctions;
+  const readiness = mkReadiness('ideal');
+
+  // BULK 20 pts — bulk vessel + confirmed last cargoes
+  it('BULK on Handysize Bulker with grain lastCargoes → 20 pts', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({ cargoType: 'BULK' }),
+      vessel: mkVessel({ vesselType: 'Handysize Bulker', lastCargoes: 'wheat, corn, fertilizer' }),
+      readiness, sanctions,
+    });
+    const c = cargoTypeComponent(b);
+    expect(c.points).toBe(20);
+  });
+
+  // BULK 16 pts — bulk vessel but no lastCargoes info
+  it('BULK on Supramax Bulker, no lastCargoes → 16 pts', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({ cargoType: 'BULK' }),
+      vessel: mkVessel({ vesselType: 'Supramax Bulker', lastCargoes: null }),
+      readiness, sanctions,
+    });
+    const c = cargoTypeComponent(b);
+    expect(c.points).toBe(16);
+  });
+
+  // BULK 12 pts — MPP with sufficient grainCapacity
+  it('BULK on MPP vessel with large grainCapacity → 12 pts', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({ cargoType: 'BULK' }),
+      vessel: mkVessel({ vesselType: 'Multi-purpose', grainCapacity: 5000, lastCargoes: null }),
+      readiness, sanctions,
+    });
+    const c = cargoTypeComponent(b);
+    expect(c.points).toBe(12);
+  });
+
+  // BULK 8 pts — MPP with small grainCapacity
+  it('BULK on MPP vessel with small grainCapacity → 8 pts', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({ cargoType: 'BULK' }),
+      vessel: mkVessel({ vesselType: 'Multi-purpose', grainCapacity: 1000, lastCargoes: null }),
+      readiness, sanctions,
+    });
+    const c = cargoTypeComponent(b);
+    expect(c.points).toBe(8);
+  });
+
+  // BREAK_BULK 20 pts — MPP + confirmed break-bulk lastCargoes
+  it('BREAK_BULK on MPP with steel lastCargoes → 20 pts', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({ cargoType: 'BREAK_BULK' }),
+      vessel: mkVessel({ vesselType: 'General Cargo / MPP', lastCargoes: 'steel, bagged cargo, breakbulk' }),
+      readiness, sanctions,
+    });
+    const c = cargoTypeComponent(b);
+    expect(c.points).toBe(20);
+  });
+
+  // BREAK_BULK 16 pts — MPP, no lastCargoes
+  it('BREAK_BULK on MPP, no lastCargoes → 16 pts', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({ cargoType: 'BREAK_BULK' }),
+      vessel: mkVessel({ vesselType: 'General Cargo / MPP', lastCargoes: null }),
+      readiness, sanctions,
+    });
+    const c = cargoTypeComponent(b);
+    expect(c.points).toBe(16);
+  });
+
+  // BREAK_BULK 12 pts — geared bulker
+  it('BREAK_BULK on geared Panamax Bulker → 12 pts', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({ cargoType: 'BREAK_BULK' }),
+      vessel: mkVessel({ vesselType: 'Panamax Bulker', geared: true, lastCargoes: null }),
+      readiness, sanctions,
+    });
+    const c = cargoTypeComponent(b);
+    expect(c.points).toBe(12);
+  });
+
+  // BREAK_BULK 8 pts — gearless bulker
+  it('BREAK_BULK on gearless Panamax Bulker → 8 pts', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({ cargoType: 'BREAK_BULK' }),
+      vessel: mkVessel({ vesselType: 'Panamax Bulker', geared: false, lastCargoes: null }),
+      readiness, sanctions,
+    });
+    const c = cargoTypeComponent(b);
+    expect(c.points).toBe(8);
+  });
+
+  // FCL 20 pts — container vessel + container lastCargoes
+  it('FCL on Container vessel with container lastCargoes → 20 pts', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({ cargoType: 'FCL' }),
+      vessel: mkVessel({ vesselType: 'Container', lastCargoes: 'container, teu boxes' }),
+      readiness, sanctions,
+    });
+    const c = cargoTypeComponent(b);
+    expect(c.points).toBe(20);
+  });
+
+  // FCL 16 pts — container vessel, no lastCargoes
+  it('FCL on Container vessel, no lastCargoes → 16 pts', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({ cargoType: 'FCL' }),
+      vessel: mkVessel({ vesselType: 'Containership', lastCargoes: null }),
+      readiness, sanctions,
+    });
+    const c = cargoTypeComponent(b);
+    expect(c.points).toBe(16);
+  });
+
+  // RORO 20 pts
+  it('RORO on Ro-Ro vessel → 20 pts', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({ cargoType: 'RORO' }),
+      vessel: mkVessel({ vesselType: 'Ro-Ro', lastCargoes: null }),
+      readiness, sanctions,
+    });
+    const c = cargoTypeComponent(b);
+    expect(c.points).toBe(20);
+  });
+
+  // OTHER 12 pts — known vessel type
+  it('OTHER cargo on bulk vessel → 12 pts', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({ cargoType: 'OTHER' }),
+      vessel: mkVessel({ vesselType: 'Handysize Bulker', lastCargoes: null }),
+      readiness, sanctions,
+    });
+    const c = cargoTypeComponent(b);
+    expect(c.points).toBe(12);
+  });
+
+  // Missing cargo/vessel type → 4 pts fallback
+  it('missing cargoType → 4 pts', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({ cargoType: undefined as unknown as 'BULK' }),
+      vessel: mkVessel({ vesselType: 'Handysize Bulker' }),
+      readiness, sanctions,
+    });
+    const c = cargoTypeComponent(b);
+    expect(c.points).toBe(4);
+    expect(c.reason).toMatch(/unspecified/);
+  });
+
+  it('missing vesselType → 4 pts', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({ cargoType: 'BULK' }),
+      vessel: mkVessel({ vesselType: null }),
+      readiness, sanctions,
+    });
+    const c = cargoTypeComponent(b);
+    expect(c.points).toBe(4);
+    expect(c.reason).toMatch(/unspecified/);
+  });
+});

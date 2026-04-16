@@ -4,7 +4,124 @@ import type {
 } from '@/lib/types';
 import { cfValue } from '@/lib/types';
 import { portHasShoreCranes } from './port-master';
-import { STOWAGE_FACTORS } from './match-filters';
+import { STOWAGE_FACTORS, checkCargoVesselCompat } from './match-filters';
+
+// ────────────────────────────────────────────────────────────────────────────
+// Cargo history keyword sets for scoring quality within compatible pairs
+// ────────────────────────────────────────────────────────────────────────────
+
+const BULK_KEYWORDS = [
+  'grain', 'wheat', 'barley', 'corn', 'maize', 'soybean', 'rice',
+  'coal', 'iron ore', 'bauxite', 'fertilizer', 'urea', 'potash',
+  'salt', 'sugar', 'cement', 'gypsum', 'scrap',
+];
+
+const BREAK_BULK_KEYWORDS = [
+  'steel', 'pipe', 'bagged', 'bags', 'breakbulk', 'break-bulk',
+  'project', 'rebar', 'lumber', 'timber', 'plywood', 'machinery',
+];
+
+const CONTAINER_KEYWORDS = ['container', 'box', 'teu'];
+
+// Re-export the vessel categorizer from match-filters via a local wrapper so we
+// can import it without duplicating regex logic.  The function is not exported
+// from match-filters, so we replicate the exact same logic here (kept in sync).
+function categorizeVesselLocal(raw: string | null | undefined): 'bulk' | 'mpp' | 'tanker' | 'container' | 'roro' | 'unknown' {
+  if (!raw) return 'unknown';
+  const s = raw.toLowerCase();
+  if (/tanker|oil|chemical|product/.test(s)) return 'tanker';
+  if (/mpp|multi-?purpose|general cargo|gc|break.?bulk|heavy.?lift/.test(s)) return 'mpp';
+  if (/container|containership/.test(s)) return 'container';
+  if (/ro.?ro|roro|car carrier/.test(s)) return 'roro';
+  if (/bulk|handysize|supramax|panamax|capesize|handymax|ultramax/.test(s)) return 'bulk';
+  return 'unknown';
+}
+
+interface CargoTypeScoreInput {
+  cargoType: string | null | undefined;
+  vesselType: string | null | undefined;
+  lastCargoes: string | null | undefined;
+  geared: boolean | null | undefined;
+  grainCapacity: number | null | undefined;
+}
+
+function scoreCargoTypeMatch(input: CargoTypeScoreInput): { points: number; reason: string } {
+  const { cargoType, vesselType, lastCargoes, geared, grainCapacity } = input;
+
+  if (!cargoType || !vesselType) {
+    return { points: 4, reason: 'cargo or vessel type unspecified' };
+  }
+
+  const cat = categorizeVesselLocal(vesselType);
+  const lcLower = (lastCargoes ?? '').toLowerCase();
+
+  switch (cargoType) {
+    case 'BULK': {
+      if (cat === 'bulk' && BULK_KEYWORDS.some(k => lcLower.includes(k))) {
+        return { points: 20, reason: 'bulk vessel with confirmed bulk cargo history' };
+      }
+      if (cat === 'bulk') {
+        return { points: 16, reason: 'bulk-class vessel, cargo history unclear' };
+      }
+      if (cat === 'mpp' && grainCapacity && grainCapacity > 3000) {
+        return { points: 12, reason: 'MPP vessel with sufficient grain capacity for bulk' };
+      }
+      if (cat === 'mpp') {
+        return { points: 8, reason: 'MPP fit marginal for bulk' };
+      }
+      return { points: 4, reason: `bulk cargo on ${cat} vessel — not primary fit` };
+    }
+
+    case 'BREAK_BULK':
+    case 'PROJECT': {
+      if (cat === 'mpp' && BREAK_BULK_KEYWORDS.some(k => lcLower.includes(k))) {
+        return { points: 20, reason: 'MPP with confirmed breakbulk/project cargo history' };
+      }
+      if (cat === 'mpp') {
+        return { points: 16, reason: 'MPP vessel — ideal for breakbulk/project' };
+      }
+      if (cat === 'bulk' && geared === true) {
+        return { points: 12, reason: 'geared bulker can handle bagged/breakbulk cargo' };
+      }
+      if (cat === 'bulk') {
+        return { points: 8, reason: 'gearless bulker marginal for breakbulk' };
+      }
+      return { points: 4, reason: `${cargoType} cargo on ${cat} vessel — not primary fit` };
+    }
+
+    case 'FCL':
+    case 'LCL':
+    case 'CONTAINER': {
+      if (cat === 'container' && CONTAINER_KEYWORDS.some(k => lcLower.includes(k))) {
+        return { points: 20, reason: 'container vessel with confirmed container history' };
+      }
+      if (cat === 'container') {
+        return { points: 16, reason: 'container vessel — ideal for FCL/LCL' };
+      }
+      return { points: 4, reason: `container cargo on ${cat} vessel — not suitable` };
+    }
+
+    case 'RORO': {
+      if (cat === 'roro') {
+        return { points: 20, reason: 'RORO vessel — perfect match for RORO cargo' };
+      }
+      return { points: 4, reason: `RORO cargo on ${cat} vessel — not suitable` };
+    }
+
+    case 'OTHER': {
+      if (cat !== 'unknown') {
+        return { points: 12, reason: `OTHER cargo on ${cat} vessel — match credible but cargo unspecified` };
+      }
+      return { points: 8, reason: 'OTHER cargo on unknown vessel type — cannot evaluate' };
+    }
+
+    default:
+      return { points: 4, reason: `unrecognised cargo type ${cargoType}` };
+  }
+}
+
+// Silence unused import warning — checkCargoVesselCompat is re-exported for callers that need it
+void checkCargoVesselCompat;
 
 /**
  * Apply readiness-based score adjustment + add contextual issue text.
@@ -98,25 +215,13 @@ export function computeScoreBreakdown(input: ScoreBreakdownInput): ScoreBreakdow
   components.push({ label: 'Geographic proximity', points: distPoints, max: 20, reason: distReason });
 
   // 2. Cargo type match
-  const vtype = (vessel.vesselType ?? '').toLowerCase();
-  let cargoPoints = 0;
-  let cargoReason: string | undefined;
-  if (cargo.cargoType === 'BULK' && /bulk|handysize|supramax|panamax/.test(vtype)) {
-    cargoPoints = 20;
-    cargoReason = `bulk cargo on bulk carrier — ideal`;
-  } else if (cargo.cargoType === 'BULK' && /mpp|multi.?purpose|general/.test(vtype)) {
-    cargoPoints = 15;
-    cargoReason = `bulk on MPP — acceptable`;
-  } else if ((cargo.cargoType === 'BREAK_BULK' || cargo.cargoType === 'PROJECT') && /mpp|multi.?purpose|general|heavy/.test(vtype)) {
-    cargoPoints = 20;
-    cargoReason = `${cargo.cargoType} on MPP / heavy-lift — ideal`;
-  } else if (cargo.cargoType === 'OTHER' || !vtype) {
-    cargoPoints = 10;
-    cargoReason = 'cargo or vessel type unspecified';
-  } else {
-    cargoPoints = 12;
-    cargoReason = `${cargo.cargoType} × ${vessel.vesselType ?? 'unknown'} — passable`;
-  }
+  const { points: cargoPoints, reason: cargoReason } = scoreCargoTypeMatch({
+    cargoType: cargo.cargoType,
+    vesselType: vessel.vesselType,
+    lastCargoes: vessel.lastCargoes,
+    geared: vessel.geared,
+    grainCapacity: vessel.grainCapacity,
+  });
   components.push({ label: 'Cargo type match', points: cargoPoints, max: 20, reason: cargoReason });
 
   // 3. Geared/crane match

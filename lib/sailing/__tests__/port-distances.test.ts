@@ -82,9 +82,80 @@ describe('KNOWN_PORTS coverage', () => {
     const expected = [
       'Karasu', 'Mykolaiv', 'Odesa', 'Constanta', 'Alexandria', 'Piraeus',
       'Ravenna', 'Istanbul', 'Aliaga', 'Skikda', 'Casablanca', 'Bayonne',
+      // New ports added for smoke-test coverage
+      'Chornomorsk', 'Marmara', 'Suez', 'Marghera',
+      'Antwerp', 'Hamburg', 'Rotterdam', 'Bremen', 'Halsvik', 'Gdansk',
+      'Dakar', 'Lagos', 'Nacala',
+      'Veracruz', 'NewOrleans', 'Houston', 'Santos',
+      'Singapore', 'Tokyo', 'Shanghai',
     ];
     for (const p of expected) {
       expect(KNOWN_PORTS).toContain(p);
     }
+  });
+});
+
+describe('normalizePortName — extended aliases', () => {
+  it('resolves "Port of Antwerp, Belgium" → Antwerp', () => {
+    expect(normalizePortName('Port of Antwerp, Belgium')).toBe('Antwerp');
+  });
+
+  it('resolves "nikolaev" → Mykolaiv', () => {
+    expect(normalizePortName('nikolaev')).toBe('Mykolaiv');
+  });
+
+  it('resolves "Alexandria (EG)" → Alexandria (strips parenthetical)', () => {
+    expect(normalizePortName('Alexandria (EG)')).toBe('Alexandria');
+  });
+
+  it('resolves "El Dekheila" → Alexandria', () => {
+    expect(normalizePortName('El Dekheila')).toBe('Alexandria');
+  });
+
+  it('resolves "Chornomorsk" → Chornomorsk', () => {
+    expect(normalizePortName('Chornomorsk')).toBe('Chornomorsk');
+  });
+
+  it('resolves "Yokohama" → Tokyo', () => {
+    expect(normalizePortName('Yokohama')).toBe('Tokyo');
+  });
+
+  it('resolves "Port Hamburg" → Hamburg', () => {
+    expect(normalizePortName('Port Hamburg')).toBe('Hamburg');
+  });
+
+  it('returns null for fantasy port "Mars Base Alpha"', () => {
+    expect(normalizePortName('Mars Base Alpha')).toBeNull();
+  });
+});
+
+describe('getPortDistance — new port pairs', () => {
+  it('Antwerp ↔ Hamburg (North Sea, ~310 NM)', () => {
+    const d = getPortDistance('Antwerp', 'Hamburg');
+    expect(d).not.toBeNull();
+    expect(d!).toBeGreaterThan(200);
+    expect(d!).toBeLessThan(500);
+  });
+
+  it('Chornomorsk ↔ Odesa (same bay, ~25 NM)', () => {
+    const d = getPortDistance('Chornomorsk', 'Odesa');
+    expect(d).not.toBeNull();
+    expect(d!).toBeLessThan(100);
+  });
+
+  it('Singapore ↔ Shanghai (Far East, ~2200 NM)', () => {
+    const d = getPortDistance('Singapore', 'Shanghai');
+    expect(d).not.toBeNull();
+    expect(d!).toBeGreaterThan(1500);
+  });
+
+  it('alias "nikolaev" resolves for distance lookup', () => {
+    expect(getPortDistance('nikolaev', 'Karasu')).toBe(getPortDistance('Mykolaiv', 'Karasu'));
+  });
+
+  it('"Port of Antwerp, Belgium" resolves for distance lookup', () => {
+    expect(getPortDistance('Port of Antwerp, Belgium', 'Rotterdam')).toBe(
+      getPortDistance('Antwerp', 'Rotterdam'),
+    );
   });
 });

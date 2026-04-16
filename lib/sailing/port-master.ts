@@ -34,6 +34,7 @@ const PORT_MASTER: Record<KnownPort, PortMaster> = {
   'Istanbul':     { maxDraftM: 13.0, hasShoreCranes: true,  berthType: 'deep-sea' },
   'Mykolaiv':     { maxDraftM: 10.5, hasShoreCranes: true,  berthType: 'river',    note: 'Buh river, pilotage required' },
   'Odesa':        { maxDraftM: 13.0, hasShoreCranes: true,  berthType: 'deep-sea' },
+  'Chornomorsk':  { maxDraftM: 13.5, hasShoreCranes: true,  berthType: 'deep-sea', note: 'Formerly Ilichivsk, bulk grain terminal' },
   'Constanta':    { maxDraftM: 14.5, hasShoreCranes: true,  berthType: 'deep-sea' },
   'Varna':        { maxDraftM: 11.5, hasShoreCranes: true,  berthType: 'deep-sea' },
   'Burgas':       { maxDraftM: 12.5, hasShoreCranes: true,  berthType: 'deep-sea' },
@@ -41,13 +42,37 @@ const PORT_MASTER: Record<KnownPort, PortMaster> = {
   // ── Aegean / Eastern Med ──
   'Piraeus':      { maxDraftM: 17.0, hasShoreCranes: true,  berthType: 'deep-sea' },
   'Aliaga':       { maxDraftM: 14.0, hasShoreCranes: true,  berthType: 'terminal', note: 'Aliaga bay incl. Efesan' },
-  // ── Mediterranean ──
+  'Marmara':      { maxDraftM: 11.0, hasShoreCranes: false, berthType: 'bay',      note: 'Sea of Marmara, small stone/marble port' },
+  // ── Eastern Med / Suez ──
   'Alexandria':   { maxDraftM: 12.5, hasShoreCranes: true,  berthType: 'deep-sea' },
+  'Suez':         { maxDraftM: 16.0, hasShoreCranes: true,  berthType: 'terminal', note: 'Suez Canal southern end, transit hub' },
+  // ── Mediterranean ──
   'Ravenna':      { maxDraftM: 10.5, hasShoreCranes: true,  berthType: 'deep-sea', note: 'Adriatic, channel-access' },
+  'Marghera':     { maxDraftM: 11.0, hasShoreCranes: true,  berthType: 'terminal', note: 'Venice/Marghera industrial port complex' },
   'Skikda':       { maxDraftM: 12.0, hasShoreCranes: false, berthType: 'deep-sea', note: 'Mostly oil/LNG, limited dry-bulk cranes' },
   // ── Atlantic ──
   'Casablanca':   { maxDraftM: 12.0, hasShoreCranes: true,  berthType: 'deep-sea' },
+  // ── Northern Europe ──
+  'Antwerp':      { maxDraftM: 15.5, hasShoreCranes: true,  berthType: 'deep-sea', note: 'Belgium, major Scheldt River port' },
+  'Hamburg':      { maxDraftM: 14.5, hasShoreCranes: true,  berthType: 'river',    note: 'Elbe River, tidal constraints' },
+  'Rotterdam':    { maxDraftM: 23.0, hasShoreCranes: true,  berthType: 'deep-sea', note: 'Europe\'s largest port, Maasvlakte' },
+  'Bremen':       { maxDraftM: 12.8, hasShoreCranes: true,  berthType: 'river',    note: 'Weser River, incl. Bremerhaven' },
+  'Halsvik':      { maxDraftM: 12.0, hasShoreCranes: true,  berthType: 'deep-sea', note: 'Norway, fjord port, bulk minerals' },
+  'Gdansk':       { maxDraftM: 15.0, hasShoreCranes: true,  berthType: 'deep-sea', note: 'Polish Baltic port, Deepwater Container Terminal' },
   'Bayonne':      { maxDraftM: 9.5,  hasShoreCranes: true,  berthType: 'bay',      note: 'Bayonne/Bilbao range, tidal' },
+  // ── West Africa ──
+  'Dakar':        { maxDraftM: 13.5, hasShoreCranes: true,  berthType: 'deep-sea', note: 'Senegal, main West African transshipment hub' },
+  'Lagos':        { maxDraftM: 12.0, hasShoreCranes: true,  berthType: 'deep-sea', note: 'Nigeria, Apapa port complex' },
+  'Nacala':       { maxDraftM: 14.5, hasShoreCranes: true,  berthType: 'deep-sea', note: 'Mozambique, natural deep-water bay' },
+  // ── Americas ──
+  'Veracruz':     { maxDraftM: 13.0, hasShoreCranes: true,  berthType: 'deep-sea', note: 'Mexico, main Gulf port' },
+  'NewOrleans':   { maxDraftM: 11.0, hasShoreCranes: true,  berthType: 'river',    note: 'Mississippi River, grain/bulk' },
+  'Houston':      { maxDraftM: 13.7, hasShoreCranes: true,  berthType: 'terminal', note: 'Houston Ship Channel, petrochemical hub' },
+  'Santos':       { maxDraftM: 15.0, hasShoreCranes: true,  berthType: 'deep-sea', note: 'Brazil, largest Latin American port' },
+  // ── Asia ──
+  'Singapore':    { maxDraftM: 20.0, hasShoreCranes: true,  berthType: 'terminal', note: 'World\'s top transshipment hub' },
+  'Tokyo':        { maxDraftM: 15.0, hasShoreCranes: true,  berthType: 'deep-sea', note: 'Tokyo Bay, incl. Yokohama' },
+  'Shanghai':     { maxDraftM: 17.0, hasShoreCranes: true,  berthType: 'deep-sea', note: 'World\'s busiest port, Yangshan deep-water' },
 };
 
 /** Lookup port master data. Returns null for unknown ports (not an error — caller decides). */
