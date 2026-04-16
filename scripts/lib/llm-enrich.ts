@@ -129,11 +129,14 @@ export async function enrichPortsBatch(input: SkeletonPort[]): Promise<PortMaste
     process.stdout.write(`  Batch ${batchNum}/${totalBatches}: ${batch.map(p => p.unlocode).join(', ')}... `);
     const prompt = buildUserPrompt(batch);
 
+    // 10 ports × ~150 tokens output = ~1500 tokens; cap at 2000 to avoid
+    // excessive reasoning token burn (gpt-5.4-mini has chain-of-thought).
     const llmResult = await callAiJson<LlmPortEnrichment[] | null>(
       prompt,
       SYSTEM_PROMPT,
       AI_MODEL_LIGHT,
       null,
+      2000,
     );
     process.stdout.write(Array.isArray(llmResult) ? `✓ (${llmResult.length})\n` : `✗ fallback\n`);
 

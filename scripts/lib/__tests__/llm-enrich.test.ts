@@ -137,7 +137,8 @@ describe('enrichPortsBatch', () => {
       expect.any(String),
       expect.any(String),
       'gpt-test-mini',
-      null,  // fallback is null (meaning "LLM returned null" → per-port fallback)
+      null,   // fallback
+      2000,   // maxTokens (capped to avoid reasoning-token burn)
     );
   });
 
