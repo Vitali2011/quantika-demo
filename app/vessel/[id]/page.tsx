@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Ship, MapPin, Calendar, ChevronLeft } from 'lucide-react';
 import { Renderable } from '@/lib/types';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
+import { ClickableField } from '@/components/clickable-field';
 
 function safeRender(v: Renderable): string {
   if (v == null) return '';
@@ -61,6 +62,12 @@ export default async function VesselDetailPage({ params }: Props) {
   const vessels = session.parsedVessels.filter(v => v.emailId === id);
   const processed = session.processedEmails.find(p => p.emailId === id);
   const matchingCargo = session.matches.filter(m => m.vesselEmailId === id);
+  const emailMeta = {
+    emailBody: email.body || email.snippet,
+    emailFrom: email.from,
+    emailDate: email.date,
+    emailSubject: email.subject,
+  };
 
   return (
     <main className="min-h-screen bg-gray-50 py-4 sm:py-8 px-3 sm:px-4">
@@ -86,7 +93,10 @@ export default async function VesselDetailPage({ params }: Props) {
 
         {/* Original email */}
         <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Original Email</CardTitle></CardHeader>
+          <CardHeader className="pb-2 flex flex-row items-center justify-between">
+            <CardTitle className="text-sm font-medium">Original Email</CardTitle>
+            <a href={`/email/${id}#highlight`} className="text-xs text-blue-500 hover:underline">View annotated →</a>
+          </CardHeader>
           <CardContent>
             <pre className="text-sm whitespace-pre-wrap font-sans overflow-x-auto">{email.body || email.snippet}</pre>
           </CardContent>
@@ -136,9 +146,30 @@ export default async function VesselDetailPage({ params }: Props) {
               {/* Specs */}
               <div>
                 <h4 className="text-xs font-medium text-muted-foreground mb-1">Specifications</h4>
-                <Spec label="DWT (summer)" value={vessel.dwtSummer} unit="MT" confidence={getConf(vessel.dwtSummer)} />
-                <Spec label="DWCC" value={vessel.dwcc} unit="MT" confidence={getConf(vessel.dwcc)} />
-                <Spec label="Draft (max)" value={vessel.draftMax} unit="m" confidence={getConf(vessel.draftMax)} />
+                <ClickableField
+                  label="DWT (summer)"
+                  value={vessel.dwtSummer?.value ?? null}
+                  unit="MT"
+                  confidence={vessel.dwtSummer?.confidence}
+                  sourceText={vessel.dwtSummer?.sourceText}
+                  {...emailMeta}
+                />
+                <ClickableField
+                  label="DWCC"
+                  value={vessel.dwcc?.value ?? null}
+                  unit="MT"
+                  confidence={vessel.dwcc?.confidence}
+                  sourceText={vessel.dwcc?.sourceText}
+                  {...emailMeta}
+                />
+                <ClickableField
+                  label="Draft (max)"
+                  value={vessel.draftMax?.value ?? null}
+                  unit="m"
+                  confidence={vessel.draftMax?.confidence}
+                  sourceText={vessel.draftMax?.sourceText}
+                  {...emailMeta}
+                />
                 <Spec label="LOA" value={vessel.loa} unit="m" />
                 <Spec label="Beam" value={vessel.beam} unit="m" />
                 <Spec label="Built" value={vessel.built} />

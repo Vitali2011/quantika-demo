@@ -6,10 +6,11 @@ import { getSession } from '@/lib/session';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DraftQuoteCard } from '@/components/request/draft-quote-card';
-import { MapPin, Package, Weight, Ship, Calendar, FileText, AlertTriangle, ChevronLeft, Anchor } from 'lucide-react';
+import { Ship, FileText, AlertTriangle, ChevronLeft, Anchor } from 'lucide-react';
 import { STATUS_CONFIG } from '@/lib/constants';
 import { cfValue, Renderable } from '@/lib/types';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
+import { ClickableField } from '@/components/clickable-field';
 
 // Universal safe renderer — handles ConfidenceField objects, plain values, null
 function safeRender(v: Renderable): string {
@@ -53,6 +54,12 @@ export default async function CargoDetailPage({ params }: Props) {
   const processed = session.processedEmails.find(p => p.emailId === id);
   const matchingVessels = session.matches.filter(m => m.cargoEmailId === id);
   const statusCfg = processed ? STATUS_CONFIG[processed.status] : null;
+  const emailMeta = {
+    emailBody: email.body || email.snippet,
+    emailFrom: email.from,
+    emailDate: email.date,
+    emailSubject: email.subject,
+  };
 
   return (
     <main className="min-h-screen bg-gray-50 py-4 sm:py-8 px-3 sm:px-4">
@@ -90,8 +97,9 @@ export default async function CargoDetailPage({ params }: Props) {
 
         {/* Original Email */}
         <Card>
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-2 flex flex-row items-center justify-between">
             <CardTitle className="text-sm font-medium">Original Email</CardTitle>
+            <a href={`/email/${id}#highlight`} className="text-xs text-blue-500 hover:underline">View annotated →</a>
           </CardHeader>
           <CardContent>
             <pre className="text-sm whitespace-pre-wrap font-sans text-foreground overflow-x-auto">
@@ -125,42 +133,47 @@ export default async function CargoDetailPage({ params }: Props) {
 
                   {/* Origin */}
                   {cargo.originPort && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-medium">Origin:</span>
-                      {safeRender(cargo.originPort)}{cargo.originCountry ? `, ${safeRender(cargo.originCountry)}` : ''}
-                      <ConfIcon confidence={getConf(cargo.originPort)} />
-                    </div>
+                    <ClickableField
+                      label="Origin"
+                      value={cargo.originPort.value + (cargo.originCountry ? `, ${cargo.originCountry}` : '')}
+                      confidence={cargo.originPort.confidence}
+                      sourceText={cargo.originPort.sourceText}
+                      {...emailMeta}
+                    />
                   )}
 
                   {/* Destination */}
                   {cargo.destinationPort && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-medium">Destination:</span>
-                      {safeRender(cargo.destinationPort)}{cargo.destinationCountry ? `, ${safeRender(cargo.destinationCountry)}` : ''}
-                      <ConfIcon confidence={getConf(cargo.destinationPort)} />
-                    </div>
+                    <ClickableField
+                      label="Destination"
+                      value={cargo.destinationPort.value + (cargo.destinationCountry ? `, ${cargo.destinationCountry}` : '')}
+                      confidence={cargo.destinationPort.confidence}
+                      sourceText={cargo.destinationPort.sourceText}
+                      {...emailMeta}
+                    />
                   )}
 
                   {/* Cargo description */}
                   {cargo.cargoDescription && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Package className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-medium">Cargo:</span>
-                      {safeRender(cargo.cargoDescription)}
-                      <ConfIcon confidence={getConf(cargo.cargoDescription)} />
-                    </div>
+                    <ClickableField
+                      label="Cargo"
+                      value={cargo.cargoDescription.value}
+                      confidence={cargo.cargoDescription.confidence}
+                      sourceText={cargo.cargoDescription.sourceText}
+                      {...emailMeta}
+                    />
                   )}
 
                   {/* Weight */}
                   {cargo.weightMt && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Weight className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-medium">Weight:</span>
-                      {safeRender(cargo.weightMt)} MT
-                      <ConfIcon confidence={getConf(cargo.weightMt)} />
-                    </div>
+                    <ClickableField
+                      label="Weight"
+                      value={cargo.weightMt.value}
+                      unit="MT"
+                      confidence={cargo.weightMt.confidence}
+                      sourceText={cargo.weightMt.sourceText}
+                      {...emailMeta}
+                    />
                   )}
 
                   {/* Cargo type */}
@@ -174,12 +187,13 @@ export default async function CargoDetailPage({ params }: Props) {
 
                   {/* Preferred dates */}
                   {cargo.preferredDates && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-medium">Dates:</span>
-                      {safeRender(cargo.preferredDates)}
-                      <ConfIcon confidence={getConf(cargo.preferredDates)} />
-                    </div>
+                    <ClickableField
+                      label="Dates"
+                      value={cargo.preferredDates.value}
+                      confidence={cargo.preferredDates.confidence}
+                      sourceText={cargo.preferredDates.sourceText}
+                      {...emailMeta}
+                    />
                   )}
 
                   {/* Loading rate */}

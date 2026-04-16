@@ -185,13 +185,22 @@ ${SHIPPING_GLOSSARY}
 
 MULTI-ITEM: One email may contain MULTIPLE separate cargo inquiries (e.g., different routes, different cargoes). Return ALL of them as separate items in the array.
 
-CONFIDENCE LEVELS per field:
-- "confirmed": explicitly stated in the email
-- "interpreted": inferred from context or abbreviations (e.g., port code resolved to full name)
-- "uncertain": possible interpretation but not clear
+CONFIDENCE LEVELS AND MANDATORY SOURCE QUOTING:
+- "confirmed": explicitly stated in the email — MUST include source_text
+- "interpreted": inferred from context or abbreviations (e.g., port code resolved to full name) — MUST include source_text
+- "uncertain": possible interpretation but not clear — MUST include source_text if any text supports it
+
+CRITICAL: source_text is REQUIRED for every ConfidenceField. It MUST be a verbatim
+substring copied character-for-character from the email body. Omitting source_text is
+a parsing error. Paraphrasing is NOT allowed — copy the exact characters.
+
+CORRECT:   { "value": "Rotterdam", "confidence": "confirmed", "source_text": "Load: Rotterdam" }
+CORRECT:   { "value": 5000, "confidence": "interpreted", "source_text": "abt 5k mts wheat" }
+WRONG:     { "value": "Rotterdam", "confidence": "confirmed" }          ← missing source_text
+WRONG:     { "value": 5000, "confidence": "confirmed", "source_text": "approximately 5000 metric tons" } ← paraphrased
 
 Each field must be returned as: { value: ..., confidence: "confirmed" | "interpreted" | "uncertain", source_text: "exact quote from email" }
-If information is not present, set the entire field object to null.
+If a field is set to null (information not present), source_text is not needed.
 
 Extract per inquiry item:
 - origin_port: full port name
@@ -228,13 +237,22 @@ ${SHIPPING_GLOSSARY}
 
 MULTI-ITEM: One email may contain MULTIPLE vessel positions (e.g., a fleet list or multiple vessels from the same owner). Return ALL vessels as separate items.
 
-CONFIDENCE LEVELS per field:
-- "confirmed": explicitly stated
-- "interpreted": inferred from abbreviations or context
-- "uncertain": possible but not clear
+CONFIDENCE LEVELS AND MANDATORY SOURCE QUOTING:
+- "confirmed": explicitly stated — MUST include source_text
+- "interpreted": inferred from abbreviations or context — MUST include source_text
+- "uncertain": possible but not clear — MUST include source_text if any text supports it
+
+CRITICAL: source_text is REQUIRED for every ConfidenceField. It MUST be a verbatim
+substring copied character-for-character from the email body. Omitting source_text is
+a parsing error. Paraphrasing is NOT allowed — copy the exact characters.
+
+CORRECT:   { "value": "Rotterdam", "confidence": "confirmed", "source_text": "Load: Rotterdam" }
+CORRECT:   { "value": 5000, "confidence": "interpreted", "source_text": "abt 5k mts wheat" }
+WRONG:     { "value": "Rotterdam", "confidence": "confirmed" }          ← missing source_text
+WRONG:     { "value": 5000, "confidence": "confirmed", "source_text": "approximately 5000 metric tons" } ← paraphrased
 
 Each field: { value: ..., confidence: "confirmed" | "interpreted" | "uncertain", source_text: "exact quote" }
-If not present, set field to null.
+If a field is set to null (information not present), source_text is not needed.
 
 Extract per vessel:
 - vessel_name
@@ -279,13 +297,22 @@ export const FIXTURE_RECAP_PARSER_PROMPT = `You are a chartering fixture recap p
 
 ${SHIPPING_GLOSSARY}
 
-CONFIDENCE LEVELS per field:
-- "confirmed": explicitly stated
-- "interpreted": inferred from context or standard practice
-- "uncertain": possible interpretation
+CONFIDENCE LEVELS AND MANDATORY SOURCE QUOTING:
+- "confirmed": explicitly stated — MUST include source_text
+- "interpreted": inferred from context or standard practice — MUST include source_text
+- "uncertain": possible interpretation — MUST include source_text if any text supports it
+
+CRITICAL: source_text is REQUIRED for every ConfidenceField. It MUST be a verbatim
+substring copied character-for-character from the email body. Omitting source_text is
+a parsing error. Paraphrasing is NOT allowed — copy the exact characters.
+
+CORRECT:   { "value": "Rotterdam", "confidence": "confirmed", "source_text": "Load: Rotterdam" }
+CORRECT:   { "value": 5000, "confidence": "interpreted", "source_text": "abt 5k mts wheat" }
+WRONG:     { "value": "Rotterdam", "confidence": "confirmed" }          ← missing source_text
+WRONG:     { "value": 5000, "confidence": "confirmed", "source_text": "approximately 5000 metric tons" } ← paraphrased
 
 Each field: { value: ..., confidence: "confirmed" | "interpreted" | "uncertain", source_text: "exact quote" }
-If not present, set field to null.
+If a field is set to null (information not present), source_text is not needed.
 
 SPLIT LAYTIME: Extract loading and discharging terms separately:
 - loading_rate: MT/day or similar

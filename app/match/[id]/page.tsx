@@ -8,6 +8,7 @@ import { ChevronLeft } from 'lucide-react';
 import { Renderable } from '@/lib/types';
 import { DraftQuoteCard } from '@/components/request/draft-quote-card';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
+import { ClickableField } from '@/components/clickable-field';
 
 function safeRender(v: Renderable): string {
   if (v == null) return '';
@@ -34,6 +35,7 @@ export default async function MatchDetailPage({ params }: Props) {
   const cargo = session.parsedCargos.find(c => c.emailId === match.cargoEmailId && c.itemIndex === match.cargoItemIndex);
   const vessel = session.parsedVessels.find(v => v.emailId === match.vesselEmailId && v.itemIndex === match.vesselItemIndex);
   const cargoEmail = session.emails.find(e => e.id === match.cargoEmailId);
+  const vesselEmail = session.emails.find(e => e.id === match.vesselEmailId);
 
   const levelConfig: Record<string, { label: string; color: string; heading: string }> = {
     good: { label: '✅ GOOD MATCH', color: 'bg-green-100 text-green-800', heading: "here's why:" },
@@ -59,23 +61,82 @@ export default async function MatchDetailPage({ params }: Props) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Card>
             <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">📦 Cargo</CardTitle></CardHeader>
-            <CardContent className="space-y-1 text-sm">
-              <p><strong>{safeRender(cargo?.cargoDescription) || 'Unknown cargo'}</strong></p>
-              {safeRender(cargo?.weightMt) && safeRender(cargo?.weightMt) !== '0' && <p>{safeRender(cargo?.weightMt)} MT</p>}
-              <p>{safeRender(cargo?.originPort) || '?'} → {safeRender(cargo?.destinationPort) || '?'}</p>
-              {cargo?.cargoType && <p>Type: {safeRender(cargo.cargoType)}</p>}
-              {cargo?.specialRequirements && <p>{safeRender(cargo.specialRequirements)}</p>}
+            <CardContent className="space-y-1">
+              {cargo?.cargoDescription && (
+                <ClickableField
+                  label="Cargo"
+                  value={cargo.cargoDescription.value}
+                  confidence={cargo.cargoDescription.confidence}
+                  sourceText={cargo.cargoDescription.sourceText}
+                  emailBody={cargoEmail?.body || cargoEmail?.snippet || ''}
+                  emailFrom={cargoEmail?.from || ''}
+                  emailDate={cargoEmail?.date || ''}
+                  emailSubject={cargoEmail?.subject || ''}
+                />
+              )}
+              {cargo?.weightMt && (
+                <ClickableField
+                  label="Weight"
+                  value={cargo.weightMt.value}
+                  unit="MT"
+                  confidence={cargo.weightMt.confidence}
+                  sourceText={cargo.weightMt.sourceText}
+                  emailBody={cargoEmail?.body || cargoEmail?.snippet || ''}
+                  emailFrom={cargoEmail?.from || ''}
+                  emailDate={cargoEmail?.date || ''}
+                  emailSubject={cargoEmail?.subject || ''}
+                />
+              )}
+              {(cargo?.originPort || cargo?.destinationPort) && (
+                <p className="text-sm">{safeRender(cargo?.originPort) || '?'} → {safeRender(cargo?.destinationPort) || '?'}</p>
+              )}
+              {cargo?.cargoType && <p className="text-sm">Type: {safeRender(cargo.cargoType)}</p>}
+              {cargo?.specialRequirements && <p className="text-sm">{safeRender(cargo.specialRequirements)}</p>}
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">🚢 Vessel</CardTitle></CardHeader>
-            <CardContent className="space-y-1 text-sm">
-              <p><strong>{safeRender(vessel?.vesselName) || 'Unknown vessel'}</strong></p>
-              <p>{safeRender(vessel?.dwtSummer) || '?'} DWT</p>
-              <p>Open: {safeRender(vessel?.openPosition) || '?'}</p>
-              {vessel?.openDate && <p>{safeRender(vessel.openDate)}</p>}
-              <p>{isGeared ? 'Geared' : 'Gearless'}{vessel?.vesselType ? `, ${safeRender(vessel.vesselType)}` : ''}</p>
+            <CardContent className="space-y-1">
+              <p className="text-sm font-semibold">{safeRender(vessel?.vesselName) || 'Unknown vessel'}</p>
+              {vessel?.dwtSummer && (
+                <ClickableField
+                  label="DWT"
+                  value={vessel.dwtSummer.value}
+                  unit="MT"
+                  confidence={vessel.dwtSummer.confidence}
+                  sourceText={vessel.dwtSummer.sourceText}
+                  emailBody={vesselEmail?.body || vesselEmail?.snippet || ''}
+                  emailFrom={vesselEmail?.from || ''}
+                  emailDate={vesselEmail?.date || ''}
+                  emailSubject={vesselEmail?.subject || ''}
+                />
+              )}
+              {vessel?.openPosition && (
+                <ClickableField
+                  label="Open"
+                  value={vessel.openPosition.value}
+                  confidence={vessel.openPosition.confidence}
+                  sourceText={vessel.openPosition.sourceText}
+                  emailBody={vesselEmail?.body || vesselEmail?.snippet || ''}
+                  emailFrom={vesselEmail?.from || ''}
+                  emailDate={vesselEmail?.date || ''}
+                  emailSubject={vesselEmail?.subject || ''}
+                />
+              )}
+              {vessel?.openDate && (
+                <ClickableField
+                  label="Date"
+                  value={vessel.openDate.value}
+                  confidence={vessel.openDate.confidence}
+                  sourceText={vessel.openDate.sourceText}
+                  emailBody={vesselEmail?.body || vesselEmail?.snippet || ''}
+                  emailFrom={vesselEmail?.from || ''}
+                  emailDate={vesselEmail?.date || ''}
+                  emailSubject={vesselEmail?.subject || ''}
+                />
+              )}
+              <p className="text-sm">{isGeared ? 'Geared' : 'Gearless'}{vessel?.vesselType ? `, ${safeRender(vessel.vesselType)}` : ''}</p>
             </CardContent>
           </Card>
         </div>

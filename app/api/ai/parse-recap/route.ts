@@ -6,6 +6,7 @@ import { AI_MODEL_HEAVY } from '@/lib/constants';
 import { ParsedFixtureRecap } from '@/lib/types';
 import { summarizeCommissions } from '@/lib/commission';
 import { extractNum, toConfidence } from '@/lib/parsing-utils';
+import { calibrateAll } from '@/lib/validation/confidence-calibration';
 
 interface RawFixtureRecap {
   vessel_name?: unknown;
@@ -83,7 +84,7 @@ export async function POST(request: NextRequest) {
         {}
       );
 
-      return {
+      return calibrateAll({
         emailId: email.id,
         vesselName: toConfidence<string>(result.vessel_name),
         owners: toConfidence<string>(result.owners),
@@ -126,7 +127,7 @@ export async function POST(request: NextRequest) {
         confidentiality: result.confidentiality != null ? Boolean(result.confidentiality) : false,
         additionalTerms: Array.isArray(result.additional_terms) ? result.additional_terms : [],
         unknownTerms: Array.isArray(result.unknown_terms) ? result.unknown_terms : [],
-      };
+      }) as ParsedFixtureRecap;
     })
   );
 
