@@ -1,5 +1,5 @@
 {
-  "task": "GET /api/health endpoint returning status, sessions, uptime, version",
+  "task": "work-4: разделение dashboard/page.tsx на компоненты",
   "total_phases": 4,
   "phase_names": {
     "1": "Scope",
@@ -9,22 +9,22 @@
   },
   "completed_phases": {
     "1": {
-      "completed_at": "2026-04-15T18:31:55.116293+00:00",
+      "completed_at": "2026-04-16T04:56:25.681288+00:00",
       "artifact": ".pipeline/phase_1_scope.md",
       "note": null
     },
     "2": {
-      "completed_at": "2026-04-15T18:34:33.308563+00:00",
+      "completed_at": "2026-04-16T05:01:42.372037+00:00",
       "artifact": ".pipeline/phase_2_impl.md",
       "note": null
     },
     "3": {
-      "completed_at": "2026-04-15T18:36:48.873644+00:00",
+      "completed_at": "2026-04-16T05:06:45.792303+00:00",
       "artifact": ".pipeline/phase_3_qi.md",
       "note": null
     }
   },
-  "current_phase": 4,
-  "created_at": "2026-04-15T18:31:19.249830+00:00",
-  "updated_at": "2026-04-15T18:36:56.826470+00:00"
+  "current_phase": 2,
+  "created_at": "2026-04-16T04:53:16.283962+00:00",
+  "updated_at": "2026-04-16T05:06:45.792691+00:00"
 }
