@@ -77,6 +77,35 @@ describe('getPortDistance', () => {
   });
 });
 
+describe('normalizePortName — fuzzy fallback (Wave 4)', () => {
+  it('catches single typo (Karasu → Karsu)', () => {
+    expect(normalizePortName('Karsu')).toBe('Karasu');
+  });
+
+  it('catches dropped letter (Constanta → Constana)', () => {
+    expect(normalizePortName('Constana')).toBe('Constanta');
+  });
+
+  it('catches "Port of X" prefix not in alias map', () => {
+    expect(normalizePortName('Port of Mykolaiv')).toBe('Mykolaiv');
+    expect(normalizePortName('Port of Constanta')).toBe('Constanta');
+  });
+
+  it('catches mixed case + country code suffix', () => {
+    expect(normalizePortName('NOVOROSSIYSK RU')).toBe('Novorossiysk');
+  });
+
+  it('returns null for nonsense input (no false positive)', () => {
+    expect(normalizePortName('xyz123')).toBeNull();
+    expect(normalizePortName('Atlantis')).toBeNull();
+  });
+
+  it('empty / null input still returns null', () => {
+    expect(normalizePortName('')).toBeNull();
+    expect(normalizePortName('   ')).toBeNull();
+  });
+});
+
 describe('KNOWN_PORTS coverage', () => {
   it('includes all sample-data ports', () => {
     const expected = [

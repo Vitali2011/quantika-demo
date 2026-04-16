@@ -174,6 +174,49 @@ function stripParenthetical(raw: string): string {
   return raw.replace(/\([^)]*\)/g, '').trim();
 }
 
+function stripPortPrefix(raw: string): string {
+  // "Port of Rotterdam" → "Rotterdam", "Pt. Klang" → "Klang"
+  return raw.replace(/^(port of|port|pt\.?)\s+/i, '').trim();
+}
+
+function stripCountryCodeSuffix(raw: string): string {
+  // "Novorossiysk RU" / "Rotterdam NL" → drop trailing 2-letter ISO code
+  return raw.replace(/\s+[A-Z]{2}$/i, '').trim();
+}
+
+/**
+ * Fuzzy fallback corpus: lazily built from PORT_ALIASES + KNOWN_PORTS so the
+ * existing alias coverage is reused. Phase 5 will extend this corpus from
+ * the JSON-backed port master (loadPortMasterFromJson exposes all canonical
+ * names).
+ */
+let _fuzzyCorpus: { lookup: string; canonical: string }[] | null = null;
+
+function getFuzzyCorpus(): { lookup: string; canonical: string }[] {
+  if (_fuzzyCorpus) return _fuzzyCorpus;
+  const seen = new Map<string, string>();
+  for (const [alias, canonical] of Object.entries(PORT_ALIASES)) {
+    seen.set(alias, canonical);
+  }
+  for (const p of KNOWN_PORTS) {
+    seen.set(p.toLowerCase(), p);
+  }
+  _fuzzyCorpus = [...seen.entries()].map(([lookup, canonical]) => ({ lookup, canonical }));
+  return _fuzzyCorpus;
+}
+
+/** Test/runtime hook: allow Phase 5 to inject the JSON-loaded port-master corpus. */
+export function _setFuzzyCorpusForTest(entries: Array<{ lookup: string; canonical: string }> | null): void {
+  _fuzzyCorpus = entries;
+}
+
+// Lazy import of fuzzysort — avoid the eslint require ban while keeping the
+// dependency optional at type-check time (Phase 5 will move to a real import).
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const fuzzysort = require('fuzzysort') as {
+  go<T>(target: string, candidates: T[], opts: { key: keyof T; threshold?: number; limit?: number }): Array<{ obj: T; score: number }>;
+};
+
 /**
  * Normalize a free-form port name to its canonical form used in the distance table.
  * Returns null if the port is not recognized.
@@ -184,9 +227,11 @@ function stripParenthetical(raw: string): string {
  *   - Parenthetical range: "Bay of Biscay (Bayonne/Bilbao range)" → Bayonne via alias
  *   - Legacy aliases: "Odessa" → "Odesa", "Efesan" → "Aliaga"
  */
-export function normalizePortName(raw: string | null | undefined): KnownPort | null {
+export function normalizePortName(raw: string | null | undefined): string | null {
   if (!raw || typeof raw !== 'string') return null;
-  const s = stripCountry(stripParenthetical(raw)).trim();
+  let s = stripCountry(stripParenthetical(raw)).trim();
+  s = stripCountryCodeSuffix(s);
+  s = stripPortPrefix(s);
   if (!s) return null;
 
   // Direct lowercase alias lookup
@@ -198,6 +243,16 @@ export function normalizePortName(raw: string | null | undefined): KnownPort | n
   for (const part of parts) {
     const hit = PORT_ALIASES[part.toLowerCase()];
     if (hit) return hit;
+  }
+
+  // Fuzzy fallback (typos, casing) — uses fuzzysort over alias + canonical
+  // names. Threshold tuned empirically: -200 is conservative (rejects garbage
+  // like "xyz123") while still catching single-letter typos in port names.
+  const corpus = getFuzzyCorpus();
+  const cleaned = s.toLowerCase();
+  const results = fuzzysort.go(cleaned, corpus, { key: 'lookup', threshold: -200, limit: 1 });
+  if (results.length > 0) {
+    return results[0].obj.canonical;
   }
 
   return null;
