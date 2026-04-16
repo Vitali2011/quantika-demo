@@ -93,6 +93,16 @@ export default async function VesselDetailPage({ params }: Props) {
           </CardContent>
         </Card>
 
+        {/* Vessel empty state */}
+        {vessels.length === 0 && (
+          <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
+            <p className="text-gray-500 mb-4">No vessel data parsed from this email.</p>
+            <Link href="/dashboard" className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline">
+              <ChevronLeft className="h-4 w-4" /> Back to Dashboard
+            </Link>
+          </div>
+        )}
+
         {/* Parsed vessels */}
         {vessels.map((vessel, idx) => (
           <Card key={idx}>

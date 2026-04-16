@@ -155,6 +155,26 @@ export default async function DashboardPage() {
     parsedFixtureRecaps,
   } = session;
 
+  if (emails.length === 0) {
+    return (
+      <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="max-w-md w-full text-center space-y-4">
+          <div className="text-4xl">📭</div>
+          <h1 className="text-xl font-bold text-gray-900">No emails yet</h1>
+          <p className="text-sm text-gray-500">
+            Load your emails to start analyzing cargo inquiries, vessel positions, and negotiations.
+          </p>
+          <Link
+            href="/processing"
+            className="inline-block px-6 py-3 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors"
+          >
+            Загрузить письма
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
   // Build a map: emailId -> ProcessedEmail
   const processedMap = new Map<string, ProcessedEmail>();
   for (const pe of processedEmails) {
