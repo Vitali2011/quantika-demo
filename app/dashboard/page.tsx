@@ -253,11 +253,11 @@ export default async function DashboardPage() {
   const maxContactEmails = topContacts.length > 0 ? topContacts[0].count : 1;
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-3xl mx-auto space-y-6">
+    <main className="min-h-screen bg-gray-50 py-4 sm:py-8 px-3 sm:px-4">
+      <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-xl font-bold text-gray-900">
+          <h1 className="text-lg sm:text-xl font-bold text-gray-900">
             Good morning. Here&apos;s what needs your attention:
           </h1>
           <p className="text-sm text-gray-500 mt-1">{emails.length} emails processed</p>
@@ -365,7 +365,7 @@ export default async function DashboardPage() {
           )}
 
           {/* Commission */}
-          <div className={`flex items-center justify-between p-4 rounded-lg border ${commissionSummary && commissionSummary.details.length > 0 ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'}`}>
+          <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 p-3 sm:p-4 rounded-lg border ${commissionSummary && commissionSummary.details.length > 0 ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'}`}>
             <div className="flex items-center gap-3">
               <span className="text-2xl">💰</span>
               <div>
@@ -391,7 +391,7 @@ export default async function DashboardPage() {
 
         {/* ── FULL INBOX BREAKDOWN (collapsed) ── */}
         <details className="border border-gray-300 rounded-xl overflow-hidden">
-          <summary className="px-5 py-4 bg-white cursor-pointer hover:bg-gray-50 list-none">
+          <summary className="px-3 sm:px-5 py-3 sm:py-4 bg-white cursor-pointer hover:bg-gray-50 list-none">
             <div className="flex items-center justify-between mb-3">
               <span className="font-semibold text-gray-900">Full Inbox Breakdown</span>
               <div className="flex items-center gap-2">

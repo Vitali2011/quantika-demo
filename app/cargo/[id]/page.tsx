@@ -56,8 +56,8 @@ export default async function CargoDetailPage({ params }: Props) {
   const statusCfg = processed ? STATUS_CONFIG[processed.status] : null;
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-3xl mx-auto space-y-6">
+    <main className="min-h-screen bg-gray-50 py-4 sm:py-8 px-3 sm:px-4">
+      <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
         {/* Back link */}
         <Link href="/dashboard" className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ChevronLeft className="h-4 w-4" /> Back to Dashboard
@@ -72,7 +72,7 @@ export default async function CargoDetailPage({ params }: Props) {
                 <Badge className={statusCfg.color}>{statusCfg.emoji} {statusCfg.label}</Badge>
               )}
             </div>
-            <h1 className="text-xl font-bold mt-2">{safeRender(email.subject)}</h1>
+            <h1 className="text-lg sm:text-xl font-bold mt-2">{safeRender(email.subject)}</h1>
             <p className="text-sm text-muted-foreground">
               From: {safeRender(email.from)} · {new Date(email.date).toLocaleDateString()}
             </p>
@@ -94,7 +94,7 @@ export default async function CargoDetailPage({ params }: Props) {
             <CardTitle className="text-sm font-medium">Original Email</CardTitle>
           </CardHeader>
           <CardContent>
-            <pre className="text-sm whitespace-pre-wrap font-sans text-foreground">
+            <pre className="text-sm whitespace-pre-wrap font-sans text-foreground overflow-x-auto">
               {sanitizeEmailBody(safeRender(email.body || email.snippet))}
             </pre>
           </CardContent>
