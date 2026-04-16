@@ -4,7 +4,7 @@ import { callAiJson } from '@/lib/openai';
 import { CARGO_INQUIRY_PARSER_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_LIGHT } from '@/lib/constants';
 import { CargoType, ParsedCargo } from '@/lib/types';
-import { toConfidence } from '@/lib/parsing-utils';
+import { toConfidence, extractNum } from '@/lib/parsing-utils';
 
 interface RawCargoItem {
   origin_port?: unknown;
@@ -76,17 +76,20 @@ export async function POST(request: NextRequest) {
           destinationCountry: item.destination_country || null,
           cargoDescription: toConfidence<string>(item.cargo_description),
           weightMt: toConfidence<number>(item.weight_mt),
-          volumeCbm: item.volume_cbm != null ? Number(item.volume_cbm) : null,
+          // extractNum is NaN-safe and preserves a legitimate zero (unlike `x || null`,
+          // which nullifies 0). Prior commit introduced a 0-commission bug by using the
+          // antipattern — see ROADMAP_MVP.md W1.8.
+          volumeCbm: extractNum(item.volume_cbm),
           dimensions: item.dimensions || null,
           cargoType: (item.cargo_type || 'OTHER') as CargoType,
           containerType: item.container_type || null,
-          quantity: item.quantity != null ? Number(item.quantity) : null,
+          quantity: extractNum(item.quantity),
           incoterms: item.incoterms || null,
           preferredDates: toConfidence<string>(item.preferred_dates),
           laycan: item.laycan || null,
           loadingRate: item.loading_rate || null,
           dischargeRate: item.discharge_rate || null,
-          commissionPercent: parseFloat(String(item.commission_percent || 0)) || null,
+          commissionPercent: extractNum(item.commission_percent),
           commissionTerms: item.commission_terms || null,
           specialRequirements: item.special_requirements || null,
           stowageFactor: item.stowage_factor || null,

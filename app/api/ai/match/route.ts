@@ -4,68 +4,129 @@ import { getSession, updateSession } from '@/lib/session';
 import { callAiJson } from '@/lib/openai';
 import { MATCH_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_HEAVY } from '@/lib/constants';
-import { Match, MatchLevel, MatchReadiness, ParsedCargo, ParsedVessel } from '@/lib/types';
+import {
+  Match, MatchLevel, MatchReadiness, MatchHardFilters,
+  ParsedCargo, ParsedVessel,
+} from '@/lib/types';
 import { cfValue } from '@/lib/types';
 import { calculateReadinessGap } from '@/lib/sailing/readiness-gap';
 import { applyReadinessScoring } from '@/lib/sailing/match-scoring';
+import { runHardFilters } from '@/lib/sailing/match-filters';
+import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
+import { validateDates } from '@/lib/sailing/date-sanity';
 
 export const maxDuration = 120;
 
-interface PairReadiness {
+interface PairAnalysis {
   cargoEmailId: string;
   cargoItemIndex: number;
   vesselEmailId: string;
   vesselItemIndex: number;
   readiness: MatchReadiness;
+  hardFilters: MatchHardFilters;
+  dateIssues: string[];
+  /** True if pair is physically or temporally impossible and must be dropped before the LLM sees it. */
+  filterOut: boolean;
+  filterReason?: string;
 }
 
-function computeReadinessForAllPairs(
-  cargos: ParsedCargo[],
-  vessels: ParsedVessel[],
-  refYear: number,
-  today: Date,
-): PairReadiness[] {
-  const out: PairReadiness[] = [];
-  for (const c of cargos) {
-    for (const v of vessels) {
-      const readiness = calculateReadinessGap(
-        {
-          openDate: cfValue(v.openDate),
-          openPosition: cfValue(v.openPosition),
-          speedLaden: v.speedLaden,
-          dwtSummer: cfValue(v.dwtSummer),
-        },
-        {
-          laycan: c.laycan,
-          originPort: cfValue(c.originPort),
-        },
-        { refYear, today },
-      );
-      out.push({
-        cargoEmailId: c.emailId,
-        cargoItemIndex: c.itemIndex,
-        vesselEmailId: v.emailId,
-        vesselItemIndex: v.itemIndex,
-        readiness,
-      });
-    }
+/**
+ * Single pair analysis: run all deterministic checks (hard filters, date
+ * validation, readiness-gap) for one cargo-vessel pair.
+ */
+function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Date): PairAnalysis {
+  // Readiness gap (sailing time + verdict)
+  const readiness = calculateReadinessGap(
+    {
+      openDate: cfValue(v.openDate),
+      openPosition: cfValue(v.openPosition),
+      speedLaden: v.speedLaden,
+      dwtSummer: cfValue(v.dwtSummer),
+    },
+    {
+      laycan: c.laycan,
+      originPort: cfValue(c.originPort),
+    },
+    { refYear, today },
+  );
+
+  // Hard filters (draft / crane / volume / cargo-vessel compatibility)
+  const hf = runHardFilters({
+    cargoType: c.cargoType,
+    originPort: cfValue(c.originPort),
+    weightMt: cfValue(c.weightMt),
+    cargoDescription: cfValue(c.cargoDescription),
+    stowageFactor: c.stowageFactor,
+    vesselType: v.vesselType,
+    geared: v.geared,
+    draftMax: cfValue(v.draftMax),
+    grainCapacity: v.grainCapacity,
+  });
+
+  const hardFilters: MatchHardFilters = {
+    draft: hf.checks.draft,
+    crane: hf.checks.crane,
+    volume: hf.checks.volume,
+    cargoVessel: hf.checks.cargoVessel,
+  };
+
+  // Date sanity (inverted laycan, stale position)
+  const parsedLaycan = parseLaycan(c.laycan, refYear);
+  const parsedOpen = parseVesselOpenDate(cfValue(v.openDate), refYear, today);
+  const dateValidation = validateDates({
+    openDate: parsedOpen,
+    laycan: parsedLaycan,
+    today,
+    staleThresholdDays: 5,
+  });
+
+  // Decide whether to filter out ahead of the LLM call.
+  // We filter on: hard-impossible physics, inverted laycan, late arrival.
+  // Staleness and graceful "unknown" cases are NOT filtered — they're warnings.
+  let filterOut = false;
+  let filterReason: string | undefined;
+
+  if (!hf.pass) {
+    filterOut = true;
+    filterReason = hf.failures.join('; ');
+  } else if (!dateValidation.valid) {
+    filterOut = true;
+    filterReason = dateValidation.issues.join('; ');
+  } else if (readiness.verdict === 'late') {
+    filterOut = true;
+    filterReason = readiness.explanation;
   }
-  return out;
+
+  return {
+    cargoEmailId: c.emailId,
+    cargoItemIndex: c.itemIndex,
+    vesselEmailId: v.emailId,
+    vesselItemIndex: v.itemIndex,
+    readiness,
+    hardFilters,
+    dateIssues: dateValidation.issues,
+    filterOut,
+    filterReason,
+  };
 }
 
-function findReadiness(
-  pairs: PairReadiness[],
+function pairKey(cargoEmailId: string, cargoItemIndex: number, vesselEmailId: string, vesselItemIndex: number): string {
+  return `${cargoEmailId}|${cargoItemIndex}|${vesselEmailId}|${vesselItemIndex}`;
+}
+
+function findAnalysis(
+  pairs: PairAnalysis[],
   cargoEmailId: string,
   cargoItemIndex: number,
   vesselEmailId: string,
   vesselItemIndex: number,
-): MatchReadiness | undefined {
+): PairAnalysis | undefined {
   return pairs.find(p =>
     p.cargoEmailId === cargoEmailId &&
     p.cargoItemIndex === cargoItemIndex &&
     p.vesselEmailId === vesselEmailId &&
     p.vesselItemIndex === vesselItemIndex,
-  )?.readiness;
+  );
 }
 
 export async function POST(request: NextRequest) {
@@ -82,20 +143,24 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ count: 0 });
   }
 
-  // Pre-compute readiness for every (cargo, vessel) pair.
   // Reference year comes from sample-data dates (they use 2025) — default to
   // the session creation year, which makes the demo deterministic.
   const refYear = session.createdAt.getUTCFullYear() === new Date().getUTCFullYear()
     ? 2025
     : session.createdAt.getUTCFullYear();
   const today = session.createdAt;
-  const pairReadiness = computeReadinessForAllPairs(parsedCargos, parsedVessels, refYear, today);
 
-  // Build a set of "late" pairs to hard-filter from the LLM prompt + final output
-  const latePairKeys = new Set(
-    pairReadiness
-      .filter(p => p.readiness.verdict === 'late')
-      .map(p => `${p.cargoEmailId}|${p.cargoItemIndex}|${p.vesselEmailId}|${p.vesselItemIndex}`),
+  // Run all deterministic checks for every (cargo, vessel) pair
+  const analyses: PairAnalysis[] = [];
+  for (const c of parsedCargos) {
+    for (const v of parsedVessels) {
+      analyses.push(analyzePair(c, v, refYear, today));
+    }
+  }
+
+  // Keys of pairs we drop BEFORE the LLM sees them (physically impossible / late)
+  const filteredOutKeys = new Set(
+    analyses.filter(a => a.filterOut).map(a => pairKey(a.cargoEmailId, a.cargoItemIndex, a.vesselEmailId, a.vesselItemIndex)),
   );
 
   // Prepare data for AI (extract values from ConfidenceFields)
@@ -130,20 +195,21 @@ export async function POST(request: NextRequest) {
     hold_dimensions: v.holdDimensions,
   }));
 
-  // Pass structured readiness to the LLM so it can use actual numbers in
-  // match_reasons instead of hallucinating timing overlap from free-text dates.
-  const readinessData = pairReadiness
-    .filter(p => !latePairKeys.has(`${p.cargoEmailId}|${p.cargoItemIndex}|${p.vesselEmailId}|${p.vesselItemIndex}`))
-    .map(p => ({
-      cargo_email_id: p.cargoEmailId,
-      cargo_item_index: p.cargoItemIndex,
-      vessel_email_id: p.vesselEmailId,
-      vessel_item_index: p.vesselItemIndex,
-      gap_days: p.readiness.gapDays,
-      sailing_days: p.readiness.sailingDays,
-      arrival_date: p.readiness.arrivalDate,
-      verdict: p.readiness.verdict,
-      explanation: p.readiness.explanation,
+  // Pass structured readiness + date warnings to the LLM (only for pairs that
+  // survived pre-filtering) so reasons cite real numbers, not hallucinations.
+  const readinessData = analyses
+    .filter(a => !filteredOutKeys.has(pairKey(a.cargoEmailId, a.cargoItemIndex, a.vesselEmailId, a.vesselItemIndex)))
+    .map(a => ({
+      cargo_email_id: a.cargoEmailId,
+      cargo_item_index: a.cargoItemIndex,
+      vessel_email_id: a.vesselEmailId,
+      vessel_item_index: a.vesselItemIndex,
+      gap_days: a.readiness.gapDays,
+      sailing_days: a.readiness.sailingDays,
+      arrival_date: a.readiness.arrivalDate,
+      verdict: a.readiness.verdict,
+      explanation: a.readiness.explanation,
+      date_issues: a.dateIssues,
     }));
 
   const promptPayload = JSON.stringify({
@@ -170,16 +236,24 @@ export async function POST(request: NextRequest) {
       matchReasons: Array.isArray(m.match_reasons) ? m.match_reasons : [],
       issues: Array.isArray(m.issues) ? m.issues : [],
     }))
-    // Hard filter: drop any match where readiness verdict is 'late' (safety net even if LLM included it)
+    // Safety net: drop any match the LLM returned that we already filtered out pre-flight
     .filter((m: Match) => {
-      const key = `${m.cargoEmailId}|${m.cargoItemIndex}|${m.vesselEmailId}|${m.vesselItemIndex}`;
-      return !latePairKeys.has(key);
+      const key = pairKey(m.cargoEmailId, m.cargoItemIndex, m.vesselEmailId, m.vesselItemIndex);
+      return !filteredOutKeys.has(key);
     });
 
-  // Attach readiness to each match + apply scoring adjustments
+  // Attach structured analysis to each match + apply readiness scoring
   const matches: Match[] = rawMatches.map((m: Match) => {
-    const readiness = findReadiness(pairReadiness, m.cargoEmailId, m.cargoItemIndex, m.vesselEmailId, m.vesselItemIndex);
-    return applyReadinessScoring(m, readiness);
+    const analysis = findAnalysis(analyses, m.cargoEmailId, m.cargoItemIndex, m.vesselEmailId, m.vesselItemIndex);
+    if (!analysis) return m;
+    const withReadiness = applyReadinessScoring(m, analysis.readiness);
+    withReadiness.hardFilters = analysis.hardFilters;
+    withReadiness.dateIssues = analysis.dateIssues;
+    // Fold date warnings (stale position, long laycan) into issues so they show in UI
+    if (analysis.dateIssues.length > 0) {
+      withReadiness.issues = [...(withReadiness.issues ?? []), ...analysis.dateIssues];
+    }
+    return withReadiness;
   });
 
   // Sort by adjusted score descending

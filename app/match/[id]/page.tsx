@@ -114,6 +114,43 @@ export default async function MatchDetailPage({ params }: Props) {
           </CardContent>
         </Card>
 
+        {match.hardFilters && (
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">🛡 Physical feasibility</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-1 text-sm">
+              {(() => {
+                const hf = match.hardFilters!;
+                const rows: { label: string; pass: boolean; reason?: string }[] = [
+                  { label: 'Port draft vs vessel draft',     pass: hf.draft.pass,       reason: hf.draft.reason },
+                  { label: 'Cargo handling (cranes/geared)', pass: hf.crane.pass,       reason: hf.crane.reason },
+                  { label: 'Cargo volume vs hold capacity',  pass: hf.volume.pass,      reason: hf.volume.reason },
+                  { label: 'Cargo type vs vessel type',      pass: hf.cargoVessel.pass, reason: hf.cargoVessel.reason },
+                ];
+                return rows.map((row, i) => (
+                  <div key={i} className="flex items-start gap-2 text-sm">
+                    <span className={row.pass ? 'text-green-600 shrink-0' : 'text-red-600 shrink-0'}>
+                      {row.pass ? '✓' : '✗'}
+                    </span>
+                    <span className="flex-1">
+                      <span className="text-gray-800">{row.label}</span>
+                      {row.reason && (
+                        <span className={`block text-xs ${row.pass ? 'text-gray-500' : 'text-red-600'}`}>
+                          {row.reason}
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                ));
+              })()}
+              <p className="text-xs text-gray-400 pt-2 border-t mt-2">
+                Matches failing any hard check are filtered out before this page. What you see here passed all deterministic checks.
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
         {match.readiness && (
           <Card>
             <CardHeader className="pb-2">

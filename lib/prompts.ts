@@ -360,8 +360,11 @@ You receive a third input — "readiness" — a pre-computed list of (cargo, ves
   - arrival_date: ISO date when vessel would arrive at the load port.
   - verdict: "ideal" | "tight" | "idle" | "late" | "unknown".
   - explanation: plain-English summary.
+  - date_issues: list of warnings (e.g. "Vessel position stale — 9d old, may already be fixed").
 Use these numbers verbatim. Do NOT invent your own timing assessment — the readiness block is the source of truth for temporal feasibility.
-Pairs with verdict="late" have already been filtered out; they will not appear in the readiness list.
+
+CRITICAL — PRE-FILTERING HAS ALREADY HAPPENED:
+Pairs that are physically impossible (draft mismatch, volume overflow, cargo-type vs vessel-type incompatible, gearless vessel at port without cranes, laycan inverted/typo, vessel arrives after laycan start) have been DROPPED before you received this input. They are not in the readiness list. You MUST NOT invent such pairs or suggest them. If you cannot justify a match from the data shown, omit it — do not fabricate.
 
 HARD FILTERS (must all pass — if any fails, do not include the match):
 1. Vessel DWT or DWCC >= cargo weight/quantity (with reasonable margin)

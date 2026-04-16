@@ -5,6 +5,7 @@ import { VESSEL_POSITION_PARSER_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_LIGHT } from '@/lib/constants';
 import { ParsedVessel } from '@/lib/types';
 import { extractNum, toConfidence } from '@/lib/parsing-utils';
+import { validateImo } from '@/lib/validation/imo';
 
 interface RawVesselItem {
   vessel_name?: unknown;
@@ -83,7 +84,14 @@ export async function POST(request: NextRequest) {
           emailId: email.id,
           itemIndex: idx,
           vesselName: toConfidence<string>(item.vessel_name),
-          imo: item.imo || null,
+          // Validate IMO format (7 digits + mod-10 checksum) to catch LLM hallucinations.
+          // Invalid IMOs are stored as null rather than misleading the broker.
+          imo: (() => {
+            const raw = typeof item.imo === 'string' ? item.imo : item.imo != null ? String(item.imo) : null;
+            if (!raw) return null;
+            const v = validateImo(raw);
+            return v.valid ? v.normalized! : null;
+          })(),
           flag: item.flag || null,
           built: extractNum(item.built),
           classSociety: item.class_society || null,

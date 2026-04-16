@@ -231,6 +231,19 @@ export interface MatchReadiness {
   explanation: string;
 }
 
+/** Result of a single hard-filter check (see lib/sailing/match-filters.ts). */
+export interface HardFilterCheck {
+  pass: boolean;
+  reason?: string;
+}
+
+export interface MatchHardFilters {
+  draft: HardFilterCheck;
+  crane: HardFilterCheck;
+  volume: HardFilterCheck;
+  cargoVessel: HardFilterCheck;
+}
+
 export interface Match {
   cargoEmailId: string;
   cargoItemIndex: number;
@@ -241,6 +254,8 @@ export interface Match {
   matchReasons: string[];
   issues: string[];
   readiness?: MatchReadiness;
+  hardFilters?: MatchHardFilters;
+  dateIssues?: string[];
 }
 
 // ── Negotiation Recap ──
