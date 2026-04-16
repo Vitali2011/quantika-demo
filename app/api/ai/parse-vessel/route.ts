@@ -94,7 +94,12 @@ export async function POST(request: NextRequest) {
             const v = validateImo(raw);
             return v.valid ? v.normalized! : null;
           })(),
-          flag: item.flag || null,
+          flag: (() => {
+            const f = item.flag;
+            if (!f) return null;
+            if (typeof f === 'object' && 'value' in f) return String((f as { value: unknown }).value) || null;
+            return String(f) || null;
+          })(),
           built: extractNum(item.built),
           classSociety: item.class_society || null,
           pandi: item.p_and_i || null,
