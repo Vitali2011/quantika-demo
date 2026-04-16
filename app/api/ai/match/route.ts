@@ -5,15 +5,16 @@ import { callAiJson } from '@/lib/openai';
 import { MATCH_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_HEAVY } from '@/lib/constants';
 import {
-  Match, MatchLevel, MatchReadiness, MatchHardFilters,
+  Match, MatchLevel, MatchReadiness, MatchHardFilters, MatchSanctions,
   ParsedCargo, ParsedVessel,
 } from '@/lib/types';
 import { cfValue } from '@/lib/types';
 import { calculateReadinessGap } from '@/lib/sailing/readiness-gap';
-import { applyReadinessScoring } from '@/lib/sailing/match-scoring';
+import { applyReadinessScoring, computeScoreBreakdown } from '@/lib/sailing/match-scoring';
 import { runHardFilters } from '@/lib/sailing/match-filters';
 import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
 import { validateDates } from '@/lib/sailing/date-sanity';
+import { checkSanctions } from '@/lib/validation/sanctions';
 
 export const maxDuration = 120;
 
@@ -24,6 +25,7 @@ interface PairAnalysis {
   vesselItemIndex: number;
   readiness: MatchReadiness;
   hardFilters: MatchHardFilters;
+  sanctions: MatchSanctions;
   dateIssues: string[];
   /** True if pair is physically or temporally impossible and must be dropped before the LLM sees it. */
   filterOut: boolean;
@@ -80,8 +82,16 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
     staleThresholdDays: 5,
   });
 
+  // Sanctions screening (flag × route × vessel restrictions)
+  const sanctions: MatchSanctions = checkSanctions({
+    vesselFlag: v.flag,
+    originPort: cfValue(c.originPort),
+    destinationPort: cfValue(c.destinationPort),
+    restrictions: v.restrictions ?? [],
+  });
+
   // Decide whether to filter out ahead of the LLM call.
-  // We filter on: hard-impossible physics, inverted laycan, late arrival.
+  // We filter on: hard-impossible physics, inverted laycan, late arrival, HIGH sanctions.
   // Staleness and graceful "unknown" cases are NOT filtered — they're warnings.
   let filterOut = false;
   let filterReason: string | undefined;
@@ -95,6 +105,9 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
   } else if (readiness.verdict === 'late') {
     filterOut = true;
     filterReason = readiness.explanation;
+  } else if (sanctions.blocking) {
+    filterOut = true;
+    filterReason = sanctions.reason ?? 'sanctions risk';
   }
 
   return {
@@ -104,6 +117,7 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
     vesselItemIndex: v.itemIndex,
     readiness,
     hardFilters,
+    sanctions,
     dateIssues: dateValidation.issues,
     filterOut,
     filterReason,
@@ -249,10 +263,29 @@ export async function POST(request: NextRequest) {
     const withReadiness = applyReadinessScoring(m, analysis.readiness);
     withReadiness.hardFilters = analysis.hardFilters;
     withReadiness.dateIssues = analysis.dateIssues;
+    withReadiness.sanctions = analysis.sanctions;
     // Fold date warnings (stale position, long laycan) into issues so they show in UI
     if (analysis.dateIssues.length > 0) {
       withReadiness.issues = [...(withReadiness.issues ?? []), ...analysis.dateIssues];
     }
+    // Non-blocking sanctions risk becomes a visible warning
+    if (analysis.sanctions.risk === 'MEDIUM' && analysis.sanctions.reason) {
+      withReadiness.issues = [...(withReadiness.issues ?? []), `Sanctions: ${analysis.sanctions.reason}`];
+    }
+
+    // Compute structured score breakdown (Task 3.3)
+    const cargo = parsedCargos.find(c => c.emailId === m.cargoEmailId && c.itemIndex === m.cargoItemIndex);
+    const vessel = parsedVessels.find(v => v.emailId === m.vesselEmailId && v.itemIndex === m.vesselItemIndex);
+    if (cargo && vessel) {
+      withReadiness.scoreBreakdown = computeScoreBreakdown({
+        match: withReadiness,
+        cargo,
+        vessel,
+        readiness: analysis.readiness,
+        sanctions: analysis.sanctions,
+      });
+    }
+
     return withReadiness;
   });
 
