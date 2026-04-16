@@ -157,11 +157,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ count: 0 });
   }
 
-  // Reference year comes from sample-data dates (they use 2025) — default to
-  // the session creation year, which makes the demo deterministic.
-  const refYear = session.createdAt.getUTCFullYear() === new Date().getUTCFullYear()
-    ? 2025
-    : session.createdAt.getUTCFullYear();
+  // Reference year: take the current calendar year dynamically so date parsing
+  // never drifts into the wrong year when the session crosses a year boundary.
+  const sessionYear = session.createdAt.getUTCFullYear();
+  const currentYear = new Date().getUTCFullYear();
+  const refYear = sessionYear < currentYear ? sessionYear : currentYear;
   const today = session.createdAt;
 
   // Run all deterministic checks for every (cargo, vessel) pair

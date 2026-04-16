@@ -113,7 +113,14 @@ export async function POST(request: NextRequest) {
           holdDimensions: item.hold_dimensions || null,
           hatchDimensions: item.hatch_dimensions || null,
           tankTopStrength: item.tank_top_strength || null,
-          geared: item.geared != null ? Boolean(item.geared) : null,
+          geared: (() => {
+            if (item.geared === false) return false;
+            const feats = JSON.stringify(item.special_features ?? '').toLowerCase();
+            if (feats.includes('gearless')) return false;
+            const body = userPrompt.toLowerCase();
+            if (body.includes('gearless') && !body.match(/\d+\s*[xх]\s*\d+\s*t/i)) return false;
+            return item.geared != null ? Boolean(item.geared) : null;
+          })(),
           craneCapacity: item.crane_capacity || null,
           hatchType: item.hatch_type || null,
           vesselType: item.vessel_type || null,
@@ -125,7 +132,16 @@ export async function POST(request: NextRequest) {
             let lc = item.last_cargoes;
             if (!lc) return null;
             if (typeof lc === 'object' && 'value' in lc) lc = lc.value;
-            if (Array.isArray(lc)) return lc.map(String).join(', ');
+            if (Array.isArray(lc)) {
+                return lc
+                  .map((entry: unknown) =>
+                    entry !== null && typeof entry === 'object' && 'value' in (entry as object)
+                      ? String((entry as { value: unknown }).value)
+                      : String(entry)
+                  )
+                  .filter(Boolean)
+                  .join(', ');
+              }
             if (typeof lc === 'string') {
               try { const parsed = JSON.parse(lc); if (Array.isArray(parsed)) return parsed.join(', '); } catch {}
               return lc;

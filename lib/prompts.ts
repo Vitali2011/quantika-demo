@@ -276,7 +276,7 @@ Extract per vessel:
 - hold_dimensions: array of strings per hold
 - hatch_dimensions: array of strings per hatch
 - tank_top_strength: MT/sqm
-- geared: boolean (true if vessel has cranes/derricks)
+- geared: boolean — true ONLY if the vessel itself has on-board cranes or derricks. Set false if the email contains "Gearless", "GLESS", or "shore cranes required" (shore cranes belong to the port, not the vessel). When email contains the word "gearless", always set false regardless of other context.
 - crane_capacity: e.g. "4 x 30T"
 - hatch_type: e.g. MacGregor, folding, pontoon
 - vessel_type: e.g. BULK CARRIER, MPP, GENERAL CARGO, CONTAINER, RORO, TANKER
