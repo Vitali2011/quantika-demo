@@ -23,8 +23,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { parseUnlocodeRow } from './lib/unlocode-parse';
 import { matchTargetsToUnlocodes } from './lib/match-targets';
+import { enrichPortsBatch } from './lib/llm-enrich';
 import { PORT_TARGETS } from './port-targets';
 import type { ParsedUnlocodeRow } from './lib/unlocode-parse';
+import type { SkeletonPort } from './lib/match-targets';
 
 const REPO_ROOT = path.resolve(__dirname, '..');
 const CACHE_DIR = path.join(REPO_ROOT, 'scripts', '.cache');
@@ -125,6 +127,80 @@ async function stageSkeleton(): Promise<void> {
   log(`\nWrote skeleton: ${outPath} (${result.matched.length} ports, ${(fs.statSync(outPath).size / 1024).toFixed(1)} KB)`);
 }
 
+/** Top-30 broker-facing ports that need human verification before full enrich. */
+const TOP30_UNLOCODES = [
+  'NLRTM', 'CNSHA', 'SGSIN', 'BEANR', 'AEJEA', 'DEHAM', 'GBFXT',
+  'KRPUS', 'USLAX', 'USLGB', 'HKHKG', 'BRSSZ', 'AUPHE', 'ROCND',
+  'GRPIR', 'INKAN', 'INMUN', 'INJNP', 'INVTZ', 'BRSAN', 'CAVAN',
+  'USNYC', 'USHOU', 'MACAS', 'EGALY', 'ESALG', 'DEBRV', 'FRLEH',
+  'LTKLN', 'PLGDN',
+];
+
+async function loadSkeleton(): Promise<SkeletonPort[]> {
+  const skeletonPath = path.join(DATA_DIR, 'port-master.skeleton.json');
+  if (!fs.existsSync(skeletonPath)) {
+    throw new Error(`Skeleton not found — run "skeleton" stage first: ${skeletonPath}`);
+  }
+  return JSON.parse(fs.readFileSync(skeletonPath, 'utf8')) as SkeletonPort[];
+}
+
+async function stageEnrichTop30(): Promise<void> {
+  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+  const skeleton = await loadSkeleton();
+  log(`Loaded ${skeleton.length} skeleton ports`);
+
+  const top30 = skeleton.filter(p => TOP30_UNLOCODES.includes(p.unlocode));
+  const rest = skeleton.filter(p => !TOP30_UNLOCODES.includes(p.unlocode));
+  log(`Enriching top-30 broker-facing ports via LLM...`);
+
+  const enriched = await enrichPortsBatch(top30);
+  log(`✓ Enriched ${enriched.length} ports`);
+
+  const draft = [...enriched, ...rest];
+  const outPath = path.join(DATA_DIR, 'port-master.draft.json');
+  fs.writeFileSync(outPath, JSON.stringify(draft, null, 2) + '\n');
+  log(`Wrote draft: ${outPath} (${draft.length} ports total, top-${enriched.length} LLM-enriched)`);
+  log(`\nNext: npx tsx scripts/verify-ports.ts --input=data/ports/port-master.draft.json --top=30`);
+}
+
+async function stageEnrichAll(): Promise<void> {
+  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+  const draftPath = path.join(DATA_DIR, 'port-master.draft.json');
+  const skeletonPath = path.join(DATA_DIR, 'port-master.skeleton.json');
+
+  // Load from draft (top-30 already enriched) or fall back to skeleton
+  const source = fs.existsSync(draftPath) ? draftPath : skeletonPath;
+  if (!fs.existsSync(source)) {
+    throw new Error(`Neither draft nor skeleton found — run "skeleton" stage first`);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const all = JSON.parse(fs.readFileSync(source, 'utf8')) as any[];
+  // Ports that still need enrichment: no maxDraftM (i.e. still skeleton shape)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const alreadyEnriched = all.filter((p: any) => typeof p.maxDraftM === 'number');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const needsEnrichment = all.filter((p: any) => typeof p.maxDraftM !== 'number') as SkeletonPort[];
+  log(`Already enriched: ${alreadyEnriched.length}, remaining: ${needsEnrichment.length}`);
+
+  if (needsEnrichment.length === 0) {
+    log('All ports already enriched — writing final port-master.json');
+  } else {
+    log(`Enriching ${needsEnrichment.length} remaining ports in batches of 20...`);
+    const enriched = await enrichPortsBatch(needsEnrichment);
+    log(`✓ Enriched ${enriched.length} ports`);
+    alreadyEnriched.push(...enriched);
+  }
+
+  const outPath = path.join(DATA_DIR, 'port-master.json');
+  fs.writeFileSync(outPath, JSON.stringify(alreadyEnriched, null, 2) + '\n');
+  log(`Wrote final: ${outPath} (${alreadyEnriched.length} ports, ${(fs.statSync(outPath).size / 1024).toFixed(1)} KB)`);
+
+  // Clean up intermediary files
+  if (fs.existsSync(draftPath)) fs.unlinkSync(draftPath);
+  log('Removed port-master.draft.json');
+}
+
 async function main(): Promise<void> {
   const stage = process.argv[2];
   switch (stage) {
@@ -138,9 +214,10 @@ async function main(): Promise<void> {
       await stageSkeleton();
       break;
     case 'enrich-top30':
+      await stageEnrichTop30();
+      break;
     case 'enrich-all':
-      logErr(`Stage "${stage}" not yet implemented (Phase 4)`);
-      process.exit(2);
+      await stageEnrichAll();
       break;
     default:
       logErr(`Usage: npx tsx scripts/generate-port-master.ts <download|stats|skeleton|enrich-top30|enrich-all>`);
