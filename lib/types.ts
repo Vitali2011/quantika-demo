@@ -250,6 +250,13 @@ export interface MatchHardFilters {
   cargoVessel: HardFilterCheck;
 }
 
+/** Sanctions screening (see lib/validation/sanctions.ts). */
+export interface MatchSanctions {
+  risk: 'HIGH' | 'MEDIUM' | 'LOW' | 'NONE';
+  reason?: string;
+  blocking: boolean;
+}
+
 export interface Match {
   cargoEmailId: string;
   cargoItemIndex: number;
@@ -262,6 +269,24 @@ export interface Match {
   readiness?: MatchReadiness;
   hardFilters?: MatchHardFilters;
   dateIssues?: string[];
+  sanctions?: MatchSanctions;
+  scoreBreakdown?: ScoreBreakdown;
+}
+
+/** Structured score breakdown (see lib/sailing/match-scoring.ts). */
+export interface ScoreBreakdownComponent {
+  label: string;
+  points: number;
+  max: number;
+  reason?: string;
+}
+
+export interface ScoreBreakdown {
+  components: ScoreBreakdownComponent[];
+  basePhysical: number;
+  readinessAdjustment: number;
+  sanctionsAdjustment: number;
+  finalScore: number;
 }
 
 // ── Negotiation Recap ──
