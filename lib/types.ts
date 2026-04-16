@@ -13,6 +13,9 @@ export function cfValue<T>(field: ConfidenceField<T> | null | undefined): T | nu
   return field?.value ?? null;
 }
 
+// Union type for values that can be rendered as strings (plain values or ConfidenceField objects)
+export type Renderable = ConfidenceField<string | number | boolean> | string | number | boolean | null | undefined;
+
 // ── Email Lifecycle ──
 
 export type EmailCategory = 'CARGO_INQUIRY' | 'VESSEL_POSITION' | 'FIXTURE_RECAP' | 'CLIENT_REPLY' | 'DOCUMENT' | 'OTHER';
