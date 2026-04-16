@@ -1,0 +1,40 @@
+[
+  {
+    "id": "sample-17",
+    "threadId": "thread-17",
+    "from": "\"ETMS - Management\" <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "demo@quantika.org",
+    "subject": "FW: [EXT] RE: Everest Bay - Pandi and Class certificate",
+    "date": "2026-04-15T00:00:00.000Z",
+    "body": "---------- Forwarded message ---------\nFrom: Schuster, Eik <e.schuster@west-of-england.com>\nDate: Mon, 8 Sep 2025 13:08:22 +0100\nSubject: [EXT] RE: Everest Bay - Pandi and Class certificate\nTo: management@etm-services.net\n\nDear colleagues,\n\nThank you for your message.\n\nPlease find attached the requested documents for MV EVEREST BAY:\n\n1) P&I Club Certificate - valid until 20 Feb 2026\n   Club: West of England Ship Owners\n   Cert No.: WOE-2025-EV-00142\n\n2) Class Certificate - valid until 15 Nov 2025\n   Classification Society: Bureau Veritas\n   Class Notation: I + HULL + MACH, Unrestricted Navigation\n\nPlease note that the class renewal survey is scheduled for Nov 2025 in Piraeus.\n\nShould you require any additional documentation, please do not hesitate to contact us.\n\nKind regards\nEik Schuster\nWest of England Ship Owners\nOperations & Documentation",
+    "snippet": "P&I and Class certificates for MV EVEREST BAY attached...",
+    "labelIds": ["INBOX"],
+    "attachments": [
+      {
+        "filename": "EverestBay_PandI_Certificate_2025.pdf",
+        "mimeType": "application/pdf",
+        "size": 218400
+      },
+      {
+        "filename": "EverestBay_Class_Certificate_BV.pdf",
+        "mimeType": "application/pdf",
+        "size": 195200
+      }
+    ]
+  },
+  {
+    "id": "sample-18",
+    "threadId": "thread-18",
+    "from": "\"ETMS - Management\" <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "demo@quantika.org",
+    "subject": "RE: 30,000 MT cement Suez / Nacala",
+    "date": "2026-04-13T00:00:00.000Z",
+    "body": "---------- Forwarded message ---------\nFrom: Osama <osama@badrgroup.com>\nDate: Fri, 5 Sep 2025 16:40:11 +0200\nSubject: RE: 30,000 MT cement Suez / Nacala\nTo: management@etm-services.net\n\nDear Sirs,\n\nThank you for your offer. After discussion with our principals:\n\nCargo: 30,000 mts cement in pp bags (50kg)\nLoad: Ain Sokhna / Suez Canal area, Egypt - 1 sb aaaa\nDisch: Nacala, Mozambique - 1 sb aaaa\n\nLaycan: 01-10 Oct 2025\nLoading: 5,000 mts SHINC\nDisch: 3,000 mts SHINC\n\nOur counter:\nFRT: USD 37.50/mt FIO basis\n\nDemurrage: USD 9,000 PDPR/FD BENDS\n3.75% TTL\n\nWe await your best offer soonest.\n\nbrgds\nOsama\nBadr Group International",
+    "snippet": "30,000 MT cement Suez / Nacala - counter offer...",
+    "labelIds": ["INBOX"]
+  }
+]
