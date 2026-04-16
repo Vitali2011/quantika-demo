@@ -29,6 +29,110 @@ export interface SanctionsInput {
 }
 
 // ────────────────────────────────────────────────────────────────────────────
+// Flag → ISO-2 normalization
+// ────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Map of free-form flag strings (uppercased) → ISO-2 codes.
+ * The LLM often returns full country names ("Russian Federation", "Cyprus")
+ * instead of ISO-2 codes. This table normalizes them before sanctions lookup.
+ */
+const FLAG_ALIASES: Record<string, string> = {
+  // Sanctioned / high-risk
+  'RUSSIA': 'RU', 'RUSSIAN FEDERATION': 'RU', 'RF': 'RU',
+  'UKRAINE': 'UA', 'UKRAINIAN': 'UA',
+  'BELARUS': 'BY', 'BELARUSIAN': 'BY', 'BYELORUSSIA': 'BY',
+  'IRAN': 'IR', 'IRANIAN': 'IR', 'ISLAMIC REPUBLIC OF IRAN': 'IR',
+  'CUBA': 'CU', 'CUBAN': 'CU',
+  'MYANMAR': 'MM', 'BURMA': 'MM',
+  // Common open-registry / trading flags
+  'CYPRUS': 'CY', 'CYPRIOT': 'CY',
+  'MARSHALL ISLANDS': 'MH',
+  'PANAMA': 'PA', 'PANAMANIAN': 'PA',
+  'LIBERIA': 'LR', 'LIBERIAN': 'LR',
+  'MALTA': 'MT', 'MALTESE': 'MT',
+  'GREECE': 'GR', 'GREEK': 'GR',
+  'TURKEY': 'TR', 'TURKISH': 'TR', 'TÜRKIYE': 'TR', 'TURKIYE': 'TR',
+  'GERMANY': 'DE', 'GERMAN': 'DE',
+  'NETHERLANDS': 'NL', 'DUTCH': 'NL', 'HOLLAND': 'NL',
+  'ITALY': 'IT', 'ITALIAN': 'IT',
+  'UNITED KINGDOM': 'GB', 'UK': 'GB', 'BRITAIN': 'GB', 'BRITISH': 'GB',
+  'UNITED STATES': 'US', 'USA': 'US', 'AMERICAN': 'US',
+  'CHINA': 'CN', 'CHINESE': 'CN', "PEOPLE'S REPUBLIC OF CHINA": 'CN',
+  'SINGAPORE': 'SG', 'SINGAPOREAN': 'SG',
+  'JAPAN': 'JP', 'JAPANESE': 'JP',
+  'NORWAY': 'NO', 'NORWEGIAN': 'NO',
+  'BAHAMAS': 'BS', 'BAHAMIAN': 'BS',
+  'ANTIGUA AND BARBUDA': 'AG', 'ANTIGUA': 'AG',
+  'BELIZE': 'BZ',
+  'CAMBODIA': 'KH', 'CAMBODIAN': 'KH',
+  'COMOROS': 'KM',
+  'COOK ISLANDS': 'CK',
+  'TUVALU': 'TV',
+  'VANUATU': 'VU',
+  'PALAU': 'PW',
+  'PORTUGAL': 'PT', 'PORTUGUESE': 'PT',
+  'DENMARK': 'DK', 'DANISH': 'DK',
+  'SWEDEN': 'SE', 'SWEDISH': 'SE',
+  'FINLAND': 'FI', 'FINNISH': 'FI',
+  'BELGIUM': 'BE', 'BELGIAN': 'BE',
+  'FRANCE': 'FR', 'FRENCH': 'FR',
+  'SPAIN': 'ES', 'SPANISH': 'ES',
+  'ROMANIA': 'RO', 'ROMANIAN': 'RO',
+  'BULGARIA': 'BG', 'BULGARIAN': 'BG',
+  'CROATIA': 'HR', 'CROATIAN': 'HR',
+  'INDIA': 'IN', 'INDIAN': 'IN',
+  'SOUTH KOREA': 'KR', 'KOREA': 'KR', 'KOREAN': 'KR',
+  'HONG KONG': 'HK',
+  'INDONESIA': 'ID', 'INDONESIAN': 'ID',
+  'THAILAND': 'TH', 'THAI': 'TH',
+  'VIETNAM': 'VN', 'VIETNAMESE': 'VN',
+  'PHILIPPINES': 'PH', 'PHILIPPINE': 'PH', 'FILIPINO': 'PH',
+  'BANGLADESH': 'BD', 'BANGLADESHI': 'BD',
+  'PAKISTAN': 'PK', 'PAKISTANI': 'PK',
+  'UAE': 'AE', 'UNITED ARAB EMIRATES': 'AE',
+  'SAUDI ARABIA': 'SA', 'SAUDI': 'SA',
+  'EGYPT': 'EG', 'EGYPTIAN': 'EG',
+  'MOROCCO': 'MA', 'MOROCCAN': 'MA',
+  'ALGERIA': 'DZ', 'ALGERIAN': 'DZ',
+  'NIGERIA': 'NG', 'NIGERIAN': 'NG',
+  'SOUTH AFRICA': 'ZA',
+  'BRAZIL': 'BR', 'BRAZILIAN': 'BR',
+  'ARGENTINA': 'AR', 'ARGENTINIAN': 'AR', 'ARGENTINE': 'AR',
+  'MEXICO': 'MX', 'MEXICAN': 'MX',
+  'CANADA': 'CA', 'CANADIAN': 'CA',
+  'AUSTRALIA': 'AU', 'AUSTRALIAN': 'AU',
+  'NEW ZEALAND': 'NZ',
+};
+
+/**
+ * Normalize a free-form flag string to an ISO-2 country code.
+ *
+ * The LLM typically returns values like "Russian Federation" or "Cyprus"
+ * while `checkSanctions` expects ISO-2 codes ("RU", "CY"). This function
+ * bridges the gap so sanctions screening works regardless of LLM output format.
+ *
+ * @returns ISO-2 code (uppercase), or null if input is blank/unrecognized
+ */
+export function normalizeFlagToISO2(flag: string | null | undefined): string | null {
+  if (!flag || typeof flag !== 'string') return null;
+  const cleaned = flag.trim().toUpperCase().replace(/[.,;:!?']+$/, '');
+  if (!cleaned) return null;
+  // Already a valid 2-letter code — return as-is
+  if (/^[A-Z]{2}$/.test(cleaned)) return cleaned;
+  // Exact match in alias table
+  if (FLAG_ALIASES[cleaned] !== undefined) return FLAG_ALIASES[cleaned];
+  // Prefix/substring match — handle cases like "RUSSIAN" matching "RUSSIA"
+  for (const [alias, iso2] of Object.entries(FLAG_ALIASES)) {
+    if (cleaned === alias || cleaned.startsWith(alias + ' ') || alias.startsWith(cleaned + ' ')) {
+      return iso2;
+    }
+  }
+  // Unknown — return cleaned value (may be a 3-letter or other code)
+  return cleaned;
+}
+
+// ────────────────────────────────────────────────────────────────────────────
 // Port → ISO-2 country mapping
 // ────────────────────────────────────────────────────────────────────────────
 
@@ -125,7 +229,10 @@ function routeCountries(originPort: string | null, destinationPort: string | nul
 }
 
 export function checkSanctions(input: SanctionsInput): SanctionsCheck {
-  const flagBloc = countryToBloc(input.vesselFlag);
+  // Normalize free-form flag string (e.g. "Russian Federation") to ISO-2 ("RU")
+  // before any comparison — the LLM may return full country names.
+  const normalizedFlag = normalizeFlagToISO2(input.vesselFlag);
+  const flagBloc = countryToBloc(normalizedFlag);
   const countries = routeCountries(input.originPort, input.destinationPort);
   const blocs = new Set(Array.from(countries).map(c => countryToBloc(c)));
 
@@ -155,7 +262,7 @@ export function checkSanctions(input: SanctionsInput): SanctionsCheck {
   }
 
   // IR flag + US/EU port → HIGH/blocking
-  if (input.vesselFlag?.toUpperCase() === 'IR') {
+  if (normalizedFlag === 'IR') {
     for (const b of ['EU', 'US', 'UK']) {
       if (blocs.has(b as Bloc)) {
         return {
@@ -168,7 +275,7 @@ export function checkSanctions(input: SanctionsInput): SanctionsCheck {
   }
 
   // BY flag + EU → MEDIUM (enhanced screening recommended)
-  if (input.vesselFlag?.toUpperCase() === 'BY' && blocs.has('EU')) {
+  if (normalizedFlag === 'BY' && blocs.has('EU')) {
     return {
       risk: 'MEDIUM',
       blocking: false,
@@ -177,7 +284,7 @@ export function checkSanctions(input: SanctionsInput): SanctionsCheck {
   }
 
   // CU flag + US → MEDIUM
-  if (input.vesselFlag?.toUpperCase() === 'CU' && blocs.has('US')) {
+  if (normalizedFlag === 'CU' && blocs.has('US')) {
     return {
       risk: 'MEDIUM',
       blocking: false,
@@ -186,7 +293,7 @@ export function checkSanctions(input: SanctionsInput): SanctionsCheck {
   }
 
   // MM flag + EU → MEDIUM
-  if (input.vesselFlag?.toUpperCase() === 'MM' && blocs.has('EU')) {
+  if (normalizedFlag === 'MM' && blocs.has('EU')) {
     return {
       risk: 'MEDIUM',
       blocking: false,

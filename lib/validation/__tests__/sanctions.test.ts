@@ -1,5 +1,6 @@
 import {
   checkSanctions,
+  normalizeFlagToISO2,
   portToCountry,
   countryToBloc,
 } from '../sanctions';
@@ -204,5 +205,143 @@ describe('checkSanctions — NONE', () => {
       restrictions: [],
     });
     expect(r.risk).toBe('NONE');
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// normalizeFlagToISO2 — unit tests (bug fix: free-form LLM flag output)
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('normalizeFlagToISO2', () => {
+  it('returns null for null', () => expect(normalizeFlagToISO2(null)).toBeNull());
+  it('returns null for undefined', () => expect(normalizeFlagToISO2(undefined)).toBeNull());
+  it('returns null for empty string', () => expect(normalizeFlagToISO2('')).toBeNull());
+  it('returns null for whitespace-only', () => expect(normalizeFlagToISO2('   ')).toBeNull());
+  it('passes through valid 2-letter ISO-2 (RU)', () => expect(normalizeFlagToISO2('RU')).toBe('RU'));
+  it('uppercases lowercase ISO-2 (ru → RU)', () => expect(normalizeFlagToISO2('ru')).toBe('RU'));
+  it('"Russian Federation" → RU', () => expect(normalizeFlagToISO2('Russian Federation')).toBe('RU'));
+  it('"Russia" → RU', () => expect(normalizeFlagToISO2('Russia')).toBe('RU'));
+  it('"Cyprus" → CY', () => expect(normalizeFlagToISO2('Cyprus')).toBe('CY'));
+  it('"Marshall Islands" → MH', () => expect(normalizeFlagToISO2('Marshall Islands')).toBe('MH'));
+  it('"Belarus" → BY', () => expect(normalizeFlagToISO2('Belarus')).toBe('BY'));
+  it('"Iran" → IR', () => expect(normalizeFlagToISO2('Iran')).toBe('IR'));
+  it('"Panama" → PA', () => expect(normalizeFlagToISO2('Panama')).toBe('PA'));
+  it('"Türkiye" → TR', () => expect(normalizeFlagToISO2('Türkiye')).toBe('TR'));
+  it('strips trailing period ("Russia.") → RU', () => expect(normalizeFlagToISO2('Russia.')).toBe('RU'));
+  it('returns cleaned uppercase for unknown flags', () => expect(normalizeFlagToISO2('Freedonia')).toBe('FREEDONIA'));
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// checkSanctions — flag normalization integration (bug fix: MV RUS NORD)
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('checkSanctions — flag normalization (MV RUS NORD scenario)', () => {
+  // Case 1: the exact failing scenario — LLM returns "Russian Federation"
+  it('"Russian Federation" flag on EU route (Constanta→Antwerp) → HIGH blocking', () => {
+    const r = checkSanctions({
+      vesselFlag: 'Russian Federation',
+      originPort: 'Constanta',
+      destinationPort: 'Antwerp',
+      restrictions: [],
+    });
+    expect(r.risk).toBe('HIGH');
+    expect(r.blocking).toBe(true);
+    expect(r.reason).toMatch(/RU/);
+  });
+
+  // Case 2: "Russia" (short form) still blocks
+  it('"Russia" flag on EU route → HIGH blocking', () => {
+    const r = checkSanctions({
+      vesselFlag: 'Russia',
+      originPort: 'Antwerp',
+      destinationPort: null,
+      restrictions: [],
+    });
+    expect(r.risk).toBe('HIGH');
+    expect(r.blocking).toBe(true);
+  });
+
+  // Case 3: ISO-2 still works after normalization
+  it('"RU" (ISO-2) on EU route → HIGH blocking', () => {
+    const r = checkSanctions({
+      vesselFlag: 'RU',
+      originPort: 'Hamburg',
+      destinationPort: null,
+      restrictions: [],
+    });
+    expect(r.risk).toBe('HIGH');
+    expect(r.blocking).toBe(true);
+  });
+
+  // Case 4: non-sanctioned flag as full text → NONE
+  it('"Cyprus" flag on EU route → NONE (not sanctioned)', () => {
+    const r = checkSanctions({
+      vesselFlag: 'Cyprus',
+      originPort: 'Piraeus',
+      destinationPort: 'Rotterdam',
+      restrictions: [],
+    });
+    expect(r.risk).toBe('NONE');
+    expect(r.blocking).toBe(false);
+  });
+
+  // Case 5: null flag → graceful NONE
+  it('null flag → NONE (graceful)', () => {
+    const r = checkSanctions({
+      vesselFlag: null,
+      originPort: 'Antwerp',
+      destinationPort: 'Hamburg',
+      restrictions: [],
+    });
+    expect(r.risk).toBe('NONE');
+    expect(r.blocking).toBe(false);
+  });
+
+  // Case 6: Belarus full name + EU → MEDIUM
+  it('"Belarus" flag on EU route → MEDIUM', () => {
+    const r = checkSanctions({
+      vesselFlag: 'Belarus',
+      originPort: 'Hamburg',
+      destinationPort: null,
+      restrictions: [],
+    });
+    expect(r.risk).toBe('MEDIUM');
+    expect(r.blocking).toBe(false);
+  });
+
+  // Case 7: Iran full name + EU → HIGH
+  it('"Iran" flag on EU route → HIGH blocking', () => {
+    const r = checkSanctions({
+      vesselFlag: 'Iran',
+      originPort: 'Rotterdam',
+      destinationPort: null,
+      restrictions: [],
+    });
+    expect(r.risk).toBe('HIGH');
+    expect(r.blocking).toBe(true);
+  });
+
+  // Case 8: RU on non-EU/UK/US/UA route → NONE
+  it('"Russian Federation" flag on non-sanctioned route → NONE', () => {
+    const r = checkSanctions({
+      vesselFlag: 'Russian Federation',
+      originPort: 'Novorossiysk',
+      destinationPort: 'Karasu',
+      restrictions: [],
+    });
+    expect(r.risk).toBe('NONE');
+    expect(r.blocking).toBe(false);
+  });
+
+  // Case 9: Marshall Islands (open registry) → NONE
+  it('"Marshall Islands" flag on EU route → NONE', () => {
+    const r = checkSanctions({
+      vesselFlag: 'Marshall Islands',
+      originPort: 'Rotterdam',
+      destinationPort: 'Hamburg',
+      restrictions: [],
+    });
+    expect(r.risk).toBe('NONE');
+    expect(r.blocking).toBe(false);
   });
 });

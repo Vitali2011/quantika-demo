@@ -367,3 +367,149 @@ describe('Cargo type match scoring', () => {
     expect(c.reason).toMatch(/unspecified/);
   });
 });
+
+// ────────────────────────────────────────────────────────────────────────────
+// Geographic proximity — piecewise step tiers
+// ────────────────────────────────────────────────────────────────────────────
+
+function geoComponent(breakdown: ReturnType<typeof computeScoreBreakdown>) {
+  const c = breakdown.components.find(c => c.label === 'Geographic proximity');
+  if (!c) throw new Error('Geographic proximity component missing');
+  return c;
+}
+
+function mkReadinessWithDist(distanceNm: number | null): MatchReadiness {
+  return {
+    openDate: '2025-09-05',
+    laycanStart: '2025-09-10',
+    laycanEnd: '2025-09-12',
+    distanceNm,
+    speedKn: 12,
+    sailingDays: 1.0,
+    arrivalDate: '2025-09-06',
+    gapDays: 3.5,
+    verdict: 'ideal',
+    explanation: 'test',
+  };
+}
+
+describe('Geographic proximity scoring — piecewise tiers', () => {
+  const sanctions = { risk: 'NONE', blocking: false } as MatchSanctions;
+
+  it('0 nm → 20 pts, prompt arrival reason', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo(),
+      vessel: mkVessel(),
+      readiness: mkReadinessWithDist(0),
+      sanctions,
+    });
+    const c = geoComponent(b);
+    expect(c.points).toBe(20);
+    expect(c.reason).toMatch(/prompt arrival/);
+  });
+
+  it('200 nm → 20 pts (same-basin tier ≤300nm)', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo(),
+      vessel: mkVessel(),
+      readiness: mkReadinessWithDist(200),
+      sanctions,
+    });
+    const c = geoComponent(b);
+    expect(c.points).toBe(20);
+  });
+
+  it('500 nm → 16 pts (short ballast 300-800nm)', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo(),
+      vessel: mkVessel(),
+      readiness: mkReadinessWithDist(500),
+      sanctions,
+    });
+    const c = geoComponent(b);
+    expect(c.points).toBe(16);
+    expect(c.reason).toMatch(/short ballast/);
+  });
+
+  it('1000 nm → 12 pts (medium ballast 800-1500nm)', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo(),
+      vessel: mkVessel(),
+      readiness: mkReadinessWithDist(1000),
+      sanctions,
+    });
+    const c = geoComponent(b);
+    expect(c.points).toBe(12);
+    expect(c.reason).toMatch(/medium ballast/);
+  });
+
+  it('2000 nm → 8 pts (long ballast 1500-2500nm)', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo(),
+      vessel: mkVessel(),
+      readiness: mkReadinessWithDist(2000),
+      sanctions,
+    });
+    const c = geoComponent(b);
+    expect(c.points).toBe(8);
+    expect(c.reason).toMatch(/long ballast/);
+    expect(c.reason).toMatch(/tramp trade/);
+  });
+
+  it('3000 nm → 4 pts (very long ballast 2500-4000nm)', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo(),
+      vessel: mkVessel(),
+      readiness: mkReadinessWithDist(3000),
+      sanctions,
+    });
+    const c = geoComponent(b);
+    expect(c.points).toBe(4);
+    expect(c.reason).toMatch(/very long ballast/);
+  });
+
+  it('5000 nm → 1 pt (cross-basin >4000nm)', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo(),
+      vessel: mkVessel(),
+      readiness: mkReadinessWithDist(5000),
+      sanctions,
+    });
+    const c = geoComponent(b);
+    expect(c.points).toBe(1);
+    expect(c.reason).toMatch(/cross-basin/);
+  });
+
+  it('null distance → 6 pts (unknown, assumed mid-range)', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo(),
+      vessel: mkVessel(),
+      readiness: mkReadinessWithDist(null),
+      sanctions,
+    });
+    const c = geoComponent(b);
+    expect(c.points).toBe(6);
+    expect(c.reason).toMatch(/distance could not be computed/);
+  });
+
+  it('component label is exactly "Geographic proximity" and max is 20', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo(),
+      vessel: mkVessel(),
+      readiness: mkReadinessWithDist(500),
+      sanctions,
+    });
+    const c = geoComponent(b);
+    expect(c.label).toBe('Geographic proximity');
+    expect(c.max).toBe(20);
+  });
+});

@@ -171,6 +171,33 @@ export function applyReadinessScoring(match: Match, readiness: MatchReadiness | 
 }
 
 // ────────────────────────────────────────────────────────────────────────────
+// Geographic proximity — piecewise step scoring
+// ────────────────────────────────────────────────────────────────────────────
+
+function scoreGeographicProximity(distanceNm: number | null): { points: number; reason: string } {
+  if (distanceNm == null) {
+    return { points: 6, reason: 'distance could not be computed from available port data' };
+  }
+  const d = Math.round(distanceNm / 10) * 10;
+  if (distanceNm <= 300) {
+    return { points: 20, reason: 'vessel within 300nm of load port — prompt arrival' };
+  }
+  if (distanceNm <= 800) {
+    return { points: 16, reason: `short ballast ${d}nm` };
+  }
+  if (distanceNm <= 1500) {
+    return { points: 12, reason: `medium ballast ${d}nm — typical for dry bulk` };
+  }
+  if (distanceNm <= 2500) {
+    return { points: 8, reason: `long ballast ${d}nm — acceptable for tramp trade` };
+  }
+  if (distanceNm <= 4000) {
+    return { points: 4, reason: `very long ballast ${d}nm — requires economic justification` };
+  }
+  return { points: 1, reason: `${d}nm — cross-basin, feasible only for capesize or larger` };
+}
+
+// ────────────────────────────────────────────────────────────────────────────
 // Structured score breakdown (task 3.3) — transparent "why this score?" UI
 // ────────────────────────────────────────────────────────────────────────────
 
@@ -203,15 +230,7 @@ export function computeScoreBreakdown(input: ScoreBreakdownInput): ScoreBreakdow
 
   // 1. Geographic proximity
   const distance = readiness?.distanceNm ?? null;
-  let distPoints = 0;
-  let distReason: string | undefined;
-  if (distance != null) {
-    // Closer ports score higher. 0nm → 20, ≥2000nm → 0
-    distPoints = Math.round(Math.max(0, Math.min(20, 20 - (distance / 100))));
-    distReason = `${distance} NM between ${cfValue(vessel.openPosition) ?? 'vessel port'} and ${cfValue(cargo.originPort) ?? 'load port'}`;
-  } else {
-    distReason = 'distance unknown';
-  }
+  const { points: distPoints, reason: distReason } = scoreGeographicProximity(distance);
   components.push({ label: 'Geographic proximity', points: distPoints, max: 20, reason: distReason });
 
   // 2. Cargo type match

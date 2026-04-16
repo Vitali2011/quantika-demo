@@ -275,6 +275,21 @@ CONFIDENCE RUBRIC:
 
 Rule: when the source text contains the exact value — even embedded in a compound phrase — use "confirmed". Only use "interpreted" when you actually derived or calculated the value.
 
+NUMERIC FIELDS — SPECIFIC RULE:
+
+For numeric fields (DWT, DWCC, LOA, beam, draft, built-year, grain capacity, etc.):
+
+- confidence='confirmed' ALWAYS when: the source text contains the exact number with no hedge word. Example: "DWT: 3,850 mts" → {value: 3850, confidence: 'confirmed'}. Example: "Built: 2003" → {value: 2003, confidence: 'confirmed'}. Example: "LOA 85.6m" → {value: 85.6, confidence: 'confirmed'}.
+
+- confidence='interpreted' when: the value is hedged by a word indicating approximation OR derived by calculation. Hedge words that trigger 'interpreted':
+  - "abt", "about", "approx", "approximately", "~", "circa", "ca.", "around", "roughly"
+  - Range midpoints: "3,500-3,700 mt" → you pick 3,600, confidence='interpreted'
+  - Unit conversions: "Built 15 years ago" in 2026 → you compute 2011, confidence='interpreted'
+
+- confidence='uncertain' when: the value is truly ambiguous or inferred from weak signals (e.g. vessel age estimated from hull class, DWT estimated from photo).
+
+CRITICAL: never use 'interpreted' for an exact number with no hedge just because you "interpreted the context". If the number is typed, it's confirmed.
+
 CRITICAL: source_text is REQUIRED for every ConfidenceField. It MUST be a verbatim
 substring copied character-for-character from the email body. Omitting source_text is
 a parsing error. Paraphrasing is NOT allowed — copy the exact characters.
@@ -317,7 +332,30 @@ Extract per vessel:
 - open_date: date vessel is available
 - direction: intended trading direction (e.g. "seeking Far East", "open for Middle East/India")
 - restrictions: array of restrictions (e.g. "no Ukraine", "no IMO cargo", "no grain")
-- last_cargoes: comma-separated string of recent cargoes. MANDATORY: MUST be populated from ANY of these markers (all equivalent): "L/C:", "Last cargoes:", "Prev. cargoes:", "Last 3 cargoes:", "Last loads:", "L5C:". Also extract from prose like "last voyages: X, Y, Z". Return as a comma-separated string (e.g. "steel, fertilizer, bagged cargo"). Use confidence='confirmed' when an explicit L/C: or equivalent marker is present. Do NOT leave last_cargoes null when any of these markers appear in the email.
+- last_cargoes: comma-separated string of recent cargoes.
+
+  last_cargoes (CRITICAL — often missed):
+
+  Populate last_cargoes whenever the email describes past or recent cargo employment, regardless of marker style. Extraction patterns include:
+
+  Explicit markers (highest priority, confidence='confirmed'):
+  - "L/C:", "L/C :", "Last cargoes:", "Last 3 cargoes:", "Last loads:", "Previous cargoes:", "Prev. cargoes:", "Recent cargoes:", "L5C:", "P/C:"
+
+  Prose patterns (also extract, confidence='confirmed' if clearly past employment, 'interpreted' if ambiguous):
+  - "She just completed [cargo] to [port]"
+  - "Previously carried [X, Y, Z]"
+  - "Recent employment: [X, Y, Z]"
+  - "Last three loads were [X, Y, Z]"
+  - "Just finished [cargo]"
+  - "Ex [cargo] voyage"
+  - "Having carried [X, Y, Z]" (when context is past)
+
+  Implicit suitability (confidence='interpreted'):
+  - "Suitable for: steel, bagged goods" — extract as last_cargoes IF the email also implies this describes recent history, NOT future suitability. If purely future-suitability, put in special_features instead.
+
+  Output format: comma-separated string of cargo names as they appear in email. Preserve cargo type hints (e.g. "steel coils" not just "steel" if that's what email says).
+
+  Only leave last_cargoes null if the email contains NO references to past cargo — in which case confidence field is not needed (field is just null).
 - speed_laden: speed in knots laden
 - speed_ballast: speed in knots ballast
 - consumption: fuel consumption details

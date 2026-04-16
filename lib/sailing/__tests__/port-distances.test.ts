@@ -88,6 +88,11 @@ describe('KNOWN_PORTS coverage', () => {
       'Dakar', 'Lagos', 'Nacala',
       'Veracruz', 'NewOrleans', 'Houston', 'Santos',
       'Singapore', 'Tokyo', 'Shanghai',
+      // Wave 3 gap-fill ports
+      'Antalya', 'Izmail', 'Haugesund', 'Georgetown', 'Qingdao',
+      'Jeddah', 'Dubai', 'Mumbai', 'Colombo', 'Singapore',
+      'HongKong', 'Busan', 'Durban', 'CapeTown',
+      'Genoa', 'Barcelona', 'Algeciras', 'LeHavre', 'Felixstowe',
     ];
     for (const p of expected) {
       expect(KNOWN_PORTS).toContain(p);
@@ -157,6 +162,107 @@ describe('getPortDistance — new port pairs', () => {
     expect(getPortDistance('Port of Antwerp, Belgium', 'Rotterdam')).toBe(
       getPortDistance('Antwerp', 'Rotterdam'),
     );
+  });
+});
+
+describe('normalizePortName — session gap-fill aliases', () => {
+  it('resolves "ARA range" → Antwerp', () => {
+    expect(normalizePortName('ARA range')).toBe('Antwerp');
+  });
+
+  it('resolves "Vera Cruz" (with space) → Veracruz', () => {
+    expect(normalizePortName('Vera Cruz')).toBe('Veracruz');
+  });
+
+  it('resolves "Haugesund" → Haugesund', () => {
+    expect(normalizePortName('Haugesund')).toBe('Haugesund');
+  });
+
+  it('resolves "Derince" → Marmara (Sea of Marmara region)', () => {
+    expect(normalizePortName('Derince')).toBe('Marmara');
+  });
+
+  it('resolves "Izmail / Reni" → Izmail', () => {
+    expect(normalizePortName('Izmail / Reni')).toBe('Izmail');
+  });
+
+  it('resolves "Georgetown" → Georgetown', () => {
+    expect(normalizePortName('Georgetown')).toBe('Georgetown');
+  });
+
+  it('resolves "Xingang / Qingdao (range)" → Qingdao', () => {
+    expect(normalizePortName('Xingang / Qingdao (range)')).toBe('Qingdao');
+  });
+
+  it('resolves "Ain Sokhna / Suez Canal area" → Suez', () => {
+    expect(normalizePortName('Ain Sokhna / Suez Canal area')).toBe('Suez');
+  });
+
+  it('resolves "KARASU, Turkey" → Karasu (uppercase + country suffix)', () => {
+    expect(normalizePortName('KARASU, Turkey')).toBe('Karasu');
+  });
+
+  it('resolves "Novorossiysk, Russia" → Novorossiysk', () => {
+    expect(normalizePortName('Novorossiysk, Russia')).toBe('Novorossiysk');
+  });
+});
+
+describe('getPortDistance — new commercial port pairs', () => {
+  it('Jeddah ↔ Suez (Red Sea ~700 NM)', () => {
+    const d = getPortDistance('Jeddah', 'Suez');
+    expect(d).not.toBeNull();
+    expect(d!).toBeGreaterThan(500);
+    expect(d!).toBeLessThan(900);
+  });
+
+  it('Dubai ↔ Mumbai (Arabian Sea ~1200 NM)', () => {
+    const d = getPortDistance('Dubai', 'Mumbai');
+    expect(d).not.toBeNull();
+    expect(d!).toBeGreaterThan(800);
+    expect(d!).toBeLessThan(1600);
+  });
+
+  it('Colombo ↔ Singapore (Indian Ocean ~1530 NM)', () => {
+    const d = getPortDistance('Colombo', 'Singapore');
+    expect(d).not.toBeNull();
+    expect(d!).toBeGreaterThan(1000);
+    expect(d!).toBeLessThan(2000);
+  });
+
+  it('Busan ↔ Shanghai (Yellow Sea ~500 NM)', () => {
+    const d = getPortDistance('Busan', 'Shanghai');
+    expect(d).not.toBeNull();
+    expect(d!).toBeGreaterThan(300);
+    expect(d!).toBeLessThan(700);
+  });
+
+  it('Algeciras ↔ Casablanca (Strait of Gibraltar ~150 NM)', () => {
+    const d = getPortDistance('Algeciras', 'Casablanca');
+    expect(d).not.toBeNull();
+    expect(d!).toBeLessThan(300);
+  });
+
+  it('alias "Jebel Ali" → Dubai resolves for distance', () => {
+    expect(getPortDistance('Jebel Ali', 'Suez')).toBe(getPortDistance('Dubai', 'Suez'));
+  });
+
+  it('alias "Bombay" → Mumbai resolves for distance', () => {
+    expect(getPortDistance('Bombay', 'Singapore')).toBe(getPortDistance('Mumbai', 'Singapore'));
+  });
+
+  it('alias "Saigon" → HoChiMinh resolves for distance', () => {
+    expect(getPortDistance('Saigon', 'Singapore')).toBe(getPortDistance('HoChiMinh', 'Singapore'));
+  });
+
+  it('alias "Laem Chabang" → Bangkok resolves for distance', () => {
+    expect(getPortDistance('Laem Chabang', 'Singapore')).toBe(getPortDistance('Bangkok', 'Singapore'));
+  });
+
+  it('Durban ↔ CapeTown (South Africa coast ~800 NM)', () => {
+    const d = getPortDistance('Durban', 'CapeTown');
+    expect(d).not.toBeNull();
+    expect(d!).toBeGreaterThan(500);
+    expect(d!).toBeLessThan(1100);
   });
 });
 
