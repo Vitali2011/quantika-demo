@@ -72,3 +72,24 @@ pm2 monit
 - **Caddy not reloading**: `systemctl status caddy` — check logs
 - **Build fails**: check Node.js version, `node --version` should be v22+
 - **OAuth redirect mismatch**: verify redirect URI in Google Cloud Console matches `https://demo.quantika.org/api/auth/google`
+
+## Rollback
+
+При поломанном деплое — откат к предыдущему тегу:
+
+```bash
+# 1. Найти предыдущий стабильный тег
+git tag -l --sort=-version:refname | head -5
+
+# 2. Откатиться
+git checkout <prev-tag>
+npm ci
+npm run build
+pm2 reload quantika-demo
+
+# 3. Проверить что откат успешен
+curl https://demo.quantika.org/api/health
+# Ожидаемый ответ: {"status":"ok","uptime":...}
+```
+
+Если `/api/health` отвечает 200 с `status: "ok"` — rollback успешен.
