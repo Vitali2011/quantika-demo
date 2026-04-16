@@ -9,45 +9,124 @@
  * Purpose: stop the matcher from recommending physical impossibilities
  * (10m draft vessel into 6m river port, gearless vessel into a port with no
  * shore cranes, etc.) that destroy broker trust instantly.
+ *
+ * Schema (v2, Wave 4): extended with UN/LOCODE, coordinates, and optional
+ * LLM-derived fields (maxLOA, cargoBerthTypes, tidal, icePort, dataConfidence,
+ * sourceNote) to support global port coverage via scripts/generate-port-master.ts.
  */
 
-import { normalizePortName, KnownPort } from './port-distances';
+import { normalizePortName } from './port-distances';
 
 export interface PortMaster {
+  /** UN/LOCODE (5 uppercase chars, e.g. "NLRTM"). */
+  unlocode: string;
+  /** Canonical English name (e.g. "Rotterdam"). */
+  name: string;
+  /** ISO-3166 alpha-2 country code (e.g. "NL"). */
+  country: string;
+  /** Latitude (WGS84 decimal degrees, positive = N). */
+  lat: number;
+  /** Longitude (WGS84 decimal degrees, positive = E). */
+  lon: number;
   /** Max permissible vessel draft in metres (salt water, summer). */
   maxDraftM: number;
   /** True if port has shore cranes (so gearless vessels can load/discharge). */
   hasShoreCranes: boolean;
-  /** Primary berth type (for stowage planning). */
+  /** Primary berth infrastructure type (for stowage planning). */
   berthType: 'river' | 'deep-sea' | 'bay' | 'terminal';
   /** Short human-readable note. */
   note?: string;
+  /** Max LOA in metres (LLM-derived for new ports, optional). */
+  maxLOA?: number;
+  /** Cargo types the port equipment can handle (LLM-derived, optional). */
+  cargoBerthTypes?: Array<'bulk' | 'container' | 'general' | 'RORO' | 'tanker'>;
+  /** Tidal port (affects ETA buffer, LLM-derived, optional). */
+  tidal?: boolean;
+  /** Ice-bound in winter (Baltic/Arctic, LLM-derived, optional). */
+  icePort?: boolean;
+  /** Confidence of LLM-derived data (new ports only, optional). */
+  dataConfidence?: 'high' | 'medium' | 'low';
+  /** Source for LLM-derived data (authority name or handbook reference). */
+  sourceNote?: string;
 }
 
 /**
- * Hardcoded port master. Draft values are "safe" working draft, typically
- * less than dredged depth minus UKC (under-keel clearance, usually 1-1.5m).
+ * Hardcoded port master for the 15 demo-scope ports (Wave 1-3 legacy).
+ * Draft values are "safe" working draft, typically dredged depth minus UKC
+ * (under-keel clearance, usually 1-1.5m). UN/LOCODEs + coordinates added
+ * in Wave 4 ahead of the JSON-backed refactor.
  */
-const PORT_MASTER: Record<KnownPort, PortMaster> = {
+const PORT_MASTER: Record<string, PortMaster> = {
   // ── Black Sea ──
-  'Karasu':       { maxDraftM: 11.0, hasShoreCranes: true,  berthType: 'deep-sea', note: 'Turkish Black Sea port, steel/grain' },
-  'Istanbul':     { maxDraftM: 13.0, hasShoreCranes: true,  berthType: 'deep-sea' },
-  'Mykolaiv':     { maxDraftM: 10.5, hasShoreCranes: true,  berthType: 'river',    note: 'Buh river, pilotage required' },
-  'Odesa':        { maxDraftM: 13.0, hasShoreCranes: true,  berthType: 'deep-sea' },
-  'Constanta':    { maxDraftM: 14.5, hasShoreCranes: true,  berthType: 'deep-sea' },
-  'Varna':        { maxDraftM: 11.5, hasShoreCranes: true,  berthType: 'deep-sea' },
-  'Burgas':       { maxDraftM: 12.5, hasShoreCranes: true,  berthType: 'deep-sea' },
-  'Novorossiysk': { maxDraftM: 14.0, hasShoreCranes: true,  berthType: 'deep-sea' },
+  Karasu: {
+    unlocode: 'TRKRS', name: 'Karasu', country: 'TR', lat: 41.113, lon: 30.683,
+    maxDraftM: 11.0, hasShoreCranes: true, berthType: 'deep-sea',
+    note: 'Turkish Black Sea port, steel/grain',
+  },
+  Istanbul: {
+    unlocode: 'TRIST', name: 'Istanbul', country: 'TR', lat: 41.008, lon: 28.978,
+    maxDraftM: 13.0, hasShoreCranes: true, berthType: 'deep-sea',
+  },
+  Mykolaiv: {
+    unlocode: 'UANLK', name: 'Mykolaiv', country: 'UA', lat: 46.950, lon: 31.992,
+    maxDraftM: 10.5, hasShoreCranes: true, berthType: 'river',
+    note: 'Buh river, pilotage required',
+  },
+  Odesa: {
+    unlocode: 'UAODS', name: 'Odesa', country: 'UA', lat: 46.485, lon: 30.742,
+    maxDraftM: 13.0, hasShoreCranes: true, berthType: 'deep-sea',
+  },
+  Constanta: {
+    unlocode: 'ROCND', name: 'Constanta', country: 'RO', lat: 44.183, lon: 28.650,
+    maxDraftM: 14.5, hasShoreCranes: true, berthType: 'deep-sea',
+  },
+  Varna: {
+    unlocode: 'BGVAR', name: 'Varna', country: 'BG', lat: 43.204, lon: 27.914,
+    maxDraftM: 11.5, hasShoreCranes: true, berthType: 'deep-sea',
+  },
+  Burgas: {
+    unlocode: 'BGBOJ', name: 'Burgas', country: 'BG', lat: 42.495, lon: 27.473,
+    maxDraftM: 12.5, hasShoreCranes: true, berthType: 'deep-sea',
+  },
+  Novorossiysk: {
+    unlocode: 'RUNVS', name: 'Novorossiysk', country: 'RU', lat: 44.723, lon: 37.767,
+    maxDraftM: 14.0, hasShoreCranes: true, berthType: 'deep-sea',
+  },
   // ── Aegean / Eastern Med ──
-  'Piraeus':      { maxDraftM: 17.0, hasShoreCranes: true,  berthType: 'deep-sea' },
-  'Aliaga':       { maxDraftM: 14.0, hasShoreCranes: true,  berthType: 'terminal', note: 'Aliaga bay incl. Efesan' },
+  Piraeus: {
+    unlocode: 'GRPIR', name: 'Piraeus', country: 'GR', lat: 37.942, lon: 23.642,
+    maxDraftM: 17.0, hasShoreCranes: true, berthType: 'deep-sea',
+  },
+  Aliaga: {
+    unlocode: 'TRALI', name: 'Aliaga', country: 'TR', lat: 38.800, lon: 26.970,
+    maxDraftM: 14.0, hasShoreCranes: true, berthType: 'terminal',
+    note: 'Aliaga bay incl. Efesan',
+  },
   // ── Mediterranean ──
-  'Alexandria':   { maxDraftM: 12.5, hasShoreCranes: true,  berthType: 'deep-sea' },
-  'Ravenna':      { maxDraftM: 10.5, hasShoreCranes: true,  berthType: 'deep-sea', note: 'Adriatic, channel-access' },
-  'Skikda':       { maxDraftM: 12.0, hasShoreCranes: false, berthType: 'deep-sea', note: 'Mostly oil/LNG, limited dry-bulk cranes' },
+  Alexandria: {
+    unlocode: 'EGALY', name: 'Alexandria', country: 'EG', lat: 31.200, lon: 29.870,
+    maxDraftM: 12.5, hasShoreCranes: true, berthType: 'deep-sea',
+  },
+  Ravenna: {
+    unlocode: 'ITRAN', name: 'Ravenna', country: 'IT', lat: 44.485, lon: 12.284,
+    maxDraftM: 10.5, hasShoreCranes: true, berthType: 'deep-sea',
+    note: 'Adriatic, channel-access',
+  },
+  Skikda: {
+    unlocode: 'DZSKI', name: 'Skikda', country: 'DZ', lat: 36.876, lon: 6.898,
+    maxDraftM: 12.0, hasShoreCranes: false, berthType: 'deep-sea',
+    note: 'Mostly oil/LNG, limited dry-bulk cranes',
+  },
   // ── Atlantic ──
-  'Casablanca':   { maxDraftM: 12.0, hasShoreCranes: true,  berthType: 'deep-sea' },
-  'Bayonne':      { maxDraftM: 9.5,  hasShoreCranes: true,  berthType: 'bay',      note: 'Bayonne/Bilbao range, tidal' },
+  Casablanca: {
+    unlocode: 'MACAS', name: 'Casablanca', country: 'MA', lat: 33.600, lon: -7.620,
+    maxDraftM: 12.0, hasShoreCranes: true, berthType: 'deep-sea',
+  },
+  Bayonne: {
+    unlocode: 'FRBAY', name: 'Bayonne', country: 'FR', lat: 43.523, lon: -1.478,
+    maxDraftM: 9.5, hasShoreCranes: true, berthType: 'bay',
+    note: 'Bayonne/Bilbao range, tidal',
+  },
 };
 
 /** Lookup port master data. Returns null for unknown ports (not an error — caller decides). */
