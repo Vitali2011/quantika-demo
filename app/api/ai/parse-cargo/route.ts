@@ -32,6 +32,13 @@ interface RawCargoItem {
   items?: RawCargoItem[];
 }
 
+/** Extract plain string from a value that may be a ConfidenceField object or a plain string */
+function extractStr(v: unknown): string | null {
+  if (v == null) return null;
+  if (typeof v === 'object' && 'value' in v) return String((v as { value: unknown }).value) || null;
+  return String(v) || null;
+}
+
 export const maxDuration = 120;
 
 export async function POST(request: NextRequest) {
@@ -72,33 +79,33 @@ export async function POST(request: NextRequest) {
           emailId: email.id,
           itemIndex: idx,
           originPort: toConfidence<string>(item.origin_port),
-          originCountry: item.origin_country || null,
+          originCountry: extractStr(item.origin_country),
           destinationPort: toConfidence<string>(item.destination_port),
-          destinationCountry: item.destination_country || null,
+          destinationCountry: extractStr(item.destination_country),
           cargoDescription: toConfidence<string>(item.cargo_description),
           weightMt: toConfidence<number>(item.weight_mt),
           // extractNum is NaN-safe and preserves a legitimate zero (unlike `x || null`,
           // which nullifies 0). Prior commit introduced a 0-commission bug by using the
           // antipattern — see ROADMAP_MVP.md W1.8.
           volumeCbm: extractNum(item.volume_cbm),
-          dimensions: item.dimensions || null,
+          dimensions: extractStr(item.dimensions),
           cargoType: (() => {
             const ct = item.cargo_type;
             if (!ct) return 'OTHER' as CargoType;
             if (typeof ct === 'object' && 'value' in ct) return (String((ct as { value: unknown }).value) || 'OTHER') as CargoType;
             return (String(ct) || 'OTHER') as CargoType;
           })(),
-          containerType: item.container_type || null,
+          containerType: extractStr(item.container_type),
           quantity: extractNum(item.quantity),
-          incoterms: item.incoterms || null,
+          incoterms: extractStr(item.incoterms),
           preferredDates: toConfidence<string>(item.preferred_dates),
-          laycan: item.laycan || null,
-          loadingRate: item.loading_rate || null,
-          dischargeRate: item.discharge_rate || null,
+          laycan: extractStr(item.laycan),
+          loadingRate: extractStr(item.loading_rate),
+          dischargeRate: extractStr(item.discharge_rate),
           commissionPercent: extractNum(item.commission_percent),
-          commissionTerms: item.commission_terms || null,
-          specialRequirements: item.special_requirements || null,
-          stowageFactor: item.stowage_factor || null,
+          commissionTerms: extractStr(item.commission_terms),
+          specialRequirements: extractStr(item.special_requirements),
+          stowageFactor: extractStr(item.stowage_factor),
           missingInfo: Array.isArray(item.missing_info) ? item.missing_info : [],
         }) as ParsedCargo);
       });

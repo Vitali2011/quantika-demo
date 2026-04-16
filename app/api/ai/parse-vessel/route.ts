@@ -48,6 +48,13 @@ interface RawVesselItem {
   items?: RawVesselItem[];
 }
 
+/** Extract plain string from a value that may be a ConfidenceField object or a plain string */
+function extractStr(v: unknown): string | null {
+  if (v == null) return null;
+  if (typeof v === 'object' && 'value' in v) return String((v as { value: unknown }).value) || null;
+  return String(v) || null;
+}
+
 export async function POST(request: NextRequest) {
   const sessionId = request.cookies.get('session_id')?.value;
   if (!sessionId) return NextResponse.json({ error: 'No session' }, { status: 401 });
@@ -101,8 +108,8 @@ export async function POST(request: NextRequest) {
             return String(f) || null;
           })(),
           built: extractNum(item.built),
-          classSociety: item.class_society || null,
-          pandi: item.p_and_i || null,
+          classSociety: extractStr(item.class_society),
+          pandi: extractStr(item.p_and_i),
           dwtSummer: toConfidence<number>(item.dwt_summer),
           dwcc: toConfidence<number>(item.dwcc),
           draftMax: toConfidence<number>(item.draft_max),
@@ -113,11 +120,11 @@ export async function POST(request: NextRequest) {
           holdsCount: extractNum(item.holds_count),
           hatchesCount: extractNum(item.hatches_count),
           grainCapacity: extractNum(item.grain_capacity),
-          grainCapacityUnit: item.grain_capacity_unit || null,
+          grainCapacityUnit: extractStr(item.grain_capacity_unit) as 'CBM' | 'CF' | null,
           baleCapacity: extractNum(item.bale_capacity),
-          holdDimensions: item.hold_dimensions || null,
-          hatchDimensions: item.hatch_dimensions || null,
-          tankTopStrength: item.tank_top_strength || null,
+          holdDimensions: extractStr(item.hold_dimensions),
+          hatchDimensions: extractStr(item.hatch_dimensions),
+          tankTopStrength: extractStr(item.tank_top_strength),
           geared: (() => {
             if (item.geared === false) return false;
             const feats = JSON.stringify(item.special_features ?? '').toLowerCase();
@@ -126,12 +133,12 @@ export async function POST(request: NextRequest) {
             if (body.includes('gearless') && !body.match(/\d+\s*[xх]\s*\d+\s*t/i)) return false;
             return item.geared != null ? Boolean(item.geared) : null;
           })(),
-          craneCapacity: item.crane_capacity || null,
-          hatchType: item.hatch_type || null,
-          vesselType: item.vessel_type || null,
+          craneCapacity: extractStr(item.crane_capacity),
+          hatchType: extractStr(item.hatch_type),
+          vesselType: extractStr(item.vessel_type),
           openPosition: toConfidence<string>(item.open_position),
           openDate: toConfidence<string>(item.open_date),
-          direction: item.direction || null,
+          direction: extractStr(item.direction),
           restrictions: Array.isArray(item.restrictions) ? item.restrictions : [],
           lastCargoes: (() => {
             let lc = item.last_cargoes;
