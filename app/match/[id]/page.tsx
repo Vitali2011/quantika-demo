@@ -53,13 +53,13 @@ export default async function MatchDetailPage({ params }: Props) {
   const isGeared = gearedVal === true || safeRender(gearedVal) === 'Yes';
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-3xl mx-auto space-y-6">
+    <main className="min-h-screen bg-gray-50 py-4 sm:py-8 px-3 sm:px-4">
+      <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
         <Link href="/dashboard" className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ChevronLeft className="h-4 w-4" /> Back to Dashboard
         </Link>
 
-        <h1 className="text-lg font-bold">CARGO ↔ VESSEL MATCH</h1>
+        <h1 className="text-base sm:text-lg font-bold">CARGO ↔ VESSEL MATCH</h1>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Card>

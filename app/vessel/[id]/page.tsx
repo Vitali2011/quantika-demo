@@ -65,8 +65,8 @@ export default async function VesselDetailPage({ params }: Props) {
   const matchingCargo = session.matches.filter(m => m.vesselEmailId === id);
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-3xl mx-auto space-y-6">
+    <main className="min-h-screen bg-gray-50 py-4 sm:py-8 px-3 sm:px-4">
+      <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
         <Link href="/dashboard" className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ChevronLeft className="h-4 w-4" /> Back to Dashboard
         </Link>
@@ -80,7 +80,7 @@ export default async function VesselDetailPage({ params }: Props) {
               </span>
             )}
           </div>
-          <h1 className="text-xl font-bold mt-2">{email.subject}</h1>
+          <h1 className="text-lg sm:text-xl font-bold mt-2">{email.subject}</h1>
           <p className="text-sm text-muted-foreground">From: {email.from} · {new Date(email.date).toLocaleDateString()}</p>
           {processed?.expiryDate && <p className="text-xs text-muted-foreground">Active until {processed.expiryDate}</p>}
         </div>
@@ -89,7 +89,7 @@ export default async function VesselDetailPage({ params }: Props) {
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Original Email</CardTitle></CardHeader>
           <CardContent>
-            <pre className="text-sm whitespace-pre-wrap font-sans">{email.body || email.snippet}</pre>
+            <pre className="text-sm whitespace-pre-wrap font-sans overflow-x-auto">{email.body || email.snippet}</pre>
           </CardContent>
         </Card>
 
