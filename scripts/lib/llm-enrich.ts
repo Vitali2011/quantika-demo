@@ -13,8 +13,8 @@ import type { PortMaster } from '../../lib/sailing/port-master';
 import type { SkeletonPort } from './match-targets';
 import { callAiJson, AI_MODEL_LIGHT } from '../../lib/openai';
 
-const BATCH_SIZE = 20;
-const BATCH_PAUSE_MS = 1000;
+const BATCH_SIZE = 10;
+const BATCH_PAUSE_MS = 500;
 
 /** Shape LLM is asked to return for each port. */
 interface LlmPortEnrichment {
@@ -121,9 +121,12 @@ function mergeEnrichment(skeleton: SkeletonPort, llm: LlmPortEnrichment): PortMa
  */
 export async function enrichPortsBatch(input: SkeletonPort[]): Promise<PortMaster[]> {
   const result: PortMaster[] = new Array(input.length);
+  const totalBatches = Math.ceil(input.length / BATCH_SIZE);
 
   for (let batchStart = 0; batchStart < input.length; batchStart += BATCH_SIZE) {
     const batch = input.slice(batchStart, batchStart + BATCH_SIZE);
+    const batchNum = Math.floor(batchStart / BATCH_SIZE) + 1;
+    process.stdout.write(`  Batch ${batchNum}/${totalBatches}: ${batch.map(p => p.unlocode).join(', ')}... `);
     const prompt = buildUserPrompt(batch);
 
     const llmResult = await callAiJson<LlmPortEnrichment[] | null>(
@@ -132,6 +135,7 @@ export async function enrichPortsBatch(input: SkeletonPort[]): Promise<PortMaste
       AI_MODEL_LIGHT,
       null,
     );
+    process.stdout.write(Array.isArray(llmResult) ? `✓ (${llmResult.length})\n` : `✗ fallback\n`);
 
     // Build unlocode → enrichment index for order-insensitive matching
     const enrichmentByUnlocode = new Map<string, LlmPortEnrichment>();

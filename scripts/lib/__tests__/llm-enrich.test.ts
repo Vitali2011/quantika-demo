@@ -116,8 +116,8 @@ describe('enrichPortsBatch', () => {
     expect(out[1].maxDraftM).toBe(16.0);
   });
 
-  it('batches 20 ports per LLM call', async () => {
-    const bigInput: SkeletonPort[] = Array.from({ length: 45 }, (_, i) => ({
+  it('batches ports per LLM call (BATCH_SIZE=10)', async () => {
+    const bigInput: SkeletonPort[] = Array.from({ length: 25 }, (_, i) => ({
       unlocode: `XX${String(i).padStart(3, '0')}`,
       name: `Port${i}`,
       country: 'XX',
@@ -126,7 +126,7 @@ describe('enrichPortsBatch', () => {
     }));
     callAiJson.mockResolvedValue([]);  // empty = all fall back, but we just count calls
     await enrichPortsBatch(bigInput);
-    // 45 ports → 3 batches: 20 + 20 + 5
+    // 25 ports → 3 batches: 10 + 10 + 5
     expect(callAiJson).toHaveBeenCalledTimes(3);
   });
 
