@@ -273,6 +273,23 @@ export interface Match {
   scoreBreakdown?: ScoreBreakdown;
 }
 
+/**
+ * A cargo × vessel pair that was deterministically blocked before the LLM stage.
+ * Stored in session alongside `matches` so brokers can see why a pair was dropped.
+ */
+export interface BlockedMatch {
+  cargoEmailId: string;
+  cargoItemIndex: number;
+  vesselEmailId: string;
+  vesselItemIndex: number;
+  /** Primary reason for blocking (hard filter, date, readiness, or sanctions). */
+  filterReason: string;
+  /** Populated when the block is due to sanctions screening. */
+  sanctions?: MatchSanctions;
+  /** Populated when the block is due to hard filters. */
+  hardFilters?: MatchHardFilters;
+}
+
 /** Structured score breakdown (see lib/sailing/match-scoring.ts). */
 export interface ScoreBreakdownComponent {
   label: string;
@@ -341,6 +358,8 @@ export interface SessionData {
   parsedVessels: ParsedVessel[];
   parsedFixtureRecaps: ParsedFixtureRecap[];
   matches: Match[];
+  /** Pairs blocked deterministically (sanctions, hard filters, dates) before the LLM stage. */
+  blockedMatches?: BlockedMatch[];
   recaps: Recap[];
   commissionSummary: CommissionSummary | null;
   counterparties: Counterparty[];

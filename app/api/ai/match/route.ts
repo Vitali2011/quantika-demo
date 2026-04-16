@@ -6,6 +6,7 @@ import { MATCH_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_HEAVY } from '@/lib/constants';
 import {
   Match, MatchLevel, MatchReadiness, MatchHardFilters, MatchSanctions,
+  BlockedMatch,
   ParsedCargo, ParsedVessel,
 } from '@/lib/types';
 import { cfValue } from '@/lib/types';
@@ -177,6 +178,27 @@ export async function POST(request: NextRequest) {
     analyses.filter(a => a.filterOut).map(a => pairKey(a.cargoEmailId, a.cargoItemIndex, a.vesselEmailId, a.vesselItemIndex)),
   );
 
+  // Collect blocked pairs as structured records so brokers can see what was rejected and why.
+  // This is deterministic (no LLM involved) — every sanctions-blocked pair will appear here.
+  const blockedMatches: BlockedMatch[] = analyses
+    .filter(a => a.filterOut)
+    .map(a => {
+      const blocked: BlockedMatch = {
+        cargoEmailId: a.cargoEmailId,
+        cargoItemIndex: a.cargoItemIndex,
+        vesselEmailId: a.vesselEmailId,
+        vesselItemIndex: a.vesselItemIndex,
+        filterReason: a.filterReason ?? 'filtered',
+      };
+      if (a.sanctions.blocking) {
+        blocked.sanctions = a.sanctions;
+      }
+      if (a.hardFilters && Object.values(a.hardFilters).some(c => !c.pass)) {
+        blocked.hardFilters = a.hardFilters;
+      }
+      return blocked;
+    });
+
   // Prepare data for AI (extract values from ConfidenceFields)
   const cargoData = parsedCargos.map(c => ({
     email_id: c.emailId,
@@ -294,6 +316,6 @@ export async function POST(request: NextRequest) {
   // Sort by adjusted score descending
   matches.sort((a, b) => b.score - a.score);
 
-  updateSession(sessionId, { matches });
-  return NextResponse.json({ count: matches.length });
+  updateSession(sessionId, { matches, blockedMatches });
+  return NextResponse.json({ count: matches.length, blockedCount: blockedMatches.length });
 }

@@ -362,6 +362,56 @@ Extract per vessel:
 - deck_capacity: deck cargo capacity (MT or sqm)
 - special_features: array of notable vessel features. MUST be populated from any of: onboard equipment notes (grabs, bulldozers, tank-cleaning capability), suitability declarations ("Suitable for: X, Y, Z"), exclusions ("No grabs", "No tank-cleaning", "Food-grade only"), and standout characteristics ("Laker-dimensioned", "Ice-class 1A", "Box-shaped holds", "CO2 fitted"). Extract each as a separate array element. Do NOT leave special_features empty when such information is present in the email.
 
+LAST_CARGOES EXAMPLES:
+
+Input email body (fragment):
+  "MV GANDOLF open Skikda spot. DWT 3,850 mts, built 2003, gearless.
+   L/C: steel bars, coal, scrap."
+Output for last_cargoes:
+  {value: "steel bars, coal, scrap", confidence: "confirmed", sourceText: "L/C: steel bars, coal, scrap"}
+
+---
+
+Input email body (fragment):
+  "PANTHERA J - Ultramax 63k DWT, geared 2x30t.
+   Just completed steel coils Constanta to Rotterdam.
+   Prev. voyage: scrap metal from Aliaga to Aveiro."
+Output for last_cargoes:
+  {value: "steel coils, scrap metal", confidence: "confirmed", sourceText: "Just completed steel coils Constanta to Rotterdam. Prev. voyage: scrap metal"}
+
+---
+
+Input email body (fragment):
+  "HC EVA-MARIE, 8500 DWT, gearless.
+   Recent employment: fertilizer (Morocco→Tema), grain (Black Sea→Mozambique),
+   bagged cement (Turkey→W.Africa)."
+Output for last_cargoes:
+  {value: "fertilizer, grain, bagged cement", confidence: "confirmed", sourceText: "Recent employment: fertilizer (Morocco→Tema), grain (Black Sea→Mozambique), bagged cement (Turkey→W.Africa)"}
+
+---
+
+Input email body (fragment):
+  "MV SLOMAN DISPATCHER - Open Antwerp, 12k DWT, having carried steel,
+   bagged goods, breakbulk on her last three voyages."
+Output for last_cargoes:
+  {value: "steel, bagged goods, breakbulk", confidence: "confirmed", sourceText: "having carried steel, bagged goods, breakbulk on her last three voyages"}
+
+---
+
+Input email body (fragment):
+  "O7 GAJA 11k DWT, geared. Suitable for steel products, coils, and bagged cargo."
+Output for last_cargoes:
+  null
+  [Rationale: "Suitable for" declares future suitability, not past history. Do NOT extract as last_cargoes.
+  Instead, extract into special_features.]
+
+---
+
+Input email body (fragment):
+  "MV ALERIA-1, last loads: grain, bauxite, iron ore."
+Output for last_cargoes:
+  {value: "grain, bauxite, iron ore", confidence: "confirmed", sourceText: "last loads: grain, bauxite, iron ore"}
+
 Output: { "items": [ ...one object per vessel... ] }`;
 
 export const FIXTURE_RECAP_PARSER_PROMPT = `You are a chartering fixture recap parser. You understand charter party terminology, GENCON 94, BIMCO terms, and standard fixture recap structure. This is a legally significant document — accuracy is critical.
@@ -539,6 +589,21 @@ Your score (0-100) must correlate with the match_reasons:
 - If reasons are mostly "unknown" or issues outnumber strengths → score 30-45 (weak)
 - If you find hard problems (DWT too small, gearless+bagged-cargo, etc.) → score 20-30
 - Downstream filters will adjust for readiness/sanctions; focus on physical & commercial fit
+
+INCLUSION POLICY (critical — do NOT self-censor):
+
+Return EVERY pair that passes hard filters, even if your score is weak (20-45).
+The broker wants to see the full landscape of physically feasible options, not
+only the top few. Do NOT drop pairs with "unknown timing", "unknown distance",
+or unclear match reasons — score them honestly (a pair with unknown timing
+scores around 30-40) and include them with an issues list.
+
+Only drop a pair if it has a hard conflict (DWT 10x too small, cargo type
+impossible on vessel class, etc.) — and those should already be blocked by
+hard filters before reaching you.
+
+If you see N candidate pairs after hard-filter, return ~N matches, not a
+curated subset.
 
 IMPORTANT:
 - Do NOT show the numeric score to the user. Score is internal only.
