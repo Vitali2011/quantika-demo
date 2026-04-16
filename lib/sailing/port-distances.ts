@@ -201,7 +201,7 @@ function getFuzzyCorpus(): { lookup: string; canonical: string }[] {
   for (const p of KNOWN_PORTS) {
     seen.set(p.toLowerCase(), p);
   }
-  _fuzzyCorpus = [...seen.entries()].map(([lookup, canonical]) => ({ lookup, canonical }));
+  _fuzzyCorpus = Array.from(seen.entries()).map(([lookup, canonical]) => ({ lookup, canonical }));
   return _fuzzyCorpus;
 }
 
@@ -258,16 +258,48 @@ export function normalizePortName(raw: string | null | undefined): string | null
   return null;
 }
 
+/** Result of a port-pair distance lookup. */
+export interface PortDistanceResult {
+  /** Distance in nautical miles (rounded). */
+  nm: number;
+  /** True if from the hand-curated sea-route matrix; false if great-circle (haversine) fallback. */
+  exact: boolean;
+}
+
 /**
- * Return nautical-mile distance between two ports, or null if either is unknown
- * or the pair is not in the table.
+ * Return nautical-mile distance between two ports.
+ *
+ * Resolution order:
+ *   1. Same canonical port → { nm: 0, exact: true }
+ *   2. Hardcoded sea-route matrix → { nm, exact: true }
+ *   3. Haversine great-circle from getPortMaster lat/lon → { nm, exact: false }
+ *   4. null (unknown port or no coords available)
  */
-export function getPortDistance(from: string | null | undefined, to: string | null | undefined): number | null {
+export function getPortDistance(
+  from: string | null | undefined,
+  to: string | null | undefined,
+): PortDistanceResult | null {
   const a = normalizePortName(from);
   const b = normalizePortName(to);
   if (!a || !b) return null;
-  if (a === b) return 0;
+  if (a === b) return { nm: 0, exact: true };
+
   const [first, second] = [a, b].sort();
-  const key = `${first}|${second}`;
-  return DISTANCES_NM[key] ?? null;
+  const matrix = DISTANCES_NM[`${first}|${second}`];
+  if (matrix != null) return { nm: matrix, exact: true };
+
+  // Haversine fallback — needs lat/lon from port-master. Lazy import to avoid
+  // a circular dependency between port-master.ts (which imports normalizePortName
+  // from us) and this file.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { getPortMaster } = require('./port-master') as typeof import('./port-master');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { haversineDistanceNm } = require('./haversine') as typeof import('./haversine');
+
+  const pa = getPortMaster(a);
+  const pb = getPortMaster(b);
+  if (!pa || !pb) return null;
+  if (pa.lat == null || pa.lon == null || pb.lat == null || pb.lon == null) return null;
+
+  return { nm: haversineDistanceNm(pa.lat, pa.lon, pb.lat, pb.lon), exact: false };
 }

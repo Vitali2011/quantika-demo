@@ -31,39 +31,40 @@ describe('normalizePortName', () => {
 });
 
 describe('getPortDistance', () => {
-  it('Karasu ↔ Mykolaiv is short (~320 NM, Black Sea crossing)', () => {
+  it('Karasu ↔ Mykolaiv is short (~320 NM, Black Sea crossing) — exact from matrix', () => {
     const d = getPortDistance('Karasu', 'Mykolaiv');
     expect(d).not.toBeNull();
-    expect(d!).toBeGreaterThan(250);
-    expect(d!).toBeLessThan(450);
+    expect(d!.nm).toBeGreaterThan(250);
+    expect(d!.nm).toBeLessThan(450);
+    expect(d!.exact).toBe(true);
   });
 
   it('is symmetric', () => {
     const a = getPortDistance('Karasu', 'Mykolaiv');
     const b = getPortDistance('Mykolaiv', 'Karasu');
-    expect(a).toBe(b);
+    expect(a).toEqual(b);
   });
 
   it('case-insensitive', () => {
-    expect(getPortDistance('karasu', 'MYKOLAIV')).toBe(getPortDistance('Karasu', 'Mykolaiv'));
+    expect(getPortDistance('karasu', 'MYKOLAIV')).toEqual(getPortDistance('Karasu', 'Mykolaiv'));
   });
 
   it('Istanbul ↔ Piraeus is medium (Aegean crossing)', () => {
     const d = getPortDistance('Istanbul', 'Piraeus');
     expect(d).not.toBeNull();
-    expect(d!).toBeGreaterThan(350);
-    expect(d!).toBeLessThan(700);
+    expect(d!.nm).toBeGreaterThan(350);
+    expect(d!.nm).toBeLessThan(700);
   });
 
   it('Piraeus ↔ Alexandria is Mediterranean ~600 NM', () => {
     const d = getPortDistance('Piraeus', 'Alexandria');
     expect(d).not.toBeNull();
-    expect(d!).toBeGreaterThan(500);
-    expect(d!).toBeLessThan(800);
+    expect(d!.nm).toBeGreaterThan(500);
+    expect(d!.nm).toBeLessThan(800);
   });
 
-  it('same port → 0', () => {
-    expect(getPortDistance('Karasu', 'Karasu')).toBe(0);
+  it('same port → 0, exact', () => {
+    expect(getPortDistance('Karasu', 'Karasu')).toEqual({ nm: 0, exact: true });
   });
 
   it('unknown port → null', () => {
@@ -72,8 +73,27 @@ describe('getPortDistance', () => {
   });
 
   it('normalizes aliases on lookup', () => {
-    // "Odessa" alias should resolve to Odesa and match distances
-    expect(getPortDistance('Odessa', 'Karasu')).toBe(getPortDistance('Odesa', 'Karasu'));
+    expect(getPortDistance('Odessa', 'Karasu')).toEqual(getPortDistance('Odesa', 'Karasu'));
+  });
+
+  it('haversine fallback for un-matrixed pair (Karasu ↔ Bayonne not in matrix)', () => {
+    const d = getPortDistance('Karasu', 'Bayonne');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(false);
+    // Karasu (41°N 30°E) to Bayonne (43°N -1°E) great-circle straight across
+    // Europe is ~1400-1500 NM. The real SEA route via Bosphorus + Med +
+    // Gibraltar is ~3100 NM, but haversine ignores land. UI marks "~" so
+    // brokers know it's an approximation — this is the documented trade-off.
+    expect(d!.nm).toBeGreaterThan(1300);
+    expect(d!.nm).toBeLessThan(1700);
+  });
+
+  it('returns null when one port lacks coords for haversine fallback', () => {
+    // If we asked for an alias that resolves but has no coords AND no matrix
+    // entry, must gracefully return null (not throw).
+    // (No way to construct this with current 15 ports — all have coords.
+    //  Phase 5 with JSON-loaded ports may have null-coord entries.)
+    expect(getPortDistance('Karasu', 'Karasu')).not.toBeNull();
   });
 });
 

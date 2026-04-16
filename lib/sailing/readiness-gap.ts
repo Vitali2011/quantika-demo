@@ -25,6 +25,9 @@ export interface ReadinessGap {
   laycanStart: string | null;
   laycanEnd: string | null;
   distanceNm: number | null;
+  /** True when distance came from the curated sea-route matrix; false when it
+   *  was a great-circle (haversine) approximation; null when distance unknown. */
+  distanceExact?: boolean | null;
   speedKn: number | null;
   sailingDays: number | null;
   arrivalDate: string | null;
@@ -130,7 +133,9 @@ export function calculateReadinessGap(
 
   const openDateObj = parseVesselOpenDate(vessel.openDate, refYear, today);
   const laycanRange = parseLaycan(cargo.laycan, refYear);
-  const distanceNm = getPortDistance(vessel.openPosition, cargo.originPort);
+  const distanceRes = getPortDistance(vessel.openPosition, cargo.originPort);
+  const distanceNm = distanceRes?.nm ?? null;
+  const distanceExact = distanceRes?.exact ?? null;
 
   const vesselPortCanon = normalizePortName(vessel.openPosition) ?? vessel.openPosition ?? null;
   const cargoPortCanon = normalizePortName(cargo.originPort) ?? cargo.originPort ?? null;
@@ -147,6 +152,7 @@ export function calculateReadinessGap(
       laycanStart: laycanRange ? isoDay(laycanRange.start) : null,
       laycanEnd: laycanRange ? isoDay(laycanRange.end) : null,
       distanceNm,
+      distanceExact,
       speedKn,
       sailingDays: null,
       arrivalDate: null,
@@ -177,6 +183,7 @@ export function calculateReadinessGap(
     laycanStart: isoDay(laycanRange.start),
     laycanEnd: isoDay(laycanRange.end),
     distanceNm,
+    distanceExact,
     speedKn,
     sailingDays: Math.round(sailingDays * 100) / 100,
     arrivalDate: isoDay(arrival),

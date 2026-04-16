@@ -297,7 +297,12 @@ export default async function MatchDetailPage({ params }: Props) {
                     <Badge className={vc.color + ' text-xs px-2 py-0.5'}>{vc.label}</Badge>
                     <p className="text-gray-700">{r.explanation}</p>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-gray-600 pt-2 border-t">
-                      {r.distanceNm != null && <p>Distance: {r.distanceNm} NM</p>}
+                      {r.distanceNm != null && (
+                        <p title={r.distanceExact === false ? 'Approximate — great-circle (no sea-route data for this pair)' : undefined}>
+                          Distance: {r.distanceExact === false ? '~' : ''}{r.distanceNm} NM
+                          {r.distanceExact === false && <span className="text-gray-400"> (approx)</span>}
+                        </p>
+                      )}
                       {r.speedKn != null && <p>Speed: {r.speedKn} kn</p>}
                       {r.sailingDays != null && <p>Sailing: ~{r.sailingDays.toFixed(1)} d</p>}
                       {r.gapDays != null && (

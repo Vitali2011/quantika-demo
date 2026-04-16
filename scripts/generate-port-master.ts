@@ -93,7 +93,7 @@ async function stageStats(): Promise<void> {
   const byCountry = new Map<string, number>();
   for (const p of ports) byCountry.set(p.country, (byCountry.get(p.country) ?? 0) + 1);
   log(`Coverage: ${byCountry.size} countries`);
-  const top10 = [...byCountry.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10);
+  const top10 = Array.from(byCountry.entries()).sort((a, b) => b[1] - a[1]).slice(0, 10);
   log('Top-10 countries by seaport count:');
   for (const [c, n] of top10) log(`  ${c}: ${n}`);
 }
