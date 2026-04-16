@@ -1,29 +1,27 @@
 import { sanitizeEmailBody } from '@/lib/utils';
-/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any */
 import { cookies } from 'next/headers';
 import { redirect, notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { DraftQuoteCard } from '@/components/request/draft-quote-card';
-import { MapPin, Package, Weight, Ship, Calendar, FileText, AlertTriangle, ChevronLeft, Clock, Anchor } from 'lucide-react';
+import { MapPin, Package, Weight, Ship, Calendar, FileText, AlertTriangle, ChevronLeft, Anchor } from 'lucide-react';
 import { STATUS_CONFIG } from '@/lib/constants';
-import { cfValue } from '@/lib/types';
+import { cfValue, Renderable } from '@/lib/types';
 
 // Universal safe renderer — handles ConfidenceField objects, plain values, null
-function safeRender(v: any): string {
+function safeRender(v: Renderable): string {
   if (v === null || v === undefined) return '';
   if (typeof v === 'string') return v;
   if (typeof v === 'number') return String(v);
-  if (typeof v === 'object' && 'value' in v) return v.value !== null && v.value !== undefined ? String(v.value) : '';
+  if (typeof v === 'object') return v.value !== null && v.value !== undefined ? String(v.value) : '';
   return JSON.stringify(v);
 }
 
 // Extract confidence level from a ConfidenceField (or undefined for plain values)
-function getConf(v: any): string | undefined {
-  if (v !== null && typeof v === 'object' && 'confidence' in v) return v.confidence;
+function getConf(v: Renderable): string | undefined {
+  if (v !== null && v !== undefined && typeof v === 'object') return v.confidence;
   return undefined;
 }
 

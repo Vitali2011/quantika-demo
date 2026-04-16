@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession, updateSession } from '@/lib/session';
 import { callAiJson } from '@/lib/openai';
@@ -6,6 +5,45 @@ import { VESSEL_POSITION_PARSER_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_LIGHT } from '@/lib/constants';
 import { ParsedVessel } from '@/lib/types';
 import { extractNum, toConfidence } from '@/lib/parsing-utils';
+
+interface RawVesselItem {
+  vessel_name?: unknown;
+  imo?: string | null;
+  flag?: string | null;
+  built?: number | string | null;
+  class_society?: string | null;
+  p_and_i?: string | null;
+  dwt_summer?: unknown;
+  dwcc?: unknown;
+  draft_max?: unknown;
+  loa?: number | string | null;
+  beam?: number | string | null;
+  grt?: number | string | null;
+  nrt?: number | string | null;
+  holds_count?: number | string | null;
+  hatches_count?: number | string | null;
+  grain_capacity?: number | string | null;
+  grain_capacity_unit?: 'cbm' | 'cbft' | null;
+  bale_capacity?: number | string | null;
+  hold_dimensions?: string | null;
+  hatch_dimensions?: string | null;
+  tank_top_strength?: string | null;
+  geared?: boolean | null;
+  crane_capacity?: string | null;
+  hatch_type?: string | null;
+  vessel_type?: string | null;
+  open_position?: unknown;
+  open_date?: unknown;
+  direction?: string | null;
+  restrictions?: string[];
+  last_cargoes?: unknown;
+  speed_laden?: string | null;
+  speed_ballast?: string | null;
+  consumption?: string | null;
+  deck_capacity?: string | null;
+  special_features?: string[];
+  items?: RawVesselItem[];
+}
 
 export async function POST(request: NextRequest) {
   const sessionId = request.cookies.get('session_id')?.value;
@@ -31,7 +69,7 @@ export async function POST(request: NextRequest) {
     vesselEmails.map(async (email) => {
       const userPrompt = `From: ${email.from}\nSubject: ${email.subject}\nDate: ${email.date}\n\n${email.body}`;
 
-      const result = await callAiJson<any>(
+      const result = await callAiJson<RawVesselItem>(
         userPrompt,
         VESSEL_POSITION_PARSER_PROMPT,
         AI_MODEL_LIGHT,
@@ -40,7 +78,7 @@ export async function POST(request: NextRequest) {
 
       const items = Array.isArray(result.items) ? result.items : [result];
 
-      items.forEach((item: any, idx: number) => {
+      items.forEach((item, idx) => {
         allParsed.push({
           emailId: email.id,
           itemIndex: idx,

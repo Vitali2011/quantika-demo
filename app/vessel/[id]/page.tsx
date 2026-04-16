@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { cookies } from 'next/headers';
 import { redirect, notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -7,20 +5,19 @@ import { getSession } from '@/lib/session';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Ship, MapPin, Calendar, ChevronLeft } from 'lucide-react';
-import { cfValue } from '@/lib/types';
+import { Renderable } from '@/lib/types';
 
-function safeRender(v: any): string {
+function safeRender(v: Renderable): string {
   if (v == null) return '';
   if (typeof v === 'string') return v;
   if (typeof v === 'number') return String(v);
   if (typeof v === 'boolean') return v ? 'Yes' : 'No';
-  if (Array.isArray(v)) return v.map(safeRender).join(', ');
-  if (typeof v === 'object' && 'value' in v) return safeRender(v.value);
+  if (typeof v === 'object') return safeRender(v.value);
   return JSON.stringify(v);
 }
 
-function getConf(v: any): string | undefined {
-  if (v && typeof v === 'object' && 'confidence' in v) return v.confidence;
+function getConf(v: Renderable): string | undefined {
+  if (v != null && typeof v === 'object') return v.confidence;
   return undefined;
 }
 
@@ -30,7 +27,7 @@ function ConfIcon({ confidence }: { confidence?: string }) {
   return <span title="Confirmed">✅</span>;
 }
 
-function Spec({ label, value, unit, confidence }: { label: string; value: any; unit?: string; confidence?: string }) {
+function Spec({ label, value, unit, confidence }: { label: string; value: Renderable; unit?: string; confidence?: string }) {
   const rendered = safeRender(value);
   if (!rendered || rendered === 'NaN') return null;
   return (
@@ -157,7 +154,7 @@ export default async function VesselDetailPage({ params }: Props) {
                 <div>
                   <h4 className="text-xs font-medium text-muted-foreground mb-1">Restrictions</h4>
                   <div className="flex flex-wrap gap-1">
-                    {vessel.restrictions.map((r: any, i: number) => <Badge key={i} variant="destructive" className="text-xs">{safeRender(r)}</Badge>)}
+                    {vessel.restrictions.map((r, i) => <Badge key={i} variant="destructive" className="text-xs">{safeRender(r)}</Badge>)}
                   </div>
                 </div>
               )}

@@ -1,11 +1,35 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession, updateSession } from '@/lib/session';
 import { callAiJson } from '@/lib/openai';
 import { CARGO_INQUIRY_PARSER_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_LIGHT } from '@/lib/constants';
-import { ParsedCargo } from '@/lib/types';
+import { CargoType, ParsedCargo } from '@/lib/types';
 import { toConfidence } from '@/lib/parsing-utils';
+
+interface RawCargoItem {
+  origin_port?: unknown;
+  origin_country?: string | null;
+  destination_port?: unknown;
+  destination_country?: string | null;
+  cargo_description?: unknown;
+  weight_mt?: unknown;
+  volume_cbm?: number | null;
+  dimensions?: string | null;
+  cargo_type?: string;
+  container_type?: string | null;
+  quantity?: number | null;
+  incoterms?: string | null;
+  preferred_dates?: unknown;
+  laycan?: string | null;
+  loading_rate?: string | null;
+  discharge_rate?: string | null;
+  commission_percent?: number | string | null;
+  commission_terms?: string | null;
+  special_requirements?: string | null;
+  stowage_factor?: string | null;
+  missing_info?: string[];
+  items?: RawCargoItem[];
+}
 
 export const maxDuration = 120;
 
@@ -33,7 +57,7 @@ export async function POST(request: NextRequest) {
     cargoEmails.map(async (email) => {
       const userPrompt = `From: ${email.from}\nSubject: ${email.subject}\nDate: ${email.date}\n\n${email.body}`;
 
-      const result = await callAiJson<any>(
+      const result = await callAiJson<RawCargoItem>(
         userPrompt,
         CARGO_INQUIRY_PARSER_PROMPT,
         AI_MODEL_LIGHT,
@@ -42,7 +66,7 @@ export async function POST(request: NextRequest) {
 
       const items = Array.isArray(result.items) ? result.items : [result];
 
-      items.forEach((item: any, idx: number) => {
+      items.forEach((item, idx) => {
         allParsed.push({
           emailId: email.id,
           itemIndex: idx,
@@ -54,7 +78,7 @@ export async function POST(request: NextRequest) {
           weightMt: toConfidence<number>(item.weight_mt),
           volumeCbm: item.volume_cbm != null ? Number(item.volume_cbm) : null,
           dimensions: item.dimensions || null,
-          cargoType: item.cargo_type || 'OTHER',
+          cargoType: (item.cargo_type || 'OTHER') as CargoType,
           containerType: item.container_type || null,
           quantity: item.quantity != null ? Number(item.quantity) : null,
           incoterms: item.incoterms || null,
