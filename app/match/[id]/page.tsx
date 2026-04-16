@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { cookies } from 'next/headers';
 import { redirect, notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -7,21 +5,17 @@ import { getSession } from '@/lib/session';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ChevronLeft } from 'lucide-react';
-import { cfValue } from '@/lib/types';
+import { Renderable } from '@/lib/types';
 import { DraftQuoteCard } from '@/components/request/draft-quote-card';
+import { AnalyticsTracker } from '@/lib/analytics-tracker';
 
-function safeRender(v: any): string {
+function safeRender(v: Renderable): string {
   if (v == null) return '';
   if (typeof v === 'string') return v;
   if (typeof v === 'number') return String(v);
   if (typeof v === 'boolean') return v ? 'Yes' : 'No';
-  if (typeof v === 'object' && 'value' in v) return safeRender(v.value);
+  if (typeof v === 'object') return safeRender(v.value);
   return JSON.stringify(v);
-}
-
-function getConf(v: any): string | undefined {
-  if (v && typeof v === 'object' && 'confidence' in v) return v.confidence;
-  return undefined;
 }
 
 interface Props { params: Promise<{ id: string }>; }
@@ -53,13 +47,14 @@ export default async function MatchDetailPage({ params }: Props) {
   const isGeared = gearedVal === true || safeRender(gearedVal) === 'Yes';
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-3xl mx-auto space-y-6">
+    <main className="min-h-screen bg-gray-50 py-4 sm:py-8 px-3 sm:px-4">
+      <AnalyticsTracker event="detail_viewed" properties={{ type: 'match' }} />
+      <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
         <Link href="/dashboard" className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ChevronLeft className="h-4 w-4" /> Back to Dashboard
         </Link>
 
-        <h1 className="text-lg font-bold">CARGO ↔ VESSEL MATCH</h1>
+        <h1 className="text-base sm:text-lg font-bold">CARGO ↔ VESSEL MATCH</h1>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Card>
@@ -94,7 +89,7 @@ export default async function MatchDetailPage({ params }: Props) {
 
             {match.matchReasons.length > 0 && (
               <ul className="space-y-1">
-                {match.matchReasons.map((reason: any, i: number) => (
+                {match.matchReasons.map((reason, i) => (
                   <li key={i} className="text-sm flex items-start gap-2">
                     <span className="text-green-600 shrink-0">•</span>
                     {safeRender(reason)}
@@ -107,7 +102,7 @@ export default async function MatchDetailPage({ params }: Props) {
               <div>
                 <p className="text-sm font-medium text-yellow-700">⚠️ Check before proceeding:</p>
                 <ul className="mt-1 space-y-1">
-                  {match.issues.map((issue: any, i: number) => (
+                  {match.issues.map((issue, i) => (
                     <li key={i} className="text-sm flex items-start gap-2 text-yellow-700">
                       <span className="shrink-0">•</span>
                       {safeRender(issue)}

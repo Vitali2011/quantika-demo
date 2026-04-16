@@ -1,38 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Quantika Demo
 
 [![CI](https://github.com/Vitali2011/quantika-demo/actions/workflows/ci.yml/badge.svg)](https://github.com/Vitali2011/quantika-demo/actions/workflows/ci.yml)
 
-## Getting Started
+## About
 
-First, run the development server:
+AI-триаж входящих freight-писем. Приложение подключается к Gmail через OAuth, читает входящие письма, классифицирует их (Claude/OpenAI), извлекает данные о грузах и формирует сводки для диспетчеров.
+
+**Стек:** Next.js 14 · TypeScript · Tailwind CSS · shadcn/ui · Gmail API · ClipProxy (Claude bridge) · SQLite sessions · PM2 + Caddy
+
+## Setup
+
+```bash
+git clone https://github.com/Vitali2011/quantika-demo.git
+cd quantika-demo
+cp .env.local.example .env.local
+# Заполнить .env.local (см. раздел Environment Variables)
+npm install
+npm run dev
+```
+
+Приложение будет доступно на [http://localhost:3000](http://localhost:3000).
+
+## Architecture
+
+Pipeline обработки письма:
+
+```
+Email (Gmail API)
+  → classify    — определить тип письма (quote request / booking / tracking / other)
+  → parse       — извлечь структурированные данные (origin, destination, cargo, weight)
+  → match       — сопоставить с существующими сессиями
+  → recap       — сформировать краткую сводку для диспетчера
+```
+
+| Route | Описание |
+|-------|----------|
+| `GET  /api/auth/google` | Инициализация OAuth-флоу |
+| `GET  /api/auth/google/callback` | OAuth callback, создание сессии |
+| `GET  /api/emails` | Список обработанных писем |
+| `POST /api/emails/process` | Запустить обработку входящих |
+| `GET  /api/health` | Healthcheck (`{"status":"ok","uptime":...}`) |
+
+## Testing
+
+```bash
+npm test
+```
+
+Jest · 122 теста · покрытие: classify, parse, match, recap, API routes.
+
+## Local Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Или с Docker:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+docker compose up
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Hot-reload активен. Изменения в `app/` и `lib/` применяются без перезапуска.
 
-## Learn More
+## Environment Variables
 
-To learn more about Next.js, take a look at the following resources:
+Скопируй `.env.local.example` → `.env.local` и заполни:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Переменная | Обязательна | Описание |
+|-----------|-------------|----------|
+| `GOOGLE_CLIENT_ID` | required | Google OAuth 2.0 client ID |
+| `GOOGLE_CLIENT_SECRET` | required | Google OAuth 2.0 client secret |
+| `CLIPROXY_API_KEY` | required | ClipProxy API key (Claude bridge) |
+| `CLIPROXY_BASE_URL` | optional | default: `http://localhost:8317/v1` |
+| `AI_MODEL_HEAVY` | optional | Модель для тяжёлых задач (по умолчанию: claude-opus-*) |
+| `AI_MODEL_LIGHT` | optional | Модель для лёгких задач (по умолчанию: claude-haiku-*) |
+| `NEXT_PUBLIC_APP_URL` | optional | Публичный URL приложения |
+| `SENTRY_DSN` | optional | Server-side error tracking |
+| `NEXT_PUBLIC_SENTRY_DSN` | optional | Client-side error tracking |
+| `NEXT_PUBLIC_POSTHOG_KEY` | optional | Analytics |
+| `SESSIONS_DB_PATH` | optional | Путь к SQLite, default: `./data/sessions.db` |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Docker
 
-## Deploy on Vercel
+```bash
+docker compose up --build
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Поднимает приложение на порту 3000. Для production используй PM2 (см. Deployment).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Docker
+
+**Production build:**
+```bash
+docker build -t quantika-demo .
+docker run -p 3000:3000 --env-file .env.local quantika-demo
+```
+
+**Local dev (hot-reload):**
+```bash
+docker compose up
+```
+
+## Deployment
+
+Инструкция по деплою на VPS (PM2 + Caddy): [docs/deploy.md](docs/deploy.md)
+
+Включает: initial deploy, updates, rollback-процедуру, мониторинг, troubleshooting.

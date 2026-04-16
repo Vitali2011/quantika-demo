@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { cookies } from 'next/headers';
 import { redirect, notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -7,20 +5,21 @@ import { getSession } from '@/lib/session';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ChevronLeft, AlertTriangle } from 'lucide-react';
-import { cfValue } from '@/lib/types';
+import { Renderable } from '@/lib/types';
 import { CopyButton } from '@/components/copy-button';
+import { AnalyticsTracker } from '@/lib/analytics-tracker';
 
-function safeRender(v: any): string {
+function safeRender(v: Renderable): string {
   if (v == null) return '';
   if (typeof v === 'string') return v;
   if (typeof v === 'number') return String(v);
   if (typeof v === 'boolean') return v ? 'Yes' : 'No';
-  if (typeof v === 'object' && 'value' in v) return safeRender(v.value);
+  if (typeof v === 'object') return safeRender(v.value);
   return JSON.stringify(v);
 }
 
-function getConf(v: any): string | undefined {
-  if (v && typeof v === 'object' && 'confidence' in v) return v.confidence;
+function getConf(v: Renderable): string | undefined {
+  if (v != null && typeof v === 'object') return v.confidence;
   return undefined;
 }
 
@@ -30,7 +29,7 @@ function ConfIcon({ confidence }: { confidence?: string }) {
   return <span title="Confirmed">✅</span>;
 }
 
-function CField({ label, field }: { label: string; field: any }) {
+function CField({ label, field }: { label: string; field: Renderable }) {
   const val = safeRender(field);
   const conf = getConf(field);
   if (!val) return null;
@@ -77,24 +76,34 @@ export default async function FixtureDetailPage({ params }: Props) {
   ].filter(Boolean).join('\n') : '';
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-3xl mx-auto space-y-6">
+    <main className="min-h-screen bg-gray-50 py-4 sm:py-8 px-3 sm:px-4">
+      <AnalyticsTracker event="detail_viewed" properties={{ type: 'fixture' }} />
+      <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
         <Link href="/dashboard" className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ChevronLeft className="h-4 w-4" /> Back to Dashboard
         </Link>
 
         <div>
           <Badge variant="secondary" className="bg-purple-100 text-purple-800">FIXTURE RECAP</Badge>
-          <h1 className="text-xl font-bold mt-2">{email.subject}</h1>
+          <h1 className="text-lg sm:text-xl font-bold mt-2">{email.subject}</h1>
           <p className="text-sm text-muted-foreground">From: {email.from} · {new Date(email.date).toLocaleDateString()}</p>
         </div>
 
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Original Email</CardTitle></CardHeader>
           <CardContent>
-            <pre className="text-sm whitespace-pre-wrap font-sans">{email.body || email.snippet}</pre>
+            <pre className="text-sm whitespace-pre-wrap font-sans overflow-x-auto">{email.body || email.snippet}</pre>
           </CardContent>
         </Card>
+
+        {!recap && (
+          <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
+            <p className="text-gray-500 mb-4">No fixture recap data available for this email.</p>
+            <Link href="/dashboard" className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline">
+              <ChevronLeft className="h-4 w-4" /> Back to Dashboard
+            </Link>
+          </div>
+        )}
 
         {recap && (
           <>
@@ -195,7 +204,7 @@ export default async function FixtureDetailPage({ params }: Props) {
                   <div className="mt-2">
                     <span className="text-sm text-muted-foreground">Subs:</span>
                     <ul className="list-disc list-inside text-sm mt-1">
-                      {recap.subs.map((s: any, i: number) => <li key={i}>{safeRender(s)}</li>)}
+                      {recap.subs.map((s, i) => <li key={i}>{safeRender(s)}</li>)}
                     </ul>
                   </div>
                 )}
@@ -203,7 +212,7 @@ export default async function FixtureDetailPage({ params }: Props) {
                   <div className="mt-2">
                     <span className="text-sm text-muted-foreground">Additional Terms:</span>
                     <ul className="list-disc list-inside text-sm mt-1">
-                      {recap.additionalTerms.map((t: any, i: number) => <li key={i}>{safeRender(t)}</li>)}
+                      {recap.additionalTerms.map((t, i) => <li key={i}>{safeRender(t)}</li>)}
                     </ul>
                   </div>
                 )}
@@ -214,7 +223,7 @@ export default async function FixtureDetailPage({ params }: Props) {
             {recap.unknownTerms.length > 0 && (
               <div className="rounded-md bg-yellow-50 border border-yellow-200 p-3">
                 <p className="text-sm font-medium text-yellow-800">❓ Unrecognized Terms</p>
-                {recap.unknownTerms.map((ut: any, i: number) => (
+                {recap.unknownTerms.map((ut, i) => (
                   <p key={i} className="text-sm text-yellow-700">{safeRender(ut.term)}: {safeRender(ut.note)}</p>
                 ))}
               </div>

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { cookies } from 'next/headers';
 import { redirect, notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -7,20 +5,20 @@ import { getSession } from '@/lib/session';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Ship, MapPin, Calendar, ChevronLeft } from 'lucide-react';
-import { cfValue } from '@/lib/types';
+import { Renderable } from '@/lib/types';
+import { AnalyticsTracker } from '@/lib/analytics-tracker';
 
-function safeRender(v: any): string {
+function safeRender(v: Renderable): string {
   if (v == null) return '';
   if (typeof v === 'string') return v;
   if (typeof v === 'number') return String(v);
   if (typeof v === 'boolean') return v ? 'Yes' : 'No';
-  if (Array.isArray(v)) return v.map(safeRender).join(', ');
-  if (typeof v === 'object' && 'value' in v) return safeRender(v.value);
+  if (typeof v === 'object') return safeRender(v.value);
   return JSON.stringify(v);
 }
 
-function getConf(v: any): string | undefined {
-  if (v && typeof v === 'object' && 'confidence' in v) return v.confidence;
+function getConf(v: Renderable): string | undefined {
+  if (v != null && typeof v === 'object') return v.confidence;
   return undefined;
 }
 
@@ -30,7 +28,7 @@ function ConfIcon({ confidence }: { confidence?: string }) {
   return <span title="Confirmed">✅</span>;
 }
 
-function Spec({ label, value, unit, confidence }: { label: string; value: any; unit?: string; confidence?: string }) {
+function Spec({ label, value, unit, confidence }: { label: string; value: Renderable; unit?: string; confidence?: string }) {
   const rendered = safeRender(value);
   if (!rendered || rendered === 'NaN') return null;
   return (
@@ -65,8 +63,9 @@ export default async function VesselDetailPage({ params }: Props) {
   const matchingCargo = session.matches.filter(m => m.vesselEmailId === id);
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-3xl mx-auto space-y-6">
+    <main className="min-h-screen bg-gray-50 py-4 sm:py-8 px-3 sm:px-4">
+      <AnalyticsTracker event="detail_viewed" properties={{ type: 'vessel' }} />
+      <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
         <Link href="/dashboard" className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ChevronLeft className="h-4 w-4" /> Back to Dashboard
         </Link>
@@ -80,7 +79,7 @@ export default async function VesselDetailPage({ params }: Props) {
               </span>
             )}
           </div>
-          <h1 className="text-xl font-bold mt-2">{email.subject}</h1>
+          <h1 className="text-lg sm:text-xl font-bold mt-2">{email.subject}</h1>
           <p className="text-sm text-muted-foreground">From: {email.from} · {new Date(email.date).toLocaleDateString()}</p>
           {processed?.expiryDate && <p className="text-xs text-muted-foreground">Active until {processed.expiryDate}</p>}
         </div>
@@ -89,9 +88,19 @@ export default async function VesselDetailPage({ params }: Props) {
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Original Email</CardTitle></CardHeader>
           <CardContent>
-            <pre className="text-sm whitespace-pre-wrap font-sans">{email.body || email.snippet}</pre>
+            <pre className="text-sm whitespace-pre-wrap font-sans overflow-x-auto">{email.body || email.snippet}</pre>
           </CardContent>
         </Card>
+
+        {/* Vessel empty state */}
+        {vessels.length === 0 && (
+          <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
+            <p className="text-gray-500 mb-4">No vessel data parsed from this email.</p>
+            <Link href="/dashboard" className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline">
+              <ChevronLeft className="h-4 w-4" /> Back to Dashboard
+            </Link>
+          </div>
+        )}
 
         {/* Parsed vessels */}
         {vessels.map((vessel, idx) => (
@@ -147,7 +156,7 @@ export default async function VesselDetailPage({ params }: Props) {
                 <div>
                   <h4 className="text-xs font-medium text-muted-foreground mb-1">Restrictions</h4>
                   <div className="flex flex-wrap gap-1">
-                    {vessel.restrictions.map((r: any, i: number) => <Badge key={i} variant="destructive" className="text-xs">{safeRender(r)}</Badge>)}
+                    {vessel.restrictions.map((r, i) => <Badge key={i} variant="destructive" className="text-xs">{safeRender(r)}</Badge>)}
                   </div>
                 </div>
               )}

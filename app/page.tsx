@@ -1,7 +1,16 @@
+'use client'
+
+import { useEffect } from 'react'
 import { ConnectGmailButton } from "@/components/connect-gmail-button";
 import { Lock, Trash2, EyeOff } from "lucide-react";
+import { initAnalytics, track } from "@/lib/analytics";
 
 export default function LandingPage() {
+  useEffect(() => {
+    initAnalytics()
+    track('landing_viewed')
+  }, [])
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-white px-6">
       <div className="w-full max-w-md text-center space-y-8">
@@ -16,9 +25,12 @@ export default function LandingPage() {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-          <ConnectGmailButton />
+          <div onClick={() => track('oauth_initiated')}>
+            <ConnectGmailButton />
+          </div>
           <a
             href="/api/sample"
+            onClick={() => track('sample_started')}
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-6 py-3 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors"
           >
             Try with Sample Data

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession, updateSession } from '@/lib/session';
 import { callAiJson } from '@/lib/openai';
@@ -7,6 +6,51 @@ import { AI_MODEL_HEAVY } from '@/lib/constants';
 import { ParsedFixtureRecap } from '@/lib/types';
 import { summarizeCommissions } from '@/lib/commission';
 import { extractNum, toConfidence } from '@/lib/parsing-utils';
+
+interface RawFixtureRecap {
+  vessel_name?: unknown;
+  owners?: unknown;
+  charterers?: unknown;
+  account?: unknown;
+  broker?: string | null;
+  load_port?: unknown;
+  disch_port?: unknown;
+  cargo_description?: unknown;
+  cargo_quantity_min?: number | string | null;
+  cargo_quantity_max?: number | string | null;
+  cargo_packaging?: string | null;
+  laycan?: unknown;
+  transit_time?: string | null;
+  freight_rate?: unknown;
+  freight_basis?: string | null;
+  freight_payment?: string | null;
+  loading_rate?: unknown;
+  loading_terms?: unknown;
+  loading_working_hours?: string | null;
+  discharging_rate?: unknown;
+  discharging_terms?: unknown;
+  discharging_working_hours?: string | null;
+  demurrage_rate?: unknown;
+  demurrage_payment?: string | null;
+  load_port_agent?: string | null;
+  disch_port_agent?: string | null;
+  vessel_dwt?: number | string | null;
+  vessel_draft?: number | string | null;
+  vessel_geared?: boolean | null;
+  cp_form?: string | null;
+  arbitration?: string | null;
+  law?: string | null;
+  commission?: string | null;
+  commission_percent?: number | string | null;
+  commission_pct?: number | string | null;
+  commission_base?: string | null;
+  commission_amount?: number | string | null;
+  commission_currency?: string | null;
+  subs?: string[];
+  confidentiality?: boolean | null;
+  additional_terms?: string[];
+  unknown_terms?: Array<{ term: string; note: string }>;
+}
 
 export const maxDuration = 120;
 
@@ -32,7 +76,7 @@ export async function POST(request: NextRequest) {
     fixtureEmails.map(async (email) => {
       const userPrompt = `From: ${email.from}\nSubject: ${email.subject}\nDate: ${email.date}\n\n${email.body}`;
 
-      const result = await callAiJson<any>(
+      const result = await callAiJson<RawFixtureRecap>(
         userPrompt,
         FIXTURE_RECAP_PARSER_PROMPT,
         AI_MODEL_HEAVY,

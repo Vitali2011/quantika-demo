@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Progress } from '@/components/ui/progress';
+import { track } from '@/lib/analytics';
 
 type StepStatus = 'pending' | 'active' | 'done' | 'error' | 'skipped';
 
@@ -16,6 +17,17 @@ interface StepGroup {
   steps: Step[];
   parallel?: boolean;
 }
+
+const STEP_ERROR_MESSAGES: Record<string, { stepName: string; errorText: string }> = {
+  '/api/emails/fetch':    { stepName: 'Loading emails',       errorText: 'Failed to load emails from Gmail' },
+  '/api/ai/classify':     { stepName: 'Classifying emails',   errorText: 'Failed to classify emails' },
+  '/api/ai/parse-cargo':  { stepName: 'Parsing cargo',        errorText: 'Failed to parse cargo inquiries' },
+  '/api/ai/parse-vessel': { stepName: 'Parsing vessels',      errorText: 'Failed to extract vessel details' },
+  '/api/ai/parse-recap':  { stepName: 'Parsing recaps',       errorText: 'Failed to extract fixture recaps' },
+  '/api/ai/match':        { stepName: 'Matching',             errorText: 'Failed to find vessel-cargo matches' },
+  '/api/ai/recap':        { stepName: 'Generating recap',     errorText: 'Failed to summarize negotiations' },
+  '/api/ai/counterparty': { stepName: 'Mapping network',      errorText: 'Failed to map counterparty network' },
+};
 
 const STEP_GROUPS: StepGroup[] = [
   { steps: [{ label: 'Loading emails from Gmail...', endpoint: '/api/emails/fetch', critical: true }] },
@@ -58,6 +70,7 @@ export default function ProcessingPage() {
   const router = useRouter();
   const [statuses, setStatuses] = useState<StepStatus[]>(STEPS.map(() => 'pending'));
   const [fatalError, setFatalError] = useState<string | null>(null);
+  const [failedStep, setFailedStep] = useState<string | null>(null);
   const [subjectIndex, setSubjectIndex] = useState(0);
 
   const doneCount = statuses.filter(s => s === 'done' || s === 'skipped').length;
@@ -89,8 +102,11 @@ export default function ProcessingPage() {
         });
 
         const runStep = async (step: Step, idx: number) => {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 90_000);
           try {
-            const res = await fetch(step.endpoint, { method: 'POST' });
+            const res = await fetch(step.endpoint, { method: 'POST', signal: controller.signal });
+            clearTimeout(timeoutId);
             if (!res.ok) {
               const body = await res.json().catch(() => ({}));
               throw new Error(body?.error ?? `Step failed (${res.status})`);
@@ -104,8 +120,11 @@ export default function ProcessingPage() {
             }
             return { ok: true, step, idx };
           } catch (err: unknown) {
-            const msg = err instanceof Error ? err.message : 'Unknown error';
-            console.warn(`Step ${idx + 1} (${step.label}) failed: ${msg}`);
+            clearTimeout(timeoutId);
+            const isTimeout = err instanceof Error && err.name === 'AbortError';
+            const msg = isTimeout
+              ? 'Сервис временно недоступен, попробуйте позже'
+              : err instanceof Error ? err.message : 'Unknown error';
             return { ok: false, step, idx, msg };
           }
         };
@@ -116,8 +135,10 @@ export default function ProcessingPage() {
           );
           for (const r of results) {
             if (!r.ok) {
+              track('processing_failed', { step: r.step.endpoint });
               if (r.step.critical) {
                 setStatuses(prev => { const next = [...prev]; next[r.idx] = 'error'; return next; });
+                setFailedStep(r.step.endpoint);
                 setFatalError(r.msg || 'Unknown error');
                 return;
               }
@@ -128,8 +149,10 @@ export default function ProcessingPage() {
           for (let i = 0; i < group.steps.length; i++) {
             const r = await runStep(group.steps[i], flatIdx + i);
             if (!r.ok) {
+              track('processing_failed', { step: r.step.endpoint });
               if (r.step.critical) {
                 setStatuses(prev => { const next = [...prev]; next[r.idx] = 'error'; return next; });
+                setFailedStep(r.step.endpoint);
                 setFatalError(r.msg || 'Unknown error');
                 return;
               }
@@ -142,6 +165,7 @@ export default function ProcessingPage() {
       }
 
       if (!cancelled) {
+        track('processing_complete');
         router.push('/dashboard');
       }
     }
@@ -163,10 +187,16 @@ export default function ProcessingPage() {
           <p className="text-xs text-muted-foreground">{progress}%</p>
         </div>
 
-        <ul className="text-left space-y-2">
+        <ul className="text-left space-y-2" aria-label="Processing steps" aria-live="polite">
           {STEPS.map((step, i) => (
-            <li key={step.endpoint} className="flex items-center gap-3 text-sm">
-              <span className="w-5 text-center shrink-0">{stepIcon(statuses[i])}</span>
+            <li
+              key={step.endpoint}
+              className="flex items-center gap-3 text-sm rounded focus:ring-2 focus:ring-offset-2 outline-none"
+              tabIndex={0}
+              aria-label={`${step.label} — ${statuses[i]}`}
+              aria-current={statuses[i] === 'active' ? 'step' : undefined}
+            >
+              <span className="w-5 text-center shrink-0" aria-hidden="true">{stepIcon(statuses[i])}</span>
               <span className={
                 statuses[i] === 'active' ? 'font-medium text-foreground' :
                 statuses[i] === 'done' ? 'text-muted-foreground' :
@@ -194,6 +224,11 @@ export default function ProcessingPage() {
         {fatalError && (
           <div className="mt-4 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
             <p className="font-medium">Something went wrong</p>
+            {failedStep && STEP_ERROR_MESSAGES[failedStep] ? (
+              <p className="mt-1 font-medium">
+                {STEP_ERROR_MESSAGES[failedStep].stepName}: {STEP_ERROR_MESSAGES[failedStep].errorText}
+              </p>
+            ) : null}
             <p className="mt-1 text-xs">{fatalError}</p>
             <button
               onClick={() => window.location.reload()}
