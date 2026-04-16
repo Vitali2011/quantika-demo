@@ -216,6 +216,21 @@ export interface CommissionSummary {
 
 // ── Match ──
 
+export type ReadinessVerdict = 'ideal' | 'tight' | 'idle' | 'late' | 'unknown';
+
+export interface MatchReadiness {
+  openDate: string | null;      // ISO yyyy-mm-dd
+  laycanStart: string | null;
+  laycanEnd: string | null;
+  distanceNm: number | null;
+  speedKn: number | null;
+  sailingDays: number | null;
+  arrivalDate: string | null;
+  gapDays: number | null;
+  verdict: ReadinessVerdict;
+  explanation: string;
+}
+
 export interface Match {
   cargoEmailId: string;
   cargoItemIndex: number;
@@ -225,6 +240,7 @@ export interface Match {
   matchLevel: MatchLevel;
   matchReasons: string[];
   issues: string[];
+  readiness?: MatchReadiness;
 }
 
 // ── Negotiation Recap ──

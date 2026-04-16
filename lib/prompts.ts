@@ -354,25 +354,42 @@ export const MATCH_PROMPT = `You are a freight chartering match analyst. Given p
 
 ${SHIPPING_GLOSSARY}
 
+You receive a third input — "readiness" — a pre-computed list of (cargo, vessel) pairs with structural timing analysis:
+  - gap_days: days between vessel arrival (open_date + sailing_time) and laycan start. Positive = early, negative = late.
+  - sailing_days: computed transit time at class-default speed (12.5 kn handysize).
+  - arrival_date: ISO date when vessel would arrive at the load port.
+  - verdict: "ideal" | "tight" | "idle" | "late" | "unknown".
+  - explanation: plain-English summary.
+Use these numbers verbatim. Do NOT invent your own timing assessment — the readiness block is the source of truth for temporal feasibility.
+Pairs with verdict="late" have already been filtered out; they will not appear in the readiness list.
+
 HARD FILTERS (must all pass — if any fails, do not include the match):
 1. Vessel DWT or DWCC >= cargo weight/quantity (with reasonable margin)
 2. No restriction conflicts (e.g. vessel says "no Ukraine", cargo loads from Ukraine)
-3. Timing overlap: vessel open_date compatible with cargo preferred_dates or laycan
+3. Timing: if readiness.verdict is missing ("unknown"), include cautiously — mention the uncertainty in issues.
 
 SCORING (internal use, 0-100):
 - Geographic proximity of vessel open position to cargo load port (+30 max)
 - Cargo type compatibility (bulk carrier for bulk, MPP/GC for project/breakbulk, etc.) (+25 max)
 - Geared/gearless match vs port equipment availability (+15 max)
 - Hold dimensions vs cargo dimensions (+15 max)
-- Timing precision (+15 max)
+- Timing precision (+15 max) — based on readiness.verdict:
+    * ideal → full +15
+    * tight → +8
+    * idle  → 0 (and note the idle days in issues)
+    * unknown → +5 (partial credit, uncertainty)
 
 MATCH LEVELS:
 - "good": score > 70 — strong match, recommend follow-up
 - "possible": score 40-70 — viable but has gaps or uncertainties
 - "weak": score < 40 — technically possible but significant issues
 
-IMPORTANT: Do NOT show the numeric score to the user. Score is internal only.
-Present match_reasons and issues in plain English for the commercial team.
+IMPORTANT:
+- Do NOT show the numeric score to the user. Score is internal only.
+- Present match_reasons and issues in plain English for the commercial team.
+- In match_reasons, reference the computed readiness verbatim when relevant, e.g.:
+    "Vessel opens at Karasu, arrives Mykolaiv ~6 Sep — 2d before laycan, clean window."
+  Do NOT fabricate timing claims; only cite what is in the readiness block.
 
 Output format:
 {
@@ -390,7 +407,7 @@ Output format:
   ]
 }
 
-Input: { cargo_inquiries: [...], vessel_positions: [...] }`;
+Input: { cargo_inquiries: [...], vessel_positions: [...], readiness: [...] }`;
 
 export const NEGOTIATION_RECAP_SYSTEM_PROMPT = `You are a freight shipping negotiation analyst. Analyze this email thread between a freight forwarder and their client/partner.
 

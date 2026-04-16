@@ -111,17 +111,36 @@ export default async function DashboardPage() {
           <div id="matches">
             <h2 className="text-base font-semibold text-gray-900 mb-3">🔗 Vessel-Cargo Matches ({goodMatches.length})</h2>
             <div className="space-y-2">
-              {goodMatches.map((match, i) => (
-                <Link key={i} href={`/match/${i}`}>
-                  <div className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200 bg-white">
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-gray-900 truncate">{match.matchReasons[0] || `Match #${i + 1}`}</p>
-                      <p className="text-xs text-gray-500">Level: {match.matchLevel} · {match.matchReasons.length} reasons</p>
+              {goodMatches.map((match, i) => {
+                const r = match.readiness;
+                const readinessBadge = r && r.gapDays != null
+                  ? (() => {
+                      const days = Math.round(r.gapDays);
+                      const abs = Math.abs(days);
+                      if (r.verdict === 'ideal') return { label: `⏱ +${abs}d ideal`, color: 'text-green-700' };
+                      if (r.verdict === 'tight') return { label: `⏱ ~${abs}d tight`, color: 'text-yellow-700' };
+                      if (r.verdict === 'idle') return { label: `⏱ +${abs}d idle`, color: 'text-orange-700' };
+                      if (r.verdict === 'late') return { label: `⏱ −${abs}d late`, color: 'text-red-700' };
+                      return null;
+                    })()
+                  : null;
+                return (
+                  <Link key={i} href={`/match/${i}`}>
+                    <div className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200 bg-white">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-gray-900 truncate">{match.matchReasons[0] || `Match #${i + 1}`}</p>
+                        <p className="text-xs text-gray-500">
+                          Level: {match.matchLevel} · {match.matchReasons.length} reasons
+                          {readinessBadge && (
+                            <> · <span className={`font-medium ${readinessBadge.color}`}>{readinessBadge.label}</span></>
+                          )}
+                        </p>
+                      </div>
+                      <span className={`shrink-0 ml-3 px-2 py-0.5 rounded text-xs font-semibold ${match.matchLevel === 'good' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>{match.matchLevel}</span>
                     </div>
-                    <span className={`shrink-0 ml-3 px-2 py-0.5 rounded text-xs font-semibold ${match.matchLevel === 'good' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>{match.matchLevel}</span>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                );
+              })}
             </div>
           </div>
         )}

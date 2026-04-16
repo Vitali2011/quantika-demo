@@ -114,6 +114,48 @@ export default async function MatchDetailPage({ params }: Props) {
           </CardContent>
         </Card>
 
+        {match.readiness && (
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">⏱ Vessel readiness</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              {(() => {
+                const r = match.readiness;
+                const verdictConfig: Record<string, { label: string; color: string }> = {
+                  ideal:   { label: 'IDEAL TIMING',   color: 'bg-green-100 text-green-800' },
+                  tight:   { label: 'TIGHT TIMING',   color: 'bg-yellow-100 text-yellow-800' },
+                  idle:    { label: 'VESSEL IDLE',    color: 'bg-orange-100 text-orange-800' },
+                  late:    { label: 'ARRIVES LATE',   color: 'bg-red-100 text-red-800' },
+                  unknown: { label: 'UNKNOWN',        color: 'bg-gray-100 text-gray-700' },
+                };
+                const vc = verdictConfig[r.verdict];
+                return (
+                  <>
+                    <Badge className={vc.color + ' text-xs px-2 py-0.5'}>{vc.label}</Badge>
+                    <p className="text-gray-700">{r.explanation}</p>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-gray-600 pt-2 border-t">
+                      {r.distanceNm != null && <p>Distance: {r.distanceNm} NM</p>}
+                      {r.speedKn != null && <p>Speed: {r.speedKn} kn</p>}
+                      {r.sailingDays != null && <p>Sailing: ~{r.sailingDays.toFixed(1)} d</p>}
+                      {r.gapDays != null && (
+                        <p>
+                          Gap to laycan:{' '}
+                          <span className={r.gapDays >= 0 ? 'text-gray-700' : 'text-red-700'}>
+                            {r.gapDays > 0 ? '+' : ''}{r.gapDays.toFixed(1)} d
+                          </span>
+                        </p>
+                      )}
+                      {r.arrivalDate && <p>Est. arrival: {r.arrivalDate}</p>}
+                      {r.laycanStart && r.laycanEnd && <p>Laycan: {r.laycanStart} → {r.laycanEnd}</p>}
+                    </div>
+                  </>
+                );
+              })()}
+            </CardContent>
+          </Card>
+        )}
+
         {cargoEmail && <DraftQuoteCard emailId={cargoEmail.id} />}
       </div>
     </main>
