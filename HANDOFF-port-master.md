@@ -1,8 +1,9 @@
 # HANDOFF — port-master global expansion (Wave 4)
 
-**Status:** Phases 0-3 done. Pause for new session at clean break (build green, 445 tests passing). Resume from **Phase 4.1**.
+**Status:** Phases 0-4.2 done. Pause mid-4.3 (enrich-all interrupted). Resume from **Phase 4.3** (enrich-all). Build green, 454 tests passing.
 
 **Branch:** `claude/port-master-global` (worktree at `/Users/jarvis/work/quantika-demo/.claude/worktrees/port-master-global/`)
+**Remote:** pushed to `origin/claude/port-master-global`
 
 **Plan file:** `/Users/jarvis/.claude/plans/distributed-questing-moth.md` (in plans dir, NOT in repo)
 
@@ -20,18 +21,17 @@
 | 3.1. Haversine module | ✅ | ceb6b01 | +9 tests |
 | 3.2. Fuzzy port-name matching (fuzzysort) | ✅ | 70e9d87 | +6 tests, normalizePortName→string\|null |
 | 3.3. getPortDistance v2 + UI ~ marker | ✅ | caaf227 | +1 test, build green |
-| **4.1. LLM enrichment module** | 🔜 | — | **NEXT** |
-| 4.2. Top-30 verify (GATE Виталию) | ⏳ | — | Wait for top-30 review |
-| 4.3. Full enrichment run | ⏳ | — | After GATE |
+| 4.1. LLM enrichment module | ✅ | 1f7bb1a | +9 tests, enrichPortsBatch with batching/fallback |
+| 4.2. Top-30 verify + GATE Виталию | ✅ | 4127451 | Виталий approved, 20/30 enriched |
+| **4.3. Full enrichment (396 remaining)** | 🔜 | — | **NEXT — run enrich-all** |
 | 5. Refactor getPortMaster → JSON-backed | ⏳ | — | After 4.3 |
 | 6. BACKLOG_FUTURE entry + ROADMAP Wave 4 | ⏳ | — | |
 | 7. Code review + GATE Виталию + merge + deploy | ⏳ | — | |
 
 **Verification right now:**
-- `npm test` → 445/445 passing (376 baseline + 69 new)
+- `npm test` → 454/454 passing (376 baseline + 78 new)
 - `npm run lint` → clean
-- `npm run build` → clean
-- `npx tsx scripts/generate-port-master.ts skeleton` → writes 416-port skeleton.json
+- `data/ports/port-master.draft.json` exists (416 ports, top-20 enriched, rest skeleton)
 
 ---
 
@@ -161,27 +161,38 @@ Input ports:
 
 ---
 
-## Resume command for new session (paste this entire block)
+## Resume command for new session
 
 ```
 Привет. Продолжаем работу над port master global expansion (Wave 4).
+
 Branch: claude/port-master-global
 Worktree: /Users/jarvis/work/quantika-demo/.claude/worktrees/port-master-global/
 
-Состояние: Фазы 0-3 закоммичены, build/lint/tests green (445 tests).
-Следующий шаг — Фаза 4.1 (LLM enrichment module).
+Состояние: Фазы 0-4.2 закоммичены, build/lint/tests green (454 tests).
+Следующий шаг — Фаза 4.3 (enrich-all) → 5 → 6 → 7.
 
 ОБЯЗАТЕЛЬНО прочитай в этом порядке (это full context):
-1. /Users/jarvis/.claude/plans/distributed-questing-moth.md (полный план)
-2. /Users/jarvis/work/quantika-demo/.claude/worktrees/port-master-global/HANDOFF-port-master.md (где мы остановились + архитектурные решения)
-3. CLAUDE.md в рабочей директории (general project rules)
+1. /Users/jarvis/.claude/plans/distributed-questing-moth.md — полный план
+2. /Users/jarvis/work/quantika-demo/.claude/worktrees/port-master-global/HANDOFF-port-master.md — где остановились + архитектурные решения + резюме всех фаз
+3. CLAUDE.md в рабочей директории — general project rules
 
-Запусти `git -C /Users/jarvis/work/quantika-demo/.claude/worktrees/port-master-global log --oneline -10`
-чтобы убедиться что 9 коммитов с 59a7437 по caaf227 на месте.
-Запусти `npm test --silent` (cd в worktree сначала) — должно быть 445/445.
+Запусти:
+  git -C /Users/jarvis/work/quantika-demo/.claude/worktrees/port-master-global log --oneline -12
+чтобы убедиться что 12 коммитов с 59a7437 по 4127451 на месте.
 
-Затем продолжай с Фазы 4.1 по плану. Helpful skill: superpowers:test-driven-development.
-GATE на Фазе 4.2 — top-30 review мне.
+Запусти:
+  cd /Users/jarvis/work/quantika-demo/.claude/worktrees/port-master-global && npm test --silent | tail -6
+должно быть 454/454.
+
+Перед enrich-all нужен SSH-туннель к ClipProxy:
+  ssh -f -N -L 8317:localhost:8317 root@185.249.225.169
+
+Затем:
+  cd /Users/jarvis/work/quantika-demo/.claude/worktrees/port-master-global
+  CLIPROXY_API_KEY=cliproxy-key-1 npx tsx scripts/generate-port-master.ts enrich-all
+
+После завершения продолжай с Фазы 5 → 6 → 7 по плану.
 GATE на Фазе 7 — финальный отчёт перед merge/deploy.
 
 Язык — русский. Автономный режим. Виталий.
@@ -189,4 +200,4 @@ GATE на Фазе 7 — финальный отчёт перед merge/deploy.
 
 ---
 
-**Last touched:** 2026-04-16, end of session 1. 9 commits ahead of origin/main. Worktree clean (no uncommitted changes after this HANDOFF doc is committed).
+**Last touched:** 2026-04-16, session 2. 12 commits, pushed to origin/claude/port-master-global.
