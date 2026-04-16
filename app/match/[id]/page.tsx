@@ -212,6 +212,70 @@ export default async function MatchDetailPage({ params }: Props) {
           </Card>
         )}
 
+        {match.sanctions && match.sanctions.risk !== 'NONE' && (
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">⚠ Sanctions &amp; restrictions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              {(() => {
+                const s = match.sanctions!;
+                const riskConfig: Record<string, { label: string; color: string }> = {
+                  HIGH:   { label: 'HIGH RISK',   color: 'bg-red-100 text-red-800' },
+                  MEDIUM: { label: 'MEDIUM RISK', color: 'bg-yellow-100 text-yellow-800' },
+                  LOW:    { label: 'LOW RISK',    color: 'bg-blue-100 text-blue-800' },
+                  NONE:   { label: 'NO RISK',     color: 'bg-gray-100 text-gray-700' },
+                };
+                const rc = riskConfig[s.risk];
+                return (
+                  <>
+                    <Badge className={rc.color + ' text-xs px-2 py-0.5'}>{rc.label}</Badge>
+                    {s.reason && <p className="text-gray-700">{s.reason}</p>}
+                    <p className="text-xs text-gray-400 border-t pt-2">
+                      Screening is indicative — broker must verify against current OFAC/EU/UK sanctions lists before fixing.
+                    </p>
+                  </>
+                );
+              })()}
+            </CardContent>
+          </Card>
+        )}
+
+        {match.scoreBreakdown && (
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">📊 Score breakdown</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              {match.scoreBreakdown.components.map((c, i) => {
+                const pct = c.max > 0 ? Math.max(0, Math.min(100, (c.points / c.max) * 100)) : 0;
+                return (
+                  <div key={i} className="space-y-1">
+                    <div className="flex justify-between items-baseline text-xs">
+                      <span className="font-medium">{c.label}</span>
+                      <span className="text-gray-600">{c.points}/{c.max}</span>
+                    </div>
+                    <div className="h-2 bg-gray-100 rounded overflow-hidden">
+                      <div className="h-full bg-green-500" style={{ width: `${pct}%` }} />
+                    </div>
+                    {c.reason && <p className="text-xs text-gray-500">{c.reason}</p>}
+                  </div>
+                );
+              })}
+              <div className="border-t pt-3 text-xs text-gray-600 grid grid-cols-2 gap-x-4 gap-y-1">
+                <p>Base physical: {match.scoreBreakdown.basePhysical}</p>
+                {match.scoreBreakdown.readinessAdjustment !== 0 && (
+                  <p>Readiness adj: {match.scoreBreakdown.readinessAdjustment > 0 ? '+' : ''}{match.scoreBreakdown.readinessAdjustment}</p>
+                )}
+                {match.scoreBreakdown.sanctionsAdjustment !== 0 && (
+                  <p>Sanctions adj: {match.scoreBreakdown.sanctionsAdjustment}</p>
+                )}
+              </div>
+              <p className="text-sm font-semibold border-t pt-2">Final score: {match.scoreBreakdown.finalScore}</p>
+            </CardContent>
+          </Card>
+        )}
+
         {match.readiness && (
           <Card>
             <CardHeader className="pb-2">
