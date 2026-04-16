@@ -1,0 +1,48 @@
+[
+  {
+    "id": "sample-14",
+    "threadId": "thread-14",
+    "from": "\"ETMS - Management\" <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "demo@quantika.org",
+    "subject": "FW: fixture recap",
+    "date": "2026-04-15T00:00:00.000Z",
+    "body": "---------- Forwarded message ---------\nFrom: Humboldt Shipping <ops@humboldtshipping.com>\nDate: Mon, 8 Sep 2025 14:32:10 +0200\nSubject: fixture recap\nTo: management@etm-services.net\n\nFIXTURE RECAP\n\nVessel: MV HUMBOLDT BAY\nDWT: 7,800 mts\nOwners: Humboldt Shipping GmbH\nCharterers: ETM Services\nAccount: same as Charterers\n\nLoad port: Constanta, Romania (1SB AAAA)\nDisch port: Ravenna, Italy (1SB AARA)\n\nCargo: abt 6,500 / 7,000 mts steel billets\nFreight: USD 18.50/mt FIOST\n\nLaycan: 12-15 Sep 2025\n\nLoading rate: 3,000 mts SHINC\nDisch rate: 2,000 mts SHINC\n\nDemurrage: USD 6,500 PDPR/FD BENDS\n\nCommission: 3.75% TTL on F/D/D\n\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London\n\nSubs: stem confirmation within 2 banking days\n\nPls confirm all in order.\n\nbrgds",
+    "snippet": "FIXTURE RECAP MV HUMBOLDT BAY Constanta / Ravenna steel billets...",
+    "labelIds": ["INBOX"],
+    "attachments": [
+      {
+        "filename": "HUMBOLDT_BAY_fixture_recap.pdf",
+        "mimeType": "application/pdf",
+        "size": 142800
+      }
+    ]
+  },
+  {
+    "id": "sample-15",
+    "threadId": "thread-15",
+    "from": "\"ETMS - Management\" <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "demo@quantika.org",
+    "subject": "FW: MV NORTHSTAR GLORY, FDF / ALEX, RECAP OF AGREED TERMS",
+    "date": "2026-04-14T00:00:00.000Z",
+    "body": "---------- Forwarded message ---------\nFrom: Varan Shipping <chartering@varanshipping.com>\nDate: Sun, 7 Sep 2025 17:45:00 +0300\nSubject: MV NORTHSTAR GLORY, FDF / ALEX, RECAP OF AGREED TERMS\nTo: management@etm-services.net\n\nFIXTURE RECAP - AGREED TERMS\n\nVessel: MV NORTHSTAR GLORY\nDWT: 6,200 mts\nOwners: Northstar Maritime Ltd\nCharterers: Varan Shipping\nAccount: Arabian Bulk Trading\n\nLoad: Figueira da Foz (FDF), Portugal - 1 sb aaaa\nDisch: Alexandria (ALEX), Egypt - 1 sb aaaa\n\nCargo: 4,000 / 4,500 mts sawn timber in bundles\nFreight: EUR 31.00/mt FIOST\n\nLaycan: 15-20 Sep 2025\n\nLoading: 1,000 mts SHINC\nDisch: 800 mts SSHEX EIU\n\nDemurrage: EUR 5,500 PDPR / FD BENDS\nDispatch: half demurrage, laytime ends\n\nCommission: 3.75% TTL on F/D/D\nCP Form: GENCON 94\nLaw: English / London arbitration\n\nSubs: stem + owners approval within 2 banking days\n\nbrgds\nVaran Shipping Chartering",
+    "snippet": "FIXTURE RECAP MV NORTHSTAR GLORY FDF / ALEX sawn timber...",
+    "labelIds": ["INBOX"]
+  },
+  {
+    "id": "sample-16",
+    "threadId": "thread-16",
+    "from": "\"ETMS - Management\" <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "demo@quantika.org",
+    "subject": "FW: MV STAD, TRIGNMOUTH // ALEXANDRIA TERMS",
+    "date": "2026-04-15T00:00:00.000Z",
+    "body": "---------- Forwarded message ---------\nFrom: Varan Shipping - Operation <operations@varanshipping.com>\nDate: Mon, 8 Sep 2025 09:15:00 +0300\nSubject: MV STAD, TRIGNMOUTH // ALEXANDRIA TERMS\nTo: management@etm-services.net\n\nDear Sirs,\n\nFIXTURE RECAP / RECAP OF AGREED TERMS:\n\nVessel: MV STAD\nDWT: 3,200 mts\nBuilt: 2001, Flag: Antigua & Barbuda\nOwners: Stad Shipping AS\nCharterers: ETM Services / Varan Shipping\n\nLoad: Teignmouth, UK - 1 sb\nDisch: Alexandria, Egypt - 1 sb aaaa\n\nCargo: 2,500 / 2,800 mts china clay in bulk\nFRT: USD 29.00/mt FIO STST\n\nLaycan: 18-22 Sep 2025\n\nLoading: 800 mts SHINC\nDisch: 600 mts SSHEX EIU\n\nDemurrage: USD 4,500 PDPR / FD BENDS\n\nCommission: 3.75% TTL\nCP: GENCON 94\nGov Law: English\n\nbrgds\nVaran Shipping - Operations",
+    "snippet": "FIXTURE RECAP MV STAD Teignmouth / Alexandria china clay...",
+    "labelIds": ["INBOX"]
+  }
+]
