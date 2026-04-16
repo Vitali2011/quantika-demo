@@ -133,6 +133,12 @@ export interface ParsedVessel {
   consumption: string | null;
   deckCapacity: string | null;
   specialFeatures: string[];
+  /**
+   * Human-readable warning about external-registry verification — e.g.
+   * "Name mismatch: Equasis says X, email says Y" or "IMO not found in Equasis registry".
+   * Null when verification passed or was not attempted.
+   */
+  verificationWarning?: string | null;
 }
 
 // ── Parsed Fixture Recap ──

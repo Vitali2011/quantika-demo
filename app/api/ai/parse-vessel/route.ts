@@ -3,10 +3,11 @@ import { getSession, updateSession } from '@/lib/session';
 import { callAiJson } from '@/lib/openai';
 import { VESSEL_POSITION_PARSER_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_LIGHT } from '@/lib/constants';
-import { ParsedVessel } from '@/lib/types';
+import { ParsedVessel, cfValue } from '@/lib/types';
 import { extractNum, toConfidence } from '@/lib/parsing-utils';
 import { validateImo } from '@/lib/validation/imo';
 import { calibrateAll } from '@/lib/validation/confidence-calibration';
+import { lookupVesselByImo, compareVesselRecord } from '@/lib/validation/equasis-client';
 
 interface RawVesselItem {
   vessel_name?: unknown;
@@ -136,8 +137,32 @@ export async function POST(request: NextRequest) {
           consumption: item.consumption || null,
           deckCapacity: item.deck_capacity || null,
           specialFeatures: Array.isArray(item.special_features) ? item.special_features : [],
+          verificationWarning: null,
         }) as ParsedVessel);
       });
+    })
+  );
+
+  // External registry verification (Equasis). Runs only for vessels where we
+  // have a structurally valid IMO. Graceful — Equasis down = no warning,
+  // not a filter failure.
+  await Promise.all(
+    allParsed.map(async (v) => {
+      if (!v.imo) return;
+      try {
+        const record = await lookupVesselByImo(v.imo);
+        if (!record) {
+          v.verificationWarning = 'IMO not found in Equasis registry';
+          return;
+        }
+        const mismatch = compareVesselRecord(record, {
+          parsedName: cfValue(v.vesselName),
+          parsedDwt: cfValue(v.dwtSummer),
+        });
+        if (mismatch) v.verificationWarning = mismatch;
+      } catch {
+        // swallow — never block a match due to verification failure
+      }
     })
   );
 
