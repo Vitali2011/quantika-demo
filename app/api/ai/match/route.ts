@@ -185,7 +185,9 @@ export async function POST(request: NextRequest) {
     destination_port: cfValue(c.destinationPort),
     cargo_description: cfValue(c.cargoDescription),
     weight_mt: cfValue(c.weightMt),
-    cargo_type: c.cargoType,
+    cargo_type: typeof c.cargoType === 'object' && c.cargoType !== null && 'value' in c.cargoType
+      ? (c.cargoType as unknown as { value: string }).value
+      : c.cargoType,
     preferred_dates: cfValue(c.preferredDates),
     laycan: c.laycan,
     loading_rate: c.loadingRate,

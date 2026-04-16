@@ -82,7 +82,12 @@ export async function POST(request: NextRequest) {
           // antipattern — see ROADMAP_MVP.md W1.8.
           volumeCbm: extractNum(item.volume_cbm),
           dimensions: item.dimensions || null,
-          cargoType: (item.cargo_type || 'OTHER') as CargoType,
+          cargoType: (() => {
+            const ct = item.cargo_type;
+            if (!ct) return 'OTHER' as CargoType;
+            if (typeof ct === 'object' && 'value' in ct) return (String((ct as { value: unknown }).value) || 'OTHER') as CargoType;
+            return (String(ct) || 'OTHER') as CargoType;
+          })(),
           containerType: item.container_type || null,
           quantity: extractNum(item.quantity),
           incoterms: item.incoterms || null,
