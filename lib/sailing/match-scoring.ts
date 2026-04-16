@@ -81,7 +81,7 @@ export interface ScoreBreakdownInput {
  * matches never reach this function).
  */
 export function computeScoreBreakdown(input: ScoreBreakdownInput): ScoreBreakdown {
-  const { match, cargo, vessel, readiness, sanctions } = input;
+  const { cargo, vessel, readiness, sanctions } = input;
   const components: ScoreBreakdownComponent[] = [];
 
   // 1. Geographic proximity
