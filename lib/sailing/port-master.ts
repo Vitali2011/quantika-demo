@@ -12,6 +12,9 @@
  */
 
 import { normalizePortName, KnownPort } from './port-distances';
+import { PortRegion, getPortRegion } from './port-regions';
+
+export type { PortRegion };
 
 export interface PortMaster {
   /** Max permissible vessel draft in metres (salt water, summer). */
@@ -20,6 +23,8 @@ export interface PortMaster {
   hasShoreCranes: boolean;
   /** Primary berth type (for stowage planning). */
   berthType: 'river' | 'deep-sea' | 'bay' | 'terminal';
+  /** Geographic basin — null for unknown ports. */
+  region?: PortRegion;
   /** Short human-readable note. */
   note?: string;
 }
@@ -152,7 +157,10 @@ const PORT_MASTER: Record<KnownPort, PortMaster> = {
 export function getPortMaster(rawName: string | null | undefined): PortMaster | null {
   const canonical = normalizePortName(rawName);
   if (!canonical) return null;
-  return PORT_MASTER[canonical] ?? null;
+  const entry = PORT_MASTER[canonical];
+  if (!entry) return null;
+  const region = getPortRegion(canonical) ?? undefined;
+  return { ...entry, region };
 }
 
 export interface DraftCheckResult {
