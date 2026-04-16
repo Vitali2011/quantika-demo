@@ -28,13 +28,14 @@ export default function LandingPage() {
           <div onClick={() => track('oauth_initiated')}>
             <ConnectGmailButton />
           </div>
-          <a
-            href="/api/sample"
-            onClick={() => track('sample_started')}
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-6 py-3 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors"
-          >
-            Try with Sample Data
-          </a>
+          <form method="POST" action="/api/sample" onSubmit={() => track('sample_started')}>
+            <button
+              type="submit"
+              className="inline-flex items-center justify-center rounded-md border border-input bg-background px-6 py-3 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors"
+            >
+              Try with Sample Data
+            </button>
+          </form>
         </div>
 
         <div className="rounded-lg border bg-gray-50 p-5 text-left space-y-3">
