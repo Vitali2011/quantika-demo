@@ -35,8 +35,15 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# session database
-/data/
+# session database (data/sessions.db etc.) — but allow committed reference data
+/data/*
+!/data/ports/
+/data/ports/.cache/
+/data/ports/*.skeleton.json
+/data/ports/*.draft.json
+
+# UN/LOCODE source CSVs (regenerable from UNECE) — keep out of repo
+/scripts/.cache/
 
 # wave-pipeline artifacts (never commit)
 /.wave/

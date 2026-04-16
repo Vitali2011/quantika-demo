@@ -85,10 +85,17 @@ describe('parseUnlocodeRow', () => {
     expect(parseUnlocodeRow(row)).toBeNull();
   });
 
-  it('returns null when status is QQ/XX/RR/RL (unapproved)', () => {
-    for (const badStatus of ['QQ', 'XX', 'RR', 'RL']) {
+  it('returns null when status is QQ/XX (scheduled for removal)', () => {
+    for (const badStatus of ['QQ', 'XX']) {
       const row = FIXTURE_ROTTERDAM.replace('"AI"', `"${badStatus}"`);
       expect(parseUnlocodeRow(row)).toBeNull();
+    }
+  });
+
+  it('accepts RL/RN/RR statuses (renamed/restored — codes still in use)', () => {
+    for (const ok of ['RL', 'RN', 'RR']) {
+      const row = FIXTURE_ROTTERDAM.replace('"AI"', `"${ok}"`);
+      expect(parseUnlocodeRow(row)).not.toBeNull();
     }
   });
 
@@ -99,9 +106,13 @@ describe('parseUnlocodeRow', () => {
     }
   });
 
-  it('returns null when coordinates are missing (skip unmappable ports)', () => {
+  it('accepts rows with empty coordinates (lat/lon null) — common for major UK/EU ports', () => {
     const row = FIXTURE_ROTTERDAM.replace('"5155N 00429E"', '""');
-    expect(parseUnlocodeRow(row)).toBeNull();
+    const r = parseUnlocodeRow(row);
+    expect(r).not.toBeNull();
+    expect(r!.lat).toBeNull();
+    expect(r!.lon).toBeNull();
+    expect(r!.unlocode).toBe('NLRTM');
   });
 
   it('returns null for country-header rows (no Location code)', () => {

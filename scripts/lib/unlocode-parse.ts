@@ -26,8 +26,8 @@ export interface ParsedUnlocodeRow {
   unlocode: string;        // 5-char: country + location (e.g. "NLRTM")
   country: string;         // ISO-2
   name: string;            // canonical name from "Name" column
-  lat: number;
-  lon: number;
+  lat: number | null;      // null when CSV "Coordinates" cell is empty
+  lon: number | null;
   subdivision?: string;    // e.g. "ZH" for Zuid-Holland
   function: string;        // 8-char bitmap
 }
@@ -49,6 +49,15 @@ const ACCEPTED_STATUS = new Set([
   'AQ', // Entry approved, function unknown
   'AS', // Approved (by national standardization body)
   'RQ', // Entry reserved (qualifier)
+  // RL/RN/RR are "renamed" entries — UN/LOCODE flags them as deprecated but
+  // the underlying port is operational and the code is still in commercial
+  // use (Port Klang MYPKG, Tanjung Priok IDTPP, Hazira INHZR, Ajman AEAJM
+  // are all currently-active major ports flagged RL because their reference
+  // changed at some past revision). We accept these. Skip XX/QQ which are
+  // scheduled for removal.
+  'RL', // Renamed
+  'RN', // New name approved
+  'RR', // Restored / reactivated
 ]);
 
 /** Round to 3 decimals (cleaner output, avoids floating-point noise). */
@@ -140,15 +149,17 @@ export function parseUnlocodeRow(line: string): ParsedUnlocodeRow | null {
   // rail/road/airport/etc with matching digit markers.
   if (funcStr[0] !== '1') return null;
 
+  // UN/LOCODE often omits coordinates for major ports (Felixstowe, Algeciras,
+  // Bremen, etc.). We accept these rows — coords are filled later from the
+  // curated target list or LLM enrichment.
   const coords = parseUnlocodeCoords(coordsStr);
-  if (!coords) return null;
 
   return {
     unlocode: (country + location).toUpperCase(),
     country: country.toUpperCase(),
     name,
-    lat: coords.lat,
-    lon: coords.lon,
+    lat: coords?.lat ?? null,
+    lon: coords?.lon ?? null,
     subdivision: subdivision || undefined,
     function: funcStr,
   };
