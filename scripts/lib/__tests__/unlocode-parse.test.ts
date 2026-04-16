@@ -62,7 +62,10 @@ describe('parseUnlocodeRow', () => {
   // UN/LOCODE CSV format (12 fields):
   // Change, Country, Location, Name, NameWoDiacritics, Subdivision, Status,
   // Function, Date, IATA, Coordinates, Remarks
-  const FIXTURE_ROTTERDAM = '"","NL","RTM","Rotterdam","Rotterdam","","AI","1-------","1601","RTM","5155N 00429E",""';
+  // UN/LOCODE CSV field order:
+  // 0:Change 1:Country 2:Location 3:Name 4:NameWoDiacritics 5:Subdivision
+  // 6:Function 7:Status 8:Date 9:IATA 10:Coordinates 11:Remarks
+  const FIXTURE_ROTTERDAM = '"","NL","RTM","Rotterdam","Rotterdam","","1-------","AI","1601","RTM","5155N 00429E",""';
 
   it('extracts unlocode, name, country, coords for a valid port row', () => {
     const r = parseUnlocodeRow(FIXTURE_ROTTERDAM);
@@ -89,9 +92,11 @@ describe('parseUnlocodeRow', () => {
     }
   });
 
-  it('accepts AA (Approved) as well as AI (Approved, Information)', () => {
-    const row = FIXTURE_ROTTERDAM.replace('"AI"', '"AA"');
-    expect(parseUnlocodeRow(row)).not.toBeNull();
+  it('accepts AA/AC/AF/AI/AM/AS (all Approved variants)', () => {
+    for (const ok of ['AA', 'AC', 'AF', 'AI', 'AM', 'AS']) {
+      const row = FIXTURE_ROTTERDAM.replace('"AI"', `"${ok}"`);
+      expect(parseUnlocodeRow(row)).not.toBeNull();
+    }
   });
 
   it('returns null when coordinates are missing (skip unmappable ports)', () => {

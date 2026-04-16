@@ -32,7 +32,24 @@ export interface ParsedUnlocodeRow {
   function: string;        // 8-char bitmap
 }
 
-const ACCEPTED_STATUS = new Set(['AA', 'AI']);
+/**
+ * Status codes we accept (all "Approved" variants by different national bodies).
+ * Deliberately excludes RL/RN/RR/RB (renamed/restored) and XX/QQ (to-remove)
+ * since those are deprecated or in-flux — we'd rather skip and patch via the
+ * curated target list than emit a soon-to-be-invalid UNLOCODE.
+ *
+ * Reference: https://service.unece.org/trade/locode/Service/LocodeColumn.htm
+ */
+const ACCEPTED_STATUS = new Set([
+  'AA', // Approved
+  'AC', // Approved (by competent national body)
+  'AF', // Approved (by national facilitation body)
+  'AI', // Approved (by competent authority)
+  'AM', // Approved (by other means)
+  'AQ', // Entry approved, function unknown
+  'AS', // Approved (by national standardization body)
+  'RQ', // Entry reserved (qualifier)
+]);
 
 /** Round to 3 decimals (cleaner output, avoids floating-point noise). */
 function round3(n: number): number {
@@ -103,12 +120,15 @@ export function parseUnlocodeRow(line: string): ParsedUnlocodeRow | null {
   const fields = parseCsvLine(line);
   if (fields.length < 11) return null;
 
+  // UN/LOCODE CSV field order (confirmed from 2024-2 CodeList):
+  // 0:Change 1:Country 2:Location 3:Name 4:NameWoDiacritics 5:Subdivision
+  // 6:Function 7:Status 8:Date 9:IATA 10:Coordinates 11:Remarks
   const country = fields[1]?.trim();
   const location = fields[2]?.trim();
   const name = fields[3]?.trim();
   const subdivision = fields[5]?.trim();
-  const status = fields[6]?.trim();
-  const funcStr = fields[7]?.trim();
+  const funcStr = fields[6]?.trim();
+  const status = fields[7]?.trim();
   const coordsStr = fields[10]?.trim();
 
   if (!country || !location || !name) return null;
