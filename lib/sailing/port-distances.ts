@@ -246,11 +246,15 @@ export function normalizePortName(raw: string | null | undefined): string | null
   }
 
   // Fuzzy fallback (typos, casing) — uses fuzzysort over alias + canonical
-  // names. Threshold tuned empirically: -200 is conservative (rejects garbage
-  // like "xyz123") while still catching single-letter typos in port names.
+  // names. fuzzysort v3 scores are in [0,1] (not the legacy negative scale).
+  // Threshold 0.3 is the empirical floor that catches single-letter typos
+  // ("Karsu"→Karasu scores ~0.35) while filtering near-garbage subsequences.
+  // Minimum length guard: inputs shorter than 4 chars are too ambiguous for
+  // fuzzy matching and are left to the direct alias table above.
   const corpus = getFuzzyCorpus();
   const cleaned = s.toLowerCase();
-  const results = fuzzysort.go(cleaned, corpus, { key: 'lookup', threshold: -200, limit: 1 });
+  if (cleaned.length < 4) return null;
+  const results = fuzzysort.go(cleaned, corpus, { key: 'lookup', threshold: 0.3, limit: 1 });
   if (results.length > 0) {
     return results[0].obj.canonical;
   }
@@ -300,6 +304,7 @@ export function getPortDistance(
   const pb = getPortMaster(b);
   if (!pa || !pb) return null;
   if (pa.lat == null || pa.lon == null || pb.lat == null || pb.lon == null) return null;
+  if (!Number.isFinite(pa.lat) || !Number.isFinite(pa.lon) || !Number.isFinite(pb.lat) || !Number.isFinite(pb.lon)) return null;
 
   return { nm: haversineDistanceNm(pa.lat, pa.lon, pb.lat, pb.lon), exact: false };
 }

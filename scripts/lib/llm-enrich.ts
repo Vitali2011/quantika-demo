@@ -76,8 +76,11 @@ function fallbackRecord(skeleton: SkeletonPort): PortMaster {
     unlocode: skeleton.unlocode,
     name: skeleton.name,
     country: skeleton.country,
-    lat: skeleton.lat ?? 0,
-    lon: skeleton.lon ?? 0,
+    // NaN signals "coords unknown" without colliding with (0,0) Gulf of Guinea.
+    // getPortDistance() guards with Number.isFinite() so these ports never produce
+    // haversine distances — callers degrade gracefully to null.
+    lat: skeleton.lat ?? NaN,
+    lon: skeleton.lon ?? NaN,
     maxDraftM: 10,
     hasShoreCranes: false,
     berthType: 'deep-sea',
@@ -91,9 +94,11 @@ function fallbackRecord(skeleton: SkeletonPort): PortMaster {
 
 /** Merge LLM enrichment into skeleton, preserving skeleton coords unless LLM fills nulls. */
 function mergeEnrichment(skeleton: SkeletonPort, llm: LlmPortEnrichment): PortMaster {
-  // Prefer skeleton coords; accept LLM coords only when skeleton has null
-  const lat = skeleton.lat ?? (typeof llm.lat === 'number' ? llm.lat : 0);
-  const lon = skeleton.lon ?? (typeof llm.lon === 'number' ? llm.lon : 0);
+  // Prefer skeleton coords; accept LLM coords only when skeleton has null.
+  // Fall back to NaN (not 0) so getPortDistance()'s isFinite guard treats
+  // unknown coords as "unavailable" rather than placing the port at (0,0).
+  const lat = skeleton.lat ?? (typeof llm.lat === 'number' ? llm.lat : NaN);
+  const lon = skeleton.lon ?? (typeof llm.lon === 'number' ? llm.lon : NaN);
 
   return {
     unlocode: skeleton.unlocode,

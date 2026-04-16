@@ -186,7 +186,7 @@ async function stageEnrichAll(): Promise<void> {
   if (needsEnrichment.length === 0) {
     log('All ports already enriched — writing final port-master.json');
   } else {
-    log(`Enriching ${needsEnrichment.length} remaining ports in batches of 20...`);
+    log(`Enriching ${needsEnrichment.length} remaining ports in batches of 10...`);
     const enriched = await enrichPortsBatch(needsEnrichment);
     log(`✓ Enriched ${enriched.length} ports`);
     alreadyEnriched.push(...enriched);
