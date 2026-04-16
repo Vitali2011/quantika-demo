@@ -82,7 +82,7 @@ export default async function EmailDetailPage({ params }: Props) {
   ];
 
   // Deduplicate legend entries by label
-  const legendItems = [...new Map(highlights.map(h => [h.label, h])).values()];
+  const legendItems = Array.from(new Map(highlights.map(h => [h.label, h])).values());
 
   return (
     <main className="min-h-screen bg-gray-50 py-4 sm:py-8 px-3 sm:px-4">

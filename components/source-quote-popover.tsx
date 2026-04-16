@@ -1,6 +1,6 @@
 'use client';
 
-import * as Popover from '@base-ui/react/popover';
+import { Popover } from '@base-ui/react/popover';
 
 interface Props {
   children: React.ReactNode;
