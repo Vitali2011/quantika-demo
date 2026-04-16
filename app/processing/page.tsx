@@ -105,7 +105,15 @@ export default function ProcessingPage() {
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 90_000);
           try {
-            const res = await fetch(step.endpoint, { method: 'POST', signal: controller.signal });
+            const csrfToken = document.cookie
+              .split('; ')
+              .find(r => r.startsWith('csrf_token='))
+              ?.split('=')[1] ?? '';
+            const res = await fetch(step.endpoint, {
+              method: 'POST',
+              signal: controller.signal,
+              headers: { 'X-CSRF-Token': csrfToken },
+            });
             clearTimeout(timeoutId);
             if (!res.ok) {
               const body = await res.json().catch(() => ({}));
