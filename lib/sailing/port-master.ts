@@ -15,7 +15,8 @@
  * sourceNote) to support global port coverage via scripts/generate-port-master.ts.
  */
 
-import { normalizePortName } from './port-distances';
+import PORTS_JSON from '@/data/ports/port-master.json';
+import { loadPortMasterFromJson } from './port-master-loader';
 
 export interface PortMaster {
   /** UN/LOCODE (5 uppercase chars, e.g. "NLRTM"). */
@@ -50,90 +51,16 @@ export interface PortMaster {
   sourceNote?: string;
 }
 
-/**
- * Hardcoded port master for the 15 demo-scope ports (Wave 1-3 legacy).
- * Draft values are "safe" working draft, typically dredged depth minus UKC
- * (under-keel clearance, usually 1-1.5m). UN/LOCODEs + coordinates added
- * in Wave 4 ahead of the JSON-backed refactor.
- */
-const PORT_MASTER: Record<string, PortMaster> = {
-  // ── Black Sea ──
-  Karasu: {
-    unlocode: 'TRKRS', name: 'Karasu', country: 'TR', lat: 41.113, lon: 30.683,
-    maxDraftM: 11.0, hasShoreCranes: true, berthType: 'deep-sea',
-    note: 'Turkish Black Sea port, steel/grain',
-  },
-  Istanbul: {
-    unlocode: 'TRIST', name: 'Istanbul', country: 'TR', lat: 41.008, lon: 28.978,
-    maxDraftM: 13.0, hasShoreCranes: true, berthType: 'deep-sea',
-  },
-  Mykolaiv: {
-    unlocode: 'UANLK', name: 'Mykolaiv', country: 'UA', lat: 46.950, lon: 31.992,
-    maxDraftM: 10.5, hasShoreCranes: true, berthType: 'river',
-    note: 'Buh river, pilotage required',
-  },
-  Odesa: {
-    unlocode: 'UAODS', name: 'Odesa', country: 'UA', lat: 46.485, lon: 30.742,
-    maxDraftM: 13.0, hasShoreCranes: true, berthType: 'deep-sea',
-  },
-  Constanta: {
-    unlocode: 'ROCND', name: 'Constanta', country: 'RO', lat: 44.183, lon: 28.650,
-    maxDraftM: 14.5, hasShoreCranes: true, berthType: 'deep-sea',
-  },
-  Varna: {
-    unlocode: 'BGVAR', name: 'Varna', country: 'BG', lat: 43.204, lon: 27.914,
-    maxDraftM: 11.5, hasShoreCranes: true, berthType: 'deep-sea',
-  },
-  Burgas: {
-    unlocode: 'BGBOJ', name: 'Burgas', country: 'BG', lat: 42.495, lon: 27.473,
-    maxDraftM: 12.5, hasShoreCranes: true, berthType: 'deep-sea',
-  },
-  Novorossiysk: {
-    unlocode: 'RUNVS', name: 'Novorossiysk', country: 'RU', lat: 44.723, lon: 37.767,
-    maxDraftM: 14.0, hasShoreCranes: true, berthType: 'deep-sea',
-  },
-  // ── Aegean / Eastern Med ──
-  Piraeus: {
-    unlocode: 'GRPIR', name: 'Piraeus', country: 'GR', lat: 37.942, lon: 23.642,
-    maxDraftM: 17.0, hasShoreCranes: true, berthType: 'deep-sea',
-  },
-  Aliaga: {
-    unlocode: 'TRALI', name: 'Aliaga', country: 'TR', lat: 38.800, lon: 26.970,
-    maxDraftM: 14.0, hasShoreCranes: true, berthType: 'terminal',
-    note: 'Aliaga bay incl. Efesan',
-  },
-  // ── Mediterranean ──
-  Alexandria: {
-    unlocode: 'EGALY', name: 'Alexandria', country: 'EG', lat: 31.200, lon: 29.870,
-    maxDraftM: 12.5, hasShoreCranes: true, berthType: 'deep-sea',
-  },
-  Ravenna: {
-    unlocode: 'ITRAN', name: 'Ravenna', country: 'IT', lat: 44.485, lon: 12.284,
-    maxDraftM: 10.5, hasShoreCranes: true, berthType: 'deep-sea',
-    note: 'Adriatic, channel-access',
-  },
-  Skikda: {
-    unlocode: 'DZSKI', name: 'Skikda', country: 'DZ', lat: 36.876, lon: 6.898,
-    maxDraftM: 12.0, hasShoreCranes: false, berthType: 'deep-sea',
-    note: 'Mostly oil/LNG, limited dry-bulk cranes',
-  },
-  // ── Atlantic ──
-  Casablanca: {
-    unlocode: 'MACAS', name: 'Casablanca', country: 'MA', lat: 33.600, lon: -7.620,
-    maxDraftM: 12.0, hasShoreCranes: true, berthType: 'deep-sea',
-  },
-  Bayonne: {
-    unlocode: 'FRBAY', name: 'Bayonne', country: 'FR', lat: 43.523, lon: -1.478,
-    maxDraftM: 9.5, hasShoreCranes: true, berthType: 'bay',
-    note: 'Bayonne/Bilbao range, tidal',
-  },
-};
-
 /** Lookup port master data. Returns null for unknown ports (not an error — caller decides). */
 export function getPortMaster(rawName: string | null | undefined): PortMaster | null {
+  if (!rawName) return null;
+  // Lazy require to avoid circular dep (port-distances imports port-master)
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { normalizePortName } = require('./port-distances') as { normalizePortName: (s: string) => string | null };
   const canonical = normalizePortName(rawName);
   if (!canonical) return null;
-  return PORT_MASTER[canonical] ?? null;
+  const map = loadPortMasterFromJson(PORTS_JSON as unknown as PortMaster[]);
+  return map.get(canonical.toLowerCase()) ?? null;
 }
 
 export interface DraftCheckResult {
