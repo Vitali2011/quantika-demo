@@ -49,6 +49,22 @@
 
 **Acceptance:** пилот с 3 брокерами, zero "impossible match" инцидентов, positive feedback от хотя бы 2/3.
 
+## Wave 4 — Port Master Global (v1.1.0) — 2026-04-16
+
+**Goal:** Scale port coverage 15 → 416 ports, global dry-bulk / general cargo / container hubs.
+
+**Delivered:**
+- UN/LOCODE 2024-2 CSV ingestion pipeline (`scripts/generate-port-master.ts`)
+- JSON-backed port master (`data/ports/port-master.json`, ~416 ports)
+- Fuzzy port-name matching via `fuzzysort` (case/prefix/alias/unlocode)
+- Haversine great-circle distance fallback for pairs outside hardcoded matrix
+- LLM enrichment (gpt-5.4-mini) for draft/crane/berth/LOA/tidal/ice fields
+- UI "~1487 NM (approx)" prefix for haversine-computed distances
+- `scripts/verify-ports.ts` for manual data quality review
+- +78 new tests (454 total)
+
+**Post-release:** Monitor `dataConfidence=low` entries; accurate sea routing via searoutes.com → Wave 5 backlog.
+
 ## Out of scope (не для МВП)
 
 - Freight rate benchmarking (Baltic Exchange) — phase 2
