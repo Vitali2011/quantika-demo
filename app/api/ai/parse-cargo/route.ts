@@ -5,6 +5,7 @@ import { CARGO_INQUIRY_PARSER_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_LIGHT } from '@/lib/constants';
 import { CargoType, ParsedCargo } from '@/lib/types';
 import { toConfidence, extractNum } from '@/lib/parsing-utils';
+import { calibrateAll } from '@/lib/validation/confidence-calibration';
 
 interface RawCargoItem {
   origin_port?: unknown;
@@ -67,7 +68,7 @@ export async function POST(request: NextRequest) {
       const items = Array.isArray(result.items) ? result.items : [result];
 
       items.forEach((item, idx) => {
-        allParsed.push({
+        allParsed.push(calibrateAll({
           emailId: email.id,
           itemIndex: idx,
           originPort: toConfidence<string>(item.origin_port),
@@ -94,7 +95,7 @@ export async function POST(request: NextRequest) {
           specialRequirements: item.special_requirements || null,
           stowageFactor: item.stowage_factor || null,
           missingInfo: Array.isArray(item.missing_info) ? item.missing_info : [],
-        });
+        }) as ParsedCargo);
       });
     })
   );

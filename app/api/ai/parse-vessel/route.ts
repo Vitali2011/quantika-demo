@@ -6,6 +6,7 @@ import { AI_MODEL_LIGHT } from '@/lib/constants';
 import { ParsedVessel } from '@/lib/types';
 import { extractNum, toConfidence } from '@/lib/parsing-utils';
 import { validateImo } from '@/lib/validation/imo';
+import { calibrateAll } from '@/lib/validation/confidence-calibration';
 
 interface RawVesselItem {
   vessel_name?: unknown;
@@ -80,7 +81,7 @@ export async function POST(request: NextRequest) {
       const items = Array.isArray(result.items) ? result.items : [result];
 
       items.forEach((item, idx) => {
-        allParsed.push({
+        allParsed.push(calibrateAll({
           emailId: email.id,
           itemIndex: idx,
           vesselName: toConfidence<string>(item.vessel_name),
@@ -135,7 +136,7 @@ export async function POST(request: NextRequest) {
           consumption: item.consumption || null,
           deckCapacity: item.deck_capacity || null,
           specialFeatures: Array.isArray(item.special_features) ? item.special_features : [],
-        });
+        }) as ParsedVessel);
       });
     })
   );
