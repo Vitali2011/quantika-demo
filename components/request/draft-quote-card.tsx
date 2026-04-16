@@ -81,13 +81,13 @@ export function DraftQuoteCard({ emailId }: DraftQuoteCardProps) {
         <Card>
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
             <CardTitle className="text-sm font-medium">Draft Quote</CardTitle>
-            <Button size="sm" variant="ghost" onClick={() => copyToClipboard(quoteDraft, 'quote')}>
+            <Button size="sm" variant="ghost" onClick={() => copyToClipboard(quoteDraft, 'quote')} aria-label={copied === 'quote' ? 'Copied' : 'Copy quote to clipboard'}>
               {copied === 'quote' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
             </Button>
           </CardHeader>
           <CardContent>
             <textarea
-              className="w-full min-h-[200px] text-sm font-mono bg-muted rounded p-3 resize-y border-0 focus:outline-none"
+              className="w-full min-h-[200px] text-sm font-mono bg-muted rounded p-3 resize-y border-0 focus:ring-2 focus:ring-offset-2 outline-none"
               value={quoteDraft}
               onChange={e => setQuoteDraft(e.target.value)}
             />
@@ -99,13 +99,13 @@ export function DraftQuoteCard({ emailId }: DraftQuoteCardProps) {
         <Card>
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
             <CardTitle className="text-sm font-medium">Follow-up Request</CardTitle>
-            <Button size="sm" variant="ghost" onClick={() => copyToClipboard(replyDraft, 'reply')}>
+            <Button size="sm" variant="ghost" onClick={() => copyToClipboard(replyDraft, 'reply')} aria-label={copied === 'reply' ? 'Copied' : 'Copy reply to clipboard'}>
               {copied === 'reply' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
             </Button>
           </CardHeader>
           <CardContent>
             <textarea
-              className="w-full min-h-[160px] text-sm font-mono bg-muted rounded p-3 resize-y border-0 focus:outline-none"
+              className="w-full min-h-[160px] text-sm font-mono bg-muted rounded p-3 resize-y border-0 focus:ring-2 focus:ring-offset-2 outline-none"
               value={replyDraft}
               onChange={e => setReplyDraft(e.target.value)}
             />

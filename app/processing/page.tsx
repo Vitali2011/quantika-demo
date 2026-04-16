@@ -163,10 +163,16 @@ export default function ProcessingPage() {
           <p className="text-xs text-muted-foreground">{progress}%</p>
         </div>
 
-        <ul className="text-left space-y-2">
+        <ul className="text-left space-y-2" aria-label="Processing steps" aria-live="polite">
           {STEPS.map((step, i) => (
-            <li key={step.endpoint} className="flex items-center gap-3 text-sm">
-              <span className="w-5 text-center shrink-0">{stepIcon(statuses[i])}</span>
+            <li
+              key={step.endpoint}
+              className="flex items-center gap-3 text-sm rounded focus:ring-2 focus:ring-offset-2 outline-none"
+              tabIndex={0}
+              aria-label={`${step.label} — ${statuses[i]}`}
+              aria-current={statuses[i] === 'active' ? 'step' : undefined}
+            >
+              <span className="w-5 text-center shrink-0" aria-hidden="true">{stepIcon(statuses[i])}</span>
               <span className={
                 statuses[i] === 'active' ? 'font-medium text-foreground' :
                 statuses[i] === 'done' ? 'text-muted-foreground' :

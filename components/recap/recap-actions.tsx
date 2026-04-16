@@ -48,13 +48,13 @@ export function RecapActions({ pendingPoints }: RecapActionsProps) {
         <Card>
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
             <CardTitle className="text-sm font-medium">Follow-up Draft</CardTitle>
-            <Button size="sm" variant="ghost" onClick={copyToClipboard}>
+            <Button size="sm" variant="ghost" onClick={copyToClipboard} aria-label={copied ? 'Copied' : 'Copy to clipboard'}>
               {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
             </Button>
           </CardHeader>
           <CardContent>
             <textarea
-              className="w-full min-h-[160px] text-sm font-mono bg-muted rounded p-3 resize-y border-0 focus:outline-none"
+              className="w-full min-h-[160px] text-sm font-mono bg-muted rounded p-3 resize-y border-0 focus:ring-2 focus:ring-offset-2 outline-none"
               value={draft}
               onChange={e => setDraft(e.target.value)}
             />
