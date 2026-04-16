@@ -11,8 +11,8 @@ const SAMPLE_EMAILS = [
 ];
 
 describe('SAMPLE_EMAILS', () => {
-  it('count: contains 19 emails', () => {
-    expect(SAMPLE_EMAILS).toHaveLength(19);
+  it('count: contains 21 emails', () => {
+    expect(SAMPLE_EMAILS).toHaveLength(21);
   });
 
   it('required-fields: every email has id, subject, from, body', () => {
