@@ -9,6 +9,7 @@ import { DraftQuoteCard } from '@/components/request/draft-quote-card';
 import { MapPin, Package, Weight, Ship, Calendar, FileText, AlertTriangle, ChevronLeft, Anchor } from 'lucide-react';
 import { STATUS_CONFIG } from '@/lib/constants';
 import { cfValue, Renderable } from '@/lib/types';
+import { AnalyticsTracker } from '@/lib/analytics-tracker';
 
 // Universal safe renderer — handles ConfidenceField objects, plain values, null
 function safeRender(v: Renderable): string {
@@ -55,6 +56,7 @@ export default async function CargoDetailPage({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-gray-50 py-4 sm:py-8 px-3 sm:px-4">
+      <AnalyticsTracker event="detail_viewed" properties={{ type: 'cargo' }} />
       <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
         {/* Back link */}
         <Link href="/dashboard" className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">

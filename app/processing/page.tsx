@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Progress } from '@/components/ui/progress';
+import { track } from '@/lib/analytics';
 
 type StepStatus = 'pending' | 'active' | 'done' | 'error' | 'skipped';
 
@@ -134,6 +135,7 @@ export default function ProcessingPage() {
           );
           for (const r of results) {
             if (!r.ok) {
+              track('processing_failed', { step: r.step.endpoint });
               if (r.step.critical) {
                 setStatuses(prev => { const next = [...prev]; next[r.idx] = 'error'; return next; });
                 setFailedStep(r.step.endpoint);
@@ -147,6 +149,7 @@ export default function ProcessingPage() {
           for (let i = 0; i < group.steps.length; i++) {
             const r = await runStep(group.steps[i], flatIdx + i);
             if (!r.ok) {
+              track('processing_failed', { step: r.step.endpoint });
               if (r.step.critical) {
                 setStatuses(prev => { const next = [...prev]; next[r.idx] = 'error'; return next; });
                 setFailedStep(r.step.endpoint);
@@ -162,6 +165,7 @@ export default function ProcessingPage() {
       }
 
       if (!cancelled) {
+        track('processing_complete');
         router.push('/dashboard');
       }
     }

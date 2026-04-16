@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { getSession } from '@/lib/session';
 import { filterByCategory, getEmailCounts } from '@/lib/dashboard-queries';
 import { EmailCard, EmailSection, ActionPanel } from '@/components/dashboard';
+import { AnalyticsTracker } from '@/lib/analytics-tracker';
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
@@ -56,6 +57,7 @@ export default async function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-gray-50 py-4 sm:py-8 px-3 sm:px-4">
+      <AnalyticsTracker event="dashboard_viewed" />
       <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
         <div>
           <h1 className="text-lg sm:text-xl font-bold text-gray-900">Good morning. Here&apos;s what needs your attention:</h1>

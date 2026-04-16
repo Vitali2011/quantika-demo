@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { ChevronLeft, AlertTriangle } from 'lucide-react';
 import { Renderable } from '@/lib/types';
 import { CopyButton } from '@/components/copy-button';
+import { AnalyticsTracker } from '@/lib/analytics-tracker';
 
 function safeRender(v: Renderable): string {
   if (v == null) return '';
@@ -76,6 +77,7 @@ export default async function FixtureDetailPage({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-gray-50 py-4 sm:py-8 px-3 sm:px-4">
+      <AnalyticsTracker event="detail_viewed" properties={{ type: 'fixture' }} />
       <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
         <Link href="/dashboard" className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ChevronLeft className="h-4 w-4" /> Back to Dashboard
