@@ -447,11 +447,66 @@ MATCH LEVELS:
 - "possible": score 40-70 — viable but has gaps or uncertainties
 - "weak": score < 40 — technically possible but significant issues
 
+MATCH_REASONS RULES:
+
+Each reason MUST cite at least ONE concrete number or vessel/cargo fact from the provided data. Vague statements are NOT allowed.
+
+BAD (avoid these exact patterns):
+- "Good fit for the cargo"
+- "Vessel fits requirements"
+- "Timing is tight"
+- "Readiness status: Insufficient data"
+- "Geographic proximity is good"
+- "Suitable for the cargo type"
+
+GOOD (follow these patterns):
+- DWT/DWCC fit: "DWCC 3,600 mt vs cargo 2,800 mt → 78% utilization, efficient load"
+- Distance/timing: "Sailing 380nm at 12kn ≈ 1.3 days; arrives 3 days before laycan start (ideal)"
+- Cargo-type match: "Vessel's last cargo 'steel, fertilizer' matches BREAK_BULK cargo"
+- Grain capacity: "Grain capacity 4,700 cbm covers ~3,200 cbm required (weight × 0.95 stowage factor)"
+- Gearing: "Vessel geared 2×25t — suitable for 50kg bags without shore crane"
+- Geography: "Vessel open Skikda, cargo loads Alexandria — ~1,100nm ballast, ~3.7 days"
+
+Each reason should be ONE sentence, citing actual values from the data. Round numbers sensibly (no "375.836 nm" — write "~380nm"). Include units (mt, cbm, nm, kn, days).
+
+If a specific number is null/unknown in the data → don't invent it; instead use "unknown" and flag in issues:
+- Issue: "Vessel speed not specified — sailing time uncertain"
+- Issue: "Cargo stowage factor unknown — using default 1.35 m³/mt"
+
+SKIP generic endorsements. Every reason earns its place by citing a number or concrete fact.
+
+ISSUES RULES:
+
+Issues are flagged for broker attention. Each issue should point to a specific missing or marginal data point.
+
+GOOD issue formats:
+- "Cargo weight uncertain (range 4,000-4,800 mt given); using midpoint 4,400 mt"
+- "Vessel's last cargo not specified — cargo-type match confidence lower"
+- "Discharge rate not given — voyage duration cannot be fully estimated"
+- "Commission terms unclear ('TTL' noted but percentage not specified)"
+- "Laycan window 25-30 Sep conflicts with vessel's ETA 05 Oct (5 days late)"
+- "Stale vessel position — last updated 14 days ago"
+- "Vessel arrives X days early — idle time increases owner's cost risk"
+
+BAD patterns to avoid:
+- "Some concerns exist"
+- "Fit is uncertain"
+- "Broker should verify"
+
+SCORE CONSISTENCY:
+
+Your score (0-100) must correlate with the match_reasons:
+- If you list 3+ positive reasons citing concrete fits → score 70-85 (good)
+- If reasons include timing warnings or "~25% utilization" → score 45-65 (possible)
+- If reasons are mostly "unknown" or issues outnumber strengths → score 30-45 (weak)
+- If you find hard problems (DWT too small, gearless+bagged-cargo, etc.) → score 20-30
+- Downstream filters will adjust for readiness/sanctions; focus on physical & commercial fit
+
 IMPORTANT:
 - Do NOT show the numeric score to the user. Score is internal only.
 - Present match_reasons and issues in plain English for the commercial team.
 - In match_reasons, reference the computed readiness verbatim when relevant, e.g.:
-    "Vessel opens at Karasu, arrives Mykolaiv ~6 Sep — 2d before laycan, clean window."
+    "Vessel opens at Karasu, arrives Mykolaiv ~6 Sep — 2d before laycan start (ideal)."
   Do NOT fabricate timing claims; only cite what is in the readiness block.
 
 Output format:

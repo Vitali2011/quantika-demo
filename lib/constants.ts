@@ -27,6 +27,8 @@ export const CATEGORY_LABELS: Record<string, string> = {
   FIXTURE_RECAP: 'Fixture Recaps',
   CLIENT_REPLY: 'Client Replies',
   DOCUMENT: 'Documents',
+  VESSEL_CERTIFICATE: 'Vessel Certificates',
+  TCT_REQUEST: 'TCT Requests',
   OTHER: 'Other',
 };
 
@@ -36,6 +38,8 @@ export const CATEGORY_COLORS: Record<string, string> = {
   FIXTURE_RECAP: 'bg-purple-100 text-purple-800',
   CLIENT_REPLY: 'bg-orange-100 text-orange-800',
   DOCUMENT: 'bg-yellow-100 text-yellow-800',
+  VESSEL_CERTIFICATE: 'bg-teal-100 text-teal-800',
+  TCT_REQUEST: 'bg-indigo-100 text-indigo-800',
   OTHER: 'bg-gray-100 text-gray-800',
 };
 

@@ -32,6 +32,8 @@ export default async function DashboardPage() {
   const fixtureRows = filterByCategory(emails, processedEmails, 'FIXTURE_RECAP');
   const clientReplyRows = filterByCategory(emails, processedEmails, 'CLIENT_REPLY');
   const documentRows = filterByCategory(emails, processedEmails, 'DOCUMENT');
+  const vesselCertRows = filterByCategory(emails, processedEmails, 'VESSEL_CERTIFICATE');
+  const tctRequestRows = filterByCategory(emails, processedEmails, 'TCT_REQUEST');
   const otherOnlyRows = filterByCategory(emails, processedEmails, 'OTHER');
   const otherRows = [...clientReplyRows, ...documentRows, ...otherOnlyRows];
   const needsActionCargo = cargoRows.filter((r) => r.statusGroup === 'NEEDS_ACTION');
@@ -42,7 +44,7 @@ export default async function DashboardPage() {
   const commissionLines = commissionSummary?.totalByCurrency
     .map((t) => `~${t.currency} ${t.amount.toLocaleString(undefined, { maximumFractionDigits: 0 })}`)
     .join(' + ') || null;
-  const categoryCounts = getEmailCounts({ CARGO_INQUIRY: cargoRows, VESSEL_POSITION: vesselRows, FIXTURE_RECAP: fixtureRows, CLIENT_REPLY: clientReplyRows, DOCUMENT: documentRows, OTHER: otherOnlyRows });
+  const categoryCounts = getEmailCounts({ CARGO_INQUIRY: cargoRows, VESSEL_POSITION: vesselRows, FIXTURE_RECAP: fixtureRows, CLIENT_REPLY: clientReplyRows, DOCUMENT: documentRows, VESSEL_CERTIFICATE: vesselCertRows, TCT_REQUEST: tctRequestRows, OTHER: otherOnlyRows });
   const isSample = session.isSampleData === true;
   const senderMap = new Map<string, { name: string; count: number }>();
   for (const email of emails) {
@@ -79,6 +81,8 @@ export default async function DashboardPage() {
                 { key: 'CARGO_INQUIRY', emoji: '📦', label: 'Cargo Inquiries', count: categoryCounts.CARGO_INQUIRY },
                 { key: 'VESSEL_POSITION', emoji: '🚢', label: 'Vessel Positions', count: categoryCounts.VESSEL_POSITION },
                 { key: 'FIXTURE_RECAP', emoji: '📋', label: 'Fixture Recaps', count: categoryCounts.FIXTURE_RECAP },
+                { key: 'VESSEL_CERTIFICATE', emoji: '📜', label: 'Vessel Certificates', count: categoryCounts.VESSEL_CERTIFICATE },
+                { key: 'TCT_REQUEST', emoji: '⏱', label: 'TCT Requests', count: categoryCounts.TCT_REQUEST },
                 { key: 'DOCUMENT', emoji: '📄', label: 'Documents', count: categoryCounts.DOCUMENT },
                 { key: 'CLIENT_REPLY', emoji: '💬', label: 'Client Replies', count: categoryCounts.CLIENT_REPLY },
                 { key: 'OTHER', emoji: '📁', label: 'Other', count: categoryCounts.OTHER },
@@ -94,6 +98,16 @@ export default async function DashboardPage() {
             <div id="cargo"><EmailSection category="CARGO_INQUIRY" rows={cargoRows} totalCount={categoryCounts.CARGO_INQUIRY} /></div>
             <div><EmailSection category="VESSEL_POSITION" rows={vesselRows} totalCount={categoryCounts.VESSEL_POSITION} /></div>
             <div id="fixture"><EmailSection category="FIXTURE_RECAP" rows={fixtureRows} totalCount={categoryCounts.FIXTURE_RECAP} /></div>
+            {categoryCounts.VESSEL_CERTIFICATE > 0 && (
+              <div id="vessel-certificates">
+                <EmailSection category="VESSEL_CERTIFICATE" rows={vesselCertRows} totalCount={categoryCounts.VESSEL_CERTIFICATE} />
+              </div>
+            )}
+            {categoryCounts.TCT_REQUEST > 0 && (
+              <div id="tct-requests">
+                <EmailSection category="TCT_REQUEST" rows={tctRequestRows} totalCount={categoryCounts.TCT_REQUEST} />
+              </div>
+            )}
             {(categoryCounts.DOCUMENT + categoryCounts.CLIENT_REPLY + categoryCounts.OTHER) > 0 && (
               <details className="border border-gray-200 rounded-lg overflow-hidden">
                 <summary className="flex items-center justify-between px-4 py-3 bg-white cursor-pointer hover:bg-gray-50 list-none">

@@ -76,5 +76,18 @@
     "body": "---------- Forwarded message ---------\nFrom: Varan Shipping <chartering@varanshipping.com>\nDate: Sat, 6 Sep 2025 10:22:00 +0300\nSubject: marmara / vera cruz\nTo: management@etm-services.net\n\nGd day,\n\nPls ploffer:\n\nMarmara (Derince), Turkey -> Vera Cruz, Mexico\n5,000 / 5,500 mts iron & steel products (plates, sections, coils)\nLaycan: 20-30 Sep 2025\nLoading: 2,000 mts SHINC\nDisch: CQD SHINC\nFRT: pls offer per wt basis\n\n3.75% TTL\n\nbrgds\nVaran Shipping Chartering",
     "snippet": "marmara / vera cruz iron & steel products...",
     "labelIds": ["INBOX"]
+  },
+  {
+    "id": "sample-21",
+    "threadId": "thread-21",
+    "from": "\"ETMS - Management\" <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "demo@quantika.org",
+    "subject": "FW: 5000mt Urea Constanta → Antwerp, Oct",
+    "date": "2026-04-16T00:00:00.000Z",
+    "body": "---------- Forwarded message ---------\nFrom: Danube Grain Trading <chartering@danubegrain.ro>\nDate: Mon, 15 Sep 2025 10:45:00 +0200\nSubject: 5000mt Urea Constanta -> Antwerp, Oct\nTo: management@etm-services.net\n\nGd day,\n\nPls ploffer for below cargo:\n\nLoad: Constanta, Romania (1 sp)\nDisch: Antwerp, Belgium (1 sp)\nCargo: 5,000 MT urea fertilizer in bags (50 kg pp)\nLaycan: 01-10 Oct 2025\nLoading: FIO SHINC\nDisch: FIO SHINC\nFreight: pls offer\n\n3.75% TTL address commission\n\nPls revert with best offer.\n\nbrgds\nDanube Grain Trading — Chartering",
+    "snippet": "5000mt urea Constanta -> Antwerp Oct 2025 FIO SHINC...",
+    "labelIds": ["INBOX"]
   }
 ]

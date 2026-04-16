@@ -368,6 +368,75 @@ const DISTANCES_NM: Record<string, number> = {
   'Santos|Singapore': 11500,
 };
 
+/**
+ * Approximate port coordinates (lat/lon) for haversine fallback.
+ * Used when a port pair is not in the static DISTANCES_NM table.
+ * Values are representative anchors for the port / port complex.
+ */
+const PORT_COORDS: Record<KnownPort, { lat: number; lon: number }> = {
+  // Black Sea
+  Karasu:        { lat: 41.12, lon: 30.68 },
+  Istanbul:      { lat: 41.01, lon: 28.98 },
+  Mykolaiv:      { lat: 46.97, lon: 31.99 },
+  Odesa:         { lat: 46.49, lon: 30.74 },
+  Chornomorsk:   { lat: 46.30, lon: 30.66 },
+  Constanta:     { lat: 44.18, lon: 28.65 },
+  Varna:         { lat: 43.20, lon: 27.92 },
+  Burgas:        { lat: 42.49, lon: 27.47 },
+  Novorossiysk:  { lat: 44.72, lon: 37.77 },
+  // Aegean / Eastern Med
+  Piraeus:       { lat: 37.94, lon: 23.62 },
+  Aliaga:        { lat: 38.80, lon: 26.97 },
+  Marmara:       { lat: 40.62, lon: 27.59 },
+  // Eastern Med / Suez
+  Alexandria:    { lat: 31.20, lon: 29.89 },
+  Suez:          { lat: 29.97, lon: 32.55 },
+  // Central / Western Med
+  Ravenna:       { lat: 44.42, lon: 12.20 },
+  Marghera:      { lat: 45.45, lon: 12.23 },
+  Skikda:        { lat: 36.88, lon: 6.90  },
+  Casablanca:    { lat: 33.60, lon: -7.62 },
+  // Northern Europe
+  Antwerp:       { lat: 51.23, lon: 4.40  },
+  Hamburg:       { lat: 53.55, lon: 9.99  },
+  Rotterdam:     { lat: 51.90, lon: 4.48  },
+  Bremen:        { lat: 53.07, lon: 8.80  },
+  Halsvik:       { lat: 59.76, lon: 5.44  },
+  Gdansk:        { lat: 54.35, lon: 18.65 },
+  // Atlantic
+  Bayonne:       { lat: 43.49, lon: -1.47 },
+  Dakar:         { lat: 14.69, lon: -17.44 },
+  Lagos:         { lat: 6.45,  lon: 3.40  },
+  Nacala:        { lat: -14.54, lon: 40.67 },
+  // Americas
+  Veracruz:      { lat: 19.20, lon: -96.13 },
+  NewOrleans:    { lat: 29.95, lon: -90.07 },
+  Houston:       { lat: 29.75, lon: -95.27 },
+  Santos:        { lat: -23.95, lon: -46.33 },
+  // Asia
+  Singapore:     { lat: 1.26,  lon: 103.82 },
+  Tokyo:         { lat: 35.45, lon: 139.77 },
+  Shanghai:      { lat: 31.23, lon: 121.47 },
+};
+
+/**
+ * Haversine great-circle distance in nautical miles between two lat/lon points.
+ */
+function haversineNm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const EARTH_RADIUS_NM = 3440.065;
+  const toRad = (deg: number) => (deg * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return EARTH_RADIUS_NM * c;
+}
+
+/** Sea-route multiplier: real ship routes average ~25% longer than great-circle. */
+const SEA_ROUTE_MULTIPLIER = 1.25;
+
 function stripCountry(raw: string): string {
   // Remove ", Country" or similar trailing qualifier
   return raw.split(',')[0].trim();
@@ -429,15 +498,29 @@ export function normalizePortName(raw: string | null | undefined): KnownPort | n
 }
 
 /**
- * Return nautical-mile distance between two ports, or null if either is unknown
- * or the pair is not in the table.
+ * Return nautical-mile distance between two ports, or null if either is unknown.
+ *
+ * Resolution order:
+ *   1. Static DISTANCES_NM table (human-curated, accounts for real sea routing).
+ *   2. Haversine great-circle × SEA_ROUTE_MULTIPLIER (1.25) using PORT_COORDS.
+ *   3. null — if coordinates are missing for either port.
  */
 export function getPortDistance(from: string | null | undefined, to: string | null | undefined): number | null {
   const a = normalizePortName(from);
   const b = normalizePortName(to);
   if (!a || !b) return null;
   if (a === b) return 0;
+
+  // 1. Prefer static table (human-curated, accounts for real routing)
   const [first, second] = [a, b].sort();
   const key = `${first}|${second}`;
-  return DISTANCES_NM[key] ?? null;
+  const staticDist = DISTANCES_NM[key];
+  if (staticDist != null) return staticDist;
+
+  // 2. Fall back to haversine × 1.25 using coordinates
+  const coordsA = PORT_COORDS[a];
+  const coordsB = PORT_COORDS[b];
+  if (!coordsA || !coordsB) return null;
+  const greatCircle = haversineNm(coordsA.lat, coordsA.lon, coordsB.lat, coordsB.lon);
+  return Math.round(greatCircle * SEA_ROUTE_MULTIPLIER);
 }

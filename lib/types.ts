@@ -18,7 +18,7 @@ export type Renderable = ConfidenceField<string | number | boolean> | string | n
 
 // ── Email Lifecycle ──
 
-export type EmailCategory = 'CARGO_INQUIRY' | 'VESSEL_POSITION' | 'FIXTURE_RECAP' | 'CLIENT_REPLY' | 'DOCUMENT' | 'OTHER';
+export type EmailCategory = 'CARGO_INQUIRY' | 'VESSEL_POSITION' | 'FIXTURE_RECAP' | 'CLIENT_REPLY' | 'DOCUMENT' | 'TCT_REQUEST' | 'VESSEL_CERTIFICATE' | 'OTHER';
 export type EmailStatus = 'NEEDS_ACTION' | 'PENDING' | 'RESPONDED' | 'INFO_ONLY';
 export type Urgency = 'high' | 'medium' | 'low';
 export type CargoType = 'FCL' | 'LCL' | 'BREAK_BULK' | 'BULK' | 'PROJECT' | 'AIR' | 'RORO' | 'OTHER';

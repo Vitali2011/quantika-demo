@@ -159,3 +159,54 @@ describe('getPortDistance — new port pairs', () => {
     );
   });
 });
+
+describe('getPortDistance — haversine fallback', () => {
+  // Karasu ↔ Mykolaiv IS in static table — must return table value exactly
+  it('static table pair returns exact table value (Karasu ↔ Mykolaiv = 315)', () => {
+    expect(getPortDistance('Karasu', 'Mykolaiv')).toBe(315);
+  });
+
+  // Same port → 0 regardless of fallback path
+  it('same port returns 0', () => {
+    expect(getPortDistance('Singapore', 'Singapore')).toBe(0);
+    expect(getPortDistance('Varna', 'Varna')).toBe(0);
+  });
+
+  // A pair NOT in the static table but both ports have coords → haversine fallback
+  // Varna ↔ Novorossiysk: both Black Sea, not in static table
+  // Real distance ~375 NM; haversine×1.25 should give a plausible value in [200, 600]
+  it('pair not in static table but with coords returns haversine × 1.25 (Varna ↔ Novorossiysk)', () => {
+    const d = getPortDistance('Varna', 'Novorossiysk');
+    expect(d).not.toBeNull();
+    expect(d!).toBeGreaterThan(200);
+    expect(d!).toBeLessThan(600);
+  });
+
+  // Antwerp ↔ Hamburg is IN static table (310); fallback must NOT be used
+  // Sanity: result should equal static value, not a haversine estimate
+  it('Antwerp ↔ Hamburg returns static 310 (not haversine estimate ~285)', () => {
+    expect(getPortDistance('Antwerp', 'Hamburg')).toBe(310);
+  });
+
+  // Sanity: Antwerp ↔ Hamburg haversine range [200, 400]
+  it('Antwerp ↔ Hamburg result is in realistic range [200, 400]', () => {
+    const d = getPortDistance('Antwerp', 'Hamburg');
+    expect(d!).toBeGreaterThanOrEqual(200);
+    expect(d!).toBeLessThanOrEqual(400);
+  });
+
+  // Sanity: Singapore ↔ Shanghai haversine × 1.25 should be in [1800, 3000]
+  // (Static table value is 2200, also within that range — test passes either way)
+  it('Singapore ↔ Shanghai is in [1800, 3000] NM range', () => {
+    const d = getPortDistance('Singapore', 'Shanghai');
+    expect(d).not.toBeNull();
+    expect(d!).toBeGreaterThanOrEqual(1800);
+    expect(d!).toBeLessThanOrEqual(3000);
+  });
+
+  // One port has no coords AND is not a known port → null
+  it('unknown port returns null even with fallback', () => {
+    expect(getPortDistance('Karasu', 'Atlantis')).toBeNull();
+    expect(getPortDistance('Atlantis', 'Rotterdam')).toBeNull();
+  });
+});

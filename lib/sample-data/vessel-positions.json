@@ -102,5 +102,18 @@
     "body": "---------- Forwarded message ---------\nFrom: agantashipping@googlegroups.com\nDate: Mon, 8 Sep 2025 08:45:00 +0300\nSubject: 2 k dwcc spot marmara\nTo: management@etm-services.net\n\nGd day,\n\nADA WOG:\n\nMV [name on subs]\nDWCC: 2,000 mts at 4.0m draft\nDWT: abt 2,200 mts\nGeared: 1 x 15t\nOpen: Marmara (Derince / Izmit range), spot\nPref: Black Sea, Med\nL/C: steel coils, bagged cargo, fertilizer, breakbulk\n\nbrgds\nAganta Shipping",
     "snippet": "2k dwcc spot marmara...",
     "labelIds": ["INBOX"]
+  },
+  {
+    "id": "sample-20",
+    "threadId": "thread-20",
+    "from": "\"ETMS - Management\" <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "demo@quantika.org",
+    "subject": "FW: MV Rus Nord — Open Novorossiysk 25/09",
+    "date": "2026-04-16T00:00:00.000Z",
+    "body": "---------- Forwarded message ---------\nFrom: Nord Shipping LLC <chartering@nordshipping.ru>\nDate: Mon, 15 Sep 2025 09:12:00 +0300\nSubject: MV Rus Nord — Open Novorossiysk 25/09\nTo: management@etm-services.net\n\nDear Sirs,\n\nPls note position ADA WOG:\n\nMV RUS NORD\nDWT: 5,200 mts (summer)\nDWCC: 4,950 mts at 5.4m draft\nBuilt: 2008, Flag: Russian Federation\nLOA: 101.2m, Beam: 16.5m\nHolds/Hatches: 2/2\nGrain cap: 6,400 cbm\nGearless\nOpen: Novorossiysk, Russia, 25 Sep 2025\nPref: Black Sea, Med, Azov\nL/C: fertilizer in bulk/bags, grain, sunflower meal, steel\n\nAll ADA WOG.\nPls revert with any suitable cargo offer.\n\nbrgds\nNord Shipping LLC — Chartering Dept",
+    "snippet": "MV Rus Nord open Novorossiysk 25/09 — RU flag gearless 5200 DWT...",
+    "labelIds": ["INBOX"]
   }
 ]
