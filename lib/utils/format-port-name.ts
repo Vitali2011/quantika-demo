@@ -3,6 +3,11 @@ export function formatPortName(raw: string | null | undefined): string {
   const trimmed = raw.trim().replace(/\s+/g, " ");
   if (trimmed === "") return "";
   return trimmed
-    .toLowerCase()
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+    .split(" ")
+    .map((word) =>
+      word.replace(/([^a-zA-Z]*)([a-zA-Z])(.*)/g, (_, pre, first, rest) =>
+        pre + first.toUpperCase() + rest.toLowerCase(),
+      ),
+    )
+    .join(" ");
 }
