@@ -1,5 +1,13 @@
 import { getPortDistance, normalizePortName, KNOWN_PORTS } from '../port-distances';
 
+describe('normalizePortName — JSON-only ports (port-master corpus)', () => {
+  it('fuzzy-matches Fos-sur-Mer with typo (u→o substitution) to canonical JSON name', () => {
+    // "Fos-sor-Mer" is a one-letter typo of "Fos-sur-Mer".
+    // Port exists ONLY in port-master.json, not in KNOWN_PORTS or PORT_ALIASES.
+    expect(normalizePortName('Fos-sor-Mer')).toBe('Fos-sur-Mer');
+  });
+});
+
 describe('normalizePortName', () => {
   it('uppercases and trims', () => {
     expect(normalizePortName('karasu')).toBe('Karasu');
