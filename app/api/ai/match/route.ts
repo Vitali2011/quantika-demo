@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
+import { validateCsrf } from '@/lib/csrf';
 import { getSession, updateSession } from '@/lib/session';
 import { callAiJson } from '@/lib/openai';
 import { MATCH_PROMPT } from '@/lib/prompts';
@@ -151,6 +152,8 @@ function findAnalysis(
 }
 
 export async function POST(request: NextRequest) {
+  if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
   const sessionId = request.cookies.get('session_id')?.value;
   if (!sessionId) return NextResponse.json({ error: 'No session' }, { status: 401 });
 

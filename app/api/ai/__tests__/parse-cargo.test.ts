@@ -19,7 +19,7 @@ const mockGetSession = getSession as jest.MockedFunction<typeof getSession>;
 const mockUpdateSession = updateSession as jest.MockedFunction<typeof updateSession>;
 
 function makeRequest(sessionId?: string): NextRequest {
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const headers: Record<string, string> = { 'Content-Type': 'application/json', origin: 'http://localhost:3000' };
   if (sessionId) {
     headers['Cookie'] = `session_id=${sessionId}`;
   }
