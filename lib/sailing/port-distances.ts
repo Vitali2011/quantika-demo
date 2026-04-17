@@ -557,7 +557,6 @@ const DISTANCES_NM: Record<string, number> = {
 
   // ── Marmara → Northern Europe / Med (missing pairs) ──
   'Antwerp|Marmara': 3370,
-  'Antwerp|Derince': 3310,
   'Hamburg|Marmara': 3500,
   'Hamburg|Derince': 3440,
   'Halsvik|Marmara': 4020,
