@@ -142,8 +142,8 @@ export default async function DashboardPage() {
                     })()
                   : null;
                 return (
-                  <Link key={i} href={`/match/${i}`}>
-                    <div className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200 bg-white">
+                  <Link key={i} href={`/match/${i}`} className="block focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-400 rounded-lg">
+                    <div className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 transition-colors border border-gray-200 bg-white">
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium text-gray-900 truncate">{match.matchReasons[0] || `Match #${i + 1}`}</p>
                         <p className="text-xs text-gray-500">
@@ -222,8 +222,8 @@ export default async function DashboardPage() {
           ) : (
             <div className="space-y-2">
               {recaps.map((recap) => (
-                <Link key={recap.threadId} href={`/recap/${recap.threadId}`}>
-                  <div className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200 bg-white">
+                <Link key={recap.threadId} href={`/recap/${recap.threadId}`} className="block focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-400 rounded-lg">
+                  <div className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 transition-colors border border-gray-200 bg-white">
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium text-gray-900 truncate">{recap.subject}</p>
                       <p className="text-xs text-gray-500">{recap.emailCount} emails · {recap.dateRange} · {recap.points.filter(p => p.status === 'AGREED').length}/{recap.points.length} terms agreed</p>

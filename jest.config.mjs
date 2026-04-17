@@ -5,7 +5,8 @@ const createJestConfig = nextJest({ dir: './' });
 /** @type {import('jest').Config} */
 const config = {
   testEnvironment: 'node',
-  testPathIgnorePatterns: ['/node_modules/', '/.wave/'],
+  // Exclude .wave worktrees only when running from the main repo (not from within a worktree)
+  testPathIgnorePatterns: ['/node_modules/', ...(process.cwd().includes('/.wave/') ? [] : ['/.wave/'])],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {
