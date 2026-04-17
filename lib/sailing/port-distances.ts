@@ -11,6 +11,11 @@
  * match is not filtered, just not credited/penalized. This fails gracefully.
  */
 
+import fuzzysort from 'fuzzysort';
+import PORTS_JSON from '@/data/ports/port-master.json';
+import { loadPortMasterFromJson } from './port-master-loader';
+import type { PortMaster } from './port-master';
+
 /** Canonical port names used as map keys. */
 export const KNOWN_PORTS = [
   // Black Sea
@@ -906,10 +911,8 @@ function stripCountryCodeSuffix(raw: string): string {
 }
 
 /**
- * Fuzzy fallback corpus: lazily built from PORT_ALIASES + KNOWN_PORTS so the
- * existing alias coverage is reused. Phase 5 will extend this corpus from
- * the JSON-backed port master (loadPortMasterFromJson exposes all canonical
- * names).
+ * Fuzzy fallback corpus: lazily built from PORT_ALIASES + KNOWN_PORTS (existing behavior)
+ * extended with all 435 entries from port-master.json for full global coverage.
  */
 let _fuzzyCorpus: { lookup: string; canonical: string }[] | null = null;
 
@@ -922,21 +925,19 @@ function getFuzzyCorpus(): { lookup: string; canonical: string }[] {
   for (const p of KNOWN_PORTS) {
     seen.set(p.toLowerCase(), p);
   }
+  // Inject all port-master.json entries — canonical = port.name, key = lowercased name
+  const portMaster = loadPortMasterFromJson(PORTS_JSON as unknown as PortMaster[]);
+  for (const [nameLower, entry] of Array.from(portMaster.entries())) {
+    if (entry.name && !seen.has(nameLower)) seen.set(nameLower, entry.name);
+  }
   _fuzzyCorpus = Array.from(seen.entries()).map(([lookup, canonical]) => ({ lookup, canonical }));
   return _fuzzyCorpus;
 }
 
-/** Test/runtime hook: allow Phase 5 to inject the JSON-loaded port-master corpus. */
-export function _setFuzzyCorpusForTest(entries: Array<{ lookup: string; canonical: string }> | null): void {
+/** Runtime hook to override the fuzzy corpus (e.g. for tests or custom injection). */
+export function setFuzzyCorpus(entries: Array<{ lookup: string; canonical: string }> | null): void {
   _fuzzyCorpus = entries;
 }
-
-// Lazy import of fuzzysort — avoid the eslint require ban while keeping the
-// dependency optional at type-check time (Phase 5 will move to a real import).
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const fuzzysort = require('fuzzysort') as {
-  go<T>(target: string, candidates: T[], opts: { key: keyof T; threshold?: number; limit?: number }): Array<{ obj: T; score: number }>;
-};
 
 
 /**
