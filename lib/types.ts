@@ -229,6 +229,8 @@ export interface MatchReadiness {
   laycanStart: string | null;
   laycanEnd: string | null;
   distanceNm: number | null;
+  /** True = exact (sea-route matrix); false = approximate (great-circle / haversine). */
+  distanceExact?: boolean | null;
   speedKn: number | null;
   sailingDays: number | null;
   arrivalDate: string | null;

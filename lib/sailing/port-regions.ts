@@ -155,5 +155,5 @@ const PORT_REGION_MAP: Record<KnownPort, PortRegion> = {
 export function getPortRegion(portName: string | null | undefined): PortRegion | null {
   const canonical = normalizePortName(portName);
   if (!canonical) return null;
-  return PORT_REGION_MAP[canonical] ?? null;
+  return PORT_REGION_MAP[canonical as KnownPort] ?? null;
 }

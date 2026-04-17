@@ -17,6 +17,7 @@
     "better-sqlite3": "^11.10.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "fuzzysort": "^3.1.0",
     "googleapis": "^171.4.0",
     "lucide-react": "^1.7.0",
     "next": "14.2.35",

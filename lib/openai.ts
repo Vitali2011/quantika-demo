@@ -15,7 +15,8 @@ export async function callAiJson<T>(
   prompt: string,
   systemPrompt: string,
   model: string = AI_MODEL_HEAVY,
-  fallback: T
+  fallback: T,
+  maxTokens: number = 16000
 ): Promise<T> {
   try {
     const stream = await ai.chat.completions.create({
@@ -26,7 +27,7 @@ export async function callAiJson<T>(
       ],
       stream: true,
       temperature: 0.1,
-      max_tokens: 16000,
+      max_tokens: maxTokens,
     });
 
     let content = '';

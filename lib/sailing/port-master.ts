@@ -9,24 +9,52 @@
  * Purpose: stop the matcher from recommending physical impossibilities
  * (10m draft vessel into 6m river port, gearless vessel into a port with no
  * shore cranes, etc.) that destroy broker trust instantly.
+ *
+ * Schema (v2, Wave 4): extended with UN/LOCODE, coordinates, and optional
+ * LLM-derived fields (maxLOA, cargoBerthTypes, tidal, icePort, dataConfidence,
+ * sourceNote) to support global port coverage via scripts/generate-port-master.ts.
  */
 
-import { normalizePortName, KnownPort } from './port-distances';
+import PORTS_JSON from '@/data/ports/port-master.json';
+import { loadPortMasterFromJson } from './port-master-loader';
 import { PortRegion, getPortRegion } from './port-regions';
+import type { KnownPort } from './port-distances';
 
 export type { PortRegion };
 
 export interface PortMaster {
+  /** UN/LOCODE (5 uppercase chars, e.g. "NLRTM"). Optional — not available for hardcoded entries. */
+  unlocode?: string;
+  /** Canonical English name (e.g. "Rotterdam"). Optional — not available for hardcoded entries. */
+  name?: string;
+  /** ISO-3166 alpha-2 country code (e.g. "NL"). Optional — not available for hardcoded entries. */
+  country?: string;
+  /** Latitude (WGS84 decimal degrees, positive = N). Optional — not available for hardcoded entries. */
+  lat?: number;
+  /** Longitude (WGS84 decimal degrees, positive = E). Optional — not available for hardcoded entries. */
+  lon?: number;
   /** Max permissible vessel draft in metres (salt water, summer). */
   maxDraftM: number;
   /** True if port has shore cranes (so gearless vessels can load/discharge). */
   hasShoreCranes: boolean;
-  /** Primary berth type (for stowage planning). */
+  /** Primary berth infrastructure type (for stowage planning). */
   berthType: 'river' | 'deep-sea' | 'bay' | 'terminal';
   /** Geographic basin — null for unknown ports. */
   region?: PortRegion;
   /** Short human-readable note. */
   note?: string;
+  /** Max LOA in metres (LLM-derived for new ports, optional). */
+  maxLOA?: number;
+  /** Cargo types the port equipment can handle (LLM-derived, optional). */
+  cargoBerthTypes?: Array<'bulk' | 'container' | 'general' | 'RORO' | 'tanker'>;
+  /** Tidal port (affects ETA buffer, LLM-derived, optional). */
+  tidal?: boolean;
+  /** Ice-bound in winter (Baltic/Arctic, LLM-derived, optional). */
+  icePort?: boolean;
+  /** Confidence of LLM-derived data (new ports only, optional). */
+  dataConfidence?: 'high' | 'medium' | 'low';
+  /** Source for LLM-derived data (authority name or handbook reference). */
+  sourceNote?: string;
 }
 
 /**
@@ -155,11 +183,16 @@ const PORT_MASTER: Record<KnownPort, PortMaster> = {
 
 /** Lookup port master data. Returns null for unknown ports (not an error — caller decides). */
 export function getPortMaster(rawName: string | null | undefined): PortMaster | null {
+  if (!rawName) return null;
+  // Lazy require to avoid circular dep (port-distances imports port-master)
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { normalizePortName } = require('./port-distances') as { normalizePortName: (s: string) => string | null };
   const canonical = normalizePortName(rawName);
   if (!canonical) return null;
-  const entry = PORT_MASTER[canonical];
+  const map = loadPortMasterFromJson(PORTS_JSON as unknown as PortMaster[]);
+  const entry = map.get(canonical.toLowerCase()) ?? null;
   if (!entry) return null;
-  const region = getPortRegion(canonical) ?? undefined;
+  const region = getPortRegion(canonical as KnownPort) ?? undefined;
   return { ...entry, region };
 }
 

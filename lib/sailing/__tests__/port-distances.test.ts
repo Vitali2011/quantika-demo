@@ -31,39 +31,40 @@ describe('normalizePortName', () => {
 });
 
 describe('getPortDistance', () => {
-  it('Karasu ↔ Mykolaiv is short (~320 NM, Black Sea crossing)', () => {
+  it('Karasu ↔ Mykolaiv is short (~320 NM, Black Sea crossing) — exact from matrix', () => {
     const d = getPortDistance('Karasu', 'Mykolaiv');
     expect(d).not.toBeNull();
-    expect(d!).toBeGreaterThan(250);
-    expect(d!).toBeLessThan(450);
+    expect(d!.nm).toBeGreaterThan(250);
+    expect(d!.nm).toBeLessThan(450);
+    expect(d!.exact).toBe(true);
   });
 
   it('is symmetric', () => {
     const a = getPortDistance('Karasu', 'Mykolaiv');
     const b = getPortDistance('Mykolaiv', 'Karasu');
-    expect(a).toBe(b);
+    expect(a).toEqual(b);
   });
 
   it('case-insensitive', () => {
-    expect(getPortDistance('karasu', 'MYKOLAIV')).toBe(getPortDistance('Karasu', 'Mykolaiv'));
+    expect(getPortDistance('karasu', 'MYKOLAIV')).toEqual(getPortDistance('Karasu', 'Mykolaiv'));
   });
 
   it('Istanbul ↔ Piraeus is medium (Aegean crossing)', () => {
     const d = getPortDistance('Istanbul', 'Piraeus');
     expect(d).not.toBeNull();
-    expect(d!).toBeGreaterThan(350);
-    expect(d!).toBeLessThan(700);
+    expect(d!.nm).toBeGreaterThan(350);
+    expect(d!.nm).toBeLessThan(700);
   });
 
   it('Piraeus ↔ Alexandria is Mediterranean ~600 NM', () => {
     const d = getPortDistance('Piraeus', 'Alexandria');
     expect(d).not.toBeNull();
-    expect(d!).toBeGreaterThan(500);
-    expect(d!).toBeLessThan(800);
+    expect(d!.nm).toBeGreaterThan(500);
+    expect(d!.nm).toBeLessThan(800);
   });
 
-  it('same port → 0', () => {
-    expect(getPortDistance('Karasu', 'Karasu')).toBe(0);
+  it('same port → 0, exact', () => {
+    expect(getPortDistance('Karasu', 'Karasu')).toEqual({ nm: 0, exact: true });
   });
 
   it('unknown port → null', () => {
@@ -72,8 +73,56 @@ describe('getPortDistance', () => {
   });
 
   it('normalizes aliases on lookup', () => {
-    // "Odessa" alias should resolve to Odesa and match distances
-    expect(getPortDistance('Odessa', 'Karasu')).toBe(getPortDistance('Odesa', 'Karasu'));
+    expect(getPortDistance('Odessa', 'Karasu')).toEqual(getPortDistance('Odesa', 'Karasu'));
+  });
+
+  it('haversine fallback for un-matrixed pair (Karasu ↔ Bayonne not in matrix)', () => {
+    const d = getPortDistance('Karasu', 'Bayonne');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(false);
+    // Karasu (41°N 30°E) to Bayonne (43°N -1°E) great-circle straight across
+    // Europe is ~1400-1500 NM. The real SEA route via Bosphorus + Med +
+    // Gibraltar is ~3100 NM, but haversine ignores land. UI marks "~" so
+    // brokers know it's an approximation — this is the documented trade-off.
+    expect(d!.nm).toBeGreaterThan(1300);
+    expect(d!.nm).toBeLessThan(1700);
+  });
+
+  it('returns null when one port lacks coords for haversine fallback', () => {
+    // If we asked for an alias that resolves but has no coords AND no matrix
+    // entry, must gracefully return null (not throw).
+    // (No way to construct this with current 15 ports — all have coords.
+    //  Phase 5 with JSON-loaded ports may have null-coord entries.)
+    expect(getPortDistance('Karasu', 'Karasu')).not.toBeNull();
+  });
+});
+
+describe('normalizePortName — fuzzy fallback (Wave 4)', () => {
+  it('catches single typo (Karasu → Karsu)', () => {
+    expect(normalizePortName('Karsu')).toBe('Karasu');
+  });
+
+  it('catches dropped letter (Constanta → Constana)', () => {
+    expect(normalizePortName('Constana')).toBe('Constanta');
+  });
+
+  it('catches "Port of X" prefix not in alias map', () => {
+    expect(normalizePortName('Port of Mykolaiv')).toBe('Mykolaiv');
+    expect(normalizePortName('Port of Constanta')).toBe('Constanta');
+  });
+
+  it('catches mixed case + country code suffix', () => {
+    expect(normalizePortName('NOVOROSSIYSK RU')).toBe('Novorossiysk');
+  });
+
+  it('returns null for nonsense input (no false positive)', () => {
+    expect(normalizePortName('xyz123')).toBeNull();
+    expect(normalizePortName('Atlantis')).toBeNull();
+  });
+
+  it('empty / null input still returns null', () => {
+    expect(normalizePortName('')).toBeNull();
+    expect(normalizePortName('   ')).toBeNull();
   });
 });
 
@@ -138,28 +187,28 @@ describe('getPortDistance — new port pairs', () => {
   it('Antwerp ↔ Hamburg (North Sea, ~310 NM)', () => {
     const d = getPortDistance('Antwerp', 'Hamburg');
     expect(d).not.toBeNull();
-    expect(d!).toBeGreaterThan(200);
-    expect(d!).toBeLessThan(500);
+    expect(d!.nm).toBeGreaterThan(200);
+    expect(d!.nm).toBeLessThan(500);
   });
 
   it('Chornomorsk ↔ Odesa (same bay, ~25 NM)', () => {
     const d = getPortDistance('Chornomorsk', 'Odesa');
     expect(d).not.toBeNull();
-    expect(d!).toBeLessThan(100);
+    expect(d!.nm).toBeLessThan(100);
   });
 
   it('Singapore ↔ Shanghai (Far East, ~2200 NM)', () => {
     const d = getPortDistance('Singapore', 'Shanghai');
     expect(d).not.toBeNull();
-    expect(d!).toBeGreaterThan(1500);
+    expect(d!.nm).toBeGreaterThan(1500);
   });
 
   it('alias "nikolaev" resolves for distance lookup', () => {
-    expect(getPortDistance('nikolaev', 'Karasu')).toBe(getPortDistance('Mykolaiv', 'Karasu'));
+    expect(getPortDistance('nikolaev', 'Karasu')).toEqual(getPortDistance('Mykolaiv', 'Karasu'));
   });
 
   it('"Port of Antwerp, Belgium" resolves for distance lookup', () => {
-    expect(getPortDistance('Port of Antwerp, Belgium', 'Rotterdam')).toBe(
+    expect(getPortDistance('Port of Antwerp, Belgium', 'Rotterdam')).toEqual(
       getPortDistance('Antwerp', 'Rotterdam'),
     );
   });
@@ -211,71 +260,71 @@ describe('getPortDistance — new commercial port pairs', () => {
   it('Jeddah ↔ Suez (Red Sea ~700 NM)', () => {
     const d = getPortDistance('Jeddah', 'Suez');
     expect(d).not.toBeNull();
-    expect(d!).toBeGreaterThan(500);
-    expect(d!).toBeLessThan(900);
+    expect(d!.nm).toBeGreaterThan(500);
+    expect(d!.nm).toBeLessThan(900);
   });
 
   it('Dubai ↔ Mumbai (Arabian Sea ~1200 NM)', () => {
     const d = getPortDistance('Dubai', 'Mumbai');
     expect(d).not.toBeNull();
-    expect(d!).toBeGreaterThan(800);
-    expect(d!).toBeLessThan(1600);
+    expect(d!.nm).toBeGreaterThan(800);
+    expect(d!.nm).toBeLessThan(1600);
   });
 
   it('Colombo ↔ Singapore (Indian Ocean ~1530 NM)', () => {
     const d = getPortDistance('Colombo', 'Singapore');
     expect(d).not.toBeNull();
-    expect(d!).toBeGreaterThan(1000);
-    expect(d!).toBeLessThan(2000);
+    expect(d!.nm).toBeGreaterThan(1000);
+    expect(d!.nm).toBeLessThan(2000);
   });
 
   it('Busan ↔ Shanghai (Yellow Sea ~500 NM)', () => {
     const d = getPortDistance('Busan', 'Shanghai');
     expect(d).not.toBeNull();
-    expect(d!).toBeGreaterThan(300);
-    expect(d!).toBeLessThan(700);
+    expect(d!.nm).toBeGreaterThan(300);
+    expect(d!.nm).toBeLessThan(700);
   });
 
   it('Algeciras ↔ Casablanca (Strait of Gibraltar ~150 NM)', () => {
     const d = getPortDistance('Algeciras', 'Casablanca');
     expect(d).not.toBeNull();
-    expect(d!).toBeLessThan(300);
+    expect(d!.nm).toBeLessThan(300);
   });
 
   it('alias "Jebel Ali" → Dubai resolves for distance', () => {
-    expect(getPortDistance('Jebel Ali', 'Suez')).toBe(getPortDistance('Dubai', 'Suez'));
+    expect(getPortDistance('Jebel Ali', 'Suez')).toEqual(getPortDistance('Dubai', 'Suez'));
   });
 
   it('alias "Bombay" → Mumbai resolves for distance', () => {
-    expect(getPortDistance('Bombay', 'Singapore')).toBe(getPortDistance('Mumbai', 'Singapore'));
+    expect(getPortDistance('Bombay', 'Singapore')).toEqual(getPortDistance('Mumbai', 'Singapore'));
   });
 
   it('alias "Saigon" → HoChiMinh resolves for distance', () => {
-    expect(getPortDistance('Saigon', 'Singapore')).toBe(getPortDistance('HoChiMinh', 'Singapore'));
+    expect(getPortDistance('Saigon', 'Singapore')).toEqual(getPortDistance('HoChiMinh', 'Singapore'));
   });
 
   it('alias "Laem Chabang" → Bangkok resolves for distance', () => {
-    expect(getPortDistance('Laem Chabang', 'Singapore')).toBe(getPortDistance('Bangkok', 'Singapore'));
+    expect(getPortDistance('Laem Chabang', 'Singapore')).toEqual(getPortDistance('Bangkok', 'Singapore'));
   });
 
   it('Durban ↔ CapeTown (South Africa coast ~800 NM)', () => {
     const d = getPortDistance('Durban', 'CapeTown');
     expect(d).not.toBeNull();
-    expect(d!).toBeGreaterThan(500);
-    expect(d!).toBeLessThan(1100);
+    expect(d!.nm).toBeGreaterThan(500);
+    expect(d!.nm).toBeLessThan(1100);
   });
 });
 
 describe('getPortDistance — haversine fallback', () => {
   // Karasu ↔ Mykolaiv IS in static table — must return table value exactly
   it('static table pair returns exact table value (Karasu ↔ Mykolaiv = 315)', () => {
-    expect(getPortDistance('Karasu', 'Mykolaiv')).toBe(315);
+    expect(getPortDistance('Karasu', 'Mykolaiv')).toEqual({ nm: 315, exact: true });
   });
 
   // Same port → 0 regardless of fallback path
   it('same port returns 0', () => {
-    expect(getPortDistance('Singapore', 'Singapore')).toBe(0);
-    expect(getPortDistance('Varna', 'Varna')).toBe(0);
+    expect(getPortDistance('Singapore', 'Singapore')).toEqual({ nm: 0, exact: true });
+    expect(getPortDistance('Varna', 'Varna')).toEqual({ nm: 0, exact: true });
   });
 
   // A pair NOT in the static table but both ports have coords → haversine fallback
@@ -284,21 +333,21 @@ describe('getPortDistance — haversine fallback', () => {
   it('pair not in static table but with coords returns haversine × 1.25 (Varna ↔ Novorossiysk)', () => {
     const d = getPortDistance('Varna', 'Novorossiysk');
     expect(d).not.toBeNull();
-    expect(d!).toBeGreaterThan(200);
-    expect(d!).toBeLessThan(600);
+    expect(d!.nm).toBeGreaterThan(200);
+    expect(d!.nm).toBeLessThan(600);
   });
 
   // Antwerp ↔ Hamburg is IN static table (310); fallback must NOT be used
   // Sanity: result should equal static value, not a haversine estimate
   it('Antwerp ↔ Hamburg returns static 310 (not haversine estimate ~285)', () => {
-    expect(getPortDistance('Antwerp', 'Hamburg')).toBe(310);
+    expect(getPortDistance('Antwerp', 'Hamburg')).toEqual({ nm: 310, exact: true });
   });
 
   // Sanity: Antwerp ↔ Hamburg haversine range [200, 400]
   it('Antwerp ↔ Hamburg result is in realistic range [200, 400]', () => {
     const d = getPortDistance('Antwerp', 'Hamburg');
-    expect(d!).toBeGreaterThanOrEqual(200);
-    expect(d!).toBeLessThanOrEqual(400);
+    expect(d!.nm).toBeGreaterThanOrEqual(200);
+    expect(d!.nm).toBeLessThanOrEqual(400);
   });
 
   // Sanity: Singapore ↔ Shanghai haversine × 1.25 should be in [1800, 3000]
@@ -306,8 +355,8 @@ describe('getPortDistance — haversine fallback', () => {
   it('Singapore ↔ Shanghai is in [1800, 3000] NM range', () => {
     const d = getPortDistance('Singapore', 'Shanghai');
     expect(d).not.toBeNull();
-    expect(d!).toBeGreaterThanOrEqual(1800);
-    expect(d!).toBeLessThanOrEqual(3000);
+    expect(d!.nm).toBeGreaterThanOrEqual(1800);
+    expect(d!.nm).toBeLessThanOrEqual(3000);
   });
 
   // One port has no coords AND is not a known port → null

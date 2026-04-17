@@ -10,7 +10,7 @@ import {
   ParsedCargo, ParsedVessel,
 } from '@/lib/types';
 import { cfValue } from '@/lib/types';
-import { calculateReadinessGap } from '@/lib/sailing/readiness-gap';
+import { calculateReadinessGap, detectSpot } from '@/lib/sailing/readiness-gap';
 import { applyReadinessScoring, computeScoreBreakdown } from '@/lib/sailing/match-scoring';
 import { runHardFilters } from '@/lib/sailing/match-filters';
 import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
@@ -38,13 +38,18 @@ interface PairAnalysis {
  * validation, readiness-gap) for one cargo-vessel pair.
  */
 function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Date): PairAnalysis {
+  // Detect spot from raw openDate value (before date-parsing discards the word).
+  const rawOpenDate = cfValue(v.openDate);
+  const isSpot = detectSpot(rawOpenDate);
+
   // Readiness gap (sailing time + verdict)
   const readiness = calculateReadinessGap(
     {
-      openDate: cfValue(v.openDate),
+      openDate: rawOpenDate,
       openPosition: cfValue(v.openPosition),
       speedLaden: v.speedLaden,
       dwtSummer: cfValue(v.dwtSummer),
+      isSpot,
     },
     {
       laycan: c.laycan,

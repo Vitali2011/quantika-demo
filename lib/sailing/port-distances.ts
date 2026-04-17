@@ -790,7 +790,7 @@ const DISTANCES_NM: Record<string, number> = {
   'Vancouver|Tokyo': 4400,
 
   // ── Africa ──
-  'Durban|CapeTown': 800,
+  'CapeTown|Durban': 800,
   'CapeTown|Dakar': 3600,
   'CapeTown|Nacala': 1900,
   'Durban|Nacala': 1400,
@@ -970,9 +970,48 @@ function stripParenthetical(raw: string): string {
 }
 
 function stripPortPrefix(raw: string): string {
-  // "Port of Antwerp" → "Antwerp", "Port Hamburg" → "Hamburg"
-  return raw.replace(/^port\s+of\s+/i, '').replace(/^port\s+/i, '').trim();
+  // "Port of Rotterdam" → "Rotterdam", "Pt. Klang" → "Klang"
+  return raw.replace(/^(port of|port|pt\.?)\s+/i, '').trim();
 }
+
+function stripCountryCodeSuffix(raw: string): string {
+  // "Novorossiysk RU" / "Rotterdam NL" → drop trailing 2-letter ISO code
+  return raw.replace(/\s+[A-Z]{2}$/i, '').trim();
+}
+
+/**
+ * Fuzzy fallback corpus: lazily built from PORT_ALIASES + KNOWN_PORTS so the
+ * existing alias coverage is reused. Phase 5 will extend this corpus from
+ * the JSON-backed port master (loadPortMasterFromJson exposes all canonical
+ * names).
+ */
+let _fuzzyCorpus: { lookup: string; canonical: string }[] | null = null;
+
+function getFuzzyCorpus(): { lookup: string; canonical: string }[] {
+  if (_fuzzyCorpus) return _fuzzyCorpus;
+  const seen = new Map<string, string>();
+  for (const [alias, canonical] of Object.entries(PORT_ALIASES)) {
+    seen.set(alias, canonical);
+  }
+  for (const p of KNOWN_PORTS) {
+    seen.set(p.toLowerCase(), p);
+  }
+  _fuzzyCorpus = Array.from(seen.entries()).map(([lookup, canonical]) => ({ lookup, canonical }));
+  return _fuzzyCorpus;
+}
+
+/** Test/runtime hook: allow Phase 5 to inject the JSON-loaded port-master corpus. */
+export function _setFuzzyCorpusForTest(entries: Array<{ lookup: string; canonical: string }> | null): void {
+  _fuzzyCorpus = entries;
+}
+
+// Lazy import of fuzzysort — avoid the eslint require ban while keeping the
+// dependency optional at type-check time (Phase 5 will move to a real import).
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const fuzzysort = require('fuzzysort') as {
+  go<T>(target: string, candidates: T[], opts: { key: keyof T; threshold?: number; limit?: number }): Array<{ obj: T; score: number }>;
+};
+
 
 /**
  * Normalize a free-form port name to its canonical form used in the distance table.
@@ -987,9 +1026,11 @@ function stripPortPrefix(raw: string): string {
  *   - Legacy aliases: "Odessa" → "Odesa", "Efesan" → "Aliaga", "Nikolaev" → "Mykolaiv"
  *   - Partial substring fallback: tries longest alias key that appears in the input
  */
-export function normalizePortName(raw: string | null | undefined): KnownPort | null {
+export function normalizePortName(raw: string | null | undefined): string | null {
   if (!raw || typeof raw !== 'string') return null;
-  const s = stripPortPrefix(stripCountry(stripParenthetical(raw))).trim();
+  let s = stripCountry(stripParenthetical(raw)).trim();
+  s = stripCountryCodeSuffix(s);
+  s = stripPortPrefix(s);
   if (!s) return null;
 
   // Direct lowercase alias lookup
@@ -1003,45 +1044,66 @@ export function normalizePortName(raw: string | null | undefined): KnownPort | n
     if (hit) return hit;
   }
 
-  // Partial substring fallback: find the longest alias key that appears in the input
-  const lc = s.toLowerCase();
-  let bestKey = '';
-  let bestPort: KnownPort | null = null;
-  for (const [key, port] of Object.entries(PORT_ALIASES)) {
-    if (lc.includes(key) && key.length > bestKey.length) {
-      bestKey = key;
-      bestPort = port;
-    }
+  // Fuzzy fallback (typos, casing) — uses fuzzysort over alias + canonical
+  // names. fuzzysort v3 scores are in [0,1] (not the legacy negative scale).
+  // Threshold 0.3 is the empirical floor that catches single-letter typos
+  // ("Karsu"→Karasu scores ~0.35) while filtering near-garbage subsequences.
+  // Minimum length guard: inputs shorter than 4 chars are too ambiguous for
+  // fuzzy matching and are left to the direct alias table above.
+  const corpus = getFuzzyCorpus();
+  const cleaned = s.toLowerCase();
+  if (cleaned.length < 4) return null;
+  const results = fuzzysort.go(cleaned, corpus, { key: 'lookup', threshold: 0.3, limit: 1 });
+  if (results.length > 0) {
+    return results[0].obj.canonical;
   }
-  if (bestPort) return bestPort;
 
   return null;
 }
 
+/** Result of a port-pair distance lookup. */
+export interface PortDistanceResult {
+  /** Distance in nautical miles (rounded). */
+  nm: number;
+  /** True if from the hand-curated sea-route matrix; false if great-circle (haversine) fallback. */
+  exact: boolean;
+}
+
 /**
- * Return nautical-mile distance between two ports, or null if either is unknown.
+ * Return nautical-mile distance between two ports.
  *
  * Resolution order:
- *   1. Static DISTANCES_NM table (human-curated, accounts for real sea routing).
- *   2. Haversine great-circle × SEA_ROUTE_MULTIPLIER (1.25) using PORT_COORDS.
- *   3. null — if coordinates are missing for either port.
+ *   1. Same canonical port → { nm: 0, exact: true }
+ *   2. Hardcoded sea-route matrix → { nm, exact: true }
+ *   3. Haversine great-circle from getPortMaster lat/lon → { nm, exact: false }
+ *   4. null (unknown port or no coords available)
  */
-export function getPortDistance(from: string | null | undefined, to: string | null | undefined): number | null {
+export function getPortDistance(
+  from: string | null | undefined,
+  to: string | null | undefined,
+): PortDistanceResult | null {
   const a = normalizePortName(from);
   const b = normalizePortName(to);
   if (!a || !b) return null;
-  if (a === b) return 0;
+  if (a === b) return { nm: 0, exact: true };
 
-  // 1. Prefer static table (human-curated, accounts for real routing)
   const [first, second] = [a, b].sort();
-  const key = `${first}|${second}`;
-  const staticDist = DISTANCES_NM[key];
-  if (staticDist != null) return staticDist;
+  const matrix = DISTANCES_NM[`${first}|${second}`];
+  if (matrix != null) return { nm: matrix, exact: true };
 
-  // 2. Fall back to haversine × 1.25 using coordinates
-  const coordsA = PORT_COORDS[a];
-  const coordsB = PORT_COORDS[b];
-  if (!coordsA || !coordsB) return null;
-  const greatCircle = haversineNm(coordsA.lat, coordsA.lon, coordsB.lat, coordsB.lon);
-  return Math.round(greatCircle * SEA_ROUTE_MULTIPLIER);
+  // Haversine fallback — needs lat/lon from port-master. Lazy import to avoid
+  // a circular dependency between port-master.ts (which imports normalizePortName
+  // from us) and this file.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { getPortMaster } = require('./port-master') as typeof import('./port-master');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { haversineDistanceNm } = require('./haversine') as typeof import('./haversine');
+
+  const pa = getPortMaster(a);
+  const pb = getPortMaster(b);
+  if (!pa || !pb) return null;
+  if (pa.lat == null || pa.lon == null || pb.lat == null || pb.lon == null) return null;
+  if (!Number.isFinite(pa.lat) || !Number.isFinite(pa.lon) || !Number.isFinite(pb.lat) || !Number.isFinite(pb.lon)) return null;
+
+  return { nm: haversineDistanceNm(pa.lat, pa.lon, pb.lat, pb.lon), exact: false };
 }
