@@ -4,14 +4,6 @@ import { exchangeCodeForToken, getAuthUrl } from '@/lib/google';
 import { logger } from '@/lib/logger';
 import { createSession } from '@/lib/session';
 import { generateCsrfToken } from '@/lib/csrf';
-import type { SessionData } from '@/lib/types';
-
-export { exchangeCodeForToken } from '@/lib/google';
-
-/** Build a minimal session data object from an access token. Pure function, no HTTP/session dependencies. */
-export function buildSessionData(accessToken: string): Pick<SessionData, 'accessToken'> {
-  return { accessToken };
-}
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
