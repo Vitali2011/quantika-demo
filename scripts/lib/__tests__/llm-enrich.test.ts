@@ -1,9 +1,11 @@
 import { enrichPortsBatch } from '../llm-enrich';
 import type { SkeletonPort } from '../match-targets';
 
-// Mock at the module path used in llm-enrich.ts
+// Mock at the module paths used in llm-enrich.ts
 jest.mock('../../../lib/openai', () => ({
   callAiJson: jest.fn(),
+}));
+jest.mock('../../../lib/constants', () => ({
   AI_MODEL_LIGHT: 'gpt-test-mini',
 }));
 

@@ -39,18 +39,3 @@ export function extractLastCargoesFromBody(body: string): string | null {
   }
   return null;
 }
-
-/**
- * Extract lastCargoes from a window of text near the vessel name.
- * Used for multi-vessel emails where a single L/C: line may belong to a specific vessel.
- * Falls back to scanning the entire body if vessel name is not found.
- */
-export function extractLastCargoesNearVessel(body: string, vesselName: string): string | null {
-  // Find vessel name position in body
-  const nameIdx = body.toLowerCase().indexOf(vesselName.toLowerCase());
-  if (nameIdx < 0) return extractLastCargoesFromBody(body); // fallback to whole body
-
-  // Take a window of ~500 chars after vessel name
-  const window = body.substring(nameIdx, nameIdx + 500);
-  return extractLastCargoesFromBody(window);
-}

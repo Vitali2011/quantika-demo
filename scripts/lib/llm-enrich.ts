@@ -11,7 +11,8 @@
 
 import type { PortMaster } from '../../lib/sailing/port-master';
 import type { SkeletonPort } from './match-targets';
-import { callAiJson, AI_MODEL_LIGHT } from '../../lib/openai';
+import { callAiJson } from '../../lib/openai';
+import { AI_MODEL_LIGHT } from '../../lib/constants';
 
 const BATCH_SIZE = 10;
 const BATCH_PAUSE_MS = 500;
