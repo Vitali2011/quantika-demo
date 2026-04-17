@@ -2,12 +2,10 @@ import OpenAI from 'openai';
 import { CLIPROXY_BASE_URL, CLIPROXY_API_KEY, AI_MODEL_HEAVY, AI_MODEL_LIGHT } from './constants';
 import { logger } from '@/lib/logger';
 
-export const ai = new OpenAI({
+const ai = new OpenAI({
   apiKey: CLIPROXY_API_KEY,
   baseURL: CLIPROXY_BASE_URL,
 });
-
-export { AI_MODEL_HEAVY, AI_MODEL_LIGHT };
 
 // Helper: call AI with streaming and parse JSON response
 // ClipProxy returns content:null in non-streaming mode, so we use streaming
