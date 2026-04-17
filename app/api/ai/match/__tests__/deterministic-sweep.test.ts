@@ -14,7 +14,6 @@ import type {
   MatchReadiness,
   MatchHardFilters,
   MatchSanctions,
-  ScoreBreakdown,
 } from '@/lib/types';
 
 import { hasDigit } from '@/lib/matching/reason-enricher';

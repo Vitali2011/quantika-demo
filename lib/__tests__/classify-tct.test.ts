@@ -30,7 +30,6 @@ describe('CLASSIFICATION_SYSTEM_PROMPT — TCT_REQUEST / VESSEL_CERTIFICATE', ()
   });
 
   it('contains keyword hints for detecting TCT emails', () => {
-    const lower = CLASSIFICATION_SYSTEM_PROMPT.toLowerCase();
     // At least one of the canonical TCT signal words must be present
     const hasTctKeywords =
       /time.?charter|daily hire|period charter|trip charter|delivery.*redelivery|dely.*redely/i.test(

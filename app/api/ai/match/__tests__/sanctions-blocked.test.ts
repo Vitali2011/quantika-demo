@@ -101,6 +101,8 @@ const euBoundCargo: ParsedCargo = {
   destinationCountry: 'BE',
   cargoDescription: cfField('Steel coils'),
   weightMt: cfField(18000),
+  weightMtMin: null,
+  weightMtMax: null,
   volumeCbm: null,
   dimensions: null,
   cargoType: 'BULK',
@@ -190,11 +192,7 @@ describe('sanctions pre-filter — blockedMatches construction', () => {
       emailId: 'v-email-004',
       flag: 'IR',
     };
-    const usRoute: ParsedCargo = {
-      ...euBoundCargo,
-      emailId: 'c-email-002',
-      destinationPort: cfField('Houston'),
-    };
+    // usRoute removed — sanctions test uses inline fields below
 
     const sanctions = checkSanctions({
       vesselFlag: 'IR',

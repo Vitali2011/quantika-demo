@@ -238,13 +238,25 @@ Extract per inquiry item:
 - incoterms: e.g. FOB, CFR, CIF, EXW, DDP
 - preferred_dates: loading or shipping dates mentioned
 - laycan: laycan window if specified (e.g. "1/5 May 2025")
-- loading_rate: if specified (e.g. "5000 MT/day SHINC")
-- discharge_rate: if specified
+- loading_rate: if specified (e.g. "5000 MT/day SHINC"). CRITICAL: Always extract laytime/rate terms here — FIO, FIO SHINC, FIOST, CQD, CQD both ends, numeric MT/day rates. These belong in loading_rate / discharge_rate, NOT in special_requirements.
+- discharge_rate: if specified. Same rules as loading_rate.
 - commission_percent: broker commission if mentioned
 - commission_terms: e.g. "TTL BENDS", "address commission"
-- special_requirements: temperature, hazmat class, fumigation, etc.
+- special_requirements: temperature, hazmat class, fumigation, etc. Do NOT put laytime terms (FIO, CQD, SHINC, SHEX) here.
 - stowage_factor: if mentioned (CBM per MT)
 - missing_info: array of strings — critical missing information needed to provide a quote
+
+LAYTIME RATE EXTRACTION RULES:
+- "FIO SHINC" / "FIO SHEX" / "FIO" → loading_rate AND discharge_rate = exact phrase. FIO = Free In Out (charterers pay for loading/discharge operations).
+- "CQD both ends" / "CQD b/e" / "CQD BENDS" / "CQD" → loading_rate AND discharge_rate = exact phrase. CQD = Customary Quick Dispatch.
+- "Loading: FIO SHINC" → loading_rate = "FIO SHINC". "Disch: FIO SHINC" → discharge_rate = "FIO SHINC".
+- Numeric patterns: "5,000 MT SHINC", "5000 MT/day SHEX" → populate the appropriate rate field.
+- NEVER route these terms to special_requirements.
+
+CARGO TYPE RULES:
+- BULK: free-flowing, unpackaged cargo (grain, coal, fertilizer, ore, cement, sugar, and scrap described as "loose").
+- BREAK_BULK: individually packaged/unitized cargo (steel coils, pipes, timber, machinery, bags on pallets, reels, HMS in bales/bundles).
+- "loose" modifier always implies BULK. Example: "steel scrap loose" → BULK. "steel scrap in bundles" → BREAK_BULK.
 
 IMPORTANT: Do NOT confuse "loading rate" or "discharge rate" (which are cargo handling rates in MT/day, SHINC, etc.) with "loading port" or "discharge port" (which are actual port names). Loading/discharge rates are operational terms, not locations. For example, "2500c/1750x" is a loading/discharge rate notation, NOT a port name.
 
@@ -324,7 +336,8 @@ Extract per vessel:
 - hold_dimensions: array of strings per hold
 - hatch_dimensions: array of strings per hatch
 - tank_top_strength: MT/sqm
-- geared: boolean — true ONLY if the vessel itself has on-board cranes or derricks. Set false if the email contains "Gearless", "GLESS", or "shore cranes required" (shore cranes belong to the port, not the vessel). When email contains the word "gearless", always set false regardless of other context.
+- geared: boolean — true ONLY if the vessel itself has on-board cranes or derricks. Set false if the vessel block contains "Gearless", "GLESS", "gearless", or "shore cranes required" (shore cranes belong to the port, not the vessel). CRITICAL: in pipe-compact format (e.g. "HC EVA-MARIE | DWT: 11,000 mts | Gearless | BOX"), the word "Gearless" in any position within the vessel's segment means geared=false. When the vessel's text block contains the word "gearless" in ANY case, ALWAYS set geared=false regardless of other context.
+- grain_capacity_unit: MUST be lowercase — either "cbm" or "cbft". Never uppercase "CBM" or "CBFT".
 - crane_capacity: e.g. "4 x 30T"
 - hatch_type: e.g. MacGregor, folding, pontoon
 - vessel_type: e.g. BULK CARRIER, MPP, GENERAL CARGO, CONTAINER, RORO, TANKER

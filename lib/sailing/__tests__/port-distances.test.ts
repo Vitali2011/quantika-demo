@@ -138,7 +138,7 @@ describe('KNOWN_PORTS coverage', () => {
       'Veracruz', 'NewOrleans', 'Houston', 'Santos',
       'Singapore', 'Tokyo', 'Shanghai',
       // Wave 3 gap-fill ports
-      'Antalya', 'Izmail', 'Haugesund', 'Georgetown', 'Qingdao',
+      'Antalya', 'Izmail', 'Derince', 'Haugesund', 'Georgetown', 'Qingdao',
       'Jeddah', 'Dubai', 'Mumbai', 'Colombo', 'Singapore',
       'HongKong', 'Busan', 'Durban', 'CapeTown',
       'Genoa', 'Barcelona', 'Algeciras', 'LeHavre', 'Felixstowe',
@@ -227,8 +227,8 @@ describe('normalizePortName — session gap-fill aliases', () => {
     expect(normalizePortName('Haugesund')).toBe('Haugesund');
   });
 
-  it('resolves "Derince" → Marmara (Sea of Marmara region)', () => {
-    expect(normalizePortName('Derince')).toBe('Marmara');
+  it('resolves "Derince" → Derince (own canonical entry, Bug E1 fix)', () => {
+    expect(normalizePortName('Derince')).toBe('Derince');
   });
 
   it('resolves "Izmail / Reni" → Izmail', () => {

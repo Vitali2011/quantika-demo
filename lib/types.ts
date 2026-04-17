@@ -76,6 +76,8 @@ export interface ParsedCargo {
   destinationCountry: string | null;
   cargoDescription: ConfidenceField<string> | null;
   weightMt: ConfidenceField<number> | null;
+  weightMtMin: number | null;
+  weightMtMax: number | null;
   volumeCbm: number | null;
   dimensions: string | null;
   cargoType: CargoType;

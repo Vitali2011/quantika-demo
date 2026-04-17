@@ -8803,5 +8803,82 @@
     "icePort": false,
     "dataConfidence": "medium",
     "sourceNote": "Akureyri Harbour"
+  },
+  {
+    "unlocode": "UAIZM",
+    "name": "Izmail",
+    "country": "UA",
+    "lat": 45.3494,
+    "lon": 28.8414,
+    "maxDraftM": 7.1,
+    "hasShoreCranes": true,
+    "berthType": "river",
+    "maxLOA": 150,
+    "cargoBerthTypes": [
+      "bulk",
+      "general"
+    ],
+    "tidal": false,
+    "icePort": false,
+    "dataConfidence": "high",
+    "sourceNote": "Ukrainian Danube port authority — grain/steel exports, shore cranes available"
+  },
+  {
+    "unlocode": "UAREN",
+    "name": "Reni",
+    "country": "UA",
+    "lat": 45.4622,
+    "lon": 28.2859,
+    "maxDraftM": 7.0,
+    "hasShoreCranes": true,
+    "berthType": "river",
+    "maxLOA": 140,
+    "cargoBerthTypes": [
+      "bulk",
+      "general"
+    ],
+    "tidal": false,
+    "icePort": false,
+    "dataConfidence": "high",
+    "sourceNote": "Ukrainian Danube port — grain/general cargo, shore cranes"
+  },
+  {
+    "unlocode": "TRDRC",
+    "name": "Derince",
+    "country": "TR",
+    "lat": 40.7549,
+    "lon": 29.8119,
+    "maxDraftM": 12.0,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "maxLOA": 200,
+    "cargoBerthTypes": [
+      "bulk",
+      "container",
+      "general"
+    ],
+    "tidal": false,
+    "icePort": false,
+    "dataConfidence": "high",
+    "sourceNote": "Turkish Marmara port on Gulf of Izmit — steel/container/general cargo hub, cranes"
+  },
+  {
+    "unlocode": "TRANT",
+    "name": "Antalya",
+    "country": "TR",
+    "lat": 36.8474,
+    "lon": 30.6097,
+    "maxDraftM": 11.5,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "maxLOA": 200,
+    "cargoBerthTypes": [
+      "bulk",
+      "general"
+    ],
+    "tidal": false,
+    "icePort": false,
+    "dataConfidence": "high",
+    "sourceNote": "Turkish Mediterranean port — general cargo + cruise, shore cranes"
   }
 ]
