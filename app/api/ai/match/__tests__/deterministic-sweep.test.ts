@@ -14,7 +14,6 @@ import type {
   MatchReadiness,
   MatchHardFilters,
   MatchSanctions,
-  ScoreBreakdown,
 } from '@/lib/types';
 
 // ── Minimal PairAnalysis shape (mirrors route.ts internal interface) ──────────
