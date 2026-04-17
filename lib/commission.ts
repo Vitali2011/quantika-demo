@@ -1,19 +1,18 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ParsedFixtureRecap, CommissionResult, CommissionSummary } from './types';
 
-function safeStr(v: any): string {
+function safeStr(v: unknown): string {
   if (v == null) return '';
   if (typeof v === 'string') return v;
   if (typeof v === 'number') return String(v);
-  if (typeof v === 'object' && 'value' in v) return safeStr(v.value);
+  if (typeof v === 'object' && 'value' in v) return safeStr((v as { value: unknown }).value);
   return String(v);
 }
 
-function safeNum(v: any): number | null {
+function safeNum(v: unknown): number | null {
   if (v == null) return null;
   if (typeof v === 'number') return isNaN(v) ? null : v;
   if (typeof v === 'string') { const m = v.match(/([\d,]+(?:\.[\d]+)?)/); if (m) { const n = parseFloat(m[1].replace(/,/g, '')); return isNaN(n) ? null : n; } return null; }
-  if (typeof v === 'object' && 'value' in v) return safeNum(v.value);
+  if (typeof v === 'object' && 'value' in v) return safeNum((v as { value: unknown }).value);
   return null;
 }
 
