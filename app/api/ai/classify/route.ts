@@ -13,7 +13,7 @@ import { calculateExpiry, isStale } from '@/lib/freshness';
 export const maxDuration = 120;
 
 /** Group emails by threadId into a Map. Pure function, no session/HTTP dependencies. */
-export function buildThreadMap(emails: Email[]): Map<string, Email[]> {
+function buildThreadMap(emails: Email[]): Map<string, Email[]> {
   const threadMap = new Map<string, Email[]>();
   for (const email of emails) {
     const list = threadMap.get(email.threadId) || [];
@@ -24,7 +24,7 @@ export function buildThreadMap(emails: Email[]): Map<string, Email[]> {
 }
 
 /** Derive EmailStatus from classification parameters. Pure function, no session/HTTP dependencies. */
-export function deriveStatus(params: {
+function deriveStatus(params: {
   requiresReply: boolean;
   isUnanswered: boolean;
   hoursWithout: number;

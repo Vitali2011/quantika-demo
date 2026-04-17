@@ -16,7 +16,7 @@ jest.mock('@/lib/validation/equasis-client', () => ({
 import {
   buildVesselPrompt,
   parseVesselAIResponse,
-} from '@/app/api/ai/parse-vessel/route';
+} from '@/lib/parsing/parse-vessel-helpers';
 import type { Email } from '@/lib/types';
 
 function makeEmail(overrides: Partial<Email> = {}): Email {

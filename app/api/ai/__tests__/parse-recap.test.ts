@@ -8,7 +8,7 @@ jest.mock('@/lib/session', () => ({
   updateSession: jest.fn(),
 }));
 
-import { parseRecapAIResponse } from '@/app/api/ai/parse-recap/route';
+import { parseRecapAIResponse } from '@/lib/parsing/parse-recap-helpers';
 
 // ── parseRecapAIResponse ──────────────────────────────────────────────────────
 

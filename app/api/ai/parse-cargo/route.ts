@@ -47,7 +47,7 @@ function extractStr(v: unknown): string | null {
 export const maxDuration = 120;
 
 /** Build user prompt strings for a list of cargo inquiry emails. */
-export function buildCargoPrompts(emails: Email[]): string[] {
+function buildCargoPrompts(emails: Email[]): string[] {
   return emails.map(
     email => `From: ${email.from}\nSubject: ${email.subject}\nDate: ${email.date}\n\n${email.body}`
   );
@@ -57,7 +57,7 @@ export function buildCargoPrompts(emails: Email[]): string[] {
  * Parse a raw AI JSON response string into ParsedCargo records.
  * Returns [] on malformed JSON or empty items.
  */
-export function parseCargoAIResponse(raw: string, emailId: string): ParsedCargo[] {
+function parseCargoAIResponse(raw: string, emailId: string): ParsedCargo[] {
   let result: RawCargoItem;
   try {
     const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
