@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createSession, updateSession } from '@/lib/session';
-import { generateCsrfToken } from '@/lib/csrf';
+import { generateCsrfToken, validateCsrf } from '@/lib/csrf';
 import cargoInquiries from '@/lib/sample-data/cargo-inquiries.json';
 import vesselPositions from '@/lib/sample-data/vessel-positions.json';
 import fixtureRecaps from '@/lib/sample-data/fixture-recaps.json';
@@ -15,7 +15,8 @@ const SAMPLE_EMAILS = [
   ...clientReplies,
 ];
 
-export async function POST() {
+export async function POST(request: NextRequest) {
+  if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   const sessionId = createSession('sample-data-token');
   updateSession(sessionId, { emails: SAMPLE_EMAILS, isSampleData: true });
 

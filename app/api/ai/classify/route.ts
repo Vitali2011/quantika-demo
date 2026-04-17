@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
+import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
 import { callAiJson } from '@/lib/openai';
 import { CLASSIFICATION_SYSTEM_PROMPT } from '@/lib/prompts';
@@ -36,6 +37,8 @@ export function deriveStatus(params: {
 }
 
 export async function POST(request: NextRequest) {
+  if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
   const authResult = requireSession(request);
   if (authResult instanceof NextResponse) return authResult;
   const { session, sessionId } = authResult;

@@ -1,4 +1,5 @@
 import { randomBytes } from 'crypto';
+import type { NextRequest } from 'next/server';
 
 const TOKEN_REGEX = /^[0-9a-f]{64}$/;
 
@@ -23,6 +24,30 @@ export function validateCsrfToken(token: unknown): boolean {
 export interface CsrfCheckable {
   cookies: { get(name: string): { value: string } | undefined };
   headers: { get(name: string): string | null };
+}
+
+/**
+ * Validates CSRF using Origin/Referer header check (same-origin defence).
+ * In development, always returns true.
+ */
+export function validateCsrf(request: NextRequest): boolean {
+  if (process.env.NODE_ENV === 'development') return true;
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://demo.quantika.org';
+  const allowedOrigins = new Set([appUrl, 'http://localhost:3000']);
+
+  const origin = request.headers.get('origin');
+  if (origin !== null) {
+    return allowedOrigins.has(origin);
+  }
+
+  // Origin absent — fall back to Referer
+  const referer = request.headers.get('referer');
+  if (referer) {
+    return referer.startsWith(appUrl);
+  }
+
+  return false;
 }
 
 /**

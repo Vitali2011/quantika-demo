@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
 import { callAiJson } from '@/lib/openai';
 import { CARGO_INQUIRY_PARSER_PROMPT } from '@/lib/prompts';
@@ -111,9 +112,11 @@ export function parseCargoAIResponse(raw: string, emailId: string): ParsedCargo[
 }
 
 export async function POST(request: NextRequest) {
-  const result = requireSession(request);
-  if (result instanceof NextResponse) return result;
-  const { session, sessionId } = result;
+  if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
+  const authResult = requireSession(request);
+  if (authResult instanceof NextResponse) return authResult;
+  const { session, sessionId } = authResult;
 
   const cargoInquiryIds = session.classifications
     .filter(c => c.category === 'CARGO_INQUIRY')

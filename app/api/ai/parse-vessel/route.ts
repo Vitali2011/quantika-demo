@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
 import { callAiText } from '@/lib/openai';
 import { VESSEL_POSITION_PARSER_PROMPT } from '@/lib/prompts';
@@ -167,6 +168,8 @@ export function parseVesselAIResponse(raw: string, emailId: string): ParsedVesse
 }
 
 export async function POST(request: NextRequest) {
+  if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
   const result = requireSession(request);
   if (result instanceof NextResponse) return result;
   const { session, sessionId } = result;

@@ -28,7 +28,7 @@ const mockGetSession = getSession as jest.MockedFunction<typeof getSession>;
 const mockUpdateSession = updateSession as jest.MockedFunction<typeof updateSession>;
 
 function makeRequest(sessionId?: string): NextRequest {
-  const headers: Record<string, string> = {};
+  const headers: Record<string, string> = { origin: 'http://localhost:3000' };
   if (sessionId) headers['cookie'] = `session_id=${sessionId}`;
   return new NextRequest('http://localhost/api/ai/classify', {
     method: 'POST',

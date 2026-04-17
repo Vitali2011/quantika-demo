@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
+import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
 import { callAiJson } from '@/lib/openai';
 import { MATCH_PROMPT } from '@/lib/prompts';
@@ -151,9 +152,11 @@ function findAnalysis(
 }
 
 export async function POST(request: NextRequest) {
-  const result = requireSession(request);
-  if (result instanceof NextResponse) return result;
-  const { session, sessionId } = result;
+  if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
+  const authResult = requireSession(request);
+  if (authResult instanceof NextResponse) return authResult;
+  const { session, sessionId } = authResult;
 
   const { parsedCargos, parsedVessels } = session;
 
