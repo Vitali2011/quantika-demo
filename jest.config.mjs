@@ -14,6 +14,8 @@ const config = {
     }],
   },
   moduleNameMapper: {
+    // p-limit is ESM-only; use a CJS shim in test environments
+    '^p-limit$': '<rootDir>/__mocks__/p-limit.ts',
     '^@/(.*)$': '<rootDir>/$1',
   },
 };

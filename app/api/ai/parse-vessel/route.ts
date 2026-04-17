@@ -198,11 +198,20 @@ export async function POST(request: NextRequest) {
   // External registry verification (Equasis). Runs only for vessels where we
   // have a structurally valid IMO. Graceful — Equasis down = no warning,
   // not a filter failure.
+  const limitEquasis = pLimit(3);
   await Promise.all(
     allParsed.map(async (v) => {
       if (!v.imo) return;
       try {
-        const record = await lookupVesselByImo(v.imo);
+        const record = await limitEquasis(async () => {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 8_000);
+          try {
+            return await lookupVesselByImo(v.imo!);
+          } finally {
+            clearTimeout(timeoutId);
+          }
+        });
         if (!record) {
           v.verificationWarning = 'IMO not found in Equasis registry';
           return;
