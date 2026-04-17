@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { google } from 'googleapis';
+import { google, gmail_v1 } from 'googleapis';
 
 import type { Email } from './types';
 
@@ -66,10 +65,10 @@ export async function fetchGmailEmails(accessToken: string, count: number = 50):
   return results.filter((email): email is Email => email !== null);
 }
 
-function parseGmailMessage(message: any): Email {
+function parseGmailMessage(message: gmail_v1.Schema$Message): Email {
   const headers = message.payload?.headers || [];
   const getHeader = (name: string) =>
-    headers.find((header: any) => header.name.toLowerCase() === name.toLowerCase())?.value || '';
+    headers.find((header) => header.name?.toLowerCase() === name.toLowerCase())?.value || '';
 
   // Parse "Name <email@domain.com>" format
   function parseFromHeader(from: string): { fromName: string | null; fromEmail: string | null } {
@@ -101,7 +100,7 @@ function parseGmailMessage(message: any): Email {
   };
 }
 
-function extractBody(payload: any): string {
+function extractBody(payload: gmail_v1.Schema$MessagePart | null | undefined): string {
   if (!payload) return '';
 
   if (payload.body?.data) {
@@ -109,12 +108,12 @@ function extractBody(payload: any): string {
   }
 
   if (payload.parts) {
-    const textPart = payload.parts.find((part: any) => part.mimeType === 'text/plain');
+    const textPart = payload.parts.find((part) => part.mimeType === 'text/plain');
     if (textPart?.body?.data) {
       return decodeBase64Url(textPart.body.data);
     }
 
-    const htmlPart = payload.parts.find((part: any) => part.mimeType === 'text/html');
+    const htmlPart = payload.parts.find((part) => part.mimeType === 'text/html');
     if (htmlPart?.body?.data) {
       const html = decodeBase64Url(htmlPart.body.data);
       return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();

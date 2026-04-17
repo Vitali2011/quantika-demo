@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
@@ -18,6 +17,17 @@ import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
 import { validateDates } from '@/lib/sailing/date-sanity';
 import { checkSanctions } from '@/lib/validation/sanctions';
 import { enrichReasons } from '@/lib/matching/reason-enricher';
+
+interface RawMatch {
+  cargo_email_id?: string;
+  cargo_item_index?: number;
+  vessel_email_id?: string;
+  vessel_item_index?: number;
+  score?: number;
+  match_level?: string;
+  match_reasons?: string[];
+  issues?: string[];
+}
 
 export const maxDuration = 120;
 
@@ -263,7 +273,7 @@ export async function POST(request: NextRequest) {
     readiness: readinessData,
   });
 
-  const result = await callAiJson<{ matches: any[] }>(
+  const result = await callAiJson<{ matches: RawMatch[] }>(
     promptPayload,
     MATCH_PROMPT,
     AI_MODEL_HEAVY,
@@ -271,7 +281,7 @@ export async function POST(request: NextRequest) {
   );
 
   const rawMatches: Match[] = (result.matches || [])
-    .map((m: any) => ({
+    .map((m: RawMatch) => ({
       cargoEmailId: m.cargo_email_id || '',
       cargoItemIndex: m.cargo_item_index ?? 0,
       vesselEmailId: m.vessel_email_id || '',

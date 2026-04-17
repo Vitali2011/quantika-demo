@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
@@ -8,6 +6,16 @@ import { CLASSIFICATION_SYSTEM_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_HEAVY, MAX_EMAIL_BODY_CHARS, UNANSWERED_THRESHOLD_HOURS } from '@/lib/constants';
 import { truncateText } from '@/lib/utils';
 import { Classification, Email, EmailCategory, EmailStatus, Urgency, ProcessedEmail } from '@/lib/types';
+
+interface RawClassification {
+  id?: string;
+  emailId?: string;
+  category?: string;
+  urgency?: string;
+  confidence?: number;
+  original_sender?: string | null;
+  original_sender_company?: string | null;
+}
 import { calculateExpiry, isStale } from '@/lib/freshness';
 
 export const maxDuration = 120;
@@ -52,7 +60,7 @@ export async function POST(request: NextRequest) {
     body_preview: truncateText(email.body || email.snippet, MAX_EMAIL_BODY_CHARS),
   }));
 
-  const result = await callAiJson<{ classifications: any[] }>(
+  const result = await callAiJson<{ classifications: RawClassification[] }>(
     JSON.stringify(emailInput),
     CLASSIFICATION_SYSTEM_PROMPT,
     AI_MODEL_HEAVY,
@@ -61,7 +69,7 @@ export async function POST(request: NextRequest) {
 
   const threadMap = buildThreadMap(session.emails);
 
-  const classifications: Classification[] = (result.classifications || []).map((c: any) => {
+  const classifications: Classification[] = (result.classifications || []).map((c: RawClassification) => {
     const email = session.emails.find(e => e.id === (c.id || c.emailId));
     const threadEmails = email ? (threadMap.get(email.threadId) || []) : [];
     const isIncoming = email ? (email.labelIds.includes('INBOX') && !email.labelIds.includes('SENT')) : false;
@@ -86,7 +94,6 @@ export async function POST(request: NextRequest) {
   const REQUIRES_REPLY: EmailCategory[] = ['CARGO_INQUIRY', 'CLIENT_REPLY'];
   const processedEmails: ProcessedEmail[] = classifications.map(cls => {
     const email = session.emails.find(e => e.id === cls.emailId);
-    const emailDate = email ? new Date(email.date).getTime() : 0;
     const hoursWithout = cls.daysWithoutReply != null ? cls.daysWithoutReply * 24 : 0;
     const requiresReply = REQUIRES_REPLY.includes(cls.category);
 
