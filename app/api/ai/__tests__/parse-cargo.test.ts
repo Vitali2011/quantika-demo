@@ -4,10 +4,22 @@ jest.mock('@/lib/openai', () => ({
   callAiJson: jest.fn(),
 }));
 
-jest.mock('@/lib/session', () => ({
-  getSession: jest.fn(),
-  updateSession: jest.fn(),
-}));
+jest.mock('@/lib/session', () => {
+  const { NextResponse } = jest.requireActual('next/server');
+  const getSession = jest.fn();
+  const updateSession = jest.fn();
+  return {
+    getSession,
+    updateSession,
+    requireSession: (request: { cookies: { get: (n: string) => { value: string } | undefined } }) => {
+      const sessionId = request.cookies.get('session_id')?.value;
+      if (!sessionId) return NextResponse.json({ error: 'No session' }, { status: 401 });
+      const session = getSession(sessionId);
+      if (!session) return NextResponse.json({ error: 'Session expired' }, { status: 401 });
+      return { session, sessionId };
+    },
+  };
+});
 
 import { POST } from '@/app/api/ai/parse-cargo/route';
 import { callAiJson } from '@/lib/openai';
