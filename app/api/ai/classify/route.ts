@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession, updateSession } from '@/lib/session';
+import { requireSession, updateSession } from '@/lib/session';
 import { callAiJson } from '@/lib/openai';
 import { CLASSIFICATION_SYSTEM_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_HEAVY, MAX_EMAIL_BODY_CHARS, UNANSWERED_THRESHOLD_HOURS } from '@/lib/constants';
@@ -36,11 +36,9 @@ export function deriveStatus(params: {
 }
 
 export async function POST(request: NextRequest) {
-  const sessionId = request.cookies.get('session_id')?.value;
-  if (!sessionId) return NextResponse.json({ error: 'No session' }, { status: 401 });
-
-  const session = getSession(sessionId);
-  if (!session) return NextResponse.json({ error: 'Session expired' }, { status: 401 });
+  const authResult = requireSession(request);
+  if (authResult instanceof NextResponse) return authResult;
+  const { session, sessionId } = authResult;
   if (session.emails.length === 0) return NextResponse.json({ error: 'No emails to classify' }, { status: 400 });
 
   const emailInput = session.emails.map(email => ({

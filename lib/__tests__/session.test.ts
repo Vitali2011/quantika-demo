@@ -1,5 +1,8 @@
 import type { SessionData, Email } from '../types';
 import { SESSION_TTL_MS } from '../constants';
+import { NextResponse } from 'next/server';
+
+import type { NextRequest } from 'next/server';
 
 type SessionMod = {
   createSession: (accessToken: string) => string;
@@ -7,6 +10,7 @@ type SessionMod = {
   updateSession: (id: string, updates: Partial<SessionData>) => boolean;
   deleteSession: (id: string) => void;
   getSessionCount: () => number;
+  requireSession: (request: NextRequest) => { session: SessionData; sessionId: string } | NextResponse;
 };
 
 describe('lib/session', () => {
@@ -105,5 +109,55 @@ describe('lib/session', () => {
     expect(data.recaps).toEqual([]);
     expect(data.commissionSummary).toBeNull();
     expect(data.counterparties).toEqual([]);
+  });
+});
+
+describe('requireSession', () => {
+  let mod: SessionMod;
+
+  function makeRequest(cookieValue: string | null): NextRequest {
+    return {
+      cookies: {
+        get: (name: string) =>
+          name === 'session_id' && cookieValue !== null
+            ? { value: cookieValue }
+            : undefined,
+      },
+    } as unknown as NextRequest;
+  }
+
+  beforeEach(() => {
+    jest.resetModules();
+    mod = jest.requireActual('../session') as SessionMod;
+  });
+
+  it('returns 401 with "No session" when session_id cookie is absent', async () => {
+    const req = makeRequest(null);
+    const result = mod.requireSession(req);
+    expect(result).toBeInstanceOf(Response);
+    const res = result as NextResponse;
+    expect(res.status).toBe(401);
+    const body = await res.json();
+    expect(body.error).toBe('No session');
+  });
+
+  it('returns 401 with "Session expired" when session_id cookie is set but session does not exist', async () => {
+    const req = makeRequest('nonexistent-session-id');
+    const result = mod.requireSession(req);
+    expect(result).toBeInstanceOf(Response);
+    const res = result as NextResponse;
+    expect(res.status).toBe(401);
+    const body = await res.json();
+    expect(body.error).toBe('Session expired');
+  });
+
+  it('returns { session, sessionId } when session_id cookie is valid', () => {
+    const sessionId = mod.createSession('token-xyz');
+    const req = makeRequest(sessionId);
+    const result = mod.requireSession(req);
+    expect(result).not.toBeInstanceOf(Response);
+    const { session, sessionId: returnedId } = result as { session: SessionData; sessionId: string };
+    expect(returnedId).toBe(sessionId);
+    expect(session.accessToken).toBe('token-xyz');
   });
 });

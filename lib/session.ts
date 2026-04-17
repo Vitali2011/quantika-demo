@@ -1,3 +1,4 @@
+import { NextRequest, NextResponse } from 'next/server';
 import { SessionData } from './types';
 import { getStore } from './session-store';
 
@@ -19,4 +20,14 @@ export function deleteSession(id: string): void {
 
 export function getSessionCount(): number {
   return getStore().getSessionCount();
+}
+
+export function requireSession(
+  request: NextRequest,
+): { session: SessionData; sessionId: string } | NextResponse {
+  const sessionId = request.cookies.get('session_id')?.value;
+  if (!sessionId) return NextResponse.json({ error: 'No session' }, { status: 401 });
+  const session = getSession(sessionId);
+  if (!session) return NextResponse.json({ error: 'Session expired' }, { status: 401 });
+  return { session, sessionId };
 }

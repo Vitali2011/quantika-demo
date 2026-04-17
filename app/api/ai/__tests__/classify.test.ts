@@ -3,7 +3,22 @@ import { NextRequest } from 'next/server';
 import { Email, SessionData } from '@/lib/types';
 
 jest.mock('@/lib/openai');
-jest.mock('@/lib/session');
+jest.mock('@/lib/session', () => {
+  const { NextResponse } = jest.requireActual('next/server');
+  const getSession = jest.fn();
+  const updateSession = jest.fn();
+  return {
+    getSession,
+    updateSession,
+    requireSession: (request: { cookies: { get: (n: string) => { value: string } | undefined } }) => {
+      const sessionId = request.cookies.get('session_id')?.value;
+      if (!sessionId) return NextResponse.json({ error: 'No session' }, { status: 401 });
+      const session = getSession(sessionId);
+      if (!session) return NextResponse.json({ error: 'Session expired' }, { status: 401 });
+      return { session, sessionId };
+    },
+  };
+});
 
 import { callAiJson } from '@/lib/openai';
 import { getSession, updateSession } from '@/lib/session';

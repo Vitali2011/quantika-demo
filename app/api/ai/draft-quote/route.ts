@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@/lib/session';
+import { requireSession } from '@/lib/session';
 import { callAiText } from '@/lib/openai';
 import { DRAFT_QUOTE_SYSTEM_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_LIGHT } from '@/lib/constants';
@@ -7,11 +7,9 @@ import { AI_MODEL_LIGHT } from '@/lib/constants';
 export const maxDuration = 30;
 
 export async function POST(request: NextRequest) {
-  const sessionId = request.cookies.get('session_id')?.value;
-  if (!sessionId) return NextResponse.json({ error: 'No session' }, { status: 401 });
-  
-  const session = getSession(sessionId);
-  if (!session) return NextResponse.json({ error: 'Session expired' }, { status: 401 });
+  const result = requireSession(request);
+  if (result instanceof NextResponse) return result;
+  const { session } = result;
   
   const body = await request.json();
   const { emailId } = body;
