@@ -5,6 +5,7 @@ import { VESSEL_POSITION_PARSER_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_LIGHT } from '@/lib/constants';
 import { Email, ParsedVessel, cfValue } from '@/lib/types';
 import { extractNum, toConfidence } from '@/lib/parsing-utils';
+import { applyGearedFallback } from '@/lib/parsing/geared-fallback';
 import { validateImo } from '@/lib/validation/imo';
 import { calibrateAll } from '@/lib/validation/confidence-calibration';
 import { lookupVesselByImo, compareVesselRecord } from '@/lib/validation/equasis-client';
@@ -108,7 +109,14 @@ export function parseVesselAIResponse(raw: string, emailId: string): ParsedVesse
       holdsCount: extractNum(item.holds_count),
       hatchesCount: extractNum(item.hatches_count),
       grainCapacity: extractNum(item.grain_capacity),
-      grainCapacityUnit: extractStr(item.grain_capacity_unit) as 'CBM' | 'CF' | null,
+      grainCapacityUnit: (() => {
+        const u = extractStr(item.grain_capacity_unit);
+        if (!u) return null;
+        const lower = u.toLowerCase();
+        if (lower === 'cbm') return 'cbm';
+        if (lower === 'cbft' || lower === 'cf') return 'cbft';
+        return null;
+      })(),
       baleCapacity: extractNum(item.bale_capacity),
       holdDimensions: extractStr(item.hold_dimensions),
       hatchDimensions: extractStr(item.hatch_dimensions),
@@ -184,7 +192,8 @@ export async function POST(request: NextRequest) {
       const prompt = buildVesselPrompt(email);
       const raw = await callAiText(prompt, VESSEL_POSITION_PARSER_PROMPT, AI_MODEL_LIGHT);
       const items = parseVesselAIResponse(raw, email.id);
-      allParsed.push(...items);
+      const corrected = applyGearedFallback(items, email.body);
+      allParsed.push(...corrected);
     }))
   );
 

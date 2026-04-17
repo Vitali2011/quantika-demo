@@ -43,6 +43,7 @@ const PORT_REGION_MAP: Record<KnownPort, PortRegion> = {
   'Piraeus':      'Mediterranean',
   'Aliaga':       'Mediterranean',
   'Marmara':      'Mediterranean',
+  'Derince':      'Mediterranean',
   'Antalya':      'Mediterranean',
   'Mersin':       'Mediterranean',
   'Iskenderun':   'Mediterranean',

@@ -11,7 +11,7 @@ import {
 } from '@/lib/types';
 import { cfValue } from '@/lib/types';
 import { calculateReadinessGap, detectSpot } from '@/lib/sailing/readiness-gap';
-import { applyReadinessScoring, computeScoreBreakdown } from '@/lib/sailing/match-scoring';
+import { applyReadinessScoring, computeScoreBreakdown, deriveMatchLevel } from '@/lib/sailing/match-scoring';
 import { runHardFilters } from '@/lib/sailing/match-filters';
 import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
 import { validateDates } from '@/lib/sailing/date-sanity';
@@ -374,8 +374,10 @@ export async function POST(request: NextRequest) {
         readiness: analysis.readiness,
         sanctions: analysis.sanctions,
       });
-      // Use the computed finalScore as the canonical score
+      // P0-D1: Use the computed finalScore as the canonical score
       withReadiness.score = Math.max(0, Math.min(100, withReadiness.scoreBreakdown.finalScore));
+      // P0-D2: Recalculate matchLevel from the final synced score
+      withReadiness.matchLevel = deriveMatchLevel(withReadiness.score);
     }
 
     sweepMatches.push(withReadiness);
@@ -409,6 +411,10 @@ export async function POST(request: NextRequest) {
         readiness: analysis.readiness,
         sanctions: analysis.sanctions,
       });
+      // P0-D1: sync score to scoreBreakdown.finalScore (LLM path was missing this)
+      withReadiness.score = Math.max(0, Math.min(100, withReadiness.scoreBreakdown.finalScore));
+      // P0-D2: recalculate matchLevel from the synced final score
+      withReadiness.matchLevel = deriveMatchLevel(withReadiness.score);
     }
 
     return withReadiness;
@@ -417,7 +423,26 @@ export async function POST(request: NextRequest) {
   // Merge: LLM matches first (richer commentary), sweep matches appended.
   // Sweep matches are already fully enriched (readiness/filters/sanctions/scoreBreakdown
   // computed above) — they must NOT go through the LLM enrichment map again.
-  const matches: Match[] = [...llmMatches, ...sweepMatches];
+  const allMatches: Match[] = [...llmMatches, ...sweepMatches];
+
+  // P1-DUP: dedupe — if a pair appears in both matches and blockedMatches,
+  // keep it in blockedMatches (safety) and remove from matches.
+  const blockedKeys = new Set(
+    blockedMatches.map(b => pairKey(b.cargoEmailId, b.cargoItemIndex, b.vesselEmailId, b.vesselItemIndex)),
+  );
+  const matches: Match[] = allMatches.filter(
+    m => !blockedKeys.has(pairKey(m.cargoEmailId, m.cargoItemIndex, m.vesselEmailId, m.vesselItemIndex)),
+  );
+
+  // Assertion: matches ∩ blockedMatches must be empty
+  if (process.env.NODE_ENV !== 'production') {
+    for (const m of matches) {
+      const key = pairKey(m.cargoEmailId, m.cargoItemIndex, m.vesselEmailId, m.vesselItemIndex);
+      if (blockedKeys.has(key)) {
+        console.error(`[match/route] BUG: pair ${key} found in both matches and blockedMatches after dedup`);
+      }
+    }
+  }
 
   // Sort by adjusted score descending
   matches.sort((a, b) => b.score - a.score);

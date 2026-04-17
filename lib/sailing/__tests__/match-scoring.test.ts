@@ -24,6 +24,8 @@ function mkCargo(overrides: Partial<ParsedCargo> = {}): ParsedCargo {
     destinationCountry: 'IT',
     cargoDescription: { value: 'steel coils', confidence: 'confirmed' },
     weightMt: { value: 4800, confidence: 'confirmed' },
+    weightMtMin: null,
+    weightMtMax: null,
     volumeCbm: null,
     dimensions: null,
     cargoType: 'BREAK_BULK',

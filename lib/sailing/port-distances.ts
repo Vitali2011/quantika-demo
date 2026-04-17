@@ -17,7 +17,7 @@ export const KNOWN_PORTS = [
   'Karasu', 'Istanbul', 'Mykolaiv', 'Odesa', 'Chornomorsk', 'Constanta', 'Varna', 'Burgas', 'Novorossiysk',
   'Taman', 'Tuapse', 'Izmail',
   // Aegean / Eastern Med
-  'Piraeus', 'Aliaga', 'Marmara', 'Antalya', 'Mersin', 'Iskenderun',
+  'Piraeus', 'Aliaga', 'Marmara', 'Derince', 'Antalya', 'Mersin', 'Iskenderun',
   // Eastern Med / Suez
   'Alexandria', 'Suez',
   // Central / Western Med
@@ -98,8 +98,9 @@ const PORT_ALIASES: Record<string, KnownPort> = {
   'marmara': 'Marmara',
   'marmara island': 'Marmara',
   'bandirma': 'Marmara',        // same Sea of Marmara region
-  'derince': 'Marmara',         // Derince/Izmit is Sea of Marmara
-  'izmit': 'Marmara',
+  'derince': 'Derince',         // Derince/Izmit — own canonical entry (hasShoreCranes fix)
+  'izmit': 'Derince',           // Izmit is adjacent to Derince on Gulf of Izmit
+  'izmit-derince': 'Derince',
   'antalya': 'Antalya',
   'mersin': 'Mersin',
   'icel': 'Mersin',             // former name of Mersin province
@@ -391,6 +392,16 @@ const DISTANCES_NM: Record<string, number> = {
   'Chornomorsk|Alexandria': 1230,
   'Chornomorsk|Ravenna': 1445,
   'Chornomorsk|Skikda': 1700,
+
+  // ── Derince (Gulf of Izmit, Sea of Marmara) ──
+  'Derince|Istanbul': 90,
+  'Derince|Marmara': 50,
+  'Derince|Piraeus': 380,
+  'Aliaga|Derince': 225,
+  'Alexandria|Derince': 820,
+  'Constanta|Derince': 290,
+  'Derince|Mykolaiv': 505,
+  'Derince|Odesa': 460,
 
   // ── Marmara (Sea of Marmara) ──
   'Istanbul|Marmara': 70,

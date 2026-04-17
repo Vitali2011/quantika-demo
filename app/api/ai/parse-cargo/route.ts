@@ -6,6 +6,7 @@ import { AI_MODEL_LIGHT } from '@/lib/constants';
 import { CargoType, Email, ParsedCargo } from '@/lib/types';
 import { toConfidence, extractNum } from '@/lib/parsing-utils';
 import { calibrateAll } from '@/lib/validation/confidence-calibration';
+import { applyCargoRateFallback, applyCargoTypeFallback } from '@/lib/parsing/cargo-rate-fallback';
 import pLimit from 'p-limit';
 
 interface RawCargoItem {
@@ -15,6 +16,8 @@ interface RawCargoItem {
   destination_country?: string | null;
   cargo_description?: unknown;
   weight_mt?: unknown;
+  weight_mt_min?: number | null;
+  weight_mt_max?: number | null;
   volume_cbm?: number | null;
   dimensions?: string | null;
   cargo_type?: string;
@@ -76,6 +79,8 @@ export function parseCargoAIResponse(raw: string, emailId: string): ParsedCargo[
       destinationCountry: extractStr(item.destination_country),
       cargoDescription: toConfidence<string>(item.cargo_description),
       weightMt: toConfidence<number>(item.weight_mt),
+      weightMtMin: extractNum(item.weight_mt_min),
+      weightMtMax: extractNum(item.weight_mt_max),
       // extractNum is NaN-safe and preserves a legitimate zero (unlike `x || null`,
       // which nullifies 0). Prior commit introduced a 0-commission bug by using the
       // antipattern — see ROADMAP_MVP.md W1.8.
@@ -136,7 +141,11 @@ export async function POST(request: NextRequest) {
         { items: [] }
       );
       const items = parseCargoAIResponse(JSON.stringify(result), email.id);
-      allParsed.push(...items);
+      // Apply regex fallbacks: populate rates/cargoType that LLM missed
+      const enriched = items
+        .map(c => applyCargoRateFallback(c, email.body))
+        .map(c => applyCargoTypeFallback(c));
+      allParsed.push(...enriched);
     }))
   );
 

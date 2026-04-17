@@ -124,6 +124,16 @@ function scoreCargoTypeMatch(input: CargoTypeScoreInput): { points: number; reas
 void checkCargoVesselCompat;
 
 /**
+ * Derive matchLevel from a numeric score.
+ * Single source of truth — used by both LLM and sweep paths in route.ts.
+ */
+export function deriveMatchLevel(score: number): MatchLevel {
+  if (score >= 70) return 'good';
+  if (score >= 40) return 'possible';
+  return 'weak';
+}
+
+/**
  * Apply readiness-based score adjustment + add contextual issue text.
  *
  * Pure function — extracted here (rather than inlined in the route) so Next.js

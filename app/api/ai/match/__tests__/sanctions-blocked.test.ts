@@ -101,6 +101,8 @@ const euBoundCargo: ParsedCargo = {
   destinationCountry: 'BE',
   cargoDescription: cfField('Steel coils'),
   weightMt: cfField(18000),
+  weightMtMin: null,
+  weightMtMax: null,
   volumeCbm: null,
   dimensions: null,
   cargoType: 'BULK',
