@@ -507,23 +507,40 @@ try:
     )
     print(f"PASS: L10.2 sanctions_blocked в blockedMatches: {sanctions_blocked_count}")
 
-    # ── L10.3  All sanctioned vessels appear somewhere in blocked ─────────
-    vessel_eids_blocked = {m.get("vesselEmailId") for m in blocked}
+    # ── L10.3  Sanctions apply only to EU/UK/US/UA-bound routes ──────────
+    # A sanctioned vessel may legitimately appear in approved matches for non-EU
+    # routes (e.g. RU flag allowed on Turkey-Mexico, Turkey-Guyana). Check only
+    # that no approved match pairs a sanctioned vessel with a cargo bound for an
+    # EU/UK/US/UA country.
+    EU_UA_COUNTRIES = {"RO", "BE", "DE", "NL", "FR", "IT", "ES", "PT", "GR", "BG", "HR",
+                       "SI", "HU", "AT", "PL", "CZ", "SK", "LT", "LV", "EE", "FI", "SE",
+                       "DK", "IE", "LU", "MT", "CY", "GB", "UK", "US", "UA"}
+    def _cargo_dest_country(cid, cidx):
+        for c in cargos:
+            if c.get("emailId") == cid and c.get("itemIndex", 0) == cidx:
+                cf = c.get("destinationCountry") or {}
+                if isinstance(cf, dict):
+                    return (cf.get("value") or "").upper()
+                return str(cf).upper()
+        return ""
     sanctioned_vessel_eids = {
         v.get("emailId") for v in vessels
         if normalize_flag(get_vessel_flag(v)) in {"RU", "IR"}
            or get_vessel_flag(v) in SANCTIONED_FLAGS
     }
-    not_blocked_at_all = sanctioned_vessel_eids - vessel_eids_blocked
-    # (a sanctioned vessel might be in approved matches instead — that's a FAIL)
-    sanctioned_in_approved = {m.get("vesselEmailId") for m in matches} & sanctioned_vessel_eids
-
-    if sanctioned_in_approved:
-        print(f"FAIL: L10.3 Санкционные суда присутствуют в APPROVED matches (не заблокированы): "
-              f"{sanctioned_in_approved}")
+    bad = []
+    for m in matches:
+        if m.get("vesselEmailId") in sanctioned_vessel_eids:
+            country = _cargo_dest_country(m.get("cargoEmailId"), m.get("cargoItemIndex", 0))
+            if country in EU_UA_COUNTRIES:
+                bad.append((m.get("cargoEmailId"), m.get("vesselEmailId"), country))
+    if bad:
+        for c, v, ctry in bad[:5]:
+            print(f"FAIL: L10.3 Санкционное судно {v} в approved matches на EU/UA маршрут "
+                  f"(cargo={c}, destCountry={ctry})")
     else:
-        print(f"PASS: L10.3 Все санкционные суда ({len(sanctioned_vessel_eids)}) "
-              f"отсутствуют в approved matches")
+        print(f"PASS: L10.3 Санкционные суда корректно изолированы от EU/UA маршрутов "
+              f"(sanctioned vessels: {len(sanctioned_vessel_eids)})")
 
     # ── L10.4  flag normalization check (sample-20 regression) ────────────
     full_name_flags = [
@@ -864,14 +881,24 @@ try:
     expected  = n_cargos * n_vessels
     actual    = len(all_matches)
 
-    # De-dupe (pairs in both matches + blocked = duplicates)
-    match_pairs   = {(m.get("cargoEmailId"), m.get("vesselEmailId")) for m in matches}
-    blocked_pairs = {(m.get("cargoEmailId"), m.get("vesselEmailId")) for m in blocked}
+    # De-dupe (pairs in both matches + blocked = duplicates). Include itemIndex so
+    # independent lots within one email (e.g. sample-9 with 3 cargo lots) are treated
+    # as distinct pairs.
+    def _pair_key(m):
+        return (
+            m.get("cargoEmailId"),
+            m.get("cargoItemIndex", 0),
+            m.get("vesselEmailId"),
+            m.get("vesselItemIndex", 0),
+        )
+    match_pairs   = {_pair_key(m) for m in matches}
+    blocked_pairs = {_pair_key(m) for m in blocked}
     duplicates    = match_pairs & blocked_pairs
 
     if duplicates:
         for pair in list(duplicates)[:5]:
-            print(f"FAIL: L13.4 Дублирующаяся пара (в matches И blocked): cargo={pair[0]}, vessel={pair[1]}")
+            print(f"FAIL: L13.4 Дублирующаяся пара (в matches И blocked): "
+                  f"cargo={pair[0]}#{pair[1]}, vessel={pair[2]}#{pair[3]}")
         print(f"FAIL: L13.4 Итого дублирующихся пар: {len(duplicates)}")
     else:
         print(f"PASS: L13.4 Нет дублирующихся пар между matches и blockedMatches")
