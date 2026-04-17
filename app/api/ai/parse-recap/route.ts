@@ -7,6 +7,7 @@ import { ParsedFixtureRecap } from '@/lib/types';
 import { summarizeCommissions } from '@/lib/commission';
 import { extractNum, toConfidence } from '@/lib/parsing-utils';
 import { calibrateAll } from '@/lib/validation/confidence-calibration';
+import pLimit from 'p-limit';
 
 interface RawFixtureRecap {
   vessel_name?: unknown;
@@ -55,6 +56,54 @@ interface RawFixtureRecap {
 
 export const maxDuration = 120;
 
+export function parseRecapAIResponse(raw: string, emailId: string): ParsedFixtureRecap {
+  const result = JSON.parse(raw) as RawFixtureRecap;
+  return calibrateAll({
+    emailId,
+    vesselName: toConfidence<string>(result.vessel_name),
+    owners: toConfidence<string>(result.owners),
+    charterers: toConfidence<string>(result.charterers),
+    account: toConfidence<string>(result.account),
+    broker: result.broker || null,
+    loadPort: toConfidence<string>(result.load_port),
+    dischPort: toConfidence<string>(result.disch_port),
+    cargoDescription: toConfidence<string>(result.cargo_description),
+    cargoQuantityMin: extractNum(result.cargo_quantity_min),
+    cargoQuantityMax: extractNum(result.cargo_quantity_max),
+    cargoPackaging: result.cargo_packaging || null,
+    laycan: toConfidence<string>(result.laycan),
+    transitTime: result.transit_time || null,
+    freightRate: toConfidence<string>(result.freight_rate),
+    freightBasis: result.freight_basis || null,
+    freightPayment: result.freight_payment || null,
+    loadingRate: toConfidence<string>(result.loading_rate),
+    loadingTerms: toConfidence<string>(result.loading_terms),
+    loadingWorkingHours: result.loading_working_hours || null,
+    dischargingRate: toConfidence<string>(result.discharging_rate),
+    dischargingTerms: toConfidence<string>(result.discharging_terms),
+    dischargingWorkingHours: result.discharging_working_hours || null,
+    demurrageRate: toConfidence<string>(result.demurrage_rate),
+    demurragePayment: result.demurrage_payment || null,
+    loadPortAgent: result.load_port_agent || null,
+    dischPortAgent: result.disch_port_agent || null,
+    vesselDwt: extractNum(result.vessel_dwt),
+    vesselDraft: extractNum(result.vessel_draft),
+    vesselGeared: result.vessel_geared != null ? Boolean(result.vessel_geared) : null,
+    cpForm: result.cp_form || null,
+    arbitration: result.arbitration || null,
+    law: result.law || null,
+    commission: result.commission || null,
+    commissionPercent: extractNum(result.commission_percent) ?? extractNum(result.commission_pct),
+    commissionBase: result.commission_base || null,
+    commissionAmount: extractNum(result.commission_amount),
+    commissionCurrency: result.commission_currency || null,
+    subs: Array.isArray(result.subs) ? result.subs : [],
+    confidentiality: result.confidentiality != null ? Boolean(result.confidentiality) : false,
+    additionalTerms: Array.isArray(result.additional_terms) ? result.additional_terms : [],
+    unknownTerms: Array.isArray(result.unknown_terms) ? result.unknown_terms : [],
+  }) as ParsedFixtureRecap;
+}
+
 export async function POST(request: NextRequest) {
   const sessionId = request.cookies.get('session_id')?.value;
   if (!sessionId) return NextResponse.json({ error: 'No session' }, { status: 401 });
@@ -73,62 +122,23 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ count: 0 });
   }
 
+  const limit = pLimit(5);
+
   const parsedFixtureRecaps: ParsedFixtureRecap[] = await Promise.all(
-    fixtureEmails.map(async (email) => {
-      const userPrompt = `From: ${email.from}\nSubject: ${email.subject}\nDate: ${email.date}\n\n${email.body}`;
+    fixtureEmails.map((email) =>
+      limit(async () => {
+        const userPrompt = `From: ${email.from}\nSubject: ${email.subject}\nDate: ${email.date}\n\n${email.body}`;
 
-      const result = await callAiJson<RawFixtureRecap>(
-        userPrompt,
-        FIXTURE_RECAP_PARSER_PROMPT,
-        AI_MODEL_HEAVY,
-        {}
-      );
+        const result = await callAiJson<RawFixtureRecap>(
+          userPrompt,
+          FIXTURE_RECAP_PARSER_PROMPT,
+          AI_MODEL_HEAVY,
+          {}
+        );
 
-      return calibrateAll({
-        emailId: email.id,
-        vesselName: toConfidence<string>(result.vessel_name),
-        owners: toConfidence<string>(result.owners),
-        charterers: toConfidence<string>(result.charterers),
-        account: toConfidence<string>(result.account),
-        broker: result.broker || null,
-        loadPort: toConfidence<string>(result.load_port),
-        dischPort: toConfidence<string>(result.disch_port),
-        cargoDescription: toConfidence<string>(result.cargo_description),
-        cargoQuantityMin: extractNum(result.cargo_quantity_min),
-        cargoQuantityMax: extractNum(result.cargo_quantity_max),
-        cargoPackaging: result.cargo_packaging || null,
-        laycan: toConfidence<string>(result.laycan),
-        transitTime: result.transit_time || null,
-        freightRate: toConfidence<string>(result.freight_rate),
-        freightBasis: result.freight_basis || null,
-        freightPayment: result.freight_payment || null,
-        loadingRate: toConfidence<string>(result.loading_rate),
-        loadingTerms: toConfidence<string>(result.loading_terms),
-        loadingWorkingHours: result.loading_working_hours || null,
-        dischargingRate: toConfidence<string>(result.discharging_rate),
-        dischargingTerms: toConfidence<string>(result.discharging_terms),
-        dischargingWorkingHours: result.discharging_working_hours || null,
-        demurrageRate: toConfidence<string>(result.demurrage_rate),
-        demurragePayment: result.demurrage_payment || null,
-        loadPortAgent: result.load_port_agent || null,
-        dischPortAgent: result.disch_port_agent || null,
-        vesselDwt: extractNum(result.vessel_dwt),
-        vesselDraft: extractNum(result.vessel_draft),
-        vesselGeared: result.vessel_geared != null ? Boolean(result.vessel_geared) : null,
-        cpForm: result.cp_form || null,
-        arbitration: result.arbitration || null,
-        law: result.law || null,
-        commission: result.commission || null,
-        commissionPercent: extractNum(result.commission_percent) ?? extractNum(result.commission_pct),
-        commissionBase: result.commission_base || null,
-        commissionAmount: extractNum(result.commission_amount),
-        commissionCurrency: result.commission_currency || null,
-        subs: Array.isArray(result.subs) ? result.subs : [],
-        confidentiality: result.confidentiality != null ? Boolean(result.confidentiality) : false,
-        additionalTerms: Array.isArray(result.additional_terms) ? result.additional_terms : [],
-        unknownTerms: Array.isArray(result.unknown_terms) ? result.unknown_terms : [],
-      }) as ParsedFixtureRecap;
-    })
+        return parseRecapAIResponse(JSON.stringify(result), email.id);
+      })
+    )
   );
 
   // Calculate commission summary

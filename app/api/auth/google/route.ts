@@ -1,9 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { exchangeCodeForToken, getAuthUrl } from '@/lib/google';
+import { exchangeCodeForToken as libExchangeCodeForToken, getAuthUrl } from '@/lib/google';
 import { logger } from '@/lib/logger';
 import { createSession } from '@/lib/session';
 import { generateCsrfToken } from '@/lib/csrf';
+import type { SessionData } from '@/lib/types';
+
+export async function exchangeCodeForToken(code: string, redirectUri: string): Promise<string> {
+  const { google } = await import('googleapis');
+  const oauth2Client = new google.auth.OAuth2(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    redirectUri
+  );
+  const { tokens } = await oauth2Client.getToken(code);
+  if (!tokens.access_token) throw new Error('No access token received');
+  return tokens.access_token;
+}
+
+export function buildSessionData(accessToken: string): Pick<SessionData, 'accessToken'> {
+  return { accessToken };
+}
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -21,7 +38,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const accessToken = await exchangeCodeForToken(code);
+    const accessToken = await libExchangeCodeForToken(code);
     const sessionId = createSession(accessToken);
     const csrfToken = generateCsrfToken();
 

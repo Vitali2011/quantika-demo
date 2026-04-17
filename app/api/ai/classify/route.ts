@@ -11,6 +11,31 @@ import { calculateExpiry, isStale } from '@/lib/freshness';
 
 export const maxDuration = 120;
 
+export function buildThreadMap(emails: Email[]): Map<string, Email[]> {
+  const threadMap = new Map<string, Email[]>();
+  for (const email of emails) {
+    const list = threadMap.get(email.threadId) ?? [];
+    list.push(email);
+    threadMap.set(email.threadId, list);
+  }
+  return threadMap;
+}
+
+interface DeriveStatusParams {
+  requiresReply: boolean;
+  isUnanswered: boolean;
+  daysWithoutReply: number | null;
+}
+
+export function deriveStatus(params: DeriveStatusParams): EmailStatus {
+  const { requiresReply, isUnanswered, daysWithoutReply } = params;
+  const hoursWithout = daysWithoutReply != null ? daysWithoutReply * 24 : 0;
+  if (!requiresReply) return 'INFO_ONLY';
+  if (!isUnanswered) return 'RESPONDED';
+  if (hoursWithout >= UNANSWERED_THRESHOLD_HOURS / 24) return 'NEEDS_ACTION';
+  return 'PENDING';
+}
+
 export async function POST(request: NextRequest) {
   const sessionId = request.cookies.get('session_id')?.value;
   if (!sessionId) return NextResponse.json({ error: 'No session' }, { status: 401 });
