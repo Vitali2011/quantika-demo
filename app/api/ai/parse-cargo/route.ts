@@ -42,17 +42,30 @@ function extractStr(v: unknown): string | null {
 
 export const maxDuration = 120;
 
-export function buildCargoPrompts(emails: Email[]): Array<{ emailId: string; prompt: string }> {
-  return emails.map(email => ({
-    emailId: email.id,
-    prompt: `From: ${email.from}\nSubject: ${email.subject}\nDate: ${email.date}\n\n${email.body}`,
-  }));
+/** Build user prompt strings for a list of cargo inquiry emails. */
+export function buildCargoPrompts(emails: Email[]): string[] {
+  return emails.map(
+    email => `From: ${email.from}\nSubject: ${email.subject}\nDate: ${email.date}\n\n${email.body}`
+  );
 }
 
+/**
+ * Parse a raw AI JSON response string into ParsedCargo records.
+ * Returns [] on malformed JSON or empty items.
+ */
 export function parseCargoAIResponse(raw: string, emailId: string): ParsedCargo[] {
-  const result = JSON.parse(raw) as RawCargoItem;
+  let result: RawCargoItem;
+  try {
+    const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
+    if (!cleaned) return [];
+    result = JSON.parse(cleaned) as RawCargoItem;
+  } catch {
+    return [];
+  }
+
   const items = Array.isArray(result.items) ? result.items : [result];
   const parsed: ParsedCargo[] = [];
+
   items.forEach((item, idx) => {
     parsed.push(calibrateAll({
       emailId,
@@ -88,6 +101,7 @@ export function parseCargoAIResponse(raw: string, emailId: string): ParsedCargo[
       missingInfo: Array.isArray(item.missing_info) ? item.missing_info : [],
     }) as ParsedCargo);
   });
+
   return parsed;
 }
 
@@ -111,22 +125,19 @@ export async function POST(request: NextRequest) {
 
   const allParsed: ParsedCargo[] = [];
   const limit = pLimit(5);
+  const prompts = buildCargoPrompts(cargoEmails);
 
   await Promise.all(
-    cargoEmails.map((email) =>
-      limit(async () => {
-        const userPrompt = `From: ${email.from}\nSubject: ${email.subject}\nDate: ${email.date}\n\n${email.body}`;
-
-        const result = await callAiJson<RawCargoItem>(
-          userPrompt,
-          CARGO_INQUIRY_PARSER_PROMPT,
-          AI_MODEL_LIGHT,
-          { items: [] }
-        );
-
-        allParsed.push(...parseCargoAIResponse(JSON.stringify(result), email.id));
-      })
-    )
+    cargoEmails.map((email, i) => limit(async () => {
+      const result = await callAiJson<RawCargoItem>(
+        prompts[i],
+        CARGO_INQUIRY_PARSER_PROMPT,
+        AI_MODEL_LIGHT,
+        { items: [] }
+      );
+      const items = parseCargoAIResponse(JSON.stringify(result), email.id);
+      allParsed.push(...items);
+    }))
   );
 
   updateSession(sessionId, { parsedCargos: allParsed });

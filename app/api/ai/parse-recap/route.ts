@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession, updateSession } from '@/lib/session';
-import { callAiJson } from '@/lib/openai';
+import { callAiText } from '@/lib/openai';
 import { FIXTURE_RECAP_PARSER_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_HEAVY } from '@/lib/constants';
 import { ParsedFixtureRecap } from '@/lib/types';
@@ -56,8 +56,21 @@ interface RawFixtureRecap {
 
 export const maxDuration = 120;
 
+/**
+ * Parse a raw AI JSON response string into a single ParsedFixtureRecap.
+ * Returns a minimal record with null fields on malformed JSON.
+ */
 export function parseRecapAIResponse(raw: string, emailId: string): ParsedFixtureRecap {
-  const result = JSON.parse(raw) as RawFixtureRecap;
+  let result: RawFixtureRecap = {};
+  try {
+    const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
+    if (cleaned) {
+      result = JSON.parse(cleaned) as RawFixtureRecap;
+    }
+  } catch {
+    // fall through with empty result
+  }
+
   return calibrateAll({
     emailId,
     vesselName: toConfidence<string>(result.vessel_name),
@@ -125,20 +138,11 @@ export async function POST(request: NextRequest) {
   const limit = pLimit(5);
 
   const parsedFixtureRecaps: ParsedFixtureRecap[] = await Promise.all(
-    fixtureEmails.map((email) =>
-      limit(async () => {
-        const userPrompt = `From: ${email.from}\nSubject: ${email.subject}\nDate: ${email.date}\n\n${email.body}`;
-
-        const result = await callAiJson<RawFixtureRecap>(
-          userPrompt,
-          FIXTURE_RECAP_PARSER_PROMPT,
-          AI_MODEL_HEAVY,
-          {}
-        );
-
-        return parseRecapAIResponse(JSON.stringify(result), email.id);
-      })
-    )
+    fixtureEmails.map((email) => limit(async () => {
+      const userPrompt = `From: ${email.from}\nSubject: ${email.subject}\nDate: ${email.date}\n\n${email.body}`;
+      const raw = await callAiText(userPrompt, FIXTURE_RECAP_PARSER_PROMPT, AI_MODEL_HEAVY);
+      return parseRecapAIResponse(raw, email.id);
+    }))
   );
 
   // Calculate commission summary
