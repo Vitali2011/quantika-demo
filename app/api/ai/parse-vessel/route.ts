@@ -5,6 +5,7 @@ import { VESSEL_POSITION_PARSER_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_LIGHT } from '@/lib/constants';
 import { ParsedVessel, cfValue } from '@/lib/types';
 import { extractNum, toConfidence } from '@/lib/parsing-utils';
+import { extractLastCargoesFromBody, extractLastCargoesNearVessel } from '@/lib/parsing/lastcargoes-fallback';
 import { validateImo } from '@/lib/validation/imo';
 import { calibrateAll } from '@/lib/validation/confidence-calibration';
 import { lookupVesselByImo, compareVesselRecord } from '@/lib/validation/equasis-client';
@@ -170,6 +171,27 @@ export async function POST(request: NextRequest) {
       });
     })
   );
+
+  // Post-process: fill lastCargoes from email body if LLM missed it (regex fallback).
+  // For multi-vessel emails, use a proximity window around the vessel name; for
+  // single-vessel emails fall back to scanning the entire body.
+  for (const vessel of allParsed) {
+    if (!vessel.lastCargoes) {
+      const sourceEmail = vesselEmails.find(e => e.id === vessel.emailId);
+      if (sourceEmail?.body) {
+        const isMultiVessel = allParsed.filter(v => v.emailId === vessel.emailId).length > 1;
+        const vesselName = typeof vessel.vesselName === 'object' && vessel.vesselName !== null && 'value' in vessel.vesselName
+          ? String((vessel.vesselName as { value: unknown }).value)
+          : vessel.vesselName ? String(vessel.vesselName) : null;
+        const extracted = isMultiVessel && vesselName
+          ? extractLastCargoesNearVessel(sourceEmail.body, vesselName)
+          : extractLastCargoesFromBody(sourceEmail.body);
+        if (extracted) {
+          vessel.lastCargoes = extracted;
+        }
+      }
+    }
+  }
 
   // External registry verification (Equasis). Runs only for vessels where we
   // have a structurally valid IMO. Graceful — Equasis down = no warning,

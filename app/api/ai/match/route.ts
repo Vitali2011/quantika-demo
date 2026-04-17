@@ -16,6 +16,7 @@ import { runHardFilters } from '@/lib/sailing/match-filters';
 import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
 import { validateDates } from '@/lib/sailing/date-sanity';
 import { checkSanctions } from '@/lib/validation/sanctions';
+import { enrichReasons } from '@/lib/matching/reason-enricher';
 
 export const maxDuration = 120;
 
@@ -285,8 +286,103 @@ export async function POST(request: NextRequest) {
       return !filteredOutKeys.has(key);
     });
 
-  // Attach structured analysis to each match + apply readiness scoring
-  const matches: Match[] = rawMatches.map((m: Match) => {
+  // Post-filter: ensure every matchReason contains at least one number.
+  // Reasons without digits are either enriched from structured data or moved to issues.
+  for (const match of rawMatches) {
+    const cargo = parsedCargos.find(c => c.emailId === match.cargoEmailId && c.itemIndex === match.cargoItemIndex);
+    const vessel = parsedVessels.find(v => v.emailId === match.vesselEmailId && v.itemIndex === match.vesselItemIndex);
+    const analysis = analyses.find(a =>
+      a.cargoEmailId === match.cargoEmailId &&
+      a.cargoItemIndex === match.cargoItemIndex &&
+      a.vesselEmailId === match.vesselEmailId &&
+      a.vesselItemIndex === match.vesselItemIndex,
+    );
+
+    const ctx = {
+      vesselDwt: vessel ? (typeof vessel.dwtSummer === 'object' && vessel.dwtSummer !== null && 'value' in vessel.dwtSummer ? (vessel.dwtSummer as { value: number }).value : vessel.dwtSummer as number | null) : null,
+      vesselDwcc: vessel ? (typeof vessel.dwcc === 'object' && vessel.dwcc !== null && 'value' in vessel.dwcc ? (vessel.dwcc as { value: number }).value : vessel.dwcc as number | null) : null,
+      vesselGrainCapacity: vessel?.grainCapacity ?? null,
+      cargoWeightMt: cargo ? (typeof cargo.weightMt === 'object' && cargo.weightMt !== null && 'value' in cargo.weightMt ? (cargo.weightMt as { value: number }).value : cargo.weightMt as number | null) : null,
+      distanceNm: analysis?.readiness?.distanceNm ?? null,
+      gapDays: analysis?.readiness?.gapDays ?? null,
+      craneCapacity: vessel?.craneCapacity ?? null,
+      vesselBuilt: vessel?.built ?? null,
+      vesselLoa: vessel?.loa ?? null,
+    };
+
+    const enriched = enrichReasons(match.matchReasons || [], match.issues || [], ctx);
+    match.matchReasons = enriched.reasons;
+    match.issues = enriched.issues;
+  }
+
+  // === Deterministic sweep: fill in pairs LLM didn't return ===
+  // After receiving LLM output we scan every "allowed" pair (passed hard filters)
+  // and add any that the LLM silently dropped as weak matches with real deterministic data.
+  const matchedKeys = new Set(rawMatches.map((m: Match) =>
+    pairKey(m.cargoEmailId, m.cargoItemIndex, m.vesselEmailId, m.vesselItemIndex),
+  ));
+
+  const sweepMatches: Match[] = [];
+  for (const analysis of analyses) {
+    const key = pairKey(analysis.cargoEmailId, analysis.cargoItemIndex, analysis.vesselEmailId, analysis.vesselItemIndex);
+
+    // Skip if already returned by LLM or already blocked deterministically
+    if (matchedKeys.has(key) || filteredOutKeys.has(key)) continue;
+
+    // This pair passed all hard filters but LLM did not include it.
+    // Build a weak match using only deterministic data — no LLM commentary.
+    const cargo = parsedCargos.find(
+      c => c.emailId === analysis.cargoEmailId && c.itemIndex === analysis.cargoItemIndex,
+    );
+    const vessel = parsedVessels.find(
+      v => v.emailId === analysis.vesselEmailId && v.itemIndex === analysis.vesselItemIndex,
+    );
+
+    // Compute score breakdown so the sweep match has real physical scoring
+    const baseSweepMatch: Match = {
+      cargoEmailId: analysis.cargoEmailId,
+      cargoItemIndex: analysis.cargoItemIndex,
+      vesselEmailId: analysis.vesselEmailId,
+      vesselItemIndex: analysis.vesselItemIndex,
+      score: 25,
+      matchLevel: 'weak',
+      matchReasons: [
+        `Physically feasible pair — passed all hard filters but was not evaluated by AI`,
+      ],
+      issues: [
+        'Not selected by AI for detailed evaluation — review manually',
+        ...(analysis.dateIssues.length > 0 ? analysis.dateIssues : []),
+        ...(analysis.sanctions.risk === 'MEDIUM' && analysis.sanctions.reason
+          ? [`Sanctions: ${analysis.sanctions.reason}`]
+          : []),
+      ],
+      readiness: analysis.readiness,
+      hardFilters: analysis.hardFilters,
+      dateIssues: analysis.dateIssues,
+      sanctions: analysis.sanctions,
+    };
+
+    // Apply readiness scoring to adjust base score using real sailing gap data
+    const withReadiness = applyReadinessScoring(baseSweepMatch, analysis.readiness);
+
+    // Compute full score breakdown if we have cargo+vessel context
+    if (cargo && vessel) {
+      withReadiness.scoreBreakdown = computeScoreBreakdown({
+        match: withReadiness,
+        cargo,
+        vessel,
+        readiness: analysis.readiness,
+        sanctions: analysis.sanctions,
+      });
+      // Use the computed finalScore as the canonical score
+      withReadiness.score = Math.max(0, Math.min(100, withReadiness.scoreBreakdown.finalScore));
+    }
+
+    sweepMatches.push(withReadiness);
+  }
+
+  // Attach structured analysis to each LLM match + apply readiness scoring
+  const llmMatches: Match[] = rawMatches.map((m: Match) => {
     const analysis = findAnalysis(analyses, m.cargoEmailId, m.cargoItemIndex, m.vesselEmailId, m.vesselItemIndex);
     if (!analysis) return m;
     const withReadiness = applyReadinessScoring(m, analysis.readiness);
@@ -317,6 +413,11 @@ export async function POST(request: NextRequest) {
 
     return withReadiness;
   });
+
+  // Merge: LLM matches first (richer commentary), sweep matches appended.
+  // Sweep matches are already fully enriched (readiness/filters/sanctions/scoreBreakdown
+  // computed above) — they must NOT go through the LLM enrichment map again.
+  const matches: Match[] = [...llmMatches, ...sweepMatches];
 
   // Sort by adjusted score descending
   matches.sort((a, b) => b.score - a.score);
