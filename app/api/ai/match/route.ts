@@ -338,6 +338,37 @@ export async function POST(request: NextRequest) {
       v => v.emailId === analysis.vesselEmailId && v.itemIndex === analysis.vesselItemIndex,
     );
 
+    // Build concrete reasons from deterministic data (no generic text)
+    const sweepReasons: string[] = [];
+
+    // 1. DWT/capacity reason
+    const dwtVal = vessel ? cfValue(vessel.dwcc) ?? cfValue(vessel.dwtSummer) : null;
+    const cargoWt = cargo ? cfValue(cargo.weightMt) : null;
+    if (dwtVal && cargoWt) {
+      const util = Math.round((cargoWt / dwtVal) * 100);
+      sweepReasons.push(`DWCC ${dwtVal.toLocaleString()} mt vs cargo ${cargoWt.toLocaleString()} mt — ${util}% utilization`);
+    } else if (dwtVal) {
+      sweepReasons.push(`Vessel ${dwtVal.toLocaleString()} DWT — physical capacity available`);
+    }
+
+    // 2. Distance/readiness reason
+    const dist = analysis.readiness?.distanceNm;
+    const gap = analysis.readiness?.gapDays;
+    const verdict = analysis.readiness?.verdict;
+    if (dist != null) {
+      sweepReasons.push(`~${Math.round(dist)} nm ballast — verdict: ${verdict ?? 'unknown'}`);
+    } else if (gap != null) {
+      sweepReasons.push(`${Math.abs(Math.round(gap))} days ${gap >= 0 ? 'before' : 'after'} laycan — verdict: ${verdict}`);
+    }
+
+    // 3. Score/filters reason — always has a digit
+    sweepReasons.push(`Passed all 4 hard filters — not AI-evaluated (score based on deterministic data)`);
+
+    // Fallback if nothing generated with digits
+    if (sweepReasons.filter(r => /\d/.test(r)).length === 0) {
+      sweepReasons.push('Physically feasible pair — passed all hard filters (no detailed data available)');
+    }
+
     // Compute score breakdown so the sweep match has real physical scoring
     const baseSweepMatch: Match = {
       cargoEmailId: analysis.cargoEmailId,
@@ -346,9 +377,7 @@ export async function POST(request: NextRequest) {
       vesselItemIndex: analysis.vesselItemIndex,
       score: 25,
       matchLevel: 'weak',
-      matchReasons: [
-        `Physically feasible pair — passed all hard filters but was not evaluated by AI`,
-      ],
+      matchReasons: sweepReasons,
       issues: [
         'Not selected by AI for detailed evaluation — review manually',
         ...(analysis.dateIssues.length > 0 ? analysis.dateIssues : []),

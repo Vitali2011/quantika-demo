@@ -365,3 +365,261 @@ describe('getPortDistance — haversine fallback', () => {
     expect(getPortDistance('Atlantis', 'Rotterdam')).toBeNull();
   });
 });
+
+describe('getPortDistance — previously-unknown verdict pairs (session gap-fill)', () => {
+  // All 42 unknown-verdict matches resolved to null distanceNm because these
+  // port pairs were missing from DISTANCES_NM. Added in this patch.
+
+  it('Antalya ↔ Antwerp — Eastern Med → N.Europe (~3200 NM)', () => {
+    const d = getPortDistance('Antalya', 'Antwerp');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(2500);
+    expect(d!.nm).toBeLessThan(4000);
+  });
+
+  it('Antalya ↔ Hamburg — Eastern Med → N.Europe (~3350 NM)', () => {
+    const d = getPortDistance('Antalya', 'Hamburg');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(2800);
+    expect(d!.nm).toBeLessThan(4000);
+  });
+
+  it('Antalya ↔ Halsvik — Eastern Med → Norway (~4070 NM)', () => {
+    const d = getPortDistance('Antalya', 'Halsvik');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(3500);
+  });
+
+  it('Antalya ↔ Haugesund — Eastern Med → Norway (~4030 NM)', () => {
+    const d = getPortDistance('Antalya', 'Haugesund');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(3500);
+  });
+
+  it('Antalya ↔ Casablanca — Med → Atlantic (~1750 NM)', () => {
+    const d = getPortDistance('Antalya', 'Casablanca');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(1200);
+    expect(d!.nm).toBeLessThan(2500);
+  });
+
+  it('Antalya ↔ Karasu — Eastern Med → Black Sea (~540 NM)', () => {
+    const d = getPortDistance('Antalya', 'Karasu');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(300);
+    expect(d!.nm).toBeLessThan(800);
+  });
+
+  it('Marmara (Derince) ↔ Antwerp — via alias "Derince" → Marmara', () => {
+    const d = getPortDistance('Derince', 'Antwerp');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(2800);
+  });
+
+  it('Marmara ↔ Hamburg (~3500 NM)', () => {
+    const d = getPortDistance('Marmara', 'Hamburg');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(2800);
+  });
+
+  it('Marmara ↔ Halsvik (~4020 NM)', () => {
+    const d = getPortDistance('Marmara', 'Halsvik');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(3500);
+  });
+
+  it('Marmara ↔ Haugesund (~3980 NM)', () => {
+    const d = getPortDistance('Marmara (Derince / Izmit range)', 'Haugesund');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(3500);
+  });
+
+  it('Marmara ↔ Casablanca (~2270 NM)', () => {
+    const d = getPortDistance('Marmara', 'Casablanca');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(1800);
+    expect(d!.nm).toBeLessThan(3000);
+  });
+
+  it('Marmara ↔ Suez (~870 NM)', () => {
+    const d = getPortDistance('Marmara', 'Suez');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(600);
+    expect(d!.nm).toBeLessThan(1200);
+  });
+
+  it('Izmail / Reni ↔ Antwerp — via alias → Izmail', () => {
+    const d = getPortDistance('Izmail / Reni', 'Antwerp');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(3000);
+  });
+
+  it('Izmail ↔ Hamburg (~3880 NM)', () => {
+    const d = getPortDistance('Izmail', 'Hamburg');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(3000);
+  });
+
+  it('Izmail ↔ Halsvik (~4400 NM)', () => {
+    const d = getPortDistance('Izmail', 'Halsvik');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(3500);
+  });
+
+  it('Izmail ↔ Haugesund (~4360 NM)', () => {
+    const d = getPortDistance('Izmail', 'Haugesund');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(3500);
+  });
+
+  it('Izmail ↔ Marmara (~430 NM)', () => {
+    const d = getPortDistance('Izmail', 'Marmara');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(200);
+    expect(d!.nm).toBeLessThan(700);
+  });
+
+  it('Chornomorsk ↔ Halsvik (~4320 NM)', () => {
+    const d = getPortDistance('Chornomorsk', 'Halsvik');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(3500);
+  });
+
+  it('Chornomorsk ↔ Haugesund (~4280 NM)', () => {
+    const d = getPortDistance('Chornomorsk', 'Haugesund');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(3500);
+  });
+
+  it('Chornomorsk ↔ Marmara (~450 NM)', () => {
+    const d = getPortDistance('Chornomorsk', 'Marmara');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(200);
+    expect(d!.nm).toBeLessThan(700);
+  });
+
+  it('Constanta ↔ Halsvik (~4180 NM)', () => {
+    const d = getPortDistance('Constanta', 'Halsvik');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(3500);
+  });
+
+  it('Constanta ↔ Haugesund (~4140 NM)', () => {
+    const d = getPortDistance('Constanta', 'Haugesund');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(3500);
+  });
+
+  it('Mykolaiv ↔ Halsvik (~4400 NM)', () => {
+    const d = getPortDistance('Mykolaiv', 'Halsvik');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(3500);
+  });
+
+  it('Mykolaiv ↔ Haugesund (~4360 NM)', () => {
+    const d = getPortDistance('Mykolaiv', 'Haugesund');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(3500);
+  });
+
+  it('El Dekheila (Alexandria) ↔ Halsvik — via alias → Alexandria', () => {
+    const d = getPortDistance('El Dekheila (Alexandria)', 'Halsvik');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(3500);
+  });
+
+  it('El Dekheila (Alexandria) ↔ Haugesund — via alias → Alexandria', () => {
+    const d = getPortDistance('El Dekheila (Alexandria)', 'Haugesund');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(3500);
+  });
+
+  it('Ain Sokhna / Suez Canal area ↔ Halsvik — via alias → Suez', () => {
+    const d = getPortDistance('Ain Sokhna / Suez Canal area', 'Halsvik');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(3500);
+  });
+
+  it('Ain Sokhna / Suez Canal area ↔ Haugesund — via alias → Suez', () => {
+    const d = getPortDistance('Ain Sokhna / Suez Canal area', 'Haugesund');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(3500);
+  });
+
+  it('Ain Sokhna / Suez Canal area ↔ Marmara — via alias → Suez', () => {
+    const d = getPortDistance('Ain Sokhna / Suez Canal area', 'Marmara (Derince / Izmit range)');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(500);
+    expect(d!.nm).toBeLessThan(1500);
+  });
+
+  it('Xingang / Qingdao range ↔ Halsvik — via alias → Qingdao', () => {
+    const d = getPortDistance('Xingang / Qingdao range', 'Halsvik');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(10000);
+  });
+
+  it('Xingang / Qingdao range ↔ Haugesund — via alias → Qingdao', () => {
+    const d = getPortDistance('Xingang / Qingdao range', 'Haugesund');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(10000);
+  });
+
+  it('Xingang / Qingdao range ↔ Marmara (Derince / Izmit range) — via aliases', () => {
+    const d = getPortDistance('Xingang / Qingdao range', 'Marmara (Derince / Izmit range)');
+    expect(d).not.toBeNull();
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(7000);
+  });
+
+  it('normalizePortName("Efesan (Aliaga)") → Aliaga', () => {
+    expect(normalizePortName('Efesan (Aliaga)')).toBe('Aliaga');
+  });
+
+  it('normalizePortName("ARA range") → Antwerp', () => {
+    expect(normalizePortName('ARA range')).toBe('Antwerp');
+  });
+
+  it('normalizePortName("Xingang / Qingdao range") → Qingdao', () => {
+    expect(normalizePortName('Xingang / Qingdao range')).toBe('Qingdao');
+  });
+
+  it('normalizePortName("Izmail / Reni") → Izmail', () => {
+    expect(normalizePortName('Izmail / Reni')).toBe('Izmail');
+  });
+
+  it('normalizePortName("Marmara (Derince / Izmit range)") → Marmara', () => {
+    expect(normalizePortName('Marmara (Derince / Izmit range)')).toBe('Marmara');
+  });
+});

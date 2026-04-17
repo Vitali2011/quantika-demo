@@ -543,12 +543,67 @@ const DISTANCES_NM: Record<string, number> = {
   'Odesa|Izmail': 150,
   'Mykolaiv|Izmail': 200,
 
+  // ── Marmara → Northern Europe / Med (missing pairs) ──
+  'Antwerp|Marmara': 3370,
+  'Hamburg|Marmara': 3500,
+  'Halsvik|Marmara': 4020,
+  'Haugesund|Marmara': 3980,
+  'Bayonne|Marmara': 2970,
+  'Casablanca|Marmara': 2270,
+  'Marmara|Novorossiysk': 620,
+  'Marmara|Skikda': 1400,
+
+  // ── Izmail → Northern Europe / Med (missing pairs) ──
+  'Antwerp|Izmail': 3750,
+  'Casablanca|Izmail': 2650,
+  'Hamburg|Izmail': 3880,
+  'Halsvik|Izmail': 4400,
+  'Haugesund|Izmail': 4360,
+  'Izmail|Marmara': 430,
+
+  // ── Chornomorsk → Northern Europe (missing pairs) ──
+  'Chornomorsk|Halsvik': 4320,
+  'Chornomorsk|Haugesund': 4280,
+  'Chornomorsk|Marmara': 450,
+
+  // ── Constanta → Northern Europe (missing pairs) ──
+  'Constanta|Halsvik': 4180,
+  'Constanta|Haugesund': 4140,
+
+  // ── Mykolaiv → Northern Europe (missing pairs) ──
+  'Halsvik|Mykolaiv': 4400,
+  'Haugesund|Mykolaiv': 4360,
+
+  // ── Alexandria → Northern Europe (missing pairs) ──
+  'Alexandria|Halsvik': 4300,
+  'Alexandria|Haugesund': 4260,
+
+  // ── Suez → Northern Europe / Marmara (missing pairs) ──
+  'Halsvik|Suez': 4500,
+  'Haugesund|Suez': 4460,
+  'Marmara|Suez': 870,
+
+  // ── Qingdao → Northern Europe / Marmara (missing pairs) ──
+  // Route: Qingdao → Suez → NW Europe / Med (via Suez Canal)
+  'Halsvik|Qingdao': 12450,
+  'Haugesund|Qingdao': 12410,
+  'Marmara|Qingdao': 9500,
+
   // ── Eastern Med additions (Antalya, Mersin, Iskenderun) ──
   'Antalya|Istanbul': 450,
   'Antalya|Piraeus': 380,
   'Antalya|Alexandria': 650,
   'Aliaga|Antalya': 280,
-  'Marmara|Antalya': 400,
+  'Antalya|Marmara': 400,
+  'Antalya|Karasu': 540,          // Antalya → Black Sea via Bosphorus
+  'Antalya|Novorossiysk': 860,
+  'Antalya|Skikda': 780,
+  'Antalya|Casablanca': 1750,
+  'Antalya|Antwerp': 3220,
+  'Antalya|Hamburg': 3350,
+  'Antalya|Bayonne': 2400,
+  'Antalya|Halsvik': 4070,
+  'Antalya|Haugesund': 4030,
   'Antalya|Mersin': 280,
   'Mersin|Piraeus': 580,
   'Alexandria|Mersin': 430,

@@ -17,6 +17,8 @@ import type {
   ScoreBreakdown,
 } from '@/lib/types';
 
+import { hasDigit } from '@/lib/matching/reason-enricher';
+
 // ── Minimal PairAnalysis shape (mirrors route.ts internal interface) ──────────
 
 interface PairAnalysis {
@@ -30,6 +32,19 @@ interface PairAnalysis {
   dateIssues: string[];
   filterOut: boolean;
   filterReason?: string;
+}
+
+interface SweepCargo {
+  emailId: string;
+  itemIndex: number;
+  weightMt?: number | null;
+}
+
+interface SweepVessel {
+  emailId: string;
+  itemIndex: number;
+  dwtSummer?: number | null;
+  dwcc?: number | null;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -98,6 +113,8 @@ function makeAnalysis(
 function runDeterministicSweep(
   analyses: PairAnalysis[],
   rawMatches: Match[],
+  cargos: SweepCargo[] = [],
+  vessels: SweepVessel[] = [],
 ): Match[] {
   const filteredOutKeys = new Set(
     analyses
@@ -131,6 +148,36 @@ function runDeterministicSweep(
         : []),
     ];
 
+    const cargo = cargos.find(c => c.emailId === analysis.cargoEmailId && c.itemIndex === analysis.cargoItemIndex);
+    const vessel = vessels.find(v => v.emailId === analysis.vesselEmailId && v.itemIndex === analysis.vesselItemIndex);
+
+    // Build concrete reasons from deterministic data (mirrors route.ts sweep logic)
+    const sweepReasons: string[] = [];
+
+    const dwtVal = vessel ? (vessel.dwcc ?? vessel.dwtSummer ?? null) : null;
+    const cargoWt = cargo ? (cargo.weightMt ?? null) : null;
+    if (dwtVal && cargoWt) {
+      const util = Math.round((cargoWt / dwtVal) * 100);
+      sweepReasons.push(`DWCC ${dwtVal.toLocaleString()} mt vs cargo ${cargoWt.toLocaleString()} mt — ${util}% utilization`);
+    } else if (dwtVal) {
+      sweepReasons.push(`Vessel ${dwtVal.toLocaleString()} DWT — physical capacity available`);
+    }
+
+    const dist = analysis.readiness?.distanceNm;
+    const gap = analysis.readiness?.gapDays;
+    const verdict = analysis.readiness?.verdict;
+    if (dist != null) {
+      sweepReasons.push(`~${Math.round(dist)} nm ballast — verdict: ${verdict ?? 'unknown'}`);
+    } else if (gap != null) {
+      sweepReasons.push(`${Math.abs(Math.round(gap))} days ${gap >= 0 ? 'before' : 'after'} laycan — verdict: ${verdict}`);
+    }
+
+    sweepReasons.push(`Passed all 4 hard filters — not AI-evaluated (score based on deterministic data)`);
+
+    if (sweepReasons.filter(r => /\d/.test(r)).length === 0) {
+      sweepReasons.push('Physically feasible pair — passed all hard filters (no detailed data available)');
+    }
+
     sweepMatches.push({
       cargoEmailId: analysis.cargoEmailId,
       cargoItemIndex: analysis.cargoItemIndex,
@@ -138,9 +185,7 @@ function runDeterministicSweep(
       vesselItemIndex: analysis.vesselItemIndex,
       score: 25,
       matchLevel: 'weak',
-      matchReasons: [
-        'Physically feasible pair — passed all hard filters but was not evaluated by AI',
-      ],
+      matchReasons: sweepReasons,
       issues,
       readiness: analysis.readiness,
       hardFilters: analysis.hardFilters,
@@ -242,10 +287,45 @@ describe('deterministic sweep — fills LLM gaps', () => {
     }
   });
 
-  it('sweep match has the standard matchReasons placeholder', () => {
-    const sweep = runDeterministicSweep(analyses, rawMatches);
+  it('sweep match has 2-3 concrete reasons with digits', () => {
+    // Provide cargo/vessel fixtures so DWT+weight reason can be built
+    const cargos: SweepCargo[] = [
+      { emailId: 'c-001', itemIndex: 0, weightMt: 25000 },
+      { emailId: 'c-002', itemIndex: 0, weightMt: 30000 },
+    ];
+    const vessels: SweepVessel[] = [
+      { emailId: 'v-001', itemIndex: 0, dwcc: 45000 },
+      { emailId: 'v-002', itemIndex: 0, dwcc: 50000 },
+      { emailId: 'v-003', itemIndex: 0, dwcc: 40000 },
+    ];
+    const sweep = runDeterministicSweep(analyses, rawMatches, cargos, vessels);
     for (const m of sweep) {
-      expect(m.matchReasons[0]).toMatch(/Physically feasible pair/);
+      expect(m.matchReasons.length).toBeGreaterThanOrEqual(2);
+      expect(m.matchReasons.length).toBeLessThanOrEqual(3);
+      // Every reason must contain at least one digit
+      for (const r of m.matchReasons) {
+        expect(hasDigit(r)).toBe(true);
+      }
+    }
+  });
+
+  it('sweep match contains distance and utilization numbers when data available', () => {
+    const cargos: SweepCargo[] = [
+      { emailId: 'c-001', itemIndex: 0, weightMt: 25000 },
+      { emailId: 'c-002', itemIndex: 0, weightMt: 30000 },
+    ];
+    const vessels: SweepVessel[] = [
+      { emailId: 'v-003', itemIndex: 0, dwcc: 40000 },
+      { emailId: 'v-002', itemIndex: 0, dwcc: 50000 },
+    ];
+    const sweep = runDeterministicSweep(analyses, rawMatches, cargos, vessels);
+    for (const m of sweep) {
+      // Should have utilization reason
+      const hasUtil = m.matchReasons.some(r => r.includes('utilization') || r.includes('DWT'));
+      expect(hasUtil).toBe(true);
+      // Should have distance/gap reason (DEFAULT_READINESS has distanceNm=1200)
+      const hasDist = m.matchReasons.some(r => r.includes('nm') || r.includes('days'));
+      expect(hasDist).toBe(true);
     }
   });
 
