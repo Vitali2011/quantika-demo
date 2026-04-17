@@ -454,6 +454,17 @@ export async function POST(request: NextRequest) {
   // computed above) — they must NOT go through the LLM enrichment map again.
   const allMatches: Match[] = [...llmMatches, ...sweepMatches];
 
+  // P0-D1/D2 final sync: guarantee score == scoreBreakdown.finalScore and matchLevel
+  // consistent with thresholds for every match that carries a scoreBreakdown, regardless
+  // of which path produced it (LLM with analysis, LLM without analysis but LLM-supplied
+  // breakdown, sweep-fallback, etc.). Defensive single source of truth.
+  for (const m of allMatches) {
+    if (m.scoreBreakdown && typeof m.scoreBreakdown.finalScore === 'number') {
+      m.score = Math.max(0, Math.min(100, m.scoreBreakdown.finalScore));
+      m.matchLevel = deriveMatchLevel(m.score);
+    }
+  }
+
   // P1-DUP: dedupe — if a pair appears in both matches and blockedMatches,
   // keep it in blockedMatches (safety) and remove from matches.
   const blockedKeys = new Set(
