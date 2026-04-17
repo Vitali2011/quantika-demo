@@ -11,14 +11,38 @@ import { calculateExpiry, isStale } from '@/lib/freshness';
 
 export const maxDuration = 120;
 
+/** Group emails by threadId into a Map. Pure function, no session/HTTP dependencies. */
+export function buildThreadMap(emails: Email[]): Map<string, Email[]> {
+  const threadMap = new Map<string, Email[]>();
+  for (const email of emails) {
+    const list = threadMap.get(email.threadId) || [];
+    list.push(email);
+    threadMap.set(email.threadId, list);
+  }
+  return threadMap;
+}
+
+/** Derive EmailStatus from classification parameters. Pure function, no session/HTTP dependencies. */
+export function deriveStatus(params: {
+  requiresReply: boolean;
+  isUnanswered: boolean;
+  hoursWithout: number;
+}): EmailStatus {
+  const { requiresReply, isUnanswered, hoursWithout } = params;
+  if (!requiresReply) return 'INFO_ONLY';
+  if (!isUnanswered) return 'RESPONDED';
+  if (hoursWithout >= UNANSWERED_THRESHOLD_HOURS / 24) return 'NEEDS_ACTION';
+  return 'PENDING';
+}
+
 export async function POST(request: NextRequest) {
   const sessionId = request.cookies.get('session_id')?.value;
   if (!sessionId) return NextResponse.json({ error: 'No session' }, { status: 401 });
-  
+
   const session = getSession(sessionId);
   if (!session) return NextResponse.json({ error: 'Session expired' }, { status: 401 });
   if (session.emails.length === 0) return NextResponse.json({ error: 'No emails to classify' }, { status: 400 });
-  
+
   const emailInput = session.emails.map(email => ({
     id: email.id,
     subject: email.subject,
@@ -26,21 +50,15 @@ export async function POST(request: NextRequest) {
     date: email.date,
     body_preview: truncateText(email.body || email.snippet, MAX_EMAIL_BODY_CHARS),
   }));
-  
+
   const result = await callAiJson<{ classifications: any[] }>(
     JSON.stringify(emailInput),
     CLASSIFICATION_SYSTEM_PROMPT,
     AI_MODEL_HEAVY,
     { classifications: [] }
   );
-  
-  // Group emails by thread
-  const threadMap = new Map<string, Email[]>();
-  for (const email of session.emails) {
-    const list = threadMap.get(email.threadId) || [];
-    list.push(email);
-    threadMap.set(email.threadId, list);
-  }
+
+  const threadMap = buildThreadMap(session.emails);
 
   const classifications: Classification[] = (result.classifications || []).map((c: any) => {
     const email = session.emails.find(e => e.id === (c.id || c.emailId));
@@ -71,16 +89,7 @@ export async function POST(request: NextRequest) {
     const hoursWithout = cls.daysWithoutReply != null ? cls.daysWithoutReply * 24 : 0;
     const requiresReply = REQUIRES_REPLY.includes(cls.category);
 
-    let status: EmailStatus;
-    if (!requiresReply) {
-      status = 'INFO_ONLY';
-    } else if (!cls.isUnanswered) {
-      status = 'RESPONDED';
-    } else if (hoursWithout >= UNANSWERED_THRESHOLD_HOURS / 24) {
-      status = 'NEEDS_ACTION';
-    } else {
-      status = 'PENDING';
-    }
+    const status = deriveStatus({ requiresReply, isUnanswered: cls.isUnanswered, hoursWithout });
 
     const { expiryDate, expirySource } = calculateExpiry(email?.date || '', cls.category);
     const stale = isStale(expiryDate);
@@ -100,7 +109,7 @@ export async function POST(request: NextRequest) {
       expirySource,
     };
   });
-  
+
   updateSession(sessionId, { classifications, processedEmails });
   return NextResponse.json({ count: classifications.length });
 }
