@@ -402,6 +402,7 @@ const DISTANCES_NM: Record<string, number> = {
   'Constanta|Derince': 290,
   'Derince|Mykolaiv': 505,
   'Derince|Odesa': 460,
+  'Antwerp|Derince': 3390,
 
   // ── Marmara (Sea of Marmara) ──
   'Istanbul|Marmara': 70,
