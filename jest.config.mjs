@@ -5,7 +5,7 @@ const createJestConfig = nextJest({ dir: './' });
 /** @type {import('jest').Config} */
 const config = {
   testEnvironment: 'node',
-  testPathIgnorePatterns: ['/node_modules/', '/.wave/'],
+  testPathIgnorePatterns: ['/node_modules/'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {
