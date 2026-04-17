@@ -477,6 +477,7 @@ const DISTANCES_NM: Record<string, number> = {
   'Hamburg|Suez': 3700,
 
   // Northern Europe ↔ Black Sea
+  'Antwerp|Derince': 3390,
   'Antwerp|Istanbul': 3300,
   'Hamburg|Istanbul': 3430,
   'Rotterdam|Istanbul': 3330,
