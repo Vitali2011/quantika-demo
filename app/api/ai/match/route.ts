@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession, updateSession } from '@/lib/session';
+import { validateCsrf } from '@/lib/csrf';
+import { requireSession, updateSession } from '@/lib/session';
 import { callAiJson } from '@/lib/openai';
 import { MATCH_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_HEAVY } from '@/lib/constants';
@@ -17,6 +17,17 @@ import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
 import { validateDates } from '@/lib/sailing/date-sanity';
 import { checkSanctions } from '@/lib/validation/sanctions';
 import { enrichReasons } from '@/lib/matching/reason-enricher';
+
+interface RawMatch {
+  cargo_email_id?: string;
+  cargo_item_index?: number;
+  vessel_email_id?: string;
+  vessel_item_index?: number;
+  score?: number;
+  match_level?: string;
+  match_reasons?: string[];
+  issues?: string[];
+}
 
 export const maxDuration = 120;
 
@@ -151,11 +162,11 @@ function findAnalysis(
 }
 
 export async function POST(request: NextRequest) {
-  const sessionId = request.cookies.get('session_id')?.value;
-  if (!sessionId) return NextResponse.json({ error: 'No session' }, { status: 401 });
+  if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
-  const session = getSession(sessionId);
-  if (!session) return NextResponse.json({ error: 'Session expired' }, { status: 401 });
+  const authResult = requireSession(request);
+  if (authResult instanceof NextResponse) return authResult;
+  const { session, sessionId } = authResult;
 
   const { parsedCargos, parsedVessels } = session;
 
@@ -262,7 +273,7 @@ export async function POST(request: NextRequest) {
     readiness: readinessData,
   });
 
-  const result = await callAiJson<{ matches: any[] }>(
+  const result = await callAiJson<{ matches: RawMatch[] }>(
     promptPayload,
     MATCH_PROMPT,
     AI_MODEL_HEAVY,
@@ -270,13 +281,13 @@ export async function POST(request: NextRequest) {
   );
 
   const rawMatches: Match[] = (result.matches || [])
-    .map((m: any) => ({
+    .map((m: RawMatch) => ({
       cargoEmailId: m.cargo_email_id || '',
       cargoItemIndex: m.cargo_item_index ?? 0,
       vesselEmailId: m.vessel_email_id || '',
       vesselItemIndex: m.vessel_item_index ?? 0,
       score: m.score ?? 50,
-      matchLevel: (m.match_level as MatchLevel) || (m.score > 70 ? 'good' : m.score > 40 ? 'possible' : 'weak'),
+      matchLevel: (m.match_level as MatchLevel) || ((m.score ?? 50) > 70 ? 'good' : (m.score ?? 50) > 40 ? 'possible' : 'weak'),
       matchReasons: Array.isArray(m.match_reasons) ? m.match_reasons : [],
       issues: Array.isArray(m.issues) ? m.issues : [],
     }))

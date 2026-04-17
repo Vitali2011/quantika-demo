@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession, updateSession } from '@/lib/session';
+import { validateCsrf } from '@/lib/csrf';
+import { requireSession, updateSession } from '@/lib/session';
 import { callAiJson } from '@/lib/openai';
 import { CARGO_INQUIRY_PARSER_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_LIGHT } from '@/lib/constants';
@@ -46,7 +47,7 @@ function extractStr(v: unknown): string | null {
 export const maxDuration = 120;
 
 /** Build user prompt strings for a list of cargo inquiry emails. */
-export function buildCargoPrompts(emails: Email[]): string[] {
+function buildCargoPrompts(emails: Email[]): string[] {
   return emails.map(
     email => `From: ${email.from}\nSubject: ${email.subject}\nDate: ${email.date}\n\n${email.body}`
   );
@@ -56,7 +57,7 @@ export function buildCargoPrompts(emails: Email[]): string[] {
  * Parse a raw AI JSON response string into ParsedCargo records.
  * Returns [] on malformed JSON or empty items.
  */
-export function parseCargoAIResponse(raw: string, emailId: string): ParsedCargo[] {
+function parseCargoAIResponse(raw: string, emailId: string): ParsedCargo[] {
   let result: RawCargoItem;
   try {
     const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
@@ -111,11 +112,11 @@ export function parseCargoAIResponse(raw: string, emailId: string): ParsedCargo[
 }
 
 export async function POST(request: NextRequest) {
-  const sessionId = request.cookies.get('session_id')?.value;
-  if (!sessionId) return NextResponse.json({ error: 'No session' }, { status: 401 });
+  if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
-  const session = getSession(sessionId);
-  if (!session) return NextResponse.json({ error: 'Session expired' }, { status: 401 });
+  const authResult = requireSession(request);
+  if (authResult instanceof NextResponse) return authResult;
+  const { session, sessionId } = authResult;
 
   const cargoInquiryIds = session.classifications
     .filter(c => c.category === 'CARGO_INQUIRY')

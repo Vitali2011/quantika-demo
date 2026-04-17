@@ -477,6 +477,7 @@ const DISTANCES_NM: Record<string, number> = {
   'Hamburg|Suez': 3700,
 
   // Northern Europe ↔ Black Sea
+  'Antwerp|Derince': 3390,
   'Antwerp|Istanbul': 3300,
   'Hamburg|Istanbul': 3430,
   'Rotterdam|Istanbul': 3330,
@@ -556,7 +557,9 @@ const DISTANCES_NM: Record<string, number> = {
 
   // ── Marmara → Northern Europe / Med (missing pairs) ──
   'Antwerp|Marmara': 3370,
+  'Antwerp|Derince': 3310,
   'Hamburg|Marmara': 3500,
+  'Hamburg|Derince': 3440,
   'Halsvik|Marmara': 4020,
   'Haugesund|Marmara': 3980,
   'Bayonne|Marmara': 2970,

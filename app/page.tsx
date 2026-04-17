@@ -25,9 +25,7 @@ export default function LandingPage() {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-          <div onClick={() => track('oauth_initiated')}>
-            <ConnectGmailButton />
-          </div>
+          <ConnectGmailButton onClick={() => track('oauth_initiated')} />
           <form method="POST" action="/api/sample" onSubmit={() => track('sample_started')}>
             <button
               type="submit"
