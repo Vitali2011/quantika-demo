@@ -316,13 +316,13 @@ else
     SSH "nohup curl -s -o /tmp/pipe_match -w '%{http_code}' \
       -X POST -b /tmp/pipeline_cookies \
       -H 'X-CSRF-Token: ${PIPE_CSRF}' -H 'Content-Type: application/json' \
-      --max-time 180 \
+      --max-time 240 \
       http://localhost:${APP_PORT}/api/ai/match > /tmp/pipe_match_code 2>&1 &
     echo \$! > /tmp/pipe_match_pid" 2>/dev/null || true
 
-    # Poll DB каждые 5 сек до 180 сек
+    # Poll DB каждые 5 сек до 240 сек
     MATCH_START=$(date +%s)
-    MATCH_TIMEOUT=180
+    MATCH_TIMEOUT=240
     MATCH_DONE=0
     MATCH_COUNT=0
 
@@ -360,6 +360,44 @@ except Exception:
 
       info "  …match in progress (${elapsed}s, current matches=${MATCH_COUNT:-0})"
     done
+
+    elapsed=$(($(date +%s) - MATCH_START))
+
+    # Retry: если 240с истекли, матчей нет и HTTP != 200 — повторяем запрос один раз
+    if [[ "$MATCH_DONE" != "1" ]] && [[ "${MATCH_COUNT:-0}" == "0" ]]; then
+      info "  Retry: firing match request again..."
+      SSH "nohup curl -s -o /tmp/pipe_match -w '%{http_code}' \
+        -X POST -b /tmp/pipeline_cookies \
+        -H 'X-CSRF-Token: ${PIPE_CSRF}' -H 'Content-Type: application/json' \
+        --max-time 240 \
+        http://localhost:${APP_PORT}/api/ai/match > /tmp/pipe_match_code 2>&1 &
+      echo \$! > /tmp/pipe_match_pid" 2>/dev/null || true
+
+      RETRY_START=$(date +%s)
+      while [[ $(($(date +%s) - RETRY_START)) -lt 120 ]]; do
+        sleep 5
+        MATCH_COUNT=$(SSH "python3 -c \"
+import sqlite3, json
+try:
+    c = sqlite3.connect('${DB_PATH}')
+    row = c.execute('SELECT data FROM sessions WHERE id=?', ('${PIPE_SESSION}',)).fetchone()
+    if row:
+        d = json.loads(row[0])
+        print(len(d.get('matches', [])))
+    else:
+        print(0)
+except Exception:
+    print(0)
+\"" 2>/dev/null || echo "0")
+        M_STATUS=$(SSH "tail -c 4 /tmp/pipe_match_code 2>/dev/null | tr -d '\\n\\r' || echo ''" 2>/dev/null || echo "")
+        if [[ "$M_STATUS" == "200" ]] || [[ "${MATCH_COUNT:-0}" -gt 0 ]]; then
+          MATCH_DONE=1
+          break
+        fi
+        elapsed_retry=$(($(date +%s) - RETRY_START))
+        info "  …retry match (${elapsed_retry}s, matches=${MATCH_COUNT:-0})"
+      done
+    fi
 
     elapsed=$(($(date +%s) - MATCH_START))
 

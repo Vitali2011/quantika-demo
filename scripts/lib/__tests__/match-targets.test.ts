@@ -95,8 +95,8 @@ describe('matchTargetsToUnlocodes', () => {
     expect(m.lat).toBeCloseTo(51.917, 2);
     expect(m.lon).toBeCloseTo(4.483, 2);
     // Enrichment fields are absent in skeleton (added in Phase 4)
-    expect((m as Record<string, unknown>).maxDraftM).toBeUndefined();
-    expect((m as Record<string, unknown>).hasShoreCranes).toBeUndefined();
+    expect((m as unknown as Record<string, unknown>).maxDraftM).toBeUndefined();
+    expect((m as unknown as Record<string, unknown>).hasShoreCranes).toBeUndefined();
   });
 
   it('warns on duplicate UNLOCODE in target list', () => {

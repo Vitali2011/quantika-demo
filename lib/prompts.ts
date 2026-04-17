@@ -563,6 +563,19 @@ If a specific number is null/unknown in the data → don't invent it; instead us
 
 SKIP generic endorsements. Every reason earns its place by citing a number or concrete fact.
 
+HARD RULE: Every match_reason string MUST contain at least one number (distance,
+weight, capacity, percentage, days, or year). If the relevant data field is null
+or unknown, cite what IS known numerically about the pair instead.
+
+Transform patterns:
+- "Vessel is geared" → "Vessel geared (2×25t crane capacity) — suitable for breakbulk discharge"
+- "Cargo type compatible" → "BULK cargo on 63,000 DWT bulker — standard vessel class for this trade"
+- "Good geographic fit" → "Vessel open 380nm from load port — ~1.3 day ballast"
+- "Timing uncertain" → "Vessel ETA unknown; cargo laycan 20-31 Aug (11-day window)"
+
+If you truly cannot find ANY number for a reason, merge it into another reason
+that does have numbers, or move it to \`issues\` instead.
+
 ISSUES RULES:
 
 Issues are flagged for broker attention. Each issue should point to a specific missing or marginal data point.

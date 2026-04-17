@@ -12,7 +12,10 @@ export default async function DashboardPage() {
   if (!sessionId) redirect('/');
   const session = getSession(sessionId);
   if (!session) redirect('/');
-  const { emails, processedEmails, matches, recaps, commissionSummary } = session;
+  const { emails, processedEmails, matches, recaps, commissionSummary, blockedMatches: rawBlockedMatches } = session;
+  const blockedMatches = rawBlockedMatches || [];
+  const sanctionsBlocked = blockedMatches.filter((b) => b.sanctions?.blocking);
+  const filterBlocked = blockedMatches.filter((b) => !b.sanctions?.blocking);
 
   if (emails.length === 0) {
     return (
@@ -63,7 +66,7 @@ export default async function DashboardPage() {
       <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
         <div>
           <h1 className="text-lg sm:text-xl font-bold text-gray-900">Good morning. Here&apos;s what needs your attention:</h1>
-          <p className="text-sm text-gray-500 mt-1">{emails.length} emails processed</p>
+          <p className="text-sm text-gray-500 mt-1">{emails.length} emails processed{blockedMatches.length > 0 && ` • ${blockedMatches.length} blocked`}</p>
           {isSample && <span className="inline-block mt-1 px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">Sample data</span>}
         </div>
         <ActionPanel needsActionCargo={needsActionCargo} goodMatches={goodMatches} fixtureRows={fixtureRows} commissionSummary={commissionSummary} commissionLines={commissionLines} oldestDays={oldestDays} />
@@ -157,6 +160,60 @@ export default async function DashboardPage() {
               })}
             </div>
           </div>
+        )}
+        {/* Blocked Matches */}
+        {blockedMatches.length > 0 && (
+          <section className="mt-8">
+            <h2 className="text-lg font-semibold text-red-700 mb-3">
+              🚫 Blocked Pairs ({blockedMatches.length})
+            </h2>
+            <p className="text-sm text-gray-500 mb-4">
+              These cargo-vessel pairs were filtered out before matching due to sanctions,
+              physical constraints, or compatibility issues.
+            </p>
+            {sanctionsBlocked.length > 0 && (
+              <div className="mb-4">
+                <h3 className="text-sm font-semibold text-red-800 mb-2 flex items-center gap-1">
+                  ⛔ Sanctions ({sanctionsBlocked.length})
+                </h3>
+                <div className="space-y-2">
+                  {sanctionsBlocked.map((b, i) => (
+                    <div key={i} className="flex items-center gap-3 p-3 bg-red-50 border border-red-200 rounded-lg text-sm">
+                      <span className="font-medium text-red-800">⛔</span>
+                      <div className="flex-1">
+                        <span className="font-medium">{b.cargoEmailId}</span>
+                        <span className="text-gray-400 mx-1">×</span>
+                        <span className="font-medium">{b.vesselEmailId}</span>
+                      </div>
+                      <span className="text-red-600 text-xs max-w-sm truncate">{b.filterReason}</span>
+                      <span className="px-2 py-0.5 bg-red-600 text-white text-xs rounded-full">SANCTIONS</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {filterBlocked.length > 0 && (
+              <details className="border border-orange-200 rounded-xl overflow-hidden">
+                <summary className="flex items-center justify-between px-4 py-3 bg-orange-50 cursor-pointer hover:bg-orange-100 list-none">
+                  <span className="text-sm font-semibold text-orange-800">🚫 Hard Filter Fails ({filterBlocked.length})</span>
+                  <span className="text-orange-500 text-xs select-none">▼</span>
+                </summary>
+                <div className="bg-white px-4 pb-4 pt-2 space-y-2">
+                  {filterBlocked.map((b, i) => (
+                    <div key={i} className="flex items-center gap-3 p-3 bg-orange-50 border border-orange-200 rounded-lg text-sm">
+                      <span className="font-medium text-orange-700">🚫</span>
+                      <div className="flex-1">
+                        <span className="font-medium">{b.cargoEmailId}</span>
+                        <span className="text-gray-400 mx-1">×</span>
+                        <span className="font-medium">{b.vesselEmailId}</span>
+                      </div>
+                      <span className="text-orange-600 text-xs max-w-sm truncate">{b.filterReason}</span>
+                    </div>
+                  ))}
+                </div>
+              </details>
+            )}
+          </section>
         )}
         <div>
           <h2 className="text-base font-semibold text-gray-900 mb-3">Active Negotiations (recap ready)</h2>
