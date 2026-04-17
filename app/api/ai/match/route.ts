@@ -287,7 +287,7 @@ export async function POST(request: NextRequest) {
       vesselEmailId: m.vessel_email_id || '',
       vesselItemIndex: m.vessel_item_index ?? 0,
       score: m.score ?? 50,
-      matchLevel: (m.match_level as MatchLevel) || (m.score > 70 ? 'good' : m.score > 40 ? 'possible' : 'weak'),
+      matchLevel: (m.match_level as MatchLevel) || ((m.score ?? 50) > 70 ? 'good' : (m.score ?? 50) > 40 ? 'possible' : 'weak'),
       matchReasons: Array.isArray(m.match_reasons) ? m.match_reasons : [],
       issues: Array.isArray(m.issues) ? m.issues : [],
     }))
