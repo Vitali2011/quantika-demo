@@ -5,8 +5,13 @@ const createJestConfig = nextJest({ dir: './' });
 /** @type {import('jest').Config} */
 const config = {
   testEnvironment: 'node',
-  // Exclude .wave worktrees only when running from the main repo (not from within a worktree)
-  testPathIgnorePatterns: ['/node_modules/', ...(process.cwd().includes('/.wave/') ? [] : ['/.wave/'])],
+  // Exclude worktree dirs only when running from the main repo (not from within a worktree).
+  // Covers both `.wave/` (wave-pipeline) and `.claude/worktrees/` (dev-pipeline / manual).
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    ...(process.cwd().includes('/.wave/') ? [] : ['/.wave/']),
+    ...(process.cwd().includes('/.claude/worktrees/') ? [] : ['/\\.claude/worktrees/']),
+  ],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {
