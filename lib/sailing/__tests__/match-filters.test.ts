@@ -133,6 +133,136 @@ describe('checkCargoVesselCompat', () => {
   });
 });
 
+// ────────────────────────────────────────────────────────────────────────────
+// Destination port checks (spec-01)
+// ────────────────────────────────────────────────────────────────────────────
+
+describe('runHardFilters — destination port draft', () => {
+  it('fails when vessel draft exceeds destination port max draft', () => {
+    const r = runHardFilters({
+      cargoType: 'BULK',
+      originPort: 'Mykolaiv',
+      destinationPort: 'Mykolaiv',
+      weightMt: 3000,
+      cargoDescription: 'wheat',
+      stowageFactor: null,
+      vesselType: 'bulk carrier',
+      geared: true,
+      draftMax: 12.0,   // exceeds Mykolaiv maxDraftM=10.5
+      grainCapacity: 6000,
+    });
+    expect(r.pass).toBe(false);
+    expect(r.checks.destDraft.pass).toBe(false);
+    expect(r.checks.destDraft.reason).toMatch(/draft/i);
+    expect(r.failures.some((f) => /draft/i.test(f))).toBe(true);
+  });
+
+  it('fails when vessel draft exceeds destination port max but origin port is fine', () => {
+    const r = runHardFilters({
+      cargoType: 'BULK',
+      originPort: 'Rotterdam',   // deep-sea port, handles large drafts
+      destinationPort: 'Mykolaiv', // river port maxDraftM=10.5
+      weightMt: 3000,
+      cargoDescription: 'wheat',
+      stowageFactor: null,
+      vesselType: 'bulk carrier',
+      geared: true,
+      draftMax: 12.0,
+      grainCapacity: 6000,
+    });
+    expect(r.checks.destDraft.pass).toBe(false);
+    expect(r.pass).toBe(false);
+  });
+
+  it('passes when destination port is null (graceful)', () => {
+    const r = runHardFilters({
+      cargoType: 'BULK',
+      originPort: 'Mykolaiv',
+      destinationPort: null,
+      weightMt: 3000,
+      cargoDescription: 'wheat',
+      stowageFactor: null,
+      vesselType: 'bulk carrier',
+      geared: true,
+      draftMax: 12.0,
+      grainCapacity: 6000,
+    });
+    expect(r.checks.destDraft.pass).toBe(true);
+    expect(r.checks.destCrane.pass).toBe(true);
+  });
+
+  it('passes when destination port is unknown (graceful)', () => {
+    const r = runHardFilters({
+      cargoType: 'BULK',
+      originPort: 'Mykolaiv',
+      destinationPort: 'PortAtlantis',
+      weightMt: 3000,
+      cargoDescription: 'wheat',
+      stowageFactor: null,
+      vesselType: 'bulk carrier',
+      geared: false,
+      draftMax: 12.0,
+      grainCapacity: 6000,
+    });
+    expect(r.checks.destDraft.pass).toBe(true);
+    expect(r.checks.destCrane.pass).toBe(true);
+  });
+});
+
+describe('runHardFilters — destination port crane', () => {
+  it('fails when gearless vessel bound for destination port with no cranes', () => {
+    const r = runHardFilters({
+      cargoType: 'BULK',
+      originPort: 'Mykolaiv',
+      destinationPort: 'Skikda',  // hasShoreCranes=false
+      weightMt: 3000,
+      cargoDescription: 'wheat',
+      stowageFactor: null,
+      vesselType: 'bulk carrier',
+      geared: false,
+      draftMax: 6.0,
+      grainCapacity: 6000,
+    });
+    expect(r.pass).toBe(false);
+    expect(r.checks.destCrane.pass).toBe(false);
+    expect(r.checks.destCrane.reason).toMatch(/crane|gearless/i);
+  });
+
+  it('passes when geared vessel bound for destination port with no cranes', () => {
+    const r = runHardFilters({
+      cargoType: 'BULK',
+      originPort: 'Mykolaiv',
+      destinationPort: 'Skikda',
+      weightMt: 3000,
+      cargoDescription: 'wheat',
+      stowageFactor: null,
+      vesselType: 'bulk carrier',
+      geared: true,
+      draftMax: 6.0,
+      grainCapacity: 6000,
+    });
+    expect(r.checks.destCrane.pass).toBe(true);
+  });
+
+  it('collects both destDraft and destCrane failures in failures array', () => {
+    const r = runHardFilters({
+      cargoType: 'BULK',
+      originPort: 'Rotterdam',
+      destinationPort: 'Skikda',   // maxDraftM=12, hasShoreCranes=false
+      weightMt: 3000,
+      cargoDescription: 'wheat',
+      stowageFactor: null,
+      vesselType: 'bulk carrier',
+      geared: false,
+      draftMax: 13.0,   // exceeds Skikda maxDraftM=12
+      grainCapacity: 6000,
+    });
+    expect(r.checks.destDraft.pass).toBe(false);
+    expect(r.checks.destCrane.pass).toBe(false);
+    expect(r.failures.length).toBeGreaterThanOrEqual(2);
+  });
+});
+
 describe('runHardFilters', () => {
   it('returns pass=true with no failures for compatible pair', () => {
     const r = runHardFilters({

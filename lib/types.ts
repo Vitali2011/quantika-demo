@@ -252,6 +252,8 @@ export interface MatchHardFilters {
   crane: HardFilterCheck;
   volume: HardFilterCheck;
   cargoVessel: HardFilterCheck;
+  destDraft: HardFilterCheck;
+  destCrane: HardFilterCheck;
 }
 
 /** Sanctions screening (see lib/validation/sanctions.ts). */
