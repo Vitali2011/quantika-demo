@@ -4,7 +4,7 @@ module.exports = {
       name: 'quantika-demo',
       script: 'node_modules/.bin/next',
       args: 'start -p 3000',
-      cwd: '/root/quantika-demo', // will be updated at deploy time
+      cwd: process.env.APP_DIR ?? __dirname,
       instances: 1,
       autorestart: true,
       watch: false,
