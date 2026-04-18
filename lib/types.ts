@@ -1,3 +1,15 @@
+// ── Range ──
+
+export interface Range<T> {
+  min: T;
+  max: T;
+  unit?: string;
+}
+
+export function isRange<T>(v: unknown): v is Range<T> {
+  return typeof v === 'object' && v !== null && 'min' in v && 'max' in v;
+}
+
 // ── Confidence ──
 
 export type ConfidenceLevel = 'confirmed' | 'interpreted' | 'uncertain';
@@ -82,7 +94,7 @@ export interface ParsedCargo {
   dimensions: string | null;
   cargoType: CargoType;
   containerType: string | null;
-  quantity: number | null;
+  quantity: Range<number> | number | null;
   incoterms: string | null;
   preferredDates: ConfidenceField<string> | null;
   laycan: string | null;

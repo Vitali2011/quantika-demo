@@ -327,20 +327,29 @@ export function computeScoreBreakdown(input: ScoreBreakdownInput): ScoreBreakdow
   let dwtPoints = 0;
   let dwtReason: string | undefined;
   const dwt = cfValue(vessel.dwtSummer);
-  if (weight && dwt && dwt > 0) {
-    const ratio = weight / dwt;
-    if (ratio >= 0.5 && ratio <= 1.0) {
-      dwtPoints = 10;
-      dwtReason = `cargo ${weight}mt on ${dwt}mt DWT — well-matched`;
-    } else if (ratio >= 0.3 && ratio < 0.5) {
-      dwtPoints = 6;
-      dwtReason = `cargo only ${Math.round(ratio * 100)}% of DWT — vessel under-utilised`;
-    } else if (ratio > 1.0) {
+  // Use max bound for fit check, min bound for utilization — Range-aware logic
+  const weightMax = cargo.weightMtMax ?? weight;
+  const weightMin = cargo.weightMtMin ?? weight;
+  if (weightMax && dwt && dwt > 0) {
+    const fitRatio = weightMax / dwt;
+    if (fitRatio > 1.0) {
       dwtPoints = 2;
-      dwtReason = `cargo exceeds vessel DWT`;
+      dwtReason = `cargo max ${weightMax}mt exceeds vessel DWT ${dwt}mt`;
     } else {
-      dwtPoints = 4;
-      dwtReason = `cargo ≪ vessel DWT — diseconomic`;
+      const utilWeight = weightMin ?? weightMax;
+      const utilRatio = utilWeight / dwt;
+      const rangeLabel = (weightMin !== null && weightMin !== weightMax)
+        ? `${weightMin}–${weightMax}` : `${weightMax}`;
+      if (utilRatio >= 0.5) {
+        dwtPoints = 10;
+        dwtReason = `cargo ${rangeLabel}mt on ${dwt}mt DWT — well-matched`;
+      } else if (utilRatio >= 0.3) {
+        dwtPoints = 6;
+        dwtReason = `cargo min only ${Math.round(utilRatio * 100)}% of DWT — vessel under-utilised`;
+      } else {
+        dwtPoints = 4;
+        dwtReason = `cargo ≪ vessel DWT — diseconomic`;
+      }
     }
   } else {
     dwtPoints = 5;

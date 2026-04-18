@@ -14,7 +14,7 @@
  */
 
 import { getPortMaster, portCanHandleDraft, portHasShoreCranes } from './port-master';
-import { CargoType } from '../types';
+import { CargoType, Range, isRange } from '../types';
 
 export interface FilterResult {
   pass: boolean;
@@ -88,7 +88,7 @@ export const STOWAGE_FACTORS: Record<string, number> = {
 const DEFAULT_STOWAGE_FACTOR = 1.35; // conservative bulk estimate
 
 export interface VolumeCheckInput {
-  weightMt: number | null;
+  weightMt: Range<number> | number | null;
   cargoDescription: string | null;
   stowageFactor: string | null;      // free-text, e.g. "1.3 m³/mt"
   grainCapacity: number | null;       // m³
@@ -115,17 +115,19 @@ function resolveStowageFactor(cargoDescription: string | null, explicit: string 
 
 export function checkVolume(input: VolumeCheckInput): FilterResult {
   const { weightMt, grainCapacity, cargoDescription, stowageFactor } = input;
-  if (weightMt == null || !Number.isFinite(weightMt) || weightMt <= 0) return { pass: true };
+  // Use max bound for conservative capacity check (worst-case scenario)
+  const effectiveWeight = isRange<number>(weightMt) ? weightMt.max : weightMt;
+  if (effectiveWeight == null || !Number.isFinite(effectiveWeight) || effectiveWeight <= 0) return { pass: true };
   if (grainCapacity == null || !Number.isFinite(grainCapacity) || grainCapacity <= 0) return { pass: true };
 
   const sf = resolveStowageFactor(cargoDescription, stowageFactor);
-  const requiredM3 = weightMt * sf;
+  const requiredM3 = effectiveWeight * sf;
   const capacityWithMargin = grainCapacity * 1.05; // 5% tolerance for "abt" values
 
   if (requiredM3 > capacityWithMargin) {
     return {
       pass: false,
-      reason: `cargo needs ~${Math.round(requiredM3)}m³ (${weightMt}mt × ${sf} stowage) but vessel grain capacity is ${grainCapacity}m³`,
+      reason: `cargo needs ~${Math.round(requiredM3)}m³ (${effectiveWeight}mt × ${sf} stowage) but vessel grain capacity is ${grainCapacity}m³`,
     };
   }
   return { pass: true };
@@ -204,7 +206,7 @@ export interface HardFilterInput {
   cargoType: CargoType;
   originPort: string | null;
   destinationPort?: string | null;
-  weightMt: number | null;
+  weightMt: Range<number> | number | null;
   cargoDescription: string | null;
   stowageFactor: string | null;
   vesselType: string | null;
