@@ -239,6 +239,8 @@ export interface MatchReadiness {
   gapDays: number | null;
   verdict: ReadinessVerdict;
   explanation: string;
+  /** True when the laycan window has already passed (end < today). */
+  laycanExpired?: boolean;
 }
 
 /** Result of a single hard-filter check (see lib/sailing/match-filters.ts). */

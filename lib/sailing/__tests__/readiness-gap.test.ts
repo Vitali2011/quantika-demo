@@ -126,6 +126,42 @@ describe('calculateReadinessGap — Mustafa case', () => {
   });
 });
 
+describe('calculateReadinessGap — expired laycan', () => {
+  // TODAY is 2025-09-05; laycan "15-25 Jan" parsed with refYear=2025 → already expired.
+  it('expired laycan → verdict late, explanation contains "expired"', () => {
+    const r = calculateReadinessGap(
+      { openDate: '5 Sep', openPosition: 'Karasu', speedLaden: null, dwtSummer: 5200 },
+      { laycan: '15-25 Jan', originPort: 'Mykolaiv' },
+      { refYear: 2025, today: TODAY },
+    );
+    expect(r.verdict).toBe('late');
+    expect(r.explanation).toMatch(/expired/i);
+    expect(r.gapDays).not.toBeNull();
+    expect(r.gapDays!).toBeLessThan(0);
+  });
+
+  it('expired laycan → gapDays is negative (days-after-end)', () => {
+    // laycan.end = 2025-01-25, today = 2025-09-05 → gap ≈ -222 days
+    const r = calculateReadinessGap(
+      { openDate: '5 Sep', openPosition: 'Karasu', speedLaden: null, dwtSummer: 5200 },
+      { laycan: '15-25 Jan', originPort: 'Mykolaiv' },
+      { refYear: 2025, today: TODAY },
+    );
+    expect(r.gapDays!).toBeLessThan(-100);
+  });
+
+  it('future laycan → existing verdict unchanged (regression guard)', () => {
+    // This is the "Mustafa case" baseline — must stay 'idle'
+    const r = calculateReadinessGap(
+      { openDate: '5 Sep', openPosition: 'Karasu', speedLaden: null, dwtSummer: 5200 },
+      { laycan: '15-25 Sep', originPort: 'Mykolaiv' },
+      { refYear: 2025, today: TODAY },
+    );
+    expect(r.verdict).toBe('idle');
+    expect(r.explanation).not.toMatch(/expired/i);
+  });
+});
+
 describe('detectSpot', () => {
   it('detects "spot"', () => expect(detectSpot('spot')).toBe(true));
   it('detects "SPOT" (case-insensitive)', () => expect(detectSpot('Open: Karasu, SPOT')).toBe(true));
