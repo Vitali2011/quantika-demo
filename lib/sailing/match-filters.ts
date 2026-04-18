@@ -203,6 +203,7 @@ export function checkCargoVesselCompat(input: CargoVesselCompatInput): FilterRes
 export interface HardFilterInput {
   cargoType: CargoType;
   originPort: string | null;
+  destinationPort?: string | null;
   weightMt: number | null;
   cargoDescription: string | null;
   stowageFactor: string | null;
@@ -220,6 +221,8 @@ export interface HardFilterResult {
     crane: FilterResult;
     volume: FilterResult;
     cargoVessel: FilterResult;
+    destDraft: FilterResult;
+    destCrane: FilterResult;
   };
 }
 
@@ -236,17 +239,21 @@ export function runHardFilters(input: HardFilterInput): HardFilterResult {
     cargoType: input.cargoType,
     vesselType: input.vesselType,
   });
+  const destDraft = checkDraft(input.destinationPort ?? null, input.draftMax);
+  const destCrane = checkCrane(input.destinationPort ?? null, input.geared);
 
   const failures: string[] = [];
   if (!draft.pass && draft.reason) failures.push(draft.reason);
   if (!crane.pass && crane.reason) failures.push(crane.reason);
   if (!volume.pass && volume.reason) failures.push(volume.reason);
   if (!cargoVessel.pass && cargoVessel.reason) failures.push(cargoVessel.reason);
+  if (!destDraft.pass && destDraft.reason) failures.push(destDraft.reason);
+  if (!destCrane.pass && destCrane.reason) failures.push(destCrane.reason);
 
   return {
     pass: failures.length === 0,
     failures,
-    checks: { draft, crane, volume, cargoVessel },
+    checks: { draft, crane, volume, cargoVessel, destDraft, destCrane },
   };
 }
 

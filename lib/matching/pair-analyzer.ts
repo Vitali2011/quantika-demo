@@ -69,6 +69,7 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
   const hf = runHardFilters({
     cargoType: c.cargoType,
     originPort: cfValue(c.originPort),
+    destinationPort: cfValue(c.destinationPort),
     weightMt: cfValue(c.weightMt),
     cargoDescription: cfValue(c.cargoDescription),
     stowageFactor: c.stowageFactor,
@@ -83,6 +84,8 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
     crane: hf.checks.crane,
     volume: hf.checks.volume,
     cargoVessel: hf.checks.cargoVessel,
+    destDraft: hf.checks.destDraft,
+    destCrane: hf.checks.destCrane,
   };
 
   const parsedLaycan = parseLaycan(c.laycan, refYear);
