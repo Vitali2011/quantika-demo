@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { validateCsrf } from '@/lib/csrf';
 import { requireSession } from '@/lib/session';
 import { callAiText } from '@/lib/openai';
 import { DRAFT_REPLY_SYSTEM_PROMPT } from '@/lib/prompts';
@@ -18,6 +19,7 @@ function extractClientName(email: { from: string; fromName: string | null; snipp
 }
 
 export async function POST(request: NextRequest) {
+  if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   const result = requireSession(request);
   if (result instanceof NextResponse) return result;
   const { session } = result;

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { validateCsrf } from '@/lib/csrf';
 import { requireSession } from '@/lib/session';
 import { callAiText } from '@/lib/openai';
 import { DRAFT_QUOTE_SYSTEM_PROMPT } from '@/lib/prompts';
@@ -8,6 +9,7 @@ import { DraftQuoteBodySchema } from '@/lib/api-schemas';
 export const maxDuration = 30;
 
 export async function POST(request: NextRequest) {
+  if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   const result = requireSession(request);
   if (result instanceof NextResponse) return result;
   const { session } = result;
