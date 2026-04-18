@@ -42,8 +42,8 @@ export class RateLimiter {
   gc(): void {
     const now = Date.now();
     const windowStart = now - this.windowMs;
-    for (const [key, timestamps] of this.store) {
-      const active = timestamps.filter((t) => t > windowStart);
+    for (const [key, timestamps] of Array.from(this.store)) {
+      const active = timestamps.filter((t: number) => t > windowStart);
       if (active.length === 0) {
         this.store.delete(key);
       } else {
