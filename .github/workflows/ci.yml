@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Cache npm
         uses: actions/cache@v4
@@ -37,12 +37,9 @@ jobs:
 
       - name: Test
         run: npm test
-        continue-on-error: true
 
       - name: Audit
         run: npm audit --audit-level=high
-        continue-on-error: true
 
       - name: Build
         run: npm run build
-        continue-on-error: true
