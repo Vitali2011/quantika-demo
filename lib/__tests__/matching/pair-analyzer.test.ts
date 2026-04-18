@@ -75,7 +75,7 @@ function makeCargo(emailId = 'cargo-1', itemIndex = 0): ParsedCargo {
     weightMtMax: null,
     volumeCbm: null,
     dimensions: null,
-    cargoType: 'general',
+    cargoType: 'OTHER',
     containerType: null,
     quantity: null,
     incoterms: null,
