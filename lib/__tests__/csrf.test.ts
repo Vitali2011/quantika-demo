@@ -1,7 +1,9 @@
+import type { NextRequest } from 'next/server';
 import {
   generateCsrfToken,
   validateCsrfToken,
   checkCsrfRequest,
+  validateCsrf,
   CsrfCheckable,
 } from '../csrf';
 
@@ -92,5 +94,61 @@ describe('checkCsrfRequest (integration: mock NextRequest)', () => {
   it('returns false when token is invalid format (too short)', () => {
     const req = makeRequest('short', 'short');
     expect(checkCsrfRequest(req)).toBe(false);
+  });
+});
+
+describe('validateCsrf', () => {
+  const originalNodeEnv = process.env.NODE_ENV;
+  const originalAppUrl = process.env.NEXT_PUBLIC_APP_URL;
+
+  afterEach(() => {
+    Object.defineProperty(process.env, 'NODE_ENV', { value: originalNodeEnv, writable: true, configurable: true });
+    process.env.NEXT_PUBLIC_APP_URL = originalAppUrl;
+  });
+
+  function makeVcsrfRequest(origin: string | null, referer: string | null): NextRequest {
+    return {
+      headers: {
+        get: (name: string): string | null => {
+          if (name === 'origin') return origin;
+          if (name === 'referer') return referer;
+          return null;
+        },
+      },
+    } as unknown as NextRequest;
+  }
+
+  it('returns true in NODE_ENV=development regardless of origin/referer', () => {
+    Object.defineProperty(process.env, 'NODE_ENV', { value: 'development', writable: true, configurable: true });
+    const req = makeVcsrfRequest(null, null);
+    expect(validateCsrf(req)).toBe(true);
+  });
+
+  it('returns true when origin matches NEXT_PUBLIC_APP_URL', () => {
+    Object.defineProperty(process.env, 'NODE_ENV', { value: 'production', writable: true, configurable: true });
+    process.env.NEXT_PUBLIC_APP_URL = 'https://app.example.com';
+    const req = makeVcsrfRequest('https://app.example.com', null);
+    expect(validateCsrf(req)).toBe(true);
+  });
+
+  it('returns false when origin does not match NEXT_PUBLIC_APP_URL', () => {
+    Object.defineProperty(process.env, 'NODE_ENV', { value: 'production', writable: true, configurable: true });
+    process.env.NEXT_PUBLIC_APP_URL = 'https://app.example.com';
+    const req = makeVcsrfRequest('https://evil.com', null);
+    expect(validateCsrf(req)).toBe(false);
+  });
+
+  it('returns true when origin absent and referer starts with NEXT_PUBLIC_APP_URL', () => {
+    Object.defineProperty(process.env, 'NODE_ENV', { value: 'production', writable: true, configurable: true });
+    process.env.NEXT_PUBLIC_APP_URL = 'https://app.example.com';
+    const req = makeVcsrfRequest(null, 'https://app.example.com/some/path');
+    expect(validateCsrf(req)).toBe(true);
+  });
+
+  it('returns false when both origin and referer are absent', () => {
+    Object.defineProperty(process.env, 'NODE_ENV', { value: 'production', writable: true, configurable: true });
+    process.env.NEXT_PUBLIC_APP_URL = 'https://app.example.com';
+    const req = makeVcsrfRequest(null, null);
+    expect(validateCsrf(req)).toBe(false);
   });
 });
