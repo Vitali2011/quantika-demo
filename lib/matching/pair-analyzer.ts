@@ -141,20 +141,12 @@ function pairKey(
   return `${cargoEmailId}|${cargoItemIndex}|${vesselEmailId}|${vesselItemIndex}`;
 }
 
-function findAnalysis(
-  pairs: PairAnalysis[],
-  cargoEmailId: string,
-  cargoItemIndex: number,
-  vesselEmailId: string,
-  vesselItemIndex: number,
-): PairAnalysis | undefined {
-  return pairs.find(
-    (p) =>
-      p.cargoEmailId === cargoEmailId &&
-      p.cargoItemIndex === cargoItemIndex &&
-      p.vesselEmailId === vesselEmailId &&
-      p.vesselItemIndex === vesselItemIndex,
-  );
+function buildAnalysisMap(pairs: PairAnalysis[]): Map<string, PairAnalysis> {
+  const map = new Map<string, PairAnalysis>();
+  for (const p of pairs) {
+    map.set(pairKey(p.cargoEmailId, p.cargoItemIndex, p.vesselEmailId, p.vesselItemIndex), p);
+  }
+  return map;
 }
 
 /**
@@ -262,6 +254,9 @@ export async function analyzePairs(
       date_issues: a.dateIssues,
     }));
 
+  // Pre-build O(1) lookup map for analyses — replaces O(n²) Array.find scans
+  const analysisMap = buildAnalysisMap(analyses);
+
   const rawAiMatches = await aiScorer({ cargoData, vesselData, readinessData });
 
   const rawMatches: Match[] = rawAiMatches
@@ -290,12 +285,8 @@ export async function analyzePairs(
     const vessel = vessels.find(
       (v) => v.emailId === match.vesselEmailId && v.itemIndex === match.vesselItemIndex,
     );
-    const analysis = analyses.find(
-      (a) =>
-        a.cargoEmailId === match.cargoEmailId &&
-        a.cargoItemIndex === match.cargoItemIndex &&
-        a.vesselEmailId === match.vesselEmailId &&
-        a.vesselItemIndex === match.vesselItemIndex,
+    const analysis = analysisMap.get(
+      pairKey(match.cargoEmailId, match.cargoItemIndex, match.vesselEmailId, match.vesselItemIndex),
     );
 
     const ctx = {
@@ -430,12 +421,8 @@ export async function analyzePairs(
 
   // Attach structured analysis + apply readiness scoring to LLM matches
   const llmMatches: Match[] = rawMatches.map((m: Match) => {
-    const analysis = findAnalysis(
-      analyses,
-      m.cargoEmailId,
-      m.cargoItemIndex,
-      m.vesselEmailId,
-      m.vesselItemIndex,
+    const analysis = analysisMap.get(
+      pairKey(m.cargoEmailId, m.cargoItemIndex, m.vesselEmailId, m.vesselItemIndex),
     );
     if (!analysis) return m;
     const withReadiness = applyReadinessScoring(m, analysis.readiness);

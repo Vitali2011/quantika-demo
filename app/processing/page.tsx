@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Progress } from '@/components/ui/progress';
 import { track } from '@/lib/analytics';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { PIPELINE_STEPS, STEP_GROUPS, type PipelineStep, type PipelineStepGroup } from '@/lib/pipeline';
 
 type StepStatus = 'pending' | 'active' | 'done' | 'error' | 'skipped';
