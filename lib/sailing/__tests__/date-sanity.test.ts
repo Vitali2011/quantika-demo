@@ -1,4 +1,4 @@
-import { isLaycanValid, isOpenDateStale, validateDates } from '../date-sanity';
+import { isLaycanValid, isLaycanExpired, isOpenDateStale, validateDates } from '../date-sanity';
 
 const TODAY = new Date('2025-09-05T00:00:00Z');
 
@@ -28,6 +28,51 @@ describe('isLaycanValid', () => {
   it('null → invalid', () => {
     const r = isLaycanValid(null);
     expect(r.valid).toBe(false);
+  });
+});
+
+describe('isLaycanExpired', () => {
+  it('both start and end in past → expired', () => {
+    const r = isLaycanExpired(
+      { start: new Date('2025-08-01'), end: new Date('2025-08-15') },
+      TODAY,
+    );
+    expect(r.valid).toBe(false);
+    expect(r.reason).toBe('laycan_expired');
+  });
+
+  it('start past, end in future → not expired (window still open)', () => {
+    const r = isLaycanExpired(
+      { start: new Date('2025-08-25'), end: new Date('2025-09-25') },
+      TODAY,
+    );
+    expect(r.valid).toBe(true);
+  });
+
+  it('end === today → not expired (last day inclusive)', () => {
+    const r = isLaycanExpired(
+      { start: new Date('2025-08-25'), end: TODAY },
+      TODAY,
+    );
+    expect(r.valid).toBe(true);
+  });
+
+  it('ambiguous-year edge case: laycan in current year already passed', () => {
+    // Simulates "15-25 Jan" parsed with refYear=2025 when today is Sep 2025
+    const r = isLaycanExpired(
+      { start: new Date('2025-01-15'), end: new Date('2025-01-25') },
+      TODAY,
+    );
+    expect(r.valid).toBe(false);
+    expect(r.reason).toBe('laycan_expired');
+  });
+
+  it('null → valid (graceful degradation)', () => {
+    expect(isLaycanExpired(null, TODAY).valid).toBe(true);
+  });
+
+  it('undefined → valid (graceful degradation)', () => {
+    expect(isLaycanExpired(undefined, TODAY).valid).toBe(true);
   });
 });
 
@@ -84,6 +129,25 @@ describe('validateDates (combined)', () => {
     const r = validateDates({
       openDate: new Date('2025-09-04'),
       laycan: { start: new Date('2025-09-25'), end: new Date('2025-09-15') },
+      today: TODAY,
+    });
+    expect(r.valid).toBe(false);
+  });
+
+  it('expired laycan → invalid, issues contains "expired"', () => {
+    const r = validateDates({
+      openDate: new Date('2025-09-04'),
+      laycan: { start: new Date('2025-08-01'), end: new Date('2025-08-15') },
+      today: TODAY,
+    });
+    expect(r.valid).toBe(false);
+    expect(r.issues.some(i => /expired/i.test(i))).toBe(true);
+  });
+
+  it('null laycan → invalid (missing, not expired)', () => {
+    const r = validateDates({
+      openDate: new Date('2025-09-04'),
+      laycan: null,
       today: TODAY,
     });
     expect(r.valid).toBe(false);

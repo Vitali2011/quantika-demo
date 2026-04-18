@@ -36,6 +36,21 @@ export function isLaycanValid(range: DateRange | null | undefined): LaycanValidi
   return { valid: true };
 }
 
+/**
+ * Checks whether a laycan window has already expired (laycan.end < today).
+ * Null / undefined inputs are treated as not expired (graceful degradation —
+ * missing laycan should not block a match, structural validity is checked by
+ * isLaycanValid separately).
+ * Same-day case (laycan.end === today) is NOT expired — last day is inclusive.
+ */
+export function isLaycanExpired(range: DateRange | null | undefined, today: Date): LaycanValidity {
+  if (!range) return { valid: true };
+  if (range.end.getTime() < today.getTime()) {
+    return { valid: false, reason: 'laycan_expired' };
+  }
+  return { valid: true };
+}
+
 // ────────────────────────────────────────────────────────────────────────────
 
 export interface StaleResult {
@@ -89,6 +104,14 @@ export function validateDates(input: {
     if (lc.reason) issues.push(`Laycan: ${lc.reason}`);
   } else if (lc.warning) {
     issues.push(`Laycan: ${lc.warning}`);
+  }
+
+  if (lc.valid) {
+    const exp = isLaycanExpired(input.laycan, input.today);
+    if (!exp.valid) {
+      valid = false;
+      if (exp.reason) issues.push(`Laycan: ${exp.reason}`);
+    }
   }
 
   const st = isOpenDateStale(input.openDate, input.today, input.staleThresholdDays ?? 5);

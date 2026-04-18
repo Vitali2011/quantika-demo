@@ -25,6 +25,7 @@
  */
 
 import { parseVesselOpenDate, parseLaycan } from './date-parsing';
+import { isLaycanExpired } from './date-sanity';
 import { getPortDistance, normalizePortName } from './port-distances';
 import { BUNKER_DEFAULTS, VESSEL_CLASS, VesselClassName } from '../constants';
 
@@ -176,6 +177,26 @@ export function calculateReadinessGap(
   const explicitSpeed = parseSpeedKnots(vessel.speedLaden);
   const cls = classifyVesselByDwt(vessel.dwtSummer);
   const speedKn = explicitSpeed ?? BUNKER_DEFAULTS[cls].speed;
+
+  // Early return: expired laycan is a hard disqualifier — broker should never see this as a match.
+  if (laycanRange && !isLaycanExpired(laycanRange, today).valid) {
+    const gapDays = Math.round((laycanRange.end.getTime() - today.getTime()) / 86_400_000 * 100) / 100;
+    const daysAgo = Math.abs(Math.round(gapDays));
+    return {
+      openDate: openDateObj ? isoDay(openDateObj) : null,
+      laycanStart: isoDay(laycanRange.start),
+      laycanEnd: isoDay(laycanRange.end),
+      distanceNm,
+      distanceExact,
+      speedKn,
+      sailingDays: null,
+      arrivalDate: null,
+      gapDays,
+      verdict: 'late',
+      explanation: `Laycan expired — window ended ${isoDay(laycanRange.end)}, ${daysAgo}d ago.`,
+      isSpot,
+    };
+  }
 
   // If any critical input is missing → unknown
   if (!openDateObj || !laycanRange || distanceNm == null) {
