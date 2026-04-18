@@ -4,19 +4,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Progress } from '@/components/ui/progress';
 import { track } from '@/lib/analytics';
+import { PIPELINE_STEPS, STEP_GROUPS, type PipelineStep, type PipelineStepGroup } from '@/lib/pipeline';
 
 type StepStatus = 'pending' | 'active' | 'done' | 'error' | 'skipped';
-
-interface Step {
-  label: string;
-  endpoint: string;
-  critical?: boolean; // if true, stop pipeline on failure
-}
-
-interface StepGroup {
-  steps: Step[];
-  parallel?: boolean;
-}
 
 const STEP_ERROR_MESSAGES: Record<string, { stepName: string; errorText: string }> = {
   '/api/emails/fetch':    { stepName: 'Loading emails',       errorText: 'Failed to load emails from Gmail' },
@@ -29,23 +19,6 @@ const STEP_ERROR_MESSAGES: Record<string, { stepName: string; errorText: string 
   '/api/ai/counterparty': { stepName: 'Mapping network',      errorText: 'Failed to map counterparty network' },
 };
 
-const STEP_GROUPS: StepGroup[] = [
-  { steps: [{ label: 'Loading emails from Gmail...', endpoint: '/api/emails/fetch', critical: true }] },
-  { steps: [{ label: 'Sorting your inbox by type...', endpoint: '/api/ai/classify', critical: true }] },
-  { steps: [
-    { label: 'Reading your cargo inquiries...', endpoint: '/api/ai/parse-cargo' },
-    { label: 'Extracting vessel details...', endpoint: '/api/ai/parse-vessel' },
-    { label: 'Extracting fixture recaps...', endpoint: '/api/ai/parse-recap' },
-  ], parallel: true },
-  { steps: [{ label: 'Finding available vessels for your cargo...', endpoint: '/api/ai/match' }] },
-  { steps: [
-    { label: 'Summarizing your negotiations...', endpoint: '/api/ai/recap' },
-    { label: 'Mapping your network...', endpoint: '/api/ai/counterparty' },
-  ], parallel: true },
-];
-
-// Flatten for display
-const STEPS: Step[] = STEP_GROUPS.flatMap(g => g.steps);
 
 const SAMPLE_SUBJECTS = [
   'RE: Antalya / Georgetown 3000mts bb cgo',
@@ -68,13 +41,13 @@ function stepIcon(status: StepStatus) {
 
 export default function ProcessingPage() {
   const router = useRouter();
-  const [statuses, setStatuses] = useState<StepStatus[]>(STEPS.map(() => 'pending'));
+  const [statuses, setStatuses] = useState<StepStatus[]>(PIPELINE_STEPS.map(() => 'pending'));
   const [fatalError, setFatalError] = useState<string | null>(null);
   const [failedStep, setFailedStep] = useState<string | null>(null);
   const [subjectIndex, setSubjectIndex] = useState(0);
 
   const doneCount = statuses.filter(s => s === 'done' || s === 'skipped').length;
-  const progress = Math.round((doneCount / STEPS.length) * 100);
+  const progress = Math.round((doneCount / PIPELINE_STEPS.length) * 100);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -101,7 +74,7 @@ export default function ProcessingPage() {
           return next;
         });
 
-        const runStep = async (step: Step, idx: number) => {
+        const runStep = async (step: PipelineStep, idx: number) => {
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 90_000);
           try {
@@ -196,7 +169,7 @@ export default function ProcessingPage() {
         </div>
 
         <ul className="text-left space-y-2" aria-label="Processing steps" aria-live="polite">
-          {STEPS.map((step, i) => (
+          {PIPELINE_STEPS.map((step, i) => (
             <li
               key={step.endpoint}
               className="flex items-center gap-3 text-sm rounded focus:ring-2 focus:ring-offset-2 outline-none"

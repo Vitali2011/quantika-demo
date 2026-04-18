@@ -2,7 +2,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
-import { filterByCategory, getEmailCounts } from '@/lib/dashboard-queries';
+import { filterByCategory, getEmailCounts, groupByContact } from '@/lib/dashboard-queries';
 import { EmailCard, EmailSection, ActionPanel } from '@/components/dashboard';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
 
@@ -49,15 +49,8 @@ export default async function DashboardPage() {
     .join(' + ') || null;
   const categoryCounts = getEmailCounts({ CARGO_INQUIRY: cargoRows, VESSEL_POSITION: vesselRows, FIXTURE_RECAP: fixtureRows, CLIENT_REPLY: clientReplyRows, DOCUMENT: documentRows, VESSEL_CERTIFICATE: vesselCertRows, TCT_REQUEST: tctRequestRows, OTHER: otherOnlyRows });
   const isSample = session.isSampleData === true;
-  const senderMap = new Map<string, { name: string; count: number }>();
-  for (const email of emails) {
-    const key = (email.fromEmail || email.from || '').toLowerCase().trim();
-    if (!key) continue;
-    const existing = senderMap.get(key);
-    if (existing) { existing.count += 1; }
-    else { senderMap.set(key, { name: email.fromName || email.fromEmail || email.from || key, count: 1 }); }
-  }
-  const topContacts = Array.from(senderMap.values()).sort((a, b) => b.count - a.count).slice(0, 10);
+  const allContacts = groupByContact(emails);
+  const topContacts = allContacts.slice(0, 10);
   const maxContactEmails = topContacts.length > 0 ? topContacts[0].count : 1;
 
   return (
