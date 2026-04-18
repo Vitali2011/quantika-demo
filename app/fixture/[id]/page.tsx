@@ -8,26 +8,7 @@ import { ChevronLeft, AlertTriangle } from 'lucide-react';
 import { Renderable } from '@/lib/types';
 import { CopyButton } from '@/components/copy-button';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
-
-function safeRender(v: Renderable): string {
-  if (v == null) return '';
-  if (typeof v === 'string') return v;
-  if (typeof v === 'number') return String(v);
-  if (typeof v === 'boolean') return v ? 'Yes' : 'No';
-  if (typeof v === 'object') return safeRender(v.value);
-  return JSON.stringify(v);
-}
-
-function getConf(v: Renderable): string | undefined {
-  if (v != null && typeof v === 'object') return v.confidence;
-  return undefined;
-}
-
-function ConfIcon({ confidence }: { confidence?: string }) {
-  if (confidence === 'uncertain') return <span title="Uncertain">❓</span>;
-  if (confidence === 'interpreted') return <span title="Interpreted">⚠️</span>;
-  return <span title="Confirmed">✅</span>;
-}
+import { safeRender, getConf, ConfIcon } from '@/lib/ui-render';
 
 function CField({ label, field }: { label: string; field: Renderable }) {
   const val = safeRender(field);

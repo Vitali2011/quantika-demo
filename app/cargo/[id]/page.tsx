@@ -8,31 +8,10 @@ import { Badge } from '@/components/ui/badge';
 import { DraftQuoteCard } from '@/components/request/draft-quote-card';
 import { Ship, FileText, AlertTriangle, ChevronLeft, Anchor } from 'lucide-react';
 import { STATUS_CONFIG } from '@/lib/constants';
-import { cfValue, Renderable } from '@/lib/types';
+import { cfValue } from '@/lib/types';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
 import { ClickableField } from '@/components/clickable-field';
-
-// Universal safe renderer — handles ConfidenceField objects, plain values, null
-function safeRender(v: Renderable): string {
-  if (v === null || v === undefined) return '';
-  if (typeof v === 'string') return v;
-  if (typeof v === 'number') return String(v);
-  if (typeof v === 'object') return v.value !== null && v.value !== undefined ? String(v.value) : '';
-  return JSON.stringify(v);
-}
-
-// Extract confidence level from a ConfidenceField (or undefined for plain values)
-function getConf(v: Renderable): string | undefined {
-  if (v !== null && v !== undefined && typeof v === 'object') return v.confidence;
-  return undefined;
-}
-
-function ConfIcon({ confidence }: { confidence?: string }) {
-  if (confidence === 'uncertain') return <span title="Uncertain — check original">❓</span>;
-  if (confidence === 'interpreted') return <span title="AI interpreted — may be ambiguous">⚠️</span>;
-  if (confidence === 'confirmed') return <span title="Confirmed from email text">✅</span>;
-  return null;
-}
+import { safeRender, getConf, ConfIcon } from '@/lib/ui-render';
 
 interface Props {
   params: Promise<{ id: string }>;

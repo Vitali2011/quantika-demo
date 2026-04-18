@@ -8,6 +8,13 @@ export function extractNum(v: unknown): number | null {
   return null;
 }
 
+export function extractStr(data: unknown, key: string): string | null {
+  if (data == null || typeof data !== 'object' || Array.isArray(data)) return null;
+  const val = (data as Record<string, unknown>)[key];
+  if (typeof val === 'string' && val.length > 0) return val;
+  return null;
+}
+
 export function toConfidence<T>(field: unknown): ConfidenceField<T> | null {
   if (!field) return null;
   if (typeof field === 'object' && field !== null && 'value' in field) {

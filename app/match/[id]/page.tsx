@@ -5,19 +5,10 @@ import { getSession } from '@/lib/session';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ChevronLeft } from 'lucide-react';
-import { Renderable } from '@/lib/types';
 import { DraftQuoteCard } from '@/components/request/draft-quote-card';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
 import { ClickableField } from '@/components/clickable-field';
-
-function safeRender(v: Renderable): string {
-  if (v == null) return '';
-  if (typeof v === 'string') return v;
-  if (typeof v === 'number') return String(v);
-  if (typeof v === 'boolean') return v ? 'Yes' : 'No';
-  if (typeof v === 'object') return safeRender(v.value);
-  return JSON.stringify(v);
-}
+import { safeRender } from '@/lib/ui-render';
 
 interface Props { params: Promise<{ id: string }>; }
 

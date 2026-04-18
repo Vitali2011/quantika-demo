@@ -1,4 +1,4 @@
-import { extractNum, toConfidence } from '../parsing-utils';
+import { extractNum, toConfidence, extractStr } from '../parsing-utils';
 
 describe('extractNum', () => {
   it('returns null for null', () => {
@@ -98,5 +98,39 @@ describe('toConfidence', () => {
   it('ignores source_text if not a string', () => {
     const result = toConfidence<string>({ value: 'Dubai', source_text: 123 });
     expect(result?.sourceText).toBeUndefined();
+  });
+});
+
+describe('extractStr', () => {
+  it('returns string value from plain object with matching key', () => {
+    expect(extractStr({ port: 'Rotterdam' }, 'port')).toBe('Rotterdam');
+  });
+
+  it('returns null for missing key', () => {
+    expect(extractStr({ port: 'Rotterdam' }, 'name')).toBeNull();
+  });
+
+  it('returns null for non-string value', () => {
+    expect(extractStr({ count: 42 }, 'count')).toBeNull();
+  });
+
+  it('returns null for null data', () => {
+    expect(extractStr(null, 'port')).toBeNull();
+  });
+
+  it('returns null for undefined data', () => {
+    expect(extractStr(undefined, 'port')).toBeNull();
+  });
+
+  it('returns null for non-object data (string)', () => {
+    expect(extractStr('hello', 'port')).toBeNull();
+  });
+
+  it('returns null for empty string value', () => {
+    expect(extractStr({ port: '' }, 'port')).toBeNull();
+  });
+
+  it('returns null for boolean value', () => {
+    expect(extractStr({ active: true }, 'active')).toBeNull();
   });
 });
