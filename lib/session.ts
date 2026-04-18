@@ -3,6 +3,7 @@ import { SessionData } from './types';
 import { getStore } from './session-store';
 
 export function createSession(accessToken: string): string {
+  getStore().expireOldSessions();
   return getStore().createSession(accessToken);
 }
 

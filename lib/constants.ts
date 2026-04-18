@@ -3,6 +3,22 @@ export const CLIPROXY_API_KEY = process.env.CLIPROXY_API_KEY || 'cliproxy-key-1'
 export const AI_MODEL_HEAVY = process.env.AI_MODEL_HEAVY || 'gpt-5.4-mini';
 export const AI_MODEL_LIGHT = process.env.AI_MODEL_LIGHT || 'gpt-5.4-mini';
 
+/**
+ * Session time-to-live: 1 hour (3 600 000 ms).
+ *
+ * - **Why 1 hour:** covers a typical single brokerage workflow end-to-end
+ *   (email fetch → classify → parse → match → draft reply) with comfortable
+ *   headroom. Shorter TTLs risk cutting off in-flight AI pipelines.
+ *
+ * - **SQLite persistence & PM2 restarts:** sessions are stored in
+ *   `data/sessions.db` rather than in-memory, so they survive a PM2 restart
+ *   or Next.js hot-reload. In-flight work (parsed cargos, vessel matches, etc.)
+ *   remains accessible to the broker within the TTL window even after a restart.
+ *
+ * - **Disk usage:** each session row serialises full `SessionData` as JSON
+ *   (emails, classifications, matches, …). Extending beyond 1 hour increases
+ *   `data/sessions.db` size proportionally — evaluate before raising the value.
+ */
 export const SESSION_TTL_MS = 60 * 60 * 1000; // 1 hour
 export const EMAIL_FETCH_COUNT = 50;
 export const MIN_THREAD_LENGTH_FOR_RECAP = 5;
