@@ -113,6 +113,27 @@ export class SessionStore {
     return true;
   }
 
+  /**
+   * Partial-update a single field on a session without deserialising and
+   * re-serialising the entire blob.  Full-blob `updateSession` remains
+   * available for initial saves and bulk updates.
+   */
+  updateSessionField<K extends keyof SessionData>(
+    id: string,
+    field: K,
+    value: SessionData[K],
+  ): boolean {
+    const existing = this.getSession(id);
+    if (!existing) return false;
+
+    const updated: SessionData = { ...existing, [field]: value };
+    this.db.prepare('UPDATE sessions SET data = ? WHERE id = ?').run(
+      serializeData(updated),
+      id,
+    );
+    return true;
+  }
+
   deleteSession(id: string): void {
     this.db.prepare('DELETE FROM sessions WHERE id = ?').run(id);
   }

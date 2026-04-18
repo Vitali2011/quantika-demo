@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
   }
 
   const allParsed: ParsedCargo[] = [];
-  const limit = pLimit(5);
+  const limit = pLimit(3);
   const prompts = buildCargoPrompts(cargoEmails);
 
   await Promise.all(

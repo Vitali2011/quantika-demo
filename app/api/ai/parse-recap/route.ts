@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ count: 0 });
   }
 
-  const limit = pLimit(5);
+  const limit = pLimit(3);
 
   const parsedFixtureRecaps: ParsedFixtureRecap[] = await Promise.all(
     fixtureEmails.map((email) => limit(async () => {
