@@ -1,8 +1,30 @@
 import type {
+  ConfidenceField, ConfidenceLevel,
   Match, MatchLevel, MatchReadiness, MatchSanctions,
   ParsedCargo, ParsedVessel, ScoreBreakdown, ScoreBreakdownComponent,
 } from '@/lib/types';
 import { cfValue } from '@/lib/types';
+
+// ────────────────────────────────────────────────────────────────────────────
+// Confidence multipliers (Spec-05)
+// ────────────────────────────────────────────────────────────────────────────
+
+export const CONFIDENCE_MULTIPLIERS: Record<ConfidenceLevel, number> = {
+  confirmed:   1.0,
+  interpreted: 0.7,
+  uncertain:   0.4,
+};
+
+function getMinMultiplier(...fields: (ConfidenceField<unknown> | null | undefined)[]): number {
+  let min = 1.0;
+  for (const f of fields) {
+    if (f != null) {
+      const m = CONFIDENCE_MULTIPLIERS[f.confidence];
+      if (m < min) min = m;
+    }
+  }
+  return min;
+}
 import { portHasShoreCranes } from './port-master';
 import { STOWAGE_FACTORS, checkCargoVesselCompat } from './match-filters';
 
@@ -239,46 +261,52 @@ export function computeScoreBreakdown(input: ScoreBreakdownInput): ScoreBreakdow
   const components: ScoreBreakdownComponent[] = [];
 
   // 1. Geographic proximity
+  // Confidence: cargo.originPort, vessel.openPosition
   const distance = readiness?.distanceNm ?? null;
-  const { points: distPoints, reason: distReason } = scoreGeographicProximity(distance);
-  components.push({ label: 'Geographic proximity', points: distPoints, max: 20, reason: distReason });
+  const { points: distRaw, reason: distReason } = scoreGeographicProximity(distance);
+  const distMult = getMinMultiplier(cargo.originPort, vessel.openPosition);
+  components.push({ label: 'Geographic proximity', points: distRaw * distMult, max: 20, reason: distReason, confidenceMultiplier: distMult });
 
   // 2. Cargo type match
-  const { points: cargoPoints, reason: cargoReason } = scoreCargoTypeMatch({
+  // Confidence: cargo.cargoDescription (cargoType is a plain enum — no CF wrapper)
+  const { points: cargoRaw, reason: cargoReason } = scoreCargoTypeMatch({
     cargoType: cargo.cargoType,
     vesselType: vessel.vesselType,
     lastCargoes: vessel.lastCargoes,
     geared: vessel.geared,
     grainCapacity: vessel.grainCapacity,
   });
-  components.push({ label: 'Cargo type match', points: cargoPoints, max: 20, reason: cargoReason });
+  const cargoMult = getMinMultiplier(cargo.cargoDescription);
+  components.push({ label: 'Cargo type match', points: cargoRaw * cargoMult, max: 20, reason: cargoReason, confidenceMultiplier: cargoMult });
 
   // 3. Geared/crane match
-  let cranePoints = 0;
+  // No ConfidenceField inputs — always 1.0
+  let craneRaw = 0;
   let craneReason: string | undefined;
   if (vessel.geared === true) {
-    cranePoints = 15;
+    craneRaw = 15;
     craneReason = 'vessel geared — no shore-crane dependency';
   } else if (vessel.geared === false) {
     const portCranes = portHasShoreCranes(cfValue(cargo.originPort));
     if (portCranes === true) {
-      cranePoints = 12;
+      craneRaw = 12;
       craneReason = 'gearless vessel + shore cranes available';
     } else if (portCranes === false) {
-      cranePoints = 0;
+      craneRaw = 0;
       craneReason = 'gearless vessel, no shore cranes — incompatible';
     } else {
-      cranePoints = 8;
+      craneRaw = 8;
       craneReason = 'gearless vessel, port crane availability unverified';
     }
   } else {
-    cranePoints = 10;
+    craneRaw = 10;
     craneReason = 'vessel gear unknown';
   }
-  components.push({ label: 'Cargo handling (cranes)', points: cranePoints, max: 15, reason: craneReason });
+  components.push({ label: 'Cargo handling (cranes)', points: craneRaw, max: 15, reason: craneReason, confidenceMultiplier: 1.0 });
 
   // 4. Volume fit
-  let volPoints = 0;
+  // Confidence: cargo.weightMt (vessel.grainCapacity is plain number — no CF wrapper)
+  let volRaw = 0;
   let volReason: string | undefined;
   const weight = cfValue(cargo.weightMt);
   const grain = vessel.grainCapacity;
@@ -292,39 +320,43 @@ export function computeScoreBreakdown(input: ScoreBreakdownInput): ScoreBreakdow
     const required = weight * sf;
     const ratio = required / grain;  // 1.0 = exact fit, <1 = room to spare
     if (ratio <= 0.7) {
-      volPoints = 12;  // comfortable fit but underutilised
+      volRaw = 12;  // comfortable fit but underutilised
       volReason = `cargo uses ~${Math.round(ratio * 100)}% of grain capacity — comfortable`;
     } else if (ratio <= 0.9) {
-      volPoints = 15;  // ideal fit
+      volRaw = 15;  // ideal fit
       volReason = `cargo uses ~${Math.round(ratio * 100)}% of grain capacity — ideal utilisation`;
     } else if (ratio <= 1.0) {
-      volPoints = 13;
+      volRaw = 13;
       volReason = `cargo uses ~${Math.round(ratio * 100)}% of grain capacity — tight fit`;
     } else {
-      volPoints = 5;
+      volRaw = 5;
       volReason = `cargo exceeds 100% of grain capacity — risky without volume confirmation`;
     }
   } else {
-    volPoints = 7;
+    volRaw = 7;
     volReason = 'cargo weight or grain capacity unknown';
   }
-  components.push({ label: 'Volume / hold fit', points: volPoints, max: 15, reason: volReason });
+  const volMult = getMinMultiplier(cargo.weightMt);
+  components.push({ label: 'Volume / hold fit', points: volRaw * volMult, max: 15, reason: volReason, confidenceMultiplier: volMult });
 
   // 5. Laycan fit
-  let layPoints = 0;
+  // Confidence: cargo.preferredDates, vessel.openDate
+  let layRaw = 0;
   let layReason: string | undefined;
   switch (readiness?.verdict) {
-    case 'ideal': layPoints = 20; layReason = 'ideal timing — arrives cleanly before laycan'; break;
-    case 'tight': layPoints = 12; layReason = 'tight timing — cuts it fine'; break;
-    case 'idle':  layPoints = 10; layReason = 'vessel idle before laycan — owner cost risk'; break;
-    case 'unknown': layPoints = 8; layReason = 'timing unknown (missing dates or port)'; break;
-    case 'late':  layPoints = 0;  layReason = 'late arrival (should have been filtered)'; break;
-    default:      layPoints = 5;  layReason = 'no readiness data';
+    case 'ideal': layRaw = 20; layReason = 'ideal timing — arrives cleanly before laycan'; break;
+    case 'tight': layRaw = 12; layReason = 'tight timing — cuts it fine'; break;
+    case 'idle':  layRaw = 10; layReason = 'vessel idle before laycan — owner cost risk'; break;
+    case 'unknown': layRaw = 8; layReason = 'timing unknown (missing dates or port)'; break;
+    case 'late':  layRaw = 0;  layReason = 'late arrival (should have been filtered)'; break;
+    default:      layRaw = 5;  layReason = 'no readiness data';
   }
-  components.push({ label: 'Laycan fit', points: layPoints, max: 20, reason: layReason });
+  const layMult = getMinMultiplier(cargo.preferredDates, vessel.openDate);
+  components.push({ label: 'Laycan fit', points: layRaw * layMult, max: 20, reason: layReason, confidenceMultiplier: layMult });
 
   // 6. DWT class
-  let dwtPoints = 0;
+  // Confidence: cargo.weightMt, vessel.dwtSummer
+  let dwtRaw = 0;
   let dwtReason: string | undefined;
   const dwt = cfValue(vessel.dwtSummer);
   // Use max bound for fit check, min bound for utilization — Range-aware logic
@@ -333,7 +365,7 @@ export function computeScoreBreakdown(input: ScoreBreakdownInput): ScoreBreakdow
   if (weightMax && dwt && dwt > 0) {
     const fitRatio = weightMax / dwt;
     if (fitRatio > 1.0) {
-      dwtPoints = 2;
+      dwtRaw = 2;
       dwtReason = `cargo max ${weightMax}mt exceeds vessel DWT ${dwt}mt`;
     } else {
       const utilWeight = weightMin ?? weightMax;
@@ -341,23 +373,29 @@ export function computeScoreBreakdown(input: ScoreBreakdownInput): ScoreBreakdow
       const rangeLabel = (weightMin !== null && weightMin !== weightMax)
         ? `${weightMin}–${weightMax}` : `${weightMax}`;
       if (utilRatio >= 0.5) {
-        dwtPoints = 10;
+        dwtRaw = 10;
         dwtReason = `cargo ${rangeLabel}mt on ${dwt}mt DWT — well-matched`;
       } else if (utilRatio >= 0.3) {
-        dwtPoints = 6;
+        dwtRaw = 6;
         dwtReason = `cargo min only ${Math.round(utilRatio * 100)}% of DWT — vessel under-utilised`;
       } else {
-        dwtPoints = 4;
+        dwtRaw = 4;
         dwtReason = `cargo ≪ vessel DWT — diseconomic`;
       }
     }
   } else {
-    dwtPoints = 5;
+    dwtRaw = 5;
     dwtReason = 'weight or DWT unknown';
   }
-  components.push({ label: 'DWT class fit', points: dwtPoints, max: 10, reason: dwtReason });
+  const dwtMult = getMinMultiplier(cargo.weightMt, vessel.dwtSummer);
+  components.push({ label: 'DWT class fit', points: dwtRaw * dwtMult, max: 10, reason: dwtReason, confidenceMultiplier: dwtMult });
 
-  const basePhysical = components.reduce((a, c) => a + c.points, 0);
+  // basePhysical = raw (unweighted) sum — backward compatible
+  const rawPoints = [distRaw, cargoRaw, craneRaw, volRaw, layRaw, dwtRaw];
+  const basePhysical = rawPoints.reduce((a, b) => a + b, 0);
+
+  // confidenceAdjustedScore = weighted sum
+  const confidenceAdjustedScore = components.reduce((a, c) => a + c.points, 0);
 
   // Readiness adjustment mirrors applyReadinessScoring
   let readinessAdjustment = 0;
@@ -371,7 +409,7 @@ export function computeScoreBreakdown(input: ScoreBreakdownInput): ScoreBreakdow
   let sanctionsAdjustment = 0;
   if (sanctions?.risk === 'MEDIUM') sanctionsAdjustment = -10;
 
-  const finalScore = Math.max(0, Math.min(100, basePhysical + readinessAdjustment + sanctionsAdjustment));
+  const finalScore = Math.max(0, Math.min(100, confidenceAdjustedScore + readinessAdjustment + sanctionsAdjustment));
 
   return {
     components,
@@ -379,5 +417,6 @@ export function computeScoreBreakdown(input: ScoreBreakdownInput): ScoreBreakdow
     readinessAdjustment,
     sanctionsAdjustment,
     finalScore,
+    confidenceAdjustedScore,
   };
 }

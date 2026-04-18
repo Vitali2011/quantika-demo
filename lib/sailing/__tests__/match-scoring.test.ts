@@ -516,6 +516,84 @@ describe('Geographic proximity scoring — piecewise tiers', () => {
   });
 });
 
+// ── Spec-05: Confidence weighting ─────────────────────────────────────────
+
+describe('Confidence weighting', () => {
+  const sanctions = { risk: 'NONE', blocking: false } as MatchSanctions;
+
+  it('all-confirmed inputs: confidenceAdjustedScore equals basePhysical and all multipliers are 1.0', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo(),   // all confidence: 'confirmed' by default
+      vessel: mkVessel(), // all confidence: 'confirmed' by default
+      readiness: mkReadiness('ideal'),
+      sanctions,
+    });
+    expect(b.confidenceAdjustedScore).toBe(b.basePhysical);
+    b.components.forEach(c => {
+      expect(c.confidenceMultiplier).toBe(1.0);
+    });
+  });
+
+  it('interpreted origin port: geographic component gets ×0.7 multiplier', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({ originPort: { value: 'Karasu', confidence: 'interpreted' } }),
+      vessel: mkVessel(),
+      readiness: mkReadinessWithDist(200), // raw 20 pts → 20 * 0.7 = 14
+      sanctions,
+    });
+    const geo = b.components.find(c => c.label === 'Geographic proximity')!;
+    expect(geo.confidenceMultiplier).toBe(0.7);
+    expect(geo.points).toBeCloseTo(14);
+  });
+
+  it('all-uncertain driving fields: confidenceAdjustedScore < basePhysical', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({
+        originPort:       { value: 'Karasu',      confidence: 'uncertain' },
+        cargoDescription: { value: 'steel coils', confidence: 'uncertain' },
+        weightMt:         { value: 4800,          confidence: 'uncertain' },
+        preferredDates:   { value: '2025-09-10',  confidence: 'uncertain' },
+      }),
+      vessel: mkVessel({
+        openPosition: { value: 'Karasu',     confidence: 'uncertain' },
+        openDate:     { value: '2025-09-05', confidence: 'uncertain' },
+        dwtSummer:    { value: 5200,         confidence: 'uncertain' },
+      }),
+      readiness: mkReadiness('ideal'),
+      sanctions,
+    });
+    expect(b.confidenceAdjustedScore).toBeLessThan(b.basePhysical);
+  });
+
+  it('null ConfidenceField wrappers default to multiplier 1.0', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({ originPort: null, weightMt: null, preferredDates: null }),
+      vessel: mkVessel({ openPosition: null, dwtSummer: null, openDate: null }),
+      readiness: mkReadiness('ideal'),
+      sanctions,
+    });
+    b.components.forEach(c => {
+      expect(c.confidenceMultiplier).toBe(1.0);
+    });
+  });
+
+  it('finalScore uses confidenceAdjustedScore (not basePhysical) as base', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({ originPort: { value: 'Karasu', confidence: 'uncertain' } }),
+      vessel: mkVessel({ openPosition: { value: 'Karasu', confidence: 'uncertain' } }),
+      readiness: mkReadinessWithDist(200),
+      sanctions,
+    });
+    const expected = Math.max(0, Math.min(100, b.confidenceAdjustedScore! + b.readinessAdjustment + b.sanctionsAdjustment));
+    expect(b.finalScore).toBe(expected);
+  });
+});
+
 // ── Spec-04: Range-aware DWT scoring ──────────────────────────────────────
 
 function dwtComponent(b: ReturnType<typeof computeScoreBreakdown>) {

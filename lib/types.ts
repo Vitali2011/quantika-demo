@@ -316,6 +316,8 @@ export interface ScoreBreakdownComponent {
   points: number;
   max: number;
   reason?: string;
+  /** Confidence multiplier applied to this component (1.0 = no degradation). */
+  confidenceMultiplier?: number;
 }
 
 export interface ScoreBreakdown {
@@ -324,6 +326,8 @@ export interface ScoreBreakdown {
   readinessAdjustment: number;
   sanctionsAdjustment: number;
   finalScore: number;
+  /** Sum of confidence-weighted component points (may be lower than basePhysical). */
+  confidenceAdjustedScore?: number;
 }
 
 // ── Negotiation Recap ──

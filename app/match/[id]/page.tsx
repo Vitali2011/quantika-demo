@@ -240,14 +240,22 @@ export default async function MatchDetailPage({ params }: Props) {
             <CardContent className="space-y-3 text-sm">
               {match.scoreBreakdown.components.map((c, i) => {
                 const pct = c.max > 0 ? Math.max(0, Math.min(100, (c.points / c.max) * 100)) : 0;
+                const degraded = c.confidenceMultiplier != null && c.confidenceMultiplier < 1.0;
                 return (
                   <div key={i} className="space-y-1">
                     <div className="flex justify-between items-baseline text-xs">
-                      <span className="font-medium">{c.label}</span>
-                      <span className="text-gray-600">{c.points}/{c.max}</span>
+                      <span className="flex items-center gap-1 font-medium">
+                        {c.label}
+                        {degraded && (
+                          <span className="text-orange-600 font-mono bg-orange-50 px-1 rounded text-[10px]">
+                            ×{c.confidenceMultiplier!.toFixed(1)}
+                          </span>
+                        )}
+                      </span>
+                      <span className="text-gray-600">{Math.round(c.points)}/{c.max}</span>
                     </div>
                     <div className="h-2 bg-gray-100 rounded overflow-hidden">
-                      <div className="h-full bg-green-500" style={{ width: `${pct}%` }} />
+                      <div className={`h-full ${degraded ? 'bg-orange-400' : 'bg-green-500'}`} style={{ width: `${pct}%` }} />
                     </div>
                     {c.reason && <p className="text-xs text-gray-500">{c.reason}</p>}
                   </div>
@@ -255,6 +263,10 @@ export default async function MatchDetailPage({ params }: Props) {
               })}
               <div className="border-t pt-3 text-xs text-gray-600 grid grid-cols-2 gap-x-4 gap-y-1">
                 <p>Base physical: {match.scoreBreakdown.basePhysical}</p>
+                {match.scoreBreakdown.confidenceAdjustedScore != null &&
+                 Math.round(match.scoreBreakdown.confidenceAdjustedScore) !== match.scoreBreakdown.basePhysical && (
+                  <p className="text-orange-600">Confidence-adjusted: {Math.round(match.scoreBreakdown.confidenceAdjustedScore)}</p>
+                )}
                 {match.scoreBreakdown.readinessAdjustment !== 0 && (
                   <p>Readiness adj: {match.scoreBreakdown.readinessAdjustment > 0 ? '+' : ''}{match.scoreBreakdown.readinessAdjustment}</p>
                 )}
