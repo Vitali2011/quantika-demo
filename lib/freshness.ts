@@ -1,10 +1,5 @@
 import { EmailCategory, ParsedCargo, ParsedVessel } from './types';
-import {
-  FRESHNESS_VESSEL_DEFAULT_DAYS,
-  FRESHNESS_CARGO_DEFAULT_DAYS,
-  FRESHNESS_DOCUMENT_DAYS,
-  FRESHNESS_CLIENT_REPLY_DAYS,
-} from './constants';
+import { FRESHNESS_CONFIG } from './freshness-config';
 
 function addDays(date: Date, days: number): Date {
   const result = new Date(date);
@@ -30,44 +25,37 @@ export function calculateExpiry(
   const emailD = parseDate(emailDate);
   if (!emailD) return { expiryDate: null, expirySource: null };
 
-  switch (category) {
-    case 'VESSEL_POSITION': {
-      const openDateStr = parsedVessel?.openDate?.value;
-      if (openDateStr) {
-        const od = parseDate(openDateStr);
-        if (od) return { expiryDate: od.toISOString(), expirySource: 'openDate' };
-      }
-      return {
-        expiryDate: addDays(emailD, FRESHNESS_VESSEL_DEFAULT_DAYS).toISOString(),
-        expirySource: 'default',
-      };
-    }
-    case 'CARGO_INQUIRY': {
-      const laycanStr = parsedCargo?.laycan;
-      if (laycanStr) {
-        const ld = parseDate(laycanStr);
-        if (ld) return { expiryDate: ld.toISOString(), expirySource: 'laycan' };
-      }
-      return {
-        expiryDate: addDays(emailD, FRESHNESS_CARGO_DEFAULT_DAYS).toISOString(),
-        expirySource: 'default',
-      };
-    }
-    case 'FIXTURE_RECAP':
-      return { expiryDate: null, expirySource: 'permanent' };
-    case 'DOCUMENT':
-      return {
-        expiryDate: addDays(emailD, FRESHNESS_DOCUMENT_DAYS).toISOString(),
-        expirySource: 'fixed',
-      };
-    case 'CLIENT_REPLY':
-      return {
-        expiryDate: addDays(emailD, FRESHNESS_CLIENT_REPLY_DAYS).toISOString(),
-        expirySource: 'fixed',
-      };
-    default:
-      return { expiryDate: null, expirySource: null };
+  const rule = FRESHNESS_CONFIG[category];
+  if (!rule) return { expiryDate: null, expirySource: null };
+
+  if (rule.permanent) {
+    return { expiryDate: null, expirySource: 'permanent' };
   }
+
+  if (rule.useParsedField === 'openDate') {
+    const openDateStr = parsedVessel?.openDate?.value;
+    if (openDateStr) {
+      const od = parseDate(openDateStr);
+      if (od) return { expiryDate: od.toISOString(), expirySource: 'openDate' };
+    }
+  }
+
+  if (rule.useParsedField === 'laycan') {
+    const laycanStr = parsedCargo?.laycan;
+    if (laycanStr) {
+      const ld = parseDate(laycanStr);
+      if (ld) return { expiryDate: ld.toISOString(), expirySource: 'laycan' };
+    }
+  }
+
+  if (rule.defaultDays !== undefined) {
+    return {
+      expiryDate: addDays(emailD, rule.defaultDays).toISOString(),
+      expirySource: rule.defaultSource ?? 'default',
+    };
+  }
+
+  return { expiryDate: null, expirySource: null };
 }
 
 export function isStale(expiryDate: string | null): boolean {

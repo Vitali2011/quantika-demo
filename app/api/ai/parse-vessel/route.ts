@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
   }
 
   const allParsed: ParsedVessel[] = [];
-  const limit = pLimit(5);
+  const limit = pLimit(3);
 
   await Promise.all(
     vesselEmails.map((email) => limit(async () => {

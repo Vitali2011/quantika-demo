@@ -63,3 +63,24 @@ export function getEmailCounts(grouped: Partial<Record<string, EmailRow[]>>): Re
   }
   return counts;
 }
+
+export interface ContactGroup {
+  name: string;
+  count: number;
+}
+
+/**
+ * Aggregate emails by sender address, sorted by count descending.
+ * Returns all contacts (caller may slice as needed).
+ */
+export function groupByContact(emails: Email[]): ContactGroup[] {
+  const senderMap = new Map<string, ContactGroup>();
+  for (const email of emails) {
+    const key = (email.fromEmail || email.from || '').toLowerCase().trim();
+    if (!key) continue;
+    const existing = senderMap.get(key);
+    if (existing) { existing.count += 1; }
+    else { senderMap.set(key, { name: email.fromName || email.fromEmail || email.from || key, count: 1 }); }
+  }
+  return Array.from(senderMap.values()).sort((a, b) => b.count - a.count);
+}

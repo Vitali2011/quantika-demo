@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { validateCsrf } from '@/lib/csrf';
 import { requireSession } from '@/lib/session';
 import { callAiText } from '@/lib/openai';
 import { DRAFT_REPLY_SYSTEM_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_LIGHT } from '@/lib/constants';
+import { DraftReplyBodySchema } from '@/lib/api-schemas';
 
 export const maxDuration = 30;
 
@@ -17,13 +19,20 @@ function extractClientName(email: { from: string; fromName: string | null; snipp
 }
 
 export async function POST(request: NextRequest) {
+  if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   const result = requireSession(request);
   if (result instanceof NextResponse) return result;
   const { session } = result;
   
-  const body = await request.json();
-  const { emailId, pendingItems } = body;
-  
+  const raw = await request.json();
+  const parsed = DraftReplyBodySchema.safeParse(raw);
+  if (!parsed.success) {
+    return Response.json({ error: 'Invalid request body' }, { status: 400 });
+  }
+  const body = parsed.data;
+  const emailId = 'emailId' in body ? body.emailId : undefined;
+  const pendingItems = 'pendingItems' in body ? body.pendingItems : undefined;
+
   // Case 1: missing info request for rate request
   if (emailId) {
     const parsedCargo = session.parsedCargos.find(r => r.emailId === emailId);
@@ -60,5 +69,6 @@ Write a follow-up email to resolve the pending items.`;
     return NextResponse.json({ draft });
   }
   
-  return NextResponse.json({ error: 'Missing emailId or pendingItems' }, { status: 400 });
+  // Unreachable: zod union guarantees emailId or pendingItems is present
+  return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
 }

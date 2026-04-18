@@ -1,4 +1,5 @@
 import { google, gmail_v1 } from 'googleapis';
+import pLimit from 'p-limit';
 
 import type { Email } from './types';
 
@@ -47,19 +48,22 @@ export async function fetchGmailEmails(accessToken: string, count: number = 50):
   const messages = listRes.data.messages || [];
   if (messages.length === 0) return [];
 
-  const emailPromises = messages.map(async (msg) => {
-    try {
-      const res = await gmail.users.messages.get({
-        userId: 'me',
-        id: msg.id!,
-        format: 'full',
-      });
+  const limit = pLimit(10);
+  const emailPromises = messages.map((msg) =>
+    limit(async () => {
+      try {
+        const res = await gmail.users.messages.get({
+          userId: 'me',
+          id: msg.id!,
+          format: 'full',
+        });
 
-      return parseGmailMessage(res.data);
-    } catch {
-      return null;
-    }
-  });
+        return parseGmailMessage(res.data);
+      } catch {
+        return null;
+      }
+    })
+  );
 
   const results = await Promise.all(emailPromises);
   return results.filter((email): email is Email => email !== null);
