@@ -48,6 +48,8 @@ const HARD_FILTERS_ALL_PASS: MatchHardFilters = {
   crane: { pass: true },
   volume: { pass: true },
   cargoVessel: { pass: true },
+  destDraft: { pass: true },
+  destCrane: { pass: true },
 };
 
 const SANCTIONS_NONE: MatchSanctions = { risk: 'NONE', blocking: false };

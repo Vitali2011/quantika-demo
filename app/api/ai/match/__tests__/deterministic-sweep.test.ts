@@ -76,6 +76,8 @@ const DEFAULT_HARD_FILTERS: MatchHardFilters = {
   crane: { pass: true },
   volume: { pass: true },
   cargoVessel: { pass: true },
+  destDraft: { pass: true },
+  destCrane: { pass: true },
 };
 
 const DEFAULT_SANCTIONS: MatchSanctions = {

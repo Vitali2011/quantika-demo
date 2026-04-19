@@ -4,6 +4,8 @@ import * as fs from 'fs';
 import { randomUUID } from 'crypto';
 import { SessionData } from './types';
 import { SESSION_TTL_MS } from './constants';
+import { runMigrations } from './migrations/runner';
+import { allMigrations } from './migrations/index';
 
 export const MAX_SESSIONS = 100;
 
@@ -33,15 +35,19 @@ export class SessionStore {
   constructor(dbPath: string = DEFAULT_DB_PATH) {
     ensureDir(dbPath);
     this.db = new Database(dbPath);
-    this.db.exec(`
-      CREATE TABLE IF NOT EXISTS sessions (
-        id         TEXT PRIMARY KEY,
-        access_token TEXT NOT NULL,
-        created_at INTEGER NOT NULL,
-        expires_at INTEGER NOT NULL,
-        data       TEXT NOT NULL
-      )
-    `);
+    if (process.env['USE_MIGRATION_RUNNER'] !== 'false') {
+      runMigrations(this.db, allMigrations);
+    } else {
+      this.db.exec(`
+        CREATE TABLE IF NOT EXISTS sessions (
+          id         TEXT PRIMARY KEY,
+          access_token TEXT NOT NULL,
+          created_at INTEGER NOT NULL,
+          expires_at INTEGER NOT NULL,
+          data       TEXT NOT NULL
+        )
+      `);
+    }
   }
 
   createSession(accessToken: string): string {

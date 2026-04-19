@@ -515,3 +515,135 @@ describe('Geographic proximity scoring — piecewise tiers', () => {
     expect(c.max).toBe(20);
   });
 });
+
+// ── Spec-05: Confidence weighting ─────────────────────────────────────────
+
+describe('Confidence weighting', () => {
+  const sanctions = { risk: 'NONE', blocking: false } as MatchSanctions;
+
+  it('all-confirmed inputs: confidenceAdjustedScore equals basePhysical and all multipliers are 1.0', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo(),   // all confidence: 'confirmed' by default
+      vessel: mkVessel(), // all confidence: 'confirmed' by default
+      readiness: mkReadiness('ideal'),
+      sanctions,
+    });
+    expect(b.confidenceAdjustedScore).toBe(b.basePhysical);
+    b.components.forEach(c => {
+      expect(c.confidenceMultiplier).toBe(1.0);
+    });
+  });
+
+  it('interpreted origin port: geographic component gets ×0.7 multiplier', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({ originPort: { value: 'Karasu', confidence: 'interpreted' } }),
+      vessel: mkVessel(),
+      readiness: mkReadinessWithDist(200), // raw 20 pts → 20 * 0.7 = 14
+      sanctions,
+    });
+    const geo = b.components.find(c => c.label === 'Geographic proximity')!;
+    expect(geo.confidenceMultiplier).toBe(0.7);
+    expect(geo.points).toBeCloseTo(14);
+  });
+
+  it('all-uncertain driving fields: confidenceAdjustedScore < basePhysical', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({
+        originPort:       { value: 'Karasu',      confidence: 'uncertain' },
+        cargoDescription: { value: 'steel coils', confidence: 'uncertain' },
+        weightMt:         { value: 4800,          confidence: 'uncertain' },
+        preferredDates:   { value: '2025-09-10',  confidence: 'uncertain' },
+      }),
+      vessel: mkVessel({
+        openPosition: { value: 'Karasu',     confidence: 'uncertain' },
+        openDate:     { value: '2025-09-05', confidence: 'uncertain' },
+        dwtSummer:    { value: 5200,         confidence: 'uncertain' },
+      }),
+      readiness: mkReadiness('ideal'),
+      sanctions,
+    });
+    expect(b.confidenceAdjustedScore).toBeLessThan(b.basePhysical);
+  });
+
+  it('null ConfidenceField wrappers default to multiplier 1.0', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({ originPort: null, weightMt: null, preferredDates: null }),
+      vessel: mkVessel({ openPosition: null, dwtSummer: null, openDate: null }),
+      readiness: mkReadiness('ideal'),
+      sanctions,
+    });
+    b.components.forEach(c => {
+      expect(c.confidenceMultiplier).toBe(1.0);
+    });
+  });
+
+  it('finalScore uses confidenceAdjustedScore (not basePhysical) as base', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({ originPort: { value: 'Karasu', confidence: 'uncertain' } }),
+      vessel: mkVessel({ openPosition: { value: 'Karasu', confidence: 'uncertain' } }),
+      readiness: mkReadinessWithDist(200),
+      sanctions,
+    });
+    const expected = Math.max(0, Math.min(100, b.confidenceAdjustedScore! + b.readinessAdjustment + b.sanctionsAdjustment));
+    expect(b.finalScore).toBe(expected);
+  });
+});
+
+// ── Spec-04: Range-aware DWT scoring ──────────────────────────────────────
+
+function dwtComponent(b: ReturnType<typeof computeScoreBreakdown>) {
+  const c = b.components.find(c => c.label === 'DWT class fit');
+  if (!c) throw new Error('DWT class fit component missing');
+  return c;
+}
+
+describe('Range-aware DWT scoring', () => {
+  const sanctions = { risk: 'NONE', blocking: false } as MatchSanctions;
+  const readiness = mkReadiness('ideal');
+
+  // Range-DWT-1: range fits within DWT → well-matched (max/DWT >= 0.5)
+  it('range fits DWT: max bound within DWT, min ≥ 50% → 10 pts well-matched', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      // vessel DWT = 5200; range 2800–4800 → fitRatio=4800/5200≈0.92, utilRatio=2800/5200≈0.54
+      cargo: mkCargo({ weightMtMin: 2800, weightMtMax: 4800 }),
+      vessel: mkVessel({ dwtSummer: { value: 5200, confidence: 'confirmed' } }),
+      readiness, sanctions,
+    });
+    const c = dwtComponent(b);
+    expect(c.points).toBe(10);
+    expect(c.reason).toMatch(/well-matched/);
+  });
+
+  // Range-DWT-2: max bound exceeds DWT → 2 pts exceeds
+  it('range exceeds DWT: max bound > DWT → 2 pts', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      // vessel DWT = 5200; range 5000–6000 → fitRatio=6000/5200≈1.15 > 1.0 → exceeds
+      cargo: mkCargo({ weightMtMin: 5000, weightMtMax: 6000 }),
+      vessel: mkVessel({ dwtSummer: { value: 5200, confidence: 'confirmed' } }),
+      readiness, sanctions,
+    });
+    const c = dwtComponent(b);
+    expect(c.points).toBe(2);
+    expect(c.reason).toMatch(/exceed/i);
+  });
+
+  // Range-DWT-3: single number fallback (no range) — backward-compat
+  it('single number weight falls back to plain ratio check', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      // weightMt=4800, DWT=5200 → ratio≈0.92, min/max both null → well-matched
+      cargo: mkCargo({ weightMt: { value: 4800, confidence: 'confirmed' }, weightMtMin: null, weightMtMax: null }),
+      vessel: mkVessel({ dwtSummer: { value: 5200, confidence: 'confirmed' } }),
+      readiness, sanctions,
+    });
+    const c = dwtComponent(b);
+    expect(c.points).toBe(10);
+  });
+});

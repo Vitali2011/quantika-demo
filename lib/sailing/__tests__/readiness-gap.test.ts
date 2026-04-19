@@ -1,4 +1,4 @@
-import { calculateReadinessGap, parseSpeedKnots, classifyVesselByDwt, detectSpot } from '../readiness-gap';
+import { calculateReadinessGap, parseSpeedKnots, classifyVesselByDwt, detectSpot, SPOT_IDEAL_MAX_GAP_DAYS } from '../readiness-gap';
 
 const TODAY = new Date('2025-09-05T00:00:00Z');
 
@@ -126,6 +126,42 @@ describe('calculateReadinessGap — Mustafa case', () => {
   });
 });
 
+describe('calculateReadinessGap — expired laycan', () => {
+  // TODAY is 2025-09-05; laycan "15-25 Jan" parsed with refYear=2025 → already expired.
+  it('expired laycan → verdict late, explanation contains "expired"', () => {
+    const r = calculateReadinessGap(
+      { openDate: '5 Sep', openPosition: 'Karasu', speedLaden: null, dwtSummer: 5200 },
+      { laycan: '15-25 Jan', originPort: 'Mykolaiv' },
+      { refYear: 2025, today: TODAY },
+    );
+    expect(r.verdict).toBe('late');
+    expect(r.explanation).toMatch(/expired/i);
+    expect(r.gapDays).not.toBeNull();
+    expect(r.gapDays!).toBeLessThan(0);
+  });
+
+  it('expired laycan → gapDays is negative (days-after-end)', () => {
+    // laycan.end = 2025-01-25, today = 2025-09-05 → gap ≈ -222 days
+    const r = calculateReadinessGap(
+      { openDate: '5 Sep', openPosition: 'Karasu', speedLaden: null, dwtSummer: 5200 },
+      { laycan: '15-25 Jan', originPort: 'Mykolaiv' },
+      { refYear: 2025, today: TODAY },
+    );
+    expect(r.gapDays!).toBeLessThan(-100);
+  });
+
+  it('future laycan → existing verdict unchanged (regression guard)', () => {
+    // This is the "Mustafa case" baseline — must stay 'idle'
+    const r = calculateReadinessGap(
+      { openDate: '5 Sep', openPosition: 'Karasu', speedLaden: null, dwtSummer: 5200 },
+      { laycan: '15-25 Sep', originPort: 'Mykolaiv' },
+      { refYear: 2025, today: TODAY },
+    );
+    expect(r.verdict).toBe('idle');
+    expect(r.explanation).not.toMatch(/expired/i);
+  });
+});
+
 describe('detectSpot', () => {
   it('detects "spot"', () => expect(detectSpot('spot')).toBe(true));
   it('detects "SPOT" (case-insensitive)', () => expect(detectSpot('Open: Karasu, SPOT')).toBe(true));
@@ -141,16 +177,16 @@ const TODAY_SPOT = new Date('2026-04-17T00:00:00Z');
 const REFYEAR_SPOT = 2026;
 
 describe('calculateReadinessGap — spot vessel fix', () => {
-  it('spot + laycan 100d in future → verdict ideal (not idle)', () => {
-    // Gap ~100 days — a non-spot vessel would be 'idle', but spot is 'ideal'.
+  it('spot + laycan 100d in future → verdict idle (upper threshold: >30d → idle)', () => {
+    // Gap ~107 days — exceeds SPOT_IDEAL_MAX_GAP_DAYS (30), so even spot vessel gets 'idle'.
     const r = calculateReadinessGap(
       { openDate: 'spot', openPosition: 'Karasu', speedLaden: null, dwtSummer: 5200 },
       { laycan: '1-20 Aug', originPort: 'Mykolaiv' },
       { refYear: REFYEAR_SPOT, today: TODAY_SPOT },
     );
     // gapDays should be large positive (laycan is ~107d away, sailing ~1d) → huge positive
-    expect(r.gapDays).toBeGreaterThan(5);         // confirms it would have been 'idle' before fix
-    expect(r.verdict).toBe('ideal');               // fix: spot overrides idle → ideal
+    expect(r.gapDays).toBeGreaterThan(30);        // confirms upper threshold applies
+    expect(r.verdict).toBe('idle');                // >30d: spot vessel won't hold unpaid that long
     expect(r.isSpot).toBe(true);
     expect(r.explanation).toMatch(/spot|immediately/i);
   });
@@ -188,5 +224,88 @@ describe('calculateReadinessGap — spot vessel fix', () => {
     );
     expect(r.verdict).toBe('ideal');   // gapDays ~9 → would be idle for non-spot, ideal for spot
     expect(r.isSpot).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Spec-03: spot vessel upper-threshold boundary tests (SPOT_IDEAL_MAX_GAP_DAYS = 30)
+// Bug: gapDays=121 → 'ideal' (incorrect). Fix: gapDays > 30 → 'idle'.
+// Reference: .specs/spec-03-fix-bug-121d-gap-ideal-spot-readiness-upper-threshold.md
+// ---------------------------------------------------------------------------
+
+/** Build a spot vessel result with a synthetic gapDays by choosing an open port
+ *  at 0 NM distance (same port) so sailingDays=0 and gapDays = laycan_start - today. */
+function spotResultWithGap(gapDays: number, today: Date, refYear: number) {
+  // Use Karasu→Karasu (0 NM) so arrival = today and gapDays = laycan_start - today
+  const laycanStart = new Date(today.getTime() + gapDays * 86_400_000);
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const mon = MONTHS[laycanStart.getUTCMonth()];
+  const dd = String(laycanStart.getUTCDate()).padStart(2, '0');
+  const laycan = `${dd} ${mon}-${String(laycanStart.getUTCDate() + 1).padStart(2, '0')} ${mon}`;
+  return calculateReadinessGap(
+    { openDate: 'spot', openPosition: 'Karasu', speedLaden: null, dwtSummer: 5200 },
+    { laycan: laycan, originPort: 'Karasu' },
+    { refYear, today },
+  );
+}
+
+const TODAY_THRESH = new Date('2026-04-17T00:00:00Z');
+const REFYEAR_THRESH = 2026;
+
+describe('calculateReadinessGap — spot upper-threshold (spec-03)', () => {
+  it('SPOT_IDEAL_MAX_GAP_DAYS constant equals 30', () => {
+    expect(SPOT_IDEAL_MAX_GAP_DAYS).toBe(30);
+  });
+
+  it('spot vessel with gap=121d → verdict idle (the bug scenario)', () => {
+    const r = spotResultWithGap(121, TODAY_THRESH, REFYEAR_THRESH);
+    expect(r.isSpot).toBe(true);
+    expect(r.gapDays).toBeGreaterThan(30);
+    expect(r.verdict).toBe('idle');
+    expect(r.explanation).toMatch(/spot|immediately/i);
+  });
+
+  it('spot vessel with gap exactly 30d → verdict ideal (boundary: still ideal)', () => {
+    const r = spotResultWithGap(30, TODAY_THRESH, REFYEAR_THRESH);
+    expect(r.isSpot).toBe(true);
+    expect(r.gapDays).toBeCloseTo(30, 0);
+    expect(r.verdict).toBe('ideal');
+  });
+
+  it('spot vessel with gap=31d → verdict idle (boundary: capped)', () => {
+    const r = spotResultWithGap(31, TODAY_THRESH, REFYEAR_THRESH);
+    expect(r.isSpot).toBe(true);
+    expect(r.gapDays).toBeCloseTo(31, 0);
+    expect(r.verdict).toBe('idle');
+  });
+
+  it('spot vessel with gap=5d → verdict ideal (regression: mid-range unchanged)', () => {
+    const r = spotResultWithGap(5, TODAY_THRESH, REFYEAR_THRESH);
+    expect(r.isSpot).toBe(true);
+    expect(r.gapDays).toBeCloseTo(5, 0);
+    expect(r.verdict).toBe('ideal');
+  });
+
+  it('spot vessel with gap in [-1, 0.5) → verdict tight (regression)', () => {
+    const r = spotResultWithGap(0.2, TODAY_THRESH, REFYEAR_THRESH);
+    expect(r.isSpot).toBe(true);
+    expect(r.verdict).toBe('tight');
+  });
+
+  it('spot vessel with gap < -1 → verdict late (regression)', () => {
+    const r = spotResultWithGap(-2, TODAY_THRESH, REFYEAR_THRESH);
+    expect(r.isSpot).toBe(true);
+    expect(r.verdict).toBe('late');
+  });
+
+  it('non-spot vessel classifyVerdict() logic unchanged (regression)', () => {
+    const r = calculateReadinessGap(
+      { openDate: '5 Sep', openPosition: 'Karasu', speedLaden: null, dwtSummer: 5200 },
+      { laycan: '15-25 Sep', originPort: 'Mykolaiv' },
+      { refYear: 2025, today: new Date('2025-09-05T00:00:00Z') },
+    );
+    expect(r.isSpot).toBeFalsy();
+    expect(r.gapDays).toBeGreaterThan(5);
+    expect(r.verdict).toBe('idle');
   });
 });
