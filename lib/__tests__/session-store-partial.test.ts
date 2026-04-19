@@ -7,6 +7,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { SessionStore } from '../session-store';
+import type { ParsedCargo } from '../types';
 
 let tmpDir: string;
 let dbPath: string;
@@ -32,7 +33,7 @@ describe('updateSessionField', () => {
     const before = store.getSession(id)!;
     expect(before.parsedCargos).toEqual([]);
 
-    const fakeCargo = [{ emailId: 'e1', itemIndex: 0 }] as unknown as Parameters<typeof store.updateSessionField>[2];
+    const fakeCargo = [{ emailId: 'e1', itemIndex: 0 }] as unknown as ParsedCargo[];
     store.updateSessionField(id, 'parsedCargos', fakeCargo);
 
     const after = store.getSession(id)!;

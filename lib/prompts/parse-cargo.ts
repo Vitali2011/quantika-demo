@@ -44,7 +44,7 @@ Extract per inquiry item:
 - destination_port: full port name
 - destination_country
 - cargo_description: full description of goods
-- weight_mt: number (metric tons). RANGE RULE: If cargo weight is given as a range (e.g. "4000/4800 MT", "5000-5500 MT", "8000–8500 mts MOLOO", "abt 10000 mt"), return the MIDDLE of the range as weight_mt (confidence='interpreted'). Also populate weight_mt_min and weight_mt_max. If a single definite number is given, use confidence='confirmed'. Quote the original range text verbatim in source_text.
+- weight_mt: number (metric tons). RANGE RULE: If cargo weight is given as a range (e.g. "4000/4800 MT", "5000-5500 MT", "8000–8500 mts MOLOO", "abt 10000 mt"), return the UPPER BOUND (maximum) as weight_mt (confidence='interpreted'). Also populate weight_mt_min (lower bound) and weight_mt_max (upper bound). Do NOT return an average or middle value — always use the max bound for weight_mt. If a single definite number is given, weight_mt = weight_mt_min = weight_mt_max = that number, use confidence='confirmed'. Quote the original range text verbatim in source_text.
 - weight_mt_min: lower bound of weight range if given as a range, else null
 - weight_mt_max: upper bound of weight range if given as a range, else null
 - volume_cbm: number (cubic meters)

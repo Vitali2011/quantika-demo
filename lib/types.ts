@@ -1,3 +1,15 @@
+// ── Range ──
+
+export interface Range<T> {
+  min: T;
+  max: T;
+  unit?: string;
+}
+
+export function isRange<T>(v: unknown): v is Range<T> {
+  return typeof v === 'object' && v !== null && 'min' in v && 'max' in v;
+}
+
 // ── Confidence ──
 
 export type ConfidenceLevel = 'confirmed' | 'interpreted' | 'uncertain';
@@ -82,7 +94,7 @@ export interface ParsedCargo {
   dimensions: string | null;
   cargoType: CargoType;
   containerType: string | null;
-  quantity: number | null;
+  quantity: Range<number> | number | null;
   incoterms: string | null;
   preferredDates: ConfidenceField<string> | null;
   laycan: string | null;
@@ -239,6 +251,8 @@ export interface MatchReadiness {
   gapDays: number | null;
   verdict: ReadinessVerdict;
   explanation: string;
+  /** True when the laycan window has already passed (end < today). */
+  laycanExpired?: boolean;
 }
 
 /** Result of a single hard-filter check (see lib/sailing/match-filters.ts). */
@@ -252,6 +266,8 @@ export interface MatchHardFilters {
   crane: HardFilterCheck;
   volume: HardFilterCheck;
   cargoVessel: HardFilterCheck;
+  destDraft: HardFilterCheck;
+  destCrane: HardFilterCheck;
 }
 
 /** Sanctions screening (see lib/validation/sanctions.ts). */
@@ -300,6 +316,8 @@ export interface ScoreBreakdownComponent {
   points: number;
   max: number;
   reason?: string;
+  /** Confidence multiplier applied to this component (1.0 = no degradation). */
+  confidenceMultiplier?: number;
 }
 
 export interface ScoreBreakdown {
@@ -308,6 +326,8 @@ export interface ScoreBreakdown {
   readinessAdjustment: number;
   sanctionsAdjustment: number;
   finalScore: number;
+  /** Sum of confidence-weighted component points (may be lower than basePhysical). */
+  confidenceAdjustedScore?: number;
 }
 
 // ── Negotiation Recap ──

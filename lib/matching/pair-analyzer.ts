@@ -8,7 +8,7 @@ import type {
   ParsedCargo,
   ParsedVessel,
 } from '@/lib/types';
-import { cfValue } from '@/lib/types';
+import { cfValue, isRange } from '@/lib/types';
 import { calculateReadinessGap, detectSpot } from '@/lib/sailing/readiness-gap';
 import { applyReadinessScoring, computeScoreBreakdown, deriveMatchLevel } from '@/lib/sailing/match-scoring';
 import { runHardFilters } from '@/lib/sailing/match-filters';
@@ -69,7 +69,10 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
   const hf = runHardFilters({
     cargoType: c.cargoType,
     originPort: cfValue(c.originPort),
-    weightMt: cfValue(c.weightMt),
+    destinationPort: cfValue(c.destinationPort),
+    weightMt: (c.weightMtMin !== null && c.weightMtMax !== null && c.weightMtMin !== c.weightMtMax)
+      ? { min: c.weightMtMin, max: c.weightMtMax }
+      : cfValue(c.weightMt),
     cargoDescription: cfValue(c.cargoDescription),
     stowageFactor: c.stowageFactor,
     vesselType: v.vesselType,
@@ -83,6 +86,8 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
     crane: hf.checks.crane,
     volume: hf.checks.volume,
     cargoVessel: hf.checks.cargoVessel,
+    destDraft: hf.checks.destDraft,
+    destCrane: hf.checks.destCrane,
   };
 
   const parsedLaycan = parseLaycan(c.laycan, refYear);
@@ -207,6 +212,9 @@ export async function analyzePairs(
     destination_port: cfValue(c.destinationPort),
     cargo_description: cfValue(c.cargoDescription),
     weight_mt: cfValue(c.weightMt),
+    weight_mt_min: c.weightMtMin,
+    weight_mt_max: c.weightMtMax,
+    weight_mt_is_range: isRange(c.quantity) || (c.weightMtMin !== null && c.weightMtMax !== null && c.weightMtMin !== c.weightMtMax),
     cargo_type:
       typeof c.cargoType === 'object' && c.cargoType !== null && 'value' in c.cargoType
         ? (c.cargoType as unknown as { value: string }).value

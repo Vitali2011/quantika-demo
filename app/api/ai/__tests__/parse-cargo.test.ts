@@ -319,6 +319,92 @@ describe('multiple items per email', () => {
   });
 });
 
+// ── Spec-04: Range<number> parsing tests ──────────────────────────────────
+
+function makeRangeSession(emailId: string, body: string) {
+  return makeSession({
+    emails: [{
+      id: emailId, threadId: emailId, from: 'x@test.com', fromName: null,
+      fromEmail: 'x@test.com', to: 'me@me.com', subject: 'Range test',
+      date: '2026-04-01', body, snippet: '', labelIds: [],
+    }],
+    classifications: [{
+      emailId, category: 'CARGO_INQUIRY', isUnanswered: false, urgency: 'low',
+      daysWithoutReply: null, confidence: 0.9, originalSender: null, originalSenderCompany: null,
+    }],
+  });
+}
+
+// Test Range-1: range input produces Range<number> in quantity
+describe('Range quantity — range input', () => {
+  it('constructs Range<number> for quantity when weight_mt_min != weight_mt_max', async () => {
+    mockGetSession.mockReturnValue(makeRangeSession('r1', '5,000/5,500 mts grain'));
+    mockCallAiJson.mockResolvedValue({
+      items: [{
+        cargo_description: { value: 'grain', confidence: 'confirmed', source_text: 'grain' },
+        weight_mt: { value: 5500, confidence: 'interpreted', source_text: '5,000/5,500 mts grain' },
+        weight_mt_min: 5000,
+        weight_mt_max: 5500,
+        cargo_type: 'BULK',
+        missing_info: [],
+      }],
+    });
+    const req = makeRequest('r1');
+    await POST(req);
+    const [, update] = mockUpdateSession.mock.calls[0];
+    const cargo = ((update as { parsedCargos: unknown[] }).parsedCargos[0]) as Record<string, unknown>;
+    expect(cargo.quantity).toEqual({ min: 5000, max: 5500 });
+    expect(cargo.weightMtMin).toBe(5000);
+    expect(cargo.weightMtMax).toBe(5500);
+  });
+});
+
+// Test Range-2: single value → quantity stays plain number (backward-compat)
+describe('Range quantity — single value', () => {
+  it('keeps quantity as plain number when weight_mt_min === weight_mt_max', async () => {
+    mockGetSession.mockReturnValue(makeRangeSession('r2', '5000 mts grain'));
+    mockCallAiJson.mockResolvedValue({
+      items: [{
+        cargo_description: { value: 'grain', confidence: 'confirmed', source_text: 'grain' },
+        weight_mt: { value: 5000, confidence: 'confirmed', source_text: '5000 mts' },
+        weight_mt_min: 5000,
+        weight_mt_max: 5000,
+        quantity: null,
+        cargo_type: 'BULK',
+        missing_info: [],
+      }],
+    });
+    const req = makeRequest('r2');
+    await POST(req);
+    const [, update] = mockUpdateSession.mock.calls[0];
+    const cargo = ((update as { parsedCargos: unknown[] }).parsedCargos[0]) as Record<string, unknown>;
+    expect(typeof cargo.quantity === 'number' || cargo.quantity === null).toBe(true);
+  });
+});
+
+// Test Range-3: null weight → quantity null (backward-compat)
+describe('Range quantity — null weight', () => {
+  it('keeps quantity null when weight fields are absent', async () => {
+    mockGetSession.mockReturnValue(makeRangeSession('r3', 'no weight mentioned'));
+    mockCallAiJson.mockResolvedValue({
+      items: [{
+        cargo_description: { value: 'some goods', confidence: 'confirmed', source_text: 'some goods' },
+        weight_mt: null,
+        weight_mt_min: null,
+        weight_mt_max: null,
+        quantity: null,
+        cargo_type: 'OTHER',
+        missing_info: ['weight'],
+      }],
+    });
+    const req = makeRequest('r3');
+    await POST(req);
+    const [, update] = mockUpdateSession.mock.calls[0];
+    const cargo = ((update as { parsedCargos: unknown[] }).parsedCargos[0]) as Record<string, unknown>;
+    expect(cargo.quantity).toBeNull();
+  });
+});
+
 // Test 8: Default field values
 describe('default field values', () => {
   it('defaults cargoType to OTHER and missingInfo to [] when absent', async () => {
