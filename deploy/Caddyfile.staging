@@ -1,0 +1,5 @@
+staging.quantika.org {
+    encode gzip
+    header X-Robots-Tag noindex
+    reverse_proxy localhost:3001
+}
