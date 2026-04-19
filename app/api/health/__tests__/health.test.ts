@@ -45,4 +45,15 @@ describe('GET /api/health', () => {
     expect(response.status).toBe(200);
     expect(response.status).not.toBe(401);
   });
+
+  it('invalid-cookie: handler with invalid session cookie returns 200, not 401', async () => {
+    // Simulates external uptime monitor sending a request with a garbage/expired
+    // session cookie — health endpoint must remain public and return 200.
+    // GET() accepts no arguments and performs no auth checks, so the cookie is irrelevant.
+    const response = await GET();
+    expect(response.status).toBe(200);
+    expect(response.status).not.toBe(401);
+    const body = await response.json();
+    expect(body.status).toBe('ok');
+  });
 });

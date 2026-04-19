@@ -5,6 +5,12 @@ export const dynamic = 'force-dynamic';
 
 const VERSION = '0.1.0';
 
+/**
+ * @public
+ * Intentionally public endpoint — no auth, no CSRF, no session required.
+ * Used by external uptime monitors (UptimeRobot, BetterStack) without cookies.
+ * DO NOT add requireSession(), getSession(), or cookies.get('session_id') here.
+ */
 export async function GET(): Promise<NextResponse> {
   try {
     const sessions = getSessionCount();
