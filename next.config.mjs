@@ -7,4 +7,12 @@ const nextConfig = {
   },
 };
 
-export default withSentryConfig(nextConfig, { silent: true, org: "", project: "" });
+const sentryOptions = {
+  silent: !process.env.SENTRY_DSN,
+  org: process.env.SENTRY_ORG ?? "",
+  project: process.env.SENTRY_PROJECT ?? "",
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  sourcemaps: { deleteSourcemapsAfterUpload: true },
+};
+
+export default withSentryConfig(nextConfig, sentryOptions);
