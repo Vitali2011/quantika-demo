@@ -140,7 +140,7 @@ describe('analyzePairs — Map-based lookup', () => {
     // Either way, no duplicates between matches and blockedMatches
     const matchKeys = new Set(result.matches.map(m => `${m.cargoEmailId}-${m.vesselEmailId}`));
     const blockedKeys = new Set(result.blockedMatches.map(b => `${b.cargoEmailId}-${b.vesselEmailId}`));
-    const overlap = [...matchKeys].filter(k => blockedKeys.has(k));
+    const overlap = Array.from(matchKeys).filter(k => blockedKeys.has(k));
     expect(overlap).toHaveLength(0);
   });
 });

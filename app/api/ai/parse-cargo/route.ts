@@ -4,7 +4,7 @@ import { requireSession, updateSession } from '@/lib/session';
 import { callAiJson } from '@/lib/openai';
 import { CARGO_INQUIRY_PARSER_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_LIGHT } from '@/lib/constants';
-import { CargoType, Email, ParsedCargo } from '@/lib/types';
+import { CargoType, Email, ParsedCargo, Range } from '@/lib/types';
 import { toConfidence, extractNum } from '@/lib/parsing-utils';
 import { calibrateAll } from '@/lib/validation/confidence-calibration';
 import { applyCargoRateFallback, applyCargoTypeFallback } from '@/lib/parsing/cargo-rate-fallback';
@@ -94,7 +94,14 @@ function parseCargoAIResponse(raw: string, emailId: string): ParsedCargo[] {
         return (String(ct) || 'OTHER') as CargoType;
       })(),
       containerType: extractStr(item.container_type),
-      quantity: extractNum(item.quantity),
+      quantity: (() => {
+        const wMin = extractNum(item.weight_mt_min);
+        const wMax = extractNum(item.weight_mt_max);
+        if (wMin !== null && wMax !== null && wMin !== wMax) {
+          return { min: wMin, max: wMax } as Range<number>;
+        }
+        return extractNum(item.quantity);
+      })(),
       incoterms: extractStr(item.incoterms),
       preferredDates: toConfidence<string>(item.preferred_dates),
       laycan: extractStr(item.laycan),

@@ -29,6 +29,10 @@ import { isLaycanExpired } from './date-sanity';
 import { getPortDistance, normalizePortName } from './port-distances';
 import { BUNKER_DEFAULTS, VESSEL_CLASS, VesselClassName } from '../constants';
 
+/** Maximum gap (days) for a spot vessel to still qualify as 'ideal'.
+ *  Beyond this, the owner won't hold the vessel unpaid — verdict degrades to 'idle'. */
+export const SPOT_IDEAL_MAX_GAP_DAYS = 30;
+
 export type ReadinessVerdict = 'ideal' | 'tight' | 'idle' | 'late' | 'unknown';
 
 export interface ReadinessGap {
@@ -140,7 +144,9 @@ function buildExplanation(args: {
         ? `${spotPrefix}${arrStr} → cuts it fine for ${lcStr} — tight but feasible.`
         : `Vessel ${openStr} → ${arrStr} → arrives right at ${lcStr} — tight timing.`;
     case 'idle':
-      return `Vessel ${openStr} → ${arrStr} → ${gap}d idle before ${lcStr} — owner likely won't wait.`;
+      return isSpot
+        ? `${spotPrefix}${arrStr} → ${gap}d before ${lcStr} — too far out, spot vessel won't hold unpaid that long.`
+        : `Vessel ${openStr} → ${arrStr} → ${gap}d idle before ${lcStr} — owner likely won't wait.`;
     case 'late':
       return isSpot
         ? `${spotPrefix}${arrStr} → misses ${lcStr} by ${gap}d even departing today.`
@@ -234,11 +240,12 @@ export function calculateReadinessGap(
 
   // For non-spot vessels: standard verdict based on how long the owner must wait idle.
   // For spot vessels: owner departs today — the only question is physical feasibility.
+  //   gapDays > SPOT_IDEAL_MAX_GAP_DAYS → 'idle' (owner won't hold unpaid 30+ days)
   //   gapDays >= 0.5  → arrives comfortably before laycan → 'ideal'
   //   gapDays [-1, 0.5) → barely makes it → 'tight'
   //   gapDays < -1    → even today's departure misses laycan → 'late'
   const verdict: ReadinessVerdict = isSpot
-    ? (gapDays >= 0.5 ? 'ideal' : gapDays >= -1 ? 'tight' : 'late')
+    ? (gapDays > SPOT_IDEAL_MAX_GAP_DAYS ? 'idle' : gapDays >= 0.5 ? 'ideal' : gapDays >= -1 ? 'tight' : 'late')
     : classifyVerdict(gapDays);
 
   return {
