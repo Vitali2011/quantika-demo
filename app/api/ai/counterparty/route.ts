@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
+import { withSentryApiHandler } from '@/lib/sentry-api';
 import { requireSession, updateSession } from '@/lib/session';
 import { groupByCounterparty } from '@/lib/counterparty';
 
 export const maxDuration = 10;
 
-export async function POST(request: NextRequest) {
+async function _POST(request: NextRequest) {
   if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   const result = requireSession(request);
   if (result instanceof NextResponse) return result;
@@ -16,3 +17,5 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({ count: counterparties.length });
 }
+
+export const POST = withSentryApiHandler(_POST, { method: 'POST', path: '/api/ai/counterparty' });

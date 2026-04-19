@@ -3,12 +3,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { EMAIL_FETCH_COUNT, MAX_EMAIL_BODY_CHARS } from '@/lib/constants';
 import { fetchGmailEmails } from '@/lib/google';
 import { logger } from '@/lib/logger';
+import { withSentryApiHandler } from '@/lib/sentry-api';
 import { getSession, updateSession } from '@/lib/session';
 import { truncateText } from '@/lib/utils';
 
 export const maxDuration = 30;
 
-export async function POST(request: NextRequest) {
+async function _POST(request: NextRequest) {
   const sessionId = request.cookies.get('session_id')?.value;
   if (!sessionId) {
     return NextResponse.json({ error: 'No session' }, { status: 401 });
@@ -46,3 +47,5 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to fetch emails' }, { status: 500 });
   }
 }
+
+export const POST = withSentryApiHandler(_POST, { method: 'POST', path: '/api/emails/fetch' });

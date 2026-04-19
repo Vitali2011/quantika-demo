@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { exchangeCodeForToken, getAuthUrl } from '@/lib/google';
+import { withSentryApiHandler } from '@/lib/sentry-api';
 import { logger } from '@/lib/logger';
 import { createSession } from '@/lib/session';
 import { generateCsrfToken } from '@/lib/csrf';
 
-export async function GET(request: NextRequest) {
+async function _GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const code = searchParams.get('code');
   const error = searchParams.get('error');
@@ -50,3 +51,5 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL('/?error=auth_failed', baseUrl));
   }
 }
+
+export const GET = withSentryApiHandler(_GET, { method: 'GET', path: '/api/auth/google' });
