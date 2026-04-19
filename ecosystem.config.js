@@ -14,5 +14,19 @@ module.exports = {
         PORT: 3000,
       },
     },
+    {
+      name: 'quantika-demo-staging',
+      script: 'node_modules/.bin/next',
+      args: 'start -p 3001',
+      cwd: process.env.APP_DIR ?? __dirname,
+      instances: 1,
+      autorestart: true,
+      watch: false,
+      max_memory_restart: '512M',
+      env: {
+        NODE_ENV: 'staging',
+        PORT: 3001,
+      },
+    },
   ],
 };
