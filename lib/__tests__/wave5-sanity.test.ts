@@ -71,12 +71,12 @@ function mkReadiness(verdict: MatchReadiness['verdict'] = 'ideal'): MatchReadine
   return {
     openDate: '2026-04-18', laycanStart: '2026-05-10', laycanEnd: '2026-05-15',
     distanceNm: 400, speedKn: 12, sailingDays: 1.4, arrivalDate: '2026-04-19',
-    gapDays: 21, verdict, isSpot: false, explanation: '',
+    gapDays: 21, verdict, explanation: '',
   };
 }
 
 function mkSanctions(): MatchSanctions {
-  return { vesselFlag: 'clear', vesselName: 'clear', originCountry: 'clear', destinationCountry: 'clear', cargoType: 'clear', overall: 'clear' };
+  return { risk: 'NONE', blocking: false };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -95,6 +95,9 @@ describe('Fix 1 — destination port compatibility', () => {
       weightMt: 4800,
       cargoDescription: 'steel',
       vesselType: 'general cargo',
+      cargoType: 'BREAK_BULK' as const,
+      stowageFactor: null,
+      grainCapacity: null,
     });
     expect(r.checks.destDraft.pass).toBe(false);
     expect(r.checks.destDraft.reason).toMatch(/draft/i);
@@ -110,6 +113,9 @@ describe('Fix 1 — destination port compatibility', () => {
       weightMt: 4800,
       cargoDescription: 'steel',
       vesselType: 'general cargo',
+      cargoType: 'BREAK_BULK' as const,
+      stowageFactor: null,
+      grainCapacity: null,
     });
     expect(r.checks.destDraft.pass).toBe(true);
   });
@@ -123,6 +129,9 @@ describe('Fix 1 — destination port compatibility', () => {
       weightMt: 4800,
       cargoDescription: 'steel',
       vesselType: 'general cargo',
+      cargoType: 'BREAK_BULK' as const,
+      stowageFactor: null,
+      grainCapacity: null,
     });
     // origin may or may not pass depending on Ravenna — destDraft must fail regardless
     expect(r.checks.destDraft.pass).toBe(false);
@@ -138,6 +147,9 @@ describe('Fix 1 — destination port compatibility', () => {
       weightMt: 4800,
       cargoDescription: 'steel',
       vesselType: 'general cargo',
+      cargoType: 'BREAK_BULK' as const,
+      stowageFactor: null,
+      grainCapacity: null,
     });
     expect(r.checks.destCrane.pass).toBe(false);
     expect(r.checks.destCrane.reason).toMatch(/crane|gearless/i);
@@ -152,6 +164,9 @@ describe('Fix 1 — destination port compatibility', () => {
       weightMt: 4800,
       cargoDescription: 'steel',
       vesselType: 'general cargo',
+      cargoType: 'BREAK_BULK' as const,
+      stowageFactor: null,
+      grainCapacity: null,
     });
     expect(r.checks.destDraft.pass).toBe(true);
     expect(r.checks.destCrane.pass).toBe(true);
@@ -325,7 +340,7 @@ describe('Fix 5 — confidence weighting in scoring', () => {
     });
     // All components use ×1.0 → confidenceAdjustedScore == basePhysical
     expect(r.confidenceAdjustedScore).toBe(r.basePhysical);
-    expect(r.components.every(c => c.multiplier === 1.0 || c.multiplier === undefined)).toBe(true);
+    expect(r.components.every(c => c.confidenceMultiplier === 1.0 || c.confidenceMultiplier === undefined)).toBe(true);
   });
 
   it('interpreted origin port: geographic component gets ×0.7 penalty', () => {
@@ -343,9 +358,9 @@ describe('Fix 5 — confidence weighting in scoring', () => {
     });
     // confidenceAdjustedScore must be lower when origin is 'interpreted'
     // interpreted origin → geographic component is penalised → lower score
-    expect(withPenalty.confidenceAdjustedScore).toBeLessThan(allConfirmed.confidenceAdjustedScore);
+    expect(withPenalty.confidenceAdjustedScore).toBeLessThan(allConfirmed.confidenceAdjustedScore!);
     // The penalty should be ~30% of the geographic component value
-    const diff = allConfirmed.confidenceAdjustedScore - withPenalty.confidenceAdjustedScore;
+    const diff = allConfirmed.confidenceAdjustedScore! - withPenalty.confidenceAdjustedScore!;
     expect(diff).toBeGreaterThan(0);
   });
 
@@ -363,7 +378,7 @@ describe('Fix 5 — confidence weighting in scoring', () => {
       cargo: baseCargo(), vessel, match: mkMatch(),
       readiness: mkReadiness('ideal'), sanctions: mkSanctions(),
     });
-    expect(withPenalty.confidenceAdjustedScore).toBeLessThan(baseline.confidenceAdjustedScore);
+    expect(withPenalty.confidenceAdjustedScore).toBeLessThan(baseline.confidenceAdjustedScore!);
   });
 
   it('finalScore is clamped to [0, 100]', () => {
