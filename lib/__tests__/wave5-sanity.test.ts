@@ -376,4 +376,22 @@ describe('Fix 5 — confidence weighting in scoring', () => {
     expect(r.finalScore).toBeGreaterThanOrEqual(0);
     expect(r.finalScore).toBeLessThanOrEqual(100);
   });
+
+  // ── Contract invariant: ConfidenceLevel ↔ CONFIDENCE_MULTIPLIERS ──
+  // Каждое значение enum обязано иметь multiplier. Защита от silent drift:
+  // если кто-то добавит 4-й уровень через `as ConfidenceLevel`-cast и забудет
+  // multiplier — scoring даст undefined → NaN в points → molча 0 в UI.
+  it('every ConfidenceLevel value has a valid multiplier in (0, 1]', () => {
+    const levels: Array<'confirmed' | 'interpreted' | 'uncertain'> = [
+      'confirmed',
+      'interpreted',
+      'uncertain',
+    ];
+    for (const lvl of levels) {
+      const m = CONFIDENCE_MULTIPLIERS[lvl];
+      expect(m).toBeGreaterThan(0);
+      expect(m).toBeLessThanOrEqual(1);
+    }
+    expect(Object.keys(CONFIDENCE_MULTIPLIERS).sort()).toEqual(levels.slice().sort());
+  });
 });
