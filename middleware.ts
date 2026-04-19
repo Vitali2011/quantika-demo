@@ -46,5 +46,6 @@ export function middleware(request: NextRequest): NextResponse {
 }
 
 export const config = {
+  // /api/health is intentionally excluded — public endpoint for uptime monitors.
   matcher: ['/api/ai/:path*', '/api/emails/:path*'],
 };
