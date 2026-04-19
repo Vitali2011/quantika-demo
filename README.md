@@ -107,3 +107,52 @@ docker compose up
 Инструкция по деплою на VPS (PM2 + Caddy): [docs/deploy.md](docs/deploy.md)
 
 Включает: initial deploy, updates, rollback-процедуру, мониторинг, troubleshooting.
+
+## Uptime Monitoring
+
+Health endpoint доступен по двум URL:
+
+- `https://<YOUR_DOMAIN>/api/health`
+- `https://<YOUR_DOMAIN>/api/healthcheck`
+
+**Ожидаемый ответ:** HTTP 200 OK, JSON body:
+```json
+{"status":"ok","sessions":0,"uptime":123,"version":"0.1.0"}
+```
+
+Минимальная проверка — поле `"status":"ok"`.
+
+**Рекомендуемый интервал проверки:** 60 секунд.
+
+### Ручная проверка
+
+```bash
+curl -s https://<YOUR_DOMAIN>/api/health | python3 -m json.tool
+```
+
+### UptimeRobot / BetterUptime
+
+1. Создать монитор типа **HTTP(S)**
+2. URL: `https://<YOUR_DOMAIN>/api/health`
+3. Интервал: **60 секунд**
+4. Keyword check: `"ok"` (поиск в теле ответа)
+5. HTTP status: **200**
+
+### ntfy alerting
+
+Для алертов через ntfy задай переменную окружения `NTFY_TOPIC` (см. `.env.local.example`) и настрой curl-хук в UptimeRobot / BetterUptime:
+
+```bash
+curl -d "Quantika Demo: health check FAILED — https://<YOUR_DOMAIN>/api/health" \
+  ntfy.sh/$NTFY_TOPIC
+```
+
+Или cron-скрипт для ручного мониторинга:
+
+```bash
+#!/bin/bash
+STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://<YOUR_DOMAIN>/api/health)
+if [ "$STATUS" != "200" ]; then
+  curl -d "Quantika DOWN: HTTP $STATUS" ntfy.sh/$NTFY_TOPIC
+fi
+```
