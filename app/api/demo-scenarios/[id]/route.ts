@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { loadDemoScenarios } from '@/lib/sample-data/demo-scenarios';
+import { withSentryApiHandler } from '@/lib/sentry-api';
 
 /**
  * Read-only fixture endpoint.
@@ -8,7 +9,7 @@ import { loadDemoScenarios } from '@/lib/sample-data/demo-scenarios';
  * vessel, expectedOutcome) so the UI can render a walkthrough for brokers.
  * Does not mutate session — this is demo material, not a seeding mechanism.
  */
-export async function GET(
+async function _GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -20,3 +21,5 @@ export async function GET(
   }
   return NextResponse.json(sc);
 }
+
+export const GET = withSentryApiHandler(_GET, { method: 'GET', path: '/api/demo-scenarios/[id]' });

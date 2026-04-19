@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
+import { withSentryApiHandler } from '@/lib/sentry-api';
 import { requireSession, updateSession } from '@/lib/session';
 import { callAiJson } from '@/lib/openai';
 import { CLASSIFICATION_SYSTEM_PROMPT } from '@/lib/prompts';
@@ -9,7 +10,7 @@ import { classifyEmails, AiClassification } from '@/lib/classification-service';
 
 export const maxDuration = 120;
 
-export async function POST(request: NextRequest) {
+async function _POST(request: NextRequest) {
   if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   const authResult = requireSession(request);
   if (authResult instanceof NextResponse) return authResult;
@@ -35,3 +36,5 @@ export async function POST(request: NextRequest) {
   updateSession(sessionId, { classifications, processedEmails });
   return NextResponse.json({ count: classifications.length });
 }
+
+export const POST = withSentryApiHandler(_POST, { method: 'POST', path: '/api/ai/classify' });

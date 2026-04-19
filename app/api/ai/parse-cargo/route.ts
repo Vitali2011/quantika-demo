@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
+import { withSentryApiHandler } from '@/lib/sentry-api';
 import { requireSession, updateSession } from '@/lib/session';
 import { callAiJson } from '@/lib/openai';
 import { CARGO_INQUIRY_PARSER_PROMPT } from '@/lib/prompts';
@@ -118,7 +119,7 @@ function parseCargoAIResponse(raw: string, emailId: string): ParsedCargo[] {
   return parsed;
 }
 
-export async function POST(request: NextRequest) {
+async function _POST(request: NextRequest) {
   if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   const authResult = requireSession(request);
@@ -160,3 +161,5 @@ export async function POST(request: NextRequest) {
   updateSession(sessionId, { parsedCargos: allParsed });
   return NextResponse.json({ count: allParsed.length });
 }
+
+export const POST = withSentryApiHandler(_POST, { method: 'POST', path: '/api/ai/parse-cargo' });

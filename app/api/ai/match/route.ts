@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
+import { withSentryApiHandler } from '@/lib/sentry-api';
 import { requireSession, updateSession } from '@/lib/session';
 import { callAiJson } from '@/lib/openai';
 import { MATCH_PROMPT } from '@/lib/prompts';
@@ -8,7 +9,7 @@ import { analyzePairs, AiScorer, RawMatch } from '@/lib/matching/pair-analyzer';
 
 export const maxDuration = 120;
 
-export async function POST(request: NextRequest) {
+async function _POST(request: NextRequest) {
   if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   const authResult = requireSession(request);
@@ -54,3 +55,5 @@ export async function POST(request: NextRequest) {
   updateSession(sessionId, { matches, blockedMatches });
   return NextResponse.json({ count: matches.length, blockedCount: blockedMatches.length });
 }
+
+export const POST = withSentryApiHandler(_POST, { method: 'POST', path: '/api/ai/match' });

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
+import { withSentryApiHandler } from '@/lib/sentry-api';
 import { requireSession, updateSession } from '@/lib/session';
 import { callAiText } from '@/lib/openai';
 import { VESSEL_POSITION_PARSER_PROMPT } from '@/lib/prompts';
@@ -10,7 +11,7 @@ import { lookupVesselByImo, compareVesselRecord } from '@/lib/validation/equasis
 import { buildVesselPrompt, parseVesselAIResponse } from '@/lib/parsing/parse-vessel-helpers';
 import pLimit from 'p-limit';
 
-export async function POST(request: NextRequest) {
+async function _POST(request: NextRequest) {
   if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   const result = requireSession(request);
@@ -76,3 +77,5 @@ export async function POST(request: NextRequest) {
   updateSession(sessionId, { parsedVessels: allParsed });
   return NextResponse.json({ count: allParsed.length });
 }
+
+export const POST = withSentryApiHandler(_POST, { method: 'POST', path: '/api/ai/parse-vessel' });

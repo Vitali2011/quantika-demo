@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { withSentryApiHandler } from '@/lib/sentry-api';
 import { createSession, updateSession } from '@/lib/session';
 import { generateCsrfToken, validateCsrf } from '@/lib/csrf';
 import cargoInquiries from '@/lib/sample-data/cargo-inquiries.json';
@@ -15,7 +16,7 @@ const SAMPLE_EMAILS = [
   ...clientReplies,
 ];
 
-export async function POST(request: NextRequest) {
+async function _POST(request: NextRequest) {
   if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   const sessionId = createSession('sample-data-token');
   updateSession(sessionId, { emails: SAMPLE_EMAILS, isSampleData: true });
@@ -29,3 +30,5 @@ export async function POST(request: NextRequest) {
 
   return response;
 }
+
+export const POST = withSentryApiHandler(_POST, { method: 'POST', path: '/api/sample' });

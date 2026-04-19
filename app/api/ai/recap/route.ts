@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
+import { withSentryApiHandler } from '@/lib/sentry-api';
 import { requireSession, updateSession } from '@/lib/session';
 import { callAiJson } from '@/lib/openai';
 import { NEGOTIATION_RECAP_SYSTEM_PROMPT } from '@/lib/prompts';
@@ -24,7 +25,7 @@ interface RawRecapPoint {
 
 export const maxDuration = 60;
 
-export async function POST(request: NextRequest) {
+async function _POST(request: NextRequest) {
   if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   const result = requireSession(request);
   if (result instanceof NextResponse) return result;
@@ -99,3 +100,5 @@ export async function POST(request: NextRequest) {
   updateSession(sessionId, { recaps });
   return NextResponse.json({ count: recaps.length });
 }
+
+export const POST = withSentryApiHandler(_POST, { method: 'POST', path: '/api/ai/recap' });

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
+import { withSentryApiHandler } from '@/lib/sentry-api';
 import { requireSession } from '@/lib/session';
 import { callAiText } from '@/lib/openai';
 import { DRAFT_REPLY_SYSTEM_PROMPT } from '@/lib/prompts';
@@ -18,7 +19,7 @@ function extractClientName(email: { from: string; fromName: string | null; snipp
   return match ? match[1] : 'the client';
 }
 
-export async function POST(request: NextRequest) {
+async function _POST(request: NextRequest) {
   if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   const result = requireSession(request);
   if (result instanceof NextResponse) return result;
@@ -72,3 +73,5 @@ Write a follow-up email to resolve the pending items.`;
   // Unreachable: zod union guarantees emailId or pendingItems is present
   return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
 }
+
+export const POST = withSentryApiHandler(_POST, { method: 'POST', path: '/api/ai/draft-reply' });
