@@ -1,0 +1,35 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: [CI]
+    branches: [main]
+    types: [completed]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ${{ secrets.DEPLOY_PATH }}
+            bash scripts/redeploy.sh
+
+      - name: Health check
+        run: |
+          curl --fail --retry 5 --retry-delay 5 \
+            "https://${{ secrets.DEPLOY_HOST }}/api/health" | \
+            grep -q '"status":"ok"'
