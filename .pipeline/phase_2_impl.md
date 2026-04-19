@@ -1,36 +1,23 @@
 # Phase 2 — Implementation
 
 ## Changed Files
-- `lib/sailing/port-distances.ts` — ESM import fuzzysort; добавлены imports PORTS_JSON + loadPortMasterFromJson + PortMaster type; `getFuzzyCorpus()` расширен JSON-инъекцией всех 435 портов; `_setFuzzyCorpusForTest` переименован в `setFuzzyCorpus`; stale "Phase 5 will ..." JSDoc комментарии удалены; `Array.from()` добавлен для совместимости с downlevelIteration
-- `lib/sailing/__tests__/port-distances.test.ts` — новый describe-блок `normalizePortName — JSON-only ports (port-master corpus)` с тестом `fuzzy-matches Fos-sur-Mer with dropped letter to canonical JSON name`
-
-## TDD Proof
-- **RED commit** `7016f69`: тест `normalizePortName('Fos-sr-Mer') → 'Fos-sur-Mer'` добавлен → FAIL (received null, порт не в corpus)
-- **GREEN+REFACTOR commit** `94bac36`: реализация JSON-инъекции → PASS. Все 876 тестов зелёные.
+- `lib/__tests__/wave5-sanity.test.ts` — +1 contract test (ConfidenceLevel ↔ CONFIDENCE_MULTIPLIERS), 14 строк
+- `scripts/preflight.sh` (NEW) — placeholder secrets scanner + USE_MIGRATION_RUNNER assertion, 62 строки
+- `scripts/redeploy.sh` (NEW) — pull → preflight → build → pm2 restart, 23 строки
+- `scripts/setup.sh` — добавлен step 2 (preflight) + указание на redeploy.sh
 
 ## Test Results
-- Before: 875 passed (49 suites)
-- After: 876 passed (49 suites)
-- New test: `fuzzy-matches Fos-sur-Mer with dropped letter to canonical JSON name` in describe `normalizePortName — JSON-only ports (port-master corpus)`
+- `npm test`: 1029/1029 passed (62 suites)
+- `npm run lint`: 0 errors / 0 warnings
+- `preflight.sh` проверен вручную 3 сценария: dev-skip / placeholder-block (exit 1) / missing-flag (exit 2) / happy-path (exit 0)
 
 ## Self-Check
-- [✅] JSON port injected into corpus (все 435 через loadPortMasterFromJson)
-- [✅] ESM import fuzzysort (`import fuzzysort from 'fuzzysort'`)
-- [✅] `_setFuzzyCorpusForTest` → `setFuzzyCorpus` everywhere (grep подтверждён: 0 старых вхождений)
-- [✅] Stale Phase 5 comments removed (JSDoc + inline комменты)
-- [✅] No new `require()` for fuzzysort in port-distances.ts (остались только haversine/port-master lazy require для circular dep prevention)
-- [✅] Lint 0 warnings
-- [✅] Build green
-
-## Key Decisions
-- **Typo choice:** изначально выбрана подстановка `u→o` (`Fos-sor-Mer`), но fuzzysort — subsequence matcher, не edit-distance. Подстановки не матчатся. Переключился на dropped-letter тип: `Fos-sr-Mer` (drop 'u') — score ~0.347 > threshold 0.3.
-- **downlevelIteration:** `PortMasterIndex extends Map<>` — итерация `for...of map.entries()` вызывает TS error. Решение: `Array.from(portMaster.entries())`.
-- **Threshold:** оставлен 0.3 без изменений. Регрессий нет — все 875 старых тестов прошли.
+- ✅ Gap #1 ConfidenceLevel contract test добавлен
+- ✅ Gap #2 placeholder secrets scanner
+- ✅ Gap #3 USE_MIGRATION_RUNNER assertion (prod-mode only)
+- ✅ Нет изменений за boundaries (lib/types.ts, match-scoring.ts не тронуты)
+- ✅ Существующие 23 теста wave5-sanity продолжают зеленеть
 
 ## Known Limitations
-- Fos-sur-Mer и другие JSON-only порты не имеют distance pairs в DISTANCE_TABLE — `getPortDistance()` вернёт haversine fallback или null. Это ожидаемо (graceful degradation).
-- Fuzzysort — subsequence matcher: подстановки букв (u→o) не матчатся. Только пропуски/перестановки.
-
-## Commits
-- `7016f69` — test(port-distances): RED — fuzzy match Fos-sur-Mer (JSON-only port) with typo
-- `94bac36` — feat(port-distances): inject port-master.json corpus into fuzzy matching (Phase 5)
+- Preflight сканирует только .env.local, не runtime env vars (достаточно для текущей архитектуры)
+- redeploy.sh не делает rollback при fail post-restart — ручной git reset если нужно
