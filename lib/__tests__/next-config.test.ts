@@ -4,6 +4,7 @@
  * when Sentry env vars are absent.
  */
 /* eslint-disable @typescript-eslint/no-require-imports */
+export {};
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockWithSentryConfig = jest.fn((config: unknown, _opts: unknown) => config);

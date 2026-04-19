@@ -3,6 +3,7 @@
  * Verifies withSentryConfig wraps the config and behaves gracefully without SENTRY_AUTH_TOKEN.
  */
 /* eslint-disable @typescript-eslint/no-require-imports */
+export {};
 
 const mockWithSentryConfig = jest.fn((config: object, options: object) => ({
   ...config,
