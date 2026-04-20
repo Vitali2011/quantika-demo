@@ -9,6 +9,34 @@ import { classifyEmails, AiClassification } from '@/lib/classification-service';
 
 export const maxDuration = 120;
 
+// Larger batches push the combined prompt past ClipProxy's upstream read timeout
+// — we've seen "connection reset by peer" mid-stream at 50+ emails.
+const CLASSIFY_BATCH_SIZE = 20;
+
+type EmailInput = {
+  id: string;
+  subject: string;
+  from: string;
+  date: string;
+  body_preview: string;
+};
+
+function chunk<T>(arr: T[], size: number): T[][] {
+  const out: T[][] = [];
+  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+  return out;
+}
+
+async function classifyBatch(batch: EmailInput[]): Promise<AiClassification[]> {
+  const result = await callAiJson<{ classifications: AiClassification[] }>(
+    JSON.stringify(batch),
+    CLASSIFICATION_SYSTEM_PROMPT,
+    AI_MODEL_HEAVY,
+    { classifications: [] },
+  );
+  return result.classifications ?? [];
+}
+
 export async function POST(request: NextRequest) {
   if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   const authResult = requireSession(request);
@@ -16,7 +44,7 @@ export async function POST(request: NextRequest) {
   const { session, sessionId } = authResult;
   if (session.emails.length === 0) return NextResponse.json({ error: 'No emails to classify' }, { status: 400 });
 
-  const emailInput = session.emails.map(email => ({
+  const emailInput: EmailInput[] = session.emails.map(email => ({
     id: email.id,
     subject: email.subject,
     from: email.from,
@@ -24,14 +52,11 @@ export async function POST(request: NextRequest) {
     body_preview: truncateText(email.body || email.snippet, MAX_EMAIL_BODY_CHARS),
   }));
 
-  const result = await callAiJson<{ classifications: AiClassification[] }>(
-    JSON.stringify(emailInput),
-    CLASSIFICATION_SYSTEM_PROMPT,
-    AI_MODEL_HEAVY,
-    { classifications: [] }
-  );
+  const batches = chunk(emailInput, CLASSIFY_BATCH_SIZE);
+  const batchResults = await Promise.all(batches.map(classifyBatch));
+  const merged = batchResults.flat();
 
-  const { classifications, processedEmails } = classifyEmails(session.emails, result.classifications || []);
+  const { classifications, processedEmails } = classifyEmails(session.emails, merged);
   updateSession(sessionId, { classifications, processedEmails });
   return NextResponse.json({ count: classifications.length });
 }
