@@ -1,40 +1,59 @@
 [
   {
-    "id": "sample-17",
-    "threadId": "thread-17",
-    "from": "\"ETMS - Management\" <management@etm-services.net>",
-    "fromName": "ETMS - Management",
-    "fromEmail": "management@etm-services.net",
+    "id": "sample-48",
+    "threadId": "thread-48",
+    "from": "\"DNV GL - Certificates\" <certificates@dnvgl.com>",
+    "fromName": "DNV GL - Certificates",
+    "fromEmail": "certificates@dnvgl.com",
     "to": "demo@quantika.org",
-    "subject": "FW: [EXT] RE: Everest Bay - Pandi and Class certificate",
-    "date": "2026-04-15T00:00:00.000Z",
-    "body": "---------- Forwarded message ---------\nFrom: Schuster, Eik <e.schuster@west-of-england.com>\nDate: Mon, 8 Sep 2025 13:08:22 +0100\nSubject: [EXT] RE: Everest Bay - Pandi and Class certificate\nTo: management@etm-services.net\n\nDear colleagues,\n\nThank you for your message.\n\nPlease find attached the requested documents for MV EVEREST BAY:\n\n1) P&I Club Certificate - valid until 20 Feb 2026\n   Club: West of England Ship Owners\n   Cert No.: WOE-2025-EV-00142\n\n2) Class Certificate - valid until 15 Nov 2025\n   Classification Society: Bureau Veritas\n   Class Notation: I + HULL + MACH, Unrestricted Navigation\n\nPlease note that the class renewal survey is scheduled for Nov 2025 in Piraeus.\n\nShould you require any additional documentation, please do not hesitate to contact us.\n\nKind regards\nEik Schuster\nWest of England Ship Owners\nOperations & Documentation",
-    "snippet": "P&I and Class certificates for MV EVEREST BAY attached...",
-    "labelIds": ["INBOX"],
+    "subject": "FW: MV NORTHERN CAPE - P&I and Class Certificates",
+    "date": "2026-04-12T00:00:00.000Z",
+    "body": "---------- Forwarded message ---------\nFrom: Gard P&I Club <documentation@gard.no>\nDate: Fri, 10 Apr 2026 09:15:00 +0200\nSubject: MV NORTHERN CAPE - P&I and Class Certificates\nTo: certificates@dnvgl.com\n\nDear Sirs,\n\nPlease find attached the requested certificates for MV NORTHERN CAPE:\n\n1) P&I Club Certificate\n   Club: Gard P&I (Bermuda) Ltd\n   Certificate No.: GARD-2026-NC-00389\n   Vessel: MV NORTHERN CAPE\n   IMO No.: 9412875\n   Valid from: 20 February 2026\n   Valid until: 20 February 2027\n   Entry: Full P&I cover\n\n2) Class Certificate\n   Classification Society: DNV GL\n   Class Notation: 1A1 BULK CARRIER, Unrestricted Navigation\n   Certificate No.: DNV-CC-2026-NC-00214\n   Valid from: 15 March 2026\n   Valid until: 14 March 2027\n   Next survey: Annual survey due March 2027 in Rotterdam\n\nShould you require any further documentation, please do not hesitate to contact us.\n\nKind regards\nGard P&I - Documentation Department",
+    "snippet": "P&I and Class certificates for MV NORTHERN CAPE - valid until Feb 2027 and Mar 2027...",
+    "labelIds": [
+      "INBOX"
+    ],
     "attachments": [
       {
-        "filename": "EverestBay_PandI_Certificate_2025.pdf",
+        "filename": "NorthernCape_PandI_Gard_2026.pdf",
         "mimeType": "application/pdf",
-        "size": 218400
+        "size": 231600
       },
       {
-        "filename": "EverestBay_Class_Certificate_BV.pdf",
+        "filename": "NorthernCape_ClassCert_DNVGL_2026.pdf",
         "mimeType": "application/pdf",
-        "size": 195200
+        "size": 208400
       }
     ]
   },
   {
-    "id": "sample-18",
-    "threadId": "thread-18",
+    "id": "sample-49",
+    "threadId": "thread-49",
     "from": "\"ETMS - Management\" <management@etm-services.net>",
     "fromName": "ETMS - Management",
     "fromEmail": "management@etm-services.net",
     "to": "demo@quantika.org",
-    "subject": "RE: 30,000 MT cement Suez / Nacala",
-    "date": "2026-04-13T00:00:00.000Z",
-    "body": "---------- Forwarded message ---------\nFrom: Osama <osama@badrgroup.com>\nDate: Fri, 5 Sep 2025 16:40:11 +0200\nSubject: RE: 30,000 MT cement Suez / Nacala\nTo: management@etm-services.net\n\nDear Sirs,\n\nThank you for your offer. After discussion with our principals:\n\nCargo: 30,000 mts cement in pp bags (50kg)\nLoad: Ain Sokhna / Suez Canal area, Egypt - 1 sb aaaa\nDisch: Nacala, Mozambique - 1 sb aaaa\n\nLaycan: 01-10 Oct 2025\nLoading: 5,000 mts SHINC\nDisch: 3,000 mts SHINC\n\nOur counter:\nFRT: USD 37.50/mt FIO basis\n\nDemurrage: USD 9,000 PDPR/FD BENDS\n3.75% TTL\n\nWe await your best offer soonest.\n\nbrgds\nOsama\nBadr Group International",
-    "snippet": "30,000 MT cement Suez / Nacala - counter offer...",
-    "labelIds": ["INBOX"]
+    "subject": "RE: Cargo inquiry - 20,000 MT fertilizer Constanta / Alexandria",
+    "date": "2026-04-16T00:00:00.000Z",
+    "body": "---------- Forwarded message ---------\nFrom: Kateryna Boyko <k.boyko@agriexport-ukraine.com>\nDate: Wed, 15 Apr 2026 14:22:00 +0300\nSubject: RE: Cargo inquiry - 20,000 MT fertilizer Constanta / Alexandria\nTo: management@etm-services.net\n\nDear colleagues,\n\nThank you for reverting. Following further confirmation from our shippers, the cargo volume has been revised upwards. We are now looking at 22,000 to 25,000 mts of fertilizer in bulk. Laycan and loading port remain unchanged. Could you please come back to us with a freshly adjusted freight indication reflecting the increased quantity?\n\nBest regards,\nKateryna Boyko\nAgriExport Ukraine - Chartering",
+    "snippet": "Cargo revised to 22-25k mts fertilizer, please revert with adjusted freight...",
+    "labelIds": [
+      "INBOX"
+    ]
+  },
+  {
+    "id": "sample-50",
+    "threadId": "thread-50",
+    "from": "\"Osama Badr\" <osama@badrgroup.com>",
+    "fromName": "Osama Badr",
+    "fromEmail": "osama@badrgroup.com",
+    "to": "demo@quantika.org",
+    "subject": "RE: 30,000 MT cement Suez / Nacala - counter freight",
+    "date": "2026-04-17T00:00:00.000Z",
+    "body": "---------- Forwarded message ---------\nFrom: Osama <osama@badrgroup.com>\nDate: Thu, 16 Apr 2026 15:55:00 +0200\nSubject: RE: 30,000 MT cement Suez / Nacala - counter freight\nTo: management@etm-services.net\n\nDear Sirs,\n\nThank you for your offer of USD 37.50/mt. After careful consideration, your rate is too high for our principals at this stage.\n\nOur maximum acceptable freight is USD 34.00/mt FIO basis.\n\nFor reference, our full counter terms:\nCargo: 30,000 mts cement in pp bags (50kg)\nLoad: Ain Sokhna, Egypt - 1 sb aaaa\nDisch: Nacala, Mozambique - 1 sb aaaa\nLaycan: 01-10 Oct 2026\nLoading: 5,000 mts SHINC\nDisch: 3,000 mts SHINC\nFRT counter: USD 34.00/mt FIO\nDemurrage: USD 9,000 PDPR / FD BENDS\nCommission: 3.75% TTL\n\nKindly revert with owners best.\n\nbrgds\nOsama\nBadr Group International",
+    "snippet": "Counter freight USD 34.00/mt FIO vs your USD 37.50 - 30,000 MT cement Suez / Nacala...",
+    "labelIds": [
+      "INBOX"
+    ]
   }
 ]

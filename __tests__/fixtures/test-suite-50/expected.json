@@ -1,0 +1,2646 @@
+[
+  {
+    "id": "sample-01",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": {
+        "name": "Antalya",
+        "unlocode": "TRANT",
+        "country": "TR"
+      },
+      "dischPort": {
+        "name": "Alexandria",
+        "unlocode": "EGALY",
+        "country": "EG"
+      },
+      "cargo": {
+        "description": "barite in big bags",
+        "weight_mt": 4500,
+        "weight_min_mt": 4500,
+        "weight_max_mt": 4500,
+        "category": "BULK_BAGGED"
+      },
+      "laycan": {
+        "start": "2026-10-01",
+        "end": "2026-10-05"
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 1500,
+      "disch_rate_mtpd": 1000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 4500,
+      "max_dwcc_mt": 7000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        5000,
+        8000
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ],
+      "expected_score_min": 60
+    },
+    "adversarial_expectation": null,
+    "notes": "small handysize bb barite Med/East Med, clean straightforward"
+  },
+  {
+    "id": "sample-02",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": {
+        "name": "Mykolaiv",
+        "unlocode": "UANLK",
+        "country": "UA"
+      },
+      "dischPort": {
+        "name": "Alexandria",
+        "unlocode": "EGALY",
+        "country": "EG"
+      },
+      "cargo": {
+        "description": "wheat in bulk",
+        "weight_mt": 25000,
+        "weight_min_mt": 25000,
+        "weight_max_mt": 25000,
+        "category": "BULK_GRAIN"
+      },
+      "laycan": {
+        "start": "2026-10-10",
+        "end": "2026-10-20"
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 5000,
+      "disch_rate_mtpd": 4000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 25000,
+      "max_dwcc_mt": 35000,
+      "crane_required": false,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        25000,
+        35000
+      ],
+      "expected_level_range": [
+        "good",
+        "excellent"
+      ],
+      "expected_score_min": 65
+    },
+    "adversarial_expectation": null,
+    "notes": "handysize grain Ukraine → Egypt, classic Black Sea route"
+  },
+  {
+    "id": "sample-03",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": {
+        "name": "Surabaya",
+        "unlocode": "IDSUB",
+        "country": "ID"
+      },
+      "dischPort": {
+        "name": "Visakhapatnam",
+        "unlocode": "INVTZ",
+        "country": "IN"
+      },
+      "cargo": {
+        "description": "steam coal in bulk",
+        "weight_mt": 50000,
+        "weight_min_mt": 50000,
+        "weight_max_mt": 50000,
+        "category": "BULK_COAL"
+      },
+      "laycan": {
+        "start": "2026-10-15",
+        "end": "2026-10-25"
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 8000,
+      "disch_rate_mtpd": 6000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 50000,
+      "max_dwcc_mt": 65000,
+      "crane_required": false,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        50000,
+        64000
+      ],
+      "expected_level_range": [
+        "good",
+        "excellent"
+      ],
+      "expected_score_min": 65
+    },
+    "adversarial_expectation": null,
+    "notes": "supramax coal Indonesia → India, typical IND/IND route"
+  },
+  {
+    "id": "sample-04",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": {
+        "name": "Gdańsk",
+        "unlocode": "PLGDN",
+        "country": "PL"
+      },
+      "dischPort": {
+        "name": "Lagos",
+        "unlocode": "NGLOS",
+        "country": "NG"
+      },
+      "cargo": {
+        "description": "urea in 50kg pp bags",
+        "weight_mt": 25000,
+        "weight_min_mt": 25000,
+        "weight_max_mt": 25000,
+        "category": "BULK_BAGGED"
+      },
+      "laycan": {
+        "start": "2026-11-01",
+        "end": "2026-11-10"
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 4000,
+      "disch_rate_mtpd": 2500
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 25000,
+      "max_dwcc_mt": 35000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        25000,
+        35000
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ],
+      "expected_score_min": 55
+    },
+    "adversarial_expectation": null,
+    "notes": "handymax fertilizer bagged Baltic → W.Africa, cranes needed"
+  },
+  {
+    "id": "sample-05",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": {
+        "name": "Alexandria",
+        "unlocode": "EGALY",
+        "country": "EG"
+      },
+      "dischPort": {
+        "name": "Djibouti",
+        "unlocode": "DJJIB",
+        "country": "DJ"
+      },
+      "cargo": {
+        "description": "portland cement in 50kg pp bags",
+        "weight_mt": 6000,
+        "weight_min_mt": 6000,
+        "weight_max_mt": 6000,
+        "category": "BULK_BAGGED"
+      },
+      "laycan": {
+        "start": "2026-09-20",
+        "end": "2026-09-30"
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 2000,
+      "disch_rate_mtpd": 1500
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 6000,
+      "max_dwcc_mt": 10000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        6000,
+        12000
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ],
+      "expected_score_min": 55
+    },
+    "adversarial_expectation": null,
+    "notes": "small bulker bagged cement Egypt → Djibouti, Red Sea route"
+  },
+  {
+    "id": "sample-06",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": {
+        "name": "Derince",
+        "unlocode": "TRDRC",
+        "country": "TR"
+      },
+      "dischPort": {
+        "name": "Piraeus",
+        "unlocode": "GRPIR",
+        "country": "GR"
+      },
+      "cargo": {
+        "description": "HRC steel coils",
+        "weight_mt": 5000,
+        "weight_min_mt": 5000,
+        "weight_max_mt": 5000,
+        "category": "STEEL"
+      },
+      "laycan": {
+        "start": "2026-10-05",
+        "end": "2026-10-10"
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": null,
+      "disch_rate_mtpd": null
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 5000,
+      "max_dwcc_mt": 8000,
+      "crane_required": false,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        5000,
+        10000
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ],
+      "expected_score_min": 55
+    },
+    "adversarial_expectation": null,
+    "notes": "mini-bulker steel coils Marmara → Piraeus, CQD both ends"
+  },
+  {
+    "id": "sample-07",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": {
+        "name": "Santos",
+        "unlocode": "BRSSZ",
+        "country": "BR"
+      },
+      "dischPort": {
+        "name": "Abidjan",
+        "unlocode": "CIABJ",
+        "country": "CI"
+      },
+      "cargo": {
+        "description": "refined sugar in 50kg pp bags",
+        "weight_mt": 10000,
+        "weight_min_mt": 10000,
+        "weight_max_mt": 10000,
+        "category": "BULK_BAGGED"
+      },
+      "laycan": {
+        "start": "2026-11-01",
+        "end": "2026-11-15"
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 3000,
+      "disch_rate_mtpd": 2000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 10000,
+      "max_dwcc_mt": 16000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        10000,
+        18000
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ],
+      "expected_score_min": 55
+    },
+    "adversarial_expectation": null,
+    "notes": "bagged sugar Brazil → W.Africa, standard handy route"
+  },
+  {
+    "id": "sample-08",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": {
+        "name": "Jebel Ali",
+        "unlocode": "AEDXB",
+        "country": "AE"
+      },
+      "dischPort": {
+        "name": "Mombasa",
+        "unlocode": "KEMBA",
+        "country": "KE"
+      },
+      "cargo": {
+        "description": "clinker in bulk",
+        "weight_mt": 35000,
+        "weight_min_mt": 35000,
+        "weight_max_mt": 35000,
+        "category": "BULK_OTHER"
+      },
+      "laycan": {
+        "start": "2026-10-10",
+        "end": "2026-10-20"
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 6000,
+      "disch_rate_mtpd": 4000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 35000,
+      "max_dwcc_mt": 45000,
+      "crane_required": false,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        35000,
+        50000
+      ],
+      "expected_level_range": [
+        "good",
+        "excellent"
+      ],
+      "expected_score_min": 60
+    },
+    "adversarial_expectation": null,
+    "notes": "clinker UAE → East Africa, Indian Ocean handy/supramax"
+  },
+  {
+    "id": "sample-09",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": {
+        "name": "Houston",
+        "unlocode": "USHOU",
+        "country": "US"
+      },
+      "dischPort": {
+        "name": "Aliaga",
+        "unlocode": "TRALI",
+        "country": "TR"
+      },
+      "cargo": {
+        "description": "green petroleum coke in bulk",
+        "weight_mt": 40000,
+        "weight_min_mt": 40000,
+        "weight_max_mt": 40000,
+        "category": "BULK_PETCOKE"
+      },
+      "laycan": {
+        "start": "2026-10-01",
+        "end": "2026-10-10"
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 7000,
+      "disch_rate_mtpd": 5000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 40000,
+      "max_dwcc_mt": 55000,
+      "crane_required": false,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        40000,
+        58000
+      ],
+      "expected_level_range": [
+        "good",
+        "excellent"
+      ],
+      "expected_score_min": 65
+    },
+    "adversarial_expectation": null,
+    "notes": "petcoke US Gulf → Turkey, trans-Atlantic supramax"
+  },
+  {
+    "id": "sample-10",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": {
+        "name": "Chornomorsk",
+        "unlocode": "UAILK",
+        "country": "UA"
+      },
+      "dischPort": {
+        "name": "Ravenna",
+        "unlocode": "ITRAN",
+        "country": "IT"
+      },
+      "cargo": {
+        "description": "steel scrap loose grab discharge",
+        "weight_mt": 4000,
+        "weight_min_mt": 4000,
+        "weight_max_mt": 4000,
+        "category": "SCRAP"
+      },
+      "laycan": {
+        "start": "2026-09-20",
+        "end": "2026-09-30"
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": null,
+      "disch_rate_mtpd": 2000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 4000,
+      "max_dwcc_mt": 7000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        4000,
+        8000
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ],
+      "expected_score_min": 55
+    },
+    "adversarial_expectation": null,
+    "notes": "scrap loose Ukraine → Italy, small handy with grab cranes"
+  },
+  {
+    "id": "sample-11",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": {
+        "name": "Mykolaiv",
+        "unlocode": "UANLK",
+        "country": "UA"
+      },
+      "dischPort": {
+        "name": "Istanbul",
+        "unlocode": "TRIST",
+        "country": "TR"
+      },
+      "cargo": {
+        "description": "sunflower meal in bulk",
+        "weight_mt": 4000,
+        "weight_min_mt": 4000,
+        "weight_max_mt": 4000,
+        "category": "BULK_AGRI"
+      },
+      "laycan": {
+        "start": "2026-10-01",
+        "end": "2026-10-10"
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": null,
+      "disch_rate_mtpd": 2500
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 4000,
+      "max_dwcc_mt": 7000,
+      "crane_required": false,
+      "min_draft_m": 10.5
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        4000,
+        8000
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ],
+      "expected_score_min": 55
+    },
+    "adversarial_expectation": null,
+    "notes": "sunflower meal Mykolaiv river port → Istanbul, draft constraint 10.5m"
+  },
+  {
+    "id": "sample-12",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": {
+        "name": "Onega",
+        "unlocode": null,
+        "country": "RU"
+      },
+      "dischPort": {
+        "name": "Alexandria",
+        "unlocode": "EGALY",
+        "country": "EG"
+      },
+      "cargo": {
+        "description": "sawn timber / lumber in packages",
+        "weight_mt": 4000,
+        "weight_min_mt": 4000,
+        "weight_max_mt": 4000,
+        "category": "TIMBER"
+      },
+      "laycan": {
+        "start": "2026-09-01",
+        "end": "2026-09-15"
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 1500,
+      "disch_rate_mtpd": 1000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 4000,
+      "max_dwcc_mt": 7000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        4000,
+        8000
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ],
+      "expected_score_min": 40
+    },
+    "adversarial_expectation": {
+      "type": "port_not_found",
+      "should_flag": true,
+      "detail": "Onega RU not in port-master.json — LLM-enrichment or fuzzy fallback required"
+    },
+    "notes": "timber Onega White Sea (missing port) → Alexandria — tests port enrichment fallback"
+  },
+  {
+    "id": "sample-13",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "edge",
+    "extracted": {
+      "loadPort": {
+        "name": "Constanta",
+        "unlocode": "ROCND",
+        "country": "RO"
+      },
+      "dischPort": {
+        "name": "Casablanca",
+        "unlocode": "MACAS",
+        "country": "MA"
+      },
+      "cargo": {
+        "description": "rock salt in big bags",
+        "weight_mt": 5000,
+        "weight_min_mt": 4500,
+        "weight_max_mt": 5500,
+        "category": "BULK_BAGGED"
+      },
+      "laycan": {
+        "start": "2026-10-25",
+        "end": "2026-11-05"
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 1500,
+      "disch_rate_mtpd": 1200
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 4500,
+      "max_dwcc_mt": 8000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        5000,
+        9000
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ],
+      "expected_score_min": 50
+    },
+    "adversarial_expectation": null,
+    "notes": "hedged weight abt +/-10%, vague laycan 'end Oct / early Nov' — tests fuzzy date parsing"
+  },
+  {
+    "id": "sample-14",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "edge",
+    "extracted": {
+      "loadPort": {
+        "name": "Varna",
+        "unlocode": "BGVAR",
+        "country": "BG"
+      },
+      "dischPort": {
+        "name": "Tunis",
+        "unlocode": "TNTUN",
+        "country": "TN"
+      },
+      "cargo": {
+        "description": "DAP fertilizer in 50kg pp bags",
+        "weight_mt": 8000,
+        "weight_min_mt": 8000,
+        "weight_max_mt": 8000,
+        "category": "BULK_BAGGED"
+      },
+      "laycan": {
+        "start": null,
+        "end": null
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 2000,
+      "disch_rate_mtpd": 1500
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 8000,
+      "max_dwcc_mt": 14000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        8000,
+        15000
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ],
+      "expected_score_min": 45
+    },
+    "adversarial_expectation": null,
+    "notes": "missing laycan — 'prompt/spot', no date — system must handle null laycan gracefully"
+  },
+  {
+    "id": "sample-15",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "edge",
+    "extracted": {
+      "loadPort": {
+        "name": "Port Said",
+        "unlocode": "EGPSD",
+        "country": "EG"
+      },
+      "dischPort": {
+        "name": "Thessaloniki",
+        "unlocode": "GRSKG",
+        "country": "GR"
+      },
+      "cargo": {
+        "description": "ordinary portland cement in 50kg pp bags",
+        "weight_mt": 6000,
+        "weight_min_mt": 6000,
+        "weight_max_mt": 6000,
+        "category": "BULK_BAGGED"
+      },
+      "laycan": {
+        "start": "2026-11-15",
+        "end": "2026-11-25"
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 2000,
+      "disch_rate_mtpd": 1500
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 6000,
+      "max_dwcc_mt": 10000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        6000,
+        12000
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ],
+      "expected_score_min": 50
+    },
+    "adversarial_expectation": {
+      "type": "ambiguous_port",
+      "should_flag": true,
+      "detail": "Port Said area — no specific terminal, fuzzy match to EGPSD"
+    },
+    "notes": "ambiguous load port 'Port Said area' — tests fuzzy port resolution"
+  },
+  {
+    "id": "sample-16",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "edge",
+    "extracted": {
+      "loadPort": {
+        "name": "Skikda",
+        "unlocode": "DZSKI",
+        "country": "DZ"
+      },
+      "dischPort": {
+        "name": "Alexandria",
+        "unlocode": "EGALY",
+        "country": "EG"
+      },
+      "dischPortAlternative": {
+        "name": "Port Said",
+        "unlocode": "EGPSD",
+        "country": "EG"
+      },
+      "cargo": {
+        "description": "petroleum coke in bulk",
+        "weight_mt": 20000,
+        "weight_min_mt": 20000,
+        "weight_max_mt": 20000,
+        "category": "BULK_PETCOKE"
+      },
+      "laycan": {
+        "start": "2026-10-20",
+        "end": "2026-10-30"
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 5000,
+      "disch_rate_mtpd": 4000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 20000,
+      "max_dwcc_mt": 30000,
+      "crane_required": false,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        20000,
+        35000
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ],
+      "expected_score_min": 55
+    },
+    "adversarial_expectation": null,
+    "notes": "two-port disch option Alexandria OR Damietta (mapped to EGPSD as proxy) — tests multi-port parsing"
+  },
+  {
+    "id": "sample-17",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "edge",
+    "extracted": {
+      "loadPort": {
+        "name": "Mykolaiv",
+        "unlocode": "UANLK",
+        "country": "UA"
+      },
+      "dischPort": {
+        "name": "Mersin",
+        "unlocode": "TRMER",
+        "country": "TR"
+      },
+      "cargo": [
+        {
+          "description": "corn in bulk",
+          "weight_mt": 12000,
+          "category": "BULK_GRAIN"
+        },
+        {
+          "description": "steel scrap loose",
+          "weight_mt": 5500,
+          "category": "SCRAP"
+        },
+        {
+          "description": "sunflower oil in flexi-tanks",
+          "weight_mt": 3000,
+          "category": "LIQUID_VEGE"
+        }
+      ],
+      "laycan": {
+        "start": "2026-10-05",
+        "end": "2026-11-10"
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 5000,
+      "disch_rate_mtpd": 3000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 3000,
+      "max_dwcc_mt": 15000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        5000,
+        15000
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ],
+      "expected_score_min": 45
+    },
+    "adversarial_expectation": null,
+    "notes": "open list 3 cargoes in one email — tests multi-cargo extraction, separate match per cargo"
+  },
+  {
+    "id": "sample-18",
+    "category": "CARGO_INQUIRY",
+    "status": "INFO_ONLY",
+    "test_category": "adversarial",
+    "extracted": {
+      "loadPort": {
+        "name": "Burgas",
+        "unlocode": "BGBOJ",
+        "country": "BG"
+      },
+      "dischPort": {
+        "name": "Taranto",
+        "unlocode": "ITTAR",
+        "country": "IT"
+      },
+      "cargo": {
+        "description": "wheat in bulk",
+        "weight_mt": 7000,
+        "weight_min_mt": 7000,
+        "weight_max_mt": 7000,
+        "category": "BULK_GRAIN"
+      },
+      "laycan": {
+        "start": "2026-09-30",
+        "end": "2026-09-15"
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 3000,
+      "disch_rate_mtpd": 2500
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 7000,
+      "max_dwcc_mt": 12000,
+      "crane_required": false,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        7000,
+        12000
+      ],
+      "expected_level_range": [
+        "none"
+      ],
+      "expected_score_min": 0
+    },
+    "adversarial_expectation": {
+      "type": "inverted_laycan",
+      "should_flag": true,
+      "detail": "laycan end (2026-09-15) is before start (2026-09-30) — must be flagged, no matching"
+    },
+    "notes": "inverted laycan 30 Sep - 15 Sep — system must reject with INVERTED_LAYCAN warning"
+  },
+  {
+    "id": "sample-19",
+    "category": "CARGO_INQUIRY",
+    "status": "INFO_ONLY",
+    "test_category": "adversarial",
+    "extracted": {
+      "loadPort": {
+        "name": "Gdynia",
+        "unlocode": "PLGDY",
+        "country": "PL"
+      },
+      "dischPort": {
+        "name": "Rotterdam",
+        "unlocode": "NLRTM",
+        "country": "NL"
+      },
+      "cargo": {
+        "description": "feed barley in bulk",
+        "weight_mt": 6000,
+        "weight_min_mt": 6000,
+        "weight_max_mt": 6000,
+        "category": "BULK_GRAIN"
+      },
+      "laycan": {
+        "start": "2026-02-10",
+        "end": "2026-02-20"
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 3000,
+      "disch_rate_mtpd": 2500
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 6000,
+      "max_dwcc_mt": 10000,
+      "crane_required": false,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        6000,
+        10000
+      ],
+      "expected_level_range": [
+        "none"
+      ],
+      "expected_score_min": 0
+    },
+    "adversarial_expectation": {
+      "type": "stale_date",
+      "should_flag": true,
+      "detail": "laycan Feb 2026 is in the past (today 2026-04-20) — must be flagged as STALE_POSITION"
+    },
+    "notes": "stale laycan Feb 2026 in the past — system must flag STALE_POSITION, no matching"
+  },
+  {
+    "id": "sample-20",
+    "category": "CARGO_INQUIRY",
+    "status": "INFO_ONLY",
+    "test_category": "adversarial",
+    "extracted": {
+      "loadPort": {
+        "name": "Kastanpole",
+        "unlocode": null,
+        "country": "TR"
+      },
+      "dischPort": {
+        "name": "Piraeus",
+        "unlocode": "GRPIR",
+        "country": "GR"
+      },
+      "cargo": {
+        "description": "chemical fertilizer in bulk",
+        "weight_mt": 5000,
+        "weight_min_mt": 5000,
+        "weight_max_mt": 5000,
+        "category": "BULK_OTHER"
+      },
+      "laycan": {
+        "start": "2026-10-01",
+        "end": "2026-10-10"
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 2500,
+      "disch_rate_mtpd": 2000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 5000,
+      "max_dwcc_mt": 8000,
+      "crane_required": false,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        5000,
+        8000
+      ],
+      "expected_level_range": [
+        "none"
+      ],
+      "expected_score_min": 0
+    },
+    "adversarial_expectation": {
+      "type": "port_not_found",
+      "should_flag": true,
+      "detail": "Kastanpole Turkey does not exist — fuzzy match should fail, PORT_RESOLUTION_FAILED flag expected"
+    },
+    "notes": "port typo Kastanpole — non-existent Turkish port, fuzzy must fail gracefully"
+  },
+  {
+    "id": "sample-21",
+    "category": "CARGO_INQUIRY",
+    "status": "INFO_ONLY",
+    "test_category": "adversarial",
+    "extracted": {
+      "loadPort": {
+        "name": "Constanta",
+        "unlocode": "ROCND",
+        "country": "RO"
+      },
+      "dischPort": {
+        "name": "Samsun",
+        "unlocode": "TRSSX",
+        "country": "TR"
+      },
+      "cargo": {
+        "description": "wheat in bulk + urea in bags (contradicted)",
+        "weight_mt": 25000,
+        "weight_min_mt": 25000,
+        "weight_max_mt": 25000,
+        "category": "BULK_GRAIN"
+      },
+      "laycan": {
+        "start": "2026-10-20",
+        "end": "2026-10-30"
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 4000,
+      "disch_rate_mtpd": 3000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 25000,
+      "max_dwcc_mt": 32000,
+      "crane_required": false,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        25000,
+        32000
+      ],
+      "expected_level_range": [
+        "none",
+        "possible"
+      ],
+      "expected_score_min": 0
+    },
+    "adversarial_expectation": {
+      "type": "cargo_contradiction",
+      "should_flag": true,
+      "detail": "body mentions 25,000 mts wheat AND 3,000 mts urea but total stow listed as 25,000 mts — quantity mismatch must be flagged"
+    },
+    "notes": "cargo quantity contradiction — 25k wheat + 3k urea but total=25k, system must flag CARGO_CONTRADICTION"
+  },
+  {
+    "id": "sample-22",
+    "category": "CARGO_INQUIRY",
+    "status": "INFO_ONLY",
+    "test_category": "impossible",
+    "extracted": {
+      "loadPort": {
+        "name": "Gdańsk",
+        "unlocode": "PLGDN",
+        "country": "PL"
+      },
+      "dischPort": {
+        "name": "Mundra",
+        "unlocode": "INMUN",
+        "country": "IN"
+      },
+      "cargo": {
+        "description": "iron ore fines in bulk",
+        "weight_mt": 80000,
+        "weight_min_mt": 80000,
+        "weight_max_mt": 80000,
+        "category": "BULK_ORE"
+      },
+      "laycan": {
+        "start": "2026-10-01",
+        "end": "2026-10-15"
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 7000,
+      "disch_rate_mtpd": 5000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 80000,
+      "max_dwcc_mt": 90000,
+      "crane_required": false,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        80000,
+        100000
+      ],
+      "expected_level_range": [
+        "none"
+      ],
+      "expected_score_min": 0
+    },
+    "adversarial_expectation": {
+      "type": "volume_overflow",
+      "should_flag": true,
+      "detail": "80,000 mts iron ore requested for handysize vessel (max ~35,000 dwt) — physically impossible, VOLUME_OVERFLOW flag expected"
+    },
+    "notes": "physically impossible: 80k mt cargo for handysize — system must flag VOLUME_OVERFLOW"
+  },
+  {
+    "id": "sample-23",
+    "category": "CARGO_INQUIRY",
+    "status": "INFO_ONLY",
+    "test_category": "impossible",
+    "extracted": {
+      "loadPort": {
+        "name": "Rotterdam",
+        "unlocode": "NLRTM",
+        "country": "NL"
+      },
+      "dischPort": {
+        "name": "Beira",
+        "unlocode": "MZBEW",
+        "country": "MZ"
+      },
+      "cargo": {
+        "description": "grain in bulk",
+        "weight_mt": 30000,
+        "weight_min_mt": 30000,
+        "weight_max_mt": 30000,
+        "category": "BULK_GRAIN"
+      },
+      "laycan": {
+        "start": "2026-11-10",
+        "end": "2026-11-20"
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 5000,
+      "disch_rate_mtpd": null
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 30000,
+      "max_dwcc_mt": 40000,
+      "crane_required": false,
+      "min_draft_m": 11.5
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        30000,
+        40000
+      ],
+      "expected_level_range": [
+        "none"
+      ],
+      "expected_score_min": 0
+    },
+    "adversarial_expectation": {
+      "type": "draft_fail",
+      "should_flag": true,
+      "detail": "30,000 mt grain vessel needs ~10-11m draft, Beira max draft is 8.0m — DRAFT_CONSTRAINT_FAIL expected"
+    },
+    "notes": "draft mismatch: 30k mt grain needs >9m draft but Beira port max 8.0m — physically impossible"
+  },
+  {
+    "id": "sample-24",
+    "category": "CARGO_INQUIRY",
+    "status": "INFO_ONLY",
+    "test_category": "impossible",
+    "extracted": {
+      "loadPort": {
+        "name": "Novorossiysk",
+        "unlocode": "RUNVS",
+        "country": "RU"
+      },
+      "dischPort": {
+        "name": "Hamburg",
+        "unlocode": "DEHAM",
+        "country": "DE"
+      },
+      "cargo": {
+        "description": "wheat in bulk",
+        "weight_mt": 15000,
+        "weight_min_mt": 15000,
+        "weight_max_mt": 15000,
+        "category": "BULK_GRAIN"
+      },
+      "laycan": {
+        "start": "2026-10-01",
+        "end": "2026-10-15"
+      },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 5000,
+      "disch_rate_mtpd": 4000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 15000,
+      "max_dwcc_mt": 22000,
+      "crane_required": false,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        15000,
+        22000
+      ],
+      "expected_level_range": [
+        "none"
+      ],
+      "expected_score_min": 0
+    },
+    "adversarial_expectation": {
+      "type": "sanctions_flag",
+      "should_flag": true,
+      "detail": "Load port Novorossiysk (RU) to EU port Hamburg (DE) — EU sanctions on Russian-origin cargo / Russian-flagged vessels, SANCTIONS_RISK flag expected"
+    },
+    "notes": "sanctions: Novorossiysk RU → Hamburg DE — EU sanctions risk, must flag SANCTIONS_RISK before matching"
+  },
+  {
+    "id": "sample-25",
+    "category": "TCT_REQUEST",
+    "status": "NEEDS_ACTION",
+    "test_category": "tct",
+    "extracted": {
+      "loadPort": {
+        "name": "Dakar",
+        "unlocode": "SNDKR",
+        "country": "SN"
+      },
+      "dischPort": {
+        "name": "Singapore",
+        "unlocode": "SGSIN",
+        "country": "SG"
+      },
+      "cargo": {
+        "description": "agriproducts (grains/meals/vegetable oils)",
+        "weight_mt": null,
+        "weight_min_mt": null,
+        "weight_max_mt": null,
+        "category": "BULK_AGRI"
+      },
+      "laycan": {
+        "start": "2026-10-10",
+        "end": "2026-10-20"
+      },
+      "commission_pct": 5.0,
+      "loading_rate_mtpd": null,
+      "disch_rate_mtpd": null,
+      "tct": {
+        "vessel_type": "Supramax",
+        "dwt_min": 52000,
+        "dwt_max": 64000,
+        "duration_trips": 1,
+        "dely_area": "W.Africa (Dakar/Abidjan/Lagos range)",
+        "redely_area": "Far East (Singapore/China/Japan)",
+        "trading_limits": "IWL"
+      }
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 52000,
+      "max_dwcc_mt": 64000,
+      "crane_required": false,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [
+        52000,
+        64000
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ],
+      "expected_score_min": 55
+    },
+    "adversarial_expectation": null,
+    "notes": "TCT supramax W.Africa → Far East agriproducts 1 trip, 5% TTL, IWL trading limits"
+  },
+  {
+    "id": "sample-26",
+    "category": "VESSEL_POSITION",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "vessel_name": "MV SESTRI MARIS",
+      "imo": "9132088",
+      "imo_valid_checksum": true,
+      "dwt_summer_mt": 4500,
+      "dwcc_mt": 4200,
+      "max_draft_m": 5.4,
+      "loa_m": 96.4,
+      "beam_m": 14.5,
+      "grain_capacity_cbm": 5800,
+      "geared": true,
+      "cranes": "2 x 16t",
+      "built_year": 2005,
+      "flag": "Cyprus",
+      "open_port": {
+        "name": "Piraeus",
+        "unlocode": "GRPIR",
+        "country": "GR"
+      },
+      "open_date": {
+        "start": "2026-09-28",
+        "end": "2026-09-30"
+      },
+      "cargo_preferences": [
+        "general cargo",
+        "bagged",
+        "breakbulk",
+        "steel coils"
+      ],
+      "restrictions": [
+        "no grain in bulk"
+      ]
+    },
+    "hard_filters": {
+      "will_fail_ports_with_draft_below_m": 5.4,
+      "will_fail_ports_without_cranes": false,
+      "will_fail_cargos_not_in_preferences": false
+    },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [
+        500,
+        4200
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ]
+    },
+    "adversarial_expectation": null,
+    "notes": "mini-bulker 4.5k DWT geared 2x16t, Med/Black Sea pref, no bulk grain"
+  },
+  {
+    "id": "sample-27",
+    "category": "VESSEL_POSITION",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "vessel_name": "MV BLACK SEA TRADER",
+      "imo": "9142784",
+      "imo_valid_checksum": true,
+      "dwt_summer_mt": 10500,
+      "dwcc_mt": 9850,
+      "max_draft_m": 6.8,
+      "loa_m": 128.6,
+      "beam_m": 18.4,
+      "grain_capacity_cbm": 13200,
+      "geared": true,
+      "cranes": "2 x 25t",
+      "built_year": 2008,
+      "flag": "Malta",
+      "open_port": {
+        "name": "Constanta",
+        "unlocode": "ROCND",
+        "country": "RO"
+      },
+      "open_date": {
+        "start": "2026-09-25",
+        "end": "2026-09-28"
+      },
+      "cargo_preferences": [
+        "steel products",
+        "bagged fertilizer",
+        "grain in bags",
+        "breakbulk"
+      ],
+      "restrictions": []
+    },
+    "hard_filters": {
+      "will_fail_ports_with_draft_below_m": 6.8,
+      "will_fail_ports_without_cranes": false,
+      "will_fail_cargos_not_in_preferences": false
+    },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [
+        2000,
+        9850
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ]
+    },
+    "adversarial_expectation": null,
+    "notes": "small handy 10.5k DWT geared, Black Sea/Med, steel & bagged cargo"
+  },
+  {
+    "id": "sample-28",
+    "category": "VESSEL_POSITION",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "vessel_name": "MV ATLAS PROGRESS",
+      "imo": "9149469",
+      "imo_valid_checksum": true,
+      "dwt_summer_mt": 32000,
+      "dwcc_mt": 30500,
+      "max_draft_m": 10.2,
+      "loa_m": 179.8,
+      "beam_m": 28.0,
+      "grain_capacity_cbm": 39200,
+      "geared": true,
+      "cranes": "4 x 30t",
+      "built_year": 2011,
+      "flag": "Marshall Islands",
+      "open_port": {
+        "name": "Casablanca",
+        "unlocode": "MACAS",
+        "country": "MA"
+      },
+      "open_date": {
+        "start": "2026-10-01",
+        "end": "2026-10-05"
+      },
+      "cargo_preferences": [
+        "grain",
+        "fertilizer",
+        "coal",
+        "clinker"
+      ],
+      "restrictions": []
+    },
+    "hard_filters": {
+      "will_fail_ports_with_draft_below_m": 10.2,
+      "will_fail_ports_without_cranes": false,
+      "will_fail_cargos_not_in_preferences": false
+    },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [
+        10000,
+        30500
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ]
+    },
+    "adversarial_expectation": null,
+    "notes": "handysize 32k DWT geared 4x30t, N.Africa/Med, grain/fertilizer/coal"
+  },
+  {
+    "id": "sample-29",
+    "category": "VESSEL_POSITION",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "vessel_name": "MV SOUTHERN CROSS",
+      "imo": "9152143",
+      "imo_valid_checksum": true,
+      "dwt_summer_mt": 55200,
+      "dwcc_mt": 53100,
+      "max_draft_m": 13.7,
+      "loa_m": 189.9,
+      "beam_m": 32.26,
+      "grain_capacity_cbm": 67800,
+      "geared": true,
+      "cranes": "4 x 30t",
+      "built_year": 2013,
+      "flag": "Bahamas",
+      "open_port": {
+        "name": "Santos",
+        "unlocode": "BRSSZ",
+        "country": "BR"
+      },
+      "open_date": {
+        "start": "2026-11-05",
+        "end": "2026-11-15"
+      },
+      "cargo_preferences": [
+        "grains",
+        "coal",
+        "iron-ore",
+        "fertilizer"
+      ],
+      "restrictions": []
+    },
+    "hard_filters": {
+      "will_fail_ports_with_draft_below_m": 13.7,
+      "will_fail_ports_without_cranes": false,
+      "will_fail_cargos_not_in_preferences": false
+    },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [
+        25000,
+        53100
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ]
+    },
+    "adversarial_expectation": null,
+    "notes": "supramax 55.2k DWT geared, Atlantic/Brazil, grains/coal/iron-ore"
+  },
+  {
+    "id": "sample-30",
+    "category": "VESSEL_POSITION",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "vessel_name": "MV ORIENT CLIPPER",
+      "imo": "9169524",
+      "imo_valid_checksum": true,
+      "dwt_summer_mt": 64000,
+      "dwcc_mt": 61500,
+      "max_draft_m": 13.9,
+      "loa_m": 199.9,
+      "beam_m": 32.26,
+      "grain_capacity_cbm": 80500,
+      "geared": false,
+      "cranes": null,
+      "built_year": 2016,
+      "flag": "Panama",
+      "open_port": {
+        "name": "Singapore",
+        "unlocode": "SGSIN",
+        "country": "SG"
+      },
+      "open_date": {
+        "start": "2026-10-10",
+        "end": "2026-10-20"
+      },
+      "cargo_preferences": [
+        "iron-ore",
+        "coal",
+        "bauxite",
+        "nickel-ore"
+      ],
+      "restrictions": [
+        "shore cranes required"
+      ]
+    },
+    "hard_filters": {
+      "will_fail_ports_with_draft_below_m": 13.9,
+      "will_fail_ports_without_cranes": true,
+      "will_fail_cargos_not_in_preferences": false
+    },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [
+        30000,
+        61500
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ]
+    },
+    "adversarial_expectation": null,
+    "notes": "ultramax 64k DWT gearless, SE Asia, iron-ore/coal/bauxite — requires shore cranes"
+  },
+  {
+    "id": "sample-31",
+    "category": "VESSEL_POSITION",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "vessel_name": "MV FJORD PROJECT",
+      "imo": "9200275",
+      "imo_valid_checksum": true,
+      "dwt_summer_mt": 15000,
+      "dwcc_mt": 14200,
+      "max_draft_m": 8.5,
+      "loa_m": 148.2,
+      "beam_m": 22.7,
+      "grain_capacity_cbm": 18900,
+      "geared": true,
+      "cranes": "2 x 80t heavy-lift + 2 x 20t aux",
+      "built_year": 2009,
+      "flag": "Norway",
+      "open_port": {
+        "name": "Rotterdam",
+        "unlocode": "NLRTM",
+        "country": "NL"
+      },
+      "open_date": {
+        "start": "2026-10-15",
+        "end": "2026-10-25"
+      },
+      "cargo_preferences": [
+        "project cargo",
+        "breakbulk",
+        "heavy lift",
+        "out-of-gauge",
+        "steel structures"
+      ],
+      "restrictions": [
+        "no bulk grain",
+        "no liquid cargo"
+      ]
+    },
+    "hard_filters": {
+      "will_fail_ports_with_draft_below_m": 8.5,
+      "will_fail_ports_without_cranes": false,
+      "will_fail_cargos_not_in_preferences": true
+    },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [
+        500,
+        14200
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ]
+    },
+    "adversarial_expectation": null,
+    "notes": "MPP 15k DWT heavy-lift 2x80t, Rotterdam, project/breakbulk only — no bulk"
+  },
+  {
+    "id": "sample-32",
+    "category": "VESSEL_POSITION",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "vessel_name": "MV TEMA CARRIER",
+      "imo": "9210971",
+      "imo_valid_checksum": true,
+      "dwt_summer_mt": 7000,
+      "dwcc_mt": 6600,
+      "max_draft_m": 6.1,
+      "loa_m": 112.5,
+      "beam_m": 16.8,
+      "grain_capacity_cbm": 8400,
+      "geared": true,
+      "cranes": "2 x 25t",
+      "built_year": 2007,
+      "flag": "Ghana",
+      "open_port": {
+        "name": "Abidjan",
+        "unlocode": "CIABJ",
+        "country": "CI"
+      },
+      "open_date": {
+        "start": "2026-11-01",
+        "end": "2026-11-10"
+      },
+      "cargo_preferences": [
+        "clinker",
+        "cement",
+        "bagged fertilizer",
+        "breakbulk"
+      ],
+      "restrictions": []
+    },
+    "hard_filters": {
+      "will_fail_ports_with_draft_below_m": 6.1,
+      "will_fail_ports_without_cranes": false,
+      "will_fail_cargos_not_in_preferences": false
+    },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [
+        1000,
+        6600
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ]
+    },
+    "adversarial_expectation": null,
+    "notes": "small bulker 7k DWT geared 2x25t, W.Africa, clinker/cement"
+  },
+  {
+    "id": "sample-33",
+    "category": "VESSEL_POSITION",
+    "status": "INFO_ONLY",
+    "test_category": "edge",
+    "extracted": {
+      "vessel_name": "MV ADRIANA K",
+      "imo": "9217656",
+      "imo_valid_checksum": true,
+      "dwt_summer_mt": 28000,
+      "dwcc_mt": 26500,
+      "max_draft_m": 9.8,
+      "loa_m": 169.5,
+      "beam_m": 26.0,
+      "grain_capacity_cbm": 34000,
+      "geared": true,
+      "cranes": "4 x 25t",
+      "built_year": 2004,
+      "flag": "Ukraine",
+      "open_port": {
+        "name": "Odesa",
+        "unlocode": "UAODS",
+        "country": "UA"
+      },
+      "open_date": {
+        "start": "2026-02-10",
+        "end": "2026-02-20"
+      },
+      "cargo_preferences": [
+        "grain",
+        "sunflower meal",
+        "steel"
+      ],
+      "restrictions": []
+    },
+    "hard_filters": {
+      "will_fail_ports_with_draft_below_m": 9.8,
+      "will_fail_ports_without_cranes": false,
+      "will_fail_cargos_not_in_preferences": false
+    },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [
+        5000,
+        26500
+      ],
+      "expected_level_range": [
+        "none"
+      ]
+    },
+    "adversarial_expectation": {
+      "type": "stale_position",
+      "should_flag": true,
+      "detail": "open_date 2026-02-10 is in the past relative to today 2026-04-20, email received 2026-04-15"
+    },
+    "notes": "STALE: laycan Feb 2026 already passed — app should flag stale position warning"
+  },
+  {
+    "id": "sample-34",
+    "category": "VESSEL_POSITION",
+    "status": "NEEDS_ACTION",
+    "test_category": "edge",
+    "extracted": {
+      "vessel_name": "MV AQUILA STAR",
+      "imo": "9220330",
+      "imo_valid_checksum": true,
+      "dwt_summer_mt": 12000,
+      "dwcc_mt": 11300,
+      "max_draft_m": 7.5,
+      "loa_m": 134.0,
+      "beam_m": 20.6,
+      "grain_capacity_cbm": 14800,
+      "geared": true,
+      "cranes": "2 x 30t",
+      "built_year": 2012,
+      "flag": "Italy",
+      "open_port": {
+        "name": "Ravenna",
+        "unlocode": "ITRAN",
+        "country": "IT"
+      },
+      "open_date": {
+        "start": "2026-10-05",
+        "end": "2026-10-07"
+      },
+      "cargo_preferences": [
+        "steel",
+        "fertilizer",
+        "grain",
+        "breakbulk"
+      ],
+      "restrictions": [
+        "next fixture from 10 Oct — no extensions"
+      ]
+    },
+    "hard_filters": {
+      "will_fail_ports_with_draft_below_m": 7.5,
+      "will_fail_ports_without_cranes": false,
+      "will_fail_cargos_not_in_preferences": false
+    },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [
+        2000,
+        11300
+      ],
+      "expected_level_range": [
+        "possible"
+      ]
+    },
+    "adversarial_expectation": {
+      "type": "tight_laycan",
+      "should_flag": true,
+      "detail": "laycan window is only 2 days (Oct 5-7), any loading delay risks missing vessel"
+    },
+    "notes": "TIGHT LAYCAN: 2-day window Oct 5-7 only — app should warn about scheduling risk"
+  },
+  {
+    "id": "sample-35",
+    "category": "VESSEL_POSITION",
+    "status": "NEEDS_ACTION",
+    "test_category": "edge",
+    "extracted": {
+      "vessel_name": "MV NILE CARRIER",
+      "imo": "9227015",
+      "imo_valid_checksum": true,
+      "dwt_summer_mt": 8500,
+      "dwcc_mt": 8000,
+      "max_draft_m": 6.4,
+      "loa_m": 118.3,
+      "beam_m": 17.5,
+      "grain_capacity_cbm": 10500,
+      "geared": true,
+      "cranes": "2 x 20t",
+      "built_year": 2006,
+      "flag": "Egypt",
+      "open_port": {
+        "name": "Alexandria",
+        "unlocode": "EGALY",
+        "country": "EG"
+      },
+      "open_date": {
+        "start": "2026-10-15",
+        "end": "2026-10-25"
+      },
+      "cargo_preferences": [
+        "general cargo",
+        "bagged cargo",
+        "project cargo",
+        "steel coils"
+      ],
+      "restrictions": [
+        "no tank-cleaned",
+        "no grabs",
+        "no coal",
+        "no steel scrap",
+        "no IMO class 1-3 hazardous"
+      ]
+    },
+    "hard_filters": {
+      "will_fail_ports_with_draft_below_m": 6.4,
+      "will_fail_ports_without_cranes": false,
+      "will_fail_cargos_not_in_preferences": true
+    },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [
+        500,
+        8000
+      ],
+      "expected_level_range": [
+        "possible"
+      ]
+    },
+    "adversarial_expectation": {
+      "type": "cargo_restriction_blocks_match",
+      "should_flag": true,
+      "detail": "no tank-cleaned, no grabs, no coal, no steel scrap eliminates major bulk cargo categories"
+    },
+    "notes": "CARGO RESTRICTIONS: no grab discharge, no coal, no scrap — blocks most bulk cargoes"
+  },
+  {
+    "id": "sample-36",
+    "category": "VESSEL_POSITION",
+    "status": "NEEDS_ACTION",
+    "test_category": "edge",
+    "extracted": {
+      "vessel_name": "MV ICE KNIGHT",
+      "imo": "9237711",
+      "imo_valid_checksum": true,
+      "dwt_summer_mt": 22000,
+      "dwcc_mt": 20800,
+      "max_draft_m": 9.2,
+      "loa_m": 156.5,
+      "beam_m": 24.0,
+      "grain_capacity_cbm": 27500,
+      "geared": true,
+      "cranes": "4 x 25t",
+      "built_year": 2014,
+      "flag": "Finland",
+      "open_port": {
+        "name": "Hamburg",
+        "unlocode": "DEHAM",
+        "country": "DE"
+      },
+      "open_date": {
+        "start": "2026-11-01",
+        "end": "2026-11-10"
+      },
+      "cargo_preferences": [
+        "grain",
+        "fertilizer",
+        "coal",
+        "forest products"
+      ],
+      "restrictions": [
+        "ice class 1A only",
+        "no Gulf of Bothnia Jan-Feb without permit",
+        "no tropical trades"
+      ]
+    },
+    "hard_filters": {
+      "will_fail_ports_with_draft_below_m": 9.2,
+      "will_fail_ports_without_cranes": false,
+      "will_fail_cargos_not_in_preferences": false
+    },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [
+        5000,
+        20800
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ]
+    },
+    "adversarial_expectation": null,
+    "notes": "ICE CLASS 1A: Finnish-Swedish notation, Baltic winter trades OK — no tropical or deep winter Bothnia"
+  },
+  {
+    "id": "sample-37",
+    "category": "VESSEL_POSITION",
+    "status": "NEEDS_ACTION",
+    "test_category": "adversarial",
+    "extracted": {
+      "vessel_name": "MV MERIDIAN BULK",
+      "imo": "1234566",
+      "imo_valid_checksum": false,
+      "dwt_summer_mt": 6500,
+      "dwcc_mt": 6100,
+      "max_draft_m": 5.9,
+      "loa_m": 108.7,
+      "beam_m": 16.2,
+      "grain_capacity_cbm": 7900,
+      "geared": true,
+      "cranes": "1 x 25t",
+      "built_year": 2003,
+      "flag": "Liberia",
+      "open_port": {
+        "name": "Takoradi",
+        "unlocode": "GHTKD",
+        "country": "GH"
+      },
+      "open_date": {
+        "start": "2026-11-20",
+        "end": "2026-11-30"
+      },
+      "cargo_preferences": [
+        "clinker",
+        "bagged cargo"
+      ],
+      "restrictions": []
+    },
+    "hard_filters": {
+      "will_fail_ports_with_draft_below_m": 5.9,
+      "will_fail_ports_without_cranes": false,
+      "will_fail_cargos_not_in_preferences": false
+    },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [
+        500,
+        6100
+      ],
+      "expected_level_range": [
+        "none"
+      ]
+    },
+    "adversarial_expectation": {
+      "type": "invalid_imo",
+      "should_flag": true,
+      "detail": "IMO 1234566 fails mod-10 checksum: sum(1×7+2×6+3×5+4×4+5×3+6×2)=7+12+15+16+15+12=77, 77%10=7 ≠ last_digit=6. App must refuse Equasis enrichment."
+    },
+    "notes": "INVALID IMO: checksum digit mismatch — app must detect and block Equasis lookup"
+  },
+  {
+    "id": "sample-38",
+    "category": "VESSEL_POSITION",
+    "status": "NEEDS_ACTION",
+    "test_category": "adversarial",
+    "extracted": {
+      "vessel_name": "MV PACIFIC STAR 9",
+      "imo": "9280495",
+      "imo_valid_checksum": true,
+      "vessel_likely_hallucinated": true,
+      "dwt_summer_mt": 45000,
+      "dwcc_mt": 43100,
+      "max_draft_m": 12.2,
+      "loa_m": 185.0,
+      "beam_m": 30.0,
+      "grain_capacity_cbm": 55500,
+      "geared": true,
+      "cranes": "4 x 30t",
+      "built_year": 2018,
+      "flag": "Panama",
+      "open_port": {
+        "name": "Paranaguá",
+        "unlocode": "BRPNG",
+        "country": "BR"
+      },
+      "open_date": {
+        "start": "2026-11-10",
+        "end": "2026-11-20"
+      },
+      "cargo_preferences": [
+        "grain",
+        "soya",
+        "fertilizer",
+        "coal"
+      ],
+      "restrictions": []
+    },
+    "hard_filters": {
+      "will_fail_ports_with_draft_below_m": 12.2,
+      "will_fail_ports_without_cranes": false,
+      "will_fail_cargos_not_in_preferences": false
+    },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [
+        10000,
+        43100
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ]
+    },
+    "adversarial_expectation": {
+      "type": "hallucinated_vessel",
+      "should_flag": true,
+      "detail": "Generic name 'MV PACIFIC STAR 9' with sequential suffix is a hallucination pattern. Equasis lookup for IMO 9280495 should return a different vessel or no match."
+    },
+    "notes": "HALLUCINATED VESSEL: generic 'PACIFIC STAR 9' name pattern, IMO may belong to different vessel — verify via Equasis"
+  },
+  {
+    "id": "sample-39",
+    "category": "VESSEL_POSITION",
+    "status": "NEEDS_ACTION",
+    "test_category": "spec",
+    "extracted": {
+      "vessel_name": "MV JAVA BULK EXPRESS",
+      "imo": "9318943",
+      "imo_valid_checksum": true,
+      "dwt_summer_mt": 55000,
+      "dwcc_mt": 52800,
+      "max_draft_m": 13.5,
+      "loa_m": 190.0,
+      "beam_m": 32.26,
+      "grain_capacity_cbm": 68000,
+      "geared": false,
+      "cranes": null,
+      "built_year": 2015,
+      "flag": "Indonesia",
+      "open_port": {
+        "name": "Probolinggo",
+        "unlocode": null,
+        "country": "ID",
+        "lat": -7.74,
+        "lon": 113.22,
+        "note": "small Indonesian coal loading port on Java north coast — NOT in port-master"
+      },
+      "open_date": {
+        "start": "2026-10-25",
+        "end": "2026-10-31"
+      },
+      "cargo_preferences": [
+        "coal",
+        "iron-ore",
+        "bauxite",
+        "nickel-ore"
+      ],
+      "restrictions": [
+        "shore cranes required"
+      ]
+    },
+    "hard_filters": {
+      "will_fail_ports_with_draft_below_m": 13.5,
+      "will_fail_ports_without_cranes": true,
+      "will_fail_cargos_not_in_preferences": false
+    },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [
+        20000,
+        52800
+      ],
+      "expected_level_range": [
+        "possible",
+        "good"
+      ]
+    },
+    "adversarial_expectation": {
+      "type": "port_not_found",
+      "should_flag": true,
+      "detail": "Probolinggo (IDPRO) not in port-master.json. App should fall back to LLM-enrichment or haversine distance from nearest known port. Coordinates: 7.74°S 113.22°E."
+    },
+    "notes": "PORT NOT FOUND: Probolinggo absent from port-master — tests LLM-enrichment/haversine fallback"
+  },
+  {
+    "id": "sample-40",
+    "category": "FIXTURE_RECAP",
+    "status": "INFO_ONLY",
+    "test_category": "clean",
+    "extracted": {
+      "recap_type": "VOYAGE",
+      "vessel_name": "MV DANUBE PIONEER",
+      "load_port": {
+        "name": "Constanta",
+        "unlocode": "ROCND",
+        "country": "RO"
+      },
+      "disch_port": {
+        "name": "Ravenna",
+        "unlocode": "ITRAN",
+        "country": "IT"
+      },
+      "cargo_description": "steel billets",
+      "cargo_weight_mt": 6500,
+      "cargo_weight_max_mt": 7000,
+      "freight": {
+        "amount": 18.5,
+        "currency": "USD",
+        "unit": "per_mt",
+        "basis": "FIOST"
+      },
+      "laycan": {
+        "start": "2026-09-12",
+        "end": "2026-09-15"
+      },
+      "commission_pct": 3.75,
+      "commission_hedged": false,
+      "demurrage": {
+        "amount": 6500,
+        "currency": "USD",
+        "per": "day"
+      },
+      "loading_rate_mtpd": 3000,
+      "disch_rate_mtpd": 2000,
+      "cp_form": "GENCON 94",
+      "governing_law": "English",
+      "subs_deadline_banking_days": 2
+    },
+    "adversarial_expectation": null,
+    "notes": "clean USD voyage recap, handysize steel billets Constanta/Ravenna, baseline test"
+  },
+  {
+    "id": "sample-41",
+    "category": "FIXTURE_RECAP",
+    "status": "INFO_ONLY",
+    "test_category": "clean",
+    "extracted": {
+      "recap_type": "VOYAGE",
+      "vessel_name": "MV ATLANTIC CEDAR",
+      "load_port": {
+        "name": "Figueira da Foz",
+        "unlocode": "PTFDF",
+        "country": "PT"
+      },
+      "disch_port": {
+        "name": "Alexandria",
+        "unlocode": "EGALY",
+        "country": "EG"
+      },
+      "cargo_description": "sawn timber in bundles",
+      "cargo_weight_mt": 4200,
+      "cargo_weight_max_mt": 4800,
+      "freight": {
+        "amount": 31.0,
+        "currency": "EUR",
+        "unit": "per_mt",
+        "basis": "FIOST"
+      },
+      "laycan": {
+        "start": "2026-10-10",
+        "end": "2026-10-15"
+      },
+      "commission_pct": 3.75,
+      "commission_hedged": false,
+      "demurrage": {
+        "amount": 5500,
+        "currency": "EUR",
+        "per": "day"
+      },
+      "loading_rate_mtpd": 1200,
+      "disch_rate_mtpd": 900,
+      "cp_form": "GENCON 94",
+      "governing_law": "English",
+      "subs_deadline_banking_days": 2
+    },
+    "adversarial_expectation": null,
+    "notes": "EUR voyage recap (spec-01/03 EUR rendering test), mini-bulker sawn timber FDF/Alexandria"
+  },
+  {
+    "id": "sample-42",
+    "category": "FIXTURE_RECAP",
+    "status": "INFO_ONLY",
+    "test_category": "tct",
+    "extracted": {
+      "recap_type": "TC",
+      "vessel_name": "MV SUNRISE KIBO",
+      "vessel_type": "Supramax",
+      "vessel_dwt": 55800,
+      "dely_port": {
+        "name": "Dakar",
+        "unlocode": "SNDKR",
+        "country": "SN"
+      },
+      "redely_range": "Singapore / Japan range, charterers option",
+      "charter_duration_days_min": 60,
+      "charter_duration_days_max": 70,
+      "hire_rate": {
+        "amount": 14500,
+        "currency": "USD",
+        "unit": "per_day",
+        "basis": "PDPR"
+      },
+      "ballast_bonus": {
+        "amount": 600000,
+        "currency": "USD",
+        "basis": "lumpsum"
+      },
+      "laycan": {
+        "start": "2026-09-15",
+        "end": "2026-09-20"
+      },
+      "commission_pct": 5.0,
+      "commission_hedged": false,
+      "cp_form": "NYPE 2015",
+      "governing_law": "English",
+      "subs_deadline_banking_days": 3
+    },
+    "adversarial_expectation": null,
+    "notes": "TCT supramax WAfrica/FEast, hire USD 14,500/day + BB USD 600,000, commission 5% TTL"
+  },
+  {
+    "id": "sample-43",
+    "category": "FIXTURE_RECAP",
+    "status": "INFO_ONLY",
+    "test_category": "clean",
+    "extracted": {
+      "recap_type": "VOYAGE",
+      "vessel_name": "MV BLACK SEA HARVEST",
+      "vessel_type": "Handymax",
+      "load_port": {
+        "name": "Izmail",
+        "unlocode": "UAIZM",
+        "country": "UA"
+      },
+      "disch_port": {
+        "name": "Alexandria",
+        "unlocode": "EGALY",
+        "country": "EG"
+      },
+      "cargo_description": "wheat in bulk",
+      "cargo_weight_mt": 28000,
+      "cargo_weight_max_mt": 30000,
+      "freight": {
+        "amount": 42.5,
+        "currency": "USD",
+        "unit": "per_mt",
+        "basis": null
+      },
+      "laycan": {
+        "start": "2026-10-01",
+        "end": "2026-10-05"
+      },
+      "commission_pct": 3.75,
+      "commission_hedged": false,
+      "demurrage": {
+        "amount": 11000,
+        "currency": "USD",
+        "per": "day"
+      },
+      "loading_rate_mtpd": 5000,
+      "disch_rate_mtpd": 3000,
+      "cp_form": "GENCON 94",
+      "governing_law": "English",
+      "subs_deadline_banking_days": 2
+    },
+    "adversarial_expectation": null,
+    "notes": "grain voyage recap handymax 30k wheat Ukraine Izmail/Alexandria, USD 42.50/mt, high demurrage USD 11,000"
+  },
+  {
+    "id": "sample-44",
+    "category": "FIXTURE_RECAP",
+    "status": "INFO_ONLY",
+    "test_category": "edge",
+    "extracted": {
+      "recap_type": "VOYAGE",
+      "vessel_name": "MV CORAL TRADER",
+      "load_port": {
+        "name": "Constanta",
+        "unlocode": "ROCND",
+        "country": "RO"
+      },
+      "disch_port": {
+        "name": "Ravenna",
+        "unlocode": "ITRAN",
+        "country": "IT"
+      },
+      "cargo_description": "steel billets",
+      "cargo_weight_mt": 7500,
+      "cargo_weight_max_mt": 8000,
+      "freight": {
+        "amount": 18.5,
+        "currency": "USD",
+        "unit": "per_mt",
+        "basis": "FIOST"
+      },
+      "laycan": {
+        "start": "2026-09-20",
+        "end": "2026-09-24"
+      },
+      "commission_pct": 3.75,
+      "commission_hedged": true,
+      "demurrage": {
+        "amount": 7000,
+        "currency": "USD",
+        "per": "day"
+      },
+      "loading_rate_mtpd": 3000,
+      "disch_rate_mtpd": 2000,
+      "cp_form": "GENCON 94",
+      "governing_law": "English",
+      "subs_deadline_banking_days": 2
+    },
+    "adversarial_expectation": {
+      "type": "hedged_commission",
+      "commission_text": "abt 3.75% TTL on F/D/D / subject to closing",
+      "should_downgrade_confidence": true
+    },
+    "notes": "hedged commission 'subject to closing' — should flag lower confidence on commission extraction"
+  },
+  {
+    "id": "sample-45",
+    "category": "FIXTURE_RECAP",
+    "status": "INFO_ONLY",
+    "test_category": "edge",
+    "extracted": {
+      "recap_type": "VOYAGE",
+      "vessel_name": "MV ADRIATIC STAR",
+      "load_port": {
+        "name": "Constanta",
+        "unlocode": "ROCND",
+        "country": "RO"
+      },
+      "disch_port": {
+        "name": "Ravenna",
+        "unlocode": "ITRAN",
+        "country": "IT"
+      },
+      "cargo_description": "steel billets",
+      "cargo_weight_mt": 6800,
+      "cargo_weight_max_mt": 7200,
+      "freight": {
+        "amount": null,
+        "currency": null,
+        "unit": "per_mt",
+        "basis": "FIOST",
+        "placeholder": "[RATE TO BE CONFIRMED]"
+      },
+      "laycan": {
+        "start": "2026-09-25",
+        "end": "2026-09-30"
+      },
+      "commission_pct": 3.75,
+      "commission_hedged": false,
+      "demurrage": {
+        "amount": 6500,
+        "currency": "USD",
+        "per": "day"
+      },
+      "loading_rate_mtpd": 3000,
+      "disch_rate_mtpd": 2000,
+      "cp_form": "GENCON 94",
+      "governing_law": "English",
+      "subs_deadline_banking_days": 2
+    },
+    "adversarial_expectation": {
+      "type": "rate_to_be_confirmed",
+      "rate_placeholder_text": "[RATE TO BE CONFIRMED]",
+      "should_trigger_rate_intelligence": true,
+      "fallback_routes_for_rate_lookup": [
+        {
+          "load": "ROCND",
+          "disch": "ITRAN",
+          "cargo": "steel billets",
+          "ref_ids": [
+            "sample-40",
+            "sample-44"
+          ]
+        }
+      ]
+    },
+    "notes": "B-2 Rate Intelligence: placeholder [RATE TO BE CONFIRMED] must trigger rate lookup fallback using same-route recaps sample-40/44"
+  },
+  {
+    "id": "sample-46",
+    "category": "FIXTURE_RECAP",
+    "status": "INFO_ONLY",
+    "test_category": "tct",
+    "extracted": {
+      "recap_type": "TC",
+      "vessel_name": "MV PACIFIC VENTURE",
+      "vessel_type": "Ultramax",
+      "vessel_dwt": 63500,
+      "dely_port": {
+        "name": "Singapore",
+        "unlocode": "SGSIN",
+        "country": "SG"
+      },
+      "dely_basis": "APS",
+      "redely_range": "WWP worldwide, charterers option (ATDNSHINC)",
+      "charter_duration_months_min": 6,
+      "charter_duration_months_max": 9,
+      "hire_rate": {
+        "amount": 16800,
+        "currency": "USD",
+        "unit": "per_day",
+        "basis": "PDPR"
+      },
+      "laycan": {
+        "start": "2026-11-01",
+        "end": "2026-11-05"
+      },
+      "commission_pct": 3.75,
+      "commission_hedged": false,
+      "cp_form": "NYPE 2015",
+      "governing_law": "English",
+      "subs_deadline_banking_days": 3
+    },
+    "adversarial_expectation": null,
+    "notes": "TC ultramax APS Singapore / WWP 6-9 months, redely range worldwide charterers option"
+  },
+  {
+    "id": "sample-47",
+    "category": "FIXTURE_RECAP",
+    "status": "INFO_ONLY",
+    "test_category": "tct",
+    "extracted": {
+      "recap_type": "TC",
+      "vessel_name": "MV EURO TITAN",
+      "vessel_type": "Handysize",
+      "vessel_dwt": 38200,
+      "dely_port": {
+        "name": "Rotterdam",
+        "unlocode": "NLRTM",
+        "country": "NL"
+      },
+      "dely_basis": "APS",
+      "redely_range": "Mediterranean / Black Sea, charterers option",
+      "charter_duration_months_min": 3,
+      "charter_duration_months_max": 5,
+      "hire_rate": {
+        "amount": 13000,
+        "currency": "EUR",
+        "unit": "per_day",
+        "basis": "PDPR"
+      },
+      "laycan": {
+        "start": "2026-09-15",
+        "end": "2026-09-20"
+      },
+      "commission_pct": 3.75,
+      "commission_hedged": false,
+      "cp_form": "NYPE 2015",
+      "governing_law": "English",
+      "recap_date": "2026-04-08",
+      "subs_deadline_banking_days": 2,
+      "subs_deadline_date": "2026-04-10"
+    },
+    "adversarial_expectation": {
+      "type": "subs_countdown",
+      "recap_date": "2026-04-08",
+      "banking_days": 2,
+      "expected_deadline": "2026-04-10",
+      "spec_refs": [
+        "spec-30",
+        "spec-31",
+        "spec-33"
+      ]
+    },
+    "notes": "spec-30/31/33 subs countdown: recap 08 Apr 2026 + 2 banking days = deadline 10 Apr 2026 (Friday). EUR hire rate."
+  },
+  {
+    "id": "sample-48",
+    "category": "OTHER",
+    "status": "INFO_ONLY",
+    "test_category": "other",
+    "extracted": {
+      "sub_category": "VESSEL_CERTIFICATE",
+      "vessel_name": "MV NORTHERN CAPE",
+      "imo_number": "9412875",
+      "cert_types": [
+        "P&I",
+        "CLASS"
+      ],
+      "attachments_found": [
+        {
+          "filename": "NorthernCape_PandI_Gard_2026.pdf",
+          "cert_type": "P&I"
+        },
+        {
+          "filename": "NorthernCape_ClassCert_DNVGL_2026.pdf",
+          "cert_type": "CLASS"
+        }
+      ],
+      "cert_validity_dates": [
+        {
+          "cert_type": "P&I",
+          "club": "Gard P&I (Bermuda) Ltd",
+          "valid_from": "2026-02-20",
+          "valid_until": "2027-02-20"
+        },
+        {
+          "cert_type": "CLASS",
+          "society": "DNV GL",
+          "class_notation": "1A1 BULK CARRIER",
+          "valid_from": "2026-03-15",
+          "valid_until": "2027-03-14"
+        }
+      ]
+    },
+    "adversarial_expectation": null,
+    "notes": "certificate email should parse as OTHER/VESSEL_CERTIFICATE, not FIXTURE_RECAP or CLIENT_REPLY"
+  },
+  {
+    "id": "sample-49",
+    "category": "CLIENT_REPLY",
+    "status": "NEEDS_ACTION",
+    "test_category": "client_reply",
+    "extracted": {
+      "reply_type": "clarification",
+      "referenced_inquiry_id": null,
+      "adjusted_fields": [
+        {
+          "field": "cargo_weight_mt",
+          "old_value": 20000,
+          "new_value_min": 22000,
+          "new_value_max": 25000
+        }
+      ],
+      "action_required": "revert_with_adjusted_freight",
+      "cargo_description": "fertilizer in bulk",
+      "load_port": {
+        "name": "Constanta",
+        "unlocode": "ROCND",
+        "country": "RO"
+      },
+      "disch_port": {
+        "name": "Alexandria",
+        "unlocode": "EGALY",
+        "country": "EG"
+      }
+    },
+    "adversarial_expectation": null,
+    "notes": "short client reply clarifying cargo weight 20k -> 22-25k, requests revised freight indication"
+  },
+  {
+    "id": "sample-50",
+    "category": "CLIENT_REPLY",
+    "status": "NEEDS_ACTION",
+    "test_category": "client_reply",
+    "extracted": {
+      "reply_type": "counter_offer",
+      "referenced_inquiry_id": "sample-18",
+      "adjusted_fields": [
+        {
+          "field": "freight_amount",
+          "offered_value": 37.5,
+          "counter_value": 34.0,
+          "currency": "USD",
+          "basis": "FIO"
+        }
+      ],
+      "cargo_description": "cement in pp bags 50kg",
+      "cargo_weight_mt": 30000,
+      "load_port": {
+        "name": "Ain Sokhna",
+        "unlocode": "EGAIS",
+        "country": "EG"
+      },
+      "disch_port": {
+        "name": "Nacala",
+        "unlocode": "MZMNC",
+        "country": "MZ"
+      },
+      "laycan": {
+        "start": "2026-10-01",
+        "end": "2026-10-10"
+      },
+      "freight_offered": {
+        "amount": 37.5,
+        "currency": "USD",
+        "unit": "per_mt",
+        "basis": "FIO"
+      },
+      "freight_counter": {
+        "amount": 34.0,
+        "currency": "USD",
+        "unit": "per_mt",
+        "basis": "FIO"
+      },
+      "demurrage": {
+        "amount": 9000,
+        "currency": "USD",
+        "per": "day"
+      },
+      "commission_pct": 3.75,
+      "action_required": "revert_with_best_freight"
+    },
+    "adversarial_expectation": null,
+    "notes": "counter-offer: client counters USD 37.50 with USD 34.00 FIO, mirrors sample-18 thread"
+  }
+]
