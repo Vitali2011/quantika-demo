@@ -52,6 +52,83 @@ describe('calculateExpiry', () => {
       expect(result.expiryDate).toBe(expected);
       expect(result.expirySource).toBe('default');
     });
+
+    it('parses broker laycan "01-05 Oct 2026" to Oct 5', () => {
+      const result = calculateExpiry(
+        '2026-04-05T00:00:00.000Z',
+        'CARGO_INQUIRY',
+        { laycan: '01-05 Oct 2026' } as Parameters<typeof calculateExpiry>[2],
+        null,
+      );
+      expect(result.expirySource).toBe('laycan');
+      expect(result.expiryDate).toBe(new Date(Date.UTC(2026, 9, 5)).toISOString());
+    });
+
+    it('parses broker laycan "15-25 Sep" in email-year', () => {
+      const result = calculateExpiry(
+        '2026-04-05T00:00:00.000Z',
+        'CARGO_INQUIRY',
+        { laycan: '15-25 Sep' } as Parameters<typeof calculateExpiry>[2],
+        null,
+      );
+      expect(result.expirySource).toBe('laycan');
+      expect(result.expiryDate).toBe(new Date(Date.UTC(2026, 8, 25)).toISOString());
+    });
+
+    it('parses broker laycan "Sep 15-30"', () => {
+      const result = calculateExpiry(
+        '2026-04-05T00:00:00.000Z',
+        'CARGO_INQUIRY',
+        { laycan: 'Sep 15-30' } as Parameters<typeof calculateExpiry>[2],
+        null,
+      );
+      expect(result.expirySource).toBe('laycan');
+      expect(result.expiryDate).toBe(new Date(Date.UTC(2026, 8, 30)).toISOString());
+    });
+
+    it('future laycan makes record non-stale even 15 days after email', () => {
+      // Regression: before the fix, "01-05 Oct 2026" failed to parse and
+      // silently fell back to emailDate+5d → stale after 5 days.
+      const emailDate = '2026-04-05T00:00:00.000Z';
+      const result = calculateExpiry(
+        emailDate,
+        'CARGO_INQUIRY',
+        { laycan: '01-05 Oct 2026' } as Parameters<typeof calculateExpiry>[2],
+        null,
+      );
+      // Simulate "today" = 2026-04-20 (15 days later)
+      const today = new Date('2026-04-20T00:00:00.000Z');
+      const expiry = new Date(result.expiryDate!);
+      expect(expiry.getTime()).toBeGreaterThan(today.getTime());
+    });
+  });
+
+  describe('VESSEL_POSITION broker dates', () => {
+    it('parses vessel openDate "Sep 6-8" as start of window', () => {
+      const result = calculateExpiry(
+        '2026-04-07T00:00:00.000Z',
+        'VESSEL_POSITION',
+        null,
+        { openDate: { value: 'Sep 6-8', confidence: 'confirmed' } } as Parameters<typeof calculateExpiry>[3],
+      );
+      expect(result.expirySource).toBe('openDate');
+      // parseVesselOpenDate returns start-of-window: Sep 6
+      expect(result.expiryDate).toBe(new Date(Date.UTC(2026, 8, 6)).toISOString());
+    });
+
+    it('parses vessel openDate "end Aug / early Sep" phrase', () => {
+      const result = calculateExpiry(
+        '2026-04-06T00:00:00.000Z',
+        'VESSEL_POSITION',
+        null,
+        { openDate: { value: 'end Aug', confidence: 'interpreted' } } as Parameters<typeof calculateExpiry>[3],
+      );
+      expect(result.expirySource).toBe('openDate');
+      // "end Aug" → phraseDay for "end" = 27 in refYear 2026
+      const parsed = new Date(result.expiryDate!);
+      expect(parsed.getUTCMonth()).toBe(7); // Aug
+      expect(parsed.getUTCFullYear()).toBe(2026);
+    });
   });
 
   describe('FIXTURE_RECAP', () => {

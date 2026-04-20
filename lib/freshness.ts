@@ -1,5 +1,6 @@
 import { EmailCategory, ParsedCargo, ParsedVessel } from './types';
 import { FRESHNESS_CONFIG } from './freshness-config';
+import { parseLaycan, parseVesselOpenDate } from './sailing/date-parsing';
 
 function addDays(date: Date, days: number): Date {
   const result = new Date(date);
@@ -7,7 +8,7 @@ function addDays(date: Date, days: number): Date {
   return result;
 }
 
-function parseDate(dateStr: string): Date | null {
+function parseIso(dateStr: string): Date | null {
   try {
     const d = new Date(dateStr);
     return isNaN(d.getTime()) ? null : d;
@@ -22,7 +23,7 @@ export function calculateExpiry(
   parsedCargo?: ParsedCargo | null,
   parsedVessel?: ParsedVessel | null,
 ): { expiryDate: string | null; expirySource: string | null } {
-  const emailD = parseDate(emailDate);
+  const emailD = parseIso(emailDate);
   if (!emailD) return { expiryDate: null, expirySource: null };
 
   const rule = FRESHNESS_CONFIG[category];
@@ -35,7 +36,7 @@ export function calculateExpiry(
   if (rule.useParsedField === 'openDate') {
     const openDateStr = parsedVessel?.openDate?.value;
     if (openDateStr) {
-      const od = parseDate(openDateStr);
+      const od = parseVesselOpenDate(openDateStr, emailD.getUTCFullYear(), emailD) ?? parseIso(openDateStr);
       if (od) return { expiryDate: od.toISOString(), expirySource: 'openDate' };
     }
   }
@@ -43,8 +44,10 @@ export function calculateExpiry(
   if (rule.useParsedField === 'laycan') {
     const laycanStr = parsedCargo?.laycan;
     if (laycanStr) {
-      const ld = parseDate(laycanStr);
-      if (ld) return { expiryDate: ld.toISOString(), expirySource: 'laycan' };
+      const range = parseLaycan(laycanStr, emailD.getUTCFullYear());
+      if (range) return { expiryDate: range.end.toISOString(), expirySource: 'laycan' };
+      const iso = parseIso(laycanStr);
+      if (iso) return { expiryDate: iso.toISOString(), expirySource: 'laycan' };
     }
   }
 
@@ -60,7 +63,7 @@ export function calculateExpiry(
 
 export function isStale(expiryDate: string | null): boolean {
   if (!expiryDate) return false;
-  const expiry = parseDate(expiryDate);
+  const expiry = parseIso(expiryDate);
   if (!expiry) return false;
   return new Date() > expiry;
 }

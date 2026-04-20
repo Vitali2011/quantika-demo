@@ -9,6 +9,7 @@ const config = {
   // Covers both `.wave/` (wave-pipeline) and `.claude/worktrees/` (dev-pipeline / manual).
   testPathIgnorePatterns: [
     '/node_modules/',
+    '/__tests__/e2e/',
     ...(process.cwd().includes('/.wave/') ? [] : ['/.wave/']),
     ...(process.cwd().includes('/.claude/worktrees/') ? [] : ['/\\.claude/worktrees/']),
   ],
