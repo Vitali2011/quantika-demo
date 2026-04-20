@@ -1,0 +1,301 @@
+[
+  {
+    "id": "sample-40",
+    "category": "FIXTURE_RECAP",
+    "status": "INFO_ONLY",
+    "test_category": "clean",
+    "extracted": {
+      "recap_type": "VOYAGE",
+      "vessel_name": "MV DANUBE PIONEER",
+      "load_port": {"name": "Constanta", "unlocode": "ROCND", "country": "RO"},
+      "disch_port": {"name": "Ravenna", "unlocode": "ITRAN", "country": "IT"},
+      "cargo_description": "steel billets",
+      "cargo_weight_mt": 6500,
+      "cargo_weight_max_mt": 7000,
+      "freight": {"amount": 18.50, "currency": "USD", "unit": "per_mt", "basis": "FIOST"},
+      "laycan": {"start": "2026-09-12", "end": "2026-09-15"},
+      "commission_pct": 3.75,
+      "commission_hedged": false,
+      "demurrage": {"amount": 6500, "currency": "USD", "per": "day"},
+      "loading_rate_mtpd": 3000,
+      "disch_rate_mtpd": 2000,
+      "cp_form": "GENCON 94",
+      "governing_law": "English",
+      "subs_deadline_banking_days": 2
+    },
+    "adversarial_expectation": null,
+    "notes": "clean USD voyage recap, handysize steel billets Constanta/Ravenna, baseline test"
+  },
+  {
+    "id": "sample-41",
+    "category": "FIXTURE_RECAP",
+    "status": "INFO_ONLY",
+    "test_category": "clean",
+    "extracted": {
+      "recap_type": "VOYAGE",
+      "vessel_name": "MV ATLANTIC CEDAR",
+      "load_port": {"name": "Figueira da Foz", "unlocode": "PTFDF", "country": "PT"},
+      "disch_port": {"name": "Alexandria", "unlocode": "EGALY", "country": "EG"},
+      "cargo_description": "sawn timber in bundles",
+      "cargo_weight_mt": 4200,
+      "cargo_weight_max_mt": 4800,
+      "freight": {"amount": 31.00, "currency": "EUR", "unit": "per_mt", "basis": "FIOST"},
+      "laycan": {"start": "2026-10-10", "end": "2026-10-15"},
+      "commission_pct": 3.75,
+      "commission_hedged": false,
+      "demurrage": {"amount": 5500, "currency": "EUR", "per": "day"},
+      "loading_rate_mtpd": 1200,
+      "disch_rate_mtpd": 900,
+      "cp_form": "GENCON 94",
+      "governing_law": "English",
+      "subs_deadline_banking_days": 2
+    },
+    "adversarial_expectation": null,
+    "notes": "EUR voyage recap (spec-01/03 EUR rendering test), mini-bulker sawn timber FDF/Alexandria"
+  },
+  {
+    "id": "sample-42",
+    "category": "FIXTURE_RECAP",
+    "status": "INFO_ONLY",
+    "test_category": "tct",
+    "extracted": {
+      "recap_type": "TC",
+      "vessel_name": "MV SUNRISE KIBO",
+      "vessel_type": "Supramax",
+      "vessel_dwt": 55800,
+      "dely_port": {"name": "Dakar", "unlocode": "SNDKR", "country": "SN"},
+      "redely_range": "Singapore / Japan range, charterers option",
+      "charter_duration_days_min": 60,
+      "charter_duration_days_max": 70,
+      "hire_rate": {"amount": 14500, "currency": "USD", "unit": "per_day", "basis": "PDPR"},
+      "ballast_bonus": {"amount": 600000, "currency": "USD", "basis": "lumpsum"},
+      "laycan": {"start": "2026-09-15", "end": "2026-09-20"},
+      "commission_pct": 5.00,
+      "commission_hedged": false,
+      "cp_form": "NYPE 2015",
+      "governing_law": "English",
+      "subs_deadline_banking_days": 3
+    },
+    "adversarial_expectation": null,
+    "notes": "TCT supramax WAfrica/FEast, hire USD 14,500/day + BB USD 600,000, commission 5% TTL"
+  },
+  {
+    "id": "sample-43",
+    "category": "FIXTURE_RECAP",
+    "status": "INFO_ONLY",
+    "test_category": "clean",
+    "extracted": {
+      "recap_type": "VOYAGE",
+      "vessel_name": "MV BLACK SEA HARVEST",
+      "vessel_type": "Handymax",
+      "load_port": {"name": "Izmail", "unlocode": "UAIZM", "country": "UA"},
+      "disch_port": {"name": "Alexandria", "unlocode": "EGALY", "country": "EG"},
+      "cargo_description": "wheat in bulk",
+      "cargo_weight_mt": 28000,
+      "cargo_weight_max_mt": 30000,
+      "freight": {"amount": 42.50, "currency": "USD", "unit": "per_mt", "basis": null},
+      "laycan": {"start": "2026-10-01", "end": "2026-10-05"},
+      "commission_pct": 3.75,
+      "commission_hedged": false,
+      "demurrage": {"amount": 11000, "currency": "USD", "per": "day"},
+      "loading_rate_mtpd": 5000,
+      "disch_rate_mtpd": 3000,
+      "cp_form": "GENCON 94",
+      "governing_law": "English",
+      "subs_deadline_banking_days": 2
+    },
+    "adversarial_expectation": null,
+    "notes": "grain voyage recap handymax 30k wheat Ukraine Izmail/Alexandria, USD 42.50/mt, high demurrage USD 11,000"
+  },
+  {
+    "id": "sample-44",
+    "category": "FIXTURE_RECAP",
+    "status": "INFO_ONLY",
+    "test_category": "edge",
+    "extracted": {
+      "recap_type": "VOYAGE",
+      "vessel_name": "MV CORAL TRADER",
+      "load_port": {"name": "Constanta", "unlocode": "ROCND", "country": "RO"},
+      "disch_port": {"name": "Ravenna", "unlocode": "ITRAN", "country": "IT"},
+      "cargo_description": "steel billets",
+      "cargo_weight_mt": 7500,
+      "cargo_weight_max_mt": 8000,
+      "freight": {"amount": 18.50, "currency": "USD", "unit": "per_mt", "basis": "FIOST"},
+      "laycan": {"start": "2026-09-20", "end": "2026-09-24"},
+      "commission_pct": 3.75,
+      "commission_hedged": true,
+      "demurrage": {"amount": 7000, "currency": "USD", "per": "day"},
+      "loading_rate_mtpd": 3000,
+      "disch_rate_mtpd": 2000,
+      "cp_form": "GENCON 94",
+      "governing_law": "English",
+      "subs_deadline_banking_days": 2
+    },
+    "adversarial_expectation": {
+      "type": "hedged_commission",
+      "commission_text": "abt 3.75% TTL on F/D/D / subject to closing",
+      "should_downgrade_confidence": true
+    },
+    "notes": "hedged commission 'subject to closing' — should flag lower confidence on commission extraction"
+  },
+  {
+    "id": "sample-45",
+    "category": "FIXTURE_RECAP",
+    "status": "INFO_ONLY",
+    "test_category": "edge",
+    "extracted": {
+      "recap_type": "VOYAGE",
+      "vessel_name": "MV ADRIATIC STAR",
+      "load_port": {"name": "Constanta", "unlocode": "ROCND", "country": "RO"},
+      "disch_port": {"name": "Ravenna", "unlocode": "ITRAN", "country": "IT"},
+      "cargo_description": "steel billets",
+      "cargo_weight_mt": 6800,
+      "cargo_weight_max_mt": 7200,
+      "freight": {"amount": null, "currency": null, "unit": "per_mt", "basis": "FIOST", "placeholder": "[RATE TO BE CONFIRMED]"},
+      "laycan": {"start": "2026-09-25", "end": "2026-09-30"},
+      "commission_pct": 3.75,
+      "commission_hedged": false,
+      "demurrage": {"amount": 6500, "currency": "USD", "per": "day"},
+      "loading_rate_mtpd": 3000,
+      "disch_rate_mtpd": 2000,
+      "cp_form": "GENCON 94",
+      "governing_law": "English",
+      "subs_deadline_banking_days": 2
+    },
+    "adversarial_expectation": {
+      "type": "rate_to_be_confirmed",
+      "rate_placeholder_text": "[RATE TO BE CONFIRMED]",
+      "should_trigger_rate_intelligence": true,
+      "fallback_routes_for_rate_lookup": [
+        {"load": "ROCND", "disch": "ITRAN", "cargo": "steel billets", "ref_ids": ["sample-40", "sample-44"]}
+      ]
+    },
+    "notes": "B-2 Rate Intelligence: placeholder [RATE TO BE CONFIRMED] must trigger rate lookup fallback using same-route recaps sample-40/44"
+  },
+  {
+    "id": "sample-46",
+    "category": "FIXTURE_RECAP",
+    "status": "INFO_ONLY",
+    "test_category": "tct",
+    "extracted": {
+      "recap_type": "TC",
+      "vessel_name": "MV PACIFIC VENTURE",
+      "vessel_type": "Ultramax",
+      "vessel_dwt": 63500,
+      "dely_port": {"name": "Singapore", "unlocode": "SGSIN", "country": "SG"},
+      "dely_basis": "APS",
+      "redely_range": "WWP worldwide, charterers option (ATDNSHINC)",
+      "charter_duration_months_min": 6,
+      "charter_duration_months_max": 9,
+      "hire_rate": {"amount": 16800, "currency": "USD", "unit": "per_day", "basis": "PDPR"},
+      "laycan": {"start": "2026-11-01", "end": "2026-11-05"},
+      "commission_pct": 3.75,
+      "commission_hedged": false,
+      "cp_form": "NYPE 2015",
+      "governing_law": "English",
+      "subs_deadline_banking_days": 3
+    },
+    "adversarial_expectation": null,
+    "notes": "TC ultramax APS Singapore / WWP 6-9 months, redely range worldwide charterers option"
+  },
+  {
+    "id": "sample-47",
+    "category": "FIXTURE_RECAP",
+    "status": "INFO_ONLY",
+    "test_category": "tct",
+    "extracted": {
+      "recap_type": "TC",
+      "vessel_name": "MV EURO TITAN",
+      "vessel_type": "Handysize",
+      "vessel_dwt": 38200,
+      "dely_port": {"name": "Rotterdam", "unlocode": "NLRTM", "country": "NL"},
+      "dely_basis": "APS",
+      "redely_range": "Mediterranean / Black Sea, charterers option",
+      "charter_duration_months_min": 3,
+      "charter_duration_months_max": 5,
+      "hire_rate": {"amount": 13000, "currency": "EUR", "unit": "per_day", "basis": "PDPR"},
+      "laycan": {"start": "2026-09-15", "end": "2026-09-20"},
+      "commission_pct": 3.75,
+      "commission_hedged": false,
+      "cp_form": "NYPE 2015",
+      "governing_law": "English",
+      "recap_date": "2026-04-08",
+      "subs_deadline_banking_days": 2,
+      "subs_deadline_date": "2026-04-10"
+    },
+    "adversarial_expectation": {
+      "type": "subs_countdown",
+      "recap_date": "2026-04-08",
+      "banking_days": 2,
+      "expected_deadline": "2026-04-10",
+      "spec_refs": ["spec-30", "spec-31", "spec-33"]
+    },
+    "notes": "spec-30/31/33 subs countdown: recap 08 Apr 2026 + 2 banking days = deadline 10 Apr 2026 (Friday). EUR hire rate."
+  },
+  {
+    "id": "sample-48",
+    "category": "OTHER",
+    "status": "INFO_ONLY",
+    "test_category": "other",
+    "extracted": {
+      "sub_category": "VESSEL_CERTIFICATE",
+      "vessel_name": "MV NORTHERN CAPE",
+      "imo_number": "9412875",
+      "cert_types": ["P&I", "CLASS"],
+      "attachments_found": [
+        {"filename": "NorthernCape_PandI_Gard_2026.pdf", "cert_type": "P&I"},
+        {"filename": "NorthernCape_ClassCert_DNVGL_2026.pdf", "cert_type": "CLASS"}
+      ],
+      "cert_validity_dates": [
+        {"cert_type": "P&I", "club": "Gard P&I (Bermuda) Ltd", "valid_from": "2026-02-20", "valid_until": "2027-02-20"},
+        {"cert_type": "CLASS", "society": "DNV GL", "class_notation": "1A1 BULK CARRIER", "valid_from": "2026-03-15", "valid_until": "2027-03-14"}
+      ]
+    },
+    "adversarial_expectation": null,
+    "notes": "certificate email should parse as OTHER/VESSEL_CERTIFICATE, not FIXTURE_RECAP or CLIENT_REPLY"
+  },
+  {
+    "id": "sample-49",
+    "category": "CLIENT_REPLY",
+    "status": "NEEDS_ACTION",
+    "test_category": "client_reply",
+    "extracted": {
+      "reply_type": "clarification",
+      "referenced_inquiry_id": null,
+      "adjusted_fields": [
+        {"field": "cargo_weight_mt", "old_value": 20000, "new_value_min": 22000, "new_value_max": 25000}
+      ],
+      "action_required": "revert_with_adjusted_freight",
+      "cargo_description": "fertilizer in bulk",
+      "load_port": {"name": "Constanta", "unlocode": "ROCND", "country": "RO"},
+      "disch_port": {"name": "Alexandria", "unlocode": "EGALY", "country": "EG"}
+    },
+    "adversarial_expectation": null,
+    "notes": "short client reply clarifying cargo weight 20k -> 22-25k, requests revised freight indication"
+  },
+  {
+    "id": "sample-50",
+    "category": "CLIENT_REPLY",
+    "status": "NEEDS_ACTION",
+    "test_category": "client_reply",
+    "extracted": {
+      "reply_type": "counter_offer",
+      "referenced_inquiry_id": "sample-18",
+      "adjusted_fields": [
+        {"field": "freight_amount", "offered_value": 37.50, "counter_value": 34.00, "currency": "USD", "basis": "FIO"}
+      ],
+      "cargo_description": "cement in pp bags 50kg",
+      "cargo_weight_mt": 30000,
+      "load_port": {"name": "Ain Sokhna", "unlocode": "EGAIS", "country": "EG"},
+      "disch_port": {"name": "Nacala", "unlocode": "MZMNC", "country": "MZ"},
+      "laycan": {"start": "2026-10-01", "end": "2026-10-10"},
+      "freight_offered": {"amount": 37.50, "currency": "USD", "unit": "per_mt", "basis": "FIO"},
+      "freight_counter": {"amount": 34.00, "currency": "USD", "unit": "per_mt", "basis": "FIO"},
+      "demurrage": {"amount": 9000, "currency": "USD", "per": "day"},
+      "commission_pct": 3.75,
+      "action_required": "revert_with_best_freight"
+    },
+    "adversarial_expectation": null,
+    "notes": "counter-offer: client counters USD 37.50 with USD 34.00 FIO, mirrors sample-18 thread"
+  }
+]
