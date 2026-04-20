@@ -7,6 +7,38 @@ observability), потому что либо требуют отдельной �
 
 ---
 
+## E2E Skeptical Audit findings (2026-04-20, v1.3.0)
+
+Источник: `__tests__/e2e/skeptical-forwarder.spec.ts` прогон против prod
+(demo.quantika.org, v1.2.1) на sample-data из 50 писем. Детальный отчёт:
+`__tests__/e2e/skeptical-report.md`.
+
+- **E2E-001 [P1] Draft constraint не блокирует impossible matches.**
+  *sample-23*: Rotterdam → Beira (max_draft = 8 m) × 30 000 mt зерно
+  (требует ~10–11 m). UI не показывает `DRAFT_CONSTRAINT_FAIL`, матч не
+  отфильтрован. Fix: hard-filter по `portDestination.maxDraftM` в
+  `lib/sailing/match-filters.ts`. Акцепт: 0 "possible" матчей на
+  невозможных draft-комбинациях в adversarial suite. *S-M, 2-3 часа.*
+
+- **E2E-002 [P2] Нет флага cargo-contradiction.**
+  *sample-21*: body содержит "25 000 mts wheat + 3 000 mts urea, total
+  stow 25 000 mts" (28 ≠ 25). Pipeline сохраняет как есть, UI не
+  предупреждает. Fix: validator в parse-cargo — если sum(cargo parts)
+  не совпадает с stated total ± 5 % → confidence downgrade +
+  warning badge в UI. *S, 2 часа.*
+
+- **E2E-003 [P2] EUR commission, возможно, silently converted в USD.**
+  *sample-41*: freight EUR 31.00/mt × 4200 mt × 3.75 % = EUR 4 882.50.
+  Commission page не содержит EUR-строк. Проверить `lib/commission.ts` —
+  учитывается ли `freight.currency` или всё суммируется как USD.
+  Если silent conversion — либо показывать per-currency итоги, либо
+  конвертировать явно с FX-rate + disclaimer. *S, 1-2 часа.*
+
+**Когда брать**: P1 (E2E-001) — в следующий patch. P2 — после
+закрытия Wave B pilot-features.
+
+---
+
 ## Wave 4 — UX (отдельная волна с дизайн-ревью)
 
 **Почему отложено**: большой объём, требует продуктовых решений и
