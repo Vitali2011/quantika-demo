@@ -106,4 +106,38 @@ describe('parseRecapAIResponse', () => {
     expect(result.vesselDwt).toBe(75000);
     expect(result.vesselDraft).toBe(14.5);
   });
+
+  it('parses full NORTHSTAR GLORY AI response → EUR 139,500 freight fixture', () => {
+    // sample-15: EUR 31.00/mt × 4,500 mts = EUR 139,500 total freight
+    const raw = JSON.stringify({
+      vessel_name: { value: 'MV NORTHSTAR GLORY', confidence: 'confirmed' },
+      owners: { value: 'Northstar Maritime Ltd', confidence: 'confirmed' },
+      charterers: { value: 'Varan Shipping', confidence: 'confirmed' },
+      account: { value: 'Arabian Bulk Trading', confidence: 'confirmed' },
+      load_port: { value: 'Figueira da Foz (FDF), Portugal', confidence: 'confirmed' },
+      disch_port: { value: 'Alexandria (ALEX), Egypt', confidence: 'confirmed' },
+      cargo_description: { value: 'sawn timber in bundles', confidence: 'confirmed' },
+      cargo_quantity_min: 4000,
+      cargo_quantity_max: 4500,
+      freight_rate: { value: 'EUR 31.00/mt FIOST', confidence: 'confirmed' },
+      commission_percent: 3.75,
+      commission_base: 'freight',
+      commission_currency: 'EUR',
+      demurrage_rate: { value: 'EUR 5,500 PDPR', confidence: 'confirmed' },
+      cp_form: 'GENCON 94',
+      arbitration: 'London',
+      law: 'English',
+      subs: ['stem + owners approval within 2 banking days'],
+      additional_terms: [],
+      unknown_terms: [],
+    });
+    const result = parseRecapAIResponse(raw, 'sample-15');
+    expect(result.vesselName?.value).toBe('MV NORTHSTAR GLORY');
+    expect(result.loadPort?.value).toContain('Figueira da Foz');
+    expect(result.dischPort?.value).toContain('Alexandria');
+    expect(result.freightRate?.value).toContain('EUR 31.00');
+    expect(result.cargoQuantityMax).toBe(4500);
+    expect(result.cargoQuantityMin).toBe(4000);
+    expect(result.commissionPercent).toBe(3.75);
+  });
 });
