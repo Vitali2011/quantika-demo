@@ -15,8 +15,10 @@ export interface PipelineStepGroup {
 
 // parse-cargo/vessel/recap each call LLM once per email (26 cargo + 14 vessel).
 // With pLimit(3) concurrency that's ~9 rounds × up to 15s/call = up to 135s.
-// 150s gives a comfortable buffer above the 90s default.
+// match makes one big LLM call for all cargo×vessel pairs (can be 29×14=406 pairs).
+// 150s gives a comfortable buffer above the 90s default for all LLM-heavy steps.
 const PARSE_TIMEOUT_MS = 150_000;
+const MATCH_TIMEOUT_MS = 150_000;
 
 export const STEP_GROUPS: PipelineStepGroup[] = [
   { steps: [{ label: 'Loading emails from Gmail...', endpoint: '/api/emails/fetch', critical: true }] },
@@ -26,7 +28,7 @@ export const STEP_GROUPS: PipelineStepGroup[] = [
     { label: 'Extracting vessel details...', endpoint: '/api/ai/parse-vessel', timeoutMs: PARSE_TIMEOUT_MS },
     { label: 'Extracting fixture recaps...', endpoint: '/api/ai/parse-recap', timeoutMs: PARSE_TIMEOUT_MS },
   ], parallel: true },
-  { steps: [{ label: 'Finding available vessels for your cargo...', endpoint: '/api/ai/match' }] },
+  { steps: [{ label: 'Finding available vessels for your cargo...', endpoint: '/api/ai/match', timeoutMs: MATCH_TIMEOUT_MS }] },
   { steps: [
     { label: 'Summarizing your negotiations...', endpoint: '/api/ai/recap' },
     { label: 'Mapping your network...', endpoint: '/api/ai/counterparty' },
