@@ -25,9 +25,16 @@ describe('isLaycanValid', () => {
     expect(r.warning).toMatch(/long|unusual/i);
   });
 
-  it('null → invalid', () => {
+  it('null → valid with warning (graceful degradation — missing laycan should not block matching)', () => {
     const r = isLaycanValid(null);
-    expect(r.valid).toBe(false);
+    expect(r.valid).toBe(true);
+    expect(r.warning).toMatch(/laycan|timing|not specified/i);
+  });
+
+  it('undefined → valid with warning', () => {
+    const r = isLaycanValid(undefined);
+    expect(r.valid).toBe(true);
+    expect(r.warning).toBeDefined();
   });
 });
 
@@ -144,12 +151,13 @@ describe('validateDates (combined)', () => {
     expect(r.issues.some(i => /expired/i.test(i))).toBe(true);
   });
 
-  it('null laycan → invalid (missing, not expired)', () => {
+  it('null laycan → valid with warning in issues (missing timing should not block matching)', () => {
     const r = validateDates({
       openDate: new Date('2025-09-04'),
       laycan: null,
       today: TODAY,
     });
-    expect(r.valid).toBe(false);
+    expect(r.valid).toBe(true);
+    expect(r.issues.some(i => /laycan|timing|not specified/i.test(i))).toBe(true);
   });
 });

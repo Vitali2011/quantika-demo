@@ -22,10 +22,12 @@ export interface LaycanValidity {
 
 /**
  * A laycan window is valid if end >= start, and reasonably sized (< 60 days).
- * Empty / null inputs are treated as invalid (a missing laycan doesn't match "any vessel").
+ * Null/undefined → valid with warning (graceful degradation: missing laycan should not
+ * block matching — same pattern as isLaycanExpired. Broker emails often omit explicit
+ * "laycan" keyword while still having usable dates in preferred_dates field).
  */
 export function isLaycanValid(range: DateRange | null | undefined): LaycanValidity {
-  if (!range) return { valid: false, reason: 'laycan missing' };
+  if (!range) return { valid: true, warning: 'laycan not specified — timing not verified' };
   if (range.end.getTime() < range.start.getTime()) {
     return { valid: false, reason: 'laycan end before start (inverted / typo)' };
   }
