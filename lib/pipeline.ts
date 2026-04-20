@@ -4,6 +4,8 @@ export interface PipelineStep {
   label: string;
   endpoint: string;
   critical?: boolean;
+  /** Client-side fetch timeout in ms. Default: 90_000. LLM-heavy steps need more. */
+  timeoutMs?: number;
 }
 
 export interface PipelineStepGroup {
@@ -11,13 +13,18 @@ export interface PipelineStepGroup {
   parallel?: boolean;
 }
 
+// parse-cargo/vessel/recap each call LLM once per email (26 cargo + 14 vessel).
+// With pLimit(3) concurrency that's ~9 rounds × up to 15s/call = up to 135s.
+// 150s gives a comfortable buffer above the 90s default.
+const PARSE_TIMEOUT_MS = 150_000;
+
 export const STEP_GROUPS: PipelineStepGroup[] = [
   { steps: [{ label: 'Loading emails from Gmail...', endpoint: '/api/emails/fetch', critical: true }] },
   { steps: [{ label: 'Sorting your inbox by type...', endpoint: '/api/ai/classify', critical: true }] },
   { steps: [
-    { label: 'Reading your cargo inquiries...', endpoint: '/api/ai/parse-cargo' },
-    { label: 'Extracting vessel details...', endpoint: '/api/ai/parse-vessel' },
-    { label: 'Extracting fixture recaps...', endpoint: '/api/ai/parse-recap' },
+    { label: 'Reading your cargo inquiries...', endpoint: '/api/ai/parse-cargo', timeoutMs: PARSE_TIMEOUT_MS },
+    { label: 'Extracting vessel details...', endpoint: '/api/ai/parse-vessel', timeoutMs: PARSE_TIMEOUT_MS },
+    { label: 'Extracting fixture recaps...', endpoint: '/api/ai/parse-recap', timeoutMs: PARSE_TIMEOUT_MS },
   ], parallel: true },
   { steps: [{ label: 'Finding available vessels for your cargo...', endpoint: '/api/ai/match' }] },
   { steps: [

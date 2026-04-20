@@ -77,7 +77,7 @@ export default function ProcessingPage() {
 
         const runStep = async (step: PipelineStep, idx: number) => {
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 90_000);
+          const timeoutId = setTimeout(() => controller.abort(), step.timeoutMs ?? 90_000);
           try {
             const csrfToken = document.cookie
               .split('; ')
