@@ -3,7 +3,6 @@ import {
   computeMatchConfidence,
   getConfidenceColorClass,
   type FieldConfidence,
-  type MatchConfidence,
 } from '../confidence';
 import type { ParsedCargo, ParsedVessel } from '../types';
 
@@ -164,11 +163,6 @@ describe('computeMatchConfidence', () => {
   });
 
   it('1 inferred critical field, rest verified → level=inferred, blockSend=false', () => {
-    // Cargo with interpreted weight (no sourceText → inferred rather than verified)
-    const cargo = makeCargo({
-      weightMt: { value: 25000, confidence: 'confirmed' }, // no sourceText → inferred
-    });
-    // Remove sourceText from weightMt manually
     const c2 = makeCargo({
       weightMt: { value: 25000, confidence: 'interpreted' },
       originPort: { value: 'Rotterdam', confidence: 'confirmed', sourceText: 'from Rotterdam' },
