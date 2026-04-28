@@ -1,5 +1,5 @@
 import type {
-  ConfidenceField, ConfidenceLevel,
+  ConfidenceField,
   Match, MatchLevel, MatchReadiness, MatchSanctions,
   ParsedCargo, ParsedVessel, ScoreBreakdown, ScoreBreakdownComponent,
 } from '@/lib/types';
@@ -7,9 +7,10 @@ import { cfValue } from '@/lib/types';
 
 // ────────────────────────────────────────────────────────────────────────────
 // Confidence multipliers (Spec-05)
+// Maps ParseConfidence values → scoring weight.
 // ────────────────────────────────────────────────────────────────────────────
 
-export const CONFIDENCE_MULTIPLIERS: Record<ConfidenceLevel, number> = {
+export const CONFIDENCE_MULTIPLIERS: Record<string, number> = {
   confirmed:   1.0,
   interpreted: 0.7,
   uncertain:   0.4,
