@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import type { TrialState } from '../trial';
 
 let tmpDir: string;
 let dbPath: string;
@@ -76,7 +77,7 @@ describe('daysRemaining', () => {
   });
 
   it('returns 0 when trial is expired', async () => {
-    const { daysRemaining, TrialState } = await import('../trial');
+    const { daysRemaining } = await import('../trial');
     const pastTrial: TrialState = {
       session_id: 'expired',
       started_at: '2020-01-01T00:00:00.000Z',
@@ -97,7 +98,7 @@ describe('isExpired', () => {
   });
 
   it('returns true for a past trial', async () => {
-    const { isExpired, TrialState } = await import('../trial');
+    const { isExpired } = await import('../trial');
     const pastTrial: TrialState = {
       session_id: 'old',
       started_at: '2020-01-01T00:00:00.000Z',

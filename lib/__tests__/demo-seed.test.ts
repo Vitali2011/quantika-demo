@@ -52,9 +52,6 @@ describe('seedDemoForRegion', () => {
   });
 
   it('seeds at least 5 inquiries for each region', async () => {
-    const { startTrial } = await import('../trial');
-    const { seedDemoForRegion, getSeededCount } = await import('../onboarding/demo-seed');
-
     for (const region of ['MENA', 'Med', 'WAFR'] as const) {
       jest.resetModules();
       const freshTmpDir = fs.mkdtempSync(path.join(os.tmpdir(), `demo-seed-${region}-`));
