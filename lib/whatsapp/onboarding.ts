@@ -1,7 +1,11 @@
 import { randomUUID } from 'crypto';
 import type Database from 'better-sqlite3';
-import type { WhatsAppClient } from './client';
-import type { WhatsAppIncomingMessage, WhatsAppButtonAction } from './types';
+import type { WhatsAppIncomingMessage, WhatsAppButtonAction, WhatsAppInteractive } from './types';
+
+interface SendableClient {
+  markAsRead(messageId: string): Promise<void>;
+  sendInteractive(to: string, interactive: WhatsAppInteractive): Promise<{ messageId: string }>;
+}
 import { getStore } from '../session-store';
 import { MENA_TIMEZONES } from '../constants';
 
@@ -13,7 +17,7 @@ const REGION_TIMEZONE: Record<string, string> = {
 };
 
 export async function startOnboarding(
-  client: WhatsAppClient,
+  client: SendableClient,
   msg: WhatsAppIncomingMessage,
 ): Promise<void> {
   await client.markAsRead(msg.id);
@@ -36,7 +40,7 @@ export async function startOnboarding(
 }
 
 export async function handleRegionReply(
-  client: WhatsAppClient,
+  client: SendableClient,
   msg: WhatsAppIncomingMessage,
   region: string,
   getDb?: () => Database.Database,

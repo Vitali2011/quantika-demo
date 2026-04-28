@@ -1,5 +1,7 @@
 import { FRIDAY_QUIET_HOURS_GST } from '../constants';
-import type { WhatsAppClient } from './client';
+interface TextableClient {
+  sendText(to: string, body: string): Promise<{ messageId: string }>;
+}
 import { buildDigest } from './digest';
 import { getStore } from '../session-store';
 
@@ -94,7 +96,7 @@ export function shouldSendDigestNow(user: WhatsAppUser, now: Date): boolean {
 }
 
 export async function sendMorningDigests(
-  client: WhatsAppClient,
+  client: TextableClient,
 ): Promise<{ sent: number; skipped: number }> {
   const db = getStore().getDatabase();
   const now = new Date();

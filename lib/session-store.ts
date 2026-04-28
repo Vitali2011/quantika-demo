@@ -45,7 +45,21 @@ export class SessionStore {
           created_at INTEGER NOT NULL,
           expires_at INTEGER NOT NULL,
           data       TEXT NOT NULL
-        )
+        );
+        CREATE TABLE IF NOT EXISTS whatsapp_users (
+          phone               TEXT PRIMARY KEY,
+          session_id          TEXT NOT NULL,
+          onboarded_at        TEXT,
+          region              TEXT,
+          timezone            TEXT,
+          locale              TEXT,
+          last_digest_sent_at TEXT,
+          created_at          TEXT NOT NULL DEFAULT (datetime('now'))
+        );
+        CREATE TABLE IF NOT EXISTS deal_id_counter (
+          session_id  TEXT PRIMARY KEY,
+          last_id     INTEGER NOT NULL DEFAULT 0
+        );
       `);
     }
   }
