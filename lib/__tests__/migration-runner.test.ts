@@ -39,16 +39,18 @@ describe('migration runner', () => {
     db.close();
   });
 
-  // Test 1: Fresh DB → migrations applied, sessions table exists
-  it('applies allMigrations to a fresh DB and creates the sessions table', () => {
+  // Test 1: Fresh DB → all migrations applied, sessions + audit_events tables exist
+  it('applies allMigrations to a fresh DB and creates sessions + audit_events tables', () => {
     runMigrations(db, allMigrations);
 
     expect(tableExists(db, 'sessions')).toBe(true);
+    expect(tableExists(db, 'audit_events')).toBe(true);
     expect(tableExists(db, 'schema_migrations')).toBe(true);
 
     const applied = getAppliedVersions(db);
     expect(applied).toContain(1);
-    expect(applied).toHaveLength(1);
+    expect(applied).toContain(2);
+    expect(applied).toHaveLength(allMigrations.length);
   });
 
   // Test 2: Pre-existing sessions table (no schema_migrations) → idempotent

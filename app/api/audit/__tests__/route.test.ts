@@ -1,6 +1,3 @@
-import Database from 'better-sqlite3';
-import { runMigrations } from '@/lib/migrations/runner';
-import { allMigrations } from '@/lib/migrations/index';
 import { logAuditEvent } from '@/lib/audit';
 
 // ── Mock dependencies ──────────────────────────────────────────────────────
@@ -21,16 +18,12 @@ jest.mock('@/lib/audit', () => ({
 
 import { requireSession } from '@/lib/session';
 import { checkCsrfRequest } from '@/lib/csrf';
-import {
-  getAuditTrail,
-  getAuditTrailBySession,
-} from '@/lib/audit';
+import { getAuditTrail } from '@/lib/audit';
 import { GET, POST } from '@/app/api/audit/route';
 
 const mockRequireSession = requireSession as jest.MockedFunction<typeof requireSession>;
 const mockCheckCsrf = checkCsrfRequest as jest.MockedFunction<typeof checkCsrfRequest>;
 const mockGetAuditTrail = getAuditTrail as jest.MockedFunction<typeof getAuditTrail>;
-const mockGetAuditTrailBySession = getAuditTrailBySession as jest.MockedFunction<typeof getAuditTrailBySession>;
 const mockLogAuditEvent = logAuditEvent as jest.MockedFunction<typeof logAuditEvent>;
 
 function makeRequest(
