@@ -1,0 +1,49 @@
+import type { ParsedVessel } from '@/lib/types';
+
+interface PassportTabProps {
+  vessel?: ParsedVessel;
+}
+
+interface CheckRow {
+  label: string;
+  value: string | null | undefined;
+  missing?: boolean;
+}
+
+export function PassportTab({ vessel }: PassportTabProps) {
+  if (!vessel) {
+    return (
+      <div data-testid="tab-passport" className="text-sm text-gray-500">
+        No vessel data available.
+      </div>
+    );
+  }
+
+  const rows: CheckRow[] = [
+    { label: 'Flag', value: vessel.flag },
+    { label: 'Class Society', value: vessel.classSociety },
+    { label: 'P&I Club', value: vessel.pandi },
+    { label: 'Restrictions', value: vessel.restrictions?.length ? vessel.restrictions.join(', ') : null },
+    { label: 'Last Cargoes', value: vessel.lastCargoes },
+  ];
+
+  return (
+    <div data-testid="tab-passport" className="space-y-2 text-sm">
+      <div className="divide-y">
+        {rows.map(({ label, value }) => (
+          <div key={label} className="flex justify-between py-2">
+            <span className="text-gray-500">{label}</span>
+            {value ? (
+              <span className="font-medium text-right max-w-xs">{value}</span>
+            ) : (
+              <span className="text-gray-300 italic">—</span>
+            )}
+          </div>
+        ))}
+      </div>
+      <p className="text-xs text-gray-400 pt-2 border-t">
+        Full certificate checks (ISM, MLC, AIS) — coming in spec-11.
+      </p>
+    </div>
+  );
+}
