@@ -90,8 +90,9 @@ export async function searchOpenSanctions(name: string, dataset = 'default'): Pr
 
 export async function checkVesselSanctions(
   vesselName: string,
-  _imo?: string,
+  imo?: string,
 ): Promise<{ sanctioned: boolean; matches: OsMatch[]; sources: string[] }> {
+  void imo; // reserved for IMO-specific lookup in Wave β
   const matches = await searchOpenSanctions(vesselName);
   const positiveMatches = matches.filter(m => m.score >= SANCTION_THRESHOLD);
   const sanctioned = positiveMatches.length > 0;
