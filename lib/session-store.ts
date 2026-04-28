@@ -158,6 +158,41 @@ export class SessionStore {
   getDatabase(): Database.Database {
     return this.db;
   }
+
+  /**
+   * Returns cached bunker price for a port+day pair (migration003: bunker_prices table).
+   * Returns null when no cache entry exists.
+   */
+  getBunkerPrice(port: string, day: string): { vlsfo: number; mgo?: number; fetched_at: string } | null {
+    const row = this.db.prepare<[string, string], { vlsfo: number; mgo: number | null; fetched_at: string }>(
+      'SELECT vlsfo, mgo, fetched_at FROM bunker_prices WHERE port = ? AND day = ?'
+    ).get(port, day);
+    if (!row) return null;
+    return { vlsfo: row.vlsfo, mgo: row.mgo ?? undefined, fetched_at: row.fetched_at };
+  }
+
+  upsertBunkerPrice(port: string, day: string, vlsfo: number, mgo: number | null, fetchedAt: string): void {
+    this.db.prepare(
+      'INSERT OR REPLACE INTO bunker_prices (port, day, vlsfo, mgo, fetched_at) VALUES (?, ?, ?, ?, ?)'
+    ).run(port, day, vlsfo, mgo, fetchedAt);
+  }
+
+  /**
+   * Returns cached EUA price for a day (migration003: eua_prices table).
+   * Returns null when no cache entry exists.
+   */
+  getEuaPrice(day: string): { price: number; fetched_at: string } | null {
+    const row = this.db.prepare<[string], { price: number; fetched_at: string }>(
+      'SELECT price, fetched_at FROM eua_prices WHERE day = ?'
+    ).get(day);
+    return row ?? null;
+  }
+
+  upsertEuaPrice(day: string, price: number, fetchedAt: string): void {
+    this.db.prepare(
+      'INSERT OR REPLACE INTO eua_prices (day, price, fetched_at) VALUES (?, ?, ?)'
+    ).run(day, price, fetchedAt);
+  }
 }
 
 // Singleton for application use
