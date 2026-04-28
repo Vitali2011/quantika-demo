@@ -14,7 +14,10 @@ global.fetch = jest.fn() as typeof global.fetch;
 
 // Provide a minimal window object so analytics (posthog) guards work in node test env
 // Defined as a configurable getter so jest.spyOn(global, 'window', 'get') works in tests
-Object.defineProperty(global, 'window', {
-  get: () => global,
-  configurable: true,
-});
+// Guard: in jsdom environment, window is already defined — skip the stub to avoid TypeError.
+if (typeof window === 'undefined') {
+  Object.defineProperty(global, 'window', {
+    get: () => global,
+    configurable: true,
+  });
+}
