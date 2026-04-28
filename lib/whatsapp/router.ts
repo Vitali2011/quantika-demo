@@ -1,5 +1,6 @@
 import type { WhatsAppClient } from './client';
 import type { WhatsAppIncomingMessage } from './types';
+import { startOnboarding, handleRegionReply, isOnboarded } from './onboarding';
 
 const COMING_SOON = '🚧 Coming soon — Forward Anything feature lands in next release';
 
@@ -17,6 +18,14 @@ export async function handleMedia(msg: WhatsAppIncomingMessage, client: WhatsApp
 
 export async function handleInteractive(msg: WhatsAppIncomingMessage, client: WhatsAppClient): Promise<void> {
   console.log('[whatsapp] handleInteractive', { id: msg.id, from: msg.from, interactive: msg.interactive });
+
+  const buttonId = msg.interactive?.button_reply?.id ?? msg.interactive?.list_reply?.id ?? '';
+  const regionMatch = buttonId.match(/^region:(MENA|Med|WAFR|Other)$/);
+  if (regionMatch) {
+    await handleRegionReply(client, msg, regionMatch[1]);
+    return;
+  }
+
   await client.markAsRead(msg.id);
   await client.sendText(msg.from, COMING_SOON);
 }
@@ -31,6 +40,12 @@ export async function routeIncomingMessage(
   msg: WhatsAppIncomingMessage,
   client: WhatsAppClient,
 ): Promise<void> {
+  const onboarded = await isOnboarded(msg.from);
+  if (!onboarded) {
+    await startOnboarding(client, msg);
+    return;
+  }
+
   switch (msg.type) {
     case 'text':
       await handleText(msg, client);
