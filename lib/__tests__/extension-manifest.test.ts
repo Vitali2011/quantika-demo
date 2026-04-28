@@ -3,6 +3,7 @@ import * as path from 'path';
 
 describe('Gmail extension manifest', () => {
   const manifestPath = path.join(__dirname, '../../extensions/gmail/manifest.json');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let manifest: any;
   beforeAll(() => { manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8')); });
   it('is Manifest v3', () => expect(manifest.manifest_version).toBe(3));
