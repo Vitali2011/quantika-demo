@@ -36,3 +36,10 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
+
+/* RTL utilities — minimal additive layer for Arabic/Hebrew layouts */
+@layer utilities {
+  [dir="rtl"] .quantika-arrow {
+    transform: scaleX(-1);
+  }
+}
