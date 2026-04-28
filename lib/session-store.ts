@@ -154,6 +154,10 @@ export class SessionStore {
     ).get();
     return row?.count ?? 0;
   }
+
+  getDatabase(): Database.Database {
+    return this.db;
+  }
 }
 
 // Singleton for application use
