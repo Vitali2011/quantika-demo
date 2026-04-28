@@ -27,7 +27,8 @@ export class MockWhatsAppClient {
     this.readMessages.push(messageId);
   }
 
-  async downloadMedia(_mediaId: string): Promise<{ url: string; mimeType: string }> {
+  async downloadMedia(mediaId: string): Promise<{ url: string; mimeType: string }> {
+    void mediaId;
     return { url: 'https://mock.example.com/media/123', mimeType: 'image/jpeg' };
   }
 }

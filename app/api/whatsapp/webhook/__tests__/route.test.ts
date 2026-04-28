@@ -1,6 +1,6 @@
 import { createHmac } from 'node:crypto';
 
-jest.mock('@/lib/whatsapp/client', () => require('@/lib/whatsapp/__mocks__/client'));
+jest.mock('@/lib/whatsapp/client', () => jest.requireActual('@/lib/whatsapp/__mocks__/client'));
 
 import { GET, POST } from '@/app/api/whatsapp/webhook/route';
 
