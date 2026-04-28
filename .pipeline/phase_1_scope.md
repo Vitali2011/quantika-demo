@@ -1,43 +1,39 @@
-# Phase 1 — Scope: Wave-5 follow-up (3 gaps)
+# Phase 1 — Scope: Wave α Acceptance Bug-Fix
 
-## Spec Summary
-Закрыть 3 gap'а из аудита Wave 5 против dev-pipeline v2026-04-19:
-1. Contract test: `ConfidenceLevel` ↔ `CONFIDENCE_MULTIPLIERS` (QI #12)
-2. Deploy preflight: placeholder secrets scanner (QI #14)
-3. Migration flag assertion: `USE_MIGRATION_RUNNER=true` в preflight (QI #14)
+**Date:** 2026-04-28
+**Branch:** `fix/wave-alpha-acceptance` от `main` (post-Wave-α)
+**Reference:** `.test-review/verdict.md`, `.test-review/findings.md`
 
-## Affected Files
-- `lib/__tests__/wave5-sanity.test.ts` — +1 test block (Gap #1)
-- `scripts/preflight.sh` (NEW) — env scanner + USE_MIGRATION_RUNNER assert (Gap #2+#3)
-- `scripts/setup.sh` — вызов preflight.sh перед pm2 restart (wiring)
+## Freshness check
+Все 6 файлов проверены на `origin/main` — баги ещё актуальны (не зафикшены другими PR'ами).
+Regression suite запущен на main: **24 failed / 60 passed / 84 total** ← exact match с verdict.md.
 
 ## Boundaries
-### Can Change
-- wave5-sanity.test.ts (append 1 `describe` block)
-- Новый файл scripts/preflight.sh
-- scripts/setup.sh (minimal diff — добавить вызов)
 
-### Cannot Change
-- lib/types.ts, lib/sailing/match-scoring.ts — только тестируем существующий инвариант
-- Любые route-handlers, middleware
-- 23 существующих wave5-sanity теста
+**Can change:**
+- `lib/whatsapp/signature.ts`, `lib/confidence.ts`, `lib/economics/ets.ts`, `lib/economics/war-risk.ts`, `lib/whatsapp/forward-parser.ts`, `lib/sanctions/opensanctions.ts`
+- `tests/regression/*` (commit — сейчас untracked)
+- `jest.regression.config.mjs` (commit)
+- `package.json` — добавить `test:regression` script
 
-### Must Not Break
-- `npm test` зелёный (24 теста включая новый)
-- `npm run lint` чистый
-- setup.sh продолжает работать локально (preflight gracefully skip если .env.local отсутствует — dev mode)
+**Cannot change:** function signatures, schema БД, миграции, env var имена.
 
-## Work Fronts
-Single front — 3 точечных изменения в 3 файлах, нет смысла параллелить.
+**Must not break:** `npm test` (1349 unit tests), `npm run build`, `npm run test:smoke`.
 
-## Overlap Check
-N/A (single front).
+## Work fronts (последовательно, без worktree — 5 файлов изолированы)
 
-## Deletion Inventory
-N/A — чистое добавление.
+| F | File | Failing tests today | Fix |
+|---|------|---------------------|-----|
+| F0 | tests/regression/* + jest.regression.config.mjs + package.json | — | Commit как RED baseline |
+| F1 | signature.ts:8 | 3 | `!signature \|\| !appSecret` |
+| F2 | confidence.ts:35,170 | 7 | `!Number.isFinite(score)` + empty criticalFields → `'missing'` |
+| F3 | ets.ts:19 | 4 | extend guard: `vlsfoBurnMt <= 0 \|\| euaPrice <= 0 \|\| euLegPercent > 1` |
+| F4 | war-risk.ts:54,67 | 3 | word-boundary regex + `vesselValueUsd <= 0 → 0` |
+| F5 | forward-parser.ts:75 | 6 | `if (!rawText) return uncertain` ДО `callAiJson` |
+| F6 | opensanctions.ts:61 | 1 | `if (!name.trim()) return []` |
 
-## Entry State Matrix
-N/A — не re-entrant codepath.
+## Open questions
+None.
 
-## Open Questions
-Нет.
+## Gate
+✅ Scope ready — переход к Phase 2.
