@@ -126,14 +126,16 @@ describe('mapConfidenceToLevel', () => {
 // ── computeMatchConfidence ───────────────────────────────────────────────────
 
 describe('computeMatchConfidence', () => {
-  it('all critical fields confirmed+sourceText → level=verified, blockSend=false, blockedFields=[]', () => {
+  it('all ConfidenceField-based critical fields confirmed+sourceText → blockSend=false, blockedFields=[]', () => {
     const cargo = makeCargo();
     const vessel = makeVessel();
     const result = computeMatchConfidence(cargo, vessel);
 
     expect(result.blockSend).toBe(false);
     expect(result.blockedFields).toEqual([]);
-    expect(result.level).toBe('verified');
+    // laycan and vessel.imo are plain strings (no AI confidence) → 'inferred' at best
+    // so overall level = 'inferred', not 'verified'
+    expect(result.level).toBe('inferred');
   });
 
   it('1 uncertain critical field → blockSend=true, blockedFields includes it', () => {
