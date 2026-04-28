@@ -8,6 +8,7 @@ import { AnalyticsTracker } from '@/lib/analytics-tracker';
 import { safeRender } from '@/lib/ui-render';
 import { getConfidenceColorClass } from '@/lib/confidence';
 import { MatchTabs } from '@/components/match/MatchTabs';
+import { SourceAttributionSection } from '@/components/match/SourceAttributionSection';
 
 interface Props { params: Promise<{ id: string }>; }
 
@@ -72,6 +73,20 @@ export default async function MatchDetailPage({ params }: Props) {
           cargo={cargo}
           cargoEmailId={cargoEmail?.id}
         />
+
+        {/* Source attribution split-view for key cargo fields */}
+        {cargo && cargoEmail && (
+          <SourceAttributionSection
+            fields={[
+              ...(cargo.cargoDescription ? [{ label: 'Cargo', value: cargo.cargoDescription }] : []),
+              ...(cargo.weightMt ? [{ label: 'Weight', value: cargo.weightMt }] : []),
+              ...(cargo.originPort ? [{ label: 'Load Port', value: cargo.originPort }] : []),
+              ...(cargo.destinationPort ? [{ label: 'Discharge Port', value: cargo.destinationPort }] : []),
+              ...(cargo.preferredDates ? [{ label: 'Laycan', value: cargo.preferredDates }] : []),
+            ]}
+            originalEmail={cargoEmail.body}
+          />
+        )}
       </div>
     </main>
   );
