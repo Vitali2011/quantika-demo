@@ -1,4 +1,39 @@
 // Pure TypeScript — NO React imports
+import type { Match } from './types';
+import type { EconomicsResult } from './types';
+import type { EconomicsInput } from './economics/index';
+
+/**
+ * Economics enrichment hook — spec α-08.
+ * Called AFTER match scoring (different hunk from spec-02 confidence attachment).
+ *
+ * For each match that has sufficient route + vessel data, attempts to compute
+ * economics with a 5-second timeout. On any failure, the match is returned
+ * unchanged (economics field absent). Never throws to caller.
+ */
+export async function enrichMatchesWithEconomics(
+  matches: Match[],
+  getData: (match: Match) => EconomicsInput | null,
+  computeFn: (input: EconomicsInput) => Promise<EconomicsResult>,
+): Promise<Match[]> {
+  return Promise.all(
+    matches.map(async (match) => {
+      const input = getData(match);
+      if (!input) return match;
+      try {
+        const economics = await Promise.race([
+          computeFn(input),
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error('economics timeout')), 5_000)
+          ),
+        ]);
+        return { ...match, economics };
+      } catch {
+        return match;
+      }
+    })
+  );
+}
 
 export interface PipelineStep {
   label: string;

@@ -12,12 +12,70 @@ export function isRange<T>(v: unknown): v is Range<T> {
 
 // ── Confidence ──
 
-export type ConfidenceLevel = 'confirmed' | 'interpreted' | 'uncertain';
+/**
+ * 4-color trust UX. `uncertain` blocks Send Quote action.
+ * Used by the confidence engine (spec-02), match detail UI (spec-06), audit trail (spec-03).
+ */
+export type ConfidenceLevel = 'verified' | 'inferred' | 'uncertain' | 'missing';
+
+/** @internal Parse-level confidence produced by the LLM parsing pipeline. */
+type ParseConfidence = 'confirmed' | 'interpreted' | 'uncertain';
 
 export interface ConfidenceField<T> {
   value: T;
-  confidence: ConfidenceLevel;
+  confidence: ParseConfidence;
   sourceText?: string;
+}
+
+// ── Audit Trail ──
+
+/** Single event in the audit trail. */
+export interface AuditEntry {
+  id: string;                          // UUID
+  timestamp: string;                   // ISO 8601
+  sessionId: string;                   // matches session
+  inquiryId?: string;                  // optional, ties to a parsed cargo inquiry
+  actor: 'ai' | 'user' | 'system';
+  action: 'parsed' | 'confirmed' | 'overridden' | 'reverted' | 'sent';
+  field?: string;                      // dot-path: "cargo.weight_mt"
+  beforeValue?: unknown;
+  afterValue?: unknown;
+  reason?: string;                     // user-provided rationale on override
+}
+
+// ── Economics Engine ──
+
+export interface EconomicsBreakdown {
+  bunkerCost: number;                  // USD
+  bunkerPort: string;                  // recommended bunkering hub
+  splitBunkerSavings?: number;         // USD, if split bunkering applicable
+  euEtsAmount: number;                 // EUR (0 if non-EU route)
+  euEtsApplicable: boolean;
+  warRiskPremium: number;              // USD (0 if no HRA crossing)
+  warRiskZones: string[];              // e.g. ['Gulf of Guinea HRA']
+}
+
+export interface EconomicsResult {
+  breakdown: EconomicsBreakdown;
+  totalUsd: number;                    // sum of all costs in USD-equivalent
+  calculatedAt: string;                // ISO 8601
+  dataFreshness: {
+    bunker: string;                    // ISO 8601 of bunker price scrape
+    eua: string;                       // ISO 8601 of EUA price scrape
+  };
+}
+
+// ── Market Benchmark ──
+
+export type MarketIndicator = 'TOEPFER_TMI' | 'DREWRY_BREAKBULK' | 'BHSI';
+
+export interface MarketBenchmark {
+  indicator: MarketIndicator;
+  value: number;                       // current value (USD/day for TMI, index for others)
+  unit: string;                        // 'USD/day' | 'index'
+  period: string;                      // 'Apr 2026' | 'W17 2026'
+  sourceUrl: string;                   // canonical URL where it was scraped
+  fetchedAt: string;                   // ISO 8601
 }
 
 // Helper to extract value from ConfidenceField
@@ -291,6 +349,10 @@ export interface Match {
   dateIssues?: string[];
   sanctions?: MatchSanctions;
   scoreBreakdown?: ScoreBreakdown;
+  /** Confidence summary computed by the confidence engine (spec α-02). Optional for backward compat. */
+  confidence?: import('./confidence').MatchConfidence;
+  /** Economics enrichment computed by the economics engine (spec α-08). Optional — absent when data unavailable. */
+  economics?: EconomicsResult;
 }
 
 /**

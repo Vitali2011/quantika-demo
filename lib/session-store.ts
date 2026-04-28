@@ -45,7 +45,29 @@ export class SessionStore {
           created_at INTEGER NOT NULL,
           expires_at INTEGER NOT NULL,
           data       TEXT NOT NULL
-        )
+        );
+        CREATE TABLE IF NOT EXISTS whatsapp_users (
+          phone               TEXT PRIMARY KEY,
+          session_id          TEXT NOT NULL,
+          onboarded_at        TEXT,
+          region              TEXT,
+          timezone            TEXT,
+          locale              TEXT,
+          last_digest_sent_at TEXT,
+          created_at          TEXT NOT NULL DEFAULT (datetime('now'))
+        );
+        CREATE TABLE IF NOT EXISTS deal_id_counter (
+          session_id  TEXT PRIMARY KEY,
+          last_id     INTEGER NOT NULL DEFAULT 0
+        );
+        CREATE TABLE IF NOT EXISTS trial_state (
+          session_id   TEXT PRIMARY KEY,
+          started_at   TEXT NOT NULL,
+          ends_at      TEXT NOT NULL,
+          activated_at TEXT,
+          region       TEXT,
+          demo_seeded  INTEGER DEFAULT 0
+        );
       `);
     }
   }
@@ -153,6 +175,62 @@ export class SessionStore {
       'SELECT COUNT(*) as count FROM sessions'
     ).get();
     return row?.count ?? 0;
+  }
+
+  getDatabase(): Database.Database {
+    return this.db;
+  }
+
+  /**
+   * Returns cached bunker price for a port+day pair (migration003: bunker_prices table).
+   * Returns null when no cache entry exists.
+   */
+  getBunkerPrice(port: string, day: string): { vlsfo: number; mgo?: number; fetched_at: string } | null {
+    const row = this.db.prepare<[string, string], { vlsfo: number; mgo: number | null; fetched_at: string }>(
+      'SELECT vlsfo, mgo, fetched_at FROM bunker_prices WHERE port = ? AND day = ?'
+    ).get(port, day);
+    if (!row) return null;
+    return { vlsfo: row.vlsfo, mgo: row.mgo ?? undefined, fetched_at: row.fetched_at };
+  }
+
+  upsertBunkerPrice(port: string, day: string, vlsfo: number, mgo: number | null, fetchedAt: string): void {
+    this.db.prepare(
+      'INSERT OR REPLACE INTO bunker_prices (port, day, vlsfo, mgo, fetched_at) VALUES (?, ?, ?, ?, ?)'
+    ).run(port, day, vlsfo, mgo, fetchedAt);
+  }
+
+  /**
+   * Returns cached EUA price for a day (migration003: eua_prices table).
+   * Returns null when no cache entry exists.
+   */
+  getEuaPrice(day: string): { price: number; fetched_at: string } | null {
+    const row = this.db.prepare<[string], { price: number; fetched_at: string }>(
+      'SELECT price, fetched_at FROM eua_prices WHERE day = ?'
+    ).get(day);
+    return row ?? null;
+  }
+
+  upsertEuaPrice(day: string, price: number, fetchedAt: string): void {
+    this.db.prepare(
+      'INSERT OR REPLACE INTO eua_prices (day, price, fetched_at) VALUES (?, ?, ?)'
+    ).run(day, price, fetchedAt);
+  }
+
+  /**
+   * Returns cached OpenSanctions response for a query hash (migration005: opensanctions_cache table).
+   * Returns null when no cache entry exists or entry is expired (TTL enforced by caller).
+   */
+  getOpenSanctionsCache(queryHash: string): { response_json: string; fetched_at: number } | null {
+    const row = this.db.prepare<[string], { response_json: string; fetched_at: number }>(
+      'SELECT response_json, fetched_at FROM opensanctions_cache WHERE query_hash = ?'
+    ).get(queryHash);
+    return row ?? null;
+  }
+
+  setOpenSanctionsCache(queryHash: string, responseJson: string, fetchedAt: number): void {
+    this.db.prepare(
+      'INSERT OR REPLACE INTO opensanctions_cache (query_hash, response_json, fetched_at) VALUES (?, ?, ?)'
+    ).run(queryHash, responseJson, fetchedAt);
   }
 }
 

@@ -9,6 +9,7 @@ import type {
   ParsedVessel,
 } from '@/lib/types';
 import { cfValue, isRange } from '@/lib/types';
+import { computeMatchConfidence } from '@/lib/confidence';
 import { calculateReadinessGap, detectSpot } from '@/lib/sailing/readiness-gap';
 import { applyReadinessScoring, computeScoreBreakdown, deriveMatchLevel } from '@/lib/sailing/match-scoring';
 import { runHardFilters } from '@/lib/sailing/match-filters';
@@ -497,6 +498,19 @@ export async function analyzePairs(
           `[pair-analyzer] BUG: pair ${key} found in both matches and blockedMatches after dedup`,
         );
       }
+    }
+  }
+
+  // Attach confidence summary to each match (spec α-02)
+  for (const m of matches) {
+    const cargo = cargos.find(
+      (c) => c.emailId === m.cargoEmailId && c.itemIndex === m.cargoItemIndex,
+    );
+    const vessel = vessels.find(
+      (v) => v.emailId === m.vesselEmailId && v.itemIndex === m.vesselItemIndex,
+    );
+    if (cargo) {
+      m.confidence = computeMatchConfidence(cargo, vessel ?? null);
     }
   }
 

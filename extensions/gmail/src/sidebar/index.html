@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Quantika Assistant</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin:0;padding:0;background:#f9fafb;color:#111;font-size:13px}
+header{background:#1e40af;color:white;padding:10px 14px;display:flex;align-items:center;gap:6px;font-weight:600;font-size:14px}
+section{padding:10px 14px;border-bottom:1px solid #e5e7eb}
+section h2{font-size:11px;font-weight:700;text-transform:uppercase;color:#6b7280;margin:0 0 6px}
+.field{display:flex;gap:6px;margin-bottom:3px;font-size:12px}
+.field-label{color:#6b7280;min-width:90px}
+.field-value{color:#111;font-weight:500}
+.vessel-item{padding:6px 8px;border:1px solid #e5e7eb;border-radius:4px;margin-bottom:4px;cursor:pointer;background:#fff}
+.vessel-item:hover{border-color:#1e40af}
+.vessel-item.selected{border-color:#1e40af;background:#eff6ff}
+.vessel-name{font-weight:600;font-size:12px}
+.vessel-score{font-size:11px;color:#6b7280}
+.passport-row{display:flex;justify-content:space-between;font-size:12px;padding:2px 0}
+.passport-ok{color:#16a34a}
+.passport-na{color:#9ca3af}
+.actions{display:flex;flex-direction:column;gap:6px;padding:12px 14px}
+button{border:0;padding:7px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:500;text-align:left}
+.btn-primary{background:#1e40af;color:white}
+.btn-secondary{background:#f3f4f6;color:#374151;border:1px solid #e5e7eb}
+.status{padding:8px 14px;font-size:11px;color:#6b7280;font-style:italic}
+#loading{padding:20px 14px;text-align:center;color:#6b7280;font-size:12px}
+</style>
+</head><body>
+<header>⚓ Quantika Assistant</header>
+<div id="loading">Loading context…</div>
+<div id="root" style="display:none">
+  <section id="cargo">
+    <h2>📦 Parsed Cargo</h2>
+    <div id="cargo-fields"></div>
+  </section>
+  <section id="matches">
+    <h2>🚢 Top Vessels</h2>
+    <div id="vessel-list"></div>
+  </section>
+  <section id="passport">
+    <h2>🛡 Vessel Passport</h2>
+    <div id="passport-content"><span class="passport-na">Select a vessel above</span></div>
+  </section>
+  <section id="actions">
+    <button class="btn-primary" id="btn-draft">📝 Insert Draft Quote</button>
+    <button class="btn-secondary" id="btn-benchmark">📊 Insert Benchmark</button>
+    <button class="btn-secondary" id="btn-passport">🛡 Insert Passport</button>
+  </section>
+  <div class="status" id="status-bar"></div>
+</div>
+<script src="index.js"></script>
+</body></html>

@@ -13,7 +13,7 @@ function makeCargo(emailId: string, itemIndex = 0): ParsedCargo {
     destinationPort: { value: 'SAJED', confidence: 0.9, source: 'llm' },
     cargoDescription: { value: 'Bulk grain', confidence: 0.9, source: 'llm' },
     weightMt: { value: 25000, confidence: 0.9, source: 'llm' },
-    cargoType: 'DRY_BULK',
+    cargoType: 'BULK',
     preferredDates: { value: '2025-05-01', confidence: 0.8, source: 'llm' },
     laycan: '1-15 May 2025',
     originCountry: null,
