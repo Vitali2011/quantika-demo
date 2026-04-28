@@ -349,6 +349,8 @@ export interface Match {
   dateIssues?: string[];
   sanctions?: MatchSanctions;
   scoreBreakdown?: ScoreBreakdown;
+  /** Confidence summary computed by the confidence engine (spec α-02). Optional for backward compat. */
+  confidence?: import('./confidence').MatchConfidence;
 }
 
 /**
