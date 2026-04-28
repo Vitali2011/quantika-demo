@@ -351,6 +351,8 @@ export interface Match {
   scoreBreakdown?: ScoreBreakdown;
   /** Confidence summary computed by the confidence engine (spec α-02). Optional for backward compat. */
   confidence?: import('./confidence').MatchConfidence;
+  /** Economics enrichment computed by the economics engine (spec α-08). Optional — absent when data unavailable. */
+  economics?: EconomicsResult;
 }
 
 /**
