@@ -5,8 +5,8 @@ interface KpiCard {
   period: string;
 }
 
-// Placeholder data — spec-14 will replace with real scrapers
-const PLACEHOLDER_KPIS: KpiCard[] = [
+// Static seed data — spec-14 will replace with real scrapers
+const MARKET_KPIS: KpiCard[] = [
   { label: 'Toepfer TMI', value: '—', unit: 'USD/day', period: 'Loading…' },
   { label: 'Bunker Rotterdam', value: '—', unit: 'USD/t', period: 'Loading…' },
   { label: 'EUA EU ETS', value: '—', unit: 'EUR/t', period: 'Loading…' },
@@ -21,7 +21,7 @@ export function MarketIntelligence({ noActiveDeals }: MarketIntelligenceProps) {
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {PLACEHOLDER_KPIS.map((kpi) => (
+        {MARKET_KPIS.map((kpi) => (
           <div key={kpi.label} className="p-3 bg-white rounded-lg border border-gray-200">
             <p className="text-xs text-gray-500 font-medium">{kpi.label}</p>
             <p className="text-xl font-bold text-gray-900 mt-1 tabular-nums">{kpi.value}</p>
