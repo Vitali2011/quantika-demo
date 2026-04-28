@@ -1,0 +1,13 @@
+{
+  "name": "quantika-gmail-extension",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "watch": "node esbuild.config.mjs --watch"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "@types/chrome": "^0.0.260"
+  }
+}
