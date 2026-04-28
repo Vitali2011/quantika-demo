@@ -36,7 +36,7 @@ export function mapConfidenceToLevel(
   score: number | null | undefined,
   hasSourceQuote: boolean = false,
 ): ConfidenceLevel {
-  if (score === null || score === undefined) return 'missing';
+  if (score === null || score === undefined || Number.isNaN(score) || score === Infinity) return 'missing';
   if (score >= 0.85 && hasSourceQuote) return 'verified';
   if (score >= 0.85) return 'inferred'; // high score without sourceQuote → inferred
   if (score >= 0.5) return 'inferred';
@@ -169,6 +169,9 @@ export function computeMatchConfidence(
   parsedVessel: ParsedVessel | null,
   criticalFields: string[] = [...DEFAULT_CRITICAL_FIELDS],
 ): MatchConfidence {
+  if (criticalFields.length === 0) {
+    return { level: 'missing', blockSend: false, blockedFields: [], fieldConfidences: [] };
+  }
   const fieldConfidences: FieldConfidence[] = criticalFields.map((f) =>
     resolveField(f, parsedCargo, parsedVessel),
   );

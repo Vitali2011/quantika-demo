@@ -164,12 +164,12 @@ describe('H5 — empty criticalFields array', () => {
     const result = computeMatchConfidence(cargo, vessel, []);
 
     // Document: is blockSend really false even when nothing is filled in?
-    if (result.blockSend === false && result.level === 'verified') {
-      console.warn('[H5 CONFIRMED] computeMatchConfidence(cargo, vessel, []) returns level=verified, blockSend=false — silent approval footgun');
+    if (result.level === 'missing') {
+      console.warn('[H5 FIXED] empty criticalFields now returns level=missing (silent approval closed)');
     }
     // Preferred: either throw on empty criticalFields, or return a neutral/missing level
     expect(result.blockSend).toBe(false); // documenting current (dangerous) behaviour
-    expect(result.level).toBe('verified'); // documenting current (dangerous) behaviour — MARK AS KNOWN BUG
+    expect(result.level).toBe('missing'); // after fix: empty criticalFields → level:missing
   });
 
   it('empty criticalFields produces zero fieldConfidences for critical subset', () => {

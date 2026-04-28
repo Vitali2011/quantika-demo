@@ -88,6 +88,13 @@ export async function parseForwardedMessage(
       rawText = await extractTextFromPdf(media.url);
       break;
     }
+
+    default:
+      return {
+        confidence: 'uncertain',
+        missingFields: ['unsupported message type'],
+        rawText: '',
+      };
   }
 
   const raw = await callAiJson<RawParseResponse>(
