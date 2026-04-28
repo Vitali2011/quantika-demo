@@ -73,21 +73,21 @@ describe('ConfIcon', () => {
     const el = ConfIcon({ confidence: 'uncertain' });
     expect(el).not.toBeNull();
     expect(el?.type).toBe('span');
-    expect(el?.props.children).toBe('❓');
+    expect((el?.props as { children: unknown }).children).toBe('❓');
   });
 
   it('returns span with warning for interpreted confidence', () => {
     const el = ConfIcon({ confidence: 'interpreted' });
     expect(el).not.toBeNull();
     expect(el?.type).toBe('span');
-    expect(el?.props.children).toBe('⚠️');
+    expect((el?.props as { children: unknown }).children).toBe('⚠️');
   });
 
   it('returns span with checkmark for confirmed confidence', () => {
     const el = ConfIcon({ confidence: 'confirmed' });
     expect(el).not.toBeNull();
     expect(el?.type).toBe('span');
-    expect(el?.props.children).toBe('✅');
+    expect((el?.props as { children: unknown }).children).toBe('✅');
   });
 
   it('returns null for undefined confidence', () => {
