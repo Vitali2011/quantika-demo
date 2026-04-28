@@ -1,7 +1,7 @@
 import type { Migration } from './types';
 
-const migration005: Migration = {
-  version: 5,
+const migration007: Migration = {
+  version: 7,
   name: 'opensanctions-cache',
   up(db) {
     db.exec(`
@@ -17,4 +17,4 @@ const migration005: Migration = {
   },
 };
 
-export default migration005;
+export default migration007;
