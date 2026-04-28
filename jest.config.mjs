@@ -10,6 +10,7 @@ const config = {
   testPathIgnorePatterns: [
     '/node_modules/',
     '/__tests__/e2e/',
+    '/tests/regression/',
     ...(process.cwd().includes('/.wave/') ? [] : ['/.wave/']),
     ...(process.cwd().includes('/.claude/worktrees/') ? [] : ['/\\.claude/worktrees/']),
   ],
