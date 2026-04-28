@@ -1,6 +1,4 @@
 (function () {
-  console.log('[Quantika] content script loaded on', location.hostname);
-
   // ── Ghost-text state ────────────────────────────────────────────────────────
   // Inline minimal ghost-text logic to avoid bundler cross-module issues
   // in the IIFE content script context. Full class lives in content/ghost-text.ts.

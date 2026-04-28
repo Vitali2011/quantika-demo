@@ -8,7 +8,7 @@ interface ExtMessage {
 }
 
 chrome.runtime.onInstalled.addListener(() => {
-  console.log('[Quantika] Extension installed');
+  // Extension installed — nothing to do yet
 });
 
 chrome.runtime.onMessage.addListener((msg: ExtMessage, _sender, sendResponse) => {
