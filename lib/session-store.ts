@@ -215,6 +215,23 @@ export class SessionStore {
       'INSERT OR REPLACE INTO eua_prices (day, price, fetched_at) VALUES (?, ?, ?)'
     ).run(day, price, fetchedAt);
   }
+
+  /**
+   * Returns cached OpenSanctions response for a query hash (migration005: opensanctions_cache table).
+   * Returns null when no cache entry exists or entry is expired (TTL enforced by caller).
+   */
+  getOpenSanctionsCache(queryHash: string): { response_json: string; fetched_at: number } | null {
+    const row = this.db.prepare<[string], { response_json: string; fetched_at: number }>(
+      'SELECT response_json, fetched_at FROM opensanctions_cache WHERE query_hash = ?'
+    ).get(queryHash);
+    return row ?? null;
+  }
+
+  setOpenSanctionsCache(queryHash: string, responseJson: string, fetchedAt: number): void {
+    this.db.prepare(
+      'INSERT OR REPLACE INTO opensanctions_cache (query_hash, response_json, fetched_at) VALUES (?, ?, ?)'
+    ).run(queryHash, responseJson, fetchedAt);
+  }
 }
 
 // Singleton for application use
