@@ -1,4 +1,6 @@
-import type { ConfidenceField, ConfidenceLevel } from '@/lib/types';
+import type { ConfidenceField } from '@/lib/types';
+
+type ParseConfidence = 'confirmed' | 'interpreted' | 'uncertain';
 
 export function extractNum(v: unknown): number | null {
   if (v == null) return null;
@@ -21,7 +23,7 @@ export function toConfidence<T>(field: unknown): ConfidenceField<T> | null {
     const f = field as { value: unknown; confidence?: unknown; source_text?: unknown };
     return {
       value: f.value as T,
-      confidence: (f.confidence as ConfidenceLevel | undefined) || 'confirmed',
+      confidence: (f.confidence as ParseConfidence | undefined) || 'confirmed',
       sourceText: typeof f.source_text === 'string' ? f.source_text : undefined,
     };
   }

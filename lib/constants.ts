@@ -1,3 +1,43 @@
+import type { ConfidenceLevel } from './types';
+
+// ── Wave α: Confidence UX ────────────────────────────────────────────────────
+
+/** Tailwind border classes for each confidence level in the 4-color trust UX. */
+export const CONFIDENCE_COLORS: Record<ConfidenceLevel, string> = {
+  verified: 'border-blue-500',
+  inferred: 'border-yellow-500',
+  uncertain: 'border-orange-500',
+  missing: 'border-gray-400',
+};
+
+// ── Wave α: MENA Timezones ───────────────────────────────────────────────────
+
+/** IANA timezone identifiers for regions where Quantika operates. */
+export const MENA_TIMEZONES = {
+  dubai: 'Asia/Dubai',
+  riyadh: 'Asia/Riyadh',
+  cairo: 'Africa/Cairo',
+  istanbul: 'Europe/Istanbul',
+  lagos: 'Africa/Lagos',
+  casablanca: 'Africa/Casablanca',
+} as const;
+
+export type MenaTimezoneKey = keyof typeof MENA_TIMEZONES;
+
+// ── Wave α: WhatsApp Bot Scheduler ──────────────────────────────────────────
+
+/** Quiet period for MENA (Friday prayer window). Used by WhatsApp bot (spec-09). */
+export const FRIDAY_QUIET_HOURS_GST = {
+  startHour: 13,                      // 13:00 GST
+  endHour: 15,                        // 15:00 GST
+  timezone: 'Asia/Dubai',             // GST = Dubai
+} as const;
+
+/** Morning digest send hour in GST. 8.5 = 08:30. Used by WhatsApp digest scheduler (spec-09). */
+export const MORNING_DIGEST_HOUR_GST = 8.5;  // 08:30 GST
+
+// ────────────────────────────────────────────────────────────────────────────
+
 export const CLIPROXY_BASE_URL = process.env.CLIPROXY_BASE_URL || 'http://localhost:8317/v1';
 export const CLIPROXY_API_KEY = process.env.CLIPROXY_API_KEY || 'cliproxy-key-1';
 export const AI_MODEL_HEAVY = process.env.AI_MODEL_HEAVY || 'gpt-5.4-mini';
