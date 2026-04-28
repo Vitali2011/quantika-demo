@@ -8,7 +8,7 @@
     "to": "demo@quantika.org",
     "subject": "FW: MV DANUBE PIONEER, ROCND / ITRAN, FIXTURE RECAP",
     "date": "2026-04-01T00:00:00.000Z",
-    "body": "---------- Forwarded message ---------\nFrom: Transmar Bulk <chartering@transmar-bulk.com>\nDate: Tue, 31 Mar 2026 15:20:00 +0200\nSubject: MV DANUBE PIONEER, ROCND / ITRAN, FIXTURE RECAP\nTo: ops@bsc-maritime.com\n\nDear Sirs,\n\nFIXTURE RECAP\n\nVessel: MV DANUBE PIONEER\nDWT: 8,500 mts\nBuilt: 2011, Flag: Marshall Islands\nOwners: Pioneer Maritime SA\nCharterers: Transmar Bulk Trading\nAccount: same as Charterers\n\nLoad port: Constanta, Romania (ROCND) - 1SB AAAA\nDisch port: Ravenna, Italy (ITRAN) - 1SB AARA\n\nCargo: abt 6,500 / 7,000 mts steel billets\nFreight: USD 18.50/mt FIOST\n\nLaycan: 12-15 Sep 2026\n\nLoading rate: 3,000 mts SHINC\nDisch rate: 2,000 mts SHINC\n\nDemurrage: USD 6,500 PDPR / FD BENDS\nDispatch: half demurrage on laytime used\n\nCommission: 3.75% TTL on F/D/D\n\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London\n\nSubs: stem + owners approval within 2 banking days from recap date\n\nAll other terms GENCON 94 as amended.\n\nPls confirm all in order.\n\nbrgds\nTransmar Bulk Chartering",
+    "body": "---------- Forwarded message ---------\nFrom: Transmar Breakbulk <chartering@transmar-bb.com>\nDate: Tue, 31 Mar 2026 15:20:00 +0200\nSubject: MV DANUBE PIONEER, ROCND / ITRAN, FIXTURE RECAP\nTo: ops@bsc-maritime.com\n\nDear Sirs,\n\nFIXTURE RECAP\n\nVessel: MV DANUBE PIONEER\nDWT: 8,500 mts\nBuilt: 2011, Flag: Marshall Islands\nOwners: Pioneer Maritime SA\nCharterers: Transmar Breakbulk Trading\nAccount: same as Charterers\n\nLoad port: Constanta, Romania (ROCND) - 1SB AAAA\nDisch port: Ravenna, Italy (ITRAN) - 1SB AARA\n\nCargo: abt 6,500 / 7,000 mts steel billets\nFreight: USD 18.50/mt FIOST\n\nLaycan: 12-15 Sep 2026\n\nLoading rate: 3,000 mts SHINC\nDisch rate: 2,000 mts SHINC\n\nDemurrage: USD 6,500 PDPR / FD BENDS\nDispatch: half demurrage on laytime used\n\nCommission: 3.75% TTL on F/D/D\n\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London\n\nSubs: stem + owners approval within 2 banking days from recap date\n\nAll other terms GENCON 94 as amended.\n\nPls confirm all in order.\n\nbrgds\nTransmar Breakbulk Chartering",
     "snippet": "FIXTURE RECAP MV DANUBE PIONEER Constanta / Ravenna steel billets USD 18.50/mt FIOST...",
     "labelIds": [
       "INBOX"
@@ -43,18 +43,18 @@
     "fromName": "West Africa Chartering Desk",
     "fromEmail": "tct@wacd-shipping.com",
     "to": "demo@quantika.org",
-    "subject": "FW: MV SUNRISE KIBO, TCT WAF / FEAST, FIXTURE RECAP",
+    "subject": "FW: MV FJORD RUNNER, TCT WAF / N.EUR breakbulk, FIXTURE RECAP",
     "date": "2026-04-05T00:00:00.000Z",
-    "body": "---------- Forwarded message ---------\nFrom: Pacific Bulk Carriers <chartering@pacificbulk.sg>\nDate: Fri, 3 Apr 2026 08:45:00 +0800\nSubject: MV SUNRISE KIBO, TCT WAF / FEAST, FIXTURE RECAP\nTo: tct@wacd-shipping.com\n\nDear Sirs,\n\nFIXTURE RECAP - TIME CHARTER TRIP\n\nVessel: MV SUNRISE KIBO\nType: Supramax\nDWT: 55,800 mts\nBuilt: 2015, Flag: Panama\nOwners: Kibo Shipping Ltd\nCharterers: Pacific Bulk Carriers Pte Ltd\nAccount: same as Charterers\n\nCharter Type: Time Charter Trip (TCT)\n\nDely: DOP Dakar (SNDKR)\nRedely: DOP Singapore / Japan range, charterers option\n\nDuration: 1 TCT, abt 60-70 days WOG\n\nHire: USD 14,500/day PDPR\nBallast Bonus: USD 600,000 lumpsum (payable on delivery)\n\nLaycan (dely): 15-20 Sep 2026\n\nFuel on delivery/redelivery: IFO 380 @ USD 420/mt, VLSFO @ USD 550/mt\nBunkers on board on dely: abt 500 mts IFO / 50 mts VLSFO\n\nCommission: 5.00% TTL on hire\n\nCP Form: NYPE 2015\nGoverning Law: English\nArbitration: London LMAA\n\nSubs: stem + owners approval within 3 banking days from recap date\n\nAll other terms and conditions as per NYPE 2015 as amended.\n\nbrgds\nPacific Bulk Carriers - TCT Desk",
-    "snippet": "FIXTURE RECAP TCT MV SUNRISE KIBO Dakar / Singapore-Japan USD 14,500/day BB USD 600,000...",
+    "body": "---------- Forwarded message ---------\nFrom: Nordic Breakbulk Carriers <chartering@nordicbbc.no>\nDate: Fri, 3 Apr 2026 08:45:00 +0100\nSubject: MV FJORD RUNNER, TCT WAF / N.EUR breakbulk, FIXTURE RECAP\nTo: tct@wacd-shipping.com\n\nDear Sirs,\n\nFIXTURE RECAP - TIME CHARTER TRIP\n\nVessel: MV FJORD RUNNER\nType: MPP general cargo\nDWT: 12,500 mts\nBuilt: 2017, Flag: Norway\nOwners: Fjord Shipping AS\nCharterers: Nordic Breakbulk Carriers AS\nAccount: same as Charterers\n\nCharter Type: Time Charter Trip (TCT)\n\nDely: DOP Lagos (NGLOS)\nRedely: DOP Hamburg / Antwerp range, charterers option\n\nDuration: 1 TCT, abt 45-55 days WOG\n\nHire: USD 8,200/day PDPR\nBallast Bonus: USD 120,000 lumpsum (payable on delivery)\n\nLaycan (dely): 15-20 Oct 2026\n\nFuel on delivery/redelivery: VLSFO @ USD 560/mt\nBunkers on board on dely: abt 120 mts VLSFO\n\nCommission: 3.75% TTL on hire\n\nCP Form: NYPE 2015\nGoverning Law: English\nArbitration: London LMAA\n\nSubs: stem + owners approval within 3 banking days from recap date\n\nAll other terms and conditions as per NYPE 2015 as amended.\n\nbrgds\nNordic Breakbulk Carriers - TCT Desk",
+    "snippet": "FIXTURE RECAP TCT MV FJORD RUNNER Lagos / Hamburg-Antwerp breakbulk USD 8,200/day BB USD 120,000...",
     "labelIds": [
       "INBOX"
     ],
     "attachments": [
       {
-        "filename": "SUNRISE_KIBO_TCT_recap_20260403.pdf",
+        "filename": "FJORD_RUNNER_TCT_recap_20260403.pdf",
         "mimeType": "application/pdf",
-        "size": 176400
+        "size": 154200
       }
     ]
   },
@@ -65,10 +65,10 @@
     "fromName": "Grain Chartering International",
     "fromEmail": "gci@grain-chartering.com",
     "to": "demo@quantika.org",
-    "subject": "FW: MV BLACK SEA HARVEST, UAIZM / EGALY, WHEAT FIXTURE RECAP",
+    "subject": "FW: MV MARMARA STAR, TRDRC / EGALY, STEEL COILS FIXTURE RECAP",
     "date": "2026-04-08T00:00:00.000Z",
-    "body": "---------- Forwarded message ---------\nFrom: Ukragreximport <chartering@ukragreximport.ua>\nDate: Mon, 6 Apr 2026 16:10:00 +0300\nSubject: MV BLACK SEA HARVEST, UAIZM / EGALY, WHEAT FIXTURE RECAP\nTo: gci@grain-chartering.com\n\nDear Sirs,\n\nFIXTURE RECAP\n\nVessel: MV BLACK SEA HARVEST\nType: Handymax\nDWT: 32,000 mts\nBuilt: 2013, Flag: Marshall Islands\nOwners: Harvest Maritime Co\nCharterers: Ukragreximport\nAccount: Egyptian Grain Board\n\nLoad port: Izmail, Ukraine (UAIZM) - 1SB AAAA\nDisch port: Alexandria, Egypt (EGALY) - 1SB AAAA\n\nCargo: abt 28,000 / 30,000 mts wheat in bulk\nFreight: USD 42.50/mt\n\nLaycan: 01-05 Oct 2026\n\nLoading rate: 5,000 mts SHINC\nDisch rate: 3,000 mts SHINC\n\nDemurrage: USD 11,000 PDPR / FD BENDS\nDispatch: half demurrage on laytime used\n\nCommission: 3.75% TTL on F/D/D\n\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London\n\nSubs: stem + owners approval within 2 banking days from recap date\n\nbrgds\nUkragreximport - Chartering",
-    "snippet": "FIXTURE RECAP MV BLACK SEA HARVEST Izmail / Alexandria wheat USD 42.50/mt...",
+    "body": "---------- Forwarded message ---------\nFrom: Tersteel Marmara <chartering@tersteel.com.tr>\nDate: Mon, 6 Apr 2026 16:10:00 +0300\nSubject: MV MARMARA STAR, TRDRC / EGALY, STEEL COILS FIXTURE RECAP\nTo: gci@grain-chartering.com\n\nDear Sirs,\n\nFIXTURE RECAP\n\nVessel: MV MARMARA STAR\nType: General cargo / MPP\nDWT: 9,500 mts\nBuilt: 2010, Flag: Turkey\nOwners: Marmara Maritime Ltd\nCharterers: Tersteel Marmara Chartering\nAccount: Nile Steel Co, Egypt\n\nLoad port: Derince, Turkey (TRDRC) - 1SB AAAA\nDisch port: Alexandria, Egypt (EGALY) - 1SB AAAA\n\nCargo: abt 7,500 / 8,000 mts HRC steel coils, stowage factor 1.20\nFreight: USD 22.00/mt FIOST\n\nLaycan: 01-05 Oct 2026\n\nLoading rate: CQD SHINC\nDisch rate: CQD SHINC\n\nDemurrage: USD 7,500 PDPR / FD BENDS\nDispatch: half demurrage on laytime used\n\nCommission: 3.75% TTL on F/D/D\n\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London\n\nSubs: stem + owners approval within 2 banking days from recap date\n\nbrgds\nTersteel Marmara - Chartering",
+    "snippet": "FIXTURE RECAP MV MARMARA STAR Derince / Alexandria steel coils USD 22.00/mt FIOST...",
     "labelIds": [
       "INBOX"
     ]
@@ -97,8 +97,8 @@
     "to": "demo@quantika.org",
     "subject": "FW: MV ADRIATIC STAR, ROCND / ITRAN, FIXTURE RECAP",
     "date": "2026-04-11T00:00:00.000Z",
-    "body": "---------- Forwarded message ---------\nFrom: Adriatic Bulk Shipping <chartering@adriatic-bulk.com>\nDate: Thu, 9 Apr 2026 10:25:00 +0200\nSubject: MV ADRIATIC STAR, ROCND / ITRAN, FIXTURE RECAP\nTo: ops@medchartering.com\n\nDear Sirs,\n\nFIXTURE RECAP\n\nVessel: MV ADRIATIC STAR\nDWT: 8,100 mts\nBuilt: 2014, Flag: Malta\nOwners: Adriatic Maritime Ltd\nCharterers: Mediterranean Chartering\nAccount: same as Charterers\n\nLoad port: Constanta, Romania (ROCND) - 1SB AAAA\nDisch port: Ravenna, Italy (ITRAN) - 1SB AARA\n\nCargo: abt 6,800 / 7,200 mts steel billets\nFreight: [RATE TO BE CONFIRMED]\n\nLaycan: 25-30 Sep 2026\n\nLoading rate: 3,000 mts SHINC\nDisch rate: 2,000 mts SHINC\n\nDemurrage: USD 6,500 PDPR / FD BENDS\n\nCommission: 3.75% TTL on F/D/D\n\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London\n\nSubs: stem + owners approval within 2 banking days\n\nRate to be confirmed upon owners revert. Route and cargo terms as agreed.\n\nbrgds\nAdriatic Bulk Shipping - Chartering",
-    "snippet": "FIXTURE RECAP MV ADRIATIC STAR Constanta / Ravenna steel billets [RATE TO BE CONFIRMED]...",
+    "body": "---------- Forwarded message ---------\nFrom: Adriatic Breakbulk Shipping <chartering@adriatic-bb.com>\nDate: Thu, 9 Apr 2026 10:25:00 +0200\nSubject: MV ADRIATIC STAR, ROCND / ITRAN, FIXTURE RECAP\nTo: ops@medchartering.com\n\nDear Sirs,\n\nFIXTURE RECAP\n\nVessel: MV ADRIATIC STAR\nDWT: 8,100 mts\nBuilt: 2014, Flag: Malta\nOwners: Adriatic Maritime Ltd\nCharterers: Mediterranean Chartering\nAccount: same as Charterers\n\nLoad port: Constanta, Romania (ROCND) - 1SB AAAA\nDisch port: Ravenna, Italy (ITRAN) - 1SB AARA\n\nCargo: abt 6,800 / 7,200 mts steel billets\nFreight: rate under negotiation\n\nLaycan: 25-30 Sep 2026\n\nLoading rate: 3,000 mts SHINC\nDisch rate: 2,000 mts SHINC\n\nDemurrage: USD 6,500 PDPR / FD BENDS\n\nCommission: 3.75% TTL on F/D/D\n\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London\n\nSubs: stem + owners approval within 2 banking days\n\nRate to be confirmed upon owners revert. Route and cargo terms as agreed.\n\nbrgds\nAdriatic Breakbulk Shipping - Chartering",
+    "snippet": "FIXTURE RECAP MV ADRIATIC STAR Constanta / Ravenna steel billets rate under negotiation...",
     "labelIds": [
       "INBOX"
     ]
@@ -110,18 +110,18 @@
     "fromName": "Global TC Desk",
     "fromEmail": "tc@globalmaritimepartners.com",
     "to": "demo@quantika.org",
-    "subject": "FW: MV PACIFIC VENTURE, TC RECAP, APS SINGAPORE / WWP",
+    "subject": "FW: MV NORBULK EXPRESS, TC RECAP, APS ANTWERP / WAF RANGE",
     "date": "2026-04-14T00:00:00.000Z",
-    "body": "---------- Forwarded message ---------\nFrom: Star Shipping Pte Ltd <chartering@starshipping.sg>\nDate: Sun, 12 Apr 2026 14:00:00 +0800\nSubject: MV PACIFIC VENTURE, TC RECAP, APS SINGAPORE / WWP\nTo: tc@globalmaritimepartners.com\n\nDear Sirs,\n\nFIXTURE RECAP - TIME CHARTER\n\nVessel: MV PACIFIC VENTURE\nType: Ultramax\nDWT: 63,500 mts\nBuilt: 2018, Flag: Singapore\nOwners: Pacific Venture Shipmanagement Pte Ltd\nCharterers: Global Maritime Partners\nAccount: same as Charterers\n\nCharter Duration: min 6 months / max 9 months, charterers option\n\nHire: USD 16,800/day PDPR\n\nDely: APS Singapore (SGSIN)\nRedely: WWP (World Wide, worldwide) or ATDNSHINC in charterers option\n\nLaycan (dely): 01-05 Nov 2026\n\nBunkers on delivery: IFO 380 @ USD 415/mt, VLSFO @ USD 545/mt, abt 800 mts IFO / 80 mts VLSFO\nBunkers on redelivery: same quality and same price as on delivery\n\nCommission: 3.75% TTL on hire\n\nCP Form: NYPE 2015\nGoverning Law: English\nArbitration: London LMAA\n\nSubs: stem + owners approval within 3 banking days from recap date\n\nAll other terms as per NYPE 2015 as amended, logically amended for vessel type.\n\nbrgds\nStar Shipping - Chartering",
-    "snippet": "FIXTURE RECAP TC MV PACIFIC VENTURE APS Singapore / WWP 6-9 months USD 16,800/day...",
+    "body": "---------- Forwarded message ---------\nFrom: Norstar MPP Management <chartering@norstar-mpp.no>\nDate: Sun, 12 Apr 2026 14:00:00 +0200\nSubject: MV NORBULK EXPRESS, TC RECAP, APS ANTWERP / WAF RANGE\nTo: tc@globalmaritimepartners.com\n\nDear Sirs,\n\nFIXTURE RECAP - TIME CHARTER\n\nVessel: MV NORBULK EXPRESS\nType: MPP general cargo\nDWT: 14,000 mts\nBuilt: 2019, Flag: Norway\nOwners: Norstar MPP Shipmanagement AS\nCharterers: Global Maritime Partners\nAccount: same as Charterers\n\nCharter Duration: 3 months, charterers option to extend 1 x 1 month\n\nHire: USD 9,500/day PDPR\n\nDely: APS Antwerp (BEANR)\nRedely: WAfrica range or Mediterranean, charterers option\n\nLaycan (dely): 01-05 Nov 2026\n\nBunkers on delivery: VLSFO @ USD 560/mt, abt 150 mts VLSFO on board\nBunkers on redelivery: same quality and same price as on delivery\n\nCommission: 3.75% TTL on hire\n\nCP Form: NYPE 2015\nGoverning Law: English\nArbitration: London LMAA\n\nSubs: stem + owners approval within 3 banking days from recap date\n\nAll other terms as per NYPE 2015 as amended.\n\nbrgds\nNorstar MPP Management - Chartering",
+    "snippet": "FIXTURE RECAP TC MV NORBULK EXPRESS APS Antwerp / WAfrica 3 months USD 9,500/day...",
     "labelIds": [
       "INBOX"
     ],
     "attachments": [
       {
-        "filename": "PACIFIC_VENTURE_TC_recap_20260412.pdf",
+        "filename": "NORBULK_EXPRESS_TC_recap_20260412.pdf",
         "mimeType": "application/pdf",
-        "size": 184600
+        "size": 172400
       }
     ]
   },
@@ -132,10 +132,10 @@
     "fromName": "Baltic Exchange Brokers",
     "fromEmail": "chartering@baltic-ex-brokers.com",
     "to": "demo@quantika.org",
-    "subject": "FW: MV EURO TITAN, TC RECAP, SUBS 2 BANKING DAYS",
+    "subject": "FW: MV NORDIC PIPE, RECAP, SUBS 2 BANKING DAYS — COMMISSION MISSING",
     "date": "2026-04-09T00:00:00.000Z",
-    "body": "---------- Forwarded message ---------\nFrom: Eurotrade Shipping <ops@eurotrade-shipping.com>\nDate: Wed, 8 Apr 2026 17:30:00 +0200\nSubject: MV EURO TITAN, TC RECAP, SUBS 2 BANKING DAYS\nTo: chartering@baltic-ex-brokers.com\n\nDear Sirs,\n\nFIXTURE RECAP - TIME CHARTER\nRECAP DATE: 08 April 2026\n\nVessel: MV EURO TITAN\nType: Handysize\nDWT: 38,200 mts\nBuilt: 2016, Flag: Liberia\nOwners: Titan Maritime GmbH\nCharterers: Eurotrade Shipping SA\nAccount: same as Charterers\n\nCharter Duration: 3-5 months TC, charterers option\n\nHire: EUR 13,000/day PDPR\n\nDely: APS Rotterdam (NLRTM)\nRedely: APS Mediterranean / Black Sea, charterers option\n\nLaycan (dely): 15-20 Sep 2026\n\nBunkers on delivery: VLSFO @ USD 540/mt, abt 600 mts VLSFO on board\nBunkers on redelivery: same price as on delivery\n\nCommission: 3.75% TTL on hire\n\nCP Form: NYPE 2015\nGoverning Law: English\nArbitration: London LMAA\n\nSubs: stem + owners approval within 2 banking days from recap date (i.e. latest by 10 April 2026)\n\nAll other NYPE 2015 terms apply as amended.\n\nbrgds\nEurotrade Shipping - Chartering",
-    "snippet": "FIXTURE RECAP TC MV EURO TITAN EUR 13,000/day subs 2 banking days from 08 April 2026...",
+    "body": "---------- Forwarded message ---------\nFrom: Nordic Pipe Carriers AS <ops@nordicpipe.no>\nDate: Wed, 8 Apr 2026 17:30:00 +0200\nSubject: MV NORDIC PIPE, RECAP, SUBS 2 BANKING DAYS — COMMISSION MISSING\nTo: chartering@baltic-ex-brokers.com\n\nDear Sirs,\n\nFIXTURE RECAP\nRECAP DATE: 08 April 2026\n\nVessel: MV NORDIC PIPE\nDWT: 7,500 mts\nBuilt: 2012, Flag: Norway\nOwners: Nordic Pipe Carriers AS\nCharterers: Baltic Exchange Brokers on behalf of principal\nAccount: to be confirmed\n\nLoad port: Iskenderun, Turkey - 1SB AAAA\nDisch port: Casablanca, Morocco - 1SB AAAA\n\nCargo: abt 5,500 / 6,000 mts API steel pipes (12m lengths)\nFreight: USD 28.50/mt FIOST\n\nLaycan: 15-20 Sep 2026\n\nLoading rate: 1,500 mts SHINC\nDisch rate: 1,000 mts SSHEX EIU\n\nDemurrage: USD 5,500 PDPR / FD BENDS\n\nCommission: [to be agreed — broker's account not confirmed]\n\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London LMAA\n\nSubs: stem + owners approval within 2 banking days from recap date (i.e. latest by 10 April 2026)\n\nAll other GENCON 94 terms apply as amended.\n\nbrgds\nNordic Pipe Carriers - Chartering",
+    "snippet": "FIXTURE RECAP MV NORDIC PIPE Iskenderun / Casablanca steel pipes USD 28.50/mt commission missing...",
     "labelIds": [
       "INBOX"
     ]
