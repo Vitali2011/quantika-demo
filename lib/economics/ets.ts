@@ -16,7 +16,12 @@ export interface EuEtsResult {
 export function calculateEuEts(input: EuEtsInput): EuEtsResult {
   const { distanceNm, euLegPercent, vlsfoBurnMt, euaPrice } = input;
 
-  if (distanceNm <= 0 || euLegPercent <= 0 || euLegPercent > 1 || vlsfoBurnMt <= 0 || euaPrice <= 0) {
+  if (
+    !Number.isFinite(distanceNm) || distanceNm <= 0 ||
+    !Number.isFinite(euLegPercent) || euLegPercent <= 0 || euLegPercent > 1 ||
+    !Number.isFinite(vlsfoBurnMt) || vlsfoBurnMt <= 0 ||
+    !Number.isFinite(euaPrice) || euaPrice <= 0
+  ) {
     return { amountEur: 0, applicable: false };
   }
 

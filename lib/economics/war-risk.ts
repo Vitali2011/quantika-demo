@@ -48,16 +48,16 @@ export interface WarRiskResult {
 export function calculateWarRiskPremium(input: WarRiskInput): WarRiskResult {
   const { route, vesselValueUsd, daysInHra } = input;
 
-  if (daysInHra <= 0) {
+  if (!Number.isFinite(daysInHra) || daysInHra <= 0) {
     return { premiumUsd: 0, zones: [] };
   }
 
-  if (vesselValueUsd < 0) {
+  if (!Number.isFinite(vesselValueUsd) || vesselValueUsd < 0) {
     return { premiumUsd: 0, zones: [] };
   }
 
-  const fromLower = route.fromPort.toLowerCase();
-  const toLower = route.toPort.toLowerCase();
+  const fromLower = route.fromPort.toLowerCase().replace(/-/g, ' ');
+  const toLower = route.toPort.toLowerCase().replace(/-/g, ' ');
   const viaLower = (route.viaCanal ?? '').toLowerCase();
 
   const matchedZones: HraZone[] = [];
