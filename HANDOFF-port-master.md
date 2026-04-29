@@ -11,24 +11,25 @@
 
 ## Where we are
 
-| Phase | Status | Commit | Notes |
-|-------|--------|--------|-------|
-| 0. Setup worktree + fuzzysort dep | ✅ | 59a7437 | Baseline 376 tests |
-| 1.1. PortMaster type extended + 15 ports migrated | ✅ | 3311f3e | +17 tests |
-| 1.2. JSON loader + cache + UNLOCODE secondary index | ✅ | e953320 | +6 tests |
-| 2.1. UN/LOCODE coord + row + CSV parsers | ✅ | 92a543d, 8ec2ca7 | +17 tests, fixed field-order bug |
-| 2.2-2.4. Curated targets (490) + matcher + orchestrator + skeleton 416 | ✅ | efdf9e5 | +11 tests |
-| 3.1. Haversine module | ✅ | ceb6b01 | +9 tests |
-| 3.2. Fuzzy port-name matching (fuzzysort) | ✅ | 70e9d87 | +6 tests, normalizePortName→string\|null |
-| 3.3. getPortDistance v2 + UI ~ marker | ✅ | caaf227 | +1 test, build green |
-| 4.1. LLM enrichment module | ✅ | 1f7bb1a | +9 tests, enrichPortsBatch with batching/fallback |
-| 4.2. Top-30 verify + GATE Виталию | ✅ | 4127451 | Виталий approved, 20/30 enriched |
-| **4.3. Full enrichment (396 remaining)** | 🔜 | — | **NEXT — run enrich-all** |
-| 5. Refactor getPortMaster → JSON-backed | ⏳ | — | After 4.3 |
-| 6. BACKLOG_FUTURE entry + ROADMAP Wave 4 | ⏳ | — | |
-| 7. Code review + GATE Виталию + merge + deploy | ⏳ | — | |
+| Phase                                                                  | Status | Commit           | Notes                                             |
+| ---------------------------------------------------------------------- | ------ | ---------------- | ------------------------------------------------- |
+| 0. Setup worktree + fuzzysort dep                                      | ✅     | 59a7437          | Baseline 376 tests                                |
+| 1.1. PortMaster type extended + 15 ports migrated                      | ✅     | 3311f3e          | +17 tests                                         |
+| 1.2. JSON loader + cache + UNLOCODE secondary index                    | ✅     | e953320          | +6 tests                                          |
+| 2.1. UN/LOCODE coord + row + CSV parsers                               | ✅     | 92a543d, 8ec2ca7 | +17 tests, fixed field-order bug                  |
+| 2.2-2.4. Curated targets (490) + matcher + orchestrator + skeleton 416 | ✅     | efdf9e5          | +11 tests                                         |
+| 3.1. Haversine module                                                  | ✅     | ceb6b01          | +9 tests                                          |
+| 3.2. Fuzzy port-name matching (fuzzysort)                              | ✅     | 70e9d87          | +6 tests, normalizePortName→string\|null          |
+| 3.3. getPortDistance v2 + UI ~ marker                                  | ✅     | caaf227          | +1 test, build green                              |
+| 4.1. LLM enrichment module                                             | ✅     | 1f7bb1a          | +9 tests, enrichPortsBatch with batching/fallback |
+| 4.2. Top-30 verify + GATE Виталию                                      | ✅     | 4127451          | Виталий approved, 20/30 enriched                  |
+| **4.3. Full enrichment (396 remaining)**                               | 🔜     | —                | **NEXT — run enrich-all**                         |
+| 5. Refactor getPortMaster → JSON-backed                                | ⏳     | —                | After 4.3                                         |
+| 6. BACKLOG_FUTURE entry + ROADMAP Wave 4                               | ⏳     | —                |                                                   |
+| 7. Code review + GATE Виталию + merge + deploy                         | ⏳     | —                |                                                   |
 
 **Verification right now:**
+
 - `npm test` → 454/454 passing (376 baseline + 78 new)
 - `npm run lint` → clean
 - `data/ports/port-master.draft.json` exists (416 ports, top-20 enriched, rest skeleton)
@@ -99,6 +100,7 @@
 **TDD with mock**: Jest can mock `@/lib/openai` to return canned responses. Tests in `scripts/lib/__tests__/llm-enrich.test.ts`.
 
 **Prompt template** (paste verbatim into the function):
+
 ```
 System: You are a maritime port authority data specialist. Return STRICT
 JSON array, same order as input, no prose, no markdown.
@@ -127,11 +129,12 @@ Input ports:
 [ array of {unlocode, name, country, lat, lon} ]
 ```
 
-**Model:** Use `AI_MODEL_LIGHT` from `lib/openai` (default `gpt-5.4-mini`), NOT hardcoded.
+**Model:** Use `AI_MODEL_LIGHT` from `lib/openai` (default `gpt-5.5`), NOT hardcoded.
 
 **Batching:** 20 ports per batch, 1-second pause between calls (server-friendly). 416 ports → 21 batches → ~25 seconds total runtime + ~$0.10 cost.
 
 **Output of `enrichPortsBatch(input: SkeletonPort[]): Promise<PortMaster[]>`:**
+
 - Returns enriched array of `PortMaster`-shape objects (compatible with the type extended in Phase 1.1).
 - Falls back to minimal record (low confidence, draft=10) if LLM returns malformed JSON.
 

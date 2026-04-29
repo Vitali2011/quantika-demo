@@ -8,6 +8,7 @@ import { ParsedVessel, cfValue } from '@/lib/types';
 import { applyGearedFallback } from '@/lib/parsing/geared-fallback';
 import { lookupVesselByImo, compareVesselRecord } from '@/lib/validation/equasis-client';
 import { buildVesselPrompt, parseVesselAIResponse } from '@/lib/parsing/parse-vessel-helpers';
+import { buildProcessedEmails } from '@/lib/classification-service';
 import pLimit from 'p-limit';
 
 export async function POST(request: NextRequest) {
@@ -73,6 +74,15 @@ export async function POST(request: NextRequest) {
     })
   );
 
-  updateSession(sessionId, { parsedVessels: allParsed });
+  // Recompute processedEmails so dashboard staleness reflects the openDate
+  // we just extracted. Mirror of parse-cargo: classify-time runs before us
+  // and falls back to emailDate+5d, which marks every VESSEL_POSITION stale.
+  const processedEmails = buildProcessedEmails(
+    session.emails,
+    session.classifications,
+    session.parsedCargos,
+    allParsed,
+  );
+  updateSession(sessionId, { parsedVessels: allParsed, processedEmails });
   return NextResponse.json({ count: allParsed.length });
 }

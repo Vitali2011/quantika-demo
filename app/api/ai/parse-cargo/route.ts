@@ -8,6 +8,7 @@ import { CargoType, Email, ParsedCargo, Range } from '@/lib/types';
 import { toConfidence, extractNum } from '@/lib/parsing-utils';
 import { calibrateAll } from '@/lib/validation/confidence-calibration';
 import { applyCargoRateFallback, applyCargoTypeFallback } from '@/lib/parsing/cargo-rate-fallback';
+import { buildProcessedEmails } from '@/lib/classification-service';
 import pLimit from 'p-limit';
 
 interface RawCargoItem {
@@ -157,6 +158,15 @@ export async function POST(request: NextRequest) {
     }))
   );
 
-  updateSession(sessionId, { parsedCargos: allParsed });
+  // Recompute processedEmails so dashboard staleness reflects the laycan
+  // we just extracted. Without this, classify-time fallback (+5d) leaves
+  // every CARGO_INQUIRY marked stale within a week.
+  const processedEmails = buildProcessedEmails(
+    session.emails,
+    session.classifications,
+    allParsed,
+    session.parsedVessels,
+  );
+  updateSession(sessionId, { parsedCargos: allParsed, processedEmails });
   return NextResponse.json({ count: allParsed.length });
 }
