@@ -18,7 +18,9 @@ const FORWARD_PARSE_SYSTEM_PROMPT =
   'You are a shipping cargo/vessel parser for a maritime brokerage platform. ' +
   'Parse the forwarded message and extract structured cargo or vessel data. ' +
   'Return JSON with fields: origin_port, destination_port, cargo_description, weight_mt, ' +
-  'laycan, loading_rate, discharge_rate, commission_percent, missing_info (array of missing fields). ' +
+  'laycan, loading_rate, discharge_rate, commission_percent, ' +
+  'cargo_type (one of: BULK, BREAK_BULK, FCL, LCL, PROJECT, AIR, RORO, OTHER — omit if unknown), ' +
+  'missing_info (array of missing fields). ' +
   'Each field with confidence should be: { value: ..., confidence: "confirmed"|"interpreted"|"uncertain" }. ' +
   'If the message describes a vessel position, include vessel_name, imo, dwt, open_position, open_date. ' +
   'Return { missing_info: [...] } for fields you cannot determine.';
@@ -29,9 +31,31 @@ interface RawParseResponse {
   cargo_description?: { value: string; confidence: string } | string;
   weight_mt?: { value: number; confidence: string } | number;
   laycan?: string;
+  cargo_type?: string;
   missing_info?: string[];
   vessel_name?: { value: string; confidence: string } | string;
   [key: string]: unknown;
+}
+
+const CARGO_TYPE_KEYWORDS: Array<[string, string]> = [
+  ['BREAK_BULK', 'BREAK.?BULK'],
+  ['RORO', 'RORO|ROLL.?ON.?ROLL.?OFF'],
+  ['FCL', '\\bFCL\\b|FULL.?CONTAINER'],
+  ['LCL', '\\bLCL\\b|LESS.?THAN.?CONTAINER'],
+  ['TANKER', 'TANKER'],
+  ['PROJECT', 'PROJECT.?CARGO'],
+  ['AIR', '\\bAIR.?FREIGHT\\b'],
+  ['BULK', '\\bBULK\\b'],
+];
+
+function inferCargoTypeFromText(text: string): string | null {
+  const upper = text.toUpperCase();
+  for (const [type, pattern] of CARGO_TYPE_KEYWORDS) {
+    if (new RegExp(pattern, 'i').test(upper)) {
+      return type;
+    }
+  }
+  return null;
 }
 
 function toConfField<T>(val: unknown): { value: T; confidence: 'confirmed' | 'interpreted' | 'uncertain'; sourceText?: string } | null {
@@ -71,7 +95,14 @@ export async function parseForwardedMessage(
       break;
 
     case 'image': {
-      const media = await client.downloadMedia(msg.image!.id);
+      if (!msg.image) {
+        return {
+          confidence: 'uncertain',
+          missingFields: ['image payload missing'],
+          rawText: '',
+        };
+      }
+      const media = await client.downloadMedia(msg.image.id);
       rawText = await extractTextFromImage(media.url);
       break;
     }
@@ -97,13 +128,33 @@ export async function parseForwardedMessage(
       };
   }
 
-  const raw = await callAiJson<RawParseResponse>(
-    rawText,
-    FORWARD_PARSE_SYSTEM_PROMPT,
-    undefined,
-    {},
-  );
+  let rawOrNull: RawParseResponse | null;
+  try {
+    rawOrNull = await callAiJson<RawParseResponse>(
+      rawText,
+      FORWARD_PARSE_SYSTEM_PROMPT,
+      undefined,
+      {},
+    );
+  } catch {
+    // BUG-C3: AI call failed (network error, malformed JSON, etc.) — return gracefully
+    return {
+      confidence: 'missing' as ConfidenceLevel,
+      missingFields: ['ai_extraction_failed'],
+      rawText,
+    };
+  }
 
+  // BUG-C3: guard against null/undefined AI response
+  if (rawOrNull == null) {
+    return {
+      confidence: 'missing' as ConfidenceLevel,
+      missingFields: ['ai_extraction_failed'],
+      rawText,
+    };
+  }
+
+  const raw = rawOrNull;
   const missingFields = Array.isArray(raw.missing_info) ? raw.missing_info : [];
   const confidence = determineConfidence(raw, rawText);
 
@@ -127,7 +178,27 @@ export async function parseForwardedMessage(
       weightMtMax: null,
       volumeCbm: null,
       dimensions: null,
-      cargoType: 'BULK',
+      cargoType: (() => {
+        // BUG-C1: drive cargoType from AI response; fall back to keyword scan; default BULK only as last resort
+        const aiCargoType = typeof raw.cargo_type === 'string' ? raw.cargo_type.toUpperCase() : null;
+        const validTypes = ['FCL', 'LCL', 'BREAK_BULK', 'BULK', 'PROJECT', 'AIR', 'RORO', 'OTHER'] as const;
+        if (aiCargoType && (validTypes as readonly string[]).includes(aiCargoType)) {
+          return aiCargoType as import('@/lib/types').CargoType;
+        }
+        const inferred = inferCargoTypeFromText(rawText);
+        if (inferred && (validTypes as readonly string[]).includes(inferred)) {
+          return inferred as import('@/lib/types').CargoType;
+        }
+        // Also check cargo_description text for keywords
+        const descText = typeof raw.cargo_description === 'object' && raw.cargo_description !== null
+          ? String((raw.cargo_description as { value?: unknown }).value ?? '')
+          : typeof raw.cargo_description === 'string' ? raw.cargo_description : '';
+        const inferredFromDesc = inferCargoTypeFromText(descText);
+        if (inferredFromDesc && (validTypes as readonly string[]).includes(inferredFromDesc)) {
+          return inferredFromDesc as import('@/lib/types').CargoType;
+        }
+        return 'BULK';
+      })(),
       containerType: null,
       quantity: null,
       incoterms: null,
