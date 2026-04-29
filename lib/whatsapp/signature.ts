@@ -5,7 +5,7 @@ export function verifyWebhookSignature(
   signature: string,
   appSecret: string,
 ): boolean {
-  if (!signature || !appSecret) return false;
+  if (rawBody == null || !signature || !appSecret) return false;
 
   const expected = createHmac('sha256', appSecret)
     .update(rawBody)
