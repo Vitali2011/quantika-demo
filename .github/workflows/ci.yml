@@ -3,8 +3,22 @@ name: CI
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - ".claude/**"
+      - ".specs/**"
+      - "README*"
+      - "*.svg"
   pull_request:
     branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - ".claude/**"
+      - ".specs/**"
+      - "README*"
+      - "*.svg"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -14,19 +28,15 @@ jobs:
   typecheck:
     name: TypeCheck
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
-      - uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          node-version: "22"
+          cache: "npm"
       - run: npm ci
       - run: npm run lint
       - run: npx tsc --noEmit
@@ -34,19 +44,15 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
-      - uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          node-version: "22"
+          cache: "npm"
       - run: npm ci
       - run: npm test -- --coverage --coverageProvider=v8 --forceExit
       - uses: actions/upload-artifact@v4
@@ -54,11 +60,13 @@ jobs:
         with:
           name: coverage
           path: coverage/
-          retention-days: 14
+          retention-days: 7
 
   e2e:
     name: E2E
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: github.event_name == 'push'
     permissions:
       contents: read
     continue-on-error: true
@@ -66,13 +74,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
-      - uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          node-version: "22"
+          cache: "npm"
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
@@ -86,25 +89,30 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
+          cache: "npm"
       - uses: actions/cache@v4
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          path: .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-nextjs-
       - run: npm ci
       - run: npm run build
 
   audit:
     name: Audit
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: github.event_name == 'push'
     permissions:
       contents: read
     continue-on-error: true
@@ -112,12 +120,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
-      - uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          node-version: "22"
+          cache: "npm"
       - run: npm ci
       - run: npm audit --audit-level=high
