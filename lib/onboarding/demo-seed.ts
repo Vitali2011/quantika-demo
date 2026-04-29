@@ -18,11 +18,29 @@ interface SampleEmail {
   labelIds: string[];
 }
 
-// Port patterns per region — used to match Load/Disch lines in email bodies
-const REGION_PORTS: Record<Region, RegExp> = {
+// Cargo patterns per region — match Load/Disch ports in cargo inquiry bodies
+const CARGO_REGION_PORTS: Record<Region, RegExp> = {
   MENA: /Derince|Iskenderun|Mersin|Kastanpole|Alexandria|Port Said|Turkey|Egypt/i,
   Med: /Castellon|Tarragona|Barcelona|Genoa|Ravenna|Piraeus|Constanta|Tunis|Beirut|Casablanca|Greece|Spain|Italy|Romania/i,
   WAFR: /Lagos|Tema|Abidjan|Dakar|Nigeria|Ghana|Senegal|C.te d.Ivoire|WAfrica/i,
+};
+
+/**
+ * Vessel open-position patterns per region.
+ *
+ * Vessel emails describe where the ship is currently open, NOT where it loads cargo.
+ * MENA cargoes (Turkey/Egypt loading) are typically served by vessels open in the
+ * Mediterranean / Black Sea / East Med area — those ships ballast to the load port.
+ * Using the cargo-port pattern for vessels would exclude almost all Med-based vessels
+ * and leave the MENA demo with a single vessel, producing zero matches.
+ */
+const VESSEL_REGION_PORTS: Record<Region, RegExp> = {
+  // Med/Black Sea/East Med vessels can ballast to Turkish/Egyptian load ports
+  MENA: /Piraeus|Constanta|Casablanca|Ravenna|Genoa|Algeciras|Hamburg|Rotterdam|Antwerp|Dakar|Odesa|Alexandria|Turkey|Egypt|Med|Black Sea|East Med|MENA|Red Sea/i,
+  // Med-positioned vessels cover Mediterranean trade routes
+  Med: /Castellon|Tarragona|Barcelona|Genoa|Ravenna|Piraeus|Constanta|Tunis|Beirut|Casablanca|Greece|Spain|Italy|Romania|Med|Black Sea/i,
+  // West Africa-based vessels plus Med vessels willing to go WAfrica
+  WAFR: /Lagos|Tema|Abidjan|Dakar|Nigeria|Ghana|Senegal|C.te d.Ivoire|WAfrica|Abidjan|Ivory Coast/i,
 };
 
 function loadSampleFile(filename: string): SampleEmail[] {
@@ -31,8 +49,13 @@ function loadSampleFile(filename: string): SampleEmail[] {
   return JSON.parse(fs.readFileSync(filePath, 'utf-8')) as SampleEmail[];
 }
 
-function filterByRegion(emails: SampleEmail[], region: Region): SampleEmail[] {
-  const pattern = REGION_PORTS[region];
+function filterCargoByRegion(emails: SampleEmail[], region: Region): SampleEmail[] {
+  const pattern = CARGO_REGION_PORTS[region];
+  return emails.filter((e) => pattern.test(e.body) || pattern.test(e.subject));
+}
+
+function filterVesselsByRegion(emails: SampleEmail[], region: Region): SampleEmail[] {
+  const pattern = VESSEL_REGION_PORTS[region];
   return emails.filter((e) => pattern.test(e.body) || pattern.test(e.subject));
 }
 
@@ -61,9 +84,9 @@ export async function seedDemoForRegion(sessionId: string, region: Region): Prom
   const vesselPositions = loadSampleFile('vessel-positions.json');
   const fixtureRecaps = loadSampleFile('fixture-recaps.json');
 
-  const filteredCargos = filterByRegion(cargoInquiries, region);
-  const filteredVessels = filterByRegion(vesselPositions, region);
-  const filteredRecaps = filterByRegion(fixtureRecaps, region);
+  const filteredCargos = filterCargoByRegion(cargoInquiries, region);
+  const filteredVessels = filterVesselsByRegion(vesselPositions, region);
+  const filteredRecaps = filterCargoByRegion(fixtureRecaps, region);
 
   // Ensure demo_seed_emails table exists before preparing statements
   ensureSeedTable(db);
