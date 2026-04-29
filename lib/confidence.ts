@@ -36,7 +36,7 @@ export function mapConfidenceToLevel(
   score: number | null | undefined,
   hasSourceQuote: boolean = false,
 ): ConfidenceLevel {
-  if (score === null || score === undefined || Number.isNaN(score) || score === Infinity) return 'missing';
+  if (score === null || score === undefined || !Number.isFinite(score)) return 'missing';
   if (score >= 0.85 && hasSourceQuote) return 'verified';
   if (score >= 0.85) return 'inferred'; // high score without sourceQuote → inferred
   if (score >= 0.5) return 'inferred';

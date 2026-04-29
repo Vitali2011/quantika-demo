@@ -271,13 +271,13 @@ describe('H8 — Infinity score', () => {
     expect(result).not.toBe('inferred'); // desired: reject
   });
 
-  it('-Infinity maps to uncertain (lower-bound covered by uncertain fallthrough)', () => {
-    // -Infinity < 0.5, so falls to uncertain — no special guard needed here
-    expect(mapConfidenceToLevel(-Infinity, false)).toBe('uncertain');
+  it('-Infinity maps to missing (non-finite guard — BUG-B10 fixed)', () => {
+    // -Infinity is non-finite → !Number.isFinite(-Infinity) → 'missing'
+    expect(mapConfidenceToLevel(-Infinity, false)).toBe('missing');
   });
 
-  it('-Infinity with sourceQuote still maps to uncertain', () => {
-    expect(mapConfidenceToLevel(-Infinity, true)).toBe('uncertain');
+  it('-Infinity with sourceQuote maps to missing (non-finite guard)', () => {
+    expect(mapConfidenceToLevel(-Infinity, true)).toBe('missing');
   });
 });
 

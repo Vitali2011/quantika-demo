@@ -23,16 +23,19 @@ export function parseBunkerHtml(html: string): Map<string, BunkerPrice> {
     const rowHtml = rowMatch[1];
 
     const portMatch = /<td[^>]*class="[^"]*port-name[^"]*"[^>]*>\s*([^<]+)\s*<\/td>/i.exec(rowHtml);
-    const vlsfoMatch = /<td[^>]*class="[^"]*vlsfo[^"]*"[^>]*>\s*([\d]+\.[\d]+)\s*<\/td>/i.exec(rowHtml);
+    const vlsfoMatch = /<td[^>]*class="[^"]*vlsfo[^"]*"[^>]*>([\s\S]*?)<\/td>/i.exec(rowHtml);
 
     if (!portMatch || !vlsfoMatch) continue;
 
     const port = portMatch[1].trim();
-    const vlsfo = parseFloat(vlsfoMatch[1]);
+    // Strip nested HTML tags, normalize EU locale comma-decimal, then parse
+    const vlsfoRaw = vlsfoMatch[1].replace(/<[^>]+>/g, '').trim().replace(/,(\d{2})$/, '.$1').replace(/[.,](?=\d{3})/g, '');
+    const vlsfo = parseFloat(vlsfoRaw);
     if (!port || isNaN(vlsfo)) continue;
 
-    const mgoMatch = /<td[^>]*class="[^"]*mgo[^"]*"[^>]*>\s*([\d]+\.[\d]+)\s*<\/td>/i.exec(rowHtml);
-    const mgo = mgoMatch ? parseFloat(mgoMatch[1]) : undefined;
+    const mgoMatch = /<td[^>]*class="[^"]*mgo[^"]*"[^>]*>([\s\S]*?)<\/td>/i.exec(rowHtml);
+    const mgoRaw = mgoMatch ? mgoMatch[1].replace(/<[^>]+>/g, '').trim().replace(/,(\d{2})$/, '.$1').replace(/[.,](?=\d{3})/g, '') : null;
+    const mgo = mgoRaw ? parseFloat(mgoRaw) : undefined;
 
     result.set(port, { port, vlsfo, mgo, fetched_at: now });
   }
