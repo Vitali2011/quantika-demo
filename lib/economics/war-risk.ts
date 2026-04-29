@@ -14,7 +14,7 @@ export const JWC_HRA_ZONES: HraZone[] = [
   {
     name: 'Red Sea / Bab al-Mandeb HRA',
     premiumPercent: 0.075,
-    ports: ['aden', 'hodeidah', 'djibouti', 'berbera', 'jeddah', 'yanbu', 'salalah'],
+    ports: ['aden', 'hodeidah', 'djibouti', 'berbera', 'jeddah', 'yanbu', 'salalah', 'bab al mandab', 'bab el mandab'],
     canals: ['suez'],
   },
   {
@@ -58,7 +58,7 @@ export function calculateWarRiskPremium(input: WarRiskInput): WarRiskResult {
 
   const fromLower = route.fromPort.toLowerCase().replace(/-/g, ' ');
   const toLower = route.toPort.toLowerCase().replace(/-/g, ' ');
-  const viaLower = (route.viaCanal ?? '').toLowerCase();
+  const viaLower = (route.viaCanal ?? '').toLowerCase().replace(/-/g, ' ');
 
   const matchedZones: HraZone[] = [];
 
