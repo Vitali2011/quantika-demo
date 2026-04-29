@@ -1,0 +1,25 @@
+{
+  "kind": "cargo",
+  "speaker": "nasser_al_hamdan_gulf_commodities_fzco",
+  "language": "en",
+  "extracted": {
+    "loadPort": { "name": "Khor Fakkan", "country": "AE", "unlocode": "AEKFK" },
+    "dischPort": { "name": "Mombasa", "country": "KE", "unlocode": "KEMBA" },
+    "cargo": {
+      "description": "palm oil in flexitanks",
+      "weight_mt": 1200,
+      "category": "VEGETABLE_OIL"
+    },
+    "laycan": { "start": "2026-12-10", "end": "2026-12-20" },
+    "freight_usd_mt": 22.0,
+    "loading_terms": "CFI",
+    "vessel_requirements": "small tanker or multipurpose with tank cleaning, no hazmat, edible grade"
+  },
+  "confidence": "low",
+  "ambiguities": [
+    "Whisper mistranscribed 'Khor Fakkan' as 'court fucking' — load port requires human confirmation, context clues (UAE, near Fujairah) strongly suggest Khor Fakkan (AEKFK)",
+    "Freight term stated as 'CFI' — likely CFR or CIF, clarification needed",
+    "Speaker repeated mistranscription twice without noticing — audio quality may be poor around port name"
+  ],
+  "notes": "Classic Whisper profanity-filter artifact: 'Khor Fakkan' misheard as offensive phrase. Human must confirm load port before use. Freight incoterm 'CFI' is non-standard — verify with shipper whether CFR or CIF was intended."
+}

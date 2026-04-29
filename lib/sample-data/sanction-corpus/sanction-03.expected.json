@@ -1,0 +1,20 @@
+{
+  "shouldFlag": true,
+  "flaggedEntities": [
+    {
+      "name": "Crystal Maritime FZE",
+      "type": "company",
+      "matchReason": "Dubai shell intermediary explicitly disclosed as cover for Russian UBO — high-risk indirect sanctions exposure",
+      "confidence": "medium"
+    },
+    {
+      "name": "Russian charterer (UBO undisclosed)",
+      "type": "ubo",
+      "matchReason": "Email body discloses ultimate beneficial owner as Russian — requires OFAC/EU SDN cross-check before fixing",
+      "confidence": "medium"
+    }
+  ],
+  "falsePositives": [],
+  "expectedAction": "review",
+  "notes": "Indirect sanctions risk via Dubai shell. Not an automatic block — requires KYC review of UBO + EU/OFAC name screening. Loading port Odessa (UA) is itself non-sanctioned."
+}

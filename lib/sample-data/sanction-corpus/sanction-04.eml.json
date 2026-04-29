@@ -1,0 +1,13 @@
+{
+  "id": "sanction-04",
+  "threadId": "sanction-thread-04",
+  "from": "ops@meridian-bulk.com",
+  "fromName": "Meridian Bulk Carriers",
+  "fromEmail": "ops@meridian-bulk.com",
+  "to": "demo@quantika.org",
+  "subject": "Vessel offer — MV PACIFIC PEARL / Singapore–Rotterdam",
+  "date": "2026-04-15T16:45:00.000Z",
+  "body": "Dear Quantika Team,\n\nPlease consider the following vessel offer:\n\nVESSEL: MV PACIFIC PEARL\nIMO: 9412081\nFLAG: Marshall Islands\nCLASS: Bureau Veritas\nDWT: 76,400\nBUILT: 2014\n\nOPEN: Singapore, 25 April 2026\nLAYCAN: 28 April – 02 May 2026\n\nCARGO INTEREST: Coal / iron ore / grain, 70,000–76,000 MT\nROUTE: Singapore → Rotterdam (NL)\n\nOwner: Meridian Bulk Carriers Ltd (Marshall Islands)\nVessel is fully compliant — P&I: Gard, no outstanding PSC deficiencies.\n\nAwaiting your cargo interest.\n\nBest regards,\nOps Desk\nMeridian Bulk Carriers",
+  "snippet": "VESSEL: MV PACIFIC PEARL, IMO: 9412081, FLAG: Marshall Islands, DWT: 76,400...",
+  "labelIds": ["INBOX"]
+}

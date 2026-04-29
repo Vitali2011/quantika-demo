@@ -1,0 +1,28 @@
+{
+  "kind": "recap",
+  "speaker": "khalid_unknown_affiliation",
+  "language": "en",
+  "extracted": {
+    "vesselName": null,
+    "route": null,
+    "cargo": null,
+    "freight": null,
+    "laycan": null,
+    "demurrage": null,
+    "commission": null,
+    "owners": null,
+    "charterers": null,
+    "subs_deadline": null,
+    "event": "subs_lifted",
+    "confirmed_by": "owners",
+    "subs_deadline_stated": "15:00 local time (timezone unknown)"
+  },
+  "confidence": "low",
+  "ambiguities": [
+    "No fixture details in message — vessel, route, cargo, freight all absent",
+    "Timezone of '3 o'clock' deadline not specified",
+    "Recipient 'hassan' mentioned but full name and company unknown",
+    "Caller identified only as 'khalid' — no company or role"
+  ],
+  "notes": "Extremely brief urgent status message. Confirms subs were lifted before deadline, owners confirmed. No actionable fixture data extractable without cross-referencing prior conversation thread."
+}

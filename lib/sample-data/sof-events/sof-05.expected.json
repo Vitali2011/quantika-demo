@@ -1,0 +1,77 @@
+{
+  "vesselName": "MV ADRIATIC CARRIER (Demo)",
+  "port": "Ravenna, Italy",
+  "operation": "discharging",
+  "laytimeTerms": "SHINC + WIBON",
+  "allowedLaytimeHours": 60,
+  "events": [
+    {
+      "timestamp": "2026-11-10T04:30:00",
+      "type": "ARRIVAL",
+      "description": "EOSP. Vessel at Ravenna pilot station."
+    },
+    {
+      "timestamp": "2026-11-10T05:00:00",
+      "type": "ARRIVAL",
+      "description": "Vessel arrived at anchorage. Berth occupied by MV SANTA ELENA."
+    },
+    {
+      "timestamp": "2026-11-10T05:15:00",
+      "type": "NOR_TENDERED",
+      "description": "NOR tendered to Coop Agricola Ravenna. Berth congestion noted."
+    },
+    {
+      "timestamp": "2026-11-10T05:15:00",
+      "type": "NOR_ACCEPTED",
+      "description": "NOR accepted without protest 0515."
+    },
+    {
+      "timestamp": "2026-11-10T05:15:00",
+      "type": "SUSPEND",
+      "reason": "berth_congestion",
+      "description": "Vessel at anchor — berth not available. WIBON clause: time counts from NOR."
+    },
+    {
+      "timestamp": "2026-11-10T13:30:00",
+      "type": "RESUME",
+      "reason": "shifting",
+      "description": "Tug NETTUNO PRIMO ordered. 45-min delay due to LNG terminal commitment."
+    },
+    {
+      "timestamp": "2026-11-10T14:45:00",
+      "type": "BERTHED",
+      "description": "First line ashore. All fast at Berth 12."
+    },
+    {
+      "timestamp": "2026-11-10T16:00:00",
+      "type": "COMMENCE",
+      "description": "Discharging commenced. Shore grab cranes operational."
+    },
+    {
+      "timestamp": "2026-11-11T10:00:00",
+      "type": "SUSPEND",
+      "reason": "breakdown",
+      "description": "Grab crane #2 broke down — hydraulic pump failure. Discharging rate reduced 50%."
+    },
+    {
+      "timestamp": "2026-11-11T13:30:00",
+      "type": "RESUME",
+      "description": "Crane #2 repaired and operational. Full discharging rate restored."
+    },
+    {
+      "timestamp": "2026-11-12T14:00:00",
+      "type": "COMPLETE",
+      "description": "Discharging completed. Total: 9,400 MT."
+    },
+    {
+      "timestamp": "2026-11-12T19:00:00",
+      "type": "UNBERTHED",
+      "description": "Pilot on board. Last line let go."
+    },
+    { "timestamp": "2026-11-12T19:30:00", "type": "DEPART", "description": "COSP Ravenna." }
+  ],
+  "laytimeUsedHours": 56.75,
+  "demurrageHours": 0,
+  "despatchHours": 3.25,
+  "notes": "Med discharge with berth congestion (WIBON — time counts from NOR), tugboat delay, and shore-equipment breakdown. CP addendum cl.47 holds breakdown counts as laytime. 56.75h used vs 60h allowed — minor despatch 3.25h. No demurrage triggered."
+}

@@ -1,0 +1,14 @@
+{
+  "shouldFlag": true,
+  "flaggedEntities": [
+    {
+      "name": "Mariupol, Ukraine",
+      "type": "port",
+      "matchReason": "Mariupol port currently under Russian occupation — EU/UK/US sanctions prohibit calls at Russian-controlled Crimea & Donbass ports. P&I clubs typically refuse coverage.",
+      "confidence": "high"
+    }
+  ],
+  "falsePositives": [],
+  "expectedAction": "block",
+  "notes": "Sanctioned port detection. Loading at Mariupol (UA, but de-facto Russian-controlled) triggers EU sanctions regulation 833/2014 + 269/2014. Block before fixing — no quote should be issued. Charterer Azov Trade & Shipping itself may also need OFAC screening."
+}

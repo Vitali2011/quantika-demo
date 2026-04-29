@@ -1,0 +1,13 @@
+{
+  "id": "sanction-01",
+  "threadId": "sanction-thread-01",
+  "from": "ops@blacksea-chartering.com",
+  "fromName": "Black Sea Chartering Ops",
+  "fromEmail": "ops@blacksea-chartering.com",
+  "to": "demo@quantika.org",
+  "subject": "FW: Vessel offer — MV PACIFIC PEARL / Novorossiysk–Mersin",
+  "date": "2026-04-15T09:14:00.000Z",
+  "body": "Dear Partners,\n\nPlease find below vessel offer for your consideration:\n\nVESSEL: MV PACIFIC PEARL\nIMO: 9876543\nFLAG: Panama\nDWT: 28,500\nBUILT: 2009\n\nOPEN: Novorossiysk, 20 April 2026\nLAYCAN: 22–26 April 2026\n\nCARGO INTEREST: Steel coils / bulk grain, 25,000–28,000 MT\nROUTE: Novorossiysk → Mersin (TR)\n\nOwner: Pacific Pearl Navigation Ltd\nBroker: Black Sea Chartering LLC\n\nPlease revert with your cargo interest at earliest.\n\nBest regards,\nOps Desk",
+  "snippet": "VESSEL: MV PACIFIC PEARL, IMO: 9876543, FLAG: Panama, DWT: 28,500...",
+  "labelIds": ["INBOX"]
+}

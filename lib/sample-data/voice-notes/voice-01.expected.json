@@ -1,0 +1,20 @@
+{
+  "kind": "cargo",
+  "speaker": "ahmed_khaleeji_trading_dubai",
+  "language": "en",
+  "extracted": {
+    "loadPort": { "name": "Jebel Ali", "country": "AE", "unlocode": "AEJEA" },
+    "dischPort": { "name": "Lagos", "country": "NG", "unlocode": "NGLOS" },
+    "cargo": { "description": "steel coils", "weight_mt": 8000, "category": "STEEL" },
+    "laycan": { "start": "2026-10-25", "end": "2026-11-05" },
+    "freight_usd_mt": 19.0,
+    "commission_pct": 3.75,
+    "loading_terms": "FIOS",
+    "vessel_requirements": "geared, heaviest piece 25 mt"
+  },
+  "confidence": "high",
+  "ambiguities": [
+    "Speaker initially said 'khor fakkan' then self-corrected to 'lagos' — discharge port Lagos confirmed but needs human verification"
+  ],
+  "notes": "Trader switched mid-sentence from Khor Fakkan to Lagos for discharge port. Arabic sign-off 'shukran'. Mixed AR/EN. Correction captured in transcript."
+}
