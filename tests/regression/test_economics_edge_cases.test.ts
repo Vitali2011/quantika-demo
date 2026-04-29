@@ -273,6 +273,50 @@ describe('calculateWarRiskPremium — adversarial', () => {
     expect(result.premiumUsd).toBeGreaterThan(0);
   });
 
+  // F29-F1 regression: Bab-el-Mandab / Bab al-Mandab strait must trigger Red Sea HRA
+  // Prior to fix, neither spelling was in the ports list — routes through the strait
+  // received no surcharge after PR #29 hyphen normalization.
+  it('F29-F1: fromPort "Bab-el-Mandab" triggers Red Sea HRA (hyphen normalized to space)', () => {
+    // Hyphen normalization: "Bab-el-Mandab" → "bab el mandab" → matches keyword
+    const result = calculateWarRiskPremium({
+      route: { fromPort: 'Bab-el-Mandab', toPort: 'Rotterdam' },
+      vesselValueUsd: 10_000_000,
+      daysInHra: 3,
+    });
+    expect(result.zones).toContain('Red Sea / Bab al-Mandeb HRA');
+    expect(result.premiumUsd).toBeGreaterThan(0);
+  });
+
+  it('F29-F1: fromPort "Bab el-Mandab" (mixed hyphen) triggers Red Sea HRA', () => {
+    const result = calculateWarRiskPremium({
+      route: { fromPort: 'Bab el-Mandab', toPort: 'Rotterdam' },
+      vesselValueUsd: 10_000_000,
+      daysInHra: 3,
+    });
+    expect(result.zones).toContain('Red Sea / Bab al-Mandeb HRA');
+    expect(result.premiumUsd).toBeGreaterThan(0);
+  });
+
+  it('F29-F1: toPort "Bab al-Mandab" (al-variant) triggers Red Sea HRA', () => {
+    const result = calculateWarRiskPremium({
+      route: { fromPort: 'Rotterdam', toPort: 'Bab al-Mandab' },
+      vesselValueUsd: 10_000_000,
+      daysInHra: 2,
+    });
+    expect(result.zones).toContain('Red Sea / Bab al-Mandeb HRA');
+    expect(result.premiumUsd).toBeGreaterThan(0);
+  });
+
+  it('F29-F1: toPort "Bab el-Mandab" (el-variant with hyphen) triggers Red Sea HRA', () => {
+    const result = calculateWarRiskPremium({
+      route: { fromPort: 'Rotterdam', toPort: 'Bab el-Mandab' },
+      vesselValueUsd: 10_000_000,
+      daysInHra: 2,
+    });
+    expect(result.zones).toContain('Red Sea / Bab al-Mandeb HRA');
+    expect(result.premiumUsd).toBeGreaterThan(0);
+  });
+
   // H19: premium math precision — verify formula manually
   it('premium math: Black Sea 0.10%, $20M vessel, 2 days = correct value', () => {
     const result = calculateWarRiskPremium({
