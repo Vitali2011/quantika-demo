@@ -125,6 +125,24 @@ describe('H12 — text type with undefined msg.text', () => {
   });
 });
 
+describe('BUG-C3 — null AI response returns uncertain with ai_response_null', () => {
+  let client: MockWhatsAppClient;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    client = new MockWhatsAppClient();
+  });
+
+  it('returns uncertain when AI response is null', async () => {
+    mockCallAiJson.mockResolvedValueOnce(null);
+    const msg = makeMsg('text', { text: { body: 'bulk grain 5000mt antwerp rotterdam' } });
+    const result: ForwardParseResult = await parseForwardedMessage(msg, client as never);
+
+    expect(result.confidence).toBe('uncertain');
+    expect(result.missingFields).toContain('ai_response_null');
+  });
+});
+
 describe('H13 — observation: no size guard on rawText (documented, not crashing)', () => {
   let client: MockWhatsAppClient;
 
