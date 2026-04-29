@@ -42,7 +42,6 @@ const CARGO_TYPE_KEYWORDS: Array<[string, string]> = [
   ['RORO', 'RORO|ROLL.?ON.?ROLL.?OFF'],
   ['FCL', '\\bFCL\\b|FULL.?CONTAINER'],
   ['LCL', '\\bLCL\\b|LESS.?THAN.?CONTAINER'],
-  ['TANKER', 'TANKER'],
   ['PROJECT', 'PROJECT.?CARGO'],
   ['AIR', '\\bAIR.?FREIGHT\\b'],
   ['BULK', '\\bBULK\\b'],
@@ -108,14 +107,30 @@ export async function parseForwardedMessage(
     }
 
     case 'audio': {
-      const media = await client.downloadMedia(msg.audio!.id);
+      // F33-F1: guard against malformed payload where audio field is absent
+      if (!msg.audio) {
+        return {
+          confidence: 'uncertain',
+          missingFields: ['audio payload missing'],
+          rawText: '',
+        };
+      }
+      const media = await client.downloadMedia(msg.audio.id);
       const transcription = await transcribeAudio(media.url, media.mimeType);
       rawText = transcription.text;
       break;
     }
 
     case 'document': {
-      const media = await client.downloadMedia(msg.document!.id);
+      // F33-F1: guard against malformed payload where document field is absent
+      if (!msg.document) {
+        return {
+          confidence: 'uncertain',
+          missingFields: ['document payload missing'],
+          rawText: '',
+        };
+      }
+      const media = await client.downloadMedia(msg.document.id);
       rawText = await extractTextFromPdf(media.url);
       break;
     }
