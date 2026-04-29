@@ -25,7 +25,7 @@ export function MorningHeader({ userName, alertCount }: MorningHeaderProps) {
           </span>
         )}
       </div>
-      <p className="text-sm text-gray-500">{today}</p>
+      <p className="text-sm text-gray-500" suppressHydrationWarning>{today}</p>
     </div>
   );
 }
