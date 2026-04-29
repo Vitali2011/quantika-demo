@@ -152,4 +152,57 @@ describe('parseForwardedMessage', () => {
     expect(result.rawText).toBe('');
     expect(result.confidence).toBe('uncertain');
   });
+
+  // F33-F1: audio payload null-guard
+  it('F33-F1: type=audio but audio field missing → returns uncertain stub, no crash', async () => {
+    const msg = makeMessage({ type: 'audio' }); // audio field absent
+
+    const result = await parseForwardedMessage(msg, client as never);
+
+    expect(result.confidence).toBe('uncertain');
+    expect(result.missingFields).toContain('audio payload missing');
+    expect(result.rawText).toBe('');
+    // Must NOT call transcribeAudio or callAiJson
+    expect(mockTranscribeAudio).not.toHaveBeenCalled();
+    expect(mockCallAiJson).not.toHaveBeenCalled();
+  });
+
+  // F33-F1: document payload null-guard
+  it('F33-F1: type=document but document field missing → returns uncertain stub, no crash', async () => {
+    const msg = makeMessage({ type: 'document' }); // document field absent
+
+    const result = await parseForwardedMessage(msg, client as never);
+
+    expect(result.confidence).toBe('uncertain');
+    expect(result.missingFields).toContain('document payload missing');
+    expect(result.rawText).toBe('');
+    // Must NOT call extractTextFromPdf or callAiJson
+    expect(mockExtractTextFromPdf).not.toHaveBeenCalled();
+    expect(mockCallAiJson).not.toHaveBeenCalled();
+  });
+
+  // F33-F2: TANKER keyword → should fall back to BULK (no TANKER in CargoType enum)
+  it('F33-F2: "Crude oil tanker, 100kt" text → cargoType falls back to BULK, no TANKER in output', async () => {
+    mockCallAiJson.mockResolvedValue({
+      cargo_description: { value: 'Crude oil', confidence: 'confirmed' },
+      origin_port: { value: 'Ras Tanura', confidence: 'confirmed' },
+      destination_port: { value: 'Rotterdam', confidence: 'confirmed' },
+      weight_mt: { value: 100000, confidence: 'confirmed' },
+      missing_info: [],
+    });
+
+    const msg = makeMessage({
+      type: 'text',
+      text: { body: 'Crude oil tanker, 100kt from Ras Tanura to Rotterdam' },
+    });
+
+    const result = await parseForwardedMessage(msg, client as never);
+
+    expect(result.parsedCargo).toBeDefined();
+    // TANKER is a vessel type, not a cargo type — must fall back to BULK
+    expect(result.parsedCargo?.cargoType).toBe('BULK');
+    // Ensure no TANKER string appears in the serialized output
+    const serialized = JSON.stringify(result);
+    expect(serialized).not.toContain('"TANKER"');
+  });
 });
