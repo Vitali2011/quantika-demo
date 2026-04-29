@@ -1,3 +1,14 @@
+/**
+ * Normalise a raw price value from external sources (EU comma decimal, HTML-stripped).
+ * Accepts string | number to handle both scraped text and pre-parsed values.
+ */
+export function parsePrice(raw: string | number): number {
+  if (typeof raw === 'number') return raw;
+  const normalized = raw.replace(',', '.');
+  const n = parseFloat(normalized);
+  return Number.isFinite(n) ? n : 0;
+}
+
 export interface BunkerPrice {
   port: string;
   vlsfo: number;
