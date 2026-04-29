@@ -6,10 +6,31 @@ interface DraftRequestBody {
   parsedCargo: ParsedCargo;
   vesselId: string;
   brokerName: string;
+  /** Email subject line — sanitized for XSS/CRLF, max 200 chars (BUG-D2/D3/D4). */
+  subject?: string;
+  /** Email body content — sanitized for XSS, max 50 000 chars (BUG-D2/D4). */
+  body?: string;
 }
 
 /** Maximum allowed length for brokerName (BUG-D4: length cap). */
 const BROKER_NAME_MAX_LEN = 256;
+/** Maximum allowed length for email subject (BUG-D4). */
+const MAX_SUBJECT = 200;
+/** Maximum allowed length for email body (BUG-D4). */
+const MAX_BODY = 50_000;
+
+/**
+ * Strip dangerous HTML constructs from user-supplied strings (BUG-D2).
+ * Removes: <script>…</script>, on* event handlers, javascript: URIs.
+ * Does NOT do full HTML escaping — suitable for plain-text template fields
+ * that accept limited inline HTML (subject, body) where stripping is preferred.
+ */
+function stripDangerousTags(html: string): string {
+  return html
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/on\w+\s*=/gi, '')
+    .replace(/javascript:/gi, '');
+}
 
 /**
  * Sanitize brokerName before inserting into draft template.
@@ -52,12 +73,34 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
 
-  const { parsedCargo, brokerName } = body;
+  const { parsedCargo, brokerName, subject, body: emailBody } = body;
+
+  // BUG-D4: length limits for subject and email body
+  if (subject !== undefined && subject.length > MAX_SUBJECT) {
+    return NextResponse.json({ error: 'subject too long' }, { status: 400 });
+  }
+  if (emailBody !== undefined && emailBody.length > MAX_BODY) {
+    return NextResponse.json({ error: 'body too long' }, { status: 400 });
+  }
+
+  // BUG-D2 + D3: sanitize subject (strip XSS, strip CRLF)
+  const safeSubject =
+    subject !== undefined
+      ? stripDangerousTags(subject.replace(/[\r\n]/g, ' '))
+      : undefined;
+
+  // BUG-D2: sanitize email body (strip XSS)
+  const safeEmailBody =
+    emailBody !== undefined ? stripDangerousTags(emailBody) : undefined;
 
   const safeBrokerName = sanitizeBrokerName(brokerName);
   const draftText = buildDraft(parsedCargo, safeBrokerName);
 
-  return NextResponse.json({ draftText });
+  return NextResponse.json({
+    draftText,
+    ...(safeSubject !== undefined && { subject: safeSubject }),
+    ...(safeEmailBody !== undefined && { body: safeEmailBody }),
+  });
 }
 
 function isValidDraftBody(body: unknown): body is DraftRequestBody {

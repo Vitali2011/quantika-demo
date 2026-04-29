@@ -20,6 +20,12 @@ export async function GET(req: NextRequest): Promise<Response> {
 
 export async function POST(req: NextRequest): Promise<Response> {
   const rawBody = await req.text();
+
+  // BUG-A1-2: guard against empty/missing body before signature verification
+  if (!rawBody) {
+    return new Response(JSON.stringify({ error: 'missing body' }), { status: 400 });
+  }
+
   const signature = req.headers.get('x-hub-signature-256') ?? '';
   const appSecret = process.env.WHATSAPP_APP_SECRET ?? '';
 
