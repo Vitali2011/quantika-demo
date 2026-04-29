@@ -11,8 +11,8 @@ const SAMPLE_EMAILS = [
 ];
 
 describe('SAMPLE_EMAILS', () => {
-  it('count: contains 50 emails', () => {
-    expect(SAMPLE_EMAILS).toHaveLength(50);
+  it('count: contains at least 50 emails (115 after Wave-corpus expansion)', () => {
+    expect(SAMPLE_EMAILS.length).toBeGreaterThanOrEqual(50);
   });
 
   it('required-fields: every email has id, subject, from, body', () => {

@@ -10,9 +10,7 @@
     "date": "2026-04-01T00:00:00.000Z",
     "body": "---------- Forwarded message ---------\nFrom: Transmar Breakbulk <chartering@transmar-bb.com>\nDate: Tue, 31 Mar 2026 15:20:00 +0200\nSubject: MV DANUBE PIONEER, ROCND / ITRAN, FIXTURE RECAP\nTo: ops@bsc-maritime.com\n\nDear Sirs,\n\nFIXTURE RECAP\n\nVessel: MV DANUBE PIONEER\nDWT: 8,500 mts\nBuilt: 2011, Flag: Marshall Islands\nOwners: Pioneer Maritime SA\nCharterers: Transmar Breakbulk Trading\nAccount: same as Charterers\n\nLoad port: Constanta, Romania (ROCND) - 1SB AAAA\nDisch port: Ravenna, Italy (ITRAN) - 1SB AARA\n\nCargo: abt 6,500 / 7,000 mts steel billets\nFreight: USD 18.50/mt FIOST\n\nLaycan: 12-15 Sep 2026\n\nLoading rate: 3,000 mts SHINC\nDisch rate: 2,000 mts SHINC\n\nDemurrage: USD 6,500 PDPR / FD BENDS\nDispatch: half demurrage on laytime used\n\nCommission: 3.75% TTL on F/D/D\n\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London\n\nSubs: stem + owners approval within 2 banking days from recap date\n\nAll other terms GENCON 94 as amended.\n\nPls confirm all in order.\n\nbrgds\nTransmar Breakbulk Chartering",
     "snippet": "FIXTURE RECAP MV DANUBE PIONEER Constanta / Ravenna steel billets USD 18.50/mt FIOST...",
-    "labelIds": [
-      "INBOX"
-    ],
+    "labelIds": ["INBOX"],
     "attachments": [
       {
         "filename": "DANUBE_PIONEER_recap_20260331.pdf",
@@ -32,9 +30,7 @@
     "date": "2026-04-03T00:00:00.000Z",
     "body": "---------- Forwarded message ---------\nFrom: Eurowood Shipping <ops@eurowood-shipping.com>\nDate: Thu, 2 Apr 2026 11:35:00 +0100\nSubject: MV ATLANTIC CEDAR, FDF / ALEX, RECAP OF AGREED TERMS\nTo: chartering@iberian-freight.pt\n\nDear Colleagues,\n\nFIXTURE RECAP - AGREED TERMS\n\nVessel: MV ATLANTIC CEDAR\nDWT: 5,800 mts\nBuilt: 2008, Flag: Portugal\nOwners: Cedarwood Maritime Lda\nCharterers: Iberian Freight Partners\nAccount: North Africa Timber Co.\n\nLoad: Figueira da Foz (FDF), Portugal - 1 sb aaaa\nDisch: Alexandria (ALEX), Egypt - 1 sb aaaa\n\nCargo: abt 4,200 / 4,800 mts sawn timber in bundles\nFreight: EUR 31.00/mt FIOST\n\nLaycan: 10-15 Oct 2026\n\nLoading: 1,200 mts SHINC\nDisch: 900 mts SSHEX EIU\n\nDemurrage: EUR 5,500 PDPR / FD BENDS\nDispatch: half demurrage, laytime ends\n\nCommission: 3.75% TTL on F/D/D\n\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London\n\nSubs: stem + owners approval within 2 banking days from recap date\n\nKindly confirm receipt and acceptance.\n\nbrgds\nEurowood Shipping - Chartering",
     "snippet": "FIXTURE RECAP MV ATLANTIC CEDAR FDF / ALEX sawn timber EUR 31.00/mt FIOST...",
-    "labelIds": [
-      "INBOX"
-    ]
+    "labelIds": ["INBOX"]
   },
   {
     "id": "sample-42",
@@ -47,9 +43,7 @@
     "date": "2026-04-05T00:00:00.000Z",
     "body": "---------- Forwarded message ---------\nFrom: Nordic Breakbulk Carriers <chartering@nordicbbc.no>\nDate: Fri, 3 Apr 2026 08:45:00 +0100\nSubject: MV FJORD RUNNER, TCT WAF / N.EUR breakbulk, FIXTURE RECAP\nTo: tct@wacd-shipping.com\n\nDear Sirs,\n\nFIXTURE RECAP - TIME CHARTER TRIP\n\nVessel: MV FJORD RUNNER\nType: MPP general cargo\nDWT: 12,500 mts\nBuilt: 2017, Flag: Norway\nOwners: Fjord Shipping AS\nCharterers: Nordic Breakbulk Carriers AS\nAccount: same as Charterers\n\nCharter Type: Time Charter Trip (TCT)\n\nDely: DOP Lagos (NGLOS)\nRedely: DOP Hamburg / Antwerp range, charterers option\n\nDuration: 1 TCT, abt 45-55 days WOG\n\nHire: USD 8,200/day PDPR\nBallast Bonus: USD 120,000 lumpsum (payable on delivery)\n\nLaycan (dely): 15-20 Oct 2026\n\nFuel on delivery/redelivery: VLSFO @ USD 560/mt\nBunkers on board on dely: abt 120 mts VLSFO\n\nCommission: 3.75% TTL on hire\n\nCP Form: NYPE 2015\nGoverning Law: English\nArbitration: London LMAA\n\nSubs: stem + owners approval within 3 banking days from recap date\n\nAll other terms and conditions as per NYPE 2015 as amended.\n\nbrgds\nNordic Breakbulk Carriers - TCT Desk",
     "snippet": "FIXTURE RECAP TCT MV FJORD RUNNER Lagos / Hamburg-Antwerp breakbulk USD 8,200/day BB USD 120,000...",
-    "labelIds": [
-      "INBOX"
-    ],
+    "labelIds": ["INBOX"],
     "attachments": [
       {
         "filename": "FJORD_RUNNER_TCT_recap_20260403.pdf",
@@ -69,9 +63,7 @@
     "date": "2026-04-08T00:00:00.000Z",
     "body": "---------- Forwarded message ---------\nFrom: Tersteel Marmara <chartering@tersteel.com.tr>\nDate: Mon, 6 Apr 2026 16:10:00 +0300\nSubject: MV MARMARA STAR, TRDRC / EGALY, STEEL COILS FIXTURE RECAP\nTo: gci@grain-chartering.com\n\nDear Sirs,\n\nFIXTURE RECAP\n\nVessel: MV MARMARA STAR\nType: General cargo / MPP\nDWT: 9,500 mts\nBuilt: 2010, Flag: Turkey\nOwners: Marmara Maritime Ltd\nCharterers: Tersteel Marmara Chartering\nAccount: Nile Steel Co, Egypt\n\nLoad port: Derince, Turkey (TRDRC) - 1SB AAAA\nDisch port: Alexandria, Egypt (EGALY) - 1SB AAAA\n\nCargo: abt 7,500 / 8,000 mts HRC steel coils, stowage factor 1.20\nFreight: USD 22.00/mt FIOST\n\nLaycan: 01-05 Oct 2026\n\nLoading rate: CQD SHINC\nDisch rate: CQD SHINC\n\nDemurrage: USD 7,500 PDPR / FD BENDS\nDispatch: half demurrage on laytime used\n\nCommission: 3.75% TTL on F/D/D\n\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London\n\nSubs: stem + owners approval within 2 banking days from recap date\n\nbrgds\nTersteel Marmara - Chartering",
     "snippet": "FIXTURE RECAP MV MARMARA STAR Derince / Alexandria steel coils USD 22.00/mt FIOST...",
-    "labelIds": [
-      "INBOX"
-    ]
+    "labelIds": ["INBOX"]
   },
   {
     "id": "sample-44",
@@ -84,9 +76,7 @@
     "date": "2026-04-10T00:00:00.000Z",
     "body": "---------- Forwarded message ---------\nFrom: Balkan Shipping Brokers <ops@balkan-sb.com>\nDate: Wed, 8 Apr 2026 13:55:00 +0200\nSubject: MV CORAL TRADER, ROCND / ITRAN, RECAP SUBJECT TO CLOSING\nTo: chartering@meridian-brokers.com\n\nDear Sirs,\n\nFIXTURE RECAP - SUBJECT TO CLOSING\n\nVessel: MV CORAL TRADER\nDWT: 9,200 mts\nBuilt: 2009, Flag: Belize\nOwners: Coral Shipping Co\nCharterers: Meridian Ship Brokers on behalf of principal\nAccount: Adriatic Steel Trading\n\nLoad port: Constanta, Romania (ROCND) - 1SB AAAA\nDisch port: Ravenna, Italy (ITRAN) - 1SB AARA\n\nCargo: abt 7,500 / 8,000 mts steel billets\nFreight: USD 18.50/mt FIOST\n\nLaycan: 20-24 Sep 2026\n\nLoading rate: 3,000 mts SHINC\nDisch rate: 2,000 mts SHINC\n\nDemurrage: USD 7,000 PDPR / FD BENDS\n\nCommission: abt 3.75% TTL on F/D/D / subject to closing\n\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London\n\nSubs: stem + owners approval within 2 banking days\n\nNote: Commission terms to be finalised upon CP signing.\n\nbrgds\nBalkan Shipping Brokers",
     "snippet": "FIXTURE RECAP MV CORAL TRADER Constanta / Ravenna steel billets commission subject to closing...",
-    "labelIds": [
-      "INBOX"
-    ]
+    "labelIds": ["INBOX"]
   },
   {
     "id": "sample-45",
@@ -99,9 +89,7 @@
     "date": "2026-04-11T00:00:00.000Z",
     "body": "---------- Forwarded message ---------\nFrom: Adriatic Breakbulk Shipping <chartering@adriatic-bb.com>\nDate: Thu, 9 Apr 2026 10:25:00 +0200\nSubject: MV ADRIATIC STAR, ROCND / ITRAN, FIXTURE RECAP\nTo: ops@medchartering.com\n\nDear Sirs,\n\nFIXTURE RECAP\n\nVessel: MV ADRIATIC STAR\nDWT: 8,100 mts\nBuilt: 2014, Flag: Malta\nOwners: Adriatic Maritime Ltd\nCharterers: Mediterranean Chartering\nAccount: same as Charterers\n\nLoad port: Constanta, Romania (ROCND) - 1SB AAAA\nDisch port: Ravenna, Italy (ITRAN) - 1SB AARA\n\nCargo: abt 6,800 / 7,200 mts steel billets\nFreight: rate under negotiation\n\nLaycan: 25-30 Sep 2026\n\nLoading rate: 3,000 mts SHINC\nDisch rate: 2,000 mts SHINC\n\nDemurrage: USD 6,500 PDPR / FD BENDS\n\nCommission: 3.75% TTL on F/D/D\n\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London\n\nSubs: stem + owners approval within 2 banking days\n\nRate to be confirmed upon owners revert. Route and cargo terms as agreed.\n\nbrgds\nAdriatic Breakbulk Shipping - Chartering",
     "snippet": "FIXTURE RECAP MV ADRIATIC STAR Constanta / Ravenna steel billets rate under negotiation...",
-    "labelIds": [
-      "INBOX"
-    ]
+    "labelIds": ["INBOX"]
   },
   {
     "id": "sample-46",
@@ -114,9 +102,7 @@
     "date": "2026-04-14T00:00:00.000Z",
     "body": "---------- Forwarded message ---------\nFrom: Norstar MPP Management <chartering@norstar-mpp.no>\nDate: Sun, 12 Apr 2026 14:00:00 +0200\nSubject: MV NORBULK EXPRESS, TC RECAP, APS ANTWERP / WAF RANGE\nTo: tc@globalmaritimepartners.com\n\nDear Sirs,\n\nFIXTURE RECAP - TIME CHARTER\n\nVessel: MV NORBULK EXPRESS\nType: MPP general cargo\nDWT: 14,000 mts\nBuilt: 2019, Flag: Norway\nOwners: Norstar MPP Shipmanagement AS\nCharterers: Global Maritime Partners\nAccount: same as Charterers\n\nCharter Duration: 3 months, charterers option to extend 1 x 1 month\n\nHire: USD 9,500/day PDPR\n\nDely: APS Antwerp (BEANR)\nRedely: WAfrica range or Mediterranean, charterers option\n\nLaycan (dely): 01-05 Nov 2026\n\nBunkers on delivery: VLSFO @ USD 560/mt, abt 150 mts VLSFO on board\nBunkers on redelivery: same quality and same price as on delivery\n\nCommission: 3.75% TTL on hire\n\nCP Form: NYPE 2015\nGoverning Law: English\nArbitration: London LMAA\n\nSubs: stem + owners approval within 3 banking days from recap date\n\nAll other terms as per NYPE 2015 as amended.\n\nbrgds\nNorstar MPP Management - Chartering",
     "snippet": "FIXTURE RECAP TC MV NORBULK EXPRESS APS Antwerp / WAfrica 3 months USD 9,500/day...",
-    "labelIds": [
-      "INBOX"
-    ],
+    "labelIds": ["INBOX"],
     "attachments": [
       {
         "filename": "NORBULK_EXPRESS_TC_recap_20260412.pdf",
@@ -136,8 +122,246 @@
     "date": "2026-04-09T00:00:00.000Z",
     "body": "---------- Forwarded message ---------\nFrom: Nordic Pipe Carriers AS <ops@nordicpipe.no>\nDate: Wed, 8 Apr 2026 17:30:00 +0200\nSubject: MV NORDIC PIPE, RECAP, SUBS 2 BANKING DAYS — COMMISSION MISSING\nTo: chartering@baltic-ex-brokers.com\n\nDear Sirs,\n\nFIXTURE RECAP\nRECAP DATE: 08 April 2026\n\nVessel: MV NORDIC PIPE\nDWT: 7,500 mts\nBuilt: 2012, Flag: Norway\nOwners: Nordic Pipe Carriers AS\nCharterers: Baltic Exchange Brokers on behalf of principal\nAccount: to be confirmed\n\nLoad port: Iskenderun, Turkey - 1SB AAAA\nDisch port: Casablanca, Morocco - 1SB AAAA\n\nCargo: abt 5,500 / 6,000 mts API steel pipes (12m lengths)\nFreight: USD 28.50/mt FIOST\n\nLaycan: 15-20 Sep 2026\n\nLoading rate: 1,500 mts SHINC\nDisch rate: 1,000 mts SSHEX EIU\n\nDemurrage: USD 5,500 PDPR / FD BENDS\n\nCommission: [to be agreed — broker's account not confirmed]\n\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London LMAA\n\nSubs: stem + owners approval within 2 banking days from recap date (i.e. latest by 10 April 2026)\n\nAll other GENCON 94 terms apply as amended.\n\nbrgds\nNordic Pipe Carriers - Chartering",
     "snippet": "FIXTURE RECAP MV NORDIC PIPE Iskenderun / Casablanca steel pipes USD 28.50/mt commission missing...",
-    "labelIds": [
-      "INBOX"
+    "labelIds": ["INBOX"]
+  },
+  {
+    "id": "sample-92",
+    "threadId": "thread-92",
+    "from": "\"Gulf Freight Brokers (Demo)\" <ops@gulf-freight-demo.ae>",
+    "fromName": "Gulf Freight Brokers (Demo)",
+    "fromEmail": "ops@gulf-freight-demo.ae",
+    "to": "demo@quantika.org",
+    "subject": "FW: MV ARABIAN FALCON, AEJEA / INCHENNAI, FIXTURE RECAP",
+    "date": "2026-04-15T00:00:00.000Z",
+    "body": "---------- Forwarded message ---------\nFrom: Emirates Breakbulk (Demo) <chartering@emirates-bb-demo.ae>\nDate: Mon, 14 Apr 2026 10:15:00 +0400\nSubject: MV ARABIAN FALCON, AEJEA / INCHENNAI, FIXTURE RECAP\nTo: ops@gulf-freight-demo.ae\n\nDear Sirs,\n\nFIXTURE RECAP\n\nVessel: MV ARABIAN FALCON\nDWT: 11,200 mts\nBuilt: 2015, Flag: UAE\nOwners: Falcon Maritime Holdings (Demo)\nCharterers: Emirates Breakbulk (Demo)\nAccount: same as Charterers\n\nLoad port: Jebel Ali, UAE (AEJEA) - 1SB AAAA\nDisch port: Chennai, India (INCHENNAI) - 1SB AAAA\n\nCargo: abt 9,000 / 9,500 mts steel plates\nFreight: AED 85.00/mt FIOST\n\nLaycan: 18-22 May 2026\n\nLoading rate: 4,000 mts FHEX EIU\nDisch rate: 3,000 mts FHEX EIU\n\nDemurrage: AED 32,000 PDPR / FD BENDS\nDispatch: none\n\nCommission: 3.75% TTL on F/D/D\n\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London LMAA\n\nSubs: stem + owners approval within 2 banking days from recap date\n\nNote: Laytime counts FHEX — Fridays and Public Holidays Excluded. No despatch payable under this CP.\n\nbrgds\nEmirates Breakbulk - Chartering",
+    "snippet": "FIXTURE RECAP MV ARABIAN FALCON Jebel Ali / Chennai steel plates AED 85.00/mt FHEX no despatch...",
+    "labelIds": ["INBOX"],
+    "attachments": [
+      {
+        "filename": "ARABIAN_FALCON_recap_20260414.pdf",
+        "mimeType": "application/pdf",
+        "size": 147800
+      }
+    ]
+  },
+  {
+    "id": "sample-93",
+    "threadId": "thread-93",
+    "from": "\"Med Steel Chartering (Demo)\" <chartering@medsteel-demo.it>",
+    "fromName": "Med Steel Chartering (Demo)",
+    "fromEmail": "chartering@medsteel-demo.it",
+    "to": "demo@quantika.org",
+    "subject": "FW: MV SICILIAN COAST, TRIZM / ITGEN, FIXTURE RECAP — DATS DESPATCH",
+    "date": "2026-04-16T00:00:00.000Z",
+    "body": "---------- Forwarded message ---------\nFrom: Tyrrhenian Cargo Lines (Demo) <ops@tyrrhenian-demo.it>\nDate: Tue, 15 Apr 2026 09:40:00 +0200\nSubject: MV SICILIAN COAST, TRIZM / ITGEN, FIXTURE RECAP — DATS DESPATCH\nTo: chartering@medsteel-demo.it\n\nDear Sirs,\n\nFIXTURE RECAP\n\nVessel: MV SICILIAN COAST\nDWT: 7,800 mts\nBuilt: 2013, Flag: Italy\nOwners: Sicilian Shipping SpA (Demo)\nCharterers: Med Steel Chartering (Demo)\nAccount: Marmara Export Group (Demo)\n\nLoad port: Izmit, Turkey (TRIZM) - 1SB AAAA\nDisch port: Genoa, Italy (ITGEN) - 1SB AAAA\n\nCargo: abt 6,200 / 6,800 mts steel coils\nFreight: EUR 26.50/mt FIOST\n\nLaycan: 20-24 May 2026\n\nLoading rate: 2,500 mts SHEX EIU\nDisch rate: 2,000 mts SHEX EIU\n\nDemurrage: EUR 6,000 PDPR / FD BENDS\nDispatch: despatch on all time saved (DATS) at half demurrage rate — early loading bonus applies\n\nCommission: 2.5% TTL on F/D/D, hedged in EUR 1m forward\n\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London LMAA\n\nSubs: stem + owners approval within 2 banking days from recap date\n\nNote: DATS despatch accrues from the moment vessel commences loading ahead of schedule.\n\nbrgds\nTyrrhenian Cargo Lines - Chartering",
+    "snippet": "FIXTURE RECAP MV SICILIAN COAST Izmit / Genoa steel coils EUR 26.50/mt DATS despatch hedge EUR forward...",
+    "labelIds": ["INBOX"],
+    "attachments": [
+      {
+        "filename": "SICILIAN_COAST_recap_20260415.pdf",
+        "mimeType": "application/pdf",
+        "size": 163500
+      }
+    ]
+  },
+  {
+    "id": "sample-94",
+    "threadId": "thread-94",
+    "from": "\"Black Sea Cargo Brokers (Demo)\" <ops@bscb-demo.ua>",
+    "fromName": "Black Sea Cargo Brokers (Demo)",
+    "fromEmail": "ops@bscb-demo.ua",
+    "to": "demo@quantika.org",
+    "subject": "FW: MV ODESSA GRAIN, UAODS / EGALY, BULK GRAIN FIXTURE RECAP",
+    "date": "2026-04-17T00:00:00.000Z",
+    "body": "---------- Forwarded message ---------\nFrom: Pontic Grain Trading (Demo) <chartering@pontic-grain-demo.com>\nDate: Wed, 16 Apr 2026 14:20:00 +0300\nSubject: MV ODESSA GRAIN, UAODS / EGALY, BULK GRAIN FIXTURE RECAP\nTo: ops@bscb-demo.ua\n\nDear Sirs,\n\nFIXTURE RECAP\n\nVessel: MV ODESSA GRAIN\nType: Bulk carrier\nDWT: 28,500 mts\nBuilt: 2016, Flag: Marshall Islands\nOwners: Pontic Bulkers Ltd (Demo)\nCharterers: Pontic Grain Trading (Demo)\nAccount: Cairo Grain Co (Demo)\n\nLoad port: Odessa, Ukraine (UAODS) - 1SB AAAA\nDisch port: Alexandria, Egypt (EGALY) - 1SB AAAA\n\nCargo: abt 25,000 / 27,000 mts wheat in bulk\nFreight: USD 14.75/mt FIOST\n\nLaycan: 22-27 May 2026\n\nLoading rate: 8,000 mts WWD ATUTC\nDisch rate: 6,000 mts WWD ATUTC\n\nDemurrage: USD 11,000 PDPR / FD BENDS\nDispatch: half demurrage on laytime saved\n\nCommission: 3.75% TTL on F/D/D\n\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London LMAA\n\nSubs: stem + owners approval within 2 banking days from recap date\n\nNote: WWD — Weather Working Days. Any time lost due to weather or swell at load port not to count as laytime.\n\nbrgds\nPontic Grain Trading - Chartering",
+    "snippet": "FIXTURE RECAP MV ODESSA GRAIN Odessa / Alexandria wheat 25,000 mts USD 14.75/mt WWD laytime...",
+    "labelIds": ["INBOX"],
+    "attachments": [
+      {
+        "filename": "ODESSA_GRAIN_recap_20260416.pdf",
+        "mimeType": "application/pdf",
+        "size": 189200
+      }
+    ]
+  },
+  {
+    "id": "sample-95",
+    "threadId": "thread-95",
+    "from": "\"Gulf Project Cargo (Demo)\" <chartering@gulfproject-demo.ae>",
+    "fromName": "Gulf Project Cargo (Demo)",
+    "fromEmail": "chartering@gulfproject-demo.ae",
+    "to": "demo@quantika.org",
+    "subject": "FW: MV DESERT WIND, AEAUH / PKKAR, PROJECT CARGO FIXTURE RECAP",
+    "date": "2026-04-18T00:00:00.000Z",
+    "body": "---------- Forwarded message ---------\nFrom: Arabian Project Logistics (Demo) <ops@arabian-proj-demo.ae>\nDate: Thu, 17 Apr 2026 11:05:00 +0400\nSubject: MV DESERT WIND, AEAUH / PKKAR, PROJECT CARGO FIXTURE RECAP\nTo: chartering@gulfproject-demo.ae\n\nDear Sirs,\n\nFIXTURE RECAP\n\nVessel: MV DESERT WIND\nType: Heavy-lift MPP\nDWT: 6,400 mts\nBuilt: 2018, Flag: UAE\nOwners: Desert Maritime Owners (Demo)\nCharterers: Arabian Project Logistics (Demo)\nAccount: Karachi Industrial Co (Demo)\n\nLoad port: Abu Dhabi, UAE (AEAUH) - 1SB AAAA\nDisch port: Karachi, Pakistan (PKKAR) - 1SB AAAA\n\nCargo: abt 4,500 / 5,000 mts project cargo (industrial modules + steel structures)\nFreight: AED 195.00/mt FIOST\n\nLaycan: 25-30 May 2026\n\nLoading rate: 800 mts SSHEX EIU\nDisch rate: 600 mts SSHEX EIU\n\nDemurrage: AED 45,000 PDPR / FD BENDS\nDispatch: half despatch reversible — demurrage rate / 2 applied to both used and saved laytime\n\nCommission: 3.75% TTL on F/D/D\n\nCP Form: HEAVYCON\nGoverning Law: English\nArbitration: London LMAA\n\nSubs: stem + owners approval within 3 banking days from recap date\n\nbrgds\nArabian Project Logistics - Chartering",
+    "snippet": "FIXTURE RECAP MV DESERT WIND Abu Dhabi / Karachi project cargo AED 195.00/mt HEAVYCON half-despatch reversible...",
+    "labelIds": ["INBOX"],
+    "attachments": [
+      {
+        "filename": "DESERT_WIND_recap_20260417.pdf",
+        "mimeType": "application/pdf",
+        "size": 214600
+      }
+    ]
+  },
+  {
+    "id": "sample-96",
+    "threadId": "thread-96",
+    "from": "\"West Africa Brokers (Demo)\" <chartering@wafbrokers-demo.ng>",
+    "fromName": "West Africa Brokers (Demo)",
+    "fromEmail": "chartering@wafbrokers-demo.ng",
+    "to": "demo@quantika.org",
+    "subject": "FW: MV BIGHT OF BENIN, GBHUL / NGAPP, BAGGED FERTILIZER FIXTURE RECAP",
+    "date": "2026-04-19T00:00:00.000Z",
+    "body": "---------- Forwarded message ---------\nFrom: Atlantic Agri Shipping (Demo) <ops@atlantic-agri-demo.com>\nDate: Fri, 18 Apr 2026 08:30:00 +0100\nSubject: MV BIGHT OF BENIN, GBHUL / NGAPP, BAGGED FERTILIZER FIXTURE RECAP\nTo: chartering@wafbrokers-demo.ng\n\nDear Sirs,\n\nFIXTURE RECAP\n\nVessel: MV BIGHT OF BENIN\nDWT: 10,800 mts\nBuilt: 2012, Flag: Liberia\nOwners: Bight Shipping Ltd (Demo)\nCharterers: Atlantic Agri Shipping (Demo)\nAccount: same as Charterers\n\nLoad port: Hull, UK (GBHUL) - 1SB AAAA\nDisch port: Apapa, Nigeria (NGAPP) - 1SB AAAA\n\nCargo: abt 8,500 / 9,000 mts bagged NPK fertilizer (50kg bags)\nFreight: GBP 22.00/mt FIOST\n\nLaycan: 01-05 Jun 2026\n\nLoading rate: 2,000 mts SHINC\nDisch rate: 1,500 mts SHINC\n\nDemurrage: GBP 7,500 PDPR / FD BENDS\nDispatch: half demurrage on laytime used\n\nCommission: 3.75% TTL on F/D/D\n\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London LMAA\n\nSubs: stem + owners approval within 2 banking days from recap date\n\nNote re NOR: Owners reserve right to object to NOR tendered if vessel not clean on arrival. Charterers confirm port is always accessible. Any weather objection at NGAPP to be supported by port authority certificate.\n\nbrgds\nAtlantic Agri Shipping - Chartering",
+    "snippet": "FIXTURE RECAP MV BIGHT OF BENIN Hull / Apapa bagged fertilizer GBP 22.00/mt SHINC NOR clean-on-arrival objection...",
+    "labelIds": ["INBOX"],
+    "attachments": [
+      {
+        "filename": "BIGHT_BENIN_recap_20260418.pdf",
+        "mimeType": "application/pdf",
+        "size": 156300
+      }
+    ]
+  },
+  {
+    "id": "sample-97",
+    "threadId": "thread-97",
+    "from": "\"Levant Maritime Brokers (Demo)\" <ops@levant-mb-demo.lb>",
+    "fromName": "Levant Maritime Brokers (Demo)",
+    "fromEmail": "ops@levant-mb-demo.lb",
+    "to": "demo@quantika.org",
+    "subject": "FW: MV CEDAR VOYAGER, JOAQB / NLRTM, STEEL PLATES FIXTURE RECAP",
+    "date": "2026-04-20T00:00:00.000Z",
+    "body": "---------- Forwarded message ---------\nFrom: Jordan Steel Carriers (Demo) <chartering@jsc-demo.jo>\nDate: Sun, 19 Apr 2026 13:55:00 +0300\nSubject: MV CEDAR VOYAGER, JOAQB / NLRTM, STEEL PLATES FIXTURE RECAP\nTo: ops@levant-mb-demo.lb\n\nDear Sirs,\n\nFIXTURE RECAP\n\nVessel: MV CEDAR VOYAGER\nDWT: 9,800 mts\nBuilt: 2014, Flag: Cyprus\nOwners: Levant Shipowners Ltd (Demo)\nCharterers: Jordan Steel Carriers (Demo)\nAccount: Rotterdam Steel Hub (Demo)\n\nLoad port: Aqaba, Jordan (JOAQB) - 1SB AAAA\nDisch port: Rotterdam, Netherlands (NLRTM) - 1SB AAAA\n\nCargo: abt 8,000 / 8,500 mts hot-rolled steel plates\nFreight: USD 34.50/mt FIOST\n\nLaycan: 05-10 Jun 2026\n\nLoading rate: 2,500 mts SSHEX EIU\nDisch rate: 3,000 mts SHEX EIU\n\nDemurrage: USD 8,000 PDPR / FD BENDS\nDispatch: half despatch reversible at half demurrage rate on all time saved or used\n\nCommission: 3.75% TTL on F/D/D, hedged via FFA at USD 34.00/mt\n\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London LMAA\n\nSubs: stem + owners approval within 2 banking days from recap date\n\nNote re NOR: NOR at JOAQB tendered 14 Apr 2026. Owners noted NOR may be objected if vessel arrives on a public holiday — Charterers confirm all-working-days basis and waive holiday objection.\n\nbrgds\nJordan Steel Carriers - Chartering",
+    "snippet": "FIXTURE RECAP MV CEDAR VOYAGER Aqaba / Rotterdam steel plates USD 34.50/mt FFA hedge NOR holiday objection...",
+    "labelIds": ["INBOX"],
+    "attachments": [
+      {
+        "filename": "CEDAR_VOYAGER_recap_20260419.pdf",
+        "mimeType": "application/pdf",
+        "size": 178900
+      }
+    ]
+  },
+  {
+    "id": "sample-98",
+    "threadId": "thread-98",
+    "from": "\"North Sea Freight Desk (Demo)\" <chartering@nsfd-demo.no>",
+    "fromName": "North Sea Freight Desk (Demo)",
+    "fromEmail": "chartering@nsfd-demo.no",
+    "to": "demo@quantika.org",
+    "subject": "FW: MV BERGEN TIMBER, NOBGO / MACSB, SAWN TIMBER FIXTURE RECAP",
+    "date": "2026-04-21T00:00:00.000Z",
+    "body": "---------- Forwarded message ---------\nFrom: Scandinavian Forest Exports (Demo) <ops@sfe-demo.no>\nDate: Mon, 20 Apr 2026 09:10:00 +0200\nSubject: MV BERGEN TIMBER, NOBGO / MACSB, SAWN TIMBER FIXTURE RECAP\nTo: chartering@nsfd-demo.no\n\nDear Sirs,\n\nFIXTURE RECAP\n\nVessel: MV BERGEN TIMBER\nDWT: 6,200 mts\nBuilt: 2009, Flag: Norway\nOwners: Bergen Maritime AS (Demo)\nCharterers: Scandinavian Forest Exports (Demo)\nAccount: Casablanca Wood Trading (Demo)\n\nLoad port: Bergen, Norway (NOBGO) - 1SB AAAA\nDisch port: Casablanca, Morocco (MACSB) - 1SB AAAA\n\nCargo: abt 5,000 / 5,400 mts sawn timber (pine/spruce), bundled\nFreight: GBP 28.50/mt FIOST\n\nLaycan: 10-14 Jun 2026\n\nLoading rate: 1,500 mts SHEX EIU\nDisch rate: 1,000 mts SHEX EIU\n\nDemurrage: GBP 5,800 PDPR / FD BENDS\nDispatch: DATS — despatch on all time saved at half demurrage rate; early loading bonus confirmed by Owners\n\nCommission: 2.5% TTL on F/D/D\n\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London LMAA\n\nSubs: stem + owners approval within 2 banking days from recap date\n\nbrgds\nScandinavian Forest Exports - Chartering",
+    "snippet": "FIXTURE RECAP MV BERGEN TIMBER Bergen / Casablanca sawn timber GBP 28.50/mt SHEX DATS despatch...",
+    "labelIds": ["INBOX"],
+    "attachments": [
+      {
+        "filename": "BERGEN_TIMBER_recap_20260420.pdf",
+        "mimeType": "application/pdf",
+        "size": 132700
+      }
+    ]
+  },
+  {
+    "id": "sample-99",
+    "threadId": "thread-99",
+    "from": "\"MENA Bulk Brokers (Demo)\" <ops@mena-bulk-demo.ae>",
+    "fromName": "MENA Bulk Brokers (Demo)",
+    "fromEmail": "ops@mena-bulk-demo.ae",
+    "to": "demo@quantika.org",
+    "subject": "FW: MV GULF PELICAN, SADMM / PKKAR, BULK FERTILIZER FIXTURE RECAP",
+    "date": "2026-04-22T00:00:00.000Z",
+    "body": "---------- Forwarded message ---------\nFrom: Arabian Agri Traders (Demo) <chartering@aat-demo.ae>\nDate: Tue, 21 Apr 2026 11:45:00 +0400\nSubject: MV GULF PELICAN, SADMM / PKKAR, BULK FERTILIZER FIXTURE RECAP\nTo: ops@mena-bulk-demo.ae\n\nDear Sirs,\n\nFIXTURE RECAP\n\nVessel: MV GULF PELICAN\nType: Bulk carrier\nDWT: 32,000 mts\nBuilt: 2017, Flag: Bahamas\nOwners: Gulf Bulkers Holdings (Demo)\nCharterers: Arabian Agri Traders (Demo)\nAccount: Karachi Fertilizer Distribution (Demo)\n\nLoad port: Dammam, Saudi Arabia (SADMM) - 1SB AAAA\nDisch port: Karachi, Pakistan (PKKAR) - 1SB AAAA\n\nCargo: abt 28,000 / 30,000 mts urea fertilizer in bulk\nFreight: AED 62.00/mt FIOST\n\nLaycan: 15-20 Jun 2026\n\nLoading rate: 10,000 mts FHEX EIU\nDisch rate: 7,000 mts FHEX EIU\n\nDemurrage: AED 55,000 PDPR / FD BENDS\nDispatch: none — demurrage only, no despatch payable\n\nCommission: 3.75% TTL on F/D/D, hedged via FFA at USD 16.50/mt\n\nCP Form: GENCON 2022\nGoverning Law: English\nArbitration: Singapore SCMA\n\nSubs: stem + owners approval within 2 banking days from recap date\n\nNote: FHEX applies at both ports. No despatch under this CP. Time lost due to weather at SADMM anchorage shall not count as laytime.\n\nbrgds\nArabian Agri Traders - Chartering",
+    "snippet": "FIXTURE RECAP MV GULF PELICAN Dammam / Karachi bulk urea AED 62.00/mt FHEX no despatch FFA hedge...",
+    "labelIds": ["INBOX"],
+    "attachments": [
+      {
+        "filename": "GULF_PELICAN_recap_20260421.pdf",
+        "mimeType": "application/pdf",
+        "size": 201400
+      }
+    ]
+  },
+  {
+    "id": "sample-100",
+    "threadId": "thread-100",
+    "from": "\"London Cargo Brokers (Demo)\" <chartering@lcb-demo.co.uk>",
+    "fromName": "London Cargo Brokers (Demo)",
+    "fromEmail": "chartering@lcb-demo.co.uk",
+    "to": "demo@quantika.org",
+    "subject": "FW: MV THAMES ARROW, GBLON / MACSB, STEEL BILLETS FIXTURE RECAP",
+    "date": "2026-04-23T00:00:00.000Z",
+    "body": "---------- Forwarded message ---------\nFrom: Britannia Metals Shipping (Demo) <ops@britannia-metals-demo.co.uk>\nDate: Wed, 22 Apr 2026 14:00:00 +0100\nSubject: MV THAMES ARROW, GBLON / MACSB, STEEL BILLETS FIXTURE RECAP\nTo: chartering@lcb-demo.co.uk\n\nDear Sirs,\n\nFIXTURE RECAP\n\nVessel: MV THAMES ARROW\nDWT: 8,900 mts\nBuilt: 2011, Flag: Gibraltar\nOwners: Thames Maritime Ltd (Demo)\nCharterers: Britannia Metals Shipping (Demo)\nAccount: Maghreb Steel Importers (Demo)\n\nLoad port: London, UK (GBLON) - 1SB AAAA\nDisch port: Casablanca, Morocco (MACSB) - 1SB AAAA\n\nCargo: abt 7,200 / 7,800 mts steel billets\nFreight: GBP 24.75/mt FIOST\n\nLaycan: 20-25 Jun 2026\n\nLoading rate: 2,000 mts WWD ATUTC\nDisch rate: 1,500 mts WWD ATUTC\n\nDemurrage: GBP 6,500 PDPR / FD BENDS\nDispatch: half demurrage on laytime saved\n\nCommission: 3.75% TTL on F/D/D\n\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London LMAA\n\nSubs: stem + owners approval within 2 banking days from recap date\n\nNote re NOR: Weather objection at GBLON anchorage — if vessel waits on roads in excess of 12 hours due to weather/swell, time not to count until vessel is all fast. Owners to provide meteorological certificate if disputed.\n\nbrgds\nBritannia Metals Shipping - Chartering",
+    "snippet": "FIXTURE RECAP MV THAMES ARROW London / Casablanca steel billets GBP 24.75/mt WWD NOR weather objection...",
+    "labelIds": ["INBOX"],
+    "attachments": [
+      {
+        "filename": "THAMES_ARROW_recap_20260422.pdf",
+        "mimeType": "application/pdf",
+        "size": 144100
+      }
+    ]
+  },
+  {
+    "id": "sample-101",
+    "threadId": "thread-101",
+    "from": "\"Adriatic Freight Brokers (Demo)\" <chartering@afb-demo.hr>",
+    "fromName": "Adriatic Freight Brokers (Demo)",
+    "fromEmail": "chartering@afb-demo.hr",
+    "to": "demo@quantika.org",
+    "subject": "FW: MV ZAGREB VOYAGER, HRSPU / DZDZE, STEEL COILS FIXTURE RECAP",
+    "date": "2026-04-24T00:00:00.000Z",
+    "body": "---------- Forwarded message ---------\nFrom: Adriatic Steel Routes (Demo) <ops@asr-demo.hr>\nDate: Thu, 23 Apr 2026 10:30:00 +0200\nSubject: MV ZAGREB VOYAGER, HRSPU / DZDZE, STEEL COILS FIXTURE RECAP\nTo: chartering@afb-demo.hr\n\nDear Sirs,\n\nFIXTURE RECAP\n\nVessel: MV ZAGREB VOYAGER\nDWT: 7,100 mts\nBuilt: 2010, Flag: Croatia\nOwners: Adriatic Bulkers d.o.o. (Demo)\nCharterers: Adriatic Steel Routes (Demo)\nAccount: Algeria Steel Distribution (Demo)\n\nLoad port: Split, Croatia (HRSPU) - 1SB AAAA\nDisch port: Algiers, Algeria (DZDZE) - 1SB AAAA\n\nCargo: abt 5,800 / 6,200 mts HRC steel coils\nFreight: EUR 29.00/mt FIOST\n\nLaycan: 25 Jun - 01 Jul 2026\n\nLoading rate: 2,000 mts SHINC\nDisch rate: 1,800 mts SHINC\n\nDemurrage: EUR 5,500 PDPR / FD BENDS\nDispatch: half demurrage on laytime used\n\nCommission: 3.75% TTL on F/D/D\n\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London LMAA\n\nSubs: stem + owners approval within 2 banking days from recap date\n\nbrgds\nAdriatic Steel Routes - Chartering",
+    "snippet": "FIXTURE RECAP MV ZAGREB VOYAGER Split / Algiers steel coils EUR 29.00/mt SHINC half-despatch...",
+    "labelIds": ["INBOX"],
+    "attachments": [
+      {
+        "filename": "ZAGREB_VOYAGER_recap_20260423.pdf",
+        "mimeType": "application/pdf",
+        "size": 128500
+      }
+    ]
+  },
+  {
+    "id": "sample-102",
+    "threadId": "thread-102",
+    "from": "\"Gulf Chartering Services (Demo)\" <chartering@gcs-demo.ae>",
+    "fromName": "Gulf Chartering Services (Demo)",
+    "fromEmail": "chartering@gcs-demo.ae",
+    "to": "demo@quantika.org",
+    "subject": "FW: MV HORMUZ PIONEER, IRBND / INCHENNAI, STEEL BILLETS FIXTURE RECAP",
+    "date": "2026-04-25T00:00:00.000Z",
+    "body": "---------- Forwarded message ---------\nFrom: Gulf Iron & Steel (Demo) <ops@gis-demo.ae>\nDate: Fri, 24 Apr 2026 09:20:00 +0400\nSubject: MV HORMUZ PIONEER, IRBND / INCHENNAI, STEEL BILLETS FIXTURE RECAP\nTo: chartering@gcs-demo.ae\n\nDear Sirs,\n\nFIXTURE RECAP\n\nVessel: MV HORMUZ PIONEER\nDWT: 12,500 mts\nBuilt: 2016, Flag: Iran (Islamic Rep.)\nOwners: Hormuz Shipping Co (Demo)\nCharterers: Gulf Iron & Steel (Demo)\nAccount: Chennai Metals Ltd (Demo)\n\nLoad port: Bandar Abbas, Iran (IRBND) - 1SB AAAA\nDisch port: Chennai, India (INCHENNAI) - 1SB AAAA\n\nCargo: abt 10,000 / 10,800 mts steel billets, Grade Q235\nFreight: AED 75.00/mt FIOST\n\nLaycan: 01-06 Jul 2026\n\nLoading rate: 4,500 mts FHEX EIU\nDisch rate: 3,500 mts SSHEX EIU\n\nDemurrage: AED 38,000 PDPR / FD BENDS\nDispatch: half demurrage on laytime used\n\nCommission: 2.5% TTL on F/D/D, hedged via FFA at USD 19.00/mt\n\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London LMAA\n\nSubs: stem + owners approval within 2 banking days from recap date\n\nNote: FHEX at load, SSHEX at discharge. NOR at IRBND — charterers note that if NOR is tendered on a Friday (holiday exclusion), NOR shall not commence until 08:00 Saturday. Owners object to any attempt to treat Friday NOR as valid for FHEX port.\n\nbrgds\nGulf Iron & Steel - Chartering",
+    "snippet": "FIXTURE RECAP MV HORMUZ PIONEER Bandar Abbas / Chennai steel billets AED 75.00/mt FHEX/SSHEX NOR Friday objection FFA hedge...",
+    "labelIds": ["INBOX"],
+    "attachments": [
+      {
+        "filename": "HORMUZ_PIONEER_recap_20260424.pdf",
+        "mimeType": "application/pdf",
+        "size": 231000
+      }
+    ]
+  },
+  {
+    "id": "sample-103",
+    "threadId": "thread-103",
+    "from": "\"Iberia Project Brokers (Demo)\" <chartering@ipb-demo.es>",
+    "fromName": "Iberia Project Brokers (Demo)",
+    "fromEmail": "chartering@ipb-demo.es",
+    "to": "demo@quantika.org",
+    "subject": "FW: MV VALENCIA STAR, ESVLC / EGALY, INDUSTRIAL EQUIPMENT FIXTURE RECAP",
+    "date": "2026-04-26T00:00:00.000Z",
+    "body": "---------- Forwarded message ---------\nFrom: Iberian Project Logistics (Demo) <ops@ipl-demo.es>\nDate: Sat, 25 Apr 2026 11:00:00 +0200\nSubject: MV VALENCIA STAR, ESVLC / EGALY, INDUSTRIAL EQUIPMENT FIXTURE RECAP\nTo: chartering@ipb-demo.es\n\nDear Sirs,\n\nFIXTURE RECAP\n\nVessel: MV VALENCIA STAR\nType: MPP / semi-submersible deck\nDWT: 8,200 mts\nBuilt: 2020, Flag: Spain\nOwners: Valencia Shipowners SA (Demo)\nCharterers: Iberian Project Logistics (Demo)\nAccount: Cairo Energy Projects (Demo)\n\nLoad port: Valencia, Spain (ESVLC) - 1SB AAAA\nDisch port: Alexandria, Egypt (EGALY) - 1SB AAAA\n\nCargo: abt 5,500 / 6,000 mts industrial equipment (steel frames + generator sets, out-of-gauge)\nFreight: EUR 88.00/mt FIOST\n\nLaycan: 05-10 Jul 2026\n\nLoading rate: 600 mts SHEX EIU\nDisch rate: 500 mts SHEX EIU\n\nDemurrage: EUR 9,500 PDPR / FD BENDS\nDispatch: none — no despatch payable (FHEX setup, heavy-lift schedule)\n\nCommission: 3.75% TTL on F/D/D\n\nCP Form: HEAVYCON\nGoverning Law: English\nArbitration: London LMAA\n\nSubs: stem + owners approval within 3 banking days from recap date\n\nNote re NOR: If vessel arrives at EGALY anchorage on a public holiday, NOR shall not be valid until 08:00 first working day thereafter. Holiday objection clause applies per local port authority schedule. In addition, owners reserve right to object to NOR if vessel is not clean on arrival (holds free of previous cargo residues).\n\nbrgds\nIberian Project Logistics - Chartering",
+    "snippet": "FIXTURE RECAP MV VALENCIA STAR Valencia / Alexandria industrial equipment EUR 88.00/mt HEAVYCON NOR holiday + clean-on-arrival objection...",
+    "labelIds": ["INBOX"],
+    "attachments": [
+      {
+        "filename": "VALENCIA_STAR_recap_20260425.pdf",
+        "mimeType": "application/pdf",
+        "size": 258700
+      }
     ]
   }
 ]

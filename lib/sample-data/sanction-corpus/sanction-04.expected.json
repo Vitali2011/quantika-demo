@@ -1,0 +1,14 @@
+{
+  "shouldFlag": false,
+  "flaggedEntities": [],
+  "falsePositives": [
+    {
+      "name": "MV PACIFIC PEARL",
+      "type": "vessel",
+      "imo": "9412081",
+      "reason": "Same vessel name as sanctioned MV PACIFIC PEARL (IMO 9876543) but different IMO. This is a legitimate Marshall Islands-flagged bulker (Meridian Bulk Carriers), no OFAC/EU listing. Name-only collision — must resolve via IMO check, not name match."
+    }
+  ],
+  "expectedAction": "clear",
+  "notes": "False-positive name collision test. System should match name 'PACIFIC PEARL' against sanctions list, then disambiguate by IMO 9412081 vs sanctioned 9876543, then clear. Failure mode: blanket-flag by vessel name without IMO check."
+}

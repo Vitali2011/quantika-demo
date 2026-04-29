@@ -10,9 +10,7 @@
     "date": "2026-04-12T00:00:00.000Z",
     "body": "---------- Forwarded message ---------\nFrom: Gard P&I Club <documentation@gard.no>\nDate: Fri, 10 Apr 2026 09:15:00 +0200\nSubject: MV FJORD PROJECT - P&I and Class Certificates\nTo: certificates@dnvgl.com\n\nDear Sirs,\n\nPlease find attached the requested certificates for MV FJORD PROJECT:\n\n1) P&I Club Certificate\n   Club: Gard P&I (Bermuda) Ltd\n   Certificate No.: GARD-2026-FP-00389\n   Vessel: MV FJORD PROJECT\n   IMO No.: 9200275\n   Valid from: 20 February 2026\n   Valid until: 20 February 2027\n   Entry: Full P&I cover\n\n2) Class Certificate\n   Classification Society: DNV GL\n   Class Notation: 1A1 GENERAL CARGO, Unrestricted Navigation\n   Certificate No.: DNV-CC-2026-FP-00214\n   Valid from: 15 March 2026\n   Valid until: 14 March 2027\n   Next survey: Annual survey due March 2027 in Rotterdam\n\nShould you require any further documentation, please do not hesitate to contact us.\n\nKind regards\nGard P&I - Documentation Department",
     "snippet": "P&I and Class certificates for MV FJORD PROJECT - valid until Feb 2027 and Mar 2027...",
-    "labelIds": [
-      "INBOX"
-    ],
+    "labelIds": ["INBOX"],
     "attachments": [
       {
         "filename": "FjordProject_PandI_Gard_2026.pdf",
@@ -37,9 +35,7 @@
     "date": "2026-04-16T00:00:00.000Z",
     "body": "---------- Forwarded message ---------\nFrom: Mehmet Demir <m.demir@marmarabrokers.com.tr>\nDate: Wed, 15 Apr 2026 14:22:00 +0300\nSubject: RE: Cargo inquiry - 6000 MT steel pipes Iskenderun / Casablanca\nTo: management@etm-services.net\n\nDear colleagues,\n\nThank you for reverting. Following further confirmation from our shippers, the cargo volume has been revised upwards. We are now looking at 7,500 to 8,000 mts of API steel pipes (12m lengths). Laycan and loading port remain unchanged. Geared vessel still required, stowage factor approximately 2.50. Could you please come back to us with a freshly adjusted freight indication reflecting the increased quantity and the tween deck requirement?\n\nBest regards,\nMehmet Demir\nMarmara Brokers - Chartering",
     "snippet": "Cargo revised to 7,500-8,000 mts steel pipes, please revert with adjusted freight including tween deck requirement...",
-    "labelIds": [
-      "INBOX"
-    ]
+    "labelIds": ["INBOX"]
   },
   {
     "id": "sample-50",
@@ -52,8 +48,162 @@
     "date": "2026-04-17T00:00:00.000Z",
     "body": "---------- Forwarded message ---------\nFrom: Osama <osama@badrgroup.com>\nDate: Thu, 16 Apr 2026 15:55:00 +0200\nSubject: RE: 10000 MT bagged cement Port Said / Dakar - counter freight\nTo: management@etm-services.net\n\nDear Sirs,\n\nThank you for your offer of USD 28.50/mt. After careful consideration, your rate is too high for our principals at this stage.\n\nOur maximum acceptable freight is USD 25.00/mt FIO basis.\n\nFor reference, our full counter terms:\nCargo: 10,000 mts portland cement in 50kg pp bags\n       bale capacity req min 12,500 cbm\nLoad: Port Said area, Egypt - 1 sb aaaa\nDisch: Dakar, Senegal - 1 sb aaaa\nLaycan: 01-10 Oct 2026\nLoading: 2,000 mts SHINC\nDisch: 1,500 mts SSHEX EIU\nFRT counter: USD 25.00/mt FIO\nDemurrage: USD 6,000 PDPR / FD BENDS\nCommission: 3.75% TTL\n\nKindly revert with owners best.\n\nbrgds\nOsama\nBadr Group International",
     "snippet": "Counter freight USD 25.00/mt FIO vs your USD 28.50 - 10,000 MT bagged cement Port Said / Dakar...",
-    "labelIds": [
-      "INBOX"
-    ]
+    "labelIds": ["INBOX"]
+  },
+  {
+    "id": "sample-104",
+    "threadId": "thread-104",
+    "from": "\"Hellenic Tramp Demo\" <chartering@hellenic-tramp-demo.gr>",
+    "fromName": "Hellenic Tramp Demo",
+    "fromEmail": "chartering@hellenic-tramp-demo.gr",
+    "to": "demo@quantika.org",
+    "subject": "RE: MV AEGEAN SPIRIT - 14500 MT wheat Novorossiysk / Alexandria",
+    "date": "2026-04-14T08:30:00.000Z",
+    "body": "WE REVERT RE YOUR OFFER DATED 13/04.\n\nFRT USD 18.50 NOT ACCEPTABLE. OWS POSITION IS USD 15.00 FIO TOPS.\n\nDEMURRAGE USD 5,500 PDPR - NON NEGOTIABLE.\n\nPLS REVERT URGENTLY - VESSEL OPEN NEXT WEEK ONLY. IF NOT WORKABLE DO NOT WASTE OUR TIME.\n\nHELLENIC TRAMP DEMO\nCHARTERING DEPT",
+    "snippet": "FRT USD 18.50 NOT ACCEPTABLE - OWS POSITION USD 15.00 FIO - PLS REVERT URGENTLY...",
+    "labelIds": ["INBOX"]
+  },
+  {
+    "id": "sample-105",
+    "threadId": "thread-105",
+    "from": "\"Mitteleuropa Charter GmbH (Demo)\" <ops@mitteleuropa-charter-demo.de>",
+    "fromName": "Mitteleuropa Charter GmbH (Demo)",
+    "fromEmail": "ops@mitteleuropa-charter-demo.de",
+    "to": "demo@quantika.org",
+    "subject": "RE: Fixture confirmation - 8200 MT steel coils Constanta / Misurata",
+    "date": "2026-04-15T10:45:00.000Z",
+    "body": "Dear Sir or Madam,\n\nWe acknowledge receipt of your offer dated 14 April 2026 concerning the transportation of 8,200 metric tonnes of steel coils from Constanta, Romania to Misurata, Libya aboard MV DANUBE STAR.\n\nFollowing a thorough review of the proposed terms by our chartering committee, we are pleased to confirm that the offered freight rate of USD 22.00 per metric tonne on FIO terms, together with the stipulated demurrage rate of USD 7,500 per day pro-rata, is acceptable to Mitteleuropa Charter GmbH.\n\nWe hereby confirm the fixture on the following basis:\n\nCargo: 8,200 MT steel coils, stowage factor 15 cbft/mt approx\nLoad Port: Constanta, Romania — 1 safe berth, always accessible, always afloat\nDischarge Port: Misurata, Libya — 1 safe berth, always accessible, always afloat\nLaycan: 20–28 April 2026\nFreight: USD 22.00/mt FIO\nLoading rate: 1,500 MT SHINC\nDischarging rate: 1,200 MT SSHEX EIU\nDemurrage: USD 7,500 PDPR / despatch half demurrage\nCommission: 3.75% total address\n\nKindly arrange for the fixture recap to be circulated at your earliest convenience so that we may proceed with the nomination of receivers and port agents.\n\nWith kind regards,\nDr. Klaus-Heinrich Brandt\nHead of Chartering Operations\nMitteleuropa Charter GmbH (Demo)",
+    "snippet": "Confirming fixture on USD 22.00/mt FIO - 8,200 MT steel coils Constanta / Misurata - laycan 20-28 April...",
+    "labelIds": ["INBOX"]
+  },
+  {
+    "id": "sample-106",
+    "threadId": "thread-106",
+    "from": "\"Pacific Bulk Asia Demo\" <fix@pacificbulkasia-demo.hk>",
+    "fromName": "Pacific Bulk Asia Demo",
+    "fromEmail": "fix@pacificbulkasia-demo.hk",
+    "to": "demo@quantika.org",
+    "subject": "RE: 12000 MT soybean meal Khor Fakkan / Lagos",
+    "date": "2026-04-14T05:15:00.000Z",
+    "body": "Noted yr offer.\nFrt USD 31 not wrkble. Our max USD 27.50 FIO.\nLaycan ok. Vessel pls check again.\nTks",
+    "snippet": "FRT USD 27.50 FIO max - laycan ok - pls check vessel again...",
+    "labelIds": ["INBOX"]
+  },
+  {
+    "id": "sample-107",
+    "threadId": "thread-107",
+    "from": "\"Adriatica Shipping Demo\" <nikos@adriatica-demo.it>",
+    "fromName": "Adriatica Shipping Demo",
+    "fromEmail": "nikos@adriatica-demo.it",
+    "to": "demo@quantika.org",
+    "subject": "RE: MV BORA VISTA - 5500 MT fertilizers Yuzhne / Tartous",
+    "date": "2026-04-16T13:20:00.000Z",
+    "body": "Dear friends,\n\nHope all well your side and family too!\n\nWe reverted quickly as we like very much this cargo and MV BORA VISTA is perfect vessel for Tartous — Captain Stavros knows the port well, last call was November.\n\nAll in order on our side. Please do firm on the following and we confirm immediately:\n\n- Cargo 5,500 MT fertilizers in bulk (NPK), SF 1.35 m3/mt\n- Load: Yuzhne, Ukraine — 1sb aaaa\n- Disch: Tartous, Syria — 1sb aaaa\n- Laycan: 22-30 April 2026 (we can also 1-5 May if needed, pls advise)\n- Frt: USD 19.50/mt FIO as per your offer — ACCEPTED\n- Demurrage: USD 6,500 pdpr / despatch half\n- Commission: 3.75% ttl\n\nFor Posidonia this year, we should have coffee if you are coming to Athens! Looking forward to catching up.\n\nWarm regards,\nNikos Papadimitriou\nAdriatica Shipping Demo - Chartering",
+    "snippet": "All in order - USD 19.50/mt FIO accepted - 5,500 MT fertilizers Yuzhne / Tartous - pls do firm...",
+    "labelIds": ["INBOX"]
+  },
+  {
+    "id": "sample-108",
+    "threadId": "thread-108",
+    "from": "\"Hellenic Tramp Demo\" <chartering@hellenic-tramp-demo.gr>",
+    "fromName": "Hellenic Tramp Demo",
+    "fromEmail": "chartering@hellenic-tramp-demo.gr",
+    "to": "demo@quantika.org",
+    "subject": "RE: SUBS LIFTED - MV MAKEDONIA / 9000 MT clinker Volos / Tripoli",
+    "date": "2026-04-17T14:00:00.000Z",
+    "body": "SUBS DECLARED LIFTED.\n\nMV MAKEDONIA / 9,000 MT CLINKER VOLOS / TRIPOLI.\n\nFIXTURE CONFIRMED. PLS PROCEED NOMINATION AGENTS + ISSUE RECAP.\n\nHELLENIC TRAMP DEMO",
+    "snippet": "SUBS DECLARED LIFTED - MV MAKEDONIA clinker Volos/Tripoli fixture confirmed...",
+    "labelIds": ["INBOX"]
+  },
+  {
+    "id": "sample-109",
+    "threadId": "thread-109",
+    "from": "\"Mitteleuropa Charter GmbH (Demo)\" <ops@mitteleuropa-charter-demo.de>",
+    "fromName": "Mitteleuropa Charter GmbH (Demo)",
+    "fromEmail": "ops@mitteleuropa-charter-demo.de",
+    "to": "demo@quantika.org",
+    "subject": "RE: MV RHINE CARRIER - 11000 MT project cargo Hamburg / Jeddah — Subject Vessel Approval",
+    "date": "2026-04-18T09:00:00.000Z",
+    "body": "Dear Sir or Madam,\n\nThank you for your revised offer of 17 April 2026 regarding the shipment of approximately 11,000 metric tonnes of project cargo (oversized machinery components) from Hamburg, Germany to Jeddah, Saudi Arabia.\n\nWe are in principle agreeable to proceeding on the freight rate of USD 42.00 per freight ton W/M basis, subject to the following outstanding conditions being satisfactorily fulfilled:\n\n1. VESSEL APPROVAL: Our principals require a full vetting of MV RHINE CARRIER including class certificates, P&I cover confirmation, and recent port state control records. We anticipate reverting with their decision within 48 hours of receipt of the complete documentation.\n\n2. STEM CONFIRMATION: The shipper's loading schedule for Hamburg remains subject to final confirmation from their freight forwarding partner. We expect this to be resolved by close of business 19 April 2026.\n\n3. CARGO DIMENSIONS: The oversized items (3 units, max 18m x 4.2m x 3.8m each) require a pre-loading stowage plan approved by the vessel's chief officer.\n\nOnce all three conditions are fulfilled to our satisfaction, we will convert this subject to a firm fixture without further delay. We trust this timeline is acceptable.\n\nYours sincerely,\nFriedericke Sommer\nSenior Chartering Manager\nMitteleuropa Charter GmbH (Demo)",
+    "snippet": "Subject vessel approval + stem confirmation - USD 42.00/ft W/M - project cargo Hamburg / Jeddah...",
+    "labelIds": ["INBOX"]
+  },
+  {
+    "id": "sample-110",
+    "threadId": "thread-110",
+    "from": "\"Pacific Bulk Asia Demo\" <fix@pacificbulkasia-demo.hk>",
+    "fromName": "Pacific Bulk Asia Demo",
+    "fromEmail": "fix@pacificbulkasia-demo.hk",
+    "to": "demo@quantika.org",
+    "subject": "RE: MV ORIENT PEARL - 7000 MT rice Haiphong / Mombasa - subs",
+    "date": "2026-04-18T03:45:00.000Z",
+    "body": "subs failed.\nvssl withdrawn by owners - stem not confirmed in time.\nsorry. will try again next cargo.\ntks",
+    "snippet": "Subs failed - vessel withdrawn by owners - stem not confirmed in time...",
+    "labelIds": ["INBOX"]
+  },
+  {
+    "id": "sample-111",
+    "threadId": "thread-111",
+    "from": "\"Adriatica Shipping Demo\" <nikos@adriatica-demo.it>",
+    "fromName": "Adriatica Shipping Demo",
+    "fromEmail": "nikos@adriatica-demo.it",
+    "to": "demo@quantika.org",
+    "subject": "RE: MV SCIROCCO - 6800 MT scrap metal Piraeus / Iskenderun — subs extension request",
+    "date": "2026-04-19T11:10:00.000Z",
+    "body": "Dear friends,\n\nSorry to bother you on Sunday but this is a bit urgent!\n\nWe need to ask kindly for a 24-hour extension of subs on MV SCIROCCO / 6,800 MT scrap Piraeus / Iskenderun. The stem from the yard is still pending — our shipper's operations manager was traveling and we are chasing him since this morning.\n\nWe are 100% committed to this cargo and fully expect to lift subs by tomorrow 12:00 UTC at the latest. Hope you can accommodate — we do not want to lose this vessel as it fits perfectly.\n\nPlease extend subs by 24h — stem still pending. Will revert first thing tomorrow morning without fail.\n\nMany thanks in advance and apologies again for the short notice.\n\nBest,\nNikos",
+    "snippet": "Pls extend subs by 24h - stem still pending from shipper - will confirm by 12:00 UTC Monday...",
+    "labelIds": ["INBOX"]
+  },
+  {
+    "id": "sample-112",
+    "threadId": "thread-112",
+    "from": "\"Global Chartering Solutions Demo\" <ops@gcs-demo.ae>",
+    "fromName": "Global Chartering Solutions Demo",
+    "fromEmail": "ops@gcs-demo.ae",
+    "to": "demo@quantika.org",
+    "subject": "RE: 15000 MT bagged rice Karachi / Dar es Salaam - decline",
+    "date": "2026-04-19T07:30:00.000Z",
+    "body": "Dear Team,\n\nThank you for offer re 15,000 MT bagged rice Karachi / Dar es Salaam.\n\nAfter review, we decline current freight levels. USD 34.50/mt is above market for this route at this time — we have competing tonnage at USD 30.00 basis.\n\nSuggest revisiting next week if owners position improves. We remain interested in the cargo.\n\nRgds\nGCS Demo - Chartering",
+    "snippet": "Decline current levels USD 34.50/mt - suggest revisiting next week - competing tonnage at USD 30.00...",
+    "labelIds": ["INBOX"]
+  },
+  {
+    "id": "sample-113",
+    "threadId": "thread-113",
+    "from": "\"Hellenic Tramp Demo\" <chartering@hellenic-tramp-demo.gr>",
+    "fromName": "Hellenic Tramp Demo",
+    "fromEmail": "chartering@hellenic-tramp-demo.gr",
+    "to": "demo@quantika.org",
+    "subject": "RE: MV POSEIDON ACE - 10500 MT iron ore pellets Constanta / Gebze - COUNTER",
+    "date": "2026-04-20T09:15:00.000Z",
+    "body": "RE YOUR OFFER 19/04 - MV POSEIDON ACE / 10,500 MT IRON ORE PELLETS CONSTANTA / GEBZE.\n\nFRT USD 17.00 UNWORKABLE. OWNERS FIRMLY AT USD 14.00 FIO BASIS.\n\nLAYCAN 25-30 APR - OWS CANNOT EXTEND. VESSEL HAS NEXT FIXTURE WAITING.\n\nLOADING 3,000 MT SHINC - DISCHARGE 2,500 MT SSHEX EIU.\n\nDEMURRAGE USD 6,000 PDPR. DESPATCH HALF.\n\nTHIS IS OWS BEST AND FINAL. PLS REVERT BY 1400 ATHENS TIME TODAY OR VESSEL RELEASED.\n\nHELLENIC TRAMP DEMO\nCHARTERING",
+    "snippet": "OWS BEST + FINAL USD 14.00 FIO - laycan 25-30 Apr non-extendable - revert by 1400 Athens time...",
+    "labelIds": ["INBOX"]
+  },
+  {
+    "id": "sample-114",
+    "threadId": "thread-114",
+    "from": "\"Pacific Bulk Asia Demo\" <fix@pacificbulkasia-demo.hk>",
+    "fromName": "Pacific Bulk Asia Demo",
+    "fromEmail": "fix@pacificbulkasia-demo.hk",
+    "to": "demo@quantika.org",
+    "subject": "RE: MV JADE HORIZON - 8000 MT urea Qingdao / Chittagong",
+    "date": "2026-04-21T04:00:00.000Z",
+    "body": "Confirm in order. Tks.",
+    "snippet": "Confirm in order - MV JADE HORIZON 8000 MT urea Qingdao / Chittagong...",
+    "labelIds": ["INBOX"]
+  },
+  {
+    "id": "sample-115",
+    "threadId": "thread-115",
+    "from": "\"Global Chartering Solutions Demo\" <ops@gcs-demo.ae>",
+    "fromName": "Global Chartering Solutions Demo",
+    "fromEmail": "ops@gcs-demo.ae",
+    "to": "demo@quantika.org",
+    "subject": "RE: SUBS LIFTED 1700 GMT FRIDAY - MV GULF NAVIGATOR / 13000 MT potash Yuzhne / Aqaba",
+    "date": "2026-04-22T09:45:00.000Z",
+    "body": "Dear Team,\n\nPlease be advised that subs are lifted by 1700 GMT Friday 24 April 2026 on the following:\n\nVessel: MV GULF NAVIGATOR\nCargo: 13,000 MT muriate of potash in bulk\nLoad: Yuzhne, Ukraine — 1 sb aaaa\nDisch: Aqaba, Jordan — 1 sb aaaa\nLaycan: 28 Apr – 05 May 2026\nFreight: USD 21.50/mt FIO\nDemurrage: USD 7,000 PDPR / despatch half\nCommission: 3.75% total\n\nKindly confirm receipt and proceed with issuing the fixture recap and nominating port agents at both ends.\n\nBest regards,\nGCS Demo - Operations",
+    "snippet": "Subs lifted by 1700 GMT Friday - MV GULF NAVIGATOR 13,000 MT potash Yuzhne / Aqaba - laycan 28 Apr...",
+    "labelIds": ["INBOX"]
   }
 ]

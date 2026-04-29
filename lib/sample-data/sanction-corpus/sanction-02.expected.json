@@ -1,0 +1,22 @@
+{
+  "shouldFlag": true,
+  "flaggedEntities": [
+    {
+      "name": "Sovcomflot Group",
+      "type": "company",
+      "imo": null,
+      "matchReason": "EU Regulation 833/2014 (as amended) — Sovcomflot PAO listed 24 Feb 2022; OFAC SDN list entry effective 2022-05-20",
+      "confidence": "high"
+    },
+    {
+      "name": "Polar Maritime LLC",
+      "type": "company",
+      "imo": null,
+      "matchReason": "Associated charterer linked to Sovcomflot Group management structure; flagged for UBO review under EU Regulation 269/2014",
+      "confidence": "high"
+    }
+  ],
+  "falsePositives": [],
+  "expectedAction": "block",
+  "notes": "Sovcomflot Group (PAO Sovcomflot) is a directly designated entity under both OFAC SDN and EU asset-freeze lists. Charterer Polar Maritime LLC is a known Sovcomflot affiliate. Block transaction and file SAR if applicable."
+}

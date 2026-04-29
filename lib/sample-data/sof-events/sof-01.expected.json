@@ -1,0 +1,53 @@
+{
+  "vesselName": "MV CRYSTAL HORIZON (Demo)",
+  "port": "Khor Fakkan, UAE",
+  "operation": "loading",
+  "laytimeTerms": "SHINC",
+  "allowedLaytimeHours": 96,
+  "events": [
+    {
+      "timestamp": "2026-10-12T08:30:00",
+      "type": "ARRIVAL",
+      "description": "Vessel arrived at port limits (AAAA)"
+    },
+    {
+      "timestamp": "2026-10-12T09:00:00",
+      "type": "NOR_TENDERED",
+      "description": "NOR tendered to charterers and owners' representative. Accepted without protest."
+    },
+    {
+      "timestamp": "2026-10-12T09:00:00",
+      "type": "NOR_ACCEPTED",
+      "description": "NOR accepted by charterers"
+    },
+    {
+      "timestamp": "2026-10-12T11:15:00",
+      "type": "BERTHED",
+      "description": "First line ashore. All fast at Berth 6."
+    },
+    {
+      "timestamp": "2026-10-12T13:00:00",
+      "type": "COMMENCE",
+      "description": "Hatches 1-4 opened. Shore crane positioned. Loading commenced."
+    },
+    {
+      "timestamp": "2026-10-13T14:00:00",
+      "type": "COMPLETE",
+      "description": "Loading completed. All hatches. Total: 5,800 MT."
+    },
+    {
+      "timestamp": "2026-10-13T18:00:00",
+      "type": "UNBERTHED",
+      "description": "Last line let go. Vessel departed Khor Fakkan anchorage."
+    },
+    {
+      "timestamp": "2026-10-13T18:45:00",
+      "type": "DEPART",
+      "description": "COSP (Commencement of Sea Passage)."
+    }
+  ],
+  "laytimeUsedHours": 29.0,
+  "demurrageHours": 0,
+  "despatchHours": 67.0,
+  "notes": "Clean SHINC loading at MENA port. No suspensions, no delays. Significant despatch earned (67h saved on 96h allowed)."
+}

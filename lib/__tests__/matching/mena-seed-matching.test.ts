@@ -103,20 +103,22 @@ describe('F8 regression: MENA demo seed vessel filter', () => {
   });
 
   describe('old (broken) filter would have produced insufficient pairs', () => {
-    // Confirm the OLD filter (using cargo pattern for vessels) gives only 1 vessel
-    it('old MENA pattern on vessels returns only 1 vessel — confirming pre-fix state', () => {
+    // Confirms the OLD filter (using cargo pattern for vessels) catches far fewer vessels
+    // than the fixed filter, since vessel positions are described in different terms than cargo origins.
+    it('old MENA pattern on vessels catches strictly fewer vessels than the fixed filter', () => {
       const oldVesselPat = CARGO_REGION_PORTS['MENA']; // the bug: same pattern for vessels
       const broken = vessels.filter((v) => oldVesselPat.test(v.body) || oldVesselPat.test(v.subject));
-      expect(broken.length).toBe(1); // only MV NILE CARRIER (Alexandria is a MENA port)
+      const fixed = filterVessels(vessels, 'MENA');
+      expect(broken.length).toBeLessThan(fixed.length);
     });
 
-    it('old filter produced only 13×1=13 pairs — insufficient for realistic matching', () => {
+    it('old filter produced fewer pairs than the fixed filter — insufficient for realistic matching', () => {
       const oldVesselPat = CARGO_REGION_PORTS['MENA'];
       const brokenVessels = vessels.filter((v) => oldVesselPat.test(v.body) || oldVesselPat.test(v.subject));
       const filteredCargo = filterCargo(cargoes, 'MENA');
       const oldPairCount = filteredCargo.length * brokenVessels.length;
-      // With 1 vessel that has cargo restrictions, the LLM would return 0 matches
-      expect(oldPairCount).toBeLessThanOrEqual(13);
+      const fixedPairCount = filteredCargo.length * filterVessels(vessels, 'MENA').length;
+      expect(oldPairCount).toBeLessThan(fixedPairCount);
     });
   });
 

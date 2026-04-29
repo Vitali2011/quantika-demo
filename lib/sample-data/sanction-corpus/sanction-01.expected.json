@@ -1,0 +1,15 @@
+{
+  "shouldFlag": true,
+  "flaggedEntities": [
+    {
+      "name": "MV PACIFIC PEARL",
+      "type": "vessel",
+      "imo": "9876543",
+      "matchReason": "OFAC SDN list — flagged 2024-03-15, Russia-related sanctions (EO 14024)",
+      "confidence": "high"
+    }
+  ],
+  "falsePositives": [],
+  "expectedAction": "block",
+  "notes": "Direct OFAC match on vessel IMO 9876543. Vessel name and IMO both appear on OFAC SDN list under Russia-related Executive Order 14024. No further investigation required — block transaction."
+}

@@ -7,14 +7,29 @@
     "extracted": {
       "loadPort": { "name": "Derince", "unlocode": "TRDRC", "country": "TR" },
       "dischPort": { "name": "Lagos", "unlocode": "NGLOS", "country": "NG" },
-      "cargo": { "description": "HRC steel coils", "weight_mt": 8000, "weight_min_mt": 8000, "weight_max_mt": 8000, "category": "STEEL" },
+      "cargo": {
+        "description": "HRC steel coils",
+        "weight_mt": 8000,
+        "weight_min_mt": 8000,
+        "weight_max_mt": 8000,
+        "category": "STEEL"
+      },
       "laycan": { "start": "2026-10-01", "end": "2026-10-10" },
       "commission_pct": 3.75,
       "loading_rate_mtpd": null,
       "disch_rate_mtpd": null
     },
-    "hard_filters": { "min_dwcc_mt": 8000, "max_dwcc_mt": 14000, "crane_required": true, "min_draft_m": null },
-    "match_expectation": { "should_match_vessel_dwt_range_mt": [8000, 15000], "expected_level_range": ["possible", "good"], "expected_score_min": 60 },
+    "hard_filters": {
+      "min_dwcc_mt": 8000,
+      "max_dwcc_mt": 14000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [8000, 15000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 60
+    },
     "adversarial_expectation": null,
     "notes": "MENA→WAFR steel coils Derince/Lagos, MPP geared required, heaviest piece 25mt"
   },
@@ -26,14 +41,29 @@
     "extracted": {
       "loadPort": { "name": "Iskenderun", "unlocode": "TRISK", "country": "TR" },
       "dischPort": { "name": "Tema", "unlocode": "GHTEM", "country": "GH" },
-      "cargo": { "description": "SAWL steel pipes", "weight_mt": 6000, "weight_min_mt": 6000, "weight_max_mt": 6000, "category": "STEEL" },
+      "cargo": {
+        "description": "SAWL steel pipes",
+        "weight_mt": 6000,
+        "weight_min_mt": 6000,
+        "weight_max_mt": 6000,
+        "category": "STEEL"
+      },
       "laycan": { "start": "2026-10-05", "end": "2026-10-15" },
       "commission_pct": 3.75,
       "loading_rate_mtpd": 1500,
       "disch_rate_mtpd": 1000
     },
-    "hard_filters": { "min_dwcc_mt": 6000, "max_dwcc_mt": 10000, "crane_required": true, "min_draft_m": null },
-    "match_expectation": { "should_match_vessel_dwt_range_mt": [6000, 12000], "expected_level_range": ["possible", "good"], "expected_score_min": 60 },
+    "hard_filters": {
+      "min_dwcc_mt": 6000,
+      "max_dwcc_mt": 10000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [6000, 12000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 60
+    },
     "adversarial_expectation": null,
     "notes": "MENA→WAFR steel pipes Iskenderun/Tema, tween deck advantageous"
   },
@@ -45,14 +75,29 @@
     "extracted": {
       "loadPort": { "name": "Alexandria", "unlocode": "EGALY", "country": "EG" },
       "dischPort": { "name": "Abidjan", "unlocode": "CIABJ", "country": "CI" },
-      "cargo": { "description": "project cargo — power transformers + switchgear", "weight_mt": 4500, "weight_min_mt": 4500, "weight_max_mt": 4500, "category": "PROJECT_CARGO" },
+      "cargo": {
+        "description": "project cargo — power transformers + switchgear",
+        "weight_mt": 4500,
+        "weight_min_mt": 4500,
+        "weight_max_mt": 4500,
+        "category": "PROJECT_CARGO"
+      },
       "laycan": { "start": "2026-11-10", "end": "2026-11-20" },
       "commission_pct": 3.75,
       "loading_rate_mtpd": null,
       "disch_rate_mtpd": null
     },
-    "hard_filters": { "min_dwcc_mt": 4500, "max_dwcc_mt": 8000, "crane_required": true, "min_draft_m": null },
-    "match_expectation": { "should_match_vessel_dwt_range_mt": [5000, 10000], "expected_level_range": ["possible", "good"], "expected_score_min": 60 },
+    "hard_filters": {
+      "min_dwcc_mt": 4500,
+      "max_dwcc_mt": 8000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [5000, 10000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 60
+    },
     "adversarial_expectation": null,
     "notes": "MENA→WAFR heavy-lift project cargo Alexandria/Abidjan, heaviest piece 85mt, MPP HLL required"
   },
@@ -64,14 +109,29 @@
     "extracted": {
       "loadPort": { "name": "Mersin", "unlocode": "TRMER", "country": "TR" },
       "dischPort": { "name": "Lagos", "unlocode": "NGLOS", "country": "NG" },
-      "cargo": { "description": "steel plates / sheets", "weight_mt": 7000, "weight_min_mt": 7000, "weight_max_mt": 7000, "category": "STEEL" },
+      "cargo": {
+        "description": "steel plates / sheets",
+        "weight_mt": 7000,
+        "weight_min_mt": 7000,
+        "weight_max_mt": 7000,
+        "category": "STEEL"
+      },
       "laycan": { "start": "2026-11-10", "end": "2026-11-20" },
       "commission_pct": 3.75,
       "loading_rate_mtpd": null,
       "disch_rate_mtpd": null
     },
-    "hard_filters": { "min_dwcc_mt": 7000, "max_dwcc_mt": 12000, "crane_required": true, "min_draft_m": null },
-    "match_expectation": { "should_match_vessel_dwt_range_mt": [7000, 14000], "expected_level_range": ["possible", "good"], "expected_score_min": 60 },
+    "hard_filters": {
+      "min_dwcc_mt": 7000,
+      "max_dwcc_mt": 12000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [7000, 14000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 60
+    },
     "adversarial_expectation": null,
     "notes": "MENA→WAFR steel plates Mersin/Lagos, tween deck preferred"
   },
@@ -83,14 +143,29 @@
     "extracted": {
       "loadPort": { "name": "Port Said", "unlocode": "EGPSD", "country": "EG" },
       "dischPort": { "name": "Dakar", "unlocode": "SNDKR", "country": "SN" },
-      "cargo": { "description": "portland cement in 50kg pp bags", "weight_mt": 10000, "weight_min_mt": 10000, "weight_max_mt": 10000, "category": "BULK_BAGGED" },
+      "cargo": {
+        "description": "portland cement in 50kg pp bags",
+        "weight_mt": 10000,
+        "weight_min_mt": 10000,
+        "weight_max_mt": 10000,
+        "category": "BULK_BAGGED"
+      },
       "laycan": { "start": "2026-10-01", "end": "2026-10-10" },
       "commission_pct": 3.75,
       "loading_rate_mtpd": 2000,
       "disch_rate_mtpd": 1500
     },
-    "hard_filters": { "min_dwcc_mt": 10000, "max_dwcc_mt": 16000, "crane_required": true, "min_draft_m": null },
-    "match_expectation": { "should_match_vessel_dwt_range_mt": [10000, 18000], "expected_level_range": ["possible", "good"], "expected_score_min": 55 },
+    "hard_filters": {
+      "min_dwcc_mt": 10000,
+      "max_dwcc_mt": 16000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [10000, 18000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 55
+    },
     "adversarial_expectation": null,
     "notes": "MENA→WAFR bagged cement Port Said/Dakar, bale capacity required"
   },
@@ -102,14 +177,29 @@
     "extracted": {
       "loadPort": { "name": "Castellon", "unlocode": "ESCAS", "country": "ES" },
       "dischPort": { "name": "Alexandria", "unlocode": "EGALY", "country": "EG" },
-      "cargo": { "description": "HRC steel coils", "weight_mt": 5000, "weight_min_mt": 5000, "weight_max_mt": 5000, "category": "STEEL" },
+      "cargo": {
+        "description": "HRC steel coils",
+        "weight_mt": 5000,
+        "weight_min_mt": 5000,
+        "weight_max_mt": 5000,
+        "category": "STEEL"
+      },
       "laycan": { "start": "2026-10-05", "end": "2026-10-15" },
       "commission_pct": 3.75,
       "loading_rate_mtpd": null,
       "disch_rate_mtpd": null
     },
-    "hard_filters": { "min_dwcc_mt": 5000, "max_dwcc_mt": 8000, "crane_required": true, "min_draft_m": null },
-    "match_expectation": { "should_match_vessel_dwt_range_mt": [5000, 10000], "expected_level_range": ["possible", "good"], "expected_score_min": 60 },
+    "hard_filters": {
+      "min_dwcc_mt": 5000,
+      "max_dwcc_mt": 8000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [5000, 10000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 60
+    },
     "adversarial_expectation": null,
     "notes": "Med→MEA steel coils Castellon/Alexandria, geared required"
   },
@@ -121,14 +211,29 @@
     "extracted": {
       "loadPort": { "name": "Genoa", "unlocode": "ITGOA", "country": "IT" },
       "dischPort": { "name": "Casablanca", "unlocode": "MACAS", "country": "MA" },
-      "cargo": { "description": "sawn timber in packages / bundles", "weight_mt": 4200, "weight_min_mt": 4200, "weight_max_mt": 4200, "category": "TIMBER" },
+      "cargo": {
+        "description": "sawn timber in packages / bundles",
+        "weight_mt": 4200,
+        "weight_min_mt": 4200,
+        "weight_max_mt": 4200,
+        "category": "TIMBER"
+      },
       "laycan": { "start": "2026-11-01", "end": "2026-11-15" },
       "commission_pct": 3.75,
       "loading_rate_mtpd": 1200,
       "disch_rate_mtpd": 900
     },
-    "hard_filters": { "min_dwcc_mt": 4200, "max_dwcc_mt": 7000, "crane_required": true, "min_draft_m": null },
-    "match_expectation": { "should_match_vessel_dwt_range_mt": [5000, 8000], "expected_level_range": ["possible", "good"], "expected_score_min": 55 },
+    "hard_filters": {
+      "min_dwcc_mt": 4200,
+      "max_dwcc_mt": 7000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [5000, 8000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 55
+    },
     "adversarial_expectation": null,
     "notes": "Med→MEA sawn timber Genoa/Casablanca, bale capacity required, geared only"
   },
@@ -140,14 +245,29 @@
     "extracted": {
       "loadPort": { "name": "Tarragona", "unlocode": "ESTRG", "country": "ES" },
       "dischPort": { "name": "Tunis", "unlocode": "TNTUN", "country": "TN" },
-      "cargo": { "description": "steel billets", "weight_mt": 3500, "weight_min_mt": 3500, "weight_max_mt": 3500, "category": "STEEL" },
+      "cargo": {
+        "description": "steel billets",
+        "weight_mt": 3500,
+        "weight_min_mt": 3500,
+        "weight_max_mt": 3500,
+        "category": "STEEL"
+      },
       "laycan": { "start": "2026-11-10", "end": "2026-11-20" },
       "commission_pct": 3.75,
       "loading_rate_mtpd": 2500,
       "disch_rate_mtpd": 2000
     },
-    "hard_filters": { "min_dwcc_mt": 3500, "max_dwcc_mt": 6000, "crane_required": true, "min_draft_m": null },
-    "match_expectation": { "should_match_vessel_dwt_range_mt": [5000, 8000], "expected_level_range": ["possible", "good"], "expected_score_min": 55 },
+    "hard_filters": {
+      "min_dwcc_mt": 3500,
+      "max_dwcc_mt": 6000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [5000, 8000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 55
+    },
     "adversarial_expectation": null,
     "notes": "Med→MEA steel billets Tarragona/Tunis, geared preferred"
   },
@@ -159,14 +279,29 @@
     "extracted": {
       "loadPort": { "name": "Piraeus", "unlocode": "GRPIR", "country": "GR" },
       "dischPort": { "name": "Beirut", "unlocode": "LBBEY", "country": "LB" },
-      "cargo": { "description": "portland cement in 50kg pp bags", "weight_mt": 4800, "weight_min_mt": 4800, "weight_max_mt": 4800, "category": "BULK_BAGGED" },
+      "cargo": {
+        "description": "portland cement in 50kg pp bags",
+        "weight_mt": 4800,
+        "weight_min_mt": 4800,
+        "weight_max_mt": 4800,
+        "category": "BULK_BAGGED"
+      },
       "laycan": { "start": "2026-11-15", "end": "2026-11-25" },
       "commission_pct": 3.75,
       "loading_rate_mtpd": 1500,
       "disch_rate_mtpd": 1200
     },
-    "hard_filters": { "min_dwcc_mt": 4800, "max_dwcc_mt": 8000, "crane_required": true, "min_draft_m": null },
-    "match_expectation": { "should_match_vessel_dwt_range_mt": [5000, 10000], "expected_level_range": ["possible", "good"], "expected_score_min": 55 },
+    "hard_filters": {
+      "min_dwcc_mt": 4800,
+      "max_dwcc_mt": 8000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [5000, 10000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 55
+    },
     "adversarial_expectation": null,
     "notes": "Med→MEA bagged cement Piraeus/Beirut, bale capacity required"
   },
@@ -178,14 +313,29 @@
     "extracted": {
       "loadPort": { "name": "Lagos", "unlocode": "NGLOS", "country": "NG" },
       "dischPort": { "name": "Antwerp", "unlocode": "BEANR", "country": "BE" },
-      "cargo": { "description": "sawn timber / lumber in packages", "weight_mt": 6000, "weight_min_mt": 6000, "weight_max_mt": 6000, "category": "TIMBER" },
+      "cargo": {
+        "description": "sawn timber / lumber in packages",
+        "weight_mt": 6000,
+        "weight_min_mt": 6000,
+        "weight_max_mt": 6000,
+        "category": "TIMBER"
+      },
       "laycan": { "start": "2026-11-01", "end": "2026-11-15" },
       "commission_pct": 3.75,
       "loading_rate_mtpd": 1500,
       "disch_rate_mtpd": 1000
     },
-    "hard_filters": { "min_dwcc_mt": 6000, "max_dwcc_mt": 10000, "crane_required": true, "min_draft_m": null },
-    "match_expectation": { "should_match_vessel_dwt_range_mt": [6000, 12000], "expected_level_range": ["possible", "good"], "expected_score_min": 55 },
+    "hard_filters": {
+      "min_dwcc_mt": 6000,
+      "max_dwcc_mt": 10000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [6000, 12000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 55
+    },
     "adversarial_expectation": null,
     "notes": "WAFR→EU sawn timber Lagos/Antwerp, bale capacity required, geared only"
   },
@@ -197,14 +347,29 @@
     "extracted": {
       "loadPort": { "name": "Casablanca", "unlocode": "MACAS", "country": "MA" },
       "dischPort": { "name": "Hamburg", "unlocode": "DEHAM", "country": "DE" },
-      "cargo": { "description": "industrial machinery — OOG items", "weight_mt": 2500, "weight_min_mt": 2500, "weight_max_mt": 2500, "category": "PROJECT_CARGO" },
+      "cargo": {
+        "description": "industrial machinery — OOG items",
+        "weight_mt": 2500,
+        "weight_min_mt": 2500,
+        "weight_max_mt": 2500,
+        "category": "PROJECT_CARGO"
+      },
       "laycan": { "start": "2026-12-05", "end": "2026-12-15" },
       "commission_pct": 3.75,
       "loading_rate_mtpd": null,
       "disch_rate_mtpd": null
     },
-    "hard_filters": { "min_dwcc_mt": 2500, "max_dwcc_mt": 6000, "crane_required": true, "min_draft_m": null },
-    "match_expectation": { "should_match_vessel_dwt_range_mt": [5000, 10000], "expected_level_range": ["possible", "good"], "expected_score_min": 60 },
+    "hard_filters": {
+      "min_dwcc_mt": 2500,
+      "max_dwcc_mt": 6000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [5000, 10000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 60
+    },
     "adversarial_expectation": null,
     "notes": "WAFR→EU heavy-lift OOG machinery Casablanca/Hamburg, heaviest piece 62mt, MPP HLL required"
   },
@@ -216,14 +381,29 @@
     "extracted": {
       "loadPort": { "name": "Abidjan", "unlocode": "CIABJ", "country": "CI" },
       "dischPort": { "name": "Barcelona", "unlocode": "ESBCN", "country": "ES" },
-      "cargo": { "description": "tropical hardwood lumber in packages", "weight_mt": 3800, "weight_min_mt": 3800, "weight_max_mt": 3800, "category": "TIMBER" },
+      "cargo": {
+        "description": "tropical hardwood lumber in packages",
+        "weight_mt": 3800,
+        "weight_min_mt": 3800,
+        "weight_max_mt": 3800,
+        "category": "TIMBER"
+      },
       "laycan": { "start": "2026-11-10", "end": "2026-11-25" },
       "commission_pct": 3.75,
       "loading_rate_mtpd": 1200,
       "disch_rate_mtpd": 900
     },
-    "hard_filters": { "min_dwcc_mt": 3800, "max_dwcc_mt": 6500, "crane_required": true, "min_draft_m": null },
-    "match_expectation": { "should_match_vessel_dwt_range_mt": [5000, 8000], "expected_level_range": ["possible", "good"], "expected_score_min": 55 },
+    "hard_filters": {
+      "min_dwcc_mt": 3800,
+      "max_dwcc_mt": 6500,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [5000, 8000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 55
+    },
     "adversarial_expectation": null,
     "notes": "WAFR→EU tropical timber Abidjan/Barcelona, bale capacity required, geared only"
   },
@@ -235,14 +415,29 @@
     "extracted": {
       "loadPort": { "name": "Tema", "unlocode": "GHTEM", "country": "GH" },
       "dischPort": { "name": "Rotterdam", "unlocode": "NLRTM", "country": "NL" },
-      "cargo": { "description": "fabricated steel structures", "weight_mt": 5500, "weight_min_mt": 5500, "weight_max_mt": 5500, "category": "STEEL" },
+      "cargo": {
+        "description": "fabricated steel structures",
+        "weight_mt": 5500,
+        "weight_min_mt": 5500,
+        "weight_max_mt": 5500,
+        "category": "STEEL"
+      },
       "laycan": { "start": "2026-12-05", "end": "2026-12-20" },
       "commission_pct": 3.75,
       "loading_rate_mtpd": 2000,
       "disch_rate_mtpd": 1500
     },
-    "hard_filters": { "min_dwcc_mt": 5500, "max_dwcc_mt": 9000, "crane_required": true, "min_draft_m": null },
-    "match_expectation": { "should_match_vessel_dwt_range_mt": [6000, 12000], "expected_level_range": ["possible", "good"], "expected_score_min": 60 },
+    "hard_filters": {
+      "min_dwcc_mt": 5500,
+      "max_dwcc_mt": 9000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [6000, 12000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 60
+    },
     "adversarial_expectation": null,
     "notes": "WAFR→EU steel structures Tema/Rotterdam, heaviest piece 18mt, geared required"
   },
@@ -254,14 +449,29 @@
     "extracted": {
       "loadPort": { "name": "Derince", "unlocode": "TRDRC", "country": "TR" },
       "dischPort": { "name": "Ravenna", "unlocode": "ITRAN", "country": "IT" },
-      "cargo": { "description": "HRC steel coils", "weight_mt": 5000, "weight_min_mt": 5000, "weight_max_mt": 5000, "category": "STEEL" },
+      "cargo": {
+        "description": "HRC steel coils",
+        "weight_mt": 5000,
+        "weight_min_mt": 5000,
+        "weight_max_mt": 5000,
+        "category": "STEEL"
+      },
       "laycan": { "start": "2026-09-30", "end": "2026-09-15" },
       "commission_pct": 3.75,
       "loading_rate_mtpd": null,
       "disch_rate_mtpd": 2000
     },
-    "hard_filters": { "min_dwcc_mt": 5000, "max_dwcc_mt": 8000, "crane_required": true, "min_draft_m": null },
-    "match_expectation": { "should_match_vessel_dwt_range_mt": [5000, 10000], "expected_level_range": ["possible", "good"], "expected_score_min": 55 },
+    "hard_filters": {
+      "min_dwcc_mt": 5000,
+      "max_dwcc_mt": 8000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [5000, 10000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 55
+    },
     "adversarial_expectation": { "laycan_issue": "inverted", "expected_warning": true },
     "notes": "edge: inverted laycan (30 Sep start > 15 Sep end) — system must flag warning"
   },
@@ -273,14 +483,29 @@
     "extracted": {
       "loadPort": { "name": "Gdynia", "unlocode": "PLGDY", "country": "PL" },
       "dischPort": { "name": "Rotterdam", "unlocode": "NLRTM", "country": "NL" },
-      "cargo": { "description": "API steel pipes (12m lengths)", "weight_mt": 4000, "weight_min_mt": 4000, "weight_max_mt": 4000, "category": "STEEL" },
+      "cargo": {
+        "description": "API steel pipes (12m lengths)",
+        "weight_mt": 4000,
+        "weight_min_mt": 4000,
+        "weight_max_mt": 4000,
+        "category": "STEEL"
+      },
       "laycan": { "start": "2026-02-10", "end": "2026-02-20" },
       "commission_pct": 3.75,
       "loading_rate_mtpd": 1500,
       "disch_rate_mtpd": 1200
     },
-    "hard_filters": { "min_dwcc_mt": 4000, "max_dwcc_mt": 7000, "crane_required": true, "min_draft_m": null },
-    "match_expectation": { "should_match_vessel_dwt_range_mt": [5000, 8000], "expected_level_range": ["possible", "good"], "expected_score_min": 55 },
+    "hard_filters": {
+      "min_dwcc_mt": 4000,
+      "max_dwcc_mt": 7000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [5000, 8000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 55
+    },
     "adversarial_expectation": { "laycan_issue": "stale", "expected_warning": true },
     "notes": "edge: stale laycan Feb 2026 (in the past relative to 2026-05) — system must flag warning"
   },
@@ -292,14 +517,29 @@
     "extracted": {
       "loadPort": { "name": "Kastanpole", "unlocode": null, "country": "TR" },
       "dischPort": { "name": "Piraeus", "unlocode": "GRPIR", "country": "GR" },
-      "cargo": { "description": "API steel pipes (12m lengths)", "weight_mt": 5000, "weight_min_mt": 5000, "weight_max_mt": 5000, "category": "STEEL" },
+      "cargo": {
+        "description": "API steel pipes (12m lengths)",
+        "weight_mt": 5000,
+        "weight_min_mt": 5000,
+        "weight_max_mt": 5000,
+        "category": "STEEL"
+      },
       "laycan": { "start": "2026-10-01", "end": "2026-10-10" },
       "commission_pct": 3.75,
       "loading_rate_mtpd": 1500,
       "disch_rate_mtpd": 1200
     },
-    "hard_filters": { "min_dwcc_mt": 5000, "max_dwcc_mt": 9000, "crane_required": true, "min_draft_m": null },
-    "match_expectation": { "should_match_vessel_dwt_range_mt": [5000, 10000], "expected_level_range": ["possible", "good"], "expected_score_min": 55 },
+    "hard_filters": {
+      "min_dwcc_mt": 5000,
+      "max_dwcc_mt": 9000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [5000, 10000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 55
+    },
     "adversarial_expectation": { "port_issue": "missing_unlocode", "expected_warning": true },
     "notes": "edge: load port 'Kastanpole' not in port-master — LLM must infer coordinates or flag missing"
   },
@@ -311,13 +551,24 @@
     "extracted": {
       "loadPort": null,
       "dischPort": null,
-      "cargo": { "description": "multiple cargoes: HRC steel coils + sawn timber + bagged cement", "weight_mt": null, "weight_min_mt": null, "weight_max_mt": null, "category": "BREAK_BULK" },
+      "cargo": {
+        "description": "multiple cargoes: HRC steel coils + sawn timber + bagged cement",
+        "weight_mt": null,
+        "weight_min_mt": null,
+        "weight_max_mt": null,
+        "category": "BREAK_BULK"
+      },
       "laycan": { "start": "2026-10-05", "end": "2026-11-10" },
       "commission_pct": 3.75,
       "loading_rate_mtpd": null,
       "disch_rate_mtpd": null
     },
-    "hard_filters": { "min_dwcc_mt": null, "max_dwcc_mt": null, "crane_required": true, "min_draft_m": null },
+    "hard_filters": {
+      "min_dwcc_mt": null,
+      "max_dwcc_mt": null,
+      "crane_required": true,
+      "min_draft_m": null
+    },
     "match_expectation": null,
     "adversarial_expectation": { "multi_cargo": true, "expected_items_count": 3 },
     "notes": "edge: multi-cargo listing (3 separate breakbulk cargoes in one email) — parser must extract as array"
@@ -330,14 +581,29 @@
     "extracted": {
       "loadPort": { "name": "Mersin", "unlocode": "TRMER", "country": "TR" },
       "dischPort": { "name": "Casablanca", "unlocode": "MACAS", "country": "MA" },
-      "cargo": { "description": "sawn timber in packages", "weight_mt": 3500, "weight_min_mt": 3150, "weight_max_mt": 3850, "category": "TIMBER" },
+      "cargo": {
+        "description": "sawn timber in packages",
+        "weight_mt": 3500,
+        "weight_min_mt": 3150,
+        "weight_max_mt": 3850,
+        "category": "TIMBER"
+      },
       "laycan": { "start": null, "end": null },
       "commission_pct": 3.75,
       "loading_rate_mtpd": 1000,
       "disch_rate_mtpd": 800
     },
-    "hard_filters": { "min_dwcc_mt": 3150, "max_dwcc_mt": 6500, "crane_required": true, "min_draft_m": null },
-    "match_expectation": { "should_match_vessel_dwt_range_mt": [5000, 8000], "expected_level_range": ["possible", "good"], "expected_score_min": 55 },
+    "hard_filters": {
+      "min_dwcc_mt": 3150,
+      "max_dwcc_mt": 6500,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [5000, 8000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 55
+    },
     "adversarial_expectation": { "laycan_issue": "approximate_verbal", "expected_warning": true },
     "notes": "edge: 'end Oct / early Nov' verbal laycan + MOLOO +/-10% weight range"
   },
@@ -349,14 +615,29 @@
     "extracted": {
       "loadPort": { "name": "Alexandria", "unlocode": "EGALY", "country": "EG" },
       "dischPort": { "name": "Tunis", "unlocode": "TNTUN", "country": "TN" },
-      "cargo": { "description": "portland cement in 50kg pp bags", "weight_mt": 6000, "weight_min_mt": 6000, "weight_max_mt": 6000, "category": "BULK_BAGGED" },
+      "cargo": {
+        "description": "portland cement in 50kg pp bags",
+        "weight_mt": 6000,
+        "weight_min_mt": 6000,
+        "weight_max_mt": 6000,
+        "category": "BULK_BAGGED"
+      },
       "laycan": { "start": null, "end": null },
       "commission_pct": 3.75,
       "loading_rate_mtpd": 2000,
       "disch_rate_mtpd": 1500
     },
-    "hard_filters": { "min_dwcc_mt": 6000, "max_dwcc_mt": 10000, "crane_required": true, "min_draft_m": null },
-    "match_expectation": { "should_match_vessel_dwt_range_mt": [6000, 12000], "expected_level_range": ["possible", "good"], "expected_score_min": 55 },
+    "hard_filters": {
+      "min_dwcc_mt": 6000,
+      "max_dwcc_mt": 10000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [6000, 12000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 55
+    },
     "adversarial_expectation": { "laycan_issue": "prompt_no_dates", "expected_warning": true },
     "notes": "edge: prompt/spot laycan — no specific dates, vessel availability required"
   },
@@ -368,15 +649,33 @@
     "extracted": {
       "loadPort": { "name": "Constanta", "unlocode": "ROCND", "country": "RO" },
       "dischPort": { "name": "Samsun", "unlocode": "TRSAM", "country": "TR" },
-      "cargo": { "description": "steel billets + sawn timber (contradicted)", "weight_mt": 12000, "weight_min_mt": 12000, "weight_max_mt": 12000, "category": "STEEL" },
+      "cargo": {
+        "description": "steel billets + sawn timber (contradicted)",
+        "weight_mt": 12000,
+        "weight_min_mt": 12000,
+        "weight_max_mt": 12000,
+        "category": "STEEL"
+      },
       "laycan": { "start": "2026-10-20", "end": "2026-10-30" },
       "commission_pct": 3.75,
       "loading_rate_mtpd": 3000,
       "disch_rate_mtpd": 2500
     },
-    "hard_filters": { "min_dwcc_mt": 12000, "max_dwcc_mt": 18000, "crane_required": true, "min_draft_m": null },
-    "match_expectation": { "should_match_vessel_dwt_range_mt": [12000, 20000], "expected_level_range": ["possible", "good"], "expected_score_min": 50 },
-    "adversarial_expectation": { "contradicted_cargo": true, "cargo_types_conflict": ["STEEL", "TIMBER"] },
+    "hard_filters": {
+      "min_dwcc_mt": 12000,
+      "max_dwcc_mt": 18000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [12000, 20000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 50
+    },
+    "adversarial_expectation": {
+      "contradicted_cargo": true,
+      "cargo_types_conflict": ["STEEL", "TIMBER"]
+    },
     "notes": "adversarial: cargo email lists incompatible cargo types (steel billets + timber) — system must flag contradiction"
   },
   {
@@ -387,14 +686,29 @@
     "extracted": {
       "loadPort": { "name": "Gdańsk", "unlocode": "PLGDN", "country": "PL" },
       "dischPort": { "name": "Mundra", "unlocode": "INMUN", "country": "IN" },
-      "cargo": { "description": "steel plates (fabricated)", "weight_mt": 150000, "weight_min_mt": 150000, "weight_max_mt": 150000, "category": "STEEL" },
+      "cargo": {
+        "description": "steel plates (fabricated)",
+        "weight_mt": 150000,
+        "weight_min_mt": 150000,
+        "weight_max_mt": 150000,
+        "category": "STEEL"
+      },
       "laycan": { "start": "2026-10-01", "end": "2026-10-15" },
       "commission_pct": 3.75,
       "loading_rate_mtpd": 8000,
       "disch_rate_mtpd": 5000
     },
-    "hard_filters": { "min_dwcc_mt": 150000, "max_dwcc_mt": 200000, "crane_required": true, "min_draft_m": null },
-    "match_expectation": { "should_match_vessel_dwt_range_mt": [150000, 200000], "expected_level_range": [], "expected_score_min": 0 },
+    "hard_filters": {
+      "min_dwcc_mt": 150000,
+      "max_dwcc_mt": 200000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [150000, 200000],
+      "expected_level_range": [],
+      "expected_score_min": 0
+    },
     "adversarial_expectation": { "impossible_volume": true, "no_geared_vessel_at_150k_dwt": true },
     "notes": "impossible: 150,000 mt steel plates requiring geared vessel — no MPP vessel exists at this scale"
   },
@@ -406,14 +720,29 @@
     "extracted": {
       "loadPort": { "name": "Novorossiysk", "unlocode": "RUNVS", "country": "RU" },
       "dischPort": { "name": "Hamburg", "unlocode": "DEHAM", "country": "DE" },
-      "cargo": { "description": "steel billets", "weight_mt": 15000, "weight_min_mt": 15000, "weight_max_mt": 15000, "category": "STEEL" },
+      "cargo": {
+        "description": "steel billets",
+        "weight_mt": 15000,
+        "weight_min_mt": 15000,
+        "weight_max_mt": 15000,
+        "category": "STEEL"
+      },
       "laycan": { "start": "2026-10-01", "end": "2026-10-15" },
       "commission_pct": 3.75,
       "loading_rate_mtpd": 4000,
       "disch_rate_mtpd": 3000
     },
-    "hard_filters": { "min_dwcc_mt": 15000, "max_dwcc_mt": 22000, "crane_required": true, "min_draft_m": null },
-    "match_expectation": { "should_match_vessel_dwt_range_mt": [15000, 22000], "expected_level_range": ["possible", "good"], "expected_score_min": 40 },
+    "hard_filters": {
+      "min_dwcc_mt": 15000,
+      "max_dwcc_mt": 22000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [15000, 22000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 40
+    },
     "adversarial_expectation": { "sanctions_flag": true, "load_country_restricted": "RU" },
     "notes": "adversarial: Russian load port (Novorossiysk) — Western flag vessels face sanctions restrictions"
   },
@@ -425,14 +754,29 @@
     "extracted": {
       "loadPort": { "name": "Rotterdam", "unlocode": "NLRTM", "country": "NL" },
       "dischPort": { "name": "Beira", "unlocode": "MZBEW", "country": "MZ" },
-      "cargo": { "description": "industrial machinery / project cargo", "weight_mt": 15000, "weight_min_mt": 15000, "weight_max_mt": 15000, "category": "PROJECT_CARGO" },
+      "cargo": {
+        "description": "industrial machinery / project cargo",
+        "weight_mt": 15000,
+        "weight_min_mt": 15000,
+        "weight_max_mt": 15000,
+        "category": "PROJECT_CARGO"
+      },
       "laycan": { "start": "2026-11-10", "end": "2026-11-20" },
       "commission_pct": 3.75,
       "loading_rate_mtpd": null,
       "disch_rate_mtpd": null
     },
-    "hard_filters": { "min_dwcc_mt": 15000, "max_dwcc_mt": 22000, "crane_required": true, "min_draft_m": 8.0 },
-    "match_expectation": { "should_match_vessel_dwt_range_mt": [15000, 22000], "expected_level_range": ["possible", "good"], "expected_score_min": 55 },
+    "hard_filters": {
+      "min_dwcc_mt": 15000,
+      "max_dwcc_mt": 22000,
+      "crane_required": true,
+      "min_draft_m": 8.0
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [15000, 22000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 55
+    },
     "adversarial_expectation": { "draft_constraint": true, "max_draft_m": 8.0 },
     "notes": "edge: Beira max draft 8.0m restricts eligible vessels — system must apply draft filter"
   },
@@ -444,15 +788,34 @@
     "extracted": {
       "loadPort": { "name": "Onega", "unlocode": null, "country": "RU" },
       "dischPort": { "name": "Alexandria", "unlocode": "EGALY", "country": "EG" },
-      "cargo": { "description": "sawn timber / lumber in packages", "weight_mt": 4000, "weight_min_mt": 4000, "weight_max_mt": 4000, "category": "TIMBER" },
+      "cargo": {
+        "description": "sawn timber / lumber in packages",
+        "weight_mt": 4000,
+        "weight_min_mt": 4000,
+        "weight_max_mt": 4000,
+        "category": "TIMBER"
+      },
       "laycan": { "start": "2026-09-01", "end": "2026-09-15" },
       "commission_pct": 3.75,
       "loading_rate_mtpd": 1500,
       "disch_rate_mtpd": 1000
     },
-    "hard_filters": { "min_dwcc_mt": 4000, "max_dwcc_mt": 7000, "crane_required": true, "min_draft_m": null },
-    "match_expectation": { "should_match_vessel_dwt_range_mt": [5000, 8000], "expected_level_range": ["possible", "good"], "expected_score_min": 40 },
-    "adversarial_expectation": { "port_issue": "missing_unlocode", "load_country_restricted": "RU", "sanctions_flag": true },
+    "hard_filters": {
+      "min_dwcc_mt": 4000,
+      "max_dwcc_mt": 7000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [5000, 8000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 40
+    },
+    "adversarial_expectation": {
+      "port_issue": "missing_unlocode",
+      "load_country_restricted": "RU",
+      "sanctions_flag": true
+    },
     "notes": "adversarial: Russian load port Onega (not in port-master + RU sanctions), geared only, timber"
   },
   {
@@ -497,7 +860,10 @@
       "suitable_cargo": ["steel coils", "bagged cargo", "breakbulk", "timber packages"]
     },
     "hard_filters": null,
-    "match_expectation": { "should_match_cargo_weight_range_mt": [3000, 4850], "vessel_type": "MPP_geared" },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [3000, 4850],
+      "vessel_type": "MPP_geared"
+    },
     "adversarial_expectation": null,
     "notes": "small MPP geared 5.2k dwt Piraeus, Med/East Med/WAfrica pref"
   },
@@ -522,7 +888,10 @@
       "suitable_cargo": ["steel products", "bagged cargo", "timber packages", "breakbulk"]
     },
     "hard_filters": null,
-    "match_expectation": { "should_match_cargo_weight_range_mt": [5000, 9850], "vessel_type": "general_cargo_geared" },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [5000, 9850],
+      "vessel_type": "general_cargo_geared"
+    },
     "adversarial_expectation": null,
     "notes": "general cargo geared 10.5k dwt open Constanta, Black Sea / Med / N.Europe"
   },
@@ -547,7 +916,10 @@
       "suitable_cargo": ["steel products", "bagged cargo", "timber", "project cargo", "breakbulk"]
     },
     "hard_filters": null,
-    "match_expectation": { "should_match_cargo_weight_range_mt": [4000, 7600], "vessel_type": "MPP_geared" },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [4000, 7600],
+      "vessel_type": "MPP_geared"
+    },
     "adversarial_expectation": null,
     "notes": "MPP geared 8k dwt open Casablanca, N.Africa/WAfrica/Med pref"
   },
@@ -572,7 +944,10 @@
       "suitable_cargo": ["steel products", "project cargo", "timber", "bagged cargo", "breakbulk"]
     },
     "hard_filters": null,
-    "match_expectation": { "should_match_cargo_weight_range_mt": [6000, 11400], "vessel_type": "general_cargo_geared" },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [6000, 11400],
+      "vessel_type": "general_cargo_geared"
+    },
     "adversarial_expectation": null,
     "notes": "general cargo geared 12k dwt open Lagos, WAfrica/Med/N.Europe pref"
   },
@@ -597,7 +972,10 @@
       "suitable_cargo": ["project cargo", "heavy-lift", "OOG", "steel structures", "breakbulk"]
     },
     "hard_filters": null,
-    "match_expectation": { "should_match_cargo_weight_range_mt": [10000, 19200], "vessel_type": "MPP_heavy_lift" },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [10000, 19200],
+      "vessel_type": "MPP_heavy_lift"
+    },
     "adversarial_expectation": null,
     "notes": "MPP heavy-lift 20k dwt open Antwerp, tandem lift SWL 240t, NW Europe/Med/WAfrica/MENA pref"
   },
@@ -619,10 +997,19 @@
       "open_port": "Rotterdam",
       "open_date_start": "2026-10-15",
       "open_date_end": "2026-10-25",
-      "suitable_cargo": ["project cargo", "breakbulk", "heavy lift", "out-of-gauge", "steel structures"]
+      "suitable_cargo": [
+        "project cargo",
+        "breakbulk",
+        "heavy lift",
+        "out-of-gauge",
+        "steel structures"
+      ]
     },
     "hard_filters": null,
-    "match_expectation": { "should_match_cargo_weight_range_mt": [8000, 14200], "vessel_type": "MPP_heavy_lift" },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [8000, 14200],
+      "vessel_type": "MPP_heavy_lift"
+    },
     "adversarial_expectation": null,
     "notes": "MPP heavy-lift 15k dwt open Rotterdam, NW Europe/Med/WAfrica pref"
   },
@@ -647,7 +1034,10 @@
       "suitable_cargo": ["steel products", "bagged cargo", "timber packages", "breakbulk"]
     },
     "hard_filters": null,
-    "match_expectation": { "should_match_cargo_weight_range_mt": [3500, 6600], "vessel_type": "general_cargo_geared" },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [3500, 6600],
+      "vessel_type": "general_cargo_geared"
+    },
     "adversarial_expectation": null,
     "notes": "general cargo geared 7k dwt open Abidjan, WAfrica/Med pref"
   },
@@ -697,7 +1087,10 @@
       "suitable_cargo": ["steel products", "bagged cargo", "timber", "breakbulk"]
     },
     "hard_filters": null,
-    "match_expectation": { "should_match_cargo_weight_range_mt": [5000, 11300], "vessel_type": "general_cargo_geared" },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [5000, 11300],
+      "vessel_type": "general_cargo_geared"
+    },
     "adversarial_expectation": { "tight_laycan": true, "window_days": 2 },
     "notes": "edge: very tight open window (5-7 Oct only, 2 days) — laycan matching is very strict"
   },
@@ -723,7 +1116,10 @@
       "cargo_restrictions": ["no_grab_discharge", "no_scrap", "no_hazmat_1_3", "no_liquid"]
     },
     "hard_filters": null,
-    "match_expectation": { "should_match_cargo_weight_range_mt": [4000, 8000], "vessel_type": "general_cargo_geared" },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [4000, 8000],
+      "vessel_type": "general_cargo_geared"
+    },
     "adversarial_expectation": { "cargo_restrictions": true },
     "notes": "edge: vessel has explicit cargo restrictions — grab discharge, scrap, hazmat, liquid all excluded"
   },
@@ -750,7 +1146,10 @@
       "trade_restrictions": ["no_tropical_trades"]
     },
     "hard_filters": null,
-    "match_expectation": { "should_match_cargo_weight_range_mt": [10000, 20800], "vessel_type": "MPP_ice_class" },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [10000, 20800],
+      "vessel_type": "MPP_ice_class"
+    },
     "adversarial_expectation": { "trade_restriction": "no_tropical" },
     "notes": "edge: ice-class MPP with no-tropical restriction — WAfrica/Med OK but no Indian Ocean tropics"
   },
@@ -775,7 +1174,10 @@
       "suitable_cargo": ["bagged cargo", "steel products", "breakbulk"]
     },
     "hard_filters": null,
-    "match_expectation": { "should_match_cargo_weight_range_mt": [3000, 6100], "vessel_type": "general_cargo_geared" },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [3000, 6100],
+      "vessel_type": "general_cargo_geared"
+    },
     "adversarial_expectation": null,
     "notes": "general cargo geared 6.5k dwt open Takoradi — small single crane"
   },
@@ -800,7 +1202,10 @@
       "suitable_cargo": ["steel products", "project cargo", "bagged cargo", "timber", "breakbulk"]
     },
     "hard_filters": null,
-    "match_expectation": { "should_match_cargo_weight_range_mt": [4500, 8500], "vessel_type": "MPP_geared" },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [4500, 8500],
+      "vessel_type": "MPP_geared"
+    },
     "adversarial_expectation": null,
     "notes": "MPP geared 9k dwt open Dakar, WAfrica/Med/N.Europe pref"
   },
@@ -825,8 +1230,15 @@
       "suitable_cargo": ["steel products", "bagged cargo", "timber", "breakbulk"]
     },
     "hard_filters": null,
-    "match_expectation": { "should_match_cargo_weight_range_mt": [5000, 10400], "vessel_type": "general_cargo_geared" },
-    "adversarial_expectation": { "invalid_imo": true, "imo_check_digit_expected": 3, "imo_check_digit_actual": 0 },
+    "match_expectation": {
+      "should_match_cargo_weight_range_mt": [5000, 10400],
+      "vessel_type": "general_cargo_geared"
+    },
+    "adversarial_expectation": {
+      "invalid_imo": true,
+      "imo_check_digit_expected": 3,
+      "imo_check_digit_actual": 0
+    },
     "notes": "adversarial: IMO 9318940 fails mod-10 checksum (expected check digit 3, got 0) — must flag as invalid"
   },
   {
@@ -1003,7 +1415,10 @@
     },
     "hard_filters": null,
     "match_expectation": null,
-    "adversarial_expectation": { "commission_issue": "missing_unconfirmed", "account_issue": "tbc" },
+    "adversarial_expectation": {
+      "commission_issue": "missing_unconfirmed",
+      "account_issue": "tbc"
+    },
     "notes": "adversarial: commission missing / unconfirmed in recap, charterer account TBC — incomplete fixture"
   },
   {
@@ -1031,7 +1446,11 @@
     "status": "NEEDS_ACTION",
     "test_category": "client_reply",
     "extracted": {
-      "cargo_revision": { "old_weight_mt": 6000, "new_weight_min_mt": 7500, "new_weight_max_mt": 8000 },
+      "cargo_revision": {
+        "old_weight_mt": 6000,
+        "new_weight_min_mt": 7500,
+        "new_weight_max_mt": 8000
+      },
       "cargo_type": "API steel pipes",
       "additional_req": "tween deck requirement added",
       "action_required": "request adjusted freight indication"
@@ -1060,5 +1479,863 @@
     "match_expectation": null,
     "adversarial_expectation": null,
     "notes": "client counter-offer: USD 25.00/mt vs USD 28.50/mt for bagged cement Port Said/Dakar"
+  },
+  {
+    "id": "sample-51",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": { "name": "Jebel Ali", "unlocode": "AEJEA", "country": "AE" },
+      "dischPort": { "name": "Tema", "unlocode": "GHTEM", "country": "GH" },
+      "cargo": {
+        "description": "steel rebar bundles",
+        "weight_mt": 9500,
+        "weight_min_mt": 9500,
+        "weight_max_mt": 9500,
+        "category": "STEEL"
+      },
+      "laycan": { "start": "2026-10-10", "end": "2026-10-20" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": null,
+      "disch_rate_mtpd": null
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 9500,
+      "max_dwcc_mt": 17200,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [9500, 18000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 60
+    },
+    "adversarial_expectation": null,
+    "notes": "MENA→WAFR steel rebar bundles Jebel Ali/Tema, geared required, max bundle length 12m, FIO CQD"
+  },
+  {
+    "id": "sample-52",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": { "name": "Sokhna", "unlocode": "EGSOK", "country": "EG" },
+      "dischPort": { "name": "Douala", "unlocode": "CMDLA", "country": "CM" },
+      "cargo": {
+        "description": "urea fertilizer in 50kg pp bags",
+        "weight_mt": 7000,
+        "weight_min_mt": 7000,
+        "weight_max_mt": 7000,
+        "category": "FERTILIZER"
+      },
+      "laycan": { "start": "2026-11-01", "end": "2026-11-15" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 2000,
+      "disch_rate_mtpd": 1500
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 7000,
+      "max_dwcc_mt": 13200,
+      "crane_required": false,
+      "min_draft_m": 9.5
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [7000, 14000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 60
+    },
+    "adversarial_expectation": null,
+    "notes": "MENA→WAFR bagged urea fertilizer Sokhna/Douala, gearless OK (gless w/able), Douala shallow port min draft 9.5m, bale capacity min 9000 cbm"
+  },
+  {
+    "id": "sample-53",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": { "name": "Dammam", "unlocode": "SADMM", "country": "SA" },
+      "dischPort": { "name": "Piraeus", "unlocode": "GRPIR", "country": "GR" },
+      "cargo": {
+        "description": "HRC steel coils",
+        "weight_mt": 11000,
+        "weight_min_mt": 11000,
+        "weight_max_mt": 11000,
+        "category": "STEEL"
+      },
+      "laycan": { "start": "2026-10-15", "end": "2026-10-25" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": null,
+      "disch_rate_mtpd": 2500
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 11000,
+      "max_dwcc_mt": 19600,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [11000, 20000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 60
+    },
+    "adversarial_expectation": null,
+    "notes": "Gulf→Med HRC steel coils Dammam/Piraeus, geared required, FIO CQD load / 2500 mtpd disch"
+  },
+  {
+    "id": "sample-54",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": { "name": "Sohar", "unlocode": "OMSOH", "country": "OM" },
+      "dischPort": { "name": "Abidjan", "unlocode": "CIABJ", "country": "CI" },
+      "cargo": {
+        "description": "steel plates",
+        "weight_mt": 8000,
+        "weight_min_mt": 8000,
+        "weight_max_mt": 8000,
+        "category": "STEEL"
+      },
+      "laycan": { "start": "2026-11-05", "end": "2026-11-15" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": null,
+      "disch_rate_mtpd": null
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 8000,
+      "max_dwcc_mt": 14800,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [8000, 15000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 60
+    },
+    "adversarial_expectation": null,
+    "notes": "Gulf→WAFR steel plates Sohar/Abidjan, bilingual Arabic/English body, geared required, FIO CQD"
+  },
+  {
+    "id": "sample-55",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "edge_case",
+    "extracted": {
+      "loadPort": { "name": "Marseille", "unlocode": "FRMRS", "country": "FR" },
+      "dischPort": { "name": "Tin-Can Island", "unlocode": "NGTIN", "country": "NG" },
+      "cargo": {
+        "description": "newsprint / printing paper reels",
+        "weight_mt": 6500,
+        "weight_min_mt": 6500,
+        "weight_max_mt": 6500,
+        "category": "OTHER"
+      },
+      "laycan": { "start": "2026-11-01", "end": "2026-11-15" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 2000,
+      "disch_rate_mtpd": 1500
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 6500,
+      "max_dwcc_mt": 12400,
+      "crane_required": true,
+      "min_draft_m": 9.5
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [6500, 13000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 30
+    },
+    "adversarial_expectation": null,
+    "notes": "Med→WAFR paper reels Marseille/Tin-Can Island, tween deck preferred, geared required, Tin-Can shallow port min draft 9.5m, heaviest reel 3.2mt"
+  },
+  {
+    "id": "sample-56",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": { "name": "Khor Fakkan", "unlocode": "AEKHL", "country": "AE" },
+      "dischPort": { "name": "Pointe Noire", "unlocode": "CGPNR", "country": "CG" },
+      "cargo": {
+        "description": "steel billets",
+        "weight_mt": 5500,
+        "weight_min_mt": 5500,
+        "weight_max_mt": 5500,
+        "category": "STEEL"
+      },
+      "laycan": { "start": "2026-10-10", "end": "2026-10-20" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 3000,
+      "disch_rate_mtpd": 2000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 5500,
+      "max_dwcc_mt": 10800,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [5500, 11000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 60
+    },
+    "adversarial_expectation": null,
+    "notes": "Gulf→WAFR steel billets Khor Fakkan/Pointe-Noire, geared required, FIO"
+  },
+  {
+    "id": "sample-57",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": { "name": "Aqaba", "unlocode": "JOAQB", "country": "JO" },
+      "dischPort": { "name": "Dakar", "unlocode": "SNDKR", "country": "SN" },
+      "cargo": {
+        "description": "urea fertilizer in 50kg bags",
+        "weight_mt": 12000,
+        "weight_min_mt": 12000,
+        "weight_max_mt": 12000,
+        "category": "FERTILIZER"
+      },
+      "laycan": { "start": "2026-10-20", "end": "2026-10-30" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 2500,
+      "disch_rate_mtpd": 2000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 12000,
+      "max_dwcc_mt": 21200,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [12000, 22000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 60
+    },
+    "adversarial_expectation": null,
+    "notes": "MENA→WAFR bagged urea fertilizer Aqaba/Dakar, bilingual Arabic/English body, geared required, FIO"
+  },
+  {
+    "id": "sample-58",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "edge_case",
+    "extracted": {
+      "loadPort": {
+        "name": "Mykolaiv + Constanta (multi-port)",
+        "unlocode": "UAMYK",
+        "country": "UA"
+      },
+      "dischPort": { "name": "Jeddah", "unlocode": "SAJED", "country": "SA" },
+      "cargo": {
+        "description": "steel plates",
+        "weight_mt": 14000,
+        "weight_min_mt": 14000,
+        "weight_max_mt": 14000,
+        "category": "STEEL"
+      },
+      "laycan": { "start": "2026-11-01", "end": "2026-11-15" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 3000,
+      "disch_rate_mtpd": 3500
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 14000,
+      "max_dwcc_mt": 24400,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [14000, 25000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 30
+    },
+    "adversarial_expectation": null,
+    "notes": "edge_case: multi-port loading (Mykolaiv ~6000mt + Constanta ~8000mt) / Jeddah total 14000mt steel plates, tween deck preferred, geared required"
+  },
+  {
+    "id": "sample-59",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "adversarial",
+    "extracted": {
+      "loadPort": { "name": "Algeciras", "unlocode": "ESALG", "country": "ES" },
+      "dischPort": { "name": "Tema", "unlocode": "GHTEM", "country": "GH" },
+      "cargo": {
+        "description": "industrial chemicals (acids/corrosives) in 200L steel drums, IMO class 8",
+        "weight_mt": 4500,
+        "weight_min_mt": 4500,
+        "weight_max_mt": 4500,
+        "category": "OTHER"
+      },
+      "laycan": { "start": "2026-10-05", "end": "2026-10-20" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 1500,
+      "disch_rate_mtpd": 1000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 4500,
+      "max_dwcc_mt": 9200,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [4500, 9500],
+      "expected_level_range": ["weak", "possible"],
+      "expected_score_min": 20
+    },
+    "adversarial_expectation": "IMO class 8 hazardous cargo (corrosive) requires IMDG segregation cert — most general cargo MPP vessels will not accept; parser must flag hazmat restriction and warn on limited vessel pool",
+    "notes": "adversarial: hazmat IMO class 8 drums Algeciras/Tema — special vessel certification required, most MPP vessels excluded"
+  },
+  {
+    "id": "sample-60",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "edge_case",
+    "extracted": {
+      "loadPort": { "name": "Jeddah", "unlocode": "SAJED", "country": "SA" },
+      "dischPort": { "name": "Lagos", "unlocode": "NGLOS", "country": "NG" },
+      "cargo": {
+        "description": "FCL containers 400 × 20' general cargo",
+        "weight_mt": 10000,
+        "weight_min_mt": 10000,
+        "weight_max_mt": 10000,
+        "category": "CONTAINER"
+      },
+      "laycan": { "start": "2026-11-01", "end": "2026-11-10" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": null,
+      "disch_rate_mtpd": null
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 10000,
+      "max_dwcc_mt": 18000,
+      "crane_required": false,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [10000, 20000],
+      "expected_level_range": ["weak", "possible"],
+      "expected_score_min": 30
+    },
+    "adversarial_expectation": null,
+    "notes": "edge_case: FCL container cargo (400 × 20') in breakbulk context Jeddah/Lagos — system must classify as CONTAINER, not standard breakbulk; container vessel or geared MPP with cell guides required"
+  },
+  {
+    "id": "sample-61",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": { "name": "Mykolaiv", "unlocode": "UAMYK", "country": "UA" },
+      "dischPort": { "name": "Genoa", "unlocode": "ITGOA", "country": "IT" },
+      "cargo": {
+        "description": "wheat (CWRS 13.5% protein) bulk",
+        "weight_mt": 8500,
+        "weight_min_mt": 8500,
+        "weight_max_mt": 8500,
+        "category": "GRAIN"
+      },
+      "laycan": { "start": "2026-10-10", "end": "2026-10-25" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 8000,
+      "disch_rate_mtpd": 6000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 8500,
+      "max_dwcc_mt": 15600,
+      "crane_required": false,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [8500, 16000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 60
+    },
+    "adversarial_expectation": null,
+    "notes": "Black Sea→Med bulk wheat Mykolaiv/Genoa, handysize bulk carrier preferred, FIOST, grab discharge OK"
+  },
+  {
+    "id": "sample-62",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "edge_case",
+    "extracted": {
+      "loadPort": { "name": "Misurata", "unlocode": "LYMRA", "country": "LY" },
+      "dischPort": { "name": "Aqaba", "unlocode": "JOAQB", "country": "JO" },
+      "cargo": {
+        "description": "HRC steel coils",
+        "weight_mt": 6000,
+        "weight_min_mt": 5000,
+        "weight_max_mt": 7000,
+        "category": "STEEL"
+      },
+      "laycan": { "start": "2026-10-15", "end": "2026-10-25" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 2000,
+      "disch_rate_mtpd": 1500
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 7000,
+      "max_dwcc_mt": 13200,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [7000, 14000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 30
+    },
+    "adversarial_expectation": null,
+    "notes": "edge_case: ABT weight range 5000-7000mt HRC steel coils Misurata/Aqaba (final qty subject to stock confirmation), ambiguous quantity — parser must extract min/max range, geared required"
+  },
+  {
+    "id": "sample-63",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": { "name": "Constanta", "unlocode": "ROCND", "country": "RO" },
+      "dischPort": { "name": "Abidjan", "unlocode": "CIABJ", "country": "CI" },
+      "cargo": {
+        "description": "thermal coal bulk (5000-6000 kcal/kg GAR)",
+        "weight_mt": 16000,
+        "weight_min_mt": 16000,
+        "weight_max_mt": 16000,
+        "category": "OTHER"
+      },
+      "laycan": { "start": "2026-11-01", "end": "2026-11-15" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 10000,
+      "disch_rate_mtpd": 8000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 16000,
+      "max_dwcc_mt": 27600,
+      "crane_required": false,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [16000, 28000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 60
+    },
+    "adversarial_expectation": null,
+    "notes": "Black Sea→WAFR bulk coal Constanta/Abidjan, handymax preferred, grab fitted, FIOST"
+  },
+  {
+    "id": "sample-64",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": { "name": "Jebel Ali", "unlocode": "AEJEA", "country": "AE" },
+      "dischPort": { "name": "Genoa", "unlocode": "ITGOA", "country": "IT" },
+      "cargo": {
+        "description": "wind tower sections (24 sections, OOG oversize)",
+        "weight_mt": 18000,
+        "weight_min_mt": 18000,
+        "weight_max_mt": 18000,
+        "category": "PROJECT"
+      },
+      "laycan": { "start": "2026-11-05", "end": "2026-11-20" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": null,
+      "disch_rate_mtpd": null
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 18000,
+      "max_dwcc_mt": 30800,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [18000, 32000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 60
+    },
+    "adversarial_expectation": null,
+    "notes": "Gulf→Med heavy project cargo Jebel Ali/Genoa, wind tower sections 24 pcs ~18000mt, heaviest section 180mt, min SWL 200t, MPP heavy-lift required, log-fitted preferred, bilingual Arabic/English"
+  },
+  {
+    "id": "sample-65",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "edge_case",
+    "extracted": {
+      "loadPort": { "name": "Burgas", "unlocode": "BGBOJ", "country": "BG" },
+      "dischPort": { "name": "Dakar", "unlocode": "SNDKR", "country": "SN" },
+      "cargo": {
+        "description": "steel coils",
+        "weight_mt": 6250,
+        "weight_min_mt": 6000,
+        "weight_max_mt": 6500,
+        "category": "STEEL"
+      },
+      "laycan": { "start": "2026-10-20", "end": "2026-10-30" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": null,
+      "disch_rate_mtpd": null
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 6500,
+      "max_dwcc_mt": 12400,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [6500, 13000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 30
+    },
+    "adversarial_expectation": null,
+    "notes": "edge_case: Whisper voice transcript (noisy/colloquial), steel coils Burgas/Dakar ~6000-6500mt, parser must handle speech-to-text artifacts and extract range, geared required, FIO"
+  },
+  {
+    "id": "sample-66",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": { "name": "Dammam", "unlocode": "SADMM", "country": "SA" },
+      "dischPort": { "name": "Tema", "unlocode": "GHTEM", "country": "GH" },
+      "cargo": {
+        "description": "steel pipes API grade",
+        "weight_mt": 9000,
+        "weight_min_mt": 9000,
+        "weight_max_mt": 9000,
+        "category": "STEEL"
+      },
+      "laycan": { "start": "2026-10-01", "end": "2026-10-10" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 1500,
+      "disch_rate_mtpd": 1200
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 9000,
+      "max_dwcc_mt": 16400,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [9000, 17000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 60
+    },
+    "adversarial_expectation": null,
+    "notes": "Gulf→WAFR API steel pipes Dammam/Tema, bilingual Arabic/English, tween deck preferred, geared required, FIOST, max pipe length 12m, subs declared within 24h"
+  },
+  {
+    "id": "sample-67",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "adversarial",
+    "extracted": {
+      "loadPort": {
+        "name": "Novorossiysk + Burgas (multi-port)",
+        "unlocode": "RUNVS",
+        "country": "RU"
+      },
+      "dischPort": { "name": "Jebel Ali", "unlocode": "AEJEA", "country": "AE" },
+      "cargo": {
+        "description": "steel billets",
+        "weight_mt": 18000,
+        "weight_min_mt": 18000,
+        "weight_max_mt": 18000,
+        "category": "STEEL"
+      },
+      "laycan": { "start": "2026-10-05", "end": "2026-10-20" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 4000,
+      "disch_rate_mtpd": 5000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 18000,
+      "max_dwcc_mt": 30800,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [18000, 32000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 40
+    },
+    "adversarial_expectation": "Russian load port (Novorossiysk 10000mt) combined with multi-port loading from Burgas — sanctions flag required for RU port call; Western-flag vessels may refuse",
+    "notes": "adversarial: multi-port loading Novorossiysk (RU, 10000mt) + Burgas (BG, 8000mt) / Jebel Ali 18000mt steel billets — RU sanctions flag must trigger, geared preferred"
+  },
+  {
+    "id": "sample-68",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "edge_case",
+    "extracted": {
+      "loadPort": { "name": "Genoa", "unlocode": "ITGOA", "country": "IT" },
+      "dischPort": { "name": "Dakar", "unlocode": "SNDKR", "country": "SN" },
+      "cargo": {
+        "description": "refined vegetable oil in FlexiTank bags (20' ISO containers)",
+        "weight_mt": 3500,
+        "weight_min_mt": 3500,
+        "weight_max_mt": 3500,
+        "category": "OTHER"
+      },
+      "laycan": { "start": "2026-11-15", "end": "2026-11-25" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 1000,
+      "disch_rate_mtpd": 800
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 3500,
+      "max_dwcc_mt": 7600,
+      "crane_required": false,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [3500, 8000],
+      "expected_level_range": ["weak", "possible"],
+      "expected_score_min": 30
+    },
+    "adversarial_expectation": null,
+    "notes": "edge_case: FlexiTank vegetable oil in 20' ISO containers Genoa/Dakar — NOT chemical tanker, general cargo MPP required; unusual liquid-in-container stowage, FIO"
+  },
+  {
+    "id": "sample-69",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "adversarial",
+    "extracted": {
+      "loadPort": { "name": "Sevastopol", "unlocode": "RUSEV", "country": "RU" },
+      "dischPort": { "name": "Rotterdam", "unlocode": "NLRTM", "country": "NL" },
+      "cargo": {
+        "description": "steel plates",
+        "weight_mt": 5000,
+        "weight_min_mt": 5000,
+        "weight_max_mt": 5000,
+        "category": "STEEL"
+      },
+      "laycan": { "start": "2026-11-01", "end": "2026-11-15" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": null,
+      "disch_rate_mtpd": null
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 5000,
+      "max_dwcc_mt": 10000,
+      "crane_required": true,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [5000, 10000],
+      "expected_level_range": ["weak", "weak"],
+      "expected_score_min": 0
+    },
+    "adversarial_expectation": "Sevastopol (Crimea) is a sanctioned port under EU/US/UK sanctions — system must reject or hard-block the inquiry and warn on sanctioned port; Whisper transcript also contains confusing negative weight mention (-500 tons) that must be discarded",
+    "notes": "adversarial: sanctioned port Sevastopol (RUSEV) + noisy Whisper transcript with erroneous -500 tons — must flag sanctioned port and reject negative weight artifact"
+  },
+  {
+    "id": "sample-70",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "adversarial",
+    "extracted": {
+      "loadPort": { "name": "Jebel Ali", "unlocode": "AEJEA", "country": "AE" },
+      "dischPort": { "name": "Pointe Noire", "unlocode": "CGPNR", "country": "CG" },
+      "cargo": {
+        "description": "API steel pipes",
+        "weight_mt": 0,
+        "weight_min_mt": 0,
+        "weight_max_mt": 0,
+        "category": "STEEL"
+      },
+      "laycan": { "start": "2026-11-10", "end": "2026-11-20" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": null,
+      "disch_rate_mtpd": null
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 0,
+      "max_dwcc_mt": 2000,
+      "crane_required": false,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [0, 0],
+      "expected_level_range": ["weak", "weak"],
+      "expected_score_min": 0
+    },
+    "adversarial_expectation": "zero weight cargo — system must reject or flag as invalid (0 mts); cargo quantity is explicitly cancelled/pending shipper confirmation",
+    "notes": "adversarial: zero weight cargo (0 mts steel pipes Jebel Ali/Pointe-Noire) — system must reject zero weight as invalid and return error/warning, not attempt vessel matching"
+  },
+  {
+    "id": "sample-71",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "adversarial",
+    "extracted": {
+      "loadPort": { "name": "Jeddah", "unlocode": "SAJED", "country": "SA" },
+      "dischPort": { "name": "Tin-Can Island", "unlocode": "NGTIN", "country": "NG" },
+      "cargo": {
+        "description": "portland cement in 50kg pp bags",
+        "weight_mt": 13000,
+        "weight_min_mt": 13000,
+        "weight_max_mt": 13000,
+        "category": "CEMENT"
+      },
+      "laycan": { "start": "2026-10-15", "end": "2026-10-10" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 3000,
+      "disch_rate_mtpd": 2000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 13000,
+      "max_dwcc_mt": 22800,
+      "crane_required": false,
+      "min_draft_m": 9.5
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [13000, 23000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 40
+    },
+    "adversarial_expectation": "inverted laycan (start 15 Oct > end 10 Oct) — system must flag warning and reject or prompt correction; Tin-Can Island shallow draft constraint also applies",
+    "notes": "adversarial: inverted laycan '15-10 Oct 2026' (start after end) for bagged cement Jeddah/Tin-Can Island, min draft 9.5m for Tin-Can, gearless OK (gless w/able)"
+  },
+  {
+    "id": "sample-72",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "adversarial",
+    "extracted": {
+      "loadPort": { "name": "Mariupol", "unlocode": "UAMAR", "country": "UA" },
+      "dischPort": { "name": "Hamburg", "unlocode": "DEHAM", "country": "DE" },
+      "cargo": {
+        "description": "steel billets",
+        "weight_mt": 9000,
+        "weight_min_mt": 9000,
+        "weight_max_mt": 9000,
+        "category": "STEEL"
+      },
+      "laycan": { "start": "2026-10-01", "end": "2026-10-15" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 4000,
+      "disch_rate_mtpd": 3000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 9000,
+      "max_dwcc_mt": 16400,
+      "crane_required": false,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [9000, 17000],
+      "expected_level_range": ["weak", "weak"],
+      "expected_score_min": 0
+    },
+    "adversarial_expectation": "Mariupol (UAMAR) is a sanctioned/occupied port — system must warn on sanctioned port and block or flag the inquiry; most insurers and Western flag vessels will refuse",
+    "notes": "adversarial: sanctioned port Mariupol (Sea of Azov, occupied territory) — must hard-flag as sanctioned, steel billets Mariupol/Hamburg"
+  },
+  {
+    "id": "sample-73",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": { "name": "Sohar", "unlocode": "OMSOH", "country": "OM" },
+      "dischPort": { "name": "Douala", "unlocode": "CMDLA", "country": "CM" },
+      "cargo": {
+        "description": "sawn timber in packages",
+        "weight_mt": 7500,
+        "weight_min_mt": 7500,
+        "weight_max_mt": 7500,
+        "category": "TIMBER"
+      },
+      "laycan": { "start": "2026-11-01", "end": "2026-11-20" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 1500,
+      "disch_rate_mtpd": 1000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 7500,
+      "max_dwcc_mt": 14000,
+      "crane_required": true,
+      "min_draft_m": 9.5
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [7500, 14500],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 60
+    },
+    "adversarial_expectation": null,
+    "notes": "Gulf→WAFR sawn timber Sohar/Douala, bilingual Arabic/English body, geared required, Douala shallow port min draft 9.5m, FIO"
+  },
+  {
+    "id": "sample-74",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "adversarial",
+    "extracted": {
+      "loadPort": { "name": "Piraeus", "unlocode": "GRPIR", "country": "GR" },
+      "dischPort": { "name": "Khor Fakkan", "unlocode": "AEKHL", "country": "AE" },
+      "cargo": {
+        "description": "machinery and industrial equipment",
+        "weight_mt": 8000,
+        "weight_min_mt": 8000,
+        "weight_max_mt": 8000,
+        "category": "PROJECT"
+      },
+      "laycan": { "start": "2026-10-30", "end": "2026-10-15" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": null,
+      "disch_rate_mtpd": null
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 8000,
+      "max_dwcc_mt": 14800,
+      "crane_required": false,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [8000, 15000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 40
+    },
+    "adversarial_expectation": "inverted laycan '30-15 Oct 2026' (start 30 Oct > end 15 Oct) — system must flag warning and reject or prompt correction for inverted date range",
+    "notes": "adversarial: inverted laycan '30-15 Oct 2026' for machinery Piraeus/Khor Fakkan — explicit adversarial test for date inversion, heaviest piece 35mt, MPP preferred"
+  },
+  {
+    "id": "sample-75",
+    "category": "CARGO_INQUIRY",
+    "status": "NEEDS_ACTION",
+    "test_category": "clean",
+    "extracted": {
+      "loadPort": { "name": "Dakar", "unlocode": "SNDKR", "country": "SN" },
+      "dischPort": { "name": "Jebel Ali", "unlocode": "AEJEA", "country": "AE" },
+      "cargo": {
+        "description": "groundnut (peanut) meal bulk",
+        "weight_mt": 11000,
+        "weight_min_mt": 11000,
+        "weight_max_mt": 11000,
+        "category": "GRAIN"
+      },
+      "laycan": { "start": "2026-11-10", "end": "2026-11-25" },
+      "commission_pct": 3.75,
+      "loading_rate_mtpd": 6000,
+      "disch_rate_mtpd": 5000
+    },
+    "hard_filters": {
+      "min_dwcc_mt": 11000,
+      "max_dwcc_mt": 19600,
+      "crane_required": false,
+      "min_draft_m": null
+    },
+    "match_expectation": {
+      "should_match_vessel_dwt_range_mt": [11000, 20000],
+      "expected_level_range": ["possible", "good"],
+      "expected_score_min": 60
+    },
+    "adversarial_expectation": null,
+    "notes": "WAFR→Gulf bulk groundnut meal Dakar/Jebel Ali, handysize/handymax bulk carrier preferred, grab discharge OK, FIOST"
   }
 ]
