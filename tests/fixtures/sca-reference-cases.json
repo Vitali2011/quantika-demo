@@ -1,0 +1,30 @@
+[
+  {
+    "name": "SCA Example A: 70k DWT bulker laden",
+    "input": {
+      "vesselDwt": 70000,
+      "vesselNt": 35000,
+      "vesselType": "bulker",
+      "laden": true
+    },
+    "expected": {
+      "scnt": 36750,
+      "tier": 4,
+      "totalUsd": 284996
+    }
+  },
+  {
+    "name": "SCA Example B: 105k DWT tanker ballast",
+    "input": {
+      "vesselDwt": 105000,
+      "vesselNt": 55000,
+      "vesselType": "tanker",
+      "laden": false
+    },
+    "expected": {
+      "scnt": 60500,
+      "tier": 4,
+      "totalUsd": 317625
+    }
+  }
+]
