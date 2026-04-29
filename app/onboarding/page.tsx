@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { getTrialState, startTrial } from '@/lib/trial';
 import { seedDemoForRegion } from '@/lib/onboarding/demo-seed';
+import { createSession } from '@/lib/session';
 
 type Region = 'MENA' | 'Med' | 'WAFR';
 const VALID_REGIONS: Region[] = ['MENA', 'Med', 'WAFR'];
@@ -17,8 +18,21 @@ async function handleStart(formData: FormData) {
   if (!VALID_REGIONS.includes(region as Region)) return;
 
   const cookieStore = await cookies();
-  const sessionId = cookieStore.get('session_id')?.value;
-  if (!sessionId) return;
+  let sessionId = cookieStore.get('session_id')?.value;
+
+  // F6 fix: if no session exists yet (user landed on /onboarding directly,
+  // without going through /api/sample), auto-create one and set the cookie.
+  // Previously this was a silent `return` that swallowed the redirect.
+  if (!sessionId) {
+    sessionId = createSession('onboarding-guest');
+    cookieStore.set('session_id', sessionId, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 3600,
+      path: '/',
+    });
+  }
 
   await startTrial(sessionId, region as Region);
   await seedDemoForRegion(sessionId, region as Region);
