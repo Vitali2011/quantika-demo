@@ -1,11 +1,34 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { parseBunkerHtml, fetchBunkerPrices } from '../bunker';
+import { parseBunkerHtml, fetchBunkerPrices, parsePrice } from '../bunker';
 
 const FIXTURE_HTML = fs.readFileSync(
   path.join(__dirname, 'fixtures', 'shipandbunker-sample.html'),
   'utf-8'
 );
+
+// BUG-C5: EU comma decimal parsing
+describe('parsePrice', () => {
+  it('parses EU comma decimal "850,5" → 850.5', () => {
+    expect(parsePrice('850,5')).toBe(850.5);
+  });
+
+  it('parses standard float string "512.0" → 512', () => {
+    expect(parsePrice('512.0')).toBe(512);
+  });
+
+  it('passes through number directly', () => {
+    expect(parsePrice(498.5)).toBe(498.5);
+  });
+
+  it('returns 0 for non-numeric string', () => {
+    expect(parsePrice('N/A')).toBe(0);
+  });
+
+  it('returns 0 for NaN result', () => {
+    expect(parsePrice('')).toBe(0);
+  });
+});
 
 describe('parseBunkerHtml', () => {
   it('parses all 5 ports from fixture HTML', () => {

@@ -17,6 +17,40 @@ const MOCK_LOW_SCORE_MATCH: OsMatch = {
   properties: { name: ['Similar Vessel'] },
 };
 
+describe('searchOpenSanctions — empty/null name guard (BUG-A6-H14)', () => {
+  let fetchSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    fetchSpy = jest.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ responses: { 'q-0': { results: [] } } }), { status: 200 })
+    );
+  });
+
+  afterEach(() => {
+    fetchSpy.mockRestore();
+    jest.resetModules();
+  });
+
+  it('returns [] without calling fetch for empty string', async () => {
+    const result = await searchOpenSanctions('');
+    expect(result).toEqual([]);
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('returns [] without calling fetch for whitespace-only string', async () => {
+    const result = await searchOpenSanctions('   ');
+    expect(result).toEqual([]);
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('returns [] without calling fetch for null (runtime JS call)', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result = await searchOpenSanctions(null as any);
+    expect(result).toEqual([]);
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+});
+
 describe('searchOpenSanctions', () => {
   beforeEach(() => {
     jest.resetAllMocks();

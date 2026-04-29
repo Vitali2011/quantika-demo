@@ -25,6 +25,19 @@ describe('detectTextDirection', () => {
   test('mixed text majority Latin → ltr', () => {
     expect(detectTextDirection('Hello world this is mostly English مرحبا')).toBe('ltr');
   });
+
+  // BUG-C4: Arabic-Indic digits must NOT be treated as RTL characters
+  test('Arabic-Indic digits only (U+0660-U+0669) → ltr', () => {
+    expect(detectTextDirection('٣٤٥')).toBe('ltr');
+  });
+
+  test('Extended Arabic-Indic digits only (U+06F0-U+06F9) → ltr', () => {
+    expect(detectTextDirection('۳۴۵')).toBe('ltr');
+  });
+
+  test('Arabic text still → rtl (regression)', () => {
+    expect(detectTextDirection('مرحبا')).toBe('rtl');
+  });
 });
 
 describe('detectLocale', () => {
