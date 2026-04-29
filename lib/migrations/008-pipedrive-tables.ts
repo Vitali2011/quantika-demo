@@ -19,6 +19,13 @@ const migration008: Migration = {
       );
       CREATE INDEX IF NOT EXISTS idx_pd_mapping_deal
         ON pipedrive_deal_mapping(pipedrive_deal_id);
+      CREATE TABLE IF NOT EXISTS notifications (
+        id         INTEGER PRIMARY KEY AUTOINCREMENT,
+        source     TEXT NOT NULL,
+        event      TEXT NOT NULL,
+        payload    TEXT NOT NULL,
+        created_at INTEGER NOT NULL
+      );
     `);
   },
   down(db) {
