@@ -6,9 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "test": "jest --forceExit",
-    "test:smoke": "bash scripts/smoke-test.sh",
+    "test:regression": "jest --testPathPattern=tests/regression --forceExit",
+    "test:smoke": "playwright test --config=__tests__/e2e/playwright.config.smoke.ts",
+    "test:smoke:prod": "SMOKE_BASE_URL=https://demo.quantika.org playwright test --config=__tests__/e2e/playwright.config.smoke.ts smoke/tier1-health.spec.ts",
+    "test:smoke:tier1": "playwright test --config=__tests__/e2e/playwright.config.smoke.ts smoke/tier1-health.spec.ts",
     "test:e2e": "playwright test",
     "build:extension": "cd extensions/gmail && npm install --no-audit --no-fund --silent && npm run build",
     "prepare": "husky"
@@ -22,27 +25,29 @@
     "fuzzysort": "^3.1.0",
     "googleapis": "^171.4.0",
     "lucide-react": "^1.7.0",
-    "next": "14.2.35",
+    "next": "^16.2.4",
     "openai": "^6.33.0",
     "p-limit": "^7.3.0",
     "pino": "^10.3.1",
     "posthog-js": "^1.372.3",
-    "react": "^18",
-    "react-dom": "^18",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
     "tailwind-merge": "^3.5.0",
     "zod": "^3.24.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
     "@playwright/test": "^1.59.1",
+    "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/better-sqlite3": "^7.6.13",
     "@types/jest": "^30.0.0",
     "@types/node": "^20.19.37",
-    "@types/react": "^18.3.28",
-    "@types/react-dom": "^18.3.7",
-    "eslint": "^8.57.1",
-    "eslint-config-next": "^14.2.35",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.4",
     "husky": "^9.1.7",
     "jest": "^30.3.0",
     "jest-environment-jsdom": "^30.3.0",
@@ -55,7 +60,8 @@
     "typescript": "^5.9.3"
   },
   "overrides": {
-    "glob": "^10.5.0"
+    "glob": "^10.5.0",
+    "postcss": "^8.5.12"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
