@@ -58,7 +58,7 @@ function setCache(queryHash: string, matches: OsMatch[]): void {
 }
 
 export async function searchOpenSanctions(name: string, dataset = 'default'): Promise<OsMatch[]> {
-  if (!name.trim()) return [];
+  if (!name || !name.trim()) return [];  // BUG-A6-H14: guard null/undefined too
   const queryHash = hashQuery(name, dataset);
 
   const cached = getCached(queryHash);
