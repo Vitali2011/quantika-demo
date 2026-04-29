@@ -8,6 +8,30 @@ interface DraftRequestBody {
   brokerName: string;
 }
 
+/** Maximum allowed length for brokerName (BUG-D4: length cap). */
+const BROKER_NAME_MAX_LEN = 256;
+
+/**
+ * Sanitize brokerName before inserting into draft template.
+ * - Truncates to BROKER_NAME_MAX_LEN chars (BUG-D4)
+ * - Strips CR (\r) and LF (\n) control characters (BUG-D3)
+ * - HTML-escapes <, >, &, ", ' to prevent XSS in downstream renderers (BUG-D2)
+ */
+function sanitizeBrokerName(name: string): string {
+  // D4: truncate first
+  let s = name.slice(0, BROKER_NAME_MAX_LEN);
+  // D3: strip CR and LF
+  s = s.replace(/[\r\n]/g, ' ');
+  // D2: HTML-escape special chars
+  s = s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+  return s;
+}
+
 export const maxDuration = 30;
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
@@ -30,7 +54,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   const { parsedCargo, brokerName } = body;
 
-  const draftText = buildDraft(parsedCargo, brokerName);
+  const safeBrokerName = sanitizeBrokerName(brokerName);
+  const draftText = buildDraft(parsedCargo, safeBrokerName);
 
   return NextResponse.json({ draftText });
 }
