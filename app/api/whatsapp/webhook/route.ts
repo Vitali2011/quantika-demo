@@ -39,21 +39,21 @@ export async function POST(req: NextRequest): Promise<Response> {
 
   // Fire-and-forget: Meta requires 200 within 5s
   void (async () => {
-    try {
-      for (const entry of payload.entry) {
-        for (const change of entry.changes) {
-          const messages = change.value.messages ?? [];
-          for (const msg of messages) {
+    for (const entry of payload.entry) {
+      for (const change of entry.changes) {
+        const messages = change.value.messages ?? [];
+        for (const msg of messages) {
+          try {
             if (client) {
               await routeIncomingMessage(msg, client);
             } else {
               console.warn('[whatsapp webhook] no client configured, skipping message', msg.id);
             }
+          } catch (err) {
+            console.error('[whatsapp webhook] message handler error, continuing batch', msg.id, err);
           }
         }
       }
-    } catch (err) {
-      console.error('[whatsapp webhook] handler error', err);
     }
   })();
 
