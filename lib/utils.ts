@@ -12,10 +12,15 @@ export function truncateText(text: string, maxChars: number): string {
 
 export function formatDate(dateStr: string): string {
   try {
+    // Pin timeZone to UTC so server (UTC) and client (user-local) render the
+    // same string. Without this, dates rendered in server components and
+    // hydrated on the client differ by one day for users east/west of UTC,
+    // triggering React #418 hydration warnings.
     return new Date(dateStr).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
+      timeZone: 'UTC',
     });
   } catch {
     return dateStr;

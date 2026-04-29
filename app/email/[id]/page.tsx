@@ -6,6 +6,7 @@ import { getSession } from '@/lib/session';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { EmailBodyViewer, type Highlight } from '@/components/email-body-viewer';
 import type { ConfidenceField } from '@/lib/types';
+import { formatDate } from '@/lib/utils';
 
 const FIELD_COLORS: Record<string, string> = {
   originPort:         'bg-blue-200',
@@ -93,7 +94,7 @@ export default async function EmailDetailPage({ params }: Props) {
         <div>
           <h1 className="text-lg font-bold">{email.subject}</h1>
           <p className="text-sm text-muted-foreground">
-            From: {email.from} · {new Date(email.date).toLocaleDateString()}
+            From: {email.from} · {formatDate(email.date)}
           </p>
         </div>
         {legendItems.length > 0 && (

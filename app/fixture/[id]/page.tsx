@@ -9,6 +9,7 @@ import { Renderable } from '@/lib/types';
 import { CopyButton } from '@/components/copy-button';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
 import { safeRender, getConf, ConfIcon } from '@/lib/ui-render';
+import { formatDate } from '@/lib/utils';
 
 function CField({ label, field }: { label: string; field: Renderable }) {
   const val = safeRender(field);
@@ -67,7 +68,7 @@ export default async function FixtureDetailPage({ params }: Props) {
         <div>
           <Badge variant="secondary" className="bg-purple-100 text-purple-800">FIXTURE RECAP</Badge>
           <h1 className="text-lg sm:text-xl font-bold mt-2">{email.subject}</h1>
-          <p className="text-sm text-muted-foreground">From: {email.from} · {new Date(email.date).toLocaleDateString()}</p>
+          <p className="text-sm text-muted-foreground">From: {email.from} · {formatDate(email.date)}</p>
         </div>
 
         <Card>
