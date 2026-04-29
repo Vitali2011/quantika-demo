@@ -9,6 +9,7 @@ import { Renderable } from '@/lib/types';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
 import { ClickableField } from '@/components/clickable-field';
 import { safeRender, getConf, ConfIcon } from '@/lib/ui-render';
+import { formatDate } from '@/lib/utils';
 
 function Spec({ label, value, unit, confidence }: { label: string; value: Renderable; unit?: string; confidence?: string }) {
   const rendered = safeRender(value);
@@ -68,7 +69,7 @@ export default async function VesselDetailPage({ params }: Props) {
             )}
           </div>
           <h1 className="text-lg sm:text-xl font-bold mt-2">{email.subject}</h1>
-          <p className="text-sm text-muted-foreground">From: {email.from} · {new Date(email.date).toLocaleDateString()}</p>
+          <p className="text-sm text-muted-foreground">From: {email.from} · {formatDate(email.date)}</p>
           {processed?.expiryDate && <p className="text-xs text-muted-foreground">Active until {processed.expiryDate}</p>}
         </div>
 

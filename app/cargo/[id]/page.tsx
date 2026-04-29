@@ -1,4 +1,4 @@
-import { sanitizeEmailBody } from '@/lib/utils';
+import { sanitizeEmailBody, formatDate } from '@/lib/utils';
 import { cookies } from 'next/headers';
 import { redirect, notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -60,14 +60,14 @@ export default async function CargoDetailPage({ params }: Props) {
             </div>
             <h1 className="text-lg sm:text-xl font-bold mt-2">{safeRender(email.subject)}</h1>
             <p className="text-sm text-muted-foreground">
-              From: {safeRender(email.from)} · {new Date(email.date).toLocaleDateString()}
+              From: {safeRender(email.from)} · {formatDate(email.date)}
             </p>
             {processed && (
               <p className="text-xs text-muted-foreground mt-1">
                 {processed.freshness === 'stale'
                   ? '⚠️ STALE — laycan/dates expired'
                   : processed.expiryDate
-                    ? `Active until ${new Date(processed.expiryDate).toLocaleDateString()}`
+                    ? `Active until ${formatDate(processed.expiryDate)}`
                     : 'Active'}
               </p>
             )}
