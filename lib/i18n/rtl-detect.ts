@@ -1,5 +1,5 @@
 // Arabic Unicode block: U+0600–U+06FF
-const ARABIC_RE = /[\u0600-\u06FF]/g;
+const ARABIC_RE = /[\u0600-\u065F\u066A-\u06FF]/g;
 // Hebrew Unicode block: U+0590–U+05FF
 const HEBREW_RE = /[\u0590-\u05FF]/g;
 
@@ -15,8 +15,7 @@ export function detectTextDirection(text: string): 'ltr' | 'rtl' {
   const hebrewCount = (text.match(HEBREW_RE) ?? []).length;
   const rtlCount = arabicCount + hebrewCount;
 
-  // Count total alphabetic characters (Latin + RTL)
-  const totalLetters = (text.match(/[a-zA-Z\u0590-\u05FF\u0600-\u06FF]/g) ?? []).length;
+  const totalLetters = (text.match(/[a-zA-Z\u0590-\u05FF\u0600-\u065F\u066A-\u06FF]/g) ?? []).length;
   if (totalLetters === 0) return 'ltr';
 
   return rtlCount / totalLetters > 0.3 ? 'rtl' : 'ltr';
@@ -31,7 +30,7 @@ export function detectLocale(text: string): { language: string; direction: 'ltr'
 
   const arabicCount = (text.match(ARABIC_RE) ?? []).length;
   const hebrewCount = (text.match(HEBREW_RE) ?? []).length;
-  const totalLetters = (text.match(/[a-zA-Z\u0590-\u05FF\u0600-\u06FF]/g) ?? []).length;
+  const totalLetters = (text.match(/[a-zA-Z\u0590-\u05FF\u0600-\u065F\u066A-\u06FF]/g) ?? []).length;
 
   if (totalLetters === 0) return { language: 'en', direction: 'ltr' };
 
