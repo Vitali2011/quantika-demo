@@ -10,10 +10,10 @@ interface KpiCard {
   period: string;
 }
 
-const STATIC_KPIS: KpiCard[] = [
-  { label: 'Bunker Rotterdam', value: '—', unit: 'USD/t', period: 'Loading…' },
-  { label: 'EUA EU ETS', value: '—', unit: 'EUR/t', period: 'Loading…' },
-  { label: 'BHSI', value: '—', unit: 'index', period: 'Loading…' },
+// Cards with no backend support show "Unavailable" immediately (no fetch).
+const UNAVAILABLE_KPIS: KpiCard[] = [
+  { label: 'Bunker Rotterdam', value: '—', unit: 'USD/t', period: 'Unavailable' },
+  { label: 'EUA EU ETS', value: '—', unit: 'EUR/t', period: 'Unavailable' },
 ];
 
 interface MarketIntelligenceProps {
@@ -25,6 +25,13 @@ export function MarketIntelligence({ noActiveDeals }: MarketIntelligenceProps) {
     label: 'Toepfer TMI',
     value: '—',
     unit: 'USD/day',
+    period: 'Loading…',
+  });
+
+  const [bhsiCard, setBhsiCard] = useState<KpiCard>({
+    label: 'BHSI',
+    value: '—',
+    unit: 'index',
     period: 'Loading…',
   });
 
@@ -48,7 +55,27 @@ export function MarketIntelligence({ noActiveDeals }: MarketIntelligenceProps) {
       });
   }, []);
 
-  const allKpis: KpiCard[] = [tmiCard, ...STATIC_KPIS];
+  useEffect(() => {
+    fetch('/api/market/benchmark?indicator=BHSI')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: MarketBenchmark | null) => {
+        if (data) {
+          setBhsiCard({
+            label: 'BHSI',
+            value: data.value.toLocaleString('en-US'),
+            unit: data.unit,
+            period: data.period,
+          });
+        } else {
+          setBhsiCard((prev) => ({ ...prev, period: 'Unavailable' }));
+        }
+      })
+      .catch(() => {
+        setBhsiCard((prev) => ({ ...prev, period: 'Unavailable' }));
+      });
+  }, []);
+
+  const allKpis: KpiCard[] = [tmiCard, ...UNAVAILABLE_KPIS, bhsiCard];
 
   return (
     <div className="space-y-3">
