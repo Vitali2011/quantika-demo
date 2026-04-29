@@ -1,4 +1,13 @@
-import { Email, EmailCategory, EmailStatus, Urgency, Classification, ProcessedEmail } from '@/lib/types';
+import {
+  Email,
+  EmailCategory,
+  EmailStatus,
+  Urgency,
+  Classification,
+  ProcessedEmail,
+  ParsedCargo,
+  ParsedVessel,
+} from '@/lib/types';
 import { UNANSWERED_THRESHOLD_HOURS } from '@/lib/constants';
 import { calculateExpiry, isStale } from '@/lib/freshness';
 
@@ -58,9 +67,61 @@ export function deriveEmailStatus(params: {
 
 const REQUIRES_REPLY: EmailCategory[] = ['CARGO_INQUIRY', 'CLIENT_REPLY'];
 
+/**
+ * Build ProcessedEmail records from existing Classification[] using whichever
+ * parsedCargos / parsedVessels are currently available.
+ *
+ * Called twice per pipeline run:
+ *   1. From classifyEmails() with empty parsed arrays — produces an initial
+ *      pass where CARGO_INQUIRY / VESSEL_POSITION fall back to emailDate+5d.
+ *   2. From parse-cargo and parse-vessel routes once those payloads exist —
+ *      recomputes expiryDate/expirySource/freshness using the real laycan /
+ *      openDate, so dashboard staleness reflects the actual broker dates.
+ */
+export function buildProcessedEmails(
+  emails: Email[],
+  classifications: Classification[],
+  parsedCargos: ParsedCargo[] = [],
+  parsedVessels: ParsedVessel[] = [],
+): ProcessedEmail[] {
+  return classifications.map(cls => {
+    const email = emails.find(e => e.id === cls.emailId);
+    const hoursWithout = cls.daysWithoutReply != null ? cls.daysWithoutReply * 24 : 0;
+    const requiresReply = REQUIRES_REPLY.includes(cls.category);
+    const status = deriveEmailStatus({ requiresReply, isUnanswered: cls.isUnanswered, hoursWithout });
+
+    const parsedCargo = parsedCargos.find(c => c.emailId === cls.emailId) ?? null;
+    const parsedVessel = parsedVessels.find(v => v.emailId === cls.emailId) ?? null;
+    const { expiryDate, expirySource } = calculateExpiry(
+      email?.date || '',
+      cls.category,
+      parsedCargo,
+      parsedVessel,
+    );
+    const stale = isStale(expiryDate);
+
+    return {
+      emailId: cls.emailId,
+      type: cls.category,
+      status,
+      isUnanswered: cls.isUnanswered,
+      urgency: cls.urgency,
+      daysWithoutReply: cls.daysWithoutReply,
+      confidence: cls.confidence,
+      originalSender: cls.originalSender || email?.from || '',
+      originalSenderCompany: cls.originalSenderCompany,
+      freshness: stale ? ('stale' as const) : ('active' as const),
+      expiryDate,
+      expirySource,
+    };
+  });
+}
+
 export function classifyEmails(
   emails: Email[],
   aiClassifications: AiClassification[],
+  parsedCargos: ParsedCargo[] = [],
+  parsedVessels: ParsedVessel[] = [],
 ): { classifications: Classification[]; processedEmails: ProcessedEmail[] } {
   const threadMap = buildThreadMap(emails);
 
@@ -83,29 +144,7 @@ export function classifyEmails(
     };
   });
 
-  const processedEmails: ProcessedEmail[] = classifications.map(cls => {
-    const email = emails.find(e => e.id === cls.emailId);
-    const hoursWithout = cls.daysWithoutReply != null ? cls.daysWithoutReply * 24 : 0;
-    const requiresReply = REQUIRES_REPLY.includes(cls.category);
-    const status = deriveEmailStatus({ requiresReply, isUnanswered: cls.isUnanswered, hoursWithout });
-    const { expiryDate, expirySource } = calculateExpiry(email?.date || '', cls.category);
-    const stale = isStale(expiryDate);
-
-    return {
-      emailId: cls.emailId,
-      type: cls.category,
-      status,
-      isUnanswered: cls.isUnanswered,
-      urgency: cls.urgency,
-      daysWithoutReply: cls.daysWithoutReply,
-      confidence: cls.confidence,
-      originalSender: cls.originalSender || email?.from || '',
-      originalSenderCompany: cls.originalSenderCompany,
-      freshness: stale ? ('stale' as const) : ('active' as const),
-      expiryDate,
-      expirySource,
-    };
-  });
+  const processedEmails = buildProcessedEmails(emails, classifications, parsedCargos, parsedVessels);
 
   return { classifications, processedEmails };
 }
