@@ -43,6 +43,9 @@ test.describe('Tier 2 — Trial onboarding flow (spec-15)', () => {
 
     // Step 3: Server action redirects to / after startTrial + seedDemoForRegion
     await page.waitForURL('/', { timeout: 15_000 });
+    // Next.js server action redirect updates page content via RSC partial diff,
+    // skipping layout re-render. A full reload forces TrialBannerWrapper to re-evaluate.
+    await page.reload();
 
     // Step 4: Trial banner should appear (TrialBannerWrapper in layout)
     await expect(
