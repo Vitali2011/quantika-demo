@@ -3,7 +3,7 @@
  *
  * Takes skeleton ports (unlocode/name/country/lat/lon) and enriches them with
  * operational data: max draft, crane availability, berth type, LOA, cargo types,
- * tidal flag, ice flag. Uses callAiJson() via ClipProxy (gpt-5.4-mini).
+ * tidal flag, ice flag. Uses callAiJson() via ClipProxy (gpt-5.5).
  *
  * Batches 20 ports per API call with a 1-second pause between batches to stay
  * server-friendly. Falls back to a low-confidence stub record on any failure.
@@ -136,7 +136,7 @@ export async function enrichPortsBatch(input: SkeletonPort[]): Promise<PortMaste
     const prompt = buildUserPrompt(batch);
 
     // 10 ports × ~150 tokens output = ~1500 tokens; cap at 2000 to avoid
-    // excessive reasoning token burn (gpt-5.4-mini has chain-of-thought).
+    // excessive reasoning token burn (gpt-5.5 has chain-of-thought).
     const llmResult = await callAiJson<LlmPortEnrichment[] | null>(
       prompt,
       SYSTEM_PROMPT,

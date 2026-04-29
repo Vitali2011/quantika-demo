@@ -40,8 +40,8 @@ export const MORNING_DIGEST_HOUR_GST = 8.5;  // 08:30 GST
 
 export const CLIPROXY_BASE_URL = process.env.CLIPROXY_BASE_URL || 'http://localhost:8317/v1';
 export const CLIPROXY_API_KEY = process.env.CLIPROXY_API_KEY || 'cliproxy-key-1';
-export const AI_MODEL_HEAVY = process.env.AI_MODEL_HEAVY || 'gpt-5.4-mini';
-export const AI_MODEL_LIGHT = process.env.AI_MODEL_LIGHT || 'gpt-5.4-mini';
+export const AI_MODEL_HEAVY = process.env.AI_MODEL_HEAVY || 'gpt-5.5';
+export const AI_MODEL_LIGHT = process.env.AI_MODEL_LIGHT || 'gpt-5.5';
 
 /**
  * Session time-to-live: 1 hour (3 600 000 ms).
