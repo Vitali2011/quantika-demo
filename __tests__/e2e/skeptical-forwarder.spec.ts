@@ -78,14 +78,13 @@ function parseDate(s: string): Date | null {
   return isNaN(d.getTime()) ? null : d;
 }
 
-/** Load JSON file from the main repo root (~/work/quantika-demo/).
- *  __dirname = e2e-playwright/__tests__/e2e
- *  worktreeRoot = e2e-playwright/
- *  repoRoot = worktreeRoot/../../../ = ~/work/quantika-demo
+/** Load JSON file from the repo root.
+ *  __dirname = <repo>/__tests__/e2e
+ *  repoRoot  = <repo>
+ *  Works in both local dev and GitHub Actions (no env-dependent cwd assumptions).
  */
 function loadJson<T>(relPath: string): T {
-  const worktreeRoot = path.resolve(__dirname, '../..');
-  const repoRoot = path.resolve(worktreeRoot, '../../..');
+  const repoRoot = path.resolve(__dirname, '../..');
   const fullPath = path.join(repoRoot, relPath);
   if (!fs.existsSync(fullPath)) {
     throw new Error(`Fixture file not found: ${fullPath} (repoRoot: ${repoRoot})`);
