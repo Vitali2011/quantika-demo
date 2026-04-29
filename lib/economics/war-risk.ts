@@ -52,6 +52,10 @@ export function calculateWarRiskPremium(input: WarRiskInput): WarRiskResult {
     return { premiumUsd: 0, zones: [] };
   }
 
+  if (vesselValueUsd < 0) {
+    return { premiumUsd: 0, zones: [] };
+  }
+
   const fromLower = route.fromPort.toLowerCase();
   const toLower = route.toPort.toLowerCase();
   const viaLower = (route.viaCanal ?? '').toLowerCase();
@@ -59,9 +63,10 @@ export function calculateWarRiskPremium(input: WarRiskInput): WarRiskResult {
   const matchedZones: HraZone[] = [];
 
   for (const zone of JWC_HRA_ZONES) {
-    const portMatch = zone.ports.some(p =>
-      fromLower.includes(p) || toLower.includes(p)
-    );
+    const portMatch = zone.ports.some(p => {
+      const re = new RegExp(`\\b${p}\\b`, 'i');
+      return re.test(fromLower) || re.test(toLower);
+    });
     const canalMatch = zone.canals?.some(c => viaLower.includes(c)) ?? false;
 
     if (portMatch || canalMatch) {
