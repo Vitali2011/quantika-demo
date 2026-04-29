@@ -47,17 +47,22 @@ export async function POST(req: NextRequest): Promise<Response> {
   void (async () => {
     for (const entry of payload.entry) {
       for (const change of entry.changes) {
-        const messages = change.value.messages ?? [];
-        for (const msg of messages) {
-          try {
-            if (client) {
-              await routeIncomingMessage(msg, client);
-            } else {
-              console.warn('[whatsapp webhook] no client configured, skipping message', msg.id);
+        try {
+          const messages = change.value.messages ?? [];
+          for (const msg of messages) {
+            try {
+              if (client) {
+                await routeIncomingMessage(msg, client);
+              } else {
+                console.warn('[whatsapp webhook] no client configured, skipping message', msg.id);
+              }
+            } catch (err) {
+              console.error('[whatsapp webhook] message handler error, continuing batch', msg.id, err);
             }
-          } catch (err) {
-            console.error('[whatsapp webhook] message handler error, continuing batch', msg.id, err);
           }
+        } catch (err) {
+          // BUG-D6: malformed change (e.g. null value) must not abort remaining changes
+          console.error('[whatsapp webhook] change processing error, skipping change', err);
         }
       }
     }
