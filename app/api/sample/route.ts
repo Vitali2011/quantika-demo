@@ -5,19 +5,27 @@ import cargoInquiries from '@/lib/sample-data/cargo-inquiries.json';
 import vesselPositions from '@/lib/sample-data/vessel-positions.json';
 import fixtureRecaps from '@/lib/sample-data/fixture-recaps.json';
 import clientReplies from '@/lib/sample-data/client-replies.json';
+import documents from '@/lib/sample-data/documents.json';
+import vesselCerts from '@/lib/sample-data/vessel-certs.json';
+import { rebaseDates } from '@/lib/sample-data/rebase';
+import type { SampleEmailRaw } from '@/lib/sample-data/types';
 
 export const dynamic = 'force-dynamic';
 
-const SAMPLE_EMAILS = [
-  ...cargoInquiries,
-  ...vesselPositions,
-  ...fixtureRecaps,
-  ...clientReplies,
+const SAMPLE_EMAILS_RAW: SampleEmailRaw[] = [
+  ...(cargoInquiries as unknown as SampleEmailRaw[]),
+  ...(vesselPositions as unknown as SampleEmailRaw[]),
+  ...(fixtureRecaps as unknown as SampleEmailRaw[]),
+  ...(clientReplies as unknown as SampleEmailRaw[]),
+  ...(documents as unknown as SampleEmailRaw[]),
+  ...(vesselCerts as unknown as SampleEmailRaw[]),
 ];
 
 export async function POST(request: NextRequest) {
   if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   const sessionId = createSession('sample-data-token');
+  const today = new Date();
+  const SAMPLE_EMAILS = rebaseDates(SAMPLE_EMAILS_RAW, today);
   updateSession(sessionId, { emails: SAMPLE_EMAILS, isSampleData: true });
 
   const csrfToken = generateCsrfToken();
