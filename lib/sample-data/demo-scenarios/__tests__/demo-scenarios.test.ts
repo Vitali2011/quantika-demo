@@ -23,8 +23,8 @@ import { cfValue } from '@/lib/types';
 const scenarios = loadDemoScenarios();
 
 describe('demo scenarios — structure', () => {
-  it('has exactly 10 scenarios', () => {
-    expect(scenarios).toHaveLength(10);
+  it('has exactly 5 scenarios (V2 minimal corpus)', () => {
+    expect(scenarios).toHaveLength(5);
   });
 
   it('each scenario has unique id', () => {

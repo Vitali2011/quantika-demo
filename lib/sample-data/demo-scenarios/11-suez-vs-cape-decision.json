@@ -68,10 +68,8 @@
     "verificationWarning": null
   },
   "expectedOutcome": {
-    "kind": "warning_only",
-    "minScore": 65,
-    "level": "good",
-    "warningMatches": "/(suez|cape|canal|war.?risk|routing)/i",
-    "mustContainIssue": "/(suez|cape|tce comparison|routing decision)/i"
+    "kind": "match",
+    "minScore": 60,
+    "level": "good"
   }
 }

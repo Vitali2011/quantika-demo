@@ -49,5 +49,6 @@
   "laytimeUsedHours": 29.0,
   "demurrageHours": 0,
   "despatchHours": 67.0,
-  "notes": "Clean SHINC loading at MENA port. No suspensions, no delays. Significant despatch earned (67h saved on 96h allowed)."
+  "notes": "Clean SHINC loading at MENA port. No suspensions, no delays. Significant despatch earned (67h saved on 96h allowed).",
+  "recapSampleId": "sample-21"
 }

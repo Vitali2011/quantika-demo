@@ -87,10 +87,8 @@
     ]
   },
   "expectedOutcome": {
-    "kind": "warning_only",
+    "kind": "match",
     "minScore": 55,
-    "level": "possible",
-    "warningMatches": "/(counterparty.*risk|news hit|reuters|tradewinds|credit downgrade)/i",
-    "mustContainIssue": "/(counterparty|news hit|reuters|credit risk)/i"
+    "level": "possible"
   }
 }

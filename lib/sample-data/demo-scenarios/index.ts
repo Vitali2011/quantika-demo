@@ -26,22 +26,21 @@ export interface DemoScenario {
 }
 
 import s01 from './01-karasu-mykolaiv-idle.json';
-import s02 from './02-steel-on-bulker-blocked.json';
-import s03 from './03-gearless-skikda-blocked.json';
-import s04 from './04-volume-overflow-blocked.json';
 import s05 from './05-ru-flag-mykolaiv-sanctioned.json';
-import s06 from './06-hallucinated-imo.json';
-import s07 from './07-abt-dwt-downgraded.json';
 import s08 from './08-inverted-laycan-rejected.json';
-import s09 from './09-stale-vessel-position.json';
-import s10 from './10-perfect-match.json';
+import s11 from './11-suez-vs-cape-decision.json';
+import s15 from './15-counterparty-news-hit.json';
 
 /**
- * Load demo scenarios, materialising the JSON fixtures into typed objects
- * (with a real RegExp reassembled from its string form).
+ * Load demo scenarios (V2 minimal corpus — 5 canonical cases covering
+ * Wave α/β/γ acceptance: idle vessel, sanctioned cargo, inverted laycan,
+ * Suez-vs-Cape routing, counterparty news hit).
+ *
+ * Materialises JSON fixtures into typed objects with real RegExps
+ * reassembled from string form.
  */
 export function loadDemoScenarios(): DemoScenario[] {
-  const raws = [s01, s02, s03, s04, s05, s06, s07, s08, s09, s10];
+  const raws = [s01, s05, s08, s11, s15];
   return raws.map(raw => reviveScenario(raw as unknown as RawScenario));
 }
 

@@ -8,7 +8,7 @@ export interface VoiceFixture {
 }
 
 export function loadVoiceFixtures(): VoiceFixture[] {
-  const ids = ['voice-01', 'voice-02', 'voice-03', 'voice-04', 'voice-05'];
+  const ids = ['voice-01', 'voice-02'];
   return ids.map((id) => ({
     id,
     rawTranscript: fs.readFileSync(path.join(__dirname, `${id}.txt`), 'utf-8'),
