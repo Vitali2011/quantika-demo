@@ -57,7 +57,7 @@ export function getPortDa(
 
   const database = db ?? getStore().getDatabase();
 
-  const rows = database.prepare<[string, number, string], PortDaRow>(`
+  const rows = database.prepare<[string, number, number, string], PortDaRow>(`
     SELECT port_code, vessel_dwt_min, vessel_dwt_max,
            port_dues_usd, pilotage_usd, tugs_usd,
            stevedoring_usd_per_mt, cargo_type, confidence, source
