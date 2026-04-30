@@ -117,7 +117,7 @@ export function refreshCanal(
 
       // Close current open row
       const closedCount = db
-        .prepare<[string, string, string]>(
+        .prepare<[string, string, string, string]>(
           `UPDATE canal_tariffs
            SET valid_to = ?
            WHERE canal = ? AND vessel_type = ?
