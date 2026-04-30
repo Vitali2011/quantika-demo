@@ -48,3 +48,54 @@ export const STAGE_ID_MAP: Record<string, number> = {
   won: 2,
   lost: 3,
 };
+
+// DB row shape (snake_case as stored in SQLite)
+export interface PipedriveTokenRow {
+  account_id: number;
+  access_token: string;
+  refresh_token_encrypted: string;
+  expires_at: number;
+  api_domain: string;
+}
+
+export interface PipedriveDealMappingRow {
+  quote_id: number;
+  pipedrive_deal_id: number;
+  synced_at: number;
+}
+
+// OAuth token exchange response from Pipedrive
+export interface PipedriveOAuthTokenResponse {
+  access_token: string;
+  refresh_token: string;
+  expires_in: number;
+  token_type: string;
+  api_domain: string;
+}
+
+// Input payload for syncQuoteAccepted
+export interface SyncQuotePayload {
+  quoteId: number;
+  contactEmail: string;
+  contactName: string;
+  dealValue: number;
+  dealCurrency: string;
+  route?: string;
+  vessel?: string;
+  eta?: string;
+}
+
+// Pipedrive API response shapes
+export interface PipedrivePersonSearchResult {
+  success: boolean;
+  data: {
+    items: Array<{
+      item: { id: number; name: string; emails: Array<{ value: string }> };
+    }>;
+  };
+}
+
+export interface PipedriveDealCreateResponse {
+  success: boolean;
+  data: { id: number };
+}

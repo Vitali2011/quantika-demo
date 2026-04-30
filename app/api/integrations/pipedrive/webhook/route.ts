@@ -100,7 +100,7 @@ export async function POST(req: NextRequest): Promise<Response> {
   // 6. Persist notification asynchronously — do not block the response.
   setImmediate(() => {
     try {
-      const db = getStore().getDb();
+      const db = getStore().getDatabase();
       writeNotification(db, {
         source: 'pipedrive',
         event: payload.event ?? 'unknown',
