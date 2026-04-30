@@ -17,11 +17,17 @@ import {
 import type Database from 'better-sqlite3';
 import type { PipedriveTokens } from './types';
 
-// ─── Encryption key validation at module import time ─────────────────────────
+// ─── Encryption key — lazy initialization ─────────────────────────────────────
+// Validated on first use (encrypt/decrypt), not at import time.
+// This prevents Next.js build from failing when ENCRYPTION_KEY is absent from
+// the build environment (env vars are only available at runtime in App Router).
 
 const HEX_64_RE = /^[0-9a-fA-F]{64}$/;
 
-function loadEncryptionKey(): Buffer {
+let _encryptionKey: Buffer | null = null;
+
+function getEncryptionKey(): Buffer {
+  if (_encryptionKey) return _encryptionKey;
   const raw = process.env.ENCRYPTION_KEY;
   if (!raw || !HEX_64_RE.test(raw)) {
     throw new Error(
@@ -29,11 +35,9 @@ function loadEncryptionKey(): Buffer {
       'Current value is missing or invalid.'
     );
   }
-  return Buffer.from(raw, 'hex');
+  _encryptionKey = Buffer.from(raw, 'hex');
+  return _encryptionKey;
 }
-
-// This runs at import time — throws if ENCRYPTION_KEY is invalid.
-const ENCRYPTION_KEY: Buffer = loadEncryptionKey();
 
 // ─── AES-256-GCM helpers ─────────────────────────────────────────────────────
 
@@ -47,7 +51,7 @@ const TAG_BYTES = 16;
  */
 function encrypt(plaintext: string): string {
   const iv = randomBytes(IV_BYTES);
-  const cipher = createCipheriv(ALGO, ENCRYPTION_KEY, iv);
+  const cipher = createCipheriv(ALGO, getEncryptionKey(), iv);
   const encrypted = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()]);
   const tag = cipher.getAuthTag();
   return `${iv.toString('hex')}:${encrypted.toString('hex')}:${tag.toString('hex')}`;
@@ -66,7 +70,7 @@ function decrypt(stored: string): string {
   const ciphertext = Buffer.from(ciphertextHex, 'hex');
   const tag = Buffer.from(tagHex, 'hex');
 
-  const decipher = createDecipheriv(ALGO, ENCRYPTION_KEY, iv);
+  const decipher = createDecipheriv(ALGO, getEncryptionKey(), iv);
   decipher.setAuthTag(tag);
   const decrypted = Buffer.concat([decipher.update(ciphertext), decipher.final()]);
   return decrypted.toString('utf8');

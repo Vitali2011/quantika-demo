@@ -18,38 +18,72 @@ function makeDb(): Database.Database {
 }
 
 // ─── Module import helper (re-import with fresh env) ──────────────────────────
-// We use jest.isolateModules so each describe block gets a clean module state.
+// ENCRYPTION_KEY is validated lazily (on first use) to allow Next.js build
+// to succeed without the key. Tests trigger validation via saveTokens().
 
-describe('tokens module — ENCRYPTION_KEY validation at import time', () => {
+describe('tokens module — ENCRYPTION_KEY validation on first use', () => {
   afterEach(() => {
     delete process.env.ENCRYPTION_KEY;
   });
 
   it('throws if ENCRYPTION_KEY is missing', () => {
     delete process.env.ENCRYPTION_KEY;
-    expect(() => {
-      jest.isolateModules(() => {
-        require('@/lib/integrations/pipedrive/tokens');
-      });
-    }).toThrow(/ENCRYPTION_KEY/);
+    let saveTokensFn: ((...args: unknown[]) => unknown) | undefined;
+    jest.isolateModules(() => {
+      const mod = require('@/lib/integrations/pipedrive/tokens') as {
+        saveTokens: (...args: unknown[]) => unknown;
+        _setDb: (db: unknown) => void;
+      };
+      const db = new (require('better-sqlite3') as typeof import('better-sqlite3'))(':memory:');
+      const { runMigrations } = require('@/lib/migrations/runner') as typeof import('@/lib/migrations/runner');
+      const { allMigrations } = require('@/lib/migrations/index') as typeof import('@/lib/migrations/index');
+      runMigrations(db, allMigrations);
+      mod._setDb(db);
+      saveTokensFn = mod.saveTokens;
+    });
+    expect(() =>
+      saveTokensFn!(1, { accessToken: 'a', refreshToken: 'r', expiresAt: 9999999999, apiDomain: 'd.pd.com' })
+    ).toThrow(/ENCRYPTION_KEY/);
   });
 
   it('throws if ENCRYPTION_KEY is not 64 hex chars', () => {
     process.env.ENCRYPTION_KEY = 'tooshort';
-    expect(() => {
-      jest.isolateModules(() => {
-        require('@/lib/integrations/pipedrive/tokens');
-      });
-    }).toThrow(/ENCRYPTION_KEY/);
+    let saveTokensFn: ((...args: unknown[]) => unknown) | undefined;
+    jest.isolateModules(() => {
+      const mod = require('@/lib/integrations/pipedrive/tokens') as {
+        saveTokens: (...args: unknown[]) => unknown;
+        _setDb: (db: unknown) => void;
+      };
+      const db = new (require('better-sqlite3') as typeof import('better-sqlite3'))(':memory:');
+      const { runMigrations } = require('@/lib/migrations/runner') as typeof import('@/lib/migrations/runner');
+      const { allMigrations } = require('@/lib/migrations/index') as typeof import('@/lib/migrations/index');
+      runMigrations(db, allMigrations);
+      mod._setDb(db);
+      saveTokensFn = mod.saveTokens;
+    });
+    expect(() =>
+      saveTokensFn!(1, { accessToken: 'a', refreshToken: 'r', expiresAt: 9999999999, apiDomain: 'd.pd.com' })
+    ).toThrow(/ENCRYPTION_KEY/);
   });
 
   it('throws if ENCRYPTION_KEY contains non-hex chars', () => {
     process.env.ENCRYPTION_KEY = 'z'.repeat(64);
-    expect(() => {
-      jest.isolateModules(() => {
-        require('@/lib/integrations/pipedrive/tokens');
-      });
-    }).toThrow(/ENCRYPTION_KEY/);
+    let saveTokensFn: ((...args: unknown[]) => unknown) | undefined;
+    jest.isolateModules(() => {
+      const mod = require('@/lib/integrations/pipedrive/tokens') as {
+        saveTokens: (...args: unknown[]) => unknown;
+        _setDb: (db: unknown) => void;
+      };
+      const db = new (require('better-sqlite3') as typeof import('better-sqlite3'))(':memory:');
+      const { runMigrations } = require('@/lib/migrations/runner') as typeof import('@/lib/migrations/runner');
+      const { allMigrations } = require('@/lib/migrations/index') as typeof import('@/lib/migrations/index');
+      runMigrations(db, allMigrations);
+      mod._setDb(db);
+      saveTokensFn = mod.saveTokens;
+    });
+    expect(() =>
+      saveTokensFn!(1, { accessToken: 'a', refreshToken: 'r', expiresAt: 9999999999, apiDomain: 'd.pd.com' })
+    ).toThrow(/ENCRYPTION_KEY/);
   });
 });
 
