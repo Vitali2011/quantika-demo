@@ -6,6 +6,7 @@ import migration005 from './005-market-benchmarks';
 import migration006 from './006-trial-state';
 import migration007 from './007-opensanctions-cache';
 import migration008 from './008-ais-polling-flag';
+import migration009 from './009-pipedrive-tables';
 import type { Migration } from './types';
 
-export const allMigrations: Migration[] = [migration001, migration002, migration003, migration004, migration005, migration006, migration007, migration008];
+export const allMigrations: Migration[] = [migration001, migration002, migration003, migration004, migration005, migration006, migration007, migration008, migration009];

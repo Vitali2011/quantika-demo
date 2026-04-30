@@ -72,6 +72,11 @@ export class SessionStore {
     }
   }
 
+  /** Expose the underlying DB for modules that need direct SQL access. */
+  getDb(): Database.Database {
+    return this.db;
+  }
+
   createSession(accessToken: string): string {
     const count = this.getSessionCount();
     if (count >= MAX_SESSIONS) {
