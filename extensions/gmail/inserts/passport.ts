@@ -51,8 +51,8 @@ export async function buildPassportInsert(
     .slice(0, 3)
     .map(
       (f) =>
-        `<tr><td>${esc(f.date)}</td><td>${esc(f.route)}</td><td>${f.rate.toLocaleString(
-          'en-US',
+        `<tr><td>${esc(f.date)}</td><td>${esc(f.route)}</td><td>${fmtNum(
+          f.rate,
         )}</td></tr>`,
     )
     .join('');
@@ -62,7 +62,7 @@ export async function buildPassportInsert(
     `<tbody>` +
     `<tr><th>Vessel</th><td>${esc(v.name)}</td></tr>` +
     `<tr><th>IMO</th><td>${esc(v.imo)}</td></tr>` +
-    `<tr><th>DWT</th><td>${v.dwt.toLocaleString('en-US')}</td></tr>` +
+    `<tr><th>DWT</th><td>${fmtNum(v.dwt)}</td></tr>` +
     `<tr><th>Year</th><td>${v.year}</td></tr>` +
     `<tr><th>Flag</th><td>${esc(v.flag)}</td></tr>` +
     `</tbody></table>` +
@@ -85,6 +85,15 @@ export async function buildPassportInsert(
     `Last fixtures:\n${fxPlain}`;
 
   return { html, plain };
+}
+
+// BUG-β-13-PassportNaN: safely format a number (or any unknown), returning
+// 'n/a' for null/undefined/NaN/non-finite values instead of throwing or
+// printing literal 'NaN'.
+function fmtNum(n: unknown): string {
+  return typeof n === 'number' && Number.isFinite(n)
+    ? n.toLocaleString('en-US')
+    : 'n/a';
 }
 
 function esc(s: string): string {
