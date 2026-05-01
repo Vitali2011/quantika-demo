@@ -12,16 +12,12 @@ import { WhileYouWereAwayCard } from '@/components/dashboard/WhileYouWereAwayCar
 describe('β-15 WhileYouWereAwayCard', () => {
   it('renders summary when there are pending drafts', () => {
     render(
-      <WhileYouWereAwayCard
-        pendingDrafts={5}
-        voiceMemosProcessed={2}
-        errors={1}
-      />,
+      <WhileYouWereAwayCard pendingDrafts={5} voiceMemosProcessed={2} errors={1} />,
     );
-    expect(screen.getByTestId('wywa-card')).toBeInTheDocument();
-    expect(screen.getByText(/5 drafts awaiting approval/i)).toBeInTheDocument();
-    expect(screen.getByText(/2 voice memos/i)).toBeInTheDocument();
-    expect(screen.getByText(/1 error/i)).toBeInTheDocument();
+    expect(screen.queryByTestId('wywa-card')).not.toBeNull();
+    expect(screen.getByText(/5 drafts awaiting approval/i)).toBeTruthy();
+    expect(screen.getByText(/2 voice memos/i)).toBeTruthy();
+    expect(screen.getByText(/1 error/i)).toBeTruthy();
   });
 
   it('hides itself when there are 0 pending drafts', () => {
@@ -29,14 +25,14 @@ describe('β-15 WhileYouWereAwayCard', () => {
       <WhileYouWereAwayCard pendingDrafts={0} voiceMemosProcessed={0} errors={0} />,
     );
     expect(container.firstChild).toBeNull();
-    expect(screen.queryByTestId('wywa-card')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('wywa-card')).toBeNull();
   });
 
   it('singularises labels for count of 1', () => {
     render(
       <WhileYouWereAwayCard pendingDrafts={1} voiceMemosProcessed={1} errors={0} />,
     );
-    expect(screen.getByText(/1 draft awaiting approval/i)).toBeInTheDocument();
-    expect(screen.getByText(/1 voice memo/i)).toBeInTheDocument();
+    expect(screen.getByText(/1 draft awaiting approval/i)).toBeTruthy();
+    expect(screen.getByText(/1 voice memo /i)).toBeTruthy();
   });
 });
