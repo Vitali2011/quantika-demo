@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import sanitizeHtml from 'sanitize-html';
 import { requireSession } from '@/lib/session';
 import type { ParsedCargo } from '@/lib/types';
 
@@ -20,16 +21,29 @@ const MAX_SUBJECT = 200;
 const MAX_BODY = 50_000;
 
 /**
- * Strip dangerous HTML constructs from user-supplied strings (BUG-D2).
- * Removes: <script>…</script>, on* event handlers, javascript: URIs.
- * Does NOT do full HTML escaping — suitable for plain-text template fields
- * that accept limited inline HTML (subject, body) where stripping is preferred.
+ * Strip dangerous HTML constructs via allow-list parser (sanitize-html).
+ * Replaces a fragile blacklist (BUG-β-stab-04-XSSBypass) with an HTML parser
+ * that drops any tag/attribute outside an explicit allow-list. Closes
+ * <iframe>, <object>, <embed>, <style>, slash-form attribute event handlers,
+ * entity-encoded `javascript:` and CRLF-broken schemes — all of which the
+ * old regex sanitizer let through.
  */
 function stripDangerousTags(html: string): string {
-  return html
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/on\w+\s*=/gi, '')
-    .replace(/javascript:/gi, '');
+  return sanitizeHtml(html, {
+    allowedTags: [
+      'p', 'br', 'strong', 'em', 'b', 'i', 'u',
+      'ul', 'ol', 'li',
+      'a', 'span', 'div',
+      'table', 'thead', 'tbody', 'tr', 'th', 'td',
+    ],
+    allowedAttributes: {
+      a: ['href', 'title'],
+      '*': ['class'],
+    },
+    allowedSchemes: ['http', 'https', 'mailto'],
+    allowedSchemesAppliedToAttributes: ['href'],
+    disallowedTagsMode: 'discard',
+  });
 }
 
 /**
