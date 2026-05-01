@@ -143,6 +143,16 @@ export async function parseForwardedMessage(
       };
   }
 
+  // BUG-β-stab-03-EmptyRawText: guard against empty/whitespace rawText so
+  // we don't waste OpenAI quota on illegible images / empty PDFs / empty audio.
+  if (!rawText || rawText.trim() === '') {
+    return {
+      confidence: 'uncertain',
+      missingFields: ['empty rawText'],
+      rawText: '',
+    };
+  }
+
   let rawOrNull: RawParseResponse | null;
   try {
     rawOrNull = await callAiJson<RawParseResponse>(
