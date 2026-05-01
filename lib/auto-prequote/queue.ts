@@ -95,9 +95,15 @@ export function getDraft(id: string): QuoteDraft | undefined {
   return _store.get(id);
 }
 
+// BUG-β-15-IdempotencyReplay: only allow transitions from 'awaiting_approval'.
+// Without this guard, a rejected draft could be flipped to approved (or vice
+// versa), defeating the Plan-First gate.
 export function approveDraft(id: string): QuoteDraft {
   const d = _store.get(id);
   if (!d) throw new Error(`approveDraft: draft ${id} not found`);
+  if (d.status !== 'awaiting_approval') {
+    throw new Error(`approveDraft: cannot transition ${d.status} → approved`);
+  }
   d.status = 'approved';
   _store.set(id, d);
   return d;
@@ -106,6 +112,9 @@ export function approveDraft(id: string): QuoteDraft {
 export function rejectDraft(id: string, reason: string): QuoteDraft {
   const d = _store.get(id);
   if (!d) throw new Error(`rejectDraft: draft ${id} not found`);
+  if (d.status !== 'awaiting_approval') {
+    throw new Error(`rejectDraft: cannot transition ${d.status} → rejected`);
+  }
   d.status = 'rejected';
   d.rejectReason = reason;
   _store.set(id, d);
