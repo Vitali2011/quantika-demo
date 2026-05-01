@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as path from 'path';
 import { getCiiCached, setCiiCached, DEFAULT_CACHE_DIR } from './cii-cache';
 
@@ -32,11 +33,15 @@ function parseLlmRating(raw: string): CiiRating {
 function lookupInDataset(imo: string): CiiRating | null {
   try {
     const datasetPath = path.join(process.cwd(), 'lib', 'sample-data', 'imo', 'cii.json');
-    const dataset = require(datasetPath) as { year: number; records: { imo: string; rating: string }[] };
+    if (!fs.existsSync(datasetPath)) return null;
+    const dataset = JSON.parse(fs.readFileSync(datasetPath, 'utf-8')) as {
+      year: number;
+      records: { imo: string; rating: string }[];
+    };
     const record = dataset.records.find(r => r.imo === imo);
     if (record && VALID_RATINGS.has(record.rating)) return record.rating as CiiRating;
   } catch {
-    // Dataset missing — fall through to LLM
+    // Dataset missing or malformed — fall through to LLM
   }
   return null;
 }
