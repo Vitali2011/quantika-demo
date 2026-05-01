@@ -12,13 +12,23 @@
  * setStepHandler() — это нужно для тестов с мок side-effect counter'ами.
  */
 
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import {
   cacheExecution,
   cacheStep,
   getCachedExecution,
   getCachedStep,
 } from './idempotency';
+
+/**
+ * BUG-β-11-PlanCacheReplay: cache key must include the set of approved step
+ * ids — otherwise a second executePlan call with an *expanded* approved set
+ * silently returns the stale result and skips the newly-authorized side-effect.
+ */
+function approvedHash(approvedStepIds: string[]): string {
+  const sorted = [...approvedStepIds].sort();
+  return createHash('sha256').update(sorted.join('|')).digest('hex').slice(0, 16);
+}
 import type {
   ExecutionResult,
   Plan,
@@ -146,8 +156,18 @@ export async function executePlan(
   plan: Plan,
   approvedStepIds: string[],
 ): Promise<ExecutionResult> {
+  const approvedSetHash = approvedHash(approvedStepIds);
   const cached = getCachedExecution(plan.planId);
-  if (cached) return cached;
+  // BUG-β-11-PlanCacheReplay: only return the cached execution if it was
+  // produced from the same approved-set. A widened approved-set must
+  // re-execute so newly-authorized side-effects actually run.
+  if (
+    cached &&
+    (cached as ExecutionResult & { approvedSetHash?: string }).approvedSetHash ===
+      approvedSetHash
+  ) {
+    return cached;
+  }
 
   const planStepIds = new Set(plan.steps.map((s) => s.id));
   for (const id of approvedStepIds) {
@@ -184,10 +204,11 @@ export async function executePlan(
     results.push(result);
   }
 
-  const execution: ExecutionResult = {
+  const execution: ExecutionResult & { approvedSetHash?: string } = {
     planId: plan.planId,
     stepResults: results,
     completedAt: new Date().toISOString(),
+    approvedSetHash,
   };
   cacheExecution(plan.planId, execution);
   return execution;
