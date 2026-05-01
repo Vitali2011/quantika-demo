@@ -5,14 +5,25 @@ import { getCached, setCached, getStaleCached } from './cache';
 const BASE_URL = 'https://api.datalastic.com/api/v0';
 const CREDITS_LOW_THRESHOLD = 50;
 
-function parsePosition(data: Record<string, unknown>): VesselPosition {
+function parsePosition(data: Record<string, unknown>): VesselPosition | null {
+  // BUG-β-01-NaNCoords: reject missing / non-finite / out-of-range coords
+  // so downstream consumers don't propagate NaN and the SQLite cache
+  // doesn't get poisoned for the TTL.
+  const lat = Number(data['lat']);
+  const lon = Number(data['lon']);
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+  if (lat < -90 || lat > 90 || lon < -180 || lon > 180) return null;
+
+  const speedRaw = Number(data['speed']);
+  const headingRaw = Number(data['heading']);
+
   return {
     imo: String(data['imo'] ?? ''),
     mmsi: data['mmsi'] != null ? String(data['mmsi']) : undefined,
-    lat: Number(data['lat']),
-    lon: Number(data['lon']),
-    speedKn: Number(data['speed']),
-    headingDeg: Number(data['heading']),
+    lat,
+    lon,
+    speedKn: Number.isFinite(speedRaw) ? speedRaw : 0,
+    headingDeg: Number.isFinite(headingRaw) ? headingRaw : 0,
     navStatus: String(data['navigational_status'] ?? ''),
     timestampUtc: String(data['time_utc'] ?? ''),
   };
@@ -67,6 +78,7 @@ export class DatalasticAdapter implements AisAdapter {
 
     const json = (await res.json()) as { data: Record<string, unknown> };
     const position = parsePosition(json.data);
+    if (!position) return null;
     if (this.db) setCached(this.db, imo, 'position', position);
     return position;
   }
