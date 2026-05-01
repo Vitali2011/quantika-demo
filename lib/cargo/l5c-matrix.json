@@ -1,0 +1,14 @@
+{
+  "pairs": [
+    { "previous": "DRI", "next": "grain", "compatible": false, "reason": "Iron oxide contamination, food-grade rejected" },
+    { "previous": "coal", "next": "grain", "compatible": false, "reason": "Black residue contamination" },
+    { "previous": "coal", "next": "bauxite", "compatible": true, "extra_clean": false },
+    { "previous": "bauxite", "next": "grain", "compatible": true, "extra_clean": true, "reason": "Requires hospital clean" },
+    { "previous": "sugar", "next": "scrap", "compatible": true, "extra_clean": false },
+    { "previous": "scrap", "next": "sugar", "compatible": false, "reason": "Sharp residue + contamination risk" },
+    { "previous": "fertilizer-urea", "next": "grain", "compatible": false, "reason": "Cross-contamination, food-grade rejected" },
+    { "previous": "petcoke", "next": "grain", "compatible": false, "reason": "Carbon residue" },
+    { "previous": "salt", "next": "steel", "compatible": false, "reason": "Corrosion risk" },
+    { "previous": "iron-ore", "next": "grain", "compatible": true, "extra_clean": true }
+  ]
+}

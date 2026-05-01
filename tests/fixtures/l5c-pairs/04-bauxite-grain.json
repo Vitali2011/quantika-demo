@@ -1,0 +1,10 @@
+{
+  "description": "Bauxite before grain — compatible but requires hospital clean",
+  "prevCargoes": ["bauxite"],
+  "newCargo": "grain",
+  "expected": {
+    "compatible": true,
+    "requires_extra_clean": true,
+    "blocking_pairs": []
+  }
+}

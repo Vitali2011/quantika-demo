@@ -52,6 +52,8 @@ const SANCTION_IDS = [
   'sanction-01',
   'sanction-02',
   'sanction-03',
+  'sanction-04',
+  'sanction-05',
 ] as const;
 
 export function loadSanctionFixtures(): SanctionFixture[] {

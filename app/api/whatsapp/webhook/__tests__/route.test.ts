@@ -1,6 +1,9 @@
 import { createHmac } from 'node:crypto';
 
 jest.mock('@/lib/whatsapp/client', () => jest.requireActual('@/lib/whatsapp/__mocks__/client'));
+jest.mock('@/lib/whatsapp/router', () => ({
+  routeIncomingMessage: jest.fn().mockResolvedValue(undefined),
+}));
 
 import { GET, POST } from '@/app/api/whatsapp/webhook/route';
 
@@ -85,6 +88,55 @@ describe('POST /api/whatsapp/webhook', () => {
     const req = makePostRequest(body, sign(body));
     const res = await POST(req as never);
     expect(res.status).toBe(200);
+  });
+
+  // BUG-D6: malformed change (null value) must not abort processing of subsequent changes
+  it('BUG-D6: exception on change.value=null does not drop subsequent change messages', async () => {
+    const { routeIncomingMessage } = await import('@/lib/whatsapp/router');
+    const routerMock = routeIncomingMessage as jest.Mock;
+    routerMock.mockClear();
+
+    const payload = {
+      object: 'whatsapp_business_account',
+      entry: [{
+        id: 'entry1',
+        changes: [
+          // change 1: valid
+          {
+            field: 'messages',
+            value: {
+              messaging_product: 'whatsapp',
+              metadata: { display_phone_number: '+1', phone_number_id: 'pid1' },
+              messages: [{ id: 'msg1', from: '+1', timestamp: '1', type: 'text', text: { body: 'ok' } }],
+            },
+          },
+          // change 2: null value — throws at change.value.messages
+          { field: 'messages', value: null },
+          // change 3: valid — must still be processed
+          {
+            field: 'messages',
+            value: {
+              messaging_product: 'whatsapp',
+              metadata: { display_phone_number: '+1', phone_number_id: 'pid1' },
+              messages: [{ id: 'msg3', from: '+1', timestamp: '3', type: 'text', text: { body: 'also ok' } }],
+            },
+          },
+        ],
+      }],
+    };
+    const body = JSON.stringify(payload);
+    const req = makePostRequest(body, sign(body));
+    const res = await POST(req as never);
+    expect(res.status).toBe(200);
+
+    // Let fire-and-forget microtask queue drain
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    // With fix: router called for msg1 AND msg3 (change 2 skipped, not aborted)
+    expect(routerMock).toHaveBeenCalledTimes(2);
+    const ids = routerMock.mock.calls.map((c: unknown[]) => (c[0] as { id: string }).id);
+    expect(ids).toContain('msg1');
+    expect(ids).toContain('msg3');
   });
 
   it('returns 200 and invokes router for valid text message', async () => {

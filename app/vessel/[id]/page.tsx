@@ -10,6 +10,8 @@ import { AnalyticsTracker } from '@/lib/analytics-tracker';
 import { ClickableField } from '@/components/clickable-field';
 import { safeRender, getConf, ConfIcon } from '@/lib/ui-render';
 import { formatDate } from '@/lib/utils';
+import { lookupCii } from '@/lib/imo/cii-lookup';
+import { CiiRatingBadge } from '@/components/vessel/CiiRatingBadge';
 
 function Spec({ label, value, unit, confidence }: { label: string; value: Renderable; unit?: string; confidence?: string }) {
   const rendered = safeRender(value);
@@ -44,6 +46,10 @@ export default async function VesselDetailPage({ params }: Props) {
   const vessels = session.parsedVessels.filter(v => v.emailId === id);
   const processed = session.processedEmails.find(p => p.emailId === id);
   const matchingCargo = session.matches.filter(m => m.vesselEmailId === id);
+
+  // Pre-fetch CII ratings for all vessels on this page (server-side, cached 30 days)
+  const ciiResults = await Promise.all(vessels.map(v => lookupCii(v.imo ?? '')));
+
   const emailMeta = {
     emailBody: email.body || email.snippet,
     emailFrom: email.from,
@@ -103,6 +109,14 @@ export default async function VesselDetailPage({ params }: Props) {
                 {safeRender(vessel.vesselName) || 'Unknown Vessel'}
                 {vessels.length > 1 ? ` (#${idx + 1})` : ''}
                 {vessel.vesselName && <ConfIcon confidence={getConf(vessel.vesselName)} />}
+                {ciiResults[idx] && ciiResults[idx].rating !== 'unknown' && (
+                  <CiiRatingBadge
+                    rating={ciiResults[idx].rating}
+                    year={ciiResults[idx].year}
+                    source={ciiResults[idx].source}
+                    size="medium"
+                  />
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">

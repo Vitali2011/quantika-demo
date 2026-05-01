@@ -1,0 +1,10 @@
+{
+  "description": "Coal before grain — black residue contamination",
+  "prevCargoes": ["coal"],
+  "newCargo": "grain",
+  "expected": {
+    "compatible": false,
+    "requires_extra_clean": false,
+    "blocking_pairs": [{ "previous": "coal", "reason": "Black residue contamination" }]
+  }
+}

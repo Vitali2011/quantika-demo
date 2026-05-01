@@ -1,0 +1,8 @@
+Hello,
+
+Cargo: 25,000 mt fertilizer in bulk.
+Freight: USD 22 /mt.
+Demurrage: USD 12,000.
+Vessel: handysize TBN, 35,000 dwt.
+
+Please advise.

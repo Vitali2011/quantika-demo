@@ -107,6 +107,8 @@ jobs:
             ${{ runner.os }}-nextjs-
       - run: npm ci
       - run: npm run build
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
 
   audit:
     name: Audit

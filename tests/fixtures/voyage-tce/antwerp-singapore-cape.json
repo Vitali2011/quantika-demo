@@ -1,0 +1,39 @@
+{
+  "input": {
+    "vessel": {
+      "dwt": 75000,
+      "valueUsd": 35000000,
+      "speedKts": 14,
+      "consumptionMtPerDay": 32
+    },
+    "route": {
+      "originPort": "antwerp",
+      "destinationPort": "singapore",
+      "distanceNm": 11500,
+      "viaSuez": false
+    },
+    "cargo": {
+      "quantityMt": 70000,
+      "freightRateUsdPerMt": 28
+    },
+    "bunkerPriceUsdPerMt": 590,
+    "euaPriceEur": 80,
+    "durationDays": 34,
+    "euLegPercent": 0.3,
+    "daysInHra": 0,
+    "canalUsd": 0,
+    "daUsd": 115000
+  },
+  "expected": {
+    "bunker_usd": 641920,
+    "canal_usd": 0,
+    "da_usd": 115000,
+    "war_risk_usd": 0,
+    "ets_eur": 81312.77,
+    "ets_usd": 87818,
+    "gross_freight_usd": 1960000,
+    "total_costs_usd": 844738,
+    "net_voyage_usd": 1115262,
+    "daily_tce_usd": 32802
+  }
+}

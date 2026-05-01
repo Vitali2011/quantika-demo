@@ -20,6 +20,12 @@ export async function GET(req: NextRequest): Promise<Response> {
 
 export async function POST(req: NextRequest): Promise<Response> {
   const rawBody = await req.text();
+
+  // BUG-A1-2: guard against empty/missing body before signature verification
+  if (!rawBody) {
+    return new Response(JSON.stringify({ error: 'missing body' }), { status: 400 });
+  }
+
   const signature = req.headers.get('x-hub-signature-256') ?? '';
   const appSecret = process.env.WHATSAPP_APP_SECRET ?? '';
 
@@ -41,17 +47,22 @@ export async function POST(req: NextRequest): Promise<Response> {
   void (async () => {
     for (const entry of payload.entry) {
       for (const change of entry.changes) {
-        const messages = change.value.messages ?? [];
-        for (const msg of messages) {
-          try {
-            if (client) {
-              await routeIncomingMessage(msg, client);
-            } else {
-              console.warn('[whatsapp webhook] no client configured, skipping message', msg.id);
+        try {
+          const messages = change.value.messages ?? [];
+          for (const msg of messages) {
+            try {
+              if (client) {
+                await routeIncomingMessage(msg, client);
+              } else {
+                console.warn('[whatsapp webhook] no client configured, skipping message', msg.id);
+              }
+            } catch (err) {
+              console.error('[whatsapp webhook] message handler error, continuing batch', msg.id, err);
             }
-          } catch (err) {
-            console.error('[whatsapp webhook] message handler error, continuing batch', msg.id, err);
           }
+        } catch (err) {
+          // BUG-D6: malformed change (e.g. null value) must not abort remaining changes
+          console.error('[whatsapp webhook] change processing error, skipping change', err);
         }
       }
     }

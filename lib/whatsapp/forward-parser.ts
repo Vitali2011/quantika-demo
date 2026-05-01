@@ -143,6 +143,16 @@ export async function parseForwardedMessage(
       };
   }
 
+  // BUG-β-stab-03-EmptyRawText: guard against empty/whitespace rawText so
+  // we don't waste OpenAI quota on illegible images / empty PDFs / empty audio.
+  if (!rawText || rawText.trim() === '') {
+    return {
+      confidence: 'uncertain',
+      missingFields: ['empty rawText'],
+      rawText: '',
+    };
+  }
+
   let rawOrNull: RawParseResponse | null;
   try {
     rawOrNull = await callAiJson<RawParseResponse>(
@@ -152,9 +162,9 @@ export async function parseForwardedMessage(
       {},
     );
   } catch {
-    // BUG-C3: AI call failed (network error, malformed JSON, etc.) — return gracefully
+    // AI call failed (network error, malformed JSON, etc.) — return gracefully
     return {
-      confidence: 'missing' as ConfidenceLevel,
+      confidence: 'missing',
       missingFields: ['ai_extraction_failed'],
       rawText,
     };
@@ -163,8 +173,8 @@ export async function parseForwardedMessage(
   // BUG-C3: guard against null/undefined AI response
   if (rawOrNull == null) {
     return {
-      confidence: 'missing' as ConfidenceLevel,
-      missingFields: ['ai_extraction_failed'],
+      confidence: 'uncertain',
+      missingFields: ['ai_response_null'],
       rawText,
     };
   }

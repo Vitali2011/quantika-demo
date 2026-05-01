@@ -5,6 +5,8 @@ import { getSession } from '@/lib/session';
 import { filterByCategory, getEmailCounts, groupByContact } from '@/lib/dashboard-queries';
 import { EmailCard, EmailSection, ActionPanel } from '@/components/dashboard';
 import { MorningHeader } from '@/components/dashboard/MorningHeader';
+import { WhileYouWereAwayCard } from '@/components/dashboard/WhileYouWereAwayCard';
+import { countAwaitingApproval } from '@/lib/auto-prequote/queue';
 import { PriorityCard } from '@/components/dashboard/PriorityCard';
 import { InboxBreakdown } from '@/components/dashboard/InboxBreakdown';
 import { MarketIntelligence } from '@/components/dashboard/MarketIntelligence';
@@ -119,6 +121,13 @@ export default async function DashboardPage() {
     <main className="min-h-screen bg-gray-50 py-4 sm:py-8 px-3 sm:px-4">
       <AnalyticsTracker event="dashboard_viewed" />
       <div className="max-w-3xl mx-auto space-y-6">
+
+        {/* ── β-15: While You Were Away digest ───────────────────── */}
+        <WhileYouWereAwayCard
+          pendingDrafts={countAwaitingApproval()}
+          voiceMemosProcessed={0}
+          errors={0}
+        />
 
         {/* ── Morning Header ─────────────────────────────────────── */}
         <div>

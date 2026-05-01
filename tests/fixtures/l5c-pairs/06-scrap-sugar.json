@@ -1,0 +1,10 @@
+{
+  "description": "Scrap before sugar — sharp residue and contamination risk",
+  "prevCargoes": ["scrap"],
+  "newCargo": "sugar",
+  "expected": {
+    "compatible": false,
+    "requires_extra_clean": false,
+    "blocking_pairs": [{ "previous": "scrap", "reason": "Sharp residue + contamination risk" }]
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "input": {
+    "vessel": {
+      "dwt": 110000,
+      "valueUsd": 55000000,
+      "speedKts": 14,
+      "consumptionMtPerDay": 45
+    },
+    "route": {
+      "originPort": "houston",
+      "destinationPort": "tianjin",
+      "distanceNm": 11800,
+      "viaSuez": false,
+      "viaCanal": "panama"
+    },
+    "cargo": {
+      "quantityMt": 100000,
+      "freightRateUsdPerMt": 32
+    },
+    "bunkerPriceUsdPerMt": 610,
+    "euaPriceEur": 85,
+    "durationDays": 36,
+    "euLegPercent": 0,
+    "daysInHra": 0,
+    "canalUsd": 480000,
+    "daUsd": 140000
+  },
+  "expected": {
+    "bunker_usd": 988200,
+    "canal_usd": 480000,
+    "da_usd": 140000,
+    "war_risk_usd": 0,
+    "ets_eur": 0,
+    "ets_usd": 0,
+    "gross_freight_usd": 3200000,
+    "total_costs_usd": 1608200,
+    "net_voyage_usd": 1591800,
+    "daily_tce_usd": 44217
+  }
+}

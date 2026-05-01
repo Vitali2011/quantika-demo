@@ -130,6 +130,17 @@ describe('calculateEuEts — adversarial', () => {
     expect(result.amountEur).toBe(0);
     expect(result.applicable).toBe(false);
   });
+
+  // BUG-A3-2 explicit: euLegPercent > 1.0 out-of-range → rejected
+  it('euLegPercent: 1.5 is out of range → {amountEur: 0, applicable: false}', () => {
+    const result = calculateEuEts({
+      distanceNm: 1000,
+      euLegPercent: 1.5,
+      vlsfoBurnMt: 100,
+      euaPrice: 87.5,
+    });
+    expect(result).toEqual({ amountEur: 0, applicable: false });
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -330,5 +341,28 @@ describe('calculateWarRiskPremium — adversarial', () => {
     const expected = Math.round(20_000_000 * (0.10 / 100 / 365) * 2 * 100) / 100;
     expect(result.premiumUsd).toBe(expected);
     expect(result.zones).toContain('Black Sea Russia/Ukraine HRA');
+  });
+
+  // BUG-B8: Tin Can Bay — hyphenated variant should resolve via port normalisation
+  // "Tin-Can Bay" → toLowerCase().replace(/-/g, ' ') → "tin can bay"
+  // → \btin can\b matches → Gulf of Guinea HRA detected
+  it('BUG-B8: fromPort "Tin-Can Bay" detects Gulf of Guinea HRA (hyphen normalised to space)', () => {
+    const result = calculateWarRiskPremium({
+      route: { fromPort: 'Tin-Can Bay', toPort: 'Rotterdam' },
+      vesselValueUsd: 10_000_000,
+      daysInHra: 3,
+    });
+    expect(result.zones).toContain('Gulf of Guinea HRA');
+    expect(result.premiumUsd).toBeGreaterThan(0);
+  });
+
+  it('BUG-B8: fromPort "Tin Can Bay" (no hyphen) detects Gulf of Guinea HRA', () => {
+    const result = calculateWarRiskPremium({
+      route: { fromPort: 'Tin Can Bay', toPort: 'Rotterdam' },
+      vesselValueUsd: 10_000_000,
+      daysInHra: 3,
+    });
+    expect(result.zones).toContain('Gulf of Guinea HRA');
+    expect(result.premiumUsd).toBeGreaterThan(0);
   });
 });

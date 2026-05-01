@@ -1,0 +1,12 @@
+{
+  "01-good-bulk-fixture": { "min": 80, "max": 95 },
+  "02-good-tanker-recap": { "min": 80, "max": 95 },
+  "03-good-coa-offer": { "min": 75, "max": 90 },
+  "04-medium-missing-laycan": { "min": 50, "max": 69 },
+  "05-medium-no-numbers": { "min": 45, "max": 65 },
+  "06-medium-casual-tone": { "min": 40, "max": 65 },
+  "07-bad-empty-shell": { "min": 0, "max": 25 },
+  "08-bad-no-route": { "min": 15, "max": 35 },
+  "09-bad-typos-caps": { "min": 20, "max": 40 },
+  "10-bad-one-liner": { "min": 0, "max": 20 }
+}

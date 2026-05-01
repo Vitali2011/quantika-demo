@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import sanitizeHtml from 'sanitize-html';
 import { requireSession } from '@/lib/session';
 import type { ParsedCargo } from '@/lib/types';
 
@@ -6,10 +7,44 @@ interface DraftRequestBody {
   parsedCargo: ParsedCargo;
   vesselId: string;
   brokerName: string;
+  /** Email subject line — sanitized for XSS/CRLF, max 200 chars (BUG-D2/D3/D4). */
+  subject?: string;
+  /** Email body content — sanitized for XSS, max 50 000 chars (BUG-D2/D4). */
+  body?: string;
 }
 
 /** Maximum allowed length for brokerName (BUG-D4: length cap). */
 const BROKER_NAME_MAX_LEN = 256;
+/** Maximum allowed length for email subject (BUG-D4). */
+const MAX_SUBJECT = 200;
+/** Maximum allowed length for email body (BUG-D4). */
+const MAX_BODY = 50_000;
+
+/**
+ * Strip dangerous HTML constructs via allow-list parser (sanitize-html).
+ * Replaces a fragile blacklist (BUG-β-stab-04-XSSBypass) with an HTML parser
+ * that drops any tag/attribute outside an explicit allow-list. Closes
+ * <iframe>, <object>, <embed>, <style>, slash-form attribute event handlers,
+ * entity-encoded `javascript:` and CRLF-broken schemes — all of which the
+ * old regex sanitizer let through.
+ */
+function stripDangerousTags(html: string): string {
+  return sanitizeHtml(html, {
+    allowedTags: [
+      'p', 'br', 'strong', 'em', 'b', 'i', 'u',
+      'ul', 'ol', 'li',
+      'a', 'span', 'div',
+      'table', 'thead', 'tbody', 'tr', 'th', 'td',
+    ],
+    allowedAttributes: {
+      a: ['href', 'title'],
+      '*': ['class'],
+    },
+    allowedSchemes: ['http', 'https', 'mailto'],
+    allowedSchemesAppliedToAttributes: ['href'],
+    disallowedTagsMode: 'discard',
+  });
+}
 
 /**
  * Sanitize brokerName before inserting into draft template.
@@ -52,12 +87,34 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
 
-  const { parsedCargo, brokerName } = body;
+  const { parsedCargo, brokerName, subject, body: emailBody } = body;
+
+  // BUG-D4: length limits for subject and email body
+  if (subject !== undefined && subject.length > MAX_SUBJECT) {
+    return NextResponse.json({ error: 'subject too long' }, { status: 400 });
+  }
+  if (emailBody !== undefined && emailBody.length > MAX_BODY) {
+    return NextResponse.json({ error: 'body too long' }, { status: 400 });
+  }
+
+  // BUG-D2 + D3: sanitize subject (strip XSS, strip CRLF)
+  const safeSubject =
+    subject !== undefined
+      ? stripDangerousTags(subject.replace(/[\r\n]/g, ' '))
+      : undefined;
+
+  // BUG-D2: sanitize email body (strip XSS)
+  const safeEmailBody =
+    emailBody !== undefined ? stripDangerousTags(emailBody) : undefined;
 
   const safeBrokerName = sanitizeBrokerName(brokerName);
   const draftText = buildDraft(parsedCargo, safeBrokerName);
 
-  return NextResponse.json({ draftText });
+  return NextResponse.json({
+    draftText,
+    ...(safeSubject !== undefined && { subject: safeSubject }),
+    ...(safeEmailBody !== undefined && { body: safeEmailBody }),
+  });
 }
 
 function isValidDraftBody(body: unknown): body is DraftRequestBody {
