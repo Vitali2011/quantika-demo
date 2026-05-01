@@ -10,6 +10,35 @@
  * inserts go BEFORE it (at the end of the user's reply, above the quote).
  */
 
+import DOMPurify from 'dompurify';
+
+/**
+ * BUG-β-13-XSS: allow-list of HTML tags + attrs permitted in compose inserts.
+ * Anything outside this list is stripped before being written to innerHTML.
+ */
+const ALLOWED_TAGS = [
+  'p',
+  'strong',
+  'em',
+  'br',
+  'table',
+  'thead',
+  'tbody',
+  'tr',
+  'th',
+  'td',
+  'div',
+  'span',
+];
+const ALLOWED_ATTR = [
+  'border',
+  'cellpadding',
+  'cellspacing',
+  'colspan',
+  'rowspan',
+  'data-bimco-clause',
+];
+
 export type ComposeFormat = 'html' | 'plain';
 
 export interface InsertResult {
@@ -52,7 +81,18 @@ export function insertIntoCompose(composeEl: HTMLElement, payload: InsertResult)
 
   const quote = composeEl.querySelector('blockquote.gmail_quote');
   const wrapper = composeEl.ownerDocument.createElement('div');
-  wrapper.innerHTML = payload.html;
+  // BUG-β-13-XSS: sanitize via DOMPurify allow-list before writing to innerHTML.
+  // Use the compose document's window so DOMPurify operates on the same realm.
+  const win = composeEl.ownerDocument.defaultView ?? globalThis;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const purify = (DOMPurify as any).sanitize
+    ? DOMPurify
+    : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (DOMPurify as any)(win);
+  wrapper.innerHTML = purify.sanitize(payload.html, {
+    ALLOWED_TAGS,
+    ALLOWED_ATTR,
+  });
   if (quote) {
     composeEl.insertBefore(wrapper, quote);
   } else {
