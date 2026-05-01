@@ -78,6 +78,20 @@
     "demurrageRateUsdPerDay": 8500,
     "demurrageDueUsd": 6375
   },
+  "voiceMemo": {
+    "transcript": "Voice memo for vessel MV CONSTANTINE STAR at port Aqaba. Arrival UTC 2026-09-18T09:00:00Z. Laytime allowed 72 hours. Laytime used 90 hours. Demurrage rate 8500 USD per day. Event 1 at 09:00 NOR tendered. Event 2 at 12:00 discharge commenced. Event 3 at 18:00 conveyor breakdown started. Event 4 at 06:00 conveyor restored. Event 5 at 10:00 tugboat delay began. Event 6 at 14:00 tugboat arrived. Event 7 at 03:00 discharge completed.",
+    "durationSec": 78,
+    "expected": {
+      "vessel": "MV CONSTANTINE STAR",
+      "port": "Aqaba",
+      "arrivalUtc": "2026-09-18T09:00:00Z",
+      "laytimeAllowedHrs": 72,
+      "laytimeUsedHrs": 90,
+      "demurrageRateUsd": 8500,
+      "eventCount": 7
+    },
+    "expectedPdfMinBytes": 1024
+  },
   "expectedOutcome": {
     "kind": "warning_only",
     "minScore": 60,
