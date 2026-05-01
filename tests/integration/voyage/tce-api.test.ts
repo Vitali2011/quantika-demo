@@ -25,8 +25,7 @@ describe('POST /api/voyage/tce', () => {
       ),
     );
     const t0 = Date.now();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const res = await POST(makeRequest(fixture.input) as any);
+    const res = await POST(makeRequest(fixture.input) as unknown as Parameters<typeof POST>[0]);
     const dt = Date.now() - t0;
     const json = await res.json();
     expect({
@@ -38,8 +37,7 @@ describe('POST /api/voyage/tce', () => {
   });
 
   it('rejects invalid body with 400', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const res = await POST(makeRequest({ wrong: 'shape' }) as any);
+    const res = await POST(makeRequest({ wrong: 'shape' }) as unknown as Parameters<typeof POST>[0]);
     expect(res.status).toBe(400);
   });
 });
