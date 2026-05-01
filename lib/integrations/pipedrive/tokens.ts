@@ -186,13 +186,28 @@ export async function getValidAccessToken(accountId: number): Promise<string> {
   const refreshToken = decrypt(row.refresh_token_encrypted);
   const url = `https://${row.api_domain}/oauth/token`;
 
+  // BUG-β-02-OAuthRefreshMissingCreds: Pipedrive requires client_id +
+  // client_secret in the refresh body. Without them production calls 401.
+  const clientId = process.env.PIPEDRIVE_CLIENT_ID;
+  const clientSecret = process.env.PIPEDRIVE_CLIENT_SECRET;
+
+  const refreshBody: Record<string, string> = {
+    grant_type: 'refresh_token',
+    refresh_token: refreshToken,
+  };
+  if (clientId && clientSecret) {
+    refreshBody.client_id = clientId;
+    refreshBody.client_secret = clientSecret;
+  } else {
+    console.warn(
+      '[pipedrive] PIPEDRIVE_CLIENT_ID/SECRET unset — refresh will likely 401',
+    );
+  }
+
   const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'refresh_token',
-      refresh_token: refreshToken,
-    }).toString(),
+    body: new URLSearchParams(refreshBody).toString(),
   });
 
   if (!response.ok) {
