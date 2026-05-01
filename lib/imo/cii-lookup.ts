@@ -32,7 +32,6 @@ function parseLlmRating(raw: string): CiiRating {
 function lookupInDataset(imo: string): CiiRating | null {
   try {
     const datasetPath = path.join(process.cwd(), 'lib', 'sample-data', 'imo', 'cii.json');
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const dataset = require(datasetPath) as { year: number; records: { imo: string; rating: string }[] };
     const record = dataset.records.find(r => r.imo === imo);
     if (record && VALID_RATINGS.has(record.rating)) return record.rating as CiiRating;
