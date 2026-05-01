@@ -8,7 +8,7 @@
  * CTA «Draft extension request» (β-11 plan-first или mailto fallback).
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactElement } from 'react';
 import {
   computeStage,
   type EscalationStage,
@@ -42,7 +42,7 @@ function formatRemaining(ms: number): string {
   return [h, m, s].map((n) => String(n).padStart(2, '0')).join(':');
 }
 
-export function SubsCountdown(props: SubsCountdownProps): JSX.Element {
+export function SubsCountdown(props: SubsCountdownProps): ReactElement {
   const [now, setNow] = useState<Date>(() => new Date());
 
   useEffect(() => {

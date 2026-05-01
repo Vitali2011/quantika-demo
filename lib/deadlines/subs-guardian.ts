@@ -82,7 +82,6 @@ export async function processDeadline(
       dispatched.push(ch.channel);
     } catch (err) {
       // Best-effort: один канал не должен ронять остальные.
-      // eslint-disable-next-line no-console
       console.error(`[subs-guardian] dispatch ${ch.channel} failed`, err);
     }
   }
