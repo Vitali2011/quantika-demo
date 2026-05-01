@@ -1,11 +1,18 @@
 import type { ParsedVessel } from '@/lib/types';
 import { safeRender } from '@/lib/ui-render';
+import { checkCompatibility, parseLastCargoes } from '@/lib/cargo/l5c-matrix';
 
 interface VesselsTabProps {
   vessel?: ParsedVessel;
+  newCargo?: string;
 }
 
-export function VesselsTab({ vessel }: VesselsTabProps) {
+export function VesselsTab({ vessel, newCargo }: VesselsTabProps) {
+  const l5cResult =
+    vessel?.lastCargoes && newCargo
+      ? checkCompatibility(parseLastCargoes(vessel.lastCargoes), newCargo)
+      : null;
+
   return (
     <div data-testid="tab-vessels" className="space-y-3 text-sm">
       {!vessel ? (
@@ -65,6 +72,22 @@ export function VesselsTab({ vessel }: VesselsTabProps) {
           {vessel.verificationWarning && (
             <p className="text-orange-700 bg-orange-50 rounded p-2 text-xs">
               ⚠ {vessel.verificationWarning}
+            </p>
+          )}
+          {l5cResult && !l5cResult.compatible && (
+            <p
+              className="text-red-700 bg-red-50 rounded p-2 text-xs"
+              title={l5cResult.warnings.concat(l5cResult.blocking_pairs.map((bp) => `${bp.previous}: ${bp.reason}`)).join('\n')}
+            >
+              L5C incompatible: {l5cResult.blocking_pairs.map((bp) => bp.reason).join('; ')}
+            </p>
+          )}
+          {l5cResult && l5cResult.compatible && l5cResult.requires_extra_clean && (
+            <p
+              className="text-yellow-700 bg-yellow-50 rounded p-2 text-xs"
+              title={l5cResult.warnings.join('\n')}
+            >
+              Extra hold cleaning required
             </p>
           )}
         </>

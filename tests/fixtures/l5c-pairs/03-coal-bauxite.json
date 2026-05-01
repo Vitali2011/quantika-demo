@@ -1,0 +1,10 @@
+{
+  "description": "Coal before bauxite — compatible, no extra cleaning required",
+  "prevCargoes": ["coal"],
+  "newCargo": "bauxite",
+  "expected": {
+    "compatible": true,
+    "requires_extra_clean": false,
+    "blocking_pairs": []
+  }
+}

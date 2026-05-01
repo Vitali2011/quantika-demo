@@ -1,0 +1,10 @@
+{
+  "description": "Iron ore before grain — compatible but requires extra hold cleaning",
+  "prevCargoes": ["iron-ore"],
+  "newCargo": "grain",
+  "expected": {
+    "compatible": true,
+    "requires_extra_clean": true,
+    "blocking_pairs": []
+  }
+}

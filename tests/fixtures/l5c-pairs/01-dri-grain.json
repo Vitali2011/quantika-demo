@@ -1,0 +1,10 @@
+{
+  "description": "DRI before grain — iron oxide contamination",
+  "prevCargoes": ["DRI"],
+  "newCargo": "grain",
+  "expected": {
+    "compatible": false,
+    "requires_extra_clean": false,
+    "blocking_pairs": [{ "previous": "DRI", "reason": "Iron oxide contamination, food-grade rejected" }]
+  }
+}
