@@ -1,0 +1,21 @@
+Dear Sirs,
+
+Pleased to recap the following fixture:
+
+Charterer: XYZ Oil Ltd
+Owner: Tanker Co
+Vessel: MT NORDIC SPIRIT, 105,000 dwt, blt 2019, double hull
+Cargo: 90,000 mt naphtha, min/max 10% MOLOO
+Loading: RAS TANURA, SAUDI ARABIA
+Discharge: ROTTERDAM, NETHERLANDS
+Laycan: 05-12 June 2026
+Freight: WS 145 (USD 18.20 /mt)
+Demurrage: USD 35,000 PDPR
+Despatch: half demurrage
+INCOTERMS: CFR Rotterdam
+Load rate: 30,000 mt SHINC
+Disch rate: 25,000 mt SHINC
+
+Sub stem, sub receivers approval otherwise as per ASBATANKVOY.
+
+Best regards.
