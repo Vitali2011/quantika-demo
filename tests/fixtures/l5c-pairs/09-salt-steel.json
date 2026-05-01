@@ -1,0 +1,10 @@
+{
+  "description": "Salt before steel — corrosion risk",
+  "prevCargoes": ["salt"],
+  "newCargo": "steel",
+  "expected": {
+    "compatible": false,
+    "requires_extra_clean": false,
+    "blocking_pairs": [{ "previous": "salt", "reason": "Corrosion risk" }]
+  }
+}

@@ -5,9 +5,11 @@ import type { ParsedVessel } from '@/lib/types';
 import type { CiiRating } from '@/lib/imo/cii-lookup';
 import { safeRender } from '@/lib/ui-render';
 import { CiiRatingBadge } from '@/components/vessel/CiiRatingBadge';
+import { checkCompatibility, parseLastCargoes } from '@/lib/cargo/l5c-matrix';
 
 interface VesselsTabProps {
   vessel?: ParsedVessel;
+  newCargo?: string;
 }
 
 const CII_D_E_PATTERN = /\bCII\s+rating\s+([DE])\b/i;
@@ -59,10 +61,14 @@ function RejectedDetails({ vessel }: { vessel: ParsedVessel }) {
   );
 }
 
-export function VesselsTab({ vessel }: VesselsTabProps) {
+export function VesselsTab({ vessel, newCargo }: VesselsTabProps) {
   const [showDetails, setShowDetails] = useState(false);
 
   const ciiRejectedRating = vessel ? parseCiiDorE(vessel.restrictions) : null;
+  const l5cResult =
+    vessel?.lastCargoes && newCargo
+      ? checkCompatibility(parseLastCargoes(vessel.lastCargoes), newCargo)
+      : null;
 
   return (
     <div data-testid="tab-vessels" className="space-y-3 text-sm">
@@ -145,6 +151,22 @@ export function VesselsTab({ vessel }: VesselsTabProps) {
           {vessel.verificationWarning && (
             <p className="text-orange-700 bg-orange-50 rounded p-2 text-xs">
               ⚠ {vessel.verificationWarning}
+            </p>
+          )}
+          {l5cResult && !l5cResult.compatible && (
+            <p
+              className="text-red-700 bg-red-50 rounded p-2 text-xs"
+              title={l5cResult.warnings.concat(l5cResult.blocking_pairs.map((bp) => `${bp.previous}: ${bp.reason}`)).join('\n')}
+            >
+              L5C incompatible: {l5cResult.blocking_pairs.map((bp) => bp.reason).join('; ')}
+            </p>
+          )}
+          {l5cResult && l5cResult.compatible && l5cResult.requires_extra_clean && (
+            <p
+              className="text-yellow-700 bg-yellow-50 rounded p-2 text-xs"
+              title={l5cResult.warnings.join('\n')}
+            >
+              Extra hold cleaning required
             </p>
           )}
         </>
