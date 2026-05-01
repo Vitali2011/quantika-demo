@@ -1,0 +1,39 @@
+{
+  "input": {
+    "vessel": {
+      "dwt": 58000,
+      "valueUsd": 28000000,
+      "speedKts": 14,
+      "consumptionMtPerDay": 28
+    },
+    "route": {
+      "originPort": "lagos",
+      "destinationPort": "rotterdam",
+      "distanceNm": 4500,
+      "viaSuez": false
+    },
+    "cargo": {
+      "quantityMt": 50000,
+      "freightRateUsdPerMt": 30
+    },
+    "bunkerPriceUsdPerMt": 600,
+    "euaPriceEur": 80,
+    "durationDays": 14,
+    "euLegPercent": 0.5,
+    "daysInHra": 3,
+    "canalUsd": 0,
+    "daUsd": 75000
+  },
+  "expected": {
+    "bunker_usd": 235200,
+    "canal_usd": 0,
+    "da_usd": 75000,
+    "war_risk_usd": 115,
+    "ets_eur": 48827.52,
+    "ets_usd": 52734,
+    "gross_freight_usd": 1500000,
+    "total_costs_usd": 363049,
+    "net_voyage_usd": 1136951,
+    "daily_tce_usd": 81211
+  }
+}
