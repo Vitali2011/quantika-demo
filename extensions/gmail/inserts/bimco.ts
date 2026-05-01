@@ -50,7 +50,19 @@ const CLAUSES: Record<BimcoClauseId, ClauseDef> = {
   },
 };
 
+// BUG-β-13-AttrXSS: TS union does not guard the runtime trust boundary —
+// callers in the extension UI / RPC layer pass strings. Validate explicitly.
+const ALLOWED_CLAUSE_IDS: ReadonlySet<BimcoClauseId> = new Set([
+  'war',
+  'sanctions',
+  'cyber',
+  'bio',
+]);
+
 export function buildBimcoInsert(clauseId: BimcoClauseId): InsertResult {
+  if (!ALLOWED_CLAUSE_IDS.has(clauseId)) {
+    throw new Error(`buildBimcoInsert: unknown clauseId: ${String(clauseId)}`);
+  }
   const c = CLAUSES[clauseId];
 
   const html =
@@ -65,8 +77,11 @@ export function buildBimcoInsert(clauseId: BimcoClauseId): InsertResult {
 }
 
 function esc(s: string): string {
+  // BUG-β-13-AttrXSS: extend escape to cover " and ' for attribute contexts.
   return String(s)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
