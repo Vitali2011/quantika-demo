@@ -1,0 +1,45 @@
+[
+  {
+    "id": "sample-30",
+    "threadId": "thread-30",
+    "from": "\"Gard P&I Club\" <documentation@gard.no>",
+    "fromName": "Gard P&I Club",
+    "fromEmail": "documentation@gard.no",
+    "to": "demo@quantika.org",
+    "subject": "FW: MV CARPATHIAN STAR — P&I Cert + Class Cert",
+    "date": "{{EMAIL_DATE}}",
+    "body": "---------- Forwarded message ---------\nFrom: Gard P&I Club <documentation@gard.no>\nDate: {{INNER_DATE}}\nSubject: MV CARPATHIAN STAR — P&I Cert + Class Cert\nTo: ...\n\nDear Sirs,\n\nPlease find attached:\n\n1) P&I Club Certificate\n   Club: Gard P&I (Bermuda) Ltd\n   Vessel: MV CARPATHIAN STAR (Demo)\n   IMO: 9234563\n   Valid from: 20 February 2026\n   Valid until: 20 February 2027\n   Entry: Full P&I cover\n\n2) Class Certificate\n   Classification Society: DNV\n   Class Notation: +1A1 General Cargo, Unrestricted Navigation\n   Valid from: 15 March 2026\n   Valid until: 14 March 2027\n   Next survey: Annual due March 2027\n\nKind regards,\nGard P&I Documentation",
+    "snippet": "P&I and Class certificates for MV CARPATHIAN STAR — valid until Feb/Mar 2027",
+    "labelIds": ["INBOX"],
+    "attachments": [
+      { "filename": "CarpathianStar_PandI_Gard.pdf", "mimeType": "application/pdf", "size": 231600 },
+      { "filename": "CarpathianStar_ClassCert_DNV.pdf", "mimeType": "application/pdf", "size": 208400 }
+    ],
+    "_meta": {
+      "emailDateOffsetDays": -7,
+      "markers": { "INNER_DATE": { "offsetDays": -8, "format": "broker-inner" } }
+    }
+  },
+  {
+    "id": "sample-31",
+    "threadId": "thread-31",
+    "from": "\"Black Sea Maritime Agency\" <bl@bsma.ro>",
+    "fromName": "Black Sea Maritime Agency",
+    "fromEmail": "bl@bsma.ro",
+    "to": "demo@quantika.org",
+    "subject": "FW: B/L MV DANUBE PIONEER — Constanta/Ravenna — fixture sample-21",
+    "date": "{{EMAIL_DATE}}",
+    "body": "---------- Forwarded message ---------\nFrom: Black Sea Maritime Agency\nDate: {{INNER_DATE}}\n\nBILL OF LADING\n\nShipper: Black Sea Steel Trading (Demo)\nConsignee: To Order\nNotify: Mediterranean Re-rolling SpA (Demo)\n\nVessel: MV DANUBE PIONEER\nVoyage No.: 24/2026\n\nLoad Port: Constanta, Romania\nDischarge Port: Ravenna, Italy\n\nCargo: 6,750 mts steel billets in bundles\nMarks/Numbers: As per stowage plan\n\nShipped on Board: {{LAYCAN_START}} {{LAYCAN_MONTH}}\nFreight: As per Charter Party dated [refer recap sample-21]\n\nClean B/L. Shipped in apparent good order.\n\nMaster's signature confirmed.",
+    "snippet": "B/L for shipment Constanta/Ravenna ref recap sample-21",
+    "labelIds": ["INBOX"],
+    "attachments": [
+      { "filename": "BL_DanubePioneer_240_2026.pdf", "mimeType": "application/pdf", "size": 156000 }
+    ],
+    "_meta": {
+      "emailDateOffsetDays": -2,
+      "laycanStartOffsetDays": -2,
+      "laycanEndOffsetDays": -2,
+      "markers": { "INNER_DATE": { "offsetDays": -2, "format": "broker-inner" } }
+    }
+  }
+]

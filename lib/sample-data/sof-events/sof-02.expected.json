@@ -78,5 +78,6 @@
   "laytimeUsedHours": 43.0,
   "demurrageHours": 0,
   "despatchHours": 29.0,
-  "notes": "Loading with three weather suspensions (4.5h + 3.5h + 1.5h = 9.5h excluded under WWD clause). Gross 52.5h, net 43.0h, significant despatch."
+  "notes": "Loading with three weather suspensions (4.5h + 3.5h + 1.5h = 9.5h excluded under WWD clause). Gross 52.5h, net 43.0h, significant despatch.",
+  "recapSampleId": "sample-24"
 }

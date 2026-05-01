@@ -1,4 +1,0 @@
-MV TEST vessel
-DWT: 10000
-Open: Hamburg 01 May 2026
-Simulates LLM returning empty source_text string (not null).

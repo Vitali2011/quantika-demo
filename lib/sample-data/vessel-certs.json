@@ -1,0 +1,22 @@
+[
+  {
+    "id": "sample-32",
+    "threadId": "thread-32",
+    "from": "\"DNV - Certification\" <certificates@dnv.com>",
+    "fromName": "DNV Certification",
+    "fromEmail": "certificates@dnv.com",
+    "to": "demo@quantika.org",
+    "subject": "FW: MV NORDIC ICE — Annual Class Survey complete, +1A1 Ice Class 1A FS",
+    "date": "{{EMAIL_DATE}}",
+    "body": "---------- Forwarded message ---------\nFrom: DNV Certification\nDate: {{INNER_DATE}}\nSubject: MV NORDIC ICE — Annual Class Survey complete\n\nDear Sirs,\n\nThis is to confirm that DNV has completed the annual class survey for MV NORDIC ICE (Demo).\n\nVessel particulars:\n- Vessel: MV NORDIC ICE (Demo)\n- IMO: 9356787\n- Class Notation: +1A1 General Cargo, Ice Class 1A FS (Finnish-Swedish), DNV\n- DWT: 28,500 mts (summer)\n\nSurvey results:\n- Annual survey completed: 12 April 2026 in Helsinki\n- Status: Class maintained\n- Next intermediate survey due: 15 October 2026 in Northern Europe\n- Class certificate valid until: 14 March 2027\n\nIce class verification:\n- Notation Ice 1A FS confirmed\n- Hull plating, frames, propulsion all compliant with Finnish-Swedish Ice Class Rules\n- Vessel cleared for Baltic winter operations\n\nKind regards,\nDNV — Certification Department",
+    "snippet": "Annual class survey complete for MV NORDIC ICE — Ice Class 1A FS confirmed valid until March 2027",
+    "labelIds": ["INBOX"],
+    "attachments": [
+      { "filename": "NordicIce_ClassCert_DNV_2026.pdf", "mimeType": "application/pdf", "size": 187500 }
+    ],
+    "_meta": {
+      "emailDateOffsetDays": -10,
+      "markers": { "INNER_DATE": { "offsetDays": -11, "format": "broker-inner" } }
+    }
+  }
+]

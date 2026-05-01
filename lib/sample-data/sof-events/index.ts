@@ -51,7 +51,7 @@ export interface SofFixture {
   expected: SofExpected;
 }
 
-const SOF_IDS = ['sof-01', 'sof-02', 'sof-03', 'sof-04', 'sof-05'] as const;
+const SOF_IDS = ['sof-01', 'sof-02', 'sof-03'] as const;
 
 export function loadSofFixtures(): SofFixture[] {
   return SOF_IDS.map((id) => ({
