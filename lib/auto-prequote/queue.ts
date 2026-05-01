@@ -77,6 +77,22 @@ export function _resetQueue(): void {
 
 // ---- CRUD ----
 export function enqueueDraft(input: QuoteDraftInput): QuoteDraft {
+  // BUG-β-15-EnqueueValidation: reject empty/NaN/negative inputs at the
+  // queue boundary so `$NaN` / ambiguous-emailId entries never reach the UI.
+  if (typeof input.emailId !== 'string' || input.emailId.trim() === '') {
+    throw new Error('enqueueDraft: emailId required (non-empty string)');
+  }
+  if (typeof input.vessel !== 'string' || input.vessel.trim() === '') {
+    throw new Error('enqueueDraft: vessel required (non-empty string)');
+  }
+  if (typeof input.summary !== 'string' || input.summary.trim() === '') {
+    throw new Error('enqueueDraft: summary required (non-empty string)');
+  }
+  if (!Number.isFinite(input.freightUsd) || input.freightUsd < 0) {
+    throw new Error(
+      `enqueueDraft: freightUsd must be a non-negative finite number, got ${input.freightUsd}`,
+    );
+  }
   const draft: QuoteDraft = {
     id: randomUUID(),
     status: 'awaiting_approval',
