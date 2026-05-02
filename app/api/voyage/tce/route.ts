@@ -23,7 +23,12 @@ const VoyageInputSchema = z.object({
     speedKts: z.number(),
     consumptionMtPerDay: z.number(),
     nt: z.number().optional(),
-    type: z.enum(['bulker', 'tanker', 'container', 'general', 'mpp']).optional(),
+    type: z
+      .preprocess(
+        (v) => (typeof v === 'string' ? v.trim().toLowerCase() : v),
+        z.enum(['bulker', 'tanker', 'container', 'general', 'mpp']),
+      )
+      .optional(),
   }),
   route: z.object({
     originPort: z.string(),
