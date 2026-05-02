@@ -186,33 +186,46 @@ export async function getValidAccessToken(accountId: number): Promise<string> {
   const refreshToken = decrypt(row.refresh_token_encrypted);
   const url = `https://${row.api_domain}/oauth/token`;
 
-  // BUG-β-02-OAuthRefreshMissingCreds: Pipedrive requires client_id +
-  // client_secret in the refresh body. Without them production calls 401.
+  // spec-βf-18 (BUG-β-02-OAuthRefreshMissingCreds): Pipedrive REQUIRES
+  // client_id + client_secret in the refresh body per OAuth 2.0 spec.
+  // Without them, /oauth/token returns 401 invalid_client and CRM sync breaks
+  // silently. Fail fast with an explicit message instead of best-effort.
   const clientId = process.env.PIPEDRIVE_CLIENT_ID;
   const clientSecret = process.env.PIPEDRIVE_CLIENT_SECRET;
-
-  const refreshBody: Record<string, string> = {
-    grant_type: 'refresh_token',
-    refresh_token: refreshToken,
-  };
-  if (clientId && clientSecret) {
-    refreshBody.client_id = clientId;
-    refreshBody.client_secret = clientSecret;
-  } else {
-    console.warn(
-      '[pipedrive] PIPEDRIVE_CLIENT_ID/SECRET unset — refresh will likely 401',
+  if (!clientId) {
+    throw new Error(
+      'PIPEDRIVE_CLIENT_ID env var is required for OAuth token refresh',
     );
   }
+  if (!clientSecret) {
+    throw new Error(
+      'PIPEDRIVE_CLIENT_SECRET env var is required for OAuth token refresh',
+    );
+  }
+
+  const refreshBody = new URLSearchParams({
+    grant_type: 'refresh_token',
+    refresh_token: refreshToken,
+    client_id: clientId,
+    client_secret: clientSecret,
+  });
 
   const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams(refreshBody).toString(),
+    body: refreshBody.toString(),
   });
 
   if (!response.ok) {
+    const status = (response as Response & { status: number }).status;
+    let detail = '';
+    try {
+      detail = await (response as Response).text();
+    } catch {
+      // ignore — body may already be consumed or unavailable in test stubs
+    }
     throw new Error(
-      `Pipedrive token refresh failed for accountId ${accountId}: HTTP ${(response as Response & { status: number }).status}`
+      `Pipedrive token refresh failed for accountId ${accountId}: HTTP ${status}${detail ? ` — ${detail}` : ''}`,
     );
   }
 
