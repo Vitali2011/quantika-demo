@@ -9,6 +9,12 @@
 // Use in-memory SQLite for session tests so each jest.resetModules() starts fresh
 process.env.SESSIONS_DB_PATH = ':memory:';
 
+// spec-βf-18: Pipedrive OAuth refresh requires client credentials. Default these
+// so unit tests that exercise the refresh path don't have to set them
+// individually. Tests that specifically validate "missing env" delete them.
+process.env.PIPEDRIVE_CLIENT_ID = process.env.PIPEDRIVE_CLIENT_ID ?? 'test-client-id';
+process.env.PIPEDRIVE_CLIENT_SECRET = process.env.PIPEDRIVE_CLIENT_SECRET ?? 'test-client-secret';
+
 // Stub global fetch to prevent accidental real HTTP calls in unit tests.
 // Returns a non-ok response by default; individual tests mock as needed.
 global.fetch = jest.fn().mockResolvedValue({ ok: false }) as typeof global.fetch;
