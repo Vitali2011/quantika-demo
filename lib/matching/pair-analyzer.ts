@@ -411,7 +411,7 @@ export async function analyzePairs(
       sanctions: analysis.sanctions,
     };
 
-    const withReadiness = applyReadinessScoring(baseSweepMatch, analysis.readiness);
+    const withReadiness = applyReadinessScoring(baseSweepMatch, analysis.readiness, cargo, vessel);
 
     if (cargo && vessel) {
       withReadiness.scoreBreakdown = computeScoreBreakdown({
@@ -434,7 +434,13 @@ export async function analyzePairs(
       pairKey(m.cargoEmailId, m.cargoItemIndex, m.vesselEmailId, m.vesselItemIndex),
     );
     if (!analysis) return m;
-    const withReadiness = applyReadinessScoring(m, analysis.readiness);
+    const cargo = cargos.find(
+      (c) => c.emailId === m.cargoEmailId && c.itemIndex === m.cargoItemIndex,
+    );
+    const vessel = vessels.find(
+      (v) => v.emailId === m.vesselEmailId && v.itemIndex === m.vesselItemIndex,
+    );
+    const withReadiness = applyReadinessScoring(m, analysis.readiness, cargo, vessel);
     withReadiness.hardFilters = analysis.hardFilters;
     withReadiness.dateIssues = analysis.dateIssues;
     withReadiness.sanctions = analysis.sanctions;
@@ -448,12 +454,6 @@ export async function analyzePairs(
       ];
     }
 
-    const cargo = cargos.find(
-      (c) => c.emailId === m.cargoEmailId && c.itemIndex === m.cargoItemIndex,
-    );
-    const vessel = vessels.find(
-      (v) => v.emailId === m.vesselEmailId && v.itemIndex === m.vesselItemIndex,
-    );
     if (cargo && vessel) {
       withReadiness.scoreBreakdown = computeScoreBreakdown({
         match: withReadiness,
@@ -472,10 +472,21 @@ export async function analyzePairs(
   const allMatches: Match[] = [...llmMatches, ...sweepMatches];
 
   // Final score/level sync for any match with a scoreBreakdown
-  for (const m of allMatches) {
+  for (let i = 0; i < allMatches.length; i++) {
+    const m = allMatches[i];
     if (m.scoreBreakdown && typeof m.scoreBreakdown.finalScore === 'number') {
       m.score = Math.max(0, Math.min(100, m.scoreBreakdown.finalScore));
       m.matchLevel = deriveMatchLevel(m.score);
+      // Re-apply DWCC overload guard: breakdown finalScore can override the guard
+      // set in applyReadinessScoring. Pass existing readiness (null-safe) so the
+      // guard runs without altering readiness adjustments again.
+      const matchCargo = cargos.find(
+        (c) => c.emailId === m.cargoEmailId && c.itemIndex === m.cargoItemIndex,
+      );
+      const matchVessel = vessels.find(
+        (v) => v.emailId === m.vesselEmailId && v.itemIndex === m.vesselItemIndex,
+      );
+      allMatches[i] = applyReadinessScoring(m, undefined, matchCargo, matchVessel);
     }
   }
 
