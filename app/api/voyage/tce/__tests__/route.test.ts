@@ -1,14 +1,23 @@
 /**
- * βf-01 — distanceNm validation
+ * Tests for POST /api/voyage/tce
  *
- * Bug: POST /api/voyage/tce принимал отрицательную/нулевую distanceNm и считал
- * расчёт с мусорными значениями (bunker=0, total=0). Должен быть HTTP 400.
+ * Combines:
+ * - βf-01 — distanceNm validation: reject distanceNm <= 0 with 400.
+ * - βf-05 — vessel.type enum: accept 'mpp' alongside existing types.
  */
 
-import { POST } from '../route';
+jest.mock('@/lib/port-da/repository', () => ({
+  getPortDa: jest.fn().mockReturnValue(null),
+}));
+
+jest.mock('@/lib/economics/canals/index', () => ({
+  quoteCanal: jest.fn().mockReturnValue({ totalUsd: 0 }),
+}));
+
+import { POST } from '@/app/api/voyage/tce/route';
 import { NextRequest } from 'next/server';
 
-function makeRequest(body: unknown): NextRequest {
+function makeReq(body: unknown): NextRequest {
   return new NextRequest('http://localhost/api/voyage/tce', {
     method: 'POST',
     body: JSON.stringify(body),
@@ -16,34 +25,32 @@ function makeRequest(body: unknown): NextRequest {
   });
 }
 
-const validBase = {
+const baseValidBody = {
   vessel: {
-    dwt: 30000,
-    valueUsd: 25_000_000,
-    speedKts: 12,
+    dwt: 30_000,
+    valueUsd: 20_000_000,
+    speedKts: 13,
     consumptionMtPerDay: 25,
   },
   route: {
-    originPort: 'NLRTM',
-    destinationPort: 'SGSIN',
-    distanceNm: 10500,
+    originPort: 'AEJEA',
+    destinationPort: 'NLRTM',
+    distanceNm: 5000,
   },
   cargo: {
-    quantityMt: 28000,
+    quantityMt: 25_000,
     freightRateUsdPerMt: 50,
   },
   bunkerPriceUsdPerMt: 600,
   euaPriceEur: 80,
-  durationDays: 40,
-  canalUsd: 0,
-  daUsd: 0,
+  durationDays: 20,
 };
 
 describe('POST /api/voyage/tce — distanceNm validation (βf-01)', () => {
   it('rejects negative distanceNm with 400', async () => {
-    const req = makeRequest({
-      ...validBase,
-      route: { ...validBase.route, distanceNm: -100 },
+    const req = makeReq({
+      ...baseValidBody,
+      route: { ...baseValidBody.route, distanceNm: -100 },
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
@@ -52,9 +59,9 @@ describe('POST /api/voyage/tce — distanceNm validation (βf-01)', () => {
   });
 
   it('rejects distanceNm=0 with 400', async () => {
-    const req = makeRequest({
-      ...validBase,
-      route: { ...validBase.route, distanceNm: 0 },
+    const req = makeReq({
+      ...baseValidBody,
+      route: { ...baseValidBody.route, distanceNm: 0 },
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
@@ -62,8 +69,65 @@ describe('POST /api/voyage/tce — distanceNm validation (βf-01)', () => {
     expect(JSON.stringify(body)).toMatch(/distanceNm/i);
   });
 
-  it('accepts distanceNm=10500 (valid Rotterdam → Singapore via Suez)', async () => {
-    const req = makeRequest(validBase);
+  it('accepts valid distanceNm=5000 → 200', async () => {
+    const req = makeReq(baseValidBody);
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+  });
+});
+
+describe('POST /api/voyage/tce — vessel.type enum (βf-05)', () => {
+  it('accepts vessel.type:"mpp" → 200', async () => {
+    const req = makeReq({ ...baseValidBody, vessel: { ...baseValidBody.vessel, type: 'mpp' } });
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+  });
+
+  it('accepts vessel.type:"general" → 200 (existing behavior preserved)', async () => {
+    const req = makeReq({ ...baseValidBody, vessel: { ...baseValidBody.vessel, type: 'general' } });
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+  });
+
+  it('accepts vessel.type:"bulker" → 200', async () => {
+    const req = makeReq({ ...baseValidBody, vessel: { ...baseValidBody.vessel, type: 'bulker' } });
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+  });
+
+  it('accepts vessel.type:"tanker" → 200', async () => {
+    const req = makeReq({ ...baseValidBody, vessel: { ...baseValidBody.vessel, type: 'tanker' } });
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+  });
+
+  it('accepts vessel.type:"container" → 200', async () => {
+    const req = makeReq({ ...baseValidBody, vessel: { ...baseValidBody.vessel, type: 'container' } });
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+  });
+
+  it('rejects vessel.type:"unknown_xyz" with validation error', async () => {
+    const req = makeReq({
+      ...baseValidBody,
+      vessel: { ...baseValidBody.vessel, type: 'unknown_xyz' },
+    });
+    const res = await POST(req);
+    // Route currently returns 400 on Zod failure (spec narrative mentions 422,
+    // but changing the status code is out of scope for βf-05).
+    expect(res.status).not.toBe(200);
+    expect(res.status).toBeGreaterThanOrEqual(400);
+    expect(res.status).toBeLessThan(500);
+  });
+
+  it('rejects case-mismatched vessel.type:"MPP" (strict lowercase enum)', async () => {
+    const req = makeReq({ ...baseValidBody, vessel: { ...baseValidBody.vessel, type: 'MPP' } });
+    const res = await POST(req);
+    expect(res.status).not.toBe(200);
+  });
+
+  it('without vessel.type → 200 (defaults to bulker, existing behavior)', async () => {
+    const req = makeReq(baseValidBody);
     const res = await POST(req);
     expect(res.status).toBe(200);
   });
