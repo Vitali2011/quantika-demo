@@ -8,6 +8,7 @@ import { main } from '@/scripts/sentinel-scan';
 describe('β-09 sentinel-scan CLI', () => {
   let writes: string[] = [];
   let originalWrite: typeof process.stdout.write;
+  let originalDealsDbEnv: string | undefined;
 
   beforeEach(() => {
     writes = [];
@@ -16,10 +17,19 @@ describe('β-09 sentinel-scan CLI', () => {
       writes.push(typeof chunk === 'string' ? chunk : Buffer.from(chunk).toString());
       return true;
     }) as typeof process.stdout.write;
+    // βf-08: defaultDealsProvider now loads sample-data unless SENTINEL_DEALS_DB
+    // is set. These tests assert the "no deals" branch, so opt out explicitly.
+    originalDealsDbEnv = process.env.SENTINEL_DEALS_DB;
+    process.env.SENTINEL_DEALS_DB = ':memory:';
   });
 
   afterEach(() => {
     process.stdout.write = originalWrite;
+    if (originalDealsDbEnv === undefined) {
+      delete process.env.SENTINEL_DEALS_DB;
+    } else {
+      process.env.SENTINEL_DEALS_DB = originalDealsDbEnv;
+    }
   });
 
   it('returns exit code 0 on cron mode with no deals', async () => {
