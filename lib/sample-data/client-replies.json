@@ -50,8 +50,8 @@
     "to": "demo@quantika.org",
     "subject": "Re: Cargo MarSeille / TUnis — réponse",
     "date": "{{EMAIL_DATE}}",
-    "body": "RÃ©f: MÃ¼ller cargo â€\" 5,000 mts terminal piÃ¨ge dÃ©passÃ©. Pls confirm freight EUR 32/mt. Best, Henri DuprÃ©",
-    "snippet": "RÃ©f: MÃ¼ller cargo â€\" 5,000 mts terminal piÃ¨ge dÃ©passÃ©. Pls confirm freight EUR 32/mt.",
+    "body": "Réf: Müller cargo – 5,000 mts terminal piège dépassé. Pls confirm freight EUR 32/mt. Best, Henri Dupré",
+    "snippet": "Réf: Müller cargo – 5,000 mts terminal piège dépassé. Pls confirm freight EUR 32/mt.",
     "labelIds": ["INBOX"],
     "_meta": { "emailDateOffsetDays": -2 }
   }
