@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Copy, Check } from 'lucide-react';
+import { csrfFetch } from '@/lib/csrf-client';
 
 interface DraftQuoteCardProps {
   emailId: string;
@@ -22,9 +23,8 @@ export function DraftQuoteCard({ emailId }: DraftQuoteCardProps) {
     setLoadingQuote(true);
     setQuoteError('');
     try {
-      const res = await fetch('/api/ai/draft-quote', {
+      const res = await csrfFetch('/api/ai/draft-quote', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ emailId }),
       });
       const data = await res.json();
@@ -41,9 +41,8 @@ export function DraftQuoteCard({ emailId }: DraftQuoteCardProps) {
     setLoadingReply(true);
     setReplyError('');
     try {
-      const res = await fetch('/api/ai/draft-reply', {
+      const res = await csrfFetch('/api/ai/draft-reply', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ emailId }),
       });
       const data = await res.json();
