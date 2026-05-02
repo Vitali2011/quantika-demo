@@ -116,8 +116,11 @@ describe('compareRoutes — β-06', () => {
 
     expect(result.suez).toBeDefined();
     expect(result.cape).toBeDefined();
-    expect(result.recommendation.savings_usd).toBeGreaterThanOrEqual(0);
-    expect(result.recommendation.savings_days).toBeGreaterThanOrEqual(0);
+    // β-06 fix: savings_usd/savings_days are now SIGNED (positive=cheaper/faster,
+    // negative=more expensive/slower). Cape may win by daily TCE but be slower &
+    // more expensive total — broker MUST see that. Assert finite, not non-negative.
+    expect(Number.isFinite(result.recommendation.savings_usd)).toBe(true);
+    expect(Number.isFinite(result.recommendation.savings_days)).toBe(true);
   });
 
   it('savings_usd reflects the daily TCE delta × winner durationDays direction', async () => {
