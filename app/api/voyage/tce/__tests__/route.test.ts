@@ -120,10 +120,12 @@ describe('POST /api/voyage/tce — vessel.type enum (βf-05)', () => {
     expect(res.status).toBeLessThan(500);
   });
 
-  it('rejects case-mismatched vessel.type:"MPP" (strict lowercase enum)', async () => {
+  it('accepts case-mismatched vessel.type:"MPP" (βf2-04: case-insensitive preprocess)', async () => {
+    // βf2-04 changed the schema to preprocess with trim+toLowerCase,
+    // so uppercase/mixed-case inputs are now normalised and accepted.
     const req = makeReq({ ...baseValidBody, vessel: { ...baseValidBody.vessel, type: 'MPP' } });
     const res = await POST(req);
-    expect(res.status).not.toBe(200);
+    expect(res.status).toBe(200);
   });
 
   it('without vessel.type → 200 (defaults to bulker, existing behavior)', async () => {

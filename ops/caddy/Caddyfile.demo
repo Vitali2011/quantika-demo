@@ -1,0 +1,5 @@
+demo.quantika.org {
+    encode gzip zstd
+    header /api/* Cache-Control "no-store"
+    reverse_proxy localhost:3000
+}

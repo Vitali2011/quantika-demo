@@ -157,50 +157,94 @@ export function deriveMatchLevel(score: number): MatchLevel {
 }
 
 /**
+ * Apply DWCC overload hard guard.
+ *
+ * If cargo maximum weight exceeds vessel DWCC (deadweight cargo capacity at
+ * design draft), the match is physically impossible to load. Regardless of the
+ * aggregate score, the tier is forced to 'weak', score is capped at 35, and an
+ * OVERLOAD warning is appended to issues.
+ *
+ * Pure function — safe to call repeatedly; only mutates a shallow copy.
+ */
+export function applyOverloadGuard(
+  match: Match,
+  cargo: ParsedCargo | null | undefined,
+  vessel: ParsedVessel | null | undefined,
+): Match {
+  const dwcc = vessel ? cfValue(vessel.dwcc) : null;
+  const weightMax = cargo?.weightMtMax ?? (cargo ? cfValue(cargo.weightMt) : null);
+  if (dwcc != null && dwcc > 0 && weightMax != null && weightMax > dwcc) {
+    const updated: Match = { ...match };
+    updated.matchLevel = 'weak';
+    updated.score = Math.min(updated.score, 35);
+    const issue = `OVERLOAD: cargo ${weightMax}mt exceeds vessel DWCC ${dwcc}mt`;
+    updated.issues = Array.isArray(updated.issues) ? [...updated.issues, issue] : [issue];
+    return updated;
+  }
+  return match;
+}
+
+/**
  * Apply readiness-based score adjustment + add contextual issue text.
  *
  * Pure function — extracted here (rather than inlined in the route) so Next.js
  * doesn't reject it as a non-standard route export, and so it's independently
  * unit-testable.
+ *
+ * Optional cargo/vessel parameters enable the DWCC overload hard guard to run
+ * in the same pass as readiness scoring.
  */
-export function applyReadinessScoring(match: Match, readiness: MatchReadiness | undefined): Match {
-  if (!readiness) return match;
-  const updated: Match = { ...match, readiness };
+export function applyReadinessScoring(
+  match: Match,
+  readiness: MatchReadiness | undefined,
+  cargo?: ParsedCargo | null,
+  vessel?: ParsedVessel | null,
+): Match {
+  let updated: Match;
 
-  switch (readiness.verdict) {
-    case 'ideal':
-      updated.score = Math.min(100, match.score + 10);
-      break;
-    case 'idle': {
-      updated.score = Math.max(0, match.score - 15);
-      const days = readiness.gapDays != null ? Math.round(readiness.gapDays) : null;
-      const issue = days != null
-        ? `Vessel idle ${days}d before laycan — owner likely won't wait unpaid`
-        : 'Vessel idle for several days before laycan — check willingness to hold';
-      updated.issues = Array.isArray(match.issues) ? [...match.issues, issue] : [issue];
-      break;
+  if (!readiness) {
+    // No readiness data — still apply overload guard if cargo/vessel available
+    updated = { ...match };
+  } else {
+    updated = { ...match, readiness };
+
+    switch (readiness.verdict) {
+      case 'ideal':
+        updated.score = Math.min(100, match.score + 10);
+        break;
+      case 'idle': {
+        updated.score = Math.max(0, match.score - 15);
+        const days = readiness.gapDays != null ? Math.round(readiness.gapDays) : null;
+        const issue = days != null
+          ? `Vessel idle ${days}d before laycan — owner likely won't wait unpaid`
+          : 'Vessel idle for several days before laycan — check willingness to hold';
+        updated.issues = Array.isArray(match.issues) ? [...match.issues, issue] : [issue];
+        break;
+      }
+      case 'late': {
+        // Safety net — hard filter should drop these, but if LLM returned one anyway, penalize heavily
+        updated.score = Math.max(0, match.score - 30);
+        const days = readiness.gapDays != null ? Math.abs(Math.round(readiness.gapDays)) : null;
+        const issue = days != null
+          ? `Vessel arrives ${days}d after laycan start — misses window`
+          : 'Vessel arrives after laycan start';
+        updated.issues = Array.isArray(match.issues) ? [...match.issues, issue] : [issue];
+        break;
+      }
+      case 'tight':
+      case 'unknown':
+      default:
+        // no score adjustment
+        break;
     }
-    case 'late': {
-      // Safety net — hard filter should drop these, but if LLM returned one anyway, penalize heavily
-      updated.score = Math.max(0, match.score - 30);
-      const days = readiness.gapDays != null ? Math.abs(Math.round(readiness.gapDays)) : null;
-      const issue = days != null
-        ? `Vessel arrives ${days}d after laycan start — misses window`
-        : 'Vessel arrives after laycan start';
-      updated.issues = Array.isArray(match.issues) ? [...match.issues, issue] : [issue];
-      break;
-    }
-    case 'tight':
-    case 'unknown':
-    default:
-      // no score adjustment
-      break;
+
+    // Recalculate matchLevel from adjusted score
+    updated.matchLevel = (updated.score > 70 ? 'good' : updated.score > 40 ? 'possible' : 'weak') as MatchLevel;
   }
 
-  // Recalculate matchLevel from adjusted score
-  updated.matchLevel = (updated.score > 70 ? 'good' : updated.score > 40 ? 'possible' : 'weak') as MatchLevel;
-
-  return updated;
+  // DWCC overload hard guard — must run after score/level adjustment so it
+  // cannot be overridden by the readiness bonus (e.g. ideal +10 pts).
+  return applyOverloadGuard(updated, cargo, vessel);
 }
 
 // ────────────────────────────────────────────────────────────────────────────

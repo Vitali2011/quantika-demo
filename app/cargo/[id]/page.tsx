@@ -13,6 +13,34 @@ import { AnalyticsTracker } from '@/lib/analytics-tracker';
 import { ClickableField } from '@/components/clickable-field';
 import { safeRender, getConf, ConfIcon } from '@/lib/ui-render';
 
+/**
+ * βf2-02: Normalise specialRequirements before rendering.
+ * The LLM parser sometimes returns an array of objects ({label, name, ...})
+ * instead of the typed `string | null`. Coerce to readable text so the user
+ * never sees "[object Object]" on the cargo page.
+ *
+ * Exported for unit testing (pure function, no React dependencies).
+ */
+export function renderSpecialRequirements(
+  value: unknown,
+): string {
+  if (value == null) return '';
+  if (typeof value === 'string') return value;
+  if (Array.isArray(value)) {
+    if (value.length === 0) return '';
+    return value
+      .map((it) =>
+        typeof it === 'string'
+          ? it
+          : (it as Record<string, unknown>).label ??
+            (it as Record<string, unknown>).name ??
+            JSON.stringify(it),
+      )
+      .join(', ');
+  }
+  return safeRender(value as Parameters<typeof safeRender>[0]);
+}
+
 interface Props {
   params: Promise<{ id: string }>;
 }
@@ -209,7 +237,7 @@ export default async function CargoDetailPage({ params }: Props) {
                     <div className="flex items-center gap-2 text-sm">
                       <AlertTriangle className="h-4 w-4 text-muted-foreground" />
                       <span className="font-medium">Special:</span>
-                      {safeRender(cargo.specialRequirements)}
+                      {renderSpecialRequirements(cargo.specialRequirements)}
                       <ConfIcon confidence={getConf(cargo.specialRequirements)} />
                     </div>
                   )}
