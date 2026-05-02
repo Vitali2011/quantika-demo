@@ -77,6 +77,11 @@ Extract per vessel:
 - crane_capacity: e.g. "4 x 30T"
 - hatch_type: e.g. MacGregor, folding, pontoon
 - vessel_type: e.g. BULK CARRIER, MPP, GENERAL CARGO, CONTAINER, RORO, TANKER
+- cii_rating: IMO Carbon Intensity Indicator grade. One of "A" | "B" | "C" | "D" | "E" | null.
+  IMPORTANT: CII rating frequently appears ONLY in the subject line as
+  "CII Grade X", "CII X", or "IMO CII Grade X" — always check the Subject:
+  header in addition to the body. Do not return "unknown" or any free-text;
+  if not present return null. Plain field (not a ConfidenceField object).
 - open_position: port or area where vessel is/will be available
 - open_date: date vessel is available
 - direction: intended trading direction (e.g. "seeking Far East", "open for Middle East/India")

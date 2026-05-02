@@ -128,3 +128,73 @@ describe('parseVesselAIResponse', () => {
     expect(results[0].imo).toBeNull();
   });
 });
+
+// ── CII rating extraction (βf-12) ─────────────────────────────────────────────
+
+describe('parseVesselAIResponse — CII rating from subject', () => {
+  it('CARBON LADY (subject "MV CARBON LADY — CII Grade D") → cii_rating=D when LLM omits it', () => {
+    const raw = JSON.stringify({
+      vessel_name: { value: 'CARBON LADY', confidence: 'confirmed' },
+      dwt_summer: { value: 32000, confidence: 'confirmed' },
+      restrictions: [],
+      special_features: [],
+    });
+    const subject = 'MV CARBON LADY — CII Grade D — open Lagos prompt';
+    const results = parseVesselAIResponse(raw, 'email-c1', subject);
+    expect(results).toHaveLength(1);
+    expect(results[0].vesselName?.value).toMatch(/CARBON LADY/i);
+    expect(results[0].ciiRating).toBe('D');
+  });
+
+  it('subject-only CII Grade extraction (no body match) — still extracted', () => {
+    const raw = JSON.stringify({
+      vessel_name: { value: 'TEST VESSEL', confidence: 'confirmed' },
+      restrictions: [],
+      special_features: [],
+    });
+    const subject = 'MV TEST VESSEL — CII Grade B — looking for next';
+    const results = parseVesselAIResponse(raw, 'email-c2', subject);
+    expect(results[0].ciiRating).toBe('B');
+  });
+
+  it('LLM-provided cii_rating wins (no override from subject)', () => {
+    const raw = JSON.stringify({
+      vessel_name: { value: 'CONFLICT', confidence: 'confirmed' },
+      cii_rating: 'A',
+      restrictions: [],
+      special_features: [],
+    });
+    const subject = 'MV CONFLICT — CII Grade D — somewhere';
+    const results = parseVesselAIResponse(raw, 'email-c3', subject);
+    expect(results[0].ciiRating).toBe('A');
+  });
+
+  it('no CII in email — ciiRating is null (not "unknown")', () => {
+    const raw = JSON.stringify({
+      vessel_name: { value: 'PLAIN', confidence: 'confirmed' },
+      restrictions: [],
+      special_features: [],
+    });
+    const subject = 'MV PLAIN — open Antwerp';
+    const results = parseVesselAIResponse(raw, 'email-c4', subject);
+    expect(results[0].ciiRating).toBeNull();
+  });
+
+  it('matches "CII D" without "Grade" keyword', () => {
+    const raw = JSON.stringify({ vessel_name: { value: 'X', confidence: 'confirmed' }, restrictions: [], special_features: [] });
+    const results = parseVesselAIResponse(raw, 'e', 'MV X — CII D — Lagos');
+    expect(results[0].ciiRating).toBe('D');
+  });
+
+  it('does not match invalid letter (CII F)', () => {
+    const raw = JSON.stringify({ vessel_name: { value: 'X', confidence: 'confirmed' }, restrictions: [], special_features: [] });
+    const results = parseVesselAIResponse(raw, 'e', 'MV X — CII F — Lagos');
+    expect(results[0].ciiRating).toBeNull();
+  });
+
+  it('lowercase grade in subject normalises to uppercase', () => {
+    const raw = JSON.stringify({ vessel_name: { value: 'X', confidence: 'confirmed' }, restrictions: [], special_features: [] });
+    const results = parseVesselAIResponse(raw, 'e', 'MV X — cii grade c — open');
+    expect(results[0].ciiRating).toBe('C');
+  });
+});
