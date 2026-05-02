@@ -33,13 +33,13 @@ Email (Gmail API)
   → recap       — сформировать краткую сводку для диспетчера
 ```
 
-| Route | Описание |
-|-------|----------|
-| `GET  /api/auth/google` | Инициализация OAuth-флоу |
-| `GET  /api/auth/google/callback` | OAuth callback, создание сессии |
-| `GET  /api/emails` | Список обработанных писем |
-| `POST /api/emails/process` | Запустить обработку входящих |
-| `GET  /api/health` | Healthcheck (`{"status":"ok","uptime":...}`) |
+| Route                            | Описание                                     |
+| -------------------------------- | -------------------------------------------- |
+| `GET  /api/auth/google`          | Инициализация OAuth-флоу                     |
+| `GET  /api/auth/google/callback` | OAuth callback, создание сессии              |
+| `GET  /api/emails`               | Список обработанных писем                    |
+| `POST /api/emails/process`       | Запустить обработку входящих                 |
+| `GET  /api/health`               | Healthcheck (`{"status":"ok","uptime":...}`) |
 
 ## Testing
 
@@ -67,19 +67,19 @@ Hot-reload активен. Изменения в `app/` и `lib/` применя
 
 Скопируй `.env.local.example` → `.env.local` и заполни:
 
-| Переменная | Обязательна | Описание |
-|-----------|-------------|----------|
-| `GOOGLE_CLIENT_ID` | required | Google OAuth 2.0 client ID |
-| `GOOGLE_CLIENT_SECRET` | required | Google OAuth 2.0 client secret |
-| `CLIPROXY_API_KEY` | required | ClipProxy API key (Claude bridge) |
-| `CLIPROXY_BASE_URL` | optional | default: `http://localhost:8317/v1` |
-| `AI_MODEL_HEAVY` | optional | Модель для тяжёлых задач (по умолчанию: claude-opus-*) |
-| `AI_MODEL_LIGHT` | optional | Модель для лёгких задач (по умолчанию: claude-haiku-*) |
-| `NEXT_PUBLIC_APP_URL` | optional | Публичный URL приложения |
-| `SENTRY_DSN` | optional | Server-side error tracking |
-| `NEXT_PUBLIC_SENTRY_DSN` | optional | Client-side error tracking |
-| `NEXT_PUBLIC_POSTHOG_KEY` | optional | Analytics |
-| `SESSIONS_DB_PATH` | optional | Путь к SQLite, default: `./data/sessions.db` |
+| Переменная                | Обязательна | Описание                                                |
+| ------------------------- | ----------- | ------------------------------------------------------- |
+| `GOOGLE_CLIENT_ID`        | required    | Google OAuth 2.0 client ID                              |
+| `GOOGLE_CLIENT_SECRET`    | required    | Google OAuth 2.0 client secret                          |
+| `CLIPROXY_API_KEY`        | required    | ClipProxy API key (Claude bridge)                       |
+| `CLIPROXY_BASE_URL`       | optional    | default: `http://localhost:8317/v1`                     |
+| `AI_MODEL_HEAVY`          | optional    | Модель для тяжёлых задач (по умолчанию: claude-opus-\*) |
+| `AI_MODEL_LIGHT`          | optional    | Модель для лёгких задач (по умолчанию: claude-haiku-\*) |
+| `NEXT_PUBLIC_APP_URL`     | optional    | Публичный URL приложения                                |
+| `SENTRY_DSN`              | optional    | Server-side error tracking                              |
+| `NEXT_PUBLIC_SENTRY_DSN`  | optional    | Client-side error tracking                              |
+| `NEXT_PUBLIC_POSTHOG_KEY` | optional    | Analytics                                               |
+| `SESSIONS_DB_PATH`        | optional    | Путь к SQLite, default: `./data/sessions.db`            |
 
 ## Docker
 
@@ -92,15 +92,27 @@ docker compose up --build
 ## Docker
 
 **Production build:**
+
 ```bash
 docker build -t quantika-demo .
 docker run -p 3000:3000 --env-file .env.local quantika-demo
 ```
 
 **Local dev (hot-reload):**
+
 ```bash
 docker compose up
 ```
+
+## Deploy
+
+На VPS:
+
+```bash
+bash scripts/deploy-vps.sh
+```
+
+Скрипт делает: git pull → npm ci → build → install Caddy config → seed port-DA → pm2 reload → health check. Idempotent — повторный запуск безопасен.
 
 ## Deployment
 
