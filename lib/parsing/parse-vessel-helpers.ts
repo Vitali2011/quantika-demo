@@ -39,7 +39,25 @@ interface RawVesselItem {
   consumption?: string | null;
   deck_capacity?: string | null;
   special_features?: string[];
+  cii_rating?: string | null;
   items?: RawVesselItem[];
+}
+
+/**
+ * Extract IMO CII rating (A-E) from a subject line.
+ * Patterns: "CII Grade D", "CII D", "Grade D" (when in CII context).
+ * Returns uppercase letter or null.
+ */
+export function extractCiiFromSubject(subject: string | null | undefined): 'A' | 'B' | 'C' | 'D' | 'E' | null {
+  if (!subject) return null;
+  // Require "CII" to disambiguate from other "Grade X" usages.
+  const m = subject.match(/CII\s*(?:Grade\s*)?([A-E])\b/i);
+  if (!m) return null;
+  const letter = m[1].toUpperCase();
+  if (letter === 'A' || letter === 'B' || letter === 'C' || letter === 'D' || letter === 'E') {
+    return letter;
+  }
+  return null;
 }
 
 /** Extract plain string from a value that may be a ConfidenceField object or a plain string */
@@ -54,11 +72,33 @@ export function buildVesselPrompt(email: Email): string {
   return `From: ${email.from}\nSubject: ${email.subject}\nDate: ${email.date}\n\n${email.body}`;
 }
 
+/** Normalise an LLM-provided cii_rating value to A-E or null. */
+function normaliseCii(v: unknown): 'A' | 'B' | 'C' | 'D' | 'E' | null {
+  if (v == null) return null;
+  let s: string;
+  if (typeof v === 'object' && 'value' in v) {
+    const inner = (v as { value: unknown }).value;
+    if (inner == null) return null;
+    s = String(inner);
+  } else {
+    s = String(v);
+  }
+  const upper = s.trim().toUpperCase();
+  if (upper === 'A' || upper === 'B' || upper === 'C' || upper === 'D' || upper === 'E') {
+    return upper;
+  }
+  return null;
+}
+
 /**
  * Parse a raw AI JSON response string into ParsedVessel records.
  * Returns [] on malformed JSON or empty items.
+ *
+ * @param subject — optional email subject. When provided, the parser
+ *   falls back to a regex extraction of CII rating from the subject line
+ *   if the LLM did not return one. LLM-provided value always wins.
  */
-export function parseVesselAIResponse(raw: string, emailId: string): ParsedVessel[] {
+export function parseVesselAIResponse(raw: string, emailId: string, subject?: string | null): ParsedVessel[] {
   let result: RawVesselItem;
   try {
     const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
@@ -151,6 +191,7 @@ export function parseVesselAIResponse(raw: string, emailId: string): ParsedVesse
       consumption: item.consumption || null,
       deckCapacity: item.deck_capacity || null,
       specialFeatures: Array.isArray(item.special_features) ? item.special_features : [],
+      ciiRating: normaliseCii(item.cii_rating) ?? extractCiiFromSubject(subject),
       verificationWarning: null,
     }) as ParsedVessel);
   });

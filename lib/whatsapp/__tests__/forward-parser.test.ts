@@ -181,6 +181,90 @@ describe('parseForwardedMessage', () => {
     expect(mockCallAiJson).not.toHaveBeenCalled();
   });
 
+  // βf-17: empty rawText guard (BUG-β-stab-03-EmptyRawText) — skip AI call for empty/whitespace
+  it('βf-17: image OCR returns "" → uncertain БЕЗ AI call', async () => {
+    mockExtractTextFromImage.mockResolvedValue('');
+
+    const msg = makeMessage({
+      type: 'image',
+      image: { id: 'media-img-empty', mime_type: 'image/jpeg', sha256: 'xyz' },
+    });
+
+    const result = await parseForwardedMessage(msg, client as never);
+
+    expect(result.confidence).toBe('uncertain');
+    expect(result.missingFields).toContain('empty rawText');
+    expect(result.rawText).toBe('');
+    expect(mockExtractTextFromImage).toHaveBeenCalledTimes(1);
+    // Critical: AI must NOT be called — wastes OpenAI quota
+    expect(mockCallAiJson).not.toHaveBeenCalled();
+  });
+
+  it('βf-17: audio transcription returns "   " (whitespace) → uncertain, no AI call', async () => {
+    mockTranscribeAudio.mockResolvedValue({
+      text: '   ',
+      language: 'en',
+    });
+
+    const msg = makeMessage({
+      type: 'audio',
+      audio: { id: 'media-audio-empty', mime_type: 'audio/ogg', sha256: 'ws' },
+    });
+
+    const result = await parseForwardedMessage(msg, client as never);
+
+    expect(result.confidence).toBe('uncertain');
+    expect(result.missingFields).toContain('empty rawText');
+    expect(result.rawText).toBe('');
+    expect(mockTranscribeAudio).toHaveBeenCalledTimes(1);
+    expect(mockCallAiJson).not.toHaveBeenCalled();
+  });
+
+  it('βf-17: PDF extract returns "\\n\\t  \\n" → uncertain, no AI call', async () => {
+    mockExtractTextFromPdf.mockResolvedValue('\n\t  \n');
+
+    const msg = makeMessage({
+      type: 'document',
+      document: { id: 'media-doc-empty', mime_type: 'application/pdf', sha256: 'pdf' },
+    });
+
+    const result = await parseForwardedMessage(msg, client as never);
+
+    expect(result.confidence).toBe('uncertain');
+    expect(result.missingFields).toContain('empty rawText');
+    expect(mockExtractTextFromPdf).toHaveBeenCalledTimes(1);
+    expect(mockCallAiJson).not.toHaveBeenCalled();
+  });
+
+  it('βf-17: empty text body → uncertain, no AI call (sanity)', async () => {
+    const msg = makeMessage({
+      type: 'text',
+      text: { body: '   \t  ' },
+    });
+
+    const result = await parseForwardedMessage(msg, client as never);
+
+    expect(result.confidence).toBe('uncertain');
+    expect(result.missingFields).toContain('empty rawText');
+    expect(mockCallAiJson).not.toHaveBeenCalled();
+  });
+
+  it('βf-17: valid rawText still triggers AI call (happy path не сломан)', async () => {
+    mockExtractTextFromImage.mockResolvedValue('OCR: 5000 mt wheat Novorossiysk to Alexandria');
+
+    const msg = makeMessage({
+      type: 'image',
+      image: { id: 'media-img-good', mime_type: 'image/jpeg', sha256: 'good' },
+    });
+
+    const result = await parseForwardedMessage(msg, client as never);
+
+    expect(result.rawText).toBe('OCR: 5000 mt wheat Novorossiysk to Alexandria');
+    expect(mockCallAiJson).toHaveBeenCalledTimes(1);
+    // Confidence should NOT be uncertain-due-to-empty (AI returned valid cargo)
+    expect(result.missingFields).not.toContain('empty rawText');
+  });
+
   // F33-F2: TANKER keyword → should fall back to BULK (no TANKER in CargoType enum)
   it('F33-F2: "Crude oil tanker, 100kt" text → cargoType falls back to BULK, no TANKER in output', async () => {
     mockCallAiJson.mockResolvedValue({

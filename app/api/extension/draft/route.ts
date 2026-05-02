@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import sanitizeHtml from 'sanitize-html';
 import { requireSession } from '@/lib/session';
+import { sanitizeForCompose } from '@/extensions/gmail/inserts/sanitize';
 import type { ParsedCargo } from '@/lib/types';
 
 interface DraftRequestBody {
@@ -21,29 +21,13 @@ const MAX_SUBJECT = 200;
 const MAX_BODY = 50_000;
 
 /**
- * Strip dangerous HTML constructs via allow-list parser (sanitize-html).
- * Replaces a fragile blacklist (BUG-β-stab-04-XSSBypass) with an HTML parser
- * that drops any tag/attribute outside an explicit allow-list. Closes
- * <iframe>, <object>, <embed>, <style>, slash-form attribute event handlers,
- * entity-encoded `javascript:` and CRLF-broken schemes — all of which the
- * old regex sanitizer let through.
+ * Strip dangerous HTML constructs via the centralized allow-list sanitizer
+ * (BUG-β-13-XSS / BUG-β-stab-04-XSSBypass). Delegates to sanitizeForCompose
+ * so the compose surface and the draft API share a single allow-list, and
+ * the old fragile regex blacklist is gone.
  */
 function stripDangerousTags(html: string): string {
-  return sanitizeHtml(html, {
-    allowedTags: [
-      'p', 'br', 'strong', 'em', 'b', 'i', 'u',
-      'ul', 'ol', 'li',
-      'a', 'span', 'div',
-      'table', 'thead', 'tbody', 'tr', 'th', 'td',
-    ],
-    allowedAttributes: {
-      a: ['href', 'title'],
-      '*': ['class'],
-    },
-    allowedSchemes: ['http', 'https', 'mailto'],
-    allowedSchemesAppliedToAttributes: ['href'],
-    disallowedTagsMode: 'discard',
-  });
+  return sanitizeForCompose(html);
 }
 
 /**

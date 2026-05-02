@@ -1,0 +1,81 @@
+plan_id: beta-fixes
+integration_branch: claude/wave-beta-fixes
+base_commit: 022e785
+description: "Wave β fixes — 21 specs from E2E smoke + browser + adversarial reports"
+created: 2026-05-01
+
+qa:
+  enabled: true
+  soft_block: true
+  test_rewrite_threshold: 50
+  per_spec_adversarial: true   # Two-Agent Model — clean session
+
+defaults:
+  test_command: "caffeinate -ids npm test -- --silent"
+  lint_command: "npm run lint"
+  build_command: "caffeinate -ids npm run build"
+  type_check_command: "npx tsc --noEmit"
+  commit_format: "fix(βf-NN-slug): ..."
+
+waves:
+  - id: B1-economics
+    parallel: true
+    description: "API economics safety"
+    specs:
+      - spec-betafix-01-distance-nm-validation
+      - spec-betafix-02-l5c-fail-closed
+      - spec-betafix-03-port-da-wiring
+      - spec-betafix-04-war-risk-gate-and-rate
+      - spec-betafix-05-mpp-enum-extension
+      - spec-betafix-06-savings-days-exposure
+    overlap_notes:
+      - "spec-01+05 both touch app/api/voyage/tce/route.ts → sequential merge (01 → 05)"
+      - "spec-03+04 both touch lib/economics/voyage-calculator.ts (different applicable.* gates) → sequential merge (03 → 04)"
+
+  - id: B2-endpoints
+    parallel: true
+    description: "Missing endpoints / scripts"
+    specs:
+      - spec-betafix-07-vessel-imo-endpoint
+      - spec-betafix-08-sentinel-deals-provider
+      - spec-betafix-09-fixture-13-or-script
+      - spec-betafix-10-auto-prequote-demo-wire
+      - spec-betafix-11-parse-cargo-timeout
+      - spec-betafix-12-vessel-cii-parse
+    overlap_notes: []
+
+  - id: B3-ui-blockers
+    parallel: true
+    description: "UI prod-blockers"
+    specs:
+      - spec-betafix-13-react-418-hydration
+      - spec-betafix-14-csrf-draft-quote-client
+
+  - id: B4-adversarial
+    parallel: true
+    description: "Adversarial security/state CRIT+HIGH"
+    specs:
+      - spec-betafix-15-gmail-extension-xss
+      - spec-betafix-16-plan-first-cache-replay
+      - spec-betafix-17-empty-rawtext-guard
+      - spec-betafix-18-pipedrive-oauth-refresh
+      - spec-betafix-19-parse-position-nan
+      - spec-betafix-20-passport-nan-guards
+      - spec-betafix-21-queue-guards-verify
+    overlap_notes:
+      - "spec-15+20 both touch extensions/gmail/inserts/passport.ts (15: esc helper; 20: toLocaleString sites) → sequential merge (15 → 20)"
+
+acceptance:
+  test_count_floor: 1721
+  lint_errors: 0
+  type_errors: 0
+  build: success
+  smoke_re_run:
+    - "POST /api/voyage/tce {distanceNm:-100} → 400"
+    - "GET /api/vessel/9322180 → 200 + JSON+CII"
+    - "L5C unknown pair → compatible:false"
+    - "Click Draft Quote → не 403"
+    - "Browser console hydration errors = 0"
+
+deploy_gate: manual_approval
+deploy_target: "ssh root@185.249.225.169 (PM2 quantika-demo :3000)"

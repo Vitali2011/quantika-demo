@@ -4,6 +4,7 @@ export interface CompatibilityResult {
   compatible: boolean;
   warnings: string[];
   requires_extra_clean: boolean;
+  requires_manual_review: boolean;
   blocking_pairs: Array<{ previous: string; reason: string }>;
 }
 
@@ -44,18 +45,31 @@ export function checkCompatibility(
   newCargo: string
 ): CompatibilityResult {
   if (!newCargo?.trim() || prevCargoes.length === 0) {
-    return { compatible: true, warnings: [], requires_extra_clean: false, blocking_pairs: [] };
+    return {
+      compatible: true,
+      warnings: [],
+      requires_extra_clean: false,
+      requires_manual_review: false,
+      blocking_pairs: [],
+    };
   }
 
   const blocking_pairs: Array<{ previous: string; reason: string }> = [];
   const warnings: string[] = [];
   let requires_extra_clean = false;
+  let requires_manual_review = false;
 
   for (const prev of prevCargoes) {
     if (!prev?.trim()) continue;
     const pair = lookupPair(prev, newCargo);
     if (!pair) {
-      warnings.push(`No L5C data for ${normalize(prev)}→${normalize(newCargo)}`);
+      // Fail-closed: unknown pair → manual surveyor review required.
+      // Rationale: matrix is incomplete; treating "no data" as "OK" is fail-open
+      // and risks cargo contamination claim / P&I dispute (BUG-09).
+      const reason = `No L5C data for ${normalize(prev)}→${normalize(newCargo)} — manual surveyor review required`;
+      warnings.push(reason);
+      requires_manual_review = true;
+      blocking_pairs.push({ previous: prev.trim(), reason });
       continue;
     }
     if (!pair.compatible) {
@@ -67,7 +81,7 @@ export function checkCompatibility(
   }
 
   const compatible = blocking_pairs.length === 0;
-  return { compatible, warnings, requires_extra_clean, blocking_pairs };
+  return { compatible, warnings, requires_extra_clean, requires_manual_review, blocking_pairs };
 }
 
 export function parseLastCargoes(raw: string | null): string[] {

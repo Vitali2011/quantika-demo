@@ -206,6 +206,12 @@ export interface ParsedVessel {
   deckCapacity: string | null;
   specialFeatures: string[];
   /**
+   * IMO CII rating (Carbon Intensity Indicator) — A-E grade.
+   * Often appears only in subject line ("CII Grade D"), so parser
+   * post-processes subject as a backup when LLM omits the field.
+   */
+  ciiRating?: 'A' | 'B' | 'C' | 'D' | 'E' | null;
+  /**
    * Human-readable warning about external-registry verification — e.g.
    * "Name mismatch: Equasis says X, email says Y" or "IMO not found in Equasis registry".
    * Null when verification passed or was not attempted.

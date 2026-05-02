@@ -127,7 +127,10 @@ export function calculateTCE(input: VoyageInput): TCEResult {
     daysInHra,
   });
   const warRiskUsd = Math.round(warResult.premiumUsd);
-  const warRiskApplicable = warRiskUsd > 0;
+  // βf-04: gate on calculator-reported applicability, not USD > 0.
+  // A matched HRA zone is "applicable" even if (in degenerate edge cases)
+  // the rounded premium were zero — so downstream UI surfaces the warning.
+  const warRiskApplicable = warResult.applicable;
 
   // ── EU ETS ────────────────────────────────────────────────────────────
   const vlsfoBurnMt = totalBunkerMt;

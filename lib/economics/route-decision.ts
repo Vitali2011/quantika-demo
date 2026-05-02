@@ -20,8 +20,72 @@ export interface RouteCompareLeg {
 export interface RouteRecommendation {
   route: 'suez' | 'cape';
   reason: string;
+  /**
+   * Signed: positive когда winner cheaper by total_usd, negative если winner more expensive
+   * (winner может быть дороже total-wise но выигрывать по daily_tce).
+   */
+  savings_usd: number;
+  /**
+   * Signed: positive если winner faster than alternative, negative если winner slower.
+   * Replaces previous Math.max(0, ...) clamp which hid time penalty for broker.
+   */
+  savings_days: number;
+  /**
+   * Convenience: max(0, -savings_days). >0 когда winner slower (broker time penalty).
+   */
+  extra_days_winner: number;
+  /**
+   * Daily TCE delta on the same axis as winner decision (winner picked by daily_tce).
+   */
+  savings_usd_per_day: number;
+}
+
+/**
+ * Pure inputs for {@link decideRoute} — no dependence on TCE breakdown internals.
+ */
+export interface DecideRouteLeg {
+  durationDays: number;
+  dailyTceUsd: number;
+  totalUsd: number;
+}
+
+export interface DecideRouteInput {
+  suez: DecideRouteLeg;
+  cape: DecideRouteLeg;
+}
+
+export interface DecideRouteOutput {
+  route: 'suez' | 'cape';
   savings_usd: number;
   savings_days: number;
+  extra_days_winner: number;
+  savings_usd_per_day: number;
+}
+
+/**
+ * Pure recommendation logic — picks winner by daily TCE and exposes signed deltas.
+ *
+ * Contract:
+ * - Winner is picked by `dailyTceUsd` (suez wins ties).
+ * - `savings_days = loser.duration - winner.duration` — SIGNED. Positive если winner faster.
+ * - `extra_days_winner = max(0, -savings_days)` — broker-facing time penalty.
+ * - `savings_usd = loser.totalUsd - winner.totalUsd` — SIGNED (positive если winner cheaper total).
+ * - `savings_usd_per_day = (winner.dailyTceUsd - loser.dailyTceUsd) * winner.durationDays`.
+ */
+export function decideRoute(input: DecideRouteInput): DecideRouteOutput {
+  const { suez, cape } = input;
+  const route: 'suez' | 'cape' = suez.dailyTceUsd >= cape.dailyTceUsd ? 'suez' : 'cape';
+  const winner = route === 'suez' ? suez : cape;
+  const loser = route === 'suez' ? cape : suez;
+
+  const savings_days = Math.round((loser.durationDays - winner.durationDays) * 10) / 10;
+  const extra_days_winner = savings_days < 0 ? Math.round(-savings_days * 10) / 10 : 0;
+  const savings_usd = Math.round(loser.totalUsd - winner.totalUsd);
+  const savings_usd_per_day = Math.round(
+    (winner.dailyTceUsd - loser.dailyTceUsd) * winner.durationDays,
+  );
+
+  return { route, savings_usd, savings_days, extra_days_winner, savings_usd_per_day };
 }
 
 export interface RouteCompareResult {
@@ -117,11 +181,16 @@ function templateReason(
   savingsUsd: number,
   savingsDays: number,
 ): string {
-  const verb = savingsDays >= 0 ? 'saves' : 'costs';
-  const days = Math.abs(savingsDays);
-  return `${winner === 'suez' ? 'Suez' : 'Cape'} ${verb} $${Math.round(
-    savingsUsd,
-  ).toLocaleString('en-US')} and ${days} days vs alternative.`;
+  const winnerName = winner === 'suez' ? 'Suez' : 'Cape';
+  const usdAbs = Math.abs(Math.round(savingsUsd)).toLocaleString('en-US');
+  const usdVerb = savingsUsd >= 0 ? 'saves' : 'costs';
+  const daysAbs = Math.abs(savingsDays);
+  // Broker MUST see direction of time delta — not clamped to "saves N days".
+  const daysClause =
+    savingsDays >= 0
+      ? `${daysAbs} days faster`
+      : `${daysAbs} days longer`;
+  return `${winnerName} ${usdVerb} $${usdAbs} and is ${daysClause} vs alternative.`;
 }
 
 async function llmReason(
@@ -165,29 +234,37 @@ export async function compareRoutes(
   const suez = buildLeg(origin, destination, dist.suezNm, true, ctx);
   const cape = buildLeg(origin, destination, dist.capeNm, false, ctx);
 
-  const winner: 'suez' | 'cape' = suez.daily_tce_usd >= cape.daily_tce_usd ? 'suez' : 'cape';
-  const winLeg = winner === 'suez' ? suez : cape;
-  const loseLeg = winner === 'suez' ? cape : suez;
-
-  const savingsUsd = Math.max(0, Math.round(loseLeg.total_usd - winLeg.total_usd));
-  const savingsDays = Math.max(0, Math.round((loseLeg.durationDays - winLeg.durationDays) * 10) / 10);
+  const decision = decideRoute({
+    suez: {
+      durationDays: suez.durationDays,
+      dailyTceUsd: suez.daily_tce_usd,
+      totalUsd: suez.total_usd,
+    },
+    cape: {
+      durationDays: cape.durationDays,
+      dailyTceUsd: cape.daily_tce_usd,
+      totalUsd: cape.total_usd,
+    },
+  });
 
   const reason = await llmReason(
     suez.daily_tce_usd,
     cape.daily_tce_usd,
-    winner,
-    savingsUsd,
-    savingsDays,
+    decision.route,
+    decision.savings_usd,
+    decision.savings_days,
   );
 
   return {
     suez,
     cape,
     recommendation: {
-      route: winner,
+      route: decision.route,
       reason,
-      savings_usd: savingsUsd,
-      savings_days: savingsDays,
+      savings_usd: decision.savings_usd,
+      savings_days: decision.savings_days,
+      extra_days_winner: decision.extra_days_winner,
+      savings_usd_per_day: decision.savings_usd_per_day,
     },
   };
 }

@@ -76,7 +76,7 @@ export default async function VesselDetailPage({ params }: Props) {
           </div>
           <h1 className="text-lg sm:text-xl font-bold mt-2">{email.subject}</h1>
           <p className="text-sm text-muted-foreground">From: {email.from} · {formatDate(email.date)}</p>
-          {processed?.expiryDate && <p className="text-xs text-muted-foreground">Active until {processed.expiryDate}</p>}
+          {processed?.expiryDate && <p className="text-xs text-muted-foreground">Active until {formatDate(processed.expiryDate)}</p>}
         </div>
 
         {/* Original email */}

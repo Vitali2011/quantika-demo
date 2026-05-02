@@ -7,7 +7,7 @@
  * |---------------------|----------------------------------|-----------------------------------------|
  * | Empty prevCargoes   | []                               | compatible:true, no warnings            |
  * | Empty newCargo      | ""                               | compatible:true, no warnings            |
- * | Unknown pair        | "titanium" → "grain"             | compatible:true + info-warning          |
+ * | Unknown pair        | "titanium" → "grain"             | compatible:false + requires_manual_review (βf-02 fail-closed) |
  * | Case/alias norm     | "WHEAT", "Wheat", "HBI", "corn"  | normalized before lookup                |
  * | Multiple blockers   | ["DRI","coal"] → "grain"         | all pairs in blocking_pairs             |
  */
@@ -63,10 +63,14 @@ describe('checkCompatibility — L5C matrix', () => {
       expect(result.warnings).toHaveLength(0);
     });
 
-    it('unknown cargo pair returns compatible:true with info-warning', () => {
+    it('unknown cargo pair returns compatible:false with requires_manual_review (βf-02 fail-closed)', () => {
+      // Contract changed by spec-betafix-02 (BUG-09): unknown pairs are no
+      // longer fail-open. Matrix-incomplete is treated as "needs surveyor
+      // review", not as silent green light.
       const result = checkCompatibility(['titanium'], 'grain');
-      expect(result.compatible).toBe(true);
-      expect(result.blocking_pairs).toHaveLength(0);
+      expect(result.compatible).toBe(false);
+      expect(result.requires_manual_review).toBe(true);
+      expect(result.blocking_pairs).toHaveLength(1);
       expect(result.warnings.length).toBeGreaterThan(0);
       expect(result.warnings[0]).toMatch(/no l5c data/i);
     });

@@ -38,4 +38,27 @@ test.describe('Tier 1 — Health checks', () => {
     await expect(html).toHaveAttribute('lang', /^en/);
     await expect(html).toHaveAttribute('dir', 'ltr');
   });
+
+  // βf-13: guard against React #418 (hydration mismatch) regressions on
+  // navigation. Server-rendered HTML must match client first-paint, otherwise
+  // React throws minified error #418 in production.
+  test('No React #418 hydration errors on navigation', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('console', (msg) => {
+      if (msg.type() === 'error') errors.push(msg.text());
+    });
+    page.on('pageerror', (err) => errors.push(err.message));
+
+    await page.goto('/');
+    await page.goto('/onboarding');
+    await page.waitForLoadState('networkidle');
+
+    const hydration = errors.filter(
+      (e) =>
+        e.includes('#418') ||
+        /Hydration/.test(e) ||
+        /did not match/.test(e),
+    );
+    expect(hydration, `Hydration errors:\n${hydration.join('\n')}`).toHaveLength(0);
+  });
 });

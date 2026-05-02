@@ -23,12 +23,12 @@ const VoyageInputSchema = z.object({
     speedKts: z.number(),
     consumptionMtPerDay: z.number(),
     nt: z.number().optional(),
-    type: z.enum(['bulker', 'tanker', 'container', 'general']).optional(),
+    type: z.enum(['bulker', 'tanker', 'container', 'general', 'mpp']).optional(),
   }),
   route: z.object({
     originPort: z.string(),
     destinationPort: z.string(),
-    distanceNm: z.number(),
+    distanceNm: z.number().positive('distanceNm must be > 0'),
     viaSuez: z.boolean().optional(),
     viaCanal: z.string().optional(),
   }),
@@ -52,7 +52,12 @@ function resolveCanalUsd(body: z.infer<typeof VoyageInputSchema>): number {
     ? 'suez'
     : (body.route.viaCanal as CanalCode | undefined) ?? null;
   if (!code) return 0;
-  const vesselType = body.vessel.type ?? 'bulker';
+  // βf-05: 'mpp' is accepted at the API boundary but canal tariff tables only
+  // carry 'bulker' | 'tanker' | 'container' | 'general' rows. Fall back to
+  // 'general' semantics for canal pricing — MPP vessels are most similar to
+  // general-cargo for SCNT/dues purposes.
+  const rawType = body.vessel.type ?? 'bulker';
+  const vesselType = rawType === 'mpp' ? 'general' : rawType;
   const vesselNt = body.vessel.nt ?? Math.round(body.vessel.dwt * 0.6);
   try {
     if (code === 'suez') {

@@ -43,12 +43,40 @@ function formatRemaining(ms: number): string {
 }
 
 export function SubsCountdown(props: SubsCountdownProps): ReactElement {
-  const [now, setNow] = useState<Date>(() => new Date());
+  // Defer `new Date()` to post-mount: SSR and client first paint must produce
+  // identical HTML, otherwise React #418 hydration mismatch fires. We use a
+  // null sentinel and render a deterministic placeholder until useEffect runs.
+  const [now, setNow] = useState<Date | null>(null);
 
   useEffect(() => {
+    // Intentional cascading render: the first `setNow` flips from the null
+    // SSR placeholder to a real Date post-mount, which is the canonical
+    // React fix for hydration mismatches with time-based content.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setNow(new Date());
     const id = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(id);
   }, []);
+
+  // Pre-mount placeholder — deterministic, no Date(), no #418.
+  if (now === null) {
+    return (
+      <div data-testid="subs-countdown" data-stage="pending" suppressHydrationWarning>
+        <span
+          style={{
+            backgroundColor: STAGE_COLOR.pending,
+            color: '#fff',
+            padding: '2px 8px',
+            borderRadius: 4,
+            fontFamily: 'monospace',
+            fontSize: 13,
+          }}
+        >
+          --:--:-- to subs
+        </span>
+      </div>
+    );
+  }
 
   const remainingMs = new Date(props.deadlineAt).getTime() - now.getTime();
   const stage = computeStage(props.deadlineAt, now);
