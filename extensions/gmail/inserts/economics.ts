@@ -91,9 +91,15 @@ export async function buildEconomicsInsert(
   return { html, plain };
 }
 
+// BUG-β-13-EconomicsZeroPath: extend escape to cover " and ' for attribute
+// contexts. Strings reach esc() in text context today, but the same helper
+// gets reused into attribute contexts as the template grows; escaping quotes
+// here is cheap insurance against future attribute-injection.
 function esc(s: string): string {
   return String(s)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }

@@ -96,9 +96,13 @@ function fmtNum(n: unknown): string {
     : 'n/a';
 }
 
+// Extend escape to cover " and ' so the helper is safe in both text and
+// attribute contexts (BUG-β-13-AttrXSS family).
 function esc(s: string): string {
   return String(s)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
