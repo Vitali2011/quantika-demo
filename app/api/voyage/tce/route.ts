@@ -28,7 +28,7 @@ const VoyageInputSchema = z.object({
   route: z.object({
     originPort: z.string(),
     destinationPort: z.string(),
-    distanceNm: z.number(),
+    distanceNm: z.number().positive('distanceNm must be > 0'),
     viaSuez: z.boolean().optional(),
     viaCanal: z.string().optional(),
   }),
