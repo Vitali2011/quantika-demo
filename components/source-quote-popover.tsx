@@ -64,7 +64,7 @@ export function SourceQuotePopover({
             <p className="text-xs text-gray-500 italic">{meta.text}</p>
             <div className="border-t pt-2 text-xs text-gray-400 space-y-0.5">
               <p>From: {emailFrom}</p>
-              <p>Date: {new Date(emailDate).toLocaleDateString()}</p>
+              <p>Date: {new Date(emailDate).toLocaleDateString('en-US', { timeZone: 'UTC' })}</p>
               <p className="truncate">Subject: {emailSubject}</p>
             </div>
           </Popover.Popup>
