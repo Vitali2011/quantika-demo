@@ -45,13 +45,49 @@ function extractStr(v: unknown): string | null {
   return String(v) || null;
 }
 
-export const maxDuration = 120;
+// βf-11: Cloudflare proxy enforces a hard 100s edge timeout (524). Cap our
+// route well below it so the runtime can still emit a clean 200 fallback
+// instead of bubbling a 524 to the browser.
+export const maxDuration = 55;
+
+// βf-11: Per-email body cap before we hand the prompt to the LLM. Real-inbox
+// emails sometimes carry quoted threads/footers in the 50k–100k char range,
+// which pushes the prompt over cliproxy/gpt-5.5 budgets and stalls the route.
+// 12 000 chars ≈ 3 000 tokens — comfortably under the model's working window
+// while still preserving the lead paragraph + first reply where intent lives.
+export const MAX_EMAIL_BODY_CHARS = 12_000;
+
+// βf-11: Per-email LLM timeout. We race callAiJson against this; on timeout we
+// fall back to regex-only enrichment (applyCargoRateFallback / TypeFallback)
+// so the route returns 200 with whatever we can salvage instead of stalling
+// past maxDuration.
+export const LLM_TIMEOUT_MS = 45_000;
+
+/** Truncate raw email body to keep prompts within model budget. */
+function truncateBody(body: string): string {
+  if (body.length <= MAX_EMAIL_BODY_CHARS) return body;
+  return body.slice(0, MAX_EMAIL_BODY_CHARS) + '\n[truncated]';
+}
 
 /** Build user prompt strings for a list of cargo inquiry emails. */
 function buildCargoPrompts(emails: Email[]): string[] {
   return emails.map(
-    email => `From: ${email.from}\nSubject: ${email.subject}\nDate: ${email.date}\n\n${email.body}`
+    email =>
+      `From: ${email.from}\nSubject: ${email.subject}\nDate: ${email.date}\n\n${truncateBody(email.body)}`
   );
+}
+
+/** Race a promise against a timeout. Returns `null` on timeout instead of throwing. */
+async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T | null> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<null>(resolve => {
+    timer = setTimeout(() => resolve(null), ms);
+  });
+  try {
+    return await Promise.race([p, timeout]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
 }
 
 /**
@@ -143,13 +179,21 @@ export async function POST(request: NextRequest) {
 
   await Promise.all(
     cargoEmails.map((email, i) => limit(async () => {
-      const result = await callAiJson<RawCargoItem>(
-        prompts[i],
-        CARGO_INQUIRY_PARSER_PROMPT,
-        AI_MODEL_LIGHT,
-        { items: [] }
+      // βf-11: race the LLM call against LLM_TIMEOUT_MS. On timeout we fall
+      // back to regex enrichment of an empty cargo so the route still returns
+      // 200 instead of letting the request hang past maxDuration → 524.
+      const result = await withTimeout(
+        callAiJson<RawCargoItem>(
+          prompts[i],
+          CARGO_INQUIRY_PARSER_PROMPT,
+          AI_MODEL_LIGHT,
+          { items: [] }
+        ),
+        LLM_TIMEOUT_MS,
       );
-      const items = parseCargoAIResponse(JSON.stringify(result), email.id);
+      const items = result === null
+        ? [] // LLM timed out — emit nothing rather than a half-parsed record.
+        : parseCargoAIResponse(JSON.stringify(result), email.id);
       // Apply regex fallbacks: populate rates/cargoType that LLM missed
       const enriched = items
         .map(c => applyCargoRateFallback(c, email.body))
