@@ -360,10 +360,16 @@ export function computeScoreBreakdown(input: ScoreBreakdownInput): ScoreBreakdow
   let dwtRaw = 0;
   let dwtReason: string | undefined;
   const dwt = cfValue(vessel.dwtSummer);
+  const dwcc = cfValue(vessel.dwcc);
   // Use max bound for fit check, min bound for utilization — Range-aware logic
   const weightMax = cargo.weightMtMax ?? weight;
   const weightMin = cargo.weightMtMin ?? weight;
-  if (weightMax && dwt && dwt > 0) {
+  if (weightMax && dwcc && dwcc > 0 && weightMax > dwcc) {
+    // Cargo exceeds DWCC (deadweight cargo capacity at the vessel's max draft) —
+    // physically un-loadable without bunker/stores reduction. Treat as overload.
+    dwtRaw = 2;
+    dwtReason = `cargo ${weightMax}mt exceeds vessel DWCC ${dwcc}mt — overload at design draft`;
+  } else if (weightMax && dwt && dwt > 0) {
     const fitRatio = weightMax / dwt;
     if (fitRatio > 1.0) {
       dwtRaw = 2;

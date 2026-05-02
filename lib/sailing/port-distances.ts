@@ -350,7 +350,7 @@ const DISTANCES_NM: Record<string, number> = {
   'Aliaga|Odesa': 645,
   'Alexandria|Odesa': 1240,
 
-  'Constanta|Piraeus': 630,
+  'Constanta|Piraeus': 790,
   'Aliaga|Constanta': 475,
   'Alexandria|Constanta': 1070,
   'Constanta|Ravenna': 1250,
@@ -1021,9 +1021,9 @@ export function getPortDistance(
   // Haversine fallback — needs lat/lon from port-master. Lazy import to avoid
   // a circular dependency between port-master.ts (which imports normalizePortName
   // from us) and this file.
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
+   
   const { getPortMaster } = require('./port-master') as typeof import('./port-master');
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
+   
   const { haversineDistanceNm } = require('./haversine') as typeof import('./haversine');
 
   const pa = getPortMaster(a);
