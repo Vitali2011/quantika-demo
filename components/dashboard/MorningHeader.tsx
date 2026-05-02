@@ -3,11 +3,15 @@ interface MorningHeaderProps {
   alertCount: number;
 }
 
+// Pin timeZone to UTC so server and client render identical strings — avoids
+// React #418 hydration mismatch at midnight boundaries when user TZ differs
+// from server TZ (server is UTC by convention).
 const dateFormatter = new Intl.DateTimeFormat('en-GB', {
   weekday: 'long',
   day: 'numeric',
   month: 'long',
   year: 'numeric',
+  timeZone: 'UTC',
 });
 
 export function MorningHeader({ userName, alertCount }: MorningHeaderProps) {
