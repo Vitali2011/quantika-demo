@@ -115,7 +115,7 @@ export function calculateWarRisk({ vesselValueUsd, hraZoneId, daysInHra }: Args)
 - [ ] Atlantic ballast (no HRA) → applicable:false, totalUsd:0.
 - [ ] daysInHra=0 но zone задан → applicable:true, не 0.
 - [ ] `applicable.war_risk:true` propagated в TCE response для HRA route.
-- [ ] Existing war-risk tests могут сломаться — это **ожидаемо** т.к. меняем contract; documents в RESULT block какие; fix их под новую модель ИЛИ создать новые test cases (согласно principle "не модифицировать существующие тесты Wave β" — escalate если нужно).
+- [ ] Existing war-risk tests могут сломаться — это **ожидаемо** т.к. меняем rate model. **User explicitly разрешил адаптировать** existing `lib/economics/__tests__/war-risk.test.ts` под новую per-voyage formula. RESULT block ОБЯЗАН явно перечислить: какие assertions изменены и почему (старое значение → новое). Это исключение из правила "не трогать Wave β тесты" специально для этой спеки.
 
 ## Commit
 
