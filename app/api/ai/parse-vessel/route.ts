@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     vesselEmails.map((email) => limit(async () => {
       const prompt = buildVesselPrompt(email);
       const raw = await callAiText(prompt, VESSEL_POSITION_PARSER_PROMPT, AI_MODEL_LIGHT);
-      const items = parseVesselAIResponse(raw, email.id);
+      const items = parseVesselAIResponse(raw, email.id, email.subject);
       const corrected = applyGearedFallback(items, email.body);
       allParsed.push(...corrected);
     }))
