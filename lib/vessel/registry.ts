@@ -43,7 +43,7 @@ function parseVesselBlock(text: string, fallbackName: string | null): Partial<Ve
   // Vessel name — line before IMO that starts with "MV " (or other prefix)
   // Captures e.g. "MV CARPATHIAN STAR" / "MV CARBON LADY"
   const nameMatch = text.match(/(MV\s+[A-Z][A-Z0-9 .'-]+?)\s*\n[^\n]*?IMO:/);
-  const name = (nameMatch ? nameMatch[1].trim() : fallbackName) ?? null;
+  const name: string = (nameMatch ? nameMatch[1].trim() : fallbackName) ?? `Vessel ${imo}`;
 
   const dwtMatch = text.match(/DWT:\s*([\d,]+)\s*mts/i);
   const dwt = dwtMatch ? Number(dwtMatch[1].replace(/,/g, '')) : null;
