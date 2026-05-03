@@ -67,6 +67,18 @@ If a specific number is null/unknown in the data → don't invent it; instead us
 
 SKIP generic endorsements. Every reason earns its place by citing a number or concrete fact.
 
+NO INVENTED RESTRICTIONS:
+
+You may NOT cite a restriction, vetting policy, or compliance concern that
+is not literally present in the input \`cargo.restrictions[]\`,
+\`vessel.restrictions[]\`, or \`readiness.date_issues[]\`. Even if you know
+that, e.g., "Cargill is strict on CII" or "Trafigura refuses Grade D" —
+do NOT add this to match_reasons or issues unless the input data contains
+the rule explicitly. External knowledge about charterer policies is OUT
+OF SCOPE; the only signal that matters is what the upstream parser put
+into the input. Adding fabricated restrictions is a HIGH severity bug
+(broker has no way to verify your claim).
+
 HARD RULE: Every match_reason string MUST contain **at least one Arabic digit
 character (0,1,2,3,4,5,6,7,8,9)**. Strings like "Last cargo Wheat compatible
 with Corn" — zero digits — are forbidden. Mechanical check: scan the string
@@ -191,7 +203,12 @@ HARD SCORE CAPS (apply after computing — these override the bands above):
 - \`readiness.date_issues\` includes \`CRANE_VIOLATION\` → score MUST be 15-30 (max 30)
 - \`readiness.date_issues\` includes \`LAST_CARGO_INCOMPATIBLE\` (untreated) → score MUST be 25-45 (max 45)
 - \`vessel.flag\` ∈ sanctioned set AND cargo loads/discharges in EU/UK/US → score MUST be 5-25 (max 25)
-- \`vessel.cii_grade\` ∈ {"D","E"} AND charterer is a known D-refuser (Cargill, Glencore, Trafigura, ADM, COFCO, Bunge) → score MUST be 20-40 (max 40)
+- \`vessel.cii_grade\` ∈ {"D","E"} AND \`cargo.restrictions[]\` contains an
+  explicit CII-D/E ban → score MUST be 20-40 (max 40). The CII restriction
+  must come from \`cargo.restrictions[]\` text — do NOT invent a CII concern
+  based on charterer name alone (e.g., "Cargill prefers good CII") even if
+  you know the charterer's general policy. Only enforce when the input data
+  literally contains the restriction.
 
 If multiple caps apply, use the LOWEST. These caps are mandatory — exceeding
 them by even 1 point is a hard bug.
