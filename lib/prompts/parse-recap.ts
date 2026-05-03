@@ -21,6 +21,17 @@ WRONG:     { "value": 5000, "confidence": "confirmed", "source_text": "approxima
 Each field: { value: ..., confidence: "confirmed" | "interpreted" | "uncertain", source_text: "exact quote" }
 If a field is set to null (information not present), source_text is not needed.
 
+PORT NAME RULE: Extract ONLY the port name — do NOT include berth/safety conditions.
+"1 safe berth, Sharjah, UAE" → load_port = "Sharjah, UAE" (strip "1 safe berth")
+"1 sb sp aaaa, Rotterdam" → load_port = "Rotterdam" (strip all berth conditions)
+Berth conditions like "1 safe berth", "1 sb", "sp aaaa", "AAAA" belong in additional_terms or are silently stripped. They are NOT part of the port name.
+
+BROKER FIELD: broker is a PLAIN STRING — do NOT wrap in ConfidenceField. Example:
+CORRECT: "broker": "Gulf Maritime Brokers LLC, Dubai"
+WRONG:   "broker": { "value": "...", "confidence": "confirmed", "source_text": "..." }
+
+NOR TERMS: Clauses like "WIPON WIBON WIFPON WICCON" and similar NOR tendering conditions must be captured in additional_terms (as a verbatim string from the email) or in unknown_terms if their operational meaning is flagged as uncertain. Do NOT silently discard these clauses.
+
 SPLIT LAYTIME: Extract loading and discharging terms separately:
 - loading_rate: MT/day or similar
 - loading_terms: SHINC / SHEX / SSHEX / SSHINC etc.
@@ -64,6 +75,7 @@ Extract fields:
 - discharging_rate, discharging_terms, discharging_working_hours
 - demurrage_rate: per day rate
 - demurrage_payment: who pays, when
+- despatch_rate: if stated (complement of demurrage; e.g. "USD 2,250 per day / pro rata")
 - load_port_agent
 - disch_port_agent
 - vessel_dwt

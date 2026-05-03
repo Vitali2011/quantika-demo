@@ -24,15 +24,16 @@ IMPORTANT CLASSIFICATION HINTS:
 - Emails starting with "RE:" that contain cargo quantities, routes, ports, or rate requests should be classified as CARGO_INQUIRY, not CLIENT_REPLY. "RE:" only indicates it's a reply in a thread — the content determines the category.
 - "dwcc" in subject can mean either vessel spec (if about a specific vessel) or cargo requirement (if asking for tonnage). Look at the body to decide.
 - TIME CHARTER TRIP (TCT): If the email is a time-charter trip request — look for keywords TCT, "Time Charter Trip", "trip charter", "period charter", daily hire rate (e.g. "USD X/day"), delivery/redelivery ports, or charter duration in months (e.g. "3-4 mos") — classify as TCT_REQUEST, NOT CARGO_INQUIRY. TCT is a vessel hire for a period, not a single cargo lifting.
+- CLIENT_REPLY vs FIXTURE_RECAP: A sub-lift notification ("subs lifted", "subjects declared lifted", "all subjects lifted") is CLIENT_REPLY — NOT FIXTURE_RECAP — even if it references a recap. A FIXTURE_RECAP must contain the actual deal terms in the email body (freight rate, cargo quantity, ports). If an email says "all terms as per our recap dated [X]" without restating terms, it is CLIENT_REPLY. Fixture confirmations that only reference prior terms are CLIENT_REPLY.
 - VESSEL CERTIFICATE: If the email or attachment is a certificate document (P&I club certificate, Class certificate, Safety certificate, Insurance certificate, Classification society document) without an open position offer, classify as VESSEL_CERTIFICATE. These are informational and should not enter the matching pipeline.
 
 Categories now include: CARGO_INQUIRY | VESSEL_POSITION | FIXTURE_RECAP | CLIENT_REPLY | DOCUMENT | TCT_REQUEST | VESSEL_CERTIFICATE | OTHER
 
 Also determine:
-- urgency: "high" (deadline within 24h or explicit urgency), "medium" (normal business), "low" (informational only)
+- urgency: "high" (deadline within 24h, laycan/delivery opening within 15 days, or explicit urgency language), "medium" (normal business — standard inquiry, routine position), "low" (informational only — documents, certificates, no action required)
 - confidence: 0.0 to 1.0 how confident you are
 - is_unanswered: boolean, true if this email appears to require a reply and has not been answered
-- days_without_reply: number of days since the email was received with no reply, or null if not applicable
+- days_without_reply: compute from the email's "date" field (ISO timestamp) compared to today. If email was received today/yesterday, output 0 or 1. NEVER output 365 as a default. If you cannot determine this accurately, output null. A fresh inquiry with no reply history = 0 days (just received). Examples: email received 3 days ago with no reply → 3; email received today → 0; uncertain → null.
 
 You will receive an array of emails. Return a JSON object.
 

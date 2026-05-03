@@ -44,7 +44,11 @@ Extract per inquiry item:
 - destination_port: full port name
 - destination_country
 - cargo_description: full description of goods
-- weight_mt: number (metric tons). RANGE RULE: If cargo weight is given as a range (e.g. "4000/4800 MT", "5000-5500 MT", "8000–8500 mts MOLOO", "abt 10000 mt"), return the UPPER BOUND (maximum) as weight_mt (confidence='interpreted'). Also populate weight_mt_min (lower bound) and weight_mt_max (upper bound). Do NOT return an average or middle value — always use the max bound for weight_mt. If a single definite number is given, weight_mt = weight_mt_min = weight_mt_max = that number, use confidence='confirmed'. Quote the original range text verbatim in source_text.
+- weight_mt: number (metric tons).
+  RANGE RULE: If cargo weight is given as an explicit range (e.g. "4000/4800 MT", "5000-5500 MT"), return the UPPER BOUND as weight_mt (confidence='interpreted'). Also populate weight_mt_min and weight_mt_max.
+  MOLOO RULE: MOLOO (More or Less Owner's Option) is a CONTRACT TOLERANCE clause — NOT a weight range. "28,000 mts (10% MOLOO)" means the nominal quantity is 28,000 mts and the owner may load ±10% at their option. Set weight_mt = 28000 (the nominal stated value). Set weight_mt_min = 25200 and weight_mt_max = 30800 to record the tolerance bounds. Do NOT set weight_mt to the MOLOO maximum (30800). "Abt 28,000 mts (10% MOLOO)" → weight_mt=28000 with confidence='interpreted' (due to "abt"), weight_mt_min=25200, weight_mt_max=30800.
+  SINGLE VALUE: If a single definite number is given with no hedge, weight_mt = weight_mt_min = weight_mt_max = that number, confidence='confirmed'.
+  Quote the original weight text verbatim in source_text.
 - weight_mt_min: lower bound of weight range if given as a range, else null
 - weight_mt_max: upper bound of weight range if given as a range, else null
 - volume_cbm: number (cubic meters)
@@ -54,7 +58,7 @@ Extract per inquiry item:
 - quantity: number of discrete units or lots (e.g. number of containers, reels, big bags). CRITICAL: Do NOT put cargo weight (MT) into quantity. If the email says "quantity 3500mt" treat it as weight_mt=3500, not quantity=3500. If no discrete unit count is given, leave quantity null. Example: "2 x 40HC" → quantity=2; "8000mt bulk" → quantity=null, weight_mt=8000.
 - incoterms: e.g. FOB, CFR, CIF, EXW, DDP
 - preferred_dates: loading or shipping dates mentioned
-- laycan: laycan window if specified (e.g. "1/5 May 2025")
+- laycan: laycan window if specified (e.g. "1/5 May 2025"). CONFIDENCE RULE: If laycan contains uncertainty markers ("TBC", "TBD", "pending", "to be confirmed", "exact dates TBC", "approx"), use confidence='uncertain'. If laycan is stated as a loose window ("end May / early June") without specific dates, use confidence='interpreted'. Only use confidence='confirmed' when specific calendar dates are given (e.g. "1/5 May 2025", "15-20 June 2025").
 - loading_rate: if specified (e.g. "5000 MT/day SHINC"). CRITICAL: Always extract laytime/rate terms here — FIO, FIO SHINC, FIOST, CQD, CQD both ends, numeric MT/day rates. These belong in loading_rate / discharge_rate, NOT in special_requirements.
 - discharge_rate: if specified. Same rules as loading_rate.
 - commission_percent: broker commission if mentioned

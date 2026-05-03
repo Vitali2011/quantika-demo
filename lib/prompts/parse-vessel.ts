@@ -84,7 +84,7 @@ Extract per vessel:
   if not present return null. Plain field (not a ConfidenceField object).
 - open_position: port or area where vessel is/will be available
 - open_date: date vessel is available
-- direction: intended trading direction (e.g. "seeking Far East", "open for Middle East/India")
+- direction: intended GEOGRAPHIC trading direction (e.g. "seeking Far East", "open for Middle East/India", "via Suez to Mediterranean"). MUST be geographic — if the email only says "seeking suitable employment", "keen to fix", or similar commercial phrases without a geographic direction, set direction to null.
 - restrictions: array of restrictions (e.g. "no Ukraine", "no IMO cargo", "no grain")
 - last_cargoes: comma-separated string of recent cargoes.
 
