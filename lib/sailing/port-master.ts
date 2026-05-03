@@ -55,13 +55,15 @@ export interface PortMaster {
   dataConfidence?: 'high' | 'medium' | 'low';
   /** Source for LLM-derived data (authority name or handbook reference). */
   sourceNote?: string;
+  /** Alternative names / variants used for fuzzy name lookup (e.g. "Antwerpen", "Anvers"). */
+  aliases?: string[];
 }
 
 /** Lookup port master data. Returns null for unknown ports (not an error — caller decides). */
 export function getPortMaster(rawName: string | null | undefined): PortMaster | null {
   if (!rawName) return null;
   // Lazy require to avoid circular dep (port-distances imports port-master)
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
+   
   const { normalizePortName } = require('./port-distances') as { normalizePortName: (s: string) => string | null };
   const canonical = normalizePortName(rawName);
   if (!canonical) return null;
