@@ -58,7 +58,7 @@ COMMISSION CALCULATION:
 UNKNOWN TERMS:
 - unknown_terms: array of { term, context } for any abbreviations or clauses not recognized
 
-SUBJECT/BODY DATE CROSS-CHECK: When the email subject line contains a date (e.g. "8-12 JUN 2025") and the email body contains a different date for the same field (e.g. "LAYCAN: 8/12 June 2026"), this is a CONFLICT. Use the body value (body is more authoritative) but set confidence='uncertain' — the discrepancy creates genuine ambiguity that requires human confirmation before the record is trusted. Document the conflict in unknown_terms: { "term": "DATE_CONFLICT", "context": "Subject says [X], body says [Y] — body value used but requires broker confirmation" }. NEVER use confidence='confirmed' when a date conflict exists, regardless of how clear the body text appears — a year discrepancy on a fixture recap is a material ambiguity.
+SUBJECT/BODY DATE CROSS-CHECK: When the email subject line contains a date (e.g. "8-12 JUN 2025") and the email body contains a different date for the same field (e.g. "LAYCAN: 8/12 June 2026"), the body is the authoritative operative text. Set the field value from the body with confidence='confirmed' if the body text itself is unambiguous. Document the discrepancy in unknown_terms: { "term": "DATE_CONFLICT", "context": "Subject says [X], body says [Y] — body value used; subject-line discrepancy requires broker to verify" }. Subject lines are manually typed summaries that often contain typos — do not let a subject typo reduce confidence in a clearly stated body value.
 
 Extract fields:
 - vessel_name
@@ -97,7 +97,7 @@ Extract fields:
 - commission_base
 - commission_amount
 - commission_currency
-- subs: array of subjects/conditions outstanding. SUBS DEADLINE RULE: If a subs clause contains BOTH an explicit calendar deadline (e.g. "by 00:00 hrs 6 May 2026 LT") AND a duration-from-event clause (e.g. "48 hours from midnight today"), extract them as SEPARATE entries in the subs array with their own source_text. Do NOT merge or silently resolve. If the computed date from the duration clause differs from the explicit calendar date (e.g. 48hrs from midnight 3 May = 5 May but email states 6 May), set confidence='uncertain' on BOTH entries and flag SUBS_DEADLINE_CONFLICT in unknown_terms noting both dates — this is a material ambiguity that requires broker clarification, not a parser decision to make.
+- subs: array of subjects/conditions outstanding. SUBS DEADLINE RULE: When a subs clause contains BOTH a duration expression AND an explicit calendar deadline (e.g. "48 hours from midnight today (3 May 2026)" and "by 00:00 hrs 6 May 2026 LT"), first verify they are consistent. In chartering, "midnight of [date]" means the END of that calendar day — the transition to the next day (00:00 of [date+1]). So "48 hours from midnight 3 May" = from 00:00 4 May + 48h = 00:00 6 May. If both expressions compute to the same deadline, use the EXPLICIT CALENDAR DEADLINE as the confirmed subs value with confidence='confirmed'. Only flag SUBS_DEADLINE_CONFLICT if the two expressions truly compute to DIFFERENT dates after applying the correct midnight interpretation.
 - acknowledgement_deadline: if the recap requires a written acknowledgement by a specific time (e.g. "please acknowledge within 12 hours", "confirm receipt by EOD"), capture that deadline as a string here. This is operationally critical — missing an ack deadline can jeopardise the fixture.
 - confidentiality: boolean (true if marked private/confidential)
 - additional_terms: array of any other clauses
