@@ -59,20 +59,24 @@ Extract per inquiry item:
 - incoterms: e.g. FOB, CFR, CIF, EXW, DDP
 - preferred_dates: loading or shipping dates mentioned
 - laycan: laycan window if specified (e.g. "1/5 May 2025"). CONFIDENCE RULE: If laycan contains uncertainty markers ("TBC", "TBD", "pending", "to be confirmed", "exact dates TBC", "approx"), use confidence='uncertain'. If laycan is stated as a loose window ("end May / early June") without specific dates, use confidence='interpreted'. Only use confidence='confirmed' when specific calendar dates are given (e.g. "1/5 May 2025", "15-20 June 2025").
-- loading_rate: if specified (e.g. "5000 MT/day SHINC"). CRITICAL: Always extract laytime/rate terms here — FIO, FIO SHINC, FIOST, CQD, CQD both ends, numeric MT/day rates. These belong in loading_rate / discharge_rate, NOT in special_requirements.
-- discharge_rate: if specified. Same rules as loading_rate.
+- loading_rate: NUMERIC cargo-handling rate only — e.g. "5,000 MT/day", "2,500c". Do NOT put cost-allocation terms (FIO, FIOST, CQD) here. If only a laytime term is given with no MT/day number, leave loading_rate null.
+- loading_terms: laytime cost-allocation and dispatch regime qualifiers — FIO, FIO SHINC, FIO SHEX, FIOST, CQD, CQD both ends, CQD BENDS. These are cost-responsibility terms, not numeric rates. Extract the exact phrase here. If the email says "FIO SHINC both ends", set loading_terms = "FIO SHINC" and discharge_terms = "FIO SHINC".
+- discharge_rate: NUMERIC cargo-handling rate only, same rule as loading_rate.
+- discharge_terms: laytime cost-allocation and dispatch regime qualifiers, same rule as loading_terms.
 - commission_percent: broker commission if mentioned
 - commission_terms: e.g. "TTL BENDS", "address commission"
-- special_requirements: temperature, hazmat class, fumigation, etc. Do NOT put laytime terms (FIO, CQD, SHINC, SHEX) here.
+- special_requirements: temperature, hazmat class, fumigation, etc. Do NOT put laytime cost terms (FIO, CQD, SHINC, SHEX) here — those go in loading_terms / discharge_terms. ALWAYS include NOR tendering conditions if present (WIPON, WIBON, WIFPON, WICCON or any combination) as a special_requirements entry — these are contractually critical laytime/demurrage terms that belong here.
 - stowage_factor: if mentioned (CBM per MT)
 - missing_info: array of strings — critical missing information needed to provide a quote
 
-LAYTIME RATE EXTRACTION RULES:
-- "FIO SHINC" / "FIO SHEX" / "FIO" → loading_rate AND discharge_rate = exact phrase. FIO = Free In Out (charterers pay for loading/discharge operations).
-- "CQD both ends" / "CQD b/e" / "CQD BENDS" / "CQD" → loading_rate AND discharge_rate = exact phrase. CQD = Customary Quick Dispatch.
-- "Loading: FIO SHINC" → loading_rate = "FIO SHINC". "Disch: FIO SHINC" → discharge_rate = "FIO SHINC".
-- Numeric patterns: "5,000 MT SHINC", "5000 MT/day SHEX" → populate the appropriate rate field.
-- NEVER route these terms to special_requirements.
+LAYTIME EXTRACTION RULES:
+- "FIO SHINC" / "FIO SHEX" / "FIO" → loading_terms AND discharge_terms = exact phrase. FIO = Free In Out (cost-allocation, not a MT/day rate).
+- "FIOST" → loading_terms AND discharge_terms = "FIOST". FIOST = Free In Out Stowed Trimmed.
+- "CQD both ends" / "CQD b/e" / "CQD BENDS" / "CQD" → loading_terms AND discharge_terms = exact phrase. CQD = Customary Quick Dispatch (dispatch regime, not a MT/day rate).
+- "Loading: FIO SHINC" → loading_terms = "FIO SHINC". "Disch: FIO SHINC" → discharge_terms = "FIO SHINC".
+- Numeric patterns: "5,000 MT SHINC", "5000 MT/day SHEX" → numeric part in loading_rate (e.g. 5000); time qualifier (SHINC, SHEX) in loading_terms.
+- "FIO SHINC both ends" → loading_terms = "FIO SHINC", discharge_terms = "FIO SHINC", loading_rate = null, discharge_rate = null.
+- NEVER route FIO, CQD, SHINC, SHEX to special_requirements.
 
 CARGO TYPE RULES:
 - BULK: free-flowing, unpackaged cargo (grain, coal, fertilizer, ore, cement, sugar, and scrap described as "loose").

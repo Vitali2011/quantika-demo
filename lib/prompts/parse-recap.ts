@@ -54,8 +54,12 @@ COMMISSION CALCULATION:
 UNKNOWN TERMS:
 - unknown_terms: array of { term, context } for any abbreviations or clauses not recognized
 
+SUBJECT/BODY DATE CROSS-CHECK: When the email subject line contains a date (e.g. "8-12 JUN 2025") and the email body contains a different date for the same field (e.g. "LAYCAN: 8/12 June 2026"), this is a CONFLICT. Set the field value from the body (the body is the authoritative legal document) and set confidence='confirmed' if the body value is unambiguous. Document the discrepancy in unknown_terms: { "term": "DATE_CONFLICT", "context": "Subject says [X], body says [Y] — body value used" }. Only downgrade to confidence='uncertain' if the BODY TEXT ITSELF is ambiguous or contradictory, not merely because the subject disagrees.
+
 Extract fields:
 - vessel_name
+- vessel_yob: year of build (integer, if stated in the recap)
+- vessel_flag: flag state (if stated)
 - owners: shipowner or disponent owner
 - charterers
 - account: cargo account / actual shipper if different from charterers
@@ -89,7 +93,8 @@ Extract fields:
 - commission_base
 - commission_amount
 - commission_currency
-- subs: array of subjects/conditions outstanding
+- subs: array of subjects/conditions outstanding. SUBS DEADLINE ARITHMETIC: If a subs clause states a deadline as "X hours from [event/date]", verify the arithmetic and include the computed absolute deadline in the array entry (e.g. "Subs: 48hrs from midnight 3 May 2026 = 5 May 2026 00:00 UTC"). If there is a discrepancy between the stated deadline and the computed deadline (e.g. email says '6 May' but 48hrs from midnight 3 May = 5 May), flag this as a SUBS_DEADLINE_CONFLICT in unknown_terms.
+- acknowledgement_deadline: if the recap requires a written acknowledgement by a specific time (e.g. "please acknowledge within 12 hours", "confirm receipt by EOD"), capture that deadline as a string here. This is operationally critical — missing an ack deadline can jeopardise the fixture.
 - confidentiality: boolean (true if marked private/confidential)
 - additional_terms: array of any other clauses
 - unknown_terms: array of { term, context }

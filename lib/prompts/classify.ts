@@ -13,10 +13,12 @@ Classify each email into exactly one category:
 - OTHER: internal, spam, newsletter, marketing, irrelevant
 
 FORWARDED EMAIL HANDLING:
-- If the email body contains forwarded content (indicated by "---------- Forwarded message ---------", "From:", "Fwd:", "FW:", or similar), extract the ORIGINAL sender from the forwarded body
-- The "from" field in input may be the person who forwarded, not the original sender
-- Set original_sender to the actual author of the original message
-- Set original_sender_company from email domain or signature of the original message
+- If the email body contains forwarded content (indicated by "---------- Forwarded message ---------", "From:", "Fwd:", "FW:", or similar), determine the original_sender based on the EMAIL TYPE:
+  • CARGO_INQUIRY / TCT_REQUEST: original_sender = the author of the inner/forwarded message (e.g. the cargo owner or shipper requesting a vessel). Extract original_sender_company from the INNER message's signature.
+  • VESSEL_POSITION: original_sender = the FORWARDER — the broker who circulated the vessel position to your team. This is your trading counterparty for fixing. The inner shipowner details are secondary and typically disclosed only once negotiations proceed. Extract original_sender_company from the OUTER/FORWARDER's signature.
+  • DOCUMENT / VESSEL_CERTIFICATE: original_sender = the FORWARDER (the person who sent the outer email to the team requesting action like "please acknowledge receipt") — NOT the inner document issuer. Extract original_sender_company from the OUTER/FORWARDER's signature.
+- The "from" field in input may be the person who forwarded, not the original sender.
+- original_sender_company: ALWAYS read from the email SIGNATURE block (lines after the sender's name listing job title and company), NOT from the email address domain. The signature contains the FULL legal entity name. Copy it EXACTLY including all suffixes. Examples: "Saudi Bulk Traders Co." (NOT "Saudi Bulk"), "Atlas Maritime S.A." (NOT "Atlas Maritime"), "Royal Gulf Phosphates LLC" (NOT "RG Phosphates"). Only use email domain as last-resort fallback if NO signature block exists.
 
 IMPORTANT CLASSIFICATION HINTS:
 - If subject contains "certificate", "cert", "P&I", "class cert", "BL", "invoice", "packing list" → likely DOCUMENT
@@ -29,8 +31,18 @@ IMPORTANT CLASSIFICATION HINTS:
 
 Categories now include: CARGO_INQUIRY | VESSEL_POSITION | FIXTURE_RECAP | CLIENT_REPLY | DOCUMENT | TCT_REQUEST | VESSEL_CERTIFICATE | OTHER
 
+DOCUMENT QUALITY CHECKS:
+- For DOCUMENT / VESSEL_CERTIFICATE emails: scan for certificate validity date fields (VALID FROM, VALID TO, "valid until", "expiry"). If VALID FROM equals VALID TO (identical dates = zero-day validity window), this is a CRITICAL data defect — the certificate is operationally invalid and cannot be submitted to a port or charterer. Set urgency='high' (immediate human action required; vessel cannot proceed without a valid certificate). Do NOT set urgency='low' or 'medium' for a zero-day validity certificate.
+
 Also determine:
-- urgency: "high" (deadline within 24h, laycan/delivery opening within 15 days, or explicit urgency language), "medium" (normal business — standard inquiry, routine position), "low" (informational only — documents, certificates, no action required)
+- urgency — apply these rules BY CATEGORY:
+  • CARGO_INQUIRY: "high" if laycan opens within 30 days (4 weeks is the latest you can reasonably start vessel search and negotiations) OR explicit urgency language. "medium" if laycan > 30 days away or TBD. "low" = not applicable.
+  • TCT_REQUEST: "high" if delivery/laycan opens within 20 days OR explicit urgency language. "medium" otherwise.
+  • VESSEL_POSITION: "high" ONLY IF open date is within 5 days OR email contains explicit urgency language ("last chance", "firm offer expiry", "deadline today"). "medium" for all other vessel position circulars — a position circular is not a deadline for the recipient; 7-10 day open window is normal market turnaround.
+  • FIXTURE_RECAP: always "high" (subs deadline running, requires acknowledgement within hours).
+  • CLIENT_REPLY: "high" if sub-lift notification ("subs lifted", "subjects lifted") or has explicit reply deadline (e.g. "revert by COB today", "within 24h"). "medium" otherwise.
+  • DOCUMENT / VESSEL_CERTIFICATE: "low" (informational, no urgent action).
+  • OTHER: "low".
 - confidence: 0.0 to 1.0 how confident you are
 - is_unanswered: boolean, true if this email appears to require a reply and has not been answered
 - days_without_reply: compute from the email's "date" field (ISO timestamp) compared to today. If email was received today/yesterday, output 0 or 1. NEVER output 365 as a default. If you cannot determine this accurately, output null. A fresh inquiry with no reply history = 0 days (just received). Examples: email received 3 days ago with no reply → 3; email received today → 0; uncertain → null.
