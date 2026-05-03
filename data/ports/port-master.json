@@ -39,7 +39,8 @@
     "lon": 30.742,
     "maxDraftM": 13.0,
     "hasShoreCranes": true,
-    "berthType": "deep-sea"
+    "berthType": "deep-sea",
+    "aliases": ["Odessa", "Odessa Port"]
   },
   {
     "unlocode": "ROCND",
@@ -49,7 +50,8 @@
     "lon": 28.65,
     "maxDraftM": 14.5,
     "hasShoreCranes": true,
-    "berthType": "deep-sea"
+    "berthType": "deep-sea",
+    "aliases": ["Constantza", "Konstanza"]
   },
   {
     "unlocode": "BGVAR",
@@ -89,7 +91,8 @@
     "lon": 23.642,
     "maxDraftM": 17.0,
     "hasShoreCranes": true,
-    "berthType": "deep-sea"
+    "berthType": "deep-sea",
+    "aliases": ["Pireaus", "Pireas", "Port of Piraeus"]
   },
   {
     "unlocode": "TRALI",
@@ -142,7 +145,8 @@
     "lon": -7.62,
     "maxDraftM": 12.0,
     "hasShoreCranes": true,
-    "berthType": "deep-sea"
+    "berthType": "deep-sea",
+    "aliases": ["Port of Casablanca", "Casa"]
   },
   {
     "unlocode": "FRBAY",
@@ -165,17 +169,12 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "Port of Rotterdam"
+    "sourceNote": "Port of Rotterdam",
+    "aliases": ["Port of Rotterdam", "Europoort"]
   },
   {
     "unlocode": "BEANR",
@@ -187,17 +186,12 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "Port of Antwerp-Bruges"
+    "sourceNote": "Port of Antwerp-Bruges",
+    "aliases": ["Antwerpen", "Anvers", "Port of Antwerp"]
   },
   {
     "unlocode": "DEHAM",
@@ -209,17 +203,12 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "Hamburg Port Auth."
+    "sourceNote": "Hamburg Port Auth.",
+    "aliases": ["Port of Hamburg", "Hafen Hamburg"]
   },
   {
     "unlocode": "DEBRV",
@@ -231,13 +220,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -253,17 +236,12 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "Haropa Port Le Havre"
+    "sourceNote": "Haropa Port Le Havre",
+    "aliases": ["Port du Havre", "Havre"]
   },
   {
     "unlocode": "GBFXT",
@@ -275,13 +253,12 @@
     "hasShoreCranes": false,
     "berthType": "terminal",
     "maxLOA": 430,
-    "cargoBerthTypes": [
-      "container"
-    ],
+    "cargoBerthTypes": ["container"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "Port of Felixstowe"
+    "sourceNote": "Port of Felixstowe",
+    "aliases": ["Port of Felixstowe"]
   },
   {
     "unlocode": "ESALG",
@@ -293,17 +270,12 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "APBA Algeciras"
+    "sourceNote": "APBA Algeciras",
+    "aliases": ["Algeciras Bay", "Port of Algeciras"]
   },
   {
     "unlocode": "PLGDN",
@@ -315,13 +287,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": true,
     "dataConfidence": "medium",
@@ -337,13 +303,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -359,13 +319,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 330,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -381,17 +335,12 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "MPA Singapore"
+    "sourceNote": "MPA Singapore",
+    "aliases": ["Port of Singapore", "PSA Singapore"]
   },
   {
     "unlocode": "HKHKG",
@@ -403,12 +352,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -424,13 +368,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -446,9 +384,7 @@
     "hasShoreCranes": false,
     "berthType": "terminal",
     "maxLOA": 327,
-    "cargoBerthTypes": [
-      "bulk"
-    ],
+    "cargoBerthTypes": ["bulk"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -464,13 +400,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -486,17 +416,12 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "Port Houston"
+    "sourceNote": "Port Houston",
+    "aliases": ["Port of Houston", "Bayport"]
   },
   {
     "unlocode": "USLAX",
@@ -508,13 +433,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -530,13 +449,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -552,13 +465,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 370,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -574,17 +481,12 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "Port of Santos"
+    "sourceNote": "Port of Santos",
+    "aliases": ["Port of Santos", "Porto de Santos"]
   },
   {
     "unlocode": "DEWVN",
@@ -596,12 +498,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 430,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -616,13 +513,7 @@
     "maxDraftM": 10,
     "hasShoreCranes": true,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -637,13 +528,7 @@
     "maxDraftM": 15,
     "hasShoreCranes": true,
     "berthType": "terminal",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -658,12 +543,7 @@
     "maxDraftM": 16,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -679,13 +559,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -700,13 +574,7 @@
     "maxDraftM": 12.5,
     "hasShoreCranes": true,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -721,13 +589,7 @@
     "maxDraftM": 16,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -742,10 +604,7 @@
     "maxDraftM": 10,
     "hasShoreCranes": false,
     "berthType": "terminal",
-    "cargoBerthTypes": [
-      "RORO",
-      "general"
-    ],
+    "cargoBerthTypes": ["RORO", "general"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -760,13 +619,7 @@
     "maxDraftM": 10.5,
     "hasShoreCranes": true,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -781,12 +634,7 @@
     "maxDraftM": 8.5,
     "hasShoreCranes": true,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -801,12 +649,7 @@
     "maxDraftM": 10.5,
     "hasShoreCranes": true,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -821,12 +664,7 @@
     "maxDraftM": 14.5,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -841,11 +679,7 @@
     "maxDraftM": 12,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -861,11 +695,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "container",
-      "RORO",
-      "general"
-    ],
+    "cargoBerthTypes": ["container", "RORO", "general"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -881,13 +711,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -902,12 +726,7 @@
     "maxDraftM": 12.5,
     "hasShoreCranes": true,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -922,11 +741,7 @@
     "maxDraftM": 13.5,
     "hasShoreCranes": true,
     "berthType": "terminal",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -941,13 +756,7 @@
     "maxDraftM": 14.5,
     "hasShoreCranes": true,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -962,11 +771,7 @@
     "maxDraftM": 10.5,
     "hasShoreCranes": true,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -982,9 +787,7 @@
     "hasShoreCranes": false,
     "berthType": "terminal",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "container"
-    ],
+    "cargoBerthTypes": ["container"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -1000,10 +803,7 @@
     "hasShoreCranes": false,
     "berthType": "terminal",
     "maxLOA": 240,
-    "cargoBerthTypes": [
-      "RORO",
-      "general"
-    ],
+    "cargoBerthTypes": ["RORO", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1019,11 +819,7 @@
     "hasShoreCranes": false,
     "berthType": "river",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "low",
@@ -1039,12 +835,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1060,13 +851,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 350,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1082,13 +867,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 240,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1104,13 +883,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1126,12 +899,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 225,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1147,13 +915,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -1169,13 +931,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -1191,13 +947,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 350,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -1212,12 +962,7 @@
     "maxDraftM": 17,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1232,13 +977,7 @@
     "maxDraftM": 20,
     "hasShoreCranes": true,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -1253,13 +992,7 @@
     "maxDraftM": 20,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1274,13 +1007,7 @@
     "maxDraftM": 14,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1295,13 +1022,7 @@
     "maxDraftM": 17.5,
     "hasShoreCranes": true,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1316,11 +1037,7 @@
     "maxDraftM": 7.5,
     "hasShoreCranes": true,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1335,12 +1052,7 @@
     "maxDraftM": 14,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1355,17 +1067,12 @@
     "maxDraftM": 17,
     "hasShoreCranes": true,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "Port of Lisbon"
+    "sourceNote": "Port of Lisbon",
+    "aliases": ["Lisboa", "Port of Lisbon"]
   },
   {
     "unlocode": "PTLEI",
@@ -1376,13 +1083,7 @@
     "maxDraftM": 14,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -1397,12 +1098,7 @@
     "maxDraftM": 22,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -1418,13 +1114,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 230,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1440,11 +1130,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 275,
-    "cargoBerthTypes": [
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1460,13 +1146,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 350,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -1482,13 +1162,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 360,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -1504,17 +1178,12 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "Porto di Genova guide"
+    "sourceNote": "Porto di Genova guide",
+    "aliases": ["Genova", "Port of Genoa", "Porto di Genova"]
   },
   {
     "unlocode": "ITSPE",
@@ -1526,13 +1195,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -1548,13 +1211,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 270,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -1570,13 +1227,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -1592,13 +1243,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1614,13 +1259,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 330,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -1635,13 +1274,7 @@
     "maxDraftM": 18,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -1656,13 +1289,7 @@
     "maxDraftM": 12,
     "hasShoreCranes": true,
     "berthType": "terminal",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1677,11 +1304,7 @@
     "maxDraftM": 14,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1696,11 +1319,7 @@
     "maxDraftM": 12,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1715,11 +1334,7 @@
     "maxDraftM": 14,
     "hasShoreCranes": false,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1734,13 +1349,7 @@
     "maxDraftM": 16,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1755,11 +1364,7 @@
     "maxDraftM": 11,
     "hasShoreCranes": false,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1774,12 +1379,7 @@
     "maxDraftM": 10.5,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1794,11 +1394,7 @@
     "maxDraftM": 18,
     "hasShoreCranes": false,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -1814,9 +1410,7 @@
     "hasShoreCranes": false,
     "berthType": "deep-sea",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "container"
-    ],
+    "cargoBerthTypes": ["container"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -1832,10 +1426,7 @@
     "hasShoreCranes": false,
     "berthType": "deep-sea",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "container",
-      "general"
-    ],
+    "cargoBerthTypes": ["container", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1851,13 +1442,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1873,13 +1458,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 320,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1895,11 +1474,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 240,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1915,10 +1490,7 @@
     "hasShoreCranes": false,
     "berthType": "bay",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1934,13 +1506,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1956,12 +1522,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1977,11 +1538,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -1997,11 +1554,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2017,10 +1570,7 @@
     "hasShoreCranes": false,
     "berthType": "bay",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2036,12 +1586,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2057,13 +1602,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -2079,12 +1618,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2100,12 +1634,7 @@
     "hasShoreCranes": false,
     "berthType": "terminal",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2121,13 +1650,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2143,13 +1666,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 280,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2165,11 +1682,7 @@
     "hasShoreCranes": false,
     "berthType": "terminal",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "low",
@@ -2185,13 +1698,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 350,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -2207,13 +1714,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2229,13 +1730,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "low",
@@ -2251,11 +1746,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2271,12 +1762,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 260,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2292,15 +1778,12 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
-    "sourceNote": "Lloyd's Port Handbk"
+    "sourceNote": "Lloyd's Port Handbk",
+    "aliases": ["Port Said East", "Bur Said"]
   },
   {
     "unlocode": "TNTUN",
@@ -2312,12 +1795,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 240,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2333,11 +1811,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 180,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2353,13 +1827,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 220,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2375,12 +1843,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2396,12 +1859,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2417,13 +1875,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 230,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2439,11 +1891,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 220,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2458,10 +1906,7 @@
     "maxDraftM": 10,
     "hasShoreCranes": false,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "RORO",
-      "general"
-    ],
+    "cargoBerthTypes": ["RORO", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2476,10 +1921,7 @@
     "maxDraftM": 10.5,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2494,11 +1936,7 @@
     "maxDraftM": 12.5,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2513,12 +1951,7 @@
     "maxDraftM": 13.5,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -2533,12 +1966,7 @@
     "maxDraftM": 9,
     "hasShoreCranes": true,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2553,11 +1981,7 @@
     "maxDraftM": 13.2,
     "hasShoreCranes": true,
     "berthType": "terminal",
-    "cargoBerthTypes": [
-      "bulk",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2572,13 +1996,7 @@
     "maxDraftM": 14.5,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2593,11 +2011,7 @@
     "maxDraftM": 9.5,
     "hasShoreCranes": true,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2612,11 +2026,7 @@
     "maxDraftM": 10.5,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2631,13 +2041,7 @@
     "maxDraftM": 12.5,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -2653,13 +2057,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 240,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": true,
     "dataConfidence": "medium",
@@ -2675,13 +2073,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 320,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": true,
     "dataConfidence": "medium",
@@ -2697,13 +2089,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": true,
     "dataConfidence": "medium",
@@ -2719,13 +2105,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": true,
     "dataConfidence": "low",
@@ -2741,13 +2121,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 260,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": true,
     "dataConfidence": "medium",
@@ -2763,9 +2137,7 @@
     "hasShoreCranes": false,
     "berthType": "terminal",
     "maxLOA": 330,
-    "cargoBerthTypes": [
-      "tanker"
-    ],
+    "cargoBerthTypes": ["tanker"],
     "tidal": false,
     "icePort": true,
     "dataConfidence": "medium",
@@ -2781,13 +2153,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2803,13 +2169,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 190,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": true,
     "dataConfidence": "medium",
@@ -2825,12 +2185,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 240,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": true,
     "dataConfidence": "medium",
@@ -2846,13 +2201,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": true,
     "dataConfidence": "medium",
@@ -2868,12 +2217,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 240,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "bulk",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "general", "bulk", "tanker"],
     "tidal": false,
     "icePort": true,
     "dataConfidence": "medium",
@@ -2889,12 +2233,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "bulk"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "bulk"],
     "tidal": false,
     "icePort": true,
     "dataConfidence": "medium",
@@ -2910,11 +2249,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": false,
     "icePort": true,
     "dataConfidence": "medium",
@@ -2930,11 +2265,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "general",
-      "RORO",
-      "bulk"
-    ],
+    "cargoBerthTypes": ["general", "RORO", "bulk"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -2950,13 +2281,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 350,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "bulk",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "bulk", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -2972,13 +2297,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 330,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "bulk",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "bulk", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -2994,11 +2313,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3014,13 +2329,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "bulk",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "bulk", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3036,13 +2345,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 340,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "bulk",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "bulk", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -3058,12 +2361,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "bulk"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "bulk"],
     "tidal": false,
     "icePort": true,
     "dataConfidence": "high",
@@ -3079,10 +2377,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "general"],
     "tidal": false,
     "icePort": true,
     "dataConfidence": "medium",
@@ -3098,12 +2393,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": true,
     "dataConfidence": "medium",
@@ -3119,10 +2409,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 170,
-    "cargoBerthTypes": [
-      "bulk",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "general"],
     "tidal": false,
     "icePort": true,
     "dataConfidence": "low",
@@ -3138,13 +2425,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 240,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "tanker",
-      "bulk"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "tanker", "bulk"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3160,13 +2441,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 220,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3182,13 +2457,7 @@
     "hasShoreCranes": false,
     "berthType": "bay",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "tanker",
-      "bulk"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "tanker", "bulk"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3204,13 +2473,7 @@
     "hasShoreCranes": false,
     "berthType": "bay",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3226,13 +2489,7 @@
     "hasShoreCranes": false,
     "berthType": "bay",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3248,13 +2505,7 @@
     "hasShoreCranes": false,
     "berthType": "bay",
     "maxLOA": 240,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "tanker",
-      "bulk"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "tanker", "bulk"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3270,10 +2521,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 340,
-    "cargoBerthTypes": [
-      "bulk",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -3289,12 +2537,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3310,12 +2553,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 240,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3331,10 +2569,7 @@
     "hasShoreCranes": false,
     "berthType": "deep-sea",
     "maxLOA": 220,
-    "cargoBerthTypes": [
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "low",
@@ -3350,11 +2585,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 140,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO"],
     "tidal": false,
     "icePort": true,
     "dataConfidence": "medium",
@@ -3370,12 +2601,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -3391,12 +2617,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3412,11 +2633,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 140,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general"],
     "tidal": false,
     "icePort": true,
     "dataConfidence": "medium",
@@ -3432,12 +2649,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -3453,13 +2665,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3475,13 +2681,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 160,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -3497,13 +2697,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "container",
-      "bulk",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "bulk", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -3519,12 +2713,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "general",
-      "container",
-      "bulk",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["general", "container", "bulk", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3540,13 +2729,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "tanker",
-      "bulk"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "tanker", "bulk"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3562,12 +2745,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 180,
-    "cargoBerthTypes": [
-      "general",
-      "container",
-      "RORO",
-      "bulk"
-    ],
+    "cargoBerthTypes": ["general", "container", "RORO", "bulk"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3583,11 +2761,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "general",
-      "container",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["general", "container", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3603,9 +2777,7 @@
     "hasShoreCranes": false,
     "berthType": "terminal",
     "maxLOA": 345,
-    "cargoBerthTypes": [
-      "tanker"
-    ],
+    "cargoBerthTypes": ["tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -3621,12 +2793,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 220,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "bulk"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "bulk"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -3642,13 +2809,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -3664,11 +2825,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 220,
-    "cargoBerthTypes": [
-      "general",
-      "container",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["general", "container", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3684,13 +2841,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "bulk",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "general", "bulk", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -3705,10 +2856,7 @@
     "maxDraftM": 16,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3723,11 +2871,7 @@
     "maxDraftM": 18,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -3742,12 +2886,7 @@
     "maxDraftM": 18,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3777,11 +2916,7 @@
     "maxDraftM": 9.5,
     "hasShoreCranes": true,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3797,13 +2932,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -3818,11 +2947,7 @@
     "maxDraftM": 8,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3837,13 +2962,7 @@
     "maxDraftM": 16,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -3858,11 +2977,7 @@
     "maxDraftM": 10,
     "hasShoreCranes": true,
     "berthType": "terminal",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3877,13 +2992,7 @@
     "maxDraftM": 16,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -3898,12 +3007,7 @@
     "maxDraftM": 11.5,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3918,11 +3022,7 @@
     "maxDraftM": 9.5,
     "hasShoreCranes": false,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3937,11 +3037,7 @@
     "maxDraftM": 8.5,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3956,11 +3052,7 @@
     "maxDraftM": 17,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -3975,11 +3067,7 @@
     "maxDraftM": 9,
     "hasShoreCranes": false,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -3994,13 +3082,7 @@
     "maxDraftM": 11.5,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -4015,19 +3097,14 @@
     "maxDraftM": 12.5,
     "hasShoreCranes": false,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
     "sourceNote": "Gwadar Port docs"
   },
   {
-    "unlocode": "INIXY",
+    "unlocode": "INKDL",
     "name": "Kandla",
     "country": "IN",
     "lat": 23.033,
@@ -4035,17 +3112,12 @@
     "maxDraftM": 14,
     "hasShoreCranes": true,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "Deendayal Port Trust"
+    "sourceNote": "Deendayal Port Trust",
+    "aliases": ["Port of Kandla", "Deendayal Port"]
   },
   {
     "unlocode": "INNSA",
@@ -4056,13 +3128,7 @@
     "maxDraftM": 16.5,
     "hasShoreCranes": true,
     "berthType": "terminal",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -4077,16 +3143,12 @@
     "maxDraftM": 10,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "MbPT handbook"
+    "sourceNote": "MbPT handbook",
+    "aliases": ["Bombay", "JNPT", "Jawaharlal Nehru Port", "Port of Mumbai"]
   },
   {
     "unlocode": "INPPV",
@@ -4098,13 +3160,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 350,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -4120,12 +3176,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 260,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -4141,12 +3192,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 280,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -4162,13 +3208,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -4184,12 +3224,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -4205,13 +3240,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 370,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -4227,12 +3256,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 360,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -4248,12 +3272,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -4269,12 +3288,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 230,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -4290,13 +3304,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 225,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -4312,12 +3320,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -4333,12 +3336,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 190,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "low",
@@ -4354,13 +3352,7 @@
     "hasShoreCranes": false,
     "berthType": "deep-sea",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -4376,13 +3368,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -4397,12 +3383,7 @@
     "maxDraftM": 6.5,
     "hasShoreCranes": false,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "low",
@@ -4418,13 +3399,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -4440,9 +3415,7 @@
     "hasShoreCranes": false,
     "berthType": "deep-sea",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "container"
-    ],
+    "cargoBerthTypes": ["container"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -4458,13 +3431,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -4480,12 +3447,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 230,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -4501,13 +3463,7 @@
     "hasShoreCranes": false,
     "berthType": "deep-sea",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -4523,11 +3479,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -4543,11 +3495,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 180,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -4563,10 +3511,7 @@
     "hasShoreCranes": false,
     "berthType": "terminal",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -4582,13 +3527,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 368,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -4604,13 +3543,7 @@
     "hasShoreCranes": false,
     "berthType": "deep-sea",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "bulk",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "general", "bulk", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -4626,12 +3559,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -4647,11 +3575,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "container"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "container"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -4667,13 +3591,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -4689,12 +3607,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 220,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -4710,12 +3623,7 @@
     "hasShoreCranes": false,
     "berthType": "terminal",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "bulk"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "bulk"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -4731,13 +3639,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "tanker",
-      "bulk"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "tanker", "bulk"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -4753,13 +3655,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "tanker",
-      "bulk"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "tanker", "bulk"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -4775,20 +3671,14 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "tanker",
-      "bulk"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "tanker", "bulk"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
     "sourceNote": "World Port Index"
   },
   {
-    "unlocode": "CNSGH",
+    "unlocode": "CNSHA",
     "name": "Shanghai",
     "country": "CN",
     "lat": 31.233,
@@ -4797,17 +3687,12 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "container",
-      "bulk",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "bulk", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "World Port Index"
+    "sourceNote": "World Port Index",
+    "aliases": ["Port of Shanghai", "Yangshan"]
   },
   {
     "unlocode": "CNNBO",
@@ -4819,13 +3704,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "container",
-      "bulk",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "bulk", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -4841,13 +3720,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "container",
-      "bulk",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "bulk", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -4863,20 +3736,14 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 370,
-    "cargoBerthTypes": [
-      "container",
-      "bulk",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "bulk", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
     "sourceNote": "World Port Index"
   },
   {
-    "unlocode": "CNQIN",
+    "unlocode": "CNTAO",
     "name": "Qingdao",
     "country": "CN",
     "lat": 36.05,
@@ -4885,20 +3752,15 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "container",
-      "bulk",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "bulk", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "World Port Index"
+    "sourceNote": "World Port Index",
+    "aliases": ["Qingdao Port", "Tsingtao"]
   },
   {
-    "unlocode": "CNTNJ",
+    "unlocode": "CNTSN",
     "name": "Tianjin",
     "country": "CN",
     "lat": 39.033,
@@ -4907,17 +3769,12 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "container",
-      "bulk",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "bulk", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "World Port Index"
+    "sourceNote": "World Port Index",
+    "aliases": ["Xingang", "Port of Tianjin", "Tianjin Xingang"]
   },
   {
     "unlocode": "CNDAL",
@@ -4929,13 +3786,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "container",
-      "bulk",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "bulk", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -4951,13 +3802,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 399.9,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "bulk",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "general", "bulk", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -4973,12 +3818,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -4994,12 +3834,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "bulk",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "general", "bulk", "RORO"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5015,13 +3850,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5037,13 +3866,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5059,13 +3882,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 380,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "bulk",
-      "tanker",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "general", "bulk", "tanker", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5081,13 +3898,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5103,12 +3914,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5124,12 +3930,7 @@
     "hasShoreCranes": false,
     "berthType": "river",
     "maxLOA": 280,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "bulk",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "general", "bulk", "RORO"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5145,13 +3946,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5167,12 +3962,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5188,12 +3978,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5209,12 +3994,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 260,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5230,13 +4010,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5252,13 +4026,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -5274,13 +4042,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -5296,13 +4058,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -5318,13 +4074,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -5340,12 +4090,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -5361,13 +4106,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -5382,13 +4121,7 @@
     "maxDraftM": 14.5,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5403,12 +4136,7 @@
     "maxDraftM": 15,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5423,11 +4151,7 @@
     "maxDraftM": 12,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5442,13 +4166,7 @@
     "maxDraftM": 16,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -5463,13 +4181,7 @@
     "maxDraftM": 16,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -5484,13 +4196,7 @@
     "maxDraftM": 16,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -5505,13 +4211,7 @@
     "maxDraftM": 14.5,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5526,13 +4226,7 @@
     "maxDraftM": 15,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5547,13 +4241,7 @@
     "maxDraftM": 14.5,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5568,12 +4256,7 @@
     "maxDraftM": 12,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5589,12 +4272,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5610,13 +4288,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5632,17 +4304,12 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "low",
-    "sourceNote": "Rosmorport Vladivostok"
+    "sourceNote": "Rosmorport Vladivostok",
+    "aliases": ["Port of Vladivostok"]
   },
   {
     "unlocode": "AUDAM",
@@ -5654,9 +4321,7 @@
     "hasShoreCranes": false,
     "berthType": "deep-sea",
     "maxLOA": 350,
-    "cargoBerthTypes": [
-      "bulk"
-    ],
+    "cargoBerthTypes": ["bulk"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -5672,10 +4337,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "general"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5691,9 +4353,7 @@
     "hasShoreCranes": false,
     "berthType": "terminal",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk"
-    ],
+    "cargoBerthTypes": ["bulk"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -5709,13 +4369,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker", "RORO"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -5731,9 +4385,7 @@
     "hasShoreCranes": false,
     "berthType": "terminal",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk"
-    ],
+    "cargoBerthTypes": ["bulk"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -5749,13 +4401,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 270,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -5771,12 +4417,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5792,13 +4433,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "bulk",
-      "tanker",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "general", "bulk", "tanker", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -5814,13 +4449,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 270,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "bulk",
-      "tanker",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "general", "bulk", "tanker", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5836,13 +4465,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "bulk",
-      "tanker",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "general", "bulk", "tanker", "RORO"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -5858,13 +4481,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "bulk",
-      "tanker",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "general", "bulk", "tanker", "RORO"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -5880,13 +4497,7 @@
     "hasShoreCranes": false,
     "berthType": "bay",
     "maxLOA": 240,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "bulk",
-      "tanker",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "general", "bulk", "tanker", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5902,11 +4513,7 @@
     "hasShoreCranes": false,
     "berthType": "deep-sea",
     "maxLOA": 230,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -5922,11 +4529,7 @@
     "hasShoreCranes": false,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -5942,13 +4545,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 340,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "bulk",
-      "tanker",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "general", "bulk", "tanker", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -5964,13 +4561,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 347,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "bulk",
-      "tanker",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "general", "bulk", "tanker", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -5986,13 +4577,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 245,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "bulk",
-      "tanker",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "general", "bulk", "tanker", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6007,12 +4592,7 @@
     "maxDraftM": 14.5,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6027,11 +4607,7 @@
     "maxDraftM": 13,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6046,11 +4622,7 @@
     "maxDraftM": 12.5,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6065,17 +4637,12 @@
     "maxDraftM": 13,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
-    "sourceNote": "Port Aut. Dakar"
+    "sourceNote": "Port Aut. Dakar",
+    "aliases": ["Port de Dakar", "Dakar Port"]
   },
   {
     "unlocode": "CIABJ",
@@ -6086,13 +4653,7 @@
     "maxDraftM": 15,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6107,12 +4668,7 @@
     "maxDraftM": 10.5,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6127,13 +4683,7 @@
     "maxDraftM": 15,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6148,13 +4698,7 @@
     "maxDraftM": 11,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6162,24 +4706,20 @@
   },
   {
     "unlocode": "NGLOS",
-    "name": "Lagos",
+    "name": "Lagos (Tin Can Island)",
     "country": "NG",
     "lat": 6.447,
     "lon": 3.392,
     "maxDraftM": 13.5,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
-    "sourceNote": "Nigerian Ports Auth."
+    "sourceNote": "Nigerian Ports Auth.",
+    "aliases": ["Lagos Tin Can", "Tin Can Island", "TCICTL"],
+    "note": "Tin Can Island Container Terminal — separate from Apapa (NGAPP) port complex"
   },
   {
     "unlocode": "NGPHC",
@@ -6190,11 +4730,7 @@
     "maxDraftM": 8,
     "hasShoreCranes": true,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6210,12 +4746,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6231,10 +4762,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 180,
-    "cargoBerthTypes": [
-      "bulk",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "general"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6250,12 +4778,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -6271,12 +4794,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 350,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -6292,11 +4810,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 180,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6312,12 +4826,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6333,12 +4842,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6354,12 +4858,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 190,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6375,13 +4874,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -6397,13 +4890,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -6418,10 +4905,7 @@
     "maxDraftM": 10,
     "hasShoreCranes": false,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "low",
@@ -6437,13 +4921,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 305,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -6459,9 +4937,7 @@
     "hasShoreCranes": false,
     "berthType": "deep-sea",
     "maxLOA": 350,
-    "cargoBerthTypes": [
-      "bulk"
-    ],
+    "cargoBerthTypes": ["bulk"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -6477,13 +4953,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6499,11 +4969,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6519,13 +4985,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 305,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -6541,10 +5001,7 @@
     "hasShoreCranes": false,
     "berthType": "terminal",
     "maxLOA": 370,
-    "cargoBerthTypes": [
-      "bulk",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6560,17 +5017,12 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
-    "sourceNote": "KPA Mombasa Port"
+    "sourceNote": "KPA Mombasa Port",
+    "aliases": ["Port of Mombasa", "Kilindini"]
   },
   {
     "unlocode": "TZDAR",
@@ -6582,13 +5034,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 275,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6604,11 +5050,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 180,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "low",
@@ -6624,12 +5066,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6645,12 +5082,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6666,13 +5098,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6688,12 +5114,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6709,13 +5130,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 350,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6731,13 +5146,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -6753,13 +5162,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6775,13 +5178,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -6797,13 +5194,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -6819,13 +5210,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -6841,12 +5226,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6862,13 +5242,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6884,13 +5258,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 370,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -6906,11 +5274,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -6926,13 +5290,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 305,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6948,13 +5306,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -6970,17 +5322,12 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
-    "sourceNote": "Port NOLA guide"
+    "sourceNote": "Port NOLA guide",
+    "aliases": ["NOLA", "Port of New Orleans"]
   },
   {
     "unlocode": "USBTR",
@@ -6992,11 +5339,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 275,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "low",
@@ -7012,12 +5355,7 @@
     "hasShoreCranes": false,
     "berthType": "bay",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7033,12 +5371,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 347,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7054,11 +5387,7 @@
     "hasShoreCranes": false,
     "berthType": "deep-sea",
     "maxLOA": 274,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7074,12 +5403,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7095,11 +5419,7 @@
     "hasShoreCranes": false,
     "berthType": "river",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7115,11 +5435,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 274,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7135,13 +5451,7 @@
     "hasShoreCranes": false,
     "berthType": "bay",
     "maxLOA": 305,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7157,12 +5467,7 @@
     "hasShoreCranes": false,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7178,12 +5483,7 @@
     "hasShoreCranes": false,
     "berthType": "bay",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -7199,13 +5499,7 @@
     "hasShoreCranes": false,
     "berthType": "bay",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -7221,12 +5515,7 @@
     "hasShoreCranes": false,
     "berthType": "bay",
     "maxLOA": 400,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -7242,12 +5531,7 @@
     "hasShoreCranes": false,
     "berthType": "terminal",
     "maxLOA": 274,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7263,12 +5547,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 305,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7284,12 +5563,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 305,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7305,11 +5579,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 350,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -7325,13 +5595,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -7347,12 +5611,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 225.5,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": true,
     "dataConfidence": "high",
@@ -7368,12 +5627,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 230,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": true,
     "icePort": true,
     "dataConfidence": "high",
@@ -7389,10 +5643,7 @@
     "hasShoreCranes": false,
     "berthType": "bay",
     "maxLOA": 365,
-    "cargoBerthTypes": [
-      "bulk",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7408,13 +5659,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -7430,13 +5675,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 350,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -7452,12 +5691,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7472,12 +5706,7 @@
     "maxDraftM": 15,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7492,12 +5721,7 @@
     "maxDraftM": 16.5,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7512,11 +5736,7 @@
     "maxDraftM": 12,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7531,11 +5751,7 @@
     "maxDraftM": 12,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7550,13 +5766,7 @@
     "maxDraftM": 15,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -7571,11 +5781,7 @@
     "maxDraftM": 13.7,
     "hasShoreCranes": true,
     "berthType": "terminal",
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -7590,11 +5796,7 @@
     "maxDraftM": 10.5,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7609,12 +5811,7 @@
     "maxDraftM": 11,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -7629,11 +5826,7 @@
     "maxDraftM": 10,
     "hasShoreCranes": true,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7648,12 +5841,7 @@
     "maxDraftM": 11,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7668,12 +5856,7 @@
     "maxDraftM": 10,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7688,13 +5871,7 @@
     "maxDraftM": 13.5,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -7709,12 +5886,7 @@
     "maxDraftM": 9.5,
     "hasShoreCranes": true,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7729,12 +5901,7 @@
     "maxDraftM": 15,
     "hasShoreCranes": true,
     "berthType": "terminal",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -7749,10 +5916,7 @@
     "maxDraftM": 10,
     "hasShoreCranes": false,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "container",
-      "general"
-    ],
+    "cargoBerthTypes": ["container", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "low",
@@ -7767,12 +5931,7 @@
     "maxDraftM": 9.5,
     "hasShoreCranes": false,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7787,13 +5946,7 @@
     "maxDraftM": 14.5,
     "hasShoreCranes": true,
     "berthType": "terminal",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7808,13 +5961,7 @@
     "maxDraftM": 12.2,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -7829,13 +5976,7 @@
     "maxDraftM": 10,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7850,13 +5991,7 @@
     "maxDraftM": 16,
     "hasShoreCranes": true,
     "berthType": "terminal",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -7872,13 +6007,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "bulk",
-      "tanker",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "general", "bulk", "tanker", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -7893,12 +6022,7 @@
     "maxDraftM": 10,
     "hasShoreCranes": true,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "container",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "container", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7914,12 +6038,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -7934,12 +6053,7 @@
     "maxDraftM": 10,
     "hasShoreCranes": true,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "container",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "container", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7955,11 +6069,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -7975,13 +6085,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "bulk",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "general", "bulk", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -7996,12 +6100,7 @@
     "maxDraftM": 9.5,
     "hasShoreCranes": true,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "container",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "container", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8016,12 +6115,7 @@
     "maxDraftM": 8,
     "hasShoreCranes": true,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "container",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "container", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8037,12 +6131,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "bulk",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "general", "bulk", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -8058,12 +6147,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8079,12 +6163,7 @@
     "hasShoreCranes": false,
     "berthType": "bay",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8100,12 +6179,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 240,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8121,12 +6195,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 340,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8142,13 +6211,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8164,12 +6227,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "bulk"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "bulk"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8185,9 +6243,7 @@
     "hasShoreCranes": false,
     "berthType": "terminal",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "container"
-    ],
+    "cargoBerthTypes": ["container"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -8203,10 +6259,7 @@
     "hasShoreCranes": false,
     "berthType": "bay",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "bulk",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8222,13 +6275,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8244,13 +6291,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -8266,10 +6307,7 @@
     "hasShoreCranes": false,
     "berthType": "river",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "bulk",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "general"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8285,13 +6323,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8306,12 +6338,7 @@
     "maxDraftM": 10,
     "hasShoreCranes": false,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8326,11 +6353,7 @@
     "maxDraftM": 10,
     "hasShoreCranes": false,
     "berthType": "river",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8346,12 +6369,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8367,11 +6385,7 @@
     "hasShoreCranes": false,
     "berthType": "bay",
     "maxLOA": 260,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8387,12 +6401,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8408,13 +6417,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -8430,12 +6433,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8451,12 +6449,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8472,11 +6465,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8492,10 +6481,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "container",
-      "general"
-    ],
+    "cargoBerthTypes": ["container", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -8511,12 +6497,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 366,
-    "cargoBerthTypes": [
-      "container",
-      "bulk",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "bulk", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -8532,11 +6513,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "container",
-      "bulk",
-      "general"
-    ],
+    "cargoBerthTypes": ["container", "bulk", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8552,11 +6529,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 280,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8572,10 +6545,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "bulk",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8591,10 +6561,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 225,
-    "cargoBerthTypes": [
-      "bulk",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8610,10 +6577,7 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "container",
-      "general"
-    ],
+    "cargoBerthTypes": ["container", "general"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8629,12 +6593,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 300,
-    "cargoBerthTypes": [
-      "container",
-      "bulk",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["container", "bulk", "general", "RORO"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
@@ -8650,11 +6609,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 250,
-    "cargoBerthTypes": [
-      "container",
-      "general",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["container", "general", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8670,13 +6625,7 @@
     "hasShoreCranes": true,
     "berthType": "bay",
     "maxLOA": 260,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8691,12 +6640,7 @@
     "maxDraftM": 15,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -8711,12 +6655,7 @@
     "maxDraftM": 14,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -8731,13 +6670,7 @@
     "maxDraftM": 13,
     "hasShoreCranes": true,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8752,13 +6685,7 @@
     "maxDraftM": 10,
     "hasShoreCranes": false,
     "berthType": "bay",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": true,
     "dataConfidence": "medium",
@@ -8773,13 +6700,7 @@
     "maxDraftM": 12,
     "hasShoreCranes": true,
     "berthType": "terminal",
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general",
-      "RORO",
-      "tanker"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general", "RORO", "tanker"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -8794,11 +6715,7 @@
     "maxDraftM": 9,
     "hasShoreCranes": true,
     "berthType": "terminal",
-    "cargoBerthTypes": [
-      "bulk",
-      "general",
-      "RORO"
-    ],
+    "cargoBerthTypes": ["bulk", "general", "RORO"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
@@ -8814,10 +6731,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 150,
-    "cargoBerthTypes": [
-      "bulk",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -8833,10 +6747,7 @@
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 140,
-    "cargoBerthTypes": [
-      "bulk",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -8852,11 +6763,7 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "bulk",
-      "container",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "container", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
@@ -8872,13 +6779,74 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 200,
-    "cargoBerthTypes": [
-      "bulk",
-      "general"
-    ],
+    "cargoBerthTypes": ["bulk", "general"],
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
     "sourceNote": "Turkish Mediterranean port — general cargo + cruise, shore cranes"
+  },
+  {
+    "unlocode": "NGAPP",
+    "name": "Apapa",
+    "country": "NG",
+    "lat": 6.456,
+    "lon": 3.372,
+    "maxDraftM": 12.5,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "aliases": ["Lagos", "Lagos Port", "Lagos Apapa", "Apapa Port"],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
+    "tidal": false,
+    "icePort": false,
+    "dataConfidence": "high",
+    "sourceNote": "Nigerian Ports Authority — Apapa Port Complex"
+  },
+  {
+    "unlocode": "GHTEM",
+    "name": "Tema",
+    "country": "GH",
+    "lat": 5.617,
+    "lon": 0.017,
+    "maxDraftM": 12.0,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "aliases": ["Tema Port", "Port of Tema"],
+    "cargoBerthTypes": ["bulk", "container", "general"],
+    "tidal": false,
+    "icePort": false,
+    "dataConfidence": "high",
+    "sourceNote": "Ghana Ports and Harbours Authority"
+  },
+  {
+    "unlocode": "EGSUZ",
+    "name": "Suez",
+    "country": "EG",
+    "lat": 29.967,
+    "lon": 32.55,
+    "maxDraftM": 20.0,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "aliases": ["Suez Canal", "Port Suez", "Port of Suez", "Bur Tewfik"],
+    "cargoBerthTypes": ["bulk", "container", "general", "tanker"],
+    "tidal": false,
+    "icePort": false,
+    "dataConfidence": "high",
+    "sourceNote": "Suez Canal Authority"
+  },
+  {
+    "unlocode": "BDCGP",
+    "name": "Chittagong",
+    "country": "BD",
+    "lat": 22.333,
+    "lon": 91.833,
+    "maxDraftM": 9.5,
+    "hasShoreCranes": true,
+    "berthType": "river",
+    "aliases": ["Chattogram", "Chittagong Port", "Port of Chittagong"],
+    "cargoBerthTypes": ["bulk", "container", "general"],
+    "tidal": true,
+    "icePort": false,
+    "dataConfidence": "high",
+    "sourceNote": "Chittagong Port Authority"
   }
 ]

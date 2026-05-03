@@ -3,10 +3,19 @@
  *   portCode   — truthy string; empty string → null
  *   vesselDwt  — finite, positive number; NaN / ±Infinity / ≤0 → null
  *   cargoType  — optional; unknown value falls back to 'general'
+ *
+ * BC note: getPortDa also accepts { port: ResolvedPort, vesselDwt, cargoType? }
+ * in addition to the legacy { portCode: string, ... } form.
  */
 import type Database from 'better-sqlite3';
 import { getStore } from '@/lib/session-store';
 import type { PortDaQuery, PortDaBreakdown } from './types';
+import type { ResolvedPort } from '@/lib/ports/resolve';
+
+/** Extended query type: accepts either a raw portCode string or a ResolvedPort object. */
+type PortDaQueryExtended =
+  | PortDaQuery
+  | { port: ResolvedPort; vesselDwt: number; cargoType?: string };
 
 const VALID_CARGO_TYPES = new Set(['general', 'bulk', 'container', 'tanker']);
 
@@ -45,14 +54,18 @@ function rowToBreakdown(row: PortDaRow, vesselDwt: number): PortDaBreakdown {
 }
 
 export function getPortDa(
-  q: PortDaQuery,
+  q: PortDaQueryExtended,
   db?: Database.Database,
 ): PortDaBreakdown | null {
-  if (!q.portCode) return null;
-  if (!Number.isFinite(q.vesselDwt) || q.vesselDwt <= 0) return null;
+  // Normalize: extract portCode from either ResolvedPort form or raw portCode string
+  const portCode = 'port' in q ? q.port.portCode : q.portCode;
+  const { vesselDwt, cargoType } = q;
 
-  const cargoType = q.cargoType && VALID_CARGO_TYPES.has(q.cargoType)
-    ? q.cargoType
+  if (!portCode) return null;
+  if (!Number.isFinite(vesselDwt) || vesselDwt <= 0) return null;
+
+  const resolvedCargoType = cargoType && VALID_CARGO_TYPES.has(cargoType)
+    ? cargoType
     : 'general';
 
   const database = db ?? getStore().getDatabase();
@@ -66,7 +79,7 @@ export function getPortDa(
       AND vessel_dwt_min <= ?
       AND vessel_dwt_max >= ?
       AND cargo_type = ?
-  `).all(q.portCode, q.vesselDwt, q.vesselDwt, cargoType);
+  `).all(portCode, vesselDwt, vesselDwt, resolvedCargoType);
 
   if (rows.length === 0) return null;
 
@@ -75,5 +88,5 @@ export function getPortDa(
     (CONFIDENCE_RANK[b.confidence] ?? -1) > (CONFIDENCE_RANK[a.confidence] ?? -1) ? b : a,
   );
 
-  return rowToBreakdown(best, q.vesselDwt);
+  return rowToBreakdown(best, vesselDwt);
 }

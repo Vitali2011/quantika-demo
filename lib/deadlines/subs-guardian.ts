@@ -6,9 +6,14 @@
  * нужно уведомить. Idempotent: если стадия уже в `notifiedStages`, повторный
  * вызов не дублирует нотификации — это критично для cron, который дёргается
  * каждые 30 мин.
+ *
+ * DB-backed idempotency (βf3-03): tryRecordDispatch acts as the source of
+ * truth across process restarts. In-memory notifiedStages[] is kept as a
+ * fast-path to avoid a DB hit on every iteration of the same-process loop.
  */
 
 import { getChannelsForStage, type EscalationStage } from './escalation-policy';
+import { tryRecordDispatch } from '../db/queries/dispatches';
 
 export type { EscalationStage } from './escalation-policy';
 
@@ -77,6 +82,20 @@ export async function processDeadline(
   const dispatched: string[] = [];
 
   for (const ch of channels) {
+    // DB-backed idempotency: tryRecordDispatch returns false if already recorded.
+    // Falls back gracefully when DB is not initialised (e.g. unit tests without DB).
+    let isNew = true;
+    try {
+      isNew = tryRecordDispatch(deadline.dealId, `${deadline.deadlineAt}`, newStage, ch.channel);
+    } catch {
+      // DB not initialised — fall through to dispatch (in-memory guard is still active above).
+    }
+
+    if (!isNew) {
+      // Already dispatched in a previous process run; skip without calling dispatcher.
+      continue;
+    }
+
     try {
       await dispatcher(ch.channel, deadline, ch.template, ch.priority);
       dispatched.push(ch.channel);
@@ -86,7 +105,7 @@ export async function processDeadline(
     }
   }
 
-  // Mutate notifiedStages in-place so the caller can persist.
+  // Mutate notifiedStages in-place so the caller can persist (fast-path for same-process).
   if (!deadline.notifiedStages.includes(newStage)) {
     deadline.notifiedStages.push(newStage);
   }

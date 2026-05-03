@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
-import { callAiJson } from '@/lib/openai';
+import { callAiJson, LLMTimeoutError } from '@/lib/openai';
 import { MATCH_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_HEAVY } from '@/lib/constants';
 import { analyzePairs, AiScorer, RawMatch } from '@/lib/matching/pair-analyzer';
@@ -44,13 +44,27 @@ export async function POST(request: NextRequest) {
     return result.matches || [];
   };
 
-  const { matches, blockedMatches } = await analyzePairs(
-    parsedCargos,
-    parsedVessels,
-    aiScorer,
-    { refYear, today },
-  );
+  try {
+    const { matches, blockedMatches } = await analyzePairs(
+      parsedCargos,
+      parsedVessels,
+      aiScorer,
+      { refYear, today },
+    );
 
-  updateSession(sessionId, { matches, blockedMatches });
-  return NextResponse.json({ count: matches.length, blockedCount: blockedMatches.length });
+    updateSession(sessionId, { matches, blockedMatches });
+    return NextResponse.json({ count: matches.length, blockedCount: blockedMatches.length });
+  } catch (err) {
+    if (err instanceof LLMTimeoutError) {
+      return NextResponse.json(
+        {
+          error: 'ai_timeout',
+          message: 'AI scoring timed out after 85s — try fewer pairs',
+          retryable: true,
+        },
+        { status: 504 },
+      );
+    }
+    throw err;
+  }
 }

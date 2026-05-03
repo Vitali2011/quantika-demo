@@ -40,6 +40,8 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // βf3-06: timing markers for cold-start profiling
+  console.time('cold:compare-routes-total');
   try {
     const result = await compareRoutes(
       body.origin,
@@ -48,8 +50,10 @@ export async function POST(req: NextRequest) {
       body.cargo,
       body.marketRates,
     );
+    console.timeEnd('cold:compare-routes-total');
     return NextResponse.json(result);
   } catch (err) {
+    console.timeEnd('cold:compare-routes-total');
     return NextResponse.json(
       { error: 'compare-routes failed', details: String(err) },
       { status: 500 },

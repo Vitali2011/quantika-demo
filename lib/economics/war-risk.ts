@@ -20,6 +20,8 @@ export interface HraZone {
  * TODO(wave-γ): add crew war bonus (~$500/person × ~20 crew)
  * and P&I surcharge (~$5k flat) per voyage. For now hull-only.
  */
+import type { ResolvedPort } from '@/lib/ports/resolve';
+
 export const JWC_HRA_ZONES: HraZone[] = [
   {
     id: 'gulf-of-guinea',
@@ -51,8 +53,10 @@ export const JWC_HRA_ZONES: HraZone[] = [
 
 export interface WarRiskInput {
   route: {
-    fromPort: string;
-    toPort: string;
+    /** Accepts either a ResolvedPort object or a plain port name string (BC). */
+    fromPort: string | ResolvedPort;
+    /** Accepts either a ResolvedPort object or a plain port name string (BC). */
+    toPort: string | ResolvedPort;
     viaCanal?: string;
   };
   vesselValueUsd: number;
@@ -72,19 +76,57 @@ export interface WarRiskResult {
 
 const VESSEL_VALUE_FALLBACK_USD = 8_000_000;
 
+/**
+ * GoG (Gulf of Guinea) LOCODE set — known HRA ports matched by LOCODE
+ * when a ResolvedPort is provided. This avoids relying solely on name keywords
+ * for ports that may have been renamed or have unusual canonical names.
+ */
+const GOG_LOCODES = new Set(['NGAPP', 'NGLOS', 'GHTMA', 'BJCOO', 'CIABD', 'NGBON', 'TGLFW', 'SNDKR', 'GNCKR']);
+
+/**
+ * Extract all searchable strings for a port — name + aliases + LOCODE.
+ * Works for both ResolvedPort objects and plain strings (BC).
+ */
+function portSearchTerms(port: string | ResolvedPort): string[] {
+  if (typeof port === 'string') {
+    return [port.toLowerCase().replace(/-/g, ' ')];
+  }
+  const terms = [
+    port.portName.toLowerCase().replace(/-/g, ' '),
+    ...port.aliases.map(a => a.toLowerCase().replace(/-/g, ' ')),
+    port.portCode.toLowerCase(),
+  ];
+  return terms;
+}
+
+/**
+ * Check if a port matches a zone's port keyword list.
+ * Matches if ANY search term (name, alias, locode) contains ANY zone keyword.
+ */
+function portMatchesZone(port: string | ResolvedPort, zone: HraZone): boolean {
+  const terms = portSearchTerms(port);
+
+  // LOCODE-based check for known GoG ports (when ResolvedPort available)
+  if (typeof port !== 'string' && zone.id === 'gulf-of-guinea' && GOG_LOCODES.has(port.portCode)) {
+    return true;
+  }
+
+  return zone.ports.some(keyword => {
+    const re = new RegExp(`\\b${keyword}\\b`, 'i');
+    return terms.some(term => re.test(term));
+  });
+}
+
 export function calculateWarRiskPremium(input: WarRiskInput): WarRiskResult {
   const { route, vesselValueUsd } = input;
 
-  const fromLower = (route?.fromPort ?? '').toLowerCase().replace(/-/g, ' ');
-  const toLower = (route?.toPort ?? '').toLowerCase().replace(/-/g, ' ');
+  const fromPort = route?.fromPort ?? '';
+  const toPort = route?.toPort ?? '';
   const viaLower = (route?.viaCanal ?? '').toLowerCase().replace(/-/g, ' ');
 
   const matchedZones: HraZone[] = [];
   for (const zone of JWC_HRA_ZONES) {
-    const portMatch = zone.ports.some(p => {
-      const re = new RegExp(`\\b${p}\\b`, 'i');
-      return re.test(fromLower) || re.test(toLower);
-    });
+    const portMatch = portMatchesZone(fromPort, zone) || portMatchesZone(toPort, zone);
     const canalMatch = zone.canals?.some(c => viaLower.includes(c)) ?? false;
     if (portMatch || canalMatch) matchedZones.push(zone);
   }
