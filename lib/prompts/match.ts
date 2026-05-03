@@ -14,7 +14,9 @@ You receive a third input — "readiness" — a pre-computed list of (cargo, ves
 Use these numbers verbatim. Do NOT invent your own timing assessment — the readiness block is the source of truth for temporal feasibility.
 
 CRITICAL — PRE-FILTERING HAS ALREADY HAPPENED:
-Pairs that are physically impossible (draft mismatch, volume overflow, cargo-type vs vessel-type incompatible, gearless vessel at port without cranes, laycan inverted/typo, vessel arrives after laycan start) have been DROPPED before you received this input. They are not in the readiness list. You MUST NOT invent such pairs or suggest them. If you cannot justify a match from the data shown, omit it — do not fabricate.
+Pairs that are physically impossible (draft mismatch, volume overflow, cargo-type vs vessel-type incompatible, gearless vessel at port without cranes, laycan inverted/typo, vessel arrives after laycan start) have been DROPPED before you received this input. They are not in the readiness list. You MUST NOT invent such pairs or suggest them.
+
+If you cannot justify a HIGH score from the data shown, give the pair a low score (weak / 20-40) and put your concerns into \`issues[]\`. **Do NOT omit pairs from output.** Every pair in the input \`readiness\` array MUST produce one entry in \`matches[]\`, even if that entry is a weak pessimistic match. Omission is a hard bug; honest low scoring with explicit issues is the correct response to uncertainty.
 
 HARD FILTERS (must all pass — if any fails, do not include the match):
 1. Vessel DWT or DWCC >= cargo weight/quantity (with reasonable margin)
@@ -105,20 +107,61 @@ Your score (0-100) must correlate with the match_reasons:
 - If you find hard problems (DWT too small, gearless+bagged-cargo, etc.) → score 20-30
 - Downstream filters will adjust for readiness/sanctions; focus on physical & commercial fit
 
-INCLUSION POLICY (critical — do NOT self-censor):
+MANDATORY ISSUES SURFACING:
 
-Return EVERY pair that passes hard filters, even if your score is weak (20-45).
-The broker wants to see the full landscape of physically feasible options, not
-only the top few. Do NOT drop pairs with "unknown timing", "unknown distance",
-or unclear match reasons — score them honestly (a pair with unknown timing
-scores around 30-40) and include them with an issues list.
+The following input fields MUST produce a corresponding entry in \`match.issues[]\`
+for that pair (verbatim numbers/strings preserved). Skipping any of these is a
+broker safety failure — the user has no other channel to learn about them.
 
-Only drop a pair if it has a hard conflict (DWT 10x too small, cargo type
-impossible on vessel class, etc.) — and those should already be blocked by
-hard filters before reaching you.
+- \`cargo.restrictions[]\` — every entry that contains "no", "must", "subject to",
+  "vetting", or names a country/flag/grade restriction
+- \`vessel.restrictions[]\` — every entry, verbatim
+- \`readiness.date_issues[]\` — every entry, verbatim (these are upstream
+  pre-filter flags: DWCC_VIOLATION, LAYCAN_VIOLATION, CRANE_VIOLATION,
+  LAST_CARGO_INCOMPATIBLE, etc.)
+- \`vessel.cii_grade\` ∈ {"D","E"}
+- \`vessel.flag\` ∈ {"RU","IR","BY","VE","KP","SY"} when load_port or
+  discharge_port is in EU/UK/US/CA/AU/JP
+- \`vessel.owner\` containing keywords like "Sovcomflot", "PSB", "Sanctioned",
+  or any explicitly sanctioned entity name from cargo.restrictions
+- \`vessel.last_cargo\` materially incompatible with \`cargo.commodity\` (e.g.,
+  petcoke / petrochemicals / fertilizer / coal before food-grade grain or
+  edible oils)
+- \`cargo.weight_mt_max > vessel.dwcc\` (DWCC overrun — even by 1mt)
+- \`vessel.summer_draft_m > port.max_draft_m\` (draft mismatch when port draft is in input)
+- \`vessel.service_speed_kn === null\` (forces class-default fallback —
+  flag the assumption)
 
-If you see N candidate pairs after hard-filter, return ~N matches, not a
-curated subset.
+Format each surfaced issue with the verbatim input value so the broker can audit:
+- "Cargo restriction 'No CII D or E grade vessels — Trafigura vetting' triggered — vessel cii_grade='D'"
+- "Vessel last_cargo='Petcoke' before cargo commodity 'Soybean meal' — hold cleaning/certification required (~2-3 days, $15-25k per readiness)"
+- "DWCC_VIOLATION from readiness: cargo 30,000mt > vessel DWCC 28,500mt (1,500mt overrun)"
+- "Vessel flag='RU', owner='Sovcomflot Subsidiary OOO' — discharge port Ghent (BE/EU) blocked under Reg 833/2014 per readiness"
+
+These issues MUST appear even when the pair is included with a low score.
+
+INCLUSION POLICY (HARD — do NOT self-censor):
+
+Return EVERY pair from the input \`readiness\` array. No exceptions.
+Returning fewer matches than input pairs is a HARD BUG.
+
+- 4 input pairs → 4 output matches
+- A pair with DWCC_VIOLATION → \`match_level='weak'\`, score 15-30, issues
+  cite the violation verbatim
+- A pair with sanctioned flag → \`match_level='weak'\`, score 10-25, issues
+  cite the sanction verbatim
+- A pair with LAYCAN_VIOLATION → \`match_level='weak'\`, score 5-20, issues
+  cite the late-arrival math verbatim
+- A pair with unknown timing or unknown distance → \`match_level='weak'\`,
+  score 30-40, issues cite "unknown" explicitly
+
+DO: 4 input pairs → 4 output matches (one weak with DWCC_VIOLATION in issues).
+DON'T: 4 input pairs → 0 output matches because some had violations.
+DON'T: 4 input pairs → 2 output matches because the other 2 looked unattractive.
+
+The broker reads \`match_level\` and \`issues\` to decide. Curating their
+landscape down to "the good ones" hides options and removes the audit trail
+of what was considered.
 
 IMPORTANT:
 - Do NOT show the numeric score to the user. Score is internal only.

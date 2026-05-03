@@ -35,3 +35,11 @@ Output schema (per MATCH_PROMPT):
 - **Documentary requirements** (LOIs, BLs, COAs) — post-fixture ops
 
 (Populated as QA agents over-flag these in early rounds.)
+
+## Round 1 additions
+
+- **Daily idle running cost / bunker burn during idle / ballast voyage cost in $/day** —
+  the matcher has no cost model and no fuel-price input. QA may want
+  `issues[]` like "$X/day idle, ballast cost $Y" but matcher only cites days.
+  Stating "vessel idle 6 days before laycan" is sufficient; quantifying $ is
+  out of scope.

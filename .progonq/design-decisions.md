@@ -88,14 +88,31 @@ math when vessel `service_speed` is null, that's NOT a bug — it's the document
 fallback. Only flag if matcher uses 12.5 kn while ignoring an explicit
 `service_speed=14` in the input.
 
-### B.6 Out-of-scope concerns (NOT flag as HIGH)
+### B.6a `issues[]` discipline — concerns only, not satisfied compliance
+`issues[]` is the broker's attention-list. It must contain unresolved or
+marginal concerns. Items confirming a restriction is SATISFIED (e.g.,
+"Cargo says No TBN, vessel is named M/V X with IMO Y") do NOT belong in
+`issues[]` — that is noise. Move to `match_reasons[]` as a positive
+compliance citation, or simply omit. (Round 1 finding D2.)
+
+### B.6b MANDATORY ISSUES SURFACING is now in the prompt (Round 2+)
+After Round 1, the prompt was extended with an explicit "MANDATORY ISSUES
+SURFACING" section enumerating input fields that MUST appear in `issues[]`
+(restrictions, date_issues, cii_grade D/E, sanctioned flags, LAST_CARGO
+incompatibilities, DWCC overrun, draft mismatch, null service_speed). QA
+agents from Round 2+ should expect these to be surfaced and may flag their
+absence as HIGH — but should NOT flag the rule itself as a bug.
+
+### B.7 Out-of-scope concerns (NOT flag as HIGH)
 The matcher does NOT compute:
-- Voyage P&L / freight rate suggestion
+- Voyage P&L / freight rate suggestion / TCE
 - Bunker procurement strategy
 - Charter party clause drafting
 - Owner/charterer credit checks
-- Vetting (RightShip, OCIMF) — only flag CII grade if present in input
+- Vetting (RightShip, OCIMF SIRE, Q88) — only flag `cii_grade` if present in input
 - Insurance/P&I match
+- Daily idle running cost in $/day; ballast bunker burn $; cleaning cost $
+  estimates (matcher has no cost model — citing days/distance is sufficient)
 QA agents may find these "missing", but they belong in `schema-gaps.md`, not
 issues. Only fields/concerns documented in MATCH_PROMPT output schema are in scope.
 
