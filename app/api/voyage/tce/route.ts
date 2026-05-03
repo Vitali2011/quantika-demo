@@ -13,6 +13,27 @@ import { z } from 'zod';
 import { calculateTCE, type VoyageInput } from '@/lib/economics/voyage-calculator';
 import { quoteCanal, type CanalCode, type SuezInput, type CanalInput } from '@/lib/economics/canals/index';
 import { getPortDa } from '@/lib/port-da/repository';
+import { resolvePort, type ResolvedPort } from '@/lib/ports/resolve';
+
+const LOCODE_RE = /^[A-Za-z]{5}$/;
+
+/**
+ * Resolve port input to a ResolvedPort.
+ * - Known ports (name or LOCODE in our DB) → full resolve.
+ * - Unknown LOCODE-format strings (5-char alpha) → synthetic pass-through for BC
+ *   (preserves compatibility with callers using LOCODEs not yet in port-master.json).
+ * - Unknown free-text names → null (caller should return 400).
+ */
+function resolvePortOrPassthrough(input: string): ResolvedPort | null {
+  const resolved = resolvePort(input);
+  if (resolved) return resolved;
+  // BC: allow unknown 5-char LOCODE-format strings through as synthetic port
+  if (LOCODE_RE.test(input)) {
+    const code = input.toUpperCase();
+    return { portCode: code, portName: code, country: '', lat: 0, lon: 0, aliases: [] };
+  }
+  return null;
+}
 
 export const dynamic = 'force-dynamic';
 
@@ -81,13 +102,17 @@ function resolveCanalUsd(body: z.infer<typeof VoyageInputSchema>): number {
   }
 }
 
-function resolveDaUsd(body: z.infer<typeof VoyageInputSchema>): number {
+function resolveDaUsd(
+  body: z.infer<typeof VoyageInputSchema>,
+  originResolved: ResolvedPort,
+  destinationResolved: ResolvedPort,
+): number {
   if (typeof body.daUsd === 'number') return body.daUsd;
   let total = 0;
-  for (const port of [body.route.originPort, body.route.destinationPort]) {
+  for (const port of [originResolved, destinationResolved]) {
     try {
       const da = getPortDa({
-        portCode: port,
+        portCode: port.portCode,
         vesselDwt: body.vessel.dwt,
         cargoType: body.cargoType,
       });
@@ -116,8 +141,25 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   const data = parsed.data;
+
+  // Resolve ports at API entry — single source of truth for downstream
+  const originResolved = resolvePortOrPassthrough(data.route.originPort);
+  if (!originResolved) {
+    return NextResponse.json(
+      { error: 'port_not_found', input: 'originPort', value: data.route.originPort },
+      { status: 400 },
+    );
+  }
+  const destinationResolved = resolvePortOrPassthrough(data.route.destinationPort);
+  if (!destinationResolved) {
+    return NextResponse.json(
+      { error: 'port_not_found', input: 'destinationPort', value: data.route.destinationPort },
+      { status: 400 },
+    );
+  }
+
   const canalUsd = resolveCanalUsd(data);
-  const daUsd = resolveDaUsd(data);
+  const daUsd = resolveDaUsd(data, originResolved, destinationResolved);
 
   const tceInput: VoyageInput = {
     vessel: {
@@ -126,7 +168,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       speedKts: data.vessel.speedKts,
       consumptionMtPerDay: data.vessel.consumptionMtPerDay,
     },
-    route: data.route,
+    route: {
+      ...data.route,
+      // Pass canonical port names downstream for war_risk matching
+      originPort: originResolved.portName,
+      destinationPort: destinationResolved.portName,
+    },
     cargo: data.cargo,
     bunkerPriceUsdPerMt: data.bunkerPriceUsdPerMt,
     euaPriceEur: data.euaPriceEur,
