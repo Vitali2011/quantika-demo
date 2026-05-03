@@ -44,7 +44,12 @@ Extract per inquiry item:
 - destination_port: full port name
 - destination_country
 - cargo_description: full description of goods
-- weight_mt: number (metric tons). RANGE RULE: If cargo weight is given as a range (e.g. "4000/4800 MT", "5000-5500 MT", "8000–8500 mts MOLOO", "abt 10000 mt"), return the UPPER BOUND (maximum) as weight_mt (confidence='interpreted'). Also populate weight_mt_min (lower bound) and weight_mt_max (upper bound). Do NOT return an average or middle value — always use the max bound for weight_mt. If a single definite number is given, weight_mt = weight_mt_min = weight_mt_max = that number, use confidence='confirmed'. Quote the original range text verbatim in source_text.
+- cargo_origin_country: the COUNTRY OF ORIGIN of the cargo itself — NOT the load port country. This is relevant when the email mentions the cargo's provenance separately from the load port (e.g. "Indonesian origin thermal coal loaded at Dammam" → cargo_origin_country = "Indonesia", while origin_country = "Saudi Arabia"). Null if not stated. Source: phrases like "[Country] origin", "from [Country]", "[Country]-produced", "[Country] coal/grain/etc."
+- weight_mt: number (metric tons).
+  RANGE RULE: If cargo weight is given as an explicit range (e.g. "4000/4800 MT", "5000-5500 MT"), return the UPPER BOUND as weight_mt (confidence='interpreted'). Also populate weight_mt_min and weight_mt_max.
+  MOLOO RULE: MOLOO (More or Less Owner's Option) is a CONTRACT TOLERANCE clause — NOT a weight range. "28,000 mts (10% MOLOO)" means the nominal quantity is 28,000 mts and the owner may load ±10% at their option. Set weight_mt = 28000 (the nominal stated value). Set weight_mt_min = 25200 and weight_mt_max = 30800 to record the tolerance bounds. Do NOT set weight_mt to the MOLOO maximum (30800). "Abt 28,000 mts (10% MOLOO)" → weight_mt=28000 with confidence='interpreted' (due to "abt"), weight_mt_min=25200, weight_mt_max=30800.
+  SINGLE VALUE: If a single definite number is given with no hedge, weight_mt = weight_mt_min = weight_mt_max = that number, confidence='confirmed'.
+  Quote the original weight text verbatim in source_text.
 - weight_mt_min: lower bound of weight range if given as a range, else null
 - weight_mt_max: upper bound of weight range if given as a range, else null
 - volume_cbm: number (cubic meters)
@@ -54,21 +59,25 @@ Extract per inquiry item:
 - quantity: number of discrete units or lots (e.g. number of containers, reels, big bags). CRITICAL: Do NOT put cargo weight (MT) into quantity. If the email says "quantity 3500mt" treat it as weight_mt=3500, not quantity=3500. If no discrete unit count is given, leave quantity null. Example: "2 x 40HC" → quantity=2; "8000mt bulk" → quantity=null, weight_mt=8000.
 - incoterms: e.g. FOB, CFR, CIF, EXW, DDP
 - preferred_dates: loading or shipping dates mentioned
-- laycan: laycan window if specified (e.g. "1/5 May 2025")
-- loading_rate: if specified (e.g. "5000 MT/day SHINC"). CRITICAL: Always extract laytime/rate terms here — FIO, FIO SHINC, FIOST, CQD, CQD both ends, numeric MT/day rates. These belong in loading_rate / discharge_rate, NOT in special_requirements.
-- discharge_rate: if specified. Same rules as loading_rate.
+- laycan: laycan window if specified (e.g. "1/5 May 2025"). CONFIDENCE RULE: If laycan contains uncertainty markers ("TBC", "TBD", "pending", "to be confirmed", "exact dates TBC", "approx"), use confidence='uncertain'. If laycan is stated as a loose window ("end May / early June") without specific dates, use confidence='interpreted'. Only use confidence='confirmed' when specific calendar dates are given (e.g. "1/5 May 2025", "15-20 June 2025").
+- loading_rate: NUMERIC cargo-handling rate only — e.g. "5,000 MT/day", "2,500c". Do NOT put cost-allocation terms (FIO, FIOST, CQD) here. If only a laytime term is given with no MT/day number, leave loading_rate null.
+- loading_terms: laytime cost-allocation and dispatch regime qualifiers — FIO, FIO SHINC, FIO SHEX, FIOST, CQD, CQD both ends, CQD BENDS. These are cost-responsibility terms, not numeric rates. Extract the exact phrase here. If the email says "FIO SHINC both ends", set loading_terms = "FIO SHINC" and discharge_terms = "FIO SHINC".
+- discharge_rate: NUMERIC cargo-handling rate only, same rule as loading_rate.
+- discharge_terms: laytime cost-allocation and dispatch regime qualifiers, same rule as loading_terms.
 - commission_percent: broker commission if mentioned
 - commission_terms: e.g. "TTL BENDS", "address commission"
-- special_requirements: temperature, hazmat class, fumigation, etc. Do NOT put laytime terms (FIO, CQD, SHINC, SHEX) here.
+- special_requirements: temperature, hazmat class, fumigation, etc. Do NOT put laytime cost terms (FIO, CQD, SHINC, SHEX) here — those go in loading_terms / discharge_terms. ALWAYS include NOR tendering conditions if present (WIPON, WIBON, WIFPON, WICCON or any combination) as a special_requirements entry — these are contractually critical laytime/demurrage terms that belong here.
 - stowage_factor: if mentioned (CBM per MT)
 - missing_info: array of strings — critical missing information needed to provide a quote
 
-LAYTIME RATE EXTRACTION RULES:
-- "FIO SHINC" / "FIO SHEX" / "FIO" → loading_rate AND discharge_rate = exact phrase. FIO = Free In Out (charterers pay for loading/discharge operations).
-- "CQD both ends" / "CQD b/e" / "CQD BENDS" / "CQD" → loading_rate AND discharge_rate = exact phrase. CQD = Customary Quick Dispatch.
-- "Loading: FIO SHINC" → loading_rate = "FIO SHINC". "Disch: FIO SHINC" → discharge_rate = "FIO SHINC".
-- Numeric patterns: "5,000 MT SHINC", "5000 MT/day SHEX" → populate the appropriate rate field.
-- NEVER route these terms to special_requirements.
+LAYTIME EXTRACTION RULES:
+- "FIO SHINC" / "FIO SHEX" / "FIO" → loading_terms AND discharge_terms = exact phrase. FIO = Free In Out (cost-allocation, not a MT/day rate).
+- "FIOST" → loading_terms AND discharge_terms = "FIOST". FIOST = Free In Out Stowed Trimmed.
+- "CQD both ends" / "CQD b/e" / "CQD BENDS" / "CQD" → loading_terms AND discharge_terms = exact phrase. CQD = Customary Quick Dispatch (dispatch regime, not a MT/day rate).
+- "Loading: FIO SHINC" → loading_terms = "FIO SHINC". "Disch: FIO SHINC" → discharge_terms = "FIO SHINC".
+- Numeric patterns: "5,000 MT SHINC", "5000 MT/day SHEX" → numeric part in loading_rate (e.g. 5000); time qualifier (SHINC, SHEX) in loading_terms.
+- "FIO SHINC both ends" → loading_terms = "FIO SHINC", discharge_terms = "FIO SHINC", loading_rate = null, discharge_rate = null.
+- NEVER route FIO, CQD, SHINC, SHEX to special_requirements.
 
 CARGO TYPE RULES:
 - BULK: free-flowing, unpackaged cargo (grain, coal, fertilizer, ore, cement, sugar, and scrap described as "loose").

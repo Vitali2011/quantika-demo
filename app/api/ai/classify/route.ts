@@ -28,8 +28,9 @@ function chunk<T>(arr: T[], size: number): T[][] {
 }
 
 async function classifyBatch(batch: EmailInput[]): Promise<AiClassification[]> {
+  const todayIso = new Date().toISOString().split('T')[0];
   const result = await callAiJson<{ classifications: AiClassification[] }>(
-    JSON.stringify(batch),
+    `Today's date: ${todayIso}\n\n${JSON.stringify(batch)}`,
     CLASSIFICATION_SYSTEM_PROMPT,
     AI_MODEL_HEAVY,
     { classifications: [] },
