@@ -71,6 +71,19 @@ HARD RULE: Every match_reason string MUST contain at least one number (distance,
 weight, capacity, percentage, days, or year). If the relevant data field is null
 or unknown, cite what IS known numerically about the pair instead.
 
+For compliance-clearance reasons (satisfying a flag / CII grade / sanctions /
+charterer-vetting restriction) where there's no natural metric, anchor the
+sentence with the vessel \`imo\` (always available, always numeric) or build
+year. Examples:
+- BAD: "No-Russian-flag restriction satisfied — vessel flag='MH'."
+  (no number — "MH" is a code, not a number; HARD RULE violated)
+- GOOD: "No-Russian-flag restriction satisfied — vessel flag='MH', IMO 9402187."
+- GOOD: "Charterer CII-D/E refusal cleared — vessel cii_grade='A' (IMO 9512663)."
+- GOOD: "Sanctions screening clear — owner='Anatolian Maritime SA', vessel IMO 9402187, no SDN/EU 833 hits."
+
+The IMO anchor satisfies the rule AND gives the broker an audit-trail identifier
+to verify the compliance against external screening tools.
+
 Transform patterns:
 - "Vessel is geared" → "Vessel geared (2×25t crane capacity) — suitable for breakbulk discharge"
 - "Cargo type compatible" → "BULK cargo on 63,000 DWT bulker — standard vessel class for this trade"
@@ -100,9 +113,21 @@ Concrete examples (apply these patterns):
 | "Holds clean food-grade" | last_cargo='Grain' | \`reasons\`: "Hold cleanliness restriction satisfied — last_cargo='Grain', no cleaning required" |
 | "Holds clean food-grade" | last_cargo='Petcoke' | \`issues\`: "Vessel last_cargo='Petcoke' before food-grade — extra cleaning required" |
 
-Phrases like "applies", "noted", "may be relevant" without a concrete violation
-or marginality are NOT acceptable in \`issues\`. If you find yourself writing
-"restriction X applies — vessel is in compliance", move it to \`match_reasons\`.
+Phrases like "applies", "noted", "reviewed", "may be relevant", "requires
+verification" (when the vessel is demonstrably compliant), "appears compliant",
+"keep [X] in recap", "no conflict shown" are NOT acceptable in \`issues\`.
+These are confirmations of satisfied compliance, not unresolved concerns.
+
+If you find yourself writing one of these patterns:
+1. Check: does the vessel's input data SATISFY the cited restriction?
+2. If YES → move the sentence to \`match_reasons\` (with IMO anchor for HARD
+   RULE compliance), or delete it.
+3. If NO (vessel violates or is marginal) → keep in \`issues\` and reword with
+   the concrete violation: "Cargo restriction 'X' triggered — vessel data shows Y."
+
+Anti-pattern audit: before finalizing the JSON, scan every \`issues\` entry. If
+it doesn't describe an unresolved concern with concrete violation/marginality,
+DELETE it.
 
 When citing \`readiness.date_issues\` verbatim, strip dollar/cost figures
 (e.g., "$15-25k cleaning cost"). The matcher does not produce cost estimates.
