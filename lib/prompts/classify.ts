@@ -36,7 +36,7 @@ DOCUMENT QUALITY CHECKS:
 
 Also determine:
 - urgency — apply these rules BY CATEGORY:
-  • CARGO_INQUIRY: "high" if laycan opens within 30 days (4 weeks is the latest you can reasonably start vessel search and negotiations) OR explicit urgency language. "medium" if laycan > 30 days away or TBD. "low" = not applicable.
+  • CARGO_INQUIRY: "high" if laycan opens within 30 days AND the laycan dates are specific enough to act on (a definite date or narrow window). "medium" if laycan > 30 days away OR laycan dates are genuinely TBD/TBC/pending (even if the rough window is within 30 days — you cannot start vessel search without a committed date range). "low" = not applicable. Rule: "End May / Early June (exact dates TBC)" → medium (TBC dominates even though the approximate window is within 30 days).
   • TCT_REQUEST: "high" if delivery/laycan opens within 20 days OR explicit urgency language. "medium" otherwise.
   • VESSEL_POSITION: "high" ONLY IF open date is within 5 days OR email contains explicit urgency language ("last chance", "firm offer expiry", "deadline today"). "medium" for all other vessel position circulars — a position circular is not a deadline for the recipient; 7-10 day open window is normal market turnaround.
   • FIXTURE_RECAP: always "high" (subs deadline running, requires acknowledgement within hours).
@@ -46,6 +46,8 @@ Also determine:
 - confidence: 0.0 to 1.0 how confident you are
 - is_unanswered: boolean, true if this email appears to require a reply and has not been answered
 - days_without_reply: compute from the email's "date" field (ISO timestamp) compared to today. If email was received today/yesterday, output 0 or 1. NEVER output 365 as a default. If you cannot determine this accurately, output null. A fresh inquiry with no reply history = 0 days (just received). Examples: email received 3 days ago with no reply → 3; email received today → 0; uncertain → null.
+
+SUBJECT/BODY DATE CONFLICT CHECK: If the email subject line contains a year (e.g. "8-12 JUN 2025" or "LAY 20-30 MAY 2025") and the email body contains a different year for the same date field (e.g. body says "LAYCAN DELIVERY: 20/30 May 2026"), this is a potential typo or stale subject. Lower confidence to reflect this ambiguity (e.g. 0.85 instead of 0.98). Note: category classification itself is usually unaffected by a year typo, but urgency calculation must use the BODY DATE as authoritative since the body contains the operator's intent.
 
 You will receive an array of emails. Return a JSON object.
 

@@ -59,7 +59,7 @@ Extract per vessel:
 - p_and_i: P&I club
 - dwt_summer: deadweight tonnage (summer)
 - dwcc: deadweight cargo capacity
-- draft_max: maximum draft in meters
+- draft_max: maximum draft in meters. IMPORTANT: if the email gives draft only as part of the DWCC line (e.g. "DWCC 11,800 mts at 7.8m draft"), use that value as draft_max with confidence='interpreted' and note in source_text that it is the DWCC draft — the vessel's structural maximum draft may differ. Only use confidence='confirmed' if the email explicitly states "Max draft: X" or "Draft summer: X".
 - loa: length overall in meters
 - beam: beam in meters
 - grt: gross register tonnage
@@ -83,7 +83,7 @@ Extract per vessel:
   header in addition to the body. Do not return "unknown" or any free-text;
   if not present return null. Plain field (not a ConfidenceField object).
 - open_position: port or area where vessel is/will be available
-- open_date: date vessel is available
+- open_date: date vessel is available. If given as a range in slash notation (e.g. "10/12 May 2026"), this is a LAYCAN WINDOW (earliest open / latest open). Store the value as a structured object: { open: "2026-05-10", close: "2026-05-12", display: "10/12 May 2026" } with confidence='interpreted' and preserve the original notation in source_text. For a single date (e.g. "open 15 May"), store as { open: "2026-05-15", close: null, display: "15 May 2026" } with confidence='confirmed'.
 - direction: intended GEOGRAPHIC trading direction (e.g. "seeking Far East", "open for Middle East/India", "via Suez to Mediterranean"). MUST be geographic — if the email only says "seeking suitable employment", "keen to fix", or similar commercial phrases without a geographic direction, set direction to null.
 - restrictions: array of restrictions (e.g. "no Ukraine", "no IMO cargo", "no grain")
 - last_cargoes: comma-separated string of recent cargoes.
@@ -110,9 +110,9 @@ Extract per vessel:
   Output format: comma-separated string of cargo names as they appear in email. Preserve cargo type hints (e.g. "steel coils" not just "steel" if that's what email says).
 
   Only leave last_cargoes null if the email contains NO references to past cargo — in which case confidence field is not needed (field is just null).
-- speed_laden: speed in knots laden
-- speed_ballast: speed in knots ballast
-- consumption: fuel consumption details
+- speed_laden: speed in knots laden. NOTE: the speed value itself (e.g. "12.5 kn") is confirmed if stated without hedge. The fuel consumption on the same line (e.g. "abt 18 MT IFO") has its OWN confidence — "abt" makes that value interpreted. Extract speed and consumption as separate fields when possible.
+- speed_ballast: speed in knots ballast. Same rule: speed = confirmed if exact; fuel = interpreted if hedged with "abt".
+- consumption: IMPORTANT — if consumption values are preceded by "abt", "about", "approx" or similar hedge, use confidence='interpreted' for the consumption field. Do NOT use confidence='confirmed' when the source text says "abt 18 MT IFO". This is a contractual qualifier — misrepresenting consumption as confirmed affects charter negotiations.
 - deck_capacity: deck cargo capacity (MT or sqm)
 - special_features: array of notable vessel features. MUST be populated from any of: onboard equipment notes (grabs, bulldozers, tank-cleaning capability), suitability declarations ("Suitable for: X, Y, Z"), exclusions ("No grabs", "No tank-cleaning", "Food-grade only"), and standout characteristics ("Laker-dimensioned", "Ice-class 1A", "Box-shaped holds", "CO2 fitted"). Extract each as a separate array element. Do NOT leave special_features empty when such information is present in the email.
 

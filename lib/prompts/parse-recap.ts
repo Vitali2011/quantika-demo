@@ -45,9 +45,13 @@ ACCOUNT vs CHARTERERS:
 - account: the actual shipper/cargo owner ("for account of [X]") — separate field
 
 COMMISSION CALCULATION:
-- commission_percent: extract numeric percentage
+- commission_percent: extract total numeric percentage (e.g. 3.75 for "3.75% TTL BENDS")
+- commission_address_pct: address commission percentage returned to charterer (e.g. 1.25 for "Address: 1.25%"). Null if not broken out.
+- commission_broker_pct: broker commission percentage payable to broker(s) (e.g. 2.50 for "Broker: 2.50%"). Null if not broken out.
 - commission_base: what it applies to (usually "freight" or "total freight")
-- commission_amount: calculate = (freight_rate x cargo_quantity x commission_percent / 100) if calculable, else null
+- commission_amount: calculate = (freight_rate x cargo_quantity x commission_percent / 100) if calculable, else null. This is the GROSS commission total across all parties.
+- commission_broker_amount: calculate = (freight_rate x cargo_quantity x commission_broker_pct / 100) if commission_broker_pct is known. This is what brokers actually receive.
+- commission_address_amount: calculate = (freight_rate x cargo_quantity x commission_address_pct / 100) if commission_address_pct is known. This is the rebate returned to charterers.
 - commission_currency: currency of commission amount
 - commission: full original commission clause text
 
@@ -93,7 +97,7 @@ Extract fields:
 - commission_base
 - commission_amount
 - commission_currency
-- subs: array of subjects/conditions outstanding. SUBS DEADLINE ARITHMETIC: If a subs clause states a deadline as "X hours from [event/date]", verify the arithmetic and include the computed absolute deadline in the array entry (e.g. "Subs: 48hrs from midnight 3 May 2026 = 5 May 2026 00:00 UTC"). If there is a discrepancy between the stated deadline and the computed deadline (e.g. email says '6 May' but 48hrs from midnight 3 May = 5 May), flag this as a SUBS_DEADLINE_CONFLICT in unknown_terms.
+- subs: array of subjects/conditions outstanding. SUBS DEADLINE RULE: If a subs clause contains BOTH an explicit calendar deadline (e.g. "by 00:00 hrs 6 May 2026 LT") AND a duration-from-event clause (e.g. "48 hours from midnight today"), the EXPLICIT CALENDAR DATE is the confirmed binding value. Use it as the primary value with confidence='confirmed'. Verify the arithmetic of the duration clause separately — if the arithmetic produces a different date (e.g. 48hrs from midnight 3 May = 5 May ≠ stated 6 May), flag this as SUBS_DEADLINE_CONFLICT in unknown_terms with both dates noted. Do NOT present the computed date as co-equal to the stated date.
 - acknowledgement_deadline: if the recap requires a written acknowledgement by a specific time (e.g. "please acknowledge within 12 hours", "confirm receipt by EOD"), capture that deadline as a string here. This is operationally critical — missing an ack deadline can jeopardise the fixture.
 - confidentiality: boolean (true if marked private/confidential)
 - additional_terms: array of any other clauses
