@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession } from '@/lib/session';
-import { callAiText } from '@/lib/openai';
+import { callAiText, LLMTimeoutError } from '@/lib/openai';
 import { DRAFT_QUOTE_SYSTEM_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_LIGHT } from '@/lib/constants';
 import { DraftQuoteBodySchema } from '@/lib/api-schemas';
@@ -43,7 +43,16 @@ Address the reply to: ${fromName}
 
 Generate a professional draft quote email.`;
   
-  const draft = await callAiText(userPrompt, DRAFT_QUOTE_SYSTEM_PROMPT, AI_MODEL_LIGHT);
-  
-  return NextResponse.json({ draft });
+  try {
+    const draft = await callAiText(userPrompt, DRAFT_QUOTE_SYSTEM_PROMPT, AI_MODEL_LIGHT);
+    return NextResponse.json({ draft });
+  } catch (err) {
+    if (err instanceof LLMTimeoutError) {
+      return NextResponse.json(
+        { error: 'ai_timeout', message: 'AI draft generation timed out — please retry', retryable: true },
+        { status: 504 },
+      );
+    }
+    throw err;
+  }
 }

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
-import { callAiText } from '@/lib/openai';
+import { callAiText, LLMTimeoutError } from '@/lib/openai';
 import { FIXTURE_RECAP_PARSER_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_HEAVY } from '@/lib/constants';
 import { ParsedFixtureRecap } from '@/lib/types';
@@ -31,12 +31,21 @@ export async function POST(request: NextRequest) {
 
   const limit = pLimit(3);
 
-  const parsedFixtureRecaps: ParsedFixtureRecap[] = await Promise.all(
+  const parsedFixtureRecapsRaw: (ParsedFixtureRecap | null)[] = await Promise.all(
     fixtureEmails.map((email) => limit(async () => {
       const userPrompt = `From: ${email.from}\nSubject: ${email.subject}\nDate: ${email.date}\n\n${email.body}`;
-      const raw = await callAiText(userPrompt, FIXTURE_RECAP_PARSER_PROMPT, AI_MODEL_HEAVY);
-      return parseRecapAIResponse(raw, email.id);
+      try {
+        const raw = await callAiText(userPrompt, FIXTURE_RECAP_PARSER_PROMPT, AI_MODEL_HEAVY);
+        return parseRecapAIResponse(raw, email.id);
+      } catch (err) {
+        // γ-1: per-email timeout isolation — skip on timeout, do not poison batch.
+        if (err instanceof LLMTimeoutError) return null;
+        throw err;
+      }
     }))
+  );
+  const parsedFixtureRecaps: ParsedFixtureRecap[] = parsedFixtureRecapsRaw.filter(
+    (r): r is ParsedFixtureRecap => r !== null,
   );
 
   // Calculate commission summary

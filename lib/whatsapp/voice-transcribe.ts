@@ -1,4 +1,4 @@
-import { callAiText } from '@/lib/openai';
+import { callAiText, LLMTimeoutError } from '@/lib/openai';
 
 const WHISPER_SYSTEM_PROMPT =
   'You are a shipping cargo transcription assistant. ' +
@@ -7,15 +7,23 @@ const WHISPER_SYSTEM_PROMPT =
 
 /**
  * Transcribes an audio file (OGG/Opus, M4A) via Whisper-compatible API through ClipProxy.
+ *
+ * γ-1: catches {@link LLMTimeoutError} and returns empty text so the WhatsApp
+ * webhook flow continues with an "ai_extraction_failed" missing-fields response
+ * instead of bubbling the timeout to the caller.
  */
 export async function transcribeAudio(
   audioUrl: string,
   mimeType: string,
 ): Promise<{ text: string; language: string }> {
-  const text = await callAiText(
-    `Transcribe the audio from: ${audioUrl}\nMIME type: ${mimeType}`,
-    WHISPER_SYSTEM_PROMPT,
-  );
-
-  return { text, language: 'auto' };
+  try {
+    const text = await callAiText(
+      `Transcribe the audio from: ${audioUrl}\nMIME type: ${mimeType}`,
+      WHISPER_SYSTEM_PROMPT,
+    );
+    return { text, language: 'auto' };
+  } catch (err) {
+    if (err instanceof LLMTimeoutError) return { text: '', language: 'auto' };
+    throw err;
+  }
 }

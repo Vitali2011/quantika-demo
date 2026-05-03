@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
-import { callAiJson } from '@/lib/openai';
+import { callAiJson, LLMTimeoutError } from '@/lib/openai';
 import { NEGOTIATION_RECAP_SYSTEM_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_HEAVY, MIN_THREAD_LENGTH_FOR_RECAP } from '@/lib/constants';
 import { Recap, RecapPoint, RecapHistoryEntry, NegotiationStatus } from '@/lib/types';
@@ -47,7 +47,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ count: 0 });
   }
   
-  const recaps: Recap[] = await Promise.all(
+  let recaps: Recap[];
+  try {
+    recaps = await Promise.all(
     longThreads.map(async ([threadId, emails]) => {
       const sortedEmails = [...emails].sort(
         (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
@@ -95,7 +97,16 @@ export async function POST(request: NextRequest) {
       };
     })
   );
-  
+  } catch (err) {
+    if (err instanceof LLMTimeoutError) {
+      return NextResponse.json(
+        { error: 'ai_timeout', message: 'Recap generation timed out — please retry', retryable: true },
+        { status: 504 },
+      );
+    }
+    throw err;
+  }
+
   updateSession(sessionId, { recaps });
   return NextResponse.json({ count: recaps.length });
 }
