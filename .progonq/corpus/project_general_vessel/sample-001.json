@@ -1,0 +1,172 @@
+{
+  "id": "project_general_vessel/sample-001",
+  "category": "project_general_vessel",
+  "edge_case_summary": "Project/breakbulk cargo — 6 turbine nacelle sections requiring 60t crane lift capability and 12m clear hold length: one MPP (genuine fit), one bulk carrier with 2×30t cranes (insufficient lift — DWCC fine but crane capacity fails), one heavy-lift vessel (overkill but valid) — verifies matcher checks crane capacity AND hold geometry, not just DWCC.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-10661",
+        "item_index": 0,
+        "cargo_type": "PROJECT",
+        "commodity": "Wind turbine nacelle sections",
+        "weight_mt": 330,
+        "weight_mt_min": 270,
+        "weight_mt_max": 390,
+        "stowage_factor_m3_per_mt": null,
+        "load_port": {
+          "name": "Hamburg",
+          "country": "Germany",
+          "unlocode": "DEHAM"
+        },
+        "discharge_port": {
+          "name": "Salalah",
+          "country": "Oman",
+          "unlocode": "OMSAL"
+        },
+        "laycan_start": "2026-05-28",
+        "laycan_end": "2026-06-04",
+        "laycan_confidence": "confirmed",
+        "charterer": "Siemens Gamesa Renewable Energy",
+        "broker": "FIS",
+        "gear_required": true,
+        "lift_capacity_required_t": 60,
+        "hold_geometry_required": "minimum 12m clear length, 5m hatch width, tween-deck or open hatches required for sections 12m × 4m × 4m",
+        "restrictions": [
+          "Pieces: 6 sections, each 12m × 4m × 4m, weights 45-65t per piece",
+          "Deck cargo acceptable for up to 2 sections",
+          "Heavy lift certified riggers required"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-20831",
+        "item_index": 0,
+        "vessel_name": "M/V Nordic Multipurpose",
+        "imo": "9567342",
+        "vessel_class": "MPP",
+        "dwt": 12500,
+        "dwcc": 11800,
+        "summer_draft_m": 8.5,
+        "loa_m": 142.0,
+        "beam_m": 21.5,
+        "geared": true,
+        "crane_config": "2×80t",
+        "grain_capacity_cbm": null,
+        "bale_capacity_cbm": 14200,
+        "hold_count": 2,
+        "hatch_dimensions": "Hold 1: 32m × 12m; Hold 2: 28m × 12m. Tween-decks fitted. Clear height 6.8m lower, 3.8m tween.",
+        "open_port": {
+          "name": "Bremerhaven",
+          "country": "Germany",
+          "unlocode": "DEBRV"
+        },
+        "open_date": "2026-05-24",
+        "service_speed_kn": 15.0,
+        "flag": "LR",
+        "owner": "Nordic Project Carriers AS",
+        "cii_grade": "B",
+        "last_cargo": "Transformers",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20832",
+        "item_index": 0,
+        "vessel_name": "M/V Marmara Bulk",
+        "imo": "9298874",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 28700,
+        "dwcc": 27400,
+        "summer_draft_m": 9.8,
+        "loa_m": 174.0,
+        "beam_m": 27.8,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 37500,
+        "bale_capacity_cbm": 35900,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 14.5m × 12m each. No tween-decks. Single skin.",
+        "open_port": {
+          "name": "Rotterdam",
+          "country": "Netherlands",
+          "unlocode": "NLRTM"
+        },
+        "open_date": "2026-05-22",
+        "service_speed_kn": 12.8,
+        "flag": "MT",
+        "owner": "Marmara Shipping Ltd",
+        "cii_grade": "C",
+        "last_cargo": "Steel coils",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20833",
+        "item_index": 0,
+        "vessel_name": "M/V Atlantic Titan",
+        "imo": "9634521",
+        "vessel_class": "HEAVY_LIFT",
+        "dwt": 18200,
+        "dwcc": 17000,
+        "summer_draft_m": 9.2,
+        "loa_m": 161.5,
+        "beam_m": 27.0,
+        "geared": true,
+        "crane_config": "2×250t",
+        "grain_capacity_cbm": null,
+        "bale_capacity_cbm": 19800,
+        "hold_count": 2,
+        "hatch_dimensions": "Hold 1: 50m × 18m open. Hold 2: 30m × 14m open. No tween-decks. Deck reinforced to 20t/m².",
+        "open_port": {
+          "name": "Antwerp",
+          "country": "Belgium",
+          "unlocode": "BEANR"
+        },
+        "open_date": "2026-05-25",
+        "service_speed_kn": 14.0,
+        "flag": "MH",
+        "owner": "Atlantic Heavy Lift NV",
+        "cii_grade": "A",
+        "last_cargo": "Offshore substation module",
+        "restrictions": ["P&I Club: Britannia. Survey required for cargo over 100t/piece"]
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-10661",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20831",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-25",
+        "verdict": "ideal",
+        "explanation": "M/V Nordic Multipurpose opens Bremerhaven 24-May. Bremerhaven to Hamburg ~80nm at 15.0kn = ~5h, arrives same day. 3 days before laycan start 28-May. Crane 2×80t satisfies 60t lift requirement. Tween-decks fitted, hold dimensions accommodate 12m sections.",
+        "date_issues": []
+      },
+      {
+        "cargo_email_id": "msg-10661",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20832",
+        "vessel_item_index": 0,
+        "gap_days": 5,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-23",
+        "verdict": "idle",
+        "explanation": "M/V Marmara Bulk opens Rotterdam 22-May. Rotterdam to Hamburg ~250nm at 12.8kn = ~20h, arrives ~23-May. 5 days idle before laycan. NOTE: crane config 4×30t — maximum single hook 30t, insufficient for pieces up to 65t. CRANE_VIOLATION present despite timing feasibility.",
+        "date_issues": ["CRANE_VIOLATION: max single hook 30t < required 60t. Also no tween-decks for 12m sections."]
+      },
+      {
+        "cargo_email_id": "msg-10661",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20833",
+        "vessel_item_index": 0,
+        "gap_days": 2,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-26",
+        "verdict": "tight",
+        "explanation": "M/V Atlantic Titan opens Antwerp 25-May. Antwerp to Hamburg ~290nm at 14.0kn = ~21h, arrives ~26-May. 2 days before laycan start 28-May. Crane 2×250t is overkill but structurally valid. Hold open design accommodates oversized pieces. Survey requirement noted.",
+        "date_issues": []
+      }
+    ]
+  }
+}

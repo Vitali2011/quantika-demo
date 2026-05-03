@@ -58,11 +58,17 @@ stack:
 llm_client:
   wrapper_module: lib/openai
   wrapper_export: callAiJson
-  model_env: AI_MODEL_LIGHT          # gpt-4o-mini per user constraint
+  model_env: AI_MODEL_HEAVY          # gpt-5.5 — matches prod app/api/ai/match/route.ts
   notes: |
-    Wrapper does NOT return usage tokens currently. Budget tracked via
-    char-length estimate (chars/4) × $0.15/1M input, $0.60/1M output for
-    gpt-4o-mini. Approximate but sufficient for $30 cap enforcement.
+    Initially planned with AI_MODEL_LIGHT=gpt-4o-mini, but local CLIproxy
+    on :8317 does not route gpt-4o-mini ("502 unknown provider"). Switched
+    to AI_MODEL_HEAVY=gpt-5.5 — that's exactly the model the prod match
+    route invokes, so progonq covers the real prod code path.
+
+    Wrapper does NOT return usage tokens. Budget tracked via char-length
+    estimate (chars/4) × pricing in scripts/eval/run-progonq-match.ts
+    PRICING_PER_1M (gpt-5.5: $1.25/M in, $5/M out). Approximate but sufficient
+    for $30 cap enforcement.
 
 budget:
   max_rounds: 20
