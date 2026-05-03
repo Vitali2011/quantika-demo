@@ -13,7 +13,7 @@ import { CLASSIFICATION_SYSTEM_PROMPT } from '../../lib/prompts/classify';
 import { CARGO_INQUIRY_PARSER_PROMPT } from '../../lib/prompts/parse-cargo';
 import { VESSEL_POSITION_PARSER_PROMPT } from '../../lib/prompts/parse-vessel';
 import { FIXTURE_RECAP_PARSER_PROMPT } from '../../lib/prompts/parse-recap';
-import { AI_MODEL_HEAVY, AI_MODEL_LIGHT } from '../../lib/constants';
+import { AI_MODEL_HEAVY, AI_MODEL_LIGHT, MAX_EMAIL_BODY_CHARS } from '../../lib/constants';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -102,7 +102,7 @@ async function main() {
     subject: e.subject,
     from: e.from,
     date: e.date,
-    body_preview: e.body.slice(0, 800),
+    body_preview: e.body.slice(0, MAX_EMAIL_BODY_CHARS),
   }));
 
   const todayIso = new Date().toISOString().split('T')[0];
@@ -164,6 +164,18 @@ async function main() {
       } else {
         console.log(`  Skipping deep parse for ${email.id} (category: ${category})`);
         parsed = null;
+        // Attach a note so reviewers understand the intentional null
+        const skipNotes: Record<string, string> = {
+          TCT_REQUEST: 'No deep parser for TCT_REQUEST — classification metadata only (category, urgency, sender).',
+          CLIENT_REPLY: 'No deep parser for CLIENT_REPLY by design. Sub-lift notifications are CLIENT_REPLY per system rules (not FIXTURE_RECAP). Key data is in classification: category=CLIENT_REPLY, urgency=HIGH for sub-lifts, sender, company.',
+          DOCUMENT: 'No deep parser for DOCUMENT — classification metadata only.',
+          VESSEL_CERTIFICATE: 'No deep parser for VESSEL_CERTIFICATE — classification metadata only. Zero-day validity anomalies detected at classification stage.',
+          OTHER: 'Category OTHER — no parsing required.',
+        };
+        const note = skipNotes[category];
+        if (note) {
+          parsed = { _parse_note: note } as unknown;
+        }
       }
     } catch (err) {
       parseError = err instanceof Error ? err.message : String(err);
