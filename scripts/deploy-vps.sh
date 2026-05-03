@@ -16,7 +16,12 @@ echo "==> Installing dependencies..."
 npm ci
 
 echo "==> Building (Node heap raised to 4GB to avoid OOM during type-check)..."
-NODE_OPTIONS="--max-old-space-size=4096" npm run build
+# `export` is required, not inline prefix — Next.js spawns child workers for the
+# TypeScript checker that don't inherit single-command env. Verified on VPS:
+# inline prefix → SIGABRT at ~2GB; export → build succeeds at ~3.5GB peak.
+export NODE_OPTIONS="--max-old-space-size=4096"
+npm run build
+unset NODE_OPTIONS
 
 echo "==> Installing Caddy config..."
 bash ops/caddy/install-caddy-config.sh "$(pwd)"
