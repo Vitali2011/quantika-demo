@@ -44,6 +44,7 @@ Extract per inquiry item:
 - destination_port: full port name
 - destination_country
 - cargo_description: full description of goods
+- cargo_origin_country: the COUNTRY OF ORIGIN of the cargo itself — NOT the load port country. This is relevant when the email mentions the cargo's provenance separately from the load port (e.g. "Indonesian origin thermal coal loaded at Dammam" → cargo_origin_country = "Indonesia", while origin_country = "Saudi Arabia"). Null if not stated. Source: phrases like "[Country] origin", "from [Country]", "[Country]-produced", "[Country] coal/grain/etc."
 - weight_mt: number (metric tons).
   RANGE RULE: If cargo weight is given as an explicit range (e.g. "4000/4800 MT", "5000-5500 MT"), return the UPPER BOUND as weight_mt (confidence='interpreted'). Also populate weight_mt_min and weight_mt_max.
   MOLOO RULE: MOLOO (More or Less Owner's Option) is a CONTRACT TOLERANCE clause — NOT a weight range. "28,000 mts (10% MOLOO)" means the nominal quantity is 28,000 mts and the owner may load ±10% at their option. Set weight_mt = 28000 (the nominal stated value). Set weight_mt_min = 25200 and weight_mt_max = 30800 to record the tolerance bounds. Do NOT set weight_mt to the MOLOO maximum (30800). "Abt 28,000 mts (10% MOLOO)" → weight_mt=28000 with confidence='interpreted' (due to "abt"), weight_mt_min=25200, weight_mt_max=30800.
