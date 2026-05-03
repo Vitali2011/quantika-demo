@@ -83,13 +83,26 @@ that does have numbers, or move it to \`issues\` instead.
 ISSUES RULES:
 
 \`issues[]\` contains UNRESOLVED concerns or marginal data points only — never
-satisfied compliance items. If the cargo restriction reads "No TBN vessels" and
-the vessel is named with an IMO, that compliance is satisfied — put it in
-\`match_reasons\` ("No TBN restriction satisfied — vessel named M/V X, IMO 1234567")
-or omit. Never write a satisfied-restriction sentence into \`issues[]\` — it
-pollutes the broker's attention list. The same applies to "cii_grade='A' appears
-compliant" or "flag='MH', no Russia exposure" — these are positive signals,
-belong in match_reasons or omitted.
+satisfied compliance items. The decision rule is binary:
+
+**If vessel SATISFIES the cargo/charterer restriction** → \`match_reasons\` (or omit).
+**If vessel VIOLATES or is MARGINAL on the restriction** → \`issues\`.
+
+Concrete examples (apply these patterns):
+
+| Cargo restriction | Vessel data | Where it goes |
+|---|---|---|
+| "No TBN vessels" | vessel.vessel_name="M/V X", imo set | \`reasons\`: "No TBN restriction satisfied — vessel named M/V X, IMO 1234567" |
+| "No CII D or E grade" | vessel.cii_grade='A' | \`reasons\`: "Charterer CII-D/E refusal cleared — vessel cii_grade='A'" |
+| "No CII D or E grade" | vessel.cii_grade='D' | \`issues\`: "Cargo restriction 'No CII D or E grade vessels' triggered — vessel cii_grade='D'" |
+| "No Russian-flag" | vessel.flag='MH' | \`reasons\`: "No-Russian-flag restriction satisfied — vessel flag='MH'" |
+| "No Russian-flag" | vessel.flag='RU' | \`issues\`: "Cargo restriction 'No Russian-flag' triggered — vessel flag='RU'" |
+| "Holds clean food-grade" | last_cargo='Grain' | \`reasons\`: "Hold cleanliness restriction satisfied — last_cargo='Grain', no cleaning required" |
+| "Holds clean food-grade" | last_cargo='Petcoke' | \`issues\`: "Vessel last_cargo='Petcoke' before food-grade — extra cleaning required" |
+
+Phrases like "applies", "noted", "may be relevant" without a concrete violation
+or marginality are NOT acceptable in \`issues\`. If you find yourself writing
+"restriction X applies — vessel is in compliance", move it to \`match_reasons\`.
 
 When citing \`readiness.date_issues\` verbatim, strip dollar/cost figures
 (e.g., "$15-25k cleaning cost"). The matcher does not produce cost estimates.
@@ -168,6 +181,14 @@ broker safety failure — the user has no other channel to learn about them.
 - \`vessel.summer_draft_m > port.max_draft_m\` (draft mismatch when port draft is in input)
 - \`vessel.service_speed_kn === null\` (forces class-default fallback —
   flag the assumption)
+- \`readiness.verdict\` for the pair — MUST appear in either \`match_reasons\`
+  or \`issues\` for every match, with the verbatim verdict label
+  (\`ideal\`/\`tight\`/\`idle\`/\`late\`/\`unknown\`) plus \`gap_days\` and
+  \`arrival_date\` if present. Example reason: "Readiness verdict 'tight' —
+  arrives 2026-05-13, 2 days before laycan start (gap_days=2)." Example
+  issue: "Readiness verdict 'late' — arrives 18-May vs laycan_end 16-May
+  (gap_days=-2)." Skipping this for any match is a hard bug — it's the
+  single most important piece of timing intelligence the matcher inherits.
 
 Format each surfaced issue with the verbatim input value so the broker can audit:
 - "Cargo restriction 'No CII D or E grade vessels — Trafigura vetting' triggered — vessel cii_grade='D'"
