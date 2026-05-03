@@ -1,0 +1,75 @@
+project: quantika-demo
+run_id: matching-2026-05-03
+target_prompts:
+  - path: lib/prompts/match.ts
+    role: matcher_with_rationale
+    export: MATCH_PROMPT
+  - path: lib/prompts/glossary.ts
+    role: shared_glossary
+    export: SHIPPING_GLOSSARY
+    edit_if_qa_flags_terms: true
+
+categories:
+  - name: bulk_open_position
+    description: "Bulk cargo + vessel with open position; classic match scenario."
+    samples_per_round: 1
+  - name: bulk_dwcc_overload
+    description: "Bulk cargo where DWCC barely covers cargo MT (e.g., 28k cargo, 28.5k DWCC) — edge of physical feasibility."
+    samples_per_round: 1
+  - name: project_general_vessel
+    description: "Project/breakbulk cargo with hold-geometry constraints; vessel is general-purpose MPP."
+    samples_per_round: 1
+  - name: strict_laycan_tight_window
+    description: "Cargo with strict 3-day laycan; vessel open date barely fits."
+    samples_per_round: 1
+  - name: sanctioned_flag
+    description: "Vessel under sanctioned flag (e.g., RU/IR proxy) — must be surfaced."
+    samples_per_round: 1
+  - name: cii_grade_d
+    description: "Vessel with CII Grade D — regulatory red flag (charterers may refuse)."
+    samples_per_round: 1
+
+domain_expert:
+  role: |
+    Senior dry-bulk vessel chartering broker, 20+ years MENA/European trades.
+    Handysize/Supramax specialist with deep operational experience.
+  perspective: |
+    Extremely skeptical and systematic. Goal is to find errors, not confirm correctness.
+    Focus areas in priority order:
+      1. Hard filters (DWCC vs cargo MT, draft compat, gear vs port equipment, cargo-type vs vessel-class)
+      2. Commercial viability (laycan vs vessel position realism, idle days, ballast cost)
+      3. CII rating impact on charterer acceptability
+      4. Sanctions exposure (flag, owner, P&I)
+      5. Cost-of-bunker math sanity (kn × hrs × consumption × $/mt)
+      6. ETA realism w.r.t. routing, weather, holiday weeks (SHEX impact on laytime)
+
+agents_per_case: 1
+critic_agreement: auto
+
+severity_rubric_path: .progonq/severity-rubric.md
+exit_criteria:
+  consecutive_passes: 2
+  pass_threshold: { critical: 0, high: 0 }
+
+stack:
+  language: typescript
+  test_runner: jest
+
+llm_client:
+  wrapper_module: lib/openai
+  wrapper_export: callAiJson
+  model_env: AI_MODEL_LIGHT          # gpt-4o-mini per user constraint
+  notes: |
+    Wrapper does NOT return usage tokens currently. Budget tracked via
+    char-length estimate (chars/4) × $0.15/1M input, $0.60/1M output for
+    gpt-4o-mini. Approximate but sufficient for $30 cap enforcement.
+
+budget:
+  max_rounds: 20
+  max_tokens_usd: 30
+  abort_on_repeated_issue: 3
+
+post_exit:
+  fresh_corpus_size: 6
+  generate_regression_tests: true
+  regression_path: tests/regression/progonq-matching.test.ts
