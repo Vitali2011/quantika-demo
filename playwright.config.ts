@@ -15,7 +15,7 @@ export default defineConfig({
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
   ],
   use: {
-    baseURL: 'https://demo.quantika.org',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'https://demo.quantika.org',
     headless: true,
     screenshot: 'only-on-failure',
     trace: 'retain-on-failure',
