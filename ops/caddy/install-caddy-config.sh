@@ -38,7 +38,24 @@ if ! systemctl reload caddy; then
     exit 1
 fi
 
-# Reload succeeded — drop the backup.
+# Sanity check: confirm demo.quantika.org block is actually loaded after reload.
+# Catches the case where the import line vanishes from the main Caddyfile
+# (observed once 2026-05-03 — root cause unknown).
+if ! caddy adapt --config "${MAIN}" --adapter caddyfile 2>/dev/null | grep -q '"demo\.quantika\.org"'; then
+    echo "✗ post-reload sanity: demo.quantika.org block NOT in adapted config — restoring backup" >&2
+    if [ -f "${DST}.bak" ]; then
+        mv "${DST}.bak" "${DST}"
+        systemctl reload caddy || true
+    fi
+    # Re-add import line if it disappeared from MAIN
+    if ! grep -q "^import ${DST}\$" "${MAIN}"; then
+        echo "import ${DST}" >> "${MAIN}"
+        systemctl reload caddy || true
+    fi
+    exit 1
+fi
+
+# Sanity check passed — safe to drop the backup.
 rm -f "${DST}.bak"
 
 echo "✓ Caddy config installed and reloaded"
