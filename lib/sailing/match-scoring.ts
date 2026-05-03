@@ -178,7 +178,13 @@ export function applyOverloadGuard(
     updated.matchLevel = 'weak';
     updated.score = Math.min(updated.score, 35);
     const issue = `OVERLOAD: cargo ${weightMax}mt exceeds vessel DWCC ${dwcc}mt`;
-    updated.issues = Array.isArray(updated.issues) ? [...updated.issues, issue] : [issue];
+    const existingIssues = Array.isArray(updated.issues) ? updated.issues : [];
+    // Idempotent: do not append duplicate OVERLOAD entry
+    if (!existingIssues.some((i) => i.startsWith('OVERLOAD:'))) {
+      updated.issues = [...existingIssues, issue];
+    } else {
+      updated.issues = existingIssues;
+    }
     return updated;
   }
   return match;
