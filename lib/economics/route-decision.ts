@@ -5,10 +5,20 @@
  * Cape of Good Hope) and produces an LLM-explained recommendation.
  *
  * Falls back to a deterministic template when the LLM is unavailable.
+ *
+ * Performance (βf3-06):
+ * - Module-scope import of voyage-calculator + openai ensures Node.js caches
+ *   the modules on the first request — no repeated resolution on warm hits.
+ * - LLM_REASON_TIMEOUT_MS caps the llmReason() await so cold-start
+ *   is bounded even when ClipProxy/OpenAI has high latency.
  */
 
 import { calculateTCE, type VoyageInput, type TCEBreakdown } from './voyage-calculator';
 import { callAiText } from '@/lib/openai';
+
+// βf3-06: LLM reason timeout — cap the AI explain call so cold-start ≤5s.
+// The LLM path is non-critical (fallback template is always available).
+const LLM_REASON_TIMEOUT_MS = 4_000;
 
 export interface RouteCompareLeg {
   breakdown: TCEBreakdown;
@@ -208,16 +218,27 @@ async function llmReason(
     '',
     'In 1-2 short sentences, explain which routing is better and why.',
   ].join('\n');
+
+  // βf3-06: race LLM call against a hard timeout so cold-start is bounded.
+  const fallback = templateReason(winner, savingsUsd, savingsDays);
+  const timeoutPromise = new Promise<string>(resolve =>
+    setTimeout(() => resolve(fallback), LLM_REASON_TIMEOUT_MS)
+  );
+
+  console.time('cold:llm-reason');
   try {
-    const text = await callAiText(
+    const aiPromise = callAiText(
       prompt,
       'You are a chartering analyst. Be concise (1-2 sentences). No markdown.',
-    );
-    const trimmed = (text ?? '').trim();
-    if (!trimmed) return templateReason(winner, savingsUsd, savingsDays);
-    return trimmed;
-  } catch {
-    return templateReason(winner, savingsUsd, savingsDays);
+    ).then(text => {
+      const trimmed = (text ?? '').trim();
+      return trimmed || fallback;
+    }).catch(() => fallback);
+
+    const result = await Promise.race([aiPromise, timeoutPromise]);
+    return result;
+  } finally {
+    console.timeEnd('cold:llm-reason');
   }
 }
 
@@ -228,11 +249,17 @@ export async function compareRoutes(
   cargo: VoyageInput['cargo'],
   marketRates: { bunkerPriceUsdPerMt: number; euaPriceEur: number },
 ): Promise<RouteCompareResult> {
+  // βf3-06: timing markers for cold-start profiling
+  console.time('cold:distances');
   const dist = lookupDistances(origin, destination);
+  console.timeEnd('cold:distances');
+
   const ctx: CompareInput = { vessel, cargo, marketRates };
 
+  console.time('cold:scoring');
   const suez = buildLeg(origin, destination, dist.suezNm, true, ctx);
   const cape = buildLeg(origin, destination, dist.capeNm, false, ctx);
+  console.timeEnd('cold:scoring');
 
   const decision = decideRoute({
     suez: {
