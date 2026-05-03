@@ -112,7 +112,17 @@ docker compose up
 bash scripts/deploy-vps.sh
 ```
 
-Скрипт делает: git pull → npm ci → build → install Caddy config → seed port-DA → pm2 reload → health check. Idempotent — повторный запуск безопасен.
+Скрипт делает: self-update deploy assets → git pull → npm ci → build (4GB heap) → install Caddy config → seed port-DA → pm2 reload → health check. Idempotent — повторный запуск безопасен.
+
+### First-time bootstrap
+
+Если на VPS ещё нет актуального `scripts/deploy-vps.sh`, забери его из origin одной командой и запусти:
+
+```bash
+ssh root@VPS 'cd /root/quantika-demo && git fetch origin main && git checkout origin/main -- scripts/deploy-vps.sh ops/caddy/install-caddy-config.sh ops/caddy/Caddyfile.demo && bash scripts/deploy-vps.sh'
+```
+
+Дальше скрипт сам подтягивает свежую версию себя и Caddy-конфигов из `origin/main` перед каждым деплоем.
 
 ## Deployment
 
