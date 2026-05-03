@@ -12,13 +12,16 @@
 import { checkCompatibility } from '../l5c-matrix';
 
 describe('L5C fail-closed for unknown pairs (spec-betafix-02)', () => {
-  it('coal → "wheat in bags" (unknown — not in matrix) → compatible:false + requires_manual_review:true', () => {
+  it('coal → "wheat in bags" → BREAK_BULK pathway (βf3-05): compatible:true + break_bulk:true, not fail-closed', () => {
+    // βf3-05 introduced BREAK_BULK detection: "wheat in bags" triggers a distinct
+    // stowage pathway (surveyor sign-off for hold preparation) rather than the
+    // fail-closed unknown-pair path. The verdict differs from bulk wheat.
     const r = checkCompatibility(['coal'], 'wheat in bags');
-    expect(r.compatible).toBe(false);
-    expect(r.requires_manual_review).toBe(true);
+    expect(r.compatible).toBe(true);
+    expect(r.break_bulk).toBe(true);
+    expect(r.requires_manual_review).toBe(false);
     expect(r.warnings.length).toBeGreaterThan(0);
-    expect(r.blocking_pairs.length).toBeGreaterThan(0);
-    expect(r.warnings[0]).toMatch(/manual surveyor review/i);
+    expect(r.warnings[0]).toMatch(/BREAK_BULK/i);
   });
 
   it('DRI → grain (KNOWN incompatible pair) — compatible:false from matrix, no manual_review flag', () => {
@@ -55,10 +58,12 @@ describe('L5C fail-closed for unknown pairs (spec-betafix-02)', () => {
     expect(prevs).toContain('unknownX');
   });
 
-  it('all-unknown prevs → compatible:false + requires_manual_review:true, no known incompatibilities', () => {
+  it('all-unknown prevs, wheat in bags → BREAK_BULK pathway (βf3-05): compatible:true + break_bulk:true', () => {
+    // BREAK_BULK detection fires before the per-previous-cargo loop.
+    // "wheat in bags" exits via the break_bulk pathway regardless of prevCargoes.
     const r = checkCompatibility(['titanium', 'lithium-ore'], 'wheat in bags');
-    expect(r.compatible).toBe(false);
-    expect(r.requires_manual_review).toBe(true);
-    expect(r.blocking_pairs).toHaveLength(2);
+    expect(r.compatible).toBe(true);
+    expect(r.break_bulk).toBe(true);
+    expect(r.requires_manual_review).toBe(false);
   });
 });
