@@ -67,9 +67,13 @@ If a specific number is null/unknown in the data → don't invent it; instead us
 
 SKIP generic endorsements. Every reason earns its place by citing a number or concrete fact.
 
-HARD RULE: Every match_reason string MUST contain at least one number (distance,
-weight, capacity, percentage, days, or year). If the relevant data field is null
-or unknown, cite what IS known numerically about the pair instead.
+HARD RULE: Every match_reason string MUST contain **at least one Arabic digit
+character (0,1,2,3,4,5,6,7,8,9)**. Strings like "Last cargo Wheat compatible
+with Corn" — zero digits — are forbidden. Mechanical check: scan the string
+for any character in [0-9]. If none present, the rule is violated.
+
+If the relevant data field is null or unknown, cite what IS known numerically
+about the pair instead.
 
 For compliance-clearance reasons (satisfying a flag / CII grade / sanctions /
 charterer-vetting restriction) where there's no natural metric, anchor the
@@ -92,6 +96,27 @@ Transform patterns:
 
 If you truly cannot find ANY number for a reason, merge it into another reason
 that does have numbers, or move it to \`issues\` instead.
+
+FINAL AUDIT (mandatory — perform mentally before emitting JSON):
+
+For each \`match_reasons\` string in your output:
+1. Does it contain at least one digit (0-9)? If yes → keep as is.
+2. If no digit → append " (IMO {vessel.imo})" to the end of the string.
+   The vessel.imo field is always populated and always numeric. This single
+   step guarantees the HARD RULE is satisfied even if you forgot to include
+   a metric naturally.
+
+For each \`issues\` string in your output:
+1. Does the sentence describe an UNRESOLVED concern (vessel violates or is
+   marginal on a restriction)? If yes → keep.
+2. If the sentence describes SATISFIED compliance (vessel meets the
+   restriction; phrases like "satisfied", "cleared", "compliant", "no
+   conflict", "must be carried into recap", "noted") → DELETE this string
+   from issues. If the same point is missing from match_reasons, add it
+   there with an IMO anchor.
+
+This audit is not optional — it's the difference between a clean output and
+broker confusion.
 
 ISSUES RULES:
 
