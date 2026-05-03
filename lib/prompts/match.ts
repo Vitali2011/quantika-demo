@@ -82,6 +82,21 @@ that does have numbers, or move it to \`issues\` instead.
 
 ISSUES RULES:
 
+\`issues[]\` contains UNRESOLVED concerns or marginal data points only — never
+satisfied compliance items. If the cargo restriction reads "No TBN vessels" and
+the vessel is named with an IMO, that compliance is satisfied — put it in
+\`match_reasons\` ("No TBN restriction satisfied — vessel named M/V X, IMO 1234567")
+or omit. Never write a satisfied-restriction sentence into \`issues[]\` — it
+pollutes the broker's attention list. The same applies to "cii_grade='A' appears
+compliant" or "flag='MH', no Russia exposure" — these are positive signals,
+belong in match_reasons or omitted.
+
+When citing \`readiness.date_issues\` verbatim, strip dollar/cost figures
+(e.g., "$15-25k cleaning cost"). The matcher does not produce cost estimates.
+Keep the operational impact in plain English: days, scope, certification
+needed. Example: "extra 2-3 days certified hold cleaning required" instead of
+"~2-3 days, $15-25k per readiness".
+
 Issues are flagged for broker attention. Each issue should point to a specific missing or marginal data point.
 
 GOOD issue formats:
@@ -107,14 +122,27 @@ Your score (0-100) must correlate with the match_reasons:
 - If you find hard problems (DWT too small, gearless+bagged-cargo, etc.) → score 20-30
 - Downstream filters will adjust for readiness/sanctions; focus on physical & commercial fit
 
+HARD SCORE CAPS (apply after computing — these override the bands above):
+- \`readiness.date_issues\` includes \`LAYCAN_VIOLATION\` → score MUST be 5-20 (max 20)
+- \`readiness.date_issues\` includes \`DWCC_VIOLATION\` → score MUST be 10-25 (max 25)
+- \`readiness.date_issues\` includes \`CRANE_VIOLATION\` → score MUST be 15-30 (max 30)
+- \`readiness.date_issues\` includes \`LAST_CARGO_INCOMPATIBLE\` (untreated) → score MUST be 25-45 (max 45)
+- \`vessel.flag\` ∈ sanctioned set AND cargo loads/discharges in EU/UK/US → score MUST be 5-25 (max 25)
+- \`vessel.cii_grade\` ∈ {"D","E"} AND charterer is a known D-refuser (Cargill, Glencore, Trafigura, ADM, COFCO, Bunge) → score MUST be 20-40 (max 40)
+
+If multiple caps apply, use the LOWEST. These caps are mandatory — exceeding
+them by even 1 point is a hard bug.
+
 MANDATORY ISSUES SURFACING:
 
 The following input fields MUST produce a corresponding entry in \`match.issues[]\`
 for that pair (verbatim numbers/strings preserved). Skipping any of these is a
 broker safety failure — the user has no other channel to learn about them.
 
-- \`cargo.restrictions[]\` — every entry that contains "no", "must", "subject to",
-  "vetting", or names a country/flag/grade restriction
+- \`cargo.restrictions[]\` — **every entry, verbatim, no keyword filter**.
+  Includes laytime terms (SHEX, SHINC, FHEX, WIBON), berth requirements, vetting,
+  flag/grade restrictions, age limits, P&I demands, charter party clauses.
+  If the upstream parser put it in \`restrictions[]\`, the broker needs to see it.
 - \`vessel.restrictions[]\` — every entry, verbatim
 - \`readiness.date_issues[]\` — every entry, verbatim (these are upstream
   pre-filter flags: DWCC_VIOLATION, LAYCAN_VIOLATION, CRANE_VIOLATION,
@@ -124,9 +152,18 @@ broker safety failure — the user has no other channel to learn about them.
   discharge_port is in EU/UK/US/CA/AU/JP
 - \`vessel.owner\` containing keywords like "Sovcomflot", "PSB", "Sanctioned",
   or any explicitly sanctioned entity name from cargo.restrictions
-- \`vessel.last_cargo\` materially incompatible with \`cargo.commodity\` (e.g.,
-  petcoke / petrochemicals / fertilizer / coal before food-grade grain or
-  edible oils)
+- \`vessel.last_cargo\` materially incompatible with \`cargo.commodity\`. This
+  catches more than the obvious dirty cargoes:
+    * Before food-grade grain (wheat, corn, rice, barley, soybeans, etc.):
+      ANY non-grain cargo requires hold-cleaning consideration. Specifically
+      flag: petcoke, coal, petrochemicals, fertilizer, sulphur, cement, iron
+      ore, scrap, AND oilseed-meal/oilcake/soybean-meal (oily/protein residue
+      requires food-safety survey before food-grade loading).
+    * Before edible oils / DPP cargo: any non-edible/non-DPP previous cargo.
+    * If commodity matches last_cargo class (grain → grain, coal → coal),
+      that's a positive — note in match_reasons, not issues.
+  When in doubt, surface the last_cargo + commodity pair in issues with
+  "verify hold cleanliness/certification" — broker decides.
 - \`cargo.weight_mt_max > vessel.dwcc\` (DWCC overrun — even by 1mt)
 - \`vessel.summer_draft_m > port.max_draft_m\` (draft mismatch when port draft is in input)
 - \`vessel.service_speed_kn === null\` (forces class-default fallback —
