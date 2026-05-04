@@ -68,3 +68,24 @@ describe('wave-γ-4: compareRoutes daResolver wiring (BUG-05 fix)', () => {
     expect(r.cape.breakdown.da_usd).toBe(25_000);
   });
 });
+
+describe('wave-γ-cleanup-C: defensive resolver guards', () => {
+  it('resolver returning NaN → daUsd is 0, not NaN', async () => {
+    const resolver: DaResolver = () => NaN;
+    const r = await compareRoutes('singapore', 'rotterdam', vessel, cargo, marketRates, resolver);
+    expect(r.suez.breakdown.da_usd).toBe(0);
+    expect(Number.isFinite(r.suez.breakdown.da_usd)).toBe(true);
+  });
+
+  it('resolver throwing → daUsd is 0, compareRoutes does not throw', async () => {
+    const resolver: DaResolver = () => { throw new Error('port not found'); };
+    const r = await compareRoutes('singapore', 'rotterdam', vessel, cargo, marketRates, resolver);
+    expect(r.suez.breakdown.da_usd).toBe(0);
+  });
+
+  it('resolver returning negative → daUsd clamped to 0', async () => {
+    const resolver: DaResolver = () => -5000;
+    const r = await compareRoutes('singapore', 'rotterdam', vessel, cargo, marketRates, resolver);
+    expect(r.suez.breakdown.da_usd).toBe(0);
+  });
+});
