@@ -11,15 +11,21 @@ import { AnalyticsTracker } from '@/lib/analytics-tracker';
 import { safeRender, getConf, ConfIcon } from '@/lib/ui-render';
 import { formatDate, formatNumber } from '@/lib/utils';
 
+// Only render ConfIcon for the three canonical string labels. Numeric scores
+// (0–1) from the parser are truthy but invalid — rendering them would leave a
+// space-only text-node that mismatches during React hydration (#418).
+const VALID_CONF = new Set(['confirmed', 'interpreted', 'uncertain']);
+
 function CField({ label, field }: { label: string; field: Renderable }) {
   const val = safeRender(field);
   const conf = getConf(field);
   if (!val) return null;
+  const confStr = typeof conf === 'string' && VALID_CONF.has(conf) ? conf : undefined;
   return (
     <div className="flex justify-between text-sm py-1.5 border-b border-gray-100">
       <span className="text-muted-foreground">{label}</span>
       <span className="font-medium text-right max-w-[60%]">
-        {val} {conf && <ConfIcon confidence={conf} />}
+        {val}{confStr ? <> <ConfIcon confidence={confStr} /></> : null}
       </span>
     </div>
   );
