@@ -203,6 +203,11 @@ export async function POST(request: NextRequest) {
   if (authResult instanceof NextResponse) return authResult;
   const { session, sessionId } = authResult;
 
+  // wave-γ-3-demo: demo guests get pre-seeded cargoes — skip live LLM entirely.
+  if (session.isSampleData === true && session.parsedCargos.length > 0) {
+    return NextResponse.json({ count: session.parsedCargos.length, cached: true });
+  }
+
   const cargoInquiryIds = session.classifications
     .filter(c => c.category === 'CARGO_INQUIRY')
     .map(c => c.emailId);
