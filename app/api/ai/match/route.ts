@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
 import { callAiJson, LLMTimeoutError } from '@/lib/openai';
+import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { MATCH_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_HEAVY } from '@/lib/constants';
 import { analyzePairs, AiScorer, RawMatch } from '@/lib/matching/pair-analyzer';
@@ -39,6 +40,8 @@ export async function POST(request: NextRequest) {
       MATCH_PROMPT,
       AI_MODEL_HEAVY,
       { matches: [] },
+      undefined,
+      { timeoutMs: endpointLlmTimeout(120) },
     );
 
     return result.matches || [];

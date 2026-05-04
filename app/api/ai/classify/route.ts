@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
 import { callAiJson, LLMTimeoutError } from '@/lib/openai';
+import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { CLASSIFICATION_SYSTEM_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_HEAVY, MAX_EMAIL_BODY_CHARS } from '@/lib/constants';
 import { truncateText } from '@/lib/utils';
@@ -34,6 +35,8 @@ async function classifyBatch(batch: EmailInput[]): Promise<AiClassification[]> {
     CLASSIFICATION_SYSTEM_PROMPT,
     AI_MODEL_HEAVY,
     { classifications: [] },
+    undefined,
+    { timeoutMs: endpointLlmTimeout(120) },
   );
   return result.classifications ?? [];
 }

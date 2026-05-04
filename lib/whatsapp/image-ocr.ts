@@ -15,6 +15,8 @@ export async function extractTextFromImage(imageUrl: string): Promise<string> {
     return await callAiText(
       `Extract text from this image: ${imageUrl}`,
       OCR_SYSTEM_PROMPT,
+      undefined,
+      { timeoutMs: 20_000 },
     );
   } catch (err) {
     if (err instanceof LLMTimeoutError) return '';

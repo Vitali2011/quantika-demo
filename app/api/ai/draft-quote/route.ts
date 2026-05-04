@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession } from '@/lib/session';
 import { callAiText, LLMTimeoutError } from '@/lib/openai';
+import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { DRAFT_QUOTE_SYSTEM_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_LIGHT } from '@/lib/constants';
 import { DraftQuoteBodySchema } from '@/lib/api-schemas';
@@ -44,7 +45,7 @@ Address the reply to: ${fromName}
 Generate a professional draft quote email.`;
   
   try {
-    const draft = await callAiText(userPrompt, DRAFT_QUOTE_SYSTEM_PROMPT, AI_MODEL_LIGHT);
+    const draft = await callAiText(userPrompt, DRAFT_QUOTE_SYSTEM_PROMPT, AI_MODEL_LIGHT, { timeoutMs: endpointLlmTimeout(30) });
     return NextResponse.json({ draft });
   } catch (err) {
     if (err instanceof LLMTimeoutError) {

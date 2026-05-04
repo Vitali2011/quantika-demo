@@ -20,6 +20,8 @@ export async function transcribeAudio(
     const text = await callAiText(
       `Transcribe the audio from: ${audioUrl}\nMIME type: ${mimeType}`,
       WHISPER_SYSTEM_PROMPT,
+      undefined,
+      { timeoutMs: 20_000 },
     );
     return { text, language: 'auto' };
   } catch (err) {
