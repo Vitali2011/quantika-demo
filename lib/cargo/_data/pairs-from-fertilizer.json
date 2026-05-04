@@ -1,0 +1,121 @@
+[
+  {
+    "previous": "fertilizer",
+    "next": "grain",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Nitrogen/phosphorus chemical residue causes food-grade rejection; even trace fertilizer contamination fails grain surveyor inspection — fertilizer profiles list grain as explicitly incompatible"
+  },
+  {
+    "previous": "fertilizer",
+    "next": "steel",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Hygroscopic moisture retention + ammonium/phosphate residue causes corrosion and surface contamination; steel profiles list fertilizer as explicitly incompatible"
+  },
+  {
+    "previous": "fertilizer",
+    "next": "pipes",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Hygroscopic fertilizer residue causes corrosion of pipe threads and protective coatings (epoxy/FBE); pipes profiles list fertilizer as explicitly incompatible"
+  },
+  {
+    "previous": "fertilizer",
+    "next": "iron-ore",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Ammonium/phosphate residue incompatible with iron ore cargo; cross-contamination risk; iron-ore profiles list fertilizer as incompatible — manual surveyor review required"
+  },
+  {
+    "previous": "fertilizer",
+    "next": "dri",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "DRI is self-heating (Group B) and reacts violently with moisture; hygroscopic fertilizer residue introduces moisture risk; DRI profiles list fertilizer as explicitly incompatible"
+  },
+  {
+    "previous": "fertilizer",
+    "next": "coal",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Coal profiles list fertilizer as explicitly incompatible; ammonium nitrate-based fertilizer is an oxidiser — contact with coal creates fire/explosion hazard (oxidiser + combustible material)"
+  },
+  {
+    "previous": "fertilizer",
+    "next": "petcoke",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Ammonium nitrate-based fertilizer (oxidiser) + petcoke (carbonaceous combustible) = fire/explosion hazard; petcoke profiles list fertilizer as explicitly incompatible"
+  },
+  {
+    "previous": "fertilizer",
+    "next": "cement",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Fertilizer residue (acidic phosphate/nitrate) destroys cement setting chemistry; cement profiles list fertilizer as explicitly incompatible"
+  },
+  {
+    "previous": "fertilizer",
+    "next": "sulphur",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Ammonium nitrate (oxidiser in some fertilizer grades) + sulphur (flammable solid, UN 1350) = severe fire/explosion hazard; sulphur profiles list fertilizer as incompatible"
+  },
+  {
+    "previous": "fertilizer",
+    "next": "scrap",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Hygroscopic fertilizer residue causes corrosion; ammonium/phosphate contamination of scrap hold oil residues creates unpredictable reactive mixtures; scrap profiles list fertilizer as explicitly incompatible"
+  },
+  {
+    "previous": "fertilizer",
+    "next": "bauxite",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Bauxite profiles list fertilizer as explicitly incompatible; nitrogen/phosphorus residue cross-contaminates aluminium ore; thorough acid/alkaline wash required — manual surveyor review recommended"
+  },
+  {
+    "previous": "fertilizer",
+    "next": "general",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "General cargo chemistry is unspecified and variable; fertilizer residue (hygroscopic, corrosive, oxidiser traces) is unsafe for unknown cargo types — manual surveyor review required (conservative bias)"
+  },
+  {
+    "previous": "fertilizer",
+    "next": "sugar",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Chemical contamination of food-grade cargo; nitrogen/phosphate fertilizer residue causes sugar surveyor rejection; sugar profiles explicitly list fertilizer as incompatible"
+  },
+  {
+    "previous": "fertilizer",
+    "next": "salt",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Salt profiles list fertilizer as compatible (symmetric: fertilizer profiles also list salt as compatible); both are inorganic mineral cargoes; standard hospital clean required before loading, but no chemical incompatibility"
+  },
+  {
+    "previous": "fertilizer",
+    "next": "limestone",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Limestone profiles list fertilizer as compatible (symmetric: fertilizer profiles also list limestone as compatible); CaCO3 is chemically inert with fertilizer residues under normal conditions; standard clean required"
+  },
+  {
+    "previous": "fertilizer",
+    "next": "manganese ore",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Manganese ore profiles list fertilizer as explicitly incompatible; nitrogen/phosphate residue cross-contaminates ore; manganese oxide reacts with oxidising agents (ammonium nitrate) — manual surveyor review required"
+  },
+  {
+    "previous": "fertilizer",
+    "next": "copper concentrate",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Copper concentrate profiles list fertilizer as explicitly incompatible; sulphide concentrate + ammonium nitrate (oxidiser) creates H2S toxic gas risk; dedicated voyage required for copper concentrate regardless of prior cargo"
+  }
+]

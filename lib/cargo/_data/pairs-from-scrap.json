@@ -1,0 +1,121 @@
+[
+  {
+    "previous": "scrap",
+    "next": "grain",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Oil contamination from cutting fluids and machinery residue — food-grade grain inspection will fail; sharp particles damage hold paint creating contamination pockets; scrap in grain.incompatible_with"
+  },
+  {
+    "previous": "scrap",
+    "next": "steel",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Both ferrous metal cargoes — chemical compatibility high; oil degreasing required after scrap before steel coils to avoid cutting fluid staining and damage claims; scrap in steel.compatible_with"
+  },
+  {
+    "previous": "scrap",
+    "next": "pipes",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Both ferrous metal cargoes — scrap in pipes.compatible_with; oil degreasing required to protect pipe coatings and threaded ends from cutting fluid contamination"
+  },
+  {
+    "previous": "scrap",
+    "next": "iron-ore",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "scrap in iron-ore.compatible_with; both industrial bulk with no food-grade constraint; normal clean sufficient — iron-ore not contamination-sensitive to oil traces at industrial quality"
+  },
+  {
+    "previous": "scrap",
+    "next": "dri",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "scrap in dri.incompatible_with; oil and moisture residue from scrap reacts with DRI metallic iron — generates H2 gas and self-heating risk; DRI requires hospital-clean inert atmosphere"
+  },
+  {
+    "previous": "scrap",
+    "next": "coal",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "coal.compatible_with includes scrap; both dirty bulk cargoes with overlapping industrial use — no contamination conflict; normal clean acceptable"
+  },
+  {
+    "previous": "scrap",
+    "next": "petcoke",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "petcoke.compatible_with includes scrap; both industrial bulk with no food-grade constraint; petcoke itself is oily so scrap oil residue does not introduce new contamination mechanism"
+  },
+  {
+    "previous": "scrap",
+    "next": "fertilizer",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "scrap in fertilizer.incompatible_with; battery acid leakage and mixed metal contamination from scrap reacts with hygroscopic fertilizer (especially AN-based) — corrosion and oxidiser contamination risk"
+  },
+  {
+    "previous": "scrap",
+    "next": "cement",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "scrap in cement.incompatible_with; oil and rubber residue from scrap contaminates cement — even trace hydrocarbons affect cement setting chemistry; scrap sharp particles damage hold paintwork needed for cement dust sealing"
+  },
+  {
+    "previous": "scrap",
+    "next": "sulphur",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "scrap not in sulphur.compatible_with; oil contamination from scrap machinery residue creates fire risk with sulphur dust (Class 4.1 flammable solid UN 1350); manual surveyor review required"
+  },
+  {
+    "previous": "scrap",
+    "next": "bauxite",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "scrap in bauxite.compatible_with; both industrial bulk — no food-grade constraint; bauxite Group A (liquefaction) requires TML certificate from shipper independent of scrap compatibility"
+  },
+  {
+    "previous": "scrap",
+    "next": "general",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Oil contamination and sharp particle residue from scrap incompatible with unknown mixed/packaged cargo of 'general' category — manual surveyor review required per broker notes on general cargo"
+  },
+  {
+    "previous": "scrap",
+    "next": "sugar",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "scrap in sugar.incompatible_with; oil and battery acid contamination from scrap causes food-grade sugar rejection; even trace hydrocarbon residue unacceptable for food cargo"
+  },
+  {
+    "previous": "scrap",
+    "next": "salt",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "scrap not in salt.compatible_with; oil degreasing required after scrap but salt (especially food-grade) requires clean hold free of hydrocarbon residue; chloride from salt accelerates corrosion of any remaining metal particles — manual surveyor review required"
+  },
+  {
+    "previous": "scrap",
+    "next": "limestone",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "limestone is chemically inert (CaCO3) — low contamination sensitivity to scrap oil traces at industrial grade; normal clean acceptable; limestone.compatible_with includes industrial bulk successors; symmetric: limestone→scrap also compatible"
+  },
+  {
+    "previous": "scrap",
+    "next": "manganese ore",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "manganese ore.compatible_with includes scrap; both industrial ore/metal bulk — no food-grade constraint; manganese ore Group A requires TML certificate from shipper independent of prior cargo"
+  },
+  {
+    "previous": "scrap",
+    "next": "copper concentrate",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "scrap in copper concentrate.incompatible_with; copper concentrate dual-hazard (Group A + B) — H2S gas generation incompatible with oil/plastic contamination from scrap; dedicated voyage required for copper concentrate; manual surveyor review required"
+  }
+]

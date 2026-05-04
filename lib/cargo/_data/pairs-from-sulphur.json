@@ -1,0 +1,121 @@
+[
+  {
+    "previous": "sulphur",
+    "next": "grain",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Sulphur residue (SO2 odour, sulphuric acid traces from wet sulphur) contaminates food-grade holds; grain surveyors will reject without full multi-wash + deodorisation — fail-closed. Symmetric: grain→sulphur equally fails (food residue + sulphur dust explosive mix)."
+  },
+  {
+    "previous": "sulphur",
+    "next": "steel",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Wet sulphur forms H₂SO₄ which actively corrodes steel surfaces and cargo; even residual sulphur dust with condensation causes acid pitting on steel coils/plates. Extra clean essential but corrosion risk too high without surveyor confirmation. Asymmetric: steel→sulphur is also listed incompatible in sulphur profile."
+  },
+  {
+    "previous": "sulphur",
+    "next": "pipes",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Sulphur residue with moisture forms sulphuric acid — corrodes pipe thread ends, epoxy/FBE coatings, and weld zones; pipes profile lists sulphur as incompatible. Hospital clean required but corrosion risk to threaded connections warrants fail-closed."
+  },
+  {
+    "previous": "sulphur",
+    "next": "iron-ore",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Iron ore is chemically tolerant of sulphur residue and is not food/food-adjacent; both are industrial bulk cargoes. Extra clean required (sulphur self-heating + high dust). Fresh water wash mandatory before iron-ore loading to neutralise acid risk to hold structure. Symmetric."
+  },
+  {
+    "previous": "sulphur",
+    "next": "dri",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "DRI profile explicitly lists sulphur as incompatible: sulphur reacts with reactive metallic iron (DRI) and moisture to produce H₂S gas (toxic) + accelerates self-heating to >900°C. Extreme hazard — dedicated voyage required. Symmetric."
+  },
+  {
+    "previous": "sulphur",
+    "next": "coal",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Sulphur profile lists coal as incompatible; sulphur + coal dust creates dual self-heating/flammable risk; high-sulphur coal contamination assessment confounded by sulphur residue; coal profile also lists sulphur incompatible. Symmetric."
+  },
+  {
+    "previous": "sulphur",
+    "next": "petcoke",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Petcoke itself is high-sulphur (up to 8% S), so sulphur contamination does not degrade cargo quality; both are industrial bulk cargoes tolerating similar hold conditions. Extra clean required (sulphur self-heating rule). Fresh water wash to remove acid before loading. Symmetric."
+  },
+  {
+    "previous": "sulphur",
+    "next": "fertilizer",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Sulphur profile explicitly lists fertilizer as incompatible; sulphur residue reacts with ammonium nitrate-based fertilisers (oxidiser + flammable solid = detonation risk); also chemical contamination of hygroscopic fertiliser. Symmetric."
+  },
+  {
+    "previous": "sulphur",
+    "next": "cement",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Sulphur profile lists cement as incompatible; sulphuric acid residue attacks calcium silicate binders in cement — degrades setting properties; also corrosive to hold surfaces that cement calcium-deposits cure onto. Symmetric."
+  },
+  {
+    "previous": "sulphur",
+    "next": "scrap",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Scrap metal is not food-grade and tolerates industrial contamination; sulphur residue corrosion risk is acceptable for scrap quality (scrap is already mixed ferrous fragments). Extra clean required (sulphur self-heating). Fresh water rinse essential to limit acid pitting of hold structure. Symmetric."
+  },
+  {
+    "previous": "sulphur",
+    "next": "bauxite",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Bauxite (aluminium oxide-hydroxide) is chemically inert to sulphur residue and not food-grade; both are industrial bulk cargoes. Extra clean required (sulphur self-heating). TML certificate still required for bauxite fines. Symmetric."
+  },
+  {
+    "previous": "sulphur",
+    "next": "general",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "General cargo is variable and may include food, chemicals, or packaged goods — sulphur residue (SO2 odour, acid traces) poses unpredictable contamination risk; manual surveyor review required for any specific general cargo manifest. Fail-closed per conservative bias."
+  },
+  {
+    "previous": "sulphur",
+    "next": "sugar",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Sulphur profile explicitly lists sugar as incompatible; sulphur residue (SO2 odour, acid traces) causes food-grade rejection; sugar is hygroscopic and absorbs contaminants readily; surveyors will refuse grain-clean standard after sulphur without multiple washes. Symmetric."
+  },
+  {
+    "previous": "sulphur",
+    "next": "salt",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Sulphur profile lists salt as compatible; salt (NaCl) is chemically tolerant of sulphur residue and not food-grade sensitive in industrial form; however extra clean required (sulphur self-heating rule) and thorough fresh water wash to remove acid before salt loading to prevent hold corrosion acceleration."
+  },
+  {
+    "previous": "sulphur",
+    "next": "limestone",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Sulphur profile lists limestone as compatible; limestone (CaCO3) is alkaline and partially neutralises residual sulphuric acid, making it a reasonable post-sulphur cargo; extra clean required (sulphur self-heating rule) and fresh water wash before loading. Symmetric."
+  },
+  {
+    "previous": "sulphur",
+    "next": "manganese ore",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Manganese ore is industrial bulk; sulphur residue does not degrade manganese oxide quality; neither is food-grade sensitive; extra clean required (sulphur self-heating). Note: manganese ore reacts with strong acids — thorough fresh water wash after sulphur mandatory to prevent MnO vapour generation. Symmetric."
+  },
+  {
+    "previous": "sulphur",
+    "next": "copper concentrate",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Sulphur profile explicitly lists copper concentrate as incompatible; copper concentrate already contains copper sulphides — sulphur residue adds flammable solid (UN 1350) risk to a cargo that itself generates H₂S; dual-hazard amplification. Symmetric."
+  }
+]

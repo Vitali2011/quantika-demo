@@ -1,0 +1,121 @@
+[
+  {
+    "previous": "steel",
+    "next": "grain",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Iron oxide stain and mill scale residue from steel coils contaminate hold surfaces; grain surveyor will reject on food-grade inspection — any ferrous dust traces cause rejection under International Grain Code."
+  },
+  {
+    "previous": "steel",
+    "next": "pipes",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Both are ferrous metal project cargoes with identical contamination profile (iron oxide, mill scale); normal clean sufficient, symmetric with pipes→steel. Hospital clean required per standard pipe loading spec regardless."
+  },
+  {
+    "previous": "steel",
+    "next": "iron-ore",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Iron oxide from steel residue is chemically identical to iron-ore cargo; no cross-contamination risk. Normal clean acceptable, symmetric iron-ore→steel. Iron-ore's own high-dust load dominates hold condition."
+  },
+  {
+    "previous": "steel",
+    "next": "dri",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Cutting oil residue from steel coils and moisture from mill scale react with DRI's highly porous metallic iron surface, accelerating self-heating (DRI Group B, self-heating to >900°C); dedicated voyage required per IMSBC DRI schedule."
+  },
+  {
+    "previous": "steel",
+    "next": "coal",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Coal profiles list steel in incompatible_with: coal's methane/CO emission and self-heating (Group B) combined with steel coil stowage creates fire risk; hold paintwork damage from alkaline degreaser wash after coal reverses compatibility direction. Manual surveyor review required."
+  },
+  {
+    "previous": "steel",
+    "next": "petcoke",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Petcoke profiles list steel in incompatible_with: oily black petcoke dust (vanadium/nickel trace metals in uncalcined grades) deposits on hold paintwork required intact for steel coil loading; contamination direction is hold-surface staining that damages next steel voyage, not this one — but petcoke's self-heating (Group B) creates fire risk adjacent to steel stowage. Manual surveyor review required."
+  },
+  {
+    "previous": "steel",
+    "next": "fertilizer",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Fertilizer profiles list steel in incompatible_with; steel's cutting oil residue (corrosive to hygroscopic fertilizer granules) and mill scale compromise fertilizer quality; AN-based fertilizer requires hospital clean of holds — iron oxide residue triggers oxidiser-incompatibility concerns."
+  },
+  {
+    "previous": "steel",
+    "next": "cement",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Cement profiles list steel in incompatible_with: mill scale and iron oxide from steel contaminate cement clinker (ferrous traces alter cement chemistry and setting time); cement's alkaline dust also damages hold paintwork required for subsequent steel loading — bidirectional incompatibility."
+  },
+  {
+    "previous": "steel",
+    "next": "sulphur",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Sulphur profiles list steel in incompatible_with: wet sulphur forms H2SO4 (sulphuric acid) on contact with moisture — cutting oil residue and mill scale moisture from steel coils create acid formation risk corroding hold steelwork; sulphur dust (UN 1350, flammable solid) adjacent to metal surfaces is fire-risk. Manual surveyor review required."
+  },
+  {
+    "previous": "steel",
+    "next": "scrap",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Both ferrous metal cargoes; steel profiles list scrap in compatible_with and scrap profiles list steel in compatible_with (symmetric). Iron oxide residue from steel is irrelevant to scrap's own mixed-metal contamination profile. Normal clean acceptable."
+  },
+  {
+    "previous": "steel",
+    "next": "bauxite",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Steel profiles list bauxite in compatible_with; iron oxide residue from steel does not contaminate bauxite (aluminium oxide ore) chemically. Normal clean acceptable — bauxite's own red/brown dust dominates any residual staining."
+  },
+  {
+    "previous": "steel",
+    "next": "general",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "General cargo chemistry is undefined by nature; mill scale, cutting oil, and packing material residues from steel coils may damage sensitive project or bagged goods in a mixed shipment. Manual surveyor review required per general's own broker notes — compatibility must be assessed case-by-case."
+  },
+  {
+    "previous": "steel",
+    "next": "sugar",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Sugar requires grain-clean equivalent holds; iron oxide stain and cutting oil residue from steel coils are food-grade rejection triggers — sugar surveyor will fail holds with any metal staining or oil trace. Symmetric with sugar profiles listing steel in incompatible_with."
+  },
+  {
+    "previous": "steel",
+    "next": "salt",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Salt profiles list steel in incompatible_with: NaCl chloride residue from salt accelerates corrosion on subsequent steel cargo — but in this direction (steel→salt), cutting oil and mill scale from steel coils contaminate food-grade sea salt and introduce chloride-incompatible residues. Manual surveyor review required."
+  },
+  {
+    "previous": "steel",
+    "next": "limestone",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Steel profiles list limestone in compatible_with and limestone profiles list steel in compatible_with (symmetric); limestone is a low-contamination-risk bulk cargo — iron oxide residue from steel does not affect calcium carbonate quality. Normal clean acceptable."
+  },
+  {
+    "previous": "steel",
+    "next": "manganese ore",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Manganese ore profiles list steel in incompatible_with: manganese oxide dust (MnO2/Mn2O3, health hazard) requires grain-clean standard inspection; additionally manganese ore's high moisture sensitivity combined with steel cutting oil residue creates corrosive microenvironment in hold. Manual surveyor review required."
+  },
+  {
+    "previous": "steel",
+    "next": "copper concentrate",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Copper concentrate profiles list steel in incompatible_with via broad exclusion list; H2S gas released from copper sulphides (CuFeS2) is toxic and reacts with mill scale moisture; arsenic/heavy metal trace contamination from concentrate would render any subsequent steel cargo a damage claim. Dedicated voyage strongly preferred per copper concentrate broker notes."
+  }
+]

@@ -1,0 +1,121 @@
+[
+  {
+    "previous": "limestone",
+    "next": "grain",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Alkaline CaCO3 dust residue can raise hold pH and cause chemical rejection by grain surveyors; grain profiles list limestone as incompatible due to food-grade contamination risk from alkaline dust. Extra wash + surveyor inspection required."
+  },
+  {
+    "previous": "limestone",
+    "next": "steel",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Limestone is inert and low-contamination; steel profiles list limestone as compatible. White alkaline dust does not chemically attack ferrous cargo. Normal clean sufficient. Symmetric: steel→limestone also compatible."
+  },
+  {
+    "previous": "limestone",
+    "next": "pipes",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Pipes profiles list limestone as compatible. Limestone dust is inert and non-corrosive to steel/epoxy pipe coatings. Normal clean acceptable. Symmetric: pipes→limestone also compatible."
+  },
+  {
+    "previous": "limestone",
+    "next": "iron-ore",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Iron-ore profiles list limestone as compatible. Both are mineral bulk cargoes; CaCO3 residue does not impair iron oxide cargo. Normal clean sufficient. Symmetric: iron-ore→limestone also compatible."
+  },
+  {
+    "previous": "limestone",
+    "next": "dri",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "DRI is highly reactive with moisture and requires inert atmosphere; any residual alkaline dust or moisture trap from limestone increases self-heating/H2 generation risk. DRI profiles list no compatible cargoes; manual surveyor review required."
+  },
+  {
+    "previous": "limestone",
+    "next": "coal",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Coal profiles list limestone as compatible. Limestone residue is inert and does not impair carbonaceous cargo. Normal clean sufficient. Symmetric: coal→limestone also compatible."
+  },
+  {
+    "previous": "limestone",
+    "next": "petcoke",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Petcoke profiles list bauxite/coal/scrap/iron-ore as compatible; limestone is inert and non-reactive with petroleum coke. White alkaline dust does not contaminate carbon-rich petcoke. Normal clean sufficient."
+  },
+  {
+    "previous": "limestone",
+    "next": "fertilizer",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Fertilizer profiles list limestone as compatible. CaCO3 is chemically neutral to urea/DAP/potash and does not trigger oxidiser reactions. Normal clean sufficient. Symmetric: fertilizer→limestone also compatible."
+  },
+  {
+    "previous": "limestone",
+    "next": "cement",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Cement profiles list limestone as compatible. CaCO3 is a primary cement raw material; trace limestone residue is chemically benign to cement clinker. Normal clean sufficient. Symmetric: cement→limestone also compatible."
+  },
+  {
+    "previous": "limestone",
+    "next": "sulphur",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Sulphur profiles list limestone as compatible. Dry limestone is alkaline and does not react with dry elemental sulphur at ambient conditions. Normal clean sufficient. Symmetric: sulphur→limestone also compatible."
+  },
+  {
+    "previous": "limestone",
+    "next": "scrap",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Scrap profiles list bauxite/iron-ore/steel/coal as compatible; limestone residue is inert and non-reactive with mixed ferrous scrap. White alkaline dust does not accelerate scrap self-heating. Normal clean sufficient."
+  },
+  {
+    "previous": "limestone",
+    "next": "bauxite",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Bauxite profiles list limestone as compatible. Both are mineral oxide/carbonate ores; CaCO3 residue does not impair aluminium hydroxide ore. Normal clean sufficient. Symmetric: bauxite→limestone also compatible."
+  },
+  {
+    "previous": "limestone",
+    "next": "general",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "General cargo profiles list limestone as compatible. Limestone is among the lowest-risk prior cargoes; inert alkaline dust is easily swept clean before general/project cargo. Normal clean sufficient; actual cargo mix should be confirmed by surveyor."
+  },
+  {
+    "previous": "limestone",
+    "next": "sugar",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Sugar profiles list limestone as incompatible: alkaline CaCO3 residue chemically degrades sucrose (alkaline hydrolysis) and triggers rejection by sugar surveyors. Limestone incompatible_with includes sugar. Extra wash + grain-clean standard required."
+  },
+  {
+    "previous": "limestone",
+    "next": "salt",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Salt profiles list limestone as compatible. CaCO3 residue is non-reactive with NaCl and does not introduce chloride contamination. Normal clean sufficient. Symmetric: salt→limestone also compatible."
+  },
+  {
+    "previous": "limestone",
+    "next": "manganese ore",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Manganese ore profiles list limestone as compatible. Limestone residue is inert to manganese oxides at ambient conditions; no reactive mechanism between CaCO3 and MnO2. Normal clean sufficient. Symmetric: manganese ore→limestone also compatible."
+  },
+  {
+    "previous": "limestone",
+    "next": "copper concentrate",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Copper concentrate profiles list limestone as incompatible (incompatible_with includes all but empty list). Copper concentrate is a dual-hazard cargo (Group A+B): CuFeS2 reacts with alkaline dust to alter pH environment and H2S generation conditions; dedicated voyage strongly preferred. Manual surveyor review required."
+  }
+]

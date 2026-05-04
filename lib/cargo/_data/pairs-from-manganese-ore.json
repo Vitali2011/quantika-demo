@@ -1,0 +1,121 @@
+[
+  {
+    "previous": "manganese ore",
+    "next": "grain",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Dark purple/black manganese oxide dust (MnO2) causes food-grade rejection; manganese residue is a health hazard and fails grain surveyor inspection; high-dust profile requires thorough wash before any food cargo"
+  },
+  {
+    "previous": "manganese ore",
+    "next": "steel",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "High manganese dust stains hold surfaces black/brown — hospital-clean standard required before steel coils; residual MnO2 dust cannot be tolerated on paintwork or steel surfaces (staining and contamination damage claims)"
+  },
+  {
+    "previous": "manganese ore",
+    "next": "pipes",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Manganese oxide dust contaminates pipe threaded ends and protective coatings; hospital-clean required before pipes — same mechanism as steel; dark staining persistent and difficult to remove from pipe joints"
+  },
+  {
+    "previous": "manganese ore",
+    "next": "iron-ore",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Both are heavy oxide ores (MnO2 / Fe2O3), compatible mineral chemistry; cross-contamination between ore cargoes not a commercial issue; normal clean acceptable — symmetric: iron-ore→manganese ore also compatible per iron-ore profile"
+  },
+  {
+    "previous": "manganese ore",
+    "next": "dri",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "DRI is listed as incompatible in manganese ore profile; moisture-laden manganese fines residue reacts with metallic iron (DRI), triggering self-heating and H2 generation risk; thorough inspection mandatory before any DRI loading"
+  },
+  {
+    "previous": "manganese ore",
+    "next": "coal",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Both bulk ore/mineral cargoes with no cross-reactive chemistry; coal is in manganese ore's compatible_with list; normal clean acceptable; symmetric — coal profile also lists manganese ore as compatible"
+  },
+  {
+    "previous": "manganese ore",
+    "next": "petcoke",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Petcoke profile does not list manganese ore as compatible; residual MnO2 dust mixed with oily petcoke creates contaminated hold environment; petcoke also requires hospital clean before loading and combination with prior high-dust cargo raises cleaning burden — manual surveyor review required"
+  },
+  {
+    "previous": "manganese ore",
+    "next": "fertilizer",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Manganese ore listed in fertilizer's incompatible_with list; MnO2 dust reacts with fertilizer acids (phosphates, nitrates) to release toxic MnO vapour; fertilizer contamination from ore residue also unacceptable under IMSBC"
+  },
+  {
+    "previous": "manganese ore",
+    "next": "cement",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Manganese ore is in cement's incompatible_with list; manganese oxide dust reacts with alkaline cement (calcium silicate/aluminate) creating hard deposits; MnO2 residue compromises cement quality and causes structural contamination"
+  },
+  {
+    "previous": "manganese ore",
+    "next": "sulphur",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "MnO2 reacts with sulphur dust and wet sulphur to form manganese sulphate compounds and toxic MnO vapour; sulphur profile does not list manganese ore as compatible; high-dust from both cargoes and chemical reactivity require manual surveyor review"
+  },
+  {
+    "previous": "manganese ore",
+    "next": "scrap",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Scrap is in manganese ore's compatible_with list; both are industrial bulk cargoes with no significant cross-reactive chemistry; manganese dust staining on scrap metal is acceptable; normal clean sufficient — symmetric per scrap profile"
+  },
+  {
+    "previous": "manganese ore",
+    "next": "bauxite",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Bauxite is in manganese ore's compatible_with list; both are oxide ores (MnO2 / Al2O3-OH) with compatible mineral chemistry; cross-staining of red/brown bauxite dust with manganese is commercially acceptable; normal clean sufficient — symmetric per bauxite profile"
+  },
+  {
+    "previous": "manganese ore",
+    "next": "general",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "General cargo is undefined by chemistry — manganese oxide high-dust profile and persistent dark staining make it unsafe for miscellaneous/bagged/project cargo without surveyor sign-off; general profile mandates case-by-case manual surveyor review"
+  },
+  {
+    "previous": "manganese ore",
+    "next": "sugar",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Sugar is in manganese ore's incompatible_with list; MnO2 dust contamination causes food-grade rejection; dark staining impossible to remove to grain-clean standard without extensive multi-wash cycle; manganese residue toxic at trace levels for food products"
+  },
+  {
+    "previous": "manganese ore",
+    "next": "salt",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Salt profile does not list manganese ore as compatible; manganese oxide dark staining is persistent and food-grade sea salt requires clean holds; MnO2 residue constitutes contamination for NaCl product quality — manual surveyor review required"
+  },
+  {
+    "previous": "manganese ore",
+    "next": "limestone",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Limestone is in manganese ore's compatible_with list; CaCO3 alkaline dust and MnO2 residue have no reactive chemistry at ambient conditions; dark staining on limestone is commercially acceptable for bulk industrial use; normal clean sufficient — symmetric per limestone profile"
+  },
+  {
+    "previous": "manganese ore",
+    "next": "copper concentrate",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Copper concentrate is in manganese ore's incompatible_with list; copper sulphide (CuFeS2) reacts with MnO2 residue under moisture (H2S generation risk); arsenic/heavy-metal impurities in concentrate exacerbate contamination; dedicated voyage strongly preferred per copper concentrate broker notes"
+  }
+]

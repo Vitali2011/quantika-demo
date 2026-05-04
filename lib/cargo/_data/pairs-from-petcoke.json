@@ -1,0 +1,121 @@
+[
+  {
+    "previous": "petcoke",
+    "next": "grain",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Oily black petcoke residue + sulphur/vanadium trace metals — food-grade grain inspection will fail; alkaline degreaser + deodoriser wash required but grain-clean standard rarely achievable without surveyor-ordered re-wash. Fail-closed per broker protocol."
+  },
+  {
+    "previous": "petcoke",
+    "next": "steel",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Petcoke leaves oily black carbon staining on hold surfaces; steel cargo (especially coils) requires hospital-clean holds — any carbon/oil residue causes cargo damage claims and surface corrosion. Multiple alkaline washes required but staining risk remains."
+  },
+  {
+    "previous": "petcoke",
+    "next": "pipes",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Oily petcoke residue contaminates pipe threaded ends and epoxy/FBE coatings — connection damage is a major claim driver. Hospital-clean required for pipes; petcoke's persistent oily staining makes this difficult to achieve reliably."
+  },
+  {
+    "previous": "petcoke",
+    "next": "iron-ore",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Petcoke and iron-ore are both heavy industrial bulk cargoes; coal/petcoke → iron-ore is a recognised compatible sequence. Extra clean required due to petcoke's high dust and oily residue, but no chemical incompatibility. Symmetric: iron-ore → petcoke also compatible."
+  },
+  {
+    "previous": "petcoke",
+    "next": "dri",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "DRI is listed as incompatible with petcoke in profiles; carbon residue and sulphur traces from petcoke could react with highly reactive metallic DRI iron sponge. DRI requires inert N2 atmosphere — petcoke sulphur residue compromises cargo safety. Fail-closed."
+  },
+  {
+    "previous": "petcoke",
+    "next": "coal",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Coal is listed in petcoke's compatible_with list; both are carbonaceous high-dust industrial bulk cargoes with similar hold cleaning requirements. Extra clean required due to petcoke's oily sulphur residue before coal loading. Symmetric: coal → petcoke also compatible."
+  },
+  {
+    "previous": "petcoke",
+    "next": "fertilizer",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Fertilizer is listed in petcoke's incompatible_with list; petcoke sulphur/vanadium/oily residue chemically incompatible with hygroscopic fertilizer (especially AN-based oxidisers). Hospital clean required for fertilizer loading — petcoke staining makes this unachievable without 2–3 extra wash cycles."
+  },
+  {
+    "previous": "petcoke",
+    "next": "cement",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Cement is listed in petcoke's incompatible_with list; oily carbon residue from petcoke prevents cement from bonding correctly to hold surfaces during loading and creates contamination risk. Calcium deposits over oil staining also damage hold structure during cement acid-descale."
+  },
+  {
+    "previous": "petcoke",
+    "next": "sulphur",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Petcoke already carries sulphur residue; loading elemental sulphur (Group B, Class 4.1) over petcoke oily residue creates combined fire/explosion risk — sulphur dust in contact with petcoke carbon and oily surface is a documented spontaneous combustion hazard. Manual surveyor review required."
+  },
+  {
+    "previous": "petcoke",
+    "next": "scrap",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Scrap metal is listed in petcoke's compatible_with list; industrial cargo sequence with no chemical incompatibility. Petcoke oily residue adds to scrap's own oil contamination profile — extra clean required but not incompatible in practice. Surveyor inspection mandatory for scrap regardless of prior cargo."
+  },
+  {
+    "previous": "petcoke",
+    "next": "bauxite",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Bauxite is listed in petcoke's compatible_with list; both are high-dust industrial bulk cargoes. Petcoke oily residue may slightly affect bauxite TML moisture readings — extra clean required. No chemical incompatibility. TML certificate mandatory from bauxite shipper regardless."
+  },
+  {
+    "previous": "petcoke",
+    "next": "general",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "General cargo category is variable — some 'general' cargo will be food-grade or packaging-sensitive and will fail inspection after petcoke's oily staining. Fail-closed: manual surveyor review required to confirm actual general cargo is compatible with residual petcoke contamination."
+  },
+  {
+    "previous": "petcoke",
+    "next": "sugar",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Sugar is listed in petcoke's incompatible_with list; food-grade cargo requiring grain-clean holds — petcoke oily black staining and sulphur/vanadium residue make food-grade standard unachievable. Brokers note 2–3 extra cleaning days needed after petcoke before any grain-clean standard."
+  },
+  {
+    "previous": "petcoke",
+    "next": "salt",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Salt (especially food-grade sea salt) requires clean holds free from chemical residues; petcoke's oily sulphur/vanadium residue would cause food-grade rejection. Even industrial salt risks chloride + sulphur interaction in wet conditions forming corrosive acids on hold steel. Manual surveyor review required."
+  },
+  {
+    "previous": "petcoke",
+    "next": "limestone",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Limestone profiles list petcoke as incompatible; petcoke oily carbon residue would contaminate alkaline limestone dust and cause staining. Limestone is often used as a buffer cargo but requires clean holds — petcoke's persistent oily staining prevents achieving acceptable standard without extensive degreasing."
+  },
+  {
+    "previous": "petcoke",
+    "next": "manganese ore",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Manganese ore profiles do not list petcoke as compatible; manganese oxides can react with sulphur residues from petcoke to produce toxic MnO vapour under acidic conditions (H2SO4 from wet sulphur). High-dust cargo following high-dust oily cargo requires full wash. Manual surveyor review required."
+  },
+  {
+    "previous": "petcoke",
+    "next": "copper concentrate",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Copper concentrate is listed in petcoke's incompatible_with list (via coal similarity) and profiles mark copper concentrate as requiring dedicated voyages. Petcoke sulphur residue combined with copper sulphide chemistry (H2S generation risk) creates dual toxic hazard. Copper concentrate requires full acid wash of holds — incompatible sequence."
+  }
+]

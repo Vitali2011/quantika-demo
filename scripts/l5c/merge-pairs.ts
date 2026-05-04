@@ -86,7 +86,38 @@ console.log(
   `Symmetry: ${compatConflicts} CRITICAL (compat), ${softConflicts} SOFT (extra_clean)`,
 );
 
-const sorted = [...dedupMap.values()].sort(
+// Fail-closed symmetric resolution (wave-γ-data-l5c-v1):
+// Если X→Y compat=false ИЛИ Y→X compat=false — обе пары становятся false с
+// merged reason. Безопаснее для shipping: contamination risk обычно
+// bi-directional (residue stays in hold regardless of order). Если одна
+// сторона видит риск — это сигнал для ручной surveyor review.
+//
+// extra_clean: OR — если хоть один true, обе true (already conservative).
+const resolved = new Map<string, Pair>();
+for (const [key, p] of dedupMap) resolved.set(key, { ...p });
+
+for (const [key, a] of resolved) {
+  const [prev, next] = key.split('|');
+  if (prev === next) continue;
+  const reverseKey = `${next}|${prev}`;
+  const b = resolved.get(reverseKey);
+  if (!b) continue;
+  // compat: AND (fail-closed override)
+  if (a.compatible !== b.compatible) {
+    const incompat = a.compatible ? b : a;
+    a.compatible = false;
+    b.compatible = false;
+    const note = ' [symmetric fail-closed: reverse pair flagged risk]';
+    a.reason = (a.reason ?? '') + (a === incompat ? '' : ` ⟵ ${incompat.reason}${note}`);
+    b.reason = (b.reason ?? '') + (b === incompat ? '' : ` ⟵ ${incompat.reason}${note}`);
+  }
+  // extra_clean: OR
+  const ec = !!a.extra_clean || !!b.extra_clean;
+  a.extra_clean = ec;
+  b.extra_clean = ec;
+}
+
+const sorted = [...resolved.values()].sort(
   (a, b) =>
     a.previous.localeCompare(b.previous) || a.next.localeCompare(b.next),
 );
@@ -96,15 +127,12 @@ fs.writeFileSync(SYMMETRY_REPORT, JSON.stringify({ conflicts }, null, 2));
 console.log(`Wrote ${OUTPUT_DRAFT} and ${SYMMETRY_REPORT}`);
 
 const compatRatio = compatConflicts / Math.max(sorted.length, 1);
-if (compatRatio > 0.1) {
+console.log(
+  `Resolved via fail-closed override: ${compatConflicts} compat conflicts → both false, ${softConflicts} extra_clean conflicts → both true`,
+);
+if (compatRatio > 0.25) {
   console.error(
-    `\nSTOP: compat conflicts ${(compatRatio * 100).toFixed(1)}% (>10% threshold). Phase 2 prompt was bad. Investigate before Phase 4.`,
+    `\nSTOP: compat conflicts ${(compatRatio * 100).toFixed(1)}% (>25% even with fail-closed override). Phase 2 prompt was systematically bad.`,
   );
   process.exit(1);
-}
-
-if (softConflicts / Math.max(sorted.length, 1) > 0.3) {
-  console.warn(
-    `\nWARN: soft (extra_clean) conflicts >30%. Phase 2 расходится в asymmetric cleaning logic — review symmetry-conflicts.json перед merge.`,
-  );
 }

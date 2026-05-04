@@ -1,0 +1,121 @@
+[
+  {
+    "previous": "coal",
+    "next": "grain",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Black carbon dust contamination — food-grade rejection guaranteed; coal sulphur residue and odour cannot be removed to grain-clean standard without alkaline degreaser wash + surveyor sign-off; fail-closed"
+  },
+  {
+    "previous": "coal",
+    "next": "steel",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Coal dust and carbon staining pit hold surfaces; steel coils require hospital-clean holds — even trace abrasive coal fines cause surface damage and cargo damage claims; listed in coal incompatible_with"
+  },
+  {
+    "previous": "coal",
+    "next": "pipes",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Carbon dust contaminates threaded pipe ends and epoxy/FBE protective coatings; hospital clean required for pipes but coal residue makes it unreliable; listed in coal incompatible_with"
+  },
+  {
+    "previous": "coal",
+    "next": "iron-ore",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Symmetric compatibility (coal↔iron-ore listed as compatible in both profiles); both industrial bulk, no food-grade sensitivity; extra_clean due to coal high dust profile before next loading"
+  },
+  {
+    "previous": "coal",
+    "next": "dri",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "DRI self-heats with carbon contamination; coal carbon residue + moisture risk triggers DRI oxidation (>900°C) and H2 gas generation; listed as incompatible in both profiles; dedicated voyage required for DRI"
+  },
+  {
+    "previous": "coal",
+    "next": "petcoke",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Symmetric compatibility (coal↔petcoke listed as compatible in both profiles); both high-dust carbonaceous bulk cargoes with similar cleaning requirements; extra_clean due to coal high dust"
+  },
+  {
+    "previous": "coal",
+    "next": "fertilizer",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Carbon residue contaminates hygroscopic fertilizer; coal sulphur residue reacts with ammonium nitrate-based fertilizers (oxidiser risk); listed in coal incompatible_with"
+  },
+  {
+    "previous": "coal",
+    "next": "cement",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Carbon contamination disrupts cement chemistry; coal dust listed in cement incompatible_with; alkaline cement hold prep incompatible with coal carbon residue — mutual contamination risk"
+  },
+  {
+    "previous": "coal",
+    "next": "sulphur",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Both self-heating (coal CH4/CO, sulphur flammable solid UN 1350); coal carbon residue creates ignition risk with sulphur dust — explosion hazard; sulphur profile lists coal as incompatible"
+  },
+  {
+    "previous": "coal",
+    "next": "scrap",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Symmetric compatibility (coal→scrap listed in coal compatible_with, scrap→coal in scrap compatible_with); both industrial bulk; oil degreasing needed after scrap anyway; extra_clean due to coal high dust"
+  },
+  {
+    "previous": "coal",
+    "next": "bauxite",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Symmetric compatibility (coal↔bauxite listed as compatible in both profiles); both industrial ore/bulk; bauxite red dust and coal carbon residue both require thorough wash; extra_clean due to coal high dust"
+  },
+  {
+    "previous": "coal",
+    "next": "general",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "General cargo is variable — coal black carbon residue and self-heating history require manual surveyor review; fail-closed per coal broker notes (heavy alkaline degreaser wash mandatory before any non-industrial cargo)"
+  },
+  {
+    "previous": "coal",
+    "next": "sugar",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Black carbon dust contamination of food-grade sugar; coal sulphur residue causes odour transfer; sugar listed in coal incompatible_with; grain-clean standard barely achievable after coal without multiple wash cycles"
+  },
+  {
+    "previous": "coal",
+    "next": "salt",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Food-grade sea salt requires grain-clean equivalent; coal carbon and sulphur residue cannot be reliably removed to food-grade standard; coal broker notes require full wash + surveyor sign-off before food cargoes; fail-closed"
+  },
+  {
+    "previous": "coal",
+    "next": "limestone",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Limestone is one of the cleanest industrial bulks (Group C, inert); coal listed in limestone compatible_with (coal); extra_clean due to coal high dust — alkaline degreaser wash required before limestone loading"
+  },
+  {
+    "previous": "coal",
+    "next": "manganese ore",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Symmetric compatibility (coal↔manganese ore listed as compatible in both profiles); both high-dust industrial ores; no chemical incompatibility; extra_clean due to coal high dust before manganese ore loading"
+  },
+  {
+    "previous": "coal",
+    "next": "copper concentrate",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Coal listed in copper concentrate incompatible_with; carbon residue contaminates sulphide concentrate; copper concentrate dual-hazard (Group A+B, H2S, arsenic) requires dedicated voyage — coal previous cargo disqualifies without surveyor review"
+  }
+]

@@ -1,0 +1,121 @@
+[
+  {
+    "previous": "copper concentrate",
+    "next": "grain",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Sulphide/acid residue + arsenic/heavy metal trace contamination — food-grade rejection certain; copper concentrate incompatible_with grain per profile"
+  },
+  {
+    "previous": "copper concentrate",
+    "next": "steel",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Acidic sulphide residue accelerates corrosion on steel surfaces — hospital clean + acid wash required before steel loading; copper concentrate extra_clean_required_after=true applies (symmetric risk for surface quality)"
+  },
+  {
+    "previous": "copper concentrate",
+    "next": "pipes",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Acidic sulphide residue damages pipe coatings and threaded ends — hospital clean + acid wash mandatory; parallel to steel case, fail-closed surveyor sign-off required"
+  },
+  {
+    "previous": "copper concentrate",
+    "next": "iron-ore",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Cross-contamination: sulphide/H2S reaction with iron oxide; copper concentrate incompatible_with iron-ore per profile (symmetric: iron-ore incompatible_with copper concentrate)"
+  },
+  {
+    "previous": "copper concentrate",
+    "next": "dri",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "H2S gas from sulphide residue reacts violently with metallic iron (DRI); copper concentrate incompatible_with dri per profile — self-heating + H2S combination is critical safety hazard"
+  },
+  {
+    "previous": "copper concentrate",
+    "next": "coal",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Sulphide acid residue + coal self-heating creates H2S/methane compound hazard; copper concentrate incompatible_with coal per profile (symmetric: coal incompatible_with copper concentrate)"
+  },
+  {
+    "previous": "copper concentrate",
+    "next": "petcoke",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Both are dirty industrial bulk; petcoke not in copper concentrate incompatible_with list — full acid wash required post copper concentrate before petcoke loading; manual surveyor review recommended given dual-hazard prior cargo"
+  },
+  {
+    "previous": "copper concentrate",
+    "next": "fertilizer",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Heavy metal (arsenic/lead/zinc) trace contamination unacceptable for fertilizer; H2S residue reacts with ammonium compounds; copper concentrate incompatible_with fertilizer per profile"
+  },
+  {
+    "previous": "copper concentrate",
+    "next": "cement",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Sulphide/acid residue reacts with calcium silicate binders, degrading cement quality; copper concentrate incompatible_with cement per profile (symmetric)"
+  },
+  {
+    "previous": "copper concentrate",
+    "next": "sulphur",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Copper sulphide residue + elemental sulphur: combined H2S and SO2 gas generation risk; copper concentrate incompatible_with sulphur per profile (symmetric: sulphur incompatible_with copper concentrate)"
+  },
+  {
+    "previous": "copper concentrate",
+    "next": "scrap",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Acidic sulphide residue accelerates corrosion of mixed scrap metals; arsenic/heavy metal cross-contamination reported in metal recycling chains; copper concentrate incompatible_with scrap per profile"
+  },
+  {
+    "previous": "copper concentrate",
+    "next": "bauxite",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Sulphide acid contamination of aluminium oxide ore; arsenic/heavy metal residue unacceptable in bauxite refining feed; copper concentrate incompatible_with bauxite per profile (symmetric)"
+  },
+  {
+    "previous": "copper concentrate",
+    "next": "general",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Dual-hazard prior cargo (Group A + H2S/heavy metals): manual surveyor review required per broker notes for general cargo; fail-closed bias applied — actual cargo composition unknown"
+  },
+  {
+    "previous": "copper concentrate",
+    "next": "sugar",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Heavy metal trace contamination (arsenic, lead) causes food-grade rejection; H2S odour transfer unacceptable; copper concentrate incompatible_with sugar per profile (symmetric: sugar incompatible_with copper concentrate)"
+  },
+  {
+    "previous": "copper concentrate",
+    "next": "salt",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Copper sulphide residue + sodium chloride forms soluble copper chlorides — contaminates salt, corrosive to hold steelwork; copper concentrate incompatible_with salt per profile"
+  },
+  {
+    "previous": "copper concentrate",
+    "next": "limestone",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Sulphide acid residue reacts with calcium carbonate (limestone) producing CO2/H2S; alkaline limestone partially neutralises acid but leaves heavy metal salts; limestone incompatible_with copper concentrate per profile (symmetric)"
+  },
+  {
+    "previous": "copper concentrate",
+    "next": "manganese ore",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Sulphide/acid residue reacts with manganese oxides producing toxic MnO vapour; heavy metal cross-contamination; manganese ore incompatible_with copper concentrate per profile (symmetric)"
+  }
+]

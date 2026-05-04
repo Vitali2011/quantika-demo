@@ -1,0 +1,121 @@
+[
+  {
+    "previous": "salt",
+    "next": "grain",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Salt incompatible_with grain per profile; chloride residue and risk of food-grade rejection — grain surveyor requires odour-free, chemically neutral holds. Symmetric: grain profile also lists salt as incompatible."
+  },
+  {
+    "previous": "salt",
+    "next": "steel",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Chloride residue from salt accelerates corrosion and pitting on steel surfaces; salt listed in steel's incompatible_with list. Thorough fresh water rinse required but risk remains — manual surveyor review required."
+  },
+  {
+    "previous": "salt",
+    "next": "pipes",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Chloride residue attacks threaded ends, coatings and bare steel of pipe cargo; salt listed in pipes' incompatible_with. Asymmetric risk: pipe connections are especially vulnerable to chloride pitting."
+  },
+  {
+    "previous": "salt",
+    "next": "iron-ore",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Iron-ore is high-dust next cargo — extra_clean required per rule. Salt not listed in iron-ore incompatible_with; chloride residue is tolerable for bulk ore. Normal clean + fresh water rinse sufficient. Symmetric: iron-ore not in salt incompatible_with."
+  },
+  {
+    "previous": "salt",
+    "next": "dri",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Salt listed in salt's incompatible_with (dri). Chloride residue reacts with metallic iron surface, accelerating oxidation and self-heating risk of DRI; moisture + chloride generates HCl traces. Dedicated voyage required for DRI."
+  },
+  {
+    "previous": "salt",
+    "next": "coal",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Coal not in salt's incompatible_with; coal is high-dust so extra_clean required. Chloride residue from salt is inconsequential for coal chemistry. Normal clean + fresh water rinse sufficient. Symmetric pair."
+  },
+  {
+    "previous": "salt",
+    "next": "petcoke",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Petcoke not in salt's incompatible_with; petcoke is high-dust so extra_clean required. Salt chloride residue does not react with petroleum coke. Symmetric: petcoke's incompatible_with does not list salt."
+  },
+  {
+    "previous": "salt",
+    "next": "fertilizer",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Salt listed in fertilizer's compatible_with; fertilizer also in salt's compatible_with (symmetric). NaCl does not interfere with urea/DAP/potash chemistry. Fresh water rinse removes chloride before hygroscopic fertilizer loading."
+  },
+  {
+    "previous": "salt",
+    "next": "cement",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Cement listed in salt's compatible_with (symmetric); however, chloride contamination raises rebar-corrosion risk in construction (BS/EN limits). Extra_clean required: thorough fresh water flush to reduce chloride to acceptable ppm before cement. Next is high-dust cargo."
+  },
+  {
+    "previous": "salt",
+    "next": "sulphur",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Sulphur not in salt's incompatible_with; NaCl does not react with dry elemental sulphur. Sulphur listed as compatible with salt (symmetric via sulphur profile compatible_with includes salt). Fresh water rinse removes chloride residue."
+  },
+  {
+    "previous": "salt",
+    "next": "scrap",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Scrap not in salt's incompatible_with; however chloride residue accelerates corrosion of ferrous scrap. Extra_clean and fresh water rinse required to minimise chloride before scrap loading. Scrap is extra_clean_required_after cargo — conservative handling justified."
+  },
+  {
+    "previous": "salt",
+    "next": "bauxite",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Bauxite not in salt's incompatible_with; bauxite is high-dust next cargo so extra_clean required. Chloride residue has low chemical reactivity with aluminium oxide ore. Normal clean + fresh water rinse sufficient."
+  },
+  {
+    "previous": "salt",
+    "next": "general",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "General listed in salt's compatible_with (symmetric). Miscellaneous/project cargo: low chemical reactivity with salt residue. Fresh water rinse to remove chloride; actual compatibility depends on specific commodity — manual surveyor review if metal-sensitive goods."
+  },
+  {
+    "previous": "salt",
+    "next": "sugar",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Sugar listed in salt's incompatible_with (symmetric: sugar incompatible_with does not list salt but sugar requires grain-clean equivalent). Salt residue and risk of food-grade rejection; chloride contamination unacceptable for food-grade sucrose. Manual surveyor review required."
+  },
+  {
+    "previous": "salt",
+    "next": "limestone",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Limestone listed in salt's compatible_with (symmetric: limestone compatible_with includes salt). CaCO3 chemically inert with NaCl. Normal clean sufficient; fresh water rinse removes chloride. Low contamination risk pair."
+  },
+  {
+    "previous": "salt",
+    "next": "manganese ore",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Manganese ore not in salt's incompatible_with; manganese ore is high-dust next cargo so extra_clean required. Chloride from salt does not react with manganese oxides under ambient conditions. Fresh water rinse + normal clean sufficient."
+  },
+  {
+    "previous": "salt",
+    "next": "copper concentrate",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Copper concentrate listed in copper concentrate's incompatible_with (includes salt); chloride ions react with copper sulphides in acidic slurry environment, risk of HCl generation and CuCl2 contamination. Manual surveyor review required; dedicated voyage strongly preferred."
+  }
+]

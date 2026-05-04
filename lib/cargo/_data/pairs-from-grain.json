@@ -1,0 +1,121 @@
+[
+  {
+    "previous": "grain",
+    "next": "steel",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Organic residue and moisture from grain holds promote surface corrosion and rust staining on steel coils; hospital clean standard required before steel loading cannot be reliably achieved after grain without surveyor sign-off — manual surveyor review required"
+  },
+  {
+    "previous": "grain",
+    "next": "pipes",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Organic grain residue and moisture risk corrosion of pipe threaded ends and protective coatings (epoxy, FBE); hospital clean standard for pipes cannot be reliably certified after grain cargo — manual surveyor review required"
+  },
+  {
+    "previous": "grain",
+    "next": "iron-ore",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Grain is chemically inert relative to iron ore; standard wash and dry removes organic residue before iron ore loading. extra_clean required: next cargo is high-dust (iron ore, Group A fines) and hold must be fully dry to avoid TML complications"
+  },
+  {
+    "previous": "grain",
+    "next": "dri",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Organic moisture residue from grain reacts with DRI (metallic iron >90% Fe, Group B self-heating) generating H2 gas and triggering self-heating cascade; DRI requires inert-atmosphere (N2) hold — grain residue moisture is an absolute contraindication"
+  },
+  {
+    "previous": "grain",
+    "next": "coal",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Grain moisture residue increases humidity in hold, accelerating coal self-heating (Group B, spontaneous combustion risk) and methane/CO emission; organic grain matter incompatible with coal ventilation safety protocol"
+  },
+  {
+    "previous": "grain",
+    "next": "petcoke",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Residual grain moisture can raise hold humidity above 55°C threshold for green petcoke self-heating (Group B); organic grain residue incompatible with petcoke oily-dust surface chemistry — manual surveyor review required"
+  },
+  {
+    "previous": "grain",
+    "next": "fertilizer",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Organic grain residue (carbohydrate/protein) contaminates fertilizer (nitrogen/phosphorus compounds), creating chemical cross-contamination; ammonium nitrate-based fertilizers (Group B MHB OH) require hospital clean with no organic matter — prior grain cargo almost certain rejection"
+  },
+  {
+    "previous": "grain",
+    "next": "cement",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Moisture from grain residue reacts with cement (calcium silicate) initiating premature hydration and calcium hydroxide deposition on hold surfaces; sugar traces in grain (even trace sucrose from damaged grain) can set-inhibit cement at 0.001% level"
+  },
+  {
+    "previous": "grain",
+    "next": "sulphur",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Grain organic residue and moisture promote H2SO4 formation when wet sulphur contacts hold surfaces; sulphur Group B (UN 1350, Class 4.1 flammable solid) — organic grain dust in contact with sulphur dust creates explosion hazard"
+  },
+  {
+    "previous": "grain",
+    "next": "scrap",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Organic grain residue promotes mould and fermentation in hold, incompatible with scrap metal surveyor inspection standards; oil/battery-acid contamination from scrap works in reverse — grain residue organics contaminate scrap classification. Manual surveyor review required"
+  },
+  {
+    "previous": "grain",
+    "next": "bauxite",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Grain moisture residue introduces hold humidity that can elevate bauxite fines moisture content above TML (Group A liquefaction risk); red/brown bauxite dust requires extra_clean after high-moisture grain — manual surveyor review required before loading bauxite fines"
+  },
+  {
+    "previous": "grain",
+    "next": "general",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "General cargo chemistry variable — organic grain residue (odour, mould spores, insect infestation risk) incompatible with unknown commodity mix; broker notes for 'general' explicitly require manual surveyor review per commodity pair"
+  },
+  {
+    "previous": "grain",
+    "next": "sugar",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Both grain and sugar are food-grade Class C cargoes sharing compatible hold cleanliness standards (International Grain Code / sugar surveyor equivalent); symmetric compatibility confirmed in profiles. extra_clean required: next cargo (sugar) is contamination-sensitive — holds must be dry, odour-free, and inspected before loading"
+  },
+  {
+    "previous": "grain",
+    "next": "salt",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Grain profile lists salt as compatible (grain→salt direction); grain is a clean food cargo leaving no chemical contamination that would harm industrial-grade salt; asymmetric note: salt→grain is incompatible (chloride residue would cause food-grade grain rejection), but grain→salt is acceptable with standard wash"
+  },
+  {
+    "previous": "grain",
+    "next": "limestone",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Grain profile lists limestone as compatible; limestone is chemically inert (CaCO3, Group C) and tolerates minor organic residue; standard wash removes grain residue before limestone loading. Asymmetric: limestone→grain is incompatible (alkaline dust), but grain→limestone acceptable"
+  },
+  {
+    "previous": "grain",
+    "next": "manganese ore",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Grain moisture residue risks elevating hold humidity, affecting manganese ore fines moisture content relative to TML (Group A liquefaction); dark manganese oxide dust (MnO2) contamination is health-hazard irreversible — extra_clean required; manual surveyor review required"
+  },
+  {
+    "previous": "grain",
+    "next": "copper concentrate",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Organic grain residue in contact with copper sulphide concentrate (CuFeS2) and moisture generates H2S (toxic gas, TLV 1 ppm); copper concentrate is dual-hazard (Group A liquefaction + Group B H2S/arsenic); dedicated voyage mandatory — grain residue is an absolute contraindication"
+  }
+]

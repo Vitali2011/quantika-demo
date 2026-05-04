@@ -1,0 +1,121 @@
+[
+  {
+    "previous": "dri",
+    "next": "grain",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Iron oxide dust contamination of food-grade cargo; DRI explicitly incompatible with grain per IMSBC broker rules — grain surveyor will reject hold with any metallic residue"
+  },
+  {
+    "previous": "dri",
+    "next": "steel",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Both ferrous cargoes — no chemical cross-contamination risk; iron oxide dust from DRI does not harm steel product, but thorough hold inspection required after DRI self-heating cargo (extra_clean mandatory per DRI broker notes)"
+  },
+  {
+    "previous": "dri",
+    "next": "pipes",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Ferrous cargo after ferrous: no chemical contamination; iron oxide residue does not damage pipe steel or coatings if hold inspected and cleaned; extra_clean required due to DRI self-heating Group B history"
+  },
+  {
+    "previous": "dri",
+    "next": "iron-ore",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Mutual incompatibility per profiles (iron-ore incompatible_with dri, dri incompatible_with iron-ore); DRI metallic iron reacts with moisture potentially released by iron ore fines, self-heating risk persists in hold residues"
+  },
+  {
+    "previous": "dri",
+    "next": "coal",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "DRI explicitly incompatible with coal; both are self-heating Group B cargoes — residual DRI metallic iron in hold reacts with coal moisture generating H2 gas and heat, compounding spontaneous combustion risk"
+  },
+  {
+    "previous": "dri",
+    "next": "petcoke",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "DRI explicitly incompatible with petcoke; oily petcoke residues incompatible with DRI self-heating chemistry; both Group B cargoes — residual DRI reacts with moisture in green petcoke, fire risk"
+  },
+  {
+    "previous": "dri",
+    "next": "fertilizer",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "DRI explicitly incompatible with fertilizer; iron oxide dust contaminates fertilizer granules; AN-based fertilizers are oxidisers — contact with metallic iron residues from DRI creates exothermic decomposition risk"
+  },
+  {
+    "previous": "dri",
+    "next": "cement",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "DRI explicitly incompatible with cement; residual DRI metallic iron reacts with cement moisture to generate H2 gas (Fe + H2O → FeO + H2); iron contamination also disrupts cement chemistry and setting quality"
+  },
+  {
+    "previous": "dri",
+    "next": "sulphur",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "DRI explicitly incompatible with sulphur; metallic iron reacts with sulphur to form iron sulphides (Fe + S → FeS), an exothermic reaction that accelerates DRI residue self-heating and sulphur ignition risk"
+  },
+  {
+    "previous": "dri",
+    "next": "scrap",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "DRI explicitly incompatible with scrap; scrap contains oily cutting fluids and lubricants — contact with residual DRI metallic iron and H2 gas pockets creates fire and explosion risk in enclosed hold atmosphere"
+  },
+  {
+    "previous": "dri",
+    "next": "bauxite",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "DRI explicitly incompatible with bauxite; bauxite fines (Group A) are moisture-sensitive — DRI hold residues react with water used to wash out bauxite fines, generating H2 gas; dedicated voyage required after DRI"
+  },
+  {
+    "previous": "dri",
+    "next": "general",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "DRI broker notes require dedicated voyages and thorough hold inspection before any cargo; 'general' category is undefined chemistry — manual surveyor review required to assess specific commodity against DRI residue reactivity"
+  },
+  {
+    "previous": "dri",
+    "next": "sugar",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "DRI explicitly incompatible with sugar (food-grade); iron oxide dust and metallic residues cause food-grade rejection; sugar moisture triggers residual DRI reactivity (H2 generation risk in sealed hold)"
+  },
+  {
+    "previous": "dri",
+    "next": "salt",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Salt explicitly incompatible with dri per profiles; chloride ions from NaCl accelerate oxidation of residual DRI metallic iron, generating heat and H2 gas — salt brine in hold is particularly aggressive toward DRI residues"
+  },
+  {
+    "previous": "dri",
+    "next": "limestone",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Conservative bias applied: DRI broker notes require dedicated voyages and thorough hold inspection; limestone is alkaline — alkaline environment can accelerate iron oxidation in DRI residues; manual surveyor review required before loading"
+  },
+  {
+    "previous": "dri",
+    "next": "manganese ore",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "DRI explicitly incompatible with manganese ore; manganese ore fines (Group A) require moisture control — DRI residues react with water, H2 generation risk; dense Group A cargo requires hold integrity uncompromised by prior reactive cargo"
+  },
+  {
+    "previous": "dri",
+    "next": "copper concentrate",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Mutual incompatibility: DRI incompatible with copper concentrate; copper concentrate releases H2S on water contact — reaction with residual DRI metallic iron creates toxic atmosphere and exothermic sulphide formation (Fe + H2S → FeS + H2)"
+  }
+]

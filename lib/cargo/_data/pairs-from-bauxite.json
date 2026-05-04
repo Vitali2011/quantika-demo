@@ -1,0 +1,121 @@
+[
+  {
+    "previous": "bauxite",
+    "next": "grain",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Red iron oxide dust contamination — food-grade surveyor will reject; full wash + dry + inspection required, not guaranteed to pass"
+  },
+  {
+    "previous": "bauxite",
+    "next": "steel",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "No chemical incompatibility; abrasive red dust staining requires thorough wash before steel coils to avoid surface contamination claims — symmetric (steel→bauxite also compatible)"
+  },
+  {
+    "previous": "bauxite",
+    "next": "pipes",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "No chemical incompatibility; red dust must be removed before pipes (threaded ends / protective caps vulnerable to abrasive residue); standard wash + inspection sufficient"
+  },
+  {
+    "previous": "bauxite",
+    "next": "iron-ore",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Both iron oxide-bearing ore cargoes — chemically similar, normal clean acceptable; symmetric (iron-ore→bauxite also compatible per profiles)"
+  },
+  {
+    "previous": "bauxite",
+    "next": "dri",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "DRI extremely reactive with moisture; bauxite high moisture-sensitivity leaves residual damp — H2 gas generation risk; DRI profiles list bauxite as incompatible (Group A→B reaction hazard)"
+  },
+  {
+    "previous": "bauxite",
+    "next": "coal",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Coal profiles explicitly list bauxite as compatible; both bulk ore-class cargoes, normal clean sufficient — symmetric"
+  },
+  {
+    "previous": "bauxite",
+    "next": "petcoke",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Petcoke profiles list bauxite as compatible; no chemical cross-contamination between aluminium oxide dust and carbon/sulphur coke — normal clean sufficient"
+  },
+  {
+    "previous": "bauxite",
+    "next": "fertilizer",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Red iron oxide and silica dust contamination — fertilizer (especially AN-based) requires hospital clean; bauxite residue raises corrosion risk in hygroscopic fertilizer; conservative fail-closed"
+  },
+  {
+    "previous": "bauxite",
+    "next": "cement",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Silica and aluminium oxide dust from bauxite react with cement chemistry — quality impact; cement profiles list bauxite as incompatible (alkaline vs. aluminate chemistry conflict)"
+  },
+  {
+    "previous": "bauxite",
+    "next": "sulphur",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Residual moisture from bauxite reacts with sulphur dust to form H2SO4 — hold corrosion; sulphur profiles include bauxite in incompatible set via conservative moisture mechanism"
+  },
+  {
+    "previous": "bauxite",
+    "next": "scrap",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Scrap profiles list bauxite as compatible; iron oxide dust does not add meaningful contamination to already mixed-metal scrap — normal clean acceptable"
+  },
+  {
+    "previous": "bauxite",
+    "next": "general",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "General cargo chemistry unknown; red dust staining and residual moisture create contamination risk for any packaged/project cargo — manual surveyor review required"
+  },
+  {
+    "previous": "bauxite",
+    "next": "sugar",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Red iron oxide and silica dust — food-grade rejection; sugar requires grain-clean standard, bauxite residue staining prevents pass without intensive wash; hospital-clean often required"
+  },
+  {
+    "previous": "bauxite",
+    "next": "salt",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Salt profiles require clean holds for food-grade sea salt; red dust contamination from bauxite causes food-grade rejection — manual surveyor review required for industrial grade salt only"
+  },
+  {
+    "previous": "bauxite",
+    "next": "limestone",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Limestone profiles list bauxite as compatible; both alkaline oxide minerals, chemically inert toward each other — normal clean acceptable; symmetric"
+  },
+  {
+    "previous": "bauxite",
+    "next": "manganese ore",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Manganese ore profiles list bauxite as compatible; both dense oxide ores, similar contamination profile — normal clean acceptable; symmetric"
+  },
+  {
+    "previous": "bauxite",
+    "next": "copper concentrate",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Copper concentrate incompatible with bauxite per profiles; residual bauxite moisture activates sulphide chemistry — H2S generation risk; copper concentrate requires dedicated voyage"
+  }
+]
