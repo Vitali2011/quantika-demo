@@ -1,0 +1,90 @@
+{
+  "id": "cii_grade_d/sample-006",
+  "category": "cii_grade_d",
+  "edge_case_summary": "Bunge sugar cargo (Brazil) with explicit CII-D refusal restriction: vessel A cii_grade='D' (must be flagged in issues, match blocked or heavily penalised); vessel B cii_grade='B' (clean control) — verifies D-grade mandatory surfacing in issues and correct match_level contrast between the two.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "ci-006-G",
+        "item_index": 0,
+        "commodity": "Raw sugar (bulk)",
+        "weight_mt": 32000,
+        "weight_mt_min": 30000,
+        "weight_mt_max": 34000,
+        "stowage_factor_cbm_mt": 1.08,
+        "load_port": "Santos, Brazil (BRSSZ)",
+        "discharge_port": "Kandla, India (INKLA)",
+        "laycan_start": "2026-07-08",
+        "laycan_end": "2026-07-14",
+        "charterer": "Bunge Global SA (Geneva desk)",
+        "restrictions": [
+          "CII Grade D vessels not acceptable — Bunge vetting policy 2025 revision",
+          "CII Grade E vessels not acceptable",
+          "No vessels with last cargo petroleum products — sugar contamination risk"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "vp-006-G1",
+        "item_index": 0,
+        "vessel_name": "Cerrado Bulk",
+        "imo": 9557483,
+        "flag": "PA",
+        "vessel_type": "Bulk Carrier",
+        "dwt": 38000,
+        "dwcc": 36400,
+        "draft_max_m": 11.2,
+        "cranes": "4 × 30t",
+        "tween_decks": false,
+        "service_speed_kn": 12.5,
+        "last_cargo": "Soybean meal",
+        "cii_grade": "D",
+        "current_position": "Rio de Janeiro, Brazil (BRRIO)",
+        "open_date": "2026-07-02",
+        "restrictions": []
+      },
+      {
+        "email_id": "vp-006-G2",
+        "item_index": 0,
+        "vessel_name": "Pantanal Star",
+        "imo": 9619874,
+        "flag": "BS",
+        "vessel_type": "Bulk Carrier",
+        "dwt": 36500,
+        "dwcc": 35100,
+        "draft_max_m": 10.9,
+        "cranes": "4 × 35t",
+        "tween_decks": false,
+        "service_speed_kn": 14.0,
+        "last_cargo": "Sugar",
+        "cii_grade": "B",
+        "current_position": "Paranagua, Brazil (BRPNG)",
+        "open_date": "2026-07-04",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "ci-006-G",
+        "cargo_item_index": 0,
+        "vessel_email_id": "vp-006-G1",
+        "vessel_item_index": 0,
+        "verdict": "ideal",
+        "gap_days": 6,
+        "arrival_date": "2026-07-06",
+        "date_issues": []
+      },
+      {
+        "cargo_email_id": "ci-006-G",
+        "cargo_item_index": 0,
+        "vessel_email_id": "vp-006-G2",
+        "vessel_item_index": 0,
+        "verdict": "ideal",
+        "gap_days": 4,
+        "arrival_date": "2026-07-08",
+        "date_issues": []
+      }
+    ]
+  }
+}

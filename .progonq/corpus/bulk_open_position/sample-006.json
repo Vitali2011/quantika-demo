@@ -1,0 +1,118 @@
+{
+  "id": "bulk_open_position/sample-006",
+  "category": "bulk_open_position",
+  "edge_case_summary": "Clean baseline with mixed readiness (ideal / idle / tight) and a null service_speed_kn on one vessel — verifies class-default 12.5 kn fallback when field is absent.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "ci-006-A",
+        "item_index": 0,
+        "commodity": "Thermal coal",
+        "weight_mt": 61000,
+        "weight_mt_min": 57000,
+        "weight_mt_max": 65000,
+        "stowage_factor_cbm_mt": 1.18,
+        "load_port": "Newcastle, Australia (AUNWC)",
+        "discharge_port": "Qingdao, China (CNQDA)",
+        "laycan_start": "2026-06-18",
+        "laycan_end": "2026-06-24",
+        "charterer": "Rio Tinto Coal Trading Pte Ltd",
+        "restrictions": [
+          "No vessels > 16 years old",
+          "Geared vessels preferred but not mandatory — loading terminal has shore cranes"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "vp-006-A",
+        "item_index": 0,
+        "vessel_name": "Strzelecki Bulk",
+        "imo": 9431802,
+        "flag": "BS",
+        "vessel_type": "Bulk Carrier",
+        "dwt": 76500,
+        "dwcc": 73200,
+        "draft_max_m": 13.8,
+        "cranes": "4 × 30t",
+        "tween_decks": false,
+        "service_speed_kn": 13.5,
+        "last_cargo": "Iron ore",
+        "cii_grade": "B",
+        "current_position": "Port Hedland, Australia (AUPHE)",
+        "open_date": "2026-06-10",
+        "restrictions": []
+      },
+      {
+        "email_id": "vp-006-B",
+        "item_index": 0,
+        "vessel_name": "Bowen Star",
+        "imo": 9518247,
+        "flag": "MH",
+        "vessel_type": "Bulk Carrier",
+        "dwt": 63000,
+        "dwcc": 60800,
+        "draft_max_m": 12.7,
+        "cranes": "4 × 36t",
+        "tween_decks": false,
+        "service_speed_kn": null,
+        "last_cargo": "Coal",
+        "cii_grade": "C",
+        "current_position": "Gladstone, Australia (AUGLT)",
+        "open_date": "2026-06-14",
+        "restrictions": []
+      },
+      {
+        "email_id": "vp-006-C",
+        "item_index": 0,
+        "vessel_name": "Hunter Pacific",
+        "imo": 9602715,
+        "flag": "PA",
+        "vessel_type": "Bulk Carrier",
+        "dwt": 82000,
+        "dwcc": 78900,
+        "draft_max_m": 14.2,
+        "cranes": "4 × 35t",
+        "tween_decks": false,
+        "service_speed_kn": 14.0,
+        "last_cargo": "Grain",
+        "cii_grade": "A",
+        "current_position": "Kembla, Australia (AUKBL)",
+        "open_date": "2026-06-16",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "ci-006-A",
+        "cargo_item_index": 0,
+        "vessel_email_id": "vp-006-A",
+        "vessel_item_index": 0,
+        "verdict": "ideal",
+        "gap_days": 8,
+        "arrival_date": "2026-06-16",
+        "date_issues": []
+      },
+      {
+        "cargo_email_id": "ci-006-A",
+        "cargo_item_index": 0,
+        "vessel_email_id": "vp-006-B",
+        "vessel_item_index": 0,
+        "verdict": "idle",
+        "gap_days": 4,
+        "arrival_date": "2026-06-18",
+        "date_issues": []
+      },
+      {
+        "cargo_email_id": "ci-006-A",
+        "cargo_item_index": 0,
+        "vessel_email_id": "vp-006-C",
+        "vessel_item_index": 0,
+        "verdict": "tight",
+        "gap_days": 2,
+        "arrival_date": "2026-06-18",
+        "date_issues": []
+      }
+    ]
+  }
+}

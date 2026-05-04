@@ -1,0 +1,129 @@
+{
+  "id": "strict_laycan_tight_window/sample-006",
+  "category": "strict_laycan_tight_window",
+  "edge_case_summary": "2-day laycan in Indian Ocean (Colombo→Aden) with no-extensions clause: vessel A arrives evening of day before laycan_start (sub-day buffer, readiness=tight), vessel B ideal, vessel C late — verifies SUB-DAY BUFFER CAP rule and that LAYCAN_VIOLATION surfaces in issues for vessel C.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "ci-006-L",
+        "item_index": 0,
+        "commodity": "Basmati rice (bagged)",
+        "weight_mt": 22000,
+        "weight_mt_min": 21000,
+        "weight_mt_max": 23000,
+        "stowage_factor_cbm_mt": 1.65,
+        "load_port": "Colombo, Sri Lanka (LKCMB)",
+        "discharge_port": "Aden, Yemen (YEPOD)",
+        "laycan_start": "2026-06-26",
+        "laycan_end": "2026-06-27",
+        "charterer": "Saiwan Shipping & Trading LLC",
+        "restrictions": [
+          "No laycan extensions — consignee appointment fixed",
+          "Vessel must present NOR by 06:00 LT on 2026-06-26 at earliest",
+          "No vessels carrying last cargo chemicals or petroleum products"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "vp-006-L1",
+        "item_index": 0,
+        "vessel_name": "Malabar Pearl",
+        "imo": 9534981,
+        "flag": "IN",
+        "vessel_type": "General Cargo",
+        "dwt": 28000,
+        "dwcc": 26500,
+        "draft_max_m": 9.8,
+        "cranes": "3 × 25t",
+        "tween_decks": true,
+        "service_speed_kn": 13.0,
+        "last_cargo": "Bagged sugar",
+        "cii_grade": "B",
+        "current_position": "Tuticorin, India (INTUT)",
+        "open_date": "2026-06-20",
+        "restrictions": []
+      },
+      {
+        "email_id": "vp-006-L2",
+        "item_index": 0,
+        "vessel_name": "Konkan Carrier",
+        "imo": 9462307,
+        "flag": "PA",
+        "vessel_type": "General Cargo",
+        "dwt": 24500,
+        "dwcc": 23000,
+        "draft_max_m": 9.2,
+        "cranes": "2 × 30t",
+        "tween_decks": true,
+        "service_speed_kn": 12.0,
+        "last_cargo": "Fertilizer bags",
+        "cii_grade": "C",
+        "current_position": "Mumbai, India (INBOM)",
+        "open_date": "2026-06-19",
+        "restrictions": []
+      },
+      {
+        "email_id": "vp-006-L3",
+        "item_index": 0,
+        "vessel_name": "Andaman Spirit",
+        "imo": 9611452,
+        "flag": "SG",
+        "vessel_type": "General Cargo",
+        "dwt": 31000,
+        "dwcc": 29200,
+        "draft_max_m": 10.5,
+        "cranes": "4 × 25t",
+        "tween_decks": true,
+        "service_speed_kn": 13.5,
+        "last_cargo": "Rice",
+        "cii_grade": "A",
+        "current_position": "Port Klang, Malaysia (MYPKG)",
+        "open_date": "2026-06-21",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "ci-006-L",
+        "cargo_item_index": 0,
+        "vessel_email_id": "vp-006-L1",
+        "vessel_item_index": 0,
+        "verdict": "tight",
+        "gap_days": 0,
+        "arrival_date": "2026-06-25",
+        "date_issues": [
+          {
+            "code": "SUB_DAY_BUFFER",
+            "detail": "Vessel ETA 2026-06-25 18:00 LT — arrives evening before laycan_start 06:00 LT 2026-06-26; buffer ~12h only; no-extensions clause elevates risk"
+          }
+        ]
+      },
+      {
+        "cargo_email_id": "ci-006-L",
+        "cargo_item_index": 0,
+        "vessel_email_id": "vp-006-L2",
+        "vessel_item_index": 0,
+        "verdict": "ideal",
+        "gap_days": 5,
+        "arrival_date": "2026-06-23",
+        "date_issues": []
+      },
+      {
+        "cargo_email_id": "ci-006-L",
+        "cargo_item_index": 0,
+        "vessel_email_id": "vp-006-L3",
+        "vessel_item_index": 0,
+        "verdict": "late",
+        "gap_days": -2,
+        "arrival_date": "2026-06-29",
+        "date_issues": [
+          {
+            "code": "LAYCAN_VIOLATION",
+            "detail": "Vessel ETA 2026-06-29 — 2 days after laycan_end 2026-06-27; laycan missed"
+          }
+        ]
+      }
+    ]
+  }
+}

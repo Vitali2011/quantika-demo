@@ -1,0 +1,94 @@
+{
+  "id": "bulk_dwcc_overload/sample-006",
+  "category": "bulk_dwcc_overload",
+  "edge_case_summary": "Razor-thin DWCC margin on Argentine soybean cargo: one vessel feasible with only 420mt margin (~0.7%), one DWCC_VIOLATION annotated in readiness — verifies hard-filter re-check and DWCC_VIOLATION surfacing in issues.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "ci-006-D",
+        "item_index": 0,
+        "commodity": "Soybean meal",
+        "weight_mt": 54000,
+        "weight_mt_min": 52000,
+        "weight_mt_max": 56000,
+        "stowage_factor_cbm_mt": 1.32,
+        "load_port": "Rosario, Argentina (ARROS)",
+        "discharge_port": "Rotterdam, Netherlands (NLRTM)",
+        "laycan_start": "2026-06-22",
+        "laycan_end": "2026-06-28",
+        "charterer": "Toepfer International GmbH",
+        "restrictions": [
+          "No vessels with last cargo Fishmeal — odour contamination risk",
+          "P&I Club must be IG member"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "vp-006-D1",
+        "item_index": 0,
+        "vessel_name": "Pampa Venture",
+        "imo": 9387654,
+        "flag": "LR",
+        "vessel_type": "Bulk Carrier",
+        "dwt": 57200,
+        "dwcc": 54420,
+        "draft_max_m": 12.5,
+        "cranes": "4 × 30t",
+        "tween_decks": false,
+        "service_speed_kn": 13.0,
+        "last_cargo": "Soybean",
+        "cii_grade": "B",
+        "current_position": "Montevideo, Uruguay (UYMVD)",
+        "open_date": "2026-06-12",
+        "restrictions": []
+      },
+      {
+        "email_id": "vp-006-D2",
+        "item_index": 0,
+        "vessel_name": "Rio Salado",
+        "imo": 9471093,
+        "flag": "PA",
+        "vessel_type": "Bulk Carrier",
+        "dwt": 55000,
+        "dwcc": 52800,
+        "draft_max_m": 12.2,
+        "cranes": "4 × 28t",
+        "tween_decks": false,
+        "service_speed_kn": 12.5,
+        "last_cargo": "Grain",
+        "cii_grade": "C",
+        "current_position": "Buenos Aires, Argentina (ARBUE)",
+        "open_date": "2026-06-15",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "ci-006-D",
+        "cargo_item_index": 0,
+        "vessel_email_id": "vp-006-D1",
+        "vessel_item_index": 0,
+        "verdict": "ideal",
+        "gap_days": 10,
+        "arrival_date": "2026-06-20",
+        "date_issues": []
+      },
+      {
+        "cargo_email_id": "ci-006-D",
+        "cargo_item_index": 0,
+        "vessel_email_id": "vp-006-D2",
+        "vessel_item_index": 0,
+        "verdict": "tight",
+        "gap_days": 2,
+        "arrival_date": "2026-06-22",
+        "date_issues": [
+          {
+            "code": "DWCC_VIOLATION",
+            "detail": "Vessel DWCC 52,800mt < cargo min 52,000mt — margin only 800mt but cargo_max 56,000mt exceeds DWCC by 3,200mt; partial load capped at 52,800mt"
+          }
+        ]
+      }
+    ]
+  }
+}

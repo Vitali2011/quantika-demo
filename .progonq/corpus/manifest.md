@@ -33,3 +33,12 @@
 - cii_grade_d/sample-003.json — CII Grade D for small trader Viterra Libya (no explicit D-refusal policy): Grade D is informational flag only, NOT hard disqualifier — contrast with Cargill/Trafigura cases.
 - cii_grade_d/sample-004.json — CII Grade D + last_cargo=Iron ore for ADM soybeans: dual independent violations (CII vetting + hold incompatibility) reported separately.
 - cii_grade_d/sample-005.json — Two CII-D vessels (one with 2024 engine refit, owner claims future C rating): matcher must NOT speculate about 2027 re-rating; current cii_grade=D governs both.
+
+## Anti-overfit verification (fresh corpus)
+
+- bulk_open_position/sample-006.json — Australia→China thermal coal (Rio Tinto, Newcastle→Qingdao): 3 vessels from Port Hedland/Gladstone/Kembla with ideal/idle/tight readiness; Bowen Star has null service_speed_kn (class-default 12.5kn fallback test).
+- bulk_dwcc_overload/sample-006.json — Argentine soybean meal (Toepfer, Rosario→Rotterdam): Pampa Venture feasible with 420mt margin (~0.7%); Rio Salado DWCC_VIOLATION (DWCC 52,800mt < cargo_max 56,000mt, partial load ceiling 52,800mt).
+- project_general_vessel/sample-006.json — 4× refinery reactor vessels 60t/piece (Sun Maritime, Houston→Jubail), 80t lift + tween-deck mandatory: Fjord Multipurpose MPP 2×100t fits; Gulf Commodore bulk CRANE_VIOLATION (4×30t insufficient); Titan Lift Seven heavy-lift 2×400t overkill but valid.
+- strict_laycan_tight_window/sample-006.json — 2-day laycan Indian Ocean (Saiwan, Colombo→Aden), no-extensions clause: Malabar Pearl tight/sub-day (arrives 18:00 day before, ~12h buffer); Konkan Carrier ideal 5d early; Andaman Spirit LAYCAN_VIOLATION (ETA 2 days after laycan_end).
+- sanctioned_flag/sample-006.json — Venezuelan-flag (VE) vessel, PDVSA-affiliated operator for EU discharge Antwerp (Bulkhandling Handymax): EU Reg 2017/2063 + OFAC E.O.13692 block; Elbe Feeder LR-flag clean control.
+- cii_grade_d/sample-006.json — Bunge raw sugar cargo (Santos→Kandla) with explicit CII-D refusal policy: Cerrado Bulk cii_grade=D must be flagged in issues; Pantanal Star cii_grade=B clean control — D-grade mandatory surfacing + match_level contrast.

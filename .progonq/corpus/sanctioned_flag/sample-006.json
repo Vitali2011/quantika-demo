@@ -1,0 +1,92 @@
+{
+  "id": "sanctioned_flag/sample-006",
+  "category": "sanctioned_flag",
+  "edge_case_summary": "Venezuelan-flag (VE) general cargo vessel with PDVSA-affiliated operator for EU discharge (Antwerp): EU Reg 2017/2063 + OFAC E.O.13692 block recommendation; charterer restriction names VE-flag and PDVSA-linked operators explicitly; clean control vessel (LR flag, European owner) provided.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "ci-006-S",
+        "item_index": 0,
+        "commodity": "Corn gluten feed (bulk)",
+        "weight_mt": 18500,
+        "weight_mt_min": 17500,
+        "weight_mt_max": 19500,
+        "stowage_factor_cbm_mt": 1.58,
+        "load_port": "Paranagua, Brazil (BRPNG)",
+        "discharge_port": "Antwerp, Belgium (BEANR)",
+        "laycan_start": "2026-06-30",
+        "laycan_end": "2026-07-06",
+        "charterer": "Bulkhandling Handymax GmbH",
+        "restrictions": [
+          "No vessels flagged VE or with operators under OFAC Venezuela sanctions",
+          "No vessels with PDVSA-linked ownership, management or operator",
+          "EU Reg 2017/2063 compliance mandatory for EU discharge"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "vp-006-S1",
+        "item_index": 0,
+        "vessel_name": "Bolivar Trader",
+        "imo": 9337521,
+        "flag": "VE",
+        "vessel_type": "General Cargo",
+        "dwt": 22000,
+        "dwcc": 20800,
+        "draft_max_m": 9.0,
+        "cranes": "2 × 25t",
+        "tween_decks": true,
+        "service_speed_kn": 12.0,
+        "last_cargo": "Logs",
+        "cii_grade": "C",
+        "current_position": "Maracaibo, Venezuela (VEMCM)",
+        "open_date": "2026-06-18",
+        "restrictions": [],
+        "operator": "PDVSA Marina SA de CV"
+      },
+      {
+        "email_id": "vp-006-S2",
+        "item_index": 0,
+        "vessel_name": "Elbe Feeder",
+        "imo": 9488310,
+        "flag": "LR",
+        "vessel_type": "General Cargo",
+        "dwt": 21500,
+        "dwcc": 20400,
+        "draft_max_m": 8.8,
+        "cranes": "2 × 30t",
+        "tween_decks": true,
+        "service_speed_kn": 13.5,
+        "last_cargo": "Grain",
+        "cii_grade": "B",
+        "current_position": "Recife, Brazil (BRREC)",
+        "open_date": "2026-06-22",
+        "restrictions": [],
+        "operator": "Hansa Shipping GmbH & Co KG"
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "ci-006-S",
+        "cargo_item_index": 0,
+        "vessel_email_id": "vp-006-S1",
+        "vessel_item_index": 0,
+        "verdict": "ideal",
+        "gap_days": 12,
+        "arrival_date": "2026-06-26",
+        "date_issues": []
+      },
+      {
+        "cargo_email_id": "ci-006-S",
+        "cargo_item_index": 0,
+        "vessel_email_id": "vp-006-S2",
+        "vessel_item_index": 0,
+        "verdict": "tight",
+        "gap_days": 2,
+        "arrival_date": "2026-07-01",
+        "date_issues": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,2473 @@
+{
+  "runId": "run-010",
+  "timestamp": "2026-05-04T11:08:15.509Z",
+  "model": "gpt-5.5",
+  "cases": [
+    {
+      "caseId": "bulk_dwcc_overload/sample-001",
+      "category": "bulk_dwcc_overload",
+      "inputCardinality": {
+        "cargoes": 2,
+        "vessels": 2,
+        "readiness_pairs": 4
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-10552",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20821",
+            "vessel_item_index": 0,
+            "score": 25,
+            "match_level": "weak",
+            "match_reasons": [
+              "Readiness verdict 'tight' — arrives 2026-05-28 with gap_days=3 before laycan start 2026-06-01.",
+              "Geography is favourable: M/V Thessaloniki Bulker opens Constanta and readiness gives Constanta–Mykolaiv ~270nm at 13.0kn, about 21h sailing.",
+              "Nominal DWCC fit is close: DWCC 29,800 mt vs cargo 28,500 mt gives about 96% utilization.",
+              "No Russian-flag restriction satisfied — vessel flag='PA', IMO 9388201.",
+              "Last cargo 'Rapeseed' is oilseed-class before Sunflower seeds cargo of 28,500 mt, supporting cargo-cleanliness compatibility."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' affects laytime calculation; demurrage/despatch exposure not assessed from vessel data.",
+              "Volume overflow: cargo 28,500 mt × SF 1.58 = 45,030 cbm vs grain_capacity 38,900 cbm → vessel intake capped at about 24,620 mt, below cargo_min 27,075 mt.",
+              "Cargo weight_mt_max 29,925 mt exceeds vessel DWCC 29,800 mt by 125 mt; vessel is only feasible if stem stays below max."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10552",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20822",
+            "vessel_item_index": 0,
+            "score": 24,
+            "match_level": "weak",
+            "match_reasons": [
+              "Readiness verdict 'tight' — arrives 2026-05-29 with gap_days=3 before laycan start 2026-06-01.",
+              "Geography is favourable: M/V Kavala Spirit opens Constanta and readiness gives Constanta–Mykolaiv ~270nm at 12.5kn, about 22h sailing.",
+              "Nominal DWCC is exact but tight: DWCC 28,500 mt vs cargo 28,500 mt gives 100% utilization with no deadweight margin.",
+              "No Russian-flag restriction satisfied — vessel flag='MH', IMO 9411738.",
+              "HANDYSIZE bulk vessel with 5 holds and 4×25t gear is commercially aligned with a 28,500 mt bulk seed parcel."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' affects laytime calculation; demurrage/despatch exposure not assessed from vessel data.",
+              "Volume overflow: cargo 28,500 mt × SF 1.58 = 45,030 cbm vs grain_capacity 36,600 cbm → vessel intake capped at about 23,165 mt, below cargo_min 27,075 mt.",
+              "Cargo weight_mt_max 29,925 mt exceeds vessel DWCC 28,500 mt by 1,425 mt; vessel is feasible by deadweight only at the lower/nominal end."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10553",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20821",
+            "vessel_item_index": 0,
+            "score": 20,
+            "match_level": "weak",
+            "match_reasons": [
+              "Readiness verdict 'tight' — arrives 2026-05-28 with gap_days=3 before laycan start 2026-06-01.",
+              "Geography is favourable: M/V Thessaloniki Bulker opens Constanta and readiness places arrival at Mykolaiv around 2026-05-28.",
+              "No Russian-flag restriction satisfied — vessel flag='PA', IMO 9388201.",
+              "Last cargo 'Rapeseed' is oilseed-class before Sunflower seeds cargo of 30,000 mt, supporting cargo-cleanliness compatibility."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' affects laytime calculation; demurrage/despatch exposure not assessed from vessel data.",
+              "DWCC_VIOLATION: cargo 30,000mt (min 28,500mt) exceeds vessel DWCC 29,800mt — pre-filter miss",
+              "Volume overflow: cargo 30,000 mt × SF 1.58 = 47,400 cbm vs grain_capacity 38,900 cbm → vessel intake capped at about 24,620 mt, below cargo_min 28,500 mt.",
+              "Cargo weight_mt_max 31,500 mt exceeds vessel DWCC 29,800 mt by 1,700 mt."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10553",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20822",
+            "vessel_item_index": 0,
+            "score": 18,
+            "match_level": "weak",
+            "match_reasons": [
+              "Readiness verdict 'tight' — arrives 2026-05-29 with gap_days=3 before laycan start 2026-06-01.",
+              "Geography is favourable: M/V Kavala Spirit opens Constanta and readiness places arrival at Mykolaiv around 2026-05-29.",
+              "No Russian-flag restriction satisfied — vessel flag='MH', IMO 9411738.",
+              "HANDYSIZE bulk vessel with 5 holds and 4×25t gear is operationally suitable for a bulk seed parcel, apart from intake constraints."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' affects laytime calculation; demurrage/despatch exposure not assessed from vessel data.",
+              "DWCC_VIOLATION: cargo 30,000mt (min 28,500mt) exceeds vessel DWCC 28,500mt — pre-filter miss",
+              "Volume overflow: cargo 30,000 mt × SF 1.58 = 47,400 cbm vs grain_capacity 36,600 cbm → vessel intake capped at about 23,165 mt, below cargo_min 28,500 mt.",
+              "Cargo weight_mt_max 31,500 mt exceeds vessel DWCC 28,500 mt by 3,000 mt."
+            ]
+          }
+        ]
+      },
+      "durationMs": 40112,
+      "costEstimate": {
+        "promptChars": 31928,
+        "outputChars": 4313,
+        "tokensIn": 7982,
+        "tokensOut": 1079,
+        "usd": 0.0153725
+      }
+    },
+    {
+      "caseId": "bulk_dwcc_overload/sample-002",
+      "category": "bulk_dwcc_overload",
+      "inputCardinality": {
+        "cargoes": 2,
+        "vessels": 2,
+        "readiness_pairs": 4
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-10601",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20901",
+            "vessel_item_index": 0,
+            "score": 65,
+            "match_level": "possible",
+            "match_reasons": [
+              "Readiness verdict 'tight' — arrives 2026-06-06, 4 days before laycan start 2026-06-10 with sailing_days=1.",
+              "DWCC 32,810 mt vs cargo max 32,760 mt gives only 50 mt margin, but nominal cargo 31,200 mt fits within stated DWCC.",
+              "Grain capacity 45,200 cbm covers cargo max volume 32,760 mt × SF 1.35 = ~44,226 cbm.",
+              "Vessel opens Santos and ballast to Paranaguá is ~260 nm at 14.0 kn, giving about 19 hours sailing per readiness.",
+              "No CII D/E restriction satisfied — vessel cii_grade='B', IMO 9399017.",
+              "Last cargo 'Soybeans' matches soybean cargo class, supporting hold-history fit for commodity 31,200 mt Soybeans."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' applies to this fixture.",
+              "DWCC_MARGIN_50MT: DWCC 32,810mt vs cargo max 32,760mt — 50mt margin only. Any additional dunnage, provisions or trim allowance could push over limit."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10601",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20902",
+            "vessel_item_index": 0,
+            "score": 86,
+            "match_level": "good",
+            "match_reasons": [
+              "Readiness verdict 'ideal' — arrives 2026-06-07 at Paranaguá, 3 days before laycan start 2026-06-10 with sailing_days=0.",
+              "DWCC 34,800 mt vs cargo max 32,760 mt gives a 2,040 mt margin for the 31,200 mt Soybeans stem.",
+              "Grain capacity 47,100 cbm covers cargo max volume 32,760 mt × SF 1.35 = ~44,226 cbm.",
+              "Vessel opens Paranaguá, the cargo load port BRPNG, so ballast distance is 0 nm.",
+              "No CII D/E restriction satisfied — vessel cii_grade='A', IMO 9445102.",
+              "HANDYMAX bulker with 5 holds and grain capacity 47,100 cbm is a standard size fit for 31,200 mt bulk Soybeans."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' applies to this fixture."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10602",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20901",
+            "vessel_item_index": 0,
+            "score": 22,
+            "match_level": "weak",
+            "match_reasons": [
+              "Readiness verdict 'tight' — arrives 2026-06-05 at Santos, 7 days before laycan start 2026-06-12 with sailing_days=0.",
+              "Vessel opens Santos, the cargo load port BRSSZ, so ballast distance is 0 nm.",
+              "HANDYMAX bulk carrier with DWT 35,600 mt is broadly aligned with a bulk Soybean meal cargo of 33,500 mt, subject to DWCC and volume limits."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' applies to this fixture.",
+              "DWCC_VIOLATION: cargo 33,500mt (min 31,825mt) exceeds vessel DWCC 32,810mt — pre-filter miss.",
+              "Cargo weight max 35,175 mt exceeds vessel DWCC 32,810 mt, so the vessel cannot cover the full stated cargo range.",
+              "Volume overflow: cargo 33,500 mt × SF 1.48 = ~49,580 cbm vs grain_capacity 45,200 cbm → vessel intake capped at ~30,541 mt, below cargo_min 31,825 mt."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10602",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20902",
+            "vessel_item_index": 0,
+            "score": 28,
+            "match_level": "weak",
+            "match_reasons": [
+              "Readiness verdict 'tight' — arrives 2026-06-08, 4 days before laycan start 2026-06-12 with sailing_days=1.",
+              "Vessel opens Paranaguá and ballasts to Santos over ~260 nm at 13.5 kn, giving about 19 hours sailing per readiness.",
+              "DWCC 34,800 mt covers the nominal cargo 33,500 mt by 1,300 mt, but not the cargo max 35,175 mt.",
+              "HANDYMAX bulker with 5 holds and grain capacity 47,100 cbm is a plausible class fit for bulk Soybean meal, subject to volume intake."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' applies to this fixture.",
+              "DWCC_PARTIAL: cargo weight_mt_max 35,175mt exceeds DWCC 34,800mt. Vessel can load only up to 34,800mt — below cargo max. May be acceptable if charterer accepts partial load.",
+              "Cargo weight max 35,175 mt exceeds vessel DWCC 34,800 mt, so the vessel cannot cover the full stated cargo range.",
+              "Volume overflow: cargo 33,500 mt × SF 1.48 = ~49,580 cbm vs grain_capacity 47,100 cbm → vessel intake capped at ~31,824 mt, below cargo_min 31,825 mt."
+            ]
+          }
+        ]
+      },
+      "durationMs": 40773,
+      "costEstimate": {
+        "promptChars": 32129,
+        "outputChars": 3868,
+        "tokensIn": 8033,
+        "tokensOut": 967,
+        "usd": 0.01487625
+      }
+    },
+    {
+      "caseId": "bulk_dwcc_overload/sample-003",
+      "category": "bulk_dwcc_overload",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 2,
+        "readiness_pairs": 2
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-10611",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20911",
+            "vessel_item_index": 0,
+            "score": 62,
+            "match_level": "possible",
+            "match_reasons": [
+              "Readiness verdict 'tight' — arrives 2026-06-11, 4 days before laycan start 2026-06-15 (gap_days=4).",
+              "DWCC 38,000 mt equals nominal cargo 38,000 mt, giving 100% utilization if fixed at the stated base quantity.",
+              "Grain capacity 50,200 cbm covers nominal cargo volume 48,640 cbm based on 38,000 mt × SF 1.28 m³/mt.",
+              "Houston to New Orleans is ~320nm at 14.0kn, giving ~23h ballast per readiness.",
+              "Last cargo 'Wheat' is grain-class and compatible with Corn cargo; vessel IMO 9378834.",
+              "No CII Grade D or E restriction satisfied — vessel cii_grade='B', IMO 9378834."
+            ],
+            "issues": [
+              "Cargo restriction 'MOLOO — More or Less Owner's Option 10%'",
+              "Cargo restriction 'SHEX laytime'",
+              "Cargo restriction 'No CII Grade D or E'",
+              "DWCC_MID_BAND: vessel DWCC 38,000mt = cargo weight_mt nom exactly. Cargo max 41,800mt under MOLOO exceeds DWCC — owner must exercise -10% option. Feasible only at lower end of band.",
+              "Cargo weight max 41,800 mt exceeds vessel DWCC 38,000 mt by 3,800 mt, so the fixture depends on loading near nominal or lower MOLOO quantity.",
+              "Cargo max volume 41,800 mt × SF 1.28 = 53,504 cbm vs grain capacity 50,200 cbm, so full +10% MOLOO quantity would exceed grain space."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10611",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20912",
+            "vessel_item_index": 0,
+            "score": 55,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 73,800 mt covers cargo max 41,800 mt with ~57% utilization at maximum quantity.",
+              "Grain capacity 93,200 cbm covers cargo max volume 53,504 cbm based on 41,800 mt × SF 1.28 m³/mt.",
+              "Baton Rouge to New Orleans is ~200nm at 14.5kn, giving ~14h ballast per readiness.",
+              "PANAMAX bulk vessel with 7 holds and 93,200 cbm grain capacity is structurally suitable for 38,000 mt Corn.",
+              "Last cargo 'Soybeans' is grain/oilseed-class and commercially close to Corn cargo; vessel IMO 9511478.",
+              "No CII Grade D or E restriction satisfied — vessel cii_grade='A', IMO 9511478."
+            ],
+            "issues": [
+              "Cargo restriction 'MOLOO — More or Less Owner's Option 10%'",
+              "Cargo restriction 'SHEX laytime'",
+              "Cargo restriction 'No CII Grade D or E'",
+              "Readiness verdict 'idle' — arrives 2026-06-09, 6 days before laycan start 2026-06-15 (gap_days=6).",
+              "6-day idle. Vessel significantly oversized (DWCC 73,800mt vs cargo max 41,800mt) — part-load freight economics likely unfavorable.",
+              "Oversized intake: nominal cargo 38,000 mt uses only ~51% of vessel DWCC 73,800 mt, likely requiring a part-cargo freight premium."
+            ]
+          }
+        ]
+      },
+      "durationMs": 25937,
+      "costEstimate": {
+        "promptChars": 30865,
+        "outputChars": 2592,
+        "tokensIn": 7717,
+        "tokensOut": 648,
+        "usd": 0.01288625
+      }
+    },
+    {
+      "caseId": "bulk_dwcc_overload/sample-004",
+      "category": "bulk_dwcc_overload",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 3,
+        "readiness_pairs": 3
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-10621",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20921",
+            "vessel_item_index": 0,
+            "score": 68,
+            "match_level": "possible",
+            "match_reasons": [
+              "Readiness verdict 'ideal' — vessel arrives 2026-05-31 at Narvik, 4 days before laycan start 2026-06-05.",
+              "DWCC 57,200 mt covers nominal cargo 55,000 mt, giving about 2,200 mt spare against the stated base quantity.",
+              "Volume check from readiness: 55,000 mt × 0.45 m³/mt = 24,750 m³ vs bale capacity 71,500 m³, so hold volume is non-binding.",
+              "Vessel opens at Narvik, the same load port as the cargo, with 0 sailing days shown in readiness.",
+              "Dense ore suitability is supported by vessel restriction 'Class DNV, approved for dense ore IMSBC Group A' and cargo requires dense ore approval.",
+              "Last cargo 'Iron ore pellets' is operationally aligned with iron ore concentrate cargo, with vessel IMO 9355612."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' must be reviewed in the fixture terms.",
+              "Cargo restriction 'Vessel must be Class NK, BV, LR or DNV surveyed' applies; vessel restriction states 'Class DNV, approved for dense ore IMSBC Group A'.",
+              "Cargo restriction 'No vessels with IMSBC Group A cargo experience required — vessel must be approved for dense ore' applies; vessel restriction states 'Class DNV, approved for dense ore IMSBC Group A'.",
+              "Vessel restriction 'Class DNV, approved for dense ore IMSBC Group A'.",
+              "DWCC_VOLUME_NOTE from readiness: stowage_factor 0.45 m³/mt means volume fills only 34% of hold; DWCC is binding constraint, not volume.",
+              "Cargo weight max 57,750 mt exceeds vessel DWCC 57,200 mt by 550 mt; fixture would need quantity capped below cargo maximum."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10621",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20922",
+            "vessel_item_index": 0,
+            "score": 56,
+            "match_level": "possible",
+            "match_reasons": [
+              "Readiness verdict 'tight' — vessel arrives 2026-05-30, 5 days before laycan start 2026-06-05, with sailing_days=2.",
+              "DWCC 56,100 mt covers cargo minimum 52,250 mt, leaving about 3,850 mt above the minimum intake.",
+              "Bergen to Narvik is stated as ~500 nm at 14.0 kn, giving about 36 hours ballast sailing in readiness.",
+              "Volume is ample for the nominal cargo: 55,000 mt × 0.45 m³/mt = 24,750 m³ vs bale capacity 68,900 m³.",
+              "Vessel class restriction 'Class BV' matches the cargo class list allowing NK, BV, LR or DNV, with vessel IMO 9421563."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' must be reviewed in the fixture terms.",
+              "Cargo restriction 'Vessel must be Class NK, BV, LR or DNV surveyed' applies; vessel restriction states 'Class BV'.",
+              "Cargo restriction 'No vessels with IMSBC Group A cargo experience required — vessel must be approved for dense ore' requires dense ore approval confirmation because vessel restriction only states 'Class BV'.",
+              "Vessel restriction 'Class BV'.",
+              "DWCC_PARTIAL from readiness: cargo max 57,750mt exceeds DWCC 56,100mt. Must load to DWCC maximum only.",
+              "Cargo weight max 57,750 mt exceeds vessel DWCC 56,100 mt by 1,650 mt; cannot lift full maximum quantity.",
+              "Last cargo 'Coal' before iron ore concentrate cargo should be checked for hold cleanliness and survey readiness."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10621",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20923",
+            "vessel_item_index": 0,
+            "score": 20,
+            "match_level": "weak",
+            "match_reasons": [
+              "Readiness verdict 'tight' — vessel arrives 2026-06-01, 3 days before laycan start 2026-06-05, with sailing_days=2.",
+              "Stavanger to Narvik is stated as ~700 nm at 13.0 kn, giving about 54 hours ballast sailing in readiness.",
+              "Volume would be non-binding for nominal cargo: 55,000 mt × 0.45 m³/mt = 24,750 m³ vs bale capacity 62,200 m³.",
+              "Vessel restriction 'Class LR, dense ore approved' matches the cargo class list allowing NK, BV, LR or DNV and dense ore approval requirement.",
+              "Last cargo 'Iron ore pellets' is operationally aligned with iron ore concentrate cargo, with vessel IMO 9488234."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' must be reviewed in the fixture terms.",
+              "Cargo restriction 'Vessel must be Class NK, BV, LR or DNV surveyed' applies; vessel restriction states 'Class LR, dense ore approved'.",
+              "Cargo restriction 'No vessels with IMSBC Group A cargo experience required — vessel must be approved for dense ore' applies; vessel restriction states 'Class LR, dense ore approved'.",
+              "Vessel restriction 'Class LR, dense ore approved'.",
+              "DWCC_VIOLATION from readiness: cargo min 52,250mt exceeds vessel DWCC 50,800mt — vessel cannot carry minimum required quantity. Pre-filter miss.",
+              "Cargo minimum 52,250 mt exceeds vessel DWCC 50,800 mt by 1,450 mt, so the vessel cannot lift the stated minimum quantity."
+            ]
+          }
+        ]
+      },
+      "durationMs": 39288,
+      "costEstimate": {
+        "promptChars": 32034,
+        "outputChars": 4609,
+        "tokensIn": 8009,
+        "tokensOut": 1153,
+        "usd": 0.01577625
+      }
+    },
+    {
+      "caseId": "bulk_dwcc_overload/sample-005",
+      "category": "bulk_dwcc_overload",
+      "inputCardinality": {
+        "cargoes": 3,
+        "vessels": 1,
+        "readiness_pairs": 3
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-10631",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20931",
+            "vessel_item_index": 0,
+            "score": 78,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 31,400 mt vs rapeseed cargo 27,000 mt nominal gives ~86% utilization, with 1,700 mt margin over cargo max 29,700 mt.",
+              "Grain capacity 43,500 cbm covers nominal rapeseed volume 27,000 mt × 1.55 = 41,850 cbm.",
+              "Vessel geared 4×30t and cargo gear_required=true for the 27,000 mt Rouen shipment.",
+              "Readiness verdict 'tight' — arrives 2026-06-02, 3 days before laycan start 2026-06-05 (gap_days=3).",
+              "Rotterdam to Rouen is cited as ~250 nm at 13.0 kn, giving ~19 h ballast sailing in readiness."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' — laytime excludes Sundays and holidays.",
+              "Cargo max volume 29,700 mt × 1.55 = 46,035 cbm exceeds vessel grain capacity 43,500 cbm, so full upper option may be volume-limited to ~28,064 mt."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10632",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20931",
+            "vessel_item_index": 0,
+            "score": 63,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 31,400 mt vs wheat cargo 31,500 mt nominal is short by only 100 mt, while still above cargo minimum 28,350 mt.",
+              "Grain capacity 43,500 cbm covers nominal wheat volume 31,500 mt × 1.28 = 40,320 cbm.",
+              "Vessel geared 4×30t and cargo gear_required=true for the 31,500 mt Le Havre wheat shipment.",
+              "Readiness verdict 'tight' — arrives 2026-06-02, 4 days before laycan start 2026-06-07 (gap_days=4).",
+              "Rotterdam to Le Havre is cited as ~200 nm at 13.0 kn, giving ~15 h ballast sailing in readiness."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' — laytime excludes Sundays and holidays.",
+              "DWCC_PARTIAL: cargo max 34,650mt exceeds DWCC 31,400mt. Must load at most 31,400mt — below cargo nominal 31,500mt but within min 28,350mt range.",
+              "Cargo max volume 34,650 mt × 1.28 = 44,352 cbm exceeds vessel grain capacity 43,500 cbm, so full upper option may be volume-limited to ~33,984 mt."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10633",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20931",
+            "vessel_item_index": 0,
+            "score": 20,
+            "match_level": "weak",
+            "match_reasons": [
+              "Vessel geared 4×30t and cargo gear_required=true for the 36,000 mt Dunkirk malt barley shipment.",
+              "Grain capacity 43,500 cbm covers the DWCC-limited intake 31,400 mt × 1.38 = 43,332 cbm.",
+              "Readiness verdict 'tight' — arrives 2026-06-02, 5 days before laycan start 2026-06-10 (gap_days=5).",
+              "Rotterdam to Dunkirk is cited as ~200 nm at 13.0 kn, giving ~15 h ballast sailing in readiness."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' — laytime excludes Sundays and holidays.",
+              "DWCC_VIOLATION: cargo min 32,400mt exceeds vessel DWCC 31,400mt — vessel cannot carry minimum required quantity. Per-pair violation; other pairings for this vessel may be feasible.",
+              "DWCC 31,400 mt is 1,000 mt below cargo minimum 32,400 mt and 4,600 mt below nominal 36,000 mt.",
+              "Nominal malt barley volume 36,000 mt × 1.38 = 49,680 cbm exceeds vessel grain capacity 43,500 cbm, with intake capped at ~31,522 mt below cargo minimum 32,400 mt."
+            ]
+          }
+        ]
+      },
+      "durationMs": 29720,
+      "costEstimate": {
+        "promptChars": 31745,
+        "outputChars": 3016,
+        "tokensIn": 7937,
+        "tokensOut": 754,
+        "usd": 0.013691249999999999
+      }
+    },
+    {
+      "caseId": "bulk_open_position/sample-001",
+      "category": "bulk_open_position",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 3,
+        "readiness_pairs": 3
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-10441",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20811",
+            "vessel_item_index": 0,
+            "score": 86,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 31,800 mt vs cargo 28,000 mt → ~88% utilization, with cargo max 30,800 mt still within capacity.",
+              "Grain capacity 41,500 cbm covers cargo volume 35,000 cbm from 28,000 mt × SF 1.25 m³/mt.",
+              "Vessel geared 4×30t and cargo gear_required=true, suitable for bulk wheat handling at Constanta.",
+              "Readiness verdict 'ideal' — arrives 2026-05-21, 4 days before laycan start 2026-05-25 (gap_days=4).",
+              "Istanbul to Constanta is ~220nm at 13.5kn, giving ~1 day sailing per readiness.",
+              "No TBN restriction satisfied — vessel is named M/V Aegean Pioneer, IMO 9312456.",
+              "Last cargo 'Barley' is grain before Wheat cargo, same cargo class for 28,000 mt grain stem."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' must be reflected in charterparty terms."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10441",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20812",
+            "vessel_item_index": 0,
+            "score": 62,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 44,100 mt vs cargo 28,000 mt → ~64% utilization, leaving large but workable spare intake.",
+              "Grain capacity 57,200 cbm covers cargo volume 35,000 cbm from 28,000 mt × SF 1.25 m³/mt.",
+              "Vessel geared 4×35t and cargo gear_required=true, suitable for bulk wheat handling at Constanta.",
+              "Piraeus to Constanta is ~720nm at 14.0kn, giving ~2 days sailing per readiness.",
+              "No TBN restriction satisfied — vessel is named M/V Bosphorus Trader, IMO 9445789.",
+              "Last cargo 'Corn' is grain before Wheat cargo, same cargo class for 28,000 mt grain stem."
+            ],
+            "issues": [
+              "Readiness verdict 'idle' — arrives 2026-05-19 before laycan start 2026-05-25 (gap_days=7), creating substantial waiting time.",
+              "6-day idle before laycan start may prompt vessel to trade elsewhere",
+              "Cargo restriction 'SHEX laytime' must be reflected in charterparty terms."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10441",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20813",
+            "vessel_item_index": 0,
+            "score": 54,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 33,200 mt vs cargo 28,000 mt → ~84% utilization, with cargo max 30,800 mt still within capacity.",
+              "Grain capacity 43,200 cbm covers cargo volume 35,000 cbm from 28,000 mt × SF 1.25 m³/mt.",
+              "Vessel geared 4×30t and cargo gear_required=true, suitable for bulk wheat handling at Constanta.",
+              "Readiness verdict 'tight' — arrives 2026-05-22, 2 days before laycan start 2026-05-25 (gap_days=2).",
+              "Odesa to Constanta is ~270nm using class default 12.5kn, giving ~22h sailing per readiness.",
+              "No TBN restriction satisfied — vessel is named M/V Dorina Star, IMO 9523114."
+            ],
+            "issues": [
+              "service_speed_kn null — arrival estimate uses 12.5kn class default",
+              "Vessel service_speed_kn=null — timing depends on class-default 12.5kn assumption.",
+              "Vessel restriction 'Bunkering deviation allowed at Canakkale only' must be checked against voyage plan.",
+              "Vessel last_cargo='Soybean meal' before cargo commodity 'Wheat' — verify hold cleanliness/certification for food-grade grain loading.",
+              "Cargo restriction 'SHEX laytime' must be reflected in charterparty terms."
+            ]
+          }
+        ]
+      },
+      "durationMs": 78364,
+      "costEstimate": {
+        "promptChars": 31431,
+        "outputChars": 3105,
+        "tokensIn": 7858,
+        "tokensOut": 777,
+        "usd": 0.013707500000000001
+      }
+    },
+    {
+      "caseId": "bulk_open_position/sample-002",
+      "category": "bulk_open_position",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 3,
+        "readiness_pairs": 3
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-11001",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-21001",
+            "vessel_item_index": 0,
+            "score": 88,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 31,400 mt covers cargo 27,500 mt and the max option 30,250 mt, leaving about 1,150 mt spare at max quantity.",
+              "Grain capacity 42,000 cbm covers nominal wheat volume 27,500 mt × SF 1.28 = 35,200 cbm.",
+              "Readiness verdict 'ideal' — arrives 2026-05-23, 3 days before laycan start 2026-05-26 (gap_days=3).",
+              "Vessel opens Sulina and load port is Galati; readiness gives Sulina–Galati ~100 nm at 13.0 kn, about 8 hours ballast.",
+              "Vessel geared 4×30t and cargo gear_required=true, giving onboard lifting capability for loading/discharge operations.",
+              "Last cargo 'Corn' is grain-compatible before Wheat, with vessel IMO 9381204."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' — Sundays/holidays excluded may affect laytime calculation.",
+              "Cargo restriction 'Holds survey required before loading' — survey/certification must be arranged before loading."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-11001",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-21002",
+            "vessel_item_index": 0,
+            "score": 25,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 44,800 mt covers cargo 27,500 mt and the max option 30,250 mt, leaving about 14,550 mt spare at max quantity.",
+              "Grain capacity 58,500 cbm covers nominal wheat volume 27,500 mt × SF 1.28 = 35,200 cbm.",
+              "Readiness verdict 'idle' — arrives 2026-05-19, 7 days before laycan start 2026-05-26 (gap_days=7).",
+              "Vessel opens Varna and load port is Galati; readiness gives Varna–Galati ~350 nm at 14.2 kn, about 25 hours ballast.",
+              "Last cargo 'Grain' is compatible before Wheat, with vessel IMO 9456321."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' — Sundays/holidays excluded may affect laytime calculation.",
+              "Cargo restriction 'Holds survey required before loading' — survey/certification must be arranged before loading.",
+              "GEAR_VIOLATION: vessel geared=false, cargo requires gear_required=true. Excessive idle (7 days) compounds ineligibility.",
+              "Cargo requires gear_required=true, but vessel geared=false and crane_config=null.",
+              "Vessel arrives 7 days early — idle time increases owner's cost risk."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-11001",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-21003",
+            "vessel_item_index": 0,
+            "score": 68,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 32,600 mt covers cargo 27,500 mt and the max option 30,250 mt, leaving about 2,350 mt spare at max quantity.",
+              "Grain capacity 43,500 cbm covers nominal wheat volume 27,500 mt × SF 1.28 = 35,200 cbm.",
+              "Readiness verdict 'tight' — arrival_date 2026-05-25 with gap_days=2, while readiness explanation warns arrival about 26-May morning near laycan start.",
+              "Vessel opens Thessaloniki and load port is Galati; readiness gives Thessaloniki–Galati ~550 nm at 13.5 kn, about 41 hours ballast.",
+              "Vessel geared 4×30t and cargo gear_required=true, giving onboard lifting capability for loading/discharge operations.",
+              "Last cargo 'Barley' is grain-compatible before Wheat, with vessel IMO 9534678."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' — Sundays/holidays excluded may affect laytime calculation.",
+              "Cargo restriction 'Holds survey required before loading' — survey/certification must be arranged before loading.",
+              "Arrival estimated 26-May morning — minimal buffer against laycan_start 26-May"
+            ]
+          }
+        ]
+      },
+      "durationMs": 32503,
+      "costEstimate": {
+        "promptChars": 31471,
+        "outputChars": 3321,
+        "tokensIn": 7868,
+        "tokensOut": 831,
+        "usd": 0.013989999999999999
+      }
+    },
+    {
+      "caseId": "bulk_open_position/sample-003",
+      "category": "bulk_open_position",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 3,
+        "readiness_pairs": 3
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-11011",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-21011",
+            "vessel_item_index": 0,
+            "score": 86,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 55,200 mt vs cargo 48,000 mt → about 87% utilization, with cargo max 50,400 mt still within intake.",
+              "Cargo volume 48,000 mt × SF 1.18 = 56,640 cbm vs grain capacity 72,100 cbm, so hold volume is adequate.",
+              "Readiness verdict 'ideal' — arrives 2026-06-02, 5 days before laycan start 2026-06-08 (gap_days=5).",
+              "Durban to Richards Bay is cited as ~150 nm at 13.5 kn, giving about 1 day sailing from open port to load port.",
+              "Cargo restriction 'Vessel must have loaded coal previously' satisfied — vessel last_cargo='Coal', IMO 9423788.",
+              "Cargo restriction 'No Indonesian-flag vessels' satisfied — vessel flag='PA', IMO 9423788."
+            ],
+            "issues": [
+              "Cargo restriction/term 'SHEX laytime' from input — laytime basis must be reflected in recap."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-11011",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-21012",
+            "vessel_item_index": 0,
+            "score": 58,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 53,700 mt vs cargo 48,000 mt → about 89% utilization, with cargo max 50,400 mt still within intake.",
+              "Cargo volume 48,000 mt × SF 1.18 = 56,640 cbm vs grain capacity 70,200 cbm, so hold volume is adequate.",
+              "Readiness verdict 'tight' — arrives 2026-06-08, on laycan start 2026-06-08 (gap_days=0).",
+              "Colombo to Richards Bay is cited as ~4,400 nm at 14.0 kn, giving a long ballast leg of about 13 days.",
+              "Cargo restriction 'Vessel must have loaded coal previously' satisfied — vessel last_cargo='Coal', IMO 9487901.",
+              "Cargo restriction 'No Indonesian-flag vessels' satisfied — vessel flag='MH', IMO 9487901."
+            ],
+            "issues": [
+              "Long ballast leg 13 days from Colombo — arrival 07-Jun leaves only 1 day buffer before laycan start 08-Jun",
+              "Cargo restriction/term 'SHEX laytime' from input — laytime basis must be reflected in recap.",
+              "Readiness is tight with gap_days=0 and arrival_date=2026-06-08, leaving effectively no schedule buffer."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-11011",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-21013",
+            "vessel_item_index": 0,
+            "score": 35,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 56,900 mt vs cargo 48,000 mt → about 84% utilization, with cargo max 50,400 mt still within intake.",
+              "Cargo volume 48,000 mt × SF 1.18 = 56,640 cbm vs grain capacity 74,500 cbm, so hold volume is adequate.",
+              "Readiness verdict 'idle' — arrives 2026-06-02, 8 days before laycan start 2026-06-08 (gap_days=8).",
+              "Luanda to Richards Bay is cited as ~2,500 nm at 14.5 kn, giving about 7 days sailing from open port to load port.",
+              "Cargo restriction 'No Indonesian-flag vessels' satisfied — vessel flag='LR', IMO 9561234."
+            ],
+            "issues": [
+              "LAST_CARGO_RESTRICTION: charterer requires prior coal loading. last_cargo=Bauxite does not satisfy requirement.",
+              "Cargo restriction 'Vessel must have loaded coal previously' triggered — vessel last_cargo='Bauxite' rather than coal.",
+              "Vessel arrives 8 days early against laycan start 2026-06-08, creating idle-time exposure.",
+              "Cargo restriction/term 'SHEX laytime' from input — laytime basis must be reflected in recap."
+            ]
+          }
+        ]
+      },
+      "durationMs": 28679,
+      "costEstimate": {
+        "promptChars": 31619,
+        "outputChars": 3106,
+        "tokensIn": 7905,
+        "tokensOut": 777,
+        "usd": 0.01376625
+      }
+    },
+    {
+      "caseId": "bulk_open_position/sample-004",
+      "category": "bulk_open_position",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 3,
+        "readiness_pairs": 3
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-11021",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-21021",
+            "vessel_item_index": 0,
+            "score": 88,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 29,800 mt vs cargo 24,000 mt nominal and 26,400 mt max → sufficient deadweight with ~81% nominal DWCC utilization.",
+              "Grain capacity 39,800 cbm covers nominal cargo volume 38,880 cbm based on 24,000 mt × SF 1.62 m³/mt.",
+              "Vessel geared 4×30t and cargo gear_required=true → suitable self-geared handysize option for Chornomorsk loading.",
+              "Readiness verdict 'ideal' — arrives 2026-05-17 at Chornomorsk with gap_days=3 before laycan start 2026-05-20.",
+              "Last cargo Barley is grain cargo and readiness says it qualifies as grain-clean for sunflower seeds, IMO 9367445."
+            ],
+            "issues": [
+              "Cargo restriction 'Holds must be grain-clean certified' — grain-clean certificate must be available before loading.",
+              "Cargo restriction 'No last cargo: steel, cement, clinker, fertilizer' — prior cargo must remain acceptable at survey.",
+              "Cargo restriction 'SHEX laytime' — laytime excludes Sundays/holidays and must be reflected in recap.",
+              "Cargo max volume 26,400 mt × SF 1.62 = 42,768 cbm exceeds vessel grain_capacity 39,800 cbm, so full declared max quantity may not fit by volume."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-11021",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-21022",
+            "vessel_item_index": 0,
+            "score": 34,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 28,400 mt vs cargo 24,000 mt nominal and 26,400 mt max → deadweight capacity is sufficient.",
+              "Vessel opens Constanta and readiness gives ~280nm to Chornomorsk at 12.5kn, with sailing_days=1.",
+              "Vessel geared 4×25t and cargo gear_required=true → self-geared equipment is available for loading operations.",
+              "Readiness verdict 'tight' — arrives 2026-05-17 with gap_days=2 before laycan start 2026-05-20."
+            ],
+            "issues": [
+              "Cargo restriction 'Holds must be grain-clean certified' — readiness states hold grain-clean certification not achievable without cleaning after last_cargo='Steel coils'.",
+              "Cargo restriction 'No last cargo: steel, cement, clinker, fertilizer' triggered — vessel last_cargo='Steel coils'.",
+              "Cargo restriction 'SHEX laytime' — laytime excludes Sundays/holidays and must be reflected in recap.",
+              "LAST_CARGO_RESTRICTION: last_cargo=Steel coils is explicitly prohibited. Hold grain-clean certification not achievable without costly cleaning.",
+              "Vessel last_cargo='Steel coils' before cargo commodity 'Sunflower seeds' — verify hold cleaning and certification before fixing.",
+              "Cargo nominal volume 24,000 mt × SF 1.62 = 38,880 cbm exceeds vessel grain_capacity 37,200 cbm, so vessel intake is volume-limited to ~22,963 mt."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-11021",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-21023",
+            "vessel_item_index": 0,
+            "score": 68,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 42,500 mt vs cargo 24,000 mt nominal and 26,400 mt max → ample deadweight but only ~56% nominal DWCC utilization.",
+              "Grain capacity 55,600 cbm covers max cargo volume 42,768 cbm based on 26,400 mt × SF 1.62 m³/mt.",
+              "Vessel geared 4×35t and cargo gear_required=true → strong self-geared fit for sunflower seed loading.",
+              "Readiness verdict 'tight' — arrives 2026-05-20 with gap_days=1 on laycan start 2026-05-20.",
+              "Last cargo Wheat is grain cargo and readiness says it is grain-clean compatible, IMO 9523456."
+            ],
+            "issues": [
+              "Cargo restriction 'Holds must be grain-clean certified' — grain-clean certificate must be available before loading.",
+              "Cargo restriction 'No last cargo: steel, cement, clinker, fertilizer' — prior cargo must remain acceptable at survey.",
+              "Cargo restriction 'SHEX laytime' — laytime excludes Sundays/holidays and must be reflected in recap.",
+              "Arrival estimated 20-May — same day as laycan_start. No buffer for delays.",
+              "Readiness timing is tight with arrival_date=2026-05-20, so any Istanbul departure or Bosporus delay risks missing the 20-May laycan start."
+            ]
+          }
+        ]
+      },
+      "durationMs": 30958,
+      "costEstimate": {
+        "promptChars": 31603,
+        "outputChars": 3865,
+        "tokensIn": 7901,
+        "tokensOut": 967,
+        "usd": 0.014711249999999999
+      }
+    },
+    {
+      "caseId": "bulk_open_position/sample-005",
+      "category": "bulk_open_position",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 3,
+        "readiness_pairs": 3
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-11031",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-21031",
+            "vessel_item_index": 0,
+            "score": 78,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 32,100 mt vs nominal cargo 30,000 mt gives ~93% utilization, with DWT 33,500 mt covering the stated cargo quantity.",
+              "Cargo volume 30,000 mt × SF 0.9 = 27,000 cbm vs grain capacity 42,500 cbm, leaving ~15,500 cbm spare hold volume.",
+              "Vessel geared 4×30t and cargo gear_required=true, giving onboard lifting capability for fertilizer operations.",
+              "Readiness verdict 'ideal' — arrives 2026-05-30, 4 days before laycan start 2026-06-04 (gap_days=4).",
+              "Open Riga to Klaipeda is ~140nm at 13.0kn per readiness, giving ~11h ballast from the 2026-05-29 open date.",
+              "Last cargo 'Urea' directly matches commodity 'Urea fertilizer', supporting the urea/corrosion-resistance requirement for IMO 9391124."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX WP laytime'.",
+              "Cargo restriction 'Vessel must be corrosion-resistant for urea (holds lined or stainless)'.",
+              "Cargo restriction 'Weather routing via Biscay — Brest to Gibraltar waypoint required'.",
+              "Cargo weight max 33,000 mt exceeds vessel DWCC 32,100 mt by 900 mt; nominal 30,000 mt fits but full charterers' option may not."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-11031",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-21032",
+            "vessel_item_index": 0,
+            "score": 68,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 43,500 mt vs nominal cargo 30,000 mt gives ~69% utilization, with full cargo max 33,000 mt also within DWCC.",
+              "Cargo volume 30,000 mt × SF 0.9 = 27,000 cbm vs grain capacity 56,900 cbm, leaving ~29,900 cbm spare hold volume.",
+              "Vessel geared 4×35t and cargo gear_required=true, giving stronger gear than the 4×30t handysize alternatives.",
+              "Open Gdynia to Klaipeda is ~200nm at 14.0kn per readiness, giving ~14h ballast from the 2026-05-28 open date.",
+              "Readiness verdict 'idle' — arrives 2026-05-29, 5 days before laycan start 2026-06-04 (gap_days=5).",
+              "Vessel restriction states 'Fertilizer experience documented; holds previously certified for urea', supporting the urea corrosion requirement for IMO 9462107."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX WP laytime'.",
+              "Cargo restriction 'Vessel must be corrosion-resistant for urea (holds lined or stainless)'.",
+              "Cargo restriction 'Weather routing via Biscay — Brest to Gibraltar waypoint required'.",
+              "Vessel restriction 'Fertilizer experience documented; holds previously certified for urea'.",
+              "6-day idle before laycan start — vessel may seek other stems in Baltic",
+              "Readiness verdict 'idle' creates commercial idle-time risk despite arrival 2026-05-29 before 2026-06-04 laycan start."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-11031",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-21033",
+            "vessel_item_index": 0,
+            "score": 48,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 31,500 mt vs nominal cargo 30,000 mt gives ~95% utilization, leaving only ~1,500 mt DWCC margin at the nominal stem.",
+              "Cargo volume 30,000 mt × SF 0.9 = 27,000 cbm vs grain capacity 41,600 cbm, leaving ~14,600 cbm spare hold volume.",
+              "Vessel geared 4×30t and cargo gear_required=true, matching the fertilizer cargo's onboard gear need.",
+              "Readiness verdict 'tight' — arrives 2026-06-04, 1 day before/at laycan start 2026-06-04 per readiness (gap_days=1).",
+              "Hamburg to Klaipeda is ~500nm and readiness used class default 12.5kn, giving ~40h ballast from the 2026-06-02 open date."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX WP laytime'.",
+              "Cargo restriction 'Vessel must be corrosion-resistant for urea (holds lined or stainless)'.",
+              "Cargo restriction 'Weather routing via Biscay — Brest to Gibraltar waypoint required'.",
+              "service_speed_kn null — class default 12.5kn applied. Arrival 04-Jun = laycan_start, no buffer. Hold corrosion qualification for urea unconfirmed.",
+              "Vessel service_speed_kn is null, so readiness timing relies on class default 12.5kn rather than an actual declared speed.",
+              "Cargo weight max 33,000 mt exceeds vessel DWCC 31,500 mt by 1,500 mt; nominal 30,000 mt fits but full charterers' option may not.",
+              "Last cargo 'Grain' before commodity 'Urea fertilizer' — verify hold cleanliness/certification for fertilizer loading.",
+              "Hold corrosion qualification for urea is unconfirmed on IMO 9538892, while cargo restriction requires corrosion-resistant holds."
+            ]
+          }
+        ]
+      },
+      "durationMs": 35163,
+      "costEstimate": {
+        "promptChars": 31776,
+        "outputChars": 4257,
+        "tokensIn": 7944,
+        "tokensOut": 1065,
+        "usd": 0.015255
+      }
+    },
+    {
+      "caseId": "cii_grade_d/sample-001",
+      "category": "cii_grade_d",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 2,
+        "readiness_pairs": 2
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-10991",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20861",
+            "vessel_item_index": 0,
+            "score": 22,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 56,100 mt vs nominal cargo 54,000 mt gives ~96% weight utilization before applying the cargo max and volume checks.",
+              "Readiness verdict 'tight' — arrives 2026-06-01, 4 days before laycan start 2026-06-05 (gap_days=4).",
+              "Geography is close: Paranaguá to Santos is ~260 nm, with readiness sailing_days=1 at 12.5 kn.",
+              "BULK soybean meal cargo on a 58,200 DWT SUPRAMAX is a normal vessel class fit for this trade.",
+              "Vessel is geared 4×30t, while cargo gear_required=false, so no shore-crane dependency is indicated for IMO 9278934."
+            ],
+            "issues": [
+              "Cargo restriction 'No CII D or E grade vessels — Trafigura fleet vetting policy 2025' triggered — vessel cii_grade='D', IMO 9278934.",
+              "Cargo restriction 'Holds must be clean and free of previous cargo residue' triggered — vessel last_cargo='Petcoke' before commodity 'Soybean meal', certified hold cleaning required.",
+              "Cargo restriction 'SHEX laytime' is a commercial laytime term to price and confirm for laycan 2026-06-05/2026-06-12.",
+              "CII_GRADE_D from readiness: Trafigura fleet policy prohibits D/E vessels.",
+              "LAST_CARGO_INCOMPATIBLE from readiness: petcoke residue requires certified cleaning before soybean meal — extra 2-3 days cleaning required.",
+              "Vessel cii_grade='D' must be treated as an unresolved Trafigura vetting issue for cargo msg-10991 item 0.",
+              "Cargo weight max 56,700 mt exceeds vessel DWCC 56,100 mt by 600 mt, although nominal 54,000 mt is within DWCC.",
+              "Volume overflow: cargo 54,000 mt × SF 1.45 = 78,300 cbm vs grain_capacity 73,500 cbm → vessel intake capped at ~50,690 mt, below cargo_min 51,300 mt."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10991",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20862",
+            "vessel_item_index": 0,
+            "score": 28,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 54,700 mt vs nominal cargo 54,000 mt gives ~99% weight utilization before applying the cargo max and volume checks.",
+              "Readiness verdict 'ideal' — arrives 2026-06-01, 4 days before laycan start 2026-06-05 (gap_days=4).",
+              "Vessel opens Santos 2026-06-01 at the load port BRSSZ, with readiness sailing_days=0.",
+              "Charterer CII-D/E refusal cleared — vessel cii_grade='A', IMO 9512663.",
+              "Hold-cleanliness restriction is supported by last_cargo='Grain' and readiness reports no cleaning issue for IMO 9512663.",
+              "Vessel is geared 4×35t, while cargo gear_required=false, so no gear shortfall is indicated for the Santos load."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' is a commercial laytime term to price and confirm for laycan 2026-06-05/2026-06-12.",
+              "Cargo weight max 56,700 mt exceeds vessel DWCC 54,700 mt by 2,000 mt, although nominal 54,000 mt is within DWCC.",
+              "Volume overflow: cargo 54,000 mt × SF 1.45 = 78,300 cbm vs grain_capacity 71,800 cbm → vessel intake capped at ~49,517 mt, below cargo_min 51,300 mt."
+            ]
+          }
+        ]
+      },
+      "durationMs": 43462,
+      "costEstimate": {
+        "promptChars": 30655,
+        "outputChars": 2916,
+        "tokensIn": 7664,
+        "tokensOut": 729,
+        "usd": 0.013225
+      }
+    },
+    {
+      "caseId": "cii_grade_d/sample-002",
+      "category": "cii_grade_d",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 2,
+        "readiness_pairs": 2
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-11101",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-21101",
+            "vessel_item_index": 0,
+            "score": 35,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 55,000 mt vs nominal cargo 50,000 mt gives ~91% utilization, and covers cargo max 52,500 mt with ~2,500 mt spare.",
+              "Grain capacity 71,600 cbm covers cargo volume 50,000 mt × SF 1.28 = 64,000 cbm with ~7,600 cbm spare.",
+              "Readiness verdict 'tight' — arrival_date 2026-06-04 with gap_days=4 before laycan start 2026-06-08.",
+              "Last cargo 'Corn' before cargo commodity 'Corn' supports the grain-clean requirement for 50,000 mt corn.",
+              "Vessel is geared 4×30t, though gear is not required for this BULK corn cargo of 50,000 mt."
+            ],
+            "issues": [
+              "Cargo restriction 'No CII D or E grade vessels — Cargill fleet vetting policy 2025' triggered — vessel cii_grade='E' and IMO 9334567.",
+              "Cargo restriction 'SHEX laytime' must be reflected in commercial review for laycan 2026-06-08/2026-06-15.",
+              "Cargo restriction 'Holds grain-clean required' requires confirmation against vessel last_cargo='Corn' for IMO 9334567.",
+              "CII_GRADE_E: cii_grade=E violates Cargill vetting policy (D and E prohibited). Grade E = highest-severity IMO rating, triggering mandatory SEEMP corrective action plan. More severe than Grade D case."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-11101",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-21102",
+            "vessel_item_index": 0,
+            "score": 88,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 56,700 mt vs nominal cargo 50,000 mt gives ~88% utilization, and covers cargo max 52,500 mt with ~4,200 mt spare.",
+              "Grain capacity 73,200 cbm covers cargo volume 50,000 mt × SF 1.28 = 64,000 cbm with ~9,200 cbm spare.",
+              "Readiness verdict 'ideal' — arrival_date 2026-06-05 with gap_days=3 before laycan start 2026-06-08.",
+              "Santos to Paranaguá is stated at ~260 nm, giving a short ballast leg from open_port Santos on 2026-06-04.",
+              "Charterer CII-D/E refusal cleared — vessel cii_grade='B', IMO 9489012.",
+              "Hold cleanliness restriction supported — vessel last_cargo='Grain' before 50,000 mt Corn cargo, IMO 9489012.",
+              "Vessel is geared 4×35t, though gear is not required for this BULK corn cargo of 50,000 mt."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' must be reflected in commercial review for laycan 2026-06-08/2026-06-15."
+            ]
+          }
+        ]
+      },
+      "durationMs": 24314,
+      "costEstimate": {
+        "promptChars": 30702,
+        "outputChars": 2257,
+        "tokensIn": 7676,
+        "tokensOut": 565,
+        "usd": 0.012419999999999999
+      }
+    },
+    {
+      "caseId": "cii_grade_d/sample-003",
+      "category": "cii_grade_d",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 2,
+        "readiness_pairs": 2
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-11111",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-21111",
+            "vessel_item_index": 0,
+            "score": 76,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 25,600 mt vs cargo 18,000 mt gives ~70% utilization and covers the 19,800 mt max quantity.",
+              "Grain capacity 33,500 cbm covers cargo volume 18,000 mt × SF 1.28 = 23,040 cbm with ~10,460 cbm spare.",
+              "Vessel opens at Novorossiysk on 2026-05-21, same as load port RUNVS, with 0 sailing days to the berth area.",
+              "Readiness verdict 'ideal' — arrival_date 2026-05-21, 4 days before laycan start 2026-05-25 (gap_days=4).",
+              "Vessel geared 4×25t and cargo has gear_required=true, giving onboard lifting capability for port operations.",
+              "Last cargo Barley before Wheat is grain-to-grain compatible, and readiness states grain-clean compatible for IMO 9356789."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' — laytime term must be reflected in voyage economics and demurrage/despatch handling.",
+              "Cargo restriction 'No vessels flagged by Libyan port authority blacklist' — Libyan port authority blacklist status not provided for vessel IMO 9356789.",
+              "Cargo restriction 'Grain-clean holds required' — hold cleanliness certificate/survey not provided despite last_cargo='Barley'.",
+              "CII_GRADE_D_INFO: cii_grade=D. Charterer has no explicit D-refusal policy. Flag as informational risk (future vetting, bank/insurance scrutiny) but NOT hard disqualifier for this fixture. Severity lower than Cargill/Trafigura scenario.",
+              "Vessel cii_grade='D' — informational vetting risk only; cargo restrictions do not contain an explicit CII D/E ban."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-11111",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-21112",
+            "vessel_item_index": 0,
+            "score": 82,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 27,300 mt vs cargo 18,000 mt gives ~66% utilization and covers the 19,800 mt max quantity.",
+              "Grain capacity 35,900 cbm covers cargo volume 18,000 mt × SF 1.28 = 23,040 cbm with ~12,860 cbm spare.",
+              "Vessel opens Tuapse on 2026-05-22, about 80 nm from Novorossiysk per readiness, with 1 sailing day allocated.",
+              "Readiness verdict 'tight' — arrival_date 2026-05-23, 2 days before laycan start 2026-05-25 (gap_days=2).",
+              "Vessel geared 4×30t and cargo has gear_required=true, giving onboard lifting capability for port operations.",
+              "Last cargo Wheat before Wheat is same-commodity grain compatible for cargo commodity 'Wheat' on IMO 9423789.",
+              "Vessel cii_grade='A' provides a stronger vetting profile than the alternative Grade D vessel, IMO 9423789."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' — laytime term must be reflected in voyage economics and demurrage/despatch handling.",
+              "Cargo restriction 'No vessels flagged by Libyan port authority blacklist' — Libyan port authority blacklist status not provided for vessel IMO 9423789.",
+              "Cargo restriction 'Grain-clean holds required' — hold cleanliness certificate/survey not provided despite last_cargo='Wheat'."
+            ]
+          }
+        ]
+      },
+      "durationMs": 25713,
+      "costEstimate": {
+        "promptChars": 30755,
+        "outputChars": 2913,
+        "tokensIn": 7689,
+        "tokensOut": 729,
+        "usd": 0.01325625
+      }
+    },
+    {
+      "caseId": "cii_grade_d/sample-004",
+      "category": "cii_grade_d",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 2,
+        "readiness_pairs": 2
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-11121",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-21121",
+            "vessel_item_index": 0,
+            "score": 30,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 53,400 mt vs cargo max 50,400 mt gives about 3,000 mt surplus intake before bunkers/stores allowance.",
+              "Grain capacity 69,800 cbm covers cargo volume 48,000 mt × SF 1.35 = 64,800 cbm.",
+              "Vessel opens at Santos on 2026-06-08, same as load port Santos, so ballast distance is 0 nm.",
+              "Readiness verdict 'tight' — arrives 2026-06-08, 4 days before laycan start 2026-06-12 (gap_days=4).",
+              "Vessel is geared with 4×30t cranes, although cargo gear_required=false, giving operational flexibility at 5 holds."
+            ],
+            "issues": [
+              "Cargo restriction 'No CII D or E grade vessels — ADM vetting policy' triggered — vessel cii_grade='D'.",
+              "Cargo restriction 'Holds must pass grain-clean survey' triggered — last_cargo='Iron ore' requires certified cleaning before Soybeans.",
+              "Cargo restriction 'No last cargo: iron ore, coal, clinker, bauxite' triggered — vessel last_cargo='Iron ore'.",
+              "Cargo restriction 'SHEX laytime' must be reflected in voyage terms.",
+              "Vessel cii_grade='D' requires broker attention against ADM vetting restriction.",
+              "Vessel last_cargo='Iron ore' before cargo commodity 'Soybeans' — hold cleaning/certification required before grain cargo.",
+              "CII_GRADE_D: cii_grade=D violates ADM vetting policy. LAST_CARGO_INCOMPATIBLE: last_cargo=Iron ore is explicitly prohibited by charterer; cleaning required before grain cargo — separate and independent from CII violation."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-11121",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-21122",
+            "vessel_item_index": 0,
+            "score": 82,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 55,100 mt vs cargo max 50,400 mt gives about 4,700 mt surplus intake, with nominal 48,000 mt at 87% DWCC utilization.",
+              "Grain capacity 71,500 cbm covers cargo volume 48,000 mt × SF 1.35 = 64,800 cbm.",
+              "Paranaguá to Santos is ~260 nm at 14.0 kn, with readiness sailing_days=1 and arrival 2026-06-10.",
+              "Readiness verdict 'tight' — arrives 2026-06-10, 2 days before laycan start 2026-06-12 (gap_days=2).",
+              "No CII D or E restriction satisfied — vessel cii_grade='B', IMO 9499234.",
+              "No prohibited last-cargo restriction satisfied — vessel last_cargo='Soybeans' is not iron ore, coal, clinker, or bauxite, IMO 9499234.",
+              "Vessel geared with 4×30t cranes and 5 holds provides loading flexibility, although Soybeans cargo gear_required=false."
+            ],
+            "issues": [
+              "Cargo restriction 'Holds must pass grain-clean survey' remains subject to passing survey/certification before loading.",
+              "Cargo restriction 'SHEX laytime' must be reflected in voyage terms."
+            ]
+          }
+        ]
+      },
+      "durationMs": 27520,
+      "costEstimate": {
+        "promptChars": 30780,
+        "outputChars": 2633,
+        "tokensIn": 7695,
+        "tokensOut": 659,
+        "usd": 0.012913749999999998
+      }
+    },
+    {
+      "caseId": "cii_grade_d/sample-005",
+      "category": "cii_grade_d",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 3,
+        "readiness_pairs": 3
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-11131",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-21131",
+            "vessel_item_index": 0,
+            "score": 38,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 52,700 mt covers cargo 46,000 mt nominal and 48,300 mt max, giving ~87% nominal utilization.",
+              "Grain capacity 68,500 cbm covers soybean meal volume of 46,000 mt × SF 1.45 = 66,700 cbm.",
+              "Vessel opens Santos and loads Paranaguá; readiness cites Santos–Paranaguá ~260nm at 11.5kn, arriving 2026-06-11.",
+              "Readiness verdict 'tight' — arrives 2026-06-11, 3 days before laycan start 2026-06-14 (gap_days=3).",
+              "Supramax bulk vessel with 5 holds and 4×30t cranes is suitable for BULK soybean meal cargo of 46,000 mt."
+            ],
+            "issues": [
+              "Cargo restriction 'No CII D or E grade vessels — Trafigura fleet vetting policy 2025' triggered — vessel cii_grade='D'.",
+              "Cargo restriction 'Holds grain-clean required' — vessel last_cargo='Grain', but grain-clean condition must be confirmed before loading 46,000 mt soybean meal.",
+              "Cargo restriction 'SHEX laytime' must be reflected in voyage terms for laycan 2026-06-14 to 2026-06-21.",
+              "Vessel restriction 'Engine built 2006; no recent refit documented'.",
+              "CII_GRADE_D: cii_grade=D violates Trafigura vetting policy. No mitigation — engine 2006 vintage, no refit.",
+              "Vessel cii_grade='D' with explicit cargo restriction banning CII D or E vessels."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-11131",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-21132",
+            "vessel_item_index": 0,
+            "score": 40,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 54,900 mt covers cargo 46,000 mt nominal and 48,300 mt max, giving ~84% nominal utilization.",
+              "Grain capacity 71,000 cbm covers soybean meal volume of 46,000 mt × SF 1.45 = 66,700 cbm.",
+              "Vessel opens directly at Paranaguá on 2026-06-11, the same port as the cargo load port BRPNG.",
+              "Readiness verdict 'tight' — arrives 2026-06-11 at load port, 3 days before laycan start 2026-06-14 (gap_days=3).",
+              "Supramax bulk vessel with 5 holds and 4×30t cranes is suitable for BULK soybean meal cargo of 46,000 mt."
+            ],
+            "issues": [
+              "Cargo restriction 'No CII D or E grade vessels — Trafigura fleet vetting policy 2025' triggered — vessel cii_grade='D'.",
+              "Cargo restriction 'Holds grain-clean required' — vessel last_cargo='Soybeans', but grain-clean condition must be confirmed before loading 46,000 mt soybean meal.",
+              "Cargo restriction 'SHEX laytime' must be reflected in voyage terms for laycan 2026-06-14 to 2026-06-21.",
+              "Vessel restriction 'Main engine SCRT retrofit completed 2024-11 per class survey; owner claims next IMO rating period (2027) may improve to C'.",
+              "CII_GRADE_D: cii_grade=D violates Trafigura policy. Owner's claim of future improvement (2027 re-rating) is speculative and not the current certified grade. Current cii_grade=D governs — do not invent future-rating relief.",
+              "Vessel cii_grade='D' with explicit cargo restriction banning CII D or E vessels."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-11131",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-21133",
+            "vessel_item_index": 0,
+            "score": 88,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 54,100 mt covers cargo 46,000 mt nominal and 48,300 mt max, giving ~85% nominal utilization.",
+              "Grain capacity 70,200 cbm covers soybean meal volume of 46,000 mt × SF 1.45 = 66,700 cbm.",
+              "Vessel opens Santos and loads Paranaguá; readiness cites Santos–Paranaguá ~260nm at 14.0kn, arriving 2026-06-10.",
+              "Readiness verdict 'ideal' — arrives 2026-06-10, 4 days before laycan start 2026-06-14 (gap_days=4).",
+              "Charterer CII-D/E refusal cleared — vessel cii_grade='B', IMO 9522345.",
+              "Last cargo 'Soybean meal' matches cargo commodity 'Soybean meal' for a 46,000 mt bulk shipment."
+            ],
+            "issues": [
+              "Cargo restriction 'No CII D or E grade vessels — Trafigura fleet vetting policy 2025' — vessel cii_grade='B' for IMO 9522345.",
+              "Cargo restriction 'Holds grain-clean required' — vessel last_cargo='Soybean meal' for IMO 9522345.",
+              "Cargo restriction 'SHEX laytime' must be reflected in voyage terms for laycan 2026-06-14 to 2026-06-21."
+            ]
+          }
+        ]
+      },
+      "durationMs": 28330,
+      "costEstimate": {
+        "promptChars": 32089,
+        "outputChars": 3950,
+        "tokensIn": 8023,
+        "tokensOut": 988,
+        "usd": 0.014968750000000001
+      }
+    },
+    {
+      "caseId": "project_general_vessel/sample-001",
+      "category": "project_general_vessel",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 3,
+        "readiness_pairs": 3
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-10661",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20831",
+            "vessel_item_index": 0,
+            "score": 88,
+            "match_level": "good",
+            "match_reasons": [
+              "Readiness verdict 'ideal' — arrives 2026-05-25, 3 days before laycan start 2026-05-28 (gap_days=3).",
+              "Bremerhaven to Hamburg is ~80nm at 15.0kn, giving about 5h ballast from open port to load port.",
+              "DWCC 11,800 mt vs cargo 330 mt gives ample capacity for 6 nacelle sections.",
+              "MPP vessel with 2 holds and tween-decks matches PROJECT cargo requiring tween-deck or open hatches for 12m × 4m × 4m sections.",
+              "Crane configuration 2×80t exceeds the 60t lift requirement and covers pieces up to 65t.",
+              "Hold 1 at 32m × 12m and Hold 2 at 28m × 12m exceed the required 12m clear length and 5m hatch width.",
+              "Last cargo 'Transformers' is consistent with project/heavy breakbulk handling experience for 45-65t pieces."
+            ],
+            "issues": [
+              "Cargo restriction 'Pieces: 6 sections, each 12m × 4m × 4m, weights 45-65t per piece' must be checked against final stow plan.",
+              "Cargo restriction 'Deck cargo acceptable for up to 2 sections' affects deck/under-deck stowage planning.",
+              "Cargo restriction 'Heavy lift certified riggers required' must be arranged for loading/discharge operations."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10661",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20832",
+            "vessel_item_index": 0,
+            "score": 25,
+            "match_level": "weak",
+            "match_reasons": [
+              "Readiness verdict 'idle' — arrives 2026-05-23, 5 days before laycan start 2026-05-28 (gap_days=5).",
+              "Rotterdam to Hamburg is ~250nm at 12.8kn, giving about 20h ballast from open port to load port.",
+              "DWCC 27,400 mt vs cargo 330 mt gives sufficient weight capacity, but utilization is only about 1%.",
+              "Five hatches of 14.5m × 12m exceed the required 12m clear length and 5m hatch width for individual sections."
+            ],
+            "issues": [
+              "CRANE_VIOLATION: max single hook 30t < required 60t. Also no tween-decks for 12m sections.",
+              "Vessel crane configuration '4×30t' is below cargo lift requirement 60t and below maximum piece weight 65t.",
+              "Vessel has no tween-decks, while cargo hold geometry requires tween-deck or open hatches for 12m × 4m × 4m sections.",
+              "Vessel arrives 5 days early — idle time increases owner's cost risk before 2026-05-28 laycan start.",
+              "Cargo restriction 'Pieces: 6 sections, each 12m × 4m × 4m, weights 45-65t per piece' conflicts with vessel single-hook crane limit of 30t.",
+              "Cargo restriction 'Deck cargo acceptable for up to 2 sections' affects deck/under-deck stowage planning.",
+              "Cargo restriction 'Heavy lift certified riggers required' must be arranged for loading/discharge operations."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10661",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20833",
+            "vessel_item_index": 0,
+            "score": 82,
+            "match_level": "good",
+            "match_reasons": [
+              "Readiness verdict 'tight' — arrives 2026-05-26, 2 days before laycan start 2026-05-28 (gap_days=2).",
+              "Antwerp to Hamburg is ~290nm at 14.0kn, giving about 21h ballast from open port to load port.",
+              "DWCC 17,000 mt vs cargo 330 mt gives ample heavy-lift carrying capacity for the 6 nacelle sections.",
+              "Heavy-lift vessel with crane configuration 2×250t exceeds the 60t lift requirement and covers pieces up to 65t.",
+              "Hold 1 at 50m × 18m open and Hold 2 at 30m × 14m open exceed the required 12m clear length and 5m hatch width.",
+              "Deck reinforced to 20t/m² supports project-cargo planning where up to 2 sections may be carried on deck.",
+              "Last cargo 'Offshore substation module' indicates recent experience with oversized project cargo similar to 12m turbine sections."
+            ],
+            "issues": [
+              "Cargo restriction 'Pieces: 6 sections, each 12m × 4m × 4m, weights 45-65t per piece' must be checked against final stow plan.",
+              "Cargo restriction 'Deck cargo acceptable for up to 2 sections' affects deck/under-deck stowage planning.",
+              "Cargo restriction 'Heavy lift certified riggers required' must be arranged for loading/discharge operations.",
+              "Vessel restriction 'P&I Club: Britannia. Survey required for cargo over 100t/piece' — cargo pieces are listed at 45-65t, but P&I/survey wording should be reviewed in the recap."
+            ]
+          }
+        ]
+      },
+      "durationMs": 30311,
+      "costEstimate": {
+        "promptChars": 32004,
+        "outputChars": 4048,
+        "tokensIn": 8001,
+        "tokensOut": 1012,
+        "usd": 0.01506125
+      }
+    },
+    {
+      "caseId": "project_general_vessel/sample-002",
+      "category": "project_general_vessel",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 4,
+        "readiness_pairs": 4
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-10701",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20971",
+            "vessel_item_index": 0,
+            "score": 28,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 9,200 mt vs cargo 320 mt gives substantial carrying margin for 4 transformer cores.",
+              "MPP vessel with 2 holds and bale capacity 11,500 cbm is commercially aligned with PROJECT cargo of 4 heavy-lift units.",
+              "Hatch dimensions Hold 1 28m × 11m and Hold 2 22m × 11m exceed the required 8m × 6m hatch opening.",
+              "Vessel opens Rotterdam, about 80nm from Antwerp, with readiness sailing_days=1."
+            ],
+            "issues": [
+              "Readiness verdict 'idle' — arrives 2026-05-27, 3 days before laycan start 2026-05-30 (gap_days=3); idle time may increase owner's cost risk.",
+              "Cargo restriction: 'Pieces: 4 transformer cores, 80t each, 6m × 5m × 4m per piece'.",
+              "Cargo restriction: 'Single lift per piece required — no tandem lifting'.",
+              "Cargo restriction: 'P&I survey mandatory for cargo over 60t/piece'.",
+              "CRANE_VIOLATION: crane 2×80t insufficient for 100t lift_capacity_required. Single hook exactly at piece weight — no safety margin. Charterer specification requires 100t+ single hook."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10701",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20972",
+            "vessel_item_index": 0,
+            "score": 25,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 8,300 mt vs cargo 320 mt gives ample deadweight margin for the 4 transformer cores.",
+              "MPP vessel with 2 holds and bale capacity 10,400 cbm is broadly suited to PROJECT cargo handling.",
+              "Hatch dimensions Hold 1 25m × 10m and Hold 2 20m × 10m exceed the required 8m × 6m hatch opening.",
+              "Vessel opens Ghent, about 60nm from Antwerp, with readiness sailing_days=1."
+            ],
+            "issues": [
+              "Readiness verdict 'idle' — arrives 2026-05-26, 4 days before laycan start 2026-05-30 (gap_days=4); idle time may increase owner's cost risk.",
+              "Cargo restriction: 'Pieces: 4 transformer cores, 80t each, 6m × 5m × 4m per piece'.",
+              "Cargo restriction: 'Single lift per piece required — no tandem lifting'.",
+              "Cargo restriction: 'P&I survey mandatory for cargo over 60t/piece'.",
+              "CRANE_VIOLATION: 2×80t < required 100t. No tween-deck for 4m height pieces — stowage not feasible below deck."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10701",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20973",
+            "vessel_item_index": 0,
+            "score": 88,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 13,400 mt vs cargo 320 mt gives very large carrying margin for 4 transformer cores.",
+              "Vessel opens Antwerp on 2026-05-27 at the load port, with sailing_days=0 and no ballast exposure.",
+              "Readiness verdict 'ideal' — arrives 2026-05-27, 2 days before laycan start 2026-05-30 (gap_days=2).",
+              "Crane configuration 2×120t satisfies the 100t single-lift requirement with a 20t margin per readiness.",
+              "Hold 1 35m × 13m and Hold 2 28m × 13m exceed the required 8m × 6m hatch opening for 6m × 5m pieces.",
+              "Tween-deck fitted with 4.1m tween clear height, matching the cargo piece height of 4m.",
+              "Last cargo 'Transformer' is closely aligned with PROJECT cargo of power transformer cores, IMO 9523781."
+            ],
+            "issues": [
+              "Cargo restriction: 'Pieces: 4 transformer cores, 80t each, 6m × 5m × 4m per piece'.",
+              "Cargo restriction: 'Single lift per piece required — no tandem lifting'.",
+              "Cargo restriction: 'P&I survey mandatory for cargo over 60t/piece'.",
+              "Vessel restriction: 'P&I Club: Gard. Full survey package available for cargo > 60t/piece.'"
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10701",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20974",
+            "vessel_item_index": 0,
+            "score": 68,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 12,700 mt vs cargo 320 mt gives substantial deadweight margin for the 4 transformer cores.",
+              "Crane configuration 2×120t satisfies the 100t lift_capacity_required with 20t margin per readiness.",
+              "Hold 1 33m × 12m and Hold 2 26m × 12m exceed the required 8m × 6m hatch opening.",
+              "MPP vessel with 2 holds and bale capacity 15,900 cbm is commercially aligned with PROJECT cargo.",
+              "Vessel opens Hamburg, about 290nm from Antwerp, with readiness sailing_days=1."
+            ],
+            "issues": [
+              "Readiness verdict 'tight' — arrives 2026-05-30 on laycan start 2026-05-30 (gap_days=1); timing has no practical buffer.",
+              "Cargo restriction: 'Pieces: 4 transformer cores, 80t each, 6m × 5m × 4m per piece'.",
+              "Cargo restriction: 'Single lift per piece required — no tandem lifting'.",
+              "Cargo restriction: 'P&I survey mandatory for cargo over 60t/piece'.",
+              "Arrival estimated 30-May = laycan_start. No buffer for transit delays."
+            ]
+          }
+        ]
+      },
+      "durationMs": 39679,
+      "costEstimate": {
+        "promptChars": 33258,
+        "outputChars": 4393,
+        "tokensIn": 8315,
+        "tokensOut": 1099,
+        "usd": 0.01588875
+      }
+    },
+    {
+      "caseId": "project_general_vessel/sample-003",
+      "category": "project_general_vessel",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 3,
+        "readiness_pairs": 3
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-10711",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20981",
+            "vessel_item_index": 0,
+            "score": 68,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 10,500 mt vs cargo 210 mt gives ample intake margin for 6 bridge sections of 35t each.",
+              "MPP vessel with 2×60t cranes satisfies the cargo lift requirement of 50t.",
+              "Hold 1 clear length 30m exceeds the required 27m hatch clear length for 25m sections.",
+              "Vessel opens Gdynia, about 30nm from Gdansk, with readiness arrival_date 2026-05-29.",
+              "Readiness verdict 'tight' — arrives 2026-05-29 with gap_days=2 before laycan start 2026-06-01."
+            ],
+            "issues": [
+              "Cargo restriction 'Deck cargo stowage not acceptable — all sections below deck required' must be observed for all 6 sections.",
+              "Cargo restriction 'No vessels with less than 27m clear hatch length' is marginal because only Hold 1 has 30m clear length.",
+              "Cargo restriction 'Lashing and securing certification required' — certificate availability not shown in vessel data.",
+              "HOLD_GEOMETRY_NOTE: Hold 2 clear length 24m < required 27m. All 6 sections must be loaded in Hold 1 (30m) — feasible but unusual stow requiring planning approval.",
+              "Only Hold 1 can take the 25m bridge sections; loading all 6 sections below deck in one hold requires stowage-plan approval."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10711",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20982",
+            "vessel_item_index": 0,
+            "score": 25,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 8,100 mt vs cargo 210 mt gives sufficient weight capacity despite the geometry problem.",
+              "MPP vessel with 2×50t cranes exactly meets the cargo lift requirement of 50t.",
+              "Vessel opens at Gdansk load port on 2026-05-26, so no ballast leg is required.",
+              "Readiness verdict 'idle' — arrives 2026-05-26 with gap_days=5 before laycan start 2026-06-01."
+            ],
+            "issues": [
+              "Cargo restriction 'Deck cargo stowage not acceptable — all sections below deck required' conflicts with the vessel geometry because 25m sections cannot fit below deck.",
+              "Cargo restriction 'No vessels with less than 27m clear hatch length' triggered — Hold 1 is 21m and Hold 2 is 18m clear length.",
+              "Cargo restriction 'Lashing and securing certification required' — certificate availability not shown in vessel data.",
+              "HOLD_GEOMETRY_VIOLATION: maximum hatch clear length 21m < required 27m for 25m sections. Cargo cannot be loaded in any hold. Pre-filter miss.",
+              "Readiness indicates the vessel would be idle about 5 days before laycan start, increasing owner cost risk."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10711",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20983",
+            "vessel_item_index": 0,
+            "score": 86,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 13,000 mt vs cargo 210 mt gives very large intake margin for 6 sections of 35t each.",
+              "MPP vessel with 2×80t cranes exceeds the 50t lift requirement by 30t per crane.",
+              "Hold 1 clear length 34m and Hold 2 clear length 28m both exceed the required 27m hatch clear length.",
+              "Lower-hold clear height 6.5m exceeds the section height of 2.8m, supporting below-deck stowage.",
+              "Vessel opens Szczecin, about 120nm from Gdansk, and readiness gives arrival_date 2026-05-30.",
+              "Readiness verdict 'tight' — arrives 2026-05-30 with gap_days=2 before laycan start 2026-06-01.",
+              "Last cargo 'Bridge components' matches the project cargo profile for 6 steel bridge sections."
+            ],
+            "issues": [
+              "Cargo restriction 'Deck cargo stowage not acceptable — all sections below deck required' must be reflected in the stowage plan.",
+              "Cargo restriction 'No vessels with less than 27m clear hatch length' must be maintained for the final nominated holds.",
+              "Cargo restriction 'Lashing and securing certification required' applies to this shipment.",
+              "Vessel restriction 'Lashing certification on file' — confirm certificate covers 6 bridge sections of 35t each."
+            ]
+          }
+        ]
+      },
+      "durationMs": 25151,
+      "costEstimate": {
+        "promptChars": 32345,
+        "outputChars": 3759,
+        "tokensIn": 8087,
+        "tokensOut": 940,
+        "usd": 0.014808749999999999
+      }
+    },
+    {
+      "caseId": "project_general_vessel/sample-004",
+      "category": "project_general_vessel",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 3,
+        "readiness_pairs": 3
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-10721",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20991",
+            "vessel_item_index": 0,
+            "score": 92,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 15,600 mt vs cargo 480 mt gives ample capacity for 12 tower sections at 40t each.",
+              "Readiness verdict 'ideal' — arrives 2026-06-02 at Esbjerg, 3 days before laycan start 2026-06-06.",
+              "Crane configuration 2×100t exceeds the required 80t lift capacity for tower base sections.",
+              "Hold clear lengths 38m and 30m exceed the required ≥17m hatch clear length for 16m sections.",
+              "Open deck 80m × 14m reinforced to 10t/m² exceeds the required 8t/m² deck reinforcement.",
+              "Last cargo 'Wind tower sections' matches the current wind tower cargo type, vessel IMO 9488765."
+            ],
+            "issues": [
+              "Cargo restriction 'Deck stowage permissible for up to 8 of 12 sections'.",
+              "Cargo restriction 'Remaining sections must be below deck with ≥17m hatch clear length'.",
+              "Cargo restriction 'Vessel must have deck reinforcement ≥8t/m² for tower sections'."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10721",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20992",
+            "vessel_item_index": 0,
+            "score": 22,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 27,200 mt vs cargo 480 mt gives sufficient weight capacity, but only about 2% utilization.",
+              "Readiness verdict 'idle' — arrives 2026-06-02, 4 days before laycan start 2026-06-06.",
+              "Copenhagen to Esbjerg is cited as ~230nm at 13.0kn, giving about 18h ballast sailing."
+            ],
+            "issues": [
+              "Cargo restriction 'Deck stowage permissible for up to 8 of 12 sections'.",
+              "Cargo restriction 'Remaining sections must be below deck with ≥17m hatch clear length'.",
+              "Cargo restriction 'Vessel must have deck reinforcement ≥8t/m² for tower sections'.",
+              "CRANE_VIOLATION: 4×30t max single hook 30t < required 80t. HOLD_GEOMETRY_VIOLATION: 14m hatch < 17m required. Deck reinforcement status unknown.",
+              "Readiness verdict 'idle' — vessel arrives 4 days before laycan start, creating idle-time cost risk.",
+              "Crane capacity is structurally short: 4×30t cranes give 30t max single hook vs required 80t lift.",
+              "Hatch geometry is structurally short: 14m hatch length vs required ≥17m for below-deck sections.",
+              "Deck reinforcement is not listed for the standard bulker deck vs required ≥8t/m²."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10721",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20993",
+            "vessel_item_index": 0,
+            "score": 68,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 11,700 mt vs cargo 480 mt gives ample weight capacity for the 12 sections.",
+              "Readiness verdict 'tight' — arrives 2026-06-05, 2 days before laycan start 2026-06-06.",
+              "Crane configuration 2×80t meets the required 80t lift capacity exactly.",
+              "Hold clear lengths 32m and 25m exceed the required ≥17m hatch clear length for 16m sections.",
+              "Open deck reinforced to 9t/m² exceeds the required 8t/m² deck reinforcement.",
+              "Hamburg to Esbjerg is cited as ~330nm at 14.0kn, giving about 24h ballast sailing."
+            ],
+            "issues": [
+              "Cargo restriction 'Deck stowage permissible for up to 8 of 12 sections'.",
+              "Cargo restriction 'Remaining sections must be below deck with ≥17m hatch clear length'.",
+              "Cargo restriction 'Vessel must have deck reinforcement ≥8t/m² for tower sections'.",
+              "Arrival 04-Jun — 2 days before laycan start. Limited buffer.",
+              "Crane margin is zero: 2×80t meets but does not exceed the required 80t lift."
+            ]
+          }
+        ]
+      },
+      "durationMs": 32319,
+      "costEstimate": {
+        "promptChars": 32249,
+        "outputChars": 3279,
+        "tokensIn": 8063,
+        "tokensOut": 820,
+        "usd": 0.01417875
+      }
+    },
+    {
+      "caseId": "project_general_vessel/sample-005",
+      "category": "project_general_vessel",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 3,
+        "readiness_pairs": 3
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-10731",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20994",
+            "vessel_item_index": 0,
+            "score": 28,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 7,300 mt vs cargo 168 mt gives ample deadweight margin for 6 modules of 28t each.",
+              "Vessel is MPP with 2×40t cranes, exceeding the 35t lift requirement per module.",
+              "Readiness verdict 'tight' — arrives 2026-06-07, 2 days before laycan start 2026-06-09 (gap_days=2).",
+              "Open Tilbury to Felixstowe is ~60nm at 13.0kn per readiness, giving a short UK ballast leg."
+            ],
+            "issues": [
+              "Cargo restriction/requirement: '6 modules, 28t each, 10m × 4m × 4m'",
+              "Cargo restriction/requirement: 'Weather-deck stowage acceptable as primary or supplementary'",
+              "Cargo restriction/requirement: 'Modules are prefab buildings — no compression loads; cradles required'",
+              "HOLD_HEIGHT_VIOLATION: max clear height 3.8m < required 4.5m. All 6 modules must be deck-stowed. Deck area and cradle securing confirmation required.",
+              "Below-deck stowage not workable: Hold 1 clear height 3.8m and Hold 2 clear height 3.6m are both below the 4.5m requirement."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10731",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20995",
+            "vessel_item_index": 0,
+            "score": 88,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 9,600 mt vs cargo 168 mt gives very large capacity margin for the 6 prefab modules.",
+              "Vessel opens Felixstowe on 2026-06-07, already at the load port 2 days before laycan start 2026-06-09.",
+              "Readiness verdict 'ideal' — arrives 2026-06-07 with gap_days=2 before the 2026-06-09 laycan start.",
+              "Hold clear heights of 5.2m and 5.0m exceed the required 4.5m clearance for 4m-high modules.",
+              "Crane configuration 2×45t exceeds the 35t lift requirement per module.",
+              "Last cargo 'Prefab structures' is directly relevant to this PROJECT cargo of hospital prefabricated modular units, IMO 9387654."
+            ],
+            "issues": [
+              "Cargo restriction/requirement: '6 modules, 28t each, 10m × 4m × 4m'",
+              "Cargo restriction/requirement: 'Weather-deck stowage acceptable as primary or supplementary'",
+              "Cargo restriction/requirement: 'Modules are prefab buildings — no compression loads; cradles required'"
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10731",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20996",
+            "vessel_item_index": 0,
+            "score": 25,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 21,500 mt vs cargo 168 mt gives ample deadweight margin but very low utilization.",
+              "Hold clear height 8.5m exceeds the required 4.5m clearance for 4m-high modules.",
+              "Open Tilbury to Felixstowe is ~60nm at 12.5kn per readiness, so the ballast leg is operationally short.",
+              "Readiness verdict 'idle' — arrives 2026-06-06, 3 days before laycan start 2026-06-09 (gap_days=3)."
+            ],
+            "issues": [
+              "Cargo restriction/requirement: '6 modules, 28t each, 10m × 4m × 4m'",
+              "Cargo restriction/requirement: 'Weather-deck stowage acceptable as primary or supplementary'",
+              "Cargo restriction/requirement: 'Modules are prefab buildings — no compression loads; cradles required'",
+              "CRANE_VIOLATION: 4×25t max single hook 25t < required 35t per module. HOLD_GEOMETRY_NOTE: hatch 13m marginally accommodates 10m module but only 3m clearance per end.",
+              "Vessel arrives 2026-06-06 for laycan start 2026-06-09, creating 3 days idle exposure per readiness.",
+              "Crane capacity is structurally short: 4×25t cranes are below the 35t single-lift requirement for each 28t module."
+            ]
+          }
+        ]
+      },
+      "durationMs": 34256,
+      "costEstimate": {
+        "promptChars": 32392,
+        "outputChars": 3321,
+        "tokensIn": 8098,
+        "tokensOut": 831,
+        "usd": 0.014277499999999999
+      }
+    },
+    {
+      "caseId": "sanctioned_flag/sample-001",
+      "category": "sanctioned_flag",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 2,
+        "readiness_pairs": 2
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-10881",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20851",
+            "vessel_item_index": 0,
+            "score": 20,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 28,200 mt vs cargo 22,000 mt → about 78% utilization, with 4,000 mt margin over cargo max 24,200 mt.",
+              "Cargo volume 22,000 mt × SF 0.83 = ~18,260 cbm vs grain capacity 36,100 cbm, so hold volume is sufficient.",
+              "Readiness verdict 'ideal' — arrives 2026-05-25 with gap_days=4 before laycan start 2026-05-29.",
+              "Bulk cargo 'Phosphate rock' fits HANDYSIZE dry bulk profile with 5 holds and 29,500 DWT.",
+              "Gear not required for this cargo, and vessel is gearless with geared=false on IMO 9156743."
+            ],
+            "issues": [
+              "Cargo restriction 'No Russian-flag vessels' triggered — vessel flag='RU', IMO 9156743.",
+              "Cargo restriction 'No vessels owned by entities subject to EU sanctions' triggered — vessel owner='Sovcomflot Subsidiary OOO', IMO 9156743.",
+              "Cargo restriction 'P&I Club must be IG member' unresolved — vessel pi_club field not provided for IMO 9156743.",
+              "Vessel restriction 'Vessel subject to EU port entry restrictions under Regulation 833/2014' triggered — discharge port Ghent, Belgium, IMO 9156743.",
+              "SANCTIONS_FLAG from readiness: flag=RU, owner=Sovcomflot Subsidiary OOO. Charterer explicitly prohibits Russian-flag vessels. EU port entry restriction under Reg 833/2014 blocks discharge at Ghent.",
+              "Vessel flag='RU', owner='Sovcomflot Subsidiary OOO' — discharge port Ghent is in Belgium/EU, creating sanctions and port-entry risk for IMO 9156743."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10881",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20852",
+            "vessel_item_index": 0,
+            "score": 86,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 30,000 mt vs cargo 22,000 mt → about 73% utilization, with 5,800 mt margin over cargo max 24,200 mt.",
+              "Cargo volume 22,000 mt × SF 0.83 = ~18,260 cbm vs grain capacity 39,500 cbm, leaving substantial hold-volume reserve.",
+              "Readiness verdict 'ideal' — arrives 2026-05-26 with gap_days=3 before laycan start 2026-05-29.",
+              "Vessel opens Mersin and readiness gives Mersin to Iskenderun ~70 nm at 13.0 kn, arriving same day before the 29-May laycan.",
+              "Bulk cargo 'Phosphate rock' fits HANDYSIZE dry bulk profile with 5 holds and 31,400 DWT.",
+              "Gear not required for this cargo, while vessel has 4×30t cranes, giving operational flexibility at Iskenderun or Ghent.",
+              "No-Russian-flag restriction satisfied — vessel flag='MH', IMO 9402187."
+            ],
+            "issues": [
+              "Cargo restriction 'P&I Club must be IG member' unresolved — vessel pi_club field not provided for IMO 9402187.",
+              "Cargo restriction 'No vessels owned by entities subject to EU sanctions' requires owner screening — vessel owner='Anatolian Maritime Management SA', IMO 9402187."
+            ]
+          }
+        ]
+      },
+      "durationMs": 33126,
+      "costEstimate": {
+        "promptChars": 30655,
+        "outputChars": 2700,
+        "tokensIn": 7664,
+        "tokensOut": 675,
+        "usd": 0.012955000000000001
+      }
+    },
+    {
+      "caseId": "sanctioned_flag/sample-002",
+      "category": "sanctioned_flag",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 2,
+        "readiness_pairs": 2
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-10901",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20901",
+            "vessel_item_index": 0,
+            "score": 15,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 25,300 mt vs cargo 20,000 mt gives ~79% utilization and covers the 22,000 mt maximum quantity.",
+              "Cargo volume 20,000 mt × SF 0.9 = 18,000 cbm vs grain capacity 33,100 cbm, so hold volume is sufficient.",
+              "Readiness verdict 'ideal' — arrives 2026-05-28, 4 days before laycan start 2026-06-01.",
+              "Vessel opens Bandar Abbas and load port is Bandar Imam Khomeini; readiness gives ~340nm ballast and ~2 sailing days.",
+              "Last cargo 'Fertilizers' is operationally close to commodity 'Urea fertilizer' for 20,000 mt bulk fertilizer cargo."
+            ],
+            "issues": [
+              "Cargo restriction 'No Iranian-flag vessels' triggered — vessel flag='IR', IMO 9178923.",
+              "Cargo restriction 'No vessels owned by IRISL or NITC affiliates' triggered — vessel owner='IRISL Affiliate Shipping Co', IMO 9178923.",
+              "Cargo restriction 'P&I must be IG member' unresolved — vessel pi_club not provided in vessel data, IMO 9178923.",
+              "Cargo restriction 'No vessels subject to OFAC or EU sanctions list' triggered — readiness flags OFAC and EU sanctions exposure for IMO 9178923.",
+              "Vessel restriction 'Vessel subject to EU and OFAC sanctions under Iran Sanctions Regime' triggered for cargo discharge at Piraeus, Greece.",
+              "SANCTIONS_FLAG: flag=IR, owner=IRISL Affiliate. EU Reg 267/2012 prohibits Iranian-flag vessels in EU ports. OFAC SDN list applies. Charterer restriction explicit. Complete disqualification."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10901",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20902",
+            "vessel_item_index": 0,
+            "score": 68,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 27,500 mt vs cargo 20,000 mt gives ~73% utilization and covers the 22,000 mt maximum quantity.",
+              "Cargo volume 20,000 mt × SF 0.9 = 18,000 cbm vs grain capacity 36,200 cbm, leaving about 18,200 cbm spare.",
+              "Readiness verdict 'tight' — arrives 2026-05-30 with gap_days=3 against laycan start 2026-06-01.",
+              "Vessel speed 13 kn and readiness sailing_days=3 support arrival within the 2026-06-01/2026-06-07 laycan window.",
+              "BULK cargo of 20,000 mt urea fertilizer fits a 28,800 DWT handysize bulk carrier with 5 holds.",
+              "Vessel geared 4×30t although gear_required=false, giving operational flexibility for port handling at IMO 9388456.",
+              "Cargo restriction 'No Iranian-flag vessels' satisfied — vessel flag='GR', IMO 9388456.",
+              "Cargo restriction 'No vessels owned by IRISL or NITC affiliates' satisfied — vessel owner='Aegean Navigation SA', IMO 9388456."
+            ],
+            "issues": [
+              "Cargo restriction 'P&I must be IG member' unresolved — vessel pi_club not provided in vessel data, IMO 9388456.",
+              "Cargo restriction 'No vessels subject to OFAC or EU sanctions list' unresolved — vessel sanctions-screening field not provided in vessel data, IMO 9388456.",
+              "Ballast leg 8 days from Mersin — arrival ~04-Jun within laycan_end 07-Jun but tight."
+            ]
+          }
+        ]
+      },
+      "durationMs": 30986,
+      "costEstimate": {
+        "promptChars": 30912,
+        "outputChars": 2914,
+        "tokensIn": 7728,
+        "tokensOut": 729,
+        "usd": 0.013305
+      }
+    },
+    {
+      "caseId": "sanctioned_flag/sample-003",
+      "category": "sanctioned_flag",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 2,
+        "readiness_pairs": 2
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-10911",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20911",
+            "vessel_item_index": 0,
+            "score": 20,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 26,500 mt vs nominal cargo 25,000 mt gives ~94% utilization, though it does not cover the 27,500 mt max option.",
+              "Grain capacity 34,600 cbm covers nominal corn volume of 25,000 mt × SF 1.28 = 32,000 cbm.",
+              "Vessel is geared with 4×25t cranes, matching cargo gear_required=true for 25,000 mt bulk corn.",
+              "Readiness verdict 'ideal' — vessel opens at Chornomorsk and arrival_date is 2026-05-24, 4 days before laycan start 2026-05-28.",
+              "Open port Chornomorsk is the same as load port Chornomorsk, so sailing_days=0 in readiness."
+            ],
+            "issues": [
+              "Cargo restriction 'No vessels owned by entities subject to EU or US sanctions' triggered — vessel owner='Belaruskaliy Transport OJSC' and readiness flags EU Reg 765/2006 Belarus sanctions.",
+              "SANCTIONS_FLAG: flag=BY, owner=Belaruskaliy Transport under EU Reg 765/2006 Belarus sanctions. Charterer restriction covers EU-sanctioned entities. BY-flag legal-grey but owner sanction is clear.",
+              "Vessel restriction 'Owner subject to EU Council Regulation 765/2006 (Belarus sanctions)' triggered for cargo discharge Portugal/EU.",
+              "Cargo restriction 'No Russian-flag vessels' requires review because vessel flag='BY', not RU, but readiness separately flags BY sanctions exposure.",
+              "Cargo restriction 'P&I Club IG member required' cannot be verified from vessel data — pi_club field is not provided for IMO 9211456.",
+              "Vessel last_cargo='Fertilizers' before cargo commodity 'Corn' — hold cleaning/certification required before food-grade grain loading.",
+              "Cargo weight_mt_max 27,500 mt exceeds vessel DWCC 26,500 mt by 1,000 mt; vessel only fits nominal 25,000 mt or reduced option.",
+              "At cargo max 27,500 mt × SF 1.28 = 35,200 cbm vs grain_capacity 34,600 cbm, volume intake caps at ~27,031 mt, below cargo max 27,500 mt."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10911",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20912",
+            "vessel_item_index": 0,
+            "score": 86,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 29,200 mt vs cargo max 27,500 mt leaves 1,700 mt margin and covers the full 25,000 mt nominal lift.",
+              "Grain capacity 38,600 cbm covers max corn volume of 27,500 mt × SF 1.28 = 35,200 cbm.",
+              "Vessel geared with 4×30t cranes, matching gear_required=true for the 25,000 mt bulk corn shipment.",
+              "Readiness verdict 'ideal' — arrival_date 2026-05-24 is 3 days before laycan start 2026-05-28 per gap_days=3.",
+              "Constanta to Chornomorsk is stated as ~280nm at 13.0kn in readiness, with sailing_days=1.",
+              "Last cargo 'Corn' matches cargo commodity 'Corn' for 1 grain-to-grain sequence on IMO 9401788.",
+              "No Russian-flag restriction satisfied — vessel flag='MH', IMO 9401788.",
+              "Cargo sanctions restriction has no vessel-side trigger shown — owner='Kyiv Maritime Management Ltd', vessel restrictions count=0, IMO 9401788."
+            ],
+            "issues": [
+              "Cargo restriction 'P&I Club IG member required' cannot be verified from vessel data — pi_club field is not provided for IMO 9401788."
+            ]
+          }
+        ]
+      },
+      "durationMs": 28363,
+      "costEstimate": {
+        "promptChars": 30795,
+        "outputChars": 3035,
+        "tokensIn": 7699,
+        "tokensOut": 759,
+        "usd": 0.01341875
+      }
+    },
+    {
+      "caseId": "sanctioned_flag/sample-004",
+      "category": "sanctioned_flag",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 2,
+        "readiness_pairs": 2
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-10921",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20921",
+            "vessel_item_index": 0,
+            "score": 20,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 42,800 mt vs cargo 35,000 mt gives ~82% utilization, with max cargo 38,500 mt still within DWCC.",
+              "Grain capacity 55,800 cbm covers nominal rapeseed volume 35,000 mt × SF 1.55 = 54,250 cbm.",
+              "Vessel geared 4×30t and cargo gear_required=true, giving onboard lifting capability for Hamburg loading.",
+              "Readiness verdict 'ideal' — arrives 2026-06-02, 2 days before laycan start 2026-06-03 (gap_days=2).",
+              "Last cargo 'Grain' before rapeseed cargo 35,000 mt is a compatible agricultural-cargo sequence."
+            ],
+            "issues": [
+              "Cargo restriction 'No Russian beneficial ownership' triggered — vessel owner='Pacific Glory Shipping Ltd (Cyprus, beneficial owner: Sovcomflot subsidiary via SCF Holding CY)', IMO 9364523.",
+              "Cargo restriction 'No vessels owned or operated by entities under EU Regulation 833/2014' triggered — readiness flags beneficial owner as Sovcomflot Cyprus subsidiary, IMO 9364523.",
+              "Cargo restriction 'KYC beneficial ownership documentation required at fixture' is material — vessel restriction says 'KYC documentation: registered Cyprus, beneficial ownership Russian state entity'.",
+              "Cargo restriction 'P&I IG member only' cannot be verified from vessel data — no pi_club field provided for IMO 9364523.",
+              "Vessel restriction 'KYC documentation: registered Cyprus, beneficial ownership Russian state entity'.",
+              "SANCTIONS_BENEFICIAL_OWNER from readiness: flag=MH (clean), but KYC reveals beneficial owner=Sovcomflot Cyprus subsidiary (Russian state entity). EU Reg 833/2014 applies to beneficial ownership, not just registered flag. Charterer explicitly requires no Russian beneficial ownership.",
+              "Cargo max option 38,500 mt × SF 1.55 = 59,675 cbm exceeds grain_capacity 55,800 cbm, so intake may be capped near ~36,000 mt if charterer insists on full max."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10921",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20922",
+            "vessel_item_index": 0,
+            "score": 86,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 43,500 mt vs cargo 35,000 mt gives ~80% utilization, with max cargo 38,500 mt still within DWCC.",
+              "Grain capacity 56,900 cbm covers nominal rapeseed volume 35,000 mt × SF 1.55 = 54,250 cbm.",
+              "Vessel opens Hamburg on 2026-05-31 at the load port DEHAM, so no ballast leg is needed for the Hamburg laycan.",
+              "Readiness verdict 'ideal' — arrives 2026-05-31, 3 days before laycan start 2026-06-03 (gap_days=3).",
+              "Vessel geared 4×35t and cargo gear_required=true, giving onboard gear for the 35,000 mt bulk parcel.",
+              "Last cargo 'Rapeseed' matches current commodity 'Rapeseed' for a 35,000 mt agricultural bulk cargo.",
+              "No-Russian-beneficial-ownership restriction supported by vessel owner='Elbe Maritime GmbH', flag='LR', IMO 9478891."
+            ],
+            "issues": [
+              "Cargo restriction 'KYC beneficial ownership documentation required at fixture' remains to be documented at fixture for IMO 9478891.",
+              "Cargo restriction 'P&I IG member only' cannot be verified from vessel data — no pi_club field provided for IMO 9478891.",
+              "Cargo max option 38,500 mt × SF 1.55 = 59,675 cbm exceeds grain_capacity 56,900 cbm, so intake may be capped near ~36,710 mt if charterer insists on full max."
+            ]
+          }
+        ]
+      },
+      "durationMs": 29472,
+      "costEstimate": {
+        "promptChars": 31068,
+        "outputChars": 3248,
+        "tokensIn": 7767,
+        "tokensOut": 812,
+        "usd": 0.01376875
+      }
+    },
+    {
+      "caseId": "sanctioned_flag/sample-005",
+      "category": "sanctioned_flag",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 2,
+        "readiness_pairs": 2
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-10931",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20931",
+            "vessel_item_index": 0,
+            "score": 20,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 26,900 mt vs cargo 24,000 mt nominal and 26,400 mt max → vessel has 500 mt margin over maximum cargo quantity.",
+              "Cargo volume 24,000 mt × SF 0.95 = 22,800 cbm vs grain capacity 33,900 cbm → hold volume is sufficient.",
+              "Readiness verdict 'ideal' — arrives 2026-06-05 at Ras Tanura, 3 days before laycan start 2026-06-08 with gap_days=3.",
+              "Vessel opens at Ras Tanura load port on 2026-06-05, so ballast distance is 0 nm.",
+              "Cargo restriction 'Vessel must have sulphur cargo experience' is supported by last_cargo='Sulphur' on IMO 9201345."
+            ],
+            "issues": [
+              "Cargo restriction 'No Russian-flag vessels — Mosaic corporate procurement policy 2025' triggered — vessel flag='RU', IMO 9201345.",
+              "Cargo restriction 'No vessels that have called Russian ports in last 90 days' unresolved — vessel port-call history for last 90 days not provided.",
+              "SANCTIONS_FLAG_CHARTERER_POLICY: flag=RU. EU port restriction inapplicable (UAE discharge) but Mosaic corporate policy 2025 prohibits Russian-flag vessels at all discharge ports. Charterer restriction overrides geographic exclusion."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10931",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20932",
+            "vessel_item_index": 0,
+            "score": 86,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 28,800 mt vs cargo 24,000 mt nominal and 26,400 mt max → vessel has 2,400 mt margin over maximum cargo quantity.",
+              "Cargo volume 24,000 mt × SF 0.95 = 22,800 cbm vs grain capacity 38,000 cbm → about 60% volumetric utilization.",
+              "Readiness verdict 'ideal' — arrives 2026-06-05, 3 days before laycan start 2026-06-08 with gap_days=3.",
+              "Bahrain to Ras Tanura is ~80 nm at 13.0 kn per readiness, giving about 6 hours ballast time.",
+              "Cargo restriction 'No Russian-flag vessels — Mosaic corporate procurement policy 2025' is satisfied by vessel flag='MH', IMO 9412987.",
+              "Cargo restriction 'No vessels that have called Russian ports in last 90 days' is satisfied per readiness explanation stating no Russia port calls, IMO 9412987.",
+              "Cargo restriction 'Vessel must have sulphur cargo experience' is supported by last_cargo='Sulphur' on IMO 9412987.",
+              "Vessel is geared with 4×25t cranes, although gear_required=false for this 24,000 mt bulk sulphur shipment."
+            ],
+            "issues": []
+          }
+        ]
+      },
+      "durationMs": 24631,
+      "costEstimate": {
+        "promptChars": 30885,
+        "outputChars": 2360,
+        "tokensIn": 7722,
+        "tokensOut": 590,
+        "usd": 0.012602499999999999
+      }
+    },
+    {
+      "caseId": "strict_laycan_tight_window/sample-001",
+      "category": "strict_laycan_tight_window",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 3,
+        "readiness_pairs": 3
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-10771",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20841",
+            "vessel_item_index": 0,
+            "score": 58,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 29,400 mt vs cargo 25,000 mt gives ~85% utilization, with max cargo 27,500 mt still within vessel capacity.",
+              "Grain capacity 40,100 cbm covers cargo volume 32,000 cbm based on 25,000 mt × SF 1.28.",
+              "Vessel is geared 4×30t, matching cargo gear_required=true for the Corn shipment.",
+              "Readiness verdict 'tight' — arrives 2026-05-13, 2 days before laycan start by gap_days=2, with Istanbul to Constanta ~220nm at 13.0kn.",
+              "Last cargo 'Barley' is grain-compatible before Corn cargo, with vessel IMO 9344112."
+            ],
+            "issues": [
+              "Cargo restriction 'SHINC laytime' from input — laytime counts Sundays and holidays for this 25,000 mt Corn cargo.",
+              "Cargo restriction 'Laycan strictly 3 days — no extensions per charterer instruction' from input — laycan is 2026-05-14 to 2026-05-16.",
+              "Arrival 13-May evening — very tight against laycan_start 14-May",
+              "Sub-day buffer risk: readiness explanation says arrival evening 13-May before strict laycan_start 14-May, leaving less than 24h effective buffer."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10771",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20842",
+            "vessel_item_index": 0,
+            "score": 54,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 41,800 mt vs cargo 25,000 mt gives ~60% utilization, with max cargo 27,500 mt well inside vessel capacity.",
+              "Grain capacity 54,000 cbm covers cargo volume 32,000 cbm based on 25,000 mt × SF 1.28.",
+              "Vessel is geared 4×35t, matching cargo gear_required=true for the Corn shipment.",
+              "Readiness verdict 'idle' — arrival_date 2026-05-10 with gap_days=4, while readiness notes Port Said to Constanta ~1280nm at 14.5kn.",
+              "Last cargo 'Soya beans' is oilseed/grain-trade compatible before Corn cargo, with vessel IMO 9487655."
+            ],
+            "issues": [
+              "Cargo restriction 'SHINC laytime' from input — laytime counts Sundays and holidays for this 25,000 mt Corn cargo.",
+              "Cargo restriction 'Laycan strictly 3 days — no extensions per charterer instruction' from input — laycan is 2026-05-14 to 2026-05-16.",
+              "4-day idle at Port Said before ballasting; arrival may align with laycan start only if vessel sails promptly",
+              "Readiness verdict 'idle' creates owner cost risk because gap_days=4 before a strict 3-day laycan."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10771",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20843",
+            "vessel_item_index": 0,
+            "score": 12,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 30,900 mt vs cargo 25,000 mt gives ~81% utilization, with max cargo 27,500 mt still within vessel capacity.",
+              "Grain capacity 41,800 cbm covers cargo volume 32,000 cbm based on 25,000 mt × SF 1.28.",
+              "Vessel is geared 4×30t, matching cargo gear_required=true for the Corn shipment.",
+              "Last cargo 'Wheat' is grain-compatible before Corn cargo, with vessel IMO 9512287."
+            ],
+            "issues": [
+              "Cargo restriction 'SHINC laytime' from input — laytime counts Sundays and holidays for this 25,000 mt Corn cargo.",
+              "Cargo restriction 'Laycan strictly 3 days — no extensions per charterer instruction' from input — laycan is 2026-05-14 to 2026-05-16.",
+              "Readiness verdict 'late' — arrives 2026-05-18 with gap_days=-1 against laycan_end 2026-05-16.",
+              "LAYCAN_VIOLATION: earliest arrival 18-May is after laycan_end 16-May. Pre-filter miss — vessel structurally late."
+            ]
+          }
+        ]
+      },
+      "durationMs": 39097,
+      "costEstimate": {
+        "promptChars": 31653,
+        "outputChars": 3315,
+        "tokensIn": 7914,
+        "tokensOut": 829,
+        "usd": 0.014037499999999998
+      }
+    },
+    {
+      "caseId": "strict_laycan_tight_window/sample-002",
+      "category": "strict_laycan_tight_window",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 4,
+        "readiness_pairs": 4
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-10801",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20801",
+            "vessel_item_index": 0,
+            "score": 88,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 28,500 mt vs cargo 22,000 mt gives ~77% utilization, with 28,500 mt also covering cargo max 24,200 mt.",
+              "Grain capacity 37,900 cbm covers cargo volume 22,000 mt × SF 1.38 = 30,360 cbm.",
+              "Vessel opens at Novorossiysk load port on 2026-05-16, so sailing_days=0 and no ballast leg is required.",
+              "Readiness verdict 'ideal' — arrives 2026-05-16, 2 days before laycan start 2026-05-18 (gap_days=2).",
+              "Vessel geared 4×30t and cargo gear_required=true, so ship cranes are available for the Barley parcel of 22,000 mt.",
+              "Last cargo Wheat is same grain class as Barley cargo, with vessel IMO 9344567."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' from input — laytime term must be reflected in recap.",
+              "Cargo restriction 'Laycan 2 days only — charterer instruction: no extensions' from input — narrow 2026-05-18/2026-05-19 window limits operational flexibility."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10801",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20802",
+            "vessel_item_index": 0,
+            "score": 68,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 30,100 mt vs cargo 22,000 mt gives ~73% utilization, with 30,100 mt covering cargo max 24,200 mt.",
+              "Grain capacity 40,200 cbm covers cargo volume 22,000 mt × SF 1.38 = 30,360 cbm.",
+              "Tuapse to Novorossiysk is stated as ~80nm at 13.5kn, giving about 6h ballast in the readiness explanation.",
+              "Vessel geared 4×30t and cargo gear_required=true, so ship cranes are available for the 22,000 mt Barley cargo.",
+              "Last cargo Corn is same grain class as Barley cargo, with vessel IMO 9412087."
+            ],
+            "issues": [
+              "Readiness verdict 'idle' — arrival_date 2026-05-15, gap_days=3 before laycan start 2026-05-18.",
+              "4-day idle before 2-day laycan window — vessel may trade elsewhere before fixing",
+              "Cargo restriction 'SHEX laytime' from input — laytime term must be reflected in recap.",
+              "Cargo restriction 'Laycan 2 days only — charterer instruction: no extensions' from input — narrow 2026-05-18/2026-05-19 window limits operational flexibility."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10801",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20803",
+            "vessel_item_index": 0,
+            "score": 56,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 27,700 mt vs cargo 22,000 mt gives ~79% utilization, with 27,700 mt covering cargo max 24,200 mt.",
+              "Grain capacity 36,500 cbm covers cargo volume 22,000 mt × SF 1.38 = 30,360 cbm.",
+              "Sochi to Novorossiysk is stated as ~130nm at 12.5kn, giving about 10h ballast in the readiness explanation.",
+              "Vessel geared 4×25t and cargo gear_required=true, so ship cranes are available for the 22,000 mt Barley cargo.",
+              "Readiness verdict 'tight' — arrives 2026-05-18 on laycan start 2026-05-18 (gap_days=0).",
+              "Last cargo Barley matches the Barley commodity exactly, with vessel IMO 9523098."
+            ],
+            "issues": [
+              "Arrival 18-May = laycan_start. 2-day window leaves zero buffer.",
+              "Cargo restriction 'SHEX laytime' from input — laytime term must be reflected in recap.",
+              "Cargo restriction 'Laycan 2 days only — charterer instruction: no extensions' from input — zero-buffer arrival on 2026-05-18 is marginal for a strict 2-day laycan."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10801",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20804",
+            "vessel_item_index": 0,
+            "score": 15,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 28,900 mt vs cargo 22,000 mt gives ~76% utilization, with 28,900 mt covering cargo max 24,200 mt.",
+              "Grain capacity 38,500 cbm covers cargo volume 22,000 mt × SF 1.38 = 30,360 cbm.",
+              "Vessel geared 4×30t and cargo gear_required=true, so ship cranes are available for the 22,000 mt Barley cargo.",
+              "Kerch to Novorossiysk is stated as ~200nm at 13.0kn, giving about 15h ballast in the readiness explanation.",
+              "Last cargo Grain is same grain class as Barley cargo, with vessel IMO 9567891."
+            ],
+            "issues": [
+              "Readiness verdict 'late' — arrival_date 2026-05-20, gap_days=-1, after laycan_end 2026-05-19.",
+              "LAYCAN_VIOLATION: earliest arrival 20-May is after laycan_end 19-May. Pre-filter miss — vessel structurally late for 2-day window.",
+              "Cargo restriction 'SHEX laytime' from input — laytime term must be reflected in recap.",
+              "Cargo restriction 'Laycan 2 days only — charterer instruction: no extensions' from input — vessel arrival 2026-05-20 misses the strict 2026-05-18/2026-05-19 laycan."
+            ]
+          }
+        ]
+      },
+      "durationMs": 31375,
+      "costEstimate": {
+        "promptChars": 32426,
+        "outputChars": 4328,
+        "tokensIn": 8107,
+        "tokensOut": 1082,
+        "usd": 0.01554375
+      }
+    },
+    {
+      "caseId": "strict_laycan_tight_window/sample-003",
+      "category": "strict_laycan_tight_window",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 3,
+        "readiness_pairs": 3
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-10811",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20811",
+            "vessel_item_index": 0,
+            "score": 66,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 32,100 mt vs nominal cargo 32,000 mt gives ~99.7% utilization, so M/V Nile Fortune can lift the stated base quantity but with almost no intake margin.",
+              "Grain capacity 42,800 cbm covers cargo volume 32,000 mt × SF 1.28 = 40,960 cbm, leaving ~1,840 cbm spare.",
+              "Vessel is geared with 4×30t cranes, matching the cargo gear_required=true requirement for this 32,000 mt wheat shipment.",
+              "Readiness verdict 'tight' — arrives Alexandria 2026-06-05, 1 day before laycan start 2026-06-06 per explanation, with gap_days=2.",
+              "Last cargo 'Barley' is grain before Wheat cargo, and vessel IMO 9367231 has a compatible grain-trade history.",
+              "No Russian-flag restriction satisfied — vessel flag='MH', IMO 9367231."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX Eid/Public Holidays excluded from laytime' affects laytime counting and should be reflected in recap.",
+              "Cargo restriction 'Eid al-Adha 2026: 06-Jun to 09-Jun in Saudi Arabia (4 public holiday days)' may reduce operations at discharge Jedda.",
+              "SHEX_HOLIDAY: discharge port Jedda observes Eid al-Adha 06-10 Jun. Laytime clock stops during holiday. Effective operational window reduced.",
+              "Cargo weight max 35,200 mt exceeds vessel DWCC 32,100 mt by 3,100 mt; fixture must stay near nominal 32,000 mt or lower."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10811",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20812",
+            "vessel_item_index": 0,
+            "score": 72,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 45,400 mt vs nominal cargo 32,000 mt gives ~70% utilization, with full max quantity 35,200 mt still inside capacity.",
+              "Grain capacity 59,100 cbm covers cargo volume 32,000 mt × SF 1.28 = 40,960 cbm, leaving ~18,140 cbm spare.",
+              "Vessel opens at Alexandria, the load port EGALY, on 2026-05-31, giving 0 nm ballast to the loading berth area.",
+              "Vessel is geared with 4×35t cranes, matching gear_required=true for the 32,000 mt wheat cargo.",
+              "Readiness verdict 'idle' — arrives/open at Alexandria 2026-05-31, 6 days before laycan start 2026-06-06 with gap_days=6.",
+              "Last cargo 'Corn' is grain before Wheat cargo, and vessel IMO 9456099 has a compatible grain-trade history.",
+              "No Russian-flag restriction satisfied — vessel flag='GR', IMO 9456099."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX Eid/Public Holidays excluded from laytime' affects laytime counting and should be reflected in recap.",
+              "Cargo restriction 'Eid al-Adha 2026: 06-Jun to 09-Jun in Saudi Arabia (4 public holiday days)' may reduce operations at discharge Jedda.",
+              "6-day idle before laycan start — vessel may not hold position"
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10811",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20813",
+            "vessel_item_index": 0,
+            "score": 35,
+            "match_level": "weak",
+            "match_reasons": [
+              "Minimum cargo 28,800 mt can fit within DWCC 29,600 mt, giving ~97% utilization if stem is cut to minimum quantity.",
+              "Grain capacity 39,200 cbm allows about 30,625 mt at SF 1.28, which covers cargo minimum 28,800 mt but not the nominal 32,000 mt.",
+              "Vessel is geared with 4×30t cranes, matching gear_required=true for the wheat cargo.",
+              "Readiness verdict 'late' — arrives Alexandria 2026-06-07, 1 day after laycan start 2026-06-06 but within laycan_end 2026-06-10, with gap_days=-1.",
+              "Last cargo 'Wheat' matches Wheat cargo, and vessel IMO 9512341 has directly compatible grain history.",
+              "No Russian-flag restriction satisfied — vessel flag='CY', IMO 9512341."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX Eid/Public Holidays excluded from laytime' affects laytime counting and should be reflected in recap.",
+              "Cargo restriction 'Eid al-Adha 2026: 06-Jun to 09-Jun in Saudi Arabia (4 public holiday days)' may reduce operations at discharge Jedda.",
+              "SHEX_HOLIDAY_NOTE: vessel opens Damietta 06-Jun during Eid al-Adha. Port operations restricted; actual departure may be 07-Jun, arrival Alexandria 08-Jun — only 2 days within laycan_end 10-Jun.",
+              "Cargo nominal weight 32,000 mt exceeds vessel DWCC 29,600 mt by 2,400 mt; cargo must be reduced toward minimum 28,800 mt.",
+              "Cargo weight max 35,200 mt exceeds vessel DWCC 29,600 mt by 5,600 mt.",
+              "Cargo volume at nominal 32,000 mt × SF 1.28 = 40,960 cbm exceeds grain capacity 39,200 cbm; estimated volumetric intake is ~30,625 mt, below nominal but above cargo_min 28,800 mt."
+            ]
+          }
+        ]
+      },
+      "durationMs": 59013,
+      "costEstimate": {
+        "promptChars": 31977,
+        "outputChars": 4332,
+        "tokensIn": 7995,
+        "tokensOut": 1083,
+        "usd": 0.01540875
+      }
+    },
+    {
+      "caseId": "strict_laycan_tight_window/sample-004",
+      "category": "strict_laycan_tight_window",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 3,
+        "readiness_pairs": 3
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-10821",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20821",
+            "vessel_item_index": 0,
+            "score": 82,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 28,800 mt vs cargo nominal 26,000 mt and max 28,600 mt → about 90% nominal utilization with 200 mt margin to max.",
+              "Readiness verdict 'ideal' — arrival_date 2026-05-21, 2 days before laycan start 2026-05-22 with gap_days=2.",
+              "Izmail to Reni is ~60 nm at 13.0 kn per readiness, giving a very short ballast leg of about 5 hours.",
+              "Vessel geared 4×30t and cargo gear_required=true, giving onboard lifting coverage for the Sunflower meal parcel.",
+              "CII Grade A/B restriction satisfied — vessel cii_grade='A', IMO 9355901.",
+              "Last cargo 'Rapeseed' is oilseed-family before Sunflower meal, with vessel IMO 9355901 for audit."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime'.",
+              "Cargo restriction 'Cancellation clause: cargo cancelled if vessel NOT at load port berth by 12:00 noon 23-May 2026'.",
+              "Cargo restriction 'CII Grade A or B only per Cargill fleet approval'.",
+              "Cargo nominal volume check: 26,000 mt × SF 1.55 = 40,300 cbm vs grain_capacity 38,700 cbm, so full nominal intake may be volume-limited unless stem quantity is reduced.",
+              "Cargo max volume check: 28,600 mt × SF 1.55 = 44,330 cbm vs grain_capacity 38,700 cbm, so max declared quantity cannot fit by grain capacity."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10821",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20822",
+            "vessel_item_index": 0,
+            "score": 57,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 27,400 mt vs cargo nominal 26,000 mt gives about 95% nominal utilization, but not enough for cargo max 28,600 mt.",
+              "Readiness verdict 'tight' — arrival_date 2026-05-23 with gap_days=0, inside the 23-May noon cancellation deadline by only about 3 hours per readiness.",
+              "Galati to Reni is ~110 nm at 12.5 kn per readiness, giving a short ballast leg of about 9 hours.",
+              "Vessel geared 4×25t and cargo gear_required=true, giving onboard lifting coverage for the Sunflower meal parcel.",
+              "CII Grade A/B restriction satisfied — vessel cii_grade='B', IMO 9422134."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime'.",
+              "Cargo restriction 'Cancellation clause: cargo cancelled if vessel NOT at load port berth by 12:00 noon 23-May 2026'.",
+              "Cargo restriction 'CII Grade A or B only per Cargill fleet approval'.",
+              "CANCELLATION_RISK: estimated arrival 23-May ~09:00 vs cancellation deadline 23-May 12:00. Only 3h buffer. Any weather/lock delay triggers cancellation clause.",
+              "Cargo weight max 28,600 mt exceeds vessel DWCC 27,400 mt by 1,200 mt, so stem must stay at or below vessel intake.",
+              "Cargo nominal volume check: 26,000 mt × SF 1.55 = 40,300 cbm vs grain_capacity 36,300 cbm, so full nominal intake may be volume-limited unless stem quantity is reduced.",
+              "Cargo max volume check: 28,600 mt × SF 1.55 = 44,330 cbm vs grain_capacity 36,300 cbm, so max declared quantity cannot fit by grain capacity.",
+              "Vessel last_cargo='Grain' before cargo commodity 'Sunflower meal' — verify hold cleanliness/certification for oilseed-meal loading."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10821",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20823",
+            "vessel_item_index": 0,
+            "score": 30,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 28,200 mt vs cargo nominal 26,000 mt gives about 92% nominal utilization, but cargo max 28,600 mt is 400 mt above DWCC.",
+              "Sulina to Reni is ~80 nm at 13.5 kn per readiness, giving a short theoretical ballast leg of about 6 hours.",
+              "Vessel geared 4×30t and cargo gear_required=true, giving onboard lifting coverage for the Sunflower meal parcel.",
+              "Readiness verdict 'late' — arrival_date 2026-05-23 with gap_days=-1, and readiness warns realistic Sulina-canal arrival is 23-May ~14:00."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime'.",
+              "Cargo restriction 'Cancellation clause: cargo cancelled if vessel NOT at load port berth by 12:00 noon 23-May 2026'.",
+              "Cargo restriction 'CII Grade A or B only per Cargill fleet approval'.",
+              "CII_GRADE_VIOLATION: cii_grade=D violates Cargill A/B restriction. CANCELLATION_RISK: realistic arrival via Sulina canal 23-May ~14:00 — 2h after cancellation deadline 12:00.",
+              "Cargo restriction 'CII Grade A or B only per Cargill fleet approval' triggered — vessel cii_grade='D'.",
+              "Vessel cii_grade='D' must be treated as an unresolved vetting concern for this Cargill A/B-only cargo.",
+              "Cargo weight max 28,600 mt exceeds vessel DWCC 28,200 mt by 400 mt, so stem must stay below max quantity.",
+              "Cargo nominal volume check: 26,000 mt × SF 1.55 = 40,300 cbm vs grain_capacity 37,500 cbm, so full nominal intake may be volume-limited unless stem quantity is reduced.",
+              "Cargo max volume check: 28,600 mt × SF 1.55 = 44,330 cbm vs grain_capacity 37,500 cbm, so max declared quantity cannot fit by grain capacity.",
+              "Vessel last_cargo='Corn' before cargo commodity 'Sunflower meal' — verify hold cleanliness/certification for oilseed-meal loading."
+            ]
+          }
+        ]
+      },
+      "durationMs": 37520,
+      "costEstimate": {
+        "promptChars": 31971,
+        "outputChars": 4857,
+        "tokensIn": 7993,
+        "tokensOut": 1215,
+        "usd": 0.01606625
+      }
+    },
+    {
+      "caseId": "strict_laycan_tight_window/sample-005",
+      "category": "strict_laycan_tight_window",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 3,
+        "readiness_pairs": 3
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "msg-10831",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20831",
+            "vessel_item_index": 0,
+            "score": 91,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 72,800 mt vs cargo max 60,500 mt gives ~12,300 mt surplus capacity for the Santos–Rotterdam soybeans stem.",
+              "Grain capacity 92,500 cbm covers cargo nominal volume 74,250 cbm using SF 1.35 m3/mt on 55,000 mt soybeans.",
+              "Readiness verdict 'ideal' — arrives 2026-06-16, 4 days before laycan start 2026-06-20 with gap_days=4.",
+              "Vessel opens at Santos/BRSSZ, same as load port Santos/BRSSZ, so ballast distance is 0 nm per readiness.",
+              "PANAMAX bulk carrier with 7 holds and 7 hatches is suitable for 55,000 mt BULK soybeans.",
+              "Charterer CII-D/E refusal cleared — vessel cii_grade='B', IMO 9378901.",
+              "Last cargo 'Corn' is grain-compatible before soybeans, with IMO 9378901 as audit reference."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' — commercial laytime term must be reflected in recap.",
+              "Cargo restriction 'No CII Grade D or E' — vessel cii_grade='B', IMO 9378901."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10831",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20832",
+            "vessel_item_index": 0,
+            "score": 68,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 71,500 mt vs cargo max 60,500 mt gives ~11,000 mt surplus capacity for the 55,000 mt soybeans cargo.",
+              "Grain capacity 90,100 cbm covers cargo nominal volume 74,250 cbm using SF 1.35 m3/mt on 55,000 mt.",
+              "Readiness verdict 'tight' — arrival_date 2026-06-21 with gap_days=0 against laycan start 2026-06-20.",
+              "Readiness gives Houston to Santos as ~6,200 nm at 14.0 kn, about 18.5 days ballast from open date 2026-06-01.",
+              "PANAMAX bulk carrier with 7 holds is a standard size class for 55,000 mt BULK soybeans.",
+              "Charterer CII-D/E refusal cleared — vessel cii_grade='A', IMO 9445231.",
+              "Last cargo 'Soybeans' matches cargo commodity 'Soybeans', with IMO 9445231 as audit reference."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' — commercial laytime term must be reflected in recap.",
+              "Cargo restriction 'No CII Grade D or E' — vessel cii_grade='A', IMO 9445231.",
+              "Cross-Atlantic ballast 18.5 days from Houston — arrival ~20-Jun matches laycan_start exactly. No buffer for weather, Panama Canal delays, or scheduling changes.",
+              "Zero effective timing buffer from Houston ballast — readiness gap_days=0 and verdict='tight'."
+            ]
+          },
+          {
+            "cargo_email_id": "msg-10831",
+            "cargo_item_index": 0,
+            "vessel_email_id": "msg-20833",
+            "vessel_item_index": 0,
+            "score": 34,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 74,200 mt vs cargo max 60,500 mt gives ~13,700 mt surplus capacity for the Santos load.",
+              "Grain capacity 94,200 cbm covers cargo nominal volume 74,250 cbm using SF 1.35 m3/mt on 55,000 mt soybeans.",
+              "Readiness verdict 'late' — arrival_date 2026-06-27 with gap_days=-1, after laycan end 2026-06-25 in the readiness record.",
+              "Readiness states Dakar to Santos is ~4,700 nm at 14.0 kn, about 14 days ballast if sailing immediately from 2026-06-10.",
+              "PANAMAX bulk carrier with 7 holds and DWCC 74,200 mt is physically sized for the 55,000 mt BULK cargo.",
+              "Charterer CII-D/E refusal cleared — vessel cii_grade='C', IMO 9512567.",
+              "Last cargo 'Grain' is compatible with soybeans as an agricultural bulk cargo, with IMO 9512567 as audit reference."
+            ],
+            "issues": [
+              "Cargo restriction 'SHEX laytime' — commercial laytime term must be reflected in recap.",
+              "Cargo restriction 'No CII Grade D or E' — vessel cii_grade='C', IMO 9512567.",
+              "LAYCAN_BORDERLINE: theoretical arrival 24-Jun within window but 0-day buffer. Realistic estimate 26-27 Jun accounting for Dakar port delays. Likely LAYCAN_VIOLATION in practice.",
+              "Readiness timing is commercially weak — arrival_date 2026-06-27 is after laycan_end 2026-06-25 despite the theoretical 24-Jun scenario in the explanation."
+            ]
+          }
+        ]
+      },
+      "durationMs": 31238,
+      "costEstimate": {
+        "promptChars": 31865,
+        "outputChars": 3736,
+        "tokensIn": 7967,
+        "tokensOut": 934,
+        "usd": 0.014628750000000001
+      }
+    }
+  ],
+  "totalsCost": {
+    "tokensIn": 237021,
+    "tokensOut": 26098,
+    "usd": 0.4268
+  }
+}
