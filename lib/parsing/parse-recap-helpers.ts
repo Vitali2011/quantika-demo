@@ -48,6 +48,19 @@ interface RawFixtureRecap {
 }
 
 /**
+ * Coerce an unknown value to a plain string or null.
+ * Handles ConfidenceField objects { value: string, confidence: ... } that the
+ * LLM sometimes returns instead of a bare string.
+ */
+function extractStrField(v: unknown): string | null {
+  if (typeof v === 'string') return v;
+  if (v && typeof v === 'object' && typeof (v as { value?: unknown }).value === 'string') {
+    return (v as { value: string }).value;
+  }
+  return null;
+}
+
+/**
  * Parse a raw AI JSON response string into a single ParsedFixtureRecap.
  * Returns a minimal record with null fields on malformed JSON.
  */
@@ -100,7 +113,7 @@ export function parseRecapAIResponse(raw: string, emailId: string): ParsedFixtur
     commissionPercent: extractNum(result.commission_percent) ?? extractNum(result.commission_pct),
     commissionBase: result.commission_base || null,
     commissionAmount: extractNum(result.commission_amount),
-    commissionCurrency: result.commission_currency || null,
+    commissionCurrency: extractStrField(result.commission_currency),
     subs: Array.isArray(result.subs) ? result.subs : [],
     confidentiality: result.confidentiality != null ? Boolean(result.confidentiality) : false,
     additionalTerms: Array.isArray(result.additional_terms) ? result.additional_terms : [],
