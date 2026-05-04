@@ -108,6 +108,23 @@ describe('wave-γ-3 Task 2: "general cargo" permissive class', () => {
   });
 });
 
+describe('wave-γ-cleanup-2 F3: leading/trailing dash trim', () => {
+  it('matches "-petcoke-" (leading + trailing dash) → petcoke alias', () => {
+    const r = checkCompatibility(['-petcoke-'], 'grain');
+    expect(r.requires_manual_review).toBe(false);
+  });
+
+  it('matches "-iron-ore-" (leading dash + internal dashes) → iron ore', () => {
+    const r = checkCompatibility(['-iron-ore-'], 'wheat');
+    expect(r.requires_manual_review).toBe(false);
+  });
+
+  it('matches "_petcoke_" (leading + trailing underscore)', () => {
+    const r = checkCompatibility(['_petcoke_'], 'grain');
+    expect(r.requires_manual_review).toBe(false);
+  });
+});
+
 describe('wave-γ-cleanup-A: normalize() edge-case forgiveness', () => {
   it('matches petroleum-coke (dash) → petcoke alias', () => {
     // petroleum-coke should normalize to "petroleum coke" → ALIAS_MAP → "petcoke"
