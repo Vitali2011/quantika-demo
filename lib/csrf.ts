@@ -1,13 +1,15 @@
-import { randomBytes } from 'crypto';
 import type { NextRequest } from 'next/server';
 
 const TOKEN_REGEX = /^[0-9a-f]{64}$/;
 
 /**
  * Generates a cryptographically secure CSRF token (64-char hex, 32 bytes).
+ * Uses Web Crypto API (globalThis.crypto) — compatible with Edge Runtime and Node 16+.
  */
 export function generateCsrfToken(): string {
-  return randomBytes(32).toString('hex');
+  const arr = new Uint8Array(32);
+  globalThis.crypto.getRandomValues(arr);
+  return Array.from(arr, b => b.toString(16).padStart(2, '0')).join('');
 }
 
 /**
