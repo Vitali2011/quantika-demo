@@ -26,6 +26,8 @@ const TAXONOMY: Record<string, string[]> = {
   'iron-ore': ['iron ore', 'ironore', 'fe ore', 'iron-ore fines', 'pellet feed'],
   dri: ['hbi', 'sponge iron'],
   coal: ['coking coal', 'thermal coal', 'steam coal', 'met coal'],
+  // petcoke parent + IMSBC canonical "petroleum coke" + broker shorthand "pet coke".
+  petcoke: ['petroleum coke', 'pet coke'],
   fertilizer: ['urea', 'ammonium nitrate', 'dap', 'map', 'potash', 'mop', 'sop'],
   cement: ['clinker', 'opc'],
   sulphur: ['sulfur'],
@@ -79,36 +81,48 @@ interface PairLookup {
 }
 
 /**
- * Wave-γ-2 (C1): wildcard rules apply symmetrically by default.
- * `*→X extra_clean:true` (X is dust/contamination-prone) is interpreted as
- * BOTH `*→X` (anything before X) and `X→*` (X before anything) carrying the
- * same `extra_clean` flag. Exact-match entries retain precedence for the
- * compatible/incompatible verdict, but their extra_clean flag is OR'd with
- * matching wildcards so a known-incompatible pair still surfaces the
- * cleanliness requirement to the surveyor.
+ * Wave-γ-2 (C1): wildcard rules apply asymmetrically for COMPATIBILITY,
+ * symmetrically for EXTRA_CLEAN hint propagation.
+ *
+ * Direct wildcards (`*→X` matched as previous=*, next=X): contribute the
+ * full verdict (compatible + reason + extra_clean).
+ *
+ * Inverted wildcards (`*→X` matched against next=X seen on previous side):
+ * - extra_clean flag DOES travel symmetrically (X is dust-prone in BOTH directions)
+ * - compatible:false DOES travel symmetrically (real safety risk is bi-directional)
+ * - compatible:true does NOT travel — `*→X compatible:true extra_clean:true` is an
+ *   ANNOTATION about X's dust profile, not a green-light verdict for X→anything.
+ *   Without direct data we surface manual_review (audit 2026-05-04 fix to fail-OPEN bug
+ *   where DRI→scrap was returning compatible:true via inversion).
  */
-function findWildcards(normPrev: string, normNext: string): MatrixPair[] {
-  const matches: MatrixPair[] = [];
+interface WildcardMatch {
+  pair: MatrixPair;
+  inverted: boolean;
+}
+
+function findWildcards(normPrev: string, normNext: string): WildcardMatch[] {
+  const matches: WildcardMatch[] = [];
   for (const p of PAIRS) {
     if (p.previous === '*' && p.next === '*') {
-      matches.push(p);
+      matches.push({ pair: p, inverted: false });
       continue;
     }
     if (p.previous === '*' && normalize(p.next) === normNext) {
-      matches.push(p);
+      matches.push({ pair: p, inverted: false });
       continue;
     }
     if (p.next === '*' && normalize(p.previous) === normPrev) {
-      matches.push(p);
+      matches.push({ pair: p, inverted: false });
       continue;
     }
-    // C1 symmetric inversion: `*→X` rule also applies to `X→*` direction.
+    // Inverted matches (γ-2 fix): contribute extra_clean and incompat-block,
+    // but NOT compatible:true verdicts. See WildcardMatch doc above.
     if (p.previous === '*' && normalize(p.next) === normPrev) {
-      matches.push(p);
+      matches.push({ pair: p, inverted: true });
       continue;
     }
     if (p.next === '*' && normalize(p.previous) === normNext) {
-      matches.push(p);
+      matches.push({ pair: p, inverted: true });
       continue;
     }
   }
@@ -123,42 +137,64 @@ function lookupPair(prev: string, next: string): PairLookup {
     (p) => normalize(p.previous) === normPrev && normalize(p.next) === normNext
   );
   const wildcards = findWildcards(normPrev, normNext);
+  // extra_clean OR's across all applicable wildcards (direct + inverted).
+  const wildcardExtraClean = wildcards.some((w) => !!w.pair.extra_clean);
 
   if (exact) {
     return {
       matched: true,
       compatible: exact.compatible,
       reason: exact.reason,
-      extra_clean: !!exact.extra_clean || wildcards.some((w) => !!w.extra_clean),
+      extra_clean: !!exact.extra_clean || wildcardExtraClean,
     };
   }
-  if (wildcards.length > 0) {
-    const incompatible = wildcards.find((w) => !w.compatible);
+
+  // Direct wildcards source the verdict.
+  const direct = wildcards.filter((w) => !w.inverted);
+  if (direct.length > 0) {
+    const incompatible = direct.find((w) => !w.pair.compatible);
     return {
       matched: true,
       compatible: !incompatible,
-      reason: incompatible?.reason,
-      extra_clean: wildcards.some((w) => !!w.extra_clean),
+      reason: incompatible?.pair.reason,
+      extra_clean: wildcardExtraClean,
     };
   }
-  return { matched: false, compatible: false, extra_clean: false };
+
+  // Inverted blocks (compatible:false) propagate symmetrically — real bi-directional risk.
+  const invertedBlocks = wildcards.filter((w) => w.inverted && !w.pair.compatible);
+  if (invertedBlocks.length > 0) {
+    return {
+      matched: true,
+      compatible: false,
+      reason: invertedBlocks[0].pair.reason,
+      extra_clean: wildcardExtraClean,
+    };
+  }
+
+  // No verdict source. Inverted "annotation" wildcards (compatible:true + extra_clean)
+  // contribute extra_clean hint only — surveyor must review.
+  return { matched: false, compatible: false, extra_clean: wildcardExtraClean };
 }
 
 /**
  * Detect if cargo should be treated as break-bulk (bagged form).
- * Triggers on: form === 'bag' | 'breakbulk', OR name includes 'in bags'.
+ * Triggers on: form === 'bag' | 'breakbulk', OR name matches "in bags"
+ * with whitespace OR hyphen separators ("wheat in bags", "wheat-in-bags").
  */
+const BREAK_BULK_RE = /[\s-]in[\s-]bags\b/i;
+
 function isBreakBulk(cargo: CargoInput): boolean {
   if (typeof cargo === 'string') {
-    return cargo.toLowerCase().includes('in bags');
+    return BREAK_BULK_RE.test(cargo);
   }
   return cargo.form === 'bag' || cargo.form === 'breakbulk' ||
-    cargo.name.toLowerCase().includes('in bags');
+    BREAK_BULK_RE.test(cargo.name);
 }
 
 /** Strip the "in bags" suffix so contamination lookup uses the underlying commodity name. */
 function stripBreakBulkSuffix(name: string): string {
-  return name.replace(/\s+in\s+bags\s*$/i, '').trim() || name;
+  return name.replace(/[\s-]+in[\s-]+bags\s*$/i, '').trim() || name;
 }
 
 /**
@@ -206,6 +242,12 @@ export function checkCompatibility(
   for (const prev of prevCargoes) {
     if (!prev?.trim()) continue;
     const lookup = lookupPair(prev, contaminationName);
+    // extra_clean hint accumulates from BOTH matched and unmatched lookups —
+    // inverted wildcards (e.g. *→DRI) contribute the hint even when verdict
+    // requires manual review.
+    if (lookup.extra_clean) {
+      requires_extra_clean = true;
+    }
     if (!lookup.matched) {
       const reason = `No L5C data for ${normalize(prev)}→${normalize(contaminationName)} — manual surveyor review required`;
       warnings.push(reason);
@@ -215,9 +257,6 @@ export function checkCompatibility(
     }
     if (!lookup.compatible) {
       blocking_pairs.push({ previous: prev.trim(), reason: lookup.reason ?? 'Incompatible cargo combination' });
-    }
-    if (lookup.extra_clean) {
-      requires_extra_clean = true;
     }
   }
 

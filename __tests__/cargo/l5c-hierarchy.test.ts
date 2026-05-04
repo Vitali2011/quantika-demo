@@ -69,22 +69,87 @@ describe('wave-γ-2: C1 symmetric wildcard (BUG-12 fix)', () => {
     expect(r.requires_extra_clean).toBe(true);
   });
 
-  it('DRI → bauxite (no exact rule): wildcard symmetry → compatible + extra_clean', () => {
+  it('DRI → bauxite (no exact rule): inverted wildcard contributes extra_clean hint, but verdict requires manual surveyor review (NOT auto-compatible)', () => {
+    // Wave-γ-2 fix: `*→DRI` inverted gives extra_clean hint only. Without
+    // direct data we MUST not auto-pass; surveyor reviews.
     const r = checkCompatibility(['DRI'], 'bauxite');
-    expect(r.compatible).toBe(true);
+    expect(r.compatible).toBe(false);
+    expect(r.requires_manual_review).toBe(true);
     expect(r.requires_extra_clean).toBe(true);
+    expect(r.blocking_pairs).toHaveLength(1);
+    expect(r.blocking_pairs[0].reason).toMatch(/manual\s+surveyor/i);
   });
 
-  it('cement symmetric: anything → cement requires extra_clean (existing wildcard)', () => {
+  it('cement symmetric: anything → cement requires extra_clean (direct *→cement wildcard, not inversion)', () => {
     const r = checkCompatibility(['scrap'], 'cement');
     expect(r.compatible).toBe(true);
     expect(r.requires_extra_clean).toBe(true);
   });
 
-  it('cement symmetric reversed: cement → bauxite — extra_clean inherited', () => {
-    // Wildcard `*→cement extra_clean:true` applies symmetrically as `cement→*`.
+  it('cement → bauxite (no exact rule): inverted wildcard contributes extra_clean hint, NOT auto-pass', () => {
+    // Wave-γ-2 fix: `*→cement` inverted to cement→* — extra_clean hint only.
+    // No direct data → manual surveyor review.
     const r = checkCompatibility(['cement'], 'bauxite');
+    expect(r.compatible).toBe(false);
+    expect(r.requires_manual_review).toBe(true);
+    expect(r.requires_extra_clean).toBe(true);
+  });
+
+  // SAFETY: inverted wildcards must NEVER make a pair auto-compatible.
+  // Adversarial QA (wave-γ-2 retest) found that *→DRI/*→cement inversion
+  // was treated as DRI→*/cement→* compatible:true — fail-OPEN safety bug.
+  describe('safety: inverted wildcards never fail-open', () => {
+    it.each([
+      ['DRI', 'scrap'],
+      ['DRI', 'pipes'],
+      ['DRI', 'sulphur'],
+      ['cement', 'pipes'],
+      ['cement', 'sulphur'],
+      ['cement', 'iron-ore'],
+    ])('%s → %s: requires manual review (not auto-compatible from inverted *→X)', (prev, next) => {
+      const r = checkCompatibility([prev], next);
+      expect(r.compatible).toBe(false);
+      expect(r.requires_manual_review).toBe(true);
+      // The wildcard hint about extra clean still travels for surveyor info.
+      expect(r.requires_extra_clean).toBe(true);
+    });
+  });
+});
+
+describe('wave-γ-2: petcoke aliases (Class 6 substring trap fix)', () => {
+  // IMSBC canonical name is "petroleum coke"; brokers also write "pet coke".
+  it('petroleum coke → wheat: incompatible via petcoke alias', () => {
+    const r = checkCompatibility(['petroleum coke'], 'wheat');
+    expect(r.compatible).toBe(false);
+    expect(r.requires_manual_review).toBe(false);
+    expect(r.blocking_pairs[0].reason).toMatch(/carbon|residue/i);
+  });
+
+  it('pet coke → grain: incompatible via petcoke alias', () => {
+    const r = checkCompatibility(['pet coke'], 'corn');
+    expect(r.compatible).toBe(false);
+    expect(r.blocking_pairs[0].reason).toMatch(/carbon|residue/i);
+  });
+
+  it('PETROLEUM COKE (uppercase) → wheat: same — case-insensitive normalize', () => {
+    const r = checkCompatibility(['PETROLEUM COKE'], 'WHEAT');
+    expect(r.compatible).toBe(false);
+    expect(r.blocking_pairs[0].reason).toMatch(/carbon|residue/i);
+  });
+});
+
+describe('wave-γ-2: BREAK_BULK hyphen variant (Class 6)', () => {
+  it('"wheat-in-bags" (hyphenated) detected as break_bulk + contamination check applied', () => {
+    const r = checkCompatibility(['coal'], 'wheat-in-bags');
+    expect(r.compatible).toBe(false);
+    expect(r.break_bulk).toBe(true);
+    expect(r.blocking_pairs[0].reason).toMatch(/black|coal|residue/i);
+  });
+
+  it('"barley-in-bags" with limestone: compatible + extra_clean + break_bulk', () => {
+    const r = checkCompatibility(['limestone'], 'barley-in-bags');
     expect(r.compatible).toBe(true);
+    expect(r.break_bulk).toBe(true);
     expect(r.requires_extra_clean).toBe(true);
   });
 });
