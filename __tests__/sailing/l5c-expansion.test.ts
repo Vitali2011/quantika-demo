@@ -38,26 +38,36 @@ describe('L5C matrix expansion (βf3-05)', () => {
     expect(r.compatible).toBe(false);
   });
 
-  // Test 4: wheat in bags — BREAK_BULK pathway, different verdict from bulk
-  it('wheat in bags: verdict differs from bulk wheat (form-detection)', () => {
+  // Test 4: wheat in bags — BREAK_BULK metadata, but contamination check still applies.
+  // wave-γ-2 REGRESSION-01 fix: BREAK_BULK form does NOT override fail-closed
+  // contamination. Bag protection is metadata for the surveyor; coal residue
+  // still contaminates the underlying grain. Positive contract assertions
+  // (Class 12) — both forms incompatible, bag carries break_bulk:true flag.
+  it('wheat in bags: contamination contract still enforced; break_bulk is metadata only', () => {
     const rBulk = checkCompatibility(['coal'], { name: 'wheat', form: 'bulk' });
     const rBag = checkCompatibility(['coal'], { name: 'wheat', form: 'bag' });
-    // bulk wheat → normalized to grain → incompatible with coal
+    // Both forms incompatible — coal contaminates wheat regardless of stowage form.
     expect(rBulk.compatible).toBe(false);
-    // bagged wheat → BREAK_BULK pathway, different result
-    expect(rBag.compatible).not.toBe(rBulk.compatible);
-    // bag form should trigger manual review (not in matrix as breakbulk) OR be explicitly allowed
-    // The verdicts must differ — form-detection is demonstrable
-    expect(rBag.compatible === rBulk.compatible).toBe(false);
+    expect(rBag.compatible).toBe(false);
+    // Form-detection evidence: bag carries the break_bulk metadata flag, bulk does not.
+    expect(rBulk.break_bulk).toBeUndefined();
+    expect(rBag.break_bulk).toBe(true);
+    // Positive contract — bag still has the contamination reason populated.
+    expect(rBag.blocking_pairs).toHaveLength(1);
+    expect(rBag.blocking_pairs[0].previous).toBe('coal');
+    expect(rBag.blocking_pairs[0].reason).toMatch(/black\s+residue|coal/i);
+    // Surveyor warning is present for the bag form.
+    expect(rBag.warnings.some((w) => /BREAK_BULK/i.test(w))).toBe(true);
   });
 
-  it('wheat in bags via name string: "wheat in bags" triggers BREAK_BULK pathway', () => {
+  it('wheat in bags via name string: same contamination verdict, break_bulk:true metadata', () => {
     const rBulk = checkCompatibility(['coal'], 'wheat');
     const rBags = checkCompatibility(['coal'], 'wheat in bags');
-    // "wheat" normalizes to grain — incompatible with coal
     expect(rBulk.compatible).toBe(false);
-    // "wheat in bags" is break_bulk — different verdict
-    expect(rBags.compatible).not.toBe(rBulk.compatible);
+    expect(rBags.compatible).toBe(false); // wave-γ-2: positive contract preserved
+    expect(rBags.break_bulk).toBe(true);
+    // "wheat" stripped of "in bags" suffix → still normalizes to grain → coal→grain incompatible.
+    expect(rBags.blocking_pairs[0].reason).toMatch(/black\s+residue|coal/i);
   });
 
   // Test 5: edge — unknown pair preserved as fail-closed

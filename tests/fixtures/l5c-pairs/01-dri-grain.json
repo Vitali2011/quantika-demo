@@ -4,7 +4,10 @@
   "newCargo": "grain",
   "expected": {
     "compatible": false,
-    "requires_extra_clean": false,
-    "blocking_pairs": [{ "previous": "DRI", "reason": "Iron oxide contamination, food-grade rejected" }]
+    "_extra_clean_note": "wave-γ-2 BUG-12 fix: symmetric wildcard `*→DRI extra_clean:true` applies to `DRI→*` direction. DRI dust contaminates downstream cargoes regardless of verdict.",
+    "requires_extra_clean": true,
+    "blocking_pairs": [
+      { "previous": "DRI", "reason": "Iron oxide contamination, food-grade rejected" }
+    ]
   }
 }
