@@ -30,10 +30,8 @@ describe('formatNumber — locale-stable parity (γ-cleanup-2 F2)', () => {
     expect(formatNumber(n)).toBe(n.toLocaleString('en-US'));
   });
 
-  it('is stable regardless of system locale', () => {
-    // Mock Intl.NumberFormat default
-    const original = Intl.NumberFormat;
-    // even when default locale would differ, formatNumber forces en-US
+  it('returns en-US format regardless of caller locale', () => {
+    // formatNumber hardcodes 'en-US', so output is stable
     expect(formatNumber(9500)).toBe('9,500');
   });
 });
