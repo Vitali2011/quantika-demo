@@ -1,10 +1,14 @@
-# Phase 1 — IMSBC Cargo Profiles Extraction
+# Phase 1 — IMSBC Cargo Profiles Extraction (Hybrid: Web Search + Knowledge)
 
-Тебе дан **IMSBC Code 2024 PDF** (~600 страниц IMO regulatory document). Твоя задача — для каждого из 18 cargo classes ниже извлечь компактный профиль (~600 токенов на класс) с фактами из IMSBC, релевантными для compatibility decisions (можно ли везти X сразу после Y).
+Тебе нужно создать **компактный JSON** с 18 cargo profiles для freight forwarder L5C compatibility matrix. Source: IMSBC Code (IMO 2024 edition в идеале) + broker practice.
 
-**Важно:** ты НЕ генеришь pairs здесь. Только profiles. Pairs делает Phase 2 на основе твоих profiles.
+**Важно:** PDF недоступен (IMO web shop требует оплаты). Используй **WebSearch/WebFetch + свои training data**:
+- Открытые публикации: Marine Insight, BIMCO, Britannia P&I, Standard Club, North P&I, ClassNK, Wikipedia (IMSBC Code), Inchcape Shipping
+- Свои знания о IMSBC Group A/B/C classification для major bulk cargoes (DRI Group A, coal Group B, iron-ore Group A, fertilizers по типу, etc.)
 
-## 18 cargo classes (фиксированный список)
+Цель — production-ready profiles для нижестоящего pair generation. Это НЕ pairs, только profiles.
+
+## 18 cargo classes (фиксированный список, lowercase keys как ниже)
 
 1. **grain** — пшеница, кукуруза, ячмень, соя, рис, овёс, сорго, рожь
 2. **steel** — coils, plates, sections, billets, rebar, slabs, wire rod (HR/CR)
@@ -27,42 +31,66 @@
 
 ## Output format
 
-Один JSON-объект, верхний уровень — keys = названия классов выше (lowercase, с дефисами как в списке). Записать в файл `.private/l5c-data/cargo-profiles.json`.
+JSON-объект, top-level keys = названия классов (используй ровно эти ключи: `grain`, `steel`, `pipes`, `iron-ore`, `dri`, `coal`, `petcoke`, `fertilizer`, `cement`, `sulphur`, `scrap`, `bauxite`, `general`, `sugar`, `salt`, `limestone`, `manganese ore`, `copper concentrate`).
 
 Для каждого класса:
 
 ```json
 {
   "<class>": {
-    "imsbc_group": "A|B|C|null",
-    "imsbc_section": "appendix-N-name или 'not-imsbc-classified'",
+    "imsbc_group": "A" | "B" | "C" | null,
+    "imsbc_section": "appendix-N-name | not-imsbc-classified",
     "chemistry": "1-2 строки про физико-химические свойства, релевантные contamination",
-    "contamination_risk": ["food-grade reject", "iron oxide stain", ...],
-    "dust_profile": "high|medium|low",
-    "moisture_sensitivity": "high|medium|low",
-    "self_heating": true|false,
+    "contamination_risk": ["food-grade reject", "iron oxide stain", "..."],
+    "dust_profile": "high" | "medium" | "low",
+    "moisture_sensitivity": "high" | "medium" | "low",
+    "self_heating": true | false,
     "compatible_with": ["<class>", ...],
     "incompatible_with": ["<class>", ...],
-    "extra_clean_required_after": true|false,
-    "broker_notes": "1-2 строки broker rule of thumb (ссылки на cleaning grade — 'hospital clean', 'grain clean')"
+    "extra_clean_required_after": true | false,
+    "broker_notes": "1-2 строки broker rule of thumb (cleaning grade — 'hospital clean', 'grain clean')",
+    "sources": ["URL or 'training-data'", "..."]
   }
 }
 ```
 
+Поле `sources` — добавлено для hybrid mode: для каждого профиля укажи 1-3 URL'а откуда взяты ключевые факты (или "training-data" если не нашёл web source). Это даёт reviewer (мне) traceability.
+
 ## Правила
 
-1. **IMSBC group**: A (liquefaction), B (chemical hazard), C (other) — из IMSBC schedules. Если "general" — ставь null + section = "not-imsbc-classified".
-2. **chemistry**: коротко. «Carbon residue, oily, fine dust» лучше чем длинная философия.
-3. **dust_profile**: high = petcoke, coal, iron-ore, cement, manganese ore. low = steel, pipes, general.
-4. **self_heating**: true для DRI (фундаментально), некоторых coals, sulphur (limited). См. IMSBC schedule per cargo.
-5. **compatible_with / incompatible_with**: твоё мнение на основе chemistry, НЕ exhaustive — Phase 2 уточнит.
+1. **IMSBC group**: A (liquefaction), B (chemical hazard), C (other). Major cargoes:
+   - Group A: iron ore fines, bauxite (некоторые), nickel ore, DRI fines
+   - Group B: coal, DRI, sulphur, petcoke (некоторые), ferrous metal scrap, fertilizers
+   - Group C: grain, cement, salt, limestone, manganese ore (обычно)
+   - "general" → null + section = "not-imsbc-classified"
+2. **chemistry**: коротко. «Carbon residue, oily, fine dust» лучше длинной философии.
+3. **dust_profile**: high = petcoke, coal, iron-ore, cement, manganese ore, bauxite. low = steel, pipes, general.
+4. **self_heating**: true для DRI (фундаментально через oxidation), некоторых coals (sub-bituminous), petcoke иногда. См. IMSBC schedules.
+5. **compatible_with / incompatible_with**: твоё мнение на основе chemistry. Не exhaustive — Phase 2 уточнит.
 6. **broker_notes**: типичные практики чартеринга. «Hospital clean required after» / «grain clean acceptable».
+
+## Источники для приоритетного поиска
+
+- Marine Insight — обзоры IMSBC schedules: https://www.marineinsight.com
+- BIMCO bulker guides
+- Britannia P&I "Carriage of bulk cargoes" series
+- North P&I cargo handling notes
+- Wikipedia: "IMSBC Code" (общая taxonomy)
+- IMO Publications page (даже если PDF недоступен, schedule listings обычно есть)
+
+Для каждого класса минимум 1 web search query. Web fetch на самые релевантные результаты.
 
 ## Self-check перед записью
 
-- 18 keys на верхнем уровне (ровно)
-- Все 11 полей заполнены (никаких null кроме imsbc_group для general)
-- imsbc_section conform к pattern `appendix-N-...` или `not-imsbc-classified`
-- compatible_with и incompatible_with — массивы строк из 18 классов
+- [ ] Ровно 18 keys на верхнем уровне
+- [ ] Все 12 полей заполнены (никаких null кроме imsbc_group для general)
+- [ ] imsbc_section conform к pattern `appendix-N-...` (или canonical name) или `not-imsbc-classified`
+- [ ] compatible_with и incompatible_with — массивы строк из 18 классов (точные ключи)
+- [ ] sources непустой для каждого class
 
-Output → `.private/l5c-data/cargo-profiles.json` (абсолютный путь будет передан вместе с PDF).
+## Output
+
+Запиши JSON в `/Users/jarvis/work/qd-l5c-data/.private/l5c-data/cargo-profiles.json`.
+Создай parent directory если её нет (`mkdir -p .private/l5c-data` уже выполнен).
+
+После записи — выведи короткий summary: сколько классов, сколько с web sources vs training-data only, low-confidence flags если есть.
