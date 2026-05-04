@@ -19,15 +19,15 @@ interface MarketIntelligenceProps {
 export function MarketIntelligence({ noActiveDeals }: MarketIntelligenceProps) {
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <KpiCard
           label="Toepfer TMI"
           url="/api/market/benchmark?indicator=TOEPFER_TMI"
           unit="USD/day"
         />
-        <KpiCard label="Bunker Rotterdam" url={null} unit="USD/t" />
-        <KpiCard label="EUA EU ETS" url={null} unit="EUR/t" />
-        <KpiCard label="BHSI" url="/api/market/benchmark?indicator=BHSI" unit="index" />
+        {/* TODO(γ-cleanup-4 F2): Bunker Rotterdam, EUA EU ETS, BHSI placeholder cards
+            removed — backend not implemented. Restore when /api/market/benchmark
+            supports those indicators. */}
       </div>
       {noActiveDeals && (
         <p className="text-sm text-gray-500 text-center py-2">
