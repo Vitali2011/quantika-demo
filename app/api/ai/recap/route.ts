@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
 import { callAiJson, LLMTimeoutError } from '@/lib/openai';
+import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { NEGOTIATION_RECAP_SYSTEM_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_HEAVY, MIN_THREAD_LENGTH_FOR_RECAP } from '@/lib/constants';
 import { Recap, RecapPoint, RecapHistoryEntry, NegotiationStatus } from '@/lib/types';
@@ -66,7 +67,9 @@ export async function POST(request: NextRequest) {
         JSON.stringify(threadInput),
         NEGOTIATION_RECAP_SYSTEM_PROMPT,
         AI_MODEL_HEAVY,
-        { points: [], summary: '' }
+        { points: [], summary: '' },
+        undefined,
+        { timeoutMs: endpointLlmTimeout(60) }
       );
 
       const participants = Array.from(new Set(sortedEmails.map(e => e.from)));
