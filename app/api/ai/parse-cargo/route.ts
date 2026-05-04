@@ -78,13 +78,18 @@ export const PARSE_CARGO_CONCURRENCY = 8;
  */
 export interface Retry429Options {
   maxRetries?: number;
+  /** Alias for maxRetries (γ-cleanup-B). */
+  maxAttempts?: number;
   baseDelayMs?: number;
 }
 export async function withRetry429<T>(
   fn: () => Promise<T>,
   opts: Retry429Options = {},
 ): Promise<T> {
-  const maxRetries = opts.maxRetries ?? 2;
+  // maxAttempts is the total number of calls; maxRetries is retries after the first.
+  // Support both: if maxAttempts is given, derive maxRetries from it.
+  const maxRetries =
+    opts.maxRetries ?? (opts.maxAttempts != null ? opts.maxAttempts - 1 : 2);
   const baseDelayMs = opts.baseDelayMs ?? 200;
   let lastErr: unknown;
   for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
@@ -92,13 +97,29 @@ export async function withRetry429<T>(
       return await fn();
     } catch (err) {
       lastErr = err;
-      const status = (err as { status?: number } | null)?.status;
+      // γ-cleanup-B: check error.status / error.statusCode FIRST (authoritative).
+      // Regex is a message-based fallback ONLY when status is not present — avoids
+      // false-positive on e.g. "RFQ #429 not found" where 429 is an order ID,
+      // not a rate-limit HTTP status code.
+      const status =
+        (err as { status?: number; statusCode?: number })?.status ??
+        (err as { statusCode?: number })?.statusCode;
+      const isStatusRateLimit = status === 429;
       const msg = String((err as { message?: string } | null)?.message ?? err ?? '');
-      const isRateLimit = status === 429 || /\b429\b|rate.?limit/i.test(msg);
+      // Message-based detection (fallback when status is absent).
+      // Lookbehind (?<![#\w]) prevents false-positives like "RFQ #429 not found"
+      // where 429 is an order ID preceded by '#', not an HTTP rate-limit code.
+      const isMessageRateLimit = /(?<![#\w])429\b|rate[-_]?limit/i.test(msg);
+      const isRateLimit = isStatusRateLimit || isMessageRateLimit;
       if (!isRateLimit || attempt === maxRetries) throw err;
       // Jittered exponential backoff: baseDelay × 2^attempt × (1..2 random).
       const delayMs = baseDelayMs * Math.pow(2, attempt) * (1 + Math.random());
-      await new Promise(resolve => setTimeout(resolve, delayMs));
+      // γ-cleanup-B: .unref() lets jest worker exit cleanly (timer does not keep
+      // the event loop alive when the test suite finishes).
+      await new Promise<void>((resolve) => {
+        const t = setTimeout(resolve, delayMs);
+        if (typeof t.unref === 'function') t.unref();
+      });
     }
   }
   throw lastErr;

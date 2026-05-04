@@ -82,3 +82,29 @@ describe('wave-γ-3 Task B1: withRetry429 helper', () => {
     expect(calls).toBe(3);
   });
 });
+
+describe('wave-γ-cleanup-B: withRetry429 false-positive guard', () => {
+  it('error message "RFQ #429 not found" without status=429 → does NOT retry (fail fast)', async () => {
+    const mockFn = jest.fn().mockRejectedValue(new Error('RFQ #429 not found'));
+    await expect(withRetry429(() => mockFn(), { maxAttempts: 3 })).rejects.toThrow();
+    expect(mockFn).toHaveBeenCalledTimes(1);  // No retry
+  });
+
+  it('error with status=429 → retries (existing behaviour)', async () => {
+    const err: Error & { status?: number } = new Error('Too many requests');
+    err.status = 429;
+    const mockFn = jest.fn().mockRejectedValueOnce(err).mockResolvedValueOnce('ok');
+    const result = await withRetry429(() => mockFn(), { maxAttempts: 3 });
+    expect(result).toBe('ok');
+    expect(mockFn).toHaveBeenCalledTimes(2);
+  });
+
+  it('error message "rate-limit exceeded" without status → retries (message-based fallback)', async () => {
+    const mockFn = jest.fn()
+      .mockRejectedValueOnce(new Error('rate-limit exceeded'))
+      .mockResolvedValueOnce('ok');
+    const result = await withRetry429(() => mockFn(), { maxAttempts: 3 });
+    expect(result).toBe('ok');
+    expect(mockFn).toHaveBeenCalledTimes(2);
+  });
+});
