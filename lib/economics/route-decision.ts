@@ -148,17 +148,35 @@ interface CompareInput {
   vessel: VoyageInput['vessel'];
   cargo: VoyageInput['cargo'];
   marketRates: { bunkerPriceUsdPerMt: number; euaPriceEur: number };
+  daResolver?: DaResolver;
 }
+
+/**
+ * wave-γ-4 (BUG-05): resolver supplied by the HTTP caller to look up
+ * disbursement-account totals per port. Returns USD; resolver returning
+ * 0 means "no data for this port" — leg falls back to 0 contribution.
+ *
+ * Decoupled from `getPortDa` so the calculator stays pure-function and
+ * test-friendly; concrete wiring lives in `app/api/voyage/compare-routes/route.ts`.
+ */
+export type DaResolver = (portCode: string, vesselDwt: number) => number;
 
 function buildLeg(
   origin: string,
   destination: string,
   distanceNm: number,
   viaSuez: boolean,
-  { vessel, cargo, marketRates }: CompareInput,
+  { vessel, cargo, marketRates, daResolver }: CompareInput,
 ): RouteCompareLeg {
   const speed = vessel.speedKts > 0 ? vessel.speedKts : 13;
   const dur = durationDays(distanceNm, speed);
+
+  // Sum origin + destination DA. Resolver may return 0 for unknown ports;
+  // we still pass through because partial DA is more informative than 0.
+  const daUsd = daResolver
+    ? Math.max(0, daResolver(origin, vessel.dwt)) +
+      Math.max(0, daResolver(destination, vessel.dwt))
+    : 0;
 
   const input: VoyageInput = {
     vessel,
@@ -173,7 +191,7 @@ function buildLeg(
     euaPriceEur: marketRates.euaPriceEur,
     durationDays: dur,
     canalUsd: viaSuez ? SUEZ_CANAL_DUES_USD : 0,
-    daUsd: 0,
+    daUsd,
     daysInHra: viaSuez ? HRA_DAYS_FOR_SUEZ : 0,
   };
 
@@ -255,13 +273,14 @@ export async function compareRoutes(
   vessel: VoyageInput['vessel'],
   cargo: VoyageInput['cargo'],
   marketRates: { bunkerPriceUsdPerMt: number; euaPriceEur: number },
+  daResolver?: DaResolver,
 ): Promise<RouteCompareResult> {
   // βf3-06: timing markers for cold-start profiling
   console.time('cold:distances');
   const dist = lookupDistances(origin, destination);
   console.timeEnd('cold:distances');
 
-  const ctx: CompareInput = { vessel, cargo, marketRates };
+  const ctx: CompareInput = { vessel, cargo, marketRates, daResolver };
 
   console.time('cold:scoring');
   const suez = buildLeg(origin, destination, dist.suezNm, true, ctx);
