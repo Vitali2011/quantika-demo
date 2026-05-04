@@ -107,3 +107,41 @@ describe('wave-γ-3 Task 2: "general cargo" permissive class', () => {
     });
   });
 });
+
+describe('wave-γ-cleanup-A: normalize() edge-case forgiveness', () => {
+  it('matches petroleum-coke (dash) → petcoke alias', () => {
+    // petroleum-coke should normalize to "petroleum coke" → ALIAS_MAP → "petcoke"
+    // petcoke ↔ wheat is incompatible (known pair), so compatible=false with a reason —
+    // but requires_manual_review MUST be false (it matched, not unmatched).
+    const r = checkCompatibility(['petroleum-coke'], 'wheat');
+    expect(r.requires_manual_review).toBe(false);
+    expect(r.compatible).toBe(false); // petcoke→wheat is known incompatible
+    expect(r.blocking_pairs.length).toBeGreaterThan(0);
+    expect(r.blocking_pairs[0].reason).not.toMatch(/manual\s+surveyor/i);
+  });
+
+  it('matches "pet  coke" (double space) → petcoke alias', () => {
+    // "pet  coke" collapses to "pet coke" → ALIAS_MAP → "petcoke"
+    const r = checkCompatibility(['pet  coke'], 'wheat');
+    expect(r.requires_manual_review).toBe(false);
+    expect(r.compatible).toBe(false); // petcoke→wheat is known incompatible
+    expect(r.blocking_pairs[0].reason).not.toMatch(/manual\s+surveyor/i);
+  });
+
+  it('matches "petcoke." (trailing dot) → petcoke', () => {
+    // "petcoke." strips trailing dot → "petcoke" → ALIAS_MAP → "petcoke"
+    const r = checkCompatibility(['petcoke.'], 'wheat');
+    expect(r.requires_manual_review).toBe(false);
+    expect(r.compatible).toBe(false); // petcoke→wheat is known incompatible
+    expect(r.blocking_pairs[0].reason).not.toMatch(/manual\s+surveyor/i);
+  });
+
+  it('matches "  general  cargo  " (whitespace + collapsed) → general taxonomy', () => {
+    // "  general  cargo  " trims + collapses → "general cargo" → ALIAS_MAP → "general"
+    // general cargo → project pipes is compatible (permissive class, inert)
+    const r = checkCompatibility(['  general  cargo  '], 'project pipes');
+    expect(r.requires_manual_review).toBe(false);
+    expect(r.compatible).toBe(true);
+    expect(r.blocking_pairs).toHaveLength(0);
+  });
+});
