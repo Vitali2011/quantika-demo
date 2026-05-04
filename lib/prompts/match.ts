@@ -93,6 +93,14 @@ vessel's input data field literally proves it. Specifically:
   \`restrictions[]\` (the LAST_CARGO mandatory surfacing applies only when
   the restriction is in the input or readiness flags it as
   LAST_CARGO_INCOMPATIBLE).
+- Specifically: if cargo.commodity is grain (wheat, corn, barley, etc.)
+  and vessel.last_cargo is also a grain or oilseed/meal product, do NOT
+  add an unsolicited hold-cleanliness flag. Grain-after-grain and
+  oilseed-after-oilseed are routine — only flag if cargo.restrictions[]
+  literally requires food-grade cleaning OR readiness explicitly flagged
+  LAST_CARGO_INCOMPATIBLE for that pair. The matcher MUST NOT inject
+  domain heuristics about "grain food-grade survey norms" — that knowledge
+  is OUTSIDE the input contract.
 
 Mirror principle: extracting from input ≠ inventing from heuristic. If
 the input doesn't say it, you don't say it.
@@ -261,6 +269,15 @@ arrives ON laycan_start, zero buffer) AND cargo.restrictions[] mentions
 "no extensions", "strict laycan", or similar inflexibility → score MUST be
 40-60 (max 60), match_level='possible'. Even one day of bad weather kills
 the fixture; a 'good' rating misleads the broker.
+
+SUB-DAY BUFFER CAP: when readiness.explanation describes arrival as
+"evening", "night", "late", or otherwise indicates <24h effective buffer
+to laycan_start (regardless of gap_days integer), AND cargo.restrictions[]
+mentions "no extensions" or "strict laycan" → apply the same cap above
+(score 40-60, possible). Calendar gap_days=2 with an evening arrival on
+day-before-laycan is functionally <12h buffer — broker treats it as tight,
+not good. Read readiness.explanation for these qualifiers; do not rely on
+gap_days alone.
 
 HOLD_HEIGHT_VIOLATION CAP: when readiness.date_issues includes
 HOLD_HEIGHT_VIOLATION, HOLD_GEOMETRY_VIOLATION, GEAR_VIOLATION, or any
