@@ -26,7 +26,7 @@
     "clsx": "^2.1.1",
     "fuzzysort": "^3.1.0",
     "googleapis": "^171.4.0",
-    "lucide-react": "^1.7.0",
+    "lucide-react": "^1.14.0",
     "next": "^16.2.4",
     "openai": "^6.33.0",
     "p-limit": "^7.3.0",
