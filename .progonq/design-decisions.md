@@ -103,6 +103,22 @@ incompatibilities, DWCC overrun, draft mismatch, null service_speed). QA
 agents from Round 2+ should expect these to be surfaced and may flag their
 absence as HIGH — but should NOT flag the rule itself as a bug.
 
+### B.6c Chronic LLM heuristic — last_cargo grain↔grain hold-cleanliness override
+**Status: open design disagreement (not a bug to chase further).**
+
+The model persistently adds an `issues[]` entry like "verify hold cleanliness/certification for food-grade grain" when a cargo's `last_cargo` is a grain or oilseed product (e.g., Soybean meal → Wheat) — even when `cargo.restrictions[]` does NOT contain a hold-cleanliness requirement.
+
+Survived 4 prompt-edit rounds (R7–R10) including:
+- Explicit grain↔grain exemption rule
+- Mirror "no invented compliance" rule
+- Pre-finalize audit step
+
+QA agents (independent broker role) consistently flag this as HIGH (fabricated restriction, "broker has no way to verify"). The model treats it as a useful proactive warning consistent with broker domain knowledge.
+
+**Resolution for the loop:** treat as non-blocking design disagreement. The chronic finding is captured in regression tests as the current expected output (so future prompt edits don't worsen it). If a future product owner decides this proactive warning is valuable to brokers, mark it as intentional in `match_reasons` rather than `issues`.
+
+If the project later wants to suppress this hard, the surgical fix is: post-process the JSON, regex-strip any `issues[]` entry matching `/last_cargo .* (grain|wheat|corn|barley|soybean|meal)/i` when no hold-cleanliness restriction is in input. That's logic, not prompting.
+
 ### B.7 Out-of-scope concerns (NOT flag as HIGH)
 The matcher does NOT compute:
 - Voyage P&L / freight rate suggestion / TCE
