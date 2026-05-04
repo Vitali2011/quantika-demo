@@ -11,12 +11,19 @@ import { buildVesselPrompt, parseVesselAIResponse } from '@/lib/parsing/parse-ve
 import { buildProcessedEmails } from '@/lib/classification-service';
 import pLimit from 'p-limit';
 
+export const maxDuration = 60;
+
 export async function POST(request: NextRequest) {
   if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   const result = requireSession(request);
   if (result instanceof NextResponse) return result;
   const { session, sessionId } = result;
+
+  // wave-γ-1.5-A: demo guests get pre-seeded vessel positions — skip live LLM entirely.
+  if (session.isSampleData === true && session.parsedVessels.length > 0) {
+    return NextResponse.json({ count: session.parsedVessels.length, cached: true });
+  }
 
   const vesselIds = session.classifications
     .filter(c => c.category === 'VESSEL_POSITION')
