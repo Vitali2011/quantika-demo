@@ -18,10 +18,13 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import Database from 'better-sqlite3';
 import {
   processDeadline,
   type SubsDeadline,
 } from '../lib/deadlines/subs-guardian';
+import { setDb } from '../lib/db/queries/dispatches';
+import migration011 from '../lib/migrations/011-notified-dispatches';
 
 interface CliFlags {
   dryRun: boolean;
@@ -57,8 +60,26 @@ async function loadActiveDeadlines(flags: CliFlags): Promise<SubsDeadline[]> {
   return [];
 }
 
+/**
+ * NEW-02 fix: initialize the DB ledger for idempotent dispatches.
+ * Without this, live cron runs miss setDb() and tryRecordDispatch()
+ * operates on an undefined db → double-dispatch on the next tick.
+ *
+ * Exported so unit tests can verify the wiring without spawning a subprocess.
+ * Accepts an optional dbPath so tests can pass ':memory:'.
+ */
+export function initDb(
+  dbPath: string = process.env.DEADLINES_DB_PATH ?? './data/quantika.db',
+): Database.Database {
+  const db = new Database(dbPath);
+  migration011.up(db); // idempotent — CREATE TABLE IF NOT EXISTS inside
+  setDb(db);
+  return db;
+}
+
 async function main(): Promise<void> {
   const flags = parseFlags(process.argv.slice(2));
+  initDb(); // NEW-02: wire up dispatch ledger before any deadline processing
   const deadlines = await loadActiveDeadlines(flags);
 
   if (deadlines.length === 0) {
