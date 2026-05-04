@@ -1,0 +1,121 @@
+[
+  {
+    "previous": "general",
+    "next": "grain",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "General cargo may include chemical/industrial goods with unknown residues — grain surveyor requires hold history disclosure; unknown cargo chemistry fails grain-clean inspection by default (fail-closed per broker note)"
+  },
+  {
+    "previous": "general",
+    "next": "steel",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "General cargo (project, bagged, palletised) leaves no chemical contamination; holds require normal clean + hospital-clean standard before steel coils — achievable from general prior; symmetric with steel→general"
+  },
+  {
+    "previous": "general",
+    "next": "pipes",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "No chemical residue from general cargo; hospital clean achievable; threaded-end contamination risk absent if prior general was dry goods — surveyor pre-inspection standard applies"
+  },
+  {
+    "previous": "general",
+    "next": "iron-ore",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Iron ore is low contamination-sensitive for loading; general cargo leaves no chemical residue incompatible with iron oxides; normal clean sufficient"
+  },
+  {
+    "previous": "general",
+    "next": "dri",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "DRI requires inert atmosphere (N2) and zero moisture/organic residue; general cargo composition unknown — packaging material, organic goods or moisture-retaining goods risk H2 generation and self-heating in DRI; manual surveyor review required"
+  },
+  {
+    "previous": "general",
+    "next": "coal",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Coal is not contamination-sensitive for loading; general cargo leaves no residue incompatible with coal chemistry; normal clean acceptable; symmetric with coal→general"
+  },
+  {
+    "previous": "general",
+    "next": "petcoke",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Petcoke is not contamination-sensitive for loading (it contaminates others, not vice versa); general cargo residue does not affect petcoke chemistry; normal clean acceptable"
+  },
+  {
+    "previous": "general",
+    "next": "fertilizer",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Fertilizer (especially AN-based) requires hospital clean; general cargo may include incompatible oxidiser-adjacent goods or packaging contaminants; unknown hold history fails fertilizer surveyor requirement — manual surveyor review required"
+  },
+  {
+    "previous": "general",
+    "next": "cement",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Cement is not degraded by general cargo residues (no organic acids, no sugars assumed); normal clean acceptable; alkaline cement tolerant of minor mixed-cargo trace residues"
+  },
+  {
+    "previous": "general",
+    "next": "sulphur",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Sulphur loading not contamination-sensitive to general cargo residues; dry general cargo leaves no moisture-generating residue that would trigger sulphuric acid formation; normal clean acceptable"
+  },
+  {
+    "previous": "general",
+    "next": "scrap",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Scrap metal is not contamination-sensitive for loading; general cargo residues compatible with ferrous scrap; normal clean sufficient — surveyor inspection for scrap quality is shipper obligation, not prior-cargo dependent"
+  },
+  {
+    "previous": "general",
+    "next": "bauxite",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Bauxite loading not sensitive to general cargo residues; no chemical incompatibility between aluminium oxide ore and typical mixed/project cargo; normal clean acceptable"
+  },
+  {
+    "previous": "general",
+    "next": "sugar",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Sugar requires grain-clean equivalent; general cargo may include alkaline, chemical or odour-generating goods — sugar is highly reactive to alkaline residues and susceptible to odour transfer; unknown cargo history fails sugar surveyor inspection (fail-closed)"
+  },
+  {
+    "previous": "general",
+    "next": "salt",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Salt (industrial grade) tolerant of general cargo residues; normal clean + fresh water rinse sufficient; food-grade sea salt requires surveyor pre-inspection — conditional on actual prior general cargo type"
+  },
+  {
+    "previous": "general",
+    "next": "limestone",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Limestone is chemically inert and not contamination-sensitive for loading; general cargo leaves no residue incompatible with CaCO3; normal clean acceptable; symmetric with limestone→general"
+  },
+  {
+    "previous": "general",
+    "next": "manganese ore",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Manganese ore not contamination-sensitive to prior general cargo; no chemical incompatibility; normal clean acceptable; TML certificate is shipper obligation independent of prior cargo"
+  },
+  {
+    "previous": "general",
+    "next": "copper concentrate",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Copper concentrate requires dedicated voyage per broker standard; dual-hazard cargo (Group A liquefaction + Group B H2S/arsenic) requires certified clean holds with no unknown residues; general cargo history unknown — manual surveyor review required"
+  }
+]

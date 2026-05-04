@@ -1,0 +1,121 @@
+[
+  {
+    "previous": "pipes",
+    "next": "grain",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Iron oxide stain and dunnage/packing residue from pipe stowage — food-grade inspection will reject holds without grain-clean standard; coating damage debris (epoxy/FBE fragments) not acceptable in food cargo. Manual surveyor review required."
+  },
+  {
+    "previous": "pipes",
+    "next": "steel",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Both ferrous metal products (Group C); normal clean acceptable. Iron oxide stain from pipes is cosmetically similar to mill scale from steel — no contamination mechanism. Symmetric: steel→pipes also compatible."
+  },
+  {
+    "previous": "pipes",
+    "next": "iron-ore",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Pipes listed in iron-ore compatible_with; iron oxide chemistry compatible with pipe residue. Normal clean sufficient — no food-grade or chemical sensitivity involved. Symmetric."
+  },
+  {
+    "previous": "pipes",
+    "next": "dri",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "DRI is self-heating (Group B) and reacts with moisture and oxygen; any metallic dust or coating fragments from pipes could introduce contamination into the inert gas atmosphere required for DRI. DRI profile lists no compatible cargoes and recommends dedicated voyages. Manual surveyor review required."
+  },
+  {
+    "previous": "pipes",
+    "next": "coal",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Pipes profile explicitly lists coal as incompatible; coal is Group B self-heating with black dust contamination — prior pipe voyage does not cause contamination of coal, but coal profile lists pipes as incompatible_with, indicating reverse asymmetry where coal brokers reject prior pipe holds due to hospital-clean requirements. Conservative: manual surveyor review required."
+  },
+  {
+    "previous": "pipes",
+    "next": "petcoke",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Pipes profile explicitly lists petcoke as incompatible; petcoke brokers require thorough prior-cargo inspection and pipe dunnage/coating residue may interfere. Petcoke profile lists pipes as incompatible_with. Conservative bias applied."
+  },
+  {
+    "previous": "pipes",
+    "next": "fertilizer",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Pipes profile lists fertilizer as incompatible; fertilizer profile lists pipes as incompatible_with. AN-based fertilizers require hospital-clean holds free of metal contamination — iron oxide stain and epoxy coating fragments from pipes are unacceptable contaminants."
+  },
+  {
+    "previous": "pipes",
+    "next": "cement",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Pipes profile lists cement as incompatible; cement (Group C) requires bone-dry, dust-free holds — dunnage residue and protective cap fragments from pipe cargo introduce organics/plastics incompatible with cement quality. Cement also highly moisture-sensitive and any pipe coating residue is unacceptable."
+  },
+  {
+    "previous": "pipes",
+    "next": "sulphur",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Sulphur (Group B, flammable) requires holds free of organic contamination — epoxy/FBE coating fragments and dunnage from pipe cargo present a contamination and fire hazard. Sulphur profile lists steel as incompatible (corrosion via H2SO4); pipes are steel/iron alloy and corrosion risk applies equally. Manual surveyor review required."
+  },
+  {
+    "previous": "pipes",
+    "next": "scrap",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Scrap profile lists pipes as compatible_with; both are ferrous metal cargoes (Group B/C). Iron oxide and dunnage residue from pipes are acceptable contaminants for scrap. Normal clean sufficient. Symmetric."
+  },
+  {
+    "previous": "pipes",
+    "next": "bauxite",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Bauxite (Group A, liquefaction risk) requires TML-certified holds; pipes are not listed in bauxite compatible_with. Protective coating fragments (epoxy/FBE) from pipes are organic contaminants unacceptable for bauxite — aluminium oxide ore is contamination-sensitive. Conservative bias: manual surveyor review required."
+  },
+  {
+    "previous": "pipes",
+    "next": "general",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "General cargo (broker term, Group C equivalent) listed as compatible with pipes in general profile (compatible_with includes pipes). Low contamination risk from iron oxide stain and dunnage residue for miscellaneous/project cargo. Case-by-case actual cargo review recommended per general profile broker notes."
+  },
+  {
+    "previous": "pipes",
+    "next": "sugar",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Sugar requires grain-clean equivalent holds (food-grade); pipes profile lists sugar as incompatible. Iron oxide stain and epoxy/FBE coating fragments from pipe dunnage/caps are chemical contaminants that will cause food-grade inspection rejection. Symmetric with grain incompatibility."
+  },
+  {
+    "previous": "pipes",
+    "next": "salt",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Salt profile lists pipes as incompatible_with — chloride residue from prior salt is the concern in the reverse direction, but pipes→salt also problematic: iron oxide and metallic residue from pipes accelerates corrosion of NaCl in holds, and food-grade sea salt requires contamination-free conditions. Conservative bias applied."
+  },
+  {
+    "previous": "pipes",
+    "next": "limestone",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Limestone profile lists pipes as compatible_with; limestone is one of the cleanest bulk cargoes (Group C, low contamination risk). Normal clean removes iron oxide and dunnage residue adequately. Alkaline limestone dust is chemically inert relative to pipe residues. Symmetric."
+  },
+  {
+    "previous": "pipes",
+    "next": "manganese ore",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Manganese ore (Group A fines, liquefaction risk) requires TML certificate; pipes not listed in manganese ore compatible_with. Dark MnO2 dust contamination from prior manganese would be the reverse risk, but pipes→manganese is also incompatible: organic dunnage and epoxy coating fragments are unacceptable in ore fines. Manual surveyor review required."
+  },
+  {
+    "previous": "pipes",
+    "next": "copper concentrate",
+    "compatible": false,
+    "extra_clean": false,
+    "reason": "Copper concentrate (Group A + B dual hazard) has H2S release risk and arsenic/heavy metal contamination — dedicated voyages strongly preferred per broker notes. Pipes not listed in copper concentrate compatible_with (which lists no compatible cargoes). Any prior cargo is suspect; manual surveyor review required."
+  }
+]

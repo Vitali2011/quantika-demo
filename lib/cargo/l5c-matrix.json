@@ -1,133 +1,18 @@
 {
   "_meta": {
-    "version": "wave-γ-2 IMSBC skeleton (A4 hybrid)",
-    "source": "IMSBC Code (IMO 2008) + broker rules of thumb. Variants and aliases resolved via TAXONOMY in l5c-matrix.ts (B2 hierarchy).",
-    "wildcard_semantics": "C1 symmetric — `*→X` rules apply to BOTH directions (X→* derived). Exact-match entries take precedence for compatibility verdict; extra_clean is OR'd from applicable wildcards.",
-    "next_phase": "wave-γ-3 will add user-supplied top-50 broker overrides for Dubai/MENA freight forwarders."
+    "version": "wave-γ-data-l5c-v1: 306 IMSBC-grounded + Haiku-validated pairs",
+    "source": "IMSBC Code (web-search hybrid: Marine Insight, BIMCO, P&I clubs, Wikipedia + Sonnet 4.6 training data) → 18 cargo profiles → 18× parallel pair generation → fail-closed symmetric merge → Haiku 4.5 cross-check. Variants/aliases via TAXONOMY in l5c-matrix.ts.",
+    "wildcard_semantics": "C1 symmetric (unchanged from γ-2). Direct *→X contributes verdict; inverted *→X (matched against previous=X) contributes extra_clean and incompat-block but NOT compat:true.",
+    "symmetric_resolution": "fail-closed: если X→Y compat:false ИЛИ Y→X compat:false — обе пары false. Safer для bi-directional contamination (residue stays in hold regardless of order).",
+    "next_phase": "wave-γ-data-broker-review will incorporate Dubai/MENA broker spot-check decisions (current Haiku disagreement: 0/306 — broker review nonetheless recommended for high-value asymmetric pairs)."
   },
   "pairs": [
-    {
-      "previous": "DRI",
-      "next": "grain",
-      "compatible": false,
-      "reason": "Iron oxide contamination, food-grade rejected"
-    },
-    {
-      "previous": "coal",
-      "next": "grain",
-      "compatible": false,
-      "extra_clean": true,
-      "reason": "Black residue contamination"
-    },
-    { "previous": "coal", "next": "bauxite", "compatible": true, "extra_clean": false },
-    {
-      "previous": "bauxite",
-      "next": "grain",
-      "compatible": true,
-      "extra_clean": true,
-      "reason": "Requires hospital clean"
-    },
-    { "previous": "sugar", "next": "scrap", "compatible": true, "extra_clean": false },
-    {
-      "previous": "scrap",
-      "next": "sugar",
-      "compatible": false,
-      "extra_clean": true,
-      "reason": "Sharp residue + contamination risk"
-    },
-    {
-      "previous": "fertilizer",
-      "next": "grain",
-      "compatible": false,
-      "extra_clean": true,
-      "reason": "Cross-contamination, food-grade rejected"
-    },
-    {
-      "previous": "petcoke",
-      "next": "grain",
-      "compatible": false,
-      "extra_clean": true,
-      "reason": "Carbon residue"
-    },
-    { "previous": "salt", "next": "steel", "compatible": false, "reason": "Corrosion risk" },
-    { "previous": "iron-ore", "next": "grain", "compatible": true, "extra_clean": true },
-    {
-      "previous": "steel",
-      "next": "pipes",
-      "compatible": true,
-      "extra_clean": false,
-      "reason": "Both ferrous, low cross-contamination risk"
-    },
     {
       "previous": "*",
       "next": "DRI",
       "compatible": true,
       "extra_clean": true,
       "reason": "DRI dust-prone, requires extra clean"
-    },
-
-    {
-      "previous": "cement",
-      "next": "grain",
-      "compatible": false,
-      "extra_clean": true,
-      "reason": "Alkalinity / fine dust contamination"
-    },
-    {
-      "previous": "sulphur",
-      "next": "grain",
-      "compatible": false,
-      "extra_clean": true,
-      "reason": "Sulphur residue + toxicity for food cargo"
-    },
-    {
-      "previous": "sulphur",
-      "next": "steel",
-      "compatible": false,
-      "extra_clean": true,
-      "reason": "Sulphur acidity corrodes steel"
-    },
-    {
-      "previous": "salt",
-      "next": "grain",
-      "compatible": true,
-      "extra_clean": true,
-      "reason": "Hospital clean required to avoid salt residue"
-    },
-    {
-      "previous": "limestone",
-      "next": "grain",
-      "compatible": true,
-      "extra_clean": true,
-      "reason": "Limestone dust requires extra clean"
-    },
-    {
-      "previous": "phosphate",
-      "next": "grain",
-      "compatible": false,
-      "extra_clean": true,
-      "reason": "Phosphate dust + radiation concern, food-grade rejected"
-    },
-    {
-      "previous": "copper concentrate",
-      "next": "grain",
-      "compatible": false,
-      "extra_clean": true,
-      "reason": "Heavy-metal contamination"
-    },
-    {
-      "previous": "manganese ore",
-      "next": "grain",
-      "compatible": true,
-      "extra_clean": true,
-      "reason": "Hospital clean required"
-    },
-    {
-      "previous": "scrap",
-      "next": "grain",
-      "compatible": false,
-      "extra_clean": true,
-      "reason": "Sharp ferrous residue + oils, food-grade rejected"
     },
     {
       "previous": "*",
@@ -136,78 +21,2042 @@
       "extra_clean": true,
       "reason": "Cement requires dry/dust-free hold (symmetric: also applies before cement loadouts)"
     },
-    { "previous": "grain", "next": "grain", "compatible": true, "extra_clean": false },
     {
-      "previous": "steel",
+      "previous": "bauxite",
+      "next": "cement",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Silica and aluminium oxide dust from bauxite react with cement chemistry — quality impact; cement profiles list bauxite as incompatible (alkaline vs. aluminate chemistry conflict)"
+    },
+    {
+      "previous": "bauxite",
+      "next": "coal",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Coal profiles explicitly list bauxite as compatible; both bulk ore-class cargoes, normal clean sufficient — symmetric"
+    },
+    {
+      "previous": "bauxite",
+      "next": "copper concentrate",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Copper concentrate incompatible with bauxite per profiles; residual bauxite moisture activates sulphide chemistry — H2S generation risk; copper concentrate requires dedicated voyage"
+    },
+    {
+      "previous": "bauxite",
+      "next": "dri",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "DRI extremely reactive with moisture; bauxite high moisture-sensitivity leaves residual damp — H2 gas generation risk; DRI profiles list bauxite as incompatible (Group A→B reaction hazard)"
+    },
+    {
+      "previous": "bauxite",
+      "next": "fertilizer",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Red iron oxide and silica dust contamination — fertilizer (especially AN-based) requires hospital clean; bauxite residue raises corrosion risk in hygroscopic fertilizer; conservative fail-closed"
+    },
+    {
+      "previous": "bauxite",
+      "next": "general",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "General cargo chemistry unknown; red dust staining and residual moisture create contamination risk for any packaged/project cargo — manual surveyor review required"
+    },
+    {
+      "previous": "bauxite",
       "next": "grain",
       "compatible": true,
       "extra_clean": true,
-      "reason": "Mill scale + rust residue requires hospital clean for food"
+      "reason": "Bauxite red-dust residue requires hospital clean before food-grade grain loading; compatible with extra hospital clean per broker override (surveyor must confirm hold cleanliness)"
     },
-    { "previous": "grain", "next": "steel", "compatible": true, "extra_clean": false },
-
     {
-      "previous": "general",
-      "next": "general",
+      "previous": "bauxite",
+      "next": "iron-ore",
       "compatible": true,
       "extra_clean": false,
-      "reason": "General↔general — varied benign mixed cargo"
+      "reason": "Both iron oxide-bearing ore cargoes — chemically similar, normal clean acceptable; symmetric (iron-ore→bauxite also compatible per profiles)"
+    },
+    {
+      "previous": "bauxite",
+      "next": "limestone",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Limestone profiles list bauxite as compatible; both alkaline oxide minerals, chemically inert toward each other — normal clean acceptable; symmetric"
+    },
+    {
+      "previous": "bauxite",
+      "next": "manganese ore",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Manganese ore profiles list bauxite as compatible; both dense oxide ores, similar contamination profile — normal clean acceptable; symmetric"
+    },
+    {
+      "previous": "bauxite",
+      "next": "petcoke",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Petcoke profiles list bauxite as compatible; no chemical cross-contamination between aluminium oxide dust and carbon/sulphur coke — normal clean sufficient"
+    },
+    {
+      "previous": "bauxite",
+      "next": "pipes",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "No chemical incompatibility; red dust must be removed before pipes (threaded ends / protective caps vulnerable to abrasive residue); standard wash + inspection sufficient ⟵ Bauxite (Group A, liquefaction risk) requires TML-certified holds; pipes are not listed in bauxite compatible_with. Protective coating fragments (epoxy/FBE) from pipes are organic contaminants unacceptable for bauxite — aluminium oxide ore is contamination-sensitive. Conservative bias: manual surveyor review required. [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "bauxite",
+      "next": "salt",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Salt profiles require clean holds for food-grade sea salt; red dust contamination from bauxite causes food-grade rejection — manual surveyor review required for industrial grade salt only"
+    },
+    {
+      "previous": "bauxite",
+      "next": "scrap",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Scrap profiles list bauxite as compatible; iron oxide dust does not add meaningful contamination to already mixed-metal scrap — normal clean acceptable"
+    },
+    {
+      "previous": "bauxite",
+      "next": "steel",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "No chemical incompatibility; abrasive red dust staining requires thorough wash before steel coils to avoid surface contamination claims — symmetric (steel→bauxite also compatible)"
+    },
+    {
+      "previous": "bauxite",
+      "next": "sugar",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Red iron oxide and silica dust — food-grade rejection; sugar requires grain-clean standard, bauxite residue staining prevents pass without intensive wash; hospital-clean often required"
+    },
+    {
+      "previous": "bauxite",
+      "next": "sulphur",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Residual moisture from bauxite reacts with sulphur dust to form H2SO4 — hold corrosion; sulphur profiles include bauxite in incompatible set via conservative moisture mechanism"
+    },
+    {
+      "previous": "cement",
+      "next": "coal",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Cement listed in coal incompatible_with; alkaline cement residue neutralises acid-wash required for coal holds; cross-contamination of black carbon into cement-stained holds degrades both cargoes"
+    },
+    {
+      "previous": "cement",
+      "next": "copper concentrate",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Cement listed in copper concentrate incompatible_with; calcium hydroxide residue raises hold pH disrupting copper sulphide concentrate chemistry; acid wash required for copper concentrate conflicts with cement calcium deposits"
+    },
+    {
+      "previous": "cement",
+      "next": "dri",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Cement listed in dri incompatible_with; calcium hydroxide residue reacts with DRI metallic iron surfaces; moisture-activating cement deposits risk H2 generation in humid holds"
+    },
+    {
+      "previous": "cement",
+      "next": "fertilizer",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Cement listed in fertilizer incompatible_with; alkaline cement residue reacts with acidic DAP/MAP fertilizer; AN-based fertilizers incompatible with alkaline contamination; manual surveyor review required"
+    },
+    {
+      "previous": "cement",
+      "next": "general",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Cement high-dust with calcium hydroxide residue; general cargo chemistry variable — manual surveyor review required per general cargo broker_notes; fail-closed until actual cargo declared"
+    },
+    {
+      "previous": "cement",
+      "next": "grain",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Alkaline calcium hydroxide residue destroys grain food-grade standard; cement dust absorption into organic cargo causes contamination rejection; fail-closed per food-grade rule"
+    },
+    {
+      "previous": "cement",
+      "next": "limestone",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Cement profile lists limestone as compatible; both calcium-based alkaline cargoes — chemistry compatible; extra_clean required (cement high-dust) to remove cured calcium deposits before limestone; symmetric"
+    },
+    {
+      "previous": "cement",
+      "next": "manganese ore",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Cement listed in manganese ore incompatible_with; alkaline cement residue reacts with manganese oxides altering MnO2/Mn2O3 chemistry; calcium contamination degrades manganese ore grade"
+    },
+    {
+      "previous": "cement",
+      "next": "petcoke",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Cement listed in petcoke incompatible_with; cement dust contaminates oily petcoke surface reducing product quality; alkaline-acid reaction between cement residue and sulphurous petcoke"
+    },
+    {
+      "previous": "cement",
+      "next": "salt",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Cement profile lists salt as compatible; salt profile lists cement as compatible — symmetric; extra_clean required (cement high-dust) — acid descale + fresh water rinse before salt loading; chloride from salt not problematic for subsequent cement-free cargo"
+    },
+    {
+      "previous": "cement",
+      "next": "scrap",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Cement listed in scrap incompatible_with; calcium hydroxide deposits fuse to metal fragments and contaminate scrap with non-metallic inclusions; acid descale required but conflicts with scrap hold prep"
+    },
+    {
+      "previous": "cement",
+      "next": "steel",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Cement listed in steel incompatible_with; calcium silicate dust abrades coil surfaces and deposits on bare metal; cement-to-steel requires hospital clean + acid descale before steel loading"
+    },
+    {
+      "previous": "cement",
+      "next": "sugar",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Sugar profile explicitly lists cement as incompatible; even 0.001% alkaline cement trace destroys sucrose setting; food-grade fail-closed; acid descale insufficient to meet sugar surveyor standard"
+    },
+    {
+      "previous": "coal",
+      "next": "bauxite",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Coal and bauxite are mutually compatible bulk cargoes; normal hold clean sufficient — no extra hospital clean required per broker standard"
+    },
+    {
+      "previous": "coal",
+      "next": "cement",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Carbon contamination disrupts cement chemistry; coal dust listed in cement incompatible_with; alkaline cement hold prep incompatible with coal carbon residue — mutual contamination risk"
+    },
+    {
+      "previous": "coal",
+      "next": "copper concentrate",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Coal listed in copper concentrate incompatible_with; carbon residue contaminates sulphide concentrate; copper concentrate dual-hazard (Group A+B, H2S, arsenic) requires dedicated voyage — coal previous cargo disqualifies without surveyor review"
+    },
+    {
+      "previous": "coal",
+      "next": "dri",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "DRI self-heats with carbon contamination; coal carbon residue + moisture risk triggers DRI oxidation (>900°C) and H2 gas generation; listed as incompatible in both profiles; dedicated voyage required for DRI"
+    },
+    {
+      "previous": "coal",
+      "next": "fertilizer",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Carbon residue contaminates hygroscopic fertilizer; coal sulphur residue reacts with ammonium nitrate-based fertilizers (oxidiser risk); listed in coal incompatible_with"
+    },
+    {
+      "previous": "coal",
+      "next": "grain",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Black carbon dust contamination — food-grade rejection guaranteed; coal sulphur residue and odour cannot be removed to grain-clean standard without alkaline degreaser wash + surveyor sign-off; fail-closed"
+    },
+    {
+      "previous": "coal",
+      "next": "iron-ore",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Symmetric compatibility (coal↔iron-ore listed as compatible in both profiles); both industrial bulk, no food-grade sensitivity; extra_clean due to coal high dust profile before next loading"
+    },
+    {
+      "previous": "coal",
+      "next": "limestone",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Limestone is one of the cleanest industrial bulks (Group C, inert); coal listed in limestone compatible_with (coal); extra_clean due to coal high dust — alkaline degreaser wash required before limestone loading"
+    },
+    {
+      "previous": "coal",
+      "next": "manganese ore",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Symmetric compatibility (coal↔manganese ore listed as compatible in both profiles); both high-dust industrial ores; no chemical incompatibility; extra_clean due to coal high dust before manganese ore loading"
+    },
+    {
+      "previous": "coal",
+      "next": "petcoke",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Symmetric compatibility (coal↔petcoke listed as compatible in both profiles); both high-dust carbonaceous bulk cargoes with similar cleaning requirements; extra_clean due to coal high dust"
+    },
+    {
+      "previous": "coal",
+      "next": "pipes",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Carbon dust contaminates threaded pipe ends and epoxy/FBE protective coatings; hospital clean required for pipes but coal residue makes it unreliable; listed in coal incompatible_with"
+    },
+    {
+      "previous": "coal",
+      "next": "salt",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Food-grade sea salt requires grain-clean equivalent; coal carbon and sulphur residue cannot be reliably removed to food-grade standard; coal broker notes require full wash + surveyor sign-off before food cargoes; fail-closed"
+    },
+    {
+      "previous": "coal",
+      "next": "scrap",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Symmetric compatibility (coal→scrap listed in coal compatible_with, scrap→coal in scrap compatible_with); both industrial bulk; oil degreasing needed after scrap anyway; extra_clean due to coal high dust"
+    },
+    {
+      "previous": "coal",
+      "next": "steel",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Coal dust and carbon staining pit hold surfaces; steel coils require hospital-clean holds — even trace abrasive coal fines cause surface damage and cargo damage claims; listed in coal incompatible_with"
+    },
+    {
+      "previous": "coal",
+      "next": "sugar",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Black carbon dust contamination of food-grade sugar; coal sulphur residue causes odour transfer; sugar listed in coal incompatible_with; grain-clean standard barely achievable after coal without multiple wash cycles"
+    },
+    {
+      "previous": "coal",
+      "next": "sulphur",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Both self-heating (coal CH4/CO, sulphur flammable solid UN 1350); coal carbon residue creates ignition risk with sulphur dust — explosion hazard; sulphur profile lists coal as incompatible"
+    },
+    {
+      "previous": "copper concentrate",
+      "next": "bauxite",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Sulphide acid contamination of aluminium oxide ore; arsenic/heavy metal residue unacceptable in bauxite refining feed; copper concentrate incompatible_with bauxite per profile (symmetric)"
+    },
+    {
+      "previous": "copper concentrate",
+      "next": "cement",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Sulphide/acid residue reacts with calcium silicate binders, degrading cement quality; copper concentrate incompatible_with cement per profile (symmetric)"
+    },
+    {
+      "previous": "copper concentrate",
+      "next": "coal",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Sulphide acid residue + coal self-heating creates H2S/methane compound hazard; copper concentrate incompatible_with coal per profile (symmetric: coal incompatible_with copper concentrate)"
+    },
+    {
+      "previous": "copper concentrate",
+      "next": "dri",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "H2S gas from sulphide residue reacts violently with metallic iron (DRI); copper concentrate incompatible_with dri per profile — self-heating + H2S combination is critical safety hazard"
+    },
+    {
+      "previous": "copper concentrate",
+      "next": "fertilizer",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Heavy metal (arsenic/lead/zinc) trace contamination unacceptable for fertilizer; H2S residue reacts with ammonium compounds; copper concentrate incompatible_with fertilizer per profile"
+    },
+    {
+      "previous": "copper concentrate",
+      "next": "general",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Dual-hazard prior cargo (Group A + H2S/heavy metals): manual surveyor review required per broker notes for general cargo; fail-closed bias applied — actual cargo composition unknown"
+    },
+    {
+      "previous": "copper concentrate",
+      "next": "grain",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Sulphide/acid residue + arsenic/heavy metal trace contamination — food-grade rejection certain; copper concentrate incompatible_with grain per profile"
+    },
+    {
+      "previous": "copper concentrate",
+      "next": "iron-ore",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Cross-contamination: sulphide/H2S reaction with iron oxide; copper concentrate incompatible_with iron-ore per profile (symmetric: iron-ore incompatible_with copper concentrate)"
+    },
+    {
+      "previous": "copper concentrate",
+      "next": "limestone",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Sulphide acid residue reacts with calcium carbonate (limestone) producing CO2/H2S; alkaline limestone partially neutralises acid but leaves heavy metal salts; limestone incompatible_with copper concentrate per profile (symmetric)"
+    },
+    {
+      "previous": "copper concentrate",
+      "next": "manganese ore",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Sulphide/acid residue reacts with manganese oxides producing toxic MnO vapour; heavy metal cross-contamination; manganese ore incompatible_with copper concentrate per profile (symmetric)"
+    },
+    {
+      "previous": "copper concentrate",
+      "next": "petcoke",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Both are dirty industrial bulk; petcoke not in copper concentrate incompatible_with list — full acid wash required post copper concentrate before petcoke loading; manual surveyor review recommended given dual-hazard prior cargo ⟵ Copper concentrate is listed in petcoke's incompatible_with list (via coal similarity) and profiles mark copper concentrate as requiring dedicated voyages. Petcoke sulphur residue combined with copper sulphide chemistry (H2S generation risk) creates dual toxic hazard. Copper concentrate requires full acid wash of holds — incompatible sequence. [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "copper concentrate",
+      "next": "pipes",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Acidic sulphide residue damages pipe coatings and threaded ends — hospital clean + acid wash mandatory; parallel to steel case, fail-closed surveyor sign-off required ⟵ Copper concentrate (Group A + B dual hazard) has H2S release risk and arsenic/heavy metal contamination — dedicated voyages strongly preferred per broker notes. Pipes not listed in copper concentrate compatible_with (which lists no compatible cargoes). Any prior cargo is suspect; manual surveyor review required. [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "copper concentrate",
+      "next": "salt",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Copper sulphide residue + sodium chloride forms soluble copper chlorides — contaminates salt, corrosive to hold steelwork; copper concentrate incompatible_with salt per profile"
+    },
+    {
+      "previous": "copper concentrate",
+      "next": "scrap",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Acidic sulphide residue accelerates corrosion of mixed scrap metals; arsenic/heavy metal cross-contamination reported in metal recycling chains; copper concentrate incompatible_with scrap per profile"
+    },
+    {
+      "previous": "copper concentrate",
+      "next": "steel",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Acidic sulphide residue accelerates corrosion on steel surfaces — hospital clean + acid wash required before steel loading; copper concentrate extra_clean_required_after=true applies (symmetric risk for surface quality) ⟵ Copper concentrate profiles list steel in incompatible_with via broad exclusion list; H2S gas released from copper sulphides (CuFeS2) is toxic and reacts with mill scale moisture; arsenic/heavy metal trace contamination from concentrate would render any subsequent steel cargo a damage claim. Dedicated voyage strongly preferred per copper concentrate broker notes. [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "copper concentrate",
+      "next": "sugar",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Heavy metal trace contamination (arsenic, lead) causes food-grade rejection; H2S odour transfer unacceptable; copper concentrate incompatible_with sugar per profile (symmetric: sugar incompatible_with copper concentrate)"
+    },
+    {
+      "previous": "copper concentrate",
+      "next": "sulphur",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Copper sulphide residue + elemental sulphur: combined H2S and SO2 gas generation risk; copper concentrate incompatible_with sulphur per profile (symmetric: sulphur incompatible_with copper concentrate)"
+    },
+    {
+      "previous": "dri",
+      "next": "cement",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "DRI explicitly incompatible with cement; residual DRI metallic iron reacts with cement moisture to generate H2 gas (Fe + H2O → FeO + H2); iron contamination also disrupts cement chemistry and setting quality"
+    },
+    {
+      "previous": "dri",
+      "next": "coal",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "DRI explicitly incompatible with coal; both are self-heating Group B cargoes — residual DRI metallic iron in hold reacts with coal moisture generating H2 gas and heat, compounding spontaneous combustion risk"
+    },
+    {
+      "previous": "dri",
+      "next": "copper concentrate",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Mutual incompatibility: DRI incompatible with copper concentrate; copper concentrate releases H2S on water contact — reaction with residual DRI metallic iron creates toxic atmosphere and exothermic sulphide formation (Fe + H2S → FeS + H2)"
+    },
+    {
+      "previous": "dri",
+      "next": "fertilizer",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "DRI explicitly incompatible with fertilizer; iron oxide dust contaminates fertilizer granules; AN-based fertilizers are oxidisers — contact with metallic iron residues from DRI creates exothermic decomposition risk"
+    },
+    {
+      "previous": "dri",
+      "next": "general",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "DRI broker notes require dedicated voyages and thorough hold inspection before any cargo; 'general' category is undefined chemistry — manual surveyor review required to assess specific commodity against DRI residue reactivity"
+    },
+    {
+      "previous": "dri",
+      "next": "grain",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Iron oxide dust contamination of food-grade cargo; DRI explicitly incompatible with grain per IMSBC broker rules — grain surveyor will reject hold with any metallic residue"
+    },
+    {
+      "previous": "dri",
+      "next": "iron-ore",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Mutual incompatibility per profiles (iron-ore incompatible_with dri, dri incompatible_with iron-ore); DRI metallic iron reacts with moisture potentially released by iron ore fines, self-heating risk persists in hold residues"
+    },
+    {
+      "previous": "dri",
+      "next": "limestone",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Conservative bias applied: DRI broker notes require dedicated voyages and thorough hold inspection; limestone is alkaline — alkaline environment can accelerate iron oxidation in DRI residues; manual surveyor review required before loading"
+    },
+    {
+      "previous": "dri",
+      "next": "manganese ore",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "DRI explicitly incompatible with manganese ore; manganese ore fines (Group A) require moisture control — DRI residues react with water, H2 generation risk; dense Group A cargo requires hold integrity uncompromised by prior reactive cargo"
+    },
+    {
+      "previous": "dri",
+      "next": "petcoke",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "DRI explicitly incompatible with petcoke; oily petcoke residues incompatible with DRI self-heating chemistry; both Group B cargoes — residual DRI reacts with moisture in green petcoke, fire risk"
+    },
+    {
+      "previous": "dri",
+      "next": "salt",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Salt explicitly incompatible with dri per profiles; chloride ions from NaCl accelerate oxidation of residual DRI metallic iron, generating heat and H2 gas — salt brine in hold is particularly aggressive toward DRI residues"
+    },
+    {
+      "previous": "dri",
+      "next": "steel",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Both ferrous cargoes — no chemical cross-contamination risk; iron oxide dust from DRI does not harm steel product, but thorough hold inspection required after DRI self-heating cargo (extra_clean mandatory per DRI broker notes) ⟵ Cutting oil residue from steel coils and moisture from mill scale react with DRI's highly porous metallic iron surface, accelerating self-heating (DRI Group B, self-heating to >900°C); dedicated voyage required per IMSBC DRI schedule. [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "dri",
+      "next": "sugar",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "DRI explicitly incompatible with sugar (food-grade); iron oxide dust and metallic residues cause food-grade rejection; sugar moisture triggers residual DRI reactivity (H2 generation risk in sealed hold)"
+    },
+    {
+      "previous": "fertilizer",
+      "next": "bauxite",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Bauxite profiles list fertilizer as explicitly incompatible; nitrogen/phosphorus residue cross-contaminates aluminium ore; thorough acid/alkaline wash required — manual surveyor review recommended"
+    },
+    {
+      "previous": "fertilizer",
+      "next": "cement",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Fertilizer residue (acidic phosphate/nitrate) destroys cement setting chemistry; cement profiles list fertilizer as explicitly incompatible"
+    },
+    {
+      "previous": "fertilizer",
+      "next": "coal",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Coal profiles list fertilizer as explicitly incompatible; ammonium nitrate-based fertilizer is an oxidiser — contact with coal creates fire/explosion hazard (oxidiser + combustible material)"
+    },
+    {
+      "previous": "fertilizer",
+      "next": "copper concentrate",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Copper concentrate profiles list fertilizer as explicitly incompatible; sulphide concentrate + ammonium nitrate (oxidiser) creates H2S toxic gas risk; dedicated voyage required for copper concentrate regardless of prior cargo"
+    },
+    {
+      "previous": "fertilizer",
+      "next": "dri",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "DRI is self-heating (Group B) and reacts violently with moisture; hygroscopic fertilizer residue introduces moisture risk; DRI profiles list fertilizer as explicitly incompatible"
+    },
+    {
+      "previous": "fertilizer",
+      "next": "general",
+      "compatible": false,
+      "extra_clean": false,
+      "reason": "General cargo chemistry is unspecified and variable; fertilizer residue (hygroscopic, corrosive, oxidiser traces) is unsafe for unknown cargo types — manual surveyor review required (conservative bias)"
+    },
+    {
+      "previous": "fertilizer",
+      "next": "grain",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Nitrogen/phosphorus chemical residue causes food-grade rejection; even trace fertilizer contamination fails grain surveyor inspection — fertilizer profiles list grain as explicitly incompatible"
+    },
+    {
+      "previous": "fertilizer",
+      "next": "iron-ore",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Ammonium/phosphate residue incompatible with iron ore cargo; cross-contamination risk; iron-ore profiles list fertilizer as incompatible — manual surveyor review required"
+    },
+    {
+      "previous": "fertilizer",
+      "next": "limestone",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Limestone profiles list fertilizer as compatible (symmetric: fertilizer profiles also list limestone as compatible); CaCO3 is chemically inert with fertilizer residues under normal conditions; standard clean required"
+    },
+    {
+      "previous": "fertilizer",
+      "next": "manganese ore",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Manganese ore profiles list fertilizer as explicitly incompatible; nitrogen/phosphate residue cross-contaminates ore; manganese oxide reacts with oxidising agents (ammonium nitrate) — manual surveyor review required"
+    },
+    {
+      "previous": "fertilizer",
+      "next": "petcoke",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Ammonium nitrate-based fertilizer (oxidiser) + petcoke (carbonaceous combustible) = fire/explosion hazard; petcoke profiles list fertilizer as explicitly incompatible"
+    },
+    {
+      "previous": "fertilizer",
+      "next": "pipes",
+      "compatible": false,
+      "extra_clean": false,
+      "reason": "Hygroscopic fertilizer residue causes corrosion of pipe threads and protective coatings (epoxy/FBE); pipes profiles list fertilizer as explicitly incompatible"
+    },
+    {
+      "previous": "fertilizer",
+      "next": "salt",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Salt profiles list fertilizer as compatible (symmetric: fertilizer profiles also list salt as compatible); both are inorganic mineral cargoes; standard hospital clean required before loading, but no chemical incompatibility"
+    },
+    {
+      "previous": "fertilizer",
+      "next": "scrap",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Hygroscopic fertilizer residue causes corrosion; ammonium/phosphate contamination of scrap hold oil residues creates unpredictable reactive mixtures; scrap profiles list fertilizer as explicitly incompatible"
+    },
+    {
+      "previous": "fertilizer",
+      "next": "steel",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Hygroscopic moisture retention + ammonium/phosphate residue causes corrosion and surface contamination; steel profiles list fertilizer as explicitly incompatible"
+    },
+    {
+      "previous": "fertilizer",
+      "next": "sugar",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Chemical contamination of food-grade cargo; nitrogen/phosphate fertilizer residue causes sugar surveyor rejection; sugar profiles explicitly list fertilizer as incompatible"
+    },
+    {
+      "previous": "fertilizer",
+      "next": "sulphur",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Ammonium nitrate (oxidiser in some fertilizer grades) + sulphur (flammable solid, UN 1350) = severe fire/explosion hazard; sulphur profiles list fertilizer as incompatible"
+    },
+    {
+      "previous": "general",
+      "next": "bauxite",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Bauxite loading not sensitive to general cargo residues; no chemical incompatibility between aluminium oxide ore and typical mixed/project cargo; normal clean acceptable ⟵ General cargo chemistry unknown; red dust staining and residual moisture create contamination risk for any packaged/project cargo — manual surveyor review required [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "general",
+      "next": "copper concentrate",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Copper concentrate requires dedicated voyage per broker standard; dual-hazard cargo (Group A liquefaction + Group B H2S/arsenic) requires certified clean holds with no unknown residues; general cargo history unknown — manual surveyor review required"
+    },
+    {
+      "previous": "general",
+      "next": "fertilizer",
+      "compatible": false,
+      "extra_clean": false,
+      "reason": "Fertilizer (especially AN-based) requires hospital clean; general cargo may include incompatible oxidiser-adjacent goods or packaging contaminants; unknown hold history fails fertilizer surveyor requirement — manual surveyor review required"
     },
     {
       "previous": "general",
       "next": "grain",
       "compatible": true,
       "extra_clean": false,
-      "reason": "General cargo (no known hazardous prior) is benign for grain loadout"
-    },
-    {
-      "previous": "grain",
-      "next": "general",
-      "compatible": true,
-      "extra_clean": false,
-      "reason": "Grain residue is food-grade dust — benign for general cargo"
+      "reason": "General cargo (inert/varied) leaves no presumed chemical contamination; compatible with grain loading — surveyor pre-inspection standard applies"
     },
     {
       "previous": "general",
-      "next": "steel",
-      "compatible": true,
-      "extra_clean": false,
-      "reason": "General cargo is benign for steel"
+      "next": "iron-ore",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Iron ore is low contamination-sensitive for loading; general cargo leaves no chemical residue incompatible with iron oxides; normal clean sufficient ⟵ General cargo chemistry unknown; iron ore extra_clean_required_after=true means residual red iron oxide dust poses unquantified contamination risk — manual surveyor review required per general profile broker notes [symmetric fail-closed: reverse pair flagged risk]"
     },
     {
-      "previous": "steel",
-      "next": "general",
+      "previous": "general",
+      "next": "limestone",
       "compatible": true,
       "extra_clean": false,
-      "reason": "Mill scale is inert for general cargo"
+      "reason": "Limestone is chemically inert and not contamination-sensitive for loading; general cargo leaves no residue incompatible with CaCO3; normal clean acceptable; symmetric with limestone→general"
+    },
+    {
+      "previous": "general",
+      "next": "manganese ore",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Manganese ore not contamination-sensitive to prior general cargo; no chemical incompatibility; normal clean acceptable; TML certificate is shipper obligation independent of prior cargo ⟵ General cargo is undefined by chemistry — manganese oxide high-dust profile and persistent dark staining make it unsafe for miscellaneous/bagged/project cargo without surveyor sign-off; general profile mandates case-by-case manual surveyor review [symmetric fail-closed: reverse pair flagged risk]"
     },
     {
       "previous": "general",
       "next": "pipes",
       "compatible": true,
       "extra_clean": false,
-      "reason": "General cargo is benign for pipes"
+      "reason": "No chemical residue from general cargo; hospital clean achievable; threaded-end contamination risk absent if prior general was dry goods — surveyor pre-inspection standard applies"
+    },
+    {
+      "previous": "general",
+      "next": "salt",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Salt (industrial grade) tolerant of general cargo residues; normal clean + fresh water rinse sufficient; food-grade sea salt requires surveyor pre-inspection — conditional on actual prior general cargo type"
+    },
+    {
+      "previous": "general",
+      "next": "steel",
+      "compatible": false,
+      "extra_clean": false,
+      "reason": "General cargo (project, bagged, palletised) leaves no chemical contamination; holds require normal clean + hospital-clean standard before steel coils — achievable from general prior; symmetric with steel→general ⟵ General cargo chemistry is undefined by nature; mill scale, cutting oil, and packing material residues from steel coils may damage sensitive project or bagged goods in a mixed shipment. Manual surveyor review required per general's own broker notes — compatibility must be assessed case-by-case. [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "general",
+      "next": "sugar",
+      "compatible": false,
+      "extra_clean": false,
+      "reason": "Sugar requires grain-clean equivalent; general cargo may include alkaline, chemical or odour-generating goods — sugar is highly reactive to alkaline residues and susceptible to odour transfer; unknown cargo history fails sugar surveyor inspection (fail-closed)"
+    },
+    {
+      "previous": "grain",
+      "next": "bauxite",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Grain moisture residue introduces hold humidity that can elevate bauxite fines moisture content above TML (Group A liquefaction risk); red/brown bauxite dust requires extra_clean after high-moisture grain — manual surveyor review required before loading bauxite fines"
+    },
+    {
+      "previous": "grain",
+      "next": "cement",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Moisture from grain residue reacts with cement (calcium silicate) initiating premature hydration and calcium hydroxide deposition on hold surfaces; sugar traces in grain (even trace sucrose from damaged grain) can set-inhibit cement at 0.001% level"
+    },
+    {
+      "previous": "grain",
+      "next": "coal",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Grain moisture residue increases humidity in hold, accelerating coal self-heating (Group B, spontaneous combustion risk) and methane/CO emission; organic grain matter incompatible with coal ventilation safety protocol"
+    },
+    {
+      "previous": "grain",
+      "next": "copper concentrate",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Organic grain residue in contact with copper sulphide concentrate (CuFeS2) and moisture generates H2S (toxic gas, TLV 1 ppm); copper concentrate is dual-hazard (Group A liquefaction + Group B H2S/arsenic); dedicated voyage mandatory — grain residue is an absolute contraindication"
+    },
+    {
+      "previous": "grain",
+      "next": "dri",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Grain→DRI: compatible with extra hospital clean per broker rule; DRI dust-prone (*→DRI wildcard); organic residue must be fully removed before DRI loading (extra_clean mandatory)"
+    },
+    {
+      "previous": "grain",
+      "next": "fertilizer",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Organic grain residue (carbohydrate/protein) contaminates fertilizer (nitrogen/phosphorus compounds), creating chemical cross-contamination; ammonium nitrate-based fertilizers (Group B MHB OH) require hospital clean with no organic matter — prior grain cargo almost certain rejection"
+    },
+    {
+      "previous": "grain",
+      "next": "general",
+      "compatible": false,
+      "extra_clean": false,
+      "reason": "General cargo chemistry variable — organic grain residue (odour, mould spores, insect infestation risk) incompatible with unknown commodity mix; broker notes for 'general' explicitly require manual surveyor review per commodity pair"
+    },
+    {
+      "previous": "grain",
+      "next": "iron-ore",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Grain is chemically inert relative to iron ore; standard wash and dry removes organic residue before iron ore loading. extra_clean required: next cargo is high-dust (iron ore, Group A fines) and hold must be fully dry to avoid TML complications ⟵ Iron oxide (Fe2O3/Fe3O4) red dust contamination causes food-grade rejection; silica dust co-present; grain surveyor will refuse holds without full wash + dry + inspection [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "grain",
+      "next": "limestone",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Grain profile lists limestone as compatible; limestone is chemically inert (CaCO3, Group C) and tolerates minor organic residue; standard wash removes grain residue before limestone loading. Asymmetric: limestone→grain is incompatible (alkaline dust), but grain→limestone acceptable ⟵ Alkaline CaCO3 dust residue can raise hold pH and cause chemical rejection by grain surveyors; grain profiles list limestone as incompatible due to food-grade contamination risk from alkaline dust. Extra wash + surveyor inspection required. [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "grain",
+      "next": "manganese ore",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Grain moisture residue risks elevating hold humidity, affecting manganese ore fines moisture content relative to TML (Group A liquefaction); dark manganese oxide dust (MnO2) contamination is health-hazard irreversible — extra_clean required; manual surveyor review required"
+    },
+    {
+      "previous": "grain",
+      "next": "petcoke",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Residual grain moisture can raise hold humidity above 55°C threshold for green petcoke self-heating (Group B); organic grain residue incompatible with petcoke oily-dust surface chemistry — manual surveyor review required"
+    },
+    {
+      "previous": "grain",
+      "next": "pipes",
+      "compatible": false,
+      "extra_clean": false,
+      "reason": "Organic grain residue and moisture risk corrosion of pipe threaded ends and protective coatings (epoxy, FBE); hospital clean standard for pipes cannot be reliably certified after grain cargo — manual surveyor review required"
+    },
+    {
+      "previous": "grain",
+      "next": "salt",
+      "compatible": false,
+      "extra_clean": false,
+      "reason": "Grain profile lists salt as compatible (grain→salt direction); grain is a clean food cargo leaving no chemical contamination that would harm industrial-grade salt; asymmetric note: salt→grain is incompatible (chloride residue would cause food-grade grain rejection), but grain→salt is acceptable with standard wash ⟵ Salt incompatible_with grain per profile; chloride residue and risk of food-grade rejection — grain surveyor requires odour-free, chemically neutral holds. Symmetric: grain profile also lists salt as incompatible. [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "grain",
+      "next": "scrap",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Organic grain residue promotes mould and fermentation in hold, incompatible with scrap metal surveyor inspection standards; oil/battery-acid contamination from scrap works in reverse — grain residue organics contaminate scrap classification. Manual surveyor review required"
+    },
+    {
+      "previous": "grain",
+      "next": "steel",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Grain residue is low-risk for steel; normal clean sufficient before steel coils loading — no extra clean required"
+    },
+    {
+      "previous": "grain",
+      "next": "sugar",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Both grain and sugar are food-grade Class C cargoes sharing compatible hold cleanliness standards (International Grain Code / sugar surveyor equivalent); symmetric compatibility confirmed in profiles. extra_clean required: next cargo (sugar) is contamination-sensitive — holds must be dry, odour-free, and inspected before loading"
+    },
+    {
+      "previous": "grain",
+      "next": "sulphur",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Grain organic residue and moisture promote H2SO4 formation when wet sulphur contacts hold surfaces; sulphur Group B (UN 1350, Class 4.1 flammable solid) — organic grain dust in contact with sulphur dust creates explosion hazard"
+    },
+    {
+      "previous": "iron-ore",
+      "next": "bauxite",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Bauxite profile lists iron-ore as compatible; both are iron-oxide-bearing ores with similar dust profiles (Group A); normal clean acceptable — symmetric pair"
+    },
+    {
+      "previous": "iron-ore",
+      "next": "cement",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Iron ore fines listed as incompatible with cement in both profiles; iron oxide and silica residue discolour and contaminate cement blend quality; alkaline cement also accelerates hold corrosion when mixed with ore moisture"
+    },
+    {
+      "previous": "iron-ore",
+      "next": "coal",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Both listed mutually compatible (iron-ore and coal profiles); normal clean acceptable — iron oxide dust does not contaminate coal quality; symmetric pair"
+    },
+    {
+      "previous": "iron-ore",
+      "next": "copper concentrate",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Iron-ore profile lists copper concentrate as incompatible; copper concentrate is dual-hazard (Group A + B, H2S generation, arsenic impurities); iron ore moisture residue risks activating sulphide reactions — dedicated voyage required"
+    },
+    {
+      "previous": "iron-ore",
+      "next": "dri",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Iron ore profile lists DRI as incompatible; iron oxide moisture residue reacts with metallic DRI sponge (Fe) triggering self-heating and H2 generation — safety-critical exclusion"
+    },
+    {
+      "previous": "iron-ore",
+      "next": "fertilizer",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Iron oxide dust and moisture residue from iron ore create corrosion risk for hygroscopic fertilizer; iron-ore profile lists fertilizer as incompatible; chemical contamination and caking risk"
+    },
+    {
+      "previous": "iron-ore",
+      "next": "general",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "General cargo chemistry unknown; iron ore extra_clean_required_after=true means residual red iron oxide dust poses unquantified contamination risk — manual surveyor review required per general profile broker notes"
+    },
+    {
+      "previous": "iron-ore",
+      "next": "grain",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Iron oxide dust requires extra hospital clean before grain loading; compatible with thorough wash + surveyor sign-off per IMSBC broker practice"
+    },
+    {
+      "previous": "iron-ore",
+      "next": "limestone",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Limestone profile lists iron-ore as compatible; both are inert mineral bulk cargoes with no reactive cross-contamination; normal clean acceptable — symmetric pair"
+    },
+    {
+      "previous": "iron-ore",
+      "next": "manganese ore",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Manganese ore profile lists iron-ore as compatible; both are oxide ores, Group A, similar dust/moisture profiles; normal clean acceptable — symmetric pair"
+    },
+    {
+      "previous": "iron-ore",
+      "next": "petcoke",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Petcoke profile lists iron-ore as compatible; both are industrial bulk with low cross-contamination risk; normal clean sufficient — iron oxide residue does not affect petcoke quality"
+    },
+    {
+      "previous": "iron-ore",
+      "next": "pipes",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Iron oxide dust damages protective epoxy/FBE pipe coatings and threaded end connections; hospital clean required — prior ore cargo is explicitly excluded in pipe charter parties"
+    },
+    {
+      "previous": "iron-ore",
+      "next": "salt",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Iron ore residue introduces iron oxide contamination into NaCl (salt); food-grade salt requires clean holds; iron oxide + chloride = accelerated hold corrosion; normal clean after ore insufficient for food-grade salt surveyor standard"
+    },
+    {
+      "previous": "iron-ore",
+      "next": "scrap",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Both profiles list each other as compatible; iron oxide residue does not materially degrade mixed ferrous scrap; normal clean acceptable — symmetric pair"
+    },
+    {
+      "previous": "iron-ore",
+      "next": "steel",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Iron ore fines leave abrasive red oxide residue on hold surfaces; hospital clean required before steel coils — even trace staining triggers cargo damage claims and mill scale disputes"
+    },
+    {
+      "previous": "iron-ore",
+      "next": "sugar",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Iron oxide dust contaminates food-grade sugar — red staining causes rejection; iron-ore listed in sugar incompatible_with; silica co-dust also unacceptable for food cargo"
+    },
+    {
+      "previous": "iron-ore",
+      "next": "sulphur",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Iron ore moisture residue reacts with sulphur to accelerate H2SO4 corrosion; sulphur profile requires dry clean holds; iron ore extra_clean_required_after=true makes residual moisture risk unacceptable without manual surveyor review"
+    },
+    {
+      "previous": "limestone",
+      "next": "bauxite",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Bauxite profiles list limestone as compatible. Both are mineral oxide/carbonate ores; CaCO3 residue does not impair aluminium hydroxide ore. Normal clean sufficient. Symmetric: bauxite→limestone also compatible."
+    },
+    {
+      "previous": "limestone",
+      "next": "cement",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Cement profiles list limestone as compatible. CaCO3 is a primary cement raw material; trace limestone residue is chemically benign to cement clinker. Normal clean sufficient. Symmetric: cement→limestone also compatible."
+    },
+    {
+      "previous": "limestone",
+      "next": "coal",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Coal profiles list limestone as compatible. Limestone residue is inert and does not impair carbonaceous cargo. Normal clean sufficient. Symmetric: coal→limestone also compatible."
+    },
+    {
+      "previous": "limestone",
+      "next": "copper concentrate",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Copper concentrate profiles list limestone as incompatible (incompatible_with includes all but empty list). Copper concentrate is a dual-hazard cargo (Group A+B): CuFeS2 reacts with alkaline dust to alter pH environment and H2S generation conditions; dedicated voyage strongly preferred. Manual surveyor review required."
+    },
+    {
+      "previous": "limestone",
+      "next": "dri",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "DRI is highly reactive with moisture and requires inert atmosphere; any residual alkaline dust or moisture trap from limestone increases self-heating/H2 generation risk. DRI profiles list no compatible cargoes; manual surveyor review required."
+    },
+    {
+      "previous": "limestone",
+      "next": "fertilizer",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Fertilizer profiles list limestone as compatible. CaCO3 is chemically neutral to urea/DAP/potash and does not trigger oxidiser reactions. Normal clean sufficient. Symmetric: fertilizer→limestone also compatible."
+    },
+    {
+      "previous": "limestone",
+      "next": "general",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "General cargo profiles list limestone as compatible. Limestone is among the lowest-risk prior cargoes; inert alkaline dust is easily swept clean before general/project cargo. Normal clean sufficient; actual cargo mix should be confirmed by surveyor."
+    },
+    {
+      "previous": "limestone",
+      "next": "grain",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Alkaline CaCO3 dust requires thorough wash before food-grade grain; compatible with extra clean and surveyor inspection per broker practice"
+    },
+    {
+      "previous": "limestone",
+      "next": "iron-ore",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Iron-ore profiles list limestone as compatible. Both are mineral bulk cargoes; CaCO3 residue does not impair iron oxide cargo. Normal clean sufficient. Symmetric: iron-ore→limestone also compatible."
+    },
+    {
+      "previous": "limestone",
+      "next": "manganese ore",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Manganese ore profiles list limestone as compatible. Limestone residue is inert to manganese oxides at ambient conditions; no reactive mechanism between CaCO3 and MnO2. Normal clean sufficient. Symmetric: manganese ore→limestone also compatible."
+    },
+    {
+      "previous": "limestone",
+      "next": "petcoke",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Petcoke profiles list bauxite/coal/scrap/iron-ore as compatible; limestone is inert and non-reactive with petroleum coke. White alkaline dust does not contaminate carbon-rich petcoke. Normal clean sufficient. ⟵ Limestone profiles list petcoke as incompatible; petcoke oily carbon residue would contaminate alkaline limestone dust and cause staining. Limestone is often used as a buffer cargo but requires clean holds — petcoke's persistent oily staining prevents achieving acceptable standard without extensive degreasing. [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "limestone",
+      "next": "pipes",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Pipes profiles list limestone as compatible. Limestone dust is inert and non-corrosive to steel/epoxy pipe coatings. Normal clean acceptable. Symmetric: pipes→limestone also compatible."
+    },
+    {
+      "previous": "limestone",
+      "next": "salt",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Salt profiles list limestone as compatible. CaCO3 residue is non-reactive with NaCl and does not introduce chloride contamination. Normal clean sufficient. Symmetric: salt→limestone also compatible."
+    },
+    {
+      "previous": "limestone",
+      "next": "scrap",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Scrap profiles list bauxite/iron-ore/steel/coal as compatible; limestone residue is inert and non-reactive with mixed ferrous scrap. White alkaline dust does not accelerate scrap self-heating. Normal clean sufficient."
+    },
+    {
+      "previous": "limestone",
+      "next": "steel",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Limestone is inert and low-contamination; steel profiles list limestone as compatible. White alkaline dust does not chemically attack ferrous cargo. Normal clean sufficient. Symmetric: steel→limestone also compatible."
+    },
+    {
+      "previous": "limestone",
+      "next": "sugar",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Sugar profiles list limestone as incompatible: alkaline CaCO3 residue chemically degrades sucrose (alkaline hydrolysis) and triggers rejection by sugar surveyors. Limestone incompatible_with includes sugar. Extra wash + grain-clean standard required."
+    },
+    {
+      "previous": "limestone",
+      "next": "sulphur",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Sulphur profiles list limestone as compatible. Dry limestone is alkaline and does not react with dry elemental sulphur at ambient conditions. Normal clean sufficient. Symmetric: sulphur→limestone also compatible."
+    },
+    {
+      "previous": "manganese ore",
+      "next": "bauxite",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Bauxite is in manganese ore's compatible_with list; both are oxide ores (MnO2 / Al2O3-OH) with compatible mineral chemistry; cross-staining of red/brown bauxite dust with manganese is commercially acceptable; normal clean sufficient — symmetric per bauxite profile"
+    },
+    {
+      "previous": "manganese ore",
+      "next": "cement",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Manganese ore is in cement's incompatible_with list; manganese oxide dust reacts with alkaline cement (calcium silicate/aluminate) creating hard deposits; MnO2 residue compromises cement quality and causes structural contamination"
+    },
+    {
+      "previous": "manganese ore",
+      "next": "coal",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Both bulk ore/mineral cargoes with no cross-reactive chemistry; coal is in manganese ore's compatible_with list; normal clean acceptable; symmetric — coal profile also lists manganese ore as compatible"
+    },
+    {
+      "previous": "manganese ore",
+      "next": "copper concentrate",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Copper concentrate is in manganese ore's incompatible_with list; copper sulphide (CuFeS2) reacts with MnO2 residue under moisture (H2S generation risk); arsenic/heavy-metal impurities in concentrate exacerbate contamination; dedicated voyage strongly preferred per copper concentrate broker notes"
+    },
+    {
+      "previous": "manganese ore",
+      "next": "dri",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "DRI is listed as incompatible in manganese ore profile; moisture-laden manganese fines residue reacts with metallic iron (DRI), triggering self-heating and H2 generation risk; thorough inspection mandatory before any DRI loading"
+    },
+    {
+      "previous": "manganese ore",
+      "next": "fertilizer",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Manganese ore listed in fertilizer's incompatible_with list; MnO2 dust reacts with fertilizer acids (phosphates, nitrates) to release toxic MnO vapour; fertilizer contamination from ore residue also unacceptable under IMSBC"
+    },
+    {
+      "previous": "manganese ore",
+      "next": "general",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "General cargo is undefined by chemistry — manganese oxide high-dust profile and persistent dark staining make it unsafe for miscellaneous/bagged/project cargo without surveyor sign-off; general profile mandates case-by-case manual surveyor review"
+    },
+    {
+      "previous": "manganese ore",
+      "next": "grain",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Manganese oxide dust (MnO2) requires hospital clean before food-grade grain; compatible with thorough wash + surveyor sign-off per broker practice"
+    },
+    {
+      "previous": "manganese ore",
+      "next": "iron-ore",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Both are heavy oxide ores (MnO2 / Fe2O3), compatible mineral chemistry; cross-contamination between ore cargoes not a commercial issue; normal clean acceptable — symmetric: iron-ore→manganese ore also compatible per iron-ore profile"
+    },
+    {
+      "previous": "manganese ore",
+      "next": "limestone",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Limestone is in manganese ore's compatible_with list; CaCO3 alkaline dust and MnO2 residue have no reactive chemistry at ambient conditions; dark staining on limestone is commercially acceptable for bulk industrial use; normal clean sufficient — symmetric per limestone profile"
+    },
+    {
+      "previous": "manganese ore",
+      "next": "petcoke",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Petcoke profile does not list manganese ore as compatible; residual MnO2 dust mixed with oily petcoke creates contaminated hold environment; petcoke also requires hospital clean before loading and combination with prior high-dust cargo raises cleaning burden — manual surveyor review required"
+    },
+    {
+      "previous": "manganese ore",
+      "next": "pipes",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Manganese oxide dust contaminates pipe threaded ends and protective coatings; hospital-clean required before pipes — same mechanism as steel; dark staining persistent and difficult to remove from pipe joints"
+    },
+    {
+      "previous": "manganese ore",
+      "next": "salt",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Salt profile does not list manganese ore as compatible; manganese oxide dark staining is persistent and food-grade sea salt requires clean holds; MnO2 residue constitutes contamination for NaCl product quality — manual surveyor review required"
+    },
+    {
+      "previous": "manganese ore",
+      "next": "scrap",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Scrap is in manganese ore's compatible_with list; both are industrial bulk cargoes with no significant cross-reactive chemistry; manganese dust staining on scrap metal is acceptable; normal clean sufficient — symmetric per scrap profile"
+    },
+    {
+      "previous": "manganese ore",
+      "next": "steel",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "High manganese dust stains hold surfaces black/brown — hospital-clean standard required before steel coils; residual MnO2 dust cannot be tolerated on paintwork or steel surfaces (staining and contamination damage claims)"
+    },
+    {
+      "previous": "manganese ore",
+      "next": "sugar",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Sugar is in manganese ore's incompatible_with list; MnO2 dust contamination causes food-grade rejection; dark staining impossible to remove to grain-clean standard without extensive multi-wash cycle; manganese residue toxic at trace levels for food products"
+    },
+    {
+      "previous": "manganese ore",
+      "next": "sulphur",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "MnO2 reacts with sulphur dust and wet sulphur to form manganese sulphate compounds and toxic MnO vapour; sulphur profile does not list manganese ore as compatible; high-dust from both cargoes and chemical reactivity require manual surveyor review"
+    },
+    {
+      "previous": "petcoke",
+      "next": "bauxite",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Bauxite is listed in petcoke's compatible_with list; both are high-dust industrial bulk cargoes. Petcoke oily residue may slightly affect bauxite TML moisture readings — extra clean required. No chemical incompatibility. TML certificate mandatory from bauxite shipper regardless."
+    },
+    {
+      "previous": "petcoke",
+      "next": "cement",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Cement is listed in petcoke's incompatible_with list; oily carbon residue from petcoke prevents cement from bonding correctly to hold surfaces during loading and creates contamination risk. Calcium deposits over oil staining also damage hold structure during cement acid-descale."
+    },
+    {
+      "previous": "petcoke",
+      "next": "coal",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Coal is listed in petcoke's compatible_with list; both are carbonaceous high-dust industrial bulk cargoes with similar hold cleaning requirements. Extra clean required due to petcoke's oily sulphur residue before coal loading. Symmetric: coal → petcoke also compatible."
+    },
+    {
+      "previous": "petcoke",
+      "next": "copper concentrate",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Copper concentrate is listed in petcoke's incompatible_with list (via coal similarity) and profiles mark copper concentrate as requiring dedicated voyages. Petcoke sulphur residue combined with copper sulphide chemistry (H2S generation risk) creates dual toxic hazard. Copper concentrate requires full acid wash of holds — incompatible sequence."
+    },
+    {
+      "previous": "petcoke",
+      "next": "dri",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "DRI is listed as incompatible with petcoke in profiles; carbon residue and sulphur traces from petcoke could react with highly reactive metallic DRI iron sponge. DRI requires inert N2 atmosphere — petcoke sulphur residue compromises cargo safety. Fail-closed."
+    },
+    {
+      "previous": "petcoke",
+      "next": "fertilizer",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Fertilizer is listed in petcoke's incompatible_with list; petcoke sulphur/vanadium/oily residue chemically incompatible with hygroscopic fertilizer (especially AN-based oxidisers). Hospital clean required for fertilizer loading — petcoke staining makes this unachievable without 2–3 extra wash cycles."
+    },
+    {
+      "previous": "petcoke",
+      "next": "grain",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Oily black petcoke residue + sulphur/vanadium trace metals — food-grade grain inspection will fail; alkaline degreaser + deodoriser wash required but grain-clean standard rarely achievable without surveyor-ordered re-wash. Fail-closed per broker protocol."
+    },
+    {
+      "previous": "petcoke",
+      "next": "iron-ore",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Petcoke and iron-ore are both heavy industrial bulk cargoes; coal/petcoke → iron-ore is a recognised compatible sequence. Extra clean required due to petcoke's high dust and oily residue, but no chemical incompatibility. Symmetric: iron-ore → petcoke also compatible."
+    },
+    {
+      "previous": "petcoke",
+      "next": "limestone",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Limestone profiles list petcoke as incompatible; petcoke oily carbon residue would contaminate alkaline limestone dust and cause staining. Limestone is often used as a buffer cargo but requires clean holds — petcoke's persistent oily staining prevents achieving acceptable standard without extensive degreasing."
+    },
+    {
+      "previous": "petcoke",
+      "next": "manganese ore",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Manganese ore profiles do not list petcoke as compatible; manganese oxides can react with sulphur residues from petcoke to produce toxic MnO vapour under acidic conditions (H2SO4 from wet sulphur). High-dust cargo following high-dust oily cargo requires full wash. Manual surveyor review required."
+    },
+    {
+      "previous": "petcoke",
+      "next": "pipes",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Oily petcoke residue contaminates pipe threaded ends and epoxy/FBE coatings — connection damage is a major claim driver. Hospital-clean required for pipes; petcoke's persistent oily staining makes this difficult to achieve reliably."
+    },
+    {
+      "previous": "petcoke",
+      "next": "salt",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Salt (especially food-grade sea salt) requires clean holds free from chemical residues; petcoke's oily sulphur/vanadium residue would cause food-grade rejection. Even industrial salt risks chloride + sulphur interaction in wet conditions forming corrosive acids on hold steel. Manual surveyor review required."
+    },
+    {
+      "previous": "petcoke",
+      "next": "scrap",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Scrap metal is listed in petcoke's compatible_with list; industrial cargo sequence with no chemical incompatibility. Petcoke oily residue adds to scrap's own oil contamination profile — extra clean required but not incompatible in practice. Surveyor inspection mandatory for scrap regardless of prior cargo."
+    },
+    {
+      "previous": "petcoke",
+      "next": "steel",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Petcoke leaves oily black carbon staining on hold surfaces; steel cargo (especially coils) requires hospital-clean holds — any carbon/oil residue causes cargo damage claims and surface corrosion. Multiple alkaline washes required but staining risk remains."
+    },
+    {
+      "previous": "petcoke",
+      "next": "sugar",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Sugar is listed in petcoke's incompatible_with list; food-grade cargo requiring grain-clean holds — petcoke oily black staining and sulphur/vanadium residue make food-grade standard unachievable. Brokers note 2–3 extra cleaning days needed after petcoke before any grain-clean standard."
+    },
+    {
+      "previous": "petcoke",
+      "next": "sulphur",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Petcoke already carries sulphur residue; loading elemental sulphur (Group B, Class 4.1) over petcoke oily residue creates combined fire/explosion risk — sulphur dust in contact with petcoke carbon and oily surface is a documented spontaneous combustion hazard. Manual surveyor review required."
+    },
+    {
+      "previous": "pipes",
+      "next": "bauxite",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Bauxite (Group A, liquefaction risk) requires TML-certified holds; pipes are not listed in bauxite compatible_with. Protective coating fragments (epoxy/FBE) from pipes are organic contaminants unacceptable for bauxite — aluminium oxide ore is contamination-sensitive. Conservative bias: manual surveyor review required."
+    },
+    {
+      "previous": "pipes",
+      "next": "cement",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Pipes profile lists cement as incompatible; cement (Group C) requires bone-dry, dust-free holds — dunnage residue and protective cap fragments from pipe cargo introduce organics/plastics incompatible with cement quality. Cement also highly moisture-sensitive and any pipe coating residue is unacceptable."
+    },
+    {
+      "previous": "pipes",
+      "next": "coal",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Pipes profile explicitly lists coal as incompatible; coal is Group B self-heating with black dust contamination — prior pipe voyage does not cause contamination of coal, but coal profile lists pipes as incompatible_with, indicating reverse asymmetry where coal brokers reject prior pipe holds due to hospital-clean requirements. Conservative: manual surveyor review required."
+    },
+    {
+      "previous": "pipes",
+      "next": "copper concentrate",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Copper concentrate (Group A + B dual hazard) has H2S release risk and arsenic/heavy metal contamination — dedicated voyages strongly preferred per broker notes. Pipes not listed in copper concentrate compatible_with (which lists no compatible cargoes). Any prior cargo is suspect; manual surveyor review required."
+    },
+    {
+      "previous": "pipes",
+      "next": "dri",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "DRI is self-heating (Group B) and reacts with moisture and oxygen; any metallic dust or coating fragments from pipes could introduce contamination into the inert gas atmosphere required for DRI. DRI profile lists no compatible cargoes and recommends dedicated voyages. Manual surveyor review required."
+    },
+    {
+      "previous": "pipes",
+      "next": "fertilizer",
+      "compatible": false,
+      "extra_clean": false,
+      "reason": "Pipes profile lists fertilizer as incompatible; fertilizer profile lists pipes as incompatible_with. AN-based fertilizers require hospital-clean holds free of metal contamination — iron oxide stain and epoxy coating fragments from pipes are unacceptable contaminants."
     },
     {
       "previous": "pipes",
       "next": "general",
       "compatible": true,
       "extra_clean": false,
-      "reason": "Pipes leave no presumed contamination"
+      "reason": "General cargo (broker term, Group C equivalent) listed as compatible with pipes in general profile (compatible_with includes pipes). Low contamination risk from iron oxide stain and dunnage residue for miscellaneous/project cargo. Case-by-case actual cargo review recommended per general profile broker notes."
     },
     {
-      "previous": "general",
-      "next": "bauxite",
+      "previous": "pipes",
+      "next": "grain",
+      "compatible": false,
+      "extra_clean": false,
+      "reason": "Iron oxide stain and dunnage/packing residue from pipe stowage — food-grade inspection will reject holds without grain-clean standard; coating damage debris (epoxy/FBE fragments) not acceptable in food cargo. Manual surveyor review required."
+    },
+    {
+      "previous": "pipes",
+      "next": "iron-ore",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Pipes listed in iron-ore compatible_with; iron oxide chemistry compatible with pipe residue. Normal clean sufficient — no food-grade or chemical sensitivity involved. Symmetric. ⟵ Iron oxide dust damages protective epoxy/FBE pipe coatings and threaded end connections; hospital clean required — prior ore cargo is explicitly excluded in pipe charter parties [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "pipes",
+      "next": "limestone",
       "compatible": true,
       "extra_clean": false,
-      "reason": "General cargo is benign for bauxite"
+      "reason": "Limestone profile lists pipes as compatible_with; limestone is one of the cleanest bulk cargoes (Group C, low contamination risk). Normal clean removes iron oxide and dunnage residue adequately. Alkaline limestone dust is chemically inert relative to pipe residues. Symmetric."
     },
     {
-      "previous": "bauxite",
+      "previous": "pipes",
+      "next": "manganese ore",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Manganese ore (Group A fines, liquefaction risk) requires TML certificate; pipes not listed in manganese ore compatible_with. Dark MnO2 dust contamination from prior manganese would be the reverse risk, but pipes→manganese is also incompatible: organic dunnage and epoxy coating fragments are unacceptable in ore fines. Manual surveyor review required."
+    },
+    {
+      "previous": "pipes",
+      "next": "petcoke",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Pipes profile explicitly lists petcoke as incompatible; petcoke brokers require thorough prior-cargo inspection and pipe dunnage/coating residue may interfere. Petcoke profile lists pipes as incompatible_with. Conservative bias applied."
+    },
+    {
+      "previous": "pipes",
+      "next": "salt",
+      "compatible": false,
+      "extra_clean": false,
+      "reason": "Salt profile lists pipes as incompatible_with — chloride residue from prior salt is the concern in the reverse direction, but pipes→salt also problematic: iron oxide and metallic residue from pipes accelerates corrosion of NaCl in holds, and food-grade sea salt requires contamination-free conditions. Conservative bias applied."
+    },
+    {
+      "previous": "pipes",
+      "next": "scrap",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Scrap profile lists pipes as compatible_with; both are ferrous metal cargoes (Group B/C). Iron oxide and dunnage residue from pipes are acceptable contaminants for scrap. Normal clean sufficient. Symmetric."
+    },
+    {
+      "previous": "pipes",
+      "next": "steel",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Both ferrous metal products (Group C); normal clean acceptable. Iron oxide stain from pipes is cosmetically similar to mill scale from steel — no contamination mechanism. Symmetric: steel→pipes also compatible."
+    },
+    {
+      "previous": "pipes",
+      "next": "sugar",
+      "compatible": false,
+      "extra_clean": false,
+      "reason": "Sugar requires grain-clean equivalent holds (food-grade); pipes profile lists sugar as incompatible. Iron oxide stain and epoxy/FBE coating fragments from pipe dunnage/caps are chemical contaminants that will cause food-grade inspection rejection. Symmetric with grain incompatibility."
+    },
+    {
+      "previous": "pipes",
+      "next": "sulphur",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Sulphur (Group B, flammable) requires holds free of organic contamination — epoxy/FBE coating fragments and dunnage from pipe cargo present a contamination and fire hazard. Sulphur profile lists steel as incompatible (corrosion via H2SO4); pipes are steel/iron alloy and corrosion risk applies equally. Manual surveyor review required."
+    },
+    {
+      "previous": "salt",
+      "next": "bauxite",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Bauxite not in salt's incompatible_with; bauxite is high-dust next cargo so extra_clean required. Chloride residue has low chemical reactivity with aluminium oxide ore. Normal clean + fresh water rinse sufficient. ⟵ Salt profiles require clean holds for food-grade sea salt; red dust contamination from bauxite causes food-grade rejection — manual surveyor review required for industrial grade salt only [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "salt",
+      "next": "cement",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Cement listed in salt's compatible_with (symmetric); however, chloride contamination raises rebar-corrosion risk in construction (BS/EN limits). Extra_clean required: thorough fresh water flush to reduce chloride to acceptable ppm before cement. Next is high-dust cargo."
+    },
+    {
+      "previous": "salt",
+      "next": "coal",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Coal not in salt's incompatible_with; coal is high-dust so extra_clean required. Chloride residue from salt is inconsequential for coal chemistry. Normal clean + fresh water rinse sufficient. Symmetric pair. ⟵ Food-grade sea salt requires grain-clean equivalent; coal carbon and sulphur residue cannot be reliably removed to food-grade standard; coal broker notes require full wash + surveyor sign-off before food cargoes; fail-closed [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "salt",
+      "next": "copper concentrate",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Copper concentrate listed in copper concentrate's incompatible_with (includes salt); chloride ions react with copper sulphides in acidic slurry environment, risk of HCl generation and CuCl2 contamination. Manual surveyor review required; dedicated voyage strongly preferred."
+    },
+    {
+      "previous": "salt",
+      "next": "dri",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Salt listed in salt's incompatible_with (dri). Chloride residue reacts with metallic iron surface, accelerating oxidation and self-heating risk of DRI; moisture + chloride generates HCl traces. Dedicated voyage required for DRI."
+    },
+    {
+      "previous": "salt",
+      "next": "fertilizer",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Salt listed in fertilizer's compatible_with; fertilizer also in salt's compatible_with (symmetric). NaCl does not interfere with urea/DAP/potash chemistry. Fresh water rinse removes chloride before hygroscopic fertilizer loading."
+    },
+    {
+      "previous": "salt",
       "next": "general",
       "compatible": true,
       "extra_clean": false,
-      "reason": "Bauxite dust is benign for non-food general cargo"
+      "reason": "General listed in salt's compatible_with (symmetric). Miscellaneous/project cargo: low chemical reactivity with salt residue. Fresh water rinse to remove chloride; actual compatibility depends on specific commodity — manual surveyor review if metal-sensitive goods."
+    },
+    {
+      "previous": "salt",
+      "next": "grain",
+      "compatible": false,
+      "extra_clean": false,
+      "reason": "Salt incompatible_with grain per profile; chloride residue and risk of food-grade rejection — grain surveyor requires odour-free, chemically neutral holds. Symmetric: grain profile also lists salt as incompatible."
+    },
+    {
+      "previous": "salt",
+      "next": "iron-ore",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Iron-ore is high-dust next cargo — extra_clean required per rule. Salt not listed in iron-ore incompatible_with; chloride residue is tolerable for bulk ore. Normal clean + fresh water rinse sufficient. Symmetric: iron-ore not in salt incompatible_with. ⟵ Iron ore residue introduces iron oxide contamination into NaCl (salt); food-grade salt requires clean holds; iron oxide + chloride = accelerated hold corrosion; normal clean after ore insufficient for food-grade salt surveyor standard [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "salt",
+      "next": "limestone",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Limestone listed in salt's compatible_with (symmetric: limestone compatible_with includes salt). CaCO3 chemically inert with NaCl. Normal clean sufficient; fresh water rinse removes chloride. Low contamination risk pair."
+    },
+    {
+      "previous": "salt",
+      "next": "manganese ore",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Manganese ore not in salt's incompatible_with; manganese ore is high-dust next cargo so extra_clean required. Chloride from salt does not react with manganese oxides under ambient conditions. Fresh water rinse + normal clean sufficient. ⟵ Salt profile does not list manganese ore as compatible; manganese oxide dark staining is persistent and food-grade sea salt requires clean holds; MnO2 residue constitutes contamination for NaCl product quality — manual surveyor review required [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "salt",
+      "next": "petcoke",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Petcoke not in salt's incompatible_with; petcoke is high-dust so extra_clean required. Salt chloride residue does not react with petroleum coke. Symmetric: petcoke's incompatible_with does not list salt. ⟵ Salt (especially food-grade sea salt) requires clean holds free from chemical residues; petcoke's oily sulphur/vanadium residue would cause food-grade rejection. Even industrial salt risks chloride + sulphur interaction in wet conditions forming corrosive acids on hold steel. Manual surveyor review required. [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "salt",
+      "next": "pipes",
+      "compatible": false,
+      "extra_clean": false,
+      "reason": "Chloride residue attacks threaded ends, coatings and bare steel of pipe cargo; salt listed in pipes' incompatible_with. Asymmetric risk: pipe connections are especially vulnerable to chloride pitting."
+    },
+    {
+      "previous": "salt",
+      "next": "scrap",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Scrap not in salt's incompatible_with; however chloride residue accelerates corrosion of ferrous scrap. Extra_clean and fresh water rinse required to minimise chloride before scrap loading. Scrap is extra_clean_required_after cargo — conservative handling justified. ⟵ scrap not in salt.compatible_with; oil degreasing required after scrap but salt (especially food-grade) requires clean hold free of hydrocarbon residue; chloride from salt accelerates corrosion of any remaining metal particles — manual surveyor review required [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "salt",
+      "next": "steel",
+      "compatible": false,
+      "extra_clean": false,
+      "reason": "Chloride residue from salt accelerates corrosion and pitting on steel surfaces; salt listed in steel's incompatible_with list. Thorough fresh water rinse required but risk remains — manual surveyor review required."
+    },
+    {
+      "previous": "salt",
+      "next": "sugar",
+      "compatible": false,
+      "extra_clean": false,
+      "reason": "Sugar listed in salt's incompatible_with (symmetric: sugar incompatible_with does not list salt but sugar requires grain-clean equivalent). Salt residue and risk of food-grade rejection; chloride contamination unacceptable for food-grade sucrose. Manual surveyor review required."
+    },
+    {
+      "previous": "salt",
+      "next": "sulphur",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Sulphur not in salt's incompatible_with; NaCl does not react with dry elemental sulphur. Sulphur listed as compatible with salt (symmetric via sulphur profile compatible_with includes salt). Fresh water rinse removes chloride residue."
+    },
+    {
+      "previous": "scrap",
+      "next": "bauxite",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "scrap in bauxite.compatible_with; both industrial bulk — no food-grade constraint; bauxite Group A (liquefaction) requires TML certificate from shipper independent of scrap compatibility"
+    },
+    {
+      "previous": "scrap",
+      "next": "cement",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Scrap metal residue (oil, particles) requires extra clean before cement; compatible with hospital clean per *→cement wildcard standard"
+    },
+    {
+      "previous": "scrap",
+      "next": "coal",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "coal.compatible_with includes scrap; both dirty bulk cargoes with overlapping industrial use — no contamination conflict; normal clean acceptable"
+    },
+    {
+      "previous": "scrap",
+      "next": "copper concentrate",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "scrap in copper concentrate.incompatible_with; copper concentrate dual-hazard (Group A + B) — H2S gas generation incompatible with oil/plastic contamination from scrap; dedicated voyage required for copper concentrate; manual surveyor review required"
+    },
+    {
+      "previous": "scrap",
+      "next": "dri",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "scrap in dri.incompatible_with; oil and moisture residue from scrap reacts with DRI metallic iron — generates H2 gas and self-heating risk; DRI requires hospital-clean inert atmosphere"
+    },
+    {
+      "previous": "scrap",
+      "next": "fertilizer",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "scrap in fertilizer.incompatible_with; battery acid leakage and mixed metal contamination from scrap reacts with hygroscopic fertilizer (especially AN-based) — corrosion and oxidiser contamination risk"
+    },
+    {
+      "previous": "scrap",
+      "next": "grain",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Oil contamination from cutting fluids and machinery residue — food-grade grain inspection will fail; sharp particles damage hold paint creating contamination pockets; scrap in grain.incompatible_with"
+    },
+    {
+      "previous": "scrap",
+      "next": "iron-ore",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "scrap in iron-ore.compatible_with; both industrial bulk with no food-grade constraint; normal clean sufficient — iron-ore not contamination-sensitive to oil traces at industrial quality"
+    },
+    {
+      "previous": "scrap",
+      "next": "limestone",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "limestone is chemically inert (CaCO3) — low contamination sensitivity to scrap oil traces at industrial grade; normal clean acceptable; limestone.compatible_with includes industrial bulk successors; symmetric: limestone→scrap also compatible"
+    },
+    {
+      "previous": "scrap",
+      "next": "manganese ore",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "manganese ore.compatible_with includes scrap; both industrial ore/metal bulk — no food-grade constraint; manganese ore Group A requires TML certificate from shipper independent of prior cargo"
+    },
+    {
+      "previous": "scrap",
+      "next": "petcoke",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "petcoke.compatible_with includes scrap; both industrial bulk with no food-grade constraint; petcoke itself is oily so scrap oil residue does not introduce new contamination mechanism"
+    },
+    {
+      "previous": "scrap",
+      "next": "pipes",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Both ferrous metal cargoes — scrap in pipes.compatible_with; oil degreasing required to protect pipe coatings and threaded ends from cutting fluid contamination"
+    },
+    {
+      "previous": "scrap",
+      "next": "salt",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "scrap not in salt.compatible_with; oil degreasing required after scrap but salt (especially food-grade) requires clean hold free of hydrocarbon residue; chloride from salt accelerates corrosion of any remaining metal particles — manual surveyor review required"
+    },
+    {
+      "previous": "scrap",
+      "next": "steel",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Both ferrous metal cargoes — chemical compatibility high; oil degreasing required after scrap before steel coils to avoid cutting fluid staining and damage claims; scrap in steel.compatible_with"
+    },
+    {
+      "previous": "scrap",
+      "next": "sugar",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "scrap in sugar.incompatible_with; oil and battery acid contamination from scrap causes food-grade sugar rejection; even trace hydrocarbon residue unacceptable for food cargo"
+    },
+    {
+      "previous": "scrap",
+      "next": "sulphur",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "scrap not in sulphur.compatible_with; oil contamination from scrap machinery residue creates fire risk with sulphur dust (Class 4.1 flammable solid UN 1350); manual surveyor review required"
+    },
+    {
+      "previous": "steel",
+      "next": "bauxite",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Steel profiles list bauxite in compatible_with; iron oxide residue from steel does not contaminate bauxite (aluminium oxide ore) chemically. Normal clean acceptable — bauxite's own red/brown dust dominates any residual staining."
+    },
+    {
+      "previous": "steel",
+      "next": "cement",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Cement profiles list steel in incompatible_with: mill scale and iron oxide from steel contaminate cement clinker (ferrous traces alter cement chemistry and setting time); cement's alkaline dust also damages hold paintwork required for subsequent steel loading — bidirectional incompatibility."
+    },
+    {
+      "previous": "steel",
+      "next": "coal",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Coal profiles list steel in incompatible_with: coal's methane/CO emission and self-heating (Group B) combined with steel coil stowage creates fire risk; hold paintwork damage from alkaline degreaser wash after coal reverses compatibility direction. Manual surveyor review required."
+    },
+    {
+      "previous": "steel",
+      "next": "copper concentrate",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Copper concentrate profiles list steel in incompatible_with via broad exclusion list; H2S gas released from copper sulphides (CuFeS2) is toxic and reacts with mill scale moisture; arsenic/heavy metal trace contamination from concentrate would render any subsequent steel cargo a damage claim. Dedicated voyage strongly preferred per copper concentrate broker notes."
+    },
+    {
+      "previous": "steel",
+      "next": "dri",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Cutting oil residue from steel coils and moisture from mill scale react with DRI's highly porous metallic iron surface, accelerating self-heating (DRI Group B, self-heating to >900°C); dedicated voyage required per IMSBC DRI schedule."
+    },
+    {
+      "previous": "steel",
+      "next": "fertilizer",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Fertilizer profiles list steel in incompatible_with; steel's cutting oil residue (corrosive to hygroscopic fertilizer granules) and mill scale compromise fertilizer quality; AN-based fertilizer requires hospital clean of holds — iron oxide residue triggers oxidiser-incompatibility concerns."
+    },
+    {
+      "previous": "steel",
+      "next": "general",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Steel coils→general cargo: compatible; mill scale and cutting oil residue manageable with normal clean for general/project cargo"
+    },
+    {
+      "previous": "steel",
+      "next": "grain",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Mill scale and rust residue from steel require extra hospital clean before food-grade grain; compatible with thorough wash + surveyor sign-off"
+    },
+    {
+      "previous": "steel",
+      "next": "iron-ore",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Iron oxide from steel residue is chemically identical to iron-ore cargo; no cross-contamination risk. Normal clean acceptable, symmetric iron-ore→steel. Iron-ore's own high-dust load dominates hold condition. ⟵ Iron ore fines leave abrasive red oxide residue on hold surfaces; hospital clean required before steel coils — even trace staining triggers cargo damage claims and mill scale disputes [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "steel",
+      "next": "limestone",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Steel profiles list limestone in compatible_with and limestone profiles list steel in compatible_with (symmetric); limestone is a low-contamination-risk bulk cargo — iron oxide residue from steel does not affect calcium carbonate quality. Normal clean acceptable."
+    },
+    {
+      "previous": "steel",
+      "next": "manganese ore",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Manganese ore profiles list steel in incompatible_with: manganese oxide dust (MnO2/Mn2O3, health hazard) requires grain-clean standard inspection; additionally manganese ore's high moisture sensitivity combined with steel cutting oil residue creates corrosive microenvironment in hold. Manual surveyor review required."
+    },
+    {
+      "previous": "steel",
+      "next": "petcoke",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Petcoke profiles list steel in incompatible_with: oily black petcoke dust (vanadium/nickel trace metals in uncalcined grades) deposits on hold paintwork required intact for steel coil loading; contamination direction is hold-surface staining that damages next steel voyage, not this one — but petcoke's self-heating (Group B) creates fire risk adjacent to steel stowage. Manual surveyor review required."
+    },
+    {
+      "previous": "steel",
+      "next": "pipes",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Both are ferrous metal project cargoes with identical contamination profile (iron oxide, mill scale); normal clean sufficient, symmetric with pipes→steel. Hospital clean required per standard pipe loading spec regardless."
+    },
+    {
+      "previous": "steel",
+      "next": "salt",
+      "compatible": false,
+      "extra_clean": false,
+      "reason": "Salt profiles list steel in incompatible_with: NaCl chloride residue from salt accelerates corrosion on subsequent steel cargo — but in this direction (steel→salt), cutting oil and mill scale from steel coils contaminate food-grade sea salt and introduce chloride-incompatible residues. Manual surveyor review required."
+    },
+    {
+      "previous": "steel",
+      "next": "scrap",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Both ferrous metal cargoes; steel profiles list scrap in compatible_with and scrap profiles list steel in compatible_with (symmetric). Iron oxide residue from steel is irrelevant to scrap's own mixed-metal contamination profile. Normal clean acceptable."
+    },
+    {
+      "previous": "steel",
+      "next": "sugar",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Sugar requires grain-clean equivalent holds; iron oxide stain and cutting oil residue from steel coils are food-grade rejection triggers — sugar surveyor will fail holds with any metal staining or oil trace. Symmetric with sugar profiles listing steel in incompatible_with."
+    },
+    {
+      "previous": "steel",
+      "next": "sulphur",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Sulphur profiles list steel in incompatible_with: wet sulphur forms H2SO4 (sulphuric acid) on contact with moisture — cutting oil residue and mill scale moisture from steel coils create acid formation risk corroding hold steelwork; sulphur dust (UN 1350, flammable solid) adjacent to metal surfaces is fire-risk. Manual surveyor review required."
+    },
+    {
+      "previous": "sugar",
+      "next": "bauxite",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Bauxite (aluminium oxide-hydroxide) is alkaline but ambient-inert; trace sucrose does not react with Al2O3·H2O at hold temperatures. Bauxite has no food-grade requirement. Standard wash removes sugar residue. Asymmetric: bauxite→sugar incompatible (red/brown Al oxide dust = food-grade reject). ⟵ Red iron oxide and silica dust — food-grade rejection; sugar requires grain-clean standard, bauxite residue staining prevents pass without intensive wash; hospital-clean often required [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "sugar",
+      "next": "cement",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Even 0.001% sucrose traces destroy cement setting (confirmed in sugar IMSBC profile and cement broker notes — sugar is a cement retarder). Hospital clean + acid wash required but residual risk remains high. Symmetric incompatibility: cement→sugar and sugar→cement both fail."
+    },
+    {
+      "previous": "sugar",
+      "next": "coal",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Coal is an industrial cargo with no food-grade requirement; sucrose residue does not react with carbonaceous material. Sugar profile lists coal as incompatible when coal is PREVIOUS (black dust contaminates food). Sugar→coal direction: standard wash removes sucrose, no chemical incompatibility. Asymmetric pair. ⟵ Black carbon dust contamination of food-grade sugar; coal sulphur residue causes odour transfer; sugar listed in coal incompatible_with; grain-clean standard barely achievable after coal without multiple wash cycles [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "sugar",
+      "next": "copper concentrate",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Copper concentrate (CuFeS2, Group A+B) generates H2S in presence of moisture; organic sucrose residue and associated moisture create conditions for enhanced H2S release toxic to crew. Copper concentrate profile marks sugar as incompatible. Dedicated voyage strongly preferred. Manual surveyor review required."
+    },
+    {
+      "previous": "sugar",
+      "next": "dri",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "DRI (metallic iron >90% Fe, Group B self-heating) reacts with moisture; any residual sugar moisture or sucrose hydrolysis products accelerate oxidation/self-heating risk. Inert atmosphere protocol incompatible with residual organic matter. Manual surveyor review required."
+    },
+    {
+      "previous": "sugar",
+      "next": "fertilizer",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Sugar residue (sucrose, moisture) incompatible with hygroscopic fertilizer (especially AN-based): promotes caking, moisture absorption, and potential decomposition of ammonium nitrate. Fertilizer→sugar also incompatible. Chemical/moisture interaction risk both directions. Manual surveyor review required."
+    },
+    {
+      "previous": "sugar",
+      "next": "general",
+      "compatible": false,
+      "extra_clean": false,
+      "reason": "General cargo is a broker catch-all with variable actual commodities; sugar residue is water-soluble and low-risk. Standard wash recommended. Compatibility must be re-assessed case-by-case for actual cargo per broker notes — manual surveyor review advised if actual cargo is food or chemical-sensitive. ⟵ Sugar requires grain-clean equivalent; general cargo may include alkaline, chemical or odour-generating goods — sugar is highly reactive to alkaline residues and susceptible to odour transfer; unknown cargo history fails sugar surveyor inspection (fail-closed) [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "sugar",
+      "next": "grain",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Both food-grade hygroscopic cargoes; sugar leaves sticky sucrose residue — warm water wash + grain-clean inspection required. Symmetric: grain→sugar same protocol. extra_clean triggered by next=grain (contamination-sensitive)."
+    },
+    {
+      "previous": "sugar",
+      "next": "iron-ore",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Iron ore is an industrial non-food cargo; residual sucrose poses no chemical incompatibility with iron oxides (Fe2O3/Fe3O4) and does not cause staining or reaction. Standard wash adequate. Asymmetric: iron-ore→sugar incompatible (red iron oxide dust = food-grade reject). ⟵ Iron oxide dust contaminates food-grade sugar — red staining causes rejection; iron-ore listed in sugar incompatible_with; silica co-dust also unacceptable for food cargo [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "sugar",
+      "next": "limestone",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Limestone (CaCO3) is alkaline but ambient-inert; trace sucrose does not cause retardation or chemical reaction at hold conditions (differs from cement clinker chemistry). Limestone listed in sugar's compatible group implicitly via grain/salt chain. Standard wash sufficient. Symmetric: limestone profile marks sugar as incompatible for limestone→sugar but sugar→limestone is low-risk industrial direction. ⟵ Sugar profiles list limestone as incompatible: alkaline CaCO3 residue chemically degrades sucrose (alkaline hydrolysis) and triggers rejection by sugar surveyors. Limestone incompatible_with includes sugar. Extra wash + grain-clean standard required. [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "sugar",
+      "next": "manganese ore",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Manganese ore (MnO2/Mn2O3) is industrial with no food-grade requirement; sucrose residue does not react with manganese oxides under hold conditions. Standard wash removes sugar residue. Asymmetric: manganese ore→sugar incompatible (dark purple/black Mn oxide dust = food-grade reject). ⟵ Sugar is in manganese ore's incompatible_with list; MnO2 dust contamination causes food-grade rejection; dark staining impossible to remove to grain-clean standard without extensive multi-wash cycle; manganese residue toxic at trace levels for food products [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "sugar",
+      "next": "petcoke",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Petroleum coke is industrial with no food-grade requirement; sucrose residue does not react with carbon-rich petcoke. Petcoke→sugar is incompatible (oily black stain ruins food-grade), but sugar→petcoke direction: standard wash sufficient, no chemical conflict. Asymmetric pair. ⟵ Sugar is listed in petcoke's incompatible_with list; food-grade cargo requiring grain-clean holds — petcoke oily black staining and sulphur/vanadium residue make food-grade standard unachievable. Brokers note 2–3 extra cleaning days needed after petcoke before any grain-clean standard. [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "sugar",
+      "next": "pipes",
+      "compatible": false,
+      "extra_clean": false,
+      "reason": "Sugar residue is water-soluble and leaves no chemical or abrasive contamination harmful to pipe coatings or threaded ends; standard wash sufficient. Asymmetric: pipes→sugar incompatible (iron oxide/coating residue fails food-grade survey). ⟵ Sugar requires grain-clean equivalent holds (food-grade); pipes profile lists sugar as incompatible. Iron oxide stain and epoxy/FBE coating fragments from pipe dunnage/caps are chemical contaminants that will cause food-grade inspection rejection. Symmetric with grain incompatibility. [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "sugar",
+      "next": "salt",
+      "compatible": false,
+      "extra_clean": false,
+      "reason": "Both listed in sugar compatible_with and salt compatible_with. NaCl is chemically inert to sucrose; standard warm water wash removes sugar residue. Salt does not require food-grade equivalent for industrial grade. Symmetric compatible pair. ⟵ Sugar listed in salt's incompatible_with (symmetric: sugar incompatible_with does not list salt but sugar requires grain-clean equivalent). Salt residue and risk of food-grade rejection; chloride contamination unacceptable for food-grade sucrose. Manual surveyor review required. [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "sugar",
+      "next": "scrap",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Sucrose residue is water-soluble and low-risk for scrap metal; normal wash sufficient — no extra clean required. Asymmetric: scrap→sugar incompatible (oil contamination)"
+    },
+    {
+      "previous": "sugar",
+      "next": "steel",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Sugar residue is water-soluble, no chemical attack on steel surface; standard wash removes sucrose. Steel requires hospital-clean holds but sugar leaves no staining or corrosive residue. Asymmetric: steel→sugar incompatible (mill scale + iron oxide contaminate food-grade). ⟵ Sugar requires grain-clean equivalent holds; iron oxide stain and cutting oil residue from steel coils are food-grade rejection triggers — sugar surveyor will fail holds with any metal staining or oil trace. Symmetric with sugar profiles listing steel in incompatible_with. [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "sugar",
+      "next": "sulphur",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Dry sulphur inert to organic residues in ambient hold conditions; sucrose does not react with elemental sulphur (S8). Standard wash removes sugar residue before sulphur loading. Asymmetric: sulphur→sugar incompatible (SO2 odour + sulphur residue = food-grade reject). ⟵ Sulphur profile explicitly lists sugar as incompatible; sulphur residue (SO2 odour, acid traces) causes food-grade rejection; sugar is hygroscopic and absorbs contaminants readily; surveyors will refuse grain-clean standard after sulphur without multiple washes. Symmetric. [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "sulphur",
+      "next": "bauxite",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Bauxite (aluminium oxide-hydroxide) is chemically inert to sulphur residue and not food-grade; both are industrial bulk cargoes. Extra clean required (sulphur self-heating). TML certificate still required for bauxite fines. Symmetric. ⟵ Residual moisture from bauxite reacts with sulphur dust to form H2SO4 — hold corrosion; sulphur profiles include bauxite in incompatible set via conservative moisture mechanism [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "sulphur",
+      "next": "cement",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Sulphur profile lists cement as incompatible; sulphuric acid residue attacks calcium silicate binders in cement — degrades setting properties; also corrosive to hold surfaces that cement calcium-deposits cure onto. Symmetric."
+    },
+    {
+      "previous": "sulphur",
+      "next": "coal",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Sulphur profile lists coal as incompatible; sulphur + coal dust creates dual self-heating/flammable risk; high-sulphur coal contamination assessment confounded by sulphur residue; coal profile also lists sulphur incompatible. Symmetric."
+    },
+    {
+      "previous": "sulphur",
+      "next": "copper concentrate",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Sulphur profile explicitly lists copper concentrate as incompatible; copper concentrate already contains copper sulphides — sulphur residue adds flammable solid (UN 1350) risk to a cargo that itself generates H₂S; dual-hazard amplification. Symmetric."
+    },
+    {
+      "previous": "sulphur",
+      "next": "dri",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "DRI profile explicitly lists sulphur as incompatible: sulphur reacts with reactive metallic iron (DRI) and moisture to produce H₂S gas (toxic) + accelerates self-heating to >900°C. Extreme hazard — dedicated voyage required. Symmetric."
+    },
+    {
+      "previous": "sulphur",
+      "next": "fertilizer",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Sulphur profile explicitly lists fertilizer as incompatible; sulphur residue reacts with ammonium nitrate-based fertilisers (oxidiser + flammable solid = detonation risk); also chemical contamination of hygroscopic fertiliser. Symmetric."
+    },
+    {
+      "previous": "sulphur",
+      "next": "general",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "General cargo is variable and may include food, chemicals, or packaged goods — sulphur residue (SO2 odour, acid traces) poses unpredictable contamination risk; manual surveyor review required for any specific general cargo manifest. Fail-closed per conservative bias."
+    },
+    {
+      "previous": "sulphur",
+      "next": "grain",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Sulphur residue (SO2 odour, sulphuric acid traces from wet sulphur) contaminates food-grade holds; grain surveyors will reject without full multi-wash + deodorisation — fail-closed. Symmetric: grain→sulphur equally fails (food residue + sulphur dust explosive mix)."
+    },
+    {
+      "previous": "sulphur",
+      "next": "iron-ore",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Iron ore is chemically tolerant of sulphur residue and is not food/food-adjacent; both are industrial bulk cargoes. Extra clean required (sulphur self-heating + high dust). Fresh water wash mandatory before iron-ore loading to neutralise acid risk to hold structure. Symmetric. ⟵ Iron ore moisture residue reacts with sulphur to accelerate H2SO4 corrosion; sulphur profile requires dry clean holds; iron ore extra_clean_required_after=true makes residual moisture risk unacceptable without manual surveyor review [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "sulphur",
+      "next": "limestone",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Sulphur profile lists limestone as compatible; limestone (CaCO3) is alkaline and partially neutralises residual sulphuric acid, making it a reasonable post-sulphur cargo; extra clean required (sulphur self-heating rule) and fresh water wash before loading. Symmetric."
+    },
+    {
+      "previous": "sulphur",
+      "next": "manganese ore",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Manganese ore is industrial bulk; sulphur residue does not degrade manganese oxide quality; neither is food-grade sensitive; extra clean required (sulphur self-heating). Note: manganese ore reacts with strong acids — thorough fresh water wash after sulphur mandatory to prevent MnO vapour generation. Symmetric. ⟵ MnO2 reacts with sulphur dust and wet sulphur to form manganese sulphate compounds and toxic MnO vapour; sulphur profile does not list manganese ore as compatible; high-dust from both cargoes and chemical reactivity require manual surveyor review [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "sulphur",
+      "next": "petcoke",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Petcoke itself is high-sulphur (up to 8% S), so sulphur contamination does not degrade cargo quality; both are industrial bulk cargoes tolerating similar hold conditions. Extra clean required (sulphur self-heating rule). Fresh water wash to remove acid before loading. Symmetric. ⟵ Petcoke already carries sulphur residue; loading elemental sulphur (Group B, Class 4.1) over petcoke oily residue creates combined fire/explosion risk — sulphur dust in contact with petcoke carbon and oily surface is a documented spontaneous combustion hazard. Manual surveyor review required. [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "sulphur",
+      "next": "pipes",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Sulphur residue with moisture forms sulphuric acid — corrodes pipe thread ends, epoxy/FBE coatings, and weld zones; pipes profile lists sulphur as incompatible. Hospital clean required but corrosion risk to threaded connections warrants fail-closed."
+    },
+    {
+      "previous": "sulphur",
+      "next": "salt",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Sulphur profile lists salt as compatible; salt (NaCl) is chemically tolerant of sulphur residue and not food-grade sensitive in industrial form; however extra clean required (sulphur self-heating rule) and thorough fresh water wash to remove acid before salt loading to prevent hold corrosion acceleration."
+    },
+    {
+      "previous": "sulphur",
+      "next": "scrap",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Scrap metal is not food-grade and tolerates industrial contamination; sulphur residue corrosion risk is acceptable for scrap quality (scrap is already mixed ferrous fragments). Extra clean required (sulphur self-heating). Fresh water rinse essential to limit acid pitting of hold structure. Symmetric. ⟵ scrap not in sulphur.compatible_with; oil contamination from scrap machinery residue creates fire risk with sulphur dust (Class 4.1 flammable solid UN 1350); manual surveyor review required [symmetric fail-closed: reverse pair flagged risk]"
+    },
+    {
+      "previous": "sulphur",
+      "next": "steel",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Wet sulphur forms H₂SO₄ which actively corrodes steel surfaces and cargo; even residual sulphur dust with condensation causes acid pitting on steel coils/plates. Extra clean essential but corrosion risk too high without surveyor confirmation. Asymmetric: steel→sulphur is also listed incompatible in sulphur profile."
+    },
+    {
+      "previous": "sulphur",
+      "next": "sugar",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Sulphur profile explicitly lists sugar as incompatible; sulphur residue (SO2 odour, acid traces) causes food-grade rejection; sugar is hygroscopic and absorbs contaminants readily; surveyors will refuse grain-clean standard after sulphur without multiple washes. Symmetric."
+    },
+    {
+      "previous": "grain",
+      "next": "grain",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Same cargo class; grain→grain compatible with normal clean — no cross-contamination risk between grain types"
+    },
+    {
+      "previous": "phosphate",
+      "next": "grain",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Phosphate rock contains naturally occurring radioactive material (NORM/radionuclides) and phosphate dust residue causes food-grade rejection; grain surveyors require hospital clean and radiation clearance certificate before grain loading"
     }
   ]
 }

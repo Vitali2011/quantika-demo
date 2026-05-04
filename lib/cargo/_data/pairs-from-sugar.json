@@ -1,0 +1,121 @@
+[
+  {
+    "previous": "sugar",
+    "next": "grain",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Both food-grade hygroscopic cargoes; sugar leaves sticky sucrose residue — warm water wash + grain-clean inspection required. Symmetric: grain→sugar same protocol. extra_clean triggered by next=grain (contamination-sensitive)."
+  },
+  {
+    "previous": "sugar",
+    "next": "steel",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Sugar residue is water-soluble, no chemical attack on steel surface; standard wash removes sucrose. Steel requires hospital-clean holds but sugar leaves no staining or corrosive residue. Asymmetric: steel→sugar incompatible (mill scale + iron oxide contaminate food-grade)."
+  },
+  {
+    "previous": "sugar",
+    "next": "pipes",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Sugar residue is water-soluble and leaves no chemical or abrasive contamination harmful to pipe coatings or threaded ends; standard wash sufficient. Asymmetric: pipes→sugar incompatible (iron oxide/coating residue fails food-grade survey)."
+  },
+  {
+    "previous": "sugar",
+    "next": "iron-ore",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Iron ore is an industrial non-food cargo; residual sucrose poses no chemical incompatibility with iron oxides (Fe2O3/Fe3O4) and does not cause staining or reaction. Standard wash adequate. Asymmetric: iron-ore→sugar incompatible (red iron oxide dust = food-grade reject)."
+  },
+  {
+    "previous": "sugar",
+    "next": "dri",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "DRI (metallic iron >90% Fe, Group B self-heating) reacts with moisture; any residual sugar moisture or sucrose hydrolysis products accelerate oxidation/self-heating risk. Inert atmosphere protocol incompatible with residual organic matter. Manual surveyor review required."
+  },
+  {
+    "previous": "sugar",
+    "next": "coal",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Coal is an industrial cargo with no food-grade requirement; sucrose residue does not react with carbonaceous material. Sugar profile lists coal as incompatible when coal is PREVIOUS (black dust contaminates food). Sugar→coal direction: standard wash removes sucrose, no chemical incompatibility. Asymmetric pair."
+  },
+  {
+    "previous": "sugar",
+    "next": "petcoke",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Petroleum coke is industrial with no food-grade requirement; sucrose residue does not react with carbon-rich petcoke. Petcoke→sugar is incompatible (oily black stain ruins food-grade), but sugar→petcoke direction: standard wash sufficient, no chemical conflict. Asymmetric pair."
+  },
+  {
+    "previous": "sugar",
+    "next": "fertilizer",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Sugar residue (sucrose, moisture) incompatible with hygroscopic fertilizer (especially AN-based): promotes caking, moisture absorption, and potential decomposition of ammonium nitrate. Fertilizer→sugar also incompatible. Chemical/moisture interaction risk both directions. Manual surveyor review required."
+  },
+  {
+    "previous": "sugar",
+    "next": "cement",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Even 0.001% sucrose traces destroy cement setting (confirmed in sugar IMSBC profile and cement broker notes — sugar is a cement retarder). Hospital clean + acid wash required but residual risk remains high. Symmetric incompatibility: cement→sugar and sugar→cement both fail."
+  },
+  {
+    "previous": "sugar",
+    "next": "sulphur",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Dry sulphur inert to organic residues in ambient hold conditions; sucrose does not react with elemental sulphur (S8). Standard wash removes sugar residue before sulphur loading. Asymmetric: sulphur→sugar incompatible (SO2 odour + sulphur residue = food-grade reject)."
+  },
+  {
+    "previous": "sugar",
+    "next": "scrap",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Scrap metal has no food-grade requirement; residual sucrose presents no chemical incompatibility with ferrous/non-ferrous fragments. Sucrose wash water does not promote corrosion or oil contamination. Standard wash adequate. Asymmetric: scrap→sugar incompatible (oil/battery acid = food-grade fail)."
+  },
+  {
+    "previous": "sugar",
+    "next": "bauxite",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Bauxite (aluminium oxide-hydroxide) is alkaline but ambient-inert; trace sucrose does not react with Al2O3·H2O at hold temperatures. Bauxite has no food-grade requirement. Standard wash removes sugar residue. Asymmetric: bauxite→sugar incompatible (red/brown Al oxide dust = food-grade reject)."
+  },
+  {
+    "previous": "sugar",
+    "next": "general",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "General cargo is a broker catch-all with variable actual commodities; sugar residue is water-soluble and low-risk. Standard wash recommended. Compatibility must be re-assessed case-by-case for actual cargo per broker notes — manual surveyor review advised if actual cargo is food or chemical-sensitive."
+  },
+  {
+    "previous": "sugar",
+    "next": "salt",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Both listed in sugar compatible_with and salt compatible_with. NaCl is chemically inert to sucrose; standard warm water wash removes sugar residue. Salt does not require food-grade equivalent for industrial grade. Symmetric compatible pair."
+  },
+  {
+    "previous": "sugar",
+    "next": "limestone",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Limestone (CaCO3) is alkaline but ambient-inert; trace sucrose does not cause retardation or chemical reaction at hold conditions (differs from cement clinker chemistry). Limestone listed in sugar's compatible group implicitly via grain/salt chain. Standard wash sufficient. Symmetric: limestone profile marks sugar as incompatible for limestone→sugar but sugar→limestone is low-risk industrial direction."
+  },
+  {
+    "previous": "sugar",
+    "next": "manganese ore",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Manganese ore (MnO2/Mn2O3) is industrial with no food-grade requirement; sucrose residue does not react with manganese oxides under hold conditions. Standard wash removes sugar residue. Asymmetric: manganese ore→sugar incompatible (dark purple/black Mn oxide dust = food-grade reject)."
+  },
+  {
+    "previous": "sugar",
+    "next": "copper concentrate",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Copper concentrate (CuFeS2, Group A+B) generates H2S in presence of moisture; organic sucrose residue and associated moisture create conditions for enhanced H2S release toxic to crew. Copper concentrate profile marks sugar as incompatible. Dedicated voyage strongly preferred. Manual surveyor review required."
+  }
+]

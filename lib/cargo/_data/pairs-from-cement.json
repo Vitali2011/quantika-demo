@@ -1,0 +1,121 @@
+[
+  {
+    "previous": "cement",
+    "next": "grain",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Alkaline calcium hydroxide residue destroys grain food-grade standard; cement dust absorption into organic cargo causes contamination rejection; fail-closed per food-grade rule"
+  },
+  {
+    "previous": "cement",
+    "next": "steel",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Cement listed in steel incompatible_with; calcium silicate dust abrades coil surfaces and deposits on bare metal; cement-to-steel requires hospital clean + acid descale before steel loading"
+  },
+  {
+    "previous": "cement",
+    "next": "pipes",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Cement listed in pipes incompatible_with; calcium deposits fuse to pipe threads and protective coatings; hospital clean + acid descale mandatory before pipe loading"
+  },
+  {
+    "previous": "cement",
+    "next": "iron-ore",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Iron-ore profile does not list cement as incompatible; both industrial bulk cargoes; extra_clean required (cement high-dust) — acid descale + full wash before iron-ore loading; symmetric"
+  },
+  {
+    "previous": "cement",
+    "next": "dri",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Cement listed in dri incompatible_with; calcium hydroxide residue reacts with DRI metallic iron surfaces; moisture-activating cement deposits risk H2 generation in humid holds"
+  },
+  {
+    "previous": "cement",
+    "next": "coal",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Cement listed in coal incompatible_with; alkaline cement residue neutralises acid-wash required for coal holds; cross-contamination of black carbon into cement-stained holds degrades both cargoes"
+  },
+  {
+    "previous": "cement",
+    "next": "petcoke",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Cement listed in petcoke incompatible_with; cement dust contaminates oily petcoke surface reducing product quality; alkaline-acid reaction between cement residue and sulphurous petcoke"
+  },
+  {
+    "previous": "cement",
+    "next": "fertilizer",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Cement listed in fertilizer incompatible_with; alkaline cement residue reacts with acidic DAP/MAP fertilizer; AN-based fertilizers incompatible with alkaline contamination; manual surveyor review required"
+  },
+  {
+    "previous": "cement",
+    "next": "sulphur",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Cement listed in sulphur incompatible_with; wet sulphur forms H2SO4 which reacts violently with calcium carbonate/hydroxide cement residue; corrosive acid-base reaction risk in hold"
+  },
+  {
+    "previous": "cement",
+    "next": "scrap",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Cement listed in scrap incompatible_with; calcium hydroxide deposits fuse to metal fragments and contaminate scrap with non-metallic inclusions; acid descale required but conflicts with scrap hold prep"
+  },
+  {
+    "previous": "cement",
+    "next": "bauxite",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Cement listed in bauxite incompatible_with; alkaline cement residue contaminates aluminium oxide ore chemistry; calcium silicate deposits alter bauxite Al2O3 grade"
+  },
+  {
+    "previous": "cement",
+    "next": "general",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Cement high-dust with calcium hydroxide residue; general cargo chemistry variable — manual surveyor review required per general cargo broker_notes; fail-closed until actual cargo declared"
+  },
+  {
+    "previous": "cement",
+    "next": "sugar",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Sugar profile explicitly lists cement as incompatible; even 0.001% alkaline cement trace destroys sucrose setting; food-grade fail-closed; acid descale insufficient to meet sugar surveyor standard"
+  },
+  {
+    "previous": "cement",
+    "next": "salt",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Cement profile lists salt as compatible; salt profile lists cement as compatible — symmetric; extra_clean required (cement high-dust) — acid descale + fresh water rinse before salt loading; chloride from salt not problematic for subsequent cement-free cargo"
+  },
+  {
+    "previous": "cement",
+    "next": "limestone",
+    "compatible": true,
+    "extra_clean": true,
+    "reason": "Cement profile lists limestone as compatible; both calcium-based alkaline cargoes — chemistry compatible; extra_clean required (cement high-dust) to remove cured calcium deposits before limestone; symmetric"
+  },
+  {
+    "previous": "cement",
+    "next": "manganese ore",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Cement listed in manganese ore incompatible_with; alkaline cement residue reacts with manganese oxides altering MnO2/Mn2O3 chemistry; calcium contamination degrades manganese ore grade"
+  },
+  {
+    "previous": "cement",
+    "next": "copper concentrate",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Cement listed in copper concentrate incompatible_with; calcium hydroxide residue raises hold pH disrupting copper sulphide concentrate chemistry; acid wash required for copper concentrate conflicts with cement calcium deposits"
+  }
+]

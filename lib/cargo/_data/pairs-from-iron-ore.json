@@ -1,0 +1,121 @@
+[
+  {
+    "previous": "iron-ore",
+    "next": "grain",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Iron oxide (Fe2O3/Fe3O4) red dust contamination causes food-grade rejection; silica dust co-present; grain surveyor will refuse holds without full wash + dry + inspection"
+  },
+  {
+    "previous": "iron-ore",
+    "next": "steel",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Iron ore fines leave abrasive red oxide residue on hold surfaces; hospital clean required before steel coils — even trace staining triggers cargo damage claims and mill scale disputes"
+  },
+  {
+    "previous": "iron-ore",
+    "next": "pipes",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Iron oxide dust damages protective epoxy/FBE pipe coatings and threaded end connections; hospital clean required — prior ore cargo is explicitly excluded in pipe charter parties"
+  },
+  {
+    "previous": "iron-ore",
+    "next": "dri",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Iron ore profile lists DRI as incompatible; iron oxide moisture residue reacts with metallic DRI sponge (Fe) triggering self-heating and H2 generation — safety-critical exclusion"
+  },
+  {
+    "previous": "iron-ore",
+    "next": "coal",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Both listed mutually compatible (iron-ore and coal profiles); normal clean acceptable — iron oxide dust does not contaminate coal quality; symmetric pair"
+  },
+  {
+    "previous": "iron-ore",
+    "next": "petcoke",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Petcoke profile lists iron-ore as compatible; both are industrial bulk with low cross-contamination risk; normal clean sufficient — iron oxide residue does not affect petcoke quality"
+  },
+  {
+    "previous": "iron-ore",
+    "next": "fertilizer",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Iron oxide dust and moisture residue from iron ore create corrosion risk for hygroscopic fertilizer; iron-ore profile lists fertilizer as incompatible; chemical contamination and caking risk"
+  },
+  {
+    "previous": "iron-ore",
+    "next": "cement",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Iron ore fines listed as incompatible with cement in both profiles; iron oxide and silica residue discolour and contaminate cement blend quality; alkaline cement also accelerates hold corrosion when mixed with ore moisture"
+  },
+  {
+    "previous": "iron-ore",
+    "next": "sulphur",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Iron ore moisture residue reacts with sulphur to accelerate H2SO4 corrosion; sulphur profile requires dry clean holds; iron ore extra_clean_required_after=true makes residual moisture risk unacceptable without manual surveyor review"
+  },
+  {
+    "previous": "iron-ore",
+    "next": "scrap",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Both profiles list each other as compatible; iron oxide residue does not materially degrade mixed ferrous scrap; normal clean acceptable — symmetric pair"
+  },
+  {
+    "previous": "iron-ore",
+    "next": "bauxite",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Bauxite profile lists iron-ore as compatible; both are iron-oxide-bearing ores with similar dust profiles (Group A); normal clean acceptable — symmetric pair"
+  },
+  {
+    "previous": "iron-ore",
+    "next": "general",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "General cargo chemistry unknown; iron ore extra_clean_required_after=true means residual red iron oxide dust poses unquantified contamination risk — manual surveyor review required per general profile broker notes"
+  },
+  {
+    "previous": "iron-ore",
+    "next": "sugar",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Iron oxide dust contaminates food-grade sugar — red staining causes rejection; iron-ore listed in sugar incompatible_with; silica co-dust also unacceptable for food cargo"
+  },
+  {
+    "previous": "iron-ore",
+    "next": "salt",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Iron ore residue introduces iron oxide contamination into NaCl (salt); food-grade salt requires clean holds; iron oxide + chloride = accelerated hold corrosion; normal clean after ore insufficient for food-grade salt surveyor standard"
+  },
+  {
+    "previous": "iron-ore",
+    "next": "limestone",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Limestone profile lists iron-ore as compatible; both are inert mineral bulk cargoes with no reactive cross-contamination; normal clean acceptable — symmetric pair"
+  },
+  {
+    "previous": "iron-ore",
+    "next": "manganese ore",
+    "compatible": true,
+    "extra_clean": false,
+    "reason": "Manganese ore profile lists iron-ore as compatible; both are oxide ores, Group A, similar dust/moisture profiles; normal clean acceptable — symmetric pair"
+  },
+  {
+    "previous": "iron-ore",
+    "next": "copper concentrate",
+    "compatible": false,
+    "extra_clean": true,
+    "reason": "Iron-ore profile lists copper concentrate as incompatible; copper concentrate is dual-hazard (Group A + B, H2S generation, arsenic impurities); iron ore moisture residue risks activating sulphide reactions — dedicated voyage required"
+  }
+]
