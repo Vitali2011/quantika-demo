@@ -42,7 +42,7 @@ export function calculateCommission(recap: ParsedFixtureRecap): CommissionResult
 
   // If AI already computed commissionAmount, use it directly
   const precomputedAmount = safeNum(recap.commissionAmount);
-  const commissionCurrency = recap.commissionCurrency || currency;
+  const commissionCurrency = (typeof recap.commissionCurrency === 'string' && recap.commissionCurrency) || currency;
 
   if (precomputedAmount && precomputedAmount > 0) {
     const totalFreight = Math.round((precomputedAmount / percent) * 100 * 100) / 100;
