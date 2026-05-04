@@ -8,6 +8,7 @@ import clientReplies from '@/lib/sample-data/client-replies.json';
 import documents from '@/lib/sample-data/documents.json';
 import vesselCerts from '@/lib/sample-data/vessel-certs.json';
 import { rebaseDates } from '@/lib/sample-data/rebase';
+import { resolveDemoParsedCargoes } from '@/lib/sample-data/demo-parsed-cargoes';
 import type { SampleEmailRaw } from '@/lib/sample-data/types';
 
 export const dynamic = 'force-dynamic';
@@ -26,7 +27,7 @@ export async function POST(request: NextRequest) {
   const sessionId = createSession('sample-data-token');
   const today = new Date();
   const SAMPLE_EMAILS = rebaseDates(SAMPLE_EMAILS_RAW, today);
-  updateSession(sessionId, { emails: SAMPLE_EMAILS, isSampleData: true });
+  updateSession(sessionId, { emails: SAMPLE_EMAILS, isSampleData: true, parsedCargos: resolveDemoParsedCargoes(today) });
 
   const csrfToken = generateCsrfToken();
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://demo.quantika.org';
