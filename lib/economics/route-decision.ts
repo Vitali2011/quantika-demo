@@ -171,11 +171,21 @@ function buildLeg(
   const speed = vessel.speedKts > 0 ? vessel.speedKts : 13;
   const dur = durationDays(distanceNm, speed);
 
+  // safeResolve: NaN/negative → 0; resolver throw → 0.
+  // Math.max(0, NaN) === NaN, so Number.isFinite guard is required.
+  const safeResolve = (port: string): number => {
+    try {
+      const x = daResolver!(port, vessel.dwt);
+      return Number.isFinite(x) ? Math.max(0, x) : 0;
+    } catch {
+      return 0;
+    }
+  };
+
   // Sum origin + destination DA. Resolver may return 0 for unknown ports;
   // we still pass through because partial DA is more informative than 0.
   const daUsd = daResolver
-    ? Math.max(0, daResolver(origin, vessel.dwt)) +
-      Math.max(0, daResolver(destination, vessel.dwt))
+    ? safeResolve(origin) + safeResolve(destination)
     : 0;
 
   const input: VoyageInput = {
