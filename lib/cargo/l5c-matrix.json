@@ -16,6 +16,7 @@
       "previous": "coal",
       "next": "grain",
       "compatible": false,
+      "extra_clean": true,
       "reason": "Black residue contamination"
     },
     { "previous": "coal", "next": "bauxite", "compatible": true, "extra_clean": false },
@@ -31,15 +32,23 @@
       "previous": "scrap",
       "next": "sugar",
       "compatible": false,
+      "extra_clean": true,
       "reason": "Sharp residue + contamination risk"
     },
     {
       "previous": "fertilizer",
       "next": "grain",
       "compatible": false,
+      "extra_clean": true,
       "reason": "Cross-contamination, food-grade rejected"
     },
-    { "previous": "petcoke", "next": "grain", "compatible": false, "reason": "Carbon residue" },
+    {
+      "previous": "petcoke",
+      "next": "grain",
+      "compatible": false,
+      "extra_clean": true,
+      "reason": "Carbon residue"
+    },
     { "previous": "salt", "next": "steel", "compatible": false, "reason": "Corrosion risk" },
     { "previous": "iron-ore", "next": "grain", "compatible": true, "extra_clean": true },
     {
@@ -61,18 +70,21 @@
       "previous": "cement",
       "next": "grain",
       "compatible": false,
+      "extra_clean": true,
       "reason": "Alkalinity / fine dust contamination"
     },
     {
       "previous": "sulphur",
       "next": "grain",
       "compatible": false,
+      "extra_clean": true,
       "reason": "Sulphur residue + toxicity for food cargo"
     },
     {
       "previous": "sulphur",
       "next": "steel",
       "compatible": false,
+      "extra_clean": true,
       "reason": "Sulphur acidity corrodes steel"
     },
     {
@@ -93,12 +105,14 @@
       "previous": "phosphate",
       "next": "grain",
       "compatible": false,
+      "extra_clean": true,
       "reason": "Phosphate dust + radiation concern, food-grade rejected"
     },
     {
       "previous": "copper concentrate",
       "next": "grain",
       "compatible": false,
+      "extra_clean": true,
       "reason": "Heavy-metal contamination"
     },
     {
@@ -112,6 +126,7 @@
       "previous": "scrap",
       "next": "grain",
       "compatible": false,
+      "extra_clean": true,
       "reason": "Sharp ferrous residue + oils, food-grade rejected"
     },
     {
@@ -129,6 +144,70 @@
       "extra_clean": true,
       "reason": "Mill scale + rust residue requires hospital clean for food"
     },
-    { "previous": "grain", "next": "steel", "compatible": true, "extra_clean": false }
+    { "previous": "grain", "next": "steel", "compatible": true, "extra_clean": false },
+
+    {
+      "previous": "general",
+      "next": "general",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "General↔general — varied benign mixed cargo"
+    },
+    {
+      "previous": "general",
+      "next": "grain",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "General cargo (no known hazardous prior) is benign for grain loadout"
+    },
+    {
+      "previous": "grain",
+      "next": "general",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Grain residue is food-grade dust — benign for general cargo"
+    },
+    {
+      "previous": "general",
+      "next": "steel",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "General cargo is benign for steel"
+    },
+    {
+      "previous": "steel",
+      "next": "general",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Mill scale is inert for general cargo"
+    },
+    {
+      "previous": "general",
+      "next": "pipes",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "General cargo is benign for pipes"
+    },
+    {
+      "previous": "pipes",
+      "next": "general",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Pipes leave no presumed contamination"
+    },
+    {
+      "previous": "general",
+      "next": "bauxite",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "General cargo is benign for bauxite"
+    },
+    {
+      "previous": "bauxite",
+      "next": "general",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Bauxite dust is benign for non-food general cargo"
+    }
   ]
 }

@@ -63,6 +63,47 @@ export const MAX_EMAIL_BODY_CHARS = 12_000;
 // past maxDuration.
 export const LLM_TIMEOUT_MS = 45_000;
 
+/**
+ * wave-γ-3 (B1): per-route concurrency cap on parallel LLM calls.
+ * Was 3 — for a 13-email demo session that cost ~5 sequential rounds × 20s
+ * each, hitting Cloudflare 524 stably. Bumped to 8 → ceil(13/8)=2 rounds.
+ */
+export const PARSE_CARGO_CONCURRENCY = 8;
+
+/**
+ * wave-γ-3 (B1): retry an LLM call when cliproxy returns 429 (rate limit).
+ * Higher pLimit concurrency means more chance of brief upstream throttling;
+ * a jittered backoff retry absorbs the blip without surfacing it as a parse
+ * failure. Non-429 errors propagate immediately so real failures stay loud.
+ */
+export interface Retry429Options {
+  maxRetries?: number;
+  baseDelayMs?: number;
+}
+export async function withRetry429<T>(
+  fn: () => Promise<T>,
+  opts: Retry429Options = {},
+): Promise<T> {
+  const maxRetries = opts.maxRetries ?? 2;
+  const baseDelayMs = opts.baseDelayMs ?? 200;
+  let lastErr: unknown;
+  for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastErr = err;
+      const status = (err as { status?: number } | null)?.status;
+      const msg = String((err as { message?: string } | null)?.message ?? err ?? '');
+      const isRateLimit = status === 429 || /\b429\b|rate.?limit/i.test(msg);
+      if (!isRateLimit || attempt === maxRetries) throw err;
+      // Jittered exponential backoff: baseDelay × 2^attempt × (1..2 random).
+      const delayMs = baseDelayMs * Math.pow(2, attempt) * (1 + Math.random());
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+    }
+  }
+  throw lastErr;
+}
+
 /** Truncate raw email body to keep prompts within model budget. */
 function truncateBody(body: string): string {
   if (body.length <= MAX_EMAIL_BODY_CHARS) return body;
@@ -174,7 +215,7 @@ export async function POST(request: NextRequest) {
   }
 
   const allParsed: ParsedCargo[] = [];
-  const limit = pLimit(3);
+  const limit = pLimit(PARSE_CARGO_CONCURRENCY);
   const prompts = buildCargoPrompts(cargoEmails);
 
   await Promise.all(
@@ -185,16 +226,20 @@ export async function POST(request: NextRequest) {
       // γ-1: pass timeoutMs into callAiJson so the underlying AbortController
       // actually cancels the upstream stream (was: only outer race resolved
       // null while the LLM kept consuming resources in the background).
+      // γ-3 (B1): wrap in withRetry429 so the higher pLimit(8) concurrency
+      // doesn't translate cliproxy 429 blips into permanent failures.
       let result: RawCargoItem | null;
       try {
         result = await withTimeout(
-          callAiJson<RawCargoItem>(
-            prompts[i],
-            CARGO_INQUIRY_PARSER_PROMPT,
-            AI_MODEL_LIGHT,
-            { items: [] },
-            16000,
-            { timeoutMs: LLM_TIMEOUT_MS },
+          withRetry429(() =>
+            callAiJson<RawCargoItem>(
+              prompts[i],
+              CARGO_INQUIRY_PARSER_PROMPT,
+              AI_MODEL_LIGHT,
+              { items: [] },
+              16000,
+              { timeoutMs: LLM_TIMEOUT_MS },
+            ),
           ),
           LLM_TIMEOUT_MS,
         );
