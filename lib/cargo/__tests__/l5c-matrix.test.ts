@@ -12,16 +12,19 @@
 import { checkCompatibility } from '../l5c-matrix';
 
 describe('L5C fail-closed for unknown pairs (spec-betafix-02)', () => {
-  it('coal → "wheat in bags" → BREAK_BULK pathway (βf3-05): compatible:true + break_bulk:true, not fail-closed', () => {
-    // βf3-05 introduced BREAK_BULK detection: "wheat in bags" triggers a distinct
-    // stowage pathway (surveyor sign-off for hold preparation) rather than the
-    // fail-closed unknown-pair path. The verdict differs from bulk wheat.
+  it('coal → "wheat in bags": contamination check still applies (wave-γ-2 REGRESSION-01 fix)', () => {
+    // wave-γ-2 fix: BREAK_BULK form is metadata for the surveyor, NOT a verdict
+    // override. Coal residue contaminates the underlying grain regardless of
+    // bag form — fail-closed contamination contract is preserved.
     const r = checkCompatibility(['coal'], 'wheat in bags');
-    expect(r.compatible).toBe(true);
+    // Positive contract — Class 12 (audit 2026-05-03):
+    expect(r.compatible).toBe(false);
     expect(r.break_bulk).toBe(true);
-    expect(r.requires_manual_review).toBe(false);
-    expect(r.warnings.length).toBeGreaterThan(0);
-    expect(r.warnings[0]).toMatch(/BREAK_BULK/i);
+    expect(r.blocking_pairs).toHaveLength(1);
+    expect(r.blocking_pairs[0].previous).toBe('coal');
+    expect(r.blocking_pairs[0].reason).toMatch(/black\s+residue|coal/i);
+    // BREAK_BULK warning still present (surveyor metadata).
+    expect(r.warnings.some((w) => /BREAK_BULK/i.test(w))).toBe(true);
   });
 
   it('DRI → grain (KNOWN incompatible pair) — compatible:false from matrix, no manual_review flag', () => {
@@ -58,12 +61,14 @@ describe('L5C fail-closed for unknown pairs (spec-betafix-02)', () => {
     expect(prevs).toContain('unknownX');
   });
 
-  it('all-unknown prevs, wheat in bags → BREAK_BULK pathway (βf3-05): compatible:true + break_bulk:true', () => {
-    // BREAK_BULK detection fires before the per-previous-cargo loop.
-    // "wheat in bags" exits via the break_bulk pathway regardless of prevCargoes.
+  it('all-unknown prevs, wheat in bags: fail-closed preserved (wave-γ-2 REGRESSION-01 fix)', () => {
+    // wave-γ-2: unknown contamination data → manual surveyor review, regardless
+    // of bag form. break_bulk:true is metadata only, not a verdict override.
     const r = checkCompatibility(['titanium', 'lithium-ore'], 'wheat in bags');
-    expect(r.compatible).toBe(true);
+    expect(r.compatible).toBe(false);
     expect(r.break_bulk).toBe(true);
-    expect(r.requires_manual_review).toBe(false);
+    expect(r.requires_manual_review).toBe(true);
+    expect(r.blocking_pairs).toHaveLength(2);
+    expect(r.warnings.some((w) => /no l5c data/i.test(w))).toBe(true);
   });
 });

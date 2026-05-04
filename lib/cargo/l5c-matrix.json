@@ -1,4 +1,10 @@
 {
+  "_meta": {
+    "version": "wave-γ-2 IMSBC skeleton (A4 hybrid)",
+    "source": "IMSBC Code (IMO 2008) + broker rules of thumb. Variants and aliases resolved via TAXONOMY in l5c-matrix.ts (B2 hierarchy).",
+    "wildcard_semantics": "C1 symmetric — `*→X` rules apply to BOTH directions (X→* derived). Exact-match entries take precedence for compatibility verdict; extra_clean is OR'd from applicable wildcards.",
+    "next_phase": "wave-γ-3 will add user-supplied top-50 broker overrides for Dubai/MENA freight forwarders."
+  },
   "pairs": [
     {
       "previous": "DRI",
@@ -28,7 +34,7 @@
       "reason": "Sharp residue + contamination risk"
     },
     {
-      "previous": "fertilizer-urea",
+      "previous": "fertilizer",
       "next": "grain",
       "compatible": false,
       "reason": "Cross-contamination, food-grade rejected"
@@ -49,6 +55,80 @@
       "compatible": true,
       "extra_clean": true,
       "reason": "DRI dust-prone, requires extra clean"
-    }
+    },
+
+    {
+      "previous": "cement",
+      "next": "grain",
+      "compatible": false,
+      "reason": "Alkalinity / fine dust contamination"
+    },
+    {
+      "previous": "sulphur",
+      "next": "grain",
+      "compatible": false,
+      "reason": "Sulphur residue + toxicity for food cargo"
+    },
+    {
+      "previous": "sulphur",
+      "next": "steel",
+      "compatible": false,
+      "reason": "Sulphur acidity corrodes steel"
+    },
+    {
+      "previous": "salt",
+      "next": "grain",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Hospital clean required to avoid salt residue"
+    },
+    {
+      "previous": "limestone",
+      "next": "grain",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Limestone dust requires extra clean"
+    },
+    {
+      "previous": "phosphate",
+      "next": "grain",
+      "compatible": false,
+      "reason": "Phosphate dust + radiation concern, food-grade rejected"
+    },
+    {
+      "previous": "copper concentrate",
+      "next": "grain",
+      "compatible": false,
+      "reason": "Heavy-metal contamination"
+    },
+    {
+      "previous": "manganese ore",
+      "next": "grain",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Hospital clean required"
+    },
+    {
+      "previous": "scrap",
+      "next": "grain",
+      "compatible": false,
+      "reason": "Sharp ferrous residue + oils, food-grade rejected"
+    },
+    {
+      "previous": "*",
+      "next": "cement",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Cement requires dry/dust-free hold (symmetric: also applies before cement loadouts)"
+    },
+    { "previous": "grain", "next": "grain", "compatible": true, "extra_clean": false },
+    {
+      "previous": "steel",
+      "next": "grain",
+      "compatible": true,
+      "extra_clean": true,
+      "reason": "Mill scale + rust residue requires hospital clean for food"
+    },
+    { "previous": "grain", "next": "steel", "compatible": true, "extra_clean": false }
   ]
 }
