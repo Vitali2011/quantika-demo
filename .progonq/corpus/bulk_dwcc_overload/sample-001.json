@@ -1,0 +1,179 @@
+{
+  "id": "bulk_dwcc_overload/sample-001",
+  "category": "bulk_dwcc_overload",
+  "edge_case_summary": "DWCC stress test: one vessel is razor-thin feasible (cargo 28,500mt × 1.05 tolerance vs DWCC 29,800mt), one is genuinely insufficient (cargo 30,000mt vs DWCC 28,500mt — pre-filter miss) — verifies matcher re-checks DWCC hard limit rather than blindly trusting readiness list.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-10552",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Sunflower seeds",
+        "weight_mt": 28500,
+        "weight_mt_min": 27075,
+        "weight_mt_max": 29925,
+        "stowage_factor_m3_per_mt": 1.58,
+        "load_port": {
+          "name": "Mykolaiv",
+          "country": "Ukraine",
+          "unlocode": "UAMYK"
+        },
+        "discharge_port": {
+          "name": "Iskenderun",
+          "country": "Turkey",
+          "unlocode": "TRISK"
+        },
+        "laycan_start": "2026-06-01",
+        "laycan_end": "2026-06-06",
+        "laycan_confidence": "confirmed",
+        "charterer": "Cargill",
+        "broker": "Brave Bulk",
+        "gear_required": false,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": ["No Russian-flag vessels", "SHEX laytime"]
+      },
+      {
+        "email_id": "msg-10553",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Sunflower seeds",
+        "weight_mt": 30000,
+        "weight_mt_min": 28500,
+        "weight_mt_max": 31500,
+        "stowage_factor_m3_per_mt": 1.58,
+        "load_port": {
+          "name": "Mykolaiv",
+          "country": "Ukraine",
+          "unlocode": "UAMYK"
+        },
+        "discharge_port": {
+          "name": "Iskenderun",
+          "country": "Turkey",
+          "unlocode": "TRISK"
+        },
+        "laycan_start": "2026-06-01",
+        "laycan_end": "2026-06-06",
+        "laycan_confidence": "confirmed",
+        "charterer": "Cargill",
+        "broker": "Brave Bulk",
+        "gear_required": false,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": ["No Russian-flag vessels", "SHEX laytime"]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-20821",
+        "item_index": 0,
+        "vessel_name": "M/V Thessaloniki Bulker",
+        "imo": "9388201",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 32400,
+        "dwcc": 29800,
+        "summer_draft_m": 10.2,
+        "loa_m": 180.1,
+        "beam_m": 29.8,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 38900,
+        "bale_capacity_cbm": 37200,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 15m × 13m each",
+        "open_port": {
+          "name": "Constanta",
+          "country": "Romania",
+          "unlocode": "ROCND"
+        },
+        "open_date": "2026-05-27",
+        "service_speed_kn": 13.0,
+        "flag": "PA",
+        "owner": "Thessaloniki Maritime Corp",
+        "cii_grade": "B",
+        "last_cargo": "Rapeseed",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20822",
+        "item_index": 0,
+        "vessel_name": "M/V Kavala Spirit",
+        "imo": "9411738",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 31000,
+        "dwcc": 28500,
+        "summer_draft_m": 9.95,
+        "loa_m": 176.4,
+        "beam_m": 28.9,
+        "geared": true,
+        "crane_config": "4×25t",
+        "grain_capacity_cbm": 36600,
+        "bale_capacity_cbm": 35100,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 15m × 12.5m each",
+        "open_port": {
+          "name": "Constanta",
+          "country": "Romania",
+          "unlocode": "ROCND"
+        },
+        "open_date": "2026-05-28",
+        "service_speed_kn": 12.5,
+        "flag": "MH",
+        "owner": "Northern Aegean Shipping SA",
+        "cii_grade": "C",
+        "last_cargo": "Wheat",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-10552",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20821",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-28",
+        "verdict": "tight",
+        "explanation": "M/V Thessaloniki Bulker opens Constanta 27-May. Constanta to Mykolaiv ~270nm at 13.0kn = ~21h, arrives ~28-May — 4 days before laycan start 01-Jun. DWCC 29,800mt vs cargo max 29,925mt: within tolerance by 125mt only.",
+        "date_issues": []
+      },
+      {
+        "cargo_email_id": "msg-10552",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20822",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-29",
+        "verdict": "tight",
+        "explanation": "M/V Kavala Spirit opens Constanta 28-May. Constanta to Mykolaiv ~270nm at 12.5kn = ~22h, arrives ~29-May — 3 days before laycan start 01-Jun. DWCC 28,500mt vs cargo min 27,075mt: feasible at lower end only.",
+        "date_issues": []
+      },
+      {
+        "cargo_email_id": "msg-10553",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20821",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-28",
+        "verdict": "tight",
+        "explanation": "M/V Thessaloniki Bulker opens Constanta 27-May. Arrives Mykolaiv ~28-May. NOTE: cargo weight_mt 30,000mt exceeds vessel DWCC 29,800mt — pre-filter should have excluded this pair but did not. Structural violation present.",
+        "date_issues": ["DWCC_VIOLATION: cargo 30,000mt (min 28,500mt) exceeds vessel DWCC 29,800mt — pre-filter miss"]
+      },
+      {
+        "cargo_email_id": "msg-10553",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20822",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-29",
+        "verdict": "tight",
+        "explanation": "M/V Kavala Spirit opens Constanta 28-May. Arrives Mykolaiv ~29-May. NOTE: cargo weight_mt 30,000mt exceeds vessel DWCC 28,500mt by 1,500mt — clear structural violation, pre-filter miss.",
+        "date_issues": ["DWCC_VIOLATION: cargo 30,000mt (min 28,500mt) exceeds vessel DWCC 28,500mt — pre-filter miss"]
+      }
+    ]
+  }
+}

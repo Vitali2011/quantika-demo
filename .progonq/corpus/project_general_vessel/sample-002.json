@@ -1,0 +1,214 @@
+{
+  "id": "project_general_vessel/sample-002",
+  "category": "project_general_vessel",
+  "edge_case_summary": "4× transformer cores 80t each requiring 100t+ single-hook lift: 2 vessels with 80t cranes (insufficient by 20t), 2 vessels with 120t cranes (fit) — verifies matcher applies per-piece lift check, not just gross cargo weight.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-10701",
+        "item_index": 0,
+        "cargo_type": "PROJECT",
+        "commodity": "Power transformer cores",
+        "weight_mt": 320,
+        "weight_mt_min": 280,
+        "weight_mt_max": 360,
+        "stowage_factor_m3_per_mt": null,
+        "load_port": {
+          "name": "Antwerp",
+          "country": "Belgium",
+          "unlocode": "BEANR"
+        },
+        "discharge_port": {
+          "name": "Abu Dhabi",
+          "country": "UAE",
+          "unlocode": "AEAUH"
+        },
+        "laycan_start": "2026-05-30",
+        "laycan_end": "2026-06-06",
+        "laycan_confidence": "confirmed",
+        "charterer": "Siemens Energy",
+        "broker": "FIS",
+        "gear_required": true,
+        "lift_capacity_required_t": 100,
+        "hold_geometry_required": "minimum 8m × 6m hatch opening; tween-deck or open hold for 4m height pieces",
+        "restrictions": [
+          "Pieces: 4 transformer cores, 80t each, 6m × 5m × 4m per piece",
+          "Single lift per piece required — no tandem lifting",
+          "P&I survey mandatory for cargo over 60t/piece"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-20971",
+        "item_index": 0,
+        "vessel_name": "M/V Scheldt Project",
+        "imo": "9451267",
+        "vessel_class": "MPP",
+        "dwt": 9800,
+        "dwcc": 9200,
+        "summer_draft_m": 7.8,
+        "loa_m": 130.5,
+        "beam_m": 19.4,
+        "geared": true,
+        "crane_config": "2×80t",
+        "grain_capacity_cbm": null,
+        "bale_capacity_cbm": 11500,
+        "hold_count": 2,
+        "hatch_dimensions": "Hold 1: 28m × 11m; Hold 2: 22m × 11m. Tween-deck fitted.",
+        "open_port": {
+          "name": "Rotterdam",
+          "country": "Netherlands",
+          "unlocode": "NLRTM"
+        },
+        "open_date": "2026-05-26",
+        "service_speed_kn": 14.0,
+        "flag": "NL",
+        "owner": "Scheldt Project Carriers BV",
+        "cii_grade": "B",
+        "last_cargo": "Generator sets",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20972",
+        "item_index": 0,
+        "vessel_name": "M/V Meuse Heavy",
+        "imo": "9399871",
+        "vessel_class": "MPP",
+        "dwt": 8900,
+        "dwcc": 8300,
+        "summer_draft_m": 7.5,
+        "loa_m": 126.0,
+        "beam_m": 18.8,
+        "geared": true,
+        "crane_config": "2×80t",
+        "grain_capacity_cbm": null,
+        "bale_capacity_cbm": 10400,
+        "hold_count": 2,
+        "hatch_dimensions": "Hold 1: 25m × 10m; Hold 2: 20m × 10m. No tween-deck.",
+        "open_port": {
+          "name": "Ghent",
+          "country": "Belgium",
+          "unlocode": "BEGNE"
+        },
+        "open_date": "2026-05-25",
+        "service_speed_kn": 13.5,
+        "flag": "BE",
+        "owner": "Meuse Shipping Partners",
+        "cii_grade": "C",
+        "last_cargo": "Steel structures",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20973",
+        "item_index": 0,
+        "vessel_name": "M/V Flanders Lifter",
+        "imo": "9523781",
+        "vessel_class": "MPP",
+        "dwt": 14200,
+        "dwcc": 13400,
+        "summer_draft_m": 8.9,
+        "loa_m": 148.5,
+        "beam_m": 22.0,
+        "geared": true,
+        "crane_config": "2×120t",
+        "grain_capacity_cbm": null,
+        "bale_capacity_cbm": 16800,
+        "hold_count": 2,
+        "hatch_dimensions": "Hold 1: 35m × 13m; Hold 2: 28m × 13m. Tween-deck fitted. Clear height 7.2m lower, 4.1m tween.",
+        "open_port": {
+          "name": "Antwerp",
+          "country": "Belgium",
+          "unlocode": "BEANR"
+        },
+        "open_date": "2026-05-27",
+        "service_speed_kn": 15.0,
+        "flag": "MH",
+        "owner": "Flanders Heavy Lift NV",
+        "cii_grade": "A",
+        "last_cargo": "Transformer",
+        "restrictions": ["P&I Club: Gard. Full survey package available for cargo > 60t/piece."]
+      },
+      {
+        "email_id": "msg-20974",
+        "item_index": 0,
+        "vessel_name": "M/V Rhine Carrier",
+        "imo": "9612340",
+        "vessel_class": "MPP",
+        "dwt": 13500,
+        "dwcc": 12700,
+        "summer_draft_m": 8.7,
+        "loa_m": 145.0,
+        "beam_m": 21.6,
+        "geared": true,
+        "crane_config": "2×120t",
+        "grain_capacity_cbm": null,
+        "bale_capacity_cbm": 15900,
+        "hold_count": 2,
+        "hatch_dimensions": "Hold 1: 33m × 12m; Hold 2: 26m × 12m. Tween-deck fitted.",
+        "open_port": {
+          "name": "Hamburg",
+          "country": "Germany",
+          "unlocode": "DEHAM"
+        },
+        "open_date": "2026-05-29",
+        "service_speed_kn": 14.5,
+        "flag": "LR",
+        "owner": "Rhine Maritime Management GmbH",
+        "cii_grade": "B",
+        "last_cargo": "Industrial machinery",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-10701",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20971",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-27",
+        "verdict": "idle",
+        "explanation": "M/V Scheldt Project opens Rotterdam 26-May. Rotterdam to Antwerp ~80nm at 14.0kn = ~6h, arrives ~26-May — 4 days before laycan start 30-May. CRANE_VIOLATION: crane config 2×80t — single hook 80t < required 100t. Pieces are 80t each but cargo requires 100t+ lift for safety margin per charterer specification.",
+        "date_issues": ["CRANE_VIOLATION: crane 2×80t insufficient for 100t lift_capacity_required. Single hook exactly at piece weight — no safety margin. Charterer specification requires 100t+ single hook."]
+      },
+      {
+        "cargo_email_id": "msg-10701",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20972",
+        "vessel_item_index": 0,
+        "gap_days": 4,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-26",
+        "verdict": "idle",
+        "explanation": "M/V Meuse Heavy opens Ghent 25-May. Ghent to Antwerp ~60nm at 13.5kn = ~4h, arrives ~25-May — 5 days before laycan start 30-May. CRANE_VIOLATION: crane 2×80t insufficient for 100t lift requirement. Additionally no tween-deck — 4m height pieces cannot be stowed below deck.",
+        "date_issues": ["CRANE_VIOLATION: 2×80t < required 100t. No tween-deck for 4m height pieces — stowage not feasible below deck."]
+      },
+      {
+        "cargo_email_id": "msg-10701",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20973",
+        "vessel_item_index": 0,
+        "gap_days": 2,
+        "sailing_days": 0,
+        "arrival_date": "2026-05-27",
+        "verdict": "ideal",
+        "explanation": "M/V Flanders Lifter opens Antwerp 27-May — at load port. 3 days before laycan start 30-May. Crane 2×120t satisfies 100t lift requirement with 20t safety margin. Tween-deck fitted, hold dimensions accommodate 6m × 5m pieces. P&I survey package available. Ideal.",
+        "date_issues": []
+      },
+      {
+        "cargo_email_id": "msg-10701",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20974",
+        "vessel_item_index": 0,
+        "gap_days": 1,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-30",
+        "verdict": "tight",
+        "explanation": "M/V Rhine Carrier opens Hamburg 29-May. Hamburg to Antwerp ~290nm at 14.5kn = ~20h, arrives ~30-May — day of laycan start. Crane 2×120t satisfies lift requirement. Tween-deck fitted. Timing very tight.",
+        "date_issues": ["Arrival estimated 30-May = laycan_start. No buffer for transit delays."]
+      }
+    ]
+  }
+}

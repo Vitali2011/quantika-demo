@@ -1,0 +1,172 @@
+{
+  "id": "bulk_dwcc_overload/sample-004",
+  "category": "bulk_dwcc_overload",
+  "edge_case_summary": "Heavy bulk (iron ore concentrate, stowage_factor 0.45 m³/mt): DWCC constraint is binding before volume — verifies matcher correctly identifies that high-density cargo exhausts DWCC long before filling hold volume.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-10621",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Iron ore concentrate",
+        "weight_mt": 55000,
+        "weight_mt_min": 52250,
+        "weight_mt_max": 57750,
+        "stowage_factor_m3_per_mt": 0.45,
+        "load_port": {
+          "name": "Narvik",
+          "country": "Norway",
+          "unlocode": "NONVK"
+        },
+        "discharge_port": {
+          "name": "Taranto",
+          "country": "Italy",
+          "unlocode": "ITTAR"
+        },
+        "laycan_start": "2026-06-05",
+        "laycan_end": "2026-06-11",
+        "laycan_confidence": "confirmed",
+        "charterer": "ArcelorMittal",
+        "broker": "Simpson Spence Young",
+        "gear_required": false,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": [
+          "SHEX laytime",
+          "Vessel must be Class NK, BV, LR or DNV surveyed",
+          "No vessels with IMSBC Group A cargo experience required — vessel must be approved for dense ore"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-20921",
+        "item_index": 0,
+        "vessel_name": "M/V Nord Fjord",
+        "imo": "9355612",
+        "vessel_class": "SUPRAMAX",
+        "dwt": 59800,
+        "dwcc": 57200,
+        "summer_draft_m": 12.7,
+        "loa_m": 198.0,
+        "beam_m": 32.8,
+        "geared": false,
+        "crane_config": null,
+        "grain_capacity_cbm": 73800,
+        "bale_capacity_cbm": 71500,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 19m × 15m each",
+        "open_port": {
+          "name": "Narvik",
+          "country": "Norway",
+          "unlocode": "NONVK"
+        },
+        "open_date": "2026-05-31",
+        "service_speed_kn": 13.5,
+        "flag": "MH",
+        "owner": "Nordic Heavy Bulk AS",
+        "cii_grade": "B",
+        "last_cargo": "Iron ore pellets",
+        "restrictions": ["Class DNV, approved for dense ore IMSBC Group A"]
+      },
+      {
+        "email_id": "msg-20922",
+        "item_index": 0,
+        "vessel_name": "M/V Bergen Carrier",
+        "imo": "9421563",
+        "vessel_class": "HANDYMAX",
+        "dwt": 58500,
+        "dwcc": 56100,
+        "summer_draft_m": 12.5,
+        "loa_m": 195.8,
+        "beam_m": 32.3,
+        "geared": false,
+        "crane_config": null,
+        "grain_capacity_cbm": 71200,
+        "bale_capacity_cbm": 68900,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 18m × 14.5m each",
+        "open_port": {
+          "name": "Bergen",
+          "country": "Norway",
+          "unlocode": "NOBGO"
+        },
+        "open_date": "2026-05-28",
+        "service_speed_kn": 14.0,
+        "flag": "PA",
+        "owner": "Bergen Shipping Partners",
+        "cii_grade": "C",
+        "last_cargo": "Coal",
+        "restrictions": ["Class BV"]
+      },
+      {
+        "email_id": "msg-20923",
+        "item_index": 0,
+        "vessel_name": "M/V Stavanger Bulk",
+        "imo": "9488234",
+        "vessel_class": "HANDYMAX",
+        "dwt": 53000,
+        "dwcc": 50800,
+        "summer_draft_m": 12.0,
+        "loa_m": 190.5,
+        "beam_m": 31.6,
+        "geared": false,
+        "crane_config": null,
+        "grain_capacity_cbm": 64500,
+        "bale_capacity_cbm": 62200,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 17.5m × 14m each",
+        "open_port": {
+          "name": "Stavanger",
+          "country": "Norway",
+          "unlocode": "NOSVG"
+        },
+        "open_date": "2026-05-29",
+        "service_speed_kn": 13.0,
+        "flag": "CY",
+        "owner": "Stavanger Maritime Corp",
+        "cii_grade": "B",
+        "last_cargo": "Iron ore pellets",
+        "restrictions": ["Class LR, dense ore approved"]
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-10621",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20921",
+        "vessel_item_index": 0,
+        "gap_days": 4,
+        "sailing_days": 0,
+        "arrival_date": "2026-05-31",
+        "verdict": "ideal",
+        "explanation": "M/V Nord Fjord opens Narvik 31-May — at load port. 5 days before laycan start 05-Jun. DWCC 57,200mt vs cargo max 57,750mt — 550mt margin. Volume check: 55,000mt × 0.45 = 24,750 m³ required vs bale 71,500 m³ available; volume non-binding (DWCC is the constraint). Dense ore approved. Ideal.",
+        "date_issues": ["DWCC_VOLUME_NOTE: stowage_factor 0.45 m³/mt means volume fills only 34% of hold; DWCC is binding constraint, not volume."]
+      },
+      {
+        "cargo_email_id": "msg-10621",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20922",
+        "vessel_item_index": 0,
+        "gap_days": 5,
+        "sailing_days": 2,
+        "arrival_date": "2026-05-30",
+        "verdict": "tight",
+        "explanation": "M/V Bergen Carrier opens Bergen 28-May. Bergen to Narvik ~500nm at 14.0kn = ~36h, arrives ~30-May — 6 days before laycan start 05-Jun. DWCC 56,100mt vs cargo min 52,250mt: feasible but max 57,750mt exceeds DWCC. BV classed, coal last cargo (different from ore, but vessel is BV classed for dense cargo).",
+        "date_issues": ["DWCC_PARTIAL: cargo max 57,750mt exceeds DWCC 56,100mt. Must load to DWCC maximum only."]
+      },
+      {
+        "cargo_email_id": "msg-10621",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20923",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 2,
+        "arrival_date": "2026-06-01",
+        "verdict": "tight",
+        "explanation": "M/V Stavanger Bulk opens Stavanger 29-May. Stavanger to Narvik ~700nm at 13.0kn = ~54h, arrives ~31-May — 5 days before laycan start 05-Jun. NOTE: DWCC 50,800mt is below cargo min 52,250mt — pre-filter miss. Structural DWCC violation.",
+        "date_issues": ["DWCC_VIOLATION: cargo min 52,250mt exceeds vessel DWCC 50,800mt — vessel cannot carry minimum required quantity. Pre-filter miss."]
+      }
+    ]
+  }
+}

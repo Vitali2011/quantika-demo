@@ -1,0 +1,179 @@
+{
+  "id": "bulk_dwcc_overload/sample-002",
+  "category": "bulk_dwcc_overload",
+  "edge_case_summary": "Even tighter DWCC margin: 2 cargoes × 2 vessels, one pair with only 50mt margin between cargo weight_mt_max and vessel DWCC — verifies matcher flags razor-thin tolerance and does not silently approve pairs at the absolute limit.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-10601",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Soybeans",
+        "weight_mt": 31200,
+        "weight_mt_min": 29640,
+        "weight_mt_max": 32760,
+        "stowage_factor_m3_per_mt": 1.35,
+        "load_port": {
+          "name": "Paranaguá",
+          "country": "Brazil",
+          "unlocode": "BRPNG"
+        },
+        "discharge_port": {
+          "name": "Barcelona",
+          "country": "Spain",
+          "unlocode": "ESBCN"
+        },
+        "laycan_start": "2026-06-10",
+        "laycan_end": "2026-06-16",
+        "laycan_confidence": "confirmed",
+        "charterer": "COFCO",
+        "broker": "Howe Robinson",
+        "gear_required": false,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": ["SHEX laytime", "No vessels with CII grade D or E"]
+      },
+      {
+        "email_id": "msg-10602",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Soybean meal",
+        "weight_mt": 33500,
+        "weight_mt_min": 31825,
+        "weight_mt_max": 35175,
+        "stowage_factor_m3_per_mt": 1.48,
+        "load_port": {
+          "name": "Santos",
+          "country": "Brazil",
+          "unlocode": "BRSSZ"
+        },
+        "discharge_port": {
+          "name": "Lisbon",
+          "country": "Portugal",
+          "unlocode": "PTLIS"
+        },
+        "laycan_start": "2026-06-12",
+        "laycan_end": "2026-06-18",
+        "laycan_confidence": "confirmed",
+        "charterer": "ADM",
+        "broker": "Braemar",
+        "gear_required": false,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": ["SHEX laytime"]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-20901",
+        "item_index": 0,
+        "vessel_name": "M/V Parana Princess",
+        "imo": "9399017",
+        "vessel_class": "HANDYMAX",
+        "dwt": 35600,
+        "dwcc": 32810,
+        "summer_draft_m": 10.7,
+        "loa_m": 185.3,
+        "beam_m": 30.5,
+        "geared": false,
+        "crane_config": null,
+        "grain_capacity_cbm": 45200,
+        "bale_capacity_cbm": 43500,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 17m × 13.5m each",
+        "open_port": {
+          "name": "Santos",
+          "country": "Brazil",
+          "unlocode": "BRSSZ"
+        },
+        "open_date": "2026-06-05",
+        "service_speed_kn": 14.0,
+        "flag": "PA",
+        "owner": "Parana Shipping Corp",
+        "cii_grade": "B",
+        "last_cargo": "Soybeans",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20902",
+        "item_index": 0,
+        "vessel_name": "M/V Amazon Horizon",
+        "imo": "9445102",
+        "vessel_class": "HANDYMAX",
+        "dwt": 36200,
+        "dwcc": 34800,
+        "summer_draft_m": 11.0,
+        "loa_m": 187.1,
+        "beam_m": 30.8,
+        "geared": false,
+        "crane_config": null,
+        "grain_capacity_cbm": 47100,
+        "bale_capacity_cbm": 45300,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 17.5m × 14m each",
+        "open_port": {
+          "name": "Paranaguá",
+          "country": "Brazil",
+          "unlocode": "BRPNG"
+        },
+        "open_date": "2026-06-07",
+        "service_speed_kn": 13.5,
+        "flag": "MH",
+        "owner": "Amazon Bulk Carriers Ltd",
+        "cii_grade": "A",
+        "last_cargo": "Grain",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-10601",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20901",
+        "vessel_item_index": 0,
+        "gap_days": 4,
+        "sailing_days": 1,
+        "arrival_date": "2026-06-06",
+        "verdict": "tight",
+        "explanation": "M/V Parana Princess opens Santos 05-Jun. Santos to Paranaguá ~260nm at 14.0kn = ~19h, arrives ~06-Jun — 4 days before laycan start 10-Jun. DWCC 32,810mt vs cargo weight_mt_max 32,760mt: margin = 50mt only. Technically within tolerance but extremely thin.",
+        "date_issues": ["DWCC_MARGIN_50MT: DWCC 32,810mt vs cargo max 32,760mt — 50mt margin only. Any additional dunnage, provisions or trim allowance could push over limit."]
+      },
+      {
+        "cargo_email_id": "msg-10601",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20902",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 0,
+        "arrival_date": "2026-06-07",
+        "verdict": "ideal",
+        "explanation": "M/V Amazon Horizon opens Paranaguá 07-Jun — at load port. 3 days before laycan start 10-Jun. DWCC 34,800mt vs cargo max 32,760mt: 2,040mt margin. Clean fit.",
+        "date_issues": []
+      },
+      {
+        "cargo_email_id": "msg-10602",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20901",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 0,
+        "arrival_date": "2026-06-05",
+        "verdict": "tight",
+        "explanation": "M/V Parana Princess opens Santos 05-Jun — at load port. 7 days before laycan start 12-Jun. NOTE: cargo weight_mt 33,500mt exceeds vessel DWCC 32,810mt by 690mt — pre-filter miss. DWCC violation.",
+        "date_issues": ["DWCC_VIOLATION: cargo 33,500mt (min 31,825mt) exceeds vessel DWCC 32,810mt — pre-filter miss."]
+      },
+      {
+        "cargo_email_id": "msg-10602",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20902",
+        "vessel_item_index": 0,
+        "gap_days": 4,
+        "sailing_days": 1,
+        "arrival_date": "2026-06-08",
+        "verdict": "tight",
+        "explanation": "M/V Amazon Horizon opens Paranaguá 07-Jun. Paranaguá to Santos ~260nm at 13.5kn = ~19h, arrives ~08-Jun — 4 days before laycan start 12-Jun. DWCC 34,800mt vs cargo max 35,175mt: DWCC 34,800mt < min 31,825mt — feasible at lower band, but max exceeds DWCC.",
+        "date_issues": ["DWCC_PARTIAL: cargo weight_mt_max 35,175mt exceeds DWCC 34,800mt. Vessel can load only up to 34,800mt — below cargo max. May be acceptable if charterer accepts partial load."]
+      }
+    ]
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "id": "project_general_vessel/sample-004",
+  "category": "project_general_vessel",
+  "edge_case_summary": "Wind tower base sections permissible on weather deck: bulker vs MPP comparison — verifies matcher correctly evaluates deck-stowage as an acceptable alternative for cargo with deck_stowage_permitted restriction.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-10721",
+        "item_index": 0,
+        "cargo_type": "PROJECT",
+        "commodity": "Wind turbine tower base sections",
+        "weight_mt": 480,
+        "weight_mt_min": 420,
+        "weight_mt_max": 540,
+        "stowage_factor_m3_per_mt": null,
+        "load_port": {
+          "name": "Esbjerg",
+          "country": "Denmark",
+          "unlocode": "DKEBJ"
+        },
+        "discharge_port": {
+          "name": "Sfax",
+          "country": "Tunisia",
+          "unlocode": "TNSFX"
+        },
+        "laycan_start": "2026-06-06",
+        "laycan_end": "2026-06-13",
+        "laycan_confidence": "confirmed",
+        "charterer": "Vestas Wind Systems",
+        "broker": "Fearnleys",
+        "gear_required": true,
+        "lift_capacity_required_t": 80,
+        "hold_geometry_required": "sections 16m × 5m diameter, 40t each, 12 sections total; deck stowage permissible for up to 8 sections",
+        "restrictions": [
+          "Deck stowage permissible for up to 8 of 12 sections",
+          "Remaining sections must be below deck with ≥17m hatch clear length",
+          "Vessel must have deck reinforcement ≥8t/m² for tower sections"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-20991",
+        "item_index": 0,
+        "vessel_name": "M/V Jutland Express",
+        "imo": "9488765",
+        "vessel_class": "MPP",
+        "dwt": 16500,
+        "dwcc": 15600,
+        "summer_draft_m": 9.3,
+        "loa_m": 156.0,
+        "beam_m": 23.2,
+        "geared": true,
+        "crane_config": "2×100t",
+        "grain_capacity_cbm": null,
+        "bale_capacity_cbm": 19400,
+        "hold_count": 2,
+        "hatch_dimensions": "Hold 1: 38m × 14m clear length; Hold 2: 30m × 14m clear length. Open deck 80m × 14m reinforced 10t/m².",
+        "open_port": {
+          "name": "Esbjerg",
+          "country": "Denmark",
+          "unlocode": "DKEBJ"
+        },
+        "open_date": "2026-06-02",
+        "service_speed_kn": 15.0,
+        "flag": "MH",
+        "owner": "Jutland Project Carriers AS",
+        "cii_grade": "A",
+        "last_cargo": "Wind tower sections",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20992",
+        "item_index": 0,
+        "vessel_name": "M/V North Sea Trader",
+        "imo": "9312789",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 28500,
+        "dwcc": 27200,
+        "summer_draft_m": 9.7,
+        "loa_m": 173.5,
+        "beam_m": 28.5,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 36800,
+        "bale_capacity_cbm": 35200,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 14m × 12m each. Standard bulker weather deck, no special reinforcement listed.",
+        "open_port": {
+          "name": "Copenhagen",
+          "country": "Denmark",
+          "unlocode": "DKCPH"
+        },
+        "open_date": "2026-05-31",
+        "service_speed_kn": 13.0,
+        "flag": "PA",
+        "owner": "North Sea Bulk Management",
+        "cii_grade": "B",
+        "last_cargo": "Barley",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20993",
+        "item_index": 0,
+        "vessel_name": "M/V Flensburg Carrier",
+        "imo": "9533456",
+        "vessel_class": "MPP",
+        "dwt": 12400,
+        "dwcc": 11700,
+        "summer_draft_m": 8.4,
+        "loa_m": 141.0,
+        "beam_m": 20.8,
+        "geared": true,
+        "crane_config": "2×80t",
+        "grain_capacity_cbm": null,
+        "bale_capacity_cbm": 14600,
+        "hold_count": 2,
+        "hatch_dimensions": "Hold 1: 32m × 12m; Hold 2: 25m × 12m. Open deck reinforced 9t/m².",
+        "open_port": {
+          "name": "Hamburg",
+          "country": "Germany",
+          "unlocode": "DEHAM"
+        },
+        "open_date": "2026-06-03",
+        "service_speed_kn": 14.0,
+        "flag": "LR",
+        "owner": "Flensburg Maritime SA",
+        "cii_grade": "B",
+        "last_cargo": "Industrial equipment",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-10721",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20991",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 0,
+        "arrival_date": "2026-06-02",
+        "verdict": "ideal",
+        "explanation": "M/V Jutland Express opens Esbjerg 02-Jun — at load port. 4 days before laycan start 06-Jun. Crane 2×100t satisfies 80t lift. Hold 1 (38m) and Hold 2 (30m) accommodate 16m sections. Deck 80m reinforced 10t/m² > required 8t/m². Previous wind tower cargo experience. Ideal.",
+        "date_issues": []
+      },
+      {
+        "cargo_email_id": "msg-10721",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20992",
+        "vessel_item_index": 0,
+        "gap_days": 4,
+        "sailing_days": 2,
+        "arrival_date": "2026-06-02",
+        "verdict": "idle",
+        "explanation": "M/V North Sea Trader opens Copenhagen 31-May. Copenhagen to Esbjerg ~230nm at 13.0kn = ~18h, arrives ~01-Jun — 5 days before laycan start 06-Jun. CRANE_VIOLATION: crane 4×30t, max single hook 30t < required 80t. HOLD_GEOMETRY_VIOLATION: max hatch length 14m < required 17m for below-deck sections. Deck reinforcement unspecified — standard bulker deck likely insufficient for 8t/m².",
+        "date_issues": ["CRANE_VIOLATION: 4×30t max single hook 30t < required 80t. HOLD_GEOMETRY_VIOLATION: 14m hatch < 17m required. Deck reinforcement status unknown."]
+      },
+      {
+        "cargo_email_id": "msg-10721",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20993",
+        "vessel_item_index": 0,
+        "gap_days": 2,
+        "sailing_days": 2,
+        "arrival_date": "2026-06-05",
+        "verdict": "tight",
+        "explanation": "M/V Flensburg Carrier opens Hamburg 03-Jun. Hamburg to Esbjerg ~330nm at 14.0kn = ~24h, arrives ~04-Jun — 2 days before laycan start 06-Jun. Crane 2×80t meets lift requirement exactly. Hold 1 (32m) and Hold 2 (25m) both > 17m minimum. Deck reinforced 9t/m² > required 8t/m². Tight timing.",
+        "date_issues": ["Arrival 04-Jun — 2 days before laycan start. Limited buffer."]
+      }
+    ]
+  }
+}

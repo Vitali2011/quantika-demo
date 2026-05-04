@@ -1,0 +1,131 @@
+{
+  "id": "cii_grade_d/sample-004",
+  "category": "cii_grade_d",
+  "edge_case_summary": "CII Grade D + last_cargo=Iron ore for soybean charterer (ADM): dual violation — verifies matcher catches both the CII grade failure AND the hold incompatibility, reporting them as separate distinct issues.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-11121",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Soybeans",
+        "weight_mt": 48000,
+        "weight_mt_min": 45600,
+        "weight_mt_max": 50400,
+        "stowage_factor_m3_per_mt": 1.35,
+        "load_port": {
+          "name": "Santos",
+          "country": "Brazil",
+          "unlocode": "BRSSZ"
+        },
+        "discharge_port": {
+          "name": "Hamburg",
+          "country": "Germany",
+          "unlocode": "DEHAM"
+        },
+        "laycan_start": "2026-06-12",
+        "laycan_end": "2026-06-19",
+        "laycan_confidence": "confirmed",
+        "charterer": "ADM",
+        "broker": "Gibson Shipbrokers",
+        "gear_required": false,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": [
+          "No CII D or E grade vessels — ADM vetting policy",
+          "Holds must pass grain-clean survey",
+          "No last cargo: iron ore, coal, clinker, bauxite",
+          "SHEX laytime"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-21121",
+        "item_index": 0,
+        "vessel_name": "M/V Buenos Aires Star",
+        "imo": "9311298",
+        "vessel_class": "SUPRAMAX",
+        "dwt": 55500,
+        "dwcc": 53400,
+        "summer_draft_m": 12.2,
+        "loa_m": 194.2,
+        "beam_m": 32.1,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 69800,
+        "bale_capacity_cbm": 67500,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 18m × 14.5m each",
+        "open_port": {
+          "name": "Santos",
+          "country": "Brazil",
+          "unlocode": "BRSSZ"
+        },
+        "open_date": "2026-06-08",
+        "service_speed_kn": 12.5,
+        "flag": "MT",
+        "owner": "Buenos Aires Navigation SA",
+        "cii_grade": "D",
+        "last_cargo": "Iron ore",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-21122",
+        "item_index": 0,
+        "vessel_name": "M/V Plata Explorer",
+        "imo": "9499234",
+        "vessel_class": "SUPRAMAX",
+        "dwt": 57300,
+        "dwcc": 55100,
+        "summer_draft_m": 12.4,
+        "loa_m": 196.0,
+        "beam_m": 32.4,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 71500,
+        "bale_capacity_cbm": 69200,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 18m × 15m each",
+        "open_port": {
+          "name": "Paranaguá",
+          "country": "Brazil",
+          "unlocode": "BRPNG"
+        },
+        "open_date": "2026-06-09",
+        "service_speed_kn": 14.0,
+        "flag": "MH",
+        "owner": "Plata Maritime Corp",
+        "cii_grade": "B",
+        "last_cargo": "Soybeans",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-11121",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-21121",
+        "vessel_item_index": 0,
+        "gap_days": 4,
+        "sailing_days": 0,
+        "arrival_date": "2026-06-08",
+        "verdict": "tight",
+        "explanation": "M/V Buenos Aires Star opens Santos 08-Jun — at load port. 4 days before laycan start 12-Jun. Timing adequate. DUAL VIOLATION: (1) cii_grade='D' violates ADM vetting policy. (2) last_cargo='Iron ore' — explicitly prohibited; ore residue in holds requires certified cleaning before grain-compatible cargo at extra cost (2-3 days, $20-30k). Both violations independent.",
+        "date_issues": ["CII_GRADE_D: cii_grade=D violates ADM vetting policy. LAST_CARGO_INCOMPATIBLE: last_cargo=Iron ore is explicitly prohibited by charterer; cleaning required before grain cargo — separate and independent from CII violation."]
+      },
+      {
+        "cargo_email_id": "msg-11121",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-21122",
+        "vessel_item_index": 0,
+        "gap_days": 2,
+        "sailing_days": 1,
+        "arrival_date": "2026-06-10",
+        "verdict": "tight",
+        "explanation": "M/V Plata Explorer opens Paranaguá 09-Jun. Paranaguá to Santos ~260nm at 14.0kn = ~19h, arrives ~10-Jun — 2 days before laycan start 12-Jun. CII Grade B qualifies. Last cargo Soybeans — holds grain-clean. Tight but clean.",
+        "date_issues": []
+      }
+    ]
+  }
+}

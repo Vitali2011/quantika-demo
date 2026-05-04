@@ -1,0 +1,168 @@
+{
+  "id": "bulk_open_position/sample-001",
+  "category": "bulk_open_position",
+  "edge_case_summary": "Classical clean baseline: 1 grain cargo vs 3 geared handysize/supramax vessels, readiness mix of ideal/tight/idle — verifies the matcher produces a coherent ranked recommendation without any disqualifying issues.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-10441",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Wheat",
+        "weight_mt": 28000,
+        "weight_mt_min": 25200,
+        "weight_mt_max": 30800,
+        "stowage_factor_m3_per_mt": 1.25,
+        "load_port": {
+          "name": "Constanta",
+          "country": "Romania",
+          "unlocode": "ROCND"
+        },
+        "discharge_port": {
+          "name": "Damietta",
+          "country": "Egypt",
+          "unlocode": "EGDAM"
+        },
+        "laycan_start": "2026-05-25",
+        "laycan_end": "2026-05-30",
+        "laycan_confidence": "confirmed",
+        "charterer": "Ameropa",
+        "broker": "Howe Robinson",
+        "gear_required": true,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": ["SHEX laytime", "No TBN vessels"]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-20811",
+        "item_index": 0,
+        "vessel_name": "M/V Aegean Pioneer",
+        "imo": "9312456",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 33200,
+        "dwcc": 31800,
+        "summer_draft_m": 10.1,
+        "loa_m": 179.8,
+        "beam_m": 29.5,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 41500,
+        "bale_capacity_cbm": 39800,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 16m × 13m each",
+        "open_port": {
+          "name": "Istanbul",
+          "country": "Turkey",
+          "unlocode": "TRIST"
+        },
+        "open_date": "2026-05-20",
+        "service_speed_kn": 13.5,
+        "flag": "MH",
+        "owner": "Aegean Bulk Carriers Ltd",
+        "cii_grade": "B",
+        "last_cargo": "Barley",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20812",
+        "item_index": 0,
+        "vessel_name": "M/V Bosphorus Trader",
+        "imo": "9445789",
+        "vessel_class": "HANDYMAX",
+        "dwt": 45800,
+        "dwcc": 44100,
+        "summer_draft_m": 11.4,
+        "loa_m": 189.9,
+        "beam_m": 31.2,
+        "geared": true,
+        "crane_config": "4×35t",
+        "grain_capacity_cbm": 57200,
+        "bale_capacity_cbm": 55100,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 18m × 14m each",
+        "open_port": {
+          "name": "Piraeus",
+          "country": "Greece",
+          "unlocode": "GRPIR"
+        },
+        "open_date": "2026-05-17",
+        "service_speed_kn": 14.0,
+        "flag": "CY",
+        "owner": "Hellas Shipping Management",
+        "cii_grade": "A",
+        "last_cargo": "Corn",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20813",
+        "item_index": 0,
+        "vessel_name": "M/V Dorina Star",
+        "imo": "9523114",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 34500,
+        "dwcc": 33200,
+        "summer_draft_m": 10.4,
+        "loa_m": 182.3,
+        "beam_m": 30.0,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 43200,
+        "bale_capacity_cbm": 41600,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 16.5m × 13m each",
+        "open_port": {
+          "name": "Odesa",
+          "country": "Ukraine",
+          "unlocode": "UAODS"
+        },
+        "open_date": "2026-05-22",
+        "service_speed_kn": null,
+        "flag": "LR",
+        "owner": "Dorina Maritime Ltd",
+        "cii_grade": "C",
+        "last_cargo": "Soybean meal",
+        "restrictions": ["Bunkering deviation allowed at Canakkale only"]
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-10441",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20811",
+        "vessel_item_index": 0,
+        "gap_days": 4,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-21",
+        "verdict": "ideal",
+        "explanation": "M/V Aegean Pioneer opens Istanbul 20-May. Istanbul to Constanta ~220nm at 13.5kn = ~16h, arrives 21-May — 4 days before laycan start 25-May. Clean 4-day idle, within normal ballast window.",
+        "date_issues": []
+      },
+      {
+        "cargo_email_id": "msg-10441",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20812",
+        "vessel_item_index": 0,
+        "gap_days": 7,
+        "sailing_days": 2,
+        "arrival_date": "2026-05-19",
+        "verdict": "idle",
+        "explanation": "M/V Bosphorus Trader opens Piraeus 17-May. Piraeus to Constanta ~720nm at 14.0kn = ~52h, arrives ~19-May — 6 days before laycan start 25-May. Excessive idle time expected; vessel may seek other stems.",
+        "date_issues": ["6-day idle before laycan start may prompt vessel to trade elsewhere"]
+      },
+      {
+        "cargo_email_id": "msg-10441",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20813",
+        "vessel_item_index": 0,
+        "gap_days": 2,
+        "sailing_days": 0,
+        "arrival_date": "2026-05-22",
+        "verdict": "tight",
+        "explanation": "M/V Dorina Star opens Odesa 22-May. Odesa to Constanta ~270nm, using class default 12.5kn (speed null) = ~22h, arrives ~23-May — 2 days before laycan start 25-May. Tight but feasible. service_speed_kn null; class default 12.5 kn applied.",
+        "date_issues": ["service_speed_kn null — arrival estimate uses 12.5kn class default"]
+      }
+    ]
+  }
+}

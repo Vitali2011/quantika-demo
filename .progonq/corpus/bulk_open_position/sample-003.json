@@ -1,0 +1,168 @@
+{
+  "id": "bulk_open_position/sample-003",
+  "category": "bulk_open_position",
+  "edge_case_summary": "West Africa coal trade (RSA → Senegal): Supramax-class vessels with longer ballast legs from Indian Ocean/Atlantic positions — verifies matcher correctly computes multi-day sailing distances and handles longer pre-laycan idle windows.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-11011",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Steam coal",
+        "weight_mt": 48000,
+        "weight_mt_min": 45600,
+        "weight_mt_max": 50400,
+        "stowage_factor_m3_per_mt": 1.18,
+        "load_port": {
+          "name": "Richards Bay",
+          "country": "South Africa",
+          "unlocode": "ZARCB"
+        },
+        "discharge_port": {
+          "name": "Dakar",
+          "country": "Senegal",
+          "unlocode": "SNDKR"
+        },
+        "laycan_start": "2026-06-08",
+        "laycan_end": "2026-06-14",
+        "laycan_confidence": "confirmed",
+        "charterer": "Trafigura",
+        "broker": "Braemar",
+        "gear_required": false,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": ["No Indonesian-flag vessels", "SHEX laytime", "Vessel must have loaded coal previously"]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-21011",
+        "item_index": 0,
+        "vessel_name": "M/V Cape Agulhas",
+        "imo": "9423788",
+        "vessel_class": "SUPRAMAX",
+        "dwt": 57400,
+        "dwcc": 55200,
+        "summer_draft_m": 12.4,
+        "loa_m": 196.0,
+        "beam_m": 32.4,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 72100,
+        "bale_capacity_cbm": 69800,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 18m × 15m each",
+        "open_port": {
+          "name": "Durban",
+          "country": "South Africa",
+          "unlocode": "ZADUR"
+        },
+        "open_date": "2026-06-01",
+        "service_speed_kn": 13.5,
+        "flag": "PA",
+        "owner": "Agulhas Bulk Carriers Ltd",
+        "cii_grade": "B",
+        "last_cargo": "Coal",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-21012",
+        "item_index": 0,
+        "vessel_name": "M/V Indian Sunrise",
+        "imo": "9487901",
+        "vessel_class": "SUPRAMAX",
+        "dwt": 55800,
+        "dwcc": 53700,
+        "summer_draft_m": 12.2,
+        "loa_m": 194.5,
+        "beam_m": 32.1,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 70200,
+        "bale_capacity_cbm": 68000,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 18m × 14.5m each",
+        "open_port": {
+          "name": "Colombo",
+          "country": "Sri Lanka",
+          "unlocode": "LKCMB"
+        },
+        "open_date": "2026-05-25",
+        "service_speed_kn": 14.0,
+        "flag": "MH",
+        "owner": "Indian Ocean Shipping Corp",
+        "cii_grade": "C",
+        "last_cargo": "Coal",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-21013",
+        "item_index": 0,
+        "vessel_name": "M/V Benguela Stream",
+        "imo": "9561234",
+        "vessel_class": "SUPRAMAX",
+        "dwt": 59100,
+        "dwcc": 56900,
+        "summer_draft_m": 12.6,
+        "loa_m": 197.3,
+        "beam_m": 32.7,
+        "geared": false,
+        "crane_config": null,
+        "grain_capacity_cbm": 74500,
+        "bale_capacity_cbm": 72200,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 19m × 15m each",
+        "open_port": {
+          "name": "Luanda",
+          "country": "Angola",
+          "unlocode": "AOLAD"
+        },
+        "open_date": "2026-05-30",
+        "service_speed_kn": 14.5,
+        "flag": "LR",
+        "owner": "Benguela Maritime SA",
+        "cii_grade": "A",
+        "last_cargo": "Bauxite",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-11011",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-21011",
+        "vessel_item_index": 0,
+        "gap_days": 5,
+        "sailing_days": 1,
+        "arrival_date": "2026-06-02",
+        "verdict": "ideal",
+        "explanation": "M/V Cape Agulhas opens Durban 01-Jun. Durban to Richards Bay ~150nm at 13.5kn = ~11h, arrives 02-Jun — 6 days before laycan start 08-Jun. Well-positioned. Last cargo coal satisfies charterer restriction. Moderate idle acceptable.",
+        "date_issues": []
+      },
+      {
+        "cargo_email_id": "msg-11011",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-21012",
+        "vessel_item_index": 0,
+        "gap_days": 0,
+        "sailing_days": 7,
+        "arrival_date": "2026-06-08",
+        "verdict": "tight",
+        "explanation": "M/V Indian Sunrise opens Colombo 25-May. Colombo to Richards Bay ~4400nm at 14.0kn = ~314h ~13 days, earliest arrival ~07-Jun. Tight against laycan start 08-Jun. Long ballast leg leaves zero buffer. Last cargo coal qualifies.",
+        "date_issues": ["Long ballast leg 13 days from Colombo — arrival 07-Jun leaves only 1 day buffer before laycan start 08-Jun"]
+      },
+      {
+        "cargo_email_id": "msg-11011",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-21013",
+        "vessel_item_index": 0,
+        "gap_days": 8,
+        "sailing_days": 3,
+        "arrival_date": "2026-06-02",
+        "verdict": "idle",
+        "explanation": "M/V Benguela Stream opens Luanda 30-May. Luanda to Richards Bay ~2500nm at 14.5kn = ~172h ~7 days, arrives ~06-Jun — 2 days before laycan start 08-Jun. However last_cargo=Bauxite — charterer requires vessel must have loaded coal previously. Restriction not met.",
+        "date_issues": ["LAST_CARGO_RESTRICTION: charterer requires prior coal loading. last_cargo=Bauxite does not satisfy requirement."]
+      }
+    ]
+  }
+}

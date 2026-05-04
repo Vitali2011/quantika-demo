@@ -1,0 +1,172 @@
+{
+  "id": "project_general_vessel/sample-003",
+  "category": "project_general_vessel",
+  "edge_case_summary": "Pre-fabricated bridge sections (25m long, 35t each): hatch length ≥27m is the binding constraint — verifies matcher checks hatch dimensions rather than just lift capacity, filtering out vessels with <22m hatches even if cranes are sufficient.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-10711",
+        "item_index": 0,
+        "cargo_type": "PROJECT",
+        "commodity": "Pre-fabricated steel bridge sections",
+        "weight_mt": 210,
+        "weight_mt_min": 180,
+        "weight_mt_max": 240,
+        "stowage_factor_m3_per_mt": null,
+        "load_port": {
+          "name": "Gdansk",
+          "country": "Poland",
+          "unlocode": "PLGDN"
+        },
+        "discharge_port": {
+          "name": "Lagos",
+          "country": "Nigeria",
+          "unlocode": "NGLOS"
+        },
+        "laycan_start": "2026-06-01",
+        "laycan_end": "2026-06-08",
+        "laycan_confidence": "confirmed",
+        "charterer": "Strabag International",
+        "broker": "Intercargo",
+        "gear_required": true,
+        "lift_capacity_required_t": 50,
+        "hold_geometry_required": "minimum hatch clear length 27m; section dimensions 25m × 3.5m × 2.8m, weight 35t each, 6 sections",
+        "restrictions": [
+          "Deck cargo stowage not acceptable — all sections below deck required",
+          "No vessels with less than 27m clear hatch length",
+          "Lashing and securing certification required"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-20981",
+        "item_index": 0,
+        "vessel_name": "M/V Baltic Project",
+        "imo": "9478123",
+        "vessel_class": "MPP",
+        "dwt": 11200,
+        "dwcc": 10500,
+        "summer_draft_m": 8.2,
+        "loa_m": 138.0,
+        "beam_m": 20.5,
+        "geared": true,
+        "crane_config": "2×60t",
+        "grain_capacity_cbm": null,
+        "bale_capacity_cbm": 13200,
+        "hold_count": 2,
+        "hatch_dimensions": "Hold 1: 30m × 11m clear length; Hold 2: 24m × 11m clear length. Tween-deck fitted.",
+        "open_port": {
+          "name": "Gdynia",
+          "country": "Poland",
+          "unlocode": "PLGDY"
+        },
+        "open_date": "2026-05-28",
+        "service_speed_kn": 14.5,
+        "flag": "LR",
+        "owner": "Baltic Project Shipping Ltd",
+        "cii_grade": "B",
+        "last_cargo": "Steel pipes",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20982",
+        "item_index": 0,
+        "vessel_name": "M/V Danzig Multipurpose",
+        "imo": "9355781",
+        "vessel_class": "MPP",
+        "dwt": 8700,
+        "dwcc": 8100,
+        "summer_draft_m": 7.4,
+        "loa_m": 122.0,
+        "beam_m": 17.8,
+        "geared": true,
+        "crane_config": "2×50t",
+        "grain_capacity_cbm": null,
+        "bale_capacity_cbm": 10200,
+        "hold_count": 2,
+        "hatch_dimensions": "Hold 1: 21m × 9m clear length; Hold 2: 18m × 9m clear length. Tween-deck fitted.",
+        "open_port": {
+          "name": "Gdansk",
+          "country": "Poland",
+          "unlocode": "PLGDN"
+        },
+        "open_date": "2026-05-26",
+        "service_speed_kn": 13.0,
+        "flag": "CY",
+        "owner": "Danzig Cargo Management SA",
+        "cii_grade": "C",
+        "last_cargo": "Steel sections",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20983",
+        "item_index": 0,
+        "vessel_name": "M/V Pomeranian Star",
+        "imo": "9601234",
+        "vessel_class": "MPP",
+        "dwt": 13800,
+        "dwcc": 13000,
+        "summer_draft_m": 8.7,
+        "loa_m": 146.0,
+        "beam_m": 21.8,
+        "geared": true,
+        "crane_config": "2×80t",
+        "grain_capacity_cbm": null,
+        "bale_capacity_cbm": 16200,
+        "hold_count": 2,
+        "hatch_dimensions": "Hold 1: 34m × 12m clear length; Hold 2: 28m × 12m clear length. Tween-deck fitted. Clear height 6.5m lower hold.",
+        "open_port": {
+          "name": "Szczecin",
+          "country": "Poland",
+          "unlocode": "PLSZZ"
+        },
+        "open_date": "2026-05-29",
+        "service_speed_kn": 14.0,
+        "flag": "MH",
+        "owner": "Pomeranian Project Carriers",
+        "cii_grade": "A",
+        "last_cargo": "Bridge components",
+        "restrictions": ["Lashing certification on file"]
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-10711",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20981",
+        "vessel_item_index": 0,
+        "gap_days": 2,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-29",
+        "verdict": "tight",
+        "explanation": "M/V Baltic Project opens Gdynia 28-May. Gdynia to Gdansk ~30nm at 14.5kn = ~2h, arrives same day. 3 days before laycan start 01-Jun. Hold 1 clear length 30m > required 27m — fits. Hold 2 clear length 24m < 27m — sections cannot be loaded in Hold 2. 6 sections; only Hold 1 (30m) can accept full-length pieces.",
+        "date_issues": ["HOLD_GEOMETRY_NOTE: Hold 2 clear length 24m < required 27m. All 6 sections must be loaded in Hold 1 (30m) — feasible but unusual stow requiring planning approval."]
+      },
+      {
+        "cargo_email_id": "msg-10711",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20982",
+        "vessel_item_index": 0,
+        "gap_days": 5,
+        "sailing_days": 0,
+        "arrival_date": "2026-05-26",
+        "verdict": "idle",
+        "explanation": "M/V Danzig Multipurpose opens Gdansk 26-May — at load port. 6 days before laycan start 01-Jun. HOLD_GEOMETRY_VIOLATION: Hold 1 clear length 21m < required 27m; Hold 2 clear length 18m < required 27m. Sections 25m long cannot fit in either hold. Complete geometric mismatch despite adequate crane lift.",
+        "date_issues": ["HOLD_GEOMETRY_VIOLATION: maximum hatch clear length 21m < required 27m for 25m sections. Cargo cannot be loaded in any hold. Pre-filter miss."]
+      },
+      {
+        "cargo_email_id": "msg-10711",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20983",
+        "vessel_item_index": 0,
+        "gap_days": 2,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-30",
+        "verdict": "tight",
+        "explanation": "M/V Pomeranian Star opens Szczecin 29-May. Szczecin to Gdansk ~120nm at 14.0kn = ~9h, arrives ~29-May — 3 days before laycan start 01-Jun. Hold 1: 34m > 27m, Hold 2: 28m > 27m — both holds accommodate 25m sections. Crane 2×80t satisfies 50t lift with margin. Lashing certification on file. Ideal geometry fit.",
+        "date_issues": []
+      }
+    ]
+  }
+}

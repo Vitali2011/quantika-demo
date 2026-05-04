@@ -1,0 +1,131 @@
+{
+  "id": "sanctioned_flag/sample-004",
+  "category": "sanctioned_flag",
+  "edge_case_summary": "Flag-of-convenience hide: Marshall Islands flag (MH) but beneficial owner is a Sovcomflot Cyprus subsidiary — verifies matcher looks through flag-of-convenience to beneficial ownership, not just flag, for sanctions assessment.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-10921",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Rapeseed",
+        "weight_mt": 35000,
+        "weight_mt_min": 31500,
+        "weight_mt_max": 38500,
+        "stowage_factor_m3_per_mt": 1.55,
+        "load_port": {
+          "name": "Hamburg",
+          "country": "Germany",
+          "unlocode": "DEHAM"
+        },
+        "discharge_port": {
+          "name": "Marseille",
+          "country": "France",
+          "unlocode": "FRMRS"
+        },
+        "laycan_start": "2026-06-03",
+        "laycan_end": "2026-06-09",
+        "laycan_confidence": "confirmed",
+        "charterer": "Cargill",
+        "broker": "FIS",
+        "gear_required": true,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": [
+          "No Russian beneficial ownership",
+          "No vessels owned or operated by entities under EU Regulation 833/2014",
+          "KYC beneficial ownership documentation required at fixture",
+          "P&I IG member only"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-20921",
+        "item_index": 0,
+        "vessel_name": "M/V Pacific Glory",
+        "imo": "9364523",
+        "vessel_class": "HANDYMAX",
+        "dwt": 44500,
+        "dwcc": 42800,
+        "summer_draft_m": 11.2,
+        "loa_m": 188.0,
+        "beam_m": 31.0,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 55800,
+        "bale_capacity_cbm": 53700,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 17.5m × 13.5m each",
+        "open_port": {
+          "name": "Rotterdam",
+          "country": "Netherlands",
+          "unlocode": "NLRTM"
+        },
+        "open_date": "2026-06-01",
+        "service_speed_kn": 13.5,
+        "flag": "MH",
+        "owner": "Pacific Glory Shipping Ltd (Cyprus, beneficial owner: Sovcomflot subsidiary via SCF Holding CY)",
+        "cii_grade": "B",
+        "last_cargo": "Grain",
+        "restrictions": ["KYC documentation: registered Cyprus, beneficial ownership Russian state entity"]
+      },
+      {
+        "email_id": "msg-20922",
+        "item_index": 0,
+        "vessel_name": "M/V Elbe Trader",
+        "imo": "9478891",
+        "vessel_class": "HANDYMAX",
+        "dwt": 45200,
+        "dwcc": 43500,
+        "summer_draft_m": 11.3,
+        "loa_m": 189.5,
+        "beam_m": 31.2,
+        "geared": true,
+        "crane_config": "4×35t",
+        "grain_capacity_cbm": 56900,
+        "bale_capacity_cbm": 54800,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 17.5m × 14m each",
+        "open_port": {
+          "name": "Hamburg",
+          "country": "Germany",
+          "unlocode": "DEHAM"
+        },
+        "open_date": "2026-05-31",
+        "service_speed_kn": 14.0,
+        "flag": "LR",
+        "owner": "Elbe Maritime GmbH",
+        "cii_grade": "A",
+        "last_cargo": "Rapeseed",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-10921",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20921",
+        "vessel_item_index": 0,
+        "gap_days": 2,
+        "sailing_days": 1,
+        "arrival_date": "2026-06-02",
+        "verdict": "ideal",
+        "explanation": "M/V Pacific Glory opens Rotterdam 01-Jun. Rotterdam to Hamburg ~290nm at 13.5kn = ~21h, arrives ~02-Jun — 1 day before laycan start 03-Jun. Timing ideal. SANCTIONS_FLAG: flag=MH (Marshall Islands — neutral on face), but beneficial owner is SCF Holding CY (Sovcomflot Cyprus subsidiary). EU Reg 833/2014 applies to beneficial ownership. KYC documentation required would reveal Russian state beneficial ownership — disqualifies under charterer restriction.",
+        "date_issues": ["SANCTIONS_BENEFICIAL_OWNER: flag=MH (clean), but KYC reveals beneficial owner=Sovcomflot Cyprus subsidiary (Russian state entity). EU Reg 833/2014 applies to beneficial ownership, not just registered flag. Charterer explicitly requires no Russian beneficial ownership."]
+      },
+      {
+        "cargo_email_id": "msg-10921",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20922",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 0,
+        "arrival_date": "2026-05-31",
+        "verdict": "ideal",
+        "explanation": "M/V Elbe Trader opens Hamburg 31-May — at load port. 3 days before laycan start 03-Jun. Clean German ownership (Elbe Maritime GmbH), LR flag, IG P&I. No sanctions exposure. KYC straightforward. Ideal.",
+        "date_issues": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "id": "sanctioned_flag/sample-001",
+  "category": "sanctioned_flag",
+  "edge_case_summary": "Sanctions stress test: vessel A has flag='RU' + owner 'Sovcomflot Subsidiary OOO', vessel B has a neutral Marshall Islands flag (clean control) — cargo loads legally in Türkiye (TRISK) for a European charterer who would refuse Russian-flag tonnage — tests whether matcher surfaces sanctions/flag issues in issues[] rather than just scoring on timing.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-10881",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Phosphate rock",
+        "weight_mt": 22000,
+        "weight_mt_min": 19800,
+        "weight_mt_max": 24200,
+        "stowage_factor_m3_per_mt": 0.83,
+        "load_port": {
+          "name": "Iskenderun",
+          "country": "Turkey",
+          "unlocode": "TRISK"
+        },
+        "discharge_port": {
+          "name": "Ghent",
+          "country": "Belgium",
+          "unlocode": "BEGNE"
+        },
+        "laycan_start": "2026-05-29",
+        "laycan_end": "2026-06-03",
+        "laycan_confidence": "confirmed",
+        "charterer": "Yara International",
+        "broker": "Clarksons",
+        "gear_required": false,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": [
+          "No Russian-flag vessels",
+          "No vessels owned by entities subject to EU sanctions",
+          "P&I Club must be IG member"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-20851",
+        "item_index": 0,
+        "vessel_name": "M/V Vostok Bulk",
+        "imo": "9156743",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 29500,
+        "dwcc": 28200,
+        "summer_draft_m": 9.7,
+        "loa_m": 175.5,
+        "beam_m": 28.6,
+        "geared": false,
+        "crane_config": null,
+        "grain_capacity_cbm": 36100,
+        "bale_capacity_cbm": 34700,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 14m × 12m each",
+        "open_port": {
+          "name": "Novorossiysk",
+          "country": "Russia",
+          "unlocode": "RUNVS"
+        },
+        "open_date": "2026-05-24",
+        "service_speed_kn": 12.5,
+        "flag": "RU",
+        "owner": "Sovcomflot Subsidiary OOO",
+        "cii_grade": "C",
+        "last_cargo": "Fertilizers",
+        "restrictions": ["Vessel subject to EU port entry restrictions under Regulation 833/2014"]
+      },
+      {
+        "email_id": "msg-20852",
+        "item_index": 0,
+        "vessel_name": "M/V Anatolian Trader",
+        "imo": "9402187",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 31400,
+        "dwcc": 30000,
+        "summer_draft_m": 10.0,
+        "loa_m": 178.2,
+        "beam_m": 29.2,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 39500,
+        "bale_capacity_cbm": 38000,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 15m × 12.5m each",
+        "open_port": {
+          "name": "Mersin",
+          "country": "Turkey",
+          "unlocode": "TRMER"
+        },
+        "open_date": "2026-05-25",
+        "service_speed_kn": 13.0,
+        "flag": "MH",
+        "owner": "Anatolian Maritime Management SA",
+        "cii_grade": "B",
+        "last_cargo": "Clinker",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-10881",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20851",
+        "vessel_item_index": 0,
+        "gap_days": 4,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-25",
+        "verdict": "ideal",
+        "explanation": "M/V Vostok Bulk opens Novorossiysk 24-May. Novorossiysk to Iskenderun ~460nm at 12.5kn = ~37h, arrives ~26-May — 3 days before laycan start 29-May. Timing ideal. NOTE: flag='RU', owner='Sovcomflot Subsidiary OOO' — charterer restriction and EU sanctions apply.",
+        "date_issues": ["SANCTIONS_FLAG: flag=RU, owner=Sovcomflot Subsidiary OOO. Charterer explicitly prohibits Russian-flag vessels. EU port entry restriction under Reg 833/2014 blocks discharge at Ghent."]
+      },
+      {
+        "cargo_email_id": "msg-10881",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20852",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-26",
+        "verdict": "ideal",
+        "explanation": "M/V Anatolian Trader opens Mersin 25-May. Mersin to Iskenderun ~70nm at 13.0kn = ~5h, arrives same day. 3 days before laycan start 29-May. Clean flag (MH), IG P&I, no sanctions exposure.",
+        "date_issues": []
+      }
+    ]
+  }
+}

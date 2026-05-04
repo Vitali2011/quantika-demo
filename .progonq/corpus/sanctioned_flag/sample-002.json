@@ -1,0 +1,131 @@
+{
+  "id": "sanctioned_flag/sample-002",
+  "category": "sanctioned_flag",
+  "edge_case_summary": "Iranian-flag (IR) vessel discharging at EU port (Piraeus): EU sanctions and cargo restriction both prohibit Iranian-flag tonnage — verifies matcher surfaces IR-flag as hard disqualifier independent of timing quality.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-10901",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Urea fertilizer",
+        "weight_mt": 20000,
+        "weight_mt_min": 18000,
+        "weight_mt_max": 22000,
+        "stowage_factor_m3_per_mt": 0.90,
+        "load_port": {
+          "name": "Bandar Imam Khomeini",
+          "country": "Iran",
+          "unlocode": "IRBIK"
+        },
+        "discharge_port": {
+          "name": "Piraeus",
+          "country": "Greece",
+          "unlocode": "GRPIR"
+        },
+        "laycan_start": "2026-06-01",
+        "laycan_end": "2026-06-07",
+        "laycan_confidence": "confirmed",
+        "charterer": "Helm AG",
+        "broker": "Simpson Spence Young",
+        "gear_required": false,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": [
+          "No Iranian-flag vessels",
+          "No vessels owned by IRISL or NITC affiliates",
+          "P&I must be IG member",
+          "No vessels subject to OFAC or EU sanctions list"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-20901",
+        "item_index": 0,
+        "vessel_name": "M/V Tehran Bulk",
+        "imo": "9178923",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 26500,
+        "dwcc": 25300,
+        "summer_draft_m": 9.4,
+        "loa_m": 170.8,
+        "beam_m": 27.9,
+        "geared": false,
+        "crane_config": null,
+        "grain_capacity_cbm": 33100,
+        "bale_capacity_cbm": 31800,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 14m × 11.5m each",
+        "open_port": {
+          "name": "Bandar Abbas",
+          "country": "Iran",
+          "unlocode": "IRBND"
+        },
+        "open_date": "2026-05-26",
+        "service_speed_kn": 12.5,
+        "flag": "IR",
+        "owner": "IRISL Affiliate Shipping Co",
+        "cii_grade": "C",
+        "last_cargo": "Fertilizers",
+        "restrictions": ["Vessel subject to EU and OFAC sanctions under Iran Sanctions Regime"]
+      },
+      {
+        "email_id": "msg-20902",
+        "item_index": 0,
+        "vessel_name": "M/V Aegean Breeze",
+        "imo": "9388456",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 28800,
+        "dwcc": 27500,
+        "summer_draft_m": 9.6,
+        "loa_m": 174.5,
+        "beam_m": 28.6,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 36200,
+        "bale_capacity_cbm": 34700,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 15m × 12m each",
+        "open_port": {
+          "name": "Mersin",
+          "country": "Turkey",
+          "unlocode": "TRMER"
+        },
+        "open_date": "2026-05-27",
+        "service_speed_kn": 13.0,
+        "flag": "GR",
+        "owner": "Aegean Navigation SA",
+        "cii_grade": "B",
+        "last_cargo": "Grain",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-10901",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20901",
+        "vessel_item_index": 0,
+        "gap_days": 4,
+        "sailing_days": 2,
+        "arrival_date": "2026-05-28",
+        "verdict": "ideal",
+        "explanation": "M/V Tehran Bulk opens Bandar Abbas 26-May. Bandar Abbas to Bandar Imam Khomeini ~340nm at 12.5kn = ~27h, arrives ~27-May — 5 days before laycan start 01-Jun. Timing ideal. SANCTIONS_FLAG: flag=IR (Iran), owner=IRISL Affiliate — blocked under EU Regulation 267/2012 and OFAC SDN list. Cannot call Piraeus EU port.",
+        "date_issues": ["SANCTIONS_FLAG: flag=IR, owner=IRISL Affiliate. EU Reg 267/2012 prohibits Iranian-flag vessels in EU ports. OFAC SDN list applies. Charterer restriction explicit. Complete disqualification."]
+      },
+      {
+        "cargo_email_id": "msg-10901",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20902",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 3,
+        "arrival_date": "2026-05-30",
+        "verdict": "tight",
+        "explanation": "M/V Aegean Breeze opens Mersin 27-May. Mersin to Bandar Imam Khomeini ~2400nm at 13.0kn = ~185h ~8 days — ballast leg too long, arrives ~04-Jun within laycan but tight. Greek flag (GR), clean ownership, IG P&I. No sanctions exposure. Timing feasible within laycan window.",
+        "date_issues": ["Ballast leg 8 days from Mersin — arrival ~04-Jun within laycan_end 07-Jun but tight."]
+      }
+    ]
+  }
+}

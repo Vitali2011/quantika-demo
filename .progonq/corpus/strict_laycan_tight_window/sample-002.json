@@ -1,0 +1,210 @@
+{
+  "id": "strict_laycan_tight_window/sample-002",
+  "category": "strict_laycan_tight_window",
+  "edge_case_summary": "2-day laycan (narrower than s001's 3-day): 4 vessels with mixed ideal/idle/tight/late — verifies matcher correctly handles a 2-day window where slight delays immediately produce LAYCAN_VIOLATION.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-10801",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Barley",
+        "weight_mt": 22000,
+        "weight_mt_min": 19800,
+        "weight_mt_max": 24200,
+        "stowage_factor_m3_per_mt": 1.38,
+        "load_port": {
+          "name": "Novorossiysk",
+          "country": "Russia",
+          "unlocode": "RUNVS"
+        },
+        "discharge_port": {
+          "name": "Aqaba",
+          "country": "Jordan",
+          "unlocode": "JOAQJ"
+        },
+        "laycan_start": "2026-05-18",
+        "laycan_end": "2026-05-19",
+        "laycan_confidence": "confirmed",
+        "charterer": "Olam International",
+        "broker": "Phibro Shipping",
+        "gear_required": true,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": ["SHEX laytime", "Laycan 2 days only — charterer instruction: no extensions"]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-20801",
+        "item_index": 0,
+        "vessel_name": "M/V Taman Bulker",
+        "imo": "9344567",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 29800,
+        "dwcc": 28500,
+        "summer_draft_m": 9.8,
+        "loa_m": 176.0,
+        "beam_m": 28.9,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 37900,
+        "bale_capacity_cbm": 36300,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 15m × 12.5m each",
+        "open_port": {
+          "name": "Novorossiysk",
+          "country": "Russia",
+          "unlocode": "RUNVS"
+        },
+        "open_date": "2026-05-16",
+        "service_speed_kn": 13.0,
+        "flag": "RU",
+        "owner": "Taman Shipping LLC",
+        "cii_grade": "B",
+        "last_cargo": "Wheat",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20802",
+        "item_index": 0,
+        "vessel_name": "M/V Abkhazia Spirit",
+        "imo": "9412087",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 31500,
+        "dwcc": 30100,
+        "summer_draft_m": 10.0,
+        "loa_m": 178.5,
+        "beam_m": 29.3,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 40200,
+        "bale_capacity_cbm": 38600,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 15.5m × 12.5m each",
+        "open_port": {
+          "name": "Tuapse",
+          "country": "Russia",
+          "unlocode": "RUTUA"
+        },
+        "open_date": "2026-05-14",
+        "service_speed_kn": 13.5,
+        "flag": "PA",
+        "owner": "Abkhazia Maritime Corp",
+        "cii_grade": "A",
+        "last_cargo": "Corn",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20803",
+        "item_index": 0,
+        "vessel_name": "M/V Sochi Bulk",
+        "imo": "9523098",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 28900,
+        "dwcc": 27700,
+        "summer_draft_m": 9.6,
+        "loa_m": 174.5,
+        "beam_m": 28.6,
+        "geared": true,
+        "crane_config": "4×25t",
+        "grain_capacity_cbm": 36500,
+        "bale_capacity_cbm": 35000,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 14.5m × 12m each",
+        "open_port": {
+          "name": "Sochi",
+          "country": "Russia",
+          "unlocode": "RUSOC"
+        },
+        "open_date": "2026-05-17",
+        "service_speed_kn": 12.5,
+        "flag": "CY",
+        "owner": "Black Sea Shipping Management",
+        "cii_grade": "C",
+        "last_cargo": "Barley",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20804",
+        "item_index": 0,
+        "vessel_name": "M/V Kerch Express",
+        "imo": "9567891",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 30200,
+        "dwcc": 28900,
+        "summer_draft_m": 9.9,
+        "loa_m": 177.2,
+        "beam_m": 29.0,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 38500,
+        "bale_capacity_cbm": 36900,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 15m × 12.5m each",
+        "open_port": {
+          "name": "Kerch",
+          "country": "Ukraine",
+          "unlocode": "UAKHE"
+        },
+        "open_date": "2026-05-19",
+        "service_speed_kn": 13.0,
+        "flag": "MH",
+        "owner": "Kerch Bulk Carriers Ltd",
+        "cii_grade": "B",
+        "last_cargo": "Grain",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-10801",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20801",
+        "vessel_item_index": 0,
+        "gap_days": 2,
+        "sailing_days": 0,
+        "arrival_date": "2026-05-16",
+        "verdict": "ideal",
+        "explanation": "M/V Taman Bulker opens Novorossiysk 16-May — at load port. 2 days before laycan start 18-May. Clean 2-day idle within window.",
+        "date_issues": []
+      },
+      {
+        "cargo_email_id": "msg-10801",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20802",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-15",
+        "verdict": "idle",
+        "explanation": "M/V Abkhazia Spirit opens Tuapse 14-May. Tuapse to Novorossiysk ~80nm at 13.5kn = ~6h, arrives ~14-May — 4 days before laycan start 18-May. Excessive idle for a 2-day laycan window.",
+        "date_issues": ["4-day idle before 2-day laycan window — vessel may trade elsewhere before fixing"]
+      },
+      {
+        "cargo_email_id": "msg-10801",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20803",
+        "vessel_item_index": 0,
+        "gap_days": 0,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-18",
+        "verdict": "tight",
+        "explanation": "M/V Sochi Bulk opens Sochi 17-May. Sochi to Novorossiysk ~130nm at 12.5kn = ~10h, arrives ~18-May. Day of laycan start. 2-day window means arrival must be on time; any delay produces violation.",
+        "date_issues": ["Arrival 18-May = laycan_start. 2-day window leaves zero buffer."]
+      },
+      {
+        "cargo_email_id": "msg-10801",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20804",
+        "vessel_item_index": 0,
+        "gap_days": -1,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-20",
+        "verdict": "late",
+        "explanation": "M/V Kerch Express opens Kerch 19-May. Kerch to Novorossiysk ~200nm at 13.0kn = ~15h, arrives ~20-May — 1 day AFTER laycan_end 19-May. Pre-filter miss. Cannot make 2-day laycan window under any scenario.",
+        "date_issues": ["LAYCAN_VIOLATION: earliest arrival 20-May is after laycan_end 19-May. Pre-filter miss — vessel structurally late for 2-day window."]
+      }
+    ]
+  }
+}

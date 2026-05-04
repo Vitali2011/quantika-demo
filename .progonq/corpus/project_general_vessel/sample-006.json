@@ -1,0 +1,126 @@
+{
+  "id": "project_general_vessel/sample-006",
+  "category": "project_general_vessel",
+  "edge_case_summary": "4× refinery reactor vessels (60t each, 12m × 3.8m × 3.5m), 80t lift required, tween-deck mandatory — MPP fits both crane and geometry; bulker triggers CRANE_VIOLATION (max 4×30t, insufficient for 80t lifts); heavy-lift vessel is technically overkill but valid.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "ci-006-P",
+        "item_index": 0,
+        "commodity": "Refinery reactor vessels — project cargo",
+        "pieces": 4,
+        "weight_per_piece_mt": 60,
+        "total_weight_mt": 240,
+        "dimensions_per_piece_m": "12.0 L × 3.8 W × 3.5 H",
+        "lift_required_mt": 80,
+        "tween_deck_required": true,
+        "load_port": "Houston, USA (USHOU)",
+        "discharge_port": "Jubail Industrial City, Saudi Arabia (SAJUB)",
+        "laycan_start": "2026-07-04",
+        "laycan_end": "2026-07-10",
+        "charterer": "Sun Maritime Carriers AS",
+        "restrictions": [
+          "Minimum 80t SWL crane capacity — individual piece weight 60t with rigging",
+          "Tween-deck mandatory — pieces cannot be stowed on deck",
+          "No vessels with flag IR, KP, or SY"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "vp-006-P1",
+        "item_index": 0,
+        "vessel_name": "Fjord Multipurpose",
+        "imo": 9523810,
+        "flag": "NO",
+        "vessel_type": "MPP",
+        "dwt": 14500,
+        "dwcc": 13900,
+        "draft_max_m": 9.2,
+        "cranes": "2 × 100t",
+        "tween_decks": true,
+        "service_speed_kn": 15.5,
+        "last_cargo": "Steel pipes",
+        "cii_grade": "B",
+        "current_position": "Baltimore, USA (USBLT)",
+        "open_date": "2026-06-28",
+        "restrictions": []
+      },
+      {
+        "email_id": "vp-006-P2",
+        "item_index": 0,
+        "vessel_name": "Gulf Commodore",
+        "imo": 9448726,
+        "flag": "MH",
+        "vessel_type": "Bulk Carrier",
+        "dwt": 32000,
+        "dwcc": 30700,
+        "draft_max_m": 11.0,
+        "cranes": "4 × 30t",
+        "tween_decks": false,
+        "service_speed_kn": 13.0,
+        "last_cargo": "Fertilizer",
+        "cii_grade": "C",
+        "current_position": "New Orleans, USA (USMSY)",
+        "open_date": "2026-06-25",
+        "restrictions": []
+      },
+      {
+        "email_id": "vp-006-P3",
+        "item_index": 0,
+        "vessel_name": "Titan Lift Seven",
+        "imo": 9591347,
+        "flag": "CY",
+        "vessel_type": "Heavy-lift",
+        "dwt": 9800,
+        "dwcc": 9200,
+        "draft_max_m": 7.8,
+        "cranes": "2 × 400t",
+        "tween_decks": true,
+        "service_speed_kn": 12.0,
+        "last_cargo": "Turbine nacelles",
+        "cii_grade": "A",
+        "current_position": "Freeport, Bahamas (BSFPO)",
+        "open_date": "2026-07-01",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "ci-006-P",
+        "cargo_item_index": 0,
+        "vessel_email_id": "vp-006-P1",
+        "vessel_item_index": 0,
+        "verdict": "ideal",
+        "gap_days": 6,
+        "arrival_date": "2026-07-02",
+        "date_issues": []
+      },
+      {
+        "cargo_email_id": "ci-006-P",
+        "cargo_item_index": 0,
+        "vessel_email_id": "vp-006-P2",
+        "vessel_item_index": 0,
+        "verdict": "ideal",
+        "gap_days": 8,
+        "arrival_date": "2026-07-01",
+        "date_issues": [
+          {
+            "code": "CRANE_VIOLATION",
+            "detail": "Max crane SWL 4×30t — cannot achieve 80t single-hook lift required for 60t reactor pieces with rigging allowance"
+          }
+        ]
+      },
+      {
+        "cargo_email_id": "ci-006-P",
+        "cargo_item_index": 0,
+        "vessel_email_id": "vp-006-P3",
+        "vessel_item_index": 0,
+        "verdict": "tight",
+        "gap_days": 3,
+        "arrival_date": "2026-07-04",
+        "date_issues": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,168 @@
+{
+  "id": "strict_laycan_tight_window/sample-005",
+  "category": "strict_laycan_tight_window",
+  "edge_case_summary": "Cross-Atlantic laycan: vessels positioned in different oceans (US Gulf, West Africa, Rotterdam), sailing days of 10-18 dominate readiness calculation — verifies matcher correctly weights sailing distance in feasibility, not just open_date proximity.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-10831",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Soybeans",
+        "weight_mt": 55000,
+        "weight_mt_min": 49500,
+        "weight_mt_max": 60500,
+        "stowage_factor_m3_per_mt": 1.35,
+        "load_port": {
+          "name": "Santos",
+          "country": "Brazil",
+          "unlocode": "BRSSZ"
+        },
+        "discharge_port": {
+          "name": "Rotterdam",
+          "country": "Netherlands",
+          "unlocode": "NLRTM"
+        },
+        "laycan_start": "2026-06-20",
+        "laycan_end": "2026-06-25",
+        "laycan_confidence": "confirmed",
+        "charterer": "Bunge",
+        "broker": "Braemar",
+        "gear_required": false,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": ["SHEX laytime", "No CII Grade D or E"]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-20831",
+        "item_index": 0,
+        "vessel_name": "M/V Atlantic Carrier",
+        "imo": "9378901",
+        "vessel_class": "PANAMAX",
+        "dwt": 75500,
+        "dwcc": 72800,
+        "summer_draft_m": 13.5,
+        "loa_m": 224.5,
+        "beam_m": 32.2,
+        "geared": false,
+        "crane_config": null,
+        "grain_capacity_cbm": 92500,
+        "bale_capacity_cbm": 89800,
+        "hold_count": 7,
+        "hatch_dimensions": "7 hatches, 18m × 15m each",
+        "open_port": {
+          "name": "Santos",
+          "country": "Brazil",
+          "unlocode": "BRSSZ"
+        },
+        "open_date": "2026-06-16",
+        "service_speed_kn": 14.5,
+        "flag": "MH",
+        "owner": "Atlantic Bulk Lines SA",
+        "cii_grade": "B",
+        "last_cargo": "Corn",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20832",
+        "item_index": 0,
+        "vessel_name": "M/V Gulf Explorer",
+        "imo": "9445231",
+        "vessel_class": "PANAMAX",
+        "dwt": 74200,
+        "dwcc": 71500,
+        "summer_draft_m": 13.3,
+        "loa_m": 222.0,
+        "beam_m": 32.1,
+        "geared": false,
+        "crane_config": null,
+        "grain_capacity_cbm": 90100,
+        "bale_capacity_cbm": 87400,
+        "hold_count": 7,
+        "hatch_dimensions": "7 hatches, 17.5m × 15m each",
+        "open_port": {
+          "name": "Houston",
+          "country": "United States",
+          "unlocode": "USHOU"
+        },
+        "open_date": "2026-06-01",
+        "service_speed_kn": 14.0,
+        "flag": "PA",
+        "owner": "Gulf Navigation Corp",
+        "cii_grade": "A",
+        "last_cargo": "Soybeans",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20833",
+        "item_index": 0,
+        "vessel_name": "M/V Dakar Voyager",
+        "imo": "9512567",
+        "vessel_class": "PANAMAX",
+        "dwt": 77000,
+        "dwcc": 74200,
+        "summer_draft_m": 13.7,
+        "loa_m": 226.0,
+        "beam_m": 32.3,
+        "geared": false,
+        "crane_config": null,
+        "grain_capacity_cbm": 94200,
+        "bale_capacity_cbm": 91500,
+        "hold_count": 7,
+        "hatch_dimensions": "7 hatches, 18m × 15m each",
+        "open_port": {
+          "name": "Dakar",
+          "country": "Senegal",
+          "unlocode": "SNDKR"
+        },
+        "open_date": "2026-06-10",
+        "service_speed_kn": 14.0,
+        "flag": "LR",
+        "owner": "West Africa Bulk Carriers",
+        "cii_grade": "C",
+        "last_cargo": "Grain",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-10831",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20831",
+        "vessel_item_index": 0,
+        "gap_days": 4,
+        "sailing_days": 0,
+        "arrival_date": "2026-06-16",
+        "verdict": "ideal",
+        "explanation": "M/V Atlantic Carrier opens Santos 16-Jun — at load port. 4 days before laycan start 20-Jun. DWCC 72,800mt comfortably above cargo max 60,500mt. CII Grade B qualifies. Ideal positioning — shortest ballast leg (already at load port).",
+        "date_issues": []
+      },
+      {
+        "cargo_email_id": "msg-10831",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20832",
+        "vessel_item_index": 0,
+        "gap_days": 0,
+        "sailing_days": 10,
+        "arrival_date": "2026-06-21",
+        "verdict": "tight",
+        "explanation": "M/V Gulf Explorer opens Houston 01-Jun. Houston to Santos ~6200nm at 14.0kn = ~443h ~18.5 days, arriving ~20-Jun. Tight against laycan start 20-Jun — arrival exactly on laycan start day. Long cross-Atlantic ballast leaves zero buffer; weather or canal delays push into violation.",
+        "date_issues": ["Cross-Atlantic ballast 18.5 days from Houston — arrival ~20-Jun matches laycan_start exactly. No buffer for weather, Panama Canal delays, or scheduling changes."]
+      },
+      {
+        "cargo_email_id": "msg-10831",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20833",
+        "vessel_item_index": 0,
+        "gap_days": -1,
+        "sailing_days": 7,
+        "arrival_date": "2026-06-27",
+        "verdict": "late",
+        "explanation": "M/V Dakar Voyager opens Dakar 10-Jun. Dakar to Santos ~4700nm at 14.0kn = ~336h ~14 days, arriving ~24-Jun — within laycan_end 25-Jun. NOTE: arrival 24-Jun is within laycan but extremely tight. However open_date 10-Jun with 14 sailing days = arrival 24-Jun only if vessel sails immediately. Any 2-day delay produces LAYCAN_VIOLATION. Expected realistic arrival 26-27 Jun given port congestion at Dakar.",
+        "date_issues": ["LAYCAN_BORDERLINE: theoretical arrival 24-Jun within window but 0-day buffer. Realistic estimate 26-27 Jun accounting for Dakar port delays. Likely LAYCAN_VIOLATION in practice."]
+      }
+    ]
+  }
+}

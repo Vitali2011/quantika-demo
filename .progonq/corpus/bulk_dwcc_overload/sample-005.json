@@ -1,0 +1,166 @@
+{
+  "id": "bulk_dwcc_overload/sample-005",
+  "category": "bulk_dwcc_overload",
+  "edge_case_summary": "3 cargoes × 1 vessel: one pair has DWCC overrun (genuine violation), two are feasible — verifies matcher handles per-pair DWCC checks and does not disqualify the vessel globally just because one pairing fails.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-10631",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Rapeseed",
+        "weight_mt": 27000,
+        "weight_mt_min": 24300,
+        "weight_mt_max": 29700,
+        "stowage_factor_m3_per_mt": 1.55,
+        "load_port": {
+          "name": "Rouen",
+          "country": "France",
+          "unlocode": "FRRDN"
+        },
+        "discharge_port": {
+          "name": "Tunis La Goulette",
+          "country": "Tunisia",
+          "unlocode": "TNTUNIS"
+        },
+        "laycan_start": "2026-06-05",
+        "laycan_end": "2026-06-11",
+        "laycan_confidence": "confirmed",
+        "charterer": "Ameropa",
+        "broker": "Clarksons",
+        "gear_required": true,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": ["SHEX laytime"]
+      },
+      {
+        "email_id": "msg-10632",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Wheat",
+        "weight_mt": 31500,
+        "weight_mt_min": 28350,
+        "weight_mt_max": 34650,
+        "stowage_factor_m3_per_mt": 1.28,
+        "load_port": {
+          "name": "Le Havre",
+          "country": "France",
+          "unlocode": "FRLEH"
+        },
+        "discharge_port": {
+          "name": "Casablanca",
+          "country": "Morocco",
+          "unlocode": "MACAS"
+        },
+        "laycan_start": "2026-06-07",
+        "laycan_end": "2026-06-14",
+        "laycan_confidence": "confirmed",
+        "charterer": "Olam International",
+        "broker": "Gibson Shipbrokers",
+        "gear_required": true,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": ["SHEX laytime"]
+      },
+      {
+        "email_id": "msg-10633",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Malt barley",
+        "weight_mt": 36000,
+        "weight_mt_min": 32400,
+        "weight_mt_max": 39600,
+        "stowage_factor_m3_per_mt": 1.38,
+        "load_port": {
+          "name": "Dunkirk",
+          "country": "France",
+          "unlocode": "FRDKK"
+        },
+        "discharge_port": {
+          "name": "Sfax",
+          "country": "Tunisia",
+          "unlocode": "TNSFX"
+        },
+        "laycan_start": "2026-06-10",
+        "laycan_end": "2026-06-17",
+        "laycan_confidence": "confirmed",
+        "charterer": "Wilmar International",
+        "broker": "Howe Robinson",
+        "gear_required": true,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": ["SHEX laytime"]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-20931",
+        "item_index": 0,
+        "vessel_name": "M/V Normandie Bulk",
+        "imo": "9412344",
+        "vessel_class": "HANDYMAX",
+        "dwt": 32800,
+        "dwcc": 31400,
+        "summer_draft_m": 10.4,
+        "loa_m": 183.0,
+        "beam_m": 30.2,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 43500,
+        "bale_capacity_cbm": 41800,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 16.5m × 13.5m each",
+        "open_port": {
+          "name": "Rotterdam",
+          "country": "Netherlands",
+          "unlocode": "NLRTM"
+        },
+        "open_date": "2026-06-01",
+        "service_speed_kn": 13.0,
+        "flag": "MT",
+        "owner": "Normandie Maritime SA",
+        "cii_grade": "B",
+        "last_cargo": "Corn",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-10631",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20931",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 1,
+        "arrival_date": "2026-06-02",
+        "verdict": "tight",
+        "explanation": "M/V Normandie Bulk opens Rotterdam 01-Jun. Rotterdam to Rouen ~250nm at 13.0kn = ~19h, arrives ~02-Jun — 3 days before laycan start 05-Jun. DWCC 31,400mt vs cargo max 29,700mt — 1,700mt margin. Feasible.",
+        "date_issues": []
+      },
+      {
+        "cargo_email_id": "msg-10632",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20931",
+        "vessel_item_index": 0,
+        "gap_days": 4,
+        "sailing_days": 1,
+        "arrival_date": "2026-06-02",
+        "verdict": "tight",
+        "explanation": "M/V Normandie Bulk opens Rotterdam 01-Jun. Rotterdam to Le Havre ~200nm at 13.0kn = ~15h, arrives ~02-Jun — 5 days before laycan start 07-Jun. DWCC 31,400mt vs cargo max 34,650mt — DWCC 31,400mt < cargo min 28,350mt is satisfied but max 34,650mt exceeds DWCC. Partial load feasible.",
+        "date_issues": ["DWCC_PARTIAL: cargo max 34,650mt exceeds DWCC 31,400mt. Must load at most 31,400mt — below cargo nominal 31,500mt but within min 28,350mt range."]
+      },
+      {
+        "cargo_email_id": "msg-10633",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20931",
+        "vessel_item_index": 0,
+        "gap_days": 5,
+        "sailing_days": 1,
+        "arrival_date": "2026-06-02",
+        "verdict": "tight",
+        "explanation": "M/V Normandie Bulk opens Rotterdam 01-Jun. Rotterdam to Dunkirk ~200nm at 13.0kn = ~15h, arrives ~02-Jun — 8 days before laycan start 10-Jun. DWCC 31,400mt vs cargo min 32,400mt — vessel DWCC is 1,000mt below minimum required quantity. Pre-filter miss. Structural DWCC violation.",
+        "date_issues": ["DWCC_VIOLATION: cargo min 32,400mt exceeds vessel DWCC 31,400mt — vessel cannot carry minimum required quantity. Per-pair violation; other pairings for this vessel may be feasible."]
+      }
+    ]
+  }
+}

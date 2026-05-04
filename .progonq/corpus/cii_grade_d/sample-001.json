@@ -1,0 +1,130 @@
+{
+  "id": "cii_grade_d/sample-001",
+  "category": "cii_grade_d",
+  "edge_case_summary": "CII Grade D stress test: Trafigura (known D-grade refuser) sends a soybean meal cargo; vessel A has cii_grade='D' and last_cargo='Petcoke' (also triggers cleaning flag), vessel B has cii_grade='A' (clean control) — tests whether matcher flags CII-D + petcoke incompatibility in issues[] and downgrades recommendation accordingly.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-10991",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Soybean meal",
+        "weight_mt": 54000,
+        "weight_mt_min": 51300,
+        "weight_mt_max": 56700,
+        "stowage_factor_m3_per_mt": 1.45,
+        "load_port": {
+          "name": "Santos",
+          "country": "Brazil",
+          "unlocode": "BRSSZ"
+        },
+        "discharge_port": {
+          "name": "Rotterdam",
+          "country": "Netherlands",
+          "unlocode": "NLRTM"
+        },
+        "laycan_start": "2026-06-05",
+        "laycan_end": "2026-06-12",
+        "laycan_confidence": "confirmed",
+        "charterer": "Trafigura",
+        "broker": "Howe Robinson",
+        "gear_required": false,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": [
+          "No CII D or E grade vessels — Trafigura fleet vetting policy 2025",
+          "Holds must be clean and free of previous cargo residue",
+          "SHEX laytime"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-20861",
+        "item_index": 0,
+        "vessel_name": "M/V Porto Alegre Star",
+        "imo": "9278934",
+        "vessel_class": "SUPRAMAX",
+        "dwt": 58200,
+        "dwcc": 56100,
+        "summer_draft_m": 12.5,
+        "loa_m": 196.3,
+        "beam_m": 32.6,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 73500,
+        "bale_capacity_cbm": 71200,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 18m × 15m each",
+        "open_port": {
+          "name": "Paranaguá",
+          "country": "Brazil",
+          "unlocode": "BRPNG"
+        },
+        "open_date": "2026-05-31",
+        "service_speed_kn": 12.5,
+        "flag": "PA",
+        "owner": "Mariana Bulk Carriers SA",
+        "cii_grade": "D",
+        "last_cargo": "Petcoke",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20862",
+        "item_index": 0,
+        "vessel_name": "M/V Parana Explorer",
+        "imo": "9512663",
+        "vessel_class": "SUPRAMAX",
+        "dwt": 56800,
+        "dwcc": 54700,
+        "summer_draft_m": 12.3,
+        "loa_m": 194.8,
+        "beam_m": 32.2,
+        "geared": true,
+        "crane_config": "4×35t",
+        "grain_capacity_cbm": 71800,
+        "bale_capacity_cbm": 69500,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 18m × 15m each",
+        "open_port": {
+          "name": "Santos",
+          "country": "Brazil",
+          "unlocode": "BRSSZ"
+        },
+        "open_date": "2026-06-01",
+        "service_speed_kn": 14.0,
+        "flag": "LR",
+        "owner": "Parana Navigation Ltd",
+        "cii_grade": "A",
+        "last_cargo": "Grain",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-10991",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20861",
+        "vessel_item_index": 0,
+        "gap_days": 4,
+        "sailing_days": 1,
+        "arrival_date": "2026-06-01",
+        "verdict": "tight",
+        "explanation": "M/V Porto Alegre Star opens Paranaguá 31-May. Paranaguá to Santos ~260nm at 12.5kn = ~21h, arrives ~01-Jun — 4 days before laycan start 05-Jun. Timing feasible. NOTE: cii_grade='D' violates Trafigura vetting policy. last_cargo='Petcoke' requires hold cleaning before grain-type cargo — additional time and cost.",
+        "date_issues": ["CII_GRADE_D: Trafigura fleet policy prohibits D/E vessels. LAST_CARGO_INCOMPATIBLE: petcoke residue requires certified cleaning before soybean meal — extra 2-3 days + $15-25k cleaning cost."]
+      },
+      {
+        "cargo_email_id": "msg-10991",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20862",
+        "vessel_item_index": 0,
+        "gap_days": 4,
+        "sailing_days": 0,
+        "arrival_date": "2026-06-01",
+        "verdict": "ideal",
+        "explanation": "M/V Parana Explorer opens Santos 01-Jun — already at load port. 4 days before laycan start 05-Jun. cii_grade='A', last_cargo='Grain' — no cleaning issue. Ideal match for Trafigura vetting.",
+        "date_issues": []
+      }
+    ]
+  }
+}

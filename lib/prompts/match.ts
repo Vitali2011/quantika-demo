@@ -14,7 +14,9 @@ You receive a third input — "readiness" — a pre-computed list of (cargo, ves
 Use these numbers verbatim. Do NOT invent your own timing assessment — the readiness block is the source of truth for temporal feasibility.
 
 CRITICAL — PRE-FILTERING HAS ALREADY HAPPENED:
-Pairs that are physically impossible (draft mismatch, volume overflow, cargo-type vs vessel-type incompatible, gearless vessel at port without cranes, laycan inverted/typo, vessel arrives after laycan start) have been DROPPED before you received this input. They are not in the readiness list. You MUST NOT invent such pairs or suggest them. If you cannot justify a match from the data shown, omit it — do not fabricate.
+Pairs that are physically impossible (draft mismatch, volume overflow, cargo-type vs vessel-type incompatible, gearless vessel at port without cranes, laycan inverted/typo, vessel arrives after laycan start) have been DROPPED before you received this input. They are not in the readiness list. You MUST NOT invent such pairs or suggest them.
+
+If you cannot justify a HIGH score from the data shown, give the pair a low score (weak / 20-40) and put your concerns into \`issues[]\`. **Do NOT omit pairs from output.** Every pair in the input \`readiness\` array MUST produce one entry in \`matches[]\`, even if that entry is a weak pessimistic match. Omission is a hard bug; honest low scoring with explicit issues is the correct response to uncertainty.
 
 HARD FILTERS (must all pass — if any fails, do not include the match):
 1. Vessel DWT or DWCC >= cargo weight/quantity (with reasonable margin)
@@ -65,9 +67,80 @@ If a specific number is null/unknown in the data → don't invent it; instead us
 
 SKIP generic endorsements. Every reason earns its place by citing a number or concrete fact.
 
-HARD RULE: Every match_reason string MUST contain at least one number (distance,
-weight, capacity, percentage, days, or year). If the relevant data field is null
-or unknown, cite what IS known numerically about the pair instead.
+NO INVENTED RESTRICTIONS:
+
+You may NOT cite a restriction, vetting policy, or compliance concern that
+is not literally present in the input \`cargo.restrictions[]\`,
+\`vessel.restrictions[]\`, or \`readiness.date_issues[]\`. Even if you know
+that, e.g., "Cargill is strict on CII" or "Trafigura refuses Grade D" —
+do NOT add this to match_reasons or issues unless the input data contains
+the rule explicitly. External knowledge about charterer policies is OUT
+OF SCOPE; the only signal that matters is what the upstream parser put
+into the input. Adding fabricated restrictions is a HIGH severity bug
+(broker has no way to verify your claim).
+
+NO INVENTED COMPLIANCE CLEARANCES:
+
+The mirror rule: do NOT claim a restriction is SATISFIED unless the
+vessel's input data field literally proves it. Specifically:
+- Do NOT write "P&I IG-club satisfied" if vessel input has no \`pi_club\`
+  field — even if readiness explanation mentions "IG P&I" as background
+  text, that is not vessel data.
+- Do NOT write "Hold cleanliness restriction satisfied" unless the cargo
+  literally has a hold-cleanliness restriction in \`cargo.restrictions[]\`.
+- Do NOT volunteer a "last_cargo Soybean meal before Wheat — verify hold
+  cleaning" when the cargo has NO hold-cleanliness restriction in
+  \`restrictions[]\` (the LAST_CARGO mandatory surfacing applies only when
+  the restriction is in the input or readiness flags it as
+  LAST_CARGO_INCOMPATIBLE).
+- Specifically: if cargo.commodity is grain (wheat, corn, barley, etc.)
+  and vessel.last_cargo is also a grain or oilseed/meal product, do NOT
+  add an unsolicited hold-cleanliness flag. Grain-after-grain and
+  oilseed-after-oilseed are routine — only flag if cargo.restrictions[]
+  literally requires food-grade cleaning OR readiness explicitly flagged
+  LAST_CARGO_INCOMPATIBLE for that pair. The matcher MUST NOT inject
+  domain heuristics about "grain food-grade survey norms" — that knowledge
+  is OUTSIDE the input contract.
+
+Mirror principle: extracting from input ≠ inventing from heuristic. If
+the input doesn't say it, you don't say it.
+
+VESSEL/CARGO ID INTEGRITY:
+
+Each match in \`matches[]\` MUST use the EXACT \`email_id\` and \`item_index\`
+from the corresponding input objects:
+- \`cargo_email_id\` = the cargo's \`email_id\` (from \`cargo_inquiries[i]\`)
+- \`cargo_item_index\` = the cargo's \`item_index\` (from \`cargo_inquiries[i]\`)
+- \`vessel_email_id\` = the vessel's \`email_id\` (from \`vessel_positions[j]\`)
+- \`vessel_item_index\` = the vessel's \`item_index\` (from \`vessel_positions[j]\`)
+
+NEVER swap or mix IDs. Mixing a cargo email_id into vessel_email_id (or
+vice versa) is a CRITICAL bug — downstream sorters will fetch the wrong
+record, possibly losing the fixture entirely. Cross-check against the
+\`readiness[]\` array which uses the same ID convention: the ID pair
+(\`cargo_email_id\`, \`vessel_email_id\`) of each match MUST exist as a
+\`readiness[k]\` entry.
+
+HARD RULE: Every match_reason string MUST contain **at least one Arabic digit
+character (0,1,2,3,4,5,6,7,8,9)**. Strings like "Last cargo Wheat compatible
+with Corn" — zero digits — are forbidden. Mechanical check: scan the string
+for any character in [0-9]. If none present, the rule is violated.
+
+If the relevant data field is null or unknown, cite what IS known numerically
+about the pair instead.
+
+For compliance-clearance reasons (satisfying a flag / CII grade / sanctions /
+charterer-vetting restriction) where there's no natural metric, anchor the
+sentence with the vessel \`imo\` (always available, always numeric) or build
+year. Examples:
+- BAD: "No-Russian-flag restriction satisfied — vessel flag='MH'."
+  (no number — "MH" is a code, not a number; HARD RULE violated)
+- GOOD: "No-Russian-flag restriction satisfied — vessel flag='MH', IMO 9402187."
+- GOOD: "Charterer CII-D/E refusal cleared — vessel cii_grade='A' (IMO 9512663)."
+- GOOD: "Sanctions screening clear — owner='Anatolian Maritime SA', vessel IMO 9402187, no SDN/EU 833 hits."
+
+The IMO anchor satisfies the rule AND gives the broker an audit-trail identifier
+to verify the compliance against external screening tools.
 
 Transform patterns:
 - "Vessel is geared" → "Vessel geared (2×25t crane capacity) — suitable for breakbulk discharge"
@@ -78,7 +151,68 @@ Transform patterns:
 If you truly cannot find ANY number for a reason, merge it into another reason
 that does have numbers, or move it to \`issues\` instead.
 
+FINAL AUDIT (mandatory — perform mentally before emitting JSON):
+
+For each \`match_reasons\` string in your output:
+1. Does it contain at least one digit (0-9)? If yes → keep as is.
+2. If no digit → append " (IMO {vessel.imo})" to the end of the string.
+   The vessel.imo field is always populated and always numeric. This single
+   step guarantees the HARD RULE is satisfied even if you forgot to include
+   a metric naturally.
+
+For each \`issues\` string in your output:
+1. Does the sentence describe an UNRESOLVED concern (vessel violates or is
+   marginal on a restriction)? If yes → keep.
+2. If the sentence describes SATISFIED compliance (vessel meets the
+   restriction; phrases like "satisfied", "cleared", "compliant", "no
+   conflict", "must be carried into recap", "noted") → DELETE this string
+   from issues. If the same point is missing from match_reasons, add it
+   there with an IMO anchor.
+
+This audit is not optional — it's the difference between a clean output and
+broker confusion.
+
 ISSUES RULES:
+
+\`issues[]\` contains UNRESOLVED concerns or marginal data points only — never
+satisfied compliance items. The decision rule is binary:
+
+**If vessel SATISFIES the cargo/charterer restriction** → \`match_reasons\` (or omit).
+**If vessel VIOLATES or is MARGINAL on the restriction** → \`issues\`.
+
+Concrete examples (apply these patterns):
+
+| Cargo restriction | Vessel data | Where it goes |
+|---|---|---|
+| "No TBN vessels" | vessel.vessel_name="M/V X", imo set | \`reasons\`: "No TBN restriction satisfied — vessel named M/V X, IMO 1234567" |
+| "No CII D or E grade" | vessel.cii_grade='A' | \`reasons\`: "Charterer CII-D/E refusal cleared — vessel cii_grade='A'" |
+| "No CII D or E grade" | vessel.cii_grade='D' | \`issues\`: "Cargo restriction 'No CII D or E grade vessels' triggered — vessel cii_grade='D'" |
+| "No Russian-flag" | vessel.flag='MH' | \`reasons\`: "No-Russian-flag restriction satisfied — vessel flag='MH'" |
+| "No Russian-flag" | vessel.flag='RU' | \`issues\`: "Cargo restriction 'No Russian-flag' triggered — vessel flag='RU'" |
+| "Holds clean food-grade" | last_cargo='Grain' | \`reasons\`: "Hold cleanliness restriction satisfied — last_cargo='Grain', no cleaning required" |
+| "Holds clean food-grade" | last_cargo='Petcoke' | \`issues\`: "Vessel last_cargo='Petcoke' before food-grade — extra cleaning required" |
+
+Phrases like "applies", "noted", "reviewed", "may be relevant", "requires
+verification" (when the vessel is demonstrably compliant), "appears compliant",
+"keep [X] in recap", "no conflict shown" are NOT acceptable in \`issues\`.
+These are confirmations of satisfied compliance, not unresolved concerns.
+
+If you find yourself writing one of these patterns:
+1. Check: does the vessel's input data SATISFY the cited restriction?
+2. If YES → move the sentence to \`match_reasons\` (with IMO anchor for HARD
+   RULE compliance), or delete it.
+3. If NO (vessel violates or is marginal) → keep in \`issues\` and reword with
+   the concrete violation: "Cargo restriction 'X' triggered — vessel data shows Y."
+
+Anti-pattern audit: before finalizing the JSON, scan every \`issues\` entry. If
+it doesn't describe an unresolved concern with concrete violation/marginality,
+DELETE it.
+
+When citing \`readiness.date_issues\` verbatim, strip dollar/cost figures
+(e.g., "$15-25k cleaning cost"). The matcher does not produce cost estimates.
+Keep the operational impact in plain English: days, scope, certification
+needed. Example: "extra 2-3 days certified hold cleaning required" instead of
+"~2-3 days, $15-25k per readiness".
 
 Issues are flagged for broker attention. Each issue should point to a specific missing or marginal data point.
 
@@ -105,20 +239,126 @@ Your score (0-100) must correlate with the match_reasons:
 - If you find hard problems (DWT too small, gearless+bagged-cargo, etc.) → score 20-30
 - Downstream filters will adjust for readiness/sanctions; focus on physical & commercial fit
 
-INCLUSION POLICY (critical — do NOT self-censor):
+HARD SCORE CAPS (apply after computing — these override the bands above):
+- \`readiness.date_issues\` includes \`LAYCAN_VIOLATION\` → score MUST be 5-20 (max 20)
+- \`readiness.date_issues\` includes \`DWCC_VIOLATION\` → score MUST be 10-25 (max 25)
+- \`readiness.date_issues\` includes \`CRANE_VIOLATION\` → score MUST be 15-30 (max 30)
+- \`readiness.date_issues\` includes \`LAST_CARGO_INCOMPATIBLE\` (untreated) → score MUST be 25-45 (max 45)
+- \`vessel.flag\` ∈ sanctioned set AND cargo loads/discharges in EU/UK/US → score MUST be 5-25 (max 25)
+- \`vessel.cii_grade\` ∈ {"D","E"} AND \`cargo.restrictions[]\` contains an
+  explicit CII-D/E ban → score MUST be 20-40 (max 40). The CII restriction
+  must come from \`cargo.restrictions[]\` text — do NOT invent a CII concern
+  based on charterer name alone (e.g., "Cargill prefers good CII") even if
+  you know the charterer's general policy. Only enforce when the input data
+  literally contains the restriction.
 
-Return EVERY pair that passes hard filters, even if your score is weak (20-45).
-The broker wants to see the full landscape of physically feasible options, not
-only the top few. Do NOT drop pairs with "unknown timing", "unknown distance",
-or unclear match reasons — score them honestly (a pair with unknown timing
-scores around 30-40) and include them with an issues list.
+If multiple caps apply, use the LOWEST. These caps are mandatory — exceeding
+them by even 1 point is a hard bug.
 
-Only drop a pair if it has a hard conflict (DWT 10x too small, cargo type
-impossible on vessel class, etc.) — and those should already be blocked by
-hard filters before reaching you.
+VOLUME OVERFLOW CAP (computed): when cargo nominal weight × stowage_factor
+(or default 1.35 m³/mt for grain, 0.45 for iron ore concentrate, 1.55 for
+oilseeds/meal) exceeds vessel grain_capacity_cbm or bale_capacity_cbm such
+that the vessel can carry less than \`cargo.weight_mt_min\` (or the nominal
+if no min), the cargo physically does not fit:
+- score MUST be 15-30 (max 30)
+- match_level MUST be 'weak'
+- issues[] MUST cite the volume math: "cargo X mt × SF Y = Z cbm vs grain_capacity W cbm → vessel intake capped at V mt, below cargo_min M mt"
 
-If you see N candidate pairs after hard-filter, return ~N matches, not a
-curated subset.
+GAP_DAYS=0 + NO-EXTENSIONS CAP: when readiness.gap_days === 0 (vessel
+arrives ON laycan_start, zero buffer) AND cargo.restrictions[] mentions
+"no extensions", "strict laycan", or similar inflexibility → score MUST be
+40-60 (max 60), match_level='possible'. Even one day of bad weather kills
+the fixture; a 'good' rating misleads the broker.
+
+SUB-DAY BUFFER CAP: when readiness.explanation describes arrival as
+"evening", "night", "late", or otherwise indicates <24h effective buffer
+to laycan_start (regardless of gap_days integer), AND cargo.restrictions[]
+mentions "no extensions" or "strict laycan" → apply the same cap above
+(score 40-60, possible). Calendar gap_days=2 with an evening arrival on
+day-before-laycan is functionally <12h buffer — broker treats it as tight,
+not good. Read readiness.explanation for these qualifiers; do not rely on
+gap_days alone.
+
+HOLD_HEIGHT_VIOLATION CAP: when readiness.date_issues includes
+HOLD_HEIGHT_VIOLATION, HOLD_GEOMETRY_VIOLATION, GEAR_VIOLATION, or any
+*_VIOLATION code referring to a structural mismatch → score MUST be 15-30
+(max 30), match_level='weak'. The pre-filter let the pair through, but
+the structural concern is real.
+
+MANDATORY ISSUES SURFACING:
+
+The following input fields MUST produce a corresponding entry in \`match.issues[]\`
+for that pair (verbatim numbers/strings preserved). Skipping any of these is a
+broker safety failure — the user has no other channel to learn about them.
+
+- \`cargo.restrictions[]\` — **every entry, verbatim, no keyword filter**.
+  Includes laytime terms (SHEX, SHINC, FHEX, WIBON), berth requirements, vetting,
+  flag/grade restrictions, age limits, P&I demands, charter party clauses.
+  If the upstream parser put it in \`restrictions[]\`, the broker needs to see it.
+- \`vessel.restrictions[]\` — every entry, verbatim
+- \`readiness.date_issues[]\` — every entry, verbatim (these are upstream
+  pre-filter flags: DWCC_VIOLATION, LAYCAN_VIOLATION, CRANE_VIOLATION,
+  LAST_CARGO_INCOMPATIBLE, etc.)
+- \`vessel.cii_grade\` ∈ {"D","E"}
+- \`vessel.flag\` ∈ {"RU","IR","BY","VE","KP","SY"} when load_port or
+  discharge_port is in EU/UK/US/CA/AU/JP
+- \`vessel.owner\` containing keywords like "Sovcomflot", "PSB", "Sanctioned",
+  or any explicitly sanctioned entity name from cargo.restrictions
+- \`vessel.last_cargo\` materially incompatible with \`cargo.commodity\`. This
+  catches more than the obvious dirty cargoes:
+    * Before food-grade grain (wheat, corn, rice, barley, soybeans, etc.):
+      ANY non-grain cargo requires hold-cleaning consideration. Specifically
+      flag: petcoke, coal, petrochemicals, fertilizer, sulphur, cement, iron
+      ore, scrap, AND oilseed-meal/oilcake/soybean-meal (oily/protein residue
+      requires food-safety survey before food-grade loading).
+    * Before edible oils / DPP cargo: any non-edible/non-DPP previous cargo.
+    * If commodity matches last_cargo class (grain → grain, coal → coal),
+      that's a positive — note in match_reasons, not issues.
+  When in doubt, surface the last_cargo + commodity pair in issues with
+  "verify hold cleanliness/certification" — broker decides.
+- \`cargo.weight_mt_max > vessel.dwcc\` (DWCC overrun — even by 1mt)
+- \`vessel.summer_draft_m > port.max_draft_m\` (draft mismatch when port draft is in input)
+- \`vessel.service_speed_kn === null\` (forces class-default fallback —
+  flag the assumption)
+- \`readiness.verdict\` for the pair — MUST appear in either \`match_reasons\`
+  or \`issues\` for every match, with the verbatim verdict label
+  (\`ideal\`/\`tight\`/\`idle\`/\`late\`/\`unknown\`) plus \`gap_days\` and
+  \`arrival_date\` if present. Example reason: "Readiness verdict 'tight' —
+  arrives 2026-05-13, 2 days before laycan start (gap_days=2)." Example
+  issue: "Readiness verdict 'late' — arrives 18-May vs laycan_end 16-May
+  (gap_days=-2)." Skipping this for any match is a hard bug — it's the
+  single most important piece of timing intelligence the matcher inherits.
+
+Format each surfaced issue with the verbatim input value so the broker can audit:
+- "Cargo restriction 'No CII D or E grade vessels — Trafigura vetting' triggered — vessel cii_grade='D'"
+- "Vessel last_cargo='Petcoke' before cargo commodity 'Soybean meal' — hold cleaning/certification required (~2-3 days, $15-25k per readiness)"
+- "DWCC_VIOLATION from readiness: cargo 30,000mt > vessel DWCC 28,500mt (1,500mt overrun)"
+- "Vessel flag='RU', owner='Sovcomflot Subsidiary OOO' — discharge port Ghent (BE/EU) blocked under Reg 833/2014 per readiness"
+
+These issues MUST appear even when the pair is included with a low score.
+
+INCLUSION POLICY (HARD — do NOT self-censor):
+
+Return EVERY pair from the input \`readiness\` array. No exceptions.
+Returning fewer matches than input pairs is a HARD BUG.
+
+- 4 input pairs → 4 output matches
+- A pair with DWCC_VIOLATION → \`match_level='weak'\`, score 15-30, issues
+  cite the violation verbatim
+- A pair with sanctioned flag → \`match_level='weak'\`, score 10-25, issues
+  cite the sanction verbatim
+- A pair with LAYCAN_VIOLATION → \`match_level='weak'\`, score 5-20, issues
+  cite the late-arrival math verbatim
+- A pair with unknown timing or unknown distance → \`match_level='weak'\`,
+  score 30-40, issues cite "unknown" explicitly
+
+DO: 4 input pairs → 4 output matches (one weak with DWCC_VIOLATION in issues).
+DON'T: 4 input pairs → 0 output matches because some had violations.
+DON'T: 4 input pairs → 2 output matches because the other 2 looked unattractive.
+
+The broker reads \`match_level\` and \`issues\` to decide. Curating their
+landscape down to "the good ones" hides options and removes the audit trail
+of what was considered.
 
 IMPORTANT:
 - Do NOT show the numeric score to the user. Score is internal only.

@@ -1,0 +1,168 @@
+{
+  "id": "strict_laycan_tight_window/sample-001",
+  "category": "strict_laycan_tight_window",
+  "edge_case_summary": "3-day laycan 14-16 May 2026 at Constanta: vessel A (Istanbul) arrives just in time (ideal), vessel B (Suez) arrives 4 days early (idle), vessel C (Piraeus 16 May noon) will arrive AFTER laycan_end — pre-filter miss with verdict='late' — tests whether matcher flags the structurally late vessel rather than recommending it.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-10771",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Corn",
+        "weight_mt": 25000,
+        "weight_mt_min": 22500,
+        "weight_mt_max": 27500,
+        "stowage_factor_m3_per_mt": 1.28,
+        "load_port": {
+          "name": "Constanta",
+          "country": "Romania",
+          "unlocode": "ROCND"
+        },
+        "discharge_port": {
+          "name": "Alexandria",
+          "country": "Egypt",
+          "unlocode": "EGALY"
+        },
+        "laycan_start": "2026-05-14",
+        "laycan_end": "2026-05-16",
+        "laycan_confidence": "confirmed",
+        "charterer": "COFCO",
+        "broker": "Clarksons",
+        "gear_required": true,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": ["SHINC laytime", "Laycan strictly 3 days — no extensions per charterer instruction"]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-20841",
+        "item_index": 0,
+        "vessel_name": "M/V Knossos Venture",
+        "imo": "9344112",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 30800,
+        "dwcc": 29400,
+        "summer_draft_m": 9.9,
+        "loa_m": 177.0,
+        "beam_m": 29.0,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 40100,
+        "bale_capacity_cbm": 38500,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 15.5m × 13m each",
+        "open_port": {
+          "name": "Istanbul",
+          "country": "Turkey",
+          "unlocode": "TRIST"
+        },
+        "open_date": "2026-05-12",
+        "service_speed_kn": 13.0,
+        "flag": "GR",
+        "owner": "Knossos Navigation SA",
+        "cii_grade": "B",
+        "last_cargo": "Barley",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20842",
+        "item_index": 0,
+        "vessel_name": "M/V Suez Carrier",
+        "imo": "9487655",
+        "vessel_class": "HANDYMAX",
+        "dwt": 43500,
+        "dwcc": 41800,
+        "summer_draft_m": 11.1,
+        "loa_m": 186.5,
+        "beam_m": 30.8,
+        "geared": true,
+        "crane_config": "4×35t",
+        "grain_capacity_cbm": 54000,
+        "bale_capacity_cbm": 52200,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 17m × 14m each",
+        "open_port": {
+          "name": "Port Said",
+          "country": "Egypt",
+          "unlocode": "EGPSD"
+        },
+        "open_date": "2026-05-10",
+        "service_speed_kn": 14.5,
+        "flag": "PA",
+        "owner": "Suez Maritime Corp",
+        "cii_grade": "A",
+        "last_cargo": "Soya beans",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20843",
+        "item_index": 0,
+        "vessel_name": "M/V Hellenic Hope",
+        "imo": "9512287",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 32200,
+        "dwcc": 30900,
+        "summer_draft_m": 10.1,
+        "loa_m": 180.0,
+        "beam_m": 29.4,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 41800,
+        "bale_capacity_cbm": 40100,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 16m × 13m each",
+        "open_port": {
+          "name": "Piraeus",
+          "country": "Greece",
+          "unlocode": "GRPIR"
+        },
+        "open_date": "2026-05-16",
+        "service_speed_kn": 13.5,
+        "flag": "CY",
+        "owner": "Hellenic Hope Shipping Ltd",
+        "cii_grade": "C",
+        "last_cargo": "Wheat",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-10771",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20841",
+        "vessel_item_index": 0,
+        "gap_days": 2,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-13",
+        "verdict": "tight",
+        "explanation": "M/V Knossos Venture opens Istanbul 12-May. Istanbul to Constanta ~220nm at 13.0kn = ~17h, arrives evening 13-May — 1 day before laycan start 14-May. Tight but feasible; no buffer for delays.",
+        "date_issues": ["Arrival 13-May evening — very tight against laycan_start 14-May"]
+      },
+      {
+        "cargo_email_id": "msg-10771",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20842",
+        "vessel_item_index": 0,
+        "gap_days": 4,
+        "sailing_days": 2,
+        "arrival_date": "2026-05-10",
+        "verdict": "idle",
+        "explanation": "M/V Suez Carrier opens Port Said 10-May. Port Said to Constanta ~1280nm at 14.5kn = ~89h ~3.7 days, arrives ~14-May. However open_date 10-May means vessel is idle 4 days before sailing. Expected arrival at Constanta ~14-May at best — tight on laycan start.",
+        "date_issues": ["4-day idle at Port Said before ballasting; arrival may align with laycan start only if vessel sails promptly"]
+      },
+      {
+        "cargo_email_id": "msg-10771",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20843",
+        "vessel_item_index": 0,
+        "gap_days": -1,
+        "sailing_days": 2,
+        "arrival_date": "2026-05-18",
+        "verdict": "late",
+        "explanation": "M/V Hellenic Hope opens Piraeus 16-May noon. Piraeus to Constanta ~720nm at 13.5kn = ~53h. Earliest arrival Constanta ~18-May — 2 days AFTER laycan_end 16-May. Pre-filter did not exclude this pair. Vessel CANNOT make the laycan under any reasonable scenario.",
+        "date_issues": ["LAYCAN_VIOLATION: earliest arrival 18-May is after laycan_end 16-May. Pre-filter miss — vessel structurally late."]
+      }
+    ]
+  }
+}

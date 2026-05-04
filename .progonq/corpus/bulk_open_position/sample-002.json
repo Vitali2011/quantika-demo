@@ -1,0 +1,168 @@
+{
+  "id": "bulk_open_position/sample-002",
+  "category": "bulk_open_position",
+  "edge_case_summary": "Med wheat trade (Romania → Egypt): 1 cargo (Glencore) vs 3 vessels with mixed geared/gearless and idle/tight/ideal readiness — verifies matcher handles gear_required=true filter and ranks by readiness quality.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-11001",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Wheat",
+        "weight_mt": 27500,
+        "weight_mt_min": 24750,
+        "weight_mt_max": 30250,
+        "stowage_factor_m3_per_mt": 1.28,
+        "load_port": {
+          "name": "Galati",
+          "country": "Romania",
+          "unlocode": "ROGLA"
+        },
+        "discharge_port": {
+          "name": "Alexandria",
+          "country": "Egypt",
+          "unlocode": "EGALY"
+        },
+        "laycan_start": "2026-05-26",
+        "laycan_end": "2026-06-01",
+        "laycan_confidence": "confirmed",
+        "charterer": "Glencore",
+        "broker": "Phibro Shipping",
+        "gear_required": true,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": ["SHEX laytime", "Holds survey required before loading"]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-21001",
+        "item_index": 0,
+        "vessel_name": "M/V Dacia Star",
+        "imo": "9381204",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 32800,
+        "dwcc": 31400,
+        "summer_draft_m": 10.2,
+        "loa_m": 180.5,
+        "beam_m": 29.6,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 42000,
+        "bale_capacity_cbm": 40300,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 16m × 13m each",
+        "open_port": {
+          "name": "Sulina",
+          "country": "Romania",
+          "unlocode": "ROSUL"
+        },
+        "open_date": "2026-05-22",
+        "service_speed_kn": 13.0,
+        "flag": "CY",
+        "owner": "Dacia Maritime Holdings",
+        "cii_grade": "B",
+        "last_cargo": "Corn",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-21002",
+        "item_index": 0,
+        "vessel_name": "M/V Pontus Carrier",
+        "imo": "9456321",
+        "vessel_class": "HANDYMAX",
+        "dwt": 46500,
+        "dwcc": 44800,
+        "summer_draft_m": 11.5,
+        "loa_m": 190.2,
+        "beam_m": 31.4,
+        "geared": false,
+        "crane_config": null,
+        "grain_capacity_cbm": 58500,
+        "bale_capacity_cbm": 56300,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 18m × 14m each",
+        "open_port": {
+          "name": "Varna",
+          "country": "Bulgaria",
+          "unlocode": "BGVAR"
+        },
+        "open_date": "2026-05-18",
+        "service_speed_kn": 14.2,
+        "flag": "GR",
+        "owner": "Pontus Shipping SA",
+        "cii_grade": "A",
+        "last_cargo": "Grain",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-21003",
+        "item_index": 0,
+        "vessel_name": "M/V Euxine Fortune",
+        "imo": "9534678",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 34100,
+        "dwcc": 32600,
+        "summer_draft_m": 10.4,
+        "loa_m": 182.8,
+        "beam_m": 30.1,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 43500,
+        "bale_capacity_cbm": 41800,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 16.5m × 13m each",
+        "open_port": {
+          "name": "Thessaloniki",
+          "country": "Greece",
+          "unlocode": "GRSKG"
+        },
+        "open_date": "2026-05-24",
+        "service_speed_kn": 13.5,
+        "flag": "MT",
+        "owner": "Euxine Navigation Ltd",
+        "cii_grade": "C",
+        "last_cargo": "Barley",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-11001",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-21001",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-23",
+        "verdict": "ideal",
+        "explanation": "M/V Dacia Star opens Sulina 22-May. Sulina to Galati ~100nm at 13.0kn = ~8h, arrives same day. 3 days before laycan start 26-May. Geared 4×30t, clean grain-compatible last cargo. Ideal timing.",
+        "date_issues": []
+      },
+      {
+        "cargo_email_id": "msg-11001",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-21002",
+        "vessel_item_index": 0,
+        "gap_days": 7,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-19",
+        "verdict": "idle",
+        "explanation": "M/V Pontus Carrier opens Varna 18-May. Varna to Galati ~350nm at 14.2kn = ~25h, arrives ~19-May — 7 days before laycan start 26-May. NOTE: geared=false — vessel has no cranes. Cargo requires gear_required=true. GEAR_VIOLATION present regardless of timing.",
+        "date_issues": ["GEAR_VIOLATION: vessel geared=false, cargo requires gear_required=true. Excessive idle (7 days) compounds ineligibility."]
+      },
+      {
+        "cargo_email_id": "msg-11001",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-21003",
+        "vessel_item_index": 0,
+        "gap_days": 2,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-25",
+        "verdict": "tight",
+        "explanation": "M/V Euxine Fortune opens Thessaloniki 24-May. Thessaloniki to Galati ~550nm at 13.5kn = ~41h, arrives ~26-May morning — right at laycan start. Tight; any weather delay risks missing laycan.",
+        "date_issues": ["Arrival estimated 26-May morning — minimal buffer against laycan_start 26-May"]
+      }
+    ]
+  }
+}

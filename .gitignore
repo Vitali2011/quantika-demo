@@ -54,3 +54,8 @@ next-env.d.ts
 /.wave/
 /.specs/
 /.claude/analysis/
+
+# progonq adversarial QA loop — ephemeral artifacts
+/.progonq/results/
+/.progonq/budget.json
+/.progonq/state.json
