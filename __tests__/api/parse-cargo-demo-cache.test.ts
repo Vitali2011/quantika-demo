@@ -152,6 +152,69 @@ describe('Cycle 4: /api/ai/parse-cargo — demo guard early-return', () => {
   });
 });
 
+// ── Cycle 4b: /api/sample seeds all 4 session fields (wave-γ-1.5-A) ──────────
+
+describe('Cycle 4b: /api/sample — full cache seed (classifications + parsedVessels + processedEmails)', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockUpdateSession.mockReturnValue(true);
+  });
+
+  it('updateSession payload includes classifications with 32 entries', async () => {
+    const { POST } = await import('@/app/api/sample/route');
+    const req = new NextRequest('http://localhost/api/sample', {
+      method: 'POST',
+      headers: { cookie: 'csrf_token=mock-csrf', 'x-csrf-token': 'mock-csrf' },
+    });
+    await POST(req);
+
+    const callArgs = mockUpdateSession.mock.calls[mockUpdateSession.mock.calls.length - 1];
+    const payload = callArgs[1] as Partial<SessionData>;
+    expect(payload.classifications).toHaveLength(32);
+  });
+
+  it('updateSession payload includes parsedVessels with 9 entries', async () => {
+    const { POST } = await import('@/app/api/sample/route');
+    const req = new NextRequest('http://localhost/api/sample', {
+      method: 'POST',
+      headers: { cookie: 'csrf_token=mock-csrf', 'x-csrf-token': 'mock-csrf' },
+    });
+    await POST(req);
+
+    const callArgs = mockUpdateSession.mock.calls[mockUpdateSession.mock.calls.length - 1];
+    const payload = callArgs[1] as Partial<SessionData>;
+    expect(payload.parsedVessels).toHaveLength(9);
+  });
+
+  it('updateSession payload includes processedEmails with 32 entries', async () => {
+    const { POST } = await import('@/app/api/sample/route');
+    const req = new NextRequest('http://localhost/api/sample', {
+      method: 'POST',
+      headers: { cookie: 'csrf_token=mock-csrf', 'x-csrf-token': 'mock-csrf' },
+    });
+    await POST(req);
+
+    const callArgs = mockUpdateSession.mock.calls[mockUpdateSession.mock.calls.length - 1];
+    const payload = callArgs[1] as Partial<SessionData>;
+    expect(payload.processedEmails).toHaveLength(32);
+  });
+
+  it('classifications include sample-01 as CARGO_INQUIRY', async () => {
+    const { POST } = await import('@/app/api/sample/route');
+    const req = new NextRequest('http://localhost/api/sample', {
+      method: 'POST',
+      headers: { cookie: 'csrf_token=mock-csrf', 'x-csrf-token': 'mock-csrf' },
+    });
+    await POST(req);
+
+    const callArgs = mockUpdateSession.mock.calls[mockUpdateSession.mock.calls.length - 1];
+    const payload = callArgs[1] as Partial<SessionData>;
+    const cls = payload.classifications!.find(c => c.emailId === 'sample-01');
+    expect(cls).toBeDefined();
+    expect(cls!.category).toBe('CARGO_INQUIRY');
+  });
+});
+
 // ── Cycle 5: regression — non-demo session still hits LLM ─────────────────
 
 describe('Cycle 5: /api/ai/parse-cargo — non-demo session bypasses guard', () => {

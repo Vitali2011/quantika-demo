@@ -1,0 +1,322 @@
+[
+  {
+    "emailId": "sample-01",
+    "category": "CARGO_INQUIRY",
+    "isUnanswered": true,
+    "urgency": "high",
+    "daysWithoutReply": 2,
+    "confidence": 1.0,
+    "originalSender": "Black Sea Shipping <chartering@bsshipping.ro>",
+    "originalSenderCompany": "Black Sea Shipping"
+  },
+  {
+    "emailId": "sample-02",
+    "category": "CARGO_INQUIRY",
+    "isUnanswered": true,
+    "urgency": "high",
+    "daysWithoutReply": 1,
+    "confidence": 1.0,
+    "originalSender": "Gulf Steel Trading <cargo@gulfsteeltrading.ae>",
+    "originalSenderCompany": "Gulf Steel Trading"
+  },
+  {
+    "emailId": "sample-03",
+    "category": "CARGO_INQUIRY",
+    "isUnanswered": false,
+    "urgency": "medium",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Singapore Metals <chartering@sgmetals.sg>",
+    "originalSenderCompany": "Singapore Metals"
+  },
+  {
+    "emailId": "sample-04",
+    "category": "CARGO_INQUIRY",
+    "isUnanswered": true,
+    "urgency": "medium",
+    "daysWithoutReply": 3,
+    "confidence": 1.0,
+    "originalSender": "Egypt Cement Corp <freight@egyptcement.eg>",
+    "originalSenderCompany": "Egypt Cement Corp"
+  },
+  {
+    "emailId": "sample-05",
+    "category": "CARGO_INQUIRY",
+    "isUnanswered": true,
+    "urgency": "high",
+    "daysWithoutReply": 1,
+    "confidence": 1.0,
+    "originalSender": "Tyrrhenian Industrial <logistics@tyrrhenianindustrial.it>",
+    "originalSenderCompany": "Tyrrhenian Industrial"
+  },
+  {
+    "emailId": "sample-06",
+    "category": "CARGO_INQUIRY",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Nordic Timber Trade <chartering@nordictimber.fi>",
+    "originalSenderCompany": "Nordic Timber Trade"
+  },
+  {
+    "emailId": "sample-07",
+    "category": "CARGO_INQUIRY",
+    "isUnanswered": true,
+    "urgency": "high",
+    "daysWithoutReply": 2,
+    "confidence": 1.0,
+    "originalSender": "Danube Agro Export <freight@danubeagro.sk>",
+    "originalSenderCompany": "Danube Agro Export"
+  },
+  {
+    "emailId": "sample-08",
+    "category": "CARGO_INQUIRY",
+    "isUnanswered": false,
+    "urgency": "medium",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Adriatic Chemical <chartering@adriatichem.hr>",
+    "originalSenderCompany": "Adriatic Chemical"
+  },
+  {
+    "emailId": "sample-09",
+    "category": "CARGO_INQUIRY",
+    "isUnanswered": true,
+    "urgency": "medium",
+    "daysWithoutReply": 4,
+    "confidence": 1.0,
+    "originalSender": "Levant Freight Partners <ops@levantfreight.lb>",
+    "originalSenderCompany": "Levant Freight Partners"
+  },
+  {
+    "emailId": "sample-10",
+    "category": "CARGO_INQUIRY",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Caspian Grain Corp <chartering@caspiangrain.kz>",
+    "originalSenderCompany": "Caspian Grain Corp"
+  },
+  {
+    "emailId": "sample-11",
+    "category": "CARGO_INQUIRY",
+    "isUnanswered": true,
+    "urgency": "high",
+    "daysWithoutReply": 1,
+    "confidence": 1.0,
+    "originalSender": "West Africa Commodities <freight@wacommodities.gh>",
+    "originalSenderCompany": "West Africa Commodities"
+  },
+  {
+    "emailId": "sample-12",
+    "category": "CARGO_INQUIRY",
+    "isUnanswered": false,
+    "urgency": "medium",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Iberian Steel Group <chartering@iberiansteel.es>",
+    "originalSenderCompany": "Iberian Steel Group"
+  },
+  {
+    "emailId": "sample-13",
+    "category": "VESSEL_POSITION",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Balkan Tramp Lines <ops@balkantramp.gr>",
+    "originalSenderCompany": "Balkan Tramp Lines"
+  },
+  {
+    "emailId": "sample-14",
+    "category": "VESSEL_POSITION",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Emirates Tramp <chartering@emiratestramp.ae>",
+    "originalSenderCompany": "Emirates Tramp"
+  },
+  {
+    "emailId": "sample-15",
+    "category": "VESSEL_POSITION",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Comoros Bulk Carriers <freight@comorosbulk.km>",
+    "originalSenderCompany": "Comoros Bulk Carriers"
+  },
+  {
+    "emailId": "sample-16",
+    "category": "VESSEL_POSITION",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Tyrrhenian Tramp Lines <ops@tyrrhenian-tramp.it>",
+    "originalSenderCompany": "Tyrrhenian Tramp Lines"
+  },
+  {
+    "emailId": "sample-17",
+    "category": "VESSEL_POSITION",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Lagos Maritime Brokers <ops@lagosbrokers.ng>",
+    "originalSenderCompany": "Lagos Maritime Brokers"
+  },
+  {
+    "emailId": "sample-18",
+    "category": "VESSEL_POSITION",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Iran Bulk Carriers <ops@iranbulk.ir>",
+    "originalSenderCompany": "Iran Bulk Carriers"
+  },
+  {
+    "emailId": "sample-19",
+    "category": "VESSEL_POSITION",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Finnlines Tramp Desk <chartering@finnlinestramp.fi>",
+    "originalSenderCompany": "Finnlines Tramp Desk"
+  },
+  {
+    "emailId": "sample-20",
+    "category": "VESSEL_POSITION",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Scheldt Tramp Carriers <ops@scheldttramp.be>",
+    "originalSenderCompany": "Scheldt Tramp Carriers"
+  },
+  {
+    "emailId": "sample-21",
+    "category": "FIXTURE_RECAP",
+    "isUnanswered": false,
+    "urgency": "medium",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Pontus Shipping <chartering@pontus-shipping.gr>",
+    "originalSenderCompany": "Pontus Shipping"
+  },
+  {
+    "emailId": "sample-22",
+    "category": "FIXTURE_RECAP",
+    "isUnanswered": false,
+    "urgency": "medium",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Gulf Star Brokers <desk@gulfstarbrokers.ae>",
+    "originalSenderCompany": "Gulf Star Brokers"
+  },
+  {
+    "emailId": "sample-23",
+    "category": "FIXTURE_RECAP",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Singapore Bulk Brokers <chartering@sgbulkbrokers.sg>",
+    "originalSenderCompany": "Singapore Bulk Brokers"
+  },
+  {
+    "emailId": "sample-24",
+    "category": "FIXTURE_RECAP",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Med Chartering <ops@medchartering.mt>",
+    "originalSenderCompany": "Med Chartering"
+  },
+  {
+    "emailId": "sample-25",
+    "category": "FIXTURE_RECAP",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Nordic Brokers <chartering@nordicbrokers.dk>",
+    "originalSenderCompany": "Nordic Brokers"
+  },
+  {
+    "emailId": "sample-26",
+    "category": "CLIENT_REPLY",
+    "isUnanswered": false,
+    "urgency": "high",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Ahmed Al-Rashidi <ahmed.alrashidi@gulftrade.ae>",
+    "originalSenderCompany": "Gulf Trade LLC"
+  },
+  {
+    "emailId": "sample-27",
+    "category": "CLIENT_REPLY",
+    "isUnanswered": true,
+    "urgency": "high",
+    "daysWithoutReply": 1,
+    "confidence": 1.0,
+    "originalSender": "Ekaterina Volkov <e.volkov@bsshipping.ro>",
+    "originalSenderCompany": "Black Sea Shipping"
+  },
+  {
+    "emailId": "sample-28",
+    "category": "CLIENT_REPLY",
+    "isUnanswered": false,
+    "urgency": "medium",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Lars Andersen <l.andersen@nordictimber.fi>",
+    "originalSenderCompany": "Nordic Timber Trade"
+  },
+  {
+    "emailId": "sample-29",
+    "category": "CLIENT_REPLY",
+    "isUnanswered": false,
+    "urgency": "medium",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Marco Ferretti <m.ferretti@adriatichem.hr>",
+    "originalSenderCompany": "Adriatic Chemical"
+  },
+  {
+    "emailId": "sample-30",
+    "category": "DOCUMENT",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "DHL Express <docsupport@dhl.com>",
+    "originalSenderCompany": "DHL Express"
+  },
+  {
+    "emailId": "sample-31",
+    "category": "DOCUMENT",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Port Constanta Authority <docs@portconstanta.ro>",
+    "originalSenderCompany": "Port Constanta Authority"
+  },
+  {
+    "emailId": "sample-32",
+    "category": "VESSEL_CERTIFICATE",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "DNV GL <certificates@dnvgl.com>",
+    "originalSenderCompany": "DNV GL"
+  }
+]

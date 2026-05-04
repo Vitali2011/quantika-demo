@@ -1,0 +1,506 @@
+[
+  {
+    "emailId": "sample-13",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "CARPATHIAN STAR",
+      "confidence": "confirmed"
+    },
+    "imo": "9234563",
+    "flag": "Marshall Islands",
+    "built": 2007,
+    "classSociety": "DNV",
+    "pandi": "Gard",
+    "dwtSummer": {
+      "value": 8500,
+      "confidence": "confirmed"
+    },
+    "dwcc": {
+      "value": 8050,
+      "confidence": "confirmed"
+    },
+    "draftMax": {
+      "value": 6.2,
+      "confidence": "confirmed"
+    },
+    "loa": 121.4,
+    "beam": 17.6,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": 2,
+    "hatchesCount": 2,
+    "grainCapacity": null,
+    "grainCapacityUnit": null,
+    "baleCapacity": 10400,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "2 x 25t",
+    "hatchType": null,
+    "vesselType": "MPP",
+    "openPosition": {
+      "value": "Piraeus, Greece",
+      "confidence": "confirmed"
+    },
+    "direction": "Med, Black Sea, WAfrica",
+    "restrictions": [],
+    "lastCargoes": "steel products, bagged cargo, breakbulk",
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [],
+    "ciiRating": null,
+    "verificationWarning": null,
+    "openDateRelative": "+3d"
+  },
+  {
+    "emailId": "sample-14",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "PROMPT TRADER",
+      "confidence": "confirmed"
+    },
+    "imo": "9345673",
+    "flag": "Bahamas",
+    "built": 2010,
+    "classSociety": "BV",
+    "pandi": "Skuld",
+    "dwtSummer": {
+      "value": 12000,
+      "confidence": "confirmed"
+    },
+    "dwcc": {
+      "value": 11300,
+      "confidence": "confirmed"
+    },
+    "draftMax": {
+      "value": 7.1,
+      "confidence": "confirmed"
+    },
+    "loa": 133.8,
+    "beam": 19.4,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": 3,
+    "hatchesCount": 3,
+    "grainCapacity": null,
+    "grainCapacityUnit": null,
+    "baleCapacity": 14600,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "2 x 30t",
+    "hatchType": null,
+    "vesselType": "General Cargo",
+    "openPosition": {
+      "value": "Khor Fakkan, UAE",
+      "confidence": "confirmed"
+    },
+    "direction": "MENA, WAfrica, Med",
+    "restrictions": [],
+    "lastCargoes": "steel pipes, general cargo, bagged cargo",
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [],
+    "ciiRating": null,
+    "verificationWarning": null,
+    "openDateRelative": "+0d"
+  },
+  {
+    "emailId": "sample-15",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "BLACK SEA WIND",
+      "confidence": "confirmed"
+    },
+    "imo": "9876541",
+    "flag": "Comoros",
+    "built": 2003,
+    "classSociety": null,
+    "pandi": null,
+    "dwtSummer": {
+      "value": 32000,
+      "confidence": "confirmed"
+    },
+    "dwcc": {
+      "value": 30200,
+      "confidence": "confirmed"
+    },
+    "draftMax": {
+      "value": 9.8,
+      "confidence": "confirmed"
+    },
+    "loa": 185.2,
+    "beam": 26.4,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": 5,
+    "hatchesCount": 5,
+    "grainCapacity": null,
+    "grainCapacityUnit": null,
+    "baleCapacity": 38500,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": false,
+    "craneCapacity": null,
+    "hatchType": null,
+    "vesselType": "Bulk Carrier",
+    "openPosition": {
+      "value": "Constanta, Romania",
+      "confidence": "confirmed"
+    },
+    "direction": "Black Sea, Med",
+    "restrictions": ["Shore gear required at all ports"],
+    "lastCargoes": "bulk cargo",
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [],
+    "ciiRating": null,
+    "verificationWarning": null,
+    "openDateRelative": "+2d"
+  },
+  {
+    "emailId": "sample-16",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "ATLAS",
+      "confidence": "confirmed"
+    },
+    "imo": "9123453",
+    "flag": "Italy",
+    "built": 2006,
+    "classSociety": "RINA",
+    "pandi": "Lloyd's",
+    "dwtSummer": {
+      "value": 5200,
+      "confidence": "confirmed"
+    },
+    "dwcc": {
+      "value": 4900,
+      "confidence": "confirmed"
+    },
+    "draftMax": {
+      "value": 5.4,
+      "confidence": "confirmed"
+    },
+    "loa": 96.0,
+    "beam": 14.2,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": 2,
+    "hatchesCount": 2,
+    "grainCapacity": null,
+    "grainCapacityUnit": null,
+    "baleCapacity": 6100,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "2 x 20t",
+    "hatchType": null,
+    "vesselType": "General Cargo",
+    "openPosition": {
+      "value": "Genoa, Italy",
+      "confidence": "confirmed"
+    },
+    "direction": "Med",
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [],
+    "ciiRating": null,
+    "verificationWarning": null,
+    "openDateRelative": "+4d"
+  },
+  {
+    "emailId": "sample-16",
+    "itemIndex": 1,
+    "vesselName": {
+      "value": "ZEUS",
+      "confidence": "confirmed"
+    },
+    "imo": "9234513",
+    "flag": "Italy",
+    "built": 2008,
+    "classSociety": "RINA",
+    "pandi": "Lloyd's",
+    "dwtSummer": {
+      "value": 6800,
+      "confidence": "confirmed"
+    },
+    "dwcc": {
+      "value": 6450,
+      "confidence": "interpreted"
+    },
+    "draftMax": {
+      "value": 5.8,
+      "confidence": "interpreted"
+    },
+    "loa": 108.0,
+    "beam": 15.6,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": 2,
+    "hatchesCount": 2,
+    "grainCapacity": null,
+    "grainCapacityUnit": null,
+    "baleCapacity": null,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "2 x 25t",
+    "hatchType": null,
+    "vesselType": "General Cargo",
+    "openPosition": {
+      "value": "Genoa, Italy",
+      "confidence": "confirmed"
+    },
+    "direction": "Med",
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [],
+    "ciiRating": null,
+    "verificationWarning": null,
+    "openDateRelative": "+4d"
+  },
+  {
+    "emailId": "sample-17",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "LAGGARD STAR",
+      "confidence": "confirmed"
+    },
+    "imo": "9156785",
+    "flag": "Malta",
+    "built": 2009,
+    "classSociety": "LR",
+    "pandi": "West of England",
+    "dwtSummer": {
+      "value": 15000,
+      "confidence": "confirmed"
+    },
+    "dwcc": {
+      "value": 14200,
+      "confidence": "confirmed"
+    },
+    "draftMax": {
+      "value": 7.8,
+      "confidence": "confirmed"
+    },
+    "loa": 148.0,
+    "beam": 22.4,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": 3,
+    "hatchesCount": 3,
+    "grainCapacity": null,
+    "grainCapacityUnit": null,
+    "baleCapacity": 18200,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "2 x 30t",
+    "hatchType": null,
+    "vesselType": "General Cargo",
+    "openPosition": {
+      "value": "Lagos, Nigeria (Apapa)",
+      "confidence": "confirmed"
+    },
+    "direction": "WAfrica, Med",
+    "restrictions": [],
+    "lastCargoes": "steel products, bagged cargo, breakbulk, general cargo",
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [],
+    "ciiRating": null,
+    "verificationWarning": null,
+    "openDateRelative": "+5d"
+  },
+  {
+    "emailId": "sample-18",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "PERSIAN ROSE",
+      "confidence": "confirmed"
+    },
+    "imo": "9256781",
+    "flag": "Iran",
+    "built": 2004,
+    "classSociety": "IRS",
+    "pandi": null,
+    "dwtSummer": {
+      "value": 22000,
+      "confidence": "confirmed"
+    },
+    "dwcc": {
+      "value": 20800,
+      "confidence": "confirmed"
+    },
+    "draftMax": {
+      "value": 8.6,
+      "confidence": "confirmed"
+    },
+    "loa": 165.4,
+    "beam": 24.8,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": 4,
+    "hatchesCount": 4,
+    "grainCapacity": null,
+    "grainCapacityUnit": null,
+    "baleCapacity": 26800,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "2 x 25t",
+    "hatchType": null,
+    "vesselType": "General Cargo",
+    "openPosition": {
+      "value": "Bandar Abbas, Iran",
+      "confidence": "confirmed"
+    },
+    "direction": "Persian Gulf, Indian Ocean",
+    "restrictions": [],
+    "lastCargoes": "bulk, general cargo",
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [],
+    "ciiRating": null,
+    "verificationWarning": null,
+    "openDateRelative": "+6d"
+  },
+  {
+    "emailId": "sample-19",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "NORDIC ICE",
+      "confidence": "confirmed"
+    },
+    "imo": "9356787",
+    "flag": "Finland",
+    "built": 2012,
+    "classSociety": "BV",
+    "pandi": "Skuld",
+    "dwtSummer": {
+      "value": 28500,
+      "confidence": "confirmed"
+    },
+    "dwcc": {
+      "value": 27100,
+      "confidence": "confirmed"
+    },
+    "draftMax": {
+      "value": 9.4,
+      "confidence": "confirmed"
+    },
+    "loa": 178.6,
+    "beam": 26.0,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": 4,
+    "hatchesCount": 4,
+    "grainCapacity": null,
+    "grainCapacityUnit": null,
+    "baleCapacity": 34200,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "2 x 30t",
+    "hatchType": null,
+    "vesselType": "Bulk Carrier",
+    "openPosition": {
+      "value": "Helsinki, Finland",
+      "confidence": "confirmed"
+    },
+    "direction": "Baltic, N.Europe, Med",
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": ["Ice Class 1A FS (Finnish-Swedish)"],
+    "ciiRating": null,
+    "verificationWarning": null,
+    "openDateRelative": "+7d"
+  },
+  {
+    "emailId": "sample-20",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "CARBON LADY",
+      "confidence": "confirmed"
+    },
+    "imo": "9456783",
+    "flag": "Marshall Islands",
+    "built": 2001,
+    "classSociety": "LR",
+    "pandi": "North",
+    "dwtSummer": {
+      "value": 17500,
+      "confidence": "confirmed"
+    },
+    "dwcc": {
+      "value": 16600,
+      "confidence": "confirmed"
+    },
+    "draftMax": {
+      "value": 8.1,
+      "confidence": "confirmed"
+    },
+    "loa": 153.8,
+    "beam": 23.2,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": 3,
+    "hatchesCount": 3,
+    "grainCapacity": null,
+    "grainCapacityUnit": null,
+    "baleCapacity": 21400,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "2 x 30t",
+    "hatchType": null,
+    "vesselType": "General Cargo",
+    "openPosition": {
+      "value": "Antwerp, Belgium",
+      "confidence": "confirmed"
+    },
+    "direction": "N.Europe, Med",
+    "restrictions": ["Subject to corrective action plan per IMO MEPC.338(76)"],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [],
+    "ciiRating": "D",
+    "verificationWarning": null,
+    "openDateRelative": "+2d"
+  }
+]

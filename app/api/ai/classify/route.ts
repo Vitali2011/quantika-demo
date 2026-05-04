@@ -43,6 +43,12 @@ export async function POST(request: NextRequest) {
   const authResult = requireSession(request);
   if (authResult instanceof NextResponse) return authResult;
   const { session, sessionId } = authResult;
+
+  // wave-γ-1.5-A: demo guests get pre-seeded classifications — skip live LLM entirely.
+  if (session.isSampleData === true && session.classifications.length > 0) {
+    return NextResponse.json({ count: session.classifications.length, cached: true });
+  }
+
   if (session.emails.length === 0) return NextResponse.json({ error: 'No emails to classify' }, { status: 400 });
 
   const emailInput: EmailInput[] = session.emails.map(email => ({
