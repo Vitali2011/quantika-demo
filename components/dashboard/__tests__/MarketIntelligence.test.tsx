@@ -26,19 +26,22 @@ describe('MarketIntelligence', () => {
     expect(screen.getByText(/Toepfer TMI/i)).toBeTruthy();
   });
 
-  it('shows Bunker Rotterdam KPI', () => {
+  // γ-cleanup-4 F2: Bunker Rotterdam, EUA, BHSI cards removed —
+  // backend not implemented (url=null placeholders / 503-only).
+  // Negative-contract tests guard against re-introduction without backend fix.
+  it('does NOT render Bunker Rotterdam (γ-cleanup-4 F2 — removed pending backend)', () => {
     render(<MarketIntelligence />);
-    expect(screen.getByText(/Bunker Rotterdam/i)).toBeTruthy();
+    expect(screen.queryByText(/Bunker Rotterdam/i)).toBeNull();
   });
 
-  it('shows EUA KPI', () => {
+  it('does NOT render EUA (γ-cleanup-4 F2 — removed pending backend)', () => {
     render(<MarketIntelligence />);
-    expect(screen.getByText(/EUA/i)).toBeTruthy();
+    expect(screen.queryByText(/EUA/i)).toBeNull();
   });
 
-  it('shows BHSI KPI', () => {
+  it('does NOT render BHSI (γ-cleanup-4 F2 — removed pending backend)', () => {
     render(<MarketIntelligence />);
-    expect(screen.getByText(/BHSI/i)).toBeTruthy();
+    expect(screen.queryByText(/BHSI/i)).toBeNull();
   });
 
   it('shows empty-state suggestion when no active deals', () => {
@@ -57,15 +60,15 @@ describe('MarketIntelligence', () => {
     expect(loadingEls).toHaveLength(0);
   });
 
-  it('shows no "Loading…" text after fetch resolves (fetch success for BHSI)', async () => {
+  it('shows no "Loading…" text after fetch resolves (fetch success for Toepfer TMI)', async () => {
     (global.fetch as jest.Mock).mockImplementation((url: string) => {
-      if (url.includes('BHSI')) {
+      if (url.includes('TOEPFER_TMI')) {
         return Promise.resolve({
           ok: true,
           json: () => Promise.resolve({
-            indicator: 'BHSI',
+            indicator: 'TOEPFER_TMI',
             value: 1234,
-            unit: 'index',
+            unit: 'USD/day',
             period: 'Apr 2026',
             sourceUrl: 'https://example.com',
             fetchedAt: new Date().toISOString(),
@@ -83,7 +86,7 @@ describe('MarketIntelligence', () => {
     const loadingEls = screen.queryAllByText(/Loading…/);
     expect(loadingEls).toHaveLength(0);
 
-    // BHSI card should now show the live value
+    // Toepfer TMI card should now show the live value
     expect(screen.getByText('1,234')).toBeTruthy();
   });
 });
