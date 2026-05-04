@@ -53,11 +53,19 @@ const ALIAS_MAP: Record<string, string> = (() => {
   }
   // Legacy aliases preserved for back-compat with prod data already in DB.
   map['fertilizer-urea'] = 'fertilizer';
+  // After normalize() converts dashes→spaces, "fertilizer-urea" becomes
+  // "fertilizer urea" — keep the normalized form as an alias too.
+  map['fertilizer urea'] = 'fertilizer';
   return map;
 })();
 
 function normalize(cargo: string): string {
-  const lower = cargo.trim().toLowerCase();
+  const lower = cargo
+    .trim()
+    .toLowerCase()
+    .replace(/[-_]+/g, ' ')           // dashes/underscores → space
+    .replace(/\s+/g, ' ')             // collapse internal whitespace
+    .replace(/[.,;:!?]+$/g, '');      // strip trailing punctuation
   return ALIAS_MAP[lower] ?? lower;
 }
 
