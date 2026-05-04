@@ -227,9 +227,16 @@ async function llmReason(
 
   console.time('cold:llm-reason');
   try {
+    // wave-γ-1 hardening: bound the internal LLM timeout to LLM_REASON_TIMEOUT_MS.
+    // Without this option, callAiText falls back to the 85s default, so the
+    // outer Promise.race resolves with `fallback` while the LLM keeps streaming
+    // for ~80s, consuming CLI proxy quota and a connection slot. Defense-in-depth:
+    // we still keep the outer race in case callAiText hangs in some other way.
     const aiPromise = callAiText(
       prompt,
       'You are a chartering analyst. Be concise (1-2 sentences). No markdown.',
+      undefined,
+      { timeoutMs: LLM_REASON_TIMEOUT_MS },
     ).then(text => {
       const trimmed = (text ?? '').trim();
       return trimmed || fallback;
