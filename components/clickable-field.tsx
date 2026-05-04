@@ -21,6 +21,13 @@ function ConfIcon({ confidence }: { confidence?: string }) {
   return null;
 }
 
+// Valid string confidence values — guards against runtime numeric confidence
+// scores (0–1) from the LLM parser being passed where strings are expected.
+// A numeric confidence is truthy, so `{confidence && ...}` would render a
+// Fragment containing only a space text-node, causing React #418 hydration
+// mismatch on interior server-rendered pages.
+const VALID_CONF = new Set(['confirmed', 'interpreted', 'uncertain']);
+
 export function ClickableField({
   label, value, unit, confidence,
   sourceText, emailBody, emailFrom, emailDate, emailSubject,
@@ -28,10 +35,15 @@ export function ClickableField({
   const rendered = value != null ? String(value) : '';
   if (!rendered || rendered === 'NaN') return null;
 
+  // Only render the ConfIcon when confidence is a recognised string label.
+  const confStr = typeof confidence === 'string' && VALID_CONF.has(confidence)
+    ? confidence
+    : undefined;
+
   const display = (
     <>
       {rendered}{unit ? ` ${unit}` : ''}
-      {confidence && <> <ConfIcon confidence={confidence} /></>}
+      {confStr ? <> <ConfIcon confidence={confStr} /></> : null}
     </>
   );
 
