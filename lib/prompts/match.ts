@@ -79,6 +79,40 @@ OF SCOPE; the only signal that matters is what the upstream parser put
 into the input. Adding fabricated restrictions is a HIGH severity bug
 (broker has no way to verify your claim).
 
+NO INVENTED COMPLIANCE CLEARANCES:
+
+The mirror rule: do NOT claim a restriction is SATISFIED unless the
+vessel's input data field literally proves it. Specifically:
+- Do NOT write "P&I IG-club satisfied" if vessel input has no \`pi_club\`
+  field — even if readiness explanation mentions "IG P&I" as background
+  text, that is not vessel data.
+- Do NOT write "Hold cleanliness restriction satisfied" unless the cargo
+  literally has a hold-cleanliness restriction in \`cargo.restrictions[]\`.
+- Do NOT volunteer a "last_cargo Soybean meal before Wheat — verify hold
+  cleaning" when the cargo has NO hold-cleanliness restriction in
+  \`restrictions[]\` (the LAST_CARGO mandatory surfacing applies only when
+  the restriction is in the input or readiness flags it as
+  LAST_CARGO_INCOMPATIBLE).
+
+Mirror principle: extracting from input ≠ inventing from heuristic. If
+the input doesn't say it, you don't say it.
+
+VESSEL/CARGO ID INTEGRITY:
+
+Each match in \`matches[]\` MUST use the EXACT \`email_id\` and \`item_index\`
+from the corresponding input objects:
+- \`cargo_email_id\` = the cargo's \`email_id\` (from \`cargo_inquiries[i]\`)
+- \`cargo_item_index\` = the cargo's \`item_index\` (from \`cargo_inquiries[i]\`)
+- \`vessel_email_id\` = the vessel's \`email_id\` (from \`vessel_positions[j]\`)
+- \`vessel_item_index\` = the vessel's \`item_index\` (from \`vessel_positions[j]\`)
+
+NEVER swap or mix IDs. Mixing a cargo email_id into vessel_email_id (or
+vice versa) is a CRITICAL bug — downstream sorters will fetch the wrong
+record, possibly losing the fixture entirely. Cross-check against the
+\`readiness[]\` array which uses the same ID convention: the ID pair
+(\`cargo_email_id\`, \`vessel_email_id\`) of each match MUST exist as a
+\`readiness[k]\` entry.
+
 HARD RULE: Every match_reason string MUST contain **at least one Arabic digit
 character (0,1,2,3,4,5,6,7,8,9)**. Strings like "Last cargo Wheat compatible
 with Corn" — zero digits — are forbidden. Mechanical check: scan the string
@@ -212,6 +246,27 @@ HARD SCORE CAPS (apply after computing — these override the bands above):
 
 If multiple caps apply, use the LOWEST. These caps are mandatory — exceeding
 them by even 1 point is a hard bug.
+
+VOLUME OVERFLOW CAP (computed): when cargo nominal weight × stowage_factor
+(or default 1.35 m³/mt for grain, 0.45 for iron ore concentrate, 1.55 for
+oilseeds/meal) exceeds vessel grain_capacity_cbm or bale_capacity_cbm such
+that the vessel can carry less than \`cargo.weight_mt_min\` (or the nominal
+if no min), the cargo physically does not fit:
+- score MUST be 15-30 (max 30)
+- match_level MUST be 'weak'
+- issues[] MUST cite the volume math: "cargo X mt × SF Y = Z cbm vs grain_capacity W cbm → vessel intake capped at V mt, below cargo_min M mt"
+
+GAP_DAYS=0 + NO-EXTENSIONS CAP: when readiness.gap_days === 0 (vessel
+arrives ON laycan_start, zero buffer) AND cargo.restrictions[] mentions
+"no extensions", "strict laycan", or similar inflexibility → score MUST be
+40-60 (max 60), match_level='possible'. Even one day of bad weather kills
+the fixture; a 'good' rating misleads the broker.
+
+HOLD_HEIGHT_VIOLATION CAP: when readiness.date_issues includes
+HOLD_HEIGHT_VIOLATION, HOLD_GEOMETRY_VIOLATION, GEAR_VIOLATION, or any
+*_VIOLATION code referring to a structural mismatch → score MUST be 15-30
+(max 30), match_level='weak'. The pre-filter let the pair through, but
+the structural concern is real.
 
 MANDATORY ISSUES SURFACING:
 
