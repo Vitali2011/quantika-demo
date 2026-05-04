@@ -8,10 +8,14 @@ interface AuditTrailProps {
 }
 
 function formatTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString(undefined, {
+  // Pin locale to 'en-US' and timeZone to 'UTC' so server (UTC) and client
+  // (user-local TZ) produce the same string — avoids React #418 hydration
+  // mismatch on interior pages that render AuditTrail in SSR context.
+  return new Date(iso).toLocaleTimeString('en-US', {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
+    timeZone: 'UTC',
   });
 }
 

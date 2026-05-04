@@ -13,15 +13,21 @@ import { formatDate } from '@/lib/utils';
 import { lookupCii } from '@/lib/imo/cii-lookup';
 import { CiiRatingBadge } from '@/components/vessel/CiiRatingBadge';
 
+// Only the three canonical string labels are valid. Guard against numeric
+// confidence scores from the parser reaching the ConfIcon branch — a truthy
+// number would render a space-only text-node Fragment, triggering React #418.
+const VALID_CONF = new Set(['confirmed', 'interpreted', 'uncertain']);
+
 function Spec({ label, value, unit, confidence }: { label: string; value: Renderable; unit?: string; confidence?: string }) {
   const rendered = safeRender(value);
   if (!rendered || rendered === 'NaN') return null;
+  const confStr = typeof confidence === 'string' && VALID_CONF.has(confidence) ? confidence : undefined;
   return (
     <div className="flex justify-between text-sm py-1 border-b border-gray-100">
       <span className="text-muted-foreground">{label}</span>
       <span className="font-medium">
         {rendered}{unit ? ` ${unit}` : ''}
-        {confidence && <> <ConfIcon confidence={confidence} /></>}
+        {confStr ? <> <ConfIcon confidence={confStr} /></> : null}
       </span>
     </div>
   );
@@ -108,7 +114,7 @@ export default async function VesselDetailPage({ params }: Props) {
                 <Ship className="h-4 w-4" />
                 {safeRender(vessel.vesselName) || 'Unknown Vessel'}
                 {vessels.length > 1 ? ` (#${idx + 1})` : ''}
-                {vessel.vesselName && <ConfIcon confidence={getConf(vessel.vesselName)} />}
+                {VALID_CONF.has(getConf(vessel.vesselName) ?? '') && <ConfIcon confidence={getConf(vessel.vesselName)} />}
                 {ciiResults[idx] && ciiResults[idx].rating !== 'unknown' && (
                   <CiiRatingBadge
                     rating={ciiResults[idx].rating}
@@ -126,13 +132,13 @@ export default async function VesselDetailPage({ params }: Props) {
                   <p className="text-sm font-medium text-blue-800">
                     <MapPin className="h-4 w-4 inline mr-1" />
                     Open: {safeRender(vessel.openPosition) || '?'}
-                    {vessel.openPosition && <> <ConfIcon confidence={getConf(vessel.openPosition)} /></>}
+                    {VALID_CONF.has(getConf(vessel.openPosition) ?? '') && <> <ConfIcon confidence={getConf(vessel.openPosition)} /></>}
                   </p>
                   {vessel.openDate && (
                     <p className="text-sm text-blue-700">
                       <Calendar className="h-4 w-4 inline mr-1" />
                       Date: {safeRender(vessel.openDate)}
-                      <> <ConfIcon confidence={getConf(vessel.openDate)} /></>
+                      {VALID_CONF.has(getConf(vessel.openDate) ?? '') && <> <ConfIcon confidence={getConf(vessel.openDate)} /></>}
                     </p>
                   )}
                   {vessel.direction && <p className="text-xs text-blue-600">Direction: {safeRender(vessel.direction)}</p>}
