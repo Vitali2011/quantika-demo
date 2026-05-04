@@ -1,0 +1,130 @@
+{
+  "id": "cii_grade_d/sample-002",
+  "category": "cii_grade_d",
+  "edge_case_summary": "CII Grade E vessel (worse than D) for Cargill grain cargo: verifies matcher escalates severity beyond Grade D language and flags Grade E as the most severe CII disqualifier.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-11101",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Corn",
+        "weight_mt": 50000,
+        "weight_mt_min": 47500,
+        "weight_mt_max": 52500,
+        "stowage_factor_m3_per_mt": 1.28,
+        "load_port": {
+          "name": "Paranaguá",
+          "country": "Brazil",
+          "unlocode": "BRPNG"
+        },
+        "discharge_port": {
+          "name": "Barcelona",
+          "country": "Spain",
+          "unlocode": "ESBCN"
+        },
+        "laycan_start": "2026-06-08",
+        "laycan_end": "2026-06-15",
+        "laycan_confidence": "confirmed",
+        "charterer": "Cargill",
+        "broker": "Howe Robinson",
+        "gear_required": false,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": [
+          "No CII D or E grade vessels — Cargill fleet vetting policy 2025",
+          "SHEX laytime",
+          "Holds grain-clean required"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-21101",
+        "item_index": 0,
+        "vessel_name": "M/V Rio Platense",
+        "imo": "9334567",
+        "vessel_class": "SUPRAMAX",
+        "dwt": 57100,
+        "dwcc": 55000,
+        "summer_draft_m": 12.4,
+        "loa_m": 196.5,
+        "beam_m": 32.5,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 71600,
+        "bale_capacity_cbm": 69300,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 18m × 15m each",
+        "open_port": {
+          "name": "Montevideo",
+          "country": "Uruguay",
+          "unlocode": "UYMVD"
+        },
+        "open_date": "2026-06-03",
+        "service_speed_kn": 12.0,
+        "flag": "PA",
+        "owner": "Rio Bulk Carriers SA",
+        "cii_grade": "E",
+        "last_cargo": "Corn",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-21102",
+        "item_index": 0,
+        "vessel_name": "M/V Parana Delta",
+        "imo": "9489012",
+        "vessel_class": "SUPRAMAX",
+        "dwt": 58800,
+        "dwcc": 56700,
+        "summer_draft_m": 12.6,
+        "loa_m": 197.8,
+        "beam_m": 32.7,
+        "geared": true,
+        "crane_config": "4×35t",
+        "grain_capacity_cbm": 73200,
+        "bale_capacity_cbm": 70900,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 18.5m × 15m each",
+        "open_port": {
+          "name": "Santos",
+          "country": "Brazil",
+          "unlocode": "BRSSZ"
+        },
+        "open_date": "2026-06-04",
+        "service_speed_kn": 14.0,
+        "flag": "MH",
+        "owner": "Parana Shipping Management",
+        "cii_grade": "B",
+        "last_cargo": "Grain",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-11101",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-21101",
+        "vessel_item_index": 0,
+        "gap_days": 4,
+        "sailing_days": 1,
+        "arrival_date": "2026-06-04",
+        "verdict": "tight",
+        "explanation": "M/V Rio Platense opens Montevideo 03-Jun. Montevideo to Paranaguá ~1000nm at 12.0kn = ~83h ~3.5 days, arrives ~06-Jun — 2 days before laycan start 08-Jun. Timing feasible. NOTE: cii_grade='E' — more severe than Grade D. Cargill vetting policy prohibits both D and E; Grade E triggers SEEMP corrective action plan and port state control scrutiny. Highest severity CII disqualification.",
+        "date_issues": ["CII_GRADE_E: cii_grade=E violates Cargill vetting policy (D and E prohibited). Grade E = highest-severity IMO rating, triggering mandatory SEEMP corrective action plan. More severe than Grade D case."]
+      },
+      {
+        "cargo_email_id": "msg-11101",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-21102",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 1,
+        "arrival_date": "2026-06-05",
+        "verdict": "ideal",
+        "explanation": "M/V Parana Delta opens Santos 04-Jun. Santos to Paranaguá ~260nm at 14.0kn = ~19h, arrives ~05-Jun — 3 days before laycan start 08-Jun. CII Grade B qualifies. Last cargo Grain — holds grain-clean. Ideal.",
+        "date_issues": []
+      }
+    ]
+  }
+}

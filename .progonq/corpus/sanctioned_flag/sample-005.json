@@ -1,0 +1,130 @@
+{
+  "id": "sanctioned_flag/sample-005",
+  "category": "sanctioned_flag",
+  "edge_case_summary": "RU-flag vessel discharging at non-EU port (UAE): tests whether matcher still flags RU flag as charterer risk even when EU port entry restriction (Reg 833/2014) technically does not apply to UAE discharge.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-10931",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Sulphur",
+        "weight_mt": 24000,
+        "weight_mt_min": 21600,
+        "weight_mt_max": 26400,
+        "stowage_factor_m3_per_mt": 0.95,
+        "load_port": {
+          "name": "Ras Tanura",
+          "country": "Saudi Arabia",
+          "unlocode": "SARTB"
+        },
+        "discharge_port": {
+          "name": "Jebel Ali",
+          "country": "UAE",
+          "unlocode": "AEJEA"
+        },
+        "laycan_start": "2026-06-08",
+        "laycan_end": "2026-06-14",
+        "laycan_confidence": "confirmed",
+        "charterer": "Mosaic Company",
+        "broker": "Clarksons",
+        "gear_required": false,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": [
+          "No Russian-flag vessels — Mosaic corporate procurement policy 2025",
+          "No vessels that have called Russian ports in last 90 days",
+          "Vessel must have sulphur cargo experience"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-20931",
+        "item_index": 0,
+        "vessel_name": "M/V Volga Express",
+        "imo": "9201345",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 28200,
+        "dwcc": 26900,
+        "summer_draft_m": 9.5,
+        "loa_m": 172.5,
+        "beam_m": 28.2,
+        "geared": false,
+        "crane_config": null,
+        "grain_capacity_cbm": 33900,
+        "bale_capacity_cbm": 32500,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 14m × 11.5m each",
+        "open_port": {
+          "name": "Ras Tanura",
+          "country": "Saudi Arabia",
+          "unlocode": "SARTB"
+        },
+        "open_date": "2026-06-05",
+        "service_speed_kn": 12.5,
+        "flag": "RU",
+        "owner": "Volga-Flot Shipping OAO",
+        "cii_grade": "C",
+        "last_cargo": "Sulphur",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20932",
+        "item_index": 0,
+        "vessel_name": "M/V Arabian Bulk",
+        "imo": "9412987",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 30100,
+        "dwcc": 28800,
+        "summer_draft_m": 9.8,
+        "loa_m": 176.8,
+        "beam_m": 29.0,
+        "geared": true,
+        "crane_config": "4×25t",
+        "grain_capacity_cbm": 38000,
+        "bale_capacity_cbm": 36500,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 15m × 12m each",
+        "open_port": {
+          "name": "Bahrain",
+          "country": "Bahrain",
+          "unlocode": "BHMHM"
+        },
+        "open_date": "2026-06-04",
+        "service_speed_kn": 13.0,
+        "flag": "MH",
+        "owner": "Arabian Maritime Corp",
+        "cii_grade": "B",
+        "last_cargo": "Sulphur",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-10931",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20931",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 0,
+        "arrival_date": "2026-06-05",
+        "verdict": "ideal",
+        "explanation": "M/V Volga Express opens Ras Tanura 05-Jun — at load port. 3 days before laycan start 08-Jun. Last cargo Sulphur — qualified experience. Timing ideal. NOTE: flag=RU. Discharge at UAE Jebel Ali (non-EU port) — EU Reg 833/2014 port-entry restriction does not apply. HOWEVER Mosaic corporate procurement policy explicitly prohibits Russian-flag vessels regardless of discharge port. Charterer-level restriction applies even outside EU jurisdiction.",
+        "date_issues": ["SANCTIONS_FLAG_CHARTERER_POLICY: flag=RU. EU port restriction inapplicable (UAE discharge) but Mosaic corporate policy 2025 prohibits Russian-flag vessels at all discharge ports. Charterer restriction overrides geographic exclusion."]
+      },
+      {
+        "cargo_email_id": "msg-10931",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20932",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 1,
+        "arrival_date": "2026-06-05",
+        "verdict": "ideal",
+        "explanation": "M/V Arabian Bulk opens Bahrain 04-Jun. Bahrain to Ras Tanura ~80nm at 13.0kn = ~6h, arrives ~05-Jun — 3 days before laycan start 08-Jun. Clean MH flag, no Russia port calls, last cargo Sulphur qualified. Ideal.",
+        "date_issues": []
+      }
+    ]
+  }
+}

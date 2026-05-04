@@ -1,0 +1,172 @@
+{
+  "id": "project_general_vessel/sample-005",
+  "category": "project_general_vessel",
+  "edge_case_summary": "Hospital prefab modules (10m × 4m × 4m, 28t each): weather-deck capacity required for 4m-height oversize modules — verifies matcher flags vessels where hold height clearance fails and deck stowage is the only viable option.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-10731",
+        "item_index": 0,
+        "cargo_type": "PROJECT",
+        "commodity": "Hospital prefabricated modular units",
+        "weight_mt": 168,
+        "weight_mt_min": 140,
+        "weight_mt_max": 196,
+        "stowage_factor_m3_per_mt": null,
+        "load_port": {
+          "name": "Felixstowe",
+          "country": "United Kingdom",
+          "unlocode": "GBFXT"
+        },
+        "discharge_port": {
+          "name": "Banjul",
+          "country": "Gambia",
+          "unlocode": "GMBJU"
+        },
+        "laycan_start": "2026-06-09",
+        "laycan_end": "2026-06-16",
+        "laycan_confidence": "confirmed",
+        "charterer": "MSF Logistics",
+        "broker": "GAC Shipping",
+        "gear_required": true,
+        "lift_capacity_required_t": 35,
+        "hold_geometry_required": "modules 10m × 4m × 4m height; hold clear height must be ≥4.5m; alternatively weather-deck stowage with securing acceptable",
+        "restrictions": [
+          "6 modules, 28t each, 10m × 4m × 4m",
+          "Weather-deck stowage acceptable as primary or supplementary",
+          "Modules are prefab buildings — no compression loads; cradles required"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-20994",
+        "item_index": 0,
+        "vessel_name": "M/V Suffolk Carrier",
+        "imo": "9523109",
+        "vessel_class": "MPP",
+        "dwt": 7800,
+        "dwcc": 7300,
+        "summer_draft_m": 7.0,
+        "loa_m": 118.5,
+        "beam_m": 17.0,
+        "geared": true,
+        "crane_config": "2×40t",
+        "grain_capacity_cbm": null,
+        "bale_capacity_cbm": 9200,
+        "hold_count": 2,
+        "hatch_dimensions": "Hold 1: 24m × 9m, clear height 3.8m. Hold 2: 18m × 9m, clear height 3.6m. Open deck available.",
+        "open_port": {
+          "name": "Tilbury",
+          "country": "United Kingdom",
+          "unlocode": "GBTIL"
+        },
+        "open_date": "2026-06-06",
+        "service_speed_kn": 13.0,
+        "flag": "LR",
+        "owner": "Suffolk Shipping Ltd",
+        "cii_grade": "C",
+        "last_cargo": "Project cargo",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20995",
+        "item_index": 0,
+        "vessel_name": "M/V Thames Project",
+        "imo": "9387654",
+        "vessel_class": "MPP",
+        "dwt": 10200,
+        "dwcc": 9600,
+        "summer_draft_m": 7.8,
+        "loa_m": 132.0,
+        "beam_m": 19.0,
+        "geared": true,
+        "crane_config": "2×45t",
+        "grain_capacity_cbm": null,
+        "bale_capacity_cbm": 12100,
+        "hold_count": 2,
+        "hatch_dimensions": "Hold 1: 28m × 10m, clear height 5.2m. Hold 2: 22m × 10m, clear height 5.0m. Deck reinforced 6t/m².",
+        "open_port": {
+          "name": "Felixstowe",
+          "country": "United Kingdom",
+          "unlocode": "GBFXT"
+        },
+        "open_date": "2026-06-07",
+        "service_speed_kn": 13.5,
+        "flag": "MH",
+        "owner": "Thames River Shipping",
+        "cii_grade": "B",
+        "last_cargo": "Prefab structures",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20996",
+        "item_index": 0,
+        "vessel_name": "M/V Kent Mariner",
+        "imo": "9445561",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 22500,
+        "dwcc": 21500,
+        "summer_draft_m": 9.0,
+        "loa_m": 165.0,
+        "beam_m": 26.5,
+        "geared": true,
+        "crane_config": "4×25t",
+        "grain_capacity_cbm": 30200,
+        "bale_capacity_cbm": 29000,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 13m × 11m, clear height 8.5m lower hold.",
+        "open_port": {
+          "name": "Tilbury",
+          "country": "United Kingdom",
+          "unlocode": "GBTIL"
+        },
+        "open_date": "2026-06-05",
+        "service_speed_kn": 12.5,
+        "flag": "MT",
+        "owner": "Kent Maritime Corp",
+        "cii_grade": "B",
+        "last_cargo": "Bagged cement",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-10731",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20994",
+        "vessel_item_index": 0,
+        "gap_days": 2,
+        "sailing_days": 1,
+        "arrival_date": "2026-06-07",
+        "verdict": "tight",
+        "explanation": "M/V Suffolk Carrier opens Tilbury 06-Jun. Tilbury to Felixstowe ~60nm at 13.0kn = ~5h, arrives same day. 3 days before laycan start 09-Jun. HOLD_HEIGHT_VIOLATION: Hold 1 clear height 3.8m and Hold 2 3.6m — both < required 4.5m. Modules 4m tall cannot be stowed below deck. Weather-deck stowage required for all 6 modules. Open deck available but vessel must confirm deck area and securing capacity.",
+        "date_issues": ["HOLD_HEIGHT_VIOLATION: max clear height 3.8m < required 4.5m. All 6 modules must be deck-stowed. Deck area and cradle securing confirmation required."]
+      },
+      {
+        "cargo_email_id": "msg-10731",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20995",
+        "vessel_item_index": 0,
+        "gap_days": 2,
+        "sailing_days": 0,
+        "arrival_date": "2026-06-07",
+        "verdict": "ideal",
+        "explanation": "M/V Thames Project opens Felixstowe 07-Jun — at load port. 2 days before laycan start 09-Jun. Hold 1 clear height 5.2m and Hold 2 5.0m — both > required 4.5m. Crane 2×45t satisfies 35t lift. Previous prefab cargo experience. Tight but ideal positioning.",
+        "date_issues": []
+      },
+      {
+        "cargo_email_id": "msg-10731",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20996",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 1,
+        "arrival_date": "2026-06-06",
+        "verdict": "idle",
+        "explanation": "M/V Kent Mariner opens Tilbury 05-Jun. Tilbury to Felixstowe ~60nm at 12.5kn = ~5h, arrives ~05-Jun — 4 days before laycan start 09-Jun. Hold clear height 8.5m > 4.5m required — adequate. However hatch length 13m < module length 10m (close fit). NOTE: crane_config 4×25t — max single hook 25t < required 35t lift. CRANE_VIOLATION.",
+        "date_issues": ["CRANE_VIOLATION: 4×25t max single hook 25t < required 35t per module. HOLD_GEOMETRY_NOTE: hatch 13m marginally accommodates 10m module but only 3m clearance per end."]
+      }
+    ]
+  }
+}

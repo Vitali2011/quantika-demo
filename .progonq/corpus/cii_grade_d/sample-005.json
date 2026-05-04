@@ -1,0 +1,172 @@
+{
+  "id": "cii_grade_d/sample-005",
+  "category": "cii_grade_d",
+  "edge_case_summary": "Two vessels both CII-D, one with a newer engine (post-2024 refit) — verifies matcher does NOT speculate about future rating improvement; only the current cii_grade field should govern the assessment.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-11131",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Soybean meal",
+        "weight_mt": 46000,
+        "weight_mt_min": 43700,
+        "weight_mt_max": 48300,
+        "stowage_factor_m3_per_mt": 1.45,
+        "load_port": {
+          "name": "Paranaguá",
+          "country": "Brazil",
+          "unlocode": "BRPNG"
+        },
+        "discharge_port": {
+          "name": "Ghent",
+          "country": "Belgium",
+          "unlocode": "BEGNE"
+        },
+        "laycan_start": "2026-06-14",
+        "laycan_end": "2026-06-21",
+        "laycan_confidence": "confirmed",
+        "charterer": "Trafigura",
+        "broker": "FIS",
+        "gear_required": false,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": [
+          "No CII D or E grade vessels — Trafigura fleet vetting policy 2025",
+          "Holds grain-clean required",
+          "SHEX laytime"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-21131",
+        "item_index": 0,
+        "vessel_name": "M/V Itajai Bulk",
+        "imo": "9267891",
+        "vessel_class": "SUPRAMAX",
+        "dwt": 54800,
+        "dwcc": 52700,
+        "summer_draft_m": 12.1,
+        "loa_m": 193.0,
+        "beam_m": 32.0,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 68500,
+        "bale_capacity_cbm": 66200,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 17.5m × 14.5m each",
+        "open_port": {
+          "name": "Santos",
+          "country": "Brazil",
+          "unlocode": "BRSSZ"
+        },
+        "open_date": "2026-06-10",
+        "service_speed_kn": 11.5,
+        "flag": "PA",
+        "owner": "Itajai Shipping Corp",
+        "cii_grade": "D",
+        "last_cargo": "Grain",
+        "restrictions": ["Engine built 2006; no recent refit documented"]
+      },
+      {
+        "email_id": "msg-21132",
+        "item_index": 0,
+        "vessel_name": "M/V Florianopolis Star",
+        "imo": "9401123",
+        "vessel_class": "SUPRAMAX",
+        "dwt": 57000,
+        "dwcc": 54900,
+        "summer_draft_m": 12.3,
+        "loa_m": 195.5,
+        "beam_m": 32.3,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 71000,
+        "bale_capacity_cbm": 68700,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 18m × 15m each",
+        "open_port": {
+          "name": "Paranaguá",
+          "country": "Brazil",
+          "unlocode": "BRPNG"
+        },
+        "open_date": "2026-06-11",
+        "service_speed_kn": 13.0,
+        "flag": "MH",
+        "owner": "Florianopolis Maritime Ltd",
+        "cii_grade": "D",
+        "last_cargo": "Soybeans",
+        "restrictions": ["Main engine SCRT retrofit completed 2024-11 per class survey; owner claims next IMO rating period (2027) may improve to C"]
+      },
+      {
+        "email_id": "msg-21133",
+        "item_index": 0,
+        "vessel_name": "M/V Recife Harvester",
+        "imo": "9522345",
+        "vessel_class": "SUPRAMAX",
+        "dwt": 56200,
+        "dwcc": 54100,
+        "summer_draft_m": 12.2,
+        "loa_m": 194.8,
+        "beam_m": 32.2,
+        "geared": true,
+        "crane_config": "4×35t",
+        "grain_capacity_cbm": 70200,
+        "bale_capacity_cbm": 67900,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 18m × 14.5m each",
+        "open_port": {
+          "name": "Santos",
+          "country": "Brazil",
+          "unlocode": "BRSSZ"
+        },
+        "open_date": "2026-06-09",
+        "service_speed_kn": 14.0,
+        "flag": "LR",
+        "owner": "Recife Navigation Corp",
+        "cii_grade": "B",
+        "last_cargo": "Soybean meal",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-11131",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-21131",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 1,
+        "arrival_date": "2026-06-11",
+        "verdict": "tight",
+        "explanation": "M/V Itajai Bulk opens Santos 10-Jun. Santos to Paranaguá ~260nm at 11.5kn = ~23h, arrives ~11-Jun — 3 days before laycan start 14-Jun. cii_grade='D' violates Trafigura vetting policy. No refit documented — current grade reflects actual operational efficiency. Disqualified.",
+        "date_issues": ["CII_GRADE_D: cii_grade=D violates Trafigura vetting policy. No mitigation — engine 2006 vintage, no refit."]
+      },
+      {
+        "cargo_email_id": "msg-11131",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-21132",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 0,
+        "arrival_date": "2026-06-11",
+        "verdict": "tight",
+        "explanation": "M/V Florianopolis Star opens Paranaguá 11-Jun — at load port. 3 days before laycan start 14-Jun. cii_grade='D' violates Trafigura vetting policy. NOTE: owner claims SCRT retrofit (2024-11) may improve to CII-C at 2027 IMO rating — this is speculative future state. Current cii_grade='D' is the only field that governs; matcher should NOT use projected 2027 rating as mitigation.",
+        "date_issues": ["CII_GRADE_D: cii_grade=D violates Trafigura policy. Owner's claim of future improvement (2027 re-rating) is speculative and not the current certified grade. Current cii_grade=D governs — do not invent future-rating relief."]
+      },
+      {
+        "cargo_email_id": "msg-11131",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-21133",
+        "vessel_item_index": 0,
+        "gap_days": 4,
+        "sailing_days": 1,
+        "arrival_date": "2026-06-10",
+        "verdict": "ideal",
+        "explanation": "M/V Recife Harvester opens Santos 09-Jun. Santos to Paranaguá ~260nm at 14.0kn = ~19h, arrives ~10-Jun — 4 days before laycan start 14-Jun. CII Grade B qualifies under Trafigura policy. Last cargo Soybean meal — grain-clean. Ideal.",
+        "date_issues": []
+      }
+    ]
+  }
+}

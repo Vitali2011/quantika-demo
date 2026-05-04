@@ -1,0 +1,172 @@
+{
+  "id": "strict_laycan_tight_window/sample-003",
+  "category": "strict_laycan_tight_window",
+  "edge_case_summary": "Holiday-week opening (Eid al-Adha): vessel C opens during public holiday with SHEX laytime — tests whether matcher flags that counting begins after holiday exclusion, effectively narrowing the usable window.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-10811",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Wheat",
+        "weight_mt": 32000,
+        "weight_mt_min": 28800,
+        "weight_mt_max": 35200,
+        "stowage_factor_m3_per_mt": 1.28,
+        "load_port": {
+          "name": "Alexandria",
+          "country": "Egypt",
+          "unlocode": "EGALY"
+        },
+        "discharge_port": {
+          "name": "Jedda",
+          "country": "Saudi Arabia",
+          "unlocode": "SAJED"
+        },
+        "laycan_start": "2026-06-06",
+        "laycan_end": "2026-06-10",
+        "laycan_confidence": "confirmed",
+        "charterer": "GASC",
+        "broker": "Clarksons",
+        "gear_required": true,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": [
+          "SHEX Eid/Public Holidays excluded from laytime",
+          "Eid al-Adha 2026: 06-Jun to 09-Jun in Saudi Arabia (4 public holiday days)",
+          "No Russian-flag vessels"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-20811",
+        "item_index": 0,
+        "vessel_name": "M/V Nile Fortune",
+        "imo": "9367231",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 33500,
+        "dwcc": 32100,
+        "summer_draft_m": 10.2,
+        "loa_m": 181.0,
+        "beam_m": 29.7,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 42800,
+        "bale_capacity_cbm": 41100,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 16m × 13m each",
+        "open_port": {
+          "name": "Port Said",
+          "country": "Egypt",
+          "unlocode": "EGPSD"
+        },
+        "open_date": "2026-06-04",
+        "service_speed_kn": 13.5,
+        "flag": "MH",
+        "owner": "Nile Maritime Corp",
+        "cii_grade": "B",
+        "last_cargo": "Barley",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20812",
+        "item_index": 0,
+        "vessel_name": "M/V Suez Navigator",
+        "imo": "9456099",
+        "vessel_class": "HANDYMAX",
+        "dwt": 47200,
+        "dwcc": 45400,
+        "summer_draft_m": 11.6,
+        "loa_m": 191.5,
+        "beam_m": 31.5,
+        "geared": true,
+        "crane_config": "4×35t",
+        "grain_capacity_cbm": 59100,
+        "bale_capacity_cbm": 56900,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 18m × 14m each",
+        "open_port": {
+          "name": "Alexandria",
+          "country": "Egypt",
+          "unlocode": "EGALY"
+        },
+        "open_date": "2026-05-31",
+        "service_speed_kn": 14.5,
+        "flag": "GR",
+        "owner": "Suez Navigation SA",
+        "cii_grade": "A",
+        "last_cargo": "Corn",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20813",
+        "item_index": 0,
+        "vessel_name": "M/V Cairo Merchant",
+        "imo": "9512341",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 30900,
+        "dwcc": 29600,
+        "summer_draft_m": 9.9,
+        "loa_m": 177.8,
+        "beam_m": 29.1,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 39200,
+        "bale_capacity_cbm": 37600,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 15.5m × 12.5m each",
+        "open_port": {
+          "name": "Damietta",
+          "country": "Egypt",
+          "unlocode": "EGDAM"
+        },
+        "open_date": "2026-06-06",
+        "service_speed_kn": 13.0,
+        "flag": "CY",
+        "owner": "Cairo Shipping Management",
+        "cii_grade": "C",
+        "last_cargo": "Wheat",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-10811",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20811",
+        "vessel_item_index": 0,
+        "gap_days": 2,
+        "sailing_days": 1,
+        "arrival_date": "2026-06-05",
+        "verdict": "tight",
+        "explanation": "M/V Nile Fortune opens Port Said 04-Jun. Port Said to Alexandria ~180nm at 13.5kn = ~13h, arrives ~05-Jun — 1 day before laycan start 06-Jun. Tight but feasible. Eid holiday note: arrival at discharge Jedda during Eid period means port operations may be reduced; laytime cannot count during Eid under SHEX clause.",
+        "date_issues": ["SHEX_HOLIDAY: discharge port Jedda observes Eid al-Adha 06-10 Jun. Laytime clock stops during holiday. Effective operational window reduced."]
+      },
+      {
+        "cargo_email_id": "msg-10811",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20812",
+        "vessel_item_index": 0,
+        "gap_days": 6,
+        "sailing_days": 0,
+        "arrival_date": "2026-05-31",
+        "verdict": "idle",
+        "explanation": "M/V Suez Navigator opens Alexandria 31-May — at load port. 6 days before laycan start 06-Jun. Excessive idle. Vessel may seek other stem.",
+        "date_issues": ["6-day idle before laycan start — vessel may not hold position"]
+      },
+      {
+        "cargo_email_id": "msg-10811",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20813",
+        "vessel_item_index": 0,
+        "gap_days": -1,
+        "sailing_days": 1,
+        "arrival_date": "2026-06-07",
+        "verdict": "late",
+        "explanation": "M/V Cairo Merchant opens Damietta 06-Jun. Damietta to Alexandria ~150nm at 13.0kn = ~12h, arrives ~07-Jun — 1 day AFTER laycan_start but still within laycan_end 10-Jun. However vessel opens 06-Jun during Eid holiday period; Damietta port operations restricted on 06-Jun — effective departure may slip to 07-Jun, arriving Alexandria 08-Jun (still within window). Marginal; Eid holiday adds uncertainty.",
+        "date_issues": ["SHEX_HOLIDAY_NOTE: vessel opens Damietta 06-Jun during Eid al-Adha. Port operations restricted; actual departure may be 07-Jun, arrival Alexandria 08-Jun — only 2 days within laycan_end 10-Jun."]
+      }
+    ]
+  }
+}

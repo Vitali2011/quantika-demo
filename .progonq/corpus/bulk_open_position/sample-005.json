@@ -1,0 +1,172 @@
+{
+  "id": "bulk_open_position/sample-005",
+  "category": "bulk_open_position",
+  "edge_case_summary": "Baltic-Med urea fertilizer (Klaipeda → Tunisia): winter weather routing constraints noted, SHEX WP laytime — verifies matcher handles weather-routing notes and cargo-restriction interaction (fertilizer + adequate hold type).",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-11031",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Urea fertilizer",
+        "weight_mt": 30000,
+        "weight_mt_min": 27000,
+        "weight_mt_max": 33000,
+        "stowage_factor_m3_per_mt": 0.90,
+        "load_port": {
+          "name": "Klaipeda",
+          "country": "Lithuania",
+          "unlocode": "LTKLJ"
+        },
+        "discharge_port": {
+          "name": "Tunis La Goulette",
+          "country": "Tunisia",
+          "unlocode": "TNTUNIS"
+        },
+        "laycan_start": "2026-06-04",
+        "laycan_end": "2026-06-10",
+        "laycan_confidence": "confirmed",
+        "charterer": "Nutrien",
+        "broker": "Clarksons",
+        "gear_required": true,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": [
+          "SHEX WP laytime",
+          "Vessel must be corrosion-resistant for urea (holds lined or stainless)",
+          "Weather routing via Biscay — Brest to Gibraltar waypoint required"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-21031",
+        "item_index": 0,
+        "vessel_name": "M/V Baltic Amber",
+        "imo": "9391124",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 33500,
+        "dwcc": 32100,
+        "summer_draft_m": 10.3,
+        "loa_m": 181.6,
+        "beam_m": 29.8,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 42500,
+        "bale_capacity_cbm": 40800,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 16m × 13m each",
+        "open_port": {
+          "name": "Riga",
+          "country": "Latvia",
+          "unlocode": "LVRIX"
+        },
+        "open_date": "2026-05-29",
+        "service_speed_kn": 13.0,
+        "flag": "LR",
+        "owner": "Baltic Carrier Lines Ltd",
+        "cii_grade": "B",
+        "last_cargo": "Urea",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-21032",
+        "item_index": 0,
+        "vessel_name": "M/V Nordic Spruce",
+        "imo": "9462107",
+        "vessel_class": "HANDYMAX",
+        "dwt": 45200,
+        "dwcc": 43500,
+        "summer_draft_m": 11.3,
+        "loa_m": 189.0,
+        "beam_m": 31.1,
+        "geared": true,
+        "crane_config": "4×35t",
+        "grain_capacity_cbm": 56900,
+        "bale_capacity_cbm": 54700,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 17.5m × 14m each",
+        "open_port": {
+          "name": "Gdynia",
+          "country": "Poland",
+          "unlocode": "PLGDY"
+        },
+        "open_date": "2026-05-28",
+        "service_speed_kn": 14.0,
+        "flag": "MH",
+        "owner": "Nordic Bulk Carriers AS",
+        "cii_grade": "A",
+        "last_cargo": "Ammonium nitrate",
+        "restrictions": ["Fertilizer experience documented; holds previously certified for urea"]
+      },
+      {
+        "email_id": "msg-21033",
+        "item_index": 0,
+        "vessel_name": "M/V Vistula Trader",
+        "imo": "9538892",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 32900,
+        "dwcc": 31500,
+        "summer_draft_m": 10.1,
+        "loa_m": 179.9,
+        "beam_m": 29.4,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 41600,
+        "bale_capacity_cbm": 39900,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 15.5m × 13m each",
+        "open_port": {
+          "name": "Hamburg",
+          "country": "Germany",
+          "unlocode": "DEHAM"
+        },
+        "open_date": "2026-06-02",
+        "service_speed_kn": null,
+        "flag": "CY",
+        "owner": "Vistula Maritime Management",
+        "cii_grade": "C",
+        "last_cargo": "Grain",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-11031",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-21031",
+        "vessel_item_index": 0,
+        "gap_days": 4,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-30",
+        "verdict": "ideal",
+        "explanation": "M/V Baltic Amber opens Riga 29-May. Riga to Klaipeda ~140nm at 13.0kn = ~11h, arrives ~30-May — 5 days before laycan start 04-Jun. Last cargo Urea — holds are corrosion-resistant qualified. Ideal positioning.",
+        "date_issues": []
+      },
+      {
+        "cargo_email_id": "msg-11031",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-21032",
+        "vessel_item_index": 0,
+        "gap_days": 5,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-29",
+        "verdict": "idle",
+        "explanation": "M/V Nordic Spruce opens Gdynia 28-May. Gdynia to Klaipeda ~200nm at 14.0kn = ~14h, arrives ~29-May — 6 days before laycan start 04-Jun. Last cargo ammonium nitrate with certified fertilizer holds. Slightly over-idle but largest capacity available.",
+        "date_issues": ["6-day idle before laycan start — vessel may seek other stems in Baltic"]
+      },
+      {
+        "cargo_email_id": "msg-11031",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-21033",
+        "vessel_item_index": 0,
+        "gap_days": 1,
+        "sailing_days": 2,
+        "arrival_date": "2026-06-04",
+        "verdict": "tight",
+        "explanation": "M/V Vistula Trader opens Hamburg 02-Jun. Hamburg to Klaipeda ~500nm, using class default 12.5kn (service_speed_kn null) = ~40h, arrives ~04-Jun — same day as laycan start. Tight. Last cargo Grain — not pre-qualified for urea/corrosion but could obtain survey.",
+        "date_issues": ["service_speed_kn null — class default 12.5kn applied. Arrival 04-Jun = laycan_start, no buffer. Hold corrosion qualification for urea unconfirmed."]
+      }
+    ]
+  }
+}

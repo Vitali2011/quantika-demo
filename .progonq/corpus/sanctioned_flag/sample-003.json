@@ -1,0 +1,130 @@
+{
+  "id": "sanctioned_flag/sample-003",
+  "category": "sanctioned_flag",
+  "edge_case_summary": "Belarus-flag (BY) vessel for Ukraine grain cargo: legal-grey scenario where BY flag adds sanctions risk under EU measures; owner identity check critical — verifies matcher flags BY-flag as elevated sanctions risk, not clean, even if charterer restriction names RU only.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-10911",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Corn",
+        "weight_mt": 25000,
+        "weight_mt_min": 22500,
+        "weight_mt_max": 27500,
+        "stowage_factor_m3_per_mt": 1.28,
+        "load_port": {
+          "name": "Chornomorsk",
+          "country": "Ukraine",
+          "unlocode": "UACHM"
+        },
+        "discharge_port": {
+          "name": "Lisbon",
+          "country": "Portugal",
+          "unlocode": "PTLIS"
+        },
+        "laycan_start": "2026-05-28",
+        "laycan_end": "2026-06-03",
+        "laycan_confidence": "confirmed",
+        "charterer": "ADM",
+        "broker": "Howe Robinson",
+        "gear_required": true,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": [
+          "No Russian-flag vessels",
+          "No vessels owned by entities subject to EU or US sanctions",
+          "P&I Club IG member required"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-20911",
+        "item_index": 0,
+        "vessel_name": "M/V Minsk Trader",
+        "imo": "9211456",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 27800,
+        "dwcc": 26500,
+        "summer_draft_m": 9.5,
+        "loa_m": 172.0,
+        "beam_m": 28.3,
+        "geared": true,
+        "crane_config": "4×25t",
+        "grain_capacity_cbm": 34600,
+        "bale_capacity_cbm": 33200,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 14.5m × 11.5m each",
+        "open_port": {
+          "name": "Chornomorsk",
+          "country": "Ukraine",
+          "unlocode": "UACHM"
+        },
+        "open_date": "2026-05-24",
+        "service_speed_kn": 12.5,
+        "flag": "BY",
+        "owner": "Belaruskaliy Transport OJSC",
+        "cii_grade": "C",
+        "last_cargo": "Fertilizers",
+        "restrictions": ["Owner subject to EU Council Regulation 765/2006 (Belarus sanctions)"]
+      },
+      {
+        "email_id": "msg-20912",
+        "item_index": 0,
+        "vessel_name": "M/V Kyiv Pioneer",
+        "imo": "9401788",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 30500,
+        "dwcc": 29200,
+        "summer_draft_m": 9.9,
+        "loa_m": 177.4,
+        "beam_m": 29.1,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 38600,
+        "bale_capacity_cbm": 37000,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 15.5m × 12.5m each",
+        "open_port": {
+          "name": "Constanta",
+          "country": "Romania",
+          "unlocode": "ROCND"
+        },
+        "open_date": "2026-05-23",
+        "service_speed_kn": 13.0,
+        "flag": "MH",
+        "owner": "Kyiv Maritime Management Ltd",
+        "cii_grade": "B",
+        "last_cargo": "Corn",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-10911",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20911",
+        "vessel_item_index": 0,
+        "gap_days": 4,
+        "sailing_days": 0,
+        "arrival_date": "2026-05-24",
+        "verdict": "ideal",
+        "explanation": "M/V Minsk Trader opens Chornomorsk 24-May — at load port. 4 days before laycan start 28-May. Timing ideal. SANCTIONS_FLAG: flag=BY (Belarus), owner=Belaruskaliy Transport OJSC — subject to EU Council Regulation 765/2006 Belarus sanctions. Charterer restriction names 'RU only' but BY-flag entity under EU sanctions is equally prohibited under 'no entities subject to EU sanctions' clause.",
+        "date_issues": ["SANCTIONS_FLAG: flag=BY, owner=Belaruskaliy Transport under EU Reg 765/2006 Belarus sanctions. Charterer restriction covers EU-sanctioned entities. BY-flag legal-grey but owner sanction is clear."]
+      },
+      {
+        "cargo_email_id": "msg-10911",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20912",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-24",
+        "verdict": "ideal",
+        "explanation": "M/V Kyiv Pioneer opens Constanta 23-May. Constanta to Chornomorsk ~280nm at 13.0kn = ~22h, arrives ~24-May — 4 days before laycan start 28-May. Clean MH flag, IG P&I, no sanctions exposure. Ideal.",
+        "date_issues": []
+      }
+    ]
+  }
+}

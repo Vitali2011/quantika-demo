@@ -1,0 +1,130 @@
+{
+  "id": "cii_grade_d/sample-003",
+  "category": "cii_grade_d",
+  "edge_case_summary": "CII Grade D vessel for a small trader (not Cargill/Trafigura): charterer has no explicit D-refusal policy — verifies matcher does NOT flag Grade D with same severity as a Cargill/Trafigura case when no charterer restriction exists.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-11111",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Wheat",
+        "weight_mt": 18000,
+        "weight_mt_min": 16200,
+        "weight_mt_max": 19800,
+        "stowage_factor_m3_per_mt": 1.28,
+        "load_port": {
+          "name": "Novorossiysk",
+          "country": "Russia",
+          "unlocode": "RUNVS"
+        },
+        "discharge_port": {
+          "name": "Tripoli",
+          "country": "Libya",
+          "unlocode": "LYTIP"
+        },
+        "laycan_start": "2026-05-25",
+        "laycan_end": "2026-05-31",
+        "laycan_confidence": "confirmed",
+        "charterer": "Viterra Libya",
+        "broker": "ACM Shipping",
+        "gear_required": true,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": [
+          "SHEX laytime",
+          "No vessels flagged by Libyan port authority blacklist",
+          "Grain-clean holds required"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-21111",
+        "item_index": 0,
+        "vessel_name": "M/V Azov Carrier",
+        "imo": "9356789",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 26800,
+        "dwcc": 25600,
+        "summer_draft_m": 9.3,
+        "loa_m": 171.5,
+        "beam_m": 28.1,
+        "geared": true,
+        "crane_config": "4×25t",
+        "grain_capacity_cbm": 33500,
+        "bale_capacity_cbm": 32100,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 14m × 11.5m each",
+        "open_port": {
+          "name": "Novorossiysk",
+          "country": "Russia",
+          "unlocode": "RUNVS"
+        },
+        "open_date": "2026-05-21",
+        "service_speed_kn": 12.0,
+        "flag": "PA",
+        "owner": "Azov Maritime Corp",
+        "cii_grade": "D",
+        "last_cargo": "Barley",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-21112",
+        "item_index": 0,
+        "vessel_name": "M/V Krasnodar Bulk",
+        "imo": "9423789",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 28500,
+        "dwcc": 27300,
+        "summer_draft_m": 9.6,
+        "loa_m": 174.2,
+        "beam_m": 28.7,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 35900,
+        "bale_capacity_cbm": 34400,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 14.5m × 12m each",
+        "open_port": {
+          "name": "Tuapse",
+          "country": "Russia",
+          "unlocode": "RUTUA"
+        },
+        "open_date": "2026-05-22",
+        "service_speed_kn": 13.0,
+        "flag": "CY",
+        "owner": "Krasnodar Shipping Ltd",
+        "cii_grade": "A",
+        "last_cargo": "Wheat",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-11111",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-21111",
+        "vessel_item_index": 0,
+        "gap_days": 4,
+        "sailing_days": 0,
+        "arrival_date": "2026-05-21",
+        "verdict": "ideal",
+        "explanation": "M/V Azov Carrier opens Novorossiysk 21-May — at load port. 4 days before laycan start 25-May. Last cargo Barley — grain-clean compatible. cii_grade='D' noted. Charterer 'Viterra Libya' has NO explicit CII D-refusal policy in restrictions — Grade D is an informational flag for future vetting context, not a hard disqualifier here. Contrast with Trafigura/Cargill cases where policy explicitly bans D/E.",
+        "date_issues": ["CII_GRADE_D_INFO: cii_grade=D. Charterer has no explicit D-refusal policy. Flag as informational risk (future vetting, bank/insurance scrutiny) but NOT hard disqualifier for this fixture. Severity lower than Cargill/Trafigura scenario."]
+      },
+      {
+        "cargo_email_id": "msg-11111",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-21112",
+        "vessel_item_index": 0,
+        "gap_days": 2,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-23",
+        "verdict": "tight",
+        "explanation": "M/V Krasnodar Bulk opens Tuapse 22-May. Tuapse to Novorossiysk ~80nm at 13.0kn = ~6h, arrives ~22-May — 3 days before laycan start 25-May. CII Grade A, last cargo Wheat grain-clean. Clean preferred option.",
+        "date_issues": []
+      }
+    ]
+  }
+}

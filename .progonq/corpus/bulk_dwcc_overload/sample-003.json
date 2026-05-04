@@ -1,0 +1,130 @@
+{
+  "id": "bulk_dwcc_overload/sample-003",
+  "category": "bulk_dwcc_overload",
+  "edge_case_summary": "MOLOO cargo: cargo has weight_mt_min/max band and vessel DWCC sits exactly mid-band — verifies matcher does not blindly approve the pair when vessel DWCC sits between min and max (partial load feasible but max overruns).",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-10611",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Corn",
+        "weight_mt": 38000,
+        "weight_mt_min": 34200,
+        "weight_mt_max": 41800,
+        "stowage_factor_m3_per_mt": 1.28,
+        "load_port": {
+          "name": "New Orleans",
+          "country": "United States",
+          "unlocode": "USMSY"
+        },
+        "discharge_port": {
+          "name": "Algiers",
+          "country": "Algeria",
+          "unlocode": "DZALG"
+        },
+        "laycan_start": "2026-06-15",
+        "laycan_end": "2026-06-22",
+        "laycan_confidence": "confirmed",
+        "charterer": "Cargill",
+        "broker": "ACM Shipping",
+        "gear_required": false,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": [
+          "MOLOO — More or Less Owner's Option 10%",
+          "SHEX laytime",
+          "No CII Grade D or E"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-20911",
+        "item_index": 0,
+        "vessel_name": "M/V Gulf Sovereign",
+        "imo": "9378834",
+        "vessel_class": "SUPRAMAX",
+        "dwt": 41500,
+        "dwcc": 38000,
+        "summer_draft_m": 11.8,
+        "loa_m": 192.4,
+        "beam_m": 32.0,
+        "geared": false,
+        "crane_config": null,
+        "grain_capacity_cbm": 50200,
+        "bale_capacity_cbm": 48300,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 17.5m × 14.5m each",
+        "open_port": {
+          "name": "Houston",
+          "country": "United States",
+          "unlocode": "USHOU"
+        },
+        "open_date": "2026-06-10",
+        "service_speed_kn": 14.0,
+        "flag": "LR",
+        "owner": "Gulf Star Shipping Corp",
+        "cii_grade": "B",
+        "last_cargo": "Wheat",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20912",
+        "item_index": 0,
+        "vessel_name": "M/V Mississippi Glory",
+        "imo": "9511478",
+        "vessel_class": "PANAMAX",
+        "dwt": 76500,
+        "dwcc": 73800,
+        "summer_draft_m": 13.6,
+        "loa_m": 225.0,
+        "beam_m": 32.2,
+        "geared": false,
+        "crane_config": null,
+        "grain_capacity_cbm": 93200,
+        "bale_capacity_cbm": 90100,
+        "hold_count": 7,
+        "hatch_dimensions": "7 hatches, 18m × 15m each",
+        "open_port": {
+          "name": "Baton Rouge",
+          "country": "United States",
+          "unlocode": "USBTR"
+        },
+        "open_date": "2026-06-08",
+        "service_speed_kn": 14.5,
+        "flag": "MH",
+        "owner": "Mississippi Bulk Lines Inc",
+        "cii_grade": "A",
+        "last_cargo": "Soybeans",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-10611",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20911",
+        "vessel_item_index": 0,
+        "gap_days": 4,
+        "sailing_days": 1,
+        "arrival_date": "2026-06-11",
+        "verdict": "tight",
+        "explanation": "M/V Gulf Sovereign opens Houston 10-Jun. Houston to New Orleans ~320nm at 14.0kn = ~23h, arrives ~11-Jun — 4 days before laycan start 15-Jun. DWCC 38,000mt = cargo weight_mt exactly, but cargo max 41,800mt exceeds DWCC. Vessel can load only up to DWCC limit under MOLOO — owner would exercise option downward. Tests mid-band DWCC positioning.",
+        "date_issues": ["DWCC_MID_BAND: vessel DWCC 38,000mt = cargo weight_mt nom exactly. Cargo max 41,800mt under MOLOO exceeds DWCC — owner must exercise -10% option. Feasible only at lower end of band."]
+      },
+      {
+        "cargo_email_id": "msg-10611",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20912",
+        "vessel_item_index": 0,
+        "gap_days": 6,
+        "sailing_days": 1,
+        "arrival_date": "2026-06-09",
+        "verdict": "idle",
+        "explanation": "M/V Mississippi Glory opens Baton Rouge 08-Jun. Baton Rouge to New Orleans ~200nm at 14.5kn = ~14h, arrives ~09-Jun — 6 days before laycan start 15-Jun. DWCC 73,800mt far exceeds cargo max 41,800mt — vessel oversized but technically feasible if no freight penalty for part-load. Excessive idle.",
+        "date_issues": ["6-day idle. Vessel significantly oversized (DWCC 73,800mt vs cargo max 41,800mt) — part-load freight economics likely unfavorable."]
+      }
+    ]
+  }
+}

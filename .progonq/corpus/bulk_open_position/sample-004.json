@@ -1,0 +1,172 @@
+{
+  "id": "bulk_open_position/sample-004",
+  "category": "bulk_open_position",
+  "edge_case_summary": "Black Sea sunflower seeds (Ukraine → Türkiye): short voyage, food-grade hold cleanliness implied by commodity — verifies matcher surfaces last_cargo incompatibility (steel products) and rewards vessels with grain-clean history.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-11021",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Sunflower seeds",
+        "weight_mt": 24000,
+        "weight_mt_min": 21600,
+        "weight_mt_max": 26400,
+        "stowage_factor_m3_per_mt": 1.62,
+        "load_port": {
+          "name": "Chornomorsk",
+          "country": "Ukraine",
+          "unlocode": "UACHM"
+        },
+        "discharge_port": {
+          "name": "Izmir",
+          "country": "Turkey",
+          "unlocode": "TRIZM"
+        },
+        "laycan_start": "2026-05-20",
+        "laycan_end": "2026-05-25",
+        "laycan_confidence": "confirmed",
+        "charterer": "Bunge",
+        "broker": "ACM Shipping",
+        "gear_required": true,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": [
+          "Holds must be grain-clean certified",
+          "No last cargo: steel, cement, clinker, fertilizer",
+          "SHEX laytime"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-21021",
+        "item_index": 0,
+        "vessel_name": "M/V Odesa Harvest",
+        "imo": "9367445",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 31200,
+        "dwcc": 29800,
+        "summer_draft_m": 9.9,
+        "loa_m": 177.4,
+        "beam_m": 29.2,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 39800,
+        "bale_capacity_cbm": 38100,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 15.5m × 12.5m each",
+        "open_port": {
+          "name": "Chornomorsk",
+          "country": "Ukraine",
+          "unlocode": "UACHM"
+        },
+        "open_date": "2026-05-17",
+        "service_speed_kn": 13.0,
+        "flag": "MH",
+        "owner": "Harvest Shipping Inc",
+        "cii_grade": "B",
+        "last_cargo": "Barley",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-21022",
+        "item_index": 0,
+        "vessel_name": "M/V Kerch Voyager",
+        "imo": "9412893",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 29600,
+        "dwcc": 28400,
+        "summer_draft_m": 9.7,
+        "loa_m": 175.0,
+        "beam_m": 28.8,
+        "geared": true,
+        "crane_config": "4×25t",
+        "grain_capacity_cbm": 37200,
+        "bale_capacity_cbm": 35700,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 15m × 12m each",
+        "open_port": {
+          "name": "Constanta",
+          "country": "Romania",
+          "unlocode": "ROCND"
+        },
+        "open_date": "2026-05-16",
+        "service_speed_kn": 12.5,
+        "flag": "PA",
+        "owner": "Kerch Maritime Ltd",
+        "cii_grade": "C",
+        "last_cargo": "Steel coils",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-21023",
+        "item_index": 0,
+        "vessel_name": "M/V Crimson Sea",
+        "imo": "9523456",
+        "vessel_class": "HANDYMAX",
+        "dwt": 44200,
+        "dwcc": 42500,
+        "summer_draft_m": 11.2,
+        "loa_m": 187.6,
+        "beam_m": 30.9,
+        "geared": true,
+        "crane_config": "4×35t",
+        "grain_capacity_cbm": 55600,
+        "bale_capacity_cbm": 53500,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 17.5m × 14m each",
+        "open_port": {
+          "name": "Istanbul",
+          "country": "Turkey",
+          "unlocode": "TRIST"
+        },
+        "open_date": "2026-05-19",
+        "service_speed_kn": 14.0,
+        "flag": "CY",
+        "owner": "Crimson Shipping Management",
+        "cii_grade": "A",
+        "last_cargo": "Wheat",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-11021",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-21021",
+        "vessel_item_index": 0,
+        "gap_days": 3,
+        "sailing_days": 0,
+        "arrival_date": "2026-05-17",
+        "verdict": "ideal",
+        "explanation": "M/V Odesa Harvest opens Chornomorsk 17-May — already at load port. 3 days before laycan start 20-May. Last cargo Barley qualifies as grain-clean. Ideal positioning.",
+        "date_issues": []
+      },
+      {
+        "cargo_email_id": "msg-11021",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-21022",
+        "vessel_item_index": 0,
+        "gap_days": 2,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-17",
+        "verdict": "tight",
+        "explanation": "M/V Kerch Voyager opens Constanta 16-May. Constanta to Chornomorsk ~280nm at 12.5kn = ~22h, arrives ~17-May — 3 days before laycan start 20-May. Timing adequate. NOTE: last_cargo='Steel coils' — charterer prohibits steel as previous cargo; hold cleaning required. LAST_CARGO_RESTRICTION violation.",
+        "date_issues": ["LAST_CARGO_RESTRICTION: last_cargo=Steel coils is explicitly prohibited. Hold grain-clean certification not achievable without costly cleaning."]
+      },
+      {
+        "cargo_email_id": "msg-11021",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-21023",
+        "vessel_item_index": 0,
+        "gap_days": 1,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-20",
+        "verdict": "tight",
+        "explanation": "M/V Crimson Sea opens Istanbul 19-May. Istanbul to Chornomorsk ~380nm at 14.0kn = ~27h, arrives ~20-May — day of laycan start. Very tight, last cargo Wheat grain-clean compatible. Any delay risks missing laycan start.",
+        "date_issues": ["Arrival estimated 20-May — same day as laycan_start. No buffer for delays."]
+      }
+    ]
+  }
+}

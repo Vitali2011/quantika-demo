@@ -1,0 +1,172 @@
+{
+  "id": "strict_laycan_tight_window/sample-004",
+  "category": "strict_laycan_tight_window",
+  "edge_case_summary": "Cancellation clause: cargo cancelled if vessel arrives >12h late; one vessel arrives exactly 14h after laycan_start — verifies matcher flags near-miss cancellation risk, not just binary LAYCAN_VIOLATION.",
+  "input": {
+    "cargo_inquiries": [
+      {
+        "email_id": "msg-10821",
+        "item_index": 0,
+        "cargo_type": "BULK",
+        "commodity": "Sunflower meal",
+        "weight_mt": 26000,
+        "weight_mt_min": 23400,
+        "weight_mt_max": 28600,
+        "stowage_factor_m3_per_mt": 1.55,
+        "load_port": {
+          "name": "Reni",
+          "country": "Ukraine",
+          "unlocode": "UAREN"
+        },
+        "discharge_port": {
+          "name": "Gemlik",
+          "country": "Turkey",
+          "unlocode": "TRGEM"
+        },
+        "laycan_start": "2026-05-22",
+        "laycan_end": "2026-05-27",
+        "laycan_confidence": "confirmed",
+        "charterer": "Cargill",
+        "broker": "ACM Shipping",
+        "gear_required": true,
+        "lift_capacity_required_t": null,
+        "hold_geometry_required": null,
+        "restrictions": [
+          "SHEX laytime",
+          "Cancellation clause: cargo cancelled if vessel NOT at load port berth by 12:00 noon 23-May 2026",
+          "CII Grade A or B only per Cargill fleet approval"
+        ]
+      }
+    ],
+    "vessel_positions": [
+      {
+        "email_id": "msg-20821",
+        "item_index": 0,
+        "vessel_name": "M/V Danube Express",
+        "imo": "9355901",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 30100,
+        "dwcc": 28800,
+        "summer_draft_m": 9.9,
+        "loa_m": 177.0,
+        "beam_m": 29.1,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 38700,
+        "bale_capacity_cbm": 37100,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 15.5m × 12.5m each",
+        "open_port": {
+          "name": "Izmail",
+          "country": "Ukraine",
+          "unlocode": "UAIZM"
+        },
+        "open_date": "2026-05-20",
+        "service_speed_kn": 13.0,
+        "flag": "MH",
+        "owner": "Danube Maritime SA",
+        "cii_grade": "A",
+        "last_cargo": "Rapeseed",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20822",
+        "item_index": 0,
+        "vessel_name": "M/V Moldova Bulk",
+        "imo": "9422134",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 28700,
+        "dwcc": 27400,
+        "summer_draft_m": 9.6,
+        "loa_m": 174.0,
+        "beam_m": 28.5,
+        "geared": true,
+        "crane_config": "4×25t",
+        "grain_capacity_cbm": 36300,
+        "bale_capacity_cbm": 34800,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 14.5m × 12m each",
+        "open_port": {
+          "name": "Galati",
+          "country": "Romania",
+          "unlocode": "ROGLA"
+        },
+        "open_date": "2026-05-22",
+        "service_speed_kn": 12.5,
+        "flag": "PA",
+        "owner": "Moldova Shipping Corp",
+        "cii_grade": "B",
+        "last_cargo": "Grain",
+        "restrictions": []
+      },
+      {
+        "email_id": "msg-20823",
+        "item_index": 0,
+        "vessel_name": "M/V Prut Venture",
+        "imo": "9534789",
+        "vessel_class": "HANDYSIZE",
+        "dwt": 29500,
+        "dwcc": 28200,
+        "summer_draft_m": 9.8,
+        "loa_m": 175.6,
+        "beam_m": 28.8,
+        "geared": true,
+        "crane_config": "4×30t",
+        "grain_capacity_cbm": 37500,
+        "bale_capacity_cbm": 35900,
+        "hold_count": 5,
+        "hatch_dimensions": "5 hatches, 15m × 12.5m each",
+        "open_port": {
+          "name": "Sulina",
+          "country": "Romania",
+          "unlocode": "ROSUL"
+        },
+        "open_date": "2026-05-22",
+        "service_speed_kn": 13.5,
+        "flag": "CY",
+        "owner": "Prut Maritime Ltd",
+        "cii_grade": "D",
+        "last_cargo": "Corn",
+        "restrictions": []
+      }
+    ],
+    "readiness": [
+      {
+        "cargo_email_id": "msg-10821",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20821",
+        "vessel_item_index": 0,
+        "gap_days": 2,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-21",
+        "verdict": "ideal",
+        "explanation": "M/V Danube Express opens Izmail 20-May. Izmail to Reni ~60nm at 13.0kn = ~5h, arrives ~20-May — 2 days before laycan start 22-May and 3 days before cancellation deadline 23-May noon. CII Grade A qualifies under Cargill policy. Ideal.",
+        "date_issues": []
+      },
+      {
+        "cargo_email_id": "msg-10821",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20822",
+        "vessel_item_index": 0,
+        "gap_days": 0,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-23",
+        "verdict": "tight",
+        "explanation": "M/V Moldova Bulk opens Galati 22-May. Galati to Reni ~110nm at 12.5kn = ~9h, arrives ~23-May 09:00. Cancellation clause requires arrival by 23-May noon (12:00). Estimated arrival 09:00 is within the 3h pre-noon window. CII Grade B qualifies. Extremely tight — any 3h delay triggers cancellation.",
+        "date_issues": ["CANCELLATION_RISK: estimated arrival 23-May ~09:00 vs cancellation deadline 23-May 12:00. Only 3h buffer. Any weather/lock delay triggers cancellation clause."]
+      },
+      {
+        "cargo_email_id": "msg-10821",
+        "cargo_item_index": 0,
+        "vessel_email_id": "msg-20823",
+        "vessel_item_index": 0,
+        "gap_days": -1,
+        "sailing_days": 1,
+        "arrival_date": "2026-05-23",
+        "verdict": "late",
+        "explanation": "M/V Prut Venture opens Sulina 22-May. Sulina to Reni ~80nm at 13.5kn = ~6h, arrives ~22-May evening. Timing appears borderline but CII Grade D violates Cargill CII Grade A/B restriction. Additionally, estimated arrival ~22-May evening satisfies laycan but Sulina Danube navigation involves canal passage — realistic arrival 23-May 14:00, 2h after cancellation deadline.",
+        "date_issues": ["CII_GRADE_VIOLATION: cii_grade=D violates Cargill A/B restriction. CANCELLATION_RISK: realistic arrival via Sulina canal 23-May ~14:00 — 2h after cancellation deadline 12:00."]
+      }
+    ]
+  }
+}
