@@ -64,15 +64,46 @@ describe('wave-γ-3 Task 2: "general cargo" permissive class', () => {
     expect(r.requires_manual_review).toBe(false);
   });
 
-  it('alias "misc" → DRI: compatible (wildcard *→general inverted is permissive)', () => {
-    const r = checkCompatibility(['misc'], 'DRI');
-    expect(r.compatible).toBe(true);
-    // DRI wildcard hint travels — extra clean still required.
-    expect(r.requires_extra_clean).toBe(true);
-  });
-
   it('uppercase + whitespace: " GENERAL CARGO " → wheat: compatible', () => {
     const r = checkCompatibility([' GENERAL CARGO '], 'wheat');
     expect(r.compatible).toBe(true);
+  });
+
+  // SAFETY: "general cargo" sometimes means "we don't know what was loaded
+  // before". For combos with KNOWN hazardous cargoes (coal, scrap, petcoke,
+  // sulphur, cement, DRI) we MUST default to manual_review (fail-CLOSED),
+  // not auto-pass. Adversarial QA round 2 caught the original universal
+  // wildcards green-lighting petcoke↔general and coal↔general.
+  describe('safety: general↔hazardous defaults to manual_review (fail-CLOSED)', () => {
+    // Note: general↔cement and general↔DRI are NOT in this list because
+    // both targets have direct *→X extra_clean wildcards — they correctly
+    // surface compatible:true + extra_clean hint (surveyor warning is
+    // delivered via the hint, not as a hard block). Adversarial QA
+    // explicitly marked those two as acceptable.
+    it.each([
+      ['general cargo', 'coal'],
+      ['general cargo', 'scrap'],
+      ['general cargo', 'petcoke'],
+      ['general cargo', 'sulphur'],
+      ['coal', 'general cargo'],
+      ['petcoke', 'general cargo'],
+      ['scrap', 'general cargo'],
+    ])('%s → %s: requires_manual_review (no curated allow-list entry)', (prev, next) => {
+      const r = checkCompatibility([prev], next);
+      expect(r.compatible).toBe(false);
+      expect(r.requires_manual_review).toBe(true);
+      expect(r.blocking_pairs).toHaveLength(1);
+      expect(r.blocking_pairs[0].reason).toMatch(/manual\s+surveyor/i);
+    });
+
+    // For cement/DRI: surveyor warning travels via extra_clean wildcards.
+    it.each([
+      ['general cargo', 'cement'],
+      ['general cargo', 'DRI'],
+    ])('%s → %s: compatible with extra_clean hint (wildcard surfaces surveyor requirement)', (prev, next) => {
+      const r = checkCompatibility([prev], next);
+      expect(r.compatible).toBe(true);
+      expect(r.requires_extra_clean).toBe(true);
+    });
   });
 });

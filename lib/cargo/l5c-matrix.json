@@ -147,18 +147,67 @@
     { "previous": "grain", "next": "steel", "compatible": true, "extra_clean": false },
 
     {
-      "previous": "*",
+      "previous": "general",
       "next": "general",
       "compatible": true,
       "extra_clean": false,
-      "reason": "General cargo is inert/varied — no presumed contamination from prior cargo"
+      "reason": "General↔general — varied benign mixed cargo"
     },
     {
       "previous": "general",
-      "next": "*",
+      "next": "grain",
       "compatible": true,
       "extra_clean": false,
-      "reason": "General cargo leaves no presumed contamination — compatible with any next cargo"
+      "reason": "General cargo (no known hazardous prior) is benign for grain loadout"
+    },
+    {
+      "previous": "grain",
+      "next": "general",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Grain residue is food-grade dust — benign for general cargo"
+    },
+    {
+      "previous": "general",
+      "next": "steel",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "General cargo is benign for steel"
+    },
+    {
+      "previous": "steel",
+      "next": "general",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Mill scale is inert for general cargo"
+    },
+    {
+      "previous": "general",
+      "next": "pipes",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "General cargo is benign for pipes"
+    },
+    {
+      "previous": "pipes",
+      "next": "general",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Pipes leave no presumed contamination"
+    },
+    {
+      "previous": "general",
+      "next": "bauxite",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "General cargo is benign for bauxite"
+    },
+    {
+      "previous": "bauxite",
+      "next": "general",
+      "compatible": true,
+      "extra_clean": false,
+      "reason": "Bauxite dust is benign for non-food general cargo"
     }
   ]
 }
