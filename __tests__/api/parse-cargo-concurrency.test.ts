@@ -107,4 +107,22 @@ describe('wave-γ-cleanup-B: withRetry429 false-positive guard', () => {
     expect(result).toBe('ok');
     expect(mockFn).toHaveBeenCalledTimes(2);
   });
+
+  it('error message "rate limit reached" (space) → retries (regression guard)', async () => {
+    const mockFn = jest.fn()
+      .mockRejectedValueOnce(new Error('rate limit reached'))
+      .mockResolvedValueOnce('ok');
+    const result = await withRetry429(() => mockFn(), { maxAttempts: 3 });
+    expect(result).toBe('ok');
+    expect(mockFn).toHaveBeenCalledTimes(2);
+  });
+
+  it('error message "rate limited" (space, past tense) → retries', async () => {
+    const mockFn = jest.fn()
+      .mockRejectedValueOnce(new Error('rate limited'))
+      .mockResolvedValueOnce('ok');
+    const result = await withRetry429(() => mockFn(), { maxAttempts: 3 });
+    expect(result).toBe('ok');
+    expect(mockFn).toHaveBeenCalledTimes(2);
+  });
 });

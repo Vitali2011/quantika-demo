@@ -109,7 +109,7 @@ export async function withRetry429<T>(
       // Message-based detection (fallback when status is absent).
       // Lookbehind (?<![#\w]) prevents false-positives like "RFQ #429 not found"
       // where 429 is an order ID preceded by '#', not an HTTP rate-limit code.
-      const isMessageRateLimit = /(?<![#\w])429\b|rate[-_]?limit/i.test(msg);
+      const isMessageRateLimit = /(?<![#\w])429\b|rate[-_\s]?limit/i.test(msg);
       const isRateLimit = isStatusRateLimit || isMessageRateLimit;
       if (!isRateLimit || attempt === maxRetries) throw err;
       // Jittered exponential backoff: baseDelay × 2^attempt × (1..2 random).
