@@ -66,6 +66,11 @@ async function main(): Promise<void> {
     return;
   }
 
+  // Idempotency lives DOWNSTREAM, not here: each iteration delegates to
+  // processDeadline → tryRecordDispatch (lib/db/queries/dispatches). The DB
+  // ledger guarantees that re-running this cron after a crash, restart, or
+  // overlapping invocation cannot resend a notification. Verified end-to-end
+  // by __tests__/deadlines/cron-idempotency.test.ts.
   for (const d of deadlines) {
     if (flags.dryRun) {
       console.log(`[check-deadlines] dry-run deal=${d.dealId} deadline=${d.deadlineAt}`);
