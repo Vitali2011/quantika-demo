@@ -65,7 +65,8 @@ function normalize(cargo: string): string {
     .toLowerCase()
     .replace(/[-_]+/g, ' ')           // dashes/underscores → space
     .replace(/\s+/g, ' ')             // collapse internal whitespace
-    .replace(/[.,;:!?]+$/g, '');      // strip trailing punctuation
+    .replace(/[.,;:!?]+$/g, '')       // strip trailing punctuation
+    .trim();                          // strip leading/trailing whitespace from dash→space conversion
   return ALIAS_MAP[lower] ?? lower;
 }
 
