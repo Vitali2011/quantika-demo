@@ -1,4 +1,4 @@
-import { sanitizeEmailBody, formatDate } from '@/lib/utils';
+import { sanitizeEmailBody, formatDate, formatNumber } from '@/lib/utils';
 import { cookies } from 'next/headers';
 import { redirect, notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -286,7 +286,7 @@ export default async function CargoDetailPage({ params }: Props) {
                   match.matchLevel === 'possible' ? '🟡 POSSIBLE' : '⚠️ WEAK';
                 const vesselName = vessel ? safeRender(vessel.vesselName) || 'Unknown' : 'Vessel';
                 const dwtRaw = vessel ? cfValue(vessel.dwtSummer) : null;
-                const dwtStr = dwtRaw != null ? Number(dwtRaw).toLocaleString() : '?';
+                const dwtStr = dwtRaw != null ? formatNumber(Number(dwtRaw)) : '?';
                 return (
                   <Link key={i} href={`/match/${session.matches.indexOf(match)}`}>
                     <div className="p-3 rounded-lg border hover:bg-muted transition-colors cursor-pointer">

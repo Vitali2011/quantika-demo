@@ -17,6 +17,7 @@ import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
 import { validateDates } from '@/lib/sailing/date-sanity';
 import { checkSanctions } from '@/lib/validation/sanctions';
 import { enrichReasons } from '@/lib/matching/reason-enricher';
+import { formatNumber } from '@/lib/utils';
 
 export interface RawMatch {
   cargo_email_id?: string;
@@ -363,10 +364,10 @@ export async function analyzePairs(
     if (dwtVal && cargoWt) {
       const util = Math.round((cargoWt / dwtVal) * 100);
       sweepReasons.push(
-        `DWCC ${dwtVal.toLocaleString()} mt vs cargo ${cargoWt.toLocaleString()} mt — ${util}% utilization`,
+        `DWCC ${formatNumber(dwtVal)} mt vs cargo ${formatNumber(cargoWt)} mt — ${util}% utilization`,
       );
     } else if (dwtVal) {
-      sweepReasons.push(`Vessel ${dwtVal.toLocaleString()} DWT — physical capacity available`);
+      sweepReasons.push(`Vessel ${formatNumber(dwtVal)} DWT — physical capacity available`);
     }
 
     const dist = analysis.readiness?.distanceNm;

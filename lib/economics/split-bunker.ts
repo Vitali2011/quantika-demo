@@ -1,4 +1,5 @@
 import type { BunkerPrice } from './bunker';
+import { formatNumber } from '@/lib/utils';
 
 export interface SplitBunkerRoute {
   fromPort: string;
@@ -67,7 +68,7 @@ export function optimizeSplitBunker(input: SplitBunkerInput): SplitBunkerResult 
     : 0;
 
   const recommendation = savingsUsd > 0
-    ? `Bunker at ${cheapest.port} (${cheapest.price.vlsfo} USD/MT) — saves ~$${savingsUsd.toLocaleString()} vs ${mostExpensive.port}`
+    ? `Bunker at ${cheapest.port} (${cheapest.price.vlsfo} USD/MT) — saves ~$${formatNumber(savingsUsd)} vs ${mostExpensive.port}`
     : `Bunker at ${cheapest.port} (${cheapest.price.vlsfo} USD/MT)`;
 
   return { recommendation, savingsUsd, bunkerPlan };

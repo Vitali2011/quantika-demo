@@ -2,6 +2,7 @@
  * Post-processes match reasons to ensure each contains at least one number.
  * Enriches numberless reasons with data from structured match fields.
  */
+import { formatNumber } from '@/lib/utils';
 
 export interface MatchContext {
   vesselDwt?: number | null;
@@ -23,7 +24,7 @@ const ENRICHMENT_RULES: Array<{
     pattern: /geared|crane|gear/i,
     enrich: (ctx) => {
       if (ctx.craneCapacity) return `Vessel geared (${ctx.craneCapacity})`;
-      if (ctx.vesselDwt) return `Vessel geared on ${ctx.vesselDwt.toLocaleString()} DWT carrier`;
+      if (ctx.vesselDwt) return `Vessel geared on ${formatNumber(ctx.vesselDwt)} DWT carrier`;
       return null;
     },
   },
@@ -32,10 +33,10 @@ const ENRICHMENT_RULES: Array<{
     enrich: (ctx) => {
       if (ctx.cargoWeightMt && ctx.vesselDwcc) {
         const util = Math.round((ctx.cargoWeightMt / ctx.vesselDwcc) * 100);
-        return `DWCC ${ctx.vesselDwcc.toLocaleString()} mt vs cargo ${ctx.cargoWeightMt.toLocaleString()} mt — ${util}% utilization`;
+        return `DWCC ${formatNumber(ctx.vesselDwcc)} mt vs cargo ${formatNumber(ctx.cargoWeightMt)} mt — ${util}% utilization`;
       }
       if (ctx.cargoWeightMt && ctx.vesselDwt) {
-        return `Cargo ${ctx.cargoWeightMt.toLocaleString()} mt on ${ctx.vesselDwt.toLocaleString()} DWT vessel`;
+        return `Cargo ${formatNumber(ctx.cargoWeightMt)} mt on ${formatNumber(ctx.vesselDwt)} DWT vessel`;
       }
       return null;
     },

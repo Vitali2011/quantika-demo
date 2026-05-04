@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
       const participants = Array.from(new Set(sortedEmails.map(e => e.from)));
       const dates = sortedEmails.map(e => e.date).filter(Boolean);
       const dateRange = dates.length > 0
-        ? `${new Date(dates[0]).toLocaleDateString()} \u2013 ${new Date(dates[dates.length - 1]).toLocaleDateString()}`
+        ? `${new Date(dates[0]).toLocaleDateString('en-US')} \u2013 ${new Date(dates[dates.length - 1]).toLocaleDateString('en-US')}`
         : '';
 
       const points: RecapPoint[] = (result.points || []).map((p) => ({

@@ -9,7 +9,7 @@ import { Renderable } from '@/lib/types';
 import { CopyButton } from '@/components/copy-button';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
 import { safeRender, getConf, ConfIcon } from '@/lib/ui-render';
-import { formatDate } from '@/lib/utils';
+import { formatDate, formatNumber } from '@/lib/utils';
 
 function CField({ label, field }: { label: string; field: Renderable }) {
   const val = safeRender(field);
@@ -54,7 +54,7 @@ export default async function FixtureDetailPage({ params }: Props) {
     recap.dischargingRate ? `Discharging: ${safeRender(recap.dischargingRate)} ${safeRender(recap.dischargingTerms) || ''}` : '',
     recap.demurrageRate ? `Demurrage: ${safeRender(recap.demurrageRate)} ${safeRender(recap.demurragePayment) || ''}` : '',
     recap.commission ? `Commission: ${safeRender(recap.commission)}` : '',
-    recap.commissionAmount ? `Calculated: ${safeRender(recap.commissionCurrency) || '$'}${recap.commissionAmount?.toLocaleString()}` : '',
+    recap.commissionAmount ? `Calculated: ${safeRender(recap.commissionCurrency) || '$'}${formatNumber(recap.commissionAmount)}` : '',
   ].filter(Boolean).join('\n') : '';
 
   return (
@@ -167,7 +167,7 @@ export default async function FixtureDetailPage({ params }: Props) {
                   <CField label="Commission" field={recap.commission} />
                   {recap.commissionPercent != null && recap.commissionAmount != null && (
                     <div className="mt-2 p-2 bg-green-100 rounded text-sm">
-                      <strong>Calculated: {safeRender(recap.commissionCurrency) || '$'}{recap.commissionAmount.toLocaleString()}</strong>
+                      <strong>Calculated: {safeRender(recap.commissionCurrency) || '$'}{formatNumber(recap.commissionAmount)}</strong>
                       <span className="text-muted-foreground ml-2">({recap.commissionPercent}% on freight)</span>
                     </div>
                   )}

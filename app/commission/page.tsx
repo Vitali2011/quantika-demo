@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
+import { formatNumber } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { ChevronLeft, AlertTriangle } from 'lucide-react';
 
@@ -43,10 +44,10 @@ export default async function CommissionPage() {
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-medium">
-                        {d.commissionPercent}% × {d.freightCurrency} {d.freightAmount.toLocaleString()}
+                        {d.commissionPercent}% × {d.freightCurrency} {formatNumber(d.freightAmount)}
                       </p>
                       <p className="text-sm font-bold text-green-700">
-                        = {d.commissionCurrency} {d.commissionAmount.toLocaleString()}
+                        = {d.commissionCurrency} {formatNumber(d.commissionAmount)}
                       </p>
                     </div>
                   </div>
@@ -59,7 +60,7 @@ export default async function CommissionPage() {
                       {commissionSummary.totalByCurrency.map((t, i) => (
                         <span key={i}>
                           {i > 0 ? ' + ' : ''}
-                          ~{t.currency === 'EUR' ? '€' : '$'}{t.amount.toLocaleString()}
+                          ~{t.currency === 'EUR' ? '€' : '$'}{formatNumber(t.amount)}
                         </span>
                       ))}
                     </span>
