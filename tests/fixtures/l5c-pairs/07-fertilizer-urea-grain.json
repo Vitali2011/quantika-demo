@@ -4,7 +4,9 @@
   "newCargo": "grain",
   "expected": {
     "compatible": false,
-    "requires_extra_clean": false,
-    "blocking_pairs": [{ "previous": "fertilizer-urea", "reason": "Cross-contamination, food-grade rejected" }]
+    "requires_extra_clean": true,
+    "blocking_pairs": [
+      { "previous": "fertilizer-urea", "reason": "Cross-contamination, food-grade rejected" }
+    ]
   }
 }

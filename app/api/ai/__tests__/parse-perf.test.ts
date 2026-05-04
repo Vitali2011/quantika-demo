@@ -82,7 +82,11 @@ beforeEach(() => {
 });
 
 describe('parse-cargo: pLimit concurrency', () => {
-  it('uses pLimit(3) for AI calls', async () => {
+  // wave-γ-3 (B1): bumped from 3 → 8. With 13 demo emails the old cap
+  // forced ~5 sequential rounds × ~20s/email = stable Cloudflare 524.
+  // PARSE_CARGO_CONCURRENCY is exported by the route so this test stays
+  // honest if the value changes again.
+  it('uses pLimit(PARSE_CARGO_CONCURRENCY = 8) for AI calls', async () => {
     mockRequireSession.mockReturnValue({
       session: makeSession('CARGO_INQUIRY') as never,
       sessionId: 'sess-1',
@@ -90,9 +94,9 @@ describe('parse-cargo: pLimit concurrency', () => {
 
     await parseCargoPOST(makeRequest());
 
-    expect(capturedConcurrency).toContain(3);
-    // Must NOT use a higher cap
-    const aiLimitCalls = capturedConcurrency.filter(c => c !== 3 && c !== 10);
+    expect(capturedConcurrency).toContain(8);
+    // Allow only the AI cap (8) and the unrelated google.ts (10) seen in this suite.
+    const aiLimitCalls = capturedConcurrency.filter(c => c !== 8 && c !== 10);
     expect(aiLimitCalls).toHaveLength(0);
   });
 });

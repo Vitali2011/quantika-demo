@@ -33,6 +33,10 @@ const TAXONOMY: Record<string, string[]> = {
   sulphur: ['sulfur'],
   scrap: ['hms', 'shredded scrap', 'busheling'],
   bauxite: ['alumina'],
+  // wave-γ-3 Task 2: "general cargo" is a permissive class (inert/varied
+  // mixed shipments). Resolves variants to canonical "general" so the
+  // *→general / general→* wildcards apply.
+  general: ['general cargo', 'mixed cargo', 'misc'],
 };
 
 /**
