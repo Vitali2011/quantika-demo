@@ -1,7 +1,14 @@
 import type { WhatsAppClient } from './client';
 import type { WhatsAppIncomingMessage } from './types';
 import type { ParsedCargo, ParsedVessel, ConfidenceLevel } from '@/lib/types';
-import { callAiJson } from '@/lib/openai';
+import { callAiJson, LLMTimeoutError } from '@/lib/openai';
+
+/**
+ * wave-γ-1 hardening: cap LLM call for inbound WhatsApp parse at 30s. The
+ * default 85s exceeds typical WhatsApp Business ack windows and leaves a
+ * cliproxy connection open long after the user's session has moved on.
+ */
+const FORWARD_PARSE_TIMEOUT_MS = 30_000;
 import { transcribeAudio } from './voice-transcribe';
 import { extractTextFromImage } from './image-ocr';
 import { extractTextFromPdf } from './pdf-extract';
@@ -160,9 +167,18 @@ export async function parseForwardedMessage(
       FORWARD_PARSE_SYSTEM_PROMPT,
       undefined,
       {},
+      16000,
+      { timeoutMs: FORWARD_PARSE_TIMEOUT_MS },
     );
-  } catch {
-    // AI call failed (network error, malformed JSON, etc.) — return gracefully
+  } catch (err) {
+    if (err instanceof LLMTimeoutError) {
+      // Distinct label so debugging differentiates timeout from other failures.
+      return {
+        confidence: 'missing',
+        missingFields: ['ai_extraction_timeout'],
+        rawText,
+      };
+    }
     return {
       confidence: 'missing',
       missingFields: ['ai_extraction_failed'],

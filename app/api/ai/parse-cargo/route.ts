@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
-import { callAiJson } from '@/lib/openai';
+import { callAiJson, LLMTimeoutError } from '@/lib/openai';
 import { CARGO_INQUIRY_PARSER_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_LIGHT } from '@/lib/constants';
 import { CargoType, Email, ParsedCargo, Range } from '@/lib/types';
@@ -182,15 +182,30 @@ export async function POST(request: NextRequest) {
       // βf-11: race the LLM call against LLM_TIMEOUT_MS. On timeout we fall
       // back to regex enrichment of an empty cargo so the route still returns
       // 200 instead of letting the request hang past maxDuration → 524.
-      const result = await withTimeout(
-        callAiJson<RawCargoItem>(
-          prompts[i],
-          CARGO_INQUIRY_PARSER_PROMPT,
-          AI_MODEL_LIGHT,
-          { items: [] }
-        ),
-        LLM_TIMEOUT_MS,
-      );
+      // γ-1: pass timeoutMs into callAiJson so the underlying AbortController
+      // actually cancels the upstream stream (was: only outer race resolved
+      // null while the LLM kept consuming resources in the background).
+      let result: RawCargoItem | null;
+      try {
+        result = await withTimeout(
+          callAiJson<RawCargoItem>(
+            prompts[i],
+            CARGO_INQUIRY_PARSER_PROMPT,
+            AI_MODEL_LIGHT,
+            { items: [] },
+            16000,
+            { timeoutMs: LLM_TIMEOUT_MS },
+          ),
+          LLM_TIMEOUT_MS,
+        );
+      } catch (err) {
+        // LLMTimeoutError from the inner abort — same outcome as withTimeout race.
+        if (err instanceof LLMTimeoutError) {
+          result = null;
+        } else {
+          throw err;
+        }
+      }
       const items = result === null
         ? [] // LLM timed out — emit nothing rather than a half-parsed record.
         : parseCargoAIResponse(JSON.stringify(result), email.id);

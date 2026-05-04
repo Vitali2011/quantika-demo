@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
-import { callAiText } from '@/lib/openai';
+import { callAiText, LLMTimeoutError } from '@/lib/openai';
 import { VESSEL_POSITION_PARSER_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_LIGHT } from '@/lib/constants';
 import { ParsedVessel, cfValue } from '@/lib/types';
@@ -35,7 +35,15 @@ export async function POST(request: NextRequest) {
   await Promise.all(
     vesselEmails.map((email) => limit(async () => {
       const prompt = buildVesselPrompt(email);
-      const raw = await callAiText(prompt, VESSEL_POSITION_PARSER_PROMPT, AI_MODEL_LIGHT);
+      let raw: string;
+      try {
+        raw = await callAiText(prompt, VESSEL_POSITION_PARSER_PROMPT, AI_MODEL_LIGHT);
+      } catch (err) {
+        // γ-1: per-email timeout isolation — a single LLM timeout must NOT
+        // poison the whole batch. Skip this email; user retries the route.
+        if (err instanceof LLMTimeoutError) return;
+        throw err;
+      }
       const items = parseVesselAIResponse(raw, email.id, email.subject);
       const corrected = applyGearedFallback(items, email.body);
       allParsed.push(...corrected);

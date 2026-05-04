@@ -27,7 +27,7 @@ jest.mock('openai', () => {
   };
 });
 
-import { callAiJson, LLMTimeoutError } from '@/lib/openai';
+import { callAiJson, callAiText, LLMTimeoutError } from '@/lib/openai';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -126,6 +126,122 @@ describe('callAiJson timeout (βf3-01)', () => {
 
     // Fire the 85s timeout immediately
     jest.runAllTimers();
+
+    await expect(promise).rejects.toBeInstanceOf(LLMTimeoutError);
+  }, 10000);
+
+  /**
+   * T-3: caller-supplied AbortSignal (already aborted) → LLMTimeoutError.
+   * Verifies external signal composition for endpoint-driven timeouts.
+   */
+  it('T-3: pre-aborted external signal → LLMTimeoutError', async () => {
+    _mockCreate.mockImplementation(async () => {
+      throw new DOMException('The operation was aborted', 'AbortError');
+    });
+
+    const ext = new AbortController();
+    ext.abort();
+
+    await expect(
+      callAiJson<{ result: string }>(
+        'p',
+        's',
+        'gpt-test',
+        { result: 'fallback' },
+        16000,
+        { signal: ext.signal },
+      ),
+    ).rejects.toBeInstanceOf(LLMTimeoutError);
+  }, 10000);
+
+  /**
+   * T-4: custom timeoutMs honoured — short timeout fires before stream finishes.
+   */
+  it('T-4: custom timeoutMs respected via fake timers', async () => {
+    _mockCreate.mockImplementation(async () => {
+      throw new DOMException('The operation was aborted', 'AbortError');
+    });
+    jest.useFakeTimers();
+
+    const promise = callAiJson<{ result: string }>(
+      'p',
+      's',
+      'gpt-test',
+      { result: 'fallback' },
+      16000,
+      { timeoutMs: 50 },
+    );
+    jest.advanceTimersByTime(60);
+
+    await expect(promise).rejects.toBeInstanceOf(LLMTimeoutError);
+  }, 10000);
+});
+
+describe('callAiText timeout (γ-1: AbortController parity)', () => {
+  beforeEach(() => {
+    _mockCreate = jest.fn();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  /** TX-1: fast text response resolves to streamed string. */
+  it('TX-1: fast text response returns streamed content', async () => {
+    _mockCreate.mockImplementation(async () =>
+      makeStream(['hello', ' world'], 10),
+    );
+
+    const text = await callAiText('p', 'sys', 'gpt-test');
+    expect(text).toBe('hello world');
+  }, 10000);
+
+  /** TX-2: AbortError → LLMTimeoutError (parity with callAiJson). */
+  it('TX-2: AbortError from create() → LLMTimeoutError', async () => {
+    _mockCreate.mockImplementation(async () => {
+      throw new DOMException('The operation was aborted', 'AbortError');
+    });
+    jest.useFakeTimers();
+
+    const promise = callAiText('p', 'sys', 'gpt-test');
+    jest.runAllTimers();
+
+    await expect(promise).rejects.toBeInstanceOf(LLMTimeoutError);
+  }, 10000);
+
+  /** TX-3: non-timeout error → empty string (preserves lenient contract). */
+  it('TX-3: non-timeout error returns empty string', async () => {
+    _mockCreate.mockImplementation(async () => {
+      throw new Error('some other failure');
+    });
+
+    const text = await callAiText('p', 'sys', 'gpt-test');
+    expect(text).toBe('');
+  }, 10000);
+
+  /** TX-4: pre-aborted external signal → LLMTimeoutError. */
+  it('TX-4: pre-aborted external signal → LLMTimeoutError', async () => {
+    _mockCreate.mockImplementation(async () => {
+      throw new DOMException('The operation was aborted', 'AbortError');
+    });
+
+    const ext = new AbortController();
+    ext.abort();
+
+    await expect(
+      callAiText('p', 'sys', 'gpt-test', { signal: ext.signal }),
+    ).rejects.toBeInstanceOf(LLMTimeoutError);
+  }, 10000);
+
+  /** TX-5: custom timeoutMs honoured. */
+  it('TX-5: custom timeoutMs honoured', async () => {
+    _mockCreate.mockImplementation(async () => {
+      throw new DOMException('The operation was aborted', 'AbortError');
+    });
+    jest.useFakeTimers();
+
+    const promise = callAiText('p', 'sys', 'gpt-test', { timeoutMs: 50 });
+    jest.advanceTimersByTime(60);
 
     await expect(promise).rejects.toBeInstanceOf(LLMTimeoutError);
   }, 10000);

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
-import { callAiJson } from '@/lib/openai';
+import { callAiJson, LLMTimeoutError } from '@/lib/openai';
 import { CLASSIFICATION_SYSTEM_PROMPT } from '@/lib/prompts';
 import { AI_MODEL_HEAVY, MAX_EMAIL_BODY_CHARS } from '@/lib/constants';
 import { truncateText } from '@/lib/utils';
@@ -54,8 +54,19 @@ export async function POST(request: NextRequest) {
   }));
 
   const batches = chunk(emailInput, CLASSIFY_BATCH_SIZE);
-  const batchResults = await Promise.all(batches.map(classifyBatch));
-  const merged = batchResults.flat();
+  let merged: AiClassification[];
+  try {
+    const batchResults = await Promise.all(batches.map(classifyBatch));
+    merged = batchResults.flat();
+  } catch (err) {
+    if (err instanceof LLMTimeoutError) {
+      return NextResponse.json(
+        { error: 'ai_timeout', message: 'Classification timed out — try fewer emails', retryable: true },
+        { status: 504 },
+      );
+    }
+    throw err;
+  }
 
   const { classifications, processedEmails } = classifyEmails(session.emails, merged);
   updateSession(sessionId, { classifications, processedEmails });

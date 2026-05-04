@@ -46,6 +46,11 @@ function lookupInDataset(imo: string): CiiRating | null {
   return null;
 }
 
+// wave-γ-1 hardening: cap CII LLM lookup at 30s. CII is an admin-side helper
+// for vessels missing from the static dataset; the 85s default is excessive
+// and a hung lookup will block a vessel-detail render upstream.
+const CII_LLM_TIMEOUT_MS = 30_000;
+
 async function defaultCallLlm(imo: string): Promise<string> {
   const { callAiJson } = await import('@/lib/openai');
   const { AI_MODEL_LIGHT } = await import('@/lib/constants');
@@ -55,6 +60,7 @@ async function defaultCallLlm(imo: string): Promise<string> {
     AI_MODEL_LIGHT,
     { rating: 'unknown' },
     100,
+    { timeoutMs: CII_LLM_TIMEOUT_MS },
   );
   return result.rating ?? 'unknown';
 }
