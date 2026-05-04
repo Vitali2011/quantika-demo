@@ -6,6 +6,7 @@ import type { ForwardParseResult } from './forward-parser';
 import { logAuditEvent } from '@/lib/audit';
 import { cfValue } from '@/lib/types';
 import { logger } from '@/lib/logger';
+import { formatNumber } from '@/lib/utils';
 
 function buildParseReply(result: ForwardParseResult): string {
   const cargo = result.parsedCargo;
@@ -19,7 +20,7 @@ function buildParseReply(result: ForwardParseResult): string {
   const dest = cfValue(cargo.destinationPort) ?? '?';
   const laycan = cargo.laycan ?? 'TBD';
 
-  const weightStr = weight ? `${weight.toLocaleString()} mt` : '? mt';
+  const weightStr = weight ? `${formatNumber(weight)} mt` : '? mt';
   const summary = `✅ Parsed: ${weightStr} ${description} ${origin}→${dest} · laycan ${laycan}`;
 
   const missing = result.missingFields.length > 0

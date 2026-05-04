@@ -13,6 +13,7 @@ import { MarketIntelligence } from '@/components/dashboard/MarketIntelligence';
 import { classifyPriority } from '@/lib/sailing/priority-classifier';
 import type { PriorityLevel } from '@/lib/sailing/priority-classifier';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
+import { formatNumber } from '@/lib/utils';
 
 const PRIORITY_ORDER: Record<PriorityLevel, number> = { urgent: 0, attention: 1, ok: 2 };
 
@@ -80,7 +81,7 @@ export default async function DashboardPage() {
     commissionSummary?.totalByCurrency
       .map(
         (t) =>
-          `~${t.currency} ${t.amount.toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
+          `~${t.currency} ${formatNumber(t.amount, { maximumFractionDigits: 0 })}`,
       )
       .join(' + ') || null;
 

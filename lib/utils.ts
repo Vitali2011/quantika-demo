@@ -49,6 +49,11 @@ export function safeJsonParse<T>(text: string, fallback: T): T {
   }
 }
 
+export function formatNumber(n: number | null | undefined, opts?: Intl.NumberFormatOptions): string {
+  if (n === null || n === undefined || !Number.isFinite(n)) return '0';
+  return new Intl.NumberFormat('en-US', opts).format(n);
+}
+
 export function sanitizeEmailBody(body: string): string {
   return body
     .replace(/<file:\/\/\/[^>]*>/gi, '')
