@@ -6,6 +6,7 @@ import { SessionData } from './types';
 import { SESSION_TTL_MS } from './constants';
 import { runMigrations } from './migrations/runner';
 import { allMigrations } from './migrations/index';
+import { bootstrapKnowledgeSources } from './knowledge/bootstrap';
 
 export const MAX_SESSIONS = 100;
 
@@ -41,6 +42,10 @@ export class SessionStore {
     this.db.pragma('foreign_keys = ON');
     if (process.env['USE_MIGRATION_RUNNER'] !== 'false') {
       runMigrations(this.db, allMigrations);
+      // Idempotent registration of all knowledge sources (OFAC, EU sanctions,
+      // distances, JWC, ECA, ...). Must run AFTER migration 013 has created
+      // the knowledge_sources table. Preserves runtime status of existing rows.
+      bootstrapKnowledgeSources(this.db);
     } else {
       this.db.exec(`
         CREATE TABLE IF NOT EXISTS sessions (
