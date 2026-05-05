@@ -1,0 +1,12 @@
+[Unit]
+Description=Quantika Searoute Service
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/quantika/services/searoute
+ExecStart=/opt/quantika/services/searoute/.venv/bin/uvicorn main:app --host 127.0.0.1 --port 8200
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -94,17 +94,68 @@ Calculate sea route distance between two points.
 
 ## Production Deployment
 
+### Option 1: Docker Compose
+
+From project root:
+
+```bash
+docker-compose up -d searoute
+```
+
+### Option 2: Systemd (VPS)
+
 For systemd-based deployment on VPS:
 
-1. Copy service files to `/opt/quantika/services/searoute/`
-2. Create virtual environment and install dependencies
-3. Copy systemd unit file (see task D3 spec)
-4. Enable and start service:
+**Step 1: Deploy service files**
+
+```bash
+# Copy service files to /opt/quantika/services/searoute/
+sudo mkdir -p /opt/quantika/services/searoute
+sudo cp -r services/searoute/* /opt/quantika/services/searoute/
+```
+
+**Step 2: Set up Python environment**
+
+```bash
+cd /opt/quantika/services/searoute
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+**Step 3: Install systemd unit**
+
+```bash
+# Copy unit file to systemd directory
+sudo cp ops/systemd/quantika-searoute.service /etc/systemd/system/
+
+# Reload systemd daemon
+sudo systemctl daemon-reload
+```
+
+**Step 4: Enable and start service**
 
 ```bash
 sudo systemctl enable quantika-searoute
 sudo systemctl start quantika-searoute
 sudo systemctl status quantika-searoute
+```
+
+**Step 5: Verify service is running**
+
+```bash
+curl http://127.0.0.1:8200/health
+# Expected: {"status": "ok", "version": "1.0.0"}
+```
+
+**Logs:**
+
+```bash
+# View service logs
+sudo journalctl -u quantika-searoute -f
+
+# View recent logs
+sudo journalctl -u quantika-searoute -n 50
 ```
 
 ## Notes
