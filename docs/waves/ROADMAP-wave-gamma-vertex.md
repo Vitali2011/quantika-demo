@@ -20,19 +20,20 @@
 
 ## Item 1: ai-provider-shim (foundation, γv-00)
 
-**Цель:** создать `lib/ai-provider.ts` — единый shim для всех AI-вызовов с поддержкой двух провайдеров (OpenAI через ClipProxy, Gemini через Vertex AI). Не трогать существующие endpoint'ы — только инфраструктура.
+**Цель:** создать `lib/ai-provider.ts` — единый shim для всех AI-вызовов с поддержкой ТРЁХ провайдеров: OpenAI через ClipProxy, Gemini через Vertex AI, Anthropic Claude через AWS Bedrock. Не трогать существующие endpoint'ы — только инфраструктура.
 
 **Что должно быть в спеке:**
 
 - Новый файл `lib/ai-provider.ts` с функциями `getProvider(scope)`, `getModel(scope)`, `callAi(scope, prompt, opts)`, `callAiJson<T>`, `callAiText`, `callAiVision`, `callAiAudio`.
-- Routing logic: per-scope override (`<SCOPE>_PROVIDER` env) → global (`AI_PROVIDER` env) → default `openai`.
-- Подключить `@google/genai` SDK (npm install).
-- Env vars: `AI_PROVIDER`, `GOOGLE_APPLICATION_CREDENTIALS`, `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION`.
+- Routing logic: per-scope override (`<SCOPE>_PROVIDER` env, значения `openai|gemini|bedrock`) → global (`AI_PROVIDER` env) → default `openai`.
+- Подключить `@google/genai` SDK (Gemini) и `@aws-sdk/client-bedrock-runtime` + `@anthropic-ai/bedrock-sdk` (Bedrock Claude).
+- Env vars Gemini: `GOOGLE_APPLICATION_CREDENTIALS`, `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION`.
+- Env vars Bedrock: `AWS_REGION` (default `us-east-1`), `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` (или IAM role), `BEDROCK_MODEL_ID` (default — последний доступный inference profile для Claude Opus 4.7, например `us.anthropic.claude-opus-4-7-20260415-v1:0` — точный ID уточнить через `aws bedrock list-foundation-models` в момент имплементации).
 - Создать `.env.gpt-fallback.example` — emergency rollback пресет (все `*_PROVIDER=openai`).
-- Обновить `.env.local.example` с полным набором новых env'ов и дефолтом `openai`.
+- Обновить `.env.local.example` с полным набором новых env'ов (Gemini + Bedrock) и дефолтом `openai`.
 - SQLite таблица `ai_audit` для логирования вызовов (request, response, usage, provider, model, latency).
-- Unit test `lib/__tests__/ai-provider.test.ts` — мок обоих провайдеров, проверка routing.
-- Documentation: README секция "AI Provider Switching" с инструкцией emergency rollback.
+- Unit test `lib/__tests__/ai-provider.test.ts` — мок всех трёх провайдеров, проверка routing для каждого.
+- Documentation: README секция "AI Provider Switching" с инструкцией emergency rollback и описанием выбора провайдеров (когда какой использовать).
 
 **Что не входит:** миграция endpoint'ов. Они продолжают использовать текущий `lib/openai.ts` через ClipProxy.
 
@@ -40,11 +41,14 @@
 
 - При `AI_PROVIDER=openai` shim вызывает текущий ClipProxy путь.
 - При `AI_PROVIDER=gemini` shim вызывает Vertex AI с service account credentials.
-- При `<SCOPE>_PROVIDER=gemini`, `AI_PROVIDER=openai` — конкретный scope идёт в Gemini, остальные в OpenAI.
+- При `AI_PROVIDER=bedrock` shim вызывает AWS Bedrock Claude (Opus 4.7 по дефолту).
+- При `<SCOPE>_PROVIDER=bedrock`, `AI_PROVIDER=openai` — конкретный scope идёт в Bedrock, остальные в OpenAI (matrix routing работает для всех 3 провайдеров).
 - `.env.gpt-fallback.example` коммитится (без секретов).
 - `npm run lint && npx tsc --noEmit && npm test` зелёный.
 
 **Files:** `lib/ai-provider.ts` [NEW], `lib/__tests__/ai-provider.test.ts` [NEW], `.env.gpt-fallback.example` [NEW], `.env.local.example` [MIGRATE], `package.json` [REWRITE], README updates.
+
+**Note про учётку AWS:** на момент написания плана у проекта нет настроенного AWS account для Bedrock. Перед имплементацией спеки γv-00 Vitali должен (а) создать/выбрать AWS account, (б) запросить model access на Claude Opus 4.7 в Bedrock console (region `us-east-1`), (в) сгенерировать access keys и положить в `.env.local`. Без этого spec γv-00 запускать нельзя — preflight упадёт. Спека должна явно проверять presence env vars при `bedrock` provider и давать понятную ошибку.
 
 ---
 
@@ -233,23 +237,33 @@
 
 ---
 
-## Item 11: Migrate match endpoint to Gemini Pro (γv-06)
+## Item 11: Migrate match endpoint to Claude Opus 4.7 via AWS Bedrock (γv-06)
 
-**Цель:** перевести cargo↔vessel matching на Gemini 2.5 Pro. **Самый сложный prompt в системе** (387 строк с hard score caps, MANDATORY ISSUES SURFACING, FINAL AUDIT). Делается последним.
+**Цель:** перевести cargo↔vessel matching на Claude Opus 4.7 через AWS Bedrock. **Самый сложный prompt в системе** (387 строк с hard score caps, MANDATORY ISSUES SURFACING, FINAL AUDIT) — для него выбран Opus 4.7 как самая способная модель в long-reasoning + structured-instruction-following. НЕ Gemini, НЕ gpt-5.5. Делается последним.
+
+**Почему Opus 4.7 а не Gemini Pro:**
+
+- Match prompt полагается на point-by-point compliance с MANDATORY ISSUES SURFACING (≥30 правил) — Claude исторически сильнее в строгом следовании multi-step инструкциям.
+- Hard score caps требуют, чтобы модель НЕ "сглаживала" — Opus 4.7 reasoning chain менее склонен к compromise scoring.
+- 1M context (Opus 4.7) — хватает на полный prompt + cargo + vessel payload + history.
 
 **Что должно быть в спеке:**
 
-- `app/api/ai/match/route.ts` использует `callAi('MATCH', ...)`.
-- Default Gemini model: `gemini-2.5-pro` (heavy reasoning task).
-- Rollback flag: `MATCH_PROVIDER=openai` — этот flag критичен, в случае регрессии немедленный откат.
-- Extensive regression eval: 50 real match scenarios, проверка score deviation ≤ ±5 points между OpenAI и Gemini, проверка что MANDATORY ISSUES surfaced, проверка readiness/score caps respected.
+- `app/api/ai/match/route.ts` использует `callAi('MATCH', ...)` через ai-provider shim.
+- Default provider для match: `bedrock` (т.е. `MATCH_PROVIDER=bedrock` в `.env.local.example`).
+- Default model: Claude Opus 4.7 inference profile (точный `BEDROCK_MODEL_ID` — uточнить через `aws bedrock list-inference-profiles --region us-east-1` на момент имплементации; ожидаем `us.anthropic.claude-opus-4-7-20260415-v1:0` или эквивалент).
+- Rollback flags (несколько уровней):
+  - `MATCH_PROVIDER=openai` → вернуться на gpt-5.5 (немедленный откат при регрессии).
+  - `MATCH_PROVIDER=gemini` → fallback на Gemini 2.5 Pro если Bedrock недоступен (например, AWS outage).
+- Extensive regression eval: 50 real match scenarios, проверка score deviation ≤ ±5 points между OpenAI baseline и Bedrock Claude, проверка что MANDATORY ISSUES surfaced, проверка readiness/score caps respected. Дополнительная per-scenario сравнительная табличка (OpenAI vs Bedrock vs Gemini) — для документации в `docs/waves/`.
 - Mandatory adversarial QA через `/test-skill` после implementation.
+- Cost monitoring: Opus 4.7 на Bedrock существенно дороже Gemini Pro и gpt-5.5. Спека должна добавить метрику `match_cost_usd` в `ai_audit` table и алерт если match average cost > $0.10/call.
 
-**Acceptance:** На corpus 50 scenarios median score deviation ≤ 5 pts, все critical issues surfaced. Если деградация — rollback flag включён в production.
+**Acceptance:** На corpus 50 scenarios median score deviation ≤ 5 pts, все critical issues surfaced, cost per match ≤ $0.15 (target $0.05-0.10). Если деградация — rollback flag включён в production.
 
-**Files:** `app/api/ai/match/route.ts` [REWRITE], `lib/prompts/match.ts` [MIGRATE если нужны Gemini-specific tweaks], тесты.
+**Files:** `app/api/ai/match/route.ts` [REWRITE], `lib/prompts/match.ts` [MIGRATE если нужны Claude-specific tweaks — `<thinking>` блоки, system prompt разделение], `docs/waves/match-provider-comparison.md` [NEW], тесты.
 
-**Dep:** Items 1, 2-7 (foundation + parse endpoints должны быть готовы для регрессии).
+**Dep:** Items 1, 2-7 (foundation + parse endpoints должны быть готовы для регрессии). **Дополнительно: Bedrock model access approved + AWS credentials в `.env.local`** (см. note в γv-00).
 
 ---
 

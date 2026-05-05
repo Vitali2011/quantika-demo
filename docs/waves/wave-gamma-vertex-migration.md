@@ -74,7 +74,7 @@ WHATSAPP_FORWARD_PROVIDER=openai
 
 ```typescript
 // lib/ai-provider.ts
-type Provider = "openai" | "gemini";
+type Provider = "openai" | "gemini" | "bedrock";
 
 export function getProvider(scope: string): Provider {
   // Per-scope override → global → default openai
@@ -90,6 +90,13 @@ export function getModel(scope: string): string {
   if (provider === "openai") {
     return process.env[`${scope}_OPENAI_MODEL`] || process.env.AI_MODEL_HEAVY || "gpt-5.5";
   }
+  if (provider === "bedrock") {
+    return (
+      process.env[`${scope}_BEDROCK_MODEL`] ||
+      process.env.BEDROCK_MODEL_ID ||
+      "us.anthropic.claude-opus-4-7-20260415-v1:0"
+    );
+  }
   return (
     process.env[`${scope}_GEMINI_MODEL`] ||
     process.env.AI_MODEL_GEMINI_DEFAULT ||
@@ -100,9 +107,12 @@ export function getModel(scope: string): string {
 export async function callAi<T>(scope: string, prompt: string, opts?: AiOpts): Promise<T> {
   const provider = getProvider(scope);
   if (provider === "openai") return callOpenAi(getModel(scope), prompt, opts);
+  if (provider === "bedrock") return callBedrock(getModel(scope), prompt, opts);
   return callGemini(getModel(scope), prompt, opts);
 }
 ```
+
+**Почему 3-й провайдер (Bedrock):** match endpoint (γv-06) — наиболее сложный prompt (387 строк, MANDATORY ISSUES SURFACING с ≥30 правилами, hard score caps). Для него выбран Claude Opus 4.7 через AWS Bedrock как самая способная модель в long-reasoning + structured-instruction-following. Gemini Pro используется для остальных тяжёлых endpoint'ов (recap, parse-recap, explain-deal). Все 3 провайдера routable per-scope, можно гибко перенаправлять трафик.
 
 Каждый endpoint вместо прямого `callAiJson(...)` (текущий путь через ClipProxy) использует `callAi('CLASSIFY', prompt, ...)` — и shim сам решает куда идти.
 
@@ -123,14 +133,14 @@ SHADOW_LOG_PATH=/var/log/quantika/shadow-ai.jsonl
 
 ### Уровень 1: Прямая миграция (сохранить функциональность, снизить стоимость)
 
-| ID        | Spec                                 | Файлы                                                                                    | Модель Gemini    | Effort                           | Rollback                                                     |
-| --------- | ------------------------------------ | ---------------------------------------------------------------------------------------- | ---------------- | -------------------------------- | ------------------------------------------------------------ |
-| **γv-01** | classify → Gemini Flash через shim   | `app/api/ai/classify/route.ts`, `lib/ai-provider.ts` (новый), `lib/openai.ts` (refactor) | gemini-2.5-flash | 0.5d                             | `CLASSIFY_PROVIDER=openai`                                   |
-| **γv-02** | parse-cargo через shim               | `app/api/ai/parse-cargo/route.ts`                                                        | gemini-2.5-flash | 0.5d                             | `PARSE_CARGO_PROVIDER=openai`                                |
-| **γv-03** | parse-vessel через shim              | `app/api/ai/parse-vessel/route.ts`                                                       | gemini-2.5-flash | 0.25d                            | `PARSE_VESSEL_PROVIDER=openai`                               |
-| **γv-04** | parse-recap (Pro для CP-clauses)     | `app/api/ai/parse-recap/route.ts`                                                        | gemini-2.5-pro   | 0.5d                             | `PARSE_RECAP_PROVIDER=openai`                                |
-| **γv-05** | draft-quote / draft-reply через shim | `app/api/ai/draft-quote/route.ts`, `app/api/ai/draft-reply/route.ts`                     | gemini-2.5-flash | 0.25d                            | `DRAFT_QUOTE_PROVIDER=openai`, `DRAFT_REPLY_PROVIDER=openai` |
-| **γv-06** | match → Pro (с rollback на openai)   | `app/api/ai/match/route.ts`                                                              | gemini-2.5-pro   | 1d (включая регрессионные тесты) | `MATCH_PROVIDER=openai`                                      |
+| ID        | Spec                                                                 | Файлы                                                                                    | Модель Gemini                                   | Effort                                                                            | Rollback                                                                          |
+| --------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ----------------------------------------------- | --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| **γv-01** | classify → Gemini Flash через shim                                   | `app/api/ai/classify/route.ts`, `lib/ai-provider.ts` (новый), `lib/openai.ts` (refactor) | gemini-2.5-flash                                | 0.5d                                                                              | `CLASSIFY_PROVIDER=openai`                                                        |
+| **γv-02** | parse-cargo через shim                                               | `app/api/ai/parse-cargo/route.ts`                                                        | gemini-2.5-flash                                | 0.5d                                                                              | `PARSE_CARGO_PROVIDER=openai`                                                     |
+| **γv-03** | parse-vessel через shim                                              | `app/api/ai/parse-vessel/route.ts`                                                       | gemini-2.5-flash                                | 0.25d                                                                             | `PARSE_VESSEL_PROVIDER=openai`                                                    |
+| **γv-04** | parse-recap (Pro для CP-clauses)                                     | `app/api/ai/parse-recap/route.ts`                                                        | gemini-2.5-pro                                  | 0.5d                                                                              | `PARSE_RECAP_PROVIDER=openai`                                                     |
+| **γv-05** | draft-quote / draft-reply через shim                                 | `app/api/ai/draft-quote/route.ts`, `app/api/ai/draft-reply/route.ts`                     | gemini-2.5-flash                                | 0.25d                                                                             | `DRAFT_QUOTE_PROVIDER=openai`, `DRAFT_REPLY_PROVIDER=openai`                      |
+| **γv-06** | match → **Claude Opus 4.7 via AWS Bedrock** (с multi-level rollback) | `app/api/ai/match/route.ts`, `lib/prompts/match.ts`                                      | **claude-opus-4-7** (Bedrock inference profile) | 1.5d (включая регрессионные тесты + per-scenario сравнение OpenAI/Bedrock/Gemini) | `MATCH_PROVIDER=openai` (gpt-5.5, primary rollback) или `=gemini` (если AWS down) |
 
 ### Уровень 2: Quick win + Multimodal
 
