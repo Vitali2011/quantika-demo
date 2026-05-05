@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 import { detectTextDirection } from '@/lib/i18n/rtl-detect';
 
 export interface Highlight {
@@ -14,25 +14,36 @@ interface Props {
   highlights: Highlight[];
 }
 
-function buildSegments(body: string, highlights: Highlight[]) {
-  const sorted = [...highlights]
-    .filter(h => h.text && body.includes(h.text))
-    .sort((a, b) => body.indexOf(a.text) - body.indexOf(b.text));
+type Span = { start: number; end: number; h: Highlight };
+type Node = { span: Span; children: Node[] };
 
-  if (sorted.length === 0) return [{ text: body, highlight: null as Highlight | null }];
-
-  const segments: Array<{ text: string; highlight: Highlight | null }> = [];
-  let remaining = body;
-
-  for (const h of sorted) {
-    const idx = remaining.indexOf(h.text);
-    if (idx === -1) continue;
-    if (idx > 0) segments.push({ text: remaining.slice(0, idx), highlight: null });
-    segments.push({ text: h.text, highlight: h });
-    remaining = remaining.slice(idx + h.text.length);
+function placeSpan(span: Span, nodes: Node[]): boolean {
+  for (const n of nodes) {
+    if (span.start >= n.span.start && span.end <= n.span.end) {
+      return placeSpan(span, n.children);
+    }
+    if (span.start < n.span.end && span.end > n.span.start) {
+      // partial overlap with already-placed sibling — drop
+      return false;
+    }
   }
-  if (remaining) segments.push({ text: remaining, highlight: null });
-  return segments;
+  nodes.push({ span, children: [] });
+  return true;
+}
+
+function buildTree(body: string, highlights: Highlight[]): Node[] {
+  const spans: Span[] = [];
+  for (const h of highlights) {
+    if (!h.text) continue;
+    const start = body.indexOf(h.text);
+    if (start === -1) continue;
+    spans.push({ start, end: start + h.text.length, h });
+  }
+  // Outer (longer at same start) processed first so inner nests inside it.
+  spans.sort((a, b) => a.start - b.start || (b.end - b.start) - (a.end - a.start));
+  const roots: Node[] = [];
+  for (const span of spans) placeSpan(span, roots);
+  return roots;
 }
 
 export function EmailBodyViewer({ body, highlights }: Props) {
@@ -44,25 +55,41 @@ export function EmailBodyViewer({ body, highlights }: Props) {
     }
   }, []);
 
-  const segments = buildSegments(body, highlights);
-  const firstHighlightIdx = segments.findIndex(s => s.highlight !== null);
+  const tree = buildTree(body, highlights);
   const dir = detectTextDirection(body);
+  const ctx = { firstAssigned: false };
+
+  const renderRange = (start: number, end: number, nodes: Node[]): ReactNode[] => {
+    const result: ReactNode[] = [];
+    let cursor = start;
+    let key = 0;
+    for (const n of nodes) {
+      if (cursor < n.span.start) {
+        result.push(<span key={`t-${key++}`}>{body.slice(cursor, n.span.start)}</span>);
+      }
+      const isFirst = !ctx.firstAssigned;
+      if (isFirst) ctx.firstAssigned = true;
+      result.push(
+        <mark
+          key={`m-${key++}-${n.span.start}`}
+          ref={isFirst ? (el) => { firstMarkRef.current = el; } : undefined}
+          className={`${n.span.h.color} rounded px-0.5`}
+          title={n.span.h.label}
+        >
+          {renderRange(n.span.start, n.span.end, n.children)}
+        </mark>
+      );
+      cursor = n.span.end;
+    }
+    if (cursor < end) {
+      result.push(<span key={`t-${key++}`}>{body.slice(cursor, end)}</span>);
+    }
+    return result;
+  };
 
   return (
     <pre dir={dir} className="text-sm whitespace-pre-wrap font-sans leading-relaxed">
-      {segments.map((seg, i) => {
-        if (!seg.highlight) return <span key={i}>{seg.text}</span>;
-        return (
-          <mark
-            key={i}
-            ref={i === firstHighlightIdx ? (el) => { firstMarkRef.current = el; } : undefined}
-            className={`${seg.highlight.color} rounded px-0.5`}
-            title={seg.highlight.label}
-          >
-            {seg.text}
-          </mark>
-        );
-      })}
+      {tree.length === 0 ? body : renderRange(0, body.length, tree)}
     </pre>
   );
 }
