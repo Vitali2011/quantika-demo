@@ -15,6 +15,8 @@
     "test:smoke:tier1": "playwright test --config=__tests__/e2e/playwright.config.smoke.ts smoke/tier1-health.spec.ts",
     "test:e2e": "playwright test",
     "build:extension": "cd extensions/gmail && npm install --no-audit --no-fund --silent && npm run build",
+    "knowledge:status": "npx tsx scripts/knowledge/status.ts",
+    "knowledge:refresh": "npx tsx scripts/knowledge/refresh.ts",
     "prepare": "husky"
   },
   "dependencies": {
