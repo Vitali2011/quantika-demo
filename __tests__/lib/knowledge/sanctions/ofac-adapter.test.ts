@@ -18,12 +18,12 @@ describe("ofac-adapter", () => {
     registerSource(db, {
       slug: "ofac",
       name: "OFAC SDN List",
-      kind: "sanctions",
-      category: "compliance",
+      kind: "structured_rows",
+      category: "sanctions",
       source_url: "https://www.treasury.gov/ofac/downloads/sdn.xml",
       license: "Public Domain",
       refresh_command: "npm run knowledge:refresh:ofac",
-      refresh_mode: "api_poll",
+      refresh_mode: "auto-daily",
       stale_threshold_days: 1,
       primary_table: "ofac_entities",
     });
