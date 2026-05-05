@@ -37,8 +37,11 @@ export function MatchTabs({ match, vessel, cargo, cargoEmailId }: MatchTabsProps
         {TABS.map(tab => (
           <button
             key={tab.id}
+            id={`match-tab-${tab.id}`}
             role="tab"
             aria-selected={activeTab === tab.id}
+            aria-controls={`match-panel-${tab.id}`}
+            tabIndex={activeTab === tab.id ? 0 : -1}
             onClick={() => setActiveTab(tab.id)}
             className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
               activeTab === tab.id
@@ -52,7 +55,12 @@ export function MatchTabs({ match, vessel, cargo, cargoEmailId }: MatchTabsProps
       </div>
 
       {/* Tab content */}
-      <div className="p-4">
+      <div
+        role="tabpanel"
+        id={`match-panel-${activeTab}`}
+        aria-labelledby={`match-tab-${activeTab}`}
+        className="p-4"
+      >
         {activeTab === 'vessels' && (
           <VesselsTab vessel={vessel} newCargo={cargo?.cargoDescription?.value ?? undefined} />
         )}
