@@ -1,23 +1,65 @@
-jest.mock('@/lib/openai', () => ({
+// ── Mocks (must be before imports) ───────────────────────────────────────────
+
+jest.mock('@/lib/ai-provider', () => ({
   callAiText: jest.fn(),
-  callAiJson: jest.fn(),
 }));
 
-jest.mock('@/lib/session', () => ({
-  getSession: jest.fn(),
-  updateSession: jest.fn(),
+jest.mock('@/lib/openai', () => ({
+  // LLMTimeoutError is still imported by route.ts for instanceof checks
+  LLMTimeoutError: class LLMTimeoutError extends Error {
+    constructor(message: string) {
+      super(message);
+      this.name = 'LLMTimeoutError';
+    }
+  },
 }));
+
+jest.mock('@/lib/session', () => {
+  const { NextResponse } = jest.requireActual('next/server');
+  const getSession = jest.fn();
+  const updateSession = jest.fn();
+  return {
+    getSession,
+    updateSession,
+    requireSession: (request: { cookies: { get: (n: string) => { value: string } | undefined } }) => {
+      const sessionId = request.cookies.get('session_id')?.value;
+      if (!sessionId) return NextResponse.json({ error: 'No session' }, { status: 401 });
+      const session = getSession(sessionId);
+      if (!session) return NextResponse.json({ error: 'Session expired' }, { status: 401 });
+      return { session, sessionId };
+    },
+  };
+});
 
 jest.mock('@/lib/validation/equasis-client', () => ({
   lookupVesselByImo: jest.fn().mockResolvedValue(null),
   compareVesselRecord: jest.fn().mockReturnValue(null),
 }));
 
+jest.mock('@/lib/classification-service', () => ({
+  buildProcessedEmails: jest.fn().mockReturnValue([]),
+}));
+
+// ── Imports ───────────────────────────────────────────────────────────────────
+
+import { NextRequest } from 'next/dist/server/web/spec-extension/request';
+import { POST } from '@/app/api/ai/parse-vessel/route';
+import { callAiText } from '@/lib/ai-provider';
+import { getSession, updateSession } from '@/lib/session';
+import type { SessionData } from '@/lib/types';
 import {
   buildVesselPrompt,
   parseVesselAIResponse,
 } from '@/lib/parsing/parse-vessel-helpers';
 import type { Email } from '@/lib/types';
+
+// ── Type helpers ──────────────────────────────────────────────────────────────
+
+const mockCallAiText = callAiText as jest.MockedFunction<typeof callAiText>;
+const mockGetSession = getSession as jest.MockedFunction<typeof getSession>;
+const mockUpdateSession = updateSession as jest.MockedFunction<typeof updateSession>;
+
+// ── Fixtures ──────────────────────────────────────────────────────────────────
 
 function makeEmail(overrides: Partial<Email> = {}): Email {
   return {
@@ -35,6 +77,196 @@ function makeEmail(overrides: Partial<Email> = {}): Email {
     ...overrides,
   };
 }
+
+function makeSession(overrides: Partial<SessionData> = {}): SessionData {
+  return {
+    id: 'sess-1',
+    accessToken: 'token',
+    createdAt: new Date(),
+    emails: [],
+    classifications: [],
+    processedEmails: [],
+    parsedCargos: [],
+    parsedVessels: [],
+    parsedFixtureRecaps: [],
+    matches: [],
+    recaps: [],
+    commissionSummary: null,
+    counterparties: [],
+    ...overrides,
+  };
+}
+
+function makeRequest(sessionId?: string): NextRequest {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    origin: 'http://localhost:3000',
+  };
+  if (sessionId) {
+    headers['Cookie'] = `session_id=${sessionId}`;
+  }
+  return new NextRequest('http://localhost/api/ai/parse-vessel', {
+    method: 'POST',
+    headers,
+  });
+}
+
+// Minimal vessel JSON that parseVesselAIResponse can handle
+const VESSEL_JSON = JSON.stringify({
+  vessel_name: { value: 'OCEAN STAR', confidence: 'confirmed' },
+  imo: '9074729',
+  flag: 'Panama',
+  dwt_summer: { value: 75000, confidence: 'confirmed' },
+  open_position: { value: 'Gibraltar', confidence: 'confirmed' },
+  open_date: { value: '2024-01-20', confidence: 'confirmed' },
+  restrictions: [],
+  special_features: [],
+});
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
+// ── Route: auth guard ─────────────────────────────────────────────────────────
+
+describe('POST /api/ai/parse-vessel — auth guard', () => {
+  it('returns 401 when no session_id cookie', async () => {
+    const res = await POST(makeRequest());
+    expect(res.status).toBe(401);
+    expect(await res.json()).toEqual({ error: 'No session' });
+  });
+
+  it('returns 401 when session is expired', async () => {
+    mockGetSession.mockReturnValue(null);
+    const res = await POST(makeRequest('sess-1'));
+    expect(res.status).toBe(401);
+  });
+});
+
+// ── Route: empty vessel list ──────────────────────────────────────────────────
+
+describe('POST /api/ai/parse-vessel — empty classifications', () => {
+  it('returns count:0 when no VESSEL_POSITION emails', async () => {
+    mockGetSession.mockReturnValue(makeSession());
+    const res = await POST(makeRequest('sess-1'));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.count).toBe(0);
+    expect(mockCallAiText).not.toHaveBeenCalled();
+  });
+});
+
+// ── Route: shim routing ───────────────────────────────────────────────────────
+
+describe('POST /api/ai/parse-vessel — shim routing', () => {
+  const session = makeSession({
+    emails: [makeEmail({ id: 'email-1' })],
+    classifications: [
+      { emailId: 'email-1', category: 'VESSEL_POSITION', confidence: 'confirmed' },
+    ],
+  });
+
+  it('calls callAiText from @/lib/ai-provider with scope PARSE_VESSEL', async () => {
+    mockGetSession.mockReturnValue(session);
+    mockCallAiText.mockResolvedValue(VESSEL_JSON);
+
+    await POST(makeRequest('sess-1'));
+
+    expect(mockCallAiText).toHaveBeenCalledTimes(1);
+    // First arg must be scope 'PARSE_VESSEL' — not a prompt string
+    const [scope] = mockCallAiText.mock.calls[0];
+    expect(scope).toBe('PARSE_VESSEL');
+  });
+
+  it('passes system prompt as second argument and user prompt as third', async () => {
+    mockGetSession.mockReturnValue(session);
+    mockCallAiText.mockResolvedValue(VESSEL_JSON);
+
+    await POST(makeRequest('sess-1'));
+
+    const [, system, user] = mockCallAiText.mock.calls[0];
+    // system must be the vessel parser prompt (non-empty instruction string)
+    expect(typeof system).toBe('string');
+    expect(system.length).toBeGreaterThan(10);
+    // user prompt must contain email body content
+    expect(user).toContain('OCEAN STAR');
+  });
+
+  it('returns count matching parsed vessels', async () => {
+    mockGetSession.mockReturnValue(session);
+    mockCallAiText.mockResolvedValue(VESSEL_JSON);
+
+    const res = await POST(makeRequest('sess-1'));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.count).toBe(1);
+  });
+
+  it('saves parsed vessels to session via updateSession', async () => {
+    mockGetSession.mockReturnValue(session);
+    mockCallAiText.mockResolvedValue(VESSEL_JSON);
+
+    await POST(makeRequest('sess-1'));
+
+    expect(mockUpdateSession).toHaveBeenCalledWith(
+      'sess-1',
+      expect.objectContaining({
+        parsedVessels: expect.arrayContaining([
+          expect.objectContaining({ emailId: 'email-1' }),
+        ]),
+      }),
+    );
+  });
+});
+
+// ── Route: timeout isolation ──────────────────────────────────────────────────
+
+describe('POST /api/ai/parse-vessel — timeout isolation (γ-1)', () => {
+  it('skips email on LLMTimeoutError and returns count:0 (not a throw)', async () => {
+    const { LLMTimeoutError } = jest.requireMock('@/lib/openai') as {
+      LLMTimeoutError: new (msg: string) => Error;
+    };
+
+    const session = makeSession({
+      emails: [makeEmail({ id: 'email-timeout' })],
+      classifications: [
+        { emailId: 'email-timeout', category: 'VESSEL_POSITION', confidence: 'confirmed' },
+      ],
+    });
+
+    mockGetSession.mockReturnValue(session);
+    mockCallAiText.mockRejectedValue(new LLMTimeoutError('timed out'));
+
+    const res = await POST(makeRequest('sess-1'));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    // email skipped → 0 parsed vessels
+    expect(body.count).toBe(0);
+  });
+});
+
+// ── Route: sample data fast-path ──────────────────────────────────────────────
+
+describe('POST /api/ai/parse-vessel — sample data fast-path', () => {
+  it('returns cached count and skips LLM when isSampleData=true and parsedVessels pre-seeded', async () => {
+    const session = makeSession({
+      isSampleData: true,
+      parsedVessels: [
+        // minimal ParsedVessel stub
+        { emailId: 'sample-1' } as SessionData['parsedVessels'][0],
+      ],
+    });
+
+    mockGetSession.mockReturnValue(session);
+
+    const res = await POST(makeRequest('sess-1'));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.cached).toBe(true);
+    expect(body.count).toBe(1);
+    expect(mockCallAiText).not.toHaveBeenCalled();
+  });
+});
 
 // ── buildVesselPrompt ─────────────────────────────────────────────────────────
 
