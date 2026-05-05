@@ -25,4 +25,19 @@ describe('migration 015 port-distances', () => {
     expect(indexes.some((idx: any) => idx.name.includes('port_from'))).toBe(true);
     expect(indexes.some((idx: any) => idx.name.includes('port_to'))).toBe(true);
   });
+
+  it('enforces UNIQUE constraint on (port_from, port_to)', () => {
+    migration015.up(db);
+    db.prepare(`
+      INSERT INTO port_distances (port_from, port_to, distance_nm, source)
+      VALUES ('Antwerp', 'Hamburg', 245.0, 'test')
+    `).run();
+
+    expect(() => {
+      db.prepare(`
+        INSERT INTO port_distances (port_from, port_to, distance_nm, source)
+        VALUES ('Antwerp', 'Hamburg', 246.0, 'test-duplicate')
+      `).run();
+    }).toThrow(/UNIQUE constraint failed/);
+  });
 });
