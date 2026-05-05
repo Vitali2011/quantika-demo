@@ -77,6 +77,44 @@ describe('MatchTabs', () => {
     });
   });
 
+  describe('a11y tabpanel markup (stab/tabpanels-render)', () => {
+    it('renders exactly one [role="tabpanel"] for the active tab', () => {
+      render(<MatchTabs match={baseMatch} />);
+      const panels = screen.getAllByRole('tabpanel');
+      expect(panels).toHaveLength(1);
+    });
+
+    it('active tabpanel is linked to the active tab via aria-labelledby/id', () => {
+      render(<MatchTabs match={baseMatch} />);
+      const panel = screen.getByRole('tabpanel');
+      const labelledBy = panel.getAttribute('aria-labelledby');
+      expect(labelledBy).toBeTruthy();
+      const tab = document.getElementById(labelledBy!);
+      expect(tab).not.toBeNull();
+      expect(tab!.getAttribute('role')).toBe('tab');
+      expect(tab!.getAttribute('aria-selected')).toBe('true');
+    });
+
+    it('active tab links to its panel via aria-controls', () => {
+      render(<MatchTabs match={baseMatch} />);
+      const activeTab = screen.getByRole('tab', { selected: true });
+      const controls = activeTab.getAttribute('aria-controls');
+      expect(controls).toBeTruthy();
+      const panel = document.getElementById(controls!);
+      expect(panel).not.toBeNull();
+      expect(panel!.getAttribute('role')).toBe('tabpanel');
+    });
+
+    it('switches tabpanel when another tab is clicked', () => {
+      render(<MatchTabs match={baseMatch} />);
+      fireEvent.click(screen.getByRole('tab', { name: /economics/i }));
+      const panel = screen.getByRole('tabpanel');
+      const labelledBy = panel.getAttribute('aria-labelledby');
+      const tab = document.getElementById(labelledBy!);
+      expect(tab!.textContent).toMatch(/economics/i);
+    });
+  });
+
   describe('confidence border', () => {
     it('applies verified border class when confidence level is verified', () => {
       const match = { ...baseMatch, confidence: mockConfidenceVerified };
