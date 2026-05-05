@@ -36,7 +36,7 @@ export async function fireAlert(ctx: AlertContext): Promise<void> {
       {
         level: 'error',
         tags: { knowledge_source: ctx.slug },
-        extra: ctx,
+        extra: { ...ctx },
       }
     );
   } catch (err) {

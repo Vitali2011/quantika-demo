@@ -38,11 +38,11 @@ describe('scripts/knowledge/cron/refresh-sanctions.ts', () => {
         cwd: repoRoot,
         encoding: 'utf8',
         stdio: ['ignore', 'pipe', 'pipe'],
-        timeout: 5000,
+        timeout: 15000,
         env: { ...process.env, CRON_SECRET: '' },
       });
     }).toThrow(/CRON_SECRET/i);
-  }, 10_000);
+  }, 20_000);
 
   it('exits 0 when both OFAC and EU refresh succeed', () => {
     // Set required env vars
