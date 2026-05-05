@@ -12,3 +12,10 @@ services:
     env_file:
       - .env.local
     command: npm run dev
+
+  searoute:
+    build:
+      context: ./services/searoute
+    ports:
+      - "8200:8200"
+    restart: on-failure
