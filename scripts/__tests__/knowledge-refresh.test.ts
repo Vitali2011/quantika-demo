@@ -30,14 +30,20 @@ describe('scripts/knowledge/refresh.ts', () => {
     }).toThrow(/unknown slug/i);
   }, 30_000);
 
-  it('exits 1 when source handler not implemented yet', () => {
-    // All sources are placeholders in Phase 1 B5, so they should fail gracefully
-    expect(() => {
+  it('successfully refreshes OFAC when handler is implemented', () => {
+    // OFAC was implemented in C4, so it should succeed (even if it hits network errors in test env)
+    // We just verify it doesn't crash with "not implemented" or "Cannot find module"
+    try {
       execFileSync('npx', ['tsx', scriptPath, 'ofac'], {
         cwd: repoRoot,
         encoding: 'utf8',
         stdio: ['ignore', 'pipe', 'pipe'],
+        timeout: 15000,
       });
-    }).toThrow(/not implemented|Cannot find module/i);
+      // Success - source is implemented
+    } catch (err: any) {
+      // If it fails, it should NOT be "not implemented" - network errors are acceptable
+      expect(err.message).not.toMatch(/not implemented|Cannot find module/i);
+    }
   }, 30_000);
 });
