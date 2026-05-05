@@ -2,12 +2,24 @@
   {
     "emailId": "sample-01",
     "itemIndex": 0,
-    "originPort": { "value": "Constanta", "confidence": 0.97 },
+    "originPort": {
+      "value": "Constanta",
+      "confidence": 0.97,
+      "sourceText": "Load: Constanta, Romania"
+    },
     "originCountry": "Romania",
-    "destinationPort": { "value": "Lagos (Apapa)", "confidence": 0.95 },
+    "destinationPort": {
+      "value": "Lagos (Apapa)",
+      "confidence": 0.95,
+      "sourceText": "Disch: Lagos, Nigeria (Apapa"
+    },
     "destinationCountry": "Nigeria",
-    "cargoDescription": { "value": "HRC steel coils, SF 1.20", "confidence": 0.98 },
-    "weightMt": { "value": 8500, "confidence": 0.98 },
+    "cargoDescription": {
+      "value": "HRC steel coils, SF 1.20",
+      "confidence": 0.98,
+      "sourceText": "8,500 mts HRC steel coils, SF 1.20"
+    },
+    "weightMt": { "value": 8500, "confidence": 0.98, "sourceText": "8,500 mts HRC steel coils" },
     "weightMtMin": 8500,
     "weightMtMax": 8500,
     "volumeCbm": null,
@@ -30,15 +42,24 @@
   {
     "emailId": "sample-02",
     "itemIndex": 0,
-    "originPort": { "value": "Khor Fakkan", "confidence": 0.96 },
+    "originPort": {
+      "value": "Khor Fakkan",
+      "confidence": 0.96,
+      "sourceText": "Load: Khor Fakkan, UAE"
+    },
     "originCountry": "UAE",
-    "destinationPort": { "value": "Tema", "confidence": 0.96 },
+    "destinationPort": { "value": "Tema", "confidence": 0.96, "sourceText": "Disch: Tema, Ghana" },
     "destinationCountry": "Ghana",
     "cargoDescription": {
       "value": "Steel pipes (SAWL), SF 2.80, max length 12m, max OD 610mm",
-      "confidence": 0.97
+      "confidence": 0.97,
+      "sourceText": "6,500/7,000 mts ABT steel pipes (SAWL), SF 2.80"
     },
-    "weightMt": { "value": 6750, "confidence": 0.92 },
+    "weightMt": {
+      "value": 6750,
+      "confidence": 0.92,
+      "sourceText": "6,500/7,000 mts ABT steel pipes"
+    },
     "weightMtMin": 6500,
     "weightMtMax": 7000,
     "volumeCbm": null,
@@ -61,12 +82,24 @@
   {
     "emailId": "sample-03",
     "itemIndex": 0,
-    "originPort": { "value": "Singapore", "confidence": 0.98 },
+    "originPort": {
+      "value": "Singapore",
+      "confidence": 0.98,
+      "sourceText": "Load: Singapore (1 sb"
+    },
     "originCountry": "Singapore",
-    "destinationPort": { "value": "Rotterdam", "confidence": 0.98 },
+    "destinationPort": {
+      "value": "Rotterdam",
+      "confidence": 0.98,
+      "sourceText": "Disch: Rotterdam, Netherlands"
+    },
     "destinationCountry": "Netherlands",
-    "cargoDescription": { "value": "Steel slabs, SF 0.35", "confidence": 0.98 },
-    "weightMt": { "value": 28000, "confidence": 0.98 },
+    "cargoDescription": {
+      "value": "Steel slabs, SF 0.35",
+      "confidence": 0.98,
+      "sourceText": "28,000 mts steel slabs, SF 0.35"
+    },
+    "weightMt": { "value": 28000, "confidence": 0.98, "sourceText": "28,000 mts steel slabs" },
     "weightMtMin": 28000,
     "weightMtMax": 28000,
     "volumeCbm": null,
@@ -89,12 +122,24 @@
   {
     "emailId": "sample-04",
     "itemIndex": 0,
-    "originPort": { "value": "Ain Sokhna", "confidence": 0.95 },
+    "originPort": {
+      "value": "Ain Sokhna",
+      "confidence": 0.95,
+      "sourceText": "Load: Ain Sokhna, Egypt"
+    },
     "originCountry": "Egypt",
-    "destinationPort": { "value": "Misurata", "confidence": 0.95 },
+    "destinationPort": {
+      "value": "Misurata",
+      "confidence": 0.95,
+      "sourceText": "Disch: Misurata, Libya"
+    },
     "destinationCountry": "Libya",
-    "cargoDescription": { "value": "Bagged cement (50kg bags on pallets)", "confidence": 0.97 },
-    "weightMt": { "value": 5000, "confidence": 0.85 },
+    "cargoDescription": {
+      "value": "Bagged cement (50kg bags on pallets)",
+      "confidence": 0.97,
+      "sourceText": "bagged cement (50kg bags on pallets)"
+    },
+    "weightMt": { "value": 5000, "confidence": 0.85, "sourceText": "0 mts bagged cement" },
     "weightMtMin": null,
     "weightMtMax": null,
     "volumeCbm": null,
@@ -117,12 +162,20 @@
   {
     "emailId": "sample-05",
     "itemIndex": 0,
-    "originPort": { "value": "Genoa", "confidence": 0.97 },
+    "originPort": { "value": "Genoa", "confidence": 0.97, "sourceText": "Load: Genoa, Italy" },
     "originCountry": "Italy",
-    "destinationPort": { "value": "Casablanca", "confidence": 0.97 },
+    "destinationPort": {
+      "value": "Casablanca",
+      "confidence": 0.97,
+      "sourceText": "Disch: Casablanca, Morocco"
+    },
     "destinationCountry": "Morocco",
-    "cargoDescription": { "value": "General machinery / industrial equipment", "confidence": 0.96 },
-    "weightMt": { "value": 5000, "confidence": 0.97 },
+    "cargoDescription": {
+      "value": "General machinery / industrial equipment",
+      "confidence": 0.96,
+      "sourceText": "5,000 mts general machinery / industrial equipment"
+    },
+    "weightMt": { "value": 5000, "confidence": 0.97, "sourceText": "5,000 mts general machinery" },
     "weightMtMin": 5000,
     "weightMtMax": 5000,
     "volumeCbm": null,
@@ -141,5 +194,294 @@
     "specialRequirements": "Heavy-lift geared vessel required, max piece abt 80mt",
     "stowageFactor": null,
     "missingInfo": []
+  },
+  {
+    "emailId": "sample-06",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Sohar",
+      "confidence": 0.95,
+      "sourceText": "ميناء التحميل: صحار، سلطنة عُمان"
+    },
+    "originCountry": "Oman",
+    "destinationPort": {
+      "value": "Abidjan",
+      "confidence": 0.95,
+      "sourceText": "ميناء التفريغ: أبيدجان، ساحل العاج"
+    },
+    "destinationCountry": "Ivory Coast",
+    "cargoDescription": {
+      "value": "Steel rebar, SF 1.20",
+      "confidence": 0.95,
+      "sourceText": "٨٬٠٠٠ طن متري حديد تسليح، عامل الاستيعاب ١٫٢٠"
+    },
+    "weightMt": { "value": 8000, "confidence": 0.92, "sourceText": "٨٬٠٠٠ طن متري حديد تسليح" },
+    "weightMtMin": 8000,
+    "weightMtMax": 8000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": 8000,
+    "incoterms": "FIOST",
+    "preferredDates": null,
+    "laycanRelativeStart": "+11d",
+    "laycanRelativeEnd": "+21d",
+    "loadingRate": "CQD SHINC",
+    "dischargeRate": "CQD SHINC",
+    "commissionPercent": 3.75,
+    "commissionTerms": "TTL",
+    "specialRequirements": "Geared vessel required",
+    "stowageFactor": "1.20",
+    "missingInfo": []
+  },
+  {
+    "emailId": "sample-07",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Marseille",
+      "confidence": 0.97,
+      "sourceText": "Load: Marseille, France"
+    },
+    "originCountry": "France",
+    "destinationPort": {
+      "value": "Tin-Can Island, Lagos",
+      "confidence": 0.96,
+      "sourceText": "Disch: Tin-Can Island, Lagos, Nigeria"
+    },
+    "destinationCountry": "Nigeria",
+    "cargoDescription": {
+      "value": "Newsprint / paper reels in rolls, SF 1.70, max roll diameter 1.2m, max roll weight 5mt",
+      "confidence": 0.97,
+      "sourceText": "6,500 mts newsprint / paper reels in rolls, SF 1.70"
+    },
+    "weightMt": { "value": 6500, "confidence": 0.98, "sourceText": "6,500 mts newsprint" },
+    "weightMtMin": 6500,
+    "weightMtMax": 6500,
+    "volumeCbm": null,
+    "dimensions": "max roll diameter 1.2m, max roll weight 5mt",
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": 6500,
+    "incoterms": "FIOST",
+    "preferredDates": null,
+    "laycanRelativeStart": "+13d",
+    "laycanRelativeEnd": "+23d",
+    "loadingRate": "3,000 mts SHINC",
+    "dischargeRate": "2,000 mts SSHEX EIU",
+    "commissionPercent": 3.75,
+    "commissionTerms": "TTL",
+    "specialRequirements": "Geared vessel required (tween deck preferred)",
+    "stowageFactor": "1.70",
+    "missingInfo": []
+  },
+  {
+    "emailId": "sample-08",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Jebel Ali",
+      "confidence": 0.88,
+      "sourceText": "from jebel ali to lagos"
+    },
+    "originCountry": "UAE",
+    "destinationPort": {
+      "value": "Lagos",
+      "confidence": 0.88,
+      "sourceText": "from jebel ali to lagos"
+    },
+    "destinationCountry": "Nigeria",
+    "cargoDescription": {
+      "value": "Steel",
+      "confidence": 0.82,
+      "sourceText": "eight thousand mt steel"
+    },
+    "weightMt": { "value": 8000, "confidence": 0.85, "sourceText": "eight thousand mt steel" },
+    "weightMtMin": 8000,
+    "weightMtMax": 8000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": 8000,
+    "incoterms": null,
+    "preferredDates": null,
+    "laycanRelativeStart": "+10d",
+    "laycanRelativeEnd": "+20d",
+    "loadingRate": null,
+    "dischargeRate": null,
+    "commissionPercent": null,
+    "commissionTerms": null,
+    "specialRequirements": "Geared vessel required",
+    "stowageFactor": null,
+    "missingInfo": [
+      "incoterms not stated",
+      "loading/discharge rates not stated",
+      "commission not stated",
+      "cargo type ambiguous"
+    ]
+  },
+  {
+    "emailId": "sample-09",
+    "itemIndex": 0,
+    "originPort": { "value": "Aqaba", "confidence": 0.97, "sourceText": "Load: Aqaba, Jordan" },
+    "originCountry": "Jordan",
+    "destinationPort": {
+      "value": "Mersin",
+      "confidence": 0.97,
+      "sourceText": "Disch: Mersin, Turkey"
+    },
+    "destinationCountry": "Turkey",
+    "cargoDescription": {
+      "value": "Urea fertilizer (granular, bulk), SF 1.25",
+      "confidence": 0.97,
+      "sourceText": "9,500 mts urea fertilizer (granular, bulk), SF 1.25"
+    },
+    "weightMt": { "value": 9500, "confidence": 0.98, "sourceText": "9,500 mts urea fertilizer" },
+    "weightMtMin": 9500,
+    "weightMtMax": 9500,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": 9500,
+    "incoterms": "FIOST",
+    "preferredDates": null,
+    "laycanRelativeStart": "+8d",
+    "laycanRelativeEnd": "+18d",
+    "loadingRate": "3,000 mts SHINC",
+    "dischargeRate": "2,500 mts SHINC",
+    "commissionPercent": 2.5,
+    "commissionTerms": "TTL",
+    "specialRequirements": "Geared vessel preferred (shore cranes available at load/disch). Subs required: stem + owners approval. Reply within 24h.",
+    "stowageFactor": "1.25",
+    "missingInfo": []
+  },
+  {
+    "emailId": "sample-10",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Mariupol",
+      "confidence": 0.97,
+      "sourceText": "Load: Mariupol, Ukraine"
+    },
+    "originCountry": "Ukraine",
+    "destinationPort": {
+      "value": "Constanta",
+      "confidence": 0.97,
+      "sourceText": "Disch: Constanta, Romania"
+    },
+    "destinationCountry": "Romania",
+    "cargoDescription": {
+      "value": "Steel slabs, SF 0.35",
+      "confidence": 0.98,
+      "sourceText": "18,000 mts steel slabs, SF 0.35"
+    },
+    "weightMt": { "value": 18000, "confidence": 0.98, "sourceText": "18,000 mts steel slabs" },
+    "weightMtMin": 18000,
+    "weightMtMax": 18000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": 18000,
+    "incoterms": "FIOST",
+    "preferredDates": null,
+    "laycanRelativeStart": "+7d",
+    "laycanRelativeEnd": "+14d",
+    "loadingRate": "5,000 mts SHINC",
+    "dischargeRate": "6,000 mts SHINC",
+    "commissionPercent": 3.75,
+    "commissionTerms": "TTL",
+    "specialRequirements": "Gearless vessel acceptable",
+    "stowageFactor": "0.35",
+    "missingInfo": []
+  },
+  {
+    "emailId": "sample-11",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Mykolaiv / Constanta",
+      "confidence": 0.92,
+      "sourceText": "Load port 1: Mykolaiv, Ukraine"
+    },
+    "originCountry": "Ukraine / Romania",
+    "destinationPort": {
+      "value": "Misurata",
+      "confidence": 0.97,
+      "sourceText": "Disch: Misurata, Libya"
+    },
+    "destinationCountry": "Libya",
+    "cargoDescription": {
+      "value": "Grain bulk, split 7,000 mts wheat + 5,000 mts corn",
+      "confidence": 0.97,
+      "sourceText": "12,000 mts grain bulk (split 7,000 + 5,000)"
+    },
+    "weightMt": {
+      "value": 12000,
+      "confidence": 0.98,
+      "sourceText": "Total cargo: 12,000 mts grain bulk"
+    },
+    "weightMtMin": 12000,
+    "weightMtMax": 12000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": 12000,
+    "incoterms": "FIOST",
+    "preferredDates": null,
+    "laycanRelativeStart": "+10d",
+    "laycanRelativeEnd": "+20d",
+    "loadingRate": "3,000 mts SHINC per port",
+    "dischargeRate": "2,500 mts SHINC",
+    "commissionPercent": 3.75,
+    "commissionTerms": "TTL",
+    "specialRequirements": "Gearless Handysize/Supramax acceptable. Split load: 7,000 mts wheat Mykolaiv + 5,000 mts corn Constanta.",
+    "stowageFactor": null,
+    "missingInfo": []
+  },
+  {
+    "emailId": "sample-12",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Iskenderun",
+      "confidence": 0.97,
+      "sourceText": "Load: Iskenderun, Turkey"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Casablanca",
+      "confidence": 0.97,
+      "sourceText": "Disch: Casablanca, Morocco"
+    },
+    "destinationCountry": "Morocco",
+    "cargoDescription": {
+      "value": "Steel pipes (SAWL/LSAW), SF 2.80",
+      "confidence": 0.98,
+      "sourceText": "5,500 mts steel pipes (SAWL/LSAW), SF 2.80"
+    },
+    "weightMt": { "value": 5500, "confidence": 0.98, "sourceText": "5,500 mts steel pipes" },
+    "weightMtMin": 5500,
+    "weightMtMax": 5500,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": 5500,
+    "incoterms": "FIOST",
+    "preferredDates": {
+      "value": "10-15 Jan 2025",
+      "confidence": 0.98,
+      "sourceText": "Laycan: 10-15 Jan 2025"
+    },
+    "laycanRelativeStart": null,
+    "laycanRelativeEnd": null,
+    "loadingRate": "CQD SHINC",
+    "dischargeRate": "CQD SHINC",
+    "commissionPercent": 3.75,
+    "commissionTerms": "TTL",
+    "specialRequirements": "Geared vessel required",
+    "stowageFactor": "2.80",
+    "missingInfo": ["laycan expired (10-15 Jan 2025)"]
   }
 ]
