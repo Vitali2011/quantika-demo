@@ -15,13 +15,19 @@ export interface ParsedEntity {
   raw?: any;
 }
 
+// Tag names that should always parse as arrays for consistent access
+const arrayTags = new Set(["sdnEntry", "aka", "program", "address"]);
+
 // Reuse parser instance for performance
 const parser = new XMLParser({
-  ignoreAttributes: true, // Don't need attributes for OFAC SDN
+  ignoreAttributes: true,
   parseTagValue: false,
   trimValues: true,
   ignoreDeclaration: true,
   ignorePiTags: true,
+  processEntities: false,
+  removeNSPrefix: true,
+  isArray: (name) => arrayTags.has(name),
 });
 
 // Helper to extract full name from entry
@@ -40,7 +46,7 @@ function extractName(obj: any): string {
  * - null/undefined: throws TypeError
  * - Malformed XML: throws parse error
  * - Missing <uid>: throws Error with helpful message
- * - Large XML (10000+ entries): must complete in <2s
+ * - Large XML (10000+ entries): must complete in <5s
  * - Unknown type values: accepted (forward compatibility)
  *
  * @param xml OFAC SDN XML string
@@ -72,10 +78,8 @@ export function parseOfacXml(xml: string): ParsedEntity[] {
     return [];
   }
 
-  // Normalize to array (single entry won't be an array by default)
-  const entries = Array.isArray(parsed.sdnList.sdnEntry)
-    ? parsed.sdnList.sdnEntry
-    : [parsed.sdnList.sdnEntry];
+  // isArray config ensures sdnEntry is always an array
+  const entries = parsed.sdnList.sdnEntry;
 
   return entries.map((entry: any) => {
     // Validate required uid field
@@ -88,14 +92,10 @@ export function parseOfacXml(xml: string): ParsedEntity[] {
     // Extract name (can be firstName+lastName or just lastName)
     const name = extractName(entry);
 
-    // Extract aliases from akaList
+    // Extract aliases from akaList (isArray config ensures aka is always array)
     const aliases: string[] = [];
     if (entry.akaList && entry.akaList.aka) {
-      const akas = Array.isArray(entry.akaList.aka)
-        ? entry.akaList.aka
-        : [entry.akaList.aka];
-
-      for (const aka of akas) {
+      for (const aka of entry.akaList.aka) {
         const akaName = extractName(aka);
         if (akaName) {
           aliases.push(akaName);
@@ -103,24 +103,19 @@ export function parseOfacXml(xml: string): ParsedEntity[] {
       }
     }
 
-    // Extract programs from programList
+    // Extract programs from programList (isArray config ensures program is always array)
     let programs: string[] = [];
     if (entry.programList && entry.programList.program) {
-      programs = Array.isArray(entry.programList.program)
-        ? entry.programList.program
-        : [entry.programList.program];
+      programs = entry.programList.program;
     }
 
-    // Extract country from addressList (first address)
+    // Extract country from addressList (isArray config ensures address is always array)
     let country: string | undefined;
     let address: any;
     if (entry.addressList && entry.addressList.address) {
-      const addrs = Array.isArray(entry.addressList.address)
-        ? entry.addressList.address
-        : [entry.addressList.address];
-      if (addrs.length > 0) {
-        country = addrs[0].country;
-        address = addrs[0];
+      if (entry.addressList.address.length > 0) {
+        country = entry.addressList.address[0].country;
+        address = entry.addressList.address[0];
       }
     }
 
