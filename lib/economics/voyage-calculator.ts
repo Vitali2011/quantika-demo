@@ -23,6 +23,9 @@
 
 import { calculateWarRiskPremium } from './war-risk';
 import { calculateEuEts } from './ets';
+import { calculateEcaFuelPortion } from '@/lib/knowledge/eca/adapter';
+import type { EcaZone } from '@/lib/knowledge/eca/parser';
+import type { ResolvedPort } from '@/lib/ports/resolve';
 
 const EUR_TO_USD = 1.08; // approximate conversion (matches index.ts)
 const ESTIMATED_DAYS_FALLBACK = 1; // for safety in non-finite cases
@@ -40,6 +43,10 @@ export interface VoyageInput {
     distanceNm: number;
     viaSuez?: boolean;
     viaCanal?: string;
+    /** Resolved origin port (with lat/lon) for ECA calculation */
+    resolvedOrigin?: ResolvedPort;
+    /** Resolved destination port (with lat/lon) for ECA calculation */
+    resolvedDest?: ResolvedPort;
   };
   cargo: {
     quantityMt: number;
@@ -56,10 +63,14 @@ export interface VoyageInput {
   canalUsd?: number;
   /** Pre-computed DA total (origin + destination) USD. */
   daUsd?: number;
+  /** ECA zones for bunker split calculation. If undefined, no ECA split. */
+  ecaZones?: EcaZone[];
 }
 
 export interface TCEBreakdown {
   bunker_usd: number;
+  bunker_eca_mt?: number;
+  bunker_open_mt?: number;
   canal_usd: number;
   da_usd: number;
   war_risk_usd: number;
@@ -82,6 +93,8 @@ export interface TCEResult {
   breakdown: TCEBreakdown;
   total_usd: number;
   daily_tce_usd: number;
+  bunker_eca_mt?: number;
+  bunker_open_mt?: number;
 }
 
 function safeNum(n: unknown): number {
@@ -107,6 +120,38 @@ export function calculateTCE(input: VoyageInput): TCEResult {
   const totalBunkerMt = consumption * duration;
   const bunkerUsd = Math.round(totalBunkerMt * bunkerPrice);
   const bunkerApplicable = bunkerUsd > 0;
+
+  // ── ECA Bunker Split (Phase 1) ───────────────────────────────────────
+  let bunkerEcaMt: number | undefined;
+  let bunkerOpenMt: number | undefined;
+  let ecaCalculated = false;
+
+  if (
+    input.ecaZones &&
+    input.ecaZones.length > 0 &&
+    input.route?.resolvedOrigin &&
+    input.route?.resolvedDest &&
+    totalBunkerMt > 0
+  ) {
+    try {
+      const ecaPortion = calculateEcaFuelPortion(
+        { lat: input.route.resolvedOrigin.lat, lon: input.route.resolvedOrigin.lon },
+        { lat: input.route.resolvedDest.lat, lon: input.route.resolvedDest.lon },
+        input.ecaZones
+      );
+
+      // Guard: clamp ecaPortion to [0, 1] range (defensive)
+      const safePortion = Math.max(0, Math.min(1, ecaPortion));
+      bunkerEcaMt = totalBunkerMt * safePortion;
+      bunkerOpenMt = totalBunkerMt * (1 - safePortion);
+      ecaCalculated = true;
+    } catch {
+      // If ECA calculation fails, fall back to 100% open-ocean
+      bunkerEcaMt = 0;
+      bunkerOpenMt = totalBunkerMt;
+      ecaCalculated = true;
+    }
+  }
 
   // ── Canal (pre-resolved) ──────────────────────────────────────────────
   const canalUsd = Math.round(safeNum(input.canalUsd));
@@ -153,6 +198,8 @@ export function calculateTCE(input: VoyageInput): TCEResult {
 
   const breakdown: TCEBreakdown = {
     bunker_usd: bunkerUsd,
+    bunker_eca_mt: ecaCalculated ? bunkerEcaMt : undefined,
+    bunker_open_mt: ecaCalculated ? bunkerOpenMt : undefined,
     canal_usd: canalUsd,
     da_usd: daUsd,
     war_risk_usd: warRiskUsd,
@@ -175,5 +222,7 @@ export function calculateTCE(input: VoyageInput): TCEResult {
     breakdown,
     total_usd: totalCosts,
     daily_tce_usd: dailyTce,
+    bunker_eca_mt: ecaCalculated ? bunkerEcaMt : undefined,
+    bunker_open_mt: ecaCalculated ? bunkerOpenMt : undefined,
   };
 }
