@@ -65,8 +65,24 @@ export interface JudgeOutput {
 
 /**
  * Bedrock cross-region inference profile for Opus 4.7.
- * Matches the entry in lib/ai-provider.ts COST_TABLE_PER_M_TOKENS.
+ *
+ * Resolution order:
+ *   1. JUDGE_BEDROCK_MODEL env (explicit override for the bake-off judge)
+ *   2. BEDROCK_MODEL_ID env (project-wide Bedrock default, e.g.
+ *      "us.anthropic.claude-opus-4-7-20260415-v1:0" from .env.local)
+ *   3. Hard-coded fallback to the cross-region profile alias.
+ *
+ * We resolve at call time, not import time, so tests can override via env.
  */
+export function resolveJudgeModel(): string {
+  return (
+    process.env.JUDGE_BEDROCK_MODEL ||
+    process.env.BEDROCK_MODEL_ID ||
+    'us.anthropic.claude-opus-4-7'
+  );
+}
+
+/** Public constant kept for tests asserting the static fallback alias. */
 export const JUDGE_MODEL = 'us.anthropic.claude-opus-4-7';
 
 /** Scope tag used for ai_audit rows when the judge runs. */
@@ -160,7 +176,7 @@ export async function judge(input: JudgeInput, options: JudgeOptions = {}): Prom
   // Pin the judge model explicitly — independent of any per-scope BEDROCK_MODEL_ID
   // override the project may use elsewhere.
   const rawText = await callFn(JUDGE_SCOPE, JUDGE_PROMPT, userMessage, {
-    model: JUDGE_MODEL,
+    model: resolveJudgeModel(),
     maxTokens: JUDGE_MAX_TOKENS,
   });
 

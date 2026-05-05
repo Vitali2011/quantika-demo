@@ -1,6 +1,6 @@
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 
-import { judge, JUDGE_MODEL, JUDGE_SCOPE, type CallAiTextFn } from '../judge';
+import { judge, JUDGE_SCOPE, type CallAiTextFn } from '../judge';
 
 /**
  * Tests inject a fake `callAiText` directly rather than mocking
@@ -55,10 +55,12 @@ describe('judge', () => {
     expect(Array.isArray(v.issues)).toBe(true);
     expect(typeof v.rationale).toBe('string');
 
-    // Verify call shape: pinned to Opus 4.7 Bedrock model + judge scope.
+    // Verify call shape: pinned to an Opus 4.7 Bedrock id + judge scope.
     const [scope, , , opts] = callMock.mock.calls[0];
     expect(scope).toBe(JUDGE_SCOPE);
-    expect(opts?.model).toBe(JUDGE_MODEL);
+    // Model resolves from env (BEDROCK_MODEL_ID / JUDGE_BEDROCK_MODEL) or the
+    // hard-coded fallback alias — all are Opus 4.7 cross-region profiles.
+    expect(opts?.model).toMatch(/claude-opus-4-7/);
     expect(opts?.maxTokens).toBe(2048);
   });
 
