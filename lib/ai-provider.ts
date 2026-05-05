@@ -26,6 +26,14 @@ export interface AiOpts {
   model?: string;
   /** Max tokens for the completion (default: 16_000). */
   maxTokens?: number;
+  /**
+   * Gemini Deep Think budget. Only applicable to gemini provider.
+   * -1 = dynamic (model decides how much to think, deeper = better on hard reasoning).
+   * Large positive number (e.g. 24000) = explicit token budget for thinking.
+   * Omit (undefined) = no thinking config passed → regular mode.
+   * Enabling this increases cost 2-3× but improves reasoning quality.
+   */
+  thinkingBudget?: number;
 }
 
 export interface ImageInput {
@@ -73,6 +81,9 @@ const COST_TABLE_PER_M_TOKENS: Record<string, { in: number; out: number }> = {
   'gemini:gemini-2.5-flash': { in: 0.075, out: 0.30 },
   'gemini:gemini-2.5-flash-lite': { in: 0.0375, out: 0.15 },
   'gemini:gemini-2.5-pro': { in: 1.25, out: 5.0 },
+  // Deep Think suffix is used by the eval script to track thinkingBudget runs separately in ai_audit.
+  // Billing rate is the same underlying model, but output token usage is higher in practice (2-3×).
+  'gemini:gemini-2.5-pro-deepthink': { in: 1.25, out: 5.0 },
   'bedrock:us.anthropic.claude-opus-4-7-20260415-v1:0': { in: 15, out: 75 },
   'bedrock:us.anthropic.claude-sonnet-4-6-20260101-v1:0': { in: 3, out: 15 },
 };
@@ -250,7 +261,10 @@ async function callGeminiText(
         generateContent: (params: {
           model: string;
           contents: Array<{ role: string; parts: Array<{ text: string }> }>;
-          config?: { systemInstruction?: string };
+          config?: {
+            systemInstruction?: string;
+            thinkingConfig?: { thinkingBudget: number; includeThoughts: boolean };
+          };
         }) => Promise<{ text: string; usageMetadata?: GeminiUsageMetadata }>;
       };
     };
@@ -262,10 +276,24 @@ async function callGeminiText(
     location: process.env.GOOGLE_CLOUD_LOCATION ?? 'us-central1',
   });
 
+  // Build config — only add thinkingConfig when caller explicitly requests it.
+  // Omitting thinkingConfig entirely → Gemini uses default (minimal thinking for Pro).
+  const callConfig: {
+    systemInstruction?: string;
+    thinkingConfig?: { thinkingBudget: number; includeThoughts: boolean };
+  } = { systemInstruction: system };
+
+  if (opts?.thinkingBudget !== undefined) {
+    callConfig.thinkingConfig = {
+      thinkingBudget: opts.thinkingBudget,
+      includeThoughts: false, // Keep response clean — thoughts are internal only
+    };
+  }
+
   const response = await ai.models.generateContent({
     model,
     contents: [{ role: 'user', parts: [{ text: user }] }],
-    config: { systemInstruction: system },
+    config: callConfig,
   });
 
   return { text: response.text ?? '', usage: extractGeminiUsage(response.usageMetadata) };

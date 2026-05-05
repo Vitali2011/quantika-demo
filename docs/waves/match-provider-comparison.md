@@ -1,27 +1,93 @@
 # Match Endpoint — Provider Comparison (γv-06)
 
-Per-scenario regression table for `POST /api/ai/match` across three providers.  
-Real numbers fill in during production regression runs; this file tracks the structure.
+Per-scenario regression table for `POST /api/ai/match` across **4 variants**.
 
-## Provider Config
+## Wave γ — 5-Scenario Methodology Proof (2026-05-05)
 
-| Provider              | Env                      | Model                                                                     | Notes                           |
-| --------------------- | ------------------------ | ------------------------------------------------------------------------- | ------------------------------- |
-| **bedrock** (default) | `MATCH_PROVIDER=bedrock` | `BEDROCK_MODEL_ID` (default `us.anthropic.claude-opus-4-7-20260415-v1:0`) | Claude Opus 4.7 via AWS Bedrock |
-| **openai** (rollback) | `MATCH_PROVIDER=openai`  | `AI_MODEL_HEAVY` (default `gpt-5.5`)                                      | ClipProxy, immediate rollback   |
-| **gemini** (fallback) | `MATCH_PROVIDER=gemini`  | `AI_MODEL_GEMINI_DEFAULT` (default `gemini-2.5-flash`)                    | Vertex AI, AWS outage fallback  |
+**Status:** Methodology proof DONE — 5 scenarios run through Gemini 2.5 Pro. Bedrock + OpenAI blocked (see Infrastructure Status). NOT production verdict — full 50-scenario regression needed for production decision.
+
+**Raw results:** `.progonq/results/wave-gamma-eval-2026-05-05T18-06-18.json`  
+**Corpus:** `.progonq/corpus/wave-gamma-eval/scenario-001..005.json`  
+**Total cost:** $0.0813 (5 Gemini calls + 5 failed Bedrock attempts = $0.08 effective)
+
+### Infrastructure Status
+
+| Provider | Status | Root Cause | Fix Needed |
+|---|---|---|---|
+| openai | SKIPPED | ClipProxy not running at localhost:8317 | Start ClipProxy or set `CLIPROXY_BASE_URL` to external proxy |
+| gemini | **ACTIVE** | Vertex AI — GCP project `quantika-demo-2026`, key at `~/.config/gcp/quantika-vertex-ai.json` | None |
+| bedrock | ERROR | `ValidationException: model not activated in AWS account` | AWS Console → Bedrock → Model Access → request `claude-opus-4-7` |
+
+### 5-Scenario Results — Gemini 2.5 Pro
+
+Corpus design: 5 pairs from `lib/sample-data/` covering full difficulty range.
+
+| Scenario | Category | Score | Level | Matches | Issues | Latency | Key Observation |
+|---|---|---|---|---|---|---|---|
+| scenario-001 | good_match | 25 | weak | 1 | 4 | 26,293ms | CBM overflow detected: 6750mt × SF 2.80 = 18,900 cbm > bale cap 14,600 cbm — **correct finding, test designer error** |
+| scenario-002 | weak_match | 20 | weak | 1 | 4 | 23,231ms | DWCC_VIOLATION + late verdict + direction mismatch — all 3 required issues surfaced ✓ |
+| scenario-003 | borderline | 20 | weak | 1 | 2 | 18,610ms | DWCC overrun 450mt cited verbatim + speed_null flagged ✓ |
+| scenario-004 | moloo_range | 15 | weak | 1 | 5 | 26,349ms | Late verdict + repositioning distance + bale cap limits cargo to 6500mt ✓ |
+| scenario-005 | readiness_edge | **75** | good | 1 | 3 | 24,008ms | Bulk carrier + bulk urea: comfortable DWCC, tight-but-feasible timing, speed_null + P&I cited ✓ |
+
+**INCLUSION POLICY compliance: 5/5** — all readiness pairs returned, no self-censoring.
+
+**Quality highlight:** scenario-001 scored 25/weak instead of expected "good" — Gemini caught a genuine stowage volume overflow the test designer missed (SF × weight > bale capacity). This is correct behavior.
+
+### Cost Summary (5-scenario proof)
+
+| Provider | Calls | Total cost (est) | Avg cost/call |
+|---|---|---|---|
+| openai | 0 (skipped) | — | — |
+| gemini | 5 | $0.0434 | $0.0087 |
+| bedrock | 0 (error) | — | — |
+| **Total** | **5** | **$0.0434** | **$0.0087** |
+
+### Latency (Gemini 2.5 Pro, 5 calls)
+
+| Provider | Median | P95 |
+|---|---|---|
+| gemini | 24,008ms | 26,349ms |
+
+~18–26 seconds per call — within AbortController 85s timeout from βf3-01. Acceptable for production.
+
+### Next Steps to Complete Comparison
+
+1. **Bedrock:** Request `claude-opus-4-7` in AWS Console → Amazon Bedrock → Model Access
+2. **OpenAI:** Start ClipProxy or configure `CLIPROXY_BASE_URL` in `.env.local`
+3. **Re-run:** `npx tsx --tsconfig tsconfig.json scripts/eval/run-match-providers-comparison.ts`
+
+---
+
+Real numbers fill in during production regression runs; full 50-scenario table below.
+
+## Variants Config
+
+| Variant ID | Provider | Model | Notes |
+| ---------- | -------- | ----- | ----- |
+| **openai** | openai | `AI_MODEL_HEAVY` (default `gpt-5.5`) | ClipProxy, immediate rollback |
+| **gemini-pro** | gemini | `AI_MODEL_GEMINI_DEFAULT` (default `gemini-2.5-pro`) | Vertex AI, standard mode |
+| **gemini-pro-dt** | gemini | `gemini-2.5-pro-deepthink` (audit key) | Gemini 2.5 Pro + Deep Think (`thinkingBudget=-1`). Extended reasoning mode — like a human who writes rough notes before answering. 2-3× more output tokens, est $0.10-0.15/call |
+| **bedrock-opus** | bedrock | `BEDROCK_MODEL_ID` (default `us.anthropic.claude-opus-4-7-20260415-v1:0`) | Claude Opus 4.7 via AWS Bedrock |
+
+### Deep Think explained
+
+Deep Think is NOT a separate model — it is an extended reasoning mode for `gemini-2.5-pro`.  
+Enabled via `thinkingConfig: { thinkingBudget: -1, includeThoughts: false }` in the API call.  
+The model spends extra tokens "thinking through" the problem before producing the final answer.  
+`thinkingBudget=-1` = dynamic (model decides how much to think; larger problems → more thinking).
 
 ## Score Deviation Budget
 
-Target: median absolute score deviation ≤ 5 pts between openai baseline and bedrock Claude.  
+Target: median absolute score deviation ≤ 5 pts between variants.  
 Alert threshold: any single scenario deviation > 15 pts is flagged as regression.
 
 ## Per-Scenario Comparison Table
 
 > Status: STUB — populate during first production regression run.
-> Run: `MATCH_PROVIDER=openai npm run regression:match` then `MATCH_PROVIDER=bedrock npm run regression:match`
+> Run: `npx tsx --tsconfig tsconfig.json scripts/eval/run-match-providers-comparison.ts`
 
-| Scenario ID | Pair Description                                      | OpenAI Score | Bedrock Score | Gemini Score | OpenAI Level | Bedrock Level | Gemini Level | Score Dev (OAI-BDR) | MANDATORY ISSUES Coverage  | Notes |
+| Scenario ID | Pair Description                                      | OpenAI Score | Gemini Pro | Gemini Pro (DT) | Bedrock Opus | Δ DT vs Pro | Δ Bedrock vs DT | MANDATORY ISSUES Coverage  | Notes |
 | ----------- | ----------------------------------------------------- | ------------ | ------------- | ------------ | ------------ | ------------- | ------------ | ------------------- | -------------------------- | ----- |
 | S-01        | Bulk grain / Handysize, ideal timing                  | —            | —             | —            | —            | —             | —            | —                   | —                          | Stub  |
 | S-02        | Bulk grain / Supramax, tight timing                   | —            | —             | —            | —            | —             | —            | —                   | —                          | Stub  |
