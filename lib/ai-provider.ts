@@ -47,6 +47,60 @@ interface AiAuditRow {
   err: string | null;
 }
 
+/**
+ * QA L-1: token usage extracted from each provider's native response.
+ * Internal-only; not part of the public callAi* signatures.
+ */
+export interface Usage {
+  promptTokens: number;
+  completionTokens: number;
+}
+
+/**
+ * QA L-1: per-(provider, model) USD pricing per 1M tokens.
+ *
+ * Rates as of 2026-05 (input / output). When the user hits a model not in the
+ * table, `computeCostUsd` returns null — we deliberately do not guess.
+ *
+ * - gemini-2.5-flash: Vertex AI public pricing $0.075 / $0.30 per 1M tokens
+ * - gemini-2.5-pro:   $1.25 / $5.00 per 1M tokens
+ * - claude-opus-4-7 (Bedrock): $15 / $75 per 1M tokens
+ *
+ * OpenAI rates are intentionally absent: lib/openai.ts doesn't surface usage
+ * tokens, so we cannot bill accurately and prefer null over a guess.
+ */
+const COST_TABLE_PER_M_TOKENS: Record<string, { in: number; out: number }> = {
+  'gemini:gemini-2.5-flash': { in: 0.075, out: 0.30 },
+  'gemini:gemini-2.5-flash-lite': { in: 0.0375, out: 0.15 },
+  'gemini:gemini-2.5-pro': { in: 1.25, out: 5.0 },
+  // Claude Opus 4.7 — AWS Bedrock cross-region inference profiles (no date suffix starting Opus 4.x)
+  'bedrock:us.anthropic.claude-opus-4-7': { in: 15, out: 75 },
+  'bedrock:eu.anthropic.claude-opus-4-7': { in: 15, out: 75 },
+  'bedrock:global.anthropic.claude-opus-4-7': { in: 15, out: 75 },
+  // Claude Sonnet 4.6 — cost-optimized alternative: ~5× cheaper than Opus 4.7
+  // Use case: per-scope override via MATCH_BEDROCK_MODEL=us.anthropic.claude-sonnet-4-6
+  'bedrock:us.anthropic.claude-sonnet-4-6': { in: 3, out: 15 },
+  'bedrock:eu.anthropic.claude-sonnet-4-6': { in: 3, out: 15 },
+  'bedrock:global.anthropic.claude-sonnet-4-6': { in: 3, out: 15 },
+};
+
+export function computeCostUsd(
+  provider: Provider,
+  model: string,
+  promptTokens: number | null | undefined,
+  completionTokens: number | null | undefined,
+): number | null {
+  if (promptTokens == null || completionTokens == null) return null;
+  if (!Number.isFinite(promptTokens) || !Number.isFinite(completionTokens)) return null;
+  // QI follow-up: a malformed SDK response with negative counts must not yield a negative cost.
+  if (promptTokens < 0 || completionTokens < 0) return null;
+  const rate = COST_TABLE_PER_M_TOKENS[`${provider}:${model}`];
+  if (!rate) return null;
+  const cost = (promptTokens * rate.in + completionTokens * rate.out) / 1_000_000;
+  // Round to 6 decimal places — sub-microcent precision is meaningless.
+  return Math.round(cost * 1_000_000) / 1_000_000;
+}
+
 // ─── Internal helpers ─────────────────────────────────────────────────────────
 
 function toScopeEnv(scope: string): string {
@@ -135,7 +189,7 @@ export function getModel(scope: string): string {
     case 'gemini':
       return process.env.AI_MODEL_GEMINI_DEFAULT ?? 'gemini-2.5-flash';
     case 'bedrock':
-      return process.env.BEDROCK_MODEL_ID ?? 'us.anthropic.claude-opus-4-7-20260415-v1:0';
+      return process.env.BEDROCK_MODEL_ID ?? 'us.anthropic.claude-opus-4-7';
     case 'openai':
     default:
       return process.env.AI_MODEL_HEAVY ?? 'gpt-5.5';
@@ -177,12 +231,25 @@ async function callOpenAiText(
   );
 }
 
+interface GeminiUsageMetadata {
+  promptTokenCount?: number;
+  candidatesTokenCount?: number;
+}
+
+function extractGeminiUsage(meta: GeminiUsageMetadata | undefined): Usage | undefined {
+  if (!meta) return undefined;
+  const p = meta.promptTokenCount;
+  const c = meta.candidatesTokenCount;
+  if (typeof p !== 'number' || typeof c !== 'number') return undefined;
+  return { promptTokens: p, completionTokens: c };
+}
+
 async function callGeminiText(
   system: string,
   user: string,
   model: string,
   opts?: AiOpts,
-): Promise<string> {
+): Promise<{ text: string; usage?: Usage }> {
   assertGeminiEnv();
   const { GoogleGenAI } = require('@google/genai') as {
     GoogleGenAI: new (opts: { vertexai: boolean; project: string; location: string }) => {
@@ -191,7 +258,7 @@ async function callGeminiText(
           model: string;
           contents: Array<{ role: string; parts: Array<{ text: string }> }>;
           config?: { systemInstruction?: string };
-        }) => Promise<{ text: string }>;
+        }) => Promise<{ text: string; usageMetadata?: GeminiUsageMetadata }>;
       };
     };
   };
@@ -208,7 +275,7 @@ async function callGeminiText(
     config: { systemInstruction: system },
   });
 
-  return response.text ?? '';
+  return { text: response.text ?? '', usage: extractGeminiUsage(response.usageMetadata) };
 }
 
 async function callGeminiVision(
@@ -216,7 +283,7 @@ async function callGeminiVision(
   user: string,
   images: ImageInput[],
   model: string,
-): Promise<string> {
+): Promise<{ text: string; usage?: Usage }> {
   assertGeminiEnv();
   const { GoogleGenAI } = require('@google/genai') as {
     GoogleGenAI: new (opts: { vertexai: boolean; project: string; location: string }) => {
@@ -225,7 +292,7 @@ async function callGeminiVision(
           model: string;
           contents: Array<{ role: string; parts: unknown[] }>;
           config?: { systemInstruction?: string };
-        }) => Promise<{ text: string }>;
+        }) => Promise<{ text: string; usageMetadata?: GeminiUsageMetadata }>;
       };
     };
   };
@@ -249,14 +316,27 @@ async function callGeminiVision(
     config: { systemInstruction: system },
   });
 
-  return response.text ?? '';
+  return { text: response.text ?? '', usage: extractGeminiUsage(response.usageMetadata) };
+}
+
+interface BedrockUsage {
+  input_tokens?: number;
+  output_tokens?: number;
+}
+
+function extractBedrockUsage(usage: BedrockUsage | undefined): Usage | undefined {
+  if (!usage) return undefined;
+  const p = usage.input_tokens;
+  const c = usage.output_tokens;
+  if (typeof p !== 'number' || typeof c !== 'number') return undefined;
+  return { promptTokens: p, completionTokens: c };
 }
 
 async function callBedrockText(
   system: string,
   user: string,
   model: string,
-): Promise<string> {
+): Promise<{ text: string; usage?: Usage }> {
   assertBedrockEnv();
   const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime') as {
     BedrockRuntimeClient: new (opts: { region: string; credentials: { accessKeyId: string; secretAccessKey: string } }) => {
@@ -289,14 +369,14 @@ async function callBedrockText(
 
   const response = await client.send(cmd);
   const decoded = new TextDecoder().decode(response.body);
-  const parsed = JSON.parse(decoded) as { content: Array<{ text?: string }> };
-  return parsed.content?.[0]?.text ?? '';
+  const parsed = JSON.parse(decoded) as { content: Array<{ text?: string }>; usage?: BedrockUsage };
+  return { text: parsed.content?.[0]?.text ?? '', usage: extractBedrockUsage(parsed.usage) };
 }
 
 async function callBedrockAudio(
   audioBuffer: Buffer,
   model: string,
-): Promise<string> {
+): Promise<{ text: string; usage?: Usage }> {
   assertBedrockEnv();
   const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime') as {
     BedrockRuntimeClient: new (opts: { region: string; credentials: { accessKeyId: string; secretAccessKey: string } }) => {
@@ -335,8 +415,8 @@ async function callBedrockAudio(
 
   const response = await client.send(cmd);
   const decoded = new TextDecoder().decode(response.body);
-  const parsed = JSON.parse(decoded) as { content: Array<{ text?: string }> };
-  return parsed.content?.[0]?.text ?? '';
+  const parsed = JSON.parse(decoded) as { content: Array<{ text?: string }>; usage?: BedrockUsage };
+  return { text: parsed.content?.[0]?.text ?? '', usage: extractBedrockUsage(parsed.usage) };
 }
 
 // ─── Public callAi* functions ─────────────────────────────────────────────────
@@ -368,18 +448,21 @@ export async function callAiJson<T>(
   let ok = false;
   let err: string | null = null;
   let result: T;
+  let usage: Usage | undefined;
 
   try {
     switch (provider) {
       case 'gemini': {
-        const text = await callGeminiText(system, user, model, opts);
-        const cleaned = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
+        const r = await callGeminiText(system, user, model, opts);
+        usage = r.usage;
+        const cleaned = r.text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
         result = JSON.parse(cleaned) as T;
         break;
       }
       case 'bedrock': {
-        const text = await callBedrockText(system, user, model);
-        const cleaned = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
+        const r = await callBedrockText(system, user, model);
+        usage = r.usage;
+        const cleaned = r.text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
         result = JSON.parse(cleaned) as T;
         break;
       }
@@ -398,9 +481,9 @@ export async function callAiJson<T>(
       scope,
       provider,
       model,
-      prompt_tokens: null,
-      completion_tokens: null,
-      cost_usd: null,
+      prompt_tokens: usage?.promptTokens ?? null,
+      completion_tokens: usage?.completionTokens ?? null,
+      cost_usd: computeCostUsd(provider, model, usage?.promptTokens, usage?.completionTokens),
       latency_ms: Date.now() - t0,
       ok,
       err,
@@ -422,16 +505,23 @@ export async function callAiText(
   const t0 = Date.now();
   let ok = false;
   let err: string | null = null;
+  let usage: Usage | undefined;
 
   try {
     let result: string;
     switch (provider) {
-      case 'gemini':
-        result = await callGeminiText(system, user, model, opts);
+      case 'gemini': {
+        const r = await callGeminiText(system, user, model, opts);
+        usage = r.usage;
+        result = r.text;
         break;
-      case 'bedrock':
-        result = await callBedrockText(system, user, model);
+      }
+      case 'bedrock': {
+        const r = await callBedrockText(system, user, model);
+        usage = r.usage;
+        result = r.text;
         break;
+      }
       case 'openai':
       default:
         result = await callOpenAiText(scope, system, user, opts);
@@ -447,9 +537,9 @@ export async function callAiText(
       scope,
       provider,
       model,
-      prompt_tokens: null,
-      completion_tokens: null,
-      cost_usd: null,
+      prompt_tokens: usage?.promptTokens ?? null,
+      completion_tokens: usage?.completionTokens ?? null,
+      cost_usd: computeCostUsd(provider, model, usage?.promptTokens, usage?.completionTokens),
       latency_ms: Date.now() - t0,
       ok,
       err,
@@ -472,13 +562,17 @@ export async function callAiVision(
   const t0 = Date.now();
   let ok = false;
   let err: string | null = null;
+  let usage: Usage | undefined;
 
   try {
     let result: string;
     switch (provider) {
-      case 'gemini':
-        result = await callGeminiVision('', prompt, images, model);
+      case 'gemini': {
+        const r = await callGeminiVision('', prompt, images, model);
+        usage = r.usage;
+        result = r.text;
         break;
+      }
       case 'bedrock': {
         assertBedrockEnv();
         const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime') as {
@@ -519,7 +613,8 @@ export async function callAiVision(
 
         const response = await client.send(cmd);
         const decoded = new TextDecoder().decode(response.body);
-        const parsed = JSON.parse(decoded) as { content: Array<{ text?: string }> };
+        const parsed = JSON.parse(decoded) as { content: Array<{ text?: string }>; usage?: BedrockUsage };
+        usage = extractBedrockUsage(parsed.usage);
         result = parsed.content?.[0]?.text ?? '';
         break;
       }
@@ -552,9 +647,9 @@ export async function callAiVision(
       scope,
       provider,
       model,
-      prompt_tokens: null,
-      completion_tokens: null,
-      cost_usd: null,
+      prompt_tokens: usage?.promptTokens ?? null,
+      completion_tokens: usage?.completionTokens ?? null,
+      cost_usd: computeCostUsd(provider, model, usage?.promptTokens, usage?.completionTokens),
       latency_ms: Date.now() - t0,
       ok,
       err,
@@ -577,13 +672,17 @@ export async function callAiAudio(
   const t0 = Date.now();
   let ok = false;
   let err: string | null = null;
+  let usage: Usage | undefined;
 
   try {
     let result: string;
     switch (provider) {
-      case 'bedrock':
-        result = await callBedrockAudio(audioBuffer, model);
+      case 'bedrock': {
+        const r = await callBedrockAudio(audioBuffer, model);
+        usage = r.usage;
+        result = r.text;
         break;
+      }
       case 'gemini': {
         assertGeminiEnv();
         const { GoogleGenAI } = require('@google/genai') as {
@@ -592,7 +691,7 @@ export async function callAiAudio(
               generateContent: (params: {
                 model: string;
                 contents: Array<{ role: string; parts: unknown[] }>;
-              }) => Promise<{ text: string }>;
+              }) => Promise<{ text: string; usageMetadata?: GeminiUsageMetadata }>;
             };
           };
         };
@@ -614,6 +713,7 @@ export async function callAiAudio(
             ],
           }],
         });
+        usage = extractGeminiUsage(response.usageMetadata);
         result = response.text ?? '';
         break;
       }
@@ -642,9 +742,9 @@ export async function callAiAudio(
       scope,
       provider,
       model,
-      prompt_tokens: null,
-      completion_tokens: null,
-      cost_usd: null,
+      prompt_tokens: usage?.promptTokens ?? null,
+      completion_tokens: usage?.completionTokens ?? null,
+      cost_usd: computeCostUsd(provider, model, usage?.promptTokens, usage?.completionTokens),
       latency_ms: Date.now() - t0,
       ok,
       err,

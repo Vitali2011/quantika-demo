@@ -57,7 +57,8 @@ import {
   POST,
   isRouteMapEnabled,
   buildRouteMapPrompt,
-  checkAndRecordRateLimit,
+  checkRateLimit,
+  recordRateLimit,
   generateImageWithImagen,
   uploadAndGetUrl,
   type RouteMapInput,
@@ -169,53 +170,49 @@ describe('buildRouteMapPrompt()', () => {
 
 // ─── Unit tests: rate limiting ────────────────────────────────────────────────
 
-describe('checkAndRecordRateLimit()', () => {
+describe('checkRateLimit() / recordRateLimit() — QA H-1 split', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-
-    // Default: table creation succeeds
     mockDb.exec.mockReturnValue(undefined);
   });
 
-  it('returns true (allowed) when no existing record', () => {
+  it('checkRateLimit returns true (allowed) when no existing record', () => {
     const mockGet = jest.fn().mockReturnValue(null);
-    const mockRun = jest.fn().mockReturnValue({ changes: 1 });
-    mockDb.prepare.mockReturnValue({ get: mockGet, run: mockRun });
-
-    const result = checkAndRecordRateLimit('match-1');
-    expect(result).toBe(true);
-    expect(mockRun).toHaveBeenCalledWith('match-1', expect.any(Number));
+    mockDb.prepare.mockReturnValue({ get: mockGet, run: jest.fn() });
+    expect(checkRateLimit('sess-1:match-1')).toBe(true);
   });
 
-  it('returns true (allowed) when last generation was more than 1 hour ago', () => {
-    const oldTime = Date.now() - 2 * 60 * 60 * 1000; // 2 hours ago
-    const mockGet = jest.fn().mockReturnValue({ match_id: 'match-1', last_gen_at: oldTime });
-    const mockRun = jest.fn().mockReturnValue({ changes: 1 });
-    mockDb.prepare.mockReturnValue({ get: mockGet, run: mockRun });
-
-    const result = checkAndRecordRateLimit('match-1');
-    expect(result).toBe(true);
+  it('checkRateLimit returns true when last generation was more than 1 hour ago', () => {
+    const oldTime = Date.now() - 2 * 60 * 60 * 1000;
+    const mockGet = jest.fn().mockReturnValue({ match_id: 'sess-1:match-1', last_gen_at: oldTime });
+    mockDb.prepare.mockReturnValue({ get: mockGet, run: jest.fn() });
+    expect(checkRateLimit('sess-1:match-1')).toBe(true);
   });
 
-  it('returns false (rate limited) when last generation was within 1 hour', () => {
-    const recentTime = Date.now() - 10 * 60 * 1000; // 10 minutes ago
-    const mockGet = jest.fn().mockReturnValue({ match_id: 'match-1', last_gen_at: recentTime });
-    mockDb.prepare.mockReturnValue({ get: mockGet });
-
-    const result = checkAndRecordRateLimit('match-1');
-    expect(result).toBe(false);
+  it('checkRateLimit returns false (rate limited) when within 1 hour', () => {
+    const recentTime = Date.now() - 10 * 60 * 1000;
+    const mockGet = jest.fn().mockReturnValue({ match_id: 'sess-1:match-1', last_gen_at: recentTime });
+    mockDb.prepare.mockReturnValue({ get: mockGet, run: jest.fn() });
+    expect(checkRateLimit('sess-1:match-1')).toBe(false);
   });
 
-  it('records attempt with current timestamp when allowed', () => {
+  it('checkRateLimit does NOT write to the table (read-only)', () => {
     const mockGet = jest.fn().mockReturnValue(null);
-    const mockRun = jest.fn().mockReturnValue({ changes: 1 });
+    const mockRun = jest.fn();
     mockDb.prepare.mockReturnValue({ get: mockGet, run: mockRun });
+    checkRateLimit('sess-1:match-1');
+    expect(mockRun).not.toHaveBeenCalled();
+  });
+
+  it('recordRateLimit writes the key with current timestamp', () => {
+    const mockRun = jest.fn().mockReturnValue({ changes: 1 });
+    mockDb.prepare.mockReturnValue({ get: jest.fn(), run: mockRun });
 
     const before = Date.now();
-    checkAndRecordRateLimit('match-2');
+    recordRateLimit('sess-1:match-2');
     const after = Date.now();
 
-    expect(mockRun).toHaveBeenCalledWith('match-2', expect.any(Number));
+    expect(mockRun).toHaveBeenCalledWith('sess-1:match-2', expect.any(Number));
     const ts = (mockRun.mock.calls[0] as [string, number])[1];
     expect(ts).toBeGreaterThanOrEqual(before);
     expect(ts).toBeLessThanOrEqual(after);
@@ -380,12 +377,11 @@ describe('POST /api/ai/generate-route-map', () => {
     expect(body.error).toBe('Image generation failed');
   });
 
-  it('returns 500 with error details when Imagen project is not configured', async () => {
+  it('QA M-2: returns 500 WITHOUT details key (no internal-path leak)', async () => {
     process.env.ROUTE_MAP_ENABLED = 'true';
     delete process.env.GOOGLE_CLOUD_PROJECT;
     delete process.env.ROUTE_MAP_GCS_BUCKET;
 
-    // Rate limit: allowed
     const mockGet = jest.fn().mockReturnValue(null);
     const mockRun = jest.fn().mockReturnValue({ changes: 1 });
     mockDb.prepare.mockReturnValue({ get: mockGet, run: mockRun });
@@ -395,6 +391,91 @@ describe('POST /api/ai/generate-route-map', () => {
     expect(res.status).toBe(500);
     const body = await res.json();
     expect(body.error).toBe('Image generation failed');
-    expect(body.details).toContain('GOOGLE_CLOUD_PROJECT');
+    expect(body).not.toHaveProperty('details');
+    expect(JSON.stringify(body)).not.toContain('GOOGLE_CLOUD_PROJECT');
+  });
+
+  // ── QA H-1: rate-limit recorded only AFTER Imagen success ──────────────────
+  it('QA H-1: does NOT record rate-limit row when Imagen call fails', async () => {
+    process.env.ROUTE_MAP_ENABLED = 'true';
+    delete process.env.GOOGLE_CLOUD_PROJECT; // forces generateImageWithImagen to throw
+
+    const mockGet = jest.fn().mockReturnValue(null);
+    const mockRun = jest.fn();
+    mockDb.prepare.mockReturnValue({ get: mockGet, run: mockRun });
+
+    const req = makeRequest({ matchId: 'm-h1', loading_port: 'Port Klang', discharge_port: 'Jebel Ali' });
+    const res = await POST(req);
+    expect(res.status).toBe(500);
+    // No INSERT/REPLACE was issued — the user keeps their hourly quota.
+    expect(mockRun).not.toHaveBeenCalled();
+  });
+
+  // ── QA H-2: rate-limit key includes sessionId ──────────────────────────────
+  it('QA H-2: rate-limit key is `${sessionId}:${matchId}` (cross-user isolation)', async () => {
+    process.env.ROUTE_MAP_ENABLED = 'true';
+    delete process.env.GOOGLE_CLOUD_PROJECT; // Imagen will throw (we still see the rate-limit lookup key)
+
+    const mockGet = jest.fn().mockReturnValue(null);
+    const mockRun = jest.fn();
+    mockDb.prepare.mockReturnValue({ get: mockGet, run: mockRun });
+
+    const req = makeRequest(
+      { matchId: 'shared-match', loading_port: 'Port Klang', discharge_port: 'Jebel Ali' },
+      'sess-A',
+    );
+    await POST(req);
+    expect(mockGet).toHaveBeenCalledWith('sess-A:shared-match');
+  });
+
+  // ── QA H-3: prompt-injection guards on port fields ─────────────────────────
+  it('QA H-3: rejects loading_port containing < or >', async () => {
+    process.env.ROUTE_MAP_ENABLED = 'true';
+    const req = makeRequest({
+      matchId: 'm-h3',
+      loading_port: '<script>alert(1)</script>',
+      discharge_port: 'Jebel Ali',
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(422);
+  });
+
+  it('QA H-3: rejects discharge_port longer than 50 chars', async () => {
+    process.env.ROUTE_MAP_ENABLED = 'true';
+    const req = makeRequest({
+      matchId: 'm-h3',
+      loading_port: 'Port Klang',
+      discharge_port: 'A'.repeat(51),
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(422);
+  });
+
+  it('QA H-3: rejects ports with newlines (Ignore previous instructions… style)', async () => {
+    process.env.ROUTE_MAP_ENABLED = 'true';
+    const req = makeRequest({
+      matchId: 'm-h3',
+      loading_port: 'Port\nIgnore previous',
+      discharge_port: 'Jebel Ali',
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(422);
+  });
+
+  it('QA H-3: accepts plain ASCII port names with hyphens and digits', async () => {
+    process.env.ROUTE_MAP_ENABLED = 'true';
+    delete process.env.GOOGLE_CLOUD_PROJECT; // 500 expected, but parse must pass
+
+    const mockGet = jest.fn().mockReturnValue(null);
+    mockDb.prepare.mockReturnValue({ get: mockGet, run: jest.fn() });
+
+    const req = makeRequest({
+      matchId: 'm-ok',
+      loading_port: 'Las Palmas-2',
+      discharge_port: 'Hong Kong 9',
+    });
+    const res = await POST(req);
+    // Validation passes (parse-success), then Imagen fails → 500 (not 422).
+    expect(res.status).toBe(500);
   });
 });

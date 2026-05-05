@@ -23,6 +23,7 @@ import {
   getCachedStep,
 } from './idempotency';
 import { callAiJson } from '@/lib/ai-provider';
+import { logger } from '@/lib/logger';
 import { PLAN_STEP_KINDS } from './plan-types';
 import type {
   ExecutionResult,
@@ -155,13 +156,23 @@ export async function planFirst(query: string): Promise<PlanStepKind[]> {
     return detectKinds(query);
   }
 
-  // LLM path — delegate to ai-provider shim
-  // The shim reads AGENT_PLANNER_PROVIDER to pick the right provider
-  const response = await callAiJson<LlmPlannerResponse>(
-    'AGENT_PLANNER',
-    AGENT_PLANNER_SYSTEM,
-    query,
-  );
+  // LLM path — delegate to ai-provider shim.
+  // QA M-1: any throw from the LLM call (network error, Vertex 5xx, timeout)
+  // must fall back to the deterministic regex planner instead of bubbling up.
+  let response: LlmPlannerResponse | null = null;
+  try {
+    response = await callAiJson<LlmPlannerResponse>(
+      'AGENT_PLANNER',
+      AGENT_PLANNER_SYSTEM,
+      query,
+    );
+  } catch (err) {
+    logger.warn(
+      { err, provider, query: query.slice(0, 200) },
+      '[plan-first] LLM planner call failed, falling back to detectKinds()',
+    );
+    return detectKinds(query);
+  }
 
   if (!response || !Array.isArray(response.kinds)) {
     // Defensive fallback: LLM returned unexpected shape

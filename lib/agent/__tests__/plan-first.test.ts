@@ -212,6 +212,28 @@ describe('planFirst() — gemini provider', () => {
     const result = await planFirst('Get CII rating');
     expect(result).toContain('check-cii');
   });
+
+  // ── QA M-1: exception swallowing ─────────────────────────────────────────
+  it('QA M-1: falls back to detectKinds when callAiJson THROWS (network/Vertex 5xx)', async () => {
+    mockCallAiJson.mockRejectedValueOnce(new Error('Vertex AI 503 Service Unavailable'));
+    const result = await planFirst('Run sanction check on charterer');
+    expect(result).toContain('check-sanctions');
+    // Did not re-throw — caller never sees the exception.
+  });
+
+  it('QA M-1: falls back to detectKinds on AbortError / timeout', async () => {
+    const err = new Error('Aborted');
+    err.name = 'AbortError';
+    mockCallAiJson.mockRejectedValueOnce(err);
+    const result = await planFirst('Compare Suez vs Cape route');
+    expect(result).toContain('compare-routes');
+  });
+
+  it('QA M-1: returns ["noop"] when LLM throws on a non-keyword query', async () => {
+    mockCallAiJson.mockRejectedValueOnce(new Error('boom'));
+    const result = await planFirst('Hello there');
+    expect(result).toEqual(['noop']);
+  });
 });
 
 // ─── planFirst() — openai provider ────────────────────────────────────────────
