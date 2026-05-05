@@ -1,0 +1,56 @@
+[
+  { "query": "Check OFAC sanctions on vessel IMO 1234567", "kinds": ["check-sanctions"] },
+  { "query": "Is SDN list updated for this counterparty?", "kinds": ["check-sanctions"] },
+  { "query": "Run OFAC check on owner Acme Shipping", "kinds": ["check-sanctions"] },
+  { "query": "Compare Suez vs Cape route for VLCC voyage", "kinds": ["compare-routes"] },
+  { "query": "Which route is cheaper via Suez canal?", "kinds": ["compare-routes"] },
+  { "query": "Cape route cost estimate for this voyage", "kinds": ["compare-routes"] },
+  { "query": "Get CII rating for MV Stardust", "kinds": ["check-cii"] },
+  { "query": "What is the CII score for this vessel?", "kinds": ["check-cii"] },
+  { "query": "Calculate CII compliance for fleet", "kinds": ["check-cii"] },
+  { "query": "Run L5C lifecycle carbon matrix check", "kinds": ["check-l5c"] },
+  { "query": "L5C carbon footprint for this voyage leg", "kinds": ["check-l5c"] },
+  { "query": "Calculate lifecycle carbon for fuel type HFO", "kinds": ["check-l5c"] },
+  { "query": "Generate prequote for charterer Acme", "kinds": ["generate-quote", "send-email"] },
+  { "query": "Get TCE freight rate for this cargo", "kinds": ["generate-quote"] },
+  { "query": "Calculate prequote freight rate DWT 75000", "kinds": ["generate-quote"] },
+  {
+    "query": "Send WhatsApp message to broker with quote",
+    "kinds": ["generate-quote", "send-whatsapp"]
+  },
+  { "query": "Forward prequote by email to charterer", "kinds": ["send-email"] },
+  { "query": "Email the recap to operations team", "kinds": ["send-email"] },
+  { "query": "Send WA msg to captain about ETA", "kinds": ["send-whatsapp"] },
+  {
+    "query": "Send sanctions clearance result via WhatsApp",
+    "kinds": ["check-sanctions", "send-whatsapp"]
+  },
+  {
+    "query": "Check sanctions and send email to compliance officer",
+    "kinds": ["check-sanctions", "send-email"]
+  },
+  {
+    "query": "Compare Suez vs Cape and generate TCE quote",
+    "kinds": ["compare-routes", "generate-quote"]
+  },
+  { "query": "Get CII and L5C for carbon reporting", "kinds": ["check-cii", "check-l5c"] },
+  {
+    "query": "Full voyage check: sanctions + route + CII",
+    "kinds": ["check-sanctions", "compare-routes", "check-cii"]
+  },
+  { "query": "Hello, what can you help me with?", "kinds": ["noop"] },
+  { "query": "Show me the dashboard", "kinds": ["noop"] },
+  { "query": "What is the weather today?", "kinds": ["noop"] },
+  {
+    "query": "Check OFAC and compare route via canal, then send email",
+    "kinds": ["check-sanctions", "compare-routes", "send-email"]
+  },
+  {
+    "query": "Generate freight rate quote and forward to charterer by mail",
+    "kinds": ["generate-quote", "send-email"]
+  },
+  {
+    "query": "Send WhatsApp and email prequote to broker",
+    "kinds": ["generate-quote", "send-whatsapp", "send-email"]
+  }
+]
