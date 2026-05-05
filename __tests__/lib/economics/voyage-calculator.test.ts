@@ -249,4 +249,57 @@ describe('voyage-calculator ECA bunker split', () => {
       expect(result.bunker_open_mt).toBeUndefined();
     });
   });
+
+  describe('Distance auto-resolution (D7)', () => {
+    it('accepts optional distanceNm in route (when 0, uses 0)', () => {
+      const input: VoyageInput = {
+        ...baseInput,
+        route: {
+          originPort: 'SGSIN',
+          destinationPort: 'SGSIN',
+          // distanceNm missing — should use 0 for same port
+        },
+        durationDays: 1,
+      };
+
+      const result = calculateTCE(input);
+
+      // With distanceNm=0 (safeNum undefined → 0), duration calculation should still work
+      expect(result.breakdown.daily_tce_usd).toBeDefined();
+      expect(result.breakdown.bunker_usd).toBe(Math.round(22 * 1 * 580));
+    });
+
+    it('accepts explicit distanceNm=0 when ports are same', () => {
+      const input: VoyageInput = {
+        ...baseInput,
+        route: {
+          originPort: 'SGSIN',
+          destinationPort: 'SGSIN',
+          distanceNm: 0,
+        },
+        durationDays: 0,
+      };
+
+      expect(() => calculateTCE(input)).not.toThrow();
+      const result = calculateTCE(input);
+      expect(result.breakdown.daily_tce_usd).toBe(0);
+    });
+
+    it('uses safeNum on missing distanceNm (collapses to 0)', () => {
+      const input: VoyageInput = {
+        ...baseInput,
+        route: {
+          originPort: 'SGSIN',
+          destinationPort: 'NLRTM',
+          // distanceNm is missing (undefined)
+        },
+      };
+
+      const result = calculateTCE(input);
+
+      // safeNum(undefined) → 0, so distance=0 but calculation proceeds
+      expect(result.breakdown.daily_tce_usd).toBeDefined();
+      expect(typeof result.breakdown.daily_tce_usd).toBe('number');
+    });
+  });
 });

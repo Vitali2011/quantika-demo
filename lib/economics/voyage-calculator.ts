@@ -40,7 +40,8 @@ export interface VoyageInput {
   route: {
     originPort: string;
     destinationPort: string;
-    distanceNm: number;
+    /** Distance in nautical miles. Optional — will be auto-resolved from LOCODEs if missing and flag enabled. */
+    distanceNm?: number;
     viaSuez?: boolean;
     viaCanal?: string;
     /** Resolved origin port (with lat/lon) for ECA calculation */
