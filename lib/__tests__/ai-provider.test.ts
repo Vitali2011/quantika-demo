@@ -347,8 +347,8 @@ describe('getModel', () => {
 
   it('returns bedrock model when AI_PROVIDER=bedrock', () => {
     const { getModel } = require('@/lib/ai-provider');
-    setEnv({ AI_PROVIDER: 'bedrock', BEDROCK_MODEL_ID: 'us.anthropic.claude-opus-4-7-20260415-v1:0' });
-    expect(getModel('match')).toBe('us.anthropic.claude-opus-4-7-20260415-v1:0');
+    setEnv({ AI_PROVIDER: 'bedrock', BEDROCK_MODEL_ID: 'us.anthropic.claude-opus-4-7' });
+    expect(getModel('match')).toBe('us.anthropic.claude-opus-4-7');
   });
 
   it('returns default openai model when no env set', () => {
@@ -393,10 +393,21 @@ describe('computeCostUsd — QA L-1', () => {
     // 1000*15/1M + 500*75/1M = 0.015 + 0.0375 = 0.0525
     expect(computeCostUsd(
       'bedrock',
-      'us.anthropic.claude-opus-4-7-20260415-v1:0',
+      'us.anthropic.claude-opus-4-7',
       1000,
       500,
     )).toBeCloseTo(0.0525, 6);
+  });
+
+  it('computes bedrock claude-sonnet-4-6 cost at $3 in / $15 out per 1M', () => {
+    const { computeCostUsd } = require('@/lib/ai-provider');
+    // 1000*3/1M + 500*15/1M = 0.003 + 0.0075 = 0.0105
+    expect(computeCostUsd(
+      'bedrock',
+      'us.anthropic.claude-sonnet-4-6',
+      1000,
+      500,
+    )).toBeCloseTo(0.0105, 6);
   });
 
   it('returns 0 for a zero-token call (rate × 0 = 0)', () => {
@@ -469,7 +480,7 @@ describe('callAiJson + ai_audit cost_usd integration — QA L-1', () => {
       AWS_REGION: 'us-east-1',
       AWS_ACCESS_KEY_ID: 'k',
       AWS_SECRET_ACCESS_KEY: 's',
-      BEDROCK_MODEL_ID: 'us.anthropic.claude-opus-4-7-20260415-v1:0',
+      BEDROCK_MODEL_ID: 'us.anthropic.claude-opus-4-7',
     });
 
     const { BedrockRuntimeClient } = require('@aws-sdk/client-bedrock-runtime');
