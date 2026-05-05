@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { detectTextDirection } from '@/lib/i18n/rtl-detect';
 
 export interface Highlight {
   text: string;
@@ -44,18 +45,17 @@ export function EmailBodyViewer({ body, highlights }: Props) {
   }, []);
 
   const segments = buildSegments(body, highlights);
-  let isFirst = true;
+  const firstHighlightIdx = segments.findIndex(s => s.highlight !== null);
+  const dir = detectTextDirection(body);
 
   return (
-    <pre className="text-sm whitespace-pre-wrap font-sans leading-relaxed">
+    <pre dir={dir} className="text-sm whitespace-pre-wrap font-sans leading-relaxed">
       {segments.map((seg, i) => {
         if (!seg.highlight) return <span key={i}>{seg.text}</span>;
-        const captureFirst = isFirst;
-        if (isFirst) isFirst = false;
         return (
           <mark
             key={i}
-            ref={captureFirst ? (el) => { firstMarkRef.current = el; } : undefined}
+            ref={i === firstHighlightIdx ? (el) => { firstMarkRef.current = el; } : undefined}
             className={`${seg.highlight.color} rounded px-0.5`}
             title={seg.highlight.label}
           >
