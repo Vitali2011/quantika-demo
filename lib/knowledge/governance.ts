@@ -1,5 +1,6 @@
 import type Database from 'better-sqlite3';
 import type { RegisterSourceInput, SourceRow } from './types';
+import { fireAlert } from './alerts';
 
 export function registerSource(db: Database.Database, input: RegisterSourceInput): void {
   db.prepare(`
@@ -122,6 +123,19 @@ export function reportSyncFailure(
     `).run(String(error?.message ?? error), log.source_slug);
   });
   tx();
+
+  // Fire alert if consecutive_failures >= 2 (threshold per design doc)
+  const source = db.prepare('SELECT consecutive_failures, last_error FROM knowledge_sources WHERE slug = ?').get(log.source_slug) as any;
+  if (source && source.consecutive_failures >= 2) {
+    // Best-effort: don't propagate fireAlert errors
+    fireAlert({
+      slug: log.source_slug,
+      consecutiveFailures: source.consecutive_failures,
+      lastError: source.last_error,
+    }).catch((err) => {
+      console.error(`fireAlert failed for ${log.source_slug}:`, err);
+    });
+  }
 }
 
 export function getSourceStatus(db: Database.Database, slug: string): SourceRow | null {
