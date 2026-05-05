@@ -359,3 +359,151 @@ describe('getModel', () => {
     expect(model.length).toBeGreaterThan(0);
   });
 });
+
+// ─── QA L-1: cost_usd computation ────────────────────────────────────────────
+
+describe('computeCostUsd — QA L-1', () => {
+  it('returns null when prompt or completion tokens missing', () => {
+    const { computeCostUsd } = require('@/lib/ai-provider');
+    expect(computeCostUsd('gemini', 'gemini-2.5-flash', null, 100)).toBeNull();
+    expect(computeCostUsd('gemini', 'gemini-2.5-flash', 100, null)).toBeNull();
+    expect(computeCostUsd('gemini', 'gemini-2.5-flash', undefined, undefined)).toBeNull();
+  });
+
+  it('returns null for an unknown (provider, model) combo', () => {
+    const { computeCostUsd } = require('@/lib/ai-provider');
+    expect(computeCostUsd('gemini', 'made-up-model', 1000, 500)).toBeNull();
+    expect(computeCostUsd('openai', 'gpt-5.5', 1000, 500)).toBeNull();
+  });
+
+  it('computes gemini-2.5-flash cost at $0.075 in / $0.30 out per 1M', () => {
+    const { computeCostUsd } = require('@/lib/ai-provider');
+    // 1000*0.075/1M + 500*0.30/1M = 0.000075 + 0.00015 = 0.000225
+    expect(computeCostUsd('gemini', 'gemini-2.5-flash', 1000, 500)).toBeCloseTo(0.000225, 6);
+  });
+
+  it('computes gemini-2.5-pro cost at $1.25 in / $5 out per 1M', () => {
+    const { computeCostUsd } = require('@/lib/ai-provider');
+    // 10000*1.25/1M + 2000*5/1M = 0.0125 + 0.01 = 0.0225
+    expect(computeCostUsd('gemini', 'gemini-2.5-pro', 10000, 2000)).toBeCloseTo(0.0225, 6);
+  });
+
+  it('computes bedrock claude-opus-4-7 cost at $15 in / $75 out per 1M', () => {
+    const { computeCostUsd } = require('@/lib/ai-provider');
+    // 1000*15/1M + 500*75/1M = 0.015 + 0.0375 = 0.0525
+    expect(computeCostUsd(
+      'bedrock',
+      'us.anthropic.claude-opus-4-7-20260415-v1:0',
+      1000,
+      500,
+    )).toBeCloseTo(0.0525, 6);
+  });
+
+  it('returns 0 for a zero-token call (rate × 0 = 0)', () => {
+    const { computeCostUsd } = require('@/lib/ai-provider');
+    expect(computeCostUsd('gemini', 'gemini-2.5-flash', 0, 0)).toBe(0);
+  });
+});
+
+describe('callAiJson + ai_audit cost_usd integration — QA L-1', () => {
+  it('writes non-null cost_usd when Gemini returns usage metadata', async () => {
+    setEnv({
+      AI_PROVIDER: 'gemini',
+      GOOGLE_APPLICATION_CREDENTIALS: '/dev/null',
+      GOOGLE_CLOUD_PROJECT: 'test-project',
+      AI_MODEL_GEMINI_DEFAULT: 'gemini-2.5-flash',
+    });
+
+    const { GoogleGenAI } = require('@google/genai');
+    (GoogleGenAI as jest.Mock).mockImplementationOnce(() => ({
+      models: {
+        generateContent: jest.fn().mockResolvedValue({
+          text: '{"ok":true}',
+          usageMetadata: { promptTokenCount: 1000, candidatesTokenCount: 500 },
+        }),
+      },
+    }));
+
+    const { callAiJson } = require('@/lib/ai-provider');
+    await callAiJson('classify', 'sys', 'user');
+
+    const row = testDb
+      .prepare('SELECT prompt_tokens, completion_tokens, cost_usd FROM ai_audit ORDER BY id DESC LIMIT 1')
+      .get() as { prompt_tokens: number; completion_tokens: number; cost_usd: number };
+
+    expect(row.prompt_tokens).toBe(1000);
+    expect(row.completion_tokens).toBe(500);
+    expect(row.cost_usd).toBeCloseTo(0.000225, 6);
+  });
+
+  it('writes null cost_usd when Gemini omits usage metadata', async () => {
+    setEnv({
+      AI_PROVIDER: 'gemini',
+      GOOGLE_APPLICATION_CREDENTIALS: '/dev/null',
+      GOOGLE_CLOUD_PROJECT: 'test-project',
+      AI_MODEL_GEMINI_DEFAULT: 'gemini-2.5-flash',
+    });
+
+    const { GoogleGenAI } = require('@google/genai');
+    (GoogleGenAI as jest.Mock).mockImplementationOnce(() => ({
+      models: {
+        generateContent: jest.fn().mockResolvedValue({ text: '{"ok":true}' }),
+      },
+    }));
+
+    const { callAiJson } = require('@/lib/ai-provider');
+    await callAiJson('classify', 'sys', 'user');
+
+    const row = testDb
+      .prepare('SELECT prompt_tokens, completion_tokens, cost_usd FROM ai_audit ORDER BY id DESC LIMIT 1')
+      .get() as { prompt_tokens: number | null; completion_tokens: number | null; cost_usd: number | null };
+
+    expect(row.prompt_tokens).toBeNull();
+    expect(row.completion_tokens).toBeNull();
+    expect(row.cost_usd).toBeNull();
+  });
+
+  it('writes non-null cost_usd from Bedrock usage', async () => {
+    setEnv({
+      AI_PROVIDER: 'bedrock',
+      AWS_REGION: 'us-east-1',
+      AWS_ACCESS_KEY_ID: 'k',
+      AWS_SECRET_ACCESS_KEY: 's',
+      BEDROCK_MODEL_ID: 'us.anthropic.claude-opus-4-7-20260415-v1:0',
+    });
+
+    const { BedrockRuntimeClient } = require('@aws-sdk/client-bedrock-runtime');
+    (BedrockRuntimeClient as jest.Mock).mockImplementationOnce(() => ({
+      send: jest.fn().mockResolvedValue({
+        body: new TextEncoder().encode(JSON.stringify({
+          content: [{ text: '{"ok":true}' }],
+          usage: { input_tokens: 1000, output_tokens: 500 },
+        })),
+      }),
+    }));
+
+    const { callAiJson } = require('@/lib/ai-provider');
+    await callAiJson('match', 'sys', 'user');
+
+    const row = testDb
+      .prepare('SELECT prompt_tokens, completion_tokens, cost_usd FROM ai_audit ORDER BY id DESC LIMIT 1')
+      .get() as { prompt_tokens: number; completion_tokens: number; cost_usd: number };
+
+    expect(row.prompt_tokens).toBe(1000);
+    expect(row.completion_tokens).toBe(500);
+    expect(row.cost_usd).toBeCloseTo(0.0525, 6);
+  });
+
+  it('rollback path: AI_PROVIDER=openai still writes audit row with null cost_usd (no regression)', async () => {
+    setEnv({ AI_PROVIDER: 'openai' });
+    const { callAiJson } = require('@/lib/ai-provider');
+    await callAiJson('classify', 'sys', 'user');
+
+    const row = testDb
+      .prepare('SELECT provider, cost_usd FROM ai_audit ORDER BY id DESC LIMIT 1')
+      .get() as { provider: string; cost_usd: number | null };
+
+    expect(row.provider).toBe('openai');
+    expect(row.cost_usd).toBeNull();
+  });
+});
