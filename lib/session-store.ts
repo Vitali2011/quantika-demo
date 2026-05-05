@@ -20,7 +20,7 @@ function ensureDir(filePath: string): void {
 }
 
 function serializeData(session: SessionData): string {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   const { id, accessToken, createdAt, ...rest } = session;
   return JSON.stringify(rest);
 }
@@ -35,6 +35,10 @@ export class SessionStore {
   constructor(dbPath: string = DEFAULT_DB_PATH) {
     ensureDir(dbPath);
     this.db = new Database(dbPath);
+    // Enforce FK constraints (SQLite default is OFF). Required for migrations
+    // that declare REFERENCES (e.g., 013 knowledge_sync_log → knowledge_sources)
+    // to actually reject orphan inserts at runtime.
+    this.db.pragma('foreign_keys = ON');
     if (process.env['USE_MIGRATION_RUNNER'] !== 'false') {
       runMigrations(this.db, allMigrations);
     } else {

@@ -33,6 +33,7 @@ function openDb(): Database.Database {
     fs.mkdirSync(dir, { recursive: true });
   }
   const db = new Database(DEFAULT_DB_PATH);
+  db.pragma('foreign_keys = ON');
   db.exec(CANAL_TARIFFS_SCHEMA);
   seedIfEmpty(db);
   return db;
