@@ -6,9 +6,11 @@
  * Generates `SentinelAlert` records and dispatches notifications.
  */
 
+import type Database from 'better-sqlite3';
 import {
   loadSanctionFixtures,
   type SanctionFlaggedEntity,
+  type SanctionEntityType,
 } from '@/lib/sample-data/sanction-corpus';
 import {
   scoreMatch,
@@ -46,12 +48,46 @@ export interface ScanOptions {
   dealsProvider?: () => ActiveDeal[] | Promise<ActiveDeal[]>;
   /** When true, dispatch a notification per alert. Defaults to false (dry-run). */
   dispatch?: boolean;
-  /** Inject corpus for tests. Defaults to `loadSanctionFixtures()`. */
+  /** Inject corpus for tests. Defaults to `loadSanctionFixtures()` or real corpus. */
   corpus?: SanctionFlaggedEntity[];
+  /** Database instance for querying real corpus. */
+  db?: Database.Database;
 }
 
 // Re-export the helpers used by tests / external callers.
 export { classifySeverity, scoreMatch } from '@/lib/sanctions/match-engine';
+
+/**
+ * Load sanction corpus from the real database (sanction_corpus_view).
+ *
+ * Input contract:
+ * - db: Database.Database (required, enforced by TypeScript)
+ * - Empty corpus tables → returns [] (not crash, not fallback)
+ *
+ * @param db Database instance to query
+ * @returns Array of SanctionFlaggedEntity from OFAC + EU tables
+ */
+export function loadSanctionCorpus(db: Database.Database): SanctionFlaggedEntity[] {
+  interface CorpusRow {
+    source: string;
+    uid: string;
+    type: string;
+    name: string;
+    name_normalized: string;
+    aliases: string | null;
+    country: string | null;
+    programs: string | null;
+  }
+
+  const rows = db.prepare('SELECT * FROM sanction_corpus_view').all() as CorpusRow[];
+
+  return rows.map((row) => ({
+    name: row.name,
+    type: row.type as SanctionEntityType,
+    matchReason: row.source === 'ofac' ? 'OFAC SDN' : 'EU consolidated',
+    confidence: 'high' as const,
+  }));
+}
 
 function buildCorpusFromFixtures(): SanctionFlaggedEntity[] {
   const out: SanctionFlaggedEntity[] = [];
@@ -88,7 +124,21 @@ function checkOne(
 export async function scanActiveDeals(
   opts: ScanOptions = {},
 ): Promise<SentinelAlert[]> {
-  const corpus = opts.corpus ?? buildCorpusFromFixtures();
+  // Feature flag: KNOWLEDGE_SANCTIONS_REAL controls whether to use real corpus or fixtures
+  const useRealCorpus = process.env.KNOWLEDGE_SANCTIONS_REAL === 'true';
+
+  let corpus: SanctionFlaggedEntity[];
+  if (opts.corpus) {
+    // Explicit corpus provided (for tests)
+    corpus = opts.corpus;
+  } else if (useRealCorpus && opts.db) {
+    // Use real corpus from database
+    corpus = loadSanctionCorpus(opts.db);
+  } else {
+    // Fall back to fixtures (default, rollback safety)
+    corpus = buildCorpusFromFixtures();
+  }
+
   const provider = opts.dealsProvider ?? (() => []);
   const deals = await provider();
 
