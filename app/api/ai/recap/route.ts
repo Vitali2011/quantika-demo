@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
-import { callAiJson, LLMTimeoutError } from '@/lib/openai';
+import { LLMTimeoutError } from '@/lib/openai';
+import { callAiJson, getProvider } from '@/lib/ai-provider';
 import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { NEGOTIATION_RECAP_SYSTEM_PROMPT } from '@/lib/prompts';
-import { AI_MODEL_HEAVY, MIN_THREAD_LENGTH_FOR_RECAP } from '@/lib/constants';
+import { MIN_THREAD_LENGTH_FOR_RECAP } from '@/lib/constants';
 import { Recap, RecapPoint, RecapHistoryEntry, NegotiationStatus } from '@/lib/types';
+
+/** Characters to keep per email body for OpenAI (limited context window). */
+const OPENAI_BODY_SLICE = 2000;
+
+/** Scope name used to resolve RECAP_PROVIDER / AI_PROVIDER env vars. */
+const RECAP_SCOPE = 'RECAP';
 
 interface RawRecapPoint {
   topic?: string;
@@ -56,19 +63,20 @@ export async function POST(request: NextRequest) {
         (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
       );
       
+      const provider = getProvider(RECAP_SCOPE);
+      const bodySlice = provider === 'openai' ? OPENAI_BODY_SLICE : undefined;
+
       const threadInput = sortedEmails.map((e, i) => ({
         number: i + 1,
         from: e.from,
         date: e.date,
-        body: e.body.slice(0, 2000),
+        body: bodySlice !== undefined ? e.body.slice(0, bodySlice) : e.body,
       }));
-      
+
       const result = await callAiJson<{ points: RawRecapPoint[]; summary: string }>(
-        JSON.stringify(threadInput),
+        RECAP_SCOPE,
         NEGOTIATION_RECAP_SYSTEM_PROMPT,
-        AI_MODEL_HEAVY,
-        { points: [], summary: '' },
-        undefined,
+        JSON.stringify(threadInput),
         { timeoutMs: endpointLlmTimeout(60) }
       );
 
