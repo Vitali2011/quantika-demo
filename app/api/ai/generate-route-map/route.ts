@@ -176,8 +176,26 @@ export async function uploadAndGetUrl(
     return `data:image/png;base64,${base64Bytes}`;
   }
 
-  // Upload to GCS and return signed URL
-  const { Storage } = require('@google-cloud/storage');
+  // Upload to GCS and return signed URL.
+  // Hide `require` from Turbopack static analysis — `@google-cloud/storage`
+  // is OPTIONAL (only loaded when `ROUTE_MAP_GCS_BUCKET` is set in production).
+  // Without this `eval('require')` trick the production build fails with
+  // "Module not found" even though the require() is gated behind a bucket check.
+  let Storage: new () => {
+    bucket: (b: string) => {
+      file: (f: string) => {
+        save: (...a: unknown[]) => Promise<void>;
+        getSignedUrl: (...a: unknown[]) => Promise<[string]>;
+      };
+    };
+  };
+  try {
+    const dynamicRequire = eval('require') as NodeRequire;
+    Storage = dynamicRequire('@google-cloud/storage').Storage;
+  } catch (err) {
+    logger.error({ err, matchId }, '[route-map] @google-cloud/storage not installed; falling back to data URL');
+    return `data:image/png;base64,${base64Bytes}`;
+  }
   const storage = new Storage();
   const filename = `route-maps/${matchId}-${Date.now()}.png`;
   const file = storage.bucket(bucket).file(filename);
