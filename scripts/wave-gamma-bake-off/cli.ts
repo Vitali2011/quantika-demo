@@ -22,9 +22,17 @@ import { writeReport } from './report';
 
 (async () => {
   const concurrency = parseInt(process.env.BAKE_OFF_CONCURRENCY ?? '5', 10);
+  // Comma-separated allowlist of model ids, e.g.
+  //   BAKE_OFF_MODEL_FILTER=gemini-2.5-pro,gemini-2.5-flash,gemini-2.5-flash-lite
+  // Useful when some Gemini models 404 in the active Vertex project/region.
+  const modelFilterRaw = process.env.BAKE_OFF_MODEL_FILTER;
+  const modelFilter = modelFilterRaw
+    ? modelFilterRaw.split(',').map((s) => s.trim()).filter(Boolean)
+    : undefined;
   const { records, runId, jsonlPath } = await runBakeOff({
     outDir: '.specs/wave-gamma-vertex/bake-off-results',
     concurrency,
+    modelFilter,
   });
 
   const agg = aggregate(records);

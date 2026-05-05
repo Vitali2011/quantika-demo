@@ -175,10 +175,31 @@ export async function judge(input: JudgeInput, options: JudgeOptions = {}): Prom
 
   // Pin the judge model explicitly — independent of any per-scope BEDROCK_MODEL_ID
   // override the project may use elsewhere.
-  const rawText = await callFn(JUDGE_SCOPE, JUDGE_PROMPT, userMessage, {
-    model: resolveJudgeModel(),
-    maxTokens: JUDGE_MAX_TOKENS,
-  });
+  // Bedrock Opus 4.7 has tight per-account TPM throttles. Retry on
+  // "Too many tokens"/ThrottlingException-style errors with exponential
+  // backoff + jitter. Up to 5 attempts (~31s worst-case wait).
+  const maxAttempts = 5;
+  let rawText = '';
+  let lastErr: unknown;
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    try {
+      rawText = await callFn(JUDGE_SCOPE, JUDGE_PROMPT, userMessage, {
+        model: resolveJudgeModel(),
+        maxTokens: JUDGE_MAX_TOKENS,
+      });
+      lastErr = undefined;
+      break;
+    } catch (e) {
+      lastErr = e;
+      const msg = e instanceof Error ? e.message : String(e);
+      const isThrottle = /too many tokens|throttl|rate.?limit|429|ServiceUnavailable|503/i.test(msg);
+      if (!isThrottle || attempt === maxAttempts - 1) throw e;
+      const baseMs = 1000 * Math.pow(2, attempt); // 1s, 2s, 4s, 8s, 16s
+      const jitter = Math.floor(Math.random() * 500);
+      await new Promise((r) => setTimeout(r, baseMs + jitter));
+    }
+  }
+  if (lastErr) throw lastErr;
 
   if (!rawText || rawText.trim().length === 0) {
     throw new Error('Judge returned no text block in response content');
