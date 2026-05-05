@@ -6,10 +6,10 @@
  * - WHATSAPP_VOICE_PROVIDER=gemini → callAiAudio shim path
  * - No provider set (default) → openai path
  * - LLMTimeoutError handling
- * - Audio URL download → buffer flow
+ * - Audio URL download → buffer flow (gemini)
  */
 
-// ─── Mocks ───────────────────────────────────────────────────────────────────
+// ─── Mocks — declared before any imports ─────────────────────────────────────
 
 jest.mock('@/lib/openai', () => ({
   callAiText: jest.fn(),
@@ -26,57 +26,57 @@ jest.mock('@/lib/ai-provider', () => ({
   getProvider: jest.fn(),
 }));
 
-// Mock global fetch for audio download
+// Mock global fetch for audio download (gemini path)
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
 
+// ─── Imports (after jest.mock declarations) ───────────────────────────────────
+
 import { callAiText, LLMTimeoutError } from '@/lib/openai';
 import { callAiAudio, getProvider } from '@/lib/ai-provider';
+import { transcribeAudio } from '@/lib/whatsapp/voice-transcribe';
 
 const mockCallAiText = callAiText as jest.MockedFunction<typeof callAiText>;
 const mockCallAiAudio = callAiAudio as jest.MockedFunction<typeof callAiAudio>;
 const mockGetProvider = getProvider as jest.MockedFunction<typeof getProvider>;
 
-// ─── Setup ───────────────────────────────────────────────────────────────────
+// ─── Shared helpers ───────────────────────────────────────────────────────────
 
-function setProvider(provider: 'openai' | 'gemini'): void {
-  process.env.WHATSAPP_VOICE_PROVIDER = provider;
-  mockGetProvider.mockReturnValue(provider);
-}
-
-function clearProvider(): void {
-  delete process.env.WHATSAPP_VOICE_PROVIDER;
-}
-
-const FAKE_AUDIO_BUFFER = Buffer.from('fake ogg audio data');
 const AUDIO_URL = 'https://example.com/media/audio.ogg';
 const MIME_OGG = 'audio/ogg; codecs=opus';
+const FAKE_AUDIO_BUFFER = Buffer.from('fake ogg audio data');
 
-function mockAudioFetch(): void {
+function mockSuccessfulDownload(buf: Buffer = FAKE_AUDIO_BUFFER): void {
   mockFetch.mockResolvedValueOnce({
     ok: true,
-    arrayBuffer: jest.fn().mockResolvedValue(FAKE_AUDIO_BUFFER.buffer),
+    arrayBuffer: jest.fn().mockResolvedValue(buf.buffer),
+  } as unknown as Response);
+}
+
+function mockFailedDownload(status = 404): void {
+  mockFetch.mockResolvedValueOnce({
+    ok: false,
+    status,
+    statusText: 'Not Found',
   } as unknown as Response);
 }
 
 beforeEach(() => {
   jest.clearAllMocks();
-  jest.resetModules();
-  clearProvider();
-});
-
-afterEach(() => {
-  clearProvider();
+  delete process.env.WHATSAPP_VOICE_PROVIDER;
 });
 
 // ─── Tests: openai rollback path ──────────────────────────────────────────────
 
 describe('transcribeAudio — openai provider (rollback)', () => {
-  it('calls callAiText when WHATSAPP_VOICE_PROVIDER=openai', async () => {
-    setProvider('openai');
+  beforeEach(() => {
+    process.env.WHATSAPP_VOICE_PROVIDER = 'openai';
+    mockGetProvider.mockReturnValue('openai');
+  });
+
+  it('calls callAiText and returns transcribed text with language', async () => {
     mockCallAiText.mockResolvedValue('7500 mt steel coils from Istanbul to Lagos');
 
-    const { transcribeAudio } = await import('@/lib/whatsapp/voice-transcribe');
     const result = await transcribeAudio(AUDIO_URL, MIME_OGG);
 
     expect(result.text).toBe('7500 mt steel coils from Istanbul to Lagos');
@@ -85,44 +85,35 @@ describe('transcribeAudio — openai provider (rollback)', () => {
     expect(mockCallAiAudio).not.toHaveBeenCalled();
   });
 
-  it('returns empty text when callAiText returns empty (openai)', async () => {
-    setProvider('openai');
+  it('returns empty text when callAiText returns empty string', async () => {
     mockCallAiText.mockResolvedValue('');
 
-    const { transcribeAudio } = await import('@/lib/whatsapp/voice-transcribe');
     const result = await transcribeAudio(AUDIO_URL, MIME_OGG);
 
     expect(result.text).toBe('');
     expect(result.language).toBe('auto');
   });
 
-  it('returns empty text on LLMTimeoutError (openai)', async () => {
-    setProvider('openai');
-    const { LLMTimeoutError: LLMErr } = require('@/lib/openai') as { LLMTimeoutError: typeof LLMTimeoutError };
-    mockCallAiText.mockRejectedValue(new LLMErr('timeout'));
+  it('returns empty text on LLMTimeoutError (graceful degradation)', async () => {
+    mockCallAiText.mockRejectedValue(new LLMTimeoutError('timeout'));
 
-    const { transcribeAudio } = await import('@/lib/whatsapp/voice-transcribe');
     const result = await transcribeAudio(AUDIO_URL, MIME_OGG);
 
     expect(result.text).toBe('');
     expect(result.language).toBe('auto');
   });
 
-  it('handles OGG/Opus mime type (WhatsApp default) — openai', async () => {
-    setProvider('openai');
+  it('handles OGG/Opus mime type (WhatsApp default)', async () => {
     mockCallAiText.mockResolvedValue('cargo booking details');
 
-    const { transcribeAudio } = await import('@/lib/whatsapp/voice-transcribe');
     const result = await transcribeAudio('https://example.com/voice.ogg', 'audio/ogg');
 
     expect(result.text).toBe('cargo booking details');
   });
 
-  it('handles M4A mime type — openai', async () => {
-    setProvider('openai');
+  it('handles M4A mime type', async () => {
     mockCallAiText.mockResolvedValue('m4a transcription');
 
-    const { transcribeAudio } = await import('@/lib/whatsapp/voice-transcribe');
     const result = await transcribeAudio('https://example.com/voice.m4a', 'audio/mp4');
 
     expect(result.text).toBe('m4a transcription');
@@ -131,13 +122,15 @@ describe('transcribeAudio — openai provider (rollback)', () => {
 
 // ─── Tests: default path (no provider set) ────────────────────────────────────
 
-describe('transcribeAudio — default provider (openai)', () => {
-  it('defaults to openai path when no env set', async () => {
-    // No provider set → default openai behaviour
+describe('transcribeAudio — default provider (openai when unset)', () => {
+  beforeEach(() => {
+    // No WHATSAPP_VOICE_PROVIDER — shim falls back to openai
     mockGetProvider.mockReturnValue('openai');
+  });
+
+  it('falls through to openai path when no provider env set', async () => {
     mockCallAiText.mockResolvedValue('default path transcript');
 
-    const { transcribeAudio } = await import('@/lib/whatsapp/voice-transcribe');
     const result = await transcribeAudio(AUDIO_URL, MIME_OGG);
 
     expect(result.text).toBe('default path transcript');
@@ -148,12 +141,15 @@ describe('transcribeAudio — default provider (openai)', () => {
 // ─── Tests: gemini path ────────────────────────────────────────────────────────
 
 describe('transcribeAudio — gemini provider', () => {
-  it('downloads audio buffer and calls callAiAudio when WHATSAPP_VOICE_PROVIDER=gemini', async () => {
-    setProvider('gemini');
-    mockAudioFetch();
+  beforeEach(() => {
+    process.env.WHATSAPP_VOICE_PROVIDER = 'gemini';
+    mockGetProvider.mockReturnValue('gemini');
+  });
+
+  it('downloads audio buffer and calls callAiAudio', async () => {
+    mockSuccessfulDownload();
     mockCallAiAudio.mockResolvedValue('Arabic: shipment 5000 MT fertilizer Aqaba to Jeddah');
 
-    const { transcribeAudio } = await import('@/lib/whatsapp/voice-transcribe');
     const result = await transcribeAudio(AUDIO_URL, MIME_OGG);
 
     expect(result.text).toBe('Arabic: shipment 5000 MT fertilizer Aqaba to Jeddah');
@@ -166,40 +162,38 @@ describe('transcribeAudio — gemini provider', () => {
     expect(mockCallAiText).not.toHaveBeenCalled();
   });
 
-  it('passes ogg mime type (WhatsApp default) to callAiAudio — gemini', async () => {
-    setProvider('gemini');
-    mockAudioFetch();
+  it('fetches the audio URL before calling callAiAudio', async () => {
+    mockSuccessfulDownload();
+    mockCallAiAudio.mockResolvedValue('transcript');
+
+    await transcribeAudio(AUDIO_URL, MIME_OGG);
+
+    expect(mockFetch).toHaveBeenCalledWith(AUDIO_URL);
+  });
+
+  it('handles OGG/Opus mime type (WhatsApp default) — gemini', async () => {
+    mockSuccessfulDownload();
     mockCallAiAudio.mockResolvedValue('ogg transcription');
 
-    const { transcribeAudio } = await import('@/lib/whatsapp/voice-transcribe');
     const result = await transcribeAudio('https://example.com/voice.ogg', 'audio/ogg');
 
     expect(result.text).toBe('ogg transcription');
     expect(mockCallAiAudio).toHaveBeenCalledTimes(1);
   });
 
-  it('returns empty text on LLMTimeoutError (gemini)', async () => {
-    setProvider('gemini');
-    mockAudioFetch();
-    const { LLMTimeoutError: LLMErr } = require('@/lib/openai') as { LLMTimeoutError: typeof LLMTimeoutError };
-    mockCallAiAudio.mockRejectedValue(new LLMErr('gemini timeout'));
+  it('returns empty text and language=auto on LLMTimeoutError (gemini)', async () => {
+    mockSuccessfulDownload();
+    mockCallAiAudio.mockRejectedValue(new LLMTimeoutError('gemini timeout'));
 
-    const { transcribeAudio } = await import('@/lib/whatsapp/voice-transcribe');
     const result = await transcribeAudio(AUDIO_URL, MIME_OGG);
 
     expect(result.text).toBe('');
     expect(result.language).toBe('auto');
   });
 
-  it('returns empty text when audio download fails (gemini)', async () => {
-    setProvider('gemini');
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      status: 404,
-      statusText: 'Not Found',
-    } as unknown as Response);
+  it('returns empty text when audio download returns non-ok status', async () => {
+    mockFailedDownload(404);
 
-    const { transcribeAudio } = await import('@/lib/whatsapp/voice-transcribe');
     const result = await transcribeAudio(AUDIO_URL, MIME_OGG);
 
     expect(result.text).toBe('');
@@ -207,16 +201,11 @@ describe('transcribeAudio — gemini provider', () => {
     expect(mockCallAiAudio).not.toHaveBeenCalled();
   });
 
-  it('passes Arabic audio fixture (en/ar code-switching)', async () => {
-    setProvider('gemini');
-    const arabicAudioBuffer = Buffer.from('arabic audio fixture data', 'utf8');
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      arrayBuffer: jest.fn().mockResolvedValue(arabicAudioBuffer.buffer),
-    } as unknown as Response);
+  it('passes Arabic audio fixture — en/ar code-switching transcript', async () => {
+    const arabicBuf = Buffer.from('arabic audio fixture data', 'utf8');
+    mockSuccessfulDownload(arabicBuf);
     mockCallAiAudio.mockResolvedValue('5000 MT قمح من بيروت إلى جدة، laytime 48 hours');
 
-    const { transcribeAudio } = await import('@/lib/whatsapp/voice-transcribe');
     const result = await transcribeAudio('https://example.com/arabic-voice.ogg', 'audio/ogg');
 
     expect(result.text).toBe('5000 MT قمح من بيروت إلى جدة، laytime 48 hours');
