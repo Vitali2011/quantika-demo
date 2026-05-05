@@ -23,10 +23,10 @@ import type { ParsedCargo } from '@/lib/types';
 const NOW = new Date('2026-05-10T00:00:00.000Z');
 
 describe('resolveDemoParsedCargoes — date resolution', () => {
-  it('returns an array of 4-5 records', () => {
+  it('returns an array of records for every cargo-inquiry email (sample-01..12)', () => {
     const result = resolveDemoParsedCargoes(NOW);
     expect(result.length).toBeGreaterThanOrEqual(4);
-    expect(result.length).toBeLessThanOrEqual(5);
+    expect(result.length).toBeLessThanOrEqual(12);
   });
 
   it('resolves +Nd offsets to ISO date strings relative to now', () => {
@@ -89,8 +89,12 @@ describe('resolveDemoParsedCargoes — schema parity with ParsedCargo', () => {
     }
   });
 
-  it('each emailId matches a real cargo-inquiry ID (sample-01 through sample-05)', () => {
-    const validIds = new Set(['sample-01', 'sample-02', 'sample-03', 'sample-04', 'sample-05']);
+  it('each emailId matches a real cargo-inquiry ID (sample-01 through sample-12)', () => {
+    const validIds = new Set([
+      'sample-01', 'sample-02', 'sample-03', 'sample-04', 'sample-05',
+      'sample-06', 'sample-07', 'sample-08', 'sample-09', 'sample-10',
+      'sample-11', 'sample-12',
+    ]);
     for (const cargo of result) {
       expect(validIds.has(cargo.emailId)).toBe(true);
     }
