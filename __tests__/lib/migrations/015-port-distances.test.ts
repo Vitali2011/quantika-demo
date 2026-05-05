@@ -14,31 +14,57 @@ describe('migration 015 port-distances', () => {
     const cols = db.prepare("PRAGMA table_info(port_distances)").all() as any[];
     expect(cols.map((c) => c.name)).toEqual(
       expect.arrayContaining([
-        'id', 'port_from', 'port_to', 'distance_nm', 'source', 'fetched_at',
+        'id', 'origin', 'dest', 'route_via', 'distance_nm', 'created_at',
       ])
     );
   });
 
-  it('creates indexes on port_from and port_to', () => {
+  it('creates indexes on origin, dest, and route_via', () => {
     migration015.up(db);
     const indexes = db.prepare("PRAGMA index_list(port_distances)").all() as any[];
-    expect(indexes.some((idx: any) => idx.name.includes('port_from'))).toBe(true);
-    expect(indexes.some((idx: any) => idx.name.includes('port_to'))).toBe(true);
+    expect(indexes.some((idx: any) => idx.name.includes('origin'))).toBe(true);
+    expect(indexes.some((idx: any) => idx.name.includes('dest'))).toBe(true);
+    expect(indexes.some((idx: any) => idx.name.includes('route'))).toBe(true);
   });
 
-  it('enforces UNIQUE constraint on (port_from, port_to)', () => {
+  it('enforces UNIQUE constraint on (origin, dest, route_via)', () => {
     migration015.up(db);
     db.prepare(`
-      INSERT INTO port_distances (port_from, port_to, distance_nm, source)
-      VALUES ('Antwerp', 'Hamburg', 245.0, 'test')
+      INSERT INTO port_distances (origin, dest, route_via, distance_nm)
+      VALUES ('BEANR', 'DEHAM', 'direct', 245.0)
     `).run();
 
     expect(() => {
       db.prepare(`
-        INSERT INTO port_distances (port_from, port_to, distance_nm, source)
-        VALUES ('Antwerp', 'Hamburg', 246.0, 'test-duplicate')
+        INSERT INTO port_distances (origin, dest, route_via, distance_nm)
+        VALUES ('BEANR', 'DEHAM', 'direct', 246.0)
       `).run();
     }).toThrow(/UNIQUE constraint failed/);
+  });
+
+  it('allows same origin+dest with different route_via', () => {
+    migration015.up(db);
+    db.prepare(`
+      INSERT INTO port_distances (origin, dest, route_via, distance_nm)
+      VALUES ('BRTER', 'CNQIN', 'suez', 11200.0)
+    `).run();
+
+    db.prepare(`
+      INSERT INTO port_distances (origin, dest, route_via, distance_nm)
+      VALUES ('BRTER', 'CNQIN', 'cape', 14500.0)
+    `).run();
+
+    const rows = db.prepare(`
+      SELECT route_via, distance_nm FROM port_distances
+      WHERE origin = 'BRTER' AND dest = 'CNQIN'
+      ORDER BY route_via
+    `).all() as any[];
+
+    expect(rows).toHaveLength(2);
+    expect(rows[0].route_via).toBe('cape');
+    expect(rows[0].distance_nm).toBe(14500.0);
+    expect(rows[1].route_via).toBe('suez');
+    expect(rows[1].distance_nm).toBe(11200.0);
   });
 
   it('rolls back cleanly via down()', () => {
@@ -48,8 +74,9 @@ describe('migration 015 port-distances', () => {
     expect(tables.map((t) => t.name)).not.toContain('port_distances');
 
     const indexes = db.prepare("SELECT name FROM sqlite_master WHERE type='index'").all() as any[];
-    expect(indexes.some((idx: any) => idx.name.includes('port_from'))).toBe(false);
-    expect(indexes.some((idx: any) => idx.name.includes('port_to'))).toBe(false);
+    expect(indexes.some((idx: any) => idx.name.includes('origin'))).toBe(false);
+    expect(indexes.some((idx: any) => idx.name.includes('dest'))).toBe(false);
+    expect(indexes.some((idx: any) => idx.name.includes('route'))).toBe(false);
   });
 
   it('is idempotent (up() can run multiple times safely)', () => {
