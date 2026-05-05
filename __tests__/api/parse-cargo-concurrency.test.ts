@@ -11,7 +11,7 @@
  * unit-tested without spinning up a Next request.
  */
 
-import { withRetry429, PARSE_CARGO_CONCURRENCY } from '@/app/api/ai/parse-cargo/route';
+import { withRetry429, PARSE_CARGO_CONCURRENCY } from '@/lib/parse-cargo-helpers';
 
 describe('wave-γ-3 Task B1: parse-cargo concurrency limit', () => {
   it('exposes PARSE_CARGO_CONCURRENCY = 8 (was 3 — caused 524 with 13 demo emails)', () => {

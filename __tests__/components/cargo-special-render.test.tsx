@@ -9,7 +9,7 @@
  * need to mount the server component in jsdom.
  */
 
-import { renderSpecialRequirements } from '@/app/cargo/[id]/page';
+import { renderSpecialRequirements } from '@/lib/cargo-render';
 
 describe('renderSpecialRequirements (βf2-02)', () => {
   it('TDD-1: array of {label} objects → readable comma-separated text, no [object Object]', () => {
