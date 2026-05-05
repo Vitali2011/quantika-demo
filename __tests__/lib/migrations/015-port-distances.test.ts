@@ -18,4 +18,11 @@ describe('migration 015 port-distances', () => {
       ])
     );
   });
+
+  it('creates indexes on port_from and port_to', () => {
+    migration015.up(db);
+    const indexes = db.prepare("PRAGMA index_list(port_distances)").all() as any[];
+    expect(indexes.some((idx: any) => idx.name.includes('port_from'))).toBe(true);
+    expect(indexes.some((idx: any) => idx.name.includes('port_to'))).toBe(true);
+  });
 });
