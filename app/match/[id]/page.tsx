@@ -9,6 +9,7 @@ import { safeRender } from '@/lib/ui-render';
 import { getConfidenceColorClass } from '@/lib/confidence';
 import { MatchTabs } from '@/components/match/MatchTabs';
 import { SourceAttributionSection } from '@/components/match/SourceAttributionSection';
+import { ExplainDealModal } from '@/components/match/ExplainDealModal';
 
 interface Props { params: Promise<{ id: string }>; }
 
@@ -65,6 +66,15 @@ export default async function MatchDetailPage({ params }: Props) {
             {badgeCfg.label}
           </Badge>
         </div>
+
+        {/* Action buttons row — γv-11 + γv-12 slot */}
+        {process.env.EXPLAIN_DEAL_ENABLED === 'true' && (
+          <div className="flex flex-wrap items-center gap-2 px-1">
+            {/* γv-11: Explain this deal */}
+            <ExplainDealModal matchIndex={idx} language="en" />
+            {/* γv-12 slot: RouteMapButton goes here — do not modify this comment */}
+          </div>
+        )}
 
         {/* Tabs */}
         <MatchTabs
