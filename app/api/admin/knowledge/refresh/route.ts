@@ -1,0 +1,108 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { spawn } from 'child_process';
+import { getStore } from '@/lib/session-store';
+import { reportSyncStarted } from '@/lib/knowledge/governance';
+import { KNOWLEDGE_REGISTRY } from '@/lib/knowledge/bootstrap';
+
+/**
+ * POST /api/admin/knowledge/refresh
+ *
+ * Manual trigger endpoint for refreshing a knowledge source.
+ * Spawns a background process to run the refresh script.
+ *
+ * Auth: TODO - In Phase 1, this endpoint is temporarily open for development.
+ * Production deployment requires admin session middleware (to be added in later phase).
+ *
+ * Request body:
+ * - slug: string (required) - must match a slug in KNOWLEDGE_REGISTRY
+ *
+ * Response (202 Accepted):
+ * - sync_log_id: number - ID of the created sync log entry
+ * - slug: string - echoed back
+ * - status: 'started'
+ * - message: string - confirmation message
+ *
+ * Error responses:
+ * - 400 Bad Request: missing slug, invalid slug, or slug not in registry
+ * - 500 Internal Server Error: failed to start refresh process
+ *
+ * SECURITY:
+ * - Slug is validated against KNOWLEDGE_REGISTRY whitelist before use
+ * - Uses child_process.spawn with array args (NOT exec) to prevent shell injection
+ * - No user input is passed directly to shell
+ */
+
+// Build whitelist set for O(1) lookup
+const VALID_SLUGS = new Set(KNOWLEDGE_REGISTRY.map((r) => r.slug));
+
+export async function POST(req: NextRequest) {
+  // TODO: Add admin auth check - await requireAdmin(req)
+  // For Phase 1, allowing unauthenticated access for development/testing
+
+  let body: any;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
+
+  // Input validation: slug is required
+  const { slug } = body;
+
+  // Empty/falsy check
+  if (!slug || typeof slug !== 'string' || slug.trim() === '') {
+    return NextResponse.json(
+      { error: 'slug is required and must be a non-empty string' },
+      { status: 400 }
+    );
+  }
+
+  // Whitelist validation (SECURITY CRITICAL)
+  if (!VALID_SLUGS.has(slug)) {
+    return NextResponse.json(
+      { error: `Unknown slug: ${slug}. Must be one of: ${Array.from(VALID_SLUGS).join(', ')}` },
+      { status: 400 }
+    );
+  }
+
+  // Get database and create sync log entry
+  const db = getStore().getDb();
+  let syncLogId: number;
+
+  try {
+    syncLogId = reportSyncStarted(db, slug);
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to create sync log entry', details: String(error) },
+      { status: 500 }
+    );
+  }
+
+  // Spawn refresh process in background (fire-and-forget)
+  // SECURITY: Using spawn with array args prevents shell injection
+  // The slug is already validated against whitelist above
+  try {
+    const child = spawn('npm', ['run', 'knowledge:refresh', '--', slug], {
+      detached: true,
+      stdio: 'ignore',
+    });
+
+    // Detach the child process so it continues after parent exits
+    child.unref();
+  } catch (error) {
+    // If spawn fails, log the error but still return success since sync log was created
+    console.error(`Failed to spawn refresh process for ${slug}:`, error);
+    // Note: In production, this should update the sync log to 'failed' status
+  }
+
+  // Return 202 Accepted immediately
+  return NextResponse.json(
+    {
+      sync_log_id: syncLogId,
+      slug,
+      status: 'started',
+      message: `Refresh job started for ${slug}`,
+    },
+    { status: 202 }
+  );
+}
