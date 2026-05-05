@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
-import { callAiJson, LLMTimeoutError } from '@/lib/openai';
+import { callAiJson } from '@/lib/ai-provider';
+import { LLMTimeoutError } from '@/lib/openai';
 import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { CLASSIFICATION_SYSTEM_PROMPT } from '@/lib/prompts';
-import { AI_MODEL_HEAVY, MAX_EMAIL_BODY_CHARS } from '@/lib/constants';
+import { MAX_EMAIL_BODY_CHARS } from '@/lib/constants';
 import { truncateText } from '@/lib/utils';
 import { classifyEmails, AiClassification } from '@/lib/classification-service';
 
@@ -31,11 +32,9 @@ function chunk<T>(arr: T[], size: number): T[][] {
 async function classifyBatch(batch: EmailInput[]): Promise<AiClassification[]> {
   const todayIso = new Date().toISOString().split('T')[0];
   const result = await callAiJson<{ classifications: AiClassification[] }>(
-    `Today's date: ${todayIso}\n\n${JSON.stringify(batch)}`,
+    'CLASSIFY',
     CLASSIFICATION_SYSTEM_PROMPT,
-    AI_MODEL_HEAVY,
-    { classifications: [] },
-    undefined,
+    `Today's date: ${todayIso}\n\n${JSON.stringify(batch)}`,
     { timeoutMs: endpointLlmTimeout(120) },
   );
   return result.classifications ?? [];

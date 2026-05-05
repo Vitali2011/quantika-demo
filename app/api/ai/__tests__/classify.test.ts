@@ -2,7 +2,18 @@ import { POST } from '@/app/api/ai/classify/route';
 import { NextRequest } from 'next/server';
 import { Email, SessionData } from '@/lib/types';
 
-jest.mock('@/lib/openai');
+jest.mock('@/lib/openai', () => {
+  const actual = jest.requireActual('@/lib/openai') as typeof import('@/lib/openai');
+  return {
+    ...actual,
+    callAiJson: jest.fn(),
+    callAiText: jest.fn(),
+  };
+});
+jest.mock('@/lib/ai-provider', () => ({
+  ...jest.requireActual('@/lib/ai-provider'),
+  callAiJson: jest.fn(),
+}));
 jest.mock('@/lib/session', () => {
   const { NextResponse } = jest.requireActual('next/server');
   const getSession = jest.fn();
@@ -21,11 +32,21 @@ jest.mock('@/lib/session', () => {
 });
 
 import { callAiJson } from '@/lib/openai';
+import * as aiProvider from '@/lib/ai-provider';
 import { getSession, updateSession } from '@/lib/session';
 
 const mockCallAiJson = callAiJson as jest.MockedFunction<typeof callAiJson>;
+const mockAiProviderCallAiJson = aiProvider.callAiJson as jest.MockedFunction<typeof aiProvider.callAiJson>;
 const mockGetSession = getSession as jest.MockedFunction<typeof getSession>;
 const mockUpdateSession = updateSession as jest.MockedFunction<typeof updateSession>;
+
+// By default ai-provider shim delegates to openai mock so existing tests keep working.
+// When old tests set mockCallAiJson.mockResolvedValue(data), the ai-provider mock
+// will forward through to it because it shares the same mockImplementation chain.
+beforeEach(() => {
+   
+  mockAiProviderCallAiJson.mockImplementation(() => mockCallAiJson('', '', '', undefined as any));
+});
 
 function makeRequest(sessionId?: string): NextRequest {
   const headers: Record<string, string> = { origin: 'http://localhost:3000' };
@@ -182,5 +203,111 @@ describe('POST /api/ai/classify', () => {
     const [, updates] = mockUpdateSession.mock.calls[0];
     const processed = (updates as { processedEmails: { status: string }[] }).processedEmails[0];
     expect(processed.status).toBe('INFO_ONLY');
+  });
+});
+
+describe('POST /api/ai/classify — provider routing', () => {
+  const singleEmail = {
+    id: 'email-1',
+    threadId: 'thread-1',
+    from: 'sender@example.com',
+    fromName: 'Sender',
+    fromEmail: 'sender@example.com',
+    to: 'recipient@example.com',
+    subject: 'Test',
+    date: new Date().toISOString(),
+    body: 'Some body',
+    snippet: 'Some body',
+    labelIds: ['INBOX'],
+  } satisfies Email;
+
+  const sessionWithEmail: SessionData = {
+    id: 'session-1',
+    accessToken: 'token',
+    createdAt: new Date(),
+    emails: [singleEmail],
+    classifications: [],
+    processedEmails: [],
+    parsedCargos: [],
+    parsedVessels: [],
+    parsedFixtureRecaps: [],
+    matches: [],
+    recaps: [],
+    commissionSummary: null,
+    counterparties: [],
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockUpdateSession.mockReturnValue(true);
+    mockGetSession.mockReturnValue(sessionWithEmail);
+  });
+
+  afterEach(() => {
+    delete process.env.CLASSIFY_PROVIDER;
+    delete process.env.AI_PROVIDER;
+  });
+
+  it('regression: CLASSIFY_PROVIDER=openai — routes through ai-provider shim (callAiJson from @/lib/ai-provider called)', async () => {
+    process.env.CLASSIFY_PROVIDER = 'openai';
+    mockAiProviderCallAiJson.mockResolvedValue({
+      classifications: [{ id: 'email-1', category: 'CARGO_INQUIRY', urgency: 'high', confidence: 0.9 }],
+    });
+
+    const req = new NextRequest('http://localhost/api/ai/classify', {
+      method: 'POST',
+      headers: { origin: 'http://localhost:3000', cookie: 'session_id=session-1' },
+    });
+
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+    // Verify callAiJson from ai-provider shim was called (not bypassed)
+    expect(mockAiProviderCallAiJson).toHaveBeenCalledWith(
+      'CLASSIFY',
+      expect.any(String),
+      expect.any(String),
+      expect.objectContaining({ timeoutMs: expect.any(Number) }),
+    );
+  });
+
+  it('CLASSIFY_PROVIDER=gemini — routes through ai-provider shim with CLASSIFY scope', async () => {
+    process.env.CLASSIFY_PROVIDER = 'gemini';
+    mockAiProviderCallAiJson.mockResolvedValue({
+      classifications: [{ id: 'email-1', category: 'VESSEL_INQUIRY', urgency: 'low', confidence: 0.8 }],
+    });
+
+    const req = new NextRequest('http://localhost/api/ai/classify', {
+      method: 'POST',
+      headers: { origin: 'http://localhost:3000', cookie: 'session_id=session-1' },
+    });
+
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+    // Verify shim was called with CLASSIFY scope — the shim itself routes to Gemini internally
+    expect(mockAiProviderCallAiJson).toHaveBeenCalledWith(
+      'CLASSIFY',
+      expect.any(String),
+      expect.any(String),
+      expect.objectContaining({ timeoutMs: expect.any(Number) }),
+    );
+    // openai callAiJson should NOT be called directly (route now uses ai-provider)
+    expect(mockCallAiJson).not.toHaveBeenCalled();
+  });
+
+  it('graceful fallback: classify endpoint returns 504 on LLMTimeoutError regardless of provider', async () => {
+    process.env.CLASSIFY_PROVIDER = 'gemini';
+    const { LLMTimeoutError } = jest.requireActual('@/lib/openai') as { LLMTimeoutError: new (message: string) => Error };
+    mockAiProviderCallAiJson.mockRejectedValue(new LLMTimeoutError('timed out'));
+
+    const req = new NextRequest('http://localhost/api/ai/classify', {
+      method: 'POST',
+      headers: { origin: 'http://localhost:3000', cookie: 'session_id=session-1' },
+    });
+
+    const res = await POST(req);
+    expect(res.status).toBe(504);
+    const body = await res.json();
+    expect(body.error).toBe('ai_timeout');
+    expect(body.retryable).toBe(true);
   });
 });
