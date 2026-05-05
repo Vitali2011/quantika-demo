@@ -15,3 +15,12 @@ export const DraftReplyBodySchema = z.union([
 ]);
 
 export type DraftReplyBody = z.infer<typeof DraftReplyBodySchema>;
+
+export const ExplainDealBodySchema = z.object({
+  /** Index into session.matches[] */
+  matchIndex: z.number().int().min(0),
+  /** Language hint: "en" (default) or "ar" for Arabic */
+  language: z.enum(['en', 'ar']).optional().default('en'),
+});
+
+export type ExplainDealBody = z.infer<typeof ExplainDealBodySchema>;

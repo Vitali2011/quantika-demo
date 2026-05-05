@@ -8,3 +8,4 @@ export * from './prompts/parse-recap';
 export * from './prompts/match';
 export * from './prompts/recap';
 export * from './prompts/draft';
+export * from './prompts/explain-deal';

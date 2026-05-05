@@ -1,9 +1,12 @@
 /**
- * β-11: Plan-First / Execute-Second core engine.
+ * β-11 / γv-10: Plan-First / Execute-Second core engine.
  *
  * - buildPlan(goal, context): декомпозирует цель агента в массив PlanStep.
- *   Без LLM — детерминированный rule-based decomposer (heuristics over goal
- *   keywords). Достаточно для foundation; LLM-driven вариант — β-15.
+ *   По умолчанию (AGENT_PLANNER_PROVIDER=regex) — детерминированный
+ *   rule-based decomposer (heuristics over goal keywords).
+ * - planFirst(query): LLM-driven planner через ai-provider shim.
+ *   AGENT_PLANNER_PROVIDER=gemini|openai|bedrock → LLM режим.
+ *   AGENT_PLANNER_PROVIDER=regex (или не задан) → fallback на detectKinds().
  * - executePlan(plan, approvedStepIds): выполняет ТОЛЬКО approved steps,
  *   остальные skipped. Per-step idempotency через step-cache.
  *
@@ -19,6 +22,15 @@ import {
   getCachedExecution,
   getCachedStep,
 } from './idempotency';
+import { callAiJson } from '@/lib/ai-provider';
+import { PLAN_STEP_KINDS } from './plan-types';
+import type {
+  ExecutionResult,
+  Plan,
+  PlanStep,
+  PlanStepKind,
+  StepResult,
+} from './plan-types';
 
 /**
  * BUG-β-11-PlanCacheReplay: cache key must include the set of approved step
@@ -29,13 +41,6 @@ function approvedHash(approvedStepIds: string[]): string {
   const sorted = [...approvedStepIds].sort();
   return createHash('sha256').update(sorted.join('|')).digest('hex').slice(0, 16);
 }
-import type {
-  ExecutionResult,
-  Plan,
-  PlanStep,
-  PlanStepKind,
-  StepResult,
-} from './plan-types';
 
 export type StepHandler = (
   step: PlanStep,
@@ -82,7 +87,11 @@ interface BuildOptions {
   now?: () => string;
 }
 
-function detectKinds(goal: string): PlanStepKind[] {
+/**
+ * Rule-based (regex) kind detector — preserved as fallback path.
+ * Used when AGENT_PLANNER_PROVIDER=regex (or not set).
+ */
+export function detectKinds(goal: string): PlanStepKind[] {
   const g = goal.toLowerCase();
   const kinds: PlanStepKind[] = [];
   if (/sanction|ofac|sdn/.test(g)) kinds.push('check-sanctions');
@@ -95,6 +104,80 @@ function detectKinds(goal: string): PlanStepKind[] {
   if (kinds.length === 0) kinds.push('noop');
   // Dedup, preserve order.
   return Array.from(new Set(kinds));
+}
+
+/**
+ * Response shape expected from LLM planner.
+ */
+interface LlmPlannerResponse {
+  kinds: string[];
+}
+
+const AGENT_PLANNER_SYSTEM = `You are an agentic planner for a freight forwarding AI assistant.
+
+Given a user query, return a JSON object with a "kinds" array listing the step kinds needed.
+
+Valid kinds: ${PLAN_STEP_KINDS.join(', ')}
+
+Rules:
+- Use "check-sanctions" for OFAC, SDN, sanctions checks
+- Use "compare-routes" for route comparisons (Suez, Cape, canal)
+- Use "check-cii" for CII rating/compliance checks
+- Use "check-l5c" for L5C lifecycle carbon checks
+- Use "generate-quote" for freight quotes, TCE calculations, prequotes
+- Use "send-email" for sending emails, forwarding results by email
+- Use "send-whatsapp" for sending WhatsApp / WA messages
+- Use "noop" ONLY when no specific action is required (informational queries)
+- You may include multiple kinds if the query requires multiple actions
+- Order: checks before communications (sanctions → route → cii → l5c → quote → whatsapp → email)
+- Deduplicate kinds
+
+Return ONLY JSON, no markdown, no explanation.
+Example: {"kinds": ["check-sanctions", "send-email"]}`;
+
+/**
+ * LLM-driven planner — γv-10.
+ *
+ * Routing via AGENT_PLANNER_PROVIDER env:
+ *   - "regex"  (or unset) → falls back to detectKinds() rule-based logic
+ *   - "gemini" → Vertex AI Gemini (default: gemini-2.5-flash)
+ *   - "openai" → OpenAI via ClipProxy
+ *   - "bedrock" → AWS Bedrock Claude
+ *
+ * @param query User query to classify into plan step kinds.
+ * @returns Array of PlanStepKind values (deduplicated, ordered).
+ */
+export async function planFirst(query: string): Promise<PlanStepKind[]> {
+  const provider = process.env.AGENT_PLANNER_PROVIDER ?? 'regex';
+
+  // Rollback path — use rule-based detectKinds()
+  if (provider === 'regex') {
+    return detectKinds(query);
+  }
+
+  // LLM path — delegate to ai-provider shim
+  // The shim reads AGENT_PLANNER_PROVIDER to pick the right provider
+  const response = await callAiJson<LlmPlannerResponse>(
+    'AGENT_PLANNER',
+    AGENT_PLANNER_SYSTEM,
+    query,
+  );
+
+  if (!response || !Array.isArray(response.kinds)) {
+    // Defensive fallback: LLM returned unexpected shape
+    return detectKinds(query);
+  }
+
+  const validKinds = new Set<string>(PLAN_STEP_KINDS);
+  const filtered = response.kinds.filter((k): k is PlanStepKind => validKinds.has(k));
+
+  // Ensure we always have at least one kind
+  if (filtered.length === 0) {
+    return ['noop'];
+  }
+
+  // Dedup, preserve order
+  return Array.from(new Set(filtered));
 }
 
 function describe(kind: PlanStepKind, goal: string): string {

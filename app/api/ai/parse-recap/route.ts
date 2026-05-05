@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
-import { callAiText, LLMTimeoutError } from '@/lib/openai';
+import { callAiText } from '@/lib/ai-provider';
+import { LLMTimeoutError } from '@/lib/openai';
 import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { FIXTURE_RECAP_PARSER_PROMPT } from '@/lib/prompts';
-import { AI_MODEL_HEAVY } from '@/lib/constants';
 import { ParsedFixtureRecap } from '@/lib/types';
 import { summarizeCommissions } from '@/lib/commission';
 import { parseRecapAIResponse } from '@/lib/parsing/parse-recap-helpers';
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     fixtureEmails.map((email) => limit(async () => {
       const userPrompt = `From: ${email.from}\nSubject: ${email.subject}\nDate: ${email.date}\n\n${email.body}`;
       try {
-        const raw = await callAiText(userPrompt, FIXTURE_RECAP_PARSER_PROMPT, AI_MODEL_HEAVY, { timeoutMs: endpointLlmTimeout(120) });
+        const raw = await callAiText('PARSE_RECAP', FIXTURE_RECAP_PARSER_PROMPT, userPrompt, { timeoutMs: endpointLlmTimeout(120) });
         return parseRecapAIResponse(raw, email.id);
       } catch (err) {
         // γ-1: per-email timeout isolation — skip on timeout, do not poison batch.

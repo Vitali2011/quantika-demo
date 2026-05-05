@@ -109,7 +109,7 @@ export async function parseForwardedMessage(
         };
       }
       const media = await client.downloadMedia(msg.image.id);
-      rawText = await extractTextFromImage(media.url);
+      rawText = await extractTextFromImage(media.url, media.mimeType);
       break;
     }
 

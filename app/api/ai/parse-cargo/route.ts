@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
-import { callAiJson, LLMTimeoutError } from '@/lib/openai';
+import { callAiJson as callAiJsonShim } from '@/lib/ai-provider';
+import { LLMTimeoutError } from '@/lib/openai';
 import { CARGO_INQUIRY_PARSER_PROMPT } from '@/lib/prompts';
-import { AI_MODEL_LIGHT } from '@/lib/constants';
 import {
   MAX_EMAIL_BODY_CHARS,
   LLM_TIMEOUT_MS,
@@ -185,17 +185,22 @@ export async function POST(request: NextRequest) {
       // null while the LLM kept consuming resources in the background).
       // γ-3 (B1): wrap in withRetry429 so the higher pLimit(8) concurrency
       // doesn't translate cliproxy 429 blips into permanent failures.
+      // γv-02: route through ai-provider shim (PARSE_CARGO_PROVIDER env).
+      //   Default: gemini-2.5-flash; rollback: PARSE_CARGO_PROVIDER=openai.
+      //   PARSE_CARGO_GEMINI_MODEL overrides the Gemini model for this scope.
       let result: RawCargoItem | null;
       try {
         result = await withTimeout(
           withRetry429(() =>
-            callAiJson<RawCargoItem>(
-              prompts[i],
+            callAiJsonShim<RawCargoItem>(
+              'PARSE_CARGO',
               CARGO_INQUIRY_PARSER_PROMPT,
-              AI_MODEL_LIGHT,
-              { items: [] },
-              16000,
-              { timeoutMs: LLM_TIMEOUT_MS },
+              prompts[i],
+              {
+                timeoutMs: LLM_TIMEOUT_MS,
+                maxTokens: 16000,
+                model: process.env.PARSE_CARGO_GEMINI_MODEL,
+              },
             ),
           ),
           LLM_TIMEOUT_MS,

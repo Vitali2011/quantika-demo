@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
-import { callAiJson, LLMTimeoutError } from '@/lib/openai';
+import { callAiJson } from '@/lib/ai-provider';
+import { LLMTimeoutError } from '@/lib/openai';
 import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { MATCH_PROMPT } from '@/lib/prompts';
-import { AI_MODEL_HEAVY } from '@/lib/constants';
 import { analyzePairs, AiScorer, RawMatch } from '@/lib/matching/pair-analyzer';
 
 export const maxDuration = 120;
@@ -36,11 +36,9 @@ export async function POST(request: NextRequest) {
     });
 
     const result = await callAiJson<{ matches: RawMatch[] }>(
-      promptPayload,
+      'MATCH',
       MATCH_PROMPT,
-      AI_MODEL_HEAVY,
-      { matches: [] },
-      undefined,
+      promptPayload,
       { timeoutMs: endpointLlmTimeout(120) },
     );
 

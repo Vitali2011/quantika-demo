@@ -124,6 +124,65 @@ ssh root@VPS 'cd /root/quantika-demo && git fetch origin main && git checkout or
 
 Дальше скрипт сам подтягивает свежую версию себя и Caddy-конфигов из `origin/main` перед каждым деплоем.
 
+## AI Provider Switching
+
+Начиная с Wave γ, все AI-вызовы идут через единый шим `lib/ai-provider.ts`, который поддерживает три провайдера:
+
+| Provider  | Что это                              | Когда использовать                 |
+| --------- | ------------------------------------ | ---------------------------------- |
+| `openai`  | OpenAI GPT через ClipProxy (default) | Стандартный путь, нет зависимостей |
+| `gemini`  | Google Gemini через Vertex AI        | Лёгкие/средние задачи, дешевле     |
+| `bedrock` | Anthropic Claude через AWS Bedrock   | Match endpoint, Opus 4.7           |
+
+### Routing
+
+Приоритет роутинга (от высокого к низкому):
+
+1. **Per-scope override** — `<SCOPE>_PROVIDER=bedrock` (например: `MATCH_PROVIDER=bedrock`)
+2. **Global fallback** — `AI_PROVIDER=gemini`
+3. **Default** — `openai` (если ничего не задано)
+
+Примеры в `.env.local`:
+
+```bash
+AI_PROVIDER=openai            # глобальный провайдер по умолчанию
+MATCH_PROVIDER=bedrock        # только match → Bedrock
+CLASSIFY_PROVIDER=gemini      # только classify → Gemini
+```
+
+### Настройка Gemini (Vertex AI)
+
+```bash
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/quantika-vertex-ai.json
+GOOGLE_CLOUD_PROJECT=quantika-demo-2026
+GOOGLE_CLOUD_LOCATION=us-central1
+AI_MODEL_GEMINI_DEFAULT=gemini-2.5-flash
+```
+
+### Настройка AWS Bedrock
+
+```bash
+AWS_REGION=us-east-1
+AWS_ACCESS_KEY_ID=your_key
+AWS_SECRET_ACCESS_KEY=your_secret
+BEDROCK_MODEL_ID=us.anthropic.claude-opus-4-7-20260415-v1:0
+```
+
+### Emergency Rollback на OpenAI
+
+Если Gemini или Bedrock дают ошибки в production:
+
+```bash
+cp .env.gpt-fallback.example .env.local
+pm2 restart quantika-demo
+```
+
+Файл `.env.gpt-fallback.example` форсирует `openai` для всех scopes. Не содержит секретов — можно коммитить.
+
+### Audit Logging
+
+Все AI-вызовы пишут запись в таблицу `ai_audit` (SQLite). Поля: `scope`, `provider`, `model`, `latency_ms`, `ok`, `err`. Полезно для дебага и мониторинга стоимости.
+
 ## Deployment
 
 Инструкция по деплою на VPS (PM2 + Caddy): [docs/deploy.md](docs/deploy.md)
