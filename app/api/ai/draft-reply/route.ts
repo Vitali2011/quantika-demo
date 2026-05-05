@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession } from '@/lib/session';
-import { callAiText, LLMTimeoutError } from '@/lib/openai';
+import { callAiText } from '@/lib/ai-provider';
+import { LLMTimeoutError } from '@/lib/openai';
 import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { DRAFT_REPLY_SYSTEM_PROMPT } from '@/lib/prompts';
-import { AI_MODEL_LIGHT } from '@/lib/constants';
 import { DraftReplyBodySchema } from '@/lib/api-schemas';
 
 export const maxDuration = 30;
@@ -60,7 +60,7 @@ Missing information: ${JSON.stringify(parsedCargo?.missingInfo || [])}
 Write a follow-up email addressing the client by their first name. Ask for the missing information listed above.`;
     
     try {
-      const draft = await callAiText(userPrompt, DRAFT_REPLY_SYSTEM_PROMPT, AI_MODEL_LIGHT, { timeoutMs: endpointLlmTimeout(30) });
+      const draft = await callAiText('DRAFT_REPLY', DRAFT_REPLY_SYSTEM_PROMPT, userPrompt, { timeoutMs: endpointLlmTimeout(30) });
       return NextResponse.json({ draft });
     } catch (err) {
       if (err instanceof LLMTimeoutError) return timeoutResponse();
@@ -77,7 +77,7 @@ ${JSON.stringify(pendingItems, null, 2)}
 Write a follow-up email to resolve the pending items.`;
 
     try {
-      const draft = await callAiText(userPrompt, DRAFT_REPLY_SYSTEM_PROMPT, AI_MODEL_LIGHT, { timeoutMs: endpointLlmTimeout(30) });
+      const draft = await callAiText('DRAFT_REPLY', DRAFT_REPLY_SYSTEM_PROMPT, userPrompt, { timeoutMs: endpointLlmTimeout(30) });
       return NextResponse.json({ draft });
     } catch (err) {
       if (err instanceof LLMTimeoutError) return timeoutResponse();

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession } from '@/lib/session';
-import { callAiText, LLMTimeoutError } from '@/lib/openai';
+import { callAiText } from '@/lib/ai-provider';
+import { LLMTimeoutError } from '@/lib/openai';
 import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { DRAFT_QUOTE_SYSTEM_PROMPT } from '@/lib/prompts';
-import { AI_MODEL_LIGHT } from '@/lib/constants';
 import { DraftQuoteBodySchema } from '@/lib/api-schemas';
 
 export const maxDuration = 30;
@@ -45,7 +45,7 @@ Address the reply to: ${fromName}
 Generate a professional draft quote email.`;
   
   try {
-    const draft = await callAiText(userPrompt, DRAFT_QUOTE_SYSTEM_PROMPT, AI_MODEL_LIGHT, { timeoutMs: endpointLlmTimeout(30) });
+    const draft = await callAiText('DRAFT_QUOTE', DRAFT_QUOTE_SYSTEM_PROMPT, userPrompt, { timeoutMs: endpointLlmTimeout(30) });
     return NextResponse.json({ draft });
   } catch (err) {
     if (err instanceof LLMTimeoutError) {
