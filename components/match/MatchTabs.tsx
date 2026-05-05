@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { getConfidenceColorClass } from '@/lib/confidence';
 import type { Match, ParsedVessel, ParsedCargo } from '@/lib/types';
 import { VesselsTab } from './VesselsTab';
@@ -26,6 +26,7 @@ interface MatchTabsProps {
 
 export function MatchTabs({ match, vessel, cargo, cargoEmailId }: MatchTabsProps) {
   const [activeTab, setActiveTab] = useState<TabId>('vessels');
+  const uid = useId();
 
   const confidenceLevel = match.confidence?.level ?? 'missing';
   const borderClass = getConfidenceColorClass(confidenceLevel);
@@ -37,10 +38,10 @@ export function MatchTabs({ match, vessel, cargo, cargoEmailId }: MatchTabsProps
         {TABS.map(tab => (
           <button
             key={tab.id}
-            id={`match-tab-${tab.id}`}
+            id={`${uid}-tab-${tab.id}`}
             role="tab"
             aria-selected={activeTab === tab.id}
-            aria-controls={`match-panel-${tab.id}`}
+            aria-controls={`${uid}-panel-${tab.id}`}
             tabIndex={activeTab === tab.id ? 0 : -1}
             onClick={() => setActiveTab(tab.id)}
             className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
@@ -57,8 +58,8 @@ export function MatchTabs({ match, vessel, cargo, cargoEmailId }: MatchTabsProps
       {/* Tab content */}
       <div
         role="tabpanel"
-        id={`match-panel-${activeTab}`}
-        aria-labelledby={`match-tab-${activeTab}`}
+        id={`${uid}-panel-${activeTab}`}
+        aria-labelledby={`${uid}-tab-${activeTab}`}
         className="p-4"
       >
         {activeTab === 'vessels' && (
