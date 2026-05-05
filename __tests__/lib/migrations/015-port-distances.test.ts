@@ -40,4 +40,15 @@ describe('migration 015 port-distances', () => {
       `).run();
     }).toThrow(/UNIQUE constraint failed/);
   });
+
+  it('rolls back cleanly via down()', () => {
+    migration015.up(db);
+    migration015.down(db);
+    const tables = db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all() as any[];
+    expect(tables.map((t) => t.name)).not.toContain('port_distances');
+
+    const indexes = db.prepare("SELECT name FROM sqlite_master WHERE type='index'").all() as any[];
+    expect(indexes.some((idx: any) => idx.name.includes('port_from'))).toBe(false);
+    expect(indexes.some((idx: any) => idx.name.includes('port_to'))).toBe(false);
+  });
 });
