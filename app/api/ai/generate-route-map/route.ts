@@ -27,12 +27,33 @@ export function isRouteMapEnabled(): boolean {
 
 // ─── Validation schema ────────────────────────────────────────────────────────
 
+/**
+ * QA H-3: ports go straight into the Imagen prompt. Cap length and restrict
+ * charset to letters / digits / spaces / hyphens to defang prompt injection
+ * (e.g. `<script>`, RTL override, "Ignore previous instructions…").
+ */
+const PORT_NAME = z.string().min(1).max(50).regex(
+  /^[A-Za-z0-9 \-]+$/,
+  'must be 1-50 chars; letters, digits, space, and hyphen only',
+);
+
+/** matchId stays opaque but bounded — prevents pathological keys in the rate-limit table. */
+const MATCH_ID = z.string().min(1).max(128).regex(
+  /^[A-Za-z0-9_:-]+$/,
+  'must be 1-128 chars; letters, digits, _, :, - only',
+);
+
+const ETA_VALUE = z.string().min(1).max(50).regex(
+  /^[A-Za-z0-9 :,\-]+$/,
+  'must be 1-50 chars; letters, digits, space, ":", ",", and hyphen only',
+);
+
 const RequestSchema = z.object({
-  matchId: z.string().min(1),
-  origin: z.string().optional().default('Unknown'),
-  loading_port: z.string().min(1),
-  discharge_port: z.string().min(1),
-  eta: z.string().optional(),
+  matchId: MATCH_ID,
+  origin: PORT_NAME.optional().default('Unknown'),
+  loading_port: PORT_NAME,
+  discharge_port: PORT_NAME,
+  eta: ETA_VALUE.optional(),
 });
 
 /** Output type (after Zod default resolution — origin is always string). */
@@ -45,34 +66,49 @@ export type RouteMapInput = z.input<typeof RequestSchema>;
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
 
 /**
- * Ensure the rate limit table exists and check+record a generation attempt.
- * Returns true if allowed (and records the attempt), false if rate-limited.
+ * QA H-2: rate-limit key is `${sessionId}:${matchId}`. The session id is the
+ * only user-identifier surface we have on the server. Without it, user A can
+ * burn user B's matchId quota by guessing or scraping ids.
+ *
+ * The `match_id` column stores this composite key (no migration: rows from PR
+ * #85 simply use the legacy `<matchId>` shape and remain harmless — new code
+ * always writes `<sessionId>:<matchId>` keys).
  */
-export function checkAndRecordRateLimit(matchId: string): boolean {
-  const db = getStore().getDatabase();
+function buildRateLimitKey(sessionId: string, matchId: string): string {
+  return `${sessionId}:${matchId}`;
+}
 
-  // Idempotent table creation
+function ensureRateLimitTable(): void {
+  const db = getStore().getDatabase();
   db.exec(`
     CREATE TABLE IF NOT EXISTS route_map_rate_limit (
       match_id    TEXT PRIMARY KEY,
       last_gen_at INTEGER NOT NULL
     )
   `);
+}
 
+/**
+ * QA H-1: split the read and the write. Returns true if a fresh generation is
+ * allowed. The caller MUST call `recordRateLimit` only after the Imagen call
+ * succeeds — otherwise a transient 5xx burns the user's hourly quota.
+ */
+export function checkRateLimit(key: string): boolean {
+  ensureRateLimitTable();
+  const db = getStore().getDatabase();
   const cutoff = Date.now() - RATE_LIMIT_WINDOW_MS;
   const existing = db.prepare<[string], { match_id: string; last_gen_at: number }>(
-    'SELECT match_id, last_gen_at FROM route_map_rate_limit WHERE match_id = ?'
-  ).get(matchId);
+    'SELECT match_id, last_gen_at FROM route_map_rate_limit WHERE match_id = ?',
+  ).get(key);
+  return !(existing && existing.last_gen_at > cutoff);
+}
 
-  if (existing && existing.last_gen_at > cutoff) {
-    return false; // rate-limited
-  }
-
+export function recordRateLimit(key: string): void {
+  ensureRateLimitTable();
+  const db = getStore().getDatabase();
   db.prepare(
-    'INSERT OR REPLACE INTO route_map_rate_limit (match_id, last_gen_at) VALUES (?, ?)'
-  ).run(matchId, Date.now());
-
-  return true; // allowed
+    'INSERT OR REPLACE INTO route_map_rate_limit (match_id, last_gen_at) VALUES (?, ?)',
+  ).run(key, Date.now());
 }
 
 // ─── Imagen 4 image generation ────────────────────────────────────────────────
@@ -224,6 +260,7 @@ export async function POST(request: NextRequest) {
 
   const authResult = requireSession(request);
   if (authResult instanceof NextResponse) return authResult;
+  const { sessionId } = authResult;
 
   // Feature flag
   if (!isRouteMapEnabled()) {
@@ -240,17 +277,29 @@ export async function POST(request: NextRequest) {
 
   const parsed = RequestSchema.safeParse(body);
   if (!parsed.success) {
+    // QI follow-up: return only the offending field paths, not the full zod
+    // issue list (which would leak whitelist regexes and message strings).
     return NextResponse.json(
-      { error: 'Invalid request', details: parsed.error.issues },
+      {
+        error: 'Invalid request',
+        fields: parsed.error.issues.map((i) => i.path.join('.')),
+      },
       { status: 422 }
     );
   }
 
   const data = parsed.data;
 
-  // Rate limit check
-  const allowed = checkAndRecordRateLimit(data.matchId);
-  if (!allowed) {
+  // QA H-1+H-2: check rate limit using session-scoped key, but DO NOT record
+  // until the Imagen call succeeds. Recording up-front lets a transient 5xx
+  // (or an attacker griefing on someone else's matchId) burn the hourly quota.
+  // KNOWN race: two concurrent POSTs with the same key can both pass the
+  // read-only check and trigger Imagen twice. The DB write is idempotent
+  // (`INSERT OR REPLACE`), so subsequent rate-limit state is correct, but
+  // the cost-amplification window during simultaneous calls is acknowledged
+  // and accepted (single-user attack-cost ratio is 1:1, not amplification).
+  const rateKey = buildRateLimitKey(sessionId, data.matchId);
+  if (!checkRateLimit(rateKey)) {
     return NextResponse.json(
       { error: 'Rate limit exceeded. You can generate one route map per match per hour.' },
       { status: 429 }
@@ -266,15 +315,31 @@ export async function POST(request: NextRequest) {
     const imageUrl = await uploadAndGetUrl(imageBytes, data.matchId);
     const latencyMs = Date.now() - start;
 
-    logger.info({ matchId: data.matchId, latencyMs }, '[route-map] image generated');
+    // Only record the rate-limit hit AFTER the expensive call succeeded.
+    // QI follow-up: a DB write failure here must not turn a successful image
+    // into a 500 — the user already paid for the generation. Log and move on.
+    // Trade-off: the user may exceed the per-hour quota next call, which is
+    // acceptable vs. losing a successfully generated image.
+    try {
+      recordRateLimit(rateKey);
+    } catch (recordErr) {
+      logger.error(
+        { err: recordErr, sessionId, matchId: data.matchId },
+        '[route-map] recordRateLimit failed (image still returned)',
+      );
+    }
+
+    logger.info({ matchId: data.matchId, sessionId, latencyMs }, '[route-map] image generated');
 
     return NextResponse.json({ imageUrl, latencyMs });
   } catch (err) {
     const latencyMs = Date.now() - start;
-    logger.error({ err, matchId: data.matchId, latencyMs }, '[route-map] generation failed');
+    // QA M-2: log full error server-side (Vertex SDK errors leak project-id,
+    // bucket URL, internal paths); return only a generic message to the client.
+    logger.error({ err, matchId: data.matchId, sessionId, latencyMs }, '[route-map] generation failed');
 
     return NextResponse.json(
-      { error: 'Image generation failed', details: String(err) },
+      { error: 'Image generation failed' },
       { status: 500 }
     );
   }
