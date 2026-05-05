@@ -51,4 +51,12 @@ describe('migration 015 port-distances', () => {
     expect(indexes.some((idx: any) => idx.name.includes('port_from'))).toBe(false);
     expect(indexes.some((idx: any) => idx.name.includes('port_to'))).toBe(false);
   });
+
+  it('is idempotent (up() can run multiple times safely)', () => {
+    migration015.up(db);
+    expect(() => migration015.up(db)).not.toThrow();
+
+    const tables = db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all() as any[];
+    expect(tables.map((t) => t.name)).toContain('port_distances');
+  });
 });
