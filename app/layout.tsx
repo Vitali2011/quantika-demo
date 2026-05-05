@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { cookies, headers } from 'next/headers';
+import { cookies } from 'next/headers';
 import { getTrialState, daysRemaining, isExpired } from '@/lib/trial';
 import { TrialBanner } from '@/components/onboarding/TrialBanner';
 import './globals.css';
@@ -23,21 +23,11 @@ async function TrialBannerWrapper() {
 
     const expired = isExpired(trial);
     const days = daysRemaining(trial);
+    // eslint-disable-next-line react-hooks/error-boundaries -- session/trial lookup may throw; banner is best-effort decoration, not critical render path
     return <TrialBanner daysRemaining={days} expired={expired} />;
   } catch {
     return null;
   }
-}
-
-/** RTL languages keyed by primary BCP-47 subtag */
-const RTL_LANGS = new Set(['ar', 'he', 'fa', 'ur']);
-
-function parseAcceptLanguage(header: string | null): { lang: string; dir: 'ltr' | 'rtl' } {
-  if (!header) return { lang: 'en', dir: 'ltr' };
-  // Take the first language tag, strip region (e.g. "ar-SA" → "ar")
-  const primary = header.split(',')[0]?.split(';')[0]?.trim().split('-')[0]?.toLowerCase() ?? 'en';
-  const dir = RTL_LANGS.has(primary) ? 'rtl' : 'ltr';
-  return { lang: primary, dir };
 }
 
 export default async function RootLayout({
@@ -45,11 +35,12 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const headersList = await headers();
-  const { lang, dir } = parseAcceptLanguage(headersList.get('accept-language'));
-
+  // The UI chrome is English; per-content RTL handling lives next to the
+  // content (EmailBodyViewer derives dir from the body via detectTextDirection).
+  // Browser Accept-Language used to leak ru/de/he into <html> and broke
+  // mixed-locale demo scenarios — see stab/rtl-per-content.
   return (
-    <html lang={lang} dir={dir}>
+    <html lang="en" dir="ltr">
       <body className={inter.className}>
         <TrialBannerWrapper />
         {children}
