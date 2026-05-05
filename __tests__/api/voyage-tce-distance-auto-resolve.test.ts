@@ -137,10 +137,6 @@ describe('POST /api/voyage/tce — distance auto-resolution (D7)', () => {
       delete (body.route as Record<string, unknown>).distanceNm;
 
       const res = await POST(makeRequest(body));
-      if (res.status !== 200) {
-        const json = await res.json();
-        console.log('ERROR:', JSON.stringify(json, null, 2));
-      }
       expect(res.status).toBe(200);
       const json = await res.json();
       expect(json).toHaveProperty('daily_tce_usd');
