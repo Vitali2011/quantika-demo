@@ -14,6 +14,7 @@ import migration013 from './013-knowledge-sources';
 import migration014 from './014-sanctions-entities';
 import migration015 from './015-port-distances';
 import migration016 from './016-war-risk-zones';
+import migration017 from './017-eca-zones';
 import type { Migration } from './types';
 
-export const allMigrations: Migration[] = [migration001, migration002, migration003, migration004, migration005, migration006, migration007, migration008, migration009, migration010, migration011, migration012, migration013, migration014, migration015, migration016];
+export const allMigrations: Migration[] = [migration001, migration002, migration003, migration004, migration005, migration006, migration007, migration008, migration009, migration010, migration011, migration012, migration013, migration014, migration015, migration016, migration017];
