@@ -30,7 +30,8 @@ jest.mock('@/lib/session', () => {
 });
 
 import * as routeModule from '@/app/api/ai/parse-cargo/route';
-import { POST, MAX_EMAIL_BODY_CHARS, LLM_TIMEOUT_MS } from '@/app/api/ai/parse-cargo/route';
+import { POST } from '@/app/api/ai/parse-cargo/route';
+import { MAX_EMAIL_BODY_CHARS, LLM_TIMEOUT_MS } from '@/lib/parse-cargo-helpers';
 import { callAiJson } from '@/lib/openai';
 import { getSession, updateSession } from '@/lib/session';
 import type { SessionData } from '@/lib/types';
