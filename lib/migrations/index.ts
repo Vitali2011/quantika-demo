@@ -11,6 +11,7 @@ import migration010 from './010-port-da-estimates';
 import migration011 from './011-notified-dispatches';
 import migration012 from './012-ai-audit';
 import migration013 from './013-knowledge-sources';
+import migration014 from './014-sanctions-entities';
 import type { Migration } from './types';
 
-export const allMigrations: Migration[] = [migration001, migration002, migration003, migration004, migration005, migration006, migration007, migration008, migration009, migration010, migration011, migration012, migration013];
+export const allMigrations: Migration[] = [migration001, migration002, migration003, migration004, migration005, migration006, migration007, migration008, migration009, migration010, migration011, migration012, migration013, migration014];
