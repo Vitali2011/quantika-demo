@@ -73,8 +73,15 @@ const COST_TABLE_PER_M_TOKENS: Record<string, { in: number; out: number }> = {
   'gemini:gemini-2.5-flash': { in: 0.075, out: 0.30 },
   'gemini:gemini-2.5-flash-lite': { in: 0.0375, out: 0.15 },
   'gemini:gemini-2.5-pro': { in: 1.25, out: 5.0 },
-  'bedrock:us.anthropic.claude-opus-4-7-20260415-v1:0': { in: 15, out: 75 },
-  'bedrock:us.anthropic.claude-sonnet-4-6-20260101-v1:0': { in: 3, out: 15 },
+  // Claude Opus 4.7 — AWS Bedrock cross-region inference profiles (no date suffix starting Opus 4.x)
+  'bedrock:us.anthropic.claude-opus-4-7': { in: 15, out: 75 },
+  'bedrock:eu.anthropic.claude-opus-4-7': { in: 15, out: 75 },
+  'bedrock:global.anthropic.claude-opus-4-7': { in: 15, out: 75 },
+  // Claude Sonnet 4.6 — cost-optimized alternative: ~5× cheaper than Opus 4.7
+  // Use case: per-scope override via MATCH_BEDROCK_MODEL=us.anthropic.claude-sonnet-4-6
+  'bedrock:us.anthropic.claude-sonnet-4-6': { in: 3, out: 15 },
+  'bedrock:eu.anthropic.claude-sonnet-4-6': { in: 3, out: 15 },
+  'bedrock:global.anthropic.claude-sonnet-4-6': { in: 3, out: 15 },
 };
 
 export function computeCostUsd(
@@ -182,7 +189,7 @@ export function getModel(scope: string): string {
     case 'gemini':
       return process.env.AI_MODEL_GEMINI_DEFAULT ?? 'gemini-2.5-flash';
     case 'bedrock':
-      return process.env.BEDROCK_MODEL_ID ?? 'us.anthropic.claude-opus-4-7-20260415-v1:0';
+      return process.env.BEDROCK_MODEL_ID ?? 'us.anthropic.claude-opus-4-7';
     case 'openai':
     default:
       return process.env.AI_MODEL_HEAVY ?? 'gpt-5.5';
