@@ -72,9 +72,16 @@ function mockFetchResponse(base64Data: string, mimeType = 'image/jpeg'): void {
 describe('extractTextFromImages — multi-image batch', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    delete process.env.WHATSAPP_OCR_PROVIDER;
+    // Wave γ QA C2 fix: default provider is openai which bypasses the shim
+    // (loops callAiText per image). The multi-image batch path goes through
+    // callAiVision, so explicitly set provider=gemini for these tests.
+    process.env.WHATSAPP_OCR_PROVIDER = 'gemini';
     delete process.env.AI_PROVIDER;
     mockCallAiVision.mockResolvedValue(INVOICE_TEXT);
+  });
+
+  afterEach(() => {
+    delete process.env.WHATSAPP_OCR_PROVIDER;
   });
 
   it('passes single image as one callAiVision call', async () => {

@@ -281,22 +281,26 @@ describe('audit logging', () => {
     expect(rows[0].provider).toBe('openai');
   });
 
-  it('callAiVision writes an audit row', async () => {
+  it('callAiVision throws on openai provider (Wave γ QA C2: fail-loud rollback) and writes audit row with ok=false', async () => {
     setEnv({ AI_PROVIDER: 'openai' });
     const { callAiVision } = require('@/lib/ai-provider');
-    await callAiVision('whatsapp_ocr', 'describe this', []);
+    await expect(callAiVision('whatsapp_ocr', 'describe this', [])).rejects.toThrow(/openai branch is not implemented/);
     const rows = getAuditRows();
     expect(rows).toHaveLength(1);
     expect(rows[0].scope).toBe('whatsapp_ocr');
+    expect(rows[0].ok).toBe(0);
+    expect(rows[0].err).toMatch(/openai branch is not implemented/);
   });
 
-  it('callAiAudio writes an audit row', async () => {
+  it('callAiAudio throws on openai provider (Wave γ QA C2: fail-loud rollback) and writes audit row with ok=false', async () => {
     setEnv({ AI_PROVIDER: 'openai' });
     const { callAiAudio } = require('@/lib/ai-provider');
-    await callAiAudio('whatsapp_voice', Buffer.from('audio-data'));
+    await expect(callAiAudio('whatsapp_voice', Buffer.from('audio-data'))).rejects.toThrow(/openai branch is not implemented/);
     const rows = getAuditRows();
     expect(rows).toHaveLength(1);
     expect(rows[0].scope).toBe('whatsapp_voice');
+    expect(rows[0].ok).toBe(0);
+    expect(rows[0].err).toMatch(/openai branch is not implemented/);
   });
 
   it('callAi writes an audit row', async () => {

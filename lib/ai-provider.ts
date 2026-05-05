@@ -525,23 +525,21 @@ export async function callAiVision(
       }
       case 'openai':
       default: {
-        // OpenAI vision: use streaming with base64 images
-        const imageMessages = images.map((img) => ({
-          type: 'image_url' as const,
-          image_url: { url: `data:${img.mimeType};base64,${img.data}` },
-        }));
-        // Delegate to openai callAiText with a combined prompt
-        // Note: for vision we construct a user message with images via OpenAI SDK directly
-        // For simplicity, we use callAiText with the prompt (images ignored in text mode)
-        result = await openaiLib.callAiText(
-          prompt,
-          '',
-          model,
-          { timeoutMs: opts?.timeoutMs, signal: opts?.signal },
+        // ai-provider shim does NOT implement OpenAI vision. Pre-Wave γ
+        // image-ocr.ts had its own ClipProxy-specific vision path; the shim
+        // intentionally does not duplicate it. If you set <SCOPE>_PROVIDER=openai
+        // for an image scope, you must either:
+        //   (a) bypass the shim and call lib/openai.ts directly, OR
+        //   (b) implement GPT-4o vision here (separate spec, not Wave γ scope).
+        //
+        // Failing loudly with throw is intentional — silent text-only fallback
+        // would drop user-supplied images and look like working OCR while
+        // returning garbage. ai_audit will record ok=false + the error.
+        // QA finding C2 (Wave γ adversarial QA, 2026-05-05).
+        throw new Error(
+          `ai-provider: scope="${scope}" requested vision via openai but the openai branch is not implemented. ` +
+          `Use <SCOPE>_PROVIDER=gemini for vision, or implement GPT-4o vision in lib/ai-provider.ts.`,
         );
-        // Suppress unused variable warning
-        void imageMessages;
-        break;
       }
     }
     ok = true;
@@ -567,7 +565,7 @@ export async function callAiVision(
 /**
  * Call AI for audio transcription/understanding.
  * For bedrock: uses Claude audio support.
- * For others: returns empty string (not yet implemented for non-bedrock).
+ * For openai: throws (use Whisper API directly via lib/voice/whisper-transcribe.ts pre-Wave γ path).
  */
 export async function callAiAudio(
   scope: string,
@@ -621,10 +619,18 @@ export async function callAiAudio(
       }
       case 'openai':
       default:
-        // OpenAI audio transcription is not implemented via callAiText
-        // Return empty string to preserve backward compatibility
-        result = '';
-        break;
+        // ai-provider shim does NOT implement OpenAI audio (Whisper).
+        // Pre-Wave γ voice-transcribe.ts called Whisper API directly; the shim
+        // intentionally does not duplicate it. If you set WHATSAPP_VOICE_PROVIDER=openai,
+        // call lib/voice/whisper-transcribe.ts directly instead of going through the shim.
+        //
+        // Failing loudly is intentional — silent empty-string fallback would
+        // make every voice message look like a successful empty transcription.
+        // QA finding C2 (Wave γ adversarial QA, 2026-05-05).
+        throw new Error(
+          `ai-provider: scope="${scope}" requested audio via openai but the openai branch is not implemented. ` +
+          `Use <SCOPE>_PROVIDER=gemini for audio, or call lib/voice/whisper-transcribe.ts directly.`,
+        );
     }
     ok = true;
     return result;

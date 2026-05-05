@@ -66,6 +66,31 @@ export async function extractTextFromImages(
 ): Promise<string> {
   if (images.length === 0) return '';
 
+  // Wave γ QA C2 fix: shim's callAiVision throws on openai provider.
+  // For multi-image batch on openai rollback, fall back to per-image
+  // legacy text extraction via callAiText (ClipProxy-specific handling).
+  // Mirrors the single-image extractTextFromImage() pattern.
+  const provider = process.env.WHATSAPP_OCR_PROVIDER ?? process.env.AI_PROVIDER ?? 'openai';
+  if (provider === 'openai') {
+    const results: string[] = [];
+    for (const img of images) {
+      const dataUri = `data:${img.mimeType};base64,${img.data}`;
+      try {
+        const text = await callAiText(
+          OCR_SYSTEM_PROMPT,
+          dataUri,
+          process.env.AI_MODEL_HEAVY || 'gpt-5.5',
+          { timeoutMs: opts?.timeoutMs ?? 20_000, signal: opts?.signal },
+        );
+        results.push(text);
+      } catch (err) {
+        if (err instanceof LLMTimeoutError) results.push('');
+        else throw err;
+      }
+    }
+    return results.filter(Boolean).join('\n\n');
+  }
+
   const prompt =
     images.length === 1
       ? `Extract all text from this image. Return ONLY the text, no commentary. Preserve original formatting.`
