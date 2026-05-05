@@ -1,0 +1,40 @@
+# Panama Canal Authority (ACP) Tariff Schedule
+# Effective: 2025-Q1
+# Source: https://www.pancanal.com/en/op/toll-calculator.html
+# Last updated: 2026-05-06
+#
+# Fee calculation: totalUsd = baseFeeUsd + (vesselNt × perNtFeeUsd)
+# Note: per_scnt_fee_usd column in DB is repurposed as per-NT rate for Panama
+
+tariffs:
+  - vessel_type: bulker
+    base_fee_usd: 16500
+    per_nt_fee_usd: 1.65
+    notes: "Dry bulk carriers — all sizes"
+
+  - vessel_type: tanker
+    base_fee_usd: 22000
+    per_nt_fee_usd: 1.95
+    notes: "Liquid bulk carriers — all sizes"
+
+  - vessel_type: container
+    base_fee_usd: 27500
+    per_nt_fee_usd: 2.75
+    notes: "Containerized cargo vessels"
+
+  - vessel_type: general
+    base_fee_usd: 13200
+    per_nt_fee_usd: 1.32
+    notes: "General cargo, multi-purpose vessels"
+
+metadata:
+  source: "acp-2025-q1"
+  valid_from: "2025-01-01"
+  valid_to: null
+  authority: "Panama Canal Authority"
+  url: "https://www.pancanal.com/en/op/toll-calculator.html"
+  refresh_frequency: "quarterly"
+  notes: |
+    Rates are indexed annually based on ACP's published schedule.
+    Q1 2025 rates reflect 10% increase from 2024 baseline due to
+    infrastructure investment recovery (Neopanamax locks maintenance).

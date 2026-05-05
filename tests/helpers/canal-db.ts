@@ -52,10 +52,10 @@ export const SUEZ_BASE_SEED: SeedRow[] = [
 
 export const ALL_CANAL_SEED: SeedRow[] = [
   ...SUEZ_BASE_SEED,
-  { canal: 'panama',   vessel_type: 'bulker',    scnt_min: 0, scnt_max: null, base_fee_usd: 15000, per_scnt_fee_usd: 1.50, war_risk_zone: null, valid_from: '2025-01-01', valid_to: null, source: 'acp-2025' },
-  { canal: 'panama',   vessel_type: 'tanker',    scnt_min: 0, scnt_max: null, base_fee_usd: 20000, per_scnt_fee_usd: 1.80, war_risk_zone: null, valid_from: '2025-01-01', valid_to: null, source: 'acp-2025' },
-  { canal: 'panama',   vessel_type: 'container', scnt_min: 0, scnt_max: null, base_fee_usd: 25000, per_scnt_fee_usd: 2.50, war_risk_zone: null, valid_from: '2025-01-01', valid_to: null, source: 'acp-2025' },
-  { canal: 'panama',   vessel_type: 'general',   scnt_min: 0, scnt_max: null, base_fee_usd: 12000, per_scnt_fee_usd: 1.20, war_risk_zone: null, valid_from: '2025-01-01', valid_to: null, source: 'acp-2025' },
+  { canal: 'panama',   vessel_type: 'bulker',    scnt_min: 0, scnt_max: null, base_fee_usd: 16500, per_scnt_fee_usd: 1.65, war_risk_zone: null, valid_from: '2025-01-01', valid_to: null, source: 'acp-2025-q1' },
+  { canal: 'panama',   vessel_type: 'tanker',    scnt_min: 0, scnt_max: null, base_fee_usd: 22000, per_scnt_fee_usd: 1.95, war_risk_zone: null, valid_from: '2025-01-01', valid_to: null, source: 'acp-2025-q1' },
+  { canal: 'panama',   vessel_type: 'container', scnt_min: 0, scnt_max: null, base_fee_usd: 27500, per_scnt_fee_usd: 2.75, war_risk_zone: null, valid_from: '2025-01-01', valid_to: null, source: 'acp-2025-q1' },
+  { canal: 'panama',   vessel_type: 'general',   scnt_min: 0, scnt_max: null, base_fee_usd: 13200, per_scnt_fee_usd: 1.32, war_risk_zone: null, valid_from: '2025-01-01', valid_to: null, source: 'acp-2025-q1' },
   { canal: 'kiel',     vessel_type: 'bulker',    scnt_min: 0, scnt_max: null, base_fee_usd: 5000,  per_scnt_fee_usd: 0,    war_risk_zone: null, valid_from: '2025-01-01', valid_to: null, source: 'kiel-2025' },
   { canal: 'kiel',     vessel_type: 'tanker',    scnt_min: 0, scnt_max: null, base_fee_usd: 7000,  per_scnt_fee_usd: 0,    war_risk_zone: null, valid_from: '2025-01-01', valid_to: null, source: 'kiel-2025' },
   { canal: 'kiel',     vessel_type: 'container', scnt_min: 0, scnt_max: null, base_fee_usd: 8500,  per_scnt_fee_usd: 0,    war_risk_zone: null, valid_from: '2025-01-01', valid_to: null, source: 'kiel-2025' },
