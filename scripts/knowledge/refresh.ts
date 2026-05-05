@@ -18,50 +18,31 @@
  *   - Block G: Panama tariffs
  */
 
-// Handler registry maps slug → async refresh function
-// For now, all handlers are placeholders that will be implemented in subsequent tasks
-const handlers: Record<string, () => Promise<void>> = {
-  ofac: async () => {
-    const { refresh } = await import('./sources/ofac');
-    await refresh();
-  },
-  'eu-sanctions': async () => {
-    const { refresh } = await import('./sources/eu-sanctions');
-    await refresh();
-  },
-  distances: async () => {
-    const { refresh } = await import('./sources/distances');
-    await refresh();
-  },
-  jwc: async () => {
-    const { refresh } = await import('./sources/jwc');
-    await refresh();
-  },
-  eca: async () => {
-    const { refresh } = await import('./sources/eca');
-    await refresh();
-  },
-  'panama-tariffs': async () => {
-    const { refresh } = await import('./sources/panama-tariffs');
-    await refresh();
-  },
-  imsbc: async () => {
-    const { refresh } = await import('./sources/imsbc');
-    await refresh();
-  },
-  igc: async () => {
-    const { refresh } = await import('./sources/igc');
-    await refresh();
-  },
-  unlocode: async () => {
-    const { refresh } = await import('./sources/unlocode');
-    await refresh();
-  },
-  'baltic-indices': async () => {
-    const { refresh } = await import('./sources/baltic-indices');
-    await refresh();
-  },
-};
+// Known source slugs — per-source handlers will be added in later phases (Block C–G).
+// Dynamic import uses a runtime variable so tsc doesn't try to resolve non-existent modules.
+const KNOWN_SLUGS = [
+  'ofac',
+  'eu-sanctions',
+  'distances',
+  'jwc',
+  'eca',
+  'panama-tariffs',
+  'imsbc',
+  'igc',
+  'unlocode',
+  'baltic-indices',
+] as const;
+
+const handlers: Record<string, () => Promise<void>> = Object.fromEntries(
+  KNOWN_SLUGS.map((slug) => [
+    slug,
+    async () => {
+      const modulePath = `./sources/${slug}`;
+      const mod = await import(modulePath);
+      await mod.refresh();
+    },
+  ]),
+);
 
 async function main(): Promise<void> {
   const slug = process.argv[2];
