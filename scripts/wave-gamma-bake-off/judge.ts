@@ -1,20 +1,22 @@
 /**
  * Opus 4.7 cold-session judge for Wave γ parsing bake-off.
  *
- * Wraps `@anthropic-ai/sdk` with a strict-JSON system prompt that grades a
- * candidate parser output against a reference (Mode A) or against the
- * endpoint's spec coverage alone (Mode B — production case, since Mode B
- * GLOBAL ai_audit doesn't store `response_text` so `reference` arrives null).
+ * Routes through the project's `lib/ai-provider.ts` shim with provider="bedrock"
+ * so the judge uses the same AWS Bedrock cross-region inference profile as the
+ * production `match` endpoint. This project has no direct ANTHROPIC_API_KEY —
+ * all Anthropic traffic goes via Bedrock.
  *
  * Returns a 5-tier verdict + side-by-side diff + issue list. The candidate's
  * model identity is intentionally hidden behind `candidateLabel` ("Candidate-A"
  * etc.) so the judge can't anchor on provider reputation.
  *
- * Env: ANTHROPIC_API_KEY required at runtime (not at import time — the SDK
- * lazy-validates on first request).
+ * Env (Bedrock branch in lib/ai-provider.ts requires):
+ *   AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, BEDROCK_MODEL_ID.
+ * BEDROCK_MODEL_ID can be set globally; we still pass `model` explicitly to
+ * pin the judge to Opus regardless of the project default.
  */
 
-import Anthropic from '@anthropic-ai/sdk';
+import { callAiText as defaultCallAiText } from '@/lib/ai-provider';
 
 export type Verdict =
   | 'PASS_BETTER'
@@ -61,8 +63,17 @@ export interface JudgeOutput {
   rationale: string;
 }
 
-/** Model id used for the judge. Matches lib/ai-provider.ts naming style. */
-export const JUDGE_MODEL = 'claude-opus-4-7';
+/**
+ * Bedrock cross-region inference profile for Opus 4.7.
+ * Matches the entry in lib/ai-provider.ts COST_TABLE_PER_M_TOKENS.
+ */
+export const JUDGE_MODEL = 'us.anthropic.claude-opus-4-7';
+
+/** Scope tag used for ai_audit rows when the judge runs. */
+export const JUDGE_SCOPE = 'wave_gamma_judge';
+
+/** Max tokens budget for judge response. */
+const JUDGE_MAX_TOKENS = 2048;
 
 const JUDGE_PROMPT = `You are a cold-session adversarial QA reviewer for a parsing endpoint output.
 
@@ -107,29 +118,29 @@ function stripFences(text: string): string {
     .trim();
 }
 
-/** Minimal client surface used by the judge — facilitates test injection. */
-export interface JudgeClient {
-  messages: {
-    create(args: {
-      model: string;
-      max_tokens: number;
-      system: string;
-      messages: Array<{ role: 'user'; content: string }>;
-    }): Promise<{ content: Array<{ type: string; text?: string }> }>;
-  };
-}
+/**
+ * Function-shaped DI seam matching the signature of `lib/ai-provider.callAiText`.
+ * Tests inject a fake; production wires the real shim with provider=bedrock.
+ */
+export type CallAiTextFn = (
+  scope: string,
+  system: string,
+  user: string,
+  opts?: { model?: string; maxTokens?: number; timeoutMs?: number; signal?: AbortSignal },
+) => Promise<string>;
 
 export interface JudgeOptions {
   /**
-   * Optional pre-constructed client (for tests). If omitted, a real
-   * `Anthropic` SDK client is constructed lazily — which requires
-   * `ANTHROPIC_API_KEY` in env.
+   * Optional injected `callAiText` (for tests). Production omits this — the
+   * default is the real shim from `@/lib/ai-provider`, configured via
+   * `BAKE_OFF_JUDGE_PROVIDER` (or AI_PROVIDER) — set to "bedrock" so the
+   * shim routes to AWS Bedrock Opus 4.7.
    */
-  client?: JudgeClient;
+  callAiText?: CallAiTextFn;
 }
 
 export async function judge(input: JudgeInput, options: JudgeOptions = {}): Promise<JudgeOutput> {
-  const anthropic: JudgeClient = options.client ?? (new Anthropic() as unknown as JudgeClient);
+  const callFn: CallAiTextFn = options.callAiText ?? defaultCallAiText;
 
   // User message: structured payload. We do NOT include the candidate's actual
   // model id — only the anonymous label.
@@ -146,22 +157,18 @@ export async function judge(input: JudgeInput, options: JudgeOptions = {}): Prom
     2,
   );
 
-  const resp = await anthropic.messages.create({
+  // Pin the judge model explicitly — independent of any per-scope BEDROCK_MODEL_ID
+  // override the project may use elsewhere.
+  const rawText = await callFn(JUDGE_SCOPE, JUDGE_PROMPT, userMessage, {
     model: JUDGE_MODEL,
-    max_tokens: 2048,
-    system: JUDGE_PROMPT,
-    messages: [{ role: 'user', content: userMessage }],
+    maxTokens: JUDGE_MAX_TOKENS,
   });
 
-  const textBlock = resp.content.find(
-    (b: { type: string }) => b.type === 'text',
-  ) as { type: 'text'; text: string } | undefined;
-
-  if (!textBlock) {
+  if (!rawText || rawText.trim().length === 0) {
     throw new Error('Judge returned no text block in response content');
   }
 
-  const cleaned = stripFences(textBlock.text);
+  const cleaned = stripFences(rawText);
 
   try {
     return JSON.parse(cleaned) as JudgeOutput;

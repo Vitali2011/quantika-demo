@@ -33,8 +33,8 @@ import {
   judge as judgeReal,
   type JudgeInput,
   type JudgeOutput,
-  type JudgeClient,
   type JudgeOptions,
+  type CallAiTextFn,
 } from './judge';
 
 /**
@@ -63,8 +63,8 @@ export interface BakeOffOptions {
   endpointFilter?: Endpoint[];
   /** p-limit concurrency. Defaults to 5. */
   concurrency?: number;
-  /** Optional injected judge client (for tests). */
-  judgeClient?: JudgeClient;
+  /** Optional injected judge `callAiText` (for tests). */
+  judgeCallAiText?: CallAiTextFn;
   /** Optional progress sink. Defaults to process.stderr. */
   progress?: (line: string) => void;
   /** Test-only DI seam — see `BakeOffDeps`. */
@@ -180,7 +180,7 @@ export async function runBakeOff(opts: BakeOffOptions): Promise<BakeOffResult> {
                     candidate: cand.outputJson,
                     candidateLabel,
                   },
-                  opts.judgeClient ? { client: opts.judgeClient } : {},
+                  opts.judgeCallAiText ? { callAiText: opts.judgeCallAiText } : {},
                 );
               } catch (e) {
                 judgeError = e instanceof Error ? e.message : String(e);

@@ -1,24 +1,17 @@
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 
-import { judge, type JudgeClient } from '../judge';
+import { judge, JUDGE_MODEL, JUDGE_SCOPE, type CallAiTextFn } from '../judge';
 
 /**
- * Tests inject a fake `JudgeClient` directly rather than mocking
- * `@anthropic-ai/sdk` at the module boundary. The SDK ships ESM-only at
- * runtime (`./index.mjs` per its `exports` map) and Jest+ts-jest hoist of
- * `jest.mock` against ESM packages is unreliable, so we use constructor
- * injection — cleaner and decouples the judge from the SDK shape.
+ * Tests inject a fake `callAiText` directly rather than mocking
+ * `lib/ai-provider` at the module boundary. This mirrors the original
+ * design choice (constructor injection over module mocks) and decouples
+ * the judge tests from the Bedrock SDK shape.
  */
-const createMock = jest.fn() as jest.Mock<
-  Promise<{ content: Array<{ type: string; text?: string }> }>,
-  [unknown]
->;
+const callMock = jest.fn() as jest.Mock<Promise<string>, Parameters<CallAiTextFn>>;
 
-const fakeClient: JudgeClient = {
-  messages: {
-    create: (args) => createMock(args),
-  },
-};
+const fakeCallAiText: CallAiTextFn = (scope, system, user, opts) =>
+  callMock(scope, system, user, opts);
 
 const fixtureVerdict = {
   completeness: 92,
@@ -33,14 +26,12 @@ const fixtureVerdict = {
 };
 
 beforeEach(() => {
-  createMock.mockReset();
+  callMock.mockReset();
 });
 
 describe('judge', () => {
   it('returns 5-tier verdict from Opus (Mode A with reference)', async () => {
-    createMock.mockResolvedValue({
-      content: [{ type: 'text', text: JSON.stringify(fixtureVerdict) }],
-    });
+    callMock.mockResolvedValue(JSON.stringify(fixtureVerdict));
 
     const v = await judge(
       {
@@ -51,7 +42,7 @@ describe('judge', () => {
         candidate: { pol: 'AEJEA' },
         candidateLabel: 'Candidate-A',
       },
-      { client: fakeClient },
+      { callAiText: fakeCallAiText },
     );
 
     expect(['PASS_BETTER', 'PASS_PARITY', 'PASS_DEGRADED', 'PASS_MARGINAL', 'FAIL']).toContain(v.verdict);
@@ -63,23 +54,24 @@ describe('judge', () => {
     expect(Array.isArray(v.side_by_side_diff)).toBe(true);
     expect(Array.isArray(v.issues)).toBe(true);
     expect(typeof v.rationale).toBe('string');
+
+    // Verify call shape: pinned to Opus 4.7 Bedrock model + judge scope.
+    const [scope, , , opts] = callMock.mock.calls[0];
+    expect(scope).toBe(JUDGE_SCOPE);
+    expect(opts?.model).toBe(JUDGE_MODEL);
+    expect(opts?.maxTokens).toBe(2048);
   });
 
   it('handles Mode B (no reference) — verdict still set, ref values null in diff', async () => {
-    createMock.mockResolvedValue({
-      content: [
-        {
-          type: 'text',
-          text: JSON.stringify({
-            ...fixtureVerdict,
-            side_by_side_diff: [
-              { field: 'pol', reference_value: null, candidate_value: 'AEJEA', match: true, comment: 'mode-b' },
-            ],
-            verdict: 'PASS_BETTER',
-          }),
-        },
-      ],
-    });
+    callMock.mockResolvedValue(
+      JSON.stringify({
+        ...fixtureVerdict,
+        side_by_side_diff: [
+          { field: 'pol', reference_value: null, candidate_value: 'AEJEA', match: true, comment: 'mode-b' },
+        ],
+        verdict: 'PASS_BETTER',
+      }),
+    );
 
     const v = await judge(
       {
@@ -90,7 +82,7 @@ describe('judge', () => {
         candidate: { pol: 'AEJEA' },
         candidateLabel: 'Candidate-A',
       },
-      { client: fakeClient },
+      { callAiText: fakeCallAiText },
     );
 
     expect(v.verdict).toBeTruthy();
@@ -98,14 +90,7 @@ describe('judge', () => {
   });
 
   it('strips ```json fences if Opus wraps the JSON', async () => {
-    createMock.mockResolvedValue({
-      content: [
-        {
-          type: 'text',
-          text: '```json\n' + JSON.stringify(fixtureVerdict) + '\n```',
-        },
-      ],
-    });
+    callMock.mockResolvedValue('```json\n' + JSON.stringify(fixtureVerdict) + '\n```');
 
     const v = await judge(
       {
@@ -116,16 +101,14 @@ describe('judge', () => {
         candidate: { pol: 'AEJEA' },
         candidateLabel: 'Candidate-A',
       },
-      { client: fakeClient },
+      { callAiText: fakeCallAiText },
     );
 
     expect(v.verdict).toBe('PASS_PARITY');
   });
 
   it('passes anonymous candidateLabel + judge prompt forbids speculation', async () => {
-    createMock.mockResolvedValue({
-      content: [{ type: 'text', text: JSON.stringify(fixtureVerdict) }],
-    });
+    callMock.mockResolvedValue(JSON.stringify(fixtureVerdict));
 
     await judge(
       {
@@ -136,23 +119,18 @@ describe('judge', () => {
         candidate: { pol: 'AEJEA' },
         candidateLabel: 'Candidate-A',
       },
-      { client: fakeClient },
+      { callAiText: fakeCallAiText },
     );
 
-    const callArgs = createMock.mock.calls[0][0] as {
-      system: string;
-      messages: Array<{ role: string; content: string }>;
-    };
-    expect(callArgs.system).toMatch(/Do NOT speculate which model produced it/i);
-    expect(callArgs.messages[0].content).toContain('Candidate-A');
+    const [, system, user] = callMock.mock.calls[0];
+    expect(system).toMatch(/Do NOT speculate which model produced it/i);
+    expect(user).toContain('Candidate-A');
     // Should NOT leak any actual model id into the user message.
-    expect(callArgs.messages[0].content).not.toMatch(/gemini|opus|sonnet|gpt-/i);
+    expect(user).not.toMatch(/gemini|opus|sonnet|gpt-/i);
   });
 
   it('throws an informative error if the SDK returns garbage (parse failure)', async () => {
-    createMock.mockResolvedValue({
-      content: [{ type: 'text', text: 'this is not json at all, just prose' }],
-    });
+    callMock.mockResolvedValue('this is not json at all, just prose');
 
     await expect(
       judge(
@@ -164,13 +142,13 @@ describe('judge', () => {
           candidate: { pol: 'AEJEA' },
           candidateLabel: 'Candidate-A',
         },
-        { client: fakeClient },
+        { callAiText: fakeCallAiText },
       ),
     ).rejects.toThrow(/judge.*parse/i);
   });
 
-  it('throws if SDK returns no text block', async () => {
-    createMock.mockResolvedValue({ content: [] });
+  it('throws if shim returns empty text', async () => {
+    callMock.mockResolvedValue('');
 
     await expect(
       judge(
@@ -182,7 +160,7 @@ describe('judge', () => {
           candidate: { pol: 'AEJEA' },
           candidateLabel: 'Candidate-A',
         },
-        { client: fakeClient },
+        { callAiText: fakeCallAiText },
       ),
     ).rejects.toThrow(/no text block/i);
   });
