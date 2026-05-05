@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export xmlns="http://eu.europa.ec/fpi/fsd/export" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <sanctionEntity logicalId="12345" publicationUrl="https://eu.europa.eu/sanctions/12345">
+    <nameAlias>
+      <wholeName>María Fernández</wholeName>
+      <function>Director</function>
+      <gender>F</gender>
+      <title>Dr.</title>
+    </nameAlias>
+    <nameAlias>
+      <wholeName>Maria Fernandez</wholeName>
+      <function>Director</function>
+    </nameAlias>
+    <nameAlias>
+      <wholeName>M.F. Fernandez-Lopez</wholeName>
+    </nameAlias>
+    <subjectType code="person" classificationCode="P">Person</subjectType>
+    <citizenship countryIso2="ES" countryDescription="Spain">Spanish</citizenship>
+    <address>
+      <street>Calle Mayor 123</street>
+      <city>Madrid</city>
+      <zipCode>28013</zipCode>
+      <country>Spain</country>
+      <countryIso2>ES</countryIso2>
+    </address>
+    <regulation>
+      <regulationType>CFSP</regulationType>
+      <publicationDate>2025-03-15</publicationDate>
+      <programme>SYRIA</programme>
+    </regulation>
+    <regulation>
+      <regulationType>CFSP</regulationType>
+      <publicationDate>2025-06-20</publicationDate>
+      <programme>BELARUS</programme>
+    </regulation>
+  </sanctionEntity>
+
+  <sanctionEntity logicalId="67890" publicationUrl="https://eu.europa.eu/sanctions/67890">
+    <nameAlias>
+      <wholeName>Acme Industries S.A.</wholeName>
+    </nameAlias>
+    <nameAlias>
+      <wholeName>ACME IND</wholeName>
+    </nameAlias>
+    <subjectType code="enterprise" classificationCode="E">Enterprise</subjectType>
+    <citizenship countryIso2="RU" countryDescription="Russia">Russian</citizenship>
+    <address>
+      <street>Prospekt Mira 456</street>
+      <city>Moscow</city>
+      <zipCode>123456</zipCode>
+      <country>Russia</country>
+      <countryIso2>RU</countryIso2>
+    </address>
+    <regulation>
+      <regulationType>CFSP</regulationType>
+      <publicationDate>2022-02-28</publicationDate>
+      <programme>UKRAINE-TERRITORIAL-INTEGRITY</programme>
+    </regulation>
+  </sanctionEntity>
+
+  <sanctionEntity logicalId="11111" publicationUrl="https://eu.europa.eu/sanctions/11111">
+    <nameAlias>
+      <wholeName>MV SANCTIONED TANKER</wholeName>
+    </nameAlias>
+    <nameAlias>
+      <wholeName>SANCTIONED TANKER</wholeName>
+    </nameAlias>
+    <nameAlias>
+      <wholeName>Санкционированный Танкер</wholeName>
+    </nameAlias>
+    <subjectType code="other" classificationCode="O">Other</subjectType>
+    <identification identificationType="IMO" identificationNumber="9876543" latinNumber="9876543"/>
+    <regulation>
+      <regulationType>CFSP</regulationType>
+      <publicationDate>2023-11-10</publicationDate>
+      <programme>IRAN</programme>
+    </regulation>
+  </sanctionEntity>
+</export>
