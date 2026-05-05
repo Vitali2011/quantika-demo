@@ -162,7 +162,7 @@ describe('POST /api/ai/parse-vessel — shim routing', () => {
   const session = makeSession({
     emails: [makeEmail({ id: 'email-1' })],
     classifications: [
-      { emailId: 'email-1', category: 'VESSEL_POSITION', confidence: 'confirmed' },
+      { emailId: 'email-1', category: 'VESSEL_POSITION', isUnanswered: false, urgency: 'low' as const, daysWithoutReply: null, confidence: 0.9, originalSender: null, originalSenderCompany: null },
     ],
   });
 
@@ -230,7 +230,7 @@ describe('POST /api/ai/parse-vessel — timeout isolation (γ-1)', () => {
     const session = makeSession({
       emails: [makeEmail({ id: 'email-timeout' })],
       classifications: [
-        { emailId: 'email-timeout', category: 'VESSEL_POSITION', confidence: 'confirmed' },
+        { emailId: 'email-timeout', category: 'VESSEL_POSITION', isUnanswered: false, urgency: 'low' as const, daysWithoutReply: null, confidence: 0.9, originalSender: null, originalSenderCompany: null },
       ],
     });
 
