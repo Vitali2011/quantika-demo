@@ -1,0 +1,41 @@
+version: JWC-2025-Q1
+effective_from: '2025-01-15'
+source_url: https://www.lmalloyds.com/lma/jointwar
+zones:
+  - zone_id: red-sea
+    name: Red Sea (south of 18°N)
+    region: red-sea
+    transit_rate_pct: 0.75
+    hold_rate_pct: 0.50
+    polygon_geojson: |
+      {"type":"Polygon","coordinates":[[[32.5,12.5],[44.0,12.5],[44.0,18.0],[32.5,18.0],[32.5,12.5]]]}
+    notes: 'Houthi threat — escalated 2024-Q4'
+
+  - zone_id: black-sea
+    name: Black Sea
+    region: black-sea
+    transit_rate_pct: 1.00
+    hold_rate_pct: 0.75
+    polygon_geojson: |
+      {"type":"Polygon","coordinates":[[[27.5,40.0],[42.0,40.0],[42.0,47.0],[27.5,47.0],[27.5,40.0]]]}
+    port_list: UAODESA,UAILLICHIVSK,UAYUZHNY,RUMCONST,BGBURGAS,TRSAMSUN
+    notes: 'Russia-Ukraine conflict — restrictions on Ukrainian ports'
+
+  - zone_id: gulf-of-guinea
+    name: Gulf of Guinea (piracy risk)
+    region: gulf-of-guinea
+    transit_rate_pct: 0.30
+    hold_rate_pct: 0.20
+    polygon_geojson: |
+      {"type":"Polygon","coordinates":[[[-10.0,-5.0],[10.0,-5.0],[10.0,10.0],[-10.0,10.0],[-10.0,-5.0]]]}
+    notes: 'Piracy and armed robbery — primarily Nigeria/Benin coast'
+
+  - zone_id: persian-gulf
+    name: Persian Gulf / Strait of Hormuz
+    region: persian-gulf
+    transit_rate_pct: 0.15
+    hold_rate_pct: 0.10
+    polygon_geojson: |
+      {"type":"Polygon","coordinates":[[[48.0,24.0],[60.0,24.0],[60.0,30.5],[48.0,30.5],[48.0,24.0]]]}
+    port_list: AEJEBEL,AEKHALIFAH,KWSHUAIBA,SASAUDIPORTS,IQBASRA
+    notes: 'Regional tensions — Iran, Strait of Hormuz chokepoint'
