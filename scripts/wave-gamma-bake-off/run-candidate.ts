@@ -7,10 +7,14 @@
  * surface them to its caller, which we need for per-call cost computation.
  *
  * The model id strings used here are the *display* ids from
- * `verification-plan.md`. Vertex AI accepts these unsuffixed for the GA models
- * (2.5-pro/flash/flash-lite, 2.0-flash, 2.0-flash-lite). The 3.1 preview model
- * is allow-listed by Google; if a project lacks access the candidate fails
- * with `modelError` (caught and reported, run continues for other models).
+ * `verification-plan.md`. Vertex AI accepts the GA 2.5-series unsuffixed
+ * (2.5-pro/flash/flash-lite). Gemini 2.0 Flash, 2.0 Flash-Lite, and the 3.1
+ * Flash-Lite Preview are NOT published to project `quantika-demo-2026` in any
+ * region we tested (us-central1, us-east5, us-east4, us-west1, europe-west1,
+ * europe-west4) — every variant (`-001`, `-exp`, `-latest`, etc.) returns 404
+ * "Publisher Model not found or your project does not have access". They were
+ * dropped from MODELS rather than left as perpetually-failing slots; restore
+ * them once Google grants access (and update apiId to the ID that resolves).
  */
 
 export interface ModelEntry {
@@ -32,9 +36,8 @@ export const MODELS: readonly ModelEntry[] = [
   { id: 'gemini-2.5-pro',                 apiId: 'gemini-2.5-pro',                 inputPerMTokens: 1.25,  outputPerMTokens: 10.0 },
   { id: 'gemini-2.5-flash',               apiId: 'gemini-2.5-flash',               inputPerMTokens: 0.30,  outputPerMTokens: 2.50 },
   { id: 'gemini-2.5-flash-lite',          apiId: 'gemini-2.5-flash-lite',          inputPerMTokens: 0.10,  outputPerMTokens: 0.40 },
-  { id: 'gemini-2.0-flash',               apiId: 'gemini-2.0-flash',               inputPerMTokens: 0.15,  outputPerMTokens: 0.60 },
-  { id: 'gemini-2.0-flash-lite',          apiId: 'gemini-2.0-flash-lite',          inputPerMTokens: 0.075, outputPerMTokens: 0.30 },
-  { id: 'gemini-3.1-flash-lite-preview',  apiId: 'gemini-3.1-flash-lite-preview',  inputPerMTokens: 0.25,  outputPerMTokens: 1.50 },
+  // Gemini 2.0 Flash / 2.0 Flash-Lite / 3.1 Flash-Lite Preview are NOT
+  // accessible on project quantika-demo-2026 — see header comment.
 ] as const;
 
 export interface RunCandidateInput {

@@ -22,8 +22,8 @@ process.env.GOOGLE_CLOUD_PROJECT = process.env.GOOGLE_CLOUD_PROJECT ?? 'test-pro
 import { runCandidate, MODELS, computeCostForModel } from '../run-candidate';
 
 describe('MODELS registry', () => {
-  it('contains exactly 6 entries', () => {
-    expect(MODELS).toHaveLength(6);
+  it('contains exactly 3 entries (only 2.5-series accessible on quantika-demo-2026)', () => {
+    expect(MODELS).toHaveLength(3);
   });
 
   it('each entry has id + pricing per 1M tokens', () => {
@@ -37,16 +37,13 @@ describe('MODELS registry', () => {
     }
   });
 
-  it('includes the 6 expected display ids from verification-plan', () => {
+  it('includes only the accessible 2.5-series display ids', () => {
     const ids = MODELS.map((m) => m.id).sort();
     expect(ids).toEqual(
       [
-        'gemini-2.0-flash',
-        'gemini-2.0-flash-lite',
         'gemini-2.5-flash',
         'gemini-2.5-flash-lite',
         'gemini-2.5-pro',
-        'gemini-3.1-flash-lite-preview',
       ].sort(),
     );
   });
