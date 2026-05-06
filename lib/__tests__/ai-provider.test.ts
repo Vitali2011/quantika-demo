@@ -518,3 +518,116 @@ describe('callAiJson + ai_audit cost_usd integration — QA L-1', () => {
     expect(row.cost_usd).toBeNull();
   });
 });
+
+// ─── Tests: Gemini structured output (Spec 05) ─────────────────────────────
+
+describe('Gemini structured output (responseSchema)', () => {
+  it('passes responseMimeType and responseSchema to Gemini when schema provided', async () => {
+    setEnv({
+      AI_PROVIDER: 'gemini',
+      GOOGLE_APPLICATION_CREDENTIALS: '/dev/null',
+      GOOGLE_CLOUD_PROJECT: 'test-project',
+      AI_MODEL_GEMINI_DEFAULT: 'gemini-2.5-flash',
+    });
+
+    const mockGenerateContent = jest.fn().mockResolvedValue({
+      text: '{"items":[{"name":"test"}]}',
+      usageMetadata: { promptTokenCount: 100, candidatesTokenCount: 50 },
+    });
+    const { GoogleGenAI } = require('@google/genai');
+    (GoogleGenAI as jest.Mock).mockImplementationOnce(() => ({
+      models: { generateContent: mockGenerateContent },
+    }));
+
+    const testSchema = { type: 'OBJECT', properties: { items: { type: 'ARRAY' } } };
+    const { callAiJson } = require('@/lib/ai-provider');
+    await callAiJson('classify', 'sys', 'user', { responseSchema: testSchema });
+
+    expect(mockGenerateContent).toHaveBeenCalledTimes(1);
+    const callArgs = mockGenerateContent.mock.calls[0][0];
+    expect(callArgs.config.responseMimeType).toBe('application/json');
+    expect(callArgs.config.responseSchema).toBe(testSchema);
+  });
+
+  it('does NOT set responseMimeType when no schema provided', async () => {
+    setEnv({
+      AI_PROVIDER: 'gemini',
+      GOOGLE_APPLICATION_CREDENTIALS: '/dev/null',
+      GOOGLE_CLOUD_PROJECT: 'test-project',
+    });
+
+    const mockGenerateContent = jest.fn().mockResolvedValue({
+      text: '{"ok":true}',
+    });
+    const { GoogleGenAI } = require('@google/genai');
+    (GoogleGenAI as jest.Mock).mockImplementationOnce(() => ({
+      models: { generateContent: mockGenerateContent },
+    }));
+
+    const { callAiJson } = require('@/lib/ai-provider');
+    await callAiJson('classify', 'sys', 'user');
+
+    const callArgs = mockGenerateContent.mock.calls[0][0];
+    expect(callArgs.config.responseMimeType).toBeUndefined();
+    expect(callArgs.config.responseSchema).toBeUndefined();
+  });
+
+  it('parses clean JSON without fence stripping when schema is provided', async () => {
+    setEnv({
+      AI_PROVIDER: 'gemini',
+      GOOGLE_APPLICATION_CREDENTIALS: '/dev/null',
+      GOOGLE_CLOUD_PROJECT: 'test-project',
+    });
+
+    const { GoogleGenAI } = require('@google/genai');
+    (GoogleGenAI as jest.Mock).mockImplementationOnce(() => ({
+      models: {
+        generateContent: jest.fn().mockResolvedValue({
+          text: '{"classifications":[{"id":"e1","category":"CARGO_INQUIRY"}]}',
+        }),
+      },
+    }));
+
+    const testSchema = { type: 'OBJECT' };
+    const { callAiJson } = require('@/lib/ai-provider');
+    const result = await callAiJson<{ classifications: Array<{ id: string; category: string }> }>(
+      'classify', 'sys', 'user', { responseSchema: testSchema },
+    );
+
+    expect(result.classifications).toHaveLength(1);
+    expect(result.classifications[0].category).toBe('CARGO_INQUIRY');
+  });
+
+  it('responseSchema is ignored for non-gemini providers', async () => {
+    setEnv({ AI_PROVIDER: 'openai' });
+    const testSchema = { type: 'OBJECT' };
+    const { callAiJson } = require('@/lib/ai-provider');
+    // Should not throw — schema is simply ignored for openai
+    const result = await callAiJson('classify', 'sys', 'user', { responseSchema: testSchema });
+    expect(result).toEqual({ result: 'openai-json' });
+  });
+
+  it('callAiText forwards responseSchema to Gemini', async () => {
+    setEnv({
+      AI_PROVIDER: 'gemini',
+      GOOGLE_APPLICATION_CREDENTIALS: '/dev/null',
+      GOOGLE_CLOUD_PROJECT: 'test-project',
+    });
+
+    const mockGenerateContent = jest.fn().mockResolvedValue({
+      text: '{"items":[]}',
+    });
+    const { GoogleGenAI } = require('@google/genai');
+    (GoogleGenAI as jest.Mock).mockImplementationOnce(() => ({
+      models: { generateContent: mockGenerateContent },
+    }));
+
+    const testSchema = { type: 'OBJECT', properties: { items: { type: 'ARRAY' } } };
+    const { callAiText } = require('@/lib/ai-provider');
+    await callAiText('parse_vessel', 'sys', 'user', { responseSchema: testSchema });
+
+    const callArgs = mockGenerateContent.mock.calls[0][0];
+    expect(callArgs.config.responseMimeType).toBe('application/json');
+    expect(callArgs.config.responseSchema).toBe(testSchema);
+  });
+});

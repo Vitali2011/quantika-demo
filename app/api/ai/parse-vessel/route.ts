@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
 import { callAiText } from '@/lib/ai-provider';
+import { PARSE_VESSEL_SCHEMA } from '@/lib/schemas';
 import { LLMTimeoutError } from '@/lib/openai';
 import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { VESSEL_POSITION_PARSER_PROMPT } from '@/lib/prompts';
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
       const prompt = buildVesselPrompt(email);
       let raw: string;
       try {
-        raw = await callAiText('PARSE_VESSEL', VESSEL_POSITION_PARSER_PROMPT, prompt, { timeoutMs: endpointLlmTimeout(60) });
+        raw = await callAiText('PARSE_VESSEL', VESSEL_POSITION_PARSER_PROMPT, prompt, { timeoutMs: endpointLlmTimeout(60), responseSchema: PARSE_VESSEL_SCHEMA });
       } catch (err) {
         // γ-1: per-email timeout isolation — a single LLM timeout must NOT
         // poison the whole batch. Skip this email; user retries the route.

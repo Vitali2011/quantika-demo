@@ -26,6 +26,13 @@ export interface AiOpts {
   model?: string;
   /** Max tokens for the completion (default: 16_000). */
   maxTokens?: number;
+  /**
+   * Gemini structured-output schema (Vertex AI `responseSchema`).
+   * When provided AND provider=gemini, the SDK sends `responseMimeType:
+   * 'application/json'` + `responseSchema` — guaranteeing valid JSON
+   * without markdown fences. Ignored for other providers.
+   */
+  responseSchema?: Record<string, unknown>;
 }
 
 export interface ImageInput {
@@ -257,7 +264,11 @@ async function callGeminiText(
         generateContent: (params: {
           model: string;
           contents: Array<{ role: string; parts: Array<{ text: string }> }>;
-          config?: { systemInstruction?: string };
+          config?: {
+            systemInstruction?: string;
+            responseMimeType?: string;
+            responseSchema?: Record<string, unknown>;
+          };
         }) => Promise<{ text: string; usageMetadata?: GeminiUsageMetadata }>;
       };
     };
@@ -269,10 +280,23 @@ async function callGeminiText(
     location: process.env.GOOGLE_CLOUD_LOCATION ?? 'us-central1',
   });
 
+  // Structured output: when caller supplies a responseSchema, instruct Gemini
+  // to return valid JSON matching the schema. This eliminates markdown fences
+  // and guarantees parseable output.
+  const config: {
+    systemInstruction?: string;
+    responseMimeType?: string;
+    responseSchema?: Record<string, unknown>;
+  } = { systemInstruction: system };
+  if (opts?.responseSchema) {
+    config.responseMimeType = 'application/json';
+    config.responseSchema = opts.responseSchema;
+  }
+
   const response = await ai.models.generateContent({
     model,
     contents: [{ role: 'user', parts: [{ text: user }] }],
-    config: { systemInstruction: system },
+    config,
   });
 
   return { text: response.text ?? '', usage: extractGeminiUsage(response.usageMetadata) };
@@ -455,8 +479,11 @@ export async function callAiJson<T>(
       case 'gemini': {
         const r = await callGeminiText(system, user, model, opts);
         usage = r.usage;
-        const cleaned = r.text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
-        result = JSON.parse(cleaned) as T;
+        // When responseSchema is provided, Gemini returns clean JSON — no fences.
+        const raw = opts?.responseSchema
+          ? r.text.trim()
+          : r.text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
+        result = JSON.parse(raw) as T;
         break;
       }
       case 'bedrock': {
