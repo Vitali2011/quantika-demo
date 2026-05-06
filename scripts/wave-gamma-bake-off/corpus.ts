@@ -49,23 +49,64 @@ const SEED_FILES: { path: string; idPrefix: string }[] = [
 ];
 
 /**
- * Path to the Gemini 2.5 Pro self-baseline (built by `npm run build-reference`).
- * If present, its contents populate `case.references[endpoint]` so the bake-off
- * judge runs in Mode A. Absent → Mode B globally (legacy behaviour).
+ * Reference source selector.
+ *
+ * BAKE_OFF_REFERENCE env var controls which reference file populates
+ * `case.references[endpoint]` for Mode A judging:
+ *   - "pro"  (default) → baseline-pro25.json  (Gemini 2.5 Pro self-baseline)
+ *   - "opus"           → ground-truth-opus.json (independent Opus 4.7 ground truth)
+ *
+ * If the selected reference file is missing:
+ *   - "pro"  → silent fallback to Mode B (legacy behaviour)
+ *   - "opus" → fail loud (ground truth must exist if explicitly requested)
  */
-const BASELINE_PATH = path.join(__dirname, 'baseline-pro25.json');
+export type BakeOffReference = 'pro' | 'opus';
+
+function resolveReferencePath(ref: BakeOffReference): string {
+  switch (ref) {
+    case 'opus':
+      return path.join(__dirname, 'ground-truth-opus.json');
+    case 'pro':
+    default:
+      return path.join(__dirname, 'baseline-pro25.json');
+  }
+}
+
+function resolveReference(): BakeOffReference {
+  const raw = process.env.BAKE_OFF_REFERENCE ?? 'pro';
+  if (raw === 'opus' || raw === 'pro') return raw;
+  return 'pro';
+}
 
 interface BaselineMap {
   [caseId: string]: Partial<Record<Endpoint, unknown>>;
 }
 
 function loadBaselineSafe(): BaselineMap {
-  if (!existsSync(BASELINE_PATH)) return {};
+  const ref = resolveReference();
+  const refPath = resolveReferencePath(ref);
+
+  if (!existsSync(refPath)) {
+    if (ref === 'opus') {
+      throw new Error(
+        `BAKE_OFF_REFERENCE=opus but ground-truth-opus.json not found at ${refPath}. ` +
+          'Run Spec 02 (build-ground-truth) first.',
+      );
+    }
+    // pro baseline missing → Mode B (legacy silent fallback)
+    return {};
+  }
+
   try {
-    const parsed = JSON.parse(readFileSync(BASELINE_PATH, 'utf-8'));
+    const parsed = JSON.parse(readFileSync(refPath, 'utf-8'));
     if (parsed && typeof parsed === 'object') return parsed as BaselineMap;
-  } catch {
-    /* corrupted baseline shouldn't kill the run — fall back to Mode B */
+  } catch (e) {
+    if (ref === 'opus') {
+      throw new Error(
+        `BAKE_OFF_REFERENCE=opus but ground-truth-opus.json is corrupted: ${e instanceof Error ? e.message : String(e)}`,
+      );
+    }
+    /* corrupted pro baseline shouldn't kill the run — fall back to Mode B */
   }
   return {};
 }

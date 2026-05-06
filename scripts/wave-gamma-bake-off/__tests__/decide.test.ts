@@ -9,8 +9,6 @@ import { decide } from '../decide';
 
 function row(partial: Partial<AggregateRow> & { endpoint: Endpoint; model: string }): AggregateRow {
   return {
-    endpoint: partial.endpoint,
-    model: partial.model,
     cases: 10,
     passRate: 0,
     parityRate: 0,

@@ -7,7 +7,11 @@ import { describe, it, expect, jest, beforeEach } from '@jest/globals';
  * tokens to ai_audit (caller-invisible). For cost computation we need tokens
  * back at call site, hence direct SDK use here.
  */
-const generateContent = jest.fn();
+interface GeminiResponse {
+  text: string;
+  usageMetadata?: { promptTokenCount: number; candidatesTokenCount: number };
+}
+const generateContent = jest.fn<(...args: unknown[]) => Promise<GeminiResponse>>();
 
 jest.mock('@google/genai', () => ({
   GoogleGenAI: jest.fn().mockImplementation(() => ({

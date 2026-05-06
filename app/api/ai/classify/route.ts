@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
 import { callAiJson } from '@/lib/ai-provider';
+import { CLASSIFY_SCHEMA } from '@/lib/schemas';
 import { LLMTimeoutError } from '@/lib/openai';
 import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { CLASSIFICATION_SYSTEM_PROMPT } from '@/lib/prompts';
@@ -35,7 +36,7 @@ async function classifyBatch(batch: EmailInput[]): Promise<AiClassification[]> {
     'CLASSIFY',
     CLASSIFICATION_SYSTEM_PROMPT,
     `Today's date: ${todayIso}\n\n${JSON.stringify(batch)}`,
-    { timeoutMs: endpointLlmTimeout(120) },
+    { timeoutMs: endpointLlmTimeout(120), responseSchema: CLASSIFY_SCHEMA },
   );
   return result.classifications ?? [];
 }

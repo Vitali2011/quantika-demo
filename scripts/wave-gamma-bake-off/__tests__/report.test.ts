@@ -14,7 +14,7 @@ import { writeReport } from '../report';
 
 function row(p: Partial<AggregateRow> & { endpoint: Endpoint; model: string }): AggregateRow {
   return {
-    endpoint: p.endpoint, model: p.model, cases: 10,
+    cases: 10,
     passRate: 0, parityRate: 0, betterRate: 0, degradedRate: 0, marginalRate: 0, failRate: 0,
     modelErrorRate: 0, parseErrorRate: 0, judgeErrorRate: 0,
     avgCompleteness: 0, avgAccuracy: 0, criticalIssues: 0,
