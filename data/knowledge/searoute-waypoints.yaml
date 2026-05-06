@@ -1,0 +1,107 @@
+version: searoute-waypoints-v1
+source_notes: |
+  Compiled from public navigation data — OpenSeaMap, IHO Sailing Directions,
+  Admiralty charts (public excerpts). Coordinates approximate to ≤0.1°.
+fetched_at: "2026-05-06"
+waypoints:
+  - id: suez-port-said
+    name: Suez Canal — Port Said (Mediterranean entrance)
+    lat: 31.27
+    lon: 32.32
+    waters: EG
+    choke_type: canal
+    linked_to: suez-port-tewfik
+    notes: Northern entrance to Suez Canal on the Mediterranean coast of Egypt.
+
+  - id: suez-port-tewfik
+    name: Suez Canal — Port Tewfik (Red Sea exit)
+    lat: 29.94
+    lon: 32.55
+    waters: EG
+    choke_type: canal
+    linked_to: suez-port-said
+    notes: Southern exit of Suez Canal near Suez city on the Red Sea.
+
+  - id: panama-cristobal
+    name: Panama Canal — Cristóbal (Atlantic / Caribbean entrance)
+    lat: 9.35
+    lon: -79.92
+    waters: PA
+    choke_type: canal
+    linked_to: panama-balboa
+    notes: Atlantic entrance to Panama Canal at Colón. Gatun locks approach.
+
+  - id: panama-balboa
+    name: Panama Canal — Balboa (Pacific entrance)
+    lat: 8.95
+    lon: -79.57
+    waters: PA
+    choke_type: canal
+    linked_to: panama-cristobal
+    notes: Pacific entrance to Panama Canal near Panama City. Miraflores locks approach.
+
+  - id: cape-of-good-hope
+    name: Cape of Good Hope (Africa southern rounding)
+    lat: -34.36
+    lon: 18.48
+    waters: ZA
+    choke_type: rounding
+    notes: Southernmost rounding point of Africa; vessels typically pass 30–50 nm offshore.
+
+  - id: bab-el-mandeb
+    name: Bab-el-Mandeb Strait (Red Sea / Gulf of Aden)
+    lat: 12.58
+    lon: 43.47
+    waters: YE
+    choke_type: strait
+    notes: >
+      Narrow strait between Yemen and Djibouti/Eritrea connecting Red Sea to Gulf of Aden.
+      Main westbound lane uses Dact Islet; eastbound uses Perim Island channel.
+
+  - id: bosporus
+    name: Bosphorus Strait (Black Sea / Sea of Marmara)
+    lat: 41.12
+    lon: 29.07
+    waters: TR
+    choke_type: strait
+    notes: 30 km strait through Istanbul controlled by Turkey under Montreux Convention.
+
+  - id: gibraltar
+    name: Strait of Gibraltar (Atlantic / Mediterranean)
+    lat: 35.97
+    lon: -5.45
+    waters: GI
+    choke_type: strait
+    notes: 14 km wide at narrowest; main gateway between Atlantic Ocean and Mediterranean Sea.
+
+  - id: malacca-singapore
+    name: Strait of Malacca — Singapore exit (eastern end)
+    lat: 1.27
+    lon: 103.75
+    waters: SG
+    choke_type: strait
+    notes: Eastern exit of the Strait of Malacca through Singapore Strait; busiest shipping lane in the world.
+
+  - id: sunda-strait
+    name: Sunda Strait (Java / Sumatra)
+    lat: -5.93
+    lon: 105.87
+    waters: ID
+    choke_type: strait
+    notes: Alternate passage between Indian Ocean and South China Sea when Malacca is avoided.
+
+  - id: hormuz
+    name: Strait of Hormuz (Persian Gulf exit)
+    lat: 26.57
+    lon: 56.47
+    waters: OM
+    choke_type: strait
+    notes: Only sea passage into the Persian Gulf; split between Omani and Iranian waters. ~39 km wide at narrowest.
+
+  - id: dover
+    name: Strait of Dover (English Channel narrow point)
+    lat: 51.07
+    lon: 1.42
+    waters: GB
+    choke_type: strait
+    notes: Narrowest point of the English Channel (~33 km); TSS with two separation lanes (NE/SW).
