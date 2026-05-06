@@ -17,10 +17,16 @@
     "build:extension": "cd extensions/gmail && npm install --no-audit --no-fund --silent && npm run build",
     "knowledge:status": "npx tsx scripts/knowledge/status.ts",
     "knowledge:refresh": "npx tsx scripts/knowledge/refresh.ts",
+    "bake-off": "tsx scripts/wave-gamma-bake-off/cli.ts",
+    "bake-off:redecide": "tsx scripts/wave-gamma-bake-off/redecide.ts",
+    "bake-off:validate-baseline": "tsx scripts/wave-gamma-bake-off/validate-baseline.ts",
+    "bake-off:ground-truth": "tsx scripts/wave-gamma-bake-off/build-ground-truth.ts",
+    "build-reference": "tsx scripts/wave-gamma-bake-off/build-reference.ts",
     "prepare": "husky"
   },
   "dependencies": {
     "@anthropic-ai/bedrock-sdk": "^0.12.0",
+    "@anthropic-ai/sdk": "^0.94.0",
     "@aws-sdk/client-bedrock-runtime": "^3.844.0",
     "@base-ui/react": "^1.4.1",
     "@google-cloud/aiplatform": "^6.7.0",

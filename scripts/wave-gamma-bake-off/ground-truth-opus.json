@@ -1,0 +1,5056 @@
+{
+  "cargo-sample-01": {
+    "parse-vessel": {
+      "items": []
+    },
+    "parse-cargo": {
+      "items": [
+        {
+          "origin_port": {
+            "value": "Constanta",
+            "confidence": "confirmed",
+            "source_text": "Load: Constanta, Romania (1 sb, sp aaaa)"
+          },
+          "origin_country": {
+            "value": "Romania",
+            "confidence": "confirmed",
+            "source_text": "Load: Constanta, Romania (1 sb, sp aaaa)"
+          },
+          "destination_port": {
+            "value": "Lagos (Apapa)",
+            "confidence": "confirmed",
+            "source_text": "Disch: Lagos, Nigeria (Apapa, 1 sb, sp aaaa)"
+          },
+          "destination_country": {
+            "value": "Nigeria",
+            "confidence": "confirmed",
+            "source_text": "Disch: Lagos, Nigeria (Apapa, 1 sb, sp aaaa)"
+          },
+          "cargo_description": {
+            "value": "HRC steel coils, stowage factor 1.20 CBM/MT",
+            "confidence": "confirmed",
+            "source_text": "Cargo: 8,500 mts HRC steel coils, SF 1.20"
+          },
+          "cargo_origin_country": null,
+          "weight_mt": {
+            "value": 8500,
+            "confidence": "confirmed",
+            "source_text": "Cargo: 8,500 mts HRC steel coils, SF 1.20"
+          },
+          "weight_mt_min": 8500,
+          "weight_mt_max": 8500,
+          "volume_cbm": {
+            "value": 10200,
+            "confidence": "interpreted",
+            "source_text": "Cargo: 8,500 mts HRC steel coils, SF 1.20"
+          },
+          "dimensions": null,
+          "cargo_type": {
+            "value": "BREAK_BULK",
+            "confidence": "confirmed",
+            "source_text": "Cargo: 8,500 mts HRC steel coils, SF 1.20"
+          },
+          "container_type": null,
+          "quantity": null,
+          "incoterms": null,
+          "preferred_dates": null,
+          "laycan": {
+            "value": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}",
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+          },
+          "loading_rate": null,
+          "loading_terms": {
+            "value": "CQD SHINC / FIO",
+            "confidence": "confirmed",
+            "source_text": "Loading: CQD SHINC\nFIO terms"
+          },
+          "discharge_rate": null,
+          "discharge_terms": {
+            "value": "CQD SHINC / FIO",
+            "confidence": "confirmed",
+            "source_text": "Disch: CQD SHINC\nFIO terms"
+          },
+          "commission_percent": {
+            "value": 3.75,
+            "confidence": "confirmed",
+            "source_text": "Gcn 3.75% TTL"
+          },
+          "commission_terms": {
+            "value": "TTL (GENCON form)",
+            "confidence": "confirmed",
+            "source_text": "Gcn 3.75% TTL"
+          },
+          "stowage_factor": {
+            "value": 1.2,
+            "confidence": "confirmed",
+            "source_text": "Cargo: 8,500 mts HRC steel coils, SF 1.20"
+          },
+          "special_requirements": {
+            "value": [
+              "Geared vessel required",
+              "Maximum single piece weight approximately 25 MT",
+              "MPP or geared general cargo vessel preferred",
+              "1 safe berth, safe port, always accessible always afloat at load port (Constanta)",
+              "1 safe berth, safe port, always accessible always afloat at discharge port (Apapa/Lagos)",
+              "ADA WOG — all details about, without guarantee (subjects to be lifted)"
+            ],
+            "confidence": "confirmed",
+            "source_text": "Geared vessel required (max piece abt 25mt)\nNB: MPP or geared general cargo vessel preferred"
+          },
+          "missing_info": [
+            "Laycan dates are template placeholders ({{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}) — actual dates not provided",
+            "Freight rate / freight basis not indicated (lump sum or PMT)",
+            "Demurrage / despatch rate not specified",
+            "No incoterms stated",
+            "Commission split (brokerage vs. address commission) not detailed beyond 3.75% TTL"
+          ]
+        }
+      ]
+    },
+    "parse-recap": {
+      "vessel_name": null,
+      "vessel_yob": null,
+      "vessel_flag": null,
+      "owners": null,
+      "charterers": {
+        "value": "Black Sea Steel Trading (Demo)",
+        "confidence": "confirmed",
+        "source_text": "From: Black Sea Steel Trading (Demo) <chartering@bssteel-demo.ro>"
+      },
+      "account": null,
+      "broker": "a.popescu@blackseabrokers.ro",
+      "load_port": {
+        "value": "Constanta, Romania",
+        "confidence": "confirmed",
+        "source_text": "Load: Constanta, Romania (1 sb, sp aaaa)"
+      },
+      "disch_port": {
+        "value": "Lagos, Nigeria (Apapa)",
+        "confidence": "confirmed",
+        "source_text": "Disch: Lagos, Nigeria (Apapa, 1 sb, sp aaaa)"
+      },
+      "cargo_description": {
+        "value": "HRC steel coils, stowage factor 1.20",
+        "confidence": "confirmed",
+        "source_text": "Cargo: 8,500 mts HRC steel coils, SF 1.20"
+      },
+      "cargo_quantity_min": {
+        "value": 8500,
+        "confidence": "confirmed",
+        "source_text": "Cargo: 8,500 mts HRC steel coils, SF 1.20"
+      },
+      "cargo_quantity_max": {
+        "value": 8500,
+        "confidence": "confirmed",
+        "source_text": "Cargo: 8,500 mts HRC steel coils, SF 1.20"
+      },
+      "cargo_packaging": {
+        "value": "coils",
+        "confidence": "confirmed",
+        "source_text": "8,500 mts HRC steel coils"
+      },
+      "laycan": {
+        "value": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}",
+        "confidence": "confirmed",
+        "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+      },
+      "transit_time": null,
+      "freight_rate": null,
+      "freight_basis": {
+        "value": "FIO",
+        "confidence": "confirmed",
+        "source_text": "FIO terms"
+      },
+      "freight_payment": null,
+      "loading_rate": {
+        "value": "CQD",
+        "confidence": "confirmed",
+        "source_text": "Loading: CQD SHINC"
+      },
+      "loading_terms": {
+        "value": "SHINC",
+        "confidence": "confirmed",
+        "source_text": "Loading: CQD SHINC"
+      },
+      "loading_working_hours": null,
+      "discharging_rate": {
+        "value": "CQD",
+        "confidence": "confirmed",
+        "source_text": "Disch: CQD SHINC"
+      },
+      "discharging_terms": {
+        "value": "SHINC",
+        "confidence": "confirmed",
+        "source_text": "Disch: CQD SHINC"
+      },
+      "discharging_working_hours": null,
+      "demurrage_rate": null,
+      "demurrage_payment": null,
+      "despatch_rate": null,
+      "load_port_agent": null,
+      "disch_port_agent": null,
+      "vessel_dwt": null,
+      "vessel_draft": null,
+      "vessel_geared": {
+        "value": true,
+        "confidence": "confirmed",
+        "source_text": "Geared vessel required (max piece abt 25mt)"
+      },
+      "cp_form": {
+        "value": "GENCON",
+        "confidence": "interpreted",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "arbitration": null,
+      "law": null,
+      "commission": {
+        "value": "3.75% TTL GENCON",
+        "confidence": "confirmed",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "commission_percent": {
+        "value": 3.75,
+        "confidence": "confirmed",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "commission_address_pct": null,
+      "commission_broker_pct": null,
+      "commission_base": {
+        "value": "freight",
+        "confidence": "interpreted",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "commission_amount": null,
+      "commission_broker_amount": null,
+      "commission_address_amount": null,
+      "commission_currency": null,
+      "subs": [
+        {
+          "value": "All Details About, Without Guarantee — no explicit deadline stated",
+          "confidence": "confirmed",
+          "source_text": "ADA WOG"
+        }
+      ],
+      "acknowledgement_deadline": null,
+      "confidentiality": false,
+      "additional_terms": [
+        "1 safe berth, spanned always afloat always accessible at load port: Constanta, Romania",
+        "1 safe berth, spanned always afloat always accessible at discharge port: Lagos, Nigeria (Apapa)",
+        "Maximum single piece weight approximately 25 MT",
+        "MPP or geared general cargo vessel preferred"
+      ],
+      "unknown_terms": [
+        {
+          "term": "{{LAYCAN_START}}, {{LAYCAN_END}}, {{LAYCAN_MONTH}}",
+          "context": "Laycan field contains unresolved template placeholders — actual laycan dates not populated. Human review required."
+        },
+        {
+          "term": "{{INNER_DATE}}",
+          "context": "Email date field contains unresolved template placeholder — actual date not populated. Human review required."
+        },
+        {
+          "term": "Pls ploffer",
+          "context": "Likely a typo for 'please offer' (ploffer = please offer) — interpreted as a cargo enquiry/offer request, not a firm fixture recap. Document may be a cargo offer request rather than a concluded fixture."
+        }
+      ]
+    }
+  },
+  "cargo-sample-02": {
+    "parse-vessel": {
+      "items": []
+    },
+    "parse-cargo": {
+      "items": [
+        {
+          "origin_port": {
+            "value": "Khor Fakkan",
+            "confidence": "confirmed",
+            "source_text": "Load: Khor Fakkan, UAE (1 sb, sp aaaa)"
+          },
+          "origin_country": {
+            "value": "United Arab Emirates",
+            "confidence": "confirmed",
+            "source_text": "Load: Khor Fakkan, UAE (1 sb, sp aaaa)"
+          },
+          "destination_port": {
+            "value": "Tema",
+            "confidence": "confirmed",
+            "source_text": "Disch: Tema, Ghana (1 sb, sp aaaa)"
+          },
+          "destination_country": {
+            "value": "Ghana",
+            "confidence": "confirmed",
+            "source_text": "Disch: Tema, Ghana (1 sb, sp aaaa)"
+          },
+          "cargo_description": {
+            "value": "Steel pipes (SAWL), max length 12m, max OD 610mm",
+            "confidence": "confirmed",
+            "source_text": "Cargo: 6,500/7,000 mts ABT steel pipes (SAWL), SF 2.80\n       max length 12m, max OD 610mm"
+          },
+          "cargo_origin_country": null,
+          "weight_mt": {
+            "value": 7000,
+            "confidence": "interpreted",
+            "source_text": "6,500/7,000 mts ABT steel pipes (SAWL)"
+          },
+          "weight_mt_min": {
+            "value": 6500,
+            "confidence": "interpreted",
+            "source_text": "6,500/7,000 mts ABT steel pipes (SAWL)"
+          },
+          "weight_mt_max": {
+            "value": 7000,
+            "confidence": "interpreted",
+            "source_text": "6,500/7,000 mts ABT steel pipes (SAWL)"
+          },
+          "volume_cbm": null,
+          "dimensions": {
+            "value": "max length 12m, max OD 610mm",
+            "confidence": "confirmed",
+            "source_text": "max length 12m, max OD 610mm"
+          },
+          "cargo_type": {
+            "value": "BREAK_BULK",
+            "confidence": "confirmed",
+            "source_text": "steel pipes (SAWL), SF 2.80\n       max length 12m, max OD 610mm"
+          },
+          "container_type": null,
+          "quantity": null,
+          "incoterms": null,
+          "preferred_dates": null,
+          "laycan": {
+            "value": null,
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+          },
+          "loading_rate": null,
+          "loading_terms": {
+            "value": "CQD SHINC",
+            "confidence": "confirmed",
+            "source_text": "Loading: CQD SHINC"
+          },
+          "discharge_rate": {
+            "value": 1000,
+            "confidence": "confirmed",
+            "source_text": "Disch: 1,000 mts SSHEX EIU"
+          },
+          "discharge_terms": {
+            "value": "SSHEX EIU",
+            "confidence": "confirmed",
+            "source_text": "Disch: 1,000 mts SSHEX EIU"
+          },
+          "commission_percent": {
+            "value": 3.75,
+            "confidence": "confirmed",
+            "source_text": "Commission: 3.75% TTL F/D/D"
+          },
+          "commission_terms": {
+            "value": "TTL F/D/D",
+            "confidence": "confirmed",
+            "source_text": "Commission: 3.75% TTL F/D/D"
+          },
+          "special_requirements": {
+            "value": [
+              "Geared vessel required",
+              "1 safe berth, safe port, always accessible always afloat – both ends (1 sb, sp aaaa)",
+              "ADA WOG (All Details About, Without Guarantee)",
+              "FIOST both ends"
+            ],
+            "confidence": "confirmed",
+            "source_text": "Geared vessel required\nCommission: 3.75% TTL F/D/D\nADA WOG"
+          },
+          "stowage_factor": {
+            "value": 2.8,
+            "confidence": "confirmed",
+            "source_text": "SF 2.80"
+          },
+          "missing_info": [
+            "Laycan dates not populated — template placeholders {{LAYCAN_START}}, {{LAYCAN_END}}, {{LAYCAN_MONTH}} were not replaced",
+            "Freight rate / freight basis not stated",
+            "Demurrage / despatch rates not stated",
+            "Incoterms not mentioned"
+          ]
+        }
+      ]
+    },
+    "parse-recap": {
+      "vessel_name": null,
+      "vessel_yob": null,
+      "vessel_flag": null,
+      "owners": null,
+      "charterers": {
+        "value": "Mitteleuropa Charter GmbH (Demo)",
+        "confidence": "interpreted",
+        "source_text": "From: Mitteleuropa Charter GmbH (Demo) <chartering@mitteleuropa-demo.de>"
+      },
+      "account": null,
+      "broker": null,
+      "load_port": {
+        "value": "Khor Fakkan, UAE",
+        "confidence": "confirmed",
+        "source_text": "Load: Khor Fakkan, UAE (1 sb, sp aaaa)"
+      },
+      "disch_port": {
+        "value": "Tema, Ghana",
+        "confidence": "confirmed",
+        "source_text": "Disch: Tema, Ghana (1 sb, sp aaaa)"
+      },
+      "cargo_description": {
+        "value": "Steel pipes (SAWL), stowage factor 2.80, max length 12m, max OD 610mm",
+        "confidence": "confirmed",
+        "source_text": "Cargo: 6,500/7,000 mts ABT steel pipes (SAWL), SF 2.80\n       max length 12m, max OD 610mm"
+      },
+      "cargo_quantity_min": {
+        "value": 6500,
+        "confidence": "confirmed",
+        "source_text": "6,500/7,000 mts ABT steel pipes"
+      },
+      "cargo_quantity_max": {
+        "value": 7000,
+        "confidence": "confirmed",
+        "source_text": "6,500/7,000 mts ABT steel pipes"
+      },
+      "cargo_packaging": {
+        "value": "bulk / loose pipes",
+        "confidence": "interpreted",
+        "source_text": "steel pipes (SAWL), SF 2.80\n       max length 12m, max OD 610mm"
+      },
+      "laycan": {
+        "value": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}",
+        "confidence": "confirmed",
+        "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+      },
+      "transit_time": null,
+      "freight_rate": null,
+      "freight_basis": {
+        "value": "FIOST both ends",
+        "confidence": "confirmed",
+        "source_text": "FIOST both ends"
+      },
+      "freight_payment": null,
+      "loading_rate": {
+        "value": "CQD",
+        "confidence": "confirmed",
+        "source_text": "Loading: CQD SHINC"
+      },
+      "loading_terms": {
+        "value": "SHINC",
+        "confidence": "confirmed",
+        "source_text": "Loading: CQD SHINC"
+      },
+      "loading_working_hours": null,
+      "discharging_rate": {
+        "value": 1000,
+        "confidence": "confirmed",
+        "source_text": "Disch: 1,000 mts SSHEX EIU"
+      },
+      "discharging_terms": {
+        "value": "SSHEX EIU",
+        "confidence": "confirmed",
+        "source_text": "Disch: 1,000 mts SSHEX EIU"
+      },
+      "discharging_working_hours": null,
+      "demurrage_rate": null,
+      "demurrage_payment": null,
+      "despatch_rate": null,
+      "load_port_agent": null,
+      "disch_port_agent": null,
+      "vessel_dwt": null,
+      "vessel_draft": null,
+      "vessel_geared": {
+        "value": true,
+        "confidence": "confirmed",
+        "source_text": "Geared vessel required"
+      },
+      "cp_form": null,
+      "arbitration": null,
+      "law": null,
+      "commission": {
+        "value": "3.75% TTL F/D/D",
+        "confidence": "confirmed",
+        "source_text": "Commission: 3.75% TTL F/D/D"
+      },
+      "commission_percent": {
+        "value": 3.75,
+        "confidence": "confirmed",
+        "source_text": "Commission: 3.75% TTL F/D/D"
+      },
+      "commission_address_pct": null,
+      "commission_broker_pct": null,
+      "commission_base": {
+        "value": "freight",
+        "confidence": "interpreted",
+        "source_text": "Commission: 3.75% TTL F/D/D"
+      },
+      "commission_amount": null,
+      "commission_broker_amount": null,
+      "commission_address_amount": null,
+      "commission_currency": null,
+      "subs": [
+        {
+          "value": "ADA WOG — all details about, without guarantee; no explicit deadline stated",
+          "confidence": "confirmed",
+          "source_text": "ADA WOG"
+        }
+      ],
+      "acknowledgement_deadline": null,
+      "confidentiality": false,
+      "additional_terms": [
+        "Load port berth conditions: 1 safe berth, safe port, always accessible always afloat (Khor Fakkan)",
+        "Disch port berth conditions: 1 safe berth, safe port, always accessible always afloat (Tema)",
+        "Stowage factor: SF 2.80",
+        "Max pipe length: 12m",
+        "Max outer diameter: 610mm",
+        "F/D/D cover included in commission clause"
+      ],
+      "unknown_terms": [
+        {
+          "term": "SAWL",
+          "context": "Cargo described as 'steel pipes (SAWL)' — SAWL is a pipe manufacturing standard (Submerged Arc Welded Longitudinal), a cargo specification identifier, not a shipping term. No flag required."
+        },
+        {
+          "term": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}",
+          "context": "Laycan dates appear as unfilled template placeholders. Actual laycan dates were not provided in the email. Requires broker to supply correct dates before this recap is actionable."
+        }
+      ]
+    }
+  },
+  "cargo-sample-03": {
+    "parse-vessel": {
+      "items": []
+    },
+    "parse-cargo": {
+      "items": [
+        {
+          "origin_port": {
+            "value": "Singapore",
+            "confidence": "confirmed",
+            "source_text": "Load: Singapore (1 sb, sp aaaa)"
+          },
+          "origin_country": {
+            "value": "Singapore",
+            "confidence": "confirmed",
+            "source_text": "Load: Singapore (1 sb, sp aaaa)"
+          },
+          "destination_port": {
+            "value": "Rotterdam",
+            "confidence": "confirmed",
+            "source_text": "Disch: Rotterdam, Netherlands (1 sb, sp aaaa)"
+          },
+          "destination_country": {
+            "value": "Netherlands",
+            "confidence": "confirmed",
+            "source_text": "Disch: Rotterdam, Netherlands (1 sb, sp aaaa)"
+          },
+          "cargo_description": {
+            "value": "Steel slabs, stowage factor 0.35 CBM/MT",
+            "confidence": "confirmed",
+            "source_text": "Cargo: 28,000 mts steel slabs, SF 0.35"
+          },
+          "cargo_origin_country": null,
+          "weight_mt": {
+            "value": 28000,
+            "confidence": "confirmed",
+            "source_text": "28,000 mts steel slabs"
+          },
+          "weight_mt_min": 28000,
+          "weight_mt_max": 28000,
+          "volume_cbm": null,
+          "dimensions": null,
+          "cargo_type": {
+            "value": "BREAK_BULK",
+            "confidence": "confirmed",
+            "source_text": "28,000 mts steel slabs"
+          },
+          "container_type": null,
+          "quantity": null,
+          "incoterms": null,
+          "preferred_dates": null,
+          "laycan": {
+            "value": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}",
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+          },
+          "loading_rate": {
+            "value": "10,000 MT/day",
+            "confidence": "confirmed",
+            "source_text": "Loading: 10,000 mts SHINC"
+          },
+          "loading_terms": {
+            "value": "FIOST SHINC",
+            "confidence": "interpreted",
+            "source_text": "Loading: 10,000 mts SHINC\nFIOST both ends"
+          },
+          "discharge_rate": {
+            "value": "12,000 MT/day",
+            "confidence": "confirmed",
+            "source_text": "Disch: 12,000 mts SHINC"
+          },
+          "discharge_terms": {
+            "value": "FIOST SHINC",
+            "confidence": "interpreted",
+            "source_text": "Disch: 12,000 mts SHINC\nFIOST both ends"
+          },
+          "commission_percent": {
+            "value": 3.75,
+            "confidence": "confirmed",
+            "source_text": "Commission: 3.75% TTL"
+          },
+          "commission_terms": {
+            "value": "TTL",
+            "confidence": "confirmed",
+            "source_text": "Commission: 3.75% TTL"
+          },
+          "special_requirements": {
+            "value": [
+              "Gearless vessel acceptable — shore cranes available at load and discharge ports",
+              "Port condition: 1 safe berth, safe port, always accessible always afloat (AAAA) at both ends",
+              "ADA WOG (All Details About, Without Guarantee)",
+              "Owners to advise preferred routing — Suez or Cape; charterers request quotes for both options with respective TCE implications",
+              "Charterers willing to discuss canal cost sharing on Suez option"
+            ],
+            "confidence": "confirmed",
+            "source_text": "Gearless vessel acceptable (shore cranes at load/disch)\nADA WOG\nNB: Owners to advise preferred routing — Q: Suez or Cape? Please quote both options with respective TCE implications. Charterers willing to discuss canal costs sharing on Suez option."
+          },
+          "stowage_factor": {
+            "value": 0.35,
+            "confidence": "confirmed",
+            "source_text": "SF 0.35"
+          },
+          "missing_info": [
+            "Laycan dates contain unresolved template placeholders ({{LAYCAN_START}}, {{LAYCAN_END}}, {{LAYCAN_MONTH}}) — actual dates required",
+            "Vessel size / DWT requirements not specified",
+            "Freight rate indication or target not provided (charterers requesting owners to quote)",
+            "No incoterms stated",
+            "Demurrage / despatch rate not specified",
+            "Commission split not detailed (3.75% TTL — brokerage vs. address commission breakdown not given)",
+            "Routing preference (Suez vs. Cape) not yet decided — dual quote requested"
+          ]
+        }
+      ]
+    },
+    "parse-recap": {
+      "vessel_name": null,
+      "vessel_yob": null,
+      "vessel_flag": null,
+      "owners": null,
+      "charterers": {
+        "value": "Asia Bulk Trading (Demo)",
+        "confidence": "confirmed",
+        "source_text": "From: Asia Bulk Trading (Demo) <chartering@asiabulk-demo.sg>"
+      },
+      "account": null,
+      "broker": null,
+      "load_port": {
+        "value": "Singapore",
+        "confidence": "confirmed",
+        "source_text": "Load: Singapore (1 sb, sp aaaa)"
+      },
+      "disch_port": {
+        "value": "Rotterdam, Netherlands",
+        "confidence": "confirmed",
+        "source_text": "Disch: Rotterdam, Netherlands (1 sb, sp aaaa)"
+      },
+      "cargo_description": {
+        "value": "Steel slabs, stowage factor 0.35",
+        "confidence": "confirmed",
+        "source_text": "Cargo: 28,000 mts steel slabs, SF 0.35"
+      },
+      "cargo_quantity_min": {
+        "value": 28000,
+        "confidence": "confirmed",
+        "source_text": "Cargo: 28,000 mts steel slabs, SF 0.35"
+      },
+      "cargo_quantity_max": {
+        "value": 28000,
+        "confidence": "confirmed",
+        "source_text": "Cargo: 28,000 mts steel slabs, SF 0.35"
+      },
+      "cargo_packaging": {
+        "value": "bulk / break-bulk steel slabs",
+        "confidence": "interpreted",
+        "source_text": "28,000 mts steel slabs, SF 0.35"
+      },
+      "laycan": {
+        "value": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}",
+        "confidence": "confirmed",
+        "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+      },
+      "transit_time": {
+        "value": "Two options requested: via Suez Canal or via Cape of Good Hope — TCE implications requested for both",
+        "confidence": "confirmed",
+        "source_text": "Owners to advise preferred routing — Q: Suez or Cape? Please quote both options with respective TCE implications."
+      },
+      "freight_rate": null,
+      "freight_basis": {
+        "value": "FIOST both ends",
+        "confidence": "confirmed",
+        "source_text": "FIOST both ends"
+      },
+      "freight_payment": null,
+      "loading_rate": {
+        "value": 10000,
+        "confidence": "confirmed",
+        "source_text": "Loading: 10,000 mts SHINC"
+      },
+      "loading_terms": {
+        "value": "SHINC",
+        "confidence": "confirmed",
+        "source_text": "Loading: 10,000 mts SHINC"
+      },
+      "loading_working_hours": null,
+      "discharging_rate": {
+        "value": 12000,
+        "confidence": "confirmed",
+        "source_text": "Disch: 12,000 mts SHINC"
+      },
+      "discharging_terms": {
+        "value": "SHINC",
+        "confidence": "confirmed",
+        "source_text": "Disch: 12,000 mts SHINC"
+      },
+      "discharging_working_hours": null,
+      "demurrage_rate": null,
+      "demurrage_payment": null,
+      "despatch_rate": null,
+      "load_port_agent": null,
+      "disch_port_agent": null,
+      "vessel_dwt": null,
+      "vessel_draft": null,
+      "vessel_geared": {
+        "value": false,
+        "confidence": "confirmed",
+        "source_text": "Gearless vessel acceptable (shore cranes at load/disch)"
+      },
+      "cp_form": null,
+      "arbitration": null,
+      "law": null,
+      "commission": {
+        "value": "3.75% TTL",
+        "confidence": "confirmed",
+        "source_text": "Commission: 3.75% TTL"
+      },
+      "commission_percent": {
+        "value": 3.75,
+        "confidence": "confirmed",
+        "source_text": "Commission: 3.75% TTL"
+      },
+      "commission_address_pct": null,
+      "commission_broker_pct": null,
+      "commission_base": {
+        "value": "freight",
+        "confidence": "interpreted",
+        "source_text": "Commission: 3.75% TTL"
+      },
+      "commission_amount": null,
+      "commission_broker_amount": null,
+      "commission_address_amount": null,
+      "commission_currency": null,
+      "subs": [
+        {
+          "value": "ADA WOG — All Details About, Without Guarantee (indicative offer; no firm subjects stated)",
+          "confidence": "confirmed",
+          "source_text": "ADA WOG"
+        }
+      ],
+      "acknowledgement_deadline": null,
+      "confidentiality": false,
+      "additional_terms": [
+        "1 safe berth, single port, always accessible always afloat — load port Singapore",
+        "1 safe berth, single port, always accessible always afloat — discharge port Rotterdam",
+        "Gearless vessel acceptable — shore cranes available at both load and discharge ports",
+        "Owners requested to quote both Suez Canal and Cape of Good Hope routing options with respective TCE implications",
+        "Charterers willing to discuss canal costs sharing on Suez option"
+      ],
+      "unknown_terms": [
+        {
+          "term": "TCE",
+          "context": "Please quote both options with respective TCE implications — TCE (Time Charter Equivalent) is a standard industry metric but not defined in the glossary; flagging for completeness"
+        },
+        {
+          "term": "ploffer",
+          "context": "Pls ploffer for below cargo — likely a typographical error for 'please offer' or 'please provide offer'; flagging as unrecognized term"
+        }
+      ]
+    }
+  },
+  "cargo-sample-04": {
+    "parse-vessel": {
+      "items": []
+    },
+    "parse-recap": {
+      "vessel_name": null,
+      "vessel_yob": null,
+      "vessel_flag": null,
+      "owners": null,
+      "charterers": {
+        "value": "Sokhna Cement Exports (Demo)",
+        "confidence": "confirmed",
+        "source_text": "From: Sokhna Cement Exports (Demo) <chartering@sokhna-cement-demo.eg>"
+      },
+      "account": null,
+      "broker": "o.khalil@redsea-brokers-demo.eg",
+      "load_port": {
+        "value": "Ain Sokhna, Egypt",
+        "confidence": "confirmed",
+        "source_text": "Load: Ain Sokhna, Egypt (1 sb, sp aaaa)"
+      },
+      "disch_port": {
+        "value": "Misurata, Libya",
+        "confidence": "confirmed",
+        "source_text": "Disch: Misurata, Libya (1 sb, sp aaaa)"
+      },
+      "cargo_description": {
+        "value": "Bagged cement (50kg bags on pallets)",
+        "confidence": "confirmed",
+        "source_text": "Cargo: 0 mts bagged cement (50kg bags on pallets)"
+      },
+      "cargo_quantity_min": {
+        "value": 0,
+        "confidence": "confirmed",
+        "source_text": "Cargo: 0 mts bagged cement (50kg bags on pallets)"
+      },
+      "cargo_quantity_max": {
+        "value": 0,
+        "confidence": "confirmed",
+        "source_text": "Cargo: 0 mts bagged cement (50kg bags on pallets)"
+      },
+      "cargo_packaging": {
+        "value": "50kg bags on pallets",
+        "confidence": "confirmed",
+        "source_text": "0 mts bagged cement (50kg bags on pallets)"
+      },
+      "laycan": {
+        "value": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}",
+        "confidence": "confirmed",
+        "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+      },
+      "transit_time": null,
+      "freight_rate": null,
+      "freight_basis": {
+        "value": "FIOST both ends",
+        "confidence": "confirmed",
+        "source_text": "FIOST both ends"
+      },
+      "freight_payment": null,
+      "loading_rate": {
+        "value": "CQD",
+        "confidence": "confirmed",
+        "source_text": "Loading: CQD SHINC"
+      },
+      "loading_terms": {
+        "value": "SHINC",
+        "confidence": "confirmed",
+        "source_text": "Loading: CQD SHINC"
+      },
+      "loading_working_hours": null,
+      "discharging_rate": {
+        "value": "CQD",
+        "confidence": "confirmed",
+        "source_text": "Disch: CQD SHINC"
+      },
+      "discharging_terms": {
+        "value": "SHINC",
+        "confidence": "confirmed",
+        "source_text": "Disch: CQD SHINC"
+      },
+      "discharging_working_hours": null,
+      "demurrage_rate": null,
+      "demurrage_payment": null,
+      "despatch_rate": null,
+      "load_port_agent": null,
+      "disch_port_agent": null,
+      "vessel_dwt": null,
+      "vessel_draft": null,
+      "vessel_geared": {
+        "value": true,
+        "confidence": "interpreted",
+        "source_text": "Geared vessel preferred"
+      },
+      "cp_form": {
+        "value": "GENCON",
+        "confidence": "interpreted",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "arbitration": null,
+      "law": null,
+      "commission": {
+        "value": "3.75% TTL GENCON",
+        "confidence": "confirmed",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "commission_percent": {
+        "value": 3.75,
+        "confidence": "confirmed",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "commission_address_pct": null,
+      "commission_broker_pct": null,
+      "commission_base": {
+        "value": "freight",
+        "confidence": "interpreted",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "commission_amount": null,
+      "commission_broker_amount": null,
+      "commission_address_amount": null,
+      "commission_currency": null,
+      "subs": [],
+      "acknowledgement_deadline": null,
+      "confidentiality": false,
+      "additional_terms": [
+        "1 safe berth, always afloat always accessible — load port: Ain Sokhna, Egypt",
+        "1 safe berth, always afloat always accessible — disch port: Misurata, Libya",
+        "ADA WOG — All Details About, Without Guarantee (vessel/cargo details subject to confirmation)"
+      ],
+      "unknown_terms": [
+        {
+          "term": "CARGO QUANTITY = 0 mts",
+          "context": "Cargo quantity is stated as '0 mts bagged cement' — this is almost certainly a placeholder or template substitution error. The actual cargo quantity is missing and requires broker/charterer clarification before any valid offer can be made."
+        },
+        {
+          "term": "LAYCAN UNRESOLVED",
+          "context": "Laycan is expressed as template placeholders '{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}' — the actual laycan dates were not substituted. This is a critical missing field for any offer."
+        },
+        {
+          "term": "INNER_DATE UNRESOLVED",
+          "context": "Email date header contains template placeholder '{{INNER_DATE}}' — the actual send date was not substituted. Cannot determine when this inquiry was issued."
+        },
+        {
+          "term": "Gcn",
+          "context": "'Gcn 3.75% TTL' — interpreted as GENCON charter party form with 3.75% total commission. 'Gcn' is an informal abbreviation for GENCON not listed in standard glossary; flagged for confirmation."
+        }
+      ]
+    }
+  },
+  "cargo-sample-05": {
+    "parse-vessel": {
+      "items": []
+    },
+    "parse-recap": {
+      "vessel_name": null,
+      "vessel_yob": null,
+      "vessel_flag": null,
+      "owners": null,
+      "charterers": {
+        "value": "Genova Machinery Exports (Demo)",
+        "confidence": "interpreted",
+        "source_text": "From: Genova Machinery Exports (Demo) <chartering@genmach-demo.it>"
+      },
+      "account": null,
+      "broker": "m.ferretti@medbrokers-demo.it",
+      "load_port": {
+        "value": "Genoa, Italy",
+        "confidence": "confirmed",
+        "source_text": "Load: Genoa, Italy (1 sb, sp aaaa)"
+      },
+      "disch_port": {
+        "value": "Casablanca, Morocco",
+        "confidence": "confirmed",
+        "source_text": "Disch: Casablanca, Morocco (1 sb, sp aaaa)"
+      },
+      "cargo_description": {
+        "value": "General machinery / industrial equipment",
+        "confidence": "confirmed",
+        "source_text": "Cargo: 5,000 mts general machinery / industrial equipment"
+      },
+      "cargo_quantity_min": {
+        "value": 5000,
+        "confidence": "confirmed",
+        "source_text": "Cargo: 5,000 mts general machinery / industrial equipment"
+      },
+      "cargo_quantity_max": {
+        "value": 5000,
+        "confidence": "confirmed",
+        "source_text": "Cargo: 5,000 mts general machinery / industrial equipment"
+      },
+      "cargo_packaging": {
+        "value": "general cargo / break-bulk (heavy-lift pieces up to approximately 80mt)",
+        "confidence": "interpreted",
+        "source_text": "Heavy-lift geared vessel required (max piece abt 80mt)"
+      },
+      "laycan": {
+        "value": "{{LAYCAN_END}}-{{LAYCAN_START}} {{LAYCAN_MONTH}} — NOTE: template placeholders not resolved; laycan dates are unset",
+        "confidence": "uncertain",
+        "source_text": "Laycan: {{LAYCAN_END}}-{{LAYCAN_START}} {{LAYCAN_MONTH}}"
+      },
+      "transit_time": null,
+      "freight_rate": null,
+      "freight_basis": {
+        "value": "FIOST both ends",
+        "confidence": "confirmed",
+        "source_text": "FIOST both ends"
+      },
+      "freight_payment": null,
+      "loading_rate": {
+        "value": "CQD",
+        "confidence": "confirmed",
+        "source_text": "Loading: CQD SHINC"
+      },
+      "loading_terms": {
+        "value": "SHINC",
+        "confidence": "confirmed",
+        "source_text": "Loading: CQD SHINC"
+      },
+      "loading_working_hours": null,
+      "discharging_rate": {
+        "value": "CQD",
+        "confidence": "confirmed",
+        "source_text": "Disch: CQD SHINC"
+      },
+      "discharging_terms": {
+        "value": "SHINC",
+        "confidence": "confirmed",
+        "source_text": "Disch: CQD SHINC"
+      },
+      "discharging_working_hours": null,
+      "demurrage_rate": null,
+      "demurrage_payment": null,
+      "despatch_rate": null,
+      "load_port_agent": null,
+      "disch_port_agent": null,
+      "vessel_dwt": null,
+      "vessel_draft": null,
+      "vessel_geared": {
+        "value": true,
+        "confidence": "confirmed",
+        "source_text": "Heavy-lift geared vessel required (max piece abt 80mt)"
+      },
+      "cp_form": {
+        "value": "GENCON",
+        "confidence": "interpreted",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "arbitration": null,
+      "law": null,
+      "commission": {
+        "value": "3.75% TTL (GENCON)",
+        "confidence": "confirmed",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "commission_percent": {
+        "value": 3.75,
+        "confidence": "confirmed",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "commission_address_pct": null,
+      "commission_broker_pct": null,
+      "commission_base": {
+        "value": "freight",
+        "confidence": "interpreted",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "commission_amount": null,
+      "commission_broker_amount": null,
+      "commission_address_amount": null,
+      "commission_currency": null,
+      "subs": [
+        {
+          "value": "ADA WOG — all details about, without guarantee; no explicit deadline stated",
+          "confidence": "confirmed",
+          "source_text": "ADA WOG"
+        }
+      ],
+      "acknowledgement_deadline": null,
+      "confidentiality": false,
+      "additional_terms": [
+        "1 safe berth, safe port, always accessible always afloat — load port Genoa",
+        "1 safe berth, safe port, always accessible always afloat — discharge port Casablanca",
+        "Heavy-lift geared vessel required — max piece approximately 80mt",
+        "This is a cargo enquiry / offer request ('ploffer'), not a fixed recap — freight rate, demurrage, vessel details and other terms are not yet agreed"
+      ],
+      "unknown_terms": [
+        {
+          "term": "ploffer",
+          "context": "Pls ploffer for below cargo — likely a typo or colloquial contraction of 'please offer' or 'please provide offer'; not a standard chartering abbreviation"
+        },
+        {
+          "term": "{{LAYCAN_END}}, {{LAYCAN_START}}, {{LAYCAN_MONTH}}",
+          "context": "Laycan: {{LAYCAN_END}}-{{LAYCAN_START}} {{LAYCAN_MONTH}} — unresolved template placeholders; actual laycan dates are missing and must be supplied before this enquiry can be acted upon"
+        },
+        {
+          "term": "{{INNER_DATE}}",
+          "context": "Date: {{INNER_DATE}} — unresolved template placeholder; message date is unknown"
+        }
+      ]
+    }
+  },
+  "cargo-sample-06": {
+    "parse-vessel": {
+      "items": []
+    }
+  },
+  "cargo-sample-07": {
+    "parse-vessel": {
+      "items": []
+    },
+    "parse-cargo": {
+      "items": [
+        {
+          "origin_port": {
+            "value": "Marseille (Fos-sur-Mer terminal)",
+            "confidence": "confirmed",
+            "source_text": "Load: Marseille, France (Fos-sur-Mer terminal, 1 sb, sp aaaa)"
+          },
+          "origin_country": {
+            "value": "France",
+            "confidence": "confirmed",
+            "source_text": "Load: Marseille, France (Fos-sur-Mer terminal, 1 sb, sp aaaa)"
+          },
+          "destination_port": {
+            "value": "Tin-Can Island, Lagos",
+            "confidence": "confirmed",
+            "source_text": "Disch: Tin-Can Island, Lagos, Nigeria (1 sb, sp aaaa)"
+          },
+          "destination_country": {
+            "value": "Nigeria",
+            "confidence": "confirmed",
+            "source_text": "Disch: Tin-Can Island, Lagos, Nigeria (1 sb, sp aaaa)"
+          },
+          "cargo_description": {
+            "value": "Newsprint / paper reels in rolls, SF 1.70, max roll diameter 1.2m, max roll weight 5mt",
+            "confidence": "confirmed",
+            "source_text": "Cargo: 6,500 mts newsprint / paper reels in rolls, SF 1.70\n       max roll diameter 1.2m, max roll weight 5mt"
+          },
+          "cargo_origin_country": null,
+          "weight_mt": {
+            "value": 6500,
+            "confidence": "confirmed",
+            "source_text": "Cargo: 6,500 mts newsprint / paper reels in rolls"
+          },
+          "weight_mt_min": {
+            "value": 6500,
+            "confidence": "confirmed",
+            "source_text": "Cargo: 6,500 mts newsprint / paper reels in rolls"
+          },
+          "weight_mt_max": {
+            "value": 6500,
+            "confidence": "confirmed",
+            "source_text": "Cargo: 6,500 mts newsprint / paper reels in rolls"
+          },
+          "volume_cbm": null,
+          "dimensions": {
+            "value": "max roll diameter 1.2m, max roll weight 5mt",
+            "confidence": "confirmed",
+            "source_text": "max roll diameter 1.2m, max roll weight 5mt"
+          },
+          "cargo_type": {
+            "value": "BREAK_BULK",
+            "confidence": "confirmed",
+            "source_text": "newsprint / paper reels in rolls, SF 1.70\n       max roll diameter 1.2m, max roll weight 5mt"
+          },
+          "container_type": null,
+          "quantity": null,
+          "incoterms": null,
+          "preferred_dates": null,
+          "laycan": {
+            "value": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}",
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+          },
+          "loading_rate": {
+            "value": 3000,
+            "confidence": "confirmed",
+            "source_text": "Loading: 3,000 mts SHINC"
+          },
+          "loading_terms": {
+            "value": "FIOST SHINC",
+            "confidence": "interpreted",
+            "source_text": "Loading: 3,000 mts SHINC\nFIOST both ends"
+          },
+          "discharge_rate": {
+            "value": 2000,
+            "confidence": "confirmed",
+            "source_text": "Disch: 2,000 mts SSHEX EIU"
+          },
+          "discharge_terms": {
+            "value": "FIOST SSHEX EIU",
+            "confidence": "interpreted",
+            "source_text": "Disch: 2,000 mts SSHEX EIU\nFIOST both ends"
+          },
+          "commission_percent": {
+            "value": 3.75,
+            "confidence": "confirmed",
+            "source_text": "Gcn 3.75% TTL"
+          },
+          "commission_terms": {
+            "value": "TTL (GENCON form, all details about, without guarantee)",
+            "confidence": "interpreted",
+            "source_text": "Gcn 3.75% TTL\nADA WOG"
+          },
+          "special_requirements": {
+            "value": [
+              "Geared vessel required",
+              "Tween deck preferred",
+              "1 safe berth each end, always accessible always afloat (1 sb, sp aaaa) at load and discharge",
+              "Stowage factor 1.70 CBM/MT",
+              "Max roll diameter 1.2m",
+              "Max individual roll weight 5mt",
+              "Charter party: GENCON form (Gcn)",
+              "ADA WOG — all details about, without guarantee"
+            ],
+            "confidence": "confirmed",
+            "source_text": "Geared vessel required (tween deck preferred)\n(Fos-sur-Mer terminal, 1 sb, sp aaaa)\n(1 sb, sp aaaa)\nSF 1.70\nmax roll diameter 1.2m, max roll weight 5mt\nGcn 3.75% TTL\nADA WOG"
+          },
+          "stowage_factor": {
+            "value": 1.7,
+            "confidence": "confirmed",
+            "source_text": "SF 1.70"
+          },
+          "missing_info": [
+            "Laycan dates are template placeholders ({{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}) — actual dates not provided",
+            "Freight rate / freight basis not indicated (voyage charter assumed from GENCON reference)",
+            "Incoterms not stated",
+            "Demurrage / despatch rate not specified"
+          ],
+          "unknown_terms": [
+            "sp aaaa — 'sp' is unrecognised in this context (possibly 'single port' or abbreviation for a specific terminal condition; 'aaaa' = Always Accessible Always Afloat is known)"
+          ]
+        }
+      ]
+    }
+  },
+  "cargo-sample-08": {
+    "parse-vessel": {
+      "items": []
+    },
+    "parse-cargo": {
+      "items": [
+        {
+          "origin_port": {
+            "value": "Jebel Ali",
+            "confidence": "confirmed",
+            "source_text": "from jebel ali"
+          },
+          "origin_country": {
+            "value": "United Arab Emirates",
+            "confidence": "interpreted",
+            "source_text": "from jebel ali"
+          },
+          "destination_port": {
+            "value": "Lagos",
+            "confidence": "confirmed",
+            "source_text": "to lagos"
+          },
+          "destination_country": {
+            "value": "Nigeria",
+            "confidence": "interpreted",
+            "source_text": "to lagos"
+          },
+          "cargo_description": {
+            "value": "Steel",
+            "confidence": "confirmed",
+            "source_text": "eight thousand mt steel"
+          },
+          "cargo_origin_country": null,
+          "weight_mt": {
+            "value": 8000,
+            "confidence": "confirmed",
+            "source_text": "eight thousand mt steel"
+          },
+          "weight_mt_min": 8000,
+          "weight_mt_max": 8000,
+          "volume_cbm": null,
+          "dimensions": null,
+          "cargo_type": {
+            "value": "BREAK_BULK",
+            "confidence": "uncertain",
+            "source_text": "eight thousand mt steel"
+          },
+          "container_type": null,
+          "quantity": null,
+          "incoterms": null,
+          "preferred_dates": null,
+          "laycan": {
+            "value": null,
+            "confidence": "uncertain",
+            "source_text": "laycan uh {{LAYCAN_RANGE}}"
+          },
+          "loading_rate": null,
+          "loading_terms": null,
+          "discharge_rate": null,
+          "discharge_terms": null,
+          "commission_percent": null,
+          "commission_terms": null,
+          "special_requirements": [
+            "Geared vessel required"
+          ],
+          "stowage_factor": null,
+          "missing_info": [
+            "Laycan dates not provided — placeholder '{{LAYCAN_RANGE}}' was not filled in",
+            "Steel sub-type not specified (coils, plates, pipes, billets, scrap, etc.) — affects cargo_type classification and stowage requirements",
+            "Incoterms not stated",
+            "Loading and discharge terms (FIO, CQD, etc.) not specified",
+            "Freight rate indication or basis not provided",
+            "Contact details incomplete — only first name 'Ahmed' given"
+          ]
+        }
+      ]
+    }
+  },
+  "cargo-sample-09": {
+    "parse-vessel": {
+      "items": []
+    },
+    "parse-cargo": {
+      "items": [
+        {
+          "origin_port": {
+            "value": "Aqaba",
+            "confidence": "confirmed",
+            "source_text": "Load: Aqaba, Jordan (1 sb, sp aaaa)"
+          },
+          "origin_country": {
+            "value": "Jordan",
+            "confidence": "confirmed",
+            "source_text": "Load: Aqaba, Jordan (1 sb, sp aaaa)"
+          },
+          "destination_port": {
+            "value": "Mersin",
+            "confidence": "confirmed",
+            "source_text": "Disch: Mersin, Turkey (1 sb, sp aaaa)"
+          },
+          "destination_country": {
+            "value": "Turkey",
+            "confidence": "confirmed",
+            "source_text": "Disch: Mersin, Turkey (1 sb, sp aaaa)"
+          },
+          "cargo_description": {
+            "value": "Urea fertilizer, granular, bulk",
+            "confidence": "confirmed",
+            "source_text": "Cargo: 9,500 mts urea fertilizer (granular, bulk), SF 1.25"
+          },
+          "cargo_origin_country": {
+            "value": null
+          },
+          "weight_mt": {
+            "value": 9500,
+            "confidence": "confirmed",
+            "source_text": "Cargo: 9,500 mts urea fertilizer (granular, bulk), SF 1.25"
+          },
+          "weight_mt_min": 9500,
+          "weight_mt_max": 9500,
+          "volume_cbm": null,
+          "dimensions": null,
+          "cargo_type": {
+            "value": "BULK",
+            "confidence": "confirmed",
+            "source_text": "Cargo: 9,500 mts urea fertilizer (granular, bulk), SF 1.25"
+          },
+          "container_type": null,
+          "quantity": null,
+          "incoterms": null,
+          "preferred_dates": {
+            "value": null,
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+          },
+          "laycan": {
+            "value": null,
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+          },
+          "loading_rate": {
+            "value": 3000,
+            "confidence": "confirmed",
+            "source_text": "Loading: 3,000 mts SHINC"
+          },
+          "loading_terms": {
+            "value": "FIOST SHINC",
+            "confidence": "interpreted",
+            "source_text": "Loading: 3,000 mts SHINC\nFIOST both ends"
+          },
+          "discharge_rate": {
+            "value": 2500,
+            "confidence": "confirmed",
+            "source_text": "Disch: 2,500 mts SHINC"
+          },
+          "discharge_terms": {
+            "value": "FIOST SHINC",
+            "confidence": "interpreted",
+            "source_text": "Disch: 2,500 mts SHINC\nFIOST both ends"
+          },
+          "commission_percent": {
+            "value": 2.5,
+            "confidence": "confirmed",
+            "source_text": "Gcn 2.5% TTL"
+          },
+          "commission_terms": {
+            "value": "TTL (GENCON form)",
+            "confidence": "interpreted",
+            "source_text": "Gcn 2.5% TTL"
+          },
+          "special_requirements": {
+            "value": [
+              "Geared vessel preferred (shore cranes available at load and discharge)",
+              "1 safe berth, safe port, always accessible always afloat at both load and discharge ports",
+              "Subject to stem + owners approval",
+              "ADA WOG — all details about, without guarantee",
+              "Reply required within 24 hours of firm offer"
+            ],
+            "confidence": "confirmed",
+            "source_text": "Geared vessel preferred (shore cranes available at load/disch)\nLoad: Aqaba, Jordan (1 sb, sp aaaa)\nDisch: Mersin, Turkey (1 sb, sp aaaa)\nNB: Subs required: stem + owners approval. Charterers require reply within 24h of firm offer.\nADA WOG"
+          },
+          "stowage_factor": {
+            "value": 1.25,
+            "confidence": "confirmed",
+            "source_text": "Cargo: 9,500 mts urea fertilizer (granular, bulk), SF 1.25"
+          },
+          "missing_info": [
+            "Laycan dates not resolved — email contains unrendered template placeholders: {{LAYCAN_START}}, {{LAYCAN_END}}, {{LAYCAN_MONTH}}",
+            "Freight rate not specified (offer requested — 'pls ploffer')",
+            "Charter party form not specified (Gcn suggests GENCON but not explicitly stated)",
+            "Demurrage / despatch rates not specified",
+            "No tolerance on cargo quantity stated (no MOLOO/MOLCHOPT)"
+          ],
+          "unknown_terms": [
+            "ploffer (likely 'please offer' — informal/typo, not a standard shipping abbreviation)"
+          ]
+        }
+      ]
+    },
+    "parse-recap": {
+      "vessel_name": null,
+      "vessel_yob": null,
+      "vessel_flag": null,
+      "owners": null,
+      "charterers": {
+        "value": "Royal Jordanian Phosphate (Demo)",
+        "confidence": "confirmed",
+        "source_text": "Royal Jordanian Phosphate (Demo) <chartering@rjphosphate-demo.jo>"
+      },
+      "account": null,
+      "broker": "f.alkhatib@aqababrokers-demo.jo",
+      "load_port": {
+        "value": "Aqaba, Jordan",
+        "confidence": "confirmed",
+        "source_text": "Load: Aqaba, Jordan (1 sb, sp aaaa)"
+      },
+      "disch_port": {
+        "value": "Mersin, Turkey",
+        "confidence": "confirmed",
+        "source_text": "Disch: Mersin, Turkey (1 sb, sp aaaa)"
+      },
+      "cargo_description": {
+        "value": "Urea fertilizer, granular, bulk, stowage factor 1.25",
+        "confidence": "confirmed",
+        "source_text": "Cargo: 9,500 mts urea fertilizer (granular, bulk), SF 1.25"
+      },
+      "cargo_quantity_min": {
+        "value": 9500,
+        "confidence": "confirmed",
+        "source_text": "9,500 mts urea fertilizer"
+      },
+      "cargo_quantity_max": {
+        "value": 9500,
+        "confidence": "confirmed",
+        "source_text": "9,500 mts urea fertilizer"
+      },
+      "cargo_packaging": {
+        "value": "bulk",
+        "confidence": "confirmed",
+        "source_text": "urea fertilizer (granular, bulk)"
+      },
+      "laycan": {
+        "value": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}",
+        "confidence": "confirmed",
+        "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+      },
+      "transit_time": null,
+      "freight_rate": null,
+      "freight_basis": {
+        "value": "FIOST both ends",
+        "confidence": "confirmed",
+        "source_text": "FIOST both ends"
+      },
+      "freight_payment": null,
+      "loading_rate": {
+        "value": 3000,
+        "confidence": "confirmed",
+        "source_text": "Loading: 3,000 mts SHINC"
+      },
+      "loading_terms": {
+        "value": "SHINC",
+        "confidence": "confirmed",
+        "source_text": "Loading: 3,000 mts SHINC"
+      },
+      "loading_working_hours": null,
+      "discharging_rate": {
+        "value": 2500,
+        "confidence": "confirmed",
+        "source_text": "Disch: 2,500 mts SHINC"
+      },
+      "discharging_terms": {
+        "value": "SHINC",
+        "confidence": "confirmed",
+        "source_text": "Disch: 2,500 mts SHINC"
+      },
+      "discharging_working_hours": null,
+      "demurrage_rate": null,
+      "demurrage_payment": null,
+      "despatch_rate": null,
+      "load_port_agent": null,
+      "disch_port_agent": null,
+      "vessel_dwt": null,
+      "vessel_draft": null,
+      "vessel_geared": {
+        "value": true,
+        "confidence": "interpreted",
+        "source_text": "Geared vessel preferred (shore cranes available at load/disch)"
+      },
+      "cp_form": {
+        "value": "GENCON",
+        "confidence": "interpreted",
+        "source_text": "Gcn 2.5% TTL"
+      },
+      "arbitration": null,
+      "law": null,
+      "commission": {
+        "value": "Gcn 2.5% TTL",
+        "confidence": "confirmed",
+        "source_text": "Gcn 2.5% TTL"
+      },
+      "commission_percent": {
+        "value": 2.5,
+        "confidence": "confirmed",
+        "source_text": "Gcn 2.5% TTL"
+      },
+      "commission_address_pct": null,
+      "commission_broker_pct": null,
+      "commission_base": {
+        "value": "freight",
+        "confidence": "interpreted",
+        "source_text": "Gcn 2.5% TTL"
+      },
+      "commission_amount": null,
+      "commission_broker_amount": null,
+      "commission_address_amount": null,
+      "commission_currency": null,
+      "subs": [
+        {
+          "value": "Subject to stem and owners approval — within 24 hours of firm offer",
+          "confidence": "confirmed",
+          "source_text": "Subs required: stem + owners approval. Charterers require reply within 24h of firm offer."
+        }
+      ],
+      "acknowledgement_deadline": "within 24 hours of firm offer",
+      "confidentiality": false,
+      "additional_terms": [
+        "1 safe berth, always safely afloat always accessible at load port: Aqaba, Jordan",
+        "1 safe berth, always safely afloat always accessible at discharge port: Mersin, Turkey",
+        "ADA WOG — All Details About, Without Guarantee",
+        "Geared vessel preferred; shore cranes available at both load and discharge ports"
+      ],
+      "unknown_terms": [
+        {
+          "term": "ploffer",
+          "context": "Pls ploffer for below cargo — appears to be a typographical error for 'please offer' or 'please proffer'; not a recognised chartering abbreviation"
+        },
+        {
+          "term": "DATE_CONFLICT",
+          "context": "Email inner date is '{{INNER_DATE}}' and laycan is '{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}' — these are unfilled template placeholders. Actual dates must be confirmed before this recap is operationally valid."
+        }
+      ]
+    }
+  },
+  "cargo-sample-10": {
+    "parse-vessel": {
+      "items": []
+    },
+    "parse-cargo": {
+      "items": [
+        {
+          "origin_port": {
+            "value": "Mariupol",
+            "confidence": "confirmed",
+            "source_text": "Load: Mariupol, Ukraine (1 sb, sp aaaa)"
+          },
+          "origin_country": {
+            "value": "Ukraine",
+            "confidence": "confirmed",
+            "source_text": "Load: Mariupol, Ukraine (1 sb, sp aaaa)"
+          },
+          "destination_port": {
+            "value": "Constanta",
+            "confidence": "confirmed",
+            "source_text": "Disch: Constanta, Romania (1 sb, sp aaaa)"
+          },
+          "destination_country": {
+            "value": "Romania",
+            "confidence": "confirmed",
+            "source_text": "Disch: Constanta, Romania (1 sb, sp aaaa)"
+          },
+          "cargo_description": {
+            "value": "Steel slabs",
+            "confidence": "confirmed",
+            "source_text": "Cargo: 18,000 mts steel slabs, SF 0.35"
+          },
+          "cargo_origin_country": null,
+          "weight_mt": {
+            "value": 18000,
+            "confidence": "confirmed",
+            "source_text": "Cargo: 18,000 mts steel slabs, SF 0.35"
+          },
+          "weight_mt_min": 18000,
+          "weight_mt_max": 18000,
+          "volume_cbm": null,
+          "dimensions": null,
+          "cargo_type": {
+            "value": "BREAK_BULK",
+            "confidence": "confirmed",
+            "source_text": "Cargo: 18,000 mts steel slabs, SF 0.35"
+          },
+          "container_type": null,
+          "quantity": null,
+          "incoterms": null,
+          "preferred_dates": null,
+          "laycan": {
+            "value": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}",
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+          },
+          "loading_rate": {
+            "value": "5000 MT/day SHINC",
+            "confidence": "confirmed",
+            "source_text": "Loading: 5,000 mts SHINC"
+          },
+          "loading_terms": {
+            "value": "FIOST SHINC",
+            "confidence": "confirmed",
+            "source_text": "Loading: 5,000 mts SHINC\nFIOST both ends"
+          },
+          "discharge_rate": {
+            "value": "6000 MT/day SHINC",
+            "confidence": "confirmed",
+            "source_text": "Disch: 6,000 mts SHINC"
+          },
+          "discharge_terms": {
+            "value": "FIOST SHINC",
+            "confidence": "confirmed",
+            "source_text": "Disch: 6,000 mts SHINC\nFIOST both ends"
+          },
+          "commission_percent": {
+            "value": 3.75,
+            "confidence": "confirmed",
+            "source_text": "Gcn 3.75% TTL"
+          },
+          "commission_terms": {
+            "value": "TTL (GENCON form)",
+            "confidence": "interpreted",
+            "source_text": "Gcn 3.75% TTL"
+          },
+          "special_requirements": {
+            "value": [
+              "1 safe berth, safe port, always accessible always afloat at load port: (1 sb, sp aaaa)",
+              "1 safe berth, safe port, always accessible always afloat at discharge port: (1 sb, sp aaaa)",
+              "Gearless vessel acceptable",
+              "ADA WOG — All Details About, Without Guarantee (offer basis)"
+            ],
+            "confidence": "confirmed",
+            "source_text": "Load: Mariupol, Ukraine (1 sb, sp aaaa)\nDisch: Constanta, Romania (1 sb, sp aaaa)\nGearless vessel acceptable\nADA WOG"
+          },
+          "stowage_factor": {
+            "value": 0.35,
+            "confidence": "confirmed",
+            "source_text": "Cargo: 18,000 mts steel slabs, SF 0.35"
+          },
+          "missing_info": [
+            "Laycan dates contain unresolved template placeholders ({{LAYCAN_START}}, {{LAYCAN_END}}, {{LAYCAN_MONTH}}) — actual dates required",
+            "Freight rate / freight basis not specified",
+            "Incoterms not stated",
+            "No demurrage / despatch rate specified"
+          ],
+          "unknown_terms": []
+        }
+      ]
+    },
+    "parse-recap": {
+      "vessel_name": null,
+      "vessel_yob": null,
+      "vessel_flag": null,
+      "owners": null,
+      "charterers": {
+        "value": "Azov Steel Exports (Demo)",
+        "confidence": "confirmed",
+        "source_text": "From: Azov Steel Exports (Demo) <chartering@azovsteel-demo.ua>"
+      },
+      "account": null,
+      "broker": "Azov Brokers (Demo)",
+      "load_port": {
+        "value": "Mariupol, Ukraine",
+        "confidence": "confirmed",
+        "source_text": "Load: Mariupol, Ukraine (1 sb, sp aaaa)"
+      },
+      "disch_port": {
+        "value": "Constanta, Romania",
+        "confidence": "confirmed",
+        "source_text": "Disch: Constanta, Romania (1 sb, sp aaaa)"
+      },
+      "cargo_description": {
+        "value": "Steel slabs, stowage factor 0.35 m³/MT",
+        "confidence": "confirmed",
+        "source_text": "Cargo: 18,000 mts steel slabs, SF 0.35"
+      },
+      "cargo_quantity_min": {
+        "value": 18000,
+        "confidence": "confirmed",
+        "source_text": "Cargo: 18,000 mts steel slabs, SF 0.35"
+      },
+      "cargo_quantity_max": {
+        "value": 18000,
+        "confidence": "confirmed",
+        "source_text": "Cargo: 18,000 mts steel slabs, SF 0.35"
+      },
+      "cargo_packaging": {
+        "value": "bulk / break-bulk (steel slabs)",
+        "confidence": "interpreted",
+        "source_text": "Cargo: 18,000 mts steel slabs, SF 0.35"
+      },
+      "laycan": {
+        "value": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}",
+        "confidence": "confirmed",
+        "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+      },
+      "transit_time": null,
+      "freight_rate": null,
+      "freight_basis": {
+        "value": "FIOST both ends",
+        "confidence": "confirmed",
+        "source_text": "FIOST both ends"
+      },
+      "freight_payment": null,
+      "loading_rate": {
+        "value": 5000,
+        "confidence": "confirmed",
+        "source_text": "Loading: 5,000 mts SHINC"
+      },
+      "loading_terms": {
+        "value": "SHINC",
+        "confidence": "confirmed",
+        "source_text": "Loading: 5,000 mts SHINC"
+      },
+      "loading_working_hours": null,
+      "discharging_rate": {
+        "value": 6000,
+        "confidence": "confirmed",
+        "source_text": "Disch: 6,000 mts SHINC"
+      },
+      "discharging_terms": {
+        "value": "SHINC",
+        "confidence": "confirmed",
+        "source_text": "Disch: 6,000 mts SHINC"
+      },
+      "discharging_working_hours": null,
+      "demurrage_rate": null,
+      "demurrage_payment": null,
+      "despatch_rate": null,
+      "load_port_agent": null,
+      "disch_port_agent": null,
+      "vessel_dwt": null,
+      "vessel_draft": null,
+      "vessel_geared": {
+        "value": false,
+        "confidence": "confirmed",
+        "source_text": "Gearless vessel acceptable"
+      },
+      "cp_form": {
+        "value": "GENCON",
+        "confidence": "confirmed",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "arbitration": null,
+      "law": null,
+      "commission": {
+        "value": "3.75% TTL on GENCON terms",
+        "confidence": "confirmed",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "commission_percent": {
+        "value": 3.75,
+        "confidence": "confirmed",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "commission_address_pct": null,
+      "commission_broker_pct": null,
+      "commission_base": {
+        "value": "freight",
+        "confidence": "interpreted",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "commission_amount": null,
+      "commission_broker_amount": null,
+      "commission_address_amount": null,
+      "commission_currency": null,
+      "subs": [
+        {
+          "value": "ADA WOG — All Details About, Without Guarantee; no fixed deadline stated",
+          "confidence": "confirmed",
+          "source_text": "ADA WOG"
+        }
+      ],
+      "acknowledgement_deadline": null,
+      "confidentiality": false,
+      "additional_terms": [
+        "1 safe berth, always accessible always afloat — load port: Mariupol",
+        "1 safe berth, always accessible always afloat — discharge port: Constanta",
+        "Gearless vessel acceptable",
+        "ADA WOG — All Details About, Without Guarantee (indicative enquiry, no cargo/vessel guarantee)"
+      ],
+      "unknown_terms": [
+        {
+          "term": "{{LAYCAN_START}}, {{LAYCAN_END}}, {{LAYCAN_MONTH}}",
+          "context": "Laycan dates contain unfilled template placeholders — actual laycan dates not provided. Human review required."
+        },
+        {
+          "term": "{{INNER_DATE}}",
+          "context": "Email date contains an unfilled template placeholder — actual date of communication unknown."
+        }
+      ]
+    }
+  },
+  "cargo-sample-11": {
+    "parse-recap": {
+      "vessel_name": null,
+      "vessel_yob": null,
+      "vessel_flag": null,
+      "owners": null,
+      "charterers": {
+        "value": "Black Sea Grains (Demo)",
+        "confidence": "confirmed",
+        "source_text": "Black Sea Grains (Demo) <chartering@bsgrains-demo.ua>"
+      },
+      "account": null,
+      "broker": "d.petrenko@blacksea-brokers-demo.ua",
+      "load_port": {
+        "value": "Mykolaiv, Ukraine; Constanta, Romania",
+        "confidence": "confirmed",
+        "source_text": "Load port 1: Mykolaiv, Ukraine (7,000 mts wheat)\nLoad port 2: Constanta, Romania (5,000 mts corn)"
+      },
+      "disch_port": {
+        "value": "Misurata, Libya",
+        "confidence": "confirmed",
+        "source_text": "Disch: Misurata, Libya (1 sb, sp aaaa)"
+      },
+      "cargo_description": {
+        "value": "Grain bulk — wheat (7,000 MT ex Mykolaiv) and corn (5,000 MT ex Constanta)",
+        "confidence": "confirmed",
+        "source_text": "Total cargo: 12,000 mts grain bulk (split 7,000 + 5,000)"
+      },
+      "cargo_quantity_min": {
+        "value": 12000,
+        "confidence": "confirmed",
+        "source_text": "Total cargo: 12,000 mts grain bulk (split 7,000 + 5,000)"
+      },
+      "cargo_quantity_max": {
+        "value": 12000,
+        "confidence": "confirmed",
+        "source_text": "Total cargo: 12,000 mts grain bulk (split 7,000 + 5,000)"
+      },
+      "cargo_packaging": {
+        "value": "bulk",
+        "confidence": "confirmed",
+        "source_text": "12,000 mts grain bulk"
+      },
+      "laycan": {
+        "value": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}} (both load ports)",
+        "confidence": "confirmed",
+        "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}} (both load ports)"
+      },
+      "transit_time": null,
+      "freight_rate": null,
+      "freight_basis": {
+        "value": "FIOST both ends",
+        "confidence": "confirmed",
+        "source_text": "FIOST both ends"
+      },
+      "freight_payment": null,
+      "loading_rate": {
+        "value": 3000,
+        "confidence": "confirmed",
+        "source_text": "Loading: 3,000 mts SHINC per port"
+      },
+      "loading_terms": {
+        "value": "SHINC",
+        "confidence": "confirmed",
+        "source_text": "Loading: 3,000 mts SHINC per port"
+      },
+      "loading_working_hours": null,
+      "discharging_rate": {
+        "value": 2500,
+        "confidence": "confirmed",
+        "source_text": "Disch: 2,500 mts SHINC"
+      },
+      "discharging_terms": {
+        "value": "SHINC",
+        "confidence": "confirmed",
+        "source_text": "Disch: 2,500 mts SHINC"
+      },
+      "discharging_working_hours": null,
+      "demurrage_rate": null,
+      "demurrage_payment": null,
+      "despatch_rate": null,
+      "load_port_agent": null,
+      "disch_port_agent": null,
+      "vessel_dwt": null,
+      "vessel_draft": null,
+      "vessel_geared": {
+        "value": false,
+        "confidence": "confirmed",
+        "source_text": "Gearless Handysize/Supramax acceptable"
+      },
+      "cp_form": {
+        "value": "GENCON",
+        "confidence": "interpreted",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "arbitration": null,
+      "law": null,
+      "commission": {
+        "value": "3.75% TTL GENCON",
+        "confidence": "confirmed",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "commission_percent": {
+        "value": 3.75,
+        "confidence": "confirmed",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "commission_address_pct": null,
+      "commission_broker_pct": null,
+      "commission_base": {
+        "value": "freight",
+        "confidence": "interpreted",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "commission_amount": null,
+      "commission_broker_amount": null,
+      "commission_address_amount": null,
+      "commission_currency": null,
+      "subs": [],
+      "acknowledgement_deadline": null,
+      "confidentiality": false,
+      "additional_terms": [
+        "1 safe berth, safe port, always accessible always afloat at Misurata discharge — source: 'Disch: Misurata, Libya (1 sb, sp aaaa)'",
+        "ADA WOG — All Details About, Without Guarantee (cargo/vessel details indicative, not guaranteed) — source: 'ADA WOG'",
+        "This is a cargo enquiry/offer request ('ploffer'), not a concluded fixture recap. No vessel nominated; freight rate not yet agreed."
+      ],
+      "unknown_terms": [
+        {
+          "term": "ploffer",
+          "context": "Used in 'Pls ploffer for below cargo' — likely a portmanteau of 'please offer' or 'pro-forma offer'; not a standard BIMCO/chartering abbreviation. Possibly colloquial/regional usage."
+        },
+        {
+          "term": "{{INNER_DATE}}",
+          "context": "Template placeholder — actual email date not populated. Date of fixture is unknown."
+        },
+        {
+          "term": "{{LAYCAN_START}}, {{LAYCAN_END}}, {{LAYCAN_MONTH}}",
+          "context": "Template placeholders — actual laycan dates not populated. Laycan window cannot be determined."
+        }
+      ]
+    },
+    "parse-cargo": {
+      "items": [
+        {
+          "origin_port": {
+            "value": "Mykolaiv",
+            "confidence": "confirmed",
+            "source_text": "Load port 1: Mykolaiv, Ukraine (7,000 mts wheat)"
+          },
+          "origin_country": {
+            "value": "Ukraine",
+            "confidence": "confirmed",
+            "source_text": "Load port 1: Mykolaiv, Ukraine (7,000 mts wheat)"
+          },
+          "destination_port": {
+            "value": "Misurata",
+            "confidence": "confirmed",
+            "source_text": "Disch: Misurata, Libya (1 sb, sp aaaa)"
+          },
+          "destination_country": {
+            "value": "Libya",
+            "confidence": "confirmed",
+            "source_text": "Disch: Misurata, Libya (1 sb, sp aaaa)"
+          },
+          "cargo_description": {
+            "value": "Wheat, bulk",
+            "confidence": "confirmed",
+            "source_text": "Load port 1: Mykolaiv, Ukraine (7,000 mts wheat)"
+          },
+          "cargo_origin_country": {
+            "value": null
+          },
+          "weight_mt": {
+            "value": 7000,
+            "confidence": "confirmed",
+            "source_text": "Load port 1: Mykolaiv, Ukraine (7,000 mts wheat)"
+          },
+          "weight_mt_min": 7000,
+          "weight_mt_max": 7000,
+          "volume_cbm": null,
+          "dimensions": null,
+          "cargo_type": {
+            "value": "BULK",
+            "confidence": "confirmed",
+            "source_text": "12,000 mts grain bulk (split 7,000 + 5,000)"
+          },
+          "container_type": null,
+          "quantity": null,
+          "incoterms": null,
+          "preferred_dates": null,
+          "laycan": {
+            "value": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}} (both load ports)",
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}} (both load ports)"
+          },
+          "loading_rate": {
+            "value": 3000,
+            "confidence": "confirmed",
+            "source_text": "Loading: 3,000 mts SHINC per port"
+          },
+          "loading_terms": {
+            "value": "FIOST SHINC",
+            "confidence": "interpreted",
+            "source_text": "Loading: 3,000 mts SHINC per port\nFIOST both ends"
+          },
+          "discharge_rate": {
+            "value": 2500,
+            "confidence": "confirmed",
+            "source_text": "Disch: 2,500 mts SHINC"
+          },
+          "discharge_terms": {
+            "value": "FIOST SHINC",
+            "confidence": "interpreted",
+            "source_text": "Disch: 2,500 mts SHINC\nFIOST both ends"
+          },
+          "commission_percent": {
+            "value": 3.75,
+            "confidence": "confirmed",
+            "source_text": "Gcn 3.75% TTL"
+          },
+          "commission_terms": {
+            "value": "TTL BENDS (GENCON form)",
+            "confidence": "interpreted",
+            "source_text": "Gcn 3.75% TTL"
+          },
+          "special_requirements": {
+            "value": [
+              "Gearless Handysize or Supramax vessel acceptable",
+              "Discharge berth: 1 safe berth, single port, always accessible always afloat (1 sb, sp aaaa)",
+              "ADA WOG — All Details About, Without Guarantee (subject to further confirmation)"
+            ],
+            "confidence": "confirmed",
+            "source_text": "Gearless Handysize/Supramax acceptable\nDisch: Misurata, Libya (1 sb, sp aaaa)\nADA WOG"
+          },
+          "stowage_factor": null,
+          "missing_info": [
+            "Laycan dates are template placeholders ({{LAYCAN_START}}, {{LAYCAN_END}}, {{LAYCAN_MONTH}}) — actual dates not provided",
+            "Freight rate not stated (offer requested: 'Pls ploffer')",
+            "Demurrage / despatch rates not specified",
+            "No vessel name or vessel position provided",
+            "Incoterms not specified"
+          ]
+        },
+        {
+          "origin_port": {
+            "value": "Constanta",
+            "confidence": "confirmed",
+            "source_text": "Load port 2: Constanta, Romania (5,000 mts corn)"
+          },
+          "origin_country": {
+            "value": "Romania",
+            "confidence": "confirmed",
+            "source_text": "Load port 2: Constanta, Romania (5,000 mts corn)"
+          },
+          "destination_port": {
+            "value": "Misurata",
+            "confidence": "confirmed",
+            "source_text": "Disch: Misurata, Libya (1 sb, sp aaaa)"
+          },
+          "destination_country": {
+            "value": "Libya",
+            "confidence": "confirmed",
+            "source_text": "Disch: Misurata, Libya (1 sb, sp aaaa)"
+          },
+          "cargo_description": {
+            "value": "Corn (maize), bulk",
+            "confidence": "confirmed",
+            "source_text": "Load port 2: Constanta, Romania (5,000 mts corn)"
+          },
+          "cargo_origin_country": {
+            "value": null
+          },
+          "weight_mt": {
+            "value": 5000,
+            "confidence": "confirmed",
+            "source_text": "Load port 2: Constanta, Romania (5,000 mts corn)"
+          },
+          "weight_mt_min": 5000,
+          "weight_mt_max": 5000,
+          "volume_cbm": null,
+          "dimensions": null,
+          "cargo_type": {
+            "value": "BULK",
+            "confidence": "confirmed",
+            "source_text": "12,000 mts grain bulk (split 7,000 + 5,000)"
+          },
+          "container_type": null,
+          "quantity": null,
+          "incoterms": null,
+          "preferred_dates": null,
+          "laycan": {
+            "value": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}} (both load ports)",
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}} (both load ports)"
+          },
+          "loading_rate": {
+            "value": 3000,
+            "confidence": "confirmed",
+            "source_text": "Loading: 3,000 mts SHINC per port"
+          },
+          "loading_terms": {
+            "value": "FIOST SHINC",
+            "confidence": "interpreted",
+            "source_text": "Loading: 3,000 mts SHINC per port\nFIOST both ends"
+          },
+          "discharge_rate": {
+            "value": 2500,
+            "confidence": "confirmed",
+            "source_text": "Disch: 2,500 mts SHINC"
+          },
+          "discharge_terms": {
+            "value": "FIOST SHINC",
+            "confidence": "interpreted",
+            "source_text": "Disch: 2,500 mts SHINC\nFIOST both ends"
+          },
+          "commission_percent": {
+            "value": 3.75,
+            "confidence": "confirmed",
+            "source_text": "Gcn 3.75% TTL"
+          },
+          "commission_terms": {
+            "value": "TTL BENDS (GENCON form)",
+            "confidence": "interpreted",
+            "source_text": "Gcn 3.75% TTL"
+          },
+          "special_requirements": {
+            "value": [
+              "Gearless Handysize or Supramax vessel acceptable",
+              "Discharge berth: 1 safe berth, single port, always accessible always afloat (1 sb, sp aaaa)",
+              "ADA WOG — All Details About, Without Guarantee (subject to further confirmation)",
+              "Split load voyage: this is cargo leg 2 of 2 (Constanta after Mykolaiv)"
+            ],
+            "confidence": "confirmed",
+            "source_text": "Gearless Handysize/Supramax acceptable\nDisch: Misurata, Libya (1 sb, sp aaaa)\nADA WOG\nTotal cargo: 12,000 mts grain bulk (split 7,000 + 5,000)"
+          },
+          "stowage_factor": null,
+          "missing_info": [
+            "Laycan dates are template placeholders ({{LAYCAN_START}}, {{LAYCAN_END}}, {{LAYCAN_MONTH}}) — actual dates not provided",
+            "Freight rate not stated (offer requested: 'Pls ploffer')",
+            "Demurrage / despatch rates not specified",
+            "No vessel name or vessel position provided",
+            "Incoterms not specified"
+          ]
+        }
+      ]
+    }
+  },
+  "cargo-sample-12": {
+    "classify": {
+      "classifications": [
+        {
+          "id": null,
+          "category": "CARGO_INQUIRY",
+          "urgency": "high",
+          "confidence": 0.93,
+          "is_unanswered": true,
+          "days_without_reply": null,
+          "original_sender": "Iskenderun Pipe Exports (Demo)",
+          "original_sender_company": "Iskenderun Pipe Exports (Demo)"
+        }
+      ]
+    },
+    "parse-vessel": {
+      "items": []
+    },
+    "parse-recap": {
+      "vessel_name": null,
+      "vessel_yob": null,
+      "vessel_flag": null,
+      "owners": null,
+      "charterers": {
+        "value": "Iskenderun Pipe Exports (Demo)",
+        "confidence": "confirmed",
+        "source_text": "From: Iskenderun Pipe Exports (Demo) <chartering@iskpipe-demo.tr>"
+      },
+      "account": null,
+      "broker": "Iskenderun Brokers (Demo)",
+      "load_port": {
+        "value": "Iskenderun, Turkey",
+        "confidence": "confirmed",
+        "source_text": "Load: Iskenderun, Turkey (1 sb, sp aaaa)"
+      },
+      "disch_port": {
+        "value": "Casablanca, Morocco",
+        "confidence": "confirmed",
+        "source_text": "Disch: Casablanca, Morocco (1 sb, sp aaaa)"
+      },
+      "cargo_description": {
+        "value": "Steel pipes (SAWL/LSAW), stowage factor 2.80",
+        "confidence": "confirmed",
+        "source_text": "Cargo: 5,500 mts steel pipes (SAWL/LSAW), SF 2.80"
+      },
+      "cargo_quantity_min": {
+        "value": 5500,
+        "confidence": "confirmed",
+        "source_text": "Cargo: 5,500 mts steel pipes (SAWL/LSAW), SF 2.80"
+      },
+      "cargo_quantity_max": {
+        "value": 5500,
+        "confidence": "confirmed",
+        "source_text": "Cargo: 5,500 mts steel pipes (SAWL/LSAW), SF 2.80"
+      },
+      "cargo_packaging": {
+        "value": "bulk / loose pipes",
+        "confidence": "interpreted",
+        "source_text": "steel pipes (SAWL/LSAW), SF 2.80"
+      },
+      "laycan": {
+        "value": "10–15 January 2025",
+        "confidence": "confirmed",
+        "source_text": "Laycan: 10-15 Jan 2025"
+      },
+      "transit_time": null,
+      "freight_rate": null,
+      "freight_basis": {
+        "value": "FIOST both ends",
+        "confidence": "confirmed",
+        "source_text": "FIOST both ends"
+      },
+      "freight_payment": null,
+      "loading_rate": {
+        "value": "CQD",
+        "confidence": "confirmed",
+        "source_text": "Loading: CQD SHINC"
+      },
+      "loading_terms": {
+        "value": "SHINC",
+        "confidence": "confirmed",
+        "source_text": "Loading: CQD SHINC"
+      },
+      "loading_working_hours": null,
+      "discharging_rate": {
+        "value": "CQD",
+        "confidence": "confirmed",
+        "source_text": "Disch: CQD SHINC"
+      },
+      "discharging_terms": {
+        "value": "SHINC",
+        "confidence": "confirmed",
+        "source_text": "Disch: CQD SHINC"
+      },
+      "discharging_working_hours": null,
+      "demurrage_rate": null,
+      "demurrage_payment": null,
+      "despatch_rate": null,
+      "load_port_agent": null,
+      "disch_port_agent": null,
+      "vessel_dwt": null,
+      "vessel_draft": null,
+      "vessel_geared": {
+        "value": true,
+        "confidence": "confirmed",
+        "source_text": "Geared vessel required"
+      },
+      "cp_form": {
+        "value": "GENCON",
+        "confidence": "interpreted",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "arbitration": null,
+      "law": null,
+      "commission": {
+        "value": "3.75% TTL on GENCON basis",
+        "confidence": "confirmed",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "commission_percent": {
+        "value": 3.75,
+        "confidence": "confirmed",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "commission_address_pct": null,
+      "commission_broker_pct": null,
+      "commission_base": {
+        "value": "freight",
+        "confidence": "interpreted",
+        "source_text": "Gcn 3.75% TTL"
+      },
+      "commission_amount": null,
+      "commission_broker_amount": null,
+      "commission_address_amount": null,
+      "commission_currency": null,
+      "subs": [],
+      "acknowledgement_deadline": null,
+      "confidentiality": false,
+      "additional_terms": [
+        "1 safe berth, safe port, always accessible always afloat — load port: Iskenderun, Turkey",
+        "1 safe berth, safe port, always accessible always afloat — discharge port: Casablanca, Morocco",
+        "ADA WOG — All Details About, Without Guarantee (vessel to be nominated)"
+      ],
+      "unknown_terms": [
+        {
+          "term": "ploffer",
+          "context": "Pls ploffer for below cargo — likely a typographical error for 'please offer' or 'please look for offer'; not a recognised chartering abbreviation"
+        }
+      ]
+    },
+    "parse-cargo": {
+      "items": [
+        {
+          "origin_port": {
+            "value": "Iskenderun",
+            "confidence": "confirmed",
+            "source_text": "Load: Iskenderun, Turkey (1 sb, sp aaaa)"
+          },
+          "origin_country": {
+            "value": "Turkey",
+            "confidence": "confirmed",
+            "source_text": "Load: Iskenderun, Turkey (1 sb, sp aaaa)"
+          },
+          "destination_port": {
+            "value": "Casablanca",
+            "confidence": "confirmed",
+            "source_text": "Disch: Casablanca, Morocco (1 sb, sp aaaa)"
+          },
+          "destination_country": {
+            "value": "Morocco",
+            "confidence": "confirmed",
+            "source_text": "Disch: Casablanca, Morocco (1 sb, sp aaaa)"
+          },
+          "cargo_description": {
+            "value": "Steel pipes (SAWL/LSAW), Stowage Factor 2.80 CBM/MT",
+            "confidence": "confirmed",
+            "source_text": "Cargo: 5,500 mts steel pipes (SAWL/LSAW), SF 2.80"
+          },
+          "cargo_origin_country": null,
+          "weight_mt": {
+            "value": 5500,
+            "confidence": "confirmed",
+            "source_text": "5,500 mts steel pipes (SAWL/LSAW), SF 2.80"
+          },
+          "weight_mt_min": {
+            "value": 5500,
+            "confidence": "confirmed",
+            "source_text": "5,500 mts steel pipes (SAWL/LSAW), SF 2.80"
+          },
+          "weight_mt_max": {
+            "value": 5500,
+            "confidence": "confirmed",
+            "source_text": "5,500 mts steel pipes (SAWL/LSAW), SF 2.80"
+          },
+          "volume_cbm": {
+            "value": 15400,
+            "confidence": "interpreted",
+            "source_text": "5,500 mts steel pipes (SAWL/LSAW), SF 2.80"
+          },
+          "dimensions": null,
+          "cargo_type": {
+            "value": "BREAK_BULK",
+            "confidence": "confirmed",
+            "source_text": "5,500 mts steel pipes (SAWL/LSAW), SF 2.80"
+          },
+          "container_type": null,
+          "quantity": null,
+          "incoterms": null,
+          "preferred_dates": null,
+          "laycan": {
+            "value": "10-15 Jan 2025",
+            "confidence": "confirmed",
+            "source_text": "Laycan: 10-15 Jan 2025"
+          },
+          "loading_rate": null,
+          "loading_terms": {
+            "value": "CQD SHINC / FIOST",
+            "confidence": "confirmed",
+            "source_text": "Loading: CQD SHINC\nFIOST both ends"
+          },
+          "discharge_rate": null,
+          "discharge_terms": {
+            "value": "CQD SHINC / FIOST",
+            "confidence": "confirmed",
+            "source_text": "Disch: CQD SHINC\nFIOST both ends"
+          },
+          "commission_percent": {
+            "value": 3.75,
+            "confidence": "confirmed",
+            "source_text": "Gcn 3.75% TTL"
+          },
+          "commission_terms": {
+            "value": "TTL BENDS (Gencon form)",
+            "confidence": "confirmed",
+            "source_text": "Gcn 3.75% TTL"
+          },
+          "special_requirements": {
+            "value": [
+              "Geared vessel required",
+              "1 safe berth, safe port, always accessible always afloat at load port",
+              "1 safe berth, safe port, always accessible always afloat at discharge port",
+              "ADA WOG — All Details About, Without Guarantee (fixture subject to final details and no guarantee on cargo)"
+            ],
+            "confidence": "confirmed",
+            "source_text": "Load: Iskenderun, Turkey (1 sb, sp aaaa)\nDisch: Casablanca, Morocco (1 sb, sp aaaa)\nGeared vessel required\nADA WOG"
+          },
+          "stowage_factor": {
+            "value": 2.8,
+            "confidence": "confirmed",
+            "source_text": "SF 2.80"
+          },
+          "missing_info": [
+            "Freight rate/offer not specified (inquiry requests offer — 'pls ploffer')",
+            "Incoterms not stated (FOB, CIF, CFR, etc.)",
+            "Bill of lading / freight payment terms not stated",
+            "Vessel size/DWT preference not specified (only geared requirement given)",
+            "Demurrage/despatch rate not stated — CQD applies but no demurrage figure given"
+          ]
+        }
+      ]
+    }
+  },
+  "recap-sample-21": {
+    "parse-cargo": {
+      "items": [
+        {
+          "origin_port": {
+            "value": "Constanta",
+            "confidence": "confirmed",
+            "source_text": "Load port: Constanta, Romania (ROCND) - 1SB AAAA"
+          },
+          "origin_country": {
+            "value": "Romania",
+            "confidence": "confirmed",
+            "source_text": "Load port: Constanta, Romania (ROCND) - 1SB AAAA"
+          },
+          "destination_port": {
+            "value": "Ravenna",
+            "confidence": "confirmed",
+            "source_text": "Disch port: Ravenna, Italy (ITRAN) - 1SB AARA"
+          },
+          "destination_country": {
+            "value": "Italy",
+            "confidence": "confirmed",
+            "source_text": "Disch port: Ravenna, Italy (ITRAN) - 1SB AARA"
+          },
+          "cargo_description": {
+            "value": "Steel billets",
+            "confidence": "confirmed",
+            "source_text": "Cargo: abt 6,500 / 7,000 mts steel billets"
+          },
+          "cargo_origin_country": null,
+          "weight_mt": {
+            "value": 7000,
+            "confidence": "interpreted",
+            "source_text": "Cargo: abt 6,500 / 7,000 mts steel billets"
+          },
+          "weight_mt_min": {
+            "value": 6500,
+            "confidence": "interpreted",
+            "source_text": "Cargo: abt 6,500 / 7,000 mts steel billets"
+          },
+          "weight_mt_max": {
+            "value": 7000,
+            "confidence": "interpreted",
+            "source_text": "Cargo: abt 6,500 / 7,000 mts steel billets"
+          },
+          "volume_cbm": null,
+          "dimensions": null,
+          "cargo_type": {
+            "value": "BREAK_BULK",
+            "confidence": "confirmed",
+            "source_text": "Cargo: abt 6,500 / 7,000 mts steel billets"
+          },
+          "container_type": null,
+          "quantity": null,
+          "incoterms": null,
+          "preferred_dates": null,
+          "laycan": {
+            "value": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}",
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+          },
+          "loading_rate": {
+            "value": 3000,
+            "confidence": "confirmed",
+            "source_text": "Loading rate: 3,000 mts SHINC"
+          },
+          "loading_terms": {
+            "value": "FIOST SHINC",
+            "confidence": "confirmed",
+            "source_text": "Freight: USD 18.50/mt FIOST\nLoading rate: 3,000 mts SHINC"
+          },
+          "discharge_rate": {
+            "value": 2000,
+            "confidence": "confirmed",
+            "source_text": "Disch rate: 2,000 mts SHINC"
+          },
+          "discharge_terms": {
+            "value": "FIOST SHINC",
+            "confidence": "confirmed",
+            "source_text": "Freight: USD 18.50/mt FIOST\nDisch rate: 2,000 mts SHINC"
+          },
+          "commission_percent": {
+            "value": 3.75,
+            "confidence": "confirmed",
+            "source_text": "Commission: 3.75% TTL on F/D/D"
+          },
+          "commission_terms": {
+            "value": "TTL on F/D/D",
+            "confidence": "confirmed",
+            "source_text": "Commission: 3.75% TTL on F/D/D"
+          },
+          "special_requirements": {
+            "value": [
+              "Load port: 1 Safe Berth, Always Accessible Always Afloat (1SB AAAA)",
+              "Discharge port: 1 Safe Berth, Always Accessible Reachable on Arrival (1SB AARA)",
+              "Demurrage: USD 6,500 PDPR / Full Despatch both ends",
+              "Despatch: half despatch on laytime saved (50% of demurrage rate on time saved)",
+              "Subjects: stem + owners approval within 2 banking days from recap date",
+              "CP Form: GENCON 94, English Law, London Arbitration"
+            ],
+            "confidence": "confirmed",
+            "source_text": "Load port: Constanta, Romania (ROCND) - 1SB AAAA\nDisch port: Ravenna, Italy (ITRAN) - 1SB AARA\nDemurrage: USD 6,500 PDPR / FD BENDS\nDespatch: half despatch on laytime saved (50% of demurrage rate on time saved)\nSubs: stem + owners approval within 2 banking days from recap date\nCP Form: GENCON 94"
+          },
+          "stowage_factor": null,
+          "missing_info": [
+            "Laycan dates contain unresolved template placeholders ({{LAYCAN_START}}, {{LAYCAN_END}}, {{LAYCAN_MONTH}}) — actual dates not populated",
+            "Inner email date is a template placeholder ({{INNER_DATE}}) — actual fixture date unknown",
+            "Freight rate basis confirmed (USD 18.50/mt FIOST) but total freight amount not calculable until exact cargo quantity confirmed (subject to stem)"
+          ],
+          "unknown_terms": []
+        }
+      ]
+    },
+    "parse-vessel": {
+      "items": [
+        {
+          "vessel_name": {
+            "value": "MV DANUBE PIONEER",
+            "confidence": "confirmed",
+            "source_text": "Vessel: MV DANUBE PIONEER (Demo)"
+          },
+          "imo": null,
+          "flag": {
+            "value": "Marshall Islands",
+            "confidence": "confirmed",
+            "source_text": "Flag: Marshall Islands"
+          },
+          "built": {
+            "value": 2011,
+            "confidence": "confirmed",
+            "source_text": "Built: 2011"
+          },
+          "class_society": null,
+          "p_and_i": null,
+          "dwt_summer": {
+            "value": 8500,
+            "confidence": "confirmed",
+            "source_text": "DWT: 8,500 mts"
+          },
+          "dwcc": null,
+          "draft_max": null,
+          "loa": null,
+          "beam": null,
+          "grt": null,
+          "nrt": null,
+          "holds_count": null,
+          "hatches_count": null,
+          "grain_capacity": null,
+          "grain_capacity_unit": null,
+          "bale_capacity": null,
+          "hold_dimensions": [],
+          "hatch_dimensions": [],
+          "tank_top_strength": null,
+          "geared": null,
+          "crane_capacity": null,
+          "hatch_type": null,
+          "vessel_type": null,
+          "cii_rating": null,
+          "open_position": {
+            "value": "Constanta, Romania",
+            "confidence": "interpreted",
+            "source_text": "Load port: Constanta, Romania (ROCND) - 1SB AAAA"
+          },
+          "open_date": {
+            "value": {
+              "open": null,
+              "close": null,
+              "display": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+            },
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+          },
+          "direction": {
+            "value": "Constanta to Ravenna",
+            "confidence": "confirmed",
+            "source_text": "Load port: Constanta, Romania (ROCND) - 1SB AAAA\nDisch port: Ravenna, Italy (ITRAN) - 1SB AARA"
+          },
+          "restrictions": [],
+          "last_cargoes": null,
+          "speed_laden": null,
+          "speed_ballast": null,
+          "consumption": null,
+          "deck_capacity": null,
+          "special_features": [],
+          "unknown_terms": [
+            {
+              "term": "AARA",
+              "reason": "AARA — 'Always Accessible Reachable on Arrival'; while listed in the glossary as a port availability clause, confirming recognition."
+            },
+            {
+              "term": "FD BENDS",
+              "reason": "FD BENDS — 'Full Dispatch Both Ends'; FD (Full Dispatch) is in glossary but 'BENDS' as a suffix to FD in this demurrage/despatch context (meaning both load and discharge ends) is not explicitly defined in the glossary as a standalone compound term."
+            }
+          ]
+        }
+      ]
+    },
+    "parse-recap": {
+      "vessel_name": {
+        "value": "MV DANUBE PIONEER",
+        "confidence": "confirmed",
+        "source_text": "Vessel: MV DANUBE PIONEER (Demo)"
+      },
+      "vessel_yob": {
+        "value": 2011,
+        "confidence": "confirmed",
+        "source_text": "Built: 2011, Flag: Marshall Islands"
+      },
+      "vessel_flag": {
+        "value": "Marshall Islands",
+        "confidence": "confirmed",
+        "source_text": "Built: 2011, Flag: Marshall Islands"
+      },
+      "owners": {
+        "value": "Pioneer Maritime SA (Demo)",
+        "confidence": "confirmed",
+        "source_text": "Owners: Pioneer Maritime SA (Demo)"
+      },
+      "charterers": {
+        "value": "Transmar Breakbulk Trading (Demo)",
+        "confidence": "confirmed",
+        "source_text": "Charterers: Transmar Breakbulk Trading (Demo)"
+      },
+      "account": {
+        "value": "same as Charterers",
+        "confidence": "confirmed",
+        "source_text": "Account: same as Charterers"
+      },
+      "broker": "Transmar Breakbulk Chartering <chartering@transmar-bb.com>",
+      "load_port": {
+        "value": "Constanta, Romania",
+        "confidence": "confirmed",
+        "source_text": "Load port: Constanta, Romania (ROCND) - 1SB AAAA"
+      },
+      "disch_port": {
+        "value": "Ravenna, Italy",
+        "confidence": "confirmed",
+        "source_text": "Disch port: Ravenna, Italy (ITRAN) - 1SB AARA"
+      },
+      "cargo_description": {
+        "value": "steel billets",
+        "confidence": "confirmed",
+        "source_text": "Cargo: abt 6,500 / 7,000 mts steel billets"
+      },
+      "cargo_quantity_min": {
+        "value": 6500,
+        "confidence": "confirmed",
+        "source_text": "Cargo: abt 6,500 / 7,000 mts steel billets"
+      },
+      "cargo_quantity_max": {
+        "value": 7000,
+        "confidence": "confirmed",
+        "source_text": "Cargo: abt 6,500 / 7,000 mts steel billets"
+      },
+      "cargo_packaging": {
+        "value": null
+      },
+      "laycan": {
+        "value": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}",
+        "confidence": "confirmed",
+        "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+      },
+      "transit_time": {
+        "value": null
+      },
+      "freight_rate": {
+        "value": 18.5,
+        "confidence": "confirmed",
+        "source_text": "Freight: USD 18.50/mt FIOST"
+      },
+      "freight_basis": {
+        "value": "FIOST",
+        "confidence": "confirmed",
+        "source_text": "Freight: USD 18.50/mt FIOST"
+      },
+      "freight_payment": {
+        "value": null
+      },
+      "loading_rate": {
+        "value": 3000,
+        "confidence": "confirmed",
+        "source_text": "Loading rate: 3,000 mts SHINC"
+      },
+      "loading_terms": {
+        "value": "SHINC",
+        "confidence": "confirmed",
+        "source_text": "Loading rate: 3,000 mts SHINC"
+      },
+      "loading_working_hours": {
+        "value": null
+      },
+      "discharging_rate": {
+        "value": 2000,
+        "confidence": "confirmed",
+        "source_text": "Disch rate: 2,000 mts SHINC"
+      },
+      "discharging_terms": {
+        "value": "SHINC",
+        "confidence": "confirmed",
+        "source_text": "Disch rate: 2,000 mts SHINC"
+      },
+      "discharging_working_hours": {
+        "value": null
+      },
+      "demurrage_rate": {
+        "value": 6500,
+        "confidence": "confirmed",
+        "source_text": "Demurrage: USD 6,500 PDPR / FD BENDS"
+      },
+      "demurrage_payment": {
+        "value": "Per Day Pro Rata (PDPR), Full Despatch both ends (FD BENDS)",
+        "confidence": "interpreted",
+        "source_text": "Demurrage: USD 6,500 PDPR / FD BENDS"
+      },
+      "despatch_rate": {
+        "value": 3250,
+        "confidence": "interpreted",
+        "source_text": "Despatch: half despatch on laytime saved (50% of demurrage rate on time saved)"
+      },
+      "load_port_agent": {
+        "value": null
+      },
+      "disch_port_agent": {
+        "value": null
+      },
+      "vessel_dwt": {
+        "value": 8500,
+        "confidence": "confirmed",
+        "source_text": "DWT: 8,500 mts"
+      },
+      "vessel_draft": {
+        "value": null
+      },
+      "vessel_geared": {
+        "value": null
+      },
+      "cp_form": {
+        "value": "GENCON 94",
+        "confidence": "confirmed",
+        "source_text": "CP Form: GENCON 94"
+      },
+      "arbitration": {
+        "value": "London",
+        "confidence": "confirmed",
+        "source_text": "Arbitration: London"
+      },
+      "law": {
+        "value": "English",
+        "confidence": "confirmed",
+        "source_text": "Governing Law: English"
+      },
+      "commission": {
+        "value": "3.75% TTL on F/D/D",
+        "confidence": "confirmed",
+        "source_text": "Commission: 3.75% TTL on F/D/D"
+      },
+      "commission_percent": {
+        "value": 3.75,
+        "confidence": "confirmed",
+        "source_text": "Commission: 3.75% TTL on F/D/D"
+      },
+      "commission_address_pct": {
+        "value": null
+      },
+      "commission_broker_pct": {
+        "value": null
+      },
+      "commission_base": {
+        "value": "Freight, Demurrage and Defence (F/D/D)",
+        "confidence": "confirmed",
+        "source_text": "Commission: 3.75% TTL on F/D/D"
+      },
+      "commission_amount": {
+        "value": null,
+        "confidence": "uncertain",
+        "source_text": "Cargo: abt 6,500 / 7,000 mts steel billets"
+      },
+      "commission_broker_amount": {
+        "value": null
+      },
+      "commission_address_amount": {
+        "value": null
+      },
+      "commission_currency": {
+        "value": "USD",
+        "confidence": "interpreted",
+        "source_text": "Freight: USD 18.50/mt FIOST"
+      },
+      "subs": [
+        {
+          "value": "Stem + owners approval — within 2 banking days from recap date",
+          "confidence": "confirmed",
+          "source_text": "Subs: stem + owners approval within 2 banking days from recap date"
+        }
+      ],
+      "acknowledgement_deadline": {
+        "value": "immediate confirmation requested — 'Pls confirm all in order'",
+        "confidence": "interpreted",
+        "source_text": "Pls confirm all in order."
+      },
+      "confidentiality": false,
+      "additional_terms": [
+        "Load port berth condition: 1SB AAAA (Constanta)",
+        "Disch port berth condition: 1SB AARA (Ravenna)",
+        "All other terms GENCON 94 as amended.",
+        "Despatch: half despatch on laytime saved (50% of demurrage rate on time saved)"
+      ],
+      "unknown_terms": [
+        {
+          "term": "FD BENDS",
+          "context": "Demurrage: USD 6,500 PDPR / FD BENDS — 'FD BENDS' likely means Full Despatch Both Ends, but 'FD' in the demurrage line (rather than despatch line) is atypical; the despatch clause separately confirms half-despatch at 50% — these two clauses appear contradictory. FD BENDS on the demurrage line may intend to qualify PDPR application at both ends, or may be a drafting error. Flagged for broker verification."
+        },
+        {
+          "term": "LAYCAN_TEMPLATE_TOKENS",
+          "context": "Laycan fields contain unresolved template placeholders: {{LAYCAN_START}}, {{LAYCAN_END}}, {{LAYCAN_MONTH}} — actual laycan dates were not substituted before transmission. Broker must confirm actual laycan window."
+        },
+        {
+          "term": "INNER_DATE",
+          "context": "Email date field contains unresolved template placeholder: {{INNER_DATE}} — actual date of fixture recap email is unknown."
+        }
+      ]
+    }
+  },
+  "recap-sample-22": {
+    "parse-cargo": {
+      "items": [
+        {
+          "origin_port": {
+            "value": "Aqaba",
+            "confidence": "confirmed",
+            "source_text": "Load port: Aqaba, Jordan (JOAQB) - 1SB AAAA"
+          },
+          "origin_country": {
+            "value": "Jordan",
+            "confidence": "confirmed",
+            "source_text": "Load port: Aqaba, Jordan (JOAQB) - 1SB AAAA"
+          },
+          "destination_port": {
+            "value": "Mersin",
+            "confidence": "confirmed",
+            "source_text": "Disch port: Mersin, Turkey (TRMER) - 1SB AAAA"
+          },
+          "destination_country": {
+            "value": "Turkey",
+            "confidence": "confirmed",
+            "source_text": "Disch port: Mersin, Turkey (TRMER) - 1SB AAAA"
+          },
+          "cargo_description": {
+            "value": "Urea fertilizer in bulk",
+            "confidence": "confirmed",
+            "source_text": "Cargo: abt 9,500 mts urea fertilizer in bulk"
+          },
+          "cargo_origin_country": null,
+          "weight_mt": {
+            "value": 9500,
+            "confidence": "interpreted",
+            "source_text": "Cargo: abt 9,500 mts urea fertilizer in bulk"
+          },
+          "weight_mt_min": null,
+          "weight_mt_max": null,
+          "volume_cbm": null,
+          "dimensions": null,
+          "cargo_type": {
+            "value": "BULK",
+            "confidence": "confirmed",
+            "source_text": "urea fertilizer in bulk"
+          },
+          "container_type": null,
+          "quantity": null,
+          "incoterms": null,
+          "preferred_dates": {
+            "value": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}",
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+          },
+          "laycan": {
+            "value": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}",
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+          },
+          "loading_rate": {
+            "value": 4000,
+            "confidence": "confirmed",
+            "source_text": "Loading rate: 4,000 mts SHINC"
+          },
+          "loading_terms": {
+            "value": "FIOST SHINC",
+            "confidence": "interpreted",
+            "source_text": "Freight: USD 22.00/mt FIOST\nLoading rate: 4,000 mts SHINC"
+          },
+          "discharge_rate": {
+            "value": 3000,
+            "confidence": "confirmed",
+            "source_text": "Disch rate: 3,000 mts SHINC"
+          },
+          "discharge_terms": {
+            "value": "FIOST SHINC",
+            "confidence": "interpreted",
+            "source_text": "Freight: USD 22.00/mt FIOST\nDisch rate: 3,000 mts SHINC"
+          },
+          "commission_percent": {
+            "value": 2.5,
+            "confidence": "confirmed",
+            "source_text": "Commission: 2.5% TTL on F/D/D"
+          },
+          "commission_terms": {
+            "value": "TTL on F/D/D",
+            "confidence": "confirmed",
+            "source_text": "Commission: 2.5% TTL on F/D/D"
+          },
+          "special_requirements": {
+            "value": [
+              "1 Safe Berth, Always Accessible Always Afloat at both load and discharge ports (1SB AAAA)",
+              "Demurrage: USD 7,500 PDPR / Full Dispatch both ends",
+              "Despatch: half demurrage on laytime saved",
+              "Subs: stem + owners approval within 24h (8h/4h/2h escalation alerts active)",
+              "CP Form: GENCON 94",
+              "Governing Law: English, Arbitration: London"
+            ],
+            "confidence": "confirmed",
+            "source_text": "Load port: Aqaba, Jordan (JOAQB) - 1SB AAAA\nDisch port: Mersin, Turkey (TRMER) - 1SB AAAA\nDemurrage: USD 7,500 PDPR / FD BENDS\nDespatch: half demurrage on laytime saved\nSubs: stem + owners approval within 24h from this recap\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London"
+          },
+          "stowage_factor": null,
+          "missing_info": [
+            "Laycan contains unresolved template placeholders ({{LAYCAN_START}}, {{LAYCAN_END}}, {{LAYCAN_MONTH}}) — actual dates not populated",
+            "Vessel DWT is 12,500 mts but cargo is abt 9,500 mts — vessel utilisation appears low; DWCC not stated, confirm vessel intake vs. cargo quantity",
+            "NOR tendering conditions not specified (WIBON/WIPON/WIFPON/WCCON) — recommend clarifying for demurrage purposes"
+          ]
+        }
+      ]
+    },
+    "parse-vessel": {
+      "items": [
+        {
+          "vessel_name": {
+            "value": "MV DESERT STAR",
+            "confidence": "confirmed",
+            "source_text": "Vessel: MV DESERT STAR (Demo)"
+          },
+          "imo": null,
+          "flag": {
+            "value": "Malta",
+            "confidence": "confirmed",
+            "source_text": "Flag: Malta"
+          },
+          "built": {
+            "value": 2014,
+            "confidence": "confirmed",
+            "source_text": "Built: 2014"
+          },
+          "class_society": null,
+          "p_and_i": null,
+          "dwt_summer": {
+            "value": 12500,
+            "confidence": "confirmed",
+            "source_text": "DWT: 12,500 mts"
+          },
+          "dwcc": null,
+          "draft_max": null,
+          "loa": null,
+          "beam": null,
+          "grt": null,
+          "nrt": null,
+          "holds_count": null,
+          "hatches_count": null,
+          "grain_capacity": null,
+          "grain_capacity_unit": null,
+          "bale_capacity": null,
+          "hold_dimensions": [],
+          "hatch_dimensions": [],
+          "tank_top_strength": null,
+          "geared": null,
+          "crane_capacity": null,
+          "hatch_type": null,
+          "vessel_type": null,
+          "cii_rating": null,
+          "open_position": {
+            "value": "Aqaba, Jordan",
+            "confidence": "interpreted",
+            "source_text": "Load port: Aqaba, Jordan (JOAQB) - 1SB AAAA"
+          },
+          "open_date": {
+            "value": {
+              "open": null,
+              "close": null,
+              "display": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+            },
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+          },
+          "direction": {
+            "value": "Aqaba, Jordan to Mersin, Turkey",
+            "confidence": "confirmed",
+            "source_text": "Load port: Aqaba, Jordan (JOAQB) - 1SB AAAA\nDisch port: Mersin, Turkey (TRMER) - 1SB AAAA"
+          },
+          "restrictions": [],
+          "last_cargoes": {
+            "value": "urea fertilizer in bulk",
+            "confidence": "interpreted",
+            "source_text": "Cargo: abt 9,500 mts urea fertilizer in bulk"
+          },
+          "speed_laden": null,
+          "speed_ballast": null,
+          "consumption": null,
+          "deck_capacity": null,
+          "special_features": [],
+          "unknown_terms": [
+            {
+              "term": "FD BENDS",
+              "reason": "FD (Full Dispatch) is known; BENDS in context of demurrage/despatch terms (rather than commission) is not standard — may mean 'both ends' but unusual in this demurrage clause position; flagged for review"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "recap-sample-23": {
+    "parse-cargo": {
+      "items": [
+        {
+          "origin_port": {
+            "value": "Jebel Ali",
+            "confidence": "confirmed",
+            "source_text": "Load port: Jebel Ali, UAE (AEJEA) - 1SB AAAA"
+          },
+          "origin_country": {
+            "value": "United Arab Emirates",
+            "confidence": "confirmed",
+            "source_text": "Load port: Jebel Ali, UAE (AEJEA) - 1SB AAAA"
+          },
+          "destination_port": {
+            "value": "Dammam",
+            "confidence": "confirmed",
+            "source_text": "Disch port: Dammam, Saudi Arabia (SADMM) - 1SB AAAA"
+          },
+          "destination_country": {
+            "value": "Saudi Arabia",
+            "confidence": "confirmed",
+            "source_text": "Disch port: Dammam, Saudi Arabia (SADMM) - 1SB AAAA"
+          },
+          "cargo_description": {
+            "value": "Machinery / industrial equipment (oversize machinery components qualifying as heavy lift)",
+            "confidence": "confirmed",
+            "source_text": "Cargo: abt 7,500 mts machinery / industrial equipment"
+          },
+          "cargo_origin_country": null,
+          "weight_mt": {
+            "value": 7500,
+            "confidence": "interpreted",
+            "source_text": "Cargo: abt 7,500 mts machinery / industrial equipment"
+          },
+          "weight_mt_min": null,
+          "weight_mt_max": null,
+          "volume_cbm": null,
+          "dimensions": null,
+          "cargo_type": {
+            "value": "BREAK_BULK",
+            "confidence": "confirmed",
+            "source_text": "HEAVYCON used per shipper's request (oversize machinery components qualify as heavy lift)"
+          },
+          "container_type": null,
+          "quantity": null,
+          "incoterms": null,
+          "preferred_dates": null,
+          "laycan": {
+            "value": null,
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+          },
+          "loading_rate": {
+            "value": "4,000 mts/day",
+            "confidence": "confirmed",
+            "source_text": "Loading rate: 4,000 mts FHEX EIU"
+          },
+          "loading_terms": {
+            "value": "FIOST / FHEX EIU",
+            "confidence": "confirmed",
+            "source_text": "Freight: AED 75.00/mt FIOST"
+          },
+          "discharge_rate": {
+            "value": "3,500 mts/day",
+            "confidence": "confirmed",
+            "source_text": "Disch rate: 3,500 mts FHEX EIU"
+          },
+          "discharge_terms": {
+            "value": "FIOST / FHEX EIU",
+            "confidence": "confirmed",
+            "source_text": "Freight: AED 75.00/mt FIOST"
+          },
+          "commission_percent": {
+            "value": 3,
+            "confidence": "confirmed",
+            "source_text": "Commission: 3% TTL on F/D/D"
+          },
+          "commission_terms": {
+            "value": "TTL on F/D/D",
+            "confidence": "confirmed",
+            "source_text": "Commission: 3% TTL on F/D/D"
+          },
+          "special_requirements": [
+            {
+              "value": "HEAVYCON 2007 CP form — oversize machinery components qualifying as heavy lift",
+              "confidence": "confirmed",
+              "source_text": "CP Form: BIMCO HEAVYCON 2007"
+            },
+            {
+              "value": "1 safe berth, always accessible always afloat at both ports",
+              "confidence": "confirmed",
+              "source_text": "Load port: Jebel Ali, UAE (AEJEA) - 1SB AAAA"
+            },
+            {
+              "value": "Demurrage: AED 18,000 PDPR / Full Despatch both ends. No despatch payable under this CP.",
+              "confidence": "confirmed",
+              "source_text": "Demurrage: AED 18,000 PDPR / FD BENDS"
+            },
+            {
+              "value": "Subs: stem + owners approval within 2 banking days from recap date",
+              "confidence": "confirmed",
+              "source_text": "Subs: stem + owners approval within 2 banking days from recap date"
+            },
+            {
+              "value": "FFA freight hedge in place at AED 70.00/mt via Cleartrade Exchange (ref GQ-2026-044); net exposure AED 5.00/mt",
+              "confidence": "confirmed",
+              "source_text": "Freight hedge: FFA position at AED 70.00/mt (locked in via Cleartrade Exchange, hedge ref GQ-2026-044)"
+            },
+            {
+              "value": "Governing Law: English. Arbitration: London LMAA.",
+              "confidence": "confirmed",
+              "source_text": "Governing Law: English\nArbitration: London LMAA"
+            }
+          ],
+          "stowage_factor": null,
+          "missing_info": [
+            "Laycan dates are unfilled template placeholders ({{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}) — actual laycan dates required",
+            "Freight currency is AED — confirm whether USD equivalent or AED settlement is intended for commission/demurrage calculations",
+            "No despatch rate stated (confirmed nil despatch) — confirm this is intentional under the CP"
+          ],
+          "unknown_terms": [
+            "Cleartrade Exchange"
+          ]
+        }
+      ]
+    },
+    "parse-vessel": {
+      "items": [
+        {
+          "vessel_name": {
+            "value": "MV GULF QUEEN",
+            "confidence": "confirmed",
+            "source_text": "Vessel: MV GULF QUEEN (Demo)"
+          },
+          "imo": null,
+          "flag": {
+            "value": "UAE",
+            "confidence": "confirmed",
+            "source_text": "Flag: UAE"
+          },
+          "built": {
+            "value": 2016,
+            "confidence": "confirmed",
+            "source_text": "Built: 2016"
+          },
+          "class_society": null,
+          "p_and_i": null,
+          "dwt_summer": {
+            "value": 15000,
+            "confidence": "confirmed",
+            "source_text": "DWT: 15,000 mts"
+          },
+          "dwcc": null,
+          "draft_max": null,
+          "loa": null,
+          "beam": null,
+          "grt": null,
+          "nrt": null,
+          "holds_count": null,
+          "hatches_count": null,
+          "grain_capacity": null,
+          "grain_capacity_unit": null,
+          "bale_capacity": null,
+          "hold_dimensions": [],
+          "hatch_dimensions": [],
+          "tank_top_strength": null,
+          "geared": null,
+          "crane_capacity": null,
+          "hatch_type": null,
+          "vessel_type": {
+            "value": "GENERAL CARGO / HEAVY LIFT",
+            "confidence": "interpreted",
+            "source_text": "HEAVYCON used per shipper's request (oversize machinery components qualify as heavy lift)"
+          },
+          "cii_rating": null,
+          "open_position": {
+            "value": "Jebel Ali, UAE",
+            "confidence": "interpreted",
+            "source_text": "Load port: Jebel Ali, UAE (AEJEA) - 1SB AAAA"
+          },
+          "open_date": {
+            "value": {
+              "open": null,
+              "close": null,
+              "display": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+            },
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+          },
+          "direction": {
+            "value": "Jebel Ali to Dammam",
+            "confidence": "confirmed",
+            "source_text": "Load port: Jebel Ali, UAE (AEJEA) - 1SB AAAA\nDisch port: Dammam, Saudi Arabia (SADMM) - 1SB AAAA"
+          },
+          "restrictions": [],
+          "last_cargoes": null,
+          "speed_laden": null,
+          "speed_ballast": null,
+          "consumption": null,
+          "deck_capacity": null,
+          "special_features": [],
+          "unknown_terms": [
+            {
+              "term": "HEAVYCON 2007",
+              "note": "BIMCO heavy-lift charter party form — not in glossary"
+            },
+            {
+              "term": "LMAA",
+              "note": "London Maritime Arbitrators Association — arbitration body, not in glossary"
+            },
+            {
+              "term": "Cleartrade Exchange",
+              "note": "FFA / freight derivatives trading platform — not in glossary"
+            },
+            {
+              "term": "FFA",
+              "note": "Forward Freight Agreement — freight derivatives instrument, not in glossary"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "recap-sample-24": {
+    "classify": {
+      "classifications": [
+        {
+          "id": null,
+          "category": "FIXTURE_RECAP",
+          "urgency": "high",
+          "confidence": 0.91,
+          "is_unanswered": true,
+          "days_without_reply": null,
+          "original_sender": "North Britain Steel - Chartering",
+          "original_sender_company": "North Britain Steel (Demo)"
+        }
+      ]
+    },
+    "parse-cargo": {
+      "items": [
+        {
+          "origin_port": {
+            "value": "Iskenderun",
+            "confidence": "confirmed",
+            "source_text": "Load port: Iskenderun, Turkey (TRIZK) - 1SB AAAA"
+          },
+          "origin_country": {
+            "value": "Turkey",
+            "confidence": "confirmed",
+            "source_text": "Load port: Iskenderun, Turkey (TRIZK) - 1SB AAAA"
+          },
+          "destination_port": {
+            "value": "Liverpool",
+            "confidence": "confirmed",
+            "source_text": "Disch port: Liverpool, UK (GBLIV) - 1SB AAAA"
+          },
+          "destination_country": {
+            "value": "United Kingdom",
+            "confidence": "confirmed",
+            "source_text": "Disch port: Liverpool, UK (GBLIV) - 1SB AAAA"
+          },
+          "cargo_description": {
+            "value": "Steel coils, stowage factor 1.15 CBM/MT",
+            "confidence": "confirmed",
+            "source_text": "Cargo: abt 5,800 mts steel coils, SF 1.15"
+          },
+          "cargo_origin_country": {
+            "value": null
+          },
+          "weight_mt": {
+            "value": 5800,
+            "confidence": "interpreted",
+            "source_text": "Cargo: abt 5,800 mts steel coils, SF 1.15"
+          },
+          "weight_mt_min": null,
+          "weight_mt_max": null,
+          "volume_cbm": null,
+          "dimensions": null,
+          "cargo_type": {
+            "value": "BREAK_BULK",
+            "confidence": "confirmed",
+            "source_text": "Cargo: abt 5,800 mts steel coils, SF 1.15"
+          },
+          "container_type": null,
+          "quantity": null,
+          "incoterms": null,
+          "preferred_dates": {
+            "value": "Laycan per {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}} (template placeholders — exact dates not populated)",
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+          },
+          "laycan": {
+            "value": null,
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+          },
+          "loading_rate": {
+            "value": "2,500 MT/day WWD ATUTC",
+            "confidence": "confirmed",
+            "source_text": "Loading rate: 2,500 mts WWD ATUTC"
+          },
+          "loading_terms": {
+            "value": "FIOST",
+            "confidence": "confirmed",
+            "source_text": "Freight: GBP 24.00/mt FIOST"
+          },
+          "discharge_rate": {
+            "value": "2,000 MT/day WWD ATUTC",
+            "confidence": "confirmed",
+            "source_text": "Disch rate: 2,000 mts WWD ATUTC"
+          },
+          "discharge_terms": {
+            "value": "FIOST",
+            "confidence": "confirmed",
+            "source_text": "Freight: GBP 24.00/mt FIOST"
+          },
+          "commission_percent": {
+            "value": 2.5,
+            "confidence": "confirmed",
+            "source_text": "Commission: 2.5% TTL on F/D/D (payable in GBP)"
+          },
+          "commission_terms": {
+            "value": "2.5% TTL on F/D/D, payable in GBP",
+            "confidence": "confirmed",
+            "source_text": "Commission: 2.5% TTL on F/D/D (payable in GBP)"
+          },
+          "special_requirements": {
+            "value": [
+              "1 Safe Berth, Always Accessible Always Afloat — both load and discharge ports (1SB AAAA)",
+              "Demurrage: GBP 5,500 PDPR (Per Day Pro Rata), Full Despatch both ends (FD BENDS)",
+              "Despatch: DATS — Despatch on All Time Saved at half demurrage rate (GBP 2,750/day)",
+              "NOR tendering conditions: NOR validity disputed at load port due to weather objection (swell force 4, NE wind Beaufort 5); NOR ultimately accepted 16:00 LT after port authority confirmed swell subsided — flag for legal/demurrage review under GENCON 94",
+              "CP Form: GENCON 94",
+              "Governing Law: English; Arbitration: London LMAA",
+              "Subs: stem + owners approval within 2 banking days from recap date",
+              "Freight rate: GBP 24.00/mt",
+              "WWD ATUTC applies to both loading and discharge rates"
+            ],
+            "confidence": "confirmed",
+            "source_text": "Demurrage: GBP 5,500 PDPR / FD BENDS\nDespatch: DATS — Despatch on All Time Saved at half demurrage rate (GBP 2,750/day)\nCP Form: GENCON 94\nGoverning Law: English\nArbitration: London LMAA\nSubs: stem + owners approval within 2 banking days from recap date"
+          },
+          "stowage_factor": {
+            "value": 1.15,
+            "confidence": "confirmed",
+            "source_text": "Cargo: abt 5,800 mts steel coils, SF 1.15"
+          },
+          "unknown_terms": [
+            {
+              "term": "WWD ATUTC",
+              "context": "Loading rate: 2,500 mts WWD ATUTC / Disch rate: 2,000 mts WWD ATUTC",
+              "note": "WWD = Weather Working Days is known; ATUTC is not a recognised standard chartering abbreviation — possible variant of ATUTC (At UTC time?) or local abbreviation. Flagged for human review."
+            },
+            {
+              "term": "DATS",
+              "context": "Despatch: DATS — Despatch on All Time Saved",
+              "note": "The email self-defines DATS as 'Despatch on All Time Saved'. This is a non-standard abbreviation (standard term is 'DAS' or 'despatch on all time saved'). Self-definition accepted but flagged as non-standard."
+            }
+          ],
+          "missing_info": [
+            "Laycan dates contain unfilled template placeholders ({{LAYCAN_START}}, {{LAYCAN_END}}, {{LAYCAN_MONTH}}) — actual laycan dates unknown",
+            "Inner date of email is also a template placeholder ({{INNER_DATE}}) — recap date unknown, which affects the 2-banking-day subs deadline",
+            "Vessel DWT (6,500 mts) appears low for 5,800 mts steel coils — confirm DWCC and draft/intake adequacy",
+            "No freight payment terms stated (e.g. prepaid, collect, payment timeline)",
+            "No bill of lading terms referenced beyond GENCON 94"
+          ]
+        }
+      ]
+    },
+    "parse-vessel": {
+      "items": [
+        {
+          "vessel_name": {
+            "value": "MV NORTH BRIT (Demo)",
+            "confidence": "confirmed",
+            "source_text": "Vessel: MV NORTH BRIT (Demo)"
+          },
+          "imo": null,
+          "flag": {
+            "value": "Isle of Man",
+            "confidence": "confirmed",
+            "source_text": "Flag: Isle of Man"
+          },
+          "built": {
+            "value": 2010,
+            "confidence": "confirmed",
+            "source_text": "Built: 2010"
+          },
+          "class_society": null,
+          "p_and_i": null,
+          "dwt_summer": {
+            "value": 6500,
+            "confidence": "confirmed",
+            "source_text": "DWT: 6,500 mts"
+          },
+          "dwcc": null,
+          "draft_max": null,
+          "loa": null,
+          "beam": null,
+          "grt": null,
+          "nrt": null,
+          "holds_count": null,
+          "hatches_count": null,
+          "grain_capacity": null,
+          "grain_capacity_unit": null,
+          "bale_capacity": null,
+          "hold_dimensions": [],
+          "hatch_dimensions": [],
+          "tank_top_strength": null,
+          "geared": null,
+          "crane_capacity": null,
+          "hatch_type": null,
+          "vessel_type": null,
+          "cii_rating": null,
+          "open_position": {
+            "value": "Iskenderun, Turkey",
+            "confidence": "interpreted",
+            "source_text": "Load port: Iskenderun, Turkey (TRIZK)"
+          },
+          "open_date": {
+            "value": {
+              "open": null,
+              "close": null,
+              "display": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+            },
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+          },
+          "direction": {
+            "value": "Iskenderun to Liverpool",
+            "confidence": "confirmed",
+            "source_text": "Load port: Iskenderun, Turkey (TRIZK) - 1SB AAAA\nDisch port: Liverpool, UK (GBLIV) - 1SB AAAA"
+          },
+          "restrictions": [],
+          "last_cargoes": {
+            "value": "steel coils",
+            "confidence": "confirmed",
+            "source_text": "Cargo: abt 5,800 mts steel coils, SF 1.15"
+          },
+          "speed_laden": null,
+          "speed_ballast": null,
+          "consumption": null,
+          "deck_capacity": null,
+          "special_features": [
+            {
+              "value": "1 Safe Berth Always Accessible Always Afloat at load and discharge ports",
+              "confidence": "confirmed",
+              "source_text": "Load port: Iskenderun, Turkey (TRIZK) - 1SB AAAA\nDisch port: Liverpool, UK (GBLIV) - 1SB AAAA"
+            }
+          ],
+          "unknown_terms": [
+            {
+              "term": "ATUTC",
+              "reason": "ATUTC — laytime/working time qualifier, not found in glossary; possibly 'Any Time Used To Count' or similar variant"
+            },
+            {
+              "term": "DATS",
+              "reason": "DATS — despatch term meaning 'Despatch on All Time Saved'; not listed in glossary (glossary lists FD = Full Dispatch, HD = Half Dispatch, but not DATS acronym explicitly)"
+            },
+            {
+              "term": "LMAA",
+              "reason": "LMAA — London Maritime Arbitrators Association; referenced under arbitration clause but not defined in glossary"
+            },
+            {
+              "term": "WWD",
+              "reason": "WWD — Weather Working Day; a laytime counting convention not explicitly listed in the glossary"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "recap-sample-25": {
+    "parse-vessel": {
+      "items": [
+        {
+          "vessel_name": {
+            "value": "MV HEAVY NORDIC (Demo)",
+            "confidence": "confirmed",
+            "source_text": "Vessel: MV HEAVY NORDIC (Demo)"
+          },
+          "imo": null,
+          "flag": {
+            "value": "Norway",
+            "confidence": "confirmed",
+            "source_text": "Flag: Norway"
+          },
+          "built": {
+            "value": 2018,
+            "confidence": "confirmed",
+            "source_text": "Built: 2018"
+          },
+          "class_society": null,
+          "p_and_i": null,
+          "dwt_summer": {
+            "value": 22000,
+            "confidence": "confirmed",
+            "source_text": "DWT: 22,000 mts"
+          },
+          "dwcc": null,
+          "draft_max": null,
+          "loa": null,
+          "beam": null,
+          "grt": null,
+          "nrt": null,
+          "holds_count": null,
+          "hatches_count": null,
+          "grain_capacity": null,
+          "grain_capacity_unit": null,
+          "bale_capacity": null,
+          "hold_dimensions": [],
+          "hatch_dimensions": [],
+          "tank_top_strength": null,
+          "geared": true,
+          "crane_capacity": {
+            "value": "HMC 250t (main hook)",
+            "confidence": "confirmed",
+            "source_text": "Heavy-lift crane: HMC 250t (main hook)"
+          },
+          "hatch_type": null,
+          "vessel_type": {
+            "value": "MPP",
+            "confidence": "confirmed",
+            "source_text": "Type: Heavy-lift MPP"
+          },
+          "cii_rating": null,
+          "open_position": {
+            "value": "Hamburg, Germany",
+            "confidence": "interpreted",
+            "source_text": "Load port: Hamburg, Germany (DEHAM) - 1SB AAAA"
+          },
+          "open_date": {
+            "value": {
+              "open": null,
+              "close": null,
+              "display": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+            },
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+          },
+          "direction": {
+            "value": "Hamburg to Lagos, Nigeria",
+            "confidence": "confirmed",
+            "source_text": "Load port: Hamburg, Germany (DEHAM) - 1SB AAAA\nDisch port: Lagos, Nigeria (NGLOS) - 1SB AAAA"
+          },
+          "restrictions": [],
+          "last_cargoes": null,
+          "speed_laden": null,
+          "speed_ballast": null,
+          "consumption": null,
+          "deck_capacity": null,
+          "special_features": [
+            {
+              "value": "Heavy-lift crane: HMC 250t (main hook)",
+              "confidence": "confirmed",
+              "source_text": "Heavy-lift crane: HMC 250t (main hook)"
+            },
+            {
+              "value": "Holds clean and dry, free of previous cargo; pre-loading survey by independent P&I surveyor",
+              "confidence": "confirmed",
+              "source_text": "Owners confirm holds clean and dry, free of previous cargo. Pre-loading survey by independent P&I surveyor."
+            },
+            {
+              "value": "FuelEU surcharge applicable: EUR 18,500 (EU port of loading, per FuelEU Maritime Regulation)",
+              "confidence": "confirmed",
+              "source_text": "FuelEU surcharge: EUR 18,500 (EU port of loading, per FuelEU Maritime Regulation)"
+            }
+          ],
+          "unknown_terms": [
+            {
+              "term": "PROJECTCON",
+              "reason": "BIMCO heavy-lift / project cargo charter party form — not in glossary"
+            },
+            {
+              "term": "LMAA",
+              "reason": "London Maritime Arbitrators Association — arbitration body, not in glossary"
+            },
+            {
+              "term": "FuelEU Maritime Regulation",
+              "reason": "EU regulatory surcharge framework for maritime fuel — not in glossary"
+            },
+            {
+              "term": "FD BENDS",
+              "reason": "FD (Full Dispatch) is in glossary; 'BENDS' in this context appears to qualify demurrage/despatch application to both ends — combination not explicitly defined in glossary; flagged for review"
+            }
+          ]
+        }
+      ]
+    },
+    "parse-recap": {
+      "vessel_name": {
+        "value": "MV HEAVY NORDIC (Demo)",
+        "confidence": "confirmed",
+        "source_text": "Vessel: MV HEAVY NORDIC (Demo)"
+      },
+      "vessel_yob": {
+        "value": 2018,
+        "confidence": "confirmed",
+        "source_text": "Built: 2018, Flag: Norway"
+      },
+      "vessel_flag": {
+        "value": "Norway",
+        "confidence": "confirmed",
+        "source_text": "Built: 2018, Flag: Norway"
+      },
+      "owners": {
+        "value": "Nordic Heavy Lift AS (Demo)",
+        "confidence": "confirmed",
+        "source_text": "Owners: Nordic Heavy Lift AS (Demo)"
+      },
+      "charterers": {
+        "value": "Norse Heavy Lift (Demo)",
+        "confidence": "confirmed",
+        "source_text": "Charterers: Norse Heavy Lift (Demo)"
+      },
+      "account": {
+        "value": "Lagos Energy Projects (Demo)",
+        "confidence": "confirmed",
+        "source_text": "Account: Lagos Energy Projects (Demo)"
+      },
+      "broker": "Norse Heavy Lift - Chartering",
+      "load_port": {
+        "value": "Hamburg, Germany (DEHAM)",
+        "confidence": "confirmed",
+        "source_text": "Load port: Hamburg, Germany (DEHAM) - 1SB AAAA"
+      },
+      "disch_port": {
+        "value": "Lagos, Nigeria (NGLOS)",
+        "confidence": "confirmed",
+        "source_text": "Disch port: Lagos, Nigeria (NGLOS) - 1SB AAAA"
+      },
+      "cargo_description": {
+        "value": "Project cargo — 1 x power transformer (approx 180t) + tower sections (steel)",
+        "confidence": "confirmed",
+        "source_text": "Cargo: project cargo — 1 x power transformer (approx 180t) + tower sections (steel)"
+      },
+      "cargo_quantity_min": {
+        "value": null,
+        "confidence": "uncertain",
+        "source_text": "project cargo — 1 x power transformer (approx 180t) + tower sections (steel)"
+      },
+      "cargo_quantity_max": {
+        "value": null,
+        "confidence": "uncertain",
+        "source_text": "project cargo — 1 x power transformer (approx 180t) + tower sections (steel)"
+      },
+      "cargo_packaging": {
+        "value": "project cargo (heavy-lift, stowed per stowage plan)",
+        "confidence": "interpreted",
+        "source_text": "heavy-lift schedule, per stowage plan"
+      },
+      "laycan": {
+        "value": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}",
+        "confidence": "confirmed",
+        "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+      },
+      "transit_time": {
+        "value": null
+      },
+      "freight_rate": {
+        "value": "NOK 850,000 lumpsum",
+        "confidence": "confirmed",
+        "source_text": "Freight: NOK 850,000 lumpsum"
+      },
+      "freight_basis": {
+        "value": "Lumpsum",
+        "confidence": "confirmed",
+        "source_text": "Freight: NOK 850,000 lumpsum"
+      },
+      "freight_payment": {
+        "value": "Freight against irrevocable Letter of Credit (L/C), first-class international bank, to be confirmed 7 working days prior to loading",
+        "confidence": "confirmed",
+        "source_text": "Payment: Freight against irrevocable Letter of Credit (L/C), first-class international bank, to be confirmed 7 working days prior to loading"
+      },
+      "loading_rate": {
+        "value": "As fast as vessel can — heavy-lift schedule, per stowage plan",
+        "confidence": "confirmed",
+        "source_text": "Loading rate: as fast as vessel can — heavy-lift schedule, per stowage plan"
+      },
+      "loading_terms": {
+        "value": null
+      },
+      "loading_working_hours": {
+        "value": null
+      },
+      "discharging_rate": {
+        "value": "As fast as vessel can — stevedore plan to be agreed",
+        "confidence": "confirmed",
+        "source_text": "Disch rate: as fast as vessel can — stevedore plan to be agreed"
+      },
+      "discharging_terms": {
+        "value": null
+      },
+      "discharging_working_hours": {
+        "value": null
+      },
+      "demurrage_rate": {
+        "value": "USD 12,000 PDPR",
+        "confidence": "confirmed",
+        "source_text": "Demurrage: USD 12,000 PDPR / FD BENDS (USD applies for demurrage; freight in NOK)"
+      },
+      "demurrage_payment": {
+        "value": "FD BENDS — both ends; demurrage payable in USD",
+        "confidence": "confirmed",
+        "source_text": "Demurrage: USD 12,000 PDPR / FD BENDS (USD applies for demurrage; freight in NOK)"
+      },
+      "despatch_rate": {
+        "value": "None",
+        "confidence": "confirmed",
+        "source_text": "Despatch: none"
+      },
+      "load_port_agent": {
+        "value": null
+      },
+      "disch_port_agent": {
+        "value": null
+      },
+      "vessel_dwt": {
+        "value": 22000,
+        "confidence": "confirmed",
+        "source_text": "DWT: 22,000 mts"
+      },
+      "vessel_draft": {
+        "value": null
+      },
+      "vessel_geared": {
+        "value": true,
+        "confidence": "confirmed",
+        "source_text": "Heavy-lift crane: HMC 250t (main hook)"
+      },
+      "cp_form": {
+        "value": "PROJECTCON (BIMCO)",
+        "confidence": "confirmed",
+        "source_text": "CP Form: PROJECTCON (BIMCO)"
+      },
+      "arbitration": {
+        "value": "London LMAA",
+        "confidence": "confirmed",
+        "source_text": "Arbitration: London LMAA"
+      },
+      "law": {
+        "value": "English",
+        "confidence": "confirmed",
+        "source_text": "Governing Law: English"
+      },
+      "commission": "1.875% TTL on freight (payable in NOK)",
+      "commission_percent": {
+        "value": 1.875,
+        "confidence": "confirmed",
+        "source_text": "Commission: 1.875% TTL on freight (payable in NOK)"
+      },
+      "commission_address_pct": {
+        "value": null
+      },
+      "commission_broker_pct": {
+        "value": null
+      },
+      "commission_base": {
+        "value": "freight",
+        "confidence": "confirmed",
+        "source_text": "Commission: 1.875% TTL on freight (payable in NOK)"
+      },
+      "commission_amount": {
+        "value": 15937.5,
+        "confidence": "interpreted",
+        "source_text": "Freight: NOK 850,000 lumpsum"
+      },
+      "commission_broker_amount": {
+        "value": null
+      },
+      "commission_address_amount": {
+        "value": null
+      },
+      "commission_currency": {
+        "value": "NOK",
+        "confidence": "confirmed",
+        "source_text": "Commission: 1.875% TTL on freight (payable in NOK)"
+      },
+      "subs": [
+        {
+          "value": "Stem + owners approval — within 2 banking days from recap date",
+          "confidence": "confirmed",
+          "source_text": "Subs: stem + owners approval within 2 banking days from recap date"
+        }
+      ],
+      "acknowledgement_deadline": null,
+      "confidentiality": false,
+      "additional_terms": [
+        "FuelEU surcharge: EUR 18,500 (EU port of loading, per FuelEU Maritime Regulation)",
+        "Heavy-lift crane: HMC 250t (main hook)",
+        "Type: Heavy-lift MPP",
+        "1SB AAAA at load port (Hamburg)",
+        "1SB AAAA at discharge port (Lagos)",
+        "Hold cleanliness: Owners confirm holds clean and dry, free of previous cargo. Pre-loading survey by independent P&I surveyor.",
+        "All other terms PROJECTCON as amended.",
+        "Dual-currency fixture: freight in NOK, demurrage in USD"
+      ],
+      "unknown_terms": [
+        {
+          "term": "FD BENDS",
+          "context": "Demurrage: USD 12,000 PDPR / FD BENDS — 'FD' normally means Full Dispatch, but pairing with 'BENDS' (both ends) in a demurrage clause is non-standard. It may mean Full Demurrage Both Ends or Full Dispatch Both Ends. Requires broker clarification."
+        },
+        {
+          "term": "PROJECTCON",
+          "context": "CP Form: PROJECTCON (BIMCO) — referenced as a BIMCO form for project cargo voyages. Not a widely published standard BIMCO form in common circulation; verify form availability and exact edition with owners."
+        },
+        {
+          "term": "LAYCAN_TEMPLATE_UNFILLED",
+          "context": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}} — laycan fields contain unfilled template placeholders. Actual laycan dates are unknown. Human review required."
+        },
+        {
+          "term": "INNER_DATE_UNFILLED",
+          "context": "Email header date: {{INNER_DATE}} — the recap date (from which the 2-banking-day subs deadline runs) is an unfilled template placeholder. Subs deadline cannot be computed. Human review required."
+        }
+      ]
+    }
+  },
+  "reply-sample-26": {
+    "classify": {
+      "classifications": [
+        {
+          "id": null,
+          "category": "CLIENT_REPLY",
+          "urgency": "high",
+          "confidence": 0.93,
+          "is_unanswered": true,
+          "days_without_reply": 0,
+          "original_sender": "Farid",
+          "original_sender_company": "Royal Jordanian Phosphate (Demo)"
+        }
+      ]
+    },
+    "parse-vessel": {
+      "items": []
+    }
+  },
+  "reply-sample-27": {
+    "classify": {
+      "classifications": [
+        {
+          "id": null,
+          "category": "CLIENT_REPLY",
+          "urgency": "high",
+          "confidence": 0.82,
+          "is_unanswered": true,
+          "days_without_reply": 0,
+          "original_sender": "Dr. Klaus Müller",
+          "original_sender_company": "Mitteleuropa Charter GmbH (Demo)"
+        }
+      ]
+    },
+    "parse-vessel": {
+      "items": []
+    },
+    "parse-cargo": {
+      "items": [],
+      "missing_info": [
+        "This email is a chartering counter-proposal / negotiation revert on an existing offer — it is not a new cargo inquiry or booking request. No parseable cargo inquiry can be extracted. The Khor Fakkan/Tema pipes reference appears to be cited as a market comparable, not as a new shipment. If a new inquiry is intended, please resubmit with full cargo and routing details."
+      ]
+    },
+    "parse-recap": {
+      "vessel_name": null,
+      "vessel_yob": null,
+      "vessel_flag": null,
+      "owners": null,
+      "charterers": {
+        "value": "Mitteleuropa Charter GmbH (Demo)",
+        "confidence": "interpreted",
+        "source_text": "Dr. Klaus Müller\nDirector of Chartering\nMitteleuropa Charter GmbH (Demo)"
+      },
+      "account": null,
+      "broker": null,
+      "load_port": {
+        "value": "Khor Fakkan",
+        "confidence": "uncertain",
+        "source_text": "Recent fixtures on comparable routes (Khor Fakkan/Tema, 6,000-7,500 mts pipes)"
+      },
+      "disch_port": {
+        "value": "Tema",
+        "confidence": "uncertain",
+        "source_text": "Recent fixtures on comparable routes (Khor Fakkan/Tema, 6,000-7,500 mts pipes)"
+      },
+      "cargo_description": {
+        "value": "Pipes (12m lengths)",
+        "confidence": "interpreted",
+        "source_text": "the nature of the pipes (12m lengths, crane-intensive)"
+      },
+      "cargo_quantity_min": {
+        "value": 6000,
+        "confidence": "uncertain",
+        "source_text": "6,000-7,500 mts pipes"
+      },
+      "cargo_quantity_max": {
+        "value": 7500,
+        "confidence": "uncertain",
+        "source_text": "6,000-7,500 mts pipes"
+      },
+      "cargo_packaging": null,
+      "laycan": null,
+      "transit_time": null,
+      "freight_rate": {
+        "value": "USD 16.00/mt",
+        "confidence": "confirmed",
+        "source_text": "Freight rate: USD 16.00/mt vs your USD 18.50/mt"
+      },
+      "freight_basis": {
+        "value": "FIOST",
+        "confidence": "uncertain",
+        "source_text": "USD 15.50-16.50/mt FIOST is the prevailing market range"
+      },
+      "freight_payment": null,
+      "loading_rate": {
+        "value": 800,
+        "confidence": "confirmed",
+        "source_text": "Loading rate: 800 mts SHINC"
+      },
+      "loading_terms": {
+        "value": "SHINC",
+        "confidence": "confirmed",
+        "source_text": "Loading rate: 800 mts SHINC"
+      },
+      "loading_working_hours": null,
+      "discharging_rate": null,
+      "discharging_terms": null,
+      "discharging_working_hours": null,
+      "demurrage_rate": {
+        "value": "USD 6,500 PDPR",
+        "confidence": "confirmed",
+        "source_text": "Demurrage: USD 6,500 PDPR"
+      },
+      "demurrage_payment": null,
+      "despatch_rate": {
+        "value": "Half laytime saved",
+        "confidence": "confirmed",
+        "source_text": "despatch half laytime saved"
+      },
+      "load_port_agent": null,
+      "disch_port_agent": null,
+      "vessel_dwt": null,
+      "vessel_draft": null,
+      "vessel_geared": {
+        "value": true,
+        "confidence": "interpreted",
+        "source_text": "crane-intensive"
+      },
+      "cp_form": {
+        "value": "GENCON 2022",
+        "confidence": "uncertain",
+        "source_text": "aligned with GENCON 2022 standard terms"
+      },
+      "arbitration": null,
+      "law": null,
+      "commission": null,
+      "commission_percent": null,
+      "commission_address_pct": null,
+      "commission_broker_pct": null,
+      "commission_base": null,
+      "commission_amount": null,
+      "commission_broker_amount": null,
+      "commission_address_amount": null,
+      "commission_currency": null,
+      "subs": [],
+      "acknowledgement_deadline": "close of business today",
+      "confidentiality": false,
+      "additional_terms": [
+        "All other terms as per your offer remain acceptable to us.",
+        "This is presented as best and final counter."
+      ],
+      "unknown_terms": [
+        {
+          "term": "GENCON 2022",
+          "context": "Demurrage aligned with GENCON 2022 standard terms — standard BIMCO GENCON versions are 1976 and 1994; GENCON 2022 is not a recognised published BIMCO form as of knowledge cutoff. May be a drafting error (intended GENCON 94?) or a new/internal reference. Requires broker verification."
+        },
+        {
+          "term": "DOCUMENT_TYPE_WARNING",
+          "context": "This email is a counter-proposal / negotiation communication, NOT a concluded fixture recap. Many fields (vessel, owners, laycan, full freight basis, agents, commission, governing law) are absent or inferred only from market reference examples. Values extracted should be treated as proposed/negotiating terms only, not agreed fixture terms."
+        },
+        {
+          "term": "ROUTE_UNCERTAINTY",
+          "context": "Khor Fakkan/Tema are cited as 'comparable routes' for market reference — they may not be the actual load/discharge ports for this fixture. Load and discharge ports not explicitly confirmed in the counter-proposal."
+        },
+        {
+          "term": "QUANTITY_UNCERTAINTY",
+          "context": "6,000-7,500 mts cited as range for comparable fixtures, not explicitly stated as the quantity for this fixture."
+        }
+      ]
+    }
+  },
+  "reply-sample-28": {
+    "classify": {
+      "classifications": [
+        {
+          "id": null,
+          "category": "CLIENT_REPLY",
+          "urgency": "high",
+          "confidence": 0.82,
+          "is_unanswered": true,
+          "days_without_reply": 4,
+          "original_sender": "Nicolaos Papadopoulos",
+          "original_sender_company": "Hellenic Tramp"
+        }
+      ]
+    },
+    "parse-cargo": {
+      "items": [],
+      "missing_info": [
+        "No cargo inquiry details provided — this email is a follow-up/chase message requesting a response to a previous offer, not a new cargo inquiry",
+        "Cargo description unknown",
+        "Weight/quantity unknown",
+        "Load port (Tema, Ghana) and discharge port (Lagos, Nigeria) are referenced but no cargo details are present",
+        "Freight terms, laytime, laycan, and all other cargo specifics are missing",
+        "Original inquiry email is needed to parse cargo details"
+      ]
+    }
+  },
+  "reply-sample-29": {
+    "classify": {
+      "classifications": [
+        {
+          "id": null,
+          "category": "CLIENT_REPLY",
+          "urgency": "medium",
+          "confidence": 0.62,
+          "is_unanswered": true,
+          "days_without_reply": null,
+          "original_sender": "Henri Dupré",
+          "original_sender_company": null
+        }
+      ]
+    },
+    "parse-vessel": {
+      "items": []
+    }
+  },
+  "eval-eval-01": {
+    "parse-vessel": {
+      "items": []
+    },
+    "parse-cargo": {
+      "items": [
+        {
+          "origin_port": {
+            "value": "Dammam",
+            "confidence": "confirmed",
+            "source_text": "LOAD PORT: 1 sb sp, Dammam, Saudi Arabia"
+          },
+          "origin_country": {
+            "value": "Saudi Arabia",
+            "confidence": "confirmed",
+            "source_text": "LOAD PORT: 1 sb sp, Dammam, Saudi Arabia"
+          },
+          "destination_port": {
+            "value": "Colombo",
+            "confidence": "confirmed",
+            "source_text": "DISCHARGE PORT: 1 sb sp, Colombo, Sri Lanka"
+          },
+          "destination_country": {
+            "value": "Sri Lanka",
+            "confidence": "confirmed",
+            "source_text": "DISCHARGE PORT: 1 sb sp, Colombo, Sri Lanka"
+          },
+          "cargo_description": {
+            "value": "Bulk Thermal Coal, Indonesian origin, HAZ-free, no special handling requirements",
+            "confidence": "confirmed",
+            "source_text": "CARGO: Bulk Thermal Coal"
+          },
+          "cargo_origin_country": {
+            "value": "Indonesia",
+            "confidence": "confirmed",
+            "source_text": "Cargo is Indonesian origin thermal coal"
+          },
+          "weight_mt": {
+            "value": 28000,
+            "confidence": "interpreted",
+            "source_text": "Abt 28,000 mts (10% MOLOO)"
+          },
+          "weight_mt_min": {
+            "value": 25200,
+            "confidence": "interpreted",
+            "source_text": "Abt 28,000 mts (10% MOLOO)"
+          },
+          "weight_mt_max": {
+            "value": 30800,
+            "confidence": "interpreted",
+            "source_text": "Abt 28,000 mts (10% MOLOO)"
+          },
+          "volume_cbm": null,
+          "dimensions": null,
+          "cargo_type": {
+            "value": "BULK",
+            "confidence": "confirmed",
+            "source_text": "CARGO: Bulk Thermal Coal"
+          },
+          "container_type": null,
+          "quantity": null,
+          "incoterms": null,
+          "preferred_dates": {
+            "value": "End May / Early June 2025",
+            "confidence": "uncertain",
+            "source_text": "LAYCAN: End May / Early June 2025 (exact dates TBC pending stem confirmation)"
+          },
+          "laycan": {
+            "value": "End May / Early June 2025",
+            "confidence": "uncertain",
+            "source_text": "LAYCAN: End May / Early June 2025 (exact dates TBC pending stem confirmation)"
+          },
+          "loading_rate": null,
+          "loading_terms": {
+            "value": "FIO SHINC",
+            "confidence": "confirmed",
+            "source_text": "LOADING TERMS: FIO SHINC"
+          },
+          "discharge_rate": null,
+          "discharge_terms": {
+            "value": "CQD",
+            "confidence": "confirmed",
+            "source_text": "DISCHARGE TERMS: CQD"
+          },
+          "commission_percent": {
+            "value": 3.75,
+            "confidence": "confirmed",
+            "source_text": "COMMISSION: 3.75% TTL BENDS"
+          },
+          "commission_terms": {
+            "value": "TTL BENDS",
+            "confidence": "confirmed",
+            "source_text": "COMMISSION: 3.75% TTL BENDS"
+          },
+          "special_requirements": {
+            "value": [
+              "NOR to be tendered WIPON WIBON WIFPON WICCON",
+              "Shipper prefers geared vessel; gearless considered only if shore appliances confirmed available at both ends",
+              "Owners to confirm holds/hatches suitable for bulk coal prior to fixing",
+              "CP to be mutually agreed form",
+              "1 safe berth, single port at each end (1 sb sp load and discharge)"
+            ],
+            "confidence": "confirmed",
+            "source_text": "All NOR to be tendered WIPON WIBON WIFPON WICCON"
+          },
+          "stowage_factor": null,
+          "missing_info": [
+            "Freight rate (owners to offer PMT — no rate provided by charterer)",
+            "Exact laycan dates (TBC pending stem confirmation)",
+            "Stowage factor (to be confirmed by owners upon offer)",
+            "Vessel draft requirements (to be confirmed by owners upon offer)",
+            "Charter party form (to be mutually agreed)"
+          ],
+          "unknown_terms": []
+        }
+      ]
+    },
+    "parse-recap": {
+      "vessel_name": null,
+      "vessel_yob": null,
+      "vessel_flag": null,
+      "owners": null,
+      "charterers": {
+        "value": "Saudi Bulk Traders Co.",
+        "confidence": "confirmed",
+        "source_text": "Saudi Bulk Traders Co."
+      },
+      "account": null,
+      "broker": "Gulf Chartering LLC, Dubai",
+      "load_port": {
+        "value": "Dammam, Saudi Arabia",
+        "confidence": "confirmed",
+        "source_text": "1 sb sp, Dammam, Saudi Arabia"
+      },
+      "disch_port": {
+        "value": "Colombo, Sri Lanka",
+        "confidence": "confirmed",
+        "source_text": "1 sb sp, Colombo, Sri Lanka"
+      },
+      "cargo_description": {
+        "value": "Bulk Thermal Coal (Indonesian origin, HAZ-free)",
+        "confidence": "confirmed",
+        "source_text": "Cargo is Indonesian origin thermal coal, HAZ-free, no special handling rqmts"
+      },
+      "cargo_quantity_min": {
+        "value": 25200,
+        "confidence": "interpreted",
+        "source_text": "Abt 28,000 mts (10% MOLOO)"
+      },
+      "cargo_quantity_max": {
+        "value": 30800,
+        "confidence": "interpreted",
+        "source_text": "Abt 28,000 mts (10% MOLOO)"
+      },
+      "cargo_packaging": {
+        "value": "bulk",
+        "confidence": "confirmed",
+        "source_text": "CARGO: Bulk Thermal Coal"
+      },
+      "laycan": {
+        "value": "End May / Early June 2025 (exact dates TBC pending stem confirmation)",
+        "confidence": "confirmed",
+        "source_text": "LAYCAN: End May / Early June 2025 (exact dates TBC pending stem confirmation)"
+      },
+      "transit_time": null,
+      "freight_rate": {
+        "value": null,
+        "confidence": "uncertain",
+        "source_text": "FREIGHT: Owners to offer pmt basis above"
+      },
+      "freight_basis": {
+        "value": "FIO",
+        "confidence": "confirmed",
+        "source_text": "LOADING TERMS: FIO SHINC"
+      },
+      "freight_payment": null,
+      "loading_rate": null,
+      "loading_terms": {
+        "value": "SHINC",
+        "confidence": "confirmed",
+        "source_text": "LOADING TERMS: FIO SHINC"
+      },
+      "loading_working_hours": null,
+      "discharging_rate": {
+        "value": "CQD",
+        "confidence": "confirmed",
+        "source_text": "DISCHARGE TERMS: CQD"
+      },
+      "discharging_terms": {
+        "value": "CQD",
+        "confidence": "confirmed",
+        "source_text": "DISCHARGE TERMS: CQD"
+      },
+      "discharging_working_hours": null,
+      "demurrage_rate": null,
+      "demurrage_payment": null,
+      "despatch_rate": null,
+      "load_port_agent": null,
+      "disch_port_agent": null,
+      "vessel_dwt": null,
+      "vessel_draft": {
+        "value": null,
+        "confidence": "uncertain",
+        "source_text": "vessel draft requirements to be confirmed by owners upon offer"
+      },
+      "vessel_geared": {
+        "value": null,
+        "confidence": "uncertain",
+        "source_text": "Shipper prefers geared vessel but will consider gearless if shore appliances confirmed available at both ends"
+      },
+      "cp_form": {
+        "value": "To be mutually agreed",
+        "confidence": "confirmed",
+        "source_text": "CP to be mutually agreed form"
+      },
+      "arbitration": null,
+      "law": null,
+      "commission": {
+        "value": "3.75% TTL BENDS",
+        "confidence": "confirmed",
+        "source_text": "COMMISSION: 3.75% TTL BENDS"
+      },
+      "commission_percent": {
+        "value": 3.75,
+        "confidence": "confirmed",
+        "source_text": "COMMISSION: 3.75% TTL BENDS"
+      },
+      "commission_address_pct": null,
+      "commission_broker_pct": {
+        "value": 3.75,
+        "confidence": "interpreted",
+        "source_text": "COMMISSION: 3.75% TTL BENDS"
+      },
+      "commission_base": {
+        "value": "freight",
+        "confidence": "interpreted",
+        "source_text": "COMMISSION: 3.75% TTL BENDS"
+      },
+      "commission_amount": null,
+      "commission_broker_amount": null,
+      "commission_address_amount": null,
+      "commission_currency": null,
+      "subs": [
+        {
+          "value": "Subject to stem confirmation (exact laycan dates TBC) — deadline not specified",
+          "confidence": "confirmed",
+          "source_text": "exact dates TBC pending stem confirmation"
+        },
+        {
+          "value": "Owners to confirm holds/hatches suitable for bulk coal prior to fixing — deadline not specified",
+          "confidence": "confirmed",
+          "source_text": "Owners to confirm holds/hatches suitable for bulk coal prior to fixing"
+        },
+        {
+          "value": "Stowage factor and vessel draft requirements to be confirmed by owners upon offer — deadline not specified",
+          "confidence": "confirmed",
+          "source_text": "stowage factor and vessel draft requirements to be confirmed by owners upon offer"
+        }
+      ],
+      "acknowledgement_deadline": "at your earliest",
+      "confidentiality": false,
+      "additional_terms": [
+        "All NOR to be tendered WIPON WIBON WIFPON WICCON",
+        "1 sb sp load port (Dammam); 1 sb sp discharge port (Colombo)",
+        "Gearless vessels acceptable if shore appliances confirmed available at both ends",
+        "Cargo is HAZ-free, no special handling requirements",
+        "Owners to offer freight rate per MT basis FIO SHINC loading / CQD discharge",
+        "Offers requested ADA WOG"
+      ],
+      "unknown_terms": [
+        {
+          "term": "CQD",
+          "context": "DISCHARGE TERMS: CQD — Customary Quick Despatch; discharge rate not fixed but at the customary rate of the port. Included here for completeness as it interacts with demurrage calculation — no demurrage rate has been provided."
+        },
+        {
+          "term": "pmt",
+          "context": "FREIGHT: Owners to offer pmt basis above — likely abbreviation for 'per metric ton' but not standard chartering abbreviation; could also be 'payment'. Flagged for broker to verify."
+        }
+      ]
+    }
+  },
+  "eval-eval-02": {
+    "classify": {
+      "classifications": [
+        {
+          "id": null,
+          "category": "VESSEL_POSITION",
+          "urgency": "medium",
+          "confidence": 0.97,
+          "is_unanswered": true,
+          "days_without_reply": 0,
+          "original_sender": "Nikos Papadopoulos",
+          "original_sender_company": "Hellas Shipbrokers"
+        }
+      ]
+    },
+    "parse-cargo": {
+      "items": [],
+      "missing_info": [
+        "This is a vessel position/particulars circular for MV GULF PIONEER (open Jebel Ali 10/12 May 2025), not a cargo inquiry. No specific cargo, load port, discharge port, quantity, or freight requirement has been stated. No parseable cargo inquiry exists in this message."
+      ]
+    },
+    "parse-recap": {
+      "vessel_name": {
+        "value": "GULF PIONEER",
+        "confidence": "confirmed",
+        "source_text": "MV GULF PIONEER"
+      },
+      "vessel_yob": {
+        "value": 2009,
+        "confidence": "confirmed",
+        "source_text": "YOB: 2009"
+      },
+      "vessel_flag": {
+        "value": "Malta",
+        "confidence": "confirmed",
+        "source_text": "Flag: Malta"
+      },
+      "owners": {
+        "value": "Atlas Maritime S.A., Piraeus, Greece",
+        "confidence": "confirmed",
+        "source_text": "Atlas Maritime S.A.\nPiraeus, Greece"
+      },
+      "charterers": null,
+      "account": null,
+      "broker": "Hellas Shipbrokers, Piraeus (Nikos Papadopoulos)",
+      "load_port": null,
+      "disch_port": null,
+      "cargo_description": null,
+      "cargo_quantity_min": null,
+      "cargo_quantity_max": null,
+      "cargo_packaging": null,
+      "laycan": {
+        "value": "10–12 May 2025",
+        "confidence": "interpreted",
+        "source_text": "OPEN DATE: 10/12 May 2025"
+      },
+      "transit_time": null,
+      "freight_rate": null,
+      "freight_basis": null,
+      "freight_payment": null,
+      "loading_rate": null,
+      "loading_terms": null,
+      "loading_working_hours": null,
+      "discharging_rate": null,
+      "discharging_terms": null,
+      "discharging_working_hours": null,
+      "demurrage_rate": null,
+      "demurrage_payment": null,
+      "despatch_rate": null,
+      "load_port_agent": null,
+      "disch_port_agent": null,
+      "vessel_dwt": {
+        "value": 12500,
+        "confidence": "confirmed",
+        "source_text": "DWT Summer: 12,500 mts"
+      },
+      "vessel_draft": {
+        "value": "7.8m",
+        "confidence": "confirmed",
+        "source_text": "DWCC: 11,800 mts at 7.8m draft"
+      },
+      "vessel_geared": {
+        "value": true,
+        "confidence": "confirmed",
+        "source_text": "2 x 30T cranes + 1 x 15T crane"
+      },
+      "cp_form": null,
+      "arbitration": null,
+      "law": null,
+      "commission": null,
+      "commission_percent": null,
+      "commission_address_pct": null,
+      "commission_broker_pct": null,
+      "commission_base": null,
+      "commission_amount": null,
+      "commission_broker_amount": null,
+      "commission_address_amount": null,
+      "commission_currency": null,
+      "subs": [],
+      "acknowledgement_deadline": null,
+      "confidentiality": false,
+      "additional_terms": [
+        "IMO: 9312847",
+        "Class: Bureau Veritas (BV)",
+        "P&I: West of England",
+        "LOA: 138.5m | Beam: 19.8m",
+        "GRT: 7,840 | NRT: 3,920",
+        "DWCC: 11,800 mts at 7.8m draft",
+        "Holds/Hatches: 3/3",
+        "Grain: 16,200 cbm | Bale: 15,100 cbm",
+        "2 x 30T cranes + 1 x 15T crane — All cranes in good working order, last surveyed Feb 2025",
+        "Speed laden: 12.5 kn on abt 18 MT IFO (AWIWL, no adverse weather)",
+        "Speed ballast: 13.0 kn on abt 14 MT IFO (AWIWL, no adverse weather)",
+        "Port consumption: abt 2.5 MT IFO/day",
+        "CII RATING: B (2024)",
+        "Vessel open Jebel Ali, UAE",
+        "Last 3 cargoes: (1) Steel pipes, Jubail → Nhava Sheva; (2) Project cargo — wind turbine blades, Jebel Ali → Colombo; (3) Fertilizer bags, Aqaba → Mombasa",
+        "Vessel fully classed, no outstanding recommendations. ITF compliant. All docs valid.",
+        "Owners open to VC, TCT or spot voyage. WOG basis."
+      ],
+      "unknown_terms": [
+        {
+          "term": "AWIWL",
+          "context": "Performance qualifier: 'AWIWL, no adverse weather' — likely 'Always When In Warm Weather / Light Winds' or similar performance warranty qualifier; not a standard listed abbreviation — requires broker verification"
+        },
+        {
+          "term": "TCT",
+          "context": "Employment type offered: 'Owners are open to VC, TCT or spot voyage' — likely 'Time Charter Trip' but not confirmed in glossary; flag for verification"
+        }
+      ]
+    },
+    "parse-vessel": {
+      "items": [
+        {
+          "vessel_name": {
+            "value": "MV GULF PIONEER",
+            "confidence": "confirmed",
+            "source_text": "MV GULF PIONEER"
+          },
+          "imo": {
+            "value": 9312847,
+            "confidence": "confirmed",
+            "source_text": "IMO: 9312847"
+          },
+          "flag": {
+            "value": "Malta",
+            "confidence": "confirmed",
+            "source_text": "Flag: Malta"
+          },
+          "built": {
+            "value": 2009,
+            "confidence": "confirmed",
+            "source_text": "YOB: 2009"
+          },
+          "class_society": {
+            "value": "Bureau Veritas (BV)",
+            "confidence": "confirmed",
+            "source_text": "Class: Bureau Veritas (BV)"
+          },
+          "p_and_i": {
+            "value": "West of England",
+            "confidence": "confirmed",
+            "source_text": "P&I: West of England"
+          },
+          "dwt_summer": {
+            "value": 12500,
+            "confidence": "confirmed",
+            "source_text": "DWT Summer: 12,500 mts"
+          },
+          "dwcc": {
+            "value": 11800,
+            "confidence": "confirmed",
+            "source_text": "DWCC: 11,800 mts at 7.8m draft"
+          },
+          "draft_max": {
+            "value": 7.8,
+            "confidence": "interpreted",
+            "source_text": "DWCC: 11,800 mts at 7.8m draft"
+          },
+          "loa": {
+            "value": 138.5,
+            "confidence": "confirmed",
+            "source_text": "LOA: 138.5m"
+          },
+          "beam": {
+            "value": 19.8,
+            "confidence": "confirmed",
+            "source_text": "Beam: 19.8m"
+          },
+          "grt": {
+            "value": 7840,
+            "confidence": "confirmed",
+            "source_text": "GRT: 7,840"
+          },
+          "nrt": {
+            "value": 3920,
+            "confidence": "confirmed",
+            "source_text": "NRT: 3,920"
+          },
+          "holds_count": {
+            "value": 3,
+            "confidence": "confirmed",
+            "source_text": "Holds/Hatches: 3/3"
+          },
+          "hatches_count": {
+            "value": 3,
+            "confidence": "confirmed",
+            "source_text": "Holds/Hatches: 3/3"
+          },
+          "grain_capacity": {
+            "value": 16200,
+            "confidence": "confirmed",
+            "source_text": "Grain: 16,200 cbm"
+          },
+          "grain_capacity_unit": "cbm",
+          "bale_capacity": {
+            "value": 15100,
+            "confidence": "confirmed",
+            "source_text": "Bale: 15,100 cbm"
+          },
+          "hold_dimensions": [],
+          "hatch_dimensions": [],
+          "tank_top_strength": null,
+          "geared": {
+            "value": true,
+            "confidence": "confirmed",
+            "source_text": "2 x 30T cranes + 1 x 15T crane"
+          },
+          "crane_capacity": {
+            "value": "2 x 30T + 1 x 15T",
+            "confidence": "confirmed",
+            "source_text": "2 x 30T cranes + 1 x 15T crane"
+          },
+          "hatch_type": null,
+          "vessel_type": {
+            "value": "GENERAL CARGO",
+            "confidence": "uncertain",
+            "source_text": "Holds/Hatches: 3/3"
+          },
+          "cii_rating": "B",
+          "open_position": {
+            "value": "Jebel Ali, UAE",
+            "confidence": "confirmed",
+            "source_text": "OPEN: Jebel Ali, UAE"
+          },
+          "open_date": {
+            "value": {
+              "open": "2025-05-10",
+              "close": "2025-05-12",
+              "display": "10/12 May 2025"
+            },
+            "confidence": "interpreted",
+            "source_text": "OPEN DATE: 10/12 May 2025"
+          },
+          "direction": {
+            "value": null,
+            "confidence": "uncertain",
+            "source_text": "seeking suitable employment"
+          },
+          "restrictions": [],
+          "last_cargoes": {
+            "value": "Steel pipes, Project cargo — wind turbine blades, Fertilizer bags",
+            "confidence": "confirmed",
+            "source_text": "LAST 3 CARGOES:\n1. Steel pipes (Jubail → Nhava Sheva)\n2. Project cargo — wind turbine blades (Jebel Ali → Colombo)\n3. Fertilizer bags (Aqaba → Mombasa)"
+          },
+          "speed_laden": {
+            "value": 12.5,
+            "confidence": "confirmed",
+            "source_text": "Speed laden: 12.5 kn on abt 18 MT IFO"
+          },
+          "speed_ballast": {
+            "value": 13,
+            "confidence": "confirmed",
+            "source_text": "Speed ballast: 13.0 kn on abt 14 MT IFO"
+          },
+          "consumption": {
+            "value": "laden: abt 18 MT IFO/day; ballast: abt 14 MT IFO/day; port: abt 2.5 MT IFO/day",
+            "confidence": "interpreted",
+            "source_text": "Speed laden: 12.5 kn on abt 18 MT IFO\nSpeed ballast: 13.0 kn on abt 14 MT IFO\nPort consumption: abt 2.5 MT IFO/day"
+          },
+          "deck_capacity": null,
+          "special_features": [
+            {
+              "value": "All cranes in good working order, last surveyed Feb 2025",
+              "confidence": "confirmed",
+              "source_text": "All cranes in good working order, last surveyed Feb 2025"
+            },
+            {
+              "value": "Performance basis AWIWL, no adverse weather",
+              "confidence": "confirmed",
+              "source_text": "PERFORMANCE (AWIWL, no adverse weather)"
+            },
+            {
+              "value": "Vessel fully classed, no outstanding recommendations",
+              "confidence": "confirmed",
+              "source_text": "Vessel fully classed, no outstanding recommendations"
+            },
+            {
+              "value": "ITF compliant",
+              "confidence": "confirmed",
+              "source_text": "ITF compliant"
+            },
+            {
+              "value": "Open to VC, TCT or spot voyage",
+              "confidence": "confirmed",
+              "source_text": "Owners are open to VC, TCT or spot voyage"
+            }
+          ],
+          "unknown_terms": [
+            "AWIWL — not in glossary; likely 'All Weather Including Wind and Legs' or similar performance warranty qualifier"
+          ]
+        }
+      ]
+    }
+  },
+  "eval-eval-03": {
+    "classify": {
+      "classifications": [
+        {
+          "id": null,
+          "category": "FIXTURE_RECAP",
+          "urgency": "high",
+          "confidence": 0.97,
+          "is_unanswered": true,
+          "days_without_reply": 0,
+          "original_sender": "Faisal Al-Hammadi",
+          "original_sender_company": "Gulf Maritime Brokers LLC"
+        }
+      ]
+    },
+    "parse-vessel": {
+      "items": [
+        {
+          "vessel_name": {
+            "value": "MV ARABIAN FALCON",
+            "confidence": "confirmed",
+            "source_text": "VESSEL: MV ARABIAN FALCON"
+          },
+          "imo": null,
+          "flag": {
+            "value": "Cyprus",
+            "confidence": "confirmed",
+            "source_text": "Flag: Cyprus"
+          },
+          "built": {
+            "value": 2005,
+            "confidence": "confirmed",
+            "source_text": "YOB: 2005"
+          },
+          "class_society": null,
+          "p_and_i": null,
+          "dwt_summer": {
+            "value": 15200,
+            "confidence": "confirmed",
+            "source_text": "DWT: 15,200 mts"
+          },
+          "dwcc": null,
+          "draft_max": null,
+          "loa": null,
+          "beam": null,
+          "grt": null,
+          "nrt": null,
+          "holds_count": null,
+          "hatches_count": null,
+          "grain_capacity": null,
+          "grain_capacity_unit": null,
+          "bale_capacity": null,
+          "hold_dimensions": [],
+          "hatch_dimensions": [],
+          "tank_top_strength": null,
+          "geared": false,
+          "crane_capacity": null,
+          "hatch_type": null,
+          "vessel_type": {
+            "value": "GENERAL CARGO",
+            "confidence": "uncertain",
+            "source_text": "GEAR: Gearless (shore cranes to be arranged by charterers at both ends)"
+          },
+          "cii_rating": null,
+          "open_position": {
+            "value": "Sharjah, UAE",
+            "confidence": "interpreted",
+            "source_text": "LOAD PORT: 1 safe berth, Sharjah, UAE"
+          },
+          "open_date": {
+            "value": {
+              "open": "2025-06-08",
+              "close": "2025-06-12",
+              "display": "8/12 June 2025"
+            },
+            "confidence": "interpreted",
+            "source_text": "LAYCAN: 8/12 June 2025"
+          },
+          "direction": {
+            "value": "Sharjah, UAE to Nhava Sheva, India",
+            "confidence": "confirmed",
+            "source_text": "LOAD PORT: 1 safe berth, Sharjah, UAE\nDISCHARGE PORT: 1 safe berth, Nhava Sheva, India"
+          },
+          "restrictions": [],
+          "last_cargoes": {
+            "value": "HMS I/II Steel Scrap",
+            "confidence": "confirmed",
+            "source_text": "CARGO: HMS I/II Steel Scrap"
+          },
+          "speed_laden": null,
+          "speed_ballast": null,
+          "consumption": null,
+          "deck_capacity": null,
+          "special_features": [
+            {
+              "value": "Gearless — shore cranes to be arranged by charterers at both ends",
+              "confidence": "confirmed",
+              "source_text": "GEAR: Gearless (shore cranes to be arranged by charterers at both ends)"
+            }
+          ],
+          "unknown_terms": [
+            {
+              "term": "LMAA",
+              "note": "London Maritime Arbitrators Association — arbitration body, not in glossary"
+            },
+            {
+              "term": "WICCON",
+              "note": "Whether In Customs Cleared Or Not — variant of WCCON, not explicitly in glossary (WCCON is listed but WICCON is a slightly different spelling)"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "eval-eval-04": {
+    "parse-cargo": {
+      "items": [],
+      "missing_info": [
+        "This appears to be a TCT/period charter request, not a voyage cargo inquiry. The email describes a Time Charter Trip (TCT) with delivery at Fujairah, redelivery at ECSA range, a daily hire rate of USD 8,500/day, and a duration of approximately 55/65 days. No specific cargo lifting or voyage freight inquiry is present. TCT/period charter requests are outside the scope of cargo inquiry parsing."
+      ]
+    },
+    "parse-vessel": {
+      "items": []
+    },
+    "parse-recap": {
+      "vessel_name": null,
+      "vessel_yob": null,
+      "vessel_flag": null,
+      "owners": null,
+      "charterers": {
+        "value": "European trading house (identity withheld — available to shortlisted owners only)",
+        "confidence": "interpreted",
+        "source_text": "Charterers are reputable principals, we can provide details to shortlisted owners only."
+      },
+      "account": null,
+      "broker": "Levante Chartering S.r.l., Milano, Italy",
+      "load_port": {
+        "value": "TBC",
+        "confidence": "confirmed",
+        "source_text": "load port TBC"
+      },
+      "disch_port": {
+        "value": "ECSA range (Rio to Buenos Aires, exact port charterers' option)",
+        "confidence": "confirmed",
+        "source_text": "REDELIVERY: ECSA range (East Coast South America, broadly Rio to Buenos Aires, exact port charterers' option)"
+      },
+      "cargo_description": null,
+      "cargo_quantity_min": null,
+      "cargo_quantity_max": null,
+      "cargo_packaging": null,
+      "laycan": {
+        "value": "20/30 May 2025",
+        "confidence": "confirmed",
+        "source_text": "LAYCAN DELIVERY: 20/30 May 2025"
+      },
+      "transit_time": {
+        "value": "approximately 55–65 days",
+        "confidence": "confirmed",
+        "source_text": "expected abt 55/65 days w.o.g."
+      },
+      "freight_rate": null,
+      "freight_basis": null,
+      "freight_payment": null,
+      "loading_rate": null,
+      "loading_terms": null,
+      "loading_working_hours": null,
+      "discharging_rate": null,
+      "discharging_terms": null,
+      "discharging_working_hours": null,
+      "demurrage_rate": null,
+      "demurrage_payment": null,
+      "despatch_rate": null,
+      "load_port_agent": null,
+      "disch_port_agent": null,
+      "vessel_dwt": {
+        "value": "Min 25,000 MT — max approximately 58,000 MT",
+        "confidence": "confirmed",
+        "source_text": "DWT: Min 25,000 mts (max abt 58,000 mts)"
+      },
+      "vessel_draft": null,
+      "vessel_geared": {
+        "value": true,
+        "confidence": "confirmed",
+        "source_text": "GEAR: Mandatory — minimum 4 x 25T cranes (no gearless considered)"
+      },
+      "cp_form": {
+        "value": "Time Charter (TCT — Time Charter Trip)",
+        "confidence": "confirmed",
+        "source_text": "TYPE: Time Charter Trip (TCT)"
+      },
+      "arbitration": null,
+      "law": null,
+      "commission": {
+        "value": "2.5% TTL to charterers' brokers",
+        "confidence": "confirmed",
+        "source_text": "COMMISSION: 2.5% TTL to charterers' brokers"
+      },
+      "commission_percent": {
+        "value": 2.5,
+        "confidence": "confirmed",
+        "source_text": "COMMISSION: 2.5% TTL to charterers' brokers"
+      },
+      "commission_address_pct": null,
+      "commission_broker_pct": {
+        "value": 2.5,
+        "confidence": "interpreted",
+        "source_text": "2.5% TTL to charterers' brokers"
+      },
+      "commission_base": {
+        "value": "hire",
+        "confidence": "interpreted",
+        "source_text": "HIRE: USD 8,500/day basis above delivery/redelivery"
+      },
+      "commission_amount": null,
+      "commission_broker_amount": null,
+      "commission_address_amount": null,
+      "commission_currency": {
+        "value": "USD",
+        "confidence": "interpreted",
+        "source_text": "HIRE: USD 8,500/day"
+      },
+      "subs": [],
+      "acknowledgement_deadline": "at your earliest convenience (time sensitive — charterers have alternative tonnage under consideration)",
+      "confidentiality": {
+        "value": false,
+        "confidence": "interpreted",
+        "source_text": "Pls circulate within your network and revert with any suitable offerings WOG."
+      },
+      "additional_terms": [
+        {
+          "value": "Delivery: Fujairah, UAE or within PG range ADA",
+          "confidence": "confirmed",
+          "source_text": "DELIVERY: Fujairah, UAE (or within PG range ADA)"
+        },
+        {
+          "value": "Redelivery: ECSA range, exact port charterers' option",
+          "confidence": "confirmed",
+          "source_text": "REDELIVERY: ECSA range (East Coast South America, broadly Rio to Buenos Aires, exact port charterers' option)"
+        },
+        {
+          "value": "Route: Delivery Fujairah → via Singapore for bunkering → load port TBC → ECSA discharge/redelivery",
+          "confidence": "confirmed",
+          "source_text": "ROUTE: Delivery Fujairah → via Singapore for bunkering → load port TBC → ECSA discharge/redelivery"
+        },
+        {
+          "value": "Duration: 2/3 months, expected approximately 55/65 days WOG",
+          "confidence": "confirmed",
+          "source_text": "DURATION: 2/3 months, expected abt 55/65 days w.o.g."
+        },
+        {
+          "value": "Hire rate: USD 8,500/day basis stated delivery/redelivery",
+          "confidence": "confirmed",
+          "source_text": "HIRE: USD 8,500/day basis above delivery/redelivery"
+        },
+        {
+          "value": "Bunkers on delivery/redelivery: DLOSP / AFSPS, price to be agreed",
+          "confidence": "confirmed",
+          "source_text": "BUNKERS ON DELIVERY/REDELIVERY: DLOSP / AFSPS, price to be agreed"
+        },
+        {
+          "value": "Bunker types: VLSFO 0.5% + MGO",
+          "confidence": "confirmed",
+          "source_text": "BUNKER TYPE: VLSFO 0.5% + MGO"
+        },
+        {
+          "value": "Vessel must be free of any average / LoU outstanding",
+          "confidence": "confirmed",
+          "source_text": "Vessel must be free of any average / LoU outstanding"
+        },
+        {
+          "value": "Clean trading record last 12 months; charterers may request last 5 B/Ls",
+          "confidence": "confirmed",
+          "source_text": "Clean trading record last 12 months (charterers may request last 5 B/Ls)"
+        },
+        {
+          "value": "Holds clean with certificate on delivery",
+          "confidence": "confirmed",
+          "source_text": "Hold condition: holds clean, cert on delivery"
+        },
+        {
+          "value": "COF/ISPS/MLC all valid; no Flag State deficiencies last 2 inspections",
+          "confidence": "confirmed",
+          "source_text": "COF/ISPS/MLC all valid, no Flag State deficiencies last 2 inspections"
+        },
+        {
+          "value": "CII rating C or above preferred",
+          "confidence": "confirmed",
+          "source_text": "CII rating C or above preferred"
+        },
+        {
+          "value": "Minimum 4 x 25T cranes mandatory; no gearless vessels considered",
+          "confidence": "confirmed",
+          "source_text": "GEAR: Mandatory — minimum 4 x 25T cranes (no gearless considered)"
+        }
+      ],
+      "unknown_terms": [
+        {
+          "term": "AFSPS",
+          "context": "Used in bunker clause: 'BUNKERS ON DELIVERY/REDELIVERY: DLOSP / AFSPS, price to be agreed' — DLOSP is recognised (Dropping Last Outward Sea Pilot) but AFSPS is not a standard recognised bunker delivery/redelivery term in this parser's glossary. Possibly 'Arrival First Sea Pilot Station' or similar — requires broker verification."
+        },
+        {
+          "term": "VP",
+          "context": "Used in: 'Pls revert WOG with VP + last position' — possibly 'Vessel Particulars' or 'Vessel Profile' but not a formally defined abbreviation in the standard glossary. Requires confirmation."
+        }
+      ]
+    }
+  },
+  "eval-eval-05": {
+    "parse-cargo": {
+      "items": [],
+      "missing_info": [
+        "This is a post-fixture sub-lift and clause amendment communication, not a cargo inquiry. No parseable cargo, route, quantity, or freight terms are present in this email. The underlying fixture details exist in a separate recap dated 30 April 2025 which was not provided."
+      ]
+    },
+    "parse-vessel": {
+      "items": []
+    }
+  },
+  "eval-eval-06": {
+    "classify": {
+      "classifications": [
+        {
+          "id": null,
+          "category": "VESSEL_CERTIFICATE",
+          "urgency": "low",
+          "confidence": 0.97,
+          "is_unanswered": true,
+          "days_without_reply": 0,
+          "original_sender": "Elena Smirnova",
+          "original_sender_company": "Polar Shipping Agency LLC"
+        }
+      ]
+    },
+    "parse-vessel": {
+      "items": []
+    },
+    "parse-recap": {
+      "vessel_name": null,
+      "vessel_yob": null,
+      "vessel_flag": null,
+      "owners": null,
+      "charterers": null,
+      "account": null,
+      "broker": null,
+      "load_port": null,
+      "disch_port": null,
+      "cargo_description": null,
+      "cargo_quantity_min": null,
+      "cargo_quantity_max": null,
+      "cargo_packaging": null,
+      "laycan": null,
+      "transit_time": null,
+      "freight_rate": null,
+      "freight_basis": null,
+      "freight_payment": null,
+      "loading_rate": null,
+      "loading_terms": null,
+      "loading_working_hours": null,
+      "discharging_rate": null,
+      "discharging_terms": null,
+      "discharging_working_hours": null,
+      "demurrage_rate": null,
+      "demurrage_payment": null,
+      "despatch_rate": null,
+      "load_port_agent": null,
+      "disch_port_agent": null,
+      "vessel_dwt": null,
+      "vessel_draft": null,
+      "vessel_geared": null,
+      "cp_form": null,
+      "arbitration": null,
+      "law": null,
+      "commission": null,
+      "commission_percent": null,
+      "commission_address_pct": null,
+      "commission_broker_pct": null,
+      "commission_base": null,
+      "commission_amount": null,
+      "commission_broker_amount": null,
+      "commission_address_amount": null,
+      "commission_currency": null,
+      "subs": [],
+      "acknowledgement_deadline": null,
+      "confidentiality": false,
+      "additional_terms": [],
+      "unknown_terms": [],
+      "_parser_note": "This document is NOT a chartering fixture recap. It is a P&I Blue Card (Oil Pollution Liability certificate under CLC 1992 / Bunkers Convention 2001) issued by the West of England P&I Club for MV ARCTIC SWAN (IMO 9401256), valid 20 February 2025 to 20 February 2026. No fixture, freight, cargo, laytime, or charter party terms are present. All fixture fields are returned as null. No chartering data can be extracted. Document should be routed to the Operations / Documentation team, not the chartering desk."
+    }
+  }
+}

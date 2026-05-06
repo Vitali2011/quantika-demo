@@ -63,3 +63,4 @@ next-env.d.ts
 
 # wave-γ-data-l5c-v1: private artefacts (IMSBC PDF, intermediate LLM outputs)
 /.private/
+.specs/wave-gamma-vertex/bake-off-results/
