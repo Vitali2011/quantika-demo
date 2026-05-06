@@ -18,6 +18,7 @@
     "knowledge:status": "npx tsx scripts/knowledge/status.ts",
     "knowledge:refresh": "npx tsx scripts/knowledge/refresh.ts",
     "bake-off": "tsx scripts/wave-gamma-bake-off/cli.ts",
+    "bake-off:redecide": "tsx scripts/wave-gamma-bake-off/redecide.ts",
     "build-reference": "tsx scripts/wave-gamma-bake-off/build-reference.ts",
     "prepare": "husky"
   },

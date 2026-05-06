@@ -44,7 +44,9 @@ import { writeReport } from './report';
     if (r.judgeMode === 'A') recordsHasReference[r.endpoint] = true;
   }
 
-  const decisions = decide(agg, { recordsHasReference });
+  const gateMode = (process.env.BAKE_OFF_DECISION_MODE === 'practical') ? 'practical' : 'strict';
+  const practicalPassGate = parseFloat(process.env.BAKE_OFF_PRACTICAL_PASS_GATE ?? '0.80');
+  const decisions = decide(agg, { recordsHasReference, gateMode, practicalPassGate });
   const reportPath = writeReport({
     runId,
     outDir: path.dirname(jsonlPath),
