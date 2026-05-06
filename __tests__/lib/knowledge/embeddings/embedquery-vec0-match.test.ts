@@ -177,7 +177,7 @@ describe("embedQuery → vec0 MATCH integration", () => {
         .prepare(
           `SELECT rowid, content, metadata, distance FROM imsbc_vec WHERE embedding MATCH ? ORDER BY distance LIMIT 3`
         )
-        .all(JSON.stringify(Array.from(embedding)));
+        .all(JSON.stringify(Array.from(embedding))) as any[];
 
       // Verify results are ordered by distance ascending
       expect(results.length).toBe(3);
@@ -235,7 +235,7 @@ describe("embedQuery → vec0 MATCH integration", () => {
         .prepare(
           `SELECT rowid, content, metadata, distance FROM imsbc_vec WHERE embedding MATCH ? ORDER BY distance LIMIT 1`
         )
-        .all(JSON.stringify(Array.from(embedding)));
+        .all(JSON.stringify(Array.from(embedding))) as any[];
 
       // Expected cosine distance for identical normalized vectors: 1 - 1.0 = 0.0
       // (or very close to 0 due to floating point precision)
@@ -316,7 +316,7 @@ describe("embedQuery → vec0 MATCH integration", () => {
         .prepare(
           `SELECT rowid, content, metadata, distance FROM imsbc_vec WHERE embedding MATCH ? ORDER BY distance LIMIT 3`
         )
-        .all(JSON.stringify(Array.from(embedding)));
+        .all(JSON.stringify(Array.from(embedding))) as any[];
 
       // Verify shipping document is the closest match (lowest distance)
       expect(results.length).toBe(3);
@@ -368,7 +368,7 @@ describe("embedQuery → vec0 MATCH integration", () => {
         .prepare(
           `SELECT rowid, content FROM imsbc_vec WHERE embedding MATCH ? ORDER BY distance LIMIT 1`
         )
-        .all(JSON.stringify(Array.from(embedding)));
+        .all(JSON.stringify(Array.from(embedding))) as any[];
 
       expect(results.length).toBe(1);
       expect(results[0].content).toBe("IMSBC test content");
@@ -415,7 +415,7 @@ describe("embedQuery → vec0 MATCH integration", () => {
         .prepare(
           `SELECT rowid, content FROM igc_vec WHERE embedding MATCH ? ORDER BY distance LIMIT 1`
         )
-        .all(JSON.stringify(Array.from(embedding)));
+        .all(JSON.stringify(Array.from(embedding))) as any[];
 
       expect(results.length).toBe(1);
       expect(results[0].content).toBe("IGC test content");
@@ -462,7 +462,7 @@ describe("embedQuery → vec0 MATCH integration", () => {
         .prepare(
           `SELECT rowid, content FROM jwc_vec WHERE embedding MATCH ? ORDER BY distance LIMIT 1`
         )
-        .all(JSON.stringify(Array.from(embedding)));
+        .all(JSON.stringify(Array.from(embedding))) as any[];
 
       expect(results.length).toBe(1);
       expect(results[0].content).toBe("JWC test content");
@@ -504,7 +504,7 @@ describe("embedQuery → vec0 MATCH integration", () => {
         .prepare(
           `SELECT rowid, content FROM imsbc_vec WHERE embedding MATCH ? ORDER BY distance LIMIT 5`
         )
-        .all(JSON.stringify(Array.from(embedding)));
+        .all(JSON.stringify(Array.from(embedding))) as any[];
 
       expect(results.length).toBe(0);
     });
