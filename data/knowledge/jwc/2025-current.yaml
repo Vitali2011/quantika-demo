@@ -32,38 +32,46 @@ zones:
   - zone_id: persian-gulf-oman-indian-ocean
     name: Persian/Arabian Gulf, Gulf of Oman, Indian Ocean, Gulf of Aden (JWLA-033 amended zone)
     region: persian-gulf
-    transit_rate_pct: null
-    hold_rate_pct: null
+    transit_rate_pct: 0.75
+    hold_rate_pct: 0.53
     polygon_geojson: |
       {"type":"Polygon","coordinates":[[[32.5,18.0],[41.5,12.0],[43.5,11.5],[48.5,11.5],[55.0,12.0],[60.15,10.8],[65.0,10.8],[65.0,25.32],[63.0,24.5],[57.0,22.5],[55.0,22.5],[50.5,24.0],[48.5,24.0],[47.0,22.5],[43.5,14.0],[41.5,12.5],[38.5,14.0],[35.0,16.0],[32.5,18.0]]]}
     port_list: AEJEBEL,AEKHALIFAH,KWSHUAIBA,IQBASRA,IRBANDER,OMSOHAR,BHMINA,DJJIB
-    confidence: needs-vitali-input
+    confidence: low
     notes: >
       JWLA-033 (3 March 2026) fundamentally restructured this zone, merging Persian Gulf, Gulf of Oman,
       Indian Ocean HRA, Gulf of Aden and Southern Red Sea into one expanded polygon.
       Boundary: NW = Red Sea south of 18°N; NE = Pakistan coast at 25°19'15"N 65°E; E = points
       10°48'N 65°E → 10°48'N 60°15'E → 6°45'S 48°45'E; SW = Somalia border 1°40'S 41°34'E to
       6°45'S 48°45'E.
-      Following Iran-Israel escalation Feb/Mar 2026, Hormuz transit rates rose from 0.2% to 0.8-1.5%
-      with some insurers quoting double-digit millions per VLCC voyage (Lloyd's List Mar 2026).
+      Following Iran-Israel escalation Feb/Mar 2026, Gulf calls (not transiting Hormuz) quoted
+      0.5%-1.0% per transit (Lloyd's List March 2026, https://www.lloydslist.com/LL1156502/).
       LMA statement: "safety concerns, not insurance availability, driving reduced vessel traffic".
-      Rate null — extreme volatility, requires real-time underwriter quote.
+      transit_rate_pct = 0.75% (midpoint of 0.5-1.0% Gulf-calls-not-transiting-Hormuz range).
+      hold_rate_pct = 0.53% (70% industry rule of thumb). CAUTION: rates are for non-Hormuz
+      Gulf calls only; Hormuz strait transit is a separate sub-zone with 1.5-3%+ rates.
+      Rates highly volatile — treat as order-of-magnitude; obtain live underwriter quote per voyage.
 
   - zone_id: strait-of-hormuz
     name: Strait of Hormuz (Iran territorial waters)
     region: persian-gulf
-    transit_rate_pct: null
-    hold_rate_pct: null
+    transit_rate_pct: 2.25
+    hold_rate_pct: 1.58
     polygon_geojson: |
       {"type":"Polygon","coordinates":[[[55.5,23.5],[56.0,24.0],[57.5,24.5],[58.8,23.8],[59.0,22.5],[58.0,21.8],[56.5,22.0],[55.5,22.8],[55.0,23.0],[55.5,23.5]]]}
     port_list: AEJEBEL,IRBANDER,IRABAD
-    confidence: needs-vitali-input
+    confidence: low
     notes: >
       Highest-risk chokepoint. JWLA-033 Iran listing effective 12 March 2026 covers all Iranian
-      territorial waters. Post-escalation Mar 2026: underwriters quoting 0.8-1.5% per transit,
-      some at 10%+ of hull value for VLCC (S&P Global Mar 2026). Several insurers withdrew
-      coverage entirely. Insurance available within Lloyd's and London company market per LMA
-      statement Mar 2026. Rate null — must obtain live underwriter quote.
+      territorial waters. Following US/Israeli strikes on Iran late Feb 2026, Hormuz transit rates
+      reported at 1.5%-3.0% of hull value for standard vessels (Lloyd's List March 2026,
+      https://www.lloydslist.com/LL1156502/). US/UK/Israeli-flagged or -linked vessels pay up to 3x
+      more (same source). Pre-conflict rate was 0.15-0.25%. Several insurers withdrew; coverage
+      remains available within Lloyd's and London company market per LMA statement March 2026.
+      transit_rate_pct = 2.25% (midpoint of 1.5-3.0% range, neutral-flag vessel).
+      hold_rate_pct = 1.58% (70% industry rule of thumb). CAUTION: extreme volatility, daily
+      price changes — quoted rates changed by 1000%+ in 48 hours during crisis onset.
+      Must obtain live underwriter quote per voyage; these figures are indicative only.
 
   - zone_id: black-sea
     name: Black Sea and Sea of Azov
@@ -85,18 +93,22 @@ zones:
   - zone_id: gulf-of-guinea
     name: Gulf of Guinea (piracy risk)
     region: gulf-of-guinea
-    transit_rate_pct: null
-    hold_rate_pct: null
+    transit_rate_pct: 0.50
+    hold_rate_pct: 0.35
     polygon_geojson: |
       {"type":"Polygon","coordinates":[[[-5.0,-4.0],[2.5,-4.5],[5.0,-3.5],[7.0,-2.0],[8.5,1.0],[9.0,3.5],[7.5,6.0],[4.5,6.5],[1.5,6.0],[-1.0,5.0],[-3.0,4.0],[-5.5,4.5],[-6.5,3.0],[-5.5,-1.0],[-5.0,-4.0]]]}
     port_list: NGAPP,NGLAG,GHTEM,BJANL,CMDLE
-    confidence: needs-vitali-input
+    confidence: low
     notes: >
       Piracy and armed robbery risk, primarily Nigeria / Benin / Cameroon coastal waters.
       IMB Piracy Report 2025: Gulf of Guinea remains primary piracy hotspot globally though
       incident numbers declined from 2023 peak. JWC listing maintained.
-      Rates not publicly available — negotiated individually. Industry estimates 2024-2025:
-      transit 0.10-0.30% depending on port, vessel type, voyage duration. Require underwriter quote.
+      ShipUniverse 2025 war risk analysis (https://www.shipuniverse.com/the-top-8-regions-driving-up-war-risk-premiums-in-2025/):
+      "Standard war-risk premiums range from 0.3 to 0.7 percent of vessel value per voyage."
+      Shipping to Nigerian ports alone: $1.5 billion in premiums over 3 years.
+      transit_rate_pct = 0.50% (midpoint of 0.3-0.7% range). hold_rate_pct = 0.35% (70% rule of thumb).
+      Note: range is wide and vessel/port-specific. Nigerian port calls attract higher end; Ghanaian
+      ports lower. Confirm with underwriter per voyage destination.
 
   - zone_id: libya
     name: Libya (territorial waters)
