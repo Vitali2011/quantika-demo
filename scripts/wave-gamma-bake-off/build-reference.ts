@@ -16,7 +16,7 @@
  * through naturally for those entries in the bake-off run).
  */
 
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import pLimit from 'p-limit';
 
@@ -37,7 +37,24 @@ interface ReferenceMap {
   const corpus = await loadCorpus();
   console.log(`Loaded ${corpus.length} cases. Building Pro 2.5 reference set…`);
 
-  const baseline: ReferenceMap = {};
+  // Optional endpoint filter — when set, only rebuild reference for those
+  // endpoints and PRESERVE existing entries for other endpoints.
+  const endpointFilterRaw = process.env.BAKE_OFF_ENDPOINT_FILTER;
+  const endpointFilter = endpointFilterRaw
+    ? (endpointFilterRaw.split(',').map((s) => s.trim()).filter(Boolean) as Endpoint[])
+    : null;
+
+  let baseline: ReferenceMap = {};
+  if (endpointFilter && existsSync(OUT_PATH)) {
+    baseline = JSON.parse(readFileSync(OUT_PATH, 'utf-8')) as ReferenceMap;
+    // Wipe filtered endpoints from existing baseline so they get rebuilt cleanly.
+    for (const caseId of Object.keys(baseline)) {
+      for (const ep of endpointFilter) {
+        delete baseline[caseId][ep];
+      }
+    }
+    console.log(`[merge] Loaded existing baseline; rebuilding endpoints: ${endpointFilter.join(', ')}`);
+  }
   let captured = 0;
   let skipped = 0;
   let totalCost = 0;
@@ -48,6 +65,7 @@ interface ReferenceMap {
   for (const cse of corpus) {
     for (const endpoint of cse.endpoints) {
       if (!ENDPOINTS.includes(endpoint)) continue;
+      if (endpointFilter && !endpointFilter.includes(endpoint)) continue;
       tasks.push(
         limit(async () => {
           const spec = getEndpointSpec(endpoint);

@@ -19,6 +19,8 @@ import { runBakeOff } from './orchestrator';
 import { aggregate } from './aggregate';
 import { decide } from './decide';
 import { writeReport } from './report';
+import type { Endpoint } from './corpus';
+import { ENDPOINTS } from './endpoint-specs';
 
 (async () => {
   const concurrency = parseInt(process.env.BAKE_OFF_CONCURRENCY ?? '5', 10);
@@ -29,10 +31,25 @@ import { writeReport } from './report';
   const modelFilter = modelFilterRaw
     ? modelFilterRaw.split(',').map((s) => s.trim()).filter(Boolean)
     : undefined;
+  // Comma-separated allowlist of endpoints, e.g.
+  //   BAKE_OFF_ENDPOINT_FILTER=parse-vessel
+  // Useful for re-running a single endpoint after a prompt tweak.
+  const endpointFilterRaw = process.env.BAKE_OFF_ENDPOINT_FILTER;
+  const endpointFilter = endpointFilterRaw
+    ? (endpointFilterRaw.split(',').map((s) => s.trim()).filter(Boolean) as Endpoint[])
+    : undefined;
+  if (endpointFilter) {
+    const unknown = endpointFilter.filter((e) => !ENDPOINTS.includes(e));
+    if (unknown.length > 0) {
+      throw new Error(`BAKE_OFF_ENDPOINT_FILTER contains unknown endpoint(s): ${unknown.join(', ')}. Valid: ${ENDPOINTS.join(', ')}`);
+    }
+  }
+
   const { records, runId, jsonlPath } = await runBakeOff({
     outDir: '.specs/wave-gamma-vertex/bake-off-results',
     concurrency,
     modelFilter,
+    endpointFilter,
   });
 
   const agg = aggregate(records);
