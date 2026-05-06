@@ -18,6 +18,7 @@ export interface Chunk {
 }
 
 export interface RetrievedChunk extends Chunk {
-  distance: number; // Cosine distance from query vector
+  distance: number; // Cosine distance from query vector (or RRF score in hybrid retrieval)
   chunkId: string; // Database row ID
+  score?: number; // Optional RRF score for hybrid retrieval (spec-07)
 }
