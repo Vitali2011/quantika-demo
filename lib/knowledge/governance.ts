@@ -152,7 +152,7 @@ export function listSources(db: Database.Database, opts: { slug?: string } = {})
       last_synced_at, stale_threshold_days, consecutive_failures,
       row_count, refresh_command, last_error, upstream_version,
       CASE
-        WHEN consecutive_failures >= 3 THEN 'failing'
+        WHEN consecutive_failures >= 1 THEN 'failing'
         WHEN last_synced_at IS NULL THEN 'never_synced'
         WHEN julianday('now') - julianday(last_synced_at) > stale_threshold_days THEN 'overdue'
         ELSE 'ok'
@@ -165,7 +165,7 @@ export function listSources(db: Database.Database, opts: { slug?: string } = {})
     ${where}
     ORDER BY
       CASE
-        WHEN consecutive_failures >= 3 THEN 0
+        WHEN consecutive_failures >= 1 THEN 0
         WHEN last_synced_at IS NULL THEN 1
         WHEN julianday('now') - julianday(last_synced_at) > stale_threshold_days THEN 2
         ELSE 3
