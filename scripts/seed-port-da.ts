@@ -15,9 +15,9 @@
  * Idempotent: uses INSERT OR REPLACE (UNIQUE constraint on port_code+dwt brackets+cargo_type).
  */
 
-import Database from 'better-sqlite3';
 import * as fs from 'fs';
 import * as path from 'path';
+import { getDb } from '../lib/db/index';
 import { runMigrations } from '../lib/migrations/runner';
 import { allMigrations } from '../lib/migrations/index';
 
@@ -199,7 +199,7 @@ async function main(): Promise<void> {
     fs.mkdirSync(dataDir, { recursive: true });
   }
 
-  const db = new Database(dbPath);
+  const db = getDb(dbPath);
   runMigrations(db, allMigrations);
 
   const baselinePath = path.join(__dirname, 'seed-data', 'port-da-base.json');
