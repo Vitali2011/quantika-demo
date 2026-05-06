@@ -5,7 +5,7 @@
  * Usage:
  *   npx tsx scripts/knowledge/sources/distances.ts
  *
- * Input: data/knowledge/top-200-ports.json (200 LOCODE strings)
+ * Input: data/knowledge/top-200-ports.json (200 port objects with locode, name, country, lat, lon, rank, category)
  * Output: ~60K rows in port_distances (200×199/2 pairs × 3 routes)
  *
  * Progress: Logs percentage every 60s for ops visibility
@@ -142,7 +142,8 @@ export async function seedDistances(
       throw new Error(`Port list file not found: ${portListPath}`);
     }
     const content = fs.readFileSync(portListPath, 'utf-8');
-    locodes = JSON.parse(content);
+    const ports = JSON.parse(content) as Array<{ locode: string }>;
+    locodes = ports.map((p) => p.locode);
   }
 
   // Empty port list → log warning and exit

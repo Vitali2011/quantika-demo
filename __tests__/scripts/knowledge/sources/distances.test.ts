@@ -6,9 +6,13 @@
  * - Idempotency: re-run doesn't duplicate rows
  * - Progress logging
  * - Batch insert in transactions
+ *
+ * Integration smoke: top-200-ports.json → seedDistances default path
  */
 
 import Database from 'better-sqlite3';
+import * as fs from 'fs';
+import * as path from 'path';
 import migration015 from '@/lib/migrations/015-port-distances';
 import migration013 from '@/lib/migrations/013-knowledge-sources';
 
@@ -232,6 +236,66 @@ describe('distances seed script', () => {
 
       // 10 ports = 10×9/2 = 45 unique pairs × 3 routes = 135 rows
       expect(count.cnt).toBe(135);
+    });
+  });
+
+  describe('Integration smoke — top-200-ports.json default path', () => {
+    it('reads ports.json (new object shape) without throwing', async () => {
+      // This test exercises the default file-loading path in seedDistances()
+      // and verifies that the new {locode, name, ...}[] shape is handled correctly.
+      // It does NOT call seedDistances (which needs DB + searoute) — instead it
+      // directly validates that the JSON produces valid LOCODE strings.
+      const portListPath = path.join(process.cwd(), 'data', 'knowledge', 'top-200-ports.json');
+      const content = fs.readFileSync(portListPath, 'utf-8');
+      const raw: unknown[] = JSON.parse(content);
+
+      // New shape: array of objects
+      expect(Array.isArray(raw)).toBe(true);
+      expect(raw.length).toBe(200);
+
+      // Each entry must be an object with a locode string (not a raw string)
+      for (const entry of raw) {
+        expect(typeof entry).toBe('object');
+        expect(entry).not.toBeNull();
+        expect(typeof (entry as { locode: string }).locode).toBe('string');
+      }
+
+      // Extract LOCODEs — this is what the fixed distances.ts must do
+      const locodes = (raw as Array<{ locode: string }>).map((p) => p.locode);
+
+      // 5 well-known LOCODEs must be present
+      for (const known of ['SGSIN', 'NLRTM', 'CNSHA', 'USHOU', 'AEDXB']) {
+        expect(locodes).toContain(known);
+      }
+
+      // Singapore coordinates
+      const singapore = (raw as Array<{ locode: string; lat: number; lon: number }>).find(
+        (p) => p.locode === 'SGSIN'
+      );
+      expect(singapore).toBeDefined();
+      expect(singapore!.lat).toBeCloseTo(1.27, 1);
+      expect(singapore!.lon).toBeCloseTo(103.83, 1);
+    });
+
+    it('generatePairs via seedDistances default path yields valid LOCODE strings (not [object Object])', async () => {
+      // This test calls seedDistances() without portList so it reads top-200-ports.json.
+      // Before the fix: isValidLocode receives "[object Object]" → all skipped → 0 pairs.
+      // After the fix: receives proper LOCODE strings → valid pairs generated.
+      const { seedDistances } = await import('@/scripts/knowledge/sources/distances');
+
+      // Override calculateDistance to count calls — if pairs are generated we get calls
+      const { calculateDistance } = await import('@/lib/knowledge/distances/client');
+      const mockCalc = calculateDistance as jest.MockedFunction<typeof calculateDistance>;
+      mockCalc.mockResolvedValue({ distanceNm: 1000, calculatorVersion: 'searoute-1.0.0' });
+
+      await seedDistances(db);
+
+      // After the fix: 200 valid ports → 200×199/2 = 19900 pairs → calculateDistance called many times
+      // Before the fix: all ports treated as invalid → 0 calls
+      expect(mockCalc).toHaveBeenCalled();
+
+      // At least a few hundred pairs must have been attempted
+      expect(mockCalc.mock.calls.length).toBeGreaterThan(100);
     });
   });
 
