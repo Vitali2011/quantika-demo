@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getStore } from '@/lib/session-store';
 import { listSources } from '@/lib/knowledge/governance';
+import { requireAdmin } from '@/lib/auth/admin';
 
 /**
  * GET /api/admin/knowledge-status
@@ -8,8 +9,8 @@ import { listSources } from '@/lib/knowledge/governance';
  * Returns the health status of all knowledge sources registered in the system,
  * along with a summary of fresh/stale/failed counts.
  *
- * Auth: TODO - In Phase 1, this endpoint is temporarily open for development.
- * Production deployment requires admin session middleware (to be added in later phase).
+ * Auth: requires X-Admin-Token header matching ADMIN_TOKEN env var
+ * (same shared-secret pattern as /api/admin/cron-heartbeat).
  *
  * Response:
  * - sources: Array of SourceRow with health_signal computed
@@ -17,8 +18,8 @@ import { listSources } from '@/lib/knowledge/governance';
  * - last_check: ISO timestamp of this request
  */
 export async function GET(req: NextRequest) {
-  // TODO: Add admin auth check - await requireAdmin(req)
-  // For Phase 1, allowing unauthenticated access for development/testing
+  const denied = requireAdmin(req);
+  if (denied) return denied;
 
   const db = getStore().getDb();
   const sources = listSources(db);

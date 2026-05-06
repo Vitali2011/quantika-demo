@@ -4,19 +4,63 @@
  * Manual trigger endpoint for refreshing knowledge sources.
  * Validates slug against KNOWLEDGE_REGISTRY whitelist (security-critical).
  * Returns 202 Accepted immediately after spawning background refresh process.
+ *
+ * Auth (FINDING-001): requires X-Admin-Token header matching ADMIN_TOKEN env var.
  */
 
 import { NextRequest } from 'next/server';
 import { POST } from '@/app/api/admin/knowledge/refresh/route';
 import { KNOWLEDGE_REGISTRY } from '@/lib/knowledge/bootstrap';
 
+const ADMIN_TOKEN = 'test-admin-token-knowledge-refresh';
+
+function authedHeaders(extra: Record<string, string> = {}) {
+  return {
+    'content-type': 'application/json',
+    'X-Admin-Token': ADMIN_TOKEN,
+    ...extra,
+  };
+}
+
 describe('POST /api/admin/knowledge/refresh', () => {
+  const originalToken = process.env.ADMIN_TOKEN;
+
+  beforeAll(() => {
+    process.env.ADMIN_TOKEN = ADMIN_TOKEN;
+  });
+
+  afterAll(() => {
+    if (originalToken === undefined) delete process.env.ADMIN_TOKEN;
+    else process.env.ADMIN_TOKEN = originalToken;
+  });
+
+  // Auth (FINDING-001)
+  it('rejects request without X-Admin-Token header (401)', async () => {
+    const req = new NextRequest('http://localhost/api/admin/knowledge/refresh', {
+      method: 'POST',
+      body: JSON.stringify({ slug: KNOWLEDGE_REGISTRY[0].slug }),
+      headers: { 'content-type': 'application/json' },
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(401);
+  });
+
+  it('rejects request with invalid X-Admin-Token header (401)', async () => {
+    const req = new NextRequest('http://localhost/api/admin/knowledge/refresh', {
+      method: 'POST',
+      body: JSON.stringify({ slug: KNOWLEDGE_REGISTRY[0].slug }),
+      headers: { 'content-type': 'application/json', 'X-Admin-Token': 'wrong-token' },
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(401);
+  });
+
   // Input Contract: Empty/falsy slug
   it('returns 400 when slug is missing', async () => {
     const req = new NextRequest('http://localhost/api/admin/knowledge/refresh', {
       method: 'POST',
       body: JSON.stringify({}),
-      headers: { 'content-type': 'application/json' },
+      headers: authedHeaders(),
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
@@ -28,7 +72,7 @@ describe('POST /api/admin/knowledge/refresh', () => {
     const req = new NextRequest('http://localhost/api/admin/knowledge/refresh', {
       method: 'POST',
       body: JSON.stringify({ slug: '' }),
-      headers: { 'content-type': 'application/json' },
+      headers: authedHeaders(),
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
@@ -40,7 +84,7 @@ describe('POST /api/admin/knowledge/refresh', () => {
     const req = new NextRequest('http://localhost/api/admin/knowledge/refresh', {
       method: 'POST',
       body: JSON.stringify({ slug: null }),
-      headers: { 'content-type': 'application/json' },
+      headers: authedHeaders(),
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
@@ -51,7 +95,7 @@ describe('POST /api/admin/knowledge/refresh', () => {
     const req = new NextRequest('http://localhost/api/admin/knowledge/refresh', {
       method: 'POST',
       body: JSON.stringify({ slug: 123 }),
-      headers: { 'content-type': 'application/json' },
+      headers: authedHeaders(),
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
@@ -62,7 +106,7 @@ describe('POST /api/admin/knowledge/refresh', () => {
     const req = new NextRequest('http://localhost/api/admin/knowledge/refresh', {
       method: 'POST',
       body: JSON.stringify({ slug: 'unknown-source-not-in-registry' }),
-      headers: { 'content-type': 'application/json' },
+      headers: authedHeaders(),
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
@@ -78,7 +122,7 @@ describe('POST /api/admin/knowledge/refresh', () => {
     const req = new NextRequest('http://localhost/api/admin/knowledge/refresh', {
       method: 'POST',
       body: JSON.stringify({ slug: validSlug }),
-      headers: { 'content-type': 'application/json' },
+      headers: authedHeaders(),
     });
     const res = await POST(req);
     expect(res.status).toBe(202);
@@ -102,7 +146,7 @@ describe('POST /api/admin/knowledge/refresh', () => {
       const req = new NextRequest('http://localhost/api/admin/knowledge/refresh', {
         method: 'POST',
         body: JSON.stringify({ slug: validSlug }),
-        headers: { 'content-type': 'application/json' },
+        headers: authedHeaders(),
       });
       const res = await POST(req);
       expect(res.status).toBe(202);
@@ -117,7 +161,7 @@ describe('POST /api/admin/knowledge/refresh', () => {
     const req = new NextRequest('http://localhost/api/admin/knowledge/refresh', {
       method: 'POST',
       body: JSON.stringify({ slug: "ofac'; DROP TABLE knowledge_sources; --" }),
-      headers: { 'content-type': 'application/json' },
+      headers: authedHeaders(),
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
@@ -128,7 +172,7 @@ describe('POST /api/admin/knowledge/refresh', () => {
     const req = new NextRequest('http://localhost/api/admin/knowledge/refresh', {
       method: 'POST',
       body: JSON.stringify({ slug: 'ofac && rm -rf /' }),
-      headers: { 'content-type': 'application/json' },
+      headers: authedHeaders(),
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
@@ -141,7 +185,7 @@ describe('POST /api/admin/knowledge/refresh', () => {
     const req = new NextRequest('http://localhost/api/admin/knowledge/refresh', {
       method: 'POST',
       body: JSON.stringify({ slug: validSlug }),
-      headers: { 'content-type': 'application/json' },
+      headers: authedHeaders(),
     });
     const res = await POST(req);
     const json = await res.json();

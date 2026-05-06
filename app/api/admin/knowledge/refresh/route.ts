@@ -3,6 +3,7 @@ import { spawn } from 'child_process';
 import { getStore } from '@/lib/session-store';
 import { reportSyncStarted } from '@/lib/knowledge/governance';
 import { KNOWLEDGE_REGISTRY } from '@/lib/knowledge/bootstrap';
+import { requireAdmin } from '@/lib/auth/admin';
 
 /**
  * POST /api/admin/knowledge/refresh
@@ -10,8 +11,8 @@ import { KNOWLEDGE_REGISTRY } from '@/lib/knowledge/bootstrap';
  * Manual trigger endpoint for refreshing a knowledge source.
  * Spawns a background process to run the refresh script.
  *
- * Auth: TODO - In Phase 1, this endpoint is temporarily open for development.
- * Production deployment requires admin session middleware (to be added in later phase).
+ * Auth: requires X-Admin-Token header matching ADMIN_TOKEN env var
+ * (same shared-secret pattern as /api/admin/cron-heartbeat).
  *
  * Request body:
  * - slug: string (required) - must match a slug in KNOWLEDGE_REGISTRY
@@ -36,8 +37,8 @@ import { KNOWLEDGE_REGISTRY } from '@/lib/knowledge/bootstrap';
 const VALID_SLUGS = new Set(KNOWLEDGE_REGISTRY.map((r) => r.slug));
 
 export async function POST(req: NextRequest) {
-  // TODO: Add admin auth check - await requireAdmin(req)
-  // For Phase 1, allowing unauthenticated access for development/testing
+  const denied = requireAdmin(req);
+  if (denied) return denied;
 
   let body: any;
   try {
