@@ -11,9 +11,9 @@
  *   SESSIONS_DB_PATH — path to sqlite db (default: data/sessions.db)
  */
 
-import Database from 'better-sqlite3';
 import * as path from 'path';
 import * as fs from 'fs';
+import { getDb } from '../../lib/db/index';
 import { runMigrations } from '../../lib/migrations/runner';
 import { allMigrations } from '../../lib/migrations/index';
 import { bootstrapKnowledgeSources } from '../../lib/knowledge/bootstrap';
@@ -60,7 +60,7 @@ async function main(): Promise<void> {
     fs.mkdirSync(dataDir, { recursive: true });
   }
 
-  const db = new Database(dbPath);
+  const db = getDb(dbPath);
   db.pragma('foreign_keys = ON');
   runMigrations(db, allMigrations);
   bootstrapKnowledgeSources(db);
