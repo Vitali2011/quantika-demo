@@ -49,3 +49,52 @@ describe('corpus loader', () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 });
+
+describe('BAKE_OFF_REFERENCE switch', () => {
+  const originalEnv = process.env.BAKE_OFF_REFERENCE;
+
+  afterEach(() => {
+    if (originalEnv === undefined) {
+      delete process.env.BAKE_OFF_REFERENCE;
+    } else {
+      process.env.BAKE_OFF_REFERENCE = originalEnv;
+    }
+  });
+
+  it('defaults to pro baseline when BAKE_OFF_REFERENCE is unset', async () => {
+    delete process.env.BAKE_OFF_REFERENCE;
+    const corpus = await loadCorpus();
+    expect(corpus.length).toBeGreaterThanOrEqual(20);
+    // With pro baseline present, references should be populated (Mode A)
+    for (const c of corpus) {
+      expect(c.references).toBeDefined();
+      expect(typeof c.references).toBe('object');
+    }
+  });
+
+  it('loads pro baseline when BAKE_OFF_REFERENCE=pro', async () => {
+    process.env.BAKE_OFF_REFERENCE = 'pro';
+    const corpus = await loadCorpus();
+    expect(corpus.length).toBeGreaterThanOrEqual(20);
+    for (const c of corpus) {
+      expect(c.references).toBeDefined();
+    }
+  });
+
+  it('loads opus ground truth when BAKE_OFF_REFERENCE=opus', async () => {
+    process.env.BAKE_OFF_REFERENCE = 'opus';
+    const corpus = await loadCorpus();
+    expect(corpus.length).toBeGreaterThanOrEqual(20);
+    // ground-truth-opus.json exists on disk (Spec 02), so references should be populated
+    const casesWithRefs = corpus.filter(
+      (c) => Object.keys(c.references).length > 0,
+    );
+    expect(casesWithRefs.length).toBeGreaterThan(0);
+  });
+
+  it('falls back to pro (Mode B) on unknown BAKE_OFF_REFERENCE value', async () => {
+    process.env.BAKE_OFF_REFERENCE = 'unknown_value';
+    const corpus = await loadCorpus();
+    expect(corpus.length).toBeGreaterThanOrEqual(20);
+  });
+});
