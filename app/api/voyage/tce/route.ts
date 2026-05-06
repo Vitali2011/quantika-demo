@@ -14,6 +14,8 @@ import { calculateTCE, type VoyageInput } from '@/lib/economics/voyage-calculato
 import { quoteCanal, type CanalCode, type SuezInput, type CanalInput } from '@/lib/economics/canals/index';
 import { getPortDa } from '@/lib/port-da/repository';
 import { resolvePort, type ResolvedPort } from '@/lib/ports/resolve';
+import { getDistance } from '@/lib/knowledge/distances/lookup';
+import { getStore } from '@/lib/session-store';
 
 const LOCODE_RE = /^[A-Za-z]{5}$/;
 
@@ -54,7 +56,7 @@ const VoyageInputSchema = z.object({
   route: z.object({
     originPort: z.string(),
     destinationPort: z.string(),
-    distanceNm: z.number().positive('distanceNm must be > 0'),
+    distanceNm: z.number().positive('distanceNm must be > 0').optional(),
     viaSuez: z.boolean().optional(),
     viaCanal: z.string().optional(),
   }),
@@ -124,6 +126,48 @@ function resolveDaUsd(
   return total;
 }
 
+/**
+ * Resolve distance from route input.
+ * Priority:
+ * 1. Explicit distanceNm in request → use it (user override)
+ * 2. KNOWLEDGE_LAYER_DISTANCES_ENABLED=true → auto-resolve via getDistance()
+ * 3. Otherwise → error (require explicit distanceNm)
+ */
+async function resolveDistanceNm(
+  body: z.infer<typeof VoyageInputSchema>,
+  originResolved: ResolvedPort,
+  destinationResolved: ResolvedPort,
+): Promise<{ distanceNm: number; error?: string }> {
+  // User provided explicit distanceNm → use it
+  if (typeof body.route.distanceNm === 'number') {
+    return { distanceNm: body.route.distanceNm };
+  }
+
+  // Flag OFF → require explicit distanceNm
+  const flagEnabled = process.env.KNOWLEDGE_LAYER_DISTANCES_ENABLED === 'true';
+  if (!flagEnabled) {
+    return { distanceNm: 0, error: 'distanceNm is required when KNOWLEDGE_LAYER_DISTANCES_ENABLED is not enabled' };
+  }
+
+  // Flag ON → auto-resolve via getDistance()
+  try {
+    const routeVia = body.route.viaSuez ? 'suez' : body.route.viaCanal ?? 'direct';
+    const db = getStore().getDb();
+    const result = await getDistance(
+      db,
+      originResolved.portCode,
+      destinationResolved.portCode,
+      routeVia,
+    );
+    return { distanceNm: result.distanceNm };
+  } catch (err) {
+    return {
+      distanceNm: 0,
+      error: `Cannot auto-resolve distance: ${err instanceof Error ? err.message : String(err)}`,
+    };
+  }
+}
+
 export async function POST(request: NextRequest): Promise<NextResponse> {
   let body: unknown;
   try {
@@ -161,6 +205,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const canalUsd = resolveCanalUsd(data);
   const daUsd = resolveDaUsd(data, originResolved, destinationResolved);
 
+  // Resolve distance (explicit or auto-resolve if flag enabled)
+  const distanceResult = await resolveDistanceNm(data, originResolved, destinationResolved);
+  if (distanceResult.error) {
+    return NextResponse.json(
+      { error: distanceResult.error },
+      { status: 400 },
+    );
+  }
+
   const tceInput: VoyageInput = {
     vessel: {
       dwt: data.vessel.dwt,
@@ -170,6 +223,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     },
     route: {
       ...data.route,
+      distanceNm: distanceResult.distanceNm,
       // Pass canonical port names downstream for war_risk matching
       originPort: originResolved.portName,
       destinationPort: destinationResolved.portName,

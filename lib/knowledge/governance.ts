@@ -1,5 +1,6 @@
 import type Database from 'better-sqlite3';
 import type { RegisterSourceInput, SourceRow } from './types';
+import { fireAlert } from './alerts';
 
 export function registerSource(db: Database.Database, input: RegisterSourceInput): void {
   db.prepare(`
@@ -46,11 +47,22 @@ export function registerSource(db: Database.Database, input: RegisterSourceInput
 }
 
 export function reportSyncStarted(db: Database.Database, slug: string): number {
-  const r = db.prepare(`
-    INSERT INTO knowledge_sync_log (source_slug, started_at, status)
-    VALUES (?, CURRENT_TIMESTAMP, 'running')
-  `).run(slug);
-  return Number(r.lastInsertRowid);
+  const tx = db.transaction(() => {
+    db.prepare(`
+      UPDATE knowledge_sync_log
+      SET status = 'aborted',
+          finished_at = CURRENT_TIMESTAMP,
+          error_message = COALESCE(error_message, 'superseded by new sync')
+      WHERE source_slug = ? AND status = 'running'
+    `).run(slug);
+
+    const r = db.prepare(`
+      INSERT INTO knowledge_sync_log (source_slug, started_at, status)
+      VALUES (?, CURRENT_TIMESTAMP, 'running')
+    `).run(slug);
+    return Number(r.lastInsertRowid);
+  });
+  return tx();
 }
 
 export interface SyncSuccessOpts {
@@ -122,6 +134,19 @@ export function reportSyncFailure(
     `).run(String(error?.message ?? error), log.source_slug);
   });
   tx();
+
+  // Fire alert if consecutive_failures >= 2 (threshold per design doc)
+  const source = db.prepare('SELECT consecutive_failures, last_error FROM knowledge_sources WHERE slug = ?').get(log.source_slug) as any;
+  if (source && source.consecutive_failures >= 2) {
+    // Best-effort: don't propagate fireAlert errors
+    fireAlert({
+      slug: log.source_slug,
+      consecutiveFailures: source.consecutive_failures,
+      lastError: source.last_error,
+    }).catch((err) => {
+      console.error(`fireAlert failed for ${log.source_slug}:`, err);
+    });
+  }
 }
 
 export function getSourceStatus(db: Database.Database, slug: string): SourceRow | null {
@@ -138,7 +163,7 @@ export function listSources(db: Database.Database, opts: { slug?: string } = {})
       last_synced_at, stale_threshold_days, consecutive_failures,
       row_count, refresh_command, last_error, upstream_version,
       CASE
-        WHEN consecutive_failures >= 3 THEN 'failing'
+        WHEN consecutive_failures >= 1 THEN 'failing'
         WHEN last_synced_at IS NULL THEN 'never_synced'
         WHEN julianday('now') - julianday(last_synced_at) > stale_threshold_days THEN 'overdue'
         ELSE 'ok'
@@ -151,7 +176,7 @@ export function listSources(db: Database.Database, opts: { slug?: string } = {})
     ${where}
     ORDER BY
       CASE
-        WHEN consecutive_failures >= 3 THEN 0
+        WHEN consecutive_failures >= 1 THEN 0
         WHEN last_synced_at IS NULL THEN 1
         WHEN julianday('now') - julianday(last_synced_at) > stale_threshold_days THEN 2
         ELSE 3

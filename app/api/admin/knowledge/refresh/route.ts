@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { spawn } from 'child_process';
 import { getStore } from '@/lib/session-store';
-import { reportSyncStarted } from '@/lib/knowledge/governance';
+import { reportSyncStarted, reportSyncFailure } from '@/lib/knowledge/governance';
 import { KNOWLEDGE_REGISTRY } from '@/lib/knowledge/bootstrap';
+import { requireAdmin } from '@/lib/auth/admin';
 
 /**
  * POST /api/admin/knowledge/refresh
@@ -10,8 +11,8 @@ import { KNOWLEDGE_REGISTRY } from '@/lib/knowledge/bootstrap';
  * Manual trigger endpoint for refreshing a knowledge source.
  * Spawns a background process to run the refresh script.
  *
- * Auth: TODO - In Phase 1, this endpoint is temporarily open for development.
- * Production deployment requires admin session middleware (to be added in later phase).
+ * Auth: requires X-Admin-Token header matching ADMIN_TOKEN env var
+ * (same shared-secret pattern as /api/admin/cron-heartbeat).
  *
  * Request body:
  * - slug: string (required) - must match a slug in KNOWLEDGE_REGISTRY
@@ -36,8 +37,8 @@ import { KNOWLEDGE_REGISTRY } from '@/lib/knowledge/bootstrap';
 const VALID_SLUGS = new Set(KNOWLEDGE_REGISTRY.map((r) => r.slug));
 
 export async function POST(req: NextRequest) {
-  // TODO: Add admin auth check - await requireAdmin(req)
-  // For Phase 1, allowing unauthenticated access for development/testing
+  const denied = requireAdmin(req);
+  if (denied) return denied;
 
   let body: any;
   try {
@@ -81,6 +82,12 @@ export async function POST(req: NextRequest) {
   // Spawn refresh process in background (fire-and-forget)
   // SECURITY: Using spawn with array args prevents shell injection
   // The slug is already validated against whitelist above
+  //
+  // FINDING-004: previously a failed spawn() (binary not found, OOM) only
+  // logged to console and still returned 202 — but the sync_log row stayed
+  // in status='running' forever (until the next reportSyncStarted aborted
+  // it via KG-2 defense). That was a real production hole when "next call"
+  // never came. Now we close the row immediately and return 503.
   try {
     const child = spawn('npm', ['run', 'knowledge:refresh', '--', slug], {
       detached: true,
@@ -90,9 +97,30 @@ export async function POST(req: NextRequest) {
     // Detach the child process so it continues after parent exits
     child.unref();
   } catch (error) {
-    // If spawn fails, log the error but still return success since sync log was created
-    console.error(`Failed to spawn refresh process for ${slug}:`, error);
-    // Note: In production, this should update the sync log to 'failed' status
+    const err = error instanceof Error ? error : new Error(String(error));
+    console.error(`Failed to spawn refresh process for ${slug}:`, err);
+
+    // Close the sync_log row immediately so it doesn't sit as 'running' forever.
+    // KG-2 abort-orphan-on-next-start logic stays as defense-in-depth, but this
+    // patch closes the hole explicitly.
+    try {
+      reportSyncFailure(db, syncLogId, err);
+    } catch (closeErr) {
+      console.error(
+        `Additionally failed to close sync_log id=${syncLogId} after spawn failure:`,
+        closeErr,
+      );
+    }
+
+    return NextResponse.json(
+      {
+        error: `Failed to start refresh process: ${err.message}`,
+        sync_log_id: syncLogId,
+        slug,
+        status: 'failed',
+      },
+      { status: 503 },
+    );
   }
 
   // Return 202 Accepted immediately

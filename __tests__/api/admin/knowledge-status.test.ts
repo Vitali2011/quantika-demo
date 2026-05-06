@@ -2,16 +2,60 @@
  * TDD tests for B1: GET /api/admin/knowledge-status
  *
  * Returns knowledge sources list with health_signal + summary statistics.
- * Auth requirement: For Phase 1, auth check deferred (TODO marker in route).
- * Will be secured in production via existing session/admin middleware.
+ * Auth: requires X-Admin-Token header matching ADMIN_TOKEN env var
+ * (FINDING-001 — was previously open during Phase 1).
  */
 
 import { NextRequest } from 'next/server';
 import { GET } from '@/app/api/admin/knowledge-status/route';
 
+const ADMIN_TOKEN = 'test-admin-token-knowledge-status';
+const authedHeaders = { 'X-Admin-Token': ADMIN_TOKEN };
+
 describe('GET /api/admin/knowledge-status', () => {
-  it('returns 200 with sources array and summary object', async () => {
+  const originalToken = process.env.ADMIN_TOKEN;
+
+  beforeAll(() => {
+    process.env.ADMIN_TOKEN = ADMIN_TOKEN;
+  });
+
+  afterAll(() => {
+    if (originalToken === undefined) delete process.env.ADMIN_TOKEN;
+    else process.env.ADMIN_TOKEN = originalToken;
+  });
+
+  it('rejects request without X-Admin-Token header (401)', async () => {
     const req = new NextRequest('http://localhost/api/admin/knowledge-status');
+    const res = await GET(req);
+    expect(res.status).toBe(401);
+  });
+
+  it('rejects request with invalid X-Admin-Token header (401)', async () => {
+    const req = new NextRequest('http://localhost/api/admin/knowledge-status', {
+      headers: { 'X-Admin-Token': 'wrong-token' },
+    });
+    const res = await GET(req);
+    expect(res.status).toBe(401);
+  });
+
+  it('returns 500 when ADMIN_TOKEN is not configured on server', async () => {
+    const saved = process.env.ADMIN_TOKEN;
+    delete process.env.ADMIN_TOKEN;
+    try {
+      const req = new NextRequest('http://localhost/api/admin/knowledge-status', {
+        headers: authedHeaders,
+      });
+      const res = await GET(req);
+      expect(res.status).toBe(500);
+    } finally {
+      process.env.ADMIN_TOKEN = saved;
+    }
+  });
+
+  it('returns 200 with sources array and summary object', async () => {
+    const req = new NextRequest('http://localhost/api/admin/knowledge-status', {
+      headers: authedHeaders,
+    });
     const res = await GET(req);
     expect(res.status).toBe(200);
 
@@ -29,7 +73,9 @@ describe('GET /api/admin/knowledge-status', () => {
   });
 
   it('summary counts match expected structure', async () => {
-    const req = new NextRequest('http://localhost/api/admin/knowledge-status');
+    const req = new NextRequest('http://localhost/api/admin/knowledge-status', {
+      headers: authedHeaders,
+    });
     const res = await GET(req);
     const json = await res.json();
 
@@ -44,7 +90,9 @@ describe('GET /api/admin/knowledge-status', () => {
   });
 
   it('sources contain expected knowledge source fields', async () => {
-    const req = new NextRequest('http://localhost/api/admin/knowledge-status');
+    const req = new NextRequest('http://localhost/api/admin/knowledge-status', {
+      headers: authedHeaders,
+    });
     const res = await GET(req);
     const json = await res.json();
 
@@ -58,7 +106,9 @@ describe('GET /api/admin/knowledge-status', () => {
   });
 
   it('last_check is a valid ISO timestamp', async () => {
-    const req = new NextRequest('http://localhost/api/admin/knowledge-status');
+    const req = new NextRequest('http://localhost/api/admin/knowledge-status', {
+      headers: authedHeaders,
+    });
     const res = await GET(req);
     const json = await res.json();
 

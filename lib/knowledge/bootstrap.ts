@@ -130,18 +130,21 @@ export const KNOWLEDGE_REGISTRY: RegisterSourceInput[] = [
 ];
 
 /**
- * Idempotent bootstrap: registers every source from KNOWLEDGE_REGISTRY that is
- * not yet present in `knowledge_sources`. Existing rows are left untouched so
- * that runtime state (status, last_synced_at, consecutive_failures, ...) is
- * preserved across restarts.
+ * Idempotent bootstrap: registers every source from KNOWLEDGE_REGISTRY.
+ * Uses registerSource() which performs ON CONFLICT DO UPDATE on a safe
+ * column-list (name, kind, category, source_url, license, refresh_command,
+ * refresh_mode, stale_threshold_days, primary_table, vector_table,
+ * freshness_check_sql, tenant_scope, metadata, updated_at). Runtime state
+ * (status, last_synced_at, consecutive_failures, last_error, row_count) is
+ * NOT touched, so re-bootstrap on server restart preserves operational state
+ * while propagating any registry-level config changes (e.g. new
+ * stale_threshold_days, updated source_url).
  *
  * Migration 013 must have run before this is called.
  */
 export function bootstrapKnowledgeSources(db: Database.Database): void {
   const tx = db.transaction(() => {
     for (const src of KNOWLEDGE_REGISTRY) {
-      const exists = db.prepare('SELECT 1 FROM knowledge_sources WHERE slug = ?').get(src.slug);
-      if (exists) continue; // preserve runtime status
       registerSource(db, src);
     }
   });

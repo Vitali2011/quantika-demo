@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdnList xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.un.org/sanctions/1.0">
+  <publshInformation>
+    <Publish_Date>05/05/2026</Publish_Date>
+  </publshInformation>
+  <sdnEntry>
+    <uid>12345</uid>
+    <sdnType>Individual</sdnType>
+    <programList>
+      <program>SDGT</program>
+      <program>SYRIA</program>
+    </programList>
+    <firstName>José</firstName>
+    <lastName>García</lastName>
+    <akaList>
+      <aka>
+        <uid>12345-1</uid>
+        <type>a.k.a.</type>
+        <category>strong</category>
+        <firstName>Jose</firstName>
+        <lastName>Garcia</lastName>
+      </aka>
+      <aka>
+        <uid>12345-2</uid>
+        <type>a.k.a.</type>
+        <category>weak</category>
+        <firstName>J.M.</firstName>
+        <lastName>Garcia</lastName>
+      </aka>
+    </akaList>
+    <addressList>
+      <address>
+        <uid>12345-addr1</uid>
+        <country>Syria</country>
+        <address1>123 Main Street</address1>
+      </address>
+    </addressList>
+  </sdnEntry>
+  <sdnEntry>
+    <uid>67890</uid>
+    <sdnType>Entity</sdnType>
+    <programList>
+      <program>IRAN</program>
+    </programList>
+    <lastName>Acme Corporation LLC</lastName>
+    <akaList>
+      <aka>
+        <uid>67890-1</uid>
+        <type>a.k.a.</type>
+        <category>strong</category>
+        <lastName>ACME Corp</lastName>
+      </aka>
+    </akaList>
+    <addressList>
+      <address>
+        <uid>67890-addr1</uid>
+        <country>Iran</country>
+        <city>Tehran</city>
+      </address>
+    </addressList>
+  </sdnEntry>
+  <sdnEntry>
+    <uid>11111</uid>
+    <sdnType>Vessel</sdnType>
+    <programList>
+      <program>UKRAINE-EO13662</program>
+    </programList>
+    <vesselInfo>
+      <callSign>ABC123</callSign>
+      <vesselType>Crude Oil Tanker</vesselType>
+      <tonnage>50000</tonnage>
+      <grossRegisteredTonnage>55000</grossRegisteredTonnage>
+      <vesselFlag>Russia</vesselFlag>
+      <vesselOwner>Bad Shipping Co</vesselOwner>
+    </vesselInfo>
+    <lastName>MV SANCTIONED VESSEL</lastName>
+    <akaList>
+      <aka>
+        <uid>11111-1</uid>
+        <type>a.k.a.</type>
+        <category>strong</category>
+        <lastName>SANCTIONED SHIP</lastName>
+      </aka>
+    </akaList>
+  </sdnEntry>
+</sdnList>

@@ -1,0 +1,87 @@
+# MARPOL Annex VI Emission Control Areas (ECAs)
+# Source: IMO MARPOL Annex VI regulations (publicly available)
+# Sulphur limit: 0.10% m/m inside ECAs (vs 0.50% global cap)
+# Effective dates: 2015-01-01 for sulphur limits
+
+zones:
+  - name: "North Sea ECA"
+    region: "north-sea"
+    fuel_sulphur_max_pct: 0.10
+    effective_from: "2015-01-01"
+    effective_to: null
+    polygon:
+      type: "Polygon"
+      coordinates:
+        - [
+            [5.0, 62.0], # North Norway coast
+            [-4.0, 62.0], # Shetland Islands north
+            [-4.0, 57.5], # Scotland northwest
+            [0.5, 51.0], # English Channel
+            [5.0, 51.0], # Netherlands coast
+            [8.5, 54.5], # Denmark/Germany
+            [8.5, 57.0], # Norway south
+            [5.0, 62.0], # Close polygon
+          ]
+
+  - name: "Baltic Sea ECA"
+    region: "baltic"
+    fuel_sulphur_max_pct: 0.10
+    effective_from: "2015-01-01"
+    effective_to: null
+    polygon:
+      type: "Polygon"
+      coordinates:
+        - [
+            [9.0, 57.4], # Skagen (Denmark)
+            [10.9, 55.8], # Denmark south
+            [13.8, 53.9], # Germany coast
+            [22.0, 54.4], # Poland coast
+            [26.0, 59.9], # Estonia
+            [28.2, 59.5], # Gulf of Finland
+            [30.2, 60.0], # St. Petersburg area
+            [24.0, 65.7], # Gulf of Bothnia north
+            [17.0, 60.7], # Sweden east coast
+            [11.0, 58.6], # Sweden south
+            [9.0, 57.4], # Close polygon
+          ]
+
+  - name: "North America ECA"
+    region: "north-america"
+    fuel_sulphur_max_pct: 0.10
+    effective_from: "2015-01-01"
+    effective_to: null
+    polygon:
+      type: "Polygon"
+      coordinates:
+        - [
+            [-50.0, 43.5], # Grand Banks
+            [-65.82, 42.5], # East coast US/Canada
+            [-67.16, 44.68], # Maine coast
+            [-67.79, 45.13], # Bay of Fundy
+            [-60.0, 46.5], # Nova Scotia
+            [-64.92, 47.53], # Gulf of St. Lawrence
+            [-61.0, 49.25], # Newfoundland
+            [-50.0, 50.0], # North Atlantic
+            [-50.0, 43.5], # Close polygon (200nm from coast)
+          ]
+
+  - name: "NECA Mediterranean"
+    region: "mediterranean"
+    fuel_sulphur_max_pct: 0.10
+    effective_from: "2025-05-01"
+    effective_to: null
+    polygon:
+      type: "Polygon"
+      coordinates:
+        - [
+            [-5.3, 36.0], # Gibraltar
+            [9.5, 37.0], # Tunisia
+            [18.5, 40.4], # Albania/Italy
+            [26.0, 40.9], # Greece/Turkey
+            [36.0, 41.4], # Turkey east
+            [36.0, 30.0], # Levant
+            [32.3, 31.3], # Israel/Egypt
+            [25.0, 34.0], # Libya
+            [10.0, 37.0], # Sicily
+            [-5.3, 36.0], # Close polygon
+          ]
