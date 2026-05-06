@@ -28,6 +28,16 @@ export interface DecideOptions {
    * Defaults to all-true when omitted (i.e. apply Mode A gate).
    */
   recordsHasReference?: Partial<Record<Endpoint, boolean>>;
+  /**
+   * Gate selection mode:
+   *  - "strict" (default): use parityRate + betterRate >= gate (legacy).
+   *  - "practical": use passRate >= practicalPassGate AND criticalIssues===0.
+   *    Designed for in-house baseline scenarios (e.g. Pro 2.5 self-anchor)
+   *    where Flash variants will inherently DEGRADE relative to baseline.
+   */
+  gateMode?: 'strict' | 'practical';
+  /** Practical-mode passRate threshold (default 0.80). */
+  practicalPassGate?: number;
 }
 
 export interface RankedEntry {
@@ -48,6 +58,7 @@ export interface DecisionPerEndpoint {
 
 const DEFAULT_GATE_A = 0.85;
 const DEFAULT_GATE_B = 0.80;
+const DEFAULT_PRACTICAL_GATE = 0.80;
 const COST_BAND = 0.10;
 
 export function decide(
@@ -56,6 +67,8 @@ export function decide(
 ): Record<string, DecisionPerEndpoint> {
   const gateA = opts.qualityGate ?? DEFAULT_GATE_A;
   const gateB = opts.modeBLowerGate ?? DEFAULT_GATE_B;
+  const gateMode = opts.gateMode ?? 'strict';
+  const practicalGate = opts.practicalPassGate ?? DEFAULT_PRACTICAL_GATE;
   const hasRef = opts.recordsHasReference ?? {};
 
   const byEndpoint = new Map<Endpoint, AggregateRow[]>();
@@ -76,20 +89,25 @@ export function decide(
 
     const flags: string[] = [];
     if (isModeB) flags.push('mode-b');
+    if (gateMode === 'practical') flags.push('practical-gate');
 
     // Step 1: disqualify on critical issues
     const disqualifiedRows = bucket.filter((r) => r.criticalIssues > 0);
     const passedCrit = bucket.filter((r) => r.criticalIssues === 0);
 
-    // Step 2: quality gate
-    const qualifiedRows = passedCrit.filter(
-      (r) => r.parityRate + r.betterRate >= gate,
-    );
+    // Step 2: quality gate (strict or practical)
+    const qualifiedRows =
+      gateMode === 'practical'
+        ? passedCrit.filter((r) => r.passRate >= practicalGate)
+        : passedCrit.filter((r) => r.parityRate + r.betterRate >= gate);
 
     const disqualified = disqualifiedRows.map((r) => r.model);
-    const failedGate = passedCrit
-      .filter((r) => r.parityRate + r.betterRate < gate)
-      .map((r) => r.model);
+    const failedGate =
+      gateMode === 'practical'
+        ? passedCrit.filter((r) => r.passRate < practicalGate).map((r) => r.model)
+        : passedCrit
+            .filter((r) => r.parityRate + r.betterRate < gate)
+            .map((r) => r.model);
 
     // Step 3: rank by cost ascending
     const ranked = qualifiedRows
@@ -108,9 +126,15 @@ export function decide(
         reasons.push(`${disqualifiedRows.length} model(s) had critical issues`);
       }
       if (failedGate.length > 0) {
-        reasons.push(
-          `${failedGate.length} model(s) below ${(gate * 100).toFixed(0)}% parity+better gate`,
-        );
+        if (gateMode === 'practical') {
+          reasons.push(
+            `${failedGate.length} model(s) below ${(practicalGate * 100).toFixed(0)}% passRate gate`,
+          );
+        } else {
+          reasons.push(
+            `${failedGate.length} model(s) below ${(gate * 100).toFixed(0)}% parity+better gate`,
+          );
+        }
       }
       if (reasons.length === 0) reasons.push('no candidates evaluated');
       result[endpoint] = {
@@ -131,6 +155,10 @@ export function decide(
     const bandTop = cheapest.costPer1kCalls * (1 + COST_BAND);
     const band = ranked.filter((r) => r.costPer1kCalls <= bandTop);
     band.sort((a, b) => {
+      if (gateMode === 'practical') {
+        if (b.passRate !== a.passRate) return b.passRate - a.passRate;
+        return a.avgLatencyMs - b.avgLatencyMs;
+      }
       const qa = a.parityRate + a.betterRate;
       const qb = b.parityRate + b.betterRate;
       if (qb !== qa) return qb - qa;
@@ -142,10 +170,15 @@ export function decide(
     if (/preview/i.test(winner.model)) flags.push('preview-stability-risk');
 
     const rationale =
-      `Cheapest qualifying model${band.length > 1 ? ` within ${(COST_BAND * 100).toFixed(0)}% cost band of ${cheapest.model}` : ''}. ` +
-      `parity+better=${((winner.parityRate + winner.betterRate) * 100).toFixed(1)}% ` +
-      `(gate ${(gate * 100).toFixed(0)}%), cost/1k=$${winner.costPer1kCalls.toFixed(4)}, ` +
-      `p50 latency=${Math.round(winner.avgLatencyMs)}ms.`;
+      gateMode === 'practical'
+        ? `Cheapest qualifying model${band.length > 1 ? ` within ${(COST_BAND * 100).toFixed(0)}% cost band of ${cheapest.model}` : ''}. ` +
+          `passRate=${(winner.passRate * 100).toFixed(1)}% ` +
+          `(practical gate ${(practicalGate * 100).toFixed(0)}%, 0 crit), cost/1k=$${winner.costPer1kCalls.toFixed(4)}, ` +
+          `p50 latency=${Math.round(winner.avgLatencyMs)}ms.`
+        : `Cheapest qualifying model${band.length > 1 ? ` within ${(COST_BAND * 100).toFixed(0)}% cost band of ${cheapest.model}` : ''}. ` +
+          `parity+better=${((winner.parityRate + winner.betterRate) * 100).toFixed(1)}% ` +
+          `(gate ${(gate * 100).toFixed(0)}%), cost/1k=$${winner.costPer1kCalls.toFixed(4)}, ` +
+          `p50 latency=${Math.round(winner.avgLatencyMs)}ms.`;
 
     result[endpoint] = {
       endpoint,

@@ -107,6 +107,37 @@ describe('decide', () => {
     expect(d['parse-cargo'].flags).toContain('preview-stability-risk');
   });
 
+  it('practical mode disqualifies on critical issues', () => {
+    const rows = [
+      row({ endpoint: 'parse-cargo', model: 'cheap-crit', passRate: 0.95, criticalIssues: 1, costPer1kCalls: 0.1 }),
+      row({ endpoint: 'parse-cargo', model: 'pricey-clean', passRate: 0.85, criticalIssues: 0, costPer1kCalls: 1.0 }),
+    ];
+    const d = decide(rows, { gateMode: 'practical', recordsHasReference: { 'parse-cargo': true } });
+    expect(d['parse-cargo'].disqualified).toEqual(['cheap-crit']);
+    expect(d['parse-cargo'].winner).toBe('pricey-clean');
+    expect(d['parse-cargo'].flags).toContain('practical-gate');
+  });
+
+  it('practical mode picks cheapest model with passRate >= 80%', () => {
+    const rows = [
+      row({ endpoint: 'parse-cargo', model: 'cheap-low', passRate: 0.70, costPer1kCalls: 0.05 }),
+      row({ endpoint: 'parse-cargo', model: 'cheap-pass', passRate: 0.82, costPer1kCalls: 0.20 }),
+      row({ endpoint: 'parse-cargo', model: 'pricey-better', passRate: 0.95, costPer1kCalls: 2.00 }),
+    ];
+    const d = decide(rows, { gateMode: 'practical', recordsHasReference: { 'parse-cargo': true } });
+    expect(d['parse-cargo'].winner).toBe('cheap-pass');
+    expect(d['parse-cargo'].qualified.sort()).toEqual(['cheap-pass', 'pricey-better']);
+  });
+
+  it('practical mode flag appears in result', () => {
+    const rows = [
+      row({ endpoint: 'classify', model: 'm1', passRate: 0.90, costPer1kCalls: 0.5 }),
+    ];
+    const d = decide(rows, { gateMode: 'practical', recordsHasReference: { classify: true } });
+    expect(d.classify.flags).toContain('practical-gate');
+    expect(d.classify.winner).toBe('m1');
+  });
+
   it('rankedByCost is sorted ascending and only contains qualified models', () => {
     const rows = [
       row({ endpoint: 'parse-cargo', model: 'a', parityRate: 0.9, betterRate: 0.0, costPer1kCalls: 2.0 }),
