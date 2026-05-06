@@ -98,7 +98,7 @@ describe('H12 — text type with undefined msg.text', () => {
     mockCallAiJson.mockResolvedValue(EMPTY_AI_RESPONSE);
   });
 
-  it('does not crash when msg.text is undefined, returns uncertain', async () => {
+  it('does not crash when msg.text is undefined, returns uncertain without calling AI', async () => {
     // msg.type = 'text' but text field missing entirely
     const msg = makeMsg('text');
     // Explicitly ensure text is not set
@@ -109,10 +109,8 @@ describe('H12 — text type with undefined msg.text', () => {
     // Should not crash
     expect(result.rawText).toBe('');
     expect(result.confidence).toBe('uncertain');
-    // callAiJson IS called here (known type), that is fine
-    expect(mockCallAiJson).toHaveBeenCalledTimes(1);
-    // But it should be called with empty string
-    expect(mockCallAiJson).toHaveBeenCalledWith('', expect.any(String), undefined, {});
+    // rawText is empty → early-return guard fires, callAiJson is NOT called (saves API quota)
+    expect(mockCallAiJson).toHaveBeenCalledTimes(0);
   });
 
   it('does not crash when msg.text.body is undefined', async () => {
