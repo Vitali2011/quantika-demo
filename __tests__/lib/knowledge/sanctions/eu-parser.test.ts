@@ -11,49 +11,53 @@ describe("EU Consolidated Sanctions XML Parser", () => {
 
   describe("parseEuXml", () => {
     it("parses 3-entry fixture (1 person + 1 entity + 1 vessel) with uid/type/name/aliases/programs", () => {
+      // Real EU FSF entries (EU Commission public sanctions list, fetched 2026-05-06):
+      //   logicalId=4182:  Arkady Romanovich ROTENBERG (person, UKRAINE-TERRITORIAL-INTEGRITY)
+      //   logicalId=11338: LIMITED LIABILITY COMPANY MARINE TRANS SHIPPING (enterprise, UKRAINE-TERRITORIAL-INTEGRITY)
+      //   logicalId=15821: POSEIDON S / VF TANKER-4 (other/vessel, UKRAINE-TERRITORIAL-INTEGRITY, IMO 9640528)
       const result = parseEuXml(sampleXml);
 
       expect(result).toHaveLength(3);
 
-      // Person entry
-      const person = result.find((e) => e.uid === "12345");
+      // Person entry — Arkady Romanovich ROTENBERG (EU FSF eu-fsf-eu-4182-1)
+      const person = result.find((e) => e.uid === "4182");
       expect(person).toBeDefined();
       expect(person?.type).toBe("person");
-      expect(person?.name).toBe("María Fernández");
+      expect(person?.name).toBe("Arkady Romanovich ROTENBERG");
       expect(person?.aliases).toEqual(
         expect.arrayContaining([
-          "Maria Fernandez",
-          "M.F. Fernandez-Lopez",
+          "Arkadi Romanowitsch Rotenberg",
+          "Arkadii Romanovich ROTENBERG",
         ])
       );
       expect(person?.programs).toEqual(
-        expect.arrayContaining(["SYRIA", "BELARUS"])
+        expect.arrayContaining(["UKRAINE-TERRITORIAL-INTEGRITY"])
       );
-      expect(person?.country).toBe("ES");
+      expect(person?.country).toBe("RU");
 
-      // Enterprise entry
-      const entity = result.find((e) => e.uid === "67890");
+      // Enterprise entry — LIMITED LIABILITY COMPANY MARINE TRANS SHIPPING (EU FSF eu-fsf-eu-11338-45)
+      const entity = result.find((e) => e.uid === "11338");
       expect(entity).toBeDefined();
       expect(entity?.type).toBe("enterprise");
-      expect(entity?.name).toBe("Acme Industries S.A.");
+      expect(entity?.name).toBe("LIMITED LIABILITY COMPANY MARINE TRANS SHIPPING");
       expect(entity?.aliases).toEqual(
-        expect.arrayContaining(["ACME IND"])
+        expect.arrayContaining(["Marine Trans Shipping LLC"])
       );
       expect(entity?.programs).toEqual(["UKRAINE-TERRITORIAL-INTEGRITY"]);
       expect(entity?.country).toBe("RU");
 
-      // Vessel entry (other type)
-      const vessel = result.find((e) => e.uid === "11111");
+      // Vessel entry (other type) — POSEIDON S / VF TANKER-4 (IMO 9640528, Council Reg 833/2014)
+      const vessel = result.find((e) => e.uid === "15821");
       expect(vessel).toBeDefined();
       expect(vessel?.type).toBe("other");
-      expect(vessel?.name).toBe("MV SANCTIONED TANKER");
+      expect(vessel?.name).toBe("POSEIDON S");
       expect(vessel?.aliases).toEqual(
         expect.arrayContaining([
-          "SANCTIONED TANKER",
-          "Санкционированный Танкер",
+          "VF TANKER-4",
+          "Poseidon S",
         ])
       );
-      expect(vessel?.programs).toEqual(["IRAN"]);
+      expect(vessel?.programs).toEqual(["UKRAINE-TERRITORIAL-INTEGRITY"]);
     });
 
     it("returns empty array for empty XML", () => {

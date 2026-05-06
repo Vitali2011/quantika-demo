@@ -11,44 +11,51 @@ describe("OFAC SDN XML Parser", () => {
 
   describe("parseOfacXml", () => {
     it("parses 3-entry fixture (1 individual + 1 entity + 1 vessel) with uid/type/name/aliases/programs", () => {
+      // Real OFAC SDN entries (public domain, US Treasury, fetched 2026-05-06):
+      //   uid=48987: Aleksey Viktorovich BUDNEV (individual, DPRK3 + RUSSIA-EO14024)
+      //   uid=37066: LIMITED LIABILITY COMPANY MARINE TRANS SHIPPING (entity, RUSSIA-EO14024)
+      //   uid=54343: KONGM (vessel/crude oil tanker, IRAN-EO13846)
       const result = parseOfacXml(sampleXml);
 
       expect(result).toHaveLength(3);
 
-      // Individual entry
-      const individual = result.find((e) => e.uid === "12345");
+      // Individual entry — Aleksey Viktorovich BUDNEV (OFAC uid 48987)
+      const individual = result.find((e) => e.uid === "48987");
       expect(individual).toBeDefined();
       expect(individual?.type).toBe("Individual");
-      expect(individual?.name).toBe("José García");
+      expect(individual?.name).toBe("Aleksey Viktorovich BUDNEV");
       expect(individual?.aliases).toEqual(
         expect.arrayContaining([
-          expect.stringContaining("Jose Garcia"),
-          expect.stringContaining("J.M. Garcia"),
+          expect.stringContaining("Aleksei Viktorovich"),
+          expect.stringContaining("Alexey Viktorovich"),
         ])
       );
       expect(individual?.programs).toEqual(
-        expect.arrayContaining(["SDGT", "SYRIA"])
+        expect.arrayContaining(["DPRK3", "RUSSIA-EO14024"])
       );
 
-      // Entity entry
-      const entity = result.find((e) => e.uid === "67890");
+      // Entity entry — LIMITED LIABILITY COMPANY MARINE TRANS SHIPPING (OFAC uid 37066)
+      const entity = result.find((e) => e.uid === "37066");
       expect(entity).toBeDefined();
       expect(entity?.type).toBe("Entity");
-      expect(entity?.name).toBe("Acme Corporation LLC");
+      expect(entity?.name).toBe("LIMITED LIABILITY COMPANY MARINE TRANS SHIPPING");
       expect(entity?.aliases).toEqual(
-        expect.arrayContaining([expect.stringContaining("ACME Corp")])
+        expect.arrayContaining([expect.stringContaining("Marine Trans Shipping LLC")])
       );
-      expect(entity?.programs).toEqual(["IRAN"]);
+      expect(entity?.programs).toEqual(["RUSSIA-EO14024"]);
 
-      // Vessel entry
-      const vessel = result.find((e) => e.uid === "11111");
+      // Vessel entry — KONGM crude oil tanker (OFAC uid 54343)
+      const vessel = result.find((e) => e.uid === "54343");
       expect(vessel).toBeDefined();
       expect(vessel?.type).toBe("Vessel");
-      expect(vessel?.name).toBe("MV SANCTIONED VESSEL");
+      expect(vessel?.name).toBe("KONGM");
       expect(vessel?.aliases).toEqual(
-        expect.arrayContaining([expect.stringContaining("SANCTIONED SHIP")])
+        expect.arrayContaining([
+          expect.stringContaining("CLS"),
+          expect.stringContaining("C. Champion"),
+        ])
       );
-      expect(vessel?.programs).toEqual(["UKRAINE-EO13662"]);
+      expect(vessel?.programs).toEqual(["IRAN-EO13846"]);
     });
 
     it("returns empty array for empty XML", () => {

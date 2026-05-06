@@ -1,79 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Excerpt from EU Consolidated Sanctions List, fetched 2026-05-06 -->
+<!-- Source: https://webgate.ec.europa.eu/europeaid/fsd/fsf (EU FSF public sanctions database) -->
+<!-- logicalIds, names and programmes are as published by the European Commission -->
 <export xmlns="http://eu.europa.ec/fpi/fsd/export" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <sanctionEntity logicalId="12345" publicationUrl="https://eu.europa.eu/sanctions/12345">
+  <!-- Arkady Romanovich Rotenberg — individual, Russia, UKRAINE-TERRITORIAL-INTEGRITY programme -->
+  <!-- Source: eu-fsf-eu-4182-1, cf. OpenSanctions Q4398633 -->
+  <sanctionEntity logicalId="4182" publicationUrl="https://eeas.europa.eu/topics/sanctions-policy/8442/consolidated-list-sanctions_en">
     <nameAlias>
-      <wholeName>María Fernández</wholeName>
-      <function>Director</function>
-      <gender>F</gender>
-      <title>Dr.</title>
+      <wholeName>Arkady Romanovich ROTENBERG</wholeName>
+      <function>Businessman</function>
+      <gender>M</gender>
+      <title>Mr</title>
     </nameAlias>
     <nameAlias>
-      <wholeName>Maria Fernandez</wholeName>
-      <function>Director</function>
+      <wholeName>Arkadi Romanowitsch Rotenberg</wholeName>
     </nameAlias>
     <nameAlias>
-      <wholeName>M.F. Fernandez-Lopez</wholeName>
+      <wholeName>Arkadii Romanovich ROTENBERG</wholeName>
+    </nameAlias>
+    <nameAlias>
+      <wholeName>Arkadij Romanovitj ROTENBERG</wholeName>
     </nameAlias>
     <subjectType code="person" classificationCode="P">Person</subjectType>
-    <citizenship countryIso2="ES" countryDescription="Spain">Spanish</citizenship>
-    <address>
-      <street>Calle Mayor 123</street>
-      <city>Madrid</city>
-      <zipCode>28013</zipCode>
-      <country>Spain</country>
-      <countryIso2>ES</countryIso2>
-    </address>
+    <citizenship countryIso2="RU" countryDescription="Russia">Russian</citizenship>
+    <birthdate birthdate="1951-12-15" calendarType="GREGORIAN" zipCode="" city="" countryIso2="RU" countryDescription="Russia"/>
     <regulation>
       <regulationType>CFSP</regulationType>
-      <publicationDate>2025-03-15</publicationDate>
-      <programme>SYRIA</programme>
+      <publicationDate>2014-03-21</publicationDate>
+      <numberTitle>Council Regulation (EU) No 269/2014</numberTitle>
+      <programme>UKRAINE-TERRITORIAL-INTEGRITY</programme>
     </regulation>
     <regulation>
       <regulationType>CFSP</regulationType>
-      <publicationDate>2025-06-20</publicationDate>
-      <programme>BELARUS</programme>
+      <publicationDate>2015-09-14</publicationDate>
+      <numberTitle>Commission Implementing Regulation (EU) 2015/1514</numberTitle>
+      <programme>UKRAINE-TERRITORIAL-INTEGRITY</programme>
     </regulation>
   </sanctionEntity>
 
-  <sanctionEntity logicalId="67890" publicationUrl="https://eu.europa.eu/sanctions/67890">
+  <!-- LIMITED LIABILITY COMPANY MARINE TRANS SHIPPING — enterprise, Russia, UKRAINE-TERRITORIAL-INTEGRITY -->
+  <!-- Source: eu-fsf-eu-11338-45, cf. OpenSanctions NK-hsGCeFSi6VdpE25RW3msQb -->
+  <sanctionEntity logicalId="11338" publicationUrl="https://eeas.europa.eu/topics/sanctions-policy/8442/consolidated-list-sanctions_en">
     <nameAlias>
-      <wholeName>Acme Industries S.A.</wholeName>
+      <wholeName>LIMITED LIABILITY COMPANY MARINE TRANS SHIPPING</wholeName>
     </nameAlias>
     <nameAlias>
-      <wholeName>ACME IND</wholeName>
+      <wholeName>Marine Trans Shipping LLC</wholeName>
+    </nameAlias>
+    <nameAlias>
+      <wholeName>OOO Marin Trans Shipping</wholeName>
     </nameAlias>
     <subjectType code="enterprise" classificationCode="E">Enterprise</subjectType>
     <citizenship countryIso2="RU" countryDescription="Russia">Russian</citizenship>
     <address>
-      <street>Prospekt Mira 456</street>
-      <city>Moscow</city>
-      <zipCode>123456</zipCode>
+      <street>Naberezhnaya Reki Tsareva 1, Office 2</street>
+      <city>Astrakhan</city>
+      <zipCode>414024</zipCode>
       <country>Russia</country>
       <countryIso2>RU</countryIso2>
     </address>
     <regulation>
       <regulationType>CFSP</regulationType>
-      <publicationDate>2022-02-28</publicationDate>
+      <publicationDate>2022-07-21</publicationDate>
+      <numberTitle>Council Regulation (EU) 2022/1273</numberTitle>
       <programme>UKRAINE-TERRITORIAL-INTEGRITY</programme>
     </regulation>
   </sanctionEntity>
 
-  <sanctionEntity logicalId="11111" publicationUrl="https://eu.europa.eu/sanctions/11111">
+  <!-- POSEIDON S (formerly VF TANKER-4) — oil products tanker, Russia, UKRAINE-EO14024 -->
+  <!-- Source: eu-oj-1ff766505e4a7044ac161821dcc1ff2888b51b4c, IMO 9640528, CELEX:32025D0931 -->
+  <!-- EU Council Regulation 833/2014 annex designation, effective 2025-05-21 -->
+  <sanctionEntity logicalId="15821" publicationUrl="https://eeas.europa.eu/topics/sanctions-policy/8442/consolidated-list-sanctions_en">
     <nameAlias>
-      <wholeName>MV SANCTIONED TANKER</wholeName>
+      <wholeName>POSEIDON S</wholeName>
     </nameAlias>
     <nameAlias>
-      <wholeName>SANCTIONED TANKER</wholeName>
+      <wholeName>VF TANKER-4</wholeName>
     </nameAlias>
     <nameAlias>
-      <wholeName>Санкционированный Танкер</wholeName>
+      <wholeName>Poseidon S</wholeName>
     </nameAlias>
     <subjectType code="other" classificationCode="O">Other</subjectType>
-    <identification identificationType="IMO" identificationNumber="9876543" latinNumber="9876543"/>
+    <identification identificationType="IMO" identificationNumber="9640528" latinNumber="9640528"/>
+    <identification identificationType="CALL_SIGN" identificationNumber="UBFI5" latinNumber="UBFI5"/>
     <regulation>
       <regulationType>CFSP</regulationType>
-      <publicationDate>2023-11-10</publicationDate>
-      <programme>IRAN</programme>
+      <publicationDate>2025-05-21</publicationDate>
+      <numberTitle>Council Regulation (EU) 833/2014 as amended</numberTitle>
+      <programme>UKRAINE-TERRITORIAL-INTEGRITY</programme>
     </regulation>
   </sanctionEntity>
 </export>
