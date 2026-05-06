@@ -589,7 +589,8 @@ describe('Gemini structured output (responseSchema)', () => {
     }));
 
     const testSchema = { type: 'OBJECT' };
-    const { callAiJson } = require('@/lib/ai-provider');
+     
+    const { callAiJson } = require('@/lib/ai-provider') as { callAiJson: <T>(...args: unknown[]) => Promise<T> };
     const result = await callAiJson<{ classifications: Array<{ id: string; category: string }> }>(
       'classify', 'sys', 'user', { responseSchema: testSchema },
     );

@@ -6,6 +6,8 @@ import path from 'node:path';
 import { runBakeOff, type BakeOffDeps } from '../orchestrator';
 import type { CorpusCase, Endpoint } from '../corpus';
 import type { EndpointSpec } from '../endpoint-specs';
+import type { RunCandidateInput, RunCandidateResult } from '../run-candidate';
+import type { JudgeInput, JudgeOutput, JudgeOptions } from '../judge';
 
 /**
  * Tests use the orchestrator's `deps` DI seam (mirroring `judge.test.ts`'s
@@ -28,20 +30,20 @@ function makeSpec(): EndpointSpec {
 }
 
 describe('runBakeOff', () => {
-  let runCandidate: jest.Mock;
-  let judge: jest.Mock;
-  let getEndpointSpec: jest.Mock;
+  let runCandidate: jest.MockedFunction<(input: RunCandidateInput) => Promise<RunCandidateResult>>;
+  let judge: jest.MockedFunction<(input: JudgeInput, options?: JudgeOptions) => Promise<JudgeOutput>>;
+  let getEndpointSpec: jest.MockedFunction<(e: Endpoint) => EndpointSpec>;
   let deps: BakeOffDeps;
 
   beforeEach(() => {
-    runCandidate = jest.fn();
-    judge = jest.fn();
-    getEndpointSpec = jest.fn().mockImplementation(() => makeSpec());
+    runCandidate = jest.fn<(input: RunCandidateInput) => Promise<RunCandidateResult>>();
+    judge = jest.fn<(input: JudgeInput, options?: JudgeOptions) => Promise<JudgeOutput>>();
+    getEndpointSpec = jest.fn<(e: Endpoint) => EndpointSpec>().mockImplementation(() => makeSpec());
     deps = {
       loadCorpus: async () => [],
-      getEndpointSpec: getEndpointSpec as unknown as (e: Endpoint) => EndpointSpec,
-      runCandidate: runCandidate as never,
-      judge: judge as never,
+      getEndpointSpec,
+      runCandidate,
+      judge,
     };
   });
 

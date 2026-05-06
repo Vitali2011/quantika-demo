@@ -8,7 +8,7 @@ import { judge, JUDGE_SCOPE, type CallAiTextFn } from '../judge';
  * design choice (constructor injection over module mocks) and decouples
  * the judge tests from the Bedrock SDK shape.
  */
-const callMock = jest.fn() as jest.Mock<Promise<string>, Parameters<CallAiTextFn>>;
+const callMock: jest.MockedFunction<CallAiTextFn> = jest.fn();
 
 const fakeCallAiText: CallAiTextFn = (scope, system, user, opts) =>
   callMock(scope, system, user, opts);
