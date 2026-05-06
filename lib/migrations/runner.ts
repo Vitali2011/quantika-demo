@@ -1,4 +1,5 @@
 import type Database from 'better-sqlite3';
+import * as sqliteVec from 'sqlite-vec';
 import type { Migration, MigrationRecord } from './types';
 
 export function ensureMigrationsTable(db: Database.Database): void {
@@ -19,6 +20,9 @@ export function getAppliedVersions(db: Database.Database): number[] {
 }
 
 export function runMigrations(db: Database.Database, migrations: Migration[]): void {
+  // Load sqlite-vec extension before running migrations (required for migration 018 vec0 tables)
+  sqliteVec.load(db);
+
   ensureMigrationsTable(db);
   const applied = new Set(getAppliedVersions(db));
 
