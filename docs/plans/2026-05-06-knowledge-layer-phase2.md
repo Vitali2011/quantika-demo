@@ -14,16 +14,12 @@ expanded port coverage, market indices, and citation UI.
 **Key constraint:** KNOWLEDGE_RAG_ENABLED=false in production until all
 embeddings are populated (safe rollout).
 
-**Existing infra to reuse:**
-
-- `lib/knowledge/embeddings/client.ts` — embedQuery(), embedDocuments()
-- `lib/knowledge/embeddings/pipeline.ts` — embedAndStore(chunks, opts)
-- `lib/knowledge/embeddings/chunks.ts` — Chunk, RetrievedChunk types
-- `lib/knowledge/governance.ts` — reportSyncStarted/Success/Failure
-- `lib/knowledge/bootstrap.ts` — KNOWLEDGE_REGISTRY (imsbc/igc/jwc already declared)
-- `lib/db/index.ts` — getDb() with sqlite-vec auto-loaded
-- `lib/prompts/glossary.ts` — SHIPPING_GLOSSARY (145-line static, to be replaced by RAG)
-- Migrations 013–017 already run; next migration number: 018
+**Existing infra (DO NOT IMPLEMENT — already done in Phase 1, just use these):**
+`lib/knowledge/embeddings/client.ts` (embedQuery), `lib/knowledge/embeddings/pipeline.ts` (embedAndStore),
+`lib/knowledge/embeddings/chunks.ts` (Chunk/RetrievedChunk types), `lib/knowledge/governance.ts` (sync lifecycle),
+`lib/knowledge/bootstrap.ts` (KNOWLEDGE_REGISTRY with imsbc/igc/jwc), `lib/db/index.ts` (sqlite-vec loaded),
+`lib/prompts/glossary.ts` (SHIPPING_GLOSSARY, 145-line static).
+Migrations 013–017 already exist; next migration number is 018.
 
 ---
 
