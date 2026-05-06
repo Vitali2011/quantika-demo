@@ -17,6 +17,7 @@
     "build:extension": "cd extensions/gmail && npm install --no-audit --no-fund --silent && npm run build",
     "knowledge:status": "npx tsx scripts/knowledge/status.ts",
     "knowledge:refresh": "npx tsx scripts/knowledge/refresh.ts",
+    "knowledge:imsbc": "npx tsx scripts/knowledge-imsbc-embed.ts",
     "bake-off": "tsx scripts/wave-gamma-bake-off/cli.ts",
     "bake-off:redecide": "tsx scripts/wave-gamma-bake-off/redecide.ts",
     "bake-off:validate-baseline": "tsx scripts/wave-gamma-bake-off/validate-baseline.ts",
