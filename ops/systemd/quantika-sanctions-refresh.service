@@ -15,6 +15,13 @@ SyslogIdentifier=quantika-sanctions
 TimeoutStartSec=30min
 EnvironmentFile=/opt/quantika/.env.production
 
+# Security hardening (restored 2026-05-06 — spec-07 subagent omitted these)
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/quantika
+
 # Failure notification — rely on Sentry SDK in refresh-sanctions.js (already in stack)
 
 [Install]
