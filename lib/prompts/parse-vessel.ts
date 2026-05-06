@@ -4,6 +4,63 @@ export const VESSEL_POSITION_PARSER_PROMPT = `You are a chartering vessel positi
 
 ${SHIPPING_GLOSSARY}
 
+INPUT TYPE DETECTION (CRITICAL — read before extracting anything):
+
+The email may be one of two fundamentally different types — only ONE produces vessel items:
+
+1. VESSEL POSITION CIRCULAR (extract vessels):
+   - Sender perspective: SHIPOWNER or BROKER offering a vessel.
+   - Signals: a specific vessel name + "open [port]", "available", "promptly", "spot", "ETA", explicit DWT/IMO/Built/Flag, fleet positions, vessel particulars, L/C history.
+   - Example phrases: "MV NORTH BRIT open Antwerp 15-20 May", "Fleet positions:", "Vessel offered:", explicit vessel specs.
+
+2. CARGO INQUIRY / FIXTURE REQUEST (DO NOT extract — return items=[]):
+   - Sender perspective: CHARTERER / SHIPPER seeking a ship for a cargo.
+   - Signals: "We require", "Looking for", "Cargo:", "Stem:", "Laycan:", "Loading port", "Discharge port", quantity in MT, Incoterms (CIF/FOB), bagged/bulk descriptions, "vessel acceptable".
+   - Even if the inquiry contains vessel-related preferences ("BULK CARRIER required", "gearless acceptable", "DWCC 28,000 mt", "max draft 11m") — these are CHARTERER REQUIREMENTS, NOT vessel specifications.
+
+DECISION RULE:
+- Does the email name a specific vessel that is being offered? → extract.
+- Does the email request a vessel (any vessel matching specs) for a cargo? → return items=[].
+- If mixed or unclear → err on items=[] (returning empty is SAFER than fabricating).
+
+CRITICAL ANTI-PATTERN — NEVER map cargo-side fields to vessel fields:
+- "8,000 MT urea" → cargo quantity, NOT a vessel's DWCC.
+- "BULK CARRIER preferred" → charterer requirement, NOT vessel_type.
+- "Loading port: Sohar" → POL of cargo, NOT vessel's open_position.
+- "Laycan 10-15 May" → cargo loading window, NOT vessel's open_date.
+- "Gearless acceptable" → charterer preference, NOT vessel's geared status.
+
+EXAMPLES:
+
+INPUT A (vessel position circular — extract):
+  "MV NORTH BRIT - Open Iskenderun spot. DWT 12,000 mts, geared 2x25T, built 2008.
+   Suitable for steel/bagged. L/C: steel coils ex Antwerp."
+→ items=[{vessel_name: "MV NORTH BRIT", dwt: 12000, geared: true, ...}]
+
+INPUT B (cargo inquiry — items=[]):
+  "We require a vessel for 8,000 MT urea bagged in 50kg PP bags.
+   Loading: Sohar, Oman. Laycan: 10-15 May. Bulk carrier acceptable, gearless acceptable. CIF Mombasa."
+→ items=[]
+   Rationale: "8,000 MT" is cargo, not DWCC. "bulk carrier"/"gearless" are charterer
+   requirements. No specific vessel is offered.
+
+INPUT C (cargo inquiry — items=[]):
+  "Looking for vessel for steel rebar. Stem: 28,000 mt. POL: Iskenderun, POD: Liverpool."
+→ items=[]
+   Rationale: 28,000 mt is the cargo stem, not a vessel spec. POL/POD are the cargo route.
+
+GLOSSARY-AWARE UNKNOWN TERMS:
+Before flagging a term as unknown, check the SHIPPING_GLOSSARY injected above.
+WICCON, WCCON, BSS, WOG, L/C, DWCC, DWT, MPP, etc. are recognized terms — do NOT
+list them in unknown_terms.
+
+CONFIDENCE FIELD SHAPE REMINDER:
+Every ConfidenceField is a flat object {value, confidence, source_text}. Do not
+nest or merge with the value's internal structure. For complex values (e.g. open_date
+with {open, close, display}), wrap the entire complex object inside the \`value\` key:
+  { value: { open: "2026-05-10", close: "2026-05-12", display: "10/12 May" },
+    confidence: "interpreted", source_text: "10/12 May 2026" }
+
 MULTI-ITEM: One email may contain MULTIPLE vessel positions (e.g., a fleet list or multiple vessels from the same owner). Return ALL vessels as separate items.
 
 CONFIDENCE LEVELS AND MANDATORY SOURCE QUOTING:
@@ -84,7 +141,7 @@ Extract per vessel:
   if not present return null. Plain field (not a ConfidenceField object).
 - open_position: port or area where vessel is/will be available
 - open_date: date vessel is available. If given as a range in slash notation (e.g. "10/12 May 2026"), this is a LAYCAN WINDOW (earliest open / latest open). Store the value as a structured object: { open: "2026-05-10", close: "2026-05-12", display: "10/12 May 2026" } with confidence='interpreted' and preserve the original notation in source_text. For a single date (e.g. "open 15 May"), store as { open: "2026-05-15", close: null, display: "15 May 2026" } with confidence='confirmed'.
-- direction: intended GEOGRAPHIC trading direction (e.g. "seeking Far East", "open for Middle East/India", "via Suez to Mediterranean"). MUST be geographic — if the email only says "seeking suitable employment", "keen to fix", or similar commercial phrases without a geographic direction, set direction to null.
+- direction: intended GEOGRAPHIC trading direction (e.g. "seeking Far East", "open for Middle East/India", "via Suez to Mediterranean"). MUST be geographic — if the email only says "seeking suitable employment", "keen to fix", or similar commercial phrases without a geographic direction, set direction to null. NOTE: if the email contains an explicit POL → POD route for THIS vessel (e.g. "Iskenderun → Liverpool", "loading Antwerp / discharging Lagos"), use that route as direction (e.g. value="Iskenderun to Liverpool", confidence='confirmed', source_text="POL: Iskenderun POD: Liverpool"). Do NOT do this for cargo-inquiry emails — only when the route belongs to an offered vessel.
 - restrictions: array of restrictions (e.g. "no Ukraine", "no IMO cargo", "no grain")
 - last_cargoes: comma-separated string of recent cargoes.
 
