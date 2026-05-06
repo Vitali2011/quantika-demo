@@ -13,7 +13,7 @@
 
 import * as path from 'path';
 import * as fs from 'fs';
-import { getDb } from '../../lib/db/index';
+import { getDb } from '../../lib/db';
 import { runMigrations } from '../../lib/migrations/runner';
 import { allMigrations } from '../../lib/migrations/index';
 import { bootstrapKnowledgeSources } from '../../lib/knowledge/bootstrap';
@@ -60,6 +60,7 @@ async function main(): Promise<void> {
     fs.mkdirSync(dataDir, { recursive: true });
   }
 
+  // Use getDb() to ensure sqlite-vec extension is loaded before migrations
   const db = getDb(dbPath);
   db.pragma('foreign_keys = ON');
   runMigrations(db, allMigrations);

@@ -18,7 +18,7 @@
 import type Database from 'better-sqlite3';
 import * as fs from 'fs';
 import * as path from 'path';
-import { getDb } from '../lib/db/index';
+import { getDb } from '../lib/db';
 import { runMigrations } from '../lib/migrations/runner';
 import { allMigrations } from '../lib/migrations/index';
 
@@ -227,6 +227,7 @@ async function main(): Promise<void> {
     fs.mkdirSync(dataDir, { recursive: true });
   }
 
+  // Use getDb() to ensure sqlite-vec extension is loaded before migrations
   const db = getDb(dbPath);
   runMigrations(db, allMigrations);
 
