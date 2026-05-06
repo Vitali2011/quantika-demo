@@ -1,6 +1,7 @@
 /**
  * Hybrid retriever: FTS5 BM25 + vec0 cosine + Reciprocal Rank Fusion (RRF)
  * Spec: spec-07-fts5-bm25-search-select-rowid-content-metadata-rank-from-ftstable-order-by-rank-limit-topk
+ * Spec: spec-08-vec0-cosine-k-nn-select-rowid-content-metadata-distance-from-vectortable-where-embedding-match-order-by-distance-limit-topk
  * Spec: spec-09-rrf-merge-score-doc-1-rrfk-rank-i-for-each-ranking-list-documents-in-both-lists-accumulate-from-both-terms
  * Spec: spec-10-sort-descending-return-top-topn-as-retrievedchunk
  *
@@ -17,8 +18,105 @@
 
 import { embedQuery } from '@/lib/knowledge/embeddings/client';
 import { getDb } from '@/lib/db';
+import { isRagEnabled } from '@/lib/knowledge/flags';
 import type { RetrievedChunk, ChunkMetadata } from '@/lib/knowledge/embeddings/chunks';
 import Database from 'better-sqlite3';
+
+/**
+ * Vec0 cosine k-NN retriever (spec-08)
+ *
+ * Executes sqlite-vec cosine similarity search against a vec0 virtual table.
+ * Returns results sorted by cosine distance ascending (closest first).
+ *
+ * Input Contract:
+ * - embedding: Float32Array[768] required → throws RangeError if not 768-dimensional
+ * - tableName: string required → SQLite throws if nonexistent
+ * - topK: number optional (default 5) → throws RangeError if NaN/Infinity/negative, returns [] if 0
+ * - db: Database optional → defaults to getDb()
+ * - Feature flag: throws Error if KNOWLEDGE_RAG_ENABLED !== "true"
+ *
+ * @param embedding - Query embedding (Float32Array[768])
+ * @param tableName - Vec0 table name (e.g., 'imsbc_vec')
+ * @param topK - Maximum results to return (default 5)
+ * @param db - Database instance (optional)
+ * @returns RetrievedChunk[] sorted by cosine distance ascending
+ */
+export function searchVec0(
+  embedding: Float32Array,
+  tableName: string,
+  topK: number = 5,
+  db?: Database.Database
+): RetrievedChunk[] {
+  // Guard: RAG feature flag
+  if (!isRagEnabled()) {
+    throw new Error('RAG is not enabled');
+  }
+
+  // Guard: embedding dimension validation
+  if (embedding.length !== 768) {
+    throw new RangeError('Embedding must be 768-dimensional');
+  }
+
+  // Guard: tableName validation
+  if (!tableName || tableName.trim().length === 0) {
+    throw new TypeError('tableName required');
+  }
+
+  // Guard: topK validation
+  if (!Number.isFinite(topK)) {
+    throw new RangeError('topK must be a positive integer');
+  }
+
+  if (topK < 0) {
+    throw new RangeError('topK must be a positive integer');
+  }
+
+  if (topK > 4096) {
+    throw new RangeError('topK exceeds sqlite-vec knn limit of 4096');
+  }
+
+  // Early return: topK = 0
+  if (topK === 0) {
+    return [];
+  }
+
+  // Get database instance
+  const database = db ?? getDb();
+
+  // Serialize embedding to JSON for sqlite-vec MATCH parameter
+  const embeddingJson = JSON.stringify(Array.from(embedding));
+
+  // Execute vec0 k-NN query
+  const rows = database
+    .prepare(
+      `SELECT rowid, content, metadata, vec_distance_cosine(embedding, ?) as distance FROM ${tableName} ORDER BY distance LIMIT ?`
+    )
+    .all(embeddingJson, topK) as Array<{
+      rowid: number;
+      content: string;
+      metadata: string;
+      distance: number;
+    }>;
+
+  // Map rows to RetrievedChunk[]
+  return rows.map((row) => {
+    // Parse metadata JSON
+    let parsedMetadata: ChunkMetadata;
+    try {
+      parsedMetadata = JSON.parse(row.metadata) as ChunkMetadata;
+    } catch {
+      // Fallback: preserve raw string if JSON invalid
+      parsedMetadata = { source: 'unknown', raw: row.metadata } as ChunkMetadata & { raw?: string };
+    }
+
+    return {
+      content: row.content,
+      metadata: parsedMetadata,
+      distance: row.distance,
+      chunkId: String(row.rowid),
+    };
+  });
+}
 
 export interface RetrieveOptions {
   vectorTable: string; // e.g., 'imsbc_vec'
@@ -237,7 +335,7 @@ export async function retrieve(
   // Step 3: vec0 cosine k-NN search
   const vecResults: RankedDoc[] = db
     .prepare(
-      `SELECT rowid, content, metadata, distance FROM ${opts.vectorTable} WHERE embedding MATCH ? ORDER BY distance LIMIT ?`
+      `SELECT rowid, content, metadata, vec_distance_cosine(embedding, ?) as distance FROM ${opts.vectorTable} ORDER BY distance LIMIT ?`
     )
     .all(embedding, topK)
     .map((row: any, index: number) => ({
