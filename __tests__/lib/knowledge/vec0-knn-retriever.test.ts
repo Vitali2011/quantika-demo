@@ -317,21 +317,18 @@ describe("searchVec0() vec0 cosine k-NN retriever (spec-08)", () => {
       );
     });
 
-    it("TC-RANGE-01: distance within [0.0, ~60] for L2 distance (vec0 default metric)", () => {
+    it("TC-RANGE-01: cosine distance within [-epsilon, 2.0]", () => {
       const queryEmbedding = new Float32Array(768).fill(0.5);
 
       const result = searchVec0(queryEmbedding, "imsbc_vec", 5, db);
 
       expect(result.length).toBeGreaterThan(0);
 
-      // TEMP-STAB-spec-08: sqlite-vec uses L2 distance by default (not cosine).
-      // Migration 018 (spec-01) creates vec0 tables without distance_metric='cosine'.
-      // Max L2 distance for 768-dim normalized embeddings ≈ sqrt(768*4) ≈ 55.4
-      // Spec-08 Expected Output Ranges specifies cosine [0,2], but reality is L2 [0,~60].
-      // Fix: spec-01 migration should add distance_metric='cosine' to vec0 table creation.
+      // vec_distance_cosine returns values in [0, 2] (1 - cos_sim).
+      // Allow tiny negative float epsilon from sqlite-vec arithmetic.
       result.forEach(chunk => {
-        expect(chunk.distance).toBeGreaterThanOrEqual(0.0);
-        expect(chunk.distance).toBeLessThanOrEqual(60.0);
+        expect(chunk.distance).toBeGreaterThanOrEqual(-1e-9);
+        expect(chunk.distance).toBeLessThanOrEqual(2.0);
       });
     });
 

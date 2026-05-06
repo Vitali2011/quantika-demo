@@ -65,20 +65,23 @@ describe("E2E: embedAndStore → searchVec0 roundtrip", () => {
       }
     ];
 
-    // Mock embedDocuments to return 3 distinct embeddings
-    const mockEmbeddings = [
-      new Float32Array(768).fill(0.1), // Embedding for chunk 0
-      new Float32Array(768).fill(0.5), // Embedding for chunk 1
-      new Float32Array(768).fill(0.9), // Embedding for chunk 2
-    ];
+    // Mock embedDocuments to return 3 directionally distinct embeddings.
+    // Uniform-fill vectors are collinear under cosine distance (distance ≈ 0),
+    // so we vary the first dimension to create angular separation.
+    const emb0 = new Float32Array(768).fill(0.0); emb0[0] = 1.0; // axis-aligned dim 0
+    const emb1 = new Float32Array(768).fill(0.0); emb1[1] = 1.0; // axis-aligned dim 1
+    const emb2 = new Float32Array(768).fill(0.0); emb2[2] = 1.0; // axis-aligned dim 2
+
+    const mockEmbeddings = [emb0, emb1, emb2];
 
     _mockEmbedDocuments.mockResolvedValue(mockEmbeddings);
 
     // Store chunks in vec0 table
     await embedAndStore(chunks, { tableName: "imsbc_vec", db });
 
-    // Query with embedding close to chunk 1 (0.5)
-    const queryEmbedding = new Float32Array(768).fill(0.51);
+    // Query embedding close to chunk 1 (dim 1 dominant, slight noise for realism)
+    const queryEmbedding = new Float32Array(768).fill(0.01);
+    queryEmbedding[1] = 1.0;
 
     const results = searchVec0(queryEmbedding, "imsbc_vec", 3, db);
 
@@ -95,11 +98,10 @@ describe("E2E: embedAndStore → searchVec0 roundtrip", () => {
     expect(results[0].distance).toBeLessThanOrEqual(results[1].distance);
     expect(results[0].distance).toBeLessThanOrEqual(results[2].distance);
 
-    // Verify all distances in valid range (L2 distance, not cosine)
-    // TEMP-STAB-spec-08: sqlite-vec uses L2 distance (not cosine per spec-08 title)
+    // Cosine distance range is [0, 2]; allow tiny float epsilon below zero
     results.forEach(chunk => {
-      expect(chunk.distance).toBeGreaterThanOrEqual(0.0);
-      expect(chunk.distance).toBeLessThanOrEqual(60.0);
+      expect(chunk.distance).toBeGreaterThanOrEqual(-1e-9);
+      expect(chunk.distance).toBeLessThanOrEqual(2.0);
     });
   });
 
