@@ -16,6 +16,7 @@ import Database from 'better-sqlite3';
 import migration014 from '@/lib/migrations/014-sanctions-entities';
 import {
   scanActiveDeals,
+  SentinelConfigError,
   type ActiveDeal,
 } from '@/lib/sanctions/sentinel';
 
@@ -141,6 +142,30 @@ describe('C6 sentinel.ts with KNOWLEDGE_SANCTIONS_REAL flag', () => {
     // This should match from the real corpus
     expect(alerts.length).toBeGreaterThan(0);
     expect(alerts[0].counterparty).toBe('Sovcomflot Group');
+  });
+
+  // FINDING-002: fail-fast when flag=true but db missing
+  it('throws SentinelConfigError when KNOWLEDGE_SANCTIONS_REAL=true and opts.db missing', async () => {
+    process.env.KNOWLEDGE_SANCTIONS_REAL = 'true';
+
+    const deals: ActiveDeal[] = [
+      {
+        id: 'deal-no-db',
+        counterpartyName: 'Sovcomflot Group',
+      },
+    ];
+
+    // Caller forgot to pass db — must throw, not silently fall back to fixtures
+    await expect(
+      scanActiveDeals({
+        dealsProvider: () => deals,
+        // db: deliberately omitted
+      }),
+    ).rejects.toBeInstanceOf(SentinelConfigError);
+
+    await expect(
+      scanActiveDeals({ dealsProvider: () => deals }),
+    ).rejects.toThrow(/KNOWLEDGE_SANCTIONS_REAL=true requires a database handle/);
   });
 
   it('returns empty array when KNOWLEDGE_SANCTIONS_REAL=true and corpus is empty', async () => {

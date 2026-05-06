@@ -58,6 +58,19 @@ export interface ScanOptions {
 export { classifySeverity, scoreMatch } from '@/lib/sanctions/match-engine';
 
 /**
+ * FINDING-002: thrown when KNOWLEDGE_SANCTIONS_REAL=true but caller did not
+ * pass opts.db. Previously the code silently fell back to fixtures, so prod
+ * could think it was screening real OFAC/EU corpus while actually checking
+ * stale test data. Now we fail-fast — caller must supply a db handle.
+ */
+export class SentinelConfigError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'SentinelConfigError';
+  }
+}
+
+/**
  * Load sanction corpus from the real database (sanction_corpus_view).
  *
  * Input contract:
@@ -131,7 +144,16 @@ export async function scanActiveDeals(
   if (opts.corpus) {
     // Explicit corpus provided (for tests)
     corpus = opts.corpus;
-  } else if (useRealCorpus && opts.db) {
+  } else if (useRealCorpus) {
+    // FINDING-002: fail-fast when flag=true but db missing. Silent fallback to
+    // fixtures here was a production risk — operators would think real OFAC/EU
+    // corpus was being screened while actually checking stale test data.
+    if (!opts.db) {
+      throw new SentinelConfigError(
+        'KNOWLEDGE_SANCTIONS_REAL=true requires a database handle; pass opts.db when calling scanActiveDeals(). ' +
+          'Set KNOWLEDGE_SANCTIONS_REAL=false to use fixture corpus (rollback mode).',
+      );
+    }
     // Use real corpus from database
     corpus = loadSanctionCorpus(opts.db);
   } else {
