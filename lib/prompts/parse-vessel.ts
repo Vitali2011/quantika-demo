@@ -6,7 +6,26 @@ ${SHIPPING_GLOSSARY}
 
 INPUT TYPE DETECTION (CRITICAL — read before extracting anything):
 
-The email may be one of two fundamentally different types — only ONE produces vessel items:
+The email may be one of FOUR fundamentally different types — only TWO of them produce vessel items.
+
+PRIORITY CHECK FIRST — ADMINISTRATIVE / CERTIFICATE / NON-VESSEL DOC (DO NOT extract — return items=[]):
+   - Sender perspective: P&I club, classification society, insurance broker, port authority, maritime administration, ITIC, MLC issuer
+   - Document types: P&I Blue Card / Oil Pollution Liability certificate, Bunker Convention Blue Card, Wreck Removal Blue Card, class certificate, MLC certificate, IOPP certificate, certificate of registry, port state inspection report, sanctions clearance letter, ITIC bulletin, ISM/ISPS audit reports
+   - Signals: phrases like "Certificate of Entry", "Certificate of Insurance", "P&I Cover Note", "Blue Card", "Class Maintained", "valid until", "Issued by", "This is to certify that", "Certificate No.", "expires on", "Period of cover"
+   - Even though such documents NAME a specific vessel + IMO + flag + GRT (full vessel particulars), the document is ABOUT the certificate, not offering the vessel for cargo
+   - Return items=[]
+
+   EXAMPLE — admin certificate (DO NOT extract):
+   "P&I CLUB BLUE CARD — Certificate of Entry
+    Vessel: MV LADY ASTRID, IMO 9401256, Flag: Liberia, GRT: 18,455
+    This is to certify that the above vessel is entered with West of England P&I Club
+    for Oil Pollution Liability per CLC 1992. Valid until 20 Feb 2027."
+   → items=[]
+   Rationale: this is an INSURANCE CERTIFICATE — vessel particulars are the SUBJECT of
+   coverage, not a vessel being offered for charter. The certificate names a vessel
+   but is not a vessel position circular and not a fixture recap.
+
+NOW the four types:
 
 1. VESSEL POSITION CIRCULAR (extract vessels):
    - Sender perspective: SHIPOWNER or BROKER offering a vessel.
@@ -39,7 +58,8 @@ Laycan: 15-20 May 2026  Freight: USD 32/mt FIO"
    - Even if the inquiry contains vessel-related preferences ("BULK CARRIER required", "gearless acceptable", "DWCC 28,000 mt", "max draft 11m") — these are CHARTERER REQUIREMENTS, NOT vessel specifications.
 
 DECISION RULE:
-- Does the email name a specific vessel that is being offered? → extract.
+- Is the email a certificate/administrative document (P&I Blue Card, class cert, etc.)? → return items=[] (HIGHEST PRIORITY — check this first even if vessel particulars are listed).
+- Does the email name a specific vessel that is being offered for charter or that has been fixed? → extract.
 - Does the email request a vessel (any vessel matching specs) for a cargo? → return items=[].
 - If mixed or unclear → err on items=[] (returning empty is SAFER than fabricating).
 
@@ -242,6 +262,61 @@ Input email body (fragment):
   "MV ALERIA-1, last loads: grain, bauxite, iron ore."
 Output for last_cargoes:
   {value: "grain, bauxite, iron ore", confidence: "confirmed", sourceText: "last loads: grain, bauxite, iron ore"}
+
+FIXTURE RECAP — open_position derivation:
+When extracting from a fixture recap, derive \`open_position\` from the load port:
+the vessel will be (or was) at the load port at laycan start. Use confidence='interpreted',
+and source_text quoting the load port mention (e.g. "Load: Iskenderun").
+
+UNKNOWN_TERMS — always include:
+Always include \`unknown_terms\` as an array — empty \`[]\` if no unrecognized terms. Never omit
+the field. Flag any abbreviation, contract form, or jurisdiction acronym not in the glossary
+above (e.g. HEAVYCON, LMAA, ATUTC, AWIWL, TCT, GENCON, NYPE, BIMCO, etc.). Include the term
+verbatim and a brief reason (e.g. "HEAVYCON — BIMCO heavy-lift charter form, not in glossary").
+
+TEMPLATE PLACEHOLDERS (anti-hallucination):
+Email body may contain unresolved template tokens like \`{{LAYCAN_START}}\`, \`{{LAYCAN_END}}\`,
+\`{{LAYCAN_MONTH}}\`, \`{{ETA}}\`, \`{{OPEN_DATE}}\`, etc. Treat these as **literal placeholder
+text**, not actual values. NEVER resolve them to concrete dates. For affected fields like
+\`open_date\`: preserve the placeholder string in \`display\`, set \`open\` and \`close\` to null,
+confidence='uncertain'. source_text should quote the unresolved placeholder verbatim
+(e.g. source_text="{{LAYCAN_START}} - {{LAYCAN_END}}").
+
+ARRAY FIELD DEFAULTS:
+Array-typed fields (\`unknown_terms\`, \`restrictions\`, \`special_features\`, \`hold_dimensions\`,
+\`hatch_dimensions\`) default to \`[]\` (empty array) when no data is present. Never use \`null\`
+for array fields. Note: \`last_cargoes\` is a STRING field (comma-separated), so null is
+acceptable when no past cargo history exists.
+
+NUMERIC FIELD TYPES:
+Fields \`imo\`, \`dwt_summer\`, \`dwcc\`, \`built\`, \`loa\`, \`beam\`, \`draft_max\`, \`grt\`, \`nrt\`,
+\`holds_count\`, \`hatches_count\`, \`grain_capacity\`, \`bale_capacity\`, \`tank_top_strength\`,
+\`deck_capacity\`, \`speed_laden\`, \`speed_ballast\` MUST be numbers (not strings).
+Example: imo=9401256 (number), NOT imo="9401256" (string).
+
+FIELD NAMES — exact spelling required:
+Use exact field names from the schema above. Critical examples that are commonly mis-spelled:
+- \`hatches_count\` (plural with 's'), NOT \`hatch_count\`
+- \`dwt_summer\`, NOT \`dwt\`
+- \`grain_capacity_unit\`, NOT \`grain_unit\`
+Misspelled field names are treated as unknown and dropped.
+
+SPECIAL_FEATURES — extract verbatim, do NOT summarize:
+When the email mentions specific equipment with brand/model details (e.g. "HMC 250t (main hook)",
+"Liebherr 4 x 35t cranes", "P&I Blue Card — Oil Pollution Liability", "CO2 fitted holds",
+"Box-shaped holds DWT 8500"), capture the FULL phrase verbatim in source_text and use a
+descriptive value, not a generic label.
+- BAD:  special_features=["Heavy-lift vessel"]
+- GOOD: special_features=[{value: "Heavy-lift crane: HMC 250t (main hook)", confidence: "confirmed", source_text: "Heavy-lift crane: HMC 250t (main hook)"}]
+Preserve all parenthetical hook/capacity qualifiers, brand names, and tonnage figures exactly
+as written.
+
+CONFIDENCEFIELD WRAPPING (complex values):
+When a field value is itself a complex object (e.g. \`open_date.value = {open, close, display}\`),
+the ConfidenceField structure is:
+  { value: { open: "...", close: "...", display: "..." }, confidence: "...", source_text: "..." }
+Do NOT merge value-internals with confidence/source_text at the same level. The complex
+object must be entirely INSIDE the \`value\` key.
 
 OUTPUT FORMAT (STRICT — applies to ALL inputs, even cargo inquiries):
 
