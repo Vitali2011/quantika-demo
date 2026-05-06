@@ -20,6 +20,7 @@
     "bake-off": "tsx scripts/wave-gamma-bake-off/cli.ts",
     "bake-off:redecide": "tsx scripts/wave-gamma-bake-off/redecide.ts",
     "bake-off:validate-baseline": "tsx scripts/wave-gamma-bake-off/validate-baseline.ts",
+    "bake-off:ground-truth": "tsx scripts/wave-gamma-bake-off/build-ground-truth.ts",
     "build-reference": "tsx scripts/wave-gamma-bake-off/build-reference.ts",
     "prepare": "husky"
   },
