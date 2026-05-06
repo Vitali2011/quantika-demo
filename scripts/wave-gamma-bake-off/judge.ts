@@ -196,10 +196,59 @@ export interface JudgeOptions {
    * shim routes to AWS Bedrock Opus 4.7.
    */
   callAiText?: CallAiTextFn;
+  /**
+   * Optional sleep function injected by tests to avoid real delays.
+   * Defaults to `(ms) => new Promise(r => setTimeout(r, ms))`.
+   */
+  sleep?: (ms: number) => Promise<void>;
+}
+
+/** Exponential-backoff delay schedule for throttle retries (ms). */
+export const RETRY_DELAYS_MS = [1000, 5000, 30000, 60000] as const;
+
+/**
+ * Returns true if the error looks like an API throttle / rate-limit signal
+ * (HTTP 429, AWS ThrottlingException, or "Too Many Requests" prose).
+ * Non-throttle errors (500, auth, malformed request, etc.) return false
+ * and should NOT be retried.
+ */
+export function isThrottle(err: unknown): boolean {
+  const msg = String((err as Error)?.message ?? err);
+  return /429|ThrottlingException|Too Many Requests/i.test(msg);
+}
+
+/**
+ * Calls `fn` with retry+backoff for throttle errors only.
+ *
+ * Retry schedule: RETRY_DELAYS_MS = [1000, 5000, 30000, 60000] ms.
+ * After 4 failed attempts (= all delays exhausted) the original error is
+ * re-thrown. Non-throttle errors are re-thrown immediately without retry.
+ *
+ * @param fn   Async operation to execute.
+ * @param sleep  Injected sleep (for tests). Defaults to real setTimeout.
+ */
+export async function callWithRetry<T>(
+  fn: () => Promise<T>,
+  sleep: (ms: number) => Promise<void> = (ms) => new Promise((r) => setTimeout(r, ms)),
+): Promise<T> {
+  let lastErr: unknown;
+  for (let attempt = 0; attempt < RETRY_DELAYS_MS.length; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastErr = err;
+      if (!isThrottle(err)) throw err;
+      // Last attempt — don't sleep, just break and re-throw below.
+      if (attempt === RETRY_DELAYS_MS.length - 1) break;
+      await sleep(RETRY_DELAYS_MS[attempt]);
+    }
+  }
+  throw lastErr;
 }
 
 export async function judge(input: JudgeInput, options: JudgeOptions = {}): Promise<JudgeOutput> {
   const callFn: CallAiTextFn = options.callAiText ?? defaultCallAiText;
+  const sleepFn = options.sleep ?? ((ms: number) => new Promise<void>((r) => setTimeout(r, ms)));
 
   // User message: structured payload. We do NOT include the candidate's actual
   // model id — only the anonymous label.
@@ -219,30 +268,16 @@ export async function judge(input: JudgeInput, options: JudgeOptions = {}): Prom
   // Pin the judge model explicitly — independent of any per-scope BEDROCK_MODEL_ID
   // override the project may use elsewhere.
   // Bedrock Opus 4.7 has tight per-account TPM throttles. Retry on
-  // "Too many tokens"/ThrottlingException-style errors with exponential
-  // backoff + jitter. Up to 5 attempts (~31s worst-case wait).
-  const maxAttempts = 5;
-  let rawText = '';
-  let lastErr: unknown;
-  for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    try {
-      rawText = await callFn(JUDGE_SCOPE, JUDGE_PROMPT, userMessage, {
+  // ThrottlingException / 429 / "Too Many Requests" only. Other errors
+  // (auth, malformed request, 500) are thrown immediately.
+  const rawText = await callWithRetry(
+    () =>
+      callFn(JUDGE_SCOPE, JUDGE_PROMPT, userMessage, {
         model: resolveJudgeModel(),
         maxTokens: JUDGE_MAX_TOKENS,
-      });
-      lastErr = undefined;
-      break;
-    } catch (e) {
-      lastErr = e;
-      const msg = e instanceof Error ? e.message : String(e);
-      const isThrottle = /too many tokens|throttl|rate.?limit|429|ServiceUnavailable|503/i.test(msg);
-      if (!isThrottle || attempt === maxAttempts - 1) throw e;
-      const baseMs = 1000 * Math.pow(2, attempt); // 1s, 2s, 4s, 8s, 16s
-      const jitter = Math.floor(Math.random() * 500);
-      await new Promise((r) => setTimeout(r, baseMs + jitter));
-    }
-  }
-  if (lastErr) throw lastErr;
+      }),
+    sleepFn,
+  );
 
   if (!rawText || rawText.trim().length === 0) {
     throw new Error('Judge returned no text block in response content');

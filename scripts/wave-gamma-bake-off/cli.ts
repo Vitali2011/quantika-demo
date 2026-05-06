@@ -23,7 +23,11 @@ import type { Endpoint } from './corpus';
 import { ENDPOINTS } from './endpoint-specs';
 
 (async () => {
-  const concurrency = parseInt(process.env.BAKE_OFF_CONCURRENCY ?? '5', 10);
+  // --max-concurrency=N CLI flag (overrides BAKE_OFF_CONCURRENCY env, default 4).
+  const argMaxConc = process.argv.find((a) => a.startsWith('--max-concurrency='));
+  const concurrency = argMaxConc
+    ? Math.max(1, Number(argMaxConc.split('=')[1]))
+    : parseInt(process.env.BAKE_OFF_CONCURRENCY ?? '4', 10);
   // Comma-separated allowlist of model ids, e.g.
   //   BAKE_OFF_MODEL_FILTER=gemini-2.5-pro,gemini-2.5-flash,gemini-2.5-flash-lite
   // Useful when some Gemini models 404 in the active Vertex project/region.
