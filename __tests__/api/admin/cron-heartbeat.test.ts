@@ -122,6 +122,44 @@ describe('POST /api/admin/cron-heartbeat', () => {
     expect(secondTimestamp).not.toBe(firstTimestamp);
   });
 
+  // FINDING-003: unknown source slug → 404 (was silent 200 with changes=0)
+  it('returns 404 when target source row does not exist (FINDING-003)', async () => {
+    const db = getStore().getDb();
+
+    // Snapshot existing 'ofac' row (bootstrap usually seeds it during test runs)
+    const snapshot = db
+      .prepare('SELECT * FROM knowledge_sources WHERE slug = ?')
+      .get('ofac') as any | undefined;
+
+    // Remove the canonical ofac source so UPDATE will affect 0 rows
+    db.prepare('DELETE FROM knowledge_sources WHERE slug = ?').run('ofac');
+
+    try {
+      const req = new NextRequest('http://localhost/api/admin/cron-heartbeat', {
+        method: 'POST',
+        headers: { 'X-Cron-Secret': validSecret },
+        body: JSON.stringify({ cron_name: validCronName }),
+      });
+
+      const res = await POST(req);
+      expect(res.status).toBe(404);
+
+      const json = await res.json();
+      expect(json.error).toMatch(/unknown.*slug|bootstrap/i);
+      expect(json.slug).toBe('ofac');
+      expect(json.cron_name).toBe(validCronName);
+    } finally {
+      // Restore snapshot so subsequent tests / suites are not affected
+      if (snapshot) {
+        const cols = Object.keys(snapshot);
+        const placeholders = cols.map(() => '?').join(', ');
+        db.prepare(
+          `INSERT INTO knowledge_sources (${cols.join(', ')}) VALUES (${placeholders})`,
+        ).run(...cols.map((c) => snapshot[c]));
+      }
+    }
+  });
+
   it('stores heartbeat in knowledge_sources.metadata for sanctions-daily', async () => {
     const db = getStore().getDb();
 

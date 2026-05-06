@@ -86,11 +86,26 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     metadata.cron_heartbeats[cron_name] = lastSeenAt;
 
     // Write back to database
-    db.prepare(`
+    const updateResult = db.prepare(`
       UPDATE knowledge_sources
       SET metadata = ?, updated_at = CURRENT_TIMESTAMP
       WHERE slug = ?
     `).run(JSON.stringify(metadata), 'ofac');
+
+    // FINDING-003: if the canonical 'ofac' source row doesn't exist (e.g.
+    // bootstrap not run), the UPDATE silently affects 0 rows and we used to
+    // return 200 OK — heartbeat lost without any signal to monitoring.
+    // Now: return 404 so the caller / cron job alerts loudly.
+    if (updateResult.changes === 0) {
+      return NextResponse.json(
+        {
+          error: 'Unknown source slug — heartbeat not stored. Run knowledge bootstrap first.',
+          slug: 'ofac',
+          cron_name,
+        },
+        { status: 404 },
+      );
+    }
 
     return NextResponse.json({
       ok: true,
