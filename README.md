@@ -183,6 +183,75 @@ pm2 restart quantika-demo
 
 Все AI-вызовы пишут запись в таблицу `ai_audit` (SQLite). Поля: `scope`, `provider`, `model`, `latency_ms`, `ok`, `err`. Полезно для дебага и мониторинга стоимости.
 
+## Knowledge Layer
+
+Начиная с Phase 1 (май 2026), все регуляторные, рыночные и справочные данные управляются через **Knowledge Layer** — единую систему governance для 10 источников.
+
+### Что включено
+
+- **OFAC + EU Sanctions** — автоматическое обновление ежедневно (cron)
+- **Port Distances** — автоматический расчёт расстояний через searoute-py (Python microservice)
+- **JWC War Risk Zones** — зоны повышенных военных рисков (Lloyd's Market Association)
+- **ECA Zones** — зоны с эмиссионными ограничениями (MARPOL Annex VI)
+- **Panama Canal Tariffs** — актуальные тарифы ACP
+- **Embeddings** — векторные представления для RAG (Vertex AI)
+
+Все источники — **бесплатные** (публичные API + лицензия Apache-2.0 для searoute-py). Стоимость data feeds: **$0/мес**.
+
+### Управление и мониторинг
+
+**Admin Dashboard:**
+```bash
+# Открыть в браузере
+open http://localhost:3000/admin/knowledge
+```
+
+Показывает статус всех 10 источников (fresh/stale/failed), последнее обновление, количество записей.
+
+**CLI:**
+```bash
+# Проверить статус всех источников
+npm run knowledge:status
+
+# Обновить конкретный источник
+npm run knowledge:refresh ofac
+npm run knowledge:refresh distances
+```
+
+**Health API (public):**
+```bash
+curl http://localhost:3000/api/health/knowledge
+# → {"status":"healthy","sources":{"total":10,"fresh":8,"stale":1,"failed":1}}
+```
+
+### Автоматическое обновление
+
+**Sanctions cron** (ежедневно в 02:00 UTC):
+```bash
+# Проверить статус cron
+systemctl status quantika-sanctions-refresh.timer
+
+# Просмотр логов последнего запуска
+journalctl -u quantika-sanctions-refresh.service -n 50
+```
+
+Обновляет OFAC + EU sanctions автоматически. Остальные источники обновляются вручную по необходимости (quarterly/yearly).
+
+### Feature Flags (Rollback)
+
+Каждый источник может быть отключён через env vars без потери данных:
+
+```bash
+KNOWLEDGE_SANCTIONS_REAL=false          # отключить sanctions lookups
+KNOWLEDGE_LAYER_DISTANCES_ENABLED=false # отключить auto-расчёт расстояний
+KNOWLEDGE_WAR_RISK_FROM_DB=false        # вернуться к хардкод war-risk rates
+```
+
+### Документация
+
+- **[Runbook](docs/runbooks/knowledge-layer.md)** — daily ops, incident response, troubleshooting
+- **[ADR](docs/adr/2026-05-06-knowledge-layer.md)** — architecture decisions, context, alternatives
+
 ## Deployment
 
 Инструкция по деплою на VPS (PM2 + Caddy): [docs/deploy.md](docs/deploy.md)
