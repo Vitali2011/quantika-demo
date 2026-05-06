@@ -48,6 +48,28 @@ const SEED_FILES: { path: string; idPrefix: string }[] = [
   { path: 'scripts/eval/email-samples.json', idPrefix: 'eval' },
 ];
 
+/**
+ * Path to the Gemini 2.5 Pro self-baseline (built by `npm run build-reference`).
+ * If present, its contents populate `case.references[endpoint]` so the bake-off
+ * judge runs in Mode A. Absent → Mode B globally (legacy behaviour).
+ */
+const BASELINE_PATH = path.join(__dirname, 'baseline-pro25.json');
+
+interface BaselineMap {
+  [caseId: string]: Partial<Record<Endpoint, unknown>>;
+}
+
+function loadBaselineSafe(): BaselineMap {
+  if (!existsSync(BASELINE_PATH)) return {};
+  try {
+    const parsed = JSON.parse(readFileSync(BASELINE_PATH, 'utf-8'));
+    if (parsed && typeof parsed === 'object') return parsed as BaselineMap;
+  } catch {
+    /* corrupted baseline shouldn't kill the run — fall back to Mode B */
+  }
+  return {};
+}
+
 function detectEndpoints(text: string): Endpoint[] {
   const eps: Endpoint[] = ['classify']; // every email is a classify candidate
   const t = text.toLowerCase();
@@ -89,6 +111,7 @@ function readSeedFile(absPath: string): RawSeedMessage[] {
 export async function loadCorpus(rootDir: string = process.cwd()): Promise<CorpusCase[]> {
   const out: CorpusCase[] = [];
   const seenIds = new Set<string>();
+  const baseline = loadBaselineSafe();
 
   for (const seed of SEED_FILES) {
     const abs = path.join(rootDir, seed.path);
@@ -114,11 +137,13 @@ export async function loadCorpus(rootDir: string = process.cwd()): Promise<Corpu
       }
       seenIds.add(id);
 
+      // Attach Pro 2.5 self-baseline if present → Mode A; else empty → Mode B.
+      const references = baseline[id] ?? {};
       out.push({
         id,
         email: body,
         endpoints,
-        references: {}, // Mode B globally (see header note)
+        references,
         source: seed.path,
       });
     }
