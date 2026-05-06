@@ -194,3 +194,78 @@ describe('POST /api/admin/knowledge/refresh', () => {
     expect(typeof json.message).toBe('string');
   });
 });
+
+// FINDING-004: spawn() failure must close sync_log row + return 503.
+// Mock child_process.spawn — by default returns a no-op detached child so the
+// happy-path tests above continue to behave; the failure test below overrides
+// the implementation to throw.
+jest.mock('child_process', () => {
+  const actual = jest.requireActual('child_process');
+  return {
+    ...actual,
+    spawn: jest.fn(() => ({ unref: () => {} })),
+  };
+});
+
+describe('POST /api/admin/knowledge/refresh — FINDING-004 spawn failure', () => {
+  const ADMIN_TOKEN = 'test-admin-token-knowledge-refresh';
+  const originalToken = process.env.ADMIN_TOKEN;
+   
+  const childProcess = require('child_process') as { spawn: jest.Mock };
+
+  beforeAll(() => {
+    process.env.ADMIN_TOKEN = ADMIN_TOKEN;
+  });
+
+  afterAll(() => {
+    if (originalToken === undefined) delete process.env.ADMIN_TOKEN;
+    else process.env.ADMIN_TOKEN = originalToken;
+  });
+
+  afterEach(() => {
+    // Restore default no-op spawn so other tests don't see a throwing impl
+    childProcess.spawn.mockImplementation(() => ({ unref: () => {} }));
+  });
+
+  it('returns 503 and closes sync_log when spawn() throws', async () => {
+    // The route logs the spawn failure via console.error — silence it for this test
+    const errSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    childProcess.spawn.mockImplementationOnce(() => {
+      throw new Error('ENOENT: npm binary not found');
+    });
+
+    const validSlug = KNOWLEDGE_REGISTRY[0].slug;
+    const req = new NextRequest('http://localhost/api/admin/knowledge/refresh', {
+      method: 'POST',
+      body: JSON.stringify({ slug: validSlug }),
+      headers: { 'content-type': 'application/json', 'X-Admin-Token': ADMIN_TOKEN },
+    });
+
+    const res = await POST(req);
+    expect(res.status).toBe(503);
+
+    const json = await res.json();
+    expect(json).toHaveProperty('sync_log_id');
+    expect(json.slug).toBe(validSlug);
+    expect(json.status).toBe('failed');
+    expect(json.error).toMatch(/ENOENT|failed to start/i);
+
+    // Verify sync_log row was actually closed (status='failure', finished_at set)
+     
+    const { getStore } = require('@/lib/session-store') as typeof import('@/lib/session-store');
+    const db = getStore().getDb();
+    const row = db
+      .prepare('SELECT status, finished_at, error_message FROM knowledge_sync_log WHERE id = ?')
+      .get(json.sync_log_id) as { status: string; finished_at: string | null; error_message: string | null } | undefined;
+
+    expect(row).toBeDefined();
+    expect(row!.status).toBe('failure');
+    expect(row!.finished_at).not.toBeNull();
+    expect(row!.error_message).toMatch(/ENOENT/);
+
+    // Confirm the failure was logged (without leaking it into test output)
+    expect(errSpy).toHaveBeenCalled();
+    errSpy.mockRestore();
+  });
+});

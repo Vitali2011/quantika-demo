@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { spawn } from 'child_process';
 import { getStore } from '@/lib/session-store';
-import { reportSyncStarted } from '@/lib/knowledge/governance';
+import { reportSyncStarted, reportSyncFailure } from '@/lib/knowledge/governance';
 import { KNOWLEDGE_REGISTRY } from '@/lib/knowledge/bootstrap';
 import { requireAdmin } from '@/lib/auth/admin';
 
@@ -82,6 +82,12 @@ export async function POST(req: NextRequest) {
   // Spawn refresh process in background (fire-and-forget)
   // SECURITY: Using spawn with array args prevents shell injection
   // The slug is already validated against whitelist above
+  //
+  // FINDING-004: previously a failed spawn() (binary not found, OOM) only
+  // logged to console and still returned 202 — but the sync_log row stayed
+  // in status='running' forever (until the next reportSyncStarted aborted
+  // it via KG-2 defense). That was a real production hole when "next call"
+  // never came. Now we close the row immediately and return 503.
   try {
     const child = spawn('npm', ['run', 'knowledge:refresh', '--', slug], {
       detached: true,
@@ -91,9 +97,30 @@ export async function POST(req: NextRequest) {
     // Detach the child process so it continues after parent exits
     child.unref();
   } catch (error) {
-    // If spawn fails, log the error but still return success since sync log was created
-    console.error(`Failed to spawn refresh process for ${slug}:`, error);
-    // Note: In production, this should update the sync log to 'failed' status
+    const err = error instanceof Error ? error : new Error(String(error));
+    console.error(`Failed to spawn refresh process for ${slug}:`, err);
+
+    // Close the sync_log row immediately so it doesn't sit as 'running' forever.
+    // KG-2 abort-orphan-on-next-start logic stays as defense-in-depth, but this
+    // patch closes the hole explicitly.
+    try {
+      reportSyncFailure(db, syncLogId, err);
+    } catch (closeErr) {
+      console.error(
+        `Additionally failed to close sync_log id=${syncLogId} after spawn failure:`,
+        closeErr,
+      );
+    }
+
+    return NextResponse.json(
+      {
+        error: `Failed to start refresh process: ${err.message}`,
+        sync_log_id: syncLogId,
+        slug,
+        status: 'failed',
+      },
+      { status: 503 },
+    );
   }
 
   // Return 202 Accepted immediately
