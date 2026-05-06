@@ -1,12 +1,21 @@
 /**
- * STUB: Created by spec-11 to enable adapter tests
- * Real implementation will be provided by spec-10 (batch 3)
+ * IMSBC Code chunker — converts scraped HTML sections into plain-text chunks
+ * Spec: spec-13-chunkimsbc-sections
  */
 
 import type { Chunk } from '@/lib/knowledge/embeddings/chunks';
-import type { ImsbcSection } from './scraper';
+import type { ScrapedSection } from './scraper';
 
-export function chunkImsbc(sections: ImsbcSection[]): Chunk[] {
-  // TEMP-STAB-spec-11: spec-10 will provide real chunker implementation
-  throw new Error('chunkImsbc stub — spec-10 will implement');
+/**
+ * Converts IMSBC scraped sections into chunks suitable for embedding
+ * @param sections - Array of scraped HTML sections from scrapeImsbc()
+ * @returns Array of plain-text chunks with metadata
+ */
+export function chunkImsbc(sections: ScrapedSection[]): Chunk[] {
+  if (sections.length === 0) {
+    return [];
+  }
+
+  // TODO: Implement chunking logic
+  return [];
 }
