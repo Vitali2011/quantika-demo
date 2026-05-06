@@ -1,5 +1,5 @@
 [Unit]
-Description=Quantika Daily Sanctions Refresh (OFAC + EU)
+Description=Quantika OFAC+EU sanctions refresh
 After=network-online.target
 Wants=network-online.target
 
@@ -7,20 +7,22 @@ Wants=network-online.target
 Type=oneshot
 User=quantika
 Group=quantika
-WorkingDirectory=/opt/quantika/app
-Environment="NODE_ENV=production"
-EnvironmentFile=/opt/quantika/app/.env
-ExecStart=/usr/bin/npx tsx scripts/knowledge/cron/refresh-sanctions.ts
+WorkingDirectory=/opt/quantika
+ExecStart=/usr/bin/node /opt/quantika/scripts/knowledge/cron/refresh-sanctions.js
 StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=quantika-sanctions
+TimeoutStartSec=30min
+EnvironmentFile=/opt/quantika/.env.production
 
-# Security hardening
+# Security hardening (restored 2026-05-06 — spec-07 subagent omitted these)
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=true
-ReadWritePaths=/opt/quantika/app/data
+ReadWritePaths=/opt/quantika
+
+# Failure notification — rely on Sentry SDK in refresh-sanctions.js (already in stack)
 
 [Install]
 WantedBy=multi-user.target

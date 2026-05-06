@@ -55,6 +55,7 @@
     "@testing-library/react": "^16.3.2",
     "@types/better-sqlite3": "^7.6.13",
     "@types/jest": "^30.0.0",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.19.37",
     "@types/pdfkit": "^0.17.6",
     "@types/react": "^19.2.14",
@@ -79,7 +80,7 @@
   "lint-staged": {
     "*.{ts,tsx}": [
       "eslint --fix --max-warnings 0",
-      "bash -c 'npx tsc --noEmit'"
+      "bash -c 'NODE_OPTIONS=--max-old-space-size=4096 npx tsc --noEmit'"
     ],
     "*.{json,md,yml,yaml}": [
       "prettier --write"

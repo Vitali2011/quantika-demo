@@ -1,17 +1,12 @@
 [Unit]
-Description=Quantika Daily Sanctions Refresh Timer
+Description=Daily Quantika sanctions refresh
 Requires=quantika-sanctions-refresh.service
 
 [Timer]
-# Run daily at 03:30 UTC (off-peak hours)
-OnCalendar=*-*-* 03:30:00
-
-# Add randomized delay of 0-30 minutes to avoid thundering herd
-# if multiple instances are deployed
-RandomizedDelaySec=1800
-
-# Ensure timer persists across reboots
+OnCalendar=*-*-* 04:00:00 UTC
+RandomizedDelaySec=30min
 Persistent=true
+Unit=quantika-sanctions-refresh.service
 
 [Install]
 WantedBy=timers.target

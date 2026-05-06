@@ -1,0 +1,130 @@
+version: JWC-2025-current
+effective_from: "2026-03-12"
+source_url: https://www.lmalloyds.com/lma/jointwar
+fetched_at: "2026-05-06"
+bulletin_ref: JWLA-033
+notes: >
+  Latest bulletin JWLA-033 published 3 March 2026, effective 12 March 2026 (00:01 GMT).
+  Adds Bahrain, Djibouti, Kuwait, Oman, Qatar as listed areas.
+  Amends Persian/Arabian Gulf, Gulf of Oman, Indian Ocean, Gulf of Aden and Southern Red Sea
+  zone with revised boundary coordinates.
+  JWC does not publish rates — these are negotiated between underwriters and brokers individually.
+  Rate estimates sourced from S&P Global (Dec 2025), Bloomberg (Dec 2025), Insurance Journal (Dec 2025),
+  and Lloyd's List reporting.
+
+zones:
+  - zone_id: red-sea
+    name: Red Sea (south of 18°N)
+    region: red-sea
+    transit_rate_pct: 0.20
+    hold_rate_pct: null
+    polygon_geojson: |
+      {"type":"Polygon","coordinates":[[[32.5,12.5],[37.2,11.8],[40.1,11.3],[43.5,11.5],[45.0,13.0],[44.5,15.0],[43.8,16.2],[43.2,17.5],[41.0,17.8],[38.0,17.5],[34.5,16.5],[32.5,14.8],[32.5,12.5]]]}
+    port_list: YEHOD,DJJIB,ERASM,SDPZS
+    confidence: medium
+    notes: >
+      Houthi ceasefire Oct 2025 led to rate reduction from peak 0.7-1.0% to approx 0.2% of hull
+      value per transit (S&P Global Dec 2025 / FreightAmigo 2025 reporting). "Brittle calm" — risk
+      of re-escalation maintained. Zone covers Red Sea south of 18°N including Bab el-Mandeb.
+      Hold (at-anchor) rate not publicly available — requires underwriter negotiation.
+      Industry estimates pre-ceasefire: 0.5-1.0% transit, 0.3-0.6% hold (Lloyd's List 2025-Q3).
+
+  - zone_id: persian-gulf-oman-indian-ocean
+    name: Persian/Arabian Gulf, Gulf of Oman, Indian Ocean, Gulf of Aden (JWLA-033 amended zone)
+    region: persian-gulf
+    transit_rate_pct: null
+    hold_rate_pct: null
+    polygon_geojson: |
+      {"type":"Polygon","coordinates":[[[32.5,18.0],[41.5,12.0],[43.5,11.5],[48.5,11.5],[55.0,12.0],[60.15,10.8],[65.0,10.8],[65.0,25.32],[63.0,24.5],[57.0,22.5],[55.0,22.5],[50.5,24.0],[48.5,24.0],[47.0,22.5],[43.5,14.0],[41.5,12.5],[38.5,14.0],[35.0,16.0],[32.5,18.0]]]}
+    port_list: AEJEBEL,AEKHALIFAH,KWSHUAIBA,IQBASRA,IRBANDER,OMSOHAR,BHMINA,DJJIB
+    confidence: needs-vitali-input
+    notes: >
+      JWLA-033 (3 March 2026) fundamentally restructured this zone, merging Persian Gulf, Gulf of Oman,
+      Indian Ocean HRA, Gulf of Aden and Southern Red Sea into one expanded polygon.
+      Boundary: NW = Red Sea south of 18°N; NE = Pakistan coast at 25°19'15"N 65°E; E = points
+      10°48'N 65°E → 10°48'N 60°15'E → 6°45'S 48°45'E; SW = Somalia border 1°40'S 41°34'E to
+      6°45'S 48°45'E.
+      Following Iran-Israel escalation Feb/Mar 2026, Hormuz transit rates rose from 0.2% to 0.8-1.5%
+      with some insurers quoting double-digit millions per VLCC voyage (Lloyd's List Mar 2026).
+      LMA statement: "safety concerns, not insurance availability, driving reduced vessel traffic".
+      Rate null — extreme volatility, requires real-time underwriter quote.
+
+  - zone_id: strait-of-hormuz
+    name: Strait of Hormuz (Iran territorial waters)
+    region: persian-gulf
+    transit_rate_pct: null
+    hold_rate_pct: null
+    polygon_geojson: |
+      {"type":"Polygon","coordinates":[[[55.5,23.5],[56.0,24.0],[57.5,24.5],[58.8,23.8],[59.0,22.5],[58.0,21.8],[56.5,22.0],[55.5,22.8],[55.0,23.0],[55.5,23.5]]]}
+    port_list: AEJEBEL,IRBANDER,IRABAD
+    confidence: needs-vitali-input
+    notes: >
+      Highest-risk chokepoint. JWLA-033 Iran listing effective 12 March 2026 covers all Iranian
+      territorial waters. Post-escalation Mar 2026: underwriters quoting 0.8-1.5% per transit,
+      some at 10%+ of hull value for VLCC (S&P Global Mar 2026). Several insurers withdrew
+      coverage entirely. Insurance available within Lloyd's and London company market per LMA
+      statement Mar 2026. Rate null — must obtain live underwriter quote.
+
+  - zone_id: black-sea
+    name: Black Sea and Sea of Azov
+    region: black-sea
+    transit_rate_pct: 0.65
+    hold_rate_pct: null
+    polygon_geojson: |
+      {"type":"Polygon","coordinates":[[[27.5,41.5],[30.0,40.8],[32.5,40.5],[35.0,41.5],[37.0,41.0],[40.0,41.5],[41.5,42.5],[42.0,44.0],[40.5,45.5],[38.0,46.5],[34.0,46.5],[31.5,47.0],[29.5,46.5],[28.5,45.5],[28.0,44.0],[27.5,43.0],[27.5,41.5]]]}
+    port_list: UAODESA,UAILLICHIVSK,UAYUZHNY,RUMCONST,BGBURGAS,TRSAMSUN,RUNOVOR,RUTEMR
+    confidence: medium
+    notes: >
+      Ukraine–Russia conflict ongoing. Dec 2025: Ukrainian drone attacks on Russian tankers caused
+      250% surge in premiums. Russian Black Sea ports: 0.65-0.80% per voyage; Ukrainian deep-water
+      ports: 0.45-0.55% per voyage (Bloomberg / Insurance Journal Dec 2025). Peak 2023: 1.0-1.2%.
+      Ukrainian inland waters (including Don and Donets rivers) included per JWLA-031.
+      Drifting mines off Romanian/Bulgarian coasts remain hazard. Transit rate shown = Russian ports
+      midpoint 0.65%; Ukrainian ports approx 0.50% — confirm with underwriter per port call.
+
+  - zone_id: gulf-of-guinea
+    name: Gulf of Guinea (piracy risk)
+    region: gulf-of-guinea
+    transit_rate_pct: null
+    hold_rate_pct: null
+    polygon_geojson: |
+      {"type":"Polygon","coordinates":[[[-5.0,-4.0],[2.5,-4.5],[5.0,-3.5],[7.0,-2.0],[8.5,1.0],[9.0,3.5],[7.5,6.0],[4.5,6.5],[1.5,6.0],[-1.0,5.0],[-3.0,4.0],[-5.5,4.5],[-6.5,3.0],[-5.5,-1.0],[-5.0,-4.0]]]}
+    port_list: NGAPP,NGLAG,GHTEM,BJANL,CMDLE
+    confidence: needs-vitali-input
+    notes: >
+      Piracy and armed robbery risk, primarily Nigeria / Benin / Cameroon coastal waters.
+      IMB Piracy Report 2025: Gulf of Guinea remains primary piracy hotspot globally though
+      incident numbers declined from 2023 peak. JWC listing maintained.
+      Rates not publicly available — negotiated individually. Industry estimates 2024-2025:
+      transit 0.10-0.30% depending on port, vessel type, voyage duration. Require underwriter quote.
+
+  - zone_id: libya
+    name: Libya (territorial waters)
+    region: libya
+    transit_rate_pct: null
+    hold_rate_pct: null
+    polygon_geojson: |
+      {"type":"Polygon","coordinates":[[[9.5,31.5],[11.5,32.5],[13.0,33.0],[15.0,33.0],[17.0,32.5],[19.5,31.5],[21.5,31.5],[23.0,32.0],[24.5,32.5],[25.0,31.0],[23.0,30.0],[21.0,29.5],[19.0,30.0],[17.0,30.5],[15.0,30.5],[13.0,31.0],[11.0,31.0],[9.5,31.5]]]}
+    port_list: LYTRI,LYBGA,LYMUS
+    confidence: needs-vitali-input
+    notes: >
+      Ongoing civil conflict between rival administrations. JWC listing maintained.
+      Eastern and western Libyan authorities both claim territorial waters.
+      Rates negotiated individually — no public market rate. Industry estimates:
+      transit 0.10-0.25% depending on specific port destination and voyage timing.
+      Oil export terminals (Es Sider, Ras Lanuf, Zawiya) intermittently operational.
+
+  - zone_id: cabo-delgado
+    name: Cabo Delgado (northern Mozambique)
+    region: indian-ocean
+    transit_rate_pct: null
+    hold_rate_pct: null
+    polygon_geojson: |
+      {"type":"Polygon","coordinates":[[[38.5,-10.0],[40.5,-10.5],[42.5,-11.5],[43.0,-13.0],[41.5,-15.0],[40.0,-15.5],[38.5,-14.0],[37.5,-12.0],[38.0,-10.5],[38.5,-10.0]]]}
+    port_list: MZPOL
+    confidence: needs-vitali-input
+    notes: >
+      Islamist insurgency (Al-Shabaab/ISIS affiliate) in Cabo Delgado province.
+      JWC listing covers coastal and offshore waters. LNG projects (TotalEnergies, ExxonMobil)
+      suspended/delayed. Listed in JWLA series. Transit rate not publicly available —
+      estimated 0.05-0.15% based on limited trade press references.
