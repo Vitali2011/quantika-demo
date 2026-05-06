@@ -1,8 +1,5 @@
 {
   "cargo-sample-01": {
-    "parse-vessel": {
-      "items": []
-    },
     "classify": {
       "classifications": [
         {
@@ -157,6 +154,9 @@
           "context": "Gcn 3.75% TTL"
         }
       ]
+    },
+    "parse-vessel": {
+      "items": []
     }
   },
   "cargo-sample-02": {
@@ -173,9 +173,6 @@
           "original_sender_company": "Mitteleuropa Charter GmbH (Demo)"
         }
       ]
-    },
-    "parse-vessel": {
-      "items": []
     },
     "parse-cargo": {
       "items": [
@@ -426,6 +423,9 @@
         }
       ],
       "unknown_terms": []
+    },
+    "parse-vessel": {
+      "items": []
     }
   },
   "cargo-sample-03": {
@@ -442,9 +442,6 @@
           "original_sender_company": "Asia Bulk Trading (Demo)"
         }
       ]
-    },
-    "parse-vessel": {
-      "items": []
     },
     "parse-recap": {
       "vessel_name": null,
@@ -718,6 +715,9 @@
           "unknown_terms": []
         }
       ]
+    },
+    "parse-vessel": {
+      "items": []
     }
   },
   "cargo-sample-04": {
@@ -734,9 +734,6 @@
           "original_sender_company": "Sokhna Cement Exports (Demo)"
         }
       ]
-    },
-    "parse-vessel": {
-      "items": []
     },
     "parse-recap": {
       "vessel_name": null,
@@ -864,6 +861,9 @@
           "context": "Gcn 3.75% TTL - 'Gcn' likely means 'Gross commission', but is not a standard abbreviation. The total commission is 3.75%."
         }
       ]
+    },
+    "parse-vessel": {
+      "items": []
     }
   },
   "cargo-sample-05": {
@@ -1016,6 +1016,9 @@
         }
       ],
       "unknown_terms": []
+    },
+    "parse-vessel": {
+      "items": []
     }
   },
   "cargo-sample-06": {
@@ -1032,6 +1035,9 @@
           "original_sender_company": "عُمان وكالة الشحن التجريبية (Demo)"
         }
       ]
+    },
+    "parse-vessel": {
+      "items": []
     }
   },
   "cargo-sample-07": {
@@ -1188,6 +1194,9 @@
         }
       ],
       "unknown_terms": []
+    },
+    "parse-vessel": {
+      "items": []
     }
   },
   "cargo-sample-08": {
@@ -1286,6 +1295,9 @@
           ]
         }
       ]
+    },
+    "parse-vessel": {
+      "items": []
     }
   },
   "cargo-sample-09": {
@@ -1302,9 +1314,6 @@
           "original_sender_company": "Royal Jordanian Phosphate (Demo)"
         }
       ]
-    },
-    "parse-vessel": {
-      "items": []
     },
     "parse-recap": {
       "vessel_name": null,
@@ -1470,6 +1479,9 @@
           "context": "Gcn 2.5% TTL"
         }
       ]
+    },
+    "parse-vessel": {
+      "items": []
     }
   },
   "cargo-sample-10": {
@@ -1486,9 +1498,6 @@
           "original_sender_company": "Azov Steel Exports (Demo)"
         }
       ]
-    },
-    "parse-vessel": {
-      "items": []
     },
     "parse-cargo": {
       "items": [
@@ -1761,6 +1770,9 @@
           "context": "Gcn 3.75% TTL. Interpreted as 'Commission' based on context."
         }
       ]
+    },
+    "parse-vessel": {
+      "items": []
     }
   },
   "cargo-sample-11": {
@@ -2300,6 +2312,9 @@
           "context": "Gcn 3.75% TTL"
         }
       ]
+    },
+    "parse-vessel": {
+      "items": []
     }
   },
   "recap-sample-21": {
@@ -2314,79 +2329,6 @@
           "days_without_reply": null,
           "original_sender": "Transmar Breakbulk Chartering",
           "original_sender_company": "Transmar Breakbulk"
-        }
-      ]
-    },
-    "parse-vessel": {
-      "items": [
-        {
-          "vessel_name": {
-            "value": "DANUBE PIONEER",
-            "confidence": "confirmed",
-            "source_text": "Vessel: MV DANUBE PIONEER (Demo)"
-          },
-          "imo": null,
-          "flag": {
-            "value": "Marshall Islands",
-            "confidence": "confirmed",
-            "source_text": "Flag: Marshall Islands"
-          },
-          "built": {
-            "value": 2011,
-            "confidence": "confirmed",
-            "source_text": "Built: 2011"
-          },
-          "class_society": null,
-          "p_and_i": null,
-          "dwt_summer": {
-            "value": 8500,
-            "confidence": "confirmed",
-            "source_text": "DWT: 8,500 mts"
-          },
-          "dwcc": null,
-          "draft_max": null,
-          "loa": null,
-          "beam": null,
-          "grt": null,
-          "nrt": null,
-          "holds_count": null,
-          "hatches_count": null,
-          "grain_capacity": null,
-          "grain_capacity_unit": null,
-          "bale_capacity": null,
-          "hold_dimensions": null,
-          "hatch_dimensions": null,
-          "tank_top_strength": null,
-          "geared": null,
-          "crane_capacity": null,
-          "hatch_type": null,
-          "vessel_type": null,
-          "cii_rating": null,
-          "open_position": {
-            "value": "Constanta, Romania",
-            "confidence": "confirmed",
-            "source_text": "Load port: Constanta, Romania (ROCND)"
-          },
-          "open_date": {
-            "open": null,
-            "close": null,
-            "display": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}",
-            "confidence": "confirmed",
-            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
-          },
-          "direction": {
-            "value": "Ravenna, Italy",
-            "confidence": "confirmed",
-            "source_text": "Disch port: Ravenna, Italy (ITRAN)"
-          },
-          "restrictions": [],
-          "last_cargoes": null,
-          "speed_laden": null,
-          "speed_ballast": null,
-          "consumption": null,
-          "deck_capacity": null,
-          "special_features": [],
-          "unknown_terms": []
         }
       ]
     },
@@ -2592,48 +2534,32 @@
           "context": "The term 'FD BENDS' (Full Despatch Both Ends) in the demurrage clause appears to conflict with the separate 'half despatch' clause. While the half despatch clause is more specific and has been used for the despatch_rate calculation, the presence of 'FD BENDS' is ambiguous and should be clarified."
         }
       ]
-    }
-  },
-  "recap-sample-22": {
-    "classify": {
-      "classifications": [
-        {
-          "id": "email_1",
-          "category": "FIXTURE_RECAP",
-          "urgency": "high",
-          "confidence": 1,
-          "is_unanswered": true,
-          "days_without_reply": 0,
-          "original_sender": "chartering@rjp-demo.jo",
-          "original_sender_company": "Royal Jordanian Phosphate - Chartering"
-        }
-      ]
     },
     "parse-vessel": {
       "items": [
         {
           "vessel_name": {
-            "value": "MV DESERT STAR (Demo)",
+            "value": "MV DANUBE PIONEER",
             "confidence": "confirmed",
-            "source_text": "Vessel: MV DESERT STAR (Demo)"
+            "source_text": "Vessel: MV DANUBE PIONEER (Demo)"
           },
           "imo": null,
           "flag": {
-            "value": "Malta",
+            "value": "Marshall Islands",
             "confidence": "confirmed",
-            "source_text": "Flag: Malta"
+            "source_text": "Flag: Marshall Islands"
           },
           "built": {
-            "value": 2014,
+            "value": 2011,
             "confidence": "confirmed",
-            "source_text": "Built: 2014"
+            "source_text": "Built: 2011"
           },
           "class_society": null,
           "p_and_i": null,
           "dwt_summer": {
-            "value": 12500,
+            "value": 8500,
             "confidence": "confirmed",
-            "source_text": "DWT: 12,500 mts"
+            "source_text": "DWT: 8,500 mts"
           },
           "dwcc": null,
           "draft_max": null,
@@ -2655,9 +2581,9 @@
           "vessel_type": null,
           "cii_rating": null,
           "open_position": {
-            "value": "Aqaba, Jordan (JOAQB)",
-            "confidence": "confirmed",
-            "source_text": "Load port: Aqaba, Jordan (JOAQB)"
+            "value": "Constanta, Romania",
+            "confidence": "interpreted",
+            "source_text": "Load port: Constanta, Romania (ROCND)"
           },
           "open_date": {
             "value": {
@@ -2665,13 +2591,13 @@
               "close": null,
               "display": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
             },
-            "confidence": "confirmed",
+            "confidence": "uncertain",
             "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
           },
           "direction": {
-            "value": "Mersin, Turkey (TRMER)",
+            "value": "Constanta, Romania to Ravenna, Italy",
             "confidence": "confirmed",
-            "source_text": "Disch port: Mersin, Turkey (TRMER)"
+            "source_text": "Load port: Constanta, Romania (ROCND) - 1SB AAAA\nDisch port: Ravenna, Italy (ITRAN) - 1SB AARA"
           },
           "restrictions": [],
           "last_cargoes": null,
@@ -2681,6 +2607,22 @@
           "deck_capacity": null,
           "special_features": [],
           "unknown_terms": []
+        }
+      ]
+    }
+  },
+  "recap-sample-22": {
+    "classify": {
+      "classifications": [
+        {
+          "id": "email_1",
+          "category": "FIXTURE_RECAP",
+          "urgency": "high",
+          "confidence": 1,
+          "is_unanswered": true,
+          "days_without_reply": 0,
+          "original_sender": "chartering@rjp-demo.jo",
+          "original_sender_company": "Royal Jordanian Phosphate - Chartering"
         }
       ]
     },
@@ -2900,6 +2842,81 @@
           "context": "The term 'FD BENDS' (Full Despatch Both Ends) appears on the demurrage line, but the separate despatch line specifies 'half demurrage', which is a contradiction. 'FD BENDS' is likely a typo or misplaced term. Context: 'Demurrage: USD 7,500 PDPR / FD BENDS'"
         }
       ]
+    },
+    "parse-vessel": {
+      "items": [
+        {
+          "vessel_name": {
+            "value": "MV DESERT STAR",
+            "confidence": "confirmed",
+            "source_text": "Vessel: MV DESERT STAR (Demo)"
+          },
+          "imo": null,
+          "flag": {
+            "value": "Malta",
+            "confidence": "confirmed",
+            "source_text": "Flag: Malta"
+          },
+          "built": {
+            "value": 2014,
+            "confidence": "confirmed",
+            "source_text": "Built: 2014"
+          },
+          "class_society": null,
+          "p_and_i": null,
+          "dwt_summer": {
+            "value": 12500,
+            "confidence": "confirmed",
+            "source_text": "DWT: 12,500 mts"
+          },
+          "dwcc": null,
+          "draft_max": null,
+          "loa": null,
+          "beam": null,
+          "grt": null,
+          "nrt": null,
+          "holds_count": null,
+          "hatches_count": null,
+          "grain_capacity": null,
+          "grain_capacity_unit": null,
+          "bale_capacity": null,
+          "hold_dimensions": [],
+          "hatch_dimensions": [],
+          "tank_top_strength": null,
+          "geared": null,
+          "crane_capacity": null,
+          "hatch_type": null,
+          "vessel_type": null,
+          "cii_rating": null,
+          "open_position": {
+            "value": "Aqaba, Jordan",
+            "confidence": "interpreted",
+            "source_text": "Load port: Aqaba, Jordan (JOAQB)"
+          },
+          "open_date": {
+            "value": {
+              "open": null,
+              "close": null,
+              "display": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+            },
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+          },
+          "direction": {
+            "value": "Aqaba to Mersin",
+            "confidence": "interpreted",
+            "source_text": "Load port: Aqaba, Jordan (JOAQB) - 1SB AAAA\nDisch port: Mersin, Turkey (TRMER) - 1SB AAAA"
+          },
+          "restrictions": [],
+          "last_cargoes": null,
+          "speed_laden": null,
+          "speed_ballast": null,
+          "consumption": null,
+          "deck_capacity": null,
+          "special_features": [],
+          "unknown_terms": []
+        }
+      ]
     }
   },
   "recap-sample-23": {
@@ -2914,87 +2931,6 @@
           "days_without_reply": 0,
           "original_sender": "Emirates Breakbulk (Demo)",
           "original_sender_company": "Emirates Breakbulk"
-        }
-      ]
-    },
-    "parse-vessel": {
-      "items": [
-        {
-          "vessel_name": {
-            "value": "GULF QUEEN",
-            "confidence": "confirmed",
-            "source_text": "Vessel: MV GULF QUEEN (Demo)"
-          },
-          "imo": null,
-          "flag": {
-            "value": "UAE",
-            "confidence": "confirmed",
-            "source_text": "Flag: UAE"
-          },
-          "built": {
-            "value": 2016,
-            "confidence": "confirmed",
-            "source_text": "Built: 2016"
-          },
-          "class_society": null,
-          "p_and_i": null,
-          "dwt_summer": {
-            "value": 15000,
-            "confidence": "confirmed",
-            "source_text": "DWT: 15,000 mts"
-          },
-          "dwcc": null,
-          "draft_max": null,
-          "loa": null,
-          "beam": null,
-          "grt": null,
-          "nrt": null,
-          "holds_count": null,
-          "hatches_count": null,
-          "grain_capacity": null,
-          "grain_capacity_unit": null,
-          "bale_capacity": null,
-          "hold_dimensions": null,
-          "hatch_dimensions": null,
-          "tank_top_strength": null,
-          "geared": null,
-          "crane_capacity": null,
-          "hatch_type": null,
-          "vessel_type": null,
-          "cii_rating": null,
-          "open_position": {
-            "value": "Jebel Ali, UAE",
-            "confidence": "confirmed",
-            "source_text": "Load port: Jebel Ali, UAE (AEJEA)"
-          },
-          "open_date": {
-            "value": {
-              "open": null,
-              "close": null,
-              "display": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
-            },
-            "confidence": "interpreted",
-            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
-          },
-          "direction": {
-            "value": "Dammam, Saudi Arabia",
-            "confidence": "confirmed",
-            "source_text": "Disch port: Dammam, Saudi Arabia (SADMM)"
-          },
-          "restrictions": null,
-          "last_cargoes": null,
-          "speed_laden": null,
-          "speed_ballast": null,
-          "consumption": null,
-          "deck_capacity": null,
-          "special_features": [
-            {
-              "value": "Suitable for heavy lift",
-              "confidence": "interpreted",
-              "source_text": "HEAVYCON used per shipper's request (oversize machinery components qualify as heavy lift)"
-            }
-          ],
-          "unknown_terms": []
         }
       ]
     },
@@ -3353,6 +3289,87 @@
           "context": "Commission base listed as 'on F/D/D'. This abbreviation normally refers to 'Freight, Demurrage, and Defence' P&I Club insurance cover, which is not a standard commission base. It is likely a typo for commission 'on Freight, Deadfreight, and Demurrage'."
         }
       ]
+    },
+    "parse-vessel": {
+      "items": [
+        {
+          "vessel_name": {
+            "value": "MV GULF QUEEN (Demo)",
+            "confidence": "confirmed",
+            "source_text": "Vessel: MV GULF QUEEN (Demo)"
+          },
+          "imo": null,
+          "flag": {
+            "value": "UAE",
+            "confidence": "confirmed",
+            "source_text": "Flag: UAE"
+          },
+          "built": {
+            "value": 2016,
+            "confidence": "confirmed",
+            "source_text": "Built: 2016"
+          },
+          "class_society": null,
+          "p_and_i": null,
+          "dwt_summer": {
+            "value": 15000,
+            "confidence": "confirmed",
+            "source_text": "DWT: 15,000 mts"
+          },
+          "dwcc": null,
+          "draft_max": null,
+          "loa": null,
+          "beam": null,
+          "grt": null,
+          "nrt": null,
+          "holds_count": null,
+          "hatches_count": null,
+          "grain_capacity": null,
+          "grain_capacity_unit": null,
+          "bale_capacity": null,
+          "hold_dimensions": [],
+          "hatch_dimensions": [],
+          "tank_top_strength": null,
+          "geared": null,
+          "crane_capacity": null,
+          "hatch_type": null,
+          "vessel_type": null,
+          "cii_rating": null,
+          "open_position": {
+            "value": "Jebel Ali, UAE",
+            "confidence": "interpreted",
+            "source_text": "Load port: Jebel Ali, UAE (AEJEA)"
+          },
+          "open_date": {
+            "value": {
+              "open": null,
+              "close": null,
+              "display": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+            },
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+          },
+          "direction": {
+            "value": "Jebel Ali to Dammam",
+            "confidence": "confirmed",
+            "source_text": "Load port: Jebel Ali, UAE (AEJEA) - 1SB AAAA\nDisch port: Dammam, Saudi Arabia (SADMM) - 1SB AAAA"
+          },
+          "restrictions": [],
+          "last_cargoes": null,
+          "speed_laden": null,
+          "speed_ballast": null,
+          "consumption": null,
+          "deck_capacity": null,
+          "special_features": [
+            "Heavy lift capable"
+          ],
+          "unknown_terms": [
+            "HEAVYCON",
+            "LMAA",
+            "FFA"
+          ]
+        }
+      ]
     }
   },
   "recap-sample-24": {
@@ -3367,84 +3384,6 @@
           "days_without_reply": 0,
           "original_sender": "North Britain Steel - Chartering",
           "original_sender_company": "North Britain Steel (Demo)"
-        }
-      ]
-    },
-    "parse-vessel": {
-      "items": [
-        {
-          "vessel_name": {
-            "value": "NORTH BRIT",
-            "confidence": "confirmed",
-            "source_text": "MV NORTH BRIT (Demo)"
-          },
-          "imo": null,
-          "flag": {
-            "value": "Isle of Man",
-            "confidence": "confirmed",
-            "source_text": "Flag: Isle of Man"
-          },
-          "built": {
-            "value": 2010,
-            "confidence": "confirmed",
-            "source_text": "Built: 2010"
-          },
-          "class_society": null,
-          "p_and_i": null,
-          "dwt_summer": {
-            "value": 6500,
-            "confidence": "confirmed",
-            "source_text": "DWT: 6,500 mts"
-          },
-          "dwcc": null,
-          "draft_max": null,
-          "loa": null,
-          "beam": null,
-          "grt": null,
-          "nrt": null,
-          "holds_count": null,
-          "hatches_count": null,
-          "grain_capacity": null,
-          "grain_capacity_unit": null,
-          "bale_capacity": null,
-          "hold_dimensions": null,
-          "hatch_dimensions": null,
-          "tank_top_strength": null,
-          "geared": null,
-          "crane_capacity": null,
-          "hatch_type": null,
-          "vessel_type": null,
-          "cii_rating": null,
-          "open_position": {
-            "value": "Iskenderun, Turkey",
-            "confidence": "confirmed",
-            "source_text": "Load port: Iskenderun, Turkey (TRIZK)"
-          },
-          "open_date": {
-            "value": {
-              "open": null,
-              "close": null,
-              "display": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
-            },
-            "confidence": "interpreted",
-            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
-          },
-          "direction": {
-            "value": "Iskenderun to Liverpool",
-            "confidence": "confirmed",
-            "source_text": "Load port: Iskenderun, Turkey (TRIZK) - 1SB AAAA\nDisch port: Liverpool, UK (GBLIV) - 1SB AAAA"
-          },
-          "restrictions": null,
-          "last_cargoes": null,
-          "speed_laden": null,
-          "speed_ballast": null,
-          "consumption": null,
-          "deck_capacity": null,
-          "special_features": null,
-          "unknown_terms": [
-            "ATUTC",
-            "DATS"
-          ]
         }
       ]
     },
@@ -3744,6 +3683,86 @@
         }
       ],
       "unknown_terms": []
+    },
+    "parse-vessel": {
+      "items": [
+        {
+          "vessel_name": {
+            "value": "MV NORTH BRIT (Demo)",
+            "confidence": "confirmed",
+            "source_text": "Vessel: MV NORTH BRIT (Demo)"
+          },
+          "imo": null,
+          "flag": {
+            "value": "Isle of Man",
+            "confidence": "confirmed",
+            "source_text": "Flag: Isle of Man"
+          },
+          "built": {
+            "value": 2010,
+            "confidence": "confirmed",
+            "source_text": "Built: 2010"
+          },
+          "class_society": null,
+          "p_and_i": null,
+          "dwt_summer": {
+            "value": 6500,
+            "confidence": "confirmed",
+            "source_text": "DWT: 6,500 mts"
+          },
+          "dwcc": null,
+          "draft_max": null,
+          "loa": null,
+          "beam": null,
+          "grt": null,
+          "nrt": null,
+          "holds_count": null,
+          "hatches_count": null,
+          "grain_capacity": null,
+          "grain_capacity_unit": null,
+          "bale_capacity": null,
+          "hold_dimensions": [],
+          "hatch_dimensions": [],
+          "tank_top_strength": null,
+          "geared": null,
+          "crane_capacity": null,
+          "hatch_type": null,
+          "vessel_type": null,
+          "cii_rating": null,
+          "open_position": {
+            "value": "Iskenderun",
+            "confidence": "interpreted",
+            "source_text": "Load port: Iskenderun, Turkey (TRIZK)"
+          },
+          "open_date": {
+            "value": {
+              "open": null,
+              "close": null,
+              "display": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+            },
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+          },
+          "direction": {
+            "value": "Iskenderun to Liverpool",
+            "confidence": "confirmed",
+            "source_text": "Load port: Iskenderun, Turkey (TRIZK) - 1SB AAAA\nDisch port: Liverpool, UK (GBLIV) - 1SB AAAA"
+          },
+          "restrictions": [],
+          "last_cargoes": null,
+          "speed_laden": null,
+          "speed_ballast": null,
+          "consumption": null,
+          "deck_capacity": null,
+          "special_features": [],
+          "unknown_terms": [
+            "DATS",
+            "WWD",
+            "ATUTC",
+            "LMAA"
+          ]
+        }
+      ]
     }
   },
   "recap-sample-25": {
@@ -3758,97 +3777,6 @@
           "days_without_reply": 0,
           "original_sender": "Norse Heavy Lift (Demo)",
           "original_sender_company": "Norse Heavy Lift"
-        }
-      ]
-    },
-    "parse-vessel": {
-      "items": [
-        {
-          "vessel_name": {
-            "value": "HEAVY NORDIC",
-            "confidence": "confirmed",
-            "source_text": "Vessel: MV HEAVY NORDIC (Demo)"
-          },
-          "imo": null,
-          "flag": {
-            "value": "Norway",
-            "confidence": "confirmed",
-            "source_text": "Flag: Norway"
-          },
-          "built": {
-            "value": 2018,
-            "confidence": "confirmed",
-            "source_text": "Built: 2018"
-          },
-          "class_society": null,
-          "p_and_i": null,
-          "dwt_summer": {
-            "value": 22000,
-            "confidence": "confirmed",
-            "source_text": "DWT: 22,000 mts"
-          },
-          "dwcc": null,
-          "draft_max": null,
-          "loa": null,
-          "beam": null,
-          "grt": null,
-          "nrt": null,
-          "holds_count": null,
-          "hatches_count": null,
-          "grain_capacity": null,
-          "grain_capacity_unit": null,
-          "bale_capacity": null,
-          "hold_dimensions": null,
-          "hatch_dimensions": null,
-          "tank_top_strength": null,
-          "geared": {
-            "value": true,
-            "confidence": "confirmed",
-            "source_text": "Heavy-lift crane: HMC 250t (main hook)"
-          },
-          "crane_capacity": {
-            "value": "HMC 250t (main hook)",
-            "confidence": "confirmed",
-            "source_text": "Heavy-lift crane: HMC 250t (main hook)"
-          },
-          "hatch_type": null,
-          "vessel_type": {
-            "value": "Heavy-lift MPP",
-            "confidence": "confirmed",
-            "source_text": "Type: Heavy-lift MPP"
-          },
-          "cii_rating": null,
-          "open_position": {
-            "value": "Hamburg, Germany",
-            "confidence": "confirmed",
-            "source_text": "Load port: Hamburg, Germany (DEHAM)"
-          },
-          "open_date": {
-            "value": {
-              "open": null,
-              "close": null,
-              "display": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
-            },
-            "confidence": "interpreted",
-            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
-          },
-          "direction": {
-            "value": "to Lagos, Nigeria",
-            "confidence": "confirmed",
-            "source_text": "Disch port: Lagos, Nigeria (NGLOS)"
-          },
-          "restrictions": [],
-          "last_cargoes": null,
-          "speed_laden": null,
-          "speed_ballast": null,
-          "consumption": null,
-          "deck_capacity": null,
-          "special_features": [
-            "Heavy-lift",
-            "Holds clean and dry",
-            "Free of previous cargo"
-          ],
-          "unknown_terms": []
         }
       ]
     },
@@ -4156,6 +4084,100 @@
           "context": "Demurrage: USD 12,000 PDPR / FD BENDS (USD applies for demurrage; freight in NOK)\nDespatch: none. The term 'FD' (Full Despatch) is contradictory with 'PDPR' (Per Day Pro Rata) and the express statement 'Despatch: none'. This is likely a typo and requires clarification."
         }
       ]
+    },
+    "parse-vessel": {
+      "items": [
+        {
+          "vessel_name": {
+            "value": "MV HEAVY NORDIC (Demo)",
+            "confidence": "confirmed",
+            "source_text": "Vessel: MV HEAVY NORDIC (Demo)"
+          },
+          "imo": null,
+          "flag": {
+            "value": "Norway",
+            "confidence": "confirmed",
+            "source_text": "Flag: Norway"
+          },
+          "built": {
+            "value": 2018,
+            "confidence": "confirmed",
+            "source_text": "Built: 2018"
+          },
+          "class_society": null,
+          "p_and_i": null,
+          "dwt_summer": {
+            "value": 22000,
+            "confidence": "confirmed",
+            "source_text": "DWT: 22,000 mts"
+          },
+          "dwcc": null,
+          "draft_max": null,
+          "loa": null,
+          "beam": null,
+          "grt": null,
+          "nrt": null,
+          "holds_count": null,
+          "hatches_count": null,
+          "grain_capacity": null,
+          "grain_capacity_unit": null,
+          "bale_capacity": null,
+          "hold_dimensions": [],
+          "hatch_dimensions": [],
+          "tank_top_strength": null,
+          "geared": {
+            "value": true,
+            "confidence": "confirmed",
+            "source_text": "Heavy-lift crane: HMC 250t (main hook)"
+          },
+          "crane_capacity": {
+            "value": "1x250T",
+            "confidence": "interpreted",
+            "source_text": "Heavy-lift crane: HMC 250t (main hook)"
+          },
+          "hatch_type": null,
+          "vessel_type": {
+            "value": "MPP",
+            "confidence": "confirmed",
+            "source_text": "Type: Heavy-lift MPP"
+          },
+          "cii_rating": null,
+          "open_position": {
+            "value": "Hamburg",
+            "confidence": "interpreted",
+            "source_text": "Load port: Hamburg, Germany (DEHAM)"
+          },
+          "open_date": {
+            "value": {
+              "open": null,
+              "close": null,
+              "display": "{{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+            },
+            "confidence": "uncertain",
+            "source_text": "Laycan: {{LAYCAN_START}}-{{LAYCAN_END}} {{LAYCAN_MONTH}}"
+          },
+          "direction": {
+            "value": "Hamburg to Lagos",
+            "confidence": "confirmed",
+            "source_text": "Load port: Hamburg, Germany (DEHAM) - 1SB AAAA\nDisch port: Lagos, Nigeria (NGLOS) - 1SB AAAA"
+          },
+          "restrictions": [],
+          "last_cargoes": null,
+          "speed_laden": null,
+          "speed_ballast": null,
+          "consumption": null,
+          "deck_capacity": null,
+          "special_features": [
+            "Heavy-lift MPP",
+            "Heavy-lift crane: HMC 250t"
+          ],
+          "unknown_terms": [
+            "PROJECTCON",
+            "LMAA",
+            "FuelEU"
+          ]
+        }
+      ]
     }
   },
   "reply-sample-26": {
@@ -4191,9 +4213,6 @@
           "original_sender_company": "Mitteleuropa Charter GmbH (Demo)"
         }
       ]
-    },
-    "parse-vessel": {
-      "items": []
     },
     "parse-recap": {
       "vessel_name": null,
@@ -4307,6 +4326,9 @@
         }
       ],
       "unknown_terms": []
+    },
+    "parse-vessel": {
+      "items": []
     }
   },
   "reply-sample-28": {
@@ -4443,9 +4465,6 @@
         }
       ]
     },
-    "parse-vessel": {
-      "items": []
-    },
     "classify": {
       "classifications": [
         {
@@ -4459,12 +4478,12 @@
           "original_sender_company": null
         }
       ]
+    },
+    "parse-vessel": {
+      "items": []
     }
   },
   "eval-eval-01": {
-    "parse-vessel": {
-      "items": []
-    },
     "classify": {
       "classifications": [
         {
@@ -4759,6 +4778,9 @@
         }
       ],
       "unknown_terms": []
+    },
+    "parse-vessel": {
+      "items": []
     }
   },
   "eval-eval-02": {
@@ -4778,166 +4800,6 @@
     },
     "parse-cargo": {
       "items": []
-    },
-    "parse-vessel": {
-      "items": [
-        {
-          "vessel_name": {
-            "value": "MV GULF PIONEER",
-            "confidence": "confirmed",
-            "source_text": "MV GULF PIONEER — VESSEL PARTICULARS / OPEN JEBEL ALI"
-          },
-          "imo": {
-            "value": "9312847",
-            "confidence": "confirmed",
-            "source_text": "IMO: 9312847"
-          },
-          "flag": {
-            "value": "Malta",
-            "confidence": "confirmed",
-            "source_text": "Flag: Malta"
-          },
-          "built": {
-            "value": 2009,
-            "confidence": "confirmed",
-            "source_text": "YOB: 2009"
-          },
-          "class_society": {
-            "value": "BV",
-            "confidence": "confirmed",
-            "source_text": "Class: Bureau Veritas (BV)"
-          },
-          "p_and_i": {
-            "value": "West of England",
-            "confidence": "confirmed",
-            "source_text": "P&I: West of England"
-          },
-          "dwt_summer": {
-            "value": 12500,
-            "confidence": "confirmed",
-            "source_text": "DWT Summer: 12,500 mts"
-          },
-          "dwcc": {
-            "value": 11800,
-            "confidence": "confirmed",
-            "source_text": "DWCC: 11,800 mts"
-          },
-          "draft_max": {
-            "value": 7.8,
-            "confidence": "interpreted",
-            "source_text": "DWCC: 11,800 mts at 7.8m draft"
-          },
-          "loa": {
-            "value": 138.5,
-            "confidence": "confirmed",
-            "source_text": "LOA: 138.5m"
-          },
-          "beam": {
-            "value": 19.8,
-            "confidence": "confirmed",
-            "source_text": "Beam: 19.8m"
-          },
-          "grt": {
-            "value": 7840,
-            "confidence": "confirmed",
-            "source_text": "GRT: 7,840"
-          },
-          "nrt": {
-            "value": 3920,
-            "confidence": "confirmed",
-            "source_text": "NRT: 3,920"
-          },
-          "holds_count": {
-            "value": 3,
-            "confidence": "confirmed",
-            "source_text": "Holds/Hatches: 3/3"
-          },
-          "hatches_count": {
-            "value": 3,
-            "confidence": "confirmed",
-            "source_text": "Holds/Hatches: 3/3"
-          },
-          "grain_capacity": {
-            "value": 16200,
-            "confidence": "confirmed",
-            "source_text": "Grain: 16,200 cbm"
-          },
-          "grain_capacity_unit": "cbm",
-          "bale_capacity": {
-            "value": 15100,
-            "confidence": "confirmed",
-            "source_text": "Bale: 15,100 cbm"
-          },
-          "hold_dimensions": null,
-          "hatch_dimensions": null,
-          "tank_top_strength": null,
-          "geared": {
-            "value": true,
-            "confidence": "confirmed",
-            "source_text": "GEAR:\n2 x 30T cranes + 1 x 15T crane"
-          },
-          "crane_capacity": {
-            "value": "2 x 30T + 1 x 15T",
-            "confidence": "confirmed",
-            "source_text": "2 x 30T cranes + 1 x 15T crane"
-          },
-          "hatch_type": null,
-          "vessel_type": {
-            "value": "MPP / General Cargo",
-            "confidence": "uncertain",
-            "source_text": "DWT Summer: 12,500 mts\nDWCC: 11,800 mts at 7.8m draft\nHolds/Hatches: 3/3\nGEAR:\n2 x 30T cranes + 1 x 15T crane\nLAST 3 CARGOES:\n1. Steel pipes (Jubail → Nhava Sheva)\n2. Project cargo — wind turbine blades (Jebel Ali → Colombo)\n3. Fertilizer bags (Aqaba → Mombasa)"
-          },
-          "cii_rating": "B",
-          "open_position": {
-            "value": "Jebel Ali, UAE",
-            "confidence": "confirmed",
-            "source_text": "OPEN: Jebel Ali, UAE"
-          },
-          "open_date": {
-            "value": {
-              "open": "2025-05-10",
-              "close": "2025-05-12",
-              "display": "10/12 May 2025"
-            },
-            "confidence": "interpreted",
-            "source_text": "OPEN DATE: 10/12 May 2025"
-          },
-          "direction": null,
-          "restrictions": null,
-          "last_cargoes": {
-            "value": "Steel pipes, Project cargo - wind turbine blades, Fertilizer bags",
-            "confidence": "confirmed",
-            "source_text": "LAST 3 CARGOES:\n1. Steel pipes (Jubail → Nhava Sheva)\n2. Project cargo — wind turbine blades (Jebel Ali → Colombo)\n3. Fertilizer bags (Aqaba → Mombasa)"
-          },
-          "speed_laden": {
-            "value": 12.5,
-            "confidence": "confirmed",
-            "source_text": "Speed laden: 12.5 kn"
-          },
-          "speed_ballast": {
-            "value": 13,
-            "confidence": "confirmed",
-            "source_text": "Speed ballast: 13.0 kn"
-          },
-          "consumption": {
-            "value": "Laden: abt 18 MT IFO, Ballast: abt 14 MT IFO, Port: abt 2.5 MT IFO/day",
-            "confidence": "interpreted",
-            "source_text": "Speed laden: 12.5 kn on abt 18 MT IFO\nSpeed ballast: 13.0 kn on abt 14 MT IFO\nPort consumption: abt 2.5 MT IFO/day"
-          },
-          "deck_capacity": null,
-          "special_features": {
-            "value": [
-              "All cranes in good working order, last surveyed Feb 2025",
-              "ITF compliant"
-            ],
-            "confidence": "confirmed",
-            "source_text": "All cranes in good working order, last surveyed Feb 2025\n...\nITF compliant."
-          },
-          "unknown_terms": [
-            "AWIWL"
-          ]
-        }
-      ]
     },
     "parse-recap": {
       "vessel_name": {
@@ -5126,6 +4988,172 @@
           "context": "Owners are open to VC, TCT or spot voyage."
         }
       ]
+    },
+    "parse-vessel": {
+      "items": [
+        {
+          "vessel_name": {
+            "value": "MV GULF PIONEER",
+            "confidence": "confirmed",
+            "source_text": "MV GULF PIONEER — VESSEL PARTICULARS / OPEN JEBEL ALI"
+          },
+          "imo": {
+            "value": 9312847,
+            "confidence": "confirmed",
+            "source_text": "IMO: 9312847"
+          },
+          "flag": {
+            "value": "Malta",
+            "confidence": "confirmed",
+            "source_text": "Flag: Malta"
+          },
+          "built": {
+            "value": 2009,
+            "confidence": "confirmed",
+            "source_text": "YOB: 2009"
+          },
+          "class_society": {
+            "value": "Bureau Veritas (BV)",
+            "confidence": "confirmed",
+            "source_text": "Class: Bureau Veritas (BV)"
+          },
+          "p_and_i": {
+            "value": "West of England",
+            "confidence": "confirmed",
+            "source_text": "P&I: West of England"
+          },
+          "dwt_summer": {
+            "value": 12500,
+            "confidence": "confirmed",
+            "source_text": "DWT Summer: 12,500 mts"
+          },
+          "dwcc": {
+            "value": 11800,
+            "confidence": "confirmed",
+            "source_text": "DWCC: 11,800 mts at 7.8m draft"
+          },
+          "draft_max": {
+            "value": 7.8,
+            "confidence": "interpreted",
+            "source_text": "at 7.8m draft"
+          },
+          "loa": {
+            "value": 138.5,
+            "confidence": "confirmed",
+            "source_text": "LOA: 138.5m"
+          },
+          "beam": {
+            "value": 19.8,
+            "confidence": "confirmed",
+            "source_text": "Beam: 19.8m"
+          },
+          "grt": {
+            "value": 7840,
+            "confidence": "confirmed",
+            "source_text": "GRT: 7,840"
+          },
+          "nrt": {
+            "value": 3920,
+            "confidence": "confirmed",
+            "source_text": "NRT: 3,920"
+          },
+          "holds_count": {
+            "value": 3,
+            "confidence": "confirmed",
+            "source_text": "Holds/Hatches: 3/3"
+          },
+          "hatches_count": {
+            "value": 3,
+            "confidence": "confirmed",
+            "source_text": "Holds/Hatches: 3/3"
+          },
+          "grain_capacity": {
+            "value": 16200,
+            "confidence": "confirmed",
+            "source_text": "Grain: 16,200 cbm"
+          },
+          "grain_capacity_unit": {
+            "value": "cbm",
+            "confidence": "interpreted",
+            "source_text": "cbm"
+          },
+          "bale_capacity": {
+            "value": 15100,
+            "confidence": "confirmed",
+            "source_text": "Bale: 15,100 cbm"
+          },
+          "hold_dimensions": [],
+          "hatch_dimensions": [],
+          "tank_top_strength": null,
+          "geared": {
+            "value": true,
+            "confidence": "confirmed",
+            "source_text": "GEAR:\n2 x 30T cranes + 1 x 15T crane"
+          },
+          "crane_capacity": {
+            "value": "2 x 30T + 1 x 15T",
+            "confidence": "confirmed",
+            "source_text": "2 x 30T cranes + 1 x 15T crane"
+          },
+          "hatch_type": null,
+          "vessel_type": {
+            "value": "GENERAL CARGO",
+            "confidence": "uncertain",
+            "source_text": "DWT Summer: 12,500 mts"
+          },
+          "cii_rating": "B",
+          "open_position": {
+            "value": "Jebel Ali, UAE",
+            "confidence": "confirmed",
+            "source_text": "OPEN: Jebel Ali, UAE"
+          },
+          "open_date": {
+            "value": {
+              "open": "2025-05-10",
+              "close": "2025-05-12",
+              "display": "10/12 May 2025"
+            },
+            "confidence": "interpreted",
+            "source_text": "10/12 May 2025"
+          },
+          "direction": null,
+          "restrictions": [],
+          "last_cargoes": {
+            "value": "Steel pipes, Project cargo — wind turbine blades, Fertilizer bags",
+            "confidence": "confirmed",
+            "source_text": "LAST 3 CARGOES:\n1. Steel pipes (Jubail → Nhava Sheva)\n2. Project cargo — wind turbine blades (Jebel Ali → Colombo)\n3. Fertilizer bags (Aqaba → Mombasa)"
+          },
+          "speed_laden": {
+            "value": 12.5,
+            "confidence": "confirmed",
+            "source_text": "Speed laden: 12.5 kn"
+          },
+          "speed_ballast": {
+            "value": 13,
+            "confidence": "confirmed",
+            "source_text": "Speed ballast: 13.0 kn"
+          },
+          "consumption": {
+            "value": "Laden: abt 18 MT IFO, Ballast: abt 14 MT IFO, Port: abt 2.5 MT IFO/day",
+            "confidence": "interpreted",
+            "source_text": "Speed laden: 12.5 kn on abt 18 MT IFO\nSpeed ballast: 13.0 kn on abt 14 MT IFO\nPort consumption: abt 2.5 MT IFO/day"
+          },
+          "deck_capacity": null,
+          "special_features": [
+            "ITF compliant"
+          ],
+          "unknown_terms": [
+            {
+              "term": "AWIWL",
+              "reason": "Unrecognized performance condition abbreviation not in glossary"
+            },
+            {
+              "term": "TCT",
+              "reason": "Unrecognized charter type abbreviation not in glossary"
+            }
+          ]
+        }
+      ]
     }
   },
   "eval-eval-03": {
@@ -5140,96 +5168,6 @@
           "days_without_reply": 0,
           "original_sender": "Faisal Al-Hammadi",
           "original_sender_company": "Gulf Maritime Brokers LLC"
-        }
-      ]
-    },
-    "parse-vessel": {
-      "items": [
-        {
-          "vessel_name": {
-            "value": "MV ARABIAN FALCON",
-            "confidence": "confirmed",
-            "source_text": "VESSEL: MV ARABIAN FALCON"
-          },
-          "imo": null,
-          "flag": {
-            "value": "Cyprus",
-            "confidence": "confirmed",
-            "source_text": "Flag: Cyprus"
-          },
-          "built": {
-            "value": 2005,
-            "confidence": "confirmed",
-            "source_text": "YOB: 2005"
-          },
-          "class_society": null,
-          "p_and_i": null,
-          "dwt_summer": {
-            "value": 15200,
-            "confidence": "confirmed",
-            "source_text": "DWT: 15,200 mts"
-          },
-          "dwcc": null,
-          "draft_max": null,
-          "loa": null,
-          "beam": null,
-          "grt": null,
-          "nrt": null,
-          "holds_count": null,
-          "hatches_count": null,
-          "grain_capacity": null,
-          "grain_capacity_unit": null,
-          "bale_capacity": null,
-          "hold_dimensions": [],
-          "hatch_dimensions": [],
-          "tank_top_strength": null,
-          "geared": {
-            "value": false,
-            "confidence": "confirmed",
-            "source_text": "GEAR: Gearless"
-          },
-          "crane_capacity": null,
-          "hatch_type": null,
-          "vessel_type": null,
-          "cii_rating": null,
-          "open_position": {
-            "value": "Sharjah, UAE",
-            "confidence": "confirmed",
-            "source_text": "LOAD PORT: 1 safe berth, Sharjah, UAE"
-          },
-          "open_date": {
-            "value": {
-              "open": "2025-06-08",
-              "close": "2025-06-12",
-              "display": "8/12 June 2025"
-            },
-            "confidence": "interpreted",
-            "source_text": "LAYCAN: 8/12 June 2025"
-          },
-          "direction": {
-            "value": "to Nhava Sheva, India",
-            "confidence": "interpreted",
-            "source_text": "DISCHARGE PORT: 1 safe berth, Nhava Sheva, India"
-          },
-          "restrictions": [],
-          "last_cargoes": null,
-          "speed_laden": null,
-          "speed_ballast": null,
-          "consumption": null,
-          "deck_capacity": null,
-          "special_features": [
-            {
-              "value": "Gearless",
-              "confidence": "confirmed",
-              "source_text": "GEAR: Gearless (shore cranes to be arranged by charterers at both ends)"
-            },
-            {
-              "value": "Holds to be clean and dry",
-              "confidence": "confirmed",
-              "source_text": "Owners to provide holds clean and dry"
-            }
-          ],
-          "unknown_terms": []
         }
       ]
     },
@@ -5594,6 +5532,94 @@
           "context": "TT TERMS: 1 sb sp aaaa both ends"
         }
       ]
+    },
+    "parse-vessel": {
+      "items": [
+        {
+          "vessel_name": {
+            "value": "MV ARABIAN FALCON",
+            "confidence": "confirmed",
+            "source_text": "VESSEL: MV ARABIAN FALCON"
+          },
+          "imo": null,
+          "flag": {
+            "value": "Cyprus",
+            "confidence": "confirmed",
+            "source_text": "Flag: Cyprus"
+          },
+          "built": {
+            "value": 2005,
+            "confidence": "confirmed",
+            "source_text": "YOB: 2005"
+          },
+          "class_society": null,
+          "p_and_i": null,
+          "dwt_summer": {
+            "value": 15200,
+            "confidence": "confirmed",
+            "source_text": "DWT: 15,200 mts"
+          },
+          "dwcc": null,
+          "draft_max": null,
+          "loa": null,
+          "beam": null,
+          "grt": null,
+          "nrt": null,
+          "holds_count": null,
+          "hatches_count": null,
+          "grain_capacity": null,
+          "grain_capacity_unit": null,
+          "bale_capacity": null,
+          "hold_dimensions": [],
+          "hatch_dimensions": [],
+          "tank_top_strength": null,
+          "geared": {
+            "value": false,
+            "confidence": "confirmed",
+            "source_text": "GEAR: Gearless"
+          },
+          "crane_capacity": null,
+          "hatch_type": null,
+          "vessel_type": {
+            "value": "BULK CARRIER",
+            "confidence": "uncertain",
+            "source_text": "CARGO: HMS I/II Steel Scrap\nDWT: 15,200 mts\nGEAR: Gearless"
+          },
+          "cii_rating": null,
+          "open_position": {
+            "value": "Sharjah, UAE",
+            "confidence": "interpreted",
+            "source_text": "LOAD PORT: 1 safe berth, Sharjah, UAE"
+          },
+          "open_date": {
+            "value": {
+              "open": "2025-06-08",
+              "close": "2025-06-12",
+              "display": "8/12 June 2025"
+            },
+            "confidence": "interpreted",
+            "source_text": "LAYCAN: 8/12 June 2025"
+          },
+          "direction": {
+            "value": "Sharjah, UAE to Nhava Sheva, India",
+            "confidence": "confirmed",
+            "source_text": "LOAD PORT: 1 safe berth, Sharjah, UAE\nDISCHARGE PORT: 1 safe berth, Nhava Sheva, India"
+          },
+          "restrictions": [],
+          "last_cargoes": null,
+          "speed_laden": null,
+          "speed_ballast": null,
+          "consumption": null,
+          "deck_capacity": null,
+          "special_features": [
+            "Gearless",
+            "Holds clean and dry"
+          ],
+          "unknown_terms": [
+            "LMAA"
+          ]
+        }
+      ]
     }
   },
   "eval-eval-04": {
@@ -5616,9 +5642,6 @@
       "missing_info": [
         "This appears to be a TCT/period charter request, not a voyage cargo inquiry"
       ]
-    },
-    "parse-vessel": {
-      "items": []
     },
     "parse-recap": {
       "vessel_name": null,
@@ -5798,6 +5821,9 @@
         }
       ],
       "unknown_terms": []
+    },
+    "parse-vessel": {
+      "items": []
     }
   },
   "eval-eval-05": {
@@ -5814,9 +5840,6 @@
           "original_sender_company": "Royal Gulf Phosphates LLC"
         }
       ]
-    },
-    "parse-vessel": {
-      "items": []
     },
     "parse-recap": {
       "vessel_name": {
@@ -5902,6 +5925,9 @@
         }
       ],
       "unknown_terms": []
+    },
+    "parse-vessel": {
+      "items": []
     }
   },
   "eval-eval-06": {
@@ -5916,69 +5942,6 @@
           "days_without_reply": 0,
           "original_sender": "Elena Smirnova",
           "original_sender_company": "Polar Shipping Agency LLC"
-        }
-      ]
-    },
-    "parse-vessel": {
-      "items": [
-        {
-          "vessel_name": {
-            "value": "ARCTIC SWAN",
-            "confidence": "confirmed",
-            "source_text": "MV ARCTIC SWAN"
-          },
-          "imo": {
-            "value": 9401256,
-            "confidence": "confirmed",
-            "source_text": "IMO NUMBER: 9401256"
-          },
-          "flag": {
-            "value": "Marshall Islands",
-            "confidence": "confirmed",
-            "source_text": "FLAG: Marshall Islands"
-          },
-          "built": null,
-          "class_society": null,
-          "p_and_i": {
-            "value": "The West of England Ship Owners Mutual Insurance Association (Luxembourg)",
-            "confidence": "confirmed",
-            "source_text": "The West of England Ship Owners Mutual Insurance Association (Luxembourg)"
-          },
-          "dwt_summer": null,
-          "dwcc": null,
-          "draft_max": null,
-          "loa": null,
-          "beam": null,
-          "grt": {
-            "value": 8420,
-            "confidence": "confirmed",
-            "source_text": "GRT: 8,420"
-          },
-          "nrt": null,
-          "holds_count": null,
-          "hatches_count": null,
-          "grain_capacity": null,
-          "grain_capacity_unit": null,
-          "bale_capacity": null,
-          "hold_dimensions": [],
-          "hatch_dimensions": [],
-          "tank_top_strength": null,
-          "geared": null,
-          "crane_capacity": null,
-          "hatch_type": null,
-          "vessel_type": null,
-          "cii_rating": null,
-          "open_position": null,
-          "open_date": null,
-          "direction": null,
-          "restrictions": [],
-          "last_cargoes": null,
-          "speed_laden": null,
-          "speed_ballast": null,
-          "consumption": null,
-          "deck_capacity": null,
-          "special_features": [],
-          "unknown_terms": []
         }
       ]
     },
@@ -6066,6 +6029,9 @@
         }
       ],
       "unknown_terms": []
+    },
+    "parse-vessel": {
+      "items": []
     }
   }
 }
