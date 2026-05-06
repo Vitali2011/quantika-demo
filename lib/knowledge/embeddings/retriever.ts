@@ -2,6 +2,7 @@
  * Hybrid retriever: FTS5 BM25 + vec0 cosine + Reciprocal Rank Fusion (RRF)
  * Spec: spec-07-fts5-bm25-search-select-rowid-content-metadata-rank-from-ftstable-order-by-rank-limit-topk
  * Spec: spec-09-rrf-merge-score-doc-1-rrfk-rank-i-for-each-ranking-list-documents-in-both-lists-accumulate-from-both-terms
+ * Spec: spec-10-sort-descending-return-top-topn-as-retrievedchunk
  *
  * Input Contract:
  * - Empty query ("") → returns [] without API call
