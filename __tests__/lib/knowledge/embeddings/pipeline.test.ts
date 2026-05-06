@@ -9,7 +9,8 @@ import type { Chunk } from '@/lib/knowledge/embeddings/chunks';
 import Database from 'better-sqlite3';
 
 // Mock @google-cloud/aiplatform before importing client (same pattern as client.test.ts)
-let _mockPredict: jest.Mock = jest.fn();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let _mockPredict: jest.Mock<(...args: any[]) => any> = jest.fn();
 
 jest.mock("@google-cloud/aiplatform", () => {
   return {
