@@ -18,6 +18,7 @@ The email may be one of two fundamentally different types — only ONE produces 
    - Signals: "Fixture recap", "Recap:", "Fixed:", explicit named vessel + DWT/specs + load/discharge ports + freight rate + laycan all in one document
    - Even though fixture recaps include cargo route, freight, and laycan info, they ALSO contain the FULL vessel particulars of the FIXED vessel — this is THE vessel that took the cargo, not a hypothetical one
    - Treat exactly as VESSEL POSITION CIRCULAR: extract vessel particulars from the named vessel
+   - When extracting from a fixture recap, derive \`open_position\` from the load port: the vessel will be (or was) at the load port at laycan start. Use confidence='interpreted', source_text quoting the load port mention.
 
 DISTINGUISHING FIXTURE RECAP FROM CARGO INQUIRY:
 - Cargo inquiry: NO specific vessel named, OR vessel is described in generic terms ("BULK CARRIER", "any suitable vessel"); cargo requirements drive the document
@@ -73,6 +74,16 @@ GLOSSARY-AWARE UNKNOWN TERMS:
 Before flagging a term as unknown, check the SHIPPING_GLOSSARY injected above.
 WICCON, WCCON, BSS, WOG, L/C, DWCC, DWT, MPP, etc. are recognized terms — do NOT
 list them in unknown_terms.
+
+Always include \`unknown_terms\` as an array — empty \`[]\` if no unrecognized terms. Never omit the field. Flag any abbreviation, contract form, or jurisdiction acronym not in the glossary above (e.g. HEAVYCON, LMAA, ATUTC, etc.). Include the term verbatim and a brief reason.
+
+ARRAY FIELD DEFAULTS: Array-typed fields (\`unknown_terms\`, \`restrictions\`, \`last_cargoes\` if array, \`special_features\`, \`hold_dimensions\`, \`hatch_dimensions\`) default to \`[]\` (empty array) when no data is present. Never use \`null\` for array fields. Use \`null\` only for scalar/object fields that are genuinely absent.
+
+NUMERIC FIELD TYPES: Fields like \`imo\`, \`dwt_summer\`, \`dwcc\`, \`built\`, \`loa\`, \`beam\`, \`draft_max\`, \`grt\`, \`nrt\`, \`holds_count\`, \`hatches_count\`, \`grain_capacity\`, \`bale_capacity\`, \`tank_top_strength\`, \`deck_capacity\`, \`speed_laden\`, \`speed_ballast\` MUST be numbers (not strings). E.g. imo=9401256 not '9401256'. If unsure, parse to a number.
+
+FIELD NAMES: Use exact field names from the schema above. For example: \`hatches_count\` (plural with 's'), not \`hatch_count\`. Misspelled or pluralized variants are treated as unknown fields.
+
+TEMPLATE PLACEHOLDERS: Email body may contain unresolved template tokens like \`{{LAYCAN_START}}\`, \`{{LAYCAN_END}}\`, \`{{LAYCAN_MONTH}}\`, \`{{ETA}}\`, etc. Treat these as **literal placeholder text**, not actual values. NEVER resolve them to concrete dates. For affected fields like \`open_date\`: preserve the placeholder string in \`display\`, set \`open\` and \`close\` to null, confidence='uncertain'. Source_text should quote the unresolved placeholder verbatim.
 
 CONFIDENCE FIELD SHAPE REMINDER:
 Every ConfidenceField is a flat object {value, confidence, source_text}. Do not
