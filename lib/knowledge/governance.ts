@@ -47,11 +47,22 @@ export function registerSource(db: Database.Database, input: RegisterSourceInput
 }
 
 export function reportSyncStarted(db: Database.Database, slug: string): number {
-  const r = db.prepare(`
-    INSERT INTO knowledge_sync_log (source_slug, started_at, status)
-    VALUES (?, CURRENT_TIMESTAMP, 'running')
-  `).run(slug);
-  return Number(r.lastInsertRowid);
+  const tx = db.transaction(() => {
+    db.prepare(`
+      UPDATE knowledge_sync_log
+      SET status = 'aborted',
+          finished_at = CURRENT_TIMESTAMP,
+          error_message = COALESCE(error_message, 'superseded by new sync')
+      WHERE source_slug = ? AND status = 'running'
+    `).run(slug);
+
+    const r = db.prepare(`
+      INSERT INTO knowledge_sync_log (source_slug, started_at, status)
+      VALUES (?, CURRENT_TIMESTAMP, 'running')
+    `).run(slug);
+    return Number(r.lastInsertRowid);
+  });
+  return tx();
 }
 
 export interface SyncSuccessOpts {
