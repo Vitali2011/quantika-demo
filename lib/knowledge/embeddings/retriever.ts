@@ -57,6 +57,11 @@ export function searchVec0(
     throw new RangeError('Embedding must be 768-dimensional');
   }
 
+  // Guard: tableName validation
+  if (!tableName || tableName.trim().length === 0) {
+    throw new TypeError('tableName required');
+  }
+
   // Guard: topK validation
   if (!Number.isFinite(topK)) {
     throw new RangeError('topK must be a positive integer');
@@ -64,6 +69,10 @@ export function searchVec0(
 
   if (topK < 0) {
     throw new RangeError('topK must be a positive integer');
+  }
+
+  if (topK > 4096) {
+    throw new RangeError('topK exceeds sqlite-vec knn limit of 4096');
   }
 
   // Early return: topK = 0
@@ -80,7 +89,7 @@ export function searchVec0(
   // Execute vec0 k-NN query
   const rows = database
     .prepare(
-      `SELECT rowid, content, metadata, distance FROM ${tableName} WHERE embedding MATCH ? ORDER BY distance LIMIT ?`
+      `SELECT rowid, content, metadata, vec_distance_cosine(embedding, ?) as distance FROM ${tableName} ORDER BY distance LIMIT ?`
     )
     .all(embeddingJson, topK) as Array<{
       rowid: number;
@@ -326,7 +335,7 @@ export async function retrieve(
   // Step 3: vec0 cosine k-NN search
   const vecResults: RankedDoc[] = db
     .prepare(
-      `SELECT rowid, content, metadata, distance FROM ${opts.vectorTable} WHERE embedding MATCH ? ORDER BY distance LIMIT ?`
+      `SELECT rowid, content, metadata, vec_distance_cosine(embedding, ?) as distance FROM ${opts.vectorTable} ORDER BY distance LIMIT ?`
     )
     .all(embedding, topK)
     .map((row: any, index: number) => ({
