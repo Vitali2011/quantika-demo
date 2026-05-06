@@ -13,6 +13,26 @@ The email may be one of two fundamentally different types — only ONE produces 
    - Signals: a specific vessel name + "open [port]", "available", "promptly", "spot", "ETA", explicit DWT/IMO/Built/Flag, fleet positions, vessel particulars, L/C history.
    - Example phrases: "MV NORTH BRIT open Antwerp 15-20 May", "Fleet positions:", "Vessel offered:", explicit vessel specs.
 
+3. **FIXTURE RECAP** (extract vessel — same as type 1):
+   - Sender perspective: OWNER's broker confirming a fixed deal between owner and charterer
+   - Signals: "Fixture recap", "Recap:", "Fixed:", explicit named vessel + DWT/specs + load/discharge ports + freight rate + laycan all in one document
+   - Even though fixture recaps include cargo route, freight, and laycan info, they ALSO contain the FULL vessel particulars of the FIXED vessel — this is THE vessel that took the cargo, not a hypothetical one
+   - Treat exactly as VESSEL POSITION CIRCULAR: extract vessel particulars from the named vessel
+
+DISTINGUISHING FIXTURE RECAP FROM CARGO INQUIRY:
+- Cargo inquiry: NO specific vessel named, OR vessel is described in generic terms ("BULK CARRIER", "any suitable vessel"); cargo requirements drive the document
+- Fixture recap: SPECIFIC vessel named with full specs (DWT, IMO, crane details, etc.); the vessel is the SUBJECT of the document, even though cargo route is also present
+
+EXAMPLE — fixture recap (extract):
+"FIXTURE RECAP:
+Vessel: MV HEAVY NORDIC, 12,000 DWT, geared 2x30T, built 2010, IMO 9234567
+Cargo: 11,500 mts steel coils
+Load: Iskenderun  Discharge: Liverpool
+Laycan: 15-20 May 2026  Freight: USD 32/mt FIO"
+→ items=[{vessel_name: "MV HEAVY NORDIC", dwt: 12000, geared: true, ...}]
+   Rationale: although cargo + freight are present, the document is ABOUT a specific
+   named vessel with full specs — extract.
+
 2. CARGO INQUIRY / FIXTURE REQUEST (DO NOT extract — return items=[]):
    - Sender perspective: CHARTERER / SHIPPER seeking a ship for a cargo.
    - Signals: "We require", "Looking for", "Cargo:", "Stem:", "Laycan:", "Loading port", "Discharge port", quantity in MT, Incoterms (CIF/FOB), bagged/bulk descriptions, "vessel acceptable".
@@ -222,5 +242,19 @@ Input email body (fragment):
   "MV ALERIA-1, last loads: grain, bauxite, iron ore."
 Output for last_cargoes:
   {value: "grain, bauxite, iron ore", confidence: "confirmed", sourceText: "last loads: grain, bauxite, iron ore"}
+
+OUTPUT FORMAT (STRICT — applies to ALL inputs, even cargo inquiries):
+
+You MUST always respond with a single valid JSON object of the form:
+  { "items": [ ...zero or more vessel objects... ] }
+
+NEVER respond with prose, commentary, refusals, apologies, or explanations.
+NEVER write "I am sorry", "The email is a cargo inquiry", "It looks like…",
+"This is a…", "The input contains…", or any English narration.
+- For a cargo inquiry / non-vessel email → return EXACTLY {"items": []} — no extra text.
+- For a vessel circular → return {"items": [ {...}, {...} ]}.
+- If unsure → return {"items": []}.
+
+Output JSON ONLY. No markdown fences, no leading text, no trailing text.
 
 Output: { "items": [ ...one object per vessel... ] }`;
