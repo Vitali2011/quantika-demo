@@ -8,6 +8,9 @@
  * - truncate=false on >2048 char chunk → RangeError before API call (cost guard)
  * - truncate=true on >2048 char chunk → Vertex auto-truncates
  * - Large batches (>250) → auto-batched into multiple API calls
+ * - ftsTable=undefined → No FTS5 insert (backward compat)
+ * - ftsTable="" → SQLite throws (invalid table name)
+ * - ftsTable="nonexistent" → SQLite throws clearly (bubbles to caller)
  */
 
 import type Database from 'better-sqlite3';
@@ -22,6 +25,7 @@ export interface EmbedAndStoreOptions {
   tableName: string;
   truncate?: boolean; // Default false (strict mode)
   db?: Database.Database; // Optional db instance (for testing)
+  ftsTable?: string; // Optional FTS5 table for dual-insert (hybrid retrieval)
 }
 
 /**
@@ -36,7 +40,7 @@ export async function embedAndStore(
   chunks: Chunk[],
   opts: EmbedAndStoreOptions
 ): Promise<void> {
-  const { tableName, truncate = false, db: providedDb } = opts;
+  const { tableName, truncate = false, db: providedDb, ftsTable } = opts;
 
   // Empty array guard — no-op
   if (chunks.length === 0) {
@@ -70,6 +74,11 @@ export async function embedAndStore(
       `INSERT INTO ${tableName} (content, metadata, embedding) VALUES (@content, @metadata, @embedding)`
     );
 
+    // Optional FTS5 dual-insert statement
+    const ftsStmt = ftsTable
+      ? db.prepare(`INSERT INTO ${ftsTable} (content, metadata) VALUES (@content, @metadata)`)
+      : null;
+
     for (let j = 0; j < batch.length; j++) {
       const chunk = batch[j];
       const embedding = embeddings[j];
@@ -77,11 +86,22 @@ export async function embedAndStore(
       // Convert Float32Array to JSON array string for vec0
       const embeddingJson = JSON.stringify(Array.from(embedding));
 
+      const metadataJson = JSON.stringify(chunk.metadata);
+
+      // Insert into vec0 table
       stmt.run({
         content: chunk.content,
-        metadata: JSON.stringify(chunk.metadata),
+        metadata: metadataJson,
         embedding: embeddingJson,
       });
+
+      // Dual-insert into FTS5 table if ftsTable is provided
+      if (ftsStmt) {
+        ftsStmt.run({
+          content: chunk.content,
+          metadata: metadataJson,
+        });
+      }
     }
   }
 }
