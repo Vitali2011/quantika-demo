@@ -7,7 +7,7 @@
 /** @type {import('jest').Config} */
 const config = {
   testEnvironment: 'node',
-  testMatch: ['<rootDir>/tests/regression/**/*.test.ts'],
+  testMatch: ['<rootDir>/tests/regression/**/*.test.ts', '<rootDir>/tests/regression/**/*.test.tsx'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {

@@ -203,36 +203,43 @@ describe('calculateWarRiskPremium — adversarial', () => {
     expect(sameZone.zones.filter(z => z === 'Red Sea / Bab al-Mandeb HRA')).toHaveLength(1);
   });
 
-  // H12: daysInHra = 0 guard
-  it('guard: daysInHra = 0 returns {0, []}', () => {
+  // H12: daysInHra = 0 — informational only since spec-betafix-04 (per-voyage model).
+  // daysInHra no longer affects premium; zones still matched from port name.
+  it('daysInHra = 0 does not crash, zone still matched, premium uses per-voyage rate', () => {
     const result = calculateWarRiskPremium({
       route: { fromPort: 'Lagos', toPort: 'Rotterdam' },
       vesselValueUsd: 10_000_000,
       daysInHra: 0,
     });
-    expect(result).toEqual({ premiumUsd: 0, zones: [] });
+    expect(result.zones).toContain('Gulf of Guinea HRA');
+    // per-voyage: 10_000_000 * 0.0005 = 5000
+    expect(result.premiumUsd).toBe(5000);
+    expect(result.premiumUsd).toBeGreaterThan(0);
   });
 
-  // H13: negative daysInHra — guard covers <= 0, should return early
-  it('guard: negative daysInHra returns {0, []}', () => {
+  // H13: negative daysInHra — informational only, does not affect calculation.
+  it('negative daysInHra does not crash, zone still matched, premium uses per-voyage rate', () => {
     const result = calculateWarRiskPremium({
       route: { fromPort: 'Lagos', toPort: 'Rotterdam' },
       vesselValueUsd: 10_000_000,
       daysInHra: -5,
     });
-    expect(result).toEqual({ premiumUsd: 0, zones: [] });
+    expect(result.zones).toContain('Gulf of Guinea HRA');
+    expect(result.premiumUsd).toBe(5000);
   });
 
-  // H14: vesselValueUsd = 0 — legitimate scenario (unvalued vessel), should not crash
-  it('vesselValueUsd = 0 produces premiumUsd = 0 (no division, just multiplication)', () => {
+  // H14: vesselValueUsd = 0 — code uses industry fallback ($8M) per spec-betafix-04.
+  // Avoids 0-premium on a 0-valued vessel (data entry error scenario).
+  it('vesselValueUsd = 0 uses fallback $8M, zone matched, premium > 0', () => {
     const result = calculateWarRiskPremium({
       route: { fromPort: 'Lagos', toPort: 'Rotterdam' },
       vesselValueUsd: 0,
       daysInHra: 5,
     });
-    expect(result.premiumUsd).toBe(0);
     // Zone should still be matched since port was recognised
     expect(result.zones).toContain('Gulf of Guinea HRA');
+    // Fallback: 8_000_000 * 0.0005 = 4000
+    expect(result.premiumUsd).toBe(4000);
   });
 
   // H15: negative vesselValueUsd — no validation, produces negative premium
@@ -328,17 +335,16 @@ describe('calculateWarRiskPremium — adversarial', () => {
     expect(result.premiumUsd).toBeGreaterThan(0);
   });
 
-  // H19: premium math precision — verify formula manually
-  it('premium math: Black Sea 0.10%, $20M vessel, 2 days = correct value', () => {
+  // H19: premium math precision — per-voyage model (spec-betafix-04).
+  // Rate is per-transit, NOT per-day. daysInHra is informational only.
+  it('premium math: Black Sea 0.10%, $20M vessel — per-voyage rate applied', () => {
     const result = calculateWarRiskPremium({
       route: { fromPort: 'Odessa', toPort: 'Istanbul' },
       vesselValueUsd: 20_000_000,
       daysInHra: 2,
     });
-    // dailyRate = (0.10 / 100) / 365 = 0.001 / 365
-    // premium = 20_000_000 * (0.001 / 365) * 2 = 109.589...
-    // Math.round(109.589... * 100) / 100 = 109.59
-    const expected = Math.round(20_000_000 * (0.10 / 100 / 365) * 2 * 100) / 100;
+    // per-voyage: 20_000_000 * (0.10 / 100) = 20_000_000 * 0.001 = 20_000
+    const expected = Math.round(20_000_000 * 0.001 * 100) / 100;
     expect(result.premiumUsd).toBe(expected);
     expect(result.zones).toContain('Black Sea Russia/Ukraine HRA');
   });
