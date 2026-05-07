@@ -1,0 +1,52 @@
+[
+  {
+    "content": "SECTION 1 - GENERAL PROVISIONS. For the purpose of this Code, the following definitions apply: 'cargo' means any goods, wares, merchandise and articles of every kind whatsoever carried or to be carried on board a ship. 'transportable moisture limit' (TML) means the maximum moisture content of the cargo which is considered safe for carriage in ships not complying with the special provisions applicable to the carriage of solid bulk cargoes with a moisture content in excess of the transportable moisture limit.",
+    "metadata": {
+      "source": "imsbc",
+      "sourceUrl": "https://www.imo.org/en/OurWork/Safety/Pages/Cargo.aspx",
+      "section": "section-1",
+      "title": "SECTION 1 - General Provisions - Definitions",
+      "subsectionIndex": 0
+    }
+  },
+  {
+    "content": "SECTION 4 - ASSESSMENT, ACCEPTANCE AND SAFE HANDLING OF SOLID BULK CARGOES. Group A cargoes are those which may liquefy if shipped at a moisture content in excess of their transportable moisture limit. The master should ensure that the shipper has provided the necessary information on the cargo, including the certificate of test for moisture content and transportable moisture limit. IRON ORE FINES and concentrates are typical examples of Group A cargoes that present a liquefaction hazard during sea transport.",
+    "metadata": {
+      "source": "imsbc",
+      "sourceUrl": "https://www.imo.org/en/OurWork/Safety/Pages/Cargo.aspx",
+      "section": "section-4",
+      "title": "SECTION 4 - Assessment and Acceptance",
+      "subsectionIndex": 0
+    }
+  },
+  {
+    "content": "APPENDIX 1 - INDIVIDUAL SCHEDULES FOR SOLID BULK CARGOES. Cargo: COAL. Description: Coal is a combustible black or brownish-black sedimentary rock. Characteristics: Coal may emit methane or other flammable gases. Some coals are liable to self-heating and spontaneous combustion. The hazard characteristics include: Class 4.2 (Materials liable to spontaneous combustion). Moisture may accelerate oxidation and self-heating. Vessels carrying coal should have adequate ventilation and gas detection equipment.",
+    "metadata": {
+      "source": "imsbc",
+      "sourceUrl": "https://www.imo.org/en/OurWork/Safety/Pages/Cargo.aspx",
+      "section": "appendix-1",
+      "title": "APPENDIX 1 - Individual Schedules - COAL",
+      "subsectionIndex": 0
+    }
+  },
+  {
+    "content": "APPENDIX 2 - LABORATORY TEST PROCEDURES. Flow moisture point (FMP) is determined by placing a sub-sample of the cargo in a cylindrical mould and subjecting it to a specified vibration. The flow moisture point is the percentage moisture content at which the surface of the specimen first flows as a liquid. This test is critical for determining whether a cargo is safe to transport. The flow moisture point must be determined in accordance with the procedures set out in this appendix. The test should be conducted by an accredited laboratory using representative samples obtained in accordance with section 4 of this Code.",
+    "metadata": {
+      "source": "imsbc",
+      "sourceUrl": "https://www.imo.org/en/OurWork/Safety/Pages/Cargo.aspx",
+      "section": "appendix-2",
+      "title": "APPENDIX 2 - Laboratory Test Procedures",
+      "subsectionIndex": 0
+    }
+  },
+  {
+    "content": "SECTION 7 - CARGOES THAT MAY LIQUEFY (GROUP A). Cargoes that may liquefy are those which contain a certain proportion of smaller particles and a certain amount of moisture. These cargoes, if possessing sufficiently high moisture content, are liable to flow. Their behavior is similar to that of a liquid and they are liable to shift rapidly to one side of the ship. This shift may capsize the ship or cause such a list that effective cargo handling at the next port of call becomes impossible. Liquefaction has been responsible for the loss of over 100 ships in the last decade. Prior to loading a cargo which may liquefy, the master must be provided with a certificate of the transportable moisture limit (TML) for the cargo and a certificate showing the actual moisture content of the cargo at the time of loading. The moisture content must not exceed the TML. The master should not load the cargo if these certificates are not provided or if the moisture content exceeds 90% of the TML. This is an absolute requirement under SOLAS Chapter VI. Typical Group A cargoes include iron ore fines, nickel ore, copper concentrates, and certain mineral concentrates. The shipper is responsible for providing accurate information and for ensuring the cargo is fit for shipment. If the master has any doubts about the cargo's suitability for transport, loading should not proceed until all concerns have been addressed and documented. The cargo hold should be clean, dry, and fit to receive the cargo. Bilge wells must be clean and the bilge pumping system tested. During the voyage, the cargo should be regularly inspected for any signs of liquefaction, such as: free moisture appearing on the surface, fluid state of the cargo, cargo shifting to one side. If any of these signs are observed, the master should immediately reduce speed, keep the vessel upright by ballasting, and proceed to the nearest safe port. Additional guidance on handling Group A cargoes can be found in the IMO circulars and in the appendices to this Code. Training of crew members in cargo safety procedures is essential and should be documented in the ship's safety management system.",
+    "metadata": {
+      "source": "imsbc",
+      "sourceUrl": "https://www.imo.org/en/OurWork/Safety/Pages/Cargo.aspx",
+      "section": "section-7",
+      "title": "SECTION 7 - Cargoes That May Liquefy",
+      "subsectionIndex": 0
+    }
+  }
+]
