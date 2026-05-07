@@ -15,9 +15,10 @@
  * Idempotent: uses INSERT OR REPLACE (UNIQUE constraint on port_code+dwt brackets+cargo_type).
  */
 
-import Database from 'better-sqlite3';
+import type Database from 'better-sqlite3';
 import * as fs from 'fs';
 import * as path from 'path';
+import { getDb } from '../lib/db';
 import { runMigrations } from '../lib/migrations/runner';
 import { allMigrations } from '../lib/migrations/index';
 
@@ -118,6 +119,31 @@ Use realistic estimates. Respond with JSON only.`;
 };
 
 // --------------------------------------------------------------------------
+// Input validation
+// --------------------------------------------------------------------------
+
+function sanitizeBracket<T extends BaselineBracket | LlmGapBracket>(bracket: T, portCode: string): T {
+  const safeNum = (v: number, fallback = 0): number =>
+    Number.isFinite(v) ? Math.max(fallback, v) : fallback;
+  const dwtMin = Math.max(1, Number.isFinite(bracket.vessel_dwt_min) ? bracket.vessel_dwt_min : 1);
+  const dwtMax = Math.max(dwtMin, Number.isFinite(bracket.vessel_dwt_max) ? bracket.vessel_dwt_max : dwtMin);
+  if (bracket.vessel_dwt_min !== dwtMin || bracket.vessel_dwt_max !== dwtMax ||
+      !Number.isFinite(bracket.port_dues_usd) || bracket.port_dues_usd < 0) {
+    console.warn(`[seed-port-da] sanitizing invalid bracket for ${portCode}: ` +
+      `dwt=[${bracket.vessel_dwt_min},${bracket.vessel_dwt_max}] port_dues=${bracket.port_dues_usd}`);
+  }
+  return {
+    ...bracket,
+    vessel_dwt_min: dwtMin,
+    vessel_dwt_max: dwtMax,
+    port_dues_usd: safeNum(bracket.port_dues_usd),
+    pilotage_usd: safeNum(bracket.pilotage_usd),
+    tugs_usd: safeNum(bracket.tugs_usd),
+    stevedoring_usd_per_mt: safeNum(bracket.stevedoring_usd_per_mt),
+  };
+}
+
+// --------------------------------------------------------------------------
 // Core seeding logic
 // --------------------------------------------------------------------------
 
@@ -150,12 +176,13 @@ export async function seedPortDa(
 
     // Insert baseline brackets
     for (const bracket of port.brackets) {
+      const sBracket = sanitizeBracket(bracket, port.port_code);
       rows.push([
         port.port_code, port.port_name,
-        bracket.vessel_dwt_min, bracket.vessel_dwt_max,
-        bracket.port_dues_usd, bracket.pilotage_usd, bracket.tugs_usd,
-        bracket.stevedoring_usd_per_mt,
-        bracket.cargo_type, bracket.confidence, bracket.source,
+        sBracket.vessel_dwt_min, sBracket.vessel_dwt_max,
+        sBracket.port_dues_usd, sBracket.pilotage_usd, sBracket.tugs_usd,
+        sBracket.stevedoring_usd_per_mt,
+        sBracket.cargo_type, sBracket.confidence, sBracket.source,
         now,
       ]);
     }
@@ -168,11 +195,12 @@ export async function seedPortDa(
         const llmBracket = await llmCaller(
           model, port.port_code, port.port_name, gap.name, gap.vessel_dwt_min, gap.vessel_dwt_max,
         );
+        const sLlmBracket = sanitizeBracket(llmBracket, port.port_code);
         rows.push([
           port.port_code, port.port_name,
-          llmBracket.vessel_dwt_min, llmBracket.vessel_dwt_max,
-          llmBracket.port_dues_usd, llmBracket.pilotage_usd, llmBracket.tugs_usd,
-          llmBracket.stevedoring_usd_per_mt,
+          sLlmBracket.vessel_dwt_min, sLlmBracket.vessel_dwt_max,
+          sLlmBracket.port_dues_usd, sLlmBracket.pilotage_usd, sLlmBracket.tugs_usd,
+          sLlmBracket.stevedoring_usd_per_mt,
           'general', llmBracket.confidence, `llm:${model}`,
           now,
         ]);
@@ -199,7 +227,8 @@ async function main(): Promise<void> {
     fs.mkdirSync(dataDir, { recursive: true });
   }
 
-  const db = new Database(dbPath);
+  // Use getDb() to ensure sqlite-vec extension is loaded before migrations
+  const db = getDb(dbPath);
   runMigrations(db, allMigrations);
 
   const baselinePath = path.join(__dirname, 'seed-data', 'port-da-base.json');

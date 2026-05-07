@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { getStore } from '@/lib/session-store';
 import { listSources } from '@/lib/knowledge/governance';
 import { SourceTable } from './_components/SourceTable';

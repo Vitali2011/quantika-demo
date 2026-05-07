@@ -1,4 +1,5 @@
 import Database from 'better-sqlite3';
+import * as sqliteVec from 'sqlite-vec';
 import * as path from 'path';
 import * as fs from 'fs';
 import { randomUUID } from 'crypto';
@@ -36,6 +37,8 @@ export class SessionStore {
   constructor(dbPath: string = DEFAULT_DB_PATH) {
     ensureDir(dbPath);
     this.db = new Database(dbPath);
+    // Load sqlite-vec extension BEFORE migrations (required for migration 018 vec0 tables)
+    sqliteVec.load(this.db);
     // Enforce FK constraints (SQLite default is OFF). Required for migrations
     // that declare REFERENCES (e.g., 013 knowledge_sync_log → knowledge_sources)
     // to actually reject orphan inserts at runtime.

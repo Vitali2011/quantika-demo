@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Section 1 - General provisions</title>
+    <style>
+        body { font-family: Arial; }
+        .dangerous { color: red; }
+    </style>
+    <script>
+        console.log('This should be stripped');
+        alert('XSS attempt');
+    </script>
+</head>
+<body>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="toc.html">Table of Contents</a>
+    </nav>
+
+    <h1>Section 1 - General provisions</h1>
+
+    <p>This section contains <strong>important</strong> definitions and <em>general provisions</em>.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Term</th>
+                <th>Definition</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>IMSBC Code</td>
+                <td>International Maritime Solid Bulk Cargoes Code</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        <li>First item</li>
+        <li>Second item</li>
+    </ul>
+
+    <div onclick="alert('xss')">
+        <span onerror="alert('xss')">Safe content</span>
+    </div>
+
+    <footer>
+        <p>Copyright IMO 2024</p>
+        <script>trackPageView();</script>
+    </footer>
+</body>
+</html>

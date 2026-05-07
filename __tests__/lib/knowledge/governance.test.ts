@@ -157,4 +157,77 @@ describe('governance', () => {
       expect(src.consecutive_failures).toBe(2);
     });
   });
+
+  describe('edge cases (spec-16)', () => {
+    it('reportSyncSuccess with empty opts {} — verify defaults', () => {
+      const id = reportSyncStarted(db, 'test-src');
+      reportSyncSuccess(db, id, {});
+
+      const log = db.prepare('SELECT * FROM knowledge_sync_log WHERE id = ?').get(id) as any;
+      expect(log.status).toBe('success');
+      expect(log.rows_changed).toBeNull();
+      expect(log.metadata).toBeNull();
+      expect(log.finished_at).toBeTruthy();
+
+      const src = db.prepare("SELECT * FROM knowledge_sources WHERE slug = 'test-src'").get() as any;
+      expect(src.status).toBe('fresh');
+      expect(src.consecutive_failures).toBe(0);
+    });
+
+    it('reportSyncSuccess with all opts populated — verify all fields stored', () => {
+      const id = reportSyncStarted(db, 'test-src');
+      const metadata = { version: '1.0', notes: 'test sync' };
+      reportSyncSuccess(db, id, {
+        rowsChanged: 100,
+        upstreamVersion: 'v2025-Q2',
+        metadata,
+      });
+
+      const log = db.prepare('SELECT * FROM knowledge_sync_log WHERE id = ?').get(id) as any;
+      expect(log.status).toBe('success');
+      expect(log.rows_changed).toBe(100);
+      expect(JSON.parse(log.metadata)).toEqual(metadata);
+
+      const src = db.prepare("SELECT * FROM knowledge_sources WHERE slug = 'test-src'").get() as any;
+      expect(src.row_count).toBe(100);
+      expect(src.upstream_version).toBe('v2025-Q2');
+    });
+
+    it('reportSyncFailure with Error that has no stack — verify graceful fallback to message', () => {
+      const id = reportSyncStarted(db, 'test-src');
+      const error = new Error('no stack error');
+      delete (error as any).stack; // Remove stack property
+
+      reportSyncFailure(db, id, error);
+
+      const log = db.prepare('SELECT * FROM knowledge_sync_log WHERE id = ?').get(id) as any;
+      expect(log.status).toBe('failure');
+      expect(log.error_message).toContain('no stack error');
+      expect(log.finished_at).toBeTruthy();
+    });
+
+    it('reportSyncFailure with non-Error thrown value (string) — verify coercion', () => {
+      const id = reportSyncStarted(db, 'test-src');
+      reportSyncFailure(db, id, 'string error' as any);
+
+      const log = db.prepare('SELECT * FROM knowledge_sync_log WHERE id = ?').get(id) as any;
+      expect(log.status).toBe('failure');
+      expect(log.error_message).toContain('string error');
+
+      const metadata = JSON.parse(log.metadata);
+      expect(metadata.error_category).toBe('unknown');
+    });
+
+    it('reportSyncFailure with non-Error thrown value (number) — verify coercion', () => {
+      const id = reportSyncStarted(db, 'test-src');
+      reportSyncFailure(db, id, 42 as any);
+
+      const log = db.prepare('SELECT * FROM knowledge_sync_log WHERE id = ?').get(id) as any;
+      expect(log.status).toBe('failure');
+      expect(log.error_message).toContain('42');
+
+      const metadata = JSON.parse(log.metadata);
+      expect(metadata.error_category).toBe('unknown');
+    });
+  });
 });

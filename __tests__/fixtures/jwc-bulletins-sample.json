@@ -1,0 +1,65 @@
+[
+  {
+    "id": "jwc-001",
+    "publishDate": "2024-03-15T00:00:00.000Z",
+    "title": "War Risk Areas - Black Sea Update",
+    "rawText": "The Joint War Committee has designated the Black Sea and Sea of Azov as additional premium areas. Vessels transiting through these waters should be aware of heightened war risk. The Ukrainian coastline remains particularly affected. Insurers are advised to apply appropriate war risk premiums for all voyages to or through the Black Sea region.",
+    "sourceUrl": "https://example.com/jwc/bulletin-001"
+  },
+  {
+    "id": "jwc-002",
+    "publishDate": "2024-04-20T00:00:00.000Z",
+    "title": "Persian Gulf and Strait of Hormuz Advisory",
+    "rawText": "War risk conditions persist in the Persian Gulf, particularly in the Strait of Hormuz region. The Arabian Gulf continues to see elevated tensions. Vessel operators should maintain heightened vigilance. The Gulf of Oman is also affected by these conditions.",
+    "sourceUrl": "https://example.com/jwc/bulletin-002"
+  },
+  {
+    "id": "jwc-003",
+    "publishDate": "2024-05-10T00:00:00.000Z",
+    "title": "Red Sea and Gulf of Aden - Increased Risk",
+    "rawText": "The Red Sea zone including Bab el-Mandeb strait and Gulf of Aden has seen increased war risk activity. Vessels transiting between the Suez Canal and the Arabian Sea should exercise extreme caution. Yemeni waters remain particularly hazardous.",
+    "sourceUrl": "https://example.com/jwc/bulletin-003"
+  },
+  {
+    "id": "jwc-004",
+    "publishDate": "2024-06-01T00:00:00.000Z",
+    "title": "Обновление по Персидскому заливу",
+    "rawText": "Персидский залив продолжает оставаться зоной повышенного военного риска. Судам рекомендуется соблюдать особую осторожность при транзите через этот регион.",
+    "sourceUrl": "https://example.com/jwc/bulletin-004"
+  },
+  {
+    "id": "jwc-005",
+    "publishDate": "2024-07-15T00:00:00.000Z",
+    "title": "General Maritime Security Update",
+    "rawText": "This bulletin provides a general update on maritime security conditions worldwide. No specific high-risk areas are identified in this advisory. Standard security protocols should be maintained across all routes.",
+    "sourceUrl": "https://example.com/jwc/bulletin-005"
+  },
+  {
+    "id": "jwc-006",
+    "publishDate": "2024-08-01T00:00:00.000Z",
+    "title": "Empty Bulletin Test",
+    "rawText": "",
+    "sourceUrl": "https://example.com/jwc/bulletin-006"
+  },
+  {
+    "id": "jwc-007",
+    "publishDate": "2024-08-02T00:00:00.000Z",
+    "title": "Whitespace Only Test",
+    "rawText": "   \n\t  \n   ",
+    "sourceUrl": "https://example.com/jwc/bulletin-007"
+  },
+  {
+    "id": "jwc-008",
+    "publishDate": "2024-09-01T00:00:00.000Z",
+    "title": "Multiple Regions - Comprehensive Advisory",
+    "rawText": "War risk conditions affect multiple areas globally. The Black Sea and Black Sea region continue to pose significant risks. The Red Sea, including the Bab al-Mandab strait, remains hazardous. Persian Gulf tensions persist, particularly around the Strait of Hormuz. The Gulf of Aden and Gulf of Oman also require heightened vigilance. Vessels transiting the Suez Canal should be aware of regional instability. The Mediterranean Sea, particularly waters near Libya and Israel, present additional concerns. Lebanese ports should be approached with caution. The Gulf of Guinea off Nigeria continues to experience piracy-related risks. The South China Sea and Malacca Strait require standard precautions. The Indian Ocean, particularly near Somalia, remains an area of concern. The Arabian Sea completes the current list of elevated risk zones.",
+    "sourceUrl": "https://example.com/jwc/bulletin-008"
+  },
+  {
+    "id": "jwc-009",
+    "publishDate": "2024-10-01T00:00:00.000Z",
+    "title": "Region Deduplication Test - Black Sea Repeated",
+    "rawText": "The Black Sea region has seen increased activity. Specifically, the Black Sea area near Ukrainian ports is particularly affected. All Black Sea transits should consider war risk premiums.",
+    "sourceUrl": "https://example.com/jwc/bulletin-009"
+  }
+]
