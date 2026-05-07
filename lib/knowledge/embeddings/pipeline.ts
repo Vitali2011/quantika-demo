@@ -11,12 +11,15 @@
  * - ftsTable=undefined → No FTS5 insert (backward compat)
  * - ftsTable="" → SQLite throws (invalid table name)
  * - ftsTable="nonexistent" → SQLite throws clearly (bubbles to caller)
+ * - dryRun=true → logs chunk count and skips API + DB writes (cost protection)
+ * - dryRun=undefined → defaults to false (full pipeline)
  */
 
 import type Database from 'better-sqlite3';
 import { getDb } from '@/lib/db';
 import { embedDocuments } from './client';
 import type { Chunk } from './chunks';
+import { logDryRun } from './dry-run';
 
 const MAX_BATCH_SIZE = 250;
 const MAX_CHUNK_LENGTH = 2048;
@@ -26,13 +29,14 @@ export interface EmbedAndStoreOptions {
   truncate?: boolean; // Default false (strict mode)
   db?: Database.Database; // Optional db instance (for testing)
   ftsTable?: string; // Optional FTS5 table for dual-insert (hybrid retrieval)
+  dryRun?: boolean; // Default false — if true, log count and skip API/DB writes
 }
 
 /**
  * Embeds chunks and stores them in the specified vec0 virtual table.
  *
  * @param chunks - Array of chunks to embed and store
- * @param opts - Configuration options (tableName, truncate)
+ * @param opts - Configuration options (tableName, truncate, dryRun)
  * @throws RangeError if truncate=false and any chunk exceeds 2048 chars
  * @throws Error if tableName doesn't exist (bubbled from SQLite)
  */
@@ -40,7 +44,7 @@ export async function embedAndStore(
   chunks: Chunk[],
   opts: EmbedAndStoreOptions
 ): Promise<void> {
-  const { tableName, truncate = false, db: providedDb, ftsTable } = opts;
+  const { tableName, truncate = false, db: providedDb, ftsTable, dryRun = false } = opts;
 
   // Empty array guard — no-op
   if (chunks.length === 0) {
@@ -57,6 +61,19 @@ export async function embedAndStore(
         );
       }
     }
+  }
+
+  // DryRun guard — log count and skip API + DB writes
+  if (dryRun) {
+    const totalChars = chunks.reduce((sum, chunk) => sum + chunk.content.length, 0);
+    logDryRun({
+      event: 'embedAndStore:dryRun',
+      tableName,
+      chunkCount: chunks.length,
+      totalChars,
+      skipped: true,
+    });
+    return;
   }
 
   const db = providedDb ?? getDb();
