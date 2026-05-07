@@ -59,7 +59,14 @@ export async function scrapeImsbc(baseUrl: string): Promise<ScrapedSection[]> {
   }
 
   // Parse ToC to extract section links
-  const sectionLinks = extractSectionLinks(tocHtml, baseUrl);
+  let sectionLinks = extractSectionLinks(tocHtml, baseUrl);
+
+  // Guard: cap sections to prevent ToC DoS via unbounded HTTP requests
+  const MAX_SECTIONS = 100;
+  if (sectionLinks.length > MAX_SECTIONS) {
+    console.warn(`[scrapeImsbc] ToC has ${sectionLinks.length} links, capping at ${MAX_SECTIONS}`);
+    sectionLinks = sectionLinks.slice(0, MAX_SECTIONS);
+  }
 
   // Fetch sections with concurrency control
   const limit = pLimit(MAX_CONCURRENT);
@@ -114,7 +121,19 @@ async function fetchWithTimeout(url: string, timeoutMs: number): Promise<string 
       throw new Error(`Failed to fetch IMSBC ToC: ${response.status}`);
     }
 
-    return await response.text();
+    // Guard: size limit to prevent DoS via large responses (max 10MB)
+    const MAX_RESPONSE_BYTES = 10 * 1024 * 1024;
+    const contentLength = response.headers?.get?.('content-length');
+    if (contentLength && parseInt(contentLength, 10) > MAX_RESPONSE_BYTES) {
+      throw new Error(`Response too large: ${contentLength} bytes (max ${MAX_RESPONSE_BYTES})`);
+    }
+
+    const text = await response.text();
+    if (text.length > MAX_RESPONSE_BYTES) {
+      throw new Error(`Response body too large: ${text.length} chars (max ${MAX_RESPONSE_BYTES})`);
+    }
+
+    return text;
   } catch (error) {
     clearTimeout(timeoutId);
     if ((error as Error).name === 'AbortError') {
