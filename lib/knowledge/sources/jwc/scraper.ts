@@ -6,7 +6,9 @@
  * (id, publishDate, title) and raw text content for downstream embedding.
  */
 
-import type { JwcBulletin } from './types';
+import type { JwcScrapedBulletin } from './types';
+
+export type { JwcScrapedBulletin };
 
 const TIMEOUT_MS = 10000;
 const MAX_CONCURRENT = 3;
@@ -28,9 +30,14 @@ const MAX_CONCURRENT = 3;
  * @returns Array of JwcBulletin objects sorted by publishDate descending (newest first)
  * @throws Error if baseUrl is empty/null/whitespace or listing page fetch fails
  */
-export async function scrapeJwc(baseUrl: string): Promise<JwcBulletin[]> {
+export async function scrapeJwc(baseUrl: string): Promise<JwcScrapedBulletin[]> {
   if (!baseUrl || baseUrl.trim() === '') {
-    throw new Error('baseUrl cannot be empty');
+    throw new Error('baseUrl is required');
+  }
+
+  const urlLower = baseUrl.trim().toLowerCase();
+  if (!urlLower.startsWith('http://') && !urlLower.startsWith('https://')) {
+    throw new Error('baseUrl must use http or https');
   }
 
   const listingHtml = await fetchWithTimeout(baseUrl, TIMEOUT_MS);
@@ -38,9 +45,16 @@ export async function scrapeJwc(baseUrl: string): Promise<JwcBulletin[]> {
     return [];
   }
 
-  const bulletinLinks = extractBulletinLinks(listingHtml, baseUrl);
+  let bulletinLinks = extractBulletinLinks(listingHtml, baseUrl);
   if (bulletinLinks.length === 0) {
     return [];
+  }
+
+  // Guard: cap bulletins to prevent listing-page DoS via unbounded HTTP requests
+  const MAX_BULLETINS = 50;
+  if (bulletinLinks.length > MAX_BULLETINS) {
+    console.warn(`[scrapeJwc] Listing has ${bulletinLinks.length} links, capping at ${MAX_BULLETINS}`);
+    bulletinLinks = bulletinLinks.slice(0, MAX_BULLETINS);
   }
 
   const bulletins = await fetchBulletinsWithConcurrency(bulletinLinks, MAX_CONCURRENT);
@@ -59,7 +73,18 @@ async function fetchWithTimeout(url: string, timeoutMs: number): Promise<string>
       throw new Error(`Failed to fetch bulletin listing: ${response.status}`);
     }
 
-    return await response.text();
+    // Guard: size limit to prevent DoS via large responses (max 10MB)
+    const MAX_RESPONSE_BYTES = 10 * 1024 * 1024;
+    const contentLength = response.headers?.get?.('content-length');
+    if (contentLength && parseInt(contentLength, 10) > MAX_RESPONSE_BYTES) {
+      throw new Error(`Response too large: ${contentLength} bytes (max ${MAX_RESPONSE_BYTES})`);
+    }
+    const text = await response.text();
+    if (text.length > MAX_RESPONSE_BYTES) {
+      throw new Error(`Response body too large: ${text.length} chars (max ${MAX_RESPONSE_BYTES})`);
+    }
+
+    return text;
   } catch (error) {
     clearTimeout(timeout);
     if ((error as Error).name === 'AbortError') {
@@ -88,8 +113,8 @@ function extractBulletinLinks(html: string, baseUrl: string): string[] {
 async function fetchBulletinsWithConcurrency(
   urls: string[],
   maxConcurrent: number
-): Promise<JwcBulletin[]> {
-  const results: JwcBulletin[] = [];
+): Promise<JwcScrapedBulletin[]> {
+  const results: JwcScrapedBulletin[] = [];
   const queue = [...urls];
 
   async function processOne(url: string): Promise<void> {
@@ -112,7 +137,7 @@ async function fetchBulletinsWithConcurrency(
   return results;
 }
 
-function parseBulletin(html: string, sourceUrl: string): JwcBulletin | null {
+function parseBulletin(html: string, sourceUrl: string): JwcScrapedBulletin | null {
   const sanitized = stripTags(html, ['script', 'style', 'nav', 'footer']);
   const title = extractTitle(sanitized);
   const publishDate = extractDate(sanitized);
