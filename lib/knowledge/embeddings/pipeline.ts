@@ -76,6 +76,25 @@ export async function embedAndStore(
     return;
   }
 
+  // Guard: allowlist tableName and ftsTable to prevent SQL injection
+  const ALLOWED_VEC_TABLES = ['imsbc_vec', 'igc_vec', 'jwc_vec'];
+  const ALLOWED_FTS_TABLES = ['imsbc_fts', 'igc_fts', 'jwc_fts'];
+
+  if (!tableName || !tableName.trim()) {
+    throw new Error('tableName is required');
+  }
+  if (!ALLOWED_VEC_TABLES.includes(tableName)) {
+    throw new Error(`Invalid table name: ${tableName}. Must be one of: ${ALLOWED_VEC_TABLES.join(', ')}`);
+  }
+  if (ftsTable !== undefined) {
+    if (!ftsTable || !ftsTable.trim()) {
+      throw new Error('ftsTable must be a non-empty string when provided');
+    }
+    if (!ALLOWED_FTS_TABLES.includes(ftsTable)) {
+      throw new Error(`Invalid ftsTable name: ${ftsTable}. Must be one of: ${ALLOWED_FTS_TABLES.join(', ')}`);
+    }
+  }
+
   const db = providedDb ?? getDb();
 
   // Process in batches of MAX_BATCH_SIZE
