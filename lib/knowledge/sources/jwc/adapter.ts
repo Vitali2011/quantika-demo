@@ -6,7 +6,7 @@
  * Separate from existing lib/knowledge/jwc/adapter.ts (structured war_risk_zones).
  */
 
-import type { Database } from 'better-sqlite3';
+import type Database from 'better-sqlite3';
 import { getDb } from '@/lib/db';
 import { scrapeJwc } from './scraper';
 import { chunkJwc } from './chunker';
