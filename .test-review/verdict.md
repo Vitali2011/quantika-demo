@@ -1,89 +1,86 @@
-# Phase 4 — Verdict
+# Phase 4 — Verdict (PR #99: claude/rag-phase2-20260507)
 
-**Date:** 2026-04-28  
-**Reviewer:** test-skill (adversarial QA, cold-start)  
-**Target:** PR #8 wave-alpha, post-merge on `main` of `Vitali2011/quantika-demo`
-
----
-
-## ⛔ BLOCK
-
-**Reason:** Security bug confirmed — auth bypass in `lib/whatsapp/signature.ts`.
-
-BUG-A1-1 allows a forged WhatsApp webhook to bypass HMAC verification when `WHATSAPP_APP_SECRET` is empty (env var unset). An attacker who sends the correct HMAC computed with an empty key will be authenticated. This is a full auth bypass for the webhook endpoint.
-
-Per the verdict decision tree:
-> "Security bug (XSS reaches DOM, auth bypass, SQL injection)" → **BLOCK**
-
-Additionally, 5 HIGH findings are present that were not pre-existing on `main` (all introduced by wave-alpha):
-> "Any HIGH finding that is NOT pre-existing on main" → **BLOCK**
+**Date:** 2026-05-07
+**Reviewer:** test-skill (adversarial QA, cold-start)
+**Target:** PR #99, branch `claude/rag-phase2-20260507` → `main`
 
 ---
 
-## Required fixes before production use
+## BLOCK
 
-### P0 — Fix immediately (BLOCK conditions)
+Three independent BLOCK conditions, each sufficient alone:
 
-| ID | File | Fix |
-|---|---|---|
-| BUG-A1-1 | `lib/whatsapp/signature.ts:6` | Add `!appSecret` guard: `if (!signature \|\| !appSecret) return false;` |
+### 1. SQL injection on read path (C1) — Security bug
 
-### P1 — Fix before first real user (HIGH)
+`retrieve()` in `lib/knowledge/embeddings/retriever.ts` has no allowlist on `vectorTable` /
+`ftsTable`. UNION SELECT injection with matching column count executes silently, returning injected
+rows as `RetrievedChunk` objects. Data exfiltration vector confirmed.
 
-| ID | File | Fix |
-|---|---|---|
-| BUG-A2-H4 | `lib/confidence.ts:26` | Change null-check to `if (score === null \|\| score === undefined \|\| !Number.isFinite(score)) return 'missing';` |
-| BUG-A3-1/2/3 | `lib/economics/ets.ts:35` | Extend guard: `if (distanceNm <= 0 \|\| euLegPercent <= 0 \|\| euLegPercent > 1 \|\| vlsfoBurnMt <= 0 \|\| euaPrice <= 0) return { amountEur: 0, applicable: false };` |
-| BUG-A4-1 | `lib/whatsapp/forward-parser.ts:75` | Add `if (!rawText) return { confidence: 'uncertain', missingFields: ['unsupported message type'], rawText: '' };` after the switch |
-| BUG-A6-H14 | `lib/sanctions/opensanctions.ts:61` | Add `if (!name.trim()) return [];` before `hashQuery` |
+Per verdict tree: "Security bug (SQL injection)" → **BLOCK**
 
-### P2 — Fix soon (MEDIUM)
+### 2. Citation validator not delivered (C2) — Feature absent
 
-| ID | File | Fix |
-|---|---|---|
-| BUG-A2-H5 | `lib/confidence.ts:107` | Guard empty criticalFields: return `level: 'missing'` or throw |
-| BUG-A3-4 | `lib/economics/war-risk.ts:54` | Use word-boundary regex for port matching |
-| BUG-A3-5 | `lib/economics/war-risk.ts:67` | Validate `vesselValueUsd > 0` |
+`lib/knowledge/citations/validator.ts` does not exist. `validateCitations()` is not called anywhere.
+PR description claims this was built and wired. It was not.
 
-### P3 — Nice to have (LOW)
+Per verdict tree: "Breaking API change without migration path" / undelivered claimed feature → **BLOCK**
 
-| ID | File | Fix |
-|---|---|---|
-| BUG-A2-H8 | `lib/confidence.ts:26` | Covered by P1 fix (BUG-A2-H4 guard uses `!Number.isFinite`) |
+### 3. compare-routes RAG not wired (C3) — Feature absent
+
+`app/api/voyage/compare-routes/route.ts` has zero RAG imports. PR description claims JWC
+retrieval was wired for Black Sea / Red Sea / Persian Gulf routes. It was not.
+
+Same as C2 → **BLOCK**
 
 ---
 
-## Test files produced
+## Required fixes before re-review
+
+| ID  | File                                            | Fix                                                                                                                                               |
+| --- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| C1  | `lib/knowledge/embeddings/retriever.ts`         | Add allowlist: `['imsbc_vec','igc_vec','jwc_vec']` for vectorTable, `['imsbc_fts','igc_fts','jwc_fts']` for ftsTable — mirror pipeline.ts pattern |
+| C2  | `lib/knowledge/citations/validator.ts` (create) | Implement `validateCitations()` and wire into `app/api/ai/draft-quote/route.ts` after LLM call, OR remove claim from PR description               |
+| C3  | `app/api/voyage/compare-routes/route.ts`        | Wire JWC `retrieve()` for Black Sea/Red Sea/Persian Gulf, OR remove claim from PR description                                                     |
+| H2  | `lib/knowledge/sources/jwc/scraper.ts`          | Replace `jwc-${Date.now()}` fallback with `crypto.randomUUID()` or `hash(sourceUrl + rawText)`                                                    |
+| H3  | `lib/knowledge/sources/imsbc/chunker.ts`        | Strip Bidi controls (U+202A–202E, U+2066–2069) and C0/C1 chars after entity decode                                                                |
+
+---
+
+## Test suite (PR #99)
 
 ```
-tests/regression/
-├── test_whatsapp_signature_security.test.ts    (12 tests, 3 fail)
-├── test_confidence_gate_property.test.ts       (28 tests, 7 fail)
-├── test_economics_edge_cases.test.ts           (23 tests, 7 fail)
-├── test_forward_parser_edge_cases.test.ts      (9 tests, 6 fail)
-└── test_sanctions_rtl_trial.test.ts            (12 tests, 1 fail)
+Tests:       10 failed, 157 passed, 167 total
+Test Suites: 3 failed, 36 passed, 39 total
+Time:        6.178 s
 ```
 
-Total: 84 new regression tests. 24 currently failing — each failing test documents a real bug. Tests will go green after the corresponding fix is applied. Do not delete them.
+New regression test files:
+
+```
+__tests__/regression/
+├── test_retriever_sql_injection.test.ts       (6 tests, 1 FAIL — C1)
+├── test_adapter_truncation_and_id.test.ts     (7 tests, 2 FAIL — H2)
+└── test_chunker_entity_decode.test.ts         (17 tests, 7 FAIL — H3)
+```
+
+All 10 failures document real bugs introduced by this PR. Tests will go green after fixes.
+Do not delete them — they are the regression lock.
 
 ---
 
-## What passed
+## What is solid (do not regress)
 
-- All 15 wave-alpha specs delivered working code for their primary happy paths
-- 1349 existing tests still green (lint + build confirmed in retro)
-- Migration version collision fix (`007-opensanctions-cache: version 7`) confirmed correct
-- RTL detection logic — all edge cases correct (boundary, Farsi, emoji, mixed)
-- Trial expiry logic — clamp + `Math.ceil` behavior correct
-- WhatsApp HMAC with correct secret — multiple test vectors pass
-- War risk double-zone counting — uses `Math.max` correctly
-- OpenSanctions cache TTL eviction — staleness check correct
+- `pipeline.ts` write-path allowlist — correct, keep as-is
+- `searchVec0()` empty-string guard — correct (not sufficient, but keep)
+- RRF merge logic — boundary cases handled (topN=0, empty arrays)
+- IMSBC scraper 10MB cap and 100-section cap — working
+- JWC scraper 50-bulletin cap, iframe/object/embed strip — working
+- Migration 018 vec0 dimension enforcement — working (DB rejects wrong dim at INSERT)
+- Feature flag `KNOWLEDGE_RAG_ENABLED=false` — safe default confirmed
 
 ---
 
-## Notes for Wave β
+## Previous verdict (PR #8, 2026-04-28)
 
-1. **BUG-A1-1 is the only true showstopper** for production. The others can coexist with the demo, but should be fixed before freight forwarder onboarding.
-2. Economics calculator bugs (A3-1/2/3) would only manifest with malformed inputs from the pipeline — the pipeline currently produces valid positive values. But the absence of guards is a liability.
-3. BUG-A4-1 (unknown WhatsApp types → API call) is a slow money leak in production; low urgency for demo.
-4. The `appSecret` empty-string bypass is likely masked in the current Caddy setup (demo doesn't have real Meta integration yet), but must be fixed before WhatsApp credentials are activated.
+Archived above this section in findings.md. Pre-existing bugs from PR #8 are not introduced
+by PR #99 and do not affect this verdict.

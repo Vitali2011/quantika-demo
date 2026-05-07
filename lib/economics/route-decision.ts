@@ -237,6 +237,7 @@ async function llmReason(
   winner: 'suez' | 'cape',
   savingsUsd: number,
   savingsDays: number,
+  jwcSystemContext?: string,
 ): Promise<string> {
   const prompt = [
     `Suez TCE: $${suezDaily}/day`,
@@ -246,6 +247,10 @@ async function llmReason(
     '',
     'In 1-2 short sentences, explain which routing is better and why.',
   ].join('\n');
+
+  const systemPrompt = jwcSystemContext
+    ? `You are a chartering analyst. Be concise (1-2 sentences). No markdown.\n\n${jwcSystemContext}`
+    : 'You are a chartering analyst. Be concise (1-2 sentences). No markdown.';
 
   // βf3-06: race LLM call against a hard timeout so cold-start is bounded.
   const fallback = templateReason(winner, savingsUsd, savingsDays);
@@ -262,7 +267,7 @@ async function llmReason(
     // we still keep the outer race in case callAiText hangs in some other way.
     const aiPromise = callAiText(
       prompt,
-      'You are a chartering analyst. Be concise (1-2 sentences). No markdown.',
+      systemPrompt,
       undefined,
       { timeoutMs: LLM_REASON_TIMEOUT_MS },
     ).then(text => {
@@ -284,6 +289,7 @@ export async function compareRoutes(
   cargo: VoyageInput['cargo'],
   marketRates: { bunkerPriceUsdPerMt: number; euaPriceEur: number },
   daResolver?: DaResolver,
+  jwcSystemContext?: string,
 ): Promise<RouteCompareResult> {
   // βf3-06: timing markers for cold-start profiling
   console.time('cold:distances');
@@ -316,6 +322,7 @@ export async function compareRoutes(
     decision.route,
     decision.savings_usd,
     decision.savings_days,
+    jwcSystemContext,
   );
 
   return {

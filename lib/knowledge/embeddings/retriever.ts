@@ -22,6 +22,9 @@ import { isRagEnabled } from '@/lib/knowledge/flags';
 import type { RetrievedChunk, ChunkMetadata } from '@/lib/knowledge/embeddings/chunks';
 import Database from 'better-sqlite3';
 
+const ALLOWED_VEC_TABLES = ['imsbc_vec', 'igc_vec', 'jwc_vec'] as const;
+const ALLOWED_FTS_TABLES = ['imsbc_fts', 'igc_fts', 'jwc_fts'] as const;
+
 /**
  * Vec0 cosine k-NN retriever (spec-08)
  *
@@ -60,6 +63,10 @@ export function searchVec0(
   // Guard: tableName validation
   if (!tableName || tableName.trim().length === 0) {
     throw new TypeError('tableName required');
+  }
+
+  if (!ALLOWED_VEC_TABLES.includes(tableName as any)) {
+    throw new Error(`Invalid table name: ${tableName}. Must be one of: ${ALLOWED_VEC_TABLES.join(', ')}`);
   }
 
   // Guard: topK validation
@@ -285,6 +292,13 @@ export async function retrieve(
   }
   if (!opts.ftsTable || opts.ftsTable.trim().length === 0) {
     throw new TypeError('ftsTable required');
+  }
+
+  if (!ALLOWED_VEC_TABLES.includes(opts.vectorTable as any)) {
+    throw new Error(`Invalid vectorTable: ${opts.vectorTable}. Must be one of: ${ALLOWED_VEC_TABLES.join(', ')}`);
+  }
+  if (!ALLOWED_FTS_TABLES.includes(opts.ftsTable as any)) {
+    throw new Error(`Invalid ftsTable: ${opts.ftsTable}. Must be one of: ${ALLOWED_FTS_TABLES.join(', ')}`);
   }
 
   // Normalize parameters with defaults and boundary guards

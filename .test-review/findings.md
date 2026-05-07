@@ -1,241 +1,178 @@
-# Phase 3 — Findings
+# findings.md — Phase 3 Adversarial QA
 
-**Date:** 2026-04-28  
-**Reviewer:** test-skill (adversarial QA, cold-start)  
-**Target:** PR #8 wave-alpha → main (`Vitali2011/quantika-demo`)
+# PR #99: claude/rag-phase2-20260507
+
+# Date: 2026-05-07
 
 ---
 
-## CRITICAL
+## FINDING C1: SQL Injection on read path — BLOCK
 
-### BUG-A1-1 — WhatsApp webhook signature — empty `appSecret` auth bypass
+**Severity:** CRITICAL / BLOCK
+**File:** `lib/knowledge/embeddings/retriever.ts` lines ~324, ~338
+**Regression test:** `__tests__/regression/test_retriever_sql_injection.test.ts` — **1 FAIL**
 
-**File:** `lib/whatsapp/signature.ts`  
-**Test:** `tests/regression/test_whatsapp_signature_security.test.ts` — **3 tests FAIL**  
-**Severity:** CRITICAL — auth bypass
+`retrieve()` and `searchVec0()` interpolate `opts.vectorTable` / `opts.ftsTable` directly into SQL
+template literals with NO allowlist. `pipeline.ts` (write path, lines 80–96) has the correct pattern:
 
-**Failing input:**
-```typescript
-// appSecret = "" (env var WHATSAPP_APP_SECRET unset)
-const body = '{"object":"whatsapp_business_account","entry":[...]}';
-const sig = `sha256=${createHmac('sha256', '').update(body).digest('hex')}`;
-verifyWebhookSignature(body, sig, '') // → true (WRONG, expected false)
+```ts
+const ALLOWED_VEC_TABLES = ['imsbc_vec', 'igc_vec', 'jwc_vec'];
+if (!ALLOWED_VEC_TABLES.includes(tableName)) throw new Error(...)
 ```
 
-**Root cause:** `createHmac('sha256', '')` is valid Node.js — HMAC with empty key is a defined operation. The function guards `if (!signature)` but never guards `if (!appSecret)`. Any attacker who sends a webhook with the HMAC computed using an empty key will be authenticated if the server's `WHATSAPP_APP_SECRET` env var is unset/empty.
+The read path has only an empty-string guard — any non-empty payload passes through.
 
-**Fix:**
-```typescript
-export function verifyWebhookSignature(rawBody, signature, appSecret): boolean {
-  if (!signature || !appSecret) return false; // ← add !appSecret guard
-  ...
-}
+**Confirmed exploit (TC-C1-06 FAILS):**
+
+```
+vectorTable = "imsbc_vec UNION SELECT id, secret, NULL, 0.0 FROM sensitive_data"
 ```
 
----
+Produces valid SQL (matching column count), SQLite executes it, injected row returned as a
+`RetrievedChunk` with `content = "api_key=SECRET_TOKEN_12345"`.
 
-## HIGH
-
-### BUG-A2-H4 — Confidence engine — NaN score silently blocks all sends
-
-**File:** `lib/confidence.ts` → `mapConfidenceToLevel`  
-**Test:** `tests/regression/test_confidence_gate_property.test.ts` — **4 tests FAIL**  
-**Severity:** HIGH
-
-**Failing input:** `mapConfidenceToLevel(NaN, false)` → `'uncertain'`
-
-`NaN >= 0.85` and `NaN >= 0.5` are both `false` in JavaScript. A NaN score falls through to `return 'uncertain'`. If the LLM pipeline emits a corrupted JSON number (e.g., `parseFloat("")` or a division by zero in a scoring helper), every field is classified as `uncertain`, setting `blockSend: true` for every match. The user cannot send any quote.
-
-Expected: NaN should map to `'missing'` (field absent/corrupted), same as `null`/`undefined`.
-
-**Fix:** `if (score === null || score === undefined || !Number.isFinite(score)) return 'missing';`
+**Note:** Existing tests `spec-08-F1` and `spec15-CRIT01` pass for the wrong reason — multi-statement
+SQL is rejected by better-sqlite3 at `prepare()` time, not by an allowlist. They do NOT catch
+single-statement UNION injections.
 
 ---
 
-### BUG-A3-1 — EU ETS calculator — negative `vlsfoBurnMt` produces negative cost
+## FINDING C2: Citation validator does not exist — BLOCK
 
-**File:** `lib/economics/ets.ts` → `calculateEuEts`  
-**Test:** `tests/regression/test_economics_edge_cases.test.ts` — **FAIL**  
-**Severity:** HIGH — financial corruption
+**Severity:** CRITICAL / BLOCK
+**File:** `lib/knowledge/citations/validator.ts` — MISSING
 
-**Failing input:** `{ distanceNm: 100, euLegPercent: 0.5, vlsfoBurnMt: -50, euaPrice: 87.5 }`  
-**Actual output:** `{ amountEur: -6811.87, applicable: false }`
+`lib/knowledge/` directory: alerts.ts, bootstrap.ts, distances/, eca/, embeddings/, flags.ts,
+governance.ts, jwc/, sanctions/, sources/, types.ts — **no `citations/` subdirectory exists**.
 
-The guard `distanceNm <= 0 || euLegPercent <= 0` doesn't include `vlsfoBurnMt`. A negative fuel burn bypasses it, producing a negative ETS cost. `applicable: false` is set, but `amountEur` is still a negative number. Downstream aggregators that sum `.amountEur` without checking `.applicable` silently subtract cost from the quote total.
+Full-tree grep for `validateCitations` across `app/` and `lib/`: **zero hits**.
 
-**Fix:** Extend guard: `if (distanceNm <= 0 || euLegPercent <= 0 || vlsfoBurnMt <= 0) return { amountEur: 0, applicable: false };`
+PR #99 claims:
 
----
+- ✗ `lib/knowledge/citations/validator.ts` was created
+- ✗ `validateCitations()` is wired into `app/api/ai/draft-quote/route.ts` after LLM response
 
-### BUG-A3-2 — EU ETS calculator — `euLegPercent > 1.0` not validated
-
-**File:** `lib/economics/ets.ts` → `calculateEuEts`  
-**Test:** `tests/regression/test_economics_edge_cases.test.ts` — **FAIL**  
-**Severity:** HIGH — financial inflation
-
-**Failing input:** `{ distanceNm: 1000, euLegPercent: 2.0, vlsfoBurnMt: 100, euaPrice: 87.5 }`  
-**Actual output:** `{ amountEur: 54495, applicable: true }` (double the legitimate maximum of 27247.5)
-
-Interface comment says `// 0.0–1.0` but no enforcement. A caller passing a percentage as `50` (meaning 50%) instead of `0.50` inflates the ETS charge 50×.
-
-**Fix:** `if (euLegPercent < 0 || euLegPercent > 1.0) throw new RangeError('euLegPercent must be 0–1');` or clamp.
+Both are false. The feature was never written.
 
 ---
 
-### BUG-A3-3 — EU ETS calculator — negative `euaPrice` produces negative cost
+## FINDING C3: compare-routes RAG not wired — BLOCK
 
-**File:** `lib/economics/ets.ts` → `calculateEuEts`  
-**Test:** `tests/regression/test_economics_edge_cases.test.ts` — **FAIL**  
-**Severity:** HIGH — financial corruption (same root as A3-1)
+**Severity:** CRITICAL / BLOCK
+**File:** `app/api/voyage/compare-routes/route.ts`
 
-**Failing input:** `{ distanceNm: 1000, euLegPercent: 0.5, vlsfoBurnMt: 100, euaPrice: -87.5 }`  
-**Actual output:** `{ amountEur: -13623.75, applicable: false }`
+Route only imports `compareRoutes()` from `@/lib/economics/route-decision` and `getPortDa()`.
+Grep for `retrieve|jwc_vec|jwc_fts|searchVec|isRagEnabled` across all `app/api/`: **zero hits**.
 
-EUA prices cannot be negative in the real world. No validation exists.
+PR #99 claims `app/api/ai/compare-routes/route.ts` (wrong path) was modified for JWC retrieval.
+File is at a different path AND has no RAG wiring. Feature not delivered.
 
-**Fix:** Add `euaPrice <= 0` to the early-return guard.
+Additional: `lib/prompts/match.ts` is a pure string constant — no `retrieve()` call, no RAG.
 
 ---
 
-### BUG-A4-1 — Forward parser — unknown message types reach OpenAI API
+## FINDING H1: truncate=true / autoTruncate:false contradiction — HIGH
 
-**File:** `lib/whatsapp/forward-parser.ts` → `parseForwardedMessage`  
-**Test:** `tests/regression/test_forward_parser_edge_cases.test.ts` — **6 tests FAIL**  
-**Severity:** HIGH — cost leakage + unnecessary external calls
+**Severity:** HIGH (data quality)
+**Files:** `lib/knowledge/sources/imsbc/adapter.ts:73`, `lib/knowledge/sources/jwc/adapter.ts:68`,
+`lib/knowledge/embeddings/client.ts`
+**Regression test:** `__tests__/regression/test_adapter_truncation_and_id.test.ts` — 3 GREEN
 
-**Failing message types:** `sticker`, `location`, `reaction`, `video`, `contacts`, `order`
+Both adapters pass `truncate: true` to `embedAndStore()`. BUT `client.ts` line 61 sets
+`autoTruncate: { boolValue: false }` in the actual Vertex AI API call. These contradict:
 
-All fall through the switch with `rawText = ''`. The `callAiJson('', SYSTEM_PROMPT, ...)` call is unconditional — outside the switch. Every unsupported type fires a real OpenAI API call with empty input, discards the result, and returns `confidence: 'uncertain'`. In a production WhatsApp Business account, every sticker or reaction triggers a paid API call.
+- Today: no truncation occurs anywhere (embeddings and stored text are aligned — H1 tests GREEN)
+- Risk: any partial fix that adds client-side truncation will break alignment silently
 
-**Fix:** Add guard after the switch:
-```typescript
-if (!rawText) {
-  return { confidence: 'uncertain', missingFields: ['unsupported message type'], rawText: '' };
-}
+The `truncate: true` flag is a semantic no-op today, creating false confidence in operators.
+
+---
+
+## FINDING H2: JWC ID collision — HIGH
+
+**Severity:** HIGH (silent data loss)
+**File:** `lib/knowledge/sources/jwc/scraper.ts`
+**Regression test:** `__tests__/regression/test_adapter_truncation_and_id.test.ts` — **2 FAIL**
+
+Two collision scenarios:
+
+**Scenario A (timing-dependent):** Trailing-slash URLs (`https://example.com/path/`) cause
+`extractId()` regex `/\/([^\/]+)$/` to return `null`. Fallback: `jwc-${Date.now()}`.
+Two bulletins fetched in the same millisecond → identical ID → last-write-wins.
+
+**Scenario B (deterministic, always reproducible):** Two bulletin pages with the same URL path
+segment (e.g. both end in `index.html`) → `extractId()` returns `"index.html"` for both →
+same ID regardless of timing.
+
+TC-H2-c and TC-H2-d FAIL: `uniqueIds.size = 1, ids.length = 2`.
+
+---
+
+## FINDING H3: Unicode control char injection — HIGH
+
+**Severity:** HIGH (XSS-adjacent, text integrity)
+**File:** `lib/knowledge/sources/imsbc/chunker.ts` lines 47–48
+**Regression test:** `__tests__/regression/test_chunker_entity_decode.test.ts` — **7 FAIL**
+
+`htmlToPlainText()` decodes numeric entities via `String.fromCharCode()` with zero validation:
+
+```ts
+.replace(/&#(\d+);/g,    (_, dec) => String.fromCharCode(parseInt(dec, 10)))
+.replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
 ```
 
----
+All four attack vectors confirmed live (7 tests FAIL):
 
-### BUG-A6-H14 — OpenSanctions — empty vessel name hits external API
+| Vector               | Entity                  | Decoded | Effect                         |
+| -------------------- | ----------------------- | ------- | ------------------------------ |
+| Decimal RTL override | `&#8238;`               | U+202E  | Flips text direction in UI     |
+| NUL byte             | `&#0;`                  | U+0000  | Corrupts SQLite C-land strings |
+| DEL char             | `&#127;`                | U+007F  | Corrupts downstream consumers  |
+| Hex RTL override     | `&#x202E;` / `&#X202E;` | U+202E  | Both hex paths vulnerable      |
 
-**File:** `lib/sanctions/opensanctions.ts` → `searchOpenSanctions`  
-**Test:** `tests/regression/test_sanctions_rtl_trial.test.ts` — **1 test FAIL**  
-**Severity:** HIGH — API quota depletion (1000 req/day free tier)
-
-**Failing input:** `searchOpenSanctions("")`
-
-No early return for empty/blank name. The function hashes `""`, gets a cache miss, and POSTs `{ name: [""] }` to the API. Free tier is 1000 requests/day. Any code path that calls `checkVesselSanctions` with a missing IMO/name (which happens for unmatched vessels) wastes quota.
-
-**Fix:** `if (!name.trim()) return [];` before the `hashQuery` call.
-
----
-
-## MEDIUM
-
-### BUG-A2-H5 — Confidence engine — empty criticalFields silently approves any match
-
-**File:** `lib/confidence.ts` → `computeMatchConfidence`  
-**Test:** `tests/regression/test_confidence_gate_property.test.ts` — **1 test FAIL**  
-**Severity:** MEDIUM — silent footgun
-
-**Input:** `computeMatchConfidence(cargo, vessel, [])`  
-**Output:** `{ level: 'verified', blockSend: false }` — full approval with zero fields checked.
-
-`Array.reduce` identity `'verified'` is returned when the criticalFields array is empty. Any caller that accidentally passes an empty array (filtered result, spread error) gets a silent green light.
-
-**Fix:** `if (criticalFields.length === 0) return { level: 'missing', blockSend: false, blockedFields: [], fieldConfidences: [] };` or throw.
+Fix: strip Bidi controls (U+202A–202E, U+2066–2069, U+200B, U+FEFF) and C0/C1 chars
+(U+0000–001F, U+007F–009F, except `\t`, `\n`, `\r`) after entity decode.
+TC-H3-07 (4 tests GREEN) serve as anti-regression anchors for the fix.
 
 ---
 
-### BUG-A3-4 — War risk — substring false positive on port names
+## MEDIUM findings (documented, no regression tests written)
 
-**File:** `lib/economics/war-risk.ts` → `calculateWarRiskPremium`  
-**Test:** `tests/regression/test_economics_edge_cases.test.ts` — **FAIL**  
-**Severity:** MEDIUM — incorrect premium charged
+**M1:** JWC `extractDate()` accepts invalid calendar dates (`2026-13-32`) via pure regex — no
+`new Date()` validation. Low exploitation surface but can corrupt `upstreamVersion` metadata.
 
-**Failing inputs:**  
-- `fromPort: "Lagoswana"` → contains `"lagos"` → Gulf of Guinea HRA matched → premium charged  
-- `fromPort: "Sindakar"` → contains `"dakar"` → Gulf of Guinea HRA matched → premium charged
+**M2:** Section/bulletin HTTP failures log `.warn()` but return partial results silently. Consumer
+cannot distinguish "got 5 of 50" from "expected 5." No `partialResults` flag.
 
-`String.includes()` has no word-boundary check. Any port name that contains a keyword as a substring triggers the HRA classification.
+**M3:** IMSBC empty ToC HTML → throws; JWC empty listing HTML → returns `[]`. Inconsistent
+failure modes across scraper families.
 
-**Fix:** Use word-boundary regex `/\blagos\b/i` or switch to UN/LOCODE exact matching.
+**M4:** `topK=0` silently becomes 20 (default) in `retrieve()`. Callers expecting 0 results get 20.
 
----
-
-### BUG-A3-5 — War risk — negative `vesselValueUsd` returns negative premium
-
-**File:** `lib/economics/war-risk.ts` → `calculateWarRiskPremium`  
-**Test:** `tests/regression/test_economics_edge_cases.test.ts` — **FAIL**  
-**Severity:** MEDIUM
-
-**Failing input:** `{ fromPort: 'Lagos', toPort: 'Rotterdam', vesselValueUsd: -10_000_000, daysInHra: 5 }`  
-**Actual output:** `{ premiumUsd: -68.49, zones: ['Gulf of Guinea HRA'] }`
-
-A negative vessel value produces a negative premium — effectively a credit. No validation on vessel value sign.
-
-**Fix:** Add `if (vesselValueUsd <= 0) return { premiumUsd: 0, zones: [] };`
+**M5:** `flags.ts` `ftsTableForSource(slug)` has no slug validation — mitigated by pipeline.ts
+allowlist but creates implicit dependency.
 
 ---
 
-## LOW
+## Coverage gaps (meta — for upstream skill improvement)
 
-### BUG-A2-H8 — Confidence engine — Infinity score accepted as `verified`/`inferred`
-
-**File:** `lib/confidence.ts` → `mapConfidenceToLevel`  
-**Test:** `tests/regression/test_confidence_gate_property.test.ts` — **2 tests FAIL**  
-**Severity:** LOW
-
-`Infinity >= 0.85` is `true`. `Infinity` passes as the highest possible confidence score. Realistic risk is low (LLM pipeline scores are 0–1), but a division-by-zero in a scoring utility could produce `Infinity`.
-
-**Fix:** Covered by the `!Number.isFinite(score)` guard in BUG-A2-H4 fix above.
+- dev-pipeline TDD did not catch the allowlist asymmetry (write path tested, read path not tested
+  for UNION injection with matching column count)
+- dev-pipeline did not verify feature delivery against PR description (C2, C3 undetected)
 
 ---
 
-## Coverage gaps (meta-bugs for upstream skills)
+## Totals (PR #99)
 
-None identified. The existing wave-pipeline Phase V integration tests and dev-pipeline TDD tests did not cover:
-- Security properties (empty secret, HMAC bypass)
-- Financial invariants (negative inputs to calculators)
-- AI client call side-effects for unknown message types
-- API quota depletion for empty inputs
+| Severity       | Count          | Tests failing |
+| -------------- | -------------- | ------------- |
+| CRITICAL/BLOCK | 3 (C1, C2, C3) | 1             |
+| HIGH           | 3 (H1, H2, H3) | 9             |
+| MEDIUM         | 5              | 0             |
+| **Total**      | **11**         | **10**        |
 
-These are property/adversarial classes that are outside the scope of standard TDD and integration checks — this is expected per test-skill's remit.
+Regression test files written:
 
----
-
-## Confirmed clean (no bugs found)
-
-| Module | Result |
-|---|---|
-| Migration version uniqueness (versions 1–7) | PASS — collision fix verified |
-| `detectTextDirection` — boundary/edge cases | PASS |
-| `daysRemaining` — clock skew, expiry clamp | PASS |
-| HMAC wrong prefix, length mismatch | PASS |
-| Confidence score boundary 0.5 / 0.4999 | PASS |
-| War risk double-zone counting | PASS |
-| OpenSanctions cache TTL eviction | PASS |
-| `msg.text.body = undefined` in forward parser | PASS |
-
----
-
-## Totals
-
-| Severity | Count |
-|---|---|
-| CRITICAL | 1 |
-| HIGH | 5 |
-| MEDIUM | 3 |
-| LOW | 1 |
-| **Total** | **10** |
-
-Failing tests by file:
-
-| Test file | Failing | Total |
-|---|---|---|
-| `test_whatsapp_signature_security.test.ts` | 3 | 12 |
-| `test_confidence_gate_property.test.ts` | 7 | 28 |
-| `test_economics_edge_cases.test.ts` | 7 | 23 |
-| `test_forward_parser_edge_cases.test.ts` | 6 | 9 |
-| `test_sanctions_rtl_trial.test.ts` | 1 | 12 |
-| **Total** | **24** | **84** |
+- `__tests__/regression/test_retriever_sql_injection.test.ts` — 6 tests, 1 FAIL
+- `__tests__/regression/test_adapter_truncation_and_id.test.ts` — 7 tests, 2 FAIL
+- `__tests__/regression/test_chunker_entity_decode.test.ts` — 17 tests, 7 FAIL

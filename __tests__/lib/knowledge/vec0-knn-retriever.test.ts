@@ -121,12 +121,12 @@ describe("searchVec0() vec0 cosine k-NN retriever (spec-08)", () => {
       }).toThrow("topK must be a positive integer");
     });
 
-    it("TC-NBI-07: unknown table → SQLite throws error", () => {
+    it("TC-NBI-07: unknown table → allowlist rejects before SQLite", () => {
       const embedding = new Float32Array(768).fill(0.1);
 
       expect(() => {
         searchVec0(embedding, "nonexistent_vec", 5, db);
-      }).toThrow(/no such table/i);
+      }).toThrow(/invalid table name/i);
     });
 
     it("TC-NBI-08: KNOWLEDGE_RAG_ENABLED=false → throws Error", () => {
