@@ -226,17 +226,19 @@ function normalizeDate(dateStr: string): string {
 }
 
 function extractId(html: string, sourceUrl: string): string | null {
-  const idMatch = /JWLA-(\d+)/i.exec(html);
-  if (idMatch) {
-    return `JWLA-${idMatch[1]}`;
+  const htmlMatch = /JWLA-(\d+)/i.exec(html);
+  if (htmlMatch) {
+    return `JWLA-${htmlMatch[1]}`;
   }
 
-  const GENERIC_SEGMENTS = new Set(['index.html', 'index.htm', 'index.php', 'default.html']);
-  const urlMatch = /\/([^\/]+)$/.exec(sourceUrl);
-  if (urlMatch && !GENERIC_SEGMENTS.has(urlMatch[1])) {
-    return urlMatch[1];
+  // Also check the URL itself (e.g. /bulletins/JWLA-2025-001)
+  const urlMatch = /JWLA-([\w-]+)/i.exec(sourceUrl);
+  if (urlMatch) {
+    return `JWLA-${urlMatch[1]}`;
   }
-  return null;
+
+  // Hash the full URL so two bulletins at different paths are always unique
+  return createHash('sha256').update(sourceUrl).digest('hex').slice(0, 16);
 }
 
 function htmlToPlainText(html: string): string {
