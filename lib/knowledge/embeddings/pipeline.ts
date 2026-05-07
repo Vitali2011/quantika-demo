@@ -95,6 +95,9 @@ export async function embedAndStore(
     }
   }
 
+  if (providedDb === null) {
+    throw new Error('Database instance required');
+  }
   const db = providedDb ?? getDb();
 
   // Process in batches of MAX_BATCH_SIZE
@@ -122,7 +125,10 @@ export async function embedAndStore(
       // Convert Float32Array to JSON array string for vec0
       const embeddingJson = JSON.stringify(Array.from(embedding));
 
-      const metadataJson = JSON.stringify(chunk.metadata);
+      // Normalize NaN/Infinity to 0 to prevent silent JSON corruption (NaN → null)
+      const metadataJson = JSON.stringify(chunk.metadata, (_key, value) =>
+        typeof value === 'number' && !Number.isFinite(value) ? 0 : value
+      );
 
       // Insert into vec0 table
       stmt.run({

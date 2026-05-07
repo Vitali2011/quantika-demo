@@ -29,7 +29,7 @@ describe('embedAndStore dryRun guard', () => {
     db = new Database(':memory:');
     sqliteVec.load(db);
     db.exec(`
-      CREATE VIRTUAL TABLE test_vec USING vec0(
+      CREATE VIRTUAL TABLE imsbc_vec USING vec0(
         content TEXT,
         metadata TEXT,
         embedding FLOAT[768]
@@ -64,14 +64,14 @@ describe('embedAndStore dryRun guard', () => {
       { content: 'test chunk', metadata: { source: 'test' } },
     ];
 
-    await embedAndStore(chunks, { tableName: 'test_vec', db });
+    await embedAndStore(chunks, { tableName: 'imsbc_vec', db });
 
     // dryRun=undefined → default false → embedDocuments called
     expect(mockEmbedDocuments).toHaveBeenCalledTimes(1);
     expect(mockEmbedDocuments).toHaveBeenCalledWith(['test chunk']);
 
     // Verify INSERT executed
-    const row = db.prepare('SELECT COUNT(*) as count FROM test_vec').get() as { count: number };
+    const row = db.prepare('SELECT COUNT(*) as count FROM imsbc_vec').get() as { count: number };
     expect(row.count).toBe(1);
   });
 
@@ -133,7 +133,7 @@ describe('embedAndStore dryRun guard', () => {
   test('TC-NBI-06: large batch (300 chunks) with dryRun logs count without error', async () => {
     const chunks: Chunk[] = Array.from({ length: 300 }, (_, i) => ({
       content: `chunk ${i}`,
-      metadata: { index: i },
+      metadata: { source: 'test', index: i },
     }));
 
     await embedAndStore(chunks, { tableName: 'test_vec', dryRun: true, db });
@@ -149,8 +149,8 @@ describe('embedAndStore dryRun guard', () => {
   // Structured JSON logging validation
   test('dryRun=true logs structured JSON with all required fields', async () => {
     const chunks: Chunk[] = [
-      { content: 'chunk1', metadata: { id: 1 } },
-      { content: 'chunk2', metadata: { id: 2 } },
+      { content: 'chunk1', metadata: { source: 'test', id: 1 } },
+      { content: 'chunk2', metadata: { source: 'test', id: 2 } },
     ];
 
     await embedAndStore(chunks, { tableName: 'test_vec', dryRun: true, db });
@@ -173,12 +173,12 @@ describe('embedAndStore dryRun guard', () => {
       { content: 'test chunk', metadata: { source: 'test' } },
     ];
 
-    await embedAndStore(chunks, { tableName: 'test_vec', dryRun: false, db });
+    await embedAndStore(chunks, { tableName: 'imsbc_vec', dryRun: false, db });
 
     // Full pipeline executes
     expect(mockEmbedDocuments).toHaveBeenCalledTimes(1);
 
-    const row = db.prepare('SELECT COUNT(*) as count FROM test_vec').get() as { count: number };
+    const row = db.prepare('SELECT COUNT(*) as count FROM imsbc_vec').get() as { count: number };
     expect(row.count).toBe(1);
 
     // No dry-run log emitted
