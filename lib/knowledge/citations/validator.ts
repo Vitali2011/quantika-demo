@@ -15,7 +15,7 @@ export function validateCitations(
 ): string {
   // Regex to match citation tags in 3 formats:
   // [Source: IMSBC §X.Y]   or   [Source: IGC X.Y]   or   [JWC-bulletinId]
-  const CITATION_PATTERN = /\[(?:Source:\s*(IMSBC|IGC)\s*§?([\w.]+)|JWC-([\w-]+))\]/g;
+  const CITATION_PATTERN = /\[(?:Source:\s*(IMSBC|IGC)\s*§?([\w.]+)|JWC-([\w-]+))\]/gi;
 
   return llmResponse.replace(CITATION_PATTERN, (fullMatch, sourceType, sectionRef, bulletinId) => {
     if (bulletinId) {
