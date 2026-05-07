@@ -144,4 +144,86 @@ describe('scrapeJwc', () => {
       consoleWarnSpy.mockRestore();
     });
   });
+
+  describe('Integration: full scrape flow', () => {
+    it('should scrape multiple bulletins and return sorted results', async () => {
+      global.fetch = jest.fn()
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          text: async () => `
+            <a href="/bulletins/jwla-033">JWLA-033</a>
+            <a href="/bulletins/jwla-032">JWLA-032</a>
+            <a href="/bulletins/jwla-031">JWLA-031</a>
+          `,
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          text: async () => `
+            <h1>Hull War Perils - JWLA-033</h1>
+            <time>2026-03-03</time>
+            <p>Red Sea and Gulf of Aden</p>
+          `,
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          text: async () => `
+            <h1>Updated Listed Areas - JWLA-032</h1>
+            <time>2026-02-15</time>
+            <p>Persian Gulf waters</p>
+          `,
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          text: async () => `
+            <h1>Listed Areas Amendment - JWLA-031</h1>
+            <time>2026-01-10</time>
+            <p>Strait of Hormuz</p>
+          `,
+        });
+
+      const result = await scrapeJwc('https://example.com/jwc');
+
+      expect(result).toHaveLength(3);
+      expect(result[0].publishDate).toBe('2026-03-03');
+      expect(result[1].publishDate).toBe('2026-02-15');
+      expect(result[2].publishDate).toBe('2026-01-10');
+      expect(result[0].id).toContain('JWLA-033');
+      expect(result[0].title).toContain('Hull War Perils');
+      expect(result[0].rawText).toContain('Red Sea');
+      expect(result[0].sourceUrl).toBe('https://example.com/bulletins/jwla-033');
+    });
+
+    it('should verify output field types and structure', async () => {
+      global.fetch = jest.fn()
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          text: async () => '<a href="/bulletin1">Test</a>',
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          text: async () => '<h1>Test</h1><time>2026-03-03</time><p>Content</p>',
+        });
+
+      const result = await scrapeJwc('https://example.com/jwc');
+
+      expect(result).toHaveLength(1);
+      const bulletin = result[0];
+      expect(typeof bulletin.id).toBe('string');
+      expect(typeof bulletin.publishDate).toBe('string');
+      expect(typeof bulletin.title).toBe('string');
+      expect(typeof bulletin.rawText).toBe('string');
+      expect(typeof bulletin.sourceUrl).toBe('string');
+      expect(bulletin.id.length).toBeGreaterThan(0);
+      expect(bulletin.publishDate.length).toBeGreaterThan(0);
+      expect(bulletin.title.length).toBeGreaterThan(0);
+      expect(bulletin.rawText.length).toBeGreaterThan(0);
+      expect(bulletin.sourceUrl).toMatch(/^https?:\/\//);
+    });
+  });
 });
