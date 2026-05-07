@@ -352,6 +352,116 @@ describe('CLEAN: computeCostUsd edge cases', () => {
   });
 });
 
+// ─── SPEC-16: Double-close guard and cross-slug isolation ────────────────────
+
+describe('SPEC-16: Double-close guard (spec-16 req 5)', () => {
+  it('reportSyncSuccess twice with same syncLogId throws', () => {
+    const db = freshDb();
+    seedSource(db);
+    const syncLogId = reportSyncStarted(db, 'test-src');
+
+    // First call succeeds
+    reportSyncSuccess(db, syncLogId, { rowsChanged: 10 });
+
+    // Second call should throw (cannot close already-closed log)
+    expect(() => reportSyncSuccess(db, syncLogId, { rowsChanged: 20 }))
+      .toThrow(/Cannot close sync_log id=\d+: already closed with status 'success'/);
+  });
+
+  it('reportSyncFailure twice with same syncLogId throws', () => {
+    const db = freshDb();
+    seedSource(db);
+    const syncLogId = reportSyncStarted(db, 'test-src');
+
+    // First call succeeds
+    reportSyncFailure(db, syncLogId, new Error('first failure'));
+
+    // Second call should throw (cannot close already-closed log)
+    expect(() => reportSyncFailure(db, syncLogId, new Error('second failure')))
+      .toThrow(/Cannot close sync_log id=\d+: already closed with status 'failure'/);
+  });
+
+  it('reportSyncSuccess after reportSyncFailure throws (re-close after failure)', () => {
+    const db = freshDb();
+    seedSource(db);
+    const syncLogId = reportSyncStarted(db, 'test-src');
+
+    // First: failure
+    reportSyncFailure(db, syncLogId, new Error('failure'));
+
+    // Then: success (re-close) should throw
+    expect(() => reportSyncSuccess(db, syncLogId, { rowsChanged: 5 }))
+      .toThrow(/Cannot close sync_log id=\d+: already closed with status 'failure'/);
+  });
+
+  it('reportSyncFailure after reportSyncSuccess throws (re-close after success)', () => {
+    const db = freshDb();
+    seedSource(db);
+    const syncLogId = reportSyncStarted(db, 'test-src');
+
+    // First: success
+    reportSyncSuccess(db, syncLogId, { rowsChanged: 10 });
+
+    // Then: failure (re-close) should throw
+    expect(() => reportSyncFailure(db, syncLogId, new Error('late failure')))
+      .toThrow(/Cannot close sync_log id=\d+: already closed with status 'success'/);
+  });
+});
+
+describe('SPEC-16: Cross-slug isolation (spec-16 req 5)', () => {
+  it('failure on slug-A does not affect slug-B status', () => {
+    const db = freshDb();
+    seedSource(db, 'slug-a');
+    seedSource(db, 'slug-b');
+
+    // Fail slug-a twice (trigger alert threshold)
+    const idA1 = reportSyncStarted(db, 'slug-a');
+    reportSyncFailure(db, idA1, new Error('fail-a-1'));
+    const idA2 = reportSyncStarted(db, 'slug-a');
+    reportSyncFailure(db, idA2, new Error('fail-a-2'));
+
+    // Succeed slug-b
+    const idB = reportSyncStarted(db, 'slug-b');
+    reportSyncSuccess(db, idB, { rowsChanged: 50 });
+
+    const sourceA = db.prepare(
+      "SELECT status, consecutive_failures FROM knowledge_sources WHERE slug = 'slug-a'"
+    ).get() as any;
+    const sourceB = db.prepare(
+      "SELECT status, consecutive_failures FROM knowledge_sources WHERE slug = 'slug-b'"
+    ).get() as any;
+
+    // slug-a: failed with 2 consecutive failures
+    expect(sourceA.status).toBe('failed');
+    expect(sourceA.consecutive_failures).toBe(2);
+
+    // slug-b: fresh with 0 failures (not affected by slug-a's failures)
+    expect(sourceB.status).toBe('fresh');
+    expect(sourceB.consecutive_failures).toBe(0);
+  });
+
+  it('success on slug-A does not reset consecutive_failures on slug-B', () => {
+    const db = freshDb();
+    seedSource(db, 'slug-a');
+    seedSource(db, 'slug-b');
+
+    // Fail slug-b once
+    const idB = reportSyncStarted(db, 'slug-b');
+    reportSyncFailure(db, idB, new Error('fail-b'));
+
+    // Succeed slug-a
+    const idA = reportSyncStarted(db, 'slug-a');
+    reportSyncSuccess(db, idA, { rowsChanged: 100 });
+
+    const sourceB = db.prepare(
+      "SELECT consecutive_failures FROM knowledge_sources WHERE slug = 'slug-b'"
+    ).get() as any;
+
+    // slug-b's consecutive_failures should remain 1 (not reset by slug-a's success)
+    expect(sourceB.consecutive_failures).toBe(1);
+  });
+});
+
 // ─── CLEAN: KNOWLEDGE_REGISTRY slug uniqueness ───────────────────────────────
 
 describe('CLEAN: KNOWLEDGE_REGISTRY slug uniqueness', () => {
