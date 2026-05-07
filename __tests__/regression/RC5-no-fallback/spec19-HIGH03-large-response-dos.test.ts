@@ -37,23 +37,9 @@ describe('regression spec19-HIGH03: large response DoS', () => {
       text: async () => hugeHtml,
     });
 
-    // Current implementation will attempt to load entire 125MB into memory.
-    // Expected behavior: Should timeout OR have size limit guard.
-    // Actual behavior: Will succeed (bug), but may be slow.
-
-    // We can't easily test OOM in unit tests, but we can verify NO size guard exists.
-    // This test documents the vulnerability.
-    const start = Date.now();
-    const bulletins = await scrapeJwc('https://evil-mirror.com/jwc');
-    const elapsed = Date.now() - start;
-
-    // If it completes without error, the bug exists (no size limit).
-    // A proper implementation would reject before reading the body.
-    expect(elapsed).toBeLessThan(5000); // Should not take 5+ seconds for in-memory mock
-
-    // NOTE: This test PASSES on buggy code (no size limit).
-    // To make it RED (failing), we need to assert the OPPOSITE of current behavior.
-    // Since we can't crash the test process, we document the issue.
+    // The scraper now has a 10MB body size limit.
+    // A 125MB response body should be rejected.
+    await expect(scrapeJwc('https://evil-mirror.com/jwc')).rejects.toThrow(/too large/i);
   }, 10000); // 10s timeout for this test
 
   it('should reject listing page with huge Content-Length header', async () => {
@@ -85,9 +71,8 @@ describe('regression spec19-HIGH03: large response DoS', () => {
     // Current implementation will load 100MB bulletin into memory
     const bulletins = await scrapeJwc('https://evil.com/jwc');
 
-    // Bug: No size limit, so huge bulletin is processed
-    // Expected: Should skip or reject bulletins > size limit
-    expect(bulletins).toHaveLength(1); // Currently succeeds (bug)
+    // Fixed: huge bulletin exceeds 10MB limit, is skipped gracefully
+    expect(bulletins).toHaveLength(0);
   }, 10000);
 
   it('should handle 10,000 bulletin links without memory exhaustion', async () => {

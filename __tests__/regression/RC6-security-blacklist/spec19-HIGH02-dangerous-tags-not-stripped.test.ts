@@ -51,9 +51,10 @@ describe('regression spec19-HIGH02: dangerous tags not stripped', () => {
 
     const bulletins = await scrapeJwc('https://example.com/jwc');
 
-    // iframe tag should be fully removed from rawText
-    expect(bulletins[0].rawText).not.toContain('iframe');
+    // iframe tag attributes (harmful URLs) should be stripped
+    // Note: the word 'iframe' in h1 title is fine — we check harmful content
     expect(bulletins[0].rawText).not.toContain('evil.com');
+    expect(bulletins[0].rawText).not.toContain('xss.html');
     expect(bulletins[0].rawText).toContain('Content before');
     expect(bulletins[0].rawText).toContain('Content after');
   });
@@ -76,8 +77,9 @@ describe('regression spec19-HIGH02: dangerous tags not stripped', () => {
 
     const bulletins = await scrapeJwc('https://example.com/jwc');
 
-    expect(bulletins[0].rawText).not.toContain('object');
+    // 'object' appears in title 'Bulletin with object' — check harmful content only
     expect(bulletins[0].rawText).not.toContain('evil.com');
+    expect(bulletins[0].rawText).not.toContain('malware.swf');
   });
 
   it('embed tags should not appear in rawText', async () => {
@@ -98,8 +100,9 @@ describe('regression spec19-HIGH02: dangerous tags not stripped', () => {
 
     const bulletins = await scrapeJwc('https://example.com/jwc');
 
-    expect(bulletins[0].rawText).not.toContain('embed');
+    // 'embed' appears in title 'Bulletin with embed' — check harmful content only
     expect(bulletins[0].rawText).not.toContain('evil.com');
+    expect(bulletins[0].rawText).not.toContain('plugin.jar');
   });
 
   it('SVG with script should not execute or appear in rawText', async () => {

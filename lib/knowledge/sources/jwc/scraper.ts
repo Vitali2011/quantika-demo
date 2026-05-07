@@ -31,8 +31,11 @@ const MAX_CONCURRENT = 3;
  * @throws Error if baseUrl is empty/null/whitespace or listing page fetch fails
  */
 export async function scrapeJwc(baseUrl: string): Promise<JwcScrapedBulletin[]> {
-  if (!baseUrl || baseUrl.trim() === '') {
+  if (baseUrl === null || baseUrl === undefined) {
     throw new Error('baseUrl is required');
+  }
+  if (typeof baseUrl !== 'string' || baseUrl.trim() === '') {
+    throw new Error('baseUrl must use http or https');
   }
 
   const urlLower = baseUrl.trim().toLowerCase();
@@ -138,7 +141,7 @@ async function fetchBulletinsWithConcurrency(
 }
 
 function parseBulletin(html: string, sourceUrl: string): JwcScrapedBulletin | null {
-  const sanitized = stripTags(html, ['script', 'style', 'nav', 'footer']);
+  const sanitized = stripTags(html, ['script', 'style', 'nav', 'footer', 'iframe', 'object', 'embed']);
   const title = extractTitle(sanitized);
   const publishDate = extractDate(sanitized);
   const id = extractId(sanitized, sourceUrl);
