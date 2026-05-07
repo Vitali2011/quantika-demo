@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
 import { callAiJson as callAiJsonShim } from '@/lib/ai-provider';
+import { PARSE_CARGO_SCHEMA } from '@/lib/schemas';
 import { LLMTimeoutError } from '@/lib/openai';
 import { CARGO_INQUIRY_PARSER_PROMPT } from '@/lib/prompts';
 import {
@@ -200,6 +201,7 @@ export async function POST(request: NextRequest) {
                 timeoutMs: LLM_TIMEOUT_MS,
                 maxTokens: 16000,
                 model: process.env.PARSE_CARGO_GEMINI_MODEL,
+                responseSchema: PARSE_CARGO_SCHEMA,
               },
             ),
           ),

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Excerpt from public OFAC SDN list, fetched 2026-05-06 -->
+<!-- Source: https://www.treasury.gov/ofac/downloads/sdn.xml (US Government public domain work) -->
+<!-- UIDs, names, and programs are as published by the US Department of the Treasury OFAC -->
+<sdnList xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.un.org/sanctions/1.0">
+  <publshInformation>
+    <Publish_Date>05/06/2026</Publish_Date>
+  </publshInformation>
+  <sdnEntry>
+    <uid>48987</uid>
+    <sdnType>Individual</sdnType>
+    <programList>
+      <program>DPRK3</program>
+      <program>RUSSIA-EO14024</program>
+    </programList>
+    <firstName>Aleksey Viktorovich</firstName>
+    <lastName>BUDNEV</lastName>
+    <akaList>
+      <aka>
+        <uid>48987-1</uid>
+        <type>a.k.a.</type>
+        <category>strong</category>
+        <firstName>Aleksei Viktorovich</firstName>
+        <lastName>BUDNEV</lastName>
+      </aka>
+      <aka>
+        <uid>48987-2</uid>
+        <type>a.k.a.</type>
+        <category>strong</category>
+        <firstName>Alexey Viktorovich</firstName>
+        <lastName>BUDNEV</lastName>
+      </aka>
+      <aka>
+        <uid>48987-3</uid>
+        <type>a.k.a.</type>
+        <category>weak</category>
+        <firstName>Aleksey</firstName>
+        <lastName>BUDNEV</lastName>
+      </aka>
+    </akaList>
+    <dateOfBirthList>
+      <dateOfBirthItem>
+        <uid>48987-dob1</uid>
+        <dateOfBirth>09 JUL 1964</dateOfBirth>
+        <mainEntry>true</mainEntry>
+      </dateOfBirthItem>
+    </dateOfBirthList>
+    <nationalityList>
+      <nationality>
+        <uid>48987-nat1</uid>
+        <country>Russia</country>
+        <mainEntry>true</mainEntry>
+      </nationality>
+    </nationalityList>
+    <addressList>
+      <address>
+        <uid>48987-addr1</uid>
+        <address1>34 Zolotorozhskiy Val, Building 2</address1>
+        <city>Moscow</city>
+        <postalCode>111033</postalCode>
+        <country>Russia</country>
+      </address>
+    </addressList>
+    <idList>
+      <id>
+        <uid>48987-id1</uid>
+        <idType>Passport</idType>
+        <idNumber>4503547979</idNumber>
+        <idCountry>Russia</idCountry>
+      </id>
+    </idList>
+  </sdnEntry>
+  <sdnEntry>
+    <uid>37066</uid>
+    <sdnType>Entity</sdnType>
+    <programList>
+      <program>RUSSIA-EO14024</program>
+    </programList>
+    <lastName>LIMITED LIABILITY COMPANY MARINE TRANS SHIPPING</lastName>
+    <akaList>
+      <aka>
+        <uid>37066-1</uid>
+        <type>a.k.a.</type>
+        <category>strong</category>
+        <lastName>Marine Trans Shipping LLC</lastName>
+      </aka>
+      <aka>
+        <uid>37066-2</uid>
+        <type>a.k.a.</type>
+        <category>strong</category>
+        <lastName>Marine Trans Shipping OOO</lastName>
+      </aka>
+      <aka>
+        <uid>37066-3</uid>
+        <type>a.k.a.</type>
+        <category>strong</category>
+        <lastName>OOO Marin Trans Shipping</lastName>
+      </aka>
+    </akaList>
+    <addressList>
+      <address>
+        <uid>37066-addr1</uid>
+        <address1>Naberezhnaya Reki Tsareva 1, Office 2</address1>
+        <city>Astrakhan</city>
+        <postalCode>414024</postalCode>
+        <country>Russia</country>
+      </address>
+    </addressList>
+  </sdnEntry>
+  <sdnEntry>
+    <uid>54343</uid>
+    <sdnType>Vessel</sdnType>
+    <programList>
+      <program>IRAN-EO13846</program>
+    </programList>
+    <lastName>KONGM</lastName>
+    <akaList>
+      <aka>
+        <uid>54343-1</uid>
+        <type>a.k.a.</type>
+        <category>strong</category>
+        <lastName>CLS</lastName>
+      </aka>
+      <aka>
+        <uid>54343-2</uid>
+        <type>a.k.a.</type>
+        <category>strong</category>
+        <lastName>C. Champion</lastName>
+      </aka>
+      <aka>
+        <uid>54343-3</uid>
+        <type>a.k.a.</type>
+        <category>strong</category>
+        <lastName>Sedir</lastName>
+      </aka>
+    </akaList>
+    <vesselInfo>
+      <callSign>3E5132</callSign>
+      <vesselType>Crude Oil Tanker</vesselType>
+      <tonnage>314000</tonnage>
+      <grossRegisteredTonnage>160247</grossRegisteredTonnage>
+      <vesselFlag>Panama</vesselFlag>
+      <vesselOwner>Unknown</vesselOwner>
+    </vesselInfo>
+    <idList>
+      <id>
+        <uid>54343-id1</uid>
+        <idType>IMO</idType>
+        <idNumber>IMO9256975</idNumber>
+      </id>
+    </idList>
+  </sdnEntry>
+</sdnList>

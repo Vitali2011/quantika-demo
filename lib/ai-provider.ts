@@ -34,6 +34,13 @@ export interface AiOpts {
    * Enabling this increases cost 2-3× but improves reasoning quality.
    */
   thinkingBudget?: number;
+  /**
+   * Gemini structured-output schema (Vertex AI `responseSchema`).
+   * When provided AND provider=gemini, the SDK sends `responseMimeType:
+   * 'application/json'` + `responseSchema` — guaranteeing valid JSON
+   * without markdown fences. Ignored for other providers.
+   */
+  responseSchema?: Record<string, unknown>;
 }
 
 export interface ImageInput {
@@ -84,8 +91,15 @@ const COST_TABLE_PER_M_TOKENS: Record<string, { in: number; out: number }> = {
   // Deep Think suffix is used by the eval script to track thinkingBudget runs separately in ai_audit.
   // Billing rate is the same underlying model, but output token usage is higher in practice (2-3×).
   'gemini:gemini-2.5-pro-deepthink': { in: 1.25, out: 5.0 },
-  'bedrock:us.anthropic.claude-opus-4-7-20260415-v1:0': { in: 15, out: 75 },
-  'bedrock:us.anthropic.claude-sonnet-4-6-20260101-v1:0': { in: 3, out: 15 },
+  // Claude Opus 4.7 — AWS Bedrock cross-region inference profiles (no date suffix starting Opus 4.x)
+  'bedrock:us.anthropic.claude-opus-4-7': { in: 15, out: 75 },
+  'bedrock:eu.anthropic.claude-opus-4-7': { in: 15, out: 75 },
+  'bedrock:global.anthropic.claude-opus-4-7': { in: 15, out: 75 },
+  // Claude Sonnet 4.6 — cost-optimized alternative: ~5× cheaper than Opus 4.7
+  // Use case: per-scope override via MATCH_BEDROCK_MODEL=us.anthropic.claude-sonnet-4-6
+  'bedrock:us.anthropic.claude-sonnet-4-6': { in: 3, out: 15 },
+  'bedrock:eu.anthropic.claude-sonnet-4-6': { in: 3, out: 15 },
+  'bedrock:global.anthropic.claude-sonnet-4-6': { in: 3, out: 15 },
 };
 
 export function computeCostUsd(
@@ -193,7 +207,7 @@ export function getModel(scope: string): string {
     case 'gemini':
       return process.env.AI_MODEL_GEMINI_DEFAULT ?? 'gemini-2.5-flash';
     case 'bedrock':
-      return process.env.BEDROCK_MODEL_ID ?? 'us.anthropic.claude-opus-4-7-20260415-v1:0';
+      return process.env.BEDROCK_MODEL_ID ?? 'us.anthropic.claude-opus-4-7';
     case 'openai':
     default:
       return process.env.AI_MODEL_HEAVY ?? 'gpt-5.5';
@@ -264,6 +278,8 @@ async function callGeminiText(
           config?: {
             systemInstruction?: string;
             thinkingConfig?: { thinkingBudget: number; includeThoughts: boolean };
+            responseMimeType?: string;
+            responseSchema?: Record<string, unknown>;
           };
         }) => Promise<{ text: string; usageMetadata?: GeminiUsageMetadata }>;
       };
@@ -276,24 +292,31 @@ async function callGeminiText(
     location: process.env.GOOGLE_CLOUD_LOCATION ?? 'us-central1',
   });
 
-  // Build config — only add thinkingConfig when caller explicitly requests it.
-  // Omitting thinkingConfig entirely → Gemini uses default (minimal thinking for Pro).
-  const callConfig: {
+  // Build config — handle both Deep Think (thinkingConfig) and structured output (responseSchema).
+  // Each is opt-in: omit thinkingConfig → default Pro behavior; omit responseSchema → free-form text.
+  const config: {
     systemInstruction?: string;
     thinkingConfig?: { thinkingBudget: number; includeThoughts: boolean };
+    responseMimeType?: string;
+    responseSchema?: Record<string, unknown>;
   } = { systemInstruction: system };
 
   if (opts?.thinkingBudget !== undefined) {
-    callConfig.thinkingConfig = {
+    config.thinkingConfig = {
       thinkingBudget: opts.thinkingBudget,
       includeThoughts: false, // Keep response clean — thoughts are internal only
     };
   }
 
+  if (opts?.responseSchema) {
+    config.responseMimeType = 'application/json';
+    config.responseSchema = opts.responseSchema;
+  }
+
   const response = await ai.models.generateContent({
     model,
     contents: [{ role: 'user', parts: [{ text: user }] }],
-    config: callConfig,
+    config,
   });
 
   return { text: response.text ?? '', usage: extractGeminiUsage(response.usageMetadata) };
@@ -476,8 +499,11 @@ export async function callAiJson<T>(
       case 'gemini': {
         const r = await callGeminiText(system, user, model, opts);
         usage = r.usage;
-        const cleaned = r.text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
-        result = JSON.parse(cleaned) as T;
+        // When responseSchema is provided, Gemini returns clean JSON — no fences.
+        const raw = opts?.responseSchema
+          ? r.text.trim()
+          : r.text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
+        result = JSON.parse(raw) as T;
         break;
       }
       case 'bedrock': {

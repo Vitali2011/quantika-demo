@@ -1,0 +1,41 @@
+regulation: MARPOL Annex VI
+source_url: https://www.imo.org/en/OurWork/Environment/Pages/Sulphur-oxides-(SOx)-%E2%80%93-Regulation-14.aspx
+fetched_at: "2026-05-06"
+# Sulphur limit inside ECAs: 0.10% m/m (vs 0.50% global cap outside ECAs)
+
+zones:
+  - zone_id: north-sea
+    name: "North Sea Emission Control Area"
+    region: north-sea
+    fuel_sulphur_max_pct: 0.10
+    effective_from: "2007-11-22"
+    resolution: "MEPC.176(58)"
+    polygon_geojson: |
+      {"type":"Polygon","coordinates":[[[5.0,62.0],[-4.0,62.0],[-4.0,57.5],[0.5,51.0],[5.0,51.0],[8.5,54.5],[8.5,57.0],[5.0,62.0]]]}
+
+  - zone_id: baltic-sea
+    name: "Baltic Sea Emission Control Area"
+    region: baltic-sea
+    fuel_sulphur_max_pct: 0.10
+    effective_from: "2006-08-19"
+    resolution: "MEPC.132(53)"
+    polygon_geojson: |
+      {"type":"Polygon","coordinates":[[[9.0,57.4],[10.9,55.8],[13.8,53.9],[22.0,54.4],[26.0,59.9],[28.2,59.5],[30.2,60.0],[24.0,65.7],[17.0,60.7],[11.0,58.6],[9.0,57.4]]]}
+
+  - zone_id: north-america
+    name: "North American Emission Control Area"
+    region: north-america
+    fuel_sulphur_max_pct: 0.10
+    effective_from: "2012-08-01"
+    resolution: "MEPC.190(60)"
+    polygon_geojson: |
+      {"type":"Polygon","coordinates":[[[-50.0,43.5],[-65.82,42.5],[-67.16,44.68],[-67.79,45.13],[-60.0,46.5],[-64.92,47.53],[-61.0,49.25],[-50.0,50.0],[-50.0,43.5]]]}
+
+  - zone_id: mediterranean
+    name: "Mediterranean Sea Emission Control Area for SOx and PM"
+    region: mediterranean
+    fuel_sulphur_max_pct: 0.10
+    effective_from: "2025-05-01"
+    resolution: "MEPC.361(79)"
+    polygon_geojson: |
+      {"type":"Polygon","coordinates":[[[-5.3,36.0],[9.5,37.0],[18.5,40.4],[26.0,40.9],[36.0,41.4],[36.0,30.0],[32.3,31.3],[25.0,34.0],[10.0,37.0],[-5.3,36.0]]]}

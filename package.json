@@ -15,12 +15,23 @@
     "test:smoke:tier1": "playwright test --config=__tests__/e2e/playwright.config.smoke.ts smoke/tier1-health.spec.ts",
     "test:e2e": "playwright test",
     "build:extension": "cd extensions/gmail && npm install --no-audit --no-fund --silent && npm run build",
+    "knowledge:status": "npx tsx scripts/knowledge/status.ts",
+    "knowledge:refresh": "npx tsx scripts/knowledge/refresh.ts",
+    "knowledge:imsbc": "npx tsx scripts/knowledge-imsbc-embed.ts",
+    "knowledge:jwc": "npx tsx scripts/knowledge-jwc-embed.ts",
+    "bake-off": "tsx scripts/wave-gamma-bake-off/cli.ts",
+    "bake-off:redecide": "tsx scripts/wave-gamma-bake-off/redecide.ts",
+    "bake-off:validate-baseline": "tsx scripts/wave-gamma-bake-off/validate-baseline.ts",
+    "bake-off:ground-truth": "tsx scripts/wave-gamma-bake-off/build-ground-truth.ts",
+    "build-reference": "tsx scripts/wave-gamma-bake-off/build-reference.ts",
     "prepare": "husky"
   },
   "dependencies": {
     "@anthropic-ai/bedrock-sdk": "^0.12.0",
+    "@anthropic-ai/sdk": "^0.94.0",
     "@aws-sdk/client-bedrock-runtime": "^3.844.0",
     "@base-ui/react": "^1.4.1",
+    "@google-cloud/aiplatform": "^6.7.0",
     "@google/genai": "^1.3.0",
     "@sentry/nextjs": "^10.51.0",
     "@types/sanitize-html": "^2.16.1",
@@ -39,7 +50,9 @@
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "sanitize-html": "^2.17.3",
+    "sqlite-vec": "^0.1.9",
     "tailwind-merge": "^3.5.0",
+    "yaml": "^2.8.4",
     "zod": "^3.24.0"
   },
   "devDependencies": {
@@ -50,7 +63,8 @@
     "@testing-library/react": "^16.3.2",
     "@types/better-sqlite3": "^7.6.13",
     "@types/jest": "^30.0.0",
-    "@types/node": "^20.19.37",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^25.6.0",
     "@types/pdfkit": "^0.17.6",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
@@ -74,7 +88,7 @@
   "lint-staged": {
     "*.{ts,tsx}": [
       "eslint --fix --max-warnings 0",
-      "bash -c 'npx tsc --noEmit'"
+      "bash -c 'NODE_OPTIONS=--max-old-space-size=4096 npx tsc --noEmit'"
     ],
     "*.{json,md,yml,yaml}": [
       "prettier --write"

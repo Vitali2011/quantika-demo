@@ -259,26 +259,29 @@ describe('ATTACK-6 — War-risk: NaN, Constanta, Bab al-Mandeb, hyphen ports', (
     expect(Number.isNaN(result.premiumUsd)).toBe(false);
   });
 
-  // A6-4: vesselValueUsd=0 — legitimate zero-value vessel
-  it('A6-4: vesselValueUsd=0 → premiumUsd=0, zone still matched', () => {
+  // A6-4: vesselValueUsd=0 — code uses industry fallback $8M (spec-betafix-04).
+  // Zero vessel value treated as missing data → fallback prevents 0-premium on known HRA route.
+  it('A6-4: vesselValueUsd=0 → fallback $8M used, zone matched, premium > 0', () => {
     const result = calculateWarRiskPremium({
       route: { fromPort: 'Lagos', toPort: 'Rotterdam' },
       vesselValueUsd: 0,
       daysInHra: 5,
     });
-    expect(result.premiumUsd).toBe(0);
+    // fallback 8_000_000 * 0.0005 = 4000
+    expect(result.premiumUsd).toBe(4000);
     expect(result.zones).toContain('Gulf of Guinea HRA');
   });
 
-  // A6-5: vesselValueUsd=-1_000_000 — existing guard: vesselValueUsd < 0 → {0, []}
-  it('A6-5: vesselValueUsd=-1M → guard fires → {0, []}', () => {
+  // A6-5: vesselValueUsd=-1M — negative value uses fallback $8M, zones still matched.
+  // Guard ensures non-negative premium; zones are determined by port, not vessel value.
+  it('A6-5: vesselValueUsd=-1M → fallback used, premiumUsd > 0, zone matched', () => {
     const result = calculateWarRiskPremium({
       route: { fromPort: 'Lagos', toPort: 'Rotterdam' },
       vesselValueUsd: -1_000_000,
       daysInHra: 5,
     });
-    expect(result.premiumUsd).toBe(0);
-    expect(result.zones).toHaveLength(0);
+    expect(result.premiumUsd).toBeGreaterThan(0);
+    expect(result.zones).toContain('Gulf of Guinea HRA');
   });
 
   // A6-6: Constanta — this is INTENTIONALLY in the Black Sea HRA zone list

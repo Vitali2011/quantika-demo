@@ -54,6 +54,7 @@ export class EquasisCache {
   constructor(dbPath: string = DEFAULT_DB_PATH, ttlMs: number = DEFAULT_TTL_MS) {
     ensureDir(dbPath);
     this.db = new Database(dbPath);
+    this.db.pragma('foreign_keys = ON');
     this.ttlMs = ttlMs;
     this.db.exec(`
       CREATE TABLE IF NOT EXISTS equasis_cache (

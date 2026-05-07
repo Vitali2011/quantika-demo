@@ -347,8 +347,8 @@ describe('getModel', () => {
 
   it('returns bedrock model when AI_PROVIDER=bedrock', () => {
     const { getModel } = require('@/lib/ai-provider');
-    setEnv({ AI_PROVIDER: 'bedrock', BEDROCK_MODEL_ID: 'us.anthropic.claude-opus-4-7-20260415-v1:0' });
-    expect(getModel('match')).toBe('us.anthropic.claude-opus-4-7-20260415-v1:0');
+    setEnv({ AI_PROVIDER: 'bedrock', BEDROCK_MODEL_ID: 'us.anthropic.claude-opus-4-7' });
+    expect(getModel('match')).toBe('us.anthropic.claude-opus-4-7');
   });
 
   it('returns default openai model when no env set', () => {
@@ -393,10 +393,21 @@ describe('computeCostUsd — QA L-1', () => {
     // 1000*15/1M + 500*75/1M = 0.015 + 0.0375 = 0.0525
     expect(computeCostUsd(
       'bedrock',
-      'us.anthropic.claude-opus-4-7-20260415-v1:0',
+      'us.anthropic.claude-opus-4-7',
       1000,
       500,
     )).toBeCloseTo(0.0525, 6);
+  });
+
+  it('computes bedrock claude-sonnet-4-6 cost at $3 in / $15 out per 1M', () => {
+    const { computeCostUsd } = require('@/lib/ai-provider');
+    // 1000*3/1M + 500*15/1M = 0.003 + 0.0075 = 0.0105
+    expect(computeCostUsd(
+      'bedrock',
+      'us.anthropic.claude-sonnet-4-6',
+      1000,
+      500,
+    )).toBeCloseTo(0.0105, 6);
   });
 
   it('returns 0 for a zero-token call (rate × 0 = 0)', () => {
@@ -469,7 +480,7 @@ describe('callAiJson + ai_audit cost_usd integration — QA L-1', () => {
       AWS_REGION: 'us-east-1',
       AWS_ACCESS_KEY_ID: 'k',
       AWS_SECRET_ACCESS_KEY: 's',
-      BEDROCK_MODEL_ID: 'us.anthropic.claude-opus-4-7-20260415-v1:0',
+      BEDROCK_MODEL_ID: 'us.anthropic.claude-opus-4-7',
     });
 
     const { BedrockRuntimeClient } = require('@aws-sdk/client-bedrock-runtime');
@@ -505,5 +516,119 @@ describe('callAiJson + ai_audit cost_usd integration — QA L-1', () => {
 
     expect(row.provider).toBe('openai');
     expect(row.cost_usd).toBeNull();
+  });
+});
+
+// ─── Tests: Gemini structured output (Spec 05) ─────────────────────────────
+
+describe('Gemini structured output (responseSchema)', () => {
+  it('passes responseMimeType and responseSchema to Gemini when schema provided', async () => {
+    setEnv({
+      AI_PROVIDER: 'gemini',
+      GOOGLE_APPLICATION_CREDENTIALS: '/dev/null',
+      GOOGLE_CLOUD_PROJECT: 'test-project',
+      AI_MODEL_GEMINI_DEFAULT: 'gemini-2.5-flash',
+    });
+
+    const mockGenerateContent = jest.fn().mockResolvedValue({
+      text: '{"items":[{"name":"test"}]}',
+      usageMetadata: { promptTokenCount: 100, candidatesTokenCount: 50 },
+    });
+    const { GoogleGenAI } = require('@google/genai');
+    (GoogleGenAI as jest.Mock).mockImplementationOnce(() => ({
+      models: { generateContent: mockGenerateContent },
+    }));
+
+    const testSchema = { type: 'OBJECT', properties: { items: { type: 'ARRAY' } } };
+    const { callAiJson } = require('@/lib/ai-provider');
+    await callAiJson('classify', 'sys', 'user', { responseSchema: testSchema });
+
+    expect(mockGenerateContent).toHaveBeenCalledTimes(1);
+    const callArgs = mockGenerateContent.mock.calls[0][0];
+    expect(callArgs.config.responseMimeType).toBe('application/json');
+    expect(callArgs.config.responseSchema).toBe(testSchema);
+  });
+
+  it('does NOT set responseMimeType when no schema provided', async () => {
+    setEnv({
+      AI_PROVIDER: 'gemini',
+      GOOGLE_APPLICATION_CREDENTIALS: '/dev/null',
+      GOOGLE_CLOUD_PROJECT: 'test-project',
+    });
+
+    const mockGenerateContent = jest.fn().mockResolvedValue({
+      text: '{"ok":true}',
+    });
+    const { GoogleGenAI } = require('@google/genai');
+    (GoogleGenAI as jest.Mock).mockImplementationOnce(() => ({
+      models: { generateContent: mockGenerateContent },
+    }));
+
+    const { callAiJson } = require('@/lib/ai-provider');
+    await callAiJson('classify', 'sys', 'user');
+
+    const callArgs = mockGenerateContent.mock.calls[0][0];
+    expect(callArgs.config.responseMimeType).toBeUndefined();
+    expect(callArgs.config.responseSchema).toBeUndefined();
+  });
+
+  it('parses clean JSON without fence stripping when schema is provided', async () => {
+    setEnv({
+      AI_PROVIDER: 'gemini',
+      GOOGLE_APPLICATION_CREDENTIALS: '/dev/null',
+      GOOGLE_CLOUD_PROJECT: 'test-project',
+    });
+
+    const { GoogleGenAI } = require('@google/genai');
+    (GoogleGenAI as jest.Mock).mockImplementationOnce(() => ({
+      models: {
+        generateContent: jest.fn().mockResolvedValue({
+          text: '{"classifications":[{"id":"e1","category":"CARGO_INQUIRY"}]}',
+        }),
+      },
+    }));
+
+    const testSchema = { type: 'OBJECT' };
+     
+    const { callAiJson } = require('@/lib/ai-provider') as { callAiJson: <T>(...args: unknown[]) => Promise<T> };
+    const result = await callAiJson<{ classifications: Array<{ id: string; category: string }> }>(
+      'classify', 'sys', 'user', { responseSchema: testSchema },
+    );
+
+    expect(result.classifications).toHaveLength(1);
+    expect(result.classifications[0].category).toBe('CARGO_INQUIRY');
+  });
+
+  it('responseSchema is ignored for non-gemini providers', async () => {
+    setEnv({ AI_PROVIDER: 'openai' });
+    const testSchema = { type: 'OBJECT' };
+    const { callAiJson } = require('@/lib/ai-provider');
+    // Should not throw — schema is simply ignored for openai
+    const result = await callAiJson('classify', 'sys', 'user', { responseSchema: testSchema });
+    expect(result).toEqual({ result: 'openai-json' });
+  });
+
+  it('callAiText forwards responseSchema to Gemini', async () => {
+    setEnv({
+      AI_PROVIDER: 'gemini',
+      GOOGLE_APPLICATION_CREDENTIALS: '/dev/null',
+      GOOGLE_CLOUD_PROJECT: 'test-project',
+    });
+
+    const mockGenerateContent = jest.fn().mockResolvedValue({
+      text: '{"items":[]}',
+    });
+    const { GoogleGenAI } = require('@google/genai');
+    (GoogleGenAI as jest.Mock).mockImplementationOnce(() => ({
+      models: { generateContent: mockGenerateContent },
+    }));
+
+    const testSchema = { type: 'OBJECT', properties: { items: { type: 'ARRAY' } } };
+    const { callAiText } = require('@/lib/ai-provider');
+    await callAiText('parse_vessel', 'sys', 'user', { responseSchema: testSchema });
+
+    const callArgs = mockGenerateContent.mock.calls[0][0];
+    expect(callArgs.config.responseMimeType).toBe('application/json');
+    expect(callArgs.config.responseSchema).toBe(testSchema);
   });
 });

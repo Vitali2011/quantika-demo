@@ -36,14 +36,14 @@ DOCUMENT QUALITY CHECKS:
 
 Also determine:
 - urgency — apply these rules BY CATEGORY:
-  • CARGO_INQUIRY: "high" if laycan opens within 30 days AND the laycan dates are specific enough to act on (a definite date or narrow window). "medium" if laycan > 30 days away OR laycan dates are genuinely TBD/TBC/pending (even if the rough window is within 30 days — you cannot start vessel search without a committed date range). "low" = not applicable. Rule: "End May / Early June (exact dates TBC)" → medium (TBC dominates even though the approximate window is within 30 days).
+  • CARGO_INQUIRY: "high" if laycan opens within 30 days AND the laycan dates are specific enough to act on (a definite date or narrow window). "medium" if laycan > 30 days away OR laycan dates are genuinely TBD/TBC/pending (even if the rough window is within 30 days — you cannot start vessel search without a committed date range). "low" = not applicable. Rule: "End May / Early June (exact dates TBC)" → medium (TBC dominates even though the approximate window is within 30 days). TEMPLATE PLACEHOLDERS: If laycan dates contain unresolved template tokens (e.g. {{LAYCAN_START}}, {{LAYCAN_END}}, {{LAYCAN_MONTH}}), treat them as TBD — urgency = "medium".
   • TCT_REQUEST: "high" if delivery/laycan opens within 20 days OR explicit urgency language. "medium" otherwise.
   • VESSEL_POSITION: "high" ONLY IF open date is within 5 days OR email contains explicit urgency language ("last chance", "firm offer expiry", "deadline today"). "medium" for all other vessel position circulars — a position circular is not a deadline for the recipient; 7-10 day open window is normal market turnaround.
   • FIXTURE_RECAP: always "high" (subs deadline running, requires acknowledgement within hours).
   • CLIENT_REPLY: "high" if sub-lift notification ("subs lifted", "subjects lifted") or has explicit reply deadline (e.g. "revert by COB today", "within 24h"). "medium" otherwise.
   • DOCUMENT / VESSEL_CERTIFICATE: "low" (informational, no urgent action).
   • OTHER: "low".
-- confidence: 0.0 to 1.0 how confident you are
+- confidence: 0.0 to 1.0 how confident you are. TEMPLATE PLACEHOLDERS: If the email body contains unresolved template tokens (e.g. {{LAYCAN_START}}, {{INNER_DATE}}, {{...}}), reduce confidence to 0.85-0.90 — the presence of placeholders introduces genuine ambiguity in urgency and timing assessment even if the category classification itself is clear.
 - is_unanswered: boolean, true if this email appears to require a reply and has not been answered
 - days_without_reply: compute from the email's "date" field (ISO timestamp) compared to today. If email was received today/yesterday, output 0 or 1. NEVER output 365 as a default. If you cannot determine this accurately, output null. A fresh inquiry with no reply history = 0 days (just received). Examples: email received 3 days ago with no reply → 3; email received today → 0; uncertain → null.
 

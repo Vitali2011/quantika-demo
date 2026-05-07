@@ -63,12 +63,13 @@ Real numbers fill in during production regression runs; full 50-scenario table b
 
 ## Variants Config
 
-| Variant ID        | Provider | Model                                                                     | Notes                                                                                                                                                                           |
-| ----------------- | -------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **openai**        | openai   | `AI_MODEL_HEAVY` (default `gpt-5.5`)                                      | ClipProxy, immediate rollback                                                                                                                                                   |
-| **gemini-pro**    | gemini   | `AI_MODEL_GEMINI_DEFAULT` (default `gemini-2.5-pro`)                      | Vertex AI, standard mode                                                                                                                                                        |
-| **gemini-pro-dt** | gemini   | `gemini-2.5-pro-deepthink` (audit key)                                    | Gemini 2.5 Pro + Deep Think (`thinkingBudget=-1`). Extended reasoning mode — like a human who writes rough notes before answering. 2-3× more output tokens, est $0.10-0.15/call |
-| **bedrock-opus**  | bedrock  | `BEDROCK_MODEL_ID` (default `us.anthropic.claude-opus-4-7-20260415-v1:0`) | Claude Opus 4.7 via AWS Bedrock                                                                                                                                                 |
+| Variant ID                 | Provider | Env / Model                                                                            | Notes                                                                                                                                                                           |
+| -------------------------- | -------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **bedrock-opus** (default) | bedrock  | `MATCH_PROVIDER=bedrock`; `BEDROCK_MODEL_ID` (default `us.anthropic.claude-opus-4-7`)  | Claude Opus 4.7 via AWS Bedrock (US cross-region inference profile). Per-region overrides: `eu.anthropic.claude-opus-4-7`, `global.anthropic.claude-opus-4-7`.                  |
+| **bedrock-sonnet** (cheap) | bedrock  | `MATCH_BEDROCK_MODEL=us.anthropic.claude-sonnet-4-6`                                   | Claude Sonnet 4.6 — ~5× cheaper than Opus 4.7 ($3/$15 vs $15/$75 per 1M tokens). See "Sonnet 4.6 as Cost-Optimized Alternative" section below.                                  |
+| **openai** (rollback)      | openai   | `MATCH_PROVIDER=openai`; `AI_MODEL_HEAVY` (default `gpt-5.5`)                          | ClipProxy, immediate rollback path.                                                                                                                                             |
+| **gemini-pro**             | gemini   | `MATCH_PROVIDER=gemini`; `AI_MODEL_GEMINI_DEFAULT` (default `gemini-2.5-pro`)          | Vertex AI, standard reasoning mode. AWS-outage fallback.                                                                                                                        |
+| **gemini-pro-dt** (eval)   | gemini   | `gemini-2.5-pro-deepthink` (audit key) + `thinkingBudget=-1`                           | Gemini 2.5 Pro + Deep Think (`thinkingBudget=-1`). Extended reasoning mode — like a human who writes rough notes before answering. 2-3× more output tokens, est $0.10-0.15/call. |
 
 ### Deep Think explained
 
@@ -76,6 +77,34 @@ Deep Think is NOT a separate model — it is an extended reasoning mode for `gem
 Enabled via `thinkingConfig: { thinkingBudget: -1, includeThoughts: false }` in the API call.  
 The model spends extra tokens "thinking through" the problem before producing the final answer.  
 `thinkingBudget=-1` = dynamic (model decides how much to think; larger problems → more thinking).
+
+## Sonnet 4.6 as Cost-Optimized Alternative
+
+Claude Sonnet 4.6 (`us.anthropic.claude-sonnet-4-6`) is available as a per-scope override for the match endpoint, offering ~5× cost reduction compared to Opus 4.7.
+
+**Pricing comparison:**
+
+| Model             | Input (per 1M tokens) | Output (per 1M tokens) | Est. cost per match call\* |
+| ----------------- | --------------------- | ---------------------- | -------------------------- |
+| Claude Opus 4.7   | $15.00                | $75.00                 | ~$0.97                     |
+| Claude Sonnet 4.6 | $3.00                 | $15.00                 | ~$0.20                     |
+
+\* Estimate based on a typical match call: ~8,000 input tokens + ~3,000 output tokens.
+
+**When to use Sonnet 4.6:**
+
+- High-volume batch matching where Opus-level reasoning is not required
+- Development / staging environments to reduce API costs
+- Cases where latency is more important than maximum scoring accuracy
+
+**How to activate:**
+
+```bash
+# In .env.local — per-scope model override (keeps MATCH_PROVIDER=bedrock)
+MATCH_BEDROCK_MODEL=us.anthropic.claude-sonnet-4-6
+```
+
+**Important:** No eval has been run yet comparing Sonnet 4.6 vs Opus 4.7 on the 50-scenario corpus. Before switching production traffic, run the full regression: `npx tsx --tsconfig tsconfig.json scripts/eval/run-match-providers-comparison.ts`
 
 ## Score Deviation Budget
 

@@ -10,6 +10,12 @@ import migration009 from './009-pipedrive-tables';
 import migration010 from './010-port-da-estimates';
 import migration011 from './011-notified-dispatches';
 import migration012 from './012-ai-audit';
+import migration013 from './013-knowledge-sources';
+import migration014 from './014-sanctions-entities';
+import migration015 from './015-port-distances';
+import migration016 from './016-war-risk-zones';
+import migration017 from './017-eca-zones';
+import migration018 from './018-knowledge-rag-vec-tables';
 import type { Migration } from './types';
 
-export const allMigrations: Migration[] = [migration001, migration002, migration003, migration004, migration005, migration006, migration007, migration008, migration009, migration010, migration011, migration012];
+export const allMigrations: Migration[] = [migration001, migration002, migration003, migration004, migration005, migration006, migration007, migration008, migration009, migration010, migration011, migration012, migration013, migration014, migration015, migration016, migration017, migration018];

@@ -1,4 +1,5 @@
 import Database from 'better-sqlite3';
+import * as sqliteVec from 'sqlite-vec';
 import * as path from 'path';
 import * as fs from 'fs';
 import { randomUUID } from 'crypto';
@@ -6,6 +7,7 @@ import { SessionData } from './types';
 import { SESSION_TTL_MS } from './constants';
 import { runMigrations } from './migrations/runner';
 import { allMigrations } from './migrations/index';
+import { bootstrapKnowledgeSources } from './knowledge/bootstrap';
 
 export const MAX_SESSIONS = 100;
 
@@ -20,7 +22,7 @@ function ensureDir(filePath: string): void {
 }
 
 function serializeData(session: SessionData): string {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   const { id, accessToken, createdAt, ...rest } = session;
   return JSON.stringify(rest);
 }
@@ -35,8 +37,18 @@ export class SessionStore {
   constructor(dbPath: string = DEFAULT_DB_PATH) {
     ensureDir(dbPath);
     this.db = new Database(dbPath);
+    // Load sqlite-vec extension BEFORE migrations (required for migration 018 vec0 tables)
+    sqliteVec.load(this.db);
+    // Enforce FK constraints (SQLite default is OFF). Required for migrations
+    // that declare REFERENCES (e.g., 013 knowledge_sync_log → knowledge_sources)
+    // to actually reject orphan inserts at runtime.
+    this.db.pragma('foreign_keys = ON');
     if (process.env['USE_MIGRATION_RUNNER'] !== 'false') {
       runMigrations(this.db, allMigrations);
+      // Idempotent registration of all knowledge sources (OFAC, EU sanctions,
+      // distances, JWC, ECA, ...). Must run AFTER migration 013 has created
+      // the knowledge_sources table. Preserves runtime status of existing rows.
+      bootstrapKnowledgeSources(this.db);
     } else {
       this.db.exec(`
         CREATE TABLE IF NOT EXISTS sessions (

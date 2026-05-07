@@ -1,0 +1,176 @@
+# Panama Canal Authority (ACP) Tariff Schedule — 2026 Current
+# Version: PCUMS-2026-current
+# Source: https://pancanal.com/en/maritime-services/maritime-tariff/
+# Fetched: 2026-05-06
+#
+# KEY NOTES:
+#   - ACP toll freeze announced through 2026-09-30 (no rate hikes until Q4 2026)
+#   - Rates effective 2025-01-01 (last structural update)
+#   - billing_unit varies by vessel type:
+#       bulker    → DWT (deadweight tonnage)
+#       tanker    → PC/UMS net tonnage
+#       container → TEU (twenty-foot equivalent unit)
+#       LNG/LPG   → m³ (cubic metres of gas capacity)
+#       general   → PC/UMS net tonnage
+#       passenger → PC/UMS net tonnage (changed from per-berth effective 2025-02-01)
+#   - per_nt_fee_usd field repurposed as per-billing-unit rate (see billing_unit per row)
+#   - base_fee_usd = fixed transit fee for Regular Panamax lock (≥7,500 PC/UMS)
+#   - Super Panamax base = $100,000; Neopanamax base = $200,000–$300,000
+#   - Reservation fees (Code 1050) are SEPARATE: Regular $12k, Super $50k, Neopanamax $100k
+#   - Last-minute reservation (LMTR): Regular $25k, Super $100k, Neopanamax $200k
+
+version: PCUMS-2026-current
+effective_from: "2025-01-01"
+frozen_until: "2026-09-30"
+source_url: https://pancanal.com/en/maritime-services/maritime-tariff/
+fetched_at: "2026-05-06"
+
+tariffs:
+  - vessel_type: bulker
+    billing_unit: DWT
+    base_fee_usd: 60000
+    per_nt_fee_usd: 1.65
+    super_per_unit: 1.50
+    neopanamax_per_unit: 0.80
+    confidence: high
+    notes: >
+      Dry bulk carriers. Billed per Deadweight Tonne (DWT). Regular Panamax rate $1.65/DWT,
+      Super $1.50/DWT, Neopanamax $0.80/DWT. Fixed transit fee $60,000 (Regular ≥7,500 PC/UMS),
+      $100,000 (Super), $200,000–$300,000 (Neopanamax). Unchanged from Jan 2025 baseline
+      (no 2026 increase — ACP freeze in effect through 2026-09-30).
+      2025 vs 2025-archive: per_nt_fee_usd unchanged ($1.65); base_fee now reflects
+      correct ACP fixed transit fee ($60k) vs simplified 2025.yaml approximation ($16,500).
+
+  - vessel_type: tanker
+    billing_unit: PC/UMS
+    base_fee_usd: 60000
+    per_nt_fee_usd: 6.00
+    super_per_unit: 5.25
+    neopanamax_per_unit: 3.25
+    confidence: high
+    notes: >
+      Crude and product tankers. Billed per PC/UMS net tonne. Regular $6.00/NT,
+      Super $5.25/NT, Neopanamax $3.25/NT. Fixed transit fee same as bulker tier.
+      Chemical carriers slightly lower: Regular $5.50, Super $5.25, Neopanamax $3.25.
+      All-in transit for laden MR tanker can exceed $329,000 incl. reservation + services.
+
+  - vessel_type: container
+    billing_unit: TEU
+    base_fee_usd: 60000
+    per_nt_fee_usd: 40.00
+    super_per_unit: 40.00
+    neopanamax_per_unit: 30.00
+    confidence: high
+    notes: >
+      Container ships. Billed per TEU capacity (TTA). Regular/Super Panamax $40/TEU capacity,
+      loaded TEU (TTL) $35/TEU, empty TEU (TTE) $6/TEU. Neopanamax <10k TTA: $30/TEU capacity,
+      $35/TEU loaded, $6/TEU empty. Neopanamax ≥10k TTA: $30/TEU capacity, $45/TEU loaded.
+      On-deck containers: dry $110/TEU, reefer $120/TEU, empty $70/TEU (since Jan 2025).
+
+  - vessel_type: LNG
+    billing_unit: m3
+    base_fee_usd: 100000
+    per_nt_fee_usd: 3.50
+    super_per_unit: 3.85
+    neopanamax_per_unit: 2.05
+    reservation_fee_usd: 100000
+    confidence: high
+    notes: >
+      Liquefied Natural Gas carriers. Billed per m³ of gas capacity. Regular $3.50/m³,
+      Super $3.85/m³, Neopanamax $2.05/m³. Most LNG transits use Neopanamax locks.
+      Dedicated LNG reservation window introduced Jan 2026 to attract gas carriers back
+      after drought-period diversions. All-in cost for laden VLGC exceeds $605,000.
+      Base fee shown is Super/Neopanamax fixed transit ($100k); most LNG are Super class.
+
+  - vessel_type: LPG
+    billing_unit: m3
+    base_fee_usd: 100000
+    per_nt_fee_usd: 3.50
+    super_per_unit: 3.85
+    neopanamax_per_unit: 2.75
+    reservation_fee_usd: 100000
+    confidence: high
+    notes: >
+      Liquefied Petroleum Gas carriers. Billed per m³ capacity. Regular $3.50/m³,
+      Super $3.85/m³, Neopanamax $2.75/m³ (slightly higher than LNG Neopanamax rate).
+      VLGCs typically transit Neopanamax locks.
+
+  - vessel_type: general
+    billing_unit: PC/UMS
+    base_fee_usd: 25000
+    per_nt_fee_usd: 3.50
+    super_per_unit: 3.00
+    neopanamax_per_unit: 1.50
+    confidence: high
+    notes: >
+      General cargo, multi-purpose vessels, breakbulk, reefers. Billed per PC/UMS net tonne.
+      Regular <10k PC/UMS: $3.50/NT; Regular ≥10k PC/UMS: $3.25/NT; Super: $3.00/NT;
+      Neopanamax: $1.50/NT. Fixed transit fee for Passengers/General Cargo/Reefers
+      <10k PC/UMS = $25,000; ≥10k = $60,000.
+
+  - vessel_type: passenger
+    billing_unit: PC/UMS
+    base_fee_usd: 60000
+    per_nt_fee_usd: 4.75
+    super_per_unit: 5.08
+    neopanamax_per_unit: 5.08
+    confidence: medium
+    notes: >
+      Cruise/passenger vessels. Billing method changed effective 1 February 2025: ACP replaced
+      the per-berth system (in use since April 2016) with a PC/UMS-tonnage tiered structure
+      (Seatrade Cruise / Riviera Maritime Media, https://www.seatrade-cruise.com/finance-legal-regulatory/new-panama-canal-tolls-structure-takes-effect-feb-1).
+      Current rates (effective 2025-02-01, frozen through 2026-09-30):
+        Panamax locks — first 10,000 PC/UMS: $4.75/ton; next 10,000: $4.65/ton; remainder: $4.58/ton.
+        Neopanamax locks — first 10,000 PC/UMS: $5.08/ton; next 10,000: $4.98/ton; remainder: $4.90/ton.
+      per_nt_fee_usd = $4.75 (Panamax first-tier, most representative for mid-size cruise ships).
+      super_per_unit and neopanamax_per_unit both set to $5.08 (Neopanamax first-tier rate).
+      Previous per-berth rates (pre-2025-02-01) for reference: $138/berth Panamax, $148/berth Neopanamax.
+      ACP toll freeze in effect through 2026-09-30 — no increases until Q4 2026.
+      Note: field per_nt_fee_usd repurposed as per-PC/UMS-ton rate (first tier, Panamax locks).
+
+  - vessel_type: vehicle_carrier
+    billing_unit: PC/UMS
+    base_fee_usd: 60000
+    per_nt_fee_usd: 6.00
+    super_per_unit: 4.75
+    neopanamax_per_unit: 2.75
+    confidence: medium
+    notes: >
+      RoRo and vehicle carriers (car carriers). Billed per PC/UMS net tonne.
+      Regular $6.00/NT, Super $4.75/NT, Neopanamax $2.75/NT.
+      Included as ACP lists explicitly in tariff schedule.
+
+metadata:
+  drought_surcharge_pct: 0
+  drought_surcharge_notes: >
+    Fresh water surcharge applies when Gatun Lake level is below operating threshold.
+    As of May 2026 drought recovery is underway; surcharge structure exists but
+    current activation status requires real-time check at pancanal.com.
+    When active: fixed $4,000–$10,000 per transit + variable % of tolls.
+  auction_slot_premium: >
+    High-demand surcharge: +10% on Neopanamax reservation fee on designated peak days.
+    Auction slot system (BoA) allows vessels to bid for priority slots above standard
+    reservation — prices vary by demand, historically $100k–$4M+ during drought peak.
+  reservation_fees:
+    panamax_regular_usd: 12000
+    panamax_super_usd: 50000
+    neopanamax_usd: 100000
+    lmtr_regular_usd: 25000
+    lmtr_super_usd: 100000
+    lmtr_neopanamax_usd: 200000
+  toll_freeze: >
+    ACP announced freeze of base toll structure through 2026-09-30.
+    No indexed increases applied in 2026. Next potential revision: Q4 2026.
+  authority: Panama Canal Authority (ACP)
+  pcums_reference: >
+    PC/UMS = Panama Canal Universal Measurement System net tonnage.
+    DWT = Deadweight tonnage (for bulk carriers). m³ = cubic metres capacity (for gas carriers).
+  data_sources:
+    - url: https://pancanal.com/en/maritime-services/maritime-tariff/
+      description: Official ACP Maritime Tariff List page (public)
+    - url: https://www.shipuniverse.com/panama-canal-transit-fees-explained-2025-edition/
+      description: ShipUniverse 2026 edition — detailed rate breakdown
+    - url: https://www.freightamigo.com/en/blog/logistics/what-is-the-panama-transit-fee-a-guide-to-panama-canal-costs-in-2026/
+      description: FreightAmigo 2026 rate guide
+    - url: https://pancanal.com/wp-content/uploads/2021/08/Tariffs-1-january-2025.pdf
+      description: Official ACP tariff PDF Jan 2025 (binary — rates confirmed via web sources above)
