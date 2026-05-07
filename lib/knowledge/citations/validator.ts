@@ -37,7 +37,11 @@ export function validateCitations(
       const found = retrievedChunks.some((c) => {
         if (c.metadata?.source !== sourceLower) return false;
         const section = String(c.metadata?.section ?? '');
-        return section.includes(sectionRef) || sectionRef.includes(section);
+        return (
+          section === sectionRef ||
+          section.startsWith(sectionRef + '.') ||
+          sectionRef.startsWith(section + '.')
+        );
       });
       return found ? fullMatch : '';
     }
