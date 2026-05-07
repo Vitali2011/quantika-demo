@@ -19,16 +19,16 @@ describe('scrapeJwc', () => {
 
   describe('Input Contract: boundary validation (TC-NBI-01 to TC-NBI-03)', () => {
     it('TC-NBI-01: should throw Error when baseUrl is empty string', async () => {
-      await expect(scrapeJwc('')).rejects.toThrow('baseUrl cannot be empty');
+      await expect(scrapeJwc('')).rejects.toThrow('baseUrl is required');
     });
 
     it('TC-NBI-02: should throw Error when baseUrl is null', async () => {
-      await expect(scrapeJwc(null as any)).rejects.toThrow('baseUrl cannot be empty');
+      await expect(scrapeJwc(null as any)).rejects.toThrow('baseUrl is required');
     });
 
     it('TC-NBI-03: should throw Error when baseUrl is whitespace only', async () => {
-      await expect(scrapeJwc('   ')).rejects.toThrow('baseUrl cannot be empty');
-      await expect(scrapeJwc('\t\n')).rejects.toThrow('baseUrl cannot be empty');
+      await expect(scrapeJwc('   ')).rejects.toThrow('baseUrl is required');
+      await expect(scrapeJwc('\t\n')).rejects.toThrow('baseUrl is required');
     });
   });
 
