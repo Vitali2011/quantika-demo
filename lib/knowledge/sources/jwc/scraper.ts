@@ -6,6 +6,7 @@
  * (id, publishDate, title) and raw text content for downstream embedding.
  */
 
+import { createHash } from 'crypto';
 import type { JwcScrapedBulletin } from './types';
 
 export type { JwcScrapedBulletin };
@@ -157,7 +158,7 @@ function parseBulletin(html: string, sourceUrl: string): JwcScrapedBulletin | nu
   const rawText = htmlToPlainText(sanitized);
 
   return {
-    id: id || `jwc-${Date.now()}`,
+    id: id || 'jwc-' + createHash('sha256').update(sourceUrl).digest('hex').slice(0, 16),
     publishDate,
     title: title || 'Untitled Bulletin',
     rawText,
@@ -230,11 +231,11 @@ function extractId(html: string, sourceUrl: string): string | null {
     return `JWLA-${idMatch[1]}`;
   }
 
+  const GENERIC_SEGMENTS = new Set(['index.html', 'index.htm', 'index.php', 'default.html']);
   const urlMatch = /\/([^\/]+)$/.exec(sourceUrl);
-  if (urlMatch) {
+  if (urlMatch && !GENERIC_SEGMENTS.has(urlMatch[1])) {
     return urlMatch[1];
   }
-
   return null;
 }
 
