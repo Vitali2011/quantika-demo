@@ -15,11 +15,13 @@ git reset --hard origin/main
 echo "==> Installing dependencies..."
 npm ci
 
-echo "==> Building (Node heap raised to 4GB to avoid OOM during type-check)..."
+echo "==> Building (Node heap raised to 6GB to avoid OOM during type-check)..."
 # `export` is required, not inline prefix — Next.js spawns child workers for the
 # TypeScript checker that don't inherit single-command env. Verified on VPS:
-# inline prefix → SIGABRT at ~2GB; export → build succeeds at ~3.5GB peak.
-export NODE_OPTIONS="--max-old-space-size=4096"
+# inline prefix → SIGABRT at ~2GB; export → build succeeds. 4096 was previously
+# insufficient on this VPS (OOM observed 2026-05-07); raised to 6144 for headroom.
+# Keep this in sync with scripts/redeploy.sh.
+export NODE_OPTIONS="--max-old-space-size=6144"
 npm run build
 unset NODE_OPTIONS
 
