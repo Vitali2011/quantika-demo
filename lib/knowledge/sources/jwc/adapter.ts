@@ -22,6 +22,11 @@ export interface SyncJwcRagOptions {
   db?: Database.Database;
 }
 
+export interface SyncJwcRagResult {
+  bulletinsScraped: number;
+  chunksStored: number;
+}
+
 /**
  * Sync JWC bulletins into RAG knowledge graph
  *
@@ -38,7 +43,7 @@ export interface SyncJwcRagOptions {
  */
 export async function syncJwcRag(
   opts?: SyncJwcRagOptions
-): Promise<{ chunksStored: number; bulletinsScraped: number }> {
+): Promise<SyncJwcRagResult> {
   const { dryRun = false, db = getDb() } = opts || {};
 
   const sourceUrl = process.env.JWC_SOURCE_URL;

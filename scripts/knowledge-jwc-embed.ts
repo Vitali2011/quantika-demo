@@ -1,29 +1,26 @@
-#!/usr/bin/env npx tsx
+#!/usr/bin/env tsx
 /**
- * CLI wrapper for JWC RAG embedding sync
- * Usage: npm run knowledge:jwc [--dry-run]
+ * CLI wrapper for JWC RAG embedding pipeline
  *
- * Syncs JWC Listed Areas bulletins into vector (jwc_vec) and FTS (jwc_fts) tables.
+ * Usage:
+ *   npm run knowledge:jwc
+ *   npm run knowledge:jwc -- --dry-run
  */
 
-import { syncJwcRag } from '../lib/knowledge/sources/jwc/adapter';
+import { syncJwcRag } from '@/lib/knowledge/sources/jwc/adapter';
 
 async function main() {
-  const args = process.argv.slice(2);
-  const dryRun = args.includes('--dry-run');
+  const dryRun = process.argv.includes('--dry-run');
 
   try {
-    console.log(`Starting JWC RAG sync${dryRun ? ' (dry-run)' : ''}...`);
-
     const result = await syncJwcRag({ dryRun });
-
-    console.log('✓ JWC RAG sync completed successfully');
-    console.log(`  Bulletins scraped: ${result.bulletinsScraped}`);
-    console.log(`  Chunks stored: ${result.chunksStored}`);
-
+    const prefix = dryRun ? '[DRY RUN] ' : '';
+    console.log(
+      `${prefix}JWC RAG sync complete: ${result.bulletinsScraped} bulletins, ${result.chunksStored} chunks stored`
+    );
     process.exit(0);
   } catch (error) {
-    console.error('✗ JWC RAG sync failed:', (error as Error).message);
+    console.error('JWC RAG sync failed:', error);
     process.exit(1);
   }
 }

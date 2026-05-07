@@ -218,7 +218,7 @@ describe('chunkJwc', () => {
 
       // Should have Black Sea only once in regions array
       const regions = result[0].metadata.regions;
-      const blackSeaInRegions = regions.filter((r) => r === 'Black Sea')
+      const blackSeaInRegions = regions.filter((r: string) => r === 'Black Sea')
         .length;
       expect(blackSeaInRegions).toBe(1);
     });
@@ -241,8 +241,8 @@ describe('chunkJwc', () => {
 
       // Should have each region only once despite different cases
       const regions = result[0].metadata.regions;
-      const blackSeaCount = regions.filter((r) => r === 'Black Sea').length;
-      const redSeaCount = regions.filter((r) => r === 'Red Sea').length;
+      const blackSeaCount = regions.filter((r: string) => r === 'Black Sea').length;
+      const redSeaCount = regions.filter((r: string) => r === 'Red Sea').length;
       expect(blackSeaCount).toBe(1);
       expect(redSeaCount).toBe(1);
     });
