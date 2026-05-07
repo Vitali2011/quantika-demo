@@ -368,3 +368,52 @@ describe('H2 regression: JWC fallback ID collision', () => {
     }
   });
 });
+
+// ─── Q3: JWC ID uniqueness after full-URL hash fix ────────────────────────────
+
+describe('Q3 regression: JWC ID uniqueness after full-URL hash fix', () => {
+  const JWLA_FREE_HTML = `
+    <html>
+      <body>
+        <h1>Bulletin</h1>
+        <time>2026-01-15</time>
+        <p>Content without JWLA identifier.</p>
+      </body>
+    </html>
+  `;
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('Q3-a: two URLs with same basename but different paths get different IDs', async () => {
+    const URL_A = 'https://jwc.example.com/2024/bulletin.html';
+    const URL_B = 'https://jwc.example.com/2025/bulletin.html';
+
+    const LISTING_HTML = `
+      <html><body>
+        <a href="${URL_A}">Bulletin 2024</a>
+        <a href="${URL_B}">Bulletin 2025</a>
+      </body></html>
+    `;
+
+    const fetchMock = jest.spyOn(global, 'fetch').mockImplementation(
+      (url: any): Promise<Response> => {
+        const urlStr = String(url);
+        const body = (urlStr === URL_A || urlStr === URL_B) ? JWLA_FREE_HTML : LISTING_HTML;
+        return Promise.resolve(
+          new Response(body, { status: 200, headers: { 'Content-Type': 'text/html' } })
+        );
+      }
+    );
+
+    const { scrapeJwc } = await import('@/lib/knowledge/sources/jwc/scraper');
+    const bulletins = await scrapeJwc('https://jwc.example.com/listing');
+
+    fetchMock.mockRestore();
+
+    expect(bulletins.length).toBe(2);
+    const ids = bulletins.map((b) => b.id);
+    expect(new Set(ids).size).toBe(2);
+  });
+});
