@@ -76,8 +76,33 @@ export function reportSyncSuccess(
   syncLogId: number,
   opts: SyncSuccessOpts = {},
 ): void {
-  const log = db.prepare('SELECT source_slug, started_at FROM knowledge_sync_log WHERE id = ?').get(syncLogId) as any;
+  // Input validation: syncLogId must be a positive finite integer
+  if (!Number.isFinite(syncLogId) || syncLogId <= 0 || !Number.isInteger(syncLogId)) {
+    throw new Error('syncLogId must be a positive integer');
+  }
+
+  // Input validation: metadata size limit (64KB)
+  if (opts.metadata !== undefined) {
+    const metadataJson = JSON.stringify(opts.metadata);
+    if (metadataJson.length > 65536) {
+      throw new Error('metadata exceeds 64KB limit');
+    }
+  }
+
+  // Input validation: rowsChanged must be non-negative finite integer
+  if (opts.rowsChanged !== undefined) {
+    if (!Number.isFinite(opts.rowsChanged) || opts.rowsChanged < 0 || !Number.isInteger(opts.rowsChanged)) {
+      throw new Error('rowsChanged must be a non-negative integer');
+    }
+  }
+
+  const log = db.prepare('SELECT source_slug, started_at, status FROM knowledge_sync_log WHERE id = ?').get(syncLogId) as any;
   if (!log) throw new Error(`sync_log id=${syncLogId} not found`);
+
+  // Idempotency guard: prevent double-close
+  if (log.status !== 'running') {
+    throw new Error(`Cannot close sync_log id=${syncLogId}: already closed with status '${log.status}'`);
+  }
 
   const tx = db.transaction(() => {
     db.prepare(`
@@ -110,20 +135,106 @@ export function reportSyncSuccess(
   tx();
 }
 
+/**
+ * Categorize error based on error type and message.
+ */
+function categorizeError(error: unknown): string {
+  if (!error) return 'unknown';
+
+  const errorName = (error as Error).name ?? '';
+  const errorMessage = String((error as Error).message ?? error).toLowerCase();
+  const errorStack = String((error as Error).stack ?? '').toLowerCase();
+  const combined = `${errorName} ${errorMessage} ${errorStack}`;
+
+  // Network errors
+  if (
+    combined.includes('etimedout') ||
+    combined.includes('econnreset') ||
+    combined.includes('econnrefused') ||
+    combined.includes('enotfound') ||
+    combined.includes('fetch failed')
+  ) {
+    return 'network';
+  }
+
+  // Parse errors
+  if (
+    errorName === 'SyntaxError' ||
+    combined.includes('syntaxerror') ||
+    combined.includes('parse') ||
+    combined.includes('malformed')
+  ) {
+    return 'parse';
+  }
+
+  // Timeout errors
+  if (
+    errorName === 'AbortError' ||
+    combined.includes('aborterror') ||
+    combined.includes('timeout')
+  ) {
+    return 'timeout';
+  }
+
+  // Database errors
+  if (
+    combined.includes('sqlite') ||
+    combined.includes('constraint') ||
+    combined.includes('unique')
+  ) {
+    return 'db';
+  }
+
+  return 'unknown';
+}
+
 export function reportSyncFailure(
   db: Database.Database,
   syncLogId: number,
   error: Error,
 ): void {
-  const log = db.prepare('SELECT source_slug FROM knowledge_sync_log WHERE id = ?').get(syncLogId) as any;
+  // Input validation: syncLogId must be a positive finite integer
+  if (!Number.isFinite(syncLogId) || syncLogId <= 0 || !Number.isInteger(syncLogId)) {
+    throw new Error('syncLogId must be a positive integer');
+  }
+
+  const log = db.prepare('SELECT source_slug, status FROM knowledge_sync_log WHERE id = ?').get(syncLogId) as any;
   if (!log) throw new Error(`sync_log id=${syncLogId} not found`);
+
+  // Idempotency guard: prevent double-close
+  if (log.status !== 'running') {
+    throw new Error(`Cannot close sync_log id=${syncLogId}: already closed with status '${log.status}'`);
+  }
+
+  // Coerce non-Error values to Error
+  let normalizedError: Error;
+  if (error instanceof Error) {
+    normalizedError = error;
+  } else if (error === null || error === undefined) {
+    normalizedError = new Error('Unknown error');
+  } else {
+    normalizedError = new Error(String(error));
+  }
+
+  // Categorize error
+  const errorCategory = categorizeError(normalizedError);
+
+  // Build metadata with error_category
+  const metadata = { error_category: errorCategory };
 
   const tx = db.transaction(() => {
     db.prepare(`
       UPDATE knowledge_sync_log
-      SET status = 'failure', finished_at = CURRENT_TIMESTAMP, error_message = ?
+      SET status = 'failure',
+          finished_at = CURRENT_TIMESTAMP,
+          error_message = ?,
+          metadata = ?
       WHERE id = ?
-    `).run(String(error?.stack ?? error?.message ?? error), syncLogId);
+    `).run(
+      String(normalizedError?.stack ?? normalizedError?.message ?? normalizedError),
+      JSON.stringify(metadata),
+      syncLogId
+    );
     db.prepare(`
       UPDATE knowledge_sources
       SET status = 'failed',
@@ -131,7 +242,7 @@ export function reportSyncFailure(
           consecutive_failures = consecutive_failures + 1,
           updated_at = CURRENT_TIMESTAMP
       WHERE slug = ?
-    `).run(String(error?.message ?? error), log.source_slug);
+    `).run(String(normalizedError?.message ?? normalizedError), log.source_slug);
   });
   tx();
 
