@@ -6,7 +6,9 @@
  * (id, publishDate, title) and raw text content for downstream embedding.
  */
 
-import type { JwcBulletin } from './types';
+import type { JwcScrapedBulletin } from './types';
+
+export type { JwcScrapedBulletin };
 
 const TIMEOUT_MS = 10000;
 const MAX_CONCURRENT = 3;
@@ -28,9 +30,14 @@ const MAX_CONCURRENT = 3;
  * @returns Array of JwcBulletin objects sorted by publishDate descending (newest first)
  * @throws Error if baseUrl is empty/null/whitespace or listing page fetch fails
  */
-export async function scrapeJwc(baseUrl: string): Promise<JwcBulletin[]> {
+export async function scrapeJwc(baseUrl: string): Promise<JwcScrapedBulletin[]> {
   if (!baseUrl || baseUrl.trim() === '') {
-    throw new Error('baseUrl cannot be empty');
+    throw new Error('baseUrl is required');
+  }
+
+  const urlLower = baseUrl.trim().toLowerCase();
+  if (!urlLower.startsWith('http://') && !urlLower.startsWith('https://')) {
+    throw new Error('baseUrl must use http or https');
   }
 
   const listingHtml = await fetchWithTimeout(baseUrl, TIMEOUT_MS);
@@ -88,8 +95,8 @@ function extractBulletinLinks(html: string, baseUrl: string): string[] {
 async function fetchBulletinsWithConcurrency(
   urls: string[],
   maxConcurrent: number
-): Promise<JwcBulletin[]> {
-  const results: JwcBulletin[] = [];
+): Promise<JwcScrapedBulletin[]> {
+  const results: JwcScrapedBulletin[] = [];
   const queue = [...urls];
 
   async function processOne(url: string): Promise<void> {
@@ -112,7 +119,7 @@ async function fetchBulletinsWithConcurrency(
   return results;
 }
 
-function parseBulletin(html: string, sourceUrl: string): JwcBulletin | null {
+function parseBulletin(html: string, sourceUrl: string): JwcScrapedBulletin | null {
   const sanitized = stripTags(html, ['script', 'style', 'nav', 'footer']);
   const title = extractTitle(sanitized);
   const publishDate = extractDate(sanitized);
