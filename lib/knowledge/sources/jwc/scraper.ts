@@ -34,8 +34,11 @@ export async function scrapeJwc(baseUrl: string): Promise<JwcScrapedBulletin[]> 
   if (baseUrl === null || baseUrl === undefined) {
     throw new Error('baseUrl is required');
   }
-  if (typeof baseUrl !== 'string' || baseUrl.trim() === '') {
+  if (typeof baseUrl !== 'string') {
     throw new Error('baseUrl must use http or https');
+  }
+  if (baseUrl.trim() === '') {
+    throw new Error('baseUrl is required');
   }
 
   const urlLower = baseUrl.trim().toLowerCase();
