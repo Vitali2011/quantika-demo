@@ -1,6 +1,6 @@
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 
-import { judge, JUDGE_SCOPE, type CallAiTextFn } from '../judge';
+import { judge, JUDGE_SCOPE, isThrottle, callWithRetry, RETRY_DELAYS_MS, type CallAiTextFn } from '../judge';
 
 /**
  * Tests inject a fake `callAiText` directly rather than mocking
@@ -165,5 +165,82 @@ describe('judge', () => {
         { callAiText: fakeCallAiText },
       ),
     ).rejects.toThrow(/no text block/i);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Retry helper tests (callWithRetry + isThrottle)
+// ---------------------------------------------------------------------------
+
+describe('isThrottle', () => {
+  it('returns true for 429 in message', () => {
+    expect(isThrottle(new Error('HTTP 429: Too Many Requests'))).toBe(true);
+  });
+  it('returns true for ThrottlingException', () => {
+    expect(isThrottle(new Error('ThrottlingException: rate exceeded'))).toBe(true);
+  });
+  it('returns true for "Too Many Requests" prose', () => {
+    expect(isThrottle(new Error('Too Many Requests'))).toBe(true);
+  });
+  it('returns false for 500 errors', () => {
+    expect(isThrottle(new Error('Internal Server Error 500'))).toBe(false);
+  });
+  it('returns false for auth errors', () => {
+    expect(isThrottle(new Error('Unauthorized 401'))).toBe(false);
+  });
+});
+
+describe('callWithRetry', () => {
+  it('(a) resolves on attempt 2 after a 429 on attempt 1', async () => {
+    // Fake sleep — records calls but resolves immediately.
+    const sleepCalls: number[] = [];
+    const fakeSleep = async (ms: number) => { sleepCalls.push(ms); };
+
+    let callCount = 0;
+    const fn = async () => {
+      callCount++;
+      if (callCount === 1) throw new Error('HTTP 429: Too Many Requests');
+      return 'success';
+    };
+
+    const result = await callWithRetry(fn, fakeSleep);
+
+    expect(result).toBe('success');
+    expect(callCount).toBe(2);
+    // One sleep between attempt 1 and attempt 2, matching RETRY_DELAYS_MS[0].
+    expect(sleepCalls).toHaveLength(1);
+    expect(sleepCalls[0]).toBe(RETRY_DELAYS_MS[0]);
+  });
+
+  it('(b) throws after 4 consecutive 429 errors (all delays exhausted)', async () => {
+    const fakeSleep = async (_ms: number) => {};
+
+    let callCount = 0;
+    const throttleErr = new Error('ThrottlingException: capacity exceeded');
+    const fn = async () => {
+      callCount++;
+      throw throttleErr;
+    };
+
+    await expect(callWithRetry(fn, fakeSleep)).rejects.toThrow('ThrottlingException: capacity exceeded');
+    // RETRY_DELAYS_MS has 4 entries → 4 attempts total.
+    expect(callCount).toBe(RETRY_DELAYS_MS.length);
+  });
+
+  it('(c) throws immediately on a 500 error without retrying', async () => {
+    const sleepCalls: number[] = [];
+    const fakeSleep = async (ms: number) => { sleepCalls.push(ms); };
+
+    let callCount = 0;
+    const serverErr = new Error('Internal Server Error 500');
+    const fn = async () => {
+      callCount++;
+      throw serverErr;
+    };
+
+    await expect(callWithRetry(fn, fakeSleep)).rejects.toThrow('Internal Server Error 500');
+    // Non-throttle → exactly 1 attempt, no sleep.
+    expect(callCount).toBe(1);
+    expect(sleepCalls).toHaveLength(0);
   });
 });
