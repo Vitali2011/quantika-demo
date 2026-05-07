@@ -45,9 +45,16 @@ export async function scrapeJwc(baseUrl: string): Promise<JwcScrapedBulletin[]> 
     return [];
   }
 
-  const bulletinLinks = extractBulletinLinks(listingHtml, baseUrl);
+  let bulletinLinks = extractBulletinLinks(listingHtml, baseUrl);
   if (bulletinLinks.length === 0) {
     return [];
+  }
+
+  // Guard: cap bulletins to prevent listing-page DoS via unbounded HTTP requests
+  const MAX_BULLETINS = 50;
+  if (bulletinLinks.length > MAX_BULLETINS) {
+    console.warn(`[scrapeJwc] Listing has ${bulletinLinks.length} links, capping at ${MAX_BULLETINS}`);
+    bulletinLinks = bulletinLinks.slice(0, MAX_BULLETINS);
   }
 
   const bulletins = await fetchBulletinsWithConcurrency(bulletinLinks, MAX_CONCURRENT);
@@ -66,7 +73,18 @@ async function fetchWithTimeout(url: string, timeoutMs: number): Promise<string>
       throw new Error(`Failed to fetch bulletin listing: ${response.status}`);
     }
 
-    return await response.text();
+    // Guard: size limit to prevent DoS via large responses (max 10MB)
+    const MAX_RESPONSE_BYTES = 10 * 1024 * 1024;
+    const contentLength = response.headers?.get?.('content-length');
+    if (contentLength && parseInt(contentLength, 10) > MAX_RESPONSE_BYTES) {
+      throw new Error(`Response too large: ${contentLength} bytes (max ${MAX_RESPONSE_BYTES})`);
+    }
+    const text = await response.text();
+    if (text.length > MAX_RESPONSE_BYTES) {
+      throw new Error(`Response body too large: ${text.length} chars (max ${MAX_RESPONSE_BYTES})`);
+    }
+
+    return text;
   } catch (error) {
     clearTimeout(timeout);
     if ((error as Error).name === 'AbortError') {
