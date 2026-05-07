@@ -27,6 +27,14 @@ export interface AiOpts {
   /** Max tokens for the completion (default: 16_000). */
   maxTokens?: number;
   /**
+   * Gemini Deep Think budget. Only applicable to gemini provider.
+   * -1 = dynamic (model decides how much to think, deeper = better on hard reasoning).
+   * Large positive number (e.g. 24000) = explicit token budget for thinking.
+   * Omit (undefined) = no thinking config passed → regular mode.
+   * Enabling this increases cost 2-3× but improves reasoning quality.
+   */
+  thinkingBudget?: number;
+  /**
    * Gemini structured-output schema (Vertex AI `responseSchema`).
    * When provided AND provider=gemini, the SDK sends `responseMimeType:
    * 'application/json'` + `responseSchema` — guaranteeing valid JSON
@@ -80,6 +88,9 @@ const COST_TABLE_PER_M_TOKENS: Record<string, { in: number; out: number }> = {
   'gemini:gemini-2.5-flash': { in: 0.075, out: 0.30 },
   'gemini:gemini-2.5-flash-lite': { in: 0.0375, out: 0.15 },
   'gemini:gemini-2.5-pro': { in: 1.25, out: 5.0 },
+  // Deep Think suffix is used by the eval script to track thinkingBudget runs separately in ai_audit.
+  // Billing rate is the same underlying model, but output token usage is higher in practice (2-3×).
+  'gemini:gemini-2.5-pro-deepthink': { in: 1.25, out: 5.0 },
   // Claude Opus 4.7 — AWS Bedrock cross-region inference profiles (no date suffix starting Opus 4.x)
   'bedrock:us.anthropic.claude-opus-4-7': { in: 15, out: 75 },
   'bedrock:eu.anthropic.claude-opus-4-7': { in: 15, out: 75 },
@@ -266,6 +277,7 @@ async function callGeminiText(
           contents: Array<{ role: string; parts: Array<{ text: string }> }>;
           config?: {
             systemInstruction?: string;
+            thinkingConfig?: { thinkingBudget: number; includeThoughts: boolean };
             responseMimeType?: string;
             responseSchema?: Record<string, unknown>;
           };
@@ -280,14 +292,22 @@ async function callGeminiText(
     location: process.env.GOOGLE_CLOUD_LOCATION ?? 'us-central1',
   });
 
-  // Structured output: when caller supplies a responseSchema, instruct Gemini
-  // to return valid JSON matching the schema. This eliminates markdown fences
-  // and guarantees parseable output.
+  // Build config — handle both Deep Think (thinkingConfig) and structured output (responseSchema).
+  // Each is opt-in: omit thinkingConfig → default Pro behavior; omit responseSchema → free-form text.
   const config: {
     systemInstruction?: string;
+    thinkingConfig?: { thinkingBudget: number; includeThoughts: boolean };
     responseMimeType?: string;
     responseSchema?: Record<string, unknown>;
   } = { systemInstruction: system };
+
+  if (opts?.thinkingBudget !== undefined) {
+    config.thinkingConfig = {
+      thinkingBudget: opts.thinkingBudget,
+      includeThoughts: false, // Keep response clean — thoughts are internal only
+    };
+  }
+
   if (opts?.responseSchema) {
     config.responseMimeType = 'application/json';
     config.responseSchema = opts.responseSchema;
