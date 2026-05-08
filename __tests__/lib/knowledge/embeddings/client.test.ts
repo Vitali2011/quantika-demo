@@ -152,6 +152,31 @@ describe("Vertex AI embedding client", () => {
       expect(secondCallInstances).toHaveLength(10);
     });
 
+    it("splits batches exceeding MAX_CHARS_PER_BATCH (76000 chars) into multiple calls", async () => {
+      // 50 texts × 2000 chars each = 100,000 chars total > 76,000 limit
+      // Expected: 2 batches (38 × 2000 = 76,000 chars, 12 × 2000 = 24,000 chars)
+      const texts = Array(50).fill("x".repeat(2000));
+      const mockEmbedding = Array(768).fill(0.5);
+
+      const makeResponse = (count: number) => [{
+        predictions: Array(count).fill({
+          structValue: { fields: { embeddings: { structValue: { fields: { values: {
+            listValue: { values: mockEmbedding.map(v => ({ numberValue: v })) },
+          }}}}}}
+        })
+      }];
+
+      _mockPredict.mockResolvedValueOnce(makeResponse(38));
+      _mockPredict.mockResolvedValueOnce(makeResponse(12));
+
+      const result = await embedDocuments(texts);
+
+      expect(result).toHaveLength(50);
+      expect(_mockPredict).toHaveBeenCalledTimes(2);
+      expect(_mockPredict.mock.calls[0][0].instances).toHaveLength(38);
+      expect(_mockPredict.mock.calls[1][0].instances).toHaveLength(12);
+    });
+
     it("handles 501 texts with 3 batches (250+250+1)", async () => {
       const texts = Array(501).fill("test");
       const mockEmbedding = Array(768).fill(0.5);
