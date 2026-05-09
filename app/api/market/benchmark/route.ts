@@ -23,11 +23,8 @@ export async function GET(request: Request): Promise<NextResponse> {
 
   if (!benchmark) {
     return NextResponse.json(
-      { error: 'Benchmark unavailable' },
-      {
-        status: 503,
-        headers: { 'Cache-Control': 'no-store' },
-      },
+      { error: `No benchmark data available for ${indicator}` },
+      { status: 404 },
     );
   }
 

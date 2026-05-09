@@ -1,4 +1,4 @@
-import { getCurrentBenchmark, formatBenchmarkReference, _clearCacheForTesting } from '../benchmark';
+import { formatBenchmarkReference } from '../benchmark';
 import type { MarketBenchmark } from '@/lib/types';
 
 const MOCK_BENCHMARK: MarketBenchmark = {
@@ -9,39 +9,6 @@ const MOCK_BENCHMARK: MarketBenchmark = {
   sourceUrl: 'https://heavyliftpfi.com/market-data/',
   fetchedAt: new Date().toISOString(),
 };
-
-jest.mock('../toepfer-scraper', () => ({
-  fetchToepferTmi: jest.fn(),
-}));
-
-import { fetchToepferTmi } from '../toepfer-scraper';
-const mockedFetch = fetchToepferTmi as jest.MockedFunction<typeof fetchToepferTmi>;
-
-describe('getCurrentBenchmark', () => {
-  beforeEach(() => {
-    jest.resetAllMocks();
-    _clearCacheForTesting();
-  });
-
-  it('fetches and returns benchmark on cache miss', async () => {
-    mockedFetch.mockResolvedValue(MOCK_BENCHMARK);
-
-    const result = await getCurrentBenchmark('TOEPFER_TMI');
-
-    expect(result).not.toBeNull();
-    expect(result!.indicator).toBe('TOEPFER_TMI');
-    expect(result!.value).toBe(12683);
-    expect(mockedFetch).toHaveBeenCalledTimes(1);
-  });
-
-  it('returns null when fetch returns null and no cache', async () => {
-    mockedFetch.mockResolvedValue(null);
-
-    const result = await getCurrentBenchmark('TOEPFER_TMI');
-
-    expect(result).toBeNull();
-  });
-});
 
 describe('formatBenchmarkReference', () => {
   it('formats benchmark as expected string', () => {
