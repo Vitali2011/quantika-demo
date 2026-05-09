@@ -26,6 +26,14 @@ export default function LandingPage() {
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
           <ConnectGmailButton onClick={() => track('oauth_initiated')} />
+          <form method="POST" action="/api/etms-demo" onSubmit={() => track('etms_demo_started')}>
+            <button
+              type="submit"
+              className="inline-flex items-center justify-center rounded-md border border-transparent bg-foreground text-background px-6 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
+            >
+              Demo: ETMS Circulars
+            </button>
+          </form>
           <form method="POST" action="/api/sample" onSubmit={() => track('sample_started')}>
             <button
               type="submit"
