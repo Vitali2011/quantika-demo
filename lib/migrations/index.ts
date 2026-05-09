@@ -17,7 +17,14 @@ import migration016 from './016-war-risk-zones';
 import migration017 from './017-eca-zones';
 import migration018 from './018-knowledge-rag-vec-tables';
 import migration019 from './019-port-master-baltic-indices';
+<<<<<<< HEAD
 import migration021 from './021-port-da-large-vessels';
 import type { Migration } from './types';
 
 export const allMigrations: Migration[] = [migration001, migration002, migration003, migration004, migration005, migration006, migration007, migration008, migration009, migration010, migration011, migration012, migration013, migration014, migration015, migration016, migration017, migration018, migration019, migration021];
+=======
+import migration020 from './020-toepfer-tmi-seed';
+import type { Migration } from './types';
+
+export const allMigrations: Migration[] = [migration001, migration002, migration003, migration004, migration005, migration006, migration007, migration008, migration009, migration010, migration011, migration012, migration013, migration014, migration015, migration016, migration017, migration018, migration019, migration020];
+>>>>>>> ea2330c (feat(spec-00): migration 020 + baltic-repository DB layer)
