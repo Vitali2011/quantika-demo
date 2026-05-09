@@ -80,6 +80,39 @@
         "cargo_type": "general",
         "confidence": "estimated",
         "source": "manual"
+      },
+      {
+        "vessel_dwt_min": 65001,
+        "vessel_dwt_max": 90000,
+        "port_dues_usd": 88000,
+        "pilotage_usd": 47000,
+        "tugs_usd": 40000,
+        "stevedoring_usd_per_mt": 5.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "broker-research-2026-05"
+      },
+      {
+        "vessel_dwt_min": 90001,
+        "vessel_dwt_max": 150000,
+        "port_dues_usd": 116000,
+        "pilotage_usd": 62000,
+        "tugs_usd": 53000,
+        "stevedoring_usd_per_mt": 4.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "broker-research-2026-05"
+      },
+      {
+        "vessel_dwt_min": 150001,
+        "vessel_dwt_max": 200000,
+        "port_dues_usd": 148000,
+        "pilotage_usd": 80000,
+        "tugs_usd": 68000,
+        "stevedoring_usd_per_mt": 4.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "broker-research-2026-05"
       }
     ]
   },
@@ -136,6 +169,39 @@
         "cargo_type": "general",
         "confidence": "estimated",
         "source": "manual"
+      },
+      {
+        "vessel_dwt_min": 65001,
+        "vessel_dwt_max": 90000,
+        "port_dues_usd": 82000,
+        "pilotage_usd": 44000,
+        "tugs_usd": 38000,
+        "stevedoring_usd_per_mt": 5.2,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "broker-research-2026-05"
+      },
+      {
+        "vessel_dwt_min": 90001,
+        "vessel_dwt_max": 150000,
+        "port_dues_usd": 108000,
+        "pilotage_usd": 58000,
+        "tugs_usd": 49000,
+        "stevedoring_usd_per_mt": 4.7,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "broker-research-2026-05"
+      },
+      {
+        "vessel_dwt_min": 150001,
+        "vessel_dwt_max": 200000,
+        "port_dues_usd": 138000,
+        "pilotage_usd": 74000,
+        "tugs_usd": 63000,
+        "stevedoring_usd_per_mt": 4.2,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "broker-research-2026-05"
       }
     ]
   },
@@ -864,6 +930,39 @@
         "cargo_type": "general",
         "confidence": "estimated",
         "source": "manual"
+      },
+      {
+        "vessel_dwt_min": 65001,
+        "vessel_dwt_max": 90000,
+        "port_dues_usd": 110000,
+        "pilotage_usd": 60000,
+        "tugs_usd": 50000,
+        "stevedoring_usd_per_mt": 5.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "broker-research-2026-05"
+      },
+      {
+        "vessel_dwt_min": 90001,
+        "vessel_dwt_max": 150000,
+        "port_dues_usd": 145000,
+        "pilotage_usd": 78000,
+        "tugs_usd": 67000,
+        "stevedoring_usd_per_mt": 4.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "broker-research-2026-05"
+      },
+      {
+        "vessel_dwt_min": 150001,
+        "vessel_dwt_max": 200000,
+        "port_dues_usd": 185000,
+        "pilotage_usd": 100000,
+        "tugs_usd": 86000,
+        "stevedoring_usd_per_mt": 4.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "broker-research-2026-05"
       }
     ]
   },
@@ -892,6 +991,39 @@
         "cargo_type": "general",
         "confidence": "estimated",
         "source": "manual"
+      },
+      {
+        "vessel_dwt_min": 65001,
+        "vessel_dwt_max": 90000,
+        "port_dues_usd": 105000,
+        "pilotage_usd": 57000,
+        "tugs_usd": 49000,
+        "stevedoring_usd_per_mt": 5.2,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "broker-research-2026-05"
+      },
+      {
+        "vessel_dwt_min": 90001,
+        "vessel_dwt_max": 150000,
+        "port_dues_usd": 140000,
+        "pilotage_usd": 75000,
+        "tugs_usd": 64000,
+        "stevedoring_usd_per_mt": 4.6,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "broker-research-2026-05"
+      },
+      {
+        "vessel_dwt_min": 150001,
+        "vessel_dwt_max": 200000,
+        "port_dues_usd": 178000,
+        "pilotage_usd": 96000,
+        "tugs_usd": 82000,
+        "stevedoring_usd_per_mt": 4.1,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "broker-research-2026-05"
       }
     ]
   },
@@ -948,6 +1080,39 @@
         "cargo_type": "general",
         "confidence": "estimated",
         "source": "manual"
+      },
+      {
+        "vessel_dwt_min": 65001,
+        "vessel_dwt_max": 90000,
+        "port_dues_usd": 95000,
+        "pilotage_usd": 51000,
+        "tugs_usd": 44000,
+        "stevedoring_usd_per_mt": 4.8,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "broker-research-2026-05"
+      },
+      {
+        "vessel_dwt_min": 90001,
+        "vessel_dwt_max": 150000,
+        "port_dues_usd": 125000,
+        "pilotage_usd": 67000,
+        "tugs_usd": 57000,
+        "stevedoring_usd_per_mt": 4.3,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "broker-research-2026-05"
+      },
+      {
+        "vessel_dwt_min": 150001,
+        "vessel_dwt_max": 200000,
+        "port_dues_usd": 160000,
+        "pilotage_usd": 86000,
+        "tugs_usd": 73000,
+        "stevedoring_usd_per_mt": 3.8,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "broker-research-2026-05"
       }
     ]
   },
@@ -1060,6 +1225,45 @@
         "cargo_type": "general",
         "confidence": "estimated",
         "source": "manual"
+      }
+    ]
+  },
+  {
+    "port_code": "AUPHE",
+    "port_name": "Port Hedland",
+    "brackets": [
+      {
+        "vessel_dwt_min": 65001,
+        "vessel_dwt_max": 90000,
+        "port_dues_usd": 90000,
+        "pilotage_usd": 48000,
+        "tugs_usd": 41000,
+        "stevedoring_usd_per_mt": 3.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "broker-research-2026-05"
+      },
+      {
+        "vessel_dwt_min": 90001,
+        "vessel_dwt_max": 150000,
+        "port_dues_usd": 118000,
+        "pilotage_usd": 63000,
+        "tugs_usd": 54000,
+        "stevedoring_usd_per_mt": 3.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "broker-research-2026-05"
+      },
+      {
+        "vessel_dwt_min": 150001,
+        "vessel_dwt_max": 200000,
+        "port_dues_usd": 150000,
+        "pilotage_usd": 81000,
+        "tugs_usd": 69000,
+        "stevedoring_usd_per_mt": 2.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "broker-research-2026-05"
       }
     ]
   }
