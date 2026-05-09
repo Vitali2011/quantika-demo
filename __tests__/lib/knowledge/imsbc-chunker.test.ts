@@ -76,6 +76,49 @@ describe('chunkImsbc', () => {
     });
 
     /**
+     * TC-SPACE-01: Inline tags adjacent to text without surrounding whitespace
+     * Bug: removing <span>/<strong> left no space between words
+     * e.g. "6<span>Information</span><span>regarding</span>" → "6 Information regarding"
+     */
+    it('should insert space between words when adjacent inline tags are stripped', () => {
+      const sections: ScrapedSection[] = [
+        {
+          sectionId: 'SECTION-6',
+          title: 'Test Section',
+          rawHtml:
+            '<p>6<span>Information</span><span>regarding</span><span>ships stability</span></p>',
+          sourceUrl: 'https://example.com/section6',
+        },
+      ];
+      const result = chunkImsbc(sections);
+      expect(result.length).toBeGreaterThan(0);
+      // Must NOT be run-together words
+      expect(result[0].content).not.toContain('6Information');
+      expect(result[0].content).not.toContain('Informationregarding');
+      // Must have spaces between words
+      expect(result[0].content).toBe('6 Information regarding ships stability');
+    });
+
+    /**
+     * TC-SPACE-02: <strong> tag without surrounding whitespace
+     */
+    it('should insert space when <strong> tag is stripped without surrounding whitespace', () => {
+      const sections: ScrapedSection[] = [
+        {
+          sectionId: 'SECTION-1',
+          title: 'Test Section',
+          rawHtml: '<p><strong>Note:</strong>This text runs together without inline tag space.</p>',
+          sourceUrl: 'https://example.com/section1',
+        },
+      ];
+      const result = chunkImsbc(sections);
+      expect(result.length).toBeGreaterThan(0);
+      expect(result[0].content).not.toContain('Note:This');
+      expect(result[0].content).toContain('Note:');
+      expect(result[0].content).toContain('This text');
+    });
+
+    /**
      * TC-NBI-03: Defense-in-depth security tag stripping
      * Input Contract row: Dangerous HTML elements | "<script>alert('xss')</script>" | Strip before text extraction
      */

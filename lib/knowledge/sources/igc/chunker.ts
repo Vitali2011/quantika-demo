@@ -23,7 +23,7 @@ function htmlToPlainText(html: string): string {
   text = text.replace(/<\/p>/gi, '</p>\n\n');
   text = text.replace(/<br\s*\/?>/gi, '\n');
   text = text.replace(/<\/div>/gi, '</div>\n\n');
-  text = text.replace(/<[^>]+>/g, '');
+  text = text.replace(/<[^>]+>/g, ' ');
 
   text = text
     .replace(/&amp;/g, '&')
@@ -33,7 +33,9 @@ function htmlToPlainText(html: string): string {
     .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(parseInt(dec, 10)))
     .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
 
-  text = text.replace(/[ ---]/g, '');
+  // Strip C0/C1 control chars (keep \t=U+0009, \n=U+000A, \r=U+000D)
+  // Removes: NUL(U+0000)–BS(U+0008), VT(U+000B), FF(U+000C), SO(U+000E)–US(U+001F), DEL(U+007F), C1(U+0080–U+009F)
+  text = text.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, '');
   text = text.replace(/[​-‏‪-‮⁦-⁩﻿]/g, '');
   text = text.replace(/[ \t]+/g, ' ');
   text = text.replace(/\n{3,}/g, '\n\n');
