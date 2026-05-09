@@ -35,6 +35,20 @@ export async function GET(
     );
   }
 
+  const DWT_MIN = 5_000;
+  const DWT_MAX = 200_000;
+
+  if (vesselDwt < DWT_MIN || vesselDwt > DWT_MAX) {
+    const rangeStr = `${DWT_MIN.toLocaleString('en-US')}–${DWT_MAX.toLocaleString('en-US')}`;
+    return NextResponse.json(
+      {
+        outOfRange: true,
+        message: `DWT ${vesselDwt} is outside our data range (${rangeStr} tonnes). Very large vessel rates require manual broker quote — contact your agent.`,
+      },
+      { status: 200 },
+    );
+  }
+
   const cargoType = searchParams.get('cargo_type') ?? undefined;
 
   const breakdown = getPortDa({ portCode: port_code, vesselDwt, cargoType });
