@@ -1,30 +1,21 @@
 /**
- * TDD tests for lib/market/benchmark.ts (spec-01: Benchmark Rewire).
+ * Unit tests for lib/market/benchmark.ts
  *
- * Requirements:
- * - getCurrentBenchmark('BHSI') reads from baltic_indices via getLatestBalticIndex
- * - getCurrentBenchmark('TOEPFER_TMI') reads from DB; fallback to fetchToepferTmi if null
- * - getCurrentBenchmark('DREWRY_BREAKBULK') returns null (no source)
- * - When DB returns null for BHSI → returns null (no scraper fallback)
- * - MarketBenchmark shape is correct for DB-sourced entries
+ * Note: DB-first lookup (BHSI/TOEPFER_TMI from baltic_indices) is done in the
+ * route handler (app/api/market/benchmark/route.ts), which is server-only.
+ * benchmark.ts itself is browser-safe — only uses fetch()-based scraper.
+ *
+ * Tests here cover:
+ * - getCurrentBenchmark TOEPFER_TMI scraper path
+ * - getCurrentBenchmark DREWRY_BREAKBULK → null
+ * - in-memory cache behaviour
+ * - formatBenchmarkReference helper
  */
 
-import Database from 'better-sqlite3';
-import migration019 from '@/lib/migrations/019-port-master-baltic-indices';
-import migration020 from '@/lib/migrations/020-toepfer-tmi-seed';
-import { getCurrentBenchmark, _clearCacheForTesting } from '@/lib/market/benchmark';
+import { getCurrentBenchmark, formatBenchmarkReference, _clearCacheForTesting } from '@/lib/market/benchmark';
+import type { MarketBenchmark } from '@/lib/types';
 
-// ─── Mock DB access ───────────────────────────────────────────────────────────
-
-let mockDb: Database.Database;
-
-jest.mock('@/lib/session-store', () => ({
-  getStore: jest.fn(() => ({
-    getDatabase: () => mockDb,
-  })),
-}));
-
-// ─── Mock toepfer scraper for TOEPFER_TMI fallback tests ─────────────────────
+// ─── Mock toepfer scraper ─────────────────────────────────────────────────────
 
 const mockFetchToepferTmi = jest.fn();
 jest.mock('@/lib/market/toepfer-scraper', () => ({
@@ -34,70 +25,20 @@ jest.mock('@/lib/market/toepfer-scraper', () => ({
 // ─── Setup ───────────────────────────────────────────────────────────────────
 
 beforeEach(() => {
-  mockDb = new Database(':memory:');
-  mockDb.exec('PRAGMA foreign_keys = ON');
-  migration019.up(mockDb);
-  migration020.up(mockDb);
   _clearCacheForTesting();
   jest.clearAllMocks();
 });
 
-afterEach(() => {
-  mockDb.close();
-});
-
 // ─── Tests ───────────────────────────────────────────────────────────────────
 
-describe('getCurrentBenchmark — BHSI (DB-sourced)', () => {
-  it('B-1: returns MarketBenchmark with value=650 for BHSI', async () => {
-    const result = await getCurrentBenchmark('BHSI');
-    expect(result).not.toBeNull();
-    expect(result!.indicator).toBe('BHSI');
-    expect(result!.value).toBe(650);
-    expect(result!.unit).toBe('index');
-  });
-
-  it('B-2: BHSI result has correct shape (period + sourceUrl + fetchedAt)', async () => {
-    const result = await getCurrentBenchmark('BHSI');
-    expect(result).not.toBeNull();
-    expect(result!.period).toBe('2026-05-09');
-    expect(result!.sourceUrl).toBe('static-seed');
-    expect(typeof result!.fetchedAt).toBe('string');
-    // fetchedAt should be a valid ISO 8601 timestamp
-    expect(() => new Date(result!.fetchedAt)).not.toThrow();
-  });
-
-  it('B-3: returns null for BHSI when DB has no row', async () => {
-    // Remove the BHSI row
-    mockDb.exec(`DELETE FROM baltic_indices WHERE index_code = 'BHSI'`);
-    const result = await getCurrentBenchmark('BHSI');
-    expect(result).toBeNull();
-  });
-});
-
-describe('getCurrentBenchmark — TOEPFER_TMI (DB with scraper fallback)', () => {
-  it('T-1: returns MarketBenchmark with value=12683 for TOEPFER_TMI from DB', async () => {
-    const result = await getCurrentBenchmark('TOEPFER_TMI');
-    expect(result).not.toBeNull();
-    expect(result!.indicator).toBe('TOEPFER_TMI');
-    expect(result!.value).toBe(12683);
-    expect(result!.unit).toBe('USD/day');
-  });
-
-  it('T-2: TOEPFER_TMI period and sourceUrl come from DB row', async () => {
-    const result = await getCurrentBenchmark('TOEPFER_TMI');
-    expect(result!.period).toBe('2026-05-09');
-    expect(result!.sourceUrl).toBe('static-seed');
-  });
-
-  it('T-3: scraper fallback is used when DB has no TOEPFER_TMI row', async () => {
-    mockDb.exec(`DELETE FROM baltic_indices WHERE index_code = 'TOEPFER_TMI'`);
-    const scraperResult = {
-      indicator: 'TOEPFER_TMI' as const,
-      value: 13000,
+describe('getCurrentBenchmark — TOEPFER_TMI (scraper path)', () => {
+  it('T-1: calls scraper and returns MarketBenchmark', async () => {
+    const scraperResult: MarketBenchmark = {
+      indicator: 'TOEPFER_TMI',
+      value: 12683,
       unit: 'USD/day',
       period: 'May 2026',
-      sourceUrl: 'https://toepfer.com/tmi',
+      sourceUrl: 'https://heavyliftpfi.com/market-data/',
       fetchedAt: new Date().toISOString(),
     };
     mockFetchToepferTmi.mockResolvedValue(scraperResult);
@@ -105,27 +46,73 @@ describe('getCurrentBenchmark — TOEPFER_TMI (DB with scraper fallback)', () =>
     const result = await getCurrentBenchmark('TOEPFER_TMI');
     expect(mockFetchToepferTmi).toHaveBeenCalledTimes(1);
     expect(result).not.toBeNull();
-    expect(result!.value).toBe(13000);
+    expect(result!.value).toBe(12683);
+    expect(result!.indicator).toBe('TOEPFER_TMI');
   });
 
-  it('T-4: returns null when DB has no TOEPFER_TMI row and scraper returns null', async () => {
-    mockDb.exec(`DELETE FROM baltic_indices WHERE index_code = 'TOEPFER_TMI'`);
+  it('T-2: returns null when scraper returns null', async () => {
     mockFetchToepferTmi.mockResolvedValue(null);
-
     const result = await getCurrentBenchmark('TOEPFER_TMI');
     expect(result).toBeNull();
   });
 
-  it('T-5: scraper is NOT called when DB has TOEPFER_TMI row', async () => {
-    const result = await getCurrentBenchmark('TOEPFER_TMI');
-    expect(result).not.toBeNull();
+  it('T-3: caches result; scraper is NOT called on second invocation', async () => {
+    const scraperResult: MarketBenchmark = {
+      indicator: 'TOEPFER_TMI',
+      value: 12683,
+      unit: 'USD/day',
+      period: 'May 2026',
+      sourceUrl: 'https://heavyliftpfi.com/market-data/',
+      fetchedAt: new Date().toISOString(),
+    };
+    mockFetchToepferTmi.mockResolvedValue(scraperResult);
+
+    await getCurrentBenchmark('TOEPFER_TMI');
+    await getCurrentBenchmark('TOEPFER_TMI');
+    expect(mockFetchToepferTmi).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('getCurrentBenchmark — BHSI (no scraper — returns null at benchmark layer)', () => {
+  it('B-1: returns null for BHSI (DB lookup is done at route layer)', async () => {
+    // BHSI has no scraper fallback in benchmark.ts; DB lookup is done in route.ts
+    const result = await getCurrentBenchmark('BHSI');
+    expect(result).toBeNull();
     expect(mockFetchToepferTmi).not.toHaveBeenCalled();
   });
 });
 
 describe('getCurrentBenchmark — DREWRY_BREAKBULK', () => {
-  it('D-1: returns null for DREWRY_BREAKBULK (no data source)', async () => {
+  it('D-1: returns null (no data source)', async () => {
     const result = await getCurrentBenchmark('DREWRY_BREAKBULK');
     expect(result).toBeNull();
+  });
+});
+
+describe('formatBenchmarkReference', () => {
+  it('F-1: formats USD value correctly', () => {
+    const benchmark: MarketBenchmark = {
+      indicator: 'TOEPFER_TMI',
+      value: 12683,
+      unit: 'USD/day',
+      period: 'Apr 2026',
+      sourceUrl: 'https://toepfer.com',
+      fetchedAt: new Date().toISOString(),
+    };
+    const result = formatBenchmarkReference(benchmark);
+    expect(result).toBe('Toepfer TMI Apr 2026 — $12,683/day TCE');
+  });
+
+  it('F-2: handles round numbers without decimals', () => {
+    const benchmark: MarketBenchmark = {
+      indicator: 'TOEPFER_TMI',
+      value: 10000,
+      unit: 'USD/day',
+      period: 'Jan 2026',
+      sourceUrl: 'https://toepfer.com',
+      fetchedAt: new Date().toISOString(),
+    };
+    const result = formatBenchmarkReference(benchmark);
+    expect(result).toBe('Toepfer TMI Jan 2026 — $10,000/day TCE');
   });
 });

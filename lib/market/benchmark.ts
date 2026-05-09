@@ -1,12 +1,10 @@
 import type { MarketBenchmark, MarketIndicator } from '@/lib/types';
 import { fetchToepferTmi } from './toepfer-scraper';
-import { getLatestBalticIndex } from './baltic-repository';
-import { getStore } from '@/lib/session-store';
 
 /** TTL for cached market benchmark entries: 7 days in milliseconds. */
 const BENCHMARK_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
-/** In-memory cache keyed by indicator — avoids repeated DB reads in serverless contexts. */
+/** In-memory cache keyed by indicator — avoids DB dependency in serverless contexts. */
 const memCache = new Map<MarketIndicator, { benchmark: MarketBenchmark; cachedAt: number }>();
 
 /** @internal Test helper — clears the in-memory cache. */
@@ -19,11 +17,9 @@ function isFresh(cachedAt: number): boolean {
 }
 
 /**
- * Returns the latest benchmark for the given indicator.
- *
- * - BHSI: reads from baltic_indices DB; returns null if not found.
- * - TOEPFER_TMI: reads from baltic_indices DB; falls back to fetchToepferTmi() if not found.
- * - DREWRY_BREAKBULK: no source available, returns null.
+ * Returns the latest benchmark for the given indicator via scraper/network.
+ * DB-first lookup is handled by the route handler (server-only context).
+ * Only TOEPFER_TMI has a scraper fallback; other indicators return null.
  *
  * Reads from in-memory cache first; fetches fresh if stale or missing.
  */
@@ -36,27 +32,9 @@ export async function getCurrentBenchmark(
   }
 
   let fetched: MarketBenchmark | null = null;
-
-  if (indicator === 'BHSI' || indicator === 'TOEPFER_TMI') {
-    const db = getStore().getDatabase();
-    const row = getLatestBalticIndex(db, indicator);
-
-    if (row) {
-      fetched = {
-        indicator,
-        value: row.value,
-        unit: indicator === 'TOEPFER_TMI' ? 'USD/day' : 'index',
-        period: row.price_date,
-        sourceUrl: row.source,
-        fetchedAt: new Date().toISOString(),
-      };
-    } else if (indicator === 'TOEPFER_TMI') {
-      // Fallback to scraper when DB has no row
-      fetched = await fetchToepferTmi();
-    }
-    // For BHSI with no DB row: fetched stays null (no scraper fallback)
+  if (indicator === 'TOEPFER_TMI') {
+    fetched = await fetchToepferTmi();
   }
-  // DREWRY_BREAKBULK: no data source, fetched stays null
 
   if (fetched) {
     memCache.set(indicator, { benchmark: fetched, cachedAt: Date.now() });
