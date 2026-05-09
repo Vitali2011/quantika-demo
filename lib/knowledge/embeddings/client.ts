@@ -18,6 +18,9 @@ const LOCATION = "us-central1";
 const MODEL = "text-multilingual-embedding-002";
 const DIMENSIONS = 768;
 const MAX_BATCH = 250;
+// Vertex AI text-multilingual-embedding-002 limit: 20K tokens/request (≈ 4 chars/token)
+// Use 76K chars (~19K tokens) as safe upper bound per API call
+const MAX_CHARS_PER_BATCH = 76_000;
 
 const client = new PredictionServiceClient({
   apiEndpoint: `${LOCATION}-aiplatform.googleapis.com`,
@@ -43,9 +46,23 @@ export async function embed(texts: string[], taskType: TaskType): Promise<Float3
 
   const out: Float32Array[] = [];
 
-  // Batch processing: split into chunks of MAX_BATCH
-  for (let i = 0; i < texts.length; i += MAX_BATCH) {
-    const batch = texts.slice(i, i + MAX_BATCH);
+  // Batch by item count (MAX_BATCH) AND total char count (MAX_CHARS_PER_BATCH)
+  let batchStart = 0;
+  while (batchStart < texts.length) {
+    let batchEnd = batchStart;
+    let batchChars = 0;
+    while (
+      batchEnd < texts.length &&
+      batchEnd - batchStart < MAX_BATCH &&
+      batchChars + texts[batchEnd].length <= MAX_CHARS_PER_BATCH
+    ) {
+      batchChars += texts[batchEnd].length;
+      batchEnd++;
+    }
+    // Always advance at least 1 to prevent infinite loop on a single over-limit text
+    if (batchEnd === batchStart) batchEnd = batchStart + 1;
+    const batch = texts.slice(batchStart, batchEnd);
+    batchStart = batchEnd;
 
     const [response] = await client.predict({
       endpoint: `projects/${PROJECT_ID}/locations/${LOCATION}/publishers/google/models/${MODEL}`,

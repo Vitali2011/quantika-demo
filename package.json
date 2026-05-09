@@ -19,6 +19,8 @@
     "knowledge:refresh": "npx tsx scripts/knowledge/refresh.ts",
     "knowledge:imsbc": "npx tsx scripts/knowledge-imsbc-embed.ts",
     "knowledge:jwc": "npx tsx scripts/knowledge-jwc-embed.ts",
+    "knowledge:jwc-yaml": "npx tsx scripts/knowledge-jwc-yaml-seed.ts",
+    "knowledge:igc": "npx tsx scripts/knowledge-igc-embed.ts",
     "bake-off": "tsx scripts/wave-gamma-bake-off/cli.ts",
     "bake-off:redecide": "tsx scripts/wave-gamma-bake-off/redecide.ts",
     "bake-off:validate-baseline": "tsx scripts/wave-gamma-bake-off/validate-baseline.ts",
