@@ -9,9 +9,12 @@ import { parseEuXml } from "./eu-parser";
 import type { ParsedEntity } from "./eu-parser";
 import { normalizeName } from "./normalize";
 
-// EU URL with optional token from env var (token may rotate)
+// EU Financial Sanctions Files portal — requires a registered token.
+// Register at: https://webgate.ec.europa.eu/fsd/fsf (free, institutional use)
+// Set EU_SANCTIONS_TOKEN env var with the token you receive by email.
+// Without a token the endpoint returns 403 — sync will fail gracefully.
 const EU_BASE_URL =
-  "https://webgate.ec.europa.eu/europeaid/fsd/fsf/public/files/xmlFullSanctionsList_1_1/content";
+  "https://webgate.ec.europa.eu/fsd/fsf/public/files/xmlFullSanctionsList_1_1/content";
 const EU_TOKEN = process.env.EU_SANCTIONS_TOKEN || "";
 const EU_URL = EU_TOKEN ? `${EU_BASE_URL}?token=${EU_TOKEN}` : EU_BASE_URL;
 
