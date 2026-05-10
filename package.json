@@ -28,6 +28,11 @@
     "bake-off:validate-baseline": "tsx scripts/wave-gamma-bake-off/validate-baseline.ts",
     "bake-off:ground-truth": "tsx scripts/wave-gamma-bake-off/build-ground-truth.ts",
     "build-reference": "tsx scripts/wave-gamma-bake-off/build-reference.ts",
+    "setup:gmail-oauth": "tsx scripts/setup-gmail-oauth.ts",
+    "import:emails": "tsx scripts/import-gmail-emails.ts",
+    "build:corpus": "tsx scripts/build-corpus.ts",
+    "sync:corpus:vps": "bash scripts/sync-corpus-vps.sh",
+    "corpus:extract": "tsx scripts/extract-corpus-cases.ts",
     "prepare": "husky"
   },
   "dependencies": {

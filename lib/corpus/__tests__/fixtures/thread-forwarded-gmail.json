@@ -1,0 +1,24 @@
+{
+  "id": "thread-002",
+  "messages": [
+    {
+      "id": "msg-002",
+      "threadId": "thread-002",
+      "snippet": "Please see the forwarded inquiry below.",
+      "labelIds": ["INBOX"],
+      "internalDate": "1746518400000",
+      "payload": {
+        "mimeType": "text/plain",
+        "headers": [
+          { "name": "From", "value": "Forwarder Agent <agent@forwarder.com>" },
+          { "name": "To", "value": "sales@quantika.com" },
+          { "name": "Subject", "value": "Fwd: Bulk cargo query" },
+          { "name": "Date", "value": "Mon, 06 May 2026 12:00:00 +0000" }
+        ],
+        "body": {
+          "data": "UGxlYXNlIHNlZSB0aGUgZm9yd2FyZGVkIGlucXVpcnkgYmVsb3cuCgotLS0tLS0tLS0tIEZvcndhcmRlZCBtZXNzYWdlIC0tLS0tLS0tLS0KRnJvbTogY2FyZ29Ac2hpcHBlci5jb20KRGF0ZTogRnJpLCAwMiBNYXkgMjAyNiAwODowMDowMCArMDAwMApTdWJqZWN0OiBCdWxrIGNhcmdvIHF1ZXJ5ClRvOiBmb3J3YXJkZXJAZXhhbXBsZS5jb20KCkRlYXIgRm9yd2FyZGVyLAoKV2UgbmVlZCB0byBzaGlwIDEwMDAwbXQgb2YgZ3JhaW4gZnJvbSBPZGVzc2EgdG8gUm90dGVyZGFtLgoKQmVzdCByZWdhcmRzLApDYXJnbyBUZWFt"
+        }
+      }
+    }
+  ]
+}

@@ -64,3 +64,6 @@ next-env.d.ts
 # wave-γ-data-l5c-v1: private artefacts (IMSBC PDF, intermediate LLM outputs)
 /.private/
 .specs/wave-gamma-vertex/bake-off-results/
+
+# corpus-00: sample fixture removed from repo — keep gitignored to prevent accidental re-add
+lib/sample-data/etms-emails.json

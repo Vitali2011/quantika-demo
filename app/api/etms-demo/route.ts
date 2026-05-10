@@ -4,8 +4,6 @@ import { generateCsrfToken, validateCsrf } from '@/lib/csrf';
 import { createSession, updateSession } from '@/lib/session';
 import type { Email } from '@/lib/types';
 
-import etmsEmailsRaw from '@/lib/sample-data/etms-emails.json';
-
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
@@ -13,7 +11,8 @@ export async function POST(request: NextRequest) {
 
   const sessionId = createSession('etms-demo-token');
 
-  const emails: Email[] = (etmsEmailsRaw as Email[]);
+  // TODO(spec-corpus-05): wire real corpus from .private/etms-corpus.json via corpus loader
+  const emails: Email[] = [];
 
   updateSession(sessionId, { emails });
 
