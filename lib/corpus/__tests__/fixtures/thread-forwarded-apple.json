@@ -1,0 +1,54 @@
+{
+  "id": "thread-003",
+  "messages": [
+    {
+      "id": "msg-003a",
+      "threadId": "thread-003",
+      "snippet": "FYI please handle this.",
+      "labelIds": ["INBOX"],
+      "internalDate": "1746432000000",
+      "payload": {
+        "mimeType": "multipart/alternative",
+        "headers": [
+          { "name": "From", "value": "Broker <broker@quantika.com>" },
+          { "name": "To", "value": "ops@quantika.com" },
+          { "name": "Subject", "value": "Fwd: Vessel charter request" },
+          { "name": "Date", "value": "Sun, 05 May 2026 09:00:00 +0000" }
+        ],
+        "parts": [
+          {
+            "mimeType": "text/plain",
+            "body": {
+              "data": "RllJIHBsZWFzZSBoYW5kbGUgdGhpcy4KCkJlZ2luIGZvcndhcmRlZCBtZXNzYWdlOgpGcm9tOiBjbGllbnRAYXJhYnRyYWRlcnMuYWUKRGF0ZTogVGh1cnNkYXksIDEgTWF5IDIwMjYgYXQgMDk6MzA6MDAgR01UClN1YmplY3Q6IFZlc3NlbCBjaGFydGVyIHJlcXVlc3QKVG86IGJyb2tlckBxdWFudGlrYS5jb20KCkhpLAoKV2UgYXJlIGxvb2tpbmcgdG8gY2hhcnRlciBhIFBhbmFtYXggdmVzc2VsIGZvciBhIGNvYWwgY2FyZ28uCgpSZWdhcmRz"
+            }
+          },
+          {
+            "mimeType": "text/html",
+            "body": {
+              "data": "PGh0bWw+PGJvZHk+PHA+RllJIHBsZWFzZSBoYW5kbGUgdGhpcy48L3A+PC9ib2R5PjwvaHRtbD4="
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "msg-003b",
+      "threadId": "thread-003",
+      "snippet": "On it, will contact the client.",
+      "labelIds": ["SENT"],
+      "internalDate": "1746435600000",
+      "payload": {
+        "mimeType": "text/plain",
+        "headers": [
+          { "name": "From", "value": "Ops Team <ops@quantika.com>" },
+          { "name": "To", "value": "broker@quantika.com" },
+          { "name": "Subject", "value": "Re: Fwd: Vessel charter request" },
+          { "name": "Date", "value": "Sun, 05 May 2026 10:00:00 +0000" }
+        ],
+        "body": {
+          "data": "T24gaXQsIHdpbGwgY29udGFjdCB0aGUgY2xpZW50Lg=="
+        }
+      }
+    }
+  ]
+}
