@@ -36,28 +36,44 @@ export function buildEexXlsxUrl(year?: number): string {
 // ---------------------------------------------------------------------------
 
 function readZipEntry(buf: Buffer, targetName: string): Buffer {
-  let pos = 0;
-  while (pos < buf.length - 30) {
-    // Local file header signature: PK\x03\x04
-    if (buf.readUInt32LE(pos) !== 0x04034b50) {
-      pos++;
-      continue;
-    }
-    const compression = buf.readUInt16LE(pos + 8);
-    const compressedSize = buf.readUInt32LE(pos + 18);
-    const filenameLen = buf.readUInt16LE(pos + 26);
-    const extraLen = buf.readUInt16LE(pos + 28);
-    const filename = buf.subarray(pos + 30, pos + 30 + filenameLen).toString('utf8');
-    const dataStart = pos + 30 + filenameLen + extraLen;
+  // Locate End of Central Directory (EOCD): signature PK\x05\x06 = 0x06054b50.
+  // Scan backwards from the end (EOCD is the last record, may have a comment).
+  let eocdPos = buf.length - 22;
+  while (eocdPos >= 0 && buf.readUInt32LE(eocdPos) !== 0x06054b50) {
+    eocdPos--;
+  }
+  if (eocdPos < 0) throw new EexCsvFormatError('EEX XLSX: EOCD not found — not a valid ZIP');
+
+  const cdOffset = buf.readUInt32LE(eocdPos + 16);
+  const cdSize = buf.readUInt32LE(eocdPos + 12);
+
+  // Parse central directory — it has accurate compressedSize even when local
+  // headers use data descriptors (GP bit 3 set, local sizes = 0).
+  let pos = cdOffset;
+  while (pos < cdOffset + cdSize) {
+    if (buf.readUInt32LE(pos) !== 0x02014b50) break; // PK\x01\x02
+
+    const compression = buf.readUInt16LE(pos + 10);
+    const compressedSize = buf.readUInt32LE(pos + 20);
+    const filenameLen = buf.readUInt16LE(pos + 28);
+    const extraLen = buf.readUInt16LE(pos + 30);
+    const commentLen = buf.readUInt16LE(pos + 32);
+    const localHeaderOffset = buf.readUInt32LE(pos + 42);
+    const filename = buf.subarray(pos + 46, pos + 46 + filenameLen).toString('utf8');
 
     if (filename === targetName) {
+      // Resolve data start via local header (skip its variable-length fields)
+      const lhFilenameLen = buf.readUInt16LE(localHeaderOffset + 26);
+      const lhExtraLen = buf.readUInt16LE(localHeaderOffset + 28);
+      const dataStart = localHeaderOffset + 30 + lhFilenameLen + lhExtraLen;
+
       const compressed = buf.subarray(dataStart, dataStart + compressedSize);
       if (compression === 0) return compressed; // stored
       if (compression === 8) return inflateRawSync(compressed); // deflate
       throw new EexCsvFormatError(`EEX XLSX: unsupported compression ${compression}`);
     }
 
-    pos = dataStart + compressedSize;
+    pos += 46 + filenameLen + extraLen + commentLen;
   }
   throw new EexCsvFormatError(`EEX XLSX: '${targetName}' not found in archive`);
 }
