@@ -25,12 +25,11 @@ import type { gmail_v1 } from 'googleapis';
 import { loadOAuthCredentials, loadRefreshToken, createGmailClient } from './lib/oauth-shared';
 import {
   shouldSkipThread,
-  buildLabelQuery,
   withBackoff,
   threadFilePath,
 } from './lib/import-helpers';
 
-const LABEL_NAME = '_ ETMS - Management';
+const SENDER_EMAIL = 'management@etm-services.net';
 const OUTPUT_DIR = path.resolve(process.cwd(), '.private/raw-emails');
 
 // ── Parse CLI flags (no yargs/commander — simple argv) ─────────────────────
@@ -103,7 +102,8 @@ export async function run(opts: RunOptions): Promise<{ written: number; skipped:
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
-  const query = buildLabelQuery(LABEL_NAME, since);
+  const sinceClause = since ? ` after:${since.replace(/-/g, '/')}` : '';
+  const query = `from:${SENDER_EMAIL}${sinceClause}`;
   console.log(`🔍  Gmail query: ${query}`);
   if (dryRun) console.log('   [--dry-run mode — no files will be written]');
 
