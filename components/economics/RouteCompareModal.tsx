@@ -2,11 +2,26 @@
 
 /**
  * β-06 RouteCompareModal — side-by-side Suez vs Cape with LLM banner.
+ * BP-04 — added "Price sources" section with PriceSourceBadge badges.
  * Closes on ESC and backdrop click.
  */
 
 import { useEffect, useState, useCallback } from 'react';
 import type { RouteCompareResult } from '@/lib/economics/route-decision';
+import { PriceSourceBadge } from '@/components/economics/PriceSourceBadge';
+
+type PriceSource = {
+  value: number;
+  source: string;
+  priceDate?: string;
+  fetchedAt?: string;
+  mode: 'manual' | 'auto' | 'auto-skip' | 'auto-fallback';
+};
+
+type RouteCompareResultWithSources = RouteCompareResult & {
+  bunkerPriceSource?: PriceSource;
+  euaPriceSource?: PriceSource;
+};
 
 interface Props {
   open: boolean;
@@ -21,6 +36,9 @@ interface Props {
   };
   cargo: { quantityMt: number; freightRateUsdPerMt: number };
   marketRates?: { bunkerPriceUsdPerMt: number; euaPriceEur: number };
+  bunkerPort?: string;
+  bunkerGrade?: string;
+  bunkerPriceManual?: number;
 }
 
 const DEFAULT_MARKET = { bunkerPriceUsdPerMt: 620, euaPriceEur: 75 };
@@ -37,8 +55,11 @@ export function RouteCompareModal({
   vessel,
   cargo,
   marketRates,
+  bunkerPort,
+  bunkerGrade,
+  bunkerPriceManual,
 }: Props) {
-  const [data, setData] = useState<RouteCompareResult | null>(null);
+  const [data, setData] = useState<RouteCompareResultWithSources | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,26 +68,32 @@ export function RouteCompareModal({
     setLoading(true);
     setError(null);
     try {
+      const body: Record<string, unknown> = {
+        origin,
+        destination,
+        vessel,
+        cargo,
+        marketRates: marketRates ?? DEFAULT_MARKET,
+      };
+      // Pass bunker port/grade for auto-resolve when no manual price provided
+      if (bunkerPort) body.bunkerPort = bunkerPort;
+      if (bunkerGrade) body.bunkerGrade = bunkerGrade;
+      if (typeof bunkerPriceManual === 'number') body.bunkerPriceManual = bunkerPriceManual;
+
       const res = await fetch('/api/voyage/compare-routes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          origin,
-          destination,
-          vessel,
-          cargo,
-          marketRates: marketRates ?? DEFAULT_MARKET,
-        }),
+        body: JSON.stringify(body),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = (await res.json()) as RouteCompareResult;
+      const json = (await res.json()) as RouteCompareResultWithSources;
       setData(json);
     } catch (e) {
       setError(String(e));
     } finally {
       setLoading(false);
     }
-  }, [origin, destination, vessel, cargo, marketRates]);
+  }, [origin, destination, vessel, cargo, marketRates, bunkerPort, bunkerGrade, bunkerPriceManual]);
 
   useEffect(() => {
     if (!open) return;
@@ -163,6 +190,35 @@ export function RouteCompareModal({
                 );
               })}
             </div>
+
+            {/* BP-04: Price sources section — only rendered when API provides source data */}
+            {data.bunkerPriceSource && data.euaPriceSource && (
+              <div className="mt-4">
+                <h3 className="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">
+                  Price sources
+                </h3>
+                <div className="flex gap-3">
+                  <PriceSourceBadge
+                    label="Bunker"
+                    value={data.bunkerPriceSource.value}
+                    unit="USD/mt"
+                    source={data.bunkerPriceSource.source}
+                    priceDate={data.bunkerPriceSource.priceDate}
+                    fetchedAt={data.bunkerPriceSource.fetchedAt}
+                    mode={data.bunkerPriceSource.mode}
+                  />
+                  <PriceSourceBadge
+                    label="EUA"
+                    value={data.euaPriceSource.value}
+                    unit="EUR/tCO₂"
+                    source={data.euaPriceSource.source}
+                    priceDate={data.euaPriceSource.priceDate}
+                    fetchedAt={data.euaPriceSource.fetchedAt}
+                    mode={data.euaPriceSource.mode}
+                  />
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>
