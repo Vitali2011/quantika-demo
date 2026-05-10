@@ -127,9 +127,9 @@ describe('TCE auto-bunker lookup (bp-03)', () => {
     const res = await POST(req);
     expect(res.status).toBe(422);
     const body = await res.json();
-    expect(body.error).toBe('bunker_price_unavailable');
-    expect(body.port).toBe('ZZZZZ');
-    expect(body.grade).toBe('VLSFO');
+    expect(body.error.code).toBe('bunker_price_unavailable');
+    expect(body.error.details.port).toBe('ZZZZZ');
+    expect(body.error.details.grade).toBe('VLSFO');
   });
 
   it('manual bunkerPriceUsdPerMt bypasses DB, source.mode=manual', async () => {

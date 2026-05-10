@@ -222,6 +222,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   // ── Bunker price resolution ──
   let bunkerPriceUsdPerMt: number;
+  // bunker always has a DB row or returns 422 — no auto-skip or auto-fallback path
   let bunkerPriceSource: {
     value: number; source: string; priceDate?: string; fetchedAt?: string; mode: 'manual' | 'auto';
   };
@@ -235,7 +236,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const row = getLatestBunkerPrice(db, port, grade);
     if (!row) {
       return NextResponse.json(
-        { error: 'bunker_price_unavailable', port, grade },
+        { error: { code: 'bunker_price_unavailable', details: { port, grade } } },
         { status: 422 },
       );
     }
@@ -249,7 +250,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   // ── EUA price resolution ──
   let euaPriceEur: number;
   let euaPriceSource: {
-    value: number; source: string; priceDate?: string; fetchedAt?: string; mode: string;
+    value: number; source: string; priceDate?: string; fetchedAt?: string; mode: 'manual' | 'auto' | 'auto-skip' | 'auto-fallback';
   };
   if (typeof data.euaPriceEur === 'number') {
     euaPriceEur = data.euaPriceEur;
