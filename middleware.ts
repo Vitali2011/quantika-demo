@@ -1,9 +1,67 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkCsrfRequest } from '@/lib/csrf';
 import { aiRateLimiter } from '@/lib/rate-limit';
+import { getAuthConfig } from '@/lib/auth/config';
+import { verifyAuthCookie, AUTH_COOKIE_NAME } from '@/lib/auth/cookie';
 
-export function middleware(request: NextRequest): NextResponse {
-  const isAiRoute = request.nextUrl.pathname.startsWith('/api/ai/');
+// Paths that bypass the auth guard entirely
+const AUTH_BYPASS_PATHS = new Set([
+  '/login',
+  '/api/auth/login',
+  '/api/auth/logout',
+  '/favicon.ico',
+  '/api/health',
+]);
+
+const AUTH_BYPASS_PREFIXES = ['/_next/static', '/_next/image', '/_next/webpack'];
+
+function isAuthBypassed(pathname: string): boolean {
+  if (AUTH_BYPASS_PATHS.has(pathname)) return true;
+  if (AUTH_BYPASS_PREFIXES.some(p => pathname.startsWith(p))) return true;
+  return false;
+}
+
+// Paths that require CSRF check (in addition to auth)
+const CSRF_PATHS = ['/api/ai/', '/api/emails/'];
+
+function isCsrfPath(pathname: string): boolean {
+  return CSRF_PATHS.some(p => pathname.startsWith(p));
+}
+
+export async function middleware(request: NextRequest): Promise<NextResponse> {
+  const { pathname } = request.nextUrl;
+
+  // ── Auth guard ────────────────────────────────────────────────────────────
+  const authConfig = getAuthConfig();
+
+  if (authConfig.enabled && !isAuthBypassed(pathname)) {
+    // Fail-loud if secret is missing
+    if (!authConfig.secret) {
+      console.error(
+        '[auth] DEMO_AUTH_ENABLED=true but DEMO_AUTH_SECRET is not set. ' +
+          'This is a misconfiguration — refusing all requests.',
+      );
+      return NextResponse.json(
+        { error: 'Server misconfiguration: auth secret missing' },
+        { status: 500 },
+      );
+    }
+
+    const cookieValue = request.cookies.get(AUTH_COOKIE_NAME)?.value;
+    const payload = cookieValue
+      ? await verifyAuthCookie(cookieValue, authConfig.secret)
+      : null;
+
+    if (!payload) {
+      // Redirect to /login preserving the original URL as `next` param is intentionally omitted
+      // (simple demo — no deep-link restoration needed)
+      const loginUrl = new URL('/login', request.url);
+      return NextResponse.redirect(loginUrl, { status: 302 });
+    }
+  }
+
+  // ── CSRF + Rate-limit guard (existing logic, untouched) ───────────────────
+  const isAiRoute = pathname.startsWith('/api/ai/');
 
   if (isAiRoute) {
     const sessionId = request.cookies.get('session_id')?.value;
@@ -36,15 +94,21 @@ export function middleware(request: NextRequest): NextResponse {
     return response;
   }
 
-  if (!checkCsrfRequest(request)) {
-    return NextResponse.json(
-      { error: 'Invalid or missing CSRF token' },
-      { status: 403 },
-    );
+  if (isCsrfPath(pathname)) {
+    if (!checkCsrfRequest(request)) {
+      return NextResponse.json(
+        { error: 'Invalid or missing CSRF token' },
+        { status: 403 },
+      );
+    }
   }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/api/ai/:path*', '/api/emails/:path*'],
+  matcher: [
+    // Match everything except static assets (Next.js docs recommended pattern)
+    '/((?!_next/static|_next/image|favicon.ico).*)',
+  ],
 };
