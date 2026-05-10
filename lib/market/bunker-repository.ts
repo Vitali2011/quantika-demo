@@ -17,7 +17,7 @@ export function getLatestBunkerPrice(
   const row = db.prepare<[string, string], BunkerPriceRow>(`
     SELECT port_unlocode, fuel_grade, price_usd_per_mt, price_date, source, fetched_at
     FROM bunker_prices
-    WHERE port_unlocode = ? AND fuel_grade = ?
+    WHERE port_unlocode = ? AND fuel_grade = ? AND price_date <= date('now')
     ORDER BY price_date DESC
     LIMIT 1
   `).get(portUnlocode, fuelGrade);
