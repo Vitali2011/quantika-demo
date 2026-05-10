@@ -190,10 +190,15 @@ export function portToCountry(port: string | null | undefined): string | null {
 // Country → bloc mapping
 // ────────────────────────────────────────────────────────────────────────────
 
-const EU_COUNTRIES = new Set([
+export const EU_COUNTRIES = new Set([
   'DE', 'FR', 'IT', 'NL', 'BE', 'ES', 'PT', 'GR', 'RO', 'BG', 'PL', 'HR', 'SI',
   'CY', 'MT', 'LU', 'AT', 'IE', 'FI', 'SE', 'DK', 'EE', 'LV', 'LT', 'SK', 'CZ', 'HU',
 ]);
+
+export function isEuCountry(cc: string | null | undefined): boolean {
+  if (!cc) return false;
+  return EU_COUNTRIES.has(cc.toUpperCase());
+}
 
 export type Bloc = 'EU' | 'UK' | 'US' | 'UA' | 'RU' | 'OTHER';
 
