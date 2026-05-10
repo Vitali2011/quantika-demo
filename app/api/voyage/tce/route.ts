@@ -249,7 +249,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   // ── EUA price resolution ──
   let euaPriceEur: number;
   let euaPriceSource: {
-    value: number; source: string; priceDate?: string; fetchedAt?: string; mode: string;
+    value: number; source: string; priceDate?: string; fetchedAt?: string; mode: 'manual' | 'auto' | 'auto-skip' | 'auto-fallback';
   };
   if (typeof data.euaPriceEur === 'number') {
     euaPriceEur = data.euaPriceEur;

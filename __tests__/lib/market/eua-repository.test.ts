@@ -56,7 +56,7 @@ describe('eua-repository', () => {
 
   it('upsertEuaPrice inserts a new row', () => {
     upsertEuaPrice(db, {
-      price_date: '2026-05-11',
+      price_date: '2026-05-10',
       price_eur_per_tco2: 73.5,
       contract_type: 'spot',
       source: 'test',
@@ -64,7 +64,7 @@ describe('eua-repository', () => {
     });
     const row = getLatestEuaPrice(db, 'spot');
     expect(row).not.toBeNull();
-    expect(row!.price_date).toBe('2026-05-11');
+    expect(row!.price_date).toBe('2026-05-10');
     expect(row!.price_eur_per_tco2).toBe(73.5);
   });
 

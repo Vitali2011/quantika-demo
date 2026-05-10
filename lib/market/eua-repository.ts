@@ -12,7 +12,7 @@ export function getLatestEuaPrice(db: Database.Database, contractType = 'spot'):
   const row = db.prepare<[string], EuaPriceRow>(`
     SELECT price_date, price_eur_per_tco2, contract_type, source, fetched_at
     FROM eua_prices
-    WHERE contract_type = ?
+    WHERE contract_type = ? AND price_date <= date('now')
     ORDER BY price_date DESC
     LIMIT 1
   `).get(contractType);
