@@ -27,27 +27,35 @@ export const JWC_HRA_ZONES: HraZone[] = [
     id: 'gulf-of-guinea',
     name: 'Gulf of Guinea HRA',
     premiumPercentPerTransit: 0.0005, // 0.05%
-    ports: ['lagos', 'apapa', 'tema', 'abidjan', 'cotonou', 'bonny', 'tin can', 'lome', 'dakar', 'conakry'],
+    ports: ['lagos', 'apapa', 'tema', 'abidjan', 'cotonou', 'bonny', 'tin can', 'lome', 'dakar', 'conakry',
+      // UNLOCODE codes for LOCODE-based detection (spec-04)
+      'ngapp', 'nglos', 'ghtma', 'bjcoo', 'ciabd', 'ngbon', 'tglfw', 'sndkr', 'gnckr', 'bjtco'],
   },
   {
     id: 'red-sea-hra',
     name: 'Red Sea / Bab al-Mandeb HRA',
     premiumPercentPerTransit: 0.00075, // 0.075%
-    ports: ['aden', 'hodeidah', 'djibouti', 'berbera', 'jeddah', 'yanbu', 'salalah', 'bab al mandab', 'bab el mandab'],
+    ports: ['aden', 'hodeidah', 'djibouti', 'berbera', 'jeddah', 'yanbu', 'salalah', 'bab al mandab', 'bab el mandab',
+      // UNLOCODE codes for LOCODE-based detection (spec-04)
+      'sajed', 'egscd', 'djjib', 'yehod', 'soado'],
     canals: ['suez'],
   },
   {
     id: 'indian-ocean-hra',
     name: 'Indian Ocean / Somali Corridor HRA',
     premiumPercentPerTransit: 0.0004, // 0.04%
-    ports: ['mogadishu', 'mombasa', 'dar es salaam', 'mumbai', 'nhava sheva', 'mundra', 'kandla', 'karachi'],
+    ports: ['mogadishu', 'mombasa', 'dar es salaam', 'mumbai', 'nhava sheva', 'mundra', 'kandla', 'karachi',
+      // UNLOCODE codes for LOCODE-based detection (spec-04)
+      'inbom', 'pkqct', 'pkpnm', 'mzcpl'],
     canals: ['suez'],
   },
   {
     id: 'black-sea-hra',
     name: 'Black Sea Russia/Ukraine HRA',
     premiumPercentPerTransit: 0.001, // 0.10%
-    ports: ['odessa', 'mykolaiv', 'kherson', 'mariupol', 'novorossiysk', 'tuapse', 'kerch', 'sevastopol', 'constanta', 'batumi'],
+    ports: ['odessa', 'mykolaiv', 'kherson', 'mariupol', 'novorossiysk', 'tuapse', 'kerch', 'sevastopol', 'constanta', 'batumi',
+      // UNLOCODE codes for LOCODE-based detection (spec-04)
+      'uaods', 'uamyi', 'ruasi', 'uakhk', 'trist'],
   },
 ];
 
