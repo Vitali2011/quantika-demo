@@ -7,11 +7,17 @@ import {
   refreshShipAndBunker,
   parseShipAndBunkerHtml,
   ShipAndBunkerParseError,
+  ShipAndBunkerStructureChangedError,
 } from '@/lib/knowledge/bunker/shipandbunker-adapter';
 import { registerSource } from '@/lib/knowledge/governance';
 
 const fixtureHtml = fs.readFileSync(
   path.join(__dirname, '../../../fixtures/shipandbunker-prices.html'),
+  'utf-8',
+);
+
+const fixture2026Html = fs.readFileSync(
+  path.join(__dirname, '../../../fixtures/shipandbunker-2026-05-10.html'),
   'utf-8',
 );
 
@@ -76,12 +82,13 @@ describe('shipandbunker-adapter', () => {
       }
     });
 
-    it('returns empty map for HTML without VLSFO th rows', () => {
-      const result = parseShipAndBunkerHtml('<html><body>No table here</body></html>');
-      expect(result.size).toBe(0);
+    it('throws ShipAndBunkerStructureChangedError for HTML without VLSFO table', () => {
+      expect(() =>
+        parseShipAndBunkerHtml('<html><body>No table here</body></html>'),
+      ).toThrow(ShipAndBunkerStructureChangedError);
     });
 
-    it('skips rows with unknown port name', () => {
+    it('derives UNLOCODE from row ID for unknown port names', () => {
       const html = `<table><tbody>
         <tr class="odd">
           <th id="row-xx-unk-VLSFO" scope="row" class="port"><a href="#">UnknownPort</a></th>
@@ -89,7 +96,9 @@ describe('shipandbunker-adapter', () => {
         </tr>
       </tbody></table>`;
       const result = parseShipAndBunkerHtml(html);
-      expect(result.size).toBe(0);
+      // Port is accepted via row-ID derived UNLOCODE (xx-unk → XXUNK)
+      expect(result.size).toBe(1);
+      expect(result.get('UnknownPort')?.unlocode).toBe('XXUNK');
     });
 
     it('skips rows with non-numeric VLSFO value', () => {
@@ -101,6 +110,47 @@ describe('shipandbunker-adapter', () => {
       </tbody></table>`;
       const result = parseShipAndBunkerHtml(html);
       expect(result.size).toBe(0);
+    });
+
+    it('throws ShipAndBunkerStructureChangedError for completely empty/broken HTML', () => {
+      expect(() => parseShipAndBunkerHtml('<html><body></body></html>')).toThrow(
+        ShipAndBunkerStructureChangedError,
+      );
+    });
+  });
+
+  describe('parseShipAndBunkerHtml — 2026-05-10 real fixture', () => {
+    it('returns ≥8 ports with VLSFO price from 2026 fixture (page shows 8 real ports)', () => {
+      const result = parseShipAndBunkerHtml(fixture2026Html);
+      expect(result.size).toBeGreaterThanOrEqual(8);
+    });
+
+    it('skips regional average rows (av-*) from 2026 fixture', () => {
+      const result = parseShipAndBunkerHtml(fixture2026Html);
+      for (const portName of result.keys()) {
+        expect(portName).not.toMatch(/Average/i);
+      }
+    });
+
+    it('Rotterdam has correct UNLOCODE and VLSFO price in 2026 fixture', () => {
+      const result = parseShipAndBunkerHtml(fixture2026Html);
+      const rtm = result.get('Rotterdam');
+      expect(rtm).toBeDefined();
+      expect(rtm!.unlocode).toBe('NLRTM');
+      expect(rtm!.vlsfo).toBeCloseTo(791.5);
+    });
+
+    it('Singapore has SGSIN in 2026 fixture', () => {
+      const result = parseShipAndBunkerHtml(fixture2026Html);
+      expect(result.get('Singapore')?.unlocode).toBe('SGSIN');
+    });
+
+    it('all returned ports have numeric VLSFO price > 0', () => {
+      const result = parseShipAndBunkerHtml(fixture2026Html);
+      for (const [, { vlsfo }] of result) {
+        expect(vlsfo).toBeGreaterThan(0);
+        expect(Number.isFinite(vlsfo)).toBe(true);
+      }
     });
   });
 
@@ -124,13 +174,10 @@ describe('shipandbunker-adapter', () => {
       expect(row.price_usd_per_mt).toBeCloseTo(789.5);
     });
 
-    it('throws ShipAndBunkerParseError when HTML has no port rows', async () => {
+    it('throws ShipAndBunkerStructureChangedError when HTML has no port rows', async () => {
       const fetcher = async () => '<html>broken</html>';
 
-      await expect(refreshShipAndBunker(db, fetcher)).rejects.toThrow(ShipAndBunkerParseError);
-      await expect(refreshShipAndBunker(db, fetcher)).rejects.toThrow(
-        'No port rows found in HTML',
-      );
+      await expect(refreshShipAndBunker(db, fetcher)).rejects.toThrow(ShipAndBunkerStructureChangedError);
     });
 
     it('on fetch error → rethrows the error', async () => {

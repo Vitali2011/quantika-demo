@@ -278,6 +278,39 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
   }
 
+  // ── ETS euLegPercent auto-derive ──
+  let resolvedEuLegPercent = data.euLegPercent;
+  let etsMode: 'auto-derived' | 'manual' | 'not-applicable' = 'not-applicable';
+  let etsReason = 'not-applicable';
+
+  if (data.includeEuETS && euaPriceEur > 0) {
+    if (resolvedEuLegPercent !== undefined) {
+      etsMode = 'manual';
+      etsReason = 'caller-provided';
+    } else {
+      const originEu = isEuCountry(originResolved.country);
+      const destEu = isEuCountry(destinationResolved.country);
+      if (originEu && destEu) {
+        resolvedEuLegPercent = 1.0;
+        etsMode = 'auto-derived';
+        etsReason = 'both legs EU (intra-EU voyage)';
+      } else if (originEu || destEu) {
+        resolvedEuLegPercent = 0.5;
+        etsMode = 'auto-derived';
+        etsReason = 'one leg EU (EU MRV 50% default)';
+      } else {
+        etsMode = 'not-applicable';
+        etsReason = 'no EU leg';
+      }
+    }
+  }
+
+  const etsResolution = {
+    euLegPercent: resolvedEuLegPercent,
+    mode: etsMode,
+    reason: etsReason,
+  };
+
   const tceInput: VoyageInput = {
     vessel: {
       dwt: data.vessel.dwt,
@@ -296,12 +329,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     bunkerPriceUsdPerMt,
     euaPriceEur,
     durationDays: data.durationDays,
-    euLegPercent: data.euLegPercent,
+    euLegPercent: resolvedEuLegPercent,
     daysInHra: data.daysInHra,
     canalUsd,
     daUsd,
   };
 
   const result = calculateTCE(tceInput);
-  return NextResponse.json({ ...result, bunkerPriceSource, euaPriceSource });
+  return NextResponse.json({ ...result, bunkerPriceSource, euaPriceSource, etsResolution });
 }

@@ -14,11 +14,39 @@ export class ShipAndBunkerParseError extends Error {
   }
 }
 
+export class ShipAndBunkerStructureChangedError extends Error {
+  constructor(msg: string) {
+    super(msg);
+    this.name = 'ShipAndBunkerStructureChangedError';
+  }
+}
+
+// Port code from row ID (e.g. "nl-rtm" → "NLRTM") used as fallback UNLOCODE
+// when not in the explicit map. Format: country-port → COUNTRYPORT (2+3 chars).
 const LOCATION_TO_UNLOCODE: Record<string, string> = {
   Rotterdam: 'NLRTM',
   Singapore: 'SGSIN',
   Fujairah: 'AEFJR',
   Houston: 'USHOU',
+  'LA / Long Beach': 'USLAX',
+  'Hong Kong': 'CNHKG',
+  'New York': 'USNYC',
+  Santos: 'BRSSZ',
+  'Panama': 'PAPAI',
+  'Balboa': 'PAPAI',
+  'Busan': 'KRBSN',
+  'Tokyo': 'JPTYO',
+  'Shanghai': 'CNSHA',
+  'Durban': 'ZADUR',
+  'Cape Town': 'ZACPT',
+  'Gibraltar': 'GIGIB',
+  'Las Palmas': 'ESLPA',
+  'Barcelona': 'ESBCN',
+  'Piraeus': 'GRPIR',
+  'Istanbul': 'TRIST',
+  'Colombo': 'LKCMB',
+  'Port Klang': 'MYPKG',
+  'Zhoushan': 'CNZOS',
 };
 
 function getCachePath(): string {
@@ -48,22 +76,53 @@ function writeCache(html: string): void {
   }
 }
 
-// Real page structure: <th id="row-XX-XX-VLSFO" class="port"><a>PortName</a></th>
-// immediately followed by <td headers="price-VLSFO">PRICE<span...
+// Real page structure:
+//   <th id="row-XX-YYY-VLSFO" class="port"><a href="...">PortName</a></th>
+//   ... whitespace ...
+//   <td headers="price-VLSFO">PRICE<span ...></span></td>
+// Rows with id="row-av-*-VLSFO" are regional averages, not real ports — skip them.
 const ENTRY_PATTERN =
-  /<th[^>]*id="row-[^"]*-VLSFO"[^>]*>[\s\S]*?<a[^>]*>([^<]+)<\/a>[\s\S]*?<\/th>\s*<td[^>]*headers="price-VLSFO"[^>]*>([\d.]+)/gi;
+  /<th[^>]*id="row-([^"]*)-VLSFO"[^>]*>[\s\S]*?<a[^>]*>([^<]+)<\/a>[\s\S]*?<\/th>[\s\S]*?<td[^>]*headers="price-VLSFO"[^>]*>([\d.]+)/gi;
+
+/**
+ * Derive a UNLOCODE from the row ID segment (e.g. "nl-rtm" → "NLRTM").
+ * IDs follow pattern "{country}-{port}", both 2-3 lowercase chars.
+ */
+function unlocodeFromRowId(rowId: string): string | null {
+  const parts = rowId.split('-');
+  if (parts.length < 2) return null;
+  // country (2 chars) + port (2-3 chars) — join first two segments
+  const country = parts[0].toUpperCase();
+  const port = parts[1].toUpperCase();
+  if (country.length !== 2) return null;
+  return country + port;
+}
 
 export function parseShipAndBunkerHtml(html: string): Map<string, { vlsfo: number; unlocode: string }> {
+  // Detect structurally broken HTML — no VLSFO price table signatures at all
+  if (!html.includes('price-VLSFO')) {
+    throw new ShipAndBunkerStructureChangedError(
+      'HTML contains no VLSFO price table — page structure may have changed',
+    );
+  }
+
   const result = new Map<string, { vlsfo: number; unlocode: string }>();
 
   ENTRY_PATTERN.lastIndex = 0;
   let match: RegExpExecArray | null;
   while ((match = ENTRY_PATTERN.exec(html)) !== null) {
-    const portName = match[1].trim();
-    const unlocode = LOCATION_TO_UNLOCODE[portName];
+    const rowId = match[1].trim();  // e.g. "nl-rtm" or "av-g20"
+    const portName = match[2].trim();
+    const priceStr = match[3];
+
+    // Skip regional/global averages
+    if (rowId.startsWith('av-')) continue;
+
+    // Prefer explicit UNLOCODE map, fall back to deriving from row ID
+    const unlocode = LOCATION_TO_UNLOCODE[portName] ?? unlocodeFromRowId(rowId);
     if (!unlocode) continue;
 
-    const vlsfo = parseFloat(match[2]);
+    const vlsfo = parseFloat(priceStr);
     if (!Number.isFinite(vlsfo)) continue;
 
     result.set(portName, { vlsfo, unlocode });
@@ -97,7 +156,7 @@ export async function refreshShipAndBunker(
   const parsed = parseShipAndBunkerHtml(html);
 
   if (parsed.size === 0) {
-    throw new ShipAndBunkerParseError(
+    throw new ShipAndBunkerStructureChangedError(
       'No port rows found in HTML — page structure may have changed',
     );
   }
