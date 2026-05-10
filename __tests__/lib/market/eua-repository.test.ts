@@ -44,6 +44,16 @@ describe('eua-repository', () => {
     expect(row!.price_eur_per_tco2).toBe(75.00);
   });
 
+  it('getLatestEuaPrice ignores future-dated rows (date guard)', () => {
+    db.prepare(
+      "INSERT INTO eua_prices (price_date, price_eur_per_tco2, contract_type, source, fetched_at) VALUES ('2099-01-01', 9999, 'spot', 'future-source', datetime('now'))"
+    ).run();
+    const row = getLatestEuaPrice(db, 'spot');
+    expect(row).not.toBeNull();
+    expect(row!.price_date).toBe('2026-05-04');
+    expect(row!.price_eur_per_tco2).toBe(72.65);
+  });
+
   it('upsertEuaPrice inserts a new row', () => {
     upsertEuaPrice(db, {
       price_date: '2026-05-11',
