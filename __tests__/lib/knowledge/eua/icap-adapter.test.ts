@@ -188,10 +188,10 @@ describe('icap-adapter — refreshIcap', () => {
     await expect(refreshIcap(db, fetcher)).rejects.toThrow('network timeout');
   });
 
-  it('throws IcapNoEuEtsError when JSON has no EU ETS system', async () => {
+  it('returns null when JSON has no EU ETS system (graceful null)', async () => {
     const apiJson = JSON.stringify([{ id: 5, name: 'RGGI', values: {} }]);
     const fetcher = jest.fn().mockResolvedValue(apiJson);
-    await expect(refreshIcap(db, fetcher)).rejects.toThrow(IcapNoEuEtsError);
+    await expect(refreshIcap(db, fetcher)).resolves.toBeNull();
   });
 
   it('returns null when response is not valid JSON (graceful fallback)', async () => {

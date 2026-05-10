@@ -143,7 +143,17 @@ export async function refreshIcap(
     return null;
   }
 
-  const { price, priceDate } = parseIcapApiResponse(systems);
+  let price: number;
+  let priceDate: string;
+  try {
+    ({ price, priceDate } = parseIcapApiResponse(systems));
+  } catch (e) {
+    if (e instanceof IcapNoEuEtsError) {
+      console.warn('ICAP: EU ETS system not found in response');
+      return null;
+    }
+    throw e;
+  }
 
   upsertEuaPrice(db, {
     price_date: priceDate,
