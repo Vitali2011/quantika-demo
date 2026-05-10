@@ -53,6 +53,16 @@ describe('bunker-repository', () => {
     expect(row!.price_usd_per_mt).toBe(750);
   });
 
+  it('getLatestBunkerPrice ignores future-dated rows (date guard)', () => {
+    db.prepare(
+      "INSERT INTO bunker_prices (port_unlocode, fuel_grade, price_usd_per_mt, price_date, source, fetched_at) VALUES ('SGSIN', 'VLSFO', 9999, '2099-01-01', 'future-source', datetime('now'))"
+    ).run();
+    const row = getLatestBunkerPrice(db, 'SGSIN', 'VLSFO');
+    expect(row).not.toBeNull();
+    expect(row!.price_date).toBe('2026-05-09');
+    expect(row!.price_usd_per_mt).toBe(801);
+  });
+
   it('upsertBunkerPrice updates existing row on conflict', () => {
     upsertBunkerPrice(db, {
       port_unlocode: 'SGSIN',

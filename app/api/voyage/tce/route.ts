@@ -235,7 +235,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const row = getLatestBunkerPrice(db, port, grade);
     if (!row) {
       return NextResponse.json(
-        { error: 'bunker_price_unavailable', port, grade },
+        { error: { code: 'bunker_price_unavailable', details: { port, grade } } },
         { status: 422 },
       );
     }
