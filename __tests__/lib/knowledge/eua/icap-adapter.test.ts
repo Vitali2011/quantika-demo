@@ -6,6 +6,7 @@ import migration024 from '@/lib/migrations/024-eua-prices-rewrite';
 import {
   refreshIcap,
   parseIcapCsv,
+  parseIcapApiResponse,
   IcapNoEuEtsError,
 } from '@/lib/knowledge/eua/icap-adapter';
 import { registerSource } from '@/lib/knowledge/governance';
@@ -32,6 +33,76 @@ function makeDb(): Database.Database {
   return db;
 }
 
+// Minimal ICAP API response fixture
+function makeApiResponse(overrides?: {
+  id?: number;
+  dates?: Record<string, number[]>;
+}) {
+  return [
+    {
+      id: overrides?.id ?? 34,
+      name: 'European Union Emissions Trading System (from 2019)',
+      defaultMarketData: 'secondary',
+      values: {
+        secondary: overrides?.dates ?? {
+          '2026-03-27': [83.42, 70.55, 70.55],
+          '2026-05-08': [71.30, 60.22, 60.22],
+          '2026-03-31': [84.10, 71.13, 71.13],
+        },
+      },
+    },
+    {
+      id: 5,
+      name: 'Regional Greenhouse Gas Initiative',
+      values: { secondary: { '2026-05-08': [5.50, 5.50] } },
+    },
+  ];
+}
+
+// ---------------------------------------------------------------------------
+// parseIcapApiResponse
+// ---------------------------------------------------------------------------
+
+describe('icap-adapter — parseIcapApiResponse', () => {
+  it('returns the latest EU ETS secondary price', () => {
+    const systems = makeApiResponse();
+    const { price, priceDate } = parseIcapApiResponse(systems as any);
+    expect(priceDate).toBe('2026-05-08');
+    expect(price).toBeCloseTo(71.30, 2);
+  });
+
+  it('picks the lexicographically latest date', () => {
+    const systems = makeApiResponse({
+      dates: {
+        '2026-01-10': [65.00, 55.00],
+        '2026-05-08': [71.30, 60.22],
+        '2026-03-15': [68.00, 57.00],
+      },
+    });
+    const { priceDate } = parseIcapApiResponse(systems as any);
+    expect(priceDate).toBe('2026-05-08');
+  });
+
+  it('throws IcapNoEuEtsError when system id=34 is absent', () => {
+    const systems = [{ id: 5, name: 'RGGI', values: {} }];
+    expect(() => parseIcapApiResponse(systems as any)).toThrow(IcapNoEuEtsError);
+  });
+
+  it('throws IcapNoEuEtsError when secondary values are empty', () => {
+    const systems = [{ id: 34, name: 'EU ETS', values: { secondary: {} } }];
+    expect(() => parseIcapApiResponse(systems as any)).toThrow(IcapNoEuEtsError);
+  });
+
+  it('throws IcapNoEuEtsError when values key is missing', () => {
+    const systems = [{ id: 34, name: 'EU ETS' }];
+    expect(() => parseIcapApiResponse(systems as any)).toThrow(IcapNoEuEtsError);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// parseIcapCsv (legacy — kept for coverage)
+// ---------------------------------------------------------------------------
+
 describe('icap-adapter — parseIcapCsv', () => {
   it('parses the ICAP fixture and returns EU ETS price', () => {
     const csv = loadFixture('icap-prices.csv');
@@ -43,7 +114,6 @@ describe('icap-adapter — parseIcapCsv', () => {
   it('only returns EU ETS row, ignores California/UK rows', () => {
     const csv = loadFixture('icap-prices.csv');
     const { price } = parseIcapCsv(csv);
-    // California = 28.50, UK = 35.20, EU = 71.30
     expect(price).toBeCloseTo(71.30, 2);
   });
 
@@ -78,6 +148,10 @@ describe('icap-adapter — parseIcapCsv', () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// refreshIcap
+// ---------------------------------------------------------------------------
+
 describe('icap-adapter — refreshIcap', () => {
   let db: Database.Database;
 
@@ -89,15 +163,18 @@ describe('icap-adapter — refreshIcap', () => {
     db.close();
   });
 
-  it('fetches CSV and upserts EU ETS price with source=icap', async () => {
-    const csv = loadFixture('icap-prices.csv');
-    const fetcher = jest.fn().mockResolvedValue(csv);
+  it('fetches JSON API and upserts EU ETS price with source=icap', async () => {
+    const apiJson = JSON.stringify(makeApiResponse());
+    const fetcher = jest.fn().mockResolvedValue(apiJson);
 
     const result = await refreshIcap(db, fetcher);
 
     expect(result.price).toBeCloseTo(71.30, 2);
     expect(result.priceDate).toBe('2026-05-08');
     expect(result.rowsChanged).toBe(1);
+    expect(fetcher).toHaveBeenCalledWith(
+      expect.stringContaining('allowancepriceexplorer.icapcarbonaction.com'),
+    );
 
     const row = db.prepare("SELECT * FROM eua_prices WHERE source='icap'").get() as any;
     expect(row).toBeTruthy();
@@ -111,23 +188,32 @@ describe('icap-adapter — refreshIcap', () => {
     await expect(refreshIcap(db, fetcher)).rejects.toThrow('network timeout');
   });
 
-  it('throws IcapNoEuEtsError when CSV has no EU ETS rows', async () => {
-    const csv = 'ETS,Date,Price (EUR/tCO2)\nCalifornia Cap-and-Trade,2026-05-08,28.50\n';
-    const fetcher = jest.fn().mockResolvedValue(csv);
+  it('throws IcapNoEuEtsError when JSON has no EU ETS system', async () => {
+    const apiJson = JSON.stringify([{ id: 5, name: 'RGGI', values: {} }]);
+    const fetcher = jest.fn().mockResolvedValue(apiJson);
+    await expect(refreshIcap(db, fetcher)).rejects.toThrow(IcapNoEuEtsError);
+  });
+
+  it('throws IcapNoEuEtsError when response is not valid JSON', async () => {
+    const fetcher = jest.fn().mockResolvedValue('not json');
     await expect(refreshIcap(db, fetcher)).rejects.toThrow(IcapNoEuEtsError);
   });
 
   it('is idempotent: second upsert with same date overwrites (no duplicate row)', async () => {
-    const csv = loadFixture('icap-prices.csv');
-    const fetcher = jest.fn().mockResolvedValue(csv);
+    const apiJson = JSON.stringify(makeApiResponse());
+    const fetcher = jest.fn().mockResolvedValue(apiJson);
 
     await refreshIcap(db, fetcher);
-    const countAfterFirst = (db.prepare("SELECT COUNT(*) as c FROM eua_prices WHERE source='icap'").get() as any).c;
+    const countAfterFirst = (
+      db.prepare("SELECT COUNT(*) as c FROM eua_prices WHERE source='icap'").get() as any
+    ).c;
 
     await refreshIcap(db, fetcher);
-    const countAfterSecond = (db.prepare("SELECT COUNT(*) as c FROM eua_prices WHERE source='icap'").get() as any).c;
+    const countAfterSecond = (
+      db.prepare("SELECT COUNT(*) as c FROM eua_prices WHERE source='icap'").get() as any
+    ).c;
 
     expect(countAfterFirst).toBe(1);
-    expect(countAfterSecond).toBe(1); // idempotent: same date → upsert, no new row
+    expect(countAfterSecond).toBe(1);
   });
 });

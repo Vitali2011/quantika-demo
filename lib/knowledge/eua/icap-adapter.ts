@@ -1,7 +1,11 @@
 import type Database from 'better-sqlite3';
 import { upsertEuaPrice } from '@/lib/market/eua-repository';
 
-const ICAP_URL = 'https://icapcarbonaction.com/en/ets-prices';
+// ICAP Allowance Price Explorer JSON API — returns all ETS systems with historical data
+const ICAP_API_URL = 'https://allowancepriceexplorer.icapcarbonaction.com/api/systems';
+
+// EU ETS system id in the ICAP APE (system "from 2019", secondary market)
+const EU_ETS_SYSTEM_ID = 34;
 
 export class IcapNoEuEtsError extends Error {
   constructor(message: string) {
@@ -12,12 +16,63 @@ export class IcapNoEuEtsError extends Error {
 
 export type Fetcher = (url: string) => Promise<string>;
 
+// ---------------------------------------------------------------------------
+// JSON API parser
+// ---------------------------------------------------------------------------
+
+interface IcapSystem {
+  id: number;
+  name: string;
+  values?: {
+    secondary?: Record<string, number[]>;
+    primary?: Record<string, number[]>;
+  };
+}
+
+/**
+ * Extract the most recent EU ETS secondary-market price from the ICAP APE
+ * /api/systems JSON response.
+ * Each date entry is an array: [EUR_price, USD_price?, ...]. We take index 0
+ * which is the local-currency (EUR) value.
+ */
+export function parseIcapApiResponse(systems: IcapSystem[]): { price: number; priceDate: string } {
+  const euEts = systems.find((s) => s.id === EU_ETS_SYSTEM_ID);
+  if (!euEts) {
+    throw new IcapNoEuEtsError(
+      `EU ETS system (id=${EU_ETS_SYSTEM_ID}) not found in ICAP API response`,
+    );
+  }
+
+  const values = euEts.values?.secondary ?? euEts.values?.primary;
+  if (!values || Object.keys(values).length === 0) {
+    throw new IcapNoEuEtsError('EU ETS system has no price data in ICAP API response');
+  }
+
+  // Keys are YYYY-MM-DD strings; pick the lexicographically largest (= newest)
+  const dates = Object.keys(values).sort();
+  const priceDate = dates[dates.length - 1];
+  const priceArr = values[priceDate];
+  const price = priceArr?.[0];
+
+  if (typeof price !== 'number' || !Number.isFinite(price)) {
+    throw new IcapNoEuEtsError(`ICAP EU ETS price for ${priceDate} is not a valid number`);
+  }
+
+  return { price, priceDate };
+}
+
+// ---------------------------------------------------------------------------
+// Legacy CSV parser — kept for backward compatibility with existing unit tests
+// ---------------------------------------------------------------------------
+
 /**
  * Parse ICAP ETS prices CSV, extract the most recent EU ETS row.
- * Returns { price, priceDate }.
  */
 export function parseIcapCsv(csv: string): { price: number; priceDate: string } {
-  const lines = csv.split('\n').map((l) => l.trim()).filter(Boolean);
+  const lines = csv
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean);
   if (lines.length < 2) {
     throw new IcapNoEuEtsError('ICAP CSV has fewer than 2 lines');
   }
@@ -29,7 +84,7 @@ export function parseIcapCsv(csv: string): { price: number; priceDate: string } 
 
   if (etsIdx === -1 || dateIdx === -1 || priceIdx === -1) {
     throw new IcapNoEuEtsError(
-      `ICAP CSV missing required columns. Headers: ${header.join(', ')}`
+      `ICAP CSV missing required columns. Headers: ${header.join(', ')}`,
     );
   }
 
@@ -42,7 +97,6 @@ export function parseIcapCsv(csv: string): { price: number; priceDate: string } 
     throw new IcapNoEuEtsError('No "EU ETS" rows found in ICAP CSV');
   }
 
-  // Sort by date descending, pick newest
   euRows.sort((a, b) => b[dateIdx].localeCompare(a[dateIdx]));
   const newest = euRows[0];
 
@@ -56,15 +110,27 @@ export function parseIcapCsv(csv: string): { price: number; priceDate: string } 
   return { price, priceDate };
 }
 
+// ---------------------------------------------------------------------------
+// Refresh
+// ---------------------------------------------------------------------------
+
 /**
- * Fetch ICAP ETS prices CSV, parse EU ETS spot price, upsert into DB.
+ * Fetch ICAP Allowance Price Explorer JSON API, parse EU ETS secondary price,
+ * upsert into DB.
  */
 export async function refreshIcap(
   db: Database.Database,
-  fetcher: Fetcher = defaultFetcher
+  fetcher: Fetcher = defaultFetcher,
 ): Promise<{ rowsChanged: number; priceDate: string; price: number }> {
-  const csv = await fetcher(ICAP_URL);
-  const { price, priceDate } = parseIcapCsv(csv);
+  const json = await fetcher(ICAP_API_URL);
+  let systems: IcapSystem[];
+  try {
+    systems = JSON.parse(json) as IcapSystem[];
+  } catch {
+    throw new IcapNoEuEtsError('ICAP API response is not valid JSON');
+  }
+
+  const { price, priceDate } = parseIcapApiResponse(systems);
 
   upsertEuaPrice(db, {
     price_date: priceDate,
@@ -80,6 +146,7 @@ export async function refreshIcap(
 async function defaultFetcher(url: string): Promise<string> {
   const res = await fetch(url, {
     headers: { 'User-Agent': 'Quantika-Demo/1.0' },
+    signal: AbortSignal.timeout(30_000),
   });
   if (!res.ok) throw new Error(`ICAP fetch failed: ${res.status} ${url}`);
   return res.text();

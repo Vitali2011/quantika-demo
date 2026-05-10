@@ -19,7 +19,6 @@ const LOCATION_TO_UNLOCODE: Record<string, string> = {
   Singapore: 'SGSIN',
   Fujairah: 'AEFJR',
   Houston: 'USHOU',
-  Gibraltar: 'GIGIB',
 };
 
 function getCachePath(): string {
@@ -49,26 +48,22 @@ function writeCache(html: string): void {
   }
 }
 
+// Real page structure: <th id="row-XX-XX-VLSFO" class="port"><a>PortName</a></th>
+// immediately followed by <td headers="price-VLSFO">PRICE<span...
+const ENTRY_PATTERN =
+  /<th[^>]*id="row-[^"]*-VLSFO"[^>]*>[\s\S]*?<a[^>]*>([^<]+)<\/a>[\s\S]*?<\/th>\s*<td[^>]*headers="price-VLSFO"[^>]*>([\d.]+)/gi;
+
 export function parseShipAndBunkerHtml(html: string): Map<string, { vlsfo: number; unlocode: string }> {
   const result = new Map<string, { vlsfo: number; unlocode: string }>();
 
-  const ROW_PATTERN = /<tr[^>]*class="[^"]*port-row[^"]*"[^>]*>([\s\S]*?)<\/tr>/gi;
-  let rowMatch: RegExpExecArray | null;
-
-  while ((rowMatch = ROW_PATTERN.exec(html)) !== null) {
-    const rowHtml = rowMatch[1];
-
-    const portMatch = /<td[^>]*class="[^"]*port-name[^"]*"[^>]*>\s*([^<]+)\s*<\/td>/i.exec(rowHtml);
-    const vlsfoMatch = /<td[^>]*class="[^"]*vlsfo[^"]*"[^>]*>([\s\S]*?)<\/td>/i.exec(rowHtml);
-
-    if (!portMatch || !vlsfoMatch) continue;
-
-    const portName = portMatch[1].trim();
+  ENTRY_PATTERN.lastIndex = 0;
+  let match: RegExpExecArray | null;
+  while ((match = ENTRY_PATTERN.exec(html)) !== null) {
+    const portName = match[1].trim();
     const unlocode = LOCATION_TO_UNLOCODE[portName];
     if (!unlocode) continue;
 
-    const vlsfoRaw = vlsfoMatch[1].replace(/<[^>]+>/g, '').trim();
-    const vlsfo = parseFloat(vlsfoRaw);
+    const vlsfo = parseFloat(match[2]);
     if (!Number.isFinite(vlsfo)) continue;
 
     result.set(portName, { vlsfo, unlocode });
@@ -92,7 +87,6 @@ export async function refreshShipAndBunker(
   db: Database.Database,
   fetcher: HtmlFetcher = defaultFetcher,
 ): Promise<{ rowsChanged: number }> {
-  // Try cache first
   let html = readCache();
 
   if (!html) {

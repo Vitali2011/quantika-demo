@@ -39,9 +39,7 @@ describe('shipandbunker-adapter', () => {
 
   beforeEach(() => {
     db = makeDb();
-    // Override cache path to a temp dir so tests don't touch /var/cache
     process.env.BUNKER_CACHE_PATH = tmpCachePath;
-    // Remove any stale cache
     try { fs.unlinkSync(tmpCachePath); } catch { /* ok */ }
   });
 
@@ -52,9 +50,9 @@ describe('shipandbunker-adapter', () => {
   });
 
   describe('parseShipAndBunkerHtml', () => {
-    it('parses 5 ports from fixture HTML', () => {
+    it('parses 4 ports from fixture HTML', () => {
       const result = parseShipAndBunkerHtml(fixtureHtml);
-      expect(result.size).toBe(5);
+      expect(result.size).toBe(4);
     });
 
     it('maps Rotterdam to NLRTM with correct VLSFO price', () => {
@@ -65,28 +63,30 @@ describe('shipandbunker-adapter', () => {
       expect(rtm!.vlsfo).toBeCloseTo(789.5);
     });
 
-    it('maps all 5 port names to correct UNLOCODEs', () => {
+    it('maps all 4 port names to correct UNLOCODEs', () => {
       const result = parseShipAndBunkerHtml(fixtureHtml);
       const expected = [
         ['Rotterdam', 'NLRTM'],
         ['Singapore', 'SGSIN'],
         ['Fujairah', 'AEFJR'],
         ['Houston', 'USHOU'],
-        ['Gibraltar', 'GIGIB'],
       ];
       for (const [port, unlocode] of expected) {
         expect(result.get(port)?.unlocode).toBe(unlocode);
       }
     });
 
-    it('returns empty map for HTML without port-row rows', () => {
+    it('returns empty map for HTML without VLSFO th rows', () => {
       const result = parseShipAndBunkerHtml('<html><body>No table here</body></html>');
       expect(result.size).toBe(0);
     });
 
     it('skips rows with unknown port name', () => {
       const html = `<table><tbody>
-        <tr class="port-row"><td class="port-name">UnknownPort</td><td class="vlsfo">999.00</td></tr>
+        <tr class="odd">
+          <th id="row-xx-unk-VLSFO" scope="row" class="port"><a href="#">UnknownPort</a></th>
+          <td headers="price-VLSFO">999.00<span class="indicator"></span></td>
+        </tr>
       </tbody></table>`;
       const result = parseShipAndBunkerHtml(html);
       expect(result.size).toBe(0);
@@ -94,7 +94,10 @@ describe('shipandbunker-adapter', () => {
 
     it('skips rows with non-numeric VLSFO value', () => {
       const html = `<table><tbody>
-        <tr class="port-row"><td class="port-name">Rotterdam</td><td class="vlsfo">N/A</td></tr>
+        <tr class="odd">
+          <th id="row-nl-rtm-VLSFO" scope="row" class="port"><a href="#">Rotterdam</a></th>
+          <td headers="price-VLSFO">N/A<span class="indicator"></span></td>
+        </tr>
       </tbody></table>`;
       const result = parseShipAndBunkerHtml(html);
       expect(result.size).toBe(0);
@@ -102,11 +105,11 @@ describe('shipandbunker-adapter', () => {
   });
 
   describe('refreshShipAndBunker', () => {
-    it('fetches HTML and inserts 5 VLSFO rows', async () => {
+    it('fetches HTML and inserts 4 VLSFO rows', async () => {
       const fetcher = async () => fixtureHtml;
       const result = await refreshShipAndBunker(db, fetcher);
 
-      expect(result.rowsChanged).toBe(5);
+      expect(result.rowsChanged).toBe(4);
     });
 
     it('stores source=shipandbunker and fuel_grade=VLSFO', async () => {
@@ -139,7 +142,6 @@ describe('shipandbunker-adapter', () => {
     });
 
     it('uses cache when cache file is fresh', async () => {
-      // Write fixture to cache
       fs.writeFileSync(tmpCachePath, fixtureHtml);
 
       let fetchCount = 0;
@@ -150,7 +152,6 @@ describe('shipandbunker-adapter', () => {
 
       await refreshShipAndBunker(db, fetcher);
 
-      // Should NOT have called fetcher since cache is fresh
       expect(fetchCount).toBe(0);
     });
 
@@ -169,7 +170,6 @@ describe('shipandbunker-adapter', () => {
       const fetcher = async () => fixtureHtml;
       await refreshShipAndBunker(db, fetcher);
 
-      // Cache should now exist
       expect(fs.existsSync(tmpCachePath)).toBe(true);
       const cached = fs.readFileSync(tmpCachePath, 'utf-8');
       expect(cached).toBe(fixtureHtml);
