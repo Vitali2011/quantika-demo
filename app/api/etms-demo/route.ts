@@ -1,18 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { generateCsrfToken, validateCsrf } from '@/lib/csrf';
+import { CorpusNotFoundError, loadCorpus } from '@/lib/corpus/loader';
 import { createSession, updateSession } from '@/lib/session';
-import type { Email } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
-  const sessionId = createSession('etms-demo-token');
+  let emails: Awaited<ReturnType<typeof loadCorpus>>;
+  try {
+    emails = await loadCorpus();
+  } catch (e) {
+    if (e instanceof CorpusNotFoundError) {
+      return NextResponse.json(
+        { error: 'Corpus not loaded. Run npm run build:corpus.' },
+        { status: 503 },
+      );
+    }
+    console.error('etms-demo corpus load failed', e);
+    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
+  }
 
-  // TODO(spec-corpus-05): wire real corpus from .private/etms-corpus.json via corpus loader
-  const emails: Email[] = [];
+  const sessionId = createSession('etms-demo-token');
 
   updateSession(sessionId, { emails });
 
