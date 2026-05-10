@@ -100,42 +100,18 @@ describe('usda-adapter', () => {
       expect(row.price_usd_per_mt).toBeCloseTo(1144.0);
     });
 
-    it('records sync success in knowledge_sync_log', async () => {
-      const fetcher = async (): Promise<UsdaRecord[]> => [
-        { location: 'Rotterdam', fuel_type: 'IFO380', price_per_mt: '789.50', report_date: '2026-05-08T00:00:00.000' },
-      ];
-      await refreshUsdaBunker(db, fetcher);
-
-      const log = db.prepare(
-        "SELECT * FROM knowledge_sync_log WHERE source_slug='bunker-usda' ORDER BY id DESC LIMIT 1"
-      ).get() as any;
-      expect(log.status).toBe('success');
-      expect(log.rows_changed).toBe(1);
-    });
-
-    it('on fetch error → reportSyncFailure and rethrows', async () => {
+    it('on fetch error → rethrows the error', async () => {
       const fetcher = async (): Promise<UsdaRecord[]> => {
         throw new Error('ECONNREFUSED');
       };
 
       await expect(refreshUsdaBunker(db, fetcher)).rejects.toThrow('ECONNREFUSED');
-
-      const log = db.prepare(
-        "SELECT * FROM knowledge_sync_log WHERE source_slug='bunker-usda' ORDER BY id DESC LIMIT 1"
-      ).get() as any;
-      expect(log.status).toBe('failure');
-      expect(log.error_message).toContain('ECONNREFUSED');
     });
 
-    it('on empty array → throws and records failure', async () => {
+    it('on empty array → throws', async () => {
       const fetcher = async (): Promise<UsdaRecord[]> => [];
 
       await expect(refreshUsdaBunker(db, fetcher)).rejects.toThrow();
-
-      const log = db.prepare(
-        "SELECT * FROM knowledge_sync_log WHERE source_slug='bunker-usda' ORDER BY id DESC LIMIT 1"
-      ).get() as any;
-      expect(log.status).toBe('failure');
     });
 
     it('is idempotent — second run with same data → same rows', async () => {

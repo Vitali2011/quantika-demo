@@ -121,17 +121,6 @@ describe('shipandbunker-adapter', () => {
       expect(row.price_usd_per_mt).toBeCloseTo(789.5);
     });
 
-    it('records sync success in knowledge_sync_log', async () => {
-      const fetcher = async () => fixtureHtml;
-      await refreshShipAndBunker(db, fetcher);
-
-      const log = db.prepare(
-        "SELECT * FROM knowledge_sync_log WHERE source_slug='bunker-shipandbunker' ORDER BY id DESC LIMIT 1"
-      ).get() as any;
-      expect(log.status).toBe('success');
-      expect(log.rows_changed).toBe(5);
-    });
-
     it('throws ShipAndBunkerParseError when HTML has no port rows', async () => {
       const fetcher = async () => '<html>broken</html>';
 
@@ -141,33 +130,12 @@ describe('shipandbunker-adapter', () => {
       );
     });
 
-    it('records sync failure on parse error', async () => {
-      const fetcher = async () => '<html>broken</html>';
-
-      try {
-        await refreshShipAndBunker(db, fetcher);
-      } catch {
-        // expected
-      }
-
-      const log = db.prepare(
-        "SELECT * FROM knowledge_sync_log WHERE source_slug='bunker-shipandbunker' ORDER BY id DESC LIMIT 1"
-      ).get() as any;
-      expect(log.status).toBe('failure');
-      expect(log.error_message).toContain('No port rows found');
-    });
-
-    it('on fetch error → reportSyncFailure and rethrows', async () => {
+    it('on fetch error → rethrows the error', async () => {
       const fetcher = async () => {
         throw new Error('ECONNRESET');
       };
 
       await expect(refreshShipAndBunker(db, fetcher)).rejects.toThrow('ECONNRESET');
-
-      const log = db.prepare(
-        "SELECT * FROM knowledge_sync_log WHERE source_slug='bunker-shipandbunker' ORDER BY id DESC LIMIT 1"
-      ).get() as any;
-      expect(log.status).toBe('failure');
     });
 
     it('uses cache when cache file is fresh', async () => {

@@ -1,11 +1,6 @@
 import type Database from 'better-sqlite3';
 import * as fs from 'fs';
 import * as path from 'path';
-import {
-  reportSyncStarted,
-  reportSyncSuccess,
-  reportSyncFailure,
-} from '@/lib/knowledge/governance';
 import { upsertBunkerPrice } from '@/lib/market/bunker-repository';
 
 const SNB_URL = 'https://shipandbunker.com/prices';
@@ -97,47 +92,40 @@ export async function refreshShipAndBunker(
   db: Database.Database,
   fetcher: HtmlFetcher = defaultFetcher,
 ): Promise<{ rowsChanged: number }> {
-  const syncId = reportSyncStarted(db, 'bunker-shipandbunker');
-  try {
-    // Try cache first
-    let html = readCache();
+  // Try cache first
+  let html = readCache();
 
-    if (!html) {
-      html = await fetcher(SNB_URL);
-      writeCache(html);
-    }
-
-    const parsed = parseShipAndBunkerHtml(html);
-
-    if (parsed.size === 0) {
-      throw new ShipAndBunkerParseError(
-        'No port rows found in HTML — page structure may have changed',
-      );
-    }
-
-    const fetchedAt = new Date().toISOString();
-    const priceDate = new Date().toISOString().slice(0, 10);
-    let rowsChanged = 0;
-
-    const upsert = db.transaction(() => {
-      for (const [, { vlsfo, unlocode }] of parsed) {
-        upsertBunkerPrice(db, {
-          port_unlocode: unlocode,
-          fuel_grade: 'VLSFO',
-          price_usd_per_mt: vlsfo,
-          price_date: priceDate,
-          source: 'shipandbunker',
-          fetched_at: fetchedAt,
-        });
-        rowsChanged++;
-      }
-    });
-    upsert();
-
-    reportSyncSuccess(db, syncId, { rowsChanged });
-    return { rowsChanged };
-  } catch (e) {
-    reportSyncFailure(db, syncId, e as Error);
-    throw e;
+  if (!html) {
+    html = await fetcher(SNB_URL);
+    writeCache(html);
   }
+
+  const parsed = parseShipAndBunkerHtml(html);
+
+  if (parsed.size === 0) {
+    throw new ShipAndBunkerParseError(
+      'No port rows found in HTML — page structure may have changed',
+    );
+  }
+
+  const fetchedAt = new Date().toISOString();
+  const priceDate = new Date().toISOString().slice(0, 10);
+  let rowsChanged = 0;
+
+  const upsert = db.transaction(() => {
+    for (const [, { vlsfo, unlocode }] of parsed) {
+      upsertBunkerPrice(db, {
+        port_unlocode: unlocode,
+        fuel_grade: 'VLSFO',
+        price_usd_per_mt: vlsfo,
+        price_date: priceDate,
+        source: 'shipandbunker',
+        fetched_at: fetchedAt,
+      });
+      rowsChanged++;
+    }
+  });
+  upsert();
+
+  return { rowsChanged };
 }

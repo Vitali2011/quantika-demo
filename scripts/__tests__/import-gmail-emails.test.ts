@@ -130,7 +130,7 @@ describe('run() — import-gmail-emails', () => {
 
       const exitSpy = jest.spyOn(process, 'exit').mockImplementation((() => {
         throw new Error('exit:1');
-      }) as (code?: number) => never);
+      }) as (code?: string | number | null) => never);
 
       // run() without gmailClient will call loadRefreshToken
       await expect(run(baseOpts())).rejects.toThrow('exit:1');
