@@ -16,6 +16,9 @@ import { getPortDa } from '@/lib/port-da/repository';
 import { resolvePort, type ResolvedPort } from '@/lib/ports/resolve';
 import { getDistance } from '@/lib/knowledge/distances/lookup';
 import { getStore } from '@/lib/session-store';
+import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
+import { getLatestEuaPrice } from '@/lib/market/eua-repository';
+import { isEuCountry } from '@/lib/validation/sanctions';
 
 const LOCODE_RE = /^[A-Za-z]{5}$/;
 
@@ -64,14 +67,17 @@ const VoyageInputSchema = z.object({
     quantityMt: z.number(),
     freightRateUsdPerMt: z.number(),
   }),
-  bunkerPriceUsdPerMt: z.number(),
-  euaPriceEur: z.number(),
+  bunkerPriceUsdPerMt: z.number().optional(),
+  euaPriceEur: z.number().optional(),
   durationDays: z.number(),
   euLegPercent: z.number().optional(),
   daysInHra: z.number().optional(),
   canalUsd: z.number().optional(),
   daUsd: z.number().optional(),
   cargoType: z.string().optional(),
+  bunkerPort: z.string().regex(/^[A-Z]{5}$/i).optional(),
+  bunkerGrade: z.enum(['VLSFO', 'MGO']).optional(),
+  includeEuETS: z.boolean().optional(),
 });
 
 function resolveCanalUsd(body: z.infer<typeof VoyageInputSchema>): number {
@@ -214,6 +220,63 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
 
+  // ── Bunker price resolution ──
+  let bunkerPriceUsdPerMt: number;
+  let bunkerPriceSource: {
+    value: number; source: string; priceDate?: string; fetchedAt?: string; mode: 'manual' | 'auto';
+  };
+  if (typeof data.bunkerPriceUsdPerMt === 'number') {
+    bunkerPriceUsdPerMt = data.bunkerPriceUsdPerMt;
+    bunkerPriceSource = { value: data.bunkerPriceUsdPerMt, source: 'manual', mode: 'manual' };
+  } else {
+    const port = (data.bunkerPort ?? 'SGSIN').toUpperCase();
+    const grade = data.bunkerGrade ?? 'VLSFO';
+    const db = getStore().getDb();
+    const row = getLatestBunkerPrice(db, port, grade);
+    if (!row) {
+      return NextResponse.json(
+        { error: 'bunker_price_unavailable', port, grade },
+        { status: 422 },
+      );
+    }
+    bunkerPriceUsdPerMt = row.price_usd_per_mt;
+    bunkerPriceSource = {
+      value: row.price_usd_per_mt, source: row.source,
+      priceDate: row.price_date, fetchedAt: row.fetched_at, mode: 'auto',
+    };
+  }
+
+  // ── EUA price resolution ──
+  let euaPriceEur: number;
+  let euaPriceSource: {
+    value: number; source: string; priceDate?: string; fetchedAt?: string; mode: string;
+  };
+  if (typeof data.euaPriceEur === 'number') {
+    euaPriceEur = data.euaPriceEur;
+    euaPriceSource = { value: data.euaPriceEur, source: 'manual', mode: 'manual' };
+  } else {
+    const euTrigger = data.includeEuETS === true
+      || isEuCountry(originResolved.country)
+      || isEuCountry(destinationResolved.country);
+    if (!euTrigger) {
+      euaPriceEur = 0;
+      euaPriceSource = { value: 0, source: 'not-applicable', mode: 'auto-skip' };
+    } else {
+      const db = getStore().getDb();
+      const row = getLatestEuaPrice(db, 'spot');
+      if (!row) {
+        euaPriceEur = 0;
+        euaPriceSource = { value: 0, source: 'unavailable', mode: 'auto-fallback' };
+      } else {
+        euaPriceEur = row.price_eur_per_tco2;
+        euaPriceSource = {
+          value: row.price_eur_per_tco2, source: row.source,
+          priceDate: row.price_date, fetchedAt: row.fetched_at, mode: 'auto',
+        };
+      }
+    }
+  }
+
   const tceInput: VoyageInput = {
     vessel: {
       dwt: data.vessel.dwt,
@@ -229,8 +292,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       destinationPort: destinationResolved.portName,
     },
     cargo: data.cargo,
-    bunkerPriceUsdPerMt: data.bunkerPriceUsdPerMt,
-    euaPriceEur: data.euaPriceEur,
+    bunkerPriceUsdPerMt,
+    euaPriceEur,
     durationDays: data.durationDays,
     euLegPercent: data.euLegPercent,
     daysInHra: data.daysInHra,
@@ -239,5 +302,5 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   };
 
   const result = calculateTCE(tceInput);
-  return NextResponse.json(result);
+  return NextResponse.json({ ...result, bunkerPriceSource, euaPriceSource });
 }
