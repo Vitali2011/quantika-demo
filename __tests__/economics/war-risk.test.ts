@@ -80,3 +80,40 @@ describe('calculateWarRiskPremium — ResolvedPort input', () => {
     expect(result.zoneIds).toContain('gulf-of-guinea');
   });
 });
+
+describe('calculateWarRiskPremium — Persian Gulf / Strait of Hormuz HRA', () => {
+  it('Bandar Abbas (Iran) → persian-gulf-hra applicable', () => {
+    const result = calculateWarRiskPremium({
+      route: { fromPort: 'Bandar Abbas', toPort: 'Antwerp' },
+      vesselValueUsd: BASE_VALUE,
+    });
+    expect(result.applicable).toBe(true);
+    expect(result.zoneIds).toContain('persian-gulf-hra');
+  });
+
+  it('Fujairah (UAE) → persian-gulf-hra applicable', () => {
+    const result = calculateWarRiskPremium({
+      route: { fromPort: 'Fujairah', toPort: 'Rotterdam' },
+      vesselValueUsd: BASE_VALUE,
+    });
+    expect(result.applicable).toBe(true);
+    expect(result.zoneIds).toContain('persian-gulf-hra');
+  });
+
+  it('IRBND→AEFJR locode string → persian-gulf-hra applicable', () => {
+    const result = calculateWarRiskPremium({
+      route: { fromPort: 'IRBND', toPort: 'AEFJR' },
+      vesselValueUsd: BASE_VALUE,
+    });
+    expect(result.applicable).toBe(true);
+    expect(result.zoneIds).toContain('persian-gulf-hra');
+  });
+
+  it('premium uses 0.5% rate for $12M vessel', () => {
+    const result = calculateWarRiskPremium({
+      route: { fromPort: 'Bandar Abbas', toPort: 'Rotterdam' },
+      vesselValueUsd: 12_000_000,
+    });
+    expect(result.premiumUsd).toBe(60_000); // 12M × 0.5% = 60k
+  });
+});

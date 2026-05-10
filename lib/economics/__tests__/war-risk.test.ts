@@ -10,10 +10,11 @@ describe('JWC_HRA_ZONES', () => {
     });
   });
 
-  it('per-transit rates match JWC 2024-26 (0.04%–0.10% range)', () => {
+  it('per-transit rates are within realistic JWC range (0.04%–1.0%)', () => {
+    // Upper bound updated to 0.01 (1%) to accommodate JWLA-033 Persian Gulf zone (0.5%)
     JWC_HRA_ZONES.forEach(z => {
       expect(z.premiumPercentPerTransit).toBeGreaterThanOrEqual(0.0004);
-      expect(z.premiumPercentPerTransit).toBeLessThanOrEqual(0.001);
+      expect(z.premiumPercentPerTransit).toBeLessThanOrEqual(0.01);
     });
   });
 });

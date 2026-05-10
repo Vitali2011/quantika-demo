@@ -57,6 +57,26 @@ export const JWC_HRA_ZONES: HraZone[] = [
       // UNLOCODE codes for LOCODE-based detection (spec-04)
       'uaods', 'uamyi', 'ruasi', 'uakhk', 'trist'],
   },
+  {
+    id: 'persian-gulf-hra',
+    name: 'Persian Gulf / Strait of Hormuz HRA',
+    // JWC JWLA-033 (2026): 0.5% per transit. Higher than other zones due to Iran/Hormuz risk.
+    premiumPercentPerTransit: 0.005,
+    ports: [
+      // Port name keywords
+      'bandar abbas', 'bandar imam', 'shahid rajaee', 'fujairah',
+      'bahrain', 'mina salman', 'khalifa bin salman',
+      'doha', 'ras laffan',
+      'kuwait', 'shuaiba', 'shuwaikh',
+      'dammam', 'jubail', 'ras tanura', 'khasab', 'hormuz',
+      // UNLOCODE codes for LOCODE-based detection
+      'irbnd', 'irbab', 'aefjr', 'aeauh',
+      'bhbah', 'qadoh', 'qaral',
+      'kwkwi', 'kwsub',
+      'sadmm', 'sajub', 'sarta',
+      'omkhb',
+    ],
+  },
 ];
 
 export interface WarRiskInput {
