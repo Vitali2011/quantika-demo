@@ -13,6 +13,15 @@ Wave γ Quality Push (PR #97) дал нам classify endpoint на 92.6% точ�
 
 **Цель:** на новом корпусе 154 emails — прогнать `progonq` adversarial loop на всех 4 Gemini-парсерах, получить hardened production prompts + auto-generated regression tests + final per-endpoint quality matrix vs production winner.
 
+## Pre-flight research (DONE 2026-05-10)
+
+Перед launch'ом проведено parallel research через 2 sub-агентов:
+
+- **Gemini 2.5 best practices** (`.specs/wave-gamma-vertex/quality-push/research-gemini-best-practices.md`) — Google docs, AI Studio, Phil Schmid, community sources. 16 источников, ~1450 слов.
+- **Allegro-lister production patterns** (`.specs/wave-gamma-vertex/quality-push/research-allegro-lister-patterns.md`) — 5+ wave итераций prompt тюнинга на проде + 11-round /progonq trajectory. ~1200 слов.
+
+Синтезированы в **`.specs/wave-gamma-vertex/quality-push/prompt-patterns-reference.md`** — 7 high-confidence patterns для baseline (Round 0), per-parser tuning matrix, anti-patterns. Этот файл — обязательное чтение для каждого progonq sub-агента в Phases 1-4. Цель: сократить количество раундов с 14 до 6-8 за счёт лучшего стартового baseline.
+
 ## Approach summary
 
 5 фаз последовательно, плюс 2 prerequisite фазы:
