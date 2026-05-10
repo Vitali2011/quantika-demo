@@ -222,6 +222,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   // ── Bunker price resolution ──
   let bunkerPriceUsdPerMt: number;
+  // bunker always has a DB row or returns 422 — no auto-skip or auto-fallback path
   let bunkerPriceSource: {
     value: number; source: string; priceDate?: string; fetchedAt?: string; mode: 'manual' | 'auto';
   };
