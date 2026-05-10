@@ -44,6 +44,7 @@ export async function main(): Promise<void> {
   try {
     console.log('[EEX] Fetching auction results from EEX hub...');
     const r = await refreshEex(db);
+    if (!r) { reportSyncFailure(db, eexId, new Error('EEX XLSX parse failed — null result')); console.warn('[EEX] ✗ Null result — structure changed'); return; }
     eexPriceDate = r.priceDate;
     reportSyncSuccess(db, eexId, { rowsChanged: r.rowsChanged });
     eexOk = true;
@@ -64,9 +65,8 @@ export async function main(): Promise<void> {
     try {
       console.log('[ICAP] Fetching ETS prices from ICAP (fallback)...');
       const r = await refreshIcap(db);
-      reportSyncSuccess(db, icapId, { rowsChanged: r.rowsChanged });
-      icapOk = true;
-      console.log(`[ICAP] ✓ Done: price=${r.price} date=${r.priceDate}`);
+      if (!r) { reportSyncFailure(db, icapId, new Error('ICAP parse failed — null result')); console.warn('[ICAP] ✗ Null result — API blocked or structure changed'); }
+      else { reportSyncSuccess(db, icapId, { rowsChanged: r.rowsChanged }); icapOk = true; console.log(`[ICAP] ✓ Done: price=${r.price} date=${r.priceDate}`); }
     } catch (e) {
       reportSyncFailure(db, icapId, e as Error);
       console.error('[ICAP] ✗ Failed:', e);

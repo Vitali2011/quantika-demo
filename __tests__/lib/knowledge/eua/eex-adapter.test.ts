@@ -140,9 +140,9 @@ describe('eex-adapter — refreshEex', () => {
 
     const result = await refreshEex(db, fetcher);
 
-    expect(result.priceDate).toBe('2026-01-08');
-    expect(result.price).toBeCloseTo(72.65, 2);
-    expect(result.rowsChanged).toBe(1);
+    expect(result!.priceDate).toBe('2026-01-08');
+    expect(result!.price).toBeCloseTo(72.65, 2);
+    expect(result!.rowsChanged).toBe(1);
     expect(fetcher).toHaveBeenCalledTimes(1);
     expect(fetcher).toHaveBeenCalledWith(expect.stringContaining('public.eex-group.com'));
 
@@ -167,6 +167,16 @@ describe('eex-adapter — refreshEex', () => {
   it('throws when fetcher network error', async () => {
     const fetcher = jest.fn().mockRejectedValue(new Error('ECONNREFUSED'));
     await expect(refreshEex(db, fetcher)).rejects.toThrow('ECONNREFUSED');
+  });
+
+  it('returns null when XLSX structure is broken (no valid ZIP)', async () => {
+    const badBuf = Buffer.alloc(100, 0);
+    const fetcher = jest.fn().mockResolvedValue(badBuf);
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const result = await refreshEex(db, fetcher);
+    expect(result).toBeNull();
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('[EEX]'), expect.any(String));
+    warnSpy.mockRestore();
   });
 
   it('is idempotent: second call with same price overwrites (upsert, no duplicate)', async () => {

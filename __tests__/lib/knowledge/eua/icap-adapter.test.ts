@@ -169,9 +169,9 @@ describe('icap-adapter — refreshIcap', () => {
 
     const result = await refreshIcap(db, fetcher);
 
-    expect(result.price).toBeCloseTo(71.30, 2);
-    expect(result.priceDate).toBe('2026-05-08');
-    expect(result.rowsChanged).toBe(1);
+    expect(result!.price).toBeCloseTo(71.30, 2);
+    expect(result!.priceDate).toBe('2026-05-08');
+    expect(result!.rowsChanged).toBe(1);
     expect(fetcher).toHaveBeenCalledWith(
       expect.stringContaining('allowancepriceexplorer.icapcarbonaction.com'),
     );
@@ -194,9 +194,30 @@ describe('icap-adapter — refreshIcap', () => {
     await expect(refreshIcap(db, fetcher)).rejects.toThrow(IcapNoEuEtsError);
   });
 
-  it('throws IcapNoEuEtsError when response is not valid JSON', async () => {
+  it('returns null when response is not valid JSON (graceful fallback)', async () => {
     const fetcher = jest.fn().mockResolvedValue('not json');
-    await expect(refreshIcap(db, fetcher)).rejects.toThrow(IcapNoEuEtsError);
+    const result = await refreshIcap(db, fetcher);
+    expect(result).toBeNull();
+  });
+
+  it('returns null when response is HTML (Cloudflare challenge)', async () => {
+    const htmlBody = '<!DOCTYPE html><html><body>Just a moment...</body></html>';
+    const fetcher = jest.fn().mockResolvedValue(htmlBody);
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const result = await refreshIcap(db, fetcher);
+    expect(result).toBeNull();
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('[ICAP]'));
+    warnSpy.mockRestore();
+  });
+
+  it('parses real ICAP API fixture (icap-systems-2026-05-10.json) → price > 0', async () => {
+    const apiJson = loadFixture('icap-systems-2026-05-10.json');
+    const fetcher = jest.fn().mockResolvedValue(apiJson);
+    const result = await refreshIcap(db, fetcher);
+    expect(result).not.toBeNull();
+    expect(result!.price).toBeGreaterThan(0);
+    expect(result!.priceDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(result!.rowsChanged).toBe(1);
   });
 
   it('is idempotent: second upsert with same date overwrites (no duplicate row)', async () => {

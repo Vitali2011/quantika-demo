@@ -117,17 +117,30 @@ export function parseIcapCsv(csv: string): { price: number; priceDate: string } 
 /**
  * Fetch ICAP Allowance Price Explorer JSON API, parse EU ETS secondary price,
  * upsert into DB.
+ *
+ * Returns null (+ logs a warning) when the API returns HTML (e.g. Cloudflare
+ * challenge) or the JSON structure has no EU ETS entry.
+ * Only re-throws on genuine network failures (fetcher rejection).
  */
 export async function refreshIcap(
   db: Database.Database,
   fetcher: Fetcher = defaultFetcher,
-): Promise<{ rowsChanged: number; priceDate: string; price: number }> {
-  const json = await fetcher(ICAP_API_URL);
+): Promise<{ rowsChanged: number; priceDate: string; price: number } | null> {
+  const raw = await fetcher(ICAP_API_URL);
+
+  // Graceful-null: Cloudflare challenge or any non-JSON response
+  const trimmed = raw.trimStart();
+  if (!trimmed.startsWith('[') && !trimmed.startsWith('{')) {
+    console.warn('[ICAP] API response is not JSON — possibly blocked by Cloudflare');
+    return null;
+  }
+
   let systems: IcapSystem[];
   try {
-    systems = JSON.parse(json) as IcapSystem[];
+    systems = JSON.parse(raw) as IcapSystem[];
   } catch {
-    throw new IcapNoEuEtsError('ICAP API response is not valid JSON');
+    console.warn('[ICAP] API response could not be parsed as JSON');
+    return null;
   }
 
   const { price, priceDate } = parseIcapApiResponse(systems);

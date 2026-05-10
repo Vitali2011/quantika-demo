@@ -216,15 +216,30 @@ export function parseEexCsv(csv: string): { price: number; priceDate: string } {
 /**
  * Download current-year EEX XLSX, parse the latest EU auction clearing price,
  * upsert into DB.
+ *
+ * Returns null (+ logs a warning) when the XLSX is unavailable or its
+ * structure has changed — callers should treat null as "stale data, skip".
+ * Only re-throws on genuine network failures (fetcher rejection).
  */
 export async function refreshEex(
   db: Database.Database,
   fetcher: Fetcher = defaultFetcher,
-): Promise<{ rowsChanged: number; priceDate: string; price: number }> {
+): Promise<{ rowsChanged: number; priceDate: string; price: number } | null> {
   const url = buildEexXlsxUrl();
   const buf = await fetcher(url);
-  const { price, priceDate } = parseEexXlsx(buf);
 
+  let parsed: { price: number; priceDate: string };
+  try {
+    parsed = parseEexXlsx(buf);
+  } catch (err) {
+    if (err instanceof EexNoAuctionFoundError || err instanceof EexCsvFormatError) {
+      console.warn('[EEX] XLSX parse failed — structure may have changed:', (err as Error).message);
+      return null;
+    }
+    throw err;
+  }
+
+  const { price, priceDate } = parsed;
   upsertEuaPrice(db, {
     price_date: priceDate,
     price_eur_per_tco2: price,
