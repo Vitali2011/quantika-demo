@@ -1,0 +1,24 @@
+{
+  "id": "thread-001",
+  "messages": [
+    {
+      "id": "msg-001",
+      "threadId": "thread-001",
+      "snippet": "Hello, I need a quote for 5000mt of steel coils.",
+      "labelIds": ["INBOX", "UNREAD"],
+      "internalDate": "1715000000000",
+      "payload": {
+        "mimeType": "text/plain",
+        "headers": [
+          { "name": "From", "value": "John Smith <john@forwarder.com>" },
+          { "name": "To", "value": "sales@quantika.com" },
+          { "name": "Subject", "value": "Cargo inquiry - steel coils" },
+          { "name": "Date", "value": "Mon, 06 May 2026 10:00:00 +0000" }
+        ],
+        "body": {
+          "data": "SGVsbG8sIEkgbmVlZCBhIHF1b3RlIGZvciA1MDAwbXQgb2Ygc3RlZWwgY29pbHMu"
+        }
+      }
+    }
+  ]
+}
