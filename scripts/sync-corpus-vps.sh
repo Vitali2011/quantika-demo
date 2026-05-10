@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-HOST="${QUANTIKA_DEMO_VPS_HOST:-demo.quantika.org}"
+HOST="${QUANTIKA_DEMO_VPS_HOST:-185.249.225.169}"
 REMOTE_PATH="/root/quantika-demo/.private/etms-corpus.json"
 LOCAL_PATH=".private/etms-corpus.json"
 
