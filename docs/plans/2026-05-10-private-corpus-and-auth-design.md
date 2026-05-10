@@ -150,7 +150,7 @@ npm run corpus:extract -- \
 - Анонимизация писем (за паролем — уже private)
 - Auto-judge "Gemini vs gpt-5.5" pipeline (есть scripts/wave-gamma-bake-off + /progonq)
 - Web-UI для управления корпусом (CLI scripts достаточно)
-- Auto-scheduling импорта (manual когда нужно)
+- **Крон / scheduled импорт — НЕ делаем.** Импорт только по ручному запуску `npm run import:emails`.
 - Веб-форма OAuth setup (terminal helper хватит)
 
 ## Estimate
