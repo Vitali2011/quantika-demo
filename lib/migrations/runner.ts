@@ -35,7 +35,7 @@ export function runMigrations(db: Database.Database, migrations: Migration[]): v
     db.transaction(() => {
       migration.up(db);
       db.prepare<[number, string, number]>(
-        'INSERT INTO schema_migrations (version, name, applied_at) VALUES (?, ?, ?)'
+        'INSERT OR IGNORE INTO schema_migrations (version, name, applied_at) VALUES (?, ?, ?)'
       ).run(migration.version, migration.name, Date.now());
     })();
   }
