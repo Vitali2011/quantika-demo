@@ -1,0 +1,14 @@
+[
+  { "location": "Rotterdam", "fuel_type": "IFO380", "price_per_mt": "789.50", "report_date": "2026-05-08T00:00:00.000" },
+  { "location": "Rotterdam", "fuel_type": "MGO", "price_per_mt": "1192.00", "report_date": "2026-05-08T00:00:00.000" },
+  { "location": "Singapore", "fuel_type": "IFO380", "price_per_mt": "801.00", "report_date": "2026-05-08T00:00:00.000" },
+  { "location": "Singapore", "fuel_type": "MGO", "price_per_mt": "1144.00", "report_date": "2026-05-08T00:00:00.000" },
+  { "location": "Fujairah", "fuel_type": "IFO380", "price_per_mt": "880.00", "report_date": "2026-05-08T00:00:00.000" },
+  { "location": "Fujairah", "fuel_type": "MGO", "price_per_mt": "1482.00", "report_date": "2026-05-08T00:00:00.000" },
+  { "location": "Houston", "fuel_type": "IFO380", "price_per_mt": "806.00", "report_date": "2026-05-08T00:00:00.000" },
+  { "location": "Houston", "fuel_type": "MGO", "price_per_mt": "1170.00", "report_date": "2026-05-08T00:00:00.000" },
+  { "location": "Gibraltar", "fuel_type": "IFO380", "price_per_mt": "771.00", "report_date": "2026-05-08T00:00:00.000" },
+  { "location": "Gibraltar", "fuel_type": "MGO", "price_per_mt": "1172.00", "report_date": "2026-05-08T00:00:00.000" },
+  { "location": "UnknownPort", "fuel_type": "IFO380", "price_per_mt": "999.00", "report_date": "2026-05-08T00:00:00.000" },
+  { "location": "Rotterdam", "fuel_type": "HSFO", "price_per_mt": "650.00", "report_date": "2026-05-08T00:00:00.000" }
+]
