@@ -1,0 +1,70 @@
+import Database from 'better-sqlite3';
+import migration023 from '@/lib/migrations/023-bunker-prices-rewrite';
+import { getLatestBunkerPrice, upsertBunkerPrice } from '@/lib/market/bunker-repository';
+
+describe('bunker-repository', () => {
+  let db: Database.Database;
+
+  beforeEach(() => {
+    db = new Database(':memory:');
+    db.exec('PRAGMA foreign_keys = ON');
+    migration023.up(db);
+  });
+
+  afterEach(() => db.close());
+
+  it('getLatestBunkerPrice returns SGSIN/VLSFO seed row', () => {
+    const row = getLatestBunkerPrice(db, 'SGSIN', 'VLSFO');
+    expect(row).not.toBeNull();
+    expect(row!.port_unlocode).toBe('SGSIN');
+    expect(row!.fuel_grade).toBe('VLSFO');
+    expect(row!.price_usd_per_mt).toBe(801);
+    expect(row!.price_date).toBe('2026-05-09');
+    expect(row!.source).toBe('static-seed');
+    expect(row!.fetched_at).toBeTruthy();
+  });
+
+  it('getLatestBunkerPrice returns null for unknown port', () => {
+    const row = getLatestBunkerPrice(db, 'ZZZZZ', 'VLSFO');
+    expect(row).toBeNull();
+  });
+
+  it('getLatestBunkerPrice returns newest row when multiple dates exist', () => {
+    db.prepare(
+      "INSERT INTO bunker_prices (port_unlocode, fuel_grade, price_usd_per_mt, price_date, source, fetched_at) VALUES ('NLRTM', 'VLSFO', 850, '2026-05-10', 'newer-source', datetime('now'))"
+    ).run();
+    const row = getLatestBunkerPrice(db, 'NLRTM', 'VLSFO');
+    expect(row).not.toBeNull();
+    expect(row!.price_date).toBe('2026-05-10');
+    expect(row!.price_usd_per_mt).toBe(850);
+  });
+
+  it('upsertBunkerPrice inserts a new row', () => {
+    upsertBunkerPrice(db, {
+      port_unlocode: 'CNSHA',
+      fuel_grade: 'VLSFO',
+      price_usd_per_mt: 750,
+      price_date: '2026-05-10',
+      source: 'test',
+      fetched_at: new Date().toISOString(),
+    });
+    const row = getLatestBunkerPrice(db, 'CNSHA', 'VLSFO');
+    expect(row).not.toBeNull();
+    expect(row!.price_usd_per_mt).toBe(750);
+  });
+
+  it('upsertBunkerPrice updates existing row on conflict', () => {
+    upsertBunkerPrice(db, {
+      port_unlocode: 'SGSIN',
+      fuel_grade: 'VLSFO',
+      price_usd_per_mt: 900,
+      price_date: '2026-05-09',
+      source: 'updated-source',
+      fetched_at: new Date().toISOString(),
+    });
+    const row = getLatestBunkerPrice(db, 'SGSIN', 'VLSFO');
+    expect(row).not.toBeNull();
+    expect(row!.price_usd_per_mt).toBe(900);
+    expect(row!.source).toBe('updated-source');
+  });
+});

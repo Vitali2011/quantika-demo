@@ -20,6 +20,8 @@ import migration019 from './019-port-master-baltic-indices';
 import migration020 from './020-toepfer-tmi-seed';
 import migration021 from './021-port-da-large-vessels';
 import migration022 from './022-drop-market-benchmarks';
+import migration023 from './023-bunker-prices-rewrite';
+import migration024 from './024-eua-prices-rewrite';
 import type { Migration } from './types';
 
-export const allMigrations: Migration[] = [migration001, migration002, migration003, migration004, migration005, migration006, migration007, migration008, migration009, migration010, migration011, migration012, migration013, migration014, migration015, migration016, migration017, migration018, migration019, migration020, migration021, migration022];
+export const allMigrations: Migration[] = [migration001, migration002, migration003, migration004, migration005, migration006, migration007, migration008, migration009, migration010, migration011, migration012, migration013, migration014, migration015, migration016, migration017, migration018, migration019, migration020, migration021, migration022, migration023, migration024];
