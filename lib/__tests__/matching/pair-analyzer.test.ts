@@ -1,4 +1,5 @@
 import { analyzePairs, AiScorer, RawMatch } from '@/lib/matching/pair-analyzer';
+import { LLMTimeoutError } from '@/lib/openai';
 import type { ParsedCargo, ParsedVessel } from '@/lib/types';
 
 jest.mock('@/lib/sailing/readiness-gap', () => ({
@@ -323,6 +324,15 @@ describe('analyzePairs', () => {
 
       // Restore mock
       checkSanctions.mockReturnValue({ risk: 'NONE', blocking: false });
+    });
+
+    it('re-throws LLMTimeoutError so route.ts can return HTTP 504 retryable signal', async () => {
+      const timeout = new LLMTimeoutError('Match scoring timed out after 85s');
+      const aiScorer: AiScorer = jest.fn().mockRejectedValue(timeout);
+
+      await expect(
+        analyzePairs([makeCargo()], [makeVessel()], aiScorer),
+      ).rejects.toThrow(LLMTimeoutError);
     });
   });
 });
