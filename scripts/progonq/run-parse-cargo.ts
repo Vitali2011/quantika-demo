@@ -117,19 +117,36 @@ function normalizePort(v: unknown): string | null {
   let s = v.trim().toLowerCase().replace(/\s+/g, ' ');
   // Strip diacritics — reference corpus is inconsistent (constanta vs constanța)
   s = s.normalize('NFD').replace(/[̀-ͯ]/g, '');
-  // Common port spelling aliases
+
+  // === PORT NAME ALIASES ===
   s = s.replace(/\bveracruz\b/g, 'vera cruz');
-  s = s.replace(/\bla coruna\b/g, 'la coruna'); // already ascii after NFD strip
-  s = s.replace(/\bnemrut bay\b/g, 'nemrut');   // normalize Nemrut Bay → nemrut for scoring
-  // Normalize port qualifier formats so "1 safe port X" == "X (1 port)" == "1 sp X"
-  s = s.replace(/^1 safe port (.+)$/, '$1 (1 port)');
-  s = s.replace(/^1 sp (.+)$/, '$1 (1 port)');
-  // Normalize "/" between ports to " or " (Puerto Limon / Caldera == Puerto Limon or Caldera)
+  s = s.replace(/\bnemrut bay\b/g, 'nemrut');
+  s = s.replace(/\bporto marghera(?:\s*\(venice\))?\b/g, 'marghera');
+  s = s.replace(/\bking abdullah port\b/g, 'king abdullah');
+
+  // === SEPARATOR NORMALIZATION ===
+  // "/" between ports → " or " (alternative ports)
   s = s.replace(/ \/ /g, ' or ');
-  // Normalize "port (unspecified)" variants
-  s = s.replace(/\s*\(port unspecified\)/, ' (port unspecified)');
-  s = s.replace(/\(unspecified\)/, '(port unspecified)');
-  return s;
+  // "+" between ports → " and " (multi-port rotation — vessel calls both)
+  s = s.replace(/ \+ /g, ' and ');
+
+  // === QUALIFIER NORMALIZATION ===
+  // Chopt notation: "X (option: Y)" == "X or Y"
+  s = s.replace(/\s*\(option:\s*([^)]+)\)/g, ' or $1');
+  // Strip unspecified-port parentheticals
+  s = s.replace(/\s*\(port unspecified\)/g, '');
+  s = s.replace(/\s*\(unspecified port\)/g, '');
+  s = s.replace(/\s*\(unspecified\)/g, '');
+
+  // === PORT COUNT QUALIFIER STRIPPING ===
+  // Strip prefix forms: "1 safe port safe berth X", "1spsb X", "1 sp X", "1 sb X"
+  s = s.replace(/^1\s*(?:safe port\s*(?:safe berth\s*)?|safe berth\s*|spsb\s*|sp\s*|sb\s*)/, '');
+  // Strip suffix forms: "X (1 safe port safe berth)", "X (1 port)"
+  s = s.replace(/\s*\(1\s*(?:safe port(?:\s*safe berth)?|safe berth|port|spsb|sp|sb)\)$/i, '');
+  // Strip trailing generic " port" qualifier (e.g. "egypt mediterranean port" → "egypt mediterranean")
+  s = s.replace(/ port$/, '');
+
+  return s.trim() || null;
 }
 
 function scoreItems(refItems: CargoItem[], modelItems: CargoItem[]): ItemMatchResult[] {

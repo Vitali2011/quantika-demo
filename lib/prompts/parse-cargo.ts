@@ -88,6 +88,24 @@ RULE 4 — Preserve source port spelling; DO NOT add unsolicited geographic qual
 - Do NOT add "(Sea)", "(region)", "(Range)" unless the source contains that word.
 - Canonical port names: "Nemrut" → "Nemrut Bay"; "Constantza/Constanta" → "Constanța" preferred.
 
+RULE 5 — Slash "/" as load/discharge separator (NOT alternatives):
+When the email uses the structure "[Port A] / [Port B] / [quantity or cargo or laycan]...",
+the first "/" separates origin from destination — NOT charterer's option.
+Parse as: origin_port = Port A, destination_port = Port B.
+Distinguish from alternatives: "Port A or Port B" or "Port A/Port B chopt" = alternatives.
+Key signal: if "/" is followed by another "/" introducing quantity/cargo/date, it is a separator.
+Examples:
+  "1 Marmara /Constanta Min 7200 tons Steel Billets" → origin=Marmara, destination=Constanta
+  "Odesa / Chornomorsk chopt" → both are alternative destinations
+
+RULE 6 — Multi-port rotation vs alternatives:
+- "Port A + Port B" = vessel calls BOTH ports in sequence (rotation). Preserve "+" literally in output.
+  Example: "loading Damietta + Misurata" → origin_port = "Damietta + Misurata"
+  Example: "disch Yarımca (Marmara) + Samsun" → destination_port = "Yarımca (Marmara) + Samsun"
+- "Port A or Port B" or "Port A / Port B chopt" = charterer's option (only one port called).
+  Example: "Odesa or Chornomorsk chopt" → destination_port = "Odesa or Chornomorsk"
+NEVER convert "+" to "or" — they mean different commercial things (rotation vs option).
+
 === CARGO DESCRIPTION RULES ===
 
 cargo_description MUST be human-readable English. Required contents:
@@ -206,6 +224,8 @@ Each field must be returned as: { value: ..., confidence: "confirmed" | "interpr
 If a field is set to null (information not present), source_text is not needed.
 
 TCT GUARD: If the email describes a time-charter trip (contains TCT, "trip charter", "period charter", daily hire rate, delivery/redelivery ports, or charter duration in months) rather than a specific cargo lifting, do NOT attempt to extract cargo fields. Return empty items array and set missing_info: ["This appears to be a TCT/period charter request, not a voyage cargo inquiry"].
+
+VESSEL POSITION GUARD: Also return empty items array if the email is a vessel availability/tonnage circular where a shipowner or operator is offering their vessel for employment. Identifies: (1) vessel capacity specs (DWCC, DWT) combined with vessel type descriptors (SID = single-deck, BOX = box-hold, GLESS = gearless, OHG = open-hatch) — these describe the ship, not the cargo; (2) "open [PORT] [date]/onw" or "open [PORT] ppt" — describes where the vessel is currently available; (3) "=> [REGION]" or "looking for employment in [REGION]" — describes preferred trading area, not a discharge port for specific cargo. These emails read as "we have a ship available at X, seeking cargo toward Y" — NOT as a shipper seeking transportation for a specific cargo. Return empty items[] and set missing_info: ["This appears to be a vessel availability/tonnage circular, not a cargo inquiry"].
 
 Extract per inquiry item:
 - origin_port: full port name (see PORT HANDLING RULES — never null when geography exists)
