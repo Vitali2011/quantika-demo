@@ -13,6 +13,7 @@ import { AnalyticsTracker } from '@/lib/analytics-tracker';
 import { ClickableField } from '@/components/clickable-field';
 import { safeRender, getConf, ConfIcon } from '@/lib/ui-render';
 import { renderSpecialRequirements } from '@/lib/cargo-render';
+import { SanctionsBadge } from '@/components/vessel/SanctionsBadge';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -33,6 +34,11 @@ export default async function CargoDetailPage({ params }: Props) {
   const cargos = session.parsedCargos.filter(c => c.emailId === id);
   const processed = session.processedEmails.find(p => p.emailId === id);
   const matchingVessels = session.matches.filter(m => m.cargoEmailId === id);
+
+  // Find if this cargo is involved in any sanctions-blocked pairs
+  const sanctionsBlock = (session.blockedMatches ?? []).find(
+    (b) => b.cargoEmailId === id && b.sanctions?.blocking,
+  );
   const statusCfg = processed ? STATUS_CONFIG[processed.status] : null;
   const emailMeta = {
     emailBody: email.body || email.snippet,
@@ -49,6 +55,11 @@ export default async function CargoDetailPage({ params }: Props) {
         <Link href="/dashboard" className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ChevronLeft className="h-4 w-4" /> Back to Dashboard
         </Link>
+
+        {/* Sanctions blocked badge — shown only when cargo is in a sanctions-blocked pair */}
+        {sanctionsBlock && (
+          <SanctionsBadge reason={sanctionsBlock.filterReason} />
+        )}
 
         {/* Header */}
         <div className="flex items-start justify-between">
