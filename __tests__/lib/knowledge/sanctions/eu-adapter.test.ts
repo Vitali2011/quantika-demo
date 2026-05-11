@@ -1,7 +1,7 @@
 import Database from "better-sqlite3";
 import migration013 from "@/lib/migrations/013-knowledge-sources";
 import migration014 from "@/lib/migrations/014-sanctions-entities";
-import { refreshEu } from "@/lib/knowledge/sanctions/eu-adapter";
+import { refreshEu, withRetry, HttpFetchError } from "@/lib/knowledge/sanctions/eu-adapter";
 import type { Fetcher } from "@/lib/knowledge/sanctions/eu-adapter";
 import { registerSource } from "@/lib/knowledge/governance";
 
@@ -330,6 +330,134 @@ describe("eu-adapter", () => {
         .prepare("SELECT * FROM knowledge_sources WHERE slug = 'eu-sanctions'")
         .get() as any;
       expect(source.status).toBe("fresh");
+    });
+  });
+
+  describe("withRetry", () => {
+    const noSleep = async () => {};
+
+    it("returns value on first attempt when fn succeeds", async () => {
+      let calls = 0;
+      const result = await withRetry(async () => {
+        calls++;
+        return "ok";
+      }, { sleep: noSleep });
+      expect(result).toBe("ok");
+      expect(calls).toBe(1);
+    });
+
+    it("retries on HTTP 500 and succeeds on 2nd attempt", async () => {
+      let calls = 0;
+      const result = await withRetry(async () => {
+        calls++;
+        if (calls === 1) throw new HttpFetchError(500, "upstream");
+        return "ok";
+      }, { sleep: noSleep });
+      expect(result).toBe("ok");
+      expect(calls).toBe(2);
+    });
+
+    it("retries on HTTP 429 (rate limit)", async () => {
+      let calls = 0;
+      const result = await withRetry(async () => {
+        calls++;
+        if (calls < 3) throw new HttpFetchError(429, "rate limited");
+        return "ok";
+      }, { sleep: noSleep });
+      expect(result).toBe("ok");
+      expect(calls).toBe(3);
+    });
+
+    it("retries on network error (no status)", async () => {
+      let calls = 0;
+      const result = await withRetry(async () => {
+        calls++;
+        if (calls === 1) throw new Error("ECONNRESET");
+        return "ok";
+      }, { sleep: noSleep });
+      expect(result).toBe("ok");
+      expect(calls).toBe(2);
+    });
+
+    it("does NOT retry on HTTP 401 (auth)", async () => {
+      let calls = 0;
+      await expect(
+        withRetry(async () => {
+          calls++;
+          throw new HttpFetchError(401, "unauthorized");
+        }, { sleep: noSleep })
+      ).rejects.toThrow("unauthorized");
+      expect(calls).toBe(1);
+    });
+
+    it("does NOT retry on HTTP 403 (forbidden — token issue)", async () => {
+      let calls = 0;
+      await expect(
+        withRetry(async () => {
+          calls++;
+          throw new HttpFetchError(403, "forbidden");
+        }, { sleep: noSleep })
+      ).rejects.toThrow("forbidden");
+      expect(calls).toBe(1);
+    });
+
+    it("does NOT retry on HTTP 404 (client error)", async () => {
+      let calls = 0;
+      await expect(
+        withRetry(async () => {
+          calls++;
+          throw new HttpFetchError(404, "not found");
+        }, { sleep: noSleep })
+      ).rejects.toThrow("not found");
+      expect(calls).toBe(1);
+    });
+
+    it("gives up after maxAttempts and throws last error", async () => {
+      let calls = 0;
+      await expect(
+        withRetry(async () => {
+          calls++;
+          throw new HttpFetchError(503, `attempt ${calls}`);
+        }, { sleep: noSleep, maxAttempts: 3 })
+      ).rejects.toThrow("attempt 3");
+      expect(calls).toBe(3);
+    });
+
+    it("uses exponential backoff between attempts", async () => {
+      const delays: number[] = [];
+      let calls = 0;
+      await withRetry(async () => {
+        calls++;
+        if (calls < 3) throw new HttpFetchError(500, "x");
+        return "ok";
+      }, {
+        sleep: async (ms) => { delays.push(ms); },
+        baseDelayMs: 100,
+        maxAttempts: 3,
+      });
+      expect(delays).toEqual([100, 200]);
+    });
+
+    it("invokes onRetry callback for each retry", async () => {
+      const events: Array<{ attempt: number; status?: number }> = [];
+      let calls = 0;
+      await withRetry(async () => {
+        calls++;
+        if (calls < 3) throw new HttpFetchError(500, "boom");
+        return "ok";
+      }, {
+        sleep: noSleep,
+        onRetry: (attempt, err) => {
+          events.push({
+            attempt,
+            status: err instanceof HttpFetchError ? err.status : undefined,
+          });
+        },
+      });
+      expect(events).toEqual([
+        { attempt: 1, status: 500 },
+        { attempt: 2, status: 500 },
+      ]);
     });
   });
 });

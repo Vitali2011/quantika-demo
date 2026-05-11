@@ -21,6 +21,63 @@ const EU_URL = EU_TOKEN ? `${EU_BASE_URL}?token=${EU_TOKEN}` : EU_BASE_URL;
 export type Fetcher = (url: string) => Promise<string>;
 
 /**
+ * HTTP error with a status code, distinguishable from generic network errors
+ * so withRetry can decide whether to retry (5xx, 429) or fail fast (4xx auth).
+ */
+export class HttpFetchError extends Error {
+  readonly status: number;
+  constructor(status: number, message: string) {
+    super(message);
+    this.name = "HttpFetchError";
+    this.status = status;
+  }
+}
+
+export interface RetryOptions {
+  maxAttempts?: number;
+  baseDelayMs?: number;
+  shouldRetry?: (err: unknown) => boolean;
+  onRetry?: (attempt: number, err: unknown, nextDelayMs: number) => void;
+  sleep?: (ms: number) => Promise<void>;
+}
+
+function defaultShouldRetry(err: unknown): boolean {
+  if (err instanceof HttpFetchError) {
+    return err.status >= 500 || err.status === 429;
+  }
+  // Non-HTTP errors (network failure, DNS, ECONNRESET, …) are transient.
+  return err instanceof Error;
+}
+
+/**
+ * Retries an async function with exponential backoff.
+ * Default: 3 attempts, 1s → 2s, retry on 5xx/429/network, fail fast on 4xx.
+ */
+export async function withRetry<T>(
+  fn: () => Promise<T>,
+  opts: RetryOptions = {}
+): Promise<T> {
+  const maxAttempts = Math.max(1, opts.maxAttempts ?? 3);
+  const baseDelayMs = opts.baseDelayMs ?? 1000;
+  const shouldRetry = opts.shouldRetry ?? defaultShouldRetry;
+  const sleep = opts.sleep ?? ((ms) => new Promise((r) => setTimeout(r, ms)));
+
+  let lastErr: unknown;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastErr = err;
+      if (attempt >= maxAttempts || !shouldRetry(err)) throw err;
+      const delay = baseDelayMs * Math.pow(2, attempt - 1);
+      opts.onRetry?.(attempt, err, delay);
+      await sleep(delay);
+    }
+  }
+  throw lastErr;
+}
+
+/**
  * Refreshes EU Consolidated Sanctions entities from upstream source.
  *
  * Input contract:
@@ -184,14 +241,29 @@ function upsertEuEntities(
  * @returns Response text
  */
 async function defaultFetcher(url: string): Promise<string> {
-  const res = await fetch(url, {
-    headers: { "User-Agent": "Quantika-Demo/1.0" },
-  });
-  if (res.status === 401) {
-    throw new Error(
-      "EU fetch failed: 401 (check EU_SANCTIONS_TOKEN env var for token rotation)"
-    );
-  }
-  if (!res.ok) throw new Error(`EU fetch failed: ${res.status}`);
-  return res.text();
+  return withRetry(
+    async () => {
+      const res = await fetch(url, {
+        headers: { "User-Agent": "Quantika-Demo/1.0" },
+      });
+      if (res.status === 401) {
+        throw new HttpFetchError(
+          401,
+          "EU fetch failed: 401 (check EU_SANCTIONS_TOKEN env var for token rotation)"
+        );
+      }
+      if (!res.ok) {
+        throw new HttpFetchError(res.status, `EU fetch failed: ${res.status}`);
+      }
+      return res.text();
+    },
+    {
+      onRetry: (attempt, err, nextDelayMs) => {
+        const status = err instanceof HttpFetchError ? err.status : "network";
+        console.warn(
+          `[EU] attempt ${attempt} failed (${status}), retrying in ${nextDelayMs}ms`
+        );
+      },
+    }
+  );
 }
