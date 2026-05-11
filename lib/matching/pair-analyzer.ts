@@ -18,6 +18,7 @@ import { validateDates } from '@/lib/sailing/date-sanity';
 import { checkSanctions } from '@/lib/validation/sanctions';
 import { enrichReasons } from '@/lib/matching/reason-enricher';
 import { formatNumber } from '@/lib/utils';
+import { LLMTimeoutError } from '@/lib/openai';
 
 export interface RawMatch {
   cargo_email_id?: string;
@@ -201,7 +202,7 @@ export async function analyzePairs(
       if (a.sanctions.blocking) {
         blocked.sanctions = a.sanctions;
       }
-      if (a.hardFilters && Object.values(a.hardFilters).some((c) => !c.pass)) {
+      if (a.hardFilters && Object.values(a.hardFilters).some((c) => c != null && !c.pass)) {
         blocked.hardFilters = a.hardFilters;
       }
       return blocked;
@@ -267,7 +268,24 @@ export async function analyzePairs(
   // Pre-build O(1) lookup map for analyses — replaces O(n²) Array.find scans
   const analysisMap = buildAnalysisMap(analyses);
 
-  const rawAiMatches = await aiScorer({ cargoData, vesselData, readinessData });
+  // Resilient aiScorer call: hard-filter + sanctions blockedMatches are already computed above
+  // and must reach the session even if LLM scoring fails (e.g. JSON parse error from refusal).
+  let rawAiMatches: RawMatch[];
+  try {
+    rawAiMatches = await aiScorer({ cargoData, vesselData, readinessData });
+  } catch (aiErr) {
+    // Timeout errors must propagate so route.ts can return HTTP 504 with retryable signal.
+    if (aiErr instanceof LLMTimeoutError) {
+      throw aiErr;
+    }
+    // Transient LLM errors (JSON parse, refusal text, etc.) — return hard-filter
+    // blockedMatches so sanctions-blocked vessels reach the session and UI.
+    console.warn(
+      '[pair-analyzer] aiScorer failed — returning hard-filter blockedMatches without AI-scored matches:',
+      aiErr instanceof Error ? aiErr.message : String(aiErr),
+    );
+    return { matches: [], blockedMatches };
+  }
 
   const rawMatches: Match[] = rawAiMatches
     .map((m: RawMatch) => ({
