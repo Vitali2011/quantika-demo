@@ -1,0 +1,110 @@
+{
+  "id": "etms-parse-cargo-066",
+  "source_email_id": "19e089cdd36d5901",
+  "category": "forwarded",
+  "input": {
+    "subject": "FW: Izmail / Samsun or Marmara or Izmir  5000 mts +/- 10% of wheat",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:22:36.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Friday, 8 May 2026 18:50\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: Re: Izmail / Samsun or Marmara or Izmir 5000 mts +/- 10% of wheat\r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n*For quick response pls include \"takis\" in the body of the email*\r\n\r\nGD DAY \r\n  \r\nPLS OFFER FOR \r\n \r\nIzmail / Samsun or Marmara or Izmir \r\n5000 mts +/- 10% of wheat \r\n2000x/1500x \r\n11 May / onward \r\n2,50% PAST \r\n \r\nPlease add our email address ( chartering@niavigrains.gr ) to your circulation list for cargoes / positions\r\n\r\nBEST RGRDS\r\nTAK  (TAKIS KAPETANIOS)\r\nE MAIL : chartering@niavigrains.gr\r\nMobile/WhatsApp:0030 6944528968\r\nSKYPE: captanpanos\r\nLINKEDIN : www.linkedin.com/in/takis-kapetanios-5031344b/\r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr\r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Izmail",
+          "confidence": "confirmed",
+          "source_text": "Izmail / Samsun or Marmara or Izmir"
+        },
+        "origin_country": {
+          "value": "Ukraine",
+          "confidence": "interpreted",
+          "source_text": "Izmail / Samsun or Marmara or Izmir"
+        },
+        "destination_port": {
+          "value": "Samsun or Marmara or Izmir",
+          "confidence": "confirmed",
+          "source_text": "Izmail / Samsun or Marmara or Izmir"
+        },
+        "destination_country": {
+          "value": "Turkey",
+          "confidence": "interpreted",
+          "source_text": "Izmail / Samsun or Marmara or Izmir"
+        },
+        "cargo_description": {
+          "value": "Wheat",
+          "confidence": "confirmed",
+          "source_text": "5000 mts +/- 10% of wheat"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 5000,
+          "confidence": "confirmed",
+          "source_text": "5000 mts +/- 10% of wheat"
+        },
+        "weight_mt_min": {
+          "value": 4500,
+          "confidence": "interpreted",
+          "source_text": "5000 mts +/- 10% of wheat"
+        },
+        "weight_mt_max": {
+          "value": 5500,
+          "confidence": "interpreted",
+          "source_text": "5000 mts +/- 10% of wheat"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "5000 mts +/- 10% of wheat"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "11 May onward",
+          "confidence": "confirmed",
+          "source_text": "11 May / onward"
+        },
+        "laycan": {
+          "value": "11 May 2026 onward",
+          "confidence": "interpreted",
+          "source_text": "11 May / onward"
+        },
+        "loading_rate": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "2000x/1500x"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "2000x/1500x"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2,50% PAST"
+        },
+        "commission_terms": {
+          "value": "PAST",
+          "confidence": "confirmed",
+          "source_text": "2,50% PAST"
+        },
+        "special_requirements": null,
+        "stowage_factor": null,
+        "missing_info": [
+          "Freight rate not specified — offer requested",
+          "Incoterms not stated",
+          "Exact discharge port not confirmed (Samsun, Marmara, or Izmir — multiple options)",
+          "No demurrage/despatch terms mentioned",
+          "PAST commission term is unrecognized — may be a broker code or abbreviation specific to this company"
+        ],
+        "unknown_terms": ["PAST"]
+      }
+    ]
+  }
+}

@@ -1,0 +1,212 @@
+{
+  "id": "etms-parse-cargo-076",
+  "source_email_id": "19e08a163e396047",
+  "category": "incomplete_data",
+  "input": {
+    "subject": "FW: Any tonnage between 6-16k mt dwcc of salt (non-food, industrial grade), 1 HO in big-bags, other HO in bulk  1 gsp, El Arish (fully bulk) OR  El Dekheila (big bags + bulk)/1 out of POC",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:27:32.000Z",
+    "body": " \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Monday, 2 February 2026 10:03\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: RE:Any tonnage between 6-16k mt dwcc of salt (non-food, industrial grade), 1 HO in big-bags, other HO in bulk 1 gsp, El Arish (fully bulk) OR El Dekheila (big bags + bulk)/1 out of POC\r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n*For quick response pls include \"takis\" in the body of the email*\r\n\r\nGD DAY\r\n\r\n \r\n\r\nPLS OFFER FOR\r\n\r\n \r\n\r\nAny tonnage between 6-16k mt dwcc of salt (non-food, industrial grade), 1 HO in big-bags, other HO in bulk\r\n\r\n1 gsp, El Arish (fully bulk) OR  El Dekheila (big bags + bulk)/1 out of POC\r\n\r\n3000/1000\r\n\r\nLC 02.02 - onward\r\n\r\n2.5% ttl\r\n\r\n\r\nPlease add our email address ( chartering@niavigrains.gr <mailto:chartering@niavigrains.gr>  ) to your circulation list for cargoes / positions\r\n\r\nBEST RGRDS\r\nTAK  (TAKIS KAPETANIOS)\r\nE MAIL : chartering@niavigrains.gr <mailto:chartering@niavigrains.gr> \r\nMobile/WhatsApp:0030 6944528968\r\nSKYPE: captanpanos\r\nLINKEDIN : www.linkedin.com/in/takis-kapetanios-5031344b/ <http://www.linkedin.com/in/takis-kapetanios-5031344b/> \r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr <http://www.niavigrains.gr> \r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "El Arish",
+          "confidence": "confirmed",
+          "source_text": "El Arish (fully bulk)"
+        },
+        "origin_country": {
+          "value": "Egypt",
+          "confidence": "interpreted",
+          "source_text": "El Arish (fully bulk)"
+        },
+        "destination_port": {
+          "value": "1 port out of POC",
+          "confidence": "uncertain",
+          "source_text": "1 out of POC"
+        },
+        "destination_country": {
+          "value": null
+        },
+        "cargo_description": {
+          "value": "Salt (non-food, industrial grade), fully bulk at this port",
+          "confidence": "confirmed",
+          "source_text": "salt (non-food, industrial grade), 1 HO in big-bags, other HO in bulk"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 16000,
+          "confidence": "interpreted",
+          "source_text": "Any tonnage between 6-16k mt dwcc"
+        },
+        "weight_mt_min": {
+          "value": 6000,
+          "confidence": "interpreted",
+          "source_text": "Any tonnage between 6-16k mt dwcc"
+        },
+        "weight_mt_max": {
+          "value": 16000,
+          "confidence": "interpreted",
+          "source_text": "Any tonnage between 6-16k mt dwcc"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "El Arish (fully bulk)"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "From 2 February 2026 onward",
+          "confidence": "interpreted",
+          "source_text": "LC 02.02 - onward"
+        },
+        "laycan": {
+          "value": "02 February 2026 onward",
+          "confidence": "interpreted",
+          "source_text": "LC 02.02 - onward"
+        },
+        "loading_rate": {
+          "value": 3000,
+          "confidence": "confirmed",
+          "source_text": "3000/1000"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "3000/1000"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl"
+        },
+        "special_requirements": {
+          "value": "Industrial grade, non-food salt. Vessel required with DWCC 6,000–16,000 MT. 1 good safe port berth. El Arish option: fully bulk (no big-bag hold split).",
+          "confidence": "confirmed",
+          "source_text": "salt (non-food, industrial grade), 1 HO in big-bags, other HO in bulk 1 gsp, El Arish (fully bulk)"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Destination port/range unclear — 'POC' abbreviation not resolved (Port of Call? Port of Constanta? Range name?)",
+          "SHINC/SHEX laytime terms for loading and discharge rates not specified",
+          "Freight rate not indicated",
+          "No specific vessel type or gear requirements stated beyond DWCC range"
+        ],
+        "unknown_terms": ["POC"]
+      },
+      {
+        "origin_port": {
+          "value": "El Dekheila",
+          "confidence": "confirmed",
+          "source_text": "El Dekheila (big bags + bulk)"
+        },
+        "origin_country": {
+          "value": "Egypt",
+          "confidence": "interpreted",
+          "source_text": "El Dekheila (big bags + bulk)"
+        },
+        "destination_port": {
+          "value": "1 port out of POC",
+          "confidence": "uncertain",
+          "source_text": "1 out of POC"
+        },
+        "destination_country": {
+          "value": null
+        },
+        "cargo_description": {
+          "value": "Salt (non-food, industrial grade), mixed stow: 1 hold in big-bags, other hold(s) in bulk",
+          "confidence": "confirmed",
+          "source_text": "salt (non-food, industrial grade), 1 HO in big-bags, other HO in bulk"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 16000,
+          "confidence": "interpreted",
+          "source_text": "Any tonnage between 6-16k mt dwcc"
+        },
+        "weight_mt_min": {
+          "value": 6000,
+          "confidence": "interpreted",
+          "source_text": "Any tonnage between 6-16k mt dwcc"
+        },
+        "weight_mt_max": {
+          "value": 16000,
+          "confidence": "interpreted",
+          "source_text": "Any tonnage between 6-16k mt dwcc"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "uncertain",
+          "source_text": "El Dekheila (big bags + bulk)"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "From 2 February 2026 onward",
+          "confidence": "interpreted",
+          "source_text": "LC 02.02 - onward"
+        },
+        "laycan": {
+          "value": "02 February 2026 onward",
+          "confidence": "interpreted",
+          "source_text": "LC 02.02 - onward"
+        },
+        "loading_rate": {
+          "value": 3000,
+          "confidence": "confirmed",
+          "source_text": "3000/1000"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "3000/1000"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl"
+        },
+        "special_requirements": {
+          "value": "Industrial grade, non-food salt. Vessel required with DWCC 6,000–16,000 MT. 1 good safe port berth. El Dekheila option: mixed stow — 1 hold big-bags, remaining hold(s) bulk. Vessel must accommodate both big-bag and bulk cargo simultaneously.",
+          "confidence": "confirmed",
+          "source_text": "El Dekheila (big bags + bulk)"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Destination port/range unclear — 'POC' abbreviation not resolved (Port of Call? Port of Constanta? Range name?)",
+          "Cargo type classification is mixed (big-bags = break_bulk handling; bulk = bulk handling) — single cargo_type field cannot fully represent both",
+          "SHINC/SHEX laytime terms for loading and discharge rates not specified",
+          "Freight rate not indicated",
+          "No specific vessel gear requirements stated"
+        ],
+        "unknown_terms": ["POC"]
+      }
+    ]
+  }
+}

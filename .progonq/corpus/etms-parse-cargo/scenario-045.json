@@ -1,0 +1,107 @@
+{
+  "id": "etms-parse-cargo-045",
+  "source_email_id": "19e07d2ac4a815b4",
+  "category": "single_cargo",
+  "input": {
+    "subject": "FW: 1 Marmara /Constanta Min 7200 tons up to fcc in chopt Steel Billets",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:41:45.000Z",
+    "body": " \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Friday, 8 May 2026 16:30\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: Re: 1 Marmara /Constanta Min 7200 tons up to fcc in chopt Steel Billets\r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n*For quick response pls include \"takis\" in the body of the email*\r\n\r\nGD DAY\r\n\r\n \r\n\r\nPLS OFFER FOR\r\n\r\n \r\n\r\n1 Marmara /Constanta\r\n\r\nMin 7200 tons up to fcc in chopt Steel Billets\r\n\r\n18/20 May – Try tick earlier/later\r\n\r\nTotal days\r\n\r\n2.5% Comm\r\n\r\n\r\nPlease add our email address ( chartering@niavigrains.gr <mailto:chartering@niavigrains.gr>  ) to your circulation list for cargoes / positions\r\n\r\nBEST RGRDS\r\nTAK  (TAKIS KAPETANIOS)\r\nE MAIL : chartering@niavigrains.gr <mailto:chartering@niavigrains.gr> \r\nMobile/WhatsApp:0030 6944528968\r\nSKYPE: captanpanos\r\nLINKEDIN : www.linkedin.com/in/takis-kapetanios-5031344b/ <http://www.linkedin.com/in/takis-kapetanios-5031344b/> \r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr <http://www.niavigrains.gr> \r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Marmara",
+          "confidence": "confirmed",
+          "source_text": "1 Marmara /Constanta"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "interpreted",
+          "source_text": "1 Marmara /Constanta"
+        },
+        "destination_port": {
+          "value": "Constanta",
+          "confidence": "confirmed",
+          "source_text": "1 Marmara /Constanta"
+        },
+        "destination_country": {
+          "value": "Romania",
+          "confidence": "interpreted",
+          "source_text": "1 Marmara /Constanta"
+        },
+        "cargo_description": {
+          "value": "Steel Billets",
+          "confidence": "confirmed",
+          "source_text": "Min 7200 tons up to fcc in chopt Steel Billets"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 7200,
+          "confidence": "interpreted",
+          "source_text": "Min 7200 tons up to fcc in chopt"
+        },
+        "weight_mt_min": {
+          "value": 7200,
+          "confidence": "confirmed",
+          "source_text": "Min 7200 tons up to fcc in chopt"
+        },
+        "weight_mt_max": {
+          "value": null,
+          "confidence": "uncertain",
+          "source_text": "up to fcc in chopt"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "interpreted",
+          "source_text": "Steel Billets"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "18/20 May – Try tick earlier/later",
+          "confidence": "confirmed",
+          "source_text": "18/20 May – Try tick earlier/later"
+        },
+        "laycan": {
+          "value": "18/20 May 2026",
+          "confidence": "interpreted",
+          "source_text": "18/20 May – Try tick earlier/later"
+        },
+        "loading_rate": null,
+        "loading_terms": null,
+        "discharge_rate": null,
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5% Comm"
+        },
+        "commission_terms": {
+          "value": "Commission",
+          "confidence": "confirmed",
+          "source_text": "2.5% Comm"
+        },
+        "special_requirements": {
+          "value": "Maximum cargo quantity subject to vessel's full cargo capacity (FCC), at charterers' option (CHOPT)",
+          "confidence": "interpreted",
+          "source_text": "Min 7200 tons up to fcc in chopt"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Loading/discharge terms (FIO, FIOST, liner, etc.) not specified",
+          "Freight rate or freight basis not mentioned",
+          "Demurrage/despatch rate not mentioned",
+          "Laytime allowed not specified",
+          "Vessel size/type requirements not specified",
+          "FCC (full cargo capacity) upper bound unknown without nominated vessel",
+          "Total days laytime figure appears incomplete ('Total days' line left blank)"
+        ]
+      }
+    ]
+  }
+}

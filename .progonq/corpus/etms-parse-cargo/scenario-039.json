@@ -1,0 +1,394 @@
+{
+  "id": "etms-parse-cargo-039",
+  "source_email_id": "19e07d08a2829481",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: STEEL MENU",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:39:24.000Z",
+    "body": " \r\n\r\nFrom: mylist1-owner@elsharkawymaritime.com\r\n<mylist1-owner@elsharkawymaritime.com> On Behalf Of Elsharkawy Maritime &\r\nLogistics Co\r\nSent: Wednesday, 6 May 2026 12:36\r\nTo: chartering@elsharkawymaritime.com\r\nSubject: STEEL MENU\r\nImportance: High\r\n\r\n \r\n\r\nAttn: Chartering Desk !!!\r\n\r\n \r\n\r\nGd Day,,\r\n\r\n \r\n\r\nPlease Only Propose Competitive Rated and Suitable Vessels Incl Full\r\nItinerary/ETA Load Port For:\r\n\r\n \r\n\r\nIACS\r\n\r\n \r\n\r\nMin 2,000 Mts Wire Rods In Bulk 10 Pct More Chopt \r\n\r\n(Dims: 1.20 (H) X 1.20 (W) X 1.35 M (L) Uw Abt 1.4 Mt \r\n\r\n1 Sbp Alexandria Chopt Abu Qir/1 Sbp Sousse, Tunisia\r\n\r\n1,000 Mts Fshex Eiu Thu Noon/Sun 0800 Ntc Eiu\r\n\r\n1,000 Mts Fshex Eiu Thu Noon/Sun 0800 Ntc Eiu\r\n\r\nLaycan 12-15 May\r\n\r\nFreight Usd      Pmt Fios L/S/D \r\n\r\nChrts Agents Bends\r\n\r\nChrts Exe Gencon Cp \r\n\r\n1.25pct Ttl Comm\r\n\r\n \r\n\r\n++\r\n\r\n \r\n\r\nMin 5,250 Mts Hrc 5 Pct More Chopt Max 2 Tiers Uw Abt 26 Mt\r\n\r\n1 Sbp Alexandria Chopt Abu Qir/1 Sbp Birkenhead, Uk\r\n\r\n(Expect 5,330 Mts)\r\n\r\n2,000 Mts Fshex Eiu Thu Noon/Sun 0800 Ntc Eiu \r\n\r\n2,000 Mts Sshex Eiu Fri 1700-Mon 0800 Ntc Eiu\r\n\r\nLaycan 18-22 May\r\n\r\nFreight Usd      Pmt Fios L/S/D 1:1\r\n\r\nChrts Agents Bends\r\n\r\nChrts Exe Gencon Cp\r\n\r\n1.25pct Ttl Comm\r\n\r\n \r\n\r\n++\r\n\r\n \r\n\r\nMin 17,500 Mts Hrc/Pno 5 Pct More Chopt Max 2 Tiers Uw Abt 26 Mt\r\n\r\n1 Sbp Alexandria Chopt Abu Qir/1 Sb-2 Sp Gemlik And Yildiz Entegre \r\n\r\n(Expect Gemlik 12,700 Mts And Yildiz Entegre: 5,000 Mts)\r\n\r\n3,000 Mts Fshex Eiu Thu Noon/Sun 0800 Ntc Eiu \r\n\r\n4,000 Mts Sshex Eiu Fri 1700-Mon 0800 Ntc Eiu\r\n\r\nLaycan 19-22 May\r\n\r\nFreight Usd      Pmt Fios L/S/D 1:2\r\n\r\nChrts Agents Bends\r\n\r\nChrts Exe Gencon Cp\r\n\r\n1.25pct Ttl Comm\r\n\r\n \r\n\r\nBrgds // \r\n\r\nCapt.Mohamed Elsharkawy\r\n\r\nTels: +20663232456/3232457\r\n\r\nFax:  +20663232459\r\n\r\nMob: +201007800552 (24hrs) \r\n\r\nTeams Id:  <mailto:elsharkawy_maritime@hotmai.com>\r\nelsharkawy_maritime@hotmai.com  \r\n\r\nE-Mail:  <mailto:chartering@elsharkawymaritime.com>\r\nchartering@elsharkawymaritime.com\r\n\r\nW.Site:  <http://www.elsharkawymaritime.com/> www.elsharkawymaritime.com \r\n\r\n \r\n\r\n  _____  \r\n\r\nTo subscribe, Please Send To mylist1-subscribe@elsharkawymaritime.com\r\n<mailto:mylist1-subscribe@elsharkawymaritime.com> \r\nTo unsubscribe, Please Send To mylist1-unsubscribe@elsharkawymaritime.com\r\n<mailto:mylist1-unsubscribe@elsharkawymaritime.com> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Alexandria (option: Abu Qir)",
+          "confidence": "confirmed",
+          "source_text": "1 Sbp Alexandria Chopt Abu Qir/1 Sbp Sousse, Tunisia"
+        },
+        "origin_country": {
+          "value": "Egypt",
+          "confidence": "confirmed",
+          "source_text": "1 Sbp Alexandria Chopt Abu Qir/1 Sbp Sousse, Tunisia"
+        },
+        "destination_port": {
+          "value": "Sousse",
+          "confidence": "confirmed",
+          "source_text": "1 Sbp Alexandria Chopt Abu Qir/1 Sbp Sousse, Tunisia"
+        },
+        "destination_country": {
+          "value": "Tunisia",
+          "confidence": "confirmed",
+          "source_text": "1 Sbp Sousse, Tunisia"
+        },
+        "cargo_description": {
+          "value": "Wire Rods In Bulk, dimensions 1.20m (H) x 1.20m (W) x 1.35m (L), unit weight approximately 1.4 MT",
+          "confidence": "confirmed",
+          "source_text": "Min 2,000 Mts Wire Rods In Bulk 10 Pct More Chopt (Dims: 1.20 (H) X 1.20 (W) X 1.35 M (L) Uw Abt 1.4 Mt"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "Min 2,000 Mts Wire Rods In Bulk 10 Pct More Chopt"
+        },
+        "weight_mt_min": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "Min 2,000 Mts Wire Rods In Bulk 10 Pct More Chopt"
+        },
+        "weight_mt_max": {
+          "value": 2200,
+          "confidence": "interpreted",
+          "source_text": "Min 2,000 Mts Wire Rods In Bulk 10 Pct More Chopt"
+        },
+        "volume_cbm": {
+          "value": null
+        },
+        "dimensions": {
+          "value": "1.20m (H) x 1.20m (W) x 1.35m (L)",
+          "confidence": "confirmed",
+          "source_text": "Dims: 1.20 (H) X 1.20 (W) X 1.35 M (L)"
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "interpreted",
+          "source_text": "Min 2,000 Mts Wire Rods In Bulk 10 Pct More Chopt (Dims: 1.20 (H) X 1.20 (W) X 1.35 M (L) Uw Abt 1.4 Mt"
+        },
+        "container_type": {
+          "value": null
+        },
+        "quantity": {
+          "value": null
+        },
+        "incoterms": {
+          "value": null
+        },
+        "preferred_dates": {
+          "value": "Laycan 12-15 May",
+          "confidence": "confirmed",
+          "source_text": "Laycan 12-15 May"
+        },
+        "laycan": {
+          "value": "12-15 May 2026",
+          "confidence": "confirmed",
+          "source_text": "Laycan 12-15 May"
+        },
+        "loading_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "1,000 Mts Fshex Eiu Thu Noon/Sun 0800 Ntc Eiu"
+        },
+        "loading_terms": {
+          "value": "FIOS L/S/D, FSHEX EIU, Thu Noon/Sun 0800 NTC EIU",
+          "confidence": "confirmed",
+          "source_text": "1,000 Mts Fshex Eiu Thu Noon/Sun 0800 Ntc Eiu Freight Usd      Pmt Fios L/S/D"
+        },
+        "discharge_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "1,000 Mts Fshex Eiu Thu Noon/Sun 0800 Ntc Eiu"
+        },
+        "discharge_terms": {
+          "value": "FIOS L/S/D, FSHEX EIU, Thu Noon/Sun 0800 NTC EIU",
+          "confidence": "confirmed",
+          "source_text": "1,000 Mts Fshex Eiu Thu Noon/Sun 0800 Ntc Eiu Freight Usd      Pmt Fios L/S/D"
+        },
+        "commission_percent": {
+          "value": 1.25,
+          "confidence": "confirmed",
+          "source_text": "1.25pct Ttl Comm"
+        },
+        "commission_terms": {
+          "value": "TTL COMM, Charterers' Agents Both Ends",
+          "confidence": "confirmed",
+          "source_text": "1.25pct Ttl Comm Chrts Agents Bends"
+        },
+        "special_requirements": {
+          "value": [
+            "IACS vessel required",
+            "Charterers execute GENCON CP",
+            "Charterers' Agents Both Ends",
+            "Vessels must submit full itinerary and ETA load port",
+            "Only competitive rated and suitable vessels",
+            "Basis 1 load port / 1 discharge port"
+          ],
+          "confidence": "confirmed",
+          "source_text": "IACS Chrts Agents Bends Chrts Exe Gencon Cp 1 Sbp Alexandria Chopt Abu Qir/1 Sbp Sousse, Tunisia"
+        },
+        "stowage_factor": {
+          "value": null
+        },
+        "missing_info": [
+          "Freight rate (USD PMT) not specified — blank in original",
+          "Vessel gear requirements not stated"
+        ]
+      },
+      {
+        "origin_port": {
+          "value": "Alexandria (option: Abu Qir)",
+          "confidence": "confirmed",
+          "source_text": "1 Sbp Alexandria Chopt Abu Qir/1 Sbp Birkenhead, Uk"
+        },
+        "origin_country": {
+          "value": "Egypt",
+          "confidence": "confirmed",
+          "source_text": "1 Sbp Alexandria Chopt Abu Qir/1 Sbp Birkenhead, Uk"
+        },
+        "destination_port": {
+          "value": "Birkenhead",
+          "confidence": "confirmed",
+          "source_text": "1 Sbp Birkenhead, Uk"
+        },
+        "destination_country": {
+          "value": "United Kingdom",
+          "confidence": "confirmed",
+          "source_text": "1 Sbp Birkenhead, Uk"
+        },
+        "cargo_description": {
+          "value": "Hot Rolled Coils (HRC), max 2 tiers, unit weight approximately 26 MT. Expected quantity 5,330 MT.",
+          "confidence": "confirmed",
+          "source_text": "Min 5,250 Mts Hrc 5 Pct More Chopt Max 2 Tiers Uw Abt 26 Mt (Expect 5,330 Mts)"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 5250,
+          "confidence": "confirmed",
+          "source_text": "Min 5,250 Mts Hrc 5 Pct More Chopt Max 2 Tiers Uw Abt 26 Mt"
+        },
+        "weight_mt_min": {
+          "value": 5250,
+          "confidence": "confirmed",
+          "source_text": "Min 5,250 Mts Hrc 5 Pct More Chopt Max 2 Tiers Uw Abt 26 Mt"
+        },
+        "weight_mt_max": {
+          "value": 5512.5,
+          "confidence": "interpreted",
+          "source_text": "Min 5,250 Mts Hrc 5 Pct More Chopt Max 2 Tiers Uw Abt 26 Mt"
+        },
+        "volume_cbm": {
+          "value": null
+        },
+        "dimensions": {
+          "value": null
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "Min 5,250 Mts Hrc 5 Pct More Chopt Max 2 Tiers Uw Abt 26 Mt"
+        },
+        "container_type": {
+          "value": null
+        },
+        "quantity": {
+          "value": null
+        },
+        "incoterms": {
+          "value": null
+        },
+        "preferred_dates": {
+          "value": "Laycan 18-22 May",
+          "confidence": "confirmed",
+          "source_text": "Laycan 18-22 May"
+        },
+        "laycan": {
+          "value": "18-22 May 2026",
+          "confidence": "confirmed",
+          "source_text": "Laycan 18-22 May"
+        },
+        "loading_rate": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "2,000 Mts Fshex Eiu Thu Noon/Sun 0800 Ntc Eiu"
+        },
+        "loading_terms": {
+          "value": "FIOS L/S/D 1:1, FSHEX EIU, Thu Noon/Sun 0800 NTC EIU",
+          "confidence": "confirmed",
+          "source_text": "2,000 Mts Fshex Eiu Thu Noon/Sun 0800 Ntc Eiu Freight Usd      Pmt Fios L/S/D 1:1"
+        },
+        "discharge_rate": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "2,000 Mts Sshex Eiu Fri 1700-Mon 0800 Ntc Eiu"
+        },
+        "discharge_terms": {
+          "value": "FIOS L/S/D 1:1, SSHEX EIU, Fri 1700-Mon 0800 NTC EIU",
+          "confidence": "confirmed",
+          "source_text": "2,000 Mts Sshex Eiu Fri 1700-Mon 0800 Ntc Eiu Freight Usd      Pmt Fios L/S/D 1:1"
+        },
+        "commission_percent": {
+          "value": 1.25,
+          "confidence": "confirmed",
+          "source_text": "1.25pct Ttl Comm"
+        },
+        "commission_terms": {
+          "value": "TTL COMM, Charterers' Agents Both Ends",
+          "confidence": "confirmed",
+          "source_text": "1.25pct Ttl Comm Chrts Agents Bends"
+        },
+        "special_requirements": {
+          "value": [
+            "IACS vessel required",
+            "Charterers execute GENCON CP",
+            "Charterers' Agents Both Ends",
+            "Vessels must submit full itinerary and ETA load port",
+            "Only competitive rated and suitable vessels",
+            "Max 2 tiers stowage for HRC coils",
+            "Basis 1 load port / 1 discharge port"
+          ],
+          "confidence": "confirmed",
+          "source_text": "IACS Min 5,250 Mts Hrc 5 Pct More Chopt Max 2 Tiers Uw Abt 26 Mt Chrts Agents Bends Chrts Exe Gencon Cp"
+        },
+        "stowage_factor": {
+          "value": null
+        },
+        "missing_info": [
+          "Freight rate (USD PMT) not specified — blank in original",
+          "Vessel gear requirements not stated"
+        ]
+      },
+      {
+        "origin_port": {
+          "value": "Alexandria (option: Abu Qir)",
+          "confidence": "confirmed",
+          "source_text": "1 Sbp Alexandria Chopt Abu Qir/1 Sb-2 Sp Gemlik And Yildiz Entegre"
+        },
+        "origin_country": {
+          "value": "Egypt",
+          "confidence": "confirmed",
+          "source_text": "1 Sbp Alexandria Chopt Abu Qir/1 Sb-2 Sp Gemlik And Yildiz Entegre"
+        },
+        "destination_port": {
+          "value": "Gemlik and Yildiz Entegre (2 discharge ports)",
+          "confidence": "confirmed",
+          "source_text": "1 Sb-2 Sp Gemlik And Yildiz Entegre (Expect Gemlik 12,700 Mts And Yildiz Entegre: 5,000 Mts)"
+        },
+        "destination_country": {
+          "value": "Turkey",
+          "confidence": "interpreted",
+          "source_text": "1 Sb-2 Sp Gemlik And Yildiz Entegre"
+        },
+        "cargo_description": {
+          "value": "Hot Rolled Coils / Plates Not Otherwise specified (HRC/PNO), max 2 tiers, unit weight approximately 26 MT. Expected: Gemlik 12,700 MT, Yildiz Entegre 5,000 MT.",
+          "confidence": "confirmed",
+          "source_text": "Min 17,500 Mts Hrc/Pno 5 Pct More Chopt Max 2 Tiers Uw Abt 26 Mt (Expect Gemlik 12,700 Mts And Yildiz Entegre: 5,000 Mts)"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 17500,
+          "confidence": "confirmed",
+          "source_text": "Min 17,500 Mts Hrc/Pno 5 Pct More Chopt Max 2 Tiers Uw Abt 26 Mt"
+        },
+        "weight_mt_min": {
+          "value": 17500,
+          "confidence": "confirmed",
+          "source_text": "Min 17,500 Mts Hrc/Pno 5 Pct More Chopt Max 2 Tiers Uw Abt 26 Mt"
+        },
+        "weight_mt_max": {
+          "value": 18375,
+          "confidence": "interpreted",
+          "source_text": "Min 17,500 Mts Hrc/Pno 5 Pct More Chopt Max 2 Tiers Uw Abt 26 Mt"
+        },
+        "volume_cbm": {
+          "value": null
+        },
+        "dimensions": {
+          "value": null
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "Min 17,500 Mts Hrc/Pno 5 Pct More Chopt Max 2 Tiers Uw Abt 26 Mt"
+        },
+        "container_type": {
+          "value": null
+        },
+        "quantity": {
+          "value": null
+        },
+        "incoterms": {
+          "value": null
+        },
+        "preferred_dates": {
+          "value": "Laycan 19-22 May",
+          "confidence": "confirmed",
+          "source_text": "Laycan 19-22 May"
+        },
+        "laycan": {
+          "value": "19-22 May 2026",
+          "confidence": "confirmed",
+          "source_text": "Laycan 19-22 May"
+        },
+        "loading_rate": {
+          "value": 3000,
+          "confidence": "confirmed",
+          "source_text": "3,000 Mts Fshex Eiu Thu Noon/Sun 0800 Ntc Eiu"
+        },
+        "loading_terms": {
+          "value": "FIOS L/S/D 1:2, FSHEX EIU, Thu Noon/Sun 0800 NTC EIU",
+          "confidence": "confirmed",
+          "source_text": "3,000 Mts Fshex Eiu Thu Noon/Sun 0800 Ntc Eiu Freight Usd      Pmt Fios L/S/D 1:2"
+        },
+        "discharge_rate": {
+          "value": 4000,
+          "confidence": "confirmed",
+          "source_text": "4,000 Mts Sshex Eiu Fri 1700-Mon 0800 Ntc Eiu"
+        },
+        "discharge_terms": {
+          "value": "FIOS L/S/D 1:2, SSHEX EIU, Fri 1700-Mon 0800 NTC EIU",
+          "confidence": "confirmed",
+          "source_text": "4,000 Mts Sshex Eiu Fri 1700-Mon 0800 Ntc Eiu Freight Usd      Pmt Fios L/S/D 1:2"
+        },
+        "commission_percent": {
+          "value": 1.25,
+          "confidence": "confirmed",
+          "source_text": "1.25pct Ttl Comm"
+        },
+        "commission_terms": {
+          "value": "TTL COMM, Charterers' Agents Both Ends",
+          "confidence": "confirmed",
+          "source_text": "1.25pct Ttl Comm Chrts Agents Bends"
+        },
+        "special_requirements": {
+          "value": [
+            "IACS vessel required",
+            "Charterers execute GENCON CP",
+            "Charterers' Agents Both Ends",
+            "Vessels must submit full itinerary and ETA load port",
+            "Only competitive rated and suitable vessels",
+            "Max 2 tiers stowage for HRC/PNO",
+            "2 discharge ports: Gemlik (expected 12,700 MT) and Yildiz Entegre (expected 5,000 MT)",
+            "Basis 1 load port / 2 discharge ports"
+          ],
+          "confidence": "confirmed",
+          "source_text": "IACS Min 17,500 Mts Hrc/Pno 5 Pct More Chopt Max 2 Tiers Uw Abt 26 Mt 1 Sbp Alexandria Chopt Abu Qir/1 Sb-2 Sp Gemlik And Yildiz Entegre (Expect Gemlik 12,700 Mts And Yildiz Entegre: 5,000 Mts)"
+        },
+        "stowage_factor": {
+          "value": null
+        },
+        "unknown_terms": ["PNO"],
+        "missing_info": [
+          "Freight rate (USD PMT) not specified — blank in original",
+          "Vessel gear requirements not stated",
+          "PNO cargo type unrecognized — flagged for human review"
+        ]
+      }
+    ]
+  }
+}

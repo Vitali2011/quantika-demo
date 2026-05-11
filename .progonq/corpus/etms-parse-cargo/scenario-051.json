@@ -1,0 +1,104 @@
+{
+  "id": "etms-parse-cargo-051",
+  "source_email_id": "19e07d4069745393",
+  "category": "numeric_edge",
+  "input": {
+    "subject": "FW:",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:43:13.000Z",
+    "body": " \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Friday, 8 May 2026 12:58\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: \r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n*For quick response pls include \"takis\" in the body of the email*\r\n\r\nGD DAY\r\n\r\n \r\n\r\nPLS OFFER FOR\r\n\r\n\r\n25,000 MT blk Clinker\r\nAlexandria/Tartous\r\nLaycan 10-12 May\r\nL/D Rates: 8000 / 5000\r\n3,75 pct ttl comm\r\n\r\nPlease add our email address ( chartering@niavigrains.gr <mailto:chartering@niavigrains.gr>  ) to your circulation list for cargoes / positions\r\n\r\nBEST RGRDS\r\nTAK  (TAKIS KAPETANIOS)\r\nE MAIL : chartering@niavigrains.gr <mailto:chartering@niavigrains.gr> \r\nMobile/WhatsApp:0030 6944528968\r\nSKYPE: captanpanos\r\nLINKEDIN : www.linkedin.com/in/takis-kapetanios-5031344b/ <http://www.linkedin.com/in/takis-kapetanios-5031344b/> \r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr <http://www.niavigrains.gr> \r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Alexandria",
+          "confidence": "confirmed",
+          "source_text": "Alexandria/Tartous"
+        },
+        "origin_country": {
+          "value": "Egypt",
+          "confidence": "interpreted",
+          "source_text": "Alexandria/Tartous"
+        },
+        "destination_port": {
+          "value": "Tartous",
+          "confidence": "confirmed",
+          "source_text": "Alexandria/Tartous"
+        },
+        "destination_country": {
+          "value": "Syria",
+          "confidence": "interpreted",
+          "source_text": "Alexandria/Tartous"
+        },
+        "cargo_description": {
+          "value": "Bulk Clinker",
+          "confidence": "confirmed",
+          "source_text": "25,000 MT blk Clinker"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 25000,
+          "confidence": "confirmed",
+          "source_text": "25,000 MT blk Clinker"
+        },
+        "weight_mt_min": {
+          "value": 25000,
+          "confidence": "confirmed",
+          "source_text": "25,000 MT blk Clinker"
+        },
+        "weight_mt_max": {
+          "value": 25000,
+          "confidence": "confirmed",
+          "source_text": "25,000 MT blk Clinker"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "25,000 MT blk Clinker"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": null,
+        "laycan": {
+          "value": "10-12 May 2026",
+          "confidence": "confirmed",
+          "source_text": "Laycan 10-12 May"
+        },
+        "loading_rate": {
+          "value": 8000,
+          "confidence": "confirmed",
+          "source_text": "L/D Rates: 8000 / 5000"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 5000,
+          "confidence": "confirmed",
+          "source_text": "L/D Rates: 8000 / 5000"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3,75 pct ttl comm"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "3,75 pct ttl comm"
+        },
+        "special_requirements": null,
+        "stowage_factor": null,
+        "missing_info": [
+          "No MOLOO or tolerance clause specified for cargo quantity",
+          "Loading/discharge terms (e.g. FIO, FIOST, CQD) not specified",
+          "Freight rate basis not stated (lump sum or per MT)",
+          "Demurrage/despatch rate not specified"
+        ]
+      }
+    ]
+  }
+}

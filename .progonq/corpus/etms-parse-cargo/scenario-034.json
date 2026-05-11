@@ -1,0 +1,142 @@
+{
+  "id": "etms-parse-cargo-034",
+  "source_email_id": "19e07ceac0ca69dc",
+  "category": "numeric_edge",
+  "input": {
+    "subject": "FW: -Kavkaz/Berbera 30000 mt 10% in OO wheat SF 47",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:37:23.000Z",
+    "body": " \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Wednesday, 6 May 2026 14:46\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: RE:-Kavkaz/Berbera 30000 mt 10% in OO wheat SF 47\r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n*For quick response pls include \"takis\" in the body of the email*\r\n\r\nGD DAY\r\n\r\n \r\n\r\nPLS OFFER FOR\r\n\r\n \r\n\r\nKavkaz/Berbera\r\n30000 mt 10% in OO wheat SF 47\r\nL/D: 5000 sshex eiu/4000 fshex eiu\r\nLC:19-22 May\r\n2.5% past us \r\nGeared at disch port\r\n\r\nPlease add our email address ( chartering@niavigrains.gr <mailto:chartering@niavigrains.gr>  ) to your circulation list for cargoes / positions\r\n\r\nBEST RGRDS\r\nTAK  (TAKIS KAPETANIOS)\r\nE MAIL : chartering@niavigrains.gr <mailto:chartering@niavigrains.gr> \r\nMobile/WhatsApp:0030 6944528968\r\nSKYPE: captanpanos\r\nLINKEDIN : www.linkedin.com/in/takis-kapetanios-5031344b/ <http://www.linkedin.com/in/takis-kapetanios-5031344b/> \r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr <http://www.niavigrains.gr> \r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Kavkaz",
+          "confidence": "confirmed",
+          "source_text": "Kavkaz/Berbera"
+        },
+        "origin_country": {
+          "value": "Russia",
+          "confidence": "interpreted",
+          "source_text": "Kavkaz/Berbera"
+        },
+        "destination_port": {
+          "value": "Berbera",
+          "confidence": "confirmed",
+          "source_text": "Kavkaz/Berbera"
+        },
+        "destination_country": {
+          "value": "Somalia (Somaliland)",
+          "confidence": "interpreted",
+          "source_text": "Kavkaz/Berbera"
+        },
+        "cargo_description": {
+          "value": "Wheat, stowage factor 47 CBM/MT",
+          "confidence": "confirmed",
+          "source_text": "30000 mt 10% in OO wheat SF 47"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 30000,
+          "confidence": "confirmed",
+          "source_text": "30000 mt 10% in OO wheat SF 47"
+        },
+        "weight_mt_min": {
+          "value": 27000,
+          "confidence": "interpreted",
+          "source_text": "30000 mt 10% in OO wheat SF 47"
+        },
+        "weight_mt_max": {
+          "value": 33000,
+          "confidence": "interpreted",
+          "source_text": "30000 mt 10% in OO wheat SF 47"
+        },
+        "volume_cbm": {
+          "value": null
+        },
+        "dimensions": {
+          "value": null
+        },
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "30000 mt 10% in OO wheat SF 47"
+        },
+        "container_type": {
+          "value": null
+        },
+        "quantity": {
+          "value": null
+        },
+        "incoterms": {
+          "value": null
+        },
+        "preferred_dates": {
+          "value": "19-22 May 2026",
+          "confidence": "confirmed",
+          "source_text": "LC:19-22 May"
+        },
+        "laycan": {
+          "value": "19-22 May 2026",
+          "confidence": "confirmed",
+          "source_text": "LC:19-22 May"
+        },
+        "loading_rate": {
+          "value": 5000,
+          "confidence": "confirmed",
+          "source_text": "5000 sshex eiu"
+        },
+        "loading_terms": {
+          "value": "SSHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "5000 sshex eiu"
+        },
+        "discharge_rate": {
+          "value": 4000,
+          "confidence": "confirmed",
+          "source_text": "4000 fshex eiu"
+        },
+        "discharge_terms": {
+          "value": "FSHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "4000 fshex eiu"
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5% past us"
+        },
+        "commission_terms": {
+          "value": "2.5% to brokers (via Niavigrains)",
+          "confidence": "interpreted",
+          "source_text": "2.5% past us"
+        },
+        "special_requirements": {
+          "value": "Geared vessel required at discharge port (Berbera)",
+          "confidence": "confirmed",
+          "source_text": "Geared at disch port"
+        },
+        "stowage_factor": {
+          "value": 47,
+          "confidence": "confirmed",
+          "source_text": "wheat SF 47"
+        },
+        "missing_info": [
+          "Freight rate not specified — owners to offer",
+          "Demurrage/despatch rate not specified",
+          "No vessel specification requirements beyond geared at discharge (e.g. minimum DWT, draft restrictions at Kavkaz or Berbera not stated)"
+        ],
+        "unknown_terms": [
+          {
+            "term": "fshex",
+            "context": "4000 fshex eiu",
+            "note": "Likely 'Fridays and Sundays Holidays Excluded' or 'Fridays, Saturdays and Holidays Excluded' — possibly a variant of FSHEX (Fridays/Saturdays Holidays Excluded) common in certain trade routes; flagged for human review as exact meaning is ambiguous"
+          }
+        ]
+      }
+    ]
+  }
+}

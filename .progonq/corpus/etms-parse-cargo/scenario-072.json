@@ -1,0 +1,203 @@
+{
+  "id": "etms-parse-cargo-072",
+  "source_email_id": "19e089fc113c03c5",
+  "category": "incomplete_data",
+  "input": {
+    "subject": "FW: 3500-8000 mt bulk cargo / Spain Med - Sweden / 9-11 Feb and 16-18 Feb",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:25:45.000Z",
+    "body": " \r\n\r\nFrom: VARAMAR <position@varamar.com> \r\nSent: Monday, 2 February 2026 10:27\r\nTo: management@etm-services.net\r\nSubject: 3500-8000 mt bulk cargo / Spain Med - Sweden / 9-11 Feb and 16-18 Feb\r\n\r\n \r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n <https://mailchi.mp/e95ff89d0d37/3-8k-dwt-contbaltic-feast-oct-dates-8117230?e=7ed3422e5a> View this email in your browser \r\n\r\n\t\r\n\r\n\r\n\r\n\r\n\r\n\r\nLOOKING FOR FIRM CANDIDATE:\r\n\r\n \r\n\r\n\r\n3.500/8.000 mts bulk cargo\r\nLoading/Discharging ports:\r\n1 sp Spanish Mediterranean / 1 sp Sweden (loa max 124, beam max 18)\r\n1st shipment laycan: 9/11 Feb \r\n2nd shipment laycan: 16/18 Feb\r\nLoading rates: 1 wwd satpmshex eiu\r\nDischarging rates: 2600 mt satpmshex eiu\r\n2.5%\r\n\r\nFreight ideas are available on request\r\n\r\n \r\n\r\n \r\n\r\n\r\n  _____  \r\n\r\nBest regards,\r\n <https://varamar.us6.list-manage.com/track/click?u=77dc233bd77642c328018b9a6&id=364c62d376&e=7ed3422e5a> VARAMAR\r\nAs agents\r\n <mailto:projects@varamar.com> projects@varamar.com\r\n <mailto:v.zotieieva@varamar.com> v.zotieieva@varamar.com\r\n \r\n\r\n \r\n\r\n\r\n\t\r\n\r\n\r\n\t\r\n\r\n \r\n\r\n\r\n\r\n\r\nYou can  <https://varamar.us6.list-manage.com/profile?u=77dc233bd77642c328018b9a6&id=726e17bbd2&e=7ed3422e5a&c=d955757752> update your preferences or  <https://varamar.us6.list-manage.com/unsubscribe?u=77dc233bd77642c328018b9a6&id=726e17bbd2&t=b&e=7ed3422e5a&c=d955757752> unsubscribe from this list.\r\n  \r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "1 safe port Spanish Mediterranean",
+          "confidence": "interpreted",
+          "source_text": "1 sp Spanish Mediterranean"
+        },
+        "origin_country": {
+          "value": "Spain",
+          "confidence": "confirmed",
+          "source_text": "1 sp Spanish Mediterranean"
+        },
+        "destination_port": {
+          "value": "1 safe port Sweden",
+          "confidence": "interpreted",
+          "source_text": "1 sp Sweden"
+        },
+        "destination_country": {
+          "value": "Sweden",
+          "confidence": "confirmed",
+          "source_text": "1 sp Sweden"
+        },
+        "cargo_description": {
+          "value": "Bulk cargo (type unspecified)",
+          "confidence": "uncertain",
+          "source_text": "3.500/8.000 mts bulk cargo"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 8000,
+          "confidence": "interpreted",
+          "source_text": "3.500/8.000 mts bulk cargo"
+        },
+        "weight_mt_min": {
+          "value": 3500,
+          "confidence": "interpreted",
+          "source_text": "3.500/8.000 mts bulk cargo"
+        },
+        "weight_mt_max": {
+          "value": 8000,
+          "confidence": "interpreted",
+          "source_text": "3.500/8.000 mts bulk cargo"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "3.500/8.000 mts bulk cargo"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": null,
+        "laycan": {
+          "value": "9/11 Feb 2026",
+          "confidence": "confirmed",
+          "source_text": "1st shipment laycan: 9/11 Feb"
+        },
+        "loading_rate": null,
+        "loading_terms": {
+          "value": "1 WWD SATPMSHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "1 wwd satpmshex eiu"
+        },
+        "discharge_rate": {
+          "value": 2600,
+          "confidence": "confirmed",
+          "source_text": "Discharging rates: 2600 mt satpmshex eiu"
+        },
+        "discharge_terms": {
+          "value": "SATPMSHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "2600 mt satpmshex eiu"
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5%"
+        },
+        "commission_terms": null,
+        "special_requirements": {
+          "value": "Vessel LOA maximum 124m, beam maximum 18m",
+          "confidence": "confirmed",
+          "source_text": "loa max 124, beam max 18"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Specific bulk cargo type not specified",
+          "Freight rate not provided (available on request)",
+          "Exact load and discharge port names not specified (only '1 sp Spanish Mediterranean' and '1 sp Sweden')",
+          "No incoterms stated",
+          "No demurrage/despatch rates mentioned"
+        ]
+      },
+      {
+        "origin_port": {
+          "value": "1 safe port Spanish Mediterranean",
+          "confidence": "interpreted",
+          "source_text": "1 sp Spanish Mediterranean"
+        },
+        "origin_country": {
+          "value": "Spain",
+          "confidence": "confirmed",
+          "source_text": "1 sp Spanish Mediterranean"
+        },
+        "destination_port": {
+          "value": "1 safe port Sweden",
+          "confidence": "interpreted",
+          "source_text": "1 sp Sweden"
+        },
+        "destination_country": {
+          "value": "Sweden",
+          "confidence": "confirmed",
+          "source_text": "1 sp Sweden"
+        },
+        "cargo_description": {
+          "value": "Bulk cargo (type unspecified)",
+          "confidence": "uncertain",
+          "source_text": "3.500/8.000 mts bulk cargo"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 8000,
+          "confidence": "interpreted",
+          "source_text": "3.500/8.000 mts bulk cargo"
+        },
+        "weight_mt_min": {
+          "value": 3500,
+          "confidence": "interpreted",
+          "source_text": "3.500/8.000 mts bulk cargo"
+        },
+        "weight_mt_max": {
+          "value": 8000,
+          "confidence": "interpreted",
+          "source_text": "3.500/8.000 mts bulk cargo"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "3.500/8.000 mts bulk cargo"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": null,
+        "laycan": {
+          "value": "16/18 Feb 2026",
+          "confidence": "confirmed",
+          "source_text": "2nd shipment laycan: 16/18 Feb"
+        },
+        "loading_rate": null,
+        "loading_terms": {
+          "value": "1 WWD SATPMSHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "1 wwd satpmshex eiu"
+        },
+        "discharge_rate": {
+          "value": 2600,
+          "confidence": "confirmed",
+          "source_text": "Discharging rates: 2600 mt satpmshex eiu"
+        },
+        "discharge_terms": {
+          "value": "SATPMSHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "2600 mt satpmshex eiu"
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5%"
+        },
+        "commission_terms": null,
+        "special_requirements": {
+          "value": "Vessel LOA maximum 124m, beam maximum 18m",
+          "confidence": "confirmed",
+          "source_text": "loa max 124, beam max 18"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Specific bulk cargo type not specified",
+          "Freight rate not provided (available on request)",
+          "Exact load and discharge port names not specified (only '1 sp Spanish Mediterranean' and '1 sp Sweden')",
+          "No incoterms stated",
+          "No demurrage/despatch rates mentioned"
+        ]
+      }
+    ]
+  }
+}

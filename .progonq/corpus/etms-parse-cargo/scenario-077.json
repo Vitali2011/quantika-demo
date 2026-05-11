@@ -1,0 +1,104 @@
+{
+  "id": "etms-parse-cargo-077",
+  "source_email_id": "19e08a1fdbf28c11",
+  "category": "single_cargo",
+  "input": {
+    "subject": "FW: Trapani, Italy / Abu Qir - 2000 mts of marble blocks",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:28:11.000Z",
+    "body": " \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Monday, 2 February 2026 09:55\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: RE:Trapani, Italy / Abu Qir - 2000 mts of marble blocks\r\n\r\n \r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n*For quick response pls include \"takis\" in the body of the email*\r\n\r\nGD DAY\r\n\r\n \r\n\r\nPLS OFFER FOR\r\n\r\n \r\n\r\nTrapani, Italy / Abu Qir \r\n2000 mts of marble blocks \r\n5 ttl day sshexeiu/ fshexeiu \r\nSpot\r\nChagent be \r\n2.5% past\r\n\r\nBox vessel\r\n\r\n\r\nPlease add our email address ( chartering@niavigrains.gr <mailto:chartering@niavigrains.gr>  ) to your circulation list for cargoes / positions\r\n\r\nBEST RGRDS\r\nTAK  (TAKIS KAPETANIOS)\r\nE MAIL : chartering@niavigrains.gr <mailto:chartering@niavigrains.gr> \r\nMobile/WhatsApp:0030 6944528968\r\nSKYPE: captanpanos\r\nLINKEDIN : www.linkedin.com/in/takis-kapetanios-5031344b/ <http://www.linkedin.com/in/takis-kapetanios-5031344b/> \r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr <http://www.niavigrains.gr> \r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Trapani",
+          "confidence": "confirmed",
+          "source_text": "Trapani, Italy / Abu Qir"
+        },
+        "origin_country": {
+          "value": "Italy",
+          "confidence": "confirmed",
+          "source_text": "Trapani, Italy / Abu Qir"
+        },
+        "destination_port": {
+          "value": "Abu Qir",
+          "confidence": "confirmed",
+          "source_text": "Trapani, Italy / Abu Qir"
+        },
+        "destination_country": {
+          "value": "Egypt",
+          "confidence": "interpreted",
+          "source_text": "Abu Qir"
+        },
+        "cargo_description": {
+          "value": "Marble blocks",
+          "confidence": "confirmed",
+          "source_text": "2000 mts of marble blocks"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "2000 mts of marble blocks"
+        },
+        "weight_mt_min": 2000,
+        "weight_mt_max": 2000,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "interpreted",
+          "source_text": "2000 mts of marble blocks"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Spot",
+          "confidence": "confirmed",
+          "source_text": "Spot"
+        },
+        "laycan": null,
+        "loading_rate": null,
+        "loading_terms": {
+          "value": "SSHEX EIU",
+          "confidence": "interpreted",
+          "source_text": "5 ttl day sshexeiu/ fshexeiu"
+        },
+        "discharge_rate": null,
+        "discharge_terms": {
+          "value": "FSHEX EIU",
+          "confidence": "interpreted",
+          "source_text": "5 ttl day sshexeiu/ fshexeiu"
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5% past"
+        },
+        "commission_terms": {
+          "value": "Charterers' agent both ends",
+          "confidence": "interpreted",
+          "source_text": "Chagent be"
+        },
+        "special_requirements": {
+          "value": "Box vessel required; 5 total laytime days SSHEX EIU at load / FSHEX EIU at discharge",
+          "confidence": "interpreted",
+          "source_text": "5 ttl day sshexeiu/ fshexeiu\nBox vessel"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Freight rate or target freight not stated",
+          "Exact laycan dates not provided (only 'Spot')",
+          "Demurrage / despatch rate not specified",
+          "Loading and discharge terms split between load and discharge ports is ambiguous — '5 ttl day' could mean total combined laytime; clarification needed",
+          "Meaning of '2.5% past' is unclear — interpreted as 2.5% brokerage but 'past' is non-standard; clarification needed",
+          "FSHEX EIU (Fridays and Holidays Excluded Even If Used) noted at discharge — confirm this is correct for Abu Qir",
+          "Vessel size / DWT requirement not specified beyond 'Box vessel'"
+        ],
+        "unknown_terms": ["fshexeiu", "2.5% past"]
+      }
+    ]
+  }
+}

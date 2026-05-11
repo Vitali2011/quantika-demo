@@ -1,0 +1,129 @@
+{
+  "id": "etms-parse-cargo-012",
+  "source_email_id": "19e07c53928a4333",
+  "category": "forwarded",
+  "input": {
+    "subject": "FW: 55000 mt iron ore ex-ec india",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:27:03.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: PNA Shipbrokers - Singapore <pna@pnaship.com> \r\nSent: Friday, 8 May 2026 10:41\r\nTo: management@etm-services.net\r\nSubject: 55000 mt iron ore ex-ec india\r\n\r\n\r\n\r\nFROM: PACIFIC & ATLANTIC SHIPBROKERS - SINGAPORE / (Email/Teams:\r\npna@pnaship.com)\r\n\r\n**\r\n\r\n\r\nTO: management@etm-services.net\r\n\r\n- seac  \r\n- 55,000mt/10% iron ore \r\n- load 1spsb ec india \r\n- disch 1spsb china main port\r\n- 15/24 may \r\n- 15000c / 15000c \r\n- 5% ttl here on f/d/d (try less)\r\n\r\n* NO TCT - VOY ONLY \r\n\r\nB Rgds  \r\nTONY (TEAMS: pna@pnaship.com)\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "East Coast India (1 safe port safe berth)",
+          "confidence": "interpreted",
+          "source_text": "load 1spsb ec india"
+        },
+        "origin_country": {
+          "value": "India",
+          "confidence": "confirmed",
+          "source_text": "ec india"
+        },
+        "destination_port": {
+          "value": "China Main Port (1 safe port safe berth)",
+          "confidence": "interpreted",
+          "source_text": "disch 1spsb china main port"
+        },
+        "destination_country": {
+          "value": "China",
+          "confidence": "confirmed",
+          "source_text": "china main port"
+        },
+        "cargo_description": {
+          "value": "Iron ore",
+          "confidence": "confirmed",
+          "source_text": "55,000mt/10% iron ore"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 55000,
+          "confidence": "confirmed",
+          "source_text": "55,000mt/10% iron ore"
+        },
+        "weight_mt_min": {
+          "value": 49500,
+          "confidence": "interpreted",
+          "source_text": "55,000mt/10% iron ore"
+        },
+        "weight_mt_max": {
+          "value": 60500,
+          "confidence": "interpreted",
+          "source_text": "55,000mt/10% iron ore"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "55,000mt/10% iron ore"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": null,
+        "laycan": {
+          "value": "15/24 May 2026",
+          "confidence": "confirmed",
+          "source_text": "15/24 may"
+        },
+        "loading_rate": {
+          "value": 15000,
+          "confidence": "confirmed",
+          "source_text": "15000c / 15000c"
+        },
+        "loading_terms": {
+          "value": "15000c",
+          "confidence": "confirmed",
+          "source_text": "15000c / 15000c"
+        },
+        "discharge_rate": {
+          "value": 15000,
+          "confidence": "confirmed",
+          "source_text": "15000c / 15000c"
+        },
+        "discharge_terms": {
+          "value": "15000c",
+          "confidence": "confirmed",
+          "source_text": "15000c / 15000c"
+        },
+        "commission_percent": {
+          "value": 5,
+          "confidence": "confirmed",
+          "source_text": "5% ttl here on f/d/d"
+        },
+        "commission_terms": {
+          "value": "TTL, on F/D/D (try less)",
+          "confidence": "confirmed",
+          "source_text": "5% ttl here on f/d/d (try less)"
+        },
+        "special_requirements": {
+          "value": "Voyage charter only — NO TCT",
+          "confidence": "confirmed",
+          "source_text": "NO TCT - VOY ONLY"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Freight rate (USD/MT or lumpsum) not specified",
+          "Vessel size/type requirements not specified beyond cargo quantity",
+          "Draft restrictions at load and discharge ports not stated"
+        ],
+        "unknown_terms": [
+          {
+            "term": "seac",
+            "source_text": "- seac",
+            "note": "Unrecognized term — possibly a vessel name, vessel type abbreviation, or market segment code; could not determine meaning from context"
+          },
+          {
+            "term": "15000c",
+            "source_text": "15000c / 15000c",
+            "note": "The 'c' suffix on the rate (15000c) is not a standard abbreviation in the glossary — possibly 'customary' or SHINC-equivalent; treated as rate qualifier but flagged for confirmation"
+          }
+        ]
+      }
+    ]
+  }
+}

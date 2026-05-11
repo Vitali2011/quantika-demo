@@ -1,0 +1,98 @@
+{
+  "id": "etms-parse-cargo-030",
+  "source_email_id": "19e07cde4af25d45",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: 1 Aegean / 1 W. Black Sea",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:36:31.000Z",
+    "body": " \r\n\r\nFrom: DURUCHART <chartering@duruchart.com> \r\nSent: Wednesday, 6 May 2026 15:15\r\nTo: 'DURUCHART' <mert@duruchart.com>\r\nSubject: 1 Aegean / 1 W. Black Sea\r\n\r\n \r\n\r\nDURUCHART-Istanbul/TURKEY\r\n\r\n+90 216 492 97 13\r\n\r\n \r\n\r\nGood Day\r\n\r\n \r\n\r\nPlease offer firm for;\r\n\r\n \r\n\r\nAliaga / Varna\r\n\r\nabt 10.000t blk clay\r\n\r\n25/30 May\r\n\r\n6 ttl days\r\n\r\n3.75 pct\r\n\r\n \r\n\r\nBest Regards\r\n\r\nMert Kalafat\r\n\r\nskype: mertkalafat6\r\n\r\nMobile: +90 505 016 01 52\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Aliaga",
+          "confidence": "confirmed",
+          "source_text": "Aliaga / Varna"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "Aliaga / Varna"
+        },
+        "destination_port": {
+          "value": "Varna",
+          "confidence": "confirmed",
+          "source_text": "Aliaga / Varna"
+        },
+        "destination_country": {
+          "value": "Bulgaria",
+          "confidence": "confirmed",
+          "source_text": "Aliaga / Varna"
+        },
+        "cargo_description": {
+          "value": "Bulk clay",
+          "confidence": "confirmed",
+          "source_text": "abt 10.000t blk clay"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 10000,
+          "confidence": "interpreted",
+          "source_text": "abt 10.000t blk clay"
+        },
+        "weight_mt_min": null,
+        "weight_mt_max": null,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "abt 10.000t blk clay"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "25–30 May 2026",
+          "confidence": "confirmed",
+          "source_text": "25/30 May"
+        },
+        "laycan": {
+          "value": "25/30 May 2026",
+          "confidence": "confirmed",
+          "source_text": "25/30 May"
+        },
+        "loading_rate": null,
+        "loading_terms": null,
+        "discharge_rate": null,
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75 pct"
+        },
+        "commission_terms": {
+          "value": null,
+          "confidence": "uncertain",
+          "source_text": "3.75 pct"
+        },
+        "special_requirements": {
+          "value": "Total laytime: 6 days (no load/discharge split specified)",
+          "confidence": "confirmed",
+          "source_text": "6 ttl days"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Freight rate / freight basis not provided (request is for firm offer)",
+          "Loading and discharge terms not specified (FIO, FIOST, CQD, etc.)",
+          "No split of laytime between loading and discharging ports",
+          "Commission breakdown not specified (address commission vs. brokerage split)",
+          "Vessel size / DWT requirement not stated",
+          "Second inquiry referenced in subject line ('1 W. Black Sea') has no details in the email body"
+        ]
+      }
+    ]
+  }
+}

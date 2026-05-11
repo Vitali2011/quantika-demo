@@ -1,0 +1,185 @@
+{
+  "id": "etms-parse-cargo-055",
+  "source_email_id": "19e07d64793f8971",
+  "category": "single_cargo",
+  "input": {
+    "subject": "FW: 5500 mts of salt in bb  (1,1x1,1x1,1, uw 1,25)  Egypt Med/POC +6000 -7000mts of salt/rice in bb  salt (1,1x1,1x1,1, uw 1,25) + rice (1,05x1,05x1,35, uw 1 mt)  Egypt Med+Mersin/POC",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:45:41.000Z",
+    "body": " \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Friday, 8 May 2026 11:22\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: RE:5500 mts of salt in bb (1,1x1,1x1,1, uw 1,25) Egypt Med/POC +6000 -7000mts of salt/rice in bb salt (1,1x1,1x1,1, uw 1,25) + rice (1,05x1,05x1,35, uw 1 mt) Egypt Med+Mersin/POC\r\n\r\n \r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n*For quick response pls include \"takis\" in the body of the email*\r\n\r\nGD DAY \r\n\r\nPLS OFFER FOR \r\n\r\n\r\n6000 -7000 mts of salt/rice in bb \r\n(1,1x1,1x1,1, uw 1,25) + rice (1,05x1,05x1,35, uw 1 mt) \r\nDamietta+Mersin/POC \r\n1250/1250 \r\n15-18/05 \r\n2,50% PAST US \r\n \r\nPlease add our email address ( chartering@niavigrains.gr <mailto:chartering@niavigrains.gr>  ) to your circulation list for cargoes / positions\r\n\r\nBEST RGRDS\r\nTAK  (TAKIS KAPETANIOS)\r\nE MAIL : chartering@niavigrains.gr <mailto:chartering@niavigrains.gr> \r\nMobile/WhatsApp:0030 6944528968\r\nSKYPE: captanpanos\r\nLINKEDIN : www.linkedin.com/in/takis-kapetanios-5031344b/ <http://www.linkedin.com/in/takis-kapetanios-5031344b/> \r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr <http://www.niavigrains.gr> \r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\n\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Egypt Mediterranean port (unspecified)",
+          "confidence": "uncertain",
+          "source_text": "Egypt Med/POC"
+        },
+        "origin_country": {
+          "value": "Egypt",
+          "confidence": "confirmed",
+          "source_text": "Egypt Med/POC"
+        },
+        "destination_port": {
+          "value": "Port of Call (unspecified)",
+          "confidence": "uncertain",
+          "source_text": "Egypt Med/POC"
+        },
+        "destination_country": null,
+        "cargo_description": {
+          "value": "Salt in break bulk, bags 1.1m x 1.1m x 1.1m, unit weight 1.25 mt",
+          "confidence": "confirmed",
+          "source_text": "5500 mts of salt in bb  (1,1x1,1x1,1, uw 1,25)  Egypt Med/POC"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 5500,
+          "confidence": "confirmed",
+          "source_text": "5500 mts of salt in bb"
+        },
+        "weight_mt_min": 5500,
+        "weight_mt_max": 5500,
+        "volume_cbm": null,
+        "dimensions": {
+          "value": "1.1m x 1.1m x 1.1m (bag/unit dimensions)",
+          "confidence": "confirmed",
+          "source_text": "(1,1x1,1x1,1, uw 1,25)"
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "5500 mts of salt in bb"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": null,
+        "laycan": null,
+        "loading_rate": null,
+        "loading_terms": null,
+        "discharge_rate": null,
+        "discharge_terms": null,
+        "commission_percent": null,
+        "commission_terms": null,
+        "special_requirements": {
+          "value": "Unit weight (uw) 1.25 mt per bag",
+          "confidence": "confirmed",
+          "source_text": "uw 1,25"
+        },
+        "stowage_factor": {
+          "value": "Bag dimensions 1.1 x 1.1 x 1.1m = 1.331 CBM per bag at 1.25 mt = approx 1.065 CBM/MT",
+          "confidence": "interpreted",
+          "source_text": "(1,1x1,1x1,1, uw 1,25)"
+        },
+        "missing_info": [
+          "This inquiry is sourced from the email subject line only — no body details provided for this cargo",
+          "Exact load port in Egypt Mediterranean range not specified",
+          "Destination port 'POC' not specified",
+          "Laycan / loading dates not provided",
+          "Loading and discharge rates not provided",
+          "Commission terms not provided",
+          "Freight rate indication or target not provided"
+        ],
+        "unknown_terms": []
+      },
+      {
+        "origin_port": {
+          "value": "Damietta",
+          "confidence": "confirmed",
+          "source_text": "Damietta+Mersin/POC"
+        },
+        "origin_country": {
+          "value": "Egypt",
+          "confidence": "confirmed",
+          "source_text": "Damietta+Mersin/POC"
+        },
+        "destination_port": {
+          "value": "Port of Call (unspecified)",
+          "confidence": "uncertain",
+          "source_text": "Damietta+Mersin/POC"
+        },
+        "destination_country": null,
+        "cargo_description": {
+          "value": "Combined cargo of salt and rice in break bulk. Salt: bags 1.1m x 1.1m x 1.1m, unit weight 1.25 mt. Rice: bags 1.05m x 1.05m x 1.35m, unit weight 1.0 mt. Two load ports: Damietta (Egypt) and Mersin (Turkey).",
+          "confidence": "confirmed",
+          "source_text": "6000 -7000 mts of salt/rice in bb \n(1,1x1,1x1,1, uw 1,25) + rice (1,05x1,05x1,35, uw 1 mt) \nDamietta+Mersin/POC"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 7000,
+          "confidence": "interpreted",
+          "source_text": "6000 -7000 mts of salt/rice in bb"
+        },
+        "weight_mt_min": 6000,
+        "weight_mt_max": 7000,
+        "volume_cbm": null,
+        "dimensions": {
+          "value": "Salt: 1.05m x 1.05m x 1.05m per bag; Rice: 1.05m x 1.05m x 1.35m per bag",
+          "confidence": "confirmed",
+          "source_text": "(1,1x1,1x1,1, uw 1,25) + rice (1,05x1,05x1,35, uw 1 mt)"
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "6000 -7000 mts of salt/rice in bb"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "15–18 May 2026",
+          "confidence": "confirmed",
+          "source_text": "15-18/05"
+        },
+        "laycan": {
+          "value": "15/18 May 2026",
+          "confidence": "confirmed",
+          "source_text": "15-18/05"
+        },
+        "loading_rate": {
+          "value": 1250,
+          "confidence": "confirmed",
+          "source_text": "1250/1250"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 1250,
+          "confidence": "confirmed",
+          "source_text": "1250/1250"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2,50% PAST US"
+        },
+        "commission_terms": {
+          "value": "PAST US (passed to us — brokerage/address commission to Niavigrains)",
+          "confidence": "uncertain",
+          "source_text": "2,50% PAST US"
+        },
+        "special_requirements": {
+          "value": "Salt unit weight 1.25 mt per bag; Rice unit weight 1.0 mt per bag. Two-port loading: Damietta + Mersin.",
+          "confidence": "confirmed",
+          "source_text": "(1,1x1,1x1,1, uw 1,25) + rice (1,05x1,05x1,35, uw 1 mt) \nDamietta+Mersin/POC"
+        },
+        "stowage_factor": {
+          "value": "Salt: 1.1 x 1.1 x 1.1m = 1.331 CBM per bag at 1.25 mt ≈ 1.065 CBM/MT; Rice: 1.05 x 1.05 x 1.35m = 1.488 CBM per bag at 1.0 mt = 1.488 CBM/MT",
+          "confidence": "interpreted",
+          "source_text": "(1,1x1,1x1,1, uw 1,25) + rice (1,05x1,05x1,35, uw 1 mt)"
+        },
+        "missing_info": [
+          "Destination port 'POC' not specified — vessel owners cannot calculate voyage unless destination is known",
+          "Split quantity between salt and rice not specified",
+          "SHINC/SHEX/laytime terms not specified for the 1250/1250 MT/day rates",
+          "Freight rate indication or target not provided",
+          "Whether second load port Mersin is additional cargo or salt origin is from Mersin not fully clear"
+        ],
+        "unknown_terms": [
+          "PAST US — possibly 'passed to us' (brokerage to be passed to Niavigrains), but not a standard chartering abbreviation"
+        ]
+      }
+    ]
+  }
+}

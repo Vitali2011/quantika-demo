@@ -1,0 +1,109 @@
+{
+  "id": "etms-parse-cargo-003",
+  "source_email_id": "19d5def0bf1a5c3f",
+  "category": "single_cargo",
+  "input": {
+    "subject": "FW: Antalya / Georgetown (Guyana) 3000mts bb cgo",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-04-05T13:57:16.000Z",
+    "body": " \r\n\r\nFrom: VARAN SHIPPING -ISTANBUL <chartering@varanshipping.com> \r\nSent: Monday, 15 February 2021 16:03\r\nTo: etms@etm-services.net\r\nSubject: Antalya / Georgetown (Guyana) 3000mts bb cgo \r\n\r\n \r\n\r\nGood Day\r\n\r\n \r\n\r\nPlease offer firm for our excl. cgo\r\n\r\n \r\n\r\nAntalya / Georgetown (Guyana)\r\n\r\n3000mts Barite in b.b\r\n\r\nCgo Ready\r\n\r\n1.500 mts shinc / 1.000 mts shinc\r\n\r\nPcgo ok\r\n\r\nGearless w.able \r\n\r\n3.75 ttl\r\n\r\nRegards\r\n\r\n   <file:///C:/Users/Hp/AppData/Local/Microsoft/Windows/INetCache/Content.MSO/FDD508AA.tmp> \r\n\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Antalya",
+          "confidence": "confirmed",
+          "source_text": "Antalya / Georgetown (Guyana)"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "Antalya / Georgetown (Guyana)"
+        },
+        "destination_port": {
+          "value": "Georgetown",
+          "confidence": "confirmed",
+          "source_text": "Antalya / Georgetown (Guyana)"
+        },
+        "destination_country": {
+          "value": "Guyana",
+          "confidence": "confirmed",
+          "source_text": "Georgetown (Guyana)"
+        },
+        "cargo_description": {
+          "value": "Barite in break bulk",
+          "confidence": "confirmed",
+          "source_text": "3000mts Barite in b.b"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 3000,
+          "confidence": "confirmed",
+          "source_text": "3000mts Barite in b.b"
+        },
+        "weight_mt_min": 3000,
+        "weight_mt_max": 3000,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "3000mts Barite in b.b"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Cargo ready (no specific date stated)",
+          "confidence": "confirmed",
+          "source_text": "Cgo Ready"
+        },
+        "laycan": null,
+        "loading_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "1.500 mts shinc / 1.000 mts shinc"
+        },
+        "loading_terms": {
+          "value": "SHINC",
+          "confidence": "confirmed",
+          "source_text": "1.500 mts shinc / 1.000 mts shinc"
+        },
+        "discharge_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "1.500 mts shinc / 1.000 mts shinc"
+        },
+        "discharge_terms": {
+          "value": "SHINC",
+          "confidence": "confirmed",
+          "source_text": "1.500 mts shinc / 1.000 mts shinc"
+        },
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75 ttl"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "3.75 ttl"
+        },
+        "special_requirements": {
+          "value": "Gearless vessel required with crane/gear available ashore (Gearless w.able); P-cargo (project cargo) acceptable (Pcgo ok)",
+          "confidence": "interpreted",
+          "source_text": "Gearless w.able"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Exact laycan dates not specified — only 'Cargo Ready' stated",
+          "Freight rate (USD/MT or lump sum) not indicated — firm offer requested",
+          "Commission split not specified (e.g. BENDS + address commission breakdown)",
+          "No vessel size / DWT requirement stated"
+        ],
+        "unknown_terms": []
+      }
+    ]
+  }
+}

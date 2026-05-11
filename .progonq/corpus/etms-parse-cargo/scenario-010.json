@@ -1,0 +1,118 @@
+{
+  "id": "etms-parse-cargo-010",
+  "source_email_id": "19e07c482e65e378",
+  "category": "single_cargo",
+  "input": {
+    "subject": "FW: 10.000 mts steels  Odessa / Aliaga",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:26:17.000Z",
+    "body": " \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Friday, 8 May 2026 11:11\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: 10.000 mts steels Odessa / Aliaga\r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\ngday\r\n\r\n \r\n\r\npls propose described ladies for the fol firm- direct  cargo : \r\n\r\n \r\n\r\n10.000 mts steel billets\r\n\r\nOdessa / Aliaga\r\n\r\n15-20 May\r\n\r\n2500 sshinc / 2500 sshex\r\n\r\n2,5% add comm pastus \r\n\r\n\r\nBEST RGRDS\r\nTASOS KOUMANIS ( mob. 00306937322574)\r\nE MAILS : chartering@niavigrains.gr <mailto:chartering@niavigrains.gr>  \r\n\r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr <http://www.niavigrains.gr> \r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\nSKYPE : NIAVIGRAINS Tasos\r\nLinkedIn: www.linkedin.com/in/tasoskoumanis <http://www.linkedin.com/in/tasoskoumanis> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Odessa",
+          "confidence": "confirmed",
+          "source_text": "Odessa / Aliaga"
+        },
+        "origin_country": {
+          "value": "Ukraine",
+          "confidence": "confirmed",
+          "source_text": "Odessa / Aliaga"
+        },
+        "destination_port": {
+          "value": "Aliaga",
+          "confidence": "confirmed",
+          "source_text": "Odessa / Aliaga"
+        },
+        "destination_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "Odessa / Aliaga"
+        },
+        "cargo_description": {
+          "value": "Steel billets",
+          "confidence": "confirmed",
+          "source_text": "10.000 mts steel billets"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 10000,
+          "confidence": "confirmed",
+          "source_text": "10.000 mts steel billets"
+        },
+        "weight_mt_min": {
+          "value": 10000,
+          "confidence": "confirmed",
+          "source_text": "10.000 mts steel billets"
+        },
+        "weight_mt_max": {
+          "value": 10000,
+          "confidence": "confirmed",
+          "source_text": "10.000 mts steel billets"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "10.000 mts steel billets"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "15-20 May 2026",
+          "confidence": "confirmed",
+          "source_text": "15-20 May"
+        },
+        "laycan": {
+          "value": "15/20 May 2026",
+          "confidence": "confirmed",
+          "source_text": "15-20 May"
+        },
+        "loading_rate": {
+          "value": 2500,
+          "confidence": "confirmed",
+          "source_text": "2500 sshinc"
+        },
+        "loading_terms": {
+          "value": "SSHINC",
+          "confidence": "confirmed",
+          "source_text": "2500 sshinc"
+        },
+        "discharge_rate": {
+          "value": 2500,
+          "confidence": "confirmed",
+          "source_text": "2500 sshex"
+        },
+        "discharge_terms": {
+          "value": "SSHEX",
+          "confidence": "confirmed",
+          "source_text": "2500 sshex"
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2,5% add comm pastus"
+        },
+        "commission_terms": {
+          "value": "Address commission",
+          "confidence": "confirmed",
+          "source_text": "2,5% add comm pastus"
+        },
+        "special_requirements": null,
+        "stowage_factor": null,
+        "missing_info": [
+          "Freight rate (not specified)",
+          "FIO / laytime cost-allocation terms not specified (only handling rates given)",
+          "Demurrage / despatch rates not specified",
+          "Vessel size / DWT requirements not specified",
+          "'pastus' in commission clause is unrecognized — may indicate a specific brokerage arrangement requiring clarification"
+        ],
+        "unknown_terms": ["pastus"]
+      }
+    ]
+  }
+}

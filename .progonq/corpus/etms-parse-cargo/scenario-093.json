@@ -1,0 +1,494 @@
+{
+  "id": "etms-parse-cargo-093",
+  "source_email_id": "19e097b289230e5f",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: FIRM CARGOES",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:25:24.000Z",
+    "body": " \r\n\r\nFrom: Oner Tokcan / Nautical Bulk Carriers <oner.tokcan@nbcarriers.com> \r\nSent: Thursday, 26 February 2026 10:26\r\nTo: Oner Tokcan / Nautical Bulk Carriers <oner.tokcan@nbcarriers.com>\r\nSubject: FIRM CARGOES \r\n\r\n \r\n\r\nDear All / Oner\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPls offer firm\r\n\r\n \r\n\r\n-NEMRUT / CATANIA\r\n\r\n-3,000MTS 1PCT MOLCHOPT WRIC UW ABT 1,8/2,1TS STW MAX 50'\r\n\r\n-L/C 01 / 03 MARCH 2026,\r\n\r\n-1000MTS SSHEX EIU / 1000MTS SSHEX EIU \r\n-MAX 25 YRS (TRY MORE) \r\n-3.75PCT ADDCOMPUS\r\n\r\n \r\n\r\n+ + + + +\r\n\r\n \r\n\r\n-NEMRUT / SAGUNTO\r\n\r\n-2,000MTS 2PCT MOLCHOPT HRC + HRCPO UW ABT 10/27TS  \r\n\r\n-L/C S P O T / P P T\r\n\r\n-1000MTS SSHEX EIU / 1000MTS SSHEX EIU \r\n-MAX 25 YRS (TRY MORE) \r\n-3.75PCT ADDCOMPUS\r\n\r\n \r\n\r\n+ + + + +\r\n\r\n \r\n\r\n-NEMRUT / VARNA\r\n\r\n-5,800MTS 2PCT MOLCHOPT HRC + HRCTD + HRCPO UW ABT 10/27TS + HRS\r\n\r\n-L/C 01 / 03 MARCH 2026,\r\n\r\n-1500MTS SSHEX EIU / 1500MTS SSHEX EIU \r\n-MAX 25 YRS (TRY MORE) \r\n-3.75PCT ADDCOMPUS\r\n\r\n \r\n\r\n+ + + + +\r\n\r\n \r\n\r\n-NEMRUT / MARGHERA\r\n\r\n-4,345MTS 2PCT MOLCHOPT HRC + HRCTD UW ABT 10/27TS  \r\n\r\n-L/C 01 / 03 MARCH 2026, -1500MTS SSHEX EIU / 1500MTS SSHEX EIU \r\n-MAX 25 YRS (TRY MORE) \r\n-3.75PCT ADDCOMPUS \r\n\r\n \r\n\r\n \r\n\r\nBest regards\r\nOner Tokcan\r\nNautical Bulk Carriers S.A.\r\n\r\nVogue Business Center, 6th Floor, Atasehir, Istanbul - Turkey\r\nMob: +90 506 507 4730\r\n\r\nTel: +90 216 639 0228\r\n\r\nEmail:  <mailto:oner.tokcan@nbcarriers.com> oner.tokcan@nbcarriers.com\r\n\r\nTeams:  <https://teams.live.com/l/invite/FEAxOZO-8peE8SGZwU?v=g1>\r\nhttps://teams.live.com/l/invite/FEAxOZO-8peE8SGZwU?v=g1\r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Nemrut Bay",
+          "confidence": "confirmed",
+          "source_text": "NEMRUT / CATANIA"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "NEMRUT / CATANIA"
+        },
+        "destination_port": {
+          "value": "Catania",
+          "confidence": "confirmed",
+          "source_text": "NEMRUT / CATANIA"
+        },
+        "destination_country": {
+          "value": "Italy",
+          "confidence": "confirmed",
+          "source_text": "NEMRUT / CATANIA"
+        },
+        "cargo_description": {
+          "value": "Hot Rolled Coils (HRC), unit weight approximately 1.8–2.1 tons, stowage max 50 inches",
+          "confidence": "interpreted",
+          "source_text": "3,000MTS 1PCT MOLCHOPT WRIC UW ABT 1,8/2,1TS STW MAX 50'"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 3000,
+          "confidence": "confirmed",
+          "source_text": "3,000MTS 1PCT MOLCHOPT"
+        },
+        "weight_mt_min": {
+          "value": 2970,
+          "confidence": "interpreted",
+          "source_text": "3,000MTS 1PCT MOLCHOPT"
+        },
+        "weight_mt_max": {
+          "value": 3030,
+          "confidence": "interpreted",
+          "source_text": "3,000MTS 1PCT MOLCHOPT"
+        },
+        "volume_cbm": {
+          "value": null
+        },
+        "dimensions": {
+          "value": null
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "interpreted",
+          "source_text": "3,000MTS 1PCT MOLCHOPT WRIC UW ABT 1,8/2,1TS STW MAX 50'"
+        },
+        "container_type": {
+          "value": null
+        },
+        "quantity": {
+          "value": null
+        },
+        "incoterms": {
+          "value": null
+        },
+        "preferred_dates": {
+          "value": "01–03 March 2026",
+          "confidence": "confirmed",
+          "source_text": "L/C 01 / 03 MARCH 2026"
+        },
+        "laycan": {
+          "value": "01/03 March 2026",
+          "confidence": "confirmed",
+          "source_text": "L/C 01 / 03 MARCH 2026"
+        },
+        "loading_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "1000MTS SSHEX EIU / 1000MTS SSHEX EIU"
+        },
+        "loading_terms": {
+          "value": "SSHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "1000MTS SSHEX EIU / 1000MTS SSHEX EIU"
+        },
+        "discharge_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "1000MTS SSHEX EIU / 1000MTS SSHEX EIU"
+        },
+        "discharge_terms": {
+          "value": "SSHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "1000MTS SSHEX EIU / 1000MTS SSHEX EIU"
+        },
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75PCT ADDCOMPUS"
+        },
+        "commission_terms": {
+          "value": "ADDCOMPUS",
+          "confidence": "confirmed",
+          "source_text": "3.75PCT ADDCOMPUS"
+        },
+        "special_requirements": {
+          "value": "Max vessel age 25 years (try older); unit weight approx 1.8–2.1 T per coil; stowage max 50 inches; WRIC clause",
+          "confidence": "interpreted",
+          "source_text": "MAX 25 YRS (TRY MORE) WRIC UW ABT 1,8/2,1TS STW MAX 50'"
+        },
+        "stowage_factor": {
+          "value": null
+        },
+        "missing_info": [
+          "Freight rate not specified",
+          "Demurrage/despatch rate not specified",
+          "WRIC meaning unconfirmed — flagged as unknown term",
+          "ADDCOMPUS commission structure unclear — flagged as unknown term"
+        ],
+        "unknown_terms": ["WRIC", "ADDCOMPUS"]
+      },
+      {
+        "origin_port": {
+          "value": "Nemrut Bay",
+          "confidence": "confirmed",
+          "source_text": "NEMRUT / SAGUNTO"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "NEMRUT / SAGUNTO"
+        },
+        "destination_port": {
+          "value": "Sagunto",
+          "confidence": "confirmed",
+          "source_text": "NEMRUT / SAGUNTO"
+        },
+        "destination_country": {
+          "value": "Spain",
+          "confidence": "confirmed",
+          "source_text": "NEMRUT / SAGUNTO"
+        },
+        "cargo_description": {
+          "value": "Hot Rolled Coils (HRC) and Hot Rolled Coils Pickled & Oiled (HRCPO), unit weight approximately 10–27 tons",
+          "confidence": "interpreted",
+          "source_text": "2,000MTS 2PCT MOLCHOPT HRC + HRCPO UW ABT 10/27TS"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "2,000MTS 2PCT MOLCHOPT"
+        },
+        "weight_mt_min": {
+          "value": 1960,
+          "confidence": "interpreted",
+          "source_text": "2,000MTS 2PCT MOLCHOPT"
+        },
+        "weight_mt_max": {
+          "value": 2040,
+          "confidence": "interpreted",
+          "source_text": "2,000MTS 2PCT MOLCHOPT"
+        },
+        "volume_cbm": {
+          "value": null
+        },
+        "dimensions": {
+          "value": null
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "interpreted",
+          "source_text": "2,000MTS 2PCT MOLCHOPT HRC + HRCPO UW ABT 10/27TS"
+        },
+        "container_type": {
+          "value": null
+        },
+        "quantity": {
+          "value": null
+        },
+        "incoterms": {
+          "value": null
+        },
+        "preferred_dates": {
+          "value": "Spot / Prompt",
+          "confidence": "confirmed",
+          "source_text": "L/C S P O T / P P T"
+        },
+        "laycan": {
+          "value": "Spot / Prompt",
+          "confidence": "interpreted",
+          "source_text": "L/C S P O T / P P T"
+        },
+        "loading_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "1000MTS SSHEX EIU / 1000MTS SSHEX EIU"
+        },
+        "loading_terms": {
+          "value": "SSHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "1000MTS SSHEX EIU / 1000MTS SSHEX EIU"
+        },
+        "discharge_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "1000MTS SSHEX EIU / 1000MTS SSHEX EIU"
+        },
+        "discharge_terms": {
+          "value": "SSHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "1000MTS SSHEX EIU / 1000MTS SSHEX EIU"
+        },
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75PCT ADDCOMPUS"
+        },
+        "commission_terms": {
+          "value": "ADDCOMPUS",
+          "confidence": "confirmed",
+          "source_text": "3.75PCT ADDCOMPUS"
+        },
+        "special_requirements": {
+          "value": "Max vessel age 25 years (try older); unit weight approx 10–27 T per coil/unit",
+          "confidence": "interpreted",
+          "source_text": "MAX 25 YRS (TRY MORE) UW ABT 10/27TS"
+        },
+        "stowage_factor": {
+          "value": null
+        },
+        "missing_info": [
+          "Freight rate not specified",
+          "Demurrage/despatch rate not specified",
+          "Exact laycan dates not confirmed — spot/prompt only",
+          "ADDCOMPUS commission structure unclear — flagged as unknown term"
+        ],
+        "unknown_terms": ["ADDCOMPUS"]
+      },
+      {
+        "origin_port": {
+          "value": "Nemrut Bay",
+          "confidence": "confirmed",
+          "source_text": "NEMRUT / VARNA"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "NEMRUT / VARNA"
+        },
+        "destination_port": {
+          "value": "Varna",
+          "confidence": "confirmed",
+          "source_text": "NEMRUT / VARNA"
+        },
+        "destination_country": {
+          "value": "Bulgaria",
+          "confidence": "confirmed",
+          "source_text": "NEMRUT / VARNA"
+        },
+        "cargo_description": {
+          "value": "Hot Rolled Coils (HRC), Hot Rolled Coils Trimmed & Descaled (HRCTD), Hot Rolled Coils Pickled & Oiled (HRCPO), and Hot Rolled Sheets (HRS); unit weight approximately 10–27 tons",
+          "confidence": "interpreted",
+          "source_text": "5,800MTS 2PCT MOLCHOPT HRC + HRCTD + HRCPO UW ABT 10/27TS + HRS"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 5800,
+          "confidence": "confirmed",
+          "source_text": "5,800MTS 2PCT MOLCHOPT"
+        },
+        "weight_mt_min": {
+          "value": 5684,
+          "confidence": "interpreted",
+          "source_text": "5,800MTS 2PCT MOLCHOPT"
+        },
+        "weight_mt_max": {
+          "value": 5916,
+          "confidence": "interpreted",
+          "source_text": "5,800MTS 2PCT MOLCHOPT"
+        },
+        "volume_cbm": {
+          "value": null
+        },
+        "dimensions": {
+          "value": null
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "interpreted",
+          "source_text": "5,800MTS 2PCT MOLCHOPT HRC + HRCTD + HRCPO UW ABT 10/27TS + HRS"
+        },
+        "container_type": {
+          "value": null
+        },
+        "quantity": {
+          "value": null
+        },
+        "incoterms": {
+          "value": null
+        },
+        "preferred_dates": {
+          "value": "01–03 March 2026",
+          "confidence": "confirmed",
+          "source_text": "L/C 01 / 03 MARCH 2026"
+        },
+        "laycan": {
+          "value": "01/03 March 2026",
+          "confidence": "confirmed",
+          "source_text": "L/C 01 / 03 MARCH 2026"
+        },
+        "loading_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "1500MTS SSHEX EIU / 1500MTS SSHEX EIU"
+        },
+        "loading_terms": {
+          "value": "SSHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "1500MTS SSHEX EIU / 1500MTS SSHEX EIU"
+        },
+        "discharge_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "1500MTS SSHEX EIU / 1500MTS SSHEX EIU"
+        },
+        "discharge_terms": {
+          "value": "SSHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "1500MTS SSHEX EIU / 1500MTS SSHEX EIU"
+        },
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75PCT ADDCOMPUS"
+        },
+        "commission_terms": {
+          "value": "ADDCOMPUS",
+          "confidence": "confirmed",
+          "source_text": "3.75PCT ADDCOMPUS"
+        },
+        "special_requirements": {
+          "value": "Max vessel age 25 years (try older); unit weight approx 10–27 T per coil/sheet; mixed steel products cargo",
+          "confidence": "interpreted",
+          "source_text": "MAX 25 YRS (TRY MORE) UW ABT 10/27TS"
+        },
+        "stowage_factor": {
+          "value": null
+        },
+        "missing_info": [
+          "Freight rate not specified",
+          "Demurrage/despatch rate not specified",
+          "ADDCOMPUS commission structure unclear — flagged as unknown term"
+        ],
+        "unknown_terms": ["ADDCOMPUS"]
+      },
+      {
+        "origin_port": {
+          "value": "Nemrut Bay",
+          "confidence": "confirmed",
+          "source_text": "NEMRUT / MARGHERA"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "NEMRUT / MARGHERA"
+        },
+        "destination_port": {
+          "value": "Porto Marghera (Venice)",
+          "confidence": "confirmed",
+          "source_text": "NEMRUT / MARGHERA"
+        },
+        "destination_country": {
+          "value": "Italy",
+          "confidence": "confirmed",
+          "source_text": "NEMRUT / MARGHERA"
+        },
+        "cargo_description": {
+          "value": "Hot Rolled Coils (HRC) and Hot Rolled Coils Trimmed & Descaled (HRCTD); unit weight approximately 10–27 tons",
+          "confidence": "interpreted",
+          "source_text": "4,345MTS 2PCT MOLCHOPT HRC + HRCTD UW ABT 10/27TS"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 4345,
+          "confidence": "confirmed",
+          "source_text": "4,345MTS 2PCT MOLCHOPT"
+        },
+        "weight_mt_min": {
+          "value": 4258,
+          "confidence": "interpreted",
+          "source_text": "4,345MTS 2PCT MOLCHOPT"
+        },
+        "weight_mt_max": {
+          "value": 4432,
+          "confidence": "interpreted",
+          "source_text": "4,345MTS 2PCT MOLCHOPT"
+        },
+        "volume_cbm": {
+          "value": null
+        },
+        "dimensions": {
+          "value": null
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "interpreted",
+          "source_text": "4,345MTS 2PCT MOLCHOPT HRC + HRCTD UW ABT 10/27TS"
+        },
+        "container_type": {
+          "value": null
+        },
+        "quantity": {
+          "value": null
+        },
+        "incoterms": {
+          "value": null
+        },
+        "preferred_dates": {
+          "value": "01–03 March 2026",
+          "confidence": "confirmed",
+          "source_text": "L/C 01 / 03 MARCH 2026"
+        },
+        "laycan": {
+          "value": "01/03 March 2026",
+          "confidence": "confirmed",
+          "source_text": "L/C 01 / 03 MARCH 2026"
+        },
+        "loading_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "-1500MTS SSHEX EIU / 1500MTS SSHEX EIU"
+        },
+        "loading_terms": {
+          "value": "SSHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "-1500MTS SSHEX EIU / 1500MTS SSHEX EIU"
+        },
+        "discharge_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "-1500MTS SSHEX EIU / 1500MTS SSHEX EIU"
+        },
+        "discharge_terms": {
+          "value": "SSHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "-1500MTS SSHEX EIU / 1500MTS SSHEX EIU"
+        },
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75PCT ADDCOMPUS"
+        },
+        "commission_terms": {
+          "value": "ADDCOMPUS",
+          "confidence": "confirmed",
+          "source_text": "3.75PCT ADDCOMPUS"
+        },
+        "special_requirements": {
+          "value": "Max vessel age 25 years (try older); unit weight approx 10–27 T per coil",
+          "confidence": "interpreted",
+          "source_text": "MAX 25 YRS (TRY MORE) UW ABT 10/27TS"
+        },
+        "stowage_factor": {
+          "value": null
+        },
+        "missing_info": [
+          "Freight rate not specified",
+          "Demurrage/despatch rate not specified",
+          "ADDCOMPUS commission structure unclear — flagged as unknown term",
+          "Draft restrictions at Porto Marghera not specified — shallow-draft port, may be relevant"
+        ],
+        "unknown_terms": ["ADDCOMPUS"]
+      }
+    ]
+  }
+}

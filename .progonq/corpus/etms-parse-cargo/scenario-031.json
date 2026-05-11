@@ -1,0 +1,105 @@
+{
+  "id": "etms-parse-cargo-031",
+  "source_email_id": "19e07ce171ab8e10",
+  "category": "forwarded",
+  "input": {
+    "subject": "FW: Iskenderun/Constanta 7.000mts blk minerals,not imo",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:36:45.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Wednesday, 6 May 2026 15:14\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: Re: Iskenderun/Constanta 7.000mts blk minerals,not imo\r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n*For quick response pls include \"takis\" in the body of the email*\r\n\r\nGD DAY \r\n\r\nPLS OFFER FOR \r\n\r\nIskenderun/Constanta\r\n7.000mts blk minerals,not imo\r\n3000/2500\r\n15-20 May\r\n2.50%\r\n\r\nPlease add our email address ( chartering@niavigrains.gr ) to your circulation list for cargoes / positions\r\n\r\nBEST RGRDS\r\nTAK  (TAKIS KAPETANIOS)\r\nE MAIL : chartering@niavigrains.gr\r\nMobile/WhatsApp:0030 6944528968\r\nSKYPE: captanpanos\r\nLINKEDIN : www.linkedin.com/in/takis-kapetanios-5031344b/\r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr\r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\n \r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Iskenderun",
+          "confidence": "confirmed",
+          "source_text": "Iskenderun/Constanta"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "interpreted",
+          "source_text": "Iskenderun/Constanta"
+        },
+        "destination_port": {
+          "value": "Constanta",
+          "confidence": "confirmed",
+          "source_text": "Iskenderun/Constanta"
+        },
+        "destination_country": {
+          "value": "Romania",
+          "confidence": "interpreted",
+          "source_text": "Iskenderun/Constanta"
+        },
+        "cargo_description": {
+          "value": "Bulk minerals, non-IMO (non-hazardous)",
+          "confidence": "confirmed",
+          "source_text": "7.000mts blk minerals,not imo"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 7000,
+          "confidence": "confirmed",
+          "source_text": "7.000mts blk minerals,not imo"
+        },
+        "weight_mt_min": 7000,
+        "weight_mt_max": 7000,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "7.000mts blk minerals,not imo"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "15-20 May 2026",
+          "confidence": "confirmed",
+          "source_text": "15-20 May"
+        },
+        "laycan": {
+          "value": "15/20 May 2026",
+          "confidence": "confirmed",
+          "source_text": "15-20 May"
+        },
+        "loading_rate": {
+          "value": 3000,
+          "confidence": "confirmed",
+          "source_text": "3000/2500"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 2500,
+          "confidence": "confirmed",
+          "source_text": "3000/2500"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.50%"
+        },
+        "commission_terms": {
+          "value": null,
+          "confidence": "uncertain",
+          "source_text": "2.50%"
+        },
+        "special_requirements": {
+          "value": "Non-IMO cargo (not hazardous)",
+          "confidence": "confirmed",
+          "source_text": "not imo"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Freight rate / freight basis not stated",
+          "Loading/discharge terms (e.g. FIO, FIOST, CQD) not specified",
+          "Commission split / basis not specified (TTL, address commission, etc.)",
+          "Specific type of bulk minerals not identified",
+          "Vessel size / DWT requirement not stated"
+        ]
+      }
+    ]
+  }
+}

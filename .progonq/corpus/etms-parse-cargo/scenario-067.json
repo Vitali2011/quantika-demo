@@ -1,0 +1,206 @@
+{
+  "id": "etms-parse-cargo-067",
+  "source_email_id": "19e089d15179ef31",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: BEJAIA(MAX LOA 145 MTR) TO EAST MED 15 K MTS + 10 K MTS BAGGED SUGAR FIRM SHIPMENTS SPOT WCYP?",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:22:50.000Z",
+    "body": " \r\n\r\nFrom: SONAY DENIZCILIK <sonay@sonayshipping.com> \r\nSent: Friday, 8 May 2026 18:08\r\nTo: management@etm-services.net\r\nSubject: BEJAIA(MAX LOA 145 MTR) TO EAST MED 15 K MTS + 10 K MTS BAGGED SUGAR FIRM SHIPMENTS SPOT WCYP?\r\n\r\n \r\n\r\nDEFINETLY NOT FOR RE-CIRCULATION PLS\r\n\r\n \r\n\r\nDEAR ALL FRIENDS / HALIL\r\n\r\n \r\n\r\nHAPPY FRIDAY \r\n\r\n \r\n\r\nPLS OFFER FIRM FOR BLW FULL FIRM SHIPMENTS ACCT A1 CLASS FIXED THEIR LAST HERE ;\r\n\r\n \r\n\r\nBEJAIA (MAX LOA 145 MTR) TO 1SP LIBYA OR MERSIN IN CHOPT\r\n\r\n15.000 MTS BAGGED SUGAR STW FACTOR ABT 50’\r\n\r\nLD RATES 1500/1000\r\n\r\nLAYCAN SPOT TRY VSL DATES\r\n\r\n3.75 TTL COMM \r\n\r\n \r\n\r\nAND PLUS BLW ANOTHER FIRM SHIPMENT ASF:\r\n\r\n \r\n\r\nBEJAIA (MAX LOA 145 MTR) TO 1SP TURKISH EAST MED OR 1SP SYRIA OR 1SP LEBANON OR 1SP LIBYA IN CHOPT\r\n\r\nABT 5-10.000 MTS BAGGED SUGAR STW FACTOR ABT 50’\r\n\r\nLD RATES 1500/1000\r\n\r\nLAYCAN SPOT TRY VSL DATES\r\n\r\n3.75 TTL COMM \r\n\r\n \r\n\r\nNEED GEARED VSLS\r\n\r\nBEST OFFERS ARE INVITED\r\n\r\n \r\n\r\nPLS COME ALONG WITH FULL VSL DETAILS + LAY CAN + INTAKE CAP ?\r\n\r\nWcyp?\r\n\r\n \r\n\r\nThks and regards\r\n\r\nB.RGDS\r\n\r\nActing as broker only\r\n\r\nHalil ERSÖZ Mr\r\n\r\nSonay Shipping AS\r\n\r\nAddress: Istasyon Mah. D100 Karayolu Cad.\r\n\r\nNo:50 Haciogullari Plaza 34940 Tuzla Istanbul Turkiye\r\n\r\nTel:+90-216-446 71 05 (Ext:325)\r\n\r\nFax:+90-216-446 25 70\r\n\r\nMob:+90 549 204 67 07\r\n\r\nTeams:Halil.ERSOZ86\r\n\r\nEmail :sonay@sonayshipping.com\r\n\r\nsonaychartering@gmail.com\r\n\r\n \r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Bejaia",
+          "confidence": "confirmed",
+          "source_text": "BEJAIA (MAX LOA 145 MTR) TO 1SP LIBYA OR MERSIN IN CHOPT"
+        },
+        "origin_country": {
+          "value": "Algeria",
+          "confidence": "interpreted",
+          "source_text": "BEJAIA (MAX LOA 145 MTR) TO 1SP LIBYA OR MERSIN IN CHOPT"
+        },
+        "destination_port": {
+          "value": "1 Safe Port Libya or Mersin (Charterers Option)",
+          "confidence": "confirmed",
+          "source_text": "BEJAIA (MAX LOA 145 MTR) TO 1SP LIBYA OR MERSIN IN CHOPT"
+        },
+        "destination_country": {
+          "value": "Libya or Turkey (Charterers Option)",
+          "confidence": "confirmed",
+          "source_text": "TO 1SP LIBYA OR MERSIN IN CHOPT"
+        },
+        "cargo_description": {
+          "value": "Bagged sugar, stowage factor approximately 50 CBM/MT",
+          "confidence": "confirmed",
+          "source_text": "15.000 MTS BAGGED SUGAR STW FACTOR ABT 50'"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 15000,
+          "confidence": "confirmed",
+          "source_text": "15.000 MTS BAGGED SUGAR STW FACTOR ABT 50'"
+        },
+        "weight_mt_min": 15000,
+        "weight_mt_max": 15000,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "15.000 MTS BAGGED SUGAR STW FACTOR ABT 50'"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Spot — vessel dates to be advised",
+          "confidence": "interpreted",
+          "source_text": "LAYCAN SPOT TRY VSL DATES"
+        },
+        "laycan": {
+          "value": "Spot",
+          "confidence": "uncertain",
+          "source_text": "LAYCAN SPOT TRY VSL DATES"
+        },
+        "loading_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "LD RATES 1500/1000"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "LD RATES 1500/1000"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75 TTL COMM"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "3.75 TTL COMM"
+        },
+        "special_requirements": {
+          "value": "Geared vessels required; port restriction at Bejaia: MAX LOA 145 MTR",
+          "confidence": "confirmed",
+          "source_text": "NEED GEARED VSLS / BEJAIA (MAX LOA 145 MTR)"
+        },
+        "stowage_factor": {
+          "value": 50,
+          "confidence": "interpreted",
+          "source_text": "STW FACTOR ABT 50'"
+        },
+        "missing_info": [
+          "Freight rate (offers invited)",
+          "Vessel details and laycan not fixed — owners to provide vessel details, laycan, and intake capacity",
+          "No specific laycan dates given (spot only)",
+          "Discharge port to be confirmed (Libya or Mersin per CHOPT)",
+          "No loading terms / laytime cost-allocation specified (e.g. FIO, FIOST)"
+        ],
+        "unknown_terms": ["WCYP"]
+      },
+      {
+        "origin_port": {
+          "value": "Bejaia",
+          "confidence": "confirmed",
+          "source_text": "BEJAIA (MAX LOA 145 MTR) TO 1SP TURKISH EAST MED OR 1SP SYRIA OR 1SP LEBANON OR 1SP LIBYA IN CHOPT"
+        },
+        "origin_country": {
+          "value": "Algeria",
+          "confidence": "interpreted",
+          "source_text": "BEJAIA (MAX LOA 145 MTR) TO 1SP TURKISH EAST MED OR 1SP SYRIA OR 1SP LEBANON OR 1SP LIBYA IN CHOPT"
+        },
+        "destination_port": {
+          "value": "1 Safe Port Turkish East Med, or 1 Safe Port Syria, or 1 Safe Port Lebanon, or 1 Safe Port Libya (Charterers Option)",
+          "confidence": "confirmed",
+          "source_text": "BEJAIA (MAX LOA 145 MTR) TO 1SP TURKISH EAST MED OR 1SP SYRIA OR 1SP LEBANON OR 1SP LIBYA IN CHOPT"
+        },
+        "destination_country": {
+          "value": "Turkey / Syria / Lebanon / Libya (Charterers Option)",
+          "confidence": "confirmed",
+          "source_text": "TO 1SP TURKISH EAST MED OR 1SP SYRIA OR 1SP LEBANON OR 1SP LIBYA IN CHOPT"
+        },
+        "cargo_description": {
+          "value": "Bagged sugar, stowage factor approximately 50 CBM/MT",
+          "confidence": "confirmed",
+          "source_text": "ABT 5-10.000 MTS BAGGED SUGAR STW FACTOR ABT 50'"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 10000,
+          "confidence": "interpreted",
+          "source_text": "ABT 5-10.000 MTS BAGGED SUGAR STW FACTOR ABT 50'"
+        },
+        "weight_mt_min": 5000,
+        "weight_mt_max": 10000,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "ABT 5-10.000 MTS BAGGED SUGAR STW FACTOR ABT 50'"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Spot — vessel dates to be advised",
+          "confidence": "interpreted",
+          "source_text": "LAYCAN SPOT TRY VSL DATES"
+        },
+        "laycan": {
+          "value": "Spot",
+          "confidence": "uncertain",
+          "source_text": "LAYCAN SPOT TRY VSL DATES"
+        },
+        "loading_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "LD RATES 1500/1000"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "LD RATES 1500/1000"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75 TTL COMM"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "3.75 TTL COMM"
+        },
+        "special_requirements": {
+          "value": "Geared vessels required; port restriction at Bejaia: MAX LOA 145 MTR",
+          "confidence": "confirmed",
+          "source_text": "NEED GEARED VSLS / BEJAIA (MAX LOA 145 MTR)"
+        },
+        "stowage_factor": {
+          "value": 50,
+          "confidence": "interpreted",
+          "source_text": "STW FACTOR ABT 50'"
+        },
+        "missing_info": [
+          "Freight rate (offers invited)",
+          "Vessel details and laycan not fixed — owners to provide vessel details, laycan, and intake capacity",
+          "No specific laycan dates given (spot only)",
+          "Discharge port to be confirmed per CHOPT (Turkish East Med / Syria / Lebanon / Libya)",
+          "Cargo quantity is a wide range (5,000–10,000 MT); exact quantity not confirmed",
+          "No loading terms / laytime cost-allocation specified (e.g. FIO, FIOST)"
+        ],
+        "unknown_terms": ["WCYP"]
+      }
+    ]
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "id": "etms-parse-cargo-009",
+  "source_email_id": "19e07c446224acf1",
+  "category": "numeric_edge",
+  "input": {
+    "subject": "FW: Izmail / Antalya",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:26:01.000Z",
+    "body": " \r\n\r\n \r\n\r\nFrom: circulation@feyzgroupchartering.com\r\n<circulation@feyzgroupchartering.com> \r\nSent: Friday, 8 May 2026 15:16\r\nTo: chartering@feyzgroup.com\r\nSubject: Izmail / Antalya\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPlease offer firm for;\r\n\r\n \r\n\r\n1500 mts +/-10% coal tar pitch in bb\r\n\r\nIzmail / Antalya\r\n\r\n11-15 May\r\n\r\n1000 / 1000 sshex \r\n\r\n2,5% addcom pus\r\n\r\n \r\n\r\n- (1.4x1.4x1.1 UW 1,2 mt) ~ 2600 m3 required\r\n\r\n \r\n\r\n \r\n\r\nBest Regards\r\n\r\nAhmet YILDIZ\r\n\r\nChartering Dept.\r\n\r\nAs Broker Only\r\n\r\n \r\n\r\nAdress  : Altinsehir Mahallesi, Tavukcuyolu Caddesi Tomurcuk Sokak No 11\r\nIstanbul/Türkiye\r\n\r\nOffice    : 0090 216 527 00 31\r\n\r\nMobile  : 0090 534 430 00 40\r\n\r\nEmail      :  <mailto:chartering@feyzgroup.com> chartering@feyzgroup.com\r\n\r\nTeams   : Ahmet YILDIZ – FEYZ GROUP\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Izmail",
+          "confidence": "confirmed",
+          "source_text": "Izmail / Antalya"
+        },
+        "origin_country": {
+          "value": "Ukraine",
+          "confidence": "interpreted",
+          "source_text": "Izmail / Antalya"
+        },
+        "destination_port": {
+          "value": "Antalya",
+          "confidence": "confirmed",
+          "source_text": "Izmail / Antalya"
+        },
+        "destination_country": {
+          "value": "Turkey",
+          "confidence": "interpreted",
+          "source_text": "Izmail / Antalya"
+        },
+        "cargo_description": {
+          "value": "Coal tar pitch in bulk bags",
+          "confidence": "confirmed",
+          "source_text": "1500 mts +/-10% coal tar pitch in bb"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "1500 mts +/-10% coal tar pitch in bb"
+        },
+        "weight_mt_min": {
+          "value": 1350,
+          "confidence": "interpreted",
+          "source_text": "1500 mts +/-10% coal tar pitch in bb"
+        },
+        "weight_mt_max": {
+          "value": 1650,
+          "confidence": "interpreted",
+          "source_text": "1500 mts +/-10% coal tar pitch in bb"
+        },
+        "volume_cbm": {
+          "value": 2600,
+          "confidence": "confirmed",
+          "source_text": "~ 2600 m3 required"
+        },
+        "dimensions": {
+          "value": "1.4m x 1.4m x 1.1m",
+          "confidence": "confirmed",
+          "source_text": "1.4x1.4x1.1 UW 1,2 mt"
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "interpreted",
+          "source_text": "coal tar pitch in bb"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "11-15 May 2026",
+          "confidence": "confirmed",
+          "source_text": "11-15 May"
+        },
+        "laycan": {
+          "value": "11/15 May 2026",
+          "confidence": "confirmed",
+          "source_text": "11-15 May"
+        },
+        "loading_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "1000 / 1000 sshex"
+        },
+        "loading_terms": {
+          "value": "SSHEX",
+          "confidence": "confirmed",
+          "source_text": "1000 / 1000 sshex"
+        },
+        "discharge_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "1000 / 1000 sshex"
+        },
+        "discharge_terms": {
+          "value": "SSHEX",
+          "confidence": "confirmed",
+          "source_text": "1000 / 1000 sshex"
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2,5% addcom pus"
+        },
+        "commission_terms": {
+          "value": "Address commission, paid by owner (pus)",
+          "confidence": "interpreted",
+          "source_text": "2,5% addcom pus"
+        },
+        "special_requirements": {
+          "value": "Coal tar pitch is a hazardous/chemical cargo; unit weight 1.2 MT per big bag (bb). Stowage factor implies ~1.73 CBM/MT.",
+          "confidence": "interpreted",
+          "source_text": "1.4x1.4x1.1 UW 1,2 mt"
+        },
+        "stowage_factor": {
+          "value": 1.73,
+          "confidence": "interpreted",
+          "source_text": "~ 2600 m3 required"
+        },
+        "missing_info": [
+          "Freight rate not provided — firm offer requested",
+          "Vessel size/type requirements not specified",
+          "Port of loading berth details for Izmail not specified",
+          "'pus' in commission terms is ambiguous — assumed 'paid by owner (us)' but may need clarification",
+          "Hazmat/IMDG class for coal tar pitch not stated — may affect vessel eligibility"
+        ],
+        "unknown_terms": ["pus"]
+      }
+    ]
+  }
+}

@@ -14,7 +14,7 @@
         "origin_port": {
           "value": "Chennai or Kattupalli or Ennore Port",
           "confidence": "interpreted",
-          "source_text": "POL: Chennai or Kattupalli or Ennore Port"
+          "source_text": "Chennai or Kattupalli or Ennore Port"
         },
         "origin_country": {
           "value": "India",
@@ -22,17 +22,17 @@
           "source_text": "POL: Chennai or Kattupalli or Ennore Port"
         },
         "destination_port": {
-          "value": "Sohar or Khorfakkan or Fujairah",
+          "value": "Sohar or Khorfakkan or Fujairah (preferred)",
           "confidence": "interpreted",
-          "source_text": "POD: Sohar or Khorfakkan or Fujairah (preferred)"
+          "source_text": "Sohar or Khorfakkan or Fujairah (preferred)"
         },
         "destination_country": {
-          "value": "United Arab Emirates",
+          "value": "Oman / United Arab Emirates",
           "confidence": "interpreted",
           "source_text": "POD: Sohar or Khorfakkan or Fujairah (preferred)"
         },
         "cargo_description": {
-          "value": "Medium-Density Fibreboard (MDF)",
+          "value": "MDF (Medium Density Fibreboard)",
           "confidence": "interpreted",
           "source_text": "MDF"
         },
@@ -41,9 +41,9 @@
         "weight_mt_min": null,
         "weight_mt_max": null,
         "volume_cbm": {
-          "value": 12000,
+          "value": 13500,
           "confidence": "interpreted",
-          "source_text": "about 12,000 net CBM"
+          "source_text": "Qty: about 12,000 net CBM / 13,500 gross CBM"
         },
         "dimensions": null,
         "cargo_type": {
@@ -53,21 +53,29 @@
         },
         "container_type": null,
         "quantity": null,
-        "incoterms": {
-          "value": "FLT",
-          "confidence": "confirmed",
-          "source_text": "Terms: FLT"
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Mid to end May 2026",
+          "confidence": "interpreted",
+          "source_text": "Laycan: Mid - end May"
         },
-        "preferred_dates": null,
         "laycan": {
           "value": "Mid - end May 2026",
           "confidence": "interpreted",
           "source_text": "Laycan: Mid - end May"
         },
         "loading_rate": null,
-        "loading_terms": null,
+        "loading_terms": {
+          "value": "FLT",
+          "confidence": "confirmed",
+          "source_text": "Terms: FLT"
+        },
         "discharge_rate": null,
-        "discharge_terms": null,
+        "discharge_terms": {
+          "value": "FLT",
+          "confidence": "confirmed",
+          "source_text": "Terms: FLT"
+        },
         "commission_percent": {
           "value": 2.5,
           "confidence": "confirmed",
@@ -75,69 +83,78 @@
         },
         "commission_terms": {
           "value": "TTL",
-          "confidence": "interpreted",
+          "confidence": "confirmed",
           "source_text": "2.50 TTL COM"
         },
         "special_requirements": null,
         "stowage_factor": null,
-        "missing_info": ["Demurrage and despatch rates not stated"]
+        "missing_info": [
+          "Weight in MT not provided — only CBM given",
+          "No vessel size/draft restriction stated",
+          "Freight rate basis not specified"
+        ],
+        "unknown_terms": ["FLT"]
       },
       {
         "origin_port": {
           "value": "Ras Al Khaimah",
           "confidence": "interpreted",
-          "source_text": "REK"
+          "source_text": "Ras Al Khaimah"
         },
         "origin_country": {
           "value": "United Arab Emirates",
           "confidence": "interpreted",
-          "source_text": "REK"
+          "source_text": "REK / SHUAIBA 12 M DRAFT"
         },
         "destination_port": {
           "value": "Shuaiba",
           "confidence": "interpreted",
-          "source_text": "SHUAIBA"
+          "source_text": "Shuaiba"
         },
         "destination_country": {
           "value": "Kuwait",
           "confidence": "interpreted",
-          "source_text": "SHUAIBA"
+          "source_text": "REK / SHUAIBA 12 M DRAFT"
         },
         "cargo_description": {
           "value": "Bulk Aggregate",
-          "confidence": "interpreted",
-          "source_text": "BULK AGGREGATE"
+          "confidence": "confirmed",
+          "source_text": "50,000 MTS +/- 10% BULK AGGREGATE"
         },
         "cargo_origin_country": null,
         "weight_mt": {
           "value": 50000,
-          "confidence": "interpreted",
-          "source_text": "50,000 MTS"
+          "confidence": "confirmed",
+          "source_text": "50,000 MTS +/- 10% BULK AGGREGATE"
         },
         "weight_mt_min": {
           "value": 45000,
           "confidence": "interpreted",
-          "source_text": "50,000 MTS +/- 10%"
+          "source_text": "50,000 MTS +/- 10% BULK AGGREGATE"
         },
         "weight_mt_max": {
           "value": 55000,
           "confidence": "interpreted",
-          "source_text": "50,000 MTS +/- 10%"
+          "source_text": "50,000 MTS +/- 10% BULK AGGREGATE"
         },
         "volume_cbm": null,
         "dimensions": null,
         "cargo_type": {
           "value": "BULK",
           "confidence": "confirmed",
-          "source_text": "BULK AGGREGATE"
+          "source_text": "50,000 MTS +/- 10% BULK AGGREGATE"
         },
         "container_type": null,
         "quantity": null,
         "incoterms": null,
-        "preferred_dates": null,
+        "preferred_dates": {
+          "value": "Spot",
+          "confidence": "confirmed",
+          "source_text": "SPOT / VSL DATES"
+        },
         "laycan": {
-          "value": "Spot — vessel's dates",
-          "confidence": "interpreted",
+          "value": "Spot",
+          "confidence": "confirmed",
           "source_text": "SPOT / VSL DATES"
         },
         "loading_rate": null,
@@ -158,86 +175,101 @@
           "source_text": "2.5% TTL HERE"
         },
         "commission_terms": {
-          "value": "TTL HERE",
-          "confidence": "interpreted",
+          "value": "TTL",
+          "confidence": "confirmed",
           "source_text": "2.5% TTL HERE"
         },
-        "special_requirements": {
-          "value": "Vessel must be gearless. Maximum draft 12 meters.",
-          "confidence": "interpreted",
-          "source_text": "12 M DRAFT\nGLSS VSL"
-        },
+        "special_requirements": [
+          {
+            "value": "Gearless vessel required",
+            "confidence": "confirmed",
+            "source_text": "GLSS VSL"
+          },
+          {
+            "value": "12m draft restriction",
+            "confidence": "confirmed",
+            "source_text": "REK / SHUAIBA 12 M DRAFT"
+          }
+        ],
         "stowage_factor": null,
-        "missing_info": ["Demurrage and despatch rates not stated"]
+        "missing_info": [
+          "Freight rate not specified",
+          "Exact laycan dates not provided — only 'Spot'"
+        ],
+        "unknown_terms": []
       },
       {
         "origin_port": {
           "value": "Fujairah",
           "confidence": "interpreted",
-          "source_text": "FUJAIRAH"
+          "source_text": "Fujairah"
         },
         "origin_country": {
           "value": "United Arab Emirates",
-          "confidence": "interpreted",
-          "source_text": "FUJAIRAH"
+          "confidence": "confirmed",
+          "source_text": "FUJAIRAH/ MOGADISHU 11 M DRAFT"
         },
         "destination_port": {
           "value": "Mogadishu",
           "confidence": "interpreted",
-          "source_text": "MOGADISHU"
+          "source_text": "Mogadishu"
         },
         "destination_country": {
           "value": "Somalia",
-          "confidence": "interpreted",
-          "source_text": "MOGADISHU"
+          "confidence": "confirmed",
+          "source_text": "FUJAIRAH/ MOGADISHU 11 M DRAFT"
         },
         "cargo_description": {
           "value": "Bulk Aggregate",
-          "confidence": "interpreted",
-          "source_text": "BULK AGGREGATE"
+          "confidence": "confirmed",
+          "source_text": "50,000 MTS +/- 10% BULK AGGREGATE"
         },
         "cargo_origin_country": null,
         "weight_mt": {
           "value": 50000,
-          "confidence": "interpreted",
-          "source_text": "50,000 MTS"
+          "confidence": "confirmed",
+          "source_text": "50,000 MTS +/- 10% BULK AGGREGATE"
         },
         "weight_mt_min": {
           "value": 45000,
           "confidence": "interpreted",
-          "source_text": "50,000 MTS +/- 10%"
+          "source_text": "50,000 MTS +/- 10% BULK AGGREGATE"
         },
         "weight_mt_max": {
           "value": 55000,
           "confidence": "interpreted",
-          "source_text": "50,000 MTS +/- 10%"
+          "source_text": "50,000 MTS +/- 10% BULK AGGREGATE"
         },
         "volume_cbm": null,
         "dimensions": null,
         "cargo_type": {
           "value": "BULK",
           "confidence": "confirmed",
-          "source_text": "BULK AGGREGATE"
+          "source_text": "50,000 MTS +/- 10% BULK AGGREGATE"
         },
         "container_type": null,
         "quantity": null,
         "incoterms": null,
-        "preferred_dates": null,
+        "preferred_dates": {
+          "value": "Spot",
+          "confidence": "confirmed",
+          "source_text": "SPOT"
+        },
         "laycan": {
           "value": "Spot",
-          "confidence": "interpreted",
+          "confidence": "confirmed",
           "source_text": "SPOT"
         },
         "loading_rate": {
           "value": 8000,
           "confidence": "confirmed",
-          "source_text": "8000"
+          "source_text": "8000 / 4000"
         },
         "loading_terms": null,
         "discharge_rate": {
           "value": 4000,
           "confidence": "confirmed",
-          "source_text": "4000"
+          "source_text": "8000 / 4000"
         },
         "discharge_terms": null,
         "commission_percent": {
@@ -247,26 +279,34 @@
         },
         "commission_terms": {
           "value": "TTL",
-          "confidence": "interpreted",
+          "confidence": "confirmed",
           "source_text": "2.50% TTL"
         },
-        "special_requirements": {
-          "value": "Vessel must be geared and equipped with grabs for discharge. Maximum draft 11 meters.",
-          "confidence": "interpreted",
-          "source_text": "11 M DRAFT\nGEARD N GRABBER FOR DISCH"
-        },
+        "special_requirements": [
+          {
+            "value": "Geared vessel with grab required for discharge",
+            "confidence": "confirmed",
+            "source_text": "GEARD N GRABBER FOR DISCH"
+          },
+          {
+            "value": "11m draft restriction",
+            "confidence": "confirmed",
+            "source_text": "FUJAIRAH/ MOGADISHU 11 M DRAFT"
+          }
+        ],
         "stowage_factor": null,
         "missing_info": [
-          "Laytime terms for loading not stated",
-          "Laytime terms for discharge not stated",
-          "Demurrage and despatch rates not stated"
-        ]
+          "Freight rate not specified",
+          "Loading/discharge rate unit (MT/day assumed) not explicitly stated",
+          "Exact laycan dates not provided"
+        ],
+        "unknown_terms": []
       },
       {
         "origin_port": {
           "value": "Bintulu",
           "confidence": "interpreted",
-          "source_text": "POL: Bintulu port in Malaysia"
+          "source_text": "Bintulu"
         },
         "origin_country": {
           "value": "Malaysia",
@@ -276,17 +316,17 @@
         "destination_port": {
           "value": "Sohar",
           "confidence": "interpreted",
-          "source_text": "POD: Sohar"
+          "source_text": "Sohar"
         },
         "destination_country": {
-          "value": "United Arab Emirates",
-          "confidence": "interpreted",
+          "value": "Oman",
+          "confidence": "confirmed",
           "source_text": "POD: Sohar"
         },
         "cargo_description": {
           "value": "Sawn Timber in bundles",
-          "confidence": "interpreted",
-          "source_text": "Sawn Timber in bundles"
+          "confidence": "confirmed",
+          "source_text": "Cargo Type: Sawn Timber in bundles"
         },
         "cargo_origin_country": null,
         "weight_mt": null,
@@ -295,57 +335,71 @@
         "volume_cbm": {
           "value": 5000,
           "confidence": "interpreted",
-          "source_text": "5,000 NET CBM (about)"
+          "source_text": "Total Qty: 5,000 NET CBM (about) of Sawn Timber"
         },
         "dimensions": null,
         "cargo_type": {
           "value": "BREAK_BULK",
           "confidence": "confirmed",
-          "source_text": "Sawn Timber in bundles"
+          "source_text": "Cargo Type: Sawn Timber in bundles"
         },
         "container_type": null,
         "quantity": null,
-        "incoterms": {
-          "value": "FILO",
-          "confidence": "interpreted",
-          "source_text": "Terms: FILO CQD"
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Prompt",
+          "confidence": "confirmed",
+          "source_text": "Laycan: Prompt"
         },
-        "preferred_dates": null,
         "laycan": {
           "value": "Prompt",
-          "confidence": "interpreted",
+          "confidence": "confirmed",
           "source_text": "Laycan: Prompt"
         },
         "loading_rate": null,
         "loading_terms": {
-          "value": "CQD",
-          "confidence": "interpreted",
+          "value": "FILO CQD",
+          "confidence": "confirmed",
           "source_text": "Terms: FILO CQD"
         },
         "discharge_rate": null,
         "discharge_terms": {
-          "value": "LINER OUT",
-          "confidence": "interpreted",
-          "source_text": "Terms: FILO CQD"
+          "value": "Liner Out",
+          "confidence": "confirmed",
+          "source_text": "Terms: Free In (CQD) Liner Out"
         },
         "commission_percent": null,
         "commission_terms": null,
-        "special_requirements": {
-          "value": "Part cargo acceptable. On-deck loading of sawn timber is permitted. Loading at Malaysia port is limited to a maximum of 2 gangs.",
-          "confidence": "confirmed",
-          "source_text": "Part cargo is ok. Sawn Timber ON DECK loading is ok.\nTerms: Free In (CQD) Liner Out, Malaysia port can work maximum with 2 gangs only."
-        },
+        "special_requirements": [
+          {
+            "value": "Part cargo acceptable",
+            "confidence": "confirmed",
+            "source_text": "Part cargo is ok."
+          },
+          {
+            "value": "On deck loading acceptable",
+            "confidence": "confirmed",
+            "source_text": "Sawn Timber ON DECK loading is ok."
+          },
+          {
+            "value": "Malaysia port maximum 2 gangs only",
+            "confidence": "confirmed",
+            "source_text": "Malaysia port can work maximum with 2 gangs only."
+          }
+        ],
         "stowage_factor": null,
         "missing_info": [
           "Commission percentage not stated",
-          "Demurrage and despatch rates not stated"
-        ]
+          "Weight in MT not provided",
+          "Freight rate not specified"
+        ],
+        "unknown_terms": []
       },
       {
         "origin_port": {
-          "value": "Lirquen",
+          "value": "Lirquén",
           "confidence": "interpreted",
-          "source_text": "Load Port – Lirquen"
+          "source_text": "Lirquén"
         },
         "origin_country": {
           "value": "Chile",
@@ -355,16 +409,16 @@
         "destination_port": {
           "value": "Fujairah",
           "confidence": "interpreted",
-          "source_text": "Discharge Port – Fujairah"
+          "source_text": "Fujairah"
         },
         "destination_country": {
           "value": "United Arab Emirates",
-          "confidence": "interpreted",
+          "confidence": "confirmed",
           "source_text": "Discharge Port – Fujairah"
         },
         "cargo_description": {
           "value": "Pine Sawn Timber",
-          "confidence": "interpreted",
+          "confidence": "confirmed",
           "source_text": "Pine Sawn Timber"
         },
         "cargo_origin_country": null,
@@ -384,12 +438,12 @@
         },
         "container_type": null,
         "quantity": null,
-        "incoterms": {
-          "value": "FILO",
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "End May 2026",
           "confidence": "confirmed",
-          "source_text": "Terms – FILO (Load Rate – CQD)"
+          "source_text": "Laycan – End May, 2026"
         },
-        "preferred_dates": null,
         "laycan": {
           "value": "End May 2026",
           "confidence": "interpreted",
@@ -397,35 +451,46 @@
         },
         "loading_rate": null,
         "loading_terms": {
-          "value": "CQD",
-          "confidence": "interpreted",
+          "value": "FILO CQD",
+          "confidence": "confirmed",
           "source_text": "Terms – FILO (Load Rate – CQD)"
         },
         "discharge_rate": null,
         "discharge_terms": {
-          "value": "LINER OUT",
+          "value": "Liner Out",
           "confidence": "interpreted",
           "source_text": "Terms – FILO (Load Rate – CQD)"
         },
         "commission_percent": {
           "value": 2.5,
-          "confidence": "confirmed",
+          "confidence": "interpreted",
           "source_text": "2.50"
         },
         "commission_terms": null,
-        "special_requirements": null,
+        "special_requirements": [
+          {
+            "value": "Freight rate to be offered on net CBM basis",
+            "confidence": "confirmed",
+            "source_text": "Please offer rate on net CBM basis."
+          }
+        ],
         "stowage_factor": {
-          "value": "abt 52 ft³/MT",
+          "value": "approximately 52 CBM/CBF for Lumber",
           "confidence": "interpreted",
           "source_text": "Stow factor abt 52 Cbm/cbft for Lumber."
         },
-        "missing_info": ["Demurrage and despatch rates not stated"]
+        "missing_info": [
+          "Weight in MT not provided",
+          "Commission terms (TTL/BENDS) not specified",
+          "Stowage factor unit 'Cbm/cbft' is non-standard — may mean CBM per metric ton"
+        ],
+        "unknown_terms": []
       },
       {
         "origin_port": {
           "value": "Laem Chabang or Songkhla",
           "confidence": "interpreted",
-          "source_text": "POL: Laem Chabang or Songkhla"
+          "source_text": "Laem Chabang or Songkhla"
         },
         "origin_country": {
           "value": "Thailand",
@@ -433,9 +498,9 @@
           "source_text": "POL: Laem Chabang or Songkhla"
         },
         "destination_port": {
-          "value": "Sudan port (unspecified)",
+          "value": "Sudan (port unspecified)",
           "confidence": "interpreted",
-          "source_text": "POD: Sudan"
+          "source_text": "Sudan (port unspecified)"
         },
         "destination_country": {
           "value": "Sudan",
@@ -443,9 +508,9 @@
           "source_text": "POD: Sudan"
         },
         "cargo_description": {
-          "value": "Medium-Density Fibreboard (MDF)",
-          "confidence": "interpreted",
-          "source_text": "MDF"
+          "value": "Not specified",
+          "confidence": "uncertain",
+          "source_text": "Qty: 8000 CBM to 10000 CBM"
         },
         "cargo_origin_country": null,
         "weight_mt": null,
@@ -454,59 +519,70 @@
         "volume_cbm": {
           "value": 10000,
           "confidence": "interpreted",
-          "source_text": "8000 CBM to 10000 CBM"
+          "source_text": "Qty: 8000 CBM to 10000 CBM"
         },
         "dimensions": null,
         "cargo_type": {
           "value": "BREAK_BULK",
-          "confidence": "interpreted",
-          "source_text": "MDF"
+          "confidence": "uncertain",
+          "source_text": "Qty: 8000 CBM to 10000 CBM"
         },
         "container_type": null,
         "quantity": null,
-        "incoterms": {
-          "value": "FLT",
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "End May 2026",
           "confidence": "confirmed",
-          "source_text": "FLT"
+          "source_text": "Laycan: End May, 2026"
         },
-        "preferred_dates": null,
         "laycan": {
           "value": "End May 2026",
           "confidence": "interpreted",
           "source_text": "Laycan: End May, 2026"
         },
         "loading_rate": null,
-        "loading_terms": null,
+        "loading_terms": {
+          "value": "FLT",
+          "confidence": "confirmed",
+          "source_text": "FLT"
+        },
         "discharge_rate": null,
-        "discharge_terms": null,
+        "discharge_terms": {
+          "value": "FLT",
+          "confidence": "confirmed",
+          "source_text": "FLT"
+        },
         "commission_percent": {
           "value": 2.5,
-          "confidence": "confirmed",
+          "confidence": "interpreted",
           "source_text": "2.50"
         },
         "commission_terms": null,
         "special_requirements": null,
         "stowage_factor": null,
         "missing_info": [
-          "Specific Sudan load port not nominated — exact port TBD",
-          "Demurrage and despatch rates not stated"
-        ]
+          "Cargo description/type not stated",
+          "Weight in MT not provided",
+          "Specific Sudan discharge port not named",
+          "Commission terms not specified"
+        ],
+        "unknown_terms": ["FLT"]
       },
       {
         "origin_port": {
           "value": "Durban",
           "confidence": "interpreted",
-          "source_text": "POL: Durban"
+          "source_text": "Durban"
         },
         "origin_country": {
           "value": "South Africa",
-          "confidence": "interpreted",
+          "confidence": "confirmed",
           "source_text": "POL: Durban"
         },
         "destination_port": {
           "value": "Bejaia",
           "confidence": "interpreted",
-          "source_text": "POD: Bejaia, Algeria"
+          "source_text": "Bejaia"
         },
         "destination_country": {
           "value": "Algeria",
@@ -514,8 +590,8 @@
           "source_text": "POD: Bejaia, Algeria"
         },
         "cargo_description": {
-          "value": "General cargo (volume-based)",
-          "confidence": "interpreted",
+          "value": "Not specified",
+          "confidence": "uncertain",
           "source_text": "About 20,000 net CBM"
         },
         "cargo_origin_country": null,
@@ -535,12 +611,12 @@
         },
         "container_type": null,
         "quantity": null,
-        "incoterms": {
-          "value": "LIFO",
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "End May 2026",
           "confidence": "confirmed",
-          "source_text": "LIFO"
+          "source_text": "Laycan: End May, 2026"
         },
-        "preferred_dates": null,
         "laycan": {
           "value": "End May 2026",
           "confidence": "interpreted",
@@ -548,39 +624,37 @@
         },
         "loading_rate": null,
         "loading_terms": {
-          "value": "LINER IN",
-          "confidence": "interpreted",
+          "value": "LIFO",
+          "confidence": "confirmed",
           "source_text": "LIFO"
         },
         "discharge_rate": {
           "value": 2000,
           "confidence": "confirmed",
-          "source_text": "2000 CBM per day"
+          "source_text": "Discharge rate: 2000 CBM per day"
         },
         "discharge_terms": {
-          "value": "FREE OUT",
+          "value": "Free Out",
           "confidence": "interpreted",
           "source_text": "LIFO"
         },
         "commission_percent": null,
         "commission_terms": null,
-        "special_requirements": {
-          "value": "Discharge rate is 2000 CBM per day.",
-          "confidence": "confirmed",
-          "source_text": "Discharge rate: 2000 CBM per day"
-        },
+        "special_requirements": null,
         "stowage_factor": null,
         "missing_info": [
-          "Specific cargo type not stated (e.g., MDF, sawn timber)",
+          "Cargo description/type not stated",
+          "Weight in MT not provided",
           "Commission percentage not stated",
-          "Demurrage and despatch rates not stated"
-        ]
+          "Loading rate not specified"
+        ],
+        "unknown_terms": []
       },
       {
         "origin_port": {
           "value": "Panjang",
           "confidence": "interpreted",
-          "source_text": "POL: Panjang"
+          "source_text": "Panjang"
         },
         "origin_country": {
           "value": "Indonesia",
@@ -590,15 +664,15 @@
         "destination_port": {
           "value": "Jeddah",
           "confidence": "interpreted",
-          "source_text": "POD: Jeddah"
+          "source_text": "Jeddah"
         },
         "destination_country": {
           "value": "Saudi Arabia",
-          "confidence": "interpreted",
+          "confidence": "confirmed",
           "source_text": "POD: Jeddah"
         },
         "cargo_description": {
-          "value": "Medium-Density Fibreboard (MDF)",
+          "value": "MDF (Medium Density Fibreboard)",
           "confidence": "interpreted",
           "source_text": "MDF"
         },
@@ -609,7 +683,7 @@
         "volume_cbm": {
           "value": 9500,
           "confidence": "interpreted",
-          "source_text": "about 7500 net CBM to 9,500 net CBM"
+          "source_text": "Qty: about 7500 net CBM to 9,500 net CBM"
         },
         "dimensions": null,
         "cargo_type": {
@@ -619,12 +693,12 @@
         },
         "container_type": null,
         "quantity": null,
-        "incoterms": {
-          "value": "FILO",
-          "confidence": "interpreted",
-          "source_text": "Terms: FILO CQD bends"
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Early May 2026",
+          "confidence": "confirmed",
+          "source_text": "Laycan: Early May, 2026"
         },
-        "preferred_dates": null,
         "laycan": {
           "value": "Early May 2026",
           "confidence": "interpreted",
@@ -632,14 +706,14 @@
         },
         "loading_rate": null,
         "loading_terms": {
-          "value": "CQD",
-          "confidence": "interpreted",
+          "value": "FILO CQD",
+          "confidence": "confirmed",
           "source_text": "Terms: FILO CQD bends"
         },
         "discharge_rate": null,
         "discharge_terms": {
-          "value": "LINER OUT",
-          "confidence": "interpreted",
+          "value": "FILO CQD",
+          "confidence": "confirmed",
           "source_text": "Terms: FILO CQD bends"
         },
         "commission_percent": {
@@ -647,38 +721,39 @@
           "confidence": "confirmed",
           "source_text": "2.50"
         },
-        "commission_terms": {
-          "value": "BENDS",
-          "confidence": "interpreted",
-          "source_text": "Terms: FILO CQD bends"
-        },
+        "commission_terms": null,
         "special_requirements": null,
         "stowage_factor": null,
-        "missing_info": ["Demurrage and despatch rates not stated"]
+        "missing_info": [
+          "Weight in MT not provided",
+          "Commission terms (TTL/BENDS) not specified",
+          "Note: Laycan Early May 2026 may already be past given email date of 6 May 2026"
+        ],
+        "unknown_terms": []
       },
       {
         "origin_port": {
           "value": "Songkhla",
           "confidence": "interpreted",
-          "source_text": "POL: Songkhla"
+          "source_text": "Songkhla"
         },
         "origin_country": {
           "value": "Thailand",
-          "confidence": "interpreted",
+          "confidence": "confirmed",
           "source_text": "POL: Songkhla"
         },
         "destination_port": {
           "value": "Jeddah",
           "confidence": "interpreted",
-          "source_text": "POD: Jeddah"
+          "source_text": "Jeddah"
         },
         "destination_country": {
           "value": "Saudi Arabia",
-          "confidence": "interpreted",
+          "confidence": "confirmed",
           "source_text": "POD: Jeddah"
         },
         "cargo_description": {
-          "value": "Medium-Density Fibreboard (MDF)",
+          "value": "MDF (Medium Density Fibreboard)",
           "confidence": "interpreted",
           "source_text": "MDF"
         },
@@ -689,7 +764,7 @@
         "volume_cbm": {
           "value": 20000,
           "confidence": "interpreted",
-          "source_text": "about 15,000 net CBM to 20,000 net CBM"
+          "source_text": "Qty: about 15,000 net CBM to 20,000 net CBM / 1 net cbm = 1.12 gross cbm"
         },
         "dimensions": null,
         "cargo_type": {
@@ -699,54 +774,69 @@
         },
         "container_type": null,
         "quantity": null,
-        "incoterms": {
-          "value": "FLT",
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Mid to end May 2026",
           "confidence": "confirmed",
-          "source_text": "Terms: FLT"
+          "source_text": "Laycan: Mid to end May, 2026"
         },
-        "preferred_dates": null,
         "laycan": {
           "value": "Mid to end May 2026",
           "confidence": "interpreted",
           "source_text": "Laycan: Mid to end May, 2026"
         },
         "loading_rate": null,
-        "loading_terms": null,
+        "loading_terms": {
+          "value": "FLT",
+          "confidence": "confirmed",
+          "source_text": "Terms: FLT"
+        },
         "discharge_rate": null,
-        "discharge_terms": null,
+        "discharge_terms": {
+          "value": "FLT",
+          "confidence": "confirmed",
+          "source_text": "Terms: FLT"
+        },
         "commission_percent": {
           "value": 2.5,
           "confidence": "confirmed",
           "source_text": "2.50%"
         },
         "commission_terms": null,
-        "special_requirements": null,
+        "special_requirements": [
+          {
+            "value": "Net to gross CBM ratio: 1 net CBM = 1.12 gross CBM",
+            "confidence": "confirmed",
+            "source_text": "1 net cbm = 1.12 gross cbm"
+          }
+        ],
         "stowage_factor": null,
-        "missing_info": ["Demurrage and despatch rates not stated"]
+        "missing_info": ["Weight in MT not provided", "Commission terms (TTL/BENDS) not specified"],
+        "unknown_terms": ["FLT"]
       },
       {
         "origin_port": {
           "value": "Laem Chabang",
           "confidence": "interpreted",
-          "source_text": "POL: Laem Chabang"
+          "source_text": "Laem Chabang"
         },
         "origin_country": {
           "value": "Thailand",
-          "confidence": "interpreted",
+          "confidence": "confirmed",
           "source_text": "POL: Laem Chabang"
         },
         "destination_port": {
           "value": "Sohar",
           "confidence": "interpreted",
-          "source_text": "POD: Sohar"
+          "source_text": "Sohar"
         },
         "destination_country": {
-          "value": "United Arab Emirates",
-          "confidence": "interpreted",
+          "value": "Oman",
+          "confidence": "confirmed",
           "source_text": "POD: Sohar"
         },
         "cargo_description": {
-          "value": "Medium-Density Fibreboard (MDF)",
+          "value": "MDF (Medium Density Fibreboard)",
           "confidence": "interpreted",
           "source_text": "MDF"
         },
@@ -755,9 +845,9 @@
         "weight_mt_min": null,
         "weight_mt_max": null,
         "volume_cbm": {
-          "value": 10000,
-          "confidence": "interpreted",
-          "source_text": "about 10,000 net CBM"
+          "value": 11200,
+          "confidence": "confirmed",
+          "source_text": "Qty: about 10,000 net CBM / 11,200 gross CBM"
         },
         "dimensions": null,
         "cargo_type": {
@@ -767,36 +857,51 @@
         },
         "container_type": null,
         "quantity": null,
-        "incoterms": {
-          "value": "FLT",
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "7th May 2026 to 12th May 2026",
           "confidence": "confirmed",
-          "source_text": "Terms: FLT"
+          "source_text": "Laycan: 7th May, 2026 to 12th May, 2026"
         },
-        "preferred_dates": null,
         "laycan": {
           "value": "7th May 2026 to 12th May 2026",
           "confidence": "confirmed",
           "source_text": "Laycan: 7th May, 2026 to 12th May, 2026"
         },
         "loading_rate": null,
-        "loading_terms": null,
+        "loading_terms": {
+          "value": "FLT",
+          "confidence": "confirmed",
+          "source_text": "Terms: FLT"
+        },
         "discharge_rate": null,
-        "discharge_terms": null,
+        "discharge_terms": {
+          "value": "FLT",
+          "confidence": "confirmed",
+          "source_text": "Terms: FLT"
+        },
         "commission_percent": {
           "value": 2.5,
           "confidence": "confirmed",
           "source_text": "2.50%"
         },
         "commission_terms": null,
-        "special_requirements": null,
+        "special_requirements": [
+          {
+            "value": "Marked as FIRM TO FIX",
+            "confidence": "confirmed",
+            "source_text": "FIRM TO FIX:"
+          }
+        ],
         "stowage_factor": null,
-        "missing_info": ["Demurrage and despatch rates not stated"]
+        "missing_info": ["Weight in MT not provided", "Commission terms (TTL/BENDS) not specified"],
+        "unknown_terms": ["FLT"]
       },
       {
         "origin_port": {
-          "value": "Koh Sri Chang",
+          "value": "Koh Sichang",
           "confidence": "interpreted",
-          "source_text": "POL: Koh Sri Chang"
+          "source_text": "Koh Sichang"
         },
         "origin_country": {
           "value": "Thailand",
@@ -806,41 +911,45 @@
         "destination_port": {
           "value": "Conakry",
           "confidence": "interpreted",
-          "source_text": "POD: Conakry"
+          "source_text": "Conakry"
         },
         "destination_country": {
           "value": "Guinea",
-          "confidence": "interpreted",
+          "confidence": "confirmed",
           "source_text": "POD: Conakry"
         },
         "cargo_description": {
-          "value": "12,500 metric tons of Thai Parboiled Rice (100% Sorted) and 12,500 metric tons of Thai White Rice (25% Broken), packed in new 50kg PP bags, with jumbo bags totaling 1 metric ton each.",
-          "confidence": "interpreted",
-          "source_text": "1- Thai Parboiled Rice 100% Sorted , Quantity 12,500 mt 2-Thai White Rice 25% Broken , Quantity 12,500 mt\nPacking: In new PP of 50 kgs with Jumbo bag total 1 mt"
+          "value": "Thai Parboiled Rice 100% Sorted (12,500 MT) and Thai White Rice 25% Broken (12,500 MT)",
+          "confidence": "confirmed",
+          "source_text": "1- Thai Parboiled Rice 100% Sorted , Quantity 12,500 mt 2-Thai White Rice 25% Broken , Quantity 12,500 mt"
         },
         "cargo_origin_country": {
           "value": "Thailand",
-          "confidence": "interpreted",
-          "source_text": "Thai Parboiled Rice"
+          "confidence": "confirmed",
+          "source_text": "Thai Parboiled Rice 100% Sorted"
         },
         "weight_mt": {
           "value": 25000,
           "confidence": "interpreted",
-          "source_text": "Quantity 12,500 mt ... Quantity 12,500 mt"
+          "source_text": "1- Thai Parboiled Rice 100% Sorted , Quantity 12,500 mt 2-Thai White Rice 25% Broken , Quantity 12,500 mt"
         },
         "weight_mt_min": null,
         "weight_mt_max": null,
         "volume_cbm": null,
         "dimensions": null,
         "cargo_type": {
-          "value": "BREAK_BULK",
-          "confidence": "confirmed",
-          "source_text": "Packing: In new PP of 50 kgs with Jumbo bag total 1 mt"
+          "value": "BULK",
+          "confidence": "interpreted",
+          "source_text": "1- Thai Parboiled Rice 100% Sorted , Quantity 12,500 mt 2-Thai White Rice 25% Broken , Quantity 12,500 mt"
         },
         "container_type": null,
         "quantity": null,
         "incoterms": null,
-        "preferred_dates": null,
+        "preferred_dates": {
+          "value": "20-30 May 2026",
+          "confidence": "confirmed",
+          "source_text": "Laycan: 20-30 May 2026"
+        },
         "laycan": {
           "value": "20-30 May 2026",
           "confidence": "confirmed",
@@ -848,13 +957,13 @@
         },
         "loading_rate": {
           "value": 3000,
-          "confidence": "confirmed",
+          "confidence": "interpreted",
           "source_text": "Quantity loading & Discharge 3,000 mt"
         },
         "loading_terms": null,
         "discharge_rate": {
           "value": 3000,
-          "confidence": "confirmed",
+          "confidence": "interpreted",
           "source_text": "Quantity loading & Discharge 3,000 mt"
         },
         "discharge_terms": null,
@@ -864,13 +973,25 @@
           "source_text": "2.50%"
         },
         "commission_terms": null,
-        "special_requirements": null,
+        "special_requirements": [
+          {
+            "value": "Packing: new PP bags of 50kg with jumbo bags (1 MT per jumbo bag)",
+            "confidence": "confirmed",
+            "source_text": "Packing: In new PP of 50 kgs with Jumbo bag total 1 mt"
+          },
+          {
+            "value": "Rated/scheduled vessels welcome",
+            "confidence": "confirmed",
+            "source_text": "Rated/scheduled vessels are welcome."
+          }
+        ],
         "stowage_factor": null,
         "missing_info": [
-          "Laytime terms for loading not stated",
-          "Laytime terms for discharge not stated",
-          "Demurrage and despatch rates not stated"
-        ]
+          "Commission terms (TTL/BENDS) not specified",
+          "Freight rate not specified",
+          "Loading/discharge rate unit assumed MT/day — not explicitly stated"
+        ],
+        "unknown_terms": []
       }
     ]
   }

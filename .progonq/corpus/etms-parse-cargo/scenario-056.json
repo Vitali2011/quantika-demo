@@ -1,0 +1,209 @@
+{
+  "id": "etms-parse-cargo-056",
+  "source_email_id": "19e07d6a749ba5ec",
+  "category": "incomplete_data",
+  "input": {
+    "subject": "FW: Friday Fixture - Direct",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:46:00.000Z",
+    "body": " \r\n\r\n \r\n\r\nThanks & Best Regards,\r\n\r\nManaging Director\r\n\r\nSherif Shaaban\r\n\r\n\r\n16 Fawzy Fahmy Gendy St., 21131\r\n\r\nEl Raml Station, Alexandria, Egypt \r\n\r\nTel: +2 03 4865320 - Fax: +2 03 4872855\r\n\r\nMob: +20 100 311 3050 \r\n\r\nWebsite : www.etmsgroup.com <http://www.etmsgroup.com/> \r\n\r\n \r\n\r\nFrom: DURUCHART <chartering@duruchart.com> \r\nSent: Friday, 8 May 2026 11:21\r\nTo: ismail@duruchart.com\r\nSubject: Friday Fixture - Direct \r\n\r\n \r\n\r\nDURUCHART-Istanbul/TURKEY\r\n\r\n+90 216 492 97 13\r\n\r\nwww.duruchart.com <http://www.duruchart.com>\r\n\r\n\r\n \r\n\r\nGd day \r\n\r\n \r\n\r\nPls offer firm for blw;\r\n\r\n \r\n\r\nDIRECT CHRTRS \r\n\r\n \r\n\r\n1 Marmara/1 C.Med \r\n\r\n(need 2500/3000 box,boxlike )\r\n\r\n12/14 May\r\n\r\n5 ttl dys x \r\n\r\n2,5 addcom pus\r\n\r\n \r\n\r\n1 Marmara/1 Continent  \r\n\r\n3500/3800 dwcc, box/boxlike vsl\r\n\r\n15/18 May \r\n\r\nTtl dys \r\n\r\n2,5 addcom pus\r\n\r\n \r\n\r\nBest Regards/Ismail Akkas\r\n\r\nMobile:+90-543-6438828\r\n\r\nSkype : ismail-akkas\r\n\r\n \r\n\r\nIf you no longer wish to receive emails from us, reply to this message with\r\nthe subject  \"DELETE''\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Marmara",
+          "confidence": "confirmed",
+          "source_text": "1 Marmara/1 C.Med"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "DURUCHART-Istanbul/TURKEY"
+        },
+        "destination_port": {
+          "value": "Central Mediterranean (1 safe port)",
+          "confidence": "interpreted",
+          "source_text": "1 Marmara/1 C.Med"
+        },
+        "destination_country": {
+          "value": null
+        },
+        "cargo_description": {
+          "value": "Not specified — vessel solicitation for box/box-like vessel",
+          "confidence": "uncertain",
+          "source_text": "need 2500/3000 box,boxlike"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": null
+        },
+        "weight_mt_min": null,
+        "weight_mt_max": null,
+        "volume_cbm": {
+          "value": null
+        },
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "uncertain",
+          "source_text": "need 2500/3000 box,boxlike"
+        },
+        "container_type": null,
+        "quantity": {
+          "value": null
+        },
+        "incoterms": {
+          "value": null
+        },
+        "preferred_dates": {
+          "value": "12/14 May 2026",
+          "confidence": "confirmed",
+          "source_text": "12/14 May"
+        },
+        "laycan": {
+          "value": "12/14 May 2026",
+          "confidence": "confirmed",
+          "source_text": "12/14 May"
+        },
+        "loading_rate": {
+          "value": null
+        },
+        "loading_terms": {
+          "value": null
+        },
+        "discharge_rate": {
+          "value": null
+        },
+        "discharge_terms": {
+          "value": null
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2,5 addcom pus"
+        },
+        "commission_terms": {
+          "value": "2.5% address commission plus brokerage",
+          "confidence": "interpreted",
+          "source_text": "2,5 addcom pus"
+        },
+        "special_requirements": {
+          "value": "Box or box-like vessel required; cargo capacity 2500–3000 CBM/DWT; 5 total laytime days (SHEX)",
+          "confidence": "interpreted",
+          "source_text": "need 2500/3000 box,boxlike"
+        },
+        "stowage_factor": {
+          "value": null
+        },
+        "missing_info": [
+          "Cargo type/description not specified",
+          "Freight rate not indicated (firm offer requested)",
+          "Vessel DWCC/hold capacity unit ambiguous (2500/3000 box — CBM or DWT not clarified)",
+          "Discharge laytime terms not specified (only '5 ttl dys x' given — SHEX assumed from 'x' suffix)",
+          "Specific discharge port within C.Med not named"
+        ],
+        "unknown_terms": ["pus"]
+      },
+      {
+        "origin_port": {
+          "value": "Marmara",
+          "confidence": "confirmed",
+          "source_text": "1 Marmara/1 Continent"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "DURUCHART-Istanbul/TURKEY"
+        },
+        "destination_port": {
+          "value": "Continent (ARA Range — Amsterdam / Rotterdam / Antwerp)",
+          "confidence": "interpreted",
+          "source_text": "1 Marmara/1 Continent"
+        },
+        "destination_country": {
+          "value": "Netherlands / Belgium / Germany range",
+          "confidence": "interpreted",
+          "source_text": "1 Marmara/1 Continent"
+        },
+        "cargo_description": {
+          "value": "Not specified — vessel solicitation for box/box-like vessel",
+          "confidence": "uncertain",
+          "source_text": "3500/3800 dwcc, box/boxlike vsl"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 3800,
+          "confidence": "interpreted",
+          "source_text": "3500/3800 dwcc, box/boxlike vsl"
+        },
+        "weight_mt_min": 3500,
+        "weight_mt_max": 3800,
+        "volume_cbm": {
+          "value": null
+        },
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "uncertain",
+          "source_text": "3500/3800 dwcc, box/boxlike vsl"
+        },
+        "container_type": null,
+        "quantity": {
+          "value": null
+        },
+        "incoterms": {
+          "value": null
+        },
+        "preferred_dates": {
+          "value": "15/18 May 2026",
+          "confidence": "confirmed",
+          "source_text": "15/18 May"
+        },
+        "laycan": {
+          "value": "15/18 May 2026",
+          "confidence": "confirmed",
+          "source_text": "15/18 May"
+        },
+        "loading_rate": {
+          "value": null
+        },
+        "loading_terms": {
+          "value": null
+        },
+        "discharge_rate": {
+          "value": null
+        },
+        "discharge_terms": {
+          "value": null
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2,5 addcom pus"
+        },
+        "commission_terms": {
+          "value": "2.5% address commission plus brokerage",
+          "confidence": "interpreted",
+          "source_text": "2,5 addcom pus"
+        },
+        "special_requirements": {
+          "value": "Box or box-like vessel required; DWCC 3500–3800 MT; total laytime days basis (numeric not specified)",
+          "confidence": "interpreted",
+          "source_text": "3500/3800 dwcc, box/boxlike vsl"
+        },
+        "stowage_factor": {
+          "value": null
+        },
+        "missing_info": [
+          "Cargo type/description not specified",
+          "Freight rate not indicated (firm offer requested)",
+          "Number of total laytime days not specified ('Ttl dys' given without a figure)",
+          "Specific discharge port within Continent range not named",
+          "Loading/discharge terms (FIO, CQD, etc.) not stated"
+        ],
+        "unknown_terms": ["pus"]
+      }
+    ]
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "id": "etms-parse-cargo-043",
+  "source_email_id": "19e07d1b2ba77051",
+  "category": "numeric_edge",
+  "input": {
+    "subject": "FW: Hereke / Constanta",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:40:41.000Z",
+    "body": " \r\n\r\nFrom: circulation@feyzgroupchartering.com\r\n<circulation@feyzgroupchartering.com> \r\nSent: Wednesday, 6 May 2026 12:01\r\nTo: chartering@feyzgroup.com\r\nSubject: Hereke / Constanta\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPlease offer firm for;\r\n\r\n \r\n\r\nHereke / Constanta\r\n\r\n2500 mts (PC Strand,  Diameter :130-140 cm,  H: 80 cm UW: 3-3,5 MT, Tier\r\nlimit: 2 )\r\n\r\n11-13 May\r\n\r\n1000 x / 800 x\r\n\r\n3.75 addcom pus\r\n\r\n \r\n\r\n \r\n\r\nBest Regards\r\n\r\nAhmet YILDIZ\r\n\r\nChartering Dept.\r\n\r\nAs Broker Only\r\n\r\n \r\n\r\nAdress  : Altinsehir Mahallesi, Tavukcuyolu Caddesi Tomurcuk Sokak No 11\r\nIstanbul/Türkiye\r\n\r\nOffice    : 0090 216 527 00 31\r\n\r\nMobile  : 0090 534 430 00 40\r\n\r\nEmail      :  <mailto:chartering@feyzgroup.com> chartering@feyzgroup.com\r\n\r\nTeams   : Ahmet YILDIZ – FEYZ GROUP\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Hereke",
+          "confidence": "confirmed",
+          "source_text": "Hereke / Constanta"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "Hereke / Constanta"
+        },
+        "destination_port": {
+          "value": "Constanta",
+          "confidence": "confirmed",
+          "source_text": "Hereke / Constanta"
+        },
+        "destination_country": {
+          "value": "Romania",
+          "confidence": "confirmed",
+          "source_text": "Hereke / Constanta"
+        },
+        "cargo_description": {
+          "value": "PC Strand, Diameter: 130-140 cm, H: 80 cm, Unit Weight: 3-3.5 MT, Tier limit: 2",
+          "confidence": "confirmed",
+          "source_text": "PC Strand,  Diameter :130-140 cm,  H: 80 cm UW: 3-3,5 MT, Tier limit: 2"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 2500,
+          "confidence": "confirmed",
+          "source_text": "2500 mts"
+        },
+        "weight_mt_min": null,
+        "weight_mt_max": null,
+        "volume_cbm": null,
+        "dimensions": {
+          "value": "Diameter: 130-140 cm, H: 80 cm",
+          "confidence": "confirmed",
+          "source_text": "Diameter :130-140 cm,  H: 80 cm"
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "interpreted",
+          "source_text": "PC Strand,  Diameter :130-140 cm,  H: 80 cm UW: 3-3,5 MT, Tier limit: 2"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "11-13 May 2026",
+          "confidence": "confirmed",
+          "source_text": "11-13 May"
+        },
+        "laycan": {
+          "value": "11/13 May 2026",
+          "confidence": "confirmed",
+          "source_text": "11-13 May"
+        },
+        "loading_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "1000 x / 800 x"
+        },
+        "loading_terms": {
+          "value": null,
+          "confidence": "uncertain",
+          "source_text": "1000 x / 800 x"
+        },
+        "discharge_rate": {
+          "value": 800,
+          "confidence": "confirmed",
+          "source_text": "1000 x / 800 x"
+        },
+        "discharge_terms": {
+          "value": null,
+          "confidence": "uncertain",
+          "source_text": "1000 x / 800 x"
+        },
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75 addcom pus"
+        },
+        "commission_terms": {
+          "value": "Address commission, plus (additional brokerage TBC)",
+          "confidence": "uncertain",
+          "source_text": "3.75 addcom pus"
+        },
+        "special_requirements": {
+          "value": "Unit weight 3-3.5 MT per coil; tier limit 2 (stacking limit)",
+          "confidence": "confirmed",
+          "source_text": "UW: 3-3,5 MT, Tier limit: 2"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Loading/discharge terms (FIO, FIOST, liner, etc.) not specified",
+          "Commission structure unclear — '3.75 addcom pus' suggests address commission of 3.75% but 'pus' is ambiguous (possibly 'plus' brokerage on top, or a typo)",
+          "Number of coils/pieces not stated (quantity unknown)",
+          "Vessel size/type requirement not stated",
+          "Freight basis (lump sum or per MT) not specified"
+        ],
+        "unknown_terms": ["pus"]
+      }
+    ]
+  }
+}

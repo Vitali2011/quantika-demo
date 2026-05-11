@@ -1,0 +1,228 @@
+{
+  "id": "etms-parse-cargo-057",
+  "source_email_id": "19e07d75e8a30c1c",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: FIRM CARGOES",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:46:52.000Z",
+    "body": " \r\n\r\nFrom: Oner Tokcan / Nautical Bulk Carriers <oner.tokcan@nbcarriers.com> \r\nSent: Wednesday, 6 May 2026 09:15\r\nTo: Oner Tokcan / Nautical Bulk Carriers <oner.tokcan@nbcarriers.com>\r\nSubject: FIRM CARGOES \r\n\r\n \r\n\r\nDear All / Oner\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPls offer firm\r\n\r\n \r\n\r\nNEMRUT / SAGUNTO\r\n\r\n-11,375mts 2PCT MOLCHOPT HRC + HRCPO UW ABT 10/27TS  \r\n\r\n-L/C 15 / 18 MAY 2026\r\n\r\n-2000MTS SSHEX EIU / 2000MTS SSHEX EIU \r\n-MAX 25 YRS (TRY MORE) \r\n-3.75PCT ADDCOMPUS \r\n\r\n \r\n\r\n+ + + + +\r\n\r\n \r\n\r\n-NEMRUT / CONSTANTZA\r\n\r\n-6,400mts 2PCT MOLCHOPT HRC + HRCPO + HRCTD UW ABT 10/27TS + HRS\r\n\r\n-L/C 22 / 25 MAY 2026\r\n\r\n-1500MTS SSHEX EIU / 1500MTS SSHEX EIU \r\n-MAX 25 YRS (TRY MORE) \r\n-3.75PCT ADDCOMPUS\r\n\r\n \r\n\r\n \r\n\r\nBest regards\r\nOner Tokcan\r\nNautical Bulk Carriers S.A.\r\n\r\nVaryap Meridian I Blok,14th Floor, Atasehir, Istanbul - Turkey\r\nMob: +90 506 507 4730\r\n\r\nTel: +90 216 639 0228\r\n\r\nEmail:  <mailto:oner.tokcan@nbcarriers.com> oner.tokcan@nbcarriers.com\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Nemrut",
+          "confidence": "confirmed",
+          "source_text": "NEMRUT / SAGUNTO"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "interpreted",
+          "source_text": "NEMRUT / SAGUNTO"
+        },
+        "destination_port": {
+          "value": "Sagunto",
+          "confidence": "confirmed",
+          "source_text": "NEMRUT / SAGUNTO"
+        },
+        "destination_country": {
+          "value": "Spain",
+          "confidence": "interpreted",
+          "source_text": "NEMRUT / SAGUNTO"
+        },
+        "cargo_description": {
+          "value": "HRC (Hot Rolled Coils) + HRCPO, unit weight approximately 10/27 metric tons per piece",
+          "confidence": "interpreted",
+          "source_text": "11,375mts 2PCT MOLCHOPT HRC + HRCPO UW ABT 10/27TS"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 11375,
+          "confidence": "confirmed",
+          "source_text": "11,375mts 2PCT MOLCHOPT HRC + HRCPO UW ABT 10/27TS"
+        },
+        "weight_mt_min": {
+          "value": 11147.5,
+          "confidence": "interpreted",
+          "source_text": "11,375mts 2PCT MOLCHOPT"
+        },
+        "weight_mt_max": {
+          "value": 11602.5,
+          "confidence": "interpreted",
+          "source_text": "11,375mts 2PCT MOLCHOPT"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "interpreted",
+          "source_text": "HRC + HRCPO UW ABT 10/27TS"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Laycan 15/18 May 2026",
+          "confidence": "confirmed",
+          "source_text": "L/C 15 / 18 MAY 2026"
+        },
+        "laycan": {
+          "value": "15/18 May 2026",
+          "confidence": "confirmed",
+          "source_text": "L/C 15 / 18 MAY 2026"
+        },
+        "loading_rate": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "2000MTS SSHEX EIU / 2000MTS SSHEX EIU"
+        },
+        "loading_terms": {
+          "value": "SSHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "2000MTS SSHEX EIU / 2000MTS SSHEX EIU"
+        },
+        "discharge_rate": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "2000MTS SSHEX EIU / 2000MTS SSHEX EIU"
+        },
+        "discharge_terms": {
+          "value": "SSHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "2000MTS SSHEX EIU / 2000MTS SSHEX EIU"
+        },
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75PCT ADDCOMPUS"
+        },
+        "commission_terms": {
+          "value": "Address Commission plus brokerage (ADDCOMPUS)",
+          "confidence": "interpreted",
+          "source_text": "3.75PCT ADDCOMPUS"
+        },
+        "special_requirements": {
+          "value": "Maximum vessel age 25 years (try older vessels as well); unit weight approximately 10–27 tons per piece (UW ABT 10/27TS)",
+          "confidence": "confirmed",
+          "source_text": "MAX 25 YRS (TRY MORE)"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Freight rate not specified",
+          "Exact meaning of ADDCOMPUS unclear — assumed 'address commission plus brokerage' but requires confirmation",
+          "HRCPO cargo grade not defined — assumed Hot Rolled Coil variant",
+          "Whether 2% MOLCHOPT tolerance applies to loading or owner's option not clarified"
+        ],
+        "unknown_terms": ["ADDCOMPUS"]
+      },
+      {
+        "origin_port": {
+          "value": "Nemrut",
+          "confidence": "confirmed",
+          "source_text": "NEMRUT / CONSTANTZA"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "interpreted",
+          "source_text": "NEMRUT / CONSTANTZA"
+        },
+        "destination_port": {
+          "value": "Constanta",
+          "confidence": "confirmed",
+          "source_text": "NEMRUT / CONSTANTZA"
+        },
+        "destination_country": {
+          "value": "Romania",
+          "confidence": "interpreted",
+          "source_text": "NEMRUT / CONSTANTZA"
+        },
+        "cargo_description": {
+          "value": "HRC (Hot Rolled Coils) + HRCPO + HRCTD, unit weight approximately 10/27 metric tons per piece, plus HRS",
+          "confidence": "interpreted",
+          "source_text": "6,400mts 2PCT MOLCHOPT HRC + HRCPO + HRCTD UW ABT 10/27TS + HRS"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 6400,
+          "confidence": "confirmed",
+          "source_text": "6,400mts 2PCT MOLCHOPT HRC + HRCPO + HRCTD UW ABT 10/27TS + HRS"
+        },
+        "weight_mt_min": {
+          "value": 6272,
+          "confidence": "interpreted",
+          "source_text": "6,400mts 2PCT MOLCHOPT"
+        },
+        "weight_mt_max": {
+          "value": 6528,
+          "confidence": "interpreted",
+          "source_text": "6,400mts 2PCT MOLCHOPT"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "interpreted",
+          "source_text": "HRC + HRCPO + HRCTD UW ABT 10/27TS + HRS"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Laycan 22/25 May 2026",
+          "confidence": "confirmed",
+          "source_text": "L/C 22 / 25 MAY 2026"
+        },
+        "laycan": {
+          "value": "22/25 May 2026",
+          "confidence": "confirmed",
+          "source_text": "L/C 22 / 25 MAY 2026"
+        },
+        "loading_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "1500MTS SSHEX EIU / 1500MTS SSHEX EIU"
+        },
+        "loading_terms": {
+          "value": "SSHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "1500MTS SSHEX EIU / 1500MTS SSHEX EIU"
+        },
+        "discharge_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "1500MTS SSHEX EIU / 1500MTS SSHEX EIU"
+        },
+        "discharge_terms": {
+          "value": "SSHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "1500MTS SSHEX EIU / 1500MTS SSHEX EIU"
+        },
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75PCT ADDCOMPUS"
+        },
+        "commission_terms": {
+          "value": "Address Commission plus brokerage (ADDCOMPUS)",
+          "confidence": "interpreted",
+          "source_text": "3.75PCT ADDCOMPUS"
+        },
+        "special_requirements": {
+          "value": "Maximum vessel age 25 years (try older vessels as well); unit weight approximately 10–27 tons per piece (UW ABT 10/27TS)",
+          "confidence": "confirmed",
+          "source_text": "MAX 25 YRS (TRY MORE)"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Freight rate not specified",
+          "Exact meaning of ADDCOMPUS unclear — assumed 'address commission plus brokerage' but requires confirmation",
+          "HRCPO and HRCTD cargo grades not defined — assumed Hot Rolled Coil variants",
+          "HRS cargo type not defined — assumed Hot Rolled Steel (sheet/strip)",
+          "Whether 2% MOLCHOPT tolerance applies to loading or owner's option not clarified"
+        ],
+        "unknown_terms": ["ADDCOMPUS", "HRCTD", "HRS"]
+      }
+    ]
+  }
+}

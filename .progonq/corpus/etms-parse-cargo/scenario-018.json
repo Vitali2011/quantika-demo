@@ -1,0 +1,408 @@
+{
+  "id": "etms-parse-cargo-018",
+  "source_email_id": "19e07c809393ff78",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: Turkish Steels",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:30:07.000Z",
+    "body": " \r\n\r\nFrom: DURUCHART <chartering@duruchart.com> \r\nSent: Thursday, 7 May 2026 12:58\r\nTo: 'DURUCHART' <mehmetali@duruchart.com>\r\nSubject: Turkish Steels\r\n\r\n \r\n\r\nDURUCHART/Istanbul                                       \r\n\r\n+90 216 492 97 13\r\n\r\n \r\n\r\nGood day \r\n\r\n \r\n\r\n\r\nPls offer firm for;\r\n\r\n \r\n\r\nNemrut / Liverpool\r\n\r\n2.720 mt 2pct molchopt hrc uw abt 10/27ts\r\n\r\n15 / 18 may\r\n\r\n1250/ 1500 \r\n\r\n3.75  add pus\r\n\r\n*max 25 yrs (try more) \r\n\r\n \r\n\r\nNemrut / Constantza\r\n\r\n6.500 mt 2pct molchopt hrc + hrcpo + hrctd uw abt 10/27ts + hrs\r\n\r\n22 / 25 may\r\n\r\n1500/ 1500 \r\n\r\n3.75 add pus\r\n\r\n*max 25 yrs (try more)\r\n\r\n \r\n\r\nHereke/Birkenhead\r\n\r\n2000 mt Wire Mesh (Abt 4500 cbm)\r\n\r\n17/25 May\r\n\r\n5 ttl days\r\n\r\n3.75 add pus\r\n\r\n \r\n\r\nCombinable with\r\n\r\n \r\n\r\nHereke/Greenore\r\n\r\n1000 mt Wire Mesh (Abt 2500 cbm)\r\n\r\n17/25 May\r\n\r\n2 ttl days\r\n\r\n3.75 add pus\r\n\r\n \r\n\r\nBest Regards\r\n\r\nMehmet Ali Lapaoglu\r\n\r\nM:+905354084626\r\n\r\n \r\n\r\nIf you no longer wish to receive emails from us, reply to this message with\r\nthe subject  \"DELETE\"\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Nemrut Bay",
+          "confidence": "confirmed",
+          "source_text": "Nemrut / Liverpool"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "Nemrut / Liverpool"
+        },
+        "destination_port": {
+          "value": "Liverpool",
+          "confidence": "confirmed",
+          "source_text": "Nemrut / Liverpool"
+        },
+        "destination_country": {
+          "value": "United Kingdom",
+          "confidence": "confirmed",
+          "source_text": "Nemrut / Liverpool"
+        },
+        "cargo_description": {
+          "value": "Hot Rolled Coils (HRC), unit weight approximately 10–27 tons per piece, 2% MOLCHOPT",
+          "confidence": "interpreted",
+          "source_text": "2.720 mt 2pct molchopt hrc uw abt 10/27ts"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 2720,
+          "confidence": "confirmed",
+          "source_text": "2.720 mt 2pct molchopt"
+        },
+        "weight_mt_min": {
+          "value": 2665,
+          "confidence": "interpreted",
+          "source_text": "2.720 mt 2pct molchopt"
+        },
+        "weight_mt_max": {
+          "value": 2774,
+          "confidence": "interpreted",
+          "source_text": "2.720 mt 2pct molchopt"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "interpreted",
+          "source_text": "hrc uw abt 10/27ts"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "15–18 May 2026",
+          "confidence": "confirmed",
+          "source_text": "15 / 18 may"
+        },
+        "laycan": {
+          "value": "15/18 May 2026",
+          "confidence": "confirmed",
+          "source_text": "15 / 18 may"
+        },
+        "loading_rate": {
+          "value": 1250,
+          "confidence": "confirmed",
+          "source_text": "1250/ 1500"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "1250/ 1500"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75  add pus"
+        },
+        "commission_terms": {
+          "value": "address commission",
+          "confidence": "interpreted",
+          "source_text": "3.75  add pus"
+        },
+        "special_requirements": {
+          "value": "Max vessel age 25 years (try older)",
+          "confidence": "confirmed",
+          "source_text": "*max 25 yrs (try more)"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Freight rate not specified — firm offer requested",
+          "Loading/discharge terms (FIO, FIOST, liner, etc.) not stated",
+          "Vessel gear requirements not stated",
+          "Meaning of 'pus' in commission clause unclear — flagged for review"
+        ],
+        "unknown_terms": ["pus"]
+      },
+      {
+        "origin_port": {
+          "value": "Nemrut Bay",
+          "confidence": "confirmed",
+          "source_text": "Nemrut / Constantza"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "Nemrut / Constantza"
+        },
+        "destination_port": {
+          "value": "Constanța",
+          "confidence": "confirmed",
+          "source_text": "Nemrut / Constantza"
+        },
+        "destination_country": {
+          "value": "Romania",
+          "confidence": "confirmed",
+          "source_text": "Nemrut / Constantza"
+        },
+        "cargo_description": {
+          "value": "Hot Rolled Coils (HRC) + HRC Pickled & Oiled (HRCPO) + HRC Trimmed & Dried (HRCTD), unit weight approximately 10–27 tons per piece, plus Hot Rolled Sheets (HRS); 2% MOLCHOPT",
+          "confidence": "interpreted",
+          "source_text": "6.500 mt 2pct molchopt hrc + hrcpo + hrctd uw abt 10/27ts + hrs"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 6500,
+          "confidence": "confirmed",
+          "source_text": "6.500 mt 2pct molchopt"
+        },
+        "weight_mt_min": {
+          "value": 6370,
+          "confidence": "interpreted",
+          "source_text": "6.500 mt 2pct molchopt"
+        },
+        "weight_mt_max": {
+          "value": 6630,
+          "confidence": "interpreted",
+          "source_text": "6.500 mt 2pct molchopt"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "interpreted",
+          "source_text": "hrc + hrcpo + hrctd uw abt 10/27ts + hrs"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "22–25 May 2026",
+          "confidence": "confirmed",
+          "source_text": "22 / 25 may"
+        },
+        "laycan": {
+          "value": "22/25 May 2026",
+          "confidence": "confirmed",
+          "source_text": "22 / 25 may"
+        },
+        "loading_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "1500/ 1500"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "1500/ 1500"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75 add pus"
+        },
+        "commission_terms": {
+          "value": "address commission",
+          "confidence": "interpreted",
+          "source_text": "3.75 add pus"
+        },
+        "special_requirements": {
+          "value": "Max vessel age 25 years (try older)",
+          "confidence": "confirmed",
+          "source_text": "*max 25 yrs (try more)"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Freight rate not specified — firm offer requested",
+          "Loading/discharge terms (FIO, FIOST, liner, etc.) not stated",
+          "Exact cargo split between HRC, HRCPO, HRCTD and HRS not specified",
+          "Vessel gear requirements not stated",
+          "Meaning of 'pus' in commission clause unclear — flagged for review"
+        ],
+        "unknown_terms": ["pus"]
+      },
+      {
+        "origin_port": {
+          "value": "Hereke",
+          "confidence": "confirmed",
+          "source_text": "Hereke/Birkenhead"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "Hereke/Birkenhead"
+        },
+        "destination_port": {
+          "value": "Birkenhead",
+          "confidence": "confirmed",
+          "source_text": "Hereke/Birkenhead"
+        },
+        "destination_country": {
+          "value": "United Kingdom",
+          "confidence": "confirmed",
+          "source_text": "Hereke/Birkenhead"
+        },
+        "cargo_description": {
+          "value": "Wire Mesh",
+          "confidence": "confirmed",
+          "source_text": "2000 mt Wire Mesh (Abt 4500 cbm)"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "2000 mt Wire Mesh (Abt 4500 cbm)"
+        },
+        "weight_mt_min": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "2000 mt Wire Mesh (Abt 4500 cbm)"
+        },
+        "weight_mt_max": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "2000 mt Wire Mesh (Abt 4500 cbm)"
+        },
+        "volume_cbm": {
+          "value": 4500,
+          "confidence": "interpreted",
+          "source_text": "Abt 4500 cbm"
+        },
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "2000 mt Wire Mesh (Abt 4500 cbm)"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "17–25 May 2026",
+          "confidence": "confirmed",
+          "source_text": "17/25 May"
+        },
+        "laycan": {
+          "value": "17/25 May 2026",
+          "confidence": "confirmed",
+          "source_text": "17/25 May"
+        },
+        "loading_rate": null,
+        "loading_terms": null,
+        "discharge_rate": null,
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75 add pus"
+        },
+        "commission_terms": {
+          "value": "address commission",
+          "confidence": "interpreted",
+          "source_text": "3.75 add pus"
+        },
+        "special_requirements": {
+          "value": "5 total laytime days; combinable with Hereke/Greenore Wire Mesh parcel",
+          "confidence": "confirmed",
+          "source_text": "5 ttl days"
+        },
+        "stowage_factor": {
+          "value": 2.25,
+          "confidence": "interpreted",
+          "source_text": "2000 mt Wire Mesh (Abt 4500 cbm)"
+        },
+        "missing_info": [
+          "Freight rate not specified — firm offer requested",
+          "Loading/discharge terms not stated",
+          "No vessel age restriction stated for this parcel (unlike steel coil inquiries)",
+          "Meaning of 'pus' in commission clause unclear — flagged for review"
+        ],
+        "unknown_terms": ["pus"]
+      },
+      {
+        "origin_port": {
+          "value": "Hereke",
+          "confidence": "confirmed",
+          "source_text": "Hereke/Greenore"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "Hereke/Greenore"
+        },
+        "destination_port": {
+          "value": "Greenore",
+          "confidence": "confirmed",
+          "source_text": "Hereke/Greenore"
+        },
+        "destination_country": {
+          "value": "Ireland",
+          "confidence": "confirmed",
+          "source_text": "Hereke/Greenore"
+        },
+        "cargo_description": {
+          "value": "Wire Mesh",
+          "confidence": "confirmed",
+          "source_text": "1000 mt Wire Mesh (Abt 2500 cbm)"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "1000 mt Wire Mesh (Abt 2500 cbm)"
+        },
+        "weight_mt_min": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "1000 mt Wire Mesh (Abt 2500 cbm)"
+        },
+        "weight_mt_max": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "1000 mt Wire Mesh (Abt 2500 cbm)"
+        },
+        "volume_cbm": {
+          "value": 2500,
+          "confidence": "interpreted",
+          "source_text": "Abt 2500 cbm"
+        },
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "1000 mt Wire Mesh (Abt 2500 cbm)"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "17–25 May 2026",
+          "confidence": "confirmed",
+          "source_text": "17/25 May"
+        },
+        "laycan": {
+          "value": "17/25 May 2026",
+          "confidence": "confirmed",
+          "source_text": "17/25 May"
+        },
+        "loading_rate": null,
+        "loading_terms": null,
+        "discharge_rate": null,
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75 add pus"
+        },
+        "commission_terms": {
+          "value": "address commission",
+          "confidence": "interpreted",
+          "source_text": "3.75 add pus"
+        },
+        "special_requirements": {
+          "value": "2 total laytime days; combinable with Hereke/Birkenhead Wire Mesh parcel",
+          "confidence": "confirmed",
+          "source_text": "2 ttl days"
+        },
+        "stowage_factor": {
+          "value": 2.5,
+          "confidence": "interpreted",
+          "source_text": "1000 mt Wire Mesh (Abt 2500 cbm)"
+        },
+        "missing_info": [
+          "Freight rate not specified — firm offer requested",
+          "Loading/discharge terms not stated",
+          "No vessel age restriction stated for this parcel",
+          "Meaning of 'pus' in commission clause unclear — flagged for review"
+        ],
+        "unknown_terms": ["pus"]
+      }
+    ]
+  }
+}

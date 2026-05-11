@@ -1,0 +1,219 @@
+{
+  "id": "etms-parse-cargo-027",
+  "source_email_id": "19e07cd18529fb77",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: Nemrut / Djibouti + Berbera abt 8-11k mts steel products stw dwt",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:35:39.000Z",
+    "body": " \r\n\r\nFrom: BA Chartering Istanbul <chartering@bachartering.com> \r\nSent: Wednesday, 6 May 2026 15:40\r\nTo: Mustafa SAY - BA Chartering Istanbul <mustafa@bachartering.com>\r\nSubject: Nemrut / Djibouti + Berbera abt 8-11k mts steel products stw dwt \r\n\r\n \r\n\r\nDear All,\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPlease advise your firm interest for our direct / close chrtrs : \r\n\r\n \r\n\r\nMin 8.000 mts up to 9.000 mts in chopt Steel Products stw = dwt\r\nNemrut / 1 Djibouti or 1 Tadjourah in chopt\r\n1500x / Liner out\r\n07/10 May ( can try dates ) \r\n2.5 pct comm \r\n\r\nto be combinable or not with : \r\n\r\n2800 mts %10 Steel Products stw = dwt\r\nNemrut / Barbera Somalia\r\n1000x / 500x\r\n07/10 May ( can try dates ) \r\n2.5 pct comm \r\n\r\n \r\n\r\nBest Regards\r\n\r\n \r\n\r\n\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Nemrut",
+          "confidence": "confirmed",
+          "source_text": "Nemrut / 1 Djibouti or 1 Tadjourah in chopt"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "interpreted",
+          "source_text": "Nemrut / 1 Djibouti or 1 Tadjourah in chopt"
+        },
+        "destination_port": {
+          "value": "Djibouti or Tadjourah (charterers option)",
+          "confidence": "confirmed",
+          "source_text": "Nemrut / 1 Djibouti or 1 Tadjourah in chopt"
+        },
+        "destination_country": {
+          "value": "Djibouti",
+          "confidence": "confirmed",
+          "source_text": "Nemrut / 1 Djibouti or 1 Tadjourah in chopt"
+        },
+        "cargo_description": {
+          "value": "Steel Products, stowage equals deadweight",
+          "confidence": "confirmed",
+          "source_text": "Min 8.000 mts up to 9.000 mts in chopt Steel Products stw = dwt"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 9000,
+          "confidence": "interpreted",
+          "source_text": "Min 8.000 mts up to 9.000 mts in chopt Steel Products stw = dwt"
+        },
+        "weight_mt_min": {
+          "value": 8000,
+          "confidence": "confirmed",
+          "source_text": "Min 8.000 mts up to 9.000 mts in chopt Steel Products stw = dwt"
+        },
+        "weight_mt_max": {
+          "value": 9000,
+          "confidence": "confirmed",
+          "source_text": "Min 8.000 mts up to 9.000 mts in chopt Steel Products stw = dwt"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "Steel Products stw = dwt"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "07/10 May 2026 (flexible)",
+          "confidence": "interpreted",
+          "source_text": "07/10 May ( can try dates )"
+        },
+        "laycan": {
+          "value": "07/10 May 2026",
+          "confidence": "interpreted",
+          "source_text": "07/10 May ( can try dates )"
+        },
+        "loading_rate": null,
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "1500x / Liner out"
+        },
+        "discharge_terms": {
+          "value": "Liner Out",
+          "confidence": "confirmed",
+          "source_text": "1500x / Liner out"
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5 pct comm"
+        },
+        "commission_terms": {
+          "value": null,
+          "confidence": "uncertain",
+          "source_text": "2.5 pct comm"
+        },
+        "special_requirements": {
+          "value": "Cargo combinable or not with second lot (Berbera parcel) at charterers option; stowage factor equals vessel DWT",
+          "confidence": "confirmed",
+          "source_text": "to be combinable or not with :"
+        },
+        "stowage_factor": {
+          "value": "stw = dwt (stowage factor allows full DWT utilisation)",
+          "confidence": "confirmed",
+          "source_text": "Steel Products stw = dwt"
+        },
+        "missing_info": [
+          "Loading rate / loading terms not specified",
+          "Freight rate not mentioned",
+          "Vessel size / type requirement not explicitly stated",
+          "Demurrage / despatch rate not mentioned",
+          "Commission split (address commission vs brokerage) not specified"
+        ]
+      },
+      {
+        "origin_port": {
+          "value": "Nemrut",
+          "confidence": "confirmed",
+          "source_text": "Nemrut / Barbera Somalia"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "interpreted",
+          "source_text": "Nemrut / Barbera Somalia"
+        },
+        "destination_port": {
+          "value": "Berbera",
+          "confidence": "interpreted",
+          "source_text": "Nemrut / Barbera Somalia"
+        },
+        "destination_country": {
+          "value": "Somalia",
+          "confidence": "confirmed",
+          "source_text": "Nemrut / Barbera Somalia"
+        },
+        "cargo_description": {
+          "value": "Steel Products, stowage equals deadweight",
+          "confidence": "confirmed",
+          "source_text": "2800 mts %10 Steel Products stw = dwt"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 2800,
+          "confidence": "confirmed",
+          "source_text": "2800 mts %10 Steel Products stw = dwt"
+        },
+        "weight_mt_min": {
+          "value": 2520,
+          "confidence": "interpreted",
+          "source_text": "2800 mts %10 Steel Products stw = dwt"
+        },
+        "weight_mt_max": {
+          "value": 3080,
+          "confidence": "interpreted",
+          "source_text": "2800 mts %10 Steel Products stw = dwt"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "2800 mts %10 Steel Products stw = dwt"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "07/10 May 2026 (flexible)",
+          "confidence": "interpreted",
+          "source_text": "07/10 May ( can try dates )"
+        },
+        "laycan": {
+          "value": "07/10 May 2026",
+          "confidence": "interpreted",
+          "source_text": "07/10 May ( can try dates )"
+        },
+        "loading_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "1000x / 500x"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 500,
+          "confidence": "confirmed",
+          "source_text": "1000x / 500x"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5 pct comm"
+        },
+        "commission_terms": {
+          "value": null,
+          "confidence": "uncertain",
+          "source_text": "2.5 pct comm"
+        },
+        "special_requirements": {
+          "value": "This parcel may be combined or not with the Djibouti/Tadjourah parcel at charterers option; stowage factor equals vessel DWT",
+          "confidence": "confirmed",
+          "source_text": "to be combinable or not with :"
+        },
+        "stowage_factor": {
+          "value": "stw = dwt (stowage factor allows full DWT utilisation)",
+          "confidence": "confirmed",
+          "source_text": "2800 mts %10 Steel Products stw = dwt"
+        },
+        "missing_info": [
+          "Freight rate not mentioned",
+          "Vessel size / type requirement not explicitly stated",
+          "Demurrage / despatch rate not mentioned",
+          "Loading and discharge laytime cost-allocation terms (FIO, FIOST, CQD, etc.) not specified",
+          "Commission split (address commission vs brokerage) not specified"
+        ]
+      }
+    ]
+  }
+}

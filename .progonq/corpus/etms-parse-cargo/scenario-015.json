@@ -1,0 +1,110 @@
+{
+  "id": "etms-parse-cargo-015",
+  "source_email_id": "19e07c733f3b71ae",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: Varna / Alex",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:29:13.000Z",
+    "body": " \r\n\r\nFrom: DURUCHART <chartering@duruchart.com> \r\nSent: Thursday, 7 May 2026 14:55\r\nTo: 'DURUCHART' <mehmetali@duruchart.com>\r\nSubject: Varna / Alex \r\n\r\n \r\n\r\nDURUCHART/Istanbul                                       \r\n\r\n+90 216 492 97 13\r\n\r\n \r\n\r\nGood day \r\n\r\n \r\n\r\n\r\nPls offer firm for;\r\n\r\n \r\n\r\nVarna West/Alexandria\r\n\r\nabt 10/10.500 mt soda dense bulk stw aabt 1,1 \r\n\r\n14/16 may\r\n\r\n7 ttl days \r\n\r\n5 pct \r\n\r\nneex box/double skinned, gless ok\r\n\r\n \r\n\r\n \r\n\r\nBest Regards\r\n\r\nMehmet Ali Lapaoglu\r\n\r\nM:+905354084626\r\n\r\n \r\n\r\nIf you no longer wish to receive emails from us, reply to this message with\r\nthe subject  \"DELETE\"\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Varna West",
+          "confidence": "confirmed",
+          "source_text": "Varna West/Alexandria"
+        },
+        "origin_country": {
+          "value": "Bulgaria",
+          "confidence": "confirmed",
+          "source_text": "Varna West/Alexandria"
+        },
+        "destination_port": {
+          "value": "Alexandria",
+          "confidence": "confirmed",
+          "source_text": "Varna West/Alexandria"
+        },
+        "destination_country": {
+          "value": "Egypt",
+          "confidence": "confirmed",
+          "source_text": "Varna West/Alexandria"
+        },
+        "cargo_description": {
+          "value": "Soda ash dense, bulk",
+          "confidence": "confirmed",
+          "source_text": "soda dense bulk"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 10500,
+          "confidence": "interpreted",
+          "source_text": "abt 10/10.500 mt soda dense bulk"
+        },
+        "weight_mt_min": {
+          "value": 10000,
+          "confidence": "interpreted",
+          "source_text": "abt 10/10.500 mt soda dense bulk"
+        },
+        "weight_mt_max": {
+          "value": 10500,
+          "confidence": "interpreted",
+          "source_text": "abt 10/10.500 mt soda dense bulk"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "soda dense bulk"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "14–16 May 2026",
+          "confidence": "confirmed",
+          "source_text": "14/16 may"
+        },
+        "laycan": {
+          "value": "14/16 May 2026",
+          "confidence": "confirmed",
+          "source_text": "14/16 may"
+        },
+        "loading_rate": null,
+        "loading_terms": null,
+        "discharge_rate": null,
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 5,
+          "confidence": "confirmed",
+          "source_text": "5 pct"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "5 pct"
+        },
+        "special_requirements": {
+          "value": "Box-shaped hold required; double-skinned vessel required; gearless vessel acceptable; total laytime 7 days",
+          "confidence": "interpreted",
+          "source_text": "7 ttl days neex box/double skinned, gless ok"
+        },
+        "stowage_factor": {
+          "value": 1.1,
+          "confidence": "interpreted",
+          "source_text": "stw aabt 1,1"
+        },
+        "missing_info": [
+          "Loading/discharge rates or laytime terms (FIO, CQD, etc.) not specified — only total laytime days given",
+          "No freight rate indication requested or provided",
+          "Demurrage/despatch rate not mentioned"
+        ],
+        "unknown_terms": [
+          "neex — unrecognized abbreviation; possibly a vessel type or trade exclusion qualifier (e.g. 'not exceeding'?); flagged for human review"
+        ]
+      }
+    ]
+  }
+}

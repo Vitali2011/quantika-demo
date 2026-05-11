@@ -1,0 +1,131 @@
+{
+  "id": "etms-parse-cargo-054",
+  "source_email_id": "19e07d5b25766951",
+  "category": "single_cargo",
+  "input": {
+    "subject": "FW: 12.000 mts agris TUNISIA / DAKAR",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:45:02.000Z",
+    "body": " \r\n\r\n \r\n\r\nThanks & Best Regards,\r\n\r\nManaging Director\r\n\r\nSherif Shaaban\r\n\r\n\r\n16 Fawzy Fahmy Gendy St., 21131\r\n\r\nEl Raml Station, Alexandria, Egypt \r\n\r\nTel: +2 03 4865320 - Fax: +2 03 4872855\r\n\r\nMob: +20 100 311 3050 \r\n\r\nWebsite :  <http://www.etmsgroup.com/> www.etmsgroup.com\r\n\r\n \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Friday, 8 May 2026 11:24\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: 12.000 mts agris TUNISIA / DAKAR\r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n\r\nGd day \r\n\r\n \r\n\r\nPls propose described MAX 25 years ladies for the fol firm cargo \r\n\r\n\r\nSfax, Tunisia  / Dakar \r\n\r\nmin 12.000 mts Olive pomace stw factor 58’ (non IMO)\r\n\r\n2000t/ 4000t \r\n\r\n20-30 MAY\r\n\r\n3.75% ttl here\r\n\r\n\r\n\r\n\r\n\r\nBEST RGRDS\r\nTASOS KOUMANIS ( mob. 00306937322574)\r\nE MAILS : chartering@niavigrains.gr <mailto:chartering@niavigrains.gr>  \r\n\r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr <http://www.niavigrains.gr> \r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\nSKYPE : NIAVIGRAINS Tasos\r\nLinkedIn: www.linkedin.com/in/tasoskoumanis <http://www.linkedin.com/in/tasoskoumanis> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Sfax",
+          "confidence": "confirmed",
+          "source_text": "Sfax, Tunisia  / Dakar"
+        },
+        "origin_country": {
+          "value": "Tunisia",
+          "confidence": "confirmed",
+          "source_text": "Sfax, Tunisia  / Dakar"
+        },
+        "destination_port": {
+          "value": "Dakar",
+          "confidence": "confirmed",
+          "source_text": "Sfax, Tunisia  / Dakar"
+        },
+        "destination_country": {
+          "value": "Senegal",
+          "confidence": "interpreted",
+          "source_text": "Sfax, Tunisia  / Dakar"
+        },
+        "cargo_description": {
+          "value": "Olive pomace, stowage factor 58 CBM/MT, non-IMO",
+          "confidence": "confirmed",
+          "source_text": "min 12.000 mts Olive pomace stw factor 58' (non IMO)"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 12000,
+          "confidence": "interpreted",
+          "source_text": "min 12.000 mts Olive pomace"
+        },
+        "weight_mt_min": {
+          "value": 12000,
+          "confidence": "interpreted",
+          "source_text": "min 12.000 mts Olive pomace"
+        },
+        "weight_mt_max": {
+          "value": null
+        },
+        "volume_cbm": {
+          "value": null
+        },
+        "dimensions": {
+          "value": null
+        },
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "interpreted",
+          "source_text": "min 12.000 mts Olive pomace stw factor 58' (non IMO)"
+        },
+        "container_type": {
+          "value": null
+        },
+        "quantity": {
+          "value": null
+        },
+        "incoterms": {
+          "value": null
+        },
+        "preferred_dates": {
+          "value": "20-30 May 2026",
+          "confidence": "confirmed",
+          "source_text": "20-30 MAY"
+        },
+        "laycan": {
+          "value": "20/30 May 2026",
+          "confidence": "confirmed",
+          "source_text": "20-30 MAY"
+        },
+        "loading_rate": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "2000t/ 4000t"
+        },
+        "loading_terms": {
+          "value": null
+        },
+        "discharge_rate": {
+          "value": 4000,
+          "confidence": "confirmed",
+          "source_text": "2000t/ 4000t"
+        },
+        "discharge_terms": {
+          "value": null
+        },
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75% ttl here"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "3.75% ttl here"
+        },
+        "special_requirements": {
+          "value": ["Vessel max 25 years old", "Non-IMO cargo", "Stowage factor 58 CBM/MT"],
+          "confidence": "confirmed",
+          "source_text": "Pls propose described MAX 25 years ladies for the fol firm cargo"
+        },
+        "stowage_factor": {
+          "value": 58,
+          "confidence": "confirmed",
+          "source_text": "stw factor 58'"
+        },
+        "missing_info": [
+          "Loading/discharge terms (FIO, FIOST, CQD, etc.) not specified",
+          "SHINC/SHEX qualifier for loading and discharge rates not stated",
+          "Freight rate or freight idea not provided",
+          "Incoterms not specified",
+          "Commission split (address commission vs. brokerage) not detailed — only total 3.75% stated"
+        ]
+      }
+    ]
+  }
+}

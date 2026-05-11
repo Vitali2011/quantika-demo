@@ -1,0 +1,203 @@
+{
+  "id": "etms-parse-cargo-073",
+  "source_email_id": "19e08a007eff29ab",
+  "category": "single_cargo",
+  "input": {
+    "subject": "FW: Izmail - Figuera de Foz 5-6k bulk clay - Figuera De Foz / Tartous 6000-7000 mts bulk clay",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:26:02.000Z",
+    "body": " \r\n\r\nFrom: e@id.inmsg.net <e@id.inmsg.net> On Behalf Of Corebulk Chartering - Korhan Akoz \r\nSent: Monday, 2 February 2026 10:17\r\nTo: management@etm-services.net\r\nSubject: Izmail - Figuera de Foz 5-6k bulk clay - Figuera De Foz / Tartous 6000-7000 mts bulk clay\r\n\r\n \r\n\r\n\r\nIf you can not see this email properly, please click here <https://track.inclick.email/webversion/1lEWjDmeD9t7VpJlXeeVIW4jdzr54qHXMG75NVXLf1mJJ8xgQGUbJmr4rN7q/> . \r\n\r\nFully Firm – Excl\r\n\r\n \r\n\r\nIzmail / Figuera De Foz\r\n\r\n5000-6000 mtons bulk clay\r\n\r\nSpot/ppt\r\n\r\n2000 shinc / shex\r\n\r\nGcn 2,5 pct\r\n\r\n \r\n\r\n++\r\n\r\n \r\n\r\n1 shipment per month\r\n\r\n \r\n\r\nFiguera De Foz / Tartous \r\n\r\n6000 any upto 7000 mtons bulk clay\r\n\r\nspot/ppt\r\n\r\n7 ttl ys\r\n\r\nGcn 1,25 pct\r\n\r\n \r\n\r\n \r\n\r\nBrgds,\r\n\r\nKa\r\n\r\n \r\n\r\nCorebulk Shipping and Chartering Services Ltd\r\n\r\nPhn : +90 532 2070548\r\n\r\nTeams : asuchart\r\n\r\n\r\nUnsubscribe <https://track.inclick.email/unsubscribe/1lEWjDmeD9t7VpJlXeeVIW4jdzr54qHXMG75NVXLf1mJJ8xgQGUbJmr4rN7q?culture=en-US>  \r\n\r\n  _____  \r\n\r\nPowered by  <https://useinbox.com> INBOX\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Izmail",
+          "confidence": "confirmed",
+          "source_text": "Izmail / Figuera De Foz"
+        },
+        "origin_country": {
+          "value": "Ukraine",
+          "confidence": "interpreted",
+          "source_text": "Izmail / Figuera De Foz"
+        },
+        "destination_port": {
+          "value": "Figueira da Foz",
+          "confidence": "confirmed",
+          "source_text": "Izmail / Figuera De Foz"
+        },
+        "destination_country": {
+          "value": "Portugal",
+          "confidence": "interpreted",
+          "source_text": "Izmail / Figuera De Foz"
+        },
+        "cargo_description": {
+          "value": "Bulk clay",
+          "confidence": "confirmed",
+          "source_text": "5000-6000 mtons bulk clay"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 6000,
+          "confidence": "interpreted",
+          "source_text": "5000-6000 mtons bulk clay"
+        },
+        "weight_mt_min": {
+          "value": 5000,
+          "confidence": "confirmed",
+          "source_text": "5000-6000 mtons bulk clay"
+        },
+        "weight_mt_max": {
+          "value": 6000,
+          "confidence": "confirmed",
+          "source_text": "5000-6000 mtons bulk clay"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "5000-6000 mtons bulk clay"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Spot / prompt",
+          "confidence": "interpreted",
+          "source_text": "Spot/ppt"
+        },
+        "laycan": null,
+        "loading_rate": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "2000 shinc / shex"
+        },
+        "loading_terms": {
+          "value": "SHINC / SHEX",
+          "confidence": "confirmed",
+          "source_text": "2000 shinc / shex"
+        },
+        "discharge_rate": {
+          "value": 2000,
+          "confidence": "interpreted",
+          "source_text": "2000 shinc / shex"
+        },
+        "discharge_terms": {
+          "value": "SHINC / SHEX",
+          "confidence": "interpreted",
+          "source_text": "2000 shinc / shex"
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "Gcn 2,5 pct"
+        },
+        "commission_terms": {
+          "value": "GENCON 2.5%",
+          "confidence": "interpreted",
+          "source_text": "Gcn 2,5 pct"
+        },
+        "special_requirements": {
+          "value": "Fully Firm – Excl (exclusive inquiry); 1 shipment per month indicated",
+          "confidence": "confirmed",
+          "source_text": "Fully Firm – Excl"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Loading and discharge rates may apply to both ends or separately — clarification needed on whether 2000 SHINC/SHEX applies to load only, discharge only, or both",
+          "Charter party form unclear — 'Gcn' interpreted as GENCON but unconfirmed",
+          "No freight rate mentioned",
+          "No specific laycan dates provided beyond 'spot/ppt'"
+        ],
+        "unknown_terms": []
+      },
+      {
+        "origin_port": {
+          "value": "Figueira da Foz",
+          "confidence": "confirmed",
+          "source_text": "Figuera De Foz / Tartous"
+        },
+        "origin_country": {
+          "value": "Portugal",
+          "confidence": "interpreted",
+          "source_text": "Figuera De Foz / Tartous"
+        },
+        "destination_port": {
+          "value": "Tartous",
+          "confidence": "confirmed",
+          "source_text": "Figuera De Foz / Tartous"
+        },
+        "destination_country": {
+          "value": "Syria",
+          "confidence": "interpreted",
+          "source_text": "Figuera De Foz / Tartous"
+        },
+        "cargo_description": {
+          "value": "Bulk clay",
+          "confidence": "confirmed",
+          "source_text": "6000 any upto 7000 mtons bulk clay"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 7000,
+          "confidence": "interpreted",
+          "source_text": "6000 any upto 7000 mtons bulk clay"
+        },
+        "weight_mt_min": {
+          "value": 6000,
+          "confidence": "confirmed",
+          "source_text": "6000 any upto 7000 mtons bulk clay"
+        },
+        "weight_mt_max": {
+          "value": 7000,
+          "confidence": "confirmed",
+          "source_text": "6000 any upto 7000 mtons bulk clay"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "6000 any upto 7000 mtons bulk clay"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Spot / prompt",
+          "confidence": "interpreted",
+          "source_text": "spot/ppt"
+        },
+        "laycan": null,
+        "loading_rate": null,
+        "loading_terms": null,
+        "discharge_rate": null,
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 1.25,
+          "confidence": "confirmed",
+          "source_text": "Gcn 1,25 pct"
+        },
+        "commission_terms": {
+          "value": "GENCON 1.25%",
+          "confidence": "interpreted",
+          "source_text": "Gcn 1,25 pct"
+        },
+        "special_requirements": {
+          "value": "Fully Firm – Excl (exclusive inquiry)",
+          "confidence": "confirmed",
+          "source_text": "Fully Firm – Excl"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Loading and discharge rates/terms not specified for this leg",
+          "No freight rate mentioned",
+          "No specific laycan dates provided beyond 'spot/ppt'",
+          "'7 ttl ys' is unrecognized — meaning unclear, flagged for human review"
+        ],
+        "unknown_terms": ["7 ttl ys"]
+      }
+    ]
+  }
+}
