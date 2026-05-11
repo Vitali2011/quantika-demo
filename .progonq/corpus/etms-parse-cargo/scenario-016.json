@@ -272,9 +272,9 @@
       },
       {
         "origin_port": {
-          "value": "Constanta",
-          "confidence": "interpreted",
-          "source_text": "POC - Douala, Cameroon"
+          "value": "Port of Call (unspecified)",
+          "confidence": "uncertain",
+          "source_text": "POC"
         },
         "origin_country": {
           "value": "Romania",
