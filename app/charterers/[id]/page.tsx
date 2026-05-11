@@ -34,22 +34,17 @@ export default function ChartererPage() {
   const params = useParams();
   const id = params?.id as string;
 
-  const [charterer, setCharterer] = useState<Charterer | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
   const isFeatureEnabled =
     process.env.NEXT_PUBLIC_CHARTERER_CREDIT_ENABLED === 'true';
 
-  useEffect(() => {
-    if (!isFeatureEnabled) {
-      setLoading(false);
-      return;
-    }
+  const [charterer, setCharterer] = useState<Charterer | null>(null);
+  const [loading, setLoading] = useState(isFeatureEnabled && !!id);
+  const [error, setError] = useState<string | null>(
+    isFeatureEnabled && !id ? 'Invalid charterer ID' : null
+  );
 
-    if (!id) {
-      setError('Invalid charterer ID');
-      setLoading(false);
+  useEffect(() => {
+    if (!isFeatureEnabled || !id) {
       return;
     }
 
