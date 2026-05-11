@@ -6,6 +6,7 @@ import { LLMTimeoutError } from '@/lib/openai';
 import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { MATCH_PROMPT } from '@/lib/prompts';
 import { analyzePairs, AiScorer, RawMatch } from '@/lib/matching/pair-analyzer';
+import { isRagEnabled } from '@/lib/knowledge/flags';
 
 export const maxDuration = 120;
 
@@ -28,6 +29,52 @@ export async function POST(request: NextRequest) {
   const refYear = sessionYear < currentYear ? sessionYear : currentYear;
   const today = session.createdAt;
 
+  // RAG phase-3: IGC context retrieval for grain/gas cargo matching.
+  // Enriches MATCH system prompt with IGC stowage / moisture requirements.
+  // Guarded by feature flag — no-op when KNOWLEDGE_RAG_ENABLED != "true".
+  let matchSystemPrompt = MATCH_PROMPT;
+  if (isRagEnabled()) {
+    try {
+      // Build query from cargo descriptions present in this session.
+      const cargoKeywords = parsedCargos
+        .map(c => {
+          const d = c.cargoDescription;
+          if (!d) return '';
+          if (typeof d === 'object' && 'value' in d) return String((d as { value: unknown }).value) || '';
+          return String(d);
+        })
+        .filter(Boolean)
+        .join(' ')
+        .slice(0, 300);
+      const query = `IGC grain gas cargo stowage ${cargoKeywords}`.trim();
+
+      const [{ retrieve }, { getDb }] = await Promise.all([
+        import('@/lib/knowledge/embeddings/retriever'),
+        import('@/lib/db'),
+      ]);
+      const db = getDb();
+      const chunks = await retrieve(query, {
+        vectorTable: 'igc_vec',
+        ftsTable: 'igc_fts',
+        topN: 3,
+        db,
+      });
+
+      if (chunks.length > 0) {
+        const lines = chunks.map(c => `[IGC-${c.metadata?.id ?? c.chunkId}] ${c.content}`);
+        const igcContext = [
+          '=== IGC Grain/Gas Cargo Context ===',
+          ...lines,
+          '====================================',
+        ].join('\n');
+        matchSystemPrompt = `${MATCH_PROMPT}\n\n${igcContext}`;
+      }
+    } catch (ragErr) {
+      // RAG failure must not block matching — degrade gracefully.
+      console.warn('[match] IGC RAG retrieval failed, continuing without context:', ragErr);
+    }
+  }
+
   const aiScorer: AiScorer = async ({ cargoData, vesselData, readinessData }) => {
     const promptPayload = JSON.stringify({
       cargo_inquiries: cargoData,
@@ -37,7 +84,7 @@ export async function POST(request: NextRequest) {
 
     const result = await callAiJson<{ matches: RawMatch[] }>(
       'MATCH',
-      MATCH_PROMPT,
+      matchSystemPrompt,
       promptPayload,
       { timeoutMs: endpointLlmTimeout(120) },
     );

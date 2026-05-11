@@ -16,6 +16,8 @@ import { toConfidence, extractNum } from '@/lib/parsing-utils';
 import { calibrateAll } from '@/lib/validation/confidence-calibration';
 import { applyCargoRateFallback, applyCargoTypeFallback } from '@/lib/parsing/cargo-rate-fallback';
 import { buildProcessedEmails } from '@/lib/classification-service';
+import { isRagEnabled } from '@/lib/knowledge/flags';
+import type { RetrievedChunk } from '@/lib/knowledge/embeddings/chunks';
 import pLimit from 'p-limit';
 
 interface RawCargoItem {
@@ -172,9 +174,53 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ count: 0 });
   }
 
+  // RAG phase-3: IMSBC context retrieval for cargo safety / stowage info.
+  // Runs before LLM calls so the system prompt can be enriched with IMSBC data.
+  // Guarded by feature flag — no-op when KNOWLEDGE_RAG_ENABLED != "true".
+  let imsbcSystemContext: string | undefined;
+  if (isRagEnabled()) {
+    try {
+      const cargoKeywords = cargoEmails
+        .map(e => e.body.slice(0, 200))
+        .join(' ')
+        .slice(0, 400);
+      const query = `cargo safety stowage hazmat bulk ${cargoKeywords}`.trim();
+      const [{ retrieve }, { getDb }] = await Promise.all([
+        import('@/lib/knowledge/embeddings/retriever'),
+        import('@/lib/db'),
+      ]);
+      const db = getDb();
+      const chunks: RetrievedChunk[] = await retrieve(query, {
+        vectorTable: 'imsbc_vec',
+        ftsTable: 'imsbc_fts',
+        topN: 3,
+        db,
+      });
+      if (chunks.length > 0) {
+        const lines = chunks.map(c => {
+          const id = c.metadata?.id ?? c.chunkId;
+          return `[IMSBC-${id}] ${c.content}`;
+        });
+        imsbcSystemContext = [
+          '=== IMSBC Cargo Safety Context ===',
+          ...lines,
+          '===================================',
+        ].join('\n');
+      }
+    } catch (ragErr) {
+      // RAG failure must not block cargo parsing — degrade gracefully.
+      console.warn('[parse-cargo] IMSBC RAG retrieval failed, continuing without context:', ragErr);
+    }
+  }
+
   const allParsed: ParsedCargo[] = [];
   const limit = pLimit(PARSE_CARGO_CONCURRENCY);
   const prompts = buildCargoPrompts(cargoEmails);
+
+  // Build system prompt: base + optional IMSBC context appended.
+  const systemPrompt = imsbcSystemContext
+    ? `${CARGO_INQUIRY_PARSER_PROMPT}\n\n${imsbcSystemContext}`
+    : CARGO_INQUIRY_PARSER_PROMPT;
 
   await Promise.all(
     cargoEmails.map((email, i) => limit(async () => {
@@ -195,7 +241,7 @@ export async function POST(request: NextRequest) {
           withRetry429(() =>
             callAiJsonShim<RawCargoItem>(
               'PARSE_CARGO',
-              CARGO_INQUIRY_PARSER_PROMPT,
+              systemPrompt,
               prompts[i],
               {
                 timeoutMs: LLM_TIMEOUT_MS,
