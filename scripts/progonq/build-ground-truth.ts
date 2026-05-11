@@ -18,7 +18,7 @@
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
-import { callAiJson, callAiText } from '@/lib/ai-provider';
+import { callAiText } from '@/lib/ai-provider';
 import {
   CLASSIFICATION_SYSTEM_PROMPT,
   CARGO_INQUIRY_PARSER_PROMPT,
@@ -73,34 +73,44 @@ function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+function extractJson(text: string): unknown {
+  let s = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+  const start = s.search(/[{[]/);
+  if (start > 0) s = s.slice(start);
+  return JSON.parse(s);
+}
+
+const SCOPE_MAP: Record<Endpoint, string> = {
+  classify: 'CLASSIFY',
+  'parse-cargo': 'PARSE_CARGO',
+  'parse-vessel': 'PARSE_VESSEL',
+  'parse-recap': 'RECAP',
+};
+
 async function extractOne(endpoint: Endpoint, email: ClassifiedEmail): Promise<unknown> {
   const system = getSystemPrompt(endpoint);
   const user = buildUserPrompt(endpoint, email);
+  const scope = SCOPE_MAP[endpoint];
 
   let attempt = 0;
   while (attempt < 4) {
     attempt++;
     try {
+      const text = await callAiText(
+        scope,
+        system,
+        endpoint === 'classify'
+          ? `Today's date: ${new Date().toISOString().split('T')[0]}\n\n[${user}]`
+          : user,
+        { model: MODEL, maxTokens: 4096, timeoutMs: 90_000 },
+      );
+      const parsed = extractJson(text);
+      // For classify, unwrap classifications[0]
       if (endpoint === 'classify') {
-        // classify returns structured JSON
-        const today = new Date().toISOString().split('T')[0];
-        const batchInput = [{ id: email.id, subject: email.subject, from: email.from, date: email.date, body_preview: truncate(email.body || email.snippet, MAX_BODY_CHARS) }];
-        const result = await callAiJson<{ classifications: unknown[] }>(
-          'CLASSIFY',
-          system,
-          `Today's date: ${today}\n\n${JSON.stringify(batchInput)}`,
-          { model: MODEL, maxTokens: 2048, timeoutMs: 90_000 },
-        );
-        return result.classifications?.[0] ?? null;
-      } else {
-        const text = await callAiText(
-          endpoint === 'parse-cargo' ? 'PARSE_CARGO' : endpoint === 'parse-vessel' ? 'PARSE_VESSEL' : 'RECAP',
-          system,
-          user,
-          { model: MODEL, maxTokens: 4096, timeoutMs: 90_000 },
-        );
-        return JSON.parse(stripFences(text));
+        const cl = parsed as { classifications?: unknown[] };
+        return cl.classifications?.[0] ?? parsed;
       }
+      return parsed;
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       const delay = [1000, 5000, 30000][attempt - 1] ?? 60000;

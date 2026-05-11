@@ -17,7 +17,7 @@
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
-import { callAiJson } from '@/lib/ai-provider';
+import { callAiText } from '@/lib/ai-provider';
 import { CLASSIFICATION_SYSTEM_PROMPT } from '@/lib/prompts';
 
 const BATCH_SIZE = 20;
@@ -76,6 +76,15 @@ function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+function extractJson(text: string): unknown {
+  // Strip markdown fences
+  let s = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+  // Find first { or [ — strip any preamble the model may have added
+  const start = s.search(/[{[]/);
+  if (start > 0) s = s.slice(start);
+  return JSON.parse(s);
+}
+
 async function classifyBatch(emails: RawEmail[]): Promise<AiClassification[]> {
   const input = emails.map((e) => ({
     id: e.id,
@@ -85,12 +94,13 @@ async function classifyBatch(emails: RawEmail[]): Promise<AiClassification[]> {
     body_preview: truncate(e.body || e.snippet, MAX_BODY_CHARS),
   }));
   const today = new Date().toISOString().split('T')[0];
-  const result = await callAiJson<{ classifications: AiClassification[] }>(
+  const text = await callAiText(
     SCOPE,
     CLASSIFICATION_SYSTEM_PROMPT,
     `Today's date: ${today}\n\n${JSON.stringify(input)}`,
     { model: MODEL, maxTokens: 4096, timeoutMs: 120_000 },
   );
+  const result = extractJson(text) as { classifications: AiClassification[] };
   return result.classifications ?? [];
 }
 
