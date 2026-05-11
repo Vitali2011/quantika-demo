@@ -12,6 +12,7 @@ import { safeRender, getConf, ConfIcon } from '@/lib/ui-render';
 import { formatDate } from '@/lib/utils';
 import { lookupCii } from '@/lib/imo/cii-lookup';
 import { CiiRatingBadge } from '@/components/vessel/CiiRatingBadge';
+import { SanctionsBadge } from '@/components/vessel/SanctionsBadge';
 
 // Only the three canonical string labels are valid. Guard against numeric
 // confidence scores from the parser reaching the ConfIcon branch — a truthy
@@ -53,6 +54,11 @@ export default async function VesselDetailPage({ params }: Props) {
   const processed = session.processedEmails.find(p => p.emailId === id);
   const matchingCargo = session.matches.filter(m => m.vesselEmailId === id);
 
+  // Find if this vessel is involved in any sanctions-blocked pairs
+  const sanctionsBlock = (session.blockedMatches ?? []).find(
+    (b) => b.vesselEmailId === id && b.sanctions?.blocking,
+  );
+
   // Pre-fetch CII ratings for all vessels on this page (server-side, cached 30 days)
   const ciiResults = await Promise.all(vessels.map(v => lookupCii(v.imo ?? '')));
 
@@ -70,6 +76,11 @@ export default async function VesselDetailPage({ params }: Props) {
         <Link href="/dashboard" className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ChevronLeft className="h-4 w-4" /> Back to Dashboard
         </Link>
+
+        {/* Sanctions blocked badge — shown only when vessel is in a sanctions-blocked pair */}
+        {sanctionsBlock && (
+          <SanctionsBadge reason={sanctionsBlock.filterReason} />
+        )}
 
         <div>
           <div className="flex items-center gap-2">
