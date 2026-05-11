@@ -252,4 +252,77 @@ describe('analyzePairs', () => {
     expect(result.blockedMatches).toHaveLength(1);
     expect(result.blockedMatches[0].filterReason).toContain('draft too deep');
   });
+
+  describe('aiScorer failure resilience', () => {
+    beforeEach(() => {
+      // Reset hard filters to pass (default) so pairs reach aiScorer
+      const { runHardFilters } = jest.requireMock('@/lib/sailing/match-filters');
+      runHardFilters.mockReturnValue({
+        pass: true,
+        failures: [],
+        checks: { draft: { pass: true }, crane: { pass: true }, volume: { pass: true }, cargoVessel: { pass: true } },
+      });
+    });
+
+    it('returns { matches: [], blockedMatches: [] } when aiScorer throws and no filtered pairs', async () => {
+      const aiScorer: AiScorer = jest.fn().mockRejectedValue(
+        new SyntaxError("Unexpected token 'I', \"I'll syste\" is not valid JSON"),
+      );
+      const result = await analyzePairs([makeCargo()], [makeVessel()], aiScorer);
+
+      expect(result.matches).toHaveLength(0);
+      // No hard-filter fails → blockedMatches empty
+      expect(result.blockedMatches).toHaveLength(0);
+    });
+
+    it('preserves hard-filter blockedMatches when aiScorer throws', async () => {
+      const cargo = makeCargo();
+      const vessel = makeVessel();
+
+      // vessel-2 fails hard filter, vessel-1 passes → aiScorer called, then throws
+      const vessel2 = makeVessel('vessel-2', 1);
+      const { runHardFilters } = jest.requireMock('@/lib/sailing/match-filters');
+      runHardFilters
+        .mockReturnValueOnce({ // cargo-vessel-1 pair: pass
+          pass: true, failures: [], checks: { draft: { pass: true }, crane: { pass: true }, volume: { pass: true }, cargoVessel: { pass: true } },
+        })
+        .mockReturnValueOnce({ // cargo-vessel-2 pair: fail
+          pass: false, failures: ['draft too deep'],
+          checks: { draft: { pass: false }, crane: { pass: true }, volume: { pass: true }, cargoVessel: { pass: true } },
+        });
+
+      const aiScorer: AiScorer = jest.fn().mockRejectedValue(
+        new SyntaxError("I'll syste"),
+      );
+      const result = await analyzePairs([cargo], [vessel, vessel2], aiScorer);
+
+      expect(result.matches).toHaveLength(0);
+      // vessel-2's blocked pair must still be returned even though aiScorer threw
+      expect(result.blockedMatches).toHaveLength(1);
+      expect(result.blockedMatches[0].vesselEmailId).toBe('vessel-2');
+    });
+
+    it('preserves sanctions-blocked pair in blockedMatches when aiScorer throws', async () => {
+      const cargo = makeCargo();
+      const vessel = makeVessel();
+
+      // Mock checkSanctions to return blocking=true for this vessel
+      const { checkSanctions } = jest.requireMock('@/lib/validation/sanctions');
+      checkSanctions.mockReturnValue({ risk: 'HIGH', blocking: true, reason: 'IR-flagged vessel — OFAC/EU sanctions apply' });
+
+      const aiScorer: AiScorer = jest.fn().mockRejectedValue(
+        new SyntaxError("I'll syste"),
+      );
+      const result = await analyzePairs([cargo], [vessel], aiScorer);
+
+      expect(result.matches).toHaveLength(0);
+      // Sanctions-blocked pair must be in blockedMatches even when aiScorer throws
+      expect(result.blockedMatches).toHaveLength(1);
+      expect(result.blockedMatches[0].sanctions?.blocking).toBe(true);
+      expect(result.blockedMatches[0].sanctions?.reason).toContain('OFAC');
+
+      // Restore mock
+      checkSanctions.mockReturnValue({ risk: 'NONE', blocking: false });
+    });
+  });
 });
