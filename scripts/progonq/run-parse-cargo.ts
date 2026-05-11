@@ -123,6 +123,12 @@ function normalizePort(v: unknown): string | null {
   s = s.replace(/\bnemrut bay\b/g, 'nemrut');
   s = s.replace(/\bporto marghera(?:\s*\(venice\))?\b/g, 'marghera');
   s = s.replace(/\bking abdullah port\b/g, 'king abdullah');
+  // Strip "port " prefix (e.g. "port sousse" → "sousse") but not "port of call"
+  s = s.replace(/^port (?!of call|of )/g, '');
+  // Strip country suffix "city,country" or "city, country" → "city"
+  s = s.replace(/,\s*[a-z ]+$/, '');
+  // Alias: visakhapatnam / vizag
+  s = s.replace(/\bvizag\b/g, 'visakhapatnam');
 
   // === SEPARATOR NORMALIZATION ===
   // "/" between ports → " or " (alternative ports)

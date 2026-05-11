@@ -92,14 +92,17 @@ RULE 4 — Preserve source port spelling; DO NOT add unsolicited geographic qual
 - Canonical port names: "Nemrut" → "Nemrut Bay"; "Constantza/Constanta" → "Constanța" preferred.
 
 RULE 5 — Slash "/" as load/discharge separator (NOT alternatives):
-When the email uses the structure "[Port A] / [Port B] / [quantity or cargo or laycan]...",
-the first "/" separates origin from destination — NOT charterer's option.
-Parse as: origin_port = Port A, destination_port = Port B.
-Distinguish from alternatives: "Port A or Port B" or "Port A/Port B chopt" = alternatives.
-Key signal: if "/" is followed by another "/" introducing quantity/cargo/date, it is a separator.
-Examples:
+DEFAULT: When "/" appears between exactly two port names, parse as origin / destination.
+  "Port A / Port B" (bare pair, line-only or clearly one cargo route) → origin=Port A, destination=Port B.
   "1 Marmara /Constanta Min 7200 tons Steel Billets" → origin=Marmara, destination=Constanta
-  "Odesa / Chornomorsk chopt" → both are alternative destinations
+  "Nemrut / Liverpool" → origin=Nemrut, destination=Liverpool
+  "Hereke/Birkenhead" → origin=Hereke, destination=Birkenhead
+EXCEPTION — alternatives only with explicit markers:
+  "Port A or Port B" = alternatives (keyword "or").
+  "Port A/Port B chopt" = alternatives (keyword "chopt").
+  "Port A/Port B/Port C" (three+ ports) = alternatives, use "or".
+  "Odesa / Chornomorsk chopt" → destination="Odesa or Chornomorsk"
+Additional signal: if "/" is followed by another "/" with quantity/cargo/date, it confirms separator.
 
 RULE 6 — Multi-port rotation vs alternatives:
 - "Port A + Port B" = vessel calls BOTH ports in sequence (rotation). Preserve "+" literally in output.

@@ -127,6 +127,7 @@ async function main() {
 
       let origV = cache.get(origPair);
       if (!origV) {
+        await new Promise((res) => setTimeout(res, 800));
         origV = await judgePair(m.ref_origin, m.model_origin);
         cache.set(origPair, origV);
         saveCache(cache);
@@ -135,6 +136,7 @@ async function main() {
 
       let destV = cache.get(destPair);
       if (!destV) {
+        await new Promise((res) => setTimeout(res, 800));
         destV = await judgePair(m.ref_dest, m.model_dest);
         cache.set(destPair, destV);
         saveCache(cache);
