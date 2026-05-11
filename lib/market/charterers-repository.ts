@@ -84,7 +84,8 @@ export function upsertCharterer(
   db.prepare(
     `INSERT INTO charterers (id, name, tier, payment_history, require_lc, notes)
      VALUES (@id, @name, @tier, @payment_history, @require_lc, @notes)
-     ON CONFLICT(name) DO UPDATE SET
+     ON CONFLICT(id) DO UPDATE SET
+       name = excluded.name,
        tier = excluded.tier,
        payment_history = excluded.payment_history,
        require_lc = excluded.require_lc,

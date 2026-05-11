@@ -152,10 +152,10 @@ describe('charterers-repository', () => {
       notes: 'Initial note',
     });
 
-    // Update same name with different data
+    // Update same id with different data (including name)
     upsertCharterer(db, {
       id: 'c1',
-      name: 'Cargill',
+      name: 'Cargill Updated',
       tier: 'second',
       payment_history: '[{"date":"2026-01-01","status":"paid"}]',
       require_lc: 1,
@@ -164,6 +164,7 @@ describe('charterers-repository', () => {
 
     const row = getCharterer(db, 'c1');
     expect(row).not.toBeNull();
+    expect(row!.name).toBe('Cargill Updated');
     expect(row!.tier).toBe('second');
     expect(row!.require_lc).toBe(1);
     expect(row!.notes).toBe('Updated note');
