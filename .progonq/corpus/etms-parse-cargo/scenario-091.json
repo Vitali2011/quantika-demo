@@ -1,0 +1,131 @@
+{
+  "id": "etms-parse-cargo-091",
+  "source_email_id": "19e097a4da37efbc",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: Firm Spot 7-12k wheat Odesa - EC Italy / READY TO FIX",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:24:28.000Z",
+    "body": " \r\n\r\nFrom: Noreply <noreply-bounces@lists.circular-chart.com> On Behalf Of Marelis Chartering\r\nSent: Thursday, 26 February 2026 10:33\r\nTo: noreply@lists.circular-chart.com\r\nSubject: Re: Firm Spot 7-12k wheat Odesa - EC Italy / READY TO FIX\r\n\r\n \r\n\r\nDear Sirs, \r\n\r\n \r\n\r\nGood day to all,\r\n\r\n \r\n\r\nStrictly Not for Recirculation\r\n\r\n \r\n\r\nPls propose workable tonnage for our direct Charterers\r\n\r\n \r\n\r\nFirm cargo / READY TO FIX\r\n\r\n \r\n\r\n7200 – 12 000 mts of Wheat sf abt 47’ wog\r\nOdesa to EC Italy \r\n2000x/2000x\r\nSpot - onw\r\n1.25 Add comm + 1.25 for Marelis \r\n\r\n \r\n\r\nAwaiting for the suitable candidates with frt ideas from Owns side \r\n\r\n \r\n\r\nPlsd to hear\r\n\r\n \r\n\r\nKind Regards \r\n\r\n \r\n\r\nVladislav Datiy\r\n\r\nBrokerage Dpt.\r\n\r\nMarelis Navigation S.A. \r\n\r\nMobile: +30 697 255 0514\r\n\r\nWhatsApp: +380 95 159 6113\r\n\r\nTeams: live:.cid.36a87362b7a2b27e\r\n\r\nE-mail: chartering@marelis-nav.com <mailto:chartering@marelis-nav.com> \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nThis is not a spam or junk mail. It's regular mail of shipping&chartering business. If you are not interested in content of our messages,please send a message with the subject \"Unsubscribe\" to unsubscribe@marelis-nav.com <mailto:unsubscribe@marelis-nav.com> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Odesa",
+          "confidence": "confirmed",
+          "source_text": "Odesa to EC Italy"
+        },
+        "origin_country": {
+          "value": "Ukraine",
+          "confidence": "confirmed",
+          "source_text": "Odesa to EC Italy"
+        },
+        "destination_port": {
+          "value": "East Coast Italy",
+          "confidence": "confirmed",
+          "source_text": "Odesa to EC Italy"
+        },
+        "destination_country": {
+          "value": "Italy",
+          "confidence": "confirmed",
+          "source_text": "Odesa to EC Italy"
+        },
+        "cargo_description": {
+          "value": "Wheat, stowage factor approximately 47 cubic feet per metric ton, without guarantee",
+          "confidence": "confirmed",
+          "source_text": "7200 – 12 000 mts of Wheat sf abt 47' wog"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 12000,
+          "confidence": "interpreted",
+          "source_text": "7200 – 12 000 mts of Wheat sf abt 47' wog"
+        },
+        "weight_mt_min": {
+          "value": 7200,
+          "confidence": "confirmed",
+          "source_text": "7200 – 12 000 mts of Wheat sf abt 47' wog"
+        },
+        "weight_mt_max": {
+          "value": 12000,
+          "confidence": "confirmed",
+          "source_text": "7200 – 12 000 mts of Wheat sf abt 47' wog"
+        },
+        "volume_cbm": {
+          "value": null
+        },
+        "dimensions": {
+          "value": null
+        },
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "7200 – 12 000 mts of Wheat sf abt 47' wog"
+        },
+        "container_type": {
+          "value": null
+        },
+        "quantity": {
+          "value": null
+        },
+        "incoterms": {
+          "value": null
+        },
+        "preferred_dates": {
+          "value": "Spot",
+          "confidence": "confirmed",
+          "source_text": "Spot - onw"
+        },
+        "laycan": {
+          "value": null
+        },
+        "loading_rate": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "2000x/2000x"
+        },
+        "loading_terms": {
+          "value": null
+        },
+        "discharge_rate": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "2000x/2000x"
+        },
+        "discharge_terms": {
+          "value": null
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "interpreted",
+          "source_text": "1.25 Add comm + 1.25 for Marelis"
+        },
+        "commission_terms": {
+          "value": "1.25% address commission + 1.25% brokerage to Marelis",
+          "confidence": "confirmed",
+          "source_text": "1.25 Add comm + 1.25 for Marelis"
+        },
+        "special_requirements": {
+          "value": "Stowage factor approximately 47 cubic feet WOG; freight ideas requested from owners side; strictly not for recirculation",
+          "confidence": "confirmed",
+          "source_text": "sf abt 47' wog"
+        },
+        "stowage_factor": {
+          "value": "abt 47 cubic feet/MT (WOG)",
+          "confidence": "confirmed",
+          "source_text": "sf abt 47' wog"
+        },
+        "missing_info": [
+          "Freight rate not indicated — owners invited to propose",
+          "Exact laycan window not specified beyond 'Spot - onw'",
+          "No SHINC/SHEX qualifier provided for loading/discharge rates (2000x/2000x)",
+          "No laytime cost-allocation terms specified (FIO, FIOST, etc.)",
+          "Specific East Coast Italy discharge port(s) not named"
+        ]
+      }
+    ]
+  }
+}

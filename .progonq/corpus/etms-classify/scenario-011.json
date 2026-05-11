@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-011",
+  "source_email_id": "19d5e74e4479a895",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: HOME TONNAGE -  5 K DWT OPEN AT KARASU TODAY",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-04-05T16:23:28.000Z",
+    "body": " \r\n\r\nFrom: ALERIA DENIZCILIK - BC <chartering@aleriashipping.com> \r\nSent: Tuesday, 25 February 2025 14:34\r\nTo: chartering@aleriashipping.com\r\nSubject: HOME TONNAGE - 5 K DWT OPEN AT KARASU TODAY\r\n\r\n \r\n\r\nGood day\r\n\r\n \r\n\r\nPls offer firm for \r\n\r\n \r\n\r\nMV BARABULKA - OPEN AT KARASU TODAY\r\n\r\nCAN'T CALL UKRAINE AND  EU PORTS. \r\n\r\n4916 Dwt  on  4.76 ssw\r\n\r\nType - Volga-Don Type\r\n\r\nIMO: 8887296  Built: 1995\r\n\r\nCameroon Flag,  Dutch  Lloyd Class / Thomas Miller Pandi  \r\n\r\nGRT/NRT       :   4110/1358\r\n\r\nHolds / Hatches  : 3/3 BOX \r\n\r\nGrain  179.538 cbft / Bale 176.008,29  cbft\r\n\r\nGrain -Hold 1: 58.057 cbft - Hold 2: 61.376 cbft - Hold 3: 60.105 cbft\r\n\r\nBale - Hold 1: 1544 cbm - Hold 2: 1738 cbm - Hold 3: 1702 cbm\r\n\r\nAll details/Figures are about\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nBest regards,\r\n\r\n \r\n\r\nBirolcan GULEREN\r\n\r\nChartering Department\r\n\r\nBIMCO Reg. No: 149495\r\n\r\nchartering@aleriashipping.com <mailto:chartering@aleriashipping.com> \r\n\r\nops@aleriashipping.com <mailto:ops@aleriashipping.com> \r\n\r\nwww.aleriashipping.com <http://www.aleriashipping.com> \r\n\r\nSkype: bguleren\r\n\r\n \r\n\r\nALERIA DENIZCILIK | ISTANBUL\r\n\r\n+90 216 343 9090 Ph\r\n\r\n+90 216 201 2424 Fx\r\n\r\n+90 532 687 1026 Mb\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19d5e74e4479a895",
+    "category": "VESSEL_POSITION",
+    "urgency": "medium",
+    "confidence": 0.82,
+    "is_unanswered": true,
+    "days_without_reply": 36,
+    "original_sender": "ETMS - Management",
+    "original_sender_company": "ETMS - Management"
+  }
+}

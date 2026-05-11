@@ -1,0 +1,23 @@
+{
+  "id": "etms-classify-069",
+  "source_email_id": "19e07d186df6a788",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: Turkish Steels",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:40:29.000Z",
+    "body": " \r\n\r\nFrom: DURUCHART <chartering@duruchart.com> \r\nSent: Wednesday, 6 May 2026 12:10\r\nTo: 'DURUCHART' <mehmetali@duruchart.com>\r\nSubject: Turkish Steels\r\n\r\n \r\n\r\nDURUCHART/Istanbul                                       \r\n\r\n+90 216 492 97 13\r\n\r\n \r\n\r\nGood day \r\n\r\n \r\n\r\n\r\nPls offer firm for;\r\n\r\n \r\n\r\n1Marmara (Hereke) / Constanta\r\n\r\n2500 mts (PC Strand,  Diameter :130-140 cm,  H: 80 cm UW: 3-3,5 MT, Tier\r\nlimit: 2 )\r\n\r\n11/13 May\r\n\r\n1000 x / 800 x\r\n\r\n3.75 add pus\r\n\r\n \r\n\r\nIskenderun / Ghent \r\n\r\n10000 mts steel rebars %3 mol chopt.\r\n\r\n06/09 June\r\n\r\n2000 x / 3000 x\r\n\r\n3.75 add pus\r\n\r\n \r\n\r\n \r\n\r\nBest Regards\r\n\r\nMehmet Ali Lapaoglu\r\n\r\nM:+905354084626\r\n\r\n \r\n\r\nIf you no longer wish to receive emails from us, reply to this message with\r\nthe subject  \"DELETE\"\r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07d186df6a788",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.91,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Mehmet Ali Lapaoglu / DURUCHART",
+    "original_sender_company": "DURUCHART",
+    "notes": "Two cargo inquiries: (1) Marmara/Hereke → Constanta, 2500 MT PC Strand, laycan 11-13 May 2026 — LAYCAN OPENS TODAY, extremely urgent. (2) Iskenderun → Ghent, 10000 MT steel rebars ±3% MOLCHOPT, laycan 06-09 June 2026. Commission stated as '3.75 add pus' — 'add' likely = address commission; 'pus' is unrecognized term, flagged for review.",
+    "unknown_terms": ["pus"]
+  }
+}

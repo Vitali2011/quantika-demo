@@ -1,0 +1,216 @@
+{
+  "id": "etms-parse-cargo-005",
+  "source_email_id": "19d5e751c0c212df",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: open cgos fm Ukraine - 03.09.25",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-04-05T16:23:43.000Z",
+    "body": " \r\n\r\nFrom: Alerta Chartering <chartering@alertaplus.si> \r\nSent: Wednesday, 3 September 2025 15:58\r\nTo: SEA TRANSIT DENIZ TASIMACILIGI <chartering@seatransit.com.tr>\r\nSubject: open cgos fm Ukraine - 03.09.25\r\n\r\n \r\n\r\n\r\nAtt: charetring desk\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPloffer for direct and fully firm cgo orders fm Ukraine:\r\n\r\n \r\n\r\n1.\r\n\r\n \r\n\r\n8000 mts 10 pct wheat stw abt 47-49' \r\n\r\nIzmail - Egypt med\r\n\r\n04-05 Sept\r\n\r\n1500/1500\r\n\r\n1.25 pct\r\n\r\n \r\n\r\n2.\r\n\r\n \r\n\r\nNeed abt 200 000 cft for full cgo abt 3000 mts of steel scrap stw abt 68-70'\r\n\r\nChornomorsk - Marghera\r\n\r\nSpot-onward\r\n\r\n800/800\r\n\r\n2.00 pct\r\n\r\n \r\n\r\nWelcome offers\r\n\r\n \r\n\r\nSincerely,\r\n\r\n \r\n\r\n\r\nBrgds,\r\n\r\nSergiy Loshkarov\r\n\r\nAlerta Plus Ltd - Ljubljana, Slovenia (since 2013)\r\n\r\nph: +38659052680\r\n\r\nmobile/whatsapp/viber/telegram: +38631589490\r\n\r\ne-mail: chartering@alertaplus.si <mailto:chartering@alertaplus.si> \r\n\r\nteams: loshkarev\r\n\r\n \r\n\r\n====\r\n\r\n \r\n\r\nPls make sure that our e-mail address chartering@alertaplus.si <mailto:chartering@alertaplus.si>  is added to Your lists.\r\n\r\n \r\n\r\nThis is ship-chartering mailing. If this content is not of interest for You - pls kindly notify\r\n\r\nBy return to exclude Your address. Apologies in advance for possible inconvenience.\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Izmail",
+          "confidence": "confirmed",
+          "source_text": "Izmail - Egypt med"
+        },
+        "origin_country": {
+          "value": "Ukraine",
+          "confidence": "confirmed",
+          "source_text": "open cgos fm Ukraine"
+        },
+        "destination_port": {
+          "value": "Egypt Mediterranean",
+          "confidence": "interpreted",
+          "source_text": "Izmail - Egypt med"
+        },
+        "destination_country": {
+          "value": "Egypt",
+          "confidence": "confirmed",
+          "source_text": "Izmail - Egypt med"
+        },
+        "cargo_description": {
+          "value": "Wheat, stowage factor approximately 47-49 cubic feet per metric ton",
+          "confidence": "confirmed",
+          "source_text": "8000 mts 10 pct wheat stw abt 47-49'"
+        },
+        "cargo_origin_country": {
+          "value": "Ukraine",
+          "confidence": "interpreted",
+          "source_text": "open cgos fm Ukraine"
+        },
+        "weight_mt": {
+          "value": 8000,
+          "confidence": "confirmed",
+          "source_text": "8000 mts 10 pct wheat stw abt 47-49'"
+        },
+        "weight_mt_min": {
+          "value": 7200,
+          "confidence": "interpreted",
+          "source_text": "8000 mts 10 pct wheat stw abt 47-49'"
+        },
+        "weight_mt_max": {
+          "value": 8800,
+          "confidence": "interpreted",
+          "source_text": "8000 mts 10 pct wheat stw abt 47-49'"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "8000 mts 10 pct wheat stw abt 47-49'"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "04-05 September 2025",
+          "confidence": "confirmed",
+          "source_text": "04-05 Sept"
+        },
+        "laycan": {
+          "value": "04/05 September 2025",
+          "confidence": "confirmed",
+          "source_text": "04-05 Sept"
+        },
+        "loading_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "1500/1500"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "1500/1500"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 1.25,
+          "confidence": "confirmed",
+          "source_text": "1.25 pct"
+        },
+        "commission_terms": {
+          "value": null,
+          "confidence": "uncertain",
+          "source_text": "1.25 pct"
+        },
+        "special_requirements": null,
+        "stowage_factor": {
+          "value": "abt 47-49 ft³/MT",
+          "confidence": "confirmed",
+          "source_text": "stw abt 47-49'"
+        },
+        "missing_info": [
+          "Specific discharge port within Egypt Mediterranean range not stated",
+          "Laytime terms (SHINC/SHEX/FIO etc.) not specified",
+          "MOLOO or tolerance percentage noted as '10 pct' — confirm if this is a MOLOO clause or other qualifier",
+          "Incoterms not stated",
+          "Address commission vs brokerage split not specified"
+        ]
+      },
+      {
+        "origin_port": {
+          "value": "Chornomorsk",
+          "confidence": "confirmed",
+          "source_text": "Chornomorsk - Marghera"
+        },
+        "origin_country": {
+          "value": "Ukraine",
+          "confidence": "confirmed",
+          "source_text": "open cgos fm Ukraine"
+        },
+        "destination_port": {
+          "value": "Porto Marghera (Venice)",
+          "confidence": "interpreted",
+          "source_text": "Chornomorsk - Marghera"
+        },
+        "destination_country": {
+          "value": "Italy",
+          "confidence": "interpreted",
+          "source_text": "Chornomorsk - Marghera"
+        },
+        "cargo_description": {
+          "value": "Steel scrap, stowage factor approximately 68-70 cubic feet per metric ton, approximately 200,000 cubic feet required for full cargo",
+          "confidence": "confirmed",
+          "source_text": "Need abt 200 000 cft for full cgo abt 3000 mts of steel scrap stw abt 68-70'"
+        },
+        "cargo_origin_country": {
+          "value": "Ukraine",
+          "confidence": "interpreted",
+          "source_text": "open cgos fm Ukraine"
+        },
+        "weight_mt": {
+          "value": 3000,
+          "confidence": "interpreted",
+          "source_text": "abt 3000 mts of steel scrap stw abt 68-70'"
+        },
+        "weight_mt_min": null,
+        "weight_mt_max": null,
+        "volume_cbm": {
+          "value": 5663,
+          "confidence": "interpreted",
+          "source_text": "Need abt 200 000 cft for full cgo"
+        },
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "uncertain",
+          "source_text": "abt 3000 mts of steel scrap stw abt 68-70'"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Spot, onwards",
+          "confidence": "confirmed",
+          "source_text": "Spot-onward"
+        },
+        "laycan": {
+          "value": "Spot",
+          "confidence": "interpreted",
+          "source_text": "Spot-onward"
+        },
+        "loading_rate": {
+          "value": 800,
+          "confidence": "confirmed",
+          "source_text": "800/800"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 800,
+          "confidence": "confirmed",
+          "source_text": "800/800"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 2,
+          "confidence": "confirmed",
+          "source_text": "2.00 pct"
+        },
+        "commission_terms": {
+          "value": null,
+          "confidence": "uncertain",
+          "source_text": "2.00 pct"
+        },
+        "special_requirements": null,
+        "stowage_factor": {
+          "value": "abt 68-70 ft³/MT",
+          "confidence": "confirmed",
+          "source_text": "stw abt 68-70'"
+        },
+        "missing_info": [
+          "Steel scrap form not specified (loose/bulk vs bales/bundles — affects cargo_type: BULK or BREAK_BULK)",
+          "Exact laycan dates not provided — only 'Spot-onward'",
+          "Laytime terms (SHINC/SHEX/FIO etc.) not specified",
+          "Incoterms not stated",
+          "Address commission vs brokerage split not specified",
+          "Volume given in cubic feet (200,000 cft ≈ 5,663 CBM) — CBM conversion applied, verify if correct"
+        ]
+      }
+    ]
+  }
+}

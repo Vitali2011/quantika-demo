@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-008",
+  "source_email_id": "19d5e73477f04fb9",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: AENAV SUPRA/ULTRA REQ - DELY WAFR INTN DAKAR  - REDELY S'PORE/JAPAN RANGE - PPT ONWARDS (REF:250HRPG00)",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-04-05T16:21:42.000Z",
+    "body": " \r\n\r\nFrom: Aenav - Chartering <chartering@aenav.com> \r\nSent: Monday, 8 September 2025 07:19\r\nTo: chartering@aenav.com\r\nSubject: AENAV SUPRA/ULTRA REQ - DELY WAFR INTN DAKAR - REDELY S'PORE/JAPAN RANGE - PPT ONWARDS (REF:250HRPG00)\r\nImportance: High\r\n\r\n \r\n\r\nTELiX MSG: 0HRPG-00 08/09/25 07:18 +03:00\r\n\r\nKindly pps suitable named/rated vsl for below reqmnt:\r\n\r\n \r\n\r\n- Acct Aenav\r\n\r\n- Reqd Supra/Ultra \r\n\r\n- Dely WAfr intn Dakar\r\n\r\n- PPT Onwards\r\n\r\n- 1 Tct with bulk harmless\r\n\r\n- Re-dely Singapore/Japan Range \r\n\r\n- 3.75% adc\r\n\r\n \r\n\r\nPlsd to hear!!\r\n\r\n \r\n\r\nThanks & best regards\r\n\r\nPRINCE SAMEER\r\n\r\nMobile: +971 56 409 9995\r\n\r\n\r\n\r\nAtlantic Eastern Navigation FZCO\r\n\r\n \r\n\r\nP.O. Box 337475\r\n\r\nDubai\r\n\r\nUnited Arab Emirates\r\n\r\n \r\n\r\nTel: +971 4 294 4851\r\n\r\nFax: +971 4 294 4852\r\n\r\nSkype: princesameer16\r\n\r\nEmail:  <mailto:chartering@aenav.com> chartering@aenav.com\r\n\r\n \r\n\r\nThis transmission is intended only for the use of the individual or entity to whom or which it is addressed and may contain privileged and confidential information. If you are not the intended recipient, you are hereby notified that any dissemination, distribution, copying or forwarding of this transmission, or any attachment, is strictly prohibited. If you have received this message in error, please notify the original sender, or Atlantic Eastern Navigation DMCC immediately by Telephone at (+971 4) 294 4851 or by return email and delete the transmission, along with any attachments from your computer.\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19d5e73477f04fb9",
+    "category": "TCT_REQUEST",
+    "urgency": "medium",
+    "confidence": 0.82,
+    "is_unanswered": true,
+    "days_without_reply": 36,
+    "original_sender": "Prince Sameer",
+    "original_sender_company": "Atlantic Eastern Navigation FZCO"
+  }
+}

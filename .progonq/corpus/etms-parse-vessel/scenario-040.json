@@ -1,0 +1,579 @@
+{
+  "id": "etms-parse-vessel-040",
+  "source_email_id": "19e09795d905a46f",
+  "category": "dwcc_edge",
+  "input": {
+    "subject": "FW: PLS PROPOSE SUITABLE CGOES FOR OUR BELOW HOME TONNAGES AND CLOSE OWNERS' VSLS",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:23:27.000Z",
+    "body": " \r\n\r\nFrom: SONAY DENIZCILIK <sonay@sonayshipping.com> \r\nSent: Thursday, 26 February 2026 10:50\r\nTo: management@etm-services.net\r\nSubject: PLS PROPOSE SUITABLE CGOES FOR OUR BELOW HOME TONNAGES AND CLOSE OWNERS' VSLS\r\n\r\n \r\n\r\nGOOD DAY \r\n\r\nPLS PROPOSE SUITABLE CGOES FOR OUR BELOW HOME TONNAGES AND CLOSE OWNERS' VSLS:\r\n\r\n-M/V NURI  SONAY-14888MTS DWT-2006BLT-14500MTS DWCC- BV CLASS- BOX-OPEN HATCH-ITF FITTED-3 X 30MTS CRANES-GR:575000 CBFT-TT STR 20T/M2 -OPEN RAVENNA,ITAL ADRIATIC ON 02-03RD MARCH  \r\n\r\n-M/V HACI HILMI II -6976MTS DWT-92 BLT -6700MTS DWCC-3 X 10MTS CRANES-GR:309.895CBFT -OPEN EAST COAST GREECE ON 09-10TH MARCH\r\n\r\n-M/V SEVKETTIN SONAY-14888MTS DWT-2006BLT-14500MTS DWCC- BV CLASS- BOX-OPEN HATCH-ITF FITTED-3 X 30MTS CRANES-GR:575000 CBFT-TT STR 20T/M2 -OPEN TUNISIA ON 12-13TH MARCH  \r\n\r\n-M/V SABAHAT SONAY-14888MTS DWT-2007 BLT-14500MTS DWCC- BV CLASS- BOX-OPEN HATCH-ITF FITTED-3 X 30MTS CRANES-GR:575000 CBFT-TT STR 20T/M2 -OPEN MARMARA ON 16-17TH MARCH  \r\n\r\n-CLOSE DIRECT OWNERS M/V TBN-17500MTS DWCC- BOX TYPE-ITF FITTED- GRAIN CAP ABT 760 K CBFT-OPEN AGEAN SEA PROMPT\r\n\r\n-Close Direct Owners M/V TBN – 22K dwt – 2008 – Abt 993 k cbft – 3x20 tons - Open Beira,East Africa- Mid April\r\n\r\n \r\n\r\nBEST REGARDS\r\n\r\nSONAY SHIPPING AS/ISTANBUL\r\n\r\nAhmet Bozkurt,Mr./Halil Ersoz,Mr.\r\n\r\n(Member of Bimco and Turkish Shipbrokers Association and Maritime Association of Shipowners and Agents)\r\n\r\nEmails:Sonay@sonayshipping.com <mailto:Sonay@sonayshipping.com> \r\n\r\nSonaychartering@gmail.com <mailto:Sonaychartering@gmail.com> \r\n\r\nOffice nr:90 216 4467105\r\n\r\nmob phones:Ahmet T. Bozkurt-90 533 582 21 38\r\n\r\n                     Halil Ersoz-90 549 204 67 07\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "M/V NURI SONAY",
+          "confidence": "confirmed",
+          "source_text": "M/V NURI  SONAY"
+        },
+        "imo": null,
+        "flag": null,
+        "built": {
+          "value": 2006,
+          "confidence": "confirmed",
+          "source_text": "2006BLT"
+        },
+        "class_society": {
+          "value": "BV",
+          "confidence": "confirmed",
+          "source_text": "BV CLASS"
+        },
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 14888,
+          "confidence": "confirmed",
+          "source_text": "14888MTS DWT"
+        },
+        "dwcc": {
+          "value": 14500,
+          "confidence": "confirmed",
+          "source_text": "14500MTS DWCC"
+        },
+        "draft_max": null,
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": null,
+        "hatches_count": null,
+        "grain_capacity": {
+          "value": 575000,
+          "confidence": "confirmed",
+          "source_text": "GR:575000 CBFT"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": {
+          "value": 20,
+          "confidence": "confirmed",
+          "source_text": "TT STR 20T/M2"
+        },
+        "geared": true,
+        "crane_capacity": {
+          "value": "3 x 30T",
+          "confidence": "confirmed",
+          "source_text": "3 X 30MTS CRANES"
+        },
+        "hatch_type": {
+          "value": "Open Hatch",
+          "confidence": "confirmed",
+          "source_text": "OPEN HATCH"
+        },
+        "vessel_type": {
+          "value": "GENERAL CARGO / BOX",
+          "confidence": "confirmed",
+          "source_text": "BOX-OPEN HATCH"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Ravenna, Italy / Adriatic",
+          "confidence": "confirmed",
+          "source_text": "OPEN RAVENNA,ITAL ADRIATIC ON 02-03RD MARCH"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-03-02",
+            "close": "2026-03-03",
+            "display": "02-03 March 2026"
+          },
+          "confidence": "interpreted",
+          "source_text": "OPEN RAVENNA,ITAL ADRIATIC ON 02-03RD MARCH"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "ITF fitted",
+            "confidence": "confirmed",
+            "source_text": "ITF FITTED"
+          },
+          {
+            "value": "Box-shaped / Open Hatch holds",
+            "confidence": "confirmed",
+            "source_text": "BOX-OPEN HATCH"
+          },
+          {
+            "value": "Tank top strength: 20T/M2",
+            "confidence": "confirmed",
+            "source_text": "TT STR 20T/M2"
+          }
+        ],
+        "unknown_terms": []
+      },
+      {
+        "vessel_name": {
+          "value": "M/V HACI HILMI II",
+          "confidence": "confirmed",
+          "source_text": "M/V HACI HILMI II"
+        },
+        "imo": null,
+        "flag": null,
+        "built": {
+          "value": 1992,
+          "confidence": "confirmed",
+          "source_text": "92 BLT"
+        },
+        "class_society": null,
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 6976,
+          "confidence": "confirmed",
+          "source_text": "6976MTS DWT"
+        },
+        "dwcc": {
+          "value": 6700,
+          "confidence": "confirmed",
+          "source_text": "6700MTS DWCC"
+        },
+        "draft_max": null,
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": null,
+        "hatches_count": null,
+        "grain_capacity": {
+          "value": 309895,
+          "confidence": "confirmed",
+          "source_text": "GR:309.895CBFT"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": true,
+        "crane_capacity": {
+          "value": "3 x 10T",
+          "confidence": "confirmed",
+          "source_text": "3 X 10MTS CRANES"
+        },
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "uncertain",
+          "source_text": "M/V HACI HILMI II -6976MTS DWT-92 BLT -6700MTS DWCC-3 X 10MTS CRANES"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "East Coast Greece",
+          "confidence": "confirmed",
+          "source_text": "OPEN EAST COAST GREECE ON 09-10TH MARCH"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-03-09",
+            "close": "2026-03-10",
+            "display": "09-10 March 2026"
+          },
+          "confidence": "interpreted",
+          "source_text": "OPEN EAST COAST GREECE ON 09-10TH MARCH"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [],
+        "unknown_terms": []
+      },
+      {
+        "vessel_name": {
+          "value": "M/V SEVKETTIN SONAY",
+          "confidence": "confirmed",
+          "source_text": "M/V SEVKETTIN SONAY"
+        },
+        "imo": null,
+        "flag": null,
+        "built": {
+          "value": 2006,
+          "confidence": "confirmed",
+          "source_text": "2006BLT"
+        },
+        "class_society": {
+          "value": "BV",
+          "confidence": "confirmed",
+          "source_text": "BV CLASS"
+        },
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 14888,
+          "confidence": "confirmed",
+          "source_text": "14888MTS DWT"
+        },
+        "dwcc": {
+          "value": 14500,
+          "confidence": "confirmed",
+          "source_text": "14500MTS DWCC"
+        },
+        "draft_max": null,
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": null,
+        "hatches_count": null,
+        "grain_capacity": {
+          "value": 575000,
+          "confidence": "confirmed",
+          "source_text": "GR:575000 CBFT"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": {
+          "value": 20,
+          "confidence": "confirmed",
+          "source_text": "TT STR 20T/M2"
+        },
+        "geared": true,
+        "crane_capacity": {
+          "value": "3 x 30T",
+          "confidence": "confirmed",
+          "source_text": "3 X 30MTS CRANES"
+        },
+        "hatch_type": {
+          "value": "Open Hatch",
+          "confidence": "confirmed",
+          "source_text": "OPEN HATCH"
+        },
+        "vessel_type": {
+          "value": "GENERAL CARGO / BOX",
+          "confidence": "confirmed",
+          "source_text": "BOX-OPEN HATCH"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Tunisia",
+          "confidence": "confirmed",
+          "source_text": "OPEN TUNISIA ON 12-13TH MARCH"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-03-12",
+            "close": "2026-03-13",
+            "display": "12-13 March 2026"
+          },
+          "confidence": "interpreted",
+          "source_text": "OPEN TUNISIA ON 12-13TH MARCH"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "ITF fitted",
+            "confidence": "confirmed",
+            "source_text": "ITF FITTED"
+          },
+          {
+            "value": "Box-shaped / Open Hatch holds",
+            "confidence": "confirmed",
+            "source_text": "BOX-OPEN HATCH"
+          },
+          {
+            "value": "Tank top strength: 20T/M2",
+            "confidence": "confirmed",
+            "source_text": "TT STR 20T/M2"
+          }
+        ],
+        "unknown_terms": []
+      },
+      {
+        "vessel_name": {
+          "value": "M/V SABAHAT SONAY",
+          "confidence": "confirmed",
+          "source_text": "M/V SABAHAT SONAY"
+        },
+        "imo": null,
+        "flag": null,
+        "built": {
+          "value": 2007,
+          "confidence": "confirmed",
+          "source_text": "2007 BLT"
+        },
+        "class_society": {
+          "value": "BV",
+          "confidence": "confirmed",
+          "source_text": "BV CLASS"
+        },
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 14888,
+          "confidence": "confirmed",
+          "source_text": "14888MTS DWT"
+        },
+        "dwcc": {
+          "value": 14500,
+          "confidence": "confirmed",
+          "source_text": "14500MTS DWCC"
+        },
+        "draft_max": null,
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": null,
+        "hatches_count": null,
+        "grain_capacity": {
+          "value": 575000,
+          "confidence": "confirmed",
+          "source_text": "GR:575000 CBFT"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": {
+          "value": 20,
+          "confidence": "confirmed",
+          "source_text": "TT STR 20T/M2"
+        },
+        "geared": true,
+        "crane_capacity": {
+          "value": "3 x 30T",
+          "confidence": "confirmed",
+          "source_text": "3 X 30MTS CRANES"
+        },
+        "hatch_type": {
+          "value": "Open Hatch",
+          "confidence": "confirmed",
+          "source_text": "OPEN HATCH"
+        },
+        "vessel_type": {
+          "value": "GENERAL CARGO / BOX",
+          "confidence": "confirmed",
+          "source_text": "BOX-OPEN HATCH"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Marmara",
+          "confidence": "confirmed",
+          "source_text": "OPEN MARMARA ON 16-17TH MARCH"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-03-16",
+            "close": "2026-03-17",
+            "display": "16-17 March 2026"
+          },
+          "confidence": "interpreted",
+          "source_text": "OPEN MARMARA ON 16-17TH MARCH"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "ITF fitted",
+            "confidence": "confirmed",
+            "source_text": "ITF FITTED"
+          },
+          {
+            "value": "Box-shaped / Open Hatch holds",
+            "confidence": "confirmed",
+            "source_text": "BOX-OPEN HATCH"
+          },
+          {
+            "value": "Tank top strength: 20T/M2",
+            "confidence": "confirmed",
+            "source_text": "TT STR 20T/M2"
+          }
+        ],
+        "unknown_terms": []
+      },
+      {
+        "vessel_name": {
+          "value": "TBN",
+          "confidence": "confirmed",
+          "source_text": "M/V TBN"
+        },
+        "imo": null,
+        "flag": null,
+        "built": null,
+        "class_society": null,
+        "p_and_i": null,
+        "dwt_summer": null,
+        "dwcc": {
+          "value": 17500,
+          "confidence": "confirmed",
+          "source_text": "17500MTS DWCC"
+        },
+        "draft_max": null,
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": null,
+        "hatches_count": null,
+        "grain_capacity": {
+          "value": 760000,
+          "confidence": "interpreted",
+          "source_text": "GRAIN CAP ABT 760 K CBFT"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": false,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO / BOX",
+          "confidence": "confirmed",
+          "source_text": "BOX TYPE"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Aegean Sea",
+          "confidence": "interpreted",
+          "source_text": "OPEN AGEAN SEA PROMPT"
+        },
+        "open_date": {
+          "value": {
+            "open": null,
+            "close": null,
+            "display": "PROMPT"
+          },
+          "confidence": "interpreted",
+          "source_text": "OPEN AGEAN SEA PROMPT"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "ITF fitted",
+            "confidence": "confirmed",
+            "source_text": "ITF FITTED"
+          },
+          {
+            "value": "Box type holds",
+            "confidence": "confirmed",
+            "source_text": "BOX TYPE"
+          },
+          {
+            "value": "Close Direct Owners vessel",
+            "confidence": "confirmed",
+            "source_text": "CLOSE DIRECT OWNERS M/V TBN"
+          }
+        ],
+        "unknown_terms": []
+      },
+      {
+        "vessel_name": {
+          "value": "TBN",
+          "confidence": "confirmed",
+          "source_text": "Close Direct Owners M/V TBN"
+        },
+        "imo": null,
+        "flag": null,
+        "built": {
+          "value": 2008,
+          "confidence": "confirmed",
+          "source_text": "2008"
+        },
+        "class_society": null,
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 22000,
+          "confidence": "interpreted",
+          "source_text": "22K dwt"
+        },
+        "dwcc": null,
+        "draft_max": null,
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": null,
+        "hatches_count": null,
+        "grain_capacity": {
+          "value": 993000,
+          "confidence": "interpreted",
+          "source_text": "Abt 993 k cbft"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": true,
+        "crane_capacity": {
+          "value": "3 x 20T",
+          "confidence": "confirmed",
+          "source_text": "3x20 tons"
+        },
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "uncertain",
+          "source_text": "Close Direct Owners M/V TBN – 22K dwt – 2008 – Abt 993 k cbft – 3x20 tons"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Beira, East Africa",
+          "confidence": "confirmed",
+          "source_text": "Open Beira,East Africa"
+        },
+        "open_date": {
+          "value": {
+            "open": null,
+            "close": null,
+            "display": "Mid April"
+          },
+          "confidence": "interpreted",
+          "source_text": "Open Beira,East Africa- Mid April"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Close Direct Owners vessel",
+            "confidence": "confirmed",
+            "source_text": "Close Direct Owners M/V TBN"
+          }
+        ],
+        "unknown_terms": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,433 @@
+{
+  "runId": "run-011-antiovr",
+  "timestamp": "2026-05-04T11:26:34.490Z",
+  "model": "gpt-5.5",
+  "cases": [
+    {
+      "caseId": "bulk_dwcc_overload/sample-006",
+      "category": "bulk_dwcc_overload",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 2,
+        "readiness_pairs": 2
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "ci-006-D",
+            "cargo_item_index": 0,
+            "vessel_email_id": "vp-006-D1",
+            "vessel_item_index": 0,
+            "score": 78,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 54,420 mt vs nominal cargo 54,000 mt gives ~99% utilization, with DWT 57,200 mt providing only a narrow deadweight buffer.",
+              "Readiness verdict 'ideal' — arrives 2026-06-20, 10 days before laycan start 2026-06-22 (gap_days=10).",
+              "Vessel is a Bulk Carrier with 4 × 30t cranes, suitable for a 54,000 mt soybean meal bulk stem.",
+              "Last cargo 'Soybean' is not Fishmeal, satisfying the odour-contamination restriction for vessel IMO 9387654.",
+              "Geographic fit is strong: vessel opens Montevideo on 2026-06-12 for Rosario load, with readiness arrival 2026-06-20."
+            ],
+            "issues": [
+              "Cargo restriction 'No vessels with last cargo Fishmeal — odour contamination risk' — vessel last_cargo='Soybean'.",
+              "Cargo restriction 'P&I Club must be IG member' — vessel P&I Club not specified for IMO 9387654.",
+              "Cargo weight max 56,000 mt exceeds vessel DWCC 54,420 mt by 1,580 mt; full charterers' option quantity may not fit."
+            ]
+          },
+          {
+            "cargo_email_id": "ci-006-D",
+            "cargo_item_index": 0,
+            "vessel_email_id": "vp-006-D2",
+            "vessel_item_index": 0,
+            "score": 24,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWT 55,000 mt vs cargo minimum 52,000 mt indicates the vessel can carry at least a partial stem, but DWCC limits intake.",
+              "Readiness verdict 'tight' — arrives 2026-06-22, on laycan start 2026-06-22 with gap_days=2 per readiness.",
+              "Vessel is a Bulk Carrier with 4 × 28t cranes, operationally suitable for soybean meal cargo handling.",
+              "Last cargo 'Grain' is not Fishmeal, satisfying the odour-contamination restriction for vessel IMO 9471093.",
+              "Geographic fit is close: vessel opens Buenos Aires on 2026-06-15 for Rosario load, with readiness arrival 2026-06-22."
+            ],
+            "issues": [
+              "Cargo restriction 'No vessels with last cargo Fishmeal — odour contamination risk' — vessel last_cargo='Grain'.",
+              "Cargo restriction 'P&I Club must be IG member' — vessel P&I Club not specified for IMO 9471093.",
+              "DWCC_VIOLATION from readiness: Vessel DWCC 52,800mt < cargo min 52,000mt — margin only 800mt but cargo_max 56,000mt exceeds DWCC by 3,200mt; partial load capped at 52,800mt.",
+              "Cargo weight max 56,000 mt exceeds vessel DWCC 52,800 mt by 3,200 mt; full charterers' option quantity cannot fit.",
+              "Readiness is tight with arrival 2026-06-22 at laycan start 2026-06-22, leaving minimal buffer."
+            ]
+          }
+        ]
+      },
+      "durationMs": 24928,
+      "costEstimate": {
+        "promptChars": 29415,
+        "outputChars": 2400,
+        "tokensIn": 7354,
+        "tokensOut": 600,
+        "usd": 0.0121925
+      }
+    },
+    {
+      "caseId": "bulk_open_position/sample-006",
+      "category": "bulk_open_position",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 3,
+        "readiness_pairs": 3
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "ci-006-A",
+            "cargo_item_index": 0,
+            "vessel_email_id": "vp-006-A",
+            "vessel_item_index": 0,
+            "score": 84,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 73,200 mt vs cargo 61,000 mt gives ~83% utilization, with headroom up to cargo max 65,000 mt.",
+              "Bulk Carrier of 76,500 DWT is compatible with Thermal coal cargo of 61,000 mt on Newcastle–Qingdao route.",
+              "Vessel cranes 4 × 30t support the cargo note 'Geared vessels preferred but not mandatory — loading terminal has shore cranes' for IMO 9431802.",
+              "Readiness verdict 'ideal' — arrival_date 2026-06-16 with gap_days=8 against laycan 2026-06-18 to 2026-06-24.",
+              "Vessel opens Port Hedland, Australia on 2026-06-10 for Newcastle, Australia loading, keeping the ballast within the same country/region."
+            ],
+            "issues": [
+              "Cargo restriction 'No vessels > 16 years old' — vessel build year/age not provided for IMO 9431802."
+            ]
+          },
+          {
+            "cargo_email_id": "ci-006-A",
+            "cargo_item_index": 0,
+            "vessel_email_id": "vp-006-B",
+            "vessel_item_index": 0,
+            "score": 52,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWT 63,000 mt vs nominal cargo 61,000 mt gives ~97% utilization, but DWCC needs close checking.",
+              "Last cargo 'Coal' matches Thermal coal commodity, reducing cargo-contamination concern for IMO 9518247.",
+              "Vessel cranes 4 × 36t support the cargo note 'Geared vessels preferred but not mandatory — loading terminal has shore cranes' for IMO 9518247.",
+              "Vessel opens Gladstone, Australia on 2026-06-14 for Newcastle, Australia loading, a regional Australian ballast position.",
+              "Bulk Carrier class is suitable for 61,000 mt Thermal coal cargo, subject to intake confirmation against DWCC 60,800 mt."
+            ],
+            "issues": [
+              "Readiness verdict 'idle' — arrival_date 2026-06-18 with gap_days=4, indicating idle/waiting risk before or at laycan.",
+              "Cargo restriction 'No vessels > 16 years old' — vessel build year/age not provided for IMO 9518247.",
+              "Cargo weight_mt_max 65,000 mt > vessel DWCC 60,800 mt by 4,200 mt; nominal 61,000 mt is also 200 mt above DWCC.",
+              "Vessel service_speed_kn=null — readiness likely used class-default speed, so sailing-time precision is lower."
+            ]
+          },
+          {
+            "cargo_email_id": "ci-006-A",
+            "cargo_item_index": 0,
+            "vessel_email_id": "vp-006-C",
+            "vessel_item_index": 0,
+            "score": 76,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 78,900 mt vs cargo 61,000 mt gives ~77% utilization, with capacity for cargo max 65,000 mt at ~82% utilization.",
+              "Bulk Carrier of 82,000 DWT is compatible with Thermal coal cargo of 61,000 mt.",
+              "Vessel cranes 4 × 35t support the cargo note 'Geared vessels preferred but not mandatory — loading terminal has shore cranes' for IMO 9602715.",
+              "Readiness verdict 'tight' — arrival_date 2026-06-18 with gap_days=2 against laycan 2026-06-18 to 2026-06-24.",
+              "Vessel opens Kembla, Australia on 2026-06-16 for Newcastle, Australia loading, keeping the ballast move within eastern Australia."
+            ],
+            "issues": [
+              "Cargo restriction 'No vessels > 16 years old' — vessel build year/age not provided for IMO 9602715."
+            ]
+          }
+        ]
+      },
+      "durationMs": 50410,
+      "costEstimate": {
+        "promptChars": 29784,
+        "outputChars": 2945,
+        "tokensIn": 7446,
+        "tokensOut": 737,
+        "usd": 0.0129925
+      }
+    },
+    {
+      "caseId": "cii_grade_d/sample-006",
+      "category": "cii_grade_d",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 2,
+        "readiness_pairs": 2
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "ci-006-G",
+            "cargo_item_index": 0,
+            "vessel_email_id": "vp-006-G1",
+            "vessel_item_index": 0,
+            "score": 35,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 36,400 mt vs cargo 32,000 mt gives ~88% utilization, and cargo max 34,000 mt remains within stated capacity.",
+              "Bulk Carrier of 38,000 DWT with no tween decks is structurally aligned with 32,000 mt raw sugar in bulk.",
+              "Vessel geared with 4 × 30t cranes, giving onboard gear support if Santos/Kandla berth operations require ship cranes.",
+              "Readiness verdict 'ideal' — arrives 2026-07-06 with gap_days=6 before laycan start 2026-07-08.",
+              "No petroleum-products last-cargo restriction satisfied — vessel last_cargo='Soybean meal', IMO 9557483."
+            ],
+            "issues": [
+              "Cargo restriction 'CII Grade D vessels not acceptable — Bunge vetting policy 2025 revision' triggered — vessel cii_grade='D', IMO 9557483.",
+              "Vessel cii_grade='D' must be treated as an unresolved vetting issue against the cargo's explicit Grade D ban, IMO 9557483."
+            ]
+          },
+          {
+            "cargo_email_id": "ci-006-G",
+            "cargo_item_index": 0,
+            "vessel_email_id": "vp-006-G2",
+            "vessel_item_index": 0,
+            "score": 84,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 35,100 mt vs cargo 32,000 mt gives ~91% utilization, and cargo max 34,000 mt remains within stated capacity.",
+              "Bulk Carrier of 36,500 DWT with no tween decks is a standard physical fit for 32,000 mt raw sugar in bulk.",
+              "Vessel geared with 4 × 35t cranes, giving stronger onboard lifting capacity than the 4 × 30t alternative.",
+              "Readiness verdict 'ideal' — arrives 2026-07-08 with gap_days=4 for laycan 2026-07-08/2026-07-14.",
+              "CII Grade D/E restrictions cleared — vessel cii_grade='B', IMO 9619874.",
+              "No petroleum-products last-cargo restriction satisfied — vessel last_cargo='Sugar', IMO 9619874."
+            ],
+            "issues": []
+          }
+        ]
+      },
+      "durationMs": 34238,
+      "costEstimate": {
+        "promptChars": 29326,
+        "outputChars": 1759,
+        "tokensIn": 7332,
+        "tokensOut": 440,
+        "usd": 0.011365
+      }
+    },
+    {
+      "caseId": "project_general_vessel/sample-006",
+      "category": "project_general_vessel",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 3,
+        "readiness_pairs": 3
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "ci-006-P",
+            "cargo_item_index": 0,
+            "vessel_email_id": "vp-006-P1",
+            "vessel_item_index": 0,
+            "score": 88,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 13,900 mt vs project cargo 240 mt → only ~2% utilization, leaving ample deadweight margin for securing, dunnage, and voyage stores.",
+              "Vessel type MPP with tween_decks=true matches the cargo requirement for 4 reactor vessels requiring tween-deck stowage.",
+              "Cranes 2 × 100t meet the cargo restriction 'Minimum 80t SWL crane capacity — individual piece weight 60t with rigging'.",
+              "Cargo pieces are 12.0 m L × 3.8 m W × 3.5 m H and vessel last cargo was Steel pipes, a compatible project/breakbulk history for reactor vessels.",
+              "Readiness verdict 'ideal' — arrival_date 2026-07-02 with gap_days=6 for Houston laycan 2026-07-04/2026-07-10.",
+              "No vessels with flag IR, KP, or SY restriction satisfied — vessel flag='NO', IMO 9523810."
+            ],
+            "issues": []
+          },
+          {
+            "cargo_email_id": "ci-006-P",
+            "cargo_item_index": 0,
+            "vessel_email_id": "vp-006-P2",
+            "vessel_item_index": 0,
+            "score": 25,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 30,700 mt vs project cargo 240 mt gives ample deadweight capacity, but the vessel is structurally weak for this cargo.",
+              "Readiness verdict 'ideal' — arrival_date 2026-07-01 with gap_days=8 for Houston laycan 2026-07-04/2026-07-10.",
+              "Vessel opens New Orleans on 2026-06-25 for Houston loading, a US Gulf positioning fit for the cargo load port."
+            ],
+            "issues": [
+              "CRANE_VIOLATION from readiness: Max crane SWL 4×30t — cannot achieve 80t single-hook lift required for 60t reactor pieces with rigging allowance.",
+              "Cargo restriction 'Minimum 80t SWL crane capacity — individual piece weight 60t with rigging' triggered — vessel cranes are 4 × 30t.",
+              "Cargo restriction 'Tween-deck mandatory — pieces cannot be stowed on deck' triggered — vessel tween_decks=false.",
+              "Vessel type Bulk Carrier with cranes 4 × 30t is a poor fit for 4 heavy reactor pieces of 60 mt each requiring project-cargo handling."
+            ]
+          },
+          {
+            "cargo_email_id": "ci-006-P",
+            "cargo_item_index": 0,
+            "vessel_email_id": "vp-006-P3",
+            "vessel_item_index": 0,
+            "score": 82,
+            "match_level": "good",
+            "match_reasons": [
+              "DWCC 9,200 mt vs project cargo 240 mt → about 3% utilization, leaving substantial margin for heavy-lift securing and dunnage.",
+              "Heavy-lift vessel with cranes 2 × 400t comfortably exceeds the 80t SWL requirement for 60t reactor pieces with rigging allowance.",
+              "Vessel has tween_decks=true, matching the cargo restriction 'Tween-deck mandatory — pieces cannot be stowed on deck'.",
+              "Cargo pieces are 12.0 m L × 3.8 m W × 3.5 m H and vessel last cargo was Turbine nacelles, a strong heavy/project-cargo history.",
+              "Readiness verdict 'tight' — arrival_date 2026-07-04 with gap_days=3 for Houston laycan 2026-07-04/2026-07-10.",
+              "No vessels with flag IR, KP, or SY restriction satisfied — vessel flag='CY', IMO 9591347."
+            ],
+            "issues": [
+              "Readiness verdict is 'tight' with arrival_date 2026-07-04, the same date as laycan_start 2026-07-04 despite gap_days=3."
+            ]
+          }
+        ]
+      },
+      "durationMs": 27389,
+      "costEstimate": {
+        "promptChars": 30101,
+        "outputChars": 2961,
+        "tokensIn": 7526,
+        "tokensOut": 741,
+        "usd": 0.0131125
+      }
+    },
+    {
+      "caseId": "sanctioned_flag/sample-006",
+      "category": "sanctioned_flag",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 2,
+        "readiness_pairs": 2
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "ci-006-S",
+            "cargo_item_index": 0,
+            "vessel_email_id": "vp-006-S1",
+            "vessel_item_index": 0,
+            "score": 18,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 20,800 mt vs cargo 18,500 mt nominal and 19,500 mt max → about 89% nominal utilization.",
+              "Readiness verdict 'ideal' — arrives 2026-06-26, 12 days before laycan start 2026-06-30 (gap_days=12).",
+              "Vessel has cranes 2 × 25t and 22,000 DWT, giving operational flexibility for a bulk feed parcel of 18,500 mt."
+            ],
+            "issues": [
+              "Cargo restriction 'No vessels flagged VE or with operators under OFAC Venezuela sanctions' triggered — vessel flag='VE', IMO 9337521.",
+              "Cargo restriction 'No vessels with PDVSA-linked ownership, management or operator' triggered — vessel operator='PDVSA Marina SA de CV', IMO 9337521.",
+              "Cargo restriction 'EU Reg 2017/2063 compliance mandatory for EU discharge' triggered — discharge port Antwerp, Belgium (BEANR) is EU and vessel flag/operator data shows VE/PDVSA exposure, IMO 9337521.",
+              "Vessel flag='VE' with discharge port Antwerp, Belgium (BEANR/EU) creates sanctions/compliance risk under the stated Venezuela-related restrictions, IMO 9337521.",
+              "Vessel last_cargo='Logs' before cargo commodity 'Corn gluten feed (bulk)' — verify hold cleanliness/certification for 18,500 mt feed cargo.",
+              "Vessel grain/bale capacity not specified — cargo volume is 18,500 mt × SF 1.58 = 29,230 cbm, so volumetric intake cannot be confirmed from provided data."
+            ]
+          },
+          {
+            "cargo_email_id": "ci-006-S",
+            "cargo_item_index": 0,
+            "vessel_email_id": "vp-006-S2",
+            "vessel_item_index": 0,
+            "score": 68,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 20,400 mt vs cargo 18,500 mt nominal and 19,500 mt max → about 91% nominal utilization with 900 mt headroom over max quantity.",
+              "Readiness verdict 'tight' — arrives 2026-07-01, 2 days after laycan start 2026-06-30 but within laycan ending 2026-07-06 (gap_days=2).",
+              "Vessel opens Recife, Brazil on 2026-06-22 for Paranagua, Brazil loading, keeping the ballast leg within the same coastal region.",
+              "Vessel cranes 2 × 30t and service speed 13.5 kn are specified, improving operational confidence for the 18,500 mt bulk feed parcel.",
+              "No-VE-flag restriction satisfied — vessel flag='LR' and IMO 9488310, not VE.",
+              "No-PDVSA-linked operator restriction satisfied — vessel operator='Hansa Shipping GmbH & Co KG', IMO 9488310.",
+              "Last cargo 'Grain' is compatible by cargo class with corn gluten feed bulk, and the parcel is 18,500 mt."
+            ],
+            "issues": [
+              "Cargo restriction 'EU Reg 2017/2063 compliance mandatory for EU discharge' requires documentary compliance confirmation for Antwerp, Belgium (BEANR/EU), IMO 9488310.",
+              "Timing is tight — readiness verdict 'tight' with arrival_date 2026-07-01 and laycan 2026-06-30/2026-07-06 leaves limited operating buffer.",
+              "Vessel grain/bale capacity not specified — cargo volume is 18,500 mt × SF 1.58 = 29,230 cbm, so volumetric intake cannot be confirmed from provided data.",
+              "Vessel type is General Cargo with tween_decks=true rather than a bulk carrier, so suitability for 18,500 mt bulk corn gluten feed loading should be checked with owners."
+            ]
+          }
+        ]
+      },
+      "durationMs": 29905,
+      "costEstimate": {
+        "promptChars": 29405,
+        "outputChars": 3076,
+        "tokensIn": 7352,
+        "tokensOut": 769,
+        "usd": 0.013035000000000001
+      }
+    },
+    {
+      "caseId": "strict_laycan_tight_window/sample-006",
+      "category": "strict_laycan_tight_window",
+      "inputCardinality": {
+        "cargoes": 1,
+        "vessels": 3,
+        "readiness_pairs": 3
+      },
+      "output": {
+        "matches": [
+          {
+            "cargo_email_id": "ci-006-L",
+            "cargo_item_index": 0,
+            "vessel_email_id": "vp-006-L1",
+            "vessel_item_index": 0,
+            "score": 55,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 26,500 mt vs cargo 22,000 mt gives about 83% utilization, with 3,500 mt margin over the 23,000 mt maximum.",
+              "General Cargo vessel with tween decks and 3 × 25t cranes is suitable for 22,000 mt bagged Basmati rice handling.",
+              "Last cargo 'Bagged sugar' is not chemicals or petroleum products, satisfying the cargo restriction for vessel IMO 9534981.",
+              "Readiness verdict 'tight' — arrives 2026-06-25 with gap_days=0 before laycan start 2026-06-26."
+            ],
+            "issues": [
+              "Cargo restriction 'No laycan extensions — consignee appointment fixed' applies to this fixture and leaves no recovery room if arrival or berthing slips.",
+              "Cargo restriction 'Vessel must present NOR by 06:00 LT on 2026-06-26 at earliest' requires NOR timing control against ETA 2026-06-25 18:00 LT.",
+              "Cargo restriction 'No vessels carrying last cargo chemicals or petroleum products' must be checked against last_cargo='Bagged sugar'.",
+              "SUB_DAY_BUFFER from readiness: Vessel ETA 2026-06-25 18:00 LT — arrives evening before laycan_start 06:00 LT 2026-06-26; buffer ~12h only; no-extensions clause elevates risk.",
+              "Effective buffer is only about 12h before the 06:00 LT NOR window on 2026-06-26, so one weather or port delay could break the fixed consignee appointment."
+            ]
+          },
+          {
+            "cargo_email_id": "ci-006-L",
+            "cargo_item_index": 0,
+            "vessel_email_id": "vp-006-L2",
+            "vessel_item_index": 0,
+            "score": 62,
+            "match_level": "possible",
+            "match_reasons": [
+              "DWCC 23,000 mt exactly covers the cargo maximum 23,000 mt, while nominal 22,000 mt gives about 96% utilization.",
+              "General Cargo vessel with tween decks and 2 × 30t cranes is suitable for 22,000 mt bagged Basmati rice operations.",
+              "Readiness verdict 'ideal' — arrives 2026-06-23, 5 days before laycan start 2026-06-26."
+            ],
+            "issues": [
+              "Cargo restriction 'No laycan extensions — consignee appointment fixed' applies to this fixture and should be protected despite the 5-day arrival buffer.",
+              "Cargo restriction 'Vessel must present NOR by 06:00 LT on 2026-06-26 at earliest' requires NOR timing control because vessel arrives 2026-06-23.",
+              "Cargo restriction 'No vessels carrying last cargo chemicals or petroleum products' must be checked against last_cargo='Fertilizer bags'.",
+              "Vessel last_cargo='Fertilizer bags' before cargo commodity 'Basmati rice (bagged)' — hold cleaning/certification required for food-grade cargo.",
+              "DWCC 23,000 mt equals cargo weight_mt_max 23,000 mt, leaving 0 mt deadweight margin at maximum quantity."
+            ]
+          },
+          {
+            "cargo_email_id": "ci-006-L",
+            "cargo_item_index": 0,
+            "vessel_email_id": "vp-006-L3",
+            "vessel_item_index": 0,
+            "score": 15,
+            "match_level": "weak",
+            "match_reasons": [
+              "DWCC 29,200 mt vs cargo 22,000 mt gives about 75% utilization, with 6,200 mt margin over the 23,000 mt maximum.",
+              "General Cargo vessel with tween decks and 4 × 25t cranes is suitable for 22,000 mt bagged rice handling.",
+              "Last cargo 'Rice' matches cargo commodity 'Basmati rice (bagged)', supporting hold suitability for vessel IMO 9611452.",
+              "Readiness verdict 'late' — arrives 2026-06-29 with gap_days=-2 after the 2026-06-26/2026-06-27 laycan."
+            ],
+            "issues": [
+              "Cargo restriction 'No laycan extensions — consignee appointment fixed' is directly problematic because the vessel arrives 2026-06-29 after laycan end 2026-06-27.",
+              "Cargo restriction 'Vessel must present NOR by 06:00 LT on 2026-06-26 at earliest' cannot be met on the planned ETA 2026-06-29.",
+              "Cargo restriction 'No vessels carrying last cargo chemicals or petroleum products' must be checked against last_cargo='Rice'.",
+              "LAYCAN_VIOLATION from readiness: Vessel ETA 2026-06-29 — 2 days after laycan_end 2026-06-27; laycan missed."
+            ]
+          }
+        ]
+      },
+      "durationMs": 32036,
+      "costEstimate": {
+        "promptChars": 30159,
+        "outputChars": 3726,
+        "tokensIn": 7540,
+        "tokensOut": 932,
+        "usd": 0.014085
+      }
+    }
+  ],
+  "totalsCost": {
+    "tokensIn": 44550,
+    "tokensOut": 4219,
+    "usd": 0.0768
+  }
+}

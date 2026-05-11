@@ -1,0 +1,135 @@
+{
+  "id": "etms-parse-cargo-025",
+  "source_email_id": "19e07cc094fc3aa2",
+  "category": "numeric_edge",
+  "input": {
+    "subject": "FW: any 20.000 - 33.000 mts phos 1 RED SEA / INDONESIA",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:34:30.000Z",
+    "body": " \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Wednesday, 6 May 2026 15:55\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: any 20.000 - 33.000 mts phos 1 RED SEA / INDONESIA\r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\ngday\r\n\r\npls offer described ladies for the fol firm cargo - do not recirculate :\r\n\r\nany 20,000- 33,000 mts ROCK PHOSPHATE IN BULK\r\n1 ADABIYA OR SAFAGA OR AIN SOKHNA / SEMARANG, INDONESIA\r\n5.000 FSHEX / 2.500 SSHEX\r\n15 - 30 MAY\r\n2.5% ttl here \r\n\r\n\r\n\r\nBEST RGRDS\r\nTASOS KOUMANIS ( mob. 00306937322574)\r\nE MAILS : chartering@niavigrains.gr <mailto:chartering@niavigrains.gr>  \r\n\r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr <http://www.niavigrains.gr> \r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\nSKYPE : NIAVIGRAINS Tasos\r\nLinkedIn: www.linkedin.com/in/tasoskoumanis <http://www.linkedin.com/in/tasoskoumanis> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Adabiya or Safaga or Ain Sokhna",
+          "confidence": "confirmed",
+          "source_text": "1 ADABIYA OR SAFAGA OR AIN SOKHNA / SEMARANG, INDONESIA"
+        },
+        "origin_country": {
+          "value": "Egypt",
+          "confidence": "interpreted",
+          "source_text": "1 ADABIYA OR SAFAGA OR AIN SOKHNA / SEMARANG, INDONESIA"
+        },
+        "destination_port": {
+          "value": "Semarang",
+          "confidence": "confirmed",
+          "source_text": "1 ADABIYA OR SAFAGA OR AIN SOKHNA / SEMARANG, INDONESIA"
+        },
+        "destination_country": {
+          "value": "Indonesia",
+          "confidence": "confirmed",
+          "source_text": "SEMARANG, INDONESIA"
+        },
+        "cargo_description": {
+          "value": "Rock Phosphate in Bulk",
+          "confidence": "confirmed",
+          "source_text": "any 20,000- 33,000 mts ROCK PHOSPHATE IN BULK"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 33000,
+          "confidence": "interpreted",
+          "source_text": "any 20,000- 33,000 mts ROCK PHOSPHATE IN BULK"
+        },
+        "weight_mt_min": {
+          "value": 20000,
+          "confidence": "confirmed",
+          "source_text": "any 20,000- 33,000 mts ROCK PHOSPHATE IN BULK"
+        },
+        "weight_mt_max": {
+          "value": 33000,
+          "confidence": "confirmed",
+          "source_text": "any 20,000- 33,000 mts ROCK PHOSPHATE IN BULK"
+        },
+        "volume_cbm": {
+          "value": null
+        },
+        "dimensions": {
+          "value": null
+        },
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "ROCK PHOSPHATE IN BULK"
+        },
+        "container_type": {
+          "value": null
+        },
+        "quantity": {
+          "value": null
+        },
+        "incoterms": {
+          "value": null
+        },
+        "preferred_dates": {
+          "value": "15 - 30 May 2026",
+          "confidence": "confirmed",
+          "source_text": "15 - 30 MAY"
+        },
+        "laycan": {
+          "value": "15/30 May 2026",
+          "confidence": "confirmed",
+          "source_text": "15 - 30 MAY"
+        },
+        "loading_rate": {
+          "value": 5000,
+          "confidence": "confirmed",
+          "source_text": "5.000 FSHEX / 2.500 SSHEX"
+        },
+        "loading_terms": {
+          "value": "FSHEX",
+          "confidence": "confirmed",
+          "source_text": "5.000 FSHEX / 2.500 SSHEX"
+        },
+        "discharge_rate": {
+          "value": 2500,
+          "confidence": "confirmed",
+          "source_text": "5.000 FSHEX / 2.500 SSHEX"
+        },
+        "discharge_terms": {
+          "value": "SSHEX",
+          "confidence": "confirmed",
+          "source_text": "5.000 FSHEX / 2.500 SSHEX"
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl here"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl here"
+        },
+        "special_requirements": {
+          "value": "Multiple load port options: Adabiya, Safaga, or Ain Sokhna (Red Sea, Egypt). Do not recirculate.",
+          "confidence": "confirmed",
+          "source_text": "1 ADABIYA OR SAFAGA OR AIN SOKHNA / SEMARANG, INDONESIA"
+        },
+        "stowage_factor": {
+          "value": null
+        },
+        "missing_info": [
+          "Freight rate not specified",
+          "Laytime terms at load port apply to discharge as well or separate terms unclear (FSHEX load / SSHEX discharge noted but no confirmation whether these are FIO or owner's expense terms)",
+          "Charter party form not specified",
+          "Demurrage / despatch rate not specified",
+          "No NOR tendering conditions stated (WIBON/WIPON etc.)"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-137",
+  "source_email_id": "19e097b52ea0fd0e",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: 1 Turkey / 1 UK - 3000/5000 mts steels // EXCL //",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:25:35.000Z",
+    "body": " \r\n\r\nFrom: Mustafa SAY - BA Chartering Istanbul <mustafa@bachartering.com> \r\nSent: Thursday, 26 February 2026 10:24\r\nTo: Mustafa SAY - BA Chartering Istanbul <mustafa@bachartering.com>\r\nSubject: 1 Turkey / 1 UK - 3000/5000 mts steels // EXCL // \r\n\r\n \r\n\r\n Dear All,\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPlease offer for our below fully firm exclusive lots;\r\n\r\n1 Turkey / 1 UK\r\n3000/5000 mts steel stw dwt\r\nttl days\r\nspot prompt - can try beg march dates as well.\r\n3,75 ttl comm\r\n\r\n \r\n\r\nAnd\r\n\r\n \r\n\r\n1 Turkey / 1 UK\r\n3000/5000 mts steel stw dwt\r\nttl days\r\n5-10 March\r\n3,75 ttl comm\r\n\r\n \r\n\r\n \r\n\r\n Best Regards\r\n\r\nMustafa Say\r\n\r\n \r\n\r\nBA CHARTERING ISTANBUL\r\n\r\nFener Kalamis Cad. Doganbey Apt. No 91 D:3\r\n\r\nFenerbahce/Kadikoy/Istanbul\r\n\r\n \r\n\r\nTel : +90 532 603 51 28\r\n\r\ne-mail :  <mailto:mustafa@bachartering.com> mustafa@bachartering.com /\r\n<mailto:chartering@bachartering.com> chartering@bachartering.com \r\n\r\nwebsite :  <http://www.bachartering.com> www.bachartering.com \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e097b52ea0fd0e",
+    "category": "CARGO_INQUIRY",
+    "urgency": "low",
+    "confidence": 0.72,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Mustafa Say",
+    "original_sender_company": "BA CHARTERING ISTANBUL"
+  }
+}

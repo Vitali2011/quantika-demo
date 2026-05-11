@@ -1,0 +1,131 @@
+{
+  "id": "etms-parse-cargo-062",
+  "source_email_id": "19e07d8a6370f3a1",
+  "category": "forwarded",
+  "input": {
+    "subject": "FW: EC India / West Africa 40000 mt Bgd Rice",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:48:17.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: PNA Shipbrokers - Singapore <pna@pnaship.com> \r\nSent: Wednesday, 6 May 2026 08:19\r\nTo: pna@pnaship.com\r\nSubject: EC India / West Africa 40000 mt Bgd Rice\r\n\r\n\r\n\r\nFROM: PACIFIC & ATLANTIC SHIPBROKERS - SINGAPORE / (Email/Teams:\r\npna@pnaship.com)\r\n\r\n**\r\n\r\nRE: EC INDIA / WEST AFRICA - 40000 MT BGD RICE \r\n\r\n- 40,000 mts of bagged rice sf 48-50 wog\r\n- load port : kakinada, ec india\r\n- laycan 20 may / onwd (try vsl dates) \r\n- discharge port : 10,000 mts to banjul, gambia + 30,000 mts to dakar,\r\nsenegal\r\n- load rate: 2,000 mts pwwd sshex eiu\r\n- discharge rate: banjul : 2,000 mts pwwd sshex eiu / dakar : 1,500 mts pwwd\r\nsshe eiu\r\n- 3.75pct \r\n\r\n\r\nRGDS \r\nTONY (TEAMS: pna@pnaship.com)\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Kakinada",
+          "confidence": "confirmed",
+          "source_text": "load port : kakinada, ec india"
+        },
+        "origin_country": {
+          "value": "India",
+          "confidence": "confirmed",
+          "source_text": "load port : kakinada, ec india"
+        },
+        "destination_port": {
+          "value": "Banjul / Dakar (split discharge: 10,000 MT to Banjul, 30,000 MT to Dakar)",
+          "confidence": "confirmed",
+          "source_text": "discharge port : 10,000 mts to banjul, gambia + 30,000 mts to dakar, senegal"
+        },
+        "destination_country": {
+          "value": "Gambia / Senegal",
+          "confidence": "confirmed",
+          "source_text": "discharge port : 10,000 mts to banjul, gambia + 30,000 mts to dakar, senegal"
+        },
+        "cargo_description": {
+          "value": "Bagged rice, stowage factor 48-50 CBM/MT (WOG)",
+          "confidence": "confirmed",
+          "source_text": "40,000 mts of bagged rice sf 48-50 wog"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 40000,
+          "confidence": "confirmed",
+          "source_text": "40,000 mts of bagged rice sf 48-50 wog"
+        },
+        "weight_mt_min": 40000,
+        "weight_mt_max": 40000,
+        "volume_cbm": {
+          "value": null
+        },
+        "dimensions": {
+          "value": null
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "40,000 mts of bagged rice sf 48-50 wog"
+        },
+        "container_type": {
+          "value": null
+        },
+        "quantity": {
+          "value": null
+        },
+        "incoterms": {
+          "value": null
+        },
+        "preferred_dates": {
+          "value": "20 May 2026 onwards (try vessel dates)",
+          "confidence": "confirmed",
+          "source_text": "laycan 20 may / onwd (try vsl dates)"
+        },
+        "laycan": {
+          "value": "20 May 2026 onwards",
+          "confidence": "interpreted",
+          "source_text": "laycan 20 may / onwd (try vsl dates)"
+        },
+        "loading_rate": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "load rate: 2,000 mts pwwd sshex eiu"
+        },
+        "loading_terms": {
+          "value": "PWWD SSHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "load rate: 2,000 mts pwwd sshex eiu"
+        },
+        "discharge_rate": {
+          "value": "Banjul: 2,000 MT/day PWWD SSHEX EIU; Dakar: 1,500 MT/day PWWD SSHEX EIU",
+          "confidence": "interpreted",
+          "source_text": "discharge rate: banjul : 2,000 mts pwwd sshex eiu / dakar : 1,500 mts pwwd sshe eiu"
+        },
+        "discharge_terms": {
+          "value": "PWWD SSHEX EIU (both discharge ports; note: 'sshe eiu' for Dakar interpreted as SSHEX EIU — possible typo in original)",
+          "confidence": "interpreted",
+          "source_text": "discharge rate: banjul : 2,000 mts pwwd sshex eiu / dakar : 1,500 mts pwwd sshe eiu"
+        },
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75pct"
+        },
+        "commission_terms": {
+          "value": null
+        },
+        "special_requirements": {
+          "value": "Split discharge: 10,000 MT at Banjul (Gambia), 30,000 MT at Dakar (Senegal). Stowage factor 48-50 CBM/MT WOG (Without Guarantee).",
+          "confidence": "confirmed",
+          "source_text": "discharge port : 10,000 mts to banjul, gambia + 30,000 mts to dakar, senegal"
+        },
+        "stowage_factor": {
+          "value": "48-50 CBM/MT (WOG)",
+          "confidence": "confirmed",
+          "source_text": "40,000 mts of bagged rice sf 48-50 wog"
+        },
+        "missing_info": [
+          "Freight rate not specified (enquiry stage — 'try vessel dates' suggests open negotiation)",
+          "Commission split not specified (no TTL BENDS / address commission breakdown for 3.75%)",
+          "Demurrage / despatch terms not mentioned",
+          "Incoterms not stated",
+          "Bills of lading / charter party form not specified",
+          "Exact laycan end date not provided — open-ended 'onwards'"
+        ],
+        "unknown_terms": [
+          "pwwd — likely 'Per Weather Working Day' but not in the provided glossary; flagged for confirmation"
+        ]
+      }
+    ]
+  }
+}

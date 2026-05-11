@@ -1,0 +1,114 @@
+{
+  "id": "etms-parse-cargo-090",
+  "source_email_id": "19e097a1fe67ba9a",
+  "category": "single_cargo",
+  "input": {
+    "subject": "FW: 5-6k corn Pivdennyi/Cyprus",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:24:16.000Z",
+    "body": " \r\n\r\n \r\n\r\nFrom: Noreply <noreply-bounces@lists.circular-chart.com> On Behalf Of Marelis Chartering\r\nSent: Thursday, 26 February 2026 10:33\r\nTo: noreply@lists.circular-chart.com\r\nSubject: Re: 5-6k corn Pivdennyi/Cyprus\r\n\r\n \r\n\r\nDear Sirs,\r\n\r\nGood day,\r\n\r\nPls propose suitable tonnage for:\r\n\r\nnot for recirculation\r\n\r\nPidennyi - Cyprus \r\n5000-6000 mt Corn sf 50 \r\n1500/1500\r\nEnd feb - beg march\r\n1.25 marelis \r\n\r\n \r\n\r\n \r\n\r\nKind Regards\r\n\r\n \r\n\r\nMichael Sobol-Pugachev\r\n\r\nBrokerage Dpt.\r\n\r\nMarelis Navigation S.A.\r\n\r\nMobile: : +306989020300\r\n\r\nWhatsApp: : +306989020300\r\n\r\nE-mail:  <mailto:chartering@marelis-nav.com%22%20%5Ct%20%22_blank> chartering@marelis-nav.com\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nThis is not a spam or junk mail. It's regular mail of shipping&chartering business. If you are not interested in content of our messages,please send a message with the subject \"Unsubscribe\" to  <mailto:unsubscribe@marelis-nav.com%22%20%5Ct%20%22_blank> unsubscribe@marelis-nav.com\r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Pivdennyi (Yuzhne)",
+          "confidence": "interpreted",
+          "source_text": "Pidennyi - Cyprus"
+        },
+        "origin_country": {
+          "value": "Ukraine",
+          "confidence": "interpreted",
+          "source_text": "Pidennyi - Cyprus"
+        },
+        "destination_port": {
+          "value": "Cyprus",
+          "confidence": "confirmed",
+          "source_text": "Pidennyi - Cyprus"
+        },
+        "destination_country": {
+          "value": "Cyprus",
+          "confidence": "confirmed",
+          "source_text": "Pidennyi - Cyprus"
+        },
+        "cargo_description": {
+          "value": "Corn, stowage factor 50 CBM/MT",
+          "confidence": "confirmed",
+          "source_text": "5000-6000 mt Corn sf 50"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 6000,
+          "confidence": "interpreted",
+          "source_text": "5000-6000 mt Corn sf 50"
+        },
+        "weight_mt_min": {
+          "value": 5000,
+          "confidence": "confirmed",
+          "source_text": "5000-6000 mt Corn sf 50"
+        },
+        "weight_mt_max": {
+          "value": 6000,
+          "confidence": "confirmed",
+          "source_text": "5000-6000 mt Corn sf 50"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "5000-6000 mt Corn sf 50"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "End February to beginning of March 2026",
+          "confidence": "interpreted",
+          "source_text": "End feb - beg march"
+        },
+        "laycan": {
+          "value": "End February – beginning March 2026",
+          "confidence": "interpreted",
+          "source_text": "End feb - beg march"
+        },
+        "loading_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "1500/1500"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "1500/1500"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 1.25,
+          "confidence": "confirmed",
+          "source_text": "1.25 marelis"
+        },
+        "commission_terms": {
+          "value": "Marelis (broker address commission)",
+          "confidence": "interpreted",
+          "source_text": "1.25 marelis"
+        },
+        "special_requirements": null,
+        "stowage_factor": {
+          "value": 50,
+          "confidence": "confirmed",
+          "source_text": "Corn sf 50"
+        },
+        "missing_info": [
+          "Exact specific discharge port(s) in Cyprus not stated",
+          "Laytime terms (SHINC/SHEX) not specified for loading/discharge rates",
+          "Freight rate / freight basis not indicated",
+          "Incoterms not specified",
+          "Whether cargo is subject to phytosanitary / fumigation requirements not stated"
+        ],
+        "unknown_terms": []
+      }
+    ]
+  }
+}

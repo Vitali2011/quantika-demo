@@ -1,0 +1,134 @@
+{
+  "id": "etms-parse-cargo-041",
+  "source_email_id": "19e07d149d83b38a",
+  "category": "single_cargo",
+  "input": {
+    "subject": "FW: any 4.800 - 5.900 mts blocks BEIRA / ITALY",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:40:14.000Z",
+    "body": " \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Wednesday, 6 May 2026 12:12\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: any 4.800 - 5.900 mts blocks BEIRA / ITALY\r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n\r\ngday\r\n\r\n \r\n\r\npls propose described - prefer GEARED-  ladies for the fol Firm cargo (sole or part cargo) : \r\n\r\n\r\nBeira (Mozambique) / Pozzallo (Italy)\r\n4800 -  5900 mts of Granite Blocks  (max uw 30 tns)\r\nSPOT / ppt\r\nCop / 4 WWD\r\n3.75%  ttl here\r\n\r\n\r\n\r\nBEST RGRDS\r\nTASOS KOUMANIS ( mob. 00306937322574)\r\nE MAILS : chartering@niavigrains.gr <mailto:chartering@niavigrains.gr>  \r\n\r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr <http://www.niavigrains.gr> \r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\nSKYPE : NIAVIGRAINS Tasos\r\nLinkedIn: www.linkedin.com/in/tasoskoumanis <http://www.linkedin.com/in/tasoskoumanis> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Beira",
+          "confidence": "confirmed",
+          "source_text": "Beira (Mozambique) / Pozzallo (Italy)"
+        },
+        "origin_country": {
+          "value": "Mozambique",
+          "confidence": "confirmed",
+          "source_text": "Beira (Mozambique) / Pozzallo (Italy)"
+        },
+        "destination_port": {
+          "value": "Pozzallo",
+          "confidence": "confirmed",
+          "source_text": "Beira (Mozambique) / Pozzallo (Italy)"
+        },
+        "destination_country": {
+          "value": "Italy",
+          "confidence": "confirmed",
+          "source_text": "Beira (Mozambique) / Pozzallo (Italy)"
+        },
+        "cargo_description": {
+          "value": "Granite Blocks, max unit weight 30 tons",
+          "confidence": "confirmed",
+          "source_text": "4800 -  5900 mts of Granite Blocks  (max uw 30 tns)"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 5900,
+          "confidence": "interpreted",
+          "source_text": "4800 -  5900 mts of Granite Blocks"
+        },
+        "weight_mt_min": {
+          "value": 4800,
+          "confidence": "confirmed",
+          "source_text": "4800 -  5900 mts of Granite Blocks"
+        },
+        "weight_mt_max": {
+          "value": 5900,
+          "confidence": "confirmed",
+          "source_text": "4800 -  5900 mts of Granite Blocks"
+        },
+        "volume_cbm": {
+          "value": null
+        },
+        "dimensions": {
+          "value": null
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "4800 -  5900 mts of Granite Blocks  (max uw 30 tns)"
+        },
+        "container_type": {
+          "value": null
+        },
+        "quantity": {
+          "value": null
+        },
+        "incoterms": {
+          "value": null
+        },
+        "preferred_dates": {
+          "value": "SPOT / prompt",
+          "confidence": "confirmed",
+          "source_text": "SPOT / ppt"
+        },
+        "laycan": {
+          "value": null
+        },
+        "loading_rate": {
+          "value": null
+        },
+        "loading_terms": {
+          "value": "COP / 4 WWD",
+          "confidence": "confirmed",
+          "source_text": "Cop / 4 WWD"
+        },
+        "discharge_rate": {
+          "value": null
+        },
+        "discharge_terms": {
+          "value": null
+        },
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75%  ttl here"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "3.75%  ttl here"
+        },
+        "special_requirements": {
+          "value": "Geared vessel preferred; sole or part cargo acceptable; granite blocks max unit weight 30 tons",
+          "confidence": "confirmed",
+          "source_text": "prefer GEARED-  ladies for the fol Firm cargo (sole or part cargo)"
+        },
+        "stowage_factor": {
+          "value": null
+        },
+        "unknown_terms": [
+          {
+            "term": "COP",
+            "context": "Cop / 4 WWD",
+            "note": "Possibly 'Charterers Option Port' or a laytime term variant — not a standard recognized abbreviation in this context; flagged for human review"
+          }
+        ],
+        "missing_info": [
+          "Discharge terms / discharge rate not specified",
+          "No laycan window provided (only SPOT/ppt)",
+          "Incoterms not stated",
+          "Freight rate expectation not provided",
+          "Stowage factor for granite blocks not stated (relevant for vessel selection)"
+        ]
+      }
+    ]
+  }
+}

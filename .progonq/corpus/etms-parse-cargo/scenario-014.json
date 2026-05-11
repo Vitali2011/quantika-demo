@@ -1,0 +1,130 @@
+{
+  "id": "etms-parse-cargo-014",
+  "source_email_id": "19e07c6291acbfd4",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: NON EU // EMED - WMED ABT 4000-4500 TS GENERAL CARGO",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:28:04.000Z",
+    "body": " \r\n\r\nFrom: BA Chartering Istanbul <chartering@bachartering.com> \r\nSent: Friday, 8 May 2026 09:48\r\nTo: Mustafa SAY - BA Chartering Istanbul <mustafa@bachartering.com>\r\nSubject: NON EU // EMED - WMED ABT 4000-4500 TS GENERAL CARGO \r\n\r\n \r\n\r\nDear All,\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPlease advise yr suitable positions for our below firm cargo ;\r\n\r\n \r\n\r\n1 EMED / 1WMED \r\n\r\n4300-4500 TS STEEL PRODUCTS STW DWT\r\n\r\n1500x/1250x\r\n\r\n16-20 MAY \r\n\r\n2.5 ttl comm\r\n\r\n \r\n\r\n-further details available upon your firm interest \r\n\r\n \r\n\r\nBest Regards\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Eastern Mediterranean (1 port)",
+          "confidence": "interpreted",
+          "source_text": "1 EMED / 1WMED"
+        },
+        "origin_country": {
+          "value": null
+        },
+        "destination_port": {
+          "value": "Western Mediterranean (1 port)",
+          "confidence": "interpreted",
+          "source_text": "1 EMED / 1WMED"
+        },
+        "destination_country": {
+          "value": null
+        },
+        "cargo_description": {
+          "value": "Steel products",
+          "confidence": "confirmed",
+          "source_text": "4300-4500 TS STEEL PRODUCTS STW DWT"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 4500,
+          "confidence": "interpreted",
+          "source_text": "4300-4500 TS STEEL PRODUCTS STW DWT"
+        },
+        "weight_mt_min": {
+          "value": 4300,
+          "confidence": "confirmed",
+          "source_text": "4300-4500 TS STEEL PRODUCTS STW DWT"
+        },
+        "weight_mt_max": {
+          "value": 4500,
+          "confidence": "confirmed",
+          "source_text": "4300-4500 TS STEEL PRODUCTS STW DWT"
+        },
+        "volume_cbm": {
+          "value": null
+        },
+        "dimensions": {
+          "value": null
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "interpreted",
+          "source_text": "STEEL PRODUCTS"
+        },
+        "container_type": {
+          "value": null
+        },
+        "quantity": {
+          "value": null
+        },
+        "incoterms": {
+          "value": null
+        },
+        "preferred_dates": {
+          "value": "16–20 May 2026",
+          "confidence": "confirmed",
+          "source_text": "16-20 MAY"
+        },
+        "laycan": {
+          "value": "16–20 May 2026",
+          "confidence": "confirmed",
+          "source_text": "16-20 MAY"
+        },
+        "loading_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "1500x/1250x"
+        },
+        "loading_terms": {
+          "value": null
+        },
+        "discharge_rate": {
+          "value": 1250,
+          "confidence": "confirmed",
+          "source_text": "1500x/1250x"
+        },
+        "discharge_terms": {
+          "value": null
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5 ttl comm"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "2.5 ttl comm"
+        },
+        "special_requirements": {
+          "value": "Non-EU cargo/trade",
+          "confidence": "confirmed",
+          "source_text": "NON EU"
+        },
+        "stowage_factor": {
+          "value": "STW DWT (stowage factor equals deadweight — cargo fills full DWT)",
+          "confidence": "interpreted",
+          "source_text": "STEEL PRODUCTS STW DWT"
+        },
+        "missing_info": [
+          "Specific load port within Eastern Mediterranean not named",
+          "Specific discharge port within Western Mediterranean not named",
+          "Loading/discharge cost-allocation terms not stated (FIO, FIOST, CQD, etc.)",
+          "Freight rate not indicated",
+          "Demurrage/despatch terms not stated",
+          "Exact steel product type not specified (coils, pipes, plates, beams, etc.)"
+        ]
+      }
+    ]
+  }
+}

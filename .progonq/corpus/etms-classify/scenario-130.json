@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-130",
+  "source_email_id": "19e09795d905a46f",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: PLS PROPOSE SUITABLE CGOES FOR OUR BELOW HOME TONNAGES AND CLOSE OWNERS' VSLS",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:23:27.000Z",
+    "body": " \r\n\r\nFrom: SONAY DENIZCILIK <sonay@sonayshipping.com> \r\nSent: Thursday, 26 February 2026 10:50\r\nTo: management@etm-services.net\r\nSubject: PLS PROPOSE SUITABLE CGOES FOR OUR BELOW HOME TONNAGES AND CLOSE OWNERS' VSLS\r\n\r\n \r\n\r\nGOOD DAY \r\n\r\nPLS PROPOSE SUITABLE CGOES FOR OUR BELOW HOME TONNAGES AND CLOSE OWNERS' VSLS:\r\n\r\n-M/V NURI  SONAY-14888MTS DWT-2006BLT-14500MTS DWCC- BV CLASS- BOX-OPEN HATCH-ITF FITTED-3 X 30MTS CRANES-GR:575000 CBFT-TT STR 20T/M2 -OPEN RAVENNA,ITAL ADRIATIC ON 02-03RD MARCH  \r\n\r\n-M/V HACI HILMI II -6976MTS DWT-92 BLT -6700MTS DWCC-3 X 10MTS CRANES-GR:309.895CBFT -OPEN EAST COAST GREECE ON 09-10TH MARCH\r\n\r\n-M/V SEVKETTIN SONAY-14888MTS DWT-2006BLT-14500MTS DWCC- BV CLASS- BOX-OPEN HATCH-ITF FITTED-3 X 30MTS CRANES-GR:575000 CBFT-TT STR 20T/M2 -OPEN TUNISIA ON 12-13TH MARCH  \r\n\r\n-M/V SABAHAT SONAY-14888MTS DWT-2007 BLT-14500MTS DWCC- BV CLASS- BOX-OPEN HATCH-ITF FITTED-3 X 30MTS CRANES-GR:575000 CBFT-TT STR 20T/M2 -OPEN MARMARA ON 16-17TH MARCH  \r\n\r\n-CLOSE DIRECT OWNERS M/V TBN-17500MTS DWCC- BOX TYPE-ITF FITTED- GRAIN CAP ABT 760 K CBFT-OPEN AGEAN SEA PROMPT\r\n\r\n-Close Direct Owners M/V TBN – 22K dwt – 2008 – Abt 993 k cbft – 3x20 tons - Open Beira,East Africa- Mid April\r\n\r\n \r\n\r\nBEST REGARDS\r\n\r\nSONAY SHIPPING AS/ISTANBUL\r\n\r\nAhmet Bozkurt,Mr./Halil Ersoz,Mr.\r\n\r\n(Member of Bimco and Turkish Shipbrokers Association and Maritime Association of Shipowners and Agents)\r\n\r\nEmails:Sonay@sonayshipping.com <mailto:Sonay@sonayshipping.com> \r\n\r\nSonaychartering@gmail.com <mailto:Sonaychartering@gmail.com> \r\n\r\nOffice nr:90 216 4467105\r\n\r\nmob phones:Ahmet T. Bozkurt-90 533 582 21 38\r\n\r\n                     Halil Ersoz-90 549 204 67 07\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e09795d905a46f",
+    "category": "VESSEL_POSITION",
+    "urgency": "medium",
+    "confidence": 0.82,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "management@etm-services.net",
+    "original_sender_company": "ETM Services"
+  }
+}

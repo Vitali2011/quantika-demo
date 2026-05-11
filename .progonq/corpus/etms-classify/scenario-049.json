@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-049",
+  "source_email_id": "19e07cd18529fb77",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: Nemrut / Djibouti + Berbera abt 8-11k mts steel products stw dwt",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:35:39.000Z",
+    "body": " \r\n\r\nFrom: BA Chartering Istanbul <chartering@bachartering.com> \r\nSent: Wednesday, 6 May 2026 15:40\r\nTo: Mustafa SAY - BA Chartering Istanbul <mustafa@bachartering.com>\r\nSubject: Nemrut / Djibouti + Berbera abt 8-11k mts steel products stw dwt \r\n\r\n \r\n\r\nDear All,\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPlease advise your firm interest for our direct / close chrtrs : \r\n\r\n \r\n\r\nMin 8.000 mts up to 9.000 mts in chopt Steel Products stw = dwt\r\nNemrut / 1 Djibouti or 1 Tadjourah in chopt\r\n1500x / Liner out\r\n07/10 May ( can try dates ) \r\n2.5 pct comm \r\n\r\nto be combinable or not with : \r\n\r\n2800 mts %10 Steel Products stw = dwt\r\nNemrut / Barbera Somalia\r\n1000x / 500x\r\n07/10 May ( can try dates ) \r\n2.5 pct comm \r\n\r\n \r\n\r\nBest Regards\r\n\r\n \r\n\r\n\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07cd18529fb77",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.92,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "BA Chartering Istanbul",
+    "original_sender_company": "BA Chartering Istanbul"
+  }
+}

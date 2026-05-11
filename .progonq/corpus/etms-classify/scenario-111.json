@@ -1,0 +1,22 @@
+{
+  "id": "etms-classify-111",
+  "source_email_id": "19e08a0886a6e7d9",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: MV LADY MERAL SPOT AT MARMARA",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:26:36.000Z",
+    "body": " \r\n\r\nFrom: Gn Group <noreply@gngroup.com.tr> \r\nSent: Monday, 2 February 2026 10:08\r\nTo: management@etm-services.net\r\nSubject: MV LADY MERAL SPOT AT MARMARA\r\n\r\n \r\n\r\nDEAR SIRS,\r\n\r\nPLS ADD IN YOUR CIRCULATION LIST AND REPLY TO: chartering@gngroup(.)com(.)tr\r\n\r\nGOOD DAY,\r\n\r\nPLS OFFER FIRM FOR OUR HOME TONNAGE POSITIONS AS FOLLOWS:\r\n\r\nSPOT AT MARMARA \r\n\r\nMV LADY MERAL \r\nDWCC 31.000 MTS AT 10.55M DRAFT\r\nPANAMA FLAG CLASS: BV SID BLT.05 \r\nDWT /GRT/NRT 32131 / 19883 / 10740 \r\nLOA/LBP/BEAM 171,59 / 164,33 / 27M- D.M. 14,8M \r\n5HO/5HA GRAIN/BALE: 1.423.997/1.406.915 CBFT\r\nGEARED; APP.B -HYDOR P&I, \r\nALL DETS ABT WOG\r\n\r\nWAITING YOURS\r\n\r\n-- \r\nBRGDS\r\nMUSTAFA SILAN\r\n\r\nGN GROUP CORPORATION-ISTANBUL \r\nTel : +90 216 325 08 00\r\nFax : +90 216 325 02 66\r\nMOB : +90 553 294 09 58\r\nSKYPE: mustafasilan53\r\n\r\nNOTICE: \r\nThis is an email broadcast related to commercial shipping business and is not spam. The contents of this email \r\nmessage and any attachments are confidential and are intended solely for the addressee. If you have received this \r\ncommunication in error, please notify us immediately. If you do not wish to receive our circular emails, please \r\ninform us via email with subject UNSUBSCRIBE or click here for  UNSUBSCRIBE. \r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e08a0886a6e7d9",
+    "category": "VESSEL_POSITION",
+    "urgency": "high",
+    "confidence": 0.82,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "ETMS - Management",
+    "original_sender_company": "ETMS Management",
+    "unknown_terms": ["APP.B"]
+  }
+}

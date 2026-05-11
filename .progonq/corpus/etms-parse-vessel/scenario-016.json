@@ -1,0 +1,201 @@
+{
+  "id": "etms-parse-vessel-016",
+  "source_email_id": "19e07c6ce81f694d",
+  "category": "dwcc_edge",
+  "input": {
+    "subject": "FW: SPECIAL POSITION  - MV ALTO 24 DWT YEMEN SPOT - EX OUR CP",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:28:45.000Z",
+    "body": " \r\n\r\nFrom: Maral Gouda <m.gouda@varamar.com> \r\nSent: Friday, 8 May 2026 09:10\r\nTo: management@etm-services.net\r\nSubject: SPECIAL POSITION - MV ALTO 24 DWT YEMEN SPOT - EX OUR CP\r\n\r\n \r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n <https://mailchi.mp/d17289617529/3-8k-dwt-contbaltic-feast-oct-dates-8117999?e=7ed3422e5a> View this email in your browser \r\n\r\n\t\r\n\r\n\r\n\r\n\r\n\r\n\r\nPlease propose suitable cargo\r\n\r\n\r\nMV ALTO\r\n----------------------------\r\nEX OUR CP\r\n\r\n\r\nOpen YEMEN SPOT\r\n\r\n\r\nMV ALTO\r\n\r\nSUMMER: 24804 DWT ON 10.045 METERS\r\n\r\nTYPE: GENERAL CARGO\r\n\r\nBUILT: 1997, JAPAN\r\n\r\nCRANES : 4X30T SWL (only 3 cranes can work simultaneously)\r\n\r\nFLAG: BELIZE\r\n\r\nCLASS: TURKISH LLOYD\r\n\r\nIMO NUMBER: 9145786\r\n\r\nCALL SIGN: V3MW\r\n\r\n \r\n\r\nL.O.A.: 153.78 M\r\n\r\nL.B.P. : 143.80 M\r\n\r\nBEAM: 26.00 M\r\n\r\nDEPTH MOULDED: 16 M\r\n\r\nGROSS TONNAGE: 20395\r\n\r\nNET TONNAGE: 9257\r\n\r\nTPC AT SUMMER: 34.055\r\n\r\n \r\n\r\n4 HOLDS / 4 HATCHES\r\n\r\nHOLD NO 2&3 ARE BOX\r\n\r\nMC GREGOR FOLDING TYPE HATCHCOVERS\r\n\r\n \r\n\r\n             GRAIN (CBM)    BALE (CBM)\r\n\r\nHOLD  1              8957.23                8812.27\r\n\r\nHOLD  2              11829.15            11538.32\r\n\r\nHOLD  3              11827.86            11538.32\r\n\r\nHOLD  4              12274.18            11877.37\r\n\r\nTOTAL                  44888.42            43766.28\r\n\r\n \r\n\r\nHATCHCOVER DIMENSIONS : (METERS)\r\n\r\nNo:1 – 16.00 x 17.38\r\n\r\nNo:2 – 20.00 x 22.00\r\n\r\nNo:3 – 20.00 x 22.00\r\n\r\nNo:4 – 20.00 x 20.00\r\n\r\n \r\n\r\nTANK TOP STRENGHT (CUM/M2) :  H1, H2, H3 = 15 T/M2 / H4 = 14 T/M2\r\n\r\nCO2 FITTED, AUSTRALIAN LADDERS FITTED  \r\n\r\nLAST DRYDOCK : 05.02.2024 , ISTANBUL\r\n\r\n \r\n\r\nALL DETS ABT+\r\n\r\n \r\n\r\n Best regards,\r\n\r\nVARAMAR SHIPPING DMCC,\r\nm.gouda@varamar.com\r\ng.bereti@varamar.com\r\n\r\n\r\n\r\n          \r\n\r\n \r\n\r\n\r\n \r\n\r\n\r\n \r\n\r\n \r\n\r\n\r\n  _____  \r\n\r\n\r\n\r\n       \r\n\r\n\r\n\r\n \r\n\r\n \r\n\r\n\r\n\t\r\n\r\n\r\n\t\r\n\r\n \r\n\r\n\r\n\r\n\r\nYou can  <https://varamar.us6.list-manage.com/profile?u=77dc233bd77642c328018b9a6&id=726e17bbd2&e=7ed3422e5a&c=e3613e9074> update your preferences or  <https://varamar.us6.list-manage.com/unsubscribe?u=77dc233bd77642c328018b9a6&id=726e17bbd2&t=b&e=7ed3422e5a&c=e3613e9074> unsubscribe from this list.\r\n  \r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "MV ALTO",
+          "confidence": "confirmed",
+          "source_text": "MV ALTO"
+        },
+        "imo": {
+          "value": 9145786,
+          "confidence": "confirmed",
+          "source_text": "IMO NUMBER: 9145786"
+        },
+        "flag": {
+          "value": "Belize",
+          "confidence": "confirmed",
+          "source_text": "FLAG: BELIZE"
+        },
+        "built": {
+          "value": 1997,
+          "confidence": "confirmed",
+          "source_text": "BUILT: 1997, JAPAN"
+        },
+        "class_society": {
+          "value": "Turkish Lloyd",
+          "confidence": "confirmed",
+          "source_text": "CLASS: TURKISH LLOYD"
+        },
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 24804,
+          "confidence": "confirmed",
+          "source_text": "SUMMER: 24804 DWT ON 10.045 METERS"
+        },
+        "dwcc": null,
+        "draft_max": {
+          "value": 10.045,
+          "confidence": "confirmed",
+          "source_text": "SUMMER: 24804 DWT ON 10.045 METERS"
+        },
+        "loa": {
+          "value": 153.78,
+          "confidence": "confirmed",
+          "source_text": "L.O.A.: 153.78 M"
+        },
+        "beam": {
+          "value": 26,
+          "confidence": "confirmed",
+          "source_text": "BEAM: 26.00 M"
+        },
+        "grt": {
+          "value": 20395,
+          "confidence": "confirmed",
+          "source_text": "GROSS TONNAGE: 20395"
+        },
+        "nrt": {
+          "value": 9257,
+          "confidence": "confirmed",
+          "source_text": "NET TONNAGE: 9257"
+        },
+        "holds_count": {
+          "value": 4,
+          "confidence": "confirmed",
+          "source_text": "4 HOLDS / 4 HATCHES"
+        },
+        "hatches_count": {
+          "value": 4,
+          "confidence": "confirmed",
+          "source_text": "4 HOLDS / 4 HATCHES"
+        },
+        "grain_capacity": {
+          "value": 44888.42,
+          "confidence": "confirmed",
+          "source_text": "TOTAL                  44888.42"
+        },
+        "grain_capacity_unit": "cbm",
+        "bale_capacity": {
+          "value": 43766.28,
+          "confidence": "confirmed",
+          "source_text": "TOTAL                  44888.42            43766.28"
+        },
+        "hold_dimensions": [],
+        "hatch_dimensions": [
+          "No:1 – 16.00 x 17.38",
+          "No:2 – 20.00 x 22.00",
+          "No:3 – 20.00 x 22.00",
+          "No:4 – 20.00 x 20.00"
+        ],
+        "tank_top_strength": {
+          "value": 15,
+          "confidence": "interpreted",
+          "source_text": "TANK TOP STRENGHT (CUM/M2) :  H1, H2, H3 = 15 T/M2 / H4 = 14 T/M2"
+        },
+        "geared": {
+          "value": true,
+          "confidence": "confirmed",
+          "source_text": "CRANES : 4X30T SWL (only 3 cranes can work simultaneously)"
+        },
+        "crane_capacity": {
+          "value": "4 x 30T SWL",
+          "confidence": "confirmed",
+          "source_text": "CRANES : 4X30T SWL (only 3 cranes can work simultaneously)"
+        },
+        "hatch_type": {
+          "value": "MacGregor folding type",
+          "confidence": "confirmed",
+          "source_text": "MC GREGOR FOLDING TYPE HATCHCOVERS"
+        },
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "confirmed",
+          "source_text": "TYPE: GENERAL CARGO"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Yemen",
+          "confidence": "confirmed",
+          "source_text": "Open YEMEN SPOT"
+        },
+        "open_date": {
+          "value": {
+            "open": null,
+            "close": null,
+            "display": "SPOT"
+          },
+          "confidence": "confirmed",
+          "source_text": "Open YEMEN SPOT"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Only 3 cranes can work simultaneously (out of 4)",
+            "confidence": "confirmed",
+            "source_text": "CRANES : 4X30T SWL (only 3 cranes can work simultaneously)"
+          },
+          {
+            "value": "Hold No 2 & 3 are box-shaped",
+            "confidence": "confirmed",
+            "source_text": "HOLD NO 2&3 ARE BOX"
+          },
+          {
+            "value": "CO2 fitted",
+            "confidence": "confirmed",
+            "source_text": "CO2 FITTED, AUSTRALIAN LADDERS FITTED"
+          },
+          {
+            "value": "Australian ladders fitted",
+            "confidence": "confirmed",
+            "source_text": "CO2 FITTED, AUSTRALIAN LADDERS FITTED"
+          },
+          {
+            "value": "Last drydock: 05.02.2024, Istanbul",
+            "confidence": "confirmed",
+            "source_text": "LAST DRYDOCK : 05.02.2024 , ISTANBUL"
+          },
+          {
+            "value": "Built in Japan",
+            "confidence": "confirmed",
+            "source_text": "BUILT: 1997, JAPAN"
+          },
+          {
+            "value": "Tank top strength: H1, H2, H3 = 15 T/M2 / H4 = 14 T/M2",
+            "confidence": "confirmed",
+            "source_text": "TANK TOP STRENGHT (CUM/M2) :  H1, H2, H3 = 15 T/M2 / H4 = 14 T/M2"
+          },
+          {
+            "value": "Ex charter party (EX OUR CP)",
+            "confidence": "confirmed",
+            "source_text": "EX OUR CP"
+          },
+          {
+            "value": "All details about (ALL DETS ABT+)",
+            "confidence": "confirmed",
+            "source_text": "ALL DETS ABT+"
+          }
+        ],
+        "unknown_terms": [
+          "CALL SIGN: V3MW — vessel radio call sign, not a shipping/chartering term but vessel identifier, not flagged",
+          "TPC AT SUMMER: 34.055 — Tonnes Per Centimetre, recognized term",
+          "DEPTH MOULDED: 16 M — vessel construction measurement, standard specification term"
+        ]
+      }
+    ]
+  }
+}

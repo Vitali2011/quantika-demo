@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-067",
+  "source_email_id": "19e07d0f8e19df79",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: KANDLA / RAVENNA",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:39:53.000Z",
+    "body": " \r\n\r\nFrom: Hope Chartering <hope@hopechartering.com> \r\nSent: Wednesday, 6 May 2026 12:25\r\nTo: logistics@etm-services.net\r\nSubject: KANDLA / RAVENNA\r\n\r\n \r\n\r\nGood Day,\r\n\r\nAny interest?\r\n\r\nKandla / Ravenna (10,5m)\r\nabt 40.000-43.000 mts moloo clay and caolin in bulk\r\n10th May onwards\r\n10000c/6000x\r\n2,5%pus\r\n\r\nNotes:\r\n- Can provide frt of last done\r\n- Need 4 grades loading\r\n- Prefer Geared vessel\r\n\r\n\r\n\r\n\r\nBest Regards\r\nMert Ekmekci\r\n\r\nHope Chartering\r\nE-mail: hope@hopechartering.com\r\nMob: +90 542 347 35 63\r\nAs broker only\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07d0f8e19df79",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.93,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Mert Ekmekci",
+    "original_sender_company": "Hope Chartering"
+  }
+}

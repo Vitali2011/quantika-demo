@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-081",
+  "source_email_id": "19e07d4ca1ca18ff",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: HANDY-SPOT AT AD",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:44:03.000Z",
+    "body": " \r\n\r\nFrom: Gn Group <noreply@gngroup.com.tr> \r\nSent: Friday, 8 May 2026 12:21\r\nTo: management@etm-services.net\r\nSubject: HANDY-SPOT AT AD\r\n\r\n \r\n\r\n\r\nPLS ADD IN YR CIRCULATION LIST AND REPLY TO:chartering@gngroup.com.tr\r\n\r\n \r\n\r\nGOOD DAY,\r\n\r\n \r\n\r\nPLS OFFER FIRM FOR OUR HOME TONNAGE POSITIONS AS FOLLOWS:\r\n\r\n \r\n\r\n \r\n\r\n+++ \r\n\r\n\r\nSPOT AT ADRIATIC       \r\n\r\n \r\n\r\nMV LADY ZEHMA  (EX CASSIOPEIA STAR)\r\nDWCC 31500 MTS AT 9.573M DRAFT\r\nPANAMA FLAG SID - BOXLIKE -BUILT 2005 JAPAN -DWT /GRT/NRT 32328/20283/10227 \r\nLOA/LBP/BEAM 172,9/164.9/29.4 M- D.M.14M -5HO/5HA GRAIN/BALE: 1489078/1453622 CBFT\r\nGEARED; APP.B/B -P&I :HYDOR  , CLASS: RINA -ALL DETS ABT WOG\r\n\r\n \r\n\r\n \r\n\r\n\r\nBRGDS\r\n\r\nHUSEYIN\r\n\r\n\r\n-- \r\nBRGDS\r\nGN GROUP CORPORATION-IS TANBUL\r\nTel : +90 216 325 08 00\r\nFax : +90 216 339 88 99\r\nEmail : chartering@gngroup(.)com(.)tr\r\nWeb: www.gngroup.com.tr\r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07d4ca1ca18ff",
+    "category": "VESSEL_POSITION",
+    "urgency": "medium",
+    "confidence": 0.95,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Huseyin / GN Group",
+    "original_sender_company": "GN GROUP CORPORATION"
+  }
+}

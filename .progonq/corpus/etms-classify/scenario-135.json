@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-135",
+  "source_email_id": "19e097b0d6404a40",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: MRC Shipping Positions 26/02/2026",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:25:16.000Z",
+    "body": " \r\n\r\nFrom: MRC SHIPPING ISTANBUL <chart@mrcship.com> \r\nSent: Thursday, 26 February 2026 09:59\r\nTo: management@etm-services.net\r\nSubject: MRC Shipping Positions 26/02/2026\r\n\r\n \r\n\r\nGood day\r\n\r\nPls offer suitable cargo for excl&home tonnages\r\n\r\n\r\n\r\n\r\nSHIP NAME\r\n\r\nDWCC\r\n\r\nHOLD TYPE\r\n\r\nBUILT\r\n\r\nBALE CAPP\r\n\r\nPOSITION\r\n\r\nDATES\r\n\r\nMIC\r\n\r\n\r\n MV AYA\r\n\r\n 6050\r\n\r\n 2 BOXI \r\n\r\n 2008\r\n\r\n 297K\r\n\r\n ISKENDERUN\r\n\r\n 07-10 MAR\r\n\r\nYasar\r\n\r\n\r\n MV SUN S\r\n\r\n 5050\r\n\r\n 3 BOX & OH\r\n\r\n 2008\r\n\r\n 240K\r\n\r\n EAST MED\r\n\r\n 08-10 MAR\r\n\r\nYasar\r\n\r\n\r\n MV CELAL SAHIN\r\n\r\n 4500\r\n\r\n 2 BOX & OH\r\n\r\n 2006\r\n\r\n 196K\r\n\r\n CONSTANTA\r\n\r\n 12-14 MAR\r\n\r\nYasar\r\n\r\n\r\n MV TURGUT SAHIN  \r\n\r\n 4450\r\n\r\n 1 BOX & OH\r\n\r\n 1997\r\n\r\n 195K \r\n\r\n ALGERIA\r\n\r\n 12-15 MAR\r\n\r\nYasar\r\n\r\n\r\n MV UNZILE ANA \r\n\r\n 4000\r\n\r\n 2 BOX & OH\r\n\r\n 1996\r\n\r\n 170K\r\n\r\n EGYPT MED\r\n\r\n 19-22 MAR\r\n\r\nMert\r\n\r\n\r\n MV HABIBE ANA      \r\n\r\n 3850\r\n\r\n 2 BOX & OH\r\n\r\n 1995\r\n\r\n 160K\r\n\r\n BULGARIA\r\n\r\n 13-15 MAR\r\n\r\nMert\r\n\r\n\r\n MV MERIC\r\n\r\n 2600\r\n\r\n 1 BOX & OH\r\n\r\n 1995\r\n\r\n 138K\r\n\r\n N.ADRIATIC\r\n\r\n 16-18 MAR\r\n\r\nMert\r\n\r\n\r\n\r\n\r\n* MV Meric  & MV Celal Sahin  fully Container and  IMO 1.1 Cargos fitted\r\n(under & on deck) \r\n\r\n \r\n\r\n\r\nBest Regards\r\n\"Member of Shipbrokers' Association\" - Turkiye\r\nYasar Meric  &  Mert   Meric  \r\n\r\n\r\n\r\n'' MRC SHIPPING AND TRADING CO ''\r\nPostane Mah. Neseli Sok  NO:2/1   \r\n34940 Tuzla -  Istanbul    \r\nOffice Tel :00 90 216 493 01 06 \r\nEmail:  <mailto:chart@mrcship.com> chart@mrcship.com  ( for chartering only\r\n)\r\n <http://www.mrcship.com> www.mrcship.com \r\n\r\nTeams : Yasar Meric  ( <mailto:yasar@mrcship.com> yasar@mrcship.com)\r\nMobil : +90 546 629 56 98 \r\nTeams : Mert   Meric  ( <mailto:mertmrcc61@gmail.com> mertmrcc61@gmail.com )\r\nMobil : +90 531 557 11 02\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e097b0d6404a40",
+    "category": "VESSEL_POSITION",
+    "urgency": "medium",
+    "confidence": 0.92,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "MRC SHIPPING ISTANBUL (chart@mrcship.com)",
+    "original_sender_company": "MRC SHIPPING AND TRADING CO"
+  }
+}

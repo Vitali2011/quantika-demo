@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-134",
+  "source_email_id": "19e097ae5d6335c1",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: Alexandria / Liverpool about 6000 ts steel HRC",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:25:06.000Z",
+    "body": " \r\n\r\nFrom: Mustafa SAY - BA Chartering Istanbul <mustafa@bachartering.com> \r\nSent: Thursday, 26 February 2026 10:31\r\nTo: Mustafa SAY - BA Chartering Istanbul <mustafa@bachartering.com>\r\nSubject: Alexandria / Liverpool about 6000 ts steel HRC \r\n\r\n \r\n\r\nDear All,\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPlease offer firm for : \r\n\r\n \r\n\r\nFIXED THEIR LAST \r\n\r\n \r\n\r\nAlexandria  / Liverpool \r\n\r\nAbt 6000-6100 mts hrc uw of 16 upto 25 tons\r\n\r\n1500x for 2 holds, 2250x for 3 holds/3000x\r\n\r\nSpot-onwards\r\n\r\n1.25 pct comm \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nBest Regards\r\n\r\nMustafa Say\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nBA CHARTERING ISTANBUL\r\n\r\nFener Kalamis Cad. Doganbey Apt. No 91 D:3\r\n\r\nFenerbahce/Kadikoy/Istanbul\r\n\r\n \r\n\r\nTel : +90 532 603 51 28\r\n\r\ne-mail :  <mailto:mustafa@bachartering.com> mustafa@bachartering.com /\r\n<mailto:chartering@bachartering.com> chartering@bachartering.com \r\n\r\nwebsite :  <http://www.bachartering.com> www.bachartering.com \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e097ae5d6335c1",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.78,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Mustafa Say",
+    "original_sender_company": "BA Chartering Istanbul"
+  }
+}

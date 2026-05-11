@@ -1,0 +1,639 @@
+{
+  "id": "etms-parse-cargo-074",
+  "source_email_id": "19e08a0b4203a0c2",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: Vina Logitics Direct Cgos",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:26:46.000Z",
+    "body": " \r\n\r\nFrom: Vina Chartering <vina@vinachartering.com> \r\nSent: Monday, 2 February 2026 10:08\r\nTo: management@etm-services.net\r\nSubject: Vina Logitics Direct Cgos\r\n\r\n \r\n\r\nDear all\r\n\r\nGd day\r\n\r\n \r\n\r\nPls offer firmfor blw direct cgos,\r\n\r\n \r\n\r\nSpot try vsl dates \r\n\r\n1 North spain / 1 Portugal \r\n\r\n3000-6000  mtons of bulk non imo in owners option\r\n\r\nttl days sshex eiu \r\n\r\nChabe- fiot bss \r\n\r\nGenc with 3.75%\r\n\r\n \r\n\r\nSpot try vsl dates \r\n\r\n1 Portugal  / 1  Spanmed\r\n\r\n3000-6000  mtons of bulk non imo in owners option\r\n\r\nttl days sshex eiu \r\n\r\nChabe- fiot bss - free da disch port \r\n\r\nGenc with 3.75%\r\n\r\n \r\n\r\n06-07 / feb /2026\r\n\r\n1 Portugal  / 1  Spanmed\r\n\r\n6000  mtons of bulk non imo in owners option\r\n\r\n4 ttl days sshex eiu \r\n\r\nChabe- fiot bss - free da disch port \r\n\r\nGenc with 3.75%\r\n\r\n \r\n\r\n \r\n\r\n10-14 / feb /2026 \r\n\r\n1 Algeria / 1 Portugal \r\n\r\n7000-7700  mtons of bulk non imo \r\n\r\nttl days thu-fshex / sshex eiu \r\n\r\nChabe- fiot bss - free da both ports \r\n\r\nGenc with 3.75% \r\n\r\n \r\n\r\n \r\n\r\n09-13 / feb /2026\r\n\r\n1 Portugal  / 1  Spanmed\r\n\r\n3500-5000  mtons of bulk non imo in owners option\r\n\r\n4 ttl days sshex eiu \r\n\r\nChabe- fiot bss - free da disch port \r\n\r\nGenc with 3.75%\r\n\r\n \r\n\r\n16-19 / feb /2026\r\n\r\n1 Portugal  / 1  Spanmed\r\n\r\n5000  mtons of bulk non imo in owners option\r\n\r\n4 ttl days sshex eiu \r\n\r\nChabe- fiot bss - free da disch port \r\n\r\nGenc with 3.75%\r\n\r\n \r\n\r\n \r\n\r\nTC REQUEST\r\n\r\nAbt 4/8k dwt\r\n\r\nDel/redel:Med/westmed/portugal range\r\n\r\nTrading Area:Med/Bsea/Continent, Exc Russia/Ukraine/Israel\r\n\r\nDuration:6 + 6 months can try 1 year\r\n\r\nLaycan: spot/prompt \r\n\r\n2,50 comm\r\n\r\nOa wable\r\n\r\n \r\n\r\nBest Regards\r\n\r\n \r\n\r\nMusa YUCE\r\n\r\nVina Chartering\r\n\r\n+90 530 317 90 29 \r\n\r\nmusa@vinachartering.com <mailto:musa@vinachartering.com> \r\n\r\nvina@vinachartering.com <mailto:vina@vinachartering.com> \r\n\r\nSkype: musayuce.\r\n\r\n <http://www.vinachartering.com/> www.vinachartering.com\r\n\r\n \r\n\r\nBIMCO MEMBERSHIP 180789\r\n\r\nAs Broker Only\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "North Spain (1 port)",
+          "confidence": "interpreted",
+          "source_text": "1 North spain / 1 Portugal"
+        },
+        "origin_country": {
+          "value": "Spain",
+          "confidence": "confirmed",
+          "source_text": "1 North spain / 1 Portugal"
+        },
+        "destination_port": {
+          "value": "Portugal (1 port)",
+          "confidence": "interpreted",
+          "source_text": "1 North spain / 1 Portugal"
+        },
+        "destination_country": {
+          "value": "Portugal",
+          "confidence": "confirmed",
+          "source_text": "1 North spain / 1 Portugal"
+        },
+        "cargo_description": {
+          "value": "Bulk non-IMO cargo (non-hazardous), owners option",
+          "confidence": "interpreted",
+          "source_text": "3000-6000  mtons of bulk non imo in owners option"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 6000,
+          "confidence": "interpreted",
+          "source_text": "3000-6000  mtons of bulk non imo in owners option"
+        },
+        "weight_mt_min": {
+          "value": 3000,
+          "confidence": "confirmed",
+          "source_text": "3000-6000  mtons of bulk non imo in owners option"
+        },
+        "weight_mt_max": {
+          "value": 6000,
+          "confidence": "confirmed",
+          "source_text": "3000-6000  mtons of bulk non imo in owners option"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "3000-6000  mtons of bulk non imo in owners option"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Spot / prompt vessel dates",
+          "confidence": "confirmed",
+          "source_text": "Spot try vsl dates"
+        },
+        "laycan": {
+          "value": "Spot / prompt",
+          "confidence": "interpreted",
+          "source_text": "Spot try vsl dates"
+        },
+        "loading_rate": null,
+        "loading_terms": {
+          "value": "FIOT",
+          "confidence": "uncertain",
+          "source_text": "Chabe- fiot bss"
+        },
+        "discharge_rate": null,
+        "discharge_terms": {
+          "value": "FIOT",
+          "confidence": "uncertain",
+          "source_text": "Chabe- fiot bss"
+        },
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "Genc with 3.75%"
+        },
+        "commission_terms": {
+          "value": "GENCON, total commission 3.75%",
+          "confidence": "interpreted",
+          "source_text": "Genc with 3.75%"
+        },
+        "special_requirements": {
+          "value": "Non-IMO cargo only; SSHEX EIU laytime; total laytime days (number not specified); Chabe and BSS terms — see unknown_terms",
+          "confidence": "interpreted",
+          "source_text": "ttl days sshex eiu"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Specific port names for 'North Spain' load port not given",
+          "Specific port name for Portugal discharge port not given",
+          "Total laytime days quantity not specified (only 'ttl days')",
+          "Cargo description/commodity not specified (only 'bulk non-IMO')",
+          "Freight rate not stated"
+        ],
+        "unknown_terms": [
+          "Chabe — unrecognized chartering abbreviation",
+          "fiot — possibly 'Free In Out Trimmed' but not confirmed standard abbreviation",
+          "bss — unrecognized abbreviation (possibly 'basis'?)"
+        ]
+      },
+      {
+        "origin_port": {
+          "value": "Portugal (1 port)",
+          "confidence": "interpreted",
+          "source_text": "1 Portugal  / 1  Spanmed"
+        },
+        "origin_country": {
+          "value": "Portugal",
+          "confidence": "confirmed",
+          "source_text": "1 Portugal  / 1  Spanmed"
+        },
+        "destination_port": {
+          "value": "Spanish Mediterranean port (1 port)",
+          "confidence": "interpreted",
+          "source_text": "1 Portugal  / 1  Spanmed"
+        },
+        "destination_country": {
+          "value": "Spain",
+          "confidence": "interpreted",
+          "source_text": "1 Portugal  / 1  Spanmed"
+        },
+        "cargo_description": {
+          "value": "Bulk non-IMO cargo (non-hazardous), owners option",
+          "confidence": "interpreted",
+          "source_text": "3000-6000  mtons of bulk non imo in owners option"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 6000,
+          "confidence": "interpreted",
+          "source_text": "3000-6000  mtons of bulk non imo in owners option"
+        },
+        "weight_mt_min": {
+          "value": 3000,
+          "confidence": "confirmed",
+          "source_text": "3000-6000  mtons of bulk non imo in owners option"
+        },
+        "weight_mt_max": {
+          "value": 6000,
+          "confidence": "confirmed",
+          "source_text": "3000-6000  mtons of bulk non imo in owners option"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "3000-6000  mtons of bulk non imo in owners option"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Spot / prompt vessel dates",
+          "confidence": "confirmed",
+          "source_text": "Spot try vsl dates"
+        },
+        "laycan": {
+          "value": "Spot / prompt",
+          "confidence": "interpreted",
+          "source_text": "Spot try vsl dates"
+        },
+        "loading_rate": null,
+        "loading_terms": {
+          "value": "FIOT",
+          "confidence": "uncertain",
+          "source_text": "Chabe- fiot bss - free da disch port"
+        },
+        "discharge_rate": null,
+        "discharge_terms": {
+          "value": "FIOT",
+          "confidence": "uncertain",
+          "source_text": "Chabe- fiot bss - free da disch port"
+        },
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "Genc with 3.75%"
+        },
+        "commission_terms": {
+          "value": "GENCON, total commission 3.75%",
+          "confidence": "interpreted",
+          "source_text": "Genc with 3.75%"
+        },
+        "special_requirements": {
+          "value": "Non-IMO cargo only; SSHEX EIU laytime; total laytime days (number not specified); Free DA at discharge port; Chabe and BSS terms — see unknown_terms",
+          "confidence": "interpreted",
+          "source_text": "Chabe- fiot bss - free da disch port"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Specific port name for Portugal load port not given",
+          "Specific Spanish Mediterranean port name not given",
+          "Total laytime days quantity not specified",
+          "Cargo commodity not specified beyond 'bulk non-IMO'",
+          "Freight rate not stated"
+        ],
+        "unknown_terms": [
+          "Chabe — unrecognized chartering abbreviation",
+          "fiot — possibly 'Free In Out Trimmed' but not confirmed standard abbreviation",
+          "bss — unrecognized abbreviation (possibly 'basis'?)"
+        ]
+      },
+      {
+        "origin_port": {
+          "value": "Portugal (1 port)",
+          "confidence": "interpreted",
+          "source_text": "1 Portugal  / 1  Spanmed"
+        },
+        "origin_country": {
+          "value": "Portugal",
+          "confidence": "confirmed",
+          "source_text": "1 Portugal  / 1  Spanmed"
+        },
+        "destination_port": {
+          "value": "Spanish Mediterranean port (1 port)",
+          "confidence": "interpreted",
+          "source_text": "1 Portugal  / 1  Spanmed"
+        },
+        "destination_country": {
+          "value": "Spain",
+          "confidence": "interpreted",
+          "source_text": "1 Portugal  / 1  Spanmed"
+        },
+        "cargo_description": {
+          "value": "Bulk non-IMO cargo (non-hazardous), owners option",
+          "confidence": "interpreted",
+          "source_text": "6000  mtons of bulk non imo in owners option"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 6000,
+          "confidence": "confirmed",
+          "source_text": "6000  mtons of bulk non imo in owners option"
+        },
+        "weight_mt_min": {
+          "value": 6000,
+          "confidence": "confirmed",
+          "source_text": "6000  mtons of bulk non imo in owners option"
+        },
+        "weight_mt_max": {
+          "value": 6000,
+          "confidence": "confirmed",
+          "source_text": "6000  mtons of bulk non imo in owners option"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "6000  mtons of bulk non imo in owners option"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "6–7 February 2026",
+          "confidence": "confirmed",
+          "source_text": "06-07 / feb /2026"
+        },
+        "laycan": {
+          "value": "06/07 February 2026",
+          "confidence": "confirmed",
+          "source_text": "06-07 / feb /2026"
+        },
+        "loading_rate": null,
+        "loading_terms": {
+          "value": "FIOT",
+          "confidence": "uncertain",
+          "source_text": "Chabe- fiot bss - free da disch port"
+        },
+        "discharge_rate": null,
+        "discharge_terms": {
+          "value": "FIOT",
+          "confidence": "uncertain",
+          "source_text": "Chabe- fiot bss - free da disch port"
+        },
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "Genc with 3.75%"
+        },
+        "commission_terms": {
+          "value": "GENCON, total commission 3.75%",
+          "confidence": "interpreted",
+          "source_text": "Genc with 3.75%"
+        },
+        "special_requirements": {
+          "value": "Non-IMO cargo only; 4 total laytime days SSHEX EIU; Free DA at discharge port; Chabe and BSS terms — see unknown_terms",
+          "confidence": "interpreted",
+          "source_text": "4 ttl days sshex eiu"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Specific port name for Portugal load port not given",
+          "Specific Spanish Mediterranean port name not given",
+          "Cargo commodity not specified beyond 'bulk non-IMO'",
+          "Freight rate not stated"
+        ],
+        "unknown_terms": [
+          "Chabe — unrecognized chartering abbreviation",
+          "fiot — possibly 'Free In Out Trimmed' but not confirmed standard abbreviation",
+          "bss — unrecognized abbreviation (possibly 'basis'?)"
+        ]
+      },
+      {
+        "origin_port": {
+          "value": "Algeria (1 port)",
+          "confidence": "interpreted",
+          "source_text": "1 Algeria / 1 Portugal"
+        },
+        "origin_country": {
+          "value": "Algeria",
+          "confidence": "confirmed",
+          "source_text": "1 Algeria / 1 Portugal"
+        },
+        "destination_port": {
+          "value": "Portugal (1 port)",
+          "confidence": "interpreted",
+          "source_text": "1 Algeria / 1 Portugal"
+        },
+        "destination_country": {
+          "value": "Portugal",
+          "confidence": "confirmed",
+          "source_text": "1 Algeria / 1 Portugal"
+        },
+        "cargo_description": {
+          "value": "Bulk non-IMO cargo (non-hazardous)",
+          "confidence": "interpreted",
+          "source_text": "7000-7700  mtons of bulk non imo"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 7700,
+          "confidence": "interpreted",
+          "source_text": "7000-7700  mtons of bulk non imo"
+        },
+        "weight_mt_min": {
+          "value": 7000,
+          "confidence": "confirmed",
+          "source_text": "7000-7700  mtons of bulk non imo"
+        },
+        "weight_mt_max": {
+          "value": 7700,
+          "confidence": "confirmed",
+          "source_text": "7000-7700  mtons of bulk non imo"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "7000-7700  mtons of bulk non imo"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "10–14 February 2026",
+          "confidence": "confirmed",
+          "source_text": "10-14 / feb /2026"
+        },
+        "laycan": {
+          "value": "10/14 February 2026",
+          "confidence": "confirmed",
+          "source_text": "10-14 / feb /2026"
+        },
+        "loading_rate": null,
+        "loading_terms": {
+          "value": "FIOT",
+          "confidence": "uncertain",
+          "source_text": "Chabe- fiot bss - free da both ports"
+        },
+        "discharge_rate": null,
+        "discharge_terms": {
+          "value": "FIOT",
+          "confidence": "uncertain",
+          "source_text": "Chabe- fiot bss - free da both ports"
+        },
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "Genc with 3.75%"
+        },
+        "commission_terms": {
+          "value": "GENCON, total commission 3.75%",
+          "confidence": "interpreted",
+          "source_text": "Genc with 3.75%"
+        },
+        "special_requirements": {
+          "value": "Non-IMO cargo only; total laytime days SSHEX EIU; Thursdays and Fridays excluded (THU-FSHEX) in addition to SSHEX EIU — likely Islamic weekend exclusion at Algeria; Free DA at both ports; Chabe and BSS terms — see unknown_terms",
+          "confidence": "interpreted",
+          "source_text": "ttl days thu-fshex / sshex eiu"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Specific Algerian port name not given",
+          "Specific Portuguese port name not given",
+          "Total laytime days quantity not specified",
+          "Cargo commodity not specified beyond 'bulk non-IMO'",
+          "Freight rate not stated"
+        ],
+        "unknown_terms": [
+          "Chabe — unrecognized chartering abbreviation",
+          "fiot — possibly 'Free In Out Trimmed' but not confirmed standard abbreviation",
+          "bss — unrecognized abbreviation (possibly 'basis'?)",
+          "thu-fshex — interpreted as Thursdays and Fridays excluded (non-standard abbreviation, likely Islamic weekend variant of FHEX)"
+        ]
+      },
+      {
+        "origin_port": {
+          "value": "Portugal (1 port)",
+          "confidence": "interpreted",
+          "source_text": "1 Portugal  / 1  Spanmed"
+        },
+        "origin_country": {
+          "value": "Portugal",
+          "confidence": "confirmed",
+          "source_text": "1 Portugal  / 1  Spanmed"
+        },
+        "destination_port": {
+          "value": "Spanish Mediterranean port (1 port)",
+          "confidence": "interpreted",
+          "source_text": "1 Portugal  / 1  Spanmed"
+        },
+        "destination_country": {
+          "value": "Spain",
+          "confidence": "interpreted",
+          "source_text": "1 Portugal  / 1  Spanmed"
+        },
+        "cargo_description": {
+          "value": "Bulk non-IMO cargo (non-hazardous), owners option",
+          "confidence": "interpreted",
+          "source_text": "3500-5000  mtons of bulk non imo in owners option"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 5000,
+          "confidence": "interpreted",
+          "source_text": "3500-5000  mtons of bulk non imo in owners option"
+        },
+        "weight_mt_min": {
+          "value": 3500,
+          "confidence": "confirmed",
+          "source_text": "3500-5000  mtons of bulk non imo in owners option"
+        },
+        "weight_mt_max": {
+          "value": 5000,
+          "confidence": "confirmed",
+          "source_text": "3500-5000  mtons of bulk non imo in owners option"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "3500-5000  mtons of bulk non imo in owners option"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "9–13 February 2026",
+          "confidence": "confirmed",
+          "source_text": "09-13 / feb /2026"
+        },
+        "laycan": {
+          "value": "09/13 February 2026",
+          "confidence": "confirmed",
+          "source_text": "09-13 / feb /2026"
+        },
+        "loading_rate": null,
+        "loading_terms": {
+          "value": "FIOT",
+          "confidence": "uncertain",
+          "source_text": "Chabe- fiot bss - free da disch port"
+        },
+        "discharge_rate": null,
+        "discharge_terms": {
+          "value": "FIOT",
+          "confidence": "uncertain",
+          "source_text": "Chabe- fiot bss - free da disch port"
+        },
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "Genc with 3.75%"
+        },
+        "commission_terms": {
+          "value": "GENCON, total commission 3.75%",
+          "confidence": "interpreted",
+          "source_text": "Genc with 3.75%"
+        },
+        "special_requirements": {
+          "value": "Non-IMO cargo only; 4 total laytime days SSHEX EIU; Free DA at discharge port; Chabe and BSS terms — see unknown_terms",
+          "confidence": "interpreted",
+          "source_text": "4 ttl days sshex eiu"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Specific Portuguese port name not given",
+          "Specific Spanish Mediterranean port name not given",
+          "Cargo commodity not specified beyond 'bulk non-IMO'",
+          "Freight rate not stated"
+        ],
+        "unknown_terms": [
+          "Chabe — unrecognized chartering abbreviation",
+          "fiot — possibly 'Free In Out Trimmed' but not confirmed standard abbreviation",
+          "bss — unrecognized abbreviation (possibly 'basis'?)"
+        ]
+      },
+      {
+        "origin_port": {
+          "value": "Portugal (1 port)",
+          "confidence": "interpreted",
+          "source_text": "1 Portugal  / 1  Spanmed"
+        },
+        "origin_country": {
+          "value": "Portugal",
+          "confidence": "confirmed",
+          "source_text": "1 Portugal  / 1  Spanmed"
+        },
+        "destination_port": {
+          "value": "Spanish Mediterranean port (1 port)",
+          "confidence": "interpreted",
+          "source_text": "1 Portugal  / 1  Spanmed"
+        },
+        "destination_country": {
+          "value": "Spain",
+          "confidence": "interpreted",
+          "source_text": "1 Portugal  / 1  Spanmed"
+        },
+        "cargo_description": {
+          "value": "Bulk non-IMO cargo (non-hazardous), owners option",
+          "confidence": "interpreted",
+          "source_text": "5000  mtons of bulk non imo in owners option"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 5000,
+          "confidence": "confirmed",
+          "source_text": "5000  mtons of bulk non imo in owners option"
+        },
+        "weight_mt_min": {
+          "value": 5000,
+          "confidence": "confirmed",
+          "source_text": "5000  mtons of bulk non imo in owners option"
+        },
+        "weight_mt_max": {
+          "value": 5000,
+          "confidence": "confirmed",
+          "source_text": "5000  mtons of bulk non imo in owners option"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "5000  mtons of bulk non imo in owners option"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "16–19 February 2026",
+          "confidence": "confirmed",
+          "source_text": "16-19 / feb /2026"
+        },
+        "laycan": {
+          "value": "16/19 February 2026",
+          "confidence": "confirmed",
+          "source_text": "16-19 / feb /2026"
+        },
+        "loading_rate": null,
+        "loading_terms": {
+          "value": "FIOT",
+          "confidence": "uncertain",
+          "source_text": "Chabe- fiot bss - free da disch port"
+        },
+        "discharge_rate": null,
+        "discharge_terms": {
+          "value": "FIOT",
+          "confidence": "uncertain",
+          "source_text": "Chabe- fiot bss - free da disch port"
+        },
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "Genc with 3.75%"
+        },
+        "commission_terms": {
+          "value": "GENCON, total commission 3.75%",
+          "confidence": "interpreted",
+          "source_text": "Genc with 3.75%"
+        },
+        "special_requirements": {
+          "value": "Non-IMO cargo only; 4 total laytime days SSHEX EIU; Free DA at discharge port; Chabe and BSS terms — see unknown_terms",
+          "confidence": "interpreted",
+          "source_text": "4 ttl days sshex eiu"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Specific Portuguese port name not given",
+          "Specific Spanish Mediterranean port name not given",
+          "Cargo commodity not specified beyond 'bulk non-IMO'",
+          "Freight rate not stated"
+        ],
+        "unknown_terms": [
+          "Chabe — unrecognized chartering abbreviation",
+          "fiot — possibly 'Free In Out Trimmed' but not confirmed standard abbreviation",
+          "bss — unrecognized abbreviation (possibly 'basis'?)"
+        ]
+      },
+      {
+        "missing_info": [
+          "This appears to be a TC (time charter) request, not a voyage cargo inquiry. TCT GUARD applied. Details: Abt 4/8k dwt vessel, Del/Redel Med/Westmed/Portugal range, Trading Area Med/Bsea/Continent excl Russia/Ukraine/Israel, Duration 6+6 months or 1 year, Laycan spot/prompt, 2.50% commission. 'Oa wable' is unrecognized — flagged for human review."
+        ],
+        "unknown_terms": [
+          "Oa wable — unrecognized abbreviation in TC request context (possibly 'owners approval' or similar?)"
+        ]
+      }
+    ]
+  }
+}

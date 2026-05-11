@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-056",
+  "source_email_id": "19e07ce84fc34a82",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: Jorf Lasfar => Yarımca (Marmara) + Samsun Ttl 20,000 mts Fertilizers",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:37:13.000Z",
+    "body": " \r\n\r\nFrom: UNIMAR NO REPLY <noreply01@unimarservice.com> \r\nSent: Wednesday, 6 May 2026 14:47\r\nSubject: Jorf Lasfar => Yarımca (Marmara) + Samsun Ttl 20,000 mts\r\nFertilizers\r\n\r\n \r\n\r\nFM: UNIMAR SERVICE LIMITED\r\n\r\n**********************************\r\n\r\nPlease add in your circulation our\r\n\r\nemail: mail@unimarservice.com <mailto:mail@unimarservice.com> \r\n\r\n**********************************\r\n\r\n \r\n\r\nTo: Chartering Desk\r\n\r\n \r\n\r\nPlease offer best/firm:\r\n\r\n \r\n\r\nJorf Lasfar => Yarımca (Marmara) + Samsun\r\n\r\nTtl 20,000 mts Fertilizers\r\n\r\n19-21 May\r\n\r\nLoad rate: Scale (Africanphos)\r\n\r\nDischarge rate: 3.000 mt sshex\r\n\r\n2.5% ttl comm here\r\n\r\n \r\n\r\nPleased to hear.\r\n \r\n\r\nBrgds, USL\r\n\r\nM/Viber/Wup/Telegram/WeChat: +357 99581395 <tel:+357%2099581395>  (24H/7D)\r\n\r\nAS BROKERS ONLY - SINCE 2006\r\n\r\n+++\r\n\r\nIn case the content of this message is irrelevant to your business, please\r\nnotify us by replying \"UNSUBSCRIBE\" in the subject field in order to remove\r\nyou from these messages, sorry any inconvenience caused.\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07ce84fc34a82",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.93,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "USL / UNIMAR SERVICE LIMITED",
+    "original_sender_company": "UNIMAR SERVICE LIMITED"
+  }
+}

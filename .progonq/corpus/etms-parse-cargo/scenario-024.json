@@ -1,0 +1,103 @@
+{
+  "id": "etms-parse-cargo-024",
+  "source_email_id": "19e07cbe0a94b74c",
+  "category": "forwarded",
+  "input": {
+    "subject": "FW: 5000mts unpeeled rice in bulk Mersin,Turkey / Syria,Tartous",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:34:19.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Wednesday, 6 May 2026 19:51\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: Re: 5000mts unpeeled rice in bulk Mersin,Turkey / Syria,Tartous\r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n*For quick response pls include \"takis\" in the body of the email*\r\n\r\nGD DAY \r\n\r\nPLS OFFER FOR \r\n\r\n5000mts unpeeled rice in bulk\r\nMersin,Turkey / Syria,Tartous  \r\nSpot/Prompt\r\n10 ttl days try 9\r\n2.5 past us\r\n\r\nPlease add our email address ( chartering@niavigrains.gr ) to your circulation list for cargoes / positions\r\n\r\nBEST RGRDS\r\nTAK  (TAKIS KAPETANIOS)\r\nE MAIL : chartering@niavigrains.gr\r\nMobile/WhatsApp:0030 6944528968\r\nSKYPE: captanpanos\r\nLINKEDIN : www.linkedin.com/in/takis-kapetanios-5031344b/\r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr\r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Mersin",
+          "confidence": "confirmed",
+          "source_text": "Mersin,Turkey / Syria,Tartous"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "Mersin,Turkey / Syria,Tartous"
+        },
+        "destination_port": {
+          "value": "Tartous",
+          "confidence": "confirmed",
+          "source_text": "Mersin,Turkey / Syria,Tartous"
+        },
+        "destination_country": {
+          "value": "Syria",
+          "confidence": "confirmed",
+          "source_text": "Mersin,Turkey / Syria,Tartous"
+        },
+        "cargo_description": {
+          "value": "Unpeeled rice in bulk",
+          "confidence": "confirmed",
+          "source_text": "5000mts unpeeled rice in bulk"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 5000,
+          "confidence": "confirmed",
+          "source_text": "5000mts unpeeled rice in bulk"
+        },
+        "weight_mt_min": 5000,
+        "weight_mt_max": 5000,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "5000mts unpeeled rice in bulk"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Spot/Prompt",
+          "confidence": "confirmed",
+          "source_text": "Spot/Prompt"
+        },
+        "laycan": {
+          "value": "Spot/Prompt",
+          "confidence": "uncertain",
+          "source_text": "Spot/Prompt"
+        },
+        "loading_rate": {
+          "value": null
+        },
+        "loading_terms": null,
+        "discharge_rate": null,
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5 past us"
+        },
+        "commission_terms": {
+          "value": "To brokers (passed to us)",
+          "confidence": "interpreted",
+          "source_text": "2.5 past us"
+        },
+        "special_requirements": null,
+        "stowage_factor": null,
+        "missing_info": [
+          "Laytime / loading and discharge terms not specified",
+          "Incoterms not stated",
+          "Exact laycan dates not provided (only 'Spot/Prompt')",
+          "Freight basis (lump sum or PMT) not indicated",
+          "Demurrage / despatch rates not mentioned",
+          "Vessel size/type requirements not stated"
+        ],
+        "unknown_terms": [
+          {
+            "term": "10 ttl days try 9",
+            "context": "10 ttl days try 9",
+            "note": "'TTL' typically means 'total' in commission context but here appears to mean total laytime days with a negotiation target of 9 days — flagged as ambiguous usage requiring human review"
+          }
+        ]
+      }
+    ]
+  }
+}

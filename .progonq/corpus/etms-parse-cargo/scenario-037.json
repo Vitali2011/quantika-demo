@@ -1,0 +1,550 @@
+{
+  "id": "etms-parse-cargo-037",
+  "source_email_id": "19e07d011dbc661e",
+  "category": "forwarded",
+  "input": {
+    "subject": "FW: Cargoes from Ukraine and Moldova",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:38:54.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: Elena ICC, PE <chartering@elenaicc.ks.ua> \r\nSent: Wednesday, 6 May 2026 11:53\r\nTo: management <management@etm-services.net>\r\nSubject: Cargoes from Ukraine and Moldova\r\n\r\nFM :'ELENA IND. & COMM.CO.', PE\r\nFAX/PH : +380666370399\r\n                +380674932903\r\nE-MAIL : admin@pkf-elena.com\r\n               chartering@pkf-elena.com\r\n               chartering@elenaicc.ks.ua - new!\r\nWEBSITE: www.pkf-elena.com , www.elenaicc.ks.ua - new!\r\n\r\n06.05.2026       11:53:16\r\n\r\nGiurgiuleshti - EC Greece\r\n3000 mts of corn, sf 51-52, wog\r\nL/c: from 15.05.2026\r\nL/d: 1000/1000\r\nBrok. comm. 1.25\r\n\r\nReni - EC Greece\r\n3000-4000 mts of wheat, sf 48, wog\r\nL/c: from 15.05.2026\r\nL/d: 1000/1000\r\nBrok. comm. 1.25\r\n\r\nReni - Marmara or Izmir, in ch's op.\r\nneed vessel with 250000 cub.ft. (+/-) for scrap cargo (but may try any vessel's intake)\r\nL/c: from 01.06.2026\r\nL/d: 600/1000\r\nBrok. comm. 1.25\r\n\r\nPOC - EC Greece\r\n4000-6000  mts of corn, sf 51, wog\r\nL/c: spot (may try vessel's dates)\r\nL/d: 1000/1000\r\nBrok. comm. 1.25\r\n\r\nChornomorsk - Poti\r\n3000-3500 mts of sugar in bb (dims: LxBxH: 120x100x110cm, UW: abt 1,0 tns)\r\nL/c: 02-07.06.2026\r\nL/d: 5 ttl days / 5 ttl days shex\r\nBrok. comm. 2.5\r\n(Pref. open hatch/ box shaped , IACS or equiv., no tiers limitations)\r\n\r\nPOC - Douala, Cameroon\r\n25000-30000 mts of milling wheat, sf 48-49, wog\r\nL/c: first half of May, 2026\r\nL/d: 6000/2500\r\n(self unloading cranes (grabs available at disch. port); 8.5 m max draft at Douala, Cameroon) Brok. comm. 1.25\r\n\r\nBRGDS,\r\n'ELENA IND. & COMM.CO.'\r\n\r\nWe kindly invite you to visit our NEW web-site: www.elenaicc.ks.ua Ми запрошуємо Вас відвідати наш новий сайт: www.elenaicc.ks.ua \r\n\r\n\r\n-- \r\nЭто сообщение было проверено антивирусным ПО AVG на наличие вирусов.\r\nwww.avg.com\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Giurgiulesti",
+          "confidence": "confirmed",
+          "source_text": "Giurgiuleshti - EC Greece"
+        },
+        "origin_country": {
+          "value": "Moldova",
+          "confidence": "confirmed",
+          "source_text": "Giurgiuleshti - EC Greece"
+        },
+        "destination_port": {
+          "value": "East Coast Greece",
+          "confidence": "confirmed",
+          "source_text": "Giurgiuleshti - EC Greece"
+        },
+        "destination_country": {
+          "value": "Greece",
+          "confidence": "confirmed",
+          "source_text": "Giurgiuleshti - EC Greece"
+        },
+        "cargo_description": {
+          "value": "Corn, stowage factor 51-52, without guarantee",
+          "confidence": "confirmed",
+          "source_text": "3000 mts of corn, sf 51-52, wog"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 3000,
+          "confidence": "confirmed",
+          "source_text": "3000 mts of corn, sf 51-52, wog"
+        },
+        "weight_mt_min": 3000,
+        "weight_mt_max": 3000,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "3000 mts of corn, sf 51-52, wog"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": null,
+        "laycan": {
+          "value": "from 15.05.2026",
+          "confidence": "interpreted",
+          "source_text": "L/c: from 15.05.2026"
+        },
+        "loading_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "L/d: 1000/1000"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "L/d: 1000/1000"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 1.25,
+          "confidence": "confirmed",
+          "source_text": "Brok. comm. 1.25"
+        },
+        "commission_terms": {
+          "value": "Brokerage",
+          "confidence": "interpreted",
+          "source_text": "Brok. comm. 1.25"
+        },
+        "special_requirements": {
+          "value": "WOG (Without Guarantee on quantity)",
+          "confidence": "confirmed",
+          "source_text": "3000 mts of corn, sf 51-52, wog"
+        },
+        "stowage_factor": {
+          "value": "51-52 CBM/MT",
+          "confidence": "confirmed",
+          "source_text": "sf 51-52"
+        },
+        "missing_info": [
+          "Exact laycan end date not specified (open-ended 'from 15.05.2026')",
+          "No freight rate indication",
+          "Specific East Coast Greece discharge port(s) not named",
+          "No demurrage/despatch terms specified"
+        ]
+      },
+      {
+        "origin_port": {
+          "value": "Reni",
+          "confidence": "confirmed",
+          "source_text": "Reni - EC Greece"
+        },
+        "origin_country": {
+          "value": "Ukraine",
+          "confidence": "confirmed",
+          "source_text": "Reni - EC Greece"
+        },
+        "destination_port": {
+          "value": "East Coast Greece",
+          "confidence": "confirmed",
+          "source_text": "Reni - EC Greece"
+        },
+        "destination_country": {
+          "value": "Greece",
+          "confidence": "confirmed",
+          "source_text": "Reni - EC Greece"
+        },
+        "cargo_description": {
+          "value": "Wheat, stowage factor 48, without guarantee",
+          "confidence": "confirmed",
+          "source_text": "3000-4000 mts of wheat, sf 48, wog"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 4000,
+          "confidence": "interpreted",
+          "source_text": "3000-4000 mts of wheat, sf 48, wog"
+        },
+        "weight_mt_min": 3000,
+        "weight_mt_max": 4000,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "3000-4000 mts of wheat, sf 48, wog"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": null,
+        "laycan": {
+          "value": "from 15.05.2026",
+          "confidence": "interpreted",
+          "source_text": "L/c: from 15.05.2026"
+        },
+        "loading_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "L/d: 1000/1000"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "L/d: 1000/1000"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 1.25,
+          "confidence": "confirmed",
+          "source_text": "Brok. comm. 1.25"
+        },
+        "commission_terms": {
+          "value": "Brokerage",
+          "confidence": "interpreted",
+          "source_text": "Brok. comm. 1.25"
+        },
+        "special_requirements": {
+          "value": "WOG (Without Guarantee on quantity)",
+          "confidence": "confirmed",
+          "source_text": "3000-4000 mts of wheat, sf 48, wog"
+        },
+        "stowage_factor": {
+          "value": "48 CBM/MT",
+          "confidence": "confirmed",
+          "source_text": "sf 48"
+        },
+        "missing_info": [
+          "Exact laycan end date not specified (open-ended 'from 15.05.2026')",
+          "No freight rate indication",
+          "Specific East Coast Greece discharge port(s) not named",
+          "No demurrage/despatch terms specified"
+        ]
+      },
+      {
+        "origin_port": {
+          "value": "Reni",
+          "confidence": "confirmed",
+          "source_text": "Reni - Marmara or Izmir, in ch's op."
+        },
+        "origin_country": {
+          "value": "Ukraine",
+          "confidence": "confirmed",
+          "source_text": "Reni - Marmara or Izmir, in ch's op."
+        },
+        "destination_port": {
+          "value": "Marmara or Izmir (charterers option)",
+          "confidence": "confirmed",
+          "source_text": "Reni - Marmara or Izmir, in ch's op."
+        },
+        "destination_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "Reni - Marmara or Izmir, in ch's op."
+        },
+        "cargo_description": {
+          "value": "Steel scrap",
+          "confidence": "confirmed",
+          "source_text": "need vessel with 250000 cub.ft. (+/-) for scrap cargo (but may try any vessel's intake)"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": null,
+        "weight_mt_min": null,
+        "weight_mt_max": null,
+        "volume_cbm": {
+          "value": 7079,
+          "confidence": "interpreted",
+          "source_text": "need vessel with 250000 cub.ft. (+/-)"
+        },
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "uncertain",
+          "source_text": "scrap cargo"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": null,
+        "laycan": {
+          "value": "from 01.06.2026",
+          "confidence": "interpreted",
+          "source_text": "L/c: from 01.06.2026"
+        },
+        "loading_rate": {
+          "value": 600,
+          "confidence": "confirmed",
+          "source_text": "L/d: 600/1000"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "L/d: 600/1000"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 1.25,
+          "confidence": "confirmed",
+          "source_text": "Brok. comm. 1.25"
+        },
+        "commission_terms": {
+          "value": "Brokerage",
+          "confidence": "interpreted",
+          "source_text": "Brok. comm. 1.25"
+        },
+        "special_requirements": {
+          "value": "Vessel required with approximately 250,000 cubic feet grain capacity (+/-); any vessel intake will be considered. Charterers option on discharge port (Marmara or Izmir).",
+          "confidence": "confirmed",
+          "source_text": "need vessel with 250000 cub.ft. (+/-) for scrap cargo (but may try any vessel's intake)"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Cargo weight in MT not specified — vessel capacity sought by volume (250,000 cub.ft.)",
+          "Exact laycan end date not specified (open-ended 'from 01.06.2026')",
+          "No freight rate indication",
+          "No demurrage/despatch terms specified",
+          "Scrap type/grade not specified"
+        ]
+      },
+      {
+        "origin_port": {
+          "value": "POC (Port of Chornomorsk — unconfirmed abbreviation, see missing_info)",
+          "confidence": "uncertain",
+          "source_text": "POC - EC Greece"
+        },
+        "origin_country": {
+          "value": "Ukraine",
+          "confidence": "uncertain",
+          "source_text": "POC - EC Greece"
+        },
+        "destination_port": {
+          "value": "East Coast Greece",
+          "confidence": "confirmed",
+          "source_text": "POC - EC Greece"
+        },
+        "destination_country": {
+          "value": "Greece",
+          "confidence": "confirmed",
+          "source_text": "POC - EC Greece"
+        },
+        "cargo_description": {
+          "value": "Corn, stowage factor 51, without guarantee",
+          "confidence": "confirmed",
+          "source_text": "4000-6000  mts of corn, sf 51, wog"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 6000,
+          "confidence": "interpreted",
+          "source_text": "4000-6000  mts of corn, sf 51, wog"
+        },
+        "weight_mt_min": 4000,
+        "weight_mt_max": 6000,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "4000-6000  mts of corn, sf 51, wog"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": null,
+        "laycan": {
+          "value": "Spot (flexible on vessel dates)",
+          "confidence": "confirmed",
+          "source_text": "L/c: spot (may try vessel's dates)"
+        },
+        "loading_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "L/d: 1000/1000"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "L/d: 1000/1000"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 1.25,
+          "confidence": "confirmed",
+          "source_text": "Brok. comm. 1.25"
+        },
+        "commission_terms": {
+          "value": "Brokerage",
+          "confidence": "interpreted",
+          "source_text": "Brok. comm. 1.25"
+        },
+        "special_requirements": {
+          "value": "WOG (Without Guarantee on quantity); spot laycan, flexible on vessel's dates",
+          "confidence": "confirmed",
+          "source_text": "L/c: spot (may try vessel's dates)"
+        },
+        "stowage_factor": {
+          "value": "51 CBM/MT",
+          "confidence": "confirmed",
+          "source_text": "sf 51"
+        },
+        "missing_info": [
+          "POC abbreviation is ambiguous — likely Port of Chornomorsk but requires confirmation",
+          "No freight rate indication",
+          "Specific East Coast Greece discharge port(s) not named",
+          "No demurrage/despatch terms specified"
+        ]
+      },
+      {
+        "origin_port": {
+          "value": "Chornomorsk",
+          "confidence": "confirmed",
+          "source_text": "Chornomorsk - Poti"
+        },
+        "origin_country": {
+          "value": "Ukraine",
+          "confidence": "confirmed",
+          "source_text": "Chornomorsk - Poti"
+        },
+        "destination_port": {
+          "value": "Poti",
+          "confidence": "confirmed",
+          "source_text": "Chornomorsk - Poti"
+        },
+        "destination_country": {
+          "value": "Georgia",
+          "confidence": "confirmed",
+          "source_text": "Chornomorsk - Poti"
+        },
+        "cargo_description": {
+          "value": "Sugar in big bags, dimensions 120x100x110cm (LxBxH), unit weight approximately 1.0 tonnes per bag",
+          "confidence": "confirmed",
+          "source_text": "3000-3500 mts of sugar in bb (dims: LxBxH: 120x100x110cm, UW: abt 1,0 tns)"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 3500,
+          "confidence": "interpreted",
+          "source_text": "3000-3500 mts of sugar in bb"
+        },
+        "weight_mt_min": 3000,
+        "weight_mt_max": 3500,
+        "volume_cbm": null,
+        "dimensions": {
+          "value": "120cm x 100cm x 110cm (LxBxH) per big bag",
+          "confidence": "confirmed",
+          "source_text": "dims: LxBxH: 120x100x110cm"
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "3000-3500 mts of sugar in bb (dims: LxBxH: 120x100x110cm, UW: abt 1,0 tns)"
+        },
+        "container_type": null,
+        "quantity": {
+          "value": "approximately 3000-3500 bags (1 MT per bag)",
+          "confidence": "interpreted",
+          "source_text": "UW: abt 1,0 tns"
+        },
+        "incoterms": null,
+        "preferred_dates": null,
+        "laycan": {
+          "value": "02-07.06.2026",
+          "confidence": "confirmed",
+          "source_text": "L/c: 02-07.06.2026"
+        },
+        "loading_rate": null,
+        "loading_terms": {
+          "value": "5 total days SHEX",
+          "confidence": "confirmed",
+          "source_text": "L/d: 5 ttl days / 5 ttl days shex"
+        },
+        "discharge_rate": null,
+        "discharge_terms": {
+          "value": "5 total days SHEX",
+          "confidence": "confirmed",
+          "source_text": "5 ttl days shex"
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "Brok. comm. 2.5"
+        },
+        "commission_terms": {
+          "value": "Brokerage",
+          "confidence": "interpreted",
+          "source_text": "Brok. comm. 2.5"
+        },
+        "special_requirements": {
+          "value": "Preferred open hatch / box-shaped vessel; IACS class or equivalent; no tier limitations on cargo stowage",
+          "confidence": "confirmed",
+          "source_text": "Pref. open hatch/ box shaped , IACS or equiv., no tiers limitations"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "No freight rate indication",
+          "Demurrage/despatch rate not specified",
+          "Total number of big bags not explicitly stated (derivable from weight and unit weight)"
+        ]
+      },
+      {
+        "origin_port": {
+          "value": "POC (Port of Chornomorsk — unconfirmed abbreviation, see missing_info)",
+          "confidence": "uncertain",
+          "source_text": "POC - Douala, Cameroon"
+        },
+        "origin_country": {
+          "value": "Ukraine",
+          "confidence": "uncertain",
+          "source_text": "POC - Douala, Cameroon"
+        },
+        "destination_port": {
+          "value": "Douala",
+          "confidence": "confirmed",
+          "source_text": "POC - Douala, Cameroon"
+        },
+        "destination_country": {
+          "value": "Cameroon",
+          "confidence": "confirmed",
+          "source_text": "POC - Douala, Cameroon"
+        },
+        "cargo_description": {
+          "value": "Milling wheat, stowage factor 48-49, without guarantee",
+          "confidence": "confirmed",
+          "source_text": "25000-30000 mts of milling wheat, sf 48-49, wog"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 30000,
+          "confidence": "interpreted",
+          "source_text": "25000-30000 mts of milling wheat, sf 48-49, wog"
+        },
+        "weight_mt_min": 25000,
+        "weight_mt_max": 30000,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "25000-30000 mts of milling wheat, sf 48-49, wog"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": null,
+        "laycan": {
+          "value": "first half of May 2026",
+          "confidence": "interpreted",
+          "source_text": "L/c: first half of May, 2026"
+        },
+        "loading_rate": {
+          "value": 6000,
+          "confidence": "confirmed",
+          "source_text": "L/d: 6000/2500"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 2500,
+          "confidence": "confirmed",
+          "source_text": "L/d: 6000/2500"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 1.25,
+          "confidence": "confirmed",
+          "source_text": "Brok. comm. 1.25"
+        },
+        "commission_terms": {
+          "value": "Brokerage",
+          "confidence": "interpreted",
+          "source_text": "Brok. comm. 1.25"
+        },
+        "special_requirements": {
+          "value": "Self-unloading cranes required (grabs available at discharge port Douala); maximum draft at Douala 8.5m",
+          "confidence": "confirmed",
+          "source_text": "self unloading cranes (grabs available at disch. port); 8.5 m max draft at Douala, Cameroon"
+        },
+        "stowage_factor": {
+          "value": "48-49 CBM/MT",
+          "confidence": "confirmed",
+          "source_text": "sf 48-49"
+        },
+        "missing_info": [
+          "POC abbreviation is ambiguous — likely Port of Chornomorsk but requires confirmation",
+          "No freight rate indication",
+          "Laycan likely already passed (email dated 06.05.2026, laycan 'first half of May 2026') — requires clarification",
+          "No demurrage/despatch terms specified",
+          "WOG quantity basis — confirm final quantity"
+        ]
+      }
+    ]
+  }
+}

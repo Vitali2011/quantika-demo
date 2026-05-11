@@ -1,0 +1,126 @@
+{
+  "id": "etms-parse-cargo-040",
+  "source_email_id": "19e07d0f8e19df79",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: KANDLA / RAVENNA",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:39:53.000Z",
+    "body": " \r\n\r\nFrom: Hope Chartering <hope@hopechartering.com> \r\nSent: Wednesday, 6 May 2026 12:25\r\nTo: logistics@etm-services.net\r\nSubject: KANDLA / RAVENNA\r\n\r\n \r\n\r\nGood Day,\r\n\r\nAny interest?\r\n\r\nKandla / Ravenna (10,5m)\r\nabt 40.000-43.000 mts moloo clay and caolin in bulk\r\n10th May onwards\r\n10000c/6000x\r\n2,5%pus\r\n\r\nNotes:\r\n- Can provide frt of last done\r\n- Need 4 grades loading\r\n- Prefer Geared vessel\r\n\r\n\r\n\r\n\r\nBest Regards\r\nMert Ekmekci\r\n\r\nHope Chartering\r\nE-mail: hope@hopechartering.com\r\nMob: +90 542 347 35 63\r\nAs broker only\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Kandla",
+          "confidence": "confirmed",
+          "source_text": "Kandla / Ravenna"
+        },
+        "origin_country": {
+          "value": "India",
+          "confidence": "interpreted",
+          "source_text": "Kandla / Ravenna"
+        },
+        "destination_port": {
+          "value": "Ravenna",
+          "confidence": "confirmed",
+          "source_text": "Kandla / Ravenna"
+        },
+        "destination_country": {
+          "value": "Italy",
+          "confidence": "interpreted",
+          "source_text": "Kandla / Ravenna"
+        },
+        "cargo_description": {
+          "value": "Clay and Kaolin in bulk (4 grades)",
+          "confidence": "confirmed",
+          "source_text": "abt 40.000-43.000 mts moloo clay and caolin in bulk"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 40000,
+          "confidence": "interpreted",
+          "source_text": "abt 40.000-43.000 mts moloo clay and caolin in bulk"
+        },
+        "weight_mt_min": {
+          "value": 40000,
+          "confidence": "interpreted",
+          "source_text": "abt 40.000-43.000 mts moloo clay and caolin in bulk"
+        },
+        "weight_mt_max": {
+          "value": 43000,
+          "confidence": "interpreted",
+          "source_text": "abt 40.000-43.000 mts moloo clay and caolin in bulk"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "clay and caolin in bulk"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "10th May 2026 onwards",
+          "confidence": "confirmed",
+          "source_text": "10th May onwards"
+        },
+        "laycan": {
+          "value": "10 May 2026 onwards",
+          "confidence": "interpreted",
+          "source_text": "10th May onwards"
+        },
+        "loading_rate": {
+          "value": 10000,
+          "confidence": "confirmed",
+          "source_text": "10000c/6000x"
+        },
+        "loading_terms": {
+          "value": "10000c",
+          "confidence": "confirmed",
+          "source_text": "10000c/6000x"
+        },
+        "discharge_rate": {
+          "value": 6000,
+          "confidence": "confirmed",
+          "source_text": "10000c/6000x"
+        },
+        "discharge_terms": {
+          "value": "6000x",
+          "confidence": "confirmed",
+          "source_text": "10000c/6000x"
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2,5%pus"
+        },
+        "commission_terms": {
+          "value": "pus",
+          "confidence": "confirmed",
+          "source_text": "2,5%pus"
+        },
+        "special_requirements": {
+          "value": "Geared vessel preferred; 4 grades loading; draft restriction 10.5m at Ravenna",
+          "confidence": "confirmed",
+          "source_text": "Kandla / Ravenna (10,5m)\n- Need 4 grades loading\n- Prefer Geared vessel"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Laycan end date not specified — only 'onwards' from 10 May 2026",
+          "MOLOO percentage not specified (range 40,000–43,000 MT provided instead)",
+          "Loading terms qualifier (SHINC/SHEX) not stated for 10000c loading rate",
+          "Discharge terms qualifier (SHINC/SHEX) not stated for 6000x discharge rate",
+          "Freight rate not included (noted as 'can provide frt of last done')",
+          "Demurrage/despatch rate not mentioned",
+          "Commission term 'pus' is non-standard — likely 'plus' (i.e. 2.5% plus address commission?) — requires clarification"
+        ],
+        "unknown_terms": [
+          "pus (in '2,5%pus' — possibly 'plus' or a commission qualifier, but non-standard abbreviation)"
+        ]
+      }
+    ]
+  }
+}

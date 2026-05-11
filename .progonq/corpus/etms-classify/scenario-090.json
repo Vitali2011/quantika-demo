@@ -1,0 +1,44 @@
+{
+  "id": "etms-classify-090",
+  "source_email_id": "19e07d75e8a30c1c",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: FIRM CARGOES",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:46:52.000Z",
+    "body": " \r\n\r\nFrom: Oner Tokcan / Nautical Bulk Carriers <oner.tokcan@nbcarriers.com> \r\nSent: Wednesday, 6 May 2026 09:15\r\nTo: Oner Tokcan / Nautical Bulk Carriers <oner.tokcan@nbcarriers.com>\r\nSubject: FIRM CARGOES \r\n\r\n \r\n\r\nDear All / Oner\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPls offer firm\r\n\r\n \r\n\r\nNEMRUT / SAGUNTO\r\n\r\n-11,375mts 2PCT MOLCHOPT HRC + HRCPO UW ABT 10/27TS  \r\n\r\n-L/C 15 / 18 MAY 2026\r\n\r\n-2000MTS SSHEX EIU / 2000MTS SSHEX EIU \r\n-MAX 25 YRS (TRY MORE) \r\n-3.75PCT ADDCOMPUS \r\n\r\n \r\n\r\n+ + + + +\r\n\r\n \r\n\r\n-NEMRUT / CONSTANTZA\r\n\r\n-6,400mts 2PCT MOLCHOPT HRC + HRCPO + HRCTD UW ABT 10/27TS + HRS\r\n\r\n-L/C 22 / 25 MAY 2026\r\n\r\n-1500MTS SSHEX EIU / 1500MTS SSHEX EIU \r\n-MAX 25 YRS (TRY MORE) \r\n-3.75PCT ADDCOMPUS\r\n\r\n \r\n\r\n \r\n\r\nBest regards\r\nOner Tokcan\r\nNautical Bulk Carriers S.A.\r\n\r\nVaryap Meridian I Blok,14th Floor, Atasehir, Istanbul - Turkey\r\nMob: +90 506 507 4730\r\n\r\nTel: +90 216 639 0228\r\n\r\nEmail:  <mailto:oner.tokcan@nbcarriers.com> oner.tokcan@nbcarriers.com\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07d75e8a30c1c",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.91,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Oner Tokcan",
+    "original_sender_company": "Nautical Bulk Carriers S.A.",
+    "notes": {
+      "cargo_1": {
+        "route": "NEMRUT / SAGUNTO",
+        "quantity": "11,375 MT ±2% MOLCHOPT",
+        "cargo": "HRC + HRCPO",
+        "laycan": "15–18 May 2026",
+        "load_rate": "2000 MTS SSHEX EIU",
+        "discharge_rate": "2000 MTS SSHEX EIU",
+        "vessel_age": "MAX 25 YRS",
+        "commission": "3.75% ADDCOMPUS"
+      },
+      "cargo_2": {
+        "route": "NEMRUT / CONSTANTZA",
+        "quantity": "6,400 MT ±2% MOLCHOPT",
+        "cargo": "HRC + HRCPO + HRCTD + HRS",
+        "laycan": "22–25 May 2026",
+        "load_rate": "1500 MTS SSHEX EIU",
+        "discharge_rate": "1500 MTS SSHEX EIU",
+        "vessel_age": "MAX 25 YRS",
+        "commission": "3.75% ADDCOMPUS"
+      },
+      "unknown_terms": ["ADDCOMPUS", "UW"]
+    }
+  }
+}

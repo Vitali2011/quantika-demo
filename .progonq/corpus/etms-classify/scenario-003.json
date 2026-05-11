@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-003",
+  "source_email_id": "19d5def0bf1a5c3f",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: Antalya / Georgetown (Guyana) 3000mts bb cgo",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-04-05T13:57:16.000Z",
+    "body": " \r\n\r\nFrom: VARAN SHIPPING -ISTANBUL <chartering@varanshipping.com> \r\nSent: Monday, 15 February 2021 16:03\r\nTo: etms@etm-services.net\r\nSubject: Antalya / Georgetown (Guyana) 3000mts bb cgo \r\n\r\n \r\n\r\nGood Day\r\n\r\n \r\n\r\nPlease offer firm for our excl. cgo\r\n\r\n \r\n\r\nAntalya / Georgetown (Guyana)\r\n\r\n3000mts Barite in b.b\r\n\r\nCgo Ready\r\n\r\n1.500 mts shinc / 1.000 mts shinc\r\n\r\nPcgo ok\r\n\r\nGearless w.able \r\n\r\n3.75 ttl\r\n\r\nRegards\r\n\r\n   <file:///C:/Users/Hp/AppData/Local/Microsoft/Windows/INetCache/Content.MSO/FDD508AA.tmp> \r\n\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19d5def0bf1a5c3f",
+    "category": "CARGO_INQUIRY",
+    "urgency": "low",
+    "confidence": 0.72,
+    "is_unanswered": true,
+    "days_without_reply": 36,
+    "original_sender": "VARAN SHIPPING - ISTANBUL",
+    "original_sender_company": "VARAN SHIPPING"
+  }
+}

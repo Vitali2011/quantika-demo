@@ -1,0 +1,112 @@
+{
+  "id": "etms-parse-cargo-085",
+  "source_email_id": "19e09776821d2476",
+  "category": "single_cargo",
+  "input": {
+    "subject": "FW: 7.000 mts mins TUAPSE / GIJON",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:21:19.000Z",
+    "body": " \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Saturday, 21 March 2026 09:17\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: 7.000 mts mins TUAPSE / GIJON\r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n\r\ngd day\r\n\r\n \r\n\r\npls propose described ladies for the fol Firm cargo - do not recirculate pls\r\n\r\n \r\n\r\nTUAPSE / GIJON\r\n7.000 mts anthracite sf 43\r\n\r\n4000 / 4000 SSHINC BENDS\r\n\r\nSPOT\r\n2.5% ttl here\r\n\r\n\r\n\r\nBEST RGRDS\r\nTASOS KOUMANIS ( mob. 00306937322574)\r\nE MAILS : chartering@niavigrains.gr <mailto:chartering@niavigrains.gr>  \r\n\r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr <http://www.niavigrains.gr> \r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\nSKYPE : NIAVIGRAINS Tasos\r\nLinkedIn: www.linkedin.com/in/tasoskoumanis <http://www.linkedin.com/in/tasoskoumanis> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Tuapse",
+          "confidence": "confirmed",
+          "source_text": "TUAPSE / GIJON"
+        },
+        "origin_country": {
+          "value": "Russia",
+          "confidence": "interpreted",
+          "source_text": "TUAPSE / GIJON"
+        },
+        "destination_port": {
+          "value": "Gijón",
+          "confidence": "confirmed",
+          "source_text": "TUAPSE / GIJON"
+        },
+        "destination_country": {
+          "value": "Spain",
+          "confidence": "interpreted",
+          "source_text": "TUAPSE / GIJON"
+        },
+        "cargo_description": {
+          "value": "Anthracite, stowage factor 43 CBM/MT",
+          "confidence": "confirmed",
+          "source_text": "7.000 mts anthracite sf 43"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 7000,
+          "confidence": "interpreted",
+          "source_text": "7.000 mts mins"
+        },
+        "weight_mt_min": {
+          "value": 7000,
+          "confidence": "interpreted",
+          "source_text": "7.000 mts mins"
+        },
+        "weight_mt_max": null,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "7.000 mts anthracite sf 43"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Spot",
+          "confidence": "confirmed",
+          "source_text": "SPOT"
+        },
+        "laycan": null,
+        "loading_rate": {
+          "value": 4000,
+          "confidence": "confirmed",
+          "source_text": "4000 / 4000 SSHINC BENDS"
+        },
+        "loading_terms": {
+          "value": "SSHINC",
+          "confidence": "confirmed",
+          "source_text": "4000 / 4000 SSHINC BENDS"
+        },
+        "discharge_rate": {
+          "value": 4000,
+          "confidence": "confirmed",
+          "source_text": "4000 / 4000 SSHINC BENDS"
+        },
+        "discharge_terms": {
+          "value": "SSHINC",
+          "confidence": "confirmed",
+          "source_text": "4000 / 4000 SSHINC BENDS"
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl here"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl here"
+        },
+        "special_requirements": null,
+        "stowage_factor": {
+          "value": 43,
+          "confidence": "confirmed",
+          "source_text": "anthracite sf 43"
+        },
+        "missing_info": [
+          "Freight rate not specified",
+          "Laycan window not specified beyond 'SPOT'",
+          "Demurrage/despatch rate not specified",
+          "Weight stated as minimum (7,000 mts mins) — maximum quantity not stated"
+        ]
+      }
+    ]
+  }
+}

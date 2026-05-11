@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-143",
+  "source_email_id": "19e0f521228afe4c",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: MV Filia Ariea 2650 150.0900 cbft sidk/box - Jeddah 30 Mar",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-10T00:38:14.000Z",
+    "body": " \r\n\r\nFrom: Visser & Visser <chartering@visservisser.nl> \r\nSent: Monday, 30 March 2026 15:50\r\nTo: management@etm-services.net\r\nSubject: MV Filia Ariea 2650 150.0900 cbft sidk/box - Jeddah 30 Mar\r\n\r\n \r\n\r\nDoc-No. 16726166   30/MAR/2026 (MON)  15:49  (+0200)  DV\r\n\r\n  \r\n\r\nVisser & Visser Chartering BV - Vlaardingen (NL)\r\n\r\nPhone : +31 10 4115620\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nPlease propose for:\r\n\r\n \r\n\r\n- FILIA ARIEA    \r\n\r\n2650 mt – 150.000 – SID/Box                    \r\n\r\n \r\n\r\nOpen: Jeddah – 30-Mar.\r\n\r\n                                                             Alt. Port Said – 02-Apr.\r\n\r\n \r\n\r\nWCUO?\r\n\r\n \r\n\r\n \r\n\r\nThanks and best regards\r\n\r\nDirk VISSER - ph +31104115620\r\n\r\nMob/What's app     +31653143975 \r\n\r\n \r\n\r\nPS: Not using Skype/Teams anymore. please contact me through whatsapp via my mobile number\r\n\r\n \r\n\r\n  \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e0f521228afe4c",
+    "category": "VESSEL_POSITION",
+    "urgency": "medium",
+    "confidence": 0.82,
+    "is_unanswered": true,
+    "days_without_reply": 1,
+    "original_sender": "Dirk Visser / Visser & Visser Chartering BV",
+    "original_sender_company": "Visser & Visser Chartering BV"
+  }
+}

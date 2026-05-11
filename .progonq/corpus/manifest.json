@@ -1,0 +1,47 @@
+{
+  "generated_at": "2026-05-11T06:39:44.912Z",
+  "extractor_model": "us.anthropic.claude-sonnet-4-6",
+  "endpoints": [
+    {
+      "endpoint": "classify",
+      "dir": "etms-classify",
+      "categories": [
+        "simple_clean",
+        "forwarded_chain",
+        "mixed_languages",
+        "ambiguous_intent",
+        "multi_intent"
+      ],
+      "written": 154,
+      "skipped": 0
+    },
+    {
+      "endpoint": "parse-cargo",
+      "dir": "etms-parse-cargo",
+      "categories": [
+        "single_cargo",
+        "multi_cargo",
+        "incomplete_data",
+        "hedged_language",
+        "numeric_edge",
+        "forwarded"
+      ],
+      "written": 95,
+      "skipped": 0
+    },
+    {
+      "endpoint": "parse-vessel",
+      "dir": "etms-parse-vessel",
+      "categories": ["single_vessel", "multi_vessel", "position_only", "full_specs", "dwcc_edge"],
+      "written": 56,
+      "skipped": 0
+    },
+    {
+      "endpoint": "parse-recap",
+      "dir": "etms-parse-recap",
+      "categories": ["bulk_recap", "project_recap", "partial_recap", "multi_clause"],
+      "written": 3,
+      "skipped": 0
+    }
+  ]
+}

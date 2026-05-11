@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-028",
+  "source_email_id": "19e07c5f0379415b",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: Exc _ 4300 Dwt  mpp bulk tonnage  Open @Vassiliko",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:27:50.000Z",
+    "body": " \r\n\r\nFrom: DRYCARGO - MPP (STEEL&BULK SINGAPORE) <chartering@steelbulk.com> \r\nSent: Friday, 8 May 2026 09:50\r\nTo: management@etm-services.net\r\nSubject: Exc _ 4300 Dwt mpp bulk tonnage Open @Vassiliko\r\n\r\n \r\n\r\nDoc-no 26050800141 Friday, 08 May 2026 14:45 (+8:00) Singapore\r\n\r\n \r\n\r\n\r\n\r\n\r\n\r\nGreetings,\r\n\r\nExclusive  - firm proposals  welcome\r\n\r\n4300 Dwt Open @Vassiliko o/a  15/16 May \r\n                 \r\n\r\n                                                                                                                                                                                                \r\nMV IMI  IMO:9063873\r\n4300/4080 DWT/DWCC ON 5.62 MR\r\n1993 BLT NL, FLG BAHAMAS  CLASS DNV\r\n1HH BOXSHAPED L/W/H   63.6X11.0X8.4X\r\nLOA: 89.9 LBP: 84.99  BREADTH: 13.17\r\n5764 CBM / 203.540 CBFT\r\n15 TONS M2 TANKTOP\r\n2 BULKHEADS\r\nOPEN HATCH\r\nBOWTHR\r\nADA \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nRespectfully\r\nAbdulvehhab Ozmen\r\n\r\nSteel&Bulk Singapore Pte Ltd\r\n50 Raffles Place\r\n#37-00\r\nSingapore 048623\r\nM: +65 8030 3432\r\nW: www(.)steelbulk(.)com\r\nE: chartering(@)steelbulk(.)com\r\n\r\n <https://sendy.steelbulk.com/l/DwH8892H6M8IMCycgyoWljDw/89202tHyKaPLiZZRKUxR3kgw/892QhvNqy3F0vEYLotyTFuhg> Chat with me on teams\r\n\r\n <mailto:chartering@steelbulk.com?subject=UNSUBSCRIBE%20ME> Unsubscribe\r\nThis message is intended solely for the use of the individual or entity it addresses and may contain confidential information. If you are not the intended recipient of this message or receive this mail in error, you should refrain from using the contents and opening attachments. In that case, please notify the sender immediately and return the message to the sender, then, delete and destroy all copies. This e-mail message, can not be copied, published, or sold for any reason. Anti-virus systems have swept this e-mail message for the presence of computer viruses. In doing so, however, the sender cannot warrant that virus or other forms of data corruption may not be present and does not take any responsibility for any occurrence\r\n#ThinkBeforePrinting\r\n#SaveMyWorld \r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07c5f0379415b",
+    "category": "VESSEL_POSITION",
+    "urgency": "high",
+    "confidence": 0.95,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "DRYCARGO - MPP (STEEL&BULK SINGAPORE)",
+    "original_sender_company": "Steel&Bulk Singapore Pte Ltd"
+  }
+}

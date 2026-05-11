@@ -1,0 +1,23 @@
+{
+  "id": "etms-classify-109",
+  "source_email_id": "19e08a007eff29ab",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: Izmail - Figuera de Foz 5-6k bulk clay - Figuera De Foz / Tartous 6000-7000 mts bulk clay",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:26:02.000Z",
+    "body": " \r\n\r\nFrom: e@id.inmsg.net <e@id.inmsg.net> On Behalf Of Corebulk Chartering - Korhan Akoz \r\nSent: Monday, 2 February 2026 10:17\r\nTo: management@etm-services.net\r\nSubject: Izmail - Figuera de Foz 5-6k bulk clay - Figuera De Foz / Tartous 6000-7000 mts bulk clay\r\n\r\n \r\n\r\n\r\nIf you can not see this email properly, please click here <https://track.inclick.email/webversion/1lEWjDmeD9t7VpJlXeeVIW4jdzr54qHXMG75NVXLf1mJJ8xgQGUbJmr4rN7q/> . \r\n\r\nFully Firm – Excl\r\n\r\n \r\n\r\nIzmail / Figuera De Foz\r\n\r\n5000-6000 mtons bulk clay\r\n\r\nSpot/ppt\r\n\r\n2000 shinc / shex\r\n\r\nGcn 2,5 pct\r\n\r\n \r\n\r\n++\r\n\r\n \r\n\r\n1 shipment per month\r\n\r\n \r\n\r\nFiguera De Foz / Tartous \r\n\r\n6000 any upto 7000 mtons bulk clay\r\n\r\nspot/ppt\r\n\r\n7 ttl ys\r\n\r\nGcn 1,25 pct\r\n\r\n \r\n\r\n \r\n\r\nBrgds,\r\n\r\nKa\r\n\r\n \r\n\r\nCorebulk Shipping and Chartering Services Ltd\r\n\r\nPhn : +90 532 2070548\r\n\r\nTeams : asuchart\r\n\r\n\r\nUnsubscribe <https://track.inclick.email/unsubscribe/1lEWjDmeD9t7VpJlXeeVIW4jdzr54qHXMG75NVXLf1mJJ8xgQGUbJmr4rN7q?culture=en-US>  \r\n\r\n  _____  \r\n\r\nPowered by  <https://useinbox.com> INBOX\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e08a007eff29ab",
+    "category": "CARGO_INQUIRY",
+    "urgency": "medium",
+    "confidence": 0.78,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Korhan Akoz",
+    "original_sender_company": "Corebulk Shipping and Chartering Services Ltd",
+    "unknown_terms": ["GCN", "7 TTL YS", "Fully Firm Excl"],
+    "notes": "Two cargo inquiries: (1) Izmail→Figuera De Foz 5-6k mtons bulk clay spot/ppt, (2) Figuera De Foz→Tartous 6-7k mtons bulk clay spot/ppt. Inner email originally dated 2 Feb 2026 — original spot laycan is stale by ~3 months. Forwarded by ETMS Management on 2026-05-08. GCN and '7 TTL YS' are unrecognized terms flagged for human review."
+  }
+}

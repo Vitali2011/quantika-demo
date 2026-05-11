@@ -1,0 +1,168 @@
+{
+  "id": "etms-parse-vessel-008",
+  "source_email_id": "19d5e7668c6587bd",
+  "category": "dwcc_edge",
+  "input": {
+    "subject": "FW: 8000 dwt open Casablanca beg October",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-04-05T16:25:07.000Z",
+    "body": " \r\n\r\nFrom: Noreply <noreply-bounces@lists.mbnav.com> On Behalf Of Alexey Chirko, MB Navigation\r\nSent: Friday, 5 September 2025 10:43\r\nTo: noreply@lists.mbnav.com\r\nSubject: 8000 dwt open Casablanca beg October\r\n\r\n \r\n\r\n \r\n\r\nopen Casablanca 01-05 October\r\n\r\nneed dir Bsea/enroute\r\n\r\n \r\n\r\n \r\n\r\nMV ALINA \r\n\r\nSID, GLESS, BLT 2025\r\n\r\n8300 DWT\r\n\r\n13'400 CBM\r\n\r\n \r\n\r\nCLASS: RINA\r\n\r\nFLAG: BELIZE CITY\r\n\r\nLOA 141.99 M – BEAM 18.0 M – DEPTH 6.0 M, DRAFT 4.6\r\n\r\nGRT/NRT: 6786/ 4041\r\n\r\n4 HO/ 4 HA\r\n\r\nHATCH SIZES: NO.1,2,3,4 L 24.7 M X B 12 M\r\n\r\nHA COVERS : MACGREGOR\r\n\r\nHOLD NO 1: 26.14 x 14.8 x 9.15 HATCH NO.1: 24.70 x 12 / COAM 2.2\r\n\r\nHOLD NO 2: 27.30 x 14.8 x 9.15 HATCH NO.2: 24.70 x 12 / COAM 2.2\r\n\r\nHOLD NO 3: 27.30 x 14.8 x 9.15 HATCH NO.3: 24.70 x 12 / COAM 2.2\r\n\r\nHOLD NO 4: 26.14 x 14.8 x 9.15 HATCH NO.4: 24.70 x 12 / COAM 2.2\r\n\r\nSTRENGTHS TANKTOP: HOLD 1-4 8.5 t/m2\r\n\r\nPANDI : SKULD, OSLO\r\n\r\n \r\n\r\n\t\r\n\r\n \r\n\r\n\r\n \r\n\r\n\r\n \r\n\r\n\r\n \r\n\r\n\r\n \r\n\r\n\r\n \r\n\r\n \r\n\r\nKind Regards  \r\n\r\n \r\n\r\n\r\n\r\n\r\nAlexey Chirko \r\n\r\nChartering manager \r\n\r\nMB Navigation S.A.  \r\n\r\nMob/WhatsUp: +38 096 580 2652 \r\n\r\nE-mail:  <mailto:chartering@mbnav.com> chartering@mbnav.com \r\n\r\nTeams:  <http://bit.ly/45xm5y9> http://bit.ly/45xm5y9\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nWe would like to inform you that MB NAVIGATION will soon operate under its new name — MARELIS NAVIGATION.\r\n\r\nKindly update your records with new email address: chartering@marelis-nav.com\r\n\r\n \r\n\r\nIt is essential that all messages in respect of operations be sent to the relevant email addresses ( <mailto:operating@mbnav.com> operating@mbnav.com). We can accept no responsibility for delay or other consequences if messages are sent to any other email address within the company. Please ensure that all important operational messages are followed up with a telephone call especially after office hours, on week-end and holidays.\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\t\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "MV ALINA",
+          "confidence": "confirmed",
+          "source_text": "MV ALINA"
+        },
+        "imo": null,
+        "flag": {
+          "value": "Belize",
+          "confidence": "confirmed",
+          "source_text": "FLAG: BELIZE CITY"
+        },
+        "built": {
+          "value": 2025,
+          "confidence": "confirmed",
+          "source_text": "BLT 2025"
+        },
+        "class_society": {
+          "value": "RINA",
+          "confidence": "confirmed",
+          "source_text": "CLASS: RINA"
+        },
+        "p_and_i": {
+          "value": "Skuld, Oslo",
+          "confidence": "confirmed",
+          "source_text": "PANDI : SKULD, OSLO"
+        },
+        "dwt_summer": {
+          "value": 8300,
+          "confidence": "confirmed",
+          "source_text": "8300 DWT"
+        },
+        "dwcc": null,
+        "draft_max": {
+          "value": 4.6,
+          "confidence": "confirmed",
+          "source_text": "DRAFT 4.6"
+        },
+        "loa": {
+          "value": 141.99,
+          "confidence": "confirmed",
+          "source_text": "LOA 141.99 M"
+        },
+        "beam": {
+          "value": 18,
+          "confidence": "confirmed",
+          "source_text": "BEAM 18.0 M"
+        },
+        "grt": {
+          "value": 6786,
+          "confidence": "confirmed",
+          "source_text": "GRT/NRT: 6786/ 4041"
+        },
+        "nrt": {
+          "value": 4041,
+          "confidence": "confirmed",
+          "source_text": "GRT/NRT: 6786/ 4041"
+        },
+        "holds_count": {
+          "value": 4,
+          "confidence": "confirmed",
+          "source_text": "4 HO/ 4 HA"
+        },
+        "hatches_count": {
+          "value": 4,
+          "confidence": "confirmed",
+          "source_text": "4 HO/ 4 HA"
+        },
+        "grain_capacity": {
+          "value": 13400,
+          "confidence": "confirmed",
+          "source_text": "13'400 CBM"
+        },
+        "grain_capacity_unit": "cbm",
+        "bale_capacity": null,
+        "hold_dimensions": [
+          "HOLD NO 1: 26.14 x 14.8 x 9.15",
+          "HOLD NO 2: 27.30 x 14.8 x 9.15",
+          "HOLD NO 3: 27.30 x 14.8 x 9.15",
+          "HOLD NO 4: 26.14 x 14.8 x 9.15"
+        ],
+        "hatch_dimensions": [
+          "HATCH NO.1: 24.70 x 12 / COAM 2.2",
+          "HATCH NO.2: 24.70 x 12 / COAM 2.2",
+          "HATCH NO.3: 24.70 x 12 / COAM 2.2",
+          "HATCH NO.4: 24.70 x 12 / COAM 2.2"
+        ],
+        "tank_top_strength": {
+          "value": 8.5,
+          "confidence": "confirmed",
+          "source_text": "STRENGTHS TANKTOP: HOLD 1-4 8.5 t/m2"
+        },
+        "geared": {
+          "value": false,
+          "confidence": "confirmed",
+          "source_text": "GLESS"
+        },
+        "crane_capacity": null,
+        "hatch_type": {
+          "value": "MacGregor",
+          "confidence": "confirmed",
+          "source_text": "HA COVERS : MACGREGOR"
+        },
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "interpreted",
+          "source_text": "SID, GLESS, BLT 2025"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Casablanca",
+          "confidence": "confirmed",
+          "source_text": "open Casablanca 01-05 October"
+        },
+        "open_date": {
+          "value": {
+            "open": "2025-10-01",
+            "close": "2025-10-05",
+            "display": "01-05 October"
+          },
+          "confidence": "confirmed",
+          "source_text": "open Casablanca 01-05 October"
+        },
+        "direction": {
+          "value": "Black Sea / enroute",
+          "confidence": "confirmed",
+          "source_text": "need dir Bsea/enroute"
+        },
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Single deck (SID)",
+            "confidence": "confirmed",
+            "source_text": "SID"
+          },
+          {
+            "value": "Box-shaped / uniform hold dimensions across all 4 holds",
+            "confidence": "confirmed",
+            "source_text": "HOLD NO 1: 26.14 x 14.8 x 9.15 HATCH NO.1: 24.70 x 12 / COAM 2.2"
+          },
+          {
+            "value": "Depth 6.0 M",
+            "confidence": "confirmed",
+            "source_text": "DEPTH 6.0 M"
+          }
+        ],
+        "unknown_terms": []
+      }
+    ]
+  }
+}

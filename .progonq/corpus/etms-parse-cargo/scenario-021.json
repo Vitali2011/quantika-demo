@@ -1,0 +1,210 @@
+{
+  "id": "etms-parse-cargo-021",
+  "source_email_id": "19e07ca31cff6b2a",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: 20/30,000mt - Egypt/Wafr",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:32:29.000Z",
+    "body": " \r\n\r\nFrom: Nautical Bulk Carriers - Mevlut <mc@nbcarriers.com> \r\nSent: Thursday, 7 May 2026 11:32\r\nTo: Nautical Bulk Carriers - Mevlut <mc@nbcarriers.com>\r\nSubject: 20/30,000mt - Egypt/Wafr\r\nImportance: High\r\n\r\n \r\n\r\nFirm to move\r\n\r\n \r\n\r\n\r\nneed 20/30,000mt sdbc try twn (try smaller)\r\n\r\nloading Damietta  + Misurata\r\n\r\ndisch Douala  + Lagos \r\n\r\n12 ttl days sx\r\n\r\n10 / 20 May \r\n\r\n2,5 pct ttl here \r\n\r\n \r\n\r\nNeed to load abt 300 containers 20HC (uw abt 20mt)\r\n\r\nLumpsum figures pls \r\n\r\n \r\n\r\n \r\n\r\nBest regards\r\n\r\n  \r\n\r\nMevlut Ceviker\r\n\r\nMember Of The Executive Board \r\n\r\n \r\n\r\n \r\n\r\nNautical  Bulk  Carriers  S.A.  \r\n\r\nAdress : Küçükbakkalköy Mah. Rüya Sok. Vogue Plaza No 12 Kat 6 Ataşehir -\r\nİSTANBUL  \r\n\r\nTel         : +90 216 639 0228  , Mob      : +90  533 123 5200\r\nE-mail   :  <mailto:mc@nbcarriers.com> mc@nbcarriers.com\r\n\r\nSkype   :  <mailto:mceviker@gmail.com> mceviker@gmail.com\r\n\r\nWeb      :  <http://www.nbcarriers.com/> www.nbcarriers.com\r\n\r\n \r\n\r\nCONFIDENTIALITY NOTICE: This message is intended for the use of the\r\nindividual or entity to which it is addressed and may contain information\r\nthat is privileged, confidential and exempt from disclosure under applicable\r\nlaw. If the reader of this message is not the intended recipient or the\r\nemployee or agent responsible for delivering this message to the intended\r\nrecipient, you are hereby notified that any dissemination, distribution or\r\ncopying of this communication is strictly prohibited. If you have received\r\nthis communication in error, please notify us immediately by email reply.\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Damietta + Misurata",
+          "confidence": "confirmed",
+          "source_text": "loading Damietta  + Misurata"
+        },
+        "origin_country": {
+          "value": "Egypt + Libya",
+          "confidence": "interpreted",
+          "source_text": "loading Damietta  + Misurata"
+        },
+        "destination_port": {
+          "value": "Douala + Lagos",
+          "confidence": "confirmed",
+          "source_text": "disch Douala  + Lagos"
+        },
+        "destination_country": {
+          "value": "Cameroon + Nigeria",
+          "confidence": "interpreted",
+          "source_text": "disch Douala  + Lagos"
+        },
+        "cargo_description": {
+          "value": null
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 30000,
+          "confidence": "interpreted",
+          "source_text": "need 20/30,000mt sdbc try twn (try smaller)"
+        },
+        "weight_mt_min": {
+          "value": 20000,
+          "confidence": "interpreted",
+          "source_text": "need 20/30,000mt sdbc try twn (try smaller)"
+        },
+        "weight_mt_max": {
+          "value": 30000,
+          "confidence": "interpreted",
+          "source_text": "need 20/30,000mt sdbc try twn (try smaller)"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "uncertain",
+          "source_text": "need 20/30,000mt sdbc try twn (try smaller)"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "10–20 May 2026",
+          "confidence": "confirmed",
+          "source_text": "10 / 20 May"
+        },
+        "laycan": {
+          "value": "10/20 May 2026",
+          "confidence": "confirmed",
+          "source_text": "10 / 20 May"
+        },
+        "loading_rate": null,
+        "loading_terms": {
+          "value": "SHEX",
+          "confidence": "interpreted",
+          "source_text": "12 ttl days sx"
+        },
+        "discharge_rate": null,
+        "discharge_terms": {
+          "value": "SHEX",
+          "confidence": "interpreted",
+          "source_text": "12 ttl days sx"
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2,5 pct ttl here"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "2,5 pct ttl here"
+        },
+        "special_requirements": {
+          "value": "12 total laytime days; vessel type requested: SDBC or tween decker (try smaller vessel); lumpsum freight requested",
+          "confidence": "confirmed",
+          "source_text": "need 20/30,000mt sdbc try twn (try smaller)"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Cargo description/type not specified for the bulk parcel — critical for vessel selection and freight calculation",
+          "No split of quantity between Damietta and Misurata load ports",
+          "No split of discharge quantity between Douala and Lagos",
+          "Laytime split between loading and discharging not specified (12 days total — how allocated?)",
+          "Freight basis not stated (per MT or lumpsum for bulk parcel)"
+        ],
+        "unknown_terms": ["sdbc"]
+      },
+      {
+        "origin_port": {
+          "value": "Damietta + Misurata",
+          "confidence": "interpreted",
+          "source_text": "loading Damietta  + Misurata"
+        },
+        "origin_country": {
+          "value": "Egypt + Libya",
+          "confidence": "interpreted",
+          "source_text": "loading Damietta  + Misurata"
+        },
+        "destination_port": {
+          "value": "Douala + Lagos",
+          "confidence": "interpreted",
+          "source_text": "disch Douala  + Lagos"
+        },
+        "destination_country": {
+          "value": "Cameroon + Nigeria",
+          "confidence": "interpreted",
+          "source_text": "disch Douala  + Lagos"
+        },
+        "cargo_description": {
+          "value": "Approximately 300 x 20HC containers, unit weight approximately 20 MT each",
+          "confidence": "interpreted",
+          "source_text": "Need to load abt 300 containers 20HC (uw abt 20mt)"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 6000,
+          "confidence": "interpreted",
+          "source_text": "abt 300 containers 20HC (uw abt 20mt)"
+        },
+        "weight_mt_min": null,
+        "weight_mt_max": null,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "FCL",
+          "confidence": "confirmed",
+          "source_text": "abt 300 containers 20HC (uw abt 20mt)"
+        },
+        "container_type": {
+          "value": "20HC",
+          "confidence": "confirmed",
+          "source_text": "abt 300 containers 20HC"
+        },
+        "quantity": {
+          "value": 300,
+          "confidence": "interpreted",
+          "source_text": "abt 300 containers 20HC (uw abt 20mt)"
+        },
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "10–20 May 2026",
+          "confidence": "confirmed",
+          "source_text": "10 / 20 May"
+        },
+        "laycan": {
+          "value": "10/20 May 2026",
+          "confidence": "confirmed",
+          "source_text": "10 / 20 May"
+        },
+        "loading_rate": null,
+        "loading_terms": {
+          "value": "SHEX",
+          "confidence": "interpreted",
+          "source_text": "12 ttl days sx"
+        },
+        "discharge_rate": null,
+        "discharge_terms": {
+          "value": "SHEX",
+          "confidence": "interpreted",
+          "source_text": "12 ttl days sx"
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2,5 pct ttl here"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "2,5 pct ttl here"
+        },
+        "special_requirements": {
+          "value": "Lumpsum freight figures requested; unit weight approximately 20 MT per 20HC container",
+          "confidence": "confirmed",
+          "source_text": "Lumpsum figures pls"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Container contents/cargo description not stated",
+          "No split of containers between load ports (Damietta vs Misurata)",
+          "No split of containers between discharge ports (Douala vs Lagos)",
+          "Incoterms not stated"
+        ],
+        "unknown_terms": []
+      }
+    ]
+  }
+}

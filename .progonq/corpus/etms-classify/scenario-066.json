@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-066",
+  "source_email_id": "19e07d0cb83503c5",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: 4000 dwcc open Sevilla",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:39:41.000Z",
+    "body": " \r\n\r\nFrom: PRIME MARITIME ODESA <chartering@prime-maritime.com> \r\nSent: None\r\nTo: management@etm-services.net\r\nSubject: 4000 dwcc open Sevilla\r\n\r\n \r\n\r\nMV KATREN   open   SEVILLA   07-08 May\r\nBUILT-1991, NETHERLANDS\r\nDWT 4173 MTS, DWCC 4000 ON 5,45 M DRAFT\r\nRINA CLASS, FLAG VANUATU\r\nSID, GLESS, LOA 88,25 M, BREADTH 13,7 M\r\nBOW TRUSTER FITTED\r\nTWO BOX HOLDS G/B 197500 CBF\r\n1- 29,75 x 11,55 x 8,65 M\r\n2- 32,05 x 11,5 5 x 8,65 M\r\nP&I MS AMLIN BELGIUM\r\nALL DETS ABT WOG\r\n\r\nfor any directions\r\n\r\n__\r\nBest regards\r\nPrime Maritime\r\n+380635961588  \r\n+380669422741\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07d0cb83503c5",
+    "category": "VESSEL_POSITION",
+    "urgency": "high",
+    "confidence": 0.93,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Prime Maritime Odesa",
+    "original_sender_company": "Prime Maritime"
+  }
+}

@@ -1,0 +1,175 @@
+{
+  "id": "etms-parse-vessel-055",
+  "source_email_id": "19e0f559b2252e15",
+  "category": "dwcc_edge",
+  "input": {
+    "subject": "FW: Open 11k Dwt Emed End of Feb",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-10T00:42:06.000Z",
+    "body": " \r\n\r\nFrom: Nora Marine <chartering@noramarine.com> \r\nSent: Tuesday, 6 February 2024 16:03\r\nTo: SEA TRANSIT DENIZ TASIMACILIGI <chartering@seatransit.com.tr>\r\nSubject: Open 11k Dwt Emed End of Feb\r\n\r\n \r\n\r\nGood Day, \r\n\r\nLooking for suitable cargoes in Med Blacksea region. Short period TC can be\r\nconsider. \r\n\r\nOpen Emed End of Feb-Beg of March \r\n\r\nGENERAL CARGO BOX HOLDS \r\nMV BENIGANE \r\nDWT/DWCC/DRAFT: 11500 / 11,100 t / 8,7 M \r\n\r\nFLAG: PALAU / CLASS: KR / BUILT: 2008, KOREA / BOX / GEAR: DECK CRANE 40T X\r\n2 SETS \r\nLOA/LBP/B/D: 129.9M/121.0Mx19.6Mx11.7M \r\nGRT/NRT: 8,963 / 4,054 T \r\nGRAIN/BALE: 13,600 / 13,500 cbm \r\nHOLD: 2 \r\n\r\nNO.1 : 18.9 M x 16.2 M x 10.85 M / NO.2 : 58.22 M x 16.2 M x 10.85 M \r\nNO.1 : 2577,4 cbm / 91008 cbft // NO.2 : 11048,2 cbm / 390111 cbft \r\nTotal: 480.000 cbft \r\n\r\nHATCH SIZES \r\nNO.1 : 18.8 M x 15.57 M \r\nNO.2 : 58.19 M x 15.57 M \r\n\r\nSPEED: SERVICE 12.5 KNOTS \r\nMULTINATIONAL CREW \r\nADA WOG \r\n\r\nBest Regards \r\n\r\nCpt. Kagan URGEV \r\nAs brokers only. \r\nSkype: k.urgev \r\nPhone: +90 532 560 4785 \r\nwww.noramarine.com <http://www.noramarine.com>  \r\nchartering@noramarine.com <mailto:chartering@noramarine.com>  \r\nTuzla, Istanbul, Turkey. \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "MV BENIGANE",
+          "confidence": "confirmed",
+          "source_text": "MV BENIGANE"
+        },
+        "imo": null,
+        "flag": {
+          "value": "Palau",
+          "confidence": "confirmed",
+          "source_text": "FLAG: PALAU"
+        },
+        "built": {
+          "value": 2008,
+          "confidence": "confirmed",
+          "source_text": "BUILT: 2008, KOREA"
+        },
+        "class_society": {
+          "value": "KR",
+          "confidence": "confirmed",
+          "source_text": "CLASS: KR"
+        },
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 11500,
+          "confidence": "confirmed",
+          "source_text": "DWT/DWCC/DRAFT: 11500 / 11,100 t / 8,7 M"
+        },
+        "dwcc": {
+          "value": 11100,
+          "confidence": "confirmed",
+          "source_text": "DWT/DWCC/DRAFT: 11500 / 11,100 t / 8,7 M"
+        },
+        "draft_max": {
+          "value": 8.7,
+          "confidence": "interpreted",
+          "source_text": "DWT/DWCC/DRAFT: 11500 / 11,100 t / 8,7 M"
+        },
+        "loa": {
+          "value": 129.9,
+          "confidence": "confirmed",
+          "source_text": "LOA/LBP/B/D: 129.9M/121.0Mx19.6Mx11.7M"
+        },
+        "beam": {
+          "value": 19.6,
+          "confidence": "confirmed",
+          "source_text": "LOA/LBP/B/D: 129.9M/121.0Mx19.6Mx11.7M"
+        },
+        "grt": {
+          "value": 8963,
+          "confidence": "confirmed",
+          "source_text": "GRT/NRT: 8,963 / 4,054 T"
+        },
+        "nrt": {
+          "value": 4054,
+          "confidence": "confirmed",
+          "source_text": "GRT/NRT: 8,963 / 4,054 T"
+        },
+        "holds_count": {
+          "value": 2,
+          "confidence": "confirmed",
+          "source_text": "HOLD: 2"
+        },
+        "hatches_count": {
+          "value": 2,
+          "confidence": "interpreted",
+          "source_text": "HATCH SIZES\nNO.1 : 18.8 M x 15.57 M\nNO.2 : 58.19 M x 15.57 M"
+        },
+        "grain_capacity": {
+          "value": 13600,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE: 13,600 / 13,500 cbm"
+        },
+        "grain_capacity_unit": "cbm",
+        "bale_capacity": {
+          "value": 13500,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE: 13,600 / 13,500 cbm"
+        },
+        "hold_dimensions": {
+          "value": [
+            "NO.1: 18.9M x 16.2M x 10.85M / 2577.4 cbm / 91008 cbft",
+            "NO.2: 58.22M x 16.2M x 10.85M / 11048.2 cbm / 390111 cbft"
+          ],
+          "confidence": "confirmed",
+          "source_text": "NO.1 : 18.9 M x 16.2 M x 10.85 M / NO.2 : 58.22 M x 16.2 M x 10.85 M\nNO.1 : 2577,4 cbm / 91008 cbft // NO.2 : 11048,2 cbm / 390111 cbft"
+        },
+        "hatch_dimensions": {
+          "value": ["NO.1: 18.8M x 15.57M", "NO.2: 58.19M x 15.57M"],
+          "confidence": "confirmed",
+          "source_text": "HATCH SIZES\nNO.1 : 18.8 M x 15.57 M\nNO.2 : 58.19 M x 15.57 M"
+        },
+        "tank_top_strength": null,
+        "geared": {
+          "value": true,
+          "confidence": "confirmed",
+          "source_text": "GEAR: DECK CRANE 40T X 2 SETS"
+        },
+        "crane_capacity": {
+          "value": "2 x 40T",
+          "confidence": "confirmed",
+          "source_text": "GEAR: DECK CRANE 40T X 2 SETS"
+        },
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "confirmed",
+          "source_text": "GENERAL CARGO BOX HOLDS"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Eastern Mediterranean",
+          "confidence": "interpreted",
+          "source_text": "Open Emed End of Feb-Beg of March"
+        },
+        "open_date": {
+          "value": {
+            "open": "2024-02-24",
+            "close": "2024-03-05",
+            "display": "End of Feb - Beg of March"
+          },
+          "confidence": "interpreted",
+          "source_text": "Open Emed End of Feb-Beg of March"
+        },
+        "direction": {
+          "value": "Mediterranean / Black Sea region",
+          "confidence": "confirmed",
+          "source_text": "Looking for suitable cargoes in Med Blacksea region. Short period TC can be consider."
+        },
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": {
+          "value": 12.5,
+          "confidence": "confirmed",
+          "source_text": "SPEED: SERVICE 12.5 KNOTS"
+        },
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Box-shaped holds",
+            "confidence": "confirmed",
+            "source_text": "GENERAL CARGO BOX HOLDS"
+          },
+          {
+            "value": "Multinational crew",
+            "confidence": "confirmed",
+            "source_text": "MULTINATIONAL CREW"
+          },
+          {
+            "value": "Short period TC considered",
+            "confidence": "confirmed",
+            "source_text": "Short period TC can be consider."
+          }
+        ],
+        "unknown_terms": [
+          "ADA WOG — ADA (All Details About) and WOG (Without Guarantee) are individually recognized terms; combined usage 'ADA WOG' as a compound clause is noted but both components are in glossary"
+        ]
+      }
+    ]
+  }
+}

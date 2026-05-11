@@ -1,0 +1,119 @@
+{
+  "id": "etms-parse-cargo-053",
+  "source_email_id": "19e07d4f102b639b",
+  "category": "numeric_edge",
+  "input": {
+    "subject": "FW: 6.000 mts agris PIVDENNYI / LA CORUNA",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:44:13.000Z",
+    "body": " \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Friday, 8 May 2026 12:20\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: 6.000 mts agris PIVDENNYI / LA CORUNA\r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\ngd afternoon\r\n\r\n \r\n\r\npls propose described ladies for the fol firm carog : \r\n\r\n\r\nPivdennyi / La Coruna\r\n6000 mts +/-10% of rapeseed meal pellets in bulk, sf  58'\r\nspot - vsl dates\r\n2000 bends\r\n3.75% ttl here\r\n\r\n\r\n\r\nBEST RGRDS\r\nTASOS KOUMANIS ( mob. 00306937322574)\r\nE MAILS : chartering@niavigrains.gr <mailto:chartering@niavigrains.gr>  \r\n\r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr <http://www.niavigrains.gr> \r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\nSKYPE : NIAVIGRAINS Tasos\r\nLinkedIn: www.linkedin.com/in/tasoskoumanis <http://www.linkedin.com/in/tasoskoumanis> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Pivdennyi",
+          "confidence": "confirmed",
+          "source_text": "Pivdennyi / La Coruna"
+        },
+        "origin_country": {
+          "value": "Ukraine",
+          "confidence": "interpreted",
+          "source_text": "Pivdennyi / La Coruna"
+        },
+        "destination_port": {
+          "value": "La Coruña",
+          "confidence": "confirmed",
+          "source_text": "Pivdennyi / La Coruna"
+        },
+        "destination_country": {
+          "value": "Spain",
+          "confidence": "interpreted",
+          "source_text": "Pivdennyi / La Coruna"
+        },
+        "cargo_description": {
+          "value": "Rapeseed meal pellets in bulk",
+          "confidence": "confirmed",
+          "source_text": "6000 mts +/-10% of rapeseed meal pellets in bulk, sf  58'"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 6000,
+          "confidence": "confirmed",
+          "source_text": "6000 mts +/-10% of rapeseed meal pellets in bulk"
+        },
+        "weight_mt_min": {
+          "value": 5400,
+          "confidence": "interpreted",
+          "source_text": "6000 mts +/-10%"
+        },
+        "weight_mt_max": {
+          "value": 6600,
+          "confidence": "interpreted",
+          "source_text": "6000 mts +/-10%"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "rapeseed meal pellets in bulk"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Spot — vessel dates to be advised",
+          "confidence": "interpreted",
+          "source_text": "spot - vsl dates"
+        },
+        "laycan": null,
+        "loading_rate": {
+          "value": 2000,
+          "confidence": "interpreted",
+          "source_text": "2000 bends"
+        },
+        "loading_terms": {
+          "value": "2000 MT/day both ends",
+          "confidence": "interpreted",
+          "source_text": "2000 bends"
+        },
+        "discharge_rate": {
+          "value": 2000,
+          "confidence": "interpreted",
+          "source_text": "2000 bends"
+        },
+        "discharge_terms": {
+          "value": "2000 MT/day both ends",
+          "confidence": "interpreted",
+          "source_text": "2000 bends"
+        },
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75% ttl here"
+        },
+        "commission_terms": {
+          "value": "TTL — broker commission, all to charterers' side (\"here\")",
+          "confidence": "interpreted",
+          "source_text": "3.75% ttl here"
+        },
+        "special_requirements": null,
+        "stowage_factor": {
+          "value": 58,
+          "confidence": "confirmed",
+          "source_text": "sf  58'"
+        },
+        "missing_info": [
+          "Laycan window not specified — only 'spot' mentioned; specific dates required",
+          "Loading/discharge terms (FIO, FIOST, CQD, etc.) not stated",
+          "SHINC/SHEX qualifier for the 2000 MT/day rate not specified",
+          "Freight rate / freight basis not indicated",
+          "No vessel size / DWT requirement specified",
+          "Demurrage / despatch rate not mentioned"
+        ],
+        "unknown_terms": []
+      }
+    ]
+  }
+}

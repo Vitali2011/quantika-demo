@@ -1,0 +1,132 @@
+{
+  "id": "etms-parse-cargo-023",
+  "source_email_id": "19e07caab607dfe5",
+  "category": "forwarded",
+  "input": {
+    "subject": "FW: - 1Egypt Med/1POC - 5000/10% mts of salt in bb   salt (1,1x1,1x1,1, uw 1,25)",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:33:01.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Wednesday, 6 May 2026 19:59\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: RE: - 1Egypt Med/1POC - 5000/10% mts of salt in bb salt (1,1x1,1x1,1, uw 1,25)\r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n*For quick response pls include \"takis\" in the body of the email*\r\n\r\nGD DAY \r\n  \r\nPLS OFFER FOR \r\n\r\n- 1Egypt Med/POC\r\n- 5000/10% mts of salt in bb\r\n  salt (1,1x1,1x1,1, uw 1,25)\r\n- 1250/1250\r\n- spot/vsls dates \r\n- 1,25% past us\r\n\r\nPlease add our email address ( chartering@niavigrains.gr ) to your circulation list for cargoes / positions\r\n\r\nBEST RGRDS\r\nTAK  (TAKIS KAPETANIOS)\r\nE MAIL : chartering@niavigrains.gr\r\nMobile/WhatsApp:0030 6944528968\r\nSKYPE: captanpanos\r\nLINKEDIN : www.linkedin.com/in/takis-kapetanios-5031344b/\r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr\r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\n \r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Egypt Mediterranean port (unspecified)",
+          "confidence": "interpreted",
+          "source_text": "1Egypt Med/POC"
+        },
+        "origin_country": {
+          "value": "Egypt",
+          "confidence": "confirmed",
+          "source_text": "1Egypt Med/POC"
+        },
+        "destination_port": {
+          "value": "Port of Call (unspecified)",
+          "confidence": "interpreted",
+          "source_text": "1Egypt Med/POC"
+        },
+        "destination_country": {
+          "value": null
+        },
+        "cargo_description": {
+          "value": "Salt in big bags (1.1m x 1.1m x 1.1m, unit weight 1.25 MT per bag)",
+          "confidence": "confirmed",
+          "source_text": "5000/10% mts of salt in bb salt (1,1x1,1x1,1, uw 1,25)"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 5000,
+          "confidence": "confirmed",
+          "source_text": "5000/10% mts of salt in bb"
+        },
+        "weight_mt_min": {
+          "value": 4500,
+          "confidence": "interpreted",
+          "source_text": "5000/10% mts of salt in bb"
+        },
+        "weight_mt_max": {
+          "value": 5500,
+          "confidence": "interpreted",
+          "source_text": "5000/10% mts of salt in bb"
+        },
+        "volume_cbm": {
+          "value": null
+        },
+        "dimensions": {
+          "value": "1.1m x 1.1m x 1.1m (per big bag)",
+          "confidence": "confirmed",
+          "source_text": "salt (1,1x1,1x1,1, uw 1,25)"
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "interpreted",
+          "source_text": "5000/10% mts of salt in bb salt (1,1x1,1x1,1, uw 1,25)"
+        },
+        "container_type": {
+          "value": null
+        },
+        "quantity": {
+          "value": null
+        },
+        "incoterms": {
+          "value": null
+        },
+        "preferred_dates": {
+          "value": "Spot / vessel's dates",
+          "confidence": "confirmed",
+          "source_text": "spot/vsls dates"
+        },
+        "laycan": {
+          "value": null
+        },
+        "loading_rate": {
+          "value": 1250,
+          "confidence": "confirmed",
+          "source_text": "1250/1250"
+        },
+        "loading_terms": {
+          "value": null
+        },
+        "discharge_rate": {
+          "value": 1250,
+          "confidence": "confirmed",
+          "source_text": "1250/1250"
+        },
+        "discharge_terms": {
+          "value": null
+        },
+        "commission_percent": {
+          "value": 1.25,
+          "confidence": "confirmed",
+          "source_text": "1,25% past us"
+        },
+        "commission_terms": {
+          "value": "1.25% brokerage via Niavigrains",
+          "confidence": "interpreted",
+          "source_text": "1,25% past us"
+        },
+        "special_requirements": {
+          "value": "Big bags dimensions 1.1m x 1.1m x 1.1m, unit weight 1.25 MT per bag",
+          "confidence": "confirmed",
+          "source_text": "salt (1,1x1,1x1,1, uw 1,25)"
+        },
+        "stowage_factor": {
+          "value": 1.065,
+          "confidence": "interpreted",
+          "source_text": "salt (1,1x1,1x1,1, uw 1,25)"
+        },
+        "missing_info": [
+          "Specific Egypt Mediterranean load port not named",
+          "Discharge port (POC) not specified — destination unknown",
+          "No laytime terms stated (SHINC/SHEX/FIO etc.)",
+          "No freight rate or freight type requested explicitly",
+          "Vessel size / DWT requirement not stated"
+        ],
+        "unknown_terms": []
+      }
+    ]
+  }
+}

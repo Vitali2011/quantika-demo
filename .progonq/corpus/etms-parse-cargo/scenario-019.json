@@ -1,0 +1,115 @@
+{
+  "id": "etms-parse-cargo-019",
+  "source_email_id": "19e07c837ba011a2",
+  "category": "forwarded",
+  "input": {
+    "subject": "FW: 5000/5500mts bgd Cement in bb1.5  Al Arish / Latakia",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:30:19.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Thursday, 7 May 2026 12:59\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: RE:5000/5500mts bgd Cement in bb1.5 Al Arish / Latakia\r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n*For quick response pls include \"takis\" in the body of the email*\r\n\r\nGD DAY \r\n  \r\nPLS OFFER FOR \r\n\r\n5.000/5.500mts bgd Cement in bb1.5 \r\nAl Arish / Latakia \r\nLaycan 12/13 may \r\nL/d 5/5 days \r\nComms 1.25 % past us\r\n\r\nPlease add our email address ( chartering@niavigrains.gr ) to your circulation list for cargoes / positions\r\n\r\nBEST RGRDS\r\nTAK  (TAKIS KAPETANIOS)\r\nE MAIL : chartering@niavigrains.gr\r\nMobile/WhatsApp:0030 6944528968\r\nSKYPE: captanpanos\r\nLINKEDIN : www.linkedin.com/in/takis-kapetanios-5031344b/\r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr\r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Al Arish",
+          "confidence": "confirmed",
+          "source_text": "Al Arish / Latakia"
+        },
+        "origin_country": {
+          "value": "Egypt",
+          "confidence": "interpreted",
+          "source_text": "Al Arish / Latakia"
+        },
+        "destination_port": {
+          "value": "Latakia",
+          "confidence": "confirmed",
+          "source_text": "Al Arish / Latakia"
+        },
+        "destination_country": {
+          "value": "Syria",
+          "confidence": "interpreted",
+          "source_text": "Al Arish / Latakia"
+        },
+        "cargo_description": {
+          "value": "Bagged Cement in big bags of 1.5 MT",
+          "confidence": "interpreted",
+          "source_text": "5.000/5.500mts bgd Cement in bb1.5"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 5500,
+          "confidence": "interpreted",
+          "source_text": "5.000/5.500mts bgd Cement in bb1.5"
+        },
+        "weight_mt_min": {
+          "value": 5000,
+          "confidence": "confirmed",
+          "source_text": "5.000/5.500mts bgd Cement in bb1.5"
+        },
+        "weight_mt_max": {
+          "value": 5500,
+          "confidence": "confirmed",
+          "source_text": "5.000/5.500mts bgd Cement in bb1.5"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "interpreted",
+          "source_text": "bgd Cement in bb1.5"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": null,
+        "laycan": {
+          "value": "12/13 May 2026",
+          "confidence": "confirmed",
+          "source_text": "Laycan 12/13 may"
+        },
+        "loading_rate": {
+          "value": "5 days",
+          "confidence": "confirmed",
+          "source_text": "L/d 5/5 days"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": "5 days",
+          "confidence": "confirmed",
+          "source_text": "L/d 5/5 days"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 1.25,
+          "confidence": "confirmed",
+          "source_text": "Comms 1.25 % past us"
+        },
+        "commission_terms": {
+          "value": "1.25% to pass through Niavigrains",
+          "confidence": "interpreted",
+          "source_text": "Comms 1.25 % past us"
+        },
+        "special_requirements": {
+          "value": "Cargo in big bags of 1.5 MT each (bagged cement)",
+          "confidence": "interpreted",
+          "source_text": "bgd Cement in bb1.5"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Freight rate / freight basis not specified",
+          "No SHINC/SHEX qualifier stated for laytime (loading/discharge days)",
+          "Vessel size / DWT requirements not specified",
+          "No demurrage / despatch rate mentioned"
+        ],
+        "unknown_terms": [
+          {
+            "term": "bb1.5",
+            "context": "5.000/5.500mts bgd Cement in bb1.5",
+            "note": "Possibly 'big bags of 1.5 MT' — cargo packaging spec, but abbreviation not standard; flagged for human review"
+          }
+        ]
+      }
+    ]
+  }
+}
