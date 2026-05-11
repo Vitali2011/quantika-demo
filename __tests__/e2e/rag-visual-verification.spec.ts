@@ -238,7 +238,7 @@ test('T05 dashboard: demo seed → cargo list visible', async () => {
 // (sample-03, dest=Netherlands/EU). checkSanctions() must block this pair deterministically.
 // Fixture reference: __tests__/fixtures/e2e-sanctions-emails.json
 //
-// If this testid changes in the future, also check T02, T03, T04, T05 for related selectors.
+// If the match API response shape changes (count/blockedCount), update T06 assertions here.
 
 test('T06 sanctions: match API blocks IR vessel on EU route', async () => {
   skipIf(!sessionOk, 'Session not available — run against localhost dev');
