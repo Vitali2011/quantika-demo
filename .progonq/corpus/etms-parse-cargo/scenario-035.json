@@ -1,0 +1,222 @@
+{
+  "id": "etms-parse-cargo-035",
+  "source_email_id": "19e07cf3d4f572fc",
+  "category": "forwarded",
+  "input": {
+    "subject": "FW: 5500 mts of salt in bb  (1,1x1,1x1,1, uw 1,25)  Egypt Med/POC +6000 -7000mts of salt/rice in bb  salt (1,1x1,1x1,1, uw 1,25) + rice (1,05x1,05x1,35, uw 1 mt)  Egypt Med+Mersin/POC",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:38:00.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Wednesday, 6 May 2026 14:13\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: RE:5500 mts of salt in bb (1,1x1,1x1,1, uw 1,25) Egypt Med/POC +6000 -7000mts of salt/rice in bb salt (1,1x1,1x1,1, uw 1,25) + rice (1,05x1,05x1,35, uw 1 mt) Egypt Med+Mersin/POC\r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n*For quick response pls include \"takis\" in the body of the email*\r\n\r\nGD DAY \r\n\r\nPLS OFFER FOR \r\n\r\n5500 mts of salt in bb \r\n(1,1x1,1x1,1, uw 1,25) \r\nEgypt Med/POC \r\n1250/1250 \r\n10-12/05 \r\n1,25% PAST US \r\n++\r\n6000 -7000 mts of salt/rice in bb \r\n(1,1x1,1x1,1, uw 1,25) + rice (1,05x1,05x1,35, uw 1 mt) \r\nDamietta+Mersin/POC \r\n1250/1250 \r\n15-18/05 \r\n2,50% PAST US \r\n \r\nPlease add our email address ( chartering@niavigrains.gr ) to your circulation list for cargoes / positions\r\n\r\nBEST RGRDS\r\nTAK  (TAKIS KAPETANIOS)\r\nE MAIL : chartering@niavigrains.gr\r\nMobile/WhatsApp:0030 6944528968\r\nSKYPE: captanpanos\r\nLINKEDIN : www.linkedin.com/in/takis-kapetanios-5031344b/\r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr\r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Egypt Mediterranean port",
+          "confidence": "interpreted",
+          "source_text": "Egypt Med/POC"
+        },
+        "origin_country": {
+          "value": "Egypt",
+          "confidence": "confirmed",
+          "source_text": "Egypt Med/POC"
+        },
+        "destination_port": {
+          "value": "Port of Call (unspecified)",
+          "confidence": "interpreted",
+          "source_text": "POC"
+        },
+        "destination_country": {
+          "value": null,
+          "confidence": null
+        },
+        "cargo_description": {
+          "value": "Salt in big bags, dimensions 1.1m x 1.1m x 1.1m, unit weight 1.25 MT per bag",
+          "confidence": "confirmed",
+          "source_text": "5500 mts of salt in bb (1,1x1,1x1,1, uw 1,25)"
+        },
+        "cargo_origin_country": {
+          "value": null,
+          "confidence": null
+        },
+        "weight_mt": {
+          "value": 5500,
+          "confidence": "confirmed",
+          "source_text": "5500 mts of salt in bb"
+        },
+        "weight_mt_min": 5500,
+        "weight_mt_max": 5500,
+        "volume_cbm": null,
+        "dimensions": {
+          "value": "1.1m x 1.1m x 1.1m (big bag)",
+          "confidence": "confirmed",
+          "source_text": "(1,1x1,1x1,1, uw 1,25)"
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "interpreted",
+          "source_text": "5500 mts of salt in bb (1,1x1,1x1,1, uw 1,25)"
+        },
+        "container_type": null,
+        "quantity": {
+          "value": 4400,
+          "confidence": "interpreted",
+          "source_text": "5500 mts of salt in bb (1,1x1,1x1,1, uw 1,25)"
+        },
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "10–12 May 2026",
+          "confidence": "confirmed",
+          "source_text": "10-12/05"
+        },
+        "laycan": {
+          "value": "10/12 May 2026",
+          "confidence": "confirmed",
+          "source_text": "10-12/05"
+        },
+        "loading_rate": {
+          "value": 1250,
+          "confidence": "confirmed",
+          "source_text": "1250/1250"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 1250,
+          "confidence": "confirmed",
+          "source_text": "1250/1250"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 1.25,
+          "confidence": "confirmed",
+          "source_text": "1,25% PAST US"
+        },
+        "commission_terms": {
+          "value": "PAST US",
+          "confidence": "confirmed",
+          "source_text": "1,25% PAST US"
+        },
+        "special_requirements": {
+          "value": "Big bag cargo: unit weight 1.25 MT/bag, bag dimensions 1.1 x 1.1 x 1.1m",
+          "confidence": "confirmed",
+          "source_text": "(1,1x1,1x1,1, uw 1,25)"
+        },
+        "stowage_factor": {
+          "value": 1.331,
+          "confidence": "interpreted",
+          "source_text": "(1,1x1,1x1,1, uw 1,25)"
+        },
+        "missing_info": [
+          "Destination port not specified — 'POC' (Port of Call/Convenience) is unresolved",
+          "No SHINC/SHEX qualifier given for loading/discharge rate of 1250/1250",
+          "Commission term 'PAST US' is non-standard and requires clarification (flagged in unknown_terms)"
+        ],
+        "unknown_terms": [
+          "PAST US (used as commission qualifier — e.g. '1,25% PAST US'; meaning unclear, possibly 'passed us' or broker address commission split notation)"
+        ]
+      },
+      {
+        "origin_port": {
+          "value": "Damietta + Mersin",
+          "confidence": "confirmed",
+          "source_text": "Damietta+Mersin/POC"
+        },
+        "origin_country": {
+          "value": "Egypt (Damietta) + Turkey (Mersin)",
+          "confidence": "interpreted",
+          "source_text": "Damietta+Mersin/POC"
+        },
+        "destination_port": {
+          "value": "Port of Call (unspecified)",
+          "confidence": "interpreted",
+          "source_text": "POC"
+        },
+        "destination_country": {
+          "value": null,
+          "confidence": null
+        },
+        "cargo_description": {
+          "value": "Salt in big bags (1.1m x 1.1m x 1.1m, unit weight 1.25 MT/bag) + Rice in big bags (1.05m x 1.05m x 1.35m, unit weight 1.0 MT/bag); combined cargo break bulk",
+          "confidence": "confirmed",
+          "source_text": "6000 -7000 mts of salt/rice in bb (1,1x1,1x1,1, uw 1,25) + rice (1,05x1,05x1,35, uw 1 mt)"
+        },
+        "cargo_origin_country": {
+          "value": null,
+          "confidence": null
+        },
+        "weight_mt": {
+          "value": 7000,
+          "confidence": "interpreted",
+          "source_text": "6000 -7000 mts of salt/rice in bb"
+        },
+        "weight_mt_min": 6000,
+        "weight_mt_max": 7000,
+        "volume_cbm": null,
+        "dimensions": {
+          "value": "Salt bags: 1.1m x 1.1m x 1.1m; Rice bags: 1.05m x 1.05m x 1.35m",
+          "confidence": "confirmed",
+          "source_text": "(1,1x1,1x1,1, uw 1,25) + rice (1,05x1,05x1,35, uw 1 mt)"
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "interpreted",
+          "source_text": "6000 -7000 mts of salt/rice in bb"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "15–18 May 2026",
+          "confidence": "confirmed",
+          "source_text": "15-18/05"
+        },
+        "laycan": {
+          "value": "15/18 May 2026",
+          "confidence": "confirmed",
+          "source_text": "15-18/05"
+        },
+        "loading_rate": {
+          "value": 1250,
+          "confidence": "confirmed",
+          "source_text": "1250/1250"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 1250,
+          "confidence": "confirmed",
+          "source_text": "1250/1250"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2,50% PAST US"
+        },
+        "commission_terms": {
+          "value": "PAST US",
+          "confidence": "confirmed",
+          "source_text": "2,50% PAST US"
+        },
+        "special_requirements": {
+          "value": "Combined cargo (salt + rice) loaded at two ports (Damietta + Mersin). Salt big bags: 1.1 x 1.1 x 1.1m, uw 1.25 MT. Rice big bags: 1.05 x 1.05 x 1.35m, uw 1.0 MT. Cargo segregation between salt and rice required.",
+          "confidence": "interpreted",
+          "source_text": "(1,1x1,1x1,1, uw 1,25) + rice (1,05x1,05x1,35, uw 1 mt)"
+        },
+        "stowage_factor": {
+          "value": "Salt: 1.331 CBM/MT; Rice: 1.488 CBM/MT",
+          "confidence": "interpreted",
+          "source_text": "(1,1x1,1x1,1, uw 1,25) + rice (1,05x1,05x1,35, uw 1 mt)"
+        },
+        "missing_info": [
+          "Destination port not specified — 'POC' is unresolved",
+          "Split quantity between salt and rice not specified (only total 6,000–7,000 MT given)",
+          "No SHINC/SHEX qualifier given for loading/discharge rate of 1250/1250",
+          "Commission term 'PAST US' requires clarification (flagged in unknown_terms)"
+        ],
+        "unknown_terms": [
+          "PAST US (used as commission qualifier — e.g. '2,50% PAST US'; meaning unclear, possibly 'passed us' or broker address commission split notation)"
+        ]
+      }
+    ]
+  }
+}
