@@ -53,6 +53,7 @@ describe('middleware auth guard', () => {
       '/api/auth/login',
       '/api/auth/logout',
       '/favicon.ico',
+      '/api/admin/cron-heartbeat',
       '/_next/static/chunks/main.js',
       '/_next/image?url=x',
     ];

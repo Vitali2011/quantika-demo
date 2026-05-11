@@ -11,6 +11,8 @@ const AUTH_BYPASS_PATHS = new Set([
   '/api/auth/logout',
   '/favicon.ico',
   '/api/health',
+  // Cron heartbeat has its own X-Cron-Secret auth — must not be redirected to /login
+  '/api/admin/cron-heartbeat',
 ]);
 
 const AUTH_BYPASS_PREFIXES = ['/_next/static', '/_next/image', '/_next/webpack'];
