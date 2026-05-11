@@ -140,7 +140,7 @@ function normalizePort(v: unknown): string | null {
 
   // === PORT COUNT QUALIFIER STRIPPING ===
   // Strip prefix forms: "1 safe port safe berth X", "1spsb X", "1 sp X", "1 sb X"
-  s = s.replace(/^1\s*(?:safe port\s*(?:safe berth\s*)?|safe berth\s*|spsb\s*|sp\s*|sb\s*)/, '');
+  s = s.replace(/^1\s*(?:safe port\s*(?:safe berth\s*)?|safe berth\s*|spsb\s*|sp\s*|sb\s*|port\s*)/, '');
   // Strip suffix forms: "X (1 safe port safe berth)", "X (1 port)"
   s = s.replace(/\s*\(1\s*(?:safe port(?:\s*safe berth)?|safe berth|port|spsb|sp|sb)\)$/i, '');
   // Strip trailing generic " port" qualifier (e.g. "egypt mediterranean port" → "egypt mediterranean")

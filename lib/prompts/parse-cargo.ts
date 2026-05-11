@@ -82,6 +82,9 @@ RULE 3 — Preserve port count prefixes ("1 sp", "2 sp", "1 safe port"):
 - "1 sp Spanish Mediterranean" → origin_port = "1 safe port Spanish Mediterranean"
 - "1 EMED" → origin_port = "Eastern Mediterranean (1 port)"
 - "2 safe ports Baltic" → origin_port = "2 safe ports Baltic"
+- "1 [region name]" or "1 [sea/coast area]" → region with 1 port TBN; format as "[Region] port (unspecified)"
+  Example: "1Egypt Med" → "Egypt Mediterranean port (unspecified)" (NOT "1 port Egypt Mediterranean")
+  Example: "1 Marmara" → "Marmara" (sea/region — 1 port TBN; omit "1 port" prefix)
 
 RULE 4 — Preserve source port spelling; DO NOT add unsolicited geographic qualifiers:
 - "Marmara" → origin_port = "Marmara" (not "Marmara Sea (region)")
@@ -224,8 +227,13 @@ Each field must be returned as: { value: ..., confidence: "confirmed" | "interpr
 If a field is set to null (information not present), source_text is not needed.
 
 TCT GUARD: If the email describes a time-charter trip (contains TCT, "trip charter", "period charter", daily hire rate, delivery/redelivery ports, or charter duration in months) rather than a specific cargo lifting, do NOT attempt to extract cargo fields. Return empty items array and set missing_info: ["This appears to be a TCT/period charter request, not a voyage cargo inquiry"].
+TCT GUARD clarification — charter duration is always in MONTHS or YEARS (e.g., "6 months", "min 12 / max 18 months"); "4 ttl days" or "10/20 days" = laytime terms for loading/discharging, NOT charter duration.
 
 VESSEL POSITION GUARD: Also return empty items array if the email is a vessel availability/tonnage circular where a shipowner or operator is offering their vessel for employment. Identifies: (1) vessel capacity specs (DWCC, DWT) combined with vessel type descriptors (SID = single-deck, BOX = box-hold, GLESS = gearless, OHG = open-hatch) — these describe the ship, not the cargo; (2) "open [PORT] [date]/onw" or "open [PORT] ppt" — describes where the vessel is currently available; (3) "=> [REGION]" or "looking for employment in [REGION]" — describes preferred trading area, not a discharge port for specific cargo. These emails read as "we have a ship available at X, seeking cargo toward Y" — NOT as a shipper seeking transportation for a specific cargo. Return empty items[] and set missing_info: ["This appears to be a vessel availability/tonnage circular, not a cargo inquiry"].
+IMPORTANT negative examples — these ARE cargo inquiries (do NOT trigger the guard):
+- "pls propose [suitable] vessels for our [cargo]" = shipper asking broker to find tonnage for specific cargo → PARSE as cargo inquiry
+- "pls propose described ladies for our firm cargo" = same — "ladies" is informal for ships — still a cargo inquiry
+- Any email that contains a specific named cargo (cement, grain, coils, etc.) with quantity and a load/discharge port → PARSE as cargo inquiry, regardless of vessel mentions.
 
 Extract per inquiry item:
 - origin_port: full port name (see PORT HANDLING RULES — never null when geography exists)
