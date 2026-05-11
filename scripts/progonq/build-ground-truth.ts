@@ -29,7 +29,8 @@ import type { ClassifiedEmail } from './classify-corpus';
 
 const MODEL = 'us.anthropic.claude-sonnet-4-6';
 const MAX_BODY_CHARS = 3000;
-const CONCURRENCY = 2;
+const CONCURRENCY = 1;
+const REQUEST_DELAY_MS = 500; // spacing between sequential Bedrock calls
 const CLASSIFY_BATCH = 20;
 
 const CLASSIFIED_PATH = path.resolve(process.cwd(), '.private/etms-corpus-classified.json');
@@ -109,6 +110,7 @@ async function extractOne(endpoint: Endpoint, email: ClassifiedEmail): Promise<u
   while (attempt < 4) {
     attempt++;
     try {
+      await sleep(REQUEST_DELAY_MS);
       const text = await callAiText(
         scope,
         system,
@@ -126,7 +128,7 @@ async function extractOne(endpoint: Endpoint, email: ClassifiedEmail): Promise<u
       return parsed;
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      const delay = [1000, 5000, 30000][attempt - 1] ?? 60000;
+      const delay = [5000, 15000, 60000][attempt - 1] ?? 60000;
       if (attempt >= 4) throw err;
       console.error(`  [${endpoint}/${email.id}] attempt ${attempt} ERR: ${msg.slice(0, 100)} — retry in ${delay / 1000}s`);
       await sleep(delay);
@@ -173,7 +175,8 @@ async function main() {
   for (const email of corpus) {
     for (const endpoint of endpointFilter) {
       if (!email.applicable_endpoints.includes(endpoint)) continue;
-      if (gt[email.id]?.[endpoint] !== undefined) continue; // already done
+      const existing = gt[email.id]?.[endpoint];
+      if (existing !== undefined && !(existing as Record<string, unknown>)?.__error) continue;
       workItems.push({ email, endpoint });
     }
   }
