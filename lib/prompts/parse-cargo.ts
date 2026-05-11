@@ -279,3 +279,38 @@ IMPORTANT: Do NOT confuse "loading rate" or "discharge rate" (which are cargo ha
 IMPORTANT: "dwcc" (deadweight cargo capacity) when used in a cargo inquiry context (e.g., "2k dwcc spot marmara") means the sender is looking for a vessel with at least that DWCC. Treat this as CARGO_INQUIRY, not VESSEL_POSITION.
 
 Output: { "items": [ ...one object per cargo inquiry... ] }`;
+
+/**
+ * Response schema for Gemini 2.5 Pro structured output.
+ * Enforces { items: [{ ... }] } shape with confidence fields for the four core
+ * routing fields. Other fields (cargo_type, laycan, terms, etc.) are accepted
+ * via additionalProperties — the prompt itself enumerates them.
+ */
+const CONFIDENCE_FIELD_SCHEMA = {
+  type: 'object',
+  properties: {
+    value: {},
+    confidence: { type: 'string', enum: ['confirmed', 'interpreted', 'uncertain'] },
+    source_text: { type: 'string' },
+  },
+  required: ['value', 'confidence'],
+} as const;
+
+export const PARSE_CARGO_RESPONSE_SCHEMA = {
+  type: 'object',
+  required: ['items'],
+  properties: {
+    items: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          origin_port: CONFIDENCE_FIELD_SCHEMA,
+          destination_port: CONFIDENCE_FIELD_SCHEMA,
+          weight_mt: CONFIDENCE_FIELD_SCHEMA,
+          cargo_description: CONFIDENCE_FIELD_SCHEMA,
+        },
+      },
+    },
+  },
+} as const;
