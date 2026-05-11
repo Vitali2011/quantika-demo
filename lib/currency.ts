@@ -9,7 +9,14 @@ const FALLBACK_RATES: Record<string, number> = {
   GBP_USD: 1.27,
   USD_EUR: 1 / 1.08,
   USD_GBP: 1 / 1.27,
+  NOK_USD: 0.092,   // Norwegian Krone — needed for FSP/Nordic routes
+  USD_NOK: 10.87,
+  AED_USD: 0.272,   // UAE Dirham — Dubai/MENA market
+  USD_AED: 3.67,
 };
+
+// Frankfurter API (ECB-backed, free, no auth): https://api.frankfurter.app
+const FRANKFURTER_URL = "https://api.frankfurter.app/latest";
 
 export async function convertCurrency(
   amount: number,
@@ -38,15 +45,13 @@ export async function convertCurrency(
       targetCurrency: to,
       exchangeRate: cached.rate,
       rateDate: new Date(cached.timestamp).toISOString().split("T")[0],
-      source: "ecb",
+      source: "frankfurter",
     };
   }
 
-  // Try ECB API
+  // Try Frankfurter API (replaces exchangerate.host — ECB-backed, reliable, no auth)
   try {
-    const res = await fetch(
-      `https://api.exchangerate.host/latest?base=${from}&symbols=${to}`
-    );
+    const res = await fetch(`${FRANKFURTER_URL}?from=${from}&to=${to}`);
     if (res.ok) {
       const data = await res.json();
       const rate = data?.rates?.[to];
@@ -58,8 +63,8 @@ export async function convertCurrency(
           targetAmount: Math.round(amount * rate * 100) / 100,
           targetCurrency: to,
           exchangeRate: rate,
-          rateDate: new Date().toISOString().split("T")[0],
-          source: "ecb",
+          rateDate: data?.date ?? new Date().toISOString().split("T")[0],
+          source: "frankfurter",
         };
       }
     }
