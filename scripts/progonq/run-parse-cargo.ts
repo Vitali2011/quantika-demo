@@ -1,0 +1,302 @@
+#!/usr/bin/env -S npx tsx
+/**
+ * progonq runner for parse-cargo endpoint.
+ *
+ * Runs CARGO_INQUIRY_PARSER_PROMPT against .progonq/corpus/etms-parse-cargo/
+ * scenarios and saves results to .progonq/results/etms-parse-cargo-<round>.json.
+ * Resumable: skips scenarios already in results file.
+ *
+ * Usage:
+ *   npx tsx --env-file=.env.local scripts/progonq/run-parse-cargo.ts [--round R0] [--limit N] [--scenario scenario-001]
+ *
+ * Env:
+ *   PARSE_CARGO_PROVIDER=gemini (default)
+ *   AI_PROVIDER fallback
+ */
+
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs';
+import path from 'node:path';
+import { callAiText } from '@/lib/ai-provider';
+import { CARGO_INQUIRY_PARSER_PROMPT } from '@/lib/prompts/parse-cargo';
+
+const SCOPE = 'PARSE_CARGO';
+const MAX_BODY_CHARS = 5000;
+const REQUEST_DELAY_MS = 400;
+
+const CORPUS_DIR = path.resolve(process.cwd(), '.progonq/corpus/etms-parse-cargo');
+const RESULTS_DIR = path.resolve(process.cwd(), '.progonq/results');
+
+interface ConfidenceField {
+  value: unknown;
+  confidence: string;
+  source_text?: string;
+}
+
+interface CargoItem {
+  origin_port?: ConfidenceField | null;
+  destination_port?: ConfidenceField | null;
+  weight_mt?: ConfidenceField | null;
+  cargo_description?: ConfidenceField | null;
+  [key: string]: unknown;
+}
+
+interface ParsedOutput {
+  items: CargoItem[];
+}
+
+interface Scenario {
+  id: string;
+  source_email_id: string;
+  category: string;
+  input: { subject: string; from: string; date: string; body: string };
+  reference_output: ParsedOutput;
+}
+
+interface ItemMatchResult {
+  ref_origin: string | null;
+  ref_dest: string | null;
+  ref_weight: number | null;
+  ref_commodity: string | null;
+  model_origin: string | null;
+  model_dest: string | null;
+  model_weight: number | null;
+  model_commodity: string | null;
+  route_match: boolean;
+  weight_match: boolean;
+}
+
+interface RunResult {
+  scenario_id: string;
+  category: string;
+  input: Scenario['input'];
+  reference_output: ParsedOutput;
+  model_output: ParsedOutput | null;
+  error?: string;
+  duration_ms: number;
+  item_count_ref: number;
+  item_count_model: number;
+  item_matches: ItemMatchResult[];
+  route_match_rate: number;
+}
+
+function truncate(s: string, max: number): string {
+  return s.length <= max ? s : s.slice(0, max) + '\n[truncated]';
+}
+
+function extractJson(text: string): unknown {
+  let s = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+  const start = s.search(/[{[]/);
+  if (start > 0) s = s.slice(start);
+  const opener = s[0];
+  if (opener !== '{' && opener !== '[') return JSON.parse(s);
+  const closer = opener === '{' ? '}' : ']';
+  let depth = 0, inStr = false, esc = false, end = -1;
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (esc) { esc = false; continue; }
+    if (c === '\\' && inStr) { esc = true; continue; }
+    if (c === '"') { inStr = !inStr; continue; }
+    if (inStr) continue;
+    if (c === opener) depth++;
+    else if (c === closer && --depth === 0) { end = i; break; }
+  }
+  return JSON.parse(end > 0 ? s.slice(0, end + 1) : s);
+}
+
+function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+function getFieldValue(field: ConfidenceField | null | undefined): unknown {
+  if (field == null) return null;
+  return field.value ?? null;
+}
+
+function normalizePort(v: unknown): string | null {
+  if (typeof v !== 'string' || !v) return null;
+  let s = v.trim().toLowerCase().replace(/\s+/g, ' ');
+  // Strip diacritics — reference corpus is inconsistent (constanta vs constanța)
+  s = s.normalize('NFD').replace(/[̀-ͯ]/g, '');
+  // Common port spelling aliases
+  s = s.replace(/\bveracruz\b/g, 'vera cruz');
+  s = s.replace(/\bla coruna\b/g, 'la coruna'); // already ascii after NFD strip
+  s = s.replace(/\bnemrut bay\b/g, 'nemrut');   // normalize Nemrut Bay → nemrut for scoring
+  // Normalize port qualifier formats so "1 safe port X" == "X (1 port)" == "1 sp X"
+  s = s.replace(/^1 safe port (.+)$/, '$1 (1 port)');
+  s = s.replace(/^1 sp (.+)$/, '$1 (1 port)');
+  // Normalize "/" between ports to " or " (Puerto Limon / Caldera == Puerto Limon or Caldera)
+  s = s.replace(/ \/ /g, ' or ');
+  // Normalize "port (unspecified)" variants
+  s = s.replace(/\s*\(port unspecified\)/, ' (port unspecified)');
+  s = s.replace(/\(unspecified\)/, '(port unspecified)');
+  return s;
+}
+
+function scoreItems(refItems: CargoItem[], modelItems: CargoItem[]): ItemMatchResult[] {
+  const results: ItemMatchResult[] = [];
+  const maxLen = Math.max(refItems.length, modelItems.length);
+
+  for (let i = 0; i < maxLen; i++) {
+    const ref = refItems[i] ?? null;
+    const model = modelItems[i] ?? null;
+
+    const refOrigin = normalizePort(getFieldValue(ref?.origin_port as ConfidenceField | null));
+    const refDest = normalizePort(getFieldValue(ref?.destination_port as ConfidenceField | null));
+    const refWeight = getFieldValue(ref?.weight_mt as ConfidenceField | null) as number | null;
+    const refCommodity = getFieldValue(ref?.cargo_description as ConfidenceField | null) as string | null;
+
+    const modelOrigin = normalizePort(getFieldValue(model?.origin_port as ConfidenceField | null));
+    const modelDest = normalizePort(getFieldValue(model?.destination_port as ConfidenceField | null));
+    const modelWeight = getFieldValue(model?.weight_mt as ConfidenceField | null) as number | null;
+    const modelCommodity = getFieldValue(model?.cargo_description as ConfidenceField | null) as string | null;
+
+    const routeMatch = refOrigin === modelOrigin && refDest === modelDest;
+    const weightMatch = refWeight === modelWeight;
+
+    results.push({
+      ref_origin: refOrigin,
+      ref_dest: refDest,
+      ref_weight: refWeight,
+      ref_commodity: refCommodity,
+      model_origin: modelOrigin,
+      model_dest: modelDest,
+      model_weight: modelWeight,
+      model_commodity: modelCommodity,
+      route_match: routeMatch,
+      weight_match: weightMatch,
+    });
+  }
+  return results;
+}
+
+async function runScenario(scenario: Scenario): Promise<RunResult> {
+  const body = truncate(scenario.input.body, MAX_BODY_CHARS);
+  const userPrompt = `From: ${scenario.input.from}\nSubject: ${scenario.input.subject}\nDate: ${scenario.input.date}\n\n${body}`;
+
+  const t0 = Date.now();
+  let model_output: ParsedOutput | null = null;
+  let error: string | undefined;
+
+  let attempt = 0;
+  while (attempt < 3) {
+    attempt++;
+    try {
+      await sleep(REQUEST_DELAY_MS);
+      const text = await callAiText(SCOPE, CARGO_INQUIRY_PARSER_PROMPT, userPrompt, {
+        maxTokens: 4096,
+        timeoutMs: 90_000,
+      });
+      const parsed = extractJson(text) as ParsedOutput;
+      model_output = { items: Array.isArray(parsed.items) ? parsed.items : [] };
+      break;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (attempt >= 3) { error = msg; break; }
+      const delay = [2000, 10000][attempt - 1] ?? 30000;
+      console.error(`  [${scenario.id}] attempt ${attempt} ERR: ${msg.slice(0, 80)} — retry in ${delay / 1000}s`);
+      await sleep(delay);
+    }
+  }
+
+  const refItems = scenario.reference_output?.items ?? [];
+  const modelItems = model_output?.items ?? [];
+  const itemMatches = error ? [] : scoreItems(refItems, modelItems);
+  // Both ref and model agree on 0 items (e.g. TCT guard) = correct match
+  const routeMatchRate = error
+    ? 0
+    : refItems.length === 0 && modelItems.length === 0
+      ? 1
+      : itemMatches.length === 0
+        ? 0
+        : itemMatches.filter((m) => m.route_match).length / itemMatches.length;
+
+  return {
+    scenario_id: scenario.id,
+    category: scenario.category,
+    input: scenario.input,
+    reference_output: scenario.reference_output,
+    model_output,
+    error,
+    duration_ms: Date.now() - t0,
+    item_count_ref: refItems.length,
+    item_count_model: modelItems.length,
+    item_matches: itemMatches,
+    route_match_rate: routeMatchRate,
+  };
+}
+
+async function main() {
+  const roundArg = process.argv.indexOf('--round');
+  const round = roundArg >= 0 ? process.argv[roundArg + 1] : 'R0';
+  const limitArg = process.argv.indexOf('--limit');
+  const limit = limitArg >= 0 ? parseInt(process.argv[limitArg + 1], 10) : Infinity;
+  const scenarioFilter = process.argv.includes('--scenario')
+    ? process.argv[process.argv.indexOf('--scenario') + 1]
+    : null;
+
+  mkdirSync(RESULTS_DIR, { recursive: true });
+  const outPath = path.join(RESULTS_DIR, `etms-parse-cargo-${round}.json`);
+
+  const files = readdirSync(CORPUS_DIR)
+    .filter((f) => f.endsWith('.json'))
+    .sort();
+  const allScenarios: Scenario[] = files.map((f) =>
+    JSON.parse(readFileSync(path.join(CORPUS_DIR, f), 'utf-8')),
+  );
+
+  let scenarios = isFinite(limit) ? allScenarios.slice(0, limit) : allScenarios;
+  if (scenarioFilter) scenarios = scenarios.filter((s) => s.id === scenarioFilter);
+
+  // Resume
+  const existing: Map<string, RunResult> = new Map();
+  if (existsSync(outPath)) {
+    const prev: RunResult[] = JSON.parse(readFileSync(outPath, 'utf-8'));
+    for (const r of prev) existing.set(r.scenario_id, r);
+  }
+  const pending = scenarios.filter((s) => !existing.has(s.id) || existing.get(s.id)?.error);
+
+  console.error(`[run-parse-cargo] round=${round} total=${scenarios.length} pending=${pending.length}`);
+
+  let done = 0;
+  const results: RunResult[] = [...existing.values()].filter((r) => !r.error);
+
+  for (const scenario of pending) {
+    const result = await runScenario(scenario);
+    results.push(result);
+    done++;
+    if (done % 5 === 0 || done === pending.length) {
+      writeFileSync(outPath, JSON.stringify(results, null, 2));
+      const ok = results.filter((r) => !r.error).length;
+      const err = results.filter((r) => r.error).length;
+      const routeOk = results.filter((r) => r.route_match_rate === 1).length;
+      console.error(`[run-parse-cargo] ${done}/${pending.length} done (ok=${ok} err=${err} full_route_match=${routeOk})`);
+    }
+  }
+
+  writeFileSync(outPath, JSON.stringify(results, null, 2));
+
+  // Summary by category
+  const byCat: Record<string, { total: number; full_match: number; partial: number; mismatch: number; errors: number }> = {};
+  for (const r of results) {
+    if (!byCat[r.category]) byCat[r.category] = { total: 0, full_match: 0, partial: 0, mismatch: 0, errors: 0 };
+    byCat[r.category].total++;
+    if (r.error) { byCat[r.category].errors++; continue; }
+    if (r.route_match_rate === 1) byCat[r.category].full_match++;
+    else if (r.route_match_rate > 0) byCat[r.category].partial++;
+    else byCat[r.category].mismatch++;
+  }
+
+  const total = results.length;
+  const fullMatch = results.filter((r) => !r.error && r.route_match_rate === 1).length;
+  const errors = results.filter((r) => r.error).length;
+
+  console.error(`\n[run-parse-cargo] DONE round=${round}`);
+  console.error(`Overall route match: ${fullMatch}/${total} (${((fullMatch / total) * 100).toFixed(1)}%) errors=${errors}`);
+  console.error('By category:', JSON.stringify(byCat, null, 2));
+  console.error(`Output: ${outPath}`);
+}
+
+main().catch((e) => {
+  console.error('FATAL', e);
+  process.exit(1);
+});
