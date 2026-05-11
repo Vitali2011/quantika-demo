@@ -145,6 +145,8 @@ function normalizePort(v: unknown): string | null {
   s = s.replace(/\s*\(1\s*(?:safe port(?:\s*safe berth)?|safe berth|port|spsb|sp|sb)\)$/i, '');
   // Strip trailing generic " port" qualifier (e.g. "egypt mediterranean port" → "egypt mediterranean")
   s = s.replace(/ port$/, '');
+  // Strip trailing single-word parenthetical (country/region qualifiers, e.g. "Georgetown (Guyana)" → "Georgetown")
+  s = s.replace(/\s*\(\w+\)$/, '');
 
   return s.trim() || null;
 }
