@@ -26,7 +26,7 @@ concurrency:
 
 jobs:
   typecheck:
-    name: TypeCheck
+    name: TypeCheck + Audit
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -37,11 +37,20 @@ jobs:
         with:
           node-version: "22"
           cache: "npm"
+      - uses: actions/cache@v5
+        id: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
       - run: npm ci
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
       - run: npm run lint
       - run: npx tsc --noEmit
         env:
           NODE_OPTIONS: --max-old-space-size=6144
+      - run: npm audit --audit-level=high
+        if: github.event_name == 'push'
+        continue-on-error: true
 
   test:
     name: Test
@@ -55,7 +64,13 @@ jobs:
         with:
           node-version: "22"
           cache: "npm"
+      - uses: actions/cache@v5
+        id: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
       - run: npm ci
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
       - run: npm test -- --coverage --coverageProvider=v8 --forceExit
         env:
           NODE_OPTIONS: --max-old-space-size=6144
@@ -80,8 +95,21 @@ jobs:
         with:
           node-version: "22"
           cache: "npm"
+      - uses: actions/cache@v5
+        id: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+      - uses: actions/cache@v5
+        id: cache-playwright
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ hashFiles('package-lock.json') }}
+      - run: npx playwright install-deps chromium
+      - run: npx playwright install chromium
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
       - run: npm run test:e2e
       - uses: actions/upload-artifact@v7
         if: failure()
@@ -103,30 +131,19 @@ jobs:
           node-version: "22"
           cache: "npm"
       - uses: actions/cache@v5
+        id: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+      - run: npm ci
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+      - uses: actions/cache@v5
         with:
           path: .next/cache
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
             ${{ runner.os }}-nextjs-
-      - run: npm ci
       - run: npm run build
         env:
           NODE_OPTIONS: --max-old-space-size=4096
-
-  audit:
-    name: Audit
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    if: github.event_name == 'push'
-    permissions:
-      contents: read
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "22"
-          cache: "npm"
-      - run: npm ci
-      - run: npm audit --audit-level=high

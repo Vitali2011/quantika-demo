@@ -29,11 +29,23 @@ const BUNKER_GRADES = ['VLSFO', 'MGO'] as const;
 type BunkerPort = (typeof BUNKER_PORTS)[number]['value'];
 type BunkerGrade = (typeof BUNKER_GRADES)[number];
 
+const MULTI_CURRENCY_V2_ENABLED =
+  process.env.NEXT_PUBLIC_MULTI_CURRENCY_V2_ENABLED === 'true';
+
+const DISPLAY_CURRENCIES = ['USD', 'EUR', 'GBP', 'NOK', 'AED'] as const;
+type DisplayCurrency = (typeof DISPLAY_CURRENCIES)[number];
+
+// Fallback FX rates vs USD (updated by daily cron; used for display only)
+const DISPLAY_RATES: Record<DisplayCurrency, number> = {
+  USD: 1, EUR: 0.926, GBP: 0.787, NOK: 10.87, AED: 3.67,
+};
+
 export function EconomicsTab({ commissionPercent, vessel, cargo }: EconomicsTabProps) {
   const [open, setOpen] = useState(false);
   const [bunkerPriceUsdPerMt, setBunkerPriceUsdPerMt] = useState('');
   const [bunkerPort, setBunkerPort] = useState<BunkerPort>('SGSIN');
   const [bunkerGrade, setBunkerGrade] = useState<BunkerGrade>('VLSFO');
+  const [displayCurrency, setDisplayCurrency] = useState<DisplayCurrency>('USD');
 
   const compareInputs = useMemo(() => {
     const origin = cargo?.originPort?.value ?? '';
@@ -131,6 +143,30 @@ export function EconomicsTab({ commissionPercent, vessel, cargo }: EconomicsTabP
           </select>
         </div>
       </div>
+
+      {MULTI_CURRENCY_V2_ENABLED && (
+        <div className="space-y-1">
+          <label className="text-xs text-gray-500 block">
+            Display currency
+          </label>
+          <select
+            value={displayCurrency}
+            onChange={(e) => setDisplayCurrency(e.target.value as DisplayCurrency)}
+            aria-label="Display currency"
+            className="w-full border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-400"
+          >
+            {DISPLAY_CURRENCIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+          {displayCurrency !== 'USD' && (
+            <p className="text-xs text-gray-400" data-testid="fx-rate-hint">
+              1 USD ≈ {DISPLAY_RATES[displayCurrency].toFixed(displayCurrency === 'EUR' || displayCurrency === 'GBP' ? 3 : 2)} {displayCurrency}
+              {' '}(fallback rate)
+            </p>
+          )}
+        </div>
+      )}
 
       <div>
         <button

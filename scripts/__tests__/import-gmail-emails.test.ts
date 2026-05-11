@@ -227,12 +227,12 @@ describe('run() — import-gmail-emails', () => {
   });
 
   describe('Gmail query format', () => {
-    it('uses quoted label name with spaces and underscores', async () => {
+    it('filters by sender email (from:management@etm-services.net)', async () => {
       const gmail = makeGmailMock({ threads: [] });
       await run(baseOpts({ gmailClient: gmail }));
 
       const allLogs = consoleSpy.mock.calls.flat().join(' ');
-      expect(allLogs).toContain('label:"_ ETMS - Management"');
+      expect(allLogs).toContain('from:management@etm-services.net');
     });
   });
 
