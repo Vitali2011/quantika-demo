@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-025",
+  "source_email_id": "19e07c53928a4333",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: 55000 mt iron ore ex-ec india",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:27:03.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: PNA Shipbrokers - Singapore <pna@pnaship.com> \r\nSent: Friday, 8 May 2026 10:41\r\nTo: management@etm-services.net\r\nSubject: 55000 mt iron ore ex-ec india\r\n\r\n\r\n\r\nFROM: PACIFIC & ATLANTIC SHIPBROKERS - SINGAPORE / (Email/Teams:\r\npna@pnaship.com)\r\n\r\n**\r\n\r\n\r\nTO: management@etm-services.net\r\n\r\n- seac  \r\n- 55,000mt/10% iron ore \r\n- load 1spsb ec india \r\n- disch 1spsb china main port\r\n- 15/24 may \r\n- 15000c / 15000c \r\n- 5% ttl here on f/d/d (try less)\r\n\r\n* NO TCT - VOY ONLY \r\n\r\nB Rgds  \r\nTONY (TEAMS: pna@pnaship.com)\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "id": "19e07c53928a4333",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.95,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Tony (PNA Shipbrokers - Singapore)",
+    "original_sender_company": "Pacific & Atlantic Shipbrokers - Singapore"
+  }
+}

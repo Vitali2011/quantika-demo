@@ -1,0 +1,124 @@
+{
+  "id": "etms-parse-cargo-038",
+  "source_email_id": "19e07d056d1ba5aa",
+  "category": "numeric_edge",
+  "input": {
+    "subject": "FW: 45-60k bauxite ex Abidjan---Dongguan",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:39:11.000Z",
+    "body": " \r\n\r\nFrom: TLMARINECO <fix@thanglongmarine.com> \r\nSent: Wednesday, 6 May 2026 12:58\r\nTo: management@etm-services.net\r\nSubject: 45-60k bauxite ex Abidjan---Dongguan\r\n\r\n \r\n\r\n\r\n \r\n\r\n\r\n\r\n\r\nCan't read or see images?  <https://tlma-cmpzourl.campaign-view.com/ua/viewinbrowser?od=3z714f227019ac79eaf1405cf8c6a23096bafd79b3983bbed7a2b7bf8462ff25f4&rd=13c2e459627477b5&sd=13c2e459627412dc&n=11699e4c16bdc04&mrd=13c2e459627412d1&m=1> View this email in a browser\r\n\r\n \r\n\r\n=THIS IS NOT SPAM MAIL. IF YOU DO NOT WANT TO RECEIVE, PLS INFORM US WITH SUB “UN-SUB” OR CLINK “UN-SUB’ BUTTON=\r\n\r\n \r\n\r\n/Mathew,\r\n\r\n \r\n\r\nGday,\r\n\r\n \r\n\r\nPls propose for:\r\n\r\n \r\n\r\nAcct: huaya\r\n\r\n45,000-60,000mt bauxite(qtty flexible)\r\n\r\nLoading port: Abidjan, CoteDivoire\r\n\r\nLoading rate: 11,000mt pwwd shinc, major holidays excluded\r\n\r\nDischarging port: 1sp Dongguan, China (need open book)\r\n\r\nDischarging rate: 12,000mt pwwd shinc, major holidays excluded\r\n\r\nLaycan: 10th May onwards try vsl's date\r\n\r\nAddcom: 3.75% on FDD to chtrs + 1.25% Tlmarineco \r\n\r\n \r\n\r\n \r\n\r\nBrgds\r\n\r\n \r\n\r\nMathew \r\n\r\nTlmarineco\r\n\r\nMob/Whatsapp: +84.904.559.435\r\n\r\nWechat: tlmarineco \r\n\r\nEmail: fix@thanglongmarine.com;\r\n\r\nhandy@thanglongmarine.com \r\n\r\n \r\n\r\n~~~AS BROKER ONLY ~~~\r\n\r\n\r\n \r\n\r\n\r\n\r\n\r\nThis email was sent by fix@thanglongmarine.com <mailto:fix@thanglongmarine.com>  to management@etm-services.net <mailto:management@etm-services.net> \r\n\r\nNot interested? Unsubscribe <https://tlma-cmpzourl.maillist-manage.com/ua/optout?od=3z714f227019ac79eaf1405cf8c6a23096bafd79b3983bbed7a2b7bf8462ff25f4&rd=13c2e459627477b5&sd=13c2e459627412dc&n=11699e4c16bdc04>  | Manage Preference <https://tlma-cmpzourl.maillist-manage.com/ua/commpref?od=3z714f227019ac79eaf1405cf8c6a23096bafd79b3983bbed7a2b7bf8462ff25f4&rd=13c2e459627477b5&sd=13c2e459627412dc&n=11699e4c16bdc04>  | Interested Subscribe <https://tlma-cmpzourl.maillist-manage.com/ua/optin?od=3z714f227019ac79eaf1405cf8c6a23096bafd79b3983bbed7a2b7bf8462ff25f4&rd=13c2e459627477b5&sd=13c2e459627412dc&n=11699e4c16bdc04>  \r\n\r\nTLMARINECO | HAIPHONG CITY - VIETNAM \r\n\r\n <https://tlma-cmpzourl.maillist-manage.com/ua/cmpredirect?od=3z714f227019ac79eaf1405cf8c6a23096bafd79b3983bbed7a2b7bf8462ff25f4&repDgs=13c2e459627477b5&linkDgs=13c2e45962745b15>   <https://www.facebook.com/>    <https://www.linkedin.com/feed/> \r\n\r\n \r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Abidjan",
+          "confidence": "confirmed",
+          "source_text": "Loading port: Abidjan, CoteDivoire"
+        },
+        "origin_country": {
+          "value": "Côte d'Ivoire",
+          "confidence": "confirmed",
+          "source_text": "Loading port: Abidjan, CoteDivoire"
+        },
+        "destination_port": {
+          "value": "Dongguan",
+          "confidence": "confirmed",
+          "source_text": "Discharging port: 1sp Dongguan, China (need open book)"
+        },
+        "destination_country": {
+          "value": "China",
+          "confidence": "confirmed",
+          "source_text": "Discharging port: 1sp Dongguan, China (need open book)"
+        },
+        "cargo_description": {
+          "value": "Bauxite",
+          "confidence": "confirmed",
+          "source_text": "45,000-60,000mt bauxite(qtty flexible)"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 60000,
+          "confidence": "interpreted",
+          "source_text": "45,000-60,000mt bauxite(qtty flexible)"
+        },
+        "weight_mt_min": {
+          "value": 45000,
+          "confidence": "confirmed",
+          "source_text": "45,000-60,000mt bauxite(qtty flexible)"
+        },
+        "weight_mt_max": {
+          "value": 60000,
+          "confidence": "confirmed",
+          "source_text": "45,000-60,000mt bauxite(qtty flexible)"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "45,000-60,000mt bauxite(qtty flexible)"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "10th May 2026 onwards, subject to vessel's schedule",
+          "confidence": "interpreted",
+          "source_text": "Laycan: 10th May onwards try vsl's date"
+        },
+        "laycan": {
+          "value": "10 May 2026 onwards",
+          "confidence": "uncertain",
+          "source_text": "Laycan: 10th May onwards try vsl's date"
+        },
+        "loading_rate": {
+          "value": 11000,
+          "confidence": "confirmed",
+          "source_text": "Loading rate: 11,000mt pwwd shinc, major holidays excluded"
+        },
+        "loading_terms": {
+          "value": "PWWD SHINC, major holidays excluded",
+          "confidence": "confirmed",
+          "source_text": "Loading rate: 11,000mt pwwd shinc, major holidays excluded"
+        },
+        "discharge_rate": {
+          "value": 12000,
+          "confidence": "confirmed",
+          "source_text": "Discharging rate: 12,000mt pwwd shinc, major holidays excluded"
+        },
+        "discharge_terms": {
+          "value": "PWWD SHINC, major holidays excluded",
+          "confidence": "confirmed",
+          "source_text": "Discharging rate: 12,000mt pwwd shinc, major holidays excluded"
+        },
+        "commission_percent": {
+          "value": 5,
+          "confidence": "interpreted",
+          "source_text": "Addcom: 3.75% on FDD to chtrs + 1.25% Tlmarineco"
+        },
+        "commission_terms": {
+          "value": "3.75% address commission to charterers (on FDD) + 1.25% brokerage to Tlmarineco; total 5.00%",
+          "confidence": "interpreted",
+          "source_text": "Addcom: 3.75% on FDD to chtrs + 1.25% Tlmarineco"
+        },
+        "special_requirements": {
+          "value": "1 safe port Dongguan; open book required at discharge port; quantity flexible between 45,000–60,000 MT; account: Huaya",
+          "confidence": "confirmed",
+          "source_text": "Discharging port: 1sp Dongguan, China (need open book)"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "No freight rate (hire rate) indicated — vessel owners should propose",
+          "Laycan close date not specified — only 'from 10th May onwards'",
+          "No demurrage / despatch rates specified",
+          "No NOR tendering conditions (WIBON/WIPON etc.) stated",
+          "FDD (Freight/Demurrage/Defence) commission basis — confirm whether commission applies to freight only or freight + demurrage",
+          "No vessel size preference or DWT range stated beyond the implied 45–60k range",
+          "No bill of lading or CP form specified"
+        ],
+        "unknown_terms": ["open book"]
+      }
+    ]
+  }
+}

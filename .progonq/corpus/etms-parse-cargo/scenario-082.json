@@ -1,0 +1,101 @@
+{
+  "id": "etms-parse-cargo-082",
+  "source_email_id": "19e0976ad0f58119",
+  "category": "single_cargo",
+  "input": {
+    "subject": "FW: 1 Egypt med / Duala  30.000 mt blk Salt",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:20:31.000Z",
+    "body": " \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Saturday, 21 March 2026 21:04\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: Re: 1 Egypt med / Duala 30.000 mt blk Salt\r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n*For quick response pls include \"takis\" in the body of the email*\r\n\r\nGD DAY\r\n\r\n \r\n\r\nPLS OFFER FOR\r\n\r\n \r\n\r\n1 Egypt med / Duala \r\n30.000 mt blk Salt \r\n21/30 march \r\n8000/3000\r\n2.5% pasr\r\n\r\nPlease add our email address ( chartering@niavigrains.gr <mailto:chartering@niavigrains.gr>  ) to your circulation list for cargoes / positions\r\n\r\nBEST RGRDS\r\nTAK  (TAKIS KAPETANIOS)\r\nE MAIL : chartering@niavigrains.gr <mailto:chartering@niavigrains.gr> \r\nMobile/WhatsApp:0030 6944528968\r\nSKYPE: captanpanos\r\nLINKEDIN : www.linkedin.com/in/takis-kapetanios-5031344b/ <http://www.linkedin.com/in/takis-kapetanios-5031344b/> \r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr <http://www.niavigrains.gr> \r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Egypt Mediterranean port",
+          "confidence": "interpreted",
+          "source_text": "1 Egypt med / Duala"
+        },
+        "origin_country": {
+          "value": "Egypt",
+          "confidence": "confirmed",
+          "source_text": "1 Egypt med / Duala"
+        },
+        "destination_port": {
+          "value": "Douala",
+          "confidence": "interpreted",
+          "source_text": "1 Egypt med / Duala"
+        },
+        "destination_country": {
+          "value": "Cameroon",
+          "confidence": "interpreted",
+          "source_text": "1 Egypt med / Duala"
+        },
+        "cargo_description": {
+          "value": "Bulk Salt",
+          "confidence": "confirmed",
+          "source_text": "30.000 mt blk Salt"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 30000,
+          "confidence": "confirmed",
+          "source_text": "30.000 mt blk Salt"
+        },
+        "weight_mt_min": 30000,
+        "weight_mt_max": 30000,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "30.000 mt blk Salt"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "21/30 March 2026",
+          "confidence": "confirmed",
+          "source_text": "21/30 march"
+        },
+        "laycan": {
+          "value": "21/30 March 2026",
+          "confidence": "confirmed",
+          "source_text": "21/30 march"
+        },
+        "loading_rate": {
+          "value": 8000,
+          "confidence": "confirmed",
+          "source_text": "8000/3000"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 3000,
+          "confidence": "confirmed",
+          "source_text": "8000/3000"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5% pasr"
+        },
+        "commission_terms": {
+          "value": "PASR",
+          "confidence": "confirmed",
+          "source_text": "2.5% pasr"
+        },
+        "special_requirements": null,
+        "stowage_factor": null,
+        "missing_info": [
+          "Specific Mediterranean load port not named (only 'Egypt med' given)",
+          "No loading/discharge terms specified (FIO, FIOST, CQD, etc.)",
+          "No SHINC/SHEX qualifier on loading/discharge rates",
+          "Freight rate / freight basis not requested or indicated"
+        ],
+        "unknown_terms": ["pasr"]
+      }
+    ]
+  }
+}

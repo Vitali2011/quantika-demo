@@ -1,0 +1,198 @@
+{
+  "id": "etms-parse-cargo-070",
+  "source_email_id": "19e089d960261c91",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: PLS OFFER BELOW CARGOES",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:23:23.000Z",
+    "body": " \r\n\r\nFrom: SONAY DENIZCILIK <sonay@sonayshipping.com> \r\nSent: Friday, 8 May 2026 17:23\r\nTo: management@etm-services.net\r\nSubject: PLS OFFER BELOW CARGOES\r\n\r\n \r\n\r\nDEAR ALL FRIENDS / HALIL\r\n\r\n \r\n\r\nGood day\r\n\r\n \r\n\r\nPls offer below cargoes\r\n\r\n \r\n\r\nAbt 10.000 mt Bulk Granular Gypsum\r\n\r\nSafi / Cotonou\r\n\r\nL/C Spot / Ppt dates\r\n\r\nL/D 6000 mt / 4000 mt \r\n\r\n2,5pus\r\n\r\n \r\n\r\nGrd vessel imperative\r\n\r\n \r\n\r\nAbt 2.100 mt steel coils/plates\r\n\r\nCasablanca / Diliskelesi\r\n\r\nL/C 20/25 May\r\n\r\nL/D 5 ttl wwd\r\n\r\n2,5pus\r\n\r\n \r\n\r\n \r\n\r\n+++\r\n\r\n \r\n\r\nThks and regards\r\n\r\nB.RGDS\r\n\r\nActing as broker only\r\n\r\nHalil ERSÖZ Mr\r\n\r\nSonay Shipping AS\r\n\r\nAddress: Istasyon Mah. D100 Karayolu Cad.\r\n\r\nNo:50 Haciogullari Plaza 34940 Tuzla Istanbul Turkiye\r\n\r\nTel:+90-216-446 71 05 (Ext:325)\r\n\r\nFax:+90-216-446 25 70\r\n\r\nMob:+90 549 204 67 07\r\n\r\nTeams:Halil.ERSOZ86\r\n\r\nEmail :sonay@sonayshipping.com\r\n\r\nsonaychartering@gmail.com\r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Safi",
+          "confidence": "confirmed",
+          "source_text": "Safi / Cotonou"
+        },
+        "origin_country": {
+          "value": "Morocco",
+          "confidence": "interpreted",
+          "source_text": "Safi / Cotonou"
+        },
+        "destination_port": {
+          "value": "Cotonou",
+          "confidence": "confirmed",
+          "source_text": "Safi / Cotonou"
+        },
+        "destination_country": {
+          "value": "Benin",
+          "confidence": "interpreted",
+          "source_text": "Safi / Cotonou"
+        },
+        "cargo_description": {
+          "value": "Bulk Granular Gypsum",
+          "confidence": "confirmed",
+          "source_text": "Abt 10.000 mt Bulk Granular Gypsum"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 10000,
+          "confidence": "interpreted",
+          "source_text": "Abt 10.000 mt Bulk Granular Gypsum"
+        },
+        "weight_mt_min": null,
+        "weight_mt_max": null,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "Abt 10.000 mt Bulk Granular Gypsum"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Spot / Prompt",
+          "confidence": "confirmed",
+          "source_text": "L/C Spot / Ppt dates"
+        },
+        "laycan": {
+          "value": "Spot / Prompt",
+          "confidence": "interpreted",
+          "source_text": "L/C Spot / Ppt dates"
+        },
+        "loading_rate": {
+          "value": 6000,
+          "confidence": "confirmed",
+          "source_text": "L/D 6000 mt / 4000 mt"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 4000,
+          "confidence": "confirmed",
+          "source_text": "L/D 6000 mt / 4000 mt"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2,5pus"
+        },
+        "commission_terms": {
+          "value": "pus — exact meaning unconfirmed; see unknown_terms",
+          "confidence": "uncertain",
+          "source_text": "2,5pus"
+        },
+        "special_requirements": {
+          "value": "Geared vessel imperative",
+          "confidence": "interpreted",
+          "source_text": "Grd vessel imperative"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "MOLOO / cargo quantity tolerance not specified",
+          "Laytime cost-allocation terms not specified (FIO, FIOST, CQD, etc.)",
+          "Demurrage / despatch rates not stated",
+          "Freight basis (PMT / lump sum) not stated",
+          "Vessel size / DWT requirements not stated"
+        ],
+        "unknown_terms": [
+          "pus (as in '2,5pus' — possibly a commission split or address commission notation, but not a recognized standard abbreviation)",
+          "Grd (interpreted as 'Geared' but abbreviation not standard — verify)"
+        ]
+      },
+      {
+        "origin_port": {
+          "value": "Casablanca",
+          "confidence": "confirmed",
+          "source_text": "Casablanca / Diliskelesi"
+        },
+        "origin_country": {
+          "value": "Morocco",
+          "confidence": "interpreted",
+          "source_text": "Casablanca / Diliskelesi"
+        },
+        "destination_port": {
+          "value": "Diliskelesi",
+          "confidence": "confirmed",
+          "source_text": "Casablanca / Diliskelesi"
+        },
+        "destination_country": {
+          "value": "Turkey",
+          "confidence": "interpreted",
+          "source_text": "Casablanca / Diliskelesi"
+        },
+        "cargo_description": {
+          "value": "Steel coils / plates",
+          "confidence": "confirmed",
+          "source_text": "Abt 2.100 mt steel coils/plates"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 2100,
+          "confidence": "interpreted",
+          "source_text": "Abt 2.100 mt steel coils/plates"
+        },
+        "weight_mt_min": null,
+        "weight_mt_max": null,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "Abt 2.100 mt steel coils/plates"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "20/25 May",
+          "confidence": "confirmed",
+          "source_text": "L/C 20/25 May"
+        },
+        "laycan": {
+          "value": "20/25 May 2026",
+          "confidence": "confirmed",
+          "source_text": "L/C 20/25 May"
+        },
+        "loading_rate": null,
+        "loading_terms": {
+          "value": "5 TTL WWD (total combined laytime both ends)",
+          "confidence": "interpreted",
+          "source_text": "L/D 5 ttl wwd"
+        },
+        "discharge_rate": null,
+        "discharge_terms": {
+          "value": "5 TTL WWD (total combined laytime both ends)",
+          "confidence": "interpreted",
+          "source_text": "L/D 5 ttl wwd"
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2,5pus"
+        },
+        "commission_terms": {
+          "value": "pus — exact meaning unconfirmed; see unknown_terms",
+          "confidence": "uncertain",
+          "source_text": "2,5pus"
+        },
+        "special_requirements": null,
+        "stowage_factor": null,
+        "missing_info": [
+          "Cargo quantity tolerance / MOLOO not specified",
+          "Freight basis (PMT / lump sum) not stated",
+          "Demurrage / despatch rates not stated",
+          "Vessel size / DWT requirements not stated",
+          "Laytime cost-allocation terms not specified (FIO, FIOST, CQD, etc.)"
+        ],
+        "unknown_terms": [
+          "pus (as in '2,5pus' — possibly a commission split or address commission notation, but not a recognized standard abbreviation)"
+        ]
+      }
+    ]
+  }
+}

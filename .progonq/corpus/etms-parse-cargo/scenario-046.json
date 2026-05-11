@@ -1,0 +1,103 @@
+{
+  "id": "etms-parse-cargo-046",
+  "source_email_id": "19e07d3145be13c8",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: izmir  / Arzew 10 units mobile machinery",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:42:11.000Z",
+    "body": " \r\n\r\nFrom: Libra Shipping Ltd . <chartering@libranav.com> \r\nSent: Friday, 8 May 2026 13:22\r\nTo: management@etm-services.net\r\nSubject: izmir  / Arzew 10 units mobile machinery\r\n\r\n \r\n\r\n\r\n\r\nLIBRA Shipping Company\r\n\r\n\r\nÜyelikten çıkış \r\nUnsubscribe \r\n\r\n \r\n\r\n\r\n \r\n\r\nPls reply  to chartering@superonline.com \r\n\r\nFully firm , \r\n\r\nizmir  Alsancak  /  Arzew\r\n\r\n10 units mobile machinery\r\n\r\nttl weight : abt  600 mt\r\n\r\nl/c  12/15 may  try vsl date \r\n\r\nl/d  6 ttl dys\r\n\r\nTtl 2,50 % comm\r\n\r\nPart cargo -over deck  ok ,.drawing available\r\n\r\nstem ready -best offer \r\n\r\nBrgds\r\n\r\n \r\n\r\n\r\nLIBRA Shipping Company Ltd.\r\n\r\nE-mail : chartering@libranav.com \r\n              chartering@superonlıne.com\r\nPhone                  : +90 216 642 26 26\r\nMobile/Whatsapp :+ 90 533 955 53 5 3\r\n \r\nNotice : is not spam / junk mail but only regular e-mail of shipping and chartering ,if content of this message isnt relevant to your bussines or if you are not interested in these bussines and do not want to receive our mail again,please notify to CHARTERING@SUPERONLINE.COM or click the unsubscribe link and your adress will be removed from our list immediately.\r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Izmir Alsancak",
+          "confidence": "confirmed",
+          "source_text": "izmir  Alsancak  /  Arzew"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "izmir  Alsancak  /  Arzew"
+        },
+        "destination_port": {
+          "value": "Arzew",
+          "confidence": "confirmed",
+          "source_text": "izmir  Alsancak  /  Arzew"
+        },
+        "destination_country": {
+          "value": "Algeria",
+          "confidence": "confirmed",
+          "source_text": "izmir  Alsancak  /  Arzew"
+        },
+        "cargo_description": {
+          "value": "10 units mobile machinery, part cargo, over-deck stowage acceptable, drawings available",
+          "confidence": "confirmed",
+          "source_text": "10 units mobile machinery"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 600,
+          "confidence": "interpreted",
+          "source_text": "ttl weight : abt  600 mt"
+        },
+        "weight_mt_min": null,
+        "weight_mt_max": null,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "10 units mobile machinery"
+        },
+        "container_type": null,
+        "quantity": {
+          "value": 10,
+          "confidence": "confirmed",
+          "source_text": "10 units mobile machinery"
+        },
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Laycan 12/15 May 2026, subject to vessel date confirmation",
+          "confidence": "interpreted",
+          "source_text": "l/c  12/15 may  try vsl date"
+        },
+        "laycan": {
+          "value": "12/15 May 2026",
+          "confidence": "uncertain",
+          "source_text": "l/c  12/15 may  try vsl date"
+        },
+        "loading_rate": null,
+        "loading_terms": null,
+        "discharge_rate": null,
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "Ttl 2,50 % comm"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "Ttl 2,50 % comm"
+        },
+        "special_requirements": {
+          "value": "Over-deck stowage acceptable; drawings available for review; part cargo basis; stem ready",
+          "confidence": "confirmed",
+          "source_text": "Part cargo -over deck  ok ,.drawing available"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Individual unit dimensions and weight breakdown (only total weight given)",
+          "Individual machinery descriptions or types",
+          "Freight rate / target rate not stated (best offer requested)",
+          "Incoterms not specified",
+          "Discharge laytime terms not specified (only total 6 days L/D combined given)",
+          "Whether over-deck cargo requires lashing/securing specifications",
+          "HAZ/IMO status of machinery not confirmed"
+        ]
+      }
+    ]
+  }
+}

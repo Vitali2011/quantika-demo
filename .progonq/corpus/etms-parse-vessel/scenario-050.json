@@ -1,0 +1,171 @@
+{
+  "id": "etms-parse-vessel-050",
+  "source_email_id": "19e0f537ac896745",
+  "category": "dwcc_edge",
+  "input": {
+    "subject": "FW: OPEN AT AGADIR ON 22-24 AUGUST",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-10T00:39:46.000Z",
+    "body": " \r\n\r\nFrom: Midway Shipping <chartering@midwayshipping.com> \r\nSent: Tuesday, 20 August 2024 13:21\r\nSubject: OPEN AT AGADIR ON 22-24 AUGUST\r\n\r\n \r\n\r\nGOOD DAY,\r\n\r\n \r\n\r\nEXCL. OPEN AT AGADIR OR ANY WEST MED ON 22-25 AUGUST.\r\n\r\n \r\n\r\n \r\n\r\nM/V AVAT 1\r\n\r\nBUILT 2020 - CHINA / CAMEROON FLAG / KRIBI / IMO: 1033822\r\n\r\nDWT: 9220 MT AT 5,20 M DRAFT / GRT: 4995 / NRT: 2607\r\n\r\nCLASS: OMROS / P&I \"THOMAS MILLER\" / H&M \"THOMAS MILLER\"\r\n\r\nLOA: 109,8 M / BEAM: 23,60 M / DM: 7,15 M\r\n\r\nGEARLESS / GENERAL CARGO / 2 HO / 2 HA\r\n\r\nHOLDS NO 1 CAPACITY: 5097 M3 / 180.000 CBFT\r\n\r\nHOLDS NO 2 CAPACITY: 4807 M3 / 170.000 CBFT\r\n\r\nGRAIN / BALE CAPACITY: 9900 M3 / 350.000 CBFT\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nMidway shipping and chartering \r\n\r\nCapt. Bulent Taskin \r\n\r\n+90 532 474 82 57\r\n\r\n+90 212 688 84 75\r\n\r\nbulent.taskin4\r\n\r\nchartering@midwayshipping.com <mailto:chartering@midwayshipping.com> \r\n\r\nwww.midwayshipping.com <http://www.midwayshipping.com> \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "M/V AVAT 1",
+          "confidence": "confirmed",
+          "source_text": "M/V AVAT 1"
+        },
+        "imo": {
+          "value": 1033822,
+          "confidence": "confirmed",
+          "source_text": "IMO: 1033822"
+        },
+        "flag": {
+          "value": "Cameroon",
+          "confidence": "confirmed",
+          "source_text": "CAMEROON FLAG"
+        },
+        "built": {
+          "value": 2020,
+          "confidence": "confirmed",
+          "source_text": "BUILT 2020"
+        },
+        "class_society": {
+          "value": "OMROS",
+          "confidence": "confirmed",
+          "source_text": "CLASS: OMROS"
+        },
+        "p_and_i": {
+          "value": "Thomas Miller",
+          "confidence": "confirmed",
+          "source_text": "P&I \"THOMAS MILLER\""
+        },
+        "dwt_summer": {
+          "value": 9220,
+          "confidence": "confirmed",
+          "source_text": "DWT: 9220 MT AT 5,20 M DRAFT"
+        },
+        "dwcc": null,
+        "draft_max": {
+          "value": 5.2,
+          "confidence": "interpreted",
+          "source_text": "DWT: 9220 MT AT 5,20 M DRAFT"
+        },
+        "loa": {
+          "value": 109.8,
+          "confidence": "confirmed",
+          "source_text": "LOA: 109,8 M"
+        },
+        "beam": {
+          "value": 23.6,
+          "confidence": "confirmed",
+          "source_text": "BEAM: 23,60 M"
+        },
+        "grt": {
+          "value": 4995,
+          "confidence": "confirmed",
+          "source_text": "GRT: 4995"
+        },
+        "nrt": {
+          "value": 2607,
+          "confidence": "confirmed",
+          "source_text": "NRT: 2607"
+        },
+        "holds_count": {
+          "value": 2,
+          "confidence": "confirmed",
+          "source_text": "2 HO"
+        },
+        "hatches_count": {
+          "value": 2,
+          "confidence": "confirmed",
+          "source_text": "2 HA"
+        },
+        "grain_capacity": {
+          "value": 9900,
+          "confidence": "confirmed",
+          "source_text": "GRAIN / BALE CAPACITY: 9900 M3 / 350.000 CBFT"
+        },
+        "grain_capacity_unit": "cbm",
+        "bale_capacity": {
+          "value": 350000,
+          "confidence": "confirmed",
+          "source_text": "GRAIN / BALE CAPACITY: 9900 M3 / 350.000 CBFT"
+        },
+        "hold_dimensions": [
+          "HOLDS NO 1 CAPACITY: 5097 M3 / 180.000 CBFT",
+          "HOLDS NO 2 CAPACITY: 4807 M3 / 170.000 CBFT"
+        ],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": false,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "confirmed",
+          "source_text": "GENERAL CARGO"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Agadir or West Mediterranean",
+          "confidence": "confirmed",
+          "source_text": "EXCL. OPEN AT AGADIR OR ANY WEST MED ON 22-25 AUGUST."
+        },
+        "open_date": {
+          "value": {
+            "open": "2024-08-22",
+            "close": "2024-08-25",
+            "display": "22-25 August 2024"
+          },
+          "confidence": "interpreted",
+          "source_text": "EXCL. OPEN AT AGADIR OR ANY WEST MED ON 22-25 AUGUST."
+        },
+        "direction": {
+          "value": "Agadir or West Mediterranean",
+          "confidence": "confirmed",
+          "source_text": "EXCL. OPEN AT AGADIR OR ANY WEST MED ON 22-25 AUGUST."
+        },
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Gearless",
+            "confidence": "confirmed",
+            "source_text": "GEARLESS"
+          },
+          {
+            "value": "Built in China",
+            "confidence": "confirmed",
+            "source_text": "BUILT 2020 - CHINA"
+          },
+          {
+            "value": "H&M insured with Thomas Miller",
+            "confidence": "confirmed",
+            "source_text": "H&M \"THOMAS MILLER\""
+          },
+          {
+            "value": "DM: 7.15m",
+            "confidence": "confirmed",
+            "source_text": "DM: 7,15 M"
+          },
+          {
+            "value": "Port of registry: Kribi",
+            "confidence": "confirmed",
+            "source_text": "KRIBI"
+          }
+        ],
+        "unknown_terms": [
+          "OMROS — classification society not found in standard IACS members list; may be a non-IACS society",
+          "DM — possibly 'Depth Moulded' or similar structural dimension; not a standard field abbreviation in the glossary",
+          "EXCL. — usage as 'exclusively' open at this port; abbreviation not in glossary"
+        ]
+      }
+    ]
+  }
+}

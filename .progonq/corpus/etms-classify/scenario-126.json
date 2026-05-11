@@ -1,0 +1,23 @@
+{
+  "id": "etms-classify-126",
+  "source_email_id": "19e0977940338503",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: Firm orders",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:21:30.000Z",
+    "body": " \r\n\r\nFrom: UNIMAR NO REPLY <no-reply@unimarservice.com> \r\nSent: Saturday, 21 March 2026 08:24\r\nSubject: Firm orders\r\n\r\n \r\n\r\nFM: UNIMAR SERVICE LIMITED\r\nE.MAIL: mail@unimarservice.com <mailto:mail@unimarservice.com> \r\n\r\n**************************\r\n\r\n \r\n\r\nTo: Chartering Desk\r\n\r\n \r\n\r\nDear Colleagues,\r\n\r\n \r\n\r\nPls offer firm/best \r\n\r\n \r\n\r\nTHESSALONIKI =>1 MARMARA (INT.TEKIRDAG)\r\nSPOT PPT - TRY VSLS DATES\r\n5.000 PADDY RICE IN BLK,SF ABT 62'\r\nL/D TTL 8 WWD SSHEX EIU AT BE\r\nCHABE\r\nGCN, TTL COMM 3.75% IAC 2.50%\r\n\r\n \r\n\r\n+++\r\n\r\n \r\n\r\nTCP minimum 12 months\r\n\r\nCV abt 2500 TEU\r\n\r\nDelivery/redelivery: Black sea, try wwd sub terms\r\n\r\nL/C: 1st half April 2026, try vessel's dates\r\nComm 3.75% ttl here\r\n\r\n \r\n\r\nPleased to hear.\r\n\r\n \r\n\r\nBrgds, USL\r\n\r\nM/Viber/Wup/Telegram/WeChat:  <tel:+357%2099581395> +357 99581395 (24H/7D)\r\n\r\nAS BROKERS ONLY - SINCE 2006\r\n\r\n+++\r\n\r\nIn case the content of this message is irrelevant to your business, please\r\nnotify us by replying \"UNSUBSCRIBE\" in the subject field in order to remove\r\nyou from these messages, sorry any inconvenience caused.\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e0977940338503",
+    "category": "CARGO_INQUIRY",
+    "urgency": "medium",
+    "confidence": 0.72,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "USL / UNIMAR SERVICE LIMITED",
+    "original_sender_company": "UNIMAR SERVICE LIMITED",
+    "notes": "Email contains two separate requests: (1) a voyage charter cargo inquiry (5,000 MT Paddy Rice, Thessaloniki → Tekirdag, SPOT) and (2) a period time charter request (min 12 months, ~2500 TEU, Black Sea delivery/redelivery, L/C 1st half April 2026). Both laycans/delivery windows are now past (original inner message dated 21 March 2026, forwarded late on 8 May 2026) — cargo/TC opportunities likely expired. Classified as CARGO_INQUIRY for the dominant voyage charter element. Unknown terms flagged: CHABE (unrecognized clause), IAC (possibly 'In Addition to Commission' but not standard), GCN (possibly GENCON variant but not confirmed), TCP (Time Charter Period — inferred but not in glossary).",
+    "unknown_terms": ["CHABE", "IAC", "GCN", "TCP"]
+  }
+}

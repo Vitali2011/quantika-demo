@@ -1,0 +1,114 @@
+{
+  "id": "etms-parse-cargo-079",
+  "source_email_id": "19e08a26402532a7",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: Constanta or POC/ Conakry, Guinea 20,000/22,000 mt bulk corn 51abt",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:28:38.000Z",
+    "body": " \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Saturday, 31 January 2026 12:37\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: Re: Constanta or POC/ Conakry, Guinea 20,000/22,000 mt bulk corn 51abt\r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n*For quick response pls include \"takis\" in the body of the email*\r\n\r\nGD DAY\r\n\r\n \r\n\r\nPLS OFFER FOR\r\n\r\n \r\n\r\nConstanta or POC/ Conakry, Guinea\r\n20,000/22,000 mt bulk corn 51abt\r\n10/20-Feb\r\n7000x/3000x\r\n2,5 pct past\r\n\r\nPlease add our email address ( chartering@niavigrains.gr <mailto:chartering@niavigrains.gr>  ) to your circulation list for cargoes / positions\r\n\r\nBEST RGRDS\r\nTAK  (TAKIS KAPETANIOS)\r\nE MAIL : chartering@niavigrains.gr <mailto:chartering@niavigrains.gr> \r\nMobile/WhatsApp:0030 6944528968\r\nSKYPE: captanpanos\r\nLINKEDIN : www.linkedin.com/in/takis-kapetanios-5031344b/ <http://www.linkedin.com/in/takis-kapetanios-5031344b/> \r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr <http://www.niavigrains.gr> \r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Constanta or POC (Port of Constanta / Port of Croatia — ambiguous; likely Constanta or another Black Sea port)",
+          "confidence": "uncertain",
+          "source_text": "Constanta or POC/ Conakry, Guinea"
+        },
+        "origin_country": {
+          "value": "Romania (Constanta) or uncertain for POC",
+          "confidence": "uncertain",
+          "source_text": "Constanta or POC/ Conakry, Guinea"
+        },
+        "destination_port": {
+          "value": "Conakry",
+          "confidence": "confirmed",
+          "source_text": "Conakry, Guinea"
+        },
+        "destination_country": {
+          "value": "Guinea",
+          "confidence": "confirmed",
+          "source_text": "Conakry, Guinea"
+        },
+        "cargo_description": {
+          "value": "Bulk corn, stowage factor approximately 51 CBM/MT",
+          "confidence": "confirmed",
+          "source_text": "20,000/22,000 mt bulk corn 51abt"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 22000,
+          "confidence": "interpreted",
+          "source_text": "20,000/22,000 mt bulk corn 51abt"
+        },
+        "weight_mt_min": {
+          "value": 20000,
+          "confidence": "confirmed",
+          "source_text": "20,000/22,000 mt bulk corn 51abt"
+        },
+        "weight_mt_max": {
+          "value": 22000,
+          "confidence": "confirmed",
+          "source_text": "20,000/22,000 mt bulk corn 51abt"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "20,000/22,000 mt bulk corn 51abt"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "10/20 February 2026",
+          "confidence": "confirmed",
+          "source_text": "10/20-Feb"
+        },
+        "laycan": {
+          "value": "10/20 February 2026",
+          "confidence": "confirmed",
+          "source_text": "10/20-Feb"
+        },
+        "loading_rate": {
+          "value": 7000,
+          "confidence": "confirmed",
+          "source_text": "7000x/3000x"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 3000,
+          "confidence": "confirmed",
+          "source_text": "7000x/3000x"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2,5 pct past"
+        },
+        "commission_terms": {
+          "value": "past",
+          "confidence": "uncertain",
+          "source_text": "2,5 pct past"
+        },
+        "special_requirements": null,
+        "stowage_factor": {
+          "value": 51,
+          "confidence": "interpreted",
+          "source_text": "bulk corn 51abt"
+        },
+        "missing_info": [
+          "POC is ambiguous — likely a second load port option but unclear which port this refers to (Port of Constanta duplicate, or another port?)",
+          "'past' in '2,5 pct past' is unclear — may mean 'passed to' or relate to commission split/routing; needs clarification",
+          "Loading terms / discharge terms not specified (SHINC/SHEX etc. for the 7000x/3000x rates)",
+          "Freight basis (FIO, FIOST, etc.) not stated",
+          "No vessel size or DWT requirements specified",
+          "Incoterms not stated"
+        ]
+      }
+    ]
+  }
+}

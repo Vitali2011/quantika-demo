@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-129",
+  "source_email_id": "19e0978b449211fb",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: MV HAGRID - OPEN IN CONSTANTA - Mid-march",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:22:44.000Z",
+    "body": " \r\n\r\nFrom: HKALKAVAN SHIPPING <hkalkavan@hkalkavan.com> \r\nSent: Thursday, 26 February 2026 10:49\r\nTo: HKALKAVAN SHIPPING <hkalkavan@hkalkavan.com>\r\nSubject: MV HAGRID - OPEN IN CONSTANTA - Mid-march\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPlease propose your firm cargoes for our home tonnage below, all agw wp:\r\n\r\n \r\n\r\nMV HAGRID                6100 dwcc              – Constanta                           – Mid-March\r\n\r\n \r\n\r\nMV HAGRID \r\n\r\n6496 dwt   - 7,00m draft  – 08 built – Barbados flag – boxlike\r\n\r\nGr/Bl 276.000 cbft / 262.000 cbft\r\n\r\n2x20 mt  cranes\r\n\r\nIACS member – IMO fitted + ice class – ITF FITTED\r\n\r\n \r\n\r\nPlease do not re-circulate\r\n\r\n \r\n\r\nBest Regards, \r\n\r\nPamela Ateş\r\n\r\nKosuyolu, Katip Salih Sok., No:36 Istanbul/Turkey\r\nP: <tel:%2B90216%203272323> +90216 3272323  F: <tel:%2B90216%203272326> +90216 3272326 \r\nMob: +905379509163\r\nSkype: live:.cid.ba37eb8ce0586d9e\r\n <mailto:hkalkavan@hkalkavan.com> hkalkavan@hkalkavan.com\r\nhttps://hkalkavan.com.tr/\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e0978b449211fb",
+    "category": "VESSEL_POSITION",
+    "urgency": "low",
+    "confidence": 0.72,
+    "is_unanswered": false,
+    "days_without_reply": 3,
+    "original_sender": "HKALKAVAN SHIPPING",
+    "original_sender_company": "ETMS - Management"
+  }
+}

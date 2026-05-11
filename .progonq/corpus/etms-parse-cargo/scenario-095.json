@@ -1,0 +1,220 @@
+{
+  "id": "etms-parse-cargo-095",
+  "source_email_id": "19e0f50b19f0c25b",
+  "category": "single_cargo",
+  "input": {
+    "subject": "FW: Min 6.500mts up to 9.000mts in chopt Steel Prods stw= wt Nemrut / 1 Djibouti or 1 Tadjourah chop combi or not   2800 mts %10 Steel Products stw = dwt Nemrut / Barbera Somalia",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-10T00:36:43.000Z",
+    "body": " \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Saturday, 9 May 2026 21:12\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: RE:Min 6.500mts up to 9.000mts in chopt Steel Prods stw= wt Nemrut / 1 Djibouti or 1 Tadjourah chop combi or not 2800 mts %10 Steel Products stw = dwt Nemrut / Barbera Somalia\r\n\r\n \r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n*For quick response pls include \"takis\" in the body of the email*\r\n\r\nGD DAY\r\n\r\n \r\n\r\nPLS OFFER FOR\r\n\r\n \r\n\r\npls offer firm for;\r\n\r\nMin 6.500 mts up to 9.000 mts in chopt Steel Products stw = dwt\r\nNemrut / 1 Djibouti or 1 Tadjourah in chopt\r\n1250x / Liner out\r\nspot/ppt\r\n2.50 % addcom past us\r\n\r\nCombine or not with\r\n\r\n2800 mts %10 Steel Products stw = dwt\r\nNemrut / Barbera Somalia\r\n1000x / 500x\r\nspot/ppt\r\n2.50 % addcom past us\r\n\r\nPlease add our email address ( chartering@niavigrains.gr <mailto:chartering@niavigrains.gr>  ) to your circulation list for cargoes / positions\r\n\r\nBEST RGRDS\r\nTAK  (TAKIS KAPETANIOS)\r\nE MAIL : chartering@niavigrains.gr <mailto:chartering@niavigrains.gr> \r\nMobile/WhatsApp:0030 6944528968\r\nSKYPE: captanpanos\r\nLINKEDIN : www.linkedin.com/in/takis-kapetanios-5031344b/ <http://www.linkedin.com/in/takis-kapetanios-5031344b/> \r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr <http://www.niavigrains.gr> \r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Nemrut Bay",
+          "confidence": "interpreted",
+          "source_text": "Nemrut / 1 Djibouti or 1 Tadjourah in chopt"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "interpreted",
+          "source_text": "Nemrut / 1 Djibouti or 1 Tadjourah in chopt"
+        },
+        "destination_port": {
+          "value": "Djibouti or Tadjourah (charterers' option)",
+          "confidence": "interpreted",
+          "source_text": "1 Djibouti or 1 Tadjourah in chopt"
+        },
+        "destination_country": {
+          "value": "Djibouti",
+          "confidence": "confirmed",
+          "source_text": "1 Djibouti or 1 Tadjourah in chopt"
+        },
+        "cargo_description": {
+          "value": "Steel Products, stowage factor equals deadweight",
+          "confidence": "confirmed",
+          "source_text": "Min 6.500 mts up to 9.000 mts in chopt Steel Products stw = dwt"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 9000,
+          "confidence": "interpreted",
+          "source_text": "Min 6.500 mts up to 9.000 mts in chopt"
+        },
+        "weight_mt_min": {
+          "value": 6500,
+          "confidence": "confirmed",
+          "source_text": "Min 6.500 mts up to 9.000 mts in chopt"
+        },
+        "weight_mt_max": {
+          "value": 9000,
+          "confidence": "confirmed",
+          "source_text": "Min 6.500 mts up to 9.000 mts in chopt"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "interpreted",
+          "source_text": "Steel Products stw = dwt"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Spot / prompt",
+          "confidence": "confirmed",
+          "source_text": "spot/ppt"
+        },
+        "laycan": null,
+        "loading_rate": {
+          "value": null,
+          "confidence": "confirmed",
+          "source_text": "1250x / Liner out"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 1250,
+          "confidence": "confirmed",
+          "source_text": "1250x / Liner out"
+        },
+        "discharge_terms": {
+          "value": "Liner Out",
+          "confidence": "confirmed",
+          "source_text": "1250x / Liner out"
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.50 % addcom past us"
+        },
+        "commission_terms": {
+          "value": "Address commission via Niavigrains",
+          "confidence": "interpreted",
+          "source_text": "2.50 % addcom past us"
+        },
+        "special_requirements": {
+          "value": "Charterers' option on port (1 Djibouti or 1 Tadjourah). Can combine with Nemrut/Berbera parcel.",
+          "confidence": "confirmed",
+          "source_text": "1 Djibouti or 1 Tadjourah in chopt"
+        },
+        "stowage_factor": {
+          "value": "stw = dwt (stowage factor allows full deadweight utilization)",
+          "confidence": "confirmed",
+          "source_text": "Steel Products stw = dwt"
+        },
+        "missing_info": [
+          "Loading rate / laytime at Nemrut not specified (only discharge rate given)",
+          "No laycan dates provided beyond 'spot/ppt'",
+          "Freight rate not indicated — firm offer requested",
+          "Bill of lading / charter party form not specified"
+        ],
+        "unknown_terms": [
+          "past us — non-standard phrase in commission context; likely means 'via us (the broker)' but not a recognized standard abbreviation"
+        ]
+      },
+      {
+        "origin_port": {
+          "value": "Nemrut Bay",
+          "confidence": "interpreted",
+          "source_text": "2800 mts %10 Steel Products stw = dwt\nNemrut / Barbera Somalia"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "interpreted",
+          "source_text": "Nemrut / Barbera Somalia"
+        },
+        "destination_port": {
+          "value": "Berbera",
+          "confidence": "interpreted",
+          "source_text": "Nemrut / Barbera Somalia"
+        },
+        "destination_country": {
+          "value": "Somalia",
+          "confidence": "confirmed",
+          "source_text": "Nemrut / Barbera Somalia"
+        },
+        "cargo_description": {
+          "value": "Steel Products, stowage factor equals deadweight",
+          "confidence": "confirmed",
+          "source_text": "2800 mts %10 Steel Products stw = dwt"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 2800,
+          "confidence": "confirmed",
+          "source_text": "2800 mts %10 Steel Products stw = dwt"
+        },
+        "weight_mt_min": {
+          "value": 2520,
+          "confidence": "interpreted",
+          "source_text": "2800 mts %10"
+        },
+        "weight_mt_max": {
+          "value": 3080,
+          "confidence": "interpreted",
+          "source_text": "2800 mts %10"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "interpreted",
+          "source_text": "Steel Products stw = dwt"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Spot / prompt",
+          "confidence": "confirmed",
+          "source_text": "spot/ppt"
+        },
+        "laycan": null,
+        "loading_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "1000x / 500x"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 500,
+          "confidence": "confirmed",
+          "source_text": "1000x / 500x"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.50 % addcom past us"
+        },
+        "commission_terms": {
+          "value": "Address commission via Niavigrains",
+          "confidence": "interpreted",
+          "source_text": "2.50 % addcom past us"
+        },
+        "special_requirements": {
+          "value": "10% MOLOO tolerance on cargo quantity. Can combine with Nemrut/Djibouti-Tadjourah parcel.",
+          "confidence": "confirmed",
+          "source_text": "2800 mts %10"
+        },
+        "stowage_factor": {
+          "value": "stw = dwt (stowage factor allows full deadweight utilization)",
+          "confidence": "confirmed",
+          "source_text": "Steel Products stw = dwt"
+        },
+        "missing_info": [
+          "No laycan dates provided beyond 'spot/ppt'",
+          "Freight rate not indicated — firm offer requested",
+          "No discharge terms specified (liner out not mentioned for this parcel)",
+          "Bill of lading / charter party form not specified",
+          "Port access and berth suitability for Berbera Somalia not confirmed"
+        ],
+        "unknown_terms": [
+          "past us — non-standard phrase in commission context; likely means 'via us (the broker)' but not a recognized standard abbreviation"
+        ]
+      }
+    ]
+  }
+}

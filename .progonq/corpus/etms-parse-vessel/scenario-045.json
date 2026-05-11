@@ -1,0 +1,102 @@
+{
+  "id": "etms-parse-vessel-045",
+  "source_email_id": "19e0f521228afe4c",
+  "category": "single_vessel",
+  "input": {
+    "subject": "FW: MV Filia Ariea 2650 150.0900 cbft sidk/box - Jeddah 30 Mar",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-10T00:38:14.000Z",
+    "body": " \r\n\r\nFrom: Visser & Visser <chartering@visservisser.nl> \r\nSent: Monday, 30 March 2026 15:50\r\nTo: management@etm-services.net\r\nSubject: MV Filia Ariea 2650 150.0900 cbft sidk/box - Jeddah 30 Mar\r\n\r\n \r\n\r\nDoc-No. 16726166   30/MAR/2026 (MON)  15:49  (+0200)  DV\r\n\r\n  \r\n\r\nVisser & Visser Chartering BV - Vlaardingen (NL)\r\n\r\nPhone : +31 10 4115620\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nPlease propose for:\r\n\r\n \r\n\r\n- FILIA ARIEA    \r\n\r\n2650 mt – 150.000 – SID/Box                    \r\n\r\n \r\n\r\nOpen: Jeddah – 30-Mar.\r\n\r\n                                                             Alt. Port Said – 02-Apr.\r\n\r\n \r\n\r\nWCUO?\r\n\r\n \r\n\r\n \r\n\r\nThanks and best regards\r\n\r\nDirk VISSER - ph +31104115620\r\n\r\nMob/What's app     +31653143975 \r\n\r\n \r\n\r\nPS: Not using Skype/Teams anymore. please contact me through whatsapp via my mobile number\r\n\r\n \r\n\r\n  \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "FILIA ARIEA",
+          "confidence": "confirmed",
+          "source_text": "FILIA ARIEA"
+        },
+        "imo": null,
+        "flag": null,
+        "built": null,
+        "class_society": null,
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 2650,
+          "confidence": "confirmed",
+          "source_text": "2650 mt"
+        },
+        "dwcc": null,
+        "draft_max": null,
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": null,
+        "hatches_count": null,
+        "grain_capacity": {
+          "value": 150000,
+          "confidence": "confirmed",
+          "source_text": "150.000"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": {
+          "value": false,
+          "confidence": "confirmed",
+          "source_text": "SID/Box"
+        },
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "interpreted",
+          "source_text": "SID/Box"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Jeddah",
+          "confidence": "confirmed",
+          "source_text": "Open: Jeddah – 30-Mar."
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-03-30",
+            "close": null,
+            "display": "30 Mar 2026"
+          },
+          "confidence": "confirmed",
+          "source_text": "Open: Jeddah – 30-Mar."
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Single deck / Box-shaped holds",
+            "confidence": "confirmed",
+            "source_text": "SID/Box"
+          },
+          {
+            "value": "Alternative open position: Port Said – 02-Apr.",
+            "confidence": "confirmed",
+            "source_text": "Alt. Port Said – 02-Apr."
+          }
+        ],
+        "unknown_terms": [
+          {
+            "term": "WCUO",
+            "reason": "WCUO — unrecognized abbreviation, not in glossary; possibly 'Would Charterers Use Owner?' or similar negotiation phrase, but cannot confirm"
+          }
+        ]
+      }
+    ]
+  }
+}

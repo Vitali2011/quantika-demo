@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-009",
+  "source_email_id": "19d5e7406f50cc13",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: 2 k dwcc spot marmara",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-04-05T16:22:31.000Z",
+    "body": " \r\n\r\nFrom: agantashipping@googlegroups.com <agantashipping@googlegroups.com> On Behalf Of Aganta Shipping\r\nSent: Tuesday, 5 August 2025 16:31\r\nSubject: 2 k dwcc spot marmara\r\n\r\n \r\n\r\n \r\n\r\ngood day\r\n\r\n \r\n\r\nPls offer your suitable parcels for below\r\n\r\n \r\n\r\nSuitable for imo 1.1 cargoes \r\n\r\n \r\n\r\nmv haskal imo:8605480\r\n\r\ndwcc 2000 mts at 4.5 draft\r\n\r\ndwt 2570 mts\r\n\r\nbuilt 1986\r\n\r\nbox shaped 1 single hold\r\n\r\ngrt/ nrt 1597 / 700\r\n\r\nloa/b/ depth 82.45 m /11.3 m/5.40 m\r\n\r\nhold hatc h dimms . 49,80m x 9,00m x 6,78m\r\n\r\nhold cap. grain/bale abt 100682 cbft\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nBRGDS\r\nCPT.   S.RUZGAR\r\nAGANTA SHIPPING AND TRADING LLC.\r\ninfo@agantaship.com <mailto:info@agantaship.com> \r\nMob/Whatsapp/Viber: +905423546649\r\nskype: seyitkaptan\r\nMEMBER OF SHIPBROKERS  ASSOCIATION - TURKEY\r\n\r\n-- \r\nIn case the contents of this message is irrelevant to your business, please notify us by replying \"UNSUBSCRIBE\" in the subject field in order to remove you from this mailing list, thanks in advance.\r\n--- \r\nYou received this message because you are subscribed to the Google Groups \"Agantaship\" group.\r\nTo unsubscribe from this group and stop receiving emails from it, send an email to Agantashipping+unsubscribe@googlegroups.com <mailto:Agantashipping+unsubscribe@googlegroups.com> .\r\nTo view this discussion, visit https://groups.google.com/d/msgid/Agantashipping/CAJHZCcZOB_8LNTHs8UQ20X7k-1Gc1Jv8SwySBYxKr7Jp9fqkRA%40mail.gmail.com <https://groups.google.com/d/msgid/Agantashipping/CAJHZCcZOB_8LNTHs8UQ20X7k-1Gc1Jv8SwySBYxKr7Jp9fqkRA%40mail.gmail.com?utm_medium=email&utm_source=footer> .\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19d5e7406f50cc13",
+    "category": "VESSEL_POSITION",
+    "urgency": "medium",
+    "confidence": 0.82,
+    "is_unanswered": true,
+    "days_without_reply": 36,
+    "original_sender": "ETMS - Management",
+    "original_sender_company": "ETM Services"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-086",
+  "source_email_id": "19e07d5e7f039766",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: harmanda home tonnages",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:45:16.000Z",
+    "body": " \r\n\r\nFrom: HARMANDA CHARTERING - ISTANBUL <chartering@harmanda.com.tr> \r\nSent: Friday, 8 May 2026 11:21\r\nTo: management@etm-services.net\r\nSubject: harmanda home tonnages\r\n\r\n \r\n\r\nGOOD DAY,\r\n\r\nPLS PROPOSE;\r\n\r\n\r\nVessel Name\r\n\r\nDWT\r\n\r\nPosition\r\n\r\nOpen\r\n\r\n\r\nFIRTINA S\r\n\r\n2,362\r\n\r\nAEGEAN SEA\r\n\r\n12-13 MAY\r\n\r\n\r\nEMINE ANNE\r\n\r\n1,602\r\n\r\nWEST BLACK SEA\r\n\r\n14-16 MAY\r\n\r\nM/V FIRTINA S\r\n\r\nGC/SID, Gearless\r\n2362 DWT on 5.4 m SSW, DWCC abt 2200 mts\r\nGrain/Bale: 96,500/94,300 CBFT\r\nVanuatu Flag, BRS Classed, P&I covered by Turk P&I\r\n1988 Built in Türkiye, Call Sign: YJWU6, IMO No: 8834940\r\nLOA: 75.52, LBP: 67.58, Beam: 11, Depth Moulded: 6\r\nGRT/NRT: 1248/734\r\n1 Hold / 2 Hatches\r\nHo1: 44.00 x 10.15 x 4.70 M\r\nHa1: 15.50 x 7.40 x 1.45 M\r\nHa2: 14.90 x 7.40 x 1.45 M\r\nADAWOG\r\n\r\nM/V EMINE ANNE\r\nGC/SID, Gearless\r\n1602 DWT on 4.30 m SSW, DWCC abt 1425 mts\r\nGrain/Bale: 70,440/67,204 CBFT\r\nVanuatu Flag, BRS Classed, P&I covered by Turk P&I\r\n1996 Built in Turkiye, Call Sign: YJWJ2, IMO No: 9145360\r\nLOA: 69, LBP: 63.35, Beam: 9, Depth Moulded: 5.2\r\nGRT/NRT: 884/531\r\nAir Draft: 20 m fm keel\r\n2 Holds / 2 Hatches\r\nHo1: 22.60 x 8.50 x 4.30 M\r\nHo2: 22.50 x 8.50 x 4.30 M\r\nHa1: 17.50 x 6.00 x 1.10 M\r\nHa2: 17.90 x 6.00 x 1.10 M\r\nAppendix b fitted\r\nADAWOG\r\n\r\n\r\n\r\nTHANKS & BEST REGARDS\r\n\r\nOSMAN ASLAN | Chartering & Operation Manager\r\nHarmanda Denizcilik ve Ticaret LTD ŞTİ\r\nPhone (WhatsApp): +90 530 594 05 83\r\nTeams: osmanaslan01\r\nEmail: chartering@harmanda.com.tr\r\nAddress: Evliya Çelebi Mh, Küme Sk, Tuzla Ticaret\r\nMerkezi, No:2, D/6-7-8-9, 34944, Tuzla, İstanbul\r\n\r\nÜyelikten çıkmak için tıklayınız.\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07d5e7f039766",
+    "category": "VESSEL_POSITION",
+    "urgency": "high",
+    "confidence": 0.93,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Osman Aslan",
+    "original_sender_company": "Harmanda Denizcilik ve Ticaret LTD ŞTİ"
+  }
+}

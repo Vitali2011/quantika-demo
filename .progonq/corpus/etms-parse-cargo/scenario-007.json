@@ -1,0 +1,120 @@
+{
+  "id": "etms-parse-cargo-007",
+  "source_email_id": "19d5e78427ad130a",
+  "category": "numeric_edge",
+  "input": {
+    "subject": "FW: China / Marmara 20k bagged cargo",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-04-05T16:27:09.000Z",
+    "body": " \r\n\r\nFrom: Altan KAYMAZ <altan.kaymaz@nbcarriers.com> \r\nSent: Wednesday, 3 September 2025 11:04\r\nTo: SEA TRANSIT DENIZ TASIMACILIGI <chartering@seatransit.com.tr>\r\nSubject: China / Marmara 20k bagged cargo\r\n\r\n \r\n\r\n \r\n\r\nFully firm\r\n\r\n \r\n\r\nNorth China / 1 Marmara\r\n\r\n20,000 mt bagged cargo non imo stw=dwt\r\n\r\n10/20 September\r\n\r\n2500c/1750x\r\n\r\nGncn 3.75 ttl\r\n\r\n \r\n\r\nBest regards\r\n\r\n \r\n\r\nAltan KAYMAZ\r\n\r\nNautical Bulk Carriers S.A.\r\n\r\nVogue Business Center, 6th Floor, Atasehir, Istanbul - Turkiye\r\n\r\nTel     : +90 216 639 0228\r\n\r\nMob:    : +90 530 611 33 67\r\n\r\nemail   :  <mailto:altan.kaymaz@nbcarriers.com> altan.kaymaz@nbcarriers.com\r\n\r\nWeb      :  <http://www.nbcarriers.com/> www.nbcarriers.com\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "North China",
+          "confidence": "confirmed",
+          "source_text": "North China / 1 Marmara"
+        },
+        "origin_country": {
+          "value": "China",
+          "confidence": "confirmed",
+          "source_text": "North China / 1 Marmara"
+        },
+        "destination_port": {
+          "value": "Marmara",
+          "confidence": "confirmed",
+          "source_text": "North China / 1 Marmara"
+        },
+        "destination_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "1 Marmara"
+        },
+        "cargo_description": {
+          "value": "Bagged cargo, non-IMO, stowage equals deadweight",
+          "confidence": "confirmed",
+          "source_text": "20,000 mt bagged cargo non imo stw=dwt"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 20000,
+          "confidence": "confirmed",
+          "source_text": "20,000 mt bagged cargo non imo stw=dwt"
+        },
+        "weight_mt_min": 20000,
+        "weight_mt_max": 20000,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "20,000 mt bagged cargo non imo stw=dwt"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "10/20 September",
+          "confidence": "confirmed",
+          "source_text": "10/20 September"
+        },
+        "laycan": {
+          "value": "10/20 September 2025",
+          "confidence": "interpreted",
+          "source_text": "10/20 September"
+        },
+        "loading_rate": {
+          "value": 2500,
+          "confidence": "confirmed",
+          "source_text": "2500c/1750x"
+        },
+        "loading_terms": {
+          "value": "2500c",
+          "confidence": "confirmed",
+          "source_text": "2500c/1750x"
+        },
+        "discharge_rate": {
+          "value": 1750,
+          "confidence": "confirmed",
+          "source_text": "2500c/1750x"
+        },
+        "discharge_terms": {
+          "value": "1750x",
+          "confidence": "confirmed",
+          "source_text": "2500c/1750x"
+        },
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "Gncn 3.75 ttl"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "Gncn 3.75 ttl"
+        },
+        "special_requirements": {
+          "value": "Non-IMO cargo (not hazardous). Stowage factor equals deadweight (stw=dwt) — cargo fully utilises vessel DWT.",
+          "confidence": "confirmed",
+          "source_text": "bagged cargo non imo stw=dwt"
+        },
+        "stowage_factor": {
+          "value": "stw=dwt (stowage factor allows full DWT utilisation)",
+          "confidence": "confirmed",
+          "source_text": "stw=dwt"
+        },
+        "missing_info": [
+          "Freight rate (USD/MT or lump sum) not specified",
+          "Specific load port(s) within North China not named",
+          "Specific Marmara discharge port / berth not named",
+          "Demurrage / despatch rates not stated",
+          "Charter party form not specified (GENCON assumed from 'Gncn')",
+          "Tolerance clause (MOLOO/MOLCHOPT) not stated",
+          "Bill of lading terms not specified"
+        ],
+        "unknown_terms": ["2500c", "1750x"]
+      }
+    ]
+  }
+}

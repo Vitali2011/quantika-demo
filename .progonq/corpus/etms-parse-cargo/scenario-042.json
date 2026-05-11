@@ -1,0 +1,201 @@
+{
+  "id": "etms-parse-cargo-042",
+  "source_email_id": "19e07d186df6a788",
+  "category": "numeric_edge",
+  "input": {
+    "subject": "FW: Turkish Steels",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:40:29.000Z",
+    "body": " \r\n\r\nFrom: DURUCHART <chartering@duruchart.com> \r\nSent: Wednesday, 6 May 2026 12:10\r\nTo: 'DURUCHART' <mehmetali@duruchart.com>\r\nSubject: Turkish Steels\r\n\r\n \r\n\r\nDURUCHART/Istanbul                                       \r\n\r\n+90 216 492 97 13\r\n\r\n \r\n\r\nGood day \r\n\r\n \r\n\r\n\r\nPls offer firm for;\r\n\r\n \r\n\r\n1Marmara (Hereke) / Constanta\r\n\r\n2500 mts (PC Strand,  Diameter :130-140 cm,  H: 80 cm UW: 3-3,5 MT, Tier\r\nlimit: 2 )\r\n\r\n11/13 May\r\n\r\n1000 x / 800 x\r\n\r\n3.75 add pus\r\n\r\n \r\n\r\nIskenderun / Ghent \r\n\r\n10000 mts steel rebars %3 mol chopt.\r\n\r\n06/09 June\r\n\r\n2000 x / 3000 x\r\n\r\n3.75 add pus\r\n\r\n \r\n\r\n \r\n\r\nBest Regards\r\n\r\nMehmet Ali Lapaoglu\r\n\r\nM:+905354084626\r\n\r\n \r\n\r\nIf you no longer wish to receive emails from us, reply to this message with\r\nthe subject  \"DELETE\"\r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Hereke (Marmara)",
+          "confidence": "confirmed",
+          "source_text": "Marmara (Hereke)"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "Marmara (Hereke)"
+        },
+        "destination_port": {
+          "value": "Constanta",
+          "confidence": "confirmed",
+          "source_text": "Marmara (Hereke) / Constanta"
+        },
+        "destination_country": {
+          "value": "Romania",
+          "confidence": "confirmed",
+          "source_text": "Marmara (Hereke) / Constanta"
+        },
+        "cargo_description": {
+          "value": "PC Strand coils, Diameter: 130-140 cm, H: 80 cm, Unit Weight: 3-3.5 MT, Tier limit: 2",
+          "confidence": "confirmed",
+          "source_text": "PC Strand,  Diameter :130-140 cm,  H: 80 cm UW: 3-3,5 MT, Tier limit: 2"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 2500,
+          "confidence": "confirmed",
+          "source_text": "2500 mts (PC Strand,  Diameter :130-140 cm,  H: 80 cm UW: 3-3,5 MT, Tier limit: 2 )"
+        },
+        "weight_mt_min": 2500,
+        "weight_mt_max": 2500,
+        "volume_cbm": null,
+        "dimensions": {
+          "value": "Diameter: 130-140 cm, H: 80 cm",
+          "confidence": "confirmed",
+          "source_text": "Diameter :130-140 cm,  H: 80 cm"
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "PC Strand,  Diameter :130-140 cm,  H: 80 cm UW: 3-3,5 MT, Tier limit: 2"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "11/13 May 2026",
+          "confidence": "confirmed",
+          "source_text": "11/13 May"
+        },
+        "laycan": {
+          "value": "11/13 May 2026",
+          "confidence": "confirmed",
+          "source_text": "11/13 May"
+        },
+        "loading_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "1000 x / 800 x"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 800,
+          "confidence": "confirmed",
+          "source_text": "1000 x / 800 x"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75 add pus"
+        },
+        "commission_terms": {
+          "value": "address commission",
+          "confidence": "interpreted",
+          "source_text": "3.75 add pus"
+        },
+        "special_requirements": {
+          "value": "PC Strand coils: unit weight 3-3.5 MT each, tier limit 2 (heavy lift stacking restriction)",
+          "confidence": "confirmed",
+          "source_text": "UW: 3-3,5 MT, Tier limit: 2"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Vessel type/gear requirement not specified (heavy lift coils may require geared vessel or crane)",
+          "Freight terms (FIO/liner/other) not stated",
+          "\"pus\" in \"3.75 add pus\" is unrecognized — commission structure unclear"
+        ],
+        "unknown_terms": ["pus"]
+      },
+      {
+        "origin_port": {
+          "value": "Iskenderun",
+          "confidence": "confirmed",
+          "source_text": "Iskenderun / Ghent"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "Iskenderun / Ghent"
+        },
+        "destination_port": {
+          "value": "Ghent",
+          "confidence": "confirmed",
+          "source_text": "Iskenderun / Ghent"
+        },
+        "destination_country": {
+          "value": "Belgium",
+          "confidence": "confirmed",
+          "source_text": "Iskenderun / Ghent"
+        },
+        "cargo_description": {
+          "value": "Steel rebars, 3% MOLCHOPT",
+          "confidence": "confirmed",
+          "source_text": "10000 mts steel rebars %3 mol chopt."
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 10000,
+          "confidence": "confirmed",
+          "source_text": "10000 mts steel rebars %3 mol chopt."
+        },
+        "weight_mt_min": {
+          "value": 9700,
+          "confidence": "interpreted",
+          "source_text": "10000 mts steel rebars %3 mol chopt."
+        },
+        "weight_mt_max": {
+          "value": 10300,
+          "confidence": "interpreted",
+          "source_text": "10000 mts steel rebars %3 mol chopt."
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "10000 mts steel rebars %3 mol chopt."
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "06/09 June 2026",
+          "confidence": "confirmed",
+          "source_text": "06/09 June"
+        },
+        "laycan": {
+          "value": "06/09 June 2026",
+          "confidence": "confirmed",
+          "source_text": "06/09 June"
+        },
+        "loading_rate": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "2000 x / 3000 x"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 3000,
+          "confidence": "confirmed",
+          "source_text": "2000 x / 3000 x"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75 add pus"
+        },
+        "commission_terms": {
+          "value": "address commission",
+          "confidence": "interpreted",
+          "source_text": "3.75 add pus"
+        },
+        "special_requirements": null,
+        "stowage_factor": null,
+        "missing_info": [
+          "Freight terms (FIO/liner/other) not stated",
+          "Vessel size/type not specified",
+          "\"pus\" in \"3.75 add pus\" is unrecognized — commission structure unclear"
+        ],
+        "unknown_terms": ["pus"]
+      }
+    ]
+  }
+}

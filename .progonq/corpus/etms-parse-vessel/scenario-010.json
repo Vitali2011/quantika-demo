@@ -1,0 +1,165 @@
+{
+  "id": "etms-parse-vessel-010",
+  "source_email_id": "19d5e77ccc974c03",
+  "category": "full_specs",
+  "input": {
+    "subject": "FW: MV SVS VEGA open Efesan Sep/6-8th",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-04-05T16:26:37.000Z",
+    "body": " \r\n\r\nFrom: Allimar Shipbrokers srl <chartering@allimar.it> \r\nSent: Tuesday, 2 September 2025 12:23\r\nTo: Allimar Shipbrokers srl <chartering@allimar.it>\r\nSubject: MV SVS VEGA open Efesan Sep/6-8th\r\n\r\n \r\n\r\nMV SVS VEGA\r\n\r\n \r\n\r\nMultipurpose dry cargo/Container vessel\r\n\r\nSt. Vincent & the Grenadines flag\r\n\r\nBuilt  1996\r\n\r\nLloyd's Register +100A1, Ice Class 1A,+LMC,UMS\r\n\r\n3200 mt DWAT sfb on 4,63m, LOA 90,67 m bеаm 15,80 m GT/NT 2658/1216 open\r\nhatch/doubleskinned  singledecker about 140.000 сbf gr/bl single hold/2\r\nhatch, MacGregor  hatchcover  hydr. folding type hatch dimensions: 57,50 х\r\n12,80 m Gearless / Cont Fitted Nominal container intake: 266 TEU (80 in hold\r\n+ 186 on deck) alt. 121 FEU + 24 TEU (28 (+ 24 TEU) in hold and 93 on deck)\r\nable abt/max 180TEU@ 14tons (50% bunker/sfb)\r\n\r\n \r\n\r\nAirdraft ballast 24,7 meter\r\n\r\n \r\n\r\nabove description is believed to be correct and true but without guarantee\r\n\r\n \r\n\r\n**open Efesan Sep/6-8th\r\n\r\n \r\n\r\n\r\n\r\n \r\n\r\nALLIMAR SHIPBROKERS s.r.l.\r\n\r\n+39/3356759395\r\n\r\n <mailto:chartering@allimar.it> chartering@allimar.it\r\n\r\n <mailto:allimar@tiscali.it> allimar@tiscali.it (circulars & positions only)\r\n\r\nallimarship\r\n\r\n  wxid_02g3slkt8c8r12\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "MV SVS VEGA",
+          "confidence": "confirmed",
+          "source_text": "MV SVS VEGA"
+        },
+        "imo": null,
+        "flag": {
+          "value": "St. Vincent & the Grenadines",
+          "confidence": "confirmed",
+          "source_text": "St. Vincent & the Grenadines flag"
+        },
+        "built": {
+          "value": 1996,
+          "confidence": "confirmed",
+          "source_text": "Built  1996"
+        },
+        "class_society": {
+          "value": "Lloyd's Register",
+          "confidence": "confirmed",
+          "source_text": "Lloyd's Register +100A1, Ice Class 1A,+LMC,UMS"
+        },
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 3200,
+          "confidence": "confirmed",
+          "source_text": "3200 mt DWAT sfb on 4,63m"
+        },
+        "dwcc": null,
+        "draft_max": {
+          "value": 4.63,
+          "confidence": "interpreted",
+          "source_text": "3200 mt DWAT sfb on 4,63m"
+        },
+        "loa": {
+          "value": 90.67,
+          "confidence": "confirmed",
+          "source_text": "LOA 90,67 m"
+        },
+        "beam": {
+          "value": 15.8,
+          "confidence": "confirmed",
+          "source_text": "bеаm 15,80 m"
+        },
+        "grt": {
+          "value": 2658,
+          "confidence": "confirmed",
+          "source_text": "GT/NT 2658/1216"
+        },
+        "nrt": {
+          "value": 1216,
+          "confidence": "confirmed",
+          "source_text": "GT/NT 2658/1216"
+        },
+        "holds_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "single hold/2 hatch"
+        },
+        "hatches_count": {
+          "value": 2,
+          "confidence": "confirmed",
+          "source_text": "single hold/2 hatch"
+        },
+        "grain_capacity": {
+          "value": 140000,
+          "confidence": "interpreted",
+          "source_text": "about 140.000 сbf gr/bl"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": {
+          "value": 140000,
+          "confidence": "interpreted",
+          "source_text": "about 140.000 сbf gr/bl"
+        },
+        "hold_dimensions": [],
+        "hatch_dimensions": ["57.50 x 12.80 m"],
+        "tank_top_strength": null,
+        "geared": false,
+        "crane_capacity": null,
+        "hatch_type": {
+          "value": "MacGregor hydraulic folding",
+          "confidence": "confirmed",
+          "source_text": "MacGregor  hatchcover  hydr. folding type"
+        },
+        "vessel_type": {
+          "value": "MPP",
+          "confidence": "confirmed",
+          "source_text": "Multipurpose dry cargo/Container vessel"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Efesan",
+          "confidence": "confirmed",
+          "source_text": "open Efesan Sep/6-8th"
+        },
+        "open_date": {
+          "value": {
+            "open": "2025-09-06",
+            "close": "2025-09-08",
+            "display": "Sep/6-8th"
+          },
+          "confidence": "interpreted",
+          "source_text": "open Efesan Sep/6-8th"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Ice Class 1A",
+            "confidence": "confirmed",
+            "source_text": "Lloyd's Register +100A1, Ice Class 1A,+LMC,UMS"
+          },
+          {
+            "value": "Open hatch / double-skinned / single decker",
+            "confidence": "confirmed",
+            "source_text": "open hatch/doubleskinned  singledecker"
+          },
+          {
+            "value": "Container fitted — nominal intake 266 TEU (80 in hold + 186 on deck) alt. 121 FEU + 24 TEU",
+            "confidence": "confirmed",
+            "source_text": "Cont Fitted Nominal container intake: 266 TEU (80 in hold + 186 on deck) alt. 121 FEU + 24 TEU (28 (+ 24 TEU) in hold and 93 on deck)"
+          },
+          {
+            "value": "Max approx 180 TEU @ 14 tons (50% bunker/sfb)",
+            "confidence": "interpreted",
+            "source_text": "able abt/max 180TEU@ 14tons (50% bunker/sfb)"
+          },
+          {
+            "value": "Airdraft ballast 24.7 metres",
+            "confidence": "confirmed",
+            "source_text": "Airdraft ballast 24,7 meter"
+          },
+          {
+            "value": "Gearless",
+            "confidence": "confirmed",
+            "source_text": "Gearless"
+          }
+        ],
+        "unknown_terms": [
+          "sfb — appears as a load/draft qualifier (possibly 'summer fresh water basis' or 'safe fill basis'); not in glossary",
+          "UMS — unattended machinery space classification notation; not in chartering glossary",
+          "+LMC — Lloyd's Register machinery class notation; not in chartering glossary"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "id": "etms-classify-097",
+  "source_email_id": "19e07d8f8a2e5988",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: Bagged Rice Orders for Africa",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:48:38.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: PNA Shipbrokers - Singapore <pna@pnaship.com> \r\nSent: Wednesday, 6 May 2026 05:29\r\nTo: pna@pnaship.com\r\nSubject: Bagged Rice Orders for Africa\r\n\r\n\r\n\r\nFROM: PACIFIC & ATLANTIC SHIPBROKERS - SINGAPORE / (Email/Teams:\r\npna@pnaship.com)\r\n\r\n**\r\n\r\nPls offer best with named tng / full itin.\r\n\r\n- NO FRT IDEAS FM CHRS. SEEKING OWS BEST \r\n\r\naa)\r\n- 20000/25000 mt bgd rice 50 kgs pp bags \r\n- kakinada anchorage, ec india  / monrovia, west africa (10m sw)\r\n- 2000mt load / 1500mt disch - pwwd sat12pm/mon08am ntc eiu\r\n- laycan 10-15 may\r\n- 5pct on f/d/d/d\r\n\r\n* max age 20yrs\r\n* frt bss free da at lport and disport \r\n* dunnage on charterers acct.\r\n\r\n+++++++ \r\n\r\nbb)\r\n- 30,000 mt 10% moloo rice in 50 kgs bags (sf abt 1.4 cbm/mt wog) \r\n- kakinada anch, ec india / conakary, west africa (10m sw)\r\n- laycan ppt/07 may (try vsl dates) \r\n- 2000mt load / 2000mt disch - pwwd sat12pm/mon08am ntc eiu (all holds at\r\nboth lports)\r\n- 5pct on f/d/d/d\r\n\r\n* charts can do free da at lport and disport \r\n* dunnage on charterers acct.\r\n\r\n+++++++\r\n\r\ncc)\r\n- 25000/35000 mt bgd rice in 50 kg bags (sf abt 1.4 cbm/mt wog)\r\n- dhamra, ec india / durban, south africa \r\n- laycan 25-30 may\r\n- load rate 500 mt/hook/day shex eiu\r\n- disrate 400 mt/hook/day shex eiu\r\n- 5pct on f/d/d/d\r\n\r\n+++++++ \r\n\r\ndd)\r\n- 30,000 mt 10% rice in bags (max draft at dsch port 10.00m)\r\n- kosichang (10,000 mt) + kakinada anchorage (balance)\r\n- dssch port conakary, guinea\r\n- laycan prompt / onw (try vsl dates)\r\n- 2000mt load / 2000mt disch - pwwd sat12pm/mon08am ntc eiu bends \r\n- all holds at both lports\r\n- 5pct on f/d/d/d\r\n\r\n* charts can do free da at lport and disport \r\n* dunnage on charterers acct.\r\n\r\nend>> \r\n\r\n\r\nB Rgds \r\nTony (TEAMS: pna@pnaship.com)\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "id": "19e07d8f8a2e5988",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.91,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Tony (PNA Shipbrokers - Singapore)",
+    "original_sender_company": "Pacific & Atlantic Shipbrokers - Singapore",
+    "unknown_terms": ["f/d/d/d", "ntc"]
+  }
+}

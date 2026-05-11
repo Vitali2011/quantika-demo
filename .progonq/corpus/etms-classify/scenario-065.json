@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-065",
+  "source_email_id": "19e07d08a2829481",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: STEEL MENU",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:39:24.000Z",
+    "body": " \r\n\r\nFrom: mylist1-owner@elsharkawymaritime.com\r\n<mylist1-owner@elsharkawymaritime.com> On Behalf Of Elsharkawy Maritime &\r\nLogistics Co\r\nSent: Wednesday, 6 May 2026 12:36\r\nTo: chartering@elsharkawymaritime.com\r\nSubject: STEEL MENU\r\nImportance: High\r\n\r\n \r\n\r\nAttn: Chartering Desk !!!\r\n\r\n \r\n\r\nGd Day,,\r\n\r\n \r\n\r\nPlease Only Propose Competitive Rated and Suitable Vessels Incl Full\r\nItinerary/ETA Load Port For:\r\n\r\n \r\n\r\nIACS\r\n\r\n \r\n\r\nMin 2,000 Mts Wire Rods In Bulk 10 Pct More Chopt \r\n\r\n(Dims: 1.20 (H) X 1.20 (W) X 1.35 M (L) Uw Abt 1.4 Mt \r\n\r\n1 Sbp Alexandria Chopt Abu Qir/1 Sbp Sousse, Tunisia\r\n\r\n1,000 Mts Fshex Eiu Thu Noon/Sun 0800 Ntc Eiu\r\n\r\n1,000 Mts Fshex Eiu Thu Noon/Sun 0800 Ntc Eiu\r\n\r\nLaycan 12-15 May\r\n\r\nFreight Usd      Pmt Fios L/S/D \r\n\r\nChrts Agents Bends\r\n\r\nChrts Exe Gencon Cp \r\n\r\n1.25pct Ttl Comm\r\n\r\n \r\n\r\n++\r\n\r\n \r\n\r\nMin 5,250 Mts Hrc 5 Pct More Chopt Max 2 Tiers Uw Abt 26 Mt\r\n\r\n1 Sbp Alexandria Chopt Abu Qir/1 Sbp Birkenhead, Uk\r\n\r\n(Expect 5,330 Mts)\r\n\r\n2,000 Mts Fshex Eiu Thu Noon/Sun 0800 Ntc Eiu \r\n\r\n2,000 Mts Sshex Eiu Fri 1700-Mon 0800 Ntc Eiu\r\n\r\nLaycan 18-22 May\r\n\r\nFreight Usd      Pmt Fios L/S/D 1:1\r\n\r\nChrts Agents Bends\r\n\r\nChrts Exe Gencon Cp\r\n\r\n1.25pct Ttl Comm\r\n\r\n \r\n\r\n++\r\n\r\n \r\n\r\nMin 17,500 Mts Hrc/Pno 5 Pct More Chopt Max 2 Tiers Uw Abt 26 Mt\r\n\r\n1 Sbp Alexandria Chopt Abu Qir/1 Sb-2 Sp Gemlik And Yildiz Entegre \r\n\r\n(Expect Gemlik 12,700 Mts And Yildiz Entegre: 5,000 Mts)\r\n\r\n3,000 Mts Fshex Eiu Thu Noon/Sun 0800 Ntc Eiu \r\n\r\n4,000 Mts Sshex Eiu Fri 1700-Mon 0800 Ntc Eiu\r\n\r\nLaycan 19-22 May\r\n\r\nFreight Usd      Pmt Fios L/S/D 1:2\r\n\r\nChrts Agents Bends\r\n\r\nChrts Exe Gencon Cp\r\n\r\n1.25pct Ttl Comm\r\n\r\n \r\n\r\nBrgds // \r\n\r\nCapt.Mohamed Elsharkawy\r\n\r\nTels: +20663232456/3232457\r\n\r\nFax:  +20663232459\r\n\r\nMob: +201007800552 (24hrs) \r\n\r\nTeams Id:  <mailto:elsharkawy_maritime@hotmai.com>\r\nelsharkawy_maritime@hotmai.com  \r\n\r\nE-Mail:  <mailto:chartering@elsharkawymaritime.com>\r\nchartering@elsharkawymaritime.com\r\n\r\nW.Site:  <http://www.elsharkawymaritime.com/> www.elsharkawymaritime.com \r\n\r\n \r\n\r\n  _____  \r\n\r\nTo subscribe, Please Send To mylist1-subscribe@elsharkawymaritime.com\r\n<mailto:mylist1-subscribe@elsharkawymaritime.com> \r\nTo unsubscribe, Please Send To mylist1-unsubscribe@elsharkawymaritime.com\r\n<mailto:mylist1-unsubscribe@elsharkawymaritime.com> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07d08a2829481",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.95,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Capt. Mohamed Elsharkawy",
+    "original_sender_company": "Elsharkawy Maritime & Logistics Co"
+  }
+}

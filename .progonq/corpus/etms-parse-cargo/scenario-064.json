@@ -1,0 +1,513 @@
+{
+  "id": "etms-parse-cargo-064",
+  "source_email_id": "19e07d8f8a2e5988",
+  "category": "forwarded",
+  "input": {
+    "subject": "FW: Bagged Rice Orders for Africa",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:48:38.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: PNA Shipbrokers - Singapore <pna@pnaship.com> \r\nSent: Wednesday, 6 May 2026 05:29\r\nTo: pna@pnaship.com\r\nSubject: Bagged Rice Orders for Africa\r\n\r\n\r\n\r\nFROM: PACIFIC & ATLANTIC SHIPBROKERS - SINGAPORE / (Email/Teams:\r\npna@pnaship.com)\r\n\r\n**\r\n\r\nPls offer best with named tng / full itin.\r\n\r\n- NO FRT IDEAS FM CHRS. SEEKING OWS BEST \r\n\r\naa)\r\n- 20000/25000 mt bgd rice 50 kgs pp bags \r\n- kakinada anchorage, ec india  / monrovia, west africa (10m sw)\r\n- 2000mt load / 1500mt disch - pwwd sat12pm/mon08am ntc eiu\r\n- laycan 10-15 may\r\n- 5pct on f/d/d/d\r\n\r\n* max age 20yrs\r\n* frt bss free da at lport and disport \r\n* dunnage on charterers acct.\r\n\r\n+++++++ \r\n\r\nbb)\r\n- 30,000 mt 10% moloo rice in 50 kgs bags (sf abt 1.4 cbm/mt wog) \r\n- kakinada anch, ec india / conakary, west africa (10m sw)\r\n- laycan ppt/07 may (try vsl dates) \r\n- 2000mt load / 2000mt disch - pwwd sat12pm/mon08am ntc eiu (all holds at\r\nboth lports)\r\n- 5pct on f/d/d/d\r\n\r\n* charts can do free da at lport and disport \r\n* dunnage on charterers acct.\r\n\r\n+++++++\r\n\r\ncc)\r\n- 25000/35000 mt bgd rice in 50 kg bags (sf abt 1.4 cbm/mt wog)\r\n- dhamra, ec india / durban, south africa \r\n- laycan 25-30 may\r\n- load rate 500 mt/hook/day shex eiu\r\n- disrate 400 mt/hook/day shex eiu\r\n- 5pct on f/d/d/d\r\n\r\n+++++++ \r\n\r\ndd)\r\n- 30,000 mt 10% rice in bags (max draft at dsch port 10.00m)\r\n- kosichang (10,000 mt) + kakinada anchorage (balance)\r\n- dssch port conakary, guinea\r\n- laycan prompt / onw (try vsl dates)\r\n- 2000mt load / 2000mt disch - pwwd sat12pm/mon08am ntc eiu bends \r\n- all holds at both lports\r\n- 5pct on f/d/d/d\r\n\r\n* charts can do free da at lport and disport \r\n* dunnage on charterers acct.\r\n\r\nend>> \r\n\r\n\r\nB Rgds \r\nTony (TEAMS: pna@pnaship.com)\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Kakinada Anchorage",
+          "confidence": "confirmed",
+          "source_text": "kakinada anchorage, ec india"
+        },
+        "origin_country": {
+          "value": "India",
+          "confidence": "confirmed",
+          "source_text": "kakinada anchorage, ec india"
+        },
+        "destination_port": {
+          "value": "Monrovia",
+          "confidence": "confirmed",
+          "source_text": "monrovia, west africa (10m sw)"
+        },
+        "destination_country": {
+          "value": "Liberia",
+          "confidence": "confirmed",
+          "source_text": "monrovia, west africa (10m sw)"
+        },
+        "cargo_description": {
+          "value": "Bagged rice, 50 kg polypropylene bags",
+          "confidence": "confirmed",
+          "source_text": "20000/25000 mt bgd rice 50 kgs pp bags"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 25000,
+          "confidence": "interpreted",
+          "source_text": "20000/25000 mt bgd rice 50 kgs pp bags"
+        },
+        "weight_mt_min": {
+          "value": 20000,
+          "confidence": "confirmed",
+          "source_text": "20000/25000 mt bgd rice 50 kgs pp bags"
+        },
+        "weight_mt_max": {
+          "value": 25000,
+          "confidence": "confirmed",
+          "source_text": "20000/25000 mt bgd rice 50 kgs pp bags"
+        },
+        "volume_cbm": {
+          "value": null
+        },
+        "dimensions": {
+          "value": null
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "20000/25000 mt bgd rice 50 kgs pp bags"
+        },
+        "container_type": {
+          "value": null
+        },
+        "quantity": {
+          "value": null
+        },
+        "incoterms": {
+          "value": null
+        },
+        "preferred_dates": {
+          "value": "Laycan 10-15 May",
+          "confidence": "confirmed",
+          "source_text": "laycan 10-15 may"
+        },
+        "laycan": {
+          "value": "10/15 May 2026",
+          "confidence": "confirmed",
+          "source_text": "laycan 10-15 may"
+        },
+        "loading_rate": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "2000mt load / 1500mt disch - pwwd sat12pm/mon08am ntc eiu"
+        },
+        "loading_terms": {
+          "value": "PWWD SAT 12PM/MON 08AM NTC EIU",
+          "confidence": "confirmed",
+          "source_text": "2000mt load / 1500mt disch - pwwd sat12pm/mon08am ntc eiu"
+        },
+        "discharge_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "2000mt load / 1500mt disch - pwwd sat12pm/mon08am ntc eiu"
+        },
+        "discharge_terms": {
+          "value": "PWWD SAT 12PM/MON 08AM NTC EIU",
+          "confidence": "confirmed",
+          "source_text": "2000mt load / 1500mt disch - pwwd sat12pm/mon08am ntc eiu"
+        },
+        "commission_percent": {
+          "value": 5,
+          "confidence": "confirmed",
+          "source_text": "5pct on f/d/d/d"
+        },
+        "commission_terms": {
+          "value": "5% on F/D/D/D (Freight/Demurrage/Defence/Deadfreight)",
+          "confidence": "confirmed",
+          "source_text": "5pct on f/d/d/d"
+        },
+        "special_requirements": {
+          "value": [
+            "Max vessel age 20 years",
+            "Freight basis free disbursements account at load port and discharge port",
+            "Dunnage on charterers account",
+            "Discharge port max draft 10.0m salt water",
+            "No freight ideas from charterers — owners to offer best rate",
+            "Named tonnage and full itinerary required with offer"
+          ],
+          "confidence": "confirmed",
+          "source_text": "* max age 20yrs\n* frt bss free da at lport and disport \n* dunnage on charterers acct.\nkakinada anchorage, ec india  / monrovia, west africa (10m sw)"
+        },
+        "stowage_factor": {
+          "value": null
+        },
+        "missing_info": [
+          "No freight rate indication from charterers — owners best required",
+          "Vessel name/itinerary not yet provided (requested by broker)"
+        ]
+      },
+      {
+        "origin_port": {
+          "value": "Kakinada Anchorage",
+          "confidence": "confirmed",
+          "source_text": "kakinada anch, ec india"
+        },
+        "origin_country": {
+          "value": "India",
+          "confidence": "confirmed",
+          "source_text": "kakinada anch, ec india"
+        },
+        "destination_port": {
+          "value": "Conakry",
+          "confidence": "interpreted",
+          "source_text": "conakary, west africa (10m sw)"
+        },
+        "destination_country": {
+          "value": "Guinea",
+          "confidence": "confirmed",
+          "source_text": "conakary, west africa (10m sw)"
+        },
+        "cargo_description": {
+          "value": "Rice in 50 kg bags",
+          "confidence": "confirmed",
+          "source_text": "30,000 mt 10% moloo rice in 50 kgs bags (sf abt 1.4 cbm/mt wog)"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 30000,
+          "confidence": "confirmed",
+          "source_text": "30,000 mt 10% moloo rice in 50 kgs bags (sf abt 1.4 cbm/mt wog)"
+        },
+        "weight_mt_min": {
+          "value": 27000,
+          "confidence": "interpreted",
+          "source_text": "30,000 mt 10% moloo rice in 50 kgs bags (sf abt 1.4 cbm/mt wog)"
+        },
+        "weight_mt_max": {
+          "value": 33000,
+          "confidence": "interpreted",
+          "source_text": "30,000 mt 10% moloo rice in 50 kgs bags (sf abt 1.4 cbm/mt wog)"
+        },
+        "volume_cbm": {
+          "value": null
+        },
+        "dimensions": {
+          "value": null
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "30,000 mt 10% moloo rice in 50 kgs bags (sf abt 1.4 cbm/mt wog)"
+        },
+        "container_type": {
+          "value": null
+        },
+        "quantity": {
+          "value": null
+        },
+        "incoterms": {
+          "value": null
+        },
+        "preferred_dates": {
+          "value": "Prompt / 7 May (try vessel dates)",
+          "confidence": "confirmed",
+          "source_text": "laycan ppt/07 may (try vsl dates)"
+        },
+        "laycan": {
+          "value": "Prompt/07 May 2026",
+          "confidence": "uncertain",
+          "source_text": "laycan ppt/07 may (try vsl dates)"
+        },
+        "loading_rate": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "2000mt load / 2000mt disch - pwwd sat12pm/mon08am ntc eiu (all holds at both lports)"
+        },
+        "loading_terms": {
+          "value": "PWWD SAT 12PM/MON 08AM NTC EIU, all holds",
+          "confidence": "confirmed",
+          "source_text": "2000mt load / 2000mt disch - pwwd sat12pm/mon08am ntc eiu (all holds at both lports)"
+        },
+        "discharge_rate": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "2000mt load / 2000mt disch - pwwd sat12pm/mon08am ntc eiu (all holds at both lports)"
+        },
+        "discharge_terms": {
+          "value": "PWWD SAT 12PM/MON 08AM NTC EIU, all holds",
+          "confidence": "confirmed",
+          "source_text": "2000mt load / 2000mt disch - pwwd sat12pm/mon08am ntc eiu (all holds at both lports)"
+        },
+        "commission_percent": {
+          "value": 5,
+          "confidence": "confirmed",
+          "source_text": "5pct on f/d/d/d"
+        },
+        "commission_terms": {
+          "value": "5% on F/D/D/D (Freight/Demurrage/Defence/Deadfreight)",
+          "confidence": "confirmed",
+          "source_text": "5pct on f/d/d/d"
+        },
+        "special_requirements": {
+          "value": [
+            "Discharge port max draft 10.0m salt water",
+            "Charterers can provide free disbursements account at load port and discharge port",
+            "Dunnage on charterers account",
+            "No freight ideas from charterers — owners to offer best rate",
+            "Named tonnage and full itinerary required with offer"
+          ],
+          "confidence": "confirmed",
+          "source_text": "* charts can do free da at lport and disport \n* dunnage on charterers acct.\nconakary, west africa (10m sw)"
+        },
+        "stowage_factor": {
+          "value": 1.4,
+          "confidence": "interpreted",
+          "source_text": "sf abt 1.4 cbm/mt wog"
+        },
+        "missing_info": [
+          "No freight rate indication from charterers — owners best required",
+          "Laycan 'prompt/07 May' may already be partially past at time of inquiry — vessel dates to be confirmed"
+        ]
+      },
+      {
+        "origin_port": {
+          "value": "Dhamra",
+          "confidence": "confirmed",
+          "source_text": "dhamra, ec india / durban, south africa"
+        },
+        "origin_country": {
+          "value": "India",
+          "confidence": "confirmed",
+          "source_text": "dhamra, ec india / durban, south africa"
+        },
+        "destination_port": {
+          "value": "Durban",
+          "confidence": "confirmed",
+          "source_text": "dhamra, ec india / durban, south africa"
+        },
+        "destination_country": {
+          "value": "South Africa",
+          "confidence": "confirmed",
+          "source_text": "dhamra, ec india / durban, south africa"
+        },
+        "cargo_description": {
+          "value": "Bagged rice in 50 kg bags",
+          "confidence": "confirmed",
+          "source_text": "25000/35000 mt bgd rice in 50 kg bags (sf abt 1.4 cbm/mt wog)"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 35000,
+          "confidence": "interpreted",
+          "source_text": "25000/35000 mt bgd rice in 50 kg bags (sf abt 1.4 cbm/mt wog)"
+        },
+        "weight_mt_min": {
+          "value": 25000,
+          "confidence": "confirmed",
+          "source_text": "25000/35000 mt bgd rice in 50 kg bags (sf abt 1.4 cbm/mt wog)"
+        },
+        "weight_mt_max": {
+          "value": 35000,
+          "confidence": "confirmed",
+          "source_text": "25000/35000 mt bgd rice in 50 kg bags (sf abt 1.4 cbm/mt wog)"
+        },
+        "volume_cbm": {
+          "value": null
+        },
+        "dimensions": {
+          "value": null
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "25000/35000 mt bgd rice in 50 kg bags (sf abt 1.4 cbm/mt wog)"
+        },
+        "container_type": {
+          "value": null
+        },
+        "quantity": {
+          "value": null
+        },
+        "incoterms": {
+          "value": null
+        },
+        "preferred_dates": {
+          "value": "Laycan 25-30 May",
+          "confidence": "confirmed",
+          "source_text": "laycan 25-30 may"
+        },
+        "laycan": {
+          "value": "25/30 May 2026",
+          "confidence": "confirmed",
+          "source_text": "laycan 25-30 may"
+        },
+        "loading_rate": {
+          "value": "500 MT/hook/day",
+          "confidence": "confirmed",
+          "source_text": "load rate 500 mt/hook/day shex eiu"
+        },
+        "loading_terms": {
+          "value": "SHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "load rate 500 mt/hook/day shex eiu"
+        },
+        "discharge_rate": {
+          "value": "400 MT/hook/day",
+          "confidence": "confirmed",
+          "source_text": "disrate 400 mt/hook/day shex eiu"
+        },
+        "discharge_terms": {
+          "value": "SHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "disrate 400 mt/hook/day shex eiu"
+        },
+        "commission_percent": {
+          "value": 5,
+          "confidence": "confirmed",
+          "source_text": "5pct on f/d/d/d"
+        },
+        "commission_terms": {
+          "value": "5% on F/D/D/D (Freight/Demurrage/Defence/Deadfreight)",
+          "confidence": "confirmed",
+          "source_text": "5pct on f/d/d/d"
+        },
+        "special_requirements": {
+          "value": [
+            "No freight ideas from charterers — owners to offer best rate",
+            "Named tonnage and full itinerary required with offer"
+          ],
+          "confidence": "confirmed",
+          "source_text": "Pls offer best with named tng / full itin.\n- NO FRT IDEAS FM CHRS. SEEKING OWS BEST"
+        },
+        "stowage_factor": {
+          "value": 1.4,
+          "confidence": "interpreted",
+          "source_text": "sf abt 1.4 cbm/mt wog"
+        },
+        "missing_info": [
+          "No freight rate indication from charterers — owners best required",
+          "Number of crane hooks on vessel not specified — total vessel loading/discharge rate depends on hook count",
+          "No vessel age restriction stated (unlike inquiry aa)"
+        ]
+      },
+      {
+        "origin_port": {
+          "value": "Ko Si Chang + Kakinada Anchorage",
+          "confidence": "confirmed",
+          "source_text": "kosichang (10,000 mt) + kakinada anchorage (balance)"
+        },
+        "origin_country": {
+          "value": "Thailand + India",
+          "confidence": "interpreted",
+          "source_text": "kosichang (10,000 mt) + kakinada anchorage (balance)"
+        },
+        "destination_port": {
+          "value": "Conakry",
+          "confidence": "interpreted",
+          "source_text": "dssch port conakary, guinea"
+        },
+        "destination_country": {
+          "value": "Guinea",
+          "confidence": "confirmed",
+          "source_text": "dssch port conakary, guinea"
+        },
+        "cargo_description": {
+          "value": "Rice in bags; two load ports: Ko Si Chang (10,000 MT) and Kakinada Anchorage (balance). Max draft at discharge port 10.00m.",
+          "confidence": "confirmed",
+          "source_text": "30,000 mt 10% rice in bags (max draft at dsch port 10.00m)\nkosichang (10,000 mt) + kakinada anchorage (balance)"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 30000,
+          "confidence": "confirmed",
+          "source_text": "30,000 mt 10% rice in bags (max draft at dsch port 10.00m)"
+        },
+        "weight_mt_min": {
+          "value": 27000,
+          "confidence": "interpreted",
+          "source_text": "30,000 mt 10% rice in bags (max draft at dsch port 10.00m)"
+        },
+        "weight_mt_max": {
+          "value": 33000,
+          "confidence": "interpreted",
+          "source_text": "30,000 mt 10% rice in bags (max draft at dsch port 10.00m)"
+        },
+        "volume_cbm": {
+          "value": null
+        },
+        "dimensions": {
+          "value": null
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "30,000 mt 10% rice in bags"
+        },
+        "container_type": {
+          "value": null
+        },
+        "quantity": {
+          "value": null
+        },
+        "incoterms": {
+          "value": null
+        },
+        "preferred_dates": {
+          "value": "Prompt / onwards (try vessel dates)",
+          "confidence": "confirmed",
+          "source_text": "laycan prompt / onw (try vsl dates)"
+        },
+        "laycan": {
+          "value": "Prompt/onwards",
+          "confidence": "uncertain",
+          "source_text": "laycan prompt / onw (try vsl dates)"
+        },
+        "loading_rate": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "2000mt load / 2000mt disch - pwwd sat12pm/mon08am ntc eiu bends"
+        },
+        "loading_terms": {
+          "value": "PWWD SAT 12PM/MON 08AM NTC EIU BENDS (both ends), all holds at both load ports",
+          "confidence": "confirmed",
+          "source_text": "2000mt load / 2000mt disch - pwwd sat12pm/mon08am ntc eiu bends \n- all holds at both lports"
+        },
+        "discharge_rate": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "2000mt load / 2000mt disch - pwwd sat12pm/mon08am ntc eiu bends"
+        },
+        "discharge_terms": {
+          "value": "PWWD SAT 12PM/MON 08AM NTC EIU BENDS (both ends)",
+          "confidence": "confirmed",
+          "source_text": "2000mt load / 2000mt disch - pwwd sat12pm/mon08am ntc eiu bends"
+        },
+        "commission_percent": {
+          "value": 5,
+          "confidence": "confirmed",
+          "source_text": "5pct on f/d/d/d"
+        },
+        "commission_terms": {
+          "value": "5% on F/D/D/D (Freight/Demurrage/Defence/Deadfreight)",
+          "confidence": "confirmed",
+          "source_text": "5pct on f/d/d/d"
+        },
+        "special_requirements": {
+          "value": [
+            "Max draft at discharge port 10.00m",
+            "Two load ports: Ko Si Chang (10,000 MT) + Kakinada Anchorage (balance ~20,000 MT)",
+            "Charterers can provide free disbursements account at load port and discharge port",
+            "Dunnage on charterers account",
+            "No freight ideas from charterers — owners to offer best rate",
+            "Named tonnage and full itinerary required with offer"
+          ],
+          "confidence": "confirmed",
+          "source_text": "30,000 mt 10% rice in bags (max draft at dsch port 10.00m)\nkosichang (10,000 mt) + kakinada anchorage (balance)\n* charts can do free da at lport and disport \n* dunnage on charterers acct."
+        },
+        "stowage_factor": {
+          "value": null
+        },
+        "missing_info": [
+          "No freight rate indication from charterers — owners best required",
+          "MOLOO tolerance not explicitly stated (only '10%' mentioned) — assumed 10% MOLOO",
+          "Laycan 'prompt/onwards' is undefined — vessel dates to be proposed by owners",
+          "Balance cargo quantity at Kakinada not explicitly stated (inferred as ~20,000 MT)"
+        ]
+      }
+    ]
+  }
+}

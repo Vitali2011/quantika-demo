@@ -1,0 +1,124 @@
+{
+  "id": "etms-parse-vessel-044",
+  "source_email_id": "19e0f51ea1cd9364",
+  "category": "dwcc_edge",
+  "input": {
+    "subject": "FW: SSL VESSEL // SEA MAJESTY // DWCC 8600 MTS // OPEN @ TRIPOLI, LEBANON 16-17 APRIL",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-10T00:38:04.000Z",
+    "body": " \r\n\r\nFrom: Sea Scanner Logistics <chartering@seascanner.org> \r\nSent: Wednesday, 15 April 2026 12:50\r\nTo: management@etm-services.net\r\nSubject: SSL VESSEL // SEA MAJESTY // DWCC 8600 MTS // OPEN @ TRIPOLI, LEBANON 16-17 APRIL\r\n\r\n \r\n\r\nFROM  : SEA SCANNER LOGISTICS FOR SHIPPING\r\nTO        : CHARTERING DEPARTMENT  \r\nREF      : SSL/CHT/2026\r\nDATE   : 15.04.2026\r\n\r\nDear Sirs /Hossam,\r\nPlease offer firm parcels for the following tonnage:\r\n\r\n**********\r\n\r\nMV SEA MAJESTY\r\n\r\nDWCC 8600 MTS - GRAIN/BALE 400407.49 / 391498.94 CBFT - 4/4 HO/HA - SID - BOX HOLD, \r\n\r\nGEARED 2 X 15 MTS SWL- BULK/IMO/APP B/GRAIN/TIMBER FITTED\r\n\r\n \r\n\r\nOPEN @ TRIPOLI, LEBANON 16-17 APRIL \r\n\r\nPREFER VOYAGES FROM EGYPT TO EC GREECE / EC BLACK SEA \r\n**********\r\n\r\nPleased to hear, \r\n\r\nSincerely, \r\n\r\n\r\nMr. Hossam Khalil\r\n\r\nSea Scanner Logistics for Shipping S.A.E\r\n\r\nChartering Executive\r\nAs Brokers Only\r\n\r\n\r\n\r\n\r\n\r\n \r\n\r\nM +2010 677 68 441\r\nM +2011 555 32 888\r\n\r\nE   <http://sslc.seascanner.org/r/46bbe839dc210b9a2f9ce3009?ct=YTo1OntzOjY6InNvdXJjZSI7YToyOntpOjA7czo1OiJlbWFpbCI7aToxO2k6MTkzO31zOjU6ImVtYWlsIjtpOjE5MztzOjQ6InN0YXQiO3M6MjI6IjY5ZGY2ZDZhYzliNzQ3NDExMzI5NzUiO3M6NDoibGVhZCI7czo0OiI5MTI2IjtzOjc6ImNoYW5uZWwiO2E6MTp7czo1OiJlbWFpbCI7aToxOTM7fX0%3D&> chartering@seascanner.org \r\n\r\nE   <http://sslc.seascanner.org/r/c4dcaeaecfca5dee55b0eeab3?ct=YTo1OntzOjY6InNvdXJjZSI7YToyOntpOjA7czo1OiJlbWFpbCI7aToxO2k6MTkzO31zOjU6ImVtYWlsIjtpOjE5MztzOjQ6InN0YXQiO3M6MjI6IjY5ZGY2ZDZhYzliNzQ3NDExMzI5NzUiO3M6NDoibGVhZCI7czo0OiI5MTI2IjtzOjc6ImNoYW5uZWwiO2E6MTp7czo1OiJlbWFpbCI7aToxOTM7fX0%3D&> info@seascanner.org\r\n\r\nW  <http://sslc.seascanner.org/r/ae6af8f3b816342f099c58e0f?ct=YTo1OntzOjY6InNvdXJjZSI7YToyOntpOjA7czo1OiJlbWFpbCI7aToxO2k6MTkzO31zOjU6ImVtYWlsIjtpOjE5MztzOjQ6InN0YXQiO3M6MjI6IjY5ZGY2ZDZhYzliNzQ3NDExMzI5NzUiO3M6NDoibGVhZCI7czo0OiI5MTI2IjtzOjc6ImNoYW5uZWwiO2E6MTp7czo1OiJlbWFpbCI7aToxOTM7fX0%3D&> www.seascanner.org\r\n\r\nP +2 057 252 5547 / +2 057 253 4624 \r\n\r\nF +2 057 253 4624\r\n\r\nA Villa No.37, El Nakhil Section, Next to Nakhil Mosque, Ras El Bar , Damietta , Egypt\r\n\r\nSkype Chartering.SSL \r\n\r\n \r\n\r\n\r\n\r\n\r\n        REG NO.171273\r\n\r\n \r\n\r\n\r\n\r\n\r\nPlease consider your environmental responsibility. Before printing \r\n\r\nthis e-mail message, ask yourself whether you really need a hard \r\n\r\ncopy.\r\n\r\nIMPORTANT: The contents of this email and any attachments are confidential. They are intended for the named recipient(s) only. If you have received this email by mistake, please notify the sender immediately and do not disclose the contents to anyone or make copies thereof. \r\nUnsubscribe <http://sslc.seascanner.org/email/unsubscribe/69df6d6ac9b74741132975/management@etm-services.net/a9a719243e1314a973ddbb605a5202bd44c076f09402401740ae73807158eec5>  to no longer receive emails from us.\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "MV SEA MAJESTY",
+          "confidence": "confirmed",
+          "source_text": "MV SEA MAJESTY"
+        },
+        "imo": null,
+        "flag": null,
+        "built": null,
+        "class_society": null,
+        "p_and_i": null,
+        "dwt_summer": null,
+        "dwcc": {
+          "value": 8600,
+          "confidence": "confirmed",
+          "source_text": "DWCC 8600 MTS"
+        },
+        "draft_max": null,
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": {
+          "value": 4,
+          "confidence": "confirmed",
+          "source_text": "4/4 HO/HA"
+        },
+        "hatches_count": {
+          "value": 4,
+          "confidence": "confirmed",
+          "source_text": "4/4 HO/HA"
+        },
+        "grain_capacity": {
+          "value": 400407.49,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE 400407.49 / 391498.94 CBFT"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": {
+          "value": 391498.94,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE 400407.49 / 391498.94 CBFT"
+        },
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": {
+          "value": true,
+          "confidence": "confirmed",
+          "source_text": "GEARED 2 X 15 MTS SWL"
+        },
+        "crane_capacity": {
+          "value": "2 x 15T SWL",
+          "confidence": "confirmed",
+          "source_text": "GEARED 2 X 15 MTS SWL"
+        },
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "interpreted",
+          "source_text": "SID - BOX HOLD"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Tripoli, Lebanon",
+          "confidence": "confirmed",
+          "source_text": "OPEN @ TRIPOLI, LEBANON 16-17 APRIL"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-04-16",
+            "close": "2026-04-17",
+            "display": "16-17 April 2026"
+          },
+          "confidence": "interpreted",
+          "source_text": "OPEN @ TRIPOLI, LEBANON 16-17 APRIL"
+        },
+        "direction": {
+          "value": "Egypt to EC Greece / EC Black Sea",
+          "confidence": "confirmed",
+          "source_text": "PREFER VOYAGES FROM EGYPT TO EC GREECE / EC BLACK SEA"
+        },
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Single deck (SID)",
+            "confidence": "confirmed",
+            "source_text": "SID"
+          },
+          {
+            "value": "Box-shaped holds",
+            "confidence": "confirmed",
+            "source_text": "BOX HOLD"
+          },
+          {
+            "value": "BULK/IMO/APP B/GRAIN/TIMBER FITTED",
+            "confidence": "confirmed",
+            "source_text": "BULK/IMO/APP B/GRAIN/TIMBER FITTED"
+          }
+        ],
+        "unknown_terms": [
+          "APP B — possibly refers to IMDG Appendix B or IMO Appendix B (solid bulk cargoes), not confirmed in glossary"
+        ]
+      }
+    ]
+  }
+}

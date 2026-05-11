@@ -1,0 +1,22 @@
+{
+  "id": "etms-classify-104",
+  "source_email_id": "19e089d960261c91",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: PLS OFFER BELOW CARGOES",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:23:23.000Z",
+    "body": " \r\n\r\nFrom: SONAY DENIZCILIK <sonay@sonayshipping.com> \r\nSent: Friday, 8 May 2026 17:23\r\nTo: management@etm-services.net\r\nSubject: PLS OFFER BELOW CARGOES\r\n\r\n \r\n\r\nDEAR ALL FRIENDS / HALIL\r\n\r\n \r\n\r\nGood day\r\n\r\n \r\n\r\nPls offer below cargoes\r\n\r\n \r\n\r\nAbt 10.000 mt Bulk Granular Gypsum\r\n\r\nSafi / Cotonou\r\n\r\nL/C Spot / Ppt dates\r\n\r\nL/D 6000 mt / 4000 mt \r\n\r\n2,5pus\r\n\r\n \r\n\r\nGrd vessel imperative\r\n\r\n \r\n\r\nAbt 2.100 mt steel coils/plates\r\n\r\nCasablanca / Diliskelesi\r\n\r\nL/C 20/25 May\r\n\r\nL/D 5 ttl wwd\r\n\r\n2,5pus\r\n\r\n \r\n\r\n \r\n\r\n+++\r\n\r\n \r\n\r\nThks and regards\r\n\r\nB.RGDS\r\n\r\nActing as broker only\r\n\r\nHalil ERSÖZ Mr\r\n\r\nSonay Shipping AS\r\n\r\nAddress: Istasyon Mah. D100 Karayolu Cad.\r\n\r\nNo:50 Haciogullari Plaza 34940 Tuzla Istanbul Turkiye\r\n\r\nTel:+90-216-446 71 05 (Ext:325)\r\n\r\nFax:+90-216-446 25 70\r\n\r\nMob:+90 549 204 67 07\r\n\r\nTeams:Halil.ERSOZ86\r\n\r\nEmail :sonay@sonayshipping.com\r\n\r\nsonaychartering@gmail.com\r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e089d960261c91",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.93,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Halil ERSÖZ",
+    "original_sender_company": "Sonay Shipping AS",
+    "unknown_terms": ["2,5pus", "Grd"]
+  }
+}

@@ -1,0 +1,186 @@
+{
+  "id": "etms-parse-vessel-024",
+  "source_email_id": "19e07cfaa34cc768",
+  "category": "full_specs",
+  "input": {
+    "subject": "FW: 25.000DWT OPEN RED SEA SPOT",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:38:28.000Z",
+    "body": " \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Wednesday, 6 May 2026 13:56\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: RE:25.000DWT OPEN RED SEA SPOT\r\n\r\n \r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n*For quick response pls include \"takis\" in the body of the email*\r\n\r\nGD DAY \r\n\r\nPLS PROPOSE ANY SUIT BIZ OR BELOW VSL OPEN RED SEA  SPOT\r\n\r\n\r\nM/V LIKA\r\n-------------\r\nDWT 25,000 ON 9.80M\r\nBUILT 1997 FLAG COMOROS, \r\nCLASS OMCS - SS 12/2028 DD 12/2026\r\nL.O.A. 158.20M / BEAM 25.80M / DEPTH 13.30M\r\n4 HOLDS / 4 HATCHES\r\nG.T. 15,349 / N.T. 8,111\r\nGRAIN 29,463 / BALE 28,768CBM\r\nGEARED C 3X30\r\nLDT 5,687MT\r\nMAIN ENGINE: HITACHI B&W 6L42MC\r\nAUX.ENGINE: 2 X DAIHATSU\r\nEmail :462001678@stratosmobile.net \r\n======\r\nSpeed and consumption under good weather conditions, upto max.Beaufort 4 / Douglas Seastate 3, no adverse current and no negative influence of swell.\r\nLaden:  about 11.00 knots on about 15.50 mts (LSFO 380 cst)\r\nBallast: about 11.00 knots on about 15.00 mts (LSFO 380 cst)\r\nIn port:  about  2mts  MDO/MGO when idle\r\nabout  3.5mts MDO/MGO when gear working\r\n\r\nPlease add our email address ( chartering@niavigrains.gr ) to your circulation list for cargoes / positions\r\n\r\nBEST RGRDS\r\nTAK  (TAKIS KAPETANIOS)\r\nE MAIL : chartering@niavigrains.gr <mailto:chartering@niavigrains.gr> \r\nMobile/WhatsApp:0030 6944528968\r\nSKYPE: captanpanos\r\nLINKEDIN : www.linkedin.com/in/takis-kapetanios-5031344b/ <http://www.linkedin.com/in/takis-kapetanios-5031344b/> \r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr <http://www.niavigrains.gr> \r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "M/V LIKA",
+          "confidence": "confirmed",
+          "source_text": "M/V LIKA"
+        },
+        "imo": null,
+        "flag": {
+          "value": "Comoros",
+          "confidence": "confirmed",
+          "source_text": "FLAG COMOROS"
+        },
+        "built": {
+          "value": 1997,
+          "confidence": "confirmed",
+          "source_text": "BUILT 1997"
+        },
+        "class_society": {
+          "value": "OMCS",
+          "confidence": "confirmed",
+          "source_text": "CLASS OMCS - SS 12/2028 DD 12/2026"
+        },
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 25000,
+          "confidence": "confirmed",
+          "source_text": "DWT 25,000 ON 9.80M"
+        },
+        "dwcc": null,
+        "draft_max": {
+          "value": 9.8,
+          "confidence": "confirmed",
+          "source_text": "DWT 25,000 ON 9.80M"
+        },
+        "loa": {
+          "value": 158.2,
+          "confidence": "confirmed",
+          "source_text": "L.O.A. 158.20M"
+        },
+        "beam": {
+          "value": 25.8,
+          "confidence": "confirmed",
+          "source_text": "BEAM 25.80M"
+        },
+        "grt": {
+          "value": 15349,
+          "confidence": "confirmed",
+          "source_text": "G.T. 15,349"
+        },
+        "nrt": {
+          "value": 8111,
+          "confidence": "confirmed",
+          "source_text": "N.T. 8,111"
+        },
+        "holds_count": {
+          "value": 4,
+          "confidence": "confirmed",
+          "source_text": "4 HOLDS / 4 HATCHES"
+        },
+        "hatches_count": {
+          "value": 4,
+          "confidence": "confirmed",
+          "source_text": "4 HOLDS / 4 HATCHES"
+        },
+        "grain_capacity": {
+          "value": 29463,
+          "confidence": "confirmed",
+          "source_text": "GRAIN 29,463"
+        },
+        "grain_capacity_unit": "cbm",
+        "bale_capacity": {
+          "value": 28768,
+          "confidence": "confirmed",
+          "source_text": "BALE 28,768CBM"
+        },
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": {
+          "value": true,
+          "confidence": "confirmed",
+          "source_text": "GEARED C 3X30"
+        },
+        "crane_capacity": {
+          "value": "3 x 30T",
+          "confidence": "confirmed",
+          "source_text": "GEARED C 3X30"
+        },
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "BULK CARRIER",
+          "confidence": "interpreted",
+          "source_text": "4 HOLDS / 4 HATCHES GRAIN 29,463 / BALE 28,768CBM"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Red Sea",
+          "confidence": "confirmed",
+          "source_text": "OPEN RED SEA SPOT"
+        },
+        "open_date": {
+          "value": {
+            "open": null,
+            "close": null,
+            "display": "spot"
+          },
+          "confidence": "confirmed",
+          "source_text": "OPEN RED SEA SPOT"
+        },
+        "direction": {
+          "value": "Red Sea",
+          "confidence": "confirmed",
+          "source_text": "OPEN RED SEA SPOT"
+        },
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": {
+          "value": 11,
+          "confidence": "interpreted",
+          "source_text": "Laden:  about 11.00 knots on about 15.50 mts (LSFO 380 cst)"
+        },
+        "speed_ballast": {
+          "value": 11,
+          "confidence": "interpreted",
+          "source_text": "Ballast: about 11.00 knots on about 15.00 mts (LSFO 380 cst)"
+        },
+        "consumption": {
+          "value": "Laden: abt 15.50 MT LSFO 380cst; Ballast: abt 15.00 MT LSFO 380cst; Port idle: abt 2 MT MDO/MGO; Port gear working: abt 3.5 MT MDO/MGO",
+          "confidence": "interpreted",
+          "source_text": "Laden:  about 11.00 knots on about 15.50 mts (LSFO 380 cst) Ballast: about 11.00 knots on about 15.00 mts (LSFO 380 cst) In port:  about  2mts  MDO/MGO when idle about  3.5mts MDO/MGO when gear working"
+        },
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "SS due 12/2028; DD due 12/2026",
+            "confidence": "confirmed",
+            "source_text": "CLASS OMCS - SS 12/2028 DD 12/2026"
+          },
+          {
+            "value": "Main Engine: HITACHI B&W 6L42MC",
+            "confidence": "confirmed",
+            "source_text": "MAIN ENGINE: HITACHI B&W 6L42MC"
+          },
+          {
+            "value": "Aux. Engines: 2 x DAIHATSU",
+            "confidence": "confirmed",
+            "source_text": "AUX.ENGINE: 2 X DAIHATSU"
+          },
+          {
+            "value": "LDT 5,687 MT",
+            "confidence": "confirmed",
+            "source_text": "LDT 5,687MT"
+          },
+          {
+            "value": "Depth 13.30M",
+            "confidence": "confirmed",
+            "source_text": "DEPTH 13.30M"
+          },
+          {
+            "value": "Speed/consumption basis: good weather up to max Beaufort 4 / Douglas Sea State 3, no adverse current, no negative influence of swell",
+            "confidence": "confirmed",
+            "source_text": "Speed and consumption under good weather conditions, upto max.Beaufort 4 / Douglas Seastate 3, no adverse current and no negative influence of swell."
+          }
+        ],
+        "unknown_terms": [
+          {
+            "term": "OMCS",
+            "reason": "OMCS — classification society abbreviation not in the standard IACS glossary; possibly Overseas Marine Classification Society or similar, not a recognized IACS member society"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-026",
+  "source_email_id": "19e07c58567fa635",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: 10th.May---Lowest Freight of SSF DREAM/2620 W from Qingdao/Shanghai/Ningbo to SOKHNA with ASCL",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:27:22.000Z",
+    "body": " \r\n\r\nFrom: sales10@oceanquoter.com <sales10@oceanquoter.com> \r\nSent: Friday, 8 May 2026 09:57\r\nTo: management@etm-services.net <=?utf-8?q?management=40etm-services=2Enet?=>\r\nSubject: Re:10th.May---Lowest Freight of SSF DREAM/2620 W from Qingdao/Shanghai/Ningbo to SOKHNA with ASCL\r\n\r\n \r\n\r\n\r\n\r\nDear Colleague\r\n\r\nThe Service from China to Red Sea of Service ( RCS Direct to Sokhna) ,the Offer from Chinese Port as below\r\n\r\n \r\n\r\nESL (SHANGHAI)--SOKHNA：\r\n\r\nPOL: SHANGHAI\r\nPOD:SOKHNA\r\nCARRIER:ESL\r\nV/V:AS CAROLINA/343W\r\nO/F: USD2800/20GP&USD3800/40HQ\r\nETD：24th.May\r\nFT: 21 DAYS\r\n\r\n\r\n\r\n \r\n\r\nASCL (QINGDAO)--SOKHNA/RCS/DIRECT/SSF DREAM/2620 W/Direct\r\n\r\n \r\n\r\nPOL:QINGDAO\r\nPOD:SOKHNA\r\nCARRIER:ASCL\r\nVESSAL/VOYAGE：SSF DREAM/2620 W\r\nETD:17th.May\r\nO/F: USD3475/20GP&USD4625/40HQ\r\nFREE TIME:  21 DAYS\r\n\r\n \r\n\r\nESL (NINGBO)--SOKHNA/VIA MUNDRA\r\n\r\nPOL: NINGBO\r\nPOD:SOKHNA\r\nCARRIER:ESL\r\nO/F: USD2700/20GP&USD3700/40HQ\r\nVV:SPARROW-2621W\r\nETD：25th.May\r\nFT: 21 DAYS\r\n\r\n\r\n\r\n\r\n \r\n\r\nASCL (SHANGHAI)--SOKHNA/RCS/DIRECT/SSF DREAM/2620 W/Direct\r\n\r\n\r\nPOL:SHANGHAI\r\nPOD:SOKHNA\r\nCARRIER:ASCL\r\nVESSAL/VOYAGE:SSF DREAM/2620 W\r\nETD:21th.May\r\nO/F: USD3400/20GP&USD4600/40HQ\r\nFREE TIME: 21 DAYS\r\n\r\n \r\n\r\n \r\n\r\nESL (TIANJIN)---SOKHNA\r\n\r\n\r\nPOL: XINGANG,TIANJIN\r\nPOD:SOKHNA\r\nCARRIER:ESL\r\nO/F: USD3550/20GP&USD4950/40HQ\r\nV/V: TS KEELUNG/2603W\r\nETD:17th.May\r\nFT: 21 DAYS\r\n\r\n \r\n\r\nASCL (NINGBO)--SOKHNA/RCS/DIRECT/：SSF DREAM/2620 W\r\n\r\n\r\nPOL:NINGBO\r\nPOD:SOKHNA\r\nCARRIER:ASCL\r\nVESSAL/VOYAGE:SSF DREAM/2620 W\r\nETD:23th.May\r\nO/F: USD3400/20GP&USD4600/40HQ\r\nFREE TIME:  21 DAYS\r\n\r\n\r\nIf Weight more than 18 tons for 20gp. Please check with me case by case\r\n\r\n <mailto:charleswang@oceanquoter.com> 🔁 Click to reply \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07c58567fa635",
+    "category": "OTHER",
+    "urgency": "low",
+    "confidence": 0.85,
+    "is_unanswered": false,
+    "days_without_reply": 3,
+    "original_sender": "sales10@oceanquoter.com",
+    "original_sender_company": "Ocean Quoter"
+  }
+}

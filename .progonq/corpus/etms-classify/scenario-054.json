@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-054",
+  "source_email_id": "19e07ce171ab8e10",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: Iskenderun/Constanta 7.000mts blk minerals,not imo",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:36:45.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Wednesday, 6 May 2026 15:14\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: Re: Iskenderun/Constanta 7.000mts blk minerals,not imo\r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n*For quick response pls include \"takis\" in the body of the email*\r\n\r\nGD DAY \r\n\r\nPLS OFFER FOR \r\n\r\nIskenderun/Constanta\r\n7.000mts blk minerals,not imo\r\n3000/2500\r\n15-20 May\r\n2.50%\r\n\r\nPlease add our email address ( chartering@niavigrains.gr ) to your circulation list for cargoes / positions\r\n\r\nBEST RGRDS\r\nTAK  (TAKIS KAPETANIOS)\r\nE MAIL : chartering@niavigrains.gr\r\nMobile/WhatsApp:0030 6944528968\r\nSKYPE: captanpanos\r\nLINKEDIN : www.linkedin.com/in/takis-kapetanios-5031344b/\r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr\r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\n \r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "id": "19e07ce171ab8e10",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.93,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Takis Kapetanios",
+    "original_sender_company": "Niavigrains Trading Chartering S.A."
+  }
+}

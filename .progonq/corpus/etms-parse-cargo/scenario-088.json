@@ -1,0 +1,133 @@
+{
+  "id": "etms-parse-cargo-088",
+  "source_email_id": "19e097888cdea89c",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: 6,5-7,5k soy / Odesa-tbs/marmara/izmir range /mersin range",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:22:33.000Z",
+    "body": " \r\n\r\nFrom: Noreply <noreply-bounces@lists.circular-chart.com> On Behalf Of Marelis Chartering\r\nSent: Thursday, 26 February 2026 10:33\r\nTo: noreply@lists.circular-chart.com\r\nSubject: Re: 6,5-7,5k soy / Odesa-tbs/marmara/izmir range /mersin range\r\n\r\n \r\n\r\nDear Sirs,\r\n\r\nGood day,\r\n\r\nPls propose suitable tonnage for:\r\n\r\nnot for recirculation\r\n\r\n6500-7500k soyabean sf abt 51\r\nOdesa – tbs/marmara/izmir range /mersin range\r\nspot\r\n1500 x / 1500 x\r\n2 days Sulina free\r\n2,5 marelis\r\n\r\n \r\n\r\n \r\n\r\nKind Regards\r\n\r\n \r\n\r\nMichael Sobol-Pugachev\r\n\r\nBrokerage Dpt.\r\n\r\nMarelis Navigation S.A.\r\n\r\nMobile: : +306989020300\r\n\r\nWhatsApp: : +306989020300\r\n\r\nE-mail:  <mailto:chartering@marelis-nav.com%22%20%5Ct%20%22_blank> chartering@marelis-nav.com\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nThis is not a spam or junk mail. It's regular mail of shipping&chartering business. If you are not interested in content of our messages,please send a message with the subject \"Unsubscribe\" to  <mailto:unsubscribe@marelis-nav.com%22%20%5Ct%20%22_blank> unsubscribe@marelis-nav.com\r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Odesa",
+          "confidence": "confirmed",
+          "source_text": "Odesa – tbs/marmara/izmir range /mersin range"
+        },
+        "origin_country": {
+          "value": "Ukraine",
+          "confidence": "confirmed",
+          "source_text": "Odesa – tbs/marmara/izmir range /mersin range"
+        },
+        "destination_port": {
+          "value": "TBS / Marmara range / Izmir range / Mersin range",
+          "confidence": "confirmed",
+          "source_text": "tbs/marmara/izmir range /mersin range"
+        },
+        "destination_country": {
+          "value": "Turkey",
+          "confidence": "interpreted",
+          "source_text": "tbs/marmara/izmir range /mersin range"
+        },
+        "cargo_description": {
+          "value": "Soyabean, stowage factor approximately 51 CBM/MT",
+          "confidence": "confirmed",
+          "source_text": "6500-7500k soyabean sf abt 51"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 7500,
+          "confidence": "interpreted",
+          "source_text": "6500-7500k soyabean"
+        },
+        "weight_mt_min": {
+          "value": 6500,
+          "confidence": "interpreted",
+          "source_text": "6500-7500k soyabean"
+        },
+        "weight_mt_max": {
+          "value": 7500,
+          "confidence": "interpreted",
+          "source_text": "6500-7500k soyabean"
+        },
+        "volume_cbm": {
+          "value": null
+        },
+        "dimensions": {
+          "value": null
+        },
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "6500-7500k soyabean sf abt 51"
+        },
+        "container_type": {
+          "value": null
+        },
+        "quantity": {
+          "value": null
+        },
+        "incoterms": {
+          "value": null
+        },
+        "preferred_dates": {
+          "value": "spot",
+          "confidence": "confirmed",
+          "source_text": "spot"
+        },
+        "laycan": {
+          "value": "spot",
+          "confidence": "uncertain",
+          "source_text": "spot"
+        },
+        "loading_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "1500 x / 1500 x"
+        },
+        "loading_terms": {
+          "value": null
+        },
+        "discharge_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "1500 x / 1500 x"
+        },
+        "discharge_terms": {
+          "value": null
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2,5 marelis"
+        },
+        "commission_terms": {
+          "value": "Marelis brokerage",
+          "confidence": "confirmed",
+          "source_text": "2,5 marelis"
+        },
+        "special_requirements": {
+          "value": "2 days free passage at Sulina (Black Sea–Danube canal transit)",
+          "confidence": "confirmed",
+          "source_text": "2 days Sulina free"
+        },
+        "stowage_factor": {
+          "value": 51,
+          "confidence": "interpreted",
+          "source_text": "sf abt 51"
+        },
+        "missing_info": [
+          "Exact laycan dates not specified (only 'spot')",
+          "Destination port TBS (to be specified) — final discharge port unknown",
+          "Loading/discharge terms not specified (FIO, FIOST, CQD etc.)",
+          "Freight rate or target freight level not indicated",
+          "Incoterms not stated"
+        ]
+      }
+    ]
+  }
+}

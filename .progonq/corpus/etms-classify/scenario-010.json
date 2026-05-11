@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-010",
+  "source_email_id": "19d5e7455d073a74",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: Ocean7 Projects - N.Europe / N.Atlantic Selected Positions - 21 May 2025",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-04-05T16:22:51.000Z",
+    "body": " \r\n\r\nFrom: Aleksandra Zamiatina - Ocean7 Chartering Europe\r\n<europe@ocean7projects.com> \r\nSent: Wednesday, 21 May 2025 14:39\r\nSubject: Ocean7 Projects - N.Europe / N.Atlantic Selected Positions - 21 May\r\n2025\r\n\r\n \r\n\r\n\r\nOCEAN7 PROJECTS\r\n\r\n \r\n\r\n \r\n\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\nPlease propose for our MPP positions:\r\n\r\n \r\n\r\n \r\n\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n*** N.EUROPE / N.ATLANTIC ***\r\n\r\n \r\n\r\n \r\n\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\nPANTHERA J\r\n\r\ntwn, 2x150/300mt, 2900sqm\r\n\r\n \r\n\r\nCONTINENT\r\n\r\n01 JUN\r\n\r\n\r\n7,000 DWT\r\n\r\nIMO 1, 9600cbm, 13 knts\r\n\r\n \r\n\r\nANY DIR WW\r\n\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\nHC EVA-MARIE\r\n\r\ntwn, 2x80/160mt, 3700 sqm\r\n\r\n \r\n\r\nHALSVIK\r\n\r\n25 MAY\r\n\r\n\r\n11,000 DWT\r\n\r\nIMO 1, 14700cbm, Ice 1A\r\n\r\n \r\n\r\nANY DIR WW\r\n\r\n \r\n\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\nO7 GAJA\r\n\r\ntwn, 2x240/480mt, 5000 sqm\r\n\r\n \r\n\r\nARA\r\n\r\n04 JUN\r\n\r\n\r\n12,215 DWT\r\n\r\nIMO 1, 18700 cbm, Lakes\r\n\r\n \r\n\r\nPC DIR BRAZIL\r\n\r\n \r\n\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\nSLOMAN DISPATCHER\r\n\r\ntwn, 2x150/300mt, 4300sqm\r\n\r\nHAUGESUND\r\n\r\n28 MAY\r\n\r\n\r\n12,700 DWT\r\n\r\nIMO 1, 14900cbm, 15 knts\r\n\r\nANY DIR WW\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\nKind regards,\r\n\r\n \r\n\r\nAleksandra Zamiatina\r\n\r\n \r\n\r\n \r\n\r\nMobile: +49 170 5984420\r\n\r\nEmail: europe@ocean7projects.com\r\n<https://ocean7.sednanetwork.com/operations@ocean7projects.com> \r\n\r\nWeb: www.ocean7projects.com <https://www.ocean7projects.com/> \r\n\r\n\r\n\r\nOcean7 Group\r\n\r\nHamburg, Germany\r\n\r\n(as agents only)\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19d5e7455d073a74",
+    "category": "VESSEL_POSITION",
+    "urgency": "medium",
+    "confidence": 0.82,
+    "is_unanswered": true,
+    "days_without_reply": 36,
+    "original_sender": "Aleksandra Zamiatina",
+    "original_sender_company": "Ocean7 Group"
+  }
+}

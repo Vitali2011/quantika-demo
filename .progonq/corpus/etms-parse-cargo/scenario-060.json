@@ -1,0 +1,97 @@
+{
+  "id": "etms-parse-cargo-060",
+  "source_email_id": "19e07d7e79fa7242",
+  "category": "single_cargo",
+  "input": {
+    "subject": "FW: 3.000 mts cement in bb Iskenderun / 1 Greece",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:47:28.000Z",
+    "body": " \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Wednesday, 6 May 2026 08:59\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: 3.000 mts cement in bb Iskenderun / 1 Greece\r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\ngday\r\n\r\npls propose described ladies for our exclusive firm cargo - do not recirculate \r\n\r\n \r\n\r\nIskenderun / 1 Greece\r\n\r\n3000 mts cement in big bags \r\n\r\n11 - 15 May\r\n\r\n4 ttl days\r\n\r\n2.5% ttl here \r\n\r\n\r\n\r\n\r\n\r\nBEST RGRDS\r\nTASOS KOUMANIS ( mob. 00306937322574)\r\nE MAILS : chartering@niavigrains.gr <mailto:chartering@niavigrains.gr>  \r\n\r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr <http://www.niavigrains.gr> \r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\nSKYPE : NIAVIGRAINS Tasos\r\nLinkedIn: www.linkedin.com/in/tasoskoumanis <http://www.linkedin.com/in/tasoskoumanis> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Iskenderun",
+          "confidence": "confirmed",
+          "source_text": "Iskenderun / 1 Greece"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "interpreted",
+          "source_text": "Iskenderun / 1 Greece"
+        },
+        "destination_port": {
+          "value": "1 safe port Greece",
+          "confidence": "interpreted",
+          "source_text": "Iskenderun / 1 Greece"
+        },
+        "destination_country": {
+          "value": "Greece",
+          "confidence": "confirmed",
+          "source_text": "Iskenderun / 1 Greece"
+        },
+        "cargo_description": {
+          "value": "Cement in big bags",
+          "confidence": "confirmed",
+          "source_text": "3000 mts cement in big bags"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 3000,
+          "confidence": "confirmed",
+          "source_text": "3000 mts cement in big bags"
+        },
+        "weight_mt_min": 3000,
+        "weight_mt_max": 3000,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "3000 mts cement in big bags"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "11-15 May 2026",
+          "confidence": "confirmed",
+          "source_text": "11 - 15 May"
+        },
+        "laycan": {
+          "value": "11/15 May 2026",
+          "confidence": "confirmed",
+          "source_text": "11 - 15 May"
+        },
+        "loading_rate": null,
+        "loading_terms": null,
+        "discharge_rate": null,
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl here"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl here"
+        },
+        "special_requirements": {
+          "value": "4 total laytime days; exclusive firm cargo — do not recirculate",
+          "confidence": "confirmed",
+          "source_text": "4 ttl days"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Freight rate or freight basis not stated",
+          "Discharge port not specified beyond '1 Greece' — exact port TBD",
+          "Loading/discharge terms (FIO, CQD, etc.) not stated",
+          "Demurrage/despatch rate not stated",
+          "Whether laytime is SHINC or SHEX not specified"
+        ]
+      }
+    ]
+  }
+}

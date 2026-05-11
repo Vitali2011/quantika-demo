@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-096",
+  "source_email_id": "19e07d8d14a945d1",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: GBC TCT Requirements",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:48:28.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: PNA Shipbrokers - Singapore <pna@pnaship.com> \r\nSent: Wednesday, 6 May 2026 08:07\r\nTo: pna@pnaship.com\r\nSubject: GBC TCT Requirements\r\n\r\n\r\n\r\nFROM: PACIFIC & ATLANTIC SHIPBROKERS - SINGAPORE / (Email/Teams:\r\npna@pnaship.com)\r\n\r\n**\r\n\r\n\r\nPls ppose rated tng for :-\r\n\r\n- a/c gbc\r\n- 32000 dwt upto 60000 dwt supramax\r\n- del bohai bay, china\r\n- 15th may / onwards\r\n- 1 tct with bulk cargo intn hbi\r\n- redel indo\r\n- 3.75%add pus \r\n\r\n++++++\r\n\r\n- a/c gbc\r\n- about 52000/67000 dwt \r\n- del fujairah, uae\r\n- 15th may / onwards\r\n- 1tct with aggregates\r\n- redel bangladesh\r\n- 3.75%add pus \r\n\r\n++++++ \r\n\r\n- a/c gbc\r\n- about 52000/67000 dwt\r\n- del w.africa\r\n- earliy june (try vsl dates)\r\n- 1tct with mang ore\r\n- redel eci/china range\r\n- 3.75%add pus \r\n\r\nend >>\r\n\r\nB Rgds \r\nTony (TEAMS: pna@pnaship.com)\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "id": "19e07d8d14a945d1",
+    "category": "TCT_REQUEST",
+    "urgency": "high",
+    "confidence": 0.95,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Tony, PNA Shipbrokers - Singapore",
+    "original_sender_company": "Pacific & Atlantic Shipbrokers"
+  }
+}

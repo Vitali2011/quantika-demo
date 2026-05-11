@@ -1,0 +1,103 @@
+{
+  "id": "etms-parse-vessel-021",
+  "source_email_id": "19e07cd53642b24c",
+  "category": "single_vessel",
+  "input": {
+    "subject": "FW: FAITH/30116DW/12/CR30MT PRAIA MOLE 15/20 MAY (REF:2602NZB00)",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:35:54.000Z",
+    "body": " \r\n\r\nFrom: Transocean Shipping Co. S.A. <miketerz@transoceangr.gr> \r\nSent: Wednesday, 6 May 2026 15:39\r\nTo: _ Transocean Shipping Co. S.A. <miketerz@transoceangr.gr>\r\nSubject: FAITH/30116DW/12/CR30MT PRAIA MOLE 15/20 MAY (REF:2602NZB00)\r\nImportance: High\r\n\r\n \r\n\r\nTELiX MSG: 02NZB-00 06/05/26 15:39\r\n\r\n \r\n\r\nTRANSOCEAN SHIPPING COMPANY S.A GREECE/REF TO MIKE\r\n\r\n \r\n\r\nLOCAL HEADOWNRS\r\n\r\n \r\n\r\nFAITH   30116DW/12/CR30MT\r\n=========================PRAIA MOLE 15/20 MAY\r\n                   ===========================\r\n\r\n \r\n\r\nTRY 2/3LL OR SP\r\n===============\r\n\r\n \r\n\r\n \r\n\r\nTRANSOCEAN SHIPPING COMPANY S.A GREECE\r\n\r\nPH 2108941169/E MAIL miketerz@transoceangr.gr <mailto:miketerz@transoceangr.gr>  ++ miketerz@otenet.gr <mailto:miketerz@otenet.gr> \r\n\r\nMIKE TERZIOGLOU/MOB 6974461055-SKYPE miketerz\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "FAITH",
+          "confidence": "confirmed",
+          "source_text": "FAITH   30116DW/12/CR30MT"
+        },
+        "imo": null,
+        "flag": null,
+        "built": null,
+        "class_society": null,
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 30116,
+          "confidence": "confirmed",
+          "source_text": "FAITH   30116DW/12/CR30MT"
+        },
+        "dwcc": null,
+        "draft_max": null,
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": null,
+        "hatches_count": null,
+        "grain_capacity": null,
+        "grain_capacity_unit": null,
+        "bale_capacity": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": {
+          "value": true,
+          "confidence": "confirmed",
+          "source_text": "CR30MT"
+        },
+        "crane_capacity": {
+          "value": "12 x 30MT",
+          "confidence": "interpreted",
+          "source_text": "30116DW/12/CR30MT"
+        },
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "BULK CARRIER",
+          "confidence": "uncertain",
+          "source_text": "FAITH   30116DW/12/CR30MT"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Praia Mole",
+          "confidence": "confirmed",
+          "source_text": "PRAIA MOLE 15/20 MAY"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-05-15",
+            "close": "2026-05-20",
+            "display": "15/20 May 2026"
+          },
+          "confidence": "interpreted",
+          "source_text": "PRAIA MOLE 15/20 MAY"
+        },
+        "direction": {
+          "value": "2/3 load lines or spot",
+          "confidence": "interpreted",
+          "source_text": "TRY 2/3LL OR SP"
+        },
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [],
+        "unknown_terms": [
+          {
+            "term": "2/3LL",
+            "reason": "Appears to reference 2 or 3 load lines (possibly load line zones or legs) — not a standard recognized abbreviation in the glossary"
+          },
+          {
+            "term": "SP",
+            "reason": "Possibly 'Spot' or 'Single Port' — ambiguous abbreviation not confirmed in glossary in this context"
+          },
+          {
+            "term": "LOCAL HEADOWNRS",
+            "reason": "Possibly 'Local Head Owners' — non-standard abbreviation/phrase not in glossary"
+          }
+        ]
+      }
+    ]
+  }
+}

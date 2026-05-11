@@ -1,0 +1,129 @@
+{
+  "id": "etms-parse-cargo-065",
+  "source_email_id": "19e089c866d595c7",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: Giurgiulesti / 1 Marmara",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:22:13.000Z",
+    "body": " \r\n\r\nFrom: circulation@feyzgroupchartering.com\r\n<circulation@feyzgroupchartering.com> \r\nSent: Friday, 8 May 2026 19:58\r\nTo: chartering@feyzgroup.com\r\nSubject: Giurgiulesti / 1 Marmara\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPlease offer firm for;\r\n\r\n \r\n\r\nGiurgiulesti / 1 Marmara\r\n\r\n2,000 mts 10% bulk sunflower seeds, sf.abt 87'\r\n\r\nSPOT\r\n\r\n1000x/1000x\r\n\r\n2.5 adcom pus\r\n\r\n \r\n\r\n \r\n\r\nBest Regards\r\n\r\nAhmet YILDIZ\r\n\r\nChartering Dept.\r\n\r\nAs Broker Only\r\n\r\n \r\n\r\nAdress  : Altinsehir Mahallesi, Tavukcuyolu Caddesi Tomurcuk Sokak No 11\r\nIstanbul/Türkiye\r\n\r\nOffice    : 0090 216 527 00 31\r\n\r\nMobile  : 0090 534 430 00 40\r\n\r\nEmail      :  <mailto:chartering@feyzgroup.com> chartering@feyzgroup.com\r\n\r\nTeams   : Ahmet YILDIZ – FEYZ GROUP\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Giurgiulești",
+          "confidence": "confirmed",
+          "source_text": "Giurgiulesti / 1 Marmara"
+        },
+        "origin_country": {
+          "value": "Moldova",
+          "confidence": "interpreted",
+          "source_text": "Giurgiulesti"
+        },
+        "destination_port": {
+          "value": "1 safe port Marmara",
+          "confidence": "interpreted",
+          "source_text": "Giurgiulesti / 1 Marmara"
+        },
+        "destination_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "1 Marmara"
+        },
+        "cargo_description": {
+          "value": "Bulk sunflower seeds, stowage factor approximately 87 CBM/MT",
+          "confidence": "confirmed",
+          "source_text": "2,000 mts 10% bulk sunflower seeds, sf.abt 87'"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "2,000 mts 10% bulk sunflower seeds"
+        },
+        "weight_mt_min": {
+          "value": 1800,
+          "confidence": "interpreted",
+          "source_text": "2,000 mts 10%"
+        },
+        "weight_mt_max": {
+          "value": 2200,
+          "confidence": "interpreted",
+          "source_text": "2,000 mts 10%"
+        },
+        "volume_cbm": {
+          "value": null
+        },
+        "dimensions": {
+          "value": null
+        },
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "bulk sunflower seeds"
+        },
+        "container_type": {
+          "value": null
+        },
+        "quantity": {
+          "value": null
+        },
+        "incoterms": {
+          "value": null
+        },
+        "preferred_dates": {
+          "value": "Spot",
+          "confidence": "confirmed",
+          "source_text": "SPOT"
+        },
+        "laycan": {
+          "value": null
+        },
+        "loading_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "1000x/1000x"
+        },
+        "loading_terms": {
+          "value": null
+        },
+        "discharge_rate": {
+          "value": 1000,
+          "confidence": "confirmed",
+          "source_text": "1000x/1000x"
+        },
+        "discharge_terms": {
+          "value": null
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5 adcom pus"
+        },
+        "commission_terms": {
+          "value": "Address commission plus brokerage",
+          "confidence": "interpreted",
+          "source_text": "2.5 adcom pus"
+        },
+        "special_requirements": {
+          "value": null
+        },
+        "stowage_factor": {
+          "value": 87,
+          "confidence": "interpreted",
+          "source_text": "sf.abt 87'"
+        },
+        "missing_info": [
+          "Exact laycan dates not specified beyond 'SPOT'",
+          "SHINC/SHEX qualifier for loading and discharge rates not specified",
+          "Commission structure unclear: '2.5 adcom pus' — 'pus' is unrecognized; unclear if 2.5% is address commission only or total including brokerage",
+          "10% tolerance direction not specified (MOLOO / MOLCHOPT / or simply ±10%)"
+        ],
+        "unknown_terms": ["pus"]
+      }
+    ]
+  }
+}

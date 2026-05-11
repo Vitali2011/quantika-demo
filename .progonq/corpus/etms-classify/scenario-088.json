@@ -1,0 +1,41 @@
+{
+  "id": "etms-classify-088",
+  "source_email_id": "19e07d6a749ba5ec",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: Friday Fixture - Direct",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:46:00.000Z",
+    "body": " \r\n\r\n \r\n\r\nThanks & Best Regards,\r\n\r\nManaging Director\r\n\r\nSherif Shaaban\r\n\r\n\r\n16 Fawzy Fahmy Gendy St., 21131\r\n\r\nEl Raml Station, Alexandria, Egypt \r\n\r\nTel: +2 03 4865320 - Fax: +2 03 4872855\r\n\r\nMob: +20 100 311 3050 \r\n\r\nWebsite : www.etmsgroup.com <http://www.etmsgroup.com/> \r\n\r\n \r\n\r\nFrom: DURUCHART <chartering@duruchart.com> \r\nSent: Friday, 8 May 2026 11:21\r\nTo: ismail@duruchart.com\r\nSubject: Friday Fixture - Direct \r\n\r\n \r\n\r\nDURUCHART-Istanbul/TURKEY\r\n\r\n+90 216 492 97 13\r\n\r\nwww.duruchart.com <http://www.duruchart.com>\r\n\r\n\r\n \r\n\r\nGd day \r\n\r\n \r\n\r\nPls offer firm for blw;\r\n\r\n \r\n\r\nDIRECT CHRTRS \r\n\r\n \r\n\r\n1 Marmara/1 C.Med \r\n\r\n(need 2500/3000 box,boxlike )\r\n\r\n12/14 May\r\n\r\n5 ttl dys x \r\n\r\n2,5 addcom pus\r\n\r\n \r\n\r\n1 Marmara/1 Continent  \r\n\r\n3500/3800 dwcc, box/boxlike vsl\r\n\r\n15/18 May \r\n\r\nTtl dys \r\n\r\n2,5 addcom pus\r\n\r\n \r\n\r\nBest Regards/Ismail Akkas\r\n\r\nMobile:+90-543-6438828\r\n\r\nSkype : ismail-akkas\r\n\r\n \r\n\r\nIf you no longer wish to receive emails from us, reply to this message with\r\nthe subject  \"DELETE''\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07d6a749ba5ec",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.91,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Ismail Akkas / DURUCHART",
+    "original_sender_company": "DURUCHART",
+    "notes": {
+      "cargo_requirements": [
+        {
+          "route": "1 Marmara / 1 C.Med",
+          "vessel_size": "2500-3000 BOX or boxlike",
+          "laycan": "12-14 May 2026",
+          "laytime": "5 total days",
+          "commission": "2.5% address commission plus brokerage"
+        },
+        {
+          "route": "1 Marmara / 1 Continent",
+          "vessel_size": "3500-3800 DWCC, BOX/boxlike",
+          "laycan": "15-18 May 2026",
+          "laytime": "total days (rate TBD)",
+          "commission": "2.5% address commission plus brokerage"
+        }
+      ],
+      "charter_type": "DIRECT CHRTRS (Direct Charterers)",
+      "unknown_terms": ["pus"]
+    }
+  }
+}

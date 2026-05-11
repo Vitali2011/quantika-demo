@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-012",
+  "source_email_id": "19d5e751c0c212df",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: open cgos fm Ukraine - 03.09.25",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-04-05T16:23:43.000Z",
+    "body": " \r\n\r\nFrom: Alerta Chartering <chartering@alertaplus.si> \r\nSent: Wednesday, 3 September 2025 15:58\r\nTo: SEA TRANSIT DENIZ TASIMACILIGI <chartering@seatransit.com.tr>\r\nSubject: open cgos fm Ukraine - 03.09.25\r\n\r\n \r\n\r\n\r\nAtt: charetring desk\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPloffer for direct and fully firm cgo orders fm Ukraine:\r\n\r\n \r\n\r\n1.\r\n\r\n \r\n\r\n8000 mts 10 pct wheat stw abt 47-49' \r\n\r\nIzmail - Egypt med\r\n\r\n04-05 Sept\r\n\r\n1500/1500\r\n\r\n1.25 pct\r\n\r\n \r\n\r\n2.\r\n\r\n \r\n\r\nNeed abt 200 000 cft for full cgo abt 3000 mts of steel scrap stw abt 68-70'\r\n\r\nChornomorsk - Marghera\r\n\r\nSpot-onward\r\n\r\n800/800\r\n\r\n2.00 pct\r\n\r\n \r\n\r\nWelcome offers\r\n\r\n \r\n\r\nSincerely,\r\n\r\n \r\n\r\n\r\nBrgds,\r\n\r\nSergiy Loshkarov\r\n\r\nAlerta Plus Ltd - Ljubljana, Slovenia (since 2013)\r\n\r\nph: +38659052680\r\n\r\nmobile/whatsapp/viber/telegram: +38631589490\r\n\r\ne-mail: chartering@alertaplus.si <mailto:chartering@alertaplus.si> \r\n\r\nteams: loshkarev\r\n\r\n \r\n\r\n====\r\n\r\n \r\n\r\nPls make sure that our e-mail address chartering@alertaplus.si <mailto:chartering@alertaplus.si>  is added to Your lists.\r\n\r\n \r\n\r\nThis is ship-chartering mailing. If this content is not of interest for You - pls kindly notify\r\n\r\nBy return to exclude Your address. Apologies in advance for possible inconvenience.\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19d5e751c0c212df",
+    "category": "CARGO_INQUIRY",
+    "urgency": "medium",
+    "confidence": 0.82,
+    "is_unanswered": true,
+    "days_without_reply": 36,
+    "original_sender": "Sergiy Loshkarov",
+    "original_sender_company": "Alerta Plus Ltd"
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "id": "etms-parse-cargo-013",
+  "source_email_id": "19e07c5b023cf374",
+  "category": "forwarded",
+  "input": {
+    "subject": "FW: Brazil / WC India 70010 Bulk Sugar",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:27:34.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: PNA Shipbrokers - Singapore <pna@pnaship.com> \r\nSent: Friday, 8 May 2026 09:58\r\nTo: pna@pnaship.com\r\nSubject: Brazil / WC India 70010 Bulk Sugar\r\n\r\n\r\n\r\nFROM: PACIFIC & ATLANTIC SHIPBROKERS - SINGAPORE / (Email/Teams:\r\npna@pnaship.com)\r\n\r\n**\r\n\r\n// fresh n firm //\r\n\r\n- a/c strc \r\n- 70000/10pct moloo bulk sugar \r\n- brazil (intn santos) / wc india \r\n- july 07 / onwd  \r\n- 10000 mt load / 10000 mt disch - pwwd shex eiu bends\r\n- 5pct \r\n\r\nPls offer best \r\n\r\nB Rgds  \r\nTONY (TEAMS: pna@pnaship.com)\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Santos",
+          "confidence": "interpreted",
+          "source_text": "brazil (intn santos)"
+        },
+        "origin_country": {
+          "value": "Brazil",
+          "confidence": "confirmed",
+          "source_text": "brazil (intn santos)"
+        },
+        "destination_port": {
+          "value": "West Coast India",
+          "confidence": "confirmed",
+          "source_text": "wc india"
+        },
+        "destination_country": {
+          "value": "India",
+          "confidence": "confirmed",
+          "source_text": "wc india"
+        },
+        "cargo_description": {
+          "value": "Bulk Sugar",
+          "confidence": "confirmed",
+          "source_text": "70000/10pct moloo bulk sugar"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 70000,
+          "confidence": "confirmed",
+          "source_text": "70000/10pct moloo bulk sugar"
+        },
+        "weight_mt_min": {
+          "value": 63000,
+          "confidence": "interpreted",
+          "source_text": "70000/10pct moloo bulk sugar"
+        },
+        "weight_mt_max": {
+          "value": 77000,
+          "confidence": "interpreted",
+          "source_text": "70000/10pct moloo bulk sugar"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "70000/10pct moloo bulk sugar"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "July 7 onwards",
+          "confidence": "confirmed",
+          "source_text": "july 07 / onwd"
+        },
+        "laycan": {
+          "value": "July 7 onwards",
+          "confidence": "interpreted",
+          "source_text": "july 07 / onwd"
+        },
+        "loading_rate": {
+          "value": 10000,
+          "confidence": "confirmed",
+          "source_text": "10000 mt load"
+        },
+        "loading_terms": {
+          "value": "PWWD SHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "10000 mt load / 10000 mt disch - pwwd shex eiu bends"
+        },
+        "discharge_rate": {
+          "value": 10000,
+          "confidence": "confirmed",
+          "source_text": "10000 mt disch"
+        },
+        "discharge_terms": {
+          "value": "PWWD SHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "10000 mt load / 10000 mt disch - pwwd shex eiu bends"
+        },
+        "commission_percent": {
+          "value": 5,
+          "confidence": "confirmed",
+          "source_text": "5pct"
+        },
+        "commission_terms": {
+          "value": "TTL BENDS",
+          "confidence": "interpreted",
+          "source_text": "pwwd shex eiu bends"
+        },
+        "special_requirements": {
+          "value": "Fresh and firm inquiry; account STRC",
+          "confidence": "confirmed",
+          "source_text": "// fresh n firm // - a/c strc"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Specific WC India discharge port(s) not named",
+          "Freight rate not provided — request for best offer",
+          "Laycan end date not specified (open-ended 'onwards')",
+          "Incoterms not stated"
+        ],
+        "unknown_terms": ["strc"]
+      }
+    ]
+  }
+}

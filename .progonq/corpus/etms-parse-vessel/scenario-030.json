@@ -1,0 +1,298 @@
+{
+  "id": "etms-parse-vessel-030",
+  "source_email_id": "19e07d5e7f039766",
+  "category": "dwcc_edge",
+  "input": {
+    "subject": "FW: harmanda home tonnages",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:45:16.000Z",
+    "body": " \r\n\r\nFrom: HARMANDA CHARTERING - ISTANBUL <chartering@harmanda.com.tr> \r\nSent: Friday, 8 May 2026 11:21\r\nTo: management@etm-services.net\r\nSubject: harmanda home tonnages\r\n\r\n \r\n\r\nGOOD DAY,\r\n\r\nPLS PROPOSE;\r\n\r\n\r\nVessel Name\r\n\r\nDWT\r\n\r\nPosition\r\n\r\nOpen\r\n\r\n\r\nFIRTINA S\r\n\r\n2,362\r\n\r\nAEGEAN SEA\r\n\r\n12-13 MAY\r\n\r\n\r\nEMINE ANNE\r\n\r\n1,602\r\n\r\nWEST BLACK SEA\r\n\r\n14-16 MAY\r\n\r\nM/V FIRTINA S\r\n\r\nGC/SID, Gearless\r\n2362 DWT on 5.4 m SSW, DWCC abt 2200 mts\r\nGrain/Bale: 96,500/94,300 CBFT\r\nVanuatu Flag, BRS Classed, P&I covered by Turk P&I\r\n1988 Built in Türkiye, Call Sign: YJWU6, IMO No: 8834940\r\nLOA: 75.52, LBP: 67.58, Beam: 11, Depth Moulded: 6\r\nGRT/NRT: 1248/734\r\n1 Hold / 2 Hatches\r\nHo1: 44.00 x 10.15 x 4.70 M\r\nHa1: 15.50 x 7.40 x 1.45 M\r\nHa2: 14.90 x 7.40 x 1.45 M\r\nADAWOG\r\n\r\nM/V EMINE ANNE\r\nGC/SID, Gearless\r\n1602 DWT on 4.30 m SSW, DWCC abt 1425 mts\r\nGrain/Bale: 70,440/67,204 CBFT\r\nVanuatu Flag, BRS Classed, P&I covered by Turk P&I\r\n1996 Built in Turkiye, Call Sign: YJWJ2, IMO No: 9145360\r\nLOA: 69, LBP: 63.35, Beam: 9, Depth Moulded: 5.2\r\nGRT/NRT: 884/531\r\nAir Draft: 20 m fm keel\r\n2 Holds / 2 Hatches\r\nHo1: 22.60 x 8.50 x 4.30 M\r\nHo2: 22.50 x 8.50 x 4.30 M\r\nHa1: 17.50 x 6.00 x 1.10 M\r\nHa2: 17.90 x 6.00 x 1.10 M\r\nAppendix b fitted\r\nADAWOG\r\n\r\n\r\n\r\nTHANKS & BEST REGARDS\r\n\r\nOSMAN ASLAN | Chartering & Operation Manager\r\nHarmanda Denizcilik ve Ticaret LTD ŞTİ\r\nPhone (WhatsApp): +90 530 594 05 83\r\nTeams: osmanaslan01\r\nEmail: chartering@harmanda.com.tr\r\nAddress: Evliya Çelebi Mh, Küme Sk, Tuzla Ticaret\r\nMerkezi, No:2, D/6-7-8-9, 34944, Tuzla, İstanbul\r\n\r\nÜyelikten çıkmak için tıklayınız.\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "FIRTINA S",
+          "confidence": "confirmed",
+          "source_text": "M/V FIRTINA S"
+        },
+        "imo": {
+          "value": 8834940,
+          "confidence": "confirmed",
+          "source_text": "IMO No: 8834940"
+        },
+        "flag": {
+          "value": "Vanuatu",
+          "confidence": "confirmed",
+          "source_text": "Vanuatu Flag"
+        },
+        "built": {
+          "value": 1988,
+          "confidence": "confirmed",
+          "source_text": "1988 Built in Türkiye"
+        },
+        "class_society": {
+          "value": "BRS",
+          "confidence": "confirmed",
+          "source_text": "BRS Classed"
+        },
+        "p_and_i": {
+          "value": "Turk P&I",
+          "confidence": "confirmed",
+          "source_text": "P&I covered by Turk P&I"
+        },
+        "dwt_summer": {
+          "value": 2362,
+          "confidence": "confirmed",
+          "source_text": "2362 DWT on 5.4 m SSW"
+        },
+        "dwcc": {
+          "value": 2200,
+          "confidence": "interpreted",
+          "source_text": "DWCC abt 2200 mts"
+        },
+        "draft_max": {
+          "value": 5.4,
+          "confidence": "interpreted",
+          "source_text": "2362 DWT on 5.4 m SSW"
+        },
+        "loa": {
+          "value": 75.52,
+          "confidence": "confirmed",
+          "source_text": "LOA: 75.52"
+        },
+        "beam": {
+          "value": 11,
+          "confidence": "confirmed",
+          "source_text": "Beam: 11"
+        },
+        "grt": {
+          "value": 1248,
+          "confidence": "confirmed",
+          "source_text": "GRT/NRT: 1248/734"
+        },
+        "nrt": {
+          "value": 734,
+          "confidence": "confirmed",
+          "source_text": "GRT/NRT: 1248/734"
+        },
+        "holds_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1 Hold / 2 Hatches"
+        },
+        "hatches_count": {
+          "value": 2,
+          "confidence": "confirmed",
+          "source_text": "1 Hold / 2 Hatches"
+        },
+        "grain_capacity": {
+          "value": 96500,
+          "confidence": "confirmed",
+          "source_text": "Grain/Bale: 96,500/94,300 CBFT"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": {
+          "value": 94300,
+          "confidence": "confirmed",
+          "source_text": "Grain/Bale: 96,500/94,300 CBFT"
+        },
+        "hold_dimensions": ["Ho1: 44.00 x 10.15 x 4.70 M"],
+        "hatch_dimensions": ["Ha1: 15.50 x 7.40 x 1.45 M", "Ha2: 14.90 x 7.40 x 1.45 M"],
+        "tank_top_strength": null,
+        "geared": false,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "confirmed",
+          "source_text": "GC/SID, Gearless"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Aegean Sea",
+          "confidence": "confirmed",
+          "source_text": "AEGEAN SEA"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-05-12",
+            "close": "2026-05-13",
+            "display": "12-13 MAY"
+          },
+          "confidence": "interpreted",
+          "source_text": "12-13 MAY"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Single deck (SID)",
+            "confidence": "confirmed",
+            "source_text": "GC/SID, Gearless"
+          },
+          {
+            "value": "ADAWOG",
+            "confidence": "confirmed",
+            "source_text": "ADAWOG"
+          }
+        ],
+        "unknown_terms": [
+          "ADAWOG — unrecognized chartering abbreviation; possibly 'All Details About / Without Guarantee' variant, not in glossary"
+        ]
+      },
+      {
+        "vessel_name": {
+          "value": "EMINE ANNE",
+          "confidence": "confirmed",
+          "source_text": "M/V EMINE ANNE"
+        },
+        "imo": {
+          "value": 9145360,
+          "confidence": "confirmed",
+          "source_text": "IMO No: 9145360"
+        },
+        "flag": {
+          "value": "Vanuatu",
+          "confidence": "confirmed",
+          "source_text": "Vanuatu Flag"
+        },
+        "built": {
+          "value": 1996,
+          "confidence": "confirmed",
+          "source_text": "1996 Built in Turkiye"
+        },
+        "class_society": {
+          "value": "BRS",
+          "confidence": "confirmed",
+          "source_text": "BRS Classed"
+        },
+        "p_and_i": {
+          "value": "Turk P&I",
+          "confidence": "confirmed",
+          "source_text": "P&I covered by Turk P&I"
+        },
+        "dwt_summer": {
+          "value": 1602,
+          "confidence": "confirmed",
+          "source_text": "1602 DWT on 4.30 m SSW"
+        },
+        "dwcc": {
+          "value": 1425,
+          "confidence": "interpreted",
+          "source_text": "DWCC abt 1425 mts"
+        },
+        "draft_max": {
+          "value": 4.3,
+          "confidence": "interpreted",
+          "source_text": "1602 DWT on 4.30 m SSW"
+        },
+        "loa": {
+          "value": 69,
+          "confidence": "confirmed",
+          "source_text": "LOA: 69"
+        },
+        "beam": {
+          "value": 9,
+          "confidence": "confirmed",
+          "source_text": "Beam: 9"
+        },
+        "grt": {
+          "value": 884,
+          "confidence": "confirmed",
+          "source_text": "GRT/NRT: 884/531"
+        },
+        "nrt": {
+          "value": 531,
+          "confidence": "confirmed",
+          "source_text": "GRT/NRT: 884/531"
+        },
+        "holds_count": {
+          "value": 2,
+          "confidence": "confirmed",
+          "source_text": "2 Holds / 2 Hatches"
+        },
+        "hatches_count": {
+          "value": 2,
+          "confidence": "confirmed",
+          "source_text": "2 Holds / 2 Hatches"
+        },
+        "grain_capacity": {
+          "value": 70440,
+          "confidence": "confirmed",
+          "source_text": "Grain/Bale: 70,440/67,204 CBFT"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": {
+          "value": 67204,
+          "confidence": "confirmed",
+          "source_text": "Grain/Bale: 70,440/67,204 CBFT"
+        },
+        "hold_dimensions": ["Ho1: 22.60 x 8.50 x 4.30 M", "Ho2: 22.50 x 8.50 x 4.30 M"],
+        "hatch_dimensions": ["Ha1: 17.50 x 6.00 x 1.10 M", "Ha2: 17.90 x 6.00 x 1.10 M"],
+        "tank_top_strength": null,
+        "geared": false,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "confirmed",
+          "source_text": "GC/SID, Gearless"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "West Black Sea",
+          "confidence": "confirmed",
+          "source_text": "WEST BLACK SEA"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-05-14",
+            "close": "2026-05-16",
+            "display": "14-16 MAY"
+          },
+          "confidence": "interpreted",
+          "source_text": "14-16 MAY"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Single deck (SID)",
+            "confidence": "confirmed",
+            "source_text": "GC/SID, Gearless"
+          },
+          {
+            "value": "Air Draft: 20 m fm keel",
+            "confidence": "confirmed",
+            "source_text": "Air Draft: 20 m fm keel"
+          },
+          {
+            "value": "Appendix b fitted",
+            "confidence": "confirmed",
+            "source_text": "Appendix b fitted"
+          },
+          {
+            "value": "ADAWOG",
+            "confidence": "confirmed",
+            "source_text": "ADAWOG"
+          }
+        ],
+        "unknown_terms": [
+          "ADAWOG — unrecognized chartering abbreviation; possibly 'All Details About / Without Guarantee' variant, not in glossary",
+          "Appendix b fitted — unrecognized vessel equipment/certification reference, not in glossary"
+        ]
+      }
+    ]
+  }
+}

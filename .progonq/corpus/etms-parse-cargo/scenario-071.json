@@ -1,0 +1,103 @@
+{
+  "id": "etms-parse-cargo-071",
+  "source_email_id": "19e089f3dc5f3033",
+  "category": "single_cargo",
+  "input": {
+    "subject": "FW: BANDIRMA / RAVENNA+KOPER",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:25:11.000Z",
+    "body": " \r\n\r\nFrom: chartering@feyzgroup.com <chartering@feyzgroup.com> \r\nSent: Monday, 2 February 2026 10:27\r\nTo: 'chartering' <chartering@feyzgroup.com>\r\nSubject: BANDIRMA / RAVENNA+KOPER\r\n\r\n \r\n\r\nGOOD DAY,\r\n\r\n \r\n\r\nPLEASE OFFER FIRM FOR;\r\n\r\n \r\n\r\nBANDIRMA / RAVENNA+KOPER\r\n\r\n5293 MTS + /- 10 BULK & BAGGED HARMLESS MINERALS  \r\n\r\n09/13 FEB\r\n\r\nTTL DAYS\r\n\r\n1.25% TTL\r\n\r\n \r\n\r\n \r\n\r\nBest Regards\r\n\r\nAhmet YILDIZ\r\n\r\nChartering Dept.\r\n\r\nAs Broker Only\r\n\r\n \r\n\r\nAdress  : Altinsehir Mahallesi, Tavukcuyolu Caddesi Tomurcuk Sokak No 11\r\nIstanbul/Türkiye\r\n\r\nOffice    : 0090 216 527 00 31\r\n\r\nMobile  : 0090 534 430 00 40\r\n\r\nEmail      :  <mailto:chartering@feyzgroup.com> chartering@feyzgroup.com\r\n\r\nTeams   : Ahmet YILDIZ – FEYZ GROUP\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Bandırma",
+          "confidence": "confirmed",
+          "source_text": "BANDIRMA / RAVENNA+KOPER"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "BANDIRMA / RAVENNA+KOPER"
+        },
+        "destination_port": {
+          "value": "Ravenna + Koper",
+          "confidence": "confirmed",
+          "source_text": "BANDIRMA / RAVENNA+KOPER"
+        },
+        "destination_country": {
+          "value": "Italy + Slovenia",
+          "confidence": "confirmed",
+          "source_text": "BANDIRMA / RAVENNA+KOPER"
+        },
+        "cargo_description": {
+          "value": "Bulk and bagged harmless minerals",
+          "confidence": "confirmed",
+          "source_text": "5293 MTS + /- 10 BULK & BAGGED HARMLESS MINERALS"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 5293,
+          "confidence": "confirmed",
+          "source_text": "5293 MTS + /- 10 BULK & BAGGED HARMLESS MINERALS"
+        },
+        "weight_mt_min": {
+          "value": 4763.7,
+          "confidence": "interpreted",
+          "source_text": "5293 MTS + /- 10"
+        },
+        "weight_mt_max": {
+          "value": 5822.3,
+          "confidence": "interpreted",
+          "source_text": "5293 MTS + /- 10"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "uncertain",
+          "source_text": "5293 MTS + /- 10 BULK & BAGGED HARMLESS MINERALS"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": null,
+        "laycan": {
+          "value": "09/13 February 2026",
+          "confidence": "confirmed",
+          "source_text": "09/13 FEB"
+        },
+        "loading_rate": null,
+        "loading_terms": null,
+        "discharge_rate": null,
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 1.25,
+          "confidence": "confirmed",
+          "source_text": "1.25% TTL"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "1.25% TTL"
+        },
+        "special_requirements": {
+          "value": "Cargo described as 'harmless minerals' — confirm exact mineral type and whether any IMDG/hazmat classification applies",
+          "confidence": "interpreted",
+          "source_text": "BULK & BAGGED HARMLESS MINERALS"
+        },
+        "stowage_factor": null,
+        "unknown_terms": ["TTL DAYS"],
+        "missing_info": [
+          "Exact mineral type/commodity name not specified — needed to confirm stowage factor, any handling requirements, and freight rate",
+          "No freight rate offered — request is for a firm offer",
+          "No loading/discharge rates or laytime terms specified",
+          "Split of cargo between Ravenna and Koper not stated",
+          "'TTL DAYS' laytime term is unrecognized — clarification needed",
+          "No vessel size/type specified"
+        ]
+      }
+    ]
+  }
+}

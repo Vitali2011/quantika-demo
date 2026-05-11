@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-073",
+  "source_email_id": "19e07d3145be13c8",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: izmir  / Arzew 10 units mobile machinery",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:42:11.000Z",
+    "body": " \r\n\r\nFrom: Libra Shipping Ltd . <chartering@libranav.com> \r\nSent: Friday, 8 May 2026 13:22\r\nTo: management@etm-services.net\r\nSubject: izmir  / Arzew 10 units mobile machinery\r\n\r\n \r\n\r\n\r\n\r\nLIBRA Shipping Company\r\n\r\n\r\nÜyelikten çıkış \r\nUnsubscribe \r\n\r\n \r\n\r\n\r\n \r\n\r\nPls reply  to chartering@superonline.com \r\n\r\nFully firm , \r\n\r\nizmir  Alsancak  /  Arzew\r\n\r\n10 units mobile machinery\r\n\r\nttl weight : abt  600 mt\r\n\r\nl/c  12/15 may  try vsl date \r\n\r\nl/d  6 ttl dys\r\n\r\nTtl 2,50 % comm\r\n\r\nPart cargo -over deck  ok ,.drawing available\r\n\r\nstem ready -best offer \r\n\r\nBrgds\r\n\r\n \r\n\r\n\r\nLIBRA Shipping Company Ltd.\r\n\r\nE-mail : chartering@libranav.com \r\n              chartering@superonlıne.com\r\nPhone                  : +90 216 642 26 26\r\nMobile/Whatsapp :+ 90 533 955 53 5 3\r\n \r\nNotice : is not spam / junk mail but only regular e-mail of shipping and chartering ,if content of this message isnt relevant to your bussines or if you are not interested in these bussines and do not want to receive our mail again,please notify to CHARTERING@SUPERONLINE.COM or click the unsubscribe link and your adress will be removed from our list immediately.\r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07d3145be13c8",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.93,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Libra Shipping Ltd.",
+    "original_sender_company": "LIBRA Shipping Company Ltd."
+  }
+}
