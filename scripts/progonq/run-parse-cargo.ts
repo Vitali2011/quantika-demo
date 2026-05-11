@@ -210,7 +210,6 @@ async function runScenario(scenario: Scenario): Promise<RunResult> {
       const text = await callAiText(SCOPE, CARGO_INQUIRY_PARSER_PROMPT, userPrompt, {
         maxTokens: 4096,
         timeoutMs: 180_000,
-        responseSchema: PARSE_CARGO_RESPONSE_SCHEMA as unknown as Record<string, unknown>,
       });
       const parsed = extractJson(text) as ParsedOutput;
       model_output = { items: Array.isArray(parsed.items) ? parsed.items : [] };
