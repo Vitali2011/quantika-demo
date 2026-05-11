@@ -1,0 +1,22 @@
+[
+  {
+    "id": "sanctions-test-ir-hamburg",
+    "subject": "MV Bushehr Star — bulker available for Hamburg discharge",
+    "from": "broker@example-shipping.com",
+    "date": "2026-05-11T10:00:00Z",
+    "flag": "IR",
+    "destinationCountry": "DE",
+    "expectBlocking": true,
+    "body": "Pleased to offer:\n\nVessel: MV BUSHEHR STAR\nFlag: IR (Iran)\nDWT: 75,000\nBuilt: 2018\nCurrent position: Bandar Abbas, ready 2026-05-15\n\nProposed voyage: Bandar Abbas → Hamburg, Germany\nCargo: 70,000 mt iron ore concentrate\n\nKindly advise interest."
+  },
+  {
+    "id": "sanctions-test-ru-rotterdam",
+    "subject": "MV Sevastopol — grain cargo Rotterdam discharge",
+    "from": "broker2@example-shipping.com",
+    "date": "2026-05-11T11:30:00Z",
+    "flag": "RU",
+    "destinationCountry": "NL",
+    "expectBlocking": true,
+    "body": "Vessel MV SEVASTOPOL\nFlag: RU (Russia)\nDWT: 60,000\nLoading: Novorossiysk\nDestination: Rotterdam, Netherlands\nCargo: 55,000 mt wheat\nLaycan: 2026-05-20/25\n\nPlease confirm if charter interest exists."
+  }
+]
