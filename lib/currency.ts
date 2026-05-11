@@ -1,4 +1,6 @@
+import type Database from "better-sqlite3";
 import { CurrencyConversion } from "./types";
+import { getLatestFxRate, upsertFxRate } from "./market/fx-rates-repository";
 
 // In-memory cache: key = "FROM_TO", value = { rate, timestamp }
 const rateCache = new Map<string, { rate: number; timestamp: number }>();
@@ -21,7 +23,8 @@ const FRANKFURTER_URL = "https://api.frankfurter.app/latest";
 export async function convertCurrency(
   amount: number,
   from: string,
-  to: string
+  to: string,
+  db?: Database.Database
 ): Promise<CurrencyConversion> {
   if (from === to) {
     return {
@@ -36,6 +39,8 @@ export async function convertCurrency(
   }
 
   const cacheKey = `${from}_${to}`;
+
+  // Tier 1: in-memory cache (24h TTL — survives within a server process)
   const cached = rateCache.get(cacheKey);
   if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
     return {
@@ -49,7 +54,24 @@ export async function convertCurrency(
     };
   }
 
-  // Try Frankfurter API (replaces exchangerate.host — ECB-backed, reliable, no auth)
+  // Tier 2: SQLite fx_rates table (populated by daily cron, survives restarts)
+  if (db) {
+    const row = getLatestFxRate(db, from, to);
+    if (row && typeof row.rate === "number" && row.rate > 0) {
+      rateCache.set(cacheKey, { rate: row.rate, timestamp: Date.now() });
+      return {
+        originalAmount: amount,
+        originalCurrency: from,
+        targetAmount: Math.round(amount * row.rate * 100) / 100,
+        targetCurrency: to,
+        exchangeRate: row.rate,
+        rateDate: row.rate_date,
+        source: "frankfurter",
+      };
+    }
+  }
+
+  // Tier 3: Frankfurter API (ECB-backed, free, no auth)
   try {
     const res = await fetch(`${FRANKFURTER_URL}?from=${from}&to=${to}`);
     if (res.ok) {
@@ -57,13 +79,21 @@ export async function convertCurrency(
       const rate = data?.rates?.[to];
       if (typeof rate === "number" && rate > 0) {
         rateCache.set(cacheKey, { rate, timestamp: Date.now() });
+        const rateDate = data?.date ?? new Date().toISOString().split("T")[0];
+        if (db) {
+          upsertFxRate(db, {
+            base_currency: from, quote_currency: to, rate,
+            rate_date: rateDate, source: "frankfurter",
+            fetched_at: new Date().toISOString(),
+          });
+        }
         return {
           originalAmount: amount,
           originalCurrency: from,
           targetAmount: Math.round(amount * rate * 100) / 100,
           targetCurrency: to,
           exchangeRate: rate,
-          rateDate: data?.date ?? new Date().toISOString().split("T")[0],
+          rateDate,
           source: "frankfurter",
         };
       }
@@ -72,7 +102,7 @@ export async function convertCurrency(
     // Fall through to fallback
   }
 
-  // Fallback to hardcoded rates
+  // Tier 4: hardcoded fallback rates (always available)
   const fallbackRate = FALLBACK_RATES[cacheKey] ?? 1;
   return {
     originalAmount: amount,

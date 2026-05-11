@@ -51,6 +51,20 @@ describe('EconomicsTab currency selector (γ-01)', () => {
     expect(withoutComments).toMatch(/Display currency|display.currency|Currency/i);
   });
 
+  it('shows FX rate hint when non-USD currency is selected', () => {
+    // DISPLAY_RATES must be defined in the component for functional badge
+    expect(withoutComments).toContain('DISPLAY_RATES');
+    expect(withoutComments).toContain('fx-rate-hint');
+  });
+
+  it('has fallback rate for NOK', () => {
+    expect(withoutComments).toContain('10.87');
+  });
+
+  it('has fallback rate for AED', () => {
+    expect(withoutComments).toContain('3.67');
+  });
+
   it('does not break existing bunker port selector (regression)', () => {
     expect(withoutComments).toContain('Bunker port');
     expect(withoutComments).toContain('SGSIN');

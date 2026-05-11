@@ -1,4 +1,19 @@
+import Database from 'better-sqlite3';
 import { convertCurrency, formatCurrencyAmount, clearCurrencyCache } from "../currency";
+import { upsertFxRate } from "../market/fx-rates-repository";
+
+function buildTestDb(): Database.Database {
+  const db = new Database(':memory:');
+  db.exec(`
+    CREATE TABLE fx_rates (
+      base_currency TEXT NOT NULL, quote_currency TEXT NOT NULL,
+      rate REAL NOT NULL, rate_date TEXT NOT NULL,
+      source TEXT NOT NULL DEFAULT 'frankfurter', fetched_at TEXT NOT NULL,
+      PRIMARY KEY (base_currency, quote_currency, rate_date)
+    );
+  `);
+  return db;
+}
 
 beforeEach(() => {
   clearCurrencyCache();
@@ -109,6 +124,43 @@ describe("convertCurrency", () => {
     expect(result.source).toBe("manual");
 
     global.fetch = originalFetch;
+  });
+
+  it("uses DB tier (Tier 2) when db provided and rate exists", async () => {
+    const db = buildTestDb();
+    upsertFxRate(db, {
+      base_currency: 'NOK', quote_currency: 'USD',
+      rate: 0.095, rate_date: '2026-05-11',
+      source: 'frankfurter', fetched_at: new Date().toISOString(),
+    });
+
+    const fetchSpy = jest.fn();
+    global.fetch = fetchSpy;
+
+    const result = await convertCurrency(1000, 'NOK', 'USD', db);
+    expect(result.exchangeRate).toBeCloseTo(0.095);
+    expect(result.source).toBe('frankfurter');
+    // Frankfurter API should NOT be called (DB hit)
+    expect(fetchSpy).not.toHaveBeenCalled();
+
+    global.fetch = jest.fn();
+    db.close();
+  });
+
+  it("falls through to Frankfurter when db has no row for pair", async () => {
+    const db = buildTestDb();
+    const originalFetch = global.fetch;
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ amount: 1, base: 'AED', date: '2026-05-11', rates: { USD: 0.272 } }),
+    } as Response);
+
+    const result = await convertCurrency(100, 'AED', 'USD', db);
+    expect(result.source).toBe('frankfurter');
+    expect(result.exchangeRate).toBeCloseTo(0.272);
+
+    global.fetch = originalFetch;
+    db.close();
   });
 });
 

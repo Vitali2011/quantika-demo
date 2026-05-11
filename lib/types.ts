@@ -520,7 +520,7 @@ export interface CurrencyConversion {
   targetCurrency: string;
   exchangeRate: number;
   rateDate: string;
-  source: "ecb" | "exchangerate_api" | "manual" | "frankfurter";
+  source: "frankfurter" | "manual";
 }
 
 // ── TZ-010: FCL/LCL ──
