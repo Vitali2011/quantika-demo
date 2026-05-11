@@ -175,7 +175,8 @@ async function main() {
   for (const email of corpus) {
     for (const endpoint of endpointFilter) {
       if (!email.applicable_endpoints.includes(endpoint)) continue;
-      if (gt[email.id]?.[endpoint] !== undefined) continue; // already done
+      const existing = gt[email.id]?.[endpoint];
+      if (existing !== undefined && !(existing as Record<string, unknown>)?.__error) continue;
       workItems.push({ email, endpoint });
     }
   }
