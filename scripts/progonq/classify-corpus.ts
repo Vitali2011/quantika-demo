@@ -77,12 +77,24 @@ function sleep(ms: number) {
 }
 
 function extractJson(text: string): unknown {
-  // Strip markdown fences
   let s = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
-  // Find first { or [ — strip any preamble the model may have added
   const start = s.search(/[{[]/);
   if (start > 0) s = s.slice(start);
-  return JSON.parse(s);
+  // Find matching closing bracket, ignoring trailing garbage after the JSON
+  const opener = s[0];
+  if (opener !== '{' && opener !== '[') return JSON.parse(s);
+  const closer = opener === '{' ? '}' : ']';
+  let depth = 0, inStr = false, esc = false, end = -1;
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (esc) { esc = false; continue; }
+    if (c === '\\' && inStr) { esc = true; continue; }
+    if (c === '"') { inStr = !inStr; continue; }
+    if (inStr) continue;
+    if (c === opener) depth++;
+    else if (c === closer && --depth === 0) { end = i; break; }
+  }
+  return JSON.parse(end > 0 ? s.slice(0, end + 1) : s);
 }
 
 async function classifyBatch(emails: RawEmail[]): Promise<AiClassification[]> {

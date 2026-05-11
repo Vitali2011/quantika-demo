@@ -29,7 +29,7 @@ import type { ClassifiedEmail } from './classify-corpus';
 
 const MODEL = 'us.anthropic.claude-sonnet-4-6';
 const MAX_BODY_CHARS = 3000;
-const CONCURRENCY = 4;
+const CONCURRENCY = 2;
 const CLASSIFY_BATCH = 20;
 
 const CLASSIFIED_PATH = path.resolve(process.cwd(), '.private/etms-corpus-classified.json');
@@ -77,7 +77,20 @@ function extractJson(text: string): unknown {
   let s = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
   const start = s.search(/[{[]/);
   if (start > 0) s = s.slice(start);
-  return JSON.parse(s);
+  const opener = s[0];
+  if (opener !== '{' && opener !== '[') return JSON.parse(s);
+  const closer = opener === '{' ? '}' : ']';
+  let depth = 0, inStr = false, esc = false, end = -1;
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (esc) { esc = false; continue; }
+    if (c === '\\' && inStr) { esc = true; continue; }
+    if (c === '"') { inStr = !inStr; continue; }
+    if (inStr) continue;
+    if (c === opener) depth++;
+    else if (c === closer && --depth === 0) { end = i; break; }
+  }
+  return JSON.parse(end > 0 ? s.slice(0, end + 1) : s);
 }
 
 const SCOPE_MAP: Record<Endpoint, string> = {
