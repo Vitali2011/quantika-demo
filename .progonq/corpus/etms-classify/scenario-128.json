@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-128",
+  "source_email_id": "19e097888cdea89c",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: 6,5-7,5k soy / Odesa-tbs/marmara/izmir range /mersin range",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:22:33.000Z",
+    "body": " \r\n\r\nFrom: Noreply <noreply-bounces@lists.circular-chart.com> On Behalf Of Marelis Chartering\r\nSent: Thursday, 26 February 2026 10:33\r\nTo: noreply@lists.circular-chart.com\r\nSubject: Re: 6,5-7,5k soy / Odesa-tbs/marmara/izmir range /mersin range\r\n\r\n \r\n\r\nDear Sirs,\r\n\r\nGood day,\r\n\r\nPls propose suitable tonnage for:\r\n\r\nnot for recirculation\r\n\r\n6500-7500k soyabean sf abt 51\r\nOdesa – tbs/marmara/izmir range /mersin range\r\nspot\r\n1500 x / 1500 x\r\n2 days Sulina free\r\n2,5 marelis\r\n\r\n \r\n\r\n \r\n\r\nKind Regards\r\n\r\n \r\n\r\nMichael Sobol-Pugachev\r\n\r\nBrokerage Dpt.\r\n\r\nMarelis Navigation S.A.\r\n\r\nMobile: : +306989020300\r\n\r\nWhatsApp: : +306989020300\r\n\r\nE-mail:  <mailto:chartering@marelis-nav.com%22%20%5Ct%20%22_blank> chartering@marelis-nav.com\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nThis is not a spam or junk mail. It's regular mail of shipping&chartering business. If you are not interested in content of our messages,please send a message with the subject \"Unsubscribe\" to  <mailto:unsubscribe@marelis-nav.com%22%20%5Ct%20%22_blank> unsubscribe@marelis-nav.com\r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e097888cdea89c",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.78,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Michael Sobol-Pugachev",
+    "original_sender_company": "Marelis Navigation S.A."
+  }
+}

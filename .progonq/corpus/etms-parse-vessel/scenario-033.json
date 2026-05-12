@@ -1,0 +1,158 @@
+{
+  "id": "etms-parse-vessel-033",
+  "source_email_id": "19e089f6040369fd",
+  "category": "full_specs",
+  "input": {
+    "subject": "FW: 12.300 dwt open at LUANDA",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:25:20.000Z",
+    "body": " \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Monday, 2 February 2026 10:35\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: 12.300 dwt open at LUANDA\r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\ngday\r\n\r\n \r\n\r\npls propose your rated cargoes for the fol lady open LUANDA 11th of February - prefer cargoes to MED SEA - BLACK SEA\r\n\r\n\r\nMV EDELSTEIN\r\nABOUT 12,320 DWT ON 8,3M SSW – TWEEN DECKER\r\nBUILT: 1997 - COMOROS FLAG PHOENIX CLASS\r\nLOA 111.97M - LBP 105.00M – BREADTH 20.50M – DEPTH 14.30M\r\nGRT/NRT 8,579 / 3,103 – GR/BL 18,338.84 M3 / 17,715.61 M3\r\n2HO/2HA\r\nCRANES 30Tx2 (NOT COMBINABLE) – DERRICK 10Tx1\r\nADA WOG\r\n\r\n\r\n\r\nBEST RGRDS\r\nTASOS KOUMANIS ( mob. 00306937322574)\r\nE MAILS : chartering@niavigrains.gr <mailto:chartering@niavigrains.gr>  \r\n\r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr <http://www.niavigrains.gr> \r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\nSKYPE : NIAVIGRAINS Tasos\r\nLinkedIn: www.linkedin.com/in/tasoskoumanis <http://www.linkedin.com/in/tasoskoumanis> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "MV EDELSTEIN",
+          "confidence": "confirmed",
+          "source_text": "MV EDELSTEIN"
+        },
+        "imo": null,
+        "flag": {
+          "value": "Comoros",
+          "confidence": "confirmed",
+          "source_text": "COMOROS FLAG"
+        },
+        "built": {
+          "value": 1997,
+          "confidence": "confirmed",
+          "source_text": "BUILT: 1997"
+        },
+        "class_society": {
+          "value": "Phoenix Class",
+          "confidence": "confirmed",
+          "source_text": "PHOENIX CLASS"
+        },
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 12320,
+          "confidence": "interpreted",
+          "source_text": "ABOUT 12,320 DWT ON 8,3M SSW"
+        },
+        "dwcc": null,
+        "draft_max": {
+          "value": 8.3,
+          "confidence": "interpreted",
+          "source_text": "ABOUT 12,320 DWT ON 8,3M SSW"
+        },
+        "loa": {
+          "value": 111.97,
+          "confidence": "confirmed",
+          "source_text": "LOA 111.97M"
+        },
+        "beam": {
+          "value": 20.5,
+          "confidence": "confirmed",
+          "source_text": "BREADTH 20.50M"
+        },
+        "grt": {
+          "value": 8579,
+          "confidence": "confirmed",
+          "source_text": "GRT/NRT 8,579 / 3,103"
+        },
+        "nrt": {
+          "value": 3103,
+          "confidence": "confirmed",
+          "source_text": "GRT/NRT 8,579 / 3,103"
+        },
+        "holds_count": {
+          "value": 2,
+          "confidence": "confirmed",
+          "source_text": "2HO/2HA"
+        },
+        "hatches_count": {
+          "value": 2,
+          "confidence": "confirmed",
+          "source_text": "2HO/2HA"
+        },
+        "grain_capacity": {
+          "value": 18338.84,
+          "confidence": "confirmed",
+          "source_text": "GR/BL 18,338.84 M3 / 17,715.61 M3"
+        },
+        "grain_capacity_unit": "cbm",
+        "bale_capacity": {
+          "value": 17715.61,
+          "confidence": "confirmed",
+          "source_text": "GR/BL 18,338.84 M3 / 17,715.61 M3"
+        },
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": true,
+        "crane_capacity": {
+          "value": "2 x 30T (not combinable) + 1 x 10T derrick",
+          "confidence": "confirmed",
+          "source_text": "CRANES 30Tx2 (NOT COMBINABLE) – DERRICK 10Tx1"
+        },
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "TWEEN DECKER",
+          "confidence": "confirmed",
+          "source_text": "ABOUT 12,320 DWT ON 8,3M SSW – TWEEN DECKER"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Luanda",
+          "confidence": "confirmed",
+          "source_text": "open LUANDA 11th of February"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-02-11",
+            "close": null,
+            "display": "11 February 2026"
+          },
+          "confidence": "confirmed",
+          "source_text": "open LUANDA 11th of February"
+        },
+        "direction": {
+          "value": "Mediterranean Sea / Black Sea",
+          "confidence": "confirmed",
+          "source_text": "prefer cargoes to MED SEA - BLACK SEA"
+        },
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Cranes 30T x 2 (not combinable)",
+            "confidence": "confirmed",
+            "source_text": "CRANES 30Tx2 (NOT COMBINABLE)"
+          },
+          {
+            "value": "Derrick 10T x 1",
+            "confidence": "confirmed",
+            "source_text": "DERRICK 10Tx1"
+          },
+          {
+            "value": "LBP 105.00M",
+            "confidence": "confirmed",
+            "source_text": "LBP 105.00M"
+          },
+          {
+            "value": "Depth 14.30M",
+            "confidence": "confirmed",
+            "source_text": "DEPTH 14.30M"
+          }
+        ],
+        "unknown_terms": [
+          "SSW — likely Salt Water Summer (draft reference), not in glossary",
+          "ADA WOG — ADA (All Details About) is in glossary; WOG (Without Guarantee) is in glossary; combined phrase 'ADA WOG' not explicitly defined as a unit but composed of known terms"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "id": "etms-parse-cargo-086",
+  "source_email_id": "19e0977940338503",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: Firm orders",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:21:30.000Z",
+    "body": " \r\n\r\nFrom: UNIMAR NO REPLY <no-reply@unimarservice.com> \r\nSent: Saturday, 21 March 2026 08:24\r\nSubject: Firm orders\r\n\r\n \r\n\r\nFM: UNIMAR SERVICE LIMITED\r\nE.MAIL: mail@unimarservice.com <mailto:mail@unimarservice.com> \r\n\r\n**************************\r\n\r\n \r\n\r\nTo: Chartering Desk\r\n\r\n \r\n\r\nDear Colleagues,\r\n\r\n \r\n\r\nPls offer firm/best \r\n\r\n \r\n\r\nTHESSALONIKI =>1 MARMARA (INT.TEKIRDAG)\r\nSPOT PPT - TRY VSLS DATES\r\n5.000 PADDY RICE IN BLK,SF ABT 62'\r\nL/D TTL 8 WWD SSHEX EIU AT BE\r\nCHABE\r\nGCN, TTL COMM 3.75% IAC 2.50%\r\n\r\n \r\n\r\n+++\r\n\r\n \r\n\r\nTCP minimum 12 months\r\n\r\nCV abt 2500 TEU\r\n\r\nDelivery/redelivery: Black sea, try wwd sub terms\r\n\r\nL/C: 1st half April 2026, try vessel's dates\r\nComm 3.75% ttl here\r\n\r\n \r\n\r\nPleased to hear.\r\n\r\n \r\n\r\nBrgds, USL\r\n\r\nM/Viber/Wup/Telegram/WeChat:  <tel:+357%2099581395> +357 99581395 (24H/7D)\r\n\r\nAS BROKERS ONLY - SINCE 2006\r\n\r\n+++\r\n\r\nIn case the content of this message is irrelevant to your business, please\r\nnotify us by replying \"UNSUBSCRIBE\" in the subject field in order to remove\r\nyou from these messages, sorry any inconvenience caused.\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Thessaloniki",
+          "confidence": "confirmed",
+          "source_text": "THESSALONIKI =>1 MARMARA (INT.TEKIRDAG)"
+        },
+        "origin_country": {
+          "value": "Greece",
+          "confidence": "confirmed",
+          "source_text": "THESSALONIKI =>1 MARMARA (INT.TEKIRDAG)"
+        },
+        "destination_port": {
+          "value": "Tekirdag (Marmara)",
+          "confidence": "confirmed",
+          "source_text": "THESSALONIKI =>1 MARMARA (INT.TEKIRDAG)"
+        },
+        "destination_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "THESSALONIKI =>1 MARMARA (INT.TEKIRDAG)"
+        },
+        "cargo_description": {
+          "value": "Paddy rice in bulk, stowage factor approximately 62 CBM/MT",
+          "confidence": "confirmed",
+          "source_text": "5.000 PADDY RICE IN BLK,SF ABT 62'"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 5000,
+          "confidence": "confirmed",
+          "source_text": "5.000 PADDY RICE IN BLK"
+        },
+        "weight_mt_min": 5000,
+        "weight_mt_max": 5000,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "5.000 PADDY RICE IN BLK"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Spot / prompt — try vessel's dates",
+          "confidence": "confirmed",
+          "source_text": "SPOT PPT - TRY VSLS DATES"
+        },
+        "laycan": {
+          "value": null,
+          "confidence": null,
+          "source_text": null
+        },
+        "loading_rate": {
+          "value": null,
+          "confidence": null,
+          "source_text": null
+        },
+        "loading_terms": {
+          "value": "WWD SSHEX EIU — total L/D 8 days both ends",
+          "confidence": "confirmed",
+          "source_text": "L/D TTL 8 WWD SSHEX EIU AT BE"
+        },
+        "discharge_rate": {
+          "value": null,
+          "confidence": null,
+          "source_text": null
+        },
+        "discharge_terms": {
+          "value": "WWD SSHEX EIU — total L/D 8 days both ends",
+          "confidence": "confirmed",
+          "source_text": "L/D TTL 8 WWD SSHEX EIU AT BE"
+        },
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "TTL COMM 3.75% IAC 2.50%"
+        },
+        "commission_terms": {
+          "value": "3.75% total commission plus 2.50% address commission (IAC)",
+          "confidence": "interpreted",
+          "source_text": "TTL COMM 3.75% IAC 2.50%"
+        },
+        "special_requirements": {
+          "value": "Charter party on GENCON form (GCN). Paddy rice — fumigation requirements may apply.",
+          "confidence": "interpreted",
+          "source_text": "GCN, TTL COMM 3.75% IAC 2.50%"
+        },
+        "stowage_factor": {
+          "value": 62,
+          "confidence": "interpreted",
+          "source_text": "SF ABT 62'"
+        },
+        "missing_info": [
+          "Vessel size / DWT requirements not specified",
+          "Exact laycan dates not provided — spot/prompt only",
+          "Loading and discharge rates per day not specified (only total laytime of 8 WWD given)",
+          "Demurrage / despatch rates not specified",
+          "CHABE abbreviation unrecognized — requires clarification",
+          "IAC abbreviation unrecognized — assumed to mean address commission but requires confirmation"
+        ],
+        "unknown_terms": [
+          {
+            "term": "CHABE",
+            "context": "GCN, TTL COMM 3.75% IAC 2.50% — CHABE",
+            "note": "Unrecognized chartering abbreviation; possibly 'Charterers/Agents Both Ends' but not a standard known term"
+          },
+          {
+            "term": "GCN",
+            "context": "GCN, TTL COMM 3.75% IAC 2.50%",
+            "note": "Possibly abbreviation for GENCON charter party form, but 'GCN' is not a standard recognized abbreviation"
+          },
+          {
+            "term": "IAC",
+            "context": "TTL COMM 3.75% IAC 2.50%",
+            "note": "Unrecognized commission term; possibly 'In Addition to Commission' or address commission variant"
+          }
+        ]
+      }
+    ],
+    "tcg_guard_notes": [
+      "Second inquiry (TCP minimum 12 months, abt 2500 TEU vessel, delivery/redelivery Black Sea, L/C 1st half April 2026) is a TIME CHARTER PERIOD request — not a voyage cargo inquiry. Excluded from items array per TCT GUARD rule."
+    ]
+  }
+}

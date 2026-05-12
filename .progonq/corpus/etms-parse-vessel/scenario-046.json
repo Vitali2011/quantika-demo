@@ -1,0 +1,168 @@
+{
+  "id": "etms-parse-vessel-046",
+  "source_email_id": "19e0f52832c715da",
+  "category": "dwcc_edge",
+  "input": {
+    "subject": "FW: BML EXCL /// mv ADAMAR / 17K DWT / GRD / BOX // OPEN EC-INDIA  04- 08 OCT",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-10T00:38:43.000Z",
+    "body": " \r\n\r\nFrom: Bml - Fix <fix@bmlcarriers.com> \r\nSent: Tuesday, 30 September 2025 12:31\r\nTo: 'Bml - Fix' <fix@bmlcarriers.com>\r\nSubject: BML EXCL /// mv ADAMAR / 17K DWT / GRD / BOX // OPEN EC-INDIA 04-\r\n08 OCT\r\n\r\n \r\n\r\n \r\n\r\nGood Day,\r\n\r\n \r\n\r\nPlease offer for below;\r\n\r\n \r\n\r\n-EXCLUSIVE TONNAGE-\r\n\r\n \r\n\r\nMV ADAMAR                                   OPEN EC-INDIA 04-08.10.2025\r\n\r\n\r\n \r\n\r\nDWT 17660,15  SUMMER ON 8,598 M SSW DWWC 16850\r\n\r\nDWT 17125,44  WINTER ON 8,419 M SSW DWCC 16300\r\n\r\nBUILT 2009 / LIBERIA FLAG\r\n\r\nSID / MULTIPURPOSE DRY CARGO SHIP / BOX SHAPED \r\n\r\nCLASS BUREAU VERITAS / PANDI STEAMSHIP MUTUAL \r\n\r\nLOA 147,55 M / BREADTH 23,00 M / DEPTH MOULDED 11.80 M \r\n\r\nGRAIN/BALE 758,120 / 726,267 CBFT \r\n\r\n4HO/4HA \r\n\r\nCRANE 3 X 25 MT \r\n\r\nADA\r\n\r\n \r\n\r\nKind Regards / Saygılarımla \r\n\r\n \r\n\r\nAlp Erdoğdu\r\n\r\n \r\n\r\nAS BROKER ONLY\r\n\r\n\r\n\r\n \r\n\r\nBeyond Multimodal Logistics \r\n\r\nErenköy Mah. Fırın Sok. No 24 \r\n\r\nKadıköy, İstanbul, Türkiye\r\n\r\nM- +90 536 698 61 63\r\n\r\nE-  <mailto:fix@bmlcarriers.com> fix@bmlcarriers.com \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "MV ADAMAR",
+          "confidence": "confirmed",
+          "source_text": "MV ADAMAR"
+        },
+        "imo": null,
+        "flag": {
+          "value": "Liberia",
+          "confidence": "confirmed",
+          "source_text": "LIBERIA FLAG"
+        },
+        "built": {
+          "value": 2009,
+          "confidence": "confirmed",
+          "source_text": "BUILT 2009"
+        },
+        "class_society": {
+          "value": "Bureau Veritas",
+          "confidence": "confirmed",
+          "source_text": "CLASS BUREAU VERITAS"
+        },
+        "p_and_i": {
+          "value": "Steamship Mutual",
+          "confidence": "confirmed",
+          "source_text": "PANDI STEAMSHIP MUTUAL"
+        },
+        "dwt_summer": {
+          "value": 17660.15,
+          "confidence": "confirmed",
+          "source_text": "DWT 17660,15  SUMMER ON 8,598 M SSW"
+        },
+        "dwcc": {
+          "value": 16850,
+          "confidence": "confirmed",
+          "source_text": "DWWC 16850"
+        },
+        "draft_max": {
+          "value": 8.598,
+          "confidence": "confirmed",
+          "source_text": "DWT 17660,15  SUMMER ON 8,598 M SSW"
+        },
+        "loa": {
+          "value": 147.55,
+          "confidence": "confirmed",
+          "source_text": "LOA 147,55 M"
+        },
+        "beam": {
+          "value": 23,
+          "confidence": "confirmed",
+          "source_text": "BREADTH 23,00 M"
+        },
+        "grt": null,
+        "nrt": null,
+        "holds_count": {
+          "value": 4,
+          "confidence": "confirmed",
+          "source_text": "4HO/4HA"
+        },
+        "hatches_count": {
+          "value": 4,
+          "confidence": "confirmed",
+          "source_text": "4HO/4HA"
+        },
+        "grain_capacity": {
+          "value": 758120,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE 758,120 / 726,267 CBFT"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": {
+          "value": 726267,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE 758,120 / 726,267 CBFT"
+        },
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": {
+          "value": true,
+          "confidence": "confirmed",
+          "source_text": "CRANE 3 X 25 MT"
+        },
+        "crane_capacity": {
+          "value": "3 x 25MT",
+          "confidence": "confirmed",
+          "source_text": "CRANE 3 X 25 MT"
+        },
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "MULTIPURPOSE DRY CARGO",
+          "confidence": "confirmed",
+          "source_text": "SID / MULTIPURPOSE DRY CARGO SHIP / BOX SHAPED"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "East Coast India",
+          "confidence": "confirmed",
+          "source_text": "OPEN EC-INDIA 04-08.10.2025"
+        },
+        "open_date": {
+          "value": {
+            "open": "2025-10-04",
+            "close": "2025-10-08",
+            "display": "04-08 Oct 2025"
+          },
+          "confidence": "confirmed",
+          "source_text": "OPEN EC-INDIA 04-08.10.2025"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Single deck (SID)",
+            "confidence": "confirmed",
+            "source_text": "SID / MULTIPURPOSE DRY CARGO SHIP / BOX SHAPED"
+          },
+          {
+            "value": "Box-shaped holds",
+            "confidence": "confirmed",
+            "source_text": "BOX SHAPED"
+          },
+          {
+            "value": "Winter DWT: 17,125.44 MT on 8.419m draft, DWCC 16,300 MT",
+            "confidence": "confirmed",
+            "source_text": "DWT 17125,44  WINTER ON 8,419 M SSW DWCC 16300"
+          },
+          {
+            "value": "Exclusive tonnage offering",
+            "confidence": "confirmed",
+            "source_text": "EXCLUSIVE TONNAGE"
+          }
+        ],
+        "unknown_terms": [
+          {
+            "term": "DWWC",
+            "reason": "DWWC — appears to be a variant of DWCC (Deadweight Cargo Capacity) on the summer draft line, but the exact abbreviation 'DWWC' is not in the glossary; may be a typo for DWCC"
+          },
+          {
+            "term": "SSW",
+            "reason": "SSW — possibly 'Salt Summer Water' or 'Summer Salt Water' draft qualifier, not explicitly defined in the glossary"
+          },
+          {
+            "term": "ADA",
+            "reason": "ADA — glossary lists 'ADA = All Details About' but in this context it appears as a standalone line; may be a different usage or confirmation indicator"
+          }
+        ]
+      }
+    ]
+  }
+}

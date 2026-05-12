@@ -1,0 +1,170 @@
+{
+  "id": "etms-parse-vessel-023",
+  "source_email_id": "19e07d815dd6691c",
+  "category": "dwcc_edge",
+  "input": {
+    "subject": "FW: MV LADY ANITA – OPEN HODEIDAH SPOT PROMPT ",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:47:38.000Z",
+    "body": " \r\n\r\nFrom: mylist1-owner@elsharkawymaritime.com <mylist1-owner@elsharkawymaritime.com> On Behalf Of Elsharkawy Maritime & Logistics Co\r\nSent: Wednesday, 6 May 2026 08:32\r\nTo: chartering@elsharkawymaritime.com\r\nSubject: MV LADY ANITA – OPEN HODEIDAH SPOT PROMPT \r\n\r\n \r\n\r\nAttn: Chartering Desk!!!\r\n\r\n \r\n\r\nGd Day,,\r\n\r\n \r\n\r\nPlease Kindly Propose Suitable/Rated Cargo For Below Dir Vsl:\r\n\r\n \r\n\r\nMV LADY ANITA – OPEN HODEIDAH SPOT PROMPT \r\n\r\n\r\nEX NAME\r\n\r\nNEW SILK ROAD 2\r\n\r\n\r\nTYPE OF VESSEL\r\n\r\nGENERAL CARGO SHIP\r\n\r\n\r\nYEAR OF BUILT\r\n\r\n2012\r\n\r\n\r\nFLAG STATE / PORT OF REGISTRY\r\n\r\nTOGO / LOME\r\n\r\n\r\nCLASSIFICATION SOCIETY\r\n\r\nOMCS\r\n\r\n\r\nL.O.A / L.B.P\r\n\r\n96.9 m / 89.8 m\r\n\r\n\r\nBREADTH MOULDED\r\n\r\n15.8 m\r\n\r\n\r\nDEPTH MOULDED\r\n\r\n7.4 m\r\n\r\n\r\nG.R.T / N.R.T\r\n\r\n2998  /1746 m/t\r\n\r\n\r\nLIGHT SHIP\r\n\r\n1386.8 mt\r\n\r\n\r\nDISPLACEMENT\r\n\r\n6715.2 mt\r\n\r\n\r\nSUMMER DRAFT\r\n\r\n5.85 m\r\n\r\n\r\nSUMMER DEADWEIGHT\r\n\r\n5328.4 m/t\r\n\r\n\r\nT.P.C\r\n\r\n12.9 mt\r\n\r\n\r\nFREE BOARD\r\n\r\nXXX\r\n\r\n\r\nMAX HEIGHT\r\n\r\nXXX\r\n\r\n\r\n1/HATCH/ HOLD\r\n\r\n9.45X25.0M, / 7.82X13.26X32.64M H\r\n\r\n\r\n2/HATCH/HOLD\r\n\r\n9.45X26.9M / 7.82X13.26X32.0M\r\n\r\n\r\nLIGHT WEIGHT\r\n\r\n1386.74\r\n\r\n\r\nM/E\r\n\r\nGC320ZCD-4 500 r/min 1765KW\r\n\r\n\r\nA/E\r\n\r\n6135JZCaf/6CCFJ120J-Y8/2sets\r\n\r\n\r\nG/E\r\n\r\nMP-H-120-4   120kw\r\n\r\n\r\nSPEED\r\n\r\nFULL LOADED/BALLAST:10.KTS/10.5KTS\r\n\r\n\r\nCONSUMPTION BALLAST\r\n\r\nIFO 180: M/E :3.7MT/D; AUX/E:MGO 0.35MT\r\n\r\n\r\nCONSUMPTION LOADING\r\n\r\nIFO 180  ME:4.2MT/D；AUX/E: MGO 0.35MT/D\r\n\r\n\r\nCONSUMPTION IN PORT\r\n\r\nAUX/E MGO 0.35MT/D\r\n\r\n \r\n\r\nWycp ? \r\n\r\n \r\n\r\nBrgds // \r\n\r\nCapt.Mohamed Elsharkawy\r\n\r\nTels: +20663232456/3232457\r\n\r\nFax:  +20663232459\r\n\r\nMob: +201007800552 (24hrs) \r\n\r\nTeams Id:  <mailto:elsharkawy_maritime@hotmai.com> elsharkawy_maritime@hotmai.com  \r\n\r\nE-Mail:  <mailto:chartering@elsharkawymaritime.com> chartering@elsharkawymaritime.com\r\n\r\nW.Site:  <http://www.elsharkawymaritime.com/> www.elsharkawymaritime.com \r\n\r\n \r\n\r\n  _____  \r\n\r\nTo subscribe, Please Send To mylist1-subscribe@elsharkawymaritime.com <mailto:mylist1-subscribe@elsharkawymaritime.com> \r\nTo unsubscribe, Please Send To mylist1-unsubscribe@elsharkawymaritime.com <mailto:mylist1-unsubscribe@elsharkawymaritime.com> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "MV LADY ANITA",
+          "confidence": "confirmed",
+          "source_text": "MV LADY ANITA – OPEN HODEIDAH SPOT PROMPT"
+        },
+        "imo": null,
+        "flag": {
+          "value": "Togo",
+          "confidence": "confirmed",
+          "source_text": "FLAG STATE / PORT OF REGISTRY\nTOGO / LOME"
+        },
+        "built": {
+          "value": 2012,
+          "confidence": "confirmed",
+          "source_text": "YEAR OF BUILT\n2012"
+        },
+        "class_society": {
+          "value": "OMCS",
+          "confidence": "confirmed",
+          "source_text": "CLASSIFICATION SOCIETY\nOMCS"
+        },
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 5328.4,
+          "confidence": "confirmed",
+          "source_text": "SUMMER DEADWEIGHT\n5328.4 m/t"
+        },
+        "dwcc": null,
+        "draft_max": {
+          "value": 5.85,
+          "confidence": "confirmed",
+          "source_text": "SUMMER DRAFT\n5.85 m"
+        },
+        "loa": {
+          "value": 96.9,
+          "confidence": "confirmed",
+          "source_text": "L.O.A / L.B.P\n96.9 m / 89.8 m"
+        },
+        "beam": {
+          "value": 15.8,
+          "confidence": "confirmed",
+          "source_text": "BREADTH MOULDED\n15.8 m"
+        },
+        "grt": {
+          "value": 2998,
+          "confidence": "confirmed",
+          "source_text": "G.R.T / N.R.T\n2998  /1746 m/t"
+        },
+        "nrt": {
+          "value": 1746,
+          "confidence": "confirmed",
+          "source_text": "G.R.T / N.R.T\n2998  /1746 m/t"
+        },
+        "holds_count": {
+          "value": 2,
+          "confidence": "interpreted",
+          "source_text": "1/HATCH/ HOLD\n9.45X25.0M, / 7.82X13.26X32.64M H\n\n2/HATCH/HOLD\n9.45X26.9M / 7.82X13.26X32.0M"
+        },
+        "hatches_count": {
+          "value": 2,
+          "confidence": "interpreted",
+          "source_text": "1/HATCH/ HOLD\n9.45X25.0M, / 7.82X13.26X32.64M H\n\n2/HATCH/HOLD\n9.45X26.9M / 7.82X13.26X32.0M"
+        },
+        "grain_capacity": null,
+        "grain_capacity_unit": null,
+        "bale_capacity": null,
+        "hold_dimensions": ["Hold 1: 7.82 x 13.26 x 32.64 m", "Hold 2: 7.82 x 13.26 x 32.0 m"],
+        "hatch_dimensions": ["Hatch 1: 9.45 x 25.0 m", "Hatch 2: 9.45 x 26.9 m"],
+        "tank_top_strength": null,
+        "geared": false,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "confirmed",
+          "source_text": "TYPE OF VESSEL\nGENERAL CARGO SHIP"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Hodeidah",
+          "confidence": "confirmed",
+          "source_text": "MV LADY ANITA – OPEN HODEIDAH SPOT PROMPT"
+        },
+        "open_date": {
+          "value": {
+            "open": null,
+            "close": null,
+            "display": "SPOT PROMPT"
+          },
+          "confidence": "confirmed",
+          "source_text": "OPEN HODEIDAH SPOT PROMPT"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": {
+          "value": 10,
+          "confidence": "confirmed",
+          "source_text": "SPEED\nFULL LOADED/BALLAST:10.KTS/10.5KTS"
+        },
+        "speed_ballast": {
+          "value": 10.5,
+          "confidence": "confirmed",
+          "source_text": "SPEED\nFULL LOADED/BALLAST:10.KTS/10.5KTS"
+        },
+        "consumption": {
+          "value": "Laden: IFO 180 ME 4.2 MT/D + MGO AUX 0.35 MT/D; Ballast: IFO 180 ME 3.7 MT/D + MGO AUX 0.35 MT/D; Port: MGO AUX 0.35 MT/D",
+          "confidence": "confirmed",
+          "source_text": "CONSUMPTION BALLAST\nIFO 180: M/E :3.7MT/D; AUX/E:MGO 0.35MT\n\nCONSUMPTION LOADING\nIFO 180  ME:4.2MT/D；AUX/E: MGO 0.35MT/D\n\nCONSUMPTION IN PORT\nAUX/E MGO 0.35MT/D"
+        },
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Ex name: NEW SILK ROAD 2",
+            "confidence": "confirmed",
+            "source_text": "EX NAME\nNEW SILK ROAD 2"
+          },
+          {
+            "value": "Main engine: GC320ZCD-4 500 r/min 1765KW",
+            "confidence": "confirmed",
+            "source_text": "M/E\nGC320ZCD-4 500 r/min 1765KW"
+          },
+          {
+            "value": "Depth moulded: 7.4 m",
+            "confidence": "confirmed",
+            "source_text": "DEPTH MOULDED\n7.4 m"
+          },
+          {
+            "value": "TPC: 12.9 mt",
+            "confidence": "confirmed",
+            "source_text": "T.P.C\n12.9 mt"
+          },
+          {
+            "value": "Displacement: 6715.2 mt",
+            "confidence": "confirmed",
+            "source_text": "DISPLACEMENT\n6715.2 mt"
+          },
+          {
+            "value": "Light ship / lightweight: 1386.8 mt",
+            "confidence": "confirmed",
+            "source_text": "LIGHT SHIP\n1386.8 mt"
+          }
+        ],
+        "unknown_terms": [
+          {
+            "term": "OMCS",
+            "reason": "OMCS — classification society abbreviation not in glossary; possible regional or small classification society"
+          },
+          {
+            "term": "Wycp",
+            "reason": "Wycp — unrecognized shipping/chartering abbreviation; possibly 'What you can propose?' but not in glossary"
+          }
+        ]
+      }
+    ]
+  }
+}

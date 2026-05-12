@@ -1,0 +1,22 @@
+{
+  "id": "etms-classify-112",
+  "source_email_id": "19e08a0b4203a0c2",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: Vina Logitics Direct Cgos",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:26:46.000Z",
+    "body": " \r\n\r\nFrom: Vina Chartering <vina@vinachartering.com> \r\nSent: Monday, 2 February 2026 10:08\r\nTo: management@etm-services.net\r\nSubject: Vina Logitics Direct Cgos\r\n\r\n \r\n\r\nDear all\r\n\r\nGd day\r\n\r\n \r\n\r\nPls offer firmfor blw direct cgos,\r\n\r\n \r\n\r\nSpot try vsl dates \r\n\r\n1 North spain / 1 Portugal \r\n\r\n3000-6000  mtons of bulk non imo in owners option\r\n\r\nttl days sshex eiu \r\n\r\nChabe- fiot bss \r\n\r\nGenc with 3.75%\r\n\r\n \r\n\r\nSpot try vsl dates \r\n\r\n1 Portugal  / 1  Spanmed\r\n\r\n3000-6000  mtons of bulk non imo in owners option\r\n\r\nttl days sshex eiu \r\n\r\nChabe- fiot bss - free da disch port \r\n\r\nGenc with 3.75%\r\n\r\n \r\n\r\n06-07 / feb /2026\r\n\r\n1 Portugal  / 1  Spanmed\r\n\r\n6000  mtons of bulk non imo in owners option\r\n\r\n4 ttl days sshex eiu \r\n\r\nChabe- fiot bss - free da disch port \r\n\r\nGenc with 3.75%\r\n\r\n \r\n\r\n \r\n\r\n10-14 / feb /2026 \r\n\r\n1 Algeria / 1 Portugal \r\n\r\n7000-7700  mtons of bulk non imo \r\n\r\nttl days thu-fshex / sshex eiu \r\n\r\nChabe- fiot bss - free da both ports \r\n\r\nGenc with 3.75% \r\n\r\n \r\n\r\n \r\n\r\n09-13 / feb /2026\r\n\r\n1 Portugal  / 1  Spanmed\r\n\r\n3500-5000  mtons of bulk non imo in owners option\r\n\r\n4 ttl days sshex eiu \r\n\r\nChabe- fiot bss - free da disch port \r\n\r\nGenc with 3.75%\r\n\r\n \r\n\r\n16-19 / feb /2026\r\n\r\n1 Portugal  / 1  Spanmed\r\n\r\n5000  mtons of bulk non imo in owners option\r\n\r\n4 ttl days sshex eiu \r\n\r\nChabe- fiot bss - free da disch port \r\n\r\nGenc with 3.75%\r\n\r\n \r\n\r\n \r\n\r\nTC REQUEST\r\n\r\nAbt 4/8k dwt\r\n\r\nDel/redel:Med/westmed/portugal range\r\n\r\nTrading Area:Med/Bsea/Continent, Exc Russia/Ukraine/Israel\r\n\r\nDuration:6 + 6 months can try 1 year\r\n\r\nLaycan: spot/prompt \r\n\r\n2,50 comm\r\n\r\nOa wable\r\n\r\n \r\n\r\nBest Regards\r\n\r\n \r\n\r\nMusa YUCE\r\n\r\nVina Chartering\r\n\r\n+90 530 317 90 29 \r\n\r\nmusa@vinachartering.com <mailto:musa@vinachartering.com> \r\n\r\nvina@vinachartering.com <mailto:vina@vinachartering.com> \r\n\r\nSkype: musayuce.\r\n\r\n <http://www.vinachartering.com/> www.vinachartering.com\r\n\r\n \r\n\r\nBIMCO MEMBERSHIP 180789\r\n\r\nAs Broker Only\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e08a0b4203a0c2",
+    "category": "CARGO_INQUIRY",
+    "urgency": "medium",
+    "confidence": 0.78,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Musa YUCE",
+    "original_sender_company": "Vina Chartering",
+    "unknown_terms": ["Chabe", "bss", "Oa wable", "thu-fshex"]
+  }
+}

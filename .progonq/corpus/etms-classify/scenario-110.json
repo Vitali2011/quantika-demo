@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-110",
+  "source_email_id": "19e08a05d472698a",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: MV ELFRIEDE - TWD/GRD/10K DWT - OPEN SPOT at Gibraltar",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:26:25.000Z",
+    "body": " \r\n\r\nFrom: UNIMAR NO REPLY <no-reply@unimarservice.com> \r\nSent: Monday, 2 February 2026 10:11\r\nSubject: MV ELFRIEDE - TWD/GRD/10K DWT - OPEN SPOT at Gibraltar\r\n\r\n \r\n\r\nFM: UNIMAR SERVICE LIMITED\r\nE.MAIL: mail@unimarservice.com <mailto:mail@unimarservice.com> \r\n\r\n*********************************\r\n\r\nTo: Chartering Desk\r\n\r\nDear Colleagues,\r\n\r\n \r\n\r\nRef.: MV ELFRIEDE - TWD/GRD/10K DWT - OPEN SPOT at Gibraltar\r\n\r\n \r\n\r\nClose Owners - PERFECT performer - MV ELFRIEDE - OPEN SPOT at Gibraltar\r\n\r\n \r\n\r\nLOOKING CARGOES TO NCSA / SOUTH AMERICA / WAFRICA / INDIAN OCEAN / FAR EAST\r\n- WCYO PLS?\r\n\r\n \r\n\r\n \r\n\r\nMV ELFRIEDE\r\n\r\nABOUT 10,074 DWT ON 9.219M SSW - TWEEN DECKER\r\n\r\nBUILT: 2004 JAPAN\r\n\r\nBARBADOS FLAG - IACS CLASS\r\n\r\nLOA 100.59M\r\n\r\nLBP 93.50M\r\n\r\nBM 18.80M\r\n\r\nDEPTH 13.00M\r\n\r\nGRT/NRT 6,395 / 3,658\r\n\r\nGR/BL 13,999.07 M3/12,864.70 M3\r\n\r\n2HO/2HA - CO2 FITTED CRANES 30Tx2 - DERRICK 30Tx1\r\n\r\nBOW THRUSTER FITTED\r\n\r\nADA WOG  \r\n\r\n \r\n\r\nPlsd to hear.\r\n\r\n \r\n\r\nBrgds, USL\r\nM/Viber/Wup/Telegram/WeChat: +357 99581395 <tel:+357%2099581395>  (24H/7D)\r\nAS BROKERS ONLY - SINCE 2006\r\n+++\r\nIn case the content of this message is irrelevant to your business, please\r\nnotify us by replying \"UNSUBSCRIBE\" in the subject field in order to remove\r\nyou from these messages, sorry any inconvenience caused.\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e08a05d472698a",
+    "category": "VESSEL_POSITION",
+    "urgency": "medium",
+    "confidence": 0.82,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "ETMS - Management",
+    "original_sender_company": "ETMS - Management"
+  }
+}

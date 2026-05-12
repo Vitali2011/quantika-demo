@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-154",
+  "source_email_id": "19e0f55e3bcf9a28",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: Bita / Excl. Tonnages",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-10T00:42:24.000Z",
+    "body": " \r\n\r\nFrom: Bita Chartering - Istanbul <chartering@bitashipping.com> \r\nSent: Monday, 5 February 2024 12:04\r\nTo: Bita Chartering - Istanbul <chartering@bitashipping.com>\r\nSubject: Bita / Excl. Tonnages\r\n\r\n \r\n\r\nGood Day,\r\n\r\n \r\n\r\nPls offer yr suitable cargoes for,\r\n\r\n \r\n\r\nSpot Jeddah, looking quick shipment in Red Sea ONLY,\r\n\r\n \r\n\r\nMV YAMAN BEY / 5.383 DWT - 5,90 M / GRAIN 6455 - BALE 6200 CBM / BOX / 08\r\nBLT / GLESS\r\n\r\n \r\n\r\n--\r\n\r\n \r\n\r\nOpen Marmara by 15 Feb,\r\n\r\n \r\n\r\nMV TQ ISTANBUL / 3.712 DWT - 5,46 M / GRAIN-BALE 4.690 CBM / OH-BOX / 93 BLT\r\n/ GLESS\r\n\r\n \r\n\r\n--\r\n\r\n \r\n\r\nOpen Giurgiulesti by 10/15 Feb, \r\n\r\n \r\n\r\nMV TQ TRABZON / 3.712 DWT - 5,46 M / GRAIN-BALE 4.690 CBM / OH-BOX / 93 BLT\r\n/ GLESS\r\n\r\n \r\n\r\n--\r\n\r\n \r\n\r\nOpen Djibouti by 25/29 Feb, \r\n\r\n \r\n\r\nMV LONE STAR / 4.400 DWT - 5,90 M / GRAIN 5911 - BALE 5800 CBM / BOX / 08\r\nBLT / GLESS\r\n\r\n \r\n\r\n--\r\n\r\n \r\n\r\nOpen Busan by 5/10 Mar, \r\n\r\n \r\n\r\nMV TQ MERSIN /12.000 DWT - 7,14 M / GRAIN - BALE 14722 CBM / BOX / 08 BLT /\r\nGLESS\r\n\r\n \r\n\r\n--\r\n\r\n \r\n\r\nOpen Marmara by 10/15 Mar, \r\n\r\n \r\n\r\nMV SONIC / 4.203 DWT - 5,25M / GRAIN-BALE 5380 CBM / OH-BOX / 84 BLT\r\n\r\n \r\n\r\n--\r\n\r\n \r\n\r\nOn Period,\r\n\r\n \r\n\r\nMV TQ SAMSUN / 43.775 DWT / GRAIN 56.666 - BALE 54.931 CBM / 96 BLT / GEARED\r\n\r\n \r\n\r\n--\r\n\r\nBest Regards,\r\n\r\n \r\n\r\nIlhami Yakup OZEN\r\n\r\nAs brokers only\r\n\r\n \r\n\r\nBita Shipping Ltd.\r\n\r\nwww.bitashipping.com <http://www.bitashipping.com> \r\n\r\nA: Evliya Çelebi Mahallesi, Genç Osman Caddesi, Ak İş Merkezi, \r\nNo:58 Kat:4/11 Tuzla,Istanbul/Turkey\r\n\r\nTel      : +90 216 395 66 64\r\n\r\nMob   : +90 539 709 98 21 \r\n\r\nEmail  : chartering@bitashipping.com <mailto:chartering@bitashipping.com>   \r\n\r\nSkype : ilhamiyakupozen@gmail.com <mailto:ilhamiyakupozen@gmail.com> \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e0f55e3bcf9a28",
+    "category": "VESSEL_POSITION",
+    "urgency": "medium",
+    "confidence": 0.82,
+    "is_unanswered": false,
+    "days_without_reply": 1,
+    "original_sender": "ETMS - Management",
+    "original_sender_company": "ETMS - Management (etm-services.net)"
+  }
+}

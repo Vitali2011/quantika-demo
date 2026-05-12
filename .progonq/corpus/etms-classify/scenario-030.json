@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-030",
+  "source_email_id": "19e07c65c31852c7",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: FAITH/30116DW/12/CR30MT PRAIA MOLE 15/20 MAY (REF:2602QAH00)",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:28:17.000Z",
+    "body": " \r\n\r\nFrom: Transocean Shipping Co. S.A. <miketerz@transoceangr.gr> \r\nSent: Friday, 8 May 2026 09:30\r\nTo: _ Transocean Shipping Co. S.A. <miketerz@transoceangr.gr>\r\nSubject: FAITH/30116DW/12/CR30MT PRAIA MOLE 15/20 MAY (REF:2602QAH00)\r\nImportance: High\r\n\r\n \r\n\r\nTELiX MSG: 02QAH-00 08/05/26 09:30\r\n\r\n \r\n\r\nTRANSOCEAN SHIPPING COMPANY S.A GREECE/REF TO MIKE\r\n\r\n \r\n\r\nLOCAL HEADOWNRS\r\n\r\n \r\n\r\nFAITH   30116DW/12/CR30MT\r\n=========================PRAIA MOLE 15/20 MAY\r\n                   ===========================\r\n\r\n \r\n\r\nTRY 2/3LL OR SP\r\n===============\r\n\r\n \r\n\r\n \r\n\r\nTRANSOCEAN SHIPPING COMPANY S.A GREECE\r\n\r\nPH 2108941169/E MAIL miketerz@transoceangr.gr <mailto:miketerz@transoceangr.gr>  ++ miketerz@otenet.gr <mailto:miketerz@otenet.gr> \r\n\r\nMIKE TERZIOGLOU/MOB 6974461055-SKYPE miketerz\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07c65c31852c7",
+    "category": "VESSEL_POSITION",
+    "urgency": "high",
+    "confidence": 0.92,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "ETMS - Management",
+    "original_sender_company": "ETM Services"
+  }
+}

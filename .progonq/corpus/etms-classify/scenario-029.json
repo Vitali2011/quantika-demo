@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-029",
+  "source_email_id": "19e07c6291acbfd4",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: NON EU // EMED - WMED ABT 4000-4500 TS GENERAL CARGO",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:28:04.000Z",
+    "body": " \r\n\r\nFrom: BA Chartering Istanbul <chartering@bachartering.com> \r\nSent: Friday, 8 May 2026 09:48\r\nTo: Mustafa SAY - BA Chartering Istanbul <mustafa@bachartering.com>\r\nSubject: NON EU // EMED - WMED ABT 4000-4500 TS GENERAL CARGO \r\n\r\n \r\n\r\nDear All,\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPlease advise yr suitable positions for our below firm cargo ;\r\n\r\n \r\n\r\n1 EMED / 1WMED \r\n\r\n4300-4500 TS STEEL PRODUCTS STW DWT\r\n\r\n1500x/1250x\r\n\r\n16-20 MAY \r\n\r\n2.5 ttl comm\r\n\r\n \r\n\r\n-further details available upon your firm interest \r\n\r\n \r\n\r\nBest Regards\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07c6291acbfd4",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.93,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "BA Chartering Istanbul <chartering@bachartering.com>",
+    "original_sender_company": "BA Chartering Istanbul"
+  }
+}

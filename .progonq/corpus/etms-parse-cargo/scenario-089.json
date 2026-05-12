@@ -1,0 +1,109 @@
+{
+  "id": "etms-parse-cargo-089",
+  "source_email_id": "19e09798df92cca7",
+  "category": "numeric_edge",
+  "input": {
+    "subject": "FW: 1 Greece / 1 Tunisia",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:23:37.000Z",
+    "body": " \r\n\r\nFrom: DURUCHART <chartering@duruchart.com> \r\nSent: Thursday, 26 February 2026 10:48\r\nTo: 'DURUCHART' <mert@duruchart.com>\r\nSubject: 1 Greece / 1 Tunisia \r\n\r\n \r\n\r\nDURUCHART-Istanbul/TURKEY\r\n\r\n+90 216 492 97 13\r\n\r\n \r\n\r\nGood Day\r\n\r\n \r\n\r\nPlease offer firm for;\r\n\r\n \r\n\r\nAleaxandroupolis / 1 Tunisia\r\n\r\n11.000mt 10% moloo wheat\r\n\r\n1/14 March\r\n\r\n6000/2000\r\n\r\n3.75 pct\r\n\r\n \r\n\r\nGless workable, max beam 16mtr\r\n\r\n \r\n\r\nBest Regards\r\n\r\nMert Kalafat\r\n\r\nskype: mertkalafat6\r\n\r\nMobile: +90 505 016 01 52\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Alexandroupolis",
+          "confidence": "interpreted",
+          "source_text": "Aleaxandroupolis / 1 Tunisia"
+        },
+        "origin_country": {
+          "value": "Greece",
+          "confidence": "interpreted",
+          "source_text": "Aleaxandroupolis / 1 Tunisia"
+        },
+        "destination_port": {
+          "value": "1 safe port Tunisia (TBN)",
+          "confidence": "interpreted",
+          "source_text": "Aleaxandroupolis / 1 Tunisia"
+        },
+        "destination_country": {
+          "value": "Tunisia",
+          "confidence": "confirmed",
+          "source_text": "1 Tunisia"
+        },
+        "cargo_description": {
+          "value": "Wheat",
+          "confidence": "confirmed",
+          "source_text": "11.000mt 10% moloo wheat"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 11000,
+          "confidence": "confirmed",
+          "source_text": "11.000mt 10% moloo wheat"
+        },
+        "weight_mt_min": {
+          "value": 9900,
+          "confidence": "interpreted",
+          "source_text": "11.000mt 10% moloo wheat"
+        },
+        "weight_mt_max": {
+          "value": 12100,
+          "confidence": "interpreted",
+          "source_text": "11.000mt 10% moloo wheat"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "11.000mt 10% moloo wheat"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": null,
+        "laycan": {
+          "value": "1/14 March 2026",
+          "confidence": "confirmed",
+          "source_text": "1/14 March"
+        },
+        "loading_rate": {
+          "value": 6000,
+          "confidence": "confirmed",
+          "source_text": "6000/2000"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 2000,
+          "confidence": "confirmed",
+          "source_text": "6000/2000"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75 pct"
+        },
+        "commission_terms": {
+          "value": null,
+          "confidence": "uncertain",
+          "source_text": "3.75 pct"
+        },
+        "special_requirements": {
+          "value": "Gearless vessel acceptable (shore gear at port); maximum beam 16 metres",
+          "confidence": "confirmed",
+          "source_text": "Gless workable, max beam 16mtr"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Exact discharge port in Tunisia not specified (only country given)",
+          "No SHINC/SHEX qualifier for loading or discharge rates (6000/2000)",
+          "Commission split not specified (TTL / BENDS / address commission breakdown unknown)",
+          "Demurrage / despatch rates not stated",
+          "Freight rate not indicated — inquiry requests firm offer"
+        ]
+      }
+    ]
+  }
+}

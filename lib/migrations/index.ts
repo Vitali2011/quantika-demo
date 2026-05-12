@@ -23,6 +23,11 @@ import migration022 from './022-drop-market-benchmarks';
 import migration023 from './023-bunker-prices-rewrite';
 import migration024 from './024-eua-prices-rewrite';
 import migration025 from './025-fx-rates';
+import migration026 from './026-charterers';
+import migration027 from './027-market-indices';
+import migration028 from './028-psc-history';
+import migration029 from './029-bimco-rag';
+import migration030 from './030-roi-metrics';
 import type { Migration } from './types';
 
-export const allMigrations: Migration[] = [migration001, migration002, migration003, migration004, migration005, migration006, migration007, migration008, migration009, migration010, migration011, migration012, migration013, migration014, migration015, migration016, migration017, migration018, migration019, migration020, migration021, migration022, migration023, migration024, migration025];
+export const allMigrations: Migration[] = [migration001, migration002, migration003, migration004, migration005, migration006, migration007, migration008, migration009, migration010, migration011, migration012, migration013, migration014, migration015, migration016, migration017, migration018, migration019, migration020, migration021, migration022, migration023, migration024, migration025, migration026, migration027, migration028, migration029, migration030];

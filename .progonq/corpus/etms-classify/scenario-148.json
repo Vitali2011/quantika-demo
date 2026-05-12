@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-148",
+  "source_email_id": "19e0f537ac896745",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: OPEN AT AGADIR ON 22-24 AUGUST",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-10T00:39:46.000Z",
+    "body": " \r\n\r\nFrom: Midway Shipping <chartering@midwayshipping.com> \r\nSent: Tuesday, 20 August 2024 13:21\r\nSubject: OPEN AT AGADIR ON 22-24 AUGUST\r\n\r\n \r\n\r\nGOOD DAY,\r\n\r\n \r\n\r\nEXCL. OPEN AT AGADIR OR ANY WEST MED ON 22-25 AUGUST.\r\n\r\n \r\n\r\n \r\n\r\nM/V AVAT 1\r\n\r\nBUILT 2020 - CHINA / CAMEROON FLAG / KRIBI / IMO: 1033822\r\n\r\nDWT: 9220 MT AT 5,20 M DRAFT / GRT: 4995 / NRT: 2607\r\n\r\nCLASS: OMROS / P&I \"THOMAS MILLER\" / H&M \"THOMAS MILLER\"\r\n\r\nLOA: 109,8 M / BEAM: 23,60 M / DM: 7,15 M\r\n\r\nGEARLESS / GENERAL CARGO / 2 HO / 2 HA\r\n\r\nHOLDS NO 1 CAPACITY: 5097 M3 / 180.000 CBFT\r\n\r\nHOLDS NO 2 CAPACITY: 4807 M3 / 170.000 CBFT\r\n\r\nGRAIN / BALE CAPACITY: 9900 M3 / 350.000 CBFT\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nMidway shipping and chartering \r\n\r\nCapt. Bulent Taskin \r\n\r\n+90 532 474 82 57\r\n\r\n+90 212 688 84 75\r\n\r\nbulent.taskin4\r\n\r\nchartering@midwayshipping.com <mailto:chartering@midwayshipping.com> \r\n\r\nwww.midwayshipping.com <http://www.midwayshipping.com> \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e0f537ac896745",
+    "category": "VESSEL_POSITION",
+    "urgency": "low",
+    "confidence": 0.72,
+    "is_unanswered": false,
+    "days_without_reply": null,
+    "original_sender": "Capt. Bulent Taskin / Midway Shipping",
+    "original_sender_company": "Midway shipping and chartering"
+  }
+}

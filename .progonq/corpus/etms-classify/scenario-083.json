@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-083",
+  "source_email_id": "19e07d517de73b94",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: MV TBN ABT 17 K DWT 96 BUILT ABT 700 K CBFT GRAIN CAP GEARED TO BE OPEN AT GIBRALTAR RANGE 24-25TH MAY -SHE CAN TRADE WORLDWIDE--M/V HACI HILMI II -6976MTS DWT-92 BLT -6750MTS DWCC-3 X 10MTS CRANES-GR:309.895CBFT -OPEN MARMARA SEA ON 22-23RD MA",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:44:23.000Z",
+    "body": " \r\n\r\nFrom: SONAY DENIZCILIK <sonay@sonayshipping.com> \r\nSent: Friday, 8 May 2026 12:06\r\nTo: management@etm-services.net\r\nSubject: MV TBN ABT 17 K DWT 96 BUILT ABT 700 K CBFT GRAIN CAP GEARED TO BE OPEN AT GIBRALTAR RANGE 24-25TH MAY -SHE CAN TRADE WORLDWIDE--M/V HACI HILMI II -6976MTS DWT-92 BLT -6750MTS DWCC-3 X 10MTS CRANES-GR:309.895CBFT -OPEN MARMARA SEA ON 22-23RD MA\r\n\r\n \r\n\r\nGOOD DAY  \r\n\r\nPLS PROPOSE SUITABLE CGOES FOR OUR BELOW HOME TONNAGE AND CLOSE OWNER'S VSL:\r\n\r\n-M/V HACI HILMI II -6976MTS DWT-92 BLT -6750MTS DWCC-3 X 10MTS CRANES-GR:309.895CBFT -OPEN MARMARA SEA ON 22-23RD MAY    \r\n\r\nCLOSE OWNERS FIXED THEIR LAST HERE;\r\n\r\nMV TBN ABT 17 K DWT 96 BUILT ABT 700 K CBFT GRAIN CAP GEARED TO BE OPEN AT GIBRALTAR RANGE 24-25TH MAY -SHE CAN TRADE WORLDWIDE\r\n\r\nBEST REGARDS\r\n\r\nSONAY SHIPPING AS/ISTANBUL \r\n\r\nAhmet Bozkurt,Mr./Halil Ersoz,Mr.\r\n\r\n(Member of Bimco and Turkish Shipbrokers Association and Maritime Association of Shipowners and Agents)\r\n\r\nPh:90 216 446 71 05\r\n\r\nEmails:Sonay@sonayshipping.com\r\n\r\nSonaychartering@gmail.com\r\n\r\nIf you no longer wish to receive these emails, please click this unsubscribe link: Unsubscribe\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07d517de73b94",
+    "category": "VESSEL_POSITION",
+    "urgency": "medium",
+    "confidence": 0.91,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "SONAY DENIZCILIK",
+    "original_sender_company": "SONAY SHIPPING AS"
+  }
+}

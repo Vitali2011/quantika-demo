@@ -1,0 +1,214 @@
+{
+  "id": "etms-parse-cargo-048",
+  "source_email_id": "19e07d37f2c8cd77",
+  "category": "single_cargo",
+  "input": {
+    "subject": "FW: Back to Blacksea",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:42:38.000Z",
+    "body": " \r\n\r\nFrom: DURUCHART <chartering@duruchart.com> \r\nSent: Friday, 8 May 2026 13:24\r\nTo: ismail@duruchart.com\r\nSubject: Back to Blacksea \r\n\r\n \r\n\r\nDURUCHART-Istanbul/TURKEY\r\n\r\n+90 216 492 97 13\r\n\r\nwww.duruchart.com <http://www.duruchart.com>\r\n\r\n\r\n \r\n\r\nGd day \r\n\r\n \r\n\r\nPls offer firm for blw;\r\n\r\n \r\n\r\n2 SB Iskenderun - POC/Ukraine\r\n\r\n7700-7800 Mts steel prod. stw=dwt\r\n\r\n(5000 + 2700 or 2800mts)\r\n\r\nAll hold type workable \r\n\r\n15-16 May\r\n\r\n1500x1500\r\n\r\n3,75 pct \r\n\r\nNote: Will load 5000mts fm Tosyali + 2700-2800mtd fm Isdemir\r\n\r\n \r\n\r\n6645 Mts Steel Rebars\r\n\r\nHereke/Batumi\r\n\r\n20-25 May\r\n\r\n8 Ttl Days\r\n\r\n3,75 addcom pus \r\n\r\n \r\n\r\nBest Regards/Ismail Akkas\r\n\r\nMobile:+90-543-6438828\r\n\r\nSkype : ismail-akkas\r\n\r\n \r\n\r\nIf you no longer wish to receive emails from us, reply to this message with\r\nthe subject  \"DELETE''\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Iskenderun",
+          "confidence": "confirmed",
+          "source_text": "2 SB Iskenderun - POC/Ukraine"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "2 SB Iskenderun - POC/Ukraine"
+        },
+        "destination_port": {
+          "value": "Port to be nominated, Ukraine",
+          "confidence": "interpreted",
+          "source_text": "2 SB Iskenderun - POC/Ukraine"
+        },
+        "destination_country": {
+          "value": "Ukraine",
+          "confidence": "confirmed",
+          "source_text": "2 SB Iskenderun - POC/Ukraine"
+        },
+        "cargo_description": {
+          "value": "Steel products (5000 MT from Tosyali + 2700-2800 MT from Isdemir), stowage equals deadweight",
+          "confidence": "confirmed",
+          "source_text": "7700-7800 Mts steel prod. stw=dwt\n(5000 + 2700 or 2800mts)\nNote: Will load 5000mts fm Tosyali + 2700-2800mtd fm Isdemir"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 7800,
+          "confidence": "interpreted",
+          "source_text": "7700-7800 Mts steel prod."
+        },
+        "weight_mt_min": {
+          "value": 7700,
+          "confidence": "confirmed",
+          "source_text": "7700-7800 Mts steel prod."
+        },
+        "weight_mt_max": {
+          "value": 7800,
+          "confidence": "confirmed",
+          "source_text": "7700-7800 Mts steel prod."
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "7700-7800 Mts steel prod."
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "15-16 May",
+          "confidence": "confirmed",
+          "source_text": "15-16 May"
+        },
+        "laycan": {
+          "value": "15/16 May 2026",
+          "confidence": "confirmed",
+          "source_text": "15-16 May"
+        },
+        "loading_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "1500x1500"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": 1500,
+          "confidence": "confirmed",
+          "source_text": "1500x1500"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3,75 pct"
+        },
+        "commission_terms": {
+          "value": "3.75% total",
+          "confidence": "confirmed",
+          "source_text": "3,75 pct"
+        },
+        "special_requirements": {
+          "value": "2 safe berths required; all hold types workable; stowage factor equals deadweight (stw=dwt); two load points: 5000 MT from Tosyali, 2700-2800 MT from Isdemir",
+          "confidence": "confirmed",
+          "source_text": "2 SB Iskenderun - POC/Ukraine\nAll hold type workable\nNote: Will load 5000mts fm Tosyali + 2700-2800mtd fm Isdemir"
+        },
+        "stowage_factor": {
+          "value": "stw=dwt (stowage factor allows full deadweight utilization)",
+          "confidence": "confirmed",
+          "source_text": "stw=dwt"
+        },
+        "missing_info": [
+          "Ukrainian port of discharge not nominated (POC/Ukraine — specific port TBN)",
+          "Freight rate not provided (requesting firm offer)",
+          "Demurrage/despatch terms not specified",
+          "Loading/discharge terms (FIO, FIOST, etc.) not stated",
+          "Vessel size/type requirements not specified beyond hold type workable"
+        ],
+        "unknown_terms": []
+      },
+      {
+        "origin_port": {
+          "value": "Hereke",
+          "confidence": "confirmed",
+          "source_text": "Hereke/Batumi"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "confirmed",
+          "source_text": "Hereke/Batumi"
+        },
+        "destination_port": {
+          "value": "Batumi",
+          "confidence": "confirmed",
+          "source_text": "Hereke/Batumi"
+        },
+        "destination_country": {
+          "value": "Georgia",
+          "confidence": "confirmed",
+          "source_text": "Hereke/Batumi"
+        },
+        "cargo_description": {
+          "value": "Steel rebars",
+          "confidence": "confirmed",
+          "source_text": "6645 Mts Steel Rebars"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 6645,
+          "confidence": "confirmed",
+          "source_text": "6645 Mts Steel Rebars"
+        },
+        "weight_mt_min": {
+          "value": 6645,
+          "confidence": "confirmed",
+          "source_text": "6645 Mts Steel Rebars"
+        },
+        "weight_mt_max": {
+          "value": 6645,
+          "confidence": "confirmed",
+          "source_text": "6645 Mts Steel Rebars"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "6645 Mts Steel Rebars"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "20-25 May",
+          "confidence": "confirmed",
+          "source_text": "20-25 May"
+        },
+        "laycan": {
+          "value": "20/25 May 2026",
+          "confidence": "confirmed",
+          "source_text": "20-25 May"
+        },
+        "loading_rate": null,
+        "loading_terms": {
+          "value": "8 total laytime days",
+          "confidence": "confirmed",
+          "source_text": "8 Ttl Days"
+        },
+        "discharge_rate": null,
+        "discharge_terms": {
+          "value": "8 total laytime days (shared both ends)",
+          "confidence": "interpreted",
+          "source_text": "8 Ttl Days"
+        },
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3,75 addcom pus"
+        },
+        "commission_terms": {
+          "value": "address commission",
+          "confidence": "confirmed",
+          "source_text": "3,75 addcom pus"
+        },
+        "special_requirements": null,
+        "stowage_factor": null,
+        "missing_info": [
+          "Freight rate not provided (requesting firm offer)",
+          "Loading/discharge terms (FIO, FIOST, etc.) not stated",
+          "Demurrage rate not specified",
+          "Meaning of 'pus' in '3,75 addcom pus' unclear — possible typo for 'plus' or additional commission instruction"
+        ],
+        "unknown_terms": [
+          "pus (in '3,75 addcom pus' — possibly a typo for 'plus' or an unrecognized commission qualifier)"
+        ]
+      }
+    ]
+  }
+}

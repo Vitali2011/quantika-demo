@@ -117,3 +117,162 @@ export async function processDeadline(
     ctaShown: newStage === '2h',
   };
 }
+
+// ============================================================================
+// γ-08: Timezone-aware Banking Days
+// ============================================================================
+
+/**
+ * Input Contract:
+ * - startDate: invalid Date → throw TypeError
+ * - startDate: null/undefined → throw TypeError
+ * - timezone: empty/null/undefined → throw TypeError
+ * - timezone: invalid IANA → throw RangeError
+ * - days: NaN/±Infinity → throw RangeError
+ * - days: negative → subtract banking days (valid)
+ * - days: 0 → return startDate as-is
+ * - days: non-integer → floor to integer
+ * - holidays: empty/undefined → default to []
+ */
+export function addBankingDays(
+  startDate: Date,
+  days: number,
+  timezone: string,
+  holidays?: string[]
+): Date {
+  // Validate startDate
+  if (!(startDate instanceof Date) || isNaN(startDate.getTime())) {
+    throw new TypeError('startDate must be a valid Date');
+  }
+
+  // Validate timezone
+  if (!timezone || typeof timezone !== 'string') {
+    throw new TypeError('timezone must be a non-empty string');
+  }
+
+  // Validate timezone is valid IANA
+  try {
+    new Intl.DateTimeFormat('en-US', { timeZone: timezone });
+  } catch {
+    throw new RangeError(`Invalid timezone: ${timezone}`);
+  }
+
+  // Validate days
+  if (!Number.isFinite(days)) {
+    throw new RangeError('days must be a finite number');
+  }
+
+  // Floor non-integer days
+  const intDays = Math.floor(days);
+
+  // Handle 0 days
+  if (intDays === 0) {
+    return new Date(startDate);
+  }
+
+  // Normalize holidays
+  const holidaySet = new Set(holidays || []);
+
+  // Direction: forward or backward
+  const direction = intDays > 0 ? 1 : -1;
+  const absDays = Math.abs(intDays);
+
+  let current = new Date(startDate);
+  let bankingDaysAdded = 0;
+
+  while (bankingDaysAdded < absDays) {
+    // Move to next/prev day
+    current = new Date(current.getTime() + direction * 24 * 60 * 60 * 1000);
+
+    // Check if it's a banking day
+    if (isBankingDay(current, timezone, holidays)) {
+      bankingDaysAdded++;
+    }
+  }
+
+  return current;
+}
+
+/**
+ * Input Contract:
+ * - date: invalid Date → throw TypeError
+ * - date: null/undefined → throw TypeError
+ * - timezone: empty/null/undefined → throw TypeError
+ * - timezone: invalid IANA → throw RangeError
+ * - holidays: empty/undefined → default to []
+ */
+export function isBankingDay(
+  date: Date,
+  timezone: string,
+  holidays?: string[]
+): boolean {
+  // Validate date
+  if (!(date instanceof Date) || isNaN(date.getTime())) {
+    throw new TypeError('date must be a valid Date');
+  }
+
+  // Validate timezone
+  if (!timezone || typeof timezone !== 'string') {
+    throw new TypeError('timezone must be a non-empty string');
+  }
+
+  // Validate timezone is valid IANA
+  try {
+    new Intl.DateTimeFormat('en-US', { timeZone: timezone });
+  } catch {
+    throw new RangeError(`Invalid timezone: ${timezone}`);
+  }
+
+  // Get local date in the specified timezone
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: timezone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  const localDateStr = formatter.format(date); // YYYY-MM-DD
+
+  // Check if it's a holiday
+  const holidaySet = new Set(holidays || []);
+  if (holidaySet.has(localDateStr)) {
+    return false;
+  }
+
+  // Get day of week in the timezone
+  const weekdayFormatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: timezone,
+    weekday: 'long',
+  });
+  const weekday = weekdayFormatter.format(date);
+
+  // Saturday or Sunday = not a banking day
+  return weekday !== 'Saturday' && weekday !== 'Sunday';
+}
+
+/**
+ * Input Contract:
+ * - tier: undefined/null/empty → return 0 (graceful fallback — no grace period)
+ * - tier: invalid (not in union) → throw TypeError (exhaustive)
+ * - tier: "blue-chip" → 1
+ * - tier: "second" → 0
+ * - tier: "weak" → 0
+ */
+export function getChartererGraceDays(
+  tier?: 'blue-chip' | 'second' | 'weak'
+): number {
+  // Graceful fallback: no tier = no grace period
+  if (!tier || typeof tier !== 'string') {
+    return 0;
+  }
+
+  // Exhaustive check
+  if (tier === 'blue-chip') {
+    return 1;
+  } else if (tier === 'second') {
+    return 0;
+  } else if (tier === 'weak') {
+    return 0;
+  } else {
+    throw new TypeError(`Invalid tier: ${tier}`);
+  }
+}

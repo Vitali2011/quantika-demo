@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-103",
+  "source_email_id": "19e089d65f53a56c",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: -Ambarli to Grimsby--abt 3500 mts of soft stainless SCRAP stw abt 66' wog (no trimming/pressing inside hold)",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:23:11.000Z",
+    "body": " \r\n\r\nFrom: SONAY DENIZCILIK <sonay@sonayshipping.com> \r\nSent: Friday, 8 May 2026 17:30\r\nTo: management@etm-services.net\r\nSubject: -Ambarli to Grimsby--abt 3500 mts of soft stainless SCRAP stw abt 66' wog (no trimming/pressing inside hold)\r\n\r\n \r\n\r\nPls do not recirculate\r\n\r\n \r\n\r\nGd day\r\n\r\n \r\n\r\n-abt 3500 mts of soft stainless SCRAP stw abt 66' wog (no trimming/pressing inside hold)\r\n\r\n-Ambarli to Grimsby \r\n\r\n-l/c May, try vessel dates\r\n\r\n-l/d 1500c/1500x\r\n\r\n-2.50% ttl\r\n\r\n \r\n\r\nWith revized frt level.\r\n\r\n \r\n\r\nB.rgds.\r\n\r\nAhmet T. Bozkurt\r\n\r\nSonay Shipping AS/Istanbul\r\n\r\nActing as broker only\r\n\r\nPh:90 216 4467105\r\n\r\nsonay@sonayshipping.com\r\n\r\nsonaychartering@gmail.com\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e089d65f53a56c",
+    "category": "CARGO_INQUIRY",
+    "urgency": "medium",
+    "confidence": 0.9,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Ahmet T. Bozkurt",
+    "original_sender_company": "Sonay Shipping AS"
+  }
+}

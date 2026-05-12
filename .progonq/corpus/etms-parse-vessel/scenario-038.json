@@ -1,0 +1,1175 @@
+{
+  "id": "etms-parse-vessel-038",
+  "source_email_id": "19e08a1aca93585c",
+  "category": "dwcc_edge",
+  "input": {
+    "subject": "FW: FEYZ GROUP VESSEL POSITION",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:27:51.000Z",
+    "body": " \r\n\r\nFrom: chartering@feyzgroup.com <chartering@feyzgroup.com> \r\nSent: Monday, 2 February 2026 09:55\r\nTo: 'Feyz Group' <chartering@feyzgroup.com>\r\nSubject: FEYZ GROUP VESSEL POSITION\r\n\r\n \r\n\r\n- / FEYZ CHARTERING                                  \r\n\r\n \r\n\r\n\r\nPlease propose your firm cargoes to our below home tonnage: \r\n\r\n \r\n\r\nFEYZ GROUP VESSEL POSITION\r\n\r\n \r\n\r\n\r\nMV Snow\r\n\r\n4,225 Dwt\r\n\r\n\t1994\r\n\r\n\tGibraltar\r\n\r\n\tSPOT\r\n\r\n\tMA\r\n\r\n\r\nMV Sky Str\r\n\r\n5,129 Dwt\r\n\r\n\t2024\r\n\r\n\tMostaganem\r\n\r\n\t03 - 05 Feb\r\n\r\n\tEK\r\n\r\n\r\nMV Sky Dolphin\r\n\r\n3,850 Dwt \r\n\r\n\t2025\r\n\r\n\tAveiro\r\n\r\n\t09 - 11 Feb\r\n\r\n\tMA\r\n\r\n\r\nMV Sky Wish\r\n\r\n5,128 Dwt\r\n\r\n\t2024\r\n\r\n\tCasablanca\r\n\r\n\t09 - 11 Feb\r\n\r\n\tEK\r\n\r\n\r\nMV Sky Falcon\r\n\r\n3,850 Dwt \r\n\r\n\t2025\r\n\r\n\tAdriatic\r\n\r\n\t18 - 20 Feb\r\n\r\n\tMA\r\n\r\n\r\nMV Sky Lbs \r\n\r\n3,850 Dwt \r\n\r\n\t2024\r\n\r\n\tUK\r\n\r\n\t22 - 24 Feb\r\n\r\n\tEK\r\n\r\n\r\nMV Sky Feyz\r\n\r\n3,662 Dwt\r\n\r\n\t1995\r\n\r\n\tAlexandria\r\n\r\n\t26 - 28 Feb\r\n\r\n\tMA\r\n\r\n\r\nMV Sky Eagle\r\n\r\n3,850 Dwt \r\n\r\n\t2025\r\n\r\n\tIskenderun\r\n\r\n\t25 - 28 Feb\r\n\r\n\tMA\r\n\r\n\r\nMV Sky Marine\r\n\r\n4,726 Dwt\r\n\r\n\t1998\r\n\r\n\tTrabzon\r\n\r\n\t28 - 30 Feb\r\n\r\n\tMA\r\n\r\n \r\n\r\n \r\n\r\nMV SNOW \r\n\r\n4226 DWT ON 5,76 M\r\n\r\nBLT 1994, PANAMA FLAG \r\n\r\nSID-BOX, DOUBLE SKIN, GEARLESS \r\n\r\n1 HO / 1 H A\r\n\r\nHO1: 62,63 X 11,2 X 8,45 M\r\n\r\nGRAIN/BALE 203,000 / 203,000 CBFT\r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS TURKISH LLOYD, TURK P&I\r\n\r\n+\r\n\r\nMV SKY STR \r\n\r\n5129 DWT ON 6,55 M \r\n\r\nBLT 2024, PORTUGAL FLAG \r\n\r\nSID-BOX, DOUBLE SKIN, GEARLESS \r\n\r\n1 HO/1 HA / 2 MOVABLE BULKHEADS\r\n\r\nHO1: 60,35 X 12,60 X 9,60\r\n\r\nGRAIN/BALE 247,200 / 247,200 CBFT \r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS LLOYD'S REGISTER, U.K P&I\r\n\r\nITF FITTED\r\n\r\n+\r\n\r\nMV SKY WISH \r\n\r\n5128 DWT ON 6,55 M \r\n\r\nBLT 2024, PORTUGAL FLAG \r\n\r\nSID-BOX, DOUBLE SKIN, GEARLESS \r\n\r\n1 HO/1 HA / 2 MOVABLE BULKHEADS\r\n\r\nHO1: 60,35 X 12,60 X 9,60\r\n\r\nGRAIN/BALE 247,200 / 247,200 CBFT \r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS LLOYD'S REGISTER, U.K P&I\r\n\r\nITF FITTED\r\n\r\n+ \r\n\r\nMV SKY DOLPHIN\r\n\r\n3821 DWT ON 5,48 M \r\n\r\nBLT 2024, MADEIRA FLAG , \r\n\r\nSID-BOX, DOUBLE SKIN, GEARLESS \r\n\r\n1 HO/1 HA / 2 MOVABLE BULKHEADS\r\n\r\nHO1: 62,50 X 10,1 X 8,40 m\r\n\r\nGRAIN/BALE 185,400 / 185,400 CBFT \r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS LLOYD'S REGISTER, U.K P&I\r\n\r\nITF FITTED\r\n\r\n+ \r\n\r\nMV SKY FEYZ\r\n\r\n3.662 DWT ON 5,00 M\r\n\r\nBLT 1995, PANAMA FLAG\r\n\r\nSID-BOX LIKE, DOUBLE SKIN, GEARLESS\r\n\r\n1 HO/2 HA\r\n\r\nHO1: 63,65 X 12,2 X 5,1 M\r\n\r\nGRAIN/BALE 157,000 CBFT / 153 468 CBFT\r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS TURKISH LLOYD,TURK P&I\r\n\r\nICE CLASSED\r\n\r\n+\r\n\r\nMV SKY EAGLE\r\n\r\n3804 DWT ON 5,48 M \r\n\r\nBLT 2025, PORTUGAL FLAG \r\n\r\nSID-BOX, DOUBLE SKIN, GEARLESS \r\n\r\n1 HO/1 HA / 2 MOVABLE BULKHEADS\r\n\r\nHO1: 62,50 X 10,1 X 8,40 m\r\n\r\nGRAIN/BALE 185,400 / 185,400 CBFT \r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS LLOYD'S REGISTER, U.K P&I\r\n\r\nITF FITTED\r\n\r\n+\r\n\r\nMV SKY FALCON\r\n\r\n3821 DWT ON 5,48 M \r\n\r\nBLT 2024, MADEIRA FLAG , \r\n\r\nSID-BOX, DOUBLE SKIN, GEARLESS \r\n\r\n1 HO/1 HA / 2 MOVABLE BULKHEADS\r\n\r\nHO1: 62,50 X 10,1 X 8,40 m\r\n\r\nGRAIN/BALE 185,400 / 185,400 CBFT \r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS LLOYD'S REGISTER, U.K P&I \r\n\r\nITF FITTED\r\n\r\n+\r\n\r\nMV SKY LBS\r\n\r\n3.821 DWT ON 5,48 M \r\n\r\nBLT 2024, PORTUGAL FLAG\r\n\r\nSID-BOX, DOUBLE SKIN, GEARLESS \r\n\r\n1 HO/1 HA / 2 MOVABLE BULKHEADS\r\n\r\nHO1: 62,50 x 10,10 x 8,40 m\r\n\r\nGRAIN/BALE 185,400 / 185,400 CBFT \r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS LLOYD'S REGISTER, U.K P&I \r\n\r\nITF FITTED\r\n\r\n+\r\n\r\nMV SKY MARINE \r\n\r\n4.569 DWT ON 5,96 M\r\n\r\nBLT 1998, PANAMA FLAG \r\n\r\nSID-BOX, DOUBLE SKIN, GEARLESS\r\n\r\n1 HO/1 HA / 1 MOVABLE BULKHEAD\r\n\r\nHO1: 62,30 x 11,0x 8,45 m \r\n\r\nGRAIN/BALE 203,544 CBFT\r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER \r\n\r\nCLASS LLOYD'S REGISTER, THE AMERICAN CLUB P&I\r\n\r\nICE CLASSED\r\n\r\n \r\n\r\n \r\n\r\nMA: MEVLUT AYNACI                    - Phone: +90 (542) 357 2871 - Teams:\r\nMevlut - Feyz Group\r\n\r\nEK : EMRE KOPUZ                           - Phone : +90 (531) 306 53 41 -\r\nTeams : longstrike28 \r\n\r\n \r\n\r\nBest Regards\r\n\r\n\r\nFEYZ GROUP\r\n\r\nAdress : Altinsehir Mahallesi, Tavukcuyolu Caddesi\r\n\r\nTomurcuk Sokak No 11 Istanbul/Turkey\r\n\r\nOffice    : +90 (216) 527 00 31\r\n\r\nEmail     : chartering@feyzgroup.com <mailto:chartering@feyzgroup.com> \r\n\r\nWeb      : www.feyzgroup.com <http://www.feyzgroup.com> \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "MV SNOW",
+          "confidence": "confirmed",
+          "source_text": "MV SNOW"
+        },
+        "imo": null,
+        "flag": {
+          "value": "Panama",
+          "confidence": "confirmed",
+          "source_text": "PANAMA FLAG"
+        },
+        "built": {
+          "value": 1994,
+          "confidence": "confirmed",
+          "source_text": "BLT 1994"
+        },
+        "class_society": {
+          "value": "Turkish Lloyd",
+          "confidence": "confirmed",
+          "source_text": "CLASS TURKISH LLOYD"
+        },
+        "p_and_i": {
+          "value": "Turk P&I",
+          "confidence": "confirmed",
+          "source_text": "TURK P&I"
+        },
+        "dwt_summer": {
+          "value": 4226,
+          "confidence": "confirmed",
+          "source_text": "4226 DWT ON 5,76 M"
+        },
+        "dwcc": null,
+        "draft_max": {
+          "value": 5.76,
+          "confidence": "interpreted",
+          "source_text": "4226 DWT ON 5,76 M"
+        },
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1 HO / 1 H A"
+        },
+        "hatches_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1 HO / 1 H A"
+        },
+        "grain_capacity": {
+          "value": 203000,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE 203,000 / 203,000 CBFT"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": {
+          "value": 203000,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE 203,000 / 203,000 CBFT"
+        },
+        "hold_dimensions": ["HO1: 62,63 X 11,2 X 8,45 M"],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": false,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "interpreted",
+          "source_text": "SID-BOX, DOUBLE SKIN, GEARLESS"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Gibraltar",
+          "confidence": "confirmed",
+          "source_text": "Gibraltar"
+        },
+        "open_date": {
+          "value": {
+            "open": null,
+            "close": null,
+            "display": "SPOT"
+          },
+          "confidence": "confirmed",
+          "source_text": "SPOT"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "SID-BOX, DOUBLE SKIN",
+            "confidence": "confirmed",
+            "source_text": "SID-BOX, DOUBLE SKIN, GEARLESS"
+          },
+          {
+            "value": "APP A-B-C FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "CO2 FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "CONTAINER FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "2 MOVABLE BULKHEADS",
+            "confidence": "uncertain",
+            "source_text": "1 HO / 1 H A"
+          }
+        ],
+        "unknown_terms": ["APP A-B-C FITTED"]
+      },
+      {
+        "vessel_name": {
+          "value": "MV SKY STR",
+          "confidence": "confirmed",
+          "source_text": "MV SKY STR"
+        },
+        "imo": null,
+        "flag": {
+          "value": "Portugal",
+          "confidence": "confirmed",
+          "source_text": "PORTUGAL FLAG"
+        },
+        "built": {
+          "value": 2024,
+          "confidence": "confirmed",
+          "source_text": "BLT 2024"
+        },
+        "class_society": {
+          "value": "Lloyd's Register",
+          "confidence": "confirmed",
+          "source_text": "CLASS LLOYD'S REGISTER"
+        },
+        "p_and_i": {
+          "value": "UK P&I",
+          "confidence": "confirmed",
+          "source_text": "U.K P&I"
+        },
+        "dwt_summer": {
+          "value": 5129,
+          "confidence": "confirmed",
+          "source_text": "5129 DWT ON 6,55 M"
+        },
+        "dwcc": null,
+        "draft_max": {
+          "value": 6.55,
+          "confidence": "interpreted",
+          "source_text": "5129 DWT ON 6,55 M"
+        },
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1 HO/1 HA / 2 MOVABLE BULKHEADS"
+        },
+        "hatches_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1 HO/1 HA / 2 MOVABLE BULKHEADS"
+        },
+        "grain_capacity": {
+          "value": 247200,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE 247,200 / 247,200 CBFT"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": {
+          "value": 247200,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE 247,200 / 247,200 CBFT"
+        },
+        "hold_dimensions": ["HO1: 60,35 X 12,60 X 9,60"],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": false,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "interpreted",
+          "source_text": "SID-BOX, DOUBLE SKIN, GEARLESS"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Mostaganem",
+          "confidence": "confirmed",
+          "source_text": "Mostaganem"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-02-03",
+            "close": "2026-02-05",
+            "display": "03 - 05 Feb"
+          },
+          "confidence": "interpreted",
+          "source_text": "03 - 05 Feb"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "SID-BOX, DOUBLE SKIN",
+            "confidence": "confirmed",
+            "source_text": "SID-BOX, DOUBLE SKIN, GEARLESS"
+          },
+          {
+            "value": "2 MOVABLE BULKHEADS",
+            "confidence": "confirmed",
+            "source_text": "1 HO/1 HA / 2 MOVABLE BULKHEADS"
+          },
+          {
+            "value": "APP A-B-C FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "CO2 FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "CONTAINER FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "ITF FITTED",
+            "confidence": "confirmed",
+            "source_text": "ITF FITTED"
+          }
+        ],
+        "unknown_terms": ["APP A-B-C FITTED", "ITF FITTED"]
+      },
+      {
+        "vessel_name": {
+          "value": "MV SKY WISH",
+          "confidence": "confirmed",
+          "source_text": "MV SKY WISH"
+        },
+        "imo": null,
+        "flag": {
+          "value": "Portugal",
+          "confidence": "confirmed",
+          "source_text": "PORTUGAL FLAG"
+        },
+        "built": {
+          "value": 2024,
+          "confidence": "confirmed",
+          "source_text": "BLT 2024"
+        },
+        "class_society": {
+          "value": "Lloyd's Register",
+          "confidence": "confirmed",
+          "source_text": "CLASS LLOYD'S REGISTER"
+        },
+        "p_and_i": {
+          "value": "UK P&I",
+          "confidence": "confirmed",
+          "source_text": "U.K P&I"
+        },
+        "dwt_summer": {
+          "value": 5128,
+          "confidence": "confirmed",
+          "source_text": "5128 DWT ON 6,55 M"
+        },
+        "dwcc": null,
+        "draft_max": {
+          "value": 6.55,
+          "confidence": "interpreted",
+          "source_text": "5128 DWT ON 6,55 M"
+        },
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1 HO/1 HA / 2 MOVABLE BULKHEADS"
+        },
+        "hatches_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1 HO/1 HA / 2 MOVABLE BULKHEADS"
+        },
+        "grain_capacity": {
+          "value": 247200,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE 247,200 / 247,200 CBFT"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": {
+          "value": 247200,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE 247,200 / 247,200 CBFT"
+        },
+        "hold_dimensions": ["HO1: 60,35 X 12,60 X 9,60"],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": false,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "interpreted",
+          "source_text": "SID-BOX, DOUBLE SKIN, GEARLESS"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Casablanca",
+          "confidence": "confirmed",
+          "source_text": "Casablanca"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-02-09",
+            "close": "2026-02-11",
+            "display": "09 - 11 Feb"
+          },
+          "confidence": "interpreted",
+          "source_text": "09 - 11 Feb"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "SID-BOX, DOUBLE SKIN",
+            "confidence": "confirmed",
+            "source_text": "SID-BOX, DOUBLE SKIN, GEARLESS"
+          },
+          {
+            "value": "2 MOVABLE BULKHEADS",
+            "confidence": "confirmed",
+            "source_text": "1 HO/1 HA / 2 MOVABLE BULKHEADS"
+          },
+          {
+            "value": "APP A-B-C FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "CO2 FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "CONTAINER FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "ITF FITTED",
+            "confidence": "confirmed",
+            "source_text": "ITF FITTED"
+          }
+        ],
+        "unknown_terms": []
+      },
+      {
+        "vessel_name": {
+          "value": "MV SKY DOLPHIN",
+          "confidence": "confirmed",
+          "source_text": "MV SKY DOLPHIN"
+        },
+        "imo": null,
+        "flag": {
+          "value": "Madeira",
+          "confidence": "confirmed",
+          "source_text": "MADEIRA FLAG"
+        },
+        "built": {
+          "value": 2024,
+          "confidence": "confirmed",
+          "source_text": "BLT 2024"
+        },
+        "class_society": {
+          "value": "Lloyd's Register",
+          "confidence": "confirmed",
+          "source_text": "CLASS LLOYD'S REGISTER"
+        },
+        "p_and_i": {
+          "value": "UK P&I",
+          "confidence": "confirmed",
+          "source_text": "U.K P&I"
+        },
+        "dwt_summer": {
+          "value": 3821,
+          "confidence": "confirmed",
+          "source_text": "3821 DWT ON 5,48 M"
+        },
+        "dwcc": null,
+        "draft_max": {
+          "value": 5.48,
+          "confidence": "interpreted",
+          "source_text": "3821 DWT ON 5,48 M"
+        },
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1 HO/1 HA / 2 MOVABLE BULKHEADS"
+        },
+        "hatches_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1 HO/1 HA / 2 MOVABLE BULKHEADS"
+        },
+        "grain_capacity": {
+          "value": 185400,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE 185,400 / 185,400 CBFT"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": {
+          "value": 185400,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE 185,400 / 185,400 CBFT"
+        },
+        "hold_dimensions": ["HO1: 62,50 X 10,1 X 8,40 m"],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": false,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "interpreted",
+          "source_text": "SID-BOX, DOUBLE SKIN, GEARLESS"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Aveiro",
+          "confidence": "confirmed",
+          "source_text": "Aveiro"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-02-09",
+            "close": "2026-02-11",
+            "display": "09 - 11 Feb"
+          },
+          "confidence": "interpreted",
+          "source_text": "09 - 11 Feb"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "SID-BOX, DOUBLE SKIN",
+            "confidence": "confirmed",
+            "source_text": "SID-BOX, DOUBLE SKIN, GEARLESS"
+          },
+          {
+            "value": "2 MOVABLE BULKHEADS",
+            "confidence": "confirmed",
+            "source_text": "1 HO/1 HA / 2 MOVABLE BULKHEADS"
+          },
+          {
+            "value": "APP A-B-C FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "CO2 FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "CONTAINER FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "ITF FITTED",
+            "confidence": "confirmed",
+            "source_text": "ITF FITTED"
+          }
+        ],
+        "unknown_terms": []
+      },
+      {
+        "vessel_name": {
+          "value": "MV SKY FEYZ",
+          "confidence": "confirmed",
+          "source_text": "MV SKY FEYZ"
+        },
+        "imo": null,
+        "flag": {
+          "value": "Panama",
+          "confidence": "confirmed",
+          "source_text": "PANAMA FLAG"
+        },
+        "built": {
+          "value": 1995,
+          "confidence": "confirmed",
+          "source_text": "BLT 1995"
+        },
+        "class_society": {
+          "value": "Turkish Lloyd",
+          "confidence": "confirmed",
+          "source_text": "CLASS TURKISH LLOYD"
+        },
+        "p_and_i": {
+          "value": "Turk P&I",
+          "confidence": "confirmed",
+          "source_text": "TURK P&I"
+        },
+        "dwt_summer": {
+          "value": 3662,
+          "confidence": "confirmed",
+          "source_text": "3.662 DWT ON 5,00 M"
+        },
+        "dwcc": null,
+        "draft_max": {
+          "value": 5,
+          "confidence": "interpreted",
+          "source_text": "3.662 DWT ON 5,00 M"
+        },
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1 HO/2 HA"
+        },
+        "hatches_count": {
+          "value": 2,
+          "confidence": "confirmed",
+          "source_text": "1 HO/2 HA"
+        },
+        "grain_capacity": {
+          "value": 157000,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE 157,000 CBFT / 153 468 CBFT"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": {
+          "value": 153468,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE 157,000 CBFT / 153 468 CBFT"
+        },
+        "hold_dimensions": ["HO1: 63,65 X 12,2 X 5,1 M"],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": false,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "interpreted",
+          "source_text": "SID-BOX LIKE, DOUBLE SKIN, GEARLESS"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Alexandria",
+          "confidence": "confirmed",
+          "source_text": "Alexandria"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-02-26",
+            "close": "2026-02-28",
+            "display": "26 - 28 Feb"
+          },
+          "confidence": "interpreted",
+          "source_text": "26 - 28 Feb"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "SID-BOX LIKE, DOUBLE SKIN",
+            "confidence": "confirmed",
+            "source_text": "SID-BOX LIKE, DOUBLE SKIN, GEARLESS"
+          },
+          {
+            "value": "APP A-B-C FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "CO2 FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "CONTAINER FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "ICE CLASSED",
+            "confidence": "confirmed",
+            "source_text": "ICE CLASSED"
+          }
+        ],
+        "unknown_terms": []
+      },
+      {
+        "vessel_name": {
+          "value": "MV SKY EAGLE",
+          "confidence": "confirmed",
+          "source_text": "MV SKY EAGLE"
+        },
+        "imo": null,
+        "flag": {
+          "value": "Portugal",
+          "confidence": "confirmed",
+          "source_text": "PORTUGAL FLAG"
+        },
+        "built": {
+          "value": 2025,
+          "confidence": "confirmed",
+          "source_text": "BLT 2025"
+        },
+        "class_society": {
+          "value": "Lloyd's Register",
+          "confidence": "confirmed",
+          "source_text": "CLASS LLOYD'S REGISTER"
+        },
+        "p_and_i": {
+          "value": "UK P&I",
+          "confidence": "confirmed",
+          "source_text": "U.K P&I"
+        },
+        "dwt_summer": {
+          "value": 3804,
+          "confidence": "confirmed",
+          "source_text": "3804 DWT ON 5,48 M"
+        },
+        "dwcc": null,
+        "draft_max": {
+          "value": 5.48,
+          "confidence": "interpreted",
+          "source_text": "3804 DWT ON 5,48 M"
+        },
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1 HO/1 HA / 2 MOVABLE BULKHEADS"
+        },
+        "hatches_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1 HO/1 HA / 2 MOVABLE BULKHEADS"
+        },
+        "grain_capacity": {
+          "value": 185400,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE 185,400 / 185,400 CBFT"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": {
+          "value": 185400,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE 185,400 / 185,400 CBFT"
+        },
+        "hold_dimensions": ["HO1: 62,50 X 10,1 X 8,40 m"],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": false,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "interpreted",
+          "source_text": "SID-BOX, DOUBLE SKIN, GEARLESS"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Iskenderun",
+          "confidence": "confirmed",
+          "source_text": "Iskenderun"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-02-25",
+            "close": "2026-02-28",
+            "display": "25 - 28 Feb"
+          },
+          "confidence": "interpreted",
+          "source_text": "25 - 28 Feb"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "SID-BOX, DOUBLE SKIN",
+            "confidence": "confirmed",
+            "source_text": "SID-BOX, DOUBLE SKIN, GEARLESS"
+          },
+          {
+            "value": "2 MOVABLE BULKHEADS",
+            "confidence": "confirmed",
+            "source_text": "1 HO/1 HA / 2 MOVABLE BULKHEADS"
+          },
+          {
+            "value": "APP A-B-C FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "CO2 FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "CONTAINER FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "ITF FITTED",
+            "confidence": "confirmed",
+            "source_text": "ITF FITTED"
+          }
+        ],
+        "unknown_terms": []
+      },
+      {
+        "vessel_name": {
+          "value": "MV SKY FALCON",
+          "confidence": "confirmed",
+          "source_text": "MV SKY FALCON"
+        },
+        "imo": null,
+        "flag": {
+          "value": "Madeira",
+          "confidence": "confirmed",
+          "source_text": "MADEIRA FLAG"
+        },
+        "built": {
+          "value": 2024,
+          "confidence": "confirmed",
+          "source_text": "BLT 2024"
+        },
+        "class_society": {
+          "value": "Lloyd's Register",
+          "confidence": "confirmed",
+          "source_text": "CLASS LLOYD'S REGISTER"
+        },
+        "p_and_i": {
+          "value": "UK P&I",
+          "confidence": "confirmed",
+          "source_text": "U.K P&I"
+        },
+        "dwt_summer": {
+          "value": 3821,
+          "confidence": "confirmed",
+          "source_text": "3821 DWT ON 5,48 M"
+        },
+        "dwcc": null,
+        "draft_max": {
+          "value": 5.48,
+          "confidence": "interpreted",
+          "source_text": "3821 DWT ON 5,48 M"
+        },
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1 HO/1 HA / 2 MOVABLE BULKHEADS"
+        },
+        "hatches_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1 HO/1 HA / 2 MOVABLE BULKHEADS"
+        },
+        "grain_capacity": {
+          "value": 185400,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE 185,400 / 185,400 CBFT"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": {
+          "value": 185400,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE 185,400 / 185,400 CBFT"
+        },
+        "hold_dimensions": ["HO1: 62,50 X 10,1 X 8,40 m"],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": false,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "interpreted",
+          "source_text": "SID-BOX, DOUBLE SKIN, GEARLESS"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Adriatic",
+          "confidence": "confirmed",
+          "source_text": "Adriatic"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-02-18",
+            "close": "2026-02-20",
+            "display": "18 - 20 Feb"
+          },
+          "confidence": "interpreted",
+          "source_text": "18 - 20 Feb"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "SID-BOX, DOUBLE SKIN",
+            "confidence": "confirmed",
+            "source_text": "SID-BOX, DOUBLE SKIN, GEARLESS"
+          },
+          {
+            "value": "2 MOVABLE BULKHEADS",
+            "confidence": "confirmed",
+            "source_text": "1 HO/1 HA / 2 MOVABLE BULKHEADS"
+          },
+          {
+            "value": "APP A-B-C FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "CO2 FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "CONTAINER FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "ITF FITTED",
+            "confidence": "confirmed",
+            "source_text": "ITF FITTED"
+          }
+        ],
+        "unknown_terms": []
+      },
+      {
+        "vessel_name": {
+          "value": "MV SKY LBS",
+          "confidence": "confirmed",
+          "source_text": "MV SKY LBS"
+        },
+        "imo": null,
+        "flag": {
+          "value": "Portugal",
+          "confidence": "confirmed",
+          "source_text": "PORTUGAL FLAG"
+        },
+        "built": {
+          "value": 2024,
+          "confidence": "confirmed",
+          "source_text": "BLT 2024"
+        },
+        "class_society": {
+          "value": "Lloyd's Register",
+          "confidence": "confirmed",
+          "source_text": "CLASS LLOYD'S REGISTER"
+        },
+        "p_and_i": {
+          "value": "UK P&I",
+          "confidence": "confirmed",
+          "source_text": "U.K P&I"
+        },
+        "dwt_summer": {
+          "value": 3821,
+          "confidence": "confirmed",
+          "source_text": "3.821 DWT ON 5,48 M"
+        },
+        "dwcc": null,
+        "draft_max": {
+          "value": 5.48,
+          "confidence": "interpreted",
+          "source_text": "3.821 DWT ON 5,48 M"
+        },
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1 HO/1 HA / 2 MOVABLE BULKHEADS"
+        },
+        "hatches_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1 HO/1 HA / 2 MOVABLE BULKHEADS"
+        },
+        "grain_capacity": {
+          "value": 185400,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE 185,400 / 185,400 CBFT"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": {
+          "value": 185400,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE 185,400 / 185,400 CBFT"
+        },
+        "hold_dimensions": ["HO1: 62,50 x 10,10 x 8,40 m"],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": false,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "interpreted",
+          "source_text": "SID-BOX, DOUBLE SKIN, GEARLESS"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "UK",
+          "confidence": "confirmed",
+          "source_text": "UK"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-02-22",
+            "close": "2026-02-24",
+            "display": "22 - 24 Feb"
+          },
+          "confidence": "interpreted",
+          "source_text": "22 - 24 Feb"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "SID-BOX, DOUBLE SKIN",
+            "confidence": "confirmed",
+            "source_text": "SID-BOX, DOUBLE SKIN, GEARLESS"
+          },
+          {
+            "value": "2 MOVABLE BULKHEADS",
+            "confidence": "confirmed",
+            "source_text": "1 HO/1 HA / 2 MOVABLE BULKHEADS"
+          },
+          {
+            "value": "APP A-B-C FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "CO2 FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "CONTAINER FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER FITTED"
+          },
+          {
+            "value": "ITF FITTED",
+            "confidence": "confirmed",
+            "source_text": "ITF FITTED"
+          }
+        ],
+        "unknown_terms": []
+      },
+      {
+        "vessel_name": {
+          "value": "MV SKY MARINE",
+          "confidence": "confirmed",
+          "source_text": "MV SKY MARINE"
+        },
+        "imo": null,
+        "flag": {
+          "value": "Panama",
+          "confidence": "confirmed",
+          "source_text": "PANAMA FLAG"
+        },
+        "built": {
+          "value": 1998,
+          "confidence": "confirmed",
+          "source_text": "BLT 1998"
+        },
+        "class_society": {
+          "value": "Lloyd's Register",
+          "confidence": "confirmed",
+          "source_text": "CLASS LLOYD'S REGISTER"
+        },
+        "p_and_i": {
+          "value": "The American Club",
+          "confidence": "confirmed",
+          "source_text": "THE AMERICAN CLUB P&I"
+        },
+        "dwt_summer": {
+          "value": 4569,
+          "confidence": "confirmed",
+          "source_text": "4.569 DWT ON 5,96 M"
+        },
+        "dwcc": null,
+        "draft_max": {
+          "value": 5.96,
+          "confidence": "interpreted",
+          "source_text": "4.569 DWT ON 5,96 M"
+        },
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1 HO/1 HA / 1 MOVABLE BULKHEAD"
+        },
+        "hatches_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1 HO/1 HA / 1 MOVABLE BULKHEAD"
+        },
+        "grain_capacity": {
+          "value": 203544,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE 203,544 CBFT"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": {
+          "value": 203544,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE 203,544 CBFT"
+        },
+        "hold_dimensions": ["HO1: 62,30 x 11,0x 8,45 m"],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": false,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "interpreted",
+          "source_text": "SID-BOX, DOUBLE SKIN, GEARLESS"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Trabzon",
+          "confidence": "confirmed",
+          "source_text": "Trabzon"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-02-28",
+            "close": null,
+            "display": "28 - 30 Feb"
+          },
+          "confidence": "interpreted",
+          "source_text": "28 - 30 Feb"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "SID-BOX, DOUBLE SKIN",
+            "confidence": "confirmed",
+            "source_text": "SID-BOX, DOUBLE SKIN, GEARLESS"
+          },
+          {
+            "value": "1 MOVABLE BULKHEAD",
+            "confidence": "confirmed",
+            "source_text": "1 HO/1 HA / 1 MOVABLE BULKHEAD"
+          },
+          {
+            "value": "APP A-B-C FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER"
+          },
+          {
+            "value": "CO2 FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER"
+          },
+          {
+            "value": "CONTAINER FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP A-B-C FITTED, CO2 & CONTAINER"
+          },
+          {
+            "value": "ICE CLASSED",
+            "confidence": "confirmed",
+            "source_text": "ICE CLASSED"
+          }
+        ],
+        "unknown_terms": ["APP A-B-C FITTED", "ITF FITTED"]
+      }
+    ]
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "id": "etms-parse-cargo-087",
+  "source_email_id": "19e0977d3c8155ca",
+  "category": "forwarded",
+  "input": {
+    "subject": "FW: 1 N Brazil ( max loa 190 m max draft 11.5) /1 N China 30-47.000 mt or full cargo of blk mang ore",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:21:46.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Friday, 20 March 2026 19:34\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: RE:1 N Brazil ( max loa 190 m max draft 11.5) /1 N China 30-47.000 mt or full cargo of blk mang ore\r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n*For quick response pls include \"takis\" in the body of the email*\r\n\r\nGD DAY \r\n  \r\nPLS OFFER FOR \r\n\r\n1 N Brazil ( max loa 190 m max draft 11.5) /1 N China\r\n30-47.000 mt or full cargo of blk mang ore\r\n9000/15000 mt pwwday shinc + 12 h tt\r\n1-10th  April 2026 \r\n12 h tt\r\n1,25% past\r\n\r\nPlease add our email address ( chartering@niavigrains.gr ) to your circulation list for cargoes / positions\r\n\r\nBEST RGRDS\r\nTAK  (TAKIS KAPETANIOS)\r\nE MAIL : chartering@niavigrains.gr\r\nMobile/WhatsApp:0030 6944528968\r\nSKYPE: captanpanos\r\nLINKEDIN : www.linkedin.com/in/takis-kapetanios-5031344b/\r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr\r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\n\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "North Brazil (unspecified port, max LOA 190m, max draft 11.5m)",
+          "confidence": "interpreted",
+          "source_text": "1 N Brazil ( max loa 190 m max draft 11.5)"
+        },
+        "origin_country": {
+          "value": "Brazil",
+          "confidence": "confirmed",
+          "source_text": "1 N Brazil ( max loa 190 m max draft 11.5)"
+        },
+        "destination_port": {
+          "value": "North China (unspecified port)",
+          "confidence": "interpreted",
+          "source_text": "1 N China"
+        },
+        "destination_country": {
+          "value": "China",
+          "confidence": "confirmed",
+          "source_text": "1 N China"
+        },
+        "cargo_description": {
+          "value": "Bulk manganese ore",
+          "confidence": "confirmed",
+          "source_text": "blk mang ore"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 47000,
+          "confidence": "interpreted",
+          "source_text": "30-47.000 mt or full cargo of blk mang ore"
+        },
+        "weight_mt_min": {
+          "value": 30000,
+          "confidence": "interpreted",
+          "source_text": "30-47.000 mt or full cargo of blk mang ore"
+        },
+        "weight_mt_max": {
+          "value": 47000,
+          "confidence": "interpreted",
+          "source_text": "30-47.000 mt or full cargo of blk mang ore"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "blk mang ore"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "1–10 April 2026",
+          "confidence": "confirmed",
+          "source_text": "1-10th  April 2026"
+        },
+        "laycan": {
+          "value": "1/10 April 2026",
+          "confidence": "confirmed",
+          "source_text": "1-10th  April 2026"
+        },
+        "loading_rate": {
+          "value": "9,000 MT/day SHINC (per weather working day)",
+          "confidence": "confirmed",
+          "source_text": "9000/15000 mt pwwday shinc"
+        },
+        "loading_terms": {
+          "value": "SHINC, 12 hours turn time",
+          "confidence": "confirmed",
+          "source_text": "9000/15000 mt pwwday shinc + 12 h tt"
+        },
+        "discharge_rate": {
+          "value": "15,000 MT/day SHINC (per weather working day)",
+          "confidence": "confirmed",
+          "source_text": "9000/15000 mt pwwday shinc"
+        },
+        "discharge_terms": {
+          "value": "SHINC, 12 hours turn time",
+          "confidence": "confirmed",
+          "source_text": "9000/15000 mt pwwday shinc + 12 h tt"
+        },
+        "commission_percent": {
+          "value": 1.25,
+          "confidence": "confirmed",
+          "source_text": "1,25% past"
+        },
+        "commission_terms": {
+          "value": "1.25% (likely address commission / brokerage — 'past' may be a typo for 'pasted' or broker shorthand)",
+          "confidence": "uncertain",
+          "source_text": "1,25% past"
+        },
+        "special_requirements": {
+          "value": "Vessel restrictions: max LOA 190m, max draft 11.5m at load port (North Brazil). Full cargo option available as alternative to 30–47,000 MT range. 12-hour turn time at each end.",
+          "confidence": "confirmed",
+          "source_text": "1 N Brazil ( max loa 190 m max draft 11.5) /1 N China 30-47.000 mt or full cargo of blk mang ore"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Specific load port name in North Brazil not stated — only vessel restrictions (max LOA 190m, max draft 11.5m) given",
+          "Specific discharge port name in North China not stated",
+          "Freight rate / freight basis not provided (inquiry is requesting offers)",
+          "Demurrage / despatch rates not stated",
+          "Stowage factor for manganese ore not provided",
+          "Charter party form not specified",
+          "Meaning of 'past' in '1.25% past' is unclear — likely a typo or shorthand; commission split/type unconfirmed",
+          "Whether 30–47,000 MT is MOLCHOPT or owner's option not clarified",
+          "Full cargo tonnage equivalent not stated"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-055",
+  "source_email_id": "19e07ce5f2f18300",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: 2 VSLS - 5000MT\u00a0DWCC/SID/GLESS OPEN EX CHINA & S.KOREA - PPT",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:37:03.000Z",
+    "body": " \r\n\r\nFrom: UNIMAR NO REPLY <no-reply@unimarservice.com> \r\nSent: Wednesday, 6 May 2026 14:49\r\nSubject: 2 VSLS - 5000MT DWCC/SID/GLESS OPEN EX CHINA & S.KOREA - PPT\r\n\r\n \r\n\r\nFM: UNIMAR SERVICE LIMITED\r\n\r\n**********************************\r\n\r\nPlease add in your circulation our\r\n\r\nemail: mail@unimarservice.com <mailto:mail@unimarservice.com> \r\n\r\n**********************************\r\n\r\n \r\n\r\nTo: Chartering Desk\r\n\r\n \r\n\r\nPlease offer best/firm:\r\n\r\n \r\n\r\n5000MT DWCC/SID/BOX/GLESS open S.KOREA ppt/onw => PG/ENROUT\r\n\r\n \r\n\r\n+++\r\n\r\n \r\n\r\n5000MT DWCC/SID/GLESS open CHINA ppt/onw => BLACK SEA /ENROUT\r\n\r\nPleased to hear.\r\n\r\n \r\n\r\nBrgds, USL\r\n\r\nM/Viber/Wup/Telegram/WeChat: +357 99581395 <tel:+357%2099581395>  (24H/7D)\r\n\r\nAS BROKERS ONLY - SINCE 2006\r\n\r\n+++\r\n\r\nIn case the content of this message is irrelevant to your business, please\r\nnotify us by replying \"UNSUBSCRIBE\" in the subject field in order to remove\r\nyou from these messages, sorry any inconvenience caused.\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07ce5f2f18300",
+    "category": "VESSEL_POSITION",
+    "urgency": "high",
+    "confidence": 0.82,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "UNIMAR SERVICE LIMITED",
+    "original_sender_company": "UNIMAR SERVICE LIMITED"
+  }
+}

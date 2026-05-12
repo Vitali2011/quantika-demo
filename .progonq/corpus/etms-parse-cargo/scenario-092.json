@@ -1,0 +1,114 @@
+{
+  "id": "etms-parse-cargo-092",
+  "source_email_id": "19e097ae5d6335c1",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: Alexandria / Liverpool about 6000 ts steel HRC",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:25:06.000Z",
+    "body": " \r\n\r\nFrom: Mustafa SAY - BA Chartering Istanbul <mustafa@bachartering.com> \r\nSent: Thursday, 26 February 2026 10:31\r\nTo: Mustafa SAY - BA Chartering Istanbul <mustafa@bachartering.com>\r\nSubject: Alexandria / Liverpool about 6000 ts steel HRC \r\n\r\n \r\n\r\nDear All,\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPlease offer firm for : \r\n\r\n \r\n\r\nFIXED THEIR LAST \r\n\r\n \r\n\r\nAlexandria  / Liverpool \r\n\r\nAbt 6000-6100 mts hrc uw of 16 upto 25 tons\r\n\r\n1500x for 2 holds, 2250x for 3 holds/3000x\r\n\r\nSpot-onwards\r\n\r\n1.25 pct comm \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nBest Regards\r\n\r\nMustafa Say\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nBA CHARTERING ISTANBUL\r\n\r\nFener Kalamis Cad. Doganbey Apt. No 91 D:3\r\n\r\nFenerbahce/Kadikoy/Istanbul\r\n\r\n \r\n\r\nTel : +90 532 603 51 28\r\n\r\ne-mail :  <mailto:mustafa@bachartering.com> mustafa@bachartering.com /\r\n<mailto:chartering@bachartering.com> chartering@bachartering.com \r\n\r\nwebsite :  <http://www.bachartering.com> www.bachartering.com \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Alexandria",
+          "confidence": "confirmed",
+          "source_text": "Alexandria  / Liverpool"
+        },
+        "origin_country": {
+          "value": "Egypt",
+          "confidence": "interpreted",
+          "source_text": "Alexandria  / Liverpool"
+        },
+        "destination_port": {
+          "value": "Liverpool",
+          "confidence": "confirmed",
+          "source_text": "Alexandria  / Liverpool"
+        },
+        "destination_country": {
+          "value": "United Kingdom",
+          "confidence": "interpreted",
+          "source_text": "Alexandria  / Liverpool"
+        },
+        "cargo_description": {
+          "value": "Steel Hot Rolled Coils (HRC), unit weight 16 up to 25 tons",
+          "confidence": "confirmed",
+          "source_text": "Abt 6000-6100 mts hrc uw of 16 upto 25 tons"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 6100,
+          "confidence": "interpreted",
+          "source_text": "Abt 6000-6100 mts hrc uw of 16 upto 25 tons"
+        },
+        "weight_mt_min": {
+          "value": 6000,
+          "confidence": "interpreted",
+          "source_text": "Abt 6000-6100 mts hrc uw of 16 upto 25 tons"
+        },
+        "weight_mt_max": {
+          "value": 6100,
+          "confidence": "interpreted",
+          "source_text": "Abt 6000-6100 mts hrc uw of 16 upto 25 tons"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "hrc uw of 16 upto 25 tons"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Spot, onwards",
+          "confidence": "confirmed",
+          "source_text": "Spot-onwards"
+        },
+        "laycan": {
+          "value": "Spot / prompt",
+          "confidence": "interpreted",
+          "source_text": "Spot-onwards"
+        },
+        "loading_rate": {
+          "value": 3000,
+          "confidence": "interpreted",
+          "source_text": "1500x for 2 holds, 2250x for 3 holds/3000x"
+        },
+        "loading_terms": null,
+        "discharge_rate": {
+          "value": "1500 MT/day for 2 holds; 2250 MT/day for 3 holds",
+          "confidence": "confirmed",
+          "source_text": "1500x for 2 holds, 2250x for 3 holds/3000x"
+        },
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 1.25,
+          "confidence": "confirmed",
+          "source_text": "1.25 pct comm"
+        },
+        "commission_terms": {
+          "value": "broker commission",
+          "confidence": "confirmed",
+          "source_text": "1.25 pct comm"
+        },
+        "special_requirements": {
+          "value": "Unit weight of 16 up to 25 tons per coil. Cargo noted as FIXED THEIR LAST (already fixed at charterer's last offer).",
+          "confidence": "confirmed",
+          "source_text": "uw of 16 upto 25 tons"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Vessel requirements / number of holds not confirmed (rate varies: 2 holds vs 3 holds)",
+          "Whether 3000x is the loading rate at Alexandria or a third discharge rate tier needs clarification",
+          "No demurrage / despatch terms stated",
+          "No freight rate (hire rate) indicated — request is for firm offer",
+          "No specific laycan dates provided beyond 'spot-onwards'"
+        ],
+        "unknown_terms": []
+      }
+    ]
+  }
+}

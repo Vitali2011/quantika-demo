@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-046",
+  "source_email_id": "19e07cbe0a94b74c",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: 5000mts unpeeled rice in bulk Mersin,Turkey / Syria,Tartous",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:34:19.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Wednesday, 6 May 2026 19:51\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: Re: 5000mts unpeeled rice in bulk Mersin,Turkey / Syria,Tartous\r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n*For quick response pls include \"takis\" in the body of the email*\r\n\r\nGD DAY \r\n\r\nPLS OFFER FOR \r\n\r\n5000mts unpeeled rice in bulk\r\nMersin,Turkey / Syria,Tartous  \r\nSpot/Prompt\r\n10 ttl days try 9\r\n2.5 past us\r\n\r\nPlease add our email address ( chartering@niavigrains.gr ) to your circulation list for cargoes / positions\r\n\r\nBEST RGRDS\r\nTAK  (TAKIS KAPETANIOS)\r\nE MAIL : chartering@niavigrains.gr\r\nMobile/WhatsApp:0030 6944528968\r\nSKYPE: captanpanos\r\nLINKEDIN : www.linkedin.com/in/takis-kapetanios-5031344b/\r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr\r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "id": "19e07cbe0a94b74c",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.93,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Takis Kapetanios",
+    "original_sender_company": "Niavigrains Trading Chartering S.A."
+  }
+}

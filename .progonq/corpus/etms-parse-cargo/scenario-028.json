@@ -1,0 +1,125 @@
+{
+  "id": "etms-parse-cargo-028",
+  "source_email_id": "19e07cd83bad47a5",
+  "category": "numeric_edge",
+  "input": {
+    "subject": "FW: 35.000 mts hrc RED SEA / ITALY",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:36:06.000Z",
+    "body": " \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Wednesday, 6 May 2026 15:29\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: 35.000 mts hrc RED SEA / ITALY\r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n\r\ngday\r\n\r\n \r\n\r\npls offer your described ladies for the fol cargo - do not recirculate pls  : \r\n\r\n\r\nKING ABDULLAH or YANBU  / RAVENNA\r\n35.000 mts 10% HOT ROLLED STEEL COILS, MAX UW 30 MT\r\n2500 SHINC / 4000 SSHEX EIU\r\nfrom 20th MAY onwards\r\n3.75% ttl here\r\n\r\n\r\n\r\nBEST RGRDS\r\nTASOS KOUMANIS ( mob. 00306937322574)\r\nE MAILS : chartering@niavigrains.gr <mailto:chartering@niavigrains.gr>  \r\n\r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr <http://www.niavigrains.gr> \r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\nSKYPE : NIAVIGRAINS Tasos\r\nLinkedIn: www.linkedin.com/in/tasoskoumanis <http://www.linkedin.com/in/tasoskoumanis> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "King Abdullah Port or Yanbu",
+          "confidence": "confirmed",
+          "source_text": "KING ABDULLAH or YANBU  / RAVENNA"
+        },
+        "origin_country": {
+          "value": "Saudi Arabia",
+          "confidence": "interpreted",
+          "source_text": "KING ABDULLAH or YANBU  / RAVENNA"
+        },
+        "destination_port": {
+          "value": "Ravenna",
+          "confidence": "confirmed",
+          "source_text": "KING ABDULLAH or YANBU  / RAVENNA"
+        },
+        "destination_country": {
+          "value": "Italy",
+          "confidence": "confirmed",
+          "source_text": "RED SEA / ITALY"
+        },
+        "cargo_description": {
+          "value": "Hot Rolled Steel Coils, max unit weight 30 MT",
+          "confidence": "confirmed",
+          "source_text": "35.000 mts 10% HOT ROLLED STEEL COILS, MAX UW 30 MT"
+        },
+        "cargo_origin_country": {
+          "value": null
+        },
+        "weight_mt": {
+          "value": 35000,
+          "confidence": "interpreted",
+          "source_text": "35.000 mts 10% HOT ROLLED STEEL COILS"
+        },
+        "weight_mt_min": {
+          "value": 31500,
+          "confidence": "interpreted",
+          "source_text": "35.000 mts 10%"
+        },
+        "weight_mt_max": {
+          "value": 38500,
+          "confidence": "interpreted",
+          "source_text": "35.000 mts 10%"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "HOT ROLLED STEEL COILS"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "From 20th May 2026 onwards",
+          "confidence": "confirmed",
+          "source_text": "from 20th MAY onwards"
+        },
+        "laycan": {
+          "value": "20 May 2026 onwards",
+          "confidence": "interpreted",
+          "source_text": "from 20th MAY onwards"
+        },
+        "loading_rate": {
+          "value": 2500,
+          "confidence": "confirmed",
+          "source_text": "2500 SHINC / 4000 SSHEX EIU"
+        },
+        "loading_terms": {
+          "value": "SHINC",
+          "confidence": "confirmed",
+          "source_text": "2500 SHINC / 4000 SSHEX EIU"
+        },
+        "discharge_rate": {
+          "value": 4000,
+          "confidence": "confirmed",
+          "source_text": "2500 SHINC / 4000 SSHEX EIU"
+        },
+        "discharge_terms": {
+          "value": "SSHEX EIU",
+          "confidence": "confirmed",
+          "source_text": "2500 SHINC / 4000 SSHEX EIU"
+        },
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75% ttl here"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "3.75% ttl here"
+        },
+        "special_requirements": {
+          "value": "Max unit weight per coil: 30 MT",
+          "confidence": "confirmed",
+          "source_text": "MAX UW 30 MT"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Exact laycan end date not specified (only 'from 20th May onwards')",
+          "Load port not confirmed — King Abdullah Port or Yanbu (one or both?)",
+          "Freight rate / basis not stated",
+          "Incoterms not specified",
+          "NOR tendering conditions not specified (WIBON/WIPON etc.)",
+          "Demurrage / despatch rate not specified"
+        ],
+        "unknown_terms": []
+      }
+    ]
+  }
+}

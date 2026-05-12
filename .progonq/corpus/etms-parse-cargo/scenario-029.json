@@ -1,0 +1,115 @@
+{
+  "id": "etms-parse-cargo-029",
+  "source_email_id": "19e07cdb7df50d0f",
+  "category": "single_cargo",
+  "input": {
+    "subject": "FW: ALEXANDRIA / BRAILA",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:36:18.000Z",
+    "body": " \r\n\r\nFrom: Hope Chartering <hope@hopechartering.com> \r\nSent: Wednesday, 6 May 2026 15:17\r\nTo: management@etm-services.net\r\nSubject: ALEXANDRIA / BRAILA\r\n\r\n \r\n\r\n\r\n\r\nGood day,\r\n\r\nAny interest?\r\n\r\nAlexandria / Braila\r\nm/m 4000 mts salt in bb – dim: 90x90x90 cm, uw: 1.5 mts – fully stackable\r\nSpot – try vsl dates\r\n6 ttl\r\n2,5%\r\n\r\n- Sub vsl failed, need substitude. Can provide frt idea for suitable vsl\r\n\r\n\r\n\r\n\r\nBest Regards\r\nMert Ekmekci\r\n\r\nHope Chartering\r\nE-mail: hope@hopechartering.com\r\nMob: +90 542 347 35 63\r\nAs broker only\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Alexandria",
+          "confidence": "confirmed",
+          "source_text": "Alexandria / Braila"
+        },
+        "origin_country": {
+          "value": "Egypt",
+          "confidence": "interpreted",
+          "source_text": "Alexandria / Braila"
+        },
+        "destination_port": {
+          "value": "Braila",
+          "confidence": "confirmed",
+          "source_text": "Alexandria / Braila"
+        },
+        "destination_country": {
+          "value": "Romania",
+          "confidence": "interpreted",
+          "source_text": "Alexandria / Braila"
+        },
+        "cargo_description": {
+          "value": "Salt in big bags, dimensions 90x90x90 cm, unit weight 1.5 mt, fully stackable",
+          "confidence": "confirmed",
+          "source_text": "m/m 4000 mts salt in bb – dim: 90x90x90 cm, uw: 1.5 mts – fully stackable"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 4000,
+          "confidence": "confirmed",
+          "source_text": "m/m 4000 mts salt in bb"
+        },
+        "weight_mt_min": {
+          "value": 4000,
+          "confidence": "confirmed",
+          "source_text": "m/m 4000 mts salt in bb"
+        },
+        "weight_mt_max": {
+          "value": 4000,
+          "confidence": "confirmed",
+          "source_text": "m/m 4000 mts salt in bb"
+        },
+        "volume_cbm": null,
+        "dimensions": {
+          "value": "90x90x90 cm per big bag",
+          "confidence": "confirmed",
+          "source_text": "dim: 90x90x90 cm, uw: 1.5 mts"
+        },
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "interpreted",
+          "source_text": "salt in bb – dim: 90x90x90 cm, uw: 1.5 mts – fully stackable"
+        },
+        "container_type": null,
+        "quantity": {
+          "value": null,
+          "confidence": null,
+          "source_text": null
+        },
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Spot – vessel dates to be tried",
+          "confidence": "interpreted",
+          "source_text": "Spot – try vsl dates"
+        },
+        "laycan": {
+          "value": null,
+          "confidence": null,
+          "source_text": null
+        },
+        "loading_rate": null,
+        "loading_terms": null,
+        "discharge_rate": null,
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 6,
+          "confidence": "confirmed",
+          "source_text": "6 ttl"
+        },
+        "commission_terms": {
+          "value": "TTL; 2.5% brokerage",
+          "confidence": "interpreted",
+          "source_text": "6 ttl\n2,5%"
+        },
+        "special_requirements": {
+          "value": "Big bags fully stackable; unit weight 1.5 mt per bag; substitute vessel required (original sub vessel failed)",
+          "confidence": "confirmed",
+          "source_text": "uw: 1.5 mts – fully stackable\nSub vsl failed, need substitude. Can provide frt idea for suitable vsl"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Exact laycan / loading window not specified beyond 'spot'",
+          "Freight rate or freight idea not yet provided (offered on request)",
+          "Number of big bags (units) not stated — only total weight 4000 mt",
+          "Loading and discharge terms (FIO/FIOST/CQD etc.) not specified",
+          "Demurrage / despatch rates not specified",
+          "Total volume / CBM not stated — can be calculated once bag count is confirmed"
+        ],
+        "unknown_terms": ["m/m (context unclear — possibly 'mind/mind' or a typing artifact)"]
+      }
+    ]
+  }
+}

@@ -1,0 +1,183 @@
+{
+  "id": "etms-parse-vessel-017",
+  "source_email_id": "19e07c79d78505e4",
+  "category": "dwcc_edge",
+  "input": {
+    "subject": "FW: MV TBN ABT 17 K DWT 96 BUILT ABT 700 K CBFT GRAIN CAP GEARED TO BE OPEN AT GIBRALTAR RANGE 24-25TH MAY -SHE CAN TRADE WORLDWIDE--M/V HACI HILMI II -6976MTS DWT-92 BLT -6750MTS DWCC-3 X 10MTS CRANES-GR:309.895CBFT -OPEN MARMARA SEA ON 22-23RD MAY",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:29:40.000Z",
+    "body": " \r\n\r\nFrom: SONAY DENIZCILIK <sonay@sonayshipping.com> \r\nSent: Thursday, 7 May 2026 13:31\r\nTo: management@etm-services.net\r\nSubject: MV TBN ABT 17 K DWT 96 BUILT ABT 700 K CBFT GRAIN CAP GEARED TO BE OPEN AT GIBRALTAR RANGE 24-25TH MAY -SHE CAN TRADE WORLDWIDE--M/V HACI HILMI II -6976MTS DWT-92 BLT -6750MTS DWCC-3 X 10MTS CRANES-GR:309.895CBFT -OPEN MARMARA SEA ON 22-23RD MAY\r\n\r\n \r\n\r\nGOOD DAY  \r\n\r\nPLS PROPOSE SUITABLE CGOES FOR OUR BELOW HOME TONNAGE AND CLOSE OWNER'S VSL:\r\n\r\n-M/V HACI HILMI II -6976MTS DWT-92 BLT -6750MTS DWCC-3 X 10MTS CRANES-GR:309.895CBFT -OPEN MARMARA SEA ON 22-23RD MAY    \r\n\r\nCLOSE OWNERS FIXED THEIR LAST HERE;\r\n\r\nMV TBN ABT 17 K DWT 96 BUILT ABT 700 K CBFT GRAIN CAP GEARED TO BE OPEN AT GIBRALTAR RANGE 24-25TH MAY -SHE CAN TRADE WORLDWIDE\r\n\r\nBEST REGARDS\r\n\r\nSONAY SHIPPING AS/ISTANBUL \r\n\r\nAhmet Bozkurt,Mr./Halil Ersoz,Mr.\r\n\r\n(Member of Bimco and Turkish Shipbrokers Association and Maritime Association of Shipowners and Agents)\r\n\r\nPh:90 216 446 71 05\r\n\r\nEmails:Sonay@sonayshipping.com\r\n\r\nSonaychartering@gmail.com\r\n\r\nIf you no longer wish to receive these emails, please click this unsubscribe link: Unsubscribe\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "M/V HACI HILMI II",
+          "confidence": "confirmed",
+          "source_text": "M/V HACI HILMI II"
+        },
+        "imo": null,
+        "flag": null,
+        "built": {
+          "value": 1992,
+          "confidence": "confirmed",
+          "source_text": "92 BLT"
+        },
+        "class_society": null,
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 6976,
+          "confidence": "confirmed",
+          "source_text": "6976MTS DWT"
+        },
+        "dwcc": {
+          "value": 6750,
+          "confidence": "confirmed",
+          "source_text": "6750MTS DWCC"
+        },
+        "draft_max": null,
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": null,
+        "hatches_count": null,
+        "grain_capacity": {
+          "value": 309895,
+          "confidence": "confirmed",
+          "source_text": "GR:309.895CBFT"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": {
+          "value": true,
+          "confidence": "confirmed",
+          "source_text": "3 X 10MTS CRANES"
+        },
+        "crane_capacity": {
+          "value": "3 x 10T",
+          "confidence": "confirmed",
+          "source_text": "3 X 10MTS CRANES"
+        },
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "uncertain",
+          "source_text": "M/V HACI HILMI II -6976MTS DWT-92 BLT -6750MTS DWCC-3 X 10MTS CRANES"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Marmara Sea",
+          "confidence": "confirmed",
+          "source_text": "OPEN MARMARA SEA ON 22-23RD MAY"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-05-22",
+            "close": "2026-05-23",
+            "display": "22-23rd May"
+          },
+          "confidence": "interpreted",
+          "source_text": "OPEN MARMARA SEA ON 22-23RD MAY"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [],
+        "unknown_terms": []
+      },
+      {
+        "vessel_name": {
+          "value": "MV TBN",
+          "confidence": "confirmed",
+          "source_text": "MV TBN ABT 17 K DWT 96 BUILT ABT 700 K CBFT GRAIN CAP GEARED TO BE OPEN AT GIBRALTAR RANGE 24-25TH MAY"
+        },
+        "imo": null,
+        "flag": null,
+        "built": {
+          "value": 1996,
+          "confidence": "interpreted",
+          "source_text": "96 BUILT"
+        },
+        "class_society": null,
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 17000,
+          "confidence": "interpreted",
+          "source_text": "ABT 17 K DWT"
+        },
+        "dwcc": null,
+        "draft_max": null,
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": null,
+        "hatches_count": null,
+        "grain_capacity": {
+          "value": 700000,
+          "confidence": "interpreted",
+          "source_text": "ABT 700 K CBFT GRAIN CAP"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": {
+          "value": true,
+          "confidence": "confirmed",
+          "source_text": "GEARED"
+        },
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "BULK CARRIER",
+          "confidence": "uncertain",
+          "source_text": "MV TBN ABT 17 K DWT 96 BUILT ABT 700 K CBFT GRAIN CAP GEARED"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Gibraltar Range",
+          "confidence": "confirmed",
+          "source_text": "TO BE OPEN AT GIBRALTAR RANGE 24-25TH MAY"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-05-24",
+            "close": "2026-05-25",
+            "display": "24-25th May"
+          },
+          "confidence": "interpreted",
+          "source_text": "TO BE OPEN AT GIBRALTAR RANGE 24-25TH MAY"
+        },
+        "direction": {
+          "value": "Worldwide trading",
+          "confidence": "confirmed",
+          "source_text": "SHE CAN TRADE WORLDWIDE"
+        },
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Worldwide trading capability",
+            "confidence": "confirmed",
+            "source_text": "SHE CAN TRADE WORLDWIDE"
+          }
+        ],
+        "unknown_terms": []
+      }
+    ]
+  }
+}

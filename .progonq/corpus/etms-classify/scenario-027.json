@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-027",
+  "source_email_id": "19e07c5b023cf374",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: Brazil / WC India 70010 Bulk Sugar",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:27:34.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: PNA Shipbrokers - Singapore <pna@pnaship.com> \r\nSent: Friday, 8 May 2026 09:58\r\nTo: pna@pnaship.com\r\nSubject: Brazil / WC India 70010 Bulk Sugar\r\n\r\n\r\n\r\nFROM: PACIFIC & ATLANTIC SHIPBROKERS - SINGAPORE / (Email/Teams:\r\npna@pnaship.com)\r\n\r\n**\r\n\r\n// fresh n firm //\r\n\r\n- a/c strc \r\n- 70000/10pct moloo bulk sugar \r\n- brazil (intn santos) / wc india \r\n- july 07 / onwd  \r\n- 10000 mt load / 10000 mt disch - pwwd shex eiu bends\r\n- 5pct \r\n\r\nPls offer best \r\n\r\nB Rgds  \r\nTONY (TEAMS: pna@pnaship.com)\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "id": "19e07c5b023cf374",
+    "category": "CARGO_INQUIRY",
+    "urgency": "medium",
+    "confidence": 0.93,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Tony (PNA Shipbrokers - Singapore)",
+    "original_sender_company": "Pacific & Atlantic Shipbrokers - Singapore"
+  }
+}

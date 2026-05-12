@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-031",
+  "source_email_id": "19e07c68d1a6c54a",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: AMITY 29996DW/10/CR30MT TUNESIA 14/20 MAY (REF:2602QAG00)",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:28:30.000Z",
+    "body": " \r\n\r\nFrom: Transocean Shipping Co. S.A. <miketerz@transoceangr.gr> \r\nSent: Friday, 8 May 2026 09:00\r\nTo: _ Transocean Shipping Co. S.A. <miketerz@transoceangr.gr>\r\nSubject: AMITY 29996DW/10/CR30MT TUNESIA 14/20 MAY (REF:2602QAG00)\r\nImportance: High\r\n\r\n \r\n\r\nTELiX MSG: 02QAG-00 08/05/26 09:00\r\n\r\nTELiX MSG: 02PIS-00 07/05/26 10:16\r\n\r\n \r\n\r\n \r\n\r\nTRANSOCEAN SHIPPING COMPANY S.A GREECE/REF TO MIKE\r\n\r\n \r\n\r\nCLOSE LOCAL HEAD OWNRS﻿\r\n\r\n \r\n\r\nAMITY  29996DW/10/CR30MT\r\n\r\n=============BIZERTE 14/20 MAY                                     \r\n\r\n                 ===============       ==================\r\n\r\nTRY SP OR 2/3LL\r\n\r\n================﻿\r\n\r\n \r\n\r\nTRANSOCEAN SHIPPING COMPANY S.A GREECE\r\n\r\nPH 2108941169/E MAIL miketerz@transoceangr.gr <mailto:miketerz@transoceangr.gr>  ++ miketerz@otenet.gr <mailto:miketerz@otenet.gr> \r\n\r\nMIKE TERZIOGLOU/MOB 6974461055-SKYPE miketerz\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07c68d1a6c54a",
+    "category": "VESSEL_POSITION",
+    "urgency": "high",
+    "confidence": 0.91,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "ETMS - Management",
+    "original_sender_company": "ETMS - Management / ETM Services"
+  }
+}

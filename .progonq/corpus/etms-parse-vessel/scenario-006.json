@@ -1,0 +1,146 @@
+{
+  "id": "etms-parse-vessel-006",
+  "source_email_id": "19d5e74e4479a895",
+  "category": "dwcc_edge",
+  "input": {
+    "subject": "FW: HOME TONNAGE -  5 K DWT OPEN AT KARASU TODAY",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-04-05T16:23:28.000Z",
+    "body": " \r\n\r\nFrom: ALERIA DENIZCILIK - BC <chartering@aleriashipping.com> \r\nSent: Tuesday, 25 February 2025 14:34\r\nTo: chartering@aleriashipping.com\r\nSubject: HOME TONNAGE - 5 K DWT OPEN AT KARASU TODAY\r\n\r\n \r\n\r\nGood day\r\n\r\n \r\n\r\nPls offer firm for \r\n\r\n \r\n\r\nMV BARABULKA - OPEN AT KARASU TODAY\r\n\r\nCAN'T CALL UKRAINE AND  EU PORTS. \r\n\r\n4916 Dwt  on  4.76 ssw\r\n\r\nType - Volga-Don Type\r\n\r\nIMO: 8887296  Built: 1995\r\n\r\nCameroon Flag,  Dutch  Lloyd Class / Thomas Miller Pandi  \r\n\r\nGRT/NRT       :   4110/1358\r\n\r\nHolds / Hatches  : 3/3 BOX \r\n\r\nGrain  179.538 cbft / Bale 176.008,29  cbft\r\n\r\nGrain -Hold 1: 58.057 cbft - Hold 2: 61.376 cbft - Hold 3: 60.105 cbft\r\n\r\nBale - Hold 1: 1544 cbm - Hold 2: 1738 cbm - Hold 3: 1702 cbm\r\n\r\nAll details/Figures are about\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nBest regards,\r\n\r\n \r\n\r\nBirolcan GULEREN\r\n\r\nChartering Department\r\n\r\nBIMCO Reg. No: 149495\r\n\r\nchartering@aleriashipping.com <mailto:chartering@aleriashipping.com> \r\n\r\nops@aleriashipping.com <mailto:ops@aleriashipping.com> \r\n\r\nwww.aleriashipping.com <http://www.aleriashipping.com> \r\n\r\nSkype: bguleren\r\n\r\n \r\n\r\nALERIA DENIZCILIK | ISTANBUL\r\n\r\n+90 216 343 9090 Ph\r\n\r\n+90 216 201 2424 Fx\r\n\r\n+90 532 687 1026 Mb\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "MV BARABULKA",
+          "confidence": "confirmed",
+          "source_text": "MV BARABULKA - OPEN AT KARASU TODAY"
+        },
+        "imo": {
+          "value": 8887296,
+          "confidence": "confirmed",
+          "source_text": "IMO: 8887296"
+        },
+        "flag": {
+          "value": "Cameroon",
+          "confidence": "confirmed",
+          "source_text": "Cameroon Flag"
+        },
+        "built": {
+          "value": 1995,
+          "confidence": "confirmed",
+          "source_text": "Built: 1995"
+        },
+        "class_society": {
+          "value": "Dutch Lloyd",
+          "confidence": "confirmed",
+          "source_text": "Dutch Lloyd Class"
+        },
+        "p_and_i": {
+          "value": "Thomas Miller",
+          "confidence": "confirmed",
+          "source_text": "Thomas Miller Pandi"
+        },
+        "dwt_summer": {
+          "value": 4916,
+          "confidence": "confirmed",
+          "source_text": "4916 Dwt on 4.76 ssw"
+        },
+        "dwcc": null,
+        "draft_max": {
+          "value": 4.76,
+          "confidence": "interpreted",
+          "source_text": "4916 Dwt on 4.76 ssw"
+        },
+        "loa": null,
+        "beam": null,
+        "grt": {
+          "value": 4110,
+          "confidence": "confirmed",
+          "source_text": "GRT/NRT       :   4110/1358"
+        },
+        "nrt": {
+          "value": 1358,
+          "confidence": "confirmed",
+          "source_text": "GRT/NRT       :   4110/1358"
+        },
+        "holds_count": {
+          "value": 3,
+          "confidence": "confirmed",
+          "source_text": "Holds / Hatches  : 3/3 BOX"
+        },
+        "hatches_count": {
+          "value": 3,
+          "confidence": "confirmed",
+          "source_text": "Holds / Hatches  : 3/3 BOX"
+        },
+        "grain_capacity": {
+          "value": 179538,
+          "confidence": "confirmed",
+          "source_text": "Grain  179.538 cbft"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": {
+          "value": 176008.29,
+          "confidence": "confirmed",
+          "source_text": "Bale 176.008,29  cbft"
+        },
+        "hold_dimensions": [
+          "Hold 1 (Grain): 58,057 cbft; Hold 1 (Bale): 1,544 cbm",
+          "Hold 2 (Grain): 61,376 cbft; Hold 2 (Bale): 1,738 cbm",
+          "Hold 3 (Grain): 60,105 cbft; Hold 3 (Bale): 1,702 cbm"
+        ],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": false,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "interpreted",
+          "source_text": "Type - Volga-Don Type"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Karasu",
+          "confidence": "confirmed",
+          "source_text": "MV BARABULKA - OPEN AT KARASU TODAY"
+        },
+        "open_date": {
+          "value": {
+            "open": "2025-02-25",
+            "close": null,
+            "display": "25 February 2025"
+          },
+          "confidence": "interpreted",
+          "source_text": "OPEN AT KARASU TODAY"
+        },
+        "direction": null,
+        "restrictions": ["Cannot call Ukraine ports", "Cannot call EU ports"],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Box-shaped holds (BOX type)",
+            "confidence": "confirmed",
+            "source_text": "Holds / Hatches  : 3/3 BOX"
+          },
+          {
+            "value": "Volga-Don Type vessel",
+            "confidence": "confirmed",
+            "source_text": "Type - Volga-Don Type"
+          },
+          {
+            "value": "All details/figures are approximate",
+            "confidence": "confirmed",
+            "source_text": "All details/Figures are about"
+          }
+        ],
+        "unknown_terms": ["ssw — possibly 'Salt Summer Water' (draft reference); not in glossary"]
+      }
+    ]
+  }
+}

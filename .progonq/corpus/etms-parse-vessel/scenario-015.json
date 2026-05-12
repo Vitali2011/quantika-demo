@@ -1,0 +1,99 @@
+{
+  "id": "etms-parse-vessel-015",
+  "source_email_id": "19e07c68d1a6c54a",
+  "category": "single_vessel",
+  "input": {
+    "subject": "FW: AMITY 29996DW/10/CR30MT TUNESIA 14/20 MAY (REF:2602QAG00)",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:28:30.000Z",
+    "body": " \r\n\r\nFrom: Transocean Shipping Co. S.A. <miketerz@transoceangr.gr> \r\nSent: Friday, 8 May 2026 09:00\r\nTo: _ Transocean Shipping Co. S.A. <miketerz@transoceangr.gr>\r\nSubject: AMITY 29996DW/10/CR30MT TUNESIA 14/20 MAY (REF:2602QAG00)\r\nImportance: High\r\n\r\n \r\n\r\nTELiX MSG: 02QAG-00 08/05/26 09:00\r\n\r\nTELiX MSG: 02PIS-00 07/05/26 10:16\r\n\r\n \r\n\r\n \r\n\r\nTRANSOCEAN SHIPPING COMPANY S.A GREECE/REF TO MIKE\r\n\r\n \r\n\r\nCLOSE LOCAL HEAD OWNRS﻿\r\n\r\n \r\n\r\nAMITY  29996DW/10/CR30MT\r\n\r\n=============BIZERTE 14/20 MAY                                     \r\n\r\n                 ===============       ==================\r\n\r\nTRY SP OR 2/3LL\r\n\r\n================﻿\r\n\r\n \r\n\r\nTRANSOCEAN SHIPPING COMPANY S.A GREECE\r\n\r\nPH 2108941169/E MAIL miketerz@transoceangr.gr <mailto:miketerz@transoceangr.gr>  ++ miketerz@otenet.gr <mailto:miketerz@otenet.gr> \r\n\r\nMIKE TERZIOGLOU/MOB 6974461055-SKYPE miketerz\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "AMITY",
+          "confidence": "confirmed",
+          "source_text": "AMITY  29996DW/10/CR30MT"
+        },
+        "imo": null,
+        "flag": null,
+        "built": null,
+        "class_society": null,
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 29996,
+          "confidence": "confirmed",
+          "source_text": "AMITY  29996DW/10/CR30MT"
+        },
+        "dwcc": null,
+        "draft_max": null,
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": null,
+        "hatches_count": null,
+        "grain_capacity": null,
+        "grain_capacity_unit": null,
+        "bale_capacity": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": {
+          "value": true,
+          "confidence": "confirmed",
+          "source_text": "CR30MT"
+        },
+        "crane_capacity": {
+          "value": "1 x 30T",
+          "confidence": "interpreted",
+          "source_text": "CR30MT"
+        },
+        "hatch_type": null,
+        "vessel_type": null,
+        "cii_rating": null,
+        "open_position": {
+          "value": "Bizerte, Tunisia",
+          "confidence": "confirmed",
+          "source_text": "BIZERTE 14/20 MAY"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-05-14",
+            "close": "2026-05-20",
+            "display": "14/20 May 2026"
+          },
+          "confidence": "confirmed",
+          "source_text": "BIZERTE 14/20 MAY"
+        },
+        "direction": {
+          "value": null,
+          "confidence": "uncertain",
+          "source_text": "TRY SP OR 2/3LL"
+        },
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [],
+        "unknown_terms": [
+          {
+            "term": "TRY SP OR 2/3LL",
+            "reason": "Abbreviation not recognized — possibly 'Spot or 2/3 Legs Loading' or a trading area code; flagged for human review"
+          },
+          {
+            "term": "TELiX MSG",
+            "reason": "Internal message routing/reference system identifier — not a recognized chartering abbreviation"
+          },
+          {
+            "term": "CLOSE LOCAL HEAD OWNRS",
+            "reason": "Phrase not recognized as standard chartering terminology — possibly internal instruction regarding head owners; flagged for human review"
+          }
+        ]
+      }
+    ]
+  }
+}

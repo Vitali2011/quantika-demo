@@ -1,0 +1,192 @@
+{
+  "id": "etms-parse-vessel-012",
+  "source_email_id": "19e07c4bb3fee039",
+  "category": "dwcc_edge",
+  "input": {
+    "subject": "FW: MV LADY ANITA – OPEN RED SEA SPOT PROMPT ",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:26:30.000Z",
+    "body": " \r\n\r\nFrom: mylist1-owner@elsharkawymaritime.com <mylist1-owner@elsharkawymaritime.com> On Behalf Of Elsharkawy Maritime & Logistics Co\r\nSent: Friday, 8 May 2026 10:49\r\nTo: chartering@elsharkawymaritime.com\r\nSubject: MV LADY ANITA – OPEN RED SEA SPOT PROMPT \r\n\r\n \r\n\r\nAttn: Chartering Desk!!!\r\n\r\n \r\n\r\nGd Day,,\r\n\r\n \r\n\r\nPlease Kindly Propose Suitable/Rated Cargo For Below Dir Vsl:\r\n\r\n \r\n\r\nMV LADY ANITA – OPEN RED SEA PROMPT\r\n\r\n\r\nTYPE OF VESSEL\r\n\r\nGENERAL CARGO SHIP\r\n\r\n\r\nYEAR OF BUILT\r\n\r\n2012\r\n\r\n\r\nFLAG STATE / PORT OF REGISTRY\r\n\r\nTOGO / LOME\r\n\r\n\r\nCLASSIFICATION SOCIETY\r\n\r\nOMCS\r\n\r\n\r\nL.O.A / L.B.P\r\n\r\n96.9 M / 89.8 M\r\n\r\n\r\nBREADTH MOULDED\r\n\r\n15.8 M\r\n\r\n\r\nDEPTH MOULDED\r\n\r\n7.4 M\r\n\r\n\r\nG.R.T / N.R.T\r\n\r\n2998  / 1746  M/T\r\n\r\n\r\nG/B CAPA \r\n\r\n6800/6700CBM\r\n\r\n\r\nLIGHT SHIP\r\n\r\n1386.8 MT\r\n\r\n\r\nDISPLACEMENT\r\n\r\n6715.2 MT\r\n\r\n\r\nSUMMER DRAFT\r\n\r\n5.85 M\r\n\r\n\r\nSUMMER DEADWEIGHT\r\n\r\n5328.4 M/T\r\n\r\n\r\nT.P.C\r\n\r\n12.9 MT\r\n\r\n\r\nFREE BOARD\r\n\r\n1.55 M\r\n\r\n\r\nMAX HEIGHT\r\n\r\n28.65 M\r\n\r\n\r\nHATCH COVER NO. 1 SIZE:\r\n\r\n25M X 9.45M\r\n\r\n\r\nHOLD DAIMANTION NO. 1\r\n\r\n32.64M X 13.26M X 7.82M\r\n\r\n\r\nHATCH COVER NO. 2 SIZE:\r\n\r\n26.9M X 9.45M\r\n\r\n\r\nHOLD DAIMANTION NO. 2\r\n\r\n32M X 13.26M X 7.82M\r\n\r\n\r\nLIGHT WEIGHT\r\n\r\n1386.74\r\n\r\n\r\nM/E\r\n\r\nGC320ZCD-4 500 R/MIN 1765KW\r\n\r\n\r\nA/E\r\n\r\n6135JZCAF/6CCFJ120J-Y8/2SETS\r\n\r\n\r\nG/E\r\n\r\nMP-H-120-4   120KW\r\n\r\n\r\nSPEED\r\n\r\nFULL LOADED/BALLAST:10.KTS/10.5KTS\r\n\r\n\r\nCONSUMPTION BALLAST\r\n\r\nIFO 180: M/E :3.7MT/D; AUX/E:MGO 0.35MT\r\n\r\n\r\nCONSUMPTION LOADING\r\n\r\nIFO 180  ME:4.2MT/D；AUX/E: MGO 0.35MT/D\r\n\r\n\r\nCONSUMPTION IN PORT\r\n\r\nAUX/E MGO 0.35MT/D\r\n\r\n \r\n\r\nWycp ?\r\n\r\n \r\n\r\nBrgds // \r\n\r\nCapt.Mohamed Elsharkawy\r\n\r\nTels: +20663232456/3232457\r\n\r\nFax:  +20663232459\r\n\r\nMob: +201007800552 (24hrs) \r\n\r\nTeams Id:  <mailto:elsharkawy_maritime@hotmai.com> elsharkawy_maritime@hotmai.com  \r\n\r\nE-Mail:  <mailto:chartering@elsharkawymaritime.com> chartering@elsharkawymaritime.com\r\n\r\nW.Site:  <http://www.elsharkawymaritime.com/> www.elsharkawymaritime.com \r\n\r\n \r\n\r\n  _____  \r\n\r\nTo subscribe, Please Send To mylist1-subscribe@elsharkawymaritime.com <mailto:mylist1-subscribe@elsharkawymaritime.com> \r\nTo unsubscribe, Please Send To mylist1-unsubscribe@elsharkawymaritime.com <mailto:mylist1-unsubscribe@elsharkawymaritime.com> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "MV LADY ANITA",
+          "confidence": "confirmed",
+          "source_text": "MV LADY ANITA – OPEN RED SEA SPOT PROMPT"
+        },
+        "imo": null,
+        "flag": {
+          "value": "Togo",
+          "confidence": "confirmed",
+          "source_text": "TOGO / LOME"
+        },
+        "built": {
+          "value": 2012,
+          "confidence": "confirmed",
+          "source_text": "YEAR OF BUILT\n2012"
+        },
+        "class_society": {
+          "value": "OMCS",
+          "confidence": "confirmed",
+          "source_text": "CLASSIFICATION SOCIETY\nOMCS"
+        },
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 5328.4,
+          "confidence": "confirmed",
+          "source_text": "SUMMER DEADWEIGHT\n5328.4 M/T"
+        },
+        "dwcc": null,
+        "draft_max": {
+          "value": 5.85,
+          "confidence": "confirmed",
+          "source_text": "SUMMER DRAFT\n5.85 M"
+        },
+        "loa": {
+          "value": 96.9,
+          "confidence": "confirmed",
+          "source_text": "L.O.A / L.B.P\n96.9 M / 89.8 M"
+        },
+        "beam": {
+          "value": 15.8,
+          "confidence": "confirmed",
+          "source_text": "BREADTH MOULDED\n15.8 M"
+        },
+        "grt": {
+          "value": 2998,
+          "confidence": "confirmed",
+          "source_text": "G.R.T / N.R.T\n2998  / 1746  M/T"
+        },
+        "nrt": {
+          "value": 1746,
+          "confidence": "confirmed",
+          "source_text": "G.R.T / N.R.T\n2998  / 1746  M/T"
+        },
+        "holds_count": {
+          "value": 2,
+          "confidence": "interpreted",
+          "source_text": "HOLD DAIMANTION NO. 1\n32.64M X 13.26M X 7.82M\nHOLD DAIMANTION NO. 2\n32M X 13.26M X 7.82M"
+        },
+        "hatches_count": {
+          "value": 2,
+          "confidence": "interpreted",
+          "source_text": "HATCH COVER NO. 1 SIZE:\n25M X 9.45M\nHATCH COVER NO. 2 SIZE:\n26.9M X 9.45M"
+        },
+        "grain_capacity": {
+          "value": 6800,
+          "confidence": "confirmed",
+          "source_text": "G/B CAPA \n6800/6700CBM"
+        },
+        "grain_capacity_unit": "cbm",
+        "bale_capacity": {
+          "value": 6700,
+          "confidence": "confirmed",
+          "source_text": "G/B CAPA \n6800/6700CBM"
+        },
+        "hold_dimensions": ["Hold 1: 32.64M X 13.26M X 7.82M", "Hold 2: 32M X 13.26M X 7.82M"],
+        "hatch_dimensions": ["Hatch 1: 25M X 9.45M", "Hatch 2: 26.9M X 9.45M"],
+        "tank_top_strength": null,
+        "geared": {
+          "value": false,
+          "confidence": "uncertain",
+          "source_text": "TYPE OF VESSEL\nGENERAL CARGO SHIP"
+        },
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "confirmed",
+          "source_text": "TYPE OF VESSEL\nGENERAL CARGO SHIP"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Red Sea",
+          "confidence": "confirmed",
+          "source_text": "MV LADY ANITA – OPEN RED SEA SPOT PROMPT"
+        },
+        "open_date": {
+          "value": {
+            "open": null,
+            "close": null,
+            "display": "PROMPT / SPOT"
+          },
+          "confidence": "interpreted",
+          "source_text": "OPEN RED SEA SPOT PROMPT"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": {
+          "value": 10,
+          "confidence": "confirmed",
+          "source_text": "FULL LOADED/BALLAST:10.KTS/10.5KTS"
+        },
+        "speed_ballast": {
+          "value": 10.5,
+          "confidence": "confirmed",
+          "source_text": "FULL LOADED/BALLAST:10.KTS/10.5KTS"
+        },
+        "consumption": {
+          "value": "Laden: IFO 180 ME 4.2 MT/D + MGO AUX 0.35 MT/D; Ballast: IFO 180 ME 3.7 MT/D + MGO AUX 0.35 MT/D; Port: MGO AUX 0.35 MT/D",
+          "confidence": "confirmed",
+          "source_text": "CONSUMPTION BALLAST\nIFO 180: M/E :3.7MT/D; AUX/E:MGO 0.35MT\nCONSUMPTION LOADING\nIFO 180  ME:4.2MT/D；AUX/E: MGO 0.35MT/D\nCONSUMPTION IN PORT\nAUX/E MGO 0.35MT/D"
+        },
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Main Engine: GC320ZCD-4 500 R/MIN 1765KW",
+            "confidence": "confirmed",
+            "source_text": "M/E\nGC320ZCD-4 500 R/MIN 1765KW"
+          },
+          {
+            "value": "Auxiliary Engine: 6135JZCAF/6CCFJ120J-Y8 / 2 SETS",
+            "confidence": "confirmed",
+            "source_text": "A/E\n6135JZCAF/6CCFJ120J-Y8/2SETS"
+          },
+          {
+            "value": "Generator: MP-H-120-4 120KW",
+            "confidence": "confirmed",
+            "source_text": "G/E\nMP-H-120-4   120KW"
+          },
+          {
+            "value": "Depth Moulded: 7.4 M",
+            "confidence": "confirmed",
+            "source_text": "DEPTH MOULDED\n7.4 M"
+          },
+          {
+            "value": "TPC: 12.9 MT",
+            "confidence": "confirmed",
+            "source_text": "T.P.C\n12.9 MT"
+          },
+          {
+            "value": "Max Height: 28.65 M",
+            "confidence": "confirmed",
+            "source_text": "MAX HEIGHT\n28.65 M"
+          },
+          {
+            "value": "Displacement: 6715.2 MT",
+            "confidence": "confirmed",
+            "source_text": "DISPLACEMENT\n6715.2 MT"
+          },
+          {
+            "value": "Port of Registry: Lome",
+            "confidence": "confirmed",
+            "source_text": "TOGO / LOME"
+          }
+        ],
+        "unknown_terms": [
+          {
+            "term": "OMCS",
+            "reason": "OMCS — classification society acronym not in standard IACS glossary; may be a non-IACS or regional society"
+          },
+          {
+            "term": "Wycp",
+            "reason": "Wycp — unrecognized abbreviation, possibly 'What you can propose?' but not a standard shipping/chartering term"
+          }
+        ]
+      }
+    ]
+  }
+}

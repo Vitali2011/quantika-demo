@@ -1,0 +1,22 @@
+{
+  "id": "etms-classify-136",
+  "source_email_id": "19e097b289230e5f",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: FIRM CARGOES",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:25:24.000Z",
+    "body": " \r\n\r\nFrom: Oner Tokcan / Nautical Bulk Carriers <oner.tokcan@nbcarriers.com> \r\nSent: Thursday, 26 February 2026 10:26\r\nTo: Oner Tokcan / Nautical Bulk Carriers <oner.tokcan@nbcarriers.com>\r\nSubject: FIRM CARGOES \r\n\r\n \r\n\r\nDear All / Oner\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPls offer firm\r\n\r\n \r\n\r\n-NEMRUT / CATANIA\r\n\r\n-3,000MTS 1PCT MOLCHOPT WRIC UW ABT 1,8/2,1TS STW MAX 50'\r\n\r\n-L/C 01 / 03 MARCH 2026,\r\n\r\n-1000MTS SSHEX EIU / 1000MTS SSHEX EIU \r\n-MAX 25 YRS (TRY MORE) \r\n-3.75PCT ADDCOMPUS\r\n\r\n \r\n\r\n+ + + + +\r\n\r\n \r\n\r\n-NEMRUT / SAGUNTO\r\n\r\n-2,000MTS 2PCT MOLCHOPT HRC + HRCPO UW ABT 10/27TS  \r\n\r\n-L/C S P O T / P P T\r\n\r\n-1000MTS SSHEX EIU / 1000MTS SSHEX EIU \r\n-MAX 25 YRS (TRY MORE) \r\n-3.75PCT ADDCOMPUS\r\n\r\n \r\n\r\n+ + + + +\r\n\r\n \r\n\r\n-NEMRUT / VARNA\r\n\r\n-5,800MTS 2PCT MOLCHOPT HRC + HRCTD + HRCPO UW ABT 10/27TS + HRS\r\n\r\n-L/C 01 / 03 MARCH 2026,\r\n\r\n-1500MTS SSHEX EIU / 1500MTS SSHEX EIU \r\n-MAX 25 YRS (TRY MORE) \r\n-3.75PCT ADDCOMPUS\r\n\r\n \r\n\r\n+ + + + +\r\n\r\n \r\n\r\n-NEMRUT / MARGHERA\r\n\r\n-4,345MTS 2PCT MOLCHOPT HRC + HRCTD UW ABT 10/27TS  \r\n\r\n-L/C 01 / 03 MARCH 2026, -1500MTS SSHEX EIU / 1500MTS SSHEX EIU \r\n-MAX 25 YRS (TRY MORE) \r\n-3.75PCT ADDCOMPUS \r\n\r\n \r\n\r\n \r\n\r\nBest regards\r\nOner Tokcan\r\nNautical Bulk Carriers S.A.\r\n\r\nVogue Business Center, 6th Floor, Atasehir, Istanbul - Turkey\r\nMob: +90 506 507 4730\r\n\r\nTel: +90 216 639 0228\r\n\r\nEmail:  <mailto:oner.tokcan@nbcarriers.com> oner.tokcan@nbcarriers.com\r\n\r\nTeams:  <https://teams.live.com/l/invite/FEAxOZO-8peE8SGZwU?v=g1>\r\nhttps://teams.live.com/l/invite/FEAxOZO-8peE8SGZwU?v=g1\r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e097b289230e5f",
+    "category": "CARGO_INQUIRY",
+    "urgency": "low",
+    "confidence": 0.82,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Oner Tokcan",
+    "original_sender_company": "Nautical Bulk Carriers S.A.",
+    "unknown_terms": ["WRIC", "ADDCOMPUS", "UW"]
+  }
+}

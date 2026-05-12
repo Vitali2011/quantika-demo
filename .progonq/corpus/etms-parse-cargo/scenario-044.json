@@ -1,0 +1,121 @@
+{
+  "id": "etms-parse-cargo-044",
+  "source_email_id": "19e07d1ec45291d1",
+  "category": "forwarded",
+  "input": {
+    "subject": "FW: EC India / CIS Pac - Vanino 40000 mt blk Alumina",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:40:55.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: PNA Shipbrokers - Singapore <pna@pnaship.com> \r\nSent: Wednesday, 6 May 2026 09:56\r\nTo: pna@pnaship.com\r\nSubject: EC India / CIS Pac - Vanino 40000 mt blk Alumina\r\n\r\n\r\n\r\nFROM: PACIFIC & ATLANTIC SHIPBROKERS - SINGAPORE / (Email/Teams:\r\npna@pnaship.com)\r\n\r\n**\r\n\r\nRE: EC INDIA / VANINO 40000 MT ALUMINA \r\n\r\nfirm / booked \r\n\r\npls offer best on foll :-\r\n\r\n- 40,000 mts 5pct moloo alumina in bulk\r\n- load port : vizag , india\r\n- discharge port : vanino , russia ( 10.2m )\r\n- laycan : 15 may / onw (try vsl dates wch pls adv)\r\n- load rate: 5,000 mts pwwd sshinc\r\n- discharge rate: 3,700 mts pwwd sshinc\r\n- 3.50 pct ttl here \r\n\r\nCan guide on rates only for serious named tng with full parti/full itin\r\n\r\nRGDS \r\nTONY (TEAMS: pna@pnaship.com)\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Visakhapatnam",
+          "confidence": "confirmed",
+          "source_text": "load port : vizag , india"
+        },
+        "origin_country": {
+          "value": "India",
+          "confidence": "confirmed",
+          "source_text": "load port : vizag , india"
+        },
+        "destination_port": {
+          "value": "Vanino",
+          "confidence": "confirmed",
+          "source_text": "discharge port : vanino , russia ( 10.2m )"
+        },
+        "destination_country": {
+          "value": "Russia",
+          "confidence": "confirmed",
+          "source_text": "discharge port : vanino , russia ( 10.2m )"
+        },
+        "cargo_description": {
+          "value": "Alumina in bulk",
+          "confidence": "confirmed",
+          "source_text": "40,000 mts 5pct moloo alumina in bulk"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 40000,
+          "confidence": "confirmed",
+          "source_text": "40,000 mts 5pct moloo alumina in bulk"
+        },
+        "weight_mt_min": {
+          "value": 38000,
+          "confidence": "interpreted",
+          "source_text": "40,000 mts 5pct moloo alumina in bulk"
+        },
+        "weight_mt_max": {
+          "value": 42000,
+          "confidence": "interpreted",
+          "source_text": "40,000 mts 5pct moloo alumina in bulk"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "40,000 mts 5pct moloo alumina in bulk"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "15 May 2026 onwards",
+          "confidence": "confirmed",
+          "source_text": "laycan : 15 may / onw (try vsl dates wch pls adv)"
+        },
+        "laycan": {
+          "value": "15 May 2026 onwards (vessel dates to be advised)",
+          "confidence": "interpreted",
+          "source_text": "laycan : 15 may / onw (try vsl dates wch pls adv)"
+        },
+        "loading_rate": {
+          "value": 5000,
+          "confidence": "confirmed",
+          "source_text": "load rate: 5,000 mts pwwd sshinc"
+        },
+        "loading_terms": {
+          "value": "SSHINC",
+          "confidence": "confirmed",
+          "source_text": "load rate: 5,000 mts pwwd sshinc"
+        },
+        "discharge_rate": {
+          "value": 3700,
+          "confidence": "confirmed",
+          "source_text": "discharge rate: 3,700 mts pwwd sshinc"
+        },
+        "discharge_terms": {
+          "value": "SSHINC",
+          "confidence": "confirmed",
+          "source_text": "discharge rate: 3,700 mts pwwd sshinc"
+        },
+        "commission_percent": {
+          "value": 3.5,
+          "confidence": "confirmed",
+          "source_text": "3.50 pct ttl here"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "3.50 pct ttl here"
+        },
+        "special_requirements": {
+          "value": "Vanino discharge port draft restriction 10.2m",
+          "confidence": "confirmed",
+          "source_text": "discharge port : vanino , russia ( 10.2m )"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Freight rate not specified — owners requested to offer best rate",
+          "Laycan close date not specified — only open date (15 May onwards) given; vessel dates to be advised",
+          "No demurrage/despatch rate mentioned",
+          "No NOR tendering conditions specified (WIBON/WIPON etc.)",
+          "No loading/discharge terms (FIO/FIOST/liner) specified beyond handling rates"
+        ]
+      }
+    ]
+  }
+}

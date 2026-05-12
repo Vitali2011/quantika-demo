@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-145",
+  "source_email_id": "19e0f52e0e064a3c",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: 3.5k dwcc mv mimi - open libya begsep",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-10T00:39:07.000Z",
+    "body": " \r\n\r\nFrom: a17-@googlegroups.com <a17-@googlegroups.com> On Behalf Of atom@atombulk.com\r\nSent: Monday, 2 September 2024 11:25\r\nTo: atom@atombulk.com\r\nSubject: 3.5k dwcc mv mimi - open libya begsep\r\n\r\n \r\n\r\natombulk ship chartering – istanbul\r\n\r\n \r\n\r\ngood day\r\n\r\n \r\n\r\n*\t   open misurata 05september2024\r\n\r\n \r\n\r\nmv mimi (imo no 8216100)\r\n\r\ndwcc 3500 mt on abt 6.34 m \r\n\r\ngeneral cargo vsl built 1987 spain \r\n\r\ncomoros flag\r\n\r\nho/ha 1 ( hatch opening: 50.30 x 10.2m ) \r\n\r\ngrain/bale 4672 cbm / 4390 cbm\r\n\r\n10 k on abt 3.5 tns\r\n\r\ngearless\r\n\r\na.d.a\r\n\r\n \r\n\r\nbest regards – as brokers \r\n\r\n  _    \r\n\r\ncagdas kilic\r\n\r\n‘    ‘     ‘\r\n\r\natombulk ship chartering\r\n\r\nmob/watsap: +90 538 861 51 17 \r\n\r\nskype: cagdaskilic.1991 \r\n\r\nemail: atom@atombulk.com <mailto:atom@atombulk.com>  \r\n\r\nmember of shipbrokers’ assocation – turkiye\r\n\r\n \r\n\r\n-- \r\nYou received this message because you are subscribed to the Google Groups \"atom@atombulk.com <mailto:atom@atombulk.com> \" group.\r\nTo unsubscribe from this group and stop receiving emails from it, send an email to a17-+unsubscribe@googlegroups.com <mailto:a17-+unsubscribe@googlegroups.com> .\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e0f52e0e064a3c",
+    "category": "VESSEL_POSITION",
+    "urgency": "medium",
+    "confidence": 0.82,
+    "is_unanswered": false,
+    "days_without_reply": null,
+    "original_sender": "Cagdas Kilic / atom@atombulk.com",
+    "original_sender_company": "Atombulk Ship Chartering"
+  }
+}

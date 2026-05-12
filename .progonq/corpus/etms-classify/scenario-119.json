@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-119",
+  "source_email_id": "19e08a26402532a7",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: Constanta or POC/ Conakry, Guinea 20,000/22,000 mt bulk corn 51abt",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:28:38.000Z",
+    "body": " \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Saturday, 31 January 2026 12:37\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: Re: Constanta or POC/ Conakry, Guinea 20,000/22,000 mt bulk corn 51abt\r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n*For quick response pls include \"takis\" in the body of the email*\r\n\r\nGD DAY\r\n\r\n \r\n\r\nPLS OFFER FOR\r\n\r\n \r\n\r\nConstanta or POC/ Conakry, Guinea\r\n20,000/22,000 mt bulk corn 51abt\r\n10/20-Feb\r\n7000x/3000x\r\n2,5 pct past\r\n\r\nPlease add our email address ( chartering@niavigrains.gr <mailto:chartering@niavigrains.gr>  ) to your circulation list for cargoes / positions\r\n\r\nBEST RGRDS\r\nTAK  (TAKIS KAPETANIOS)\r\nE MAIL : chartering@niavigrains.gr <mailto:chartering@niavigrains.gr> \r\nMobile/WhatsApp:0030 6944528968\r\nSKYPE: captanpanos\r\nLINKEDIN : www.linkedin.com/in/takis-kapetanios-5031344b/ <http://www.linkedin.com/in/takis-kapetanios-5031344b/> \r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr <http://www.niavigrains.gr> \r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e08a26402532a7",
+    "category": "CARGO_INQUIRY",
+    "urgency": "low",
+    "confidence": 0.78,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Takis Kapetanios",
+    "original_sender_company": "Niavigrains Trading Chartering S.A."
+  }
+}
