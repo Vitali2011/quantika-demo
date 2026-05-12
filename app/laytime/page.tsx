@@ -23,6 +23,9 @@ export default function LaytimePage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [holidayInput, setHolidayInput] = useState('');
+  const [sofText, setSofText] = useState('');
+  const [sofParsing, setSofParsing] = useState(false);
+  const [sofError, setSofError] = useState<string | null>(null);
 
   if (process.env.NEXT_PUBLIC_LAYTIME_ENGINE_ENABLED !== 'true') {
     return (
@@ -82,15 +85,85 @@ export default function LaytimePage() {
     });
   };
 
+  const handleParseSof = async () => {
+    setSofError(null);
+    setSofParsing(true);
+
+    try {
+      const res = await fetch('/api/laytime/parse-sof', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: sofText }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Failed to parse SOF');
+      }
+
+      const data = await res.json();
+
+      // Fill form with parsed data
+      if (data.commencedAt) {
+        setInput((prev) => ({ ...prev, commencedAt: data.commencedAt }));
+      }
+      if (data.completedAt) {
+        setInput((prev) => ({ ...prev, completedAt: data.completedAt }));
+      }
+      if (data.weatherDelayHours > 0) {
+        setInput((prev) => ({ ...prev, weatherDelayHours: data.weatherDelayHours }));
+      }
+
+      // Show warnings if any
+      if (data.parseWarnings && data.parseWarnings.length > 0) {
+        setSofError(`Parsed with warnings: ${data.parseWarnings.join('; ')}`);
+      }
+    } catch (err) {
+      setSofError(err instanceof Error ? err.message : 'Unknown error');
+    } finally {
+      setSofParsing(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-8">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-2xl font-bold text-gray-900 mb-6">Laytime Calculator</h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="space-y-6">
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-semibold mb-4">Input</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <h2 className="text-lg font-semibold mb-4">Parse Statement of Facts (Optional)</h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Paste a Statement of Facts document to auto-fill the form below.
+            </p>
+            <div className="space-y-4">
+              <textarea
+                value={sofText}
+                onChange={(e) => setSofText(e.target.value)}
+                placeholder="2026-05-01 08:00 - Vessel arrived at anchorage&#10;2026-05-01 14:30 - NOR tendered&#10;2026-05-01 18:00 - NOR accepted, laytime commenced&#10;2026-05-03 22:00 - Completed loading&#10;2026-05-04 06:00 - Vessel departed"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md font-mono text-sm"
+                rows={8}
+              />
+              <button
+                type="button"
+                onClick={handleParseSof}
+                disabled={sofParsing || !sofText}
+                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400"
+              >
+                {sofParsing ? 'Parsing...' : 'Parse SOF'}
+              </button>
+              {sofError && (
+                <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md text-sm text-yellow-800">
+                  {sofError}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-lg font-semibold mb-4">Input</h2>
+              <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Allowed Laytime (days)
@@ -287,6 +360,7 @@ export default function LaytimePage() {
                 Enter laytime details and click Calculate to see results.
               </div>
             )}
+          </div>
           </div>
         </div>
       </div>
