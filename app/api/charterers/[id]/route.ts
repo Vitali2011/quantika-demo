@@ -23,7 +23,7 @@ function isFeatureEnabled(): boolean {
 
 export async function GET(
   _request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   if (!isFeatureEnabled()) {
     return NextResponse.json(
@@ -33,7 +33,7 @@ export async function GET(
   }
 
   try {
-    const { id } = context.params;
+    const { id } = await context.params;
     const db = getStore().getDatabase();
 
     const charterer = getCharterer(db, id);
@@ -56,7 +56,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   if (!isFeatureEnabled()) {
     return NextResponse.json(
@@ -66,7 +66,7 @@ export async function PUT(
   }
 
   try {
-    const { id } = context.params;
+    const { id } = await context.params;
     const db = getStore().getDatabase();
 
     // Check if charterer exists
@@ -104,7 +104,7 @@ export async function PUT(
 
 export async function DELETE(
   _request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   if (!isFeatureEnabled()) {
     return NextResponse.json(
@@ -114,7 +114,7 @@ export async function DELETE(
   }
 
   try {
-    const { id } = context.params;
+    const { id } = await context.params;
     const db = getStore().getDatabase();
 
     // Check if charterer exists
