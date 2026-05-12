@@ -65,6 +65,18 @@ export interface EconomicsResult {
   };
 }
 
+// ── FuelEU Maritime (Spec γ-11) ──
+
+export interface FuelEuResult {
+  ghgIntensityActual: number;    // g CO2eq/MJ actual
+  ghgIntensityTarget: number;    // g CO2eq/MJ target for year
+  complianceGapPct: number;      // positive = non-compliant, negative = over-compliant
+  penaltyEur: number;            // €0 if compliant
+  penaltyUsd: number;            // converted at ~1.08 rate (or from currency.ts fallback)
+  totalEnergyMj: number;
+  isCompliant: boolean;
+}
+
 // ── Market Benchmark ──
 
 export type MarketIndicator = 'TOEPFER_TMI' | 'DREWRY_BREAKBULK' | 'BHSI';
@@ -545,4 +557,54 @@ export interface ParsedTimeCharterRecap {
   hireRate: { value: number; currency: string; unit: string };
   cargoExclusions?: string[];
   commission: string;
+}
+
+// ── Laytime Engine (Spec γ-05) ──
+
+export type LaytimeMode = 'SHEX' | 'SHINC' | 'FHEX' | 'FHINC';
+
+export interface LaytimeInput {
+  allowedLaytimeDays: number;
+  mode: LaytimeMode;
+  commencedAt: string;
+  completedAt: string;
+  portHolidays?: string[];
+  weatherDelayHours?: number;
+}
+
+export interface LaytimeResult {
+  allowedLaytimeHours: number;
+  usedLaytimeHours: number;
+  demurrageOrDespatch: 'demurrage' | 'despatch' | 'balanced';
+  netHours: number;
+  breakdown: LaytimeBreakdownEntry[];
+}
+
+export interface LaytimeBreakdownEntry {
+  date: string;
+  hours: number;
+  excluded: boolean;
+  reason?: string;
+}
+
+// ── Demurrage & Despatch (Spec γ-07) ──
+
+export interface DemurrageDespatchInput {
+  laytimeResult: LaytimeResult;      // from γ-05 calculateLaytime
+  demurrageRateUsdPerDay: number;    // e.g. 8000
+  despatchRateUsdPerDay?: number;    // optional, default = demurrageRate / 2
+}
+
+export interface DemurrageDespatchResult {
+  status: "demurrage" | "despatch" | "balanced";
+  netHours: number;
+  demurrageAmount: number;           // USD, 0 if despatch
+  despatchAmount: number;            // USD, 0 if demurrage
+  netAmount: number;                 // positive = you pay, negative = you earn
+  breakdown: {
+    demurrageRate: number;
+    despatchRate: number;
+    demurrageHours: number;
+    despatchHours: number;
+  };
 }
