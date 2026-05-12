@@ -269,6 +269,24 @@ A single physical cargo movement may involve multiple ports. Distinguish three c
 
 WHEN IN DOUBT: if commodity differs OR tonnages are clearly separate parcels → split into 2 items. If same commodity with same (or total) tonnage and only the port varies → multi-port rules (A or B).
 
+=== EXTRACT ALL DISTINCT CARGO OFFERS ===
+
+When a single email contains MULTIPLE distinct cargo offers, extract ONE ITEM PER OFFER — do not merge them.
+
+SUBJECT LINE CARGOES: The email subject often lists cargo offers that are NOT repeated in the body. Always parse the Subject line for cargo offers. If the subject contains "X mt cargo1 port1/POC + Y mt cargo2 port2/POC", treat each "+" segment as a separate cargo offer and extract it as a separate item — even when the body only elaborates one of them.
+  Example: Subject "5500 mts of salt Egypt Med/POC + 6000-7000mts of salt/rice Damietta+Mersin/POC"
+    → item 1: origin=Egypt Med (unspecified), weight=5500, cargo=salt [from subject]
+    → item 2: origin=Damietta, origin_port_rotation=["Damietta","Mersin"], weight=6000-7000, cargo=salt/rice [from body+subject]
+
+DISTINCT OFFER SIGNALS (always produce separate items):
+- Different commodities: "salt" + "rice" = 2 items
+- Parallel tonnage parcels for different vessels: "5500mt + 6000-7000mt" = 2 items
+- Numbered listing: "Cargo 1: ...; Cargo 2: ..." = 2 items
+
+DO NOT split (use multi-port rules instead):
+- Same cargo, rotation ports: "40,000mt rice, Banjul + Dakar" = 1 item with destination_port_rotation
+- Same cargo, alternative ports: "salt, El Arish or El Dekheila" = 1 item with origin_port_alternatives
+
 Extract per inquiry item:
 - origin_port: full port name (see PORT HANDLING RULES — never null when geography exists)
 - origin_country
