@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getStore } from '@/lib/session-store';
-import { getRoiSummary } from '@/lib/analytics/roi-metrics';
+import { NextRequest, NextResponse } from "next/server";
+import { requireSession } from "@/lib/session";
+import { getStore } from "@/lib/session-store";
+import { getRoiSummary } from "@/lib/analytics/roi-metrics";
 
 /**
  * GET /api/analytics/roi?days=90
@@ -14,9 +15,13 @@ import { getRoiSummary } from '@/lib/analytics/roi-metrics';
  */
 export async function GET(request: NextRequest) {
   // Check feature flag
-  if (process.env.ROI_GUARANTEE_ENABLED !== 'true') {
-    return NextResponse.json({ error: 'Feature not enabled' }, { status: 503 });
+  if (process.env.ROI_GUARANTEE_ENABLED !== "true") {
+    return NextResponse.json({ error: "Feature not enabled" }, { status: 503 });
   }
+
+  // Require authentication
+  const authResult = requireSession(request);
+  if (authResult instanceof NextResponse) return authResult;
 
   try {
     const store = getStore();
@@ -24,17 +29,17 @@ export async function GET(request: NextRequest) {
 
     // Parse query params
     const searchParams = request.nextUrl.searchParams;
-    const daysParam = searchParams.get('days');
+    const daysParam = searchParams.get("days");
 
     let days = 90; // default
 
     if (daysParam !== null) {
       const parsed = parseInt(daysParam, 10);
       if (isNaN(parsed)) {
-        return NextResponse.json({ error: 'Invalid days parameter: must be a number' }, { status: 400 });
+        return NextResponse.json({ error: "Invalid days parameter: must be a number" }, { status: 400 });
       }
       if (parsed < 0) {
-        return NextResponse.json({ error: 'Invalid days parameter: cannot be negative' }, { status: 400 });
+        return NextResponse.json({ error: "Invalid days parameter: cannot be negative" }, { status: 400 });
       }
       days = parsed;
     }
@@ -46,7 +51,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(summary, { status: 200 });
   } catch (error: any) {
-    console.error('GET /api/analytics/roi error:', error);
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+    console.error("GET /api/analytics/roi error:", error);
+    return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
   }
 }
