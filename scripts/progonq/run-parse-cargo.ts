@@ -123,6 +123,12 @@ function normalizePort(v: unknown): string | null {
   s = s.replace(/\bnemrut bay\b/g, 'nemrut');
   s = s.replace(/\bporto marghera(?:\s*\(venice\))?\b/g, 'marghera');
   s = s.replace(/\bking abdullah port\b/g, 'king abdullah');
+  // Strip "port " prefix (e.g. "port sousse" → "sousse") but not "port of call"
+  s = s.replace(/^port (?!of call|of )/g, '');
+  // Strip country suffix "city,country" or "city, country" → "city"
+  s = s.replace(/,\s*[a-z ]+$/, '');
+  // Alias: visakhapatnam / vizag
+  s = s.replace(/\bvizag\b/g, 'visakhapatnam');
 
   // === SEPARATOR NORMALIZATION ===
   // "/" between ports → " or " (alternative ports)
@@ -140,11 +146,13 @@ function normalizePort(v: unknown): string | null {
 
   // === PORT COUNT QUALIFIER STRIPPING ===
   // Strip prefix forms: "1 safe port safe berth X", "1spsb X", "1 sp X", "1 sb X"
-  s = s.replace(/^1\s*(?:safe port\s*(?:safe berth\s*)?|safe berth\s*|spsb\s*|sp\s*|sb\s*)/, '');
+  s = s.replace(/^1\s*(?:safe port\s*(?:safe berth\s*)?|safe berth\s*|spsb\s*|sp\s*|sb\s*|port\s*)/, '');
   // Strip suffix forms: "X (1 safe port safe berth)", "X (1 port)"
   s = s.replace(/\s*\(1\s*(?:safe port(?:\s*safe berth)?|safe berth|port|spsb|sp|sb)\)$/i, '');
   // Strip trailing generic " port" qualifier (e.g. "egypt mediterranean port" → "egypt mediterranean")
   s = s.replace(/ port$/, '');
+  // Strip trailing single-word parenthetical (country/region qualifiers, e.g. "Georgetown (Guyana)" → "Georgetown")
+  s = s.replace(/\s*\(\w+\)$/, '');
 
   return s.trim() || null;
 }
@@ -201,7 +209,7 @@ async function runScenario(scenario: Scenario): Promise<RunResult> {
       await sleep(REQUEST_DELAY_MS);
       const text = await callAiText(SCOPE, CARGO_INQUIRY_PARSER_PROMPT, userPrompt, {
         maxTokens: 4096,
-        timeoutMs: 90_000,
+        timeoutMs: 180_000,
       });
       const parsed = extractJson(text) as ParsedOutput;
       model_output = { items: Array.isArray(parsed.items) ? parsed.items : [] };

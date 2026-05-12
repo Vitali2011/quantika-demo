@@ -113,7 +113,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo }: EconomicsTabP
     } catch {
       return null;
     }
-  }, [fuelType, vessel, cargo]);
+  }, [fuelType, vessel, cargo, fuelEuEnabled]);
 
   return (
     <div data-testid="tab-economics" className="space-y-4 text-sm">
