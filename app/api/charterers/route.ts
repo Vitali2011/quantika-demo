@@ -70,8 +70,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     // Validate tier enum
-    const validTiers = ['blue-chip', 'second', 'weak'];
-    if (!validTiers.includes(tier)) {
+    const validTiers = ['blue-chip', 'second', 'weak'] as const;
+    type ChartererTier = typeof validTiers[number];
+    if (!validTiers.includes(tier as 'blue-chip' | 'second' | 'weak')) {
       return NextResponse.json(
         { error: `Field "tier" must be one of: ${validTiers.join(', ')}` },
         { status: 400 }
@@ -84,7 +85,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     upsertCharterer(db, {
       id,
       name: name.trim(),
-      tier,
+      tier: tier as ChartererTier,
       payment_history: '[]',
       require_lc: require_lc ?? 0,
       notes: notes ?? null,
@@ -93,7 +94,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const charterer = {
       id,
       name: name.trim(),
-      tier,
+      tier: tier as ChartererTier,
       payment_history: '[]',
       require_lc: require_lc ?? 0,
       notes: notes ?? null,
