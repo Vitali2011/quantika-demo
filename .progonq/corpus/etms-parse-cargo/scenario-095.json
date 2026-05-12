@@ -22,10 +22,11 @@
           "source_text": "Nemrut / 1 Djibouti or 1 Tadjourah in chopt"
         },
         "destination_port": {
-          "value": "Djibouti or Tadjourah (charterers' option)",
-          "confidence": "interpreted",
+          "value": "Djibouti",
+          "confidence": "confirmed",
           "source_text": "1 Djibouti or 1 Tadjourah in chopt"
         },
+        "destination_port_alternatives": ["Tadjourah"],
         "destination_country": {
           "value": "Djibouti",
           "confidence": "confirmed",

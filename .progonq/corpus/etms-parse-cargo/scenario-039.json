@@ -12,10 +12,11 @@
     "items": [
       {
         "origin_port": {
-          "value": "Alexandria (option: Abu Qir)",
+          "value": "Alexandria",
           "confidence": "confirmed",
           "source_text": "1 Sbp Alexandria Chopt Abu Qir/1 Sbp Sousse, Tunisia"
         },
+        "origin_port_alternatives": ["Abu Qir"],
         "origin_country": {
           "value": "Egypt",
           "confidence": "confirmed",
@@ -138,10 +139,11 @@
       },
       {
         "origin_port": {
-          "value": "Alexandria (option: Abu Qir)",
+          "value": "Alexandria",
           "confidence": "confirmed",
           "source_text": "1 Sbp Alexandria Chopt Abu Qir/1 Sbp Birkenhead, Uk"
         },
+        "origin_port_alternatives": ["Abu Qir"],
         "origin_country": {
           "value": "Egypt",
           "confidence": "confirmed",
@@ -263,20 +265,23 @@
       },
       {
         "origin_port": {
-          "value": "Alexandria (option: Abu Qir)",
+          "value": "Alexandria",
           "confidence": "confirmed",
           "source_text": "1 Sbp Alexandria Chopt Abu Qir/1 Sb-2 Sp Gemlik And Yildiz Entegre"
         },
+        "origin_port_alternatives": ["Abu Qir"],
         "origin_country": {
           "value": "Egypt",
           "confidence": "confirmed",
           "source_text": "1 Sbp Alexandria Chopt Abu Qir/1 Sb-2 Sp Gemlik And Yildiz Entegre"
         },
         "destination_port": {
-          "value": "Gemlik and Yildiz Entegre (2 discharge ports)",
+          "value": "Gemlik",
           "confidence": "confirmed",
           "source_text": "1 Sb-2 Sp Gemlik And Yildiz Entegre (Expect Gemlik 12,700 Mts And Yildiz Entegre: 5,000 Mts)"
         },
+        "destination_port_rotation": ["Gemlik", "Yildiz Entegre"],
+        "weight_per_port": null,
         "destination_country": {
           "value": "Turkey",
           "confidence": "interpreted",
