@@ -110,10 +110,11 @@
           "source_text": "Cargoes from Ukraine and Moldova"
         },
         "destination_port": {
-          "value": "Marmara or Izmir (charterers option)",
+          "value": "Marmara",
           "confidence": "confirmed",
           "source_text": "Reni - Marmara or Izmir, in ch's op."
         },
+        "destination_port_alternatives": ["Izmir"],
         "destination_country": {
           "value": "Turkey",
           "confidence": "confirmed",

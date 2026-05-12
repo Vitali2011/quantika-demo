@@ -118,10 +118,12 @@
           "source_text": "Karasu / puero limon  or caldera"
         },
         "destination_port": {
-          "value": "Puerto Limon or Caldera",
+          "value": "Puerto Limon",
           "confidence": "confirmed",
           "source_text": "Karasu / puero limon  or caldera"
         },
+        "destination_port_alternatives": ["Caldera"],
+        "weight_per_port": null,
         "destination_country": {
           "value": "Costa Rica",
           "confidence": "interpreted",

@@ -12,10 +12,11 @@
     "items": [
       {
         "origin_port": {
-          "value": "Adabiya or Safaga or Ain Sokhna",
+          "value": "Adabiya",
           "confidence": "confirmed",
           "source_text": "1 ADABIYA OR SAFAGA OR AIN SOKHNA / SEMARANG, INDONESIA"
         },
+        "origin_port_alternatives": ["Safaga", "Ain Sokhna"],
         "origin_country": {
           "value": "Egypt",
           "confidence": "interpreted",
