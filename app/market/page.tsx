@@ -25,13 +25,13 @@ export default function MarketPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (process.env.NEXT_PUBLIC_MARKET_BENCHMARK_FULL_ENABLED !== 'true') {
-      setError('Market benchmark feature not enabled');
-      setLoading(false);
-      return;
-    }
+    async function loadData() {
+      if (process.env.NEXT_PUBLIC_MARKET_BENCHMARK_FULL_ENABLED !== 'true') {
+        setError('Market benchmark feature not enabled');
+        setLoading(false);
+        return;
+      }
 
-    async function fetchData() {
       try {
         const [bhsi, tmi, drewry] = await Promise.all([
           fetch('/api/market/indices?name=bhsi&days=30').then((r) => {
@@ -58,7 +58,7 @@ export default function MarketPage() {
       }
     }
 
-    fetchData();
+    loadData();
   }, []);
 
   if (process.env.NEXT_PUBLIC_MARKET_BENCHMARK_FULL_ENABLED !== 'true') {
