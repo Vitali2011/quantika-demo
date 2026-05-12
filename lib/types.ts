@@ -65,6 +65,18 @@ export interface EconomicsResult {
   };
 }
 
+// ── FuelEU Maritime (Spec γ-11) ──
+
+export interface FuelEuResult {
+  ghgIntensityActual: number;    // g CO2eq/MJ actual
+  ghgIntensityTarget: number;    // g CO2eq/MJ target for year
+  complianceGapPct: number;      // positive = non-compliant, negative = over-compliant
+  penaltyEur: number;            // €0 if compliant
+  penaltyUsd: number;            // converted at ~1.08 rate (or from currency.ts fallback)
+  totalEnergyMj: number;
+  isCompliant: boolean;
+}
+
 // ── Market Benchmark ──
 
 export type MarketIndicator = 'TOEPFER_TMI' | 'DREWRY_BREAKBULK' | 'BHSI';
