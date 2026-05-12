@@ -7,8 +7,9 @@
  * Idempotent — re-POST с тем же planId возвращает cached ExecutionResult.
  */
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { requireSession } from '@/lib/session';
 import { executePlan } from '@/lib/agent/plan-first';
 import { PLAN_STEP_KINDS } from '@/lib/agent/plan-types';
 
@@ -37,7 +38,10 @@ const Body = z.object({
   approvedStepIds: z.array(z.string()),
 });
 
-export async function POST(req: Request): Promise<NextResponse> {
+export async function POST(req: NextRequest): Promise<NextResponse> {
+  const authResult = requireSession(req);
+  if (authResult instanceof NextResponse) return authResult;
+
   let payload: unknown;
   try {
     payload = await req.json();

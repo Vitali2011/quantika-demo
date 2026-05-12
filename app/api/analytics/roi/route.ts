@@ -14,14 +14,14 @@ import { getRoiSummary } from "@/lib/analytics/roi-metrics";
  * Feature flag: ROI_GUARANTEE_ENABLED
  */
 export async function GET(request: NextRequest) {
+  // Require authentication first — unauthenticated users must not see feature state
+  const authResult = requireSession(request);
+  if (authResult instanceof NextResponse) return authResult;
+
   // Check feature flag
   if (process.env.ROI_GUARANTEE_ENABLED !== "true") {
     return NextResponse.json({ error: "Feature not enabled" }, { status: 503 });
   }
-
-  // Require authentication
-  const authResult = requireSession(request);
-  if (authResult instanceof NextResponse) return authResult;
 
   try {
     const store = getStore();
