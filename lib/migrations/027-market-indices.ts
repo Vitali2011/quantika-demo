@@ -1,7 +1,7 @@
 import type { Migration } from './types';
 
-const migration028: Migration = {
-  version: 28,
+const migration027: Migration = {
+  version: 27,
   name: 'market-indices',
   up(db) {
     db.exec(`
@@ -22,4 +22,4 @@ const migration028: Migration = {
   down(db) { db.exec(`DROP TABLE IF EXISTS market_indices;`); },
 };
 
-export default migration028;
+export default migration027;

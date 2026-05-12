@@ -1,5 +1,5 @@
 import Database from 'better-sqlite3';
-import migration028 from '@/lib/migrations/028-market-indices';
+import migration027 from '@/lib/migrations/027-market-indices';
 import { upsertIndex, type MarketIndexRow } from '@/lib/market/market-indices-repository';
 
 let testDb: Database.Database;
@@ -17,7 +17,7 @@ describe('GET /api/market/indices', () => {
 
   beforeEach(() => {
     db = new Database(':memory:');
-    migration028.up(db);
+    migration027.up(db);
     testDb = db;
     process.env = { ...originalEnv };
   });
