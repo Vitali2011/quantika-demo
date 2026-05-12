@@ -134,7 +134,15 @@ export function parseSof(rawText: string): SofParseResult {
             `Weather delay end before start: ${description} ends before ${start.description}`
           );
         } else {
-          totalWeatherDelayMs += delayMs;
+          // FIX B-02: cap per-event at 365 days to prevent overflow from extreme dates
+          const MAX_DELAY_MS = 365 * 24 * 60 * 60 * 1000;
+          const cappedDelayMs = Math.min(delayMs, MAX_DELAY_MS);
+          if (cappedDelayMs < delayMs) {
+            parseWarnings.push(
+              `Weather delay capped at 365 days: ${description}`
+            );
+          }
+          totalWeatherDelayMs += cappedDelayMs;
         }
       }
       // If no matching start, just add event (0 hours accumulated)
@@ -175,6 +183,12 @@ function classifyEventType(description: string): SofEventType {
     return "laytime-commenced";
   }
 
+  // FIX F-02: check "departed" (whole-word) BEFORE loading-completed
+  // so "Vessel departed after loading completed" → departure, not loading-completed
+  if (/\bdeparted\b/.test(lower)) {
+    return "departure";
+  }
+
   // Loading completed
   if (
     lower.includes("completed loading") ||
@@ -188,23 +202,23 @@ function classifyEventType(description: string): SofEventType {
     return "loading-started";
   }
 
-  // Departure
-  if (lower.includes("departed") || lower.includes("departure")) {
+  // Departure (broader — "departure" keyword; "departed" handled above)
+  if (lower.includes("departure")) {
     return "departure";
   }
 
-  // Weather delay
+  // Weather delay — FIX F-01: require explicit start/end verb keywords
+  // Removed: (lower.includes("delay") && !lower.includes("end")) — was causing false positives
+  // for advisory prose like "weather delay possible" or "weather forecast: possible delay"
   if (lower.includes("weather")) {
-    // Check for start/commenced keywords
     if (
       lower.includes("commenced") ||
       lower.includes("started") ||
       lower.includes("start") ||
-      (lower.includes("delay") && !lower.includes("end"))
+      lower.includes("begins")
     ) {
       return "weather-delay-start";
     }
-    // Check for end/ended keywords
     if (lower.includes("ended") || lower.includes("end")) {
       return "weather-delay-end";
     }
