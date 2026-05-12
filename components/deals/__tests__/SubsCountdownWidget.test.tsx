@@ -128,13 +128,12 @@ describe('SubsCountdownWidget', () => {
     expect(screen.queryByText(/grace/i)).not.toBeInTheDocument();
   });
 
-  test('handles timezone when provided', () => {
+  test('renders correctly without optional props', () => {
     process.env.NEXT_PUBLIC_SUBS_TIMER_V2_ENABLED = 'true';
     render(
       <SubsCountdownWidget
         dealId="deal-1"
         subsDeadline="2026-05-10T12:00:00Z"
-        timezone="America/New_York"
       />
     );
     // Should render without crashing

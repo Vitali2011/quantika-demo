@@ -14,14 +14,12 @@ export interface SubsCountdownWidgetProps {
   dealId: string;
   subsDeadline: string; // ISO 8601
   chartererTier?: 'blue-chip' | 'second' | 'weak';
-  timezone?: string;
 }
 
 export default function SubsCountdownWidget({
   dealId,
   subsDeadline,
   chartererTier,
-  timezone = 'UTC',
 }: SubsCountdownWidgetProps) {
   // Feature flag check
   if (process.env.NEXT_PUBLIC_SUBS_TIMER_V2_ENABLED !== 'true') {
@@ -59,12 +57,13 @@ export default function SubsCountdownWidget({
   }
 
   // Grace indicator
-  const showGrace = chartererTier && getChartererGraceDays(chartererTier) > 0;
+  const graceDays = getChartererGraceDays(chartererTier);
+  const showGrace = graceDays > 0;
 
   return (
     <div data-testid={`subs-countdown-${dealId}`}>
       <div>{countdownText}</div>
-      {showGrace && <div>+1 day grace (blue-chip)</div>}
+      {showGrace && <div>+{graceDays} day{graceDays !== 1 ? 's' : ''} grace ({chartererTier})</div>}
     </div>
   );
 }

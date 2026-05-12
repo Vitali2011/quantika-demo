@@ -105,32 +105,31 @@ describe('addBankingDays', () => {
     expect(() => addBankingDays(invalid, 1, 'UTC')).toThrow(TypeError);
   });
 
-  // @ts-expect-error — testing runtime validation
   test('throws TypeError for null startDate', () => {
+    // @ts-expect-error — testing runtime validation
     expect(() => addBankingDays(null, 1, 'UTC')).toThrow(TypeError);
   });
 
-  // @ts-expect-error — testing runtime validation
   test('throws TypeError for undefined startDate', () => {
+    // @ts-expect-error — testing runtime validation
     expect(() => addBankingDays(undefined, 1, 'UTC')).toThrow(TypeError);
   });
 
   // Boundary: empty/invalid timezone
   test('throws TypeError for empty timezone', () => {
     const start = new Date('2026-05-08T12:00:00Z');
-    // @ts-expect-error — testing runtime validation
     expect(() => addBankingDays(start, 1, '')).toThrow(TypeError);
   });
 
-  // @ts-expect-error — testing runtime validation
   test('throws TypeError for null timezone', () => {
     const start = new Date('2026-05-08T12:00:00Z');
+    // @ts-expect-error — testing runtime validation
     expect(() => addBankingDays(start, 1, null)).toThrow(TypeError);
   });
 
-  // @ts-expect-error — testing runtime validation
   test('throws TypeError for undefined timezone', () => {
     const start = new Date('2026-05-08T12:00:00Z');
+    // @ts-expect-error — testing runtime validation
     expect(() => addBankingDays(start, 1, undefined)).toThrow(TypeError);
   });
 
@@ -228,32 +227,31 @@ describe('isBankingDay', () => {
     expect(() => isBankingDay(invalid, 'UTC')).toThrow(TypeError);
   });
 
-  // @ts-expect-error — testing runtime validation
   test('throws TypeError for null date', () => {
+    // @ts-expect-error — testing runtime validation
     expect(() => isBankingDay(null, 'UTC')).toThrow(TypeError);
   });
 
-  // @ts-expect-error — testing runtime validation
   test('throws TypeError for undefined date', () => {
+    // @ts-expect-error — testing runtime validation
     expect(() => isBankingDay(undefined, 'UTC')).toThrow(TypeError);
   });
 
   // Boundary: empty/invalid timezone
   test('throws TypeError for empty timezone', () => {
     const date = new Date('2026-05-11T12:00:00Z');
-    // @ts-expect-error — testing runtime validation
     expect(() => isBankingDay(date, '')).toThrow(TypeError);
   });
 
-  // @ts-expect-error — testing runtime validation
   test('throws TypeError for null timezone', () => {
     const date = new Date('2026-05-11T12:00:00Z');
+    // @ts-expect-error — testing runtime validation
     expect(() => isBankingDay(date, null)).toThrow(TypeError);
   });
 
-  // @ts-expect-error — testing runtime validation
   test('throws TypeError for undefined timezone', () => {
     const date = new Date('2026-05-11T12:00:00Z');
+    // @ts-expect-error — testing runtime validation
     expect(() => isBankingDay(date, undefined)).toThrow(TypeError);
   });
 
@@ -277,30 +275,29 @@ describe('getChartererGraceDays', () => {
     expect(getChartererGraceDays('weak')).toBe(0);
   });
 
-  // Boundary: empty/falsy tier
-  // @ts-expect-error — testing runtime validation
-  test('throws TypeError for empty string tier', () => {
-    expect(() => getChartererGraceDays('')).toThrow(TypeError);
+  // Boundary: empty/falsy tier → graceful 0 (no grace period)
+  test('returns 0 for empty string tier (graceful fallback)', () => {
+    // @ts-expect-error — testing runtime behavior with empty string
+    expect(getChartererGraceDays('')).toBe(0);
   });
 
-  // @ts-expect-error — testing runtime validation
-  test('throws TypeError for null tier', () => {
-    expect(() => getChartererGraceDays(null)).toThrow(TypeError);
+  test('returns 0 for null tier (graceful fallback)', () => {
+    // @ts-expect-error — testing runtime behavior with null
+    expect(getChartererGraceDays(null)).toBe(0);
   });
 
-  // @ts-expect-error — testing runtime validation
-  test('throws TypeError for undefined tier', () => {
-    expect(() => getChartererGraceDays(undefined)).toThrow(TypeError);
+  test('returns 0 for undefined tier (graceful fallback)', () => {
+    expect(getChartererGraceDays(undefined)).toBe(0);
   });
 
   // Boundary: invalid tier (exhaustive check)
-  // @ts-expect-error — testing runtime validation
   test('throws TypeError for invalid tier', () => {
+    // @ts-expect-error — testing runtime validation
     expect(() => getChartererGraceDays('platinum')).toThrow(TypeError);
   });
 
-  // @ts-expect-error — testing runtime validation
   test('throws TypeError for unknown tier', () => {
+    // @ts-expect-error — testing runtime validation
     expect(() => getChartererGraceDays('unknown')).toThrow(TypeError);
   });
 });

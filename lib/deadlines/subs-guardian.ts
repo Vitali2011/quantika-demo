@@ -251,18 +251,18 @@ export function isBankingDay(
 
 /**
  * Input Contract:
- * - tier: empty/null/undefined → throw TypeError
+ * - tier: undefined/null/empty → return 0 (graceful fallback — no grace period)
  * - tier: invalid (not in union) → throw TypeError (exhaustive)
  * - tier: "blue-chip" → 1
  * - tier: "second" → 0
  * - tier: "weak" → 0
  */
 export function getChartererGraceDays(
-  tier: 'blue-chip' | 'second' | 'weak'
+  tier?: 'blue-chip' | 'second' | 'weak'
 ): number {
-  // Validate tier
+  // Graceful fallback: no tier = no grace period
   if (!tier || typeof tier !== 'string') {
-    throw new TypeError('tier must be a non-empty string');
+    return 0;
   }
 
   // Exhaustive check
