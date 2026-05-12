@@ -273,19 +273,18 @@ WHEN IN DOUBT: if commodity differs OR tonnages are clearly separate parcels →
 
 When a single email contains MULTIPLE distinct cargo offers, extract ONE ITEM PER OFFER — do not merge them.
 
-SUBJECT LINE CARGOES: The email subject often lists cargo offers that are NOT repeated in the body. Always parse the Subject line for cargo offers. If the subject contains "X mt cargo1 port1/POC + Y mt cargo2 port2/POC", treat each "+" segment as a separate cargo offer and extract it as a separate item — even when the body only elaborates one of them.
-  Example: Subject "5500 mts of salt Egypt Med/POC + 6000-7000mts of salt/rice Damietta+Mersin/POC"
-    → item 1: origin=Egypt Med (unspecified), weight=5500, cargo=salt [from subject]
-    → item 2: origin=Damietta, origin_port_rotation=["Damietta","Mersin"], weight=6000-7000, cargo=salt/rice [from body+subject]
+SUBJECT-LINE MULTI-OFFER PATTERN: When the subject line contains TWO or more cargo segments separated by "+" where EACH segment has its own weight AND commodity AND port (e.g. "5500mts salt Egypt Med/POC + 6000-7000mts salt/rice Damietta+Mersin/POC"), extract each segment as a separate item — even if the body only elaborates one of them.
+  ✓ Trigger: subject has "Xmt commodity origin/POC + Ymt commodity2 origin2/POC" (each segment self-contained with weight + cargo + port)
+  ✗ Do NOT trigger for: "FW: origin / destination weight commodity" — here "/" separates origin from destination, not two offers
 
 DISTINCT OFFER SIGNALS (always produce separate items):
-- Different commodities: "salt" + "rice" = 2 items
-- Parallel tonnage parcels for different vessels: "5500mt + 6000-7000mt" = 2 items
+- Different commodities with separate tonnages: "5500mt salt + 7000mt rice" = 2 items
 - Numbered listing: "Cargo 1: ...; Cargo 2: ..." = 2 items
 
 DO NOT split (use multi-port rules instead):
 - Same cargo, rotation ports: "40,000mt rice, Banjul + Dakar" = 1 item with destination_port_rotation
 - Same cargo, alternative ports: "salt, El Arish or El Dekheila" = 1 item with origin_port_alternatives
+- Simple subject "origin / destination" or "FW: origin/destination weight commodity" = 1 item (the "/" is origin→destination, not two offers)
 
 Extract per inquiry item:
 - origin_port: full port name (see PORT HANDLING RULES — never null when geography exists)
