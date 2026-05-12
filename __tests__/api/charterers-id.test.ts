@@ -42,7 +42,7 @@ describe('GET /api/charterers/[id]', () => {
     const { GET } = await import('@/app/api/charterers/[id]/route');
     const res = await GET(
       new NextRequest('http://localhost/api/charterers/c1'),
-      { params: { id: 'c1' } }
+      { params: Promise.resolve({ id: 'c1' }) }
     );
 
     expect(res.status).toBe(503);
@@ -66,7 +66,7 @@ describe('GET /api/charterers/[id]', () => {
     const { GET } = await import('@/app/api/charterers/[id]/route');
     const res = await GET(
       new NextRequest('http://localhost/api/charterers/c1'),
-      { params: { id: 'c1' } }
+      { params: Promise.resolve({ id: 'c1' }) }
     );
 
     expect(res.status).toBe(200);
@@ -82,7 +82,7 @@ describe('GET /api/charterers/[id]', () => {
     const { GET } = await import('@/app/api/charterers/[id]/route');
     const res = await GET(
       new NextRequest('http://localhost/api/charterers/unknown'),
-      { params: { id: 'unknown' } }
+      { params: Promise.resolve({ id: 'unknown' }) }
     );
 
     expect(res.status).toBe(404);
@@ -119,7 +119,7 @@ describe('PUT /api/charterers/[id]', () => {
       }),
     });
 
-    const res = await PUT(req, { params: { id: 'c1' } });
+    const res = await PUT(req, { params: Promise.resolve({ id: 'c1' }) });
 
     expect(res.status).toBe(503);
     const json = await res.json();
@@ -150,7 +150,7 @@ describe('PUT /api/charterers/[id]', () => {
       }),
     });
 
-    const res = await PUT(req, { params: { id: 'c1' } });
+    const res = await PUT(req, { params: Promise.resolve({ id: 'c1' }) });
 
     expect(res.status).toBe(200);
     const json = await res.json();
@@ -172,7 +172,7 @@ describe('PUT /api/charterers/[id]', () => {
       }),
     });
 
-    const res = await PUT(req, { params: { id: 'unknown' } });
+    const res = await PUT(req, { params: Promise.resolve({ id: 'unknown' }) });
 
     expect(res.status).toBe(404);
     const json = await res.json();
@@ -202,7 +202,7 @@ describe('DELETE /api/charterers/[id]', () => {
     const { DELETE } = await import('@/app/api/charterers/[id]/route');
     const res = await DELETE(
       new NextRequest('http://localhost/api/charterers/c1', { method: 'DELETE' }),
-      { params: { id: 'c1' } }
+      { params: Promise.resolve({ id: 'c1' }) }
     );
 
     expect(res.status).toBe(503);
@@ -226,7 +226,7 @@ describe('DELETE /api/charterers/[id]', () => {
     const { DELETE } = await import('@/app/api/charterers/[id]/route');
     const res = await DELETE(
       new NextRequest('http://localhost/api/charterers/c1', { method: 'DELETE' }),
-      { params: { id: 'c1' } }
+      { params: Promise.resolve({ id: 'c1' }) }
     );
 
     expect(res.status).toBe(204);
@@ -239,7 +239,7 @@ describe('DELETE /api/charterers/[id]', () => {
     const { DELETE } = await import('@/app/api/charterers/[id]/route');
     const res = await DELETE(
       new NextRequest('http://localhost/api/charterers/unknown', { method: 'DELETE' }),
-      { params: { id: 'unknown' } }
+      { params: Promise.resolve({ id: 'unknown' }) }
     );
 
     expect(res.status).toBe(404);
