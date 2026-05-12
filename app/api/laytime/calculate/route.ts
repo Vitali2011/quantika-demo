@@ -1,7 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { calculateLaytime } from '@/lib/laytime/calculator';
-import type { LaytimeInput, LaytimeResult } from '@/lib/types';
+import { calculateDemurrageDespatch } from '@/lib/laytime/dd-calculator';
+import type { LaytimeInput, LaytimeResult, DemurrageDespatchResult } from '@/lib/types';
+
+interface LaytimeCalculateRequest extends LaytimeInput {
+  demurrageRateUsdPerDay?: number;
+  despatchRateUsdPerDay?: number;
+}
+
+interface LaytimeCalculateResponse extends LaytimeResult {
+  dd?: DemurrageDespatchResult;
+}
 
 export const maxDuration = 10;
 
@@ -17,9 +27,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  let body: LaytimeInput;
+  let body: LaytimeCalculateRequest;
   try {
-    body = await request.json() as LaytimeInput;
+    body = await request.json() as LaytimeCalculateRequest;
   } catch {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
@@ -70,9 +80,42 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Validate demurrageRateUsdPerDay if provided
+  if (body.demurrageRateUsdPerDay !== undefined) {
+    if (typeof body.demurrageRateUsdPerDay !== 'number' || !Number.isFinite(body.demurrageRateUsdPerDay)) {
+      return NextResponse.json(
+        { error: 'demurrageRateUsdPerDay must be a finite number' },
+        { status: 400 }
+      );
+    }
+  }
+
+  // Validate despatchRateUsdPerDay if provided
+  if (body.despatchRateUsdPerDay !== undefined) {
+    if (typeof body.despatchRateUsdPerDay !== 'number' || !Number.isFinite(body.despatchRateUsdPerDay)) {
+      return NextResponse.json(
+        { error: 'despatchRateUsdPerDay must be a finite number' },
+        { status: 400 }
+      );
+    }
+  }
+
   try {
-    const result: LaytimeResult = calculateLaytime(body);
-    return NextResponse.json(result);
+    const laytimeResult: LaytimeResult = calculateLaytime(body);
+
+    let response: LaytimeCalculateResponse = laytimeResult;
+
+    // If demurrageRateUsdPerDay is provided, calculate D/D
+    if (body.demurrageRateUsdPerDay !== undefined) {
+      const ddResult = calculateDemurrageDespatch({
+        laytimeResult,
+        demurrageRateUsdPerDay: body.demurrageRateUsdPerDay,
+        despatchRateUsdPerDay: body.despatchRateUsdPerDay,
+      });
+      response = { ...laytimeResult, dd: ddResult };
+    }
+
+    return NextResponse.json(response);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
