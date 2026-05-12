@@ -73,8 +73,10 @@ Equivalence rules:
 - Aliases match: "Nemrut Bay" = "Nemrut"; "UK" = "United Kingdom"; "KAP" = "King Abdullah Port".
 - Spelling variants match: "Giurgiulesti" = "Giurgiuleshti"; "Douala" = "Duala"; "Pidennyi" = "Pivdennyi".
 - Annotation suffixes match the bare name: "X (Charterers Option)" = "X".
-- "(port unspecified)" / "(unspecified port)" qualifier is decorative — match either side without it.
+- "(port unspecified)" / "(unspecified port)" / "(unspecified)" qualifiers are decorative — match either side without them.
 - Regional shorthand overlaps: "East Coast Greece" overlap with "Eastern Mediterranean Greece" (treat as equiv).
+- "Port of Call" / "POC" / "Port to be nominated" / "TBN" / "port not yet nominated" / "to be nominated" all describe a destination port that the charterer has not yet specified — treat all of these as equivalent. Including when paired with a country: "Port of Call, Ukraine" = "Port to be nominated, Ukraine" = "Ukraine port (unspecified)" = "Port of Call (unspecified) / Ukraine port (unspecified)" — all are "unspecified destination in Ukraine".
+- Country-only port descriptions are equivalent when paired with a "port unspecified"-style qualifier on the other side: e.g. "South Korea (port unspecified)" = "South Korea" = "open S.KOREA".
 - Different ports do NOT match even if names look similar.
 - Null on both sides = equivalent.
 - Null on one side, named port on other = NOT equivalent.
