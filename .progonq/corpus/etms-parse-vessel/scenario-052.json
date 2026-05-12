@@ -1,0 +1,302 @@
+{
+  "id": "etms-parse-vessel-052",
+  "source_email_id": "19e0f54a2c261266",
+  "category": "multi_vessel",
+  "input": {
+    "subject": "FW: Molina Shipping Exclusive Fleet",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-10T00:41:02.000Z",
+    "body": " \r\n\r\nFrom: Burcin Ozhan <chart@molinaship.com> \r\nSent: Monday, 1 July 2024 13:12\r\nCc: project@molinaship.com\r\nSubject: Molina Shipping Exclusive Fleet\r\n\r\n \r\n\r\n \r\n\r\nDear all,\r\n\r\n \r\n\r\nPlease find latest position list for our exclusive fleet below:\r\n\r\n \r\n\r\nPlease always reply to  <mailto:project@molinaship.com>\r\nproject@molinaship.com \r\n\r\n \r\n\r\n \r\n\r\n\r\nDOLPHIN E\r\n\r\n1.600 CC\r\n\r\nIZMIR \r\n\r\n12/13 JULY \r\n\r\n\r\nSERENITY AC\r\n\r\n1.600 CC\r\n\r\nEC GREECE\r\n\r\n7/8 JULY \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n''M/V DOLPHIN E''\r\nIMO: 9013012\r\n1991 BLT, PALAU FLAG, IACS CLASS, ICE CLASS 1A\r\n1600 DWCC ON 3,83 M DRAFT - SID BOX      \r\nLOA 78,5, LBP73,8 BREATH: 10,5 DEPTH 4,75\r\n1HO/1HA - HOLD 54,7 x 8,3x 5,50 M - HA 54,7 x 8,3 M\r\nAIR DRAFT 8,4 M ON BALLAST\r\nGR/BL:89600/88100 CBFT\r\nGRT 1276 / NRT 672\r\nBOW THRUSTER FITTED\r\nGEARLESS\r\nAPP B FITTED\r\nA/D/A WOG\r\n\r\n \r\n\r\n''SERENITY AC''\r\n\r\nIMO: 9013036\r\n1,723 DWT ON 3.70 M DRAFT / 1.600 DWCC\r\n\r\nBLT 1991 / PANAMA FLAG / CLASS IRS (IACS)\r\nLOA/BM / DEPTH 74.99M / 10.70M / 4.70M\r\nGRT/NRT 1,282/675\r\n1 HO / 1 HA - BOX / OPEN HATCH\r\nHOLD 50,4 M x 8,7 M x 5,6 M\r\nHATCH 50,4 M x 8,7 M\r\n1 MOVABLE BULKHEAD\r\nGRAIN/BALE  88.000 CBFT / 2.480 CBM\r\nIMO 1 FITTED\r\nA/D/A  WOG\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nBrgds\r\n\r\n \r\n\r\nMOLINA SHIPPING & PROJECT\r\n\r\nMs. Burcin Ozhan - Mob: +90 541 488 91 11\r\n\r\nUtku Sozeri - Mob: +90 532 412 68 31\r\n\r\ne-mail :  <mailto:project@molinaship.com> project@molinaship.com\r\n\r\n <https://www.molinaship.com/> https://www.molinaship.com\r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "DOLPHIN E",
+          "confidence": "confirmed",
+          "source_text": "''M/V DOLPHIN E''"
+        },
+        "imo": {
+          "value": 9013012,
+          "confidence": "confirmed",
+          "source_text": "IMO: 9013012"
+        },
+        "flag": {
+          "value": "Palau",
+          "confidence": "confirmed",
+          "source_text": "PALAU FLAG"
+        },
+        "built": {
+          "value": 1991,
+          "confidence": "confirmed",
+          "source_text": "1991 BLT"
+        },
+        "class_society": {
+          "value": "IACS",
+          "confidence": "confirmed",
+          "source_text": "IACS CLASS"
+        },
+        "p_and_i": null,
+        "dwt_summer": null,
+        "dwcc": {
+          "value": 1600,
+          "confidence": "confirmed",
+          "source_text": "1600 DWCC ON 3,83 M DRAFT"
+        },
+        "draft_max": {
+          "value": 3.83,
+          "confidence": "interpreted",
+          "source_text": "1600 DWCC ON 3,83 M DRAFT - SID BOX"
+        },
+        "loa": {
+          "value": 78.5,
+          "confidence": "confirmed",
+          "source_text": "LOA 78,5"
+        },
+        "beam": {
+          "value": 10.5,
+          "confidence": "confirmed",
+          "source_text": "BREATH: 10,5"
+        },
+        "grt": {
+          "value": 1276,
+          "confidence": "confirmed",
+          "source_text": "GRT 1276 / NRT 672"
+        },
+        "nrt": {
+          "value": 672,
+          "confidence": "confirmed",
+          "source_text": "GRT 1276 / NRT 672"
+        },
+        "holds_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1HO/1HA"
+        },
+        "hatches_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1HO/1HA"
+        },
+        "grain_capacity": {
+          "value": 89600,
+          "confidence": "confirmed",
+          "source_text": "GR/BL:89600/88100 CBFT"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": {
+          "value": 88100,
+          "confidence": "confirmed",
+          "source_text": "GR/BL:89600/88100 CBFT"
+        },
+        "hold_dimensions": ["54.7 x 8.3 x 5.50 M"],
+        "hatch_dimensions": ["54.7 x 8.3 M"],
+        "tank_top_strength": null,
+        "geared": false,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "uncertain",
+          "source_text": "SID BOX"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Izmir",
+          "confidence": "confirmed",
+          "source_text": "IZMIR"
+        },
+        "open_date": {
+          "value": {
+            "open": "2024-07-12",
+            "close": "2024-07-13",
+            "display": "12/13 JULY"
+          },
+          "confidence": "interpreted",
+          "source_text": "12/13 JULY"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Ice Class 1A",
+            "confidence": "confirmed",
+            "source_text": "ICE CLASS 1A"
+          },
+          {
+            "value": "Single deck, box-shaped hold",
+            "confidence": "confirmed",
+            "source_text": "SID BOX"
+          },
+          {
+            "value": "Bow thruster fitted",
+            "confidence": "confirmed",
+            "source_text": "BOW THRUSTER FITTED"
+          },
+          {
+            "value": "Gearless",
+            "confidence": "confirmed",
+            "source_text": "GEARLESS"
+          },
+          {
+            "value": "APP B FITTED",
+            "confidence": "confirmed",
+            "source_text": "APP B FITTED"
+          },
+          {
+            "value": "Air draft 8.4 M on ballast",
+            "confidence": "confirmed",
+            "source_text": "AIR DRAFT 8,4 M ON BALLAST"
+          }
+        ],
+        "unknown_terms": [
+          "APP B FITTED — unrecognized equipment/certification abbreviation; not in glossary"
+        ]
+      },
+      {
+        "vessel_name": {
+          "value": "SERENITY AC",
+          "confidence": "confirmed",
+          "source_text": "''SERENITY AC''"
+        },
+        "imo": {
+          "value": 9013036,
+          "confidence": "confirmed",
+          "source_text": "IMO: 9013036"
+        },
+        "flag": {
+          "value": "Panama",
+          "confidence": "confirmed",
+          "source_text": "PANAMA FLAG"
+        },
+        "built": {
+          "value": 1991,
+          "confidence": "confirmed",
+          "source_text": "BLT 1991"
+        },
+        "class_society": {
+          "value": "IRS",
+          "confidence": "confirmed",
+          "source_text": "CLASS IRS (IACS)"
+        },
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 1723,
+          "confidence": "confirmed",
+          "source_text": "1,723 DWT ON 3.70 M DRAFT"
+        },
+        "dwcc": {
+          "value": 1600,
+          "confidence": "confirmed",
+          "source_text": "1.600 DWCC"
+        },
+        "draft_max": {
+          "value": 3.7,
+          "confidence": "interpreted",
+          "source_text": "1,723 DWT ON 3.70 M DRAFT"
+        },
+        "loa": {
+          "value": 74.99,
+          "confidence": "confirmed",
+          "source_text": "LOA/BM / DEPTH 74.99M / 10.70M / 4.70M"
+        },
+        "beam": {
+          "value": 10.7,
+          "confidence": "confirmed",
+          "source_text": "LOA/BM / DEPTH 74.99M / 10.70M / 4.70M"
+        },
+        "grt": {
+          "value": 1282,
+          "confidence": "confirmed",
+          "source_text": "GRT/NRT 1,282/675"
+        },
+        "nrt": {
+          "value": 675,
+          "confidence": "confirmed",
+          "source_text": "GRT/NRT 1,282/675"
+        },
+        "holds_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1 HO / 1 HA"
+        },
+        "hatches_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1 HO / 1 HA"
+        },
+        "grain_capacity": {
+          "value": 88000,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE  88.000 CBFT / 2.480 CBM"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": {
+          "value": 2480,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE  88.000 CBFT / 2.480 CBM"
+        },
+        "hold_dimensions": ["50.4 M x 8.7 M x 5.6 M"],
+        "hatch_dimensions": ["50.4 M x 8.7 M"],
+        "tank_top_strength": null,
+        "geared": false,
+        "crane_capacity": null,
+        "hatch_type": {
+          "value": "Open hatch",
+          "confidence": "confirmed",
+          "source_text": "BOX / OPEN HATCH"
+        },
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "uncertain",
+          "source_text": "BOX / OPEN HATCH"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "East Coast Greece",
+          "confidence": "interpreted",
+          "source_text": "EC GREECE"
+        },
+        "open_date": {
+          "value": {
+            "open": "2024-07-07",
+            "close": "2024-07-08",
+            "display": "7/8 JULY"
+          },
+          "confidence": "interpreted",
+          "source_text": "7/8 JULY"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Box-shaped hold / Open hatch",
+            "confidence": "confirmed",
+            "source_text": "BOX / OPEN HATCH"
+          },
+          {
+            "value": "1 Movable bulkhead",
+            "confidence": "confirmed",
+            "source_text": "1 MOVABLE BULKHEAD"
+          },
+          {
+            "value": "IMO 1 fitted",
+            "confidence": "confirmed",
+            "source_text": "IMO 1 FITTED"
+          }
+        ],
+        "unknown_terms": []
+      }
+    ]
+  }
+}

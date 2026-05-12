@@ -276,9 +276,9 @@
       },
       {
         "origin_port": {
-          "value": "Port of Call (unspecified)",
+          "value": "POC (Port of Chornomorsk — unconfirmed abbreviation, see missing_info)",
           "confidence": "uncertain",
-          "source_text": "POC"
+          "source_text": "POC - EC Greece"
         },
         "origin_country": {
           "value": "Ukraine",
@@ -457,9 +457,9 @@
       },
       {
         "origin_port": {
-          "value": "Port of Call (unspecified)",
+          "value": "POC (Port of Chornomorsk — unconfirmed abbreviation, see missing_info)",
           "confidence": "uncertain",
-          "source_text": "POC"
+          "source_text": "POC - Douala, Cameroon"
         },
         "origin_country": {
           "value": "Ukraine",

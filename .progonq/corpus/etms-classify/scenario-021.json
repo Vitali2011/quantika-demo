@@ -1,0 +1,24 @@
+{
+  "id": "etms-classify-021",
+  "source_email_id": "19e07c446224acf1",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: Izmail / Antalya",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:26:01.000Z",
+    "body": " \r\n\r\n \r\n\r\nFrom: circulation@feyzgroupchartering.com\r\n<circulation@feyzgroupchartering.com> \r\nSent: Friday, 8 May 2026 15:16\r\nTo: chartering@feyzgroup.com\r\nSubject: Izmail / Antalya\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPlease offer firm for;\r\n\r\n \r\n\r\n1500 mts +/-10% coal tar pitch in bb\r\n\r\nIzmail / Antalya\r\n\r\n11-15 May\r\n\r\n1000 / 1000 sshex \r\n\r\n2,5% addcom pus\r\n\r\n \r\n\r\n- (1.4x1.4x1.1 UW 1,2 mt) ~ 2600 m3 required\r\n\r\n \r\n\r\n \r\n\r\nBest Regards\r\n\r\nAhmet YILDIZ\r\n\r\nChartering Dept.\r\n\r\nAs Broker Only\r\n\r\n \r\n\r\nAdress  : Altinsehir Mahallesi, Tavukcuyolu Caddesi Tomurcuk Sokak No 11\r\nIstanbul/Türkiye\r\n\r\nOffice    : 0090 216 527 00 31\r\n\r\nMobile  : 0090 534 430 00 40\r\n\r\nEmail      :  <mailto:chartering@feyzgroup.com> chartering@feyzgroup.com\r\n\r\nTeams   : Ahmet YILDIZ – FEYZ GROUP\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07c446224acf1",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.93,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Ahmet YILDIZ",
+    "original_sender_company": "FEYZ GROUP",
+    "unknown_terms": [
+      "pus (context: '2,5% addcom pus' — unrecognized commission qualifier/split notation)"
+    ]
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "id": "etms-parse-vessel-009",
+  "source_email_id": "19d5e77730e6489b",
+  "category": "full_specs",
+  "input": {
+    "subject": "FW: MV 'Gandolf' open Skikda spot",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-04-05T16:26:15.000Z",
+    "body": " \r\n\r\nFrom: Allimar Chartering <chartering@allimar.it> \r\nSent: Friday, 5 September 2025 11:37\r\nTo: Allimar Chartering <chartering@allimar.it>\r\nSubject: MV 'Gandolf' open Skikda spot\r\n\r\n \r\n\r\nMV 'Gandolf'\r\n\r\nBuilt 1988\r\n\r\nComoros Flag - Phoenix Class - Turk P&I\r\n\r\n1084 DWAT on 3m ssw\r\n\r\nSid/Box Hold\r\n\r\nGT/NT  910/273\r\n\r\nLoa/Beam/Draft 69,04/9,46/3,00 m\r\n\r\nHo/Ha 1/1 - Gr/Bl 1.681/1.462 CBM\r\n\r\nHo dim: 37,80 x 7,40 x 5,20 m\r\n\r\nHa dim: 37,80 x 7,40 m\r\n\r\nMcGregor single pull type hatch covers\r\n\r\nSteel floored,\r\n\r\nAppendix A,B,C fitted\r\n\r\nAir vent fitted\r\n\r\nBowtrusther fitted\r\n\r\nADA WOG\r\n\r\n \r\n\r\n**open Skikda spot under our c/p\r\n\r\n \r\n\r\n\r\n\r\n \r\n\r\nALLIMAR SHIPBROKERS s.r.l.\r\n\r\n+39/3356759395\r\n\r\n <mailto:chartering@allimar.it> chartering@allimar.it\r\n\r\n <mailto:allimar@tiscali.it> allimar@tiscali.it (circulars & positions only)\r\n\r\nallimarship\r\n\r\n  wxid_02g3slkt8c8r12\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "MV 'Gandolf'",
+          "confidence": "confirmed",
+          "source_text": "MV 'Gandolf'"
+        },
+        "imo": null,
+        "flag": {
+          "value": "Comoros",
+          "confidence": "confirmed",
+          "source_text": "Comoros Flag"
+        },
+        "built": {
+          "value": 1988,
+          "confidence": "confirmed",
+          "source_text": "Built 1988"
+        },
+        "class_society": {
+          "value": "Phoenix Class",
+          "confidence": "confirmed",
+          "source_text": "Phoenix Class"
+        },
+        "p_and_i": {
+          "value": "Turk P&I",
+          "confidence": "confirmed",
+          "source_text": "Turk P&I"
+        },
+        "dwt_summer": {
+          "value": 1084,
+          "confidence": "confirmed",
+          "source_text": "1084 DWAT on 3m ssw"
+        },
+        "dwcc": null,
+        "draft_max": {
+          "value": 3,
+          "confidence": "confirmed",
+          "source_text": "Loa/Beam/Draft 69,04/9,46/3,00 m"
+        },
+        "loa": {
+          "value": 69.04,
+          "confidence": "confirmed",
+          "source_text": "Loa/Beam/Draft 69,04/9,46/3,00 m"
+        },
+        "beam": {
+          "value": 9.46,
+          "confidence": "confirmed",
+          "source_text": "Loa/Beam/Draft 69,04/9,46/3,00 m"
+        },
+        "grt": {
+          "value": 910,
+          "confidence": "confirmed",
+          "source_text": "GT/NT  910/273"
+        },
+        "nrt": {
+          "value": 273,
+          "confidence": "confirmed",
+          "source_text": "GT/NT  910/273"
+        },
+        "holds_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "Ho/Ha 1/1"
+        },
+        "hatches_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "Ho/Ha 1/1"
+        },
+        "grain_capacity": {
+          "value": 1681,
+          "confidence": "confirmed",
+          "source_text": "Gr/Bl 1.681/1.462 CBM"
+        },
+        "grain_capacity_unit": "cbm",
+        "bale_capacity": {
+          "value": 1462,
+          "confidence": "confirmed",
+          "source_text": "Gr/Bl 1.681/1.462 CBM"
+        },
+        "hold_dimensions": ["37,80 x 7,40 x 5,20 m"],
+        "hatch_dimensions": ["37,80 x 7,40 m"],
+        "tank_top_strength": null,
+        "geared": {
+          "value": false,
+          "confidence": "uncertain",
+          "source_text": "Sid/Box Hold"
+        },
+        "crane_capacity": null,
+        "hatch_type": {
+          "value": "MacGregor single pull type",
+          "confidence": "confirmed",
+          "source_text": "McGregor single pull type hatch covers"
+        },
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "interpreted",
+          "source_text": "Sid/Box Hold"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Skikda",
+          "confidence": "confirmed",
+          "source_text": "open Skikda spot under our c/p"
+        },
+        "open_date": {
+          "value": {
+            "open": null,
+            "close": null,
+            "display": "spot"
+          },
+          "confidence": "confirmed",
+          "source_text": "open Skikda spot under our c/p"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Single deck / Box-shaped hold",
+            "confidence": "confirmed",
+            "source_text": "Sid/Box Hold"
+          },
+          {
+            "value": "Steel floored hold",
+            "confidence": "confirmed",
+            "source_text": "Steel floored,"
+          },
+          {
+            "value": "Appendix A, B, C fitted",
+            "confidence": "confirmed",
+            "source_text": "Appendix A,B,C fitted"
+          },
+          {
+            "value": "Air vent fitted",
+            "confidence": "confirmed",
+            "source_text": "Air vent fitted"
+          },
+          {
+            "value": "Bow thruster fitted",
+            "confidence": "confirmed",
+            "source_text": "Bowtrusther fitted"
+          },
+          {
+            "value": "Open under existing charter party",
+            "confidence": "confirmed",
+            "source_text": "open Skikda spot under our c/p"
+          }
+        ],
+        "unknown_terms": [
+          "ssw — possibly 'salt water summer' draft reference, not confirmed in glossary",
+          "Appendix A,B,C fitted — vessel certificate appendices, specific meaning not confirmed in glossary"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,411 @@
+{
+  "id": "etms-parse-vessel-005",
+  "source_email_id": "19d5e7455d073a74",
+  "category": "full_specs",
+  "input": {
+    "subject": "FW: Ocean7 Projects - N.Europe / N.Atlantic Selected Positions - 21 May 2025",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-04-05T16:22:51.000Z",
+    "body": " \r\n\r\nFrom: Aleksandra Zamiatina - Ocean7 Chartering Europe\r\n<europe@ocean7projects.com> \r\nSent: Wednesday, 21 May 2025 14:39\r\nSubject: Ocean7 Projects - N.Europe / N.Atlantic Selected Positions - 21 May\r\n2025\r\n\r\n \r\n\r\n\r\nOCEAN7 PROJECTS\r\n\r\n \r\n\r\n \r\n\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\nPlease propose for our MPP positions:\r\n\r\n \r\n\r\n \r\n\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n*** N.EUROPE / N.ATLANTIC ***\r\n\r\n \r\n\r\n \r\n\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\nPANTHERA J\r\n\r\ntwn, 2x150/300mt, 2900sqm\r\n\r\n \r\n\r\nCONTINENT\r\n\r\n01 JUN\r\n\r\n\r\n7,000 DWT\r\n\r\nIMO 1, 9600cbm, 13 knts\r\n\r\n \r\n\r\nANY DIR WW\r\n\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\nHC EVA-MARIE\r\n\r\ntwn, 2x80/160mt, 3700 sqm\r\n\r\n \r\n\r\nHALSVIK\r\n\r\n25 MAY\r\n\r\n\r\n11,000 DWT\r\n\r\nIMO 1, 14700cbm, Ice 1A\r\n\r\n \r\n\r\nANY DIR WW\r\n\r\n \r\n\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\nO7 GAJA\r\n\r\ntwn, 2x240/480mt, 5000 sqm\r\n\r\n \r\n\r\nARA\r\n\r\n04 JUN\r\n\r\n\r\n12,215 DWT\r\n\r\nIMO 1, 18700 cbm, Lakes\r\n\r\n \r\n\r\nPC DIR BRAZIL\r\n\r\n \r\n\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\nSLOMAN DISPATCHER\r\n\r\ntwn, 2x150/300mt, 4300sqm\r\n\r\nHAUGESUND\r\n\r\n28 MAY\r\n\r\n\r\n12,700 DWT\r\n\r\nIMO 1, 14900cbm, 15 knts\r\n\r\nANY DIR WW\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\nKind regards,\r\n\r\n \r\n\r\nAleksandra Zamiatina\r\n\r\n \r\n\r\n \r\n\r\nMobile: +49 170 5984420\r\n\r\nEmail: europe@ocean7projects.com\r\n<https://ocean7.sednanetwork.com/operations@ocean7projects.com> \r\n\r\nWeb: www.ocean7projects.com <https://www.ocean7projects.com/> \r\n\r\n\r\n\r\nOcean7 Group\r\n\r\nHamburg, Germany\r\n\r\n(as agents only)\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "PANTHERA J",
+          "confidence": "confirmed",
+          "source_text": "PANTHERA J"
+        },
+        "imo": null,
+        "flag": null,
+        "built": null,
+        "class_society": null,
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 7000,
+          "confidence": "confirmed",
+          "source_text": "7,000 DWT"
+        },
+        "dwcc": null,
+        "draft_max": null,
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": null,
+        "hatches_count": null,
+        "grain_capacity": {
+          "value": 9600,
+          "confidence": "confirmed",
+          "source_text": "9600cbm"
+        },
+        "grain_capacity_unit": "cbm",
+        "bale_capacity": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": {
+          "value": true,
+          "confidence": "confirmed",
+          "source_text": "2x150/300mt"
+        },
+        "crane_capacity": {
+          "value": "2 x 150/300t",
+          "confidence": "confirmed",
+          "source_text": "2x150/300mt"
+        },
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "MPP",
+          "confidence": "confirmed",
+          "source_text": "twn, 2x150/300mt"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Continent",
+          "confidence": "confirmed",
+          "source_text": "CONTINENT"
+        },
+        "open_date": {
+          "value": {
+            "open": "2025-06-01",
+            "close": null,
+            "display": "01 JUN 2025"
+          },
+          "confidence": "confirmed",
+          "source_text": "01 JUN"
+        },
+        "direction": {
+          "value": "Any direction worldwide",
+          "confidence": "confirmed",
+          "source_text": "ANY DIR WW"
+        },
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": {
+          "value": 13,
+          "confidence": "confirmed",
+          "source_text": "13 knts"
+        },
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": {
+          "value": 2900,
+          "confidence": "confirmed",
+          "source_text": "2900sqm"
+        },
+        "special_features": [
+          {
+            "value": "Tween decker",
+            "confidence": "confirmed",
+            "source_text": "twn"
+          },
+          {
+            "value": "IMO 1 certified",
+            "confidence": "confirmed",
+            "source_text": "IMO 1"
+          }
+        ],
+        "unknown_terms": []
+      },
+      {
+        "vessel_name": {
+          "value": "HC EVA-MARIE",
+          "confidence": "confirmed",
+          "source_text": "HC EVA-MARIE"
+        },
+        "imo": null,
+        "flag": null,
+        "built": null,
+        "class_society": null,
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 11000,
+          "confidence": "confirmed",
+          "source_text": "11,000 DWT"
+        },
+        "dwcc": null,
+        "draft_max": null,
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": null,
+        "hatches_count": null,
+        "grain_capacity": {
+          "value": 14700,
+          "confidence": "confirmed",
+          "source_text": "14700cbm"
+        },
+        "grain_capacity_unit": "cbm",
+        "bale_capacity": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": {
+          "value": true,
+          "confidence": "confirmed",
+          "source_text": "2x80/160mt"
+        },
+        "crane_capacity": {
+          "value": "2 x 80/160t",
+          "confidence": "confirmed",
+          "source_text": "2x80/160mt"
+        },
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "MPP",
+          "confidence": "confirmed",
+          "source_text": "twn, 2x80/160mt"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Halsvik",
+          "confidence": "confirmed",
+          "source_text": "HALSVIK"
+        },
+        "open_date": {
+          "value": {
+            "open": "2025-05-25",
+            "close": null,
+            "display": "25 MAY 2025"
+          },
+          "confidence": "confirmed",
+          "source_text": "25 MAY"
+        },
+        "direction": {
+          "value": "Any direction worldwide",
+          "confidence": "confirmed",
+          "source_text": "ANY DIR WW"
+        },
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": {
+          "value": 3700,
+          "confidence": "confirmed",
+          "source_text": "3700 sqm"
+        },
+        "special_features": [
+          {
+            "value": "Tween decker",
+            "confidence": "confirmed",
+            "source_text": "twn"
+          },
+          {
+            "value": "IMO 1 certified",
+            "confidence": "confirmed",
+            "source_text": "IMO 1"
+          },
+          {
+            "value": "Ice class 1A",
+            "confidence": "confirmed",
+            "source_text": "Ice 1A"
+          }
+        ],
+        "unknown_terms": []
+      },
+      {
+        "vessel_name": {
+          "value": "O7 GAJA",
+          "confidence": "confirmed",
+          "source_text": "O7 GAJA"
+        },
+        "imo": null,
+        "flag": null,
+        "built": null,
+        "class_society": null,
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 12215,
+          "confidence": "confirmed",
+          "source_text": "12,215 DWT"
+        },
+        "dwcc": null,
+        "draft_max": null,
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": null,
+        "hatches_count": null,
+        "grain_capacity": {
+          "value": 18700,
+          "confidence": "confirmed",
+          "source_text": "18700 cbm"
+        },
+        "grain_capacity_unit": "cbm",
+        "bale_capacity": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": {
+          "value": true,
+          "confidence": "confirmed",
+          "source_text": "2x240/480mt"
+        },
+        "crane_capacity": {
+          "value": "2 x 240/480t",
+          "confidence": "confirmed",
+          "source_text": "2x240/480mt"
+        },
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "MPP",
+          "confidence": "confirmed",
+          "source_text": "twn, 2x240/480mt"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "ARA",
+          "confidence": "confirmed",
+          "source_text": "ARA"
+        },
+        "open_date": {
+          "value": {
+            "open": "2025-06-04",
+            "close": null,
+            "display": "04 JUN 2025"
+          },
+          "confidence": "confirmed",
+          "source_text": "04 JUN"
+        },
+        "direction": {
+          "value": "Brazil",
+          "confidence": "confirmed",
+          "source_text": "PC DIR BRAZIL"
+        },
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": {
+          "value": 5000,
+          "confidence": "confirmed",
+          "source_text": "5000 sqm"
+        },
+        "special_features": [
+          {
+            "value": "Tween decker",
+            "confidence": "confirmed",
+            "source_text": "twn"
+          },
+          {
+            "value": "IMO 1 certified",
+            "confidence": "confirmed",
+            "source_text": "IMO 1"
+          },
+          {
+            "value": "Lakes dimensioned",
+            "confidence": "confirmed",
+            "source_text": "Lakes"
+          }
+        ],
+        "unknown_terms": [
+          "PC DIR — direction qualifier 'PC' not recognized (possibly 'Preferred/Preferred Course' direction indicator)"
+        ]
+      },
+      {
+        "vessel_name": {
+          "value": "SLOMAN DISPATCHER",
+          "confidence": "confirmed",
+          "source_text": "SLOMAN DISPATCHER"
+        },
+        "imo": null,
+        "flag": null,
+        "built": null,
+        "class_society": null,
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 12700,
+          "confidence": "confirmed",
+          "source_text": "12,700 DWT"
+        },
+        "dwcc": null,
+        "draft_max": null,
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": null,
+        "hatches_count": null,
+        "grain_capacity": {
+          "value": 14900,
+          "confidence": "confirmed",
+          "source_text": "14900cbm"
+        },
+        "grain_capacity_unit": "cbm",
+        "bale_capacity": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": {
+          "value": true,
+          "confidence": "confirmed",
+          "source_text": "2x150/300mt"
+        },
+        "crane_capacity": {
+          "value": "2 x 150/300t",
+          "confidence": "confirmed",
+          "source_text": "2x150/300mt"
+        },
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "MPP",
+          "confidence": "confirmed",
+          "source_text": "twn, 2x150/300mt"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Haugesund",
+          "confidence": "confirmed",
+          "source_text": "HAUGESUND"
+        },
+        "open_date": {
+          "value": {
+            "open": "2025-05-28",
+            "close": null,
+            "display": "28 MAY 2025"
+          },
+          "confidence": "confirmed",
+          "source_text": "28 MAY"
+        },
+        "direction": {
+          "value": "Any direction worldwide",
+          "confidence": "confirmed",
+          "source_text": "ANY DIR WW"
+        },
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": {
+          "value": 15,
+          "confidence": "confirmed",
+          "source_text": "15 knts"
+        },
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": {
+          "value": 4300,
+          "confidence": "confirmed",
+          "source_text": "4300sqm"
+        },
+        "special_features": [
+          {
+            "value": "Tween decker",
+            "confidence": "confirmed",
+            "source_text": "twn"
+          },
+          {
+            "value": "IMO 1 certified",
+            "confidence": "confirmed",
+            "source_text": "IMO 1"
+          }
+        ],
+        "unknown_terms": []
+      }
+    ]
+  }
+}

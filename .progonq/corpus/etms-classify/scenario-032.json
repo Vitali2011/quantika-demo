@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-032",
+  "source_email_id": "19e07c6ce81f694d",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: SPECIAL POSITION  - MV ALTO 24 DWT YEMEN SPOT - EX OUR CP",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:28:45.000Z",
+    "body": " \r\n\r\nFrom: Maral Gouda <m.gouda@varamar.com> \r\nSent: Friday, 8 May 2026 09:10\r\nTo: management@etm-services.net\r\nSubject: SPECIAL POSITION - MV ALTO 24 DWT YEMEN SPOT - EX OUR CP\r\n\r\n \r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n <https://mailchi.mp/d17289617529/3-8k-dwt-contbaltic-feast-oct-dates-8117999?e=7ed3422e5a> View this email in your browser \r\n\r\n\t\r\n\r\n\r\n\r\n\r\n\r\n\r\nPlease propose suitable cargo\r\n\r\n\r\nMV ALTO\r\n----------------------------\r\nEX OUR CP\r\n\r\n\r\nOpen YEMEN SPOT\r\n\r\n\r\nMV ALTO\r\n\r\nSUMMER: 24804 DWT ON 10.045 METERS\r\n\r\nTYPE: GENERAL CARGO\r\n\r\nBUILT: 1997, JAPAN\r\n\r\nCRANES : 4X30T SWL (only 3 cranes can work simultaneously)\r\n\r\nFLAG: BELIZE\r\n\r\nCLASS: TURKISH LLOYD\r\n\r\nIMO NUMBER: 9145786\r\n\r\nCALL SIGN: V3MW\r\n\r\n \r\n\r\nL.O.A.: 153.78 M\r\n\r\nL.B.P. : 143.80 M\r\n\r\nBEAM: 26.00 M\r\n\r\nDEPTH MOULDED: 16 M\r\n\r\nGROSS TONNAGE: 20395\r\n\r\nNET TONNAGE: 9257\r\n\r\nTPC AT SUMMER: 34.055\r\n\r\n \r\n\r\n4 HOLDS / 4 HATCHES\r\n\r\nHOLD NO 2&3 ARE BOX\r\n\r\nMC GREGOR FOLDING TYPE HATCHCOVERS\r\n\r\n \r\n\r\n             GRAIN (CBM)    BALE (CBM)\r\n\r\nHOLD  1              8957.23                8812.27\r\n\r\nHOLD  2              11829.15            11538.32\r\n\r\nHOLD  3              11827.86            11538.32\r\n\r\nHOLD  4              12274.18            11877.37\r\n\r\nTOTAL                  44888.42            43766.28\r\n\r\n \r\n\r\nHATCHCOVER DIMENSIONS : (METERS)\r\n\r\nNo:1 – 16.00 x 17.38\r\n\r\nNo:2 – 20.00 x 22.00\r\n\r\nNo:3 – 20.00 x 22.00\r\n\r\nNo:4 – 20.00 x 20.00\r\n\r\n \r\n\r\nTANK TOP STRENGHT (CUM/M2) :  H1, H2, H3 = 15 T/M2 / H4 = 14 T/M2\r\n\r\nCO2 FITTED, AUSTRALIAN LADDERS FITTED  \r\n\r\nLAST DRYDOCK : 05.02.2024 , ISTANBUL\r\n\r\n \r\n\r\nALL DETS ABT+\r\n\r\n \r\n\r\n Best regards,\r\n\r\nVARAMAR SHIPPING DMCC,\r\nm.gouda@varamar.com\r\ng.bereti@varamar.com\r\n\r\n\r\n\r\n          \r\n\r\n \r\n\r\n\r\n \r\n\r\n\r\n \r\n\r\n \r\n\r\n\r\n  _____  \r\n\r\n\r\n\r\n       \r\n\r\n\r\n\r\n \r\n\r\n \r\n\r\n\r\n\t\r\n\r\n\r\n\t\r\n\r\n \r\n\r\n\r\n\r\n\r\nYou can  <https://varamar.us6.list-manage.com/profile?u=77dc233bd77642c328018b9a6&id=726e17bbd2&e=7ed3422e5a&c=e3613e9074> update your preferences or  <https://varamar.us6.list-manage.com/unsubscribe?u=77dc233bd77642c328018b9a6&id=726e17bbd2&t=b&e=7ed3422e5a&c=e3613e9074> unsubscribe from this list.\r\n  \r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07c6ce81f694d",
+    "category": "VESSEL_POSITION",
+    "urgency": "medium",
+    "confidence": 0.92,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Maral Gouda",
+    "original_sender_company": "VARAMAR SHIPPING DMCC"
+  }
+}

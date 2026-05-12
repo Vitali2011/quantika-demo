@@ -1,0 +1,22 @@
+{
+  "id": "etms-classify-043",
+  "source_email_id": "19e07ca31cff6b2a",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: 20/30,000mt - Egypt/Wafr",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:32:29.000Z",
+    "body": " \r\n\r\nFrom: Nautical Bulk Carriers - Mevlut <mc@nbcarriers.com> \r\nSent: Thursday, 7 May 2026 11:32\r\nTo: Nautical Bulk Carriers - Mevlut <mc@nbcarriers.com>\r\nSubject: 20/30,000mt - Egypt/Wafr\r\nImportance: High\r\n\r\n \r\n\r\nFirm to move\r\n\r\n \r\n\r\n\r\nneed 20/30,000mt sdbc try twn (try smaller)\r\n\r\nloading Damietta  + Misurata\r\n\r\ndisch Douala  + Lagos \r\n\r\n12 ttl days sx\r\n\r\n10 / 20 May \r\n\r\n2,5 pct ttl here \r\n\r\n \r\n\r\nNeed to load abt 300 containers 20HC (uw abt 20mt)\r\n\r\nLumpsum figures pls \r\n\r\n \r\n\r\n \r\n\r\nBest regards\r\n\r\n  \r\n\r\nMevlut Ceviker\r\n\r\nMember Of The Executive Board \r\n\r\n \r\n\r\n \r\n\r\nNautical  Bulk  Carriers  S.A.  \r\n\r\nAdress : Küçükbakkalköy Mah. Rüya Sok. Vogue Plaza No 12 Kat 6 Ataşehir -\r\nİSTANBUL  \r\n\r\nTel         : +90 216 639 0228  , Mob      : +90  533 123 5200\r\nE-mail   :  <mailto:mc@nbcarriers.com> mc@nbcarriers.com\r\n\r\nSkype   :  <mailto:mceviker@gmail.com> mceviker@gmail.com\r\n\r\nWeb      :  <http://www.nbcarriers.com/> www.nbcarriers.com\r\n\r\n \r\n\r\nCONFIDENTIALITY NOTICE: This message is intended for the use of the\r\nindividual or entity to which it is addressed and may contain information\r\nthat is privileged, confidential and exempt from disclosure under applicable\r\nlaw. If the reader of this message is not the intended recipient or the\r\nemployee or agent responsible for delivering this message to the intended\r\nrecipient, you are hereby notified that any dissemination, distribution or\r\ncopying of this communication is strictly prohibited. If you have received\r\nthis communication in error, please notify us immediately by email reply.\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07ca31cff6b2a",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.93,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Mevlut Ceviker",
+    "original_sender_company": "Nautical Bulk Carriers S.A.",
+    "unknown_terms": ["sx"]
+  }
+}

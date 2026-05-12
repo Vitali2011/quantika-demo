@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-121",
+  "source_email_id": "19e09767a49f448a",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: VVY : 5000 mts soya in blk, Pivdenniy -> Poti, l/c SPOT",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:20:18.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: Mariia Levandovska (VVY) <chartering@morskazvezda.si> \r\nSent: Monday, 23 March 2026 12:47\r\nTo: management@etm-services.net\r\nSubject: VVY : 5000 mts soya in blk, Pivdenniy -> Poti, l/c SPOT\r\nImportance: High\r\n\r\nGood day,\r\nPlease offer firm for:\r\n\r\n- abt 5000 mts soya in blk\r\n- 1 sb Pivdenniy / 1 sb Poti\r\n- l/d 1500 mts pwwd sshex eiu\r\n- l/c SPOT\r\n- chabe, Sulina 3 days\r\n- comm 2,50 pct ttl\r\n\r\nChrts frt idea against vessel's detail.\r\n\r\nBest regards,\r\nMariia Levandovska (VVY)\r\nmobile/whatsapp/viber/telegram: +386(70)556998\r\ne-mail: chartering@morskazvezda.si\r\n\r\nMorska Zvezda d.o.o., Shipping & Management Co. (Koper, Slovenia) Dry-cargo,\r\nheavy-lift and project chartering brokers.\r\n\r\n===\r\nThis is not Spam/Junk Mail but only regular e-mail of ships chartering\r\nbusiness.\r\nWe apologize if this email reached you without your consent.\r\nTo remove from our mailing list, please reply with subject  \"UNSUBSCRIBE\".\r\nIf you are interested in the information below please update your full style\r\nand biz scope accordingly.\r\nIf you are receiving our circulars to many e-mail addresses of your company,\r\nplease advice MAIN ONE for circular/positions only.\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "id": "19e09767a49f448a",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.82,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Mariia Levandovska",
+    "original_sender_company": "Morska Zvezda d.o.o."
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "id": "etms-parse-vessel-025",
+  "source_email_id": "19e07d0cb83503c5",
+  "category": "dwcc_edge",
+  "input": {
+    "subject": "FW: 4000 dwcc open Sevilla",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:39:41.000Z",
+    "body": " \r\n\r\nFrom: PRIME MARITIME ODESA <chartering@prime-maritime.com> \r\nSent: None\r\nTo: management@etm-services.net\r\nSubject: 4000 dwcc open Sevilla\r\n\r\n \r\n\r\nMV KATREN   open   SEVILLA   07-08 May\r\nBUILT-1991, NETHERLANDS\r\nDWT 4173 MTS, DWCC 4000 ON 5,45 M DRAFT\r\nRINA CLASS, FLAG VANUATU\r\nSID, GLESS, LOA 88,25 M, BREADTH 13,7 M\r\nBOW TRUSTER FITTED\r\nTWO BOX HOLDS G/B 197500 CBF\r\n1- 29,75 x 11,55 x 8,65 M\r\n2- 32,05 x 11,5 5 x 8,65 M\r\nP&I MS AMLIN BELGIUM\r\nALL DETS ABT WOG\r\n\r\nfor any directions\r\n\r\n__\r\nBest regards\r\nPrime Maritime\r\n+380635961588  \r\n+380669422741\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "MV KATREN",
+          "confidence": "confirmed",
+          "source_text": "MV KATREN   open   SEVILLA   07-08 May"
+        },
+        "imo": null,
+        "flag": {
+          "value": "Vanuatu",
+          "confidence": "confirmed",
+          "source_text": "FLAG VANUATU"
+        },
+        "built": {
+          "value": 1991,
+          "confidence": "confirmed",
+          "source_text": "BUILT-1991, NETHERLANDS"
+        },
+        "class_society": {
+          "value": "RINA",
+          "confidence": "confirmed",
+          "source_text": "RINA CLASS"
+        },
+        "p_and_i": {
+          "value": "MS Amlin Belgium",
+          "confidence": "confirmed",
+          "source_text": "P&I MS AMLIN BELGIUM"
+        },
+        "dwt_summer": {
+          "value": 4173,
+          "confidence": "confirmed",
+          "source_text": "DWT 4173 MTS"
+        },
+        "dwcc": {
+          "value": 4000,
+          "confidence": "confirmed",
+          "source_text": "DWCC 4000 ON 5,45 M DRAFT"
+        },
+        "draft_max": {
+          "value": 5.45,
+          "confidence": "interpreted",
+          "source_text": "DWCC 4000 ON 5,45 M DRAFT"
+        },
+        "loa": {
+          "value": 88.25,
+          "confidence": "confirmed",
+          "source_text": "LOA 88,25 M"
+        },
+        "beam": {
+          "value": 13.7,
+          "confidence": "confirmed",
+          "source_text": "BREADTH 13,7 M"
+        },
+        "grt": null,
+        "nrt": null,
+        "holds_count": {
+          "value": 2,
+          "confidence": "confirmed",
+          "source_text": "TWO BOX HOLDS"
+        },
+        "hatches_count": null,
+        "grain_capacity": {
+          "value": 197500,
+          "confidence": "confirmed",
+          "source_text": "TWO BOX HOLDS G/B 197500 CBF"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": {
+          "value": 197500,
+          "confidence": "interpreted",
+          "source_text": "TWO BOX HOLDS G/B 197500 CBF"
+        },
+        "hold_dimensions": {
+          "value": ["Hold 1: 29.75 x 11.55 x 8.65 M", "Hold 2: 32.05 x 11.55 x 8.65 M"],
+          "confidence": "confirmed",
+          "source_text": "1- 29,75 x 11,55 x 8,65 M\n2- 32,05 x 11,5 5 x 8,65 M"
+        },
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": {
+          "value": false,
+          "confidence": "confirmed",
+          "source_text": "GLESS"
+        },
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "interpreted",
+          "source_text": "SID, GLESS, LOA 88,25 M"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Sevilla",
+          "confidence": "confirmed",
+          "source_text": "MV KATREN   open   SEVILLA   07-08 May"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-05-07",
+            "close": "2026-05-08",
+            "display": "07-08 May"
+          },
+          "confidence": "interpreted",
+          "source_text": "MV KATREN   open   SEVILLA   07-08 May"
+        },
+        "direction": {
+          "value": null,
+          "confidence": "uncertain",
+          "source_text": "for any directions"
+        },
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Bow thruster fitted",
+            "confidence": "confirmed",
+            "source_text": "BOW TRUSTER FITTED"
+          },
+          {
+            "value": "Box-shaped holds",
+            "confidence": "confirmed",
+            "source_text": "TWO BOX HOLDS"
+          },
+          {
+            "value": "Single deck (SID)",
+            "confidence": "confirmed",
+            "source_text": "SID"
+          }
+        ],
+        "unknown_terms": [
+          "ALL DETS ABT WOG — 'ALL DETS ABT WOG' contains WOG (Without Guarantee, recognized) and ABT (about, recognized) but 'ALL DETS' as a compound abbreviation is not formally in the glossary; likely 'All Details About' (ADA equivalent) — flagging for review"
+        ]
+      }
+    ]
+  }
+}

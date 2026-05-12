@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-016",
+  "source_email_id": "19d5e77730e6489b",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: MV 'Gandolf' open Skikda spot",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-04-05T16:26:15.000Z",
+    "body": " \r\n\r\nFrom: Allimar Chartering <chartering@allimar.it> \r\nSent: Friday, 5 September 2025 11:37\r\nTo: Allimar Chartering <chartering@allimar.it>\r\nSubject: MV 'Gandolf' open Skikda spot\r\n\r\n \r\n\r\nMV 'Gandolf'\r\n\r\nBuilt 1988\r\n\r\nComoros Flag - Phoenix Class - Turk P&I\r\n\r\n1084 DWAT on 3m ssw\r\n\r\nSid/Box Hold\r\n\r\nGT/NT  910/273\r\n\r\nLoa/Beam/Draft 69,04/9,46/3,00 m\r\n\r\nHo/Ha 1/1 - Gr/Bl 1.681/1.462 CBM\r\n\r\nHo dim: 37,80 x 7,40 x 5,20 m\r\n\r\nHa dim: 37,80 x 7,40 m\r\n\r\nMcGregor single pull type hatch covers\r\n\r\nSteel floored,\r\n\r\nAppendix A,B,C fitted\r\n\r\nAir vent fitted\r\n\r\nBowtrusther fitted\r\n\r\nADA WOG\r\n\r\n \r\n\r\n**open Skikda spot under our c/p\r\n\r\n \r\n\r\n\r\n\r\n \r\n\r\nALLIMAR SHIPBROKERS s.r.l.\r\n\r\n+39/3356759395\r\n\r\n <mailto:chartering@allimar.it> chartering@allimar.it\r\n\r\n <mailto:allimar@tiscali.it> allimar@tiscali.it (circulars & positions only)\r\n\r\nallimarship\r\n\r\n  wxid_02g3slkt8c8r12\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19d5e77730e6489b",
+    "category": "VESSEL_POSITION",
+    "urgency": "medium",
+    "confidence": 0.82,
+    "is_unanswered": true,
+    "days_without_reply": 36,
+    "original_sender": "Allimar Chartering",
+    "original_sender_company": "ALLIMAR SHIPBROKERS s.r.l."
+  }
+}

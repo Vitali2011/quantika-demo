@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-079",
+  "source_email_id": "19e07d4742474163",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: FIRM CARGOES",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:43:42.000Z",
+    "body": " \r\n\r\nFrom: Oner Tokcan / Nautical Bulk Carriers <oner.tokcan@nbcarriers.com> \r\nSent: Friday, 8 May 2026 12:24\r\nTo: Oner Tokcan / Nautical Bulk Carriers <oner.tokcan@nbcarriers.com>\r\nSubject: FIRM CARGOES \r\n\r\n \r\n\r\nDear All / Oner\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPls offer firm\r\n\r\n \r\n\r\n-NEMRUT / LIVERPOOL\r\n\r\n-2,720mts 2PCT MOLCHOPT HRC UW ABT 10/27TS\r\n\r\n-L/C 15 / 18 MAY 2026\r\n\r\n-1250MTS SSHEX EIU / 1500MTS SSHEX EIU \r\n-MAX 25 YRS (TRY MORE) \r\n-3.75PCT ADDCOMPUS \r\n\r\n \r\n\r\n+ + + + +\r\n\r\n \r\n\r\n-NEMRUT / CONSTANTZA\r\n\r\n-6,500mts 2PCT MOLCHOPT HRC + HRCPO + HRCTD UW ABT 10/27TS + HRS\r\n\r\n-L/C 22 / 25 MAY 2026\r\n\r\n-1500MTS SSHEX EIU / 1500MTS SSHEX EIU \r\n-MAX 25 YRS (TRY MORE) \r\n-3.75PCT ADDCOMPUS\r\n\r\n \r\n\r\n \r\n\r\nBest regards\r\nOner Tokcan\r\nNautical Bulk Carriers S.A.\r\n\r\nVaryap Meridian I Blok,14th Floor, Atasehir, Istanbul - Turkey\r\nMob: +90 506 507 4730\r\n\r\nTel: +90 216 639 0228\r\n\r\nEmail:  <mailto:oner.tokcan@nbcarriers.com> oner.tokcan@nbcarriers.com\r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07d4742474163",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.93,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Oner Tokcan",
+    "original_sender_company": "Nautical Bulk Carriers S.A."
+  }
+}

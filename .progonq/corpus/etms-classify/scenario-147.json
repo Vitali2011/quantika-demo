@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-147",
+  "source_email_id": "19e0f53423e78f5f",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: 10k dwcc mv propus - open marmara sea 22/26aug",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-10T00:39:32.000Z",
+    "body": " \r\n\r\nFrom: a17-@googlegroups.com <a17-@googlegroups.com> On Behalf Of atom@atombulk.com\r\nSent: Tuesday, 20 August 2024 18:41\r\nTo: atom@atombulk.com\r\nSubject: 10k dwcc mv propus - open marmara sea 22/26aug\r\n\r\n \r\n\r\natombulk ship chartering – istanbul\r\n\r\n \r\n\r\ngood day\r\n\r\n \r\n\r\n*\topen istanbul 22/26august\r\n\r\n \r\n\r\nmv propus\r\n\r\ndwt 10430 dwt on 8.58 m draft blt 1997\r\n\r\nclass bv flag panama\r\n\r\ngrt 7708 /nrt 3514 mt\r\n\r\nloa 126. / beam 20 m\r\n\r\n3 ho/3 ha\r\n\r\nbox like\r\n\r\ngrain 11960 / bale 11220 cbm\r\n\r\n \r\n\r\n*not prefer ukraine voyage for just now\r\n\r\nrated other cgoes welcome.\r\n\r\n \r\n\r\nbest regards – as brokers \r\n\r\n  _    \r\n\r\ncagdas kilic\r\n\r\n‘    ‘     ‘\r\n\r\natombulk ship chartering\r\n\r\nmob/watsap: +90 538 861 51 17 \r\n\r\nskype: cagdaskilic.1991 \r\n\r\nemail: atom@atombulk.com <mailto:atom@atombulk.com>  \r\n\r\nmember of shipbrokers’ assocation – turkiye\r\n\r\n-- \r\nYou received this message because you are subscribed to the Google Groups \"atom@atombulk.com <mailto:atom@atombulk.com> \" group.\r\nTo unsubscribe from this group and stop receiving emails from it, send an email to a17-+unsubscribe@googlegroups.com <mailto:a17-+unsubscribe@googlegroups.com> .\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e0f53423e78f5f",
+    "category": "VESSEL_POSITION",
+    "urgency": "medium",
+    "confidence": 0.82,
+    "is_unanswered": false,
+    "days_without_reply": null,
+    "original_sender": "Cagdas Kilic",
+    "original_sender_company": "Atombulk Ship Chartering"
+  }
+}

@@ -1,0 +1,156 @@
+{
+  "id": "etms-parse-vessel-035",
+  "source_email_id": "19e08a05d472698a",
+  "category": "full_specs",
+  "input": {
+    "subject": "FW: MV ELFRIEDE - TWD/GRD/10K DWT - OPEN SPOT at Gibraltar",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:26:25.000Z",
+    "body": " \r\n\r\nFrom: UNIMAR NO REPLY <no-reply@unimarservice.com> \r\nSent: Monday, 2 February 2026 10:11\r\nSubject: MV ELFRIEDE - TWD/GRD/10K DWT - OPEN SPOT at Gibraltar\r\n\r\n \r\n\r\nFM: UNIMAR SERVICE LIMITED\r\nE.MAIL: mail@unimarservice.com <mailto:mail@unimarservice.com> \r\n\r\n*********************************\r\n\r\nTo: Chartering Desk\r\n\r\nDear Colleagues,\r\n\r\n \r\n\r\nRef.: MV ELFRIEDE - TWD/GRD/10K DWT - OPEN SPOT at Gibraltar\r\n\r\n \r\n\r\nClose Owners - PERFECT performer - MV ELFRIEDE - OPEN SPOT at Gibraltar\r\n\r\n \r\n\r\nLOOKING CARGOES TO NCSA / SOUTH AMERICA / WAFRICA / INDIAN OCEAN / FAR EAST\r\n- WCYO PLS?\r\n\r\n \r\n\r\n \r\n\r\nMV ELFRIEDE\r\n\r\nABOUT 10,074 DWT ON 9.219M SSW - TWEEN DECKER\r\n\r\nBUILT: 2004 JAPAN\r\n\r\nBARBADOS FLAG - IACS CLASS\r\n\r\nLOA 100.59M\r\n\r\nLBP 93.50M\r\n\r\nBM 18.80M\r\n\r\nDEPTH 13.00M\r\n\r\nGRT/NRT 6,395 / 3,658\r\n\r\nGR/BL 13,999.07 M3/12,864.70 M3\r\n\r\n2HO/2HA - CO2 FITTED CRANES 30Tx2 - DERRICK 30Tx1\r\n\r\nBOW THRUSTER FITTED\r\n\r\nADA WOG  \r\n\r\n \r\n\r\nPlsd to hear.\r\n\r\n \r\n\r\nBrgds, USL\r\nM/Viber/Wup/Telegram/WeChat: +357 99581395 <tel:+357%2099581395>  (24H/7D)\r\nAS BROKERS ONLY - SINCE 2006\r\n+++\r\nIn case the content of this message is irrelevant to your business, please\r\nnotify us by replying \"UNSUBSCRIBE\" in the subject field in order to remove\r\nyou from these messages, sorry any inconvenience caused.\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "MV ELFRIEDE",
+          "confidence": "confirmed",
+          "source_text": "MV ELFRIEDE"
+        },
+        "imo": null,
+        "flag": {
+          "value": "Barbados",
+          "confidence": "confirmed",
+          "source_text": "BARBADOS FLAG"
+        },
+        "built": {
+          "value": 2004,
+          "confidence": "confirmed",
+          "source_text": "BUILT: 2004 JAPAN"
+        },
+        "class_society": {
+          "value": "IACS",
+          "confidence": "confirmed",
+          "source_text": "IACS CLASS"
+        },
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 10074,
+          "confidence": "confirmed",
+          "source_text": "ABOUT 10,074 DWT ON 9.219M SSW"
+        },
+        "dwcc": null,
+        "draft_max": {
+          "value": 9.219,
+          "confidence": "confirmed",
+          "source_text": "ABOUT 10,074 DWT ON 9.219M SSW"
+        },
+        "loa": {
+          "value": 100.59,
+          "confidence": "confirmed",
+          "source_text": "LOA 100.59M"
+        },
+        "beam": {
+          "value": 18.8,
+          "confidence": "confirmed",
+          "source_text": "BM 18.80M"
+        },
+        "grt": {
+          "value": 6395,
+          "confidence": "confirmed",
+          "source_text": "GRT/NRT 6,395 / 3,658"
+        },
+        "nrt": {
+          "value": 3658,
+          "confidence": "confirmed",
+          "source_text": "GRT/NRT 6,395 / 3,658"
+        },
+        "holds_count": {
+          "value": 2,
+          "confidence": "confirmed",
+          "source_text": "2HO/2HA"
+        },
+        "hatches_count": {
+          "value": 2,
+          "confidence": "confirmed",
+          "source_text": "2HO/2HA"
+        },
+        "grain_capacity": {
+          "value": 13999.07,
+          "confidence": "confirmed",
+          "source_text": "GR/BL 13,999.07 M3/12,864.70 M3"
+        },
+        "grain_capacity_unit": "cbm",
+        "bale_capacity": {
+          "value": 12864.7,
+          "confidence": "confirmed",
+          "source_text": "GR/BL 13,999.07 M3/12,864.70 M3"
+        },
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": true,
+        "crane_capacity": {
+          "value": "2 x 30T cranes, 1 x 30T derrick",
+          "confidence": "confirmed",
+          "source_text": "CRANES 30Tx2 - DERRICK 30Tx1"
+        },
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "TWEEN DECKER",
+          "confidence": "confirmed",
+          "source_text": "ABOUT 10,074 DWT ON 9.219M SSW - TWEEN DECKER"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Gibraltar",
+          "confidence": "confirmed",
+          "source_text": "OPEN SPOT at Gibraltar"
+        },
+        "open_date": {
+          "value": {
+            "open": null,
+            "close": null,
+            "display": "SPOT"
+          },
+          "confidence": "confirmed",
+          "source_text": "OPEN SPOT at Gibraltar"
+        },
+        "direction": {
+          "value": "NCSA / South America / West Africa / Indian Ocean / Far East",
+          "confidence": "confirmed",
+          "source_text": "LOOKING CARGOES TO NCSA / SOUTH AMERICA / WAFRICA / INDIAN OCEAN / FAR EAST"
+        },
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "CO2 fitted holds",
+            "confidence": "confirmed",
+            "source_text": "CO2 FITTED"
+          },
+          {
+            "value": "Bow thruster fitted",
+            "confidence": "confirmed",
+            "source_text": "BOW THRUSTER FITTED"
+          },
+          {
+            "value": "ADA WOG (All Details About, Without Guarantee)",
+            "confidence": "confirmed",
+            "source_text": "ADA WOG"
+          }
+        ],
+        "unknown_terms": [
+          "TWD — appears in subject line as vessel type abbreviation alongside GRD; TWD likely = Tween Decker, but not confirmed in glossary",
+          "GRD — appears in subject line alongside TWD; possibly 'Geared' abbreviation but not confirmed in glossary",
+          "SSW — appears as 'ON 9.219M SSW'; possibly Salt/Summer/Winter waterline qualifier; not in glossary",
+          "WCYO PLS — unclear abbreviation in trading direction request; not in glossary",
+          "NCSA — appears to be a geographic trading area abbreviation (possibly North/Central/South America); not in glossary"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-017",
+  "source_email_id": "19d5e77ccc974c03",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: MV SVS VEGA open Efesan Sep/6-8th",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-04-05T16:26:37.000Z",
+    "body": " \r\n\r\nFrom: Allimar Shipbrokers srl <chartering@allimar.it> \r\nSent: Tuesday, 2 September 2025 12:23\r\nTo: Allimar Shipbrokers srl <chartering@allimar.it>\r\nSubject: MV SVS VEGA open Efesan Sep/6-8th\r\n\r\n \r\n\r\nMV SVS VEGA\r\n\r\n \r\n\r\nMultipurpose dry cargo/Container vessel\r\n\r\nSt. Vincent & the Grenadines flag\r\n\r\nBuilt  1996\r\n\r\nLloyd's Register +100A1, Ice Class 1A,+LMC,UMS\r\n\r\n3200 mt DWAT sfb on 4,63m, LOA 90,67 m bеаm 15,80 m GT/NT 2658/1216 open\r\nhatch/doubleskinned  singledecker about 140.000 сbf gr/bl single hold/2\r\nhatch, MacGregor  hatchcover  hydr. folding type hatch dimensions: 57,50 х\r\n12,80 m Gearless / Cont Fitted Nominal container intake: 266 TEU (80 in hold\r\n+ 186 on deck) alt. 121 FEU + 24 TEU (28 (+ 24 TEU) in hold and 93 on deck)\r\nable abt/max 180TEU@ 14tons (50% bunker/sfb)\r\n\r\n \r\n\r\nAirdraft ballast 24,7 meter\r\n\r\n \r\n\r\nabove description is believed to be correct and true but without guarantee\r\n\r\n \r\n\r\n**open Efesan Sep/6-8th\r\n\r\n \r\n\r\n\r\n\r\n \r\n\r\nALLIMAR SHIPBROKERS s.r.l.\r\n\r\n+39/3356759395\r\n\r\n <mailto:chartering@allimar.it> chartering@allimar.it\r\n\r\n <mailto:allimar@tiscali.it> allimar@tiscali.it (circulars & positions only)\r\n\r\nallimarship\r\n\r\n  wxid_02g3slkt8c8r12\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19d5e77ccc974c03",
+    "category": "VESSEL_POSITION",
+    "urgency": "medium",
+    "confidence": 0.72,
+    "is_unanswered": true,
+    "days_without_reply": 36,
+    "original_sender": "ETMS - Management",
+    "original_sender_company": "ETM Services"
+  }
+}

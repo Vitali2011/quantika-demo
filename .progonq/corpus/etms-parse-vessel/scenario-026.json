@@ -1,0 +1,181 @@
+{
+  "id": "etms-parse-vessel-026",
+  "source_email_id": "19e07d49ee39a1cc",
+  "category": "dwcc_edge",
+  "input": {
+    "subject": "FW: 18300 DWCC OPEN AT AGADIR",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:43:51.000Z",
+    "body": " \r\n\r\nFrom: Gn Group <noreply@gngroup.com.tr> \r\nSent: Friday, 8 May 2026 12:23\r\nTo: management@etm-services.net\r\nSubject: 18300 DWCC OPEN AT AGADIR\r\n\r\n \r\n\r\n\r\nPLS ADD IN YR CIRCULATION LIST AND REPLY TO:chartering@gngroup.com.tr\r\n\r\n \r\n\r\n \r\n\r\nGOOD DAY,\r\n\r\n \r\n\r\nPLS OFFER FIRM FOR OUR HOME TONNAGE POSITIONS AS FOLLOWS:\r\n\r\n \r\n\r\n+++ \r\n\r\n \r\n\r\n18/19 MAY OPEN AT AGADIR     \r\n\r\n \r\n\r\n \r\n\r\nMV LADY HATICE  EX SQUAMISH\r\nDWCC 18200 MTS AT 8.49M DRAFT\r\nPANAMA FLAG SID - BOXLIKE -BUILT 2009 JAPAN -DWT /GRT/NRT 18930/11767/6023 \r\nLOA/LBP/BEAM 139,92/132,48/25 M- D.M.11,50M -4HO/4HA GRAIN/BALE: 762.340/737.837 CBFT\r\nGEARED; APP.B/B -HYDOR  P&I, CLASS: RINA -ALL DETS ABT WOG\r\n\r\n \r\n\r\n\r\nBRGDS\r\n\r\nHUSEYIN\r\n\r\n\r\n-- \r\nBRGDS\r\nGN GROUP CORPORATION-IS TANBUL\r\nTel : +90 216 325 08 00\r\nFax : +90 216 339 88 99\r\nEmail : chartering@gngroup(.)com(.)tr\r\nWeb: www.gngroup.com.tr\r\n\r\n Üyelikten çıkış linki için bir başlık yazınız. \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "MV LADY HATICE",
+          "confidence": "confirmed",
+          "source_text": "MV LADY HATICE  EX SQUAMISH"
+        },
+        "imo": null,
+        "flag": {
+          "value": "Panama",
+          "confidence": "confirmed",
+          "source_text": "PANAMA FLAG"
+        },
+        "built": {
+          "value": 2009,
+          "confidence": "confirmed",
+          "source_text": "BUILT 2009 JAPAN"
+        },
+        "class_society": {
+          "value": "RINA",
+          "confidence": "confirmed",
+          "source_text": "CLASS: RINA"
+        },
+        "p_and_i": {
+          "value": "HYDOR P&I",
+          "confidence": "confirmed",
+          "source_text": "HYDOR  P&I"
+        },
+        "dwt_summer": {
+          "value": 18930,
+          "confidence": "confirmed",
+          "source_text": "DWT /GRT/NRT 18930/11767/6023"
+        },
+        "dwcc": {
+          "value": 18200,
+          "confidence": "confirmed",
+          "source_text": "DWCC 18200 MTS AT 8.49M DRAFT"
+        },
+        "draft_max": {
+          "value": 8.49,
+          "confidence": "interpreted",
+          "source_text": "DWCC 18200 MTS AT 8.49M DRAFT"
+        },
+        "loa": {
+          "value": 139.92,
+          "confidence": "confirmed",
+          "source_text": "LOA/LBP/BEAM 139,92/132,48/25 M"
+        },
+        "beam": {
+          "value": 25,
+          "confidence": "confirmed",
+          "source_text": "LOA/LBP/BEAM 139,92/132,48/25 M"
+        },
+        "grt": {
+          "value": 11767,
+          "confidence": "confirmed",
+          "source_text": "DWT /GRT/NRT 18930/11767/6023"
+        },
+        "nrt": {
+          "value": 6023,
+          "confidence": "confirmed",
+          "source_text": "DWT /GRT/NRT 18930/11767/6023"
+        },
+        "holds_count": {
+          "value": 4,
+          "confidence": "confirmed",
+          "source_text": "4HO/4HA"
+        },
+        "hatches_count": {
+          "value": 4,
+          "confidence": "confirmed",
+          "source_text": "4HO/4HA"
+        },
+        "grain_capacity": {
+          "value": 762340,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE: 762.340/737.837 CBFT"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": {
+          "value": 737837,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE: 762.340/737.837 CBFT"
+        },
+        "tank_top_strength": null,
+        "geared": {
+          "value": true,
+          "confidence": "confirmed",
+          "source_text": "GEARED; APP.B/B"
+        },
+        "crane_capacity": {
+          "value": "APP.B/B",
+          "confidence": "confirmed",
+          "source_text": "GEARED; APP.B/B"
+        },
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "interpreted",
+          "source_text": "SID - BOXLIKE"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Agadir",
+          "confidence": "confirmed",
+          "source_text": "18/19 MAY OPEN AT AGADIR"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-05-18",
+            "close": "2026-05-19",
+            "display": "18/19 May 2026"
+          },
+          "confidence": "interpreted",
+          "source_text": "18/19 MAY OPEN AT AGADIR"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "special_features": [
+          {
+            "value": "Single deck (SID)",
+            "confidence": "confirmed",
+            "source_text": "PANAMA FLAG SID - BOXLIKE"
+          },
+          {
+            "value": "Box-shaped holds",
+            "confidence": "confirmed",
+            "source_text": "SID - BOXLIKE"
+          },
+          {
+            "value": "Built in Japan",
+            "confidence": "confirmed",
+            "source_text": "BUILT 2009 JAPAN"
+          },
+          {
+            "value": "All details about, without guarantee (ALL DETS ABT WOG)",
+            "confidence": "confirmed",
+            "source_text": "ALL DETS ABT WOG"
+          },
+          {
+            "value": "LBP: 132.48m",
+            "confidence": "confirmed",
+            "source_text": "LOA/LBP/BEAM 139,92/132,48/25 M"
+          },
+          {
+            "value": "Deadrise / moulded depth: 11.50m",
+            "confidence": "confirmed",
+            "source_text": "D.M.11,50M"
+          },
+          {
+            "value": "Ex-name: SQUAMISH",
+            "confidence": "confirmed",
+            "source_text": "MV LADY HATICE  EX SQUAMISH"
+          }
+        ],
+        "unknown_terms": [
+          "APP.B/B — crane type/configuration abbreviation not in glossary (possibly 'Appleton B/B' or a model reference); requires clarification",
+          "D.M.11,50M — field label 'D.M.' not clearly identified (possibly 'Depth Moulded' or 'Draft Moulded'); not in glossary"
+        ]
+      }
+    ]
+  }
+}

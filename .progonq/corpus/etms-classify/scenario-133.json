@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-133",
+  "source_email_id": "19e097a4da37efbc",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: Firm Spot 7-12k wheat Odesa - EC Italy / READY TO FIX",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:24:28.000Z",
+    "body": " \r\n\r\nFrom: Noreply <noreply-bounces@lists.circular-chart.com> On Behalf Of Marelis Chartering\r\nSent: Thursday, 26 February 2026 10:33\r\nTo: noreply@lists.circular-chart.com\r\nSubject: Re: Firm Spot 7-12k wheat Odesa - EC Italy / READY TO FIX\r\n\r\n \r\n\r\nDear Sirs, \r\n\r\n \r\n\r\nGood day to all,\r\n\r\n \r\n\r\nStrictly Not for Recirculation\r\n\r\n \r\n\r\nPls propose workable tonnage for our direct Charterers\r\n\r\n \r\n\r\nFirm cargo / READY TO FIX\r\n\r\n \r\n\r\n7200 – 12 000 mts of Wheat sf abt 47’ wog\r\nOdesa to EC Italy \r\n2000x/2000x\r\nSpot - onw\r\n1.25 Add comm + 1.25 for Marelis \r\n\r\n \r\n\r\nAwaiting for the suitable candidates with frt ideas from Owns side \r\n\r\n \r\n\r\nPlsd to hear\r\n\r\n \r\n\r\nKind Regards \r\n\r\n \r\n\r\nVladislav Datiy\r\n\r\nBrokerage Dpt.\r\n\r\nMarelis Navigation S.A. \r\n\r\nMobile: +30 697 255 0514\r\n\r\nWhatsApp: +380 95 159 6113\r\n\r\nTeams: live:.cid.36a87362b7a2b27e\r\n\r\nE-mail: chartering@marelis-nav.com <mailto:chartering@marelis-nav.com> \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nThis is not a spam or junk mail. It's regular mail of shipping&chartering business. If you are not interested in content of our messages,please send a message with the subject \"Unsubscribe\" to unsubscribe@marelis-nav.com <mailto:unsubscribe@marelis-nav.com> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e097a4da37efbc",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.82,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Vladislav Datiy",
+    "original_sender_company": "Marelis Navigation S.A."
+  }
+}

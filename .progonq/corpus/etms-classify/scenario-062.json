@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-062",
+  "source_email_id": "19e07cfdf63e232b",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: Vasto / 1 Cyprus",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:38:41.000Z",
+    "body": " \r\n\r\nFrom: DURUCHART <chartering@duruchart.com> \r\nSent: Wednesday, 6 May 2026 13:42\r\nTo: 'DURUCHART' <mert@duruchart.com>\r\nSubject: Vasto / 1 Cyprus\r\n\r\n \r\n\r\nDURUCHART-Istanbul/TURKEY\r\n\r\n+90 216 492 97 13\r\n\r\n \r\n\r\nGood Day\r\n\r\n \r\n\r\nPlease offer firm for;\r\n\r\n \r\n\r\nVasto / 1 Cyprus\r\n\r\nabt 2.500mt gypsum boards/need min 5000cbm baler\r\n\r\n10/15 May\r\n\r\nttl days\r\n\r\n3.75 pct\r\n\r\n \r\n\r\nBest Regards\r\n\r\nMert Kalafat\r\n\r\nskype: mertkalafat6\r\n\r\nMobile: +90 505 016 01 52\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07cfdf63e232b",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.93,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Mert Kalafat",
+    "original_sender_company": "DURUCHART"
+  }
+}

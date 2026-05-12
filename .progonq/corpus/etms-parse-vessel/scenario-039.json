@@ -1,0 +1,133 @@
+{
+  "id": "etms-parse-vessel-039",
+  "source_email_id": "19e0978b449211fb",
+  "category": "dwcc_edge",
+  "input": {
+    "subject": "FW: MV HAGRID - OPEN IN CONSTANTA - Mid-march",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:22:44.000Z",
+    "body": " \r\n\r\nFrom: HKALKAVAN SHIPPING <hkalkavan@hkalkavan.com> \r\nSent: Thursday, 26 February 2026 10:49\r\nTo: HKALKAVAN SHIPPING <hkalkavan@hkalkavan.com>\r\nSubject: MV HAGRID - OPEN IN CONSTANTA - Mid-march\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPlease propose your firm cargoes for our home tonnage below, all agw wp:\r\n\r\n \r\n\r\nMV HAGRID                6100 dwcc              – Constanta                           – Mid-March\r\n\r\n \r\n\r\nMV HAGRID \r\n\r\n6496 dwt   - 7,00m draft  – 08 built – Barbados flag – boxlike\r\n\r\nGr/Bl 276.000 cbft / 262.000 cbft\r\n\r\n2x20 mt  cranes\r\n\r\nIACS member – IMO fitted + ice class – ITF FITTED\r\n\r\n \r\n\r\nPlease do not re-circulate\r\n\r\n \r\n\r\nBest Regards, \r\n\r\nPamela Ateş\r\n\r\nKosuyolu, Katip Salih Sok., No:36 Istanbul/Turkey\r\nP: <tel:%2B90216%203272323> +90216 3272323  F: <tel:%2B90216%203272326> +90216 3272326 \r\nMob: +905379509163\r\nSkype: live:.cid.ba37eb8ce0586d9e\r\n <mailto:hkalkavan@hkalkavan.com> hkalkavan@hkalkavan.com\r\nhttps://hkalkavan.com.tr/\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "MV HAGRID",
+          "confidence": "confirmed",
+          "source_text": "MV HAGRID"
+        },
+        "imo": null,
+        "flag": {
+          "value": "Barbados",
+          "confidence": "confirmed",
+          "source_text": "Barbados flag"
+        },
+        "built": {
+          "value": 2008,
+          "confidence": "confirmed",
+          "source_text": "08 built"
+        },
+        "class_society": {
+          "value": "IACS member",
+          "confidence": "confirmed",
+          "source_text": "IACS member"
+        },
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 6496,
+          "confidence": "confirmed",
+          "source_text": "6496 dwt"
+        },
+        "dwcc": {
+          "value": 6100,
+          "confidence": "confirmed",
+          "source_text": "6100 dwcc"
+        },
+        "draft_max": {
+          "value": 7,
+          "confidence": "confirmed",
+          "source_text": "7,00m draft"
+        },
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": null,
+        "hatches_count": null,
+        "grain_capacity": {
+          "value": 276000,
+          "confidence": "confirmed",
+          "source_text": "Gr/Bl 276.000 cbft / 262.000 cbft"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": {
+          "value": 262000,
+          "confidence": "confirmed",
+          "source_text": "Gr/Bl 276.000 cbft / 262.000 cbft"
+        },
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": true,
+        "crane_capacity": {
+          "value": "2 x 20T",
+          "confidence": "confirmed",
+          "source_text": "2x20 mt  cranes"
+        },
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "uncertain",
+          "source_text": "boxlike"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Constanta",
+          "confidence": "confirmed",
+          "source_text": "Constanta – Mid-March"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-03-15",
+            "close": null,
+            "display": "Mid-March 2026"
+          },
+          "confidence": "interpreted",
+          "source_text": "Mid-March"
+        },
+        "direction": null,
+        "restrictions": ["Please do not re-circulate"],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Box-shaped holds (boxlike)",
+            "confidence": "confirmed",
+            "source_text": "boxlike"
+          },
+          {
+            "value": "IMO fitted",
+            "confidence": "confirmed",
+            "source_text": "IMO fitted"
+          },
+          {
+            "value": "Ice class",
+            "confidence": "confirmed",
+            "source_text": "ice class"
+          },
+          {
+            "value": "ITF fitted",
+            "confidence": "confirmed",
+            "source_text": "ITF FITTED"
+          }
+        ],
+        "unknown_terms": [
+          "ITF FITTED — ITF (International Transport Workers' Federation) fitted/approved, not in glossary"
+        ]
+      }
+    ]
+  }
+}

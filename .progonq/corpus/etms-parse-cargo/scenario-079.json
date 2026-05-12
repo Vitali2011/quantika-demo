@@ -12,9 +12,9 @@
     "items": [
       {
         "origin_port": {
-          "value": "Constanta or Port of Call",
-          "confidence": "interpreted",
-          "source_text": "Constanta or POC"
+          "value": "Constanta or POC (Port of Constanta / Port of Croatia — ambiguous; likely Constanta or another Black Sea port)",
+          "confidence": "uncertain",
+          "source_text": "Constanta or POC/ Conakry, Guinea"
         },
         "origin_country": {
           "value": "Romania (Constanta) or uncertain for POC",

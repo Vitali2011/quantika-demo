@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-094",
+  "source_email_id": "19e07d842ae91302",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: WC India to West Africa 40000 mt Bgd Rice",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:47:51.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: PNA Shipbrokers - Singapore <pna@pnaship.com> \r\nSent: Wednesday, 6 May 2026 08:25\r\nTo: pna@pnaship.com\r\nSubject: WC India to West Africa 40000 mt Bgd Rice\r\n\r\n\r\n\r\nFROM: PACIFIC & ATLANTIC SHIPBROKERS - SINGAPORE / (Email/Teams:\r\npna@pnaship.com)\r\n\r\n**\r\n\r\nRE: WC INDIA / WEST AFRICA - 40000 MT BGD RICE \r\n\r\npls offer best for :-\r\n\r\n- 40,000 mts of bagged rice sf 48-50 wog\r\n- load port : kandla, wc india \r\n- laycan 15/onwd (try vsl dates) \r\n- discharge port : 10,000 mts to banjul, gambia + 30,000 mts to dakar,\r\nsenegal\r\n- load rate: 2,000 mts pwwd sshex eiu\r\n- discharge rate: banjul : 2,000 mts pwwd sshex eiu / dakar : 1,500 mts pwwd\r\nsshe eiu\r\n- 3.75pct \r\n\r\nRGDS \r\nTONY (TEAMS: pna@pnaship.com)\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "id": "19e07d842ae91302",
+    "category": "CARGO_INQUIRY",
+    "urgency": "medium",
+    "confidence": 0.91,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Tony (PNA Shipbrokers - Singapore)",
+    "original_sender_company": "Pacific & Atlantic Shipbrokers - Singapore"
+  }
+}

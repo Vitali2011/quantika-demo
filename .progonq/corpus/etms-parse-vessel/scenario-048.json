@@ -1,0 +1,187 @@
+{
+  "id": "etms-parse-vessel-048",
+  "source_email_id": "19e0f531898504ce",
+  "category": "full_specs",
+  "input": {
+    "subject": "FW: 8k dwt mv snapper - open aegean sea spot",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-10T00:39:22.000Z",
+    "body": " \r\n\r\nFrom: a17-@googlegroups.com <a17-@googlegroups.com> On Behalf Of atom@atombulk.com\r\nSent: Tuesday, 20 August 2024 18:51\r\nTo: atom@atombulk.com\r\nSubject: 8k dwt mv snapper - open aegean sea spot\r\n\r\n \r\n\r\natombulk ship chartering – istanbul\r\n\r\n \r\n\r\ngood day\r\n\r\n \r\n\r\n*\topen nemrut bay spot\r\n\r\n \r\n\r\nmv snapper (ex aikaterini k imo.9381407)\r\n\r\n8100 mts dwt at 6.82 mtrs draft\r\n\r\nblt 2008-08  china\r\n\r\nclass ir, ice 1d, ss 08/2028, dd 06/2026\r\n\r\nloa 108.1 m, beam 18.2 m\r\n\r\ngt/nt 5,599/2,883\r\n\r\n3 ho(boxed)/3 ha\r\n\r\nhold/ hatch 1: 18.90 m x 15.20/6.60 m x 11.20 m\r\n\r\nhold/ hatch 2: 29.40 m x 15.20 m x 9.10 m\r\n\r\nhold/ hatch 3: 28 m x 15.20/7.70 m x 9.10 m\r\n\r\n10,194 cbm grain\r\n\r\ngearless\r\n\r\nbowthruster\r\n\r\nman-b&w 7s26mc 3,808 hp\r\n\r\nbwts fitted\r\n\r\nimo fitted\r\n\r\n \r\n\r\n*no european ports for now\r\n\r\nall africa, pg india try\r\n\r\n \r\n\r\nbest regards – as brokers \r\n\r\n  _    \r\n\r\ncagdas kilic\r\n\r\n‘    ‘     ‘\r\n\r\natombulk ship chartering\r\n\r\nmob/watsap: +90 538 861 51 17 \r\n\r\nskype: cagdaskilic.1991 \r\n\r\nemail:  <mailto:atom@atombulk.com> atom@atombulk.com \r\n\r\nmember of shipbrokers’ assocation – turkiye\r\n\r\n \r\n\r\n-- \r\nYou received this message because you are subscribed to the Google Groups \"atom@atombulk.com <mailto:atom@atombulk.com> \" group.\r\nTo unsubscribe from this group and stop receiving emails from it, send an email to a17-+unsubscribe@googlegroups.com <mailto:a17-+unsubscribe@googlegroups.com> .\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "MV SNAPPER",
+          "confidence": "confirmed",
+          "source_text": "mv snapper (ex aikaterini k imo.9381407)"
+        },
+        "imo": {
+          "value": 9381407,
+          "confidence": "confirmed",
+          "source_text": "imo.9381407"
+        },
+        "flag": null,
+        "built": {
+          "value": 2008,
+          "confidence": "confirmed",
+          "source_text": "blt 2008-08  china"
+        },
+        "class_society": {
+          "value": "IR",
+          "confidence": "confirmed",
+          "source_text": "class ir, ice 1d, ss 08/2028, dd 06/2026"
+        },
+        "p_and_i": null,
+        "dwt_summer": {
+          "value": 8100,
+          "confidence": "confirmed",
+          "source_text": "8100 mts dwt at 6.82 mtrs draft"
+        },
+        "dwcc": null,
+        "draft_max": {
+          "value": 6.82,
+          "confidence": "interpreted",
+          "source_text": "8100 mts dwt at 6.82 mtrs draft"
+        },
+        "loa": {
+          "value": 108.1,
+          "confidence": "confirmed",
+          "source_text": "loa 108.1 m, beam 18.2 m"
+        },
+        "beam": {
+          "value": 18.2,
+          "confidence": "confirmed",
+          "source_text": "loa 108.1 m, beam 18.2 m"
+        },
+        "grt": {
+          "value": 5599,
+          "confidence": "confirmed",
+          "source_text": "gt/nt 5,599/2,883"
+        },
+        "nrt": {
+          "value": 2883,
+          "confidence": "confirmed",
+          "source_text": "gt/nt 5,599/2,883"
+        },
+        "holds_count": {
+          "value": 3,
+          "confidence": "confirmed",
+          "source_text": "3 ho(boxed)/3 ha"
+        },
+        "hatches_count": {
+          "value": 3,
+          "confidence": "confirmed",
+          "source_text": "3 ho(boxed)/3 ha"
+        },
+        "grain_capacity": {
+          "value": 10194,
+          "confidence": "confirmed",
+          "source_text": "10,194 cbm grain"
+        },
+        "grain_capacity_unit": "cbm",
+        "bale_capacity": null,
+        "hold_dimensions": [
+          "Hold 1: 18.90 m x 15.20 m x 11.20 m",
+          "Hold 2: 29.40 m x 15.20 m x 9.10 m",
+          "Hold 3: 28 m x 15.20 m x 9.10 m"
+        ],
+        "hatch_dimensions": [
+          "Hatch 1: 6.60 m x 11.20 m",
+          "Hatch 2: 29.40 m x 15.20 m",
+          "Hatch 3: 7.70 m x 9.10 m"
+        ],
+        "tank_top_strength": null,
+        "geared": false,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "interpreted",
+          "source_text": "3 ho(boxed)/3 ha"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Nemrut Bay",
+          "confidence": "confirmed",
+          "source_text": "open nemrut bay spot"
+        },
+        "open_date": {
+          "value": {
+            "open": null,
+            "close": null,
+            "display": "spot"
+          },
+          "confidence": "confirmed",
+          "source_text": "open nemrut bay spot"
+        },
+        "direction": {
+          "value": "Africa, Persian Gulf, India",
+          "confidence": "confirmed",
+          "source_text": "all africa, pg india try"
+        },
+        "restrictions": ["No European ports for now"],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Box-shaped holds (3 ho boxed)",
+            "confidence": "confirmed",
+            "source_text": "3 ho(boxed)/3 ha"
+          },
+          {
+            "value": "Gearless",
+            "confidence": "confirmed",
+            "source_text": "gearless"
+          },
+          {
+            "value": "Bowthruster fitted",
+            "confidence": "confirmed",
+            "source_text": "bowthruster"
+          },
+          {
+            "value": "Main engine: MAN-B&W 7S26MC 3,808 HP",
+            "confidence": "confirmed",
+            "source_text": "man-b&w 7s26mc 3,808 hp"
+          },
+          {
+            "value": "BWTS fitted",
+            "confidence": "confirmed",
+            "source_text": "bwts fitted"
+          },
+          {
+            "value": "IMO fitted",
+            "confidence": "confirmed",
+            "source_text": "imo fitted"
+          },
+          {
+            "value": "Ice class 1D",
+            "confidence": "confirmed",
+            "source_text": "class ir, ice 1d, ss 08/2028, dd 06/2026"
+          },
+          {
+            "value": "SS due 08/2028; DD due 06/2026",
+            "confidence": "confirmed",
+            "source_text": "ss 08/2028, dd 06/2026"
+          },
+          {
+            "value": "Built in China",
+            "confidence": "confirmed",
+            "source_text": "blt 2008-08  china"
+          }
+        ],
+        "unknown_terms": [
+          "IR — class society abbreviation not in glossary (possibly Iranian Register of Shipping)",
+          "ice 1d — ice class notation, not in glossary",
+          "ss 08/2028 — Special Survey due date notation, not explicitly in glossary",
+          "dd 06/2026 — Dry Dock due date notation, not explicitly in glossary",
+          "bwts — Ballast Water Treatment System, not in glossary",
+          "pg — Persian Gulf abbreviation, not in glossary"
+        ]
+      }
+    ]
+  }
+}

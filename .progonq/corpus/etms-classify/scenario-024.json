@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-024",
+  "source_email_id": "19e07c5000b8200e",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: Mtwara / Matadi - Coal",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:26:49.000Z",
+    "body": " \r\n\r\nFrom: chartering@mostship.com <circulation@steminorder.com> \r\nSent: Friday, 8 May 2026 10:49\r\nTo: management@etm-services.net\r\nSubject: Re : Mtwara / Matadi - Coal\r\n\r\n \r\n\r\n***Not for Circulation***\r\n\r\n \r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPls offer firm for dir Chrts,\r\n\r\n \r\n\r\n-22.000 MT +/- 10% coal in bulk. \r\n\r\n-Mtwara / Matadi\r\n\r\n-01/10 june 2026\r\n\r\n-8000/3000\r\n\r\n-3.75 pct\r\n\r\n \r\n\r\nGrd/Grab fitted vsl req.\r\n\r\n \r\n\r\nBest Regards\r\n\r\nBerk,\r\n\r\n \r\n\r\n \r\n\r\nMOST SHIPPING\r\n\r\nTel    : +90 286 217 55 12 \r\n\r\nMail   :  <https://fwgsylvn.r.eu-west-1.awstrack.me/L0/https:%2F%2Ftrack.inclick.email%2Fclick%2F6603e2d30662cef6a6aafe5a%2F693a66e48b4ff155d73fc188%2F5f9691ddad6af20001359ff4%2F68da41159c7472af7ad89a85/1/0102019e068f7c91-db728588-7003-4d0d-a777-3a66c5c08d6c-000000/zNJeatLV3osI9J0S1B3ZlK3_hgo=473> chartering@mostship.com\r\n\r\nSkype  : berk.acar17\r\n\r\n \r\n\r\nClick here <https://fwgsylvn.r.eu-west-1.awstrack.me/L0/https:%2F%2Fportal.steminorder.com%2Funsubscribe%3Femail=ZABil4BG%2BNjy8JJh8uNmvEEPa07bX0ZDGpXi%2Fi7NA3vHENDqKSa2rkqH%2BzrbduTyVLvnBveXu966JANNKqwl%2Bw==%26ty=matching%26ty=@mailtype%26ty=@type/1/0102019e068f7c91-db728588-7003-4d0d-a777-3a66c5c08d6c-000000/u50-3_1Uv5SpFxte_uirTE5Ipbc=473>  to Unsubscribe from the sender's mail list.\r\nThis mail has been sent using CIRCULATION PLATFORM by Steminorder; powered with Amazon Web Services. circulation.steminorder.com \r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07c5000b8200e",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.93,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Berk",
+    "original_sender_company": "MOST SHIPPING"
+  }
+}

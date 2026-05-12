@@ -1,0 +1,172 @@
+{
+  "id": "etms-parse-vessel-027",
+  "source_email_id": "19e07d4ca1ca18ff",
+  "category": "dwcc_edge",
+  "input": {
+    "subject": "FW: HANDY-SPOT AT AD",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:44:03.000Z",
+    "body": " \r\n\r\nFrom: Gn Group <noreply@gngroup.com.tr> \r\nSent: Friday, 8 May 2026 12:21\r\nTo: management@etm-services.net\r\nSubject: HANDY-SPOT AT AD\r\n\r\n \r\n\r\n\r\nPLS ADD IN YR CIRCULATION LIST AND REPLY TO:chartering@gngroup.com.tr\r\n\r\n \r\n\r\nGOOD DAY,\r\n\r\n \r\n\r\nPLS OFFER FIRM FOR OUR HOME TONNAGE POSITIONS AS FOLLOWS:\r\n\r\n \r\n\r\n \r\n\r\n+++ \r\n\r\n\r\nSPOT AT ADRIATIC       \r\n\r\n \r\n\r\nMV LADY ZEHMA  (EX CASSIOPEIA STAR)\r\nDWCC 31500 MTS AT 9.573M DRAFT\r\nPANAMA FLAG SID - BOXLIKE -BUILT 2005 JAPAN -DWT /GRT/NRT 32328/20283/10227 \r\nLOA/LBP/BEAM 172,9/164.9/29.4 M- D.M.14M -5HO/5HA GRAIN/BALE: 1489078/1453622 CBFT\r\nGEARED; APP.B/B -P&I :HYDOR  , CLASS: RINA -ALL DETS ABT WOG\r\n\r\n \r\n\r\n \r\n\r\n\r\nBRGDS\r\n\r\nHUSEYIN\r\n\r\n\r\n-- \r\nBRGDS\r\nGN GROUP CORPORATION-IS TANBUL\r\nTel : +90 216 325 08 00\r\nFax : +90 216 339 88 99\r\nEmail : chartering@gngroup(.)com(.)tr\r\nWeb: www.gngroup.com.tr\r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "MV LADY ZEHMA",
+          "confidence": "confirmed",
+          "source_text": "MV LADY ZEHMA  (EX CASSIOPEIA STAR)"
+        },
+        "imo": null,
+        "flag": {
+          "value": "Panama",
+          "confidence": "confirmed",
+          "source_text": "PANAMA FLAG"
+        },
+        "built": {
+          "value": 2005,
+          "confidence": "confirmed",
+          "source_text": "BUILT 2005 JAPAN"
+        },
+        "class_society": {
+          "value": "RINA",
+          "confidence": "confirmed",
+          "source_text": "CLASS: RINA"
+        },
+        "p_and_i": {
+          "value": "HYDOR",
+          "confidence": "confirmed",
+          "source_text": "P&I :HYDOR"
+        },
+        "dwt_summer": {
+          "value": 32328,
+          "confidence": "confirmed",
+          "source_text": "DWT /GRT/NRT 32328/20283/10227"
+        },
+        "dwcc": {
+          "value": 31500,
+          "confidence": "confirmed",
+          "source_text": "DWCC 31500 MTS AT 9.573M DRAFT"
+        },
+        "draft_max": {
+          "value": 9.573,
+          "confidence": "interpreted",
+          "source_text": "DWCC 31500 MTS AT 9.573M DRAFT"
+        },
+        "loa": {
+          "value": 172.9,
+          "confidence": "confirmed",
+          "source_text": "LOA/LBP/BEAM 172,9/164.9/29.4 M"
+        },
+        "beam": {
+          "value": 29.4,
+          "confidence": "confirmed",
+          "source_text": "LOA/LBP/BEAM 172,9/164.9/29.4 M"
+        },
+        "grt": {
+          "value": 20283,
+          "confidence": "confirmed",
+          "source_text": "DWT /GRT/NRT 32328/20283/10227"
+        },
+        "nrt": {
+          "value": 10227,
+          "confidence": "confirmed",
+          "source_text": "DWT /GRT/NRT 32328/20283/10227"
+        },
+        "holds_count": {
+          "value": 5,
+          "confidence": "confirmed",
+          "source_text": "5HO/5HA"
+        },
+        "hatches_count": {
+          "value": 5,
+          "confidence": "confirmed",
+          "source_text": "5HO/5HA"
+        },
+        "grain_capacity": {
+          "value": 1489078,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE: 1489078/1453622 CBFT"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": {
+          "value": 1453622,
+          "confidence": "confirmed",
+          "source_text": "GRAIN/BALE: 1489078/1453622 CBFT"
+        },
+        "tank_top_strength": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "geared": {
+          "value": true,
+          "confidence": "confirmed",
+          "source_text": "GEARED; APP.B/B"
+        },
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "BULK CARRIER",
+          "confidence": "interpreted",
+          "source_text": "SID - BOXLIKE"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Adriatic",
+          "confidence": "confirmed",
+          "source_text": "SPOT AT ADRIATIC"
+        },
+        "open_date": {
+          "value": {
+            "open": null,
+            "close": null,
+            "display": "SPOT"
+          },
+          "confidence": "confirmed",
+          "source_text": "SPOT AT ADRIATIC"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Single deck, box-shaped holds",
+            "confidence": "confirmed",
+            "source_text": "SID - BOXLIKE"
+          },
+          {
+            "value": "All details about without guarantee (ALL DETS ABT WOG)",
+            "confidence": "confirmed",
+            "source_text": "ALL DETS ABT WOG"
+          },
+          {
+            "value": "Former name: EX CASSIOPEIA STAR",
+            "confidence": "confirmed",
+            "source_text": "MV LADY ZEHMA  (EX CASSIOPEIA STAR)"
+          },
+          {
+            "value": "Built in Japan",
+            "confidence": "confirmed",
+            "source_text": "BUILT 2005 JAPAN"
+          },
+          {
+            "value": "LBP: 164.9m",
+            "confidence": "confirmed",
+            "source_text": "LOA/LBP/BEAM 172,9/164.9/29.4 M"
+          },
+          {
+            "value": "Deadweight moulded: 14m (D.M.14M)",
+            "confidence": "confirmed",
+            "source_text": "D.M.14M"
+          }
+        ],
+        "unknown_terms": [
+          "APP.B/B — appears after GEARED; possibly 'Approved B/B (Bulk/Breakbulk)' or 'Approved by Bureau' — not recognized in glossary",
+          "HYDOR — P&I club name not in standard glossary (possibly regional/specialist club)"
+        ]
+      }
+    ]
+  }
+}

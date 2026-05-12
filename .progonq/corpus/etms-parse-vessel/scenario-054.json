@@ -1,0 +1,14 @@
+{
+  "id": "etms-parse-vessel-054",
+  "source_email_id": "19e0f555a7fb2be5",
+  "category": "single_vessel",
+  "input": {
+    "subject": "FW: Sailing MED Position list wk 09-11",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-10T00:41:48.000Z",
+    "body": " \r\n\r\nFrom: Camilla Biggi - Chartering Genoa <Chartering.Genoa@bbc-chartering.com> \r\nSent: Wednesday, 21 February 2024 10:48\r\nTo: Chartering.Genoa@bbc-chartering.com\r\nSubject: Sailing MED Position list wk 09-11\r\n\r\n \r\n\r\n\r\n\r\n \r\n\r\n\r\n\r\n \r\n\r\nBBC Chartering Genoa S.U.R.L.\r\nas agents\r\n\r\n \r\n\r\nCamilla Biggi\r\nChartering Assistant\r\n\r\n \r\n\r\nBBC Chartering Genoa s.r.l. con unico socio\r\nPiazza della Vittoria n. 15/24\r\n16121 Genoa\r\nItaly\r\n\r\nM: +39 340 6807 649\r\nP: +39 010 8990 974\r\n\r\n \r\n\r\nchartering.genoa@bbc-chartering.com <mailto:chartering.genoa@bbc-chartering.com> \r\nwww.bbc-chartering.com <http://www.bbc-chartering.com/> \r\n\r\n \r\n\r\n <https://www.instagram.com/bbcchartering/>    <https://de.linkedin.com/company/bbc-chartering>    <https://twitter.com/bbcchartering> \r\n\r\n \r\n\r\nOur suppliers are obliged to follow our health, safety and environmental policies and standards as per information displayed on our website.\r\n\r\nPlease consider the environment before printing this e-mail\r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": []
+  }
+}

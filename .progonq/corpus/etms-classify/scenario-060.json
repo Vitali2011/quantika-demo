@@ -1,0 +1,22 @@
+{
+  "id": "etms-classify-060",
+  "source_email_id": "19e07d815dd6691c",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: MV LADY ANITA – OPEN HODEIDAH SPOT PROMPT ",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:47:38.000Z",
+    "body": " \r\n\r\nFrom: mylist1-owner@elsharkawymaritime.com <mylist1-owner@elsharkawymaritime.com> On Behalf Of Elsharkawy Maritime & Logistics Co\r\nSent: Wednesday, 6 May 2026 08:32\r\nTo: chartering@elsharkawymaritime.com\r\nSubject: MV LADY ANITA – OPEN HODEIDAH SPOT PROMPT \r\n\r\n \r\n\r\nAttn: Chartering Desk!!!\r\n\r\n \r\n\r\nGd Day,,\r\n\r\n \r\n\r\nPlease Kindly Propose Suitable/Rated Cargo For Below Dir Vsl:\r\n\r\n \r\n\r\nMV LADY ANITA – OPEN HODEIDAH SPOT PROMPT \r\n\r\n\r\nEX NAME\r\n\r\nNEW SILK ROAD 2\r\n\r\n\r\nTYPE OF VESSEL\r\n\r\nGENERAL CARGO SHIP\r\n\r\n\r\nYEAR OF BUILT\r\n\r\n2012\r\n\r\n\r\nFLAG STATE / PORT OF REGISTRY\r\n\r\nTOGO / LOME\r\n\r\n\r\nCLASSIFICATION SOCIETY\r\n\r\nOMCS\r\n\r\n\r\nL.O.A / L.B.P\r\n\r\n96.9 m / 89.8 m\r\n\r\n\r\nBREADTH MOULDED\r\n\r\n15.8 m\r\n\r\n\r\nDEPTH MOULDED\r\n\r\n7.4 m\r\n\r\n\r\nG.R.T / N.R.T\r\n\r\n2998  /1746 m/t\r\n\r\n\r\nLIGHT SHIP\r\n\r\n1386.8 mt\r\n\r\n\r\nDISPLACEMENT\r\n\r\n6715.2 mt\r\n\r\n\r\nSUMMER DRAFT\r\n\r\n5.85 m\r\n\r\n\r\nSUMMER DEADWEIGHT\r\n\r\n5328.4 m/t\r\n\r\n\r\nT.P.C\r\n\r\n12.9 mt\r\n\r\n\r\nFREE BOARD\r\n\r\nXXX\r\n\r\n\r\nMAX HEIGHT\r\n\r\nXXX\r\n\r\n\r\n1/HATCH/ HOLD\r\n\r\n9.45X25.0M, / 7.82X13.26X32.64M H\r\n\r\n\r\n2/HATCH/HOLD\r\n\r\n9.45X26.9M / 7.82X13.26X32.0M\r\n\r\n\r\nLIGHT WEIGHT\r\n\r\n1386.74\r\n\r\n\r\nM/E\r\n\r\nGC320ZCD-4 500 r/min 1765KW\r\n\r\n\r\nA/E\r\n\r\n6135JZCaf/6CCFJ120J-Y8/2sets\r\n\r\n\r\nG/E\r\n\r\nMP-H-120-4   120kw\r\n\r\n\r\nSPEED\r\n\r\nFULL LOADED/BALLAST:10.KTS/10.5KTS\r\n\r\n\r\nCONSUMPTION BALLAST\r\n\r\nIFO 180: M/E :3.7MT/D; AUX/E:MGO 0.35MT\r\n\r\n\r\nCONSUMPTION LOADING\r\n\r\nIFO 180  ME:4.2MT/D；AUX/E: MGO 0.35MT/D\r\n\r\n\r\nCONSUMPTION IN PORT\r\n\r\nAUX/E MGO 0.35MT/D\r\n\r\n \r\n\r\nWycp ? \r\n\r\n \r\n\r\nBrgds // \r\n\r\nCapt.Mohamed Elsharkawy\r\n\r\nTels: +20663232456/3232457\r\n\r\nFax:  +20663232459\r\n\r\nMob: +201007800552 (24hrs) \r\n\r\nTeams Id:  <mailto:elsharkawy_maritime@hotmai.com> elsharkawy_maritime@hotmai.com  \r\n\r\nE-Mail:  <mailto:chartering@elsharkawymaritime.com> chartering@elsharkawymaritime.com\r\n\r\nW.Site:  <http://www.elsharkawymaritime.com/> www.elsharkawymaritime.com \r\n\r\n \r\n\r\n  _____  \r\n\r\nTo subscribe, Please Send To mylist1-subscribe@elsharkawymaritime.com <mailto:mylist1-subscribe@elsharkawymaritime.com> \r\nTo unsubscribe, Please Send To mylist1-unsubscribe@elsharkawymaritime.com <mailto:mylist1-unsubscribe@elsharkawymaritime.com> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07d815dd6691c",
+    "category": "VESSEL_POSITION",
+    "urgency": "high",
+    "confidence": 0.87,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "ETMS - Management",
+    "original_sender_company": "ETMS - Management",
+    "unknown_terms": ["OMCS", "Wycp", "Dir Vsl"]
+  }
+}

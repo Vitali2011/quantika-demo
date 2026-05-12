@@ -1,0 +1,14 @@
+{
+  "id": "etms-parse-vessel-007",
+  "source_email_id": "19d5e75a1f9011b6",
+  "category": "dwcc_edge",
+  "input": {
+    "subject": "FW: open vsl - dwcc 2900 mts - spot biscay - 18.08.25",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-04-05T16:24:15.000Z",
+    "body": " \r\n\r\nFrom: Alerta Chartering <chartering@alertaplus.si> \r\nSent: Monday, 18 August 2025 12:08\r\nTo: SEA TRANSIT DENIZ TASIMACILIGI <chartering@seatransit.com.tr>\r\nSubject: open vsl - dwcc 2900 mts - spot biscay - 18.08.25\r\n\r\n \r\n\r\n\r\nAtt: chartering dpt\r\n\r\n \r\n\r\nGd\r\n\r\n \r\n\r\nClose owners looking cgoes direction Black Sea, can load from continent\r\n\r\n \r\n\r\nDwcc 2900 mts, grain cap 147 000 cut, box\r\n\r\n \r\n\r\nOpen spot biscay, considers loading fm Conti\r\n\r\n \r\n\r\npls offer rated cgoes\r\n\r\n \r\n\r\nSincerely,\r\n\r\n \r\n\r\n\r\nBrgds,\r\n\r\nSergiy Loshkarov\r\n\r\nAlerta Plus Ltd - Ljubljana, Slovenia\r\n\r\nph: +38659052680\r\n\r\nmobile/whatsapp/viber/telegram: +38631589490\r\n\r\ne-mail: chartering@alertaplus.si <mailto:chartering@alertaplus.si> \r\n\r\nteams: loshkarev\r\n\r\n \r\n\r\n====\r\n\r\n \r\n\r\nPls make sure that our e-mail address chartering@alertaplus.si <mailto:chartering@alertaplus.si>  is added to Your lists.\r\n\r\n \r\n\r\nThis is ship-chartering mailing. If this content is not of interest for You - pls kindly notify\r\n\r\nBy return to exclude Your address. Apologies in advance for possible inconvenience.\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": []
+  }
+}

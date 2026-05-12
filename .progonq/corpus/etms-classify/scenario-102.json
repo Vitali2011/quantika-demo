@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-102",
+  "source_email_id": "19e089d2d810d075",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: 3.000 mts cement in bb Iskenderun / 1 Greece",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:22:56.000Z",
+    "body": " \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Friday, 8 May 2026 20:00\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: 3.000 mts cement in bb Iskenderun / 1 Greece\r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n\r\ngday\r\n\r\npls propose described ladies for our exclusive  - fully firm cargo - do not recirculate \r\n\r\n \r\n\r\nIskenderun / 1 Greece\r\n\r\n3000 mts cement in big bags \r\n\r\n11 - 16 May\r\n\r\n4 ttl days\r\n\r\n2.5% ttl here \r\n\r\n\r\n\r\n\r\n\r\nBEST RGRDS\r\nTASOS KOUMANIS ( mob. 00306937322574)\r\nE MAILS :  <mailto:chartering@niavigrains.gr> chartering@niavigrains.gr \r\n\r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\n <http://www.niavigrains.gr> www.niavigrains.gr\r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\nSKYPE : NIAVIGRAINS Tasos\r\nLinkedIn:  <http://www.linkedin.com/in/tasoskoumanis> www.linkedin.com/in/tasoskoumanis\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e089d2d810d075",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.95,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Tasos Koumanis",
+    "original_sender_company": "Niavigrains Trading Chartering S.A."
+  }
+}

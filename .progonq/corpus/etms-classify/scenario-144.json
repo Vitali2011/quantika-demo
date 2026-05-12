@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-144",
+  "source_email_id": "19e0f52832c715da",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: BML EXCL /// mv ADAMAR / 17K DWT / GRD / BOX // OPEN EC-INDIA  04- 08 OCT",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-10T00:38:43.000Z",
+    "body": " \r\n\r\nFrom: Bml - Fix <fix@bmlcarriers.com> \r\nSent: Tuesday, 30 September 2025 12:31\r\nTo: 'Bml - Fix' <fix@bmlcarriers.com>\r\nSubject: BML EXCL /// mv ADAMAR / 17K DWT / GRD / BOX // OPEN EC-INDIA 04-\r\n08 OCT\r\n\r\n \r\n\r\n \r\n\r\nGood Day,\r\n\r\n \r\n\r\nPlease offer for below;\r\n\r\n \r\n\r\n-EXCLUSIVE TONNAGE-\r\n\r\n \r\n\r\nMV ADAMAR                                   OPEN EC-INDIA 04-08.10.2025\r\n\r\n\r\n \r\n\r\nDWT 17660,15  SUMMER ON 8,598 M SSW DWWC 16850\r\n\r\nDWT 17125,44  WINTER ON 8,419 M SSW DWCC 16300\r\n\r\nBUILT 2009 / LIBERIA FLAG\r\n\r\nSID / MULTIPURPOSE DRY CARGO SHIP / BOX SHAPED \r\n\r\nCLASS BUREAU VERITAS / PANDI STEAMSHIP MUTUAL \r\n\r\nLOA 147,55 M / BREADTH 23,00 M / DEPTH MOULDED 11.80 M \r\n\r\nGRAIN/BALE 758,120 / 726,267 CBFT \r\n\r\n4HO/4HA \r\n\r\nCRANE 3 X 25 MT \r\n\r\nADA\r\n\r\n \r\n\r\nKind Regards / Saygılarımla \r\n\r\n \r\n\r\nAlp Erdoğdu\r\n\r\n \r\n\r\nAS BROKER ONLY\r\n\r\n\r\n\r\n \r\n\r\nBeyond Multimodal Logistics \r\n\r\nErenköy Mah. Fırın Sok. No 24 \r\n\r\nKadıköy, İstanbul, Türkiye\r\n\r\nM- +90 536 698 61 63\r\n\r\nE-  <mailto:fix@bmlcarriers.com> fix@bmlcarriers.com \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e0f52832c715da",
+    "category": "VESSEL_POSITION",
+    "urgency": "low",
+    "confidence": 0.82,
+    "is_unanswered": false,
+    "days_without_reply": null,
+    "original_sender": "Alp Erdoğdu",
+    "original_sender_company": "Beyond Multimodal Logistics"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-108",
+  "source_email_id": "19e089fc113c03c5",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: 3500-8000 mt bulk cargo / Spain Med - Sweden / 9-11 Feb and 16-18 Feb",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:25:45.000Z",
+    "body": " \r\n\r\nFrom: VARAMAR <position@varamar.com> \r\nSent: Monday, 2 February 2026 10:27\r\nTo: management@etm-services.net\r\nSubject: 3500-8000 mt bulk cargo / Spain Med - Sweden / 9-11 Feb and 16-18 Feb\r\n\r\n \r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n <https://mailchi.mp/e95ff89d0d37/3-8k-dwt-contbaltic-feast-oct-dates-8117230?e=7ed3422e5a> View this email in your browser \r\n\r\n\t\r\n\r\n\r\n\r\n\r\n\r\n\r\nLOOKING FOR FIRM CANDIDATE:\r\n\r\n \r\n\r\n\r\n3.500/8.000 mts bulk cargo\r\nLoading/Discharging ports:\r\n1 sp Spanish Mediterranean / 1 sp Sweden (loa max 124, beam max 18)\r\n1st shipment laycan: 9/11 Feb \r\n2nd shipment laycan: 16/18 Feb\r\nLoading rates: 1 wwd satpmshex eiu\r\nDischarging rates: 2600 mt satpmshex eiu\r\n2.5%\r\n\r\nFreight ideas are available on request\r\n\r\n \r\n\r\n \r\n\r\n\r\n  _____  \r\n\r\nBest regards,\r\n <https://varamar.us6.list-manage.com/track/click?u=77dc233bd77642c328018b9a6&id=364c62d376&e=7ed3422e5a> VARAMAR\r\nAs agents\r\n <mailto:projects@varamar.com> projects@varamar.com\r\n <mailto:v.zotieieva@varamar.com> v.zotieieva@varamar.com\r\n \r\n\r\n \r\n\r\n\r\n\t\r\n\r\n\r\n\t\r\n\r\n \r\n\r\n\r\n\r\n\r\nYou can  <https://varamar.us6.list-manage.com/profile?u=77dc233bd77642c328018b9a6&id=726e17bbd2&e=7ed3422e5a&c=d955757752> update your preferences or  <https://varamar.us6.list-manage.com/unsubscribe?u=77dc233bd77642c328018b9a6&id=726e17bbd2&t=b&e=7ed3422e5a&c=d955757752> unsubscribe from this list.\r\n  \r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e089fc113c03c5",
+    "category": "CARGO_INQUIRY",
+    "urgency": "low",
+    "confidence": 0.72,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "VARAMAR",
+    "original_sender_company": "VARAMAR"
+  }
+}

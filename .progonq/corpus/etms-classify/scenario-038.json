@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-038",
+  "source_email_id": "19e07c837ba011a2",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: 5000/5500mts bgd Cement in bb1.5  Al Arish / Latakia",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:30:19.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Thursday, 7 May 2026 12:59\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: RE:5000/5500mts bgd Cement in bb1.5 Al Arish / Latakia\r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n*For quick response pls include \"takis\" in the body of the email*\r\n\r\nGD DAY \r\n  \r\nPLS OFFER FOR \r\n\r\n5.000/5.500mts bgd Cement in bb1.5 \r\nAl Arish / Latakia \r\nLaycan 12/13 may \r\nL/d 5/5 days \r\nComms 1.25 % past us\r\n\r\nPlease add our email address ( chartering@niavigrains.gr ) to your circulation list for cargoes / positions\r\n\r\nBEST RGRDS\r\nTAK  (TAKIS KAPETANIOS)\r\nE MAIL : chartering@niavigrains.gr\r\nMobile/WhatsApp:0030 6944528968\r\nSKYPE: captanpanos\r\nLINKEDIN : www.linkedin.com/in/takis-kapetanios-5031344b/\r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr\r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "id": "19e07c837ba011a2",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.93,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Takis Kapetanios (Niavigrains Chartering S.A)",
+    "original_sender_company": "NIAVIGRAINS TRADING CHARTERING S.A."
+  }
+}

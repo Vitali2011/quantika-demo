@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-124",
+  "source_email_id": "19e097736f6fcbe9",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: 5000 mt W.R.C. (wire rod coils) - Iskenderun / Constanta",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:21:06.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Saturday, 21 March 2026 12:54\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: RE: 5000 mt W.R.C. (wire rod coils) - Iskenderun / Constanta\r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n*For quick response pls include \"takis\" in the body of the email*\r\n\r\nGD DAY \r\n\r\nPLS OFFER FOR \r\n\r\n5000 mt W.R.C. (wire rod coils)\r\nOuter diam 1250 mm,Length  1500-1600 mm,Weight  2mt / coil Iskenderun / Constanta L/D rate 1200/1500 mts SSHEX Laycan Spot/Prompt Charter's agents bends Box shaped / box-like vessels/Open haches Comm 3.75% TTL\r\n\r\nno ideas given boffers invited \r\n\r\nPlease add our email address ( chartering@niavigrains.gr ) to your circulation list for cargoes / positions\r\n\r\nBEST RGRDS\r\nTAK  (TAKIS KAPETANIOS)\r\nE MAIL : chartering@niavigrains.gr\r\nMobile/WhatsApp:0030 6944528968\r\nSKYPE: captanpanos\r\nLINKEDIN : www.linkedin.com/in/takis-kapetanios-5031344b/\r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr\r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "id": "19e097736f6fcbe9",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.82,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Takis Kapetanios",
+    "original_sender_company": "Niavigrains Trading Chartering S.A."
+  }
+}

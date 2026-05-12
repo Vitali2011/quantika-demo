@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-105",
+  "source_email_id": "19e089f3dc5f3033",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: BANDIRMA / RAVENNA+KOPER",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:25:11.000Z",
+    "body": " \r\n\r\nFrom: chartering@feyzgroup.com <chartering@feyzgroup.com> \r\nSent: Monday, 2 February 2026 10:27\r\nTo: 'chartering' <chartering@feyzgroup.com>\r\nSubject: BANDIRMA / RAVENNA+KOPER\r\n\r\n \r\n\r\nGOOD DAY,\r\n\r\n \r\n\r\nPLEASE OFFER FIRM FOR;\r\n\r\n \r\n\r\nBANDIRMA / RAVENNA+KOPER\r\n\r\n5293 MTS + /- 10 BULK & BAGGED HARMLESS MINERALS  \r\n\r\n09/13 FEB\r\n\r\nTTL DAYS\r\n\r\n1.25% TTL\r\n\r\n \r\n\r\n \r\n\r\nBest Regards\r\n\r\nAhmet YILDIZ\r\n\r\nChartering Dept.\r\n\r\nAs Broker Only\r\n\r\n \r\n\r\nAdress  : Altinsehir Mahallesi, Tavukcuyolu Caddesi Tomurcuk Sokak No 11\r\nIstanbul/Türkiye\r\n\r\nOffice    : 0090 216 527 00 31\r\n\r\nMobile  : 0090 534 430 00 40\r\n\r\nEmail      :  <mailto:chartering@feyzgroup.com> chartering@feyzgroup.com\r\n\r\nTeams   : Ahmet YILDIZ – FEYZ GROUP\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e089f3dc5f3033",
+    "category": "CARGO_INQUIRY",
+    "urgency": "low",
+    "confidence": 0.82,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Ahmet YILDIZ",
+    "original_sender_company": "FEYZ GROUP"
+  }
+}

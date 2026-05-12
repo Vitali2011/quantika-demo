@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-075",
+  "source_email_id": "19e07d37f2c8cd77",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: Back to Blacksea",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:42:38.000Z",
+    "body": " \r\n\r\nFrom: DURUCHART <chartering@duruchart.com> \r\nSent: Friday, 8 May 2026 13:24\r\nTo: ismail@duruchart.com\r\nSubject: Back to Blacksea \r\n\r\n \r\n\r\nDURUCHART-Istanbul/TURKEY\r\n\r\n+90 216 492 97 13\r\n\r\nwww.duruchart.com <http://www.duruchart.com>\r\n\r\n\r\n \r\n\r\nGd day \r\n\r\n \r\n\r\nPls offer firm for blw;\r\n\r\n \r\n\r\n2 SB Iskenderun - POC/Ukraine\r\n\r\n7700-7800 Mts steel prod. stw=dwt\r\n\r\n(5000 + 2700 or 2800mts)\r\n\r\nAll hold type workable \r\n\r\n15-16 May\r\n\r\n1500x1500\r\n\r\n3,75 pct \r\n\r\nNote: Will load 5000mts fm Tosyali + 2700-2800mtd fm Isdemir\r\n\r\n \r\n\r\n6645 Mts Steel Rebars\r\n\r\nHereke/Batumi\r\n\r\n20-25 May\r\n\r\n8 Ttl Days\r\n\r\n3,75 addcom pus \r\n\r\n \r\n\r\nBest Regards/Ismail Akkas\r\n\r\nMobile:+90-543-6438828\r\n\r\nSkype : ismail-akkas\r\n\r\n \r\n\r\nIf you no longer wish to receive emails from us, reply to this message with\r\nthe subject  \"DELETE''\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07d37f2c8cd77",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.92,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Ismail Akkas",
+    "original_sender_company": "DURUCHART"
+  }
+}

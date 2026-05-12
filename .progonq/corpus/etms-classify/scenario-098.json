@@ -1,0 +1,22 @@
+{
+  "id": "etms-classify-098",
+  "source_email_id": "19e07d9324b157fc",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: breakbulk sailling may 5",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:48:51.000Z",
+    "body": " \r\n\r\nFrom: operationp <open-position@vessel-position.royalevershpg.com> \r\nSent: Wednesday, 6 May 2026 04:37\r\nTo: management@etm-services.net\r\nSubject: breakbulk sailling may 5\r\n\r\n \r\n\r\nmanagement@etm-services.net <mailto:management@etm-services.net> \r\nneed named/rated cargo to fix\r\n\r\n1) loading: japan, korea, china\r\ndisport: fujairah, sohar,\r\nlaycan may 15-20\r\n\r\n2) loading: korea, china\r\n   disport: red, med, bsea\r\n   laycan : may 20-25\r\n\r\n3) loading: se.asia, eci\r\n disport : fujairaj, sohar\r\n laycan: may 20-25\r\n\r\n4)?loading: fujairah, sohar\r\n  disport: med, conti\r\n  laycan: may 17-25\r\n\r\n5) loading: bsea, med,\r\ndisport: wafrica, ecsa\r\nlaycan : may 15-20\r\n\r\n6) loading: bsea, med,\r\ndisport: red, eafrica\r\nlaycan may 15-20\r\n\r\n7) loading: neuro, conti, arag\r\ndisport: e.usa, usg, carib, ncsa\r\nlaycan jun 1-10\r\n\r\n\r\nIf you do not wish to receive further messages from this sender, please reply with the word UNSUBSCRIBE in the Subject line\r\n\r\nb.rgds/tang\r\nriver ocean shipping limited\r\ntel:0086-411-39756008\r\nfax:0086-411-39756009\r\nmobile&whatsapp : 86-18698624158\r\nemail: chartering@royalevershpg.com <mailto:chartering@royalevershpg.com> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07d9324b157fc",
+    "category": "VESSEL_POSITION",
+    "urgency": "high",
+    "confidence": 0.82,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "management@etm-services.net (ETMS Management, forwarding from Tang / River Ocean Shipping Limited)",
+    "original_sender_company": "River Ocean Shipping Limited",
+    "unknown_terms": ["arag", "neuro"]
+  }
+}

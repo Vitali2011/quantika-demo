@@ -1,0 +1,22 @@
+{
+  "id": "etms-classify-149",
+  "source_email_id": "19e0f544fba5e7ab",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: EXCLUSIVE HANDIES - 24K DWT EGYPTMED 04-05 JULY ///  27K DWT CANAKKALE 05 JULY (REF:240DTE800)",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-10T00:40:41.000Z",
+    "body": " \r\n\r\nFrom: WAMAR MARITIME <chartering@wamarmaritime.com> \r\nSent: Tuesday, 2 July 2024 12:13\r\nTo: _ WAMAR MARITIME <chartering@wamarmaritime.com>\r\nSubject: EXCLUSIVE HANDIES - 24K DWT EGYPTMED 04-05 JULY /// 27K DWT CANAKKALE 05 JULY (REF:240DTE800)\r\n\r\n \r\n\r\nTELiX MSG: 0DTE8-00 02/07/24 12:14 +03:00\r\n\r\nGd day \r\n\r\n \r\n\r\n \r\n\r\nWAMAR's  EXCLUSIVE  HANDIES  \r\n\r\n--------------------------------------\r\n\r\n \r\n\r\n \r\n\r\nMV YA HUSSEIN    DWT  24,290 MTS      ALEXANDRIA, EGYPT 04-05 JULY  \r\n\r\n(LAST CARGO CORN IN BULK)\r\n\r\n \r\n\r\n \r\n\r\nMV AYA                  DWT  27,239 MTS      MARMARA, TUZLA  -   REVERTING \r\n\r\n(EX DD)\r\n\r\n \r\n\r\n \r\n\r\nMV ARTICULATE    DWT  27,308 MTS      CANAKKALE,  05 JULY \r\n\r\n(LAST CARGO WHEAT IN BULK) \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nVSLS DETS\r\n------------\r\nMV YA HUSSEIN\r\n==========\r\nDWT 24,290 MTS ON 9,54 M DRAFT\r\nBUILT 1996 JAPAN / FLAG PALAU\r\nLOA 157,26 M / BEAM 26,00 M\r\nGRT 14599 / NRT 8429\r\nGRAIN (CBM) : 31000 / BALE (CBM) : 29843\r\n4 HOLDS / 4 HATCHES\r\nCRANES 4/25T\r\nCLASS NKK/P&I CVRD\r\nADA\r\n\r\n \r\n\r\n+ + + \r\n\r\n \r\n\r\n \r\n\r\nMV  AYA \r\n\r\n=======\r\n\r\nFLAG : ST. Kitts & Navis\r\nBUILT : 1997. KOREA \r\nCLASS : K.R\r\nPNI CLUB: THOMAS MILLER\r\nSUMMER DWT/DRAFT: 27,239.3MTS ON ABOUT 9.91M\r\nTPC SUMMER  : 37.33 MT  \r\nGRT / NRT : 16498 / 9670\r\nLENGTH OVER ALL: 167.0 M \r\nL.B.P. : 158.0 M \r\nBREADTH (MOULDED) : 26.20 M \r\nDEPTH (MOULDED) :13.80M \r\nHOLDS / HATCHES:  5 / 5\r\nTYPE OF HATCH COVERS : FOLDING\r\nHOLDS CO2 FITTED : YES\r\nAHL FITTED : YES \r\nCARGO GEAR: 4*25MT\r\nOUTREACH : 10.5 M\r\nTOTAL HOLD CAPACITY : 35387.8(GRAIN) 34326.2(BALE)\r\nADA \r\n\r\n \r\n\r\n \r\n\r\n+ + + \r\n\r\n \r\n\r\n \r\n\r\nMV ARTICULATE \r\n\r\nBC FLG PALAU\r\nCLASS IRS BLT 1994\r\nDWT 27308 MT ON 9,52M DRFT\r\nGRT /NRT 16446 MT/ 9409 MT\r\nLOA 165,5M, LBP 158,6M BEAM 27,03M, DEPTH 13,3M\r\n5HO/5HA ICE CLASS\r\nGRAIN :34810 cbm, BALE :34182 bm\r\nHATCH #1: 8.0x13.5- HATCH # 2,3,4&5: 19.2x13.5\r\nCAPA GAIN /BALE\r\nHOLD1:3969/3808CBM\r\nHOLD2:7895/7775 CBM\r\nHOLD3:7899/7780 CBM\r\nHOLD4:7715/7597 CBM\r\nHOLD5:7334/7222 CBM\r\nTTL : 34810/34182 CBM\r\nCRANES: 4 X 25T\r\nCRANE OUT REACH : 22.0M\r\nVESSEL IS GEARED\r\n\r\n \r\n\r\n+ + + \r\n\r\n \r\n\r\n  \r\n\r\nPlse ppse / offer firm . \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nBest regards\r\n\r\n \r\n\r\nEmmanouil Papanikolaou  \r\n\r\n----------------------------------------------\r\n\r\nM :  +30 693 614 2797 | S : e.papanikolaou |\r\n\r\n---------------------------------------------------\r\n\r\nWAMAR MARITIME CO.\r\n\r\nKyprou 2 & Kolokotroni 14 Str.\r\n\r\n14562 Kifisia, Greece\r\n\r\nTel.: +30 210 8083133\r\n\r\nEmail :   <mailto:chartering@wamarmaritime.com> chartering@wamarmaritime.com\r\n\r\n--------------------------------------------------\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e0f544fba5e7ab",
+    "category": "VESSEL_POSITION",
+    "urgency": "medium",
+    "confidence": 0.88,
+    "is_unanswered": true,
+    "days_without_reply": 1,
+    "original_sender": "ETMS - Management",
+    "original_sender_company": "ETM Services",
+    "unknown_terms": ["AHL FITTED", "EX DD", "TELIX MSG"]
+  }
+}

@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import type { ParsedVessel, ParsedCargo } from '@/lib/types';
 import { RouteCompareModal } from '@/components/economics/RouteCompareModal';
+import { calculateFuelEu } from '@/lib/economics/fueleu';
 
 interface EconomicsTabProps {
   commissionPercent?: number | null;
@@ -46,6 +47,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo }: EconomicsTabP
   const [bunkerPort, setBunkerPort] = useState<BunkerPort>('SGSIN');
   const [bunkerGrade, setBunkerGrade] = useState<BunkerGrade>('VLSFO');
   const [displayCurrency, setDisplayCurrency] = useState<DisplayCurrency>('USD');
+  const [fuelType, setFuelType] = useState('hfo');
 
   const compareInputs = useMemo(() => {
     const origin = cargo?.originPort?.value ?? '';
@@ -87,6 +89,31 @@ export function EconomicsTab({ commissionPercent, vessel, cargo }: EconomicsTabP
       bunkerGrade,
     };
   }, [bunkerPriceUsdPerMt, bunkerPort, bunkerGrade]);
+
+  const fuelEuEnabled = process.env.NEXT_PUBLIC_FUELEU_ENABLED === 'true';
+
+  const fuelEuResult = useMemo(() => {
+    if (!fuelEuEnabled) return null;
+
+    const consumption = parseLeadingNumber(vessel?.consumption);
+    const origin = cargo?.originPort?.value ?? '';
+    const destination = cargo?.destinationPort?.value ?? '';
+
+    // Estimate voyage days (simple calculation: assume 5000 nm average, 14 kts)
+    // This is a placeholder — real implementation would calculate from route distance
+    const estimatedVoyageDays = origin && destination ? 15 : 0;
+
+    try {
+      return calculateFuelEu({
+        fuelType,
+        consumptionMtPerDay: consumption,
+        voyageDays: estimatedVoyageDays,
+        year: 2025,
+      });
+    } catch {
+      return null;
+    }
+  }, [fuelType, vessel, cargo, fuelEuEnabled]);
 
   return (
     <div data-testid="tab-economics" className="space-y-4 text-sm">
@@ -164,6 +191,73 @@ export function EconomicsTab({ commissionPercent, vessel, cargo }: EconomicsTabP
               1 USD ≈ {DISPLAY_RATES[displayCurrency].toFixed(displayCurrency === 'EUR' || displayCurrency === 'GBP' ? 3 : 2)} {displayCurrency}
               {' '}(fallback rate)
             </p>
+          )}
+        </div>
+      )}
+
+      {fuelEuEnabled && (
+        <div
+          data-testid="fueleu-tile"
+          className="rounded border border-blue-200 bg-blue-50 p-3 space-y-2"
+        >
+          <h3 className="text-xs font-semibold text-blue-900">
+            FuelEU Maritime Compliance
+          </h3>
+
+          <div className="space-y-1">
+            <label className="text-xs text-gray-600 block">Fuel type</label>
+            <select
+              value={fuelType}
+              onChange={(e) => setFuelType(e.target.value)}
+              aria-label="Fuel type"
+              className="w-full border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-400"
+            >
+              <option value="hfo">HFO (Heavy Fuel Oil)</option>
+              <option value="vlsfo">VLSFO (Very Low Sulfur FO)</option>
+              <option value="mgo">MGO (Marine Gas Oil)</option>
+              <option value="lng">LNG (Liquefied Natural Gas)</option>
+              <option value="methanol">Methanol (Conventional)</option>
+              <option value="ammonia">Green Ammonia</option>
+              <option value="biodiesel-b100">Biodiesel B100</option>
+            </select>
+          </div>
+
+          {fuelEuResult && (
+            <div className="space-y-1 text-xs">
+              <div className="flex justify-between">
+                <span className="text-gray-600">WtW GHG intensity:</span>
+                <span className="font-medium">
+                  {fuelEuResult.ghgIntensityActual.toFixed(2)} g CO₂eq/MJ
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Target (2025):</span>
+                <span className="font-medium">
+                  {fuelEuResult.ghgIntensityTarget.toFixed(2)} g CO₂eq/MJ
+                </span>
+              </div>
+
+              <div className="mt-2 pt-2 border-t border-blue-200">
+                {fuelEuResult.isCompliant ? (
+                  <div className="flex items-center gap-1.5 text-green-700">
+                    <span className="text-base">✓</span>
+                    <span className="font-medium">Compliant</span>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1.5 text-orange-700">
+                      <span className="text-base">⚠</span>
+                      <span className="font-medium">
+                        Penalty: €{fuelEuResult.penaltyEur.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                      </span>
+                    </div>
+                    <div className="text-gray-500">
+                      ≈ ${fuelEuResult.penaltyUsd.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           )}
         </div>
       )}

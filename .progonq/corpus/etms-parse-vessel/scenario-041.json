@@ -1,0 +1,596 @@
+{
+  "id": "etms-parse-vessel-041",
+  "source_email_id": "19e097b0d6404a40",
+  "category": "multi_vessel",
+  "input": {
+    "subject": "FW: MRC Shipping Positions 26/02/2026",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:25:16.000Z",
+    "body": " \r\n\r\nFrom: MRC SHIPPING ISTANBUL <chart@mrcship.com> \r\nSent: Thursday, 26 February 2026 09:59\r\nTo: management@etm-services.net\r\nSubject: MRC Shipping Positions 26/02/2026\r\n\r\n \r\n\r\nGood day\r\n\r\nPls offer suitable cargo for excl&home tonnages\r\n\r\n\r\n\r\n\r\nSHIP NAME\r\n\r\nDWCC\r\n\r\nHOLD TYPE\r\n\r\nBUILT\r\n\r\nBALE CAPP\r\n\r\nPOSITION\r\n\r\nDATES\r\n\r\nMIC\r\n\r\n\r\n MV AYA\r\n\r\n 6050\r\n\r\n 2 BOXI \r\n\r\n 2008\r\n\r\n 297K\r\n\r\n ISKENDERUN\r\n\r\n 07-10 MAR\r\n\r\nYasar\r\n\r\n\r\n MV SUN S\r\n\r\n 5050\r\n\r\n 3 BOX & OH\r\n\r\n 2008\r\n\r\n 240K\r\n\r\n EAST MED\r\n\r\n 08-10 MAR\r\n\r\nYasar\r\n\r\n\r\n MV CELAL SAHIN\r\n\r\n 4500\r\n\r\n 2 BOX & OH\r\n\r\n 2006\r\n\r\n 196K\r\n\r\n CONSTANTA\r\n\r\n 12-14 MAR\r\n\r\nYasar\r\n\r\n\r\n MV TURGUT SAHIN  \r\n\r\n 4450\r\n\r\n 1 BOX & OH\r\n\r\n 1997\r\n\r\n 195K \r\n\r\n ALGERIA\r\n\r\n 12-15 MAR\r\n\r\nYasar\r\n\r\n\r\n MV UNZILE ANA \r\n\r\n 4000\r\n\r\n 2 BOX & OH\r\n\r\n 1996\r\n\r\n 170K\r\n\r\n EGYPT MED\r\n\r\n 19-22 MAR\r\n\r\nMert\r\n\r\n\r\n MV HABIBE ANA      \r\n\r\n 3850\r\n\r\n 2 BOX & OH\r\n\r\n 1995\r\n\r\n 160K\r\n\r\n BULGARIA\r\n\r\n 13-15 MAR\r\n\r\nMert\r\n\r\n\r\n MV MERIC\r\n\r\n 2600\r\n\r\n 1 BOX & OH\r\n\r\n 1995\r\n\r\n 138K\r\n\r\n N.ADRIATIC\r\n\r\n 16-18 MAR\r\n\r\nMert\r\n\r\n\r\n\r\n\r\n* MV Meric  & MV Celal Sahin  fully Container and  IMO 1.1 Cargos fitted\r\n(under & on deck) \r\n\r\n \r\n\r\n\r\nBest Regards\r\n\"Member of Shipbrokers' Association\" - Turkiye\r\nYasar Meric  &  Mert   Meric  \r\n\r\n\r\n\r\n'' MRC SHIPPING AND TRADING CO ''\r\nPostane Mah. Neseli Sok  NO:2/1   \r\n34940 Tuzla -  Istanbul    \r\nOffice Tel :00 90 216 493 01 06 \r\nEmail:  <mailto:chart@mrcship.com> chart@mrcship.com  ( for chartering only\r\n)\r\n <http://www.mrcship.com> www.mrcship.com \r\n\r\nTeams : Yasar Meric  ( <mailto:yasar@mrcship.com> yasar@mrcship.com)\r\nMobil : +90 546 629 56 98 \r\nTeams : Mert   Meric  ( <mailto:mertmrcc61@gmail.com> mertmrcc61@gmail.com )\r\nMobil : +90 531 557 11 02\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "MV AYA",
+          "confidence": "confirmed",
+          "source_text": "MV AYA"
+        },
+        "imo": null,
+        "flag": null,
+        "built": {
+          "value": 2008,
+          "confidence": "confirmed",
+          "source_text": "2008"
+        },
+        "class_society": null,
+        "p_and_i": null,
+        "dwt_summer": null,
+        "dwcc": {
+          "value": 6050,
+          "confidence": "confirmed",
+          "source_text": "6050"
+        },
+        "draft_max": null,
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": {
+          "value": 2,
+          "confidence": "confirmed",
+          "source_text": "2 BOXI"
+        },
+        "hatches_count": null,
+        "grain_capacity": {
+          "value": 297000,
+          "confidence": "interpreted",
+          "source_text": "297K"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": null,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "uncertain",
+          "source_text": "2 BOXI"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Iskenderun",
+          "confidence": "confirmed",
+          "source_text": "ISKENDERUN"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-03-07",
+            "close": "2026-03-10",
+            "display": "07-10 MAR"
+          },
+          "confidence": "interpreted",
+          "source_text": "07-10 MAR"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Box-shaped holds",
+            "confidence": "confirmed",
+            "source_text": "2 BOXI"
+          }
+        ],
+        "unknown_terms": []
+      },
+      {
+        "vessel_name": {
+          "value": "MV SUN S",
+          "confidence": "confirmed",
+          "source_text": "MV SUN S"
+        },
+        "imo": null,
+        "flag": null,
+        "built": {
+          "value": 2008,
+          "confidence": "confirmed",
+          "source_text": "2008"
+        },
+        "class_society": null,
+        "p_and_i": null,
+        "dwt_summer": null,
+        "dwcc": {
+          "value": 5050,
+          "confidence": "confirmed",
+          "source_text": "5050"
+        },
+        "draft_max": null,
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": {
+          "value": 3,
+          "confidence": "confirmed",
+          "source_text": "3 BOX & OH"
+        },
+        "hatches_count": null,
+        "grain_capacity": {
+          "value": 240000,
+          "confidence": "interpreted",
+          "source_text": "240K"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": null,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "uncertain",
+          "source_text": "3 BOX & OH"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "East Mediterranean",
+          "confidence": "confirmed",
+          "source_text": "EAST MED"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-03-08",
+            "close": "2026-03-10",
+            "display": "08-10 MAR"
+          },
+          "confidence": "interpreted",
+          "source_text": "08-10 MAR"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Box-shaped holds with open hatch",
+            "confidence": "confirmed",
+            "source_text": "3 BOX & OH"
+          }
+        ],
+        "unknown_terms": []
+      },
+      {
+        "vessel_name": {
+          "value": "MV CELAL SAHIN",
+          "confidence": "confirmed",
+          "source_text": "MV CELAL SAHIN"
+        },
+        "imo": null,
+        "flag": null,
+        "built": {
+          "value": 2006,
+          "confidence": "confirmed",
+          "source_text": "2006"
+        },
+        "class_society": null,
+        "p_and_i": null,
+        "dwt_summer": null,
+        "dwcc": {
+          "value": 4500,
+          "confidence": "confirmed",
+          "source_text": "4500"
+        },
+        "draft_max": null,
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": {
+          "value": 2,
+          "confidence": "confirmed",
+          "source_text": "2 BOX & OH"
+        },
+        "hatches_count": null,
+        "grain_capacity": {
+          "value": 196000,
+          "confidence": "interpreted",
+          "source_text": "196K"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": null,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "uncertain",
+          "source_text": "2 BOX & OH"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Constanta",
+          "confidence": "confirmed",
+          "source_text": "CONSTANTA"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-03-12",
+            "close": "2026-03-14",
+            "display": "12-14 MAR"
+          },
+          "confidence": "interpreted",
+          "source_text": "12-14 MAR"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Box-shaped holds with open hatch",
+            "confidence": "confirmed",
+            "source_text": "2 BOX & OH"
+          },
+          {
+            "value": "Fully fitted for Container and IMO 1.1 cargoes (under & on deck)",
+            "confidence": "confirmed",
+            "source_text": "MV Meric & MV Celal Sahin fully Container and IMO 1.1 Cargos fitted\n(under & on deck)"
+          }
+        ],
+        "unknown_terms": []
+      },
+      {
+        "vessel_name": {
+          "value": "MV TURGUT SAHIN",
+          "confidence": "confirmed",
+          "source_text": "MV TURGUT SAHIN"
+        },
+        "imo": null,
+        "flag": null,
+        "built": {
+          "value": 1997,
+          "confidence": "confirmed",
+          "source_text": "1997"
+        },
+        "class_society": null,
+        "p_and_i": null,
+        "dwt_summer": null,
+        "dwcc": {
+          "value": 4450,
+          "confidence": "confirmed",
+          "source_text": "4450"
+        },
+        "draft_max": null,
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1 BOX & OH"
+        },
+        "hatches_count": null,
+        "grain_capacity": {
+          "value": 195000,
+          "confidence": "interpreted",
+          "source_text": "195K"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": null,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "uncertain",
+          "source_text": "1 BOX & OH"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Algeria",
+          "confidence": "confirmed",
+          "source_text": "ALGERIA"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-03-12",
+            "close": "2026-03-15",
+            "display": "12-15 MAR"
+          },
+          "confidence": "interpreted",
+          "source_text": "12-15 MAR"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Box-shaped holds with open hatch",
+            "confidence": "confirmed",
+            "source_text": "1 BOX & OH"
+          }
+        ],
+        "unknown_terms": []
+      },
+      {
+        "vessel_name": {
+          "value": "MV UNZILE ANA",
+          "confidence": "confirmed",
+          "source_text": "MV UNZILE ANA"
+        },
+        "imo": null,
+        "flag": null,
+        "built": {
+          "value": 1996,
+          "confidence": "confirmed",
+          "source_text": "1996"
+        },
+        "class_society": null,
+        "p_and_i": null,
+        "dwt_summer": null,
+        "dwcc": {
+          "value": 4000,
+          "confidence": "confirmed",
+          "source_text": "4000"
+        },
+        "draft_max": null,
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": {
+          "value": 2,
+          "confidence": "confirmed",
+          "source_text": "2 BOX & OH"
+        },
+        "hatches_count": null,
+        "grain_capacity": {
+          "value": 170000,
+          "confidence": "interpreted",
+          "source_text": "170K"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": null,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "uncertain",
+          "source_text": "2 BOX & OH"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Egypt Mediterranean",
+          "confidence": "confirmed",
+          "source_text": "EGYPT MED"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-03-19",
+            "close": "2026-03-22",
+            "display": "19-22 MAR"
+          },
+          "confidence": "interpreted",
+          "source_text": "19-22 MAR"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Box-shaped holds with open hatch",
+            "confidence": "confirmed",
+            "source_text": "2 BOX & OH"
+          }
+        ],
+        "unknown_terms": []
+      },
+      {
+        "vessel_name": {
+          "value": "MV HABIBE ANA",
+          "confidence": "confirmed",
+          "source_text": "MV HABIBE ANA"
+        },
+        "imo": null,
+        "flag": null,
+        "built": {
+          "value": 1995,
+          "confidence": "confirmed",
+          "source_text": "1995"
+        },
+        "class_society": null,
+        "p_and_i": null,
+        "dwt_summer": null,
+        "dwcc": {
+          "value": 3850,
+          "confidence": "confirmed",
+          "source_text": "3850"
+        },
+        "draft_max": null,
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": {
+          "value": 2,
+          "confidence": "confirmed",
+          "source_text": "2 BOX & OH"
+        },
+        "hatches_count": null,
+        "grain_capacity": {
+          "value": 160000,
+          "confidence": "interpreted",
+          "source_text": "160K"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": null,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "uncertain",
+          "source_text": "2 BOX & OH"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "Bulgaria",
+          "confidence": "confirmed",
+          "source_text": "BULGARIA"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-03-13",
+            "close": "2026-03-15",
+            "display": "13-15 MAR"
+          },
+          "confidence": "interpreted",
+          "source_text": "13-15 MAR"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Box-shaped holds with open hatch",
+            "confidence": "confirmed",
+            "source_text": "2 BOX & OH"
+          }
+        ],
+        "unknown_terms": []
+      },
+      {
+        "vessel_name": {
+          "value": "MV MERIC",
+          "confidence": "confirmed",
+          "source_text": "MV MERIC"
+        },
+        "imo": null,
+        "flag": null,
+        "built": {
+          "value": 1995,
+          "confidence": "confirmed",
+          "source_text": "1995"
+        },
+        "class_society": null,
+        "p_and_i": null,
+        "dwt_summer": null,
+        "dwcc": {
+          "value": 2600,
+          "confidence": "confirmed",
+          "source_text": "2600"
+        },
+        "draft_max": null,
+        "loa": null,
+        "beam": null,
+        "grt": null,
+        "nrt": null,
+        "holds_count": {
+          "value": 1,
+          "confidence": "confirmed",
+          "source_text": "1 BOX & OH"
+        },
+        "hatches_count": null,
+        "grain_capacity": {
+          "value": 138000,
+          "confidence": "interpreted",
+          "source_text": "138K"
+        },
+        "grain_capacity_unit": "cbft",
+        "bale_capacity": null,
+        "hold_dimensions": [],
+        "hatch_dimensions": [],
+        "tank_top_strength": null,
+        "geared": null,
+        "crane_capacity": null,
+        "hatch_type": null,
+        "vessel_type": {
+          "value": "GENERAL CARGO",
+          "confidence": "uncertain",
+          "source_text": "1 BOX & OH"
+        },
+        "cii_rating": null,
+        "open_position": {
+          "value": "North Adriatic",
+          "confidence": "confirmed",
+          "source_text": "N.ADRIATIC"
+        },
+        "open_date": {
+          "value": {
+            "open": "2026-03-16",
+            "close": "2026-03-18",
+            "display": "16-18 MAR"
+          },
+          "confidence": "interpreted",
+          "source_text": "16-18 MAR"
+        },
+        "direction": null,
+        "restrictions": [],
+        "last_cargoes": null,
+        "speed_laden": null,
+        "speed_ballast": null,
+        "consumption": null,
+        "deck_capacity": null,
+        "special_features": [
+          {
+            "value": "Box-shaped holds with open hatch",
+            "confidence": "confirmed",
+            "source_text": "1 BOX & OH"
+          },
+          {
+            "value": "Fully fitted for Container and IMO 1.1 cargoes (under & on deck)",
+            "confidence": "confirmed",
+            "source_text": "MV Meric & MV Celal Sahin fully Container and IMO 1.1 Cargos fitted\n(under & on deck)"
+          }
+        ],
+        "unknown_terms": [
+          "BOXI — appears to be a variant of BOX (box-shaped hold) possibly indicating a specific hold configuration; not in glossary",
+          "OH — likely Open Hatch; not explicitly defined in glossary",
+          "MIC — column header in vessel position table; purpose unclear (possibly internal MRC broker code or 'Manager In Charge')"
+        ]
+      }
+    ]
+  }
+}

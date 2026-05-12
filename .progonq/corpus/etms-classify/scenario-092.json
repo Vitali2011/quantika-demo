@@ -1,0 +1,23 @@
+{
+  "id": "etms-classify-092",
+  "source_email_id": "19e07d7c0f5b66c5",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: FIRM CARGOES",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:47:18.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: chartering@kievshipping.com.ua <chartering@kievshipping.com.ua> \r\nSent: Wednesday, 6 May 2026 08:46\r\nTo: management@etm-services.net\r\nSubject: FIRM CARGOES\r\n\r\n\r\nDear colleagues,\r\n\r\nKINDLY OFFER FOR OUR FULLY FIRM CARGOES AS BELOW: \r\n\r\nMDF\r\n\r\nBasis 1/1\r\nQty: about 12,000 net CBM / 13,500 gross CBM\r\nPOL: Chennai or Kattupalli or Ennore Port\r\nPOD: Sohar or Khorfakkan or Fujairah (preferred)\r\nTerms: FLT\r\nLaycan: Mid - end May\r\n2.50 TTL COM\r\n++++++++++++++\r\n50,000 MTS +/- 10% BULK AGGREGATE\r\nREK / SHUAIBA 12 M DRAFT\r\nCQD/CQD\r\nGLSS VSL\r\nSPOT / VSL DATES\r\n2.5% TTL HERE \r\n+++++++++++\r\n50,000 MTS +/- 10% BULK AGGREGATE\r\nFUJAIRAH/ MOGADISHU 11 M DRAFT\r\nGEARD N GRABBER FOR DISCH\r\n8000 / 4000\r\nSPOT\r\n2.50% TTL  \r\n++++++++++++++ \r\nSawn Timber\r\nCargo Type: Sawn Timber in bundles\r\nTotal Qty: 5,000 NET CBM (about) of Sawn Timber\r\nLaycan: Prompt\r\nPOL: Bintulu port in Malaysia\r\nPOD: Sohar\r\nTerms: FILO CQD\r\n\r\nPart cargo is ok. Sawn Timber ON DECK loading is ok.\r\nTerms: Free In (CQD) Liner Out, Malaysia port can work maximum with 2 gangs only.\r\n+++++++++++++\r\nMDF \r\n\r\nPine Sawn Timber\r\nLoad Port – Lirquen\r\nDischarge Port – Fujairah\r\nLaycan – End May, 2026\r\nQuantity – 25,000 net CBM\r\nTerms – FILO (Load Rate – CQD)\r\n2.50\r\nPlease offer rate on net CBM basis. \r\nStow factor abt 52 Cbm/cbft for Lumber.\r\n++++++++++++++++++ \r\nQty: 8000 CBM to 10000 CBM\r\nPOL: Laem Chabang or Songkhla\r\nPOD: Sudan\r\nLaycan: End May, 2026\r\nFLT\r\n2.50\r\n++++++++\r\nPOL: Durban    \r\nPOD: Bejaia, Algeria       \r\nAbout 20,000 net CBM    \r\nLIFO    \r\nDischarge rate: 2000 CBM per day\r\nLaycan: End May, 2026    \r\n+++++++++++++++++++\r\nMDF\r\nQty: about 7500 net CBM to 9,500 net CBM\r\nPOL: Panjang\r\nPOD: Jeddah\r\nTerms: FILO CQD bends\r\nLaycan: Early May, 2026\r\n2.50\r\n++++++++++++++++\r\nMDF\r\nQty: about 15,000 net CBM to 20,000 net CBM / 1 net cbm = 1.12 gross cbm\r\nPOL: Songkhla\r\nPOD: Jeddah\r\nTerms: FLT\r\nLaycan: Mid to end May, 2026\r\n2.50%\r\n+++++++++++++++++++++++\r\nFIRM TO FIX:\r\nMDF\r\nQty: about 10,000 net CBM / 11,200 gross CBM\r\nPOL: Laem Chabang\r\nPOD: Sohar\r\nTerms: FLT\r\nLaycan: 7th May, 2026 to 12th May, 2026\r\n2.50%\r\n++++++++++++++++++++\r\n1- Thai Parboiled Rice 100% Sorted , Quantity 12,500 mt 2-Thai White Rice 25% Broken , Quantity 12,500 mt\r\nLaycan: 20-30 May 2026\r\nPacking: In new PP of 50 kgs with Jumbo bag total 1 mt\r\nPOL: Koh Sri Chang\r\nPOD: Conakry\r\nQuantity loading & Discharge 3,000 mt\r\n2.50%\r\n\r\nRated/scheduled vessels are welcome.\r\n\r\n\r\nBest regards,\r\n\r\nKonstantin Kalnyi\r\n  Head/Partner\r\n\r\n\"Kiev Shipping Ltd\"\r\n    Since 2000\r\n\r\nBulk / Break-bulk / Tankers / SNP\r\n\r\nchartering@kievshipping.com.ua\r\nwww.kievshipping.com.ua\r\n+380674010506  WhatsApp, Viber, Telegram.\r\nTeams: KIEVSHIP\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n"
+  },
+  "reference_output": {
+    "id": "19e07d7c0f5b66c5",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.91,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Konstantin Kalnyi",
+    "original_sender_company": "Kiev Shipping Ltd",
+    "unknown_terms": ["FLT", "REK", "GLSS", "CQD", "GRABBER"],
+    "notes": "Multiple firm cargo inquiries across various routes (India/UAE, Malaysia/Oman, Thailand/Sudan, Durban/Algeria, Chile/Fujairah, Thailand/Conakry, etc.). Several laycans are SPOT or within 30 days (e.g. 7-12 May already past, 20-30 May, End May). High urgency due to imminent/past laycans. FLT, REK, GLSS, CQD, GRABBER not in glossary — flagged for review."
+  }
+}

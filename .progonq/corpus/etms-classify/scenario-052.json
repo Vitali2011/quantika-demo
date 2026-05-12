@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-052",
+  "source_email_id": "19e07cdb7df50d0f",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: ALEXANDRIA / BRAILA",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:36:18.000Z",
+    "body": " \r\n\r\nFrom: Hope Chartering <hope@hopechartering.com> \r\nSent: Wednesday, 6 May 2026 15:17\r\nTo: management@etm-services.net\r\nSubject: ALEXANDRIA / BRAILA\r\n\r\n \r\n\r\n\r\n\r\nGood day,\r\n\r\nAny interest?\r\n\r\nAlexandria / Braila\r\nm/m 4000 mts salt in bb – dim: 90x90x90 cm, uw: 1.5 mts – fully stackable\r\nSpot – try vsl dates\r\n6 ttl\r\n2,5%\r\n\r\n- Sub vsl failed, need substitude. Can provide frt idea for suitable vsl\r\n\r\n\r\n\r\n\r\nBest Regards\r\nMert Ekmekci\r\n\r\nHope Chartering\r\nE-mail: hope@hopechartering.com\r\nMob: +90 542 347 35 63\r\nAs broker only\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07cdb7df50d0f",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.91,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Mert Ekmekci",
+    "original_sender_company": "Hope Chartering"
+  }
+}

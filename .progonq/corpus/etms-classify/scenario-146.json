@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-146",
+  "source_email_id": "19e0f531898504ce",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: 8k dwt mv snapper - open aegean sea spot",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-10T00:39:22.000Z",
+    "body": " \r\n\r\nFrom: a17-@googlegroups.com <a17-@googlegroups.com> On Behalf Of atom@atombulk.com\r\nSent: Tuesday, 20 August 2024 18:51\r\nTo: atom@atombulk.com\r\nSubject: 8k dwt mv snapper - open aegean sea spot\r\n\r\n \r\n\r\natombulk ship chartering – istanbul\r\n\r\n \r\n\r\ngood day\r\n\r\n \r\n\r\n*\topen nemrut bay spot\r\n\r\n \r\n\r\nmv snapper (ex aikaterini k imo.9381407)\r\n\r\n8100 mts dwt at 6.82 mtrs draft\r\n\r\nblt 2008-08  china\r\n\r\nclass ir, ice 1d, ss 08/2028, dd 06/2026\r\n\r\nloa 108.1 m, beam 18.2 m\r\n\r\ngt/nt 5,599/2,883\r\n\r\n3 ho(boxed)/3 ha\r\n\r\nhold/ hatch 1: 18.90 m x 15.20/6.60 m x 11.20 m\r\n\r\nhold/ hatch 2: 29.40 m x 15.20 m x 9.10 m\r\n\r\nhold/ hatch 3: 28 m x 15.20/7.70 m x 9.10 m\r\n\r\n10,194 cbm grain\r\n\r\ngearless\r\n\r\nbowthruster\r\n\r\nman-b&w 7s26mc 3,808 hp\r\n\r\nbwts fitted\r\n\r\nimo fitted\r\n\r\n \r\n\r\n*no european ports for now\r\n\r\nall africa, pg india try\r\n\r\n \r\n\r\nbest regards – as brokers \r\n\r\n  _    \r\n\r\ncagdas kilic\r\n\r\n‘    ‘     ‘\r\n\r\natombulk ship chartering\r\n\r\nmob/watsap: +90 538 861 51 17 \r\n\r\nskype: cagdaskilic.1991 \r\n\r\nemail:  <mailto:atom@atombulk.com> atom@atombulk.com \r\n\r\nmember of shipbrokers’ assocation – turkiye\r\n\r\n \r\n\r\n-- \r\nYou received this message because you are subscribed to the Google Groups \"atom@atombulk.com <mailto:atom@atombulk.com> \" group.\r\nTo unsubscribe from this group and stop receiving emails from it, send an email to a17-+unsubscribe@googlegroups.com <mailto:a17-+unsubscribe@googlegroups.com> .\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e0f531898504ce",
+    "category": "VESSEL_POSITION",
+    "urgency": "medium",
+    "confidence": 0.82,
+    "is_unanswered": false,
+    "days_without_reply": 1,
+    "original_sender": "Cagdas Kilic",
+    "original_sender_company": "Atombulk Ship Chartering"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-002",
+  "source_email_id": "19d5dea61d04209f",
+  "category": "simple_clean",
+  "input": {
+    "subject": "RE: 30,000 MT cement Suez / Nacala",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-04-05T13:52:10.000Z",
+    "body": " \r\n\r\nFrom: Osama <osama@badrgroup.com> \r\nSent: Monday, 20 May 2019 14:33\r\nTo: 'chartering' <chartering@etm-services.net>; ETMS Management\r\n<management@etm-services.net>\r\nSubject: 30,000 MT cement Suez / Nacala\r\n\r\n \r\n\r\nDear Sir,\r\n\r\n \r\n\r\nPlease offer freight idea for the following;\r\n\r\n30,000 MT cement in sling\r\n\r\nSuez / Nacala\r\n\r\nL/D normal\r\n\r\nL/Can e/Jun'19\r\n\r\n \r\n\r\nAwaiting yours,\r\n\r\n \r\n\r\nRamadan Kareem\r\n\r\n \r\n\r\nOsama Hassouba (Mr.)\r\n\r\nGeneral Manager\r\n\r\nosama@badrgroup.com <mailto:osama@badrgroup.com> \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\nAl-Badr Group \r\n\r\nD-Holy International (China)\r\n\r\nSHANGHAI D2D IMP&EXP \r\n\r\n\r\n\r\n\r\n4, Farouk Amer str. \r\n\r\nSheraton Heliopolis\r\n\r\nCairo, 11421 - Egypt\r\n\r\n\r\n\r\n23F, Yiwu port building \r\n\r\nYIWU City, Zhejiang\r\n\r\n\r\n\r\nWU BAO LU , MINHANG DISTRICT     \r\n\r\nNO . 428 A5 103-105\r\n\r\n\r\nT : +20(0)22689370\r\nF : +20(0)22689371\r\n\r\n \r\n\r\nT: +86 (0) 18657967093\r\n\r\nT: +86 (0) 579 8529 8007\r\nF: +86 (0) 579 8516 0877\r\n\r\nT: +86 (0) 18657967093\r\n\r\n \r\n\r\n\t\t\t\t\t\t\r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19d5dea61d04209f",
+    "category": "CARGO_INQUIRY",
+    "urgency": "low",
+    "confidence": 0.62,
+    "is_unanswered": true,
+    "days_without_reply": 36,
+    "original_sender": "Osama Hassouba",
+    "original_sender_company": "Al-Badr Group"
+  }
+}

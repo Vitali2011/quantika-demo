@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-120",
+  "source_email_id": "19e09764c527253d",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: TC ORDER 8-16k DWT / del Europe => Canada/Great Lakes end of March/beg April",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T21:20:06.000Z",
+    "body": " \r\n\r\nFrom: position <position@varamar.com> \r\nSent: Monday, 23 March 2026 12:48\r\nTo: management@etm-services.net\r\nSubject: TC ORDER 8-16k DWT / del Europe => Canada/Great Lakes end of March/beg April\r\n\r\n \r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n <https://mailchi.mp/62e2a5ecd322/3-8k-dwt-contbaltic-feast-oct-dates-8117661?e=7ed3422e5a> View this email in your browser \r\n\r\n\t\r\n\r\n\r\n\r\n\r\n\r\n\r\nLOOKING FOR FIRM TCT CANDIDATE :\r\n\r\n \r\n\r\n\r\n8-16,000 mt dwt, SID / MPP geared\r\nL/C: End of March/beg April\r\nDel: Med/Continent\r\nDur: abt 25-45 days (+/- 10 days) agw wog uce\r\nRedel:1 Canada/Great Lakes\r\nCargoes: Generals, projects, bulk\r\n2,5 pct addcom\r\n\r\n \r\n\r\n \r\n\r\n\r\n  _____  \r\n\r\nBest regards,\r\n <https://varamar.us6.list-manage.com/track/click?u=77dc233bd77642c328018b9a6&id=e1c38f34cd&e=7ed3422e5a> VARAMAR\r\nAs agents\r\nprojects@varamar.com\r\n\r\n \r\n\r\n\r\n\t\r\n\r\n\r\n\t\r\n\r\n \r\n\r\n\r\n\r\n\r\nYou can  <https://varamar.us6.list-manage.com/profile?u=77dc233bd77642c328018b9a6&id=726e17bbd2&e=7ed3422e5a&c=067ba609a9> update your preferences or  <https://varamar.us6.list-manage.com/unsubscribe?u=77dc233bd77642c328018b9a6&id=726e17bbd2&t=b&e=7ed3422e5a&c=067ba609a9> unsubscribe from this list.\r\n  \r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e09764c527253d",
+    "category": "TCT_REQUEST",
+    "urgency": "low",
+    "confidence": 0.72,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "position@varamar.com",
+    "original_sender_company": "VARAMAR"
+  }
+}

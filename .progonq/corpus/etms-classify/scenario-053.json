@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-053",
+  "source_email_id": "19e07cde4af25d45",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: 1 Aegean / 1 W. Black Sea",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T13:36:31.000Z",
+    "body": " \r\n\r\nFrom: DURUCHART <chartering@duruchart.com> \r\nSent: Wednesday, 6 May 2026 15:15\r\nTo: 'DURUCHART' <mert@duruchart.com>\r\nSubject: 1 Aegean / 1 W. Black Sea\r\n\r\n \r\n\r\nDURUCHART-Istanbul/TURKEY\r\n\r\n+90 216 492 97 13\r\n\r\n \r\n\r\nGood Day\r\n\r\n \r\n\r\nPlease offer firm for;\r\n\r\n \r\n\r\nAliaga / Varna\r\n\r\nabt 10.000t blk clay\r\n\r\n25/30 May\r\n\r\n6 ttl days\r\n\r\n3.75 pct\r\n\r\n \r\n\r\nBest Regards\r\n\r\nMert Kalafat\r\n\r\nskype: mertkalafat6\r\n\r\nMobile: +90 505 016 01 52\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e07cde4af25d45",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.93,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Mert Kalafat",
+    "original_sender_company": "DURUCHART"
+  }
+}

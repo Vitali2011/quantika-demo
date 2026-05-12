@@ -1,0 +1,21 @@
+{
+  "id": "etms-classify-106",
+  "source_email_id": "19e089f6040369fd",
+  "category": "forwarded_chain",
+  "input": {
+    "subject": "FW: 12.300 dwt open at LUANDA",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-08T17:25:20.000Z",
+    "body": " \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Monday, 2 February 2026 10:35\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: 12.300 dwt open at LUANDA\r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\ngday\r\n\r\n \r\n\r\npls propose your rated cargoes for the fol lady open LUANDA 11th of February - prefer cargoes to MED SEA - BLACK SEA\r\n\r\n\r\nMV EDELSTEIN\r\nABOUT 12,320 DWT ON 8,3M SSW – TWEEN DECKER\r\nBUILT: 1997 - COMOROS FLAG PHOENIX CLASS\r\nLOA 111.97M - LBP 105.00M – BREADTH 20.50M – DEPTH 14.30M\r\nGRT/NRT 8,579 / 3,103 – GR/BL 18,338.84 M3 / 17,715.61 M3\r\n2HO/2HA\r\nCRANES 30Tx2 (NOT COMBINABLE) – DERRICK 10Tx1\r\nADA WOG\r\n\r\n\r\n\r\nBEST RGRDS\r\nTASOS KOUMANIS ( mob. 00306937322574)\r\nE MAILS : chartering@niavigrains.gr <mailto:chartering@niavigrains.gr>  \r\n\r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr <http://www.niavigrains.gr> \r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\nSKYPE : NIAVIGRAINS Tasos\r\nLinkedIn: www.linkedin.com/in/tasoskoumanis <http://www.linkedin.com/in/tasoskoumanis> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "19e089f6040369fd",
+    "category": "VESSEL_POSITION",
+    "urgency": "medium",
+    "confidence": 0.82,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "ETMS - Management",
+    "original_sender_company": "ETM Services"
+  }
+}
