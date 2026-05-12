@@ -12,6 +12,11 @@ jest.mock('@/lib/session-store', () => ({
   })),
 }));
 
+// Bypass auth — these tests cover ROI logic, not auth (see test_roi_auth_regression.test.ts)
+jest.mock('@/lib/session', () => ({
+  requireSession: jest.fn(() => ({ session: { accessToken: 'test-token' }, sessionId: 'test-session-id' })),
+}));
+
 /**
  * Input Contract:
  * - Feature flag ROI_GUARANTEE_ENABLED !== 'true' → 503 with {error: "feature disabled"}

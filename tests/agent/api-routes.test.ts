@@ -7,13 +7,20 @@
  * Assert-budget: ≤ 30 expects.
  */
 
+import { NextRequest } from 'next/server';
 import { POST as planPOST } from '@/app/api/agent/plan/route';
 import { POST as execPOST } from '@/app/api/agent/execute/route';
 import { _resetIdempotencyCache } from '@/lib/agent/idempotency';
 import { resetStepHandlers, setStepHandler } from '@/lib/agent/plan-first';
 
-function jsonReq(body: unknown): Request {
-  return new Request('http://localhost/api/agent/test', {
+// Bypass auth — these tests cover plan/execute logic, not auth
+// (see __tests__/regression/test_agent_auth_regression.test.ts for 401 coverage)
+jest.mock('@/lib/session', () => ({
+  requireSession: jest.fn(() => ({ session: { accessToken: 'test-token' }, sessionId: 'test-session-id' })),
+}));
+
+function jsonReq(body: unknown): NextRequest {
+  return new NextRequest('http://localhost/api/agent/test', {
     method: 'POST',
     body: JSON.stringify(body),
     headers: { 'content-type': 'application/json' },
@@ -49,7 +56,7 @@ describe('β-11 API: /api/agent/plan', () => {
   });
 
   it('rejects malformed JSON', async () => {
-    const req = new Request('http://localhost/api/agent/plan', {
+    const req = new NextRequest('http://localhost/api/agent/plan', {
       method: 'POST',
       body: 'not json',
       headers: { 'content-type': 'application/json' },
