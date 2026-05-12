@@ -8,7 +8,16 @@
 'use client';
 
 import { useState } from 'react';
-import type { LaytimeInput, LaytimeResult } from '@/lib/types';
+import type { LaytimeInput, LaytimeResult, DemurrageDespatchResult } from '@/lib/types';
+
+interface LaytimeCalculateRequest extends LaytimeInput {
+  demurrageRateUsdPerDay?: number;
+  despatchRateUsdPerDay?: number;
+}
+
+interface LaytimeCalculateResponse extends LaytimeResult {
+  dd?: DemurrageDespatchResult;
+}
 
 export default function LaytimePage() {
   const [input, setInput] = useState<LaytimeInput>({
@@ -19,7 +28,9 @@ export default function LaytimePage() {
     portHolidays: [],
     weatherDelayHours: 0,
   });
-  const [result, setResult] = useState<LaytimeResult | null>(null);
+  const [demurrageRate, setDemurrageRate] = useState<number | undefined>(undefined);
+  const [despatchRate, setDespatchRate] = useState<number | undefined>(undefined);
+  const [result, setResult] = useState<LaytimeCalculateResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [holidayInput, setHolidayInput] = useState('');
@@ -48,10 +59,16 @@ export default function LaytimePage() {
     setLoading(true);
 
     try {
+      const requestBody: LaytimeCalculateRequest = {
+        ...input,
+        demurrageRateUsdPerDay: demurrageRate,
+        despatchRateUsdPerDay: despatchRate,
+      };
+
       const res = await fetch('/api/laytime/calculate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(input),
+        body: JSON.stringify(requestBody),
       });
 
       if (!res.ok) {
@@ -59,7 +76,7 @@ export default function LaytimePage() {
         throw new Error(errorData.error || 'Failed to calculate laytime');
       }
 
-      const data: LaytimeResult = await res.json();
+      const data: LaytimeCalculateResponse = await res.json();
       setResult(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
@@ -277,6 +294,53 @@ export default function LaytimePage() {
                 </div>
               </div>
 
+              <div className="pt-4 border-t border-gray-200">
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                  Demurrage/Despatch (Optional)
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Demurrage Rate (USD/day)
+                    </label>
+                    <input
+                      type="number"
+                      step="100"
+                      min="0"
+                      value={demurrageRate ?? ''}
+                      onChange={(e) =>
+                        setDemurrageRate(e.target.value ? parseFloat(e.target.value) : undefined)
+                      }
+                      placeholder="e.g. 8000"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Leave empty to skip demurrage/despatch calculation
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Despatch Rate (USD/day)
+                    </label>
+                    <input
+                      type="number"
+                      step="100"
+                      min="0"
+                      value={despatchRate ?? ''}
+                      onChange={(e) =>
+                        setDespatchRate(e.target.value ? parseFloat(e.target.value) : undefined)
+                      }
+                      placeholder="Default: half of demurrage rate"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Optional. If not specified, defaults to demurrage rate / 2
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <button
                 type="submit"
                 disabled={loading}
@@ -354,6 +418,75 @@ export default function LaytimePage() {
                     ))}
                   </div>
                 </div>
+
+                {result.dd && (
+                  <div className="pt-4 border-t border-gray-200">
+                    <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                      Demurrage/Despatch
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="p-4 bg-gray-50 rounded-md">
+                        <div className="text-sm text-gray-600">Status</div>
+                        <div
+                          className={`text-2xl font-bold ${
+                            result.dd.status === 'demurrage'
+                              ? 'text-red-600'
+                              : result.dd.status === 'despatch'
+                                ? 'text-green-600'
+                                : 'text-gray-900'
+                          }`}
+                        >
+                          {result.dd.status.toUpperCase()}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <div className="text-sm text-gray-600">Demurrage Amount</div>
+                          <div className="text-lg font-bold text-red-600">
+                            ${result.dd.demurrageAmount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-600">Despatch Amount</div>
+                          <div className="text-lg font-bold text-green-600">
+                            ${result.dd.despatchAmount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
+                        <div className="text-sm text-gray-600 mb-1">Net Amount</div>
+                        <div
+                          className={`text-xl font-bold ${
+                            result.dd.netAmount > 0
+                              ? 'text-red-600'
+                              : result.dd.netAmount < 0
+                                ? 'text-green-600'
+                                : 'text-gray-900'
+                          }`}
+                        >
+                          {result.dd.netAmount > 0 ? '+' : ''}
+                          ${result.dd.netAmount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                        </div>
+                        <div className="text-xs text-gray-600 mt-1">
+                          {result.dd.netAmount > 0
+                            ? 'You pay (demurrage)'
+                            : result.dd.netAmount < 0
+                              ? 'You earn (despatch)'
+                              : 'Balanced'}
+                        </div>
+                      </div>
+
+                      <div className="text-xs text-gray-500 space-y-1">
+                        <div>Demurrage Rate: ${result.dd.breakdown.demurrageRate.toLocaleString()}/day</div>
+                        <div>Despatch Rate: ${result.dd.breakdown.despatchRate.toLocaleString()}/day</div>
+                        <div>Demurrage Hours: {result.dd.breakdown.demurrageHours.toFixed(1)}h</div>
+                        <div>Despatch Hours: {result.dd.breakdown.despatchHours.toFixed(1)}h</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="text-center text-gray-500 py-12">
