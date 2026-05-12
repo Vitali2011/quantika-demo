@@ -276,8 +276,8 @@ describe('psc-repository', () => {
     }).toThrow(/CHECK constraint/i);
   });
 
-  // RED test (boundary): negative deficiencies stored as-is
-  it('upsertInspection stores negative deficiencies as-is', () => {
+  // boundary: negative deficiencies are clamped to 0 (QA fix C-01)
+  it('upsertInspection clamps negative deficiencies to 0', () => {
     upsertInspection(db, {
       id: 'p1',
       imo: '9123456',
@@ -293,7 +293,7 @@ describe('psc-repository', () => {
       .prepare<[string], any>(`SELECT deficiencies FROM psc_detention_history WHERE id = ?`)
       .get('p1');
 
-    expect(row.deficiencies).toBe(-5);
+    expect(row.deficiencies).toBe(0);
   });
 
   // RED test (boundary): NaN deficiencies → guard with Number.isFinite, default to 0

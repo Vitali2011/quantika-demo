@@ -5,7 +5,7 @@ import {
   getDetentionHistory,
   upsertInspection,
 } from '@/lib/market/psc-repository';
-import { getDatabase } from '@/lib/db';
+import { getDb } from '@/lib/db/index';
 
 const ImoSchema = z.string().regex(/^\d{7}$/, 'IMO must be 7 digits');
 
@@ -43,7 +43,7 @@ export async function GET(
     );
   }
 
-  const db = getDatabase();
+  const db = getDb();
 
   try {
     // Attempt to fetch from adapter

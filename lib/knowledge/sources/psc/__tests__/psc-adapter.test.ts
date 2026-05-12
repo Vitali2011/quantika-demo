@@ -163,7 +163,7 @@ describe('psc-adapter', () => {
       json: async () => {
         throw new Error('Invalid JSON');
       },
-    } as Response);
+    } as unknown as Response);
 
     const result = await fetchPscHistory('9123456');
 

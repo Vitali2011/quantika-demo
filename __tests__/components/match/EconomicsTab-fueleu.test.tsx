@@ -92,7 +92,7 @@ describe('EconomicsTab FuelEU tile', () => {
       missingInfo: [],
     };
 
-    render(<EconomicsTab vessel={vessel} cargo={cargo} />);
+    render(<EconomicsTab vessel={vessel as unknown as import('@/lib/types').ParsedVessel} cargo={cargo} />);
 
     // With vessel consumption and estimated voyage days, penalty should be shown
     // (depends on implementation details)

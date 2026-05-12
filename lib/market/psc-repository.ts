@@ -59,9 +59,9 @@ export function upsertInspection(
   db: Database.Database,
   record: PscRecord
 ): void {
-  // Guard against NaN/Infinity deficiencies
+  // Guard against NaN/Infinity and negative deficiencies
   const safeDeficiencies = Number.isFinite(record.deficiencies)
-    ? record.deficiencies
+    ? Math.max(0, record.deficiencies)
     : 0;
 
   db.prepare(
