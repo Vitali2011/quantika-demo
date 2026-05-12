@@ -16,8 +16,8 @@ function makeReq(path: string): NextRequest {
 // Mock the adapter, repository, and database
 jest.mock('@/lib/knowledge/sources/psc/psc-adapter');
 jest.mock('@/lib/market/psc-repository');
-jest.mock('@/lib/db', () => ({
-  getDatabase: jest.fn(() => ({})),
+jest.mock('@/lib/db/index', () => ({
+  getDb: jest.fn(() => ({})),
 }));
 
 import { fetchPscHistory } from '@/lib/knowledge/sources/psc/psc-adapter';

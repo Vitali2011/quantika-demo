@@ -558,3 +558,31 @@ export interface ParsedTimeCharterRecap {
   cargoExclusions?: string[];
   commission: string;
 }
+
+// ── Laytime Engine (Spec γ-05) ──
+
+export type LaytimeMode = 'SHEX' | 'SHINC' | 'FHEX' | 'FHINC';
+
+export interface LaytimeInput {
+  allowedLaytimeDays: number;
+  mode: LaytimeMode;
+  commencedAt: string;
+  completedAt: string;
+  portHolidays?: string[];
+  weatherDelayHours?: number;
+}
+
+export interface LaytimeResult {
+  allowedLaytimeHours: number;
+  usedLaytimeHours: number;
+  demurrageOrDespatch: 'demurrage' | 'despatch' | 'balanced';
+  netHours: number;
+  breakdown: LaytimeBreakdownEntry[];
+}
+
+export interface LaytimeBreakdownEntry {
+  date: string;
+  hours: number;
+  excluded: boolean;
+  reason?: string;
+}
