@@ -1,86 +1,47 @@
-# Phase 1 — Scope: β-02 Pipedrive CRM Bridge
+# Phase 1 Scope — γ-01 multi-currency-v2
 
-**Date:** 2026-04-29
-**Branch:** `spec/beta/02-pipedrive-crm-bridge`
-**Reference:** `.specs/spec-beta-02-pipedrive-crm-bridge.md`
+## Assumptions (Rule A)
 
-## Spec
+Понимаю задачу как: заменить exchangerate.host на Frankfurter API, добавить NOK+AED в fallback,
+создать fx_rates SQLite table + daily cron, UI dropdown за MULTI_CURRENCY_V2_ENABLED=false flag.
+Альтернатива: оставить in-memory cache. Иду по DB-backed — spec явно требует "SQLite таблица fx_rates".
+UI: только при flag=true, дефолт false → продовое поведение не меняется.
 
-Интеграция с Pipedrive CRM: OAuth 2.0 flow, зашифрованное хранение токенов,
-синхронизация quotes → deals + contacts, входящий webhook с HMAC-верификацией.
+## Scope Freshness Check
+
+- exchangerate.host ещё в lib/currency.ts:48 ✅ (нужно менять)
+- fx_rates таблицы нет (migrations 001-024 проверены) ✅
+- MULTI_CURRENCY_V2_ENABLED не существует в .env.local.example ✅
+
+## Affected Files
+
+| Файл                                       | Действие                                                      |
+| ------------------------------------------ | ------------------------------------------------------------- |
+| lib/currency.ts                            | Replace API, add NOK/AED, add DB layer (4-tier priority)      |
+| lib/types.ts:516                           | Add "frankfurter" to source union                             |
+| lib/migrations/025-fx-rates.ts             | NEW — fx_rates table                                          |
+| lib/migrations/index.ts                    | Register migration 025                                        |
+| lib/market/fx-rates-repository.ts          | NEW — getLatestFxRate + upsertFxRate                          |
+| scripts/knowledge/cron/refresh-fx-rates.ts | NEW — daily cron job                                          |
+| components/match/EconomicsTab.tsx          | Add currency dropdown (behind flag)                           |
+| .env.local.example                         | Add MULTI*CURRENCY_V2_ENABLED=false + NEXT_PUBLIC*            |
+| lib/**tests**/currency.test.ts             | Update mocks: exchangerate.host → Frankfurter + NOK/AED tests |
+| lib/**tests**/fx-rates-repository.test.ts  | NEW — unit tests for repository                               |
 
 ## Boundaries
 
-**Can change:**
-- `lib/integrations/pipedrive/` (новый модуль)
-- `app/api/integrations/pipedrive/` (новые роуты)
-- `lib/migrations/008-pipedrive-tables.ts` + `lib/migrations/index.ts`
-- `scripts/migrations/008-pipedrive-tables.sql`
-- `tests/unit/integrations/pipedrive/`
-- `tests/integration/pipedrive/`
-- `__tests__/e2e/` (Playwright)
-- `.env.local.example`
+- CAN CHANGE: все 10 файлов выше
+- CANNOT CHANGE: lib/economics/voyage-calculator.ts (EUR_TO_USD там для EUA, не currency)
+- MUST NOT BREAK: existing TCE API behavior, all 4075+ existing tests
 
-**Cannot change:** существующие API-роуты, схема sessions/audit таблиц, lib/types.ts (без
-расширения), function signatures других модулей.
+## Cross-Cutting Surface (Rule C — 10 files ≥ 5)
 
-**Must-Not-Break:** `npm test` (все существующие тесты), `npm run lint`, `npm run build`.
+| Файл                           | Символ                 | Риск                                 |
+| ------------------------------ | ---------------------- | ------------------------------------ |
+| lib/**tests**/currency.test.ts | exchangerate.host mock | MEDIUM — нужно обновить URL в тестах |
 
-## Work Fronts
+Остальные: convertCurrency не импортируется ни одним production файлом → LOW
 
-| WF | Файл | Зависит от |
-|----|------|------------|
-| WF0 | types.ts + migration + SQL | — |
-| WF1 | tokens.ts | WF0 (DB schema) |
-| WF2 | webhook/route.ts | WF0 (DB schema), env |
-| WF3 | client.ts | WF1 (tokens interface) |
-| WF4 | sync.ts | WF3 |
-| WF5 | oauth/route.ts | WF3 |
+## Open Questions
 
-**WF1 и WF2 — параллельны**. WF4 и WF5 — параллельны после WF3.
-
-## Input Contract
-
-### `tokens.ts`
-
-| Класс | Пример | Решение |
-|-------|--------|---------|
-| Empty/falsy accountId | 0, -1 | `throw new RangeError` |
-| Пустые строки токенов | `""`, `null` | `throw new TypeError` |
-| NaN/Infinity в expires_at | `NaN`, `Infinity` | `Number.isFinite` guard → `throw RangeError` |
-| Отрицательный expires_at | `-1` | `throw new RangeError` |
-| Отсутствует ENCRYPTION_KEY | `undefined` | `throw Error` при инициализации модуля |
-
-### `sync.ts`
-
-| Класс | Пример | Решение |
-|-------|--------|---------|
-| Empty/falsy quoteId | 0, -1 | `throw new RangeError` |
-| Non-existent quote | `quoteId=99999` | propagate from data layer |
-| Повторный вызов | second call same quoteId | идемпотентно (проверить mapping) |
-| Неизвестный newStatus | `"nonsense"` | exhaustive default → `throw Error` |
-
-### `webhook/route.ts`
-
-| Класс | Пример | Решение |
-|-------|--------|---------|
-| Нет заголовка подписи | undefined | 401 |
-| Неверная HMAC-подпись | wrong bytes | 401 |
-| Пустое тело | `""` | 400 |
-| Отсутствует PIPEDRIVE_WEBHOOK_SECRET | `undefined` | 500 |
-
-### `oauth/route.ts`
-
-| Класс | Пример | Решение |
-|-------|--------|---------|
-| Отсутствует `code` в callback | `?action=callback` без code | 400 |
-| state mismatch (CSRF) | подменённый state | 401 |
-| Отсутствует CLIENT_ID env | `undefined` | 500 на init |
-
-## Deletion Inventory
-
-Нет удалений — только создание нового модуля.
-
-## Gate
-
-✅ Scope ready — переход к Phase 2.
+Нет — все решения приняты.

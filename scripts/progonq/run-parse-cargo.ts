@@ -17,7 +17,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { callAiText } from '@/lib/ai-provider';
-import { CARGO_INQUIRY_PARSER_PROMPT, PARSE_CARGO_RESPONSE_SCHEMA } from '@/lib/prompts/parse-cargo';
+import { CARGO_INQUIRY_PARSER_PROMPT } from '@/lib/prompts/parse-cargo';
 
 const SCOPE = 'PARSE_CARGO';
 const MAX_BODY_CHARS = 5000;
