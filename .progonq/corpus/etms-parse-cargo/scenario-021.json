@@ -12,25 +12,28 @@
     "items": [
       {
         "origin_port": {
-          "value": "Damietta + Misurata",
+          "value": "Damietta",
           "confidence": "confirmed",
           "source_text": "loading Damietta  + Misurata"
         },
+        "origin_port_rotation": ["Damietta", "Misurata"],
         "origin_country": {
           "value": "Egypt + Libya",
           "confidence": "interpreted",
           "source_text": "loading Damietta  + Misurata"
         },
         "destination_port": {
-          "value": "Douala + Lagos",
+          "value": "Douala",
           "confidence": "confirmed",
           "source_text": "disch Douala  + Lagos"
         },
+        "destination_port_rotation": ["Douala", "Lagos"],
         "destination_country": {
           "value": "Cameroon + Nigeria",
           "confidence": "interpreted",
           "source_text": "disch Douala  + Lagos"
         },
+        "weight_per_port": null,
         "cargo_description": {
           "value": null
         },
@@ -109,25 +112,28 @@
       },
       {
         "origin_port": {
-          "value": "Damietta + Misurata",
+          "value": "Damietta",
           "confidence": "interpreted",
           "source_text": "loading Damietta  + Misurata"
         },
+        "origin_port_rotation": ["Damietta", "Misurata"],
         "origin_country": {
           "value": "Egypt + Libya",
           "confidence": "interpreted",
           "source_text": "loading Damietta  + Misurata"
         },
         "destination_port": {
-          "value": "Douala + Lagos",
+          "value": "Douala",
           "confidence": "interpreted",
           "source_text": "disch Douala  + Lagos"
         },
+        "destination_port_rotation": ["Douala", "Lagos"],
         "destination_country": {
           "value": "Cameroon + Nigeria",
           "confidence": "interpreted",
           "source_text": "disch Douala  + Lagos"
         },
+        "weight_per_port": null,
         "cargo_description": {
           "value": "Approximately 300 x 20HC containers, unit weight approximately 20 MT each",
           "confidence": "interpreted",
