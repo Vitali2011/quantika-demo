@@ -22,16 +22,15 @@ interface RoiSummary {
  * Returns null when NEXT_PUBLIC_ROI_GUARANTEE_ENABLED !== 'true'.
  */
 export function RoiSummaryTile() {
-  // Feature flag check
-  if (process.env.NEXT_PUBLIC_ROI_GUARANTEE_ENABLED !== 'true') {
-    return null;
-  }
-
   const [summary, setSummary] = useState<RoiSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Feature flag check (after hooks to comply with Rules of Hooks)
+  const enabled = process.env.NEXT_PUBLIC_ROI_GUARANTEE_ENABLED === 'true';
+
   useEffect(() => {
+    if (!enabled) return;
     fetch('/api/analytics/roi?days=90')
       .then((res) => {
         if (!res.ok) {
@@ -47,7 +46,12 @@ export function RoiSummaryTile() {
         setError(err.message);
         setLoading(false);
       });
-  }, []);
+  }, [enabled]);
+
+  // Return null when flag is disabled
+  if (!enabled) {
+    return null;
+  }
 
   if (loading) {
     return (
