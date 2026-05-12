@@ -586,3 +586,25 @@ export interface LaytimeBreakdownEntry {
   excluded: boolean;
   reason?: string;
 }
+
+// ── Demurrage & Despatch (Spec γ-07) ──
+
+export interface DemurrageDespatchInput {
+  laytimeResult: LaytimeResult;      // from γ-05 calculateLaytime
+  demurrageRateUsdPerDay: number;    // e.g. 8000
+  despatchRateUsdPerDay?: number;    // optional, default = demurrageRate / 2
+}
+
+export interface DemurrageDespatchResult {
+  status: "demurrage" | "despatch" | "balanced";
+  netHours: number;
+  demurrageAmount: number;           // USD, 0 if despatch
+  despatchAmount: number;            // USD, 0 if demurrage
+  netAmount: number;                 // positive = you pay, negative = you earn
+  breakdown: {
+    demurrageRate: number;
+    despatchRate: number;
+    demurrageHours: number;
+    despatchHours: number;
+  };
+}
