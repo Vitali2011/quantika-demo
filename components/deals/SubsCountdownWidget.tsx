@@ -8,11 +8,11 @@
 'use client';
 
 import React from 'react';
-import { getChartererGraceDays } from '@/lib/deadlines/subs-guardian';
+import { getChartererGraceDays, normalizeDeadline } from '@/lib/deadlines/subs-guardian';
 
 export interface SubsCountdownWidgetProps {
   dealId: string;
-  subsDeadline: string; // ISO 8601
+  subsDeadline: string | number; // ISO 8601 or Unix seconds/ms
   chartererTier?: 'blue-chip' | 'second' | 'weak';
 }
 
@@ -26,8 +26,8 @@ export default function SubsCountdownWidget({
     return null;
   }
 
-  // Parse deadline
-  const deadline = new Date(subsDeadline);
+  // Parse deadline — handles ISO string, Unix seconds, or Unix ms
+  const deadline = normalizeDeadline(subsDeadline);
   if (isNaN(deadline.getTime())) {
     return <div>Invalid deadline</div>;
   }

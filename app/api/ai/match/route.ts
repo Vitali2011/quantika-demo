@@ -7,6 +7,11 @@ import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { MATCH_PROMPT } from '@/lib/prompts';
 import { analyzePairs, AiScorer, RawMatch } from '@/lib/matching/pair-analyzer';
 import { isRagEnabled } from '@/lib/knowledge/flags';
+import type { Match } from '@/lib/types';
+
+/** Demo match IDs — must stay in sync with /api/sample/route.ts */
+const DEMO_CARGO_EMAIL_ID = 'demo-cargo-economics';
+const DEMO_VESSEL_EMAIL_ID = 'demo-vessel-economics';
 
 export const maxDuration = 120;
 
@@ -100,8 +105,30 @@ export async function POST(request: NextRequest) {
       { refYear, today },
     );
 
-    updateSession(sessionId, { matches, blockedMatches });
-    return NextResponse.json({ count: matches.length, blockedCount: blockedMatches.length });
+    // Idempotency guard: if this is a sample-data session, preserve the demo
+    // economics match injected by /api/sample so EconomicsTab remains accessible
+    // even after the user clicks "Run Matching".
+    let finalMatches = matches;
+    if (session.isSampleData) {
+      const hasDemoMatch = matches.some(
+        (m: Match) =>
+          m.cargoEmailId === DEMO_CARGO_EMAIL_ID && m.vesselEmailId === DEMO_VESSEL_EMAIL_ID,
+      );
+      if (!hasDemoMatch) {
+        // Preserve the original demo match from the session if present, or
+        // fall back to the previous session matches to recover it.
+        const previousDemoMatch = session.matches?.find(
+          (m: Match) =>
+            m.cargoEmailId === DEMO_CARGO_EMAIL_ID && m.vesselEmailId === DEMO_VESSEL_EMAIL_ID,
+        );
+        if (previousDemoMatch) {
+          finalMatches = [previousDemoMatch, ...matches];
+        }
+      }
+    }
+
+    updateSession(sessionId, { matches: finalMatches, blockedMatches });
+    return NextResponse.json({ count: finalMatches.length, blockedCount: blockedMatches.length });
   } catch (err) {
     if (err instanceof LLMTimeoutError) {
       return NextResponse.json(

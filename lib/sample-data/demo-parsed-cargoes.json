@@ -441,6 +441,46 @@
     "missingInfo": []
   },
   {
+    "emailId": "demo-cargo-economics",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "CNSHA",
+      "confidence": 0.99,
+      "sourceText": "Load: Shanghai, China"
+    },
+    "originCountry": "China",
+    "destinationPort": {
+      "value": "NLRTM",
+      "confidence": 0.99,
+      "sourceText": "Disch: Rotterdam, Netherlands"
+    },
+    "destinationCountry": "Netherlands",
+    "cargoDescription": {
+      "value": "Grain",
+      "confidence": 0.99,
+      "sourceText": "50,000 mts Grain"
+    },
+    "weightMt": { "value": 50000, "confidence": 0.99, "sourceText": "50,000 mts Grain" },
+    "weightMtMin": 50000,
+    "weightMtMax": 50000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": 50000,
+    "incoterms": "FIOST",
+    "preferredDates": null,
+    "laycanRelativeStart": "+180d",
+    "laycanRelativeEnd": "+200d",
+    "loadingRate": "10000 mts SHINC",
+    "dischargeRate": "10000 mts SHINC",
+    "commissionPercent": 3.75,
+    "commissionTerms": "TTL",
+    "specialRequirements": null,
+    "stowageFactor": "1.25",
+    "missingInfo": []
+  },
+  {
     "emailId": "sample-12",
     "itemIndex": 0,
     "originPort": {

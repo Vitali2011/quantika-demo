@@ -1239,3 +1239,49 @@ EOF
 2. **UI: render alternatives + rotation:** processing/match results page показывает "load at A or B" / "discharge at X+Y (10k+30k)" вместо primary only.
 3. **Adversarial corpus expansion:** brokers throw at parser — расширить корпус до 150+ scenarios, продолжить адверсарные раунды.
 4. **Search for other corpus annotation drift:** сделать однократный full audit corpus на consistency между ref и model для сценариев которые "случайно прошли" R13.
+
+---
+
+# PHASE R17 — Post-drift baseline + semi-stable reds (2026-05-13)
+
+## Eval methodology (3-run median rule)
+
+После discovery Gemini-drift в мае 2026 принята новая методология:
+
+| Правило                  | Описание                                                               |
+| ------------------------ | ---------------------------------------------------------------------- |
+| **3-run median**         | Запускать 3 прогона (R17a, R17b, R17c) перед принятием решения о фиксе |
+| **Variance band**        | Ожидаемая дисперсия ±7 string / ±8 semantic между прогонами            |
+| **Класс F**              | Scenario red < 3/3 прогонов → drift, accept, не фиксить                |
+| **Real bug**             | Scenario red 3/3 прогонов → fix                                        |
+| **Regression threshold** | Медиана упала > 3 баллов от предыдущего baseline → block               |
+
+## Accepted variance (Class F scenarios)
+
+Сценарии нестабильные между прогонами (дрейф модели, не баги):
+
+| Scenario | Pattern           | Note                                           |
+| -------- | ----------------- | ---------------------------------------------- |
+| 089      | 0/1/0 по R17a/b/c | MOLOO tonnage interpretation нестабилен        |
+| 095      | 0/1/0 по R17a/b/c | Multi-port re-annotation — дрейф после Phase 2 |
+
+## R17 target ranges
+
+| Metric   | Baseline (R17a/b/c median) | Post-fix target |
+| -------- | -------------------------- | --------------- |
+| String   | 68/95                      | 70–76/95        |
+| Semantic | 80/95                      | 87–91/95        |
+
+Ranges, не точки: variance ±5 между прогонами — нормально.
+
+## Fixes applied in R17
+
+| Scenario | Class | Fix                                                  |
+| -------- | ----- | ---------------------------------------------------- |
+| 087      | A     | origin_port.value: убраны vessel dims                |
+| 088      | A     | destination_port: TBS + alternatives array           |
+| 006      | A     | destination_port_alternatives: ["Chornomorsk"]       |
+| 035      | A     | destination_port null → "Port of Call (unspecified)" |
+| 079      | A     | origin_port.value очищен от аннотаторской заметки    |
+| 056      | E     | Judge: ARA range alias добавлен                      |
+| 058      | B     | Prompt: LINE UP [DWCC] без commodity → vessel guard  |

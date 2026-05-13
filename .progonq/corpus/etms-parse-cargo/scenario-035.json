@@ -22,8 +22,9 @@
           "source_text": "Egypt Med/POC"
         },
         "destination_port": {
-          "value": null,
-          "confidence": null
+          "value": "Port of Call (unspecified)",
+          "confidence": "interpreted",
+          "source_text": "POC"
         },
         "destination_country": {
           "value": null,
@@ -128,8 +129,9 @@
           "source_text": "Damietta+Mersin/POC"
         },
         "destination_port": {
-          "value": null,
-          "confidence": null
+          "value": "Port of Call (unspecified)",
+          "confidence": "interpreted",
+          "source_text": "POC"
         },
         "destination_country": {
           "value": null,

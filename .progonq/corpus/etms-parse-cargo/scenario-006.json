@@ -26,6 +26,7 @@
           "confidence": "confirmed",
           "source_text": "Odesa or Chornomorsk chopt"
         },
+        "destination_port_alternatives": ["Chornomorsk"],
         "destination_country": {
           "value": "Ukraine",
           "confidence": "interpreted",

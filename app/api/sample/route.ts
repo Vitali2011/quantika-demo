@@ -15,6 +15,19 @@ import {
   resolveDemoProcessedEmails,
 } from '@/lib/sample-data/demo-parsed-cargoes';
 import type { SampleEmailRaw } from '@/lib/sample-data/types';
+import type { Match } from '@/lib/types';
+
+/** Guaranteed demo match injected so EconomicsTab is always accessible in the demo. */
+const DEMO_ECONOMICS_MATCH: Match = {
+  cargoEmailId: 'demo-cargo-economics',
+  cargoItemIndex: 0,
+  vesselEmailId: 'demo-vessel-economics',
+  vesselItemIndex: 0,
+  score: 92,
+  matchLevel: 'good',
+  matchReasons: ['Guaranteed demo match for EconomicsTab'],
+  issues: [],
+};
 
 export const dynamic = 'force-dynamic';
 
@@ -43,6 +56,7 @@ export async function POST(request: NextRequest) {
     classifications,
     parsedVessels,
     processedEmails,
+    matches: [DEMO_ECONOMICS_MATCH],
   });
 
   const csrfToken = generateCsrfToken();

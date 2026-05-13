@@ -12,7 +12,7 @@
     "items": [
       {
         "origin_port": {
-          "value": "North Brazil (unspecified port, max LOA 190m, max draft 11.5m)",
+          "value": "North Brazil port (unspecified)",
           "confidence": "interpreted",
           "source_text": "1 N Brazil ( max loa 190 m max draft 11.5)"
         },

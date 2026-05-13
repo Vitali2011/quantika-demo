@@ -75,7 +75,7 @@ Decide whether two port descriptions refer to the same maritime location
 in a cargo inquiry context.
 
 Equivalence rules:
-- Aliases match: "Nemrut Bay" = "Nemrut"; "UK" = "United Kingdom"; "KAP" = "King Abdullah Port".
+- Aliases match: "Nemrut Bay" = "Nemrut"; "UK" = "United Kingdom"; "KAP" = "King Abdullah Port"; "ARA" = "ARA range" = "Amsterdam/Rotterdam/Antwerp range" = "ARA ports".
 - Spelling variants match: "Giurgiulesti" = "Giurgiuleshti"; "Douala" = "Duala"; "Pidennyi" = "Pivdennyi".
 - Annotation suffixes match the bare name: "X (Charterers Option)" = "X".
 - "(port unspecified)" / "(unspecified port)" / "(unspecified)" qualifiers are decorative — match either side without them.
