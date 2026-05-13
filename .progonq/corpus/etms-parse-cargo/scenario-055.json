@@ -178,7 +178,9 @@
         ],
         "unknown_terms": [
           "PAST US — possibly 'passed to us' (brokerage to be passed to Niavigrains), but not a standard chartering abbreviation"
-        ]
+        ],
+        "origin_port_rotation": ["Damietta", "Mersin"],
+        "weight_per_port": null
       }
     ]
   }
