@@ -22,10 +22,11 @@
           "source_text": "Odesa – tbs/marmara/izmir range /mersin range"
         },
         "destination_port": {
-          "value": "TBS / Marmara range / Izmir range / Mersin range",
+          "value": "TBS (to be specified)",
           "confidence": "confirmed",
           "source_text": "tbs/marmara/izmir range /mersin range"
         },
+        "destination_port_alternatives": ["Marmara range", "Izmir range", "Mersin range"],
         "destination_country": {
           "value": "Turkey",
           "confidence": "interpreted",
