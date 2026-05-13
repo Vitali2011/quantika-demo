@@ -11,13 +11,21 @@
   "reference_output": {
     "items": [
       {
-        "origin_port": "Chennai or Kattupalli or Ennore Port",
+        "origin_port": {
+          "value": "Chennai or Kattupalli or Ennore Port",
+          "confidence": "confirmed",
+          "source_text": "Chennai or Kattupalli or Ennore Port"
+        },
         "origin_country": {
           "value": "India",
           "confidence": "interpreted",
           "source_text": "POL: Chennai or Kattupalli or Ennore Port"
         },
-        "destination_port": "Sohar or Khorfakkan or Fujairah (preferred)",
+        "destination_port": {
+          "value": "Sohar or Khorfakkan or Fujairah (preferred)",
+          "confidence": "confirmed",
+          "source_text": "Sohar or Khorfakkan or Fujairah (preferred)"
+        },
         "destination_country": {
           "value": "Oman / United Arab Emirates",
           "confidence": "interpreted",
@@ -88,13 +96,21 @@
         "unknown_terms": ["FLT"]
       },
       {
-        "origin_port": "Ras Al Khaimah",
+        "origin_port": {
+          "value": "Ras Al Khaimah",
+          "confidence": "confirmed",
+          "source_text": "Ras Al Khaimah"
+        },
         "origin_country": {
           "value": "United Arab Emirates",
           "confidence": "interpreted",
           "source_text": "REK / SHUAIBA 12 M DRAFT"
         },
-        "destination_port": "Shuaiba",
+        "destination_port": {
+          "value": "Shuaiba",
+          "confidence": "confirmed",
+          "source_text": "Shuaiba"
+        },
         "destination_country": {
           "value": "Kuwait",
           "confidence": "interpreted",
@@ -183,13 +199,21 @@
         "unknown_terms": []
       },
       {
-        "origin_port": "Fujairah",
+        "origin_port": {
+          "value": "Fujairah",
+          "confidence": "confirmed",
+          "source_text": "Fujairah"
+        },
         "origin_country": {
           "value": "United Arab Emirates",
           "confidence": "confirmed",
           "source_text": "FUJAIRAH/ MOGADISHU 11 M DRAFT"
         },
-        "destination_port": "Mogadishu",
+        "destination_port": {
+          "value": "Mogadishu",
+          "confidence": "confirmed",
+          "source_text": "Mogadishu"
+        },
         "destination_country": {
           "value": "Somalia",
           "confidence": "confirmed",
@@ -279,13 +303,21 @@
         "unknown_terms": []
       },
       {
-        "origin_port": "Bintulu",
+        "origin_port": {
+          "value": "Bintulu",
+          "confidence": "confirmed",
+          "source_text": "Bintulu"
+        },
         "origin_country": {
           "value": "Malaysia",
           "confidence": "confirmed",
           "source_text": "POL: Bintulu port in Malaysia"
         },
-        "destination_port": "Sohar",
+        "destination_port": {
+          "value": "Sohar",
+          "confidence": "confirmed",
+          "source_text": "Sohar"
+        },
         "destination_country": {
           "value": "Oman",
           "confidence": "confirmed",
@@ -364,13 +396,21 @@
         "unknown_terms": []
       },
       {
-        "origin_port": "Lirquén",
+        "origin_port": {
+          "value": "Lirquén",
+          "confidence": "confirmed",
+          "source_text": "Lirquén"
+        },
         "origin_country": {
           "value": "Chile",
           "confidence": "interpreted",
           "source_text": "Load Port – Lirquen"
         },
-        "destination_port": "Fujairah",
+        "destination_port": {
+          "value": "Fujairah",
+          "confidence": "confirmed",
+          "source_text": "Fujairah"
+        },
         "destination_country": {
           "value": "United Arab Emirates",
           "confidence": "confirmed",
@@ -447,13 +487,21 @@
         "unknown_terms": []
       },
       {
-        "origin_port": "Laem Chabang or Songkhla",
+        "origin_port": {
+          "value": "Laem Chabang or Songkhla",
+          "confidence": "confirmed",
+          "source_text": "Laem Chabang or Songkhla"
+        },
         "origin_country": {
           "value": "Thailand",
           "confidence": "interpreted",
           "source_text": "POL: Laem Chabang or Songkhla"
         },
-        "destination_port": "Sudan (port unspecified)",
+        "destination_port": {
+          "value": "Sudan (port unspecified)",
+          "confidence": "confirmed",
+          "source_text": "Sudan (port unspecified)"
+        },
         "destination_country": {
           "value": "Sudan",
           "confidence": "confirmed",
@@ -521,13 +569,21 @@
         "unknown_terms": ["FLT"]
       },
       {
-        "origin_port": "Durban",
+        "origin_port": {
+          "value": "Durban",
+          "confidence": "confirmed",
+          "source_text": "Durban"
+        },
         "origin_country": {
           "value": "South Africa",
           "confidence": "confirmed",
           "source_text": "POL: Durban"
         },
-        "destination_port": "Bejaia",
+        "destination_port": {
+          "value": "Bejaia",
+          "confidence": "confirmed",
+          "source_text": "Bejaia"
+        },
         "destination_country": {
           "value": "Algeria",
           "confidence": "confirmed",
@@ -595,13 +651,21 @@
         "unknown_terms": []
       },
       {
-        "origin_port": "Panjang",
+        "origin_port": {
+          "value": "Panjang",
+          "confidence": "confirmed",
+          "source_text": "Panjang"
+        },
         "origin_country": {
           "value": "Indonesia",
           "confidence": "interpreted",
           "source_text": "POL: Panjang"
         },
-        "destination_port": "Jeddah",
+        "destination_port": {
+          "value": "Jeddah",
+          "confidence": "confirmed",
+          "source_text": "Jeddah"
+        },
         "destination_country": {
           "value": "Saudi Arabia",
           "confidence": "confirmed",
@@ -668,13 +732,21 @@
         "unknown_terms": []
       },
       {
-        "origin_port": "Songkhla",
+        "origin_port": {
+          "value": "Songkhla",
+          "confidence": "confirmed",
+          "source_text": "Songkhla"
+        },
         "origin_country": {
           "value": "Thailand",
           "confidence": "confirmed",
           "source_text": "POL: Songkhla"
         },
-        "destination_port": "Jeddah",
+        "destination_port": {
+          "value": "Jeddah",
+          "confidence": "confirmed",
+          "source_text": "Jeddah"
+        },
         "destination_country": {
           "value": "Saudi Arabia",
           "confidence": "confirmed",
@@ -743,13 +815,21 @@
         "unknown_terms": ["FLT"]
       },
       {
-        "origin_port": "Laem Chabang",
+        "origin_port": {
+          "value": "Laem Chabang",
+          "confidence": "confirmed",
+          "source_text": "Laem Chabang"
+        },
         "origin_country": {
           "value": "Thailand",
           "confidence": "confirmed",
           "source_text": "POL: Laem Chabang"
         },
-        "destination_port": "Sohar",
+        "destination_port": {
+          "value": "Sohar",
+          "confidence": "confirmed",
+          "source_text": "Sohar"
+        },
         "destination_country": {
           "value": "Oman",
           "confidence": "confirmed",
@@ -818,13 +898,21 @@
         "unknown_terms": ["FLT"]
       },
       {
-        "origin_port": "Koh Sichang",
+        "origin_port": {
+          "value": "Koh Sichang",
+          "confidence": "confirmed",
+          "source_text": "Koh Sichang"
+        },
         "origin_country": {
           "value": "Thailand",
           "confidence": "interpreted",
           "source_text": "POL: Koh Sri Chang"
         },
-        "destination_port": "Conakry",
+        "destination_port": {
+          "value": "Conakry",
+          "confidence": "confirmed",
+          "source_text": "Conakry"
+        },
         "destination_country": {
           "value": "Guinea",
           "confidence": "confirmed",

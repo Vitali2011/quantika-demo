@@ -27,7 +27,7 @@
           "source_text": "BANDIRMA / RAVENNA+KOPER"
         },
         "destination_port_rotation": ["Ravenna", "Koper"],
-        "weight_per_port": null,
+        "weight_per_port": [],
         "destination_country": {
           "value": "Italy + Slovenia",
           "confidence": "confirmed",
@@ -98,7 +98,10 @@
           "Split of cargo between Ravenna and Koper not stated",
           "'TTL DAYS' laytime term is unrecognized — clarification needed",
           "No vessel size/type specified"
-        ]
+        ],
+        "origin_port_alternatives": [],
+        "destination_port_alternatives": [],
+        "origin_port_rotation": []
       }
     ]
   }

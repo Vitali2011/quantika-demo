@@ -108,6 +108,25 @@ RULE 6 — Multi-port rotation vs alternatives: see === MULTI-PORT CARGOES === s
 Use origin_port_alternatives / origin_port_rotation / destination_port_alternatives / destination_port_rotation arrays — NOT concatenated strings like "Port A + Port B" or "Port A or Port B".
 Primary port: always set origin_port / destination_port to the first port mentioned (backward-compat).
 
+RULE 7 — Port VALUE must be the bare port name only — strip berth/safety qualifiers:
+- Qualifiers like "(2 safe berths)", "1 gsp", "2 SB", "(safe anchorage)" belong in special_requirements, NOT in the port value.
+  ✗ "Rotterdam (2 safe berths)"  → ✓ "Rotterdam"
+  ✗ "Antwerp 1 gsp"             → ✓ "Antwerp"
+- Count prefixes like "1 sp" / "2 safe ports" are preserved ONLY for regional/unspecified contexts (see RULE 3), never for a named port.
+
+RULE 8 — Unspecified-port format: when a country is known but specific port is not:
+- Format MUST be: "[Country] (port unspecified)"
+  ✗ "China port (unspecified)"  → ✓ "China (port unspecified)"
+  ✗ "Chinese port"              → ✓ "China (port unspecified)"
+  ✗ "Turkey port"               → ✓ "Turkey (port unspecified)"
+  ✗ "UK port"                   → ✓ "United Kingdom (port unspecified)"
+
+RULE 9 — TBS/TBN destination: when email shows "TBS / Port A / Port B / ..." format:
+- Primary destination_port.value = "TBS (to be specified)"
+- Remaining named ports → destination_port_alternatives array (do NOT flatten into one string).
+  ✗ destination_port = "TBS / Marmara range / Izmir range / Mersin range"
+  ✓ destination_port = {value: "TBS (to be specified)"}, destination_port_alternatives = ["Marmara range", "Izmir range", "Mersin range"]
+
 === CARGO DESCRIPTION RULES ===
 
 cargo_description MUST be human-readable English. Required contents:
@@ -129,6 +148,15 @@ cargo_description MUST be human-readable English. Required contents:
 8. Do NOT copy-paste raw source text verbatim as cargo_description.
 9. For PROJECT cargo: dimensions and per-piece weights are MANDATORY.
 10. For BREAK_BULK: per-unit weight and packaging details are MANDATORY if given.
+11. Use a concise noun phrase — NOT a full sentence.
+    ✗ "The cargo consists of a fertilizer with a stowage factor of 51–52 ft³/MT"
+    ✓ "Fertilizer, stowage factor 51–52"
+12. Do NOT include unit notations (ft³/MT, m³/MT, CBM/MT) inside cargo_description — units belong only in the stowage_factor field.
+    ✗ "stowage factor 51–52 ft³/MT (without guarantee)"
+    ✓ "stowage factor 51–52, without guarantee"
+13. When stowage equals deadweight, write exactly: "stowage equals deadweight" — NOT an expanded phrase.
+    ✗ "stowage factor equals full deadweight capacity"
+    ✓ "Steel, stowage equals deadweight"
 
 === STOWAGE FACTOR RULES ===
 
