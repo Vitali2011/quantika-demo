@@ -153,6 +153,102 @@ export function computeCostUsd(
   return Math.round(cost * 1_000_000) / 1_000_000;
 }
 
+// ─── JSON extraction helper ───────────────────────────────────────────────────
+
+/**
+ * Strip chain-of-thought preamble, markdown fences, and trailing junk from
+ * an LLM response to yield clean JSON suitable for `JSON.parse()`.
+ *
+ * Why: Bedrock Claude Sonnet 4.6 routinely emits CoT-style preamble before
+ * JSON ("I'll systematically work through this..."), which breaks naive
+ * `JSON.parse(raw)`. ai_audit (2026-05-13) shows 9/10 MATCH failures in 24h
+ * with signature `Unexpected token 'I', "I'll syste"...`. This helper is the
+ * defensive parser applied before `JSON.parse` in `callAiJson` for the
+ * Bedrock provider (and Gemini fallback when no responseSchema is used).
+ *
+ * Algorithm:
+ *   1. Trim whitespace.
+ *   2. If wrapped in ```...``` fence (with optional `json` tag), unwrap.
+ *   3. Locate first `{` or `[`, slice from there.
+ *   4. Walk characters, respecting string literals + escape sequences,
+ *      tracking brace/bracket depth; cut at matching close.
+ *
+ * @throws if input is empty, non-string, or contains no JSON-looking start char.
+ */
+export function extractJson(raw: string): string {
+  if (!raw || typeof raw !== 'string') {
+    throw new Error('extractJson: empty or non-string input');
+  }
+
+  let s = raw.trim();
+  if (s.length === 0) {
+    throw new Error('extractJson: empty input after trim');
+  }
+
+  // Strip a wrapping markdown fence if the whole thing is fenced.
+  // We do not handle nested fences — only outermost.
+  const fenceMatch = s.match(/```(?:json)?\s*\n?([\s\S]*?)\n?```/);
+  if (fenceMatch) {
+    s = fenceMatch[1].trim();
+  }
+
+  // Find first `{` or `[` (whichever appears earliest).
+  const firstBrace = s.indexOf('{');
+  const firstBracket = s.indexOf('[');
+  const candidates = [firstBrace, firstBracket].filter((i) => i >= 0);
+  if (candidates.length === 0) {
+    throw new Error(
+      `extractJson: no JSON-looking start char ({ or [) found in: ${raw.slice(0, 100)}`,
+    );
+  }
+  const start = Math.min(...candidates);
+  s = s.slice(start);
+
+  // Balance braces/brackets to find the matching closing token.
+  // Respect string boundaries and escape characters so that `}` inside a
+  // JSON string literal doesn't cut us off early.
+  const openChar = s[0];
+  const closeChar = openChar === '{' ? '}' : ']';
+  let depth = 0;
+  let inString = false;
+  let escape = false;
+  let endIdx = -1;
+
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (escape) {
+      escape = false;
+      continue;
+    }
+    if (c === '\\') {
+      escape = true;
+      continue;
+    }
+    if (c === '"') {
+      inString = !inString;
+      continue;
+    }
+    if (inString) continue;
+    if (c === openChar) {
+      depth++;
+    } else if (c === closeChar) {
+      depth--;
+      if (depth === 0) {
+        endIdx = i;
+        break;
+      }
+    }
+  }
+
+  if (endIdx === -1) {
+    // Unbalanced — return what we have; JSON.parse downstream will surface a
+    // clearer "Unexpected end of JSON input" error with the real reason.
+    return s;
+  }
+
+  return s.slice(0, endIdx + 1);
+}
+
 // ─── Internal helpers ─────────────────────────────────────────────────────────
 
 function toScopeEnv(scope: string): string {
@@ -544,18 +640,18 @@ export async function callAiJson<T>(
       case 'gemini': {
         const r = await callGeminiText(system, user, model, opts);
         usage = r.usage;
-        // When responseSchema is provided, Gemini returns clean JSON — no fences.
-        const raw = opts?.responseSchema
-          ? r.text.trim()
-          : r.text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
+        // When responseSchema is provided, Gemini returns clean JSON — parse directly.
+        // Otherwise apply extractJson to strip any CoT preamble / fences.
+        const raw = opts?.responseSchema ? r.text.trim() : extractJson(r.text);
         result = JSON.parse(raw) as T;
         break;
       }
       case 'bedrock': {
         const r = await callBedrockText(system, user, model, opts);
         usage = r.usage;
-        const cleaned = r.text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
-        result = JSON.parse(cleaned) as T;
+        // Bedrock Claude (esp. Sonnet 4.6) often emits CoT preamble before JSON.
+        // extractJson strips preamble + fences + trailing junk before parse.
+        result = JSON.parse(extractJson(r.text)) as T;
         break;
       }
       case 'openai':
