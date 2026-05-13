@@ -31,8 +31,8 @@ bash ops/caddy/install-caddy-config.sh "$(pwd)"
 echo "==> Seeding port-DA estimates..."
 SESSIONS_DB_PATH=data/sessions.db npx tsx scripts/seed-port-da.ts
 
-echo "==> Reloading PM2..."
-npx pm2 reload quantika-demo
+echo "==> Restarting PM2 (--update-env picks up .env.local changes)..."
+npx pm2 restart quantika-demo --update-env
 npx pm2 save
 
 echo "==> Health check..."
