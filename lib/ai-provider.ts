@@ -41,6 +41,40 @@ export interface AiOpts {
    * without markdown fences. Ignored for other providers.
    */
   responseSchema?: Record<string, unknown>;
+  /** Sampling temperature 0..1. 0 = greedy/deterministic. Default: provider default. */
+  temperature?: number;
+  /** Top-p nucleus sampling. Default: provider default. */
+  topP?: number;
+  /** Top-k sampling (Gemini only). Default: provider default. */
+  topK?: number;
+  /** Random seed for reproducibility (Gemini Vertex AI supports). */
+  seed?: number;
+}
+
+/**
+ * Returns sampling-related fields for Gemini `generateContent` config.
+ * Only includes fields that are explicitly provided (no defaults).
+ */
+export function buildGeminiSamplingFields(opts: AiOpts): Record<string, unknown> {
+  const cfg: Record<string, unknown> = {};
+  if (opts.temperature !== undefined) cfg.temperature = opts.temperature;
+  if (opts.topP !== undefined) cfg.topP = opts.topP;
+  if (opts.topK !== undefined) cfg.topK = opts.topK;
+  if (opts.seed !== undefined) cfg.seed = opts.seed;
+  return cfg;
+}
+
+/**
+ * Returns sampling-related fields for Bedrock Anthropic payload.
+ * Maps camelCase AiOpts → Anthropic API snake_case names.
+ */
+export function buildBedrockSamplingFields(opts: AiOpts): Record<string, unknown> {
+  const cfg: Record<string, unknown> = {
+    max_tokens: opts.maxTokens ?? 16000,
+  };
+  if (opts.temperature !== undefined) cfg.temperature = opts.temperature;
+  if (opts.topP !== undefined) cfg.top_p = opts.topP;
+  return cfg;
 }
 
 export interface ImageInput {
@@ -280,6 +314,10 @@ async function callGeminiText(
             thinkingConfig?: { thinkingBudget: number; includeThoughts: boolean };
             responseMimeType?: string;
             responseSchema?: Record<string, unknown>;
+            temperature?: number;
+            topP?: number;
+            topK?: number;
+            seed?: number;
           };
         }) => Promise<{ text: string; usageMetadata?: GeminiUsageMetadata }>;
       };
@@ -299,6 +337,10 @@ async function callGeminiText(
     thinkingConfig?: { thinkingBudget: number; includeThoughts: boolean };
     responseMimeType?: string;
     responseSchema?: Record<string, unknown>;
+    temperature?: number;
+    topP?: number;
+    topK?: number;
+    seed?: number;
   } = { systemInstruction: system };
 
   if (opts?.thinkingBudget !== undefined) {
@@ -312,6 +354,8 @@ async function callGeminiText(
     config.responseMimeType = 'application/json';
     config.responseSchema = opts.responseSchema;
   }
+
+  Object.assign(config, buildGeminiSamplingFields(opts ?? {}));
 
   const response = await ai.models.generateContent({
     model,
@@ -380,6 +424,7 @@ async function callBedrockText(
   system: string,
   user: string,
   model: string,
+  opts?: AiOpts,
 ): Promise<{ text: string; usage?: Usage }> {
   assertBedrockEnv();
   const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime') as {
@@ -399,7 +444,7 @@ async function callBedrockText(
 
   const payload = {
     anthropic_version: 'bedrock-2023-05-31',
-    max_tokens: 16000,
+    ...buildBedrockSamplingFields(opts ?? {}),
     system,
     messages: [{ role: 'user', content: user }],
   };
@@ -507,7 +552,7 @@ export async function callAiJson<T>(
         break;
       }
       case 'bedrock': {
-        const r = await callBedrockText(system, user, model);
+        const r = await callBedrockText(system, user, model, opts);
         usage = r.usage;
         const cleaned = r.text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
         result = JSON.parse(cleaned) as T;
@@ -564,7 +609,7 @@ export async function callAiText(
         break;
       }
       case 'bedrock': {
-        const r = await callBedrockText(system, user, model);
+        const r = await callBedrockText(system, user, model, opts);
         usage = r.usage;
         result = r.text;
         break;

@@ -67,3 +67,6 @@ next-env.d.ts
 
 # corpus-00: sample fixture removed from repo — keep gitignored to prevent accidental re-add
 lib/sample-data/etms-emails.json
+
+# local dev notes (ephemeral, not for review)
+/.notes/

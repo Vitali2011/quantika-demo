@@ -268,6 +268,8 @@ export async function POST(request: NextRequest) {
                 maxTokens: 16000,
                 model: process.env.PARSE_CARGO_GEMINI_MODEL,
                 responseSchema: PARSE_CARGO_SCHEMA,
+                temperature: 0,
+                seed: 42,
               },
             ),
           ),

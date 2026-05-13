@@ -320,6 +320,9 @@ async function runScenario(scenario: Scenario): Promise<RunResult> {
       const text = await callAiText(SCOPE, CARGO_INQUIRY_PARSER_PROMPT, userPrompt, {
         maxTokens: 4096,
         timeoutMs: 180_000,
+        temperature: 0,
+        seed: 42,
+        model: process.env.PARSE_CARGO_GEMINI_MODEL,
       });
       const parsed = extractJson(text) as ParsedOutput;
       model_output = { items: Array.isArray(parsed.items) ? parsed.items : [] };
