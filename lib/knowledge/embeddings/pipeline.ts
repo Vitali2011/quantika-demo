@@ -77,8 +77,8 @@ export async function embedAndStore(
   }
 
   // Guard: allowlist tableName and ftsTable to prevent SQL injection
-  const ALLOWED_VEC_TABLES = ['imsbc_vec', 'igc_vec', 'jwc_vec'];
-  const ALLOWED_FTS_TABLES = ['imsbc_fts', 'igc_fts', 'jwc_fts'];
+  const ALLOWED_VEC_TABLES = ['imsbc_vec', 'igc_vec', 'jwc_vec', 'bimco_vec'];
+  const ALLOWED_FTS_TABLES = ['imsbc_fts', 'igc_fts', 'jwc_fts', 'bimco_fts'];
 
   if (!tableName || !tableName.trim()) {
     throw new Error('tableName is required');

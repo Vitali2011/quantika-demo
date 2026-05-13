@@ -1,162 +1,850 @@
 [
   {
-    "id": "sample-13",
-    "threadId": "thread-13",
-    "from": "\"Pontus Chartering\" <chartering@pontus-shipping.gr>",
-    "fromName": "Pontus Chartering",
-    "fromEmail": "chartering@pontus-shipping.gr",
-    "to": "demo@quantika.org",
-    "subject": "FW: MV CARPATHIAN STAR 8500dwt MPP geared open Piraeus",
-    "date": "{{EMAIL_DATE}}",
-    "body": "---------- Forwarded message ---------\nFrom: Balkan Tramp Lines <ops@balkantramp.gr>\nDate: {{INNER_DATE}}\nSubject: MV CARPATHIAN STAR 8500dwt MPP geared open Piraeus\nTo: chartering@pontus-shipping.gr\n\nDear Sirs,\n\nPls note below position ADA WOG:\n\nMV CARPATHIAN STAR\nIMO: 9234563\nDWT: 8,500 mts (summer)\nDWCC: 8,050 mts at 6.2m draft\nBuilt: 2007, Flag: Marshall Islands\nLOA: 121.4m, Beam: 17.6m\nHolds/Hatches: 2/2\nBale cap: 10,400 cbm\nGeared: 2 x 25t cranes\nP&I: Gard\nClass: DNV\nOpen: Piraeus, Greece, {{OPEN_DATE}}\nDirectional pref: Med, Black Sea, WAfrica\nL/C: steel products, bagged cargo, breakbulk, timber packages\n\nAll ADA WOG\n\nBest regards\nBalkan Tramp Lines Chartering",
-    "snippet": "MV CARPATHIAN STAR 8500dwt MPP geared open Piraeus — IMO 9234563, DNV, Gard, Marshall Islands...",
-    "labelIds": ["INBOX"],
+    "id": "19d5e7406f50cc13",
+    "threadId": "19d5e7406f50cc13",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<vitali6825621@gmail.com>",
+    "subject": "FW: 2 k dwcc spot marmara",
+    "date": "2026-04-05T16:22:31.000Z",
+    "body": " \r\n\r\nFrom: agantashipping@googlegroups.com <agantashipping@googlegroups.com> On Behalf Of Aganta Shipping\r\nSent: Tuesday, 5 August 2025 16:31\r\nSubject: 2 k dwcc spot marmara\r\n\r\n \r\n\r\n \r\n\r\ngood day\r\n\r\n \r\n\r\nPls offer your suitable parcels for below\r\n\r\n \r\n\r\nSuitable for imo 1.1 cargoes \r\n\r\n \r\n\r\nmv haskal imo:8605480\r\n\r\ndwcc 2000 mts at 4.5 draft\r\n\r\ndwt 2570 mts\r\n\r\nbuilt 1986\r\n\r\nbox shaped 1 single hold\r\n\r\ngrt/ nrt 1597 / 700\r\n\r\nloa/b/ depth 82.45 m /11.3 m/5.40 m\r\n\r\nhold hatc h dimms . 49,80m x 9,00m x 6,78m\r\n\r\nhold cap. grain/bale abt 100682 cbft\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nBRGDS\r\nCPT.   S.RUZGAR\r\nAGANTA SHIPPING AND TRADING LLC.\r\ninfo@agantaship.com <mailto:info@agantaship.com> \r\nMob/Whatsapp/Viber: +905423546649\r\nskype: seyitkaptan\r\nMEMBER OF SHIPBROKERS  ASSOCIATION - TURKEY\r\n\r\n-- \r\nIn case the contents of this message is irrelevant to your business, please notify us by replying \"UNSUBSCRIBE\" in the subject field in order to remove you from this mailing list, thanks in advance.\r\n--- \r\nYou received this message because you are subscribed to the Google Groups \"Agantaship\" group.\r\nTo unsubscribe from this group and stop receiving emails from it, send an email to Agantashipping+unsubscribe@googlegroups.com <mailto:Agantashipping+unsubscribe@googlegroups.com> .\r\nTo view this discussion, visit https://groups.google.com/d/msgid/Agantashipping/CAJHZCcZOB_8LNTHs8UQ20X7k-1Gc1Jv8SwySBYxKr7Jp9fqkRA%40mail.gmail.com <https://groups.google.com/d/msgid/Agantashipping/CAJHZCcZOB_8LNTHs8UQ20X7k-1Gc1Jv8SwySBYxKr7Jp9fqkRA%40mail.gmail.com?utm_medium=email&utm_source=footer> .\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: agantashipping@googlegroups.com &lt;agantashipping@googlegroups.com&gt; On Behalf Of Aganta Shipping Sent: Tuesday, 5 August 2025 16:31 Subject: 2 k dwcc spot marmara good day Pls offer your",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
     "_meta": {
-      "emailDateOffsetDays": -3,
-      "openDateOffsetDays": 9,
-      "markers": {
-        "INNER_DATE": { "offsetDays": -4, "format": "broker-inner" }
-      }
+      "skipRebase": true
     }
   },
   {
-    "id": "sample-14",
-    "threadId": "thread-14",
-    "from": "\"Gulf Star Brokers\" <desk@gulfstarbrokers.ae>",
-    "fromName": "Gulf Star Brokers",
-    "fromEmail": "desk@gulfstarbrokers.ae",
-    "to": "demo@quantika.org",
-    "subject": "FW: MV PROMPT TRADER 12000dwt geared SPOT Khor Fakkan",
-    "date": "{{EMAIL_DATE}}",
-    "body": "---------- Forwarded message ---------\nFrom: Emirates Tramp <chartering@emiratestramp.ae>\nDate: {{INNER_DATE}}\nSubject: MV PROMPT TRADER 12000dwt geared SPOT Khor Fakkan\nTo: desk@gulfstarbrokers.ae\n\nDear all,\n\nPls note below vessel open SPOT — PROMPT:\n\nMV PROMPT TRADER\nIMO: 9345673\nDWT: 12,000 mts (summer)\nDWCC: 11,300 mts at 7.1m draft\nBuilt: 2010, Flag: Bahamas\nLOA: 133.8m, Beam: 19.4m\nHolds/Hatches: 3/3\nBale cap: 14,600 cbm\nGeared: 2 x 30t cranes\nP&I: Skuld\nClass: BV\nOpen: spot Khor Fakkan, UAE, {{OPEN_DATE}}\nDirectional pref: MENA, WAfrica, Med\nL/C: steel pipes, general cargo, bagged cargo, breakbulk\n\nVessel open spot / prompt — can load immediately.\nAll ADA WOG\n\nBrgds\nEmirates Tramp Chartering",
-    "snippet": "MV PROMPT TRADER 12000dwt geared SPOT Khor Fakkan — open spot/prompt today...",
-    "labelIds": ["INBOX"],
+    "id": "19d5e7455d073a74",
+    "threadId": "19d5e7455d073a74",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<vitali6825621@gmail.com>",
+    "subject": "FW: Ocean7 Projects - N.Europe / N.Atlantic Selected Positions - 21 May 2025",
+    "date": "2026-04-05T16:22:51.000Z",
+    "body": " \r\n\r\nFrom: Aleksandra Zamiatina - Ocean7 Chartering Europe\r\n<europe@ocean7projects.com> \r\nSent: Wednesday, 21 May 2025 14:39\r\nSubject: Ocean7 Projects - N.Europe / N.Atlantic Selected Positions - 21 May\r\n2025\r\n\r\n \r\n\r\n\r\nOCEAN7 PROJECTS\r\n\r\n \r\n\r\n \r\n\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\nPlease propose for our MPP positions:\r\n\r\n \r\n\r\n \r\n\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n*** N.EUROPE / N.ATLANTIC ***\r\n\r\n \r\n\r\n \r\n\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\nPANTHERA J\r\n\r\ntwn, 2x150/300mt, 2900sqm\r\n\r\n \r\n\r\nCONTINENT\r\n\r\n01 JUN\r\n\r\n\r\n7,000 DWT\r\n\r\nIMO 1, 9600cbm, 13 knts\r\n\r\n \r\n\r\nANY DIR WW\r\n\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\nHC EVA-MARIE\r\n\r\ntwn, 2x80/160mt, 3700 sqm\r\n\r\n \r\n\r\nHALSVIK\r\n\r\n25 MAY\r\n\r\n\r\n11,000 DWT\r\n\r\nIMO 1, 14700cbm, Ice 1A\r\n\r\n \r\n\r\nANY DIR WW\r\n\r\n \r\n\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\nO7 GAJA\r\n\r\ntwn, 2x240/480mt, 5000 sqm\r\n\r\n \r\n\r\nARA\r\n\r\n04 JUN\r\n\r\n\r\n12,215 DWT\r\n\r\nIMO 1, 18700 cbm, Lakes\r\n\r\n \r\n\r\nPC DIR BRAZIL\r\n\r\n \r\n\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\nSLOMAN DISPATCHER\r\n\r\ntwn, 2x150/300mt, 4300sqm\r\n\r\nHAUGESUND\r\n\r\n28 MAY\r\n\r\n\r\n12,700 DWT\r\n\r\nIMO 1, 14900cbm, 15 knts\r\n\r\nANY DIR WW\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\nKind regards,\r\n\r\n \r\n\r\nAleksandra Zamiatina\r\n\r\n \r\n\r\n \r\n\r\nMobile: +49 170 5984420\r\n\r\nEmail: europe@ocean7projects.com\r\n<https://ocean7.sednanetwork.com/operations@ocean7projects.com> \r\n\r\nWeb: www.ocean7projects.com <https://www.ocean7projects.com/> \r\n\r\n\r\n\r\nOcean7 Group\r\n\r\nHamburg, Germany\r\n\r\n(as agents only)\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Aleksandra Zamiatina - Ocean7 Chartering Europe &lt;europe@ocean7projects.com&gt; Sent: Wednesday, 21 May 2025 14:39 Subject: Ocean7 Projects - N.Europe / N.Atlantic Selected Positions - 21 May",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
     "_meta": {
-      "emailDateOffsetDays": 0,
-      "openDateOffsetDays": 0,
-      "markers": {
-        "INNER_DATE": { "offsetDays": -1, "format": "broker-inner" }
-      }
+      "skipRebase": true
     }
   },
   {
-    "id": "sample-15",
-    "threadId": "thread-15",
-    "from": "\"Black Sea Chartering\" <ops@bschartering.ro>",
-    "fromName": "Black Sea Chartering",
-    "fromEmail": "ops@bschartering.ro",
-    "to": "demo@quantika.org",
-    "subject": "FW: MV BLACK SEA WIND 32000dwt gearless open Constanta",
-    "date": "{{EMAIL_DATE}}",
-    "body": "---------- Forwarded message ---------\nFrom: Comoros Bulk Carriers <freight@comorosbulk.km>\nDate: {{INNER_DATE}}\nSubject: MV BLACK SEA WIND 32000dwt gearless open Constanta\nTo: ops@bschartering.ro\n\nDear Sirs,\n\nPls note below position ADA WOG:\n\nMV BLACK SEA WIND\nIMO: 9876541\nDWT: 32,000 mts (summer)\nDWCC: 30,200 mts at 9.8m draft\nBuilt: 2003, Flag: Comoros\nLOA: 185.2m, Beam: 26.4m\nHolds/Hatches: 5/5\nBale cap: 38,500 cbm\nGearless (no cranes — shore gear required at all ports)\nP&I: unknown\nClass: unspecified\nOpen: Constanta, Romania, {{OPEN_DATE}}\nDirectional pref: Black Sea, Med\nL/C: bulk cargo, grain, coal\n\nPSC history (full disclosure): Tokyo MoU detention 2025-08-12 at Vladivostok — 2 deficiencies (lifeboat launching gear + emergency fire pump pressure), 4 days detained, released 2025-08-16 after rectification. Paris MoU: 1 deficiency Nov 2024, no detention.\n\nAll ADA WOG\n\nBrgds\nComoros Bulk Carriers",
-    "snippet": "MV BLACK SEA WIND 32000dwt gearless Constanta — IMO 9876541, Comoros flag...",
-    "labelIds": ["INBOX"],
+    "id": "19d5e74e4479a895",
+    "threadId": "19d5e74e4479a895",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<vitali6825621@gmail.com>",
+    "subject": "FW: HOME TONNAGE -  5 K DWT OPEN AT KARASU TODAY",
+    "date": "2026-04-05T16:23:28.000Z",
+    "body": " \r\n\r\nFrom: ALERIA DENIZCILIK - BC <chartering@aleriashipping.com> \r\nSent: Tuesday, 25 February 2025 14:34\r\nTo: chartering@aleriashipping.com\r\nSubject: HOME TONNAGE - 5 K DWT OPEN AT KARASU TODAY\r\n\r\n \r\n\r\nGood day\r\n\r\n \r\n\r\nPls offer firm for \r\n\r\n \r\n\r\nMV BARABULKA - OPEN AT KARASU TODAY\r\n\r\nCAN'T CALL UKRAINE AND  EU PORTS. \r\n\r\n4916 Dwt  on  4.76 ssw\r\n\r\nType - Volga-Don Type\r\n\r\nIMO: 8887296  Built: 1995\r\n\r\nCameroon Flag,  Dutch  Lloyd Class / Thomas Miller Pandi  \r\n\r\nGRT/NRT       :   4110/1358\r\n\r\nHolds / Hatches  : 3/3 BOX \r\n\r\nGrain  179.538 cbft / Bale 176.008,29  cbft\r\n\r\nGrain -Hold 1: 58.057 cbft - Hold 2: 61.376 cbft - Hold 3: 60.105 cbft\r\n\r\nBale - Hold 1: 1544 cbm - Hold 2: 1738 cbm - Hold 3: 1702 cbm\r\n\r\nAll details/Figures are about\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nBest regards,\r\n\r\n \r\n\r\nBirolcan GULEREN\r\n\r\nChartering Department\r\n\r\nBIMCO Reg. No: 149495\r\n\r\nchartering@aleriashipping.com <mailto:chartering@aleriashipping.com> \r\n\r\nops@aleriashipping.com <mailto:ops@aleriashipping.com> \r\n\r\nwww.aleriashipping.com <http://www.aleriashipping.com> \r\n\r\nSkype: bguleren\r\n\r\n \r\n\r\nALERIA DENIZCILIK | ISTANBUL\r\n\r\n+90 216 343 9090 Ph\r\n\r\n+90 216 201 2424 Fx\r\n\r\n+90 532 687 1026 Mb\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: ALERIA DENIZCILIK - BC &lt;chartering@aleriashipping.com&gt; Sent: Tuesday, 25 February 2025 14:34 To: chartering@aleriashipping.com Subject: HOME TONNAGE - 5 K DWT OPEN AT KARASU TODAY Good day",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
     "_meta": {
-      "emailDateOffsetDays": -4,
-      "openDateOffsetDays": 6,
-      "markers": {
-        "INNER_DATE": { "offsetDays": -5, "format": "broker-inner" }
-      }
+      "skipRebase": true
     }
   },
   {
-    "id": "sample-16",
-    "threadId": "thread-16",
-    "from": "\"Ligurian Shipbrokers\" <chartering@ligurian-brokers.it>",
-    "fromName": "Ligurian Shipbrokers",
-    "fromEmail": "chartering@ligurian-brokers.it",
-    "to": "demo@quantika.org",
-    "subject": "FW: MV ATLAS + MV ZEUS — 2 vessels open Genoa",
-    "date": "{{EMAIL_DATE}}",
-    "body": "---------- Forwarded message ---------\nFrom: Tyrrhenian Tramp Lines <ops@tyrrhenian-tramp.it>\nDate: {{INNER_DATE}}\nSubject: MV ATLAS + MV ZEUS — 2 vessels open Genoa\nTo: chartering@ligurian-brokers.it\n\nDear Sirs,\n\nPls note below 2 (two) positions ADA WOG, both open Genoa:\n\n--- VESSEL 1 ---\nMV ATLAS\nIMO: 9123453\nDWT: 5,200 mts (summer)\nDWCC: 4,900 mts at 5.4m draft\nBuilt: 2006, Flag: Italy\nLOA: 96.0m, Beam: 14.2m\nHolds/Hatches: 2/2\nBale cap: 6,100 cbm\nGeared: 2 x 20t cranes\nP&I: Lloyd's\nClass: RINA\nOpen: Genoa, Italy, {{OPEN_DATE}}\n\n--- VESSEL 2 ---\nMV ZEUS\nIMO: 9234513\nDWT: 6,800 mts (summer)\nDWCC: 6,400 mts at 5.9m draft\nBuilt: 2009, Flag: Italy\nLOA: 108.6m, Beam: 16.2m\nHolds/Hatches: 2/2\nBale cap: 8,200 cbm\nGeared: 2 x 25t cranes\nP&I: Lloyd's\nClass: RINA\nOpen: Genoa, Italy, {{OPEN_DATE}}\n\nBoth vessels L/C: steel coils, breakbulk, project cargo, timber.\nAll ADA WOG\n\nKind regards\nTyrrhenian Tramp Lines Chartering",
-    "snippet": "MV ATLAS 5200dwt + MV ZEUS 6800dwt — 2 geared vessels open Genoa...",
-    "labelIds": ["INBOX"],
+    "id": "19d5e75a1f9011b6",
+    "threadId": "19d5e75a1f9011b6",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<vitali6825621@gmail.com>",
+    "subject": "FW: open vsl - dwcc 2900 mts - spot biscay - 18.08.25",
+    "date": "2026-04-05T16:24:15.000Z",
+    "body": " \r\n\r\nFrom: Alerta Chartering <chartering@alertaplus.si> \r\nSent: Monday, 18 August 2025 12:08\r\nTo: SEA TRANSIT DENIZ TASIMACILIGI <chartering@seatransit.com.tr>\r\nSubject: open vsl - dwcc 2900 mts - spot biscay - 18.08.25\r\n\r\n \r\n\r\n\r\nAtt: chartering dpt\r\n\r\n \r\n\r\nGd\r\n\r\n \r\n\r\nClose owners looking cgoes direction Black Sea, can load from continent\r\n\r\n \r\n\r\nDwcc 2900 mts, grain cap 147 000 cut, box\r\n\r\n \r\n\r\nOpen spot biscay, considers loading fm Conti\r\n\r\n \r\n\r\npls offer rated cgoes\r\n\r\n \r\n\r\nSincerely,\r\n\r\n \r\n\r\n\r\nBrgds,\r\n\r\nSergiy Loshkarov\r\n\r\nAlerta Plus Ltd - Ljubljana, Slovenia\r\n\r\nph: +38659052680\r\n\r\nmobile/whatsapp/viber/telegram: +38631589490\r\n\r\ne-mail: chartering@alertaplus.si <mailto:chartering@alertaplus.si> \r\n\r\nteams: loshkarev\r\n\r\n \r\n\r\n====\r\n\r\n \r\n\r\nPls make sure that our e-mail address chartering@alertaplus.si <mailto:chartering@alertaplus.si>  is added to Your lists.\r\n\r\n \r\n\r\nThis is ship-chartering mailing. If this content is not of interest for You - pls kindly notify\r\n\r\nBy return to exclude Your address. Apologies in advance for possible inconvenience.\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Alerta Chartering &lt;chartering@alertaplus.si&gt; Sent: Monday, 18 August 2025 12:08 To: SEA TRANSIT DENIZ TASIMACILIGI &lt;chartering@seatransit.com.tr&gt; Subject: open vsl - dwcc 2900 mts -",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
     "_meta": {
-      "emailDateOffsetDays": -2,
-      "openDateOffsetDays": 7,
-      "markers": {
-        "INNER_DATE": { "offsetDays": -3, "format": "broker-inner" }
-      }
+      "skipRebase": true
     }
   },
   {
-    "id": "sample-17",
-    "threadId": "thread-17",
-    "from": "\"West Africa Carriers\" <freight@wacarriers.ng>",
-    "fromName": "West Africa Carriers",
-    "fromEmail": "freight@wacarriers.ng",
-    "to": "demo@quantika.org",
-    "subject": "FW: MV LAGGARD STAR 15000dwt geared open Lagos",
-    "date": "{{EMAIL_DATE}}",
-    "body": "---------- Forwarded message ---------\nFrom: Lagos Maritime Brokers <ops@lagosbrokers.ng>\nDate: {{INNER_DATE}}\nSubject: MV LAGGARD STAR 15000dwt geared open Lagos\nTo: freight@wacarriers.ng\n\nDear all,\n\nPls note below position ADA WOG:\n\nMV LAGGARD STAR\nIMO: 9156785\nDWT: 15,000 mts (summer)\nDWCC: 14,200 mts at 7.8m draft\nBuilt: 2009, Flag: Malta\nLOA: 148.0m, Beam: 22.4m\nHolds/Hatches: 3/3\nBale cap: 18,200 cbm\nGeared: 2 x 30t cranes\nP&I: West of England\nClass: LR\nOpen: Lagos, Nigeria (Apapa), {{OPEN_DATE}}\nDirectional pref: WAfrica, Med\nL/C: steel products, bagged cargo, breakbulk, general cargo\n\nAll ADA WOG\n\nBrgds\nLagos Maritime Brokers",
-    "snippet": "MV LAGGARD STAR 15000dwt geared open Lagos — late availability...",
-    "labelIds": ["INBOX"],
+    "id": "19d5e7668c6587bd",
+    "threadId": "19d5e7668c6587bd",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<vitali6825621@gmail.com>",
+    "subject": "FW: 8000 dwt open Casablanca beg October",
+    "date": "2026-04-05T16:25:07.000Z",
+    "body": " \r\n\r\nFrom: Noreply <noreply-bounces@lists.mbnav.com> On Behalf Of Alexey Chirko, MB Navigation\r\nSent: Friday, 5 September 2025 10:43\r\nTo: noreply@lists.mbnav.com\r\nSubject: 8000 dwt open Casablanca beg October\r\n\r\n \r\n\r\n \r\n\r\nopen Casablanca 01-05 October\r\n\r\nneed dir Bsea/enroute\r\n\r\n \r\n\r\n \r\n\r\nMV ALINA \r\n\r\nSID, GLESS, BLT 2025\r\n\r\n8300 DWT\r\n\r\n13'400 CBM\r\n\r\n \r\n\r\nCLASS: RINA\r\n\r\nFLAG: BELIZE CITY\r\n\r\nLOA 141.99 M – BEAM 18.0 M – DEPTH 6.0 M, DRAFT 4.6\r\n\r\nGRT/NRT: 6786/ 4041\r\n\r\n4 HO/ 4 HA\r\n\r\nHATCH SIZES: NO.1,2,3,4 L 24.7 M X B 12 M\r\n\r\nHA COVERS : MACGREGOR\r\n\r\nHOLD NO 1: 26.14 x 14.8 x 9.15 HATCH NO.1: 24.70 x 12 / COAM 2.2\r\n\r\nHOLD NO 2: 27.30 x 14.8 x 9.15 HATCH NO.2: 24.70 x 12 / COAM 2.2\r\n\r\nHOLD NO 3: 27.30 x 14.8 x 9.15 HATCH NO.3: 24.70 x 12 / COAM 2.2\r\n\r\nHOLD NO 4: 26.14 x 14.8 x 9.15 HATCH NO.4: 24.70 x 12 / COAM 2.2\r\n\r\nSTRENGTHS TANKTOP: HOLD 1-4 8.5 t/m2\r\n\r\nPANDI : SKULD, OSLO\r\n\r\n \r\n\r\n\t\r\n\r\n \r\n\r\n\r\n \r\n\r\n\r\n \r\n\r\n\r\n \r\n\r\n\r\n \r\n\r\n\r\n \r\n\r\n \r\n\r\nKind Regards  \r\n\r\n \r\n\r\n\r\n\r\n\r\nAlexey Chirko \r\n\r\nChartering manager \r\n\r\nMB Navigation S.A.  \r\n\r\nMob/WhatsUp: +38 096 580 2652 \r\n\r\nE-mail:  <mailto:chartering@mbnav.com> chartering@mbnav.com \r\n\r\nTeams:  <http://bit.ly/45xm5y9> http://bit.ly/45xm5y9\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nWe would like to inform you that MB NAVIGATION will soon operate under its new name — MARELIS NAVIGATION.\r\n\r\nKindly update your records with new email address: chartering@marelis-nav.com\r\n\r\n \r\n\r\nIt is essential that all messages in respect of operations be sent to the relevant email addresses ( <mailto:operating@mbnav.com> operating@mbnav.com). We can accept no responsibility for delay or other consequences if messages are sent to any other email address within the company. Please ensure that all important operational messages are followed up with a telephone call especially after office hours, on week-end and holidays.\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\t\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Noreply &lt;noreply-bounces@lists.mbnav.com&gt; On Behalf Of Alexey Chirko, MB Navigation Sent: Friday, 5 September 2025 10:43 To: noreply@lists.mbnav.com Subject: 8000 dwt open Casablanca beg",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
     "_meta": {
-      "emailDateOffsetDays": -1,
-      "openDateOffsetDays": 25,
-      "markers": {
-        "INNER_DATE": { "offsetDays": -2, "format": "broker-inner" }
-      }
+      "skipRebase": true
     }
   },
   {
-    "id": "sample-18",
-    "threadId": "thread-18",
-    "from": "\"Persian Gulf Shipping\" <chartering@persianshipping.ir>",
-    "fromName": "Persian Gulf Shipping",
-    "fromEmail": "chartering@persianshipping.ir",
-    "to": "demo@quantika.org",
-    "subject": "FW: MV PERSIAN ROSE 22000dwt open Bandar Abbas",
-    "date": "{{EMAIL_DATE}}",
-    "body": "---------- Forwarded message ---------\nFrom: Iran Bulk Carriers <ops@iranbulk.ir>\nDate: {{INNER_DATE}}\nSubject: MV PERSIAN ROSE 22000dwt open Bandar Abbas\nTo: chartering@persianshipping.ir\n\nDear Sirs,\n\nPls note below position ADA WOG:\n\nMV PERSIAN ROSE\nIMO: 9256781\nDWT: 22,000 mts (summer)\nDWCC: 20,800 mts at 8.6m draft\nBuilt: 2004, Flag: Iran\nLOA: 165.4m, Beam: 24.8m\nHolds/Hatches: 4/4\nBale cap: 26,800 cbm\nGeared: 2 x 25t cranes\nP&I: unknown\nClass: IRS (Iranian Register of Shipping)\nOpen: Bandar Abbas, Iran, {{OPEN_DATE}}\nDirectional pref: Persian Gulf, Indian Ocean\nL/C: bulk, general cargo, steel\n\nAll ADA WOG\n\nBrgds\nIran Bulk Carriers",
-    "snippet": "MV PERSIAN ROSE 22000dwt Iran flag open Bandar Abbas — IMO 9256781...",
-    "labelIds": ["INBOX"],
+    "id": "19d5e77730e6489b",
+    "threadId": "19d5e77730e6489b",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<vitali6825621@gmail.com>",
+    "subject": "FW: MV 'Gandolf' open Skikda spot",
+    "date": "2026-04-05T16:26:15.000Z",
+    "body": " \r\n\r\nFrom: Allimar Chartering <chartering@allimar.it> \r\nSent: Friday, 5 September 2025 11:37\r\nTo: Allimar Chartering <chartering@allimar.it>\r\nSubject: MV 'Gandolf' open Skikda spot\r\n\r\n \r\n\r\nMV 'Gandolf'\r\n\r\nBuilt 1988\r\n\r\nComoros Flag - Phoenix Class - Turk P&I\r\n\r\n1084 DWAT on 3m ssw\r\n\r\nSid/Box Hold\r\n\r\nGT/NT  910/273\r\n\r\nLoa/Beam/Draft 69,04/9,46/3,00 m\r\n\r\nHo/Ha 1/1 - Gr/Bl 1.681/1.462 CBM\r\n\r\nHo dim: 37,80 x 7,40 x 5,20 m\r\n\r\nHa dim: 37,80 x 7,40 m\r\n\r\nMcGregor single pull type hatch covers\r\n\r\nSteel floored,\r\n\r\nAppendix A,B,C fitted\r\n\r\nAir vent fitted\r\n\r\nBowtrusther fitted\r\n\r\nADA WOG\r\n\r\n \r\n\r\n**open Skikda spot under our c/p\r\n\r\n \r\n\r\n\r\n\r\n \r\n\r\nALLIMAR SHIPBROKERS s.r.l.\r\n\r\n+39/3356759395\r\n\r\n <mailto:chartering@allimar.it> chartering@allimar.it\r\n\r\n <mailto:allimar@tiscali.it> allimar@tiscali.it (circulars & positions only)\r\n\r\nallimarship\r\n\r\n  wxid_02g3slkt8c8r12\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Allimar Chartering &lt;chartering@allimar.it&gt; Sent: Friday, 5 September 2025 11:37 To: Allimar Chartering &lt;chartering@allimar.it&gt; Subject: MV &#39;Gandolf&#39; open Skikda spot MV &#39;",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
     "_meta": {
-      "emailDateOffsetDays": -2,
-      "openDateOffsetDays": 5,
-      "markers": {
-        "INNER_DATE": { "offsetDays": -3, "format": "broker-inner" }
-      }
+      "skipRebase": true
     }
   },
   {
-    "id": "sample-19",
-    "threadId": "thread-19",
-    "from": "\"Nordic Chartering\" <chartering@nordicchartering.fi>",
-    "fromName": "Nordic Chartering",
-    "fromEmail": "chartering@nordicchartering.fi",
-    "to": "demo@quantika.org",
-    "subject": "FW: MV NORDIC ICE 28500dwt Ice Class 1A FS open Helsinki",
-    "date": "{{EMAIL_DATE}}",
-    "body": "---------- Forwarded message ---------\nFrom: Finnlines Tramp Desk <chartering@finnlinestramp.fi>\nDate: {{INNER_DATE}}\nSubject: MV NORDIC ICE 28500dwt Ice Class 1A FS open Helsinki\nTo: chartering@nordicchartering.fi\n\nDear Sirs,\n\nPls note below position ADA WOG:\n\nMV NORDIC ICE\nIMO: 9356787\nDWT: 28,500 mts (summer)\nDWCC: 27,100 mts at 9.4m draft\nBuilt: 2012, Flag: Finland\nLOA: 178.6m, Beam: 26.0m\nHolds/Hatches: 4/4\nBale cap: 34,200 cbm\nGeared: 2 x 30t cranes\nP&I: Skuld\nClass: BV +1A1 Ice Class 1A FS (Finnish-Swedish)\nOpen: Helsinki, Finland, {{OPEN_DATE}}\nDirectional pref: Baltic, N.Europe, Med\nL/C: steel products, forest products, bagged cargo, breakbulk\nNote: Full Finnish-Swedish ice class certification — suitable for ice-restricted Baltic/Nordic routes.\n\nAll ADA WOG\n\nKind regards\nFinnlines Tramp Desk Chartering",
-    "snippet": "MV NORDIC ICE 28500dwt BV +1A1 Ice Class 1A FS open Helsinki — IMO 9356787...",
-    "labelIds": ["INBOX"],
+    "id": "19d5e77ccc974c03",
+    "threadId": "19d5e77ccc974c03",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<vitali6825621@gmail.com>",
+    "subject": "FW: MV SVS VEGA open Efesan Sep/6-8th",
+    "date": "2026-04-05T16:26:37.000Z",
+    "body": " \r\n\r\nFrom: Allimar Shipbrokers srl <chartering@allimar.it> \r\nSent: Tuesday, 2 September 2025 12:23\r\nTo: Allimar Shipbrokers srl <chartering@allimar.it>\r\nSubject: MV SVS VEGA open Efesan Sep/6-8th\r\n\r\n \r\n\r\nMV SVS VEGA\r\n\r\n \r\n\r\nMultipurpose dry cargo/Container vessel\r\n\r\nSt. Vincent & the Grenadines flag\r\n\r\nBuilt  1996\r\n\r\nLloyd's Register +100A1, Ice Class 1A,+LMC,UMS\r\n\r\n3200 mt DWAT sfb on 4,63m, LOA 90,67 m bеаm 15,80 m GT/NT 2658/1216 open\r\nhatch/doubleskinned  singledecker about 140.000 сbf gr/bl single hold/2\r\nhatch, MacGregor  hatchcover  hydr. folding type hatch dimensions: 57,50 х\r\n12,80 m Gearless / Cont Fitted Nominal container intake: 266 TEU (80 in hold\r\n+ 186 on deck) alt. 121 FEU + 24 TEU (28 (+ 24 TEU) in hold and 93 on deck)\r\nable abt/max 180TEU@ 14tons (50% bunker/sfb)\r\n\r\n \r\n\r\nAirdraft ballast 24,7 meter\r\n\r\n \r\n\r\nabove description is believed to be correct and true but without guarantee\r\n\r\n \r\n\r\n**open Efesan Sep/6-8th\r\n\r\n \r\n\r\n\r\n\r\n \r\n\r\nALLIMAR SHIPBROKERS s.r.l.\r\n\r\n+39/3356759395\r\n\r\n <mailto:chartering@allimar.it> chartering@allimar.it\r\n\r\n <mailto:allimar@tiscali.it> allimar@tiscali.it (circulars & positions only)\r\n\r\nallimarship\r\n\r\n  wxid_02g3slkt8c8r12\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Allimar Shipbrokers srl &lt;chartering@allimar.it&gt; Sent: Tuesday, 2 September 2025 12:23 To: Allimar Shipbrokers srl &lt;chartering@allimar.it&gt; Subject: MV SVS VEGA open Efesan Sep/6-8th MV",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
     "_meta": {
-      "emailDateOffsetDays": -3,
-      "openDateOffsetDays": 12,
-      "markers": {
-        "INNER_DATE": { "offsetDays": -4, "format": "broker-inner" }
-      }
+      "skipRebase": true
     }
   },
   {
-    "id": "sample-20",
-    "threadId": "thread-20",
-    "from": "\"Antwerp Ship Brokers\" <desk@antwerpbrokers.be>",
-    "fromName": "Antwerp Ship Brokers",
-    "fromEmail": "desk@antwerpbrokers.be",
-    "to": "demo@quantika.org",
-    "subject": "FW: MV CARBON LADY 17500dwt geared open Antwerp — CII Grade D",
-    "date": "{{EMAIL_DATE}}",
-    "body": "---------- Forwarded message ---------\nFrom: Scheldt Tramp Carriers <ops@scheldttramp.be>\nDate: {{INNER_DATE}}\nSubject: MV CARBON LADY 17500dwt geared open Antwerp — CII Grade D\nTo: desk@antwerpbrokers.be\n\nDear all,\n\nPls note below position ADA WOG:\n\nMV CARBON LADY\nIMO: 9456783\nDWT: 17,500 mts (summer)\nDWCC: 16,600 mts at 8.1m draft\nBuilt: 2001, Flag: Marshall Islands\nLOA: 153.8m, Beam: 23.2m\nHolds/Hatches: 3/3\nBale cap: 21,400 cbm\nGeared: 2 x 30t cranes\nP&I: North\nClass: LR\nIMO CII Grade: D (AER: 9.2 g/dwt·nm) — vessel is subject to corrective action plan per IMO MEPC.338(76).\nOpen: Antwerp, Belgium, {{OPEN_DATE}}\nDirectional pref: N.Europe, Med, WAfrica\nL/C: steel products, bulk, bagged cargo, breakbulk\n\nNote: Owners are aware of CII Grade D status and corrective action plan is in place for next annual survey.\n\nAll ADA WOG\n\nBrgds\nScheldt Tramp Carriers Chartering",
-    "snippet": "MV CARBON LADY 17500dwt geared Antwerp — CII Grade D AER 9.2 g/dwt·nm, Marshall Islands...",
-    "labelIds": ["INBOX"],
+    "id": "19d5e79432c6caf9",
+    "threadId": "19d5e79432c6caf9",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<vitali6825621@gmail.com>",
+    "subject": "FW: DWT 63695 - OPEN CASABLANCA END AUG/EARLY SEP",
+    "date": "2026-04-05T16:28:09.000Z",
+    "body": " \r\n\r\nFrom: Augusta shipping <chart@Augusta.co.in> \r\nSent: Tuesday, 15 July 2025 14:38\r\nTo: Augusta shipping <chart@Augusta.co.in>\r\nCc: 'chinar patil' <augusta.shipping@outlook.com>\r\nSubject: DWT 63695 - OPEN CASABLANCA END AUG/EARLY SEP\r\n\r\n \r\n\r\nAugusta  Shipping  India\r\n\r\nemail : chart@augusta.co.in <mailto:chart@augusta.co.in> \r\n\r\n \r\n\r\n   /CHINAR,\r\n\r\n \r\n\r\nGD,\r\n\r\n \r\n\r\nPLS PPS FOR\r\n\r\n \r\n\r\nMV GLORY TOM  DWT 63695 - OPEN CASABLANCA END AUG/EARLY SEP\r\n\r\nBOD ABT 600-700 MT VLSFO AND ABT 140-160 MT LSMGO\r\n\r\n \r\n\r\nTRY ANY INCLUDING PERIOD, BOP TILL END OF FEB, 2026\r\n\r\n \r\n\r\nNO UKRAINE, BLACK SEA RUSSIA TRADING;\r\n\r\nNO USA TRADING;\r\n\r\n \r\n\r\nBALTIC RUSSIA - MURMANSK/UST LUGA/SAINT PETERSBURG - OK\r\n\r\nGOA TRANSIT - OK\r\n\r\n \r\n\r\n2*25MT, DECK/HATCH - OK ; WINDMILL BLADES CAN TRY CASE BY CASE;\r\n\r\n \r\n\r\nL5C: GENERAL CARGO/TAPIOCA CHIPS/COAL/COAL/BAUXITE, I.ORE\r\n\r\n \r\n\r\nM/V \"GLORY TOM\"\r\n\r\nVESSEL (IMO) : 9701360\r\n\r\nCALL SIGN : 9HA3969\r\n\r\nBUILT : JUNE 29, 2015 - COSCO ZHOUSHAN\r\n\r\nFLAG : PANAMA\r\n\r\nCLASS : NK\r\n\r\nTPC : 62.30 METRIC TONNES\r\n\r\nGRT : 36353\r\n\r\nNRT : 21610\r\n\r\nP&I: CPI\r\n\r\nRIGHTSHIP RATING: 3 STARS\r\n\r\nTYPE : GRABFITTED BULKCARRIER\r\n\r\nSDWT : 63695.70 METRIC TONNES\r\n\r\nSDRAFT : 13.30 METRES\r\n\r\nLOA : 199.90 METRES\r\n\r\nBEAM : 32.26 METRES\r\n\r\nDERRICKS : N/A\r\n\r\nCRANES : 4 X 30 METRIC TONNES\r\n\r\nOUTREACH : 13.80 METRES\r\n\r\nHULL : DOUBLE HULL\r\n\r\n \r\n\r\nHOLDS : 5\r\n\r\nCAPACITY : GRAIN / BALE\r\n\r\nHOLD#1 : 13958 CU. METRES / 13200 CU. METRES\r\n\r\nHOLD#2 : 17658 CU. METRES / 16650 CU. METRES\r\n\r\nHOLD#3 : 15353 CU. METRES / 14080 CU. METRES\r\n\r\nHOLD#4 : 15840 CU. METRES / 15000 CU. METRES\r\n\r\nHOLD#5 : 15962 CU. METRES / 14750 CU. METRES\r\n\r\nTOTAL : 78771 CU. METRES / 73680 CU. METRES\r\n\r\n \r\n\r\nHATCHES : MACGREGOR FOLDING\r\n\r\nHATCH DIM : HATCH #1: 19.68 X 18.26 X 1.82\r\n\r\nHATCH #2, #3, #4, #5: 22.96 X 18.26 X 1.82\r\n\r\n \r\n\r\nTANKTOP STR : HOLD #1, #3, #5: 25 MT/SQM\r\n\r\nHOLD #2, #4: 20 MT/SQM\r\n\r\n \r\n\r\nSPEED/CONS :\r\n\r\n \r\n\r\nBALLAST\r\n\r\nABT 14.0 KNOTS ON ABT 27.0 MT/DAY IFO 380 CST + 0.1 MT/DAY MGO\r\n\r\n \r\n\r\nLADEN\r\n\r\nABT 13.5 KNOTS ON ABT 28.5 MT/DAY IFO 380 CST + 0.1 MT/DAY MGO\r\n\r\n \r\n\r\nECO SPEED(WOG)\r\n\r\n \r\n\r\nBALLAST\r\n\r\nABT 12.0 KNOTS ON ABT 19.5 MT/DAY IFO 380 CST+ 0.1 MT/DAY MGO\r\n\r\n \r\n\r\nLADEN\r\n\r\nABT 11.0 KNOTS ON ABT 21.0 MT/DAY IFO 380 CST+ 0.1 MT/DAY MGO\r\n\r\n \r\n\r\nPORT WORK : ABT 6.0 MT/DAY IFO 380 CST + 0.2 MT/DAY MGO\r\n\r\nPORT IDLE : ABT 2.0 MT/DAY IFO 380 CST + 0.2 MT/DAY MGO\r\n\r\n \r\n\r\nWHILE AT PORT, VESSEL BURNS 1.5 MT/DAY IFO 380 CST FOR BOILER IN ADDITION TO\r\nTHE ABOVE CONSUMPTIONS\r\n\r\n \r\n\r\n \r\n\r\nSPEED/CONS BASED UNDER GOOD WEATHER DAYS, UNDER NO ADVERSE INFLUENCE OF\r\nCURRENT\r\n\r\nAND SWELL WITH THE VESSEL LADEN UNDERDECK TO HER SUMMER SALTWATER LOADLINE,\r\nFROM\r\n\r\nSEA BUOY TO SEA BUOY, ALWAYS EXCLUDING CANALS, NARROW OR SHALLOW OR\r\nRESTRICTED\r\n\r\nWATERS, PERIODS WHEN SPEED IS REDUCED DUE TO CHRS' ORDERS, REASONS OF\r\nSAFETY.\r\n\r\nTHE WORD \"ABOUT\" IN SPEED AND CONSUMPTION REFERS TO ALLOWANCE OF - 0.5KNOTS\r\nIN SPEED\r\n\r\nAND +5% ON CONSUMPTION RESPECTIVELY. CALCULATION OF VSLS PERFORMANCE ON BOTH\r\n\r\nLADEN AND BALLAST PASSAGES HAS TO BE BASED UPON AN AVERAGE SPEED/CONS DURING\r\n\r\nWEATHER DAYS UPTO BEAUFORT SCALE 4 AND DOUGLAS SEA STATE 3 AND MAX COMBINED\r\nSEA\r\n\r\nWAVE HEIGHT AND SWELL WAVE HEIGHT 1.25 METERS AND NO ADVERSE CURRENT.\r\n\r\n \r\n\r\nPERIODS OF WEATHER IN EXCESS OF ABOVE CONDITIONS ARE TO BE EXPRESSLY\r\nEXCLUDED FROM\r\n\r\nCALCS. FOR A STEAMING PERIOD TO BE CONSIDERED AS A GOOD WEATHER ONE, ALL\r\nPERIOD FROM\r\n\r\nNOON TO NOON HAS TO BE IN GOOD WEATHER. FAVOURABLE CURRENTS SHALL NOT BE\r\nTAKEN\r\n\r\nINTO ACCOUNT WHEN CALCULATING VESSEL'S PERFORMANCE. NO EXTRAPOLATION OF\r\nSPEED AND\r\n\r\nCONSUMPTION TO BE MADE FOR WEATHER/SEA CONDITIONS OTHER THOSE DESCRIBED\r\nABOVE.\r\n\r\nALL DETS ABT\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nPLEASE INCLUDE OUR EMAIL ID CHART@AUGUSTA.CO.IN <mailto:chart@augusta.co.in>\r\nIN YOUR CIRCULATION LIST FOR VESSEL POSITIONS AND CARGO ORDERS.\r\n\r\n \r\n\r\n \r\n\r\nRegards\r\n\r\nMr. Chinar patil\r\n\r\nDir:+91-7020141086\r\n\r\nCell:+91-9158987218 (whatsapp,Botim,Telegram)\r\n\r\nTeams: augusta.shipping@outlook.com <mailto:augusta.shipping@outlook.com> \r\n\r\n(As a Broker only)\r\n\r\nAugusta Shipping & Trading, Mumbai, India\r\n\r\nDry Bulk, Break bulk, Project,Liquid Logistics,S&P\r\n\r\n      \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Augusta shipping &lt;chart@Augusta.co.in&gt; Sent: Tuesday, 15 July 2025 14:38 To: Augusta shipping &lt;chart@Augusta.co.in&gt; Cc: &#39;chinar patil&#39; &lt;augusta.shipping@outlook.com&gt;",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
     "_meta": {
-      "emailDateOffsetDays": -4,
-      "openDateOffsetDays": 14,
-      "markers": {
-        "INNER_DATE": { "offsetDays": -5, "format": "broker-inner" }
-      }
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e07c4bb3fee039",
+    "threadId": "19e07c4bb3fee039",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>",
+    "subject": "FW: MV LADY ANITA – OPEN RED SEA SPOT PROMPT ",
+    "date": "2026-05-08T13:26:30.000Z",
+    "body": " \r\n\r\nFrom: mylist1-owner@elsharkawymaritime.com <mylist1-owner@elsharkawymaritime.com> On Behalf Of Elsharkawy Maritime & Logistics Co\r\nSent: Friday, 8 May 2026 10:49\r\nTo: chartering@elsharkawymaritime.com\r\nSubject: MV LADY ANITA – OPEN RED SEA SPOT PROMPT \r\n\r\n \r\n\r\nAttn: Chartering Desk!!!\r\n\r\n \r\n\r\nGd Day,,\r\n\r\n \r\n\r\nPlease Kindly Propose Suitable/Rated Cargo For Below Dir Vsl:\r\n\r\n \r\n\r\nMV LADY ANITA – OPEN RED SEA PROMPT\r\n\r\n\r\nTYPE OF VESSEL\r\n\r\nGENERAL CARGO SHIP\r\n\r\n\r\nYEAR OF BUILT\r\n\r\n2012\r\n\r\n\r\nFLAG STATE / PORT OF REGISTRY\r\n\r\nTOGO / LOME\r\n\r\n\r\nCLASSIFICATION SOCIETY\r\n\r\nOMCS\r\n\r\n\r\nL.O.A / L.B.P\r\n\r\n96.9 M / 89.8 M\r\n\r\n\r\nBREADTH MOULDED\r\n\r\n15.8 M\r\n\r\n\r\nDEPTH MOULDED\r\n\r\n7.4 M\r\n\r\n\r\nG.R.T / N.R.T\r\n\r\n2998  / 1746  M/T\r\n\r\n\r\nG/B CAPA \r\n\r\n6800/6700CBM\r\n\r\n\r\nLIGHT SHIP\r\n\r\n1386.8 MT\r\n\r\n\r\nDISPLACEMENT\r\n\r\n6715.2 MT\r\n\r\n\r\nSUMMER DRAFT\r\n\r\n5.85 M\r\n\r\n\r\nSUMMER DEADWEIGHT\r\n\r\n5328.4 M/T\r\n\r\n\r\nT.P.C\r\n\r\n12.9 MT\r\n\r\n\r\nFREE BOARD\r\n\r\n1.55 M\r\n\r\n\r\nMAX HEIGHT\r\n\r\n28.65 M\r\n\r\n\r\nHATCH COVER NO. 1 SIZE:\r\n\r\n25M X 9.45M\r\n\r\n\r\nHOLD DAIMANTION NO. 1\r\n\r\n32.64M X 13.26M X 7.82M\r\n\r\n\r\nHATCH COVER NO. 2 SIZE:\r\n\r\n26.9M X 9.45M\r\n\r\n\r\nHOLD DAIMANTION NO. 2\r\n\r\n32M X 13.26M X 7.82M\r\n\r\n\r\nLIGHT WEIGHT\r\n\r\n1386.74\r\n\r\n\r\nM/E\r\n\r\nGC320ZCD-4 500 R/MIN 1765KW\r\n\r\n\r\nA/E\r\n\r\n6135JZCAF/6CCFJ120J-Y8/2SETS\r\n\r\n\r\nG/E\r\n\r\nMP-H-120-4   120KW\r\n\r\n\r\nSPEED\r\n\r\nFULL LOADED/BALLAST:10.KTS/10.5KTS\r\n\r\n\r\nCONSUMPTION BALLAST\r\n\r\nIFO 180: M/E :3.7MT/D; AUX/E:MGO 0.35MT\r\n\r\n\r\nCONSUMPTION LOADING\r\n\r\nIFO 180  ME:4.2MT/D；AUX/E: MGO 0.35MT/D\r\n\r\n\r\nCONSUMPTION IN PORT\r\n\r\nAUX/E MGO 0.35MT/D\r\n\r\n \r\n\r\nWycp ?\r\n\r\n \r\n\r\nBrgds // \r\n\r\nCapt.Mohamed Elsharkawy\r\n\r\nTels: +20663232456/3232457\r\n\r\nFax:  +20663232459\r\n\r\nMob: +201007800552 (24hrs) \r\n\r\nTeams Id:  <mailto:elsharkawy_maritime@hotmai.com> elsharkawy_maritime@hotmai.com  \r\n\r\nE-Mail:  <mailto:chartering@elsharkawymaritime.com> chartering@elsharkawymaritime.com\r\n\r\nW.Site:  <http://www.elsharkawymaritime.com/> www.elsharkawymaritime.com \r\n\r\n \r\n\r\n  _____  \r\n\r\nTo subscribe, Please Send To mylist1-subscribe@elsharkawymaritime.com <mailto:mylist1-subscribe@elsharkawymaritime.com> \r\nTo unsubscribe, Please Send To mylist1-unsubscribe@elsharkawymaritime.com <mailto:mylist1-unsubscribe@elsharkawymaritime.com> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: mylist1-owner@elsharkawymaritime.com &lt;mylist1-owner@elsharkawymaritime.com&gt; On Behalf Of Elsharkawy Maritime &amp; Logistics Co Sent: Friday, 8 May 2026 10:49 To: chartering@",
+    "labelIds": ["UNREAD", "IMPORTANT", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e07c5f0379415b",
+    "threadId": "19e07c5f0379415b",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>",
+    "subject": "FW: Exc _ 4300 Dwt  mpp bulk tonnage  Open @Vassiliko",
+    "date": "2026-05-08T13:27:50.000Z",
+    "body": " \r\n\r\nFrom: DRYCARGO - MPP (STEEL&BULK SINGAPORE) <chartering@steelbulk.com> \r\nSent: Friday, 8 May 2026 09:50\r\nTo: management@etm-services.net\r\nSubject: Exc _ 4300 Dwt mpp bulk tonnage Open @Vassiliko\r\n\r\n \r\n\r\nDoc-no 26050800141 Friday, 08 May 2026 14:45 (+8:00) Singapore\r\n\r\n \r\n\r\n\r\n\r\n\r\n\r\nGreetings,\r\n\r\nExclusive  - firm proposals  welcome\r\n\r\n4300 Dwt Open @Vassiliko o/a  15/16 May \r\n                 \r\n\r\n                                                                                                                                                                                                \r\nMV IMI  IMO:9063873\r\n4300/4080 DWT/DWCC ON 5.62 MR\r\n1993 BLT NL, FLG BAHAMAS  CLASS DNV\r\n1HH BOXSHAPED L/W/H   63.6X11.0X8.4X\r\nLOA: 89.9 LBP: 84.99  BREADTH: 13.17\r\n5764 CBM / 203.540 CBFT\r\n15 TONS M2 TANKTOP\r\n2 BULKHEADS\r\nOPEN HATCH\r\nBOWTHR\r\nADA \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nRespectfully\r\nAbdulvehhab Ozmen\r\n\r\nSteel&Bulk Singapore Pte Ltd\r\n50 Raffles Place\r\n#37-00\r\nSingapore 048623\r\nM: +65 8030 3432\r\nW: www(.)steelbulk(.)com\r\nE: chartering(@)steelbulk(.)com\r\n\r\n <https://sendy.steelbulk.com/l/DwH8892H6M8IMCycgyoWljDw/89202tHyKaPLiZZRKUxR3kgw/892QhvNqy3F0vEYLotyTFuhg> Chat with me on teams\r\n\r\n <mailto:chartering@steelbulk.com?subject=UNSUBSCRIBE%20ME> Unsubscribe\r\nThis message is intended solely for the use of the individual or entity it addresses and may contain confidential information. If you are not the intended recipient of this message or receive this mail in error, you should refrain from using the contents and opening attachments. In that case, please notify the sender immediately and return the message to the sender, then, delete and destroy all copies. This e-mail message, can not be copied, published, or sold for any reason. Anti-virus systems have swept this e-mail message for the presence of computer viruses. In doing so, however, the sender cannot warrant that virus or other forms of data corruption may not be present and does not take any responsibility for any occurrence\r\n#ThinkBeforePrinting\r\n#SaveMyWorld \r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: DRYCARGO - MPP (STEEL&amp;BULK SINGAPORE) &lt;chartering@steelbulk.com&gt; Sent: Friday, 8 May 2026 09:50 To: management@etm-services.net Subject: Exc _ 4300 Dwt mpp bulk tonnage Open @Vassiliko",
+    "labelIds": ["UNREAD", "IMPORTANT", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e07c65c31852c7",
+    "threadId": "19e07c65c31852c7",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>",
+    "subject": "FW: FAITH/30116DW/12/CR30MT PRAIA MOLE 15/20 MAY (REF:2602QAH00)",
+    "date": "2026-05-08T13:28:17.000Z",
+    "body": " \r\n\r\nFrom: Transocean Shipping Co. S.A. <miketerz@transoceangr.gr> \r\nSent: Friday, 8 May 2026 09:30\r\nTo: _ Transocean Shipping Co. S.A. <miketerz@transoceangr.gr>\r\nSubject: FAITH/30116DW/12/CR30MT PRAIA MOLE 15/20 MAY (REF:2602QAH00)\r\nImportance: High\r\n\r\n \r\n\r\nTELiX MSG: 02QAH-00 08/05/26 09:30\r\n\r\n \r\n\r\nTRANSOCEAN SHIPPING COMPANY S.A GREECE/REF TO MIKE\r\n\r\n \r\n\r\nLOCAL HEADOWNRS\r\n\r\n \r\n\r\nFAITH   30116DW/12/CR30MT\r\n=========================PRAIA MOLE 15/20 MAY\r\n                   ===========================\r\n\r\n \r\n\r\nTRY 2/3LL OR SP\r\n===============\r\n\r\n \r\n\r\n \r\n\r\nTRANSOCEAN SHIPPING COMPANY S.A GREECE\r\n\r\nPH 2108941169/E MAIL miketerz@transoceangr.gr <mailto:miketerz@transoceangr.gr>  ++ miketerz@otenet.gr <mailto:miketerz@otenet.gr> \r\n\r\nMIKE TERZIOGLOU/MOB 6974461055-SKYPE miketerz\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Transocean Shipping Co. SA &lt;miketerz@transoceangr.gr&gt; Sent: Friday, 8 May 2026 09:30 To: _ Transocean Shipping Co. SA &lt;miketerz@transoceangr.gr&gt; Subject: FAITH/30116DW/12/CR30MT PRAIA",
+    "labelIds": ["UNREAD", "IMPORTANT", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e07c68d1a6c54a",
+    "threadId": "19e07c68d1a6c54a",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>",
+    "subject": "FW: AMITY 29996DW/10/CR30MT TUNESIA 14/20 MAY (REF:2602QAG00)",
+    "date": "2026-05-08T13:28:30.000Z",
+    "body": " \r\n\r\nFrom: Transocean Shipping Co. S.A. <miketerz@transoceangr.gr> \r\nSent: Friday, 8 May 2026 09:00\r\nTo: _ Transocean Shipping Co. S.A. <miketerz@transoceangr.gr>\r\nSubject: AMITY 29996DW/10/CR30MT TUNESIA 14/20 MAY (REF:2602QAG00)\r\nImportance: High\r\n\r\n \r\n\r\nTELiX MSG: 02QAG-00 08/05/26 09:00\r\n\r\nTELiX MSG: 02PIS-00 07/05/26 10:16\r\n\r\n \r\n\r\n \r\n\r\nTRANSOCEAN SHIPPING COMPANY S.A GREECE/REF TO MIKE\r\n\r\n \r\n\r\nCLOSE LOCAL HEAD OWNRS﻿\r\n\r\n \r\n\r\nAMITY  29996DW/10/CR30MT\r\n\r\n=============BIZERTE 14/20 MAY                                     \r\n\r\n                 ===============       ==================\r\n\r\nTRY SP OR 2/3LL\r\n\r\n================﻿\r\n\r\n \r\n\r\nTRANSOCEAN SHIPPING COMPANY S.A GREECE\r\n\r\nPH 2108941169/E MAIL miketerz@transoceangr.gr <mailto:miketerz@transoceangr.gr>  ++ miketerz@otenet.gr <mailto:miketerz@otenet.gr> \r\n\r\nMIKE TERZIOGLOU/MOB 6974461055-SKYPE miketerz\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Transocean Shipping Co. SA &lt;miketerz@transoceangr.gr&gt; Sent: Friday, 8 May 2026 09:00 To: _ Transocean Shipping Co. SA &lt;miketerz@transoceangr.gr&gt; Subject: AMITY 29996DW/10/CR30MT",
+    "labelIds": ["UNREAD", "IMPORTANT", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e07c6ce81f694d",
+    "threadId": "19e07c6ce81f694d",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>",
+    "subject": "FW: SPECIAL POSITION  - MV ALTO 24 DWT YEMEN SPOT - EX OUR CP",
+    "date": "2026-05-08T13:28:45.000Z",
+    "body": " \r\n\r\nFrom: Maral Gouda <m.gouda@varamar.com> \r\nSent: Friday, 8 May 2026 09:10\r\nTo: management@etm-services.net\r\nSubject: SPECIAL POSITION - MV ALTO 24 DWT YEMEN SPOT - EX OUR CP\r\n\r\n \r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n <https://mailchi.mp/d17289617529/3-8k-dwt-contbaltic-feast-oct-dates-8117999?e=7ed3422e5a> View this email in your browser \r\n\r\n\t\r\n\r\n\r\n\r\n\r\n\r\n\r\nPlease propose suitable cargo\r\n\r\n\r\nMV ALTO\r\n----------------------------\r\nEX OUR CP\r\n\r\n\r\nOpen YEMEN SPOT\r\n\r\n\r\nMV ALTO\r\n\r\nSUMMER: 24804 DWT ON 10.045 METERS\r\n\r\nTYPE: GENERAL CARGO\r\n\r\nBUILT: 1997, JAPAN\r\n\r\nCRANES : 4X30T SWL (only 3 cranes can work simultaneously)\r\n\r\nFLAG: BELIZE\r\n\r\nCLASS: TURKISH LLOYD\r\n\r\nIMO NUMBER: 9145786\r\n\r\nCALL SIGN: V3MW\r\n\r\n \r\n\r\nL.O.A.: 153.78 M\r\n\r\nL.B.P. : 143.80 M\r\n\r\nBEAM: 26.00 M\r\n\r\nDEPTH MOULDED: 16 M\r\n\r\nGROSS TONNAGE: 20395\r\n\r\nNET TONNAGE: 9257\r\n\r\nTPC AT SUMMER: 34.055\r\n\r\n \r\n\r\n4 HOLDS / 4 HATCHES\r\n\r\nHOLD NO 2&3 ARE BOX\r\n\r\nMC GREGOR FOLDING TYPE HATCHCOVERS\r\n\r\n \r\n\r\n             GRAIN (CBM)    BALE (CBM)\r\n\r\nHOLD  1              8957.23                8812.27\r\n\r\nHOLD  2              11829.15            11538.32\r\n\r\nHOLD  3              11827.86            11538.32\r\n\r\nHOLD  4              12274.18            11877.37\r\n\r\nTOTAL                  44888.42            43766.28\r\n\r\n \r\n\r\nHATCHCOVER DIMENSIONS : (METERS)\r\n\r\nNo:1 – 16.00 x 17.38\r\n\r\nNo:2 – 20.00 x 22.00\r\n\r\nNo:3 – 20.00 x 22.00\r\n\r\nNo:4 – 20.00 x 20.00\r\n\r\n \r\n\r\nTANK TOP STRENGHT (CUM/M2) :  H1, H2, H3 = 15 T/M2 / H4 = 14 T/M2\r\n\r\nCO2 FITTED, AUSTRALIAN LADDERS FITTED  \r\n\r\nLAST DRYDOCK : 05.02.2024 , ISTANBUL\r\n\r\n \r\n\r\nALL DETS ABT+\r\n\r\n \r\n\r\n Best regards,\r\n\r\nVARAMAR SHIPPING DMCC,\r\nm.gouda@varamar.com\r\ng.bereti@varamar.com\r\n\r\n\r\n\r\n          \r\n\r\n \r\n\r\n\r\n \r\n\r\n\r\n \r\n\r\n \r\n\r\n\r\n  _____  \r\n\r\n\r\n\r\n       \r\n\r\n\r\n\r\n \r\n\r\n \r\n\r\n\r\n\t\r\n\r\n\r\n\t\r\n\r\n \r\n\r\n\r\n\r\n\r\nYou can  <https://varamar.us6.list-manage.com/profile?u=77dc233bd77642c328018b9a6&id=726e17bbd2&e=7ed3422e5a&c=e3613e9074> update your preferences or  <https://varamar.us6.list-manage.com/unsubscribe?u=77dc233bd77642c328018b9a6&id=726e17bbd2&t=b&e=7ed3422e5a&c=e3613e9074> unsubscribe from this list.\r\n  \r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Maral Gouda &lt;m.gouda@varamar.com&gt; Sent: Friday, 8 May 2026 09:10 To: management@etm-services.net Subject: SPECIAL POSITION - MV ALTO 24 DWT YEMEN SPOT - EX OUR CP View this email in your",
+    "labelIds": ["UNREAD", "IMPORTANT", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e07c79d78505e4",
+    "threadId": "19e07c79d78505e4",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>",
+    "subject": "FW: MV TBN ABT 17 K DWT 96 BUILT ABT 700 K CBFT GRAIN CAP GEARED TO BE OPEN AT GIBRALTAR RANGE 24-25TH MAY -SHE CAN TRADE WORLDWIDE--M/V HACI HILMI II -6976MTS DWT-92 BLT -6750MTS DWCC-3 X 10MTS CRANES-GR:309.895CBFT -OPEN MARMARA SEA ON 22-23RD MAY",
+    "date": "2026-05-08T13:29:40.000Z",
+    "body": " \r\n\r\nFrom: SONAY DENIZCILIK <sonay@sonayshipping.com> \r\nSent: Thursday, 7 May 2026 13:31\r\nTo: management@etm-services.net\r\nSubject: MV TBN ABT 17 K DWT 96 BUILT ABT 700 K CBFT GRAIN CAP GEARED TO BE OPEN AT GIBRALTAR RANGE 24-25TH MAY -SHE CAN TRADE WORLDWIDE--M/V HACI HILMI II -6976MTS DWT-92 BLT -6750MTS DWCC-3 X 10MTS CRANES-GR:309.895CBFT -OPEN MARMARA SEA ON 22-23RD MAY\r\n\r\n \r\n\r\nGOOD DAY  \r\n\r\nPLS PROPOSE SUITABLE CGOES FOR OUR BELOW HOME TONNAGE AND CLOSE OWNER'S VSL:\r\n\r\n-M/V HACI HILMI II -6976MTS DWT-92 BLT -6750MTS DWCC-3 X 10MTS CRANES-GR:309.895CBFT -OPEN MARMARA SEA ON 22-23RD MAY    \r\n\r\nCLOSE OWNERS FIXED THEIR LAST HERE;\r\n\r\nMV TBN ABT 17 K DWT 96 BUILT ABT 700 K CBFT GRAIN CAP GEARED TO BE OPEN AT GIBRALTAR RANGE 24-25TH MAY -SHE CAN TRADE WORLDWIDE\r\n\r\nBEST REGARDS\r\n\r\nSONAY SHIPPING AS/ISTANBUL \r\n\r\nAhmet Bozkurt,Mr./Halil Ersoz,Mr.\r\n\r\n(Member of Bimco and Turkish Shipbrokers Association and Maritime Association of Shipowners and Agents)\r\n\r\nPh:90 216 446 71 05\r\n\r\nEmails:Sonay@sonayshipping.com\r\n\r\nSonaychartering@gmail.com\r\n\r\nIf you no longer wish to receive these emails, please click this unsubscribe link: Unsubscribe\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: SONAY DENIZCILIK &lt;sonay@sonayshipping.com&gt; Sent: Thursday, 7 May 2026 13:31 To: management@etm-services.net Subject: MV TBN ABT 17 K DWT 96 BUILT ABT 700 K CBFT GRAIN CAP GEARED TO BE OPEN",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e07c8807c18d8c",
+    "threadId": "19e07c8807c18d8c",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>",
+    "subject": "FW: FEYZ GROUP VESSEL POSITION",
+    "date": "2026-05-08T13:30:38.000Z",
+    "body": " \r\n\r\nFrom: FeyzGroup <circulation@feyzgroupchartering.com> \r\nSent: Thursday, 7 May 2026 12:21\r\nTo: 'FEYZ GROUP // CHARTERING' <chartering@feyzgroup.com>\r\nSubject: FEYZ GROUP VESSEL POSITION\r\n\r\n \r\n\r\n- / FEYZ CHARTERING \r\n\r\n \r\n\r\n\r\nPlease propose your firm cargoes to our below home tonnage: \r\n\r\n \r\n\r\nDo not reply to :  <mailto:circulation@feyzgroupchartering.com>\r\ncirculation@feyzgroupchartering.com  - Pls always reply to :\r\n<mailto:chartering@feyzgroup.com> chartering@feyzgroup.com \r\n\r\n \r\n\r\nFEYZ GROUP VESSEL POSITION\r\n\r\n \r\n\r\n\r\nMV Sky Str\r\n\r\n5,129 Dwt\r\n\r\n\t2024\r\n\r\n\tRavenna\r\n\r\n\t09 - 11 May\r\n\r\n\tEK\r\n\r\n\r\nMV Sky Falcon\r\n\r\n3,821 Dwt \r\n\r\n\t2025\r\n\r\n\tWC.UK \r\n\r\n\t18 - 19 May\r\n\r\n\tEK\r\n\r\n\r\nMV Sky Dolphin\r\n\r\n3,821 Dwt \r\n\r\n\t2025\r\n\r\n\tGemlik\r\n\r\n\t18 - 20 May\r\n\r\n\tEK\r\n\r\n\r\nMV Sky Feyz\r\n\r\n3,662 Dwt\r\n\r\n\t1995\r\n\r\n\tMarmara\r\n\r\n\t19 - 21 May\r\n\r\n\tMA\r\n\r\n\r\nMV Snow\r\n\r\n4,225 Dwt\r\n\r\n\t1994\r\n\r\n\tE.Med\r\n\r\n\t20 - 22 May\r\n\r\n\tAY\r\n\r\n\r\nMV Sky Lbs \r\n\r\n3,821 Dwt \r\n\r\n\t2024\r\n\r\n\tPoti\r\n\r\n\t21 - 23 May\r\n\r\n\tEK\r\n\r\n\r\nMV Sea Line\r\n\r\n6,795 Dwt\r\n\r\n\t2011\r\n\r\n\tJorf Lasfar\r\n\r\n\t22 - 24 May\r\n\r\n\tMA\r\n\r\n\r\nMV Sky Wish\r\n\r\n5,128 Dwt\r\n\r\n\t2024\r\n\r\n\tIzmit\r\n\r\n\t22 - 24 May\r\n\r\n\tEK\r\n\r\n\r\nMv Sea Wind\r\n\r\n4,188 Dwt\r\n\r\n\t2008\r\n\r\n\tTrabzon\r\n\r\n\t10 - 15 June\r\n\r\n\tMA \r\n\r\n \r\n\r\nMV SKY STR \r\n\r\n5129 DWT ON 6,55 M \r\n\r\nBLT 2024, PORTUGAL FLAG \r\n\r\nSID-BOX, DOUBLE SKIN, GEARLESS \r\n\r\n1 HO/1 HA / 2 MOVABLE BULKHEADS\r\n\r\nHO1: 60,35 X 12,60 X 9,60\r\n\r\nGRAIN/BALE 247,200 / 247,200 CBFT \r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS LLOYD'S REGISTER, U.K P&I\r\n\r\nITF FITTED\r\n\r\n+\r\n\r\nMV SKY MARINE \r\n\r\n4.569 DWT ON 5,96 M\r\n\r\nBLT 1998, PANAMA FLAG \r\n\r\nSID-BOX, DOUBLE SKIN, GEARLESS\r\n\r\n1 HO/1 HA / 1 MOVABLE BULKHEAD\r\n\r\nHO1: 62,30 x 11,0x 8,45 m \r\n\r\nGRAIN/BALE 203,544 CBFT\r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER \r\n\r\nCLASS LLOYD'S REGISTER, THE AMERICAN CLUB P&I\r\n\r\nICE CLASSED\r\n\r\n+\r\n\r\nMV SKY WISH \r\n\r\n5128 DWT ON 6,55 M \r\n\r\nBLT 2024, PORTUGAL FLAG \r\n\r\nSID-BOX, DOUBLE SKIN, GEARLESS \r\n\r\n1 HO/1 HA / 2 MOVABLE BULKHEADS\r\n\r\nHO1: 60,35 X 12,60 X 9,60\r\n\r\nGRAIN/BALE 247,200 / 247,200 CBFT \r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS LLOYD'S REGISTER, U.K P&I\r\n\r\nITF FITTED\r\n\r\n+\r\n\r\nMV SNOW \r\n\r\n4226 DWT ON 5,76 M\r\n\r\nBLT 1994, PANAMA FLAG \r\n\r\nSID-BOX, DOUBLE SKIN, GEARLESS \r\n\r\n1 HO / 1 H A\r\n\r\nHO1: 62,63 X 11,2 X 8,45 M\r\n\r\nGRAIN/BALE 203,000 / 203,000 CBFT\r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS TURKISH LLOYD, TURK P&I\r\n\r\n+\r\n\r\nMV SKY LBS\r\n\r\n3.821 DWT ON 5,48 M \r\n\r\nBLT 2024, PORTUGAL FLAG\r\n\r\nSID-BOX, DOUBLE SKIN, GEARLESS \r\n\r\n1 HO/1 HA / 2 MOVABLE BULKHEADS\r\n\r\nHO1: 62,50 x 10,10 x 8,40 m\r\n\r\nGRAIN/BALE 185,400 / 185,400 CBFT \r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS LLOYD'S REGISTER, U.K P&I \r\n\r\nITF FITTED\r\n\r\n+\r\n\r\nMV SKY FEYZ\r\n\r\n3.662 DWT ON 5,00 M\r\n\r\nBLT 1995, PANAMA FLAG\r\n\r\nSID-BOX LIKE, DOUBLE SKIN, GEARLESS\r\n\r\n1 HO/2 HA\r\n\r\nHO1: 63,65 X 12,2 X 5,1 M\r\n\r\nGRAIN/BALE 157,000 CBFT / 153 468 CBFT\r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS TURKISH LLOYD,TURK P&I\r\n\r\nICE CLASSED\r\n\r\n+\r\n\r\nMV SEA WIND\r\n\r\n4188 DWT ON 5,10 M \r\n\r\nBLT 2008, CYPRUS FLAG\r\n\r\nBOX SHAPED,STEEL FLOORED,GEARLESS\r\n\r\n1 HO / 1 HA\r\n\r\nHO1 : 61,5 X 12,65 X 7,99 M \r\n\r\nGRAIN/BALE 211,000 / 211,000 CBFT \r\n\r\nAPP A-B-C FITTED,  CO2 & CONTAINER FITTED\r\n\r\nCLASS RINA\r\n\r\n +\r\n\r\nMV SKY FALCON\r\n\r\n3821 DWT ON 5,48 M \r\n\r\nBLT 2024, MADEIRA FLAG , \r\n\r\nSID-BOX, DOUBLE SKIN, GEARLESS \r\n\r\n1 HO/1 HA / 2 MOVABLE BULKHEADS\r\n\r\nHO1: 62,50 X 10,1 X 8,40 m\r\n\r\nGRAIN/BALE 185,400 / 185,400 CBFT \r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS LLOYD'S REGISTER, U.K P&I \r\n\r\nITF FITTED\r\n\r\n+\r\n\r\nMV SKY DOLPHIN\r\n\r\n3821 DWT ON 5,48 M \r\n\r\nBLT 2024, MADEIRA FLAG , \r\n\r\nSID-BOX, DOUBLE SKIN, GEARLESS \r\n\r\n1 HO/1 HA / 2 MOVABLE BULKHEADS\r\n\r\nHO1: 62,50 X 10,1 X 8,40 m\r\n\r\nGRAIN/BALE 185,400 / 185,400 CBFT \r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS LLOYD'S REGISTER, U.K P&I\r\n\r\nITF FITTED\r\n\r\n+\r\n\r\nMV SEA LINE\r\n\r\n6795 DWT ON 6,63 M \r\n\r\nBLT 2011, PORTUGAL FLAG\r\n\r\nSID-BOX LIKE, DOUBLE SKIN, GEARLESS\r\n\r\n1 HO/1 HA\r\n\r\nHO1 : \r\n\r\nGRAIN/BALE 290,477 CBFT\r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS RINA, U.K P&I\r\n\r\n \r\n\r\n \r\n\r\nMA: MEVLUT AYNACI                    - Phone: +90 (542) 357 2871 - Teams:\r\nMevlut - Feyz Group\r\n\r\nEK :  EMRE KOPUZ                          - Phone : +90 (531) 306 53 41 -\r\nTeams : longstrike28 \r\n\r\nAY: AHMET YILDIZ                          - Phone : +90 (534) 430 00 40 -\r\nTeams : Ahmet YILDIZ - FEYZ GROUP\r\n\r\n  \r\n\r\nBest Regards\r\n\r\n\r\nFEYZ GROUP\r\n\r\nAdress : Altinsehir Mahallesi, Tavukcuyolu Caddesi\r\n\r\nTomurcuk Sokak No 11 Istanbul/Turkey\r\n\r\nOffice    : +90 (216) 527 00 31\r\n\r\nEmail     :  <mailto:chartering@feyzgroup.com> chartering@feyzgroup.com\r\n\r\nWeb      :  <http://www.feyzgroup.com> www.feyzgroup.com\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: FeyzGroup &lt;circulation@feyzgroupchartering.com&gt; Sent: Thursday, 7 May 2026 12:21 To: &#39;FEYZ GROUP // CHARTERING&#39; &lt;chartering@feyzgroup.com&gt; Subject: FEYZ GROUP VESSEL POSITION",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e07c8d8f66d4aa",
+    "threadId": "19e07c8d8f66d4aa",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>",
+    "subject": "FW: MV GULF BLUE - 4444 DWT - AEGEAN - SPOT",
+    "date": "2026-05-08T13:31:00.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: PACIFIC CHARTERING - ISTANBUL <no-reply@pasifik-grup.com> \r\nSent: Friday, 8 May 2026 11:16\r\nTo: management@etm-services.net\r\nSubject: MV GULF BLUE - 4444 DWT - AEGEAN - SPOT\r\n\r\nPls Reply Only To chartering@pacifictr.com <https://proxy.mailxtr.com/cp/le/MDI0M0F3U3p0S2hleG1jRDRsSGlwcXZHK3VabktCalREZkcwdHduTzdrQXlZY0pTSWJNQzdlTk5yZ3ExN3p5MlgrbmZLUE1TMFhKd3Azb1JLNVlZQlI1eDJkclZOb1FGQkZOTHBLWlNQbVk5ditrT2VYUjBYTzlvM1hZUkVySVB3aC9kMmV2eUJEc0NodXhtVjYrVmM4bno5L1pZVWZGdVNlOGlCUkw5WjhsMDhSYVovWXFHQjJ6SURaMnRDMEE4UzFDMkdXZjZFNTVHMlRJck1CWFFBRjFmak5nL2JnZlM5RmV1US9aaUkyc1hZM1RQTGpRQWFwdEphaU5uZTVtT2hlM0hQcWsrZmk5QUMvQi80WmFRTHR2M2dKK01kcnd5QXBSZXFUVThyUFpva0QxaDNGNU5Dckp4QmpEMlZmSlh1a1gvS2Q1OTI5bzFYc0UrSi9NampwUzduS0FnU0NFbTZIUS9pdmhtRmZhTG12Ty81b1Btc2dqNUkzQ3Q1aFY3Kzl1TEhWTlBLTkx3UHJpWGNjMTgxTExOUUE9PQ> \r\n\r\n<https://proxy.mailxtr.com/cp/le/MDI0M0F3U3p0S2hleG1jRDRsSGlwcXZHK3VabktCalREZkcwdHduTzdrQXlZY0pTSWJNQzdlTk5yZ3ExN3p5MlgrbmZLUE1TMFhKd3Azb1JLNVlZQlI1eDJkclZOb1FGQkZOTHBLWlNQbVk5ditrT2VYUjBYTzlvM1hZUkVySVB3aC9kMmV2eUJEc0NodXhtVjYrVmM4bno5L1pZVWZGdVNlOGlCUkw5WjhsMDhSYVovWXFHQjJ6SURaMnRDMEE4UzFDMkdXZjZFNTVHMlRJck1CWFFBRjFmak5nL2JnZlM5RmV1US9aaUkyc1hZM1RQTGpRQWFwdEphaU5uZTVtT2hlM0hQcWsrZmk5QUMvQi80WmFRTHR2M2dKK01kcnd5QXBSZXFUVThyUFpva0QxaDNGNU5Dckp4QmpEMlZmSlh1a1gvS2Q1OTI5bzFYc0UrSi9NampwUzduS0FnU0NFbTZIUS9pdmhtRmZhTG12Ty81b1Btc2dqNUkzQ3Q1aFY3Kzl1TEhWTlBLTkx3UHJpWGNjMTgxTExOUUE9PQ> 08.05.2026\r\n\r\nPLS DON'T RECIRCULATE\r\n\r\nPLS PROPOSE SUITABLE CGOES FOR OUR HOME TONNAGE\r\n\r\n=====\r\n\r\nMV GULF BLUE\r\n\r\n4444 DWT - AEGEAN - SPOT\r\n\r\n=====\r\nMV GULF BLUE\r\nBUILT 1997\r\nANTIGUA & BARBUDA FLAG - NK CLA SS / IMO:9125073 DWT 4444 MT ON 5,68 m GT/N T 2997/1741 MT LOA/LBP 99,91/95,80 m MOULDED BREADTH 12,80 m DEPTH MOULDED 7,55 m MAX AIR DRAFT FROM KEEL : 32,0 m / 34,0 m GRAIN/BALE ABT 203.271 / 200.271 cbft\r\n1/2 HO/HA SID-BOXHOLD\r\nHOLD DIMS 70,8 x 10,20 x 8,17 m - KING BEAM FITTED HATCHES DIMS No.1: 38,52 x 10,57, No.2: 31,57 x 10,57 TWO STATIONARY BULKHEADS IN FIXED POSITIONS\r\n297 TEU WHEREOF 129 TEU IN HOLD AND 168 TEU ON DECK, GLESS GRAIN/APP B FITTED,STEELFLOORED, ELECTRICAL VENTILATION, BOWTHRUSTER 220 KW,IMO FITTED IN HOLD 1.4S/2/3/4/5.1/6.1/8 / A60 BULKHEAD FITTED P&I - WEST OF ENGLAND , H&M – Leading Underwriter – Amphitrite ADA WOG =====\r\n\r\nBRGDS\r\n\r\nCHARTERING & OPERATION DEPARTMENT\r\n\r\nMr. Osman VARLIK - Chartering Dept.\r\n\r\nMs. Nilufer TOMBEK - Chartering & Operation Dept.\r\n\r\nMr. M.Cagri KAYABAY - Chartering & Operation Dept.\r\n\r\nMr. Yavuz Furkan ESSIZ - Chartering & Operation Dept.\r\n\r\nMr. Ibrahim KARATAS - Chartering & Operation Dept.\r\n\r\nPACIFIC LOGISTICS GROUP AND SHIPPING CO.INC.\r\nPostane Mah. Gokyuzu Sok. No:1\r\n34940 Tuzla/Istanbul\r\n\r\nPHN\r\n\r\n:\r\n\r\n+90 216 446 55 55 pbx\r\n\r\nFAX\r\n\r\n:\r\n\r\n+90 216 446 55 60 pbx\r\n\r\nE-mail\r\n\r\n:\r\n\r\nchartering@pacifictr.com <https://proxy.mailxtr.com/cp/le/MDI0M0F3U3p0S2hleG1jRDRsSGlwcXZHK3VabktCalREZkcwdHduTzdrQXlZY0pTSWJNQzdlTk5yZ3ExN3p5MlgrbmZLUE1TMFhKd3Azb1JLNVlZQlI1eDJkclZOb1FGQkZOTHBLWlNQbVk5ditrT2VYUjBYTzlvM1hZUkVySVB3aC9kMmV2eUJEc0NodXhtVjYrVmM4bno5L1pZVWZGdVNlOGlCUkw5WjhsMDhSYVovWXFHQjJ6SURaMnRDMEE4UzFDMkdXZjZFNTVHMlRJck1CWFFBRjFmak5nL2JnZlM5RmV1US9aaUkyc1hZM1RQTGpRQWFwdEphaU5uZTVtT2hlM0hQcWsrZmk5QUMvQi80WmFRTHR2M2dKK01kcnd5QXBSZXFUVThyUFpva0QxaDNGNU5Dckp4QmpEMlZmSlh1a1gvS2Q1OTI5bzFYc0UrSi9NampwUzduS0FnU0NFbTZIUS9pdmhtRmZhTG12Ty81b1Btc2dqNUkzQ3Q1aFY3Kzl1TEhWTlBLTkx3UHJpWGNjMTgxTExOUUE9PQ> \r\n\r\nWeb : www.pacifictr.com   \r\n\r\n<https://proxy.mailxtr.com/cp/le/MDI0M3luL2JoRFlTMjgxRzhpS3g2eTkySFRCRDBMOFhHWG1SWDF4M1RYUUVRdnYyRWNFN2Q4dGJLaHhZWlNqbTJ0WjRrQytlYndWZkpwSTZOdE41RFBtclZQMGw5MFh6UEVKOWdlQUhBVnFPZXBGTGMrT2NIcmMxY2lZNXFkRCtPRWZjanc2VXlWMFRYbzEvekJzdWNPNW56b2tuUVp6U3FEUGQ5Sk1nUTdOUklQaDRReXgxQnYxVXduTU9sYjE5dk55T2tmeFhiczMrRnZmNkZ6aEl5Qk5iSDBwUlFtZFdEZW93YTd1Sm9jVk1qeG5jUDFFZWZzbW9tUEJrSGtZM1NiWXZFbUdmaHZtU1JFSGtqY0VDY0hnc25ycHhkWWRpVml0a2oyTUNpTDVxdklmSU4zRGJwZ1p2MkVhVHRjTFk2T1hJMVF2dzVyaXBFNW1OT3g1dmpPQXpRUmgrS2RRNk9ZaUhJOWsyc1hCMmY3aVJxcHNnRkhKbHNNZ1hlMXdiM3laMFp0cU5HaVQ1TzBtR3ZCcG4vT3BwL1NLWTdIRnZ6WExVNTNtZUpOL0d5QXczNlZWYkdHcW4xeEpmZGdtQ2s2NUg2cXh6OHIzak4zSE5uUUpGNDlWRFBNOXpFdkFBMzM5eU9qbk03eXJhcWZSUnRLM0N0WFVqVXowWlVEZWlMbGdu> If you prefer not to receive e-mail messages from us click  <https://proxy.mailxtr.com/cp/le/MDI0M3luL2JoRFlTMjgxRzhpS3g2eTkySFRCRDBMOFhHWG1SWDF4M1RYUUVRdnYyRWNFN2Q4dGJLaHhZWlNqbTJ0WjRrQytlYndWZkpwSTZOdE41RFBtclZQMGw5MFh6UEVKOWdlQUhBVnFPZXBGTGMrT2NIcmMxY2lZNXFkRCtPRWZjanc2VXlWMFRYbzEvekJzdWNPNW56b2tuUVp6U3FEUGQ5Sk1nUTdOUklQaDRReXgxQnYxVXduTU9sYjE5dk55T2tmeFhiczMrRnZmNkZ6aEl5Qk5iSDBwUlFtZFdEZW93YTd1Sm9jVk1qeG5jUDFFZWZzbW9tUEJrSGtZM1NiWXZFbUdmaHZtU1JFSGtqY0VDY0hnc25ycHhkWWRpVml0a2oyTUNpTDVxdklmSU4zRGJwZ1p2MkVhVHRjTFk2T1hJMVF2dzVyaXBFNW1OT3g1dmpPQXpRUmgrS2RRNk9ZaUhJOWsyc1hCMmY3aVJxcHNnRkhKbHNNZ1hlMXdiM3laMFp0cU5HaVQ1TzBtR3ZCcG4vT3BwL1NLWTdIRnZ6WExVNTNtZUpOL0d5QXczNlZWYkdHcW4xeEpmZGdtQ2s2NUg2cXh6OHIzak4zSE5uUUpGNDlWRFBNOXpFdkFBMzM5eU9qbk03eXJhcWZSUnRLM0N0WFVqVXowWlVEZWlMbGdu> here <https://proxy.mailxtr.com/cp/le/MDI0M2tnTVQzT0xZSHR2MTFKUlRERnphd01PMks3RE91OERCZ3VjWUhxRS9BUXNwcisxSVNwTzVhb29UZDZiOURzM21KMlBVUGd4RDFKV0lteXRBY1c4SjVQUEl2SVFhcEY2UXpQaGE1cFI0SUdKOUZBQzdPU3hlenZXVzZwdE44WFR1YllFaFVqY2MyZ05WcVdldHNacjNsaUxWQyt1ZFI2Y2ZzR05ad29ZRmFoVFp3K2ZBZVE3ZFlXc1dWUUQ1UDF3TDV6d1c4akliV0tqUWJGWXZiTXpGZnVaRVp6TTRsbXZKdjVxSzhtazEzdnh6RnF5SDUrN1JKVlkvc0tZa0JCUzFtamlrbkRxdm9qeUh1V1UwSE0rYy9ZTzdyVlhQaDcvcm1Bd2h6TzRvZUlXbGYrbHZpT0R3NSt5bWloYlNQOFFOOEMyZm0zb2NmaUwwelJLcVZWa1Nla0d2OEtYOWFOa3UvcXl0VkhBdkpiV01OSSt1V0ZjU2FMbE5OQnpRTDczY1ppWGdiRlVnVVNaTmFrQUNRMVdmc3lKQTV3aEZxUkFpYXBtbDdiVElFeHpNRjhZNi9aK3EzNDVMR1praTU0TkRTczA0VmpDV3RjalhpdlBkdHBoYTV3PT0> .\r\n\r\n <https://proxy.mailxtr.com/cp/te/MDI0M0NxQ2xnT0JVa0RNMGRDVDU1Um13eTI5UGorU0JEY1hhWnRiRnh5SGFsWU0xY21MeW9pb2YxbmpqcUtpUVUyOVlQT3dERGMzSWx1akxMdVR6SzlNejg4bG5PWlNFeElWT2JySC9iZ2xpZ3k4MGxvRWZwcittMGZiVmRobmE0eHhXUFhzMW9EK09kSnU3cDFzdm94bGN6YnFaTWY5amUxb2lmQjg4UDgzTjcxUmlza0VFTVF1Sng0cVJGOW9OWWpGbm9EMWpDbm1jNHh4N0xpNTVtMGhTRy8rd0RPTnpIbHpJYzJ0bEZHVmNDUFI2ZndhRElhSHNnNGY1ek1hbHNpV0ZWMEUwLzRoZmVxd3NyTG9QQzhnV3hSZ20yS3hzRlI1TjVBNjBRWVZTa3I4UmROdDRkZUxyZGlpWjBmcFl3VlNaWDQwMXJ4WDhGN1FEb2pidjlCVkVNajgxT0Ezd2IrOHM1NmFzZy95WENCaks1TUViZTVZY0dON1JIVlhna0cxRQ> \r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n",
+    "snippet": "-----Original Message----- From: PACIFIC CHARTERING - ISTANBUL &lt;no-reply@pasifik-grup.com&gt; Sent: Friday, 8 May 2026 11:16 To: management@etm-services.net Subject: MV GULF BLUE - 4444 DWT - AEGEAN",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e07c91571317d9",
+    "threadId": "19e07c91571317d9",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>",
+    "subject": "FW: PACIFIC SHIPPING GROUP HOME TONNAGES - 08.05.2026",
+    "date": "2026-05-08T13:31:16.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: PACIFIC CHARTERING - ISTANBUL <no-reply@pasifik-grup.com> \r\nSent: Friday, 8 May 2026 11:02\r\nTo: management@etm-services.net\r\nSubject: PACIFIC SHIPPING GROUP HOME TONNAGES - 08.05.2026\r\n\r\nPls Reply Only To chartering@pacifictr.com <https://proxy.mailxtr.com/cp/le/MDI0M0F3U3p0S2hleG1jRDRsSGlwcXZHK3VabktCalREZkcwdHduTzdrQXlZY0pTSWJNQzdlTk5yZ3ExN3p5MlgrbmZLUE1TMFhKd3Azb1JLNVlZQlI1eDJlRFV2MEVIdVhkS1ZBNVhZMkRLck4vKzlLOVU5cERUYUYrUk5xbXZjbWRhQWliODY1R1BscHczUmxyWWpFNU1rNDRsOWFOcE4wbjRiT0hRNEVWSWlFdThyY000ZzQ2SlRVM0c0bENFZWJEeTRXQkVlYW00bUlYUDQyMTY1eGZudTBEbk9QajdxcHZaSTVOdFVPQ2V4SG9MWXFQYXlsM1FzWkJuaEFEeWwvbGZlM2JvaDB3TCtaelkxM3ErbVc1TWd2NHVtOFhtNUVtRnRWbmJEbmExVk9kQWduU1c1Q1FVaVhKL3dMOGlZRzcvQy8wTEQ4ZWpPelpiR3VPaWZGUWtWdS8wWmMrNXNTUzZMdHNhbTVmcTA0R1dYcjIzaFBBaTk0U2VFMHQ5SmZVd3dtcnZ4aG1TZkFMV09xMTVmQ2VMQmc9PQ> \r\n\r\n08.05.2026\r\n\r\nPLS DON'T RECIRCULATE\r\n\r\nPLS PROPOSE SUITABLE CGOES FOR OUR HOME TONNAGES\r\n\r\n----------\r\n\r\nMV GULF WIND\t 3827 DWT - SKIKDA - 18/19 MAY\t \r\nMV GULF SKY\t 3827 DWT - WC GREECE - 14/15 MAY\t \r\nMV GULF RAIN\t 3910 DWT - GRD - EMED - 20/21 MAY\t \r\nMV GULF\t 4322 DWT - SEVILLE - 19 MAY\t \r\nMV GULF BLUE\t 4444 DWT - AEGEAN - SPOT\t \r\nMV GULF WEST\t 4444 DWT - EMED - 20/21 MAY\t \r\nMV GULF ANGEL\t 4454 DWT - CMED - 09 MAY\t \r\nMV GULF EXPRESS\t 5244 DWT - GRD - MARMARA - WEEK 20\t \r\n----------\r\nMV GULF WIND\r\nBLT 1990\r\nIMO 8818075\r\nANTIGUA & BARBUDA FLAG, RINA CLASS\r\nDWT 3827 ON DRAFT 5,477 (SUMMER)\r\nGRT / NRT 2351/1262\r\nLOA 87,00 / MOULDED BREADTH 13,00\r\nGRAIN /BALE 160.537 CBFT/ 160.537 CBFT\r\n1/2 HO/HA SID-BOX HOLD\r\nHOLD DIMS : 57,4 X 10,2 X 8,00 – Strongbeam fitted MAX AIR DRAFT FROM KEEL 25 M GEARLESS, STEELFLOORED\r\nP&I- WEST OF ENGLAND\r\nH&M – Leading Underwriter – Amphitrite\r\nBOWTHRUSTER/CONTAINER/BULK/APP B/GRAIN/TIMBER FITTED TWO STATIONARY BULKHEADS IN FIXED POSITIONS ADA WOG\r\n----------\r\nMV GULF SKY\r\nBLT 1990\r\nIMO NUMBER 8817409\r\nANTIGUA & BARBUDA FLAG, RINA CLASS\r\nDWT 3827 ON DRAFT 5,477 (SUMMER)\r\nGRT / NRT 2351/1262\r\nLOA 87,00 / MOULDED BREADTH 13,00\r\nGRAIN /BALE 160.537 CBFT/ 160.537 CBFT\r\n1/2 HO/HA SID-BOX HOLD\r\nHOLD DIMS : 57,4 X 10,2 X 8,00 – Strongbeam fitted MAX AIR DRAFT FROM KEEL 25 M GEARLESS, STEELFLOORED\r\nP&I- WEST OF ENGLAND\r\nH&M – Leading Underwriter – Amphitrite\r\nBOWTHRUSTER/CONTAINER/BULK/APP B/GRAIN/TIMBER FITTED TWO STATIONARY BULKHEADS IN FIXED POSITIONS ADA WOG\r\n----------\r\nMV GULF RAIN\r\nBLT 11/1993,SLOVAKIA\r\nST. KITTS & NEVIS FLAG\r\nIRS CLASS / IMO:9056052\r\nDWT 3910 MT ON 5,85 M ON SUMMER\r\nGT/NT 2514/1351 MT\r\nLOA/BEAM 87,58/12,90\r\nGR/BL ABT 4.620 M3/164.175 CBFT\r\n1 HO/HA SID-BOXHOLD\r\nHOLD DIMS: 56,44 x 10,17 x 8,10 M (7,99 M UNDER KNUCKLE POINT) KING BEAM FITTED HATCH DIMS:56,60 x 10,20\r\n14 TONS / M2 STEEL FLOORED\r\nTWO STATIONARY BULKHEADS IN FIXED POSITIONS, ELECTRICAL / 6 AIR CHANGES V ANTILATION\r\n2X12,5 TON CRANES AT PORT SIDE\r\nBOWTHRUSTER 185 KW/168 TEU/CO2/BULK/APP B/GRAIN FITTED IMO FITTED IN HOLD 1.4s/2/3/4/5,1/6/8/9 P&I - WEST OF ENGLAND , H&M – Leading Underwriter – Amphitrite ADA WOG\r\n----------\r\nMV GULF\r\nBLT 2000/09\r\nANTIGUA & BARBUDA FLAG\r\nNK CLASS / IMO:8937352\r\nDWT 4322 MT ON 5,56 M\r\nGT/NT 2914/1311 MT\r\nLOA/LBP 96,30/92,15 MOULDED BREADTH MAX 13,40 MTR, DEPTH TO MAINDECK 6,70 M GR/BL ABT 169.299 /169.299 CBFT\r\n2/2 HO/HA SID-BOXHOLD\r\nHOLD DIMS : 29,5 x10,3x8,2 / 29,62x10,3x8,2 HATCH DIMS : 26,4x10,3 / 26,4x10,3 M MAX AIR DRAFT FROM KEEL : 27,06 M GLESS,STEELFLOORED\r\nP&I- WEST OF ENGLAND\r\nH&M – Leading Underwriter – Amphitrite\r\nBOWTHRUSTER 135 KW/CONTAINER /BULK/APP B/GRAIN/TIMBER FITTED IMO FITTED IN HOLD 1.4S/2/3/4/5.1/6.1/8/9 ADA WOG\r\n----------\r\nMV GULF BLUE\r\nBUILT 1997\r\nANTIGUA & BARBUDA FLAG - NK CLA SS / IMO:9125073 DWT 4444 MT ON 5,68 m GT/N T 2997/1741 MT LOA/LBP 99,91/95,80 m MOULDED BREADTH 12,80 m DEPTH MOULDED 7,55 m MAX AIR DRAFT FROM KEEL : 32,0 m / 34,0 m GRAIN/BALE ABT 203.271 / 200.271 cbft\r\n1/2 HO/HA SID-BOXHOLD\r\nHOLD DIMS 70,8 x 10,20 x 8,17 m - KING BEAM FITTED HATCHES DIMS No.1: 38,52 x 10,57, No.2: 31,57 x 10,57 TWO STATIONARY BULKHEADS IN FIXED POSITIONS\r\n297 TEU WHEREOF 129 TEU IN HOLD AND 168 TEU ON DECK, GLESS GRAIN/APP B FITTED,STEELFLOORED, ELECTRICAL VENTILATION, BOWTHRUSTER 220 KW,IMO FITTED IN HOLD 1.4S/2/3/4/5.1/6.1/8 / A60 BULKHEAD FITTED P&I - WEST OF ENGLAND , H&M – Leading Underwriter – Amphitrite ADA WOG\r\n----------\r\nMV GULF WEST\r\nBUILT 1997\r\nANTIGUA & BARBUDA FLAG - RINA CLASS / IMO:9125085 DWT 4444 MT ON 5,68 m GT/NT 2997/1741 MT LOA/LBP 99,91/95,52 m EXTREME BREADTH 12,80 m DEPTH MOULDED 7,578 m MAX AIR DRAFT FROM KEEL : 28,8 m GRAIN/BALE ABT 203.271/200.271 cbft\r\n1/2 HO/HA SID-BOXHOLD\r\nHOLD DIMS 70,80 x 10,20 x 8,17 m - KING BEAM FITTED HATCHES DIMS No.1: 38,56 x 10,57, No.2: 31,55 x 10,57 TWO STATIONARY BULKHEADS IN FIXED POSITIONS\r\n297 TEU WHEREOF 129 TEU IN HOLD AND 168 TEU ON DECK, GLESS GRAIN/APP B FITTED,STEELFLOORED, ELECTRICAL VENTILATION, BOWTHRUSTER 220 KW IMO FITTED IN HOLD 1.4S/2/3/4 /5.1/6.1/8 P&I - WEST OF ENGLAND , H&M – Leading Underwriter – Amphitrite ADA WOG\r\n----------\r\nMV GULF ANGEL\r\nBUILT 1996 / 10 EU BUILT\r\nANTIGUA & BARBUDA FLAG - NK CLASS / IMO:9125059 DWT 4454 MT ON 5,68 m GT/NT 2997/1741 MT LOA/LBP 99,91/95,80 m MOULDED BREADTH 12,80 m DEPTH MOULDED 7,55 m MAX AIR DRAFT FROM KEEL : 28,0 m GRAIN/BALE ABT 203.271/200.271 cbft\r\n1/2 HO/HA SID-BOXHOLD\r\nHOLD DIMS 70,8 x 10,20 x 8,17 m - KING BEAM FITTED HATCHES DIMS No.1: 38,52 x 10,57, No.2: 31,50 x 10,57 TWO STATIONARY BULKHEADS IN FIXED POSITIONS\r\n297 TEU WHEREOF 129 TEU IN HOLD AND 168 TEU ON DECK, GLESS GRAIN/APP B FITTED,STEELFLOORED, ELECTRICAL VENTILATION, BOWTHRUSTER 220 KW, IMO FITTED IN HOLD 1.4S/2/3/4/5.1/6.1 AND 8. / A60 BULKHEAD FITTED P&I - WEST OF ENGLAND , H&M – Leading Underwriter – Amphitrite ADA WOG\r\n----------\r\nMV GULF EXPRESS\r\nANTIGUA & BARBUDA FLAG - RINA CLASS\r\nIMO:9191101\r\nDWT 5244 MT ON ABT 6,74 M DRAFT\r\nBLT 1999/12, ICE CLASSED\r\nGT/NT 3784/1839 MT\r\nLOA/LBP 93,28/84,70 MOULDED BREADTH 16,50 M, DEPTH 7,6 M GR/BL ABT 6165,7 CBM / 217,736 cbft\r\n1 HO/2 HA SID-BOXHOLD\r\nHOLD DIMS : 52,50 X 12,75 X 9,0 M KINGBEAM FITTED HATCH DIMS : 51,25 X 12,75 M MAX AIR DRAFT FROM KEEL: 34,70 M GEARED 2 X 36 TONS HYDRAULIC CRANES STEELFLOORED BOWTHRUSTER 200kw/CONTAINER 251 TEUS/BULK/APP B/GRAIN/CO2/TIMBER FITTED IMO FITTED IN HOLD 1.4S/2/3/4/5.1/6.1/8/9 VESSEL HAS 6 ELECTRICAL AIRCHANGES P&I-WEST OF ENGLAND, H&M – Leading Underwriter – Amphitrite ADA WOG \r\n\r\nBRGDS\r\n\r\nCHARTERING & OPERATION DEPARTMENT\r\n\r\nMr. Osman VARLIK - Chartering Dept.\r\n\r\nMs. Nilufer TOMBEK - Chartering & Operation Dept.\r\n\r\nMr. M. Cagri KAYABAY - Chartering & Operation Dept.\r\n\r\nMr. Yavuz Furkan ESSIZ - Chartering & Operation Dept.\r\n\r\nMr. Ibrahim KARATAS - Chartering & Operation Dept.\r\n\r\nPACIFIC LOGISTICS GROUP AND SHIPPING CO.INC.\r\nPostane Mah. Gokyuzu Sok. No:1\r\n34940 Tuzla/Istanbul\r\n\r\nPHN\r\n\r\n:\r\n\r\n+90 216 446 55 55 pbx\r\n\r\nFAX\r\n\r\n:\r\n\r\n+90 216 446 55 60 pbx\r\n\r\nE-mail\r\n\r\n:\r\n\r\nchartering@pacifictr.com <https://proxy.mailxtr.com/cp/le/MDI0M0F3U3p0S2hleG1jRDRsSGlwcXZHK3VabktCalREZkcwdHduTzdrQXlZY0pTSWJNQzdlTk5yZ3ExN3p5MlgrbmZLUE1TMFhKd3Azb1JLNVlZQlI1eDJlRFV2MEVIdVhkS1ZBNVhZMkRLck4vKzlLOVU5cERUYUYrUk5xbXZjbWRhQWliODY1R1BscHczUmxyWWpFNU1rNDRsOWFOcE4wbjRiT0hRNEVWSWlFdThyY000ZzQ2SlRVM0c0bENFZWJEeTRXQkVlYW00bUlYUDQyMTY1eGZudTBEbk9QajdxcHZaSTVOdFVPQ2V4SG9MWXFQYXlsM1FzWkJuaEFEeWwvbGZlM2JvaDB3TCtaelkxM3ErbVc1TWd2NHVtOFhtNUVtRnRWbmJEbmExVk9kQWduU1c1Q1FVaVhKL3dMOGlZRzcvQy8wTEQ4ZWpPelpiR3VPaWZGUWtWdS8wWmMrNXNTUzZMdHNhbTVmcTA0R1dYcjIzaFBBaTk0U2VFMHQ5SmZVd3dtcnZ4aG1TZkFMV09xMTVmQ2VMQmc9PQ> \r\n\r\nWeb : www.pacifictr.com   \r\n\r\nIf you prefer not to receive e-mail messages from us click  <https://proxy.mailxtr.com/cp/le/MDI0M3luL2JoRFlTMjgxRzhpS3g2eTkySFRCRDBMOFhHWG1SWDF4M1RYUUVRdnYyRWNFN2Q4dGJLaHhZWlNqbTJ0WjRrQytlYndWZkpwSTZOdE41RFBtclZHL3QzNzZCY1VxMjBpQkxzNVRMcXVpUVNlSWQxTXR5cktxeDdLaSsvUFJyU3hpS0lUUVRacnFjR2xldzJ6NDFjTzhiQ2tDektDeEdYSFE5cjNTTnptaDVuejdsSFNJcDVOeXJ5UytpeE0vOTFyYnRrUGFKVXJtc3dyNzJMRkcwSDRRa2IvVVdXNVdrSkJxc2ZIb3l3L0xiS1VXMXNTL2FibkNBSXNiR1IwRUc1Ync3YkZEeThZYytQTkRsZTZxdnkzN211VG80NWxicnhBY2VwQVpCYnh4SlYvaFlIZHRZNWFXOXI3azRibGFld25QejgrYW51R1l6dUh6eEN6NGxJM3Rnb3UvY054K2pSNnQvbDY4U0pTbnpOSmppYmZDd25Xd3llKzV6ZzFFYWJwLzJmTEtyN2RFR3dQNGo0UUZhT1NJYWkxbDJMdG9Wb0JjOElBRzVMQ0tYbmVOalZjbDBFL3plRXNqTDFwdHR2eFZ4djZNNjUxOWFLejArdVRtYUF6T3JDTmdSblJYbkE5VmI4K1psZEVmRStjMDVwb0FxQlRLQ0UrelZybS9Q> here <https://proxy.mailxtr.com/cp/le/MDI0M2tnTVQzT0xZSHR2MTFKUlRERnphd01PMks3RE91OERCZ3VjWUhxRS9BUXNwcisxSVNwTzVhb29UZDZiOURzM21KMlBVUGd4RDFKV0lteXRBY1c4SjVQUEl2SVFhcEY2UXpQaGE1cFI0SUdKOUZBQzdPU3hlenZXVzZwdE44WFR1YllFaFVqY2MyZ05WcVdldHNacjNsaUxWQyt1ZFI2Y2ZzR05ad29ZRmFoUS9WNUdhUyt2clkwRkx0MHdURnJXRHA1MWlsNEZFY1ZqaTFxRUcya3kyU3lQN1dUYlY0RmpWckRmYWhhVFlDVmozS292b2QzblRMVWpmTkJNamdZZnRoaTZrVWJVMGhGL3hmcEs4ZFdxcE1FamlWRG4vVjlKbGhPNkd5R3NsTFFGaVJPRHpaU2JmK09QVldwRlIxQUIra3Q1c2RpYUQ2RnhNR3V6T2xjdkc5ODlaY05Pb0dsQ2pZT1plM1oydDNHNW1QcEE4UGcyZXZSTHhVazFaZ3BQWS94UHUyMXNyVDhLZ0t1Qmp0VFFFVGVHM1M1dGt5eEs0UjJGNkRHbmtHcVdMTTlyMlZCMnlhaWlzWlFPbmwvUi8zbkVicVppbGlOZkJXcGc1cVR4dlB3PT0> .\r\n\r\n\r\n\r\n\r\n\r\n <https://proxy.mailxtr.com/cp/te/MDI0M0NxQ2xnT0JVa0RNMGRDVDU1Um13eTI5UGorU0JEY1hhWnRiRnh5SGFsWU0xY21MeW9pb2YxbmpqcUtpUVUyOVkwa2VPZzlGZnBLTFZuN3V4Vm9OalZoc1h0WUV0QllkaHVYVFAwNHJQalZBOU1YSC9Na1VrRlc0bmVLaDVzVW1FaDY4aWRFYTkwK2RsSmdtSDFwbTVLMStoSndIOVg5RVdoN1FwbmJVMW1LMEh4N2h5d3ZjOFBUMG5JNTVoeUJ6dFUzVnU3WFRrVW45U2lIL3BEcjJKU1QyaUhDK0xiSFhiZHhjZUtMSlpycnpzdmtpREozNERJaWRuc0Zuc2NqZ3o1d0hVM2trb25pZ2tMRmsvbDVGT0oyNmF0MGMvdTZQZGZ3R2dVb0FWRW50N3UzUEJSejJPbC80REc2VjM4TlRHdjgycmtENGlSaEc4aGtGbDAvYzk3LzRBMGlZeWh1VS9nbmd6WjV5NlRla2tqZ2RSWGZ1Y0xyemJRTVVOSmJjdQ> \r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com\r\n",
+    "snippet": "-----Original Message----- From: PACIFIC CHARTERING - ISTANBUL &lt;no-reply@pasifik-grup.com&gt; Sent: Friday, 8 May 2026 11:02 To: management@etm-services.net Subject: PACIFIC SHIPPING GROUP HOME",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e07cd53642b24c",
+    "threadId": "19e07cd53642b24c",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: FAITH/30116DW/12/CR30MT PRAIA MOLE 15/20 MAY (REF:2602NZB00)",
+    "date": "2026-05-08T13:35:54.000Z",
+    "body": " \r\n\r\nFrom: Transocean Shipping Co. S.A. <miketerz@transoceangr.gr> \r\nSent: Wednesday, 6 May 2026 15:39\r\nTo: _ Transocean Shipping Co. S.A. <miketerz@transoceangr.gr>\r\nSubject: FAITH/30116DW/12/CR30MT PRAIA MOLE 15/20 MAY (REF:2602NZB00)\r\nImportance: High\r\n\r\n \r\n\r\nTELiX MSG: 02NZB-00 06/05/26 15:39\r\n\r\n \r\n\r\nTRANSOCEAN SHIPPING COMPANY S.A GREECE/REF TO MIKE\r\n\r\n \r\n\r\nLOCAL HEADOWNRS\r\n\r\n \r\n\r\nFAITH   30116DW/12/CR30MT\r\n=========================PRAIA MOLE 15/20 MAY\r\n                   ===========================\r\n\r\n \r\n\r\nTRY 2/3LL OR SP\r\n===============\r\n\r\n \r\n\r\n \r\n\r\nTRANSOCEAN SHIPPING COMPANY S.A GREECE\r\n\r\nPH 2108941169/E MAIL miketerz@transoceangr.gr <mailto:miketerz@transoceangr.gr>  ++ miketerz@otenet.gr <mailto:miketerz@otenet.gr> \r\n\r\nMIKE TERZIOGLOU/MOB 6974461055-SKYPE miketerz\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Transocean Shipping Co. SA &lt;miketerz@transoceangr.gr&gt; Sent: Wednesday, 6 May 2026 15:39 To: _ Transocean Shipping Co. SA &lt;miketerz@transoceangr.gr&gt; Subject: FAITH/30116DW/12/CR30MT",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e07cf877558fdc",
+    "threadId": "19e07cf877558fdc",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: MV LADY ANITA – OPEN HODEIDAH SPOT PROMPT ",
+    "date": "2026-05-08T13:38:18.000Z",
+    "body": " \r\n\r\nFrom: mylist1-owner@elsharkawymaritime.com <mylist1-owner@elsharkawymaritime.com> On Behalf Of Elsharkawy Maritime & Logistics Co\r\nSent: Wednesday, 6 May 2026 13:39\r\nTo: chartering@elsharkawymaritime.com\r\nSubject: MV LADY ANITA – OPEN HODEIDAH SPOT PROMPT \r\n\r\n \r\n\r\nAttn: Chartering Desk!!!\r\n\r\n \r\n\r\nGd Day,,\r\n\r\n \r\n\r\nPlease Kindly Propose Suitable/Rated Cargo For Below Dir Vsl:\r\n\r\n \r\n\r\nMV LADY ANITA – OPEN HODEIDAH SPOT PROMPT\r\n\r\n\r\nTYPE OF VESSEL\r\n\r\nGENERAL CARGO SHIP\r\n\r\n\r\nYEAR OF BUILT\r\n\r\n2012\r\n\r\n\r\nFLAG STATE / PORT OF REGISTRY\r\n\r\nTOGO / LOME\r\n\r\n\r\nCLASSIFICATION SOCIETY\r\n\r\nOMCS\r\n\r\n\r\nL.O.A / L.B.P\r\n\r\n96.9 M / 89.8 M\r\n\r\n\r\nBREADTH MOULDED\r\n\r\n15.8 M\r\n\r\n\r\nDEPTH MOULDED\r\n\r\n7.4 M\r\n\r\n\r\nG.R.T / N.R.T\r\n\r\n2998  / 1746  M/T\r\n\r\n\r\nG/B CAPA \r\n\r\n6800/6700CBM\r\n\r\n\r\nLIGHT SHIP\r\n\r\n1386.8 MT\r\n\r\n\r\nDISPLACEMENT\r\n\r\n6715.2 MT\r\n\r\n\r\nSUMMER DRAFT\r\n\r\n5.85 M\r\n\r\n\r\nSUMMER DEADWEIGHT\r\n\r\n5328.4 M/T\r\n\r\n\r\nT.P.C\r\n\r\n12.9 MT\r\n\r\n\r\nFREE BOARD\r\n\r\n1.55 M\r\n\r\n\r\nMAX HEIGHT\r\n\r\n28.65 M\r\n\r\n\r\nHATCH COVER NO. 1 SIZE:\r\n\r\n25M X 9.45M\r\n\r\n\r\nHOLD DAIMANTION NO. 1\r\n\r\n32.64M X 13.26M X 7.82M\r\n\r\n\r\nHATCH COVER NO. 2 SIZE:\r\n\r\n26.9M X 9.45M\r\n\r\n\r\nHOLD DAIMANTION NO. 2\r\n\r\n32M X 13.26M X 7.82M\r\n\r\n\r\nLIGHT WEIGHT\r\n\r\n1386.74\r\n\r\n\r\nM/E\r\n\r\nGC320ZCD-4 500 R/MIN 1765KW\r\n\r\n\r\nA/E\r\n\r\n6135JZCAF/6CCFJ120J-Y8/2SETS\r\n\r\n\r\nG/E\r\n\r\nMP-H-120-4   120KW\r\n\r\n\r\nSPEED\r\n\r\nFULL LOADED/BALLAST:10.KTS/10.5KTS\r\n\r\n\r\nCONSUMPTION BALLAST\r\n\r\nIFO 180: M/E :3.7MT/D; AUX/E:MGO 0.35MT\r\n\r\n\r\nCONSUMPTION LOADING\r\n\r\nIFO 180  ME:4.2MT/D；AUX/E: MGO 0.35MT/D\r\n\r\n\r\nCONSUMPTION IN PORT\r\n\r\nAUX/E MGO 0.35MT/D\r\n\r\n \r\n\r\nWycp ? \r\n\r\n \r\n\r\nBrgds // \r\n\r\nCapt.Mohamed Elsharkawy\r\n\r\nTels: +20663232456/3232457\r\n\r\nFax:  +20663232459\r\n\r\nMob: +201007800552 (24hrs) \r\n\r\nTeams Id:  <mailto:elsharkawy_maritime@hotmai.com> elsharkawy_maritime@hotmai.com  \r\n\r\nE-Mail:  <mailto:chartering@elsharkawymaritime.com> chartering@elsharkawymaritime.com\r\n\r\nW.Site:  <http://www.elsharkawymaritime.com/> www.elsharkawymaritime.com \r\n\r\n \r\n\r\n  _____  \r\n\r\nTo subscribe, Please Send To mylist1-subscribe@elsharkawymaritime.com <mailto:mylist1-subscribe@elsharkawymaritime.com> \r\nTo unsubscribe, Please Send To mylist1-unsubscribe@elsharkawymaritime.com <mailto:mylist1-unsubscribe@elsharkawymaritime.com> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: mylist1-owner@elsharkawymaritime.com &lt;mylist1-owner@elsharkawymaritime.com&gt; On Behalf Of Elsharkawy Maritime &amp; Logistics Co Sent: Wednesday, 6 May 2026 13:39 To: chartering@",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e07d815dd6691c",
+    "threadId": "19e07cf877558fdc",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: MV LADY ANITA – OPEN HODEIDAH SPOT PROMPT ",
+    "date": "2026-05-08T13:47:38.000Z",
+    "body": " \r\n\r\nFrom: mylist1-owner@elsharkawymaritime.com <mylist1-owner@elsharkawymaritime.com> On Behalf Of Elsharkawy Maritime & Logistics Co\r\nSent: Wednesday, 6 May 2026 08:32\r\nTo: chartering@elsharkawymaritime.com\r\nSubject: MV LADY ANITA – OPEN HODEIDAH SPOT PROMPT \r\n\r\n \r\n\r\nAttn: Chartering Desk!!!\r\n\r\n \r\n\r\nGd Day,,\r\n\r\n \r\n\r\nPlease Kindly Propose Suitable/Rated Cargo For Below Dir Vsl:\r\n\r\n \r\n\r\nMV LADY ANITA – OPEN HODEIDAH SPOT PROMPT \r\n\r\n\r\nEX NAME\r\n\r\nNEW SILK ROAD 2\r\n\r\n\r\nTYPE OF VESSEL\r\n\r\nGENERAL CARGO SHIP\r\n\r\n\r\nYEAR OF BUILT\r\n\r\n2012\r\n\r\n\r\nFLAG STATE / PORT OF REGISTRY\r\n\r\nTOGO / LOME\r\n\r\n\r\nCLASSIFICATION SOCIETY\r\n\r\nOMCS\r\n\r\n\r\nL.O.A / L.B.P\r\n\r\n96.9 m / 89.8 m\r\n\r\n\r\nBREADTH MOULDED\r\n\r\n15.8 m\r\n\r\n\r\nDEPTH MOULDED\r\n\r\n7.4 m\r\n\r\n\r\nG.R.T / N.R.T\r\n\r\n2998  /1746 m/t\r\n\r\n\r\nLIGHT SHIP\r\n\r\n1386.8 mt\r\n\r\n\r\nDISPLACEMENT\r\n\r\n6715.2 mt\r\n\r\n\r\nSUMMER DRAFT\r\n\r\n5.85 m\r\n\r\n\r\nSUMMER DEADWEIGHT\r\n\r\n5328.4 m/t\r\n\r\n\r\nT.P.C\r\n\r\n12.9 mt\r\n\r\n\r\nFREE BOARD\r\n\r\nXXX\r\n\r\n\r\nMAX HEIGHT\r\n\r\nXXX\r\n\r\n\r\n1/HATCH/ HOLD\r\n\r\n9.45X25.0M, / 7.82X13.26X32.64M H\r\n\r\n\r\n2/HATCH/HOLD\r\n\r\n9.45X26.9M / 7.82X13.26X32.0M\r\n\r\n\r\nLIGHT WEIGHT\r\n\r\n1386.74\r\n\r\n\r\nM/E\r\n\r\nGC320ZCD-4 500 r/min 1765KW\r\n\r\n\r\nA/E\r\n\r\n6135JZCaf/6CCFJ120J-Y8/2sets\r\n\r\n\r\nG/E\r\n\r\nMP-H-120-4   120kw\r\n\r\n\r\nSPEED\r\n\r\nFULL LOADED/BALLAST:10.KTS/10.5KTS\r\n\r\n\r\nCONSUMPTION BALLAST\r\n\r\nIFO 180: M/E :3.7MT/D; AUX/E:MGO 0.35MT\r\n\r\n\r\nCONSUMPTION LOADING\r\n\r\nIFO 180  ME:4.2MT/D；AUX/E: MGO 0.35MT/D\r\n\r\n\r\nCONSUMPTION IN PORT\r\n\r\nAUX/E MGO 0.35MT/D\r\n\r\n \r\n\r\nWycp ? \r\n\r\n \r\n\r\nBrgds // \r\n\r\nCapt.Mohamed Elsharkawy\r\n\r\nTels: +20663232456/3232457\r\n\r\nFax:  +20663232459\r\n\r\nMob: +201007800552 (24hrs) \r\n\r\nTeams Id:  <mailto:elsharkawy_maritime@hotmai.com> elsharkawy_maritime@hotmai.com  \r\n\r\nE-Mail:  <mailto:chartering@elsharkawymaritime.com> chartering@elsharkawymaritime.com\r\n\r\nW.Site:  <http://www.elsharkawymaritime.com/> www.elsharkawymaritime.com \r\n\r\n \r\n\r\n  _____  \r\n\r\nTo subscribe, Please Send To mylist1-subscribe@elsharkawymaritime.com <mailto:mylist1-subscribe@elsharkawymaritime.com> \r\nTo unsubscribe, Please Send To mylist1-unsubscribe@elsharkawymaritime.com <mailto:mylist1-unsubscribe@elsharkawymaritime.com> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: mylist1-owner@elsharkawymaritime.com &lt;mylist1-owner@elsharkawymaritime.com&gt; On Behalf Of Elsharkawy Maritime &amp; Logistics Co Sent: Wednesday, 6 May 2026 08:32 To: chartering@",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e07cfaa34cc768",
+    "threadId": "19e07cfaa34cc768",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: 25.000DWT OPEN RED SEA SPOT",
+    "date": "2026-05-08T13:38:28.000Z",
+    "body": " \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Wednesday, 6 May 2026 13:56\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: RE:25.000DWT OPEN RED SEA SPOT\r\n\r\n \r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\n*For quick response pls include \"takis\" in the body of the email*\r\n\r\nGD DAY \r\n\r\nPLS PROPOSE ANY SUIT BIZ OR BELOW VSL OPEN RED SEA  SPOT\r\n\r\n\r\nM/V LIKA\r\n-------------\r\nDWT 25,000 ON 9.80M\r\nBUILT 1997 FLAG COMOROS, \r\nCLASS OMCS - SS 12/2028 DD 12/2026\r\nL.O.A. 158.20M / BEAM 25.80M / DEPTH 13.30M\r\n4 HOLDS / 4 HATCHES\r\nG.T. 15,349 / N.T. 8,111\r\nGRAIN 29,463 / BALE 28,768CBM\r\nGEARED C 3X30\r\nLDT 5,687MT\r\nMAIN ENGINE: HITACHI B&W 6L42MC\r\nAUX.ENGINE: 2 X DAIHATSU\r\nEmail :462001678@stratosmobile.net \r\n======\r\nSpeed and consumption under good weather conditions, upto max.Beaufort 4 / Douglas Seastate 3, no adverse current and no negative influence of swell.\r\nLaden:  about 11.00 knots on about 15.50 mts (LSFO 380 cst)\r\nBallast: about 11.00 knots on about 15.00 mts (LSFO 380 cst)\r\nIn port:  about  2mts  MDO/MGO when idle\r\nabout  3.5mts MDO/MGO when gear working\r\n\r\nPlease add our email address ( chartering@niavigrains.gr ) to your circulation list for cargoes / positions\r\n\r\nBEST RGRDS\r\nTAK  (TAKIS KAPETANIOS)\r\nE MAIL : chartering@niavigrains.gr <mailto:chartering@niavigrains.gr> \r\nMobile/WhatsApp:0030 6944528968\r\nSKYPE: captanpanos\r\nLINKEDIN : www.linkedin.com/in/takis-kapetanios-5031344b/ <http://www.linkedin.com/in/takis-kapetanios-5031344b/> \r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr <http://www.niavigrains.gr> \r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Niavigrains Chartering SA &lt;chartering@niavigrains.gr&gt; Sent: Wednesday, 6 May 2026 13:56 To: Niavigrains Chartering SA &lt;chartering@niavigrains.gr&gt; Subject: RE:25.000DWT OPEN RED SEA",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e07d0cb83503c5",
+    "threadId": "19e07d0cb83503c5",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: 4000 dwcc open Sevilla",
+    "date": "2026-05-08T13:39:41.000Z",
+    "body": " \r\n\r\nFrom: PRIME MARITIME ODESA <chartering@prime-maritime.com> \r\nSent: None\r\nTo: management@etm-services.net\r\nSubject: 4000 dwcc open Sevilla\r\n\r\n \r\n\r\nMV KATREN   open   SEVILLA   07-08 May\r\nBUILT-1991, NETHERLANDS\r\nDWT 4173 MTS, DWCC 4000 ON 5,45 M DRAFT\r\nRINA CLASS, FLAG VANUATU\r\nSID, GLESS, LOA 88,25 M, BREADTH 13,7 M\r\nBOW TRUSTER FITTED\r\nTWO BOX HOLDS G/B 197500 CBF\r\n1- 29,75 x 11,55 x 8,65 M\r\n2- 32,05 x 11,5 5 x 8,65 M\r\nP&I MS AMLIN BELGIUM\r\nALL DETS ABT WOG\r\n\r\nfor any directions\r\n\r\n__\r\nBest regards\r\nPrime Maritime\r\n+380635961588  \r\n+380669422741\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: PRIME MARITIME ODESA &lt;chartering@prime-maritime.com&gt; Sent: None To: management@etm-services.net Subject: 4000 dwcc open Sevilla MV KATREN open SEVILLA 07-08 May BUILT-1991, NETHERLANDS DWT",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e07d49ee39a1cc",
+    "threadId": "19e07d49ee39a1cc",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: 18300 DWCC OPEN AT AGADIR",
+    "date": "2026-05-08T13:43:51.000Z",
+    "body": " \r\n\r\nFrom: Gn Group <noreply@gngroup.com.tr> \r\nSent: Friday, 8 May 2026 12:23\r\nTo: management@etm-services.net\r\nSubject: 18300 DWCC OPEN AT AGADIR\r\n\r\n \r\n\r\n\r\nPLS ADD IN YR CIRCULATION LIST AND REPLY TO:chartering@gngroup.com.tr\r\n\r\n \r\n\r\n \r\n\r\nGOOD DAY,\r\n\r\n \r\n\r\nPLS OFFER FIRM FOR OUR HOME TONNAGE POSITIONS AS FOLLOWS:\r\n\r\n \r\n\r\n+++ \r\n\r\n \r\n\r\n18/19 MAY OPEN AT AGADIR     \r\n\r\n \r\n\r\n \r\n\r\nMV LADY HATICE  EX SQUAMISH\r\nDWCC 18200 MTS AT 8.49M DRAFT\r\nPANAMA FLAG SID - BOXLIKE -BUILT 2009 JAPAN -DWT /GRT/NRT 18930/11767/6023 \r\nLOA/LBP/BEAM 139,92/132,48/25 M- D.M.11,50M -4HO/4HA GRAIN/BALE: 762.340/737.837 CBFT\r\nGEARED; APP.B/B -HYDOR  P&I, CLASS: RINA -ALL DETS ABT WOG\r\n\r\n \r\n\r\n\r\nBRGDS\r\n\r\nHUSEYIN\r\n\r\n\r\n-- \r\nBRGDS\r\nGN GROUP CORPORATION-IS TANBUL\r\nTel : +90 216 325 08 00\r\nFax : +90 216 339 88 99\r\nEmail : chartering@gngroup(.)com(.)tr\r\nWeb: www.gngroup.com.tr\r\n\r\n Üyelikten çıkış linki için bir başlık yazınız. \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Gn Group &lt;noreply@gngroup.com.tr&gt; Sent: Friday, 8 May 2026 12:23 To: management@etm-services.net Subject: 18300 DWCC OPEN AT AGADIR PLS ADD IN YR CIRCULATION LIST AND REPLY TO:chartering@",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e07d4ca1ca18ff",
+    "threadId": "19e07d4ca1ca18ff",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: HANDY-SPOT AT AD",
+    "date": "2026-05-08T13:44:03.000Z",
+    "body": " \r\n\r\nFrom: Gn Group <noreply@gngroup.com.tr> \r\nSent: Friday, 8 May 2026 12:21\r\nTo: management@etm-services.net\r\nSubject: HANDY-SPOT AT AD\r\n\r\n \r\n\r\n\r\nPLS ADD IN YR CIRCULATION LIST AND REPLY TO:chartering@gngroup.com.tr\r\n\r\n \r\n\r\nGOOD DAY,\r\n\r\n \r\n\r\nPLS OFFER FIRM FOR OUR HOME TONNAGE POSITIONS AS FOLLOWS:\r\n\r\n \r\n\r\n \r\n\r\n+++ \r\n\r\n\r\nSPOT AT ADRIATIC       \r\n\r\n \r\n\r\nMV LADY ZEHMA  (EX CASSIOPEIA STAR)\r\nDWCC 31500 MTS AT 9.573M DRAFT\r\nPANAMA FLAG SID - BOXLIKE -BUILT 2005 JAPAN -DWT /GRT/NRT 32328/20283/10227 \r\nLOA/LBP/BEAM 172,9/164.9/29.4 M- D.M.14M -5HO/5HA GRAIN/BALE: 1489078/1453622 CBFT\r\nGEARED; APP.B/B -P&I :HYDOR  , CLASS: RINA -ALL DETS ABT WOG\r\n\r\n \r\n\r\n \r\n\r\n\r\nBRGDS\r\n\r\nHUSEYIN\r\n\r\n\r\n-- \r\nBRGDS\r\nGN GROUP CORPORATION-IS TANBUL\r\nTel : +90 216 325 08 00\r\nFax : +90 216 339 88 99\r\nEmail : chartering@gngroup(.)com(.)tr\r\nWeb: www.gngroup.com.tr\r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Gn Group &lt;noreply@gngroup.com.tr&gt; Sent: Friday, 8 May 2026 12:21 To: management@etm-services.net Subject: HANDY-SPOT AT AD PLS ADD IN YR CIRCULATION LIST AND REPLY TO:chartering@gngroup.com",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e07d517de73b94",
+    "threadId": "19e07d517de73b94",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: MV TBN ABT 17 K DWT 96 BUILT ABT 700 K CBFT GRAIN CAP GEARED TO BE OPEN AT GIBRALTAR RANGE 24-25TH MAY -SHE CAN TRADE WORLDWIDE--M/V HACI HILMI II -6976MTS DWT-92 BLT -6750MTS DWCC-3 X 10MTS CRANES-GR:309.895CBFT -OPEN MARMARA SEA ON 22-23RD MA",
+    "date": "2026-05-08T13:44:23.000Z",
+    "body": " \r\n\r\nFrom: SONAY DENIZCILIK <sonay@sonayshipping.com> \r\nSent: Friday, 8 May 2026 12:06\r\nTo: management@etm-services.net\r\nSubject: MV TBN ABT 17 K DWT 96 BUILT ABT 700 K CBFT GRAIN CAP GEARED TO BE OPEN AT GIBRALTAR RANGE 24-25TH MAY -SHE CAN TRADE WORLDWIDE--M/V HACI HILMI II -6976MTS DWT-92 BLT -6750MTS DWCC-3 X 10MTS CRANES-GR:309.895CBFT -OPEN MARMARA SEA ON 22-23RD MA\r\n\r\n \r\n\r\nGOOD DAY  \r\n\r\nPLS PROPOSE SUITABLE CGOES FOR OUR BELOW HOME TONNAGE AND CLOSE OWNER'S VSL:\r\n\r\n-M/V HACI HILMI II -6976MTS DWT-92 BLT -6750MTS DWCC-3 X 10MTS CRANES-GR:309.895CBFT -OPEN MARMARA SEA ON 22-23RD MAY    \r\n\r\nCLOSE OWNERS FIXED THEIR LAST HERE;\r\n\r\nMV TBN ABT 17 K DWT 96 BUILT ABT 700 K CBFT GRAIN CAP GEARED TO BE OPEN AT GIBRALTAR RANGE 24-25TH MAY -SHE CAN TRADE WORLDWIDE\r\n\r\nBEST REGARDS\r\n\r\nSONAY SHIPPING AS/ISTANBUL \r\n\r\nAhmet Bozkurt,Mr./Halil Ersoz,Mr.\r\n\r\n(Member of Bimco and Turkish Shipbrokers Association and Maritime Association of Shipowners and Agents)\r\n\r\nPh:90 216 446 71 05\r\n\r\nEmails:Sonay@sonayshipping.com\r\n\r\nSonaychartering@gmail.com\r\n\r\nIf you no longer wish to receive these emails, please click this unsubscribe link: Unsubscribe\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: SONAY DENIZCILIK &lt;sonay@sonayshipping.com&gt; Sent: Friday, 8 May 2026 12:06 To: management@etm-services.net Subject: MV TBN ABT 17 K DWT 96 BUILT ABT 700 K CBFT GRAIN CAP GEARED TO BE OPEN AT",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e07d53e7d46b71",
+    "threadId": "19e07d53e7d46b71",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: AYKIN SHIPPING /// VESSELS POSITION",
+    "date": "2026-05-08T13:44:33.000Z",
+    "body": " \r\n\r\nFrom: chartering@aykinshipping.com <chartering@aykinshipping.com> \r\nSent: Friday, 8 May 2026 12:13\r\nTo: chartering@aykinshipping.com\r\nSubject: AYKIN SHIPPING /// VESSELS POSITION\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPlease kindly note that i am the owner of below vessels which details\r\nwritten. You may add our good ladies to your circulation mail list.\r\n\r\n \r\n\r\nMV BBA LARISA '' EX ALI AYKIN ” / ” EX YALIKOY ”\r\n\r\nIMO 9166510\r\n\r\nBuilt 1999 - 5007 dwt –APP B FITTED\r\n\r\n4900 dwcc on 6,45 Draft\r\n\r\nL/B/D 93,72/14,85/7,50\r\n\r\nGRT/NRT/ 2950/1807\r\n\r\nPALAU Flag - TL Class – London P&I\r\n\r\nSemi Box 1 Hold  / 1 Hatch\r\n\r\nG/B 220.577 / 213000\r\n\r\nVessel will be open at Gabes on 11-12 May\r\n\r\n \r\n\r\n \r\n\r\nMV YUCATAN (EX PARAKLITOS) \r\n\r\nIMO 9367841\r\n\r\nBuilt 2006 - 3178 dwt \r\n\r\n3100 dwcc on 5,51 Draft\r\n\r\nL/B/D 80,6/13,6/6,9\r\n\r\nGRT/NRT/ 1972/1227\r\n\r\nST VINCENT Flag - TL Class – London P&I\r\n\r\nBox 2 Hold  / 2 Hatch\r\n\r\nG/B 141050,3 cuft\r\n\r\nVessel will be open at Bourgas on 15-16 May \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nMV ONEGO TRADER\r\n\r\nIMO 9238351\r\n\r\nBuilt 2001 - 8930 dwt –APP B FITTED\r\n\r\n8200 dwcc on 7,2  Draft\r\n\r\nL/B/D 132,2/15,87/9,65\r\n\r\nGRT/NRT/ 6301/3582\r\n\r\nPORTUGAL Flag - KR Class – London P&I\r\n\r\nFull Box 2 Hold  / 2 Hatch\r\n\r\nG/B 452,000 cbft\r\n\r\nVessel ON TC.\r\n\r\n \r\n\r\nMV ONEGO MERCHANT\r\n\r\nIMO 9238363\r\n\r\nBuilt 2002 - 8930 dwt –APP B FITTED\r\n\r\n8200 dwcc on 7,2  Draft\r\n\r\nL/B/D 132,2/15,87/9,65\r\n\r\nGRT/NRT/ 6301/3582\r\n\r\nPORTUGAL Flag - KR Class – London P&I\r\n\r\nFull Box 2 Hold  / 2 Hatch\r\n\r\nG/B 452,000 cbft\r\n\r\nVessel ON TC.\r\n\r\n \r\n\r\nFurther information please feel free to contact.\r\n\r\n \r\n\r\n\r\nBest Regards / Mit freundlichen Grüßen\r\n\r\n\r\n \r\n\r\n\r\n\r\n\r\nCapt. Cabir OZTURK\r\n\r\n\r\nOperations Manager\r\n\r\n\r\n\r\n\r\n <mailto:operation@aykinshipping.com> operation@aykinshipping.com\r\n\r\n\r\n\r\n <http://www.aykinshipping.com/> www.aykinshipping.com\r\n\r\n\r\n\r\n\r\n+90 537 561 47 85\r\n\r\n\r\n\r\n+90 (216) 392 99 48 / 204\r\n\r\n\r\n\r\n\r\n \r\n\r\n\r\n\r\n \r\n\r\nAydintepe Mah. Güzin Sokak. No:35 \r\n\r\nTuzla / Istanbul / TURKEY\r\n\r\n \r\n\r\nbei den Mühren 1, 20457\r\n\r\nHamburg / GERMANY\r\n\r\n    <https://www.instagram.com/aykinshipping/>\r\n<https://www.linkedin.com/company/aykinshipping> \r\n\r\n \r\n\r\n <https://aykinshipping.com/web/assets/pdf/aykinshipping.pdf> \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n       <http://www.aykingroup.com/> \r\n\r\n\r\n\r\n\r\n\r\n \r\n\r\nDISCLAIMER\r\n\r\nThis e-mail and related files are the private property of the sender , the\r\npersonal and the legal entities to whom they were intended to be send. If\r\nyou are not an authorized recepient of this e-mail it is forbidden to open,\r\ncopy, forward or use it. It is required that you should delate this e-mail\r\nimmediately. Aykin Deniz Nakliyat A.S. does not guarrantee absolutely the\r\ncorrectness and completeness of the information within this e-mail, and\r\ntherefore will not be held liable from their illegal use and the forfeit.\r\nThe sole resposibility will belong to the person who send  it and the\r\ncontents herein might not be reflecting the opinions of Aykin Deniz Nakliyat\r\nA.S.  legal entity. This e-mail has been scanned for all known computer\r\nviruses.\r\n\r\nAssigned as data supervisor in accordance with Law No. 6698 (General Data\r\nProtection Regulation Law), your general documents existing in your e-mail\r\nenvironment will be protected and processed by the form and principles of\r\nAykin Deniz Nakliyat A.S. General Data Protection and Processing Policy.\r\n\r\n\t\t\t\t\t\t\t\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: chartering@aykinshipping.com &lt;chartering@aykinshipping.com&gt; Sent: Friday, 8 May 2026 12:13 To: chartering@aykinshipping.com Subject: AYKIN SHIPPING /// VESSELS POSITION Good day, Please",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e07d5e7f039766",
+    "threadId": "19e07d5e7f039766",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>",
+    "subject": "FW: harmanda home tonnages",
+    "date": "2026-05-08T13:45:16.000Z",
+    "body": " \r\n\r\nFrom: HARMANDA CHARTERING - ISTANBUL <chartering@harmanda.com.tr> \r\nSent: Friday, 8 May 2026 11:21\r\nTo: management@etm-services.net\r\nSubject: harmanda home tonnages\r\n\r\n \r\n\r\nGOOD DAY,\r\n\r\nPLS PROPOSE;\r\n\r\n\r\nVessel Name\r\n\r\nDWT\r\n\r\nPosition\r\n\r\nOpen\r\n\r\n\r\nFIRTINA S\r\n\r\n2,362\r\n\r\nAEGEAN SEA\r\n\r\n12-13 MAY\r\n\r\n\r\nEMINE ANNE\r\n\r\n1,602\r\n\r\nWEST BLACK SEA\r\n\r\n14-16 MAY\r\n\r\nM/V FIRTINA S\r\n\r\nGC/SID, Gearless\r\n2362 DWT on 5.4 m SSW, DWCC abt 2200 mts\r\nGrain/Bale: 96,500/94,300 CBFT\r\nVanuatu Flag, BRS Classed, P&I covered by Turk P&I\r\n1988 Built in Türkiye, Call Sign: YJWU6, IMO No: 8834940\r\nLOA: 75.52, LBP: 67.58, Beam: 11, Depth Moulded: 6\r\nGRT/NRT: 1248/734\r\n1 Hold / 2 Hatches\r\nHo1: 44.00 x 10.15 x 4.70 M\r\nHa1: 15.50 x 7.40 x 1.45 M\r\nHa2: 14.90 x 7.40 x 1.45 M\r\nADAWOG\r\n\r\nM/V EMINE ANNE\r\nGC/SID, Gearless\r\n1602 DWT on 4.30 m SSW, DWCC abt 1425 mts\r\nGrain/Bale: 70,440/67,204 CBFT\r\nVanuatu Flag, BRS Classed, P&I covered by Turk P&I\r\n1996 Built in Turkiye, Call Sign: YJWJ2, IMO No: 9145360\r\nLOA: 69, LBP: 63.35, Beam: 9, Depth Moulded: 5.2\r\nGRT/NRT: 884/531\r\nAir Draft: 20 m fm keel\r\n2 Holds / 2 Hatches\r\nHo1: 22.60 x 8.50 x 4.30 M\r\nHo2: 22.50 x 8.50 x 4.30 M\r\nHa1: 17.50 x 6.00 x 1.10 M\r\nHa2: 17.90 x 6.00 x 1.10 M\r\nAppendix b fitted\r\nADAWOG\r\n\r\n\r\n\r\nTHANKS & BEST REGARDS\r\n\r\nOSMAN ASLAN | Chartering & Operation Manager\r\nHarmanda Denizcilik ve Ticaret LTD ŞTİ\r\nPhone (WhatsApp): +90 530 594 05 83\r\nTeams: osmanaslan01\r\nEmail: chartering@harmanda.com.tr\r\nAddress: Evliya Çelebi Mh, Küme Sk, Tuzla Ticaret\r\nMerkezi, No:2, D/6-7-8-9, 34944, Tuzla, İstanbul\r\n\r\nÜyelikten çıkmak için tıklayınız.\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: HARMANDA CHARTERING - ISTANBUL &lt;chartering@harmanda.com.tr&gt; Sent: Friday, 8 May 2026 11:21 To: management@etm-services.net Subject: harmanda home tonnages GOOD DAY, PLS PROPOSE; Vessel Name",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e07d718417e96d",
+    "threadId": "19e07d718417e96d",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: inhouse ship :MV Raven 10.000dwcc Open Turkish Black Sea / Prompt",
+    "date": "2026-05-08T13:46:34.000Z",
+    "body": " \r\n\r\nFrom: Fix | Multiserviceshipping <fix@multiserviceshipping.com> \r\nSent: Wednesday, 6 May 2026 09:52\r\nTo: 'Fix | Multiserviceshipping' <fix@multiserviceshipping.com>\r\nSubject: inhouse ship :MV Raven 10.000dwcc Open Turkish Black Sea / Prompt\r\n\r\n \r\n\r\nFrom: Multiservice Shipping and Trading Corp.\r\n\r\n <https://multiserviceshipping.com/en/> https://multiserviceshipping.com/en/\r\n\r\n \r\n\r\n*Our inhouse ship* \r\n\r\n \r\n\r\nGood Cubic Intake\r\n\r\n \r\n\r\nMV Raven 10.000dwcc Open Turkish Black Sea / Prompt\r\n\r\n \r\n\r\nMV Raven\r\n\r\n10.000 dwcc on 10.00 m ssw\r\n\r\nsingle decker/box shaped\r\n\r\n1997 blt\r\n\r\nVanatu flag\r\n\r\nloa / beam / deep moulded: 105.5 /19 /13.5\r\n\r\ngrt: 6870 nrt : 3404\r\n\r\ngrain: 14138 cbm  bale:13656 cbm\r\n\r\n2 hold / 2 hatch\r\n\r\nmac gregor hatches\r\n\r\nbrs class\r\n\r\nturk pandi\r\n\r\nCO2 fitted\r\n\r\ntank top strenght : 15 tonnes\r\n\r\ncrane 2x15t &derrick 2x15t \r\n\r\nada\r\n\r\n \r\n\r\n \r\n\r\nRegards /Ersin (skype :capitan119)\r\n\r\nMultiservice Shipping and Trading Corp.\r\n\r\nOffice  : +90 216 309 71 97  Extention:105\r\n\r\nMobile:+90 532 660 45 06        \r\n\r\nE-mail :  <mailto:fix@multiserviceshipping.com> fix@multiserviceshipping.com\r\n\r\n\r\n <https://multiserviceshipping.com/en/> https://multiserviceshipping.com/en/\r\n\r\n \r\n\r\nFrom: Fix | Multiserviceshipping <fix@multiserviceshipping.com\r\n<mailto:fix@multiserviceshipping.com> > \r\nSent: Tuesday, May 5, 2026 1:43 PM\r\nTo: 'Fix | Multiserviceshipping' <fix@multiserviceshipping.com\r\n<mailto:fix@multiserviceshipping.com> >\r\nSubject: inhouse ship :MV Raven 10.000dwcc Open Turkish Black Sea / Prompt\r\n\r\n \r\n\r\nFrom: Multiservice Shipping and Trading Corp.\r\n\r\n <https://multiserviceshipping.com/en/> https://multiserviceshipping.com/en/\r\n\r\n \r\n\r\n*Our inhouse ship* \r\n\r\n \r\n\r\nGood Cubic Intake\r\n\r\n \r\n\r\nMV Raven 10.000dwcc Open Turkish Black Sea / Prompt\r\n\r\n \r\n\r\nMV Raven\r\n\r\n10.000 dwcc on 10.00 m ssw\r\n\r\nsingle decker/box shaped\r\n\r\n1997 blt\r\n\r\nVanatu flag\r\n\r\nloa / beam / deep moulded: 105.5 /19 /13.5\r\n\r\ngrt: 6870 nrt : 3404\r\n\r\ngrain: 14138 cbm  bale:13656 cbm\r\n\r\n2 hold / 2 hatch\r\n\r\nmac gregor hatches\r\n\r\nbrs class\r\n\r\nturk pandi\r\n\r\nCO2 fitted\r\n\r\ntank top strenght : 15 tonnes\r\n\r\ncrane 2x15t &derrick 2x15t \r\n\r\nada\r\n\r\n \r\n\r\n \r\n\r\nRegards /Ersin (skype :capitan119)\r\n\r\nMultiservice Shipping and Trading Corp.\r\n\r\nOffice  : +90 216 309 71 97  Extention:105\r\n\r\nMobile:+90 532 660 45 06        \r\n\r\nE-mail :  <mailto:fix@multiserviceshipping.com> fix@multiserviceshipping.com\r\n\r\n\r\n <https://multiserviceshipping.com/en/> https://multiserviceshipping.com/en/\r\n\r\n \r\n\r\nFrom: Fix | Multiserviceshipping <fix@multiserviceshipping.com\r\n<mailto:fix@multiserviceshipping.com> > \r\nSent: Tuesday, May 5, 2026 9:33 AM\r\nTo: 'Fix | Multiserviceshipping' <fix@multiserviceshipping.com\r\n<mailto:fix@multiserviceshipping.com> >\r\nSubject: inhouse ship :MV Raven 10.000dwcc Open Turkish Black Sea / Prompt\r\n\r\n \r\n\r\nFrom: Multiservice Shipping and Trading Corp.\r\n\r\n <https://multiserviceshipping.com/en/> https://multiserviceshipping.com/en/\r\n\r\n \r\n\r\n*Our inhouse ship* \r\n\r\n \r\n\r\nGood Cubic Intake\r\n\r\n \r\n\r\nMV Raven 10.000dwcc Open Turkish Black Sea / Prompt\r\n\r\n \r\n\r\nMV Raven\r\n\r\n10.000 dwcc on 10.00 m ssw\r\n\r\nsingle decker/box shaped\r\n\r\n1997 blt\r\n\r\nVanatu flag\r\n\r\nloa / beam / deep moulded: 105.5 /19 /13.5\r\n\r\ngrt: 6870 nrt : 3404\r\n\r\ngrain: 14138 cbm  bale:13656 cbm\r\n\r\n2 hold / 2 hatch\r\n\r\nmac gregor hatches\r\n\r\nbrs class\r\n\r\nturk pandi\r\n\r\nCO2 fitted\r\n\r\ntank top strenght : 15 tonnes\r\n\r\ncrane 2x15t &derrick 2x15t \r\n\r\nada\r\n\r\n \r\n\r\n \r\n\r\nRegards /Ersin (skype :capitan119)\r\n\r\nMultiservice Shipping and Trading Corp.\r\n\r\nOffice  : +90 216 309 71 97  Extention:105\r\n\r\nMobile:+90 532 660 45 06        \r\n\r\nE-mail :  <mailto:fix@multiserviceshipping.com> fix@multiserviceshipping.com\r\n\r\n\r\n <https://multiserviceshipping.com/en/> https://multiserviceshipping.com/en/\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Fix | Multiserviceshipping &lt;fix@multiserviceshipping.com&gt; Sent: Wednesday, 6 May 2026 09:52 To: &#39;Fix | Multiserviceshipping&#39; &lt;fix@multiserviceshipping.com&gt; Subject: inhouse",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e07d9324b157fc",
+    "threadId": "19e07d9324b157fc",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: breakbulk sailling may 5",
+    "date": "2026-05-08T13:48:51.000Z",
+    "body": " \r\n\r\nFrom: operationp <open-position@vessel-position.royalevershpg.com> \r\nSent: Wednesday, 6 May 2026 04:37\r\nTo: management@etm-services.net\r\nSubject: breakbulk sailling may 5\r\n\r\n \r\n\r\nmanagement@etm-services.net <mailto:management@etm-services.net> \r\nneed named/rated cargo to fix\r\n\r\n1) loading: japan, korea, china\r\ndisport: fujairah, sohar,\r\nlaycan may 15-20\r\n\r\n2) loading: korea, china\r\n   disport: red, med, bsea\r\n   laycan : may 20-25\r\n\r\n3) loading: se.asia, eci\r\n disport : fujairaj, sohar\r\n laycan: may 20-25\r\n\r\n4)?loading: fujairah, sohar\r\n  disport: med, conti\r\n  laycan: may 17-25\r\n\r\n5) loading: bsea, med,\r\ndisport: wafrica, ecsa\r\nlaycan : may 15-20\r\n\r\n6) loading: bsea, med,\r\ndisport: red, eafrica\r\nlaycan may 15-20\r\n\r\n7) loading: neuro, conti, arag\r\ndisport: e.usa, usg, carib, ncsa\r\nlaycan jun 1-10\r\n\r\n\r\nIf you do not wish to receive further messages from this sender, please reply with the word UNSUBSCRIBE in the Subject line\r\n\r\nb.rgds/tang\r\nriver ocean shipping limited\r\ntel:0086-411-39756008\r\nfax:0086-411-39756009\r\nmobile&whatsapp : 86-18698624158\r\nemail: chartering@royalevershpg.com <mailto:chartering@royalevershpg.com> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: operationp &lt;open-position@vessel-position.royalevershpg.com&gt; Sent: Wednesday, 6 May 2026 04:37 To: management@etm-services.net Subject: breakbulk sailling may 5 management@etm-services.net",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e089f6040369fd",
+    "threadId": "19e089f6040369fd",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: 12.300 dwt open at LUANDA",
+    "date": "2026-05-08T17:25:20.000Z",
+    "body": " \r\n\r\nFrom: Niavigrains Chartering S.A <chartering@niavigrains.gr> \r\nSent: Monday, 2 February 2026 10:35\r\nTo: Niavigrains Chartering S.A <chartering@niavigrains.gr>\r\nSubject: 12.300 dwt open at LUANDA\r\n\r\n \r\n\r\nNIAVIGRAINS TRADING CHARTERING S.A.\r\n\r\ngday\r\n\r\n \r\n\r\npls propose your rated cargoes for the fol lady open LUANDA 11th of February - prefer cargoes to MED SEA - BLACK SEA\r\n\r\n\r\nMV EDELSTEIN\r\nABOUT 12,320 DWT ON 8,3M SSW – TWEEN DECKER\r\nBUILT: 1997 - COMOROS FLAG PHOENIX CLASS\r\nLOA 111.97M - LBP 105.00M – BREADTH 20.50M – DEPTH 14.30M\r\nGRT/NRT 8,579 / 3,103 – GR/BL 18,338.84 M3 / 17,715.61 M3\r\n2HO/2HA\r\nCRANES 30Tx2 (NOT COMBINABLE) – DERRICK 10Tx1\r\nADA WOG\r\n\r\n\r\n\r\nBEST RGRDS\r\nTASOS KOUMANIS ( mob. 00306937322574)\r\nE MAILS : chartering@niavigrains.gr <mailto:chartering@niavigrains.gr>  \r\n\r\n19 FILYRON STR TK 141 21\r\nNEO IRAKLIO ATTIKIS GREECE\r\nwww.niavigrains.gr <http://www.niavigrains.gr> \r\nTEL 00302106455787-8\r\nFAX 00302106455789\r\nSKYPE : NIAVIGRAINS Tasos\r\nLinkedIn: www.linkedin.com/in/tasoskoumanis <http://www.linkedin.com/in/tasoskoumanis> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Niavigrains Chartering SA &lt;chartering@niavigrains.gr&gt; Sent: Monday, 2 February 2026 10:35 To: Niavigrains Chartering SA &lt;chartering@niavigrains.gr&gt; Subject: 12.300 dwt open at LUANDA",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e089f8eedde1bf",
+    "threadId": "19e089f8eedde1bf",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: AYKIN SHIPPING /// VESSELS POSITION",
+    "date": "2026-05-08T17:25:32.000Z",
+    "body": " \r\n\r\nFrom: chartering@aykinshipping.com <chartering@aykinshipping.com> \r\nSent: Monday, 2 February 2026 10:31\r\nTo: chartering@aykinshipping.com\r\nSubject: AYKIN SHIPPING /// VESSELS POSITION\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPlease kindly note that i am the owner of below vessels which details\r\nwritten. You may add our good ladies to your circulation mail list.\r\n\r\n \r\n\r\n \r\n\r\nMV YUCATAN (EX PARAKLITOS) \r\n\r\nIMO 9367841\r\n\r\nBuilt 2006 - 3178 dwt \r\n\r\n3100 dwcc on 5,51 Draft\r\n\r\nL/B/D 80,6/13,6/6,9\r\n\r\nGRT/NRT/ 1972/1227\r\n\r\nST VINCENT Flag - TL Class – Turk P&I\r\n\r\nBox 2 Hold  / 2 Hatch\r\n\r\nG/B 141050,3 cuft\r\n\r\nVessel will be open at Bizerte on 11-12 Feb\r\n\r\n \r\n\r\n \r\n\r\nMV BBA LARISA '' EX ALI AYKIN ” / ” EX YALIKOY ”\r\n\r\nIMO 9166510\r\n\r\nBuilt 1999 - 5007 dwt –APP B FITTED\r\n\r\n4900 dwcc on 6,45 Draft\r\n\r\nL/B/D 93,72/14,85/7,50\r\n\r\nGRT/NRT/ 2950/1807\r\n\r\nPALAU Flag - TL Class – Turk P&I\r\n\r\nSemi Box 1 Hold  / 1 Hatch\r\n\r\nG/B 220.577 / 213000\r\n\r\nVessel  will be open at Ravenna on 04 Feb\r\n\r\n \r\n\r\n \r\n\r\nMV ONEGO TRADER\r\n\r\nIMO 9238351\r\n\r\nBuilt 2001 - 8930 dwt –APP B FITTED\r\n\r\n8200 dwcc on 7,2  Draft\r\n\r\nL/B/D 132,2/15,87/9,65\r\n\r\nGRT/NRT/ 6301/3582\r\n\r\nPORTUGAL Flag - KR Class – UK PANDI\r\n\r\nFull Box 2 Hold  / 2 Hatch\r\n\r\nG/B 452,000 cbft\r\n\r\nVessel ON TC.\r\n\r\n \r\n\r\nMV ONEGO MERCHANT\r\n\r\nIMO 9238363\r\n\r\nBuilt 2002 - 8930 dwt –APP B FITTED\r\n\r\n8200 dwcc on 7,2  Draft\r\n\r\nL/B/D 132,2/15,87/9,65\r\n\r\nGRT/NRT/ 6301/3582\r\n\r\nPORTUGAL Flag - KR Class – UK PANDI\r\n\r\nFull Box 2 Hold  / 2 Hatch\r\n\r\nG/B 452,000 cbft\r\n\r\nVessel ON TC.\r\n\r\n \r\n\r\nFurther information please feel free to contact.\r\n\r\n \r\n\r\n\r\nBest Regards / Mit freundlichen Grüßen\r\n\r\n \r\n\r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n\r\nCapt. Cabir OZTURK\r\n\r\n \r\n\r\n\r\nOperations Manager\r\n\r\n \r\n\r\n\r\n\r\n\r\n <mailto:operation@aykinshipping.com> operation@aykinshipping.com\r\n\r\n\r\n\r\n <http://www.aykinshipping.com/> www.aykinshipping.com\r\n\r\n \r\n\r\n\r\n\r\n\r\n+90 537 561 47 85\r\n\r\n\r\n\r\n+90 (216) 392 99 48 / 204\r\n\r\n \r\n\r\n\r\n\r\n\r\n \r\n\r\n\r\n\r\n \r\n\r\nAydintepe Mah. Güzin Sokak. No:35 \r\n\r\nTuzla / Istanbul / TURKEY\r\n\r\n \r\n\r\nbei den Mühren 1, 20457\r\n\r\nHamburg / GERMANY\r\n\r\n    <https://www.instagram.com/aykinshipping/>\r\n<https://www.linkedin.com/company/aykinshipping> \r\n\r\n \r\n\r\n <https://aykinshipping.com/web/assets/pdf/aykinshipping.pdf> \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n       <http://www.aykingroup.com/> \r\n\r\n \r\n\r\n\r\n\r\n\r\n \r\n\r\n\r\n \r\n\r\nDISCLAIMER\r\n\r\nThis e-mail and related files are the private property of the sender , the\r\npersonal and the legal entities to whom they were intended to be send. If\r\nyou are not an authorized recepient of this e-mail it is forbidden to open,\r\ncopy, forward or use it. It is required that you should delate this e-mail\r\nimmediately. Aykin Deniz Nakliyat A.S. does not guarrantee absolutely the\r\ncorrectness and completeness of the information within this e-mail, and\r\ntherefore will not be held liable from their illegal use and the forfeit.\r\nThe sole resposibility will belong to the person who send  it and the\r\ncontents herein might not be reflecting the opinions of Aykin Deniz Nakliyat\r\nA.S.  legal entity. This e-mail has been scanned for all known computer\r\nviruses.\r\n\r\nAssigned as data supervisor in accordance with Law No. 6698 (General Data\r\nProtection Regulation Law), your general documents existing in your e-mail\r\nenvironment will be protected and processed by the form and principles of\r\nAykin Deniz Nakliyat A.S. General Data Protection and Processing Policy.\r\n\r\n \r\n\r\n\t\t\t\t\t\t\t\t\t\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: chartering@aykinshipping.com &lt;chartering@aykinshipping.com&gt; Sent: Monday, 2 February 2026 10:31 To: chartering@aykinshipping.com Subject: AYKIN SHIPPING /// VESSELS POSITION Good day,",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e08a05d472698a",
+    "threadId": "19e08a05d472698a",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: MV ELFRIEDE - TWD/GRD/10K DWT - OPEN SPOT at Gibraltar",
+    "date": "2026-05-08T17:26:25.000Z",
+    "body": " \r\n\r\nFrom: UNIMAR NO REPLY <no-reply@unimarservice.com> \r\nSent: Monday, 2 February 2026 10:11\r\nSubject: MV ELFRIEDE - TWD/GRD/10K DWT - OPEN SPOT at Gibraltar\r\n\r\n \r\n\r\nFM: UNIMAR SERVICE LIMITED\r\nE.MAIL: mail@unimarservice.com <mailto:mail@unimarservice.com> \r\n\r\n*********************************\r\n\r\nTo: Chartering Desk\r\n\r\nDear Colleagues,\r\n\r\n \r\n\r\nRef.: MV ELFRIEDE - TWD/GRD/10K DWT - OPEN SPOT at Gibraltar\r\n\r\n \r\n\r\nClose Owners - PERFECT performer - MV ELFRIEDE - OPEN SPOT at Gibraltar\r\n\r\n \r\n\r\nLOOKING CARGOES TO NCSA / SOUTH AMERICA / WAFRICA / INDIAN OCEAN / FAR EAST\r\n- WCYO PLS?\r\n\r\n \r\n\r\n \r\n\r\nMV ELFRIEDE\r\n\r\nABOUT 10,074 DWT ON 9.219M SSW - TWEEN DECKER\r\n\r\nBUILT: 2004 JAPAN\r\n\r\nBARBADOS FLAG - IACS CLASS\r\n\r\nLOA 100.59M\r\n\r\nLBP 93.50M\r\n\r\nBM 18.80M\r\n\r\nDEPTH 13.00M\r\n\r\nGRT/NRT 6,395 / 3,658\r\n\r\nGR/BL 13,999.07 M3/12,864.70 M3\r\n\r\n2HO/2HA - CO2 FITTED CRANES 30Tx2 - DERRICK 30Tx1\r\n\r\nBOW THRUSTER FITTED\r\n\r\nADA WOG  \r\n\r\n \r\n\r\nPlsd to hear.\r\n\r\n \r\n\r\nBrgds, USL\r\nM/Viber/Wup/Telegram/WeChat: +357 99581395 <tel:+357%2099581395>  (24H/7D)\r\nAS BROKERS ONLY - SINCE 2006\r\n+++\r\nIn case the content of this message is irrelevant to your business, please\r\nnotify us by replying \"UNSUBSCRIBE\" in the subject field in order to remove\r\nyou from these messages, sorry any inconvenience caused.\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: UNIMAR NO REPLY &lt;no-reply@unimarservice.com&gt; Sent: Monday, 2 February 2026 10:11 Subject: MV ELFRIEDE - TWD/GRD/10K DWT - OPEN SPOT at Gibraltar FM: UNIMAR SERVICE LIMITED E.MAIL: mail@",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e08a0886a6e7d9",
+    "threadId": "19e08a0886a6e7d9",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: MV LADY MERAL SPOT AT MARMARA",
+    "date": "2026-05-08T17:26:36.000Z",
+    "body": " \r\n\r\nFrom: Gn Group <noreply@gngroup.com.tr> \r\nSent: Monday, 2 February 2026 10:08\r\nTo: management@etm-services.net\r\nSubject: MV LADY MERAL SPOT AT MARMARA\r\n\r\n \r\n\r\nDEAR SIRS,\r\n\r\nPLS ADD IN YOUR CIRCULATION LIST AND REPLY TO: chartering@gngroup(.)com(.)tr\r\n\r\nGOOD DAY,\r\n\r\nPLS OFFER FIRM FOR OUR HOME TONNAGE POSITIONS AS FOLLOWS:\r\n\r\nSPOT AT MARMARA \r\n\r\nMV LADY MERAL \r\nDWCC 31.000 MTS AT 10.55M DRAFT\r\nPANAMA FLAG CLASS: BV SID BLT.05 \r\nDWT /GRT/NRT 32131 / 19883 / 10740 \r\nLOA/LBP/BEAM 171,59 / 164,33 / 27M- D.M. 14,8M \r\n5HO/5HA GRAIN/BALE: 1.423.997/1.406.915 CBFT\r\nGEARED; APP.B -HYDOR P&I, \r\nALL DETS ABT WOG\r\n\r\nWAITING YOURS\r\n\r\n-- \r\nBRGDS\r\nMUSTAFA SILAN\r\n\r\nGN GROUP CORPORATION-ISTANBUL \r\nTel : +90 216 325 08 00\r\nFax : +90 216 325 02 66\r\nMOB : +90 553 294 09 58\r\nSKYPE: mustafasilan53\r\n\r\nNOTICE: \r\nThis is an email broadcast related to commercial shipping business and is not spam. The contents of this email \r\nmessage and any attachments are confidential and are intended solely for the addressee. If you have received this \r\ncommunication in error, please notify us immediately. If you do not wish to receive our circular emails, please \r\ninform us via email with subject UNSUBSCRIBE or click here for  UNSUBSCRIBE. \r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Gn Group &lt;noreply@gngroup.com.tr&gt; Sent: Monday, 2 February 2026 10:08 To: management@etm-services.net Subject: MV LADY MERAL SPOT AT MARMARA DEAR SIRS, PLS ADD IN YOUR CIRCULATION LIST AND",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e08a0e45dd6980",
+    "threadId": "19e08a0e45dd6980",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: HARMANDA HOME TONNAGES",
+    "date": "2026-05-08T17:26:59.000Z",
+    "body": " \r\n\r\nFrom: HARMANDA CHARTERING - ISTANBUL <chartering@harmanda.com.tr> \r\nSent: Monday, 2 February 2026 10:07\r\nTo: management@etm-services.net\r\nSubject: HARMANDA HOME TONNAGES\r\n\r\n \r\n\r\nGOOD DAY,\r\n\r\nPLS PROPOSE;\r\n\r\n\r\nVessel Name\r\n\r\nDWT\r\n\r\nPosition\r\n\r\nOpen\r\n\r\n\r\nGOYNUK\r\n\r\n4,712\r\n\r\nAEGEAN SEA\r\n\r\n18-20 FEB\r\n\r\n\r\nGOCEK\r\n\r\n4,260\r\n\r\nADRIATIC\r\n\r\n13-15 FEB\r\n\r\n\r\nDOGANBEY\r\n\r\n3,085\r\n\r\nMARMARA\r\n\r\n15-18 FEB\r\n\r\n\r\nFIRTINA S\r\n\r\n2,362\r\n\r\nDANUBE RIVER\r\n\r\n17-20 FEB\r\n\r\n\r\nEMINE ANNE\r\n\r\n1,602\r\n\r\nSFAX\r\n\r\n6-7 FEB\r\n\r\nM/V GOYNUK\r\nGC/SID/Box Open-hatch, Gearless\r\n4712 DWT on 6.344 m SSW, DWCC abt 4550 mts\r\nGrain/Bale: 197,204 CBFT\r\nMarshall Flag, RINA Classed, P&I covered by HYDOR\r\n2010 Built in Türkiye, Call Sign: V7LA8, IMO No: 9554145\r\nLOA: 93.63, LBP: 84.95, Breadth: 14.55, Depth Moulded: 7.6\r\nGRT/NRT: 2976/1510\r\nAir Draft: 31.5 m fm keel\r\n2 Holds / 2 Hatches\r\nHo1: 31.5 x 11.72 x 8.05 M\r\nHo2: 29.4 x 11.72 x 8.20 M\r\nHa1: 28.7 x 11.75 M\r\nHa2: 28.0 x 11.75 M\r\nITF & Container & IMO.1 & Co2 & Bow thruster fitted\r\nADAWOG \r\n\r\nM/V GOCEK (EX ULTRAMAR)\r\n========================\r\nGC / Box Open-hatch / Gearless\r\nIMO 9167320\r\nFlag St Kitts & Nevis\r\nDWT 4260 \r\nBuilt Year / Place 1997 / Bodewes Shipyards BV - Netherlands\r\nClass TURK LOYDU (IACS) - HYDOR\r\nIce Class 1A\r\nGrt/Nrt 2820 / 1503\r\nHo/Ha 1/1\r\n\r\nHold dims: 62.88 x 11.00 x 8.35 M\r\n\r\nHatch dims: 62.88 x 11.00 M\r\nGrain / Bale 198762 CBFT\r\n\r\n2 Moveable Bulkheads\r\n\r\nLOA 89.7 M\r\nBeam 13.6 M\r\nDraft 5.8 M\r\n\r\nAir draft (Ballast) 31.5 M\r\nBowthruster Fitted\r\n\r\nBwts Fitted\r\nTEU 246\r\n\r\n\r\nM/V DOGANBEY\r\nGC/SID, Gearless\r\n3085 DWT on 5.37 m SSW, DWCC abt 3000 mts\r\nGrain/Bale: 136,807/124,714 CBFT\r\nPalau Flag, Phoenix classed, P&I covered by Turk P&I\r\n1996 Built in Türkiye, Call Sign: T8A4746, IMO No: 9111761\r\nLOA: 87.25, LBP: 79.05, Beam: 12, Depth Moulded: 6.5\r\nGRT/NRT: 1941/1053\r\n2 Holds / 2 Hatches\r\nHo1: 28.50 x 11.15 x 5.00 M\r\nHo2: 28.20 x 11.15 x 5.00 M\r\nHa1: 19.20 x 8.10 x 1.50 M\r\nHa2: 20.40 x 8.10 x 1.50 M\r\nAppendix B fitted\r\nADAWOG \r\n\r\n\r\nM/V FIRTINA S\r\nGC/SID, Gearless\r\n2362 DWT on 5.4 m SSW, DWCC abt 2200 mts\r\nGrain/Bale: 96,500/94,300 CBFT\r\nVanuatu Flag, BRS Classed, P&I covered by Turk P&I\r\n1988 Built in Türkiye, Call Sign: YJWU6, IMO No: 8834940\r\nLOA: 75.52, LBP: 67.58, Beam: 11, Depth Moulded: 6\r\nGRT/NRT: 1248/734\r\n1 Hold / 2 Hatches\r\nHo1: 44.00 x 10.15 x 4.70 M\r\nHa1: 15.50 x 7.40 x 1.45 M\r\nHa2: 14.90 x 7.40 x 1.45 M\r\nADAWOG \r\n\r\nM/V EMINE ANNE\r\nGC/SID, Gearless\r\n1602 DWT on 4.30 m SSW, DWCC abt 1425 mts\r\nGrain/Bale: 70,440/67,204 CBFT\r\nVanuatu Flag, BRS Classed, P&I covered by Turk P&I\r\n1996 Built in Turkiye, Call Sign: YJWJ2, IMO No: 9145360\r\nLOA: 69, LBP: 63.35, Beam: 9, Depth Moulded: 5.2\r\nGRT/NRT: 884/531\r\nAir Draft: 20 m fm keel\r\n2 Holds / 2 Hatches\r\nHo1: 22.60 x 8.50 x 4.30 M\r\nHo2: 22.50 x 8.50 x 4.30 M\r\nHa1: 17.50 x 6.00 x 1.10 M\r\nHa2: 17.90 x 6.00 x 1.10 M\r\nAppendix b fitted\r\nADAWOG\r\n\r\n\r\n\r\nTHANKS & BEST REGARDS\r\n\r\nOSMAN ASLAN | Chartering & Operation Manager\r\nHarmanda Denizcilik ve Ticaret LTD ŞTİ\r\nPhone (WhatsApp): +90 530 594 05 83\r\nTeams: osmanaslan01\r\nEmail: chartering@harmanda.com.tr\r\nAddress: Evliya Çelebi Mh, Küme Sk, Tuzla Ticaret\r\nMerkezi, No:2, D/6-7-8-9, 34944, Tuzla, İstanbul\r\n\r\nÜyelikten çıkmak için tıklayınız.\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: HARMANDA CHARTERING - ISTANBUL &lt;chartering@harmanda.com.tr&gt; Sent: Monday, 2 February 2026 10:07 To: management@etm-services.net Subject: HARMANDA HOME TONNAGES GOOD DAY, PLS PROPOSE; Vessel",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e08a1aca93585c",
+    "threadId": "19e08a1aca93585c",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<vitali6825621@gmail.com>, <Mostafamarwan96@gmail.com>",
+    "subject": "FW: FEYZ GROUP VESSEL POSITION",
+    "date": "2026-05-08T17:27:51.000Z",
+    "body": " \r\n\r\nFrom: chartering@feyzgroup.com <chartering@feyzgroup.com> \r\nSent: Monday, 2 February 2026 09:55\r\nTo: 'Feyz Group' <chartering@feyzgroup.com>\r\nSubject: FEYZ GROUP VESSEL POSITION\r\n\r\n \r\n\r\n- / FEYZ CHARTERING                                  \r\n\r\n \r\n\r\n\r\nPlease propose your firm cargoes to our below home tonnage: \r\n\r\n \r\n\r\nFEYZ GROUP VESSEL POSITION\r\n\r\n \r\n\r\n\r\nMV Snow\r\n\r\n4,225 Dwt\r\n\r\n\t1994\r\n\r\n\tGibraltar\r\n\r\n\tSPOT\r\n\r\n\tMA\r\n\r\n\r\nMV Sky Str\r\n\r\n5,129 Dwt\r\n\r\n\t2024\r\n\r\n\tMostaganem\r\n\r\n\t03 - 05 Feb\r\n\r\n\tEK\r\n\r\n\r\nMV Sky Dolphin\r\n\r\n3,850 Dwt \r\n\r\n\t2025\r\n\r\n\tAveiro\r\n\r\n\t09 - 11 Feb\r\n\r\n\tMA\r\n\r\n\r\nMV Sky Wish\r\n\r\n5,128 Dwt\r\n\r\n\t2024\r\n\r\n\tCasablanca\r\n\r\n\t09 - 11 Feb\r\n\r\n\tEK\r\n\r\n\r\nMV Sky Falcon\r\n\r\n3,850 Dwt \r\n\r\n\t2025\r\n\r\n\tAdriatic\r\n\r\n\t18 - 20 Feb\r\n\r\n\tMA\r\n\r\n\r\nMV Sky Lbs \r\n\r\n3,850 Dwt \r\n\r\n\t2024\r\n\r\n\tUK\r\n\r\n\t22 - 24 Feb\r\n\r\n\tEK\r\n\r\n\r\nMV Sky Feyz\r\n\r\n3,662 Dwt\r\n\r\n\t1995\r\n\r\n\tAlexandria\r\n\r\n\t26 - 28 Feb\r\n\r\n\tMA\r\n\r\n\r\nMV Sky Eagle\r\n\r\n3,850 Dwt \r\n\r\n\t2025\r\n\r\n\tIskenderun\r\n\r\n\t25 - 28 Feb\r\n\r\n\tMA\r\n\r\n\r\nMV Sky Marine\r\n\r\n4,726 Dwt\r\n\r\n\t1998\r\n\r\n\tTrabzon\r\n\r\n\t28 - 30 Feb\r\n\r\n\tMA\r\n\r\n \r\n\r\n \r\n\r\nMV SNOW \r\n\r\n4226 DWT ON 5,76 M\r\n\r\nBLT 1994, PANAMA FLAG \r\n\r\nSID-BOX, DOUBLE SKIN, GEARLESS \r\n\r\n1 HO / 1 H A\r\n\r\nHO1: 62,63 X 11,2 X 8,45 M\r\n\r\nGRAIN/BALE 203,000 / 203,000 CBFT\r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS TURKISH LLOYD, TURK P&I\r\n\r\n+\r\n\r\nMV SKY STR \r\n\r\n5129 DWT ON 6,55 M \r\n\r\nBLT 2024, PORTUGAL FLAG \r\n\r\nSID-BOX, DOUBLE SKIN, GEARLESS \r\n\r\n1 HO/1 HA / 2 MOVABLE BULKHEADS\r\n\r\nHO1: 60,35 X 12,60 X 9,60\r\n\r\nGRAIN/BALE 247,200 / 247,200 CBFT \r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS LLOYD'S REGISTER, U.K P&I\r\n\r\nITF FITTED\r\n\r\n+\r\n\r\nMV SKY WISH \r\n\r\n5128 DWT ON 6,55 M \r\n\r\nBLT 2024, PORTUGAL FLAG \r\n\r\nSID-BOX, DOUBLE SKIN, GEARLESS \r\n\r\n1 HO/1 HA / 2 MOVABLE BULKHEADS\r\n\r\nHO1: 60,35 X 12,60 X 9,60\r\n\r\nGRAIN/BALE 247,200 / 247,200 CBFT \r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS LLOYD'S REGISTER, U.K P&I\r\n\r\nITF FITTED\r\n\r\n+ \r\n\r\nMV SKY DOLPHIN\r\n\r\n3821 DWT ON 5,48 M \r\n\r\nBLT 2024, MADEIRA FLAG , \r\n\r\nSID-BOX, DOUBLE SKIN, GEARLESS \r\n\r\n1 HO/1 HA / 2 MOVABLE BULKHEADS\r\n\r\nHO1: 62,50 X 10,1 X 8,40 m\r\n\r\nGRAIN/BALE 185,400 / 185,400 CBFT \r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS LLOYD'S REGISTER, U.K P&I\r\n\r\nITF FITTED\r\n\r\n+ \r\n\r\nMV SKY FEYZ\r\n\r\n3.662 DWT ON 5,00 M\r\n\r\nBLT 1995, PANAMA FLAG\r\n\r\nSID-BOX LIKE, DOUBLE SKIN, GEARLESS\r\n\r\n1 HO/2 HA\r\n\r\nHO1: 63,65 X 12,2 X 5,1 M\r\n\r\nGRAIN/BALE 157,000 CBFT / 153 468 CBFT\r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS TURKISH LLOYD,TURK P&I\r\n\r\nICE CLASSED\r\n\r\n+\r\n\r\nMV SKY EAGLE\r\n\r\n3804 DWT ON 5,48 M \r\n\r\nBLT 2025, PORTUGAL FLAG \r\n\r\nSID-BOX, DOUBLE SKIN, GEARLESS \r\n\r\n1 HO/1 HA / 2 MOVABLE BULKHEADS\r\n\r\nHO1: 62,50 X 10,1 X 8,40 m\r\n\r\nGRAIN/BALE 185,400 / 185,400 CBFT \r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS LLOYD'S REGISTER, U.K P&I\r\n\r\nITF FITTED\r\n\r\n+\r\n\r\nMV SKY FALCON\r\n\r\n3821 DWT ON 5,48 M \r\n\r\nBLT 2024, MADEIRA FLAG , \r\n\r\nSID-BOX, DOUBLE SKIN, GEARLESS \r\n\r\n1 HO/1 HA / 2 MOVABLE BULKHEADS\r\n\r\nHO1: 62,50 X 10,1 X 8,40 m\r\n\r\nGRAIN/BALE 185,400 / 185,400 CBFT \r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS LLOYD'S REGISTER, U.K P&I \r\n\r\nITF FITTED\r\n\r\n+\r\n\r\nMV SKY LBS\r\n\r\n3.821 DWT ON 5,48 M \r\n\r\nBLT 2024, PORTUGAL FLAG\r\n\r\nSID-BOX, DOUBLE SKIN, GEARLESS \r\n\r\n1 HO/1 HA / 2 MOVABLE BULKHEADS\r\n\r\nHO1: 62,50 x 10,10 x 8,40 m\r\n\r\nGRAIN/BALE 185,400 / 185,400 CBFT \r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER FITTED\r\n\r\nCLASS LLOYD'S REGISTER, U.K P&I \r\n\r\nITF FITTED\r\n\r\n+\r\n\r\nMV SKY MARINE \r\n\r\n4.569 DWT ON 5,96 M\r\n\r\nBLT 1998, PANAMA FLAG \r\n\r\nSID-BOX, DOUBLE SKIN, GEARLESS\r\n\r\n1 HO/1 HA / 1 MOVABLE BULKHEAD\r\n\r\nHO1: 62,30 x 11,0x 8,45 m \r\n\r\nGRAIN/BALE 203,544 CBFT\r\n\r\nAPP A-B-C FITTED, CO2 & CONTAINER \r\n\r\nCLASS LLOYD'S REGISTER, THE AMERICAN CLUB P&I\r\n\r\nICE CLASSED\r\n\r\n \r\n\r\n \r\n\r\nMA: MEVLUT AYNACI                    - Phone: +90 (542) 357 2871 - Teams:\r\nMevlut - Feyz Group\r\n\r\nEK : EMRE KOPUZ                           - Phone : +90 (531) 306 53 41 -\r\nTeams : longstrike28 \r\n\r\n \r\n\r\nBest Regards\r\n\r\n\r\nFEYZ GROUP\r\n\r\nAdress : Altinsehir Mahallesi, Tavukcuyolu Caddesi\r\n\r\nTomurcuk Sokak No 11 Istanbul/Turkey\r\n\r\nOffice    : +90 (216) 527 00 31\r\n\r\nEmail     : chartering@feyzgroup.com <mailto:chartering@feyzgroup.com> \r\n\r\nWeb      : www.feyzgroup.com <http://www.feyzgroup.com> \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: chartering@feyzgroup.com &lt;chartering@feyzgroup.com&gt; Sent: Monday, 2 February 2026 09:55 To: &#39;Feyz Group&#39; &lt;chartering@feyzgroup.com&gt; Subject: FEYZ GROUP VESSEL POSITION - /",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e0978b449211fb",
+    "threadId": "19e0978b449211fb",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: MV HAGRID - OPEN IN CONSTANTA - Mid-march",
+    "date": "2026-05-08T21:22:44.000Z",
+    "body": " \r\n\r\nFrom: HKALKAVAN SHIPPING <hkalkavan@hkalkavan.com> \r\nSent: Thursday, 26 February 2026 10:49\r\nTo: HKALKAVAN SHIPPING <hkalkavan@hkalkavan.com>\r\nSubject: MV HAGRID - OPEN IN CONSTANTA - Mid-march\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPlease propose your firm cargoes for our home tonnage below, all agw wp:\r\n\r\n \r\n\r\nMV HAGRID                6100 dwcc              – Constanta                           – Mid-March\r\n\r\n \r\n\r\nMV HAGRID \r\n\r\n6496 dwt   - 7,00m draft  – 08 built – Barbados flag – boxlike\r\n\r\nGr/Bl 276.000 cbft / 262.000 cbft\r\n\r\n2x20 mt  cranes\r\n\r\nIACS member – IMO fitted + ice class – ITF FITTED\r\n\r\n \r\n\r\nPlease do not re-circulate\r\n\r\n \r\n\r\nBest Regards, \r\n\r\nPamela Ateş\r\n\r\nKosuyolu, Katip Salih Sok., No:36 Istanbul/Turkey\r\nP: <tel:%2B90216%203272323> +90216 3272323  F: <tel:%2B90216%203272326> +90216 3272326 \r\nMob: +905379509163\r\nSkype: live:.cid.ba37eb8ce0586d9e\r\n <mailto:hkalkavan@hkalkavan.com> hkalkavan@hkalkavan.com\r\nhttps://hkalkavan.com.tr/\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: HKALKAVAN SHIPPING &lt;hkalkavan@hkalkavan.com&gt; Sent: Thursday, 26 February 2026 10:49 To: HKALKAVAN SHIPPING &lt;hkalkavan@hkalkavan.com&gt; Subject: MV HAGRID - OPEN IN CONSTANTA - Mid-march",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e09795d905a46f",
+    "threadId": "19e09795d905a46f",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: PLS PROPOSE SUITABLE CGOES FOR OUR BELOW HOME TONNAGES AND CLOSE OWNERS' VSLS",
+    "date": "2026-05-08T21:23:27.000Z",
+    "body": " \r\n\r\nFrom: SONAY DENIZCILIK <sonay@sonayshipping.com> \r\nSent: Thursday, 26 February 2026 10:50\r\nTo: management@etm-services.net\r\nSubject: PLS PROPOSE SUITABLE CGOES FOR OUR BELOW HOME TONNAGES AND CLOSE OWNERS' VSLS\r\n\r\n \r\n\r\nGOOD DAY \r\n\r\nPLS PROPOSE SUITABLE CGOES FOR OUR BELOW HOME TONNAGES AND CLOSE OWNERS' VSLS:\r\n\r\n-M/V NURI  SONAY-14888MTS DWT-2006BLT-14500MTS DWCC- BV CLASS- BOX-OPEN HATCH-ITF FITTED-3 X 30MTS CRANES-GR:575000 CBFT-TT STR 20T/M2 -OPEN RAVENNA,ITAL ADRIATIC ON 02-03RD MARCH  \r\n\r\n-M/V HACI HILMI II -6976MTS DWT-92 BLT -6700MTS DWCC-3 X 10MTS CRANES-GR:309.895CBFT -OPEN EAST COAST GREECE ON 09-10TH MARCH\r\n\r\n-M/V SEVKETTIN SONAY-14888MTS DWT-2006BLT-14500MTS DWCC- BV CLASS- BOX-OPEN HATCH-ITF FITTED-3 X 30MTS CRANES-GR:575000 CBFT-TT STR 20T/M2 -OPEN TUNISIA ON 12-13TH MARCH  \r\n\r\n-M/V SABAHAT SONAY-14888MTS DWT-2007 BLT-14500MTS DWCC- BV CLASS- BOX-OPEN HATCH-ITF FITTED-3 X 30MTS CRANES-GR:575000 CBFT-TT STR 20T/M2 -OPEN MARMARA ON 16-17TH MARCH  \r\n\r\n-CLOSE DIRECT OWNERS M/V TBN-17500MTS DWCC- BOX TYPE-ITF FITTED- GRAIN CAP ABT 760 K CBFT-OPEN AGEAN SEA PROMPT\r\n\r\n-Close Direct Owners M/V TBN – 22K dwt – 2008 – Abt 993 k cbft – 3x20 tons - Open Beira,East Africa- Mid April\r\n\r\n \r\n\r\nBEST REGARDS\r\n\r\nSONAY SHIPPING AS/ISTANBUL\r\n\r\nAhmet Bozkurt,Mr./Halil Ersoz,Mr.\r\n\r\n(Member of Bimco and Turkish Shipbrokers Association and Maritime Association of Shipowners and Agents)\r\n\r\nEmails:Sonay@sonayshipping.com <mailto:Sonay@sonayshipping.com> \r\n\r\nSonaychartering@gmail.com <mailto:Sonaychartering@gmail.com> \r\n\r\nOffice nr:90 216 4467105\r\n\r\nmob phones:Ahmet T. Bozkurt-90 533 582 21 38\r\n\r\n                     Halil Ersoz-90 549 204 67 07\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: SONAY DENIZCILIK &lt;sonay@sonayshipping.com&gt; Sent: Thursday, 26 February 2026 10:50 To: management@etm-services.net Subject: PLS PROPOSE SUITABLE CGOES FOR OUR BELOW HOME TONNAGES AND CLOSE",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e097b0d6404a40",
+    "threadId": "19e097b0d6404a40",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: MRC Shipping Positions 26/02/2026",
+    "date": "2026-05-08T21:25:16.000Z",
+    "body": " \r\n\r\nFrom: MRC SHIPPING ISTANBUL <chart@mrcship.com> \r\nSent: Thursday, 26 February 2026 09:59\r\nTo: management@etm-services.net\r\nSubject: MRC Shipping Positions 26/02/2026\r\n\r\n \r\n\r\nGood day\r\n\r\nPls offer suitable cargo for excl&home tonnages\r\n\r\n\r\n\r\n\r\nSHIP NAME\r\n\r\nDWCC\r\n\r\nHOLD TYPE\r\n\r\nBUILT\r\n\r\nBALE CAPP\r\n\r\nPOSITION\r\n\r\nDATES\r\n\r\nMIC\r\n\r\n\r\n MV AYA\r\n\r\n 6050\r\n\r\n 2 BOXI \r\n\r\n 2008\r\n\r\n 297K\r\n\r\n ISKENDERUN\r\n\r\n 07-10 MAR\r\n\r\nYasar\r\n\r\n\r\n MV SUN S\r\n\r\n 5050\r\n\r\n 3 BOX & OH\r\n\r\n 2008\r\n\r\n 240K\r\n\r\n EAST MED\r\n\r\n 08-10 MAR\r\n\r\nYasar\r\n\r\n\r\n MV CELAL SAHIN\r\n\r\n 4500\r\n\r\n 2 BOX & OH\r\n\r\n 2006\r\n\r\n 196K\r\n\r\n CONSTANTA\r\n\r\n 12-14 MAR\r\n\r\nYasar\r\n\r\n\r\n MV TURGUT SAHIN  \r\n\r\n 4450\r\n\r\n 1 BOX & OH\r\n\r\n 1997\r\n\r\n 195K \r\n\r\n ALGERIA\r\n\r\n 12-15 MAR\r\n\r\nYasar\r\n\r\n\r\n MV UNZILE ANA \r\n\r\n 4000\r\n\r\n 2 BOX & OH\r\n\r\n 1996\r\n\r\n 170K\r\n\r\n EGYPT MED\r\n\r\n 19-22 MAR\r\n\r\nMert\r\n\r\n\r\n MV HABIBE ANA      \r\n\r\n 3850\r\n\r\n 2 BOX & OH\r\n\r\n 1995\r\n\r\n 160K\r\n\r\n BULGARIA\r\n\r\n 13-15 MAR\r\n\r\nMert\r\n\r\n\r\n MV MERIC\r\n\r\n 2600\r\n\r\n 1 BOX & OH\r\n\r\n 1995\r\n\r\n 138K\r\n\r\n N.ADRIATIC\r\n\r\n 16-18 MAR\r\n\r\nMert\r\n\r\n\r\n\r\n\r\n* MV Meric  & MV Celal Sahin  fully Container and  IMO 1.1 Cargos fitted\r\n(under & on deck) \r\n\r\n \r\n\r\n\r\nBest Regards\r\n\"Member of Shipbrokers' Association\" - Turkiye\r\nYasar Meric  &  Mert   Meric  \r\n\r\n\r\n\r\n'' MRC SHIPPING AND TRADING CO ''\r\nPostane Mah. Neseli Sok  NO:2/1   \r\n34940 Tuzla -  Istanbul    \r\nOffice Tel :00 90 216 493 01 06 \r\nEmail:  <mailto:chart@mrcship.com> chart@mrcship.com  ( for chartering only\r\n)\r\n <http://www.mrcship.com> www.mrcship.com \r\n\r\nTeams : Yasar Meric  ( <mailto:yasar@mrcship.com> yasar@mrcship.com)\r\nMobil : +90 546 629 56 98 \r\nTeams : Mert   Meric  ( <mailto:mertmrcc61@gmail.com> mertmrcc61@gmail.com )\r\nMobil : +90 531 557 11 02\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: MRC SHIPPING ISTANBUL &lt;chart@mrcship.com&gt; Sent: Thursday, 26 February 2026 09:59 To: management@etm-services.net Subject: MRC Shipping Positions 26/02/2026 Good day Pls offer suitable cargo",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e0f518e6d7610d",
+    "threadId": "19e0f518e6d7610d",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: SSL VESSELS // MV SEA BREEZE DWCC 6600  // MV SEA PIONEER  DWCC 5900  //  OPEN GREECE",
+    "date": "2026-05-10T00:37:40.000Z",
+    "body": " \r\n\r\nFrom: Sea Scanner Logistics <chartering@seascanner.org> \r\nSent: Monday, 20 April 2026 10:32\r\nTo: management@etm-services.net\r\nSubject: SSL VESSELS // MV SEA BREEZE DWCC 6600 // MV SEA PIONEER DWCC 5900 // OPEN GREECE\r\n\r\n \r\n\r\nFROM  : SEA SCANNER LOGISTICS FOR SHIPPING\r\nTO        : CHARTERING DEPARTMENT  \r\nREF      : SSL/CHT/2026\r\nDATE   : 20.04.2026\r\n\r\nDear Sirs /Hossam,\r\nPlease offer firm parcels for the following tonnages:\r\n*** *** *** ***\r\n\r\n1)\r\n\r\nMV SEA BREEZE\r\n\r\nDWCC 6600 MTS - GRAIN/BALE 283917 CBFT - 3/3 HO/HA - SID - BOX HOLD, \r\n\r\nGEARLESS - BULK/IMO/APP B/GRAIN/TIMBER FITTED\r\n\r\n \r\n\r\nOPEN @ SOUDA PORT, CHANIA, CRETE, GREECE ON 24-26 APRIL \r\n\r\n**\r\n\r\n2)\r\n\r\nMV SEA PIONEER\r\n\r\nDWCC 5900 MTS - GRAIN/BALE 235231 CBFT- 2/2 HO/HA - SID - BOX HOLD, \r\n\r\nGEARED 2 X 15 MTS SWL - BULK/IMO/APP B/GRAIN/TIMBER FITTED\r\n\r\n \r\n\r\nOPEN @THESSALONIKI, GREECE ON 25-27 APRIL \r\n*** *** *** ***\r\n\r\nPleased to hear, \r\n\r\nSincerely, \r\n\r\n\r\nMr. Hossam Khalil\r\n\r\nSea Scanner Logistics for Shipping S.A.E\r\n\r\nChartering Executive\r\nAs Brokers Only\r\n\r\n\r\n\r\n\r\n\r\n \r\n\r\nM +2010 677 68 441\r\n\r\nE   <http://sslc.seascanner.org/r/5faaa5c0a72a6e2a410db6582?ct=YTo1OntzOjY6InNvdXJjZSI7YToyOntpOjA7czo1OiJlbWFpbCI7aToxO2k6MTk4O31zOjU6ImVtYWlsIjtpOjE5ODtzOjQ6InN0YXQiO3M6MjI6IjY5ZTVlNDhhOGIxMDU1MzM4Njc1ODYiO3M6NDoibGVhZCI7czo0OiI5MTI2IjtzOjc6ImNoYW5uZWwiO2E6MTp7czo1OiJlbWFpbCI7aToxOTg7fX0%3D&> chartering@seascanner.org \r\n\r\nE   <http://sslc.seascanner.org/r/187c05bc5f8dce3bd775648ec?ct=YTo1OntzOjY6InNvdXJjZSI7YToyOntpOjA7czo1OiJlbWFpbCI7aToxO2k6MTk4O31zOjU6ImVtYWlsIjtpOjE5ODtzOjQ6InN0YXQiO3M6MjI6IjY5ZTVlNDhhOGIxMDU1MzM4Njc1ODYiO3M6NDoibGVhZCI7czo0OiI5MTI2IjtzOjc6ImNoYW5uZWwiO2E6MTp7czo1OiJlbWFpbCI7aToxOTg7fX0%3D&> info@seascanner.org\r\n\r\nW  <http://sslc.seascanner.org/r/b5bd6c5185536a2c74d153ff9?ct=YTo1OntzOjY6InNvdXJjZSI7YToyOntpOjA7czo1OiJlbWFpbCI7aToxO2k6MTk4O31zOjU6ImVtYWlsIjtpOjE5ODtzOjQ6InN0YXQiO3M6MjI6IjY5ZTVlNDhhOGIxMDU1MzM4Njc1ODYiO3M6NDoibGVhZCI7czo0OiI5MTI2IjtzOjc6ImNoYW5uZWwiO2E6MTp7czo1OiJlbWFpbCI7aToxOTg7fX0%3D&> www.seascanner.org\r\n\r\nP +2 057 252 5547 / +2 057 253 4624 \r\n\r\nF +2 057 253 4624\r\n\r\nA Villa No.37, El Nakhil Section, Next to Nakhil Mosque, Ras El Bar , Damietta , Egypt\r\n\r\nSkype Chartering.SSL \r\n\r\n \r\n\r\n\r\n\r\n\r\n          REG NO.171273\r\n\r\n \r\n\r\n\r\n\r\n\r\nPlease consider your environmental responsibility. Before printing \r\n\r\nthis e-mail message, ask yourself whether you really need a hard \r\n\r\ncopy.\r\n\r\nIMPORTANT: The contents of this email and any attachments are confidential. They are intended for the named recipient(s) only. If you have received this email by mistake, please notify the sender immediately and do not disclose the contents to anyone or make copies thereof. \r\nUnsubscribe <http://sslc.seascanner.org/email/unsubscribe/69e5e48a8b105533867586/management@etm-services.net/a9a719243e1314a973ddbb605a5202bd44c076f09402401740ae73807158eec5>  to no longer receive emails from us.\r\n\r\n  <http://sslc.seascanner.org/email/69e5e48a8b105533867586.gif> \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Sea Scanner Logistics &lt;chartering@seascanner.org&gt; Sent: Monday, 20 April 2026 10:32 To: management@etm-services.net Subject: SSL VESSELS // MV SEA BREEZE DWCC 6600 // MV SEA PIONEER DWCC",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e0f51c5410d5d2",
+    "threadId": "19e0f51c5410d5d2",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: AYKIN SHIPPING /// VESSELS POSITION",
+    "date": "2026-05-10T00:37:54.000Z",
+    "body": " \r\n\r\nFrom: chartering@aykinshipping.com <chartering@aykinshipping.com> \r\nSent: Monday, 20 April 2026 08:40\r\nTo: chartering@aykinshipping.com\r\nSubject: AYKIN SHIPPING /// VESSELS POSITION\r\n\r\n \r\n\r\nGood day,\r\n\r\n \r\n\r\nPlease kindly note that i am the owner of below vessels which details\r\nwritten. You may add our good ladies to your circulation mail list.\r\n\r\n \r\n\r\nMV BBA LARISA '' EX ALI AYKIN ” / ” EX YALIKOY ”\r\n\r\nIMO 9166510\r\n\r\nBuilt 1999 - 5007 dwt –APP B FITTED\r\n\r\n4900 dwcc on 6,45 Draft\r\n\r\nL/B/D 93,72/14,85/7,50\r\n\r\nGRT/NRT/ 2950/1807\r\n\r\nPALAU Flag - TL Class – London P&I\r\n\r\nSemi Box 1 Hold  / 1 Hatch\r\n\r\nG/B 220.577 / 213000\r\n\r\nVessel will be open at Gabes on 7-8 May\r\n\r\n \r\n\r\n \r\n\r\nMV YUCATAN (EX PARAKLITOS) \r\n\r\nIMO 9367841\r\n\r\nBuilt 2006 - 3178 dwt \r\n\r\n3100 dwcc on 5,51 Draft\r\n\r\nL/B/D 80,6/13,6/6,9\r\n\r\nGRT/NRT/ 1972/1227\r\n\r\nST VINCENT Flag - TL Class – London P&I\r\n\r\nBox 2 Hold  / 2 Hatch\r\n\r\nG/B 141050,3 cuft\r\n\r\nVessel will be open at Alexandria on 1-2 May\r\n\r\n \r\n\r\n \r\n\r\nMV ONEGO TRADER\r\n\r\nIMO 9238351\r\n\r\nBuilt 2001 - 8930 dwt –APP B FITTED\r\n\r\n8200 dwcc on 7,2  Draft\r\n\r\nL/B/D 132,2/15,87/9,65\r\n\r\nGRT/NRT/ 6301/3582\r\n\r\nPORTUGAL Flag - KR Class – London P&I\r\n\r\nFull Box 2 Hold  / 2 Hatch\r\n\r\nG/B 452,000 cbft\r\n\r\nVessel ON TC.\r\n\r\n \r\n\r\nMV ONEGO MERCHANT\r\n\r\nIMO 9238363\r\n\r\nBuilt 2002 - 8930 dwt –APP B FITTED\r\n\r\n8200 dwcc on 7,2  Draft\r\n\r\nL/B/D 132,2/15,87/9,65\r\n\r\nGRT/NRT/ 6301/3582\r\n\r\nPORTUGAL Flag - KR Class – London P&I\r\n\r\nFull Box 2 Hold  / 2 Hatch\r\n\r\nG/B 452,000 cbft\r\n\r\nVessel ON TC.\r\n\r\n \r\n\r\nFurther information please feel free to contact.\r\n\r\n \r\n\r\n\r\nBest Regards / Mit freundlichen Grüßen\r\n\r\n\r\n \r\n\r\n\r\n\r\n\r\nCapt. Cabir OZTURK\r\n\r\n\r\nOperations Manager\r\n\r\n\r\n\r\n\r\n <mailto:operation@aykinshipping.com> operation@aykinshipping.com\r\n\r\n\r\n\r\n <http://www.aykinshipping.com/> www.aykinshipping.com\r\n\r\n\r\n\r\n\r\n+90 537 561 47 85\r\n\r\n\r\n\r\n+90 (216) 392 99 48 / 204\r\n\r\n\r\n\r\n\r\n \r\n\r\n\r\n\r\n \r\n\r\nAydintepe Mah. Güzin Sokak. No:35 \r\n\r\nTuzla / Istanbul / TURKEY\r\n\r\n \r\n\r\nbei den Mühren 1, 20457\r\n\r\nHamburg / GERMANY\r\n\r\n    <https://www.instagram.com/aykinshipping/>\r\n<https://www.linkedin.com/company/aykinshipping> \r\n\r\n \r\n\r\n <https://aykinshipping.com/web/assets/pdf/aykinshipping.pdf> \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n       <http://www.aykingroup.com/> \r\n\r\n\r\n\r\n\r\n\r\n \r\n\r\nDISCLAIMER\r\n\r\nThis e-mail and related files are the private property of the sender , the\r\npersonal and the legal entities to whom they were intended to be send. If\r\nyou are not an authorized recepient of this e-mail it is forbidden to open,\r\ncopy, forward or use it. It is required that you should delate this e-mail\r\nimmediately. Aykin Deniz Nakliyat A.S. does not guarrantee absolutely the\r\ncorrectness and completeness of the information within this e-mail, and\r\ntherefore will not be held liable from their illegal use and the forfeit.\r\nThe sole resposibility will belong to the person who send  it and the\r\ncontents herein might not be reflecting the opinions of Aykin Deniz Nakliyat\r\nA.S.  legal entity. This e-mail has been scanned for all known computer\r\nviruses.\r\n\r\nAssigned as data supervisor in accordance with Law No. 6698 (General Data\r\nProtection Regulation Law), your general documents existing in your e-mail\r\nenvironment will be protected and processed by the form and principles of\r\nAykin Deniz Nakliyat A.S. General Data Protection and Processing Policy.\r\n\r\n\t\t\t\t\t\t\t\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: chartering@aykinshipping.com &lt;chartering@aykinshipping.com&gt; Sent: Monday, 20 April 2026 08:40 To: chartering@aykinshipping.com Subject: AYKIN SHIPPING /// VESSELS POSITION Good day, Please",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e0f51ea1cd9364",
+    "threadId": "19e0f51ea1cd9364",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: SSL VESSEL // SEA MAJESTY // DWCC 8600 MTS // OPEN @ TRIPOLI, LEBANON 16-17 APRIL",
+    "date": "2026-05-10T00:38:04.000Z",
+    "body": " \r\n\r\nFrom: Sea Scanner Logistics <chartering@seascanner.org> \r\nSent: Wednesday, 15 April 2026 12:50\r\nTo: management@etm-services.net\r\nSubject: SSL VESSEL // SEA MAJESTY // DWCC 8600 MTS // OPEN @ TRIPOLI, LEBANON 16-17 APRIL\r\n\r\n \r\n\r\nFROM  : SEA SCANNER LOGISTICS FOR SHIPPING\r\nTO        : CHARTERING DEPARTMENT  \r\nREF      : SSL/CHT/2026\r\nDATE   : 15.04.2026\r\n\r\nDear Sirs /Hossam,\r\nPlease offer firm parcels for the following tonnage:\r\n\r\n**********\r\n\r\nMV SEA MAJESTY\r\n\r\nDWCC 8600 MTS - GRAIN/BALE 400407.49 / 391498.94 CBFT - 4/4 HO/HA - SID - BOX HOLD, \r\n\r\nGEARED 2 X 15 MTS SWL- BULK/IMO/APP B/GRAIN/TIMBER FITTED\r\n\r\n \r\n\r\nOPEN @ TRIPOLI, LEBANON 16-17 APRIL \r\n\r\nPREFER VOYAGES FROM EGYPT TO EC GREECE / EC BLACK SEA \r\n**********\r\n\r\nPleased to hear, \r\n\r\nSincerely, \r\n\r\n\r\nMr. Hossam Khalil\r\n\r\nSea Scanner Logistics for Shipping S.A.E\r\n\r\nChartering Executive\r\nAs Brokers Only\r\n\r\n\r\n\r\n\r\n\r\n \r\n\r\nM +2010 677 68 441\r\nM +2011 555 32 888\r\n\r\nE   <http://sslc.seascanner.org/r/46bbe839dc210b9a2f9ce3009?ct=YTo1OntzOjY6InNvdXJjZSI7YToyOntpOjA7czo1OiJlbWFpbCI7aToxO2k6MTkzO31zOjU6ImVtYWlsIjtpOjE5MztzOjQ6InN0YXQiO3M6MjI6IjY5ZGY2ZDZhYzliNzQ3NDExMzI5NzUiO3M6NDoibGVhZCI7czo0OiI5MTI2IjtzOjc6ImNoYW5uZWwiO2E6MTp7czo1OiJlbWFpbCI7aToxOTM7fX0%3D&> chartering@seascanner.org \r\n\r\nE   <http://sslc.seascanner.org/r/c4dcaeaecfca5dee55b0eeab3?ct=YTo1OntzOjY6InNvdXJjZSI7YToyOntpOjA7czo1OiJlbWFpbCI7aToxO2k6MTkzO31zOjU6ImVtYWlsIjtpOjE5MztzOjQ6InN0YXQiO3M6MjI6IjY5ZGY2ZDZhYzliNzQ3NDExMzI5NzUiO3M6NDoibGVhZCI7czo0OiI5MTI2IjtzOjc6ImNoYW5uZWwiO2E6MTp7czo1OiJlbWFpbCI7aToxOTM7fX0%3D&> info@seascanner.org\r\n\r\nW  <http://sslc.seascanner.org/r/ae6af8f3b816342f099c58e0f?ct=YTo1OntzOjY6InNvdXJjZSI7YToyOntpOjA7czo1OiJlbWFpbCI7aToxO2k6MTkzO31zOjU6ImVtYWlsIjtpOjE5MztzOjQ6InN0YXQiO3M6MjI6IjY5ZGY2ZDZhYzliNzQ3NDExMzI5NzUiO3M6NDoibGVhZCI7czo0OiI5MTI2IjtzOjc6ImNoYW5uZWwiO2E6MTp7czo1OiJlbWFpbCI7aToxOTM7fX0%3D&> www.seascanner.org\r\n\r\nP +2 057 252 5547 / +2 057 253 4624 \r\n\r\nF +2 057 253 4624\r\n\r\nA Villa No.37, El Nakhil Section, Next to Nakhil Mosque, Ras El Bar , Damietta , Egypt\r\n\r\nSkype Chartering.SSL \r\n\r\n \r\n\r\n\r\n\r\n\r\n        REG NO.171273\r\n\r\n \r\n\r\n\r\n\r\n\r\nPlease consider your environmental responsibility. Before printing \r\n\r\nthis e-mail message, ask yourself whether you really need a hard \r\n\r\ncopy.\r\n\r\nIMPORTANT: The contents of this email and any attachments are confidential. They are intended for the named recipient(s) only. If you have received this email by mistake, please notify the sender immediately and do not disclose the contents to anyone or make copies thereof. \r\nUnsubscribe <http://sslc.seascanner.org/email/unsubscribe/69df6d6ac9b74741132975/management@etm-services.net/a9a719243e1314a973ddbb605a5202bd44c076f09402401740ae73807158eec5>  to no longer receive emails from us.\r\n\r\n\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Sea Scanner Logistics &lt;chartering@seascanner.org&gt; Sent: Wednesday, 15 April 2026 12:50 To: management@etm-services.net Subject: SSL VESSEL // SEA MAJESTY // DWCC 8600 MTS // OPEN @ TRIPOLI,",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e0f521228afe4c",
+    "threadId": "19e0f521228afe4c",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: MV Filia Ariea 2650 150.0900 cbft sidk/box - Jeddah 30 Mar",
+    "date": "2026-05-10T00:38:14.000Z",
+    "body": " \r\n\r\nFrom: Visser & Visser <chartering@visservisser.nl> \r\nSent: Monday, 30 March 2026 15:50\r\nTo: management@etm-services.net\r\nSubject: MV Filia Ariea 2650 150.0900 cbft sidk/box - Jeddah 30 Mar\r\n\r\n \r\n\r\nDoc-No. 16726166   30/MAR/2026 (MON)  15:49  (+0200)  DV\r\n\r\n  \r\n\r\nVisser & Visser Chartering BV - Vlaardingen (NL)\r\n\r\nPhone : +31 10 4115620\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nPlease propose for:\r\n\r\n \r\n\r\n- FILIA ARIEA    \r\n\r\n2650 mt – 150.000 – SID/Box                    \r\n\r\n \r\n\r\nOpen: Jeddah – 30-Mar.\r\n\r\n                                                             Alt. Port Said – 02-Apr.\r\n\r\n \r\n\r\nWCUO?\r\n\r\n \r\n\r\n \r\n\r\nThanks and best regards\r\n\r\nDirk VISSER - ph +31104115620\r\n\r\nMob/What's app     +31653143975 \r\n\r\n \r\n\r\nPS: Not using Skype/Teams anymore. please contact me through whatsapp via my mobile number\r\n\r\n \r\n\r\n  \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Visser &amp; Visser &lt;chartering@visservisser.nl&gt; Sent: Monday, 30 March 2026 15:50 To: management@etm-services.net Subject: MV Filia Ariea 2650 150.0900 cbft sidk/box - Jeddah 30 Mar Doc-No",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e0f52832c715da",
+    "threadId": "19e0f52832c715da",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: BML EXCL /// mv ADAMAR / 17K DWT / GRD / BOX // OPEN EC-INDIA  04- 08 OCT",
+    "date": "2026-05-10T00:38:43.000Z",
+    "body": " \r\n\r\nFrom: Bml - Fix <fix@bmlcarriers.com> \r\nSent: Tuesday, 30 September 2025 12:31\r\nTo: 'Bml - Fix' <fix@bmlcarriers.com>\r\nSubject: BML EXCL /// mv ADAMAR / 17K DWT / GRD / BOX // OPEN EC-INDIA 04-\r\n08 OCT\r\n\r\n \r\n\r\n \r\n\r\nGood Day,\r\n\r\n \r\n\r\nPlease offer for below;\r\n\r\n \r\n\r\n-EXCLUSIVE TONNAGE-\r\n\r\n \r\n\r\nMV ADAMAR                                   OPEN EC-INDIA 04-08.10.2025\r\n\r\n\r\n \r\n\r\nDWT 17660,15  SUMMER ON 8,598 M SSW DWWC 16850\r\n\r\nDWT 17125,44  WINTER ON 8,419 M SSW DWCC 16300\r\n\r\nBUILT 2009 / LIBERIA FLAG\r\n\r\nSID / MULTIPURPOSE DRY CARGO SHIP / BOX SHAPED \r\n\r\nCLASS BUREAU VERITAS / PANDI STEAMSHIP MUTUAL \r\n\r\nLOA 147,55 M / BREADTH 23,00 M / DEPTH MOULDED 11.80 M \r\n\r\nGRAIN/BALE 758,120 / 726,267 CBFT \r\n\r\n4HO/4HA \r\n\r\nCRANE 3 X 25 MT \r\n\r\nADA\r\n\r\n \r\n\r\nKind Regards / Saygılarımla \r\n\r\n \r\n\r\nAlp Erdoğdu\r\n\r\n \r\n\r\nAS BROKER ONLY\r\n\r\n\r\n\r\n \r\n\r\nBeyond Multimodal Logistics \r\n\r\nErenköy Mah. Fırın Sok. No 24 \r\n\r\nKadıköy, İstanbul, Türkiye\r\n\r\nM- +90 536 698 61 63\r\n\r\nE-  <mailto:fix@bmlcarriers.com> fix@bmlcarriers.com \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Bml - Fix &lt;fix@bmlcarriers.com&gt; Sent: Tuesday, 30 September 2025 12:31 To: &#39;Bml - Fix&#39; &lt;fix@bmlcarriers.com&gt; Subject: BML EXCL /// mv ADAMAR / 17K DWT / GRD / BOX // OPEN EC-",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e0f52e0e064a3c",
+    "threadId": "19e0f52e0e064a3c",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: 3.5k dwcc mv mimi - open libya begsep",
+    "date": "2026-05-10T00:39:07.000Z",
+    "body": " \r\n\r\nFrom: a17-@googlegroups.com <a17-@googlegroups.com> On Behalf Of atom@atombulk.com\r\nSent: Monday, 2 September 2024 11:25\r\nTo: atom@atombulk.com\r\nSubject: 3.5k dwcc mv mimi - open libya begsep\r\n\r\n \r\n\r\natombulk ship chartering – istanbul\r\n\r\n \r\n\r\ngood day\r\n\r\n \r\n\r\n*\t   open misurata 05september2024\r\n\r\n \r\n\r\nmv mimi (imo no 8216100)\r\n\r\ndwcc 3500 mt on abt 6.34 m \r\n\r\ngeneral cargo vsl built 1987 spain \r\n\r\ncomoros flag\r\n\r\nho/ha 1 ( hatch opening: 50.30 x 10.2m ) \r\n\r\ngrain/bale 4672 cbm / 4390 cbm\r\n\r\n10 k on abt 3.5 tns\r\n\r\ngearless\r\n\r\na.d.a\r\n\r\n \r\n\r\nbest regards – as brokers \r\n\r\n  _    \r\n\r\ncagdas kilic\r\n\r\n‘    ‘     ‘\r\n\r\natombulk ship chartering\r\n\r\nmob/watsap: +90 538 861 51 17 \r\n\r\nskype: cagdaskilic.1991 \r\n\r\nemail: atom@atombulk.com <mailto:atom@atombulk.com>  \r\n\r\nmember of shipbrokers’ assocation – turkiye\r\n\r\n \r\n\r\n-- \r\nYou received this message because you are subscribed to the Google Groups \"atom@atombulk.com <mailto:atom@atombulk.com> \" group.\r\nTo unsubscribe from this group and stop receiving emails from it, send an email to a17-+unsubscribe@googlegroups.com <mailto:a17-+unsubscribe@googlegroups.com> .\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: a17-@googlegroups.com &lt;a17-@googlegroups.com&gt; On Behalf Of atom@atombulk.com Sent: Monday, 2 September 2024 11:25 To: atom@atombulk.com Subject: 3.5k dwcc mv mimi - open libya begsep atom",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e0f531898504ce",
+    "threadId": "19e0f531898504ce",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: 8k dwt mv snapper - open aegean sea spot",
+    "date": "2026-05-10T00:39:22.000Z",
+    "body": " \r\n\r\nFrom: a17-@googlegroups.com <a17-@googlegroups.com> On Behalf Of atom@atombulk.com\r\nSent: Tuesday, 20 August 2024 18:51\r\nTo: atom@atombulk.com\r\nSubject: 8k dwt mv snapper - open aegean sea spot\r\n\r\n \r\n\r\natombulk ship chartering – istanbul\r\n\r\n \r\n\r\ngood day\r\n\r\n \r\n\r\n*\topen nemrut bay spot\r\n\r\n \r\n\r\nmv snapper (ex aikaterini k imo.9381407)\r\n\r\n8100 mts dwt at 6.82 mtrs draft\r\n\r\nblt 2008-08  china\r\n\r\nclass ir, ice 1d, ss 08/2028, dd 06/2026\r\n\r\nloa 108.1 m, beam 18.2 m\r\n\r\ngt/nt 5,599/2,883\r\n\r\n3 ho(boxed)/3 ha\r\n\r\nhold/ hatch 1: 18.90 m x 15.20/6.60 m x 11.20 m\r\n\r\nhold/ hatch 2: 29.40 m x 15.20 m x 9.10 m\r\n\r\nhold/ hatch 3: 28 m x 15.20/7.70 m x 9.10 m\r\n\r\n10,194 cbm grain\r\n\r\ngearless\r\n\r\nbowthruster\r\n\r\nman-b&w 7s26mc 3,808 hp\r\n\r\nbwts fitted\r\n\r\nimo fitted\r\n\r\n \r\n\r\n*no european ports for now\r\n\r\nall africa, pg india try\r\n\r\n \r\n\r\nbest regards – as brokers \r\n\r\n  _    \r\n\r\ncagdas kilic\r\n\r\n‘    ‘     ‘\r\n\r\natombulk ship chartering\r\n\r\nmob/watsap: +90 538 861 51 17 \r\n\r\nskype: cagdaskilic.1991 \r\n\r\nemail:  <mailto:atom@atombulk.com> atom@atombulk.com \r\n\r\nmember of shipbrokers’ assocation – turkiye\r\n\r\n \r\n\r\n-- \r\nYou received this message because you are subscribed to the Google Groups \"atom@atombulk.com <mailto:atom@atombulk.com> \" group.\r\nTo unsubscribe from this group and stop receiving emails from it, send an email to a17-+unsubscribe@googlegroups.com <mailto:a17-+unsubscribe@googlegroups.com> .\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: a17-@googlegroups.com &lt;a17-@googlegroups.com&gt; On Behalf Of atom@atombulk.com Sent: Tuesday, 20 August 2024 18:51 To: atom@atombulk.com Subject: 8k dwt mv snapper - open aegean sea spot atom",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e0f53423e78f5f",
+    "threadId": "19e0f53423e78f5f",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: 10k dwcc mv propus - open marmara sea 22/26aug",
+    "date": "2026-05-10T00:39:32.000Z",
+    "body": " \r\n\r\nFrom: a17-@googlegroups.com <a17-@googlegroups.com> On Behalf Of atom@atombulk.com\r\nSent: Tuesday, 20 August 2024 18:41\r\nTo: atom@atombulk.com\r\nSubject: 10k dwcc mv propus - open marmara sea 22/26aug\r\n\r\n \r\n\r\natombulk ship chartering – istanbul\r\n\r\n \r\n\r\ngood day\r\n\r\n \r\n\r\n*\topen istanbul 22/26august\r\n\r\n \r\n\r\nmv propus\r\n\r\ndwt 10430 dwt on 8.58 m draft blt 1997\r\n\r\nclass bv flag panama\r\n\r\ngrt 7708 /nrt 3514 mt\r\n\r\nloa 126. / beam 20 m\r\n\r\n3 ho/3 ha\r\n\r\nbox like\r\n\r\ngrain 11960 / bale 11220 cbm\r\n\r\n \r\n\r\n*not prefer ukraine voyage for just now\r\n\r\nrated other cgoes welcome.\r\n\r\n \r\n\r\nbest regards – as brokers \r\n\r\n  _    \r\n\r\ncagdas kilic\r\n\r\n‘    ‘     ‘\r\n\r\natombulk ship chartering\r\n\r\nmob/watsap: +90 538 861 51 17 \r\n\r\nskype: cagdaskilic.1991 \r\n\r\nemail: atom@atombulk.com <mailto:atom@atombulk.com>  \r\n\r\nmember of shipbrokers’ assocation – turkiye\r\n\r\n-- \r\nYou received this message because you are subscribed to the Google Groups \"atom@atombulk.com <mailto:atom@atombulk.com> \" group.\r\nTo unsubscribe from this group and stop receiving emails from it, send an email to a17-+unsubscribe@googlegroups.com <mailto:a17-+unsubscribe@googlegroups.com> .\r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: a17-@googlegroups.com &lt;a17-@googlegroups.com&gt; On Behalf Of atom@atombulk.com Sent: Tuesday, 20 August 2024 18:41 To: atom@atombulk.com Subject: 10k dwcc mv propus - open marmara sea 22/",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e0f537ac896745",
+    "threadId": "19e0f537ac896745",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: OPEN AT AGADIR ON 22-24 AUGUST",
+    "date": "2026-05-10T00:39:46.000Z",
+    "body": " \r\n\r\nFrom: Midway Shipping <chartering@midwayshipping.com> \r\nSent: Tuesday, 20 August 2024 13:21\r\nSubject: OPEN AT AGADIR ON 22-24 AUGUST\r\n\r\n \r\n\r\nGOOD DAY,\r\n\r\n \r\n\r\nEXCL. OPEN AT AGADIR OR ANY WEST MED ON 22-25 AUGUST.\r\n\r\n \r\n\r\n \r\n\r\nM/V AVAT 1\r\n\r\nBUILT 2020 - CHINA / CAMEROON FLAG / KRIBI / IMO: 1033822\r\n\r\nDWT: 9220 MT AT 5,20 M DRAFT / GRT: 4995 / NRT: 2607\r\n\r\nCLASS: OMROS / P&I \"THOMAS MILLER\" / H&M \"THOMAS MILLER\"\r\n\r\nLOA: 109,8 M / BEAM: 23,60 M / DM: 7,15 M\r\n\r\nGEARLESS / GENERAL CARGO / 2 HO / 2 HA\r\n\r\nHOLDS NO 1 CAPACITY: 5097 M3 / 180.000 CBFT\r\n\r\nHOLDS NO 2 CAPACITY: 4807 M3 / 170.000 CBFT\r\n\r\nGRAIN / BALE CAPACITY: 9900 M3 / 350.000 CBFT\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nMidway shipping and chartering \r\n\r\nCapt. Bulent Taskin \r\n\r\n+90 532 474 82 57\r\n\r\n+90 212 688 84 75\r\n\r\nbulent.taskin4\r\n\r\nchartering@midwayshipping.com <mailto:chartering@midwayshipping.com> \r\n\r\nwww.midwayshipping.com <http://www.midwayshipping.com> \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Midway Shipping &lt;chartering@midwayshipping.com&gt; Sent: Tuesday, 20 August 2024 13:21 Subject: OPEN AT AGADIR ON 22-24 AUGUST GOOD DAY, EXCL. OPEN AT AGADIR OR ANY WEST MED ON 22-25 AUGUST. M",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e0f544fba5e7ab",
+    "threadId": "19e0f544fba5e7ab",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: EXCLUSIVE HANDIES - 24K DWT EGYPTMED 04-05 JULY ///  27K DWT CANAKKALE 05 JULY (REF:240DTE800)",
+    "date": "2026-05-10T00:40:41.000Z",
+    "body": " \r\n\r\nFrom: WAMAR MARITIME <chartering@wamarmaritime.com> \r\nSent: Tuesday, 2 July 2024 12:13\r\nTo: _ WAMAR MARITIME <chartering@wamarmaritime.com>\r\nSubject: EXCLUSIVE HANDIES - 24K DWT EGYPTMED 04-05 JULY /// 27K DWT CANAKKALE 05 JULY (REF:240DTE800)\r\n\r\n \r\n\r\nTELiX MSG: 0DTE8-00 02/07/24 12:14 +03:00\r\n\r\nGd day \r\n\r\n \r\n\r\n \r\n\r\nWAMAR's  EXCLUSIVE  HANDIES  \r\n\r\n--------------------------------------\r\n\r\n \r\n\r\n \r\n\r\nMV YA HUSSEIN    DWT  24,290 MTS      ALEXANDRIA, EGYPT 04-05 JULY  \r\n\r\n(LAST CARGO CORN IN BULK)\r\n\r\n \r\n\r\n \r\n\r\nMV AYA                  DWT  27,239 MTS      MARMARA, TUZLA  -   REVERTING \r\n\r\n(EX DD)\r\n\r\n \r\n\r\n \r\n\r\nMV ARTICULATE    DWT  27,308 MTS      CANAKKALE,  05 JULY \r\n\r\n(LAST CARGO WHEAT IN BULK) \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nVSLS DETS\r\n------------\r\nMV YA HUSSEIN\r\n==========\r\nDWT 24,290 MTS ON 9,54 M DRAFT\r\nBUILT 1996 JAPAN / FLAG PALAU\r\nLOA 157,26 M / BEAM 26,00 M\r\nGRT 14599 / NRT 8429\r\nGRAIN (CBM) : 31000 / BALE (CBM) : 29843\r\n4 HOLDS / 4 HATCHES\r\nCRANES 4/25T\r\nCLASS NKK/P&I CVRD\r\nADA\r\n\r\n \r\n\r\n+ + + \r\n\r\n \r\n\r\n \r\n\r\nMV  AYA \r\n\r\n=======\r\n\r\nFLAG : ST. Kitts & Navis\r\nBUILT : 1997. KOREA \r\nCLASS : K.R\r\nPNI CLUB: THOMAS MILLER\r\nSUMMER DWT/DRAFT: 27,239.3MTS ON ABOUT 9.91M\r\nTPC SUMMER  : 37.33 MT  \r\nGRT / NRT : 16498 / 9670\r\nLENGTH OVER ALL: 167.0 M \r\nL.B.P. : 158.0 M \r\nBREADTH (MOULDED) : 26.20 M \r\nDEPTH (MOULDED) :13.80M \r\nHOLDS / HATCHES:  5 / 5\r\nTYPE OF HATCH COVERS : FOLDING\r\nHOLDS CO2 FITTED : YES\r\nAHL FITTED : YES \r\nCARGO GEAR: 4*25MT\r\nOUTREACH : 10.5 M\r\nTOTAL HOLD CAPACITY : 35387.8(GRAIN) 34326.2(BALE)\r\nADA \r\n\r\n \r\n\r\n \r\n\r\n+ + + \r\n\r\n \r\n\r\n \r\n\r\nMV ARTICULATE \r\n\r\nBC FLG PALAU\r\nCLASS IRS BLT 1994\r\nDWT 27308 MT ON 9,52M DRFT\r\nGRT /NRT 16446 MT/ 9409 MT\r\nLOA 165,5M, LBP 158,6M BEAM 27,03M, DEPTH 13,3M\r\n5HO/5HA ICE CLASS\r\nGRAIN :34810 cbm, BALE :34182 bm\r\nHATCH #1: 8.0x13.5- HATCH # 2,3,4&5: 19.2x13.5\r\nCAPA GAIN /BALE\r\nHOLD1:3969/3808CBM\r\nHOLD2:7895/7775 CBM\r\nHOLD3:7899/7780 CBM\r\nHOLD4:7715/7597 CBM\r\nHOLD5:7334/7222 CBM\r\nTTL : 34810/34182 CBM\r\nCRANES: 4 X 25T\r\nCRANE OUT REACH : 22.0M\r\nVESSEL IS GEARED\r\n\r\n \r\n\r\n+ + + \r\n\r\n \r\n\r\n  \r\n\r\nPlse ppse / offer firm . \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nBest regards\r\n\r\n \r\n\r\nEmmanouil Papanikolaou  \r\n\r\n----------------------------------------------\r\n\r\nM :  +30 693 614 2797 | S : e.papanikolaou |\r\n\r\n---------------------------------------------------\r\n\r\nWAMAR MARITIME CO.\r\n\r\nKyprou 2 & Kolokotroni 14 Str.\r\n\r\n14562 Kifisia, Greece\r\n\r\nTel.: +30 210 8083133\r\n\r\nEmail :   <mailto:chartering@wamarmaritime.com> chartering@wamarmaritime.com\r\n\r\n--------------------------------------------------\r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: WAMAR MARITIME &lt;chartering@wamarmaritime.com&gt; Sent: Tuesday, 2 July 2024 12:13 To: _ WAMAR MARITIME &lt;chartering@wamarmaritime.com&gt; Subject: EXCLUSIVE HANDIES - 24K DWT EGYPTMED 04-05",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e0f54a2c261266",
+    "threadId": "19e0f54a2c261266",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<vitali6825621@gmail.com>, <Mostafamarwan96@gmail.com>",
+    "subject": "FW: Molina Shipping Exclusive Fleet",
+    "date": "2026-05-10T00:41:02.000Z",
+    "body": " \r\n\r\nFrom: Burcin Ozhan <chart@molinaship.com> \r\nSent: Monday, 1 July 2024 13:12\r\nCc: project@molinaship.com\r\nSubject: Molina Shipping Exclusive Fleet\r\n\r\n \r\n\r\n \r\n\r\nDear all,\r\n\r\n \r\n\r\nPlease find latest position list for our exclusive fleet below:\r\n\r\n \r\n\r\nPlease always reply to  <mailto:project@molinaship.com>\r\nproject@molinaship.com \r\n\r\n \r\n\r\n \r\n\r\n\r\nDOLPHIN E\r\n\r\n1.600 CC\r\n\r\nIZMIR \r\n\r\n12/13 JULY \r\n\r\n\r\nSERENITY AC\r\n\r\n1.600 CC\r\n\r\nEC GREECE\r\n\r\n7/8 JULY \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n''M/V DOLPHIN E''\r\nIMO: 9013012\r\n1991 BLT, PALAU FLAG, IACS CLASS, ICE CLASS 1A\r\n1600 DWCC ON 3,83 M DRAFT - SID BOX      \r\nLOA 78,5, LBP73,8 BREATH: 10,5 DEPTH 4,75\r\n1HO/1HA - HOLD 54,7 x 8,3x 5,50 M - HA 54,7 x 8,3 M\r\nAIR DRAFT 8,4 M ON BALLAST\r\nGR/BL:89600/88100 CBFT\r\nGRT 1276 / NRT 672\r\nBOW THRUSTER FITTED\r\nGEARLESS\r\nAPP B FITTED\r\nA/D/A WOG\r\n\r\n \r\n\r\n''SERENITY AC''\r\n\r\nIMO: 9013036\r\n1,723 DWT ON 3.70 M DRAFT / 1.600 DWCC\r\n\r\nBLT 1991 / PANAMA FLAG / CLASS IRS (IACS)\r\nLOA/BM / DEPTH 74.99M / 10.70M / 4.70M\r\nGRT/NRT 1,282/675\r\n1 HO / 1 HA - BOX / OPEN HATCH\r\nHOLD 50,4 M x 8,7 M x 5,6 M\r\nHATCH 50,4 M x 8,7 M\r\n1 MOVABLE BULKHEAD\r\nGRAIN/BALE  88.000 CBFT / 2.480 CBM\r\nIMO 1 FITTED\r\nA/D/A  WOG\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\nBrgds\r\n\r\n \r\n\r\nMOLINA SHIPPING & PROJECT\r\n\r\nMs. Burcin Ozhan - Mob: +90 541 488 91 11\r\n\r\nUtku Sozeri - Mob: +90 532 412 68 31\r\n\r\ne-mail :  <mailto:project@molinaship.com> project@molinaship.com\r\n\r\n <https://www.molinaship.com/> https://www.molinaship.com\r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Burcin Ozhan &lt;chart@molinaship.com&gt; Sent: Monday, 1 July 2024 13:12 Cc: project@molinaship.com Subject: Molina Shipping Exclusive Fleet Dear all, Please find latest position list for our",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e0f54e1bbca506",
+    "threadId": "19e0f54e1bbca506",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: ELKENZ MARITIME // HOME TONNAGE",
+    "date": "2026-05-10T00:41:18.000Z",
+    "body": " \r\n\r\nFrom: Chartering <chartering@elkenz.com> \r\nSent: Monday, 1 July 2024 09:54\r\nTo: Chartering <chartering@elkenz.com>\r\nSubject: ELKENZ MARITIME // HOME TONNAGE\r\n\r\n \r\n\r\n+++Please do not recirculate+++\r\n\r\n \r\n\r\nGreetings from Elkenz Maritime;\r\n\r\n  \r\n\r\nPls offer suitable cargoes for our home tonnages;\r\n\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\nM/V CANKA\r\n\r\nStatus: SPOT @ Constanta\r\n\r\n3,200 dwt\r\n\r\nGearless\r\n\r\n \r\n\r\nHo/Ha - 1/1\r\n\r\n \r\n\r\n \r\n\r\n\r\nM/V SARDES\r\n\r\nStatus: Open @ Constanta 02 - 03 July\r\n\r\n \r\n\r\n6,500 dwt\r\n\r\n  Gearless\r\n\r\n \r\n\r\n   Ho/Ha - 2/2 / Tween\r\n\r\n \r\n\r\n\r\nM/V TEAM SPIRIT\r\n\r\nStatus: Open @ Alexandria 03 - 05 July\r\n\r\n \r\n\r\n4,820 dwt\r\n\r\n2 x 50ts cranes (100ts in combi)\r\n\r\n   Ho/Ha - 1/1\r\n\r\n   Box / Tween\r\n\r\n  M/V TEOS\r\n\r\n  Status: Open @ Istanbul 15 - 17 July                     4,900 dwt\r\n2 x 50ts cranes                  Ho/Ha - 1/1\r\n\r\n \r\n(100ts in combi)                Box / Tween\r\n\r\nFurther details of the vessels:\r\n\r\n \r\n\r\n++\r\n\r\nMV CANKA (ex VIRTSU)\r\n\r\nMultipurpose dry cargo vessel ,Panama flag, port of registry: Panama\r\n\r\nBuilt in Holland 1995 ,Lloyd's Register + 100A1, Ice class 1A, +LMC, UMS\r\n,IMO No.: 9103740\r\n\r\n3200 mt DWAT sfb on 4,63m  about 3000 mt TDWCC\r\n\r\nLOA 90,67 m - beam 15,80 m ,GT/NT 2658/1216 ,open hatch/doubleskinned\r\nsingledecker, steelfloored\r\n\r\nabout 140.000 cbf gr/bl (3990 cbm) ,Pointload: tanktop 7,5 mt/m2 and  on\r\nhatch 1,75 mt / m2\r\n\r\nIMO fitted, mechanical holdventilation 10 times/hour\r\n\r\nfitted with smokedetection system in holds.\r\n\r\nCO2 firefigthing system fitted in holds and engineroom.\r\n\r\n1 hold, 1 hatch, MacGregor hatchcover hydr. folding type\r\n\r\nhatch dimensions: 57,50 x 12,80 m\r\n\r\nwith 2 sections folding forward and aft resp.\r\n\r\nG e a r l e s s\r\n\r\nAirdraft ballast 24,7 meter\r\n\r\nP & I club: Shipowner P&I club\r\n\r\nAll details are 'About'\r\n\r\n++\r\n\r\n \r\n\r\n++\r\n\r\nMV SARDES (ex AMKE)\r\n\r\nType: Multi Purpose Cargo Vessel\r\n\r\nFlag: Panama \r\n\r\nLength o.a.: abt. 115.50 m Length p.p.: abt. 111.63 m Beam abt.: 16.50 m\r\nDraft abt.: 5.70 m Depth moulded abt.: 7,95 m\r\n\r\nDWAT/DWCC: abt 6500/5800 mt\r\n\r\nGT / NT: Abt. 5313 / 2382\r\n\r\nGearless \r\n\r\nNo. of Ho / Ha: 2/2\r\n\r\nType of Hatches: pontoon type,\r\n\r\nopened by means of gantry cranes\r\n\r\nHold dimensions\r\n\r\nNo. 1    abt. 19.72 m x 13.50 m x 09.05 m No. 2    abt. 57.80 m x 13.50 m x\r\n09.05 m Vessel is fitted with 2 moveable bulkheads in hold no. 2 and full\r\ntweendeck in hold 1 and 2\r\n\r\nVentilation: 6 airchanges p/h of empty cargo hold Bowthruster 1 x abt. 350\r\nkW Hold volume: abt. 308.000 cbft \r\n\r\nAll details are 'about'.\r\n\r\n++\r\n\r\n \r\n\r\n++\r\n\r\nMV TEAM SPIRIT (ex MV THOR INGEBORG)\r\n\r\nBuilt in Poland June 1997,Panama flag , Mpp geared/boxshaped ship with\r\nadjustable tweendeck, 4820 mt DWAT on 6,40 m summer salt water, GT/NT\r\n4078/2009\r\n\r\n1 Hatch 57,80 x 13,40 m - MacGrecor folding type, 4 forward, 4 aft. 6790 cbm\r\n(about 240.000 cbf) bale without tweendeck. About 226.000 cbf incl\r\ntweendeck.\r\n\r\nFull tweendeck is on board.\r\n\r\nEquipped for carriage of containers.\r\n\r\nReefer plug capacity :30 x 40'\r\n\r\n1 boxshaped double skinned cargo hold, narrowing for and slightly aft on\r\ntanktop.\r\n\r\n2 cranes placed port side. Each up to 60 mt lifting capacity (SWL) out\r\nreach: 30 tons: 2,3 to 25 meter, 35 tons: 2,3 to 21,3 meter and 60 tons 4,0\r\nto 12,4 meter.\r\n\r\nAll details are 'about'\r\n\r\n++\r\n\r\n \r\n\r\n++\r\n\r\nMV TEOS (ex BBC ICELAND) \r\n\r\nImo No.: 9173331. Build in Xingang Shipyard,China in 1999 \r\n\r\nex name \"BBC Iceland\" \r\n\r\nPanama Flag \r\n\r\nMultipurpose geared/boxshaped ship with adjustable tweendeck \r\n\r\n4900 mt DWAT on 6,40 m summer salt water \r\n\r\nGT/NT 4089/2016 \r\n\r\nLOA 100,60 m, Beam 16,60 m. Depth moulded: 8,10 m \r\n\r\nAirdraft about 37,95 meter(waterline/top of antenna). \r\n\r\nIndian Shipping Registry Class \r\n\r\nEquipped for carriage of containers. \r\n\r\n  \r\n\r\nabt. 6.800 cbm (240.140 cft) grain/bale without tweendeck. Full tweendeck is\r\non board. \r\n\r\n1 boxshaped double skinned cargo hold, narrowing for and slightly aft on\r\ntanktop. Please see pocket plan. \r\n\r\n1 Hatch 57,80 x 13,40 m - Kvaerner folding type, 4 forward, 4 aft. \r\n\r\nPointloads: Tanktop 17,9 mt/m2, tweendeck and hatch: 2,5 mt/m2 Hold\r\nventilation 30 airchanges. \r\n\r\n  \r\n\r\n2 cranes placed port side. Each up to 60 mt lifting capacity (SWL) outreach:\r\neach 60 mt / 2,4 - 12,4 m; 35mt / 2,3 - 21,3 m; 30 mt /2,3 - 25,00 m. \r\n\r\nHeavylift spreader on board. \r\n\r\n  \r\n\r\nFully fitted for upto 390 standard 20 feet containers subject to weights. \r\n\r\nAble to load about 202 containers of 20 feet of 14 mt average weight. \r\n\r\nAble load also highcubes, 45', 48' feet containers. \r\n\r\n40 feet containers: 56 FEU in hold and 122 FEU on deck. \r\n\r\n30 reeferplugs on deck. \r\n\r\nStacking weights: tanktop 72/90 mt for 20/40 feet containers,hatch: 40/50 mt\r\nfor 20 and 40 feet containers. Subject to stability. \r\n\r\nAvailable container- and general lashing equipment as per inventory list. \r\n\r\nAll details are 'about' \r\n\r\n++\r\n\r\n \r\n\r\nBest Regards\r\n\r\n\r\n\r\n\r\n \r\n\r\nMr. Mert DARTAR | Operation\r\n\r\n\r\nElkenz Maritime | Your partners at sea\r\n\r\n\r\nTel. (0216) 327 96 86 | +90 531 619 3696\r\n\r\n\r\nFax.(0216) 428 94 60-65-66 \r\n\r\n\r\n <mailto:elkenz@elkenz.com> elkenz@elkenz.com \r\n\r\n \r\n\r\n***Please always keep  <mailto:elkenz@elkenz.com> elkenz@elkenz.com in CC on\r\nall e-mails.\r\n\r\n \r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Chartering &lt;chartering@elkenz.com&gt; Sent: Monday, 1 July 2024 09:54 To: Chartering &lt;chartering@elkenz.com&gt; Subject: ELKENZ MARITIME // HOME TONNAGE +++Please do not recirculate+++",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e0f555a7fb2be5",
+    "threadId": "19e0f555a7fb2be5",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: Sailing MED Position list wk 09-11",
+    "date": "2026-05-10T00:41:48.000Z",
+    "body": " \r\n\r\nFrom: Camilla Biggi - Chartering Genoa <Chartering.Genoa@bbc-chartering.com> \r\nSent: Wednesday, 21 February 2024 10:48\r\nTo: Chartering.Genoa@bbc-chartering.com\r\nSubject: Sailing MED Position list wk 09-11\r\n\r\n \r\n\r\n\r\n\r\n \r\n\r\n\r\n\r\n \r\n\r\nBBC Chartering Genoa S.U.R.L.\r\nas agents\r\n\r\n \r\n\r\nCamilla Biggi\r\nChartering Assistant\r\n\r\n \r\n\r\nBBC Chartering Genoa s.r.l. con unico socio\r\nPiazza della Vittoria n. 15/24\r\n16121 Genoa\r\nItaly\r\n\r\nM: +39 340 6807 649\r\nP: +39 010 8990 974\r\n\r\n \r\n\r\nchartering.genoa@bbc-chartering.com <mailto:chartering.genoa@bbc-chartering.com> \r\nwww.bbc-chartering.com <http://www.bbc-chartering.com/> \r\n\r\n \r\n\r\n <https://www.instagram.com/bbcchartering/>    <https://de.linkedin.com/company/bbc-chartering>    <https://twitter.com/bbcchartering> \r\n\r\n \r\n\r\nOur suppliers are obliged to follow our health, safety and environmental policies and standards as per information displayed on our website.\r\n\r\nPlease consider the environment before printing this e-mail\r\n\r\n \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Camilla Biggi - Chartering Genoa &lt;Chartering.Genoa@bbc-chartering.com&gt; Sent: Wednesday, 21 February 2024 10:48 To: Chartering.Genoa@bbc-chartering.com Subject: Sailing MED Position list wk",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e0f559b2252e15",
+    "threadId": "19e0f559b2252e15",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: Open 11k Dwt Emed End of Feb",
+    "date": "2026-05-10T00:42:06.000Z",
+    "body": " \r\n\r\nFrom: Nora Marine <chartering@noramarine.com> \r\nSent: Tuesday, 6 February 2024 16:03\r\nTo: SEA TRANSIT DENIZ TASIMACILIGI <chartering@seatransit.com.tr>\r\nSubject: Open 11k Dwt Emed End of Feb\r\n\r\n \r\n\r\nGood Day, \r\n\r\nLooking for suitable cargoes in Med Blacksea region. Short period TC can be\r\nconsider. \r\n\r\nOpen Emed End of Feb-Beg of March \r\n\r\nGENERAL CARGO BOX HOLDS \r\nMV BENIGANE \r\nDWT/DWCC/DRAFT: 11500 / 11,100 t / 8,7 M \r\n\r\nFLAG: PALAU / CLASS: KR / BUILT: 2008, KOREA / BOX / GEAR: DECK CRANE 40T X\r\n2 SETS \r\nLOA/LBP/B/D: 129.9M/121.0Mx19.6Mx11.7M \r\nGRT/NRT: 8,963 / 4,054 T \r\nGRAIN/BALE: 13,600 / 13,500 cbm \r\nHOLD: 2 \r\n\r\nNO.1 : 18.9 M x 16.2 M x 10.85 M / NO.2 : 58.22 M x 16.2 M x 10.85 M \r\nNO.1 : 2577,4 cbm / 91008 cbft // NO.2 : 11048,2 cbm / 390111 cbft \r\nTotal: 480.000 cbft \r\n\r\nHATCH SIZES \r\nNO.1 : 18.8 M x 15.57 M \r\nNO.2 : 58.19 M x 15.57 M \r\n\r\nSPEED: SERVICE 12.5 KNOTS \r\nMULTINATIONAL CREW \r\nADA WOG \r\n\r\nBest Regards \r\n\r\nCpt. Kagan URGEV \r\nAs brokers only. \r\nSkype: k.urgev \r\nPhone: +90 532 560 4785 \r\nwww.noramarine.com <http://www.noramarine.com>  \r\nchartering@noramarine.com <mailto:chartering@noramarine.com>  \r\nTuzla, Istanbul, Turkey. \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Nora Marine &lt;chartering@noramarine.com&gt; Sent: Tuesday, 6 February 2024 16:03 To: SEA TRANSIT DENIZ TASIMACILIGI &lt;chartering@seatransit.com.tr&gt; Subject: Open 11k Dwt Emed End of Feb",
+    "labelIds": ["UNREAD", "CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
+    }
+  },
+  {
+    "id": "19e0f55e3bcf9a28",
+    "threadId": "19e0f55e3bcf9a28",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "fromName": "ETMS - Management",
+    "fromEmail": "management@etm-services.net",
+    "to": "<Mostafamarwan96@gmail.com>, <vitali6825621@gmail.com>",
+    "subject": "FW: Bita / Excl. Tonnages",
+    "date": "2026-05-10T00:42:24.000Z",
+    "body": " \r\n\r\nFrom: Bita Chartering - Istanbul <chartering@bitashipping.com> \r\nSent: Monday, 5 February 2024 12:04\r\nTo: Bita Chartering - Istanbul <chartering@bitashipping.com>\r\nSubject: Bita / Excl. Tonnages\r\n\r\n \r\n\r\nGood Day,\r\n\r\n \r\n\r\nPls offer yr suitable cargoes for,\r\n\r\n \r\n\r\nSpot Jeddah, looking quick shipment in Red Sea ONLY,\r\n\r\n \r\n\r\nMV YAMAN BEY / 5.383 DWT - 5,90 M / GRAIN 6455 - BALE 6200 CBM / BOX / 08\r\nBLT / GLESS\r\n\r\n \r\n\r\n--\r\n\r\n \r\n\r\nOpen Marmara by 15 Feb,\r\n\r\n \r\n\r\nMV TQ ISTANBUL / 3.712 DWT - 5,46 M / GRAIN-BALE 4.690 CBM / OH-BOX / 93 BLT\r\n/ GLESS\r\n\r\n \r\n\r\n--\r\n\r\n \r\n\r\nOpen Giurgiulesti by 10/15 Feb, \r\n\r\n \r\n\r\nMV TQ TRABZON / 3.712 DWT - 5,46 M / GRAIN-BALE 4.690 CBM / OH-BOX / 93 BLT\r\n/ GLESS\r\n\r\n \r\n\r\n--\r\n\r\n \r\n\r\nOpen Djibouti by 25/29 Feb, \r\n\r\n \r\n\r\nMV LONE STAR / 4.400 DWT - 5,90 M / GRAIN 5911 - BALE 5800 CBM / BOX / 08\r\nBLT / GLESS\r\n\r\n \r\n\r\n--\r\n\r\n \r\n\r\nOpen Busan by 5/10 Mar, \r\n\r\n \r\n\r\nMV TQ MERSIN /12.000 DWT - 7,14 M / GRAIN - BALE 14722 CBM / BOX / 08 BLT /\r\nGLESS\r\n\r\n \r\n\r\n--\r\n\r\n \r\n\r\nOpen Marmara by 10/15 Mar, \r\n\r\n \r\n\r\nMV SONIC / 4.203 DWT - 5,25M / GRAIN-BALE 5380 CBM / OH-BOX / 84 BLT\r\n\r\n \r\n\r\n--\r\n\r\n \r\n\r\nOn Period,\r\n\r\n \r\n\r\nMV TQ SAMSUN / 43.775 DWT / GRAIN 56.666 - BALE 54.931 CBM / 96 BLT / GEARED\r\n\r\n \r\n\r\n--\r\n\r\nBest Regards,\r\n\r\n \r\n\r\nIlhami Yakup OZEN\r\n\r\nAs brokers only\r\n\r\n \r\n\r\nBita Shipping Ltd.\r\n\r\nwww.bitashipping.com <http://www.bitashipping.com> \r\n\r\nA: Evliya Çelebi Mahallesi, Genç Osman Caddesi, Ak İş Merkezi, \r\nNo:58 Kat:4/11 Tuzla,Istanbul/Turkey\r\n\r\nTel      : +90 216 395 66 64\r\n\r\nMob   : +90 539 709 98 21 \r\n\r\nEmail  : chartering@bitashipping.com <mailto:chartering@bitashipping.com>   \r\n\r\nSkype : ilhamiyakupozen@gmail.com <mailto:ilhamiyakupozen@gmail.com> \r\n\r\n \r\n\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com",
+    "snippet": "From: Bita Chartering - Istanbul &lt;chartering@bitashipping.com&gt; Sent: Monday, 5 February 2024 12:04 To: Bita Chartering - Istanbul &lt;chartering@bitashipping.com&gt; Subject: Bita / Excl.",
+    "labelIds": ["CATEGORY_PERSONAL", "INBOX"],
+    "_meta": {
+      "skipRebase": true
     }
   }
 ]

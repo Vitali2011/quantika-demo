@@ -10,12 +10,18 @@ import { countAwaitingApproval } from '@/lib/auto-prequote/queue';
 import { PriorityCard } from '@/components/dashboard/PriorityCard';
 import { InboxBreakdown } from '@/components/dashboard/InboxBreakdown';
 import { MarketIntelligence } from '@/components/dashboard/MarketIntelligence';
+import { RoiSummaryTile } from '@/components/dashboard/RoiSummaryTile';
+import SubsCountdownWidget from '@/components/deals/SubsCountdownWidget';
 import { classifyPriority } from '@/lib/sailing/priority-classifier';
 import type { PriorityLevel } from '@/lib/sailing/priority-classifier';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
 import { formatNumber } from '@/lib/utils';
 
 const PRIORITY_ORDER: Record<PriorityLevel, number> = { urgent: 0, attention: 1, ok: 2 };
+
+// Demo data for SubsCountdownWidget (F-01) — static, server-safe
+const DEMO_DEAL_ID = 'demo-deal-001';
+const DEMO_SUBS_DEADLINE = '2099-01-01T12:00:00.000Z';
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
@@ -118,6 +124,7 @@ export default async function DashboardPage() {
   const urgentCount = priorityCards.filter((c) => c.priority === 'urgent').length;
   const noActiveDeals = goodMatches.length === 0;
 
+
   return (
     <main className="min-h-screen bg-gray-50 py-4 sm:py-8 px-3 sm:px-4">
       <AnalyticsTracker event="dashboard_viewed" />
@@ -130,6 +137,9 @@ export default async function DashboardPage() {
           errors={0}
         />
 
+        {/* ── γ-18: ROI Summary Tile (feature flag) ──────────────── */}
+        {process.env.NEXT_PUBLIC_ROI_GUARANTEE_ENABLED === 'true' && <RoiSummaryTile />}
+
         {/* ── Morning Header ─────────────────────────────────────── */}
         <div>
           <MorningHeader userName="Broker" alertCount={urgentCount} />
@@ -139,6 +149,15 @@ export default async function DashboardPage() {
             </span>
           )}
         </div>
+
+        {/* ── F-01: Subs Countdown Widget (feature flag) ─────────── */}
+        {process.env.NEXT_PUBLIC_SUBS_TIMER_V2_ENABLED === 'true' && (
+          <SubsCountdownWidget
+            dealId={DEMO_DEAL_ID}
+            subsDeadline={DEMO_SUBS_DEADLINE}
+            chartererTier="blue-chip"
+          />
+        )}
 
         {/* ── Top Priorities ─────────────────────────────────────── */}
         <section>
