@@ -77,7 +77,24 @@ export function seedMarketIndices(): void {
   }
   console.log(`  ✓ Seeded ${tmiData.length} TMI rows`);
 
-  console.log(`\n✓ Seeded total ${bhsiData.length + tmiData.length} market index rows.`);
+  // Drewry Breakbulk: range ~$1500-1700 USD/TEU
+  const drewryData = generateSyntheticData('drewry-bb', 30, 1600, 200);
+  console.log('Seeding Drewry Breakbulk Index...');
+  for (const row of drewryData) {
+    const id = `drewry-bb-${row.date}`;
+    upsertIndex(db, {
+      id,
+      index_name: 'drewry-bb',
+      index_date: row.date,
+      value: row.value,
+      unit: 'USD/TEU',
+      source: 'seed-synthetic',
+      fetched_at: new Date().toISOString(),
+    });
+  }
+  console.log(`  ✓ Seeded ${drewryData.length} Drewry BB rows`);
+
+  console.log(`\n✓ Seeded total ${bhsiData.length + tmiData.length + drewryData.length} market index rows.`);
 }
 
 if (require.main === module) {
