@@ -116,10 +116,12 @@
       },
       {
         "origin_port": {
-          "value": "Damietta + Mersin",
+          "value": "Damietta",
           "confidence": "confirmed",
           "source_text": "Damietta+Mersin/POC"
         },
+        "origin_port_rotation": ["Damietta", "Mersin"],
+        "weight_per_port": null,
         "origin_country": {
           "value": "Egypt (Damietta) + Turkey (Mersin)",
           "confidence": "interpreted",

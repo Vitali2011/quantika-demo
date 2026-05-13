@@ -22,10 +22,11 @@
           "source_text": "BEJAIA (MAX LOA 145 MTR) TO 1SP LIBYA OR MERSIN IN CHOPT"
         },
         "destination_port": {
-          "value": "1 Safe Port Libya or Mersin (Charterers Option)",
-          "confidence": "confirmed",
+          "value": "Libya port",
+          "confidence": "interpreted",
           "source_text": "BEJAIA (MAX LOA 145 MTR) TO 1SP LIBYA OR MERSIN IN CHOPT"
         },
+        "destination_port_alternatives": ["Mersin"],
         "destination_country": {
           "value": "Libya or Turkey (Charterers Option)",
           "confidence": "confirmed",
@@ -117,10 +118,11 @@
           "source_text": "BEJAIA (MAX LOA 145 MTR) TO 1SP TURKISH EAST MED OR 1SP SYRIA OR 1SP LEBANON OR 1SP LIBYA IN CHOPT"
         },
         "destination_port": {
-          "value": "1 Safe Port Turkish East Med, or 1 Safe Port Syria, or 1 Safe Port Lebanon, or 1 Safe Port Libya (Charterers Option)",
-          "confidence": "confirmed",
+          "value": "Turkish East Med",
+          "confidence": "interpreted",
           "source_text": "BEJAIA (MAX LOA 145 MTR) TO 1SP TURKISH EAST MED OR 1SP SYRIA OR 1SP LEBANON OR 1SP LIBYA IN CHOPT"
         },
+        "destination_port_alternatives": ["Syria port", "Lebanon port", "Libya port"],
         "destination_country": {
           "value": "Turkey / Syria / Lebanon / Libya (Charterers Option)",
           "confidence": "confirmed",

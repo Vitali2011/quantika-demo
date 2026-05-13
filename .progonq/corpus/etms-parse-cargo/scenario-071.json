@@ -22,10 +22,12 @@
           "source_text": "BANDIRMA / RAVENNA+KOPER"
         },
         "destination_port": {
-          "value": "Ravenna + Koper",
+          "value": "Ravenna",
           "confidence": "confirmed",
           "source_text": "BANDIRMA / RAVENNA+KOPER"
         },
+        "destination_port_rotation": ["Ravenna", "Koper"],
+        "weight_per_port": null,
         "destination_country": {
           "value": "Italy + Slovenia",
           "confidence": "confirmed",

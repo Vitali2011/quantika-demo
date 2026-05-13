@@ -22,10 +22,12 @@
           "source_text": "Jorf Lasfar => Yarımca (Marmara) + Samsun"
         },
         "destination_port": {
-          "value": "Yarımca (Marmara) + Samsun",
+          "value": "Yarımca",
           "confidence": "confirmed",
           "source_text": "Jorf Lasfar => Yarımca (Marmara) + Samsun"
         },
+        "destination_port_rotation": ["Yarımca", "Samsun"],
+        "weight_per_port": null,
         "destination_country": {
           "value": "Turkey",
           "confidence": "confirmed",

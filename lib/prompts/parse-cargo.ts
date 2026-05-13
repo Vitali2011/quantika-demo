@@ -104,13 +104,9 @@ EXCEPTION — alternatives only with explicit markers:
   "Odesa / Chornomorsk chopt" → destination="Odesa or Chornomorsk"
 Additional signal: if "/" is followed by another "/" with quantity/cargo/date, it confirms separator.
 
-RULE 6 — Multi-port rotation vs alternatives:
-- "Port A + Port B" = vessel calls BOTH ports in sequence (rotation). Preserve "+" literally in output.
-  Example: "loading Damietta + Misurata" → origin_port = "Damietta + Misurata"
-  Example: "disch Yarımca (Marmara) + Samsun" → destination_port = "Yarımca (Marmara) + Samsun"
-- "Port A or Port B" or "Port A / Port B chopt" = charterer's option (only one port called).
-  Example: "Odesa or Chornomorsk chopt" → destination_port = "Odesa or Chornomorsk"
-NEVER convert "+" to "or" — they mean different commercial things (rotation vs option).
+RULE 6 — Multi-port rotation vs alternatives: see === MULTI-PORT CARGOES === section below.
+Use origin_port_alternatives / origin_port_rotation / destination_port_alternatives / destination_port_rotation arrays — NOT concatenated strings like "Port A + Port B" or "Port A or Port B".
+Primary port: always set origin_port / destination_port to the first port mentioned (backward-compat).
 
 === CARGO DESCRIPTION RULES ===
 
@@ -237,6 +233,41 @@ IMPORTANT negative examples — these ARE cargo inquiries (do NOT trigger the gu
 - "pls propose [suitable] vessels for our [cargo]" = shipper asking broker to find tonnage for specific cargo → PARSE as cargo inquiry
 - "pls propose described ladies for our firm cargo" = same — "ladies" is informal for ships — still a cargo inquiry
 - Any email that contains a specific named cargo (cement, grain, coils, etc.) with quantity and a load/discharge port → PARSE as cargo inquiry, regardless of vessel mentions.
+
+=== MULTI-PORT CARGOES ===
+
+A single physical cargo movement may involve multiple ports. Distinguish three cases:
+
+(A) ALTERNATIVE PORTS — vessel (or charterer) chooses ONE of several options:
+  Phrases: "X or Y", "X / Y chopt", "either X or Y", "1 SP X or Y"
+  → Emit ONE item. Set primary port = first mentioned. Put others in *_alternatives array.
+  Example: "16000mt salt, El Arish OR El Dekheila → POC"
+    origin_port: { value: "El Arish", confidence: "confirmed", source_text: "El Arish OR El Dekheila" }
+    origin_port_alternatives: ["El Dekheila"]
+    destination_port: { value: "Port of Call", confidence: "interpreted", source_text: "POC" }
+    weight_mt: { value: 16000, confidence: "confirmed", source_text: "16000mt" }
+
+(B) ROTATION PORTS — vessel calls ALL ports in sequence:
+  Phrases: "X + Y", "X and Y", "X then Y", "combined X+Y", "discharge at X and Y"
+  → Emit ONE item. Set primary port = first in rotation. Populate *_rotation array (all ports including primary). If per-port tonnage breakdown is explicitly stated, populate weight_per_port (parallel array, same order as rotation). weight_mt = total.
+  Example: "40000mt rice, Kandla → Banjul 10000mt + Dakar 30000mt"
+    origin_port: { value: "Kandla", confidence: "confirmed", source_text: "Kandla" }
+    destination_port: { value: "Banjul", confidence: "confirmed", source_text: "Banjul" }
+    destination_port_rotation: ["Banjul", "Dakar"]
+    weight_per_port: [10000, 30000]
+    weight_mt: { value: 40000, confidence: "confirmed", source_text: "40000mt" }
+
+(C) TWO DIFFERENT CARGO OFFERS in the same email — DO NOT merge into one item:
+  → Emit TWO (or more) separate items.
+  Signals: different commodities ("salt + rice"), distinct tonnage parcels clearly for separate vessels ("5500mt + 7000mt" of different cargo), numbered cargo listing ("Cargo 1: ... Cargo 2: ..."), subject line naming multiple cargoes.
+  Examples that MUST become 2 items:
+    "5500 mts of salt ... + 6000-7000mts of salt/rice" → 2 items (different commodities)
+    "Cargo 1: 3000mt Banjul. Cargo 2: 5000mt Dakar." → 2 items (explicit separation)
+  Examples that MUST stay as 1 item (do NOT split):
+    "Cement 50000mt, Doha + Damman" → 1 item with destination_port_rotation (one cargo, two discharge ports)
+    "Steel from Iskenderun or Ceyhan → Rotterdam" → 1 item with origin_port_alternatives (one cargo, alt load ports)
+
+WHEN IN DOUBT: if commodity differs OR tonnages are clearly separate parcels → split into 2 items. If same commodity with same (or total) tonnage and only the port varies → multi-port rules (A or B).
 
 Extract per inquiry item:
 - origin_port: full port name (see PORT HANDLING RULES — never null when geography exists)

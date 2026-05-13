@@ -37,6 +37,11 @@ interface CargoItem {
   destination_port?: ConfidenceField | null;
   weight_mt?: ConfidenceField | null;
   cargo_description?: ConfidenceField | null;
+  origin_port_alternatives?: unknown;
+  origin_port_rotation?: unknown;
+  destination_port_alternatives?: unknown;
+  destination_port_rotation?: unknown;
+  weight_per_port?: unknown;
   [key: string]: unknown;
 }
 
@@ -63,6 +68,17 @@ interface ItemMatchResult {
   model_commodity: string | null;
   route_match: boolean;
   weight_match: boolean;
+  // Raw (un-normalized) strings — for judge: sees original text, not normalized form
+  ref_origin_raw: string | null;
+  ref_dest_raw: string | null;
+  model_origin_raw: string | null;
+  model_dest_raw: string | null;
+  // Multi-port sub-match fields
+  origin_alts_match: boolean;
+  origin_rotation_match: boolean;
+  dest_alts_match: boolean;
+  dest_rotation_match: boolean;
+  weight_per_port_match: boolean;
 }
 
 interface RunResult {
@@ -112,7 +128,7 @@ function getFieldValue(field: ConfidenceField | null | undefined): unknown {
   return field.value ?? null;
 }
 
-function normalizePort(v: unknown): string | null {
+export function normalizePort(v: unknown): string | null {
   if (typeof v !== 'string' || !v) return null;
   let s = v.trim().toLowerCase().replace(/\s+/g, ' ');
   // Strip diacritics — reference corpus is inconsistent (constanta vs constanța)
@@ -157,7 +173,35 @@ function normalizePort(v: unknown): string | null {
   return s.trim() || null;
 }
 
-function scoreItems(refItems: CargoItem[], modelItems: CargoItem[]): ItemMatchResult[] {
+function normalizeStringArray(arr: unknown): string[] {
+  if (!Array.isArray(arr)) return [];
+  return arr
+    .map((v) => normalizePort(typeof v === 'string' ? v : v != null ? String(v) : null))
+    .filter((s): s is string => s !== null);
+}
+
+function normalizeStringSet(arr: unknown): string[] {
+  return normalizeStringArray(arr).sort();
+}
+
+function setsEqual(a: string[], b: string[]): boolean {
+  if (a.length !== b.length) return false;
+  return a.every((v, i) => v === b[i]);
+}
+
+function rotationCanonicalKey(ports: string[], weights: number[] | null): string {
+  const pairs = ports.map((p, i) => [p, weights?.[i] ?? null] as const);
+  pairs.sort((x, y) => x[0].localeCompare(y[0]));
+  return JSON.stringify(pairs);
+}
+
+function rawFieldString(field: ConfidenceField | null | undefined): string | null {
+  if (field == null) return null;
+  const v = field.value;
+  return typeof v === 'string' ? v : v != null ? String(v) : null;
+}
+
+export function scoreItems(refItems: CargoItem[], modelItems: CargoItem[]): ItemMatchResult[] {
   const results: ItemMatchResult[] = [];
   const maxLen = Math.max(refItems.length, modelItems.length);
 
@@ -165,17 +209,74 @@ function scoreItems(refItems: CargoItem[], modelItems: CargoItem[]): ItemMatchRe
     const ref = refItems[i] ?? null;
     const model = modelItems[i] ?? null;
 
-    const refOrigin = normalizePort(getFieldValue(ref?.origin_port as ConfidenceField | null));
-    const refDest = normalizePort(getFieldValue(ref?.destination_port as ConfidenceField | null));
+    // Raw (un-normalized) strings — preserved for judge so it sees original text
+    const refOriginRaw = rawFieldString(ref?.origin_port as ConfidenceField | null);
+    const refDestRaw = rawFieldString(ref?.destination_port as ConfidenceField | null);
+    const modelOriginRaw = rawFieldString(model?.origin_port as ConfidenceField | null);
+    const modelDestRaw = rawFieldString(model?.destination_port as ConfidenceField | null);
+
+    // Normalized strings — used only for string scorer (route_match)
+    const refOrigin = normalizePort(refOriginRaw);
+    const refDest = normalizePort(refDestRaw);
     const refWeight = getFieldValue(ref?.weight_mt as ConfidenceField | null) as number | null;
     const refCommodity = getFieldValue(ref?.cargo_description as ConfidenceField | null) as string | null;
 
-    const modelOrigin = normalizePort(getFieldValue(model?.origin_port as ConfidenceField | null));
-    const modelDest = normalizePort(getFieldValue(model?.destination_port as ConfidenceField | null));
+    const modelOrigin = normalizePort(modelOriginRaw);
+    const modelDest = normalizePort(modelDestRaw);
     const modelWeight = getFieldValue(model?.weight_mt as ConfidenceField | null) as number | null;
     const modelCommodity = getFieldValue(model?.cargo_description as ConfidenceField | null) as string | null;
 
-    const routeMatch = refOrigin === modelOrigin && refDest === modelDest;
+    // Multi-port: normalize alternatives/rotation arrays as sorted sets
+    const refOriginAlts = normalizeStringSet(ref?.origin_port_alternatives);
+    const refOriginRot = normalizeStringSet(ref?.origin_port_rotation);
+    const refDestAlts = normalizeStringSet(ref?.destination_port_alternatives);
+    const refDestRot = normalizeStringSet(ref?.destination_port_rotation);
+    const refWPP = Array.isArray(ref?.weight_per_port) ? (ref!.weight_per_port as number[]) : null;
+
+    const modelOriginAlts = normalizeStringSet(model?.origin_port_alternatives);
+    const modelOriginRot = normalizeStringSet(model?.origin_port_rotation);
+    const modelDestAlts = normalizeStringSet(model?.destination_port_alternatives);
+    const modelDestRot = normalizeStringSet(model?.destination_port_rotation);
+    const modelWPP = Array.isArray(model?.weight_per_port) ? (model!.weight_per_port as number[]) : null;
+
+    const originAltsMatch = setsEqual(refOriginAlts, modelOriginAlts);
+    const originRotMatch = setsEqual(refOriginRot, modelOriginRot);
+    const destAltsMatch = setsEqual(refDestAlts, modelDestAlts);
+    const destRotMatch = setsEqual(refDestRot, modelDestRot);
+
+    // weight_per_port: use canonical (port,weight) pairs sorted by port name
+    // Use normalizeStringArray (preserves order = preserves port-weight pairing)
+    const refDestRotRaw = normalizeStringArray(ref?.destination_port_rotation);
+    const refOriginRotRaw = normalizeStringArray(ref?.origin_port_rotation);
+    const modelDestRotRaw = normalizeStringArray(model?.destination_port_rotation);
+    const modelOriginRotRaw = normalizeStringArray(model?.origin_port_rotation);
+    const refRotPortsRaw = refDestRotRaw.length ? refDestRotRaw : refOriginRotRaw;
+    const modelRotPortsRaw = modelDestRotRaw.length ? modelDestRotRaw : modelOriginRotRaw;
+    const weightPerPortMatch =
+      refWPP === null && modelWPP === null
+        ? true
+        : rotationCanonicalKey(refRotPortsRaw, refWPP) === rotationCanonicalKey(modelRotPortsRaw, modelWPP);
+
+    // Origin/dest universe: if rotation present, rotation set covers all ports;
+    // otherwise primary + alternatives. Used for universe-equality check.
+    const refOriginUniverse = refOriginRot.length > 0
+      ? refOriginRot
+      : [refOrigin, ...refOriginAlts].filter((s): s is string => s !== null).sort();
+    const modelOriginUniverse = modelOriginRot.length > 0
+      ? modelOriginRot
+      : [modelOrigin, ...modelOriginAlts].filter((s): s is string => s !== null).sort();
+    const refDestUniverse = refDestRot.length > 0
+      ? refDestRot
+      : [refDest, ...refDestAlts].filter((s): s is string => s !== null).sort();
+    const modelDestUniverse = modelDestRot.length > 0
+      ? modelDestRot
+      : [modelDest, ...modelDestAlts].filter((s): s is string => s !== null).sort();
+
+    const originUniverseMatch = setsEqual(refOriginUniverse, modelOriginUniverse);
+    const destUniverseMatch = setsEqual(refDestUniverse, modelDestUniverse);
+
+    const routeMatch =
+      originUniverseMatch && destUniverseMatch && originRotMatch && destRotMatch;
     const weightMatch = refWeight === modelWeight;
 
     results.push({
@@ -189,6 +290,15 @@ function scoreItems(refItems: CargoItem[], modelItems: CargoItem[]): ItemMatchRe
       model_commodity: modelCommodity,
       route_match: routeMatch,
       weight_match: weightMatch,
+      ref_origin_raw: refOriginRaw,
+      ref_dest_raw: refDestRaw,
+      model_origin_raw: modelOriginRaw,
+      model_dest_raw: modelDestRaw,
+      origin_alts_match: originAltsMatch,
+      origin_rotation_match: originRotMatch,
+      dest_alts_match: destAltsMatch,
+      dest_rotation_match: destRotMatch,
+      weight_per_port_match: weightPerPortMatch,
     });
   }
   return results;

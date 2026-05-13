@@ -12,10 +12,11 @@
     "items": [
       {
         "origin_port": {
-          "value": "King Abdullah Port or Yanbu",
+          "value": "King Abdullah Port",
           "confidence": "confirmed",
           "source_text": "KING ABDULLAH or YANBU  / RAVENNA"
         },
+        "origin_port_alternatives": ["Yanbu"],
         "origin_country": {
           "value": "Saudi Arabia",
           "confidence": "interpreted",

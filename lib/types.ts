@@ -175,6 +175,11 @@ export interface ParsedCargo {
   specialRequirements: string | null;
   stowageFactor: string | null;
   missingInfo: string[];
+  originPortAlternatives?: string[] | null;
+  originPortRotation?: string[] | null;
+  destinationPortAlternatives?: string[] | null;
+  destinationPortRotation?: string[] | null;
+  weightPerPort?: number[] | null;
 }
 
 // ── Parsed Vessel ──

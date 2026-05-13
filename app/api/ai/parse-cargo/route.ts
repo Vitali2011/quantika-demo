@@ -44,6 +44,11 @@ interface RawCargoItem {
   special_requirements?: string | null;
   stowage_factor?: string | null;
   missing_info?: string[];
+  origin_port_alternatives?: unknown[] | null;
+  origin_port_rotation?: unknown[] | null;
+  destination_port_alternatives?: unknown[] | null;
+  destination_port_rotation?: unknown[] | null;
+  weight_per_port?: unknown[] | null;
   items?: RawCargoItem[];
 }
 
@@ -90,7 +95,7 @@ async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T | null> {
  * Parse a raw AI JSON response string into ParsedCargo records.
  * Returns [] on malformed JSON or empty items.
  */
-function parseCargoAIResponse(raw: string, emailId: string): ParsedCargo[] {
+export function parseCargoAIResponse(raw: string, emailId: string): ParsedCargo[] {
   let result: RawCargoItem;
   try {
     const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
@@ -145,6 +150,21 @@ function parseCargoAIResponse(raw: string, emailId: string): ParsedCargo[] {
       specialRequirements: extractStr(item.special_requirements),
       stowageFactor: extractStr(item.stowage_factor),
       missingInfo: Array.isArray(item.missing_info) ? item.missing_info : [],
+      originPortAlternatives: Array.isArray(item.origin_port_alternatives)
+        ? item.origin_port_alternatives.filter((p) => p != null && p !== '').map((p) => String(p)).filter(Boolean)
+        : null,
+      originPortRotation: Array.isArray(item.origin_port_rotation)
+        ? item.origin_port_rotation.filter((p) => p != null && p !== '').map((p) => String(p)).filter(Boolean)
+        : null,
+      destinationPortAlternatives: Array.isArray(item.destination_port_alternatives)
+        ? item.destination_port_alternatives.filter((p) => p != null && p !== '').map((p) => String(p)).filter(Boolean)
+        : null,
+      destinationPortRotation: Array.isArray(item.destination_port_rotation)
+        ? item.destination_port_rotation.filter((p) => p != null && p !== '').map((p) => String(p)).filter(Boolean)
+        : null,
+      weightPerPort: Array.isArray(item.weight_per_port)
+        ? item.weight_per_port.map((n) => Number(n)).filter((n) => !isNaN(n))
+        : null,
     }) as ParsedCargo);
   });
 

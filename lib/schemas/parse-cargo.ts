@@ -61,6 +61,11 @@ const cargoItemSchema = {
     special_requirements: { type: Type.STRING, nullable: true },
     stowage_factor: { type: Type.STRING, nullable: true },
     missing_info: { type: Type.ARRAY, items: { type: Type.STRING } },
+    origin_port_alternatives: { type: Type.ARRAY, items: { type: Type.STRING }, nullable: true },
+    origin_port_rotation: { type: Type.ARRAY, items: { type: Type.STRING }, nullable: true },
+    destination_port_alternatives: { type: Type.ARRAY, items: { type: Type.STRING }, nullable: true },
+    destination_port_rotation: { type: Type.ARRAY, items: { type: Type.STRING }, nullable: true },
+    weight_per_port: { type: Type.ARRAY, items: { type: Type.NUMBER }, nullable: true },
   },
 };
 

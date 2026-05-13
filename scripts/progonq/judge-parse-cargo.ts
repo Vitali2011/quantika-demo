@@ -32,6 +32,11 @@ interface ItemMatchResult {
   model_dest: string | null;
   route_match: boolean;
   semantic_route_match?: boolean;
+  // Raw (un-normalized) strings — prefer these for judge to avoid normalization artifacts
+  ref_origin_raw?: string | null;
+  ref_dest_raw?: string | null;
+  model_origin_raw?: string | null;
+  model_dest_raw?: string | null;
 }
 
 interface RunResult {
@@ -81,6 +86,16 @@ Equivalence rules:
 - Null on both sides = equivalent.
 - Null on one side, named port on other = NOT equivalent.
 
+MULTI-PORT EQUIVALENCE:
+- "X or Y" / "X / Y chopt" / "either X or Y" = alternative ports (charterer's option). Both representations are equivalent regardless of which port is listed as "primary" vs in alternatives.
+- "X + Y" / "X and Y" / "X then Y" / "combined X+Y" = rotation (vessel calls both). Port set + per-port weights matter; order does not.
+- For rotation cargo, treat as equivalent when the set of (port, weight) pairs matches after canonical sorting by port name.
+- "Port of Call" / "POC" / "Port to be nominated" / "TBN" / "port not yet nominated" = equivalent (unspecified destination). Including country-qualified forms: "Port of Call, Ukraine" = "Ukraine port (unspecified)" = "Port to be nominated, Ukraine".
+
+EXPECTED OUTPUT DISTINCTIONS:
+- One physical cargo with 2+ ports → ONE item in the array (alternatives or rotation). Both representations of the same cargo movement are equivalent.
+- Two distinct cargo offers (different commodity or tonnage parcels) → TWO items. Non-matching item counts indicate a parsing difference, not semantic equivalence.
+
 Reply ONLY with JSON: {"equiv": true | false, "reason": "one short sentence"}`;
 
 async function judgePair(ref: string | null, model: string | null): Promise<JudgeVerdict> {
@@ -124,13 +139,20 @@ async function main() {
         semanticMatches++;
         continue;
       }
-      const origPair = pairKey(m.ref_origin, m.model_origin);
-      const destPair = pairKey(m.ref_dest, m.model_dest);
+      // Prefer raw (un-normalized) strings so judge sees original text.
+      // Fallback to normalized for results produced before raw-values were added.
+      const refOriginJ = m.ref_origin_raw ?? m.ref_origin;
+      const modelOriginJ = m.model_origin_raw ?? m.model_origin;
+      const refDestJ = m.ref_dest_raw ?? m.ref_dest;
+      const modelDestJ = m.model_dest_raw ?? m.model_dest;
+
+      const origPair = pairKey(refOriginJ, modelOriginJ);
+      const destPair = pairKey(refDestJ, modelDestJ);
 
       let origV = cache.get(origPair);
       if (!origV) {
         await new Promise((res) => setTimeout(res, 800));
-        origV = await judgePair(m.ref_origin, m.model_origin);
+        origV = await judgePair(refOriginJ, modelOriginJ);
         cache.set(origPair, origV);
         saveCache(cache);
         pairsJudged++;
@@ -139,7 +161,7 @@ async function main() {
       let destV = cache.get(destPair);
       if (!destV) {
         await new Promise((res) => setTimeout(res, 800));
-        destV = await judgePair(m.ref_dest, m.model_dest);
+        destV = await judgePair(refDestJ, modelDestJ);
         cache.set(destPair, destV);
         saveCache(cache);
         pairsJudged++;
@@ -148,8 +170,8 @@ async function main() {
       const semanticMatch = origV.equiv && destV.equiv;
       m.semantic_route_match = semanticMatch;
       if (semanticMatch) semanticMatches++;
-      verdicts.push({ pair: 'origin', ref: m.ref_origin ?? '', model: m.model_origin ?? '', equiv: origV.equiv, reason: origV.reason });
-      verdicts.push({ pair: 'dest', ref: m.ref_dest ?? '', model: m.model_dest ?? '', equiv: destV.equiv, reason: destV.reason });
+      verdicts.push({ pair: 'origin', ref: refOriginJ ?? '', model: modelOriginJ ?? '', equiv: origV.equiv, reason: origV.reason });
+      verdicts.push({ pair: 'dest', ref: refDestJ ?? '', model: modelDestJ ?? '', equiv: destV.equiv, reason: destV.reason });
     }
 
     r.judge_verdicts = verdicts;

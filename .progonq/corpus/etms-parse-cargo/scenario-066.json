@@ -22,10 +22,11 @@
           "source_text": "Izmail / Samsun or Marmara or Izmir"
         },
         "destination_port": {
-          "value": "Samsun or Marmara or Izmir",
+          "value": "Samsun",
           "confidence": "confirmed",
           "source_text": "Izmail / Samsun or Marmara or Izmir"
         },
+        "destination_port_alternatives": ["Marmara", "Izmir"],
         "destination_country": {
           "value": "Turkey",
           "confidence": "interpreted",
