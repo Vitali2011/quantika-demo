@@ -329,6 +329,40 @@ IMPORTANT: Do NOT confuse "loading rate" or "discharge rate" (which are cargo ha
 
 IMPORTANT: "dwcc" (deadweight cargo capacity) when used in a cargo inquiry context (e.g., "2k dwcc spot marmara") means the sender is looking for a vessel with at least that DWCC. Treat this as CARGO_INQUIRY, not VESSEL_POSITION.
 
+=== EXAMPLES ===
+
+Example 1 — Vessel position circular (return empty items):
+
+Email: "OPEN VESSEL 8500 DWCC GLESS open ALEXANDRIA 12-15 May/onw => MED EUROPE. Rgds"
+
+Output: {"items": [], "missing_info": ["Vessel availability circular, not a cargo inquiry"]}
+
+---
+
+Example 2 — Port alternatives (vessel chooses one):
+
+Email: "PLS PROPOSE FOR: 25000 mt clinker in bulk, El Arish OR El Dekheila / POC, 7-15/Jun, 12000x/8000x, 2.5 pct ttl"
+
+Output: {"items": [{"origin_port": {"value": "El Arish", "confidence": "confirmed", "source_text": "El Arish OR El Dekheila"}, "origin_port_alternatives": ["El Dekheila"], "destination_port": {"value": "Port of Call", "confidence": "interpreted", "source_text": "POC"}, "weight_mt": {"value": 25000, "confidence": "confirmed", "source_text": "25000 mt clinker"}, "cargo_type": "BULK"}]}
+
+---
+
+Example 3 — Port rotation (vessel calls both in sequence):
+
+Email: "40000 mt rice in bb, Kandla to Banjul 10000 + Dakar 30000, laycan 5-12 Jul"
+
+Output: {"items": [{"origin_port": {"value": "Kandla", "confidence": "confirmed", "source_text": "Kandla"}, "destination_port": {"value": "Banjul", "confidence": "confirmed", "source_text": "Banjul 10000"}, "destination_port_rotation": ["Banjul", "Dakar"], "weight_per_port": [10000, 30000], "weight_mt": {"value": 40000, "confidence": "confirmed", "source_text": "40000 mt rice"}, "cargo_type": "BREAK_BULK"}]}
+
+---
+
+Example 4 — Destination unspecified (POC):
+
+Email: "6000mt urea in big-bags, Alexandria to POC, mid Jul, 3000/3000 shinc"
+
+Output: {"items": [{"origin_port": {"value": "Alexandria", "confidence": "confirmed", "source_text": "Alexandria"}, "destination_port": {"value": "Port of Call (unspecified)", "confidence": "interpreted", "source_text": "POC"}, "weight_mt": {"value": 6000, "confidence": "confirmed", "source_text": "6000mt urea"}, "cargo_type": "BREAK_BULK"}]}
+
+=== END EXAMPLES ===
+
 Output: { "items": [ ...one object per cargo inquiry... ] }`;
 
 /**
