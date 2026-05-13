@@ -140,6 +140,20 @@ export default async function DashboardPage() {
         {/* ── γ-18: ROI Summary Tile (feature flag) ──────────────── */}
         {process.env.NEXT_PUBLIC_ROI_GUARANTEE_ENABLED === 'true' && <RoiSummaryTile />}
 
+        {/* ── Charterer Credit (feature flag) ────────────────────── */}
+        {process.env.NEXT_PUBLIC_CHARTERER_CREDIT_ENABLED === 'true' && (
+          <Link
+            href="/charterers"
+            className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+          >
+            <div>
+              <p className="text-sm font-semibold text-gray-900">Charterer Credit</p>
+              <p className="text-xs text-gray-500">Credit profiles for blue-chip charterers</p>
+            </div>
+            <span className="text-gray-400 text-sm">→</span>
+          </Link>
+        )}
+
         {/* ── Morning Header ─────────────────────────────────────── */}
         <div>
           <MorningHeader userName="Broker" alertCount={urgentCount} />

@@ -1,7 +1,8 @@
 import Database from 'better-sqlite3';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import migration026 from '@/lib/migrations/026-charterers';
 import { upsertCharterer } from '@/lib/market/charterers-repository';
+import { requireSession } from '@/lib/session';
 
 let testDb: Database.Database;
 
@@ -10,6 +11,16 @@ jest.mock('@/lib/session-store', () => ({
     getDatabase: () => testDb,
   })),
 }));
+
+jest.mock('@/lib/session', () => ({
+  requireSession: jest.fn(),
+}));
+
+const mockRequireSession = requireSession as jest.Mock;
+
+beforeEach(() => {
+  mockRequireSession.mockReturnValue({ session: { id: 'test' }, sessionId: 'test-sid' });
+});
 
 /**
  * Input Contract:
@@ -245,5 +256,60 @@ describe('DELETE /api/charterers/[id]', () => {
     expect(res.status).toBe(404);
     const json = await res.json();
     expect(json.error).toBeDefined();
+  });
+});
+
+describe('Auth: /api/charterers/[id]', () => {
+  const originalEnv = process.env.CHARTERER_CREDIT_ENABLED;
+
+  beforeEach(() => {
+    process.env.CHARTERER_CREDIT_ENABLED = 'true';
+  });
+
+  afterEach(() => {
+    process.env.CHARTERER_CREDIT_ENABLED = originalEnv;
+  });
+
+  // PI4 RC test — auth returns 401 when no session
+  it('GET returns 401 when session is missing', async () => {
+    mockRequireSession.mockReturnValueOnce(
+      NextResponse.json({ error: 'No session' }, { status: 401 })
+    );
+
+    const { GET } = await import('@/app/api/charterers/[id]/route');
+    const res = await GET(
+      new NextRequest('http://localhost/api/charterers/c1'),
+      { params: Promise.resolve({ id: 'c1' }) }
+    );
+    expect(res.status).toBe(401);
+  });
+
+  it('PUT returns 401 when session is missing', async () => {
+    mockRequireSession.mockReturnValueOnce(
+      NextResponse.json({ error: 'No session' }, { status: 401 })
+    );
+
+    const { PUT } = await import('@/app/api/charterers/[id]/route');
+    const res = await PUT(
+      new NextRequest('http://localhost/api/charterers/c1', {
+        method: 'PUT',
+        body: JSON.stringify({ name: 'Test' }),
+      }),
+      { params: Promise.resolve({ id: 'c1' }) }
+    );
+    expect(res.status).toBe(401);
+  });
+
+  it('DELETE returns 401 when session is missing', async () => {
+    mockRequireSession.mockReturnValueOnce(
+      NextResponse.json({ error: 'No session' }, { status: 401 })
+    );
+
+    const { DELETE } = await import('@/app/api/charterers/[id]/route');
+    const res = await DELETE(
+      new NextRequest('http://localhost/api/charterers/c1', { method: 'DELETE' }),
+      { params: Promise.resolve({ id: 'c1' }) }
+    );
+    expect(res.status).toBe(401);
   });
 });

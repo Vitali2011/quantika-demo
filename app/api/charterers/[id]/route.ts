@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getStore } from '@/lib/session-store';
+import { requireSession } from '@/lib/session';
 import {
   getCharterer,
   upsertCharterer,
@@ -22,9 +23,12 @@ function isFeatureEnabled(): boolean {
 }
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
+  const authResult = requireSession(request);
+  if (authResult instanceof NextResponse) return authResult;
+
   if (!isFeatureEnabled()) {
     return NextResponse.json(
       { error: 'Feature disabled' },
@@ -58,6 +62,9 @@ export async function PUT(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
+  const authResult = requireSession(request);
+  if (authResult instanceof NextResponse) return authResult;
+
   if (!isFeatureEnabled()) {
     return NextResponse.json(
       { error: 'Feature disabled' },
@@ -81,6 +88,17 @@ export async function PUT(
     const body = await request.json();
     const { name, tier, payment_history, require_lc, notes } = body;
 
+    // Validate tier if provided
+    if (tier !== undefined) {
+      const validTiers = ['blue-chip', 'second', 'weak'];
+      if (!validTiers.includes(tier)) {
+        return NextResponse.json(
+          { error: `Field "tier" must be one of: ${validTiers.join(', ')}` },
+          { status: 400 }
+        );
+      }
+    }
+
     // Update with new values or keep existing
     upsertCharterer(db, {
       id,
@@ -103,9 +121,12 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
+  const authResult = requireSession(request);
+  if (authResult instanceof NextResponse) return authResult;
+
   if (!isFeatureEnabled()) {
     return NextResponse.json(
       { error: 'Feature disabled' },

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getStore } from '@/lib/session-store';
+import { requireSession } from '@/lib/session';
 import { listCharterers, upsertCharterer } from '@/lib/market/charterers-repository';
 import { randomBytes } from 'crypto';
 
@@ -19,7 +20,10 @@ function isFeatureEnabled(): boolean {
   return process.env.CHARTERER_CREDIT_ENABLED === 'true';
 }
 
-export async function GET(request?: NextRequest): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<NextResponse> {
+  const authResult = requireSession(request);
+  if (authResult instanceof NextResponse) return authResult;
+
   if (!isFeatureEnabled()) {
     return NextResponse.json(
       { error: 'Feature disabled' },
@@ -43,6 +47,9 @@ export async function GET(request?: NextRequest): Promise<NextResponse> {
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const authResult = requireSession(request);
+  if (authResult instanceof NextResponse) return authResult;
+
   if (!isFeatureEnabled()) {
     return NextResponse.json(
       { error: 'Feature disabled' },
