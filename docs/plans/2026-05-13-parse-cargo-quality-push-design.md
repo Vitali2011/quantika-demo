@@ -1,9 +1,9 @@
 # parse-cargo Quality Push — Design
 
 **Date:** 2026-05-13
-**Status:** approved (brainstorm complete)
+**Status:** approved (brainstorm complete, RAG inserted as Phase 2 per user request)
 **Author:** brainstorm session, Sonnet 4.6
-**Target branches:** four sequential PRs (one per phase)
+**Target branches:** five sequential PRs (one per phase)
 
 ---
 
@@ -94,7 +94,94 @@
 
 ---
 
-## 4. Phase 2 — Model Exploration
+## 4. Phase 2 — RAG-Augmented Few-Shot (NEW — было Phase 2.5)
+
+**Cost:** code only + ~$5 на 3 прогона (embeddings уже proindexedованы)
+**Effort:** 2-3 дня
+**Hypothesis:** +5-15 баллов через dynamic few-shot retrieval из corpus
+
+### 4.1 Концепция
+
+Вместо статических 4 few-shot примеров из Phase 1, для каждого нового
+письма делаем retrieve топ-K похожих писем из corpus и подставляем их
+
+- их правильные ответы в prompt динамически.
+
+**Преимущество:** парсер видит конкретный pattern, не общий. MOLOO email →
+retrieve MOLOO example → видит "вот так выглядит и вот правильный ответ".
+
+### 4.2 Infrastructure reuse
+
+quantika-demo уже имеет RAG-стек (Phase 2 RAG live 2026-05-09):
+
+- sqlite-vec extension для cosine k-NN
+- FTS5 для hybrid (lexical + semantic)
+- embed batching pipeline (76K chars/batch)
+- UNLOCODE индекс готов (для нормализации портов)
+
+Переиспользуем для parse-cargo corpus как нового индекса.
+
+### 4.3 Algorithm
+
+1. **Index parse-cargo corpus** (95 scenarios):
+   - Document = email subject + body
+   - Metadata = scenario_id, category, reference_output
+   - Embed через тот же model что используется в Phase 2 RAG
+
+2. **Retrieve at parse time:**
+   - Embed incoming email body
+   - k-NN search → топ-3 similar scenarios
+   - Threshold: similarity ≥ 0.6 (если ниже — fallback на статические few-shot)
+
+3. **Inject into prompt:**
+   - "=== RETRIEVED SIMILAR EXAMPLES ===" section before main task
+   - Each retrieved example: email body + reference_output как ground truth
+   - Promt size growth: ~1500 tokens (3 examples × ~500)
+
+4. **Leave-one-out evaluation:**
+   - Для каждого scenario i: index содержит 94 других, parse i, score
+   - Это fair — никогда не retrieve'аем сам себя
+   - Стандарт для small-corpus RAG eval
+
+### 4.4 Holdout strategy для prod-honesty
+
+Хотя для R-rounds используем leave-one-out, нужно проверить **out-of-distribution**
+performance:
+
+- Берём 20% scenarios (19 emails) — НЕ индексируем
+- Запускаем парсер с RAG (индекс = 76 emails) на эти 19
+- Сравниваем с парсером без RAG на тех же 19
+- Если RAG winner на holdout — реальный win, не overfit
+
+### 4.5 Anti-overfit guards
+
+- **Similarity threshold 0.6:** если нет похожих → не подсовываем examples
+- **Retrieved examples ≠ exact match:** explicit instruction в prompt
+  "These are SIMILAR not IDENTICAL — apply same logic, not copy answer"
+- **Holdout always-fresh:** 20% scenarios никогда не в индексе
+
+### 4.6 Risks
+
+- **Retrieval returns wrong-class examples** (e.g. vessel circular retrieves
+  cargo email) → парсер сбивается. Mitigation: классифицировать корпус
+  предварительно, retrieve within class.
+- **Embedding model bias:** maritime jargon (POC, TBN, MOLOO) может плохо
+  embed'иться generic models. Mitigation: проверить retrieval quality
+  вручную на 5 sample queries; если плохо — fine-tune или сменить embedder.
+- **Latency:** +200-500ms на retrieval. В проде critical для UI; для batch
+  parse-cargo не critical.
+
+### 4.7 Gate
+
+3 verification рaунда + holdout test:
+
+- Leave-one-out median должен вырасти ≥5 vs Phase 1 baseline
+- Holdout (20% out-of-index) должен показать тот же или близкий gain
+- Если holdout показывает регресс vs Phase 1 → это overfit, фаза откатывается
+
+---
+
+## 5. Phase 3 — Model Exploration
 
 **Cost:** ~$50-60 на 3 прогона × 3 модели
 **Effort:** 2-3 дня
@@ -148,7 +235,7 @@ Switch требует только:
 
 ---
 
-## 5. Phase 3 — Self-Consistency Voting
+## 6. Phase 4 — Self-Consistency Voting
 
 **Cost:** 3× inference per email (~$50/прогон на R17, в проде × volume)
 **Effort:** 1 день код
@@ -197,7 +284,7 @@ flaky). Откатываем; вес идёт в Phase 4.
 
 ---
 
-## 6. Phase 4 — Data Engineering + Continuous Eval
+## 7. Phase 5 — Data Engineering + Continuous Eval
 
 **Cost:** ~30 человеко-часов + $10/неделю cron
 **Effort:** 1-2 недели
@@ -271,22 +358,30 @@ revisit.
 
 ---
 
-## 7. Expected outcomes
+## 8. Expected outcomes
 
-| Phase               | Cost          | Effort | Expected delta             | Cumulative semantic median |
-| ------------------- | ------------- | ------ | -------------------------- | -------------------------- |
-| Baseline (post-R17) | —             | —      | —                          | 81                         |
-| Phase 1             | $0            | 1d     | +3-5                       | 84-86                      |
-| Phase 2             | $50           | 3d     | +0-8 (depending on winner) | 84-94                      |
-| Phase 3             | code + 3× ops | 1d     | +2-4                       | 86-98                      |
-| Phase 4             | 30 человеко-ч | 2w     | +5-8 (annotation cleanup)  | 91-100+                    |
+| Phase                         | Cost          | Effort | Expected delta                          | Cumulative semantic median |
+| ----------------------------- | ------------- | ------ | --------------------------------------- | -------------------------- |
+| Baseline (post-R17)           | —             | —      | —                                       | 81                         |
+| Phase 1 — Sampling            | $0            | 1d     | +3-5                                    | 84-86                      |
+| **Phase 2 — RAG few-shot** ⭐ | code + $5     | 2-3d   | **+5-15**                               | **89-99**                  |
+| Phase 3 — Models              | $50           | 3d     | +0-5 (diminishing return after RAG)     | 89-100+                    |
+| Phase 4 — Self-consistency    | code + 3× ops | 1d     | +1-3                                    | 90-100+                    |
+| Phase 5 — Data engineering    | 30 чел-ч      | 2w     | +3-5 (annotation cleanup + corpus exp.) | 93-100+                    |
 
-**Honest range:** 91-95 medianа semantic после всех фаз. 100% — асимптотическая
+**Honest range:** 91-95 median semantic после всех фаз. 100% — асимптотическая
 цель; реалистичный таргет для production = 95+ при variance ±1-2.
+
+**Why RAG поднят в Phase 2:**
+
+1. Максимальный ожидаемый gain (+5-15) среди всех фаз
+2. Инфраструктура уже есть (sqlite-vec + FTS5 + embed pipeline live с 2026-05-09)
+3. После RAG потенциал Phase 3/4 снижается — diminishing returns
+4. Если RAG закроет gap (89-99) → Phase 3/4 можно skip или сделать с меньшим scope
 
 ---
 
-## 8. Risks & Mitigations
+## 9. Risks & Mitigations
 
 | Risk                                                     | Impact | Mitigation                                                                              |
 | -------------------------------------------------------- | ------ | --------------------------------------------------------------------------------------- |
@@ -300,7 +395,7 @@ revisit.
 
 ---
 
-## 9. Out of scope
+## 10. Out of scope
 
 - **Two-stage pipeline (classifier → extractor).** Big-bet restructure;
   держим как Phase 5 backup если Phase 1-4 не дотягивают.
@@ -310,7 +405,7 @@ revisit.
 
 ---
 
-## 10. Decisions log
+## 11. Decisions log
 
 - **D1:** Cup goal = robust production quality, не corpus 100%.
 - **D2:** Phased over big-bet — 4 PR в sequence с гейтами.
@@ -323,10 +418,14 @@ revisit.
   избежания overfit'а.
 - **D7:** Continuous eval weekly (не daily) — экономия + достаточная
   частота для catch'а drift'а.
+- **D8:** RAG-augmented few-shot поднят в Phase 2 (был Phase 2.5) по запросу
+  пользователя 2026-05-13. Reason: максимальный ожидаемый gain (+5-15),
+  инфраструктура уже есть, после RAG диминирующий return на Phase 3/4 —
+  если gap закроется, последующие фазы можно skip.
 
 ---
 
-## 11. Next step
+## 12. Next step
 
 После merge'а этого design doc → invoke `superpowers:writing-plans` skill
 для создания implementation plan с task-by-task breakdown каждой фазы.

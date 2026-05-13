@@ -16,6 +16,21 @@
 
 ---
 
+> **🔥 PHASE REORDERING NOTE (2026-05-13):**
+>
+> Per user decision, **RAG-augmented few-shot retrieval поднят в Phase 2** (был Phase 2.5).
+> Старые "PHASE 2 — Model Exploration", "PHASE 3 — Self-Consistency", "PHASE 4 — Data Engineering"
+> в этом документе ниже теперь **становятся PHASE 3, 4, 5 соответственно**.
+>
+> Task IDs внутри них сохраняются как Task 2.x → теперь читать как Task 3.x, Task 3.x → Task 4.x,
+> Task 4.x → Task 5.x. Round labels (R19, R20, R21) тоже сдвигаются: новый Phase 2 (RAG) =
+> **R19-rag**, старый Phase 2 (Models) = **R20-models**, Phase 3 (Consistency) = **R21**, Phase 4
+> (Data) = **R22**.
+>
+> Новая Phase 2 (RAG) описана ПЕРЕД старой PHASE 2 секцией ниже.
+
+---
+
 # PHASE 1 — Sampling Foundation (цель median 84-86/95, variance ±2-3)
 
 ## Task 1.0: Branch setup
@@ -672,7 +687,473 @@ gh pr merge --admin --merge
 
 ---
 
-# PHASE 2 — Model Exploration (3 модели на R17 corpus)
+# PHASE 2 — RAG-Augmented Few-Shot (цель median 89-99, NEW)
+
+## Task RAG.0: Branch setup
+
+```bash
+cd ~/work/quantika-demo
+git checkout main && git pull
+git checkout -b feat/parse-cargo-phase2-rag
+```
+
+---
+
+## Task RAG.1: Audit existing RAG infrastructure
+
+**Files:**
+
+- Read: `lib/rag/*.ts` (existing modules)
+- Read: `scripts/seed-*-rag.ts` (existing seed scripts for IMSBC/IGC/JWC)
+- Read: `lib/db/migrations/*.sql` (sqlite-vec setup)
+
+**Step 1: Find RAG modules**
+
+```bash
+ls lib/rag/ 2>/dev/null
+find lib -name "*rag*.ts" -o -name "*retriever*.ts" -o -name "*embed*.ts" | head -20
+```
+
+Expected: see existing retriever, embedder, vector store modules from Phase 2 RAG (live 2026-05-09).
+
+**Step 2: Find seed scripts**
+
+```bash
+ls scripts/seed-*-rag.ts 2>/dev/null
+ls scripts/progonq/seed-*.ts 2>/dev/null
+```
+
+**Step 3: Document infrastructure findings**
+
+Create `.notes/phase2-rag-audit.md` (gitignored):
+
+```
+- Embedder module: lib/rag/.../*.ts
+- Embedding model: <e.g. text-embedding-004 via Vertex>
+- Vector store: sqlite + sqlite-vec extension
+- FTS5 hybrid: yes/no
+- Existing indexes: imsbc, igc, jwc, unlocode (counts from memory)
+- Seed pattern: scripts/seed-X-rag.ts (--env-file=.env.local mandatory)
+```
+
+No commit.
+
+---
+
+## Task RAG.2: Build parse-cargo corpus index seed script
+
+**Files:**
+
+- Create: `scripts/seed-parse-cargo-rag.ts`
+- Create: `lib/db/migrations/NNNN_parse_cargo_rag.sql`
+
+**Step 1: Write migration for new index table**
+
+`lib/db/migrations/NNNN_parse_cargo_rag.sql`:
+
+```sql
+-- Parse-cargo few-shot retrieval index
+CREATE TABLE IF NOT EXISTS parse_cargo_examples (
+  id TEXT PRIMARY KEY,
+  category TEXT NOT NULL,
+  email_subject TEXT NOT NULL,
+  email_body TEXT NOT NULL,
+  reference_output_json TEXT NOT NULL,
+  embedding BLOB,   -- vec_to_blob output
+  in_holdout INTEGER DEFAULT 0  -- 1 = excluded from index, used for holdout eval
+);
+
+CREATE VIRTUAL TABLE IF NOT EXISTS parse_cargo_examples_fts USING fts5(
+  id UNINDEXED,
+  email_subject,
+  email_body,
+  category UNINDEXED
+);
+
+CREATE VIRTUAL TABLE IF NOT EXISTS parse_cargo_examples_vec USING vec0(
+  id TEXT PRIMARY KEY,
+  embedding FLOAT[768]  -- adjust to embedder dimension
+);
+```
+
+**Step 2: Write seed script**
+
+`scripts/seed-parse-cargo-rag.ts`:
+
+```typescript
+// Loads all 95 scenarios from .progonq/corpus/etms-parse-cargo/scenario-*.json,
+// embeds email body via existing embedder,
+// inserts into parse_cargo_examples + FTS5 + vec0 tables.
+// Holdout: scenarios with IDs ending in [05, 15, 25, ...] → in_holdout=1 (19 out of 95)
+```
+
+Use existing embed batching helper (76K chars/batch) from seed-imsbc-rag.ts as template.
+
+**Step 3: Run migration + seed**
+
+```bash
+npx tsx --env-file=.env.local lib/db/migrate.ts
+npx tsx --env-file=.env.local scripts/seed-parse-cargo-rag.ts
+```
+
+Expected output: `parse_cargo_examples count: 95 (76 indexed, 19 holdout)`.
+
+**Step 4: Smoke test retrieval**
+
+```bash
+npx tsx --env-file=.env.local -e "
+import { retrieveParseCargoExamples } from './lib/rag/parse-cargo-retriever';
+const results = await retrieveParseCargoExamples('Egypt med - Odesa or Chornomorsk chopt, 4500mt salt big-bags', 3);
+console.log(JSON.stringify(results, null, 2));
+"
+```
+
+Expected: top-3 examples from corpus с similarity scores, e.g. scenario-006 (Chornomorsk alternatives) близкий.
+
+**Step 5: Commit**
+
+```bash
+git add lib/db/migrations/NNNN_parse_cargo_rag.sql scripts/seed-parse-cargo-rag.ts
+git commit -m "feat(parse-cargo rag): add corpus index migration + seed script"
+```
+
+---
+
+## Task RAG.3: Implement retrieve function
+
+**Files:**
+
+- Create: `lib/rag/parse-cargo-retriever.ts`
+- Test: `__tests__/lib/rag/parse-cargo-retriever.test.ts`
+
+**Step 1: Write failing test**
+
+```typescript
+import { describe, it, expect } from "@jest/globals";
+import { retrieveParseCargoExamples } from "@/lib/rag/parse-cargo-retriever";
+
+describe("retrieveParseCargoExamples", () => {
+  it("returns top-K examples sorted by similarity", async () => {
+    const examples = await retrieveParseCargoExamples("salt big-bags Egypt Odesa", 3);
+    expect(examples.length).toBeLessThanOrEqual(3);
+    examples.forEach((e) => {
+      expect(e.similarity).toBeGreaterThanOrEqual(0);
+      expect(e.similarity).toBeLessThanOrEqual(1);
+      expect(e.referenceOutput).toBeDefined();
+    });
+  });
+
+  it("returns empty when similarity below threshold", async () => {
+    const examples = await retrieveParseCargoExamples("totally unrelated random text", 3, 0.95);
+    expect(examples.length).toBe(0);
+  });
+
+  it("excludes holdout scenarios from results", async () => {
+    const examples = await retrieveParseCargoExamples("any query", 100);
+    expect(examples.every((e) => !e.inHoldout)).toBe(true);
+  });
+});
+```
+
+**Step 2: Run test, expect FAIL**
+
+**Step 3: Implement retriever**
+
+`lib/rag/parse-cargo-retriever.ts`:
+
+```typescript
+import { embedText } from "@/lib/rag/embedder"; // existing
+import { getDb } from "@/lib/db";
+
+export interface RetrievedExample {
+  id: string;
+  category: string;
+  emailSubject: string;
+  emailBody: string;
+  referenceOutput: unknown; // parsed JSON
+  similarity: number;
+  inHoldout: boolean;
+}
+
+export async function retrieveParseCargoExamples(
+  query: string,
+  topK: number = 3,
+  minSimilarity: number = 0.6
+): Promise<RetrievedExample[]> {
+  const embedding = await embedText(query);
+  const db = await getDb();
+
+  // Hybrid: FTS5 lexical + vec cosine, combine via RRF or just vec for now
+  const rows = await db.all(
+    `
+    SELECT e.id, e.category, e.email_subject, e.email_body, e.reference_output_json,
+           vec_distance_cosine(v.embedding, ?) AS distance,
+           e.in_holdout
+    FROM parse_cargo_examples e
+    JOIN parse_cargo_examples_vec v ON v.id = e.id
+    WHERE e.in_holdout = 0
+    ORDER BY distance ASC
+    LIMIT ?
+  `,
+    [embedding, topK * 2]
+  );
+
+  return rows
+    .map((r) => ({
+      id: r.id,
+      category: r.category,
+      emailSubject: r.email_subject,
+      emailBody: r.email_body,
+      referenceOutput: JSON.parse(r.reference_output_json),
+      similarity: 1 - r.distance,
+      inHoldout: !!r.in_holdout,
+    }))
+    .filter((r) => r.similarity >= minSimilarity)
+    .slice(0, topK);
+}
+```
+
+**Step 4: Run tests, PASS**
+
+**Step 5: Commit**
+
+```bash
+git add lib/rag/parse-cargo-retriever.ts __tests__/lib/rag/parse-cargo-retriever.test.ts
+git commit -m "feat(parse-cargo rag): implement retrieveParseCargoExamples with similarity threshold"
+```
+
+---
+
+## Task RAG.4: Wire retrieval into parser prompt
+
+**Files:**
+
+- Modify: `scripts/progonq/run-parse-cargo.ts`
+- Modify: `app/api/ai/parse-cargo/route.ts`
+- Modify: `lib/prompts/parse-cargo.ts` — add `formatRetrievedExamples()` helper
+
+**Step 1: Add helper to format retrieved examples for prompt**
+
+In `lib/prompts/parse-cargo.ts`:
+
+```typescript
+import type { RetrievedExample } from "@/lib/rag/parse-cargo-retriever";
+
+export function formatRetrievedExamples(examples: RetrievedExample[]): string {
+  if (examples.length === 0) return "";
+  const blocks = examples.map(
+    (e, i) => `
+=== RETRIEVED SIMILAR EXAMPLE ${i + 1} (similarity ${e.similarity.toFixed(2)}) ===
+
+Email subject: ${e.emailSubject}
+Email body: ${e.emailBody.slice(0, 800)}${e.emailBody.length > 800 ? "..." : ""}
+
+Reference output:
+${JSON.stringify(e.referenceOutput, null, 2)}
+
+---
+`
+  );
+  return `
+=== RETRIEVED SIMILAR EXAMPLES ===
+The following are SIMILAR (not identical) emails from past corpus.
+Use them as guidance for the current email — apply SAME LOGIC, do NOT copy answers verbatim.
+If a retrieved example contradicts the current email, trust the current email.
+
+${blocks.join("\n")}
+=== END RETRIEVED EXAMPLES ===
+`;
+}
+```
+
+**Step 2: Modify run-parse-cargo.ts to retrieve + inject**
+
+In `scripts/progonq/run-parse-cargo.ts`:
+
+```typescript
+import { retrieveParseCargoExamples } from "@/lib/rag/parse-cargo-retriever";
+import { formatRetrievedExamples } from "@/lib/prompts/parse-cargo";
+
+const useRag = process.env.PARSE_CARGO_RAG === "1" || process.argv.includes("--rag");
+
+async function runScenario(scenario: Scenario): Promise<RunResult> {
+  // ... existing setup
+  let retrievedBlock = "";
+  if (useRag) {
+    // Important: exclude the scenario itself (leave-one-out)
+    const examples = await retrieveParseCargoExamples(
+      scenario.input.body,
+      3,
+      0.6,
+      [scenario.id] // exclude
+    );
+    retrievedBlock = formatRetrievedExamples(examples);
+  }
+  const userPrompt = `${retrievedBlock}\n\n=== CURRENT EMAIL ===\nSubject: ${scenario.input.subject}\nBody: ${scenario.input.body}`;
+  // ... existing call
+}
+```
+
+**Step 3: Update retriever to accept excludeIds parameter**
+
+In `lib/rag/parse-cargo-retriever.ts`:
+
+```typescript
+export async function retrieveParseCargoExamples(
+  query: string,
+  topK: number = 3,
+  minSimilarity: number = 0.6,
+  excludeIds: string[] = []
+): Promise<RetrievedExample[]> {
+  // ... add WHERE NOT IN (?, ?, ?) clause
+}
+```
+
+Update test to cover excludeIds.
+
+**Step 4: Wire into production route**
+
+`app/api/ai/parse-cargo/route.ts`: same pattern, gated by env `PARSE_CARGO_RAG=1`.
+
+**Step 5: Smoke test**
+
+```bash
+ssh outreach-vps "cd /root/qd-r17 && git fetch && git checkout feat/parse-cargo-phase2-rag && git pull"
+# Re-run migration + seed на VPS
+ssh outreach-vps "cd /root/qd-r17 && npx tsx --env-file=.env.local lib/db/migrate.ts && npx tsx --env-file=.env.local scripts/seed-parse-cargo-rag.ts"
+# Smoke parse with RAG
+ssh outreach-vps "cd /root/qd-r17 && PARSE_CARGO_PROVIDER=gemini PARSE_CARGO_RAG=1 npx tsx --env-file=.env.local scripts/progonq/run-parse-cargo.ts --round R19-rag-smoke --limit 3 2>&1 | tail -10"
+```
+
+Expected: 3 scenarios processed, prompt size в логах ~3x от baseline (из-за retrieved блока).
+
+**Step 6: Commit**
+
+```bash
+git add lib/rag/parse-cargo-retriever.ts lib/prompts/parse-cargo.ts \
+        scripts/progonq/run-parse-cargo.ts app/api/ai/parse-cargo/route.ts \
+        __tests__/lib/rag/parse-cargo-retriever.test.ts
+git commit -m "feat(parse-cargo): inject retrieved similar examples via PARSE_CARGO_RAG flag"
+```
+
+---
+
+## Task RAG.5: Run R19-rag leave-one-out verification
+
+**Step 1: 3 rounds с PARSE_CARGO_RAG=1**
+
+```bash
+for r in R19a-rag R19b-rag R19c-rag; do
+  ssh outreach-vps "cd /root/qd-r17 && PARSE_CARGO_PROVIDER=gemini PARSE_CARGO_RAG=1 npx tsx --env-file=.env.local scripts/progonq/run-parse-cargo.ts --round $r 2>&1 | tail -3"
+done
+```
+
+**Step 2: Judge all three**
+
+```bash
+for r in R19a-rag R19b-rag R19c-rag; do
+  ssh outreach-vps "cd /root/qd-r17 && npx tsx --env-file=.env.local scripts/progonq/judge-parse-cargo.ts --results .progonq/results/etms-parse-cargo-$r.json 2>&1 | grep -E 'string_full|semantic_full'"
+done
+```
+
+Expected: median ≥89 (vs Phase 1 baseline 84-86).
+
+---
+
+## Task RAG.6: Holdout evaluation
+
+**Step 1: Run parser on 19 holdout scenarios БЕЗ RAG (control)**
+
+```bash
+ssh outreach-vps "cd /root/qd-r17 && PARSE_CARGO_PROVIDER=gemini npx tsx --env-file=.env.local scripts/progonq/run-parse-cargo.ts --round R19-holdout-norag --scenarios-filter holdout 2>&1 | tail -3"
+```
+
+(Need to add `--scenarios-filter holdout` flag that reads `in_holdout=1` IDs from DB.)
+
+**Step 2: Run parser on 19 holdout scenarios С RAG (using 76-scenario index)**
+
+```bash
+ssh outreach-vps "cd /root/qd-r17 && PARSE_CARGO_PROVIDER=gemini PARSE_CARGO_RAG=1 npx tsx --env-file=.env.local scripts/progonq/run-parse-cargo.ts --round R19-holdout-rag --scenarios-filter holdout 2>&1 | tail -3"
+```
+
+**Step 3: Compare**
+
+```bash
+ssh outreach-vps "python3 << 'PY'
+import json
+nr = json.load(open('/root/qd-r17/.progonq/results/etms-parse-cargo-R19-holdout-norag.json'))
+rg = json.load(open('/root/qd-r17/.progonq/results/etms-parse-cargo-R19-holdout-rag.json'))
+nr_full = sum(1 for x in nr if x.get('route_match_rate',0)==1)
+rg_full = sum(1 for x in rg if x.get('route_match_rate',0)==1)
+print(f'Holdout (19 scenarios): no-RAG={nr_full} with-RAG={rg_full} delta={rg_full-nr_full}')
+PY"
+```
+
+**Expected:** RAG delta ≥+2 на holdout (real generalization signal). If delta ≤0 → RAG overfits к индексу, abort фазу.
+
+---
+
+## Task RAG.7: Write retro + decide
+
+**Files:**
+
+- Create: `docs/plans/2026-05-13-parse-cargo-phase2-rag-retro.md`
+
+**Step 1: Document numbers**
+
+```markdown
+# Phase 2 — RAG Retro
+
+## Leave-one-out (95 scenarios)
+
+| Round    | String | Semantic |
+| -------- | ------ | -------- |
+| R19a-rag | X      | Y        |
+| R19b-rag | X      | Y        |
+| R19c-rag | X      | Y        |
+| Median   | M      | M        |
+
+Delta vs Phase 1 baseline (R18 median):
+
+- String: +N
+- Semantic: +N
+
+## Holdout (19 scenarios, never indexed)
+
+| Setup          | Score |
+| -------------- | ----- |
+| No-RAG control | X     |
+| With-RAG       | X     |
+| Delta          | +N    |
+
+## Gates
+
+- [ ] Leave-one-out median ≥ Phase 1 + 5 → PASS
+- [ ] Holdout delta ≥ +2 → PASS (anti-overfit guard)
+- [ ] Both PASS → ship; else debug
+```
+
+**Step 2: Commit**
+
+```bash
+git add docs/plans/2026-05-13-parse-cargo-phase2-rag-retro.md
+git commit -m "docs(parse-cargo): Phase 2 RAG retro with leave-one-out + holdout numbers"
+```
+
+---
+
+## Task RAG.8: Open PR
+
+```bash
+git push -u origin feat/parse-cargo-phase2-rag
+gh pr create --title "feat(parse-cargo): Phase 2 — RAG-augmented few-shot retrieval" --body "..."
+gh pr checks --watch
+gh pr merge --admin --merge
+```
+
+---
+
+# PHASE 3 — Model Exploration (was PHASE 2; 3 модели на R17 corpus)
 
 ## Task 2.0: Branch setup
 
@@ -945,7 +1426,7 @@ gh pr merge --admin --merge
 
 ---
 
-# PHASE 3 — Self-Consistency Voting
+# PHASE 4 — Self-Consistency Voting (was PHASE 3)
 
 ## Task 3.0: Branch setup
 
@@ -1381,7 +1862,7 @@ gh pr merge --admin --merge
 
 ---
 
-# PHASE 4 — Data Engineering
+# PHASE 5 — Data Engineering (was PHASE 4)
 
 ## Task 4.0: Branch setup
 
