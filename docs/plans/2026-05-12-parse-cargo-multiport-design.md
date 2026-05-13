@@ -273,3 +273,34 @@ Only merge under MULTI-PORT rules above (alternatives/rotation), where it's ONE 
 - **Phase 2b**: matching engine real evaluation of alternatives + rotation
 - **UI**: показ alternatives/rotation в processing/match results
 - **Future eval rounds**: после 95/95 — adversarial corpus expansion (cold cases brokers throw at the parser)
+
+## 8. Eval reality post-Gemini-drift (2026-05)
+
+После завершения Phase 1-3 (PR #126, #130, #131) и R17 round был зафиксирован
+устойчивый Gemini-drift, который меняет интерпретацию результатов eval.
+
+**Наблюдения:**
+
+- Gemini 2.5 Pro нестабилен между прогонами без version pin
+- Variance band: ±7 баллов по string score, ±8 баллов по semantic score между сессиями
+- R17a=74/95, R17b=80/95, R17c=82/95 semantic — всё на одном коде
+
+**НОВАЯ норма:**
+
+- 3-run median вместо single-run target
+- Целевая зона = куда попадает медиана 3 прогонов (не worst-case, не best-case)
+- 1/3 прогонов red → Class F drift → accept as known limitation
+- 3/3 прогонов red → real bug → fix
+
+**Классификация стабильных reds (R17):**
+
+- Class A (corpus wrong): scenarios 006, 035, 079, 087, 088 — re-annotated
+- Class B (prompt gap): scenario 058 — LINE UP DWCC guard added
+- Class E (judge false negative): scenario 056 — ARA range alias added
+- Class F (drift): scenarios 089, 095 — accepted, не фиксить
+
+**Implications for future rounds:**
+
+- Никогда не сравнивать single-run результаты между разными датами без variance check
+- Version pin Gemini рассмотреть как опцию если variance мешает продуктовым решениям
+- Baseline = медиана 3 прогонов. Regression = медиана упала > 3 баллов.
