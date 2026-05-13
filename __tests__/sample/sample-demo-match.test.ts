@@ -161,7 +161,7 @@ describe('spec-03: demo seed-match for EconomicsTab', () => {
     expect(originalDemoMatch).toBeDefined();
 
     // Simulate AI returning zero matches (worst case)
-    const aiMatches: typeof session.matches = [];
+    const aiMatches: NonNullable<typeof session>['matches'] = [];
 
     // Guard logic (mirrors /api/ai/match/route.ts)
     const hasDemoMatch = aiMatches.some(

@@ -21,7 +21,7 @@ const PRIORITY_ORDER: Record<PriorityLevel, number> = { urgent: 0, attention: 1,
 
 // Demo data for SubsCountdownWidget (F-01) — static, server-safe
 const DEMO_DEAL_ID = 'demo-deal-001';
-const DEMO_SUBS_DEADLINE = '2099-01-01T12:00:00.000Z';
+const DEMO_SUBS_DEADLINE = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
