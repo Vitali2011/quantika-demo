@@ -424,6 +424,7 @@ async function callBedrockText(
   system: string,
   user: string,
   model: string,
+  opts?: AiOpts,
 ): Promise<{ text: string; usage?: Usage }> {
   assertBedrockEnv();
   const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime') as {
@@ -443,7 +444,7 @@ async function callBedrockText(
 
   const payload = {
     anthropic_version: 'bedrock-2023-05-31',
-    max_tokens: 16000,
+    ...buildBedrockSamplingFields(opts ?? {}),
     system,
     messages: [{ role: 'user', content: user }],
   };
@@ -551,7 +552,7 @@ export async function callAiJson<T>(
         break;
       }
       case 'bedrock': {
-        const r = await callBedrockText(system, user, model);
+        const r = await callBedrockText(system, user, model, opts);
         usage = r.usage;
         const cleaned = r.text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
         result = JSON.parse(cleaned) as T;
@@ -608,7 +609,7 @@ export async function callAiText(
         break;
       }
       case 'bedrock': {
-        const r = await callBedrockText(system, user, model);
+        const r = await callBedrockText(system, user, model, opts);
         usage = r.usage;
         result = r.text;
         break;
