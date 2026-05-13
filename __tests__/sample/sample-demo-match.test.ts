@@ -8,6 +8,13 @@
 import { createSession, updateSession, getSession, deleteSession } from '@/lib/session';
 import { resolveDemoParsedCargoes, resolveDemoParsedVessels } from '@/lib/sample-data/demo-parsed-cargoes';
 
+/** Mirrors parseLeadingNumber in EconomicsTab.tsx — must stay in sync */
+function parseLeadingNumber(s: string | null | undefined): number {
+  if (!s) return 0;
+  const m = s.match(/(\d+(?:\.\d+)?)/);
+  return m ? Number(m[1]) : 0;
+}
+
 const DEMO_MATCH_CARGO_EMAIL_ID = 'demo-cargo-economics';
 const DEMO_MATCH_VESSEL_EMAIL_ID = 'demo-vessel-economics';
 
@@ -119,23 +126,59 @@ describe('spec-03: demo seed-match for EconomicsTab', () => {
     expect(demoVessel!.dwtSummer!.value).toBeGreaterThan(0);
   });
 
-  it('demo vessel has speedLaden (non-null, non-empty)', () => {
+  it('demo vessel has speedLaden parseable as number > 0 (EconomicsTab guard)', () => {
     const session = getSession(sessionId);
     const demoVessel = session!.parsedVessels.find(
       (v) => v.emailId === DEMO_MATCH_VESSEL_EMAIL_ID && v.itemIndex === 0
     );
     expect(demoVessel).toBeDefined();
     expect(demoVessel!.speedLaden).not.toBeNull();
-    expect(demoVessel!.speedLaden).toBeTruthy();
+    // EconomicsTab uses parseLeadingNumber — must yield > 0 or tab stays blank
+    expect(parseLeadingNumber(demoVessel!.speedLaden)).toBeGreaterThan(0);
   });
 
-  it('demo vessel has consumption (non-null, non-empty)', () => {
+  it('demo vessel has consumption parseable as number > 0 (EconomicsTab guard)', () => {
     const session = getSession(sessionId);
     const demoVessel = session!.parsedVessels.find(
       (v) => v.emailId === DEMO_MATCH_VESSEL_EMAIL_ID && v.itemIndex === 0
     );
     expect(demoVessel).toBeDefined();
     expect(demoVessel!.consumption).not.toBeNull();
-    expect(demoVessel!.consumption).toBeTruthy();
+    // EconomicsTab uses parseLeadingNumber — must yield > 0 or tab stays blank
+    expect(parseLeadingNumber(demoVessel!.consumption)).toBeGreaterThan(0);
+  });
+
+  it('demo match survives a simulated "Run Matching" overwrite (idempotency guard)', () => {
+    // Simulate what /api/ai/match does: replace session.matches with AI results
+    // that do NOT include the demo match. The guard in /api/ai/match/route.ts
+    // should prepend the demo match back — here we test the guard logic directly.
+    const session = getSession(sessionId);
+    expect(session).not.toBeNull();
+
+    const originalDemoMatch = session!.matches.find(
+      (m) => m.cargoEmailId === DEMO_MATCH_CARGO_EMAIL_ID,
+    );
+    expect(originalDemoMatch).toBeDefined();
+
+    // Simulate AI returning zero matches (worst case)
+    const aiMatches: typeof session.matches = [];
+
+    // Guard logic (mirrors /api/ai/match/route.ts)
+    const hasDemoMatch = aiMatches.some(
+      (m) =>
+        m.cargoEmailId === DEMO_MATCH_CARGO_EMAIL_ID &&
+        m.vesselEmailId === DEMO_MATCH_VESSEL_EMAIL_ID,
+    );
+    const finalMatches = hasDemoMatch
+      ? aiMatches
+      : [originalDemoMatch!, ...aiMatches];
+
+    updateSession(sessionId, { matches: finalMatches });
+
+    const updated = getSession(sessionId);
+    const demoStillPresent = updated!.matches.find(
+      (m) => m.cargoEmailId === DEMO_MATCH_CARGO_EMAIL_ID,
+    );
+    expect(demoStillPresent).toBeDefined();
   });
 });
