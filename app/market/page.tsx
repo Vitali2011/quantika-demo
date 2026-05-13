@@ -18,9 +18,9 @@ interface IndexData {
 }
 
 export default function MarketPage() {
-  const [bhsiData, setBhsiData] = useState<IndexData[]>([]);
-  const [tmiData, setTmiData] = useState<IndexData[]>([]);
-  const [drewryData, setDrewryData] = useState<IndexData[]>([]);
+  const [bhsiData, setBhsiData] = useState<IndexData[] | null>(null);
+  const [tmiData, setTmiData] = useState<IndexData[] | null>(null);
+  const [drewryData, setDrewryData] = useState<IndexData[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,19 +33,25 @@ export default function MarketPage() {
       }
 
       try {
+        const [bhsiRes, tmiRes, drewryRes] = await Promise.all([
+          fetch('/api/market/indices?name=bhsi&days=30'),
+          fetch('/api/market/indices?name=tmi&days=30'),
+          fetch('/api/market/indices?name=drewry-bb&days=30'),
+        ]);
+
+        if (!bhsiRes.ok || !tmiRes.ok || !drewryRes.ok) {
+          // Server-side flag not enabled or service unavailable — graceful empty state
+          setBhsiData(null);
+          setTmiData(null);
+          setDrewryData(null);
+          setLoading(false);
+          return;
+        }
+
         const [bhsi, tmi, drewry] = await Promise.all([
-          fetch('/api/market/indices?name=bhsi&days=30').then((r) => {
-            if (!r.ok) throw new Error('Failed to fetch BHSI');
-            return r.json();
-          }),
-          fetch('/api/market/indices?name=tmi&days=30').then((r) => {
-            if (!r.ok) throw new Error('Failed to fetch TMI');
-            return r.json();
-          }),
-          fetch('/api/market/indices?name=drewry-bb&days=30').then((r) => {
-            if (!r.ok) throw new Error('Failed to fetch Drewry');
-            return r.json();
-          }),
+          bhsiRes.json(),
+          tmiRes.json(),
+          drewryRes.json(),
         ]);
 
         setBhsiData(bhsi);
@@ -100,6 +106,18 @@ export default function MarketPage() {
     );
   }
 
+  // Graceful empty state: API returned non-ok (503/404) — data is null
+  if (bhsiData === null && tmiData === null && drewryData === null) {
+    return (
+      <main className="min-h-screen bg-gray-50 p-6">
+        <div className="mx-auto max-w-7xl">
+          <h1 className="mb-6 text-2xl font-bold">Market Benchmarks</h1>
+          <p className="text-muted-foreground text-gray-500">No market data available</p>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-gray-50 p-6">
       <div className="mx-auto max-w-7xl">
@@ -108,15 +126,15 @@ export default function MarketPage() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <MarketBenchmarkChart
             indexName="bhsi"
-            data={bhsiData.map((d) => ({ date: d.index_date, value: d.value }))}
+            data={(bhsiData ?? []).map((d) => ({ date: d.index_date, value: d.value }))}
           />
           <MarketBenchmarkChart
             indexName="tmi"
-            data={tmiData.map((d) => ({ date: d.index_date, value: d.value }))}
+            data={(tmiData ?? []).map((d) => ({ date: d.index_date, value: d.value }))}
           />
           <MarketBenchmarkChart
             indexName="drewry-bb"
-            data={drewryData.map((d) => ({ date: d.index_date, value: d.value }))}
+            data={(drewryData ?? []).map((d) => ({ date: d.index_date, value: d.value }))}
           />
         </div>
       </div>
