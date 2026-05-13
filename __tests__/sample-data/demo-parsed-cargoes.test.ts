@@ -23,10 +23,11 @@ import type { ParsedCargo } from '@/lib/types';
 const NOW = new Date('2026-05-10T00:00:00.000Z');
 
 describe('resolveDemoParsedCargoes — date resolution', () => {
-  it('returns an array of records for every cargo-inquiry email (sample-01..12)', () => {
+  it('returns an array of records for every cargo-inquiry email (sample-01..12) plus demo fixtures', () => {
     const result = resolveDemoParsedCargoes(NOW);
     expect(result.length).toBeGreaterThanOrEqual(4);
-    expect(result.length).toBeLessThanOrEqual(12);
+    // spec-03 adds demo-cargo-economics, so upper bound is 13
+    expect(result.length).toBeLessThanOrEqual(13);
   });
 
   it('resolves +Nd offsets to ISO date strings relative to now', () => {
@@ -89,11 +90,13 @@ describe('resolveDemoParsedCargoes — schema parity with ParsedCargo', () => {
     }
   });
 
-  it('each emailId matches a real cargo-inquiry ID (sample-01 through sample-12)', () => {
+  it('each emailId matches a real cargo-inquiry ID (sample-01 through sample-12) or a demo fixture ID', () => {
     const validIds = new Set([
       'sample-01', 'sample-02', 'sample-03', 'sample-04', 'sample-05',
       'sample-06', 'sample-07', 'sample-08', 'sample-09', 'sample-10',
       'sample-11', 'sample-12',
+      // spec-03: guaranteed demo match fixture
+      'demo-cargo-economics',
     ]);
     for (const cargo of result) {
       expect(validIds.has(cargo.emailId)).toBe(true);
@@ -178,9 +181,9 @@ describe('resolveDemoClassifications — 32 records, correct schema', () => {
 describe('resolveDemoParsedVessels — date resolution and schema', () => {
   const NOW = new Date('2026-05-10T00:00:00.000Z');
 
-  it('returns exactly 9 ParsedVessel records (8 emails, sample-16 has 2 vessels)', () => {
+  it('returns exactly 10 ParsedVessel records (8 emails, sample-16 has 2 vessels, plus demo-vessel-economics)', () => {
     const result = resolveDemoParsedVessels(NOW);
-    expect(result).toHaveLength(9);
+    expect(result).toHaveLength(10);
   });
 
   it('sample-13 vessel (CARPATHIAN STAR) has correct vesselName and IMO', () => {

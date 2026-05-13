@@ -502,5 +502,61 @@
     "ciiRating": "D",
     "verificationWarning": null,
     "openDateRelative": "+2d"
+  },
+  {
+    "emailId": "demo-vessel-economics",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "DEMO ECONOMICS",
+      "confidence": "confirmed"
+    },
+    "imo": "9999991",
+    "flag": "Marshall Islands",
+    "built": 2015,
+    "classSociety": "DNV",
+    "pandi": "Gard",
+    "dwtSummer": {
+      "value": 58000,
+      "confidence": "confirmed"
+    },
+    "dwcc": {
+      "value": 55500,
+      "confidence": "confirmed"
+    },
+    "draftMax": {
+      "value": 12.5,
+      "confidence": "confirmed"
+    },
+    "loa": 189.9,
+    "beam": 32.2,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": 5,
+    "hatchesCount": 5,
+    "grainCapacity": null,
+    "grainCapacityUnit": null,
+    "baleCapacity": 72000,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": false,
+    "craneCapacity": null,
+    "hatchType": null,
+    "vesselType": "Bulk Carrier",
+    "openPosition": {
+      "value": "Singapore",
+      "confidence": "confirmed"
+    },
+    "direction": "Worldwide",
+    "restrictions": [],
+    "lastCargoes": "grain, bulk",
+    "speedLaden": "14.0",
+    "speedBallast": "14.5",
+    "consumption": "32.0 mt IFO",
+    "deckCapacity": null,
+    "specialFeatures": [],
+    "ciiRating": null,
+    "verificationWarning": null,
+    "openDateRelative": "+0d"
   }
 ]
