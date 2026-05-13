@@ -17,6 +17,17 @@ import { tryRecordDispatch } from '../db/queries/dispatches';
 
 export type { EscalationStage } from './escalation-policy';
 
+/**
+ * Normalize a deadline to Date.
+ * Accepts: Unix seconds (number < 1e10), Unix ms (number ≥ 1e10), or ISO string.
+ */
+export function normalizeDeadline(deadline: string | number): Date {
+  if (typeof deadline === 'number') {
+    return new Date(deadline < 1e10 ? deadline * 1000 : deadline);
+  }
+  return new Date(deadline);
+}
+
 export interface SubsDeadline {
   dealId: string;
   counterparty: string;
@@ -29,10 +40,10 @@ export interface SubsDeadline {
 const HOUR_MS = 3_600_000;
 
 export function computeStage(
-  deadlineAt: string,
+  deadlineAt: string | number,
   now: Date = new Date(),
 ): EscalationStage | 'pending' {
-  const remaining = new Date(deadlineAt).getTime() - now.getTime();
+  const remaining = normalizeDeadline(deadlineAt).getTime() - now.getTime();
   if (remaining <= 0) return 'expired';
   if (remaining <= 2 * HOUR_MS) return '2h';
   if (remaining <= 4 * HOUR_MS) return '4h';
