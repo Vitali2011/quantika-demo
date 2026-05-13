@@ -314,6 +314,10 @@ async function callGeminiText(
             thinkingConfig?: { thinkingBudget: number; includeThoughts: boolean };
             responseMimeType?: string;
             responseSchema?: Record<string, unknown>;
+            temperature?: number;
+            topP?: number;
+            topK?: number;
+            seed?: number;
           };
         }) => Promise<{ text: string; usageMetadata?: GeminiUsageMetadata }>;
       };
@@ -333,6 +337,10 @@ async function callGeminiText(
     thinkingConfig?: { thinkingBudget: number; includeThoughts: boolean };
     responseMimeType?: string;
     responseSchema?: Record<string, unknown>;
+    temperature?: number;
+    topP?: number;
+    topK?: number;
+    seed?: number;
   } = { systemInstruction: system };
 
   if (opts?.thinkingBudget !== undefined) {
@@ -346,6 +354,8 @@ async function callGeminiText(
     config.responseMimeType = 'application/json';
     config.responseSchema = opts.responseSchema;
   }
+
+  Object.assign(config, buildGeminiSamplingFields(opts ?? {}));
 
   const response = await ai.models.generateContent({
     model,
