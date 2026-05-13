@@ -105,15 +105,33 @@ Phase 3 (PR #131, EXTRACT-ALL-OFFERS) — 6 semi-stable scenarios оставал
 
 ## Post-fix runs
 
-| Round      | String  | Semantic | Notes          |
-| ---------- | ------- | -------- | -------------- |
-| R17d       | TBD     | TBD      | post-fix run 1 |
-| R17e       | TBD     | TBD      | post-fix run 2 |
-| R17f       | TBD     | TBD      | post-fix run 3 |
-| **Median** | **TBD** | **TBD**  | final baseline |
+| Round      | String    | Semantic  | Notes          |
+| ---------- | --------- | --------- | -------------- |
+| R17d       | 77/95     | 81/95     | post-fix run 1 |
+| R17e       | 72/95     | 76/95     | post-fix run 2 |
+| R17f       | 74/95     | 81/95     | post-fix run 3 |
+| **Median** | **74/95** | **81/95** | final baseline |
 
-**Target:** Semantic median ≥ 87/95 (цель была 92/95, но принят диапазон 87-91
-с учётом Class F drift scenarios которые не фиксятся)
+**Delta vs baseline median:** string +6, semantic +1.
+
+**Target review:** Заявленный диапазон 87-91 semantic не достигнут (получили 81).
+Причина: judge уже принимал старые corpus phrasings как семантически эквивалентные,
+поэтому Class A fixes улучшили только string match. Реальный win — string +6 и
+4 stable fixes scenarios теперь green.
+
+## Per-scenario fix results
+
+| Scenario | Pre (3/3)       | Post (3/3)      | Verdict                                                                      |
+| -------- | --------------- | --------------- | ---------------------------------------------------------------------------- |
+| 006      | 0.0 / 0.0 / 0.0 | 1.0 / 1.0 / 1.0 | ✅ FIXED (Class A)                                                           |
+| 035      | 0.0 / 0.0 / 0.0 | 1.0 / 1.0 / 1.0 | ✅ FIXED (Class A)                                                           |
+| 079      | 0.0 / 0.0 / 0.0 | 1.0 / 1.0 / 1.0 | ✅ FIXED (Class A)                                                           |
+| 087      | 0.0 / 0.0 / 0.0 | 1.0 / 1.0 / 1.0 | ✅ FIXED (Class A)                                                           |
+| 058      | 0.0 / 0.0 / 0.0 | 1.0 / 0.0 / 1.0 | ⚠️ FLAKY 2/3 (Class B partial — model drift)                                 |
+| 056      | 0.5 / 0.5 / 0.5 | 0.5 / 0.5 / 0.5 | ❌ String unchanged (Class E judge only — affects semantic)                  |
+| 088      | 0.0 / 0.0 / 0.0 | 0.0 / 0.0 / 0.0 | ❌ Reclassified as Class F (Gemini drift — model output format inconsistent) |
+
+**Summary:** 4 stable string fixes + 1 flaky + 1 semantic-only fix + 1 reclassified as drift.
 
 ---
 
@@ -130,6 +148,16 @@ Phase 3 (PR #131, EXTRACT-ALL-OFFERS) — 6 semi-stable scenarios оставал
 - Pattern: 0 → 1 → 0 по R17a/b/c
 - Root cause: после Phase 2 re-annotation модель иногда возвращает 0 items
 - Decision: accept. Нестабильность в самой модели, не в prompt/corpus.
+
+**088** — Reclassified to Class F post-fix:
+
+- Corpus was correctly updated to Phase 2 schema (TBS + alts array)
+- Model output format unstable между сессиями: иногда split format (TBS + alts),
+  иногда flat string ("TBS / Marmara range / Izmir range / Mersin range")
+- В R17a/b/c модель давала split → corpus с flat string fail'ил
+- В R17d/e/f модель даёт flat → corpus со split fail'ит
+- Decision: accept as drift. Real fix = prompt enforcement of split format
+  (out-of-scope для R17).
 
 ---
 
