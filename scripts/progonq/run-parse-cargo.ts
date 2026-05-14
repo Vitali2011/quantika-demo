@@ -324,8 +324,9 @@ async function runScenario(scenario: Scenario): Promise<RunResult> {
         seed: 42,
         model: process.env.PARSE_CARGO_GEMINI_MODEL,
       });
-      const parsed = extractJson(text) as ParsedOutput;
-      model_output = { items: Array.isArray(parsed.items) ? parsed.items : [] };
+      const raw = extractJson(text);
+      const parsed = (Array.isArray(raw) ? raw[0] : raw) as ParsedOutput;
+      model_output = { items: Array.isArray(parsed?.items) ? parsed.items : [] };
       break;
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
