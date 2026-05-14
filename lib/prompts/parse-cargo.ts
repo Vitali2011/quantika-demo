@@ -156,9 +156,11 @@ cargo_description MUST be human-readable English. Required contents:
 8. Do NOT copy-paste raw source text verbatim as cargo_description.
 9. For PROJECT cargo: dimensions and per-piece weights are MANDATORY.
 10. For BREAK_BULK: per-unit weight and packaging details are MANDATORY if given.
-11. Use a concise noun phrase — NOT a full sentence.
-    ✗ "The cargo consists of a fertilizer with a stowage factor of 51–52 ft³/MT"
-    ✓ "Fertilizer, stowage factor 51–52"
+11. Use a concise noun phrase — NOT a full sentence. Concise ≠ lossy: keep all
+    material cargo facts (commodity type, packaging, vessel/hold requirements,
+    dimensions). Drop only filler ("The cargo consists of…"), never substance.
+    ✗ "Scrap"  (when the email specifies HMS type + 250,000 ft³ hold requirement)
+    ✓ "Steel scrap (loose bulk), vessel ~250,000 ft³ hold capacity required"
 12. Do NOT include unit notations (ft³/MT, m³/MT, CBM/MT) inside cargo_description — units belong only in the stowage_factor field.
     ✗ "stowage factor 51–52 ft³/MT (without guarantee)"
     ✓ "stowage factor 51–52, without guarantee"
