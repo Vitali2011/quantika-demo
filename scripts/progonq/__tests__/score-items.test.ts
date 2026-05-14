@@ -36,6 +36,8 @@ describe('normalizePort', () => {
     expect(normalizePort('BANDIRMA')).toBe(normalizePort('Bandırma'));
     expect(normalizePort('Bandırma')).toBe('bandirma');
     expect(normalizePort('Gdańsk')).toBe('gdansk');
+    expect(normalizePort('Bjørnafjorden')).toBe('bjornafjorden');
+    expect(normalizePort('Świnoujście')).toBe('swinoujscie');
   });
 
   it('does NOT fuzzy-match genuine typos', () => {
