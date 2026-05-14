@@ -90,8 +90,6 @@ RULE 4 — Preserve source port spelling; DO NOT add unsolicited geographic qual
 - "Marmara" → origin_port = "Marmara" (not "Marmara Sea (region)")
 - Do NOT add "(Sea)", "(region)", "(Range)" unless the source contains that word.
 - Canonical port names: "Nemrut" → "Nemrut Bay"; "Constantza/Constanta" → "Constanța" preferred.
-  - Coast abbreviations: "EC/WC/NC/SC <country>" → "East/West/North/South Coast <country>"
-    (e.g. "EC India" → "East Coast India"). This is a port VALUE, confidence "interpreted".
 
 RULE 5 — Slash "/" as load/discharge separator (NOT alternatives):
 DEFAULT: When "/" appears between exactly two port names, parse as origin / destination.
@@ -129,12 +127,6 @@ RULE 9 — TBS/TBN destination: when email shows "TBS / Port A / Port B / ..." f
   ✗ destination_port = "TBS / Marmara range / Izmir range / Mersin range"
   ✓ destination_port = {value: "TBS (to be specified)"}, destination_port_alternatives = ["Marmara range", "Izmir range", "Mersin range"]
 
-RULE 10 — Cargo-lot segmentation: each distinct "rate + route + cargo" block in the
-email is exactly ONE item. Lot boundaries are marked by separators ("+++", blank
-lines, the word "And", or numbered lists). Do NOT merge two separate lots into one
-item, and do NOT split one lot (single route + single cargo) into multiple items
-just because it is described over several lines.
-
 === CARGO DESCRIPTION RULES ===
 
 cargo_description MUST be human-readable English. Required contents:
@@ -156,11 +148,9 @@ cargo_description MUST be human-readable English. Required contents:
 8. Do NOT copy-paste raw source text verbatim as cargo_description.
 9. For PROJECT cargo: dimensions and per-piece weights are MANDATORY.
 10. For BREAK_BULK: per-unit weight and packaging details are MANDATORY if given.
-11. Use a concise noun phrase — NOT a full sentence. Concise ≠ lossy: keep all
-    material cargo facts (commodity type, packaging, vessel/hold requirements,
-    dimensions). Drop only filler ("The cargo consists of…"), never substance.
-    ✗ "Scrap"  (when the email specifies HMS type + 250,000 ft³ hold requirement)
-    ✓ "Steel scrap (loose bulk), vessel ~250,000 ft³ hold capacity required"
+11. Use a concise noun phrase — NOT a full sentence.
+    ✗ "The cargo consists of a fertilizer with a stowage factor of 51–52 ft³/MT"
+    ✓ "Fertilizer, stowage factor 51–52"
 12. Do NOT include unit notations (ft³/MT, m³/MT, CBM/MT) inside cargo_description — units belong only in the stowage_factor field.
     ✗ "stowage factor 51–52 ft³/MT (without guarantee)"
     ✓ "stowage factor 51–52, without guarantee"
