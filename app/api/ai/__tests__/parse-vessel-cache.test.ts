@@ -2,6 +2,7 @@ import { POST } from "../parse-vessel/route";
 import * as session from "@/lib/session";
 import * as cache from "@/lib/email-cache";
 import * as ai from "@/lib/ai-provider";
+import * as equasis from "@/lib/validation/equasis-client";
 import { NextRequest } from "next/server";
 
 jest.mock("@/lib/csrf", () => ({ validateCsrf: () => true }));
@@ -119,5 +120,100 @@ describe("parse-vessel cache", () => {
     await POST(req());
     expect(getSpy).not.toHaveBeenCalled();
     expect(aiSpy).toHaveBeenCalledTimes(1);
+  });
+
+  // FINDING-1 (MEDIUM): Equasis verificationWarning must not go stale in cache.
+  describe("Equasis verification over cached vessels (FINDING-1)", () => {
+    const EQUASIS_RECORD = {
+      vesselName: "MV Star",
+      flag: "MH",
+      type: "Bulk Carrier",
+      dwt: 63695,
+      built: 2010,
+    };
+
+    it("re-runs Equasis verification over cached vessels — stale warning is cleared", async () => {
+      (session.requireSession as jest.Mock).mockReturnValue({
+        session: mkSession(["m1"]),
+        sessionId: "s1",
+      });
+      // Cached vessel carries a stale warning from a day when Equasis was down.
+      (cache.getCachedParses as jest.Mock).mockReturnValue(
+        new Map([
+          [
+            "m1",
+            [
+              {
+                emailId: "m1",
+                imo: "9811000",
+                vesselName: { value: "STAR" },
+                verificationWarning: "IMO not found in Equasis registry",
+              },
+            ],
+          ],
+        ])
+      );
+      // Equasis is back up and the IMO resolves cleanly now.
+      (equasis.lookupVesselByImo as jest.Mock).mockResolvedValue(EQUASIS_RECORD);
+      (equasis.compareVesselRecord as jest.Mock).mockReturnValue(null);
+      jest.spyOn(ai, "callAiText").mockResolvedValue("{}");
+
+      await POST(req());
+
+      const lastUpdate = (session.updateSession as jest.Mock).mock.calls.at(-1)!;
+      const vessels = lastUpdate[1].parsedVessels as { emailId: string; verificationWarning?: string | null }[];
+      const m1 = vessels.find((v) => v.emailId === "m1")!;
+      expect(m1.verificationWarning).toBeFalsy();
+    });
+
+    it("recomputes a fresh warning for cached vessels when Equasis still rejects the IMO", async () => {
+      (session.requireSession as jest.Mock).mockReturnValue({
+        session: mkSession(["m1"]),
+        sessionId: "s1",
+      });
+      (cache.getCachedParses as jest.Mock).mockReturnValue(
+        new Map([
+          ["m1", [{ emailId: "m1", imo: "9811000", vesselName: { value: "STAR" } }]],
+        ])
+      );
+      (equasis.lookupVesselByImo as jest.Mock).mockResolvedValue(null);
+      jest.spyOn(ai, "callAiText").mockResolvedValue("{}");
+
+      await POST(req());
+
+      const lastUpdate = (session.updateSession as jest.Mock).mock.calls.at(-1)!;
+      const vessels = lastUpdate[1].parsedVessels as { emailId: string; verificationWarning?: string | null }[];
+      const m1 = vessels.find((v) => v.emailId === "m1")!;
+      expect(m1.verificationWarning).toBe("IMO not found in Equasis registry");
+    });
+
+    it("does not bake verificationWarning into the persisted cache row", async () => {
+      (session.requireSession as jest.Mock).mockReturnValue({
+        session: mkSession(["m1"]),
+        sessionId: "s1",
+      });
+      (cache.getCachedParses as jest.Mock).mockReturnValue(new Map());
+      jest
+        .spyOn(ai, "callAiText")
+        .mockResolvedValue('{"items":[{"vessel_name":"STAR","imo":"9811000"}]}');
+      // Equasis rejects → without the fix this warning gets persisted into the cache row.
+      (equasis.lookupVesselByImo as jest.Mock).mockResolvedValue(null);
+      // Snapshot the items at the moment saveParsedResults is invoked — production
+      // serialises here synchronously, so a later mutation must not be reflected.
+      let snapshot: { items: { verificationWarning?: string | null }[] }[] = [];
+      (cache.saveParsedResults as jest.Mock).mockImplementation(
+        (_acc, _type, _ver, results) => {
+          snapshot = JSON.parse(JSON.stringify(results));
+        }
+      );
+
+      await POST(req());
+
+      const savedItems = snapshot.flatMap((r) => r.items);
+      expect(savedItems.length).toBeGreaterThan(0);
+      for (const item of savedItems) {
+        expect(item.verificationWarning).toBeFalsy();
+      }
+    });
   });
 });

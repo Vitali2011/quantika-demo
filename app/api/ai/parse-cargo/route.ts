@@ -215,9 +215,14 @@ export async function POST(request: NextRequest) {
   // Runs before LLM calls so the system prompt can be enriched with IMSBC data.
   // Guarded by feature flag — no-op when KNOWLEDGE_RAG_ENABLED != "true".
   let imsbcSystemContext: string | undefined;
-  if (isRagEnabled()) {
+  // Skip RAG when toParse is empty — no LLM calls means imsbcSystemContext has
+  // no consumer, so retrieval would be a wasted DB round-trip.
+  if (isRagEnabled() && toParse.length > 0) {
     try {
-      const cargoKeywords = toParse
+      // Build keywords from the full cargo batch, not just uncached emails: in a
+      // mixed batch a cached hazmat email must still steer the IMSBC context for
+      // an uncached email re-parsed alongside it.
+      const cargoKeywords = cargoEmails
         .map(e => e.body.slice(0, 200))
         .join(' ')
         .slice(0, 400);

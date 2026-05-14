@@ -72,12 +72,31 @@ export async function POST(request: NextRequest) {
     }))
   );
 
-  // External registry verification (Equasis). Runs only for vessels where we
-  // have a structurally valid IMO. Graceful — Equasis down = no warning,
-  // not a filter failure.
+  // Persist fresh LLM results BEFORE Equasis verification, so the transient
+  // verificationWarning is never baked into the cached JSON. The cache holds
+  // only the parse output; verification is recomputed every request.
+  if (accountId) {
+    saveParsedResults<ParsedVessel>(
+      accountId,
+      "vessel",
+      parserVersion,
+      toParse.map((e) => ({
+        gmailMessageId: e.id,
+        items: allParsed.filter((v) => v.emailId === e.id),
+      }))
+    );
+  }
+  const mergedVessels = [...allParsed, ...Array.from(cached.values()).flat()];
+
+  // External registry verification (Equasis). Runs over ALL vessels (fresh +
+  // cached) every request — a transient Equasis outage on first parse must not
+  // produce a permanently stale warning for cached vessels. Graceful — Equasis
+  // down = no warning, not a filter failure.
   const limitEquasis = pLimit(3);
   await Promise.all(
-    allParsed.map(async (v) => {
+    mergedVessels.map(async (v) => {
+      // Reset any stale warning carried over from the cache before recomputing.
+      v.verificationWarning = null;
       if (!v.imo) return;
       try {
         const record = await limitEquasis(async () => {
@@ -103,19 +122,6 @@ export async function POST(request: NextRequest) {
       }
     })
   );
-
-  if (accountId) {
-    saveParsedResults<ParsedVessel>(
-      accountId,
-      "vessel",
-      parserVersion,
-      toParse.map((e) => ({
-        gmailMessageId: e.id,
-        items: allParsed.filter((v) => v.emailId === e.id),
-      }))
-    );
-  }
-  const mergedVessels = [...allParsed, ...Array.from(cached.values()).flat()];
 
   // Recompute processedEmails so dashboard staleness reflects the openDate
   // we just extracted. Mirror of parse-cargo: classify-time runs before us
