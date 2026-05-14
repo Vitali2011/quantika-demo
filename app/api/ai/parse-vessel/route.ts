@@ -11,6 +11,7 @@ import { applyGearedFallback } from '@/lib/parsing/geared-fallback';
 import { lookupVesselByImo, compareVesselRecord } from '@/lib/validation/equasis-client';
 import { buildVesselPrompt, parseVesselAIResponse } from '@/lib/parsing/parse-vessel-helpers';
 import { buildProcessedEmails } from '@/lib/classification-service';
+import { getCachedParses, saveParsedResults, hashParserVersion } from '@/lib/email-cache';
 import pLimit from 'p-limit';
 
 export const maxDuration = 60;
@@ -33,6 +34,18 @@ export async function POST(request: NextRequest) {
 
   const vesselEmails = session.emails.filter(e => vesselIds.includes(e.id));
 
+  const accountId = session.accountId;
+  const parserVersion = hashParserVersion(VESSEL_POSITION_PARSER_PROMPT);
+  const cached = accountId
+    ? getCachedParses<ParsedVessel>(
+        accountId,
+        "vessel",
+        parserVersion,
+        vesselEmails.map((e) => e.id)
+      )
+    : new Map<string, ParsedVessel[]>();
+  const toParse = vesselEmails.filter((e) => !cached.has(e.id));
+
   if (vesselEmails.length === 0) {
     updateSession(sessionId, { parsedVessels: [] });
     return NextResponse.json({ count: 0 });
@@ -42,7 +55,7 @@ export async function POST(request: NextRequest) {
   const limit = pLimit(3);
 
   await Promise.all(
-    vesselEmails.map((email) => limit(async () => {
+    toParse.map((email) => limit(async () => {
       const prompt = buildVesselPrompt(email);
       let raw: string;
       try {
@@ -59,12 +72,31 @@ export async function POST(request: NextRequest) {
     }))
   );
 
-  // External registry verification (Equasis). Runs only for vessels where we
-  // have a structurally valid IMO. Graceful — Equasis down = no warning,
-  // not a filter failure.
+  // Persist fresh LLM results BEFORE Equasis verification, so the transient
+  // verificationWarning is never baked into the cached JSON. The cache holds
+  // only the parse output; verification is recomputed every request.
+  if (accountId) {
+    saveParsedResults<ParsedVessel>(
+      accountId,
+      "vessel",
+      parserVersion,
+      toParse.map((e) => ({
+        gmailMessageId: e.id,
+        items: allParsed.filter((v) => v.emailId === e.id),
+      }))
+    );
+  }
+  const mergedVessels = [...allParsed, ...Array.from(cached.values()).flat()];
+
+  // External registry verification (Equasis). Runs over ALL vessels (fresh +
+  // cached) every request — a transient Equasis outage on first parse must not
+  // produce a permanently stale warning for cached vessels. Graceful — Equasis
+  // down = no warning, not a filter failure.
   const limitEquasis = pLimit(3);
   await Promise.all(
-    allParsed.map(async (v) => {
+    mergedVessels.map(async (v) => {
+      // Reset any stale warning carried over from the cache before recomputing.
+      v.verificationWarning = null;
       if (!v.imo) return;
       try {
         const record = await limitEquasis(async () => {
@@ -98,8 +130,8 @@ export async function POST(request: NextRequest) {
     session.emails,
     session.classifications,
     session.parsedCargos,
-    allParsed,
+    mergedVessels,
   );
-  updateSession(sessionId, { parsedVessels: allParsed, processedEmails });
-  return NextResponse.json({ count: allParsed.length });
+  updateSession(sessionId, { parsedVessels: mergedVessels, processedEmails });
+  return NextResponse.json({ count: mergedVessels.length });
 }

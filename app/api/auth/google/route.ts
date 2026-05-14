@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { exchangeCodeForToken, getAuthUrl } from '@/lib/google';
+import { exchangeCodeForToken, fetchGmailProfile, getAuthUrl } from '@/lib/google';
 import { logger } from '@/lib/logger';
-import { createSession } from '@/lib/session';
+import { createSession, updateSession } from '@/lib/session';
 import { generateCsrfToken } from '@/lib/csrf';
 
 export async function GET(request: NextRequest) {
@@ -23,6 +23,14 @@ export async function GET(request: NextRequest) {
   try {
     const accessToken = await exchangeCodeForToken(code);
     const sessionId = createSession(accessToken);
+    try {
+      const accountId = await fetchGmailProfile(accessToken);
+      if (accountId) updateSession(sessionId, { accountId });
+    } catch (err) {
+      // Profile lookup is non-fatal — without accountId the app falls back to
+      // the legacy ephemeral path (parse, don't cache). Never block login.
+      logger.error({ err }, "Gmail profile fetch failed");
+    }
     const csrfToken = generateCsrfToken();
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `https://${request.headers.get('host')}`;
