@@ -1,7 +1,7 @@
 /**
  * Vertex AI Search retriever — implements identical retrieve() signature
  *
- * Maps vectorTable → datastore ID, calls SearchServiceClient.search(),
+ * Maps vectorTable → engine ID, calls SearchServiceClient.search(),
  * transforms response to RetrievedChunk[] with required metadata fields
  * (source, section, id, sourceUrl, title) for citations validator.
  *
@@ -13,31 +13,32 @@
  * - vectorTable allow-list enforcement
  */
 
-import { SearchServiceClient } from '@google-cloud/discoveryengine';
-import type { RetrievedChunk, ChunkMetadata } from '@/lib/knowledge/embeddings/chunks';
-import type { RetrieveOptions } from '@/lib/knowledge/embeddings/retriever-sqlite';
+import { SearchServiceClient } from "@google-cloud/discoveryengine";
+import type { RetrievedChunk, ChunkMetadata } from "@/lib/knowledge/embeddings/chunks";
+import type { RetrieveOptions } from "@/lib/knowledge/embeddings/retriever-sqlite";
 
-const ALLOWED_VEC_TABLES = ['imsbc_vec', 'igc_vec', 'jwc_vec', 'bimco_vec'] as const;
+const ALLOWED_VEC_TABLES = ["imsbc_vec", "igc_vec", "jwc_vec", "bimco_vec"] as const;
 
 /**
- * Maps SQLite vector table names to Vertex AI Search datastore IDs.
+ * Maps SQLite vector table names to Vertex AI Search engine IDs.
+ * Env vars: VERTEX_ENGINE_IMSBC / VERTEX_ENGINE_IGC / VERTEX_ENGINE_JWC / VERTEX_ENGINE_BIMCO
  * Function form to allow tests to mock env vars after module load.
  */
-function getDatastoreId(vectorTable: string): string {
+function getEngineId(vectorTable: string): string {
   const map: Record<string, string> = {
-    imsbc_vec: process.env.VERTEX_DATASTORE_IMSBC || '',
-    igc_vec: process.env.VERTEX_DATASTORE_IGC || '',
-    jwc_vec: process.env.VERTEX_DATASTORE_JWC || '',
-    bimco_vec: process.env.VERTEX_DATASTORE_BIMCO || '',
+    imsbc_vec: process.env.VERTEX_ENGINE_IMSBC || "",
+    igc_vec:   process.env.VERTEX_ENGINE_IGC   || "",
+    jwc_vec:   process.env.VERTEX_ENGINE_JWC   || "",
+    bimco_vec: process.env.VERTEX_ENGINE_BIMCO || "",
   };
-  return map[vectorTable] || '';
+  return map[vectorTable] || "";
 }
 
 /**
  * Hybrid retriever using Vertex AI Search (semantic + keyword fusion built-in)
  *
  * @param query - Search query string (empty string returns [])
- * @param opts - Retrieval options (vectorTable for datastore mapping, ftsTable ignored, topN, db ignored)
+ * @param opts - Retrieval options (vectorTable for engine mapping, ftsTable ignored, topN, db ignored)
  * @returns Promise<RetrievedChunk[]> with metadata fields required by citations validator
  */
 export async function retrieve(
@@ -51,12 +52,12 @@ export async function retrieve(
 
   // Guard: required table names
   if (!opts.vectorTable || opts.vectorTable.trim().length === 0) {
-    throw new TypeError('vectorTable required');
+    throw new TypeError("vectorTable required");
   }
 
   // Guard: allow-list enforcement
   if (!ALLOWED_VEC_TABLES.includes(opts.vectorTable as any)) {
-    throw new Error(`Invalid vectorTable: ${opts.vectorTable}. Must be one of: ${ALLOWED_VEC_TABLES.join(', ')}`);
+    throw new Error(`Invalid vectorTable: ${opts.vectorTable}. Must be one of: ${ALLOWED_VEC_TABLES.join(", ")}`);
   }
 
   // Guard: topN = 0 → return empty array (identical to sqlite version)
@@ -65,24 +66,29 @@ export async function retrieve(
     return [];
   }
 
-  // Map vectorTable to datastore ID
-  const datastoreId = getDatastoreId(opts.vectorTable);
-  if (!datastoreId) {
-    throw new Error(`No datastore configured for vectorTable: ${opts.vectorTable}. Set VERTEX_DATASTORE_${opts.vectorTable.replace('_vec', '').toUpperCase()} env var.`);
+  // Map vectorTable to engine ID
+  const engineId = getEngineId(opts.vectorTable);
+  if (!engineId) {
+    throw new Error(
+      `No engine configured for vectorTable: ${opts.vectorTable}. ` +
+      `Set VERTEX_ENGINE_${opts.vectorTable.replace("_vec", "").toUpperCase()} env var.`
+    );
   }
 
   // Initialize Vertex AI Search client
   const projectId = process.env.VERTEX_SEARCH_PROJECT || process.env.GOOGLE_CLOUD_PROJECT;
-  const location = process.env.VERTEX_SEARCH_LOCATION || 'global';
+  const location  = process.env.VERTEX_SEARCH_LOCATION || "global";
 
   if (!projectId) {
-    throw new Error('VERTEX_SEARCH_PROJECT or GOOGLE_CLOUD_PROJECT env var must be set');
+    throw new Error("VERTEX_SEARCH_PROJECT or GOOGLE_CLOUD_PROJECT env var must be set");
   }
 
   const client = new SearchServiceClient();
 
-  // Construct serving config path
-  const servingConfig = `projects/${projectId}/locations/${location}/collections/default_collection/dataStores/${datastoreId}/servingConfigs/default_config`;
+  // Engine-level serving config (not datastore-level)
+  const servingConfig =
+    `projects/${projectId}/locations/${location}/collections/default_collection` +
+    `/engines/${engineId}/servingConfigs/default_search`;
 
   try {
     // Call Vertex AI Search
@@ -90,11 +96,8 @@ export async function retrieve(
       servingConfig,
       query,
       pageSize: topN,
-      // Enable extractive answers/segments for better snippet quality
       contentSearchSpec: {
-        snippetSpec: {
-          returnSnippet: true,
-        },
+        snippetSpec: { returnSnippet: true },
         extractiveContentSpec: {
           maxExtractiveSegmentCount: 1,
           maxExtractiveAnswerCount: 1,
@@ -105,49 +108,41 @@ export async function retrieve(
     // Map Vertex response to RetrievedChunk[]
     const chunks: RetrievedChunk[] = [];
 
-    // response is an iterable of results pages
     for await (const result of response) {
       if (!result) continue;
-      // Type assertion: result is ISearchResult from async iterator
       const searchResult = result as any;
       const doc = searchResult.document;
       if (!doc) continue;
 
-      // Extract content from snippet or extractive segment
-      let content = '';
+      // Extract content — extractive segment > snippet > structData.content
+      let content = "";
       if (doc.derivedStructData) {
-        const structData = doc.derivedStructData as any;
-        // Try extractive segments first (higher quality)
-        if (structData.extractive_segments && Array.isArray(structData.extractive_segments) && structData.extractive_segments.length > 0) {
-          content = structData.extractive_segments[0]?.content || '';
+        const derived = doc.derivedStructData as any;
+        if (derived.extractive_segments?.length) {
+          content = derived.extractive_segments[0]?.content || "";
         }
-        // Fallback to snippets
-        if (!content && structData.snippets && Array.isArray(structData.snippets) && structData.snippets.length > 0) {
-          content = structData.snippets[0]?.snippet || '';
+        if (!content && derived.snippets?.length) {
+          content = derived.snippets[0]?.snippet || "";
         }
       }
-
-      // Fallback to full content if no snippet/segment
       if (!content && doc.structData?.content) {
         content = String(doc.structData.content);
       }
 
-      // Extract metadata from structData (set during Phase 0 document upload)
-      const structData = doc.structData || {};
+      // Extract metadata from structData (set during document upload)
+      const sd = (doc.structData || {}) as any;
       const metadata: ChunkMetadata = {
-        source: String(structData.source || opts.vectorTable.replace('_vec', '')),
-        section: structData.section ? String(structData.section) : undefined,
-        id: structData.id ? String(structData.id) : doc.id,
-        sourceUrl: structData.sourceUrl ? String(structData.sourceUrl) : undefined,
-        title: structData.title ? String(structData.title) : doc.name,
-        // Preserve bulletinId for JWC citations (validator checks both metadata.id and metadata.bulletinId)
-        bulletinId: structData.bulletinId ? String(structData.bulletinId) : undefined,
+        source:    String(sd.source || opts.vectorTable.replace("_vec", "")),
+        section:   sd.section   ? String(sd.section)   : undefined,
+        id:        sd.id        ? String(sd.id)        : doc.id,
+        sourceUrl: sd.sourceUrl ? String(sd.sourceUrl) : undefined,
+        title:     sd.title     ? String(sd.title)     : doc.name,
+        // JWC citations: validator checks metadata.id OR metadata.bulletinId
+        bulletinId: sd.bulletinId ? String(sd.bulletinId) : undefined,
       };
 
-      // Map relevance score to distance (lower is better in sqlite world)
-      // Vertex relevance scores are typically 0-1 (higher is better)
-      // Invert to match sqlite contract: distance = 1 - score
-      const score = searchResult.relevanceScore ?? 0;
+      // Vertex relevance score 0-1 (higher=better) → invert to distance (lower=better)
+      const score    = searchResult.relevanceScore ?? 0;
       const distance = 1 - score;
 
       chunks.push({
@@ -155,15 +150,13 @@ export async function retrieve(
         metadata,
         distance,
         chunkId: doc.id || `vertex-${chunks.length}`,
-        score, // Preserve original score for debugging
+        score,
       });
     }
 
     return chunks;
   } catch (error) {
-    // Log error but don't throw — graceful degradation pattern
-    // (isRagEnabled() try/catch in endpoints handles this)
-    console.error(`[retriever-vertex] Search failed for datastore ${datastoreId}:`, error);
-    throw error; // Re-throw to let endpoint try/catch handle graceful degradation
+    console.error(`[retriever-vertex] Search failed for engine ${engineId}:`, error);
+    throw error;
   }
 }
