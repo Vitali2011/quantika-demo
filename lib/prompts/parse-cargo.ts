@@ -129,6 +129,12 @@ RULE 9 — TBS/TBN destination: when email shows "TBS / Port A / Port B / ..." f
   ✗ destination_port = "TBS / Marmara range / Izmir range / Mersin range"
   ✓ destination_port = {value: "TBS (to be specified)"}, destination_port_alternatives = ["Marmara range", "Izmir range", "Mersin range"]
 
+RULE 10 — Cargo-lot segmentation: each distinct "rate + route + cargo" block in the
+email is exactly ONE item. Lot boundaries are marked by separators ("+++", blank
+lines, the word "And", or numbered lists). Do NOT merge two separate lots into one
+item, and do NOT split one lot (single route + single cargo) into multiple items
+just because it is described over several lines.
+
 === CARGO DESCRIPTION RULES ===
 
 cargo_description MUST be human-readable English. Required contents:
