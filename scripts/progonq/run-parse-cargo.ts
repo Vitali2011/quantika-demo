@@ -131,6 +131,12 @@ function getFieldValue(field: ConfidenceField | null | undefined): unknown {
 export function normalizePort(v: unknown): string | null {
   if (typeof v !== 'string' || !v) return null;
   let s = v.trim().toLowerCase().replace(/\s+/g, ' ');
+  // Fold special base letters NFD does not decompose (dotless ı, ł, ø, etc.).
+  // Corpus reference uses native spelling; model often returns ASCII.
+  const BASE_LETTER_FOLDS: Record<string, string> = {
+    ı: 'i', ł: 'l', ø: 'o', đ: 'd', ð: 'd', þ: 'th', ß: 'ss', æ: 'ae', œ: 'oe',
+  };
+  s = s.replace(/[ıłøđðþßæœ]/g, (c) => BASE_LETTER_FOLDS[c] ?? c);
   // Strip diacritics — reference corpus is inconsistent (constanta vs constanța)
   s = s.normalize('NFD').replace(/[̀-ͯ]/g, '');
 
@@ -304,6 +310,25 @@ export function scoreItems(refItems: CargoItem[], modelItems: CargoItem[]): Item
   return results;
 }
 
+
+export function extractItems(raw: unknown): unknown[] {
+  if (Array.isArray(raw)) {
+    const first = raw[0] as { items?: unknown } | undefined;
+    if (first && typeof first === 'object' && !Array.isArray(first) && Array.isArray(first.items)) {
+      return raw.flatMap((w) => {
+        const items = (w as { items?: unknown })?.items;
+        return Array.isArray(items) ? items : [];
+      });
+    }
+    return raw;
+  }
+  if (raw && typeof raw === 'object') {
+    const items = (raw as { items?: unknown }).items;
+    if (Array.isArray(items)) return items;
+  }
+  return [];
+}
+
 async function runScenario(scenario: Scenario): Promise<RunResult> {
   const body = truncate(scenario.input.body, MAX_BODY_CHARS);
   const userPrompt = `From: ${scenario.input.from}\nSubject: ${scenario.input.subject}\nDate: ${scenario.input.date}\n\n${body}`;
@@ -318,14 +343,14 @@ async function runScenario(scenario: Scenario): Promise<RunResult> {
     try {
       await sleep(REQUEST_DELAY_MS);
       const text = await callAiText(SCOPE, CARGO_INQUIRY_PARSER_PROMPT, userPrompt, {
-        maxTokens: 4096,
+        maxTokens: 16000,
         timeoutMs: 180_000,
         temperature: 0,
         seed: 42,
         model: process.env.PARSE_CARGO_GEMINI_MODEL,
       });
-      const parsed = extractJson(text) as ParsedOutput;
-      model_output = { items: Array.isArray(parsed.items) ? parsed.items : [] };
+      const raw = extractJson(text);
+      model_output = { items: extractItems(raw) as ParsedOutput['items'] };
       break;
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);

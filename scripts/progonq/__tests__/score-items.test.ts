@@ -1,4 +1,4 @@
-import { scoreItems, normalizePort } from '../run-parse-cargo';
+import { scoreItems, normalizePort, extractItems } from '../run-parse-cargo';
 
 function makeItem(
   origin: string | null,
@@ -30,6 +30,19 @@ describe('normalizePort', () => {
   it('strips port prefix but not port of call', () => {
     expect(normalizePort('Port Sousse')).toBe('sousse');
     expect(normalizePort('Port of Call')).toBe('port of call');
+  });
+
+  it('folds special base letters (dotless i, slashed o, stroked l)', () => {
+    expect(normalizePort('BANDIRMA')).toBe(normalizePort('Bandırma'));
+    expect(normalizePort('Bandırma')).toBe('bandirma');
+    expect(normalizePort('Gdańsk')).toBe('gdansk');
+    expect(normalizePort('Bjørnafjorden')).toBe('bjornafjorden');
+    expect(normalizePort('Świnoujście')).toBe('swinoujscie');
+  });
+
+  it('does NOT fuzzy-match genuine typos', () => {
+    expect(normalizePort('Alexandroupolis')).not.toBe(normalizePort('Aleaxandroupolis'));
+    expect(normalizePort('Douala')).not.toBe(normalizePort('Duala'));
   });
 });
 
@@ -152,5 +165,23 @@ describe('scoreItems — raw-values fields', () => {
     expect(r.model_origin_raw).toBe('Ukraine port (unspecified)');
     // Normalized differ → route_match=false at string level (judge handles equivalence)
     expect(r.route_match).toBe(false);
+  });
+});
+
+describe('extractItems', () => {
+  it('shape 1: {items:[...]}', () => {
+    expect(extractItems({ items: [{ a: 1 }, { a: 2 }] })).toEqual([{ a: 1 }, { a: 2 }]);
+  });
+  it('shape 2: [{items:[...]}]', () => {
+    expect(extractItems([{ items: [{ a: 1 }] }])).toEqual([{ a: 1 }]);
+  });
+  it('shape 3: bare array of item objects', () => {
+    expect(extractItems([{ origin_port: { value: 'X' } }, { origin_port: { value: 'Y' } }]))
+      .toEqual([{ origin_port: { value: 'X' } }, { origin_port: { value: 'Y' } }]);
+  });
+  it('returns [] for null/garbage', () => {
+    expect(extractItems(null)).toEqual([]);
+    expect(extractItems('nope')).toEqual([]);
+    expect(extractItems({})).toEqual([]);
   });
 });

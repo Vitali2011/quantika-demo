@@ -32,7 +32,7 @@
           "source_text": "Sfax, Tunisia  / Dakar"
         },
         "cargo_description": {
-          "value": "Olive pomace, stowage factor 58 CBM/MT, non-IMO",
+          "value": "Olive pomace, stowage factor 58 ft³/MT, non-IMO",
           "confidence": "confirmed",
           "source_text": "min 12.000 mts Olive pomace stw factor 58' (non IMO)"
         },
@@ -109,7 +109,7 @@
           "source_text": "3.75% ttl here"
         },
         "special_requirements": {
-          "value": ["Vessel max 25 years old", "Non-IMO cargo", "Stowage factor 58 CBM/MT"],
+          "value": ["Vessel max 25 years old", "Non-IMO cargo", "Stowage factor 58 ft³/MT"],
           "confidence": "confirmed",
           "source_text": "Pls propose described MAX 25 years ladies for the fol firm cargo"
         },

@@ -32,7 +32,7 @@
           "source_text": "Savona /  Samsun"
         },
         "cargo_description": {
-          "value": "Metallurgical coke (metcoke) in bulk, 3 grades: Grade 1 2,000 MT 60-140mm stw abt 74/75 CBM/MT; Grade 2 6,000 MT 60-100mm stw abt 69/70 CBM/MT; Grade 3 2,000 MT 90-250mm stw abt 76/77 CBM/MT. Holdwise grade separation required.",
+          "value": "Metallurgical coke (metcoke) in bulk, 3 grades: Grade 1 2,000 MT 60-140mm stw abt 74/75 ft³/MT; Grade 2 6,000 MT 60-100mm stw abt 69/70 ft³/MT; Grade 3 2,000 MT 90-250mm stw abt 76/77 ft³/MT. Holdwise grade separation required.",
           "confidence": "confirmed",
           "source_text": "metcoke in bulk,3 grades"
         },
@@ -103,12 +103,12 @@
           "source_text": "3.75 add pus"
         },
         "special_requirements": {
-          "value": "Holdwise grade separation required. Grade 1: 2,000 MT (+/-10%) 60-140mm, stw abt 74/75 CBM/MT. Grade 2: 6,000 MT (+/-10%) 60-100mm, stw abt 69/70 CBM/MT. Grade 3: 2,000 MT (+/-10%) 90-250mm, stw abt 76/77 CBM/MT.",
+          "value": "Holdwise grade separation required. Grade 1: 2,000 MT (+/-10%) 60-140mm, stw abt 74/75 ft³/MT. Grade 2: 6,000 MT (+/-10%) 60-100mm, stw abt 69/70 ft³/MT. Grade 3: 2,000 MT (+/-10%) 90-250mm, stw abt 76/77 ft³/MT.",
           "confidence": "confirmed",
           "source_text": "*holdwise grade separation needed"
         },
         "stowage_factor": {
-          "value": "Grade 1: abt 74–75 CBM/MT; Grade 2: abt 69–70 CBM/MT; Grade 3: abt 76–77 CBM/MT",
+          "value": "Grade 1: abt 74–75 ft³/MT; Grade 2: abt 69–70 ft³/MT; Grade 3: abt 76–77 ft³/MT",
           "confidence": "confirmed",
           "source_text": "Grade 1 : 2.000 mt (+/-%10) 60-140mm stw abt 74/75 \nGrade 2 : 6.000 mt ( +/-%10) 60-100mm stw abt 69/70  \nGrade 3 : 2.000 mt (+/-%10) 90-250mm stw abt 76/77"
         },

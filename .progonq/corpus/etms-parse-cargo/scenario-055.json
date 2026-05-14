@@ -115,7 +115,7 @@
         "weight_mt_max": 7000,
         "volume_cbm": null,
         "dimensions": {
-          "value": "Salt: 1.05m x 1.05m x 1.05m per bag; Rice: 1.05m x 1.05m x 1.35m per bag",
+          "value": "Salt: 1.1m x 1.1m x 1.1m per bag; Rice: 1.05m x 1.05m x 1.35m per bag",
           "confidence": "confirmed",
           "source_text": "(1,1x1,1x1,1, uw 1,25) + rice (1,05x1,05x1,35, uw 1 mt)"
         },

@@ -88,7 +88,7 @@
           "source_text": "sf 51-52, wog"
         },
         "stowage_factor": {
-          "value": "51-52 CBM/MT",
+          "value": "51-52 ft³/MT",
           "confidence": "confirmed",
           "source_text": "sf 51-52"
         },
@@ -349,7 +349,7 @@
           "source_text": "self unloading cranes (grabs available at disch. port); 8.5 m max draft at Douala, Cameroon"
         },
         "stowage_factor": {
-          "value": "48-49 CBM/MT",
+          "value": "48-49 ft³/MT",
           "confidence": "confirmed",
           "source_text": "sf 48-49"
         },
