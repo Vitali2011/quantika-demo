@@ -318,7 +318,7 @@ async function runScenario(scenario: Scenario): Promise<RunResult> {
     try {
       await sleep(REQUEST_DELAY_MS);
       const text = await callAiText(SCOPE, CARGO_INQUIRY_PARSER_PROMPT, userPrompt, {
-        maxTokens: 4096,
+        maxTokens: 16000,
         timeoutMs: 180_000,
         temperature: 0,
         seed: 42,
