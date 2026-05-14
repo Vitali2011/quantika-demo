@@ -90,6 +90,8 @@ RULE 4 — Preserve source port spelling; DO NOT add unsolicited geographic qual
 - "Marmara" → origin_port = "Marmara" (not "Marmara Sea (region)")
 - Do NOT add "(Sea)", "(region)", "(Range)" unless the source contains that word.
 - Canonical port names: "Nemrut" → "Nemrut Bay"; "Constantza/Constanta" → "Constanța" preferred.
+  - Coast abbreviations: "EC/WC/NC/SC <country>" → "East/West/North/South Coast <country>"
+    (e.g. "EC India" → "East Coast India"). This is a port VALUE, confidence "interpreted".
 
 RULE 5 — Slash "/" as load/discharge separator (NOT alternatives):
 DEFAULT: When "/" appears between exactly two port names, parse as origin / destination.
