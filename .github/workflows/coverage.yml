@@ -1,0 +1,36 @@
+name: Coverage
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: "npm"
+      - uses: actions/cache@v5
+        id: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+      - run: npm ci
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+      - run: npm test -- --coverage --coverageProvider=v8 --forceExit
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 7
