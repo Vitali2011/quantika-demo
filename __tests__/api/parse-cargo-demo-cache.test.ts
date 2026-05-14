@@ -62,13 +62,13 @@ function makeSession(overrides: Partial<SessionData>): SessionData {
 // ── Cycle 3: /api/sample seeds parsedCargos ────────────────────────────────
 
 describe('Cycle 3: /api/sample seeds parsedCargos via resolveDemoParsedCargoes', () => {
-  it('resolveDemoParsedCargoes returns 12 ParsedCargo records seeded correctly', async () => {
+  it('resolveDemoParsedCargoes returns 13 ParsedCargo records seeded correctly', async () => {
     // Verify the loader produces the right shape for what sample/route.ts would call
     const { resolveDemoParsedCargoes } = await import('@/lib/sample-data/demo-parsed-cargoes');
     const today = new Date('2026-05-10T00:00:00.000Z');
     const cargoes = resolveDemoParsedCargoes(today);
 
-    expect(cargoes).toHaveLength(12);
+    expect(cargoes).toHaveLength(13);
     expect(cargoes[0].emailId).toBe('sample-01');
     expect(cargoes[0].laycan).toMatch(/^\d{4}-\d{2}-\d{2} \.\. \d{4}-\d{2}-\d{2}$/);
     // Verify laycan start is after seed date
@@ -97,10 +97,10 @@ describe('Cycle 3: /api/sample seeds parsedCargos via resolveDemoParsedCargoes',
       })
     );
 
-    // parsedCargos in the call should have 12 items (sample-01..12)
+    // parsedCargos in the call should have 13 items (sample-01..12 + demo-cargo-economics)
     const callArgs = mockUpdateSession.mock.calls[mockUpdateSession.mock.calls.length - 1];
     const payload = callArgs[1] as Partial<SessionData>;
-    expect(payload.parsedCargos).toHaveLength(12);
+    expect(payload.parsedCargos).toHaveLength(13);
     // laycan should be resolved (absolute date, not +Nd)
     const firstLaycan = payload.parsedCargos![0].laycan;
     expect(firstLaycan).toMatch(/^\d{4}-\d{2}-\d{2} \.\. \d{4}-\d{2}-\d{2}$/);
@@ -130,7 +130,7 @@ describe('Cycle 4: /api/ai/parse-cargo — demo guard early-return', () => {
     expect(res.status).toBe(200);
     const json = await res.json();
     expect(json.cached).toBe(true);
-    expect(json.count).toBe(12);
+    expect(json.count).toBe(13);
     expect(mockCallAiJson).not.toHaveBeenCalled();
   });
 
@@ -173,7 +173,7 @@ describe('Cycle 4b: /api/sample — full cache seed (classifications + parsedVes
     expect(payload.classifications).toHaveLength(32);
   });
 
-  it('updateSession payload includes parsedVessels with 9 entries', async () => {
+  it('updateSession payload includes parsedVessels with 10 entries', async () => {
     const { POST } = await import('@/app/api/sample/route');
     const req = new NextRequest('http://localhost/api/sample', {
       method: 'POST',
@@ -183,7 +183,7 @@ describe('Cycle 4b: /api/sample — full cache seed (classifications + parsedVes
 
     const callArgs = mockUpdateSession.mock.calls[mockUpdateSession.mock.calls.length - 1];
     const payload = callArgs[1] as Partial<SessionData>;
-    expect(payload.parsedVessels).toHaveLength(9);
+    expect(payload.parsedVessels).toHaveLength(10);
   });
 
   it('updateSession payload includes processedEmails with 32 entries', async () => {
