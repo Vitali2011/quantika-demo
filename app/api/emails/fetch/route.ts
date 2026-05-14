@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { EMAIL_FETCH_COUNT, MAX_EMAIL_BODY_CHARS } from '@/lib/constants';
+import { upsertEmails } from '@/lib/email-cache';
 import { fetchGmailEmails } from '@/lib/google';
 import { logger } from '@/lib/logger';
 import { getSession, updateSession } from '@/lib/session';
@@ -36,6 +37,17 @@ export async function POST(request: NextRequest) {
     }));
 
     updateSession(sessionId, { emails: truncatedEmails });
+
+    // Persist raw emails for the cache layer. accountId may be absent on legacy
+    // sessions — in that case we keep today's ephemeral behavior (no persistence).
+    if (session.accountId) {
+      try {
+        upsertEmails(session.accountId, truncatedEmails);
+      } catch (err) {
+        // Persistence failure must not break the fetch response.
+        logger.error({ err }, "Email persistence (upsertEmails) failed");
+      }
+    }
 
     return NextResponse.json({
       count: truncatedEmails.length,
