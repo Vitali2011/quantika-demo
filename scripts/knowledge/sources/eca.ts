@@ -52,4 +52,6 @@ function main() {
   console.log('[ECA] ✓ Done');
 }
 
-main();
+if (require.main === module) {
+  main();
+}
