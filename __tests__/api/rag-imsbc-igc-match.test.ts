@@ -56,8 +56,10 @@ jest.mock('@/lib/knowledge/embeddings/retriever', () => ({
 }));
 
 const mockIsRagEnabled = jest.fn().mockReturnValue(false);
+const mockKnowledgeBackend = jest.fn().mockReturnValue('sqlite');
 jest.mock('@/lib/knowledge/flags', () => ({
   isRagEnabled: () => mockIsRagEnabled(),
+  knowledgeBackend: () => mockKnowledgeBackend(),
   ftsTableForSource: (slug: string) => `${slug}_fts`,
   vecTableForSource: (slug: string) => `${slug}_vec`,
 }));
@@ -246,6 +248,83 @@ describe('IGC RAG integration — match endpoint (T09)', () => {
    */
   it('M3b (class 1): retrieve() returns [] → match proceeds normally, 200', async () => {
     mockIsRagEnabled.mockReturnValue(true);
+    mockRetrieve.mockResolvedValue([]);
+
+    const res = await POST(makeRequest());
+    const json = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(json.count).toBe(1);
+  });
+});
+
+// ── Vertex AI Search backend tests ───────────────────────────────────────────
+
+describe('IGC RAG with Vertex backend — match endpoint', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockKnowledgeBackend.mockReturnValue('vertex');
+    mockIsRagEnabled.mockReturnValue(true);
+    mockGetSession.mockReturnValue(makeGrainSession() as unknown as ReturnType<typeof mockGetSession>);
+    mockRetrieve.mockResolvedValue([
+      {
+        content: 'IGC Code Chapter 4: grain cargo moisture requirements.',
+        metadata: {
+          source: 'igc',
+          section: '4.1',
+          id: 'igc-4.1',
+          sourceUrl: 'https://example.com/igc/ch4',
+          title: 'Grain Cargo Requirements',
+        },
+        distance: 0.13,
+        chunkId: 'vertex-igc-1',
+      },
+    ]);
+    mockAnalyzePairs.mockResolvedValue({
+      matches: [
+        {
+          cargoEmailId: 'email-grain-1',
+          cargoItemIndex: 0,
+          vesselEmailId: 'email-vessel-1',
+          vesselItemIndex: 0,
+          score: 75,
+          matchLevel: 'good',
+          matchReasons: ['DWT 28000 vs cargo 25000 MT — 89% utilization'],
+          issues: [],
+        },
+      ],
+      blockedMatches: [],
+    });
+  });
+
+  it('VX-M1: vertex backend + grain cargo → retrieve() called with igc tables', async () => {
+    const res = await POST(makeRequest());
+
+    const igcCall = mockRetrieve.mock.calls.find(([, opts]) => opts?.vectorTable === 'igc_vec');
+    expect(igcCall).toBeDefined();
+    expect(igcCall![1].ftsTable).toBe('igc_fts');
+  });
+
+  it('VX-M2: vertex backend error → graceful degrade, 200 with match count', async () => {
+    mockRetrieve.mockRejectedValue(new Error('Vertex API timeout'));
+
+    const res = await POST(makeRequest());
+    const json = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(typeof json.count).toBe('number');
+  });
+
+  it('VX-M3: vertex backend + RAG disabled → retrieve() not called', async () => {
+    mockIsRagEnabled.mockReturnValue(false);
+
+    const res = await POST(makeRequest());
+
+    expect(res.status).toBe(200);
+    expect(mockRetrieve).not.toHaveBeenCalled();
+  });
+
+  it('VX-M4: vertex backend + empty results → match proceeds normally', async () => {
     mockRetrieve.mockResolvedValue([]);
 
     const res = await POST(makeRequest());

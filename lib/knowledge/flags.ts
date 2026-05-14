@@ -5,8 +5,11 @@
  *
  * Provides guards and helpers for RAG subsystem:
  * - isRagEnabled: feature toggle for retrieval (default: false until embeddings populated)
+ * - knowledgeBackend: selects retrieval backend ('sqlite' or 'vertex')
  * - ftsTableForSource/vecTableForSource: derive table names from source slugs
  */
+
+export type KnowledgeBackend = 'sqlite' | 'vertex';
 
 /**
  * Returns true only when KNOWLEDGE_RAG_ENABLED === "true" (strict lowercase).
@@ -15,6 +18,15 @@
  */
 export function isRagEnabled(): boolean {
   return process.env.KNOWLEDGE_RAG_ENABLED === 'true';
+}
+
+/**
+ * Selects the knowledge retrieval backend.
+ * KNOWLEDGE_BACKEND=vertex → Vertex AI Search; anything else → sqlite (default).
+ * isRagEnabled() remains the master on/off switch regardless of backend.
+ */
+export function knowledgeBackend(): KnowledgeBackend {
+  return process.env.KNOWLEDGE_BACKEND === 'vertex' ? 'vertex' : 'sqlite';
 }
 
 /**
