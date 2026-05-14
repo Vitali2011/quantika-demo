@@ -72,11 +72,11 @@ export async function retrieve(
   }
 
   // Initialize Vertex AI Search client
-  const projectId = process.env.GOOGLE_CLOUD_PROJECT;
+  const projectId = process.env.VERTEX_SEARCH_PROJECT || process.env.GOOGLE_CLOUD_PROJECT;
   const location = process.env.VERTEX_SEARCH_LOCATION || 'global';
 
   if (!projectId) {
-    throw new Error('GOOGLE_CLOUD_PROJECT env var not set');
+    throw new Error('VERTEX_SEARCH_PROJECT or GOOGLE_CLOUD_PROJECT env var must be set');
   }
 
   const client = new SearchServiceClient();
