@@ -103,7 +103,12 @@
           "Discharge laytime terms not specified (only '5 ttl dys x' given — SHEX assumed from 'x' suffix)",
           "Specific discharge port within C.Med not named"
         ],
-        "unknown_terms": ["pus"]
+        "unknown_terms": ["pus"],
+        "origin_port_alternatives": [],
+        "destination_port_alternatives": [],
+        "origin_port_rotation": [],
+        "destination_port_rotation": [],
+        "weight_per_port": []
       },
       {
         "origin_port": {
@@ -202,7 +207,12 @@
           "Specific discharge port within Continent range not named",
           "Loading/discharge terms (FIO, CQD, etc.) not stated"
         ],
-        "unknown_terms": ["pus"]
+        "unknown_terms": ["pus"],
+        "origin_port_alternatives": [],
+        "destination_port_alternatives": [],
+        "origin_port_rotation": [],
+        "destination_port_rotation": [],
+        "weight_per_port": []
       }
     ]
   }

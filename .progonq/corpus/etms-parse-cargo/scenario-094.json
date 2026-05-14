@@ -98,7 +98,12 @@
           "Laytime quantum not specified — 'ttl days' has no numeric value",
           "Loading and discharge terms (FIO, FIOST, CQD, etc.) not specified",
           "Freight rate not indicated (seeking offers)"
-        ]
+        ],
+        "origin_port_alternatives": [],
+        "destination_port_alternatives": [],
+        "origin_port_rotation": [],
+        "destination_port_rotation": [],
+        "weight_per_port": []
       },
       {
         "origin_port": {
@@ -188,7 +193,12 @@
           "Laytime quantum not specified — 'ttl days' has no numeric value",
           "Loading and discharge terms (FIO, FIOST, CQD, etc.) not specified",
           "Freight rate not indicated (seeking offers)"
-        ]
+        ],
+        "origin_port_alternatives": [],
+        "destination_port_alternatives": [],
+        "origin_port_rotation": [],
+        "destination_port_rotation": [],
+        "weight_per_port": []
       }
     ]
   }
