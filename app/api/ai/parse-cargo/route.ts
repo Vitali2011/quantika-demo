@@ -16,6 +16,7 @@ import { toConfidence, extractNum } from '@/lib/parsing-utils';
 import { calibrateAll } from '@/lib/validation/confidence-calibration';
 import { applyCargoRateFallback, applyCargoTypeFallback } from '@/lib/parsing/cargo-rate-fallback';
 import { buildProcessedEmails } from '@/lib/classification-service';
+import { getCachedParses, saveParsedResults, hashParserVersion } from '@/lib/email-cache';
 import { isRagEnabled } from '@/lib/knowledge/flags';
 import type { RetrievedChunk } from '@/lib/knowledge/embeddings/chunks';
 import pLimit from 'p-limit';
@@ -189,6 +190,22 @@ export async function POST(request: NextRequest) {
 
   const cargoEmails = session.emails.filter(e => cargoInquiryIds.includes(e.id));
 
+  // Email-cache: parse only the emails we have not parsed before (same prompt
+  // version). RAG flag is folded into the version because it changes output.
+  const accountId = session.accountId;
+  const parserVersion = hashParserVersion(
+    CARGO_INQUIRY_PARSER_PROMPT + (isRagEnabled() ? ":rag" : "")
+  );
+  const cached = accountId
+    ? getCachedParses<ParsedCargo>(
+        accountId,
+        "cargo",
+        parserVersion,
+        cargoEmails.map((e) => e.id)
+      )
+    : new Map<string, ParsedCargo[]>();
+  const toParse = cargoEmails.filter((e) => !cached.has(e.id));
+
   if (cargoEmails.length === 0) {
     updateSession(sessionId, { parsedCargos: [] });
     return NextResponse.json({ count: 0 });
@@ -200,7 +217,7 @@ export async function POST(request: NextRequest) {
   let imsbcSystemContext: string | undefined;
   if (isRagEnabled()) {
     try {
-      const cargoKeywords = cargoEmails
+      const cargoKeywords = toParse
         .map(e => e.body.slice(0, 200))
         .join(' ')
         .slice(0, 400);
@@ -235,7 +252,7 @@ export async function POST(request: NextRequest) {
 
   const allParsed: ParsedCargo[] = [];
   const limit = pLimit(PARSE_CARGO_CONCURRENCY);
-  const prompts = buildCargoPrompts(cargoEmails);
+  const prompts = buildCargoPrompts(toParse);
 
   // Build system prompt: base + optional IMSBC context appended.
   const systemPrompt = imsbcSystemContext
@@ -243,7 +260,7 @@ export async function POST(request: NextRequest) {
     : CARGO_INQUIRY_PARSER_PROMPT;
 
   await Promise.all(
-    cargoEmails.map((email, i) => limit(async () => {
+    toParse.map((email, i) => limit(async () => {
       // βf-11: race the LLM call against LLM_TIMEOUT_MS. On timeout we fall
       // back to regex enrichment of an empty cargo so the route still returns
       // 200 instead of letting the request hang past maxDuration → 524.
@@ -294,15 +311,29 @@ export async function POST(request: NextRequest) {
     }))
   );
 
+  // Persist fresh results, then merge with the cached ones for this response.
+  if (accountId) {
+    saveParsedResults<ParsedCargo>(
+      accountId,
+      "cargo",
+      parserVersion,
+      toParse.map((e) => ({
+        gmailMessageId: e.id,
+        items: allParsed.filter((c) => c.emailId === e.id),
+      }))
+    );
+  }
+  const mergedCargos = [...allParsed, ...Array.from(cached.values()).flat()];
+
   // Recompute processedEmails so dashboard staleness reflects the laycan
   // we just extracted. Without this, classify-time fallback (+5d) leaves
   // every CARGO_INQUIRY marked stale within a week.
   const processedEmails = buildProcessedEmails(
     session.emails,
     session.classifications,
-    allParsed,
+    mergedCargos,
     session.parsedVessels,
   );
-  updateSession(sessionId, { parsedCargos: allParsed, processedEmails });
-  return NextResponse.json({ count: allParsed.length });
+  updateSession(sessionId, { parsedCargos: mergedCargos, processedEmails });
+  return NextResponse.json({ count: mergedCargos.length });
 }
