@@ -31,6 +31,17 @@ describe('normalizePort', () => {
     expect(normalizePort('Port Sousse')).toBe('sousse');
     expect(normalizePort('Port of Call')).toBe('port of call');
   });
+
+  it('folds special base letters (dotless i, slashed o, stroked l)', () => {
+    expect(normalizePort('BANDIRMA')).toBe(normalizePort('Bandırma'));
+    expect(normalizePort('Bandırma')).toBe('bandirma');
+    expect(normalizePort('Gdańsk')).toBe('gdansk');
+  });
+
+  it('does NOT fuzzy-match genuine typos', () => {
+    expect(normalizePort('Alexandroupolis')).not.toBe(normalizePort('Aleaxandroupolis'));
+    expect(normalizePort('Douala')).not.toBe(normalizePort('Duala'));
+  });
 });
 
 describe('scoreItems — backward compat (single port)', () => {

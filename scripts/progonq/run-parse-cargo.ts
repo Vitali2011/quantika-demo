@@ -131,6 +131,12 @@ function getFieldValue(field: ConfidenceField | null | undefined): unknown {
 export function normalizePort(v: unknown): string | null {
   if (typeof v !== 'string' || !v) return null;
   let s = v.trim().toLowerCase().replace(/\s+/g, ' ');
+  // Fold special base letters NFD does not decompose (dotless ı, ł, ø, etc.).
+  // Corpus reference uses native spelling; model often returns ASCII.
+  const BASE_LETTER_FOLDS: Record<string, string> = {
+    ı: 'i', ł: 'l', ø: 'o', đ: 'd', ð: 'd', þ: 'th', ß: 'ss', æ: 'ae', œ: 'oe',
+  };
+  s = s.replace(/[ıłøđðþßæœ]/g, (c) => BASE_LETTER_FOLDS[c] ?? c);
   // Strip diacritics — reference corpus is inconsistent (constanta vs constanța)
   s = s.normalize('NFD').replace(/[̀-ͯ]/g, '');
 
