@@ -198,11 +198,27 @@ pass, 25% ModelErr, ×3 цена, ×2 латентность). Но весь pro
 
 Заполняется в ходе 1c. Формат: `scenario-XXX | поле | было | стало | обоснование`.
 
-| Сценарий | Поле                               | Было           | Стало          | Обоснование                                                     |
-| -------- | ---------------------------------- | -------------- | -------------- | --------------------------------------------------------------- |
-| 062      | cargo_description / stowage_factor | `48-50 CBM/MT` | `48-50 ft³/MT` | Физика SF риса; письмо `sf 48-50` без единицы — конвенция = ft³ |
-| 086      | cargo_description / stowage_factor | `~62 CBM/MT`   | `~62 ft³/MT`   | Письмо пишет `62'` (апостроф = футы); SF paddy rice ~62 ft³/т   |
-| ...      |                                    |                |                | (дополняется ре-аудитом)                                        |
+| Сценарий | Поле                                    | Было                       | Стало                   | Обоснование                                                |
+| -------- | --------------------------------------- | -------------------------- | ----------------------- | ---------------------------------------------------------- |
+| 016      | reference_output / stowage_factor.value | `CBM/MT`                   | `ft³/MT`                | SF 43-87 физически невозможен как CBM/MT — это ft³/MT      |
+| 022      | reference_output / stowage_factor.value | `CBM/MT`                   | `ft³/MT`                | SF 43-87 физически невозможен как CBM/MT — это ft³/MT      |
+| 034      | reference_output / stowage_factor.value | `CBM/MT`                   | `ft³/MT`                | SF 43-87 физически невозможен как CBM/MT — это ft³/MT      |
+| 037      | reference_output / stowage_factor.value | `CBM/MT`                   | `ft³/MT`                | SF 43-87 физически невозможен как CBM/MT — это ft³/MT      |
+| 054      | reference_output / stowage_factor.value | `CBM/MT`                   | `ft³/MT`                | SF 43-87 физически невозможен как CBM/MT — это ft³/MT      |
+| 061      | reference_output / stowage_factor.value | `CBM/MT`                   | `ft³/MT`                | SF 43-87 физически невозможен как CBM/MT — это ft³/MT      |
+| 062      | reference_output / stowage_factor.value | `CBM/MT`                   | `ft³/MT`                | SF 43-87 физически невозможен как CBM/MT — это ft³/MT      |
+| 065      | reference_output / stowage_factor.value | `CBM/MT`                   | `ft³/MT`                | SF 43-87 физически невозможен как CBM/MT — это ft³/MT      |
+| 067      | reference_output / stowage_factor.value | `CBM/MT`                   | `ft³/MT`                | SF 43-87 физически невозможен как CBM/MT — это ft³/MT      |
+| 069      | reference_output / stowage_factor.value | `CBM/MT`                   | `ft³/MT`                | SF 43-87 физически невозможен как CBM/MT — это ft³/MT      |
+| 079      | reference_output / stowage_factor.value | `CBM/MT`                   | `ft³/MT`                | SF 43-87 физически невозможен как CBM/MT — это ft³/MT      |
+| 083      | reference_output / stowage_factor.value | `CBM/MT`                   | `ft³/MT`                | SF 43-87 физически невозможен как CBM/MT — это ft³/MT      |
+| 085      | reference_output / stowage_factor.value | `CBM/MT`                   | `ft³/MT`                | SF 43-87 физически невозможен как CBM/MT — это ft³/MT      |
+| 086      | reference_output / stowage_factor.value | `CBM/MT`                   | `ft³/MT`                | SF 43-87 физически невозможен как CBM/MT — это ft³/MT      |
+| 088      | reference_output / stowage_factor.value | `CBM/MT`                   | `ft³/MT`                | SF 43-87 физически невозможен как CBM/MT — это ft³/MT      |
+| 090      | reference_output / stowage_factor.value | `CBM/MT`                   | `ft³/MT`                | SF 43-87 физически невозможен как CBM/MT — это ft³/MT      |
+| 035      | items[0].stowage_factor.value           | `1.331`                    | `1.065`                 | Был объём мешка (1.1³), а не SF: 1.331 м³ ÷ 1.25 т = 1.065 |
+| 035      | items[1].stowage_factor.value           | `Salt: 1.331 CBM/MT`       | `Salt: 1.065 CBM/MT`    | То же — соль: объём мешка вместо SF; рис 1.488 верен       |
+| 055      | items[1].dimensions.value               | `Salt 1.05m x1.05m x1.05m` | `Salt 1.1m x1.1m x1.1m` | source_text `1,1x1,1x1,1` — опечатка аннотатора; рис верен |
 
 ---
 
