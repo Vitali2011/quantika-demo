@@ -254,9 +254,12 @@ async function llmReason(
 
   // βf3-06: race LLM call against a hard timeout so cold-start is bounded.
   const fallback = templateReason(winner, savingsUsd, savingsDays);
-  const timeoutPromise = new Promise<string>(resolve =>
-    setTimeout(() => resolve(fallback), LLM_REASON_TIMEOUT_MS)
-  );
+  // Keep a reference to the timer so it can be cleared after the race settles,
+  // preventing an open-handle leak in test environments.
+  let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
+  const timeoutPromise = new Promise<string>(resolve => {
+    timeoutHandle = setTimeout(() => resolve(fallback), LLM_REASON_TIMEOUT_MS);
+  });
 
   console.time('cold:llm-reason');
   try {
@@ -279,6 +282,7 @@ async function llmReason(
     return result;
   } finally {
     console.timeEnd('cold:llm-reason');
+    clearTimeout(timeoutHandle);
   }
 }
 
