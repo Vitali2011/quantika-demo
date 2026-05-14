@@ -8,6 +8,7 @@ import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { FIXTURE_RECAP_PARSER_PROMPT } from '@/lib/prompts';
 import { ParsedFixtureRecap } from '@/lib/types';
 import { summarizeCommissions } from '@/lib/commission';
+import { getCachedParses, saveParsedResults, hashParserVersion } from '@/lib/email-cache';
 import { parseRecapAIResponse } from '@/lib/parsing/parse-recap-helpers';
 import pLimit from 'p-limit';
 
@@ -26,6 +27,18 @@ export async function POST(request: NextRequest) {
 
   const fixtureEmails = session.emails.filter(e => fixtureIds.includes(e.id));
 
+  const accountId = session.accountId;
+  const parserVersion = hashParserVersion(FIXTURE_RECAP_PARSER_PROMPT);
+  const cached = accountId
+    ? getCachedParses<ParsedFixtureRecap>(
+        accountId,
+        "recap",
+        parserVersion,
+        fixtureEmails.map((e) => e.id)
+      )
+    : new Map<string, ParsedFixtureRecap[]>();
+  const toParse = fixtureEmails.filter((e) => !cached.has(e.id));
+
   if (fixtureEmails.length === 0) {
     updateSession(sessionId, { parsedFixtureRecaps: [], commissionSummary: null });
     return NextResponse.json({ count: 0 });
@@ -34,7 +47,7 @@ export async function POST(request: NextRequest) {
   const limit = pLimit(3);
 
   const parsedFixtureRecapsRaw: (ParsedFixtureRecap | null)[] = await Promise.all(
-    fixtureEmails.map((email) => limit(async () => {
+    toParse.map((email) => limit(async () => {
       const userPrompt = `From: ${email.from}\nSubject: ${email.subject}\nDate: ${email.date}\n\n${email.body}`;
       try {
         const raw = await callAiText('PARSE_RECAP', FIXTURE_RECAP_PARSER_PROMPT, userPrompt, { timeoutMs: endpointLlmTimeout(120), responseSchema: PARSE_RECAP_SCHEMA });
@@ -50,9 +63,22 @@ export async function POST(request: NextRequest) {
     (r): r is ParsedFixtureRecap => r !== null,
   );
 
-  // Calculate commission summary
-  const commissionSummary = summarizeCommissions(parsedFixtureRecaps);
+  if (accountId) {
+    saveParsedResults<ParsedFixtureRecap>(
+      accountId,
+      "recap",
+      parserVersion,
+      toParse.map((e) => ({
+        gmailMessageId: e.id,
+        items: parsedFixtureRecaps.filter((r) => r.emailId === e.id),
+      }))
+    );
+  }
+  const mergedRecaps = [...parsedFixtureRecaps, ...Array.from(cached.values()).flat()];
 
-  updateSession(sessionId, { parsedFixtureRecaps, commissionSummary });
-  return NextResponse.json({ count: parsedFixtureRecaps.length });
+  // Calculate commission summary
+  const commissionSummary = summarizeCommissions(mergedRecaps);
+
+  updateSession(sessionId, { parsedFixtureRecaps: mergedRecaps, commissionSummary });
+  return NextResponse.json({ count: mergedRecaps.length });
 }
