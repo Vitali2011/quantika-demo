@@ -7,6 +7,7 @@
 
 import {
   isRagEnabled,
+  knowledgeBackend,
   ftsTableForSource,
   vecTableForSource,
 } from '@/lib/knowledge/flags';
@@ -102,6 +103,44 @@ describe('lib/knowledge/flags', () => {
     // TC-NBI-05: unknown slug → "unknown_source_vec" (no validation, retriever handles)
     it('returns suffixed table name for unknown source (no validation at this layer)', () => {
       expect(vecTableForSource('unknown_source')).toBe('unknown_source_vec');
+    });
+  });
+
+  describe('knowledgeBackend()', () => {
+    const originalEnv = process.env.KNOWLEDGE_BACKEND;
+
+    afterEach(() => {
+      // Restore original env value
+      if (originalEnv === undefined) {
+        delete process.env.KNOWLEDGE_BACKEND;
+      } else {
+        process.env.KNOWLEDGE_BACKEND = originalEnv;
+      }
+    });
+
+    it('returns "sqlite" when KNOWLEDGE_BACKEND is unset (default)', () => {
+      delete process.env.KNOWLEDGE_BACKEND;
+      expect(knowledgeBackend()).toBe('sqlite');
+    });
+
+    it('returns "sqlite" when KNOWLEDGE_BACKEND is empty string', () => {
+      process.env.KNOWLEDGE_BACKEND = '';
+      expect(knowledgeBackend()).toBe('sqlite');
+    });
+
+    it('returns "vertex" when KNOWLEDGE_BACKEND is "vertex"', () => {
+      process.env.KNOWLEDGE_BACKEND = 'vertex';
+      expect(knowledgeBackend()).toBe('vertex');
+    });
+
+    it('returns "sqlite" when KNOWLEDGE_BACKEND is "sqlite"', () => {
+      process.env.KNOWLEDGE_BACKEND = 'sqlite';
+      expect(knowledgeBackend()).toBe('sqlite');
+    });
+
+    it('returns "sqlite" for any other value (default fallback)', () => {
+      process.env.KNOWLEDGE_BACKEND = 'unknown';
+      expect(knowledgeBackend()).toBe('sqlite');
     });
   });
 });

@@ -1,1542 +1,322 @@
 [
   {
-    "emailId": "19d5de87705baf9b",
+    "emailId": "sample-01",
+    "category": "CARGO_INQUIRY",
+    "isUnanswered": true,
+    "urgency": "high",
+    "daysWithoutReply": 2,
+    "confidence": 1.0,
+    "originalSender": "Black Sea Shipping <chartering@bsshipping.ro>",
+    "originalSenderCompany": "Black Sea Shipping"
+  },
+  {
+    "emailId": "sample-02",
+    "category": "CARGO_INQUIRY",
+    "isUnanswered": true,
+    "urgency": "high",
+    "daysWithoutReply": 1,
+    "confidence": 1.0,
+    "originalSender": "Gulf Steel Trading <cargo@gulfsteeltrading.ae>",
+    "originalSenderCompany": "Gulf Steel Trading"
+  },
+  {
+    "emailId": "sample-03",
+    "category": "CARGO_INQUIRY",
+    "isUnanswered": false,
+    "urgency": "medium",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Singapore Metals <chartering@sgmetals.sg>",
+    "originalSenderCompany": "Singapore Metals"
+  },
+  {
+    "emailId": "sample-04",
     "category": "CARGO_INQUIRY",
     "isUnanswered": true,
     "urgency": "medium",
-    "daysWithoutReply": 36,
-    "confidence": 0.82,
-    "originalSender": "Serkan Varan",
-    "originalSenderCompany": "Varan Shipping"
+    "daysWithoutReply": 3,
+    "confidence": 1.0,
+    "originalSender": "Egypt Cement Corp <freight@egyptcement.eg>",
+    "originalSenderCompany": "Egypt Cement Corp"
   },
   {
-    "emailId": "19d5dea61d04209f",
+    "emailId": "sample-05",
+    "category": "CARGO_INQUIRY",
+    "isUnanswered": true,
+    "urgency": "high",
+    "daysWithoutReply": 1,
+    "confidence": 1.0,
+    "originalSender": "Tyrrhenian Industrial <logistics@tyrrhenianindustrial.it>",
+    "originalSenderCompany": "Tyrrhenian Industrial"
+  },
+  {
+    "emailId": "sample-06",
+    "category": "CARGO_INQUIRY",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Nordic Timber Trade <chartering@nordictimber.fi>",
+    "originalSenderCompany": "Nordic Timber Trade"
+  },
+  {
+    "emailId": "sample-07",
+    "category": "CARGO_INQUIRY",
+    "isUnanswered": true,
+    "urgency": "high",
+    "daysWithoutReply": 2,
+    "confidence": 1.0,
+    "originalSender": "Danube Agro Export <freight@danubeagro.sk>",
+    "originalSenderCompany": "Danube Agro Export"
+  },
+  {
+    "emailId": "sample-08",
+    "category": "CARGO_INQUIRY",
+    "isUnanswered": false,
+    "urgency": "medium",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Adriatic Chemical <chartering@adriatichem.hr>",
+    "originalSenderCompany": "Adriatic Chemical"
+  },
+  {
+    "emailId": "sample-09",
     "category": "CARGO_INQUIRY",
     "isUnanswered": true,
     "urgency": "medium",
-    "daysWithoutReply": 36,
-    "confidence": 0.88,
-    "originalSender": "Osama Hassouba",
-    "originalSenderCompany": "Al-Badr Group"
+    "daysWithoutReply": 4,
+    "confidence": 1.0,
+    "originalSender": "Levant Freight Partners <ops@levantfreight.lb>",
+    "originalSenderCompany": "Levant Freight Partners"
   },
   {
-    "emailId": "19d5def0bf1a5c3f",
+    "emailId": "sample-10",
+    "category": "CARGO_INQUIRY",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Caspian Grain Corp <chartering@caspiangrain.kz>",
+    "originalSenderCompany": "Caspian Grain Corp"
+  },
+  {
+    "emailId": "sample-11",
     "category": "CARGO_INQUIRY",
     "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 36,
-    "confidence": 0.87,
-    "originalSender": "VARAN SHIPPING - ISTANBUL",
-    "originalSenderCompany": "Varan Shipping"
+    "urgency": "high",
+    "daysWithoutReply": 1,
+    "confidence": 1.0,
+    "originalSender": "West Africa Commodities <freight@wacommodities.gh>",
+    "originalSenderCompany": "West Africa Commodities"
   },
   {
-    "emailId": "19d5df1d60908577",
+    "emailId": "sample-12",
+    "category": "CARGO_INQUIRY",
+    "isUnanswered": false,
+    "urgency": "medium",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Iberian Steel Group <chartering@iberiansteel.es>",
+    "originalSenderCompany": "Iberian Steel Group"
+  },
+  {
+    "emailId": "sample-13",
+    "category": "VESSEL_POSITION",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Balkan Tramp Lines <ops@balkantramp.gr>",
+    "originalSenderCompany": "Balkan Tramp Lines"
+  },
+  {
+    "emailId": "sample-14",
+    "category": "VESSEL_POSITION",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Emirates Tramp <chartering@emiratestramp.ae>",
+    "originalSenderCompany": "Emirates Tramp"
+  },
+  {
+    "emailId": "sample-15",
+    "category": "VESSEL_POSITION",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Comoros Bulk Carriers <freight@comorosbulk.km>",
+    "originalSenderCompany": "Comoros Bulk Carriers"
+  },
+  {
+    "emailId": "sample-16",
+    "category": "VESSEL_POSITION",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Tyrrhenian Tramp Lines <ops@tyrrhenian-tramp.it>",
+    "originalSenderCompany": "Tyrrhenian Tramp Lines"
+  },
+  {
+    "emailId": "sample-17",
+    "category": "VESSEL_POSITION",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Lagos Maritime Brokers <ops@lagosbrokers.ng>",
+    "originalSenderCompany": "Lagos Maritime Brokers"
+  },
+  {
+    "emailId": "sample-18",
+    "category": "VESSEL_POSITION",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Iran Bulk Carriers <ops@iranbulk.ir>",
+    "originalSenderCompany": "Iran Bulk Carriers"
+  },
+  {
+    "emailId": "sample-19",
+    "category": "VESSEL_POSITION",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Finnlines Tramp Desk <chartering@finnlinestramp.fi>",
+    "originalSenderCompany": "Finnlines Tramp Desk"
+  },
+  {
+    "emailId": "sample-20",
+    "category": "VESSEL_POSITION",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Scheldt Tramp Carriers <ops@scheldttramp.be>",
+    "originalSenderCompany": "Scheldt Tramp Carriers"
+  },
+  {
+    "emailId": "sample-21",
+    "category": "FIXTURE_RECAP",
+    "isUnanswered": false,
+    "urgency": "medium",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Pontus Shipping <chartering@pontus-shipping.gr>",
+    "originalSenderCompany": "Pontus Shipping"
+  },
+  {
+    "emailId": "sample-22",
+    "category": "FIXTURE_RECAP",
+    "isUnanswered": false,
+    "urgency": "medium",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Gulf Star Brokers <desk@gulfstarbrokers.ae>",
+    "originalSenderCompany": "Gulf Star Brokers"
+  },
+  {
+    "emailId": "sample-23",
+    "category": "FIXTURE_RECAP",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Singapore Bulk Brokers <chartering@sgbulkbrokers.sg>",
+    "originalSenderCompany": "Singapore Bulk Brokers"
+  },
+  {
+    "emailId": "sample-24",
+    "category": "FIXTURE_RECAP",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Med Chartering <ops@medchartering.mt>",
+    "originalSenderCompany": "Med Chartering"
+  },
+  {
+    "emailId": "sample-25",
+    "category": "FIXTURE_RECAP",
+    "isUnanswered": false,
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Nordic Brokers <chartering@nordicbrokers.dk>",
+    "originalSenderCompany": "Nordic Brokers"
+  },
+  {
+    "emailId": "sample-26",
     "category": "CLIENT_REPLY",
     "isUnanswered": false,
     "urgency": "high",
-    "daysWithoutReply": 0,
-    "confidence": 0.92,
-    "originalSender": "Eik Schuster",
-    "originalSenderCompany": "Seatrade"
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Ahmed Al-Rashidi <ahmed.alrashidi@gulftrade.ae>",
+    "originalSenderCompany": "Gulf Trade LLC"
   },
   {
-    "emailId": "19d5df35aa2df825",
-    "category": "FIXTURE_RECAP",
+    "emailId": "sample-27",
+    "category": "CLIENT_REPLY",
     "isUnanswered": true,
     "urgency": "high",
-    "daysWithoutReply": 36,
-    "confidence": 0.85,
-    "originalSender": "Varan Shipping - Operation Dept.",
-    "originalSenderCompany": "Varan Shipping"
+    "daysWithoutReply": 1,
+    "confidence": 1.0,
+    "originalSender": "Ekaterina Volkov <e.volkov@bsshipping.ro>",
+    "originalSenderCompany": "Black Sea Shipping"
   },
   {
-    "emailId": "19d5df57f1eb40e6",
-    "category": "FIXTURE_RECAP",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 36,
-    "confidence": 0.9,
-    "originalSender": "Varan Shipping - Chartering Dept.",
-    "originalSenderCompany": "Varan Shipping"
-  },
-  {
-    "emailId": "19d5df6c964e6592",
-    "category": "FIXTURE_RECAP",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 36,
-    "confidence": 0.91,
-    "originalSender": "Sherif Shaaban",
-    "originalSenderCompany": "ETMS - Management"
-  },
-  {
-    "emailId": "19d5e73477f04fb9",
-    "category": "TCT_REQUEST",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 36,
-    "confidence": 0.93,
-    "originalSender": "Prince Sameer",
-    "originalSenderCompany": "Atlantic Eastern Navigation FZCO"
-  },
-  {
-    "emailId": "19d5e7406f50cc13",
-    "category": "VESSEL_POSITION",
+    "emailId": "sample-28",
+    "category": "CLIENT_REPLY",
     "isUnanswered": false,
     "urgency": "medium",
-    "daysWithoutReply": 36,
-    "confidence": 0.88,
-    "originalSender": "Aganta Shipping",
-    "originalSenderCompany": "Aganta Shipping and Trading LLC"
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Lars Andersen <l.andersen@nordictimber.fi>",
+    "originalSenderCompany": "Nordic Timber Trade"
   },
   {
-    "emailId": "19d5e7455d073a74",
-    "category": "VESSEL_POSITION",
+    "emailId": "sample-29",
+    "category": "CLIENT_REPLY",
     "isUnanswered": false,
     "urgency": "medium",
-    "daysWithoutReply": 36,
-    "confidence": 0.9,
-    "originalSender": "Aleksandra Zamiatina",
-    "originalSenderCompany": "Ocean7 Group"
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "Marco Ferretti <m.ferretti@adriatichem.hr>",
+    "originalSenderCompany": "Adriatic Chemical"
   },
   {
-    "emailId": "19d5e74e4479a895",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": false,
-    "urgency": "medium",
-    "daysWithoutReply": 36,
-    "confidence": 0.91,
-    "originalSender": "Birolcan Guleren",
-    "originalSenderCompany": "Aleria Denizcilik"
-  },
-  {
-    "emailId": "19d5e751c0c212df",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 36,
-    "confidence": 0.87,
-    "originalSender": "Sergiy Loshkarov",
-    "originalSenderCompany": "Alerta Plus Ltd"
-  },
-  {
-    "emailId": "19d5e75a1f9011b6",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": false,
-    "urgency": "medium",
-    "daysWithoutReply": 36,
-    "confidence": 0.86,
-    "originalSender": "Sergiy Loshkarov",
-    "originalSenderCompany": "Alerta Plus Ltd"
-  },
-  {
-    "emailId": "19d5e75f7c50d8e8",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 36,
-    "confidence": 0.88,
-    "originalSender": "Sergiy Loshkarov",
-    "originalSenderCompany": "Alerta Plus Ltd"
-  },
-  {
-    "emailId": "19d5e7668c6587bd",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": false,
-    "urgency": "medium",
-    "daysWithoutReply": 36,
-    "confidence": 0.9,
-    "originalSender": "Alexey Chirko",
-    "originalSenderCompany": "MB Navigation S.A."
-  },
-  {
-    "emailId": "19d5e77730e6489b",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": false,
-    "urgency": "medium",
-    "daysWithoutReply": 36,
-    "confidence": 0.91,
-    "originalSender": "Allimar Chartering",
-    "originalSenderCompany": "Allimar Shipbrokers s.r.l."
-  },
-  {
-    "emailId": "19d5e77ccc974c03",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": false,
-    "urgency": "medium",
-    "daysWithoutReply": 36,
-    "confidence": 0.9,
-    "originalSender": "Allimar Shipbrokers srl",
-    "originalSenderCompany": "Allimar Shipbrokers s.r.l."
-  },
-  {
-    "emailId": "19d5e78427ad130a",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 36,
-    "confidence": 0.9,
-    "originalSender": "Altan Kaymaz",
-    "originalSenderCompany": "Nautical Bulk Carriers S.A."
-  },
-  {
-    "emailId": "19d5e79432c6caf9",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": false,
-    "urgency": "medium",
-    "daysWithoutReply": 36,
-    "confidence": 0.9,
-    "originalSender": "Augusta Shipping India",
-    "originalSenderCompany": "Augusta Shipping India"
-  },
-  {
-    "emailId": "19e07c3f2dc72d95",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "Tasos Koumanis",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e07c446224acf1",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "Ahmet YILDIZ",
-    "originalSenderCompany": "FEYZ GROUP"
-  },
-  {
-    "emailId": "19e07c482e65e378",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "TASOS KOUMANIS",
-    "originalSenderCompany": "NIAVIGRAINS TRADING CHARTERING S.A."
-  },
-  {
-    "emailId": "19e07c4bb3fee039",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.88,
-    "originalSender": "Capt. Mohamed Elsharkawy",
-    "originalSenderCompany": "Elsharkawy Maritime & Logistics Co"
-  },
-  {
-    "emailId": "19e07c5000b8200e",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "Berk",
-    "originalSenderCompany": "MOST SHIPPING"
-  },
-  {
-    "emailId": "19e07c53928a4333",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "TONY",
-    "originalSenderCompany": "PACIFIC & ATLANTIC SHIPBROKERS - SINGAPORE"
-  },
-  {
-    "emailId": "19e07c58567fa635",
-    "category": "OTHER",
+    "emailId": "sample-30",
+    "category": "DOCUMENT",
     "isUnanswered": false,
     "urgency": "low",
     "daysWithoutReply": null,
-    "confidence": 0.91,
-    "originalSender": "sales10@oceanquoter.com",
-    "originalSenderCompany": null
+    "confidence": 1.0,
+    "originalSender": "DHL Express <docsupport@dhl.com>",
+    "originalSenderCompany": "DHL Express"
   },
   {
-    "emailId": "19e07c5b023cf374",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "TONY",
-    "originalSenderCompany": "PACIFIC & ATLANTIC SHIPBROKERS - SINGAPORE"
-  },
-  {
-    "emailId": "19e07c5f0379415b",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "Abdulvehhab Ozmen",
-    "originalSenderCompany": "Steel&Bulk Singapore Pte Ltd"
-  },
-  {
-    "emailId": "19e07c6291acbfd4",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.91,
-    "originalSender": "BA Chartering Istanbul",
-    "originalSenderCompany": "BA Chartering Istanbul"
-  },
-  {
-    "emailId": "19e07c65c31852c7",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.85,
-    "originalSender": "MIKE TERZIOGLOU",
-    "originalSenderCompany": "TRANSOCEAN SHIPPING COMPANY S.A GREECE"
-  },
-  {
-    "emailId": "19e07c68d1a6c54a",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.85,
-    "originalSender": "MIKE TERZIOGLOU",
-    "originalSenderCompany": "TRANSOCEAN SHIPPING COMPANY S.A GREECE"
-  },
-  {
-    "emailId": "19e07c6ce81f694d",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.9,
-    "originalSender": "Maral Gouda",
-    "originalSenderCompany": "VARAMAR SHIPPING DMCC"
-  },
-  {
-    "emailId": "19e07c733f3b71ae",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 4,
-    "confidence": 0.92,
-    "originalSender": "Mehmet Ali Lapaoglu",
-    "originalSenderCompany": "DURUCHART"
-  },
-  {
-    "emailId": "19e07c76863e8702",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 4,
-    "confidence": 0.9,
-    "originalSender": "ELENA IND. & COMM.CO., PE",
-    "originalSenderCompany": "ELENA IND. & COMM.CO., PE"
-  },
-  {
-    "emailId": "19e07c79d78505e4",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 4,
-    "confidence": 0.9,
-    "originalSender": "Ahmet Bozkurt / Halil Ersoz",
-    "originalSenderCompany": "SONAY SHIPPING AS"
-  },
-  {
-    "emailId": "19e07c7d8deafc02",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 4,
-    "confidence": 0.91,
-    "originalSender": "TAKIS KAPETANIOS",
-    "originalSenderCompany": "NIAVIGRAINS TRADING CHARTERING S.A."
-  },
-  {
-    "emailId": "19e07c809393ff78",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 4,
-    "confidence": 0.92,
-    "originalSender": "Mehmet Ali Lapaoglu",
-    "originalSenderCompany": "DURUCHART"
-  },
-  {
-    "emailId": "19e07c837ba011a2",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 4,
-    "confidence": 0.92,
-    "originalSender": "TAKIS KAPETANIOS",
-    "originalSenderCompany": "NIAVIGRAINS TRADING CHARTERING S.A."
-  },
-  {
-    "emailId": "19e07c8807c18d8c",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 4,
-    "confidence": 0.93,
-    "originalSender": "FeyzGroup",
-    "originalSenderCompany": "FEYZ GROUP"
-  },
-  {
-    "emailId": "19e07c8d8f66d4aa",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.91,
-    "originalSender": "Osman VARLIK / Nilufer TOMBEK",
-    "originalSenderCompany": "PACIFIC LOGISTICS GROUP AND SHIPPING CO.INC."
-  },
-  {
-    "emailId": "19e07c91571317d9",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "Pacific Chartering - Istanbul"
-  },
-  {
-    "emailId": "19e07c9fb6a61008",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "Oner Tokcan",
-    "originalSenderCompany": "Nautical Bulk Carriers S.A."
-  },
-  {
-    "emailId": "19e07ca31cff6b2a",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "Mevlut Ceviker",
-    "originalSenderCompany": "Nautical Bulk Carriers S.A."
-  },
-  {
-    "emailId": "19e07ca65bfe786c",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "Mehmet Ali Lapaoglu",
-    "originalSenderCompany": "DURUCHART"
-  },
-  {
-    "emailId": "19e07caab607dfe5",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "Takis Kapetanios",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e07cbe0a94b74c",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "Takis Kapetanios",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e07cc094fc3aa2",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "Tasos Koumanis",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e07cc3ba833475",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "Tasos Koumanis",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e07cd18529fb77",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "Mustafa SAY",
-    "originalSenderCompany": "BA Chartering Istanbul"
-  },
-  {
-    "emailId": "19e07cd53642b24c",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.9,
-    "originalSender": "Mike Terzioglou",
-    "originalSenderCompany": "Transocean Shipping Company S.A."
-  },
-  {
-    "emailId": "19e07cd83bad47a5",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "Tasos Koumanis",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e07cdb7df50d0f",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "Mert Ekmekci",
-    "originalSenderCompany": "Hope Chartering"
-  },
-  {
-    "emailId": "19e07cde4af25d45",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "Mert Kalafat",
-    "originalSenderCompany": "DURUCHART"
-  },
-  {
-    "emailId": "19e07ce171ab8e10",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "Takis Kapetanios",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e07ce5f2f18300",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.88,
-    "originalSender": "USL",
-    "originalSenderCompany": "Unimar Service Limited"
-  },
-  {
-    "emailId": "19e07ce84fc34a82",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "USL",
-    "originalSenderCompany": "Unimar Service Limited"
-  },
-  {
-    "emailId": "19e07ceac0ca69dc",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "Takis Kapetanios",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e07cf3d4f572fc",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "Takis Kapetanios",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e07cf877558fdc",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "Elsharkawy Maritime & Logistics Co"
-  },
-  {
-    "emailId": "19e07d815dd6691c",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "Elsharkawy Maritime & Logistics Co"
-  },
-  {
-    "emailId": "19e07cfaa34cc768",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e07cfdf63e232b",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "Mert Kalafat",
-    "originalSenderCompany": "DURUCHART"
-  },
-  {
-    "emailId": "19e07d011dbc661e",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "Elena ICC, PE",
-    "originalSenderCompany": "ELENA IND. & COMM.CO., PE"
-  },
-  {
-    "emailId": "19e07d056d1ba5aa",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "Mathew",
-    "originalSenderCompany": "TLMARINECO"
-  },
-  {
-    "emailId": "19e07d08a2829481",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "Capt. Mohamed Elsharkawy",
-    "originalSenderCompany": "Elsharkawy Maritime & Logistics Co"
-  },
-  {
-    "emailId": "19e07d0cb83503c5",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "Prime Maritime"
-  },
-  {
-    "emailId": "19e07d0f8e19df79",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "Mert Ekmekci",
-    "originalSenderCompany": "Hope Chartering"
-  },
-  {
-    "emailId": "19e07d149d83b38a",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "Tasos Koumanis",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e07d186df6a788",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "Mehmet Ali Lapaoglu",
-    "originalSenderCompany": "DURUCHART"
-  },
-  {
-    "emailId": "19e07d1b2ba77051",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "Ahmet YILDIZ",
-    "originalSenderCompany": "FEYZ GROUP"
-  },
-  {
-    "emailId": "19e07d1ec45291d1",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "Tony",
-    "originalSenderCompany": "Pacific & Atlantic Shipbrokers - Singapore"
-  },
-  {
-    "emailId": "19e07d2ac4a815b4",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "Takis Kapetanios",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e07d3145be13c8",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "LIBRA Shipping Company Ltd.",
-    "originalSenderCompany": "LIBRA Shipping Company Ltd."
-  },
-  {
-    "emailId": "19e07d3581dc9d89",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "Tasos Koumanis",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e07d37f2c8cd77",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "Ismail Akkas",
-    "originalSenderCompany": "DURUCHART"
-  },
-  {
-    "emailId": "19e07d3b74116bae",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.88,
-    "originalSender": "USL",
-    "originalSenderCompany": "UNIMAR SERVICE LIMITED"
-  },
-  {
-    "emailId": "19e07d3d91481ec3",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.88,
-    "originalSender": "USL",
-    "originalSenderCompany": "UNIMAR SERVICE LIMITED"
-  },
-  {
-    "emailId": "19e07d4069745393",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "Takis Kapetanios",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e07d4742474163",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "Oner Tokcan",
-    "originalSenderCompany": "Nautical Bulk Carriers S.A."
-  },
-  {
-    "emailId": "19e07d49ee39a1cc",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "GN GROUP CORPORATION"
-  },
-  {
-    "emailId": "19e07d4ca1ca18ff",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "GN GROUP CORPORATION"
-  },
-  {
-    "emailId": "19e07d4f102b639b",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "NIAVIGRAINS TRADING CHARTERING S.A."
-  },
-  {
-    "emailId": "19e07d517de73b94",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "SONAY SHIPPING AS"
-  },
-  {
-    "emailId": "19e07d53e7d46b71",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "Aykin Deniz Nakliyat A.S."
-  },
-  {
-    "emailId": "19e07d5b25766951",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "Sherif Shaaban",
-    "originalSenderCompany": "NIAVIGRAINS TRADING CHARTERING S.A."
-  },
-  {
-    "emailId": "19e07d5e7f039766",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "Harmanda Denizcilik ve Ticaret LTD ŞTİ"
-  },
-  {
-    "emailId": "19e07d64793f8971",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "NIAVIGRAINS TRADING CHARTERING S.A."
-  },
-  {
-    "emailId": "19e07d6a749ba5ec",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.91,
-    "originalSender": "Sherif Shaaban",
-    "originalSenderCompany": "DURUCHART"
-  },
-  {
-    "emailId": "19e07d718417e96d",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "Multiservice Shipping and Trading Corp."
-  },
-  {
-    "emailId": "19e07d75e8a30c1c",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "Nautical Bulk Carriers S.A."
-  },
-  {
-    "emailId": "19e07d79d068826a",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.88,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "Nautical Bulk Carriers S.A."
-  },
-  {
-    "emailId": "19e07d7c0f5b66c5",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "Kiev Shipping Ltd"
-  },
-  {
-    "emailId": "19e07d7e79fa7242",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "NIAVIGRAINS TRADING CHARTERING S.A."
-  },
-  {
-    "emailId": "19e07d842ae91302",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "PACIFIC & ATLANTIC SHIPBROKERS"
-  },
-  {
-    "emailId": "19e07d8a6370f3a1",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "PACIFIC & ATLANTIC SHIPBROKERS"
-  },
-  {
-    "emailId": "19e07d8d14a945d1",
-    "category": "TCT_REQUEST",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "PACIFIC & ATLANTIC SHIPBROKERS"
-  },
-  {
-    "emailId": "19e07d8f8a2e5988",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "PACIFIC & ATLANTIC SHIPBROKERS"
-  },
-  {
-    "emailId": "19e07d9324b157fc",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.87,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "river ocean shipping limited"
-  },
-  {
-    "emailId": "19e089c866d595c7",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "FEYZ GROUP"
-  },
-  {
-    "emailId": "19e089cdd36d5901",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "NIAVIGRAINS TRADING CHARTERING S.A."
-  },
-  {
-    "emailId": "19e089d15179ef31",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "Halil ERSÖZ",
-    "originalSenderCompany": "Sonay Shipping AS"
-  },
-  {
-    "emailId": "19e089d2d810d075",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.95,
-    "originalSender": "Tasos Koumanis",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e089d65f53a56c",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "Ahmet T. Bozkurt",
-    "originalSenderCompany": "Sonay Shipping AS"
-  },
-  {
-    "emailId": "19e089d960261c91",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 3,
-    "confidence": 0.9,
-    "originalSender": "Halil ERSÖZ",
-    "originalSenderCompany": "Sonay Shipping AS"
-  },
-  {
-    "emailId": "19e089f3dc5f3033",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "low",
-    "daysWithoutReply": 3,
-    "confidence": 0.88,
-    "originalSender": "Ahmet YILDIZ",
-    "originalSenderCompany": "Feyz Group"
-  },
-  {
-    "emailId": "19e089f6040369fd",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "Tasos Koumanis",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e089f8eedde1bf",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "Aykin Deniz Nakliyat A.S."
-  },
-  {
-    "emailId": "19e089fc113c03c5",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "low",
-    "daysWithoutReply": 3,
-    "confidence": 0.88,
-    "originalSender": "VARAMAR",
-    "originalSenderCompany": "VARAMAR"
-  },
-  {
-    "emailId": "19e08a007eff29ab",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "low",
-    "daysWithoutReply": 3,
-    "confidence": 0.88,
-    "originalSender": "Korhan Akoz",
-    "originalSenderCompany": "Corebulk Shipping and Chartering Services Ltd"
-  },
-  {
-    "emailId": "19e08a05d472698a",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "UNIMAR SERVICE LIMITED"
-  },
-  {
-    "emailId": "19e08a0886a6e7d9",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "Mustafa Silan",
-    "originalSenderCompany": "GN GROUP CORPORATION"
-  },
-  {
-    "emailId": "19e08a0b4203a0c2",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "low",
-    "daysWithoutReply": 3,
-    "confidence": 0.8,
-    "originalSender": "Musa YUCE",
-    "originalSenderCompany": "Vina Chartering"
-  },
-  {
-    "emailId": "19e08a0e45dd6980",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "Osman Aslan",
-    "originalSenderCompany": "Harmanda Denizcilik ve Ticaret LTD ŞTİ"
-  },
-  {
-    "emailId": "19e08a1116eb9e50",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "low",
-    "daysWithoutReply": 3,
-    "confidence": 0.8,
-    "originalSender": "Musa YUCE",
-    "originalSenderCompany": "Vina Chartering"
-  },
-  {
-    "emailId": "19e08a163e396047",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "low",
-    "daysWithoutReply": 3,
-    "confidence": 0.88,
-    "originalSender": "Takis Kapetanios",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e08a1aca93585c",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "Ahmet YILDIZ",
-    "originalSenderCompany": "Feyz Group"
-  },
-  {
-    "emailId": "19e08a1fdbf28c11",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "low",
-    "daysWithoutReply": 3,
-    "confidence": 0.88,
-    "originalSender": "Takis Kapetanios",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e08a2360deb01b",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "low",
-    "daysWithoutReply": 3,
-    "confidence": 0.88,
-    "originalSender": "Takis Kapetanios",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e08a26402532a7",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "low",
-    "daysWithoutReply": 3,
-    "confidence": 0.88,
-    "originalSender": "Takis Kapetanios",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e09764c527253d",
-    "category": "TCT_REQUEST",
-    "isUnanswered": true,
-    "urgency": "low",
-    "daysWithoutReply": 3,
-    "confidence": 0.93,
-    "originalSender": "VARAMAR",
-    "originalSenderCompany": "VARAMAR"
-  },
-  {
-    "emailId": "19e09767a49f448a",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.9,
-    "originalSender": "Mariia Levandovska",
-    "originalSenderCompany": "Morska Zvezda d.o.o."
-  },
-  {
-    "emailId": "19e0976ad0f58119",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.88,
-    "originalSender": "Takis Kapetanios",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e0976e3eeb9c2b",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.88,
-    "originalSender": "Tasos Koumanis",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e097736f6fcbe9",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.88,
-    "originalSender": "Takis Kapetanios",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e09776821d2476",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.88,
-    "originalSender": "Tasos Koumanis",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e0977940338503",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.82,
-    "originalSender": "USL",
-    "originalSenderCompany": "Unimar Service Limited"
-  },
-  {
-    "emailId": "19e0977d3c8155ca",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.88,
-    "originalSender": "Takis Kapetanios",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e097888cdea89c",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.88,
-    "originalSender": "Michael Sobol-Pugachev",
-    "originalSenderCompany": "Marelis Navigation S.A."
-  },
-  {
-    "emailId": "19e0978b449211fb",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "Pamela Ateş",
-    "originalSenderCompany": "HKALKAVAN Shipping"
-  },
-  {
-    "emailId": "19e09795d905a46f",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "Ahmet Bozkurt / Halil Ersoz",
-    "originalSenderCompany": "Sonay Shipping AS"
-  },
-  {
-    "emailId": "19e09798df92cca7",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.9,
-    "originalSender": "Mert Kalafat",
-    "originalSenderCompany": "DURUCHART"
-  },
-  {
-    "emailId": "19e097a1fe67ba9a",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.88,
-    "originalSender": "Michael Sobol-Pugachev",
-    "originalSenderCompany": "Marelis Navigation S.A."
-  },
-  {
-    "emailId": "19e097a4da37efbc",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.9,
-    "originalSender": "Vladislav Datiy",
-    "originalSenderCompany": "Marelis Navigation S.A."
-  },
-  {
-    "emailId": "19e097ae5d6335c1",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.88,
-    "originalSender": "Mustafa Say",
-    "originalSenderCompany": "BA Chartering Istanbul"
-  },
-  {
-    "emailId": "19e097b0d6404a40",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.92,
-    "originalSender": "Yasar Meric / Mert Meric",
-    "originalSenderCompany": "MRC Shipping and Trading Co."
-  },
-  {
-    "emailId": "19e097b289230e5f",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.9,
-    "originalSender": "Oner Tokcan",
-    "originalSenderCompany": "Nautical Bulk Carriers S.A."
-  },
-  {
-    "emailId": "19e097b52ea0fd0e",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 3,
-    "confidence": 0.88,
-    "originalSender": "Mustafa Say",
-    "originalSenderCompany": "BA Chartering Istanbul"
-  },
-  {
-    "emailId": "19e0f50b19f0c25b",
-    "category": "CARGO_INQUIRY",
-    "isUnanswered": true,
-    "urgency": "high",
-    "daysWithoutReply": 1,
-    "confidence": 0.9,
-    "originalSender": "Takis Kapetanios",
-    "originalSenderCompany": "Niavigrains Trading Chartering S.A."
-  },
-  {
-    "emailId": "19e0f511bb7c6d0c",
-    "category": "OTHER",
+    "emailId": "sample-31",
+    "category": "DOCUMENT",
     "isUnanswered": false,
     "urgency": "low",
     "daysWithoutReply": null,
-    "confidence": 0.95,
-    "originalSender": "shipping",
-    "originalSenderCompany": "ibroker.world"
+    "confidence": 1.0,
+    "originalSender": "Port Constanta Authority <docs@portconstanta.ro>",
+    "originalSenderCompany": "Port Constanta Authority"
   },
   {
-    "emailId": "19e0f518e6d7610d",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": true,
-    "urgency": "medium",
-    "daysWithoutReply": 21,
-    "confidence": 0.92,
-    "originalSender": "Hossam Khalil",
-    "originalSenderCompany": "Sea Scanner Logistics for Shipping S.A.E"
-  },
-  {
-    "emailId": "19e0f51c5410d5d2",
-    "category": "VESSEL_POSITION",
+    "emailId": "sample-32",
+    "category": "VESSEL_CERTIFICATE",
     "isUnanswered": false,
-    "urgency": "medium",
-    "daysWithoutReply": 1,
-    "confidence": 0.9,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "Aykin Deniz Nakliyat A.S."
-  },
-  {
-    "emailId": "19e0f51ea1cd9364",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": false,
-    "urgency": "medium",
-    "daysWithoutReply": 1,
-    "confidence": 0.88,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "Sea Scanner Logistics for Shipping S.A.E"
-  },
-  {
-    "emailId": "19e0f521228afe4c",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": false,
-    "urgency": "medium",
-    "daysWithoutReply": 1,
-    "confidence": 0.85,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "Visser & Visser Chartering BV"
-  },
-  {
-    "emailId": "19e0f52832c715da",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": false,
-    "urgency": "medium",
-    "daysWithoutReply": 1,
-    "confidence": 0.87,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "Beyond Multimodal Logistics"
-  },
-  {
-    "emailId": "19e0f52e0e064a3c",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": false,
-    "urgency": "medium",
-    "daysWithoutReply": 1,
-    "confidence": 0.85,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "atombulk ship chartering"
-  },
-  {
-    "emailId": "19e0f531898504ce",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": false,
-    "urgency": "medium",
-    "daysWithoutReply": 1,
-    "confidence": 0.85,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "atombulk ship chartering"
-  },
-  {
-    "emailId": "19e0f53423e78f5f",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": false,
-    "urgency": "medium",
-    "daysWithoutReply": 1,
-    "confidence": 0.85,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "atombulk ship chartering"
-  },
-  {
-    "emailId": "19e0f537ac896745",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": false,
-    "urgency": "medium",
-    "daysWithoutReply": 1,
-    "confidence": 0.87,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "Midway shipping and chartering"
-  },
-  {
-    "emailId": "19e0f544fba5e7ab",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": false,
-    "urgency": "medium",
-    "daysWithoutReply": 1,
-    "confidence": 0.88,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "WAMAR MARITIME CO."
-  },
-  {
-    "emailId": "19e0f54a2c261266",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": false,
-    "urgency": "medium",
-    "daysWithoutReply": 1,
-    "confidence": 0.87,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "MOLINA SHIPPING & PROJECT"
-  },
-  {
-    "emailId": "19e0f54e1bbca506",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": false,
-    "urgency": "medium",
-    "daysWithoutReply": 1,
-    "confidence": 0.87,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "Elkenz Maritime"
-  },
-  {
-    "emailId": "19e0f555a7fb2be5",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": false,
-    "urgency": "medium",
-    "daysWithoutReply": 1,
-    "confidence": 0.82,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "BBC Chartering Genoa S.U.R.L."
-  },
-  {
-    "emailId": "19e0f559b2252e15",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": false,
-    "urgency": "medium",
-    "daysWithoutReply": 1,
-    "confidence": 0.87,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "Nora Marine"
-  },
-  {
-    "emailId": "19e0f55e3bcf9a28",
-    "category": "VESSEL_POSITION",
-    "isUnanswered": false,
-    "urgency": "medium",
-    "daysWithoutReply": 1,
-    "confidence": 0.87,
-    "originalSender": "ETMS - Management",
-    "originalSenderCompany": "Bita Shipping Ltd."
+    "urgency": "low",
+    "daysWithoutReply": null,
+    "confidence": 1.0,
+    "originalSender": "DNV GL <certificates@dnvgl.com>",
+    "originalSenderCompany": "DNV GL"
   }
 ]
