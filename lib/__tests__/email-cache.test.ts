@@ -91,4 +91,25 @@ describe("email-cache", () => {
     const db = freshDb();
     expect(getCachedParses("acc", "cargo", "v1", [], db).size).toBe(0);
   });
+
+  it("getCachedParses skips corrupt result_json rows without throwing", () => {
+    const db = freshDb();
+    // Insert a valid row
+    saveParsedResults("acc", "cargo", "v1", [{ gmailMessageId: "m1", items: [{ a: 1 }] }], db);
+    // Manually insert a row with invalid JSON
+    db.prepare(
+      `INSERT INTO parsed_results
+         (account_id, gmail_message_id, parse_type, parser_version, result_json, parsed_at)
+       VALUES (?, ?, ?, ?, ?, datetime('now'))`
+    ).run("acc", "m2", "cargo", "v1", "{not json");
+
+    let result: Map<string, unknown>;
+    expect(() => {
+      result = getCachedParses("acc", "cargo", "v1", ["m1", "m2"], db);
+    }).not.toThrow();
+    // The valid row is still returned
+    expect(result!.get("m1")).toEqual([{ a: 1 }]);
+    // The corrupt row is treated as a cache miss
+    expect(result!.has("m2")).toBe(false);
+  });
 });

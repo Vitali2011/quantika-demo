@@ -352,15 +352,13 @@ describe("Boundary inputs (FA-6)", () => {
       "INSERT INTO parsed_results (account_id, gmail_message_id, parse_type, parser_version, result_json, parsed_at) VALUES (?,?,?,?,?, datetime('now'))"
     ).run("acc@example.com", "m-corrupt", "cargo", "v1", "NOT_VALID_JSON{{{");
 
-    // getCachedParses will call JSON.parse on the corrupt row — this should throw
-    // Currently there is NO try/catch around JSON.parse in getCachedParses (email-cache.ts:35)
-    // This demonstrates the bug: corrupt DB data crashes the route
-    expect(() =>
-      getCachedParses("acc@example.com", "cargo", "v1", ["m-corrupt"], db)
-    ).toThrow();
-    // NOTE: This test documents that getCachedParses has NO defensive JSON.parse
-    // guard. A corrupt row (hardware error, manual admin edit, or future migration bug)
-    // will crash ALL parse routes that hit the cache. Severity: MEDIUM.
+    // FIXED: getCachedParses now wraps JSON.parse in try/catch per row.
+    // A corrupt row is treated as a cache miss — does NOT throw.
+    let result: Map<string, unknown>;
+    expect(() => {
+      result = getCachedParses("acc@example.com", "cargo", "v1", ["m-corrupt"], db);
+    }).not.toThrow();
+    expect(result!.has("m-corrupt")).toBe(false);
   });
 
   it("large number of message IDs (1000) is handled without SQLite variable limit error", () => {

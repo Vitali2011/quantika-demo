@@ -32,7 +32,11 @@ export function getCachedParses<T>(
     result_json: string;
   }[];
   for (const row of rows) {
-    map.set(row.gmail_message_id, JSON.parse(row.result_json) as T[]);
+    try {
+      map.set(row.gmail_message_id, JSON.parse(row.result_json) as T[]);
+    } catch {
+      console.warn(`[email-cache] Skipping corrupt result_json for message ${row.gmail_message_id}`);
+    }
   }
   return map;
 }
