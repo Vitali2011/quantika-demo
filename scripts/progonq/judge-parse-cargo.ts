@@ -2,9 +2,11 @@
 /**
  * Opus-judge scorer for parse-cargo results.
  *
- * Reads .progonq/results/etms-parse-cargo-<round>.json, finds item-pairs
- * that string-scorer marked route_match=false, asks Opus 4.7 (Bedrock)
- * whether the pair is semantically equivalent in chartering context.
+ * Reads .progonq/results/etms-parse-cargo-<round>.json, judges field pairs
+ * that need semantic comparison (ports via chartering broker rubric,
+ * cargo_description and laycan via field-specific rubrics).
+ * Deterministic fields (weight_mt, commission_percent) are read directly
+ * from the runner's boolean flags.
  *
  * Cache: .progonq/cache/judge-cache.json — keyed by sha256(ref||model).
  *
@@ -31,7 +33,20 @@ interface ItemMatchResult {
   model_origin: string | null;
   model_dest: string | null;
   route_match: boolean;
+  weight_match?: boolean;
+  commission_match?: boolean;
+  ref_commodity?: string | null;
+  model_commodity?: string | null;
+  ref_laycan?: string | null;
+  model_laycan?: string | null;
   semantic_route_match?: boolean;
+  semantic_field_match?: {
+    ports: boolean;
+    weight: boolean;
+    cargo_description: boolean;
+    laycan: boolean;
+    commission: boolean;
+  };
   // Raw (un-normalized) strings — prefer these for judge to avoid normalization artifacts
   ref_origin_raw?: string | null;
   ref_dest_raw?: string | null;
@@ -98,11 +113,26 @@ EXPECTED OUTPUT DISTINCTIONS:
 
 Reply ONLY with JSON: {"equiv": true | false, "reason": "one short sentence"}`;
 
-async function judgePair(ref: string | null, model: string | null): Promise<JudgeVerdict> {
+const CARGO_DESC_JUDGE_SYSTEM = `You are scoring whether two cargo descriptions from a shipping broker email describe THE SAME cargo.
+Focus on: commodity type, packaging, and material attributes (stowage factor, dimensions, vessel/hold requirements).
+IGNORE: wording, word order, prepositions, punctuation, sentence vs noun-phrase form.
+Examples of EQUIVALENT: "Bagged rice, 50 kg bags" / "Bagged rice in 50 kg polypropylene bags"; "Steel, stowage equals deadweight" / "Steel products, stw dwt".
+Examples of NOT equivalent: different commodity; a materially different stowage factor; one side omits a stated vessel/hold requirement the other includes.
+Null on both sides = equivalent. Null on one side, described cargo on the other = NOT equivalent.
+Reply ONLY with JSON: {"equiv": true | false, "reason": "one short sentence"}`;
+
+const LAYCAN_JUDGE_SYSTEM = `You are scoring whether two laycan (date-range) values from a shipping broker email describe THE SAME laycan.
+Treat as EQUIVALENT any format differences for the same date range: "09/13 February 2026" = "9-13 Feb 2026" = "Feb 9-13, 2026".
+Treat vague/relative forms as equivalent only when they clearly mean the same window: "first half of May 2026" = "1-15 May 2026"; "spot prompt" = "spot / prompt".
+NOT equivalent: different date ranges; one side specific, the other a different vague window.
+Null on both sides = equivalent. Null on one side, a date on the other = NOT equivalent.
+Reply ONLY with JSON: {"equiv": true | false, "reason": "one short sentence"}`;
+
+async function judgePair(ref: string | null, model: string | null, system: string): Promise<JudgeVerdict> {
   if (ref === model) return { equiv: true, reason: 'identical strings' };
   const userMsg = `REF:   ${JSON.stringify(ref)}\nMODEL: ${JSON.stringify(model)}`;
   try {
-    const raw = await callAiText('PARSE_CARGO_JUDGE', JUDGE_SYSTEM, userMsg, {
+    const raw = await callAiText('PARSE_CARGO_JUDGE', system, userMsg, {
       maxTokens: 200,
       timeoutMs: 30_000,
     });
@@ -133,45 +163,78 @@ async function main() {
     const verdicts: Array<{ pair: string; ref: string; model: string; equiv: boolean; reason: string }> = [];
     let semanticMatches = 0;
     const total = r.item_matches.length;
+
     for (const m of r.item_matches) {
-      if (m.route_match) {
+      // --- PORT field ---
+      let portsMatch = m.route_match;
+      if (!m.route_match) {
+        // Prefer raw (un-normalized) strings so judge sees original text.
+        // Fallback to normalized for results produced before raw-values were added.
+        const refOriginJ = m.ref_origin_raw ?? m.ref_origin;
+        const modelOriginJ = m.model_origin_raw ?? m.model_origin;
+        const refDestJ = m.ref_dest_raw ?? m.ref_dest;
+        const modelDestJ = m.model_dest_raw ?? m.model_dest;
+
+        // Port cache keys use UNprefixed pairKey to preserve backward-compat with existing cache.
+        const origPair = pairKey(refOriginJ, modelOriginJ);
+        const destPair = pairKey(refDestJ, modelDestJ);
+
+        let origV = cache.get(origPair);
+        if (!origV) {
+          await new Promise((res) => setTimeout(res, 800));
+          origV = await judgePair(refOriginJ, modelOriginJ, JUDGE_SYSTEM);
+          cache.set(origPair, origV);
+          saveCache(cache);
+          pairsJudged++;
+        } else pairsCached++;
+
+        let destV = cache.get(destPair);
+        if (!destV) {
+          await new Promise((res) => setTimeout(res, 800));
+          destV = await judgePair(refDestJ, modelDestJ, JUDGE_SYSTEM);
+          cache.set(destPair, destV);
+          saveCache(cache);
+          pairsJudged++;
+        } else pairsCached++;
+
+        portsMatch = origV.equiv && destV.equiv;
+        m.semantic_route_match = portsMatch;
+        verdicts.push({ pair: 'origin', ref: refOriginJ ?? '', model: modelOriginJ ?? '', equiv: origV.equiv, reason: origV.reason });
+        verdicts.push({ pair: 'dest', ref: refDestJ ?? '', model: modelDestJ ?? '', equiv: destV.equiv, reason: destV.reason });
+      } else {
         m.semantic_route_match = true;
-        semanticMatches++;
-        continue;
       }
-      // Prefer raw (un-normalized) strings so judge sees original text.
-      // Fallback to normalized for results produced before raw-values were added.
-      const refOriginJ = m.ref_origin_raw ?? m.ref_origin;
-      const modelOriginJ = m.model_origin_raw ?? m.model_origin;
-      const refDestJ = m.ref_dest_raw ?? m.ref_dest;
-      const modelDestJ = m.model_dest_raw ?? m.model_dest;
+      if (portsMatch) semanticMatches++;
 
-      const origPair = pairKey(refOriginJ, modelOriginJ);
-      const destPair = pairKey(refDestJ, modelDestJ);
-
-      let origV = cache.get(origPair);
-      if (!origV) {
+      // --- CARGO DESCRIPTION field — prefixed key avoids port-cache collisions ---
+      const cargoKey = pairKey('cargodesc:' + (m.ref_commodity ?? ''), m.model_commodity ?? null);
+      let cargoV = cache.get(cargoKey);
+      if (!cargoV) {
         await new Promise((res) => setTimeout(res, 800));
-        origV = await judgePair(refOriginJ, modelOriginJ);
-        cache.set(origPair, origV);
+        cargoV = await judgePair(m.ref_commodity ?? null, m.model_commodity ?? null, CARGO_DESC_JUDGE_SYSTEM);
+        cache.set(cargoKey, cargoV);
         saveCache(cache);
         pairsJudged++;
       } else pairsCached++;
 
-      let destV = cache.get(destPair);
-      if (!destV) {
+      // --- LAYCAN field ---
+      const laycanKey = pairKey('laycan:' + (m.ref_laycan ?? ''), m.model_laycan ?? null);
+      let laycanV = cache.get(laycanKey);
+      if (!laycanV) {
         await new Promise((res) => setTimeout(res, 800));
-        destV = await judgePair(refDestJ, modelDestJ);
-        cache.set(destPair, destV);
+        laycanV = await judgePair(m.ref_laycan ?? null, m.model_laycan ?? null, LAYCAN_JUDGE_SYSTEM);
+        cache.set(laycanKey, laycanV);
         saveCache(cache);
         pairsJudged++;
       } else pairsCached++;
 
-      const semanticMatch = origV.equiv && destV.equiv;
-      m.semantic_route_match = semanticMatch;
-      if (semanticMatch) semanticMatches++;
-      verdicts.push({ pair: 'origin', ref: refOriginJ ?? '', model: modelOriginJ ?? '', equiv: origV.equiv, reason: origV.reason });
-      verdicts.push({ pair: 'dest', ref: refDestJ ?? '', model: modelDestJ ?? '', equiv: destV.equiv, reason: destV.reason });
+      m.semantic_field_match = {
+        ports: portsMatch,
+        weight: m.weight_match ?? false,
+        cargo_description: cargoV.equiv,
+        laycan: laycanV.equiv,
+        commission: m.commission_match ?? false,
+      };
     }
 
     r.judge_verdicts = verdicts;
@@ -179,11 +242,34 @@ async function main() {
   }
 
   writeFileSync(resultsPath, JSON.stringify(results, null, 2));
+
+  // Backward-compat summary
   const fullSemantic = results.filter((r) => (r.semantic_match_rate ?? 0) === 1).length;
   const fullString = results.filter((r) => r.route_match_rate === 1).length;
   console.error(`[judge] pairs_judged=${pairsJudged} cached=${pairsCached}`);
-  console.error(`[judge] string_full=${fullString}/${results.length} (${(fullString/results.length*100).toFixed(1)}%)`);
-  console.error(`[judge] semantic_full=${fullSemantic}/${results.length} (${(fullSemantic/results.length*100).toFixed(1)}%)`);
+  console.error(`[judge] string_full=${fullString}/${results.length} (${(fullString / results.length * 100).toFixed(1)}%)`);
+  console.error(`[judge] semantic_full=${fullSemantic}/${results.length} (${(fullSemantic / results.length * 100).toFixed(1)}%)`);
+
+  // Per-field aggregation
+  const FIELDS = ['ports', 'weight', 'cargo_description', 'laycan', 'commission'] as const;
+  const fieldTotals: Record<string, { match: number; total: number }> = {};
+  for (const f of FIELDS) fieldTotals[f] = { match: 0, total: 0 };
+  for (const r of results) {
+    for (const m of r.item_matches) {
+      const sfm = m.semantic_field_match;
+      if (!sfm) continue;
+      for (const f of FIELDS) {
+        fieldTotals[f].total++;
+        if (sfm[f]) fieldTotals[f].match++;
+      }
+    }
+  }
+  console.error('[judge] per-field accuracy:');
+  for (const f of FIELDS) {
+    const { match, total } = fieldTotals[f];
+    const pct = total === 0 ? 'n/a' : (match / total * 100).toFixed(1) + '%';
+    console.error(`  ${f.padEnd(20)} ${match}/${total} (${pct})`);
+  }
 }
 
 main().catch((e) => { console.error('FATAL', e); process.exit(1); });
