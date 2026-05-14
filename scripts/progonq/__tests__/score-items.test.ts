@@ -1,4 +1,4 @@
-import { scoreItems, normalizePort } from '../run-parse-cargo';
+import { scoreItems, normalizePort, extractItems } from '../run-parse-cargo';
 
 function makeItem(
   origin: string | null,
@@ -165,5 +165,23 @@ describe('scoreItems — raw-values fields', () => {
     expect(r.model_origin_raw).toBe('Ukraine port (unspecified)');
     // Normalized differ → route_match=false at string level (judge handles equivalence)
     expect(r.route_match).toBe(false);
+  });
+});
+
+describe('extractItems', () => {
+  it('shape 1: {items:[...]}', () => {
+    expect(extractItems({ items: [{ a: 1 }, { a: 2 }] })).toEqual([{ a: 1 }, { a: 2 }]);
+  });
+  it('shape 2: [{items:[...]}]', () => {
+    expect(extractItems([{ items: [{ a: 1 }] }])).toEqual([{ a: 1 }]);
+  });
+  it('shape 3: bare array of item objects', () => {
+    expect(extractItems([{ origin_port: { value: 'X' } }, { origin_port: { value: 'Y' } }]))
+      .toEqual([{ origin_port: { value: 'X' } }, { origin_port: { value: 'Y' } }]);
+  });
+  it('returns [] for null/garbage', () => {
+    expect(extractItems(null)).toEqual([]);
+    expect(extractItems('nope')).toEqual([]);
+    expect(extractItems({})).toEqual([]);
   });
 });

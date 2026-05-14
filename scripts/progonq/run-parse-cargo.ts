@@ -310,6 +310,25 @@ export function scoreItems(refItems: CargoItem[], modelItems: CargoItem[]): Item
   return results;
 }
 
+
+export function extractItems(raw: unknown): unknown[] {
+  if (Array.isArray(raw)) {
+    const first = raw[0] as { items?: unknown } | undefined;
+    if (first && typeof first === 'object' && !Array.isArray(first) && Array.isArray(first.items)) {
+      return raw.flatMap((w) => {
+        const items = (w as { items?: unknown })?.items;
+        return Array.isArray(items) ? items : [];
+      });
+    }
+    return raw;
+  }
+  if (raw && typeof raw === 'object') {
+    const items = (raw as { items?: unknown }).items;
+    if (Array.isArray(items)) return items;
+  }
+  return [];
+}
+
 async function runScenario(scenario: Scenario): Promise<RunResult> {
   const body = truncate(scenario.input.body, MAX_BODY_CHARS);
   const userPrompt = `From: ${scenario.input.from}\nSubject: ${scenario.input.subject}\nDate: ${scenario.input.date}\n\n${body}`;
@@ -331,8 +350,7 @@ async function runScenario(scenario: Scenario): Promise<RunResult> {
         model: process.env.PARSE_CARGO_GEMINI_MODEL,
       });
       const raw = extractJson(text);
-      const parsed = (Array.isArray(raw) ? raw[0] : raw) as ParsedOutput;
-      model_output = { items: Array.isArray(parsed?.items) ? parsed.items : [] };
+      model_output = { items: extractItems(raw) as ParsedOutput['items'] };
       break;
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
