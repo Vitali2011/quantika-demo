@@ -54,8 +54,10 @@ jest.mock('@/lib/knowledge/embeddings/retriever', () => ({
 
 // Mock flags
 const mockIsRagEnabled = jest.fn().mockReturnValue(false);
+const mockKnowledgeBackend = jest.fn().mockReturnValue('sqlite');
 jest.mock('@/lib/knowledge/flags', () => ({
   isRagEnabled: () => mockIsRagEnabled(),
+  knowledgeBackend: () => mockKnowledgeBackend(),
   ftsTableForSource: (slug: string) => `${slug}_fts`,
   vecTableForSource: (slug: string) => `${slug}_vec`,
 }));
@@ -208,6 +210,66 @@ describe('IMSBC RAG integration — parse-cargo (T08)', () => {
    */
   it('R4b: retrieve() returns empty [] → 200 without citation', async () => {
     mockIsRagEnabled.mockReturnValue(true);
+    mockRetrieve.mockResolvedValue([]);
+
+    const res = await POST(makeRequest());
+    const json = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(json).toHaveProperty('count');
+  });
+});
+
+// ── Vertex AI Search backend tests ───────────────────────────────────────────
+
+describe('IMSBC RAG with Vertex backend — parse-cargo endpoint', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockKnowledgeBackend.mockReturnValue('vertex');
+    mockIsRagEnabled.mockReturnValue(true);
+    mockRetrieve.mockResolvedValue([
+      {
+        content: 'IMSBC: Coal Group B — monitor for methane emission.',
+        metadata: {
+          source: 'imsbc',
+          section: 'Coal Group B',
+          id: 'imsbc-coal-b',
+          sourceUrl: 'https://example.com/imsbc/coal',
+          title: 'Coal Bulk Cargo',
+        },
+        distance: 0.10,
+        chunkId: 'vertex-imsbc-1',
+      },
+    ]);
+  });
+
+  it('VX-R1: vertex backend + coal cargo → retrieve() called with imsbc tables', async () => {
+    const res = await POST(makeRequest());
+
+    const imsbcCall = mockRetrieve.mock.calls.find(([, opts]) => opts?.vectorTable === 'imsbc_vec');
+    expect(imsbcCall).toBeDefined();
+    expect(imsbcCall![1].ftsTable).toBe('imsbc_fts');
+    expect(imsbcCall![1].topN).toBeGreaterThan(0);
+  });
+
+  it('VX-R2: vertex backend error → graceful degrade, 200 response', async () => {
+    mockRetrieve.mockRejectedValue(new Error('Vertex datastore not found'));
+
+    const res = await POST(makeRequest());
+
+    expect(res.status).toBe(200);
+  });
+
+  it('VX-R3: vertex backend + RAG disabled → retrieve() not called', async () => {
+    mockIsRagEnabled.mockReturnValue(false);
+
+    const res = await POST(makeRequest());
+
+    expect(res.status).toBe(200);
+    expect(mockRetrieve).not.toHaveBeenCalled();
+  });
+
+  it('VX-R4: vertex backend + empty results → 200 without citations', async () => {
     mockRetrieve.mockResolvedValue([]);
 
     const res = await POST(makeRequest());

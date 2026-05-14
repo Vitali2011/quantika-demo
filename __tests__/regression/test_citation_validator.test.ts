@@ -91,3 +91,95 @@ describe('F-5 regression: citation validator case-insensitive pattern', () => {
     expect(result).toBe(' text');
   });
 });
+
+// ─── Vertex AI Search metadata format compatibility ────────────────────────────
+
+describe('Vertex AI Search metadata format', () => {
+  it('VX-META-01: IMSBC chunk from Vertex with required metadata fields validates correctly', () => {
+    const vertexChunk: RetrievedChunk = {
+      content: 'Group A cargoes may liquefy...',
+      metadata: {
+        source: 'imsbc',
+        section: '3.1',
+        id: 'imsbc-doc-3.1',
+        sourceUrl: 'https://example.com/imsbc/ch3',
+        title: 'Group A Cargoes',
+      },
+      distance: 0.15,
+      chunkId: 'vertex-imsbc-3.1',
+    };
+
+    const result = validateCitations('[Source: IMSBC §3.1] text', [vertexChunk]);
+    expect(result).toBe('[Source: IMSBC §3.1] text');
+  });
+
+  it('VX-META-02: IGC chunk from Vertex validates correctly', () => {
+    const vertexChunk: RetrievedChunk = {
+      content: 'Fire detection systems...',
+      metadata: {
+        source: 'igc',
+        section: '7.2',
+        id: 'igc-doc-7.2',
+        sourceUrl: 'https://example.com/igc/ch7',
+        title: 'Fire Safety',
+      },
+      distance: 0.12,
+      chunkId: 'vertex-igc-7.2',
+    };
+
+    const result = validateCitations('[Source: IGC 7.2] text', [vertexChunk]);
+    expect(result).toBe('[Source: IGC 7.2] text');
+  });
+
+  it('VX-META-03: JWC chunk from Vertex with bulletinId validates [JWC-bulletinId] format', () => {
+    const vertexChunk: RetrievedChunk = {
+      content: 'War risk zone includes...',
+      metadata: {
+        source: 'jwc',
+        id: 'LMA-123',
+        bulletinId: 'LMA-123',
+        sourceUrl: 'https://example.com/jwc/LMA-123',
+        title: 'Black Sea War Risk Zone',
+      },
+      distance: 0.10,
+      chunkId: 'vertex-jwc-LMA-123',
+    };
+
+    const result = validateCitations('[JWC-LMA-123] text', [vertexChunk]);
+    expect(result).toBe('[JWC-LMA-123] text');
+  });
+
+  it('VX-META-04: JWC chunk checks both metadata.id and metadata.bulletinId', () => {
+    // Validator checks metadata.id === bulletinId OR metadata.bulletinId === bulletinId
+    const vertexChunkIdOnly: RetrievedChunk = {
+      content: 'War risk zone...',
+      metadata: {
+        source: 'jwc',
+        id: 'LMA-456',
+        // bulletinId not set
+      },
+      distance: 0.08,
+      chunkId: 'vertex-jwc-456',
+    };
+
+    const result = validateCitations('[JWC-LMA-456] text', [vertexChunkIdOnly]);
+    expect(result).toBe('[JWC-LMA-456] text');
+  });
+
+  it('VX-META-05: Vertex chunk with hallucinated section gets citation removed', () => {
+    const vertexChunk: RetrievedChunk = {
+      content: 'Some content',
+      metadata: {
+        source: 'imsbc',
+        section: '5.2',
+        id: 'imsbc-5.2',
+      },
+      distance: 0.20,
+      chunkId: 'vertex-imsbc-5.2',
+    };
+
+    // LLM hallucinates §99.9 not in retrieved chunks
+    const result = validateCitations('[Source: IMSBC §99.9] hallucinated text', [vertexChunk]);
+    expect(result).toBe(' hallucinated text');
+  });
+});

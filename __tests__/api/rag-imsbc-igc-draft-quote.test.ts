@@ -49,8 +49,10 @@ jest.mock('@/lib/knowledge/embeddings/retriever', () => ({
 }));
 
 const mockIsRagEnabled = jest.fn().mockReturnValue(false);
+const mockKnowledgeBackend = jest.fn().mockReturnValue('sqlite');
 jest.mock('@/lib/knowledge/flags', () => ({
   isRagEnabled: () => mockIsRagEnabled(),
+  knowledgeBackend: () => mockKnowledgeBackend(),
   ftsTableForSource: (slug: string) => `${slug}_fts`,
   vecTableForSource: (slug: string) => `${slug}_vec`,
 }));
@@ -246,5 +248,85 @@ describe('IMSBC + IGC RAG integration — draft-quote (T08/T09)', () => {
     // Citations are server-side prompt enrichment — NOT in response body
     expect(json.imsbcCitations).toBeUndefined();
     expect(json.igcCitations).toBeUndefined();
+  });
+});
+
+// ── Vertex AI Search backend tests ───────────────────────────────────────────
+
+describe('IMSBC + IGC RAG with Vertex backend — draft-quote', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockKnowledgeBackend.mockReturnValue('vertex');
+    mockIsRagEnabled.mockReturnValue(true);
+    mockRetrieve.mockResolvedValue([
+      {
+        content: 'IMSBC: Coal Group B — monitor for methane. Stowage factor 0.83-0.96 m³/t.',
+        metadata: {
+          source: 'imsbc',
+          section: 'Coal Group B',
+          id: 'imsbc-coal-b',
+          sourceUrl: 'https://example.com/imsbc/coal',
+          title: 'Coal Bulk Cargo',
+        },
+        distance: 0.12,
+        chunkId: 'vertex-imsbc-1',
+      },
+    ]);
+  });
+
+  it('VX-D1: vertex backend + coal cargo → retrieve() still called correctly', async () => {
+    mockGetSession.mockReturnValue(makeCoalSession() as unknown as ReturnType<typeof mockGetSession>);
+
+    await POST(makeRequest('email-coal-1', 'sess-coal-1'));
+
+    const imsbcCall = mockRetrieve.mock.calls.find(([, opts]) => opts?.vectorTable === 'imsbc_vec');
+    expect(imsbcCall).toBeDefined();
+    expect(imsbcCall![1].ftsTable).toBe('imsbc_fts');
+    expect(imsbcCall![1].topN).toBeGreaterThan(0);
+  });
+
+  it('VX-D2: vertex backend + grain cargo → retrieve() with igc_vec/igc_fts', async () => {
+    mockGetSession.mockReturnValue(makeGrainSession() as unknown as ReturnType<typeof mockGetSession>);
+    mockRetrieve.mockResolvedValue([
+      {
+        content: 'IGC Code Chapter 4: grain cargo moisture requirements.',
+        metadata: {
+          source: 'igc',
+          section: '4.1',
+          id: 'igc-4.1',
+          sourceUrl: 'https://example.com/igc/ch4',
+          title: 'Grain Cargo Requirements',
+        },
+        distance: 0.15,
+        chunkId: 'vertex-igc-1',
+      },
+    ]);
+
+    await POST(makeRequest('email-coal-1', 'sess-grain-1'));
+
+    const igcCall = mockRetrieve.mock.calls.find(([, opts]) => opts?.vectorTable === 'igc_vec');
+    expect(igcCall).toBeDefined();
+    expect(igcCall![1].ftsTable).toBe('igc_fts');
+  });
+
+  it('VX-D3: vertex backend error → graceful degrade still works', async () => {
+    mockGetSession.mockReturnValue(makeCoalSession() as unknown as ReturnType<typeof mockGetSession>);
+    mockRetrieve.mockRejectedValue(new Error('Vertex AI Search API error'));
+
+    const res = await POST(makeRequest('email-coal-1', 'sess-coal-1'));
+    const json = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(typeof json.draft).toBe('string');
+  });
+
+  it('VX-D4: vertex backend + RAG disabled → retrieve() not called', async () => {
+    mockIsRagEnabled.mockReturnValue(false);
+    mockGetSession.mockReturnValue(makeCoalSession() as unknown as ReturnType<typeof mockGetSession>);
+
+    const res = await POST(makeRequest('email-coal-1', 'sess-coal-1'));
+
+    expect(res.status).toBe(200);
+    expect(mockRetrieve).not.toHaveBeenCalled();
   });
 });
