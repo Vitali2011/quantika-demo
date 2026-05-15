@@ -19,6 +19,7 @@ import path from 'node:path';
 import { callAiText } from '@/lib/ai-provider';
 import { CARGO_INQUIRY_PARSER_PROMPT } from '@/lib/prompts/parse-cargo';
 import { compareNumericField } from './score-fields';
+import { PARSE_CARGO_SCHEMA } from '@/lib/schemas';
 
 const SCOPE = 'PARSE_CARGO';
 const MAX_BODY_CHARS = 5000;
@@ -364,6 +365,12 @@ async function runScenario(scenario: Scenario): Promise<RunResult> {
         temperature: 0,
         seed: 42,
         model: process.env.PARSE_CARGO_GEMINI_MODEL,
+        ...(process.env.PARSE_CARGO_THINKING_BUDGET
+          ? { thinkingBudget: Number(process.env.PARSE_CARGO_THINKING_BUDGET) }
+          : {}),
+        ...(process.env.PARSE_CARGO_USE_SCHEMA === '1'
+          ? { responseSchema: PARSE_CARGO_SCHEMA as Record<string, unknown> }
+          : {}),
       });
       const raw = extractJson(text);
       model_output = { items: extractItems(raw) as ParsedOutput['items'] };
@@ -435,6 +442,9 @@ async function main() {
   const pending = scenarios.filter((s) => !existing.has(s.id) || existing.get(s.id)?.error);
 
   console.error(`[run-parse-cargo] round=${round} total=${scenarios.length} pending=${pending.length}`);
+console.error(
+  `[run-parse-cargo] thinkingBudget=${process.env.PARSE_CARGO_THINKING_BUDGET ?? "off"} useSchema=${process.env.PARSE_CARGO_USE_SCHEMA === "1"}`
+);
 
   let done = 0;
   const results: RunResult[] = [...existing.values()].filter((r) => !r.error);
