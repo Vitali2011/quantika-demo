@@ -31,6 +31,10 @@
 
 import { test, expect, chromium, type Page, type BrowserContext } from '@playwright/test';
 
+// CI skip: this spec requires a headed browser (X server) and is intended for
+// manual visual QA only. It is automatically skipped in CI environments.
+test.skip(!!process.env.CI, 'Manual visual QA spec — requires X server (headed browser); skipped in CI');
+
 // ─── Env ─────────────────────────────────────────────────────────────────────
 
 const BASE_URL   = process.env.E2E_BASE_URL   ?? 'http://localhost:3000';
