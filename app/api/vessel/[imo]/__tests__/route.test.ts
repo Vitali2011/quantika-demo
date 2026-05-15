@@ -22,18 +22,20 @@ describe('GET /api/vessel/[imo]', () => {
     expect(typeof body.name).toBe('string');
   });
 
-  it('valid IMO from vessel-positions (CARBON LADY 9456783) → 200 + name parsed', async () => {
-    const res = await GET(makeReq('/api/vessel/9456783'), {
-      params: Promise.resolve({ imo: '9456783' }),
+  it('valid IMO present in vessel-positions corpus (8605480 / MV HASKAL) → 200 + name', async () => {
+    // After the ETMS-corpus migration (2026-05-14) the curated CARBON LADY
+    // sample-20 entry no longer exists. 8605480 (MV HASKAL) is one of 11
+    // IMOs present in the real ETMS vessel-position emails. The corpus
+    // emails use looser formatting than the V2 parser was designed for, so
+    // we only assert status + name presence — dwt/flag/built may be null.
+    const res = await GET(makeReq('/api/vessel/8605480'), {
+      params: Promise.resolve({ imo: '8605480' }),
     });
     expect(res.status).toBe(200);
     const body = await res.json();
-    expect(body.imo).toBe('9456783');
+    expect(body.imo).toBe('8605480');
     expect(typeof body.name).toBe('string');
-    expect(body.name).toMatch(/CARBON LADY/i);
-    expect(body.dwt).toBe(17500);
-    expect(body.flag).toBe('Marshall Islands');
-    expect(body.built_year).toBe(2001);
+    expect(body.name.length).toBeGreaterThan(0);
   });
 
   it('CII Grade D vessel → chartering_policy_reject:true', async () => {
@@ -45,7 +47,6 @@ describe('GET /api/vessel/[imo]', () => {
     if (body.cii_rating === 'D' || body.cii_rating === 'E') {
       expect(body.chartering_policy_reject).toBe(true);
     } else {
-      // Defensive — dataset rating drift would fail loudly.
       throw new Error(`Expected D/E for 9322180, got ${body.cii_rating}`);
     }
   });

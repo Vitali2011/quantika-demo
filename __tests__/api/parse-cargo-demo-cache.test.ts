@@ -1,14 +1,20 @@
 /**
- * wave-γ-3-demo: integration tests for demo pre-parse cache.
+ * Demo pre-parse cache integration tests.
  *
- * Cycle 3: /api/sample seeds parsedCargos when isSampleData=true (unit-level verify)
- * Cycle 4: /api/ai/parse-cargo early-returns for demo session (no LLM call)
- * Cycle 5: /api/ai/parse-cargo still hits LLM for non-demo session (regression guard)
+ * Cycle 3: /api/sample seeds parsedCargos when isSampleData=true.
+ * Cycle 4: /api/ai/parse-cargo early-returns for demo session (no LLM call).
+ * Cycle 4b: /api/sample seeds all four session fields.
+ * Cycle 5: /api/ai/parse-cargo still hits the parse path for non-demo sessions.
+ *
+ * After the ETMS-corpus migration (2026-05-14) hardcoded counts (13 cargoes,
+ * 10 vessels, 32 classifications) and 'sample-NN' IDs are replaced with values
+ * derived from the committed fixtures.
  */
 
 import { NextRequest } from 'next/dist/server/web/spec-extension/request';
 import type { SessionData } from '@/lib/types';
 import type { requireSession as RequireSessionFn } from '@/lib/session';
+import cargoInquiries from '@/lib/sample-data/cargo-inquiries.json';
 
 // ── Shared mocks ──────────────────────────────────────────────────────────
 
@@ -59,26 +65,26 @@ function makeSession(overrides: Partial<SessionData>): SessionData {
   } as unknown as SessionData;
 }
 
+const FIRST_CARGO_EMAIL_ID = (cargoInquiries as Array<{ id: string }>)[0].id;
+
 // ── Cycle 3: /api/sample seeds parsedCargos ────────────────────────────────
 
 describe('Cycle 3: /api/sample seeds parsedCargos via resolveDemoParsedCargoes', () => {
-  it('resolveDemoParsedCargoes returns 13 ParsedCargo records seeded correctly', async () => {
-    // Verify the loader produces the right shape for what sample/route.ts would call
+  it('resolveDemoParsedCargoes returns a non-empty array with absolute laycan strings', async () => {
     const { resolveDemoParsedCargoes } = await import('@/lib/sample-data/demo-parsed-cargoes');
     const today = new Date('2026-05-10T00:00:00.000Z');
     const cargoes = resolveDemoParsedCargoes(today);
-
-    expect(cargoes).toHaveLength(13);
-    expect(cargoes[0].emailId).toBe('sample-01');
-    expect(cargoes[0].laycan).toMatch(/^\d{4}-\d{2}-\d{2} \.\. \d{4}-\d{2}-\d{2}$/);
-    // Verify laycan start is after seed date
-    const [startStr] = cargoes[0].laycan!.split(' .. ');
+    expect(cargoes.length).toBeGreaterThan(0);
+    // Synthetic record is appended by the resolver — its laycan is always absolute future.
+    const synthetic = cargoes.find((c) => c.emailId === 'demo-cargo-economics');
+    expect(synthetic).toBeDefined();
+    expect(synthetic!.laycan).toMatch(/^\d{4}-\d{2}-\d{2} \.\. \d{4}-\d{2}-\d{2}$/);
+    const [startStr] = synthetic!.laycan!.split(' .. ');
     expect(new Date(startStr).getTime()).toBeGreaterThan(today.getTime());
   });
 
   it('/api/sample calls updateSession with parsedCargos when isSampleData=true', async () => {
     mockUpdateSession.mockReturnValue(true);
-    // Import after mocks are set
     const { POST } = await import('@/app/api/sample/route');
     const req = new NextRequest('http://localhost/api/sample', {
       method: 'POST',
@@ -86,24 +92,23 @@ describe('Cycle 3: /api/sample seeds parsedCargos via resolveDemoParsedCargoes',
     });
     await POST(req);
 
-    // updateSession must have been called with parsedCargos
+    const { resolveDemoParsedCargoes } = await import('@/lib/sample-data/demo-parsed-cargoes');
+    const expectedCount = resolveDemoParsedCargoes(new Date()).length;
+
     expect(mockUpdateSession).toHaveBeenCalledWith(
       expect.any(String),
-      expect.objectContaining({
-        isSampleData: true,
-        parsedCargos: expect.arrayContaining([
-          expect.objectContaining({ emailId: 'sample-01', itemIndex: 0 }),
-        ]),
-      })
+      expect.objectContaining({ isSampleData: true }),
     );
 
-    // parsedCargos in the call should have 13 items (sample-01..12 + demo-cargo-economics)
     const callArgs = mockUpdateSession.mock.calls[mockUpdateSession.mock.calls.length - 1];
     const payload = callArgs[1] as Partial<SessionData>;
-    expect(payload.parsedCargos).toHaveLength(13);
-    // laycan should be resolved (absolute date, not +Nd)
-    const firstLaycan = payload.parsedCargos![0].laycan;
-    expect(firstLaycan).toMatch(/^\d{4}-\d{2}-\d{2} \.\. \d{4}-\d{2}-\d{2}$/);
+    expect(payload.parsedCargos).toHaveLength(expectedCount);
+    // Every laycan in the payload must be absolute (no +Nd offsets).
+    for (const c of payload.parsedCargos!) {
+      if (c.laycan !== null && c.laycan !== undefined) {
+        expect(c.laycan).not.toMatch(/\+\d+d/);
+      }
+    }
   });
 });
 
@@ -130,7 +135,7 @@ describe('Cycle 4: /api/ai/parse-cargo — demo guard early-return', () => {
     expect(res.status).toBe(200);
     const json = await res.json();
     expect(json.cached).toBe(true);
-    expect(json.count).toBe(13);
+    expect(json.count).toBe(cargoes.length);
     expect(mockCallAiJson).not.toHaveBeenCalled();
   });
 
@@ -152,7 +157,7 @@ describe('Cycle 4: /api/ai/parse-cargo — demo guard early-return', () => {
   });
 });
 
-// ── Cycle 4b: /api/sample seeds all 4 session fields (wave-γ-1.5-A) ──────────
+// ── Cycle 4b: /api/sample seeds all 4 session fields ──────────
 
 describe('Cycle 4b: /api/sample — full cache seed (classifications + parsedVessels + processedEmails)', () => {
   beforeEach(() => {
@@ -160,62 +165,44 @@ describe('Cycle 4b: /api/sample — full cache seed (classifications + parsedVes
     mockUpdateSession.mockReturnValue(true);
   });
 
-  it('updateSession payload includes classifications with 32 entries', async () => {
+  async function callSampleRoute(): Promise<Partial<SessionData>> {
     const { POST } = await import('@/app/api/sample/route');
     const req = new NextRequest('http://localhost/api/sample', {
       method: 'POST',
       headers: { cookie: 'csrf_token=mock-csrf', 'x-csrf-token': 'mock-csrf' },
     });
     await POST(req);
-
     const callArgs = mockUpdateSession.mock.calls[mockUpdateSession.mock.calls.length - 1];
-    const payload = callArgs[1] as Partial<SessionData>;
-    expect(payload.classifications).toHaveLength(32);
+    return callArgs[1] as Partial<SessionData>;
+  }
+
+  it('classifications length matches the resolver output', async () => {
+    const payload = await callSampleRoute();
+    const { resolveDemoClassifications } = await import('@/lib/sample-data/demo-parsed-cargoes');
+    expect(payload.classifications).toHaveLength(resolveDemoClassifications().length);
   });
 
-  it('updateSession payload includes parsedVessels with 10 entries', async () => {
-    const { POST } = await import('@/app/api/sample/route');
-    const req = new NextRequest('http://localhost/api/sample', {
-      method: 'POST',
-      headers: { cookie: 'csrf_token=mock-csrf', 'x-csrf-token': 'mock-csrf' },
-    });
-    await POST(req);
-
-    const callArgs = mockUpdateSession.mock.calls[mockUpdateSession.mock.calls.length - 1];
-    const payload = callArgs[1] as Partial<SessionData>;
-    expect(payload.parsedVessels).toHaveLength(10);
+  it('parsedVessels length matches the resolver output (corpus + synthetic)', async () => {
+    const payload = await callSampleRoute();
+    const { resolveDemoParsedVessels } = await import('@/lib/sample-data/demo-parsed-cargoes');
+    expect(payload.parsedVessels).toHaveLength(resolveDemoParsedVessels(new Date()).length);
   });
 
-  it('updateSession payload includes processedEmails with 32 entries', async () => {
-    const { POST } = await import('@/app/api/sample/route');
-    const req = new NextRequest('http://localhost/api/sample', {
-      method: 'POST',
-      headers: { cookie: 'csrf_token=mock-csrf', 'x-csrf-token': 'mock-csrf' },
-    });
-    await POST(req);
-
-    const callArgs = mockUpdateSession.mock.calls[mockUpdateSession.mock.calls.length - 1];
-    const payload = callArgs[1] as Partial<SessionData>;
-    expect(payload.processedEmails).toHaveLength(32);
+  it('processedEmails length matches the classifications length', async () => {
+    const payload = await callSampleRoute();
+    const { resolveDemoClassifications } = await import('@/lib/sample-data/demo-parsed-cargoes');
+    expect(payload.processedEmails).toHaveLength(resolveDemoClassifications().length);
   });
 
-  it('classifications include sample-01 as CARGO_INQUIRY', async () => {
-    const { POST } = await import('@/app/api/sample/route');
-    const req = new NextRequest('http://localhost/api/sample', {
-      method: 'POST',
-      headers: { cookie: 'csrf_token=mock-csrf', 'x-csrf-token': 'mock-csrf' },
-    });
-    await POST(req);
-
-    const callArgs = mockUpdateSession.mock.calls[mockUpdateSession.mock.calls.length - 1];
-    const payload = callArgs[1] as Partial<SessionData>;
-    const cls = payload.classifications!.find(c => c.emailId === 'sample-01');
+  it('classifications include the first cargo-inquiry email as CARGO_INQUIRY', async () => {
+    const payload = await callSampleRoute();
+    const cls = payload.classifications!.find((c) => c.emailId === FIRST_CARGO_EMAIL_ID);
     expect(cls).toBeDefined();
     expect(cls!.category).toBe('CARGO_INQUIRY');
   });
 });
 
-// ── Cycle 5: regression — non-demo session still hits LLM ─────────────────
+// ── Cycle 5: regression — non-demo session bypasses guard ─────────────────
 
 describe('Cycle 5: /api/ai/parse-cargo — non-demo session bypasses guard', () => {
   beforeEach(() => {
