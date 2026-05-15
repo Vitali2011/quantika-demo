@@ -66,7 +66,12 @@ export function MatchTabs({ match, vessel, cargo, cargoEmailId }: MatchTabsProps
           <VesselsTab vessel={vessel} newCargo={cargo?.cargoDescription?.value ?? undefined} />
         )}
         {activeTab === 'economics' && (
-          <EconomicsTab commissionPercent={cargo?.commissionPercent} vessel={vessel} cargo={cargo} />
+          <EconomicsTab
+            commissionPercent={cargo?.commissionPercent}
+            vessel={vessel}
+            cargo={cargo}
+            routeDistanceNm={match.readiness?.distanceNm ?? null}
+          />
         )}
         {activeTab === 'passport' && (
           <PassportTab vessel={vessel} />
