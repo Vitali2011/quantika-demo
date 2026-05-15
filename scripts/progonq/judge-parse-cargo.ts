@@ -131,19 +131,32 @@ Reply ONLY with JSON: {"equiv": true | false, "reason": "one short sentence"}`;
 async function judgePair(ref: string | null, model: string | null, system: string): Promise<JudgeVerdict> {
   if (ref === model) return { equiv: true, reason: 'identical strings' };
   const userMsg = `REF:   ${JSON.stringify(ref)}\nMODEL: ${JSON.stringify(model)}`;
-  try {
-    const raw = await callAiText('PARSE_CARGO_JUDGE', system, userMsg, {
-      maxTokens: 200,
-      timeoutMs: 30_000,
-    });
-    const cleaned = raw.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
-    const parsed = JSON.parse(cleaned) as JudgeVerdict;
-    if (typeof parsed.equiv !== 'boolean') throw new Error('equiv not boolean');
-    return parsed;
-  } catch (e) {
-    console.error('[judge] parse fail for pair:', { ref, model, err: (e as Error).message.slice(0, 80) });
-    return { equiv: false, reason: 'judge parse error — conservative non-match' };
+  const maxAttempts = 4;
+  let lastErr: string = 'unknown';
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const raw = await callAiText('PARSE_CARGO_JUDGE', system, userMsg, {
+        maxTokens: 200,
+        timeoutMs: 30_000,
+      });
+      const cleaned = raw.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
+      const parsed = JSON.parse(cleaned) as JudgeVerdict;
+      if (typeof parsed.equiv !== 'boolean') throw new Error('equiv not boolean');
+      return parsed;
+    } catch (e) {
+      lastErr = (e as Error).message.slice(0, 80);
+      const isRateLimit = /too many requests|throttl|rate.?limit|429/i.test(lastErr);
+      if (attempt < maxAttempts && isRateLimit) {
+        const delayMs = 5_000 * attempt; // 5s, 10s, 15s
+        console.error(`[judge] rate-limited (attempt ${attempt}/${maxAttempts}), backoff ${delayMs}ms`);
+        await new Promise((res) => setTimeout(res, delayMs));
+        continue;
+      }
+      break;
+    }
   }
+  console.error('[judge] parse fail for pair:', { ref, model, err: lastErr });
+  return { equiv: false, reason: 'judge parse error — conservative non-match' };
 }
 
 async function main() {
@@ -183,8 +196,10 @@ async function main() {
         if (!origV) {
           await new Promise((res) => setTimeout(res, 800));
           origV = await judgePair(refOriginJ, modelOriginJ, JUDGE_SYSTEM);
-          cache.set(origPair, origV);
-          saveCache(cache);
+          if (!origV.reason.startsWith('judge parse error')) {
+            cache.set(origPair, origV);
+            saveCache(cache);
+          }
           pairsJudged++;
         } else pairsCached++;
 
@@ -192,8 +207,10 @@ async function main() {
         if (!destV) {
           await new Promise((res) => setTimeout(res, 800));
           destV = await judgePair(refDestJ, modelDestJ, JUDGE_SYSTEM);
-          cache.set(destPair, destV);
-          saveCache(cache);
+          if (!destV.reason.startsWith('judge parse error')) {
+            cache.set(destPair, destV);
+            saveCache(cache);
+          }
           pairsJudged++;
         } else pairsCached++;
 
@@ -212,8 +229,10 @@ async function main() {
       if (!cargoV) {
         await new Promise((res) => setTimeout(res, 800));
         cargoV = await judgePair(m.ref_commodity ?? null, m.model_commodity ?? null, CARGO_DESC_JUDGE_SYSTEM);
-        cache.set(cargoKey, cargoV);
-        saveCache(cache);
+        if (!cargoV.reason.startsWith('judge parse error')) {
+          cache.set(cargoKey, cargoV);
+          saveCache(cache);
+        }
         pairsJudged++;
       } else pairsCached++;
 
@@ -223,8 +242,10 @@ async function main() {
       if (!laycanV) {
         await new Promise((res) => setTimeout(res, 800));
         laycanV = await judgePair(m.ref_laycan ?? null, m.model_laycan ?? null, LAYCAN_JUDGE_SYSTEM);
-        cache.set(laycanKey, laycanV);
-        saveCache(cache);
+        if (!laycanV.reason.startsWith('judge parse error')) {
+          cache.set(laycanKey, laycanV);
+          saveCache(cache);
+        }
         pairsJudged++;
       } else pairsCached++;
 
