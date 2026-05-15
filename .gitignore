@@ -12,7 +12,9 @@
 # playwright
 /test-results/
 /playwright-report/
+/playwright-report-rag/
 /.playwright/
+/playwright/.auth/
 
 # next.js
 /.next/
