@@ -33,7 +33,8 @@
     "build:corpus": "tsx scripts/build-corpus.ts",
     "sync:corpus:vps": "bash scripts/sync-corpus-vps.sh",
     "corpus:extract": "tsx scripts/extract-corpus-cases.ts",
-    "prepare": "husky"
+    "prepare": "husky",
+    "build:sample-data": "npx tsx scripts/build-sample-data.ts"
   },
   "dependencies": {
     "@anthropic-ai/bedrock-sdk": "^0.12.0",

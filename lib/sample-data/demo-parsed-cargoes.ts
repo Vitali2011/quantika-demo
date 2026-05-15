@@ -1,98 +1,59 @@
 /**
- * wave-γ-3-demo: pre-parsed cargo fixture loader.
+ * Pre-parsed cargo / vessel / classification fixture loader for the demo
+ * (POST /api/sample). After the ETMS corpus migration (2026-05-14) the JSON
+ * fixtures hold corpus-derived records with ABSOLUTE laycan / openDate values
+ * (real LLM output against frozen email bodies), so the resolvers are
+ * effectively passthrough.
  *
- * Reads the committed JSON fixture and resolves relative laycan offsets
- * (+Nd format) to absolute ISO date strings based on the seed `now` date.
- * Laycan resolution happens at SEED time (when /api/sample is called),
- * never at read time, so the 9 consumer sites remain untouched.
- *
- * wave-γ-1.5-A: extended with resolveDemoClassifications,
- * resolveDemoParsedVessels, and resolveDemoProcessedEmails.
+ * The only date resolution that still happens is for the two synthetic
+ * economics-matching records (lib/sample-data/synthetic-economics.ts), which
+ * are appended at seed-time so the EconomicsTab demo always has a future
+ * laycan and a fresh openDate.
  */
 
-import type { ParsedCargo, Classification, ParsedVessel, ProcessedEmail, Email } from '@/lib/types';
+import type {
+  ParsedCargo,
+  Classification,
+  ParsedVessel,
+  ProcessedEmail,
+  Email,
+} from '@/lib/types';
 import { buildProcessedEmails } from '@/lib/classification-service';
-import fixtureRaw from './demo-parsed-cargoes.json';
+import { resolveSyntheticCargo, resolveSyntheticVessel } from './synthetic-economics';
+import cargoesFixture from './demo-parsed-cargoes.json';
 import classificationsFixture from './demo-classifications.json';
-import vesselsFixtureRaw from './demo-parsed-vessels.json';
-
-/** Internal fixture shape — adds relative laycan fields, omits resolved laycan */
-interface FixtureRecord extends Omit<ParsedCargo, 'laycan'> {
-  laycanRelativeStart: string | null;
-  laycanRelativeEnd: string | null;
-}
-
-/** Internal vessel fixture shape — openDate is stored as relative offset */
-interface VesselFixtureRecord extends Omit<ParsedVessel, 'openDate'> {
-  openDateRelative: string | null;
-}
+import vesselsFixture from './demo-parsed-vessels.json';
 
 /**
- * Parses "+Nd" offset string and adds N days to `base`.
- * Returns an ISO date string "YYYY-MM-DD".
- */
-function resolveOffset(base: Date, offset: string): string {
-  const match = /^\+(\d+)d$/.exec(offset);
-  if (!match) throw new Error(`Invalid offset: "${offset}"`);
-  const days = parseInt(match[1], 10);
-  const result = new Date(base.getTime() + days * 24 * 60 * 60 * 1000);
-  return result.toISOString().slice(0, 10);
-}
-
-/**
- * Returns 4-5 pre-parsed cargoes with laycan dates resolved relative to `now`.
- * Safe to call multiple times — does not mutate the fixture JSON.
+ * Pre-parsed cargoes: corpus-derived records from the JSON fixture
+ * (laycan stored as absolute YYYY-MM-DD..YYYY-MM-DD or null) plus one
+ * synthetic economics-match record resolved relative to `now`.
  */
 export function resolveDemoParsedCargoes(now: Date): ParsedCargo[] {
-  return (fixtureRaw as unknown as FixtureRecord[]).map((record) => {
-    let laycan: string | null = null;
-
-    if (record.laycanRelativeStart !== null && record.laycanRelativeEnd !== null) {
-      const start = resolveOffset(now, record.laycanRelativeStart);
-      const end = resolveOffset(now, record.laycanRelativeEnd);
-      laycan = `${start} .. ${end}`;
-    }
-
-    // Destructure out the relative fields, spread the rest as ParsedCargo
-
-    const { laycanRelativeStart, laycanRelativeEnd, ...rest } = record;
-
-    return { ...rest, laycan } as ParsedCargo;
-  });
+  const corpus = cargoesFixture as unknown as ParsedCargo[];
+  return [...corpus, resolveSyntheticCargo(now)];
 }
 
 /**
- * Returns 32 pre-seeded classifications — one per sample email.
- * No date resolution needed: classifications have no date-relative fields.
- * Safe to call multiple times — does not mutate the fixture JSON.
+ * Pre-seeded classifications, one per sample email. No date resolution.
  */
 export function resolveDemoClassifications(): Classification[] {
   return classificationsFixture as unknown as Classification[];
 }
 
 /**
- * Returns 9 pre-parsed vessel positions with openDate resolved relative to `now`.
- * Safe to call multiple times — does not mutate the fixture JSON.
+ * Pre-parsed vessel positions: corpus-derived records (openDate absolute
+ * or null) plus one synthetic economics-match vessel resolved relative
+ * to `now`.
  */
 export function resolveDemoParsedVessels(now: Date): ParsedVessel[] {
-  return (vesselsFixtureRaw as unknown as VesselFixtureRecord[]).map((record) => {
-    let openDate: ParsedVessel['openDate'] = null;
-
-    if (record.openDateRelative !== null && record.openDateRelative !== undefined) {
-      const resolved = resolveOffset(now, record.openDateRelative);
-      openDate = { value: resolved, confidence: 'confirmed' };
-    }
-
-    const { openDateRelative, ...rest } = record;
-
-    return { ...rest, openDate } as ParsedVessel;
-  });
+  const corpus = vesselsFixture as unknown as ParsedVessel[];
+  return [...corpus, resolveSyntheticVessel(now)];
 }
 
 /**
- * Returns ProcessedEmail[] built from pre-seeded classifications + parsed arrays.
- * Delegates to buildProcessedEmails (lib/classification-service.ts:81) — pure function.
- * Accepts `emails` so freshness / expiryDate can be derived from email.date.
+ * Derived ProcessedEmail[] for the dashboard. Pure delegation to
+ * buildProcessedEmails — keeps freshness logic centralised.
  */
 export function resolveDemoProcessedEmails(
   now: Date,

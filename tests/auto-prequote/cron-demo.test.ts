@@ -8,6 +8,10 @@
  *    fetcher, defaults to empty Gmail-style stub)
  *  - per-email errors don't crash the cron (preserved isolation contract)
  *
+ * After the ETMS-corpus migration (2026-05-14) the curated 'sample-01' ID
+ * no longer exists. The per-email-error test now reads the first cargo
+ * email ID from the fixture dynamically.
+ *
  * Assert-budget: ≤30 expects.
  */
 
@@ -17,6 +21,9 @@ import {
   setEmailFetcher,
   setQuoteDrafter,
 } from '@/lib/auto-prequote/queue';
+import cargoInquiries from '@/lib/sample-data/cargo-inquiries.json';
+
+const FIRST_CARGO_EMAIL_ID = (cargoInquiries as Array<{ id: string }>)[0].id;
 
 describe('βf-10 runAutoPrequoteCron --demo', () => {
   beforeEach(() => {
@@ -46,7 +53,7 @@ describe('βf-10 runAutoPrequoteCron --demo', () => {
 
   it('demo run: per-email drafter errors do not crash, surface in errors[]', async () => {
     setQuoteDrafter(async (e) => {
-      if (e.id === 'sample-01') throw new Error('boom');
+      if (e.id === FIRST_CARGO_EMAIL_ID) throw new Error('boom');
       return {
         emailId: e.id,
         vessel: 'TBD',
@@ -57,7 +64,7 @@ describe('βf-10 runAutoPrequoteCron --demo', () => {
     const result = await runAutoPrequoteCron({ demo: true });
     expect(result.processedEmails).toBeGreaterThan(0);
     expect(result.errors.length).toBeGreaterThanOrEqual(1);
-    expect(result.errors.some((e) => e.emailId === 'sample-01')).toBe(true);
+    expect(result.errors.some((e) => e.emailId === FIRST_CARGO_EMAIL_ID)).toBe(true);
   });
 
   it('demo emails conform to PendingEmail shape (id/from/subject/body present)', async () => {
