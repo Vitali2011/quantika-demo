@@ -4,11 +4,18 @@ import { useState, useMemo } from 'react';
 import type { ParsedVessel, ParsedCargo } from '@/lib/types';
 import { RouteCompareModal } from '@/components/economics/RouteCompareModal';
 import { calculateFuelEu } from '@/lib/economics/fueleu';
+import { estimateVoyageDays } from '@/lib/economics/voyage-days';
 
 interface EconomicsTabProps {
   commissionPercent?: number | null;
   vessel?: ParsedVessel;
   cargo?: ParsedCargo;
+  /**
+   * Route distance in nautical miles, e.g. from `match.readiness.distanceNm`.
+   * When omitted/null the FuelEU tile renders without a penalty estimate
+   * (shows "Voyage distance n/a") instead of using a hardcoded constant.
+   */
+  routeDistanceNm?: number | null;
 }
 
 function parseLeadingNumber(s: string | null | undefined): number {
@@ -41,7 +48,7 @@ const DISPLAY_RATES: Record<DisplayCurrency, number> = {
   USD: 1, EUR: 0.926, GBP: 0.787, NOK: 10.87, AED: 3.67,
 };
 
-export function EconomicsTab({ commissionPercent, vessel, cargo }: EconomicsTabProps) {
+export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm }: EconomicsTabProps) {
   const [open, setOpen] = useState(false);
   const [bunkerPriceUsdPerMt, setBunkerPriceUsdPerMt] = useState('');
   const [bunkerPort, setBunkerPort] = useState<BunkerPort>('SGSIN');
@@ -96,24 +103,26 @@ export function EconomicsTab({ commissionPercent, vessel, cargo }: EconomicsTabP
     if (!fuelEuEnabled) return null;
 
     const consumption = parseLeadingNumber(vessel?.consumption);
-    const origin = cargo?.originPort?.value ?? '';
-    const destination = cargo?.destinationPort?.value ?? '';
-
-    // Estimate voyage days (simple calculation: assume 5000 nm average, 14 kts)
-    // This is a placeholder — real implementation would calculate from route distance
-    const estimatedVoyageDays = origin && destination ? 15 : 0;
+    const speedKnots = parseLeadingNumber(vessel?.speedLaden);
+    const voyageDays = estimateVoyageDays(routeDistanceNm, speedKnots);
 
     try {
       return calculateFuelEu({
         fuelType,
         consumptionMtPerDay: consumption,
-        voyageDays: estimatedVoyageDays,
+        voyageDays,
         year: 2025,
       });
     } catch {
       return null;
     }
-  }, [fuelType, vessel, cargo, fuelEuEnabled]);
+  }, [fuelType, vessel, routeDistanceNm, fuelEuEnabled]);
+
+  const fuelEuVoyageDays = useMemo(() => {
+    if (!fuelEuEnabled) return 0;
+    const speedKnots = parseLeadingNumber(vessel?.speedLaden);
+    return estimateVoyageDays(routeDistanceNm, speedKnots);
+  }, [vessel, routeDistanceNm, fuelEuEnabled]);
 
   return (
     <div data-testid="tab-economics" className="space-y-4 text-sm">
@@ -221,6 +230,12 @@ export function EconomicsTab({ commissionPercent, vessel, cargo }: EconomicsTabP
               <option value="biodiesel-b100">Biodiesel B100</option>
             </select>
           </div>
+
+          {fuelEuResult && fuelEuVoyageDays === 0 && (
+            <p className="text-xs text-gray-500" data-testid="fueleu-distance-missing">
+              Voyage distance n/a — provide origin/destination + vessel speed for a penalty estimate.
+            </p>
+          )}
 
           {fuelEuResult && (
             <div className="space-y-1 text-xs">
