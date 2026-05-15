@@ -16,6 +16,12 @@ import { test, expect, type Page, type BrowserContext, chromium } from '@playwri
 import * as fs from 'fs';
 import * as path from 'path';
 
+// CI skip: this spec requires __tests__/fixtures/test-suite-50/expected.json (not committed)
+// and runs against the production URL https://demo.quantika.org.
+// It is intended for manual adversarial QA and is automatically skipped in CI.
+const _fixturePath = path.resolve(__dirname, '../fixtures/test-suite-50/expected.json');
+test.skip(!!process.env.CI || !fs.existsSync(_fixturePath), 'Requires test-suite-50/expected.json fixture (not committed) and prod baseURL; skipped in CI');
+
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface Finding {
