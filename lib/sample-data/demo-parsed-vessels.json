@@ -1,258 +1,1015 @@
 [
   {
-    "emailId": "sample-13",
+    "emailId": "19d5e74e4479a895",
     "itemIndex": 0,
     "vesselName": {
-      "value": "CARPATHIAN STAR",
-      "confidence": "confirmed"
+      "value": "MV BARABULKA",
+      "confidence": "confirmed",
+      "sourceText": "MV BARABULKA - OPEN AT KARASU TODAY"
     },
-    "imo": "9234563",
-    "flag": "Marshall Islands",
-    "built": 2007,
-    "classSociety": "DNV",
-    "pandi": "Gard",
+    "imo": null,
+    "flag": "Cameroon",
+    "built": 1995,
+    "classSociety": "Dutch Lloyd",
+    "pandi": "Thomas Miller Pandi",
     "dwtSummer": {
-      "value": 8500,
-      "confidence": "confirmed"
+      "value": 4916,
+      "confidence": "interpreted",
+      "sourceText": "4916 Dwt  on  4.76 ssw"
     },
-    "dwcc": {
-      "value": 8050,
-      "confidence": "confirmed"
-    },
+    "dwcc": null,
     "draftMax": {
-      "value": 6.2,
-      "confidence": "confirmed"
+      "value": 4.76,
+      "confidence": "interpreted",
+      "sourceText": "4916 Dwt  on  4.76 ssw"
     },
-    "loa": 121.4,
-    "beam": 17.6,
-    "grt": null,
-    "nrt": null,
-    "holdsCount": 2,
-    "hatchesCount": 2,
-    "grainCapacity": null,
-    "grainCapacityUnit": null,
-    "baleCapacity": 10400,
-    "holdDimensions": null,
-    "hatchDimensions": null,
-    "tankTopStrength": null,
-    "geared": true,
-    "craneCapacity": "2 x 25t",
-    "hatchType": null,
-    "vesselType": "MPP",
-    "openPosition": {
-      "value": "Piraeus, Greece",
-      "confidence": "confirmed"
-    },
-    "direction": "Med, Black Sea, WAfrica",
-    "restrictions": [],
-    "lastCargoes": "steel products, bagged cargo, breakbulk",
-    "speedLaden": null,
-    "speedBallast": null,
-    "consumption": null,
-    "deckCapacity": null,
-    "specialFeatures": [],
-    "ciiRating": null,
-    "verificationWarning": null,
-    "openDateRelative": "+3d"
-  },
-  {
-    "emailId": "sample-14",
-    "itemIndex": 0,
-    "vesselName": {
-      "value": "PROMPT TRADER",
-      "confidence": "confirmed"
-    },
-    "imo": "9345673",
-    "flag": "Bahamas",
-    "built": 2010,
-    "classSociety": "BV",
-    "pandi": "Skuld",
-    "dwtSummer": {
-      "value": 12000,
-      "confidence": "confirmed"
-    },
-    "dwcc": {
-      "value": 11300,
-      "confidence": "confirmed"
-    },
-    "draftMax": {
-      "value": 7.1,
-      "confidence": "confirmed"
-    },
-    "loa": 133.8,
-    "beam": 19.4,
-    "grt": null,
-    "nrt": null,
+    "loa": null,
+    "beam": null,
+    "grt": 4110,
+    "nrt": 1358,
     "holdsCount": 3,
     "hatchesCount": 3,
-    "grainCapacity": null,
-    "grainCapacityUnit": null,
-    "baleCapacity": 14600,
+    "grainCapacity": 179538,
+    "grainCapacityUnit": "cbft",
+    "baleCapacity": 176008.29,
     "holdDimensions": null,
     "hatchDimensions": null,
     "tankTopStrength": null,
-    "geared": true,
-    "craneCapacity": "2 x 30t",
+    "geared": null,
+    "craneCapacity": null,
     "hatchType": null,
-    "vesselType": "General Cargo",
+    "vesselType": "Volga-Don Type",
     "openPosition": {
-      "value": "Khor Fakkan, UAE",
-      "confidence": "confirmed"
+      "value": "Karasu",
+      "confidence": "confirmed",
+      "sourceText": "OPEN AT KARASU TODAY"
     },
-    "direction": "MENA, WAfrica, Med",
-    "restrictions": [],
-    "lastCargoes": "steel pipes, general cargo, bagged cargo",
+    "openDate": {
+      "value": {
+        "open": "2025-02-25",
+        "close": null,
+        "display": "TODAY"
+      },
+      "confidence": "interpreted",
+      "sourceText": "OPEN AT KARASU TODAY"
+    },
+    "direction": null,
+    "restrictions": [
+      {
+        "value": "CAN'T CALL UKRAINE AND  EU PORTS.",
+        "confidence": "confirmed",
+        "source_text": "CAN'T CALL UKRAINE AND  EU PORTS."
+      }
+    ],
+    "lastCargoes": null,
     "speedLaden": null,
     "speedBallast": null,
     "consumption": null,
     "deckCapacity": null,
-    "specialFeatures": [],
+    "specialFeatures": [
+      {
+        "value": "BOX",
+        "confidence": "confirmed",
+        "source_text": "Holds / Hatches  : 3/3 BOX"
+      }
+    ],
     "ciiRating": null,
-    "verificationWarning": null,
-    "openDateRelative": "+0d"
+    "verificationWarning": null
   },
   {
-    "emailId": "sample-15",
+    "emailId": "19d5e7406f50cc13",
     "itemIndex": 0,
     "vesselName": {
-      "value": "BLACK SEA WIND",
-      "confidence": "confirmed"
+      "value": "mv haskal",
+      "confidence": "confirmed",
+      "sourceText": "mv haskal"
     },
-    "imo": "9876541",
-    "flag": "Comoros",
-    "built": 2003,
+    "imo": null,
+    "flag": null,
+    "built": 1986,
     "classSociety": null,
     "pandi": null,
     "dwtSummer": {
-      "value": 32000,
-      "confidence": "confirmed"
+      "value": 2570,
+      "confidence": "confirmed",
+      "sourceText": "dwt 2570 mts"
     },
     "dwcc": {
-      "value": 30200,
-      "confidence": "confirmed"
+      "value": 2000,
+      "confidence": "confirmed",
+      "sourceText": "dwcc 2000 mts at 4.5 draft"
     },
     "draftMax": {
-      "value": 9.8,
-      "confidence": "confirmed"
+      "value": 4.5,
+      "confidence": "interpreted",
+      "sourceText": "dwcc 2000 mts at 4.5 draft"
     },
-    "loa": 185.2,
-    "beam": 26.4,
-    "grt": null,
-    "nrt": null,
-    "holdsCount": 5,
-    "hatchesCount": 5,
-    "grainCapacity": null,
-    "grainCapacityUnit": null,
-    "baleCapacity": 38500,
-    "holdDimensions": null,
-    "hatchDimensions": null,
+    "loa": 82.45,
+    "beam": 11.3,
+    "grt": 1597,
+    "nrt": 700,
+    "holdsCount": 1,
+    "hatchesCount": null,
+    "grainCapacity": 100682,
+    "grainCapacityUnit": "cbft",
+    "baleCapacity": 100682,
+    "holdDimensions": "[object Object]",
+    "hatchDimensions": "[object Object]",
     "tankTopStrength": null,
-    "geared": false,
+    "geared": null,
     "craneCapacity": null,
     "hatchType": null,
-    "vesselType": "Bulk Carrier",
+    "vesselType": null,
     "openPosition": {
-      "value": "Constanta, Romania",
-      "confidence": "confirmed"
+      "value": "marmara",
+      "confidence": "confirmed",
+      "sourceText": "spot marmara"
     },
-    "direction": "Black Sea, Med",
-    "restrictions": ["Shore gear required at all ports"],
-    "lastCargoes": "bulk cargo",
-    "speedLaden": null,
-    "speedBallast": null,
-    "consumption": null,
-    "deckCapacity": null,
-    "specialFeatures": [],
-    "ciiRating": null,
-    "verificationWarning": null,
-    "openDateRelative": "+2d"
-  },
-  {
-    "emailId": "sample-16",
-    "itemIndex": 0,
-    "vesselName": {
-      "value": "ATLAS",
-      "confidence": "confirmed"
+    "openDate": {
+      "value": "spot",
+      "confidence": "interpreted",
+      "sourceText": "spot marmara"
     },
-    "imo": "9123453",
-    "flag": "Italy",
-    "built": 2006,
-    "classSociety": "RINA",
-    "pandi": "Lloyd's",
-    "dwtSummer": {
-      "value": 5200,
-      "confidence": "confirmed"
-    },
-    "dwcc": {
-      "value": 4900,
-      "confidence": "confirmed"
-    },
-    "draftMax": {
-      "value": 5.4,
-      "confidence": "confirmed"
-    },
-    "loa": 96.0,
-    "beam": 14.2,
-    "grt": null,
-    "nrt": null,
-    "holdsCount": 2,
-    "hatchesCount": 2,
-    "grainCapacity": null,
-    "grainCapacityUnit": null,
-    "baleCapacity": 6100,
-    "holdDimensions": null,
-    "hatchDimensions": null,
-    "tankTopStrength": null,
-    "geared": true,
-    "craneCapacity": "2 x 20t",
-    "hatchType": null,
-    "vesselType": "General Cargo",
-    "openPosition": {
-      "value": "Genoa, Italy",
-      "confidence": "confirmed"
-    },
-    "direction": "Med",
+    "direction": null,
     "restrictions": [],
     "lastCargoes": null,
     "speedLaden": null,
     "speedBallast": null,
     "consumption": null,
     "deckCapacity": null,
-    "specialFeatures": [],
+    "specialFeatures": [
+      {
+        "value": "Suitable for imo 1.1 cargoes",
+        "confidence": "confirmed",
+        "source_text": "Suitable for imo 1.1 cargoes"
+      },
+      {
+        "value": "box shaped 1 single hold",
+        "confidence": "confirmed",
+        "source_text": "box shaped 1 single hold"
+      }
+    ],
     "ciiRating": null,
-    "verificationWarning": null,
-    "openDateRelative": "+4d"
+    "verificationWarning": null
   },
   {
-    "emailId": "sample-16",
-    "itemIndex": 1,
-    "vesselName": {
-      "value": "ZEUS",
-      "confidence": "confirmed"
-    },
-    "imo": "9234513",
-    "flag": "Italy",
-    "built": 2008,
-    "classSociety": "RINA",
-    "pandi": "Lloyd's",
-    "dwtSummer": {
-      "value": 6800,
-      "confidence": "confirmed"
-    },
+    "emailId": "19d5e75a1f9011b6",
+    "itemIndex": 0,
+    "vesselName": null,
+    "imo": null,
+    "flag": null,
+    "built": null,
+    "classSociety": null,
+    "pandi": null,
+    "dwtSummer": null,
     "dwcc": {
-      "value": 6450,
-      "confidence": "interpreted"
+      "value": 2900,
+      "confidence": "confirmed",
+      "sourceText": "Dwcc 2900 mts"
     },
-    "draftMax": {
-      "value": 5.8,
-      "confidence": "interpreted"
-    },
-    "loa": 108.0,
-    "beam": 15.6,
+    "draftMax": null,
+    "loa": null,
+    "beam": null,
     "grt": null,
     "nrt": null,
+    "holdsCount": null,
+    "hatchesCount": null,
+    "grainCapacity": 147000,
+    "grainCapacityUnit": "cbft",
+    "baleCapacity": null,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": null,
+    "craneCapacity": null,
+    "hatchType": null,
+    "vesselType": null,
+    "openPosition": {
+      "value": "Biscay",
+      "confidence": "confirmed",
+      "sourceText": "Open spot biscay"
+    },
+    "openDate": {
+      "value": "spot",
+      "confidence": "interpreted",
+      "sourceText": "Open spot biscay"
+    },
+    "direction": "Black Sea; can load from Continent",
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "box",
+        "confidence": "confirmed",
+        "source_text": "Dwcc 2900 mts, grain cap 147 000 cut, box"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19d5e7455d073a74",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "PANTHERA J",
+      "confidence": "confirmed",
+      "sourceText": "PANTHERA J"
+    },
+    "imo": null,
+    "flag": null,
+    "built": null,
+    "classSociety": null,
+    "pandi": null,
+    "dwtSummer": {
+      "value": 7000,
+      "confidence": "confirmed",
+      "sourceText": "7,000 DWT"
+    },
+    "dwcc": null,
+    "draftMax": null,
+    "loa": null,
+    "beam": null,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": null,
+    "hatchesCount": null,
+    "grainCapacity": 9600,
+    "grainCapacityUnit": "cbm",
+    "baleCapacity": null,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "2x150/300mt",
+    "hatchType": null,
+    "vesselType": "MPP",
+    "openPosition": {
+      "value": "CONTINENT",
+      "confidence": "confirmed",
+      "sourceText": "CONTINENT"
+    },
+    "openDate": {
+      "value": {
+        "open": "2025-06-01",
+        "close": null,
+        "display": "01 Jun 2025"
+      },
+      "confidence": "interpreted",
+      "sourceText": "01 JUN"
+    },
+    "direction": "ANY DIR WW",
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": {
+      "value": 13,
+      "confidence": "confirmed",
+      "source_text": "13 knts"
+    },
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": {
+      "value": 2900,
+      "confidence": "confirmed",
+      "source_text": "2900sqm"
+    },
+    "specialFeatures": [
+      {
+        "value": "twn",
+        "confidence": "confirmed",
+        "source_text": "twn"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19d5e7455d073a74",
+    "itemIndex": 1,
+    "vesselName": {
+      "value": "HC EVA-MARIE",
+      "confidence": "confirmed",
+      "sourceText": "HC EVA-MARIE"
+    },
+    "imo": null,
+    "flag": null,
+    "built": null,
+    "classSociety": null,
+    "pandi": null,
+    "dwtSummer": {
+      "value": 11000,
+      "confidence": "confirmed",
+      "sourceText": "11,000 DWT"
+    },
+    "dwcc": null,
+    "draftMax": null,
+    "loa": null,
+    "beam": null,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": null,
+    "hatchesCount": null,
+    "grainCapacity": 14700,
+    "grainCapacityUnit": "cbm",
+    "baleCapacity": null,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "2x80/160mt",
+    "hatchType": null,
+    "vesselType": "MPP",
+    "openPosition": {
+      "value": "HALSVIK",
+      "confidence": "confirmed",
+      "sourceText": "HALSVIK"
+    },
+    "openDate": {
+      "value": {
+        "open": "2025-05-25",
+        "close": null,
+        "display": "25 May 2025"
+      },
+      "confidence": "interpreted",
+      "sourceText": "25 MAY"
+    },
+    "direction": "ANY DIR WW",
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": {
+      "value": 3700,
+      "confidence": "confirmed",
+      "source_text": "3700 sqm"
+    },
+    "specialFeatures": [
+      {
+        "value": "twn",
+        "confidence": "confirmed",
+        "source_text": "twn"
+      },
+      {
+        "value": "Ice 1A",
+        "confidence": "confirmed",
+        "source_text": "Ice 1A"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19d5e7455d073a74",
+    "itemIndex": 2,
+    "vesselName": {
+      "value": "O7 GAJA",
+      "confidence": "confirmed",
+      "sourceText": "O7 GAJA"
+    },
+    "imo": null,
+    "flag": null,
+    "built": null,
+    "classSociety": null,
+    "pandi": null,
+    "dwtSummer": {
+      "value": 12215,
+      "confidence": "confirmed",
+      "sourceText": "12,215 DWT"
+    },
+    "dwcc": null,
+    "draftMax": null,
+    "loa": null,
+    "beam": null,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": null,
+    "hatchesCount": null,
+    "grainCapacity": 18700,
+    "grainCapacityUnit": "cbm",
+    "baleCapacity": null,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "2x240/480mt",
+    "hatchType": null,
+    "vesselType": "MPP",
+    "openPosition": {
+      "value": "ARA",
+      "confidence": "confirmed",
+      "sourceText": "ARA"
+    },
+    "openDate": {
+      "value": {
+        "open": "2025-06-04",
+        "close": null,
+        "display": "04 Jun 2025"
+      },
+      "confidence": "interpreted",
+      "sourceText": "04 JUN"
+    },
+    "direction": "BRAZIL",
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": {
+      "value": 5000,
+      "confidence": "confirmed",
+      "source_text": "5000 sqm"
+    },
+    "specialFeatures": [
+      {
+        "value": "twn",
+        "confidence": "confirmed",
+        "source_text": "twn"
+      },
+      {
+        "value": "Lakes",
+        "confidence": "confirmed",
+        "source_text": "Lakes"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19d5e7455d073a74",
+    "itemIndex": 3,
+    "vesselName": {
+      "value": "SLOMAN DISPATCHER",
+      "confidence": "confirmed",
+      "sourceText": "SLOMAN DISPATCHER"
+    },
+    "imo": null,
+    "flag": null,
+    "built": null,
+    "classSociety": null,
+    "pandi": null,
+    "dwtSummer": {
+      "value": 12700,
+      "confidence": "confirmed",
+      "sourceText": "12,700 DWT"
+    },
+    "dwcc": null,
+    "draftMax": null,
+    "loa": null,
+    "beam": null,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": null,
+    "hatchesCount": null,
+    "grainCapacity": 14900,
+    "grainCapacityUnit": "cbm",
+    "baleCapacity": null,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "2x150/300mt",
+    "hatchType": null,
+    "vesselType": "MPP",
+    "openPosition": {
+      "value": "HAUGESUND",
+      "confidence": "confirmed",
+      "sourceText": "HAUGESUND"
+    },
+    "openDate": {
+      "value": {
+        "open": "2025-05-28",
+        "close": null,
+        "display": "28 May 2025"
+      },
+      "confidence": "interpreted",
+      "sourceText": "28 MAY"
+    },
+    "direction": "ANY DIR WW",
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": {
+      "value": 15,
+      "confidence": "confirmed",
+      "source_text": "15 knts"
+    },
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": {
+      "value": 4300,
+      "confidence": "confirmed",
+      "source_text": "4300sqm"
+    },
+    "specialFeatures": [
+      {
+        "value": "twn",
+        "confidence": "confirmed",
+        "source_text": "twn"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19d5e7668c6587bd",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "MV ALINA",
+      "confidence": "confirmed",
+      "sourceText": "MV ALINA"
+    },
+    "imo": null,
+    "flag": "BELIZE CITY",
+    "built": 2025,
+    "classSociety": "RINA",
+    "pandi": "SKULD, OSLO",
+    "dwtSummer": {
+      "value": 8300,
+      "confidence": "confirmed",
+      "sourceText": "8300 DWT"
+    },
+    "dwcc": null,
+    "draftMax": {
+      "value": 4.6,
+      "confidence": "confirmed",
+      "sourceText": "DRAFT 4.6"
+    },
+    "loa": 141.99,
+    "beam": 18,
+    "grt": 6786,
+    "nrt": 4041,
+    "holdsCount": 4,
+    "hatchesCount": 4,
+    "grainCapacity": 13400,
+    "grainCapacityUnit": "cbm",
+    "baleCapacity": null,
+    "holdDimensions": "[object Object],[object Object],[object Object],[object Object]",
+    "hatchDimensions": "[object Object],[object Object],[object Object],[object Object],[object Object]",
+    "tankTopStrength": "8.5",
+    "geared": false,
+    "craneCapacity": null,
+    "hatchType": "MACGREGOR",
+    "vesselType": "SID",
+    "openPosition": {
+      "value": "Casablanca",
+      "confidence": "confirmed",
+      "sourceText": "open Casablanca 01-05 October"
+    },
+    "openDate": {
+      "value": {
+        "open": "2025-10-01",
+        "close": "2025-10-05",
+        "display": "01-05 October"
+      },
+      "confidence": "interpreted",
+      "sourceText": "open Casablanca 01-05 October"
+    },
+    "direction": "Bsea/enroute",
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "SID",
+        "confidence": "confirmed",
+        "source_text": "SID, GLESS, BLT 2025"
+      },
+      {
+        "value": "Gearless",
+        "confidence": "confirmed",
+        "source_text": "GLESS"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19d5e77730e6489b",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "Gandolf",
+      "confidence": "confirmed",
+      "sourceText": "MV 'Gandolf'"
+    },
+    "imo": null,
+    "flag": "Comoros",
+    "built": 1988,
+    "classSociety": "Phoenix Class",
+    "pandi": "Turk P&I",
+    "dwtSummer": {
+      "value": 1084,
+      "confidence": "confirmed",
+      "sourceText": "1084 DWAT on 3m ssw"
+    },
+    "dwcc": null,
+    "draftMax": {
+      "value": 3,
+      "confidence": "confirmed",
+      "sourceText": "Loa/Beam/Draft 69,04/9,46/3,00 m"
+    },
+    "loa": 69.04,
+    "beam": 9.46,
+    "grt": 910,
+    "nrt": 273,
+    "holdsCount": 1,
+    "hatchesCount": 1,
+    "grainCapacity": 1681,
+    "grainCapacityUnit": "cbm",
+    "baleCapacity": 1462,
+    "holdDimensions": "[object Object]",
+    "hatchDimensions": "[object Object]",
+    "tankTopStrength": null,
+    "geared": null,
+    "craneCapacity": null,
+    "hatchType": "McGregor single pull type hatch covers",
+    "vesselType": "SID/BOX",
+    "openPosition": {
+      "value": "Skikda",
+      "confidence": "confirmed",
+      "sourceText": "**open Skikda spot under our c/p"
+    },
+    "openDate": {
+      "value": "spot",
+      "confidence": "interpreted",
+      "sourceText": "**open Skikda spot under our c/p"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "Sid/Box Hold",
+        "confidence": "confirmed",
+        "source_text": "Sid/Box Hold"
+      },
+      {
+        "value": "Steel floored",
+        "confidence": "confirmed",
+        "source_text": "Steel floored"
+      },
+      {
+        "value": "Appendix A,B,C fitted",
+        "confidence": "confirmed",
+        "source_text": "Appendix A,B,C fitted"
+      },
+      {
+        "value": "Air vent fitted",
+        "confidence": "confirmed",
+        "source_text": "Air vent fitted"
+      },
+      {
+        "value": "Bowtrusther fitted",
+        "confidence": "confirmed",
+        "source_text": "Bowtrusther fitted"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19d5e77ccc974c03",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "MV SVS VEGA",
+      "confidence": "confirmed",
+      "sourceText": "MV SVS VEGA"
+    },
+    "imo": null,
+    "flag": "St. Vincent & the Grenadines",
+    "built": 1996,
+    "classSociety": "Lloyd's Register",
+    "pandi": null,
+    "dwtSummer": {
+      "value": 3200,
+      "confidence": "confirmed",
+      "sourceText": "3200 mt DWAT"
+    },
+    "dwcc": null,
+    "draftMax": {
+      "value": 4.63,
+      "confidence": "interpreted",
+      "sourceText": "3200 mt DWAT sfb on 4,63m"
+    },
+    "loa": 90.67,
+    "beam": 15.8,
+    "grt": 2658,
+    "nrt": 1216,
+    "holdsCount": 1,
+    "hatchesCount": 2,
+    "grainCapacity": 140000,
+    "grainCapacityUnit": "cbft",
+    "baleCapacity": 140000,
+    "holdDimensions": null,
+    "hatchDimensions": "[object Object]",
+    "tankTopStrength": null,
+    "geared": false,
+    "craneCapacity": null,
+    "hatchType": "MacGregor hatchcover hydr. folding type",
+    "vesselType": "Multipurpose dry cargo/Container vessel",
+    "openPosition": {
+      "value": "Efesan",
+      "confidence": "confirmed",
+      "sourceText": "**open Efesan Sep/6-8th"
+    },
+    "openDate": {
+      "value": {
+        "open": "2025-09-06",
+        "close": "2025-09-08",
+        "display": "Sep/6-8th"
+      },
+      "confidence": "interpreted",
+      "sourceText": "Sep/6-8th"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "Ice Class 1A",
+        "confidence": "confirmed",
+        "source_text": "Ice Class 1A"
+      },
+      {
+        "value": "open hatch/doubleskinned singledecker",
+        "confidence": "confirmed",
+        "source_text": "open\nhatch/doubleskinned  singledecker"
+      },
+      {
+        "value": "Gearless / Cont Fitted",
+        "confidence": "confirmed",
+        "source_text": "Gearless / Cont Fitted"
+      },
+      {
+        "value": "Nominal container intake: 266 TEU (80 in hold + 186 on deck)",
+        "confidence": "confirmed",
+        "source_text": "Nominal container intake: 266 TEU (80 in hold\n+ 186 on deck)"
+      },
+      {
+        "value": "alt. 121 FEU + 24 TEU (28 (+ 24 TEU) in hold and 93 on deck)",
+        "confidence": "confirmed",
+        "source_text": "alt. 121 FEU + 24 TEU (28 (+ 24 TEU) in hold and 93 on deck)"
+      },
+      {
+        "value": "able abt/max 180TEU@ 14tons (50% bunker/sfb)",
+        "confidence": "interpreted",
+        "source_text": "able abt/max 180TEU@ 14tons (50% bunker/sfb)"
+      },
+      {
+        "value": "Airdraft ballast 24,7 meter",
+        "confidence": "confirmed",
+        "source_text": "Airdraft ballast 24,7 meter"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e07c4bb3fee039",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "MV LADY ANITA",
+      "confidence": "confirmed",
+      "sourceText": "MV LADY ANITA – OPEN RED SEA PROMPT"
+    },
+    "imo": null,
+    "flag": "TOGO",
+    "built": 2012,
+    "classSociety": "OMCS",
+    "pandi": null,
+    "dwtSummer": {
+      "value": 5328.4,
+      "confidence": "confirmed",
+      "sourceText": "SUMMER DEADWEIGHT\r\n\r\n5328.4 M/T"
+    },
+    "dwcc": null,
+    "draftMax": {
+      "value": 5.85,
+      "confidence": "confirmed",
+      "sourceText": "SUMMER DRAFT\r\n\r\n5.85 M"
+    },
+    "loa": 96.9,
+    "beam": 15.8,
+    "grt": 2998,
+    "nrt": 1746,
     "holdsCount": 2,
     "hatchesCount": 2,
+    "grainCapacity": 6800,
+    "grainCapacityUnit": "cbm",
+    "baleCapacity": 6700,
+    "holdDimensions": "[object Object],[object Object]",
+    "hatchDimensions": "[object Object],[object Object]",
+    "tankTopStrength": null,
+    "geared": null,
+    "craneCapacity": null,
+    "hatchType": null,
+    "vesselType": "GENERAL CARGO SHIP",
+    "openPosition": {
+      "value": "RED SEA",
+      "confidence": "confirmed",
+      "sourceText": "OPEN RED SEA PROMPT"
+    },
+    "openDate": {
+      "value": "spot",
+      "confidence": "interpreted",
+      "sourceText": "OPEN RED SEA PROMPT"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": {
+      "value": 10,
+      "confidence": "confirmed",
+      "source_text": "FULL LOADED/BALLAST:10.KTS/10.5KTS"
+    },
+    "speedBallast": {
+      "value": 10.5,
+      "confidence": "confirmed",
+      "source_text": "FULL LOADED/BALLAST:10.KTS/10.5KTS"
+    },
+    "consumption": {
+      "value": "Ballast: IFO 180 M/E 3.7MT/D; AUX/E MGO 0.35MT. Loading: IFO 180 ME 4.2MT/D; AUX/E MGO 0.35MT/D. In port: AUX/E MGO 0.35MT/D",
+      "confidence": "confirmed",
+      "source_text": "CONSUMPTION BALLAST\r\n\r\nIFO 180: M/E :3.7MT/D; AUX/E:MGO 0.35MT\r\n\r\n\r\nCONSUMPTION LOADING\r\n\r\nIFO 180  ME:4.2MT/D；AUX/E: MGO 0.35MT/D\r\n\r\n\r\nCONSUMPTION IN PORT\r\n\r\nAUX/E MGO 0.35MT/D"
+    },
+    "deckCapacity": null,
+    "specialFeatures": [],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19d5e79432c6caf9",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "MV GLORY TOM",
+      "confidence": "confirmed",
+      "sourceText": "MV GLORY TOM  DWT 63695 - OPEN CASABLANCA END AUG/EARLY SEP"
+    },
+    "imo": null,
+    "flag": "PANAMA",
+    "built": 2015,
+    "classSociety": "NK",
+    "pandi": "CPI",
+    "dwtSummer": {
+      "value": 63695.7,
+      "confidence": "confirmed",
+      "sourceText": "SDWT : 63695.70 METRIC TONNES"
+    },
+    "dwcc": null,
+    "draftMax": {
+      "value": 13.3,
+      "confidence": "confirmed",
+      "sourceText": "SDRAFT : 13.30 METRES"
+    },
+    "loa": 199.9,
+    "beam": 32.26,
+    "grt": 36353,
+    "nrt": 21610,
+    "holdsCount": 5,
+    "hatchesCount": 5,
+    "grainCapacity": 78771,
+    "grainCapacityUnit": "cbm",
+    "baleCapacity": 73680,
+    "holdDimensions": null,
+    "hatchDimensions": "[object Object],[object Object]",
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "4 X 30 METRIC TONNES",
+    "hatchType": "MACGREGOR FOLDING",
+    "vesselType": "GRABFITTED BULKCARRIER",
+    "openPosition": {
+      "value": "CASABLANCA",
+      "confidence": "confirmed",
+      "sourceText": "OPEN CASABLANCA END AUG/EARLY SEP"
+    },
+    "openDate": {
+      "value": {
+        "open": null,
+        "close": null,
+        "display": "END AUG/EARLY SEP"
+      },
+      "confidence": "uncertain",
+      "sourceText": "END AUG/EARLY SEP"
+    },
+    "direction": null,
+    "restrictions": [
+      {
+        "value": "NO UKRAINE, BLACK SEA RUSSIA TRADING",
+        "confidence": "confirmed",
+        "source_text": "NO UKRAINE, BLACK SEA RUSSIA TRADING;"
+      },
+      {
+        "value": "NO USA TRADING",
+        "confidence": "confirmed",
+        "source_text": "NO USA TRADING;"
+      },
+      {
+        "value": "BALTIC RUSSIA - MURMANSK/UST LUGA/SAINT PETERSBURG - OK",
+        "confidence": "confirmed",
+        "source_text": "BALTIC RUSSIA - MURMANSK/UST LUGA/SAINT PETERSBURG - OK"
+      },
+      {
+        "value": "GOA TRANSIT - OK",
+        "confidence": "confirmed",
+        "source_text": "GOA TRANSIT - OK"
+      }
+    ],
+    "lastCargoes": "GENERAL CARGO/TAPIOCA CHIPS/COAL/COAL/BAUXITE, I.ORE",
+    "speedLaden": {
+      "value": 13.5,
+      "confidence": "interpreted",
+      "source_text": "ABT 13.5 KNOTS ON ABT 28.5 MT/DAY IFO 380 CST + 0.1 MT/DAY MGO"
+    },
+    "speedBallast": {
+      "value": 14,
+      "confidence": "interpreted",
+      "source_text": "ABT 14.0 KNOTS ON ABT 27.0 MT/DAY IFO 380 CST + 0.1 MT/DAY MGO"
+    },
+    "consumption": {
+      "value": "Ballast: ABT 27.0 MT/DAY IFO 380 CST + 0.1 MT/DAY MGO; Laden: ABT 28.5 MT/DAY IFO 380 CST + 0.1 MT/DAY MGO; Eco ballast: ABT 19.5 MT/DAY IFO 380 CST+ 0.1 MT/DAY MGO; Eco laden: ABT 21.0 MT/DAY IFO 380 CST+ 0.1 MT/DAY MGO; Port work: ABT 6.0 MT/DAY IFO 380 CST + 0.2 MT/DAY MGO; Port idle: ABT 2.0 MT/DAY IFO 380 CST + 0.2 MT/DAY MGO",
+      "confidence": "interpreted",
+      "source_text": "ABT 14.0 KNOTS ON ABT 27.0 MT/DAY IFO 380 CST + 0.1 MT/DAY MGO"
+    },
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "BOD ABT 600-700 MT VLSFO AND ABT 140-160 MT LSMGO",
+        "confidence": "interpreted",
+        "source_text": "BOD ABT 600-700 MT VLSFO AND ABT 140-160 MT LSMGO"
+      },
+      {
+        "value": "2*25MT, DECK/HATCH - OK",
+        "confidence": "confirmed",
+        "source_text": "2*25MT, DECK/HATCH - OK"
+      },
+      {
+        "value": "WINDMILL BLADES CAN TRY CASE BY CASE",
+        "confidence": "confirmed",
+        "source_text": "WINDMILL BLADES CAN TRY CASE BY CASE;"
+      },
+      {
+        "value": "TYPE : GRABFITTED BULKCARRIER",
+        "confidence": "confirmed",
+        "source_text": "TYPE : GRABFITTED BULKCARRIER"
+      },
+      {
+        "value": "HULL : DOUBLE HULL",
+        "confidence": "confirmed",
+        "source_text": "HULL : DOUBLE HULL"
+      },
+      {
+        "value": "RIGHTSHIP RATING: 3 STARS",
+        "confidence": "confirmed",
+        "source_text": "RIGHTSHIP RATING: 3 STARS"
+      },
+      {
+        "value": "TANKTOP STR : HOLD #1, #3, #5: 25 MT/SQM\n\nHOLD #2, #4: 20 MT/SQM",
+        "confidence": "confirmed",
+        "source_text": "TANKTOP STR : HOLD #1, #3, #5: 25 MT/SQM\n\nHOLD #2, #4: 20 MT/SQM"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e07c65c31852c7",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "FAITH",
+      "confidence": "confirmed",
+      "sourceText": "FAITH   30116DW/12/CR30MT"
+    },
+    "imo": null,
+    "flag": null,
+    "built": null,
+    "classSociety": null,
+    "pandi": null,
+    "dwtSummer": {
+      "value": 30116,
+      "confidence": "confirmed",
+      "sourceText": "30116DW"
+    },
+    "dwcc": null,
+    "draftMax": null,
+    "loa": null,
+    "beam": null,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": null,
+    "hatchesCount": null,
     "grainCapacity": null,
     "grainCapacityUnit": null,
     "baleCapacity": null,
@@ -260,303 +1017,3053 @@
     "hatchDimensions": null,
     "tankTopStrength": null,
     "geared": true,
-    "craneCapacity": "2 x 25t",
+    "craneCapacity": "30 MT",
     "hatchType": null,
-    "vesselType": "General Cargo",
+    "vesselType": null,
     "openPosition": {
-      "value": "Genoa, Italy",
-      "confidence": "confirmed"
+      "value": "Praia Mole",
+      "confidence": "confirmed",
+      "sourceText": "PRAIA MOLE 15/20 MAY"
     },
-    "direction": "Med",
+    "openDate": {
+      "value": {
+        "open": "2026-05-15",
+        "close": "2026-05-20",
+        "display": "15/20 MAY"
+      },
+      "confidence": "interpreted",
+      "sourceText": "PRAIA MOLE 15/20 MAY"
+    },
+    "direction": null,
     "restrictions": [],
     "lastCargoes": null,
-    "speedLaden": null,
+    "speedLaden": {
+      "value": 12,
+      "confidence": "uncertain",
+      "source_text": "30116DW/12/CR30MT"
+    },
     "speedBallast": null,
     "consumption": null,
     "deckCapacity": null,
     "specialFeatures": [],
     "ciiRating": null,
-    "verificationWarning": null,
-    "openDateRelative": "+4d"
+    "verificationWarning": null
   },
   {
-    "emailId": "sample-17",
+    "emailId": "19e07c68d1a6c54a",
     "itemIndex": 0,
     "vesselName": {
-      "value": "LAGGARD STAR",
-      "confidence": "confirmed"
+      "value": "AMITY",
+      "confidence": "confirmed",
+      "sourceText": "AMITY  29996DW/10/CR30MT"
     },
-    "imo": "9156785",
-    "flag": "Malta",
-    "built": 2009,
-    "classSociety": "LR",
-    "pandi": "West of England",
-    "dwtSummer": {
-      "value": 15000,
-      "confidence": "confirmed"
-    },
-    "dwcc": {
-      "value": 14200,
-      "confidence": "confirmed"
-    },
-    "draftMax": {
-      "value": 7.8,
-      "confidence": "confirmed"
-    },
-    "loa": 148.0,
-    "beam": 22.4,
-    "grt": null,
-    "nrt": null,
-    "holdsCount": 3,
-    "hatchesCount": 3,
-    "grainCapacity": null,
-    "grainCapacityUnit": null,
-    "baleCapacity": 18200,
-    "holdDimensions": null,
-    "hatchDimensions": null,
-    "tankTopStrength": null,
-    "geared": true,
-    "craneCapacity": "2 x 30t",
-    "hatchType": null,
-    "vesselType": "General Cargo",
-    "openPosition": {
-      "value": "Lagos, Nigeria (Apapa)",
-      "confidence": "confirmed"
-    },
-    "direction": "WAfrica, Med",
-    "restrictions": [],
-    "lastCargoes": "steel products, bagged cargo, breakbulk, general cargo",
-    "speedLaden": null,
-    "speedBallast": null,
-    "consumption": null,
-    "deckCapacity": null,
-    "specialFeatures": [],
-    "ciiRating": null,
-    "verificationWarning": null,
-    "openDateRelative": "+5d"
-  },
-  {
-    "emailId": "sample-18",
-    "itemIndex": 0,
-    "vesselName": {
-      "value": "PERSIAN ROSE",
-      "confidence": "confirmed"
-    },
-    "imo": "9256781",
-    "flag": "Iran",
-    "built": 2004,
-    "classSociety": "IRS",
+    "imo": null,
+    "flag": null,
+    "built": 2010,
+    "classSociety": null,
     "pandi": null,
     "dwtSummer": {
-      "value": 22000,
-      "confidence": "confirmed"
+      "value": 29996,
+      "confidence": "confirmed",
+      "sourceText": "AMITY  29996DW/10/CR30MT"
     },
-    "dwcc": {
-      "value": 20800,
-      "confidence": "confirmed"
-    },
-    "draftMax": {
-      "value": 8.6,
-      "confidence": "confirmed"
-    },
-    "loa": 165.4,
-    "beam": 24.8,
+    "dwcc": null,
+    "draftMax": null,
+    "loa": null,
+    "beam": null,
     "grt": null,
     "nrt": null,
-    "holdsCount": 4,
-    "hatchesCount": 4,
+    "holdsCount": null,
+    "hatchesCount": null,
     "grainCapacity": null,
     "grainCapacityUnit": null,
-    "baleCapacity": 26800,
+    "baleCapacity": null,
     "holdDimensions": null,
     "hatchDimensions": null,
     "tankTopStrength": null,
     "geared": true,
-    "craneCapacity": "2 x 25t",
+    "craneCapacity": "30MT",
     "hatchType": null,
-    "vesselType": "General Cargo",
+    "vesselType": null,
     "openPosition": {
-      "value": "Bandar Abbas, Iran",
-      "confidence": "confirmed"
+      "value": "BIZERTE",
+      "confidence": "confirmed",
+      "sourceText": "BIZERTE 14/20 MAY"
     },
-    "direction": "Persian Gulf, Indian Ocean",
-    "restrictions": [],
-    "lastCargoes": "bulk, general cargo",
-    "speedLaden": null,
-    "speedBallast": null,
-    "consumption": null,
-    "deckCapacity": null,
-    "specialFeatures": [],
-    "ciiRating": null,
-    "verificationWarning": null,
-    "openDateRelative": "+6d"
-  },
-  {
-    "emailId": "sample-19",
-    "itemIndex": 0,
-    "vesselName": {
-      "value": "NORDIC ICE",
-      "confidence": "confirmed"
+    "openDate": {
+      "value": {
+        "open": "2026-05-14",
+        "close": "2026-05-20",
+        "display": "14/20 MAY"
+      },
+      "confidence": "interpreted",
+      "sourceText": "BIZERTE 14/20 MAY"
     },
-    "imo": "9356787",
-    "flag": "Finland",
-    "built": 2012,
-    "classSociety": "BV",
-    "pandi": "Skuld",
-    "dwtSummer": {
-      "value": 28500,
-      "confidence": "confirmed"
-    },
-    "dwcc": {
-      "value": 27100,
-      "confidence": "confirmed"
-    },
-    "draftMax": {
-      "value": 9.4,
-      "confidence": "confirmed"
-    },
-    "loa": 178.6,
-    "beam": 26.0,
-    "grt": null,
-    "nrt": null,
-    "holdsCount": 4,
-    "hatchesCount": 4,
-    "grainCapacity": null,
-    "grainCapacityUnit": null,
-    "baleCapacity": 34200,
-    "holdDimensions": null,
-    "hatchDimensions": null,
-    "tankTopStrength": null,
-    "geared": true,
-    "craneCapacity": "2 x 30t",
-    "hatchType": null,
-    "vesselType": "Bulk Carrier",
-    "openPosition": {
-      "value": "Helsinki, Finland",
-      "confidence": "confirmed"
-    },
-    "direction": "Baltic, N.Europe, Med",
+    "direction": null,
     "restrictions": [],
     "lastCargoes": null,
     "speedLaden": null,
     "speedBallast": null,
     "consumption": null,
     "deckCapacity": null,
-    "specialFeatures": ["Ice Class 1A FS (Finnish-Swedish)"],
-    "ciiRating": null,
-    "verificationWarning": null,
-    "openDateRelative": "+7d"
-  },
-  {
-    "emailId": "sample-20",
-    "itemIndex": 0,
-    "vesselName": {
-      "value": "CARBON LADY",
-      "confidence": "confirmed"
-    },
-    "imo": "9456783",
-    "flag": "Marshall Islands",
-    "built": 2001,
-    "classSociety": "LR",
-    "pandi": "North",
-    "dwtSummer": {
-      "value": 17500,
-      "confidence": "confirmed"
-    },
-    "dwcc": {
-      "value": 16600,
-      "confidence": "confirmed"
-    },
-    "draftMax": {
-      "value": 8.1,
-      "confidence": "confirmed"
-    },
-    "loa": 153.8,
-    "beam": 23.2,
-    "grt": null,
-    "nrt": null,
-    "holdsCount": 3,
-    "hatchesCount": 3,
-    "grainCapacity": null,
-    "grainCapacityUnit": null,
-    "baleCapacity": 21400,
-    "holdDimensions": null,
-    "hatchDimensions": null,
-    "tankTopStrength": null,
-    "geared": true,
-    "craneCapacity": "2 x 30t",
-    "hatchType": null,
-    "vesselType": "General Cargo",
-    "openPosition": {
-      "value": "Antwerp, Belgium",
-      "confidence": "confirmed"
-    },
-    "direction": "N.Europe, Med",
-    "restrictions": ["Subject to corrective action plan per IMO MEPC.338(76)"],
-    "lastCargoes": null,
-    "speedLaden": null,
-    "speedBallast": null,
-    "consumption": null,
-    "deckCapacity": null,
     "specialFeatures": [],
-    "ciiRating": "D",
-    "verificationWarning": null,
-    "openDateRelative": "+2d"
+    "ciiRating": null,
+    "verificationWarning": null
   },
   {
-    "emailId": "demo-vessel-economics",
+    "emailId": "19e07c5f0379415b",
     "itemIndex": 0,
     "vesselName": {
-      "value": "DEMO ECONOMICS",
-      "confidence": "confirmed"
+      "value": "MV IMI",
+      "confidence": "confirmed",
+      "sourceText": "MV IMI"
     },
-    "imo": "9999991",
-    "flag": "Marshall Islands",
-    "built": 2015,
+    "imo": null,
+    "flag": "BAHAMAS",
+    "built": 1993,
     "classSociety": "DNV",
-    "pandi": "Gard",
+    "pandi": null,
     "dwtSummer": {
-      "value": 58000,
-      "confidence": "confirmed"
+      "value": 4300,
+      "confidence": "confirmed",
+      "sourceText": "4300/4080 DWT/DWCC"
     },
     "dwcc": {
-      "value": 55500,
-      "confidence": "confirmed"
+      "value": 4080,
+      "confidence": "confirmed",
+      "sourceText": "4300/4080 DWT/DWCC"
     },
     "draftMax": {
-      "value": 12.5,
-      "confidence": "confirmed"
+      "value": 5.62,
+      "confidence": "interpreted",
+      "sourceText": "4300/4080 DWT/DWCC ON 5.62 MR"
     },
-    "loa": 189.9,
-    "beam": 32.2,
+    "loa": 89.9,
+    "beam": 13.17,
     "grt": null,
     "nrt": null,
-    "holdsCount": 5,
-    "hatchesCount": 5,
+    "holdsCount": 1,
+    "hatchesCount": 1,
+    "grainCapacity": 5764,
+    "grainCapacityUnit": "cbm",
+    "baleCapacity": null,
+    "holdDimensions": "[object Object]",
+    "hatchDimensions": null,
+    "tankTopStrength": "15",
+    "geared": null,
+    "craneCapacity": null,
+    "hatchType": "OPEN HATCH",
+    "vesselType": "mpp bulk tonnage",
+    "openPosition": {
+      "value": "Vassiliko",
+      "confidence": "confirmed",
+      "sourceText": "Open @Vassiliko"
+    },
+    "openDate": {
+      "value": {
+        "open": "2026-05-15",
+        "close": "2026-05-16",
+        "display": "15/16 May 2026"
+      },
+      "confidence": "interpreted",
+      "sourceText": "15/16 May"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "BOXSHAPED",
+        "confidence": "confirmed",
+        "source_text": "BOXSHAPED"
+      },
+      {
+        "value": "2 BULKHEADS",
+        "confidence": "confirmed",
+        "source_text": "2 BULKHEADS"
+      },
+      {
+        "value": "BOWTHR",
+        "confidence": "confirmed",
+        "source_text": "BOWTHR"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e07c79d78505e4",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "M/V HACI HILMI II",
+      "confidence": "confirmed",
+      "sourceText": "M/V HACI HILMI II"
+    },
+    "imo": null,
+    "flag": null,
+    "built": 1992,
+    "classSociety": null,
+    "pandi": null,
+    "dwtSummer": {
+      "value": 6976,
+      "confidence": "confirmed",
+      "sourceText": "6976MTS DWT"
+    },
+    "dwcc": {
+      "value": 6750,
+      "confidence": "confirmed",
+      "sourceText": "6750MTS DWCC"
+    },
+    "draftMax": null,
+    "loa": null,
+    "beam": null,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": null,
+    "hatchesCount": null,
+    "grainCapacity": 309895,
+    "grainCapacityUnit": "cbft",
+    "baleCapacity": null,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "3 X 10MTS",
+    "hatchType": null,
+    "vesselType": null,
+    "openPosition": {
+      "value": "Marmara Sea",
+      "confidence": "confirmed",
+      "sourceText": "OPEN MARMARA SEA"
+    },
+    "openDate": {
+      "value": {
+        "open": "2026-05-22",
+        "close": "2026-05-23",
+        "display": "22-23RD MAY"
+      },
+      "confidence": "interpreted",
+      "sourceText": "22-23RD MAY"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e07c79d78505e4",
+    "itemIndex": 1,
+    "vesselName": {
+      "value": "MV TBN",
+      "confidence": "confirmed",
+      "sourceText": "MV TBN"
+    },
+    "imo": null,
+    "flag": null,
+    "built": 1996,
+    "classSociety": null,
+    "pandi": null,
+    "dwtSummer": {
+      "value": 17000,
+      "confidence": "interpreted",
+      "sourceText": "ABT 17 K DWT"
+    },
+    "dwcc": null,
+    "draftMax": null,
+    "loa": null,
+    "beam": null,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": null,
+    "hatchesCount": null,
+    "grainCapacity": 700000,
+    "grainCapacityUnit": "cbft",
+    "baleCapacity": null,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": null,
+    "hatchType": null,
+    "vesselType": null,
+    "openPosition": {
+      "value": "Gibraltar Range",
+      "confidence": "confirmed",
+      "sourceText": "OPEN AT GIBRALTAR RANGE"
+    },
+    "openDate": {
+      "value": {
+        "open": "2026-05-24",
+        "close": "2026-05-25",
+        "display": "24-25TH MAY"
+      },
+      "confidence": "interpreted",
+      "sourceText": "24-25TH MAY"
+    },
+    "direction": "worldwide",
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e07c6ce81f694d",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "MV ALTO",
+      "confidence": "confirmed",
+      "sourceText": "MV ALTO"
+    },
+    "imo": null,
+    "flag": "BELIZE",
+    "built": 1997,
+    "classSociety": "TURKISH LLOYD",
+    "pandi": null,
+    "dwtSummer": {
+      "value": 24804,
+      "confidence": "confirmed",
+      "sourceText": "SUMMER: 24804 DWT ON 10.045 METERS"
+    },
+    "dwcc": null,
+    "draftMax": {
+      "value": 10.045,
+      "confidence": "confirmed",
+      "sourceText": "SUMMER: 24804 DWT ON 10.045 METERS"
+    },
+    "loa": 153.78,
+    "beam": 26,
+    "grt": 20395,
+    "nrt": 9257,
+    "holdsCount": 4,
+    "hatchesCount": 4,
+    "grainCapacity": 44888.42,
+    "grainCapacityUnit": "cbm",
+    "baleCapacity": 43766.28,
+    "holdDimensions": null,
+    "hatchDimensions": "[object Object],[object Object],[object Object],[object Object]",
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "4X30T SWL (only 3 cranes can work simultaneously)",
+    "hatchType": "MC GREGOR FOLDING TYPE HATCHCOVERS",
+    "vesselType": "GENERAL CARGO",
+    "openPosition": {
+      "value": "YEMEN",
+      "confidence": "confirmed",
+      "sourceText": "Open YEMEN SPOT"
+    },
+    "openDate": {
+      "value": "spot",
+      "confidence": "interpreted",
+      "sourceText": "Open YEMEN SPOT"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "HOLD NO 2&3 ARE BOX",
+        "confidence": "confirmed",
+        "source_text": "HOLD NO 2&3 ARE BOX"
+      },
+      {
+        "value": "TANK TOP STRENGHT (CUM/M2) :  H1, H2, H3 = 15 T/M2 / H4 = 14 T/M2",
+        "confidence": "confirmed",
+        "source_text": "TANK TOP STRENGHT (CUM/M2) :  H1, H2, H3 = 15 T/M2 / H4 = 14 T/M2"
+      },
+      {
+        "value": "CO2 FITTED, AUSTRALIAN LADDERS FITTED",
+        "confidence": "confirmed",
+        "source_text": "CO2 FITTED, AUSTRALIAN LADDERS FITTED"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e07c8d8f66d4aa",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "MV GULF BLUE",
+      "confidence": "confirmed",
+      "sourceText": "MV GULF BLUE"
+    },
+    "imo": null,
+    "flag": "ANTIGUA & BARBUDA",
+    "built": 1997,
+    "classSociety": "NK",
+    "pandi": "WEST OF ENGLAND",
+    "dwtSummer": {
+      "value": 4444,
+      "confidence": "confirmed",
+      "sourceText": "DWT 4444 MT"
+    },
+    "dwcc": null,
+    "draftMax": {
+      "value": 5.68,
+      "confidence": "interpreted",
+      "sourceText": "DWT 4444 MT ON 5,68 m"
+    },
+    "loa": 99.91,
+    "beam": 12.8,
+    "grt": 2997,
+    "nrt": 1741,
+    "holdsCount": 1,
+    "hatchesCount": 2,
+    "grainCapacity": 203271,
+    "grainCapacityUnit": "cbft",
+    "baleCapacity": 200271,
+    "holdDimensions": "[object Object]",
+    "hatchDimensions": "[object Object],[object Object]",
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": null,
+    "hatchType": null,
+    "vesselType": null,
+    "openPosition": {
+      "value": "AEGEAN",
+      "confidence": "confirmed",
+      "sourceText": "4444 DWT - AEGEAN - SPOT"
+    },
+    "openDate": {
+      "value": "spot",
+      "confidence": "interpreted",
+      "sourceText": "4444 DWT - AEGEAN - SPOT"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "SID-BOXHOLD",
+        "confidence": "confirmed",
+        "source_text": "SID-BOXHOLD"
+      },
+      {
+        "value": "KING BEAM FITTED",
+        "confidence": "confirmed",
+        "source_text": "KING BEAM FITTED"
+      },
+      {
+        "value": "TWO STATIONARY BULKHEADS IN FIXED POSITIONS",
+        "confidence": "confirmed",
+        "source_text": "TWO STATIONARY BULKHEADS IN FIXED POSITIONS"
+      },
+      {
+        "value": "297 TEU WHEREOF 129 TEU IN HOLD AND 168 TEU ON DECK",
+        "confidence": "confirmed",
+        "source_text": "297 TEU WHEREOF 129 TEU IN HOLD AND 168 TEU ON DECK"
+      },
+      {
+        "value": "GRAIN/APP B FITTED",
+        "confidence": "confirmed",
+        "source_text": "GRAIN/APP B FITTED"
+      },
+      {
+        "value": "STEELFLOORED",
+        "confidence": "confirmed",
+        "source_text": "STEELFLOORED"
+      },
+      {
+        "value": "ELECTRICAL VENTILATION",
+        "confidence": "confirmed",
+        "source_text": "ELECTRICAL VENTILATION"
+      },
+      {
+        "value": "BOWTHRUSTER 220 KW",
+        "confidence": "confirmed",
+        "source_text": "BOWTHRUSTER 220 KW"
+      },
+      {
+        "value": "IMO FITTED IN HOLD 1.4S/2/3/4/5.1/6.1/8",
+        "confidence": "confirmed",
+        "source_text": "IMO FITTED IN HOLD 1.4S/2/3/4/5.1/6.1/8"
+      },
+      {
+        "value": "A60 BULKHEAD FITTED",
+        "confidence": "confirmed",
+        "source_text": "A60 BULKHEAD FITTED"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e07cd53642b24c",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "FAITH",
+      "confidence": "confirmed",
+      "sourceText": "FAITH   30116DW/12/CR30MT"
+    },
+    "imo": null,
+    "flag": null,
+    "built": null,
+    "classSociety": null,
+    "pandi": null,
+    "dwtSummer": {
+      "value": 30116,
+      "confidence": "confirmed",
+      "sourceText": "30116DW"
+    },
+    "dwcc": null,
+    "draftMax": null,
+    "loa": null,
+    "beam": null,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": null,
+    "hatchesCount": null,
     "grainCapacity": null,
     "grainCapacityUnit": null,
-    "baleCapacity": 72000,
+    "baleCapacity": null,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "30MT",
+    "hatchType": null,
+    "vesselType": null,
+    "openPosition": {
+      "value": "Praia Mole",
+      "confidence": "confirmed",
+      "sourceText": "PRAIA MOLE 15/20 MAY"
+    },
+    "openDate": {
+      "value": {
+        "open": "2026-05-15",
+        "close": "2026-05-20",
+        "display": "15/20 MAY"
+      },
+      "confidence": "interpreted",
+      "sourceText": "PRAIA MOLE 15/20 MAY"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": {
+      "value": 12,
+      "confidence": "uncertain",
+      "source_text": "30116DW/12/CR30MT"
+    },
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e07cf877558fdc",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "MV LADY ANITA",
+      "confidence": "confirmed",
+      "sourceText": "MV LADY ANITA – OPEN HODEIDAH SPOT PROMPT"
+    },
+    "imo": null,
+    "flag": "TOGO",
+    "built": 2012,
+    "classSociety": "OMCS",
+    "pandi": null,
+    "dwtSummer": {
+      "value": 5328.4,
+      "confidence": "confirmed",
+      "sourceText": "SUMMER DEADWEIGHT\r\n\r\n5328.4 M/T"
+    },
+    "dwcc": null,
+    "draftMax": {
+      "value": 5.85,
+      "confidence": "confirmed",
+      "sourceText": "SUMMER DRAFT\r\n\r\n5.85 M"
+    },
+    "loa": 96.9,
+    "beam": 15.8,
+    "grt": 2998,
+    "nrt": 1746,
+    "holdsCount": 2,
+    "hatchesCount": 2,
+    "grainCapacity": 6800,
+    "grainCapacityUnit": "cbm",
+    "baleCapacity": 6700,
+    "holdDimensions": "[object Object],[object Object]",
+    "hatchDimensions": "[object Object],[object Object]",
+    "tankTopStrength": null,
+    "geared": null,
+    "craneCapacity": null,
+    "hatchType": null,
+    "vesselType": "GENERAL CARGO SHIP",
+    "openPosition": {
+      "value": "HODEIDAH",
+      "confidence": "confirmed",
+      "sourceText": "MV LADY ANITA – OPEN HODEIDAH SPOT PROMPT"
+    },
+    "openDate": {
+      "value": "spot",
+      "confidence": "interpreted",
+      "sourceText": "SPOT PROMPT"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": {
+      "value": 10,
+      "confidence": "confirmed",
+      "source_text": "FULL LOADED/BALLAST:10.KTS/10.5KTS"
+    },
+    "speedBallast": {
+      "value": 10.5,
+      "confidence": "confirmed",
+      "source_text": "FULL LOADED/BALLAST:10.KTS/10.5KTS"
+    },
+    "consumption": {
+      "value": "Ballast: IFO 180: M/E :3.7MT/D; AUX/E:MGO 0.35MT; Loading: IFO 180 ME:4.2MT/D；AUX/E: MGO 0.35MT/D; In port: AUX/E MGO 0.35MT/D",
+      "confidence": "confirmed",
+      "source_text": "CONSUMPTION BALLAST\r\n\r\nIFO 180: M/E :3.7MT/D; AUX/E:MGO 0.35MT\r\n\r\n\r\nCONSUMPTION LOADING\r\n\r\nIFO 180  ME:4.2MT/D；AUX/E: MGO 0.35MT/D\r\n\r\n\r\nCONSUMPTION IN PORT\r\n\r\nAUX/E MGO 0.35MT/D"
+    },
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "L.B.P: 89.8 M",
+        "confidence": "confirmed",
+        "source_text": "L.O.A / L.B.P\r\n\r\n96.9 M / 89.8 M"
+      },
+      {
+        "value": "Depth moulded: 7.4 M",
+        "confidence": "confirmed",
+        "source_text": "DEPTH MOULDED\r\n\r\n7.4 M"
+      },
+      {
+        "value": "Light ship: 1386.8 MT",
+        "confidence": "confirmed",
+        "source_text": "LIGHT SHIP\r\n\r\n1386.8 MT"
+      },
+      {
+        "value": "Displacement: 6715.2 MT",
+        "confidence": "confirmed",
+        "source_text": "DISPLACEMENT\r\n\r\n6715.2 MT"
+      },
+      {
+        "value": "T.P.C: 12.9 MT",
+        "confidence": "confirmed",
+        "source_text": "T.P.C\r\n\r\n12.9 MT"
+      },
+      {
+        "value": "Free board: 1.55 M",
+        "confidence": "confirmed",
+        "source_text": "FREE BOARD\r\n\r\n1.55 M"
+      },
+      {
+        "value": "Max height: 28.65 M",
+        "confidence": "confirmed",
+        "source_text": "MAX HEIGHT\r\n\r\n28.65 M"
+      },
+      {
+        "value": "M/E: GC320ZCD-4 500 R/MIN 1765KW",
+        "confidence": "confirmed",
+        "source_text": "M/E\r\n\r\nGC320ZCD-4 500 R/MIN 1765KW"
+      },
+      {
+        "value": "A/E: 6135JZCAF/6CCFJ120J-Y8/2SETS",
+        "confidence": "confirmed",
+        "source_text": "A/E\r\n\r\n6135JZCAF/6CCFJ120J-Y8/2SETS"
+      },
+      {
+        "value": "G/E: MP-H-120-4   120KW",
+        "confidence": "confirmed",
+        "source_text": "G/E\r\n\r\nMP-H-120-4   120KW"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e07d815dd6691c",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "MV LADY ANITA",
+      "confidence": "confirmed",
+      "sourceText": "MV LADY ANITA – OPEN HODEIDAH SPOT PROMPT"
+    },
+    "imo": null,
+    "flag": "TOGO",
+    "built": 2012,
+    "classSociety": "OMCS",
+    "pandi": null,
+    "dwtSummer": {
+      "value": 5328.4,
+      "confidence": "confirmed",
+      "sourceText": "SUMMER DEADWEIGHT\r\n\r\n5328.4 m/t"
+    },
+    "dwcc": null,
+    "draftMax": {
+      "value": 5.85,
+      "confidence": "confirmed",
+      "sourceText": "SUMMER DRAFT\r\n\r\n5.85 m"
+    },
+    "loa": 96.9,
+    "beam": 15.8,
+    "grt": 2998,
+    "nrt": 1746,
+    "holdsCount": 2,
+    "hatchesCount": 2,
+    "grainCapacity": null,
+    "grainCapacityUnit": null,
+    "baleCapacity": null,
+    "holdDimensions": "[object Object],[object Object]",
+    "hatchDimensions": "[object Object],[object Object]",
+    "tankTopStrength": null,
+    "geared": null,
+    "craneCapacity": null,
+    "hatchType": null,
+    "vesselType": "GENERAL CARGO SHIP",
+    "openPosition": {
+      "value": "HODEIDAH",
+      "confidence": "confirmed",
+      "sourceText": "MV LADY ANITA – OPEN HODEIDAH SPOT PROMPT"
+    },
+    "openDate": {
+      "value": "spot",
+      "confidence": "interpreted",
+      "sourceText": "SPOT PROMPT"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": {
+      "value": 10,
+      "confidence": "confirmed",
+      "source_text": "SPEED\r\n\r\nFULL LOADED/BALLAST:10.KTS/10.5KTS"
+    },
+    "speedBallast": {
+      "value": 10.5,
+      "confidence": "confirmed",
+      "source_text": "SPEED\r\n\r\nFULL LOADED/BALLAST:10.KTS/10.5KTS"
+    },
+    "consumption": {
+      "value": "Ballast: IFO 180 M/E 3.7MT/D; AUX/E MGO 0.35MT. Loading: IFO 180 ME 4.2MT/D; AUX/E MGO 0.35MT/D. In port: AUX/E MGO 0.35MT/D",
+      "confidence": "confirmed",
+      "source_text": "CONSUMPTION BALLAST\r\n\r\nIFO 180: M/E :3.7MT/D; AUX/E:MGO 0.35MT\r\n\r\n\r\nCONSUMPTION LOADING\r\n\r\nIFO 180  ME:4.2MT/D；AUX/E: MGO 0.35MT/D\r\n\r\n\r\nCONSUMPTION IN PORT\r\n\r\nAUX/E MGO 0.35MT/D"
+    },
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "Ex name: NEW SILK ROAD 2",
+        "confidence": "confirmed",
+        "source_text": "EX NAME\r\n\r\nNEW SILK ROAD 2"
+      },
+      {
+        "value": "Depth moulded: 7.4 m",
+        "confidence": "confirmed",
+        "source_text": "DEPTH MOULDED\r\n\r\n7.4 m"
+      },
+      {
+        "value": "Light ship: 1386.8 mt",
+        "confidence": "confirmed",
+        "source_text": "LIGHT SHIP\r\n\r\n1386.8 mt"
+      },
+      {
+        "value": "Displacement: 6715.2 mt",
+        "confidence": "confirmed",
+        "source_text": "DISPLACEMENT\r\n\r\n6715.2 mt"
+      },
+      {
+        "value": "TPC: 12.9 mt",
+        "confidence": "confirmed",
+        "source_text": "T.P.C\r\n\r\n12.9 mt"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e07cfaa34cc768",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "M/V LIKA",
+      "confidence": "confirmed",
+      "sourceText": "M/V LIKA"
+    },
+    "imo": null,
+    "flag": "COMOROS",
+    "built": 1997,
+    "classSociety": "OMCS",
+    "pandi": null,
+    "dwtSummer": {
+      "value": 25000,
+      "confidence": "confirmed",
+      "sourceText": "DWT 25,000 ON 9.80M"
+    },
+    "dwcc": null,
+    "draftMax": {
+      "value": 9.8,
+      "confidence": "interpreted",
+      "sourceText": "DWT 25,000 ON 9.80M"
+    },
+    "loa": 158.2,
+    "beam": 25.8,
+    "grt": 15349,
+    "nrt": 8111,
+    "holdsCount": 4,
+    "hatchesCount": 4,
+    "grainCapacity": 29463,
+    "grainCapacityUnit": "cbm",
+    "baleCapacity": 28768,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "3X30",
+    "hatchType": null,
+    "vesselType": null,
+    "openPosition": {
+      "value": "Red Sea",
+      "confidence": "confirmed",
+      "sourceText": "VSL OPEN RED SEA  SPOT"
+    },
+    "openDate": {
+      "value": "spot",
+      "confidence": "interpreted",
+      "sourceText": "VSL OPEN RED SEA  SPOT"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": {
+      "value": 11,
+      "confidence": "interpreted",
+      "source_text": "Laden:  about 11.00 knots"
+    },
+    "speedBallast": {
+      "value": 11,
+      "confidence": "interpreted",
+      "source_text": "Ballast: about 11.00 knots"
+    },
+    "consumption": {
+      "value": "Laden: about 15.50 mts LSFO 380 cst; Ballast: about 15.00 mts LSFO 380 cst; In port: about 2 mts MDO/MGO when idle; about 3.5 mts MDO/MGO when gear working",
+      "confidence": "interpreted",
+      "source_text": "Laden:  about 11.00 knots on about 15.50 mts (LSFO 380 cst)\nBallast: about 11.00 knots on about 15.00 mts (LSFO 380 cst)\nIn port:  about  2mts  MDO/MGO when idle\nabout  3.5mts MDO/MGO when gear working"
+    },
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "MAIN ENGINE: HITACHI B&W 6L42MC",
+        "confidence": "confirmed",
+        "source_text": "MAIN ENGINE: HITACHI B&W 6L42MC"
+      },
+      {
+        "value": "AUX.ENGINE: 2 X DAIHATSU",
+        "confidence": "confirmed",
+        "source_text": "AUX.ENGINE: 2 X DAIHATSU"
+      },
+      {
+        "value": "Speed and consumption under good weather conditions, upto max.Beaufort 4 / Douglas Seastate 3, no adverse current and no negative influence of swell.",
+        "confidence": "confirmed",
+        "source_text": "Speed and consumption under good weather conditions, upto max.Beaufort 4 / Douglas Seastate 3, no adverse current and no negative influence of swell."
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e07d0cb83503c5",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "MV KATREN",
+      "confidence": "confirmed",
+      "sourceText": "MV KATREN"
+    },
+    "imo": null,
+    "flag": "VANUATU",
+    "built": 1991,
+    "classSociety": "RINA",
+    "pandi": "MS AMLIN BELGIUM",
+    "dwtSummer": {
+      "value": 4173,
+      "confidence": "confirmed",
+      "sourceText": "DWT 4173 MTS"
+    },
+    "dwcc": {
+      "value": 4000,
+      "confidence": "confirmed",
+      "sourceText": "DWCC 4000"
+    },
+    "draftMax": {
+      "value": 5.45,
+      "confidence": "interpreted",
+      "sourceText": "DWCC 4000 ON 5,45 M DRAFT"
+    },
+    "loa": 88.25,
+    "beam": 13.7,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": 2,
+    "hatchesCount": null,
+    "grainCapacity": 197500,
+    "grainCapacityUnit": "cbft",
+    "baleCapacity": 197500,
+    "holdDimensions": "[object Object],[object Object]",
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": null,
+    "hatchType": null,
+    "vesselType": null,
+    "openPosition": {
+      "value": "SEVILLA",
+      "confidence": "confirmed",
+      "sourceText": "open   SEVILLA"
+    },
+    "openDate": {
+      "value": {
+        "open": "2026-05-07",
+        "close": "2026-05-08",
+        "display": "07-08 May 2026"
+      },
+      "confidence": "interpreted",
+      "sourceText": "07-08 May"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "Single deck",
+        "confidence": "interpreted",
+        "source_text": "SID"
+      },
+      {
+        "value": "BOW TRUSTER FITTED",
+        "confidence": "confirmed",
+        "source_text": "BOW TRUSTER FITTED"
+      },
+      {
+        "value": "TWO BOX HOLDS",
+        "confidence": "confirmed",
+        "source_text": "TWO BOX HOLDS"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e07d3d91481ec3",
+    "itemIndex": 0,
+    "vesselName": null,
+    "imo": null,
+    "flag": null,
+    "built": null,
+    "classSociety": null,
+    "pandi": null,
+    "dwtSummer": null,
+    "dwcc": {
+      "value": 5000,
+      "confidence": "confirmed",
+      "sourceText": "5000MT DWCC/SID/BOX/GLESS open S.KOREA ppt/onw"
+    },
+    "draftMax": null,
+    "loa": null,
+    "beam": null,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": null,
+    "hatchesCount": null,
+    "grainCapacity": null,
+    "grainCapacityUnit": null,
+    "baleCapacity": null,
     "holdDimensions": null,
     "hatchDimensions": null,
     "tankTopStrength": null,
     "geared": false,
     "craneCapacity": null,
     "hatchType": null,
-    "vesselType": "Bulk Carrier",
+    "vesselType": null,
     "openPosition": {
-      "value": "Singapore",
-      "confidence": "confirmed"
+      "value": "S.KOREA",
+      "confidence": "confirmed",
+      "sourceText": "open S.KOREA"
     },
-    "direction": "Worldwide",
+    "openDate": {
+      "value": {
+        "open": null,
+        "close": null,
+        "display": "ppt/onw"
+      },
+      "confidence": "interpreted",
+      "sourceText": "ppt/onw"
+    },
+    "direction": "PG",
     "restrictions": [],
-    "lastCargoes": "grain, bulk",
-    "speedLaden": "14.0",
-    "speedBallast": "14.5",
-    "consumption": "32.0 mt IFO",
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "Single deck",
+        "confidence": "interpreted",
+        "source_text": "SID"
+      },
+      {
+        "value": "Box-shaped holds",
+        "confidence": "interpreted",
+        "source_text": "BOX"
+      },
+      {
+        "value": "Gearless",
+        "confidence": "interpreted",
+        "source_text": "GLESS"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e07d3d91481ec3",
+    "itemIndex": 1,
+    "vesselName": null,
+    "imo": null,
+    "flag": null,
+    "built": null,
+    "classSociety": null,
+    "pandi": null,
+    "dwtSummer": null,
+    "dwcc": {
+      "value": 5000,
+      "confidence": "confirmed",
+      "sourceText": "5000MT DWCC/SID/GLESS open CHINA ppt/onw"
+    },
+    "draftMax": null,
+    "loa": null,
+    "beam": null,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": null,
+    "hatchesCount": null,
+    "grainCapacity": null,
+    "grainCapacityUnit": null,
+    "baleCapacity": null,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": false,
+    "craneCapacity": null,
+    "hatchType": null,
+    "vesselType": null,
+    "openPosition": {
+      "value": "CHINA",
+      "confidence": "confirmed",
+      "sourceText": "open CHINA"
+    },
+    "openDate": {
+      "value": {
+        "open": null,
+        "close": null,
+        "display": "ppt/onw"
+      },
+      "confidence": "interpreted",
+      "sourceText": "ppt/onw"
+    },
+    "direction": "BLACK SEA",
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "Single deck",
+        "confidence": "interpreted",
+        "source_text": "SID"
+      },
+      {
+        "value": "Gearless",
+        "confidence": "interpreted",
+        "source_text": "GLESS"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e07d49ee39a1cc",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "MV LADY HATICE",
+      "confidence": "confirmed",
+      "sourceText": "MV LADY HATICE"
+    },
+    "imo": null,
+    "flag": "PANAMA",
+    "built": 2009,
+    "classSociety": "RINA",
+    "pandi": "HYDOR",
+    "dwtSummer": {
+      "value": 18930,
+      "confidence": "confirmed",
+      "sourceText": "DWT /GRT/NRT 18930/11767/6023"
+    },
+    "dwcc": {
+      "value": 18200,
+      "confidence": "confirmed",
+      "sourceText": "DWCC 18200 MTS AT 8.49M DRAFT"
+    },
+    "draftMax": {
+      "value": 8.49,
+      "confidence": "interpreted",
+      "sourceText": "DWCC 18200 MTS AT 8.49M DRAFT"
+    },
+    "loa": 139.92,
+    "beam": 25,
+    "grt": 11767,
+    "nrt": 6023,
+    "holdsCount": 4,
+    "hatchesCount": 4,
+    "grainCapacity": 762340,
+    "grainCapacityUnit": "cbft",
+    "baleCapacity": 737837,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": null,
+    "hatchType": null,
+    "vesselType": "SID - BOXLIKE",
+    "openPosition": {
+      "value": "AGADIR",
+      "confidence": "confirmed",
+      "sourceText": "OPEN AT AGADIR"
+    },
+    "openDate": {
+      "value": {
+        "open": "2026-05-18",
+        "close": "2026-05-19",
+        "display": "18/19 MAY"
+      },
+      "confidence": "interpreted",
+      "sourceText": "18/19 MAY OPEN AT AGADIR"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "EX SQUAMISH",
+        "confidence": "confirmed",
+        "source_text": "EX SQUAMISH"
+      },
+      {
+        "value": "SID - BOXLIKE",
+        "confidence": "confirmed",
+        "source_text": "SID - BOXLIKE"
+      },
+      {
+        "value": "BUILT 2009 JAPAN",
+        "confidence": "confirmed",
+        "source_text": "BUILT 2009 JAPAN"
+      },
+      {
+        "value": "ALL DETS ABT WOG",
+        "confidence": "confirmed",
+        "source_text": "ALL DETS ABT WOG"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e07d4ca1ca18ff",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "MV LADY ZEHMA",
+      "confidence": "confirmed",
+      "sourceText": "MV LADY ZEHMA  (EX CASSIOPEIA STAR)"
+    },
+    "imo": null,
+    "flag": "PANAMA",
+    "built": 2005,
+    "classSociety": "RINA",
+    "pandi": "HYDOR",
+    "dwtSummer": {
+      "value": 32328,
+      "confidence": "confirmed",
+      "sourceText": "DWT /GRT/NRT 32328/20283/10227"
+    },
+    "dwcc": {
+      "value": 31500,
+      "confidence": "confirmed",
+      "sourceText": "DWCC 31500 MTS AT 9.573M DRAFT"
+    },
+    "draftMax": {
+      "value": 9.573,
+      "confidence": "interpreted",
+      "sourceText": "DWCC 31500 MTS AT 9.573M DRAFT"
+    },
+    "loa": 172.9,
+    "beam": 29.4,
+    "grt": 20283,
+    "nrt": 10227,
+    "holdsCount": 5,
+    "hatchesCount": 5,
+    "grainCapacity": 1489078,
+    "grainCapacityUnit": "cbft",
+    "baleCapacity": 1453622,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": null,
+    "hatchType": null,
+    "vesselType": null,
+    "openPosition": {
+      "value": "Adriatic",
+      "confidence": "confirmed",
+      "sourceText": "SPOT AT ADRIATIC"
+    },
+    "openDate": {
+      "value": "spot",
+      "confidence": "interpreted",
+      "sourceText": "SPOT AT ADRIATIC"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "Ex name: CASSIOPEIA STAR",
+        "confidence": "confirmed",
+        "source_text": "(EX CASSIOPEIA STAR)"
+      },
+      {
+        "value": "Single deck",
+        "confidence": "confirmed",
+        "source_text": "SID"
+      },
+      {
+        "value": "Boxlike",
+        "confidence": "confirmed",
+        "source_text": "BOXLIKE"
+      },
+      {
+        "value": "Built Japan",
+        "confidence": "confirmed",
+        "source_text": "BUILT 2005 JAPAN"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e07d517de73b94",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "M/V HACI HILMI II",
+      "confidence": "confirmed",
+      "sourceText": "-M/V HACI HILMI II"
+    },
+    "imo": null,
+    "flag": null,
+    "built": 1992,
+    "classSociety": null,
+    "pandi": null,
+    "dwtSummer": {
+      "value": 6976,
+      "confidence": "confirmed",
+      "sourceText": "6976MTS DWT"
+    },
+    "dwcc": {
+      "value": 6750,
+      "confidence": "confirmed",
+      "sourceText": "6750MTS DWCC"
+    },
+    "draftMax": null,
+    "loa": null,
+    "beam": null,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": null,
+    "hatchesCount": null,
+    "grainCapacity": 309895,
+    "grainCapacityUnit": "cbft",
+    "baleCapacity": null,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "3 X 10MTS",
+    "hatchType": null,
+    "vesselType": null,
+    "openPosition": {
+      "value": "Marmara Sea",
+      "confidence": "confirmed",
+      "sourceText": "OPEN MARMARA SEA"
+    },
+    "openDate": {
+      "value": {
+        "open": "2026-05-22",
+        "close": "2026-05-23",
+        "display": "22-23RD MAY"
+      },
+      "confidence": "interpreted",
+      "sourceText": "OPEN MARMARA SEA ON 22-23RD MAY"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
     "deckCapacity": null,
     "specialFeatures": [],
     "ciiRating": null,
-    "verificationWarning": null,
-    "openDateRelative": "+0d"
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e07d517de73b94",
+    "itemIndex": 1,
+    "vesselName": {
+      "value": "MV TBN",
+      "confidence": "confirmed",
+      "sourceText": "MV TBN"
+    },
+    "imo": null,
+    "flag": null,
+    "built": 1996,
+    "classSociety": null,
+    "pandi": null,
+    "dwtSummer": {
+      "value": 17000,
+      "confidence": "interpreted",
+      "sourceText": "ABT 17 K DWT"
+    },
+    "dwcc": null,
+    "draftMax": null,
+    "loa": null,
+    "beam": null,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": null,
+    "hatchesCount": null,
+    "grainCapacity": 700000,
+    "grainCapacityUnit": "cbft",
+    "baleCapacity": null,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": null,
+    "hatchType": null,
+    "vesselType": null,
+    "openPosition": {
+      "value": "Gibraltar Range",
+      "confidence": "confirmed",
+      "sourceText": "OPEN AT GIBRALTAR RANGE"
+    },
+    "openDate": {
+      "value": {
+        "open": "2026-05-24",
+        "close": "2026-05-25",
+        "display": "24-25TH MAY"
+      },
+      "confidence": "interpreted",
+      "sourceText": "TO BE OPEN AT GIBRALTAR RANGE 24-25TH MAY"
+    },
+    "direction": "worldwide",
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e07d718417e96d",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "MV Raven",
+      "confidence": "confirmed",
+      "sourceText": "MV Raven"
+    },
+    "imo": null,
+    "flag": "Vanatu",
+    "built": 1997,
+    "classSociety": "brs",
+    "pandi": "turk pandi",
+    "dwtSummer": null,
+    "dwcc": {
+      "value": 10000,
+      "confidence": "confirmed",
+      "sourceText": "10.000 dwcc"
+    },
+    "draftMax": {
+      "value": 10,
+      "confidence": "interpreted",
+      "sourceText": "10.000 dwcc on 10.00 m ssw"
+    },
+    "loa": 105.5,
+    "beam": 19,
+    "grt": 6870,
+    "nrt": 3404,
+    "holdsCount": 2,
+    "hatchesCount": 2,
+    "grainCapacity": 14138,
+    "grainCapacityUnit": "cbm",
+    "baleCapacity": 13656,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": "15",
+    "geared": true,
+    "craneCapacity": "crane 2x15t &derrick 2x15t",
+    "hatchType": "mac gregor hatches",
+    "vesselType": "single decker/box shaped",
+    "openPosition": {
+      "value": "Turkish Black Sea",
+      "confidence": "confirmed",
+      "sourceText": "Open Turkish Black Sea"
+    },
+    "openDate": {
+      "value": "spot",
+      "confidence": "interpreted",
+      "sourceText": "Prompt"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "Good Cubic Intake",
+        "confidence": "confirmed",
+        "source_text": "Good Cubic Intake"
+      },
+      {
+        "value": "single decker/box shaped",
+        "confidence": "confirmed",
+        "source_text": "single decker/box shaped"
+      },
+      {
+        "value": "CO2 fitted",
+        "confidence": "confirmed",
+        "source_text": "CO2 fitted"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e07d5e7f039766",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "FIRTINA S",
+      "confidence": "confirmed",
+      "sourceText": "FIRTINA S"
+    },
+    "imo": null,
+    "flag": "Vanuatu",
+    "built": 1988,
+    "classSociety": "BRS",
+    "pandi": "Turk P&I",
+    "dwtSummer": {
+      "value": 2362,
+      "confidence": "confirmed",
+      "sourceText": "2362 DWT on 5.4 m SSW"
+    },
+    "dwcc": {
+      "value": 2200,
+      "confidence": "interpreted",
+      "sourceText": "DWCC abt 2200 mts"
+    },
+    "draftMax": {
+      "value": 5.4,
+      "confidence": "interpreted",
+      "sourceText": "2362 DWT on 5.4 m SSW"
+    },
+    "loa": 75.52,
+    "beam": 11,
+    "grt": 1248,
+    "nrt": 734,
+    "holdsCount": 1,
+    "hatchesCount": 2,
+    "grainCapacity": 96500,
+    "grainCapacityUnit": "cbft",
+    "baleCapacity": 94300,
+    "holdDimensions": "[object Object]",
+    "hatchDimensions": "[object Object],[object Object]",
+    "tankTopStrength": null,
+    "geared": false,
+    "craneCapacity": null,
+    "hatchType": null,
+    "vesselType": "GENERAL CARGO",
+    "openPosition": {
+      "value": "AEGEAN SEA",
+      "confidence": "confirmed",
+      "sourceText": "AEGEAN SEA"
+    },
+    "openDate": {
+      "value": {
+        "open": "2026-05-12",
+        "close": "2026-05-13",
+        "display": "12-13 MAY 2026"
+      },
+      "confidence": "interpreted",
+      "sourceText": "12-13 MAY"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "GC/SID",
+        "confidence": "confirmed",
+        "source_text": "GC/SID"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e07d5e7f039766",
+    "itemIndex": 1,
+    "vesselName": {
+      "value": "EMINE ANNE",
+      "confidence": "confirmed",
+      "sourceText": "EMINE ANNE"
+    },
+    "imo": null,
+    "flag": "Vanuatu",
+    "built": 1996,
+    "classSociety": "BRS",
+    "pandi": "Turk P&I",
+    "dwtSummer": {
+      "value": 1602,
+      "confidence": "confirmed",
+      "sourceText": "1602 DWT on 4.30 m SSW"
+    },
+    "dwcc": {
+      "value": 1425,
+      "confidence": "interpreted",
+      "sourceText": "DWCC abt 1425 mts"
+    },
+    "draftMax": {
+      "value": 4.3,
+      "confidence": "interpreted",
+      "sourceText": "1602 DWT on 4.30 m SSW"
+    },
+    "loa": 69,
+    "beam": 9,
+    "grt": 884,
+    "nrt": 531,
+    "holdsCount": 2,
+    "hatchesCount": 2,
+    "grainCapacity": 70440,
+    "grainCapacityUnit": "cbft",
+    "baleCapacity": 67204,
+    "holdDimensions": "[object Object],[object Object]",
+    "hatchDimensions": "[object Object],[object Object]",
+    "tankTopStrength": null,
+    "geared": false,
+    "craneCapacity": null,
+    "hatchType": null,
+    "vesselType": "GENERAL CARGO",
+    "openPosition": {
+      "value": "WEST BLACK SEA",
+      "confidence": "confirmed",
+      "sourceText": "WEST BLACK SEA"
+    },
+    "openDate": {
+      "value": {
+        "open": "2026-05-14",
+        "close": "2026-05-16",
+        "display": "14-16 MAY 2026"
+      },
+      "confidence": "interpreted",
+      "sourceText": "14-16 MAY"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "GC/SID",
+        "confidence": "confirmed",
+        "source_text": "GC/SID"
+      },
+      {
+        "value": "Air Draft: 20 m fm keel",
+        "confidence": "confirmed",
+        "source_text": "Air Draft: 20 m fm keel"
+      },
+      {
+        "value": "Appendix b fitted",
+        "confidence": "confirmed",
+        "source_text": "Appendix b fitted"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e089f6040369fd",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "MV EDELSTEIN",
+      "confidence": "confirmed",
+      "sourceText": "MV EDELSTEIN"
+    },
+    "imo": null,
+    "flag": "COMOROS",
+    "built": 1997,
+    "classSociety": "PHOENIX CLASS",
+    "pandi": null,
+    "dwtSummer": {
+      "value": 12320,
+      "confidence": "interpreted",
+      "sourceText": "ABOUT 12,320 DWT"
+    },
+    "dwcc": null,
+    "draftMax": {
+      "value": 8.3,
+      "confidence": "interpreted",
+      "sourceText": "ABOUT 12,320 DWT ON 8,3M SSW"
+    },
+    "loa": 111.97,
+    "beam": 20.5,
+    "grt": 8579,
+    "nrt": 3103,
+    "holdsCount": 2,
+    "hatchesCount": 2,
+    "grainCapacity": 18338.84,
+    "grainCapacityUnit": "cbm",
+    "baleCapacity": 17715.61,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "CRANES 30Tx2 (NOT COMBINABLE) – DERRICK 10Tx1",
+    "hatchType": null,
+    "vesselType": "TWEEN DECKER",
+    "openPosition": {
+      "value": "LUANDA",
+      "confidence": "confirmed",
+      "sourceText": "open LUANDA"
+    },
+    "openDate": {
+      "value": {
+        "open": "2026-02-11",
+        "close": null,
+        "display": "11th of February 2026"
+      },
+      "confidence": "confirmed",
+      "sourceText": "open LUANDA 11th of February"
+    },
+    "direction": "MED SEA - BLACK SEA",
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "TWEEN DECKER",
+        "confidence": "confirmed",
+        "source_text": "TWEEN DECKER"
+      },
+      {
+        "value": "CRANES 30Tx2 (NOT COMBINABLE) – DERRICK 10Tx1",
+        "confidence": "confirmed",
+        "source_text": "CRANES 30Tx2 (NOT COMBINABLE) – DERRICK 10Tx1"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e08a05d472698a",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "MV ELFRIEDE",
+      "confidence": "confirmed",
+      "sourceText": "MV ELFRIEDE"
+    },
+    "imo": null,
+    "flag": "BARBADOS",
+    "built": 2004,
+    "classSociety": "IACS",
+    "pandi": null,
+    "dwtSummer": {
+      "value": 10074,
+      "confidence": "interpreted",
+      "sourceText": "ABOUT 10,074 DWT ON 9.219M SSW"
+    },
+    "dwcc": null,
+    "draftMax": {
+      "value": 9.219,
+      "confidence": "interpreted",
+      "sourceText": "ABOUT 10,074 DWT ON 9.219M SSW"
+    },
+    "loa": 100.59,
+    "beam": 18.8,
+    "grt": 6395,
+    "nrt": 3658,
+    "holdsCount": 2,
+    "hatchesCount": 2,
+    "grainCapacity": 13999.07,
+    "grainCapacityUnit": "cbm",
+    "baleCapacity": 12864.7,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "CRANES 30Tx2 - DERRICK 30Tx1",
+    "hatchType": null,
+    "vesselType": "TWEEN DECKER",
+    "openPosition": {
+      "value": "Gibraltar",
+      "confidence": "confirmed",
+      "sourceText": "OPEN SPOT at Gibraltar"
+    },
+    "openDate": {
+      "value": "spot",
+      "confidence": "interpreted",
+      "sourceText": "OPEN SPOT at Gibraltar"
+    },
+    "direction": "NCSA / SOUTH AMERICA / WAFRICA / INDIAN OCEAN / FAR EAST",
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "CO2 FITTED",
+        "confidence": "confirmed",
+        "source_text": "CO2 FITTED"
+      },
+      {
+        "value": "BOW THRUSTER FITTED",
+        "confidence": "confirmed",
+        "source_text": "BOW THRUSTER FITTED"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e0978b449211fb",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "MV HAGRID",
+      "confidence": "confirmed",
+      "sourceText": "MV HAGRID"
+    },
+    "imo": null,
+    "flag": "Barbados",
+    "built": 2008,
+    "classSociety": null,
+    "pandi": null,
+    "dwtSummer": {
+      "value": 6496,
+      "confidence": "confirmed",
+      "sourceText": "6496 dwt"
+    },
+    "dwcc": {
+      "value": 6100,
+      "confidence": "confirmed",
+      "sourceText": "6100 dwcc"
+    },
+    "draftMax": {
+      "value": 7,
+      "confidence": "interpreted",
+      "sourceText": "7,00m draft"
+    },
+    "loa": null,
+    "beam": null,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": null,
+    "hatchesCount": null,
+    "grainCapacity": 276000,
+    "grainCapacityUnit": "cbft",
+    "baleCapacity": 262000,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "2x20 mt",
+    "hatchType": null,
+    "vesselType": null,
+    "openPosition": {
+      "value": "Constanta",
+      "confidence": "confirmed",
+      "sourceText": "Constanta"
+    },
+    "openDate": {
+      "value": {
+        "open": null,
+        "close": null,
+        "display": "Mid-March"
+      },
+      "confidence": "confirmed",
+      "sourceText": "Mid-March"
+    },
+    "direction": null,
+    "restrictions": [
+      {
+        "value": "Please do not re-circulate",
+        "confidence": "confirmed",
+        "source_text": "Please do not re-circulate"
+      }
+    ],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "boxlike",
+        "confidence": "confirmed",
+        "source_text": "boxlike"
+      },
+      {
+        "value": "IACS member",
+        "confidence": "confirmed",
+        "source_text": "IACS member"
+      },
+      {
+        "value": "IMO fitted",
+        "confidence": "confirmed",
+        "source_text": "IMO fitted"
+      },
+      {
+        "value": "ice class",
+        "confidence": "confirmed",
+        "source_text": "ice class"
+      },
+      {
+        "value": "ITF FITTED",
+        "confidence": "confirmed",
+        "source_text": "ITF FITTED"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e0f518e6d7610d",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "MV SEA BREEZE",
+      "confidence": "confirmed",
+      "sourceText": "MV SEA BREEZE"
+    },
+    "imo": null,
+    "flag": null,
+    "built": null,
+    "classSociety": null,
+    "pandi": null,
+    "dwtSummer": null,
+    "dwcc": {
+      "value": 6600,
+      "confidence": "confirmed",
+      "sourceText": "DWCC 6600 MTS"
+    },
+    "draftMax": null,
+    "loa": null,
+    "beam": null,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": 3,
+    "hatchesCount": 3,
+    "grainCapacity": 283917,
+    "grainCapacityUnit": "cbft",
+    "baleCapacity": 283917,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": false,
+    "craneCapacity": null,
+    "hatchType": null,
+    "vesselType": null,
+    "openPosition": {
+      "value": "Souda Port, Chania, Crete, Greece",
+      "confidence": "confirmed",
+      "sourceText": "OPEN @ SOUDA PORT, CHANIA, CRETE, GREECE"
+    },
+    "openDate": {
+      "value": {
+        "open": "2026-04-24",
+        "close": "2026-04-26",
+        "display": "24-26 APRIL 2026"
+      },
+      "confidence": "interpreted",
+      "sourceText": "OPEN @ SOUDA PORT, CHANIA, CRETE, GREECE ON 24-26 APRIL"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "SID",
+        "confidence": "confirmed",
+        "source_text": "SID"
+      },
+      {
+        "value": "BOX HOLD",
+        "confidence": "confirmed",
+        "source_text": "BOX HOLD"
+      },
+      {
+        "value": "BULK/IMO/APP B/GRAIN/TIMBER FITTED",
+        "confidence": "confirmed",
+        "source_text": "BULK/IMO/APP B/GRAIN/TIMBER FITTED"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e0f518e6d7610d",
+    "itemIndex": 1,
+    "vesselName": {
+      "value": "MV SEA PIONEER",
+      "confidence": "confirmed",
+      "sourceText": "MV SEA PIONEER"
+    },
+    "imo": null,
+    "flag": null,
+    "built": null,
+    "classSociety": null,
+    "pandi": null,
+    "dwtSummer": null,
+    "dwcc": {
+      "value": 5900,
+      "confidence": "confirmed",
+      "sourceText": "DWCC 5900 MTS"
+    },
+    "draftMax": null,
+    "loa": null,
+    "beam": null,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": 2,
+    "hatchesCount": 2,
+    "grainCapacity": 235231,
+    "grainCapacityUnit": "cbft",
+    "baleCapacity": 235231,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": false,
+    "craneCapacity": "2 X 15 MTS SWL",
+    "hatchType": null,
+    "vesselType": null,
+    "openPosition": {
+      "value": "Thessaloniki, Greece",
+      "confidence": "confirmed",
+      "sourceText": "OPEN @THESSALONIKI, GREECE"
+    },
+    "openDate": {
+      "value": {
+        "open": "2026-04-25",
+        "close": "2026-04-27",
+        "display": "25-27 APRIL 2026"
+      },
+      "confidence": "interpreted",
+      "sourceText": "OPEN @THESSALONIKI, GREECE ON 25-27 APRIL"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "SID",
+        "confidence": "confirmed",
+        "source_text": "SID"
+      },
+      {
+        "value": "BOX HOLD",
+        "confidence": "confirmed",
+        "source_text": "BOX HOLD"
+      },
+      {
+        "value": "BULK/IMO/APP B/GRAIN/TIMBER FITTED",
+        "confidence": "confirmed",
+        "source_text": "BULK/IMO/APP B/GRAIN/TIMBER FITTED"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e0f51ea1cd9364",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "MV SEA MAJESTY",
+      "confidence": "confirmed",
+      "sourceText": "MV SEA MAJESTY"
+    },
+    "imo": null,
+    "flag": null,
+    "built": null,
+    "classSociety": null,
+    "pandi": null,
+    "dwtSummer": null,
+    "dwcc": {
+      "value": 8600,
+      "confidence": "confirmed",
+      "sourceText": "DWCC 8600 MTS"
+    },
+    "draftMax": null,
+    "loa": null,
+    "beam": null,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": 4,
+    "hatchesCount": 4,
+    "grainCapacity": 400407.49,
+    "grainCapacityUnit": "cbft",
+    "baleCapacity": 391498.94,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "2 X 15 MTS SWL",
+    "hatchType": null,
+    "vesselType": null,
+    "openPosition": {
+      "value": "Tripoli, Lebanon",
+      "confidence": "confirmed",
+      "sourceText": "OPEN @ TRIPOLI, LEBANON"
+    },
+    "openDate": {
+      "value": {
+        "open": "2026-04-16",
+        "close": "2026-04-17",
+        "display": "16-17 APRIL"
+      },
+      "confidence": "interpreted",
+      "sourceText": "16-17 APRIL"
+    },
+    "direction": "Egypt to EC Greece / EC Black Sea",
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "SID - BOX HOLD",
+        "confidence": "confirmed",
+        "source_text": "SID - BOX HOLD"
+      },
+      {
+        "value": "BULK/IMO/APP B/GRAIN/TIMBER FITTED",
+        "confidence": "confirmed",
+        "source_text": "BULK/IMO/APP B/GRAIN/TIMBER FITTED"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e0f521228afe4c",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "FILIA ARIEA",
+      "confidence": "confirmed",
+      "sourceText": "- FILIA ARIEA"
+    },
+    "imo": null,
+    "flag": null,
+    "built": null,
+    "classSociety": null,
+    "pandi": null,
+    "dwtSummer": {
+      "value": 2650,
+      "confidence": "confirmed",
+      "sourceText": "2650 mt"
+    },
+    "dwcc": null,
+    "draftMax": null,
+    "loa": null,
+    "beam": null,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": null,
+    "hatchesCount": null,
+    "grainCapacity": 150000,
+    "grainCapacityUnit": "cbft",
+    "baleCapacity": null,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": null,
+    "craneCapacity": null,
+    "hatchType": null,
+    "vesselType": null,
+    "openPosition": {
+      "value": "Jeddah",
+      "confidence": "confirmed",
+      "sourceText": "Open: Jeddah"
+    },
+    "openDate": {
+      "value": {
+        "open": "2026-03-30",
+        "close": null,
+        "display": "30-Mar-2026"
+      },
+      "confidence": "confirmed",
+      "sourceText": "30-Mar."
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "SID/Box",
+        "confidence": "confirmed",
+        "source_text": "SID/Box"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e0f52832c715da",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "MV ADAMAR",
+      "confidence": "confirmed",
+      "sourceText": "MV ADAMAR                                   OPEN EC-INDIA 04-08.10.2025"
+    },
+    "imo": null,
+    "flag": "LIBERIA",
+    "built": 2009,
+    "classSociety": "BUREAU VERITAS",
+    "pandi": "STEAMSHIP MUTUAL",
+    "dwtSummer": {
+      "value": 17660.15,
+      "confidence": "confirmed",
+      "sourceText": "DWT 17660,15  SUMMER ON 8,598 M SSW DWWC 16850"
+    },
+    "dwcc": {
+      "value": 16850,
+      "confidence": "confirmed",
+      "sourceText": "DWT 17660,15  SUMMER ON 8,598 M SSW DWWC 16850"
+    },
+    "draftMax": {
+      "value": 8.598,
+      "confidence": "confirmed",
+      "sourceText": "DWT 17660,15  SUMMER ON 8,598 M SSW DWWC 16850"
+    },
+    "loa": 147.55,
+    "beam": 23,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": 4,
+    "hatchesCount": 4,
+    "grainCapacity": 758120,
+    "grainCapacityUnit": "cbft",
+    "baleCapacity": 726267,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "3 X 25 MT",
+    "hatchType": null,
+    "vesselType": "MULTIPURPOSE DRY CARGO SHIP",
+    "openPosition": {
+      "value": "EC-INDIA",
+      "confidence": "confirmed",
+      "sourceText": "OPEN EC-INDIA 04-08.10.2025"
+    },
+    "openDate": {
+      "value": {
+        "open": "2025-10-04",
+        "close": "2025-10-08",
+        "display": "04-08.10.2025"
+      },
+      "confidence": "interpreted",
+      "sourceText": "OPEN EC-INDIA 04-08.10.2025"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "SID",
+        "confidence": "confirmed",
+        "source_text": "SID / MULTIPURPOSE DRY CARGO SHIP / BOX SHAPED"
+      },
+      {
+        "value": "BOX SHAPED",
+        "confidence": "confirmed",
+        "source_text": "SID / MULTIPURPOSE DRY CARGO SHIP / BOX SHAPED"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e0f52e0e064a3c",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "MV MIMI",
+      "confidence": "confirmed",
+      "sourceText": "mv mimi"
+    },
+    "imo": null,
+    "flag": "Comoros",
+    "built": 1987,
+    "classSociety": null,
+    "pandi": null,
+    "dwtSummer": null,
+    "dwcc": {
+      "value": 3500,
+      "confidence": "confirmed",
+      "sourceText": "dwcc 3500 mt"
+    },
+    "draftMax": {
+      "value": 6.34,
+      "confidence": "interpreted",
+      "sourceText": "dwcc 3500 mt on abt 6.34 m"
+    },
+    "loa": null,
+    "beam": null,
+    "grt": null,
+    "nrt": null,
+    "holdsCount": 1,
+    "hatchesCount": 1,
+    "grainCapacity": 4672,
+    "grainCapacityUnit": "cbm",
+    "baleCapacity": 4390,
+    "holdDimensions": null,
+    "hatchDimensions": "[object Object]",
+    "tankTopStrength": null,
+    "geared": false,
+    "craneCapacity": null,
+    "hatchType": null,
+    "vesselType": "GENERAL CARGO",
+    "openPosition": {
+      "value": "Misurata",
+      "confidence": "confirmed",
+      "sourceText": "open misurata"
+    },
+    "openDate": {
+      "value": {
+        "open": "2024-09-05",
+        "close": null,
+        "display": "05 September 2024"
+      },
+      "confidence": "confirmed",
+      "sourceText": "open misurata 05september2024"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": {
+      "value": "10 k on abt 3.5 tns",
+      "confidence": "interpreted",
+      "source_text": "10 k on abt 3.5 tns"
+    },
+    "deckCapacity": null,
+    "specialFeatures": [],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e0f53423e78f5f",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "mv propus",
+      "confidence": "confirmed",
+      "sourceText": "mv propus"
+    },
+    "imo": null,
+    "flag": "panama",
+    "built": 1997,
+    "classSociety": "bv",
+    "pandi": null,
+    "dwtSummer": {
+      "value": 10430,
+      "confidence": "confirmed",
+      "sourceText": "dwt 10430 dwt"
+    },
+    "dwcc": {
+      "value": 10000,
+      "confidence": "interpreted",
+      "sourceText": "10k dwcc"
+    },
+    "draftMax": {
+      "value": 8.58,
+      "confidence": "interpreted",
+      "sourceText": "dwt 10430 dwt on 8.58 m draft"
+    },
+    "loa": 126,
+    "beam": 20,
+    "grt": 7708,
+    "nrt": 3514,
+    "holdsCount": 3,
+    "hatchesCount": 3,
+    "grainCapacity": 11960,
+    "grainCapacityUnit": "cbm",
+    "baleCapacity": 11220,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": null,
+    "craneCapacity": null,
+    "hatchType": null,
+    "vesselType": null,
+    "openPosition": {
+      "value": "istanbul",
+      "confidence": "confirmed",
+      "sourceText": "open istanbul"
+    },
+    "openDate": {
+      "value": {
+        "open": "2024-08-22",
+        "close": "2024-08-26",
+        "display": "22/26august"
+      },
+      "confidence": "interpreted",
+      "sourceText": "open istanbul 22/26august"
+    },
+    "direction": null,
+    "restrictions": [
+      {
+        "value": "not prefer ukraine voyage for just now",
+        "confidence": "confirmed",
+        "source_text": "not prefer ukraine voyage for just now"
+      }
+    ],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "box like",
+        "confidence": "confirmed",
+        "source_text": "box like"
+      },
+      {
+        "value": "rated other cgoes welcome",
+        "confidence": "confirmed",
+        "source_text": "rated other cgoes welcome"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e0f531898504ce",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "mv snapper",
+      "confidence": "confirmed",
+      "sourceText": "mv snapper (ex aikaterini k imo.9381407)"
+    },
+    "imo": null,
+    "flag": null,
+    "built": 2008,
+    "classSociety": "ir",
+    "pandi": null,
+    "dwtSummer": {
+      "value": 8100,
+      "confidence": "confirmed",
+      "sourceText": "8100 mts dwt at 6.82 mtrs draft"
+    },
+    "dwcc": null,
+    "draftMax": {
+      "value": 6.82,
+      "confidence": "interpreted",
+      "sourceText": "8100 mts dwt at 6.82 mtrs draft"
+    },
+    "loa": 108.1,
+    "beam": 18.2,
+    "grt": 5599,
+    "nrt": 2883,
+    "holdsCount": 3,
+    "hatchesCount": 3,
+    "grainCapacity": 10194,
+    "grainCapacityUnit": "cbm",
+    "baleCapacity": null,
+    "holdDimensions": "[object Object],[object Object],[object Object]",
+    "hatchDimensions": "[object Object],[object Object],[object Object]",
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": null,
+    "hatchType": null,
+    "vesselType": null,
+    "openPosition": {
+      "value": "nemrut bay",
+      "confidence": "confirmed",
+      "sourceText": "open nemrut bay spot"
+    },
+    "openDate": {
+      "value": "spot",
+      "confidence": "interpreted",
+      "sourceText": "open nemrut bay spot"
+    },
+    "direction": "all africa, pg india",
+    "restrictions": [
+      {
+        "value": "no european ports for now",
+        "confidence": "confirmed",
+        "source_text": "*no european ports for now"
+      }
+    ],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "ice 1d",
+        "confidence": "confirmed",
+        "source_text": "ice 1d"
+      },
+      {
+        "value": "3 ho(boxed)/3 ha",
+        "confidence": "confirmed",
+        "source_text": "3 ho(boxed)/3 ha"
+      },
+      {
+        "value": "bowthruster",
+        "confidence": "confirmed",
+        "source_text": "bowthruster"
+      },
+      {
+        "value": "bwts fitted",
+        "confidence": "confirmed",
+        "source_text": "bwts fitted"
+      },
+      {
+        "value": "imo fitted",
+        "confidence": "confirmed",
+        "source_text": "imo fitted"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e0f537ac896745",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "M/V AVAT 1",
+      "confidence": "confirmed",
+      "sourceText": "M/V AVAT 1"
+    },
+    "imo": null,
+    "flag": "Cameroon",
+    "built": 2020,
+    "classSociety": "OMROS",
+    "pandi": "THOMAS MILLER",
+    "dwtSummer": {
+      "value": 9220,
+      "confidence": "confirmed",
+      "sourceText": "DWT: 9220 MT AT 5,20 M DRAFT"
+    },
+    "dwcc": null,
+    "draftMax": {
+      "value": 5.2,
+      "confidence": "interpreted",
+      "sourceText": "DWT: 9220 MT AT 5,20 M DRAFT"
+    },
+    "loa": 109.8,
+    "beam": 23.6,
+    "grt": 4995,
+    "nrt": 2607,
+    "holdsCount": 2,
+    "hatchesCount": 2,
+    "grainCapacity": 9900,
+    "grainCapacityUnit": "cbm",
+    "baleCapacity": 9900,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": false,
+    "craneCapacity": null,
+    "hatchType": null,
+    "vesselType": "GENERAL CARGO",
+    "openPosition": {
+      "value": "Agadir or any West Med",
+      "confidence": "confirmed",
+      "sourceText": "OPEN AT AGADIR OR ANY WEST MED ON 22-25 AUGUST."
+    },
+    "openDate": {
+      "value": {
+        "open": "2024-08-22",
+        "close": "2024-08-25",
+        "display": "22-25 AUGUST"
+      },
+      "confidence": "interpreted",
+      "sourceText": "22-25 AUGUST"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e0f54a2c261266",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "DOLPHIN E",
+      "confidence": "confirmed",
+      "sourceText": "DOLPHIN E"
+    },
+    "imo": null,
+    "flag": "PALAU",
+    "built": 1991,
+    "classSociety": "IACS",
+    "pandi": null,
+    "dwtSummer": null,
+    "dwcc": {
+      "value": 1600,
+      "confidence": "confirmed",
+      "sourceText": "1600 DWCC"
+    },
+    "draftMax": {
+      "value": 3.83,
+      "confidence": "interpreted",
+      "sourceText": "1600 DWCC ON 3,83 M DRAFT"
+    },
+    "loa": 78.5,
+    "beam": 10.5,
+    "grt": 1276,
+    "nrt": 672,
+    "holdsCount": 1,
+    "hatchesCount": 1,
+    "grainCapacity": 89600,
+    "grainCapacityUnit": "cbft",
+    "baleCapacity": 88100,
+    "holdDimensions": "[object Object]",
+    "hatchDimensions": "[object Object]",
+    "tankTopStrength": null,
+    "geared": false,
+    "craneCapacity": null,
+    "hatchType": null,
+    "vesselType": null,
+    "openPosition": {
+      "value": "IZMIR",
+      "confidence": "confirmed",
+      "sourceText": "IZMIR"
+    },
+    "openDate": {
+      "value": {
+        "open": "2024-07-12",
+        "close": "2024-07-13",
+        "display": "12/13 JULY"
+      },
+      "confidence": "interpreted",
+      "sourceText": "12/13 JULY"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "ICE CLASS 1A",
+        "confidence": "confirmed",
+        "source_text": "ICE CLASS 1A"
+      },
+      {
+        "value": "SID BOX",
+        "confidence": "confirmed",
+        "source_text": "SID BOX"
+      },
+      {
+        "value": "AIR DRAFT 8,4 M ON BALLAST",
+        "confidence": "confirmed",
+        "source_text": "AIR DRAFT 8,4 M ON BALLAST"
+      },
+      {
+        "value": "BOW THRUSTER FITTED",
+        "confidence": "confirmed",
+        "source_text": "BOW THRUSTER FITTED"
+      },
+      {
+        "value": "APP B FITTED",
+        "confidence": "confirmed",
+        "source_text": "APP B FITTED"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e0f54a2c261266",
+    "itemIndex": 1,
+    "vesselName": {
+      "value": "SERENITY AC",
+      "confidence": "confirmed",
+      "sourceText": "SERENITY AC"
+    },
+    "imo": null,
+    "flag": "PANAMA",
+    "built": 1991,
+    "classSociety": "IRS",
+    "pandi": null,
+    "dwtSummer": {
+      "value": 1723,
+      "confidence": "confirmed",
+      "sourceText": "1,723 DWT"
+    },
+    "dwcc": {
+      "value": 1600,
+      "confidence": "confirmed",
+      "sourceText": "1.600 DWCC"
+    },
+    "draftMax": {
+      "value": 3.7,
+      "confidence": "interpreted",
+      "sourceText": "1,723 DWT ON 3.70 M DRAFT / 1.600 DWCC"
+    },
+    "loa": 74.99,
+    "beam": 10.7,
+    "grt": 1282,
+    "nrt": 675,
+    "holdsCount": 1,
+    "hatchesCount": 1,
+    "grainCapacity": 88000,
+    "grainCapacityUnit": "cbft",
+    "baleCapacity": 2480,
+    "holdDimensions": "[object Object]",
+    "hatchDimensions": "[object Object]",
+    "tankTopStrength": null,
+    "geared": null,
+    "craneCapacity": null,
+    "hatchType": "OPEN HATCH",
+    "vesselType": null,
+    "openPosition": {
+      "value": "EC GREECE",
+      "confidence": "confirmed",
+      "sourceText": "EC GREECE"
+    },
+    "openDate": {
+      "value": {
+        "open": "2024-07-07",
+        "close": "2024-07-08",
+        "display": "7/8 JULY"
+      },
+      "confidence": "interpreted",
+      "sourceText": "7/8 JULY"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "BOX / OPEN HATCH",
+        "confidence": "confirmed",
+        "source_text": "BOX / OPEN HATCH"
+      },
+      {
+        "value": "1 MOVABLE BULKHEAD",
+        "confidence": "confirmed",
+        "source_text": "1 MOVABLE BULKHEAD"
+      },
+      {
+        "value": "IMO 1 FITTED",
+        "confidence": "confirmed",
+        "source_text": "IMO 1 FITTED"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e0f544fba5e7ab",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "MV YA HUSSEIN",
+      "confidence": "confirmed",
+      "sourceText": "MV YA HUSSEIN    DWT  24,290 MTS"
+    },
+    "imo": null,
+    "flag": "PALAU",
+    "built": 1996,
+    "classSociety": "NKK",
+    "pandi": "CVRD",
+    "dwtSummer": {
+      "value": 24290,
+      "confidence": "confirmed",
+      "sourceText": "DWT 24,290 MTS ON 9,54 M DRAFT"
+    },
+    "dwcc": null,
+    "draftMax": {
+      "value": 9.54,
+      "confidence": "confirmed",
+      "sourceText": "DWT 24,290 MTS ON 9,54 M DRAFT"
+    },
+    "loa": 157.26,
+    "beam": 26,
+    "grt": 14599,
+    "nrt": 8429,
+    "holdsCount": 4,
+    "hatchesCount": 4,
+    "grainCapacity": 31000,
+    "grainCapacityUnit": "cbm",
+    "baleCapacity": 29843,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "4/25T",
+    "hatchType": null,
+    "vesselType": null,
+    "openPosition": {
+      "value": "ALEXANDRIA, EGYPT",
+      "confidence": "confirmed",
+      "sourceText": "ALEXANDRIA, EGYPT 04-05 JULY"
+    },
+    "openDate": {
+      "value": {
+        "open": "2024-07-04",
+        "close": "2024-07-05",
+        "display": "04-05 JULY"
+      },
+      "confidence": "interpreted",
+      "sourceText": "04-05 JULY"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": "CORN IN BULK",
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e0f544fba5e7ab",
+    "itemIndex": 1,
+    "vesselName": {
+      "value": "MV AYA",
+      "confidence": "confirmed",
+      "sourceText": "MV  AYA"
+    },
+    "imo": null,
+    "flag": "ST. Kitts & Navis",
+    "built": 1997,
+    "classSociety": "K.R",
+    "pandi": "THOMAS MILLER",
+    "dwtSummer": {
+      "value": 27239.3,
+      "confidence": "interpreted",
+      "sourceText": "SUMMER DWT/DRAFT: 27,239.3MTS ON ABOUT 9.91M"
+    },
+    "dwcc": null,
+    "draftMax": {
+      "value": 9.91,
+      "confidence": "interpreted",
+      "sourceText": "SUMMER DWT/DRAFT: 27,239.3MTS ON ABOUT 9.91M"
+    },
+    "loa": 167,
+    "beam": 26.2,
+    "grt": 16498,
+    "nrt": 9670,
+    "holdsCount": 5,
+    "hatchesCount": 5,
+    "grainCapacity": 35387.8,
+    "grainCapacityUnit": "cbm",
+    "baleCapacity": 34326.2,
+    "holdDimensions": null,
+    "hatchDimensions": null,
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "4*25MT",
+    "hatchType": "FOLDING",
+    "vesselType": null,
+    "openPosition": {
+      "value": "MARMARA, TUZLA",
+      "confidence": "confirmed",
+      "sourceText": "MARMARA, TUZLA  -   REVERTING"
+    },
+    "openDate": null,
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "HOLDS CO2 FITTED : YES",
+        "confidence": "confirmed",
+        "source_text": "HOLDS CO2 FITTED : YES"
+      },
+      {
+        "value": "AHL FITTED : YES",
+        "confidence": "confirmed",
+        "source_text": "AHL FITTED : YES"
+      },
+      {
+        "value": "OUTREACH : 10.5 M",
+        "confidence": "confirmed",
+        "source_text": "OUTREACH : 10.5 M"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e0f544fba5e7ab",
+    "itemIndex": 2,
+    "vesselName": {
+      "value": "MV ARTICULATE",
+      "confidence": "confirmed",
+      "sourceText": "MV ARTICULATE"
+    },
+    "imo": null,
+    "flag": "PALAU",
+    "built": 1994,
+    "classSociety": "IRS",
+    "pandi": null,
+    "dwtSummer": {
+      "value": 27308,
+      "confidence": "confirmed",
+      "sourceText": "DWT 27308 MT ON 9,52M DRFT"
+    },
+    "dwcc": null,
+    "draftMax": {
+      "value": 9.52,
+      "confidence": "confirmed",
+      "sourceText": "DWT 27308 MT ON 9,52M DRFT"
+    },
+    "loa": 165.5,
+    "beam": 27.03,
+    "grt": 16446,
+    "nrt": 9409,
+    "holdsCount": 5,
+    "hatchesCount": 5,
+    "grainCapacity": 34810,
+    "grainCapacityUnit": "cbm",
+    "baleCapacity": 34182,
+    "holdDimensions": "HOLD1:3969/3808CBM,HOLD2:7895/7775 CBM,HOLD3:7899/7780 CBM,HOLD4:7715/7597 CBM,HOLD5:7334/7222 CBM",
+    "hatchDimensions": "HATCH #1: 8.0x13.5,HATCH # 2,3,4&5: 19.2x13.5",
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "4 X 25T",
+    "hatchType": null,
+    "vesselType": "BC",
+    "openPosition": {
+      "value": "CANAKKALE",
+      "confidence": "confirmed",
+      "sourceText": "CANAKKALE,  05 JULY"
+    },
+    "openDate": {
+      "value": {
+        "open": "2024-07-05",
+        "close": null,
+        "display": "05 JULY"
+      },
+      "confidence": "confirmed",
+      "sourceText": "05 JULY"
+    },
+    "direction": null,
+    "restrictions": [],
+    "lastCargoes": "WHEAT IN BULK",
+    "speedLaden": null,
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "ICE CLASS",
+        "confidence": "confirmed",
+        "source_text": "ICE CLASS"
+      },
+      {
+        "value": "CRANE OUT REACH : 22.0M",
+        "confidence": "confirmed",
+        "source_text": "CRANE OUT REACH : 22.0M"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
+  },
+  {
+    "emailId": "19e0f559b2252e15",
+    "itemIndex": 0,
+    "vesselName": {
+      "value": "MV BENIGANE",
+      "confidence": "confirmed",
+      "sourceText": "MV BENIGANE"
+    },
+    "imo": null,
+    "flag": "PALAU",
+    "built": 2008,
+    "classSociety": "KR",
+    "pandi": null,
+    "dwtSummer": {
+      "value": 11500,
+      "confidence": "confirmed",
+      "sourceText": "DWT/DWCC/DRAFT: 11500 / 11,100 t / 8,7 M"
+    },
+    "dwcc": {
+      "value": 11100,
+      "confidence": "confirmed",
+      "sourceText": "DWT/DWCC/DRAFT: 11500 / 11,100 t / 8,7 M"
+    },
+    "draftMax": {
+      "value": 8.7,
+      "confidence": "interpreted",
+      "sourceText": "DWT/DWCC/DRAFT: 11500 / 11,100 t / 8,7 M"
+    },
+    "loa": 129.9,
+    "beam": 19.6,
+    "grt": 8963,
+    "nrt": 4054,
+    "holdsCount": 2,
+    "hatchesCount": 2,
+    "grainCapacity": 13600,
+    "grainCapacityUnit": "cbm",
+    "baleCapacity": 13500,
+    "holdDimensions": "[object Object],[object Object]",
+    "hatchDimensions": "[object Object],[object Object]",
+    "tankTopStrength": null,
+    "geared": true,
+    "craneCapacity": "DECK CRANE 40T X 2 SETS",
+    "hatchType": null,
+    "vesselType": "GENERAL CARGO",
+    "openPosition": {
+      "value": "East Mediterranean",
+      "confidence": "interpreted",
+      "sourceText": "Open Emed End of Feb-Beg of March"
+    },
+    "openDate": {
+      "value": {
+        "open": null,
+        "close": null,
+        "display": "End of Feb-Beg of March"
+      },
+      "confidence": "uncertain",
+      "sourceText": "End of Feb-Beg of March"
+    },
+    "direction": "Med Blacksea region",
+    "restrictions": [],
+    "lastCargoes": null,
+    "speedLaden": {
+      "value": 12.5,
+      "confidence": "uncertain",
+      "source_text": "SPEED: SERVICE 12.5 KNOTS"
+    },
+    "speedBallast": null,
+    "consumption": null,
+    "deckCapacity": null,
+    "specialFeatures": [
+      {
+        "value": "GENERAL CARGO BOX HOLDS",
+        "confidence": "confirmed",
+        "source_text": "GENERAL CARGO BOX HOLDS"
+      },
+      {
+        "value": "BOX",
+        "confidence": "confirmed",
+        "source_text": "BOX"
+      },
+      {
+        "value": "MULTINATIONAL CREW",
+        "confidence": "confirmed",
+        "source_text": "MULTINATIONAL CREW"
+      }
+    ],
+    "ciiRating": null,
+    "verificationWarning": null
   }
 ]

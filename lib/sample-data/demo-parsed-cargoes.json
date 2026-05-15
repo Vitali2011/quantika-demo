@@ -1,145 +1,3264 @@
 [
   {
-    "emailId": "sample-01",
+    "emailId": "19d5dea61d04209f",
     "itemIndex": 0,
     "originPort": {
-      "value": "Constanta",
-      "confidence": 0.97,
-      "sourceText": "Load: Constanta, Romania"
+      "value": "Suez",
+      "confidence": "confirmed",
+      "sourceText": "Suez / Nacala"
     },
-    "originCountry": "Romania",
+    "originCountry": "Egypt",
     "destinationPort": {
-      "value": "Lagos (Apapa)",
-      "confidence": 0.95,
-      "sourceText": "Disch: Lagos, Nigeria (Apapa"
+      "value": "Nacala",
+      "confidence": "confirmed",
+      "sourceText": "Suez / Nacala"
     },
-    "destinationCountry": "Nigeria",
+    "destinationCountry": "Mozambique",
     "cargoDescription": {
-      "value": "HRC steel coils, SF 1.20",
-      "confidence": 0.98,
-      "sourceText": "8,500 mts HRC steel coils, SF 1.20"
+      "value": "Cement in sling",
+      "confidence": "confirmed",
+      "sourceText": "30,000 MT cement in sling"
     },
-    "weightMt": { "value": 8500, "confidence": 0.98, "sourceText": "8,500 mts HRC steel coils" },
-    "weightMtMin": 8500,
-    "weightMtMax": 8500,
+    "weightMt": {
+      "value": 30000,
+      "confidence": "confirmed",
+      "sourceText": "30,000 MT cement"
+    },
+    "weightMtMin": 30000,
+    "weightMtMax": 30000,
     "volumeCbm": null,
     "dimensions": null,
     "cargoType": "BREAK_BULK",
     "containerType": null,
-    "quantity": 8500,
-    "incoterms": "FIO",
-    "preferredDates": null,
-    "laycanRelativeStart": "+12d",
-    "laycanRelativeEnd": "+22d",
-    "loadingRate": "CQD SHINC",
-    "dischargeRate": "CQD SHINC",
-    "commissionPercent": 3.75,
-    "commissionTerms": "TTL",
-    "specialRequirements": "Geared vessel required, max piece abt 25mt. MPP or geared general cargo vessel preferred.",
-    "stowageFactor": "1.20",
-    "missingInfo": []
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "End June 2019",
+      "confidence": "interpreted",
+      "sourceText": "L/Can e/Jun'19"
+    },
+    "laycan": "End June 2019",
+    "loadingRate": null,
+    "dischargeRate": null,
+    "commissionPercent": null,
+    "commissionTerms": null,
+    "specialRequirements": null,
+    "stowageFactor": null,
+    "missingInfo": [
+      "Exact laycan dates within end June 2019 not stated",
+      "Loading and discharge rates not stated",
+      "Laytime cost-allocation terms (FIO/CQD/FIOST) not stated",
+      "Demurrage and despatch rates not stated",
+      "Incoterms not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": null,
+    "originPortRotation": null,
+    "destinationPortAlternatives": null,
+    "destinationPortRotation": null,
+    "weightPerPort": null
   },
   {
-    "emailId": "sample-02",
+    "emailId": "19d5def0bf1a5c3f",
     "itemIndex": 0,
     "originPort": {
-      "value": "Khor Fakkan",
-      "confidence": 0.96,
-      "sourceText": "Load: Khor Fakkan, UAE"
+      "value": "Antalya",
+      "confidence": "confirmed",
+      "sourceText": "Antalya / Georgetown (Guyana)"
     },
-    "originCountry": "UAE",
-    "destinationPort": { "value": "Tema", "confidence": 0.96, "sourceText": "Disch: Tema, Ghana" },
-    "destinationCountry": "Ghana",
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Georgetown",
+      "confidence": "confirmed",
+      "sourceText": "Antalya / Georgetown (Guyana)"
+    },
+    "destinationCountry": "Guyana",
     "cargoDescription": {
-      "value": "Steel pipes (SAWL), SF 2.80, max length 12m, max OD 610mm",
-      "confidence": 0.97,
-      "sourceText": "6,500/7,000 mts ABT steel pipes (SAWL), SF 2.80"
+      "value": "Barite in big bags",
+      "confidence": "interpreted",
+      "sourceText": "3000mts Barite in b.b"
     },
     "weightMt": {
-      "value": 6750,
-      "confidence": 0.92,
-      "sourceText": "6,500/7,000 mts ABT steel pipes"
+      "value": 3000,
+      "confidence": "confirmed",
+      "sourceText": "3000mts Barite"
     },
-    "weightMtMin": 6500,
-    "weightMtMax": 7000,
+    "weightMtMin": 3000,
+    "weightMtMax": 3000,
     "volumeCbm": null,
-    "dimensions": "max length 12m, max OD 610mm",
+    "dimensions": null,
     "cargoType": "BREAK_BULK",
     "containerType": null,
-    "quantity": { "min": 6500, "max": 7000 },
-    "incoterms": "FIOST",
-    "preferredDates": null,
-    "laycanRelativeStart": "+14d",
-    "laycanRelativeEnd": "+24d",
-    "loadingRate": "CQD SHINC",
-    "dischargeRate": "1000 mts SSHEX EIU",
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "Cargo ready",
+      "confidence": "confirmed",
+      "sourceText": "Cgo Ready"
+    },
+    "laycan": "Cargo ready",
+    "loadingRate": "1500",
+    "dischargeRate": "1000",
     "commissionPercent": 3.75,
-    "commissionTerms": "TTL F/D/D",
-    "specialRequirements": "Geared vessel required",
-    "stowageFactor": "2.80",
-    "missingInfo": []
+    "commissionTerms": "TTL",
+    "specialRequirements": "[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Incoterms not stated",
+      "Demurrage and despatch rates not stated",
+      "Exact cargo unit count / number of big bags not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
   },
   {
-    "emailId": "sample-03",
+    "emailId": "19d5e75f7c50d8e8",
     "itemIndex": 0,
     "originPort": {
-      "value": "Singapore",
-      "confidence": 0.98,
-      "sourceText": "Load: Singapore (1 sb"
+      "value": "Egypt Mediterranean port (unspecified)",
+      "confidence": "interpreted",
+      "sourceText": "Egypt med"
     },
-    "originCountry": "Singapore",
+    "originCountry": "Egypt",
     "destinationPort": {
-      "value": "Rotterdam",
-      "confidence": 0.98,
-      "sourceText": "Disch: Rotterdam, Netherlands"
+      "value": "Odesa",
+      "confidence": "confirmed",
+      "sourceText": "Odesa or Chornomorsk chopt"
     },
-    "destinationCountry": "Netherlands",
+    "destinationCountry": "Ukraine",
     "cargoDescription": {
-      "value": "Steel slabs, SF 0.35",
-      "confidence": 0.98,
-      "sourceText": "28,000 mts steel slabs, SF 0.35"
+      "value": "Salt in big bags",
+      "confidence": "interpreted",
+      "sourceText": "4000-4800 mts salt in big-bags"
     },
-    "weightMt": { "value": 28000, "confidence": 0.98, "sourceText": "28,000 mts steel slabs" },
-    "weightMtMin": 28000,
-    "weightMtMax": 28000,
+    "weightMt": {
+      "value": 4800,
+      "confidence": "interpreted",
+      "sourceText": "4000-4800 mts salt"
+    },
+    "weightMtMin": 4000,
+    "weightMtMax": 4800,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 4000,
+      "max": 4800
+    },
+    "incoterms": null,
+    "preferredDates": null,
+    "laycan": "Spot",
+    "loadingRate": "1200",
+    "dischargeRate": "1200",
+    "commissionPercent": 2.5,
+    "commissionTerms": null,
+    "specialRequirements": "[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Specific Egypt-Med load port not nominated — exact port TBD",
+      "Final discharge port nomination pending (charterer's option: Odesa or Chornomorsk)",
+      "Laytime terms such as SHINC/SHEX/SSHEX not stated",
+      "Demurrage and despatch rates not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [
+      "Chornomorsk"
+    ],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07c3f2dc72d95",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Iskenderun",
+      "confidence": "confirmed",
+      "sourceText": "Iskenderun / 1 Greece"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Greece (port unspecified)",
+      "confidence": "interpreted",
+      "sourceText": "1 Greece"
+    },
+    "destinationCountry": "Greece",
+    "cargoDescription": {
+      "value": "Cement in big bags",
+      "confidence": "interpreted",
+      "sourceText": "3000 mts cement in big bags"
+    },
+    "weightMt": {
+      "value": 3000,
+      "confidence": "confirmed",
+      "sourceText": "3000 mts cement"
+    },
+    "weightMtMin": 3000,
+    "weightMtMax": 3000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "11–16 May 2026",
+      "confidence": "interpreted",
+      "sourceText": "11 - 16 May"
+    },
+    "laycan": "11–16 May 2026",
+    "loadingRate": null,
+    "dischargeRate": null,
+    "commissionPercent": 2.5,
+    "commissionTerms": "TTL here",
+    "specialRequirements": "[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Specific Greece discharge port not nominated — exact port TBD",
+      "Cement grade/specification not stated",
+      "Laytime cost-allocation terms (FIO/CQD/FIOST) not stated",
+      "Loading and discharge rates not stated",
+      "Demurrage and despatch rates not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19d5e78427ad130a",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "North China (port unspecified)",
+      "confidence": "interpreted",
+      "sourceText": "North China"
+    },
+    "originCountry": "China",
+    "destinationPort": {
+      "value": "Marmara",
+      "confidence": "confirmed",
+      "sourceText": "1 Marmara"
+    },
+    "destinationCountry": "Turkey",
+    "cargoDescription": {
+      "value": "Bagged cargo, non-IMO, stowage equals deadweight",
+      "confidence": "interpreted",
+      "sourceText": "20,000 mt bagged cargo non imo stw=dwt"
+    },
+    "weightMt": {
+      "value": 20000,
+      "confidence": "confirmed",
+      "sourceText": "20,000 mt"
+    },
+    "weightMtMin": 20000,
+    "weightMtMax": 20000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "10-20 September 2025",
+      "confidence": "interpreted",
+      "sourceText": "10/20 September"
+    },
+    "laycan": "10-20 September 2025",
+    "loadingRate": "2500",
+    "dischargeRate": "1750",
+    "commissionPercent": 3.75,
+    "commissionTerms": "TTL",
+    "specialRequirements": "[object Object],[object Object]",
+    "stowageFactor": "STW DWT (cargo loads vessel to full deadweight)",
+    "missingInfo": [
+      "Specific North China load port not nominated — exact port TBD",
+      "Specific Marmara discharge port not nominated — exact port TBD",
+      "Incoterms not stated",
+      "Demurrage and despatch rates not stated",
+      "Exact commodity not specified beyond bagged cargo"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07c446224acf1",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Izmail",
+      "confidence": "confirmed",
+      "sourceText": "Izmail / Antalya"
+    },
+    "originCountry": "Ukraine",
+    "destinationPort": {
+      "value": "Antalya",
+      "confidence": "confirmed",
+      "sourceText": "Izmail / Antalya"
+    },
+    "destinationCountry": "Turkey",
+    "cargoDescription": {
+      "value": "Coal tar pitch in big bags, dimensions 1.4m × 1.4m × 1.1m, unit weight 1.2 MT, stowage factor 1.797 derived from dimensions",
+      "confidence": "interpreted",
+      "sourceText": "1500 mts +/-10% coal tar pitch in bb"
+    },
+    "weightMt": {
+      "value": 1500,
+      "confidence": "confirmed",
+      "sourceText": "1500 mts +/-10% coal tar pitch in bb"
+    },
+    "weightMtMin": 1350,
+    "weightMtMax": 1650,
+    "volumeCbm": 2600,
+    "dimensions": "1.4m x 1.4m x 1.1m",
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 1350,
+      "max": 1650
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "11-15 May 2026",
+      "confidence": "interpreted",
+      "sourceText": "11-15 May"
+    },
+    "laycan": "11-15 May 2026",
+    "loadingRate": "1000",
+    "dischargeRate": "1000",
+    "commissionPercent": 2.5,
+    "commissionTerms": "ADDCOM PUS",
+    "specialRequirements": null,
+    "stowageFactor": "1.797 m³/MT (derived from dimensions)",
+    "missingInfo": [
+      "Incoterms not stated",
+      "Exact number of big bags not stated",
+      "Demurrage and despatch rates not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": []
+  },
+  {
+    "emailId": "19e07c482e65e378",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Odessa",
+      "confidence": "confirmed",
+      "sourceText": "Odessa / Aliaga"
+    },
+    "originCountry": "Ukraine",
+    "destinationPort": {
+      "value": "Aliaga",
+      "confidence": "confirmed",
+      "sourceText": "Odessa / Aliaga"
+    },
+    "destinationCountry": "Turkey",
+    "cargoDescription": {
+      "value": "Steel billets",
+      "confidence": "confirmed",
+      "sourceText": "steel billets"
+    },
+    "weightMt": {
+      "value": 10000,
+      "confidence": "confirmed",
+      "sourceText": "10.000 mts steel billets"
+    },
+    "weightMtMin": 10000,
+    "weightMtMax": 10000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "15-20 May 2026",
+      "confidence": "interpreted",
+      "sourceText": "15-20 May"
+    },
+    "laycan": "15-20 May 2026",
+    "loadingRate": "2500",
+    "dischargeRate": "2500",
+    "commissionPercent": 2.5,
+    "commissionTerms": "Address commission past us",
+    "specialRequirements": null,
+    "stowageFactor": null,
+    "missingInfo": [
+      "Incoterms not stated",
+      "Vessel DWT/type requirement not specified",
+      "Demurrage and despatch rates not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07c5000b8200e",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Mtwara",
+      "confidence": "confirmed",
+      "sourceText": "Mtwara / Matadi"
+    },
+    "originCountry": "Tanzania",
+    "destinationPort": {
+      "value": "Matadi",
+      "confidence": "confirmed",
+      "sourceText": "Mtwara / Matadi"
+    },
+    "destinationCountry": "Democratic Republic of the Congo",
+    "cargoDescription": {
+      "value": "Coal in bulk",
+      "confidence": "confirmed",
+      "sourceText": "coal in bulk"
+    },
+    "weightMt": {
+      "value": 22000,
+      "confidence": "confirmed",
+      "sourceText": "22.000 MT +/- 10% coal in bulk"
+    },
+    "weightMtMin": 19800,
+    "weightMtMax": 24200,
     "volumeCbm": null,
     "dimensions": null,
     "cargoType": "BULK",
     "containerType": null,
-    "quantity": 28000,
-    "incoterms": "FIOST",
-    "preferredDates": null,
-    "laycanRelativeStart": "+18d",
-    "laycanRelativeEnd": "+30d",
-    "loadingRate": "10000 mts SHINC",
-    "dischargeRate": "12000 mts SHINC",
+    "quantity": {
+      "min": 19800,
+      "max": 24200
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "01/10 June 2026",
+      "confidence": "confirmed",
+      "sourceText": "01/10 june 2026"
+    },
+    "laycan": "01/10 June 2026",
+    "loadingRate": "8000",
+    "dischargeRate": "3000",
     "commissionPercent": 3.75,
-    "commissionTerms": "TTL",
-    "specialRequirements": "Gearless vessel acceptable (shore cranes at load/disch). Owners to advise Suez or Cape routing.",
-    "stowageFactor": "0.35",
-    "missingInfo": []
+    "commissionTerms": null,
+    "specialRequirements": "[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Incoterms not stated",
+      "Loading and discharge laytime terms such as SHINC/SHEX/FIO/CQD not stated",
+      "Demurrage and despatch rates not stated",
+      "Final vessel specification unclear because 'Grd' is not recognized with certainty"
+    ],
+    "originPortAlternatives": null,
+    "originPortRotation": null,
+    "destinationPortAlternatives": null,
+    "destinationPortRotation": null,
+    "weightPerPort": null
   },
   {
-    "emailId": "sample-04",
+    "emailId": "19e07c5b023cf374",
     "itemIndex": 0,
     "originPort": {
-      "value": "Ain Sokhna",
-      "confidence": 0.95,
-      "sourceText": "Load: Ain Sokhna, Egypt"
+      "value": "Santos",
+      "confidence": "interpreted",
+      "sourceText": "brazil (intn santos)"
+    },
+    "originCountry": "Brazil",
+    "destinationPort": {
+      "value": "West Coast India port (unspecified)",
+      "confidence": "interpreted",
+      "sourceText": "wc india"
+    },
+    "destinationCountry": "India",
+    "cargoDescription": {
+      "value": "Bulk sugar",
+      "confidence": "confirmed",
+      "sourceText": "bulk sugar"
+    },
+    "weightMt": {
+      "value": 70000,
+      "confidence": "confirmed",
+      "sourceText": "70000/10pct moloo bulk sugar"
+    },
+    "weightMtMin": 63000,
+    "weightMtMax": 77000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 63000,
+      "max": 77000
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "July 7 onward 2026",
+      "confidence": "interpreted",
+      "sourceText": "july 07 / onwd"
+    },
+    "laycan": "July 7 onward 2026",
+    "loadingRate": "10000",
+    "dischargeRate": "10000",
+    "commissionPercent": 5,
+    "commissionTerms": null,
+    "specialRequirements": "[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Exact Brazilian load port nomination not fully clear — Santos appears intended but final port should be confirmed",
+      "Specific West Coast India discharge port not nominated — exact port TBD",
+      "Demurrage and despatch rates not stated",
+      "Incoterms not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": null,
+    "originPortRotation": null,
+    "destinationPortAlternatives": null,
+    "destinationPortRotation": null,
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07c6291acbfd4",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Eastern Mediterranean (1 port)",
+      "confidence": "interpreted",
+      "sourceText": "1 EMED"
+    },
+    "originCountry": null,
+    "destinationPort": {
+      "value": "Western Mediterranean (1 port)",
+      "confidence": "interpreted",
+      "sourceText": "1WMED"
+    },
+    "destinationCountry": null,
+    "cargoDescription": {
+      "value": "Steel products, stowage equals deadweight",
+      "confidence": "interpreted",
+      "sourceText": "STEEL PRODUCTS STW DWT"
+    },
+    "weightMt": {
+      "value": 4500,
+      "confidence": "interpreted",
+      "sourceText": "4300-4500 TS"
+    },
+    "weightMtMin": 4300,
+    "weightMtMax": 4500,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 4300,
+      "max": 4500
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "16-20 May 2026",
+      "confidence": "confirmed",
+      "sourceText": "16-20 MAY"
+    },
+    "laycan": "16-20 May 2026",
+    "loadingRate": "1500",
+    "dischargeRate": "1250",
+    "commissionPercent": 2.5,
+    "commissionTerms": "TTL commission",
+    "specialRequirements": null,
+    "stowageFactor": "STW DWT (cargo loads vessel to full deadweight)",
+    "missingInfo": [
+      "Specific Eastern Mediterranean load port not nominated — exact port TBD",
+      "Specific Western Mediterranean discharge port not nominated — exact port TBD",
+      "Laytime terms are not explicitly stated; the 'x' suffix in 1500x/1250x is not treated as a recognized laytime term",
+      "Demurrage and despatch rates not stated",
+      "Incoterms not stated",
+      "Further cargo details available only upon firm interest"
+    ],
+    "originPortAlternatives": null,
+    "originPortRotation": null,
+    "destinationPortAlternatives": null,
+    "destinationPortRotation": null,
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07c733f3b71ae",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Varna West",
+      "confidence": "confirmed",
+      "sourceText": "Varna West/Alexandria"
+    },
+    "originCountry": "Bulgaria",
+    "destinationPort": {
+      "value": "Alexandria",
+      "confidence": "confirmed",
+      "sourceText": "Varna West/Alexandria"
+    },
+    "destinationCountry": "Egypt",
+    "cargoDescription": {
+      "value": "Dense soda ash, bulk, stowage factor about 1.1",
+      "confidence": "interpreted",
+      "sourceText": "soda dense bulk stw aabt 1,1"
+    },
+    "weightMt": {
+      "value": 10500,
+      "confidence": "interpreted",
+      "sourceText": "abt 10/10.500 mt"
+    },
+    "weightMtMin": 10000,
+    "weightMtMax": 10500,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 10000,
+      "max": 10500
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "14/16 May 2026",
+      "confidence": "confirmed",
+      "sourceText": "14/16 may"
+    },
+    "laycan": "14/16 May 2026",
+    "loadingRate": null,
+    "dischargeRate": null,
+    "commissionPercent": 5,
+    "commissionTerms": null,
+    "specialRequirements": "[object Object]",
+    "stowageFactor": "about 1.1",
+    "missingInfo": [
+      "Demurrage and despatch rates not stated",
+      "Stowage factor units not stated",
+      "Incoterms not stated"
+    ],
+    "originPortAlternatives": null,
+    "originPortRotation": null,
+    "destinationPortAlternatives": null,
+    "destinationPortRotation": null,
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07c53928a4333",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "1 safe port East Coast India",
+      "confidence": "interpreted",
+      "sourceText": "load 1spsb ec india"
+    },
+    "originCountry": "India",
+    "destinationPort": {
+      "value": "China (port unspecified)",
+      "confidence": "interpreted",
+      "sourceText": "disch 1spsb china main port"
+    },
+    "destinationCountry": "China",
+    "cargoDescription": {
+      "value": "Iron ore",
+      "confidence": "confirmed",
+      "sourceText": "iron ore"
+    },
+    "weightMt": {
+      "value": 55000,
+      "confidence": "confirmed",
+      "sourceText": "55,000mt/10% iron ore"
+    },
+    "weightMtMin": 49500,
+    "weightMtMax": 60500,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 49500,
+      "max": 60500
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "15-24 May 2026",
+      "confidence": "interpreted",
+      "sourceText": "15/24 may"
+    },
+    "laycan": "15-24 May 2026",
+    "loadingRate": "15000",
+    "dischargeRate": "15000",
+    "commissionPercent": 5,
+    "commissionTerms": "TTL here on F/D/D",
+    "specialRequirements": "[object Object],[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Specific East Coast India load port not nominated — exact port TBD",
+      "Specific China main discharge port not nominated — exact port TBD",
+      "Iron ore grade/specification not stated",
+      "Laytime cost-allocation terms such as FIO, CQD, or FIOST not stated",
+      "Demurrage and despatch rates not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": []
+  },
+  {
+    "emailId": "19e07c7d8deafc02",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "El Arish",
+      "confidence": "confirmed",
+      "sourceText": "El Arish / Tartous"
     },
     "originCountry": "Egypt",
     "destinationPort": {
-      "value": "Misurata",
-      "confidence": 0.95,
-      "sourceText": "Disch: Misurata, Libya"
+      "value": "Tartous",
+      "confidence": "confirmed",
+      "sourceText": "El Arish / Tartous"
     },
-    "destinationCountry": "Libya",
+    "destinationCountry": "Syria",
     "cargoDescription": {
-      "value": "Bagged cement (50kg bags on pallets)",
-      "confidence": 0.97,
-      "sourceText": "bagged cement (50kg bags on pallets)"
+      "value": "Bagged cement in jumbo bags",
+      "confidence": "confirmed",
+      "sourceText": "baged cement (Jumbo bags)"
     },
-    "weightMt": { "value": 5000, "confidence": 0.85, "sourceText": "0 mts bagged cement" },
+    "weightMt": {
+      "value": 7000,
+      "confidence": "interpreted",
+      "sourceText": "6000 - 7000tns"
+    },
+    "weightMtMin": 6000,
+    "weightMtMax": 7000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 6000,
+      "max": 7000
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "Spot; second voyage instantly upon completion of discharging first lot",
+      "confidence": "interpreted",
+      "sourceText": "SPOT / 2 voy instantly upon completion of discharging 1st lot"
+    },
+    "laycan": "Spot",
+    "loadingRate": "2000",
+    "dischargeRate": "1500",
+    "commissionPercent": 2.5,
+    "commissionTerms": "Past us",
+    "specialRequirements": "Two consecutive voyage charters / two voyages: \"x 2 CVC\",Charterers can accept two vessels at loading port if available: \"chrts can accept 2 vsls at loading ports if        available\",Vessel must be geared: \"Vsl shd be geared\",Charterers' agents both ends: \"Chrts agents bends\"",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Exact cargo quantity per voyage remains a range of 6,000–7,000 tonnes.",
+      "Demurrage and despatch rates not stated.",
+      "Incoterms not stated.",
+      "Stowage factor not stated.",
+      "Cargo grade/specification for cement not stated."
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07c837ba011a2",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Al Arish",
+      "confidence": "confirmed",
+      "sourceText": "Al Arish / Latakia"
+    },
+    "originCountry": "Egypt",
+    "destinationPort": {
+      "value": "Latakia",
+      "confidence": "confirmed",
+      "sourceText": "Al Arish / Latakia"
+    },
+    "destinationCountry": "Syria",
+    "cargoDescription": {
+      "value": "Cement in big bags, 1.5 MT each",
+      "confidence": "interpreted",
+      "sourceText": "bgd Cement in bb1.5"
+    },
+    "weightMt": {
+      "value": 5500,
+      "confidence": "interpreted",
+      "sourceText": "5.000/5.500mts"
+    },
+    "weightMtMin": 5000,
+    "weightMtMax": 5500,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 5000,
+      "max": 5500
+    },
+    "incoterms": null,
+    "preferredDates": null,
+    "laycan": "12/13 May 2026",
+    "loadingRate": null,
+    "dischargeRate": null,
+    "commissionPercent": 1.25,
+    "commissionTerms": "Past us",
+    "specialRequirements": null,
+    "stowageFactor": null,
+    "missingInfo": [
+      "Cement grade/type not specified",
+      "Laytime cost-allocation terms (FIO/CQD/FIOST) not stated",
+      "Demurrage and despatch rates not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07ca31cff6b2a",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Damietta",
+      "confidence": "confirmed",
+      "sourceText": "loading Damietta  + Misurata"
+    },
+    "originCountry": "Egypt",
+    "destinationPort": {
+      "value": "Douala",
+      "confidence": "confirmed",
+      "sourceText": "disch Douala  + Lagos"
+    },
+    "destinationCountry": "Cameroon",
+    "cargoDescription": {
+      "value": "20HC containers as cargo, approximately 300 units, unit weight approximately 20 MT each",
+      "confidence": "interpreted",
+      "sourceText": "Need to load abt 300 containers 20HC (uw abt 20mt)"
+    },
+    "weightMt": {
+      "value": 6000,
+      "confidence": "interpreted",
+      "sourceText": "abt 300 containers 20HC (uw abt 20mt)"
+    },
+    "weightMtMin": null,
+    "weightMtMax": null,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": "20HC",
+    "quantity": 300,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "10 / 20 May",
+      "confidence": "confirmed",
+      "sourceText": "10 / 20 May"
+    },
+    "laycan": "10-20 May 2026",
+    "loadingRate": null,
+    "dischargeRate": null,
+    "commissionPercent": 2.5,
+    "commissionTerms": "TTL here",
+    "specialRequirements": "[object Object],[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Exact cargo weight is not directly stated; total weight was derived from approximately 300 containers at approximately 20 MT each.",
+      "Per-port loading split between Damietta and Misurata not stated.",
+      "Per-port discharge split between Douala and Lagos not stated.",
+      "Demurrage and despatch rates not stated.",
+      "Incoterms not stated.",
+      "Commodity inside the containers not specified.",
+      "Final vessel size/type acceptance requires clarification because SDBC/TWN vessel preference is stated but cargo weight appears much lower than 20,000–30,000 MT."
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [
+      "Damietta",
+      "Misurata"
+    ],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [
+      "Douala",
+      "Lagos"
+    ],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07ca65bfe786c",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Savona",
+      "confidence": "confirmed",
+      "sourceText": "Savona /  Samsun"
+    },
+    "originCountry": "Italy",
+    "destinationPort": {
+      "value": "Samsun",
+      "confidence": "confirmed",
+      "sourceText": "Savona /  Samsun"
+    },
+    "destinationCountry": "Turkey",
+    "cargoDescription": {
+      "value": "Metcoke in bulk, 3 grades: Grade 1 2,000 MT +/-10% 60–140 mm, stowage factor approximately 74/75; Grade 2 6,000 MT +/-10% 60–100 mm, stowage factor approximately 69/70; Grade 3 2,000 MT +/-10% 90–250 mm, stowage factor approximately 76/77",
+      "confidence": "confirmed",
+      "sourceText": "metcoke in bulk,3 grades"
+    },
+    "weightMt": {
+      "value": 10000,
+      "confidence": "confirmed",
+      "sourceText": "10.000 mt (+/-10 pct)"
+    },
+    "weightMtMin": 9000,
+    "weightMtMax": 11000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 9000,
+      "max": 11000
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "11-14 May 2026",
+      "confidence": "interpreted",
+      "sourceText": "11/14 May"
+    },
+    "laycan": "11-14 May 2026",
+    "loadingRate": "1200",
+    "dischargeRate": "3000",
+    "commissionPercent": 3.75,
+    "commissionTerms": "ADD PUS",
+    "specialRequirements": "[object Object]",
+    "stowageFactor": "Grade 1: abt 74/75; Grade 2: abt 69/70; Grade 3: abt 76/77",
+    "missingInfo": [
+      "Incoterms not stated",
+      "Demurrage and despatch rates not stated",
+      "Exact loading and discharge laytime terms are unclear: rate suffixes 'sx' and 'sc' are not recognized as explicit laytime abbreviations",
+      "Stowage-factor units not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": []
+  },
+  {
+    "emailId": "19e07caab607dfe5",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Egypt Mediterranean port (unspecified)",
+      "confidence": "interpreted",
+      "sourceText": "1Egypt Med/POC"
+    },
+    "originCountry": "Egypt",
+    "destinationPort": {
+      "value": "Port of Call (unspecified)",
+      "confidence": "interpreted",
+      "sourceText": "POC"
+    },
+    "destinationCountry": null,
+    "cargoDescription": {
+      "value": "Salt in big bags, dimensions 1.1m × 1.1m × 1.1m, unit weight 1.25 MT per big bag",
+      "confidence": "interpreted"
+    },
+    "weightMt": {
+      "value": 5000,
+      "confidence": "interpreted",
+      "sourceText": "5000/10% mts"
+    },
+    "weightMtMin": 4500,
+    "weightMtMax": 5500,
+    "volumeCbm": null,
+    "dimensions": "1.1m x 1.1m x 1.1m",
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 4500,
+      "max": 5500
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "Spot / vessel's dates",
+      "confidence": "interpreted",
+      "sourceText": "spot/vsls dates"
+    },
+    "laycan": "Spot — vessel's dates",
+    "loadingRate": "1250",
+    "dischargeRate": "1250",
+    "commissionPercent": 1.25,
+    "commissionTerms": "Past us",
+    "specialRequirements": null,
+    "stowageFactor": "1.065 m³/MT (derived from dimensions)",
+    "missingInfo": [
+      "Specific Egypt-Med load port not nominated — exact port TBD",
+      "Final discharge port nomination pending: Port of Call not specified",
+      "Laytime terms such as SHINC, SHEX, or FIO not stated",
+      "Demurrage and despatch rates not stated",
+      "Salt grade/specification not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07c9fb6a61008",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Nemrut Bay",
+      "confidence": "interpreted",
+      "sourceText": "NEMRUT / LIVERPOOL"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Liverpool",
+      "confidence": "confirmed",
+      "sourceText": "NEMRUT / LIVERPOOL"
+    },
+    "destinationCountry": "United Kingdom",
+    "cargoDescription": {
+      "value": "Hot Rolled Coils (HRC), unit weight approximately 10–27 tonnes per coil",
+      "confidence": "interpreted",
+      "sourceText": "HRC UW ABT 10/27TS"
+    },
+    "weightMt": {
+      "value": 2720,
+      "confidence": "confirmed",
+      "sourceText": "2,720mts 2PCT MOLCHOPT"
+    },
+    "weightMtMin": 2666,
+    "weightMtMax": 2774,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 2666,
+      "max": 2774
+    },
+    "incoterms": null,
+    "preferredDates": null,
+    "laycan": "15 / 18 MAY 2026",
+    "loadingRate": "1250",
+    "dischargeRate": "1500",
+    "commissionPercent": 3.75,
+    "commissionTerms": "ADDCOMPUS",
+    "specialRequirements": "[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Incoterms not stated",
+      "Demurrage and despatch rates not stated",
+      "Cargo grade/specification beyond HRC not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07c9fb6a61008",
+    "itemIndex": 1,
+    "originPort": {
+      "value": "Nemrut Bay",
+      "confidence": "interpreted",
+      "sourceText": "NEMRUT / CONSTANTZA"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Constanța",
+      "confidence": "interpreted",
+      "sourceText": "CONSTANTZA"
+    },
+    "destinationCountry": "Romania",
+    "cargoDescription": {
+      "value": "Hot Rolled Coils (HRC), Hot Rolled Coils Pickled & Oiled (HRCPO), Hot Rolled Coils Trimmed & Dried (HRCTD), and Hot Rolled Sheets (HRS), unit weight approximately 10–27 tonnes per coil",
+      "confidence": "interpreted",
+      "sourceText": "HRC + HRCPO + HRCTD UW ABT 10/27TS + HRS"
+    },
+    "weightMt": {
+      "value": 6500,
+      "confidence": "confirmed",
+      "sourceText": "6,500mts 2PCT MOLCHOPT"
+    },
+    "weightMtMin": 6370,
+    "weightMtMax": 6630,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 6370,
+      "max": 6630
+    },
+    "incoterms": null,
+    "preferredDates": null,
+    "laycan": "22 / 25 MAY 2026",
+    "loadingRate": "1500",
+    "dischargeRate": "1500",
+    "commissionPercent": 3.75,
+    "commissionTerms": "ADDCOMPUS",
+    "specialRequirements": "[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Incoterms not stated",
+      "Demurrage and despatch rates not stated",
+      "Cargo grade/specification beyond HRC/HRCPO/HRCTD/HRS not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07cbe0a94b74c",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Mersin",
+      "confidence": "confirmed",
+      "sourceText": "Mersin,Turkey / Syria,Tartous"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Tartous",
+      "confidence": "confirmed",
+      "sourceText": "Syria,Tartous"
+    },
+    "destinationCountry": "Syria",
+    "cargoDescription": {
+      "value": "Unpeeled rice in bulk",
+      "confidence": "confirmed",
+      "sourceText": "unpeeled rice in bulk"
+    },
+    "weightMt": {
+      "value": 5000,
+      "confidence": "confirmed",
+      "sourceText": "5000mts unpeeled rice in bulk"
+    },
+    "weightMtMin": 5000,
+    "weightMtMax": 5000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "Spot/Prompt",
+      "confidence": "interpreted",
+      "sourceText": "Spot/Prompt"
+    },
+    "laycan": "Spot / Prompt",
+    "loadingRate": null,
+    "dischargeRate": null,
+    "commissionPercent": 2.5,
+    "commissionTerms": "Past us",
+    "specialRequirements": null,
+    "stowageFactor": null,
+    "missingInfo": [
+      "Separate loading and discharge rates are not stated",
+      "Laytime cost-allocation terms such as FIO, FIOST or CQD are not stated",
+      "Demurrage and despatch rates not stated",
+      "Incoterms are not stated"
+    ],
+    "originPortAlternatives": null,
+    "originPortRotation": null,
+    "destinationPortAlternatives": null,
+    "destinationPortRotation": null,
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07cc094fc3aa2",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Adabiya",
+      "confidence": "confirmed",
+      "sourceText": "1 ADABIYA OR SAFAGA OR AIN SOKHNA"
+    },
+    "originCountry": "Egypt",
+    "destinationPort": {
+      "value": "Semarang",
+      "confidence": "confirmed",
+      "sourceText": "SEMARANG, INDONESIA"
+    },
+    "destinationCountry": "Indonesia",
+    "cargoDescription": {
+      "value": "Rock phosphate in bulk",
+      "confidence": "confirmed",
+      "sourceText": "ROCK PHOSPHATE IN BULK"
+    },
+    "weightMt": {
+      "value": 33000,
+      "confidence": "interpreted",
+      "sourceText": "20,000- 33,000 mts"
+    },
+    "weightMtMin": 20000,
+    "weightMtMax": 33000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 20000,
+      "max": 33000
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "15–30 May 2026",
+      "confidence": "interpreted",
+      "sourceText": "15 - 30 MAY"
+    },
+    "laycan": "15–30 May 2026",
+    "loadingRate": "5000",
+    "dischargeRate": "2500",
+    "commissionPercent": 2.5,
+    "commissionTerms": "TTL here",
+    "specialRequirements": null,
+    "stowageFactor": null,
+    "missingInfo": [
+      "Final load port nomination pending (charterer's option: Adabiya or Safaga or Ain Sokhna)",
+      "Commodity grade not specified (rock phosphate BPL grade not stated)",
+      "Incoterms not stated",
+      "Demurrage and despatch rates not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": [
+      "Safaga",
+      "Ain Sokhna"
+    ],
+    "originPortRotation": null,
+    "destinationPortAlternatives": null,
+    "destinationPortRotation": null,
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07cc3ba833475",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Thisvi",
+      "confidence": "confirmed",
+      "sourceText": "Thisvi  / Monfalcone"
+    },
+    "originCountry": "Greece",
+    "destinationPort": {
+      "value": "Monfalcone",
+      "confidence": "confirmed",
+      "sourceText": "Thisvi  / Monfalcone"
+    },
+    "destinationCountry": "Italy",
+    "cargoDescription": {
+      "value": "Unspecified firm cargo",
+      "confidence": "uncertain",
+      "sourceText": "firm cargo"
+    },
+    "weightMt": null,
+    "weightMtMin": null,
+    "weightMtMax": null,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "OTHER",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "17-22 May 2026",
+      "confidence": "interpreted",
+      "sourceText": "17 - 22 May"
+    },
+    "laycan": "17-22 May 2026",
+    "loadingRate": null,
+    "dischargeRate": null,
+    "commissionPercent": 2.5,
+    "commissionTerms": "Address commission past us",
+    "specialRequirements": "[object Object],[object Object],[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Commodity not specified for the firm cargo",
+      "Cargo weight in metric tons not stated",
+      "Cargo type and packaging not stated",
+      "Incoterms not stated",
+      "Demurrage and despatch rates not stated",
+      "Loading and discharge rates in MT/day not stated"
+    ],
+    "originPortAlternatives": null,
+    "originPortRotation": null,
+    "destinationPortAlternatives": null,
+    "destinationPortRotation": null,
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07cde4af25d45",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Aliaga",
+      "confidence": "confirmed",
+      "sourceText": "Aliaga / Varna"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Varna",
+      "confidence": "confirmed",
+      "sourceText": "Aliaga / Varna"
+    },
+    "destinationCountry": "Bulgaria",
+    "cargoDescription": {
+      "value": "Clay in bulk",
+      "confidence": "interpreted",
+      "sourceText": "abt 10.000t blk clay"
+    },
+    "weightMt": {
+      "value": 10000,
+      "confidence": "interpreted",
+      "sourceText": "abt 10.000t blk clay"
+    },
+    "weightMtMin": null,
+    "weightMtMax": null,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": null,
+    "laycan": "25/30 May 2026",
+    "loadingRate": null,
+    "dischargeRate": null,
+    "commissionPercent": 3.75,
+    "commissionTerms": null,
+    "specialRequirements": null,
+    "stowageFactor": null,
+    "missingInfo": [
+      "Incoterms not stated",
+      "Loading and discharge rates not stated",
+      "Demurrage and despatch rates not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": []
+  },
+  {
+    "emailId": "19e07ce171ab8e10",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Iskenderun",
+      "confidence": "confirmed",
+      "sourceText": "Iskenderun/Constanta"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Constanța",
+      "confidence": "confirmed",
+      "sourceText": "Iskenderun/Constanta"
+    },
+    "destinationCountry": "Romania",
+    "cargoDescription": {
+      "value": "Bulk minerals, not IMO classified",
+      "confidence": "interpreted",
+      "sourceText": "7.000mts blk minerals,not imo"
+    },
+    "weightMt": {
+      "value": 7000,
+      "confidence": "confirmed",
+      "sourceText": "7.000mts blk minerals,not imo"
+    },
+    "weightMtMin": 7000,
+    "weightMtMax": 7000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "15-20 May 2026",
+      "confidence": "interpreted",
+      "sourceText": "15-20 May"
+    },
+    "laycan": "15-20 May 2026",
+    "loadingRate": "3000",
+    "dischargeRate": "2500",
+    "commissionPercent": 2.5,
+    "commissionTerms": null,
+    "specialRequirements": "[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Exact mineral commodity/grade not specified",
+      "Laytime terms such as SHINC/SHEX/FIO/CQD not stated",
+      "Demurrage and despatch rates not stated",
+      "Incoterms not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07cd83bad47a5",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "King Abdullah",
+      "confidence": "confirmed",
+      "sourceText": "KING ABDULLAH or YANBU  / RAVENNA"
+    },
+    "originCountry": "Saudi Arabia",
+    "destinationPort": {
+      "value": "Ravenna",
+      "confidence": "confirmed",
+      "sourceText": "KING ABDULLAH or YANBU  / RAVENNA"
+    },
+    "destinationCountry": "Italy",
+    "cargoDescription": {
+      "value": "Hot Rolled Steel Coils (HRC), maximum unit weight 30 MT",
+      "confidence": "confirmed",
+      "sourceText": "HOT ROLLED STEEL COILS, MAX UW 30 MT"
+    },
+    "weightMt": {
+      "value": 35000,
+      "confidence": "confirmed",
+      "sourceText": "35.000 mts 10% HOT ROLLED STEEL COILS"
+    },
+    "weightMtMin": 31500,
+    "weightMtMax": 38500,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 31500,
+      "max": 38500
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "20 May 2026 onwards",
+      "confidence": "interpreted",
+      "sourceText": "from 20th MAY onwards"
+    },
+    "laycan": "20 May 2026 onwards",
+    "loadingRate": "2500",
+    "dischargeRate": "4000",
+    "commissionPercent": 3.75,
+    "commissionTerms": "TTL here",
+    "specialRequirements": "[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Final load port nomination pending (charterer's option: King Abdullah or Yanbu)",
+      "Demurrage and despatch rates not stated",
+      "Incoterms not stated",
+      "Cargo stowage factor not stated"
+    ],
+    "originPortAlternatives": [
+      "Yanbu"
+    ],
+    "originPortRotation": null,
+    "destinationPortAlternatives": null,
+    "destinationPortRotation": null,
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07cdb7df50d0f",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Alexandria",
+      "confidence": "confirmed",
+      "sourceText": "Alexandria / Braila"
+    },
+    "originCountry": "Egypt",
+    "destinationPort": {
+      "value": "Braila",
+      "confidence": "confirmed",
+      "sourceText": "Alexandria / Braila"
+    },
+    "destinationCountry": "Romania",
+    "cargoDescription": {
+      "value": "Salt in big bags, dimensions 90 x 90 x 90 cm, unit weight 1.5 metric tons, fully stackable",
+      "confidence": "interpreted",
+      "sourceText": "m/m 4000 mts salt in bb – dim: 90x90x90 cm, uw: 1.5 mts – fully stackable"
+    },
+    "weightMt": {
+      "value": 4000,
+      "confidence": "confirmed",
+      "sourceText": "m/m 4000 mts"
+    },
+    "weightMtMin": 4000,
+    "weightMtMax": 4000,
+    "volumeCbm": null,
+    "dimensions": "90 x 90 x 90 cm",
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "Spot — try vessel dates",
+      "confidence": "interpreted",
+      "sourceText": "Spot – try vsl dates"
+    },
+    "laycan": "Spot — vessel's dates",
+    "loadingRate": null,
+    "dischargeRate": null,
+    "commissionPercent": 2.5,
+    "commissionTerms": null,
+    "specialRequirements": "[object Object],[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Demurrage and despatch rates not stated",
+      "Loading and discharge handling rates not stated",
+      "Incoterms not stated",
+      "Freight rate not stated",
+      "Exact vessel dates pending"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07ce84fc34a82",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Jorf Lasfar",
+      "confidence": "confirmed",
+      "sourceText": "Jorf Lasfar => Yarımca (Marmara) + Samsun"
+    },
+    "originCountry": "Morocco",
+    "destinationPort": {
+      "value": "Yarımca",
+      "confidence": "confirmed",
+      "sourceText": "Yarımca (Marmara) + Samsun"
+    },
+    "destinationCountry": "Turkey",
+    "cargoDescription": {
+      "value": "Fertilizers",
+      "confidence": "confirmed",
+      "sourceText": "Fertilizers"
+    },
+    "weightMt": {
+      "value": 20000,
+      "confidence": "confirmed",
+      "sourceText": "Ttl 20,000 mts Fertilizers"
+    },
+    "weightMtMin": 20000,
+    "weightMtMax": 20000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "19-21 May 2026",
+      "confidence": "interpreted",
+      "sourceText": "19-21 May"
+    },
+    "laycan": "19-21 May 2026",
+    "loadingRate": null,
+    "dischargeRate": "3000",
+    "commissionPercent": 2.5,
+    "commissionTerms": "TTL commission here",
+    "specialRequirements": null,
+    "stowageFactor": null,
+    "missingInfo": [
+      "Per-discharge-port tonnage split between Yarımca and Samsun not stated",
+      "Demurrage and despatch rates not stated",
+      "Incoterms not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [
+      "Yarımca",
+      "Samsun"
+    ],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07cd18529fb77",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Nemrut Bay",
+      "confidence": "interpreted",
+      "sourceText": "Nemrut"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Djibouti",
+      "confidence": "confirmed",
+      "sourceText": "1 Djibouti or 1 Tadjourah in chopt"
+    },
+    "destinationCountry": "Djibouti",
+    "cargoDescription": {
+      "value": "Steel Products, stowage equals deadweight",
+      "confidence": "interpreted",
+      "sourceText": "Steel Products stw = dwt"
+    },
+    "weightMt": {
+      "value": 9000,
+      "confidence": "interpreted",
+      "sourceText": "Min 8.000 mts up to 9.000 mts in chopt"
+    },
+    "weightMtMin": 8000,
+    "weightMtMax": 9000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 8000,
+      "max": 9000
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "7-10 May 2026",
+      "confidence": "confirmed",
+      "sourceText": "07/10 May"
+    },
+    "laycan": "7-10 May 2026",
+    "loadingRate": "1500",
+    "dischargeRate": null,
+    "commissionPercent": 2.5,
+    "commissionTerms": "commission",
+    "specialRequirements": "[object Object],[object Object],[object Object]",
+    "stowageFactor": "STW DWT (cargo loads vessel to full deadweight)",
+    "missingInfo": [
+      "Final discharge port nomination pending (charterer's option: Djibouti or Tadjourah)",
+      "Demurrage and despatch rates not stated",
+      "Vessel DWT/type requirement not specified",
+      "Incoterms not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [
+      "Tadjourah"
+    ],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07cd18529fb77",
+    "itemIndex": 1,
+    "originPort": {
+      "value": "Nemrut Bay",
+      "confidence": "interpreted",
+      "sourceText": "Nemrut"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Barbera",
+      "confidence": "confirmed",
+      "sourceText": "Barbera Somalia"
+    },
+    "destinationCountry": "Somalia",
+    "cargoDescription": {
+      "value": "Steel Products, stowage equals deadweight",
+      "confidence": "interpreted",
+      "sourceText": "Steel Products stw = dwt"
+    },
+    "weightMt": {
+      "value": 2800,
+      "confidence": "confirmed",
+      "sourceText": "2800 mts %10"
+    },
+    "weightMtMin": 2520,
+    "weightMtMax": 3080,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 2520,
+      "max": 3080
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "7-10 May 2026",
+      "confidence": "confirmed",
+      "sourceText": "07/10 May"
+    },
+    "laycan": "7-10 May 2026",
+    "loadingRate": "1000",
+    "dischargeRate": "500",
+    "commissionPercent": 2.5,
+    "commissionTerms": "commission",
+    "specialRequirements": "[object Object],[object Object],[object Object]",
+    "stowageFactor": "STW DWT (cargo loads vessel to full deadweight)",
+    "missingInfo": [
+      "Demurrage and despatch rates not stated",
+      "Vessel DWT/type requirement not specified",
+      "Incoterms not stated",
+      "Whether the 10% quantity tolerance is owner's option or charterer's option is not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07ceac0ca69dc",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Kavkaz",
+      "confidence": "confirmed",
+      "sourceText": "Kavkaz/Berbera"
+    },
+    "originCountry": "Russia",
+    "destinationPort": {
+      "value": "Berbera",
+      "confidence": "confirmed",
+      "sourceText": "Kavkaz/Berbera"
+    },
+    "destinationCountry": "Somalia",
+    "cargoDescription": {
+      "value": "Wheat, stowage factor 47",
+      "confidence": "confirmed",
+      "sourceText": "wheat SF 47"
+    },
+    "weightMt": {
+      "value": 30000,
+      "confidence": "confirmed",
+      "sourceText": "30000 mt 10% in OO"
+    },
+    "weightMtMin": 27000,
+    "weightMtMax": 33000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 27000,
+      "max": 33000
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "19-22 May 2026",
+      "confidence": "interpreted",
+      "sourceText": "LC:19-22 May"
+    },
+    "laycan": "19-22 May 2026",
+    "loadingRate": "5000",
+    "dischargeRate": "4000",
+    "commissionPercent": 2.5,
+    "commissionTerms": "past us",
+    "specialRequirements": "[object Object],[object Object]",
+    "stowageFactor": "47",
+    "missingInfo": [
+      "Wheat grade/specification not stated, such as protein percentage or other quality parameters",
+      "Demurrage and despatch rates not stated",
+      "Incoterms not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07cfdf63e232b",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Vasto",
+      "confidence": "confirmed",
+      "sourceText": "Vasto / 1 Cyprus"
+    },
+    "originCountry": "Italy",
+    "destinationPort": {
+      "value": "Cyprus (port unspecified)",
+      "confidence": "interpreted",
+      "sourceText": "1 Cyprus"
+    },
+    "destinationCountry": "Cyprus",
+    "cargoDescription": {
+      "value": "Gypsum boards, minimum 5000 CBM bale/baler capacity required",
+      "confidence": "interpreted",
+      "sourceText": "abt 2.500mt gypsum boards/need min 5000cbm baler"
+    },
+    "weightMt": {
+      "value": 2500,
+      "confidence": "interpreted",
+      "sourceText": "abt 2.500mt"
+    },
+    "weightMtMin": null,
+    "weightMtMax": null,
+    "volumeCbm": 5000,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "10-15 May 2026",
+      "confidence": "interpreted",
+      "sourceText": "10/15 May"
+    },
+    "laycan": "10-15 May 2026",
+    "loadingRate": null,
+    "dischargeRate": null,
+    "commissionPercent": 3.75,
+    "commissionTerms": null,
+    "specialRequirements": "[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Specific Cyprus discharge port not nominated — exact port TBD",
+      "Loading and discharge rates not stated",
+      "Laytime allocation stated only as total days, but the number of total days is not specified",
+      "Demurrage and despatch rates not stated",
+      "Incoterms not stated",
+      "Packaging details and piece count for gypsum boards not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07d056d1ba5aa",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Abidjan",
+      "confidence": "confirmed",
+      "sourceText": "Loading port: Abidjan, CoteDivoire"
+    },
+    "originCountry": "Côte d'Ivoire",
+    "destinationPort": {
+      "value": "Dongguan",
+      "confidence": "confirmed",
+      "sourceText": "Discharging port: 1sp Dongguan, China (need open book)"
+    },
+    "destinationCountry": "China",
+    "cargoDescription": {
+      "value": "Bauxite, quantity flexible",
+      "confidence": "confirmed",
+      "sourceText": "45,000-60,000mt bauxite(qtty flexible)"
+    },
+    "weightMt": {
+      "value": 60000,
+      "confidence": "interpreted",
+      "sourceText": "45,000-60,000mt bauxite(qtty flexible)"
+    },
+    "weightMtMin": 45000,
+    "weightMtMax": 60000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 45000,
+      "max": 60000
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "10 May 2026 onwards, try vessel's dates",
+      "confidence": "interpreted",
+      "sourceText": "Laycan: 10th May onwards try vsl's date"
+    },
+    "laycan": "10 May 2026 onwards — try vessel's dates",
+    "loadingRate": "11000",
+    "dischargeRate": "12000",
+    "commissionPercent": 5,
+    "commissionTerms": "ADCOM: 3.75% on FDD to charterers + 1.25% Tlmarineco",
+    "specialRequirements": "[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Incoterms not stated",
+      "Demurrage and despatch rates not stated",
+      "Exact final cargo quantity within the 45,000–60,000 MT flexible range not confirmed",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07d149d83b38a",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Beira",
+      "confidence": "confirmed",
+      "sourceText": "Beira (Mozambique)"
+    },
+    "originCountry": "Mozambique",
+    "destinationPort": {
+      "value": "Pozzallo",
+      "confidence": "confirmed",
+      "sourceText": "Pozzallo (Italy)"
+    },
+    "destinationCountry": "Italy",
+    "cargoDescription": {
+      "value": "Granite blocks, maximum unit weight 30 tonnes",
+      "confidence": "confirmed",
+      "sourceText": "Granite Blocks  (max uw 30 tns)"
+    },
+    "weightMt": {
+      "value": 5900,
+      "confidence": "interpreted",
+      "sourceText": "4800 -  5900 mts"
+    },
+    "weightMtMin": 4800,
+    "weightMtMax": 5900,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 4800,
+      "max": 5900
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "Spot / Prompt",
+      "confidence": "interpreted",
+      "sourceText": "SPOT / ppt"
+    },
+    "laycan": "Spot / Prompt",
+    "loadingRate": null,
+    "dischargeRate": null,
+    "commissionPercent": 3.75,
+    "commissionTerms": "TTL here",
+    "specialRequirements": "[object Object],[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Loading laytime term 'Cop' requires clarification",
+      "Demurrage and despatch rates not stated",
+      "Incoterms not stated",
+      "Cargo dimensions and number of granite blocks not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07d0f8e19df79",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Kandla",
+      "confidence": "confirmed",
+      "sourceText": "Kandla / Ravenna"
+    },
+    "originCountry": "India",
+    "destinationPort": {
+      "value": "Ravenna",
+      "confidence": "confirmed",
+      "sourceText": "Kandla / Ravenna"
+    },
+    "destinationCountry": "Italy",
+    "cargoDescription": {
+      "value": "Clay and kaolin in bulk, 4 grades to load",
+      "confidence": "interpreted",
+      "sourceText": "clay and caolin in bulk"
+    },
+    "weightMt": {
+      "value": 43000,
+      "confidence": "interpreted",
+      "sourceText": "abt 40.000-43.000 mts moloo"
+    },
+    "weightMtMin": 40000,
+    "weightMtMax": 43000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 40000,
+      "max": 43000
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "10 May 2026 onwards",
+      "confidence": "interpreted",
+      "sourceText": "10th May onwards"
+    },
+    "laycan": "10 May 2026 onwards",
+    "loadingRate": "10000",
+    "dischargeRate": "6000",
+    "commissionPercent": 2.5,
+    "commissionTerms": "PUS",
+    "specialRequirements": "[object Object],[object Object],[object Object],[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "MOLOO tolerance percentage not stated, so weight tolerance bounds could not be calculated beyond the stated cargo range",
+      "Specific cargo grades not stated, although 4 grades are required for loading",
+      "Laytime terms are not explicitly stated for loading or discharge",
+      "Demurrage and despatch rates not stated",
+      "Incoterms not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07d1b2ba77051",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Hereke",
+      "confidence": "confirmed",
+      "sourceText": "Hereke / Constanta"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Constanța",
+      "confidence": "confirmed",
+      "sourceText": "Hereke / Constanta"
+    },
+    "destinationCountry": "Romania",
+    "cargoDescription": {
+      "value": "PC strand coils, diameter 130–140 cm, height 80 cm, unit weight 3–3.5 MT, tier limit 2",
+      "confidence": "confirmed",
+      "sourceText": "PC Strand,  Diameter :130-140 cm,  H: 80 cm UW: 3-3,5 MT, Tier\r\nlimit: 2"
+    },
+    "weightMt": {
+      "value": 2500,
+      "confidence": "confirmed",
+      "sourceText": "2500 mts"
+    },
+    "weightMtMin": 2500,
+    "weightMtMax": 2500,
+    "volumeCbm": null,
+    "dimensions": "Diameter 130-140 cm; height 80 cm",
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "11-13 May 2026",
+      "confidence": "interpreted",
+      "sourceText": "11-13 May"
+    },
+    "laycan": "11-13 May 2026",
+    "loadingRate": "1000",
+    "dischargeRate": "800",
+    "commissionPercent": 3.75,
+    "commissionTerms": "ADDCOM PUS",
+    "specialRequirements": "[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Incoterms not stated",
+      "Laytime terms not stated — only loading/discharge rates provided",
+      "Demurrage and despatch rates not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07d186df6a788",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Hereke",
+      "confidence": "interpreted",
+      "sourceText": "1Marmara (Hereke) / Constanta"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Constanța",
+      "confidence": "confirmed",
+      "sourceText": "Constanta"
+    },
+    "destinationCountry": "Romania",
+    "cargoDescription": {
+      "value": "PC Strand, diameter 130–140 cm, height 80 cm, unit weight 3–3.5 MT, tier limit 2",
+      "confidence": "confirmed"
+    },
+    "weightMt": {
+      "value": 2500,
+      "confidence": "confirmed",
+      "sourceText": "2500 mts"
+    },
+    "weightMtMin": 2500,
+    "weightMtMax": 2500,
+    "volumeCbm": null,
+    "dimensions": "Diameter 130-140 cm; H 80 cm",
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "11-13 May 2026",
+      "confidence": "confirmed",
+      "sourceText": "11/13 May"
+    },
+    "laycan": "11-13 May 2026",
+    "loadingRate": "1000",
+    "dischargeRate": "800",
+    "commissionPercent": 3.75,
+    "commissionTerms": "Address commission past us",
+    "specialRequirements": "[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Incoterms not stated",
+      "Laytime cost-allocation terms not stated",
+      "Demurrage and despatch rates not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": null,
+    "originPortRotation": null,
+    "destinationPortAlternatives": null,
+    "destinationPortRotation": null,
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07d186df6a788",
+    "itemIndex": 1,
+    "originPort": {
+      "value": "Iskenderun",
+      "confidence": "confirmed",
+      "sourceText": "Iskenderun / Ghent"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Ghent",
+      "confidence": "confirmed",
+      "sourceText": "Iskenderun / Ghent"
+    },
+    "destinationCountry": "Belgium",
+    "cargoDescription": {
+      "value": "Steel rebars, 3% more or less charterer's option",
+      "confidence": "confirmed",
+      "sourceText": "10000 mts steel rebars %3 mol chopt."
+    },
+    "weightMt": {
+      "value": 10000,
+      "confidence": "confirmed",
+      "sourceText": "10000 mts steel rebars %3 mol chopt."
+    },
+    "weightMtMin": 9700,
+    "weightMtMax": 10300,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 9700,
+      "max": 10300
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "06-09 June 2026",
+      "confidence": "confirmed",
+      "sourceText": "06/09 June"
+    },
+    "laycan": "06-09 June 2026",
+    "loadingRate": "2000",
+    "dischargeRate": "3000",
+    "commissionPercent": 3.75,
+    "commissionTerms": "Address commission past us",
+    "specialRequirements": "[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Incoterms not stated",
+      "Laytime cost-allocation terms not stated",
+      "Demurrage and despatch rates not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": null,
+    "originPortRotation": null,
+    "destinationPortAlternatives": null,
+    "destinationPortRotation": null,
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07d1ec45291d1",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Vizag",
+      "confidence": "confirmed",
+      "sourceText": "load port : vizag , india"
+    },
+    "originCountry": "India",
+    "destinationPort": {
+      "value": "Vanino",
+      "confidence": "confirmed",
+      "sourceText": "discharge port : vanino , russia ( 10.2m )"
+    },
+    "destinationCountry": "Russia",
+    "cargoDescription": {
+      "value": "Alumina in bulk",
+      "confidence": "confirmed",
+      "sourceText": "alumina in bulk"
+    },
+    "weightMt": {
+      "value": 40000,
+      "confidence": "confirmed",
+      "sourceText": "40,000 mts 5pct moloo alumina in bulk"
+    },
+    "weightMtMin": 38000,
+    "weightMtMax": 42000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 38000,
+      "max": 42000
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "15 May 2026 onward; try vessel dates",
+      "confidence": "interpreted",
+      "sourceText": "laycan : 15 may / onw (try vsl dates wch pls adv)"
+    },
+    "laycan": "15 May 2026 onward",
+    "loadingRate": "5000",
+    "dischargeRate": "3700",
+    "commissionPercent": 3.5,
+    "commissionTerms": "TTL here",
+    "specialRequirements": "[object Object],[object Object],[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Incoterms not stated",
+      "Demurrage and despatch rates not stated",
+      "Exact vessel dates are requested but not fixed",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07d2ac4a815b4",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Marmara",
+      "confidence": "confirmed",
+      "sourceText": "1 Marmara /Constanta"
+    },
+    "originCountry": null,
+    "destinationPort": {
+      "value": "Constanța",
+      "confidence": "confirmed",
+      "sourceText": "1 Marmara /Constanta"
+    },
+    "destinationCountry": "Romania",
+    "cargoDescription": {
+      "value": "Steel billets",
+      "confidence": "confirmed",
+      "sourceText": "Steel Billets"
+    },
+    "weightMt": {
+      "value": 7200,
+      "confidence": "confirmed",
+      "sourceText": "Min 7200 tons"
+    },
+    "weightMtMin": 7200,
+    "weightMtMax": null,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "18-20 May 2026, earlier/later possible",
+      "confidence": "interpreted",
+      "sourceText": "18/20 May – Try tick earlier/later"
+    },
+    "laycan": "18-20 May 2026",
+    "loadingRate": null,
+    "dischargeRate": null,
+    "commissionPercent": 2.5,
+    "commissionTerms": "Commission",
+    "specialRequirements": "[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Specific Marmara load port not nominated — exact port TBD",
+      "Maximum cargo quantity not numerically stated; only 'up to fcc in chopt' mentioned",
+      "Loading and discharge rates not stated",
+      "Laytime cost-allocation terms (FIO/CQD/FIOST) not stated",
+      "Demurrage and despatch rates not stated",
+      "Incoterms not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": []
+  },
+  {
+    "emailId": "19e07d3581dc9d89",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Iskenderun",
+      "confidence": "confirmed",
+      "sourceText": "Iskenderun / 1 Greece"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Greece (port unspecified)",
+      "confidence": "interpreted",
+      "sourceText": "1 Greece"
+    },
+    "destinationCountry": "Greece",
+    "cargoDescription": {
+      "value": "Cement in big bags",
+      "confidence": "confirmed",
+      "sourceText": "3000 mts cement in big bags"
+    },
+    "weightMt": {
+      "value": 3000,
+      "confidence": "confirmed",
+      "sourceText": "3000 mts cement in big bags"
+    },
+    "weightMtMin": 3000,
+    "weightMtMax": 3000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "11–16 May 2026",
+      "confidence": "interpreted",
+      "sourceText": "11 - 16 May"
+    },
+    "laycan": "11–16 May 2026",
+    "loadingRate": null,
+    "dischargeRate": null,
+    "commissionPercent": 2.5,
+    "commissionTerms": "TTL here",
+    "specialRequirements": "Exclusive firm cargo — do not recirculate",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Specific Greece discharge port not nominated — exact port TBD",
+      "Loading and discharge cargo-handling rates not stated",
+      "Demurrage and despatch rates not stated",
+      "Incoterms not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07d3145be13c8",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Izmir Alsancak",
+      "confidence": "confirmed",
+      "sourceText": "izmir  Alsancak"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Arzew",
+      "confidence": "confirmed",
+      "sourceText": "Arzew"
+    },
+    "destinationCountry": "Algeria",
+    "cargoDescription": {
+      "value": "Mobile machinery, 10 units, part cargo, over-deck stowage permitted, drawings available",
+      "confidence": "confirmed",
+      "sourceText": "10 units mobile machinery"
+    },
+    "weightMt": {
+      "value": 600,
+      "confidence": "interpreted",
+      "sourceText": "ttl weight : abt  600 mt"
+    },
+    "weightMtMin": null,
+    "weightMtMax": null,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "PROJECT",
+    "containerType": null,
+    "quantity": 10,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "12/15 May 2026, try vessel date",
+      "confidence": "uncertain",
+      "sourceText": "l/c  12/15 may  try vsl date"
+    },
+    "laycan": "12-15 May 2026",
+    "loadingRate": null,
+    "dischargeRate": null,
+    "commissionPercent": 2.5,
+    "commissionTerms": "TTL commission",
+    "specialRequirements": "[object Object],[object Object],[object Object],[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Cargo dimensions not stated — mandatory for project cargo",
+      "Per-unit weights not stated for the 10 mobile machinery units",
+      "Incoterms not stated",
+      "Demurrage and despatch rates not stated",
+      "Exact vessel date pending or to be tried"
+    ],
+    "originPortAlternatives": null,
+    "originPortRotation": null,
+    "destinationPortAlternatives": null,
+    "destinationPortRotation": null,
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07d4069745393",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Alexandria",
+      "confidence": "confirmed",
+      "sourceText": "Alexandria/Tartous"
+    },
+    "originCountry": "Egypt",
+    "destinationPort": {
+      "value": "Tartous",
+      "confidence": "confirmed",
+      "sourceText": "Alexandria/Tartous"
+    },
+    "destinationCountry": "Syria",
+    "cargoDescription": {
+      "value": "Bulk clinker",
+      "confidence": "confirmed",
+      "sourceText": "25,000 MT blk Clinker"
+    },
+    "weightMt": {
+      "value": 25000,
+      "confidence": "confirmed",
+      "sourceText": "25,000 MT blk Clinker"
+    },
+    "weightMtMin": 25000,
+    "weightMtMax": 25000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": null,
+    "laycan": "10-12 May 2026",
+    "loadingRate": "8000",
+    "dischargeRate": "5000",
+    "commissionPercent": 3.75,
+    "commissionTerms": "TTL commission",
+    "specialRequirements": null,
+    "stowageFactor": null,
+    "missingInfo": [
+      "Laytime terms such as SHINC, SHEX, or SSHEX not stated for the loading and discharge rates",
+      "Demurrage and despatch rates not stated",
+      "Incoterms not stated",
+      "Vessel type and size requirements not specified"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07d5b25766951",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Sfax",
+      "confidence": "confirmed",
+      "sourceText": "Sfax, Tunisia"
+    },
+    "originCountry": "Tunisia",
+    "destinationPort": {
+      "value": "Dakar",
+      "confidence": "confirmed",
+      "sourceText": "Dakar"
+    },
+    "destinationCountry": "Senegal",
+    "cargoDescription": {
+      "value": "Olive pomace, stowage factor 58, non-IMO",
+      "confidence": "confirmed",
+      "sourceText": "Olive pomace stw factor 58’ (non IMO)"
+    },
+    "weightMt": {
+      "value": 12000,
+      "confidence": "confirmed",
+      "sourceText": "min 12.000 mts"
+    },
+    "weightMtMin": 12000,
+    "weightMtMax": null,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "20-30 May 2026",
+      "confidence": "interpreted",
+      "sourceText": "20-30 MAY"
+    },
+    "laycan": "20-30 May 2026",
+    "loadingRate": "2000",
+    "dischargeRate": "4000",
+    "commissionPercent": 3.75,
+    "commissionTerms": "TTL here",
+    "specialRequirements": "[object Object],[object Object]",
+    "stowageFactor": "58 ft³/MT",
+    "missingInfo": [
+      "Exact quantity above minimum 12,000 MT not stated",
+      "Incoterms not stated",
+      "Laytime terms such as SHINC/SHEX/SSHEX not stated",
+      "Demurrage and despatch rates not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": []
+  },
+  {
+    "emailId": "19e07d4f102b639b",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Pivdennyi",
+      "confidence": "confirmed",
+      "sourceText": "Pivdennyi / La Coruna"
+    },
+    "originCountry": "Ukraine",
+    "destinationPort": {
+      "value": "La Coruna",
+      "confidence": "confirmed",
+      "sourceText": "Pivdennyi / La Coruna"
+    },
+    "destinationCountry": "Spain",
+    "cargoDescription": {
+      "value": "Rapeseed meal pellets in bulk, stowage factor 58",
+      "confidence": "confirmed",
+      "sourceText": "rapeseed meal pellets in bulk, sf  58'"
+    },
+    "weightMt": {
+      "value": 6000,
+      "confidence": "confirmed",
+      "sourceText": "6000 mts +/-10%"
+    },
+    "weightMtMin": 5400,
+    "weightMtMax": 6600,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 5400,
+      "max": 6600
+    },
+    "incoterms": null,
+    "preferredDates": null,
+    "laycan": "Spot — vessel's dates",
+    "loadingRate": "2000",
+    "dischargeRate": "2000",
+    "commissionPercent": 3.75,
+    "commissionTerms": "TTL here",
+    "specialRequirements": null,
+    "stowageFactor": "58 ft³/MT",
+    "missingInfo": [
+      "Incoterms not stated",
+      "Demurrage and despatch rates not stated",
+      "Exact vessel dates for spot laycan not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07d4742474163",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Nemrut Bay",
+      "confidence": "interpreted",
+      "sourceText": "-NEMRUT / LIVERPOOL"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Liverpool",
+      "confidence": "confirmed",
+      "sourceText": "-NEMRUT / LIVERPOOL"
+    },
+    "destinationCountry": "United Kingdom",
+    "cargoDescription": {
+      "value": "Hot Rolled Coils (HRC), unit weight approximately 10–27 tonnes per coil",
+      "confidence": "interpreted",
+      "sourceText": "-2,720mts 2PCT MOLCHOPT HRC UW ABT 10/27TS"
+    },
+    "weightMt": {
+      "value": 2720,
+      "confidence": "interpreted",
+      "sourceText": "-2,720mts 2PCT MOLCHOPT HRC UW ABT 10/27TS"
+    },
+    "weightMtMin": 2666,
+    "weightMtMax": 2774,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 2666,
+      "max": 2774
+    },
+    "incoterms": null,
+    "preferredDates": null,
+    "laycan": "15–18 May 2026",
+    "loadingRate": "1250",
+    "dischargeRate": "1500",
+    "commissionPercent": 3.75,
+    "commissionTerms": "ADDCOMPUS",
+    "specialRequirements": "[object Object],[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Incoterms not stated",
+      "Demurrage and despatch rates not stated",
+      "Cargo stowage factor not stated"
+    ],
+    "originPortAlternatives": null,
+    "originPortRotation": null,
+    "destinationPortAlternatives": null,
+    "destinationPortRotation": null,
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07d4742474163",
+    "itemIndex": 1,
+    "originPort": {
+      "value": "Nemrut Bay",
+      "confidence": "interpreted",
+      "sourceText": "-NEMRUT / CONSTANTZA"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Constanța",
+      "confidence": "interpreted",
+      "sourceText": "-NEMRUT / CONSTANTZA"
+    },
+    "destinationCountry": "Romania",
+    "cargoDescription": {
+      "value": "Hot Rolled Coils (HRC), Hot Rolled Coils Pickled & Oiled (HRCPO), Hot Rolled Coils Trimmed & Dried (HRCTD), and Hot Rolled Sheets (HRS), unit weight approximately 10–27 tonnes per coil",
+      "confidence": "interpreted",
+      "sourceText": "-6,500mts 2PCT MOLCHOPT HRC + HRCPO + HRCTD UW ABT 10/27TS + HRS"
+    },
+    "weightMt": {
+      "value": 6500,
+      "confidence": "interpreted",
+      "sourceText": "-6,500mts 2PCT MOLCHOPT HRC + HRCPO + HRCTD UW ABT 10/27TS + HRS"
+    },
+    "weightMtMin": 6370,
+    "weightMtMax": 6630,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 6370,
+      "max": 6630
+    },
+    "incoterms": null,
+    "preferredDates": null,
+    "laycan": "22–25 May 2026",
+    "loadingRate": "1500",
+    "dischargeRate": "1500",
+    "commissionPercent": 3.75,
+    "commissionTerms": "ADDCOMPUS",
+    "specialRequirements": "[object Object],[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Incoterms not stated",
+      "Demurrage and despatch rates not stated",
+      "Cargo stowage factor not stated"
+    ],
+    "originPortAlternatives": null,
+    "originPortRotation": null,
+    "destinationPortAlternatives": null,
+    "destinationPortRotation": null,
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07d7e79fa7242",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Iskenderun",
+      "confidence": "confirmed",
+      "sourceText": "Iskenderun"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Greece (port unspecified)",
+      "confidence": "interpreted",
+      "sourceText": "1 Greece"
+    },
+    "destinationCountry": "Greece",
+    "cargoDescription": {
+      "value": "Cement in big bags",
+      "confidence": "confirmed",
+      "sourceText": "3000 mts cement in big bags"
+    },
+    "weightMt": {
+      "value": 3000,
+      "confidence": "confirmed",
+      "sourceText": "3000 mts cement"
+    },
+    "weightMtMin": 3000,
+    "weightMtMax": 3000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "11 - 15 May",
+      "confidence": "confirmed",
+      "sourceText": "11 - 15 May"
+    },
+    "laycan": "11-15 May 2026",
+    "loadingRate": null,
+    "dischargeRate": null,
+    "commissionPercent": 2.5,
+    "commissionTerms": "TTL here",
+    "specialRequirements": "[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Specific discharge port in Greece not nominated — exact port TBD",
+      "Incoterms not stated",
+      "Loading and discharge rates not stated",
+      "Demurrage and despatch rates not stated",
+      "Cement grade/type not specified",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e07d8a6370f3a1",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Kakinada",
+      "confidence": "confirmed",
+      "sourceText": "load port : kakinada, ec india"
+    },
+    "originCountry": "India",
+    "destinationPort": {
+      "value": "Banjul",
+      "confidence": "confirmed",
+      "sourceText": "10,000 mts to banjul, gambia"
+    },
+    "destinationCountry": "Gambia",
+    "cargoDescription": {
+      "value": "Bagged rice, stowage factor 48–50, without guarantee",
+      "confidence": "confirmed",
+      "sourceText": "40,000 mts of bagged rice sf 48-50 wog"
+    },
+    "weightMt": {
+      "value": 40000,
+      "confidence": "confirmed",
+      "sourceText": "40,000 mts of bagged rice"
+    },
+    "weightMtMin": 40000,
+    "weightMtMax": 40000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": null,
+    "laycan": "20 May 2026 onward (try vessel's dates)",
+    "loadingRate": "2000",
+    "dischargeRate": "2000",
+    "commissionPercent": 3.75,
+    "commissionTerms": null,
+    "specialRequirements": null,
+    "stowageFactor": "48–50 WOG",
+    "missingInfo": [
+      "Incoterms not stated",
+      "Demurrage and despatch rates not stated",
+      "Commission terms not stated beyond 3.75 percent",
+      "Exact laycan end date not stated — shipment is 20 May onward and subject to vessel's dates"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [
+      "Banjul",
+      "Dakar"
+    ],
+    "weightPerPort": [
+      10000,
+      30000
+    ]
+  },
+  {
+    "emailId": "19e07d842ae91302",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Kandla",
+      "confidence": "confirmed",
+      "sourceText": "load port : kandla, wc india"
+    },
+    "originCountry": "India",
+    "destinationPort": {
+      "value": "Banjul",
+      "confidence": "confirmed",
+      "sourceText": "10,000 mts to banjul, gambia"
+    },
+    "destinationCountry": "Gambia",
+    "cargoDescription": {
+      "value": "Bagged rice, stowage factor 48–50, without guarantee",
+      "confidence": "confirmed",
+      "sourceText": "40,000 mts of bagged rice sf 48-50 wog"
+    },
+    "weightMt": {
+      "value": 40000,
+      "confidence": "confirmed",
+      "sourceText": "40,000 mts of bagged rice"
+    },
+    "weightMtMin": 40000,
+    "weightMtMax": 40000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "15 onward, try vessel dates",
+      "confidence": "interpreted",
+      "sourceText": "laycan 15/onwd (try vsl dates)"
+    },
+    "laycan": "15 May 2026 onward — try vessel's dates",
+    "loadingRate": "2000",
+    "dischargeRate": "2000",
+    "commissionPercent": 3.75,
+    "commissionTerms": null,
+    "specialRequirements": "[object Object],[object Object]",
+    "stowageFactor": "48–50 WOG",
+    "missingInfo": [
+      "Incoterms not stated",
+      "Demurrage and despatch rates not stated",
+      "Exact laycan commencement month is not explicitly stated beyond '15/onwd'",
+      "Commission terms not stated beyond 3.75 percent",
+      "Dakar discharge country is stated in the rotation, but the primary destination country field only reflects Banjul, Gambia"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [
+      "Banjul",
+      "Dakar"
+    ],
+    "weightPerPort": [
+      10000,
+      30000
+    ]
+  },
+  {
+    "emailId": "19e089c866d595c7",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Giurgiulesti",
+      "confidence": "confirmed",
+      "sourceText": "Giurgiulesti / 1 Marmara"
+    },
+    "originCountry": "Moldova",
+    "destinationPort": {
+      "value": "Marmara",
+      "confidence": "confirmed",
+      "sourceText": "Giurgiulesti / 1 Marmara"
+    },
+    "destinationCountry": "Turkey",
+    "cargoDescription": {
+      "value": "Bulk sunflower seeds, stowage factor approximately 87",
+      "confidence": "interpreted",
+      "sourceText": "bulk sunflower seeds, sf.abt 87'"
+    },
+    "weightMt": {
+      "value": 2000,
+      "confidence": "confirmed",
+      "sourceText": "2,000 mts 10% bulk sunflower seeds"
+    },
+    "weightMtMin": 1800,
+    "weightMtMax": 2200,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 1800,
+      "max": 2200
+    },
+    "incoterms": null,
+    "preferredDates": null,
+    "laycan": "Spot",
+    "loadingRate": "1000",
+    "dischargeRate": "1000",
+    "commissionPercent": 2.5,
+    "commissionTerms": "ADCOM PUS",
+    "specialRequirements": "[object Object]",
+    "stowageFactor": "abt 87 ft³/MT",
+    "missingInfo": [
+      "Specific Marmara discharge port not nominated — exact port TBD",
+      "Incoterms not stated",
+      "Laytime terms not stated beyond numeric loading/discharge rates",
+      "Demurrage and despatch rates not stated",
+      "Final cargo quantity tolerance option holder not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e089cdd36d5901",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Izmail",
+      "confidence": "confirmed",
+      "sourceText": "Izmail / Samsun or Marmara or Izmir"
+    },
+    "originCountry": "Ukraine",
+    "destinationPort": {
+      "value": "Samsun",
+      "confidence": "confirmed",
+      "sourceText": "Izmail / Samsun or Marmara or Izmir"
+    },
+    "destinationCountry": "Turkey",
+    "cargoDescription": {
+      "value": "Wheat",
+      "confidence": "confirmed",
+      "sourceText": "wheat"
+    },
+    "weightMt": {
+      "value": 5000,
+      "confidence": "confirmed",
+      "sourceText": "5000 mts +/- 10% of wheat"
+    },
+    "weightMtMin": 4500,
+    "weightMtMax": 5500,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 4500,
+      "max": 5500
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "11 May 2026 onward",
+      "confidence": "interpreted",
+      "sourceText": "11 May / onward"
+    },
+    "laycan": "11 May 2026 onward",
+    "loadingRate": "2000",
+    "dischargeRate": "1500",
+    "commissionPercent": 2.5,
+    "commissionTerms": "PAST",
+    "specialRequirements": null,
+    "stowageFactor": null,
+    "missingInfo": [
+      "Final discharge port nomination pending (charterer's option: Samsun or Marmara or Izmir)",
+      "Commodity grade not specified (e.g. wheat: protein %)",
+      "Laytime cost-allocation terms (FIO/CQD/FIOST) not stated",
+      "Demurrage and despatch rates not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [
+      "Marmara",
+      "Izmir"
+    ],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e089d2d810d075",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Iskenderun",
+      "confidence": "confirmed",
+      "sourceText": "Iskenderun / 1 Greece"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Greece (port unspecified)",
+      "confidence": "interpreted",
+      "sourceText": "1 Greece"
+    },
+    "destinationCountry": "Greece",
+    "cargoDescription": {
+      "value": "Cement in big bags",
+      "confidence": "confirmed",
+      "sourceText": "3000 mts cement in big bags"
+    },
+    "weightMt": {
+      "value": 3000,
+      "confidence": "confirmed",
+      "sourceText": "3000 mts cement in big bags"
+    },
+    "weightMtMin": 3000,
+    "weightMtMax": 3000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "11-16 May 2026",
+      "confidence": "interpreted",
+      "sourceText": "11 - 16 May"
+    },
+    "laycan": "11-16 May 2026",
+    "loadingRate": null,
+    "dischargeRate": null,
+    "commissionPercent": 2.5,
+    "commissionTerms": "TTL here",
+    "specialRequirements": "[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Specific discharge port in Greece not nominated — exact port TBD",
+      "Loading and discharge rates not stated",
+      "Demurrage and despatch rates not stated",
+      "Incoterms not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e089d65f53a56c",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Ambarli",
+      "confidence": "confirmed",
+      "sourceText": "Ambarli to Grimsby"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Grimsby",
+      "confidence": "confirmed",
+      "sourceText": "Ambarli to Grimsby"
+    },
+    "destinationCountry": "United Kingdom",
+    "cargoDescription": {
+      "value": "Soft stainless scrap, stowage factor approximately 66, without guarantee, no trimming/pressing inside hold",
+      "confidence": "interpreted",
+      "sourceText": "abt 3500 mts of soft stainless SCRAP stw abt 66' wog (no trimming/pressing inside hold)"
+    },
+    "weightMt": {
+      "value": 3500,
+      "confidence": "interpreted",
+      "sourceText": "abt 3500 mts"
+    },
+    "weightMtMin": null,
+    "weightMtMax": null,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "May 2026, try vessel dates",
+      "confidence": "interpreted",
+      "sourceText": "l/c May, try vessel dates"
+    },
+    "laycan": "May 2026 — try vessel dates",
+    "loadingRate": "1500",
+    "dischargeRate": "1500",
+    "commissionPercent": 2.5,
+    "commissionTerms": "TTL",
+    "specialRequirements": "[object Object],[object Object],[object Object]",
+    "stowageFactor": "abt 66 ft³/MT WOG",
+    "missingInfo": [
+      "Incoterms not stated",
+      "Demurrage and despatch rates not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": null,
+    "originPortRotation": null,
+    "destinationPortAlternatives": null,
+    "destinationPortRotation": null,
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e089f3dc5f3033",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Bandirma",
+      "confidence": "confirmed",
+      "sourceText": "BANDIRMA / RAVENNA+KOPER"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Ravenna",
+      "confidence": "confirmed",
+      "sourceText": "RAVENNA+KOPER"
+    },
+    "destinationCountry": "Italy",
+    "cargoDescription": {
+      "value": "Bulk and bagged harmless minerals",
+      "confidence": "confirmed",
+      "sourceText": "BULK & BAGGED HARMLESS MINERALS"
+    },
+    "weightMt": {
+      "value": 5293,
+      "confidence": "confirmed",
+      "sourceText": "5293 MTS + /- 10"
+    },
+    "weightMtMin": 4764,
+    "weightMtMax": 5822,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "OTHER",
+    "containerType": null,
+    "quantity": {
+      "min": 4764,
+      "max": 5822
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "09/13 Feb 2026",
+      "confidence": "interpreted",
+      "sourceText": "09/13 FEB"
+    },
+    "laycan": "09/13 Feb 2026",
+    "loadingRate": null,
+    "dischargeRate": null,
+    "commissionPercent": 1.25,
+    "commissionTerms": "TTL",
+    "specialRequirements": null,
+    "stowageFactor": null,
+    "missingInfo": [
+      "Exact meaning of the +/- 10 weight tolerance is not fully stated — assumed as 10 percent tolerance.",
+      "Total laytime allowance is not stated despite 'TTL DAYS' being mentioned.",
+      "Loading and discharge rates are not stated.",
+      "Demurrage and despatch rates not stated.",
+      "Discharge quantity split between Ravenna and Koper is not stated.",
+      "Incoterms not stated."
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [
+      "Ravenna",
+      "Koper"
+    ],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e089d960261c91",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Safi",
+      "confidence": "confirmed",
+      "sourceText": "Safi / Cotonou"
+    },
+    "originCountry": "Morocco",
+    "destinationPort": {
+      "value": "Cotonou",
+      "confidence": "confirmed",
+      "sourceText": "Safi / Cotonou"
+    },
+    "destinationCountry": "Benin",
+    "cargoDescription": {
+      "value": "Bulk granular gypsum",
+      "confidence": "confirmed",
+      "sourceText": "Bulk Granular Gypsum"
+    },
+    "weightMt": {
+      "value": 10000,
+      "confidence": "interpreted",
+      "sourceText": "Abt 10.000 mt Bulk Granular Gypsum"
+    },
+    "weightMtMin": null,
+    "weightMtMax": null,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "Spot / Prompt dates",
+      "confidence": "interpreted",
+      "sourceText": "L/C Spot / Ppt dates"
+    },
+    "laycan": "Spot / Prompt dates",
+    "loadingRate": "6000",
+    "dischargeRate": "4000",
+    "commissionPercent": 2.5,
+    "commissionTerms": "PUS (Past Us)",
+    "specialRequirements": "[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Incoterms not stated",
+      "Loading laytime terms not stated",
+      "Discharge laytime terms not stated",
+      "Demurrage and despatch rates not stated",
+      "Meaning of 'Grd' vessel requirement needs human review"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e089d960261c91",
+    "itemIndex": 1,
+    "originPort": {
+      "value": "Casablanca",
+      "confidence": "confirmed",
+      "sourceText": "Casablanca / Diliskelesi"
+    },
+    "originCountry": "Morocco",
+    "destinationPort": {
+      "value": "Diliskelesi",
+      "confidence": "confirmed",
+      "sourceText": "Casablanca / Diliskelesi"
+    },
+    "destinationCountry": "Turkey",
+    "cargoDescription": {
+      "value": "Steel coils and plates",
+      "confidence": "confirmed",
+      "sourceText": "steel coils/plates"
+    },
+    "weightMt": {
+      "value": 2100,
+      "confidence": "interpreted",
+      "sourceText": "Abt 2.100 mt steel coils/plates"
+    },
     "weightMtMin": null,
     "weightMtMax": null,
     "volumeCbm": null,
@@ -147,381 +3266,1384 @@
     "cargoType": "BREAK_BULK",
     "containerType": null,
     "quantity": null,
-    "incoterms": "FIOST",
-    "preferredDates": null,
-    "laycanRelativeStart": "+8d",
-    "laycanRelativeEnd": "+18d",
-    "loadingRate": "CQD SHINC",
-    "dischargeRate": "CQD SHINC",
-    "commissionPercent": 3.75,
-    "commissionTerms": "TTL",
-    "specialRequirements": "Geared vessel preferred",
-    "stowageFactor": null,
-    "missingInfo": ["weight_mt not specified in cargo description, estimated"]
-  },
-  {
-    "emailId": "sample-05",
-    "itemIndex": 0,
-    "originPort": { "value": "Genoa", "confidence": 0.97, "sourceText": "Load: Genoa, Italy" },
-    "originCountry": "Italy",
-    "destinationPort": {
-      "value": "Casablanca",
-      "confidence": 0.97,
-      "sourceText": "Disch: Casablanca, Morocco"
-    },
-    "destinationCountry": "Morocco",
-    "cargoDescription": {
-      "value": "General machinery / industrial equipment",
-      "confidence": 0.96,
-      "sourceText": "5,000 mts general machinery / industrial equipment"
-    },
-    "weightMt": { "value": 5000, "confidence": 0.97, "sourceText": "5,000 mts general machinery" },
-    "weightMtMin": 5000,
-    "weightMtMax": 5000,
-    "volumeCbm": null,
-    "dimensions": null,
-    "cargoType": "PROJECT",
-    "containerType": null,
-    "quantity": 5000,
-    "incoterms": "FIOST",
-    "preferredDates": null,
-    "laycanRelativeStart": "+15d",
-    "laycanRelativeEnd": "+25d",
-    "loadingRate": "CQD SHINC",
-    "dischargeRate": "CQD SHINC",
-    "commissionPercent": 3.75,
-    "commissionTerms": "TTL",
-    "specialRequirements": "Heavy-lift geared vessel required, max piece abt 80mt",
-    "stowageFactor": null,
-    "missingInfo": []
-  },
-  {
-    "emailId": "sample-06",
-    "itemIndex": 0,
-    "originPort": {
-      "value": "Sohar",
-      "confidence": 0.95,
-      "sourceText": "ميناء التحميل: صحار، سلطنة عُمان"
-    },
-    "originCountry": "Oman",
-    "destinationPort": {
-      "value": "Abidjan",
-      "confidence": 0.95,
-      "sourceText": "ميناء التفريغ: أبيدجان، ساحل العاج"
-    },
-    "destinationCountry": "Ivory Coast",
-    "cargoDescription": {
-      "value": "Steel rebar, SF 1.20",
-      "confidence": 0.95,
-      "sourceText": "٨٬٠٠٠ طن متري حديد تسليح، عامل الاستيعاب ١٫٢٠"
-    },
-    "weightMt": { "value": 8000, "confidence": 0.92, "sourceText": "٨٬٠٠٠ طن متري حديد تسليح" },
-    "weightMtMin": 8000,
-    "weightMtMax": 8000,
-    "volumeCbm": null,
-    "dimensions": null,
-    "cargoType": "BREAK_BULK",
-    "containerType": null,
-    "quantity": 8000,
-    "incoterms": "FIOST",
-    "preferredDates": null,
-    "laycanRelativeStart": "+11d",
-    "laycanRelativeEnd": "+21d",
-    "loadingRate": "CQD SHINC",
-    "dischargeRate": "CQD SHINC",
-    "commissionPercent": 3.75,
-    "commissionTerms": "TTL",
-    "specialRequirements": "Geared vessel required",
-    "stowageFactor": "1.20",
-    "missingInfo": []
-  },
-  {
-    "emailId": "sample-07",
-    "itemIndex": 0,
-    "originPort": {
-      "value": "Marseille",
-      "confidence": 0.97,
-      "sourceText": "Load: Marseille, France"
-    },
-    "originCountry": "France",
-    "destinationPort": {
-      "value": "Tin-Can Island, Lagos",
-      "confidence": 0.96,
-      "sourceText": "Disch: Tin-Can Island, Lagos, Nigeria"
-    },
-    "destinationCountry": "Nigeria",
-    "cargoDescription": {
-      "value": "Newsprint / paper reels in rolls, SF 1.70, max roll diameter 1.2m, max roll weight 5mt",
-      "confidence": 0.97,
-      "sourceText": "6,500 mts newsprint / paper reels in rolls, SF 1.70"
-    },
-    "weightMt": { "value": 6500, "confidence": 0.98, "sourceText": "6,500 mts newsprint" },
-    "weightMtMin": 6500,
-    "weightMtMax": 6500,
-    "volumeCbm": null,
-    "dimensions": "max roll diameter 1.2m, max roll weight 5mt",
-    "cargoType": "BREAK_BULK",
-    "containerType": null,
-    "quantity": 6500,
-    "incoterms": "FIOST",
-    "preferredDates": null,
-    "laycanRelativeStart": "+13d",
-    "laycanRelativeEnd": "+23d",
-    "loadingRate": "3,000 mts SHINC",
-    "dischargeRate": "2,000 mts SSHEX EIU",
-    "commissionPercent": 3.75,
-    "commissionTerms": "TTL",
-    "specialRequirements": "Geared vessel required (tween deck preferred)",
-    "stowageFactor": "1.70",
-    "missingInfo": []
-  },
-  {
-    "emailId": "sample-08",
-    "itemIndex": 0,
-    "originPort": {
-      "value": "Jebel Ali",
-      "confidence": 0.88,
-      "sourceText": "from jebel ali to lagos"
-    },
-    "originCountry": "UAE",
-    "destinationPort": {
-      "value": "Lagos",
-      "confidence": 0.88,
-      "sourceText": "from jebel ali to lagos"
-    },
-    "destinationCountry": "Nigeria",
-    "cargoDescription": {
-      "value": "Steel",
-      "confidence": 0.82,
-      "sourceText": "eight thousand mt steel"
-    },
-    "weightMt": { "value": 8000, "confidence": 0.85, "sourceText": "eight thousand mt steel" },
-    "weightMtMin": 8000,
-    "weightMtMax": 8000,
-    "volumeCbm": null,
-    "dimensions": null,
-    "cargoType": "BREAK_BULK",
-    "containerType": null,
-    "quantity": 8000,
     "incoterms": null,
-    "preferredDates": null,
-    "laycanRelativeStart": "+10d",
-    "laycanRelativeEnd": "+20d",
+    "preferredDates": {
+      "value": "20–25 May 2026",
+      "confidence": "interpreted",
+      "sourceText": "L/C 20/25 May"
+    },
+    "laycan": "20–25 May 2026",
     "loadingRate": null,
     "dischargeRate": null,
-    "commissionPercent": null,
-    "commissionTerms": null,
-    "specialRequirements": "Geared vessel required",
+    "commissionPercent": 2.5,
+    "commissionTerms": "PUS (Past Us)",
+    "specialRequirements": null,
     "stowageFactor": null,
     "missingInfo": [
-      "incoterms not stated",
-      "loading/discharge rates not stated",
-      "commission not stated",
-      "cargo type ambiguous"
-    ]
+      "Incoterms not stated",
+      "Separate loading and discharge handling rates not stated",
+      "Demurrage and despatch rates not stated",
+      "Per-unit weight and packaging details for steel coils/plates not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
   },
   {
-    "emailId": "sample-09",
+    "emailId": "19e089fc113c03c5",
     "itemIndex": 0,
-    "originPort": { "value": "Aqaba", "confidence": 0.97, "sourceText": "Load: Aqaba, Jordan" },
-    "originCountry": "Jordan",
+    "originPort": {
+      "value": "1 safe port Spanish Mediterranean",
+      "confidence": "interpreted",
+      "sourceText": "1 sp Spanish Mediterranean"
+    },
+    "originCountry": "Spain",
     "destinationPort": {
-      "value": "Mersin",
-      "confidence": 0.97,
-      "sourceText": "Disch: Mersin, Turkey"
+      "value": "1 safe port Sweden",
+      "confidence": "interpreted",
+      "sourceText": "1 sp Sweden"
     },
-    "destinationCountry": "Turkey",
+    "destinationCountry": "Sweden",
     "cargoDescription": {
-      "value": "Urea fertilizer (granular, bulk), SF 1.25",
-      "confidence": 0.97,
-      "sourceText": "9,500 mts urea fertilizer (granular, bulk), SF 1.25"
+      "value": "Bulk cargo, commodity not specified",
+      "confidence": "confirmed",
+      "sourceText": "3.500/8.000 mts bulk cargo"
     },
-    "weightMt": { "value": 9500, "confidence": 0.98, "sourceText": "9,500 mts urea fertilizer" },
-    "weightMtMin": 9500,
-    "weightMtMax": 9500,
+    "weightMt": {
+      "value": 8000,
+      "confidence": "interpreted",
+      "sourceText": "3.500/8.000 mts"
+    },
+    "weightMtMin": 3500,
+    "weightMtMax": 8000,
     "volumeCbm": null,
     "dimensions": null,
     "cargoType": "BULK",
     "containerType": null,
-    "quantity": 9500,
-    "incoterms": "FIOST",
-    "preferredDates": null,
-    "laycanRelativeStart": "+8d",
-    "laycanRelativeEnd": "+18d",
-    "loadingRate": "3,000 mts SHINC",
-    "dischargeRate": "2,500 mts SHINC",
+    "quantity": {
+      "min": 3500,
+      "max": 8000
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "9-11 Feb 2026",
+      "confidence": "confirmed",
+      "sourceText": "1st shipment laycan: 9/11 Feb"
+    },
+    "laycan": "9-11 Feb 2026",
+    "loadingRate": null,
+    "dischargeRate": "2600",
     "commissionPercent": 2.5,
-    "commissionTerms": "TTL",
-    "specialRequirements": "Geared vessel preferred (shore cranes available at load/disch). Subs required: stem + owners approval. Reply within 24h.",
-    "stowageFactor": "1.25",
-    "missingInfo": []
+    "commissionTerms": null,
+    "specialRequirements": "[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Specific Spanish Mediterranean load port not nominated — exact port TBD",
+      "Specific Sweden discharge port not nominated — exact port TBD",
+      "Commodity not specified for the bulk cargo",
+      "Incoterms not stated",
+      "Demurrage and despatch rates not stated",
+      "Commission terms not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": []
   },
   {
-    "emailId": "sample-10",
+    "emailId": "19e089fc113c03c5",
+    "itemIndex": 1,
+    "originPort": {
+      "value": "1 safe port Spanish Mediterranean",
+      "confidence": "interpreted",
+      "sourceText": "1 sp Spanish Mediterranean"
+    },
+    "originCountry": "Spain",
+    "destinationPort": {
+      "value": "1 safe port Sweden",
+      "confidence": "interpreted",
+      "sourceText": "1 sp Sweden"
+    },
+    "destinationCountry": "Sweden",
+    "cargoDescription": {
+      "value": "Bulk cargo, commodity not specified",
+      "confidence": "confirmed",
+      "sourceText": "3.500/8.000 mts bulk cargo"
+    },
+    "weightMt": {
+      "value": 8000,
+      "confidence": "interpreted",
+      "sourceText": "3.500/8.000 mts"
+    },
+    "weightMtMin": 3500,
+    "weightMtMax": 8000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 3500,
+      "max": 8000
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "16-18 Feb 2026",
+      "confidence": "confirmed",
+      "sourceText": "2nd shipment laycan: 16/18 Feb"
+    },
+    "laycan": "16-18 Feb 2026",
+    "loadingRate": null,
+    "dischargeRate": "2600",
+    "commissionPercent": 2.5,
+    "commissionTerms": null,
+    "specialRequirements": "[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Specific Spanish Mediterranean load port not nominated — exact port TBD",
+      "Specific Sweden discharge port not nominated — exact port TBD",
+      "Commodity not specified for the bulk cargo",
+      "Incoterms not stated",
+      "Demurrage and despatch rates not stated",
+      "Commission terms not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": []
+  },
+  {
+    "emailId": "19e08a163e396047",
     "itemIndex": 0,
     "originPort": {
-      "value": "Mariupol",
-      "confidence": 0.97,
-      "sourceText": "Load: Mariupol, Ukraine"
+      "value": "El Arish",
+      "confidence": "confirmed",
+      "sourceText": "El Arish (fully bulk) OR  El Dekheila"
+    },
+    "originCountry": "Egypt",
+    "destinationPort": {
+      "value": "Port of Call (unspecified)",
+      "confidence": "interpreted",
+      "sourceText": "POC"
+    },
+    "destinationCountry": null,
+    "cargoDescription": {
+      "value": "Salt, non-food industrial grade, El Arish option fully bulk, El Dekheila option big bags plus bulk",
+      "confidence": "confirmed"
+    },
+    "weightMt": {
+      "value": 16000,
+      "confidence": "interpreted",
+      "sourceText": "Any tonnage between 6-16k mt dwcc"
+    },
+    "weightMtMin": 6000,
+    "weightMtMax": 16000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "OTHER",
+    "containerType": null,
+    "quantity": {
+      "min": 6000,
+      "max": 16000
+    },
+    "incoterms": null,
+    "preferredDates": null,
+    "laycan": "02 Feb 2026 onward",
+    "loadingRate": "3000",
+    "dischargeRate": "1000",
+    "commissionPercent": 2.5,
+    "commissionTerms": "TTL",
+    "specialRequirements": "[object Object],[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Final load port nomination pending (charterer's option: El Arish or El Dekheila)",
+      "Specific discharge port not nominated — Port of Call is unspecified",
+      "Laytime terms such as SHINC/SHEX/SSHEX not stated",
+      "Demurrage and despatch rates not stated",
+      "Incoterms not stated"
+    ],
+    "originPortAlternatives": [
+      "El Dekheila"
+    ],
+    "originPortRotation": null,
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": null,
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e08a1fdbf28c11",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Trapani",
+      "confidence": "confirmed",
+      "sourceText": "Trapani, Italy / Abu Qir"
+    },
+    "originCountry": "Italy",
+    "destinationPort": {
+      "value": "Abu Qir",
+      "confidence": "confirmed",
+      "sourceText": "Trapani, Italy / Abu Qir"
+    },
+    "destinationCountry": "Egypt",
+    "cargoDescription": {
+      "value": "Marble blocks",
+      "confidence": "confirmed",
+      "sourceText": "2000 mts of marble blocks"
+    },
+    "weightMt": {
+      "value": 2000,
+      "confidence": "confirmed",
+      "sourceText": "2000 mts of marble blocks"
+    },
+    "weightMtMin": 2000,
+    "weightMtMax": 2000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": null,
+    "laycan": "Spot",
+    "loadingRate": null,
+    "dischargeRate": null,
+    "commissionPercent": 2.5,
+    "commissionTerms": "Past Us",
+    "specialRequirements": "[object Object],[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Individual marble block dimensions and unit weights not stated",
+      "Demurrage and despatch rates not stated",
+      "Incoterms not stated",
+      "Loading and discharge cost-allocation terms such as FIO/FIOST not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e08a2360deb01b",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Reni",
+      "confidence": "confirmed",
+      "sourceText": "Reni/Tartous"
     },
     "originCountry": "Ukraine",
     "destinationPort": {
-      "value": "Constanta",
-      "confidence": 0.97,
-      "sourceText": "Disch: Constanta, Romania"
+      "value": "Tartous",
+      "confidence": "confirmed",
+      "sourceText": "Reni/Tartous"
     },
-    "destinationCountry": "Romania",
+    "destinationCountry": "Syria",
     "cargoDescription": {
-      "value": "Steel slabs, SF 0.35",
-      "confidence": 0.98,
-      "sourceText": "18,000 mts steel slabs, SF 0.35"
+      "value": "Wheat in bulk",
+      "confidence": "confirmed",
+      "sourceText": "7300 mts wheat bulk"
     },
-    "weightMt": { "value": 18000, "confidence": 0.98, "sourceText": "18,000 mts steel slabs" },
-    "weightMtMin": 18000,
-    "weightMtMax": 18000,
+    "weightMt": {
+      "value": 7300,
+      "confidence": "confirmed",
+      "sourceText": "7300 mts wheat bulk,try 10600 mts"
+    },
+    "weightMtMin": 7300,
+    "weightMtMax": 10600,
     "volumeCbm": null,
     "dimensions": null,
     "cargoType": "BULK",
     "containerType": null,
-    "quantity": 18000,
-    "incoterms": "FIOST",
+    "quantity": {
+      "min": 7300,
+      "max": 10600
+    },
+    "incoterms": null,
     "preferredDates": null,
-    "laycanRelativeStart": "+7d",
-    "laycanRelativeEnd": "+14d",
-    "loadingRate": "5,000 mts SHINC",
-    "dischargeRate": "6,000 mts SHINC",
-    "commissionPercent": 3.75,
+    "laycan": "Spot",
+    "loadingRate": "1250",
+    "dischargeRate": "1250",
+    "commissionPercent": 2.5,
     "commissionTerms": "TTL",
-    "specialRequirements": "Gearless vessel acceptable",
-    "stowageFactor": "0.35",
-    "missingInfo": []
+    "specialRequirements": null,
+    "stowageFactor": null,
+    "missingInfo": [
+      "Wheat grade/specification not stated",
+      "Laytime terms for loading and discharge not stated",
+      "Demurrage and despatch rates not stated",
+      "Incoterms not stated",
+      "Clarification needed whether 10,600 mts is an alternative cargo quantity or maximum trial intake"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
   },
   {
-    "emailId": "sample-11",
+    "emailId": "19e08a007eff29ab",
     "itemIndex": 0,
     "originPort": {
-      "value": "Mykolaiv / Constanta",
-      "confidence": 0.92,
-      "sourceText": "Load port 1: Mykolaiv, Ukraine"
+      "value": "Izmail",
+      "confidence": "confirmed",
+      "sourceText": "Izmail / Figuera De Foz"
     },
-    "originCountry": "Ukraine / Romania",
+    "originCountry": "Ukraine",
     "destinationPort": {
-      "value": "Misurata",
-      "confidence": 0.97,
-      "sourceText": "Disch: Misurata, Libya"
+      "value": "Figuera De Foz",
+      "confidence": "confirmed",
+      "sourceText": "Izmail / Figuera De Foz"
     },
-    "destinationCountry": "Libya",
+    "destinationCountry": "Portugal",
     "cargoDescription": {
-      "value": "Grain bulk, split 7,000 mts wheat + 5,000 mts corn",
-      "confidence": 0.97,
-      "sourceText": "12,000 mts grain bulk (split 7,000 + 5,000)"
+      "value": "Bulk clay",
+      "confidence": "confirmed",
+      "sourceText": "bulk clay"
+    },
+    "weightMt": {
+      "value": 6000,
+      "confidence": "interpreted",
+      "sourceText": "5000-6000 mtons bulk clay"
+    },
+    "weightMtMin": 5000,
+    "weightMtMax": 6000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 5000,
+      "max": 6000
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "Spot / Prompt",
+      "confidence": "interpreted",
+      "sourceText": "Spot/ppt"
+    },
+    "laycan": "Spot / Prompt",
+    "loadingRate": "2000",
+    "dischargeRate": null,
+    "commissionPercent": 2.5,
+    "commissionTerms": "Gcn",
+    "specialRequirements": "[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Discharge rate not clearly stated.",
+      "Demurrage and despatch rates not stated.",
+      "Incoterms not stated.",
+      "Vessel DWT/type requirement not specified.",
+      "Exact laycan dates not stated beyond spot/prompt."
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": []
+  },
+  {
+    "emailId": "19e08a007eff29ab",
+    "itemIndex": 1,
+    "originPort": {
+      "value": "Figuera De Foz",
+      "confidence": "confirmed",
+      "sourceText": "Figuera De Foz / Tartous"
+    },
+    "originCountry": "Portugal",
+    "destinationPort": {
+      "value": "Tartous",
+      "confidence": "confirmed",
+      "sourceText": "Figuera De Foz / Tartous"
+    },
+    "destinationCountry": "Syria",
+    "cargoDescription": {
+      "value": "Bulk clay",
+      "confidence": "confirmed",
+      "sourceText": "bulk clay"
+    },
+    "weightMt": {
+      "value": 7000,
+      "confidence": "interpreted",
+      "sourceText": "6000 any upto 7000 mtons bulk clay"
+    },
+    "weightMtMin": 6000,
+    "weightMtMax": 7000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 6000,
+      "max": 7000
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "Spot / Prompt",
+      "confidence": "interpreted",
+      "sourceText": "spot/ppt"
+    },
+    "laycan": "Spot / Prompt",
+    "loadingRate": null,
+    "dischargeRate": null,
+    "commissionPercent": 1.25,
+    "commissionTerms": "Gcn",
+    "specialRequirements": "[object Object],[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Loading and discharge rates not stated.",
+      "Laytime term '7 ttl ys' is unclear and requires confirmation.",
+      "Demurrage and despatch rates not stated.",
+      "Incoterms not stated.",
+      "Vessel DWT/type requirement not specified.",
+      "Exact laycan dates not stated beyond spot/prompt."
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": []
+  },
+  {
+    "emailId": "19e08a26402532a7",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Constanța",
+      "confidence": "interpreted",
+      "sourceText": "Constanta or POC"
+    },
+    "originCountry": "Romania",
+    "destinationPort": {
+      "value": "Conakry",
+      "confidence": "confirmed",
+      "sourceText": "Conakry, Guinea"
+    },
+    "destinationCountry": "Guinea",
+    "cargoDescription": {
+      "value": "Bulk corn, stowage factor approximately 51",
+      "confidence": "interpreted",
+      "sourceText": "bulk corn 51abt"
+    },
+    "weightMt": {
+      "value": 22000,
+      "confidence": "interpreted",
+      "sourceText": "20,000/22,000 mt"
+    },
+    "weightMtMin": 20000,
+    "weightMtMax": 22000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 20000,
+      "max": 22000
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "10-20 February 2026",
+      "confidence": "confirmed",
+      "sourceText": "10/20-Feb"
+    },
+    "laycan": "10-20 February 2026",
+    "loadingRate": "7000",
+    "dischargeRate": "3000",
+    "commissionPercent": 2.5,
+    "commissionTerms": "past",
+    "specialRequirements": null,
+    "stowageFactor": "abt 51 ft³/MT",
+    "missingInfo": [
+      "Final load port nomination pending (charterer's option: Constanța or Port of Call unspecified)",
+      "Incoterms not stated",
+      "Demurrage and despatch rates not stated",
+      "Laytime terms not explicitly stated; rate suffix 'x' was not interpreted as a laytime term"
+    ],
+    "originPortAlternatives": [
+      "Port of Call (unspecified)"
+    ],
+    "originPortRotation": null,
+    "destinationPortAlternatives": null,
+    "destinationPortRotation": null,
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e0976ad0f58119",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Egypt Mediterranean port (unspecified)",
+      "confidence": "interpreted",
+      "sourceText": "1 Egypt med"
+    },
+    "originCountry": "Egypt",
+    "destinationPort": {
+      "value": "Duala",
+      "confidence": "confirmed",
+      "sourceText": "Duala"
+    },
+    "destinationCountry": "Cameroon",
+    "cargoDescription": {
+      "value": "Salt in bulk",
+      "confidence": "interpreted",
+      "sourceText": "30.000 mt blk Salt"
+    },
+    "weightMt": {
+      "value": 30000,
+      "confidence": "confirmed",
+      "sourceText": "30.000 mt blk Salt"
+    },
+    "weightMtMin": 30000,
+    "weightMtMax": 30000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": null,
+    "laycan": "21-30 March 2026",
+    "loadingRate": "8000",
+    "dischargeRate": "3000",
+    "commissionPercent": 2.5,
+    "commissionTerms": "pasr",
+    "specialRequirements": null,
+    "stowageFactor": null,
+    "missingInfo": [
+      "Specific Egypt-Med load port not nominated — exact port TBD",
+      "Laytime cost-allocation terms such as SHINC, SHEX, FIO, CQD, or FIOST not stated",
+      "Demurrage and despatch rates not stated",
+      "Incoterms not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e09767a49f448a",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Pivdenniy",
+      "confidence": "confirmed",
+      "sourceText": "1 sb Pivdenniy"
+    },
+    "originCountry": "Ukraine",
+    "destinationPort": {
+      "value": "Poti",
+      "confidence": "confirmed",
+      "sourceText": "1 sb Poti"
+    },
+    "destinationCountry": "Georgia",
+    "cargoDescription": {
+      "value": "Soya in bulk",
+      "confidence": "confirmed",
+      "sourceText": "soya in blk"
+    },
+    "weightMt": {
+      "value": 5000,
+      "confidence": "interpreted",
+      "sourceText": "abt 5000 mts soya in blk"
+    },
+    "weightMtMin": null,
+    "weightMtMax": null,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": null,
+    "laycan": "Spot",
+    "loadingRate": "1500",
+    "dischargeRate": "1500",
+    "commissionPercent": 2.5,
+    "commissionTerms": "TTL",
+    "specialRequirements": "[object Object],[object Object],[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Incoterms not stated",
+      "Demurrage and despatch rates not stated",
+      "Vessel DWT/type requirement not specified",
+      "Meaning of 'chabe' is not recognized and needs human review"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e0976e3eeb9c2b",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Tuapse",
+      "confidence": "interpreted",
+      "sourceText": "TUAPSE / GIJON"
+    },
+    "originCountry": "Russia",
+    "destinationPort": {
+      "value": "Gijon",
+      "confidence": "interpreted",
+      "sourceText": "TUAPSE / GIJON"
+    },
+    "destinationCountry": "Spain",
+    "cargoDescription": {
+      "value": "Anthracite, stowage factor 43",
+      "confidence": "confirmed",
+      "sourceText": "7.000 mts anthracite sf 43"
+    },
+    "weightMt": {
+      "value": 7000,
+      "confidence": "confirmed",
+      "sourceText": "7.000 mts"
+    },
+    "weightMtMin": 7000,
+    "weightMtMax": null,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": null,
+    "laycan": "Spot",
+    "loadingRate": "4000",
+    "dischargeRate": "4000",
+    "commissionPercent": 2.5,
+    "commissionTerms": "TTL here",
+    "specialRequirements": "[object Object]",
+    "stowageFactor": "43",
+    "missingInfo": [
+      "Exact maximum cargo quantity not stated — only minimum 7,000 mts indicated",
+      "Demurrage and despatch rates not stated",
+      "Incoterms not stated"
+    ],
+    "originPortAlternatives": null,
+    "originPortRotation": null,
+    "destinationPortAlternatives": null,
+    "destinationPortRotation": null,
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e09776821d2476",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Tuapse",
+      "confidence": "confirmed",
+      "sourceText": "TUAPSE / GIJON"
+    },
+    "originCountry": "Russia",
+    "destinationPort": {
+      "value": "Gijón",
+      "confidence": "confirmed",
+      "sourceText": "TUAPSE / GIJON"
+    },
+    "destinationCountry": "Spain",
+    "cargoDescription": {
+      "value": "Anthracite, stowage factor 43",
+      "confidence": "confirmed",
+      "sourceText": "7.000 mts anthracite sf 43"
+    },
+    "weightMt": {
+      "value": 7000,
+      "confidence": "confirmed",
+      "sourceText": "7.000 mts anthracite"
+    },
+    "weightMtMin": 7000,
+    "weightMtMax": null,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": null,
+    "laycan": "Spot",
+    "loadingRate": "4000",
+    "dischargeRate": "4000",
+    "commissionPercent": 2.5,
+    "commissionTerms": "TTL here",
+    "specialRequirements": "[object Object],[object Object]",
+    "stowageFactor": "43",
+    "missingInfo": [
+      "Demurrage and despatch rates not stated",
+      "Incoterms not stated",
+      "Specific cargo grade/specification for anthracite not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": null,
+    "originPortRotation": null,
+    "destinationPortAlternatives": null,
+    "destinationPortRotation": null,
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e09798df92cca7",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Alexandroupolis",
+      "confidence": "interpreted",
+      "sourceText": "Aleaxandroupolis / 1 Tunisia"
+    },
+    "originCountry": "Greece",
+    "destinationPort": {
+      "value": "Tunisia (port unspecified)",
+      "confidence": "interpreted",
+      "sourceText": "1 Tunisia"
+    },
+    "destinationCountry": "Tunisia",
+    "cargoDescription": {
+      "value": "Wheat",
+      "confidence": "confirmed",
+      "sourceText": "11.000mt 10% moloo wheat"
+    },
+    "weightMt": {
+      "value": 11000,
+      "confidence": "confirmed",
+      "sourceText": "11.000mt 10% moloo wheat"
+    },
+    "weightMtMin": 9900,
+    "weightMtMax": 12100,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 9900,
+      "max": 12100
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "1/14 March 2026",
+      "confidence": "interpreted",
+      "sourceText": "1/14 March"
+    },
+    "laycan": "1/14 March 2026",
+    "loadingRate": "6000",
+    "dischargeRate": "2000",
+    "commissionPercent": 3.75,
+    "commissionTerms": null,
+    "specialRequirements": "[object Object],[object Object],[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Specific Tunisia discharge port not nominated — exact port TBD",
+      "Incoterms not stated",
+      "Laytime terms such as SHINC, SHEX, or SSHEX not stated",
+      "Demurrage and despatch rates not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e097888cdea89c",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Odesa",
+      "confidence": "confirmed",
+      "sourceText": "Odesa – tbs/marmara/izmir range /mersin range"
+    },
+    "originCountry": "Ukraine",
+    "destinationPort": {
+      "value": "TBS (to be specified)",
+      "confidence": "interpreted",
+      "sourceText": "tbs/marmara/izmir range /mersin range"
+    },
+    "destinationCountry": "Turkey",
+    "cargoDescription": {
+      "value": "Soyabean, stowage factor approximately 51",
+      "confidence": "interpreted",
+      "sourceText": "6500-7500k soyabean sf abt 51"
+    },
+    "weightMt": {
+      "value": 7500,
+      "confidence": "interpreted",
+      "sourceText": "6500-7500k soyabean"
+    },
+    "weightMtMin": 6500,
+    "weightMtMax": 7500,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 6500,
+      "max": 7500
+    },
+    "incoterms": null,
+    "preferredDates": null,
+    "laycan": "Spot",
+    "loadingRate": "1500",
+    "dischargeRate": "1500",
+    "commissionPercent": 2.5,
+    "commissionTerms": "Marelis brokerage/commission",
+    "specialRequirements": "[object Object],[object Object]",
+    "stowageFactor": "abt 51",
+    "missingInfo": [
+      "Final discharge port nomination pending: TBS, with alternatives Marmara range, Izmir range, or Mersin range",
+      "Laytime terms not stated — the “x” suffix is not a recognized laytime abbreviation",
+      "Demurrage and despatch rates not stated",
+      "Incoterms not stated",
+      "Exact stowage factor units not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [
+      "Marmara range",
+      "Izmir range",
+      "Mersin range"
+    ],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e0977d3c8155ca",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "North Brazil port (unspecified)",
+      "confidence": "interpreted",
+      "sourceText": "1 N Brazil"
+    },
+    "originCountry": "Brazil",
+    "destinationPort": {
+      "value": "North China port (unspecified)",
+      "confidence": "interpreted",
+      "sourceText": "1 N China"
+    },
+    "destinationCountry": "China",
+    "cargoDescription": {
+      "value": "Bulk manganese ore",
+      "confidence": "interpreted",
+      "sourceText": "blk mang ore"
+    },
+    "weightMt": {
+      "value": 47000,
+      "confidence": "interpreted",
+      "sourceText": "30-47.000 mt or full cargo"
+    },
+    "weightMtMin": 30000,
+    "weightMtMax": 47000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 30000,
+      "max": 47000
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "1-10 April 2026",
+      "confidence": "confirmed",
+      "sourceText": "1-10th  April 2026"
+    },
+    "laycan": "1-10 April 2026",
+    "loadingRate": "9000",
+    "dischargeRate": "15000",
+    "commissionPercent": 1.25,
+    "commissionTerms": "past",
+    "specialRequirements": "[object Object],[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Specific North Brazil load port not nominated — exact port TBD",
+      "Specific North China discharge port not nominated — exact port TBD",
+      "Incoterms not stated",
+      "Demurrage and despatch rates not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e097736f6fcbe9",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Iskenderun",
+      "confidence": "confirmed",
+      "sourceText": "Iskenderun / Constanta"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Constanța",
+      "confidence": "confirmed",
+      "sourceText": "Iskenderun / Constanta"
+    },
+    "destinationCountry": "Romania",
+    "cargoDescription": {
+      "value": "Wire rod coils (W.R.C.), outer diameter 1250 mm, length 1500–1600 mm, unit weight 2 MT per coil",
+      "confidence": "confirmed"
+    },
+    "weightMt": {
+      "value": 5000,
+      "confidence": "confirmed",
+      "sourceText": "5000 mt W.R.C. (wire rod coils)"
+    },
+    "weightMtMin": 5000,
+    "weightMtMax": 5000,
+    "volumeCbm": null,
+    "dimensions": "Outer diameter 1250 mm; length 1500-1600 mm",
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": null,
+    "incoterms": null,
+    "preferredDates": {
+      "value": "Spot/Prompt",
+      "confidence": "interpreted",
+      "sourceText": "Laycan Spot/Prompt"
+    },
+    "laycan": "Spot/Prompt",
+    "loadingRate": "1200",
+    "dischargeRate": "1500",
+    "commissionPercent": 3.75,
+    "commissionTerms": "TTL",
+    "specialRequirements": "[object Object],[object Object],[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Freight rate not stated — offers invited",
+      "Demurrage and despatch rates not stated",
+      "Incoterms not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e097a1fe67ba9a",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Pidennyi",
+      "confidence": "confirmed",
+      "sourceText": "Pidennyi - Cyprus"
+    },
+    "originCountry": "Ukraine",
+    "destinationPort": {
+      "value": "Cyprus (port unspecified)",
+      "confidence": "interpreted",
+      "sourceText": "Pidennyi - Cyprus"
+    },
+    "destinationCountry": "Cyprus",
+    "cargoDescription": {
+      "value": "Corn, stowage factor 50",
+      "confidence": "confirmed",
+      "sourceText": "Corn sf 50"
+    },
+    "weightMt": {
+      "value": 6000,
+      "confidence": "interpreted",
+      "sourceText": "5000-6000 mt"
+    },
+    "weightMtMin": 5000,
+    "weightMtMax": 6000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 5000,
+      "max": 6000
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "End February – beginning March 2026",
+      "confidence": "interpreted",
+      "sourceText": "End feb - beg march"
+    },
+    "laycan": "End February – beginning March 2026",
+    "loadingRate": "1500",
+    "dischargeRate": "1500",
+    "commissionPercent": 1.25,
+    "commissionTerms": "Marelis brokerage",
+    "specialRequirements": "[object Object]",
+    "stowageFactor": "50",
+    "missingInfo": [
+      "Specific Cyprus discharge port not nominated — exact port TBD",
+      "Laytime terms such as SHINC/SHEX/SSHEX not stated",
+      "Demurrage and despatch rates not stated",
+      "Incoterms not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": []
+  },
+  {
+    "emailId": "19e097a4da37efbc",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Odesa",
+      "confidence": "confirmed",
+      "sourceText": "Odesa to EC Italy"
+    },
+    "originCountry": "Ukraine",
+    "destinationPort": {
+      "value": "East Coast Italy port (unspecified)",
+      "confidence": "interpreted",
+      "sourceText": "EC Italy"
+    },
+    "destinationCountry": "Italy",
+    "cargoDescription": {
+      "value": "Wheat, stowage factor approximately 47, without guarantee",
+      "confidence": "interpreted",
+      "sourceText": "Wheat sf abt 47’ wog"
     },
     "weightMt": {
       "value": 12000,
-      "confidence": 0.98,
-      "sourceText": "Total cargo: 12,000 mts grain bulk"
+      "confidence": "interpreted",
+      "sourceText": "7200 – 12 000 mts"
     },
-    "weightMtMin": 12000,
+    "weightMtMin": 7200,
     "weightMtMax": 12000,
     "volumeCbm": null,
     "dimensions": null,
     "cargoType": "BULK",
     "containerType": null,
-    "quantity": 12000,
-    "incoterms": "FIOST",
-    "preferredDates": null,
-    "laycanRelativeStart": "+10d",
-    "laycanRelativeEnd": "+20d",
-    "loadingRate": "3,000 mts SHINC per port",
-    "dischargeRate": "2,500 mts SHINC",
-    "commissionPercent": 3.75,
-    "commissionTerms": "TTL",
-    "specialRequirements": "Gearless Handysize/Supramax acceptable. Split load: 7,000 mts wheat Mykolaiv + 5,000 mts corn Constanta.",
-    "stowageFactor": null,
-    "missingInfo": []
+    "quantity": {
+      "min": 7200,
+      "max": 12000
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "Spot onward",
+      "confidence": "interpreted",
+      "sourceText": "Spot - onw"
+    },
+    "laycan": "Spot",
+    "loadingRate": "2000",
+    "dischargeRate": "2000",
+    "commissionPercent": 2.5,
+    "commissionTerms": "1.25% address commission + 1.25% brokerage for Marelis",
+    "specialRequirements": "[object Object],[object Object]",
+    "stowageFactor": "abt 47 ft³/MT WOG",
+    "missingInfo": [
+      "Specific East Coast Italy discharge port not nominated — exact port TBD",
+      "Laytime terms not stated; the “x” suffix in the handling rates is not a recognized laytime term",
+      "Demurrage and despatch rates not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
   },
   {
-    "emailId": "demo-cargo-economics",
+    "emailId": "19e097ae5d6335c1",
     "itemIndex": 0,
     "originPort": {
-      "value": "CNSHA",
-      "confidence": 0.99,
-      "sourceText": "Load: Shanghai, China"
+      "value": "Alexandria",
+      "confidence": "confirmed",
+      "sourceText": "Alexandria  / Liverpool"
     },
-    "originCountry": "China",
+    "originCountry": "Egypt",
     "destinationPort": {
-      "value": "NLRTM",
-      "confidence": 0.99,
-      "sourceText": "Disch: Rotterdam, Netherlands"
+      "value": "Liverpool",
+      "confidence": "confirmed",
+      "sourceText": "Alexandria  / Liverpool"
     },
-    "destinationCountry": "Netherlands",
+    "destinationCountry": "United Kingdom",
     "cargoDescription": {
-      "value": "Grain",
-      "confidence": 0.99,
-      "sourceText": "50,000 mts Grain"
+      "value": "Steel Hot Rolled Coils (HRC), unit weight 16 up to 25 tons",
+      "confidence": "interpreted",
+      "sourceText": "Abt 6000-6100 mts hrc uw of 16 upto 25 tons"
     },
-    "weightMt": { "value": 50000, "confidence": 0.99, "sourceText": "50,000 mts Grain" },
-    "weightMtMin": 50000,
-    "weightMtMax": 50000,
-    "volumeCbm": null,
-    "dimensions": null,
-    "cargoType": "BULK",
-    "containerType": null,
-    "quantity": 50000,
-    "incoterms": "FIOST",
-    "preferredDates": null,
-    "laycanRelativeStart": "+180d",
-    "laycanRelativeEnd": "+200d",
-    "loadingRate": "10000 mts SHINC",
-    "dischargeRate": "10000 mts SHINC",
-    "commissionPercent": 3.75,
-    "commissionTerms": "TTL",
-    "specialRequirements": null,
-    "stowageFactor": "1.25",
-    "missingInfo": []
-  },
-  {
-    "emailId": "sample-12",
-    "itemIndex": 0,
-    "originPort": {
-      "value": "Iskenderun",
-      "confidence": 0.97,
-      "sourceText": "Load: Iskenderun, Turkey"
+    "weightMt": {
+      "value": 6100,
+      "confidence": "interpreted",
+      "sourceText": "Abt 6000-6100 mts hrc"
     },
-    "originCountry": "Turkey",
-    "destinationPort": {
-      "value": "Casablanca",
-      "confidence": 0.97,
-      "sourceText": "Disch: Casablanca, Morocco"
-    },
-    "destinationCountry": "Morocco",
-    "cargoDescription": {
-      "value": "Steel pipes (SAWL/LSAW), SF 2.80",
-      "confidence": 0.98,
-      "sourceText": "5,500 mts steel pipes (SAWL/LSAW), SF 2.80"
-    },
-    "weightMt": { "value": 5500, "confidence": 0.98, "sourceText": "5,500 mts steel pipes" },
-    "weightMtMin": 5500,
-    "weightMtMax": 5500,
+    "weightMtMin": 6000,
+    "weightMtMax": 6100,
     "volumeCbm": null,
     "dimensions": null,
     "cargoType": "BREAK_BULK",
     "containerType": null,
-    "quantity": 5500,
-    "incoterms": "FIOST",
-    "preferredDates": {
-      "value": "10-15 Jan 2025",
-      "confidence": 0.98,
-      "sourceText": "Laycan: 10-15 Jan 2025"
+    "quantity": {
+      "min": 6000,
+      "max": 6100
     },
-    "laycanRelativeStart": null,
-    "laycanRelativeEnd": null,
-    "loadingRate": "CQD SHINC",
-    "dischargeRate": "CQD SHINC",
+    "incoterms": null,
+    "preferredDates": {
+      "value": "Spot-onwards",
+      "confidence": "interpreted",
+      "sourceText": "Spot-onwards"
+    },
+    "laycan": "Spot",
+    "loadingRate": "1500",
+    "dischargeRate": "3000",
+    "commissionPercent": 1.25,
+    "commissionTerms": "commission",
+    "specialRequirements": "[object Object]",
+    "stowageFactor": null,
+    "missingInfo": [
+      "Incoterms not stated",
+      "Laytime cost-allocation terms such as FIO, CQD, or FIOST not stated",
+      "Demurrage and despatch rates not stated",
+      "Vessel DWT/type requirement not specified",
+      "Exact loading date range not stated beyond spot-onwards"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e097b52ea0fd0e",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Turkey (port unspecified)",
+      "confidence": "interpreted",
+      "sourceText": "1 Turkey / 1 UK"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "United Kingdom (port unspecified)",
+      "confidence": "interpreted",
+      "sourceText": "1 Turkey / 1 UK"
+    },
+    "destinationCountry": "United Kingdom",
+    "cargoDescription": {
+      "value": "Steel, stowage equals deadweight",
+      "confidence": "interpreted",
+      "sourceText": "steel stw dwt"
+    },
+    "weightMt": {
+      "value": 5000,
+      "confidence": "interpreted",
+      "sourceText": "3000/5000 mts"
+    },
+    "weightMtMin": 3000,
+    "weightMtMax": 5000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 3000,
+      "max": 5000
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "Spot / prompt; can try beginning March 2026 dates as well",
+      "confidence": "interpreted",
+      "sourceText": "spot prompt - can try beg march dates as well."
+    },
+    "laycan": "Spot / Prompt; beginning March 2026 possible",
+    "loadingRate": null,
+    "dischargeRate": null,
     "commissionPercent": 3.75,
-    "commissionTerms": "TTL",
-    "specialRequirements": "Geared vessel required",
-    "stowageFactor": "2.80",
-    "missingInfo": ["laycan expired (10-15 Jan 2025)"]
+    "commissionTerms": "TTL COMM",
+    "specialRequirements": null,
+    "stowageFactor": "STW DWT (cargo loads vessel to full deadweight)",
+    "missingInfo": [
+      "Specific Turkey load port not nominated — exact port TBD",
+      "Specific United Kingdom discharge port not nominated — exact port TBD",
+      "Laytime cost-allocation terms such as FIO, CQD, or FIOST not stated",
+      "Loading and discharge rates not stated",
+      "Demurrage and despatch rates not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": null,
+    "originPortRotation": null,
+    "destinationPortAlternatives": null,
+    "destinationPortRotation": null,
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e097b52ea0fd0e",
+    "itemIndex": 1,
+    "originPort": {
+      "value": "Turkey (port unspecified)",
+      "confidence": "interpreted",
+      "sourceText": "1 Turkey / 1 UK"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "United Kingdom (port unspecified)",
+      "confidence": "interpreted",
+      "sourceText": "1 Turkey / 1 UK"
+    },
+    "destinationCountry": "United Kingdom",
+    "cargoDescription": {
+      "value": "Steel, stowage equals deadweight",
+      "confidence": "interpreted",
+      "sourceText": "steel stw dwt"
+    },
+    "weightMt": {
+      "value": 5000,
+      "confidence": "interpreted",
+      "sourceText": "3000/5000 mts"
+    },
+    "weightMtMin": 3000,
+    "weightMtMax": 5000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 3000,
+      "max": 5000
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "5–10 March 2026",
+      "confidence": "interpreted",
+      "sourceText": "5-10 March"
+    },
+    "laycan": "5–10 March 2026",
+    "loadingRate": null,
+    "dischargeRate": null,
+    "commissionPercent": 3.75,
+    "commissionTerms": "TTL COMM",
+    "specialRequirements": null,
+    "stowageFactor": "STW DWT (cargo loads vessel to full deadweight)",
+    "missingInfo": [
+      "Specific Turkey load port not nominated — exact port TBD",
+      "Specific United Kingdom discharge port not nominated — exact port TBD",
+      "Laytime cost-allocation terms such as FIO, CQD, or FIOST not stated",
+      "Loading and discharge rates not stated",
+      "Demurrage and despatch rates not stated",
+      "Vessel DWT/type requirement not specified"
+    ],
+    "originPortAlternatives": null,
+    "originPortRotation": null,
+    "destinationPortAlternatives": null,
+    "destinationPortRotation": null,
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e0f50b19f0c25b",
+    "itemIndex": 0,
+    "originPort": {
+      "value": "Nemrut Bay",
+      "confidence": "interpreted",
+      "sourceText": "Nemrut"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Djibouti",
+      "confidence": "confirmed",
+      "sourceText": "1 Djibouti or 1 Tadjourah in chopt"
+    },
+    "destinationCountry": "Djibouti",
+    "cargoDescription": {
+      "value": "Steel Products, stowage equals deadweight",
+      "confidence": "confirmed",
+      "sourceText": "Steel Products stw = dwt"
+    },
+    "weightMt": {
+      "value": 9000,
+      "confidence": "interpreted",
+      "sourceText": "Min 6.500 mts up to 9.000 mts in chopt"
+    },
+    "weightMtMin": 6500,
+    "weightMtMax": 9000,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 6500,
+      "max": 9000
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "spot/ppt",
+      "confidence": "interpreted",
+      "sourceText": "spot/ppt"
+    },
+    "laycan": "Spot / Prompt",
+    "loadingRate": "1250",
+    "dischargeRate": null,
+    "commissionPercent": 2.5,
+    "commissionTerms": "ADDCOMPUS / address commission past us",
+    "specialRequirements": "[object Object],[object Object]",
+    "stowageFactor": "STW DWT (cargo loads vessel to full deadweight)",
+    "missingInfo": [
+      "Final discharge port nomination pending (charterer's option: Djibouti or Tadjourah)",
+      "Detailed steel product specification, packing, dimensions, and unit weights not stated",
+      "Demurrage and despatch rates not stated",
+      "Exact laycan dates not stated beyond spot/prompt",
+      "Incoterms not stated"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [
+      "Tadjourah"
+    ],
+    "destinationPortRotation": [],
+    "weightPerPort": null
+  },
+  {
+    "emailId": "19e0f50b19f0c25b",
+    "itemIndex": 1,
+    "originPort": {
+      "value": "Nemrut Bay",
+      "confidence": "interpreted",
+      "sourceText": "Nemrut"
+    },
+    "originCountry": "Turkey",
+    "destinationPort": {
+      "value": "Barbera",
+      "confidence": "confirmed",
+      "sourceText": "Barbera Somalia"
+    },
+    "destinationCountry": "Somalia",
+    "cargoDescription": {
+      "value": "Steel Products, stowage equals deadweight",
+      "confidence": "confirmed",
+      "sourceText": "Steel Products stw = dwt"
+    },
+    "weightMt": {
+      "value": 2800,
+      "confidence": "confirmed",
+      "sourceText": "2800 mts %10"
+    },
+    "weightMtMin": 2520,
+    "weightMtMax": 3080,
+    "volumeCbm": null,
+    "dimensions": null,
+    "cargoType": "BREAK_BULK",
+    "containerType": null,
+    "quantity": {
+      "min": 2520,
+      "max": 3080
+    },
+    "incoterms": null,
+    "preferredDates": {
+      "value": "spot/ppt",
+      "confidence": "interpreted",
+      "sourceText": "spot/ppt"
+    },
+    "laycan": "Spot / Prompt",
+    "loadingRate": "1000",
+    "dischargeRate": "500",
+    "commissionPercent": 2.5,
+    "commissionTerms": "ADDCOMPUS / address commission past us",
+    "specialRequirements": "[object Object]",
+    "stowageFactor": "STW DWT (cargo loads vessel to full deadweight)",
+    "missingInfo": [
+      "Detailed steel product specification, packing, dimensions, and unit weights not stated",
+      "Demurrage and despatch rates not stated",
+      "Exact laycan dates not stated beyond spot/prompt",
+      "Incoterms not stated",
+      "Cargo quantity tolerance option holder not stated for the 10% tolerance"
+    ],
+    "originPortAlternatives": [],
+    "originPortRotation": [],
+    "destinationPortAlternatives": [],
+    "destinationPortRotation": [],
+    "weightPerPort": null
   }
 ]
