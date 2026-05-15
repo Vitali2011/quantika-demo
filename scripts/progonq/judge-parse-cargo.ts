@@ -186,4 +186,6 @@ async function main() {
   console.error(`[judge] semantic_full=${fullSemantic}/${results.length} (${(fullSemantic/results.length*100).toFixed(1)}%)`);
 }
 
-main().catch((e) => { console.error('FATAL', e); process.exit(1); });
+if (require.main === module) {
+  main().catch((e) => { console.error('FATAL', e); process.exit(1); });
+}

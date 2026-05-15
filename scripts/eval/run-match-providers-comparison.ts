@@ -605,7 +605,9 @@ function buildMarkdownReport(data: {
   return md;
 }
 
-main().catch(err => {
-  console.error('\nFatal error:', err);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch(err => {
+    console.error('\nFatal error:', err);
+    process.exit(1);
+  });
+}
