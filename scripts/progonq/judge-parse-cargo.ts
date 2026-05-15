@@ -85,6 +85,136 @@ function pairKey(ref: string | null, model: string | null): string {
   return createHash('sha256').update(JSON.stringify({ ref, model })).digest('hex').slice(0, 16);
 }
 
+// ─── Resilience layer (exported for tests) ────────────────────────────────────
+//
+// 2026-05-15 incident: ai_audit shows ~20% fail rate on PARSE_CARGO_JUDGE Bedrock
+// calls. Two error families dominate: "Bedrock unable to process your request"
+// (transient model-side) and "Too many requests" (rate limit). The previous
+// retry loop only matched the rate-limit family, so transient errors flowed
+// straight to "conservative non-match". This module exports a small, testable
+// resilience helper that classifies errors, applies exponential backoff, and
+// optionally falls back to the Anthropic API SDK when AWS Bedrock keeps
+// refusing the call.
+
+export type JudgeErrorKind =
+  | 'rate_limit'
+  | 'service_unavailable'
+  | 'transient'
+  | 'empty'
+  | 'malformed'
+  | 'non_retryable';
+
+const RATE_LIMIT_RE = /too many requests|throttl|rate.?limit|\b429\b|quota.?exceeded/i;
+const SERVICE_UNAVAILABLE_RE = /\b50[023]\b|service\s+(?:is\s+)?(?:temporarily\s+)?unavailable|internal\s+server\s+error|bad\s+gateway|gateway\s+timeout/i;
+// Strict word-anchored phrases — avoids substring leak (Class 6) into unrelated
+// words like "capability" or "unable to deserialize".
+const TRANSIENT_RE = /unable to process your request|model is unable to process|\bETIMEDOUT\b|socket\s+hang\s+up|\bECONNRESET\b|\bEAI_AGAIN\b|request\s+aborted|\btimeout\b/i;
+const EMPTY_RE = /empty\s+input|empty\s+(?:after\s+)?trim|no\s+JSON-looking\s+start/i;
+const MALFORMED_RE = /unexpected\s+token|equiv\s+not\s+boolean|unexpected\s+end\s+of\s+JSON/i;
+
+const RETRYABLE_KINDS: ReadonlySet<JudgeErrorKind> = new Set([
+  'rate_limit',
+  'service_unavailable',
+  'transient',
+  'empty',
+  'malformed',
+]);
+
+export function classifyJudgeError(msg: string): JudgeErrorKind {
+  if (!msg) return 'non_retryable';
+  // Order matters: rate_limit before service_unavailable (some 429 also carry 5xx text);
+  // empty + malformed are inspected before transient timeouts so the more specific
+  // parse-side cause wins.
+  if (RATE_LIMIT_RE.test(msg)) return 'rate_limit';
+  if (EMPTY_RE.test(msg)) return 'empty';
+  if (MALFORMED_RE.test(msg)) return 'malformed';
+  if (SERVICE_UNAVAILABLE_RE.test(msg)) return 'service_unavailable';
+  if (TRANSIENT_RE.test(msg)) return 'transient';
+  return 'non_retryable';
+}
+
+export interface BackoffOpts {
+  baseMs: number;
+  capMs: number;
+  kind?: JudgeErrorKind;
+}
+
+export function computeBackoffMs(attempt: number, opts: BackoffOpts): number {
+  const multiplier = opts.kind === 'rate_limit' ? 2 : 1;
+  const raw = opts.baseMs * multiplier * Math.pow(2, Math.max(0, attempt - 1));
+  return Math.min(raw, opts.capMs);
+}
+
+export type JudgePrimaryCall = () => Promise<string>;
+export type JudgeFallbackCall = () => Promise<string>;
+
+export interface JudgeResilienceOpts {
+  maxAttempts: number;
+  backoff: { baseMs: number; capMs: number };
+  /** Injected for tests; defaults to real setTimeout. */
+  sleep?: (ms: number) => Promise<void>;
+}
+
+const defaultSleep = (ms: number) => new Promise<void>((res) => setTimeout(res, ms));
+
+function parseVerdict(raw: string): JudgeVerdict {
+  if (!raw || raw.trim().length === 0) {
+    throw new Error('extractJson: empty input after trim');
+  }
+  const cleaned = raw.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
+  const parsed = JSON.parse(cleaned) as JudgeVerdict;
+  if (typeof parsed.equiv !== 'boolean') throw new Error('equiv not boolean');
+  return parsed;
+}
+
+const CONSERVATIVE: JudgeVerdict = {
+  equiv: false,
+  reason: 'judge parse error — conservative non-match',
+};
+
+export async function executeJudgeWithResilience(
+  primary: JudgePrimaryCall,
+  fallback: JudgeFallbackCall | undefined,
+  opts: JudgeResilienceOpts,
+): Promise<JudgeVerdict> {
+  const sleep = opts.sleep ?? defaultSleep;
+  let lastErr = 'unknown';
+
+  for (let attempt = 1; attempt <= opts.maxAttempts; attempt++) {
+    try {
+      const raw = await primary();
+      return parseVerdict(raw);
+    } catch (e) {
+      lastErr = (e as Error).message ?? 'unknown';
+      const kind = classifyJudgeError(lastErr);
+      if (!RETRYABLE_KINDS.has(kind)) {
+        console.error(`[judge] non-retryable (${kind}): ${lastErr.slice(0, 120)}`);
+        return CONSERVATIVE;
+      }
+      if (attempt >= opts.maxAttempts) break;
+      const delayMs = computeBackoffMs(attempt, { ...opts.backoff, kind });
+      console.error(`[judge] ${kind} (attempt ${attempt}/${opts.maxAttempts}), backoff ${delayMs}ms`);
+      await sleep(delayMs);
+    }
+  }
+
+  if (fallback && process.env.ANTHROPIC_API_KEY) {
+    try {
+      console.error('[judge] primary exhausted — falling back to Anthropic API direct');
+      const raw = await fallback();
+      return parseVerdict(raw);
+    } catch (e) {
+      const msg = (e as Error).message ?? 'unknown';
+      console.error(`[judge] Anthropic fallback failed: ${msg.slice(0, 120)}`);
+    }
+  }
+
+  console.error(`[judge] all attempts failed, last err: ${lastErr.slice(0, 120)}`);
+  return CONSERVATIVE;
+}
+
+// ─── End resilience layer ─────────────────────────────────────────────────────
+
 const JUDGE_SYSTEM = `You are a Senior Chartering Broker (dry-bulk + break-bulk, 20+ years).
 Decide whether two port descriptions refer to the same maritime location
 in a cargo inquiry context.
@@ -128,35 +258,43 @@ NOT equivalent: different date ranges; one side specific, the other a different 
 Null on both sides = equivalent. Null on one side, a date on the other = NOT equivalent.
 Reply ONLY with JSON: {"equiv": true | false, "reason": "one short sentence"}`;
 
+async function callAnthropicDirect(system: string, userMsg: string): Promise<string> {
+  // Lazy require — only loaded when fallback fires AND ANTHROPIC_API_KEY is set.
+  // @anthropic-ai/sdk is already in package.json dependencies.
+  const Anthropic = require('@anthropic-ai/sdk').default as new (opts: { apiKey: string }) => {
+    messages: {
+      create: (params: {
+        model: string;
+        max_tokens: number;
+        system: string;
+        messages: Array<{ role: 'user' | 'assistant'; content: string }>;
+      }) => Promise<{ content: Array<{ type: string; text?: string }> }>;
+    };
+  };
+  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+  const model = process.env.ANTHROPIC_FALLBACK_MODEL ?? 'claude-opus-4-7';
+  const resp = await client.messages.create({
+    model,
+    max_tokens: 200,
+    system,
+    messages: [{ role: 'user', content: userMsg }],
+  });
+  const block = resp.content.find((c) => c.type === 'text');
+  return block?.text ?? '';
+}
+
 async function judgePair(ref: string | null, model: string | null, system: string): Promise<JudgeVerdict> {
   if (ref === model) return { equiv: true, reason: 'identical strings' };
   const userMsg = `REF:   ${JSON.stringify(ref)}\nMODEL: ${JSON.stringify(model)}`;
-  const maxAttempts = 4;
-  let lastErr: string = 'unknown';
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      const raw = await callAiText('PARSE_CARGO_JUDGE', system, userMsg, {
-        maxTokens: 200,
-        timeoutMs: 30_000,
-      });
-      const cleaned = raw.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
-      const parsed = JSON.parse(cleaned) as JudgeVerdict;
-      if (typeof parsed.equiv !== 'boolean') throw new Error('equiv not boolean');
-      return parsed;
-    } catch (e) {
-      lastErr = (e as Error).message.slice(0, 80);
-      const isRateLimit = /too many requests|throttl|rate.?limit|429/i.test(lastErr);
-      if (attempt < maxAttempts && isRateLimit) {
-        const delayMs = 5_000 * attempt; // 5s, 10s, 15s
-        console.error(`[judge] rate-limited (attempt ${attempt}/${maxAttempts}), backoff ${delayMs}ms`);
-        await new Promise((res) => setTimeout(res, delayMs));
-        continue;
-      }
-      break;
-    }
-  }
-  console.error('[judge] parse fail for pair:', { ref, model, err: lastErr });
-  return { equiv: false, reason: 'judge parse error — conservative non-match' };
+
+  const primary: JudgePrimaryCall = () =>
+    callAiText('PARSE_CARGO_JUDGE', system, userMsg, { maxTokens: 200, timeoutMs: 30_000 });
+  const fallback: JudgeFallbackCall = () => callAnthropicDirect(system, userMsg);
+
+  return executeJudgeWithResilience(primary, fallback, {
+    maxAttempts: 4,
+    backoff: { baseMs: 1_000, capMs: 30_000 },
+  });
 }
 
 async function main() {
