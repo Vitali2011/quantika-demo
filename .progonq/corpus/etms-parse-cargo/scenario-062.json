@@ -32,7 +32,7 @@
           "source_text": "discharge port : 10,000 mts to banjul, gambia + 30,000 mts to dakar, senegal"
         },
         "cargo_description": {
-          "value": "Bagged rice, stowage factor 48-50 CBM/MT (WOG)",
+          "value": "Bagged rice, stowage factor 48-50 ft³/MT (WOG)",
           "confidence": "confirmed",
           "source_text": "40,000 mts of bagged rice sf 48-50 wog"
         },
@@ -105,12 +105,12 @@
           "value": null
         },
         "special_requirements": {
-          "value": "Split discharge: 10,000 MT at Banjul (Gambia), 30,000 MT at Dakar (Senegal). Stowage factor 48-50 CBM/MT WOG (Without Guarantee).",
+          "value": "Split discharge: 10,000 MT at Banjul (Gambia), 30,000 MT at Dakar (Senegal). Stowage factor 48-50 ft³/MT WOG (Without Guarantee).",
           "confidence": "confirmed",
           "source_text": "discharge port : 10,000 mts to banjul, gambia + 30,000 mts to dakar, senegal"
         },
         "stowage_factor": {
-          "value": "48-50 CBM/MT (WOG)",
+          "value": "48-50 ft³/MT (WOG)",
           "confidence": "confirmed",
           "source_text": "40,000 mts of bagged rice sf 48-50 wog"
         },

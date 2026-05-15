@@ -102,7 +102,7 @@
           "source_text": "(1,1x1,1x1,1, uw 1,25)"
         },
         "stowage_factor": {
-          "value": 1.331,
+          "value": 1.065,
           "confidence": "interpreted",
           "source_text": "(1,1x1,1x1,1, uw 1,25)"
         },
@@ -205,7 +205,7 @@
           "source_text": "(1,1x1,1x1,1, uw 1,25) + rice (1,05x1,05x1,35, uw 1 mt)"
         },
         "stowage_factor": {
-          "value": "Salt: 1.331 CBM/MT; Rice: 1.488 CBM/MT",
+          "value": "Salt: 1.065 CBM/MT; Rice: 1.488 CBM/MT",
           "confidence": "interpreted",
           "source_text": "(1,1x1,1x1,1, uw 1,25) + rice (1,05x1,05x1,35, uw 1 mt)"
         },

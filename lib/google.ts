@@ -135,3 +135,12 @@ function extractBody(payload: gmail_v1.Schema$MessagePart | null | undefined): s
 function decodeBase64Url(data: string): string {
   return Buffer.from(data.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf-8');
 }
+
+/** Fetch the Gmail account's own email address — used as the persistence owner key. */
+export async function fetchGmailProfile(accessToken: string): Promise<string | null> {
+  const oauth2Client = getOAuthClient();
+  oauth2Client.setCredentials({ access_token: accessToken });
+  const gmail = google.gmail({ version: "v1", auth: oauth2Client });
+  const res = await gmail.users.getProfile({ userId: "me" });
+  return res.data.emailAddress ?? null;
+}

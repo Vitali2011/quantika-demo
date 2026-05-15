@@ -53,6 +53,8 @@ jobs:
         continue-on-error: true
 
   test:
+    # When this job exceeds ~8 minutes, shard it via matrix strategy (jest --shard=N/M).
+    # Current runtime: ~3 min — sharding is premature at this scale (YAGNI).
     name: Test
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -71,7 +73,7 @@ jobs:
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
       - run: npm ci
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-      - run: npm test -- --forceExit
+      - run: npm test
         env:
           NODE_OPTIONS: --max-old-space-size=6144
 
@@ -82,6 +84,9 @@ jobs:
     if: github.event_name == 'push'
     permissions:
       contents: read
+    # TODO: remove continue-on-error after 3 consecutive green push runs.
+    # E2E is now running against a local build (not prod), but needs stabilization
+    # before it can gate merges.
     continue-on-error: true
     steps:
       - uses: actions/checkout@v6
@@ -104,7 +109,18 @@ jobs:
       - run: npx playwright install-deps chromium
       - run: npx playwright install chromium
         if: steps.cache-playwright.outputs.cache-hit != 'true'
-      - run: npm run test:e2e
+      - name: Build app for E2E
+        run: npm run build
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+      - name: Run E2E tests against local build
+        # The app is started automatically by playwright.config.ts webServer config.
+        # Demo session is bootstrapped by each test via POST /api/sample (no external seed needed).
+        # Knowledge RAG (IMSBC/IGC/JWC) requires GCP/Vertex AI credentials not available in CI.
+        # RAG-dependent tests gracefully skip when KNOWLEDGE_RAG_ENABLED=false (the default).
+        run: npm run test:e2e
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
       - uses: actions/upload-artifact@v7
         if: failure()
         with:

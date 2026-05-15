@@ -163,4 +163,6 @@ function main(): void {
   console.log(`\n**Summary:** ${all.length} ports total, ${totalEnriched} enriched, ${totalLow} low-confidence.`);
 }
 
-main();
+if (require.main === module) {
+  main();
+}

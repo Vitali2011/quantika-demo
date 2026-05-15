@@ -88,7 +88,7 @@
           "source_text": "3000 mts of corn, sf 51-52, wog"
         },
         "stowage_factor": {
-          "value": "51-52 CBM/MT",
+          "value": "51-52 ft³/MT",
           "confidence": "confirmed",
           "source_text": "sf 51-52"
         },
@@ -177,7 +177,7 @@
           "source_text": "3000-4000 mts of wheat, sf 48, wog"
         },
         "stowage_factor": {
-          "value": "48 CBM/MT",
+          "value": "48 ft³/MT",
           "confidence": "confirmed",
           "source_text": "sf 48"
         },
@@ -353,7 +353,7 @@
           "source_text": "L/c: spot (may try vessel's dates)"
         },
         "stowage_factor": {
-          "value": "51 CBM/MT",
+          "value": "51 ft³/MT",
           "confidence": "confirmed",
           "source_text": "sf 51"
         },
@@ -534,7 +534,7 @@
           "source_text": "self unloading cranes (grabs available at disch. port); 8.5 m max draft at Douala, Cameroon"
         },
         "stowage_factor": {
-          "value": "48-49 CBM/MT",
+          "value": "48-49 ft³/MT",
           "confidence": "confirmed",
           "source_text": "sf 48-49"
         },

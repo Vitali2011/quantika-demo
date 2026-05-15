@@ -473,6 +473,8 @@ export interface SessionData {
   commissionSummary: CommissionSummary | null;
   counterparties: Counterparty[];
   isSampleData?: boolean;
+  /** Gmail account email — stable multi-tenant owner key for persisted data. */
+  accountId?: string;
 }
 
 // ── TZ-008: Subs Tracking ──

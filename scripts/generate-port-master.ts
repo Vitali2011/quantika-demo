@@ -58,7 +58,7 @@ async function downloadIfMissing(): Promise<void> {
 
   log(`Downloading UN/LOCODE 2024-2 from ${UNLOCODE_URL}...`);
   // Use child_process.execSync — avoid bundler concerns at script time.
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
+   
   const { execSync } = require('child_process');
   execSync(`curl -sL -o "${zip}" "${UNLOCODE_URL}"`, { stdio: 'inherit' });
   execSync(`unzip -o -q "${zip}" -d "${CACHE_DIR}"`, { stdio: 'inherit' });
@@ -174,12 +174,12 @@ async function stageEnrichAll(): Promise<void> {
     throw new Error(`Neither draft nor skeleton found — run "skeleton" stage first`);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const all = JSON.parse(fs.readFileSync(source, 'utf8')) as any[];
   // Ports that still need enrichment: no maxDraftM (i.e. still skeleton shape)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const alreadyEnriched = all.filter((p: any) => typeof p.maxDraftM === 'number');
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const needsEnrichment = all.filter((p: any) => typeof p.maxDraftM !== 'number') as SkeletonPort[];
   log(`Already enriched: ${alreadyEnriched.length}, remaining: ${needsEnrichment.length}`);
 
@@ -225,4 +225,6 @@ async function main(): Promise<void> {
   }
 }
 
-main().catch(e => { logErr(String(e)); process.exit(1); });
+if (require.main === module) {
+  main().catch(e => { logErr(String(e)); process.exit(1); });
+}

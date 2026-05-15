@@ -34,7 +34,7 @@
         "destination_port_rotation": ["Banjul", "Dakar"],
         "weight_per_port": [10000, 30000],
         "cargo_description": {
-          "value": "Bagged rice, stowage factor 48-50 CBM/MT WOG",
+          "value": "Bagged rice, stowage factor 48-50 ft³/MT WOG",
           "confidence": "confirmed",
           "source_text": "40,000 mts of bagged rice sf 48-50 wog"
         },
@@ -98,7 +98,7 @@
           "source_text": "bagged rice sf 48-50 wog"
         },
         "stowage_factor": {
-          "value": "48-50 CBM/MT WOG",
+          "value": "48-50 ft³/MT WOG",
           "confidence": "confirmed",
           "source_text": "sf 48-50 wog"
         },

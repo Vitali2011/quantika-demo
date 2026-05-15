@@ -198,7 +198,9 @@ async function main() {
   console.error(`Output: ${OUT_PATH}`);
 }
 
-main().catch((e) => {
-  console.error('FATAL', e);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((e) => {
+    console.error('FATAL', e);
+    process.exit(1);
+  });
+}
