@@ -18,6 +18,8 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 
 import path from 'node:path';
 import { callAiText } from '@/lib/ai-provider';
 import { CARGO_INQUIRY_PARSER_PROMPT } from '@/lib/prompts/parse-cargo';
+import { compareNumericField } from './score-fields';
+import { PARSE_CARGO_SCHEMA } from '@/lib/schemas';
 
 const SCOPE = 'PARSE_CARGO';
 const MAX_BODY_CHARS = 5000;
@@ -68,6 +70,11 @@ interface ItemMatchResult {
   model_commodity: string | null;
   route_match: boolean;
   weight_match: boolean;
+  commission_match: boolean;
+  ref_commission: number | null;
+  model_commission: number | null;
+  ref_laycan: string | null;
+  model_laycan: string | null;
   // Raw (un-normalized) strings — for judge: sees original text, not normalized form
   ref_origin_raw: string | null;
   ref_dest_raw: string | null;
@@ -226,11 +233,15 @@ export function scoreItems(refItems: CargoItem[], modelItems: CargoItem[]): Item
     const refDest = normalizePort(refDestRaw);
     const refWeight = getFieldValue(ref?.weight_mt as ConfidenceField | null) as number | null;
     const refCommodity = getFieldValue(ref?.cargo_description as ConfidenceField | null) as string | null;
+    const refCommission = getFieldValue(ref?.commission_percent as ConfidenceField | null) as number | null;
+    const refLaycan = getFieldValue(ref?.laycan as ConfidenceField | null) as string | null;
 
     const modelOrigin = normalizePort(modelOriginRaw);
     const modelDest = normalizePort(modelDestRaw);
     const modelWeight = getFieldValue(model?.weight_mt as ConfidenceField | null) as number | null;
     const modelCommodity = getFieldValue(model?.cargo_description as ConfidenceField | null) as string | null;
+    const modelCommission = getFieldValue(model?.commission_percent as ConfidenceField | null) as number | null;
+    const modelLaycan = getFieldValue(model?.laycan as ConfidenceField | null) as string | null;
 
     // Multi-port: normalize alternatives/rotation arrays as sorted sets
     const refOriginAlts = normalizeStringSet(ref?.origin_port_alternatives);
@@ -283,7 +294,8 @@ export function scoreItems(refItems: CargoItem[], modelItems: CargoItem[]): Item
 
     const routeMatch =
       originUniverseMatch && destUniverseMatch && originRotMatch && destRotMatch;
-    const weightMatch = refWeight === modelWeight;
+    const weightMatch = compareNumericField(refWeight, modelWeight);
+    const commissionMatch = compareNumericField(refCommission, modelCommission);
 
     results.push({
       ref_origin: refOrigin,
@@ -296,6 +308,11 @@ export function scoreItems(refItems: CargoItem[], modelItems: CargoItem[]): Item
       model_commodity: modelCommodity,
       route_match: routeMatch,
       weight_match: weightMatch,
+      commission_match: commissionMatch,
+      ref_commission: refCommission,
+      model_commission: modelCommission,
+      ref_laycan: refLaycan,
+      model_laycan: modelLaycan,
       ref_origin_raw: refOriginRaw,
       ref_dest_raw: refDestRaw,
       model_origin_raw: modelOriginRaw,
@@ -348,6 +365,12 @@ async function runScenario(scenario: Scenario): Promise<RunResult> {
         temperature: 0,
         seed: 42,
         model: process.env.PARSE_CARGO_GEMINI_MODEL,
+        ...(process.env.PARSE_CARGO_THINKING_BUDGET
+          ? { thinkingBudget: Number(process.env.PARSE_CARGO_THINKING_BUDGET) }
+          : {}),
+        ...(process.env.PARSE_CARGO_USE_SCHEMA === '1'
+          ? { responseSchema: PARSE_CARGO_SCHEMA as Record<string, unknown> }
+          : {}),
       });
       const raw = extractJson(text);
       model_output = { items: extractItems(raw) as ParsedOutput['items'] };
@@ -419,6 +442,9 @@ async function main() {
   const pending = scenarios.filter((s) => !existing.has(s.id) || existing.get(s.id)?.error);
 
   console.error(`[run-parse-cargo] round=${round} total=${scenarios.length} pending=${pending.length}`);
+console.error(
+  `[run-parse-cargo] thinkingBudget=${process.env.PARSE_CARGO_THINKING_BUDGET ?? "off"} useSchema=${process.env.PARSE_CARGO_USE_SCHEMA === "1"}`
+);
 
   let done = 0;
   const results: RunResult[] = [...existing.values()].filter((r) => !r.error);
