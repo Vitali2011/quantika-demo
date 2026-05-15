@@ -129,34 +129,41 @@ RULE 9 — TBS/TBN destination: when email shows "TBS / Port A / Port B / ..." f
 
 === CARGO DESCRIPTION RULES ===
 
-cargo_description MUST be human-readable English. Required contents:
-1. Expand ALL abbreviations (never leave bare abbreviations in the description):
+cargo_description is a CANONICAL field containing ONLY: cargo name, grade,
+and physical form (bulk, bagged, big bags, coils, containerised, etc.).
+
+DO NOT include operational/technical details in cargo_description. These
+belong to their own dedicated fields:
+- stowage factor (m³/MT, ft³/MT, CBM-coefficients) → stowage_factor field
+- per-piece / unit weight, dimensions, piece count → dedicated unit_weight /
+  dimensions / quantity fields (or missing_info if unmapped)
+- packaging specifications such as "50kg polypropylene bags" vs "50kg bags"
+  → packaging field (or missing_info)
+- on-deck / under-deck stowage permission, capacity options → special_requirements
+- vessel capacity / draft / capacity options → vessel_requirements
+
+Rules:
+1. Expand ALL cargo-name abbreviations (never leave bare abbreviations):
    - "HRC" → "Hot Rolled Coils (HRC)"
    - "HRCPO" → "Hot Rolled Coils Pickled & Oiled (HRCPO)"
    - "HRCTD" → "Hot Rolled Coils Trimmed & Dried (HRCTD)"
    - "HRS" → "Hot Rolled Sheets (HRS)"
    - "bb" / "BB" → "big bags"
-   - "uw" / "UW" → "unit weight"
-   - "stw" → "stowage factor"
    - Steel grade list example: "HRC + HRCPO + HRCTD + HRS" → "Hot Rolled Coils (HRC), Hot Rolled Coils Pickled & Oiled (HRCPO), Hot Rolled Coils Trimmed & Dried (HRCTD), and Hot Rolled Sheets (HRS)"
-2. Include stowage factor inline if given (with original units): "stowage factor approximately 47–49 ft³/MT"
-3. Include per-piece / unit weight if given: "unit weight approximately 10–27 tonnes per coil"
-4. Include dimensions if given: "LxHxW 4.3m × 15.7m × 4.3m, 15,000 kg each"
-5. Include piece count if given
-6. Include on-deck/under-deck stowage permission if stated
-7. Normalize European decimal comma to period: "1,25" → "1.25"
-8. Do NOT copy-paste raw source text verbatim as cargo_description.
-9. For PROJECT cargo: dimensions and per-piece weights are MANDATORY.
-10. For BREAK_BULK: per-unit weight and packaging details are MANDATORY if given.
-11. Use a concise noun phrase — NOT a full sentence.
+2. Normalize European decimal comma to period inside the cargo name: "1,25" → "1.25"
+3. Do NOT copy-paste raw source text verbatim as cargo_description.
+4. Use a concise noun phrase — NOT a full sentence.
     ✗ "The cargo consists of a fertilizer with a stowage factor of 51–52 ft³/MT"
-    ✓ "Fertilizer, stowage factor 51–52"
-12. Do NOT include unit notations (ft³/MT, m³/MT, CBM/MT) inside cargo_description — units belong only in the stowage_factor field.
-    ✗ "stowage factor 51–52 ft³/MT (without guarantee)"
-    ✓ "stowage factor 51–52, without guarantee"
-13. When stowage equals deadweight, write exactly: "stowage equals deadweight" — NOT an expanded phrase.
-    ✗ "stowage factor equals full deadweight capacity"
-    ✓ "Steel, stowage equals deadweight"
+    ✓ "Fertilizer"
+    ✓ "Wheat in bulk"
+    ✓ "Hot Rolled Coils (HRC), bagged"
+5. Examples of the canonical form (name + grade + form ONLY, no operational specs):
+    ✗ "Fertilizer, stowage factor 51–52, without guarantee"
+    ✓ "Fertilizer"
+    ✗ "Steel coils, unit weight 10–27 tonnes, dimensions 4.3m × 15.7m × 4.3m"
+    ✓ "Steel coils"
+    ✗ "Clinker in bulk, stowage equals deadweight"
+    ✓ "Clinker in bulk"
 
 === STOWAGE FACTOR RULES ===
 
@@ -199,13 +206,24 @@ Previous rules still apply:
 
 === LAYCAN RULES ===
 
-Never return null for laycan when a time window is mentioned:
-- Month only (no day range): return "Month YYYY" with confidence='interpreted' — e.g. "June dates" → "June 2026"
-- "Spot" → laycan = "Spot", confidence='interpreted'
-- "Spot-onward" → laycan = "Spot", confidence='interpreted'
-- "spot/vsls dates" → laycan = "Spot — vessel's dates", confidence='interpreted'
-- "PPT" (Prompt) → laycan = "Prompt", confidence='interpreted'
-- Use email date for year context when only a month is given.
+DEFAULT: If the email does NOT contain an explicit date or loading window,
+return laycan = null. Do NOT infer values like "Spot", "Prompt", or
+"vessel's dates" from context — emit them ONLY when those literal words
+actually appear in the source text.
+
+Allowed extractions:
+- Explicit date or date range: return verbatim (with year from email date if
+  only a day/month is given), confidence='confirmed' when full calendar dates
+  given, confidence='interpreted' for loose windows.
+- Month only (no day range), and a month name appears literally: return
+  "Month YYYY" with confidence='interpreted'. Use the email date for year
+  context when only a month is given.
+- Literal "Spot" / "Spot-onward" → laycan = "Spot", confidence='interpreted'.
+- Literal "spot/vsls dates" (or equivalent substring) → laycan = "Spot — vessel's dates", confidence='interpreted'.
+- Literal "PPT" or "Prompt" → laycan = "Prompt", confidence='interpreted'.
+
+If none of the above apply: laycan = null. Do NOT guess "Spot" from
+contextual hints ("asap", "urgent", "vessel ready", absence of any window).
 
 === missing_info RULES ===
 

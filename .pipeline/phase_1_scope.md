@@ -1,47 +1,72 @@
-# Phase 1 Scope — γ-01 multi-currency-v2
+# Phase 1 Scope — parse-cargo Stage 2 targeted prompt fix
 
-## Assumptions (Rule A)
+## Assumptions (Karpathy #1)
 
-Понимаю задачу как: заменить exchangerate.host на Frankfurter API, добавить NOK+AED в fallback,
-создать fx_rates SQLite table + daily cron, UI dropdown за MULTI_CURRENCY_V2_ENABLED=false flag.
-Альтернатива: оставить in-memory cache. Иду по DB-backed — spec явно требует "SQLite таблица fx_rates".
-UI: только при flag=true, дефолт false → продовое поведение не меняется.
-
-## Scope Freshness Check
-
-- exchangerate.host ещё в lib/currency.ts:48 ✅ (нужно менять)
-- fx_rates таблицы нет (migrations 001-024 проверены) ✅
-- MULTI_CURRENCY_V2_ENABLED не существует в .env.local.example ✅
-
-## Affected Files
-
-| Файл                                       | Действие                                                      |
-| ------------------------------------------ | ------------------------------------------------------------- |
-| lib/currency.ts                            | Replace API, add NOK/AED, add DB layer (4-tier priority)      |
-| lib/types.ts:516                           | Add "frankfurter" to source union                             |
-| lib/migrations/025-fx-rates.ts             | NEW — fx_rates table                                          |
-| lib/migrations/index.ts                    | Register migration 025                                        |
-| lib/market/fx-rates-repository.ts          | NEW — getLatestFxRate + upsertFxRate                          |
-| scripts/knowledge/cron/refresh-fx-rates.ts | NEW — daily cron job                                          |
-| components/match/EconomicsTab.tsx          | Add currency dropdown (behind flag)                           |
-| .env.local.example                         | Add MULTI*CURRENCY_V2_ENABLED=false + NEXT_PUBLIC*            |
-| lib/**tests**/currency.test.ts             | Update mocks: exchangerate.host → Frankfurter + NOK/AED tests |
-| lib/**tests**/fx-rates-repository.test.ts  | NEW — unit tests for repository                               |
+Понимаю задачу как: добавить 2 правила в production prompt
+`lib/prompts/parse-cargo.ts` для устранения двух чистых failure-кластеров
+из Phase 3a analysis — laycan/Spot-inference и cargo/stowage-noise.
+Альтернатива: переезд parse-cargo на Sonnet 4.6 через AI provider shim
+(Stage 2 option 2) — стоит дороже и инвазивнее, оставляем как fallback.
+Иду по targeted-prompt, потому что: failure pattern узкий (17/26 laycan +
+5/23 cargo), config-леверы Gemini исчерпаны (responseSchema регрессирует),
+1 файл, низкий риск регрессии остальных полей.
 
 ## Boundaries
 
-- CAN CHANGE: все 10 файлов выше
-- CANNOT CHANGE: lib/economics/voyage-calculator.ts (EUR_TO_USD там для EUA, не currency)
-- MUST NOT BREAK: existing TCE API behavior, all 4075+ existing tests
+### Can Change
 
-## Cross-Cutting Surface (Rule C — 10 files ≥ 5)
+- `lib/prompts/parse-cargo.ts`:
+  - Секция `=== LAYCAN RULES ===` (строки 199–209) — переписать с inversion:
+    null по умолчанию, Spot/Prompt только при literal substring.
+  - Секция `=== CARGO DESCRIPTION RULES ===` (строки 130–160) — снять
+    требования inline stowage / dimensions / weight; оставить только
+    cargo name + grade + physical form (bulk/bagged/coils/HRC etc.).
 
-| Файл                           | Символ                 | Риск                                 |
-| ------------------------------ | ---------------------- | ------------------------------------ |
-| lib/**tests**/currency.test.ts | exchangerate.host mock | MEDIUM — нужно обновить URL в тестах |
+### Cannot Change
 
-Остальные: convertCurrency не импортируется ни одним production файлом → LOW
+- Schema / Zod-валидация cargo output (`lib/schemas/parse-cargo.ts`).
+- AI provider shim (`lib/ai-provider.ts`) — frozen config: gemini-2.5-pro,
+  us-central1, temp 0, seed 42, thinking off.
+- Eval harness `scripts/progonq/run-parse-cargo.ts` + judge — не трогать
+  (5-field scoring merged в PR #154).
+- Test fixtures под parse-cargo (`lib/__tests__/etms-corpus-fixtures.ts`).
 
-## Open Questions
+### Must Not Break
 
-Нет — все решения приняты.
+- ports / weight / commission accuracy: каждое ≥ baseline R21-A − 1pp
+  (anti-regression gate).
+- Schema совместимость: cargo_description остаётся string, laycan
+  остаётся nullable string.
+
+## Affected files
+
+| Файл                       | Изменение           | Риск              |
+| -------------------------- | ------------------- | ----------------- |
+| lib/prompts/parse-cargo.ts | 2 секции переписаны | LOW (prompt-only) |
+
+## Cross-cutting check
+
+Файлов <5, скейл cross-cutting grep не нужен. PI3 не активен — unit-тесты
+проверяют только schema/types, не assert'ят конкретные cargo_description
+строки или Spot-значения laycan (confirmed: grep по lib/**tests** показал
+только `stowageFactor: null` в fixtures).
+
+## Acceptance gate (Phase 3 QI)
+
+R22 baseline на VPS в tmux, 95 сценариев × 3 повтора, frozen config A
+(см. handover). Сравнение medians с R21-A baseline:
+
+- laycan ≥ 88% (R21-A=82.4%, R1 expectation +5pp) → REQUIRED
+- cargo_description ≥ 85% (R21-A=83.0%, R2 expectation +2pp) → REQUIRED
+- ports / weight / commission: каждое ≥ R21-A − 1pp → REQUIRED
+- variance min-max ≤ 3pp по каждому полю → желательно
+
+## Decision tree после gate
+
+- R1+R2 PASS → preview report, ⛔ wait merge command
+- Только R1 PASS → revert R2, оставить R1 (partial-merge)
+- Оба FAIL → revert обоих, эскалировать в Stage 2 option 2 (Sonnet)
+
+## Open questions
+
+Нет.
