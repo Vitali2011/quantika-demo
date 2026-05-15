@@ -70,3 +70,11 @@ lib/sample-data/etms-emails.json
 
 # local dev notes (ephemeral, not for review)
 /.notes/
+
+# Internal strategy / partner-facing docs — keep local-only after public repo (2026-05-15)
+/E2E_AUDIT_PROMPT.md
+/docs/QUANTIKA-PRODUCT-SPEC-FOR-PARTNER.md
+/docs/QUANTIKA-PRODUCT-SPEC-FOR-PARTNER-EN.md
+/docs/ROADMAP-WAVES.md
+/docs/RETRO-WAVE-ALPHA.md
+/docs/QUANTIKA-UX-VISION.md
