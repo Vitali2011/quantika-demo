@@ -13,6 +13,7 @@ import { formatDate } from '@/lib/utils';
 import { lookupCii } from '@/lib/imo/cii-lookup';
 import { CiiRatingBadge } from '@/components/vessel/CiiRatingBadge';
 import { SanctionsBadge } from '@/components/vessel/SanctionsBadge';
+import { PscHistoryLink } from '@/components/vessel/PscHistoryLink';
 
 // Only the three canonical string labels are valid. Guard against numeric
 // confidence scores from the parser reaching the ConfIcon branch — a truthy
@@ -134,6 +135,9 @@ export default async function VesselDetailPage({ params }: Props) {
                     size="medium"
                   />
                 )}
+                <span className="ml-auto">
+                  <PscHistoryLink imo={vessel.imo} />
+                </span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
