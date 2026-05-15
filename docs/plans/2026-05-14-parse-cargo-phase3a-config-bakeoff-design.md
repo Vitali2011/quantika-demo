@@ -183,3 +183,108 @@ Laycan:
 - "End June 2019" ≠ "Early June 2019" → eq=false ✓ (разные части месяца)
 
 **GATE: PASS.** Scorer trustworthy для 12-run bakeoff (Tasks 5-7).
+
+## Этап 1: Config Bakeoff Results (2026-05-15)
+
+**Длительность:** 12 прогонов × ~50-60 мин ≈ 10.5ч в tmux на VPS (07:06 → 17:42).
+**Cost:** ~$X Gemini 2.5 Pro + ~$Y Bedrock Sonnet 4.6 judge (judge cache отыграл, после A-1 в основном hits).
+**Setup:** 4 конфига × 3 прогона = 12, всё измерено через расширенный scorer (Task 1-4) + judge с retry-on-rate-limit.
+
+### Per-field таблица (по полным 95 сценариям)
+
+Числа — `match / total_items`, accuracy %. Total items зависит от того, сколько `items[]` сгенерировал модель: больше items = больше «лишних» с ref=null = mismatch.
+
+| Config           | Run | items   | ports | weight | cargo_desc | laycan    | commission |
+| ---------------- | --- | ------- | ----- | ------ | ---------- | --------- | ---------- |
+| **A** (baseline) | 1   | 148     | 95.3% | 93.9%  | 84.5%      | 82.4%     | 98.0%      |
+| **A**            | 2   | 147     | 95.2% | 93.2%  | 83.0%      | 83.0%     | 98.0%      |
+| **A**            | 3   | 148     | 94.6% | 93.2%  | 82.4%      | 84.5%     | 97.3%      |
+| **B** (thinking) | 1   | 147     | 95.2% | 93.2%  | 83.0%      | 85.0%     | 98.0%      |
+| **B**            | 2   | 148     | 95.3% | 93.9%  | 83.8%      | 82.4%     | 98.0%      |
+| **B**            | 3   | 148     | 95.3% | 93.9%  | 83.1%      | 81.8%     | 98.0%      |
+| **C** (schema)   | 1   | **229** | 83.8% | 83.8%  | 79.5%      | **43.7%** | **38.4%**  |
+| **C**            | 2   | **244** | 82.4% | 82.4%  | 79.1%      | **47.1%** | **42.2%**  |
+| **C**            | 3   | **188** | 83.0% | 80.3%  | 77.1%      | **31.4%** | **25.0%**  |
+| **D** (both)     | 1   | **173** | 86.1% | 84.4%  | 79.2%      | **25.4%** | **18.5%**  |
+| **D**            | 2   | **240** | 85.0% | 86.3%  | 81.3%      | **46.3%** | **41.3%**  |
+| **D**            | 3   | **184** | 84.2% | 81.5%  | 76.6%      | **29.9%** | **23.4%**  |
+
+### Median (per-config)
+
+| Config | items | ports             | weight            | cargo_desc       | laycan            | commission        |
+| ------ | ----- | ----------------- | ----------------- | ---------------- | ----------------- | ----------------- |
+| A      | 148   | **95.2%**         | **93.2%**         | **83.0%**        | **83.0%**         | **98.0%**         |
+| B      | 148   | 95.3% (+0.1)      | 93.9% (+0.7)      | 83.1% (+0.1)     | 82.4% (−0.6)      | 98.0% (=)         |
+| C      | 229   | 83.0% (**−12.2**) | 82.4% (**−10.8**) | 79.1% (**−3.9**) | 43.7% (**−39.3**) | 38.4% (**−59.6**) |
+| D      | 184   | 85.0% (**−10.2**) | 84.4% (**−8.8**)  | 79.2% (**−3.8**) | 29.9% (**−53.1**) | 23.4% (**−74.6**) |
+
+### Variance bands (min/max across 3 runs)
+
+| Config | ports     | weight    | cargo_desc | laycan    | commission |
+| ------ | --------- | --------- | ---------- | --------- | ---------- |
+| A      | 94.6–95.3 | 93.2–93.9 | 82.4–84.5  | 82.4–84.5 | 97.3–98.0  |
+| B      | 95.2–95.3 | 93.2–93.9 | 83.0–83.8  | 81.8–85.0 | 98.0–98.0  |
+| C      | 82.4–83.8 | 80.3–83.8 | 77.1–79.5  | 31.4–47.1 | 25.0–42.2  |
+| D      | 84.2–86.1 | 81.5–86.3 | 76.6–81.3  | 25.4–46.3 | 18.5–41.3  |
+
+Конфиги A/B имеют узкий band (≤1.5%), C/D — широкий (особенно laycan ±16%, commission ±17%) — модель в режимах schema/both менее стабильна.
+
+### Root cause: items inflation в C/D
+
+В конфигах C (schema) и D (both) модель генерирует **в 1.3–1.6× больше items** на тех же 95 сценариях:
+
+- Config A/B: 147–148 items (нормально, 95 сценариев × ~1.55 items)
+- Config C: 188–244 items (+27% до +65%)
+- Config D: 173–240 items (+17% до +62%)
+
+Эти «extra items» имеют `ref_X = null` (нет соответствующего эталонного item), но model выдаёт какое-то значение → automatic mismatch на ВСЕХ полях. Особенно ломает `commission` (98% → 23%) и `laycan` (83% → 30%), потому что эти поля редко null в эталоне → каждый «лишний» item почти гарантированно даёт mismatch.
+
+**Гипотеза:** `responseSchema` принуждает Gemini к структуре `{items: [...]}`, и модель «играет в безопасность», добавляя кандидатов вместо одного консолидированного item — что-то вроде over-generation от ужесточённого контракта.
+
+### Regression check (per-field B/C/D vs A)
+
+| Config | ports | weight | cargo_desc | laycan    | commission | Verdict                    |
+| ------ | ----- | ------ | ---------- | --------- | ---------- | -------------------------- |
+| B      | +0.1  | +0.7   | +0.1       | −0.6      | 0          | **NEUTRAL** (within noise) |
+| C      | −12.2 | −10.8  | −3.9       | **−39.3** | **−59.6**  | **STRONG REGRESSION**      |
+| D      | −10.2 | −8.8   | −3.8       | **−53.1** | **−74.6**  | **STRONG REGRESSION**      |
+
+### Decision tree verdict
+
+Применяем дерево из плана:
+
+1. ❌ Нет конфига с clear cross-field gain без регрессии:
+   - B даёт ничтожные сдвиги (≤0.7%), в пределах variance.
+   - C/D деградируют по 4 полям из 5.
+2. ❌ Marginal gains не выявлены — лучший улучшение `weight +0.7%` в config B меньше variance band (0.7%).
+3. ✅ **Configs don't help / only regress** — config-леверы Gemini 2.5 Pro **исчерпаны**.
+
+→ **Stage 2 mandatory.**
+
+### Production-config рекомендация
+
+**Не менять прод-конфиг.** Текущий setup (без thinking, без responseSchema на этом endpoint, или альтернативно с responseSchema — нужна проверка) ≈ baseline A. Включение thinking даст ×2-3 цены и нулевой выигрыш. Включение responseSchema **ухудшит качество** в этом конкретном бенчмарке (items inflation).
+
+⚠️ **Проверить настоящий прод-конфиг parse-cargo endpoint:**  
+Plan ссылается на «production использует `responseSchema: PARSE_CARGO_SCHEMA`», но bakeoff показал что schema-режим вызывает 60-75% регрессию commission/laycan. Если прод **сейчас** на schema=on — это срочная задача отключить или разобраться, почему prod не показывает этих симптомов.
+
+### Stage 2 triggers
+
+Цель Stage 2 — повышение качества laycan + cargo_description (топ-2 слабых поля baseline). Варианты:
+
+1. **Better model** — Claude Sonnet 4.6 (или Opus 4.7) через AI provider shim. Bedrock уже используется как judge, инфраструктура готова. Hypothesis: Sonnet даёт +5–10% на laycan/cargo_desc.
+2. **Architectural change** — двух-проходный pipeline: extract → validate/refine. Hypothesis: refine-pass ловит «спорные» laycan/cargo_desc формулировки.
+3. **Targeted prompt** — узко по laycan (формат-инвариантность) и cargo_desc (детали vs essence). Hypothesis: +3–5%, дёшево.
+
+Рекомендация порядка: **3 → 1 → 2** (от дешёвого к дорогому).
+
+### Артефакты
+
+- Branch: `feat/parse-cargo-phase3a-config-bakeoff` (12 коммитов от 7907828 до D-3 results)
+- Result JSONs: `.progonq/results/etms-parse-cargo-R21-{A,B,C,D}-{1,2,3}.json` (gitignored)
+- Re-judge log: `/tmp/rejudge.log` (на VPS)
+- Bakeoff log: `/tmp/bakeoff.log` (на VPS)
+
+### MEMORY UPDATE NEEDED
+
+Локальный файл `/Users/jarvis/.claude/projects/-Users-jarvis-claude/memory/project_parse_cargo_phase1_5.md` нужно пополнить блоком «Phase 3a COMPLETE 2026-05-15» со ссылкой на этот design-doc и итог: scorer расширен на 5 полей, config-leверы Gemini исчерпаны (B≈A, C/D regress), Stage 2 triggered.
