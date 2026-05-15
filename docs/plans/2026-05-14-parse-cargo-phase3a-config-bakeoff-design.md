@@ -137,3 +137,49 @@ Scorer должен быть достоверным до эксперимент�
 - Результаты 12 прогонов + per-field таблица (дописать в этот doc)
 - Обновление memory
 - **НЕ мержим в прод автоматически** — Этап 1 это измерительный эксперимент; смена прод-конфига (особенно thinking, ×2-3 цена) — отдельное решение по результатам.
+
+## Foundation gate (Task 4 — 2026-05-15)
+
+Baseline прогон конфига A (no thinking, no schema) для проверки расширенного scorer'а ДО запуска 12-run bakeoff.
+
+**Команда:** `npx tsx --env-file=.env.local scripts/progonq/run-parse-cargo.ts --round R21-gate` + `judge-parse-cargo.ts`.
+
+**Per-field результат (95 сценариев → 148 item-пар):**
+
+| Field             | Match/Total | Accuracy |
+| ----------------- | ----------- | -------- |
+| ports             | 141/148     | 95.3%    |
+| weight            | 139/148     | 93.9%    |
+| cargo_description | 125/148     | 84.5%    |
+| laycan            | 122/148     | 82.4%    |
+| commission        | 145/148     | 98.0%    |
+
+**Backward-compat метрики:** string_full 82/95 (86.3%), semantic_full 89/95 (93.7%).
+
+### Что выловил гейт
+
+**Bedrock rate-limit:** первая попытка прогона вернула 85 "Too many requests" ошибок от Sonnet 4.6 (judge). Все 85 закэшировались как `{equiv: false, reason: 'judge parse error'}` → laycan ложно скатилось до 42.6%. Это ровно тот класс артефакта, ради которого был задуман гейт.
+
+**Фикс (commit d8ec068):**
+
+- `judgePair`: retry до 4 попыток с backoff 5/10/15s при `Too many requests | throttl | rate.?limit | 429`.
+- Не кэшировать verdicts с `reason` начинающимся на `judge parse error` — иначе artifact-fail на одной попытке заражает все следующие прогоны через кеш.
+- Очищен старый кеш от 85 artifact verdicts (174 валидных остались).
+
+После фикса: 85 fails → **2 fails**, числа стабилизировались.
+
+### Eyeball verdicts (sane?)
+
+Cargo_description:
+
+- "Storage Tanks, 10x VT + 4x GMMOS..." ≈ "Storage Tanks, consisting of 10 VT + 4 GMMOS..." → eq=true ✓
+- "HRC, max 20 metric tons per piece" ≈ "HRC with maximum unit weight of 20 tonnes" → eq=true ✓
+- "Cement in sling" ≈ "Cement in sling bags" → eq=true ✓ (рубрика игнорирует packaging-уровневые детали)
+
+Laycan:
+
+- "15/20 June" = "15-20 June 2026" → eq=true ✓ (формат, не значение)
+- "June 2019" ≠ "June 2026" → eq=false ✓
+- "End June 2019" ≠ "Early June 2019" → eq=false ✓ (разные части месяца)
+
+**GATE: PASS.** Scorer trustworthy для 12-run bakeoff (Tasks 5-7).
