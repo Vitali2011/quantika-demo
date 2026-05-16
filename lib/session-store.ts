@@ -8,6 +8,7 @@ import { SESSION_TTL_MS } from './constants';
 import { runMigrations } from './migrations/runner';
 import { allMigrations } from './migrations/index';
 import { bootstrapKnowledgeSources } from './knowledge/bootstrap';
+import { loadMarketCsvFiles } from './market/manual-csv-loader';
 
 export const MAX_SESSIONS = 100;
 
@@ -49,6 +50,9 @@ export class SessionStore {
       // distances, JWC, ECA, ...). Must run AFTER migration 013 has created
       // the knowledge_sources table. Preserves runtime status of existing rows.
       bootstrapKnowledgeSources(this.db);
+      // Boot-time CSV fallback: seeds market_indices from lib/sample-data/market/
+      // if the table is empty. No-op when data already present.
+      loadMarketCsvFiles(this.db);
     } else {
       this.db.exec(`
         CREATE TABLE IF NOT EXISTS sessions (
