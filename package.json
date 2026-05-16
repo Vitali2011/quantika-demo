@@ -11,6 +11,8 @@
     "test:regression": "jest --testPathPattern=tests/regression --forceExit",
     "test:regression:prod": "jest --testPathPattern='tests/regression/test-tc' --silent",
     "test:smoke": "playwright test --config=__tests__/e2e/playwright.config.smoke.ts",
+    "test:suite": "playwright test --config=__tests__/e2e/playwright.config.suite.ts",
+    "test:suite:prod": "SUITE_BASE_URL=https://demo.quantika.org playwright test --config=__tests__/e2e/playwright.config.suite.ts",
     "test:smoke:prod": "SMOKE_BASE_URL=https://demo.quantika.org playwright test --config=__tests__/e2e/playwright.config.smoke.ts smoke/tier1-health.spec.ts",
     "test:smoke:tier1": "playwright test --config=__tests__/e2e/playwright.config.smoke.ts smoke/tier1-health.spec.ts",
     "test:e2e": "playwright test",
