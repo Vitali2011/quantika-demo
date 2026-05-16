@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthConfig } from '@/lib/auth/config';
 import { signAuthCookie, AUTH_COOKIE_NAME } from '@/lib/auth/cookie';
+import { getRequestBaseUrl } from '@/lib/auth/redirect-url';
 
 /**
  * Constant-time string comparison to prevent timing attacks.
@@ -48,8 +49,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const validUser = timingSafeStringEqual(user, config.user);
   const validPassword = timingSafeStringEqual(password, config.password ?? '');
 
+  const baseUrl = getRequestBaseUrl(request);
+
   if (!validUser || !validPassword || !password) {
-    return NextResponse.redirect(new URL('/login?error=1', request.url), { status: 303 });
+    return NextResponse.redirect(new URL('/login?error=1', baseUrl), { status: 303 });
   }
 
   // Credentials valid — sign and set cookie
@@ -58,7 +61,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const maxAge = config.cookieDays * 86_400;
   const isProduction = process.env.NODE_ENV === 'production';
 
-  const response = NextResponse.redirect(new URL('/', request.url), { status: 303 });
+  const response = NextResponse.redirect(new URL('/', baseUrl), { status: 303 });
   response.headers.set(
     'Set-Cookie',
     [

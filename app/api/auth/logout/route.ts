@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AUTH_COOKIE_NAME } from '@/lib/auth/cookie';
+import { getRequestBaseUrl } from '@/lib/auth/redirect-url';
 
-export async function POST(_request: NextRequest): Promise<NextResponse> {
-  const response = NextResponse.redirect(new URL('/login', _request.url), { status: 303 });
+export async function POST(request: NextRequest): Promise<NextResponse> {
+  const response = NextResponse.redirect(new URL('/login', getRequestBaseUrl(request)), { status: 303 });
 
   // Clear the auth cookie by setting Max-Age=0
   response.headers.set(

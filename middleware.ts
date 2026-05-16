@@ -3,6 +3,7 @@ import { checkCsrfRequest } from '@/lib/csrf';
 import { aiRateLimiter } from '@/lib/rate-limit';
 import { getAuthConfig } from '@/lib/auth/config';
 import { verifyAuthCookie, AUTH_COOKIE_NAME } from '@/lib/auth/cookie';
+import { getRequestBaseUrl } from '@/lib/auth/redirect-url';
 
 // Paths that bypass the auth guard entirely
 const AUTH_BYPASS_PATHS = new Set([
@@ -59,7 +60,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     if (!payload) {
       // Redirect to /login preserving the original URL as `next` param is intentionally omitted
       // (simple demo — no deep-link restoration needed)
-      const loginUrl = new URL('/login', request.url);
+      const loginUrl = new URL('/login', getRequestBaseUrl(request));
       return NextResponse.redirect(loginUrl, { status: 302 });
     }
   }
