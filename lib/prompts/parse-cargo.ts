@@ -199,13 +199,24 @@ Previous rules still apply:
 
 === LAYCAN RULES ===
 
-Never return null for laycan when a time window is mentioned:
-- Month only (no day range): return "Month YYYY" with confidence='interpreted' — e.g. "June dates" → "June 2026"
-- "Spot" → laycan = "Spot", confidence='interpreted'
-- "Spot-onward" → laycan = "Spot", confidence='interpreted'
-- "spot/vsls dates" → laycan = "Spot — vessel's dates", confidence='interpreted'
-- "PPT" (Prompt) → laycan = "Prompt", confidence='interpreted'
-- Use email date for year context when only a month is given.
+DEFAULT: If the email does NOT contain an explicit date or loading window,
+return laycan = null. Do NOT infer values like "Spot", "Prompt", or
+"vessel's dates" from context — emit them ONLY when those literal words
+actually appear in the source text.
+
+Allowed extractions:
+- Explicit date or date range: return verbatim (with year from email date if
+  only a day/month is given), confidence='confirmed' when full calendar dates
+  given, confidence='interpreted' for loose windows.
+- Month only (no day range), and a month name appears literally: return
+  "Month YYYY" with confidence='interpreted'. Use the email date for year
+  context when only a month is given.
+- Literal "Spot" / "Spot-onward" → laycan = "Spot", confidence='interpreted'.
+- Literal "spot/vsls dates" (or equivalent substring) → laycan = "Spot — vessel's dates", confidence='interpreted'.
+- Literal "PPT" or "Prompt" → laycan = "Prompt", confidence='interpreted'.
+
+If none of the above apply: laycan = null. Do NOT guess "Spot" from
+contextual hints ("asap", "urgent", "vessel ready", absence of any window).
 
 === missing_info RULES ===
 
