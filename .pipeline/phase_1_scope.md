@@ -1,100 +1,70 @@
-# Phase 1 Scope — parse-cargo Stage 2 targeted prompt fix
+# Phase 1 Scope -- parse-cargo R3
 
 ## Assumptions (Karpathy #1)
 
-Понимаю задачу как: добавить 2 правила в production prompt
-`lib/prompts/parse-cargo.ts` для устранения двух чистых failure-кластеров
-из Phase 3a analysis — laycan/Spot-inference и cargo/stowage-noise.
-Альтернатива: переезд parse-cargo на Sonnet 4.6 через AI provider shim
-(Stage 2 option 2) — стоит дороже и инвазивнее, оставляем как fallback.
-Иду по targeted-prompt, потому что: failure pattern узкий (17/26 laycan +
-5/23 cargo), config-леверы Gemini исчерпаны (responseSchema регрессирует),
-1 файл, низкий риск регрессии остальных полей.
+Понимаю задачу как: точечная правка CARGO DESCRIPTION RULES секции в одном файле.
+Альтернатива: переписать всю секцию или добавить few-shot примеры.
+Иду по точечной правке, потому что: fewer changes = less risk of side effects; targeted fixes for identified root causes.
+
+## Affected Files
+
+| File                       | Change                                              | Risk |
+| -------------------------- | --------------------------------------------------- | ---- |
+| lib/prompts/parse-cargo.ts | 6 targeted edits in CARGO DESCRIPTION RULES section | LOW  |
+
+No other files touched.
 
 ## Boundaries
 
-### Can Change
+- Can Change: lines 130-160 (CARGO DESCRIPTION RULES section)
+- Cannot Change: stowage_factor field rules (lines 161-175), LAYCAN RULES, test files
+- Must Not Break: laycan match (currently 86.4% post-R1), commission/weight/ports fields
 
-- `lib/prompts/parse-cargo.ts`:
-  - Секция `=== LAYCAN RULES ===` (строки 199–209) — переписать с inversion:
-    null по умолчанию, Spot/Prompt только при literal substring.
-  - Секция `=== CARGO DESCRIPTION RULES ===` (строки 130–160) — снять
-    требования inline stowage / dimensions / weight; оставить только
-    cargo name + grade + physical form (bulk/bagged/coils/HRC etc.).
+## Changes Detail
 
-### Cannot Change
+### Change 1: HRCTD abbreviation fix (line ~137)
 
-- Schema / Zod-валидация cargo output (`lib/schemas/parse-cargo.ts`).
-- AI provider shim (`lib/ai-provider.ts`) — frozen config: gemini-2.5-pro,
-  us-central1, temp 0, seed 42, thinking off.
-- Eval harness `scripts/progonq/run-parse-cargo.ts` + judge — не трогать
-  (5-field scoring merged в PR #154).
-- Test fixtures под parse-cargo (`lib/__tests__/etms-corpus-fixtures.ts`).
+FROM: 'HRCTD' -> 'Hot Rolled Coils Trimmed & Dried (HRCTD)'
+TO: 'HRCTD' -> 'Hot Rolled Coils Trimmed & Descaled (HRCTD)'
+Why: factual error in prompt. Affects ~15 fails (Cluster B).
 
-### Must Not Break
+### Change 2: Add PNO abbreviation (after HRCPO line)
 
-- ports / weight / commission accuracy: каждое ≥ baseline R21-A − 1pp
-  (anti-regression gate).
-- Schema совместимость: cargo_description остаётся string, laycan
-  остаётся nullable string.
+ADD: '- PNO -> Plates Not Otherwise Specified (PNO)'
+Why: PNO undefined -> model guesses wrong expansion. Affects ~3 fails.
 
-## Affected files
+### Change 3: Fix rule 2 -- stowage factor duplication (lines 142-143)
 
-| Файл                       | Изменение           | Риск              |
-| -------------------------- | ------------------- | ----------------- |
-| lib/prompts/parse-cargo.ts | 2 секции переписаны | LOW (prompt-only) |
+REPLACE current rule 2 with clarified version:
+'2. Stowage factor: the numeric value (without units) MUST appear in cargo_description
+when stated in the email, e.g. stowage factor 51-52, without guarantee.
+The full 'X ft3/MT' notation also goes in the separate stowage_factor field.
+These are independent: both fields must be populated. Do not omit stowage from
+cargo_description because it is already in stowage_factor.'
+Why: rules 2 and 12 contradicted each other, causing model to omit stowage entirely.
 
-## Cross-cutting check
+### Change 4: BULK mandatory rule (after rule 10)
 
-Файлов <5, скейл cross-cutting grep не нужен. PI3 не активен — unit-тесты
-проверяют только schema/types, не assert'ят конкретные cargo_description
-строки или Spot-значения laycan (confirmed: grep по lib/**tests** показал
-только `stowageFactor: null` в fixtures).
+ADD: '10a. For BULK cargo: if stowage factor is stated, it is MANDATORY in cargo_description.'
+Example: corn with 'stw 51' -> 'Corn, stowage factor 51, without guarantee'
 
-## Acceptance gate (Phase 3 QI)
+### Change 5: BAGGED mandatory rule (after rule 10a)
 
-R22 baseline на VPS в tmux, 95 сценариев × 3 повтора, frozen config A
-(см. handover). Сравнение medians с R21-A baseline:
+ADD: '10b. For BAGGED cargo: if bag dimensions or unit weight are stated, they are MANDATORY.'
+Example: 'salt bb 1.1x1.1x1.1m uw 1.25mt' -> 'Salt in big bags, dimensions 1.1m x 1.1m x 1.1m, unit weight 1.25 MT'
 
-- laycan ≥ 88% (R21-A=82.4%, R1 expectation +5pp) → REQUIRED
-- cargo_description ≥ 85% (R21-A=83.0%, R2 expectation +2pp) → REQUIRED
-- ports / weight / commission: каждое ≥ R21-A − 1pp → REQUIRED
-- variance min-max ≤ 3pp по каждому полю → желательно
+### Change 6: Additional example showing stowage in cargo_description
 
-## Decision tree после gate
+ADD to examples block: shows bulk grain with stowage factor correctly included.
 
-- R1+R2 PASS → preview report, ⛔ wait merge command
-- Только R1 PASS → revert R2, оставить R1 (partial-merge)
-- Оба FAIL → revert обоих, эскалировать в Stage 2 option 2 (Sonnet)
+## PI3 Enforcement
 
-## Open questions
+Only lib/prompts/parse-cargo.ts changes. No test files touched. Tests do not assert prompt content directly.
+PI3 threshold: >5 test expectation rewrites = STOP. Expected here: 0.
 
-Нет.
+## Acceptance Gate
 
----
-
-## Result (Phase 3 eval, 2026-05-16)
-
-R22 baseline (3 × 95 sc, frozen config A) vs R21-A baseline:
-
-| Поле              | R21-A | R22 median | Δ    | Gate    |
-| ----------------- | ----- | ---------- | ---- | ------- |
-| ports             | 95.3  | 94.6       | -0.7 | ≥94.3 ✓ |
-| weight            | 93.9  | 96.6       | +2.7 | ≥92.9 ✓ |
-| cargo_description | 84.5  | 84.4       | -0.1 | ≥85 ✗   |
-| laycan            | 82.4  | 86.4       | +4.0 | ≥88 ✗   |
-| commission        | 98.0  | 98.6       | +0.6 | ≥97 ✓   |
-
-Variance: laycan 1.3pp, cargo 1.4pp (≤3pp ✓).
-
-**Decision: soft-merge R1, revert R2.**
-
-- R1 (laycan) даёт стабильный +4pp без регрессий. Gate в 88% не достигнут,
-  но direction-correct, prod-выигрыш реальный, цена нулевая.
-- R2 (cargo_description) — медиана в шуме (-0.1pp), правило не сработало.
-  Гипотеза «extra_detail = 5/23» не подтверждена, нужна другая failure
-  таксономия. Revert, оставить как negative result.
-- Stage 2 option 2 (Sonnet parser) **не активируем** — overreaction на 2pp
-  shortfall одного из двух экспериментов. Сначала исчерпать дешёвые опции.
-
-Anti-regression gate (ports/weight/commission ≥ baseline-1pp) пройден.
+- cargo_description >= 87.0% (R23-A median over 3 runs)
+- Soft-merge if 85.0-86.9% (direction-correct)
+- Revert if < 85.0%
+- Anti-regression: laycan >= 85.4%, all other fields >= R22 - 1pp
