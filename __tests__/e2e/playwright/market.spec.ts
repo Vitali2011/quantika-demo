@@ -2,15 +2,16 @@ import { test, expect } from '@playwright/test';
 import { isFeatureGate } from './helpers/env';
 
 /**
- * Task 3.3e — Market benchmark page: BHSI / TMI / Drewry-BB charts.
+ * Task 3.3e — Market benchmark page: BHSI / TMI / Drewry-BB tables.
  *
  * Gated by NEXT_PUBLIC_MARKET_BENCHMARK_FULL_ENABLED. When off, page shows
  * "Feature Not Enabled" → we skip.
  *
- * The page renders <MarketBenchmarkChart> three times (one per index). We
- * don't introspect chart internals; we assert that 3 chart containers
- * exist and that the page heading + "No market data available" fallback
- * never both appear (sanity).
+ * The page renders <MarketBenchmarkChart> three times (one per index).
+ * MarketBenchmarkChart is a table-fallback implementation (no recharts/SVG
+ * dependency — intentional for B2B demo on low-bandwidth connections).
+ * We assert that 3 <table> elements exist (one per index) and that the page
+ * heading + "No market data available" fallback never both appear (sanity).
  */
 test.describe('Task 3.3e — Market benchmark dashboard', () => {
   test('page heading visible (or graceful empty state)', async ({ page }) => {
@@ -35,8 +36,9 @@ test.describe('Task 3.3e — Market benchmark dashboard', () => {
     }
 
     // The page issues async fetches in useEffect. Wait for the page to
-    // settle on one of three terminal states: charts, empty copy, or error.
-    const charts = page.locator('svg.recharts-surface, .recharts-responsive-container');
+    // settle on one of three terminal states: index tables, empty copy, or error.
+    // MarketBenchmarkChart renders a <table> per index (table-fallback, no recharts).
+    const charts = page.locator('table');
     const emptyCopy = page.locator('text=/No market data available/i');
     const errorCopy = page.locator('text=/Error:/i');
 
@@ -51,6 +53,7 @@ test.describe('Task 3.3e — Market benchmark dashboard', () => {
       return;
     }
 
+    // 3 market index tables rendered (bhsi / tmi / drewry-bb)
     expect(await charts.count()).toBeGreaterThanOrEqual(3);
   });
 });
