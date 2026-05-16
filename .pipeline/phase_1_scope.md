@@ -70,3 +70,31 @@ R22 baseline на VPS в tmux, 95 сценариев × 3 повтора, frozen
 ## Open questions
 
 Нет.
+
+---
+
+## Result (Phase 3 eval, 2026-05-16)
+
+R22 baseline (3 × 95 sc, frozen config A) vs R21-A baseline:
+
+| Поле              | R21-A | R22 median | Δ    | Gate    |
+| ----------------- | ----- | ---------- | ---- | ------- |
+| ports             | 95.3  | 94.6       | -0.7 | ≥94.3 ✓ |
+| weight            | 93.9  | 96.6       | +2.7 | ≥92.9 ✓ |
+| cargo_description | 84.5  | 84.4       | -0.1 | ≥85 ✗   |
+| laycan            | 82.4  | 86.4       | +4.0 | ≥88 ✗   |
+| commission        | 98.0  | 98.6       | +0.6 | ≥97 ✓   |
+
+Variance: laycan 1.3pp, cargo 1.4pp (≤3pp ✓).
+
+**Decision: soft-merge R1, revert R2.**
+
+- R1 (laycan) даёт стабильный +4pp без регрессий. Gate в 88% не достигнут,
+  но direction-correct, prod-выигрыш реальный, цена нулевая.
+- R2 (cargo_description) — медиана в шуме (-0.1pp), правило не сработало.
+  Гипотеза «extra_detail = 5/23» не подтверждена, нужна другая failure
+  таксономия. Revert, оставить как negative result.
+- Stage 2 option 2 (Sonnet parser) **не активируем** — overreaction на 2pp
+  shortfall одного из двух экспериментов. Сначала исчерпать дешёвые опции.
+
+Anti-regression gate (ports/weight/commission ≥ baseline-1pp) пройден.
