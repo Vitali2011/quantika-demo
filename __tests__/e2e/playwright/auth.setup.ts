@@ -19,7 +19,7 @@ const STORAGE_STATE = path.join('playwright', '.auth', 'user.json');
  * Either way we write a storageState file so the chromium project can mount
  * it unconditionally without an `if` in every spec.
  */
-setup('authenticate and seed demo session', async ({ request, page }) => {
+setup('authenticate and seed demo session', async ({ page }) => {
   setup.setTimeout(120_000); // first request can hit a cold Next.js dev compile
   fs.mkdirSync(path.dirname(STORAGE_STATE), { recursive: true });
 
@@ -29,7 +29,7 @@ setup('authenticate and seed demo session', async ({ request, page }) => {
   // is false (default local dev), the middleware bypasses the cookie check
   // and a POST would just waste a slow first-request budget.
   if (authEnabled && SUITE_ENV.demoAuthPassword) {
-    const res = await request.post('/api/auth/login', {
+    const res = await page.request.post('/api/auth/login', {
       form: { user: SUITE_ENV.demoAuthUser, password: SUITE_ENV.demoAuthPassword },
       maxRedirects: 0,
       failOnStatusCode: false,
