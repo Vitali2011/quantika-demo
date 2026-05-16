@@ -35,7 +35,7 @@ PORT OPERATIONS:
 CARGO ABBREVIATIONS (always expand in cargo_description):
 - HRC = Hot Rolled Coils
 - HRCPO = Hot Rolled Coils Pickled & Oiled
-- HRCTD = Hot Rolled Coils Trimmed & Dried
+- HRCTD = Hot Rolled Coils Trimmed & Descaled
 - HRS = Hot Rolled Sheets / Hot Rolled Steel
 - CRC = Cold Rolled Coils
 - HMS = Heavy Melting Scrap
@@ -133,13 +133,18 @@ cargo_description MUST be human-readable English. Required contents:
 1. Expand ALL abbreviations (never leave bare abbreviations in the description):
    - "HRC" → "Hot Rolled Coils (HRC)"
    - "HRCPO" → "Hot Rolled Coils Pickled & Oiled (HRCPO)"
-   - "HRCTD" → "Hot Rolled Coils Trimmed & Dried (HRCTD)"
+   - "HRCTD" → "Hot Rolled Coils Trimmed & Descaled (HRCTD)"
    - "HRS" → "Hot Rolled Sheets (HRS)"
+   - "PNO" → "Plates Not Otherwise Specified (PNO)"
    - "bb" / "BB" → "big bags"
    - "uw" / "UW" → "unit weight"
    - "stw" → "stowage factor"
-   - Steel grade list example: "HRC + HRCPO + HRCTD + HRS" → "Hot Rolled Coils (HRC), Hot Rolled Coils Pickled & Oiled (HRCPO), Hot Rolled Coils Trimmed & Dried (HRCTD), and Hot Rolled Sheets (HRS)"
-2. Include stowage factor inline if given (with original units): "stowage factor approximately 47–49 ft³/MT"
+   - Steel grade list example: "HRC + HRCPO + HRCTD + HRS" → "Hot Rolled Coils (HRC), Hot Rolled Coils Pickled & Oiled (HRCPO), Hot Rolled Coils Trimmed & Descaled (HRCTD), and Hot Rolled Sheets (HRS)"
+2. Stowage factor MUST appear in cargo_description (as a bare number, no units) when stated in the email.
+   The full X ft³/MT notation also populates the separate stowage_factor field — these are independent, both must be filled.
+   Do NOT omit stowage from cargo_description just because it already appears in the stowage_factor field.
+   Example: email corn stw 51-52 ft³/MT wog → cargo_description: Corn, stowage factor 51–52, without guarantee
+            AND stowage_factor: 51–52 ft³/MT WOG
 3. Include per-piece / unit weight if given: "unit weight approximately 10–27 tonnes per coil"
 4. Include dimensions if given: "LxHxW 4.3m × 15.7m × 4.3m, 15,000 kg each"
 5. Include piece count if given
@@ -148,6 +153,12 @@ cargo_description MUST be human-readable English. Required contents:
 8. Do NOT copy-paste raw source text verbatim as cargo_description.
 9. For PROJECT cargo: dimensions and per-piece weights are MANDATORY.
 10. For BREAK_BULK: per-unit weight and packaging details are MANDATORY if given.
+10a. For BULK cargo: stowage factor is MANDATORY in cargo_description if stated in the email.
+   ✗ Corn in bulk  (email says stw 51-52)
+   ✓ Corn, stowage factor 51–52, without guarantee
+10b. For BAGGED cargo: bag dimensions and unit weight are MANDATORY in cargo_description if stated.
+   ✗ Salt in big bags  (email says bags 1.1×1.1×1.1m, uw 1.25mt)
+   ✓ Salt in big bags, dimensions 1.1m × 1.1m × 1.1m, unit weight 1.25 MT
 11. Use a concise noun phrase — NOT a full sentence.
     ✗ "The cargo consists of a fertilizer with a stowage factor of 51–52 ft³/MT"
     ✓ "Fertilizer, stowage factor 51–52"
