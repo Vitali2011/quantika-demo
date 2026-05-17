@@ -25,9 +25,9 @@ describe('/upgrade placeholder page', () => {
     expect(screen.getByRole('heading', { name: /апгрейд|upgrade/i })).toBeInTheDocument();
   });
 
-  test('exposes mailto link to hello@quantika.org', () => {
+  test('exposes mailto link to sales@quantika.org', () => {
     render(<UpgradePage />);
-    const link = screen.getByRole('link', { name: /hello@quantika\.org|связаться|contact/i });
-    expect(link).toHaveAttribute('href', 'mailto:hello@quantika.org');
+    const link = screen.getByRole('link', { name: /contact sales/i });
+    expect(link).toHaveAttribute('href', 'mailto:sales@quantika.org');
   });
 });
