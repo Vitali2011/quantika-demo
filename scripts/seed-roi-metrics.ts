@@ -3,7 +3,7 @@
  * Seed script: populates roi_metrics with 18 synthetic fixture rows
  * (3 cohort_months × 6 voyages) for γ-18 ROI_GUARANTEE activation.
  *
- * Idempotent: INSERT OR IGNORE via upsertRoiMetrics (ON CONFLICT DO UPDATE).
+ * Idempotent: ON CONFLICT DO UPDATE SET — re-runs overwrite existing rows (full upsert).
  * Deterministic: seeded LCG — re-runs produce identical rows.
  *
  * Usage:
@@ -15,13 +15,13 @@ import { getStore } from '@/lib/session-store';
 import { upsertRoiMetrics } from '@/lib/analytics/roi-metrics';
 
 // ---------------------------------------------------------------------------
-// Deterministic seeded LCG (Lehmer/Park-Miller)
+// Deterministic seeded LCG (Numerical Recipes, multiplier=1664525)
 // ---------------------------------------------------------------------------
 function makePrng(seed: number) {
   let s = seed >>> 0;
   return () => {
-    s = Math.imul(s, 1664525) + 1013904223;
-    return (s >>> 0) / 4294967296;
+    s = (Math.imul(s, 1664525) + 1013904223) >>> 0;
+    return s / 4294967296;
   };
 }
 
@@ -69,10 +69,7 @@ function buildFixtures(): FixtureRow[] {
     const daysInMonth = new Date(year, month, 0).getDate();
 
     for (let v = 1; v <= 6; v++) {
-      const vesselIdx = (v - 1) % VESSEL_TYPES.length; // 0,1,2,0,1,2
-      const vessel = VESSEL_TYPES[vesselIdx];
-
-      // Cycle through vessel types across voyages for variety
+      // Random vessel selection per voyage
       const actualVesselIdx = randInt(rng, 0, 2);
       const av = VESSEL_TYPES[actualVesselIdx];
 

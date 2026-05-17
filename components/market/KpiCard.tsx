@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 export const FETCH_TIMEOUT_MS = 5000;
 
@@ -91,13 +91,12 @@ export function KpiCard({
     url == null ? 'unavailable' : 'loading',
   );
   const [retryNonce, setRetryNonce] = useState(0);
-  const cancelledRef = useRef(false);
 
   useEffect(() => {
     if (url == null) return;
-    cancelledRef.current = false;
+    let cancelled = false;
     void fetchWithTimeout<KpiData>(url, timeoutMs, fetchImpl).then((res) => {
-      if (cancelledRef.current) return;
+      if (cancelled) return;
       if (res && (typeof res.value === 'number' || typeof res.value === 'string')) {
         setData(res);
         setPhase('ok');
@@ -106,7 +105,7 @@ export function KpiCard({
       }
     });
     return () => {
-      cancelledRef.current = true;
+      cancelled = true;
     };
   }, [url, timeoutMs, fetchImpl, retryNonce]);
 

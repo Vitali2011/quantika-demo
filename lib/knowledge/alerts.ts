@@ -73,10 +73,17 @@ export async function fireAlert(ctx: AlertContext): Promise<void> {
 export async function sendAlertEmail(ctx: AlertContext): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
   const toRaw = process.env.ALERT_EMAIL_TO;
-  if (!apiKey || !toRaw) return;
+  if (!apiKey || !toRaw) {
+    console.warn('[alerts] sendAlertEmail: RESEND_API_KEY or ALERT_EMAIL_TO not configured, email skipped');
+    return;
+  }
 
   const resend = new Resend(apiKey);
   const to = toRaw.split(',').map(s => s.trim()).filter(Boolean);
+  if (to.length === 0) {
+    console.warn('[alerts] sendAlertEmail: ALERT_EMAIL_TO has no valid addresses, email skipped');
+    return;
+  }
   const from = process.env.RESEND_FROM_EMAIL ?? 'Quantika Alerts <alerts@quantika.app>';
 
   const safeSlug = sanitizeHtml(ctx.slug, { allowedTags: [], allowedAttributes: {} });
