@@ -142,7 +142,7 @@ log "Weekly backups kept: $(ls "${BACKUP_DIR}/weekly/"*.tar.gz 2>/dev/null | wc 
 if [[ -n "$CRON_SECRET" && -n "$APP_URL" ]]; then
   HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
     --max-time 10 \
-    -X POST "${APP_URL}/api/admin/cron-heartbeat" \
+    -X POST "${HEARTBEAT_URL:-http://localhost:3000/api/admin/cron-heartbeat}" \
     -H "Content-Type: application/json" \
     -H "X-Cron-Secret: ${CRON_SECRET}" \
     -d '{"cron_name":"quantika-backup"}' 2>/dev/null) || HTTP_CODE="000"
