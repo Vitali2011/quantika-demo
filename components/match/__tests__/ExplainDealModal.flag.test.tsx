@@ -18,7 +18,7 @@ jest.mock('@/lib/csrf-client', () => ({
   csrfFetch: jest.fn(),
 }));
 
-import ExplainDealModal from '../ExplainDealModal';
+import { ExplainDealModal } from '../ExplainDealModal';
 
 describe('ExplainDealModal — NEXT_PUBLIC_EXPLAIN_DEAL_ENABLED flag guard', () => {
   const originalEnv = process.env.NEXT_PUBLIC_EXPLAIN_DEAL_ENABLED;
