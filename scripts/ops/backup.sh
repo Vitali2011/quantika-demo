@@ -95,11 +95,12 @@ for src in "${SOURCES[@]}"; do
   [[ -e "$src" ]] && log "  + $src ($(du -sh "$src" 2>/dev/null | cut -f1))"
 done
 
-# Build the archive. Use || true on the tar command since --ignore-failed-read
-# exits non-zero on vanished sparse inodes; the size check below catches real failures.
+# --ignore-failed-read tolerates vanished/unreadable inodes; real failures (disk
+# full, I/O error) still exit non-zero and are caught here.
 tar -czf "${DAILY_FILE}" \
   --ignore-failed-read \
-  "${SOURCES[@]}" 2>/dev/null || true
+  "${SOURCES[@]}" 2>/dev/null \
+  || { rm -f "${DAILY_FILE}"; die "tar failed — disk full or I/O error"; }
 
 ARCHIVE_SIZE=$(stat -c%s "${DAILY_FILE}" 2>/dev/null || echo 0)
 [[ $ARCHIVE_SIZE -gt 200 ]] || die "Archive too small (${ARCHIVE_SIZE} bytes) — tar likely failed"
