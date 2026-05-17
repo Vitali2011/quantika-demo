@@ -68,8 +68,10 @@ On success, `backup.sh` POSTs to `/api/admin/cron-heartbeat` with
 `cron_name=quantika-backup`. If no heartbeat is seen for > 24 h, the monitoring
 dashboard will flag it.
 
-`backup.sh` reads `CRON_SECRET` and `NEXT_PUBLIC_APP_URL` automatically from
-`.env.local` — no separate configuration needed.
+`backup.sh` reads `CRON_SECRET` and `HEARTBEAT_URL` automatically from
+`.env.local` — no separate configuration needed. `HEARTBEAT_URL` defaults to
+`http://localhost:3000/api/admin/cron-heartbeat` so heartbeats always go via
+localhost, bypassing Cloudflare (which strips the `X-Cron-Secret` header).
 
 The backup also pre-flight-checks `.env.local` size (aborts if < 100 bytes),
 preventing a repeat of the 2026-05-17 incident pattern where a truncated file
@@ -109,7 +111,7 @@ pm2 restart quantika-demo --update-env
 | `DAILY_KEEP` | `7` | Number of daily archives to retain |
 | `WEEKLY_KEEP` | `4` | Number of weekly archives to retain |
 | `CRON_SECRET` | from `.env.local` | For heartbeat POST auth |
-| `APP_URL` | from `NEXT_PUBLIC_APP_URL` | Heartbeat target base URL |
+| `HEARTBEAT_URL` | `http://localhost:3000/api/admin/cron-heartbeat` | Heartbeat target URL (localhost avoids Cloudflare stripping `X-Cron-Secret`) |
 
 ## Logs
 
