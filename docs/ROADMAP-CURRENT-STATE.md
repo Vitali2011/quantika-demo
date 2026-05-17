@@ -28,7 +28,7 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 | classify | gemini-flash | 95.5% cat / 73.4% urgency | progonq R0 ✅ | R4 prompt готов, не активирован (с 04-20) |
 | parse-cargo | openai gpt-5.5 | est. 87%+ | no baseline | R4 normalizer #175 merged, R5 ETA |
 | parse-vessel | openai gpt-5.5 | 76.0% mean, **dwcc 51.9%** | progonq ✅ | weakest field — unit conversion |
-| parse-recap | openai gpt-5.5 | n/a | **no baseline** | bake-off DEFERRED (judge blocked) |
+| parse-recap | openai gpt-5.5 | **~70% overall** (static analysis, 3 corpus scenarios) | **baseline ✅ 2026-05-17** | weakest: despatch_rate 40%, ack_deadline 38%, laytime-wh 53%; schema/prompt mismatch = Gemini-path bug |
 | match | bedrock-opus | n/a | **no baseline** | most expensive scope, no eval |
 | explain-deal | openai | n/a | none | feature live |
 | draft-quote | openai | n/a | none | feature live |
@@ -178,7 +178,7 @@ ETA: ~5-7 days wall-clock. Mostly autonomous.
 **Theme:** «UX polish + dark spots в parsers + tracking issues»
 
 1. **Parse-cargo R5** — finalize per parse-cargo track (deep accuracy work)
-2. **parse-recap progonq baseline** — establish before further iteration
+2. **parse-recap prompt fixes** — baseline ✅ 2026-05-17 (~70%); fix despatch_rate/ack_deadline/laytime-wh; see `scripts/baselines/parse-recap-baseline-2026-05-17.md`
 3. **parse-vessel dwcc fix** — unit conversion bug (51.9% → ?)
 4. **match progonq baseline** — long overdue
 5. **Tracking issues** #177-180 (MarketIntelligence cards, war-risk crew, alerts email, check-deadlines)
