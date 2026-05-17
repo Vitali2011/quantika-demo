@@ -5,6 +5,7 @@ Uses searoute-py library for maritime routing.
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from typing import Literal
+import threading
 import searoute as sr
 
 app = FastAPI(title="Quantika Searoute Service", version="1.0.0")
@@ -27,12 +28,18 @@ class DistanceResponse(BaseModel):
     calculator_version: str = "searoute-py-1.2.0"
 
 
-# RESTRICTIONS_MAP defines which canals to avoid for each routing preference
+# Serialises concurrent calls to sr.searoute() — the library mutates module-level
+# M.restrictions before computing the shortest path, so concurrent threads share state.
+_searoute_lock = threading.Lock()
+
+# RESTRICTIONS_MAP defines which canals to avoid for each routing preference.
+# Valid searoute-py passage names: babalmandab, bosporus, gibraltar, suez, panama, ormuz, northwest
+# 'cape' is NOT a valid passage name — it is silently ignored by the library.
 RESTRICTIONS_MAP = {
-    'cape':   ['suez', 'panama'],   # force around Cape of Good Hope
-    'suez':   ['panama', 'cape'],    # force Suez Canal (no Panama, no Cape)
-    'panama': ['suez', 'cape'],      # force Panama Canal
-    'direct': [],                    # let algorithm pick best route
+    'cape':   ['suez', 'panama'],   # force around Cape of Good Hope — block both canals
+    'suez':   ['panama'],           # force Suez organically — block only Panama
+    'panama': ['suez'],             # force Panama organically — block only Suez
+    'direct': [],                   # let algorithm pick best route
 }
 
 
@@ -59,11 +66,12 @@ def distance(req: DistanceRequest):
     dest = [req.dest_lon, req.dest_lat]
 
     try:
-        route = sr.searoute(
-            origin, dest,
-            restrictions=RESTRICTIONS_MAP[req.route_via],
-            units='naut',
-        )
+        with _searoute_lock:
+            route = sr.searoute(
+                origin, dest,
+                restrictions=RESTRICTIONS_MAP[req.route_via],
+                units='naut',
+            )
     except Exception as e:
         raise HTTPException(status_code=422, detail=f"routing failed: {e}")
 
