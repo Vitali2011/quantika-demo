@@ -22,8 +22,8 @@ import { isRagEnabled } from '@/lib/knowledge/flags';
 import type { RetrievedChunk, ChunkMetadata } from '@/lib/knowledge/embeddings/chunks';
 import Database from 'better-sqlite3';
 
-const ALLOWED_VEC_TABLES = ['imsbc_vec', 'igc_vec', 'jwc_vec'] as const;
-const ALLOWED_FTS_TABLES = ['imsbc_fts', 'igc_fts', 'jwc_fts'] as const;
+const ALLOWED_VEC_TABLES = ['imsbc_vec', 'igc_vec', 'jwc_vec', 'bimco_vec'] as const;
+const ALLOWED_FTS_TABLES = ['imsbc_fts', 'igc_fts', 'jwc_fts', 'bimco_fts'] as const;
 
 /**
  * Vec0 cosine k-NN retriever (spec-08)
