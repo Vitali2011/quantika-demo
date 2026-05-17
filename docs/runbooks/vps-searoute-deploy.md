@@ -1,293 +1,170 @@
 # VPS Searoute Deploy Runbook
 
-**Target host:** outreach-vps (185.249.225.169)
-**Service port:** 8200 (internal only)
+**Target host:** dev-VPS (157.173.124.116)
+**Service port:** 8200 (internal only — Next.js on same host calls localhost:8200)
+**Systemd unit:** `searoute.service`
+**Service directory:** `/opt/searoute`
+**Python venv:** `/opt/searoute/venv`
 **Phase 1 dependency:** Block D (distances)
-**Last verified:** 2026-05-06 (document only — not yet executed on VPS)
 
 ---
 
 ## Overview
 
-`quantika-searoute` is a lightweight FastAPI service wrapping the [searoute-py](https://github.com/genthalili/searoute-py) library. It exposes a `/distance` endpoint that returns sea-route distance in nautical miles between two lat/lon coordinates, plus the GeoJSON geometry of the route.
+`searoute` is a lightweight FastAPI service wrapping [searoute-py](https://github.com/genthalili/searoute-py).
+It exposes a `/distance` endpoint returning sea-route distance in nautical miles between two lat/lon coordinates.
 
-The Next.js app (running on `:8100` on the same host) calls this service from `lib/knowledge/distances/*` when `KNOWLEDGE_LAYER_DISTANCES_ENABLED=true`. Requests are made server-side (Node → localhost:8200), so the port never needs to be publicly reachable.
+The Next.js app (`:8100`) calls this service server-side when `KNOWLEDGE_LAYER_DISTANCES_ENABLED=true`.
+Port 8200 never needs to be publicly reachable.
 
-Service path on disk: `/opt/quantika/services/searoute`
-Canonical systemd unit: `ops/systemd/quantika-searoute.service` (already committed in repo)
+Source in repo: `services/searoute/`
+Systemd unit in repo: `ops/systemd/searoute.service`
+Install helper: `ops/scripts/install-searoute.sh`
 
 ---
 
-## Prerequisites
+## Quick Install (recommended)
 
-Before starting, verify on the VPS:
+Run from the repo root on the VPS **as root**:
 
 ```bash
-# Python 3.11 or newer
-python3.11 --version
+sudo bash ops/scripts/install-searoute.sh
+```
 
-# sudo access
-sudo whoami   # should return root
+This copies `main.py` + `requirements.txt` to `/opt/searoute/`, creates a venv, installs deps,
+and drops the unit file at `/etc/systemd/system/searoute.service`. Does **not** enable the service.
 
-# ufw is installed and active
-sudo ufw status
+After smoke testing (see Step 6), enable:
 
-# systemd is running
+```bash
+sudo systemctl enable --now searoute
+```
+
+---
+
+## Manual Steps
+
+### Step 1: Prerequisites
+
+```bash
+python3 --version   # 3.11+ preferred
+sudo whoami         # should be root
 systemctl --version
-
-# Free RAM >= 512 MB
-free -m | awk '/^Mem/ { print $4 " MB free" }'
 ```
 
----
-
-## Step 1: Install Python 3.11 + venv
+### Step 2: Create service directory and venv
 
 ```bash
-sudo apt update
-sudo apt install -y python3.11 python3.11-venv python3.11-dev
-python3.11 --version   # verify
+mkdir -p /opt/searoute
+cp services/searoute/main.py services/searoute/requirements.txt /opt/searoute/
+
+python3.11 -m venv /opt/searoute/venv  # or python3 if 3.11 not symlinked
+/opt/searoute/venv/bin/pip install -q -r /opt/searoute/requirements.txt
 ```
 
----
-
-## Step 2: Repository / directory setup
+### Step 3: Install systemd unit
 
 ```bash
-# Create service user (no login shell)
-sudo useradd --system --no-create-home --shell /usr/sbin/nologin quantika-searoute || true
-
-# Create service directory
-sudo mkdir -p /opt/quantika/services/searoute
-sudo chown quantika-searoute:quantika-searoute /opt/quantika/services/searoute
-
-# Create virtualenv
-sudo -u quantika-searoute python3.11 -m venv /opt/quantika/services/searoute/.venv
+cp ops/systemd/searoute.service /etc/systemd/system/searoute.service
+systemctl daemon-reload
 ```
 
-Deploy application files (run from your local machine or a CI agent):
+Unit content for reference:
+```ini
+[Unit]
+Description=Quantika Searoute Service
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/searoute
+ExecStart=/opt/searoute/venv/bin/uvicorn main:app --host 127.0.0.1 --port 8200
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### Step 4: Firewall
+
+Port 8200 must be reachable only from localhost:
 
 ```bash
-# Option A: rsync from local repo checkout
-rsync -av --delete \
-  ops/searoute/ \
-  root@185.249.225.169:/opt/quantika/services/searoute/
-
-# Option B: clone/pull on VPS directly
-# ssh root@185.249.225.169
-# cd /opt/quantika/services/searoute
-# git init && git remote add origin <repo-url>
-# git pull origin main -- ops/searoute
+ufw deny 8200/tcp
+ufw reload
+ufw status | grep 8200
 ```
 
----
-
-## Step 3: requirements.txt
-
-Create `/opt/quantika/services/searoute/requirements.txt` with this exact content:
-
-```
-searoute>=1.1.4,<2
-fastapi>=0.110,<1
-uvicorn[standard]>=0.30,<1
-pydantic>=2.6,<3
-```
-
-Install:
+### Step 5: Start service
 
 ```bash
-sudo -u quantika-searoute \
-  /opt/quantika/services/searoute/.venv/bin/pip install \
-  -r /opt/quantika/services/searoute/requirements.txt
+systemctl enable --now searoute
+systemctl status searoute
 ```
 
----
+Expected: `Active: active (running)`.
 
-## Step 4: FastAPI app (main.py)
-
-Create `/opt/quantika/services/searoute/main.py`:
-
-```python
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-import searoute as sr
-
-app = FastAPI(title="quantika-searoute", version="1.0.0")
-
-
-class Req(BaseModel):
-    origin: tuple[float, float]   # (lon, lat)
-    dest: tuple[float, float]     # (lon, lat)
-
-
-@app.get("/health")
-def health():
-    return {"ok": True}
-
-
-@app.post("/distance")
-def distance(req: Req):
-    try:
-        route = sr.searoute(req.origin, req.dest, units="naut")
-        return {
-            "distance_nm": route["properties"]["length"],
-            "geometry": route["geometry"],
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-```
-
-> **Note:** coordinate order is `(longitude, latitude)` — same as GeoJSON, matching the searoute-py convention.
-
----
-
-## Step 5: systemd unit
-
-The canonical unit file is committed in the repository at `ops/systemd/quantika-searoute.service`. Copy it to the host and enable the service:
-
-```bash
-# Copy from repo (run on VPS after the file is deployed)
-sudo cp /opt/quantika/services/searoute/ops/systemd/quantika-searoute.service \
-        /etc/systemd/system/quantika-searoute.service
-
-# Or paste directly — content matches the committed unit exactly:
-# WorkingDirectory=/opt/quantika/services/searoute
-# ExecStart=/opt/quantika/services/searoute/.venv/bin/uvicorn main:app --host 127.0.0.1 --port 8200
-
-sudo systemctl daemon-reload
-sudo systemctl enable --now quantika-searoute.service
-sudo systemctl status quantika-searoute.service
-```
-
-Expected status output: `Active: active (running)`.
-
----
-
-## Step 6: Firewall
-
-Port 8200 must be reachable only from localhost (Next.js on the same host). Block external access:
-
-```bash
-# Deny all external access to 8200
-sudo ufw deny 8200/tcp
-
-# Reload to apply
-sudo ufw reload
-
-# Verify
-sudo ufw status | grep 8200
-```
-
-If Next.js runs on a **different host**, replace the deny rule:
-
-```bash
-# Allow only from Next.js server IP
-sudo ufw allow from <NEXT_JS_HOST_IP> to any port 8200
-sudo ufw deny 8200/tcp
-sudo ufw reload
-```
-
----
-
-## Step 7: nginx reverse proxy (optional)
-
-Internal HTTP on `:8200` is sufficient for same-host Next.js calls. Skip this step unless you need:
-- TLS termination for inter-service HTTPS
-- A named `searoute.internal` hostname
-
-If needed, add to `/etc/nginx/sites-available/quantika-searoute`:
-
-```nginx
-server {
-    listen 8201 ssl;
-    server_name searoute.internal;
-
-    ssl_certificate     /etc/ssl/certs/quantika-internal.crt;
-    ssl_certificate_key /etc/ssl/private/quantika-internal.key;
-
-    location / {
-        proxy_pass http://127.0.0.1:8200;
-        proxy_set_header Host $host;
-        proxy_read_timeout 60s;
-    }
-}
-```
-
-```bash
-sudo ln -s /etc/nginx/sites-available/quantika-searoute \
-           /etc/nginx/sites-enabled/
-sudo nginx -t && sudo systemctl reload nginx
-```
-
----
-
-## Step 8: Smoke tests
-
-Run these on the VPS (or via SSH):
+### Step 6: Smoke test
 
 ```bash
 # Health check
 curl -s http://localhost:8200/health
-# Expected: {"ok":true}
+# Expected: {"status":"ok","version":"1.0.0"}
 
-# Distance: Singapore → Rotterdam (via Suez)
+# Distance: Singapore → Rotterdam (Suez)
 curl -s -X POST http://localhost:8200/distance \
   -H 'Content-Type: application/json' \
-  -d '{"origin":[103.83,1.27],"dest":[4.48,51.92]}'
-# Expected: distance_nm ~ 8200, geometry.type = "LineString"
-
-# Quick parse check
-curl -s -X POST http://localhost:8200/distance \
-  -H 'Content-Type: application/json' \
-  -d '{"origin":[103.83,1.27],"dest":[4.48,51.92]}' \
+  -d '{"origin_lat":1.29,"origin_lon":103.85,"dest_lat":51.92,"dest_lon":4.48,"route_via":"suez"}' \
   | python3 -c "import sys,json; d=json.load(sys.stdin); print('distance_nm:', d['distance_nm'])"
+# Expected: distance_nm ~ 8300 nm
 ```
 
 ---
 
-## Step 9: Logs and monitoring
+## Seed port_distances table
+
+Once the service is running, seed ~60K rows (200 ports × 3 routes):
 
 ```bash
-# Follow live logs
-journalctl -u quantika-searoute -f
-
-# Last 100 lines
-journalctl -u quantika-searoute -n 100 --no-pager
-
-# Errors only
-journalctl -u quantika-searoute -p err --since "1 hour ago"
-
-# Service resource usage
-systemctl status quantika-searoute.service
+# From the Next.js app root on VPS:
+npx tsx scripts/knowledge/sources/distances.ts
 ```
 
-Future: extend with Sentry DSN if Next.js already has Sentry configured — add `sentry-sdk[fastapi]` to requirements.txt and initialize in `main.py` before `app = FastAPI(...)`.
+Progress logs every 60s. ETA ~2-3h (network-bound). Idempotent — safe to re-run.
 
 ---
 
-## Step 10: Rollback
-
-If the service is misbehaving, fall back to Haversine in Next.js without touching the Python service:
+## Logs and monitoring
 
 ```bash
-# On VPS: update .env for the Next.js app
-# Edit /root/quantika-demo/.env.local (or equivalent)
+journalctl -u searoute -f              # live
+journalctl -u searoute -n 100          # last 100 lines
+journalctl -u searoute -p err          # errors only
+```
+
+---
+
+## Rollback
+
+Disable distance auto-resolution without touching the Python service:
+
+```bash
+# In /root/work/quantika-demo/.env.local on VPS:
 KNOWLEDGE_LAYER_DISTANCES_ENABLED=false
 
-# Restart Next.js to pick up the env change
-pm2 restart quantika-demo   # or: systemctl restart quantika-demo
+pm2 restart quantika-demo   # picks up new env
 ```
 
 To also stop the searoute service:
 
 ```bash
-sudo systemctl stop quantika-searoute.service
-sudo systemctl disable quantika-searoute.service
+systemctl stop searoute
+systemctl disable searoute
 ```
 
-To re-enable after fixing:
+Re-enable after fixing:
 
 ```bash
-sudo systemctl enable --now quantika-searoute.service
-# Then set KNOWLEDGE_LAYER_DISTANCES_ENABLED=true and restart Next.js
+systemctl enable --now searoute
+# Then set KNOWLEDGE_LAYER_DISTANCES_ENABLED=true and restart quantika-demo
 ```
