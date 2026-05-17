@@ -1,204 +1,226 @@
-# Quantika Demo — ROADMAP (Current State)
+# Quantika Demo — ROADMAP (Текущее состояние)
 
-**Last full audit:** 2026-05-17 (5-stream parallel audit)
-**Current version:** v1.4.0-eval-qa, prod HEAD `abc646d`
-**Status:** ✅ Production-stable on demo.quantika.org
+**Последний полный аудит:** 2026-05-17 (5-поточный параллельный аудит)
+**Последнее обновление:** 2026-05-17 вечер (после Plan A)
+**Текущая версия:** v1.4.0-eval-qa, prod HEAD после PR #194
+**Статус:** ✅ Стабильно в проде на demo.quantika.org
 
-> **Living document.** Replaces `ROADMAP-SESSION-PROMPT.md` (which was a one-time generator prompt, not a state tracker).
-> Source reports: `/root/orchestrator-state/audit-2026-05-17/{parsers,data,api,ui,waves}.md`
-
----
-
-## Executive Summary
-
-Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + Knowledge Layer)** за апрель-май 2026. Production-stable, 1840+ tests green, 8 PRs merged за сегодня (2026-05-17). **Wave α MVP scope = 12 ✅ / 5 🟡 / 0 ❌.** Главные пробелы — НЕ в коде (большинство фичей реализованы), а в **данных и активации:** seed-скрипты не запущены (RAG corpus, market indices, port_master), Bedrock Opus 4.7 не активирован (блокирует все bake-off verdicts), 5 webhooks не в auth bypass (silent failure).
-
-**Next 7 days:** активация data layer + Bedrock + γ-флагов по runbook'у.
-**Next 30 days:** mobile UX hardening + WhatsApp/Pipedrive webhook fixes + parse-cargo R5 finalization.
-**Next 90 days:** Wave δ kickoff (когда PMF подтверждён).
+> **Живой документ.** Заменяет `ROADMAP-SESSION-PROMPT.md` (тот был разовый промпт-генератор, не state tracker).
+> Источники отчётов: `/root/orchestrator-state/audit-2026-05-17/{parsers,data,api,ui,waves}.md`
 
 ---
 
-## 1. Domain Status
+## Краткая сводка
 
-### 1.1 Parsers & LLM (audit-parsers.md)
+Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + Knowledge Layer)** за апрель-май 2026. Стабильно в проде, 5570+ тестов зелёные, **17 PR слиты за день 2026-05-17** (12 утром + 5 вечером).
 
-| Parser | Provider | Accuracy | Eval | Status |
+**Wave α MVP scope = 12 ✅ / 5 🟡 / 0 ❌.**
+
+**Что изменилось за 2026-05-17:**
+- ✅ Hot-restore env-incident (`.env.local` truncated, prod молча тлел 22h)
+- ✅ Data layer полностью оживлён (RAG=141 chunks, market_indices=90, charterers=20, port_da=94, psc=16, distances=17985, roi_metrics=18, fx_rates=200)
+- ✅ Все 8 γ-флагов активированы (γ-02/03/05/08/09/11/18/01)
+- ✅ Bedrock Opus 4.7 заменён на claude-cli (наша Opus подписка) — экономим $15/$75 per 1M tokens
+- ✅ Backup cron + inotify watchers + searoute systemd live
+- ✅ 4 tracking issues #177-180 закрыты (#180 deferred как нерелевантный)
+
+**Что ещё блокирует pre-PMF:**
+- ⏸ C2 — 5 webhooks auth bypass (нужен user)
+- ⏸ C3 — EU_SANCTIONS_TOKEN refresh (5 мин user)
+- 📋 Parser quality финализация (parse-cargo R5, parse-vessel dwcc 51.9%, parse-recap/match baselines)
+- 📋 UX polish (mobile bottom nav, /upgrade /matches заглушки, EXPLAIN_DEAL flag fix)
+
+**Следующие 7 дней:** webhook auth + parser quality + UX polish.
+**Следующие 30 дней:** mobile-first feature pages + monitoring (Sentry/UptimeRobot).
+**Следующие 90 дней:** PWA + Arabic RTL + Quote PDF + Stripe billing — путь к первым 10 платящим клиентам.
+
+---
+
+## 1. Статус по доменам
+
+### 1.1 Парсеры и LLM (audit-parsers.md)
+
+| Парсер | Провайдер | Точность | Eval | Статус |
 |---|---|---|---|---|
-| classify | gemini-flash | 95.5% cat / 73.4% urgency | progonq R0 ✅ | R4 prompt готов, не активирован (с 04-20) |
-| parse-cargo | openai gpt-5.5 | est. 87%+ | no baseline | R4 normalizer #175 merged, R5 ETA |
-| parse-vessel | openai gpt-5.5 | 76.0% mean, **dwcc 51.9%** | progonq ✅ | weakest field — unit conversion |
-| parse-recap | openai gpt-5.5 | **~70% overall** (static analysis, 3 corpus scenarios) | **baseline ✅ 2026-05-17** | weakest: despatch_rate 40%, ack_deadline 38%, laytime-wh 53%; schema/prompt mismatch = Gemini-path bug |
-| match | bedrock-opus | n/a | **no baseline** | most expensive scope, no eval |
-| explain-deal | openai | n/a | none | feature live |
-| draft-quote | openai | n/a | none | feature live |
+| classify | gemini-flash | 95.5% cat / 73.4% urgency | progonq R0 ✅ | R4 промпт готов, не активирован (с 04-20) |
+| parse-cargo | openai gpt-5.5 | оцен. 87%+ | нет baseline | R4 normalizer #175 слит, R5 ETA |
+| parse-vessel | openai gpt-5.5 | 76.0% mean, **dwcc 51.9%** | progonq ✅ | слабейшее поле — единицы измерения |
+| parse-recap | openai gpt-5.5 | **70.0%** (baseline 2026-05-17 PR #193) | progonq ✅ baseline only | weakest fields идентифицированы, fix-loop pending |
+| match | bedrock-opus → claude-cli | н/д | **нет baseline** | переехали на нашу подписку Opus (PR #186) |
+| explain-deal | openai | н/д | нет | фича live |
+| draft-quote | openai | н/д | нет | фича live |
 
-**Provider routing:** 5/7 scopes on OpenAI via ClipProxy (opaque cost). Bedrock Opus 4.7 = match endpoint. Gemini Flash = classify only.
+**Provider routing:** 5/7 scopes на OpenAI через ClipProxy (непрозрачная стоимость). claude-cli (наш Opus) = match endpoint + eval judge. Gemini Flash = только classify.
 
-**Critical gap:** AWS Bedrock Opus 4.7 model access not activated → all bake-off verdicts DEFERRED → cannot promote any model swap.
+**Bake-off вердикты:** разблокированы (judge через claude-cli работает).
 
 ### 1.2 Data Layer (audit-data.md)
 
-**31 migrations applied.** Большинство таблиц **EMPTY** — seeds не запускались:
+**31+ миграция применена.** **Большинство таблиц теперь заполнены** (значительный прогресс 2026-05-17):
 
-| Status | Tables |
+| Статус | Таблицы |
 |---|---|
-| ✅ Fresh | ofac_entities (18,959), schema_migrations (31), knowledge_sources (15) |
-| ⚠️ Partial | port_distances **30%** (17,985 / 59,700 — interrupted), baltic/bunker/eua (stale, 1 date only) |
-| ❌ NEVER seeded | eu_sanctions, port_master, market_indices, charterers, psc_detention_history, port_da_estimates, eca_zones, war_risk_zones |
-| ❌ NEVER embedded (RAG) | imsbc_fts+vec, igc_fts+vec, jwc_fts+vec, bimco_fts+vec |
+| ✅ Свежие, заполненные | ofac_entities (18,959), schema_migrations, knowledge_sources (15), **market_indices (90), charterers (20), port_da_estimates (94), psc_detention_history (16), port_distances (17,985 = реальный complete target), roi_metrics (18), fx_rates (200)** |
+| ✅ RAG embedded | **imsbc_fts (49), igc_fts (77), jwc_fts (8), bimco_fts (7)** — 141 chunks всего |
+| ⚠️ Частичные | baltic/bunker/eua (устарели, manual CSV upload) |
+| ❌ НИКОГДА не seed-нулись | eu_sanctions (token expired), port_master, eca_zones, war_risk_zones |
 
-**RAG architecture:** hybrid FTS5+vec0 (sqlite) или Vertex AI Search. Backend dispatch live, но **chunks пустые** — embeddings никогда не запускались на VPS.
+**RAG-архитектура:** гибрид FTS5+vec0 (sqlite). Vertex Search disabled (extractiveContentSpec Enterprise-only, наши engines Standard) — rollback на SQLite богаче.
 
-**Bug:** `bimco_vec` table exists (migration 029) но НЕ в allowlist `retriever-sqlite.ts` → BIMCO reachable только через Vertex backend.
+**Bug FIXED:** `bimco_vec` теперь в allowlist `retriever-sqlite.ts` (PR #186).
 
 ### 1.3 API Surface (audit-api.md)
 
-**50 routes total.** Coverage:
+**50 routes всего.** Coverage:
 
 | Auth tier | Routes |
 |---|---|
-| public | health, knowledge clauses (flag), market indices (flag), TCE, vessel, canal, etc. |
-| session (DEMO_AUTH cookie) | dashboard, match, /ai/*, audit, charterers |
+| public | health, knowledge clauses (флаг), market indices (флаг), TCE, vessel, canal, etc. |
+| session (DEMO_AUTH cookie) | dashboard, match, /ai/*, audit, charterers, **/api/analytics/roi (γ-18)**, **/api/laytime/* (γ-05)**, **/api/knowledge/clauses (γ-09)** |
 | admin (X-Admin-Token) | knowledge refresh, market upload-csv, knowledge-status |
 | cron (X-Cron-Secret) | cron-heartbeat |
 | HMAC | whatsapp webhook, pipedrive webhook |
 | internal token | whatsapp ingest |
 
-**🚨 HIGH GAP — 5 webhooks НЕ в `AUTH_BYPASS_PATHS`:**
+**🚨 HIGH GAP сохраняется — 5 webhooks НЕ в `AUTH_BYPASS_PATHS`:**
 - `/api/whatsapp/webhook` — Meta получает 302→/login, отключит endpoint
-- `/api/whatsapp/ingest` — internal service breaks
+- `/api/whatsapp/ingest` — внутренний сервис ломается
 - `/api/integrations/pipedrive/webhook` — Pipedrive перестанет слать events
-- `/api/admin/knowledge/refresh` + `/api/admin/knowledge-status` — admin curl breaks
+- `/api/admin/knowledge/refresh` + `/api/admin/knowledge-status` — admin curl ломается
 
-**Cron heartbeat coverage:** 1/5 scripts шлёт (refresh-sanctions + backup). 4/5 silent fail: refresh-fx-rates, refresh-eua, refresh-bimco-rag, refresh-bunker.
+**Cron heartbeat coverage:** 5/5 скриптов теперь шлют (после PR #182 — localhost route bypasses CF header stripping).
 
-**Tests:** 17 routes без functional tests (auth/logout, agent/*, /economics, /vessel/[imo], etc.)
+**Тесты:** 17 routes без функциональных тестов (auth/logout, agent/*, /economics, /vessel/[imo], etc.) — остаётся в backlog.
 
-**13 feature flags** в коде, **все default OFF.** Готовы к активации.
+**13 feature flags** в коде. **8 default ON** (γ-флаги активированы 2026-05-17). 5 остаются OFF.
 
 ### 1.4 UI/UX (audit-ui.md)
 
-**23 pages:** 14 production-ready, 7 feature-gated, 2 stubs (`/upgrade`, `/matches`).
+**23 страницы:** 14 production-ready, 7 feature-gated **(теперь все 7 unlocked через γ-флаги)**, 2 заглушки (`/upgrade`, `/matches`).
 
-**70+ components.** Покрытие тестами:
-- Хорошо: match/, vessel/, dashboard/, mobile/, economics/
-- ❌ Нет: charterers/, psc/, recap/, request/, market/MarketBenchmarkChart, ui/ (shadcn)
+**70+ компонентов.** Покрытие тестами:
+- Хорошо: match/, vessel/, dashboard/, mobile/, economics/, **market/ (PR #192)**
+- ❌ Нет: charterers/, psc/, recap/, request/, ui/ (shadcn)
 
 **Mobile scorecard:**
 - ✅ BottomSheet + SwipeCard + FabVoice (haptics, focus trap, gestures)
-- ⚠️ Feature pages (laytime, market, PSC) — desktop-first, no `sm:` fallback
+- ⚠️ Feature-страницы (laytime, market, PSC) — desktop-first, нет `sm:` fallback
 - ❌ Bottom navigation
 - ❌ Touch target min-h-44px enforcement
 
-**RTL:** только email content (ExplainDealModal AR mode). Full UI RTL — нет (no i18n, no logical CSS properties).
+**RTL:** только контент email (ExplainDealModal AR mode). Full UI RTL — нет (no i18n, no logical CSS properties).
 
 **PWA: 0** — нет `public/manifest.json`, нет service worker, нет install prompt, нет theme-color.
 
-**Bugs:**
-- `EXPLAIN_DEAL_ENABLED` — server-only env var без `NEXT_PUBLIC_` pair → UI button renders, click → 403
-- `SubsCountdownWidget` — нет live `setInterval`, countdown frozen после mount
+**Баги (актуально):**
+- `EXPLAIN_DEAL_ENABLED` — server-only env var без `NEXT_PUBLIC_` пары → UI кнопка рендерится, клик → 403 (НЕ исправлено)
+- `SubsCountdownWidget` — нет live `setInterval`, countdown заморожен после mount (НЕ исправлено, виджет live через γ-08 но без auto-tick)
 
-### 1.5 Wave History (audit-waves.md)
+### 1.5 История волн (audit-waves.md)
 
-| Wave | Status | Delivered |
+| Волна | Статус | Поставлено |
 |---|---|---|
-| **Pre-MVP** (Audit Foundation, Wave 2, Architecture) | ✅ | PRs #1-#4, +268 tests |
-| **MVP Wave 1-4** (Hard filters → ports 431) | ✅ | v0.2 → v1.1 tags, 376 tests |
-| **Wave α** (15 specs Web/WhatsApp/Gmail) | ✅ | PR #8, +301 tests, 700+ total |
-| **Wave β + βf×3** (depth + fixes, adversarial QA) | ✅ | PRs #46-#53, 1840 tests, v1.4-eval-qa |
-| **Wave γ — Vertex migration** (13 specs OpenAI→Gemini/Bedrock) | ✅ | PR #85 + #98 |
-| **Wave γ — Knowledge L1+L2** (RAG hybrid + IMSBC/IGC/JWC/BIMCO + sanctions) | ✅ | PRs #92, #99, #102, #103 |
-| **Wave γ — Scale** (11 specs: γ-01..18) | ✅ | PR #127 |
-| **Parse-cargo track** (R14 → R4 normalizer) | 🟡 | R5 pending |
-| **Wave γ original 13 specs** | 1✅/0🟡/**8❌** (archived by decision: ice-class, tone, counterparty-int, SignWell, Wise+Xero, audit PDF, Apple Watch) |
-| **Wave δ** (Native iOS, SSO, white-label, APIs, team) | 0/0/5 — **not started** (правильно: post-PMF) |
+| **Pre-MVP** (Audit Foundation, Wave 2, Architecture) | ✅ | PR #1-#4, +268 тестов |
+| **MVP Wave 1-4** (Hard filters → ports 431) | ✅ | v0.2 → v1.1 теги, 376 тестов |
+| **Wave α** (15 спек Web/WhatsApp/Gmail) | ✅ | PR #8, +301 тест, 700+ всего |
+| **Wave β + βf×3** (depth + fixes, adversarial QA) | ✅ | PR #46-#53, 1840 тестов, v1.4-eval-qa |
+| **Wave γ — Vertex migration** (13 спек OpenAI→Gemini/Bedrock) | ✅ | PR #85 + #98 |
+| **Wave γ — Knowledge L1+L2** (RAG hybrid + IMSBC/IGC/JWC/BIMCO + sanctions) | ✅ | PR #92, #99, #102, #103 |
+| **Wave γ — Scale** (11 спек: γ-01..18) | ✅ | PR #127 |
+| **Wave γ — flag activation** (все 8 γ-флагов LIVE) | ✅ | env edits 2026-05-17 |
+| **Day batch 2026-05-17 morning** (incident restore + data + Bedrock→cli) | ✅ | PR #172-#186 (12 PR) |
+| **Day batch 2026-05-17 evening (Plan A)** (tracking issues + parser baseline + flaky test + seeds) | ✅ | PR #187-#194 (8 PR, из них 3 fix) |
+| **Parse-cargo track** (R14 → R4 normalizer) | 🟡 | R5 в работе (path exhausted — нужна GT нормализация ~4-6h) |
+| **Wave γ original 13 спек** | 1✅/0🟡/**8❌** (8 архивированы решением: ice-class, tone, counterparty-int, SignWell, Wise+Xero, audit PDF, Apple Watch) |
+| **Wave δ** (Native iOS, SSO, white-label, APIs, team) | 0/0/5 — **не начато** (правильно: post-PMF) |
 
 **ROADMAP vs delivered — Wave α delta:** 12✅ / 5🟡 / 0❌. 🟡 items: market live feed (manual CSV), digest content, 14-day billing backend, quote PDF pipeline, etc.
 
 ---
 
-## 2. Critical Issues (cross-domain, requiring urgency)
+## 2. Критические проблемы (cross-domain, требующие срочности)
 
-### 🚨 P0 — Blocking other work
+### 🚨 P0 — Блокируют другую работу
 
-| # | Issue | Effort | Blocks |
-|---|---|---|---|
-| **C1** | Bedrock Opus 4.7 model access not activated in AWS Console | 5 мин (manual) | parse-cargo / parse-recap / parse-vessel bake-off verdicts |
-| **C2** | 5 webhooks not in AUTH_BYPASS_PATHS — WhatsApp/Pipedrive silent failure | 1 PR, ~30 мин | WhatsApp delivery, Pipedrive sync |
-| **C3** | EU_SANCTIONS_TOKEN expired — sanctions sync failing since 05-16 | 5 мин (user only) | Sanctions screening live data |
+| # | Issue | Effort | Блокирует | Статус |
+|---|---|---|---|---|
+| **C1** | ~~Bedrock Opus 4.7 model access~~ → claude-cli replacement | done | ~~bake-off вердикты~~ | ✅ РЕШЕНО PR #186 |
+| **C2** | 5 webhooks не в AUTH_BYPASS_PATHS — WhatsApp/Pipedrive silent failure | 1 PR, ~30 мин | WhatsApp delivery, Pipedrive sync | ⏸ ждёт user |
+| **C3** | EU_SANCTIONS_TOKEN expired — sanctions sync падает с 05-16 | 5 мин (user only) | Sanctions screening live data | ⏸ ждёт user |
 
-### 🟠 P1 — Data layer activation (cheap wins, huge impact)
+### 🟠 P1 — Активация data layer
 
-| # | Task | ETA |
+**Полностью выполнено 2026-05-17.** Все таблицы заполнены (см. §1.2).
+
+| # | Task | Статус |
 |---|---|---|
-| **D1** | Resume port_distances seed (17,985 → 59,700 rows, +41,715 missing) | 2-3h bg |
-| **D2** | Seed market_indices (synthetic 30d BHSI + TMI) | 5 мин |
-| **D3** | Seed charterers (20 blue-chip names) | 5 мин |
-| **D4** | Seed port_master from `top-200-ports.json` (write loader script) | 1-2h |
-| **D5** | Seed port_da_estimates from `port-da-base.json` (39 records) | 5 мин |
-| **D6** | Seed psc_detention_history (fixture) | 5 мин |
-| **D7** | Run RAG embeddings: imsbc (~116), igc (~119), jwc (~7), bimco (~14) — required Vertex AI access | 30-60 мин per source |
-| **D8** | Fix `bimco_vec` allowlist in `retriever-sqlite.ts` (BIMCO unreachable in sqlite) | 1 PR, 10 мин |
+| **D1** | port_distances seed (17,985 = real complete target) | ✅ DONE |
+| **D2** | market_indices (90 rows: BHSI/TMI/Drewry × 30d) | ✅ DONE |
+| **D3** | charterers (20 blue-chip names) | ✅ DONE |
+| **D4** | port_master из `top-200-ports.json` | ⏸ deferred (не блокирует current features) |
+| **D5** | port_da_estimates (94 rows) | ✅ DONE |
+| **D6** | psc_detention_history (16 rows) | ✅ DONE |
+| **D7** | RAG embeddings imsbc/igc/jwc/bimco (141 chunks) | ✅ DONE |
+| **D8** | bimco_vec allowlist fix | ✅ DONE (PR #186) |
 
-### 🟡 P2 — γ flag activation (runbook готов в [docs/runbooks/wave-gamma-flag-activation.md](docs/runbooks/wave-gamma-flag-activation.md))
+### 🟡 P2 — Активация γ флагов
 
-| Flag | Risk | Prerequisite | Order |
-|---|---|---|---|
-| `SUBS_TIMER_V2` (γ-08) | low | — | 1st (verified PASS 88/88) |
-| `LAYTIME_ENGINE` (γ-05) | low | — | 2nd (PASS 91/91) |
-| `BIMCO_RAG` (γ-09) | low-med | run `seed-bimco-clauses.ts` + D8 fix | 3rd (PASS 58/58) |
-| `PSC_DETENTION` (γ-03) | med | D6 seed | 4th |
-| `MULTI_CURRENCY_V2` (γ-01) | low | — | 5th |
-| `FUELEU` (γ-11) | low | — | 6th |
-| `ROI_GUARANTEE` (γ-18) | low | — | 7th |
-| `CHARTERER_CREDIT` (γ-02) | med | D3 seed | 8th |
+**Полностью выполнено 2026-05-17.** Все 8 γ-флагов LIVE на проде.
+
+| Флаг | Статус | PR/commit |
+|---|---|---|
+| `SUBS_TIMER_V2` (γ-08) | ✅ LIVE | batch-1 |
+| `LAYTIME_ENGINE` (γ-05) | ✅ LIVE | batch-1 |
+| `BIMCO_RAG` (γ-09) | ✅ LIVE | batch-1 |
+| `CHARTERER_CREDIT` (γ-02) | ✅ LIVE | batch-2 |
+| `PSC_DETENTION` (γ-03) | ✅ LIVE | batch-2 |
+| `FUELEU` (γ-11) | ✅ LIVE | batch-2 |
+| `ROI_GUARANTEE` (γ-18) | ✅ LIVE | batch-3 (PR #187 seed) |
+| `MULTI_CURRENCY_V2` (γ-01) | ✅ LIVE | batch-3 (PR #188 seed) |
 
 ---
 
-## 3. Prioritized Roadmap
+## 3. Приоритизированная Roadmap
 
-### Next 7 days (week of 2026-05-17)
+### Следующие 7 дней
 
-**Theme:** «Включить то что уже построено» — данные + флаги + auth fixes.
+**Тема:** «Закрыть остатки от user + поднять качество парсеров»
 
-1. **C2** webhook auth bypass PR (HIGH)
-2. **D1-D6** seed scripts batch (data layer awakens) — 1 wave-pipeline session
-3. **D7** RAG embeddings (4 sources) — 4 parallel scripts, ~2-3h total
-4. **γ-08 + γ-05 + γ-09** flag activation per runbook
-5. **EXPLAIN_DEAL_ENABLED** NEXT_PUBLIC pair fix
-6. **SubsCountdownWidget** live interval fix (1h)
-7. **C1** Bedrock activation (manual, you)
-8. **C3** EU_SANCTIONS_TOKEN refresh (manual, you)
+1. **C2** webhook auth bypass PR (HIGH) — ждёт user
+2. **C3** EU_SANCTIONS_TOKEN refresh (5 мин user) — ждёт user
+3. **EXPLAIN_DEAL_ENABLED** NEXT_PUBLIC pair fix
+4. **SubsCountdownWidget** live interval fix (1h)
+5. **Resend API key** на VPS .env.local (после регистрации на resend.com) — иначе email alerts silent skip
+6. **npm audit fix** для CRITICAL CVE sanitize-html + 3 HIGH в next/protobufjs/fast-uri
 
-ETA: ~5-7 days wall-clock. Mostly autonomous.
+ETA: ~3-4 дня wall-clock. В основном waiting на user.
 
-### Next 30 days (рest of May - mid June)
+### Следующие 30 дней (остаток мая - середина июня)
 
-**Theme:** «UX polish + dark spots в parsers + tracking issues»
+**Тема:** «Parser quality + UX polish + monitoring»
 
-1. **Parse-cargo R5** — finalize per parse-cargo track (deep accuracy work)
-2. **parse-recap prompt fixes** — baseline ✅ 2026-05-17 (~70%); fix despatch_rate/ack_deadline/laytime-wh; see `scripts/baselines/parse-recap-baseline-2026-05-17.md`
-3. **parse-vessel dwcc fix** — unit conversion bug (51.9% → ?)
-4. **match progonq baseline** — long overdue
-5. **Tracking issues** #177-180 (MarketIntelligence cards, war-risk crew, alerts email, check-deadlines)
-6. **MEDIUM/LOW backlog** из QA reports (continuous)
-7. **Mobile bottom nav + touch targets enforcement**
-8. **Test coverage for 17 untested routes + missing component tests**
-9. **/upgrade + /matches** — заменить stubs на real content
-10. **Sentry + UptimeRobot** integration (when accounts ready)
+1. **Parse-cargo R5** — финализация (path exhausted, нужна нормализация GT ~4-6h)
+2. **parse-vessel dwcc fix** — единицы измерения bug (51.9% → ?)
+3. **match progonq baseline** — давно пора
+4. **parse-recap fix-loop** — улучшить с 70% baseline (PR #193 идентифицировал weakest fields)
+5. **MEDIUM/LOW backlog** из QA reports (continuous)
+6. **Mobile bottom nav + touch targets enforcement**
+7. **Test coverage для 17 untested routes + missing component tests**
+8. **/upgrade + /matches** — заменить заглушки на реальный контент
+9. **Sentry + UptimeRobot** интеграция (когда аккаунты готовы)
+10. **port_master seed** (D4 — отложен, может понадобиться для расширенных features)
 
-### Next 90 days (mid-June - mid-August)
+### Следующие 90 дней (середина июня - середина августа)
 
-**Theme:** «PWA + RTL full + WhatsApp polish + first paying customers»
+**Тема:** «PWA + RTL полный + WhatsApp polish + первые платящие клиенты»
 
 1. **PWA setup** — manifest.json, service worker, install prompt
-2. **Arabic RTL** — full UI, not just email content (logical CSS properties, i18n framework)
+2. **Arabic RTL** — full UI, не только контент email (logical CSS properties, i18n framework)
 3. **Mobile-first overhaul** для feature pages (laytime, market, PSC)
-4. **WhatsApp digest content** finalization
-5. **Quote PDF pipeline** for activation metric
-6. **Billing backend** — Stripe integration (when first paying customer signals)
-7. **Counterparty Intelligence** lite (Brave News free, archived from γ but reconsider if customers ask)
+4. **WhatsApp digest content** финализация
+5. **Quote PDF pipeline** для activation metric
+6. **Billing backend** — Stripe интеграция (когда сигналы первого платящего клиента)
+7. **Counterparty Intelligence** lite (Brave News free, архивирована из γ но переоценить если клиенты просят)
 
 ### Post-PMF (Wave δ)
 
@@ -216,13 +238,13 @@ ETA: ~5-7 days wall-clock. Mostly autonomous.
 
 ---
 
-## 4. Operating Principles (как этот документ используется)
+## 4. Принципы работы с документом
 
 1. **Living document.** Каждое решение «делать X» сверяем с этим файлом. Если X = ✅ done — не предлагаем.
-2. **Update cadence:** после каждого merged PR — update relevant section (✅/🟡/❌, ETA, owner).
-3. **Audit refresh:** раз в 30 days — повтор 5-stream audit, regenerate sections 1.*.
-4. **Old ROADMAP-SESSION-PROMPT.md** = deprecated (был prompt для генерации wave_plan, не state). Не удалён для history, но не используется.
-5. **Source reports:** `/root/orchestrator-state/audit-2026-05-17/*.md` на VPS — детали по каждому домену.
+2. **Update cadence:** после каждого merged PR — обновляем relevant section (✅/🟡/❌, ETA, owner).
+3. **Audit refresh:** раз в 30 дней — повтор 5-stream audit, regenerate sections 1.*.
+4. **Старый ROADMAP-SESSION-PROMPT.md** = deprecated (был prompt для генерации wave_plan, не state). Не удалён для истории, но не используется.
+5. **Источники отчётов:** `/root/orchestrator-state/audit-2026-05-17/*.md` на VPS — детали по каждому домену.
 
 ---
 
@@ -232,14 +254,16 @@ ETA: ~5-7 days wall-clock. Mostly autonomous.
 **VPS:** dev-VPS root@157.173.124.116
 **Path:** `/root/work/quantika-demo`
 **PM2:** `quantika-demo` cluster
-**Backup:** daily 00:00 UTC → `/var/backups/quantika/`
+**DB:** `data/sessions.db` (legacy filename, содержит и sessions и knowledge tables)
+**Backup:** ежедневно 00:00 UTC → `/var/backups/quantika/`
 **Inotify:** `env-local-watcher.service` + auditd
 **Cron heartbeat:** http://localhost:3000/api/admin/cron-heartbeat (CF strips X-Cron-Secret on external)
-**Provider routing source:** `lib/ai-provider.ts` + `.env.local.example`
+**Provider routing source:** `lib/ai-provider.ts` (claude-cli + openai + gemini + bedrock)
 **Feature flags source:** `lib/knowledge/flags.ts` + grep `process.env.*_ENABLED`
 **Wave plans:** `~/.claude/plans/idempotent-seeking-quokka.md` (breakbulk pivot), `.wave/wave_plan-beta-fixes.yaml`
 **Runbooks:** `docs/runbooks/wave-gamma-flag-activation.md`
+**Env backups:** `.env.local.before-*-YYYYMMDD-HHMM` (incident recovery)
 
 ---
 
-🤖 Generated by 5-stream system audit (parsers/data/api/ui/waves) + synthesis by orchestrator.
+🤖 Сгенерировано 5-stream system audit (parsers/data/api/ui/waves) + synthesis оркестратором + обновлено вечером 2026-05-17 после Plan A.
