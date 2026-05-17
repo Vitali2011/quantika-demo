@@ -27,7 +27,7 @@ export function MarketIntelligence({ noActiveDeals }: MarketIntelligenceProps) {
         />
         {/* TODO(γ-cleanup-4 F2): Bunker Rotterdam, EUA EU ETS, BHSI placeholder cards
             removed — backend not implemented. Restore when /api/market/benchmark
-            supports those indicators. */}
+            supports those indicators. Tracked: https://github.com/Vitali2011/quantika-demo/issues/177 */}
       </div>
       {noActiveDeals && (
         <p className="text-sm text-gray-500 text-center py-2">
