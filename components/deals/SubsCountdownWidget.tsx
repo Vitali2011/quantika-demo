@@ -21,7 +21,8 @@ function computeRemaining(subsDeadline: string | number): number {
   return deadline.getTime() - Date.now();
 }
 
-export default function SubsCountdownWidget({
+// Inner component holds hooks; only mounted when flag is enabled.
+function SubsCountdownInner({
   dealId,
   subsDeadline,
   chartererTier,
@@ -34,16 +35,10 @@ export default function SubsCountdownWidget({
     return () => clearInterval(id);
   }, [subsDeadline]);
 
-  // Feature flag check
-  if (process.env.NEXT_PUBLIC_SUBS_TIMER_V2_ENABLED !== 'true') {
-    return null;
-  }
-
   if (isNaN(remaining)) {
     return <div>Invalid deadline</div>;
   }
 
-  // Format countdown
   let countdownText = '';
   if (remaining <= 0) {
     countdownText = 'Expired';
@@ -63,7 +58,6 @@ export default function SubsCountdownWidget({
     }
   }
 
-  // Grace indicator
   const graceDays = getChartererGraceDays(chartererTier);
   const showGrace = graceDays > 0;
 
@@ -73,4 +67,11 @@ export default function SubsCountdownWidget({
       {showGrace && <div>+{graceDays} day{graceDays !== 1 ? 's' : ''} grace ({chartererTier})</div>}
     </div>
   );
+}
+
+export default function SubsCountdownWidget(props: SubsCountdownWidgetProps) {
+  if (process.env.NEXT_PUBLIC_SUBS_TIMER_V2_ENABLED !== 'true') {
+    return null;
+  }
+  return <SubsCountdownInner {...props} />;
 }

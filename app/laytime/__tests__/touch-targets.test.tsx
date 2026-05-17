@@ -47,6 +47,10 @@ describe('app/laytime/page.tsx — touch-target class on primary buttons', () =>
     // "Calculate" button
     const calculateButton = screen.getByRole('button', { name: /calculate/i });
     expect(calculateButton.className).toMatch(/touch-target/);
+
+    // "Add" holiday button (WCAG 2.5.5 — 44px min touch target)
+    const addButton = screen.getByRole('button', { name: /^add$/i });
+    expect(addButton.className).toMatch(/touch-target/);
   });
 });
 

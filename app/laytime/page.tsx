@@ -270,7 +270,7 @@ export default function LaytimePage() {
                   <button
                     type="button"
                     onClick={addHoliday}
-                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                    className="touch-target px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
                   >
                     Add
                   </button>

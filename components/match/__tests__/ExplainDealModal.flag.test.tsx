@@ -49,4 +49,28 @@ describe('ExplainDealModal — NEXT_PUBLIC_EXPLAIN_DEAL_ENABLED flag guard', () 
     render(<ExplainDealModal matchIndex={0} />);
     expect(screen.getByTestId('explain-deal-button')).toBeInTheDocument();
   });
+
+  // Boundary: strict match — only lowercase 'true' activates the flag.
+  // Deployment systems (Ansible, Helm, Docker Compose) may normalize boolean
+  // env vars to 'True', 'TRUE', '1', or ' true '. All treated as disabled.
+  // Decision: document strict matching rather than normalize, to prevent
+  // accidental activation when the env var is not explicitly set to 'true'.
+
+  it('renders null when NEXT_PUBLIC_EXPLAIN_DEAL_ENABLED is "TRUE" (uppercase)', () => {
+    process.env.NEXT_PUBLIC_EXPLAIN_DEAL_ENABLED = 'TRUE';
+    const { container } = render(<ExplainDealModal matchIndex={0} />);
+    expect(container.firstChild).toBeNull();
+  });
+
+  it('renders null when NEXT_PUBLIC_EXPLAIN_DEAL_ENABLED is "1"', () => {
+    process.env.NEXT_PUBLIC_EXPLAIN_DEAL_ENABLED = '1';
+    const { container } = render(<ExplainDealModal matchIndex={0} />);
+    expect(container.firstChild).toBeNull();
+  });
+
+  it('renders null when NEXT_PUBLIC_EXPLAIN_DEAL_ENABLED is " true " (whitespace)', () => {
+    process.env.NEXT_PUBLIC_EXPLAIN_DEAL_ENABLED = ' true ';
+    const { container } = render(<ExplainDealModal matchIndex={0} />);
+    expect(container.firstChild).toBeNull();
+  });
 });
