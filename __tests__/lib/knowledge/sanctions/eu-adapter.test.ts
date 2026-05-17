@@ -1,14 +1,34 @@
 import Database from "better-sqlite3";
+import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from "fs";
+import { tmpdir } from "os";
+import { join } from "path";
 import migration013 from "@/lib/migrations/013-knowledge-sources";
 import migration014 from "@/lib/migrations/014-sanctions-entities";
-import { refreshEu, withRetry, HttpFetchError } from "@/lib/knowledge/sanctions/eu-adapter";
+import {
+  refreshEu,
+  withRetry,
+  HttpFetchError,
+  getCachePath,
+  saveCacheXml,
+  loadCacheXml,
+} from "@/lib/knowledge/sanctions/eu-adapter";
 import type { Fetcher } from "@/lib/knowledge/sanctions/eu-adapter";
 import { registerSource } from "@/lib/knowledge/governance";
 
+/** Returns a unique temp path that does NOT exist (for cache isolation per test). */
+function tmpCachePath(): string {
+  return join(tmpdir(), `eu-sanctions-test-${Date.now()}-${Math.random().toString(36).slice(2)}.xml`);
+}
+
 describe("eu-adapter", () => {
   let db: Database.Database;
+  let testCachePath: string;
 
   beforeEach(() => {
+    // Isolate each test from the real on-disk cache
+    testCachePath = tmpCachePath();
+    process.env.EU_SANCTIONS_CACHE_PATH = testCachePath;
+
     db = new Database(":memory:");
     db.pragma("foreign_keys = ON");
     migration013.up(db);
@@ -32,6 +52,8 @@ describe("eu-adapter", () => {
 
   afterEach(() => {
     db.close();
+    delete process.env.EU_SANCTIONS_CACHE_PATH;
+    try { unlinkSync(testCachePath); } catch { /* already gone */ }
   });
 
   describe("refreshEu", () => {
@@ -330,6 +352,118 @@ describe("eu-adapter", () => {
         .prepare("SELECT * FROM knowledge_sources WHERE slug = 'eu-sanctions'")
         .get() as any;
       expect(source.status).toBe("fresh");
+    });
+
+    it("saves last-known-good cache after successful live fetch", async () => {
+      const mockXml = `<?xml version="1.0"?>
+<export>
+  <sanctionEntity logicalId="12345">
+    <subjectType code="person"/>
+    <nameAlias><wholeName>Test Person</wholeName></nameAlias>
+    <regulation><programme>CFSP</programme></regulation>
+  </sanctionEntity>
+</export>`;
+
+      await refreshEu(db, async () => mockXml);
+
+      expect(existsSync(testCachePath)).toBe(true);
+      expect(readFileSync(testCachePath, "utf-8")).toBe(mockXml);
+    });
+
+    it("falls back to last-known-good cache when fetch fails", async () => {
+      const cachedXml = `<?xml version="1.0"?>
+<export>
+  <sanctionEntity logicalId="99999">
+    <subjectType code="person"/>
+    <nameAlias><wholeName>Cached Person</wholeName></nameAlias>
+    <regulation><programme>CFSP</programme></regulation>
+  </sanctionEntity>
+</export>`;
+      writeFileSync(testCachePath, cachedXml, "utf-8");
+
+      const failingFetcher: Fetcher = async () => {
+        throw new HttpFetchError(500, "EU fetch failed: 500");
+      };
+
+      const result = await refreshEu(db, failingFetcher);
+
+      // Successfully served from cache
+      expect(result.rowsChanged).toBe(1);
+      expect(result.upstreamVersion).toMatch(/^cache:/);
+
+      const source = db
+        .prepare("SELECT * FROM knowledge_sources WHERE slug = 'eu-sanctions'")
+        .get() as any;
+      expect(source.status).toBe("fresh");
+      expect(source.upstream_version).toMatch(/^cache:/);
+
+      const entity = db
+        .prepare("SELECT * FROM eu_sanctions_entities WHERE uid = '99999'")
+        .get() as any;
+      expect(entity.name).toBe("Cached Person");
+    });
+
+    it("throws when fetch fails and no cache is available", async () => {
+      // testCachePath does not exist (never written)
+      const failingFetcher: Fetcher = async () => {
+        throw new HttpFetchError(500, "EU fetch failed: 500");
+      };
+
+      await expect(refreshEu(db, failingFetcher)).rejects.toThrow("EU fetch failed: 500");
+
+      const syncLog = db
+        .prepare(
+          "SELECT * FROM knowledge_sync_log WHERE source_slug = 'eu-sanctions' ORDER BY id DESC LIMIT 1"
+        )
+        .get() as any;
+      expect(syncLog.status).toBe("failure");
+    });
+
+    it("does not overwrite cache when serving from cache (stale cache preserved)", async () => {
+      const cachedXml = `<?xml version="1.0"?>
+<export>
+  <sanctionEntity logicalId="77777">
+    <subjectType code="enterprise"/>
+    <nameAlias><wholeName>Cached Corp</wholeName></nameAlias>
+    <regulation><programme>EU-RUSSIA</programme></regulation>
+  </sanctionEntity>
+</export>`;
+      writeFileSync(testCachePath, cachedXml, "utf-8");
+
+      const failingFetcher: Fetcher = async () => {
+        throw new Error("ECONNREFUSED");
+      };
+
+      await refreshEu(db, failingFetcher);
+
+      // Cache must not have been modified
+      expect(readFileSync(testCachePath, "utf-8")).toBe(cachedXml);
+    });
+  });
+
+  describe("cache helpers", () => {
+    it("getCachePath returns EU_SANCTIONS_CACHE_PATH env var when set", () => {
+      expect(getCachePath()).toBe(testCachePath);
+    });
+
+    it("saveCacheXml writes file and loadCacheXml reads it back", () => {
+      const xml = "<export><test/></export>";
+      saveCacheXml(xml);
+      expect(loadCacheXml()).toBe(xml);
+    });
+
+    it("loadCacheXml returns null when cache file does not exist", () => {
+      expect(loadCacheXml()).toBeNull();
+    });
+
+    it("saveCacheXml creates parent directory if it does not exist", () => {
+      const deepPath = join(tmpdir(), `eu-test-${Date.now()}`, "sub", "eu.xml");
+      process.env.EU_SANCTIONS_CACHE_PATH = deepPath;
+      saveCacheXml("<export/>");
+      expect(existsSync(deepPath)).toBe(true);
+      // cleanup
+      unlinkSync(deepPath);
+      process.env.EU_SANCTIONS_CACHE_PATH = testCachePath;
     });
   });
 

@@ -1,5 +1,7 @@
 import type Database from "better-sqlite3";
 import { createHash } from "crypto";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { dirname, join } from "path";
 import {
   reportSyncStarted,
   reportSyncSuccess,
@@ -12,11 +14,41 @@ import { normalizeName } from "./normalize";
 // EU Financial Sanctions Files portal — requires a registered token.
 // Register at: https://webgate.ec.europa.eu/fsd/fsf (free, institutional use)
 // Set EU_SANCTIONS_TOKEN env var with the token you receive by email.
-// Without a token the endpoint returns 403 — sync will fail gracefully.
+// Without a token the endpoint returns 403; invalid/expired token returns 500.
 const EU_BASE_URL =
   "https://webgate.ec.europa.eu/fsd/fsf/public/files/xmlFullSanctionsList_1_1/content";
 const EU_TOKEN = process.env.EU_SANCTIONS_TOKEN || "";
 const EU_URL = EU_TOKEN ? `${EU_BASE_URL}?token=${EU_TOKEN}` : EU_BASE_URL;
+
+/** Returns the path used for last-known-good XML cache. Injectable via env for tests. */
+export function getCachePath(): string {
+  return (
+    process.env.EU_SANCTIONS_CACHE_PATH ||
+    join(process.cwd(), "data", "cache", "eu-sanctions-last-good.xml")
+  );
+}
+
+/** Saves XML to the last-known-good cache file. Best-effort: logs on failure but never throws. */
+export function saveCacheXml(xml: string): void {
+  const cachePath = getCachePath();
+  try {
+    mkdirSync(dirname(cachePath), { recursive: true });
+    writeFileSync(cachePath, xml, "utf-8");
+  } catch (err) {
+    console.warn("[EU] Failed to save last-known-good cache:", err);
+  }
+}
+
+/** Loads the last-known-good cache XML, or null if absent. Never throws. */
+export function loadCacheXml(): string | null {
+  const cachePath = getCachePath();
+  try {
+    if (!existsSync(cachePath)) return null;
+    return readFileSync(cachePath, "utf-8") || null;
+  } catch {
+    return null;
+  }
+}
 
 export type Fetcher = (url: string) => Promise<string>;
 
@@ -105,9 +137,24 @@ export async function refreshEu(
 ): Promise<{ rowsChanged: number; upstreamVersion: string }> {
   const syncId = reportSyncStarted(db, "eu-sanctions");
   try {
-    const xml = await fetcher(EU_URL);
+    let xml: string;
+    let fromCache = false;
 
-    // Guard: empty body should throw
+    try {
+      xml = await fetcher(EU_URL);
+    } catch (fetchErr) {
+      // On fetch failure, try last-known-good cache before giving up
+      const cached = loadCacheXml();
+      if (!cached) throw fetchErr;
+      console.warn(
+        `[EU] Live fetch failed (${(fetchErr as Error).message}), ` +
+          "falling back to last-known-good cache"
+      );
+      xml = cached;
+      fromCache = true;
+    }
+
+    // Guard: empty body should throw (not cached — a real signal of upstream problem)
     if (!xml || xml.trim() === "") {
       throw new Error("EU fetch returned empty body (NOT marking as fresh)");
     }
@@ -115,16 +162,19 @@ export async function refreshEu(
     const entities = parseEuXml(xml);
     const result = upsertEuEntities(db, entities);
 
-    // Content-addressable version for change detection
-    const upstreamVersion = `sha256:${createHash("sha256")
-      .update(xml)
-      .digest("hex")
-      .slice(0, 16)}`;
+    // Content-addressable version; cache: prefix signals degraded mode
+    const xmlHash = createHash("sha256").update(xml).digest("hex").slice(0, 16);
+    const upstreamVersion = fromCache ? `cache:${xmlHash}` : `sha256:${xmlHash}`;
+
+    // Persist cache only on live fetch so stale cache is never overwritten with itself
+    if (!fromCache) {
+      saveCacheXml(xml);
+    }
 
     reportSyncSuccess(db, syncId, {
       rowsChanged: result.added + result.removed + result.updated,
       upstreamVersion,
-      metadata: result,
+      metadata: { ...result, fromCache },
     });
 
     return {
@@ -244,16 +294,27 @@ async function defaultFetcher(url: string): Promise<string> {
   return withRetry(
     async () => {
       const res = await fetch(url, {
-        headers: { "User-Agent": "Quantika-Demo/1.0" },
+        headers: { "User-Agent": "Quantika-Demo/1.0", Accept: "application/xml" },
       });
       if (res.status === 401) {
         throw new HttpFetchError(
           401,
-          "EU fetch failed: 401 (check EU_SANCTIONS_TOKEN env var for token rotation)"
+          "EU fetch failed: 401 (token expired — rotate EU_SANCTIONS_TOKEN at webgate.ec.europa.eu/fsd/fsf)"
         );
       }
+      if (res.status === 403) {
+        const hint = EU_TOKEN
+          ? "token rejected — check EU_SANCTIONS_TOKEN for expiry"
+          : "token required — register free at webgate.ec.europa.eu/fsd/fsf and set EU_SANCTIONS_TOKEN";
+        throw new HttpFetchError(403, `EU fetch failed: 403 (${hint})`);
+      }
       if (!res.ok) {
-        throw new HttpFetchError(res.status, `EU fetch failed: ${res.status}`);
+        // EU FSF returns 500 for invalid/expired tokens (server-side bug); include hint
+        const hint =
+          res.status >= 500 && EU_TOKEN
+            ? " — EU FSF may return 5xx for expired tokens; check EU_SANCTIONS_TOKEN"
+            : "";
+        throw new HttpFetchError(res.status, `EU fetch failed: ${res.status}${hint}`);
       }
       return res.text();
     },
