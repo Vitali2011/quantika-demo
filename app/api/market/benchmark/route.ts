@@ -31,6 +31,10 @@ function rowToMarketBenchmark(
   };
 }
 
+/**
+ * Intentionally public endpoint — returns only public commodity data (no PII).
+ * No session check by design: equivalent to what public scrapers provide.
+ */
 export async function GET(request: Request): Promise<NextResponse> {
   const { searchParams } = new URL(request.url);
   const indicator = searchParams.get('indicator');

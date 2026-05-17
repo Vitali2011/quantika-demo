@@ -124,9 +124,8 @@ describe('fireAlert — email integration (fire-and-forget)', () => {
       fireAlert({ slug: 'test-source', consecutiveFailures: 2 })
     ).resolves.not.toThrow();
 
-    // flush microtasks to let fire-and-forget promise settle
-    await Promise.resolve();
-    await Promise.resolve();
+    // flush all microtasks + I/O callbacks so fire-and-forget promise settles
+    await new Promise((r) => setImmediate(r));
   });
 
   it('throttles repeated emails for same slug within cooldown window', async () => {
