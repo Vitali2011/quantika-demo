@@ -49,6 +49,8 @@ export interface AiOpts {
   topK?: number;
   /** Random seed for reproducibility (Gemini Vertex AI supports). */
   seed?: number;
+  /** Max USD budget per claude-cli call (default: 0.05). Only used by claude-cli provider. */
+  maxBudgetUsd?: number;
 }
 
 /**
@@ -326,10 +328,19 @@ export function callClaudeCliRaw(
   model: string,
   opts?: AiOpts,
 ): { text: string } {
+  if (process.env.NEXT_RUNTIME) {
+    throw new Error(
+      "claude-cli provider must not be used in Next.js runtime (request handlers). " +
+      "spawnSync blocks the event loop for up to 85s. " +
+      "Use claude-cli only in eval scripts (scripts/progonq/, scripts/eval/)."
+    );
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { spawnSync } = require('child_process') as typeof import('child_process');
 
-  const args = ['--print', '--model', model, '--output-format', 'json'];
+  const budget = opts?.maxBudgetUsd ?? 0.05;
+  const args = ['--print', '--model', model, '--output-format', 'json', '--max-budget-usd', String(budget)];
   if (system) {
     args.push('--system-prompt', system);
   }
@@ -338,6 +349,7 @@ export function callClaudeCliRaw(
     input: user,
     encoding: 'utf8',
     timeout: opts?.timeoutMs ?? 85_000,
+    maxBuffer: 10 * 1024 * 1024,
     env: process.env,
   });
 

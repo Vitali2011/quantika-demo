@@ -103,4 +103,47 @@ describe('callClaudeCliRaw', () => {
     });
     expect(() => callClaudeCliRaw('s', 'u', 'claude-opus-4-7')).toThrow(/error response/);
   });
+
+  // HIGH-01 regression: must throw when called in Next.js runtime context
+  it('throws when NEXT_RUNTIME is set (Next.js request handler guard)', () => {
+    const original = process.env.NEXT_RUNTIME;
+    process.env.NEXT_RUNTIME = 'nodejs';
+    try {
+      expect(() => callClaudeCliRaw('s', 'u', 'claude-opus-4-7')).toThrow(/must not be used in Next\.js runtime/);
+    } finally {
+      if (original === undefined) {
+        delete process.env.NEXT_RUNTIME;
+      } else {
+        process.env.NEXT_RUNTIME = original;
+      }
+    }
+  });
+
+  // MEDIUM-01 regression: maxBuffer must be passed to spawnSync
+  it('passes maxBuffer: 10 MB to spawnSync options', () => {
+    childProcess.spawnSync.mockReturnValue(OK_RESPONSE('ok'));
+    callClaudeCliRaw('s', 'u', 'claude-opus-4-7');
+    const [, , spawnOpts] = childProcess.spawnSync.mock.calls[0] as [string, string[], { maxBuffer: number }];
+    expect(spawnOpts.maxBuffer).toBe(10 * 1024 * 1024);
+  });
+
+  // MEDIUM-02 regression: --max-budget-usd must be in args with default 0.05
+  it('passes --max-budget-usd 0.05 by default', () => {
+    childProcess.spawnSync.mockReturnValue(OK_RESPONSE('ok'));
+    callClaudeCliRaw('s', 'u', 'claude-opus-4-7');
+    const [, args] = childProcess.spawnSync.mock.calls[0] as [string, string[]];
+    const idx = args.indexOf('--max-budget-usd');
+    expect(idx).toBeGreaterThan(-1);
+    expect(args[idx + 1]).toBe('0.05');
+  });
+
+  // MEDIUM-02 regression: opts.maxBudgetUsd is forwarded to args
+  it('passes custom maxBudgetUsd to --max-budget-usd arg', () => {
+    childProcess.spawnSync.mockReturnValue(OK_RESPONSE('ok'));
+    callClaudeCliRaw('s', 'u', 'claude-opus-4-7', { maxBudgetUsd: 0.10 });
+    const [, args] = childProcess.spawnSync.mock.calls[0] as [string, string[]];
+    const idx = args.indexOf('--max-budget-usd');
+    expect(idx).toBeGreaterThan(-1);
+    expect(args[idx + 1]).toBe('0.1');
+  });
 });
