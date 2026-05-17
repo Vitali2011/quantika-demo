@@ -14,6 +14,7 @@
 #   BACKUP_DIR=/var/backups/quantika
 #   DAILY_KEEP=7
 #   WEEKLY_KEEP=4
+#   HEARTBEAT_URL=http://localhost:3000/api/admin/cron-heartbeat
 
 set -euo pipefail
 
@@ -32,14 +33,14 @@ log() {
 }
 die() { log "ERROR: $*"; exit 1; }
 
-# ── Resolve env from .env.local (CRON_SECRET, NEXT_PUBLIC_APP_URL) ───────────
+# ── Resolve env from .env.local (CRON_SECRET, HEARTBEAT_URL) ─────────────────
 ENV_FILE="${APP_DIR}/.env.local"
 if [[ -f "$ENV_FILE" ]]; then
   CRON_SECRET="${CRON_SECRET:-$(grep -E '^CRON_SECRET=' "$ENV_FILE" | head -1 | cut -d= -f2- | sed "s/^[\"']//;s/[\"']\$//" | cut -d'#' -f1 | tr -d ' ')}"
-  APP_URL="${APP_URL:-$(grep -E '^NEXT_PUBLIC_APP_URL=' "$ENV_FILE" | head -1 | cut -d= -f2- | sed "s/^[\"']//;s/[\"']\$//" | cut -d'#' -f1 | tr -d ' ')}"
+  HEARTBEAT_URL="${HEARTBEAT_URL:-$(grep -E '^HEARTBEAT_URL=' "$ENV_FILE" | head -1 | cut -d= -f2- | sed "s/^[\"']//;s/[\"']\$//" | cut -d'#' -f1 | tr -d ' ')}"
 fi
 CRON_SECRET="${CRON_SECRET:-}"
-APP_URL="${APP_URL:-}"
+HEARTBEAT_URL="${HEARTBEAT_URL:-http://localhost:3000/api/admin/cron-heartbeat}"
 
 # ── Sources (priority order) ─────────────────────────────────────────────────
 declare -a SOURCES=(
@@ -68,7 +69,7 @@ if $DRY_RUN; then
     fi
   done
   log "DRY-RUN: backup dir: ${BACKUP_DIR} (retention: ${DAILY_KEEP} daily / ${WEEKLY_KEEP} weekly)"
-  log "DRY-RUN: heartbeat: ${APP_URL:-<APP_URL not set>}/api/admin/cron-heartbeat"
+  log "DRY-RUN: heartbeat: ${HEARTBEAT_URL}"
   log "DRY-RUN: CRON_SECRET: ${CRON_SECRET:+set (${#CRON_SECRET} chars)}"
   $ALL_OK || die "DRY-RUN: critical sources missing — backup would fail"
   log "DRY-RUN: OK — all critical sources present"
@@ -139,10 +140,10 @@ log "Daily backups kept: $(ls "${BACKUP_DIR}/daily/"*.tar.gz 2>/dev/null | wc -l
 log "Weekly backups kept: $(ls "${BACKUP_DIR}/weekly/"*.tar.gz 2>/dev/null | wc -l)/${WEEKLY_KEEP}"
 
 # ── Heartbeat ─────────────────────────────────────────────────────────────────
-if [[ -n "$CRON_SECRET" && -n "$APP_URL" ]]; then
+if [[ -n "$CRON_SECRET" ]]; then
   HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
     --max-time 10 \
-    -X POST "${APP_URL}/api/admin/cron-heartbeat" \
+    -X POST "${HEARTBEAT_URL}" \
     -H "Content-Type: application/json" \
     -H "X-Cron-Secret: ${CRON_SECRET}" \
     -d '{"cron_name":"quantika-backup"}' 2>/dev/null) || HTTP_CODE="000"
@@ -154,5 +155,5 @@ if [[ -n "$CRON_SECRET" && -n "$APP_URL" ]]; then
     # separate concern tracked by the monitoring dashboard.
   fi
 else
-  log "WARNING: CRON_SECRET or APP_URL not set — heartbeat skipped"
+  log "WARNING: CRON_SECRET not set — heartbeat skipped"
 fi

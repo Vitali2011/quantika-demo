@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Regression tests for backup.sh HIGH findings:
 #   HIGH-1: tar || true allowed partial archives to exit 0
-#   HIGH-2: quoted .env.local values broke CRON_SECRET/APP_URL extraction
+#   HIGH-2: quoted .env.local values broke CRON_SECRET/HEARTBEAT_URL extraction
+#   HIGH-3: backup.sh used APP_URL (public/CF-proxied) instead of HEARTBEAT_URL
 #
 # Run: bash scripts/ops/tests/backup-unit.sh
 # Exits 0 on all pass, 1 if any fail.
@@ -54,7 +55,7 @@ trap 'rm -f "$TMP_ENV"' EXIT
 cat > "$TMP_ENV" <<'EOF'
 # Next.js .env.local
 CRON_SECRET="my-real-secret"
-NEXT_PUBLIC_APP_URL="https://example.com"
+HEARTBEAT_URL="http://localhost:3000/api/admin/cron-heartbeat"
 OTHER_VAR=irrelevant
 EOF
 
@@ -63,10 +64,27 @@ got_secret=$(grep -E '^CRON_SECRET=' "$TMP_ENV" | head -1 | cut -d= -f2- | sed "
   && pass "HIGH-2: CRON_SECRET extracted from quoted .env.local" \
   || fail "HIGH-2: CRON_SECRET extraction → got '$got_secret', want 'my-real-secret'"
 
-got_url=$(grep -E '^NEXT_PUBLIC_APP_URL=' "$TMP_ENV" | head -1 | cut -d= -f2- | sed "s/^[\"']//;s/[\"']\$//" | cut -d'#' -f1 | tr -d ' ')
-[[ "$got_url" == "https://example.com" ]] \
-  && pass "HIGH-2: NEXT_PUBLIC_APP_URL extracted from quoted .env.local" \
-  || fail "HIGH-2: APP_URL extraction → got '$got_url', want 'https://example.com'"
+got_url=$(grep -E '^HEARTBEAT_URL=' "$TMP_ENV" | head -1 | cut -d= -f2- | sed "s/^[\"']//;s/[\"']\$//" | cut -d'#' -f1 | tr -d ' ')
+[[ "$got_url" == "http://localhost:3000/api/admin/cron-heartbeat" ]] \
+  && pass "HIGH-2: HEARTBEAT_URL extracted from quoted .env.local" \
+  || fail "HIGH-2: HEARTBEAT_URL extraction → got '$got_url', want 'http://localhost:3000/api/admin/cron-heartbeat'"
+
+# ── HIGH-3: HEARTBEAT_URL defaults to localhost (not public APP_URL) ──────────
+
+# Verify backup.sh uses HEARTBEAT_URL env var (not NEXT_PUBLIC_APP_URL/APP_URL)
+BACKUP_SH="${BASH_SOURCE[0]%/tests/*}/backup.sh"
+if grep -qE 'HEARTBEAT_URL' "$BACKUP_SH" && ! grep -qE '\$\{APP_URL\}' "$BACKUP_SH"; then
+  pass "HIGH-3: backup.sh uses HEARTBEAT_URL (not APP_URL) for heartbeat curl"
+else
+  fail "HIGH-3: backup.sh still references \${APP_URL} for heartbeat — CF will strip X-Cron-Secret"
+fi
+
+# Verify default value is localhost (not public URL)
+if grep -qE 'HEARTBEAT_URL:-http://localhost:3000' "$BACKUP_SH"; then
+  pass "HIGH-3: HEARTBEAT_URL defaults to localhost (bypasses Cloudflare)"
+else
+  fail "HIGH-3: HEARTBEAT_URL default not localhost — cron may use public CF-proxied URL"
+fi
 
 # ── HIGH-1: tar failure removes partial archive and exits non-zero ────────────
 
