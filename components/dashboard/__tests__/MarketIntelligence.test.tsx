@@ -26,22 +26,21 @@ describe('MarketIntelligence', () => {
     expect(screen.getByText(/Toepfer TMI/i)).toBeTruthy();
   });
 
-  // γ-cleanup-4 F2: Bunker Rotterdam, EUA, BHSI cards removed —
-  // backend not implemented (url=null placeholders / 503-only).
-  // Negative-contract tests guard against re-introduction without backend fix.
-  it('does NOT render Bunker Rotterdam (γ-cleanup-4 F2 — removed pending backend)', () => {
+  // Issue #177: Bunker Rotterdam, EUA, BHSI restored — backend now implemented
+  // via bunker_prices, eua_prices, and market_indices DB repositories.
+  it('renders Bunker Rotterdam card (issue #177 — backend implemented)', () => {
     render(<MarketIntelligence />);
-    expect(screen.queryByText(/Bunker Rotterdam/i)).toBeNull();
+    expect(screen.getByText(/Bunker Rotterdam/i)).toBeTruthy();
   });
 
-  it('does NOT render EUA (γ-cleanup-4 F2 — removed pending backend)', () => {
+  it('renders EUA card (issue #177 — backend implemented)', () => {
     render(<MarketIntelligence />);
-    expect(screen.queryByText(/EUA/i)).toBeNull();
+    expect(screen.getByText(/EUA/i)).toBeTruthy();
   });
 
-  it('does NOT render BHSI (γ-cleanup-4 F2 — removed pending backend)', () => {
+  it('renders BHSI card (issue #177 — backend implemented)', () => {
     render(<MarketIntelligence />);
-    expect(screen.queryByText(/BHSI/i)).toBeNull();
+    expect(screen.getByText(/BHSI/i)).toBeTruthy();
   });
 
   it('shows empty-state suggestion when no active deals', () => {

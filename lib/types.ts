@@ -79,7 +79,7 @@ export interface FuelEuResult {
 
 // ── Market Benchmark ──
 
-export type MarketIndicator = 'TOEPFER_TMI' | 'DREWRY_BREAKBULK' | 'BHSI';
+export type MarketIndicator = 'TOEPFER_TMI' | 'DREWRY_BREAKBULK' | 'BHSI' | 'BUNKER_ROTTERDAM' | 'EUA';
 
 export interface MarketBenchmark {
   indicator: MarketIndicator;
