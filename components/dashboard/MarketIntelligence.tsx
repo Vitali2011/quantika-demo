@@ -25,9 +25,21 @@ export function MarketIntelligence({ noActiveDeals }: MarketIntelligenceProps) {
           url="/api/market/benchmark?indicator=TOEPFER_TMI"
           unit="USD/day"
         />
-        {/* TODO(γ-cleanup-4 F2): Bunker Rotterdam, EUA EU ETS, BHSI placeholder cards
-            removed — backend not implemented. Restore when /api/market/benchmark
-            supports those indicators. Tracked: https://github.com/Vitali2011/quantika-demo/issues/177 */}
+        <KpiCard
+          label="BHSI"
+          url="/api/market/benchmark?indicator=BHSI"
+          unit="index"
+        />
+        <KpiCard
+          label="Bunker Rotterdam VLSFO"
+          url="/api/market/benchmark?indicator=BUNKER_ROTTERDAM"
+          unit="USD/MT"
+        />
+        <KpiCard
+          label="EUA EU ETS"
+          url="/api/market/benchmark?indicator=EUA"
+          unit="EUR/tCO₂"
+        />
       </div>
       {noActiveDeals && (
         <p className="text-sm text-gray-500 text-center py-2">
