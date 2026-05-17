@@ -35,7 +35,7 @@
         },
         "weight_per_port": null,
         "cargo_description": {
-          "value": null
+          "value": ""
         },
         "cargo_origin_country": null,
         "weight_mt": {

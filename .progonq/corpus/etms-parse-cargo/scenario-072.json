@@ -32,7 +32,7 @@
           "source_text": "1 sp Sweden"
         },
         "cargo_description": {
-          "value": "Bulk cargo (type unspecified)",
+          "value": "Bulk cargo",
           "confidence": "uncertain",
           "source_text": "3.500/8.000 mts bulk cargo"
         },
@@ -126,7 +126,7 @@
           "source_text": "1 sp Sweden"
         },
         "cargo_description": {
-          "value": "Bulk cargo (type unspecified)",
+          "value": "Bulk cargo",
           "confidence": "uncertain",
           "source_text": "3.500/8.000 mts bulk cargo"
         },

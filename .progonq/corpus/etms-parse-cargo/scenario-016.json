@@ -121,7 +121,7 @@
           "source_text": "Reni - Marmara or Izmir, in ch's op."
         },
         "cargo_description": {
-          "value": "Steel scrap (loose bulk); vessel required with approximately 250,000 cubic feet cargo capacity",
+          "value": "Scrap cargo; vessel required with 250000 cubic feet (+/-) capacity, but may try any vessel's intake",
           "confidence": "confirmed",
           "source_text": "need vessel with 250000 cub.ft. (+/-) for scrap cargo (but may try any vessel's intake)"
         },
@@ -205,7 +205,7 @@
           "source_text": "Chornomorsk - Poti"
         },
         "cargo_description": {
-          "value": "Sugar in big bags; bag dimensions 120x100x110 cm, unit weight approximately 1.0 tonnes",
+          "value": "Sugar in big bags; bag dimensions 120x100x110 cm, unit weight approximately 1.0 tonnes, no tiers limitations",
           "confidence": "confirmed",
           "source_text": "3000-3500 mts of sugar in bb (dims: LxBxH: 120x100x110cm, UW: abt 1,0 tns)"
         },

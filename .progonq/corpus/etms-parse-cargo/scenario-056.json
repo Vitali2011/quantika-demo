@@ -30,7 +30,7 @@
           "value": null
         },
         "cargo_description": {
-          "value": "Not specified — vessel solicitation for box/box-like vessel",
+          "value": "",
           "confidence": "uncertain",
           "source_text": "need 2500/3000 box,boxlike"
         },
@@ -132,7 +132,7 @@
           "source_text": "1 Marmara/1 Continent"
         },
         "cargo_description": {
-          "value": "Not specified — vessel solicitation for box/box-like vessel",
+          "value": "",
           "confidence": "uncertain",
           "source_text": "3500/3800 dwcc, box/boxlike vsl"
         },

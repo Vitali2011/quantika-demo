@@ -32,7 +32,7 @@
           "source_text": "1 North spain / 1 Portugal"
         },
         "cargo_description": {
-          "value": "Bulk non-IMO cargo (non-hazardous)",
+          "value": "Bulk non-IMO cargo",
           "confidence": "interpreted",
           "source_text": "3000-6000  mtons of bulk non imo in owners option"
         },
@@ -133,7 +133,7 @@
           "source_text": "1  Spanmed"
         },
         "cargo_description": {
-          "value": "Bulk non-IMO cargo (non-hazardous)",
+          "value": "bulk non-IMO in owners option",
           "confidence": "interpreted",
           "source_text": "3000-6000  mtons of bulk non imo in owners option"
         },
@@ -235,7 +235,7 @@
           "source_text": "1  Spanmed"
         },
         "cargo_description": {
-          "value": "Bulk non-IMO cargo (non-hazardous)",
+          "value": "bulk non-IMO cargo",
           "confidence": "interpreted",
           "source_text": "6000  mtons of bulk non imo in owners option"
         },
@@ -336,7 +336,7 @@
           "source_text": "1 Algeria / 1 Portugal"
         },
         "cargo_description": {
-          "value": "Bulk non-IMO cargo (non-hazardous)",
+          "value": "Bulk non-IMO cargo",
           "confidence": "interpreted",
           "source_text": "7000-7700  mtons of bulk non imo"
         },
@@ -439,7 +439,7 @@
           "source_text": "1  Spanmed"
         },
         "cargo_description": {
-          "value": "Bulk non-IMO cargo (non-hazardous)",
+          "value": "Bulk non-IMO cargo in owners option",
           "confidence": "interpreted",
           "source_text": "3500-5000  mtons of bulk non imo in owners option"
         },
@@ -540,7 +540,7 @@
           "source_text": "1  Spanmed"
         },
         "cargo_description": {
-          "value": "Bulk non-IMO cargo (non-hazardous)",
+          "value": "Bulk non-IMO cargo in owners option",
           "confidence": "interpreted",
           "source_text": "5000  mtons of bulk non imo in owners option"
         },
