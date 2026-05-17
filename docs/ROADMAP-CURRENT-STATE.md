@@ -23,6 +23,9 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 - ✅ Bedrock Opus 4.7 заменён на claude-cli (наша Opus подписка) — экономим $15/$75 per 1M tokens
 - ✅ Backup cron + inotify watchers + searoute systemd live
 - ✅ 4 tracking issues #177-180 закрыты (#180 deferred как нерелевантный)
+- ✅ parse-cargo GT нормализован (PR #197, 43 fixtures)
+
+**🎯 Новое стратегическое направление (2026-05-17 вечер):** все 7 парсеров мигрируют на Gemini. Конкретные модели (Flash vs Pro vs новые) выбираются bake-off тестами per parser. Подробности в §1.1.
 
 **Что ещё блокирует pre-PMF:**
 - ⏸ C2 — 5 webhooks auth bypass (нужен user)
@@ -40,19 +43,23 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 ### 1.1 Парсеры и LLM (audit-parsers.md)
 
-| Парсер | Провайдер | Точность | Eval | Статус |
-|---|---|---|---|---|
-| classify | gemini-flash | 95.5% cat / 73.4% urgency | progonq R0 ✅ | R4 промпт готов, не активирован (с 04-20) |
-| parse-cargo | openai gpt-5.5 | оцен. 87%+ | нет baseline | R4 normalizer #175 слит, R5 ETA |
-| parse-vessel | openai gpt-5.5 | 76.0% mean, **dwcc 51.9%** | progonq ✅ | слабейшее поле — единицы измерения |
-| parse-recap | openai gpt-5.5 | **70.0%** (baseline 2026-05-17 PR #193) | progonq ✅ baseline only | weakest fields идентифицированы, fix-loop pending |
-| match | bedrock-opus → claude-cli | н/д | **нет baseline** | переехали на нашу подписку Opus (PR #186) |
-| explain-deal | openai | н/д | нет | фича live |
-| draft-quote | openai | н/д | нет | фича live |
+**🎯 Стратегическое направление:** все 7 scopes мигрируют на Gemini. Конкретные модели (Flash vs Pro vs более новые) выберем после bake-off тестов per parser.
 
-**Provider routing:** 5/7 scopes на OpenAI через ClipProxy (непрозрачная стоимость). claude-cli (наш Opus) = match endpoint + eval judge. Gemini Flash = только classify.
+| Парсер | Текущий провайдер | Цель | Точность | Eval | Статус |
+|---|---|---|---|---|---|
+| classify | gemini-flash | ✅ Gemini уже | 95.5% cat / 73.4% urgency | progonq R0 ✅ | R4 промпт готов, не активирован (с 04-20) |
+| parse-cargo | openai gpt-5.5 | → Gemini (TBD model) | оцен. 87%+ | нет baseline | R4 normalizer #175 слит, GT нормализован #197, R5 ETA |
+| parse-vessel | openai gpt-5.5 | → Gemini (TBD model) | 76.0% mean, **dwcc 51.9%** | progonq ✅ | слабейшее поле — единицы измерения |
+| parse-recap | openai gpt-5.5 | → Gemini (TBD model) | **70.0%** (baseline 2026-05-17 PR #193) | progonq ✅ baseline only | weakest fields идентифицированы, fix-loop pending |
+| match | bedrock-opus → claude-cli | → Gemini (TBD model) | н/д | **нет baseline** | переехали на нашу подписку Opus (PR #186), Gemini migration в очереди |
+| explain-deal | openai | → Gemini (TBD model) | н/д | нет | фича live |
+| draft-quote | openai | → Gemini (TBD model) | н/д | нет | фича live |
 
-**Bake-off вердикты:** разблокированы (judge через claude-cli работает).
+**Provider routing (текущий):** 5/7 scopes на OpenAI через ClipProxy (непрозрачная стоимость). claude-cli (наш Opus) = match endpoint + eval judge. Gemini Flash = только classify.
+
+**Provider routing (целевой):** 7/7 на Gemini (модель per parser выбирается bake-off тестом — Flash для дешёвых high-volume, Pro для сложных). OpenAI + claude-cli постепенно выводятся.
+
+**Bake-off вердикты:** разблокированы (judge через claude-cli работает). Следующая итерация — Gemini bake-off per parser.
 
 ### 1.2 Data Layer (audit-data.md)
 
