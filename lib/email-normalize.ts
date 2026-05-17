@@ -47,7 +47,7 @@ export function normalizeCompanyName(name: string | null | undefined): string | 
   if (name == null) return null;
   return name
     .toLowerCase()
-    .replace(/\bthe\s+/g, '')
+    .replace(/^the\s+/, '')
     .replace(/[.,;:!]+$/g, '')
     .replace(/\s+/g, ' ')
     .trim();

@@ -103,6 +103,11 @@ describe('normalizeCompanyName', () => {
     expect(normalizeCompanyName('The West of England P&I Club')).toBe('west of england p&i club');
   });
 
+  it('preserves "the" in mid-name position (H1 regression)', () => {
+    expect(normalizeCompanyName('Pan the Sea Shipping Co.')).toBe('pan the sea shipping co');
+    expect(normalizeCompanyName('Northern the Lion Ltd')).toBe('northern the lion ltd');
+  });
+
   it('same company with minor difference normalizes to equal strings', () => {
     const a = normalizeCompanyName('Varan Shipping');
     const b = normalizeCompanyName('Varan Shipping');
