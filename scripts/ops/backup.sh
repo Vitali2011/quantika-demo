@@ -35,8 +35,8 @@ die() { log "ERROR: $*"; exit 1; }
 # ── Resolve env from .env.local (CRON_SECRET, NEXT_PUBLIC_APP_URL) ───────────
 ENV_FILE="${APP_DIR}/.env.local"
 if [[ -f "$ENV_FILE" ]]; then
-  CRON_SECRET="${CRON_SECRET:-$(grep -E '^CRON_SECRET=' "$ENV_FILE" | head -1 | cut -d= -f2-)}"
-  APP_URL="${APP_URL:-$(grep -E '^NEXT_PUBLIC_APP_URL=' "$ENV_FILE" | head -1 | cut -d= -f2-)}"
+  CRON_SECRET="${CRON_SECRET:-$(grep -E '^CRON_SECRET=' "$ENV_FILE" | head -1 | cut -d= -f2- | sed "s/^[\"']//;s/[\"']\$//" | cut -d'#' -f1 | tr -d ' ')}"
+  APP_URL="${APP_URL:-$(grep -E '^NEXT_PUBLIC_APP_URL=' "$ENV_FILE" | head -1 | cut -d= -f2- | sed "s/^[\"']//;s/[\"']\$//" | cut -d'#' -f1 | tr -d ' ')}"
 fi
 CRON_SECRET="${CRON_SECRET:-}"
 APP_URL="${APP_URL:-}"
