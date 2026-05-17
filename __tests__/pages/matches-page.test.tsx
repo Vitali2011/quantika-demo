@@ -21,14 +21,14 @@ jest.mock('next/link', () => {
 import MatchesPage from '@/app/matches/page';
 
 describe('/matches placeholder page', () => {
-  test('renders "Coming soon" heading instead of redirecting', () => {
+  test('renders "Your Recent Matches" heading', () => {
     render(<MatchesPage />);
-    expect(screen.getByRole('heading', { name: /coming soon|скоро/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Your Recent Matches/i })).toBeInTheDocument();
   });
 
-  test('exposes link back to /dashboard', () => {
+  test('exposes link to /request', () => {
     render(<MatchesPage />);
-    const link = screen.getByRole('link', { name: /dashboard|дашборд/i });
-    expect(link).toHaveAttribute('href', '/dashboard');
+    const link = screen.getByRole('link', { name: /submit your first deal request/i });
+    expect(link).toHaveAttribute('href', '/request');
   });
 });
