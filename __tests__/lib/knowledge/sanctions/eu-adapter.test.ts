@@ -557,6 +557,14 @@ describe("eu-adapter", () => {
       unlinkSync(deepPath);
       process.env.EU_SANCTIONS_CACHE_PATH = testCachePath;
     });
+
+    // FINDING-02 regression: atomic write leaves no .tmp artifact
+    it("FINDING-02: saveCacheXml leaves no .tmp artifact after successful write (atomic write regression)", () => {
+      const xml = "<export><entity id='1'/></export>";
+      saveCacheXml(xml);
+      expect(existsSync(testCachePath + ".tmp")).toBe(false);
+      expect(readFileSync(testCachePath, "utf-8")).toBe(xml);
+    });
   });
 
   describe("withRetry", () => {

@@ -1,6 +1,6 @@
 import type Database from "better-sqlite3";
 import { createHash } from "crypto";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "fs";
 import { dirname, join } from "path";
 import {
   reportSyncStarted,
@@ -28,14 +28,18 @@ export function getCachePath(): string {
   );
 }
 
-/** Saves XML to the last-known-good cache file. Best-effort: logs on failure but never throws. */
+/** Saves XML to the last-known-good cache file. Best-effort: logs on failure but never throws.
+ *  Uses atomic write-then-rename so a mid-write crash cannot corrupt the cache. */
 export function saveCacheXml(xml: string): void {
   const cachePath = getCachePath();
+  const tmpPath = cachePath + ".tmp";
   try {
     mkdirSync(dirname(cachePath), { recursive: true });
-    writeFileSync(cachePath, xml, "utf-8");
+    writeFileSync(tmpPath, xml, "utf-8");
+    renameSync(tmpPath, cachePath);
   } catch (err) {
     console.warn("[EU] Failed to save last-known-good cache:", err);
+    try { unlinkSync(tmpPath); } catch {}
   }
 }
 
