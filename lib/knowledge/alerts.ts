@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/nextjs';
+import { Resend } from 'resend';
 
 export interface AlertContext {
   slug: string;
@@ -44,5 +45,34 @@ export async function fireAlert(ctx: AlertContext): Promise<void> {
     console.error('fireAlert failed (best-effort):', err);
   }
 
-  // TODO: email channel — for Phase 1 stub. Tracked: https://github.com/Vitali2011/quantika-demo/issues/179
+  // Fire-and-forget email notification (issue #179)
+  void sendAlertEmail(ctx).catch(err => {
+    console.error('sendAlertEmail failed (best-effort):', err);
+  });
+}
+
+/**
+ * Sends an alert email via Resend.
+ * Requires RESEND_API_KEY + ALERT_EMAIL_TO env vars; no-op if either is absent.
+ * Exported for unit testing; call sites use fire-and-forget via void.
+ */
+export async function sendAlertEmail(ctx: AlertContext): Promise<void> {
+  const apiKey = process.env.RESEND_API_KEY;
+  const toRaw = process.env.ALERT_EMAIL_TO;
+  if (!apiKey || !toRaw) return;
+
+  const resend = new Resend(apiKey);
+  const to = toRaw.split(',').map(s => s.trim()).filter(Boolean);
+  const from = process.env.RESEND_FROM_EMAIL ?? 'Quantika Alerts <alerts@quantika.app>';
+
+  await resend.emails.send({
+    from,
+    to,
+    subject: `[Quantika Alert] "${ctx.slug}" failed ${ctx.consecutiveFailures}× consecutively`,
+    html: [
+      `<p>Knowledge source <strong>${ctx.slug}</strong> has failed`,
+      `<strong>${ctx.consecutiveFailures}</strong> times consecutively.</p>`,
+      ctx.lastError ? `<p>Last error: <code>${ctx.lastError}</code></p>` : '',
+    ].join('\n'),
+  });
 }
