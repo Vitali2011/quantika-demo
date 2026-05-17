@@ -25,7 +25,7 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 - ✅ 4 tracking issues #177-180 закрыты (#180 deferred как нерелевантный)
 - ✅ parse-cargo GT нормализован (PR #197, 43 fixtures)
 
-**🎯 Новое стратегическое направление (2026-05-17 вечер):** все 7 парсеров мигрируют на Gemini. Конкретные модели (Flash vs Pro vs новые) выбираются bake-off тестами per parser. Подробности в §1.1.
+**🎯 Стратегия моделей (актуализация 2026-05-17 вечер):** код миграции на Gemini уже сделан (Wave γ, 2026-05-05). На проде AI_PROVIDER=gemini default — **6/7 scopes уже через Gemini**. Match — fallback на claude-cli (Bedrock не активен). Сейчас в отдельной user-сессии идёт bake-off конкретных Gemini моделей per parser. Подробности в §1.1.
 
 **Что ещё блокирует pre-PMF:**
 - ⏸ C2 — 5 webhooks auth bypass (нужен user)
@@ -43,23 +43,23 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 ### 1.1 Парсеры и LLM (audit-parsers.md)
 
-**🎯 Стратегическое направление:** все 7 scopes мигрируют на Gemini. Конкретные модели (Flash vs Pro vs более новые) выберем после bake-off тестов per parser.
+**🎯 Реальный статус (2026-05-17 вечер):** код миграции на Gemini был сделан в Wave γ (2026-05-05, `lib/ai-provider.ts` shim). После env-restore сегодня `AI_PROVIDER=gemini` стоит default → **6/7 scopes уже работают через Gemini на проде**. Идёт bake-off тестов конкретных моделей per parser (в отдельной user-сессии).
 
-| Парсер | Текущий провайдер | Цель | Точность | Eval | Статус |
-|---|---|---|---|---|---|
-| classify | gemini-flash | ✅ Gemini уже | 95.5% cat / 73.4% urgency | progonq R0 ✅ | R4 промпт готов, не активирован (с 04-20) |
-| parse-cargo | openai gpt-5.5 | → Gemini (TBD model) | оцен. 87%+ | нет baseline | R4 normalizer #175 слит, GT нормализован #197, R5 ETA |
-| parse-vessel | openai gpt-5.5 | → Gemini (TBD model) | 76.0% mean, **dwcc 51.9%** | progonq ✅ | слабейшее поле — единицы измерения |
-| parse-recap | openai gpt-5.5 | → Gemini (TBD model) | **70.0%** (baseline 2026-05-17 PR #193) | progonq ✅ baseline only | weakest fields идентифицированы, fix-loop pending |
-| match | bedrock-opus → claude-cli | → Gemini (TBD model) | н/д | **нет baseline** | переехали на нашу подписку Opus (PR #186), Gemini migration в очереди |
-| explain-deal | openai | → Gemini (TBD model) | н/д | нет | фича live |
-| draft-quote | openai | → Gemini (TBD model) | н/д | нет | фича live |
+| Парсер | Прод-провайдер | Точность | Eval | Статус |
+|---|---|---|---|---|
+| classify | gemini-flash | 95.5% cat / 73.4% urgency | progonq R0 ✅ | R4 промпт готов, не активирован (с 04-20) |
+| parse-cargo | gemini (model TBD) | оцен. 87%+ | baseline pending | R4 normalizer #175 слит, GT нормализован #197, bake-off in progress |
+| parse-vessel | gemini (model TBD) | 76.0% mean, **dwcc 51.9%** | progonq ✅ | слабейшее поле — единицы измерения, bake-off in progress |
+| parse-recap | gemini (model TBD) | **70.0%** (baseline 2026-05-17 PR #193) | progonq ✅ baseline only | bake-off in progress |
+| match | claude-cli (наш Opus) | н/д | **нет baseline** | MATCH_PROVIDER=bedrock override, Bedrock не активен → fallback claude-cli (PR #186); Gemini migration возможна после bake-off |
+| explain-deal | gemini (model TBD) | н/д | нет | фича live |
+| draft-quote | gemini (model TBD) | н/д | нет | фича live |
 
-**Provider routing (текущий):** 5/7 scopes на OpenAI через ClipProxy (непрозрачная стоимость). claude-cli (наш Opus) = match endpoint + eval judge. Gemini Flash = только classify.
+**Provider routing (текущий, на проде):** 6/7 scopes default через Gemini (AI_PROVIDER=gemini). Match через MATCH_PROVIDER=bedrock но Bedrock не активирован → fallback на claude-cli. ClipProxy/OpenAI больше не активен по умолчанию (только если AI_PROVIDER=openai вернуть).
 
-**Provider routing (целевой):** 7/7 на Gemini (модель per parser выбирается bake-off тестом — Flash для дешёвых high-volume, Pro для сложных). OpenAI + claude-cli постепенно выводятся.
+**Текущая работа:** bake-off конкретных Gemini моделей (Flash vs Pro vs 2.5 Pro vs новые) per parser идёт в отдельной user-сессии. Цель — выбрать оптимальную модель по cost/accuracy.
 
-**Bake-off вердикты:** разблокированы (judge через claude-cli работает). Следующая итерация — Gemini bake-off per parser.
+**Bake-off вердикты:** разблокированы (judge через claude-cli работает).
 
 ### 1.2 Data Layer (audit-data.md)
 
