@@ -27,12 +27,14 @@ class DistanceResponse(BaseModel):
     calculator_version: str = "searoute-py-1.2.0"
 
 
-# RESTRICTIONS_MAP defines which canals to avoid for each routing preference
+# RESTRICTIONS_MAP defines which canals to avoid for each routing preference.
+# Valid searoute-py passage names: babalmandab, bosporus, gibraltar, suez, panama, ormuz, northwest
+# 'cape' is NOT a valid passage name — it is silently ignored by the library.
 RESTRICTIONS_MAP = {
-    'cape':   ['suez', 'panama'],   # force around Cape of Good Hope
-    'suez':   ['panama', 'cape'],    # force Suez Canal (no Panama, no Cape)
-    'panama': ['suez', 'cape'],      # force Panama Canal
-    'direct': [],                    # let algorithm pick best route
+    'cape':   ['suez', 'panama'],   # force around Cape of Good Hope — block both canals
+    'suez':   ['panama'],           # force Suez organically — block only Panama
+    'panama': ['suez'],             # force Panama organically — block only Suez
+    'direct': [],                   # let algorithm pick best route
 }
 
 
