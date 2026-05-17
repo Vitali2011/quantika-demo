@@ -565,6 +565,12 @@ describe("eu-adapter", () => {
       expect(existsSync(testCachePath + ".tmp")).toBe(false);
       expect(readFileSync(testCachePath, "utf-8")).toBe(xml);
     });
+
+    // FINDING-06 regression: whitespace-only cache returns null, not whitespace string
+    it("FINDING-06: loadCacheXml returns null for whitespace-only cache file", () => {
+      writeFileSync(testCachePath, "   \n  \t  ", "utf-8");
+      expect(loadCacheXml()).toBeNull();
+    });
   });
 
   describe("withRetry", () => {

@@ -48,7 +48,7 @@ export function loadCacheXml(): string | null {
   const cachePath = getCachePath();
   try {
     if (!existsSync(cachePath)) return null;
-    return readFileSync(cachePath, "utf-8") || null;
+    return readFileSync(cachePath, "utf-8").trim() || null;
   } catch {
     return null;
   }
@@ -143,6 +143,7 @@ export async function refreshEu(
   try {
     let xml: string;
     let fromCache = false;
+    let fetchErrMessage: string | undefined;
 
     try {
       xml = await fetcher(EU_URL);
@@ -156,6 +157,7 @@ export async function refreshEu(
       );
       xml = cached;
       fromCache = true;
+      fetchErrMessage = (fetchErr as Error).message;
     }
 
     // Guard: empty body should throw (not cached — a real signal of upstream problem)
@@ -179,7 +181,7 @@ export async function refreshEu(
       rowsChanged: result.added + result.removed + result.updated,
       upstreamVersion,
       fromCache,
-      metadata: { ...result, fromCache },
+      metadata: { ...result, fromCache, ...(fromCache && { fallbackReason: fetchErrMessage }) },
     });
 
     return {

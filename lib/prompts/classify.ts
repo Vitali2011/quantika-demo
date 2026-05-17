@@ -7,7 +7,12 @@ export { CLASSIFICATION_SYSTEM_PROMPT_R4 } from './classify-r4';
  *  EMAIL_PARSE_R4_ENABLED=true activates the R4 improved prompt.
  *  Default (false) returns the stable baseline prompt. */
 export function getClassifyPrompt(): string {
-  return process.env.EMAIL_PARSE_R4_ENABLED === 'true'
+  const raw = process.env.EMAIL_PARSE_R4_ENABLED;
+  const normalized = (raw ?? '').toLowerCase().trim();
+  if (raw && normalized !== 'true' && normalized !== 'false' && normalized !== '') {
+    console.warn(`[classify] EMAIL_PARSE_R4_ENABLED="${raw}" is not "true" — falling back to baseline. Use "true" to enable R4.`);
+  }
+  return normalized === 'true'
     ? CLASSIFICATION_SYSTEM_PROMPT_R4
     : CLASSIFICATION_SYSTEM_PROMPT;
 }
