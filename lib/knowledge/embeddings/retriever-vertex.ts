@@ -90,19 +90,29 @@ export async function retrieve(
     `projects/${projectId}/locations/${location}/collections/default_collection` +
     `/engines/${engineId}/servingConfigs/default_search`;
 
+  // extractiveContentSpec is Enterprise-edition Discovery Engine only.
+  // On Standard engines it triggers FAILED_PRECONDITION (gRPC 9). Default OFF;
+  // opt in via VERTEX_USE_ENTERPRISE_EXTRACTIVE=true after upgrading the engine.
+  const useEnterpriseExtractive =
+    process.env.VERTEX_USE_ENTERPRISE_EXTRACTIVE === "true";
+
+  const contentSearchSpec: Record<string, unknown> = {
+    snippetSpec: { returnSnippet: true },
+  };
+  if (useEnterpriseExtractive) {
+    contentSearchSpec.extractiveContentSpec = {
+      maxExtractiveSegmentCount: 1,
+      maxExtractiveAnswerCount: 1,
+    };
+  }
+
   try {
     // Call Vertex AI Search
     const response = await client.search({
       servingConfig,
       query,
       pageSize: topN,
-      contentSearchSpec: {
-        snippetSpec: { returnSnippet: true },
-        extractiveContentSpec: {
-          maxExtractiveSegmentCount: 1,
-          maxExtractiveAnswerCount: 1,
-        },
-      },
+      contentSearchSpec,
     });
 
     // Map Vertex response to RetrievedChunk[]

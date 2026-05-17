@@ -10,23 +10,20 @@
  * Phase 0 not done → tests use mocked SearchServiceClient.search()
  */
 
-import { describe, it, expect, jest, beforeEach } from "@jest/globals";
+import { describe, it, expect, jest, beforeEach, afterEach } from "@jest/globals";
+import { SearchServiceClient } from "@google-cloud/discoveryengine";
 
-// Mock @google-cloud/discoveryengine before import
-let _mockSearch: jest.Mock<any> = jest.fn();
-
-jest.mock("@google-cloud/discoveryengine", () => ({
-  SearchServiceClient: class {
-    async *search(...args: unknown[]) {
-      const results = await _mockSearch(...args);
-      if (Array.isArray(results)) {
-        for (const result of results) {
-          yield result;
-        }
-      }
+// Replace prototype.search with a controllable mock — jest.mock factory
+// doesn't reliably apply for this package under next/jest + ts-jest stack.
+let _mockSearch: jest.Mock<(...args: unknown[]) => Promise<unknown[]>> = jest.fn(async () => []);
+(SearchServiceClient as any).prototype.search = async function (...args: unknown[]) {
+  const results = await _mockSearch(...args);
+  return (async function* () {
+    if (Array.isArray(results)) {
+      for (const result of results) yield result;
     }
-  },
-}));
+  })();
+};
 
 // Set required env vars before import
 process.env.GOOGLE_CLOUD_PROJECT      = "test-project";
@@ -341,6 +338,102 @@ describe("retriever-vertex metadata mapping", () => {
     });
 
     expect(result).toEqual([]);
+  });
+});
+
+describe("retriever-vertex extractiveContentSpec opt-in (Enterprise edition)", () => {
+  const ORIGINAL_FLAG = process.env.VERTEX_USE_ENTERPRISE_EXTRACTIVE;
+
+  beforeEach(() => {
+    _mockSearch = jest.fn(async () => []);
+  });
+
+  afterEach(() => {
+    if (ORIGINAL_FLAG === undefined) {
+      delete process.env.VERTEX_USE_ENTERPRISE_EXTRACTIVE;
+    } else {
+      process.env.VERTEX_USE_ENTERPRISE_EXTRACTIVE = ORIGINAL_FLAG;
+    }
+  });
+
+  it("TC-VX-EXT-01: default (unset) → request omits extractiveContentSpec (Standard edition safe)", async () => {
+    delete process.env.VERTEX_USE_ENTERPRISE_EXTRACTIVE;
+
+    await retrieve("test", {
+      vectorTable: "imsbc_vec",
+      ftsTable: "imsbc_fts",
+      topN: 1,
+    });
+
+    expect(_mockSearch).toHaveBeenCalledTimes(1);
+    const callArg = _mockSearch.mock.calls[0][0] as any;
+    expect(callArg.contentSearchSpec).toBeDefined();
+    expect(callArg.contentSearchSpec.snippetSpec).toEqual({ returnSnippet: true });
+    expect(callArg.contentSearchSpec.extractiveContentSpec).toBeUndefined();
+  });
+
+  it("TC-VX-EXT-02: flag=false → request omits extractiveContentSpec", async () => {
+    process.env.VERTEX_USE_ENTERPRISE_EXTRACTIVE = "false";
+
+    await retrieve("test", {
+      vectorTable: "imsbc_vec",
+      ftsTable: "imsbc_fts",
+      topN: 1,
+    });
+
+    const callArg = _mockSearch.mock.calls[0][0] as any;
+    expect(callArg.contentSearchSpec.extractiveContentSpec).toBeUndefined();
+  });
+
+  it("TC-VX-EXT-03: flag=true → backward compat, extractiveContentSpec present", async () => {
+    process.env.VERTEX_USE_ENTERPRISE_EXTRACTIVE = "true";
+
+    await retrieve("test", {
+      vectorTable: "imsbc_vec",
+      ftsTable: "imsbc_fts",
+      topN: 1,
+    });
+
+    const callArg = _mockSearch.mock.calls[0][0] as any;
+    expect(callArg.contentSearchSpec.extractiveContentSpec).toEqual({
+      maxExtractiveSegmentCount: 1,
+      maxExtractiveAnswerCount: 1,
+    });
+  });
+
+  it("TC-VX-EXT-04: snippet-only response parses to valid RetrievedChunk (no extractive answers)", async () => {
+    delete process.env.VERTEX_USE_ENTERPRISE_EXTRACTIVE;
+
+    _mockSearch.mockResolvedValue([
+      {
+        relevanceScore: 0.8,
+        document: {
+          id: "imsbc-doc-1",
+          name: "IMSBC Ch 3",
+          structData: {
+            source: "imsbc",
+            section: "3.1",
+            id: "imsbc-3.1",
+            title: "Group A",
+          },
+          derivedStructData: {
+            snippets: [{ snippet: "Group A cargoes may liquefy when moisture exceeds TML." }],
+          },
+        },
+      },
+    ]);
+
+    const result = await retrieve("Group A", {
+      vectorTable: "imsbc_vec",
+      ftsTable: "imsbc_fts",
+      topN: 1,
+    });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].content).toBe("Group A cargoes may liquefy when moisture exceeds TML.");
+    expect(result[0].metadata.source).toBe("imsbc");
+    expect(result[0].metadata.id).toBe("imsbc-3.1");
+    expect(result[0].chunkId).toBe("imsbc-doc-1");
   });
 });
 
