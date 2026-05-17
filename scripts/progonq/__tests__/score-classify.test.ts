@@ -1,4 +1,4 @@
-import { scoreClassification } from '../run-classify';
+import { scoreClassification, scoreNormalized } from '../run-classify';
 
 const REF = {
   id: 'e1',
@@ -44,5 +44,49 @@ describe('scoreClassification', () => {
     const r = scoreClassification(REF, null);
     expect(r.category_match).toBe(false);
     expect(r.urgency_match).toBe(false);
+  });
+});
+
+// REF_LOW simulates a stale GT entry: CARGO_INQUIRY with urgency=low (GT rule drift)
+const REF_LOW = {
+  ...REF,
+  urgency: 'low',
+  days_without_reply: 36,
+  original_sender_company: 'Acme Shipping Ltd.',
+};
+// EMAIL_DATE is an old email — GT was captured when it was 36 days old,
+// but today (relative to 2026-05-17) it would be ~42 days old.
+const EMAIL_DATE_ISO = '2026-04-05T14:00:00Z';
+
+describe('scoreNormalized', () => {
+  it('normalizes CARGO_INQUIRY low→medium, so medium model urgency matches', () => {
+    const model = { ...REF_LOW, urgency: 'medium', days_without_reply: 41 };
+    const r = scoreNormalized(REF_LOW, model, EMAIL_DATE_ISO);
+    expect(r.urgency_match).toBe(true);
+  });
+
+  it('still fails if model urgency is wrong after normalization', () => {
+    const model = { ...REF_LOW, urgency: 'low', days_without_reply: 41 };
+    const r = scoreNormalized(REF_LOW, model, EMAIL_DATE_ISO);
+    expect(r.urgency_match).toBe(false);
+  });
+
+  it('days_match passes when within ±10d tolerance', () => {
+    const model = { ...REF_LOW, urgency: 'medium', days_without_reply: 41 };
+    const r = scoreNormalized(REF_LOW, model, EMAIL_DATE_ISO);
+    expect(r.days_match).toBe(true);
+  });
+
+  it('company_name_match normalizes punctuation and case', () => {
+    const model = { ...REF_LOW, urgency: 'medium', days_without_reply: 41, original_sender_company: 'acme shipping ltd' };
+    const r = scoreNormalized(REF_LOW, model, EMAIL_DATE_ISO);
+    expect(r.company_name_match).toBe(true);
+  });
+
+  it('null model → all false', () => {
+    const r = scoreNormalized(REF_LOW, null, EMAIL_DATE_ISO);
+    expect(r.category_match).toBe(false);
+    expect(r.urgency_match).toBe(false);
+    expect(r.is_unanswered_match).toBe(false);
   });
 });

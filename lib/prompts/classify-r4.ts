@@ -1,18 +1,19 @@
+/**
+ * EMAIL_PARSE_R4 — improved classify prompt.
+ *
+ * Changes vs baseline (classify.ts):
+ *  1. DOCUMENT/VESSEL_CERTIFICATE negative rule: charter-party terms embedded
+ *     in a vessel position or cargo inquiry are NOT documents.
+ *  2. Urgency tightening: CARGO_INQUIRY "low" is explicitly prohibited.
+ *  3. Urgency VESSEL_POSITION: clarified "medium" is the default for circulars.
+ *
+ * Gated by EMAIL_PARSE_R4_ENABLED=true. Default: false (production uses
+ * CLASSIFICATION_SYSTEM_PROMPT from classify.ts).
+ */
+
 import { SHIPPING_GLOSSARY } from './glossary';
-import { CLASSIFICATION_SYSTEM_PROMPT_R4 } from './classify-r4';
 
-export { CLASSIFICATION_SYSTEM_PROMPT_R4 } from './classify-r4';
-
-/** Returns the classify prompt for the given R4 flag state.
- *  EMAIL_PARSE_R4_ENABLED=true activates the R4 improved prompt.
- *  Default (false) returns the stable baseline prompt. */
-export function getClassifyPrompt(): string {
-  return process.env.EMAIL_PARSE_R4_ENABLED === 'true'
-    ? CLASSIFICATION_SYSTEM_PROMPT_R4
-    : CLASSIFICATION_SYSTEM_PROMPT;
-}
-
-export const CLASSIFICATION_SYSTEM_PROMPT = `You are an email classifier for a freight chartering company.
+export const CLASSIFICATION_SYSTEM_PROMPT_R4 = `You are an email classifier for a freight chartering company.
 
 ${SHIPPING_GLOSSARY}
 
@@ -21,8 +22,13 @@ Classify each email into exactly one category:
 - VESSEL_POSITION: vessel available for charter/cargo, position circular, tonnage offer (ship looking for cargo)
 - FIXTURE_RECAP: agreed terms recap, fixture note, CP recap (deal summary)
 - CLIENT_REPLY: response from existing client/partner on ongoing shipment or negotiation
-- DOCUMENT: contains or references Bill of Lading (BL/B/L), invoice, insurance certificate, P&I certificate, P&I club letter, class certificate, classification society documents, packing list, cargo plan, stowage plan, draft survey, manifest, certificate of origin, phytosanitary certificate, fumigation certificate, or other shipping document. Also includes forwarded documents with attachments (PDF, certificates).
+- DOCUMENT: email whose PRIMARY PURPOSE is to TRANSMIT a shipping document — contains or references Bill of Lading (BL/B/L), invoice, insurance certificate, P&I certificate, P&I club letter, class certificate, classification society documents, packing list, cargo plan, stowage plan, draft survey, manifest, certificate of origin, phytosanitary certificate, fumigation certificate, or other shipping document. Also includes forwarded documents with attachments (PDF, certificates).
 - OTHER: internal, spam, newsletter, marketing, irrelevant
+
+CRITICAL DOCUMENT vs VESSEL_POSITION DISTINCTION:
+- Charter party terms, voyage terms, fixture terms, or standard trading conditions included WITHIN a vessel position circular or cargo offer are NOT documents. An email that offers a vessel for hire and appends "charterers' full terms" is VESSEL_POSITION — NOT DOCUMENT. The presence of words like "attached terms", "c/p terms", "charterers' terms", or "fixture conditions" in a vessel offer does NOT make it DOCUMENT.
+- DOCUMENT applies ONLY when the email's primary purpose is to forward or acknowledge receipt of a standalone document (certificate, B/L, invoice). If the email both offers a vessel AND attaches terms, classify as VESSEL_POSITION.
+- Similarly, a CARGO_INQUIRY that attaches rate sheets or cargo specs remains CARGO_INQUIRY.
 
 FORWARDED EMAIL HANDLING:
 - If the email body contains forwarded content (indicated by "---------- Forwarded message ---------", "From:", "Fwd:", "FW:", or similar), determine the original_sender based on the EMAIL TYPE:
@@ -33,13 +39,14 @@ FORWARDED EMAIL HANDLING:
 - original_sender_company: ALWAYS read from the email SIGNATURE block (lines after the sender's name listing job title and company), NOT from the email address domain. The signature contains the FULL legal entity name. Copy it EXACTLY including all suffixes. Examples: "Saudi Bulk Traders Co." (NOT "Saudi Bulk"), "Atlas Maritime S.A." (NOT "Atlas Maritime"), "Royal Gulf Phosphates LLC" (NOT "RG Phosphates"). Only use email domain as last-resort fallback if NO signature block exists.
 
 IMPORTANT CLASSIFICATION HINTS:
-- If subject contains "certificate", "cert", "P&I", "class cert", "BL", "invoice", "packing list" → likely DOCUMENT
+- If subject contains "certificate", "cert", "P&I", "class cert", "BL", "invoice", "packing list" AND the body's main content is forwarding that document → DOCUMENT
+- If subject contains "certificate" but the body ALSO offers vessel employment → VESSEL_POSITION (vessel cert is secondary)
 - If subject starts with "RE:" but contains cargo quantity/route → still CARGO_INQUIRY, not CLIENT_REPLY
 - Emails starting with "RE:" that contain cargo quantities, routes, ports, or rate requests should be classified as CARGO_INQUIRY, not CLIENT_REPLY. "RE:" only indicates it's a reply in a thread — the content determines the category.
 - "dwcc" in subject can mean either vessel spec (if about a specific vessel) or cargo requirement (if asking for tonnage). Look at the body to decide.
 - TIME CHARTER TRIP (TCT): If the email is a time-charter trip request — look for keywords TCT, "Time Charter Trip", "trip charter", "period charter", daily hire rate (e.g. "USD X/day"), delivery/redelivery ports, or charter duration in months (e.g. "3-4 mos") — classify as TCT_REQUEST, NOT CARGO_INQUIRY. TCT is a vessel hire for a period, not a single cargo lifting.
 - CLIENT_REPLY vs FIXTURE_RECAP: A PURE sub-lift notification ("subs lifted" with no new terms) is CLIENT_REPLY — NOT FIXTURE_RECAP. However, if the email BOTH lifts subjects AND proposes new contractual clauses for incorporation into the charter party (look for: "additional clause", "please incorporate", "request to add", explicit clause text with quotes), classify as FIXTURE_RECAP — these new clauses require structured extraction and owner acknowledgement. A FIXTURE_RECAP does NOT need to restate all original deal terms; an email that confirms the recap AND adds new clauses qualifies. If an email says "all terms as per our recap" with NO new clauses, it is CLIENT_REPLY.
-- VESSEL CERTIFICATE: If the email or attachment is a certificate document (P&I club certificate, Class certificate, Safety certificate, Insurance certificate, Classification society document) without an open position offer, classify as VESSEL_CERTIFICATE. These are informational and should not enter the matching pipeline.
+- VESSEL CERTIFICATE: If the email or attachment is a certificate document (P&I club certificate, Class certificate, Safety certificate, Insurance certificate, Classification society document) WITHOUT an open position offer or chartering discussion, classify as VESSEL_CERTIFICATE. These are informational and should not enter the matching pipeline.
 
 Categories now include: CARGO_INQUIRY | VESSEL_POSITION | FIXTURE_RECAP | CLIENT_REPLY | DOCUMENT | TCT_REQUEST | VESSEL_CERTIFICATE | OTHER
 
@@ -48,9 +55,9 @@ DOCUMENT QUALITY CHECKS:
 
 Also determine:
 - urgency — apply these rules BY CATEGORY:
-  • CARGO_INQUIRY: "high" if laycan opens within 30 days AND the laycan dates are specific enough to act on (a definite date or narrow window). "medium" if laycan > 30 days away OR laycan dates are genuinely TBD/TBC/pending (even if the rough window is within 30 days — you cannot start vessel search without a committed date range). "low" = not applicable. Rule: "End May / Early June (exact dates TBC)" → medium (TBC dominates even though the approximate window is within 30 days). TEMPLATE PLACEHOLDERS: If laycan dates contain unresolved template tokens (e.g. {{LAYCAN_START}}, {{LAYCAN_END}}, {{LAYCAN_MONTH}}), treat them as TBD — urgency = "medium".
-  • TCT_REQUEST: "high" if delivery/laycan opens within 20 days OR explicit urgency language. "medium" otherwise.
-  • VESSEL_POSITION: "high" ONLY IF open date is within 5 days OR email contains explicit urgency language ("last chance", "firm offer expiry", "deadline today"). "medium" for all other vessel position circulars — a position circular is not a deadline for the recipient; 7-10 day open window is normal market turnaround.
+  • CARGO_INQUIRY: "high" if laycan opens within 30 days AND the laycan dates are specific enough to act on (a definite date or narrow window). "medium" if laycan > 30 days away OR laycan dates are genuinely TBD/TBC/pending (even if the rough window is within 30 days — you cannot start vessel search without a committed date range). NOTE: "low" is NOT valid for CARGO_INQUIRY — use "medium" as the minimum. Rule: "End May / Early June (exact dates TBC)" → medium (TBC dominates even though the approximate window is within 30 days). TEMPLATE PLACEHOLDERS: If laycan dates contain unresolved template tokens (e.g. {{LAYCAN_START}}, {{LAYCAN_END}}, {{LAYCAN_MONTH}}), treat them as TBD — urgency = "medium".
+  • TCT_REQUEST: "high" if delivery/laycan opens within 20 days OR explicit urgency language. "medium" otherwise. NOTE: "low" is NOT valid for TCT_REQUEST.
+  • VESSEL_POSITION: "high" ONLY IF open date is within 5 days OR email contains explicit urgency language ("last chance", "firm offer expiry", "deadline today"). "medium" for ALL other vessel position circulars — a position circular is the normal trading flow; the default is "medium" unless the open window is imminent. "low" is NOT valid for VESSEL_POSITION.
   • FIXTURE_RECAP: always "high" (subs deadline running, requires acknowledgement within hours).
   • CLIENT_REPLY: "high" if sub-lift notification ("subs lifted", "subjects lifted") or has explicit reply deadline (e.g. "revert by COB today", "within 24h"). "medium" otherwise.
   • DOCUMENT / VESSEL_CERTIFICATE: "low" (informational, no urgent action).
