@@ -1,3 +1,8 @@
+> ⚠️ **DEPRECATED 2026-05-17** — этот файл был prompt для генерации wave_plan, не state tracker.
+> Текущее состояние системы и actionable roadmap → [ROADMAP-CURRENT-STATE.md](./ROADMAP-CURRENT-STATE.md).
+
+---
+
 # PROMPT для новой сессии — Quantika Roadmap для Wave-Pipeline
 
 **Скопируй всё ниже в новый чат Claude Code (`claude` в терминале или /clear → новая сессия)**
