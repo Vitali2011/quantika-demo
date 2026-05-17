@@ -57,6 +57,7 @@ async function loadActiveDeadlines(flags: CliFlags): Promise<SubsDeadline[]> {
   }
   // TODO: when deals table gets a `subs_deadline_at` column, query it here.
   // Intentionally empty in the demo build so production cron is a no-op.
+  // Tracked: https://github.com/Vitali2011/quantika-demo/issues/180
   return [];
 }
 

@@ -19,6 +19,7 @@ export interface HraZone {
  *
  * TODO(wave-γ): add crew war bonus (~$500/person × ~20 crew)
  * and P&I surcharge (~$5k flat) per voyage. For now hull-only.
+ * Tracked: https://github.com/Vitali2011/quantika-demo/issues/178
  */
 import type { ResolvedPort } from '@/lib/ports/resolve';
 

@@ -44,5 +44,5 @@ export async function fireAlert(ctx: AlertContext): Promise<void> {
     console.error('fireAlert failed (best-effort):', err);
   }
 
-  // TODO: email channel — for Phase 1 stub
+  // TODO: email channel — for Phase 1 stub. Tracked: https://github.com/Vitali2011/quantika-demo/issues/179
 }
