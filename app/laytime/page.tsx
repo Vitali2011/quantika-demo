@@ -165,7 +165,7 @@ export default function LaytimePage() {
                 type="button"
                 onClick={handleParseSof}
                 disabled={sofParsing || !sofText}
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400"
+                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 touch-target"
               >
                 {sofParsing ? 'Parsing...' : 'Parse SOF'}
               </button>
@@ -344,7 +344,7 @@ export default function LaytimePage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
+                className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 touch-target"
               >
                 {loading ? 'Calculating...' : 'Calculate'}
               </button>
