@@ -17,7 +17,18 @@ jest.mock('../ets', () => ({
 }));
 
 jest.mock('../war-risk', () => ({
-  calculateWarRiskPremium: jest.fn().mockReturnValue({ premiumUsd: 1500, zones: ['Red Sea / Bab al-Mandeb HRA'] }),
+  calculateWarRiskPremium: jest.fn().mockReturnValue({
+    premiumUsd: 1500,
+    zones: ['Red Sea / Bab al-Mandeb HRA'],
+    applicable: true,
+    zoneIds: ['red-sea-hra'],
+    breakdown: {
+      hullPremiumUsd: 1500,
+      crewWarBonusUsd: 10_000,
+      piSurchargeUsd: 20_000,
+      totalPremiumUsd: 31_500,
+    },
+  }),
 }));
 
 jest.mock('../split-bunker', () => ({
@@ -63,6 +74,20 @@ describe('computeEconomics', () => {
     expect(typeof breakdown.euEtsApplicable).toBe('boolean');
     expect(typeof breakdown.warRiskPremium).toBe('number');
     expect(Array.isArray(breakdown.warRiskZones)).toBe(true);
+  });
+
+  it('MEDIUM-3: warRiskTotal is populated from breakdown.totalPremiumUsd when war risk applicable', async () => {
+    const result = await computeEconomics(SAMPLE_INPUT);
+    expect(result.breakdown.warRiskTotal).toBe(31_500);
+  });
+
+  it('MEDIUM-3: warRiskBreakdown contains hull + crew + P&I fields', async () => {
+    const result = await computeEconomics(SAMPLE_INPUT);
+    const wb = result.breakdown.warRiskBreakdown!;
+    expect(wb.hullPremiumUsd).toBe(1500);
+    expect(wb.crewWarBonusUsd).toBe(10_000);
+    expect(wb.piSurchargeUsd).toBe(20_000);
+    expect(wb.totalPremiumUsd).toBe(31_500);
   });
 
   it('totalUsd is sum of costs', async () => {

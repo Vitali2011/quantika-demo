@@ -25,7 +25,20 @@ import type { ResolvedPort } from '@/lib/ports/resolve';
 
 export const CREW_WAR_BONUS_PER_PERSON_USD = 500;
 export const DEFAULT_CREW_COUNT = 20;
+/** Default P&I surcharge for zones not in PI_SURCHARGE_BY_ZONE_ID. */
 export const PI_SURCHARGE_USD = 5_000;
+
+/**
+ * Per-voyage P&I war surcharge by JWC zone ID (JWC 2024-26 + P&I club practice).
+ * Dominant zone determines the surcharge. Falls back to PI_SURCHARGE_USD.
+ */
+export const PI_SURCHARGE_BY_ZONE_ID: Record<string, number> = {
+  'gulf-of-guinea': 5_000,
+  'red-sea-hra': 20_000,
+  'indian-ocean-hra': 10_000,
+  'black-sea-hra': 30_000,
+  'persian-gulf-hra': 15_000,
+};
 
 export const JWC_HRA_ZONES: HraZone[] = [
   {
@@ -196,9 +209,12 @@ export function calculateWarRiskPremium(input: WarRiskInput): WarRiskResult {
   const hullPremium = value * dominantZone.premiumPercentPerTransit;
   const premiumUsd = Math.round(hullPremium * 100) / 100;
 
-  const crewCount = input.crewCount ?? DEFAULT_CREW_COUNT;
+  const crewCount =
+    Number.isFinite(input.crewCount) && (input.crewCount ?? 0) > 0
+      ? input.crewCount!
+      : DEFAULT_CREW_COUNT;
   const crewWarBonusUsd = CREW_WAR_BONUS_PER_PERSON_USD * crewCount;
-  const piSurchargeUsd = PI_SURCHARGE_USD;
+  const piSurchargeUsd = PI_SURCHARGE_BY_ZONE_ID[dominantZone.id] ?? PI_SURCHARGE_USD;
   const breakdown: WarRiskBreakdown = {
     hullPremiumUsd: premiumUsd,
     crewWarBonusUsd,

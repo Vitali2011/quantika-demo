@@ -7,6 +7,7 @@ import {
   CREW_WAR_BONUS_PER_PERSON_USD,
   DEFAULT_CREW_COUNT,
   PI_SURCHARGE_USD,
+  PI_SURCHARGE_BY_ZONE_ID,
 } from '@/lib/economics/war-risk';
 
 describe('WarRiskBreakdown — crew war bonus + P&I surcharge (issue #178)', () => {
@@ -40,13 +41,13 @@ describe('WarRiskBreakdown — crew war bonus + P&I surcharge (issue #178)', () 
       expect(result.breakdown!.crewWarBonusUsd).toBe(10_000);
     });
 
-    it('piSurchargeUsd = $5,000 flat per voyage', () => {
+    it('piSurchargeUsd = $30,000 for Black Sea (zone-differentiated per JWC 2024-26)', () => {
       const result = calculateWarRiskPremium({
         route: { fromPort: 'Rotterdam', toPort: 'Odessa' },
         vesselValueUsd: 10_000_000,
       });
-      expect(result.breakdown!.piSurchargeUsd).toBe(PI_SURCHARGE_USD);
-      expect(result.breakdown!.piSurchargeUsd).toBe(5_000);
+      expect(result.breakdown!.piSurchargeUsd).toBe(PI_SURCHARGE_BY_ZONE_ID['black-sea-hra']);
+      expect(result.breakdown!.piSurchargeUsd).toBe(30_000);
     });
   });
 
@@ -96,6 +97,96 @@ describe('WarRiskBreakdown — crew war bonus + P&I surcharge (issue #178)', () 
       expect(result.breakdown!.totalPremiumUsd).toBe(
         result.breakdown!.hullPremiumUsd + result.breakdown!.crewWarBonusUsd + result.breakdown!.piSurchargeUsd,
       );
+    });
+  });
+
+  describe('HIGH-1: zone-differentiated P&I surcharge (JWC 2024-26)', () => {
+    it('Gulf of Guinea → $5,000 P&I surcharge', () => {
+      const result = calculateWarRiskPremium({
+        route: { fromPort: 'Rotterdam', toPort: 'Lagos' },
+        vesselValueUsd: 8_000_000,
+      });
+      expect(result.breakdown!.piSurchargeUsd).toBe(5_000);
+    });
+
+    it('Black Sea (Odessa) → $30,000 P&I surcharge', () => {
+      const result = calculateWarRiskPremium({
+        route: { fromPort: 'Rotterdam', toPort: 'Odessa' },
+        vesselValueUsd: 8_000_000,
+      });
+      expect(result.breakdown!.piSurchargeUsd).toBe(30_000);
+    });
+
+    it('Red Sea / Bab al-Mandeb (via Suez) → $20,000 P&I surcharge', () => {
+      const result = calculateWarRiskPremium({
+        route: { fromPort: 'Rotterdam', toPort: 'Jeddah' },
+        vesselValueUsd: 8_000_000,
+      });
+      expect(result.breakdown!.piSurchargeUsd).toBe(20_000);
+    });
+
+    it('Persian Gulf (Bandar Abbas) → $15,000 P&I surcharge', () => {
+      const result = calculateWarRiskPremium({
+        route: { fromPort: 'Rotterdam', toPort: 'Bandar Abbas' },
+        vesselValueUsd: 8_000_000,
+      });
+      expect(result.breakdown!.piSurchargeUsd).toBe(15_000);
+    });
+
+    it('Indian Ocean (Mogadishu) → $10,000 P&I surcharge', () => {
+      const result = calculateWarRiskPremium({
+        route: { fromPort: 'Rotterdam', toPort: 'Mogadishu' },
+        vesselValueUsd: 8_000_000,
+      });
+      expect(result.breakdown!.piSurchargeUsd).toBe(10_000);
+    });
+
+    it('totalPremiumUsd reflects zone-specific P&I for Black Sea', () => {
+      const result = calculateWarRiskPremium({
+        route: { fromPort: 'Odessa', toPort: 'Rotterdam' },
+        vesselValueUsd: 12_000_000,
+      });
+      const { hullPremiumUsd, crewWarBonusUsd, piSurchargeUsd, totalPremiumUsd } = result.breakdown!;
+      expect(piSurchargeUsd).toBe(30_000);
+      expect(totalPremiumUsd).toBe(Math.round((hullPremiumUsd + crewWarBonusUsd + piSurchargeUsd) * 100) / 100);
+    });
+  });
+
+  describe('MEDIUM-1: crewCount guard — invalid inputs fall back to DEFAULT', () => {
+    it('NaN crewCount → fallback to DEFAULT_CREW_COUNT (20)', () => {
+      const result = calculateWarRiskPremium({
+        route: { fromPort: 'Rotterdam', toPort: 'Lagos' },
+        vesselValueUsd: 8_000_000,
+        crewCount: NaN,
+      });
+      expect(result.breakdown!.crewWarBonusUsd).toBe(DEFAULT_CREW_COUNT * CREW_WAR_BONUS_PER_PERSON_USD);
+    });
+
+    it('negative crewCount (-5) → fallback to DEFAULT_CREW_COUNT', () => {
+      const result = calculateWarRiskPremium({
+        route: { fromPort: 'Rotterdam', toPort: 'Lagos' },
+        vesselValueUsd: 8_000_000,
+        crewCount: -5,
+      });
+      expect(result.breakdown!.crewWarBonusUsd).toBe(DEFAULT_CREW_COUNT * CREW_WAR_BONUS_PER_PERSON_USD);
+    });
+
+    it('zero crewCount (0) → fallback to DEFAULT_CREW_COUNT', () => {
+      const result = calculateWarRiskPremium({
+        route: { fromPort: 'Rotterdam', toPort: 'Lagos' },
+        vesselValueUsd: 8_000_000,
+        crewCount: 0,
+      });
+      expect(result.breakdown!.crewWarBonusUsd).toBe(DEFAULT_CREW_COUNT * CREW_WAR_BONUS_PER_PERSON_USD);
+    });
+
+    it('valid crewCount (15) → used as-is, not falling back', () => {
+      const result = calculateWarRiskPremium({
+        route: { fromPort: 'Rotterdam', toPort: 'Lagos' },
+        vesselValueUsd: 8_000_000,
+        crewCount: 15,
+      });
+      expect(result.breakdown!.crewWarBonusUsd).toBe(15 * CREW_WAR_BONUS_PER_PERSON_USD);
     });
   });
 

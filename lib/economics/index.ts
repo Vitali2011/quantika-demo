@@ -80,6 +80,8 @@ export async function computeEconomics(input: EconomicsInput): Promise<Economics
       euEtsApplicable: etsResult.applicable,
       warRiskPremium: warRisk.premiumUsd,
       warRiskZones: warRisk.zones,
+      warRiskTotal: warRisk.breakdown?.totalPremiumUsd,
+      warRiskBreakdown: warRisk.breakdown,
     },
     totalUsd,
     calculatedAt: now,
