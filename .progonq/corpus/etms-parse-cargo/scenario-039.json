@@ -160,7 +160,7 @@
           "source_text": "1 Sbp Birkenhead, Uk"
         },
         "cargo_description": {
-          "value": "Hot Rolled Coils (HRC), max 2 tiers, unit weight approximately 26 MT. Expected quantity 5,330 MT.",
+          "value": "Hot Rolled Coils (HRC), minimum 5,250 MT 5 pct more chopt, max 2 tiers, unit weight approximately 26 MT, expected quantity 5,330 MT",
           "confidence": "confirmed",
           "source_text": "Min 5,250 Mts Hrc 5 Pct More Chopt Max 2 Tiers Uw Abt 26 Mt (Expect 5,330 Mts)"
         },
@@ -288,7 +288,7 @@
           "source_text": "1 Sb-2 Sp Gemlik And Yildiz Entegre"
         },
         "cargo_description": {
-          "value": "Hot Rolled Coils / Plates Not Otherwise specified (HRC/PNO), max 2 tiers, unit weight approximately 26 MT. Expected: Gemlik 12,700 MT, Yildiz Entegre 5,000 MT.",
+          "value": "Hot Rolled Coils (HRC) / Plates Not Otherwise Specified (PNO), max 2 tiers, unit weight approximately 26 MT, expected Gemlik 12,700 MT and Yildiz Entegre 5,000 MT",
           "confidence": "confirmed",
           "source_text": "Min 17,500 Mts Hrc/Pno 5 Pct More Chopt Max 2 Tiers Uw Abt 26 Mt (Expect Gemlik 12,700 Mts And Yildiz Entegre: 5,000 Mts)"
         },

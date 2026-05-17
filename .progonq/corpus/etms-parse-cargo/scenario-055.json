@@ -28,7 +28,7 @@
         },
         "destination_country": null,
         "cargo_description": {
-          "value": "Salt in break bulk, bags 1.1m x 1.1m x 1.1m, unit weight 1.25 mt",
+          "value": "Salt in big bags, 1.1x1.1x1.1, unit weight 1.25 mt",
           "confidence": "confirmed",
           "source_text": "5500 mts of salt in bb  (1,1x1,1x1,1, uw 1,25)  Egypt Med/POC"
         },
@@ -101,7 +101,7 @@
         },
         "destination_country": null,
         "cargo_description": {
-          "value": "Combined cargo of salt and rice in break bulk. Salt: bags 1.1m x 1.1m x 1.1m, unit weight 1.25 mt. Rice: bags 1.05m x 1.05m x 1.35m, unit weight 1.0 mt. Two load ports: Damietta (Egypt) and Mersin (Turkey).",
+          "value": "6000-7000 mts of salt/rice in big bags, salt dimensions 1.1x1.1x1.1, unit weight 1.25 mt, rice dimensions 1.05x1.05x1.35, unit weight 1 mt",
           "confidence": "confirmed",
           "source_text": "6000 -7000 mts of salt/rice in bb \n(1,1x1,1x1,1, uw 1,25) + rice (1,05x1,05x1,35, uw 1 mt) \nDamietta+Mersin/POC"
         },

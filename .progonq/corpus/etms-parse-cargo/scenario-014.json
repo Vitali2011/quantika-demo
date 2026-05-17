@@ -28,7 +28,7 @@
           "value": null
         },
         "cargo_description": {
-          "value": "Steel products",
+          "value": "Steel products, stowage equals deadweight",
           "confidence": "confirmed",
           "source_text": "4300-4500 TS STEEL PRODUCTS STW DWT"
         },

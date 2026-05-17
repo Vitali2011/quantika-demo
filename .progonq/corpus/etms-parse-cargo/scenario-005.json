@@ -32,7 +32,7 @@
           "source_text": "Izmail - Egypt med"
         },
         "cargo_description": {
-          "value": "Wheat, stowage factor approximately 47-49 cubic feet per metric ton",
+          "value": "Wheat, stowage factor approximately 47-49",
           "confidence": "confirmed",
           "source_text": "8000 mts 10 pct wheat stw abt 47-49'"
         },
@@ -134,7 +134,7 @@
           "source_text": "Chornomorsk - Marghera"
         },
         "cargo_description": {
-          "value": "Steel scrap, stowage factor approximately 68-70 cubic feet per metric ton, approximately 200,000 cubic feet required for full cargo",
+          "value": "Steel scrap, stowage factor approximately 68-70, approximately 200,000 cubic feet required for full cargo of approximately 3,000 metric tons",
           "confidence": "confirmed",
           "source_text": "Need abt 200 000 cft for full cgo abt 3000 mts of steel scrap stw abt 68-70'"
         },

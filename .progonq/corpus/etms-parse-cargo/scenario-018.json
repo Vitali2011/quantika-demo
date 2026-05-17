@@ -229,7 +229,7 @@
           "source_text": "Hereke/Birkenhead"
         },
         "cargo_description": {
-          "value": "Wire Mesh",
+          "value": "Wire Mesh, about 4500 cbm",
           "confidence": "confirmed",
           "source_text": "2000 mt Wire Mesh (Abt 4500 cbm)"
         },
@@ -327,7 +327,7 @@
           "source_text": "Hereke/Greenore"
         },
         "cargo_description": {
-          "value": "Wire Mesh",
+          "value": "Wire Mesh (Abt 2500 cbm)",
           "confidence": "confirmed",
           "source_text": "1000 mt Wire Mesh (Abt 2500 cbm)"
         },

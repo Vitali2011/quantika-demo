@@ -138,7 +138,7 @@
           "confidence": null
         },
         "cargo_description": {
-          "value": "Salt in big bags (1.1m x 1.1m x 1.1m, unit weight 1.25 MT/bag) + Rice in big bags (1.05m x 1.05m x 1.35m, unit weight 1.0 MT/bag); combined cargo break bulk",
+          "value": "Salt in big bags (1.1m x 1.1m x 1.1m, unit weight 1.25 MT/bag) + Rice in big bags (1.05m x 1.05m x 1.35m, unit weight 1.0 MT/bag)",
           "confidence": "confirmed",
           "source_text": "6000 -7000 mts of salt/rice in bb (1,1x1,1x1,1, uw 1,25) + rice (1,05x1,05x1,35, uw 1 mt)"
         },

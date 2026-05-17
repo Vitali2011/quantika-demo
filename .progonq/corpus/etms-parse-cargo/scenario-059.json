@@ -220,7 +220,7 @@
           "source_text": "FUJAIRAH/ MOGADISHU 11 M DRAFT"
         },
         "cargo_description": {
-          "value": "Bulk Aggregate",
+          "value": "Bulk Aggregate, geared and grabber for discharge",
           "confidence": "confirmed",
           "source_text": "50,000 MTS +/- 10% BULK AGGREGATE"
         },
@@ -324,7 +324,7 @@
           "source_text": "POD: Sohar"
         },
         "cargo_description": {
-          "value": "Sawn Timber in bundles",
+          "value": "Sawn Timber in bundles, on-deck loading ok",
           "confidence": "confirmed",
           "source_text": "Cargo Type: Sawn Timber in bundles"
         },
@@ -417,7 +417,7 @@
           "source_text": "Discharge Port – Fujairah"
         },
         "cargo_description": {
-          "value": "Pine Sawn Timber",
+          "value": "Pine Sawn Timber, stowage factor about 52",
           "confidence": "confirmed",
           "source_text": "Pine Sawn Timber"
         },
@@ -753,7 +753,7 @@
           "source_text": "POD: Jeddah"
         },
         "cargo_description": {
-          "value": "MDF (Medium Density Fibreboard)",
+          "value": "MDF (Medium Density Fibreboard), 1 net CBM = 1.12 gross CBM",
           "confidence": "interpreted",
           "source_text": "MDF"
         },
@@ -919,7 +919,7 @@
           "source_text": "POD: Conakry"
         },
         "cargo_description": {
-          "value": "Thai Parboiled Rice 100% Sorted (12,500 MT) and Thai White Rice 25% Broken (12,500 MT)",
+          "value": "Thai Parboiled Rice 100% Sorted (12,500 MT) and Thai White Rice 25% Broken (12,500 MT), packing in new PP of 50 kgs with Jumbo bag total 1 MT",
           "confidence": "confirmed",
           "source_text": "1- Thai Parboiled Rice 100% Sorted , Quantity 12,500 mt 2-Thai White Rice 25% Broken , Quantity 12,500 mt"
         },

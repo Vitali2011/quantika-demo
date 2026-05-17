@@ -33,7 +33,7 @@
           "source_text": "TO 1SP LIBYA OR MERSIN IN CHOPT"
         },
         "cargo_description": {
-          "value": "Bagged sugar, stowage factor approximately 50 ft³/MT",
+          "value": "Bagged sugar, stowage factor approximately 50",
           "confidence": "confirmed",
           "source_text": "15.000 MTS BAGGED SUGAR STW FACTOR ABT 50'"
         },
@@ -129,7 +129,7 @@
           "source_text": "TO 1SP TURKISH EAST MED OR 1SP SYRIA OR 1SP LEBANON OR 1SP LIBYA IN CHOPT"
         },
         "cargo_description": {
-          "value": "Bagged sugar, stowage factor approximately 50 ft³/MT",
+          "value": "Bagged sugar, stowage factor approximately 50",
           "confidence": "confirmed",
           "source_text": "ABT 5-10.000 MTS BAGGED SUGAR STW FACTOR ABT 50'"
         },
