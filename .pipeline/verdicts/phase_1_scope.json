@@ -1,0 +1,21 @@
+{
+  "phase": "1",
+  "task_id": "stubs-upgrade-matches",
+  "task_description": "Convert /upgrade and /matches stub pages to real content with 3-tier cards and empty-state list",
+  "files_in_scope": [
+    "app/upgrade/page.tsx",
+    "app/matches/page.tsx",
+    "app/__tests__/upgrade-page.test.tsx",
+    "app/__tests__/matches-page.test.tsx",
+    "__tests__/pages/upgrade-page.test.tsx",
+    "__tests__/pages/matches-page.test.tsx"
+  ],
+  "scope_size": 6,
+  "cross_cutting_surface": [],
+  "rule_g_triggered": true,
+  "rule_g_reason": "scope>=3",
+  "boundary_classes_planned": [1, 9],
+  "gotchas_acknowledged": ["pi3-needs-review"],
+  "assumptions_path": ".pipeline/phase_1_scope.md",
+  "escalate_to": null
+}

@@ -1,19 +1,18 @@
 {
   "phase": "2a",
-  "tests_written": 6,
+  "tests_written": 9,
   "test_files": [
-    "components/match/__tests__/ExplainDealModal.flag.test.tsx",
-    "components/deals/__tests__/SubsCountdownWidget.tick.test.tsx",
-    "app/laytime/__tests__/touch-targets.test.tsx"
+    "app/__tests__/upgrade-page.test.tsx",
+    "app/__tests__/matches-page.test.tsx"
   ],
   "red_verified": true,
-  "red_command": "cd /root/work/quantika-demo/.worktrees/week-B-ui-fixes && npx jest --testPathPatterns=\"ExplainDealModal.flag|SubsCountdownWidget.tick|touch-targets\" --no-coverage 2>&1 | tail -20",
-  "red_command_output": "Test Suites: 3 failed, 3 total\nTests:       6 failed, 6 total\nSnapshots:   0 total\nTime:        39.089 s\nRan all test suites matching ExplainDealModal.flag|SubsCountdownWidget.tick|touch-targets.\n\nTouch-targets specific failures:\n  - parseSofButton: received \"px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400\" (no touch-target)\n  - searchButton: received \"rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50\" (no touch-target)\n  - ExplainDealModal: renders even when flag is off (guard not implemented)\n  - SubsCountdownWidget: countdown frozen at mount, no live interval tick",
-  "assumptions_count": 2,
+  "red_command": "npx jest app/__tests__/upgrade-page.test.tsx app/__tests__/matches-page.test.tsx --no-coverage 2>&1 | tail -20",
+  "red_command_output": "41 |     render(<MatchesPage />);\n      42 |     // Spec: \"Submit your first deal request\" → /request\n    > 43 |     const link = screen.getByRole('link', { name: /submit your first deal request/i });\n         |                         ^\n      44 |     expect(link).toHaveAttribute('href', '/request');\n      45 |   });\n      46 | });\n\n      at Object.getElementError (../../node_modules/@testing-library/dom/dist/config.js:37:19)\n      at ../../node_modules/@testing-library/dom/dist/query-helpers.js:76:38\n      at ../../node_modules/@testing-library/dom/dist/query-helpers.js:52:17\n      at ../../node_modules/@testing-library/dom/dist/query-helpers.js:95:19\n      at Object.getByRole (app/__tests__/matches-page.test.tsx:43:25)\n\nTest Suites: 2 failed, 2 total\nTests:       9 failed, 9 total\nSnapshots:   0 total\nTime:        22.158 s\nRan all test suites matching app/__tests__/upgrade-page.test.tsx|app/__tests__/matches-page.test.tsx.",
+  "assumptions_count": 5,
   "spec_ambiguities_flagged": [
-    "PscSearchForm uses named export (not default export) — adjusted test to use named export fallback: `pscModule.default ?? pscModule.PscSearchForm`",
-    "Touch-targets spec mentions 'Add' button in laytime/page but the rendered output may not have a button with exactly that label — test covers Parse SOF and Calculate which were confirmed present"
+    "Matches populated state (vessel/route/score/date rows) not tested in phase 2a — deferred",
+    "Contact Sales CTA assumed page-level (not per-card) — getByRole will throw if multiple links exist"
   ],
-  "boundary_classes_covered": [5],
-  "behavioral_tests_count": 1
+  "boundary_classes_covered": [1, 9],
+  "behavioral_tests_count": 9
 }

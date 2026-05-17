@@ -1,0 +1,30 @@
+{
+  "phase": "2",
+  "task_id": "close-high1-spec-drift-cta-href",
+  "mode": "single-agent",
+  "impl_files": [
+    "app/request/page.tsx",
+    "app/matches/page.tsx",
+    "app/matches/demo-data.ts"
+  ],
+  "test_files": [
+    "app/__tests__/matches-page.test.tsx",
+    "__tests__/pages/matches-page.test.tsx"
+  ],
+  "tests_total": 9,
+  "tests_green": 9,
+  "test_rewrite_count": 2,
+  "pi3_triggered": false,
+  "pi3_note": "2 test expectation changes are intentional — spec drift fix per task spec (href /dashboard → /request). Below PI3 threshold of 5.",
+  "pi2_violations": [],
+  "pi4_flag_tests_added": null,
+  "class_10_pbt_added": null,
+  "rule_g_verdicts": {
+    "phase_2a": null,
+    "phase_2b": null,
+    "needs_review_rounds": 0
+  },
+  "green_verified": true,
+  "pre_existing_failure": "__tests__/routing/matches-redirect.test.tsx — MEDIUM-3 (defer), failed before this fix on line 9 (Coming Soon check)",
+  "new_low_1_fixed": true
+}
