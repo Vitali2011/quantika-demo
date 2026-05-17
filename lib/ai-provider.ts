@@ -15,7 +15,7 @@ import * as openaiLib from '@/lib/openai';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type Provider = 'openai' | 'gemini' | 'bedrock';
+export type Provider = 'openai' | 'gemini' | 'bedrock' | 'claude-cli';
 
 export interface AiOpts {
   /** Override timeout in milliseconds (default: 85_000). */
@@ -304,6 +304,68 @@ function writeAuditRecord(row: AiAuditRow): void {
   }
 }
 
+interface ClaudeCliOutput {
+  type?: string;
+  subtype?: string;
+  is_error?: boolean;
+  result?: string;
+}
+
+/**
+ * Calls the claude CLI via spawnSync for judge/eval workloads.
+ * Auth: CLAUDE_CODE_OAUTH_TOKEN picked up automatically by the claude CLI.
+ * Exported for unit testing (mock spawnSync in tests).
+ *
+ * Set *_JUDGE_PROVIDER=claude-cli (or AI_PROVIDER=claude-cli) to route judge
+ * scopes (CLASSIFY_JUDGE, PARSE_CARGO_JUDGE, PARSE_VESSEL_JUDGE) here instead
+ * of Bedrock, eliminating AWS credentials for eval runs.
+ */
+export function callClaudeCliRaw(
+  system: string,
+  user: string,
+  model: string,
+  opts?: AiOpts,
+): { text: string } {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { spawnSync } = require('child_process') as typeof import('child_process');
+
+  const args = ['--print', '--model', model, '--output-format', 'json'];
+  if (system) {
+    args.push('--system-prompt', system);
+  }
+
+  const result = spawnSync('claude', args, {
+    input: user,
+    encoding: 'utf8',
+    timeout: opts?.timeoutMs ?? 85_000,
+    env: process.env,
+  });
+
+  if (result.error) {
+    throw new Error(`claude CLI spawn error: ${result.error.message}`);
+  }
+  if (result.status !== 0) {
+    const stderr = typeof result.stderr === 'string' ? result.stderr : '';
+    throw new Error(
+      `claude CLI exited with status ${result.status}: ${stderr.slice(0, 200)}`,
+    );
+  }
+
+  const stdout = typeof result.stdout === 'string' ? result.stdout : '';
+  let parsed: ClaudeCliOutput;
+  try {
+    parsed = JSON.parse(stdout) as ClaudeCliOutput;
+  } catch {
+    return { text: stdout };
+  }
+
+  if (parsed.is_error) {
+    throw new Error(`claude CLI returned error response: ${parsed.result ?? 'unknown'}`);
+  }
+
+  return { text: parsed.result ?? '' };
+}
+
 // ─── Public routing API ───────────────────────────────────────────────────────
 
 /**
@@ -314,7 +376,7 @@ export function getProvider(scope: string): Provider {
   const scopeEnv = process.env[toScopeEnv(scope)];
   const globalEnv = process.env.AI_PROVIDER;
   const raw = scopeEnv || globalEnv || 'openai';
-  if (raw !== 'openai' && raw !== 'gemini' && raw !== 'bedrock') {
+  if (raw !== 'openai' && raw !== 'gemini' && raw !== 'bedrock' && raw !== 'claude-cli') {
     logger.warn({ scope, raw }, '[ai-provider] unknown provider value, falling back to openai');
     return 'openai';
   }
@@ -338,6 +400,8 @@ export function getModel(scope: string): string {
       return process.env.AI_MODEL_GEMINI_DEFAULT ?? 'gemini-2.5-flash';
     case 'bedrock':
       return process.env.BEDROCK_MODEL_ID ?? 'us.anthropic.claude-opus-4-7';
+    case 'claude-cli':
+      return 'claude-opus-4-7';
     case 'openai':
     default:
       return process.env.AI_MODEL_HEAVY ?? 'gpt-5.5';
@@ -654,6 +718,11 @@ export async function callAiJson<T>(
         result = JSON.parse(extractJson(r.text)) as T;
         break;
       }
+      case 'claude-cli': {
+        const r = callClaudeCliRaw(system, user, model, opts);
+        result = JSON.parse(extractJson(r.text)) as T;
+        break;
+      }
       case 'openai':
       default:
         result = await callOpenAiJson<T>(scope, system, user, opts);
@@ -707,6 +776,11 @@ export async function callAiText(
       case 'bedrock': {
         const r = await callBedrockText(system, user, model, opts);
         usage = r.usage;
+        result = r.text;
+        break;
+      }
+      case 'claude-cli': {
+        const r = callClaudeCliRaw(system, user, model, opts);
         result = r.text;
         break;
       }
