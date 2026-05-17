@@ -25,7 +25,7 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 - ✅ 4 tracking issues #177-180 закрыты (#180 deferred как нерелевантный)
 - ✅ parse-cargo GT нормализован (PR #197, 43 fixtures)
 
-**🎯 Стратегия моделей (актуализация 2026-05-17 вечер):** код миграции на Gemini уже сделан (Wave γ, 2026-05-05). На проде AI_PROVIDER=gemini default — **6/7 scopes уже через Gemini**. Match — fallback на claude-cli (Bedrock не активен). Сейчас в отдельной user-сессии идёт bake-off конкретных Gemini моделей per parser. Подробности в §1.1.
+**🎯 Стратегия моделей (актуализация 2026-05-17 поздний вечер):** код миграции на Gemini уже сделан (Wave γ, 2026-05-05). На проде AI_PROVIDER=gemini + MATCH_PROVIDER=gemini → **7/7 scopes через Gemini default**. claude-cli остаётся для eval judge. Сейчас в отдельной user-сессии идёт bake-off конкретных Gemini моделей per parser. Подробности в §1.1.
 
 **Что ещё блокирует pre-PMF:**
 - ⏸ C2 — 5 webhooks auth bypass (нужен user)
@@ -43,7 +43,7 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 ### 1.1 Парсеры и LLM (audit-parsers.md)
 
-**🎯 Реальный статус (2026-05-17 вечер):** код миграции на Gemini был сделан в Wave γ (2026-05-05, `lib/ai-provider.ts` shim). После env-restore сегодня `AI_PROVIDER=gemini` стоит default → **6/7 scopes уже работают через Gemini на проде**. Идёт bake-off тестов конкретных моделей per parser (в отдельной user-сессии).
+**🎯 Реальный статус (2026-05-17 поздний вечер):** код миграции на Gemini был сделан в Wave γ (2026-05-05, `lib/ai-provider.ts` shim). На проде `AI_PROVIDER=gemini` + `MATCH_PROVIDER=gemini` → **7/7 scopes работают через Gemini default**. Идёт bake-off тестов конкретных моделей per parser (в отдельной user-сессии).
 
 | Парсер | Прод-провайдер | Точность | Eval | Статус |
 |---|---|---|---|---|
@@ -51,11 +51,11 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 | parse-cargo | gemini (model TBD) | оцен. 87%+ | baseline pending | R4 normalizer #175 слит, GT нормализован #197, bake-off in progress |
 | parse-vessel | gemini (model TBD) | 76.0% mean, **dwcc 51.9%** | progonq ✅ | слабейшее поле — единицы измерения, bake-off in progress |
 | parse-recap | gemini (model TBD) | **70.0%** (baseline 2026-05-17 PR #193) | progonq ✅ baseline only | bake-off in progress |
-| match | claude-cli (наш Opus) | н/д | **нет baseline** | MATCH_PROVIDER=bedrock override, Bedrock не активен → fallback claude-cli (PR #186); Gemini migration возможна после bake-off |
+| match | gemini (model TBD) | н/д | **нет baseline** | переключено на Gemini 2026-05-17 вечер (был MATCH_PROVIDER=bedrock → claude-cli fallback) — теперь 7/7 на Gemini default |
 | explain-deal | gemini (model TBD) | н/д | нет | фича live |
 | draft-quote | gemini (model TBD) | н/д | нет | фича live |
 
-**Provider routing (текущий, на проде):** 6/7 scopes default через Gemini (AI_PROVIDER=gemini). Match через MATCH_PROVIDER=bedrock но Bedrock не активирован → fallback на claude-cli. ClipProxy/OpenAI больше не активен по умолчанию (только если AI_PROVIDER=openai вернуть).
+**Provider routing (текущий, на проде):** **7/7 scopes default через Gemini** (AI_PROVIDER=gemini + MATCH_PROVIDER=gemini). ClipProxy/OpenAI + claude-cli больше не активны по умолчанию (только если env override вернуть). claude-cli остаётся для eval judge (через --print, не runtime).
 
 **Текущая работа:** bake-off конкретных Gemini моделей (Flash vs Pro vs 2.5 Pro vs новые) per parser идёт в отдельной user-сессии. Цель — выбрать оптимальную модель по cost/accuracy.
 
