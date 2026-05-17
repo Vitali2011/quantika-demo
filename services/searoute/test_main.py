@@ -128,6 +128,46 @@ def test_distance_transpacific_direct():
     assert data["route_via"] == "direct"
 
 
+def test_distance_thread_safety_concurrent_routes():
+    """
+    H1 regression: concurrent cape/suez requests must each return their own
+    correct distances. _searoute_lock prevents M.restrictions cross-contamination.
+    """
+    import threading
+    from main import app
+    client = TestClient(app)
+    cape_results = []
+    suez_results = []
+
+    def do_cape():
+        resp = client.post("/distance", json={
+            "origin_lat": 1.29, "origin_lon": 103.85,
+            "dest_lat": 51.92, "dest_lon": 4.48,
+            "route_via": "cape"
+        })
+        cape_results.append(resp.json()["distance_nm"])
+
+    def do_suez():
+        resp = client.post("/distance", json={
+            "origin_lat": 1.29, "origin_lon": 103.85,
+            "dest_lat": 51.92, "dest_lon": 4.48,
+            "route_via": "suez"
+        })
+        suez_results.append(resp.json()["distance_nm"])
+
+    threads = [threading.Thread(target=do_cape) for _ in range(4)] + \
+              [threading.Thread(target=do_suez) for _ in range(4)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    for dist in cape_results:
+        assert dist > 10000, f"Cape result out of range: {dist} (expected >10000)"
+    for dist in suez_results:
+        assert dist < 9000, f"Suez result out of range: {dist} (expected <9000)"
+
+
 def test_restrictions_map_uses_only_valid_passages():
     """H2 regression: RESTRICTIONS_MAP must not contain 'cape' as a restriction value."""
     from main import RESTRICTIONS_MAP

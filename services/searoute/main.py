@@ -5,6 +5,7 @@ Uses searoute-py library for maritime routing.
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from typing import Literal
+import threading
 import searoute as sr
 
 app = FastAPI(title="Quantika Searoute Service", version="1.0.0")
@@ -26,6 +27,10 @@ class DistanceResponse(BaseModel):
     waypoints_count: int
     calculator_version: str = "searoute-py-1.2.0"
 
+
+# Serialises concurrent calls to sr.searoute() — the library mutates module-level
+# M.restrictions before computing the shortest path, so concurrent threads share state.
+_searoute_lock = threading.Lock()
 
 # RESTRICTIONS_MAP defines which canals to avoid for each routing preference.
 # Valid searoute-py passage names: babalmandab, bosporus, gibraltar, suez, panama, ormuz, northwest
@@ -61,11 +66,12 @@ def distance(req: DistanceRequest):
     dest = [req.dest_lon, req.dest_lat]
 
     try:
-        route = sr.searoute(
-            origin, dest,
-            restrictions=RESTRICTIONS_MAP[req.route_via],
-            units='naut',
-        )
+        with _searoute_lock:
+            route = sr.searoute(
+                origin, dest,
+                restrictions=RESTRICTIONS_MAP[req.route_via],
+                units='naut',
+            )
     except Exception as e:
         raise HTTPException(status_code=422, detail=f"routing failed: {e}")
 
