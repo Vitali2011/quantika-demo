@@ -10,6 +10,7 @@ jest.mock('resend', () => ({
     emails: { send: mockEmailsSend },
   })),
 }));
+jest.mock('@sentry/nextjs', () => ({ captureMessage: jest.fn() }));
 
 describe('sendAlertEmail (issue #179)', () => {
   const CTX = { slug: 'ofac-sanctions', consecutiveFailures: 3, lastError: 'Timeout' };
@@ -70,12 +71,31 @@ describe('sendAlertEmail (issue #179)', () => {
     expect(call.html).toContain('Connection refused');
   });
 
-  it('resolves without throwing if Resend throws (caller handles via .catch)', async () => {
+  it('rejects with transport error — caller must handle via .catch', async () => {
     process.env.RESEND_API_KEY = 'test-key';
     process.env.ALERT_EMAIL_TO = 'admin@example.com';
     mockEmailsSend.mockRejectedValue(new Error('Resend API error'));
 
     await expect(sendAlertEmail(CTX)).rejects.toThrow('Resend API error');
+  });
+
+  it('strips HTML tags from slug and lastError in email body', async () => {
+    process.env.RESEND_API_KEY = 'test-key';
+    process.env.ALERT_EMAIL_TO = 'admin@example.com';
+    mockEmailsSend.mockResolvedValue({ data: { id: 'email-123' }, error: null });
+
+    await sendAlertEmail({
+      slug: '<img src=x onerror=alert(1)>injected-slug',
+      consecutiveFailures: 2,
+      lastError: '<style>body{display:none}</style>injected-error',
+    });
+
+    const call = mockEmailsSend.mock.calls[0][0];
+    expect(call.html).not.toContain('<img');
+    expect(call.html).not.toContain('<style>');
+    expect(call.html).not.toContain('onerror');
+    expect(call.html).toContain('injected-slug');
+    expect(call.html).toContain('injected-error');
   });
 });
 
@@ -95,7 +115,6 @@ describe('fireAlert — email integration (fire-and-forget)', () => {
 
   it('fireAlert completes without throwing even if email would error', async () => {
     const { fireAlert } = await import('@/lib/knowledge/alerts');
-    jest.mock('@sentry/nextjs', () => ({ captureMessage: jest.fn() }));
 
     process.env.RESEND_API_KEY = 'test-key';
     process.env.ALERT_EMAIL_TO = 'admin@example.com';
@@ -108,5 +127,30 @@ describe('fireAlert — email integration (fire-and-forget)', () => {
     // flush microtasks to let fire-and-forget promise settle
     await Promise.resolve();
     await Promise.resolve();
+  });
+
+  it('throttles repeated emails for same slug within cooldown window', async () => {
+    const { fireAlert } = await import('@/lib/knowledge/alerts');
+    const logSpy = jest.spyOn(console, 'log').mockImplementation();
+
+    process.env.RESEND_API_KEY = 'test-key';
+    process.env.ALERT_EMAIL_TO = 'admin@example.com';
+    mockEmailsSend.mockResolvedValue({ data: { id: 'email-123' }, error: null });
+
+    const slug = 'throttle-test-unique-slug-abc123';
+
+    await fireAlert({ slug, consecutiveFailures: 2 });
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(mockEmailsSend).toHaveBeenCalledTimes(1);
+
+    // second call within cooldown should be throttled
+    await fireAlert({ slug, consecutiveFailures: 3 });
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(mockEmailsSend).toHaveBeenCalledTimes(1);
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('throttled'));
+
+    logSpy.mockRestore();
   });
 });
