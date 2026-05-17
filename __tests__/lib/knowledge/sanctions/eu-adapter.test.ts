@@ -439,6 +439,98 @@ describe("eu-adapter", () => {
       // Cache must not have been modified
       expect(readFileSync(testCachePath, "utf-8")).toBe(cachedXml);
     });
+
+    // FINDING-01 regression: cache fallback must not silence monitoring
+    it("FINDING-01: cache fallback increments consecutive_failures (does not reset to 0)", async () => {
+      const cachedXml = `<?xml version="1.0"?>
+<export>
+  <sanctionEntity logicalId="55555">
+    <subjectType code="person"/>
+    <nameAlias><wholeName>Cache Fallback Person</wholeName></nameAlias>
+    <regulation><programme>CFSP</programme></regulation>
+  </sanctionEntity>
+</export>`;
+      writeFileSync(testCachePath, cachedXml, "utf-8");
+
+      await refreshEu(db, async () => { throw new HttpFetchError(403, "token rejected"); });
+
+      const source = db
+        .prepare("SELECT consecutive_failures FROM knowledge_sources WHERE slug = 'eu-sanctions'")
+        .get() as any;
+      expect(source.consecutive_failures).toBeGreaterThan(0);
+    });
+
+    it("FINDING-01: consecutive_failures accumulates across repeated cache fallbacks (alert threshold reachable)", async () => {
+      const cachedXml = `<?xml version="1.0"?>
+<export>
+  <sanctionEntity logicalId="44444">
+    <subjectType code="person"/>
+    <nameAlias><wholeName>Cache Person</wholeName></nameAlias>
+    <regulation><programme>CFSP</programme></regulation>
+  </sanctionEntity>
+</export>`;
+      writeFileSync(testCachePath, cachedXml, "utf-8");
+
+      const failingFetcher: Fetcher = async () => { throw new HttpFetchError(403, "token rejected"); };
+      await refreshEu(db, failingFetcher);
+      await refreshEu(db, failingFetcher);
+
+      const source = db
+        .prepare("SELECT consecutive_failures FROM knowledge_sources WHERE slug = 'eu-sanctions'")
+        .get() as any;
+      expect(source.consecutive_failures).toBeGreaterThanOrEqual(2);
+    });
+
+    it("FINDING-01: live fetch success resets consecutive_failures to 0 after cache fallbacks", async () => {
+      const cachedXml = `<?xml version="1.0"?>
+<export>
+  <sanctionEntity logicalId="33333">
+    <subjectType code="person"/>
+    <nameAlias><wholeName>Cache Person</wholeName></nameAlias>
+    <regulation><programme>CFSP</programme></regulation>
+  </sanctionEntity>
+</export>`;
+      writeFileSync(testCachePath, cachedXml, "utf-8");
+
+      await refreshEu(db, async () => { throw new HttpFetchError(403, "token rejected"); });
+
+      const liveXml = `<?xml version="1.0"?>
+<export>
+  <sanctionEntity logicalId="33334">
+    <subjectType code="person"/>
+    <nameAlias><wholeName>Live Person</wholeName></nameAlias>
+    <regulation><programme>CFSP</programme></regulation>
+  </sanctionEntity>
+</export>`;
+      await refreshEu(db, async () => liveXml);
+
+      const source = db
+        .prepare("SELECT consecutive_failures FROM knowledge_sources WHERE slug = 'eu-sanctions'")
+        .get() as any;
+      expect(source.consecutive_failures).toBe(0);
+    });
+
+    it("403 auth error with cache falls back to cache (covers auth-failure degradation path)", async () => {
+      const cachedXml = `<?xml version="1.0"?>
+<export>
+  <sanctionEntity logicalId="66666">
+    <subjectType code="person"/>
+    <nameAlias><wholeName>Auth Error Person</wholeName></nameAlias>
+    <regulation><programme>CFSP</programme></regulation>
+  </sanctionEntity>
+</export>`;
+      writeFileSync(testCachePath, cachedXml, "utf-8");
+
+      const result = await refreshEu(db, async () => {
+        throw new HttpFetchError(403, "EU fetch failed: 403 (token rejected)");
+      });
+
+      expect(result.upstreamVersion).toMatch(/^cache:/);
+      const entity = db
+        .prepare("SELECT name FROM eu_sanctions_entities WHERE uid = '66666'")
+        .get() as any;
+      expect(entity?.name).toBe("Auth Error Person");
+    });
   });
 
   describe("cache helpers", () => {

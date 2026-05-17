@@ -69,6 +69,9 @@ export interface SyncSuccessOpts {
   rowsChanged?: number;
   upstreamVersion?: string;
   metadata?: Record<string, unknown>;
+  /** When true, live fetch failed and data was served from last-known-good cache.
+   *  consecutive_failures is incremented (not reset) so fireAlert threshold is reachable. */
+  fromCache?: boolean;
 }
 
 export function reportSyncSuccess(
@@ -126,13 +129,26 @@ export function reportSyncSuccess(
           parsed_at = CURRENT_TIMESTAMP,
           row_count = COALESCE(?, row_count),
           upstream_version = COALESCE(?, upstream_version),
-          consecutive_failures = 0,
+          consecutive_failures = CASE WHEN ? THEN consecutive_failures + 1 ELSE 0 END,
           last_error = NULL,
           updated_at = CURRENT_TIMESTAMP
       WHERE slug = ?
-    `).run(opts.rowsChanged ?? null, opts.upstreamVersion ?? null, log.source_slug);
+    `).run(opts.rowsChanged ?? null, opts.upstreamVersion ?? null, opts.fromCache ? 1 : 0, log.source_slug);
   });
   tx();
+
+  if (opts.fromCache) {
+    const source = db.prepare('SELECT consecutive_failures, last_error FROM knowledge_sources WHERE slug = ?').get(log.source_slug) as any;
+    if (source && source.consecutive_failures >= 2) {
+      fireAlert({
+        slug: log.source_slug,
+        consecutiveFailures: source.consecutive_failures,
+        lastError: source.last_error,
+      }).catch((err) => {
+        console.error(`fireAlert failed for ${log.source_slug}:`, err);
+      });
+    }
+  }
 }
 
 /**

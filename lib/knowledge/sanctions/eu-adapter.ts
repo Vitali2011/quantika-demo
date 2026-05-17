@@ -174,6 +174,7 @@ export async function refreshEu(
     reportSyncSuccess(db, syncId, {
       rowsChanged: result.added + result.removed + result.updated,
       upstreamVersion,
+      fromCache,
       metadata: { ...result, fromCache },
     });
 
