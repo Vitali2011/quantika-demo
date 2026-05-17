@@ -99,6 +99,15 @@ describe('A7 — detectTextDirection', () => {
 // A8 — trial daysRemaining / TRIAL_DAYS
 // ---------------------------------------------------------------------------
 describe('A8 — daysRemaining clamp + TRIAL_DAYS constant', () => {
+  // Freeze Date.now() so daysRemaining() is deterministic regardless of execution time.
+  beforeEach(() => {
+    jest.useFakeTimers({ now: new Date('2026-05-17T12:00:00Z') });
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   // Import synchronously since trial.ts has no top-level async side-effects
   // We avoid importing session-store by only importing the pure functions.
   // daysRemaining and isExpired are pure (no DB access); startTrial uses DB.
