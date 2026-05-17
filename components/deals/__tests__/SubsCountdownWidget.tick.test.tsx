@@ -31,11 +31,11 @@ describe('SubsCountdownWidget — live 60s interval tick', () => {
     }
   });
 
-  it('updates countdown display after 60 seconds elapses', () => {
-    // Start time: 2026-05-08T12:01:00Z
+  it('updates countdown display after 60 seconds elapses', async () => {
+    // Start time: 2026-05-08T12:02:00Z
     // Deadline:   2026-05-09T00:01:00Z
-    // Remaining at start: exactly 11h 59m 0s → "11 hours 59 minutes remaining"
-    jest.setSystemTime(new Date('2026-05-08T12:01:00Z').getTime());
+    // Remaining at start: 11h 59m 0s → "11 hours 59 minutes remaining"
+    jest.setSystemTime(new Date('2026-05-08T12:02:00Z').getTime());
 
     const deadline = '2026-05-09T00:01:00Z';
     render(
@@ -45,12 +45,16 @@ describe('SubsCountdownWidget — live 60s interval tick', () => {
       />
     );
 
+    // Flush pending useEffect so setInterval is registered with fake timer system.
+    await act(async () => {});
+
     // Initial render should show 11 hours 59 minutes
     expect(screen.getByText(/11 hours 59 minutes/i)).toBeInTheDocument();
 
-    // Advance system clock by 60 seconds and fire the interval
-    act(() => {
-      jest.setSystemTime(new Date('2026-05-08T12:02:00Z').getTime());
+    // Advance fake clock by 60s — fires the setInterval tick and moves Date.now() forward.
+    // Do NOT call jest.setSystemTime separately: that would double-advance the clock
+    // (setSystemTime+advanceTimersByTime together fire two interval ticks instead of one).
+    await act(async () => {
       jest.advanceTimersByTime(60_000);
     });
 

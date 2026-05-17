@@ -62,8 +62,20 @@ const AR_SECTIONS = [
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
 describe('ExplainDealModal', () => {
+  const originalExplainFlag = process.env.NEXT_PUBLIC_EXPLAIN_DEAL_ENABLED;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    // Enable client-side guard for all existing tests (guard added in Fix 1)
+    process.env.NEXT_PUBLIC_EXPLAIN_DEAL_ENABLED = 'true';
+  });
+
+  afterEach(() => {
+    if (originalExplainFlag === undefined) {
+      delete process.env.NEXT_PUBLIC_EXPLAIN_DEAL_ENABLED;
+    } else {
+      process.env.NEXT_PUBLIC_EXPLAIN_DEAL_ENABLED = originalExplainFlag;
+    }
   });
 
   // ── Trigger button ─────────────────────────────────────────────────────────
