@@ -51,8 +51,12 @@ export interface EconomicsBreakdown {
   splitBunkerSavings?: number;         // USD, if split bunkering applicable
   euEtsAmount: number;                 // EUR (0 if non-EU route)
   euEtsApplicable: boolean;
-  warRiskPremium: number;              // USD (0 if no HRA crossing)
+  warRiskPremium: number;              // USD, hull only (0 if no HRA crossing)
   warRiskZones: string[];              // e.g. ['Gulf of Guinea HRA']
+  /** Hull + crew war bonus + P&I surcharge. Undefined when warRiskPremium is 0. */
+  warRiskTotal?: number;
+  /** Full per-voyage war risk breakdown (issue #178). */
+  warRiskBreakdown?: import('./economics/war-risk').WarRiskBreakdown;
 }
 
 export interface EconomicsResult {

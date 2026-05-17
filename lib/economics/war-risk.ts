@@ -17,11 +17,28 @@ export interface HraZone {
  * Rates are per-transit (per-voyage), NOT per-day.
  * Hull war premium = vessel_value × premiumPercentPerTransit.
  *
- * TODO(wave-γ): add crew war bonus (~$500/person × ~20 crew)
- * and P&I surcharge (~$5k flat) per voyage. For now hull-only.
- * Tracked: https://github.com/Vitali2011/quantika-demo/issues/178
+ * Issue #178: crew war bonus and P&I surcharge added in WarRiskBreakdown.
+ * premiumUsd remains hull-only for backward compat; use breakdown.totalPremiumUsd
+ * for the full per-voyage cost.
  */
 import type { ResolvedPort } from '@/lib/ports/resolve';
+
+export const CREW_WAR_BONUS_PER_PERSON_USD = 500;
+export const DEFAULT_CREW_COUNT = 20;
+/** Default P&I surcharge for zones not in PI_SURCHARGE_BY_ZONE_ID. */
+export const PI_SURCHARGE_USD = 5_000;
+
+/**
+ * Per-voyage P&I war surcharge by JWC zone ID (JWC 2024-26 + P&I club practice).
+ * Dominant zone determines the surcharge. Falls back to PI_SURCHARGE_USD.
+ */
+export const PI_SURCHARGE_BY_ZONE_ID: Record<string, number> = {
+  'gulf-of-guinea': 5_000,
+  'red-sea-hra': 20_000,
+  'indian-ocean-hra': 10_000,
+  'black-sea-hra': 30_000,
+  'persian-gulf-hra': 15_000,
+};
 
 export const JWC_HRA_ZONES: HraZone[] = [
   {
@@ -94,13 +111,26 @@ export interface WarRiskInput {
    * does NOT divide by days; daysInHra is informational only.
    */
   daysInHra?: number;
+  /** Number of crew for war bonus calculation. Defaults to DEFAULT_CREW_COUNT (20). */
+  crewCount?: number;
+}
+
+/** Per-voyage war risk cost breakdown (issue #178). Present only when applicable=true. */
+export interface WarRiskBreakdown {
+  hullPremiumUsd: number;
+  crewWarBonusUsd: number;
+  piSurchargeUsd: number;
+  totalPremiumUsd: number;
 }
 
 export interface WarRiskResult {
   applicable: boolean;
+  /** Hull war premium only. Unchanged for backward compat. Use breakdown.totalPremiumUsd for full cost. */
   premiumUsd: number;
   zones: string[];
   zoneIds: string[];
+  /** Defined only when applicable=true. */
+  breakdown?: WarRiskBreakdown;
 }
 
 const VESSEL_VALUE_FALLBACK_USD = 8_000_000;
@@ -179,10 +209,24 @@ export function calculateWarRiskPremium(input: WarRiskInput): WarRiskResult {
   const hullPremium = value * dominantZone.premiumPercentPerTransit;
   const premiumUsd = Math.round(hullPremium * 100) / 100;
 
+  const crewCount =
+    Number.isFinite(input.crewCount) && (input.crewCount ?? 0) > 0
+      ? input.crewCount!
+      : DEFAULT_CREW_COUNT;
+  const crewWarBonusUsd = CREW_WAR_BONUS_PER_PERSON_USD * crewCount;
+  const piSurchargeUsd = PI_SURCHARGE_BY_ZONE_ID[dominantZone.id] ?? PI_SURCHARGE_USD;
+  const breakdown: WarRiskBreakdown = {
+    hullPremiumUsd: premiumUsd,
+    crewWarBonusUsd,
+    piSurchargeUsd,
+    totalPremiumUsd: Math.round((premiumUsd + crewWarBonusUsd + piSurchargeUsd) * 100) / 100,
+  };
+
   return {
     applicable: true,
     premiumUsd,
     zones: matchedZones.map(z => z.name),
     zoneIds: matchedZones.map(z => z.id),
+    breakdown,
   };
 }
