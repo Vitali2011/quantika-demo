@@ -5,7 +5,9 @@ export const metadata: Metadata = {
   title: 'Upgrade Your Quantika Plan',
 };
 
-const TIERS = [
+type Tier = { name: string; features: string[] };
+
+const TIERS: Tier[] = [
   {
     name: 'Free',
     features: ['5 deals/month', 'Basic match score', 'Email digest'],

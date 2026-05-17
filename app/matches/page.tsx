@@ -24,8 +24,8 @@ export default function MatchesPage() {
           </div>
         ) : (
           <ul className="space-y-4">
-            {DEMO_MATCHES.slice(0, 10).map((match, idx) => (
-              <li key={idx} className="bg-white rounded-lg border p-4">
+            {DEMO_MATCHES.slice(0, 10).map((match) => (
+              <li key={`${match.vessel}-${match.date}`} className="bg-white rounded-lg border p-4">
                 <div className="font-medium">{match.vessel}</div>
                 <div className="text-sm text-gray-600">{match.route}</div>
                 <div className="text-xs text-gray-400 mt-1">

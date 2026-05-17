@@ -16,12 +16,12 @@ export default function RequestPage() {
             Deal request form coming soon. Our team will reach out to help you
             submit your first deal.
           </p>
-          <Link
+          <a
             href="mailto:sales@quantika.org"
             className="inline-block px-4 py-2 rounded bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
           >
             Contact Sales
-          </Link>
+          </a>
         </div>
 
         <p className="text-sm text-gray-400">
