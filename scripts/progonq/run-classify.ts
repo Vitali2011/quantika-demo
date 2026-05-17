@@ -123,13 +123,14 @@ export function scoreNormalized(
     category_match: model !== null && norm.category === model.category,
     urgency_match: model !== null && ciEqual(norm.urgency, model.urgency),
     is_unanswered_match: model !== null && norm.is_unanswered === model.is_unanswered,
-    days_match: daysMatch(norm.days_without_reply, model?.days_without_reply ?? null),
+    days_match: model !== null && daysMatch(norm.days_without_reply, model.days_without_reply ?? null),
     company_name_match:
-      norm.original_sender_company === null && modelCompanyNorm === null
+      model !== null &&
+      (norm.original_sender_company === null && modelCompanyNorm === null
         ? true
         : norm.original_sender_company !== null &&
           modelCompanyNorm !== null &&
-          norm.original_sender_company === modelCompanyNorm,
+          norm.original_sender_company === modelCompanyNorm),
     ref_urgency_normalized: norm.urgency,
     ref_days_normalized: norm.days_without_reply,
   };

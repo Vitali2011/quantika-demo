@@ -89,4 +89,15 @@ describe('scoreNormalized', () => {
     expect(r.urgency_match).toBe(false);
     expect(r.is_unanswered_match).toBe(false);
   });
+
+  it('null model + null ref company → company_name_match false (H2 regression)', () => {
+    const refNoCompany = { ...REF_LOW, original_sender_company: null as unknown as string };
+    const r = scoreNormalized(refNoCompany, null, EMAIL_DATE_ISO);
+    expect(r.company_name_match).toBe(false);
+  });
+
+  it('null model + invalid email date → days_match false (H2 regression)', () => {
+    const r = scoreNormalized(REF_LOW, null, 'not-a-date');
+    expect(r.days_match).toBe(false);
+  });
 });
