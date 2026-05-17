@@ -26,9 +26,9 @@ describe('/matches placeholder page', () => {
     expect(screen.getByRole('heading', { name: /Your Recent Matches/i })).toBeInTheDocument();
   });
 
-  test('exposes link to /request', () => {
+  test('exposes CTA link to /dashboard', () => {
     render(<MatchesPage />);
     const link = screen.getByRole('link', { name: /submit your first deal request/i });
-    expect(link).toHaveAttribute('href', '/request');
+    expect(link).toHaveAttribute('href', '/dashboard');
   });
 });

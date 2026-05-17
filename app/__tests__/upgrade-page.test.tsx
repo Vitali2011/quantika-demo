@@ -2,9 +2,6 @@
  * @jest-environment jsdom
  *
  * Contract tests for /upgrade — real subscription tier page.
- * Phase 2a: RED state — verifies NEW content spec (tier cards, sales CTA).
- * These tests define the contract; implementation does NOT exist yet.
- *
  * Spec ref: week-C-stubs Phase 1 scope — upgrade page content
  * OLD stub tests remain in __tests__/pages/upgrade-page.test.tsx (different assertions).
  */
@@ -52,14 +49,11 @@ describe('/upgrade tier cards page', () => {
     expect(link).toHaveAttribute('href', 'mailto:sales@quantika.org');
   });
 
-  test('page container has sm: responsive class', () => {
+  test('tier card grid has sm:grid-cols-3 responsive class', () => {
     const { container } = render(<UpgradePage />);
-    // Spec: mobile-responsive with sm: breakpoints on tier card grid
-    const smClassRegex = /\bsm:/;
-    const allElements = container.querySelectorAll('[class]');
-    const hasSmBreakpoint = Array.from(allElements).some((el) =>
-      smClassRegex.test(el.getAttribute('class') ?? '')
-    );
-    expect(hasSmBreakpoint).toBe(true);
+    // Spec: mobile-responsive grid — must have sm:grid-cols-3 on the tier grid element
+    // (not just any sm: class anywhere in the tree)
+    const gridEl = container.querySelector('.sm\\:grid-cols-3');
+    expect(gridEl).toBeInTheDocument();
   });
 });
