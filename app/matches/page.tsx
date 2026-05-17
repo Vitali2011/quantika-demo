@@ -16,7 +16,7 @@ export default function MatchesPage() {
           <div className="bg-white rounded-lg border p-8 text-center space-y-4">
             <p className="text-gray-500">No matches yet</p>
             <Link
-              href="/dashboard"
+              href="/request"
               className="inline-block px-4 py-2 rounded bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
             >
               Submit your first deal request

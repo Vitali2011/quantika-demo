@@ -44,11 +44,10 @@ describe('/matches recent matches page', () => {
     expect(screen.getByText(/No matches yet/i)).toBeInTheDocument();
   });
 
-  test('empty state CTA link has href="/dashboard"', () => {
+  test('empty state CTA link has href="/request"', () => {
     render(<MatchesPage />);
-    // Spec: "Submit your first deal request" → /dashboard (no /request route exists)
     const link = screen.getByRole('link', { name: /submit your first deal request/i });
-    expect(link).toHaveAttribute('href', '/dashboard');
+    expect(link).toHaveAttribute('href', '/request');
   });
 
   describe('populated list state', () => {
