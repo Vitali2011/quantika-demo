@@ -1,0 +1,22 @@
+# /etc/cron.d/quantika-backup
+#
+# Daily backup of critical Quantika files.
+# 03:00 BY (Europe/Minsk, UTC+3) = 00:00 UTC
+#
+# INSTALLATION:
+#   sudo cp scripts/ops/quantika-backup.cron /etc/cron.d/quantika-backup
+#   sudo chmod 644 /etc/cron.d/quantika-backup
+#   sudo chown root:root /etc/cron.d/quantika-backup
+#
+# LOG:
+#   tail -f /var/log/quantika-backup.log
+#   # or via journald: journalctl -t quantika-backup
+
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# daily at 00:00 UTC (03:00 BY)
+0 0 * * * root APP_DIR=/root/work/quantika-demo BACKUP_DIR=/var/backups/quantika /root/work/quantika-demo/scripts/ops/backup.sh >> /var/log/quantika-backup.log 2>&1
+
+# restore-test: runs 15 min after backup to verify last archive is valid
+15 0 * * * root APP_DIR=/root/work/quantika-demo BACKUP_DIR=/var/backups/quantika /root/work/quantika-demo/scripts/ops/restore-test.sh >> /var/log/quantika-backup.log 2>&1
