@@ -312,7 +312,7 @@ async function main() {
 
     reportSyncSuccess(db, syncLogId, {
       rowsChanged: finalCount.cnt,
-      upstreamVersion: 'searoute-1.0.0',
+      upstreamVersion: 'searoute-1.2.0',
     });
 
     console.log('[distances] ✓ Done');
