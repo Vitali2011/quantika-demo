@@ -1,70 +1,70 @@
-# Phase 1 Scope -- parse-cargo R3
+# Phase 1 Scope — week-B-ui-fixes (3 UI fixes)
 
-## Assumptions (Karpathy #1)
+## Assumptions (Rule A)
 
-Понимаю задачу как: точечная правка CARGO DESCRIPTION RULES секции в одном файле.
-Альтернатива: переписать всю секцию или добавить few-shot примеры.
-Иду по точечной правке, потому что: fewer changes = less risk of side effects; targeted fixes for identified root causes.
+Понимаю задачу как: 3 хирургических UI-фикса в одном PR (3 отдельных коммита).
+Альтернатива: 3 отдельных PR.
+Иду по одному PR, потому что: фиксы малые, все UI-layer, файлы не пересекаются.
+
+---
+
+## Fix 1 — EXPLAIN_DEAL_ENABLED NEXT_PUBLIC pair
+
+**Problem:** `ExplainDealModal` не имеет client-side guard. Серверная проверка в `app/match/[id]/page.tsx:71` гарантирует SSR-защиту, но ExplainDealModal при прямом импорте всегда рендерит кнопку.
+
+**Fix:**
+- `components/match/ExplainDealModal.tsx` — guard `if (process.env.NEXT_PUBLIC_EXPLAIN_DEAL_ENABLED !== 'true') return null;` — ПОСЛЕ хуков (hooks discipline)
+- `.env.local.example` — добавить `NEXT_PUBLIC_EXPLAIN_DEAL_ENABLED=false`
+
+**Must Not Break:** 22 существующих теста ExplainDealModal (все рендерятся без флага → тесты нужно адаптировать: задать env var до рендера)
+
+---
+
+## Fix 2 — SubsCountdownWidget live interval
+
+**Problem:** `remaining` вычисляется при монтировании, не обновляется. Countdown заморожен.
+
+**Fix:**
+- `components/deals/SubsCountdownWidget.tsx` — рефакторинг:
+  1. `computeRemaining(subsDeadline): number` — pure helper
+  2. `useState(() => computeRemaining(subsDeadline))` — ПЕРЕД feature flag check (rules of hooks)
+  3. `useEffect` с `setInterval(fn, 60_000)` + cleanup
+  4. Feature flag check — ПОСЛЕ хуков
+
+**Critical:** текущий ранний return перед хуками станет нарушением после добавления хуков. Перенести после хуков.
+
+---
+
+## Fix 3 — Touch target min-h-44px enforcement
+
+**Fix:**
+1. `app/globals.css` — `.touch-target { min-height: 44px; min-width: 44px; }` в `@layer utilities`
+2. `app/laytime/page.tsx` — class `touch-target` на primary buttons (Parse SOF, Add, Calculate) + key inputs
+3. `components/psc/PscSearchForm.tsx` — class на search button + IMO input
+4. `app/market/page.tsx` — НЕТ кнопок/inputs → skip
+
+---
 
 ## Affected Files
 
-| File                       | Change                                              | Risk |
-| -------------------------- | --------------------------------------------------- | ---- |
-| lib/prompts/parse-cargo.ts | 6 targeted edits in CARGO DESCRIPTION RULES section | LOW  |
+| File | Change |
+|------|--------|
+| `components/match/ExplainDealModal.tsx` | +1 guard строка |
+| `.env.local.example` | +1 env var |
+| `components/deals/SubsCountdownWidget.tsx` | рефакторинг (useState/useEffect) |
+| `app/globals.css` | +.touch-target utility |
+| `app/laytime/page.tsx` | +touch-target class на ~5 elements |
+| `components/psc/PscSearchForm.tsx` | +touch-target class на 2 elements |
+| `components/match/__tests__/ExplainDealModal.test.tsx` | +1 тест (flag-off → null) |
+| `components/deals/__tests__/SubsCountdownWidget.test.tsx` | +1 тест (60s tick) |
+| `app/laytime/__tests__/touch-targets.test.tsx` | новый файл (class presence test) |
 
-No other files touched.
+## Scope: 9 files | Rule G: YES (≥3 production files)
 
 ## Boundaries
 
-- Can Change: lines 130-160 (CARGO DESCRIPTION RULES section)
-- Cannot Change: stowage_factor field rules (lines 161-175), LAYCAN RULES, test files
-- Must Not Break: laycan match (currently 86.4% post-R1), commission/weight/ports fields
+- Can Change: перечисленные файлы
+- Cannot Change: API routes, middleware, bottom nav, auth, session
+- Must Not Break: все существующие тесты
 
-## Changes Detail
-
-### Change 1: HRCTD abbreviation fix (line ~137)
-
-FROM: 'HRCTD' -> 'Hot Rolled Coils Trimmed & Dried (HRCTD)'
-TO: 'HRCTD' -> 'Hot Rolled Coils Trimmed & Descaled (HRCTD)'
-Why: factual error in prompt. Affects ~15 fails (Cluster B).
-
-### Change 2: Add PNO abbreviation (after HRCPO line)
-
-ADD: '- PNO -> Plates Not Otherwise Specified (PNO)'
-Why: PNO undefined -> model guesses wrong expansion. Affects ~3 fails.
-
-### Change 3: Fix rule 2 -- stowage factor duplication (lines 142-143)
-
-REPLACE current rule 2 with clarified version:
-'2. Stowage factor: the numeric value (without units) MUST appear in cargo_description
-when stated in the email, e.g. stowage factor 51-52, without guarantee.
-The full 'X ft3/MT' notation also goes in the separate stowage_factor field.
-These are independent: both fields must be populated. Do not omit stowage from
-cargo_description because it is already in stowage_factor.'
-Why: rules 2 and 12 contradicted each other, causing model to omit stowage entirely.
-
-### Change 4: BULK mandatory rule (after rule 10)
-
-ADD: '10a. For BULK cargo: if stowage factor is stated, it is MANDATORY in cargo_description.'
-Example: corn with 'stw 51' -> 'Corn, stowage factor 51, without guarantee'
-
-### Change 5: BAGGED mandatory rule (after rule 10a)
-
-ADD: '10b. For BAGGED cargo: if bag dimensions or unit weight are stated, they are MANDATORY.'
-Example: 'salt bb 1.1x1.1x1.1m uw 1.25mt' -> 'Salt in big bags, dimensions 1.1m x 1.1m x 1.1m, unit weight 1.25 MT'
-
-### Change 6: Additional example showing stowage in cargo_description
-
-ADD to examples block: shows bulk grain with stowage factor correctly included.
-
-## PI3 Enforcement
-
-Only lib/prompts/parse-cargo.ts changes. No test files touched. Tests do not assert prompt content directly.
-PI3 threshold: >5 test expectation rewrites = STOP. Expected here: 0.
-
-## Acceptance Gate
-
-- cargo_description >= 87.0% (R23-A median over 3 runs)
-- Soft-merge if 85.0-86.9% (direction-correct)
-- Revert if < 85.0%
-- Anti-regression: laycan >= 85.4%, all other fields >= R22 - 1pp
+## Open Questions: нет

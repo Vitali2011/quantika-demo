@@ -42,4 +42,8 @@
   [dir="rtl"] .quantika-arrow {
     transform: scaleX(-1);
   }
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
 }

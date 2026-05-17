@@ -136,6 +136,8 @@ export function ExplainDealModal({ matchIndex, language = 'en', className }: Pro
     [handleClose],
   );
 
+  if (process.env.NEXT_PUBLIC_EXPLAIN_DEAL_ENABLED !== 'true') return null;
+
   return (
     <>
       {/* Trigger button */}

@@ -7,7 +7,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { getChartererGraceDays, normalizeDeadline } from '@/lib/deadlines/subs-guardian';
 
 export interface SubsCountdownWidgetProps {
@@ -16,27 +16,29 @@ export interface SubsCountdownWidgetProps {
   chartererTier?: 'blue-chip' | 'second' | 'weak';
 }
 
-export default function SubsCountdownWidget({
+function computeRemaining(subsDeadline: string | number): number {
+  const deadline = normalizeDeadline(subsDeadline);
+  return deadline.getTime() - Date.now();
+}
+
+// Inner component holds hooks; only mounted when flag is enabled.
+function SubsCountdownInner({
   dealId,
   subsDeadline,
   chartererTier,
 }: SubsCountdownWidgetProps) {
-  // Feature flag check
-  if (process.env.NEXT_PUBLIC_SUBS_TIMER_V2_ENABLED !== 'true') {
-    return null;
-  }
+  const [remaining, setRemaining] = useState(() => computeRemaining(subsDeadline));
 
-  // Parse deadline — handles ISO string, Unix seconds, or Unix ms
-  const deadline = normalizeDeadline(subsDeadline);
-  if (isNaN(deadline.getTime())) {
+  useEffect(() => {
+    setRemaining(computeRemaining(subsDeadline));
+    const id = setInterval(() => setRemaining(computeRemaining(subsDeadline)), 60_000);
+    return () => clearInterval(id);
+  }, [subsDeadline]);
+
+  if (isNaN(remaining)) {
     return <div>Invalid deadline</div>;
   }
 
-  // Calculate remaining time
-  const now = new Date();
-  const remaining = deadline.getTime() - now.getTime();
-
-  // Format countdown
   let countdownText = '';
   if (remaining <= 0) {
     countdownText = 'Expired';
@@ -56,7 +58,6 @@ export default function SubsCountdownWidget({
     }
   }
 
-  // Grace indicator
   const graceDays = getChartererGraceDays(chartererTier);
   const showGrace = graceDays > 0;
 
@@ -66,4 +67,11 @@ export default function SubsCountdownWidget({
       {showGrace && <div>+{graceDays} day{graceDays !== 1 ? 's' : ''} grace ({chartererTier})</div>}
     </div>
   );
+}
+
+export default function SubsCountdownWidget(props: SubsCountdownWidgetProps) {
+  if (process.env.NEXT_PUBLIC_SUBS_TIMER_V2_ENABLED !== 'true') {
+    return null;
+  }
+  return <SubsCountdownInner {...props} />;
 }
