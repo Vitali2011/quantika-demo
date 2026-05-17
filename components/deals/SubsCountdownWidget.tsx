@@ -7,7 +7,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { getChartererGraceDays, normalizeDeadline } from '@/lib/deadlines/subs-guardian';
 
 export interface SubsCountdownWidgetProps {
@@ -16,25 +16,32 @@ export interface SubsCountdownWidgetProps {
   chartererTier?: 'blue-chip' | 'second' | 'weak';
 }
 
+function computeRemaining(subsDeadline: string | number): number {
+  const deadline = normalizeDeadline(subsDeadline);
+  return deadline.getTime() - Date.now();
+}
+
 export default function SubsCountdownWidget({
   dealId,
   subsDeadline,
   chartererTier,
 }: SubsCountdownWidgetProps) {
+  const [remaining, setRemaining] = useState(() => computeRemaining(subsDeadline));
+
+  useEffect(() => {
+    setRemaining(computeRemaining(subsDeadline));
+    const id = setInterval(() => setRemaining(computeRemaining(subsDeadline)), 60_000);
+    return () => clearInterval(id);
+  }, [subsDeadline]);
+
   // Feature flag check
   if (process.env.NEXT_PUBLIC_SUBS_TIMER_V2_ENABLED !== 'true') {
     return null;
   }
 
-  // Parse deadline — handles ISO string, Unix seconds, or Unix ms
-  const deadline = normalizeDeadline(subsDeadline);
-  if (isNaN(deadline.getTime())) {
+  if (isNaN(remaining)) {
     return <div>Invalid deadline</div>;
   }
-
-  // Calculate remaining time
-  const now = new Date();
-  const remaining = deadline.getTime() - now.getTime();
 
   // Format countdown
   let countdownText = '';
