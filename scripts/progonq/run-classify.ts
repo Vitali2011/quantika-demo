@@ -14,8 +14,9 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { callAiJson } from '@/lib/ai-provider';
-import { CLASSIFICATION_SYSTEM_PROMPT } from '@/lib/prompts';
+import { CLASSIFICATION_SYSTEM_PROMPT, CLASSIFICATION_SYSTEM_PROMPT_R4 } from '@/lib/prompts';
 import { CLASSIFY_SCHEMA } from '@/lib/schemas';
+import { normalizeRef, daysMatch, normalizeCompanyName } from '@/lib/email-normalize';
 
 const SCOPE = 'CLASSIFY';
 const MAX_BODY_CHARS = 3000;
@@ -59,6 +60,16 @@ export interface ClassifyMatch {
   model_sender: string | null;
 }
 
+export interface NormalizedMatch {
+  category_match: boolean;
+  urgency_match: boolean;
+  is_unanswered_match: boolean;
+  days_match: boolean;
+  company_name_match: boolean;
+  ref_urgency_normalized: string;
+  ref_days_normalized: number | null;
+}
+
 interface RunResult {
   scenario_id: string;
   category: string;
@@ -68,6 +79,7 @@ interface RunResult {
   error?: string;
   duration_ms: number;
   match: ClassifyMatch;
+  normalized_match?: NormalizedMatch;
 }
 
 function truncate(s: string, max: number): string {
@@ -100,6 +112,32 @@ export function scoreClassification(ref: AiClassification, model: AiClassificati
   };
 }
 
+export function scoreNormalized(
+  ref: AiClassification,
+  model: AiClassification | null,
+  emailDateIso: string,
+): NormalizedMatch {
+  const norm = normalizeRef(ref, emailDateIso);
+  const modelCompanyNorm = normalizeCompanyName(model?.original_sender_company ?? null);
+  return {
+    category_match: model !== null && norm.category === model.category,
+    urgency_match: model !== null && ciEqual(norm.urgency, model.urgency),
+    is_unanswered_match: model !== null && norm.is_unanswered === model.is_unanswered,
+    days_match: model !== null && daysMatch(norm.days_without_reply, model.days_without_reply ?? null),
+    company_name_match:
+      model !== null &&
+      (norm.original_sender_company === null && modelCompanyNorm === null
+        ? true
+        : norm.original_sender_company !== null &&
+          modelCompanyNorm !== null &&
+          norm.original_sender_company === modelCompanyNorm),
+    ref_urgency_normalized: norm.urgency,
+    ref_days_normalized: norm.days_without_reply,
+  };
+}
+
+let ACTIVE_SYSTEM_PROMPT = CLASSIFICATION_SYSTEM_PROMPT;
+
 async function classifyOne(scenario: Scenario): Promise<AiClassification | null> {
   const body = truncate(scenario.input.body, MAX_BODY_CHARS);
   const emailInput = [{
@@ -114,7 +152,7 @@ async function classifyOne(scenario: Scenario): Promise<AiClassification | null>
 
   const result = await callAiJson<{ classifications: AiClassification[] }>(
     SCOPE,
-    CLASSIFICATION_SYSTEM_PROMPT,
+    ACTIVE_SYSTEM_PROMPT,
     userPrompt,
     {
       maxTokens: 4000,
@@ -157,6 +195,7 @@ async function runScenario(scenario: Scenario): Promise<RunResult> {
     error,
     duration_ms: Date.now() - t0,
     match: scoreClassification(scenario.reference_output, model),
+    normalized_match: scoreNormalized(scenario.reference_output, model, scenario.input.date),
   };
 }
 
@@ -166,6 +205,12 @@ async function main() {
   const limitArg = process.argv.indexOf('--limit');
   const limit = limitArg >= 0 ? parseInt(process.argv[limitArg + 1], 10) : Infinity;
   const outArg = process.argv.indexOf('--output');
+  const useR4 = process.argv.includes('--r4') || process.env.EMAIL_PARSE_R4_ENABLED === 'true';
+
+  if (useR4) {
+    ACTIVE_SYSTEM_PROMPT = CLASSIFICATION_SYSTEM_PROMPT_R4;
+    console.error('[run-classify] Using R4 improved prompt (EMAIL_PARSE_R4_ENABLED)');
+  }
 
   mkdirSync(RESULTS_DIR, { recursive: true });
   const outPath = outArg >= 0
@@ -212,11 +257,25 @@ async function main() {
   const unsOk = noErr.filter((r) => r.match.is_unanswered_match).length;
   const errors = total - noErr.length;
 
+  // Normalized accuracy (removes GT staleness from urgency + days)
+  const normCatOk = noErr.filter((r) => r.normalized_match?.category_match).length;
+  const normUrgOk = noErr.filter((r) => r.normalized_match?.urgency_match).length;
+  const normUnsOk = noErr.filter((r) => r.normalized_match?.is_unanswered_match).length;
+  const normDaysOk = noErr.filter((r) => r.normalized_match?.days_match).length;
+  const normCompanyOk = noErr.filter((r) => r.normalized_match?.company_name_match).length;
+
   console.error(`\n[run-classify] DONE round=${round}`);
+  console.error('--- Raw (exact GT) ---');
   console.error(`Category accuracy:     ${catOk}/${total} (${((catOk / total) * 100).toFixed(1)}%)`);
   console.error(`Urgency accuracy:      ${urgOk}/${total} (${((urgOk / total) * 100).toFixed(1)}%)`);
   console.error(`is_unanswered match:   ${unsOk}/${total} (${((unsOk / total) * 100).toFixed(1)}%)`);
   console.error(`Errors:                ${errors}`);
+  console.error('--- Normalized (GT staleness corrected) ---');
+  console.error(`Category accuracy:     ${normCatOk}/${total} (${((normCatOk / total) * 100).toFixed(1)}%)`);
+  console.error(`Urgency accuracy:      ${normUrgOk}/${total} (${((normUrgOk / total) * 100).toFixed(1)}%)`);
+  console.error(`is_unanswered match:   ${normUnsOk}/${total} (${((normUnsOk / total) * 100).toFixed(1)}%)`);
+  console.error(`Days ±10d tolerance:   ${normDaysOk}/${total} (${((normDaysOk / total) * 100).toFixed(1)}%)`);
+  console.error(`Company name match:    ${normCompanyOk}/${total} (${((normCompanyOk / total) * 100).toFixed(1)}%)`);
   console.error(`Output: ${outPath}`);
 
   // Confusion matrix for category

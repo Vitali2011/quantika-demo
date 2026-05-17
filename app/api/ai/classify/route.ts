@@ -5,7 +5,7 @@ import { callAiJson } from '@/lib/ai-provider';
 import { CLASSIFY_SCHEMA } from '@/lib/schemas';
 import { LLMTimeoutError } from '@/lib/openai';
 import { endpointLlmTimeout } from '@/lib/openai-helpers';
-import { CLASSIFICATION_SYSTEM_PROMPT } from '@/lib/prompts';
+import { getClassifyPrompt } from '@/lib/prompts';
 import { MAX_EMAIL_BODY_CHARS } from '@/lib/constants';
 import { truncateText } from '@/lib/utils';
 import { classifyEmails, AiClassification } from '@/lib/classification-service';
@@ -34,7 +34,7 @@ async function classifyBatch(batch: EmailInput[]): Promise<AiClassification[]> {
   const todayIso = new Date().toISOString().split('T')[0];
   const result = await callAiJson<{ classifications: AiClassification[] }>(
     'CLASSIFY',
-    CLASSIFICATION_SYSTEM_PROMPT,
+    getClassifyPrompt(),
     `Today's date: ${todayIso}\n\n${JSON.stringify(batch)}`,
     { timeoutMs: endpointLlmTimeout(120), responseSchema: CLASSIFY_SCHEMA },
   );
