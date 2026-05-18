@@ -59,7 +59,9 @@
           "confidence": "confirmed",
           "source_text": "Spot"
         },
-        "laycan": null,
+        "laycan": {
+          "value": "Spot"
+        },
         "loading_rate": null,
         "loading_terms": {
           "value": "SSHEX EIU",

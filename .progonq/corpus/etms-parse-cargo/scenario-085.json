@@ -63,7 +63,9 @@
           "confidence": "confirmed",
           "source_text": "SPOT"
         },
-        "laycan": null,
+        "laycan": {
+          "value": "Spot"
+        },
         "loading_rate": {
           "value": 4000,
           "confidence": "confirmed",
