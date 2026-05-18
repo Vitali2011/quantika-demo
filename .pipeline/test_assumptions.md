@@ -209,3 +209,41 @@ transition/i)`. If the implementation throws a different error subclass (e.g., a
    only**: The spec body definition says `status: 'saved'|'dismissed'|'archived'`. Tests
    verify that 'shortlist' and non-enum values like 'pending' or 'save' are rejected with 400. If the spec is amended to allow 'shortlist' as a bulk target (e.g., to un-shortlist
    matching), tests Class 6 assertions will need revision.
+
+---
+
+# Phase 2a — Matches M3 UI Assumptions
+
+1. **Score breakdown state persisted in component-level useState (not URL or localStorage)**:
+   The spec says either URL `?breakdown=<id>` or localStorage is acceptable. Tests assert
+   a state variable named `expandedBreakdown` (or similar) exists at the component level.
+   Assumption: the impl agent uses `useState` for this. If the impl uses URL params instead,
+   tests for `expandedBreakdown` will fail and the contract is still met via the URL state
+   assertions (which also cover this indirectly). The impl agent should document the actual
+   choice in a comment in MatchesClient.tsx.
+
+2. **Bulk checkbox visibility is always-visible (not hidden until another is selected)**:
+   The spec says "hidden when no other checkboxes selected OR always visible — document
+   choice". Tests assert `type="checkbox"` appears in the source without conditional hide
+   logic. If the impl hides checkboxes behind a hover/first-selection interaction, the
+   checkbox tests still pass (the `type="checkbox"` attribute must appear in the JSX
+   regardless of visibility logic). The impl agent must document the choice.
+
+3. **Delete (admin) button is always rendered but disabled without admin token**:
+   The spec says "visible but disabled unless user has provided admin token OR always
+   visible". Tests only verify the button text "Delete" and the word "admin" appear; they
+   do not assert `disabled` attribute or token-checking logic. If the impl conditionally
+   renders Delete only when an admin token is present, the test will fail when no token is
+   in state (because the Delete text won't appear). The impl must always render the button.
+
+4. **Filter API call is triggered after "Apply" click, not on each keystroke**:
+   The spec says filter changes trigger an API call to `/api/matches?<filter_params>`.
+   Tests assert that `/api/matches?` or `/api/matches${` appears in the source. This does
+   not mandate debouncing or immediate-change behavior. The impl agent may choose either
+   pattern (Apply-button-triggered or debounced-input-triggered) — tests only verify the
+   URL pattern exists in the source.
+
+5. **"Archive All when N > 5" confirm check uses `> 5`, not `>= 5` or `> 4`**:
+   The spec says "when N > 5". Tests assert the literal `> 5` pattern in source. If the
+   impl uses `>= 6` (equivalent but not literally `> 5`), the source-level regex will
+   fail. The impl should use `> 5` explicitly.
