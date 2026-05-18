@@ -1,18 +1,24 @@
 {
-  "phase": "4",
-  "checklist": {
-    "tests_output_shown": true,
-    "no_junk_markers": true,
-    "secrets_preflight": true,
-    "pi3_resolved": true,
-    "pi2_resolved": true,
-    "cross_cutting_verified": true,
-    "admin_middleware_whitelist": null
+  "phase": "4_deliver",
+  "feature": "matches-m1",
+  "date": "2026-05-18",
+  "verdict": "DELIVERED",
+  "commit": "77bdcf7",
+  "branch": "orchestrator/matches-m1",
+  "pr_url": "https://github.com/Vitali2011/quantika-demo/pull/227",
+  "checks": {
+    "npm_test": "5768 passed / 5 pre-existing failures (EACCES in jwc/adapter.test.ts)",
+    "npm_run_lint": "0 errors / 21 pre-existing warnings",
+    "npm_run_build": "exit 0 — routes /matches /api/matches /api/matches/[id] present",
+    "test_rewrite_count": 0
   },
-  "deploy_target": "none",
-  "smoke_passed": null,
-  "commit_sha": "e1736fe",
-  "pr_url": "https://github.com/Vitali2011/quantika-demo/pull/209",
-  "branch": "orchestrator/p9-sentry-wiring-v2",
-  "build_note": "Passed with NODE_OPTIONS=--max-old-space-size=4096 (VPS OOM constraint, pre-existing)"
+  "qi_fixes_applied": [
+    "HIGH: auth order — requireSession before isFeatureEnabled in all 3 handlers",
+    "HIGH: page.tsx — added cookies()+getSession()+redirect session guard",
+    "HIGH: PATCH route — isNaN(id)||id<1 guard on parseInt result",
+    "MEDIUM: POST score — isFinite check + clamp 0-100",
+    "MEDIUM: GET limit/offset — NaN guards on parseInt results",
+    "MEDIUM: catch blocks — generic 'Internal server error' message",
+    "MEDIUM: MatchesClient — Restore button for archived→saved transition"
+  ]
 }

@@ -1,0 +1,83 @@
+{
+  "phase": "3",
+  "qi_persona": "security-auditor",
+  "classes_checked": [1, 2, 3, 5, 6, 7, 8, 9, 10],
+  "findings": [
+    {
+      "class": 9,
+      "severity": "HIGH",
+      "file": "app/api/matches/route.ts:28-37 and app/api/matches/[id]/route.ts:28-41",
+      "summary": "Feature flag checked BEFORE requireSession in all three handlers (GET, POST, PATCH). Spec requires auth-first. Unauthenticated requests get 503 instead of 401, leaking feature availability to anonymous callers."
+    },
+    {
+      "class": 9,
+      "severity": "HIGH",
+      "file": "app/matches/page.tsx:10-21",
+      "summary": "Server component MatchesPage calls getStore().getDatabase() and listMatches() with no session check and no feature flag check. Unauthenticated users navigating to /matches receive all DB matches in the rendered HTML."
+    },
+    {
+      "class": 3,
+      "severity": "HIGH",
+      "file": "app/api/matches/[id]/route.ts:44",
+      "summary": "parseInt(idStr, 10) result is not validated for NaN or negative values before use. PATCH /api/matches/abc passes NaN to getMatch(); PATCH /api/matches/-1 passes -1. Both hit the DB without a 400 rejection. Missing: isNaN(id) || id < 1 guard."
+    },
+    {
+      "class": 2,
+      "severity": "MEDIUM",
+      "file": "app/api/matches/route.ts:105",
+      "summary": "score field accepts NaN/Infinity: `typeof score === 'number' ? score : 0` passes NaN and Infinity through to createMatch. SQLite INTEGER column coerces these to NULL via better-sqlite3, silently storing NULL instead of rejecting the input."
+    },
+    {
+      "class": 2,
+      "severity": "MEDIUM",
+      "file": "app/api/matches/route.ts:54-58",
+      "summary": "parseInt on limit/offset query params is not guarded against NaN. ?limit=abc yields NaN, which passes the `limit !== undefined` check in listMatches and produces `LIMIT NaN` SQL. better-sqlite3 may throw a runtime error or silently ignore."
+    },
+    {
+      "class": 5,
+      "severity": "MEDIUM",
+      "file": "app/matches/MatchesClient.tsx:87-110",
+      "summary": "Action buttons for 'archived' matches are all hidden (Save/Dismiss/Archive each gated on status !== 'archived'). The transition table allows archived→saved, but the UI offers no button to trigger it. Archived matches become permanently stuck in the UI."
+    },
+    {
+      "class": 7,
+      "severity": "MEDIUM",
+      "file": "app/matches/page.tsx:10-21",
+      "summary": "MATCHES_ENABLED feature flag is enforced in API routes but not in the /matches server-rendered page. When the feature is disabled, the page still renders all matches from the DB — inconsistent feature-flag enforcement."
+    },
+    {
+      "class": 9,
+      "severity": "MEDIUM",
+      "file": "app/api/matches/route.ts:63-68 and app/api/matches/[id]/route.ts:75-78",
+      "summary": "Catch-all 500 handler returns error.message verbatim: { error: error.message }. SQLite/better-sqlite3 error messages can expose table names, column names, and constraint details to API callers."
+    },
+    {
+      "class": 9,
+      "severity": "LOW",
+      "file": "app/api/matches/route.ts:18-26 and app/api/matches/[id]/route.ts:18-26",
+      "summary": "checkAuth helper uses fragile duck-type check (presence of .session property) to discriminate between a NextResponse 401 and a session object. Any object without .session silently passes auth. Robust approach: use instanceof NextResponse."
+    },
+    {
+      "class": 3,
+      "severity": "LOW",
+      "file": "lib/matching/matches-repository.ts:41-54 and lib/migrations/032-matches.ts:12",
+      "summary": "No CHECK constraint on score in the migration, and no validation in createMatch or the POST handler rejects negative scores. score=-999 is silently accepted. If score represents a match quality percentage (0-100), this should be enforced."
+    }
+  ],
+  "verdict": "BLOCK",
+  "block_reasons": [
+    "HIGH: Auth order inverted — feature flag runs before requireSession in all 3 API handlers",
+    "HIGH: /matches server page has zero auth/session protection — leaks all DB matches to anonymous users",
+    "HIGH: PATCH id param not validated for NaN/negative — passes unchecked values to DB layer"
+  ],
+  "required_fixes_before_pass": [
+    "In GET, POST (route.ts) and PATCH ([id]/route.ts): move checkAuth() call to run BEFORE isFeatureEnabled() check",
+    "In app/matches/page.tsx: add requireSession check (redirect to login if no session) and MATCHES_ENABLED guard",
+    "In [id]/route.ts after parseInt: add `if (isNaN(id) || id < 1) return NextResponse.json({ error: 'Invalid id' }, { status: 400 })`"
+  ],
+  "pi3_compliance": true,
+  "phase_2_verdict_read": true,
+  "phase_2_test_rewrite_count_observed": 0,
+  "fail_rework_round": 0,
+  "notes": "test_rewrite_count=0 confirmed, SHA checksums before/after are identical for all 5 test files. PI3 fully compliant. Migration schema correct: version=32, name=matches, IF NOT EXISTS on table and all 3 indexes, down() uses DROP IF EXISTS, all 4 status values in CHECK constraint. listMatches sortBy/sortDir are whitelisted before interpolation — no SQL injection. VALID_TRANSITIONS covers all 4 states. Error message 'Invalid transition' matches test contract."
+}

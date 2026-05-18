@@ -1,0 +1,31 @@
+{
+  "phase": "1",
+  "task_id": "matches-m1",
+  "task_description": "M1 manual-only matches foundation: DB migration + repository + API routes (GET/POST/PATCH) + UI with status filters, sort, and action buttons",
+  "files_in_scope": [
+    "lib/migrations/032-matches.ts",
+    "lib/migrations/index.ts",
+    "lib/matching/matches-repository.ts",
+    "app/api/matches/route.ts",
+    "app/api/matches/[id]/route.ts",
+    "app/matches/page.tsx",
+    "app/matches/MatchesClient.tsx",
+    "lib/migrations/__tests__/032-matches.test.ts",
+    "lib/matching/__tests__/matches-repository.test.ts",
+    "__tests__/api/matches.test.ts",
+    "__tests__/api/matches-id.test.ts",
+    "__tests__/matches-page.test.tsx"
+  ],
+  "scope_size": 12,
+  "cross_cutting_surface": [
+    {"file": "lib/types.ts", "symbol": "Match", "risk": "LOW"},
+    {"file": "lib/migrations/index.ts", "symbol": "allMigrations", "risk": "MEDIUM"},
+    {"file": "lib/session.ts", "symbol": "requireSession", "risk": "LOW"}
+  ],
+  "rule_g_triggered": true,
+  "rule_g_reason": "migration+scope≥3+API+UI — 5+ production files, migration domain",
+  "boundary_classes_planned": [1, 3, 5, 8, 9, 10],
+  "gotchas_acknowledged": ["worktree-from-main", "pi3-needs-review", "dynamic-imports", "server-side-flag"],
+  "assumptions_path": ".pipeline/phase_1_scope.md",
+  "escalate_to": null
+}
