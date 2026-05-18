@@ -1,32 +1,20 @@
-# Phase 1 SCOPE — feat(stubs): /upgrade + /matches real content
+# Phase 1 Scope — p6-webhooks-bypass
 
 ## Assumptions (Rule A)
 
-Понимаю задачу как: превратить 2 заглушки в статичные страницы с реальным UX-контентом.
-Альтернатива: добавить backend (API/matches). Иду по статичным страницам потому что: задача явно говорит "без backend", mock data + TODO comment.
+Понимаю задачу как: добавить webhook paths в AUTH_BYPASS_PATHS в middleware.ts и в
+bypassPaths в __tests__/middleware-auth.test.ts, чтобы внешние сервисы (Meta/WhatsApp
+и Pipedrive) могли вызывать webhook endpoints без auth-cookie.
+
+Задача ожидала 5 webhook routes — реально найдено 2 (остальные browser-based или internal):
+- /api/whatsapp/webhook — GET (Meta verification) + POST (events), caller=Meta
+- /api/integrations/pipedrive/webhook — POST (events), caller=Pipedrive
 
 ## Files in Scope
 
-Can Change:
-- app/upgrade/page.tsx
-- app/matches/page.tsx
-- app/__tests__/upgrade-page.test.tsx (NEW)
-- app/__tests__/matches-page.test.tsx (NEW)
-- __tests__/pages/upgrade-page.test.tsx (update 1 expectation)
-- __tests__/pages/matches-page.test.tsx (update 2 expectations)
+1. middleware.ts — добавить 2 пути в AUTH_BYPASS_PATHS Set
+2. __tests__/middleware-auth.test.ts — добавить 2 пути в bypassPaths array
 
-Cannot Change: backend/API, middleware, session
+## Rule G: YES (auth domain, mandatory even for 2 files / <50 LOC)
 
-## PI3 count: 3 intentional changes (< 6 limit) — proceed
-
-## Tier data
-Free: 5 deals/month, basic match, email digest
-Pro: unlimited deals, AI explain-deal, WhatsApp digest, RAG clauses
-Enterprise: SSO, white-label, dedicated support, API access
-CTA: mailto:sales@quantika.org
-
-## /api/matches: NOT FOUND → use DEMO_MATCHES static array + TODO comment
-
-## Rule G triggered (≥3 files)
-Phase 2a: test-author writes app/__tests__/ files
-Phase 2b: impl writes pages + updates __tests__/pages/ stubs
+## Precedent: /api/admin/cron-heartbeat + /api/admin/market/upload-csv (#162)

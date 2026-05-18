@@ -16,6 +16,10 @@ const AUTH_BYPASS_PATHS = new Set([
   '/api/admin/cron-heartbeat',
   // Market CSV upload has its own X-Admin-Token auth (requireAdmin) — must not be redirected to /login
   '/api/admin/market/upload-csv',
+  // Meta webhook has its own HMAC-SHA256 signature verification
+  '/api/whatsapp/webhook',
+  // Pipedrive webhook has its own HMAC-SHA256 signature verification
+  '/api/integrations/pipedrive/webhook',
 ]);
 
 const AUTH_BYPASS_PREFIXES = ['/_next/static', '/_next/image', '/_next/webpack'];

@@ -1,21 +1,14 @@
 {
   "phase": "1",
-  "task_id": "stubs-upgrade-matches",
-  "task_description": "Convert /upgrade and /matches stub pages to real content with 3-tier cards and empty-state list",
-  "files_in_scope": [
-    "app/upgrade/page.tsx",
-    "app/matches/page.tsx",
-    "app/__tests__/upgrade-page.test.tsx",
-    "app/__tests__/matches-page.test.tsx",
-    "__tests__/pages/upgrade-page.test.tsx",
-    "__tests__/pages/matches-page.test.tsx"
-  ],
-  "scope_size": 6,
+  "task_id": "p6-webhooks-bypass",
+  "task_description": "Add 2 webhook paths to AUTH_BYPASS_PATHS so Meta/WhatsApp and Pipedrive can call them without demo auth cookie",
+  "files_in_scope": ["middleware.ts", "__tests__/middleware-auth.test.ts"],
+  "scope_size": 2,
   "cross_cutting_surface": [],
   "rule_g_triggered": true,
-  "rule_g_reason": "scope>=3",
-  "boundary_classes_planned": [1, 9],
-  "gotchas_acknowledged": ["pi3-needs-review"],
+  "rule_g_reason": "auth",
+  "boundary_classes_planned": [6, 9, 10],
+  "gotchas_acknowledged": ["worktree-from-main"],
   "assumptions_path": ".pipeline/phase_1_scope.md",
   "escalate_to": null
 }
