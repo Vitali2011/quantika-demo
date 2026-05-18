@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import type { StoredMatch, MatchStatus } from '@/lib/matching/matches-repository';
 
 interface Props {
@@ -9,14 +10,88 @@ interface Props {
 
 const ALL_STATUSES: MatchStatus[] = ['shortlist', 'saved', 'dismissed', 'archived'];
 
+const CARGO_TYPE_OPTIONS = ['grain', 'coal', 'ore', 'container', 'project'];
+
+interface ScoreComponent {
+  label: string;
+  points: number;
+  max: number;
+  reason: string;
+}
+
 export default function MatchesClient({ initialMatches }: Props) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // Core state
   const [matches, setMatches] = useState<StoredMatch[]>(initialMatches);
   const [filterStatus, setFilterStatus] = useState<MatchStatus | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [expandedBreakdown, setExpandedBreakdown] = useState<number | null>(null);
+  const [showModal, setShowModal] = useState<{ action: string; count: number } | null>(null);
+  const [bulkError, setBulkError] = useState<string | null>(null);
 
-  const filtered = matches.filter(
-    (m) => !filterStatus || m.status === filterStatus
+  // Filter panel state — lazy-initialized from URL search params on first render
+  const [filtersOpen, setFiltersOpen] = useState(() =>
+    searchParams.has('cargo_type') ||
+    searchParams.has('route') ||
+    searchParams.has('laycan_from') ||
+    searchParams.has('laycan_to') ||
+    searchParams.has('score_min') ||
+    searchParams.has('dwt_min') ||
+    searchParams.has('dwt_max')
   );
+  const [cargoTypes, setCargoTypes] = useState<string[]>(() => {
+    const v = searchParams.get('cargo_type');
+    return v ? v.split(',').filter(Boolean) : [];
+  });
+  const [route, setRoute] = useState(() => searchParams.get('route') ?? '');
+  const [laycan_from, setLaycanFrom] = useState(() => searchParams.get('laycan_from') ?? '');
+  const [laycan_to, setLaycanTo] = useState(() => searchParams.get('laycan_to') ?? '');
+  const [score_min, setScoreMin] = useState(() => searchParams.get('score_min') ?? '');
+  const [dwt_min, setDwtMin] = useState(() => searchParams.get('dwt_min') ?? '');
+  const [dwt_max, setDwtMax] = useState(() => searchParams.get('dwt_max') ?? '');
 
+  // Apply Filters handler
+  const handleApplyFilters = useCallback(async () => {
+    const params = new URLSearchParams();
+    for (const ct of cargoTypes) params.append('cargo_type', ct);
+    if (route) params.set('route', route);
+    if (laycan_from) params.set('laycan_from', laycan_from);
+    if (laycan_to) params.set('laycan_to', laycan_to);
+    if (score_min) params.set('score_min', score_min);
+    if (dwt_min) params.set('dwt_min', dwt_min);
+    if (dwt_max) params.set('dwt_max', dwt_max);
+
+    const qs = params.toString();
+    router.push(qs ? `/matches?${qs}` : '/matches');
+
+    const res = await fetch(qs ? `/api/matches?${qs}` : '/api/matches');
+    if (res.ok) {
+      const data = await res.json();
+      setMatches(data.matches);
+    }
+  }, [cargoTypes, route, laycan_from, laycan_to, score_min, dwt_min, dwt_max, router]);
+
+  // Clear Filters handler
+  const handleClearFilters = useCallback(async () => {
+    setCargoTypes([]);
+    setRoute('');
+    setLaycanFrom('');
+    setLaycanTo('');
+    setScoreMin('');
+    setDwtMin('');
+    setDwtMax('');
+    router.push('/matches');
+
+    const res = await fetch('/api/matches');
+    if (res.ok) {
+      const data = await res.json();
+      setMatches(data.matches);
+    }
+  }, [router]);
+
+  // Single match action
   async function handleAction(id: number, status: MatchStatus) {
     const res = await fetch(`/api/matches/${id}`, {
       method: 'PATCH',
@@ -25,11 +100,59 @@ export default function MatchesClient({ initialMatches }: Props) {
     });
     if (res.ok) {
       const updated: StoredMatch = await res.json();
-      setMatches((prev) =>
-        prev.map((m) => (m.id === id ? updated : m))
-      );
+      setMatches((prev) => prev.map((m) => (m.id === id ? updated : m)));
     }
   }
+
+  // Bulk action handler
+  async function handleBulkAction(action: string) {
+    const ids = Array.from(selectedIds);
+    const isDelete = action === 'delete';
+
+    const res = await fetch('/api/matches/bulk', {
+      method: isDelete ? 'DELETE' : 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(isDelete ? { ids } : { ids, status: action }),
+    });
+
+    if (!res.ok) {
+      setBulkError(`Bulk action failed: ${res.status}`);
+      return;
+    }
+
+    // Refresh matches after successful bulk action
+    const refreshRes = await fetch('/api/matches');
+    if (refreshRes.ok) {
+      const data = await refreshRes.json();
+      setMatches(data.matches);
+    }
+
+    // Clear selection after successful bulk action
+    setSelectedIds(new Set());
+    setBulkError(null);
+  }
+
+  // Toggle checkbox selection
+  function toggleSelect(id: number) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }
+
+  // Toggle score breakdown expansion
+  function toggleBreakdown(id: number) {
+    setExpandedBreakdown((prev) => (prev === id ? null : id));
+  }
+
+  const filtered = matches.filter(
+    (m) => !filterStatus || m.status === filterStatus
+  );
 
   return (
     <div className="space-y-4">
@@ -50,7 +173,131 @@ export default function MatchesClient({ initialMatches }: Props) {
             {s}
           </button>
         ))}
+        <button
+          onClick={() => setFiltersOpen((o) => !o)}
+          className="px-3 py-1 rounded-full text-sm border bg-white text-gray-700 border-gray-300 ml-2"
+        >
+          Advanced Filters
+        </button>
       </div>
+
+      {/* Advanced Filter Panel */}
+      {filtersOpen && (
+        <div className="bg-white rounded-lg border p-4 space-y-4">
+          <h3 className="font-semibold text-sm text-gray-700">Filters</h3>
+
+          {/* Cargo type checkboxes */}
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Cargo Type</label>
+            <div className="flex flex-wrap gap-3">
+              {CARGO_TYPE_OPTIONS.map((ct) => (
+                <label key={ct} className="flex items-center gap-1 text-sm capitalize">
+                  <input
+                    type="checkbox"
+                    checked={cargoTypes.includes(ct)}
+                    onChange={() => {
+                      setCargoTypes((prev) =>
+                        prev.includes(ct) ? prev.filter((x) => x !== ct) : [...prev, ct]
+                      );
+                    }}
+                  />
+                  {ct}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Route (Port / UNLOCODE) */}
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Route (Port / UNLOCODE)</label>
+            <input
+              type="text"
+              value={route}
+              onChange={(e) => setRoute(e.target.value)}
+              placeholder="e.g. UAODS or Port Name"
+              className="border rounded px-2 py-1 text-sm w-full"
+            />
+          </div>
+
+          {/* Laycan range */}
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <label className="block text-xs font-medium text-gray-600 mb-1">Laycan From</label>
+              <input
+                type="date"
+                value={laycan_from}
+                onChange={(e) => setLaycanFrom(e.target.value)}
+                className="border rounded px-2 py-1 text-sm w-full"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block text-xs font-medium text-gray-600 mb-1">Laycan To</label>
+              <input
+                type="date"
+                value={laycan_to}
+                onChange={(e) => setLaycanTo(e.target.value)}
+                className="border rounded px-2 py-1 text-sm w-full"
+              />
+            </div>
+          </div>
+
+          {/* Score min */}
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Min Score</label>
+            <input
+              type="number"
+              value={score_min}
+              onChange={(e) => setScoreMin(e.target.value)}
+              placeholder="0"
+              min={0}
+              max={100}
+              className="border rounded px-2 py-1 text-sm w-32"
+            />
+          </div>
+
+          {/* DWT range */}
+          <div className="flex gap-4">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">DWT Min</label>
+              <input
+                type="number"
+                value={dwt_min}
+                onChange={(e) => setDwtMin(e.target.value)}
+                placeholder="0"
+                min={0}
+                className="border rounded px-2 py-1 text-sm w-32"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">DWT Max</label>
+              <input
+                type="number"
+                value={dwt_max}
+                onChange={(e) => setDwtMax(e.target.value)}
+                placeholder="unlimited"
+                min={0}
+                className="border rounded px-2 py-1 text-sm w-32"
+              />
+            </div>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex gap-2">
+            <button
+              onClick={handleApplyFilters}
+              className="px-4 py-2 text-sm rounded bg-blue-600 text-white hover:bg-blue-700"
+            >
+              Apply
+            </button>
+            <button
+              onClick={handleClearFilters}
+              className="px-4 py-2 text-sm rounded bg-gray-100 text-gray-700 hover:bg-gray-200"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Match list */}
       {filtered.length === 0 ? (
@@ -61,65 +308,196 @@ export default function MatchesClient({ initialMatches }: Props) {
         <ul className="space-y-4">
           {filtered.map((match) => (
             <li key={match.id} className="bg-white rounded-lg border p-4 space-y-2">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-medium text-sm">
-                    Cargo: <span className="text-gray-700">{match.cargo_id}</span>
+              <div className="flex items-start gap-3">
+                {/* Checkbox for bulk selection */}
+                <div className="pt-1">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(match.id)}
+                    onChange={() => toggleSelect(match.id)}
+                    className="w-4 h-4 cursor-pointer"
+                  />
+                </div>
+
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium text-sm">
+                        Cargo: <span className="text-gray-700">{match.cargo_id}</span>
+                      </div>
+                      <div className="font-medium text-sm">
+                        Vessel: <span className="text-gray-700">{match.vessel_id}</span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-blue-600">{match.score}%</div>
+                      <div className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 capitalize">
+                        {match.status}
+                      </div>
+                    </div>
                   </div>
-                  <div className="font-medium text-sm">
-                    Vessel: <span className="text-gray-700">{match.vessel_id}</span>
+
+                  {match.reason && (
+                    <div className="text-xs text-gray-500 truncate">
+                      {match.reason}
+                    </div>
+                  )}
+
+                  {/* Score Breakdown toggle */}
+                  {match.reason_structured && (
+                    <button
+                      onClick={() => toggleBreakdown(match.id)}
+                      className="text-xs text-blue-600 hover:underline mt-1"
+                    >
+                      {expandedBreakdown === match.id ? 'Hide Breakdown' : 'Show Breakdown'}
+                    </button>
+                  )}
+
+                  {/* Score Breakdown panel */}
+                  {expandedBreakdown === match.id && match.reason_structured && (() => {
+                    let components: ScoreComponent[] = [];
+                    try {
+                      components = JSON.parse(match.reason_structured as string);
+                    } catch {
+                      components = [];
+                    }
+                    return (
+                      <div className="mt-2 space-y-2 border-t pt-2">
+                        <h4 className="text-xs font-semibold text-gray-600">Score Breakdown</h4>
+                        {components.map((comp, idx) => (
+                          <div key={idx} className="space-y-0.5">
+                            <div className="flex justify-between text-xs">
+                              <span className="font-medium">{comp.label}</span>
+                              <span>{comp.points} / {comp.max} points</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-1.5">
+                              <div
+                                className="bg-blue-500 h-1.5 rounded-full"
+                                style={{ width: `${((comp.points / comp.max) * 100).toFixed(0)}%` }}
+                              />
+                            </div>
+                            {comp.reason && (
+                              <p className="text-xs text-gray-500">{comp.reason}</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
+
+                  {/* Action buttons */}
+                  <div className="flex gap-2 mt-2">
+                    {match.status !== 'saved' && match.status !== 'archived' && (
+                      <button
+                        onClick={() => handleAction(match.id, 'saved')}
+                        className="px-3 py-1 text-xs rounded bg-green-100 text-green-700 hover:bg-green-200"
+                      >
+                        Save
+                      </button>
+                    )}
+                    {match.status !== 'dismissed' && match.status !== 'archived' && (
+                      <button
+                        onClick={() => handleAction(match.id, 'dismissed')}
+                        className="px-3 py-1 text-xs rounded bg-red-100 text-red-700 hover:bg-red-200"
+                      >
+                        Dismiss
+                      </button>
+                    )}
+                    {match.status !== 'archived' && (
+                      <button
+                        onClick={() => handleAction(match.id, 'archived')}
+                        className="px-3 py-1 text-xs rounded bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      >
+                        Archive
+                      </button>
+                    )}
+                    {match.status === 'archived' && (
+                      <button
+                        onClick={() => handleAction(match.id, 'saved')}
+                        className="px-3 py-1 text-xs rounded bg-blue-100 text-blue-700 hover:bg-blue-200"
+                      >
+                        Restore
+                      </button>
+                    )}
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-lg font-bold text-blue-600">{match.score}%</div>
-                  <div className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 capitalize">
-                    {match.status}
-                  </div>
-                </div>
-              </div>
-              {match.reason && (
-                <div className="text-xs text-gray-500 truncate">
-                  {match.reason}
-                </div>
-              )}
-              {/* Action buttons */}
-              <div className="flex gap-2">
-                {match.status !== 'saved' && match.status !== 'archived' && (
-                  <button
-                    onClick={() => handleAction(match.id, 'saved')}
-                    className="px-3 py-1 text-xs rounded bg-green-100 text-green-700 hover:bg-green-200"
-                  >
-                    Save
-                  </button>
-                )}
-                {match.status !== 'dismissed' && match.status !== 'archived' && (
-                  <button
-                    onClick={() => handleAction(match.id, 'dismissed')}
-                    className="px-3 py-1 text-xs rounded bg-red-100 text-red-700 hover:bg-red-200"
-                  >
-                    Dismiss
-                  </button>
-                )}
-                {match.status !== 'archived' && (
-                  <button
-                    onClick={() => handleAction(match.id, 'archived')}
-                    className="px-3 py-1 text-xs rounded bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  >
-                    Archive
-                  </button>
-                )}
-                {match.status === 'archived' && (
-                  <button
-                    onClick={() => handleAction(match.id, 'saved')}
-                    className="px-3 py-1 text-xs rounded bg-blue-100 text-blue-700 hover:bg-blue-200"
-                  >
-                    Restore
-                  </button>
-                )}
               </div>
             </li>
           ))}
         </ul>
+      )}
+
+      {/* Sticky footer for bulk actions */}
+      {selectedIds.size > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg px-4 py-3 flex items-center gap-3 z-50 sticky-bulk-footer">
+          <span className="text-sm font-medium text-gray-700">
+            Selected {selectedIds.size} {selectedIds.size === 1 ? 'match' : 'matches'}
+          </span>
+          {bulkError && (
+            <span className="text-xs text-red-600">{bulkError}</span>
+          )}
+          <div className="flex gap-2 ml-auto">
+            <button
+              onClick={() => handleBulkAction('saved')}
+              className="px-3 py-1.5 text-sm rounded bg-green-100 text-green-700 hover:bg-green-200"
+            >
+              Save All
+            </button>
+            <button
+              onClick={() => handleBulkAction('dismissed')}
+              className="px-3 py-1.5 text-sm rounded bg-red-100 text-red-700 hover:bg-red-200"
+            >
+              Dismiss All
+            </button>
+            <button
+              onClick={() => {
+                if (selectedIds.size > 5) {
+                  setShowModal({ action: 'archived', count: selectedIds.size });
+                } else {
+                  handleBulkAction('archived');
+                }
+              }}
+              className="px-3 py-1.5 text-sm rounded bg-gray-100 text-gray-700 hover:bg-gray-200"
+            >
+              Archive All
+            </button>
+            <button
+              onClick={() => setShowModal({ action: 'delete', count: selectedIds.size })}
+              className="px-3 py-1.5 text-sm rounded bg-red-600 text-white hover:bg-red-700"
+            >
+              Delete (admin)
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Confirm modal */}
+      {showModal && (
+        <div className="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-2">Confirm Action</h3>
+            <p className="text-sm text-gray-700 mb-4">
+              Are you sure? This will {showModal.action} {showModal.count} matches.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowModal(null)}
+                className="px-4 py-2 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  handleBulkAction(showModal.action);
+                  setShowModal(null);
+                }}
+                className="px-4 py-2 text-sm rounded bg-red-600 text-white hover:bg-red-700"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

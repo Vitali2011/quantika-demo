@@ -54,16 +54,20 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     const laycanFrom = searchParams.get('laycan_from');
     const laycanTo = searchParams.get('laycan_to');
-    const laycanFromMs = laycanFrom ? new Date(laycanFrom).getTime() : undefined;
-    const laycanToMs = laycanTo ? new Date(laycanTo).getTime() : undefined;
+    const _laycanFromMs = laycanFrom ? new Date(laycanFrom).getTime() : undefined;
+    const _laycanToMs = laycanTo ? new Date(laycanTo).getTime() : undefined;
+    const laycanFromMs = _laycanFromMs !== undefined && !isNaN(_laycanFromMs) ? _laycanFromMs : undefined;
+    const laycanToMs = _laycanToMs !== undefined && !isNaN(_laycanToMs) ? _laycanToMs : undefined;
 
     const scoreMinParam = searchParams.get('score_min');
     const scoreMin = scoreMinParam !== null && !isNaN(Number(scoreMinParam)) ? Number(scoreMinParam) : undefined;
 
     const dwtMinParam = searchParams.get('dwt_min');
-    const dwtMin = dwtMinParam ? parseInt(dwtMinParam, 10) : undefined;
+    const _dwtMin = dwtMinParam ? parseInt(dwtMinParam, 10) : undefined;
+    const dwtMin = _dwtMin !== undefined && !isNaN(_dwtMin) ? _dwtMin : undefined;
     const dwtMaxParam = searchParams.get('dwt_max');
-    const dwtMax = dwtMaxParam ? parseInt(dwtMaxParam, 10) : undefined;
+    const _dwtMax = dwtMaxParam ? parseInt(dwtMaxParam, 10) : undefined;
+    const dwtMax = _dwtMax !== undefined && !isNaN(_dwtMax) ? _dwtMax : undefined;
 
     const matches = listMatches(db, {
       status,
