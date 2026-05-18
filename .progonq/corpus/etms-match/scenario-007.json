@@ -1,0 +1,23 @@
+{
+  "id": "etms-match-007-weak-idle-months",
+  "category": "weak",
+  "cargo_ref": "etms-parse-cargo/scenario-066",
+  "vessel_ref": "etms-parse-vessel/scenario-040",
+  "expected": {
+    "should_be_hard_filtered": false,
+    "match_level": "weak",
+    "score_range": [10, 35],
+    "must_cite_facts": [
+      "Vessel open Ravenna 02-03 March, cargo Izmail laycan 11 May+ — vessel would idle ~2 MONTHS",
+      "Wrong region: vessel Adriatic, cargo Black Sea — long ballast through Bosphorus",
+      "DWCC 14500 mt vs cargo 5000 mt (35% utilization)"
+    ],
+    "must_NOT_invent": [
+      "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+      "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+      "Charterer-specific policy (e.g., 'Cargill strict on CII') — never allowed from external knowledge",
+      "Vetting clearance — only valid if vessel input has vetting fields"
+    ]
+  },
+  "notes": "Heavy idle (~60 days). Should score low. Tests readiness.verdict=idle handling."
+}

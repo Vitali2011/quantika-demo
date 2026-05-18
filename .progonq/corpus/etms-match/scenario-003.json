@@ -1,0 +1,23 @@
+{
+  "id": "etms-match-003-strong-aegean-bsea",
+  "category": "strong",
+  "cargo_ref": "etms-parse-cargo/scenario-030",
+  "vessel_ref": "etms-parse-vessel/scenario-028",
+  "expected": {
+    "should_be_hard_filtered": false,
+    "match_level": "possible",
+    "score_range": [55, 78],
+    "must_cite_facts": [
+      "DWCC 6750 mt vs cargo 10000 mt — vessel UNDER-LIFTS by ~3250 mt (only 67% of cargo)",
+      "Vessel open Marmara 22-23 May, cargo Aliaga laycan 25/30 May — timing fits",
+      "Geared vessel"
+    ],
+    "must_NOT_invent": [
+      "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+      "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+      "Charterer-specific policy (e.g., 'Cargill strict on CII') — never allowed from external knowledge",
+      "Vetting clearance — only valid if vessel input has vetting fields"
+    ]
+  },
+  "notes": "Tests under-lift handling. Should be 'possible' (not 'good') because vessel cannot carry full cargo. If scorer ignores under-lift and gives 'good', that's a regression."
+}

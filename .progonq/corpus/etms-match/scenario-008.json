@@ -1,0 +1,23 @@
+{
+  "id": "etms-match-008-weak-oversize-late-gearless-bb",
+  "category": "weak",
+  "cargo_ref": "etms-parse-cargo/scenario-006",
+  "vessel_ref": "etms-parse-vessel/scenario-052",
+  "expected": {
+    "should_be_hard_filtered": false,
+    "match_level": "weak",
+    "score_range": [5, 30],
+    "must_cite_facts": [
+      "DWCC 1600 mt vs cargo 4800 mt — vessel under-lifts by 3200 mt (only 33% capacity)",
+      "Vessel open Izmir 12/13 July, cargo Egypt Med SPOT — vessel ~2 months too late",
+      "Gearless vessel for break-bulk cargo"
+    ],
+    "must_NOT_invent": [
+      "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+      "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+      "Charterer-specific policy (e.g., 'Cargill strict on CII') — never allowed from external knowledge",
+      "Vetting clearance — only valid if vessel input has vetting fields"
+    ]
+  },
+  "notes": "Triple problem: way under-lifts, way late, wrong equipment. Should be weak (close to hard-filter)."
+}

@@ -1,0 +1,24 @@
+{
+  "id": "etms-match-002-strong-eastmed-bulk",
+  "category": "strong",
+  "cargo_ref": "etms-parse-cargo/scenario-024",
+  "vessel_ref": "etms-parse-vessel/scenario-048",
+  "expected": {
+    "should_be_hard_filtered": false,
+    "match_level": "good",
+    "score_range": [70, 88],
+    "must_cite_facts": [
+      "DWT 8100 mt vs cargo 5000 mt (62% utilization)",
+      "Vessel open Nemrut Bay, cargo loads Mersin — both East Med, ~400nm",
+      "Both spot dates",
+      "Bulk cargo OK gearless (assuming load port has cranes)"
+    ],
+    "must_NOT_invent": [
+      "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+      "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+      "Charterer-specific policy (e.g., 'Cargill strict on CII') — never allowed from external knowledge",
+      "Vetting clearance — only valid if vessel input has vetting fields"
+    ]
+  },
+  "notes": "Clean East Med bulk pair. Spot/spot timing."
+}

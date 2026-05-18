@@ -1,0 +1,23 @@
+{
+  "id": "etms-match-006-marginal-redsea-eastmed-tight",
+  "category": "marginal",
+  "cargo_ref": "etms-parse-cargo/scenario-060",
+  "vessel_ref": "etms-parse-vessel/scenario-012",
+  "expected": {
+    "should_be_hard_filtered": false,
+    "match_level": "possible",
+    "score_range": [35, 60],
+    "must_cite_facts": [
+      "DWT 5328 mt vs cargo 3000 mt (56% utilization)",
+      "Vessel open Red Sea PROMPT, cargo Iskenderun laycan 11/15 May — Suez transit ~4-6 days",
+      "Geared vessel suitable for break-bulk"
+    ],
+    "must_NOT_invent": [
+      "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+      "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+      "Charterer-specific policy (e.g., 'Cargill strict on CII') — never allowed from external knowledge",
+      "Vetting clearance — only valid if vessel input has vetting fields"
+    ]
+  },
+  "notes": "Tests long ballast handling. Red Sea→East Med via Suez is ~5 days, tight against 11/15 May laycan."
+}

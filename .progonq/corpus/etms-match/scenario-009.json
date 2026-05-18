@@ -1,0 +1,23 @@
+{
+  "id": "etms-match-009-weak-months-late",
+  "category": "weak",
+  "cargo_ref": "etms-parse-cargo/scenario-036",
+  "vessel_ref": "etms-parse-vessel/scenario-008",
+  "expected": {
+    "should_be_hard_filtered": false,
+    "match_level": "weak",
+    "score_range": [10, 30],
+    "must_cite_facts": [
+      "Vessel open Casablanca 01-05 October, cargo Vasto laycan 10/15 May — vessel ~5 MONTHS late",
+      "DWT 8300 mt vs cargo 2500 mt (30% utilization — oversized)",
+      "Geared vessel for break-bulk OK"
+    ],
+    "must_NOT_invent": [
+      "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+      "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+      "Charterer-specific policy (e.g., 'Cargill strict on CII') — never allowed from external knowledge",
+      "Vetting clearance — only valid if vessel input has vetting fields"
+    ]
+  },
+  "notes": "Massive timing miss. Should score very low or be filtered."
+}
