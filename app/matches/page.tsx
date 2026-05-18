@@ -17,7 +17,7 @@ export default async function MatchesPage() {
   const session = getSession(sessionId);
   if (!session) redirect('/');
 
-  if (process.env.MATCHES_ENABLED === 'false') redirect('/');
+  if (process.env.MATCHES_ENABLED !== "true") redirect('/');
 
   const db = getStore().getDatabase();
   const matches = listMatches(db, { sortBy: 'score', sortDir: 'desc' });
