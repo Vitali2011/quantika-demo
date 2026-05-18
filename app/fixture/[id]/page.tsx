@@ -61,6 +61,9 @@ export default async function FixtureDetailPage({ params }: Props) {
     recap.demurrageRate ? `Demurrage: ${safeRender(recap.demurrageRate)} ${safeRender(recap.demurragePayment) || ''}` : '',
     recap.commission ? `Commission: ${safeRender(recap.commission)}` : '',
     recap.commissionAmount ? `Calculated: ${safeRender(recap.commissionCurrency) || '$'}${formatNumber(recap.commissionAmount)}` : '',
+    recap.despatchRate ? `Despatch: ${safeRender(recap.despatchRate)}` : '',
+    recap.acknowledgementDeadline ? `Ack Deadline: ${recap.acknowledgementDeadline}` : '',
+    recap.vesselDraft ? `Draft: ${recap.vesselDraft}` : '',
   ].filter(Boolean).join('\n') : '';
 
   return (
@@ -106,6 +109,33 @@ export default async function FixtureDetailPage({ params }: Props) {
                 <CField label="Broker" field={recap.broker} />
               </CardContent>
             </Card>
+
+            {/* Vessel Specs (PR #231 surface) */}
+            {(recap.vesselDwt != null || recap.vesselDraft || recap.vesselGeared != null) && (
+              <Card>
+                <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Vessel Specs</CardTitle></CardHeader>
+                <CardContent>
+                  {recap.vesselDwt != null && (
+                    <div className="flex justify-between text-sm py-1.5 border-b border-gray-100">
+                      <span className="text-muted-foreground">DWT</span>
+                      <span className="font-medium">{formatNumber(recap.vesselDwt)} MT</span>
+                    </div>
+                  )}
+                  {recap.vesselDraft && (
+                    <div className="flex justify-between text-sm py-1.5 border-b border-gray-100">
+                      <span className="text-muted-foreground">Draft</span>
+                      <span className="font-medium">{recap.vesselDraft}</span>
+                    </div>
+                  )}
+                  {recap.vesselGeared != null && (
+                    <div className="flex justify-between text-sm py-1.5">
+                      <span className="text-muted-foreground">Geared</span>
+                      <span className="font-medium">{recap.vesselGeared ? 'Yes' : 'No (gearless)'}</span>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
             {/* Route & Cargo */}
             <Card>
@@ -156,17 +186,22 @@ export default async function FixtureDetailPage({ params }: Props) {
               </CardContent>
             </Card>
 
-            {/* Demurrage */}
+            {/* Demurrage & Despatch */}
             <Card>
-              <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Demurrage</CardTitle></CardHeader>
+              <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Demurrage &amp; Despatch</CardTitle></CardHeader>
               <CardContent>
-                <CField label="Rate" field={recap.demurrageRate} />
+                <CField label="Demurrage Rate" field={recap.demurrageRate} />
                 <CField label="Payment" field={recap.demurragePayment} />
+                <CField label="Despatch Rate" field={recap.despatchRate} />
               </CardContent>
             </Card>
 
             {/* Commission */}
-            {recap.commission && (
+            {(recap.commission ||
+              recap.commissionAddressPct != null ||
+              recap.commissionAddressAmount != null ||
+              recap.commissionBrokerPct != null ||
+              recap.commissionBrokerAmount != null) && (
               <Card className="border-green-200 bg-green-50/50">
                 <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">💰 Commission</CardTitle></CardHeader>
                 <CardContent>
@@ -175,6 +210,26 @@ export default async function FixtureDetailPage({ params }: Props) {
                     <div className="mt-2 p-2 bg-green-100 rounded text-sm">
                       <strong>Calculated: {safeRender(recap.commissionCurrency) || '$'}{formatNumber(recap.commissionAmount)}</strong>
                       <span className="text-muted-foreground ml-2">({recap.commissionPercent}% on freight)</span>
+                    </div>
+                  )}
+                  {(recap.commissionAddressPct != null || recap.commissionAddressAmount != null) && (
+                    <div className="flex justify-between text-sm py-1.5 border-b border-gray-100">
+                      <span className="text-muted-foreground">Address Commission</span>
+                      <span className="font-medium">
+                        {recap.commissionAddressPct != null && `${recap.commissionAddressPct}%`}
+                        {recap.commissionAddressPct != null && recap.commissionAddressAmount != null && ' · '}
+                        {recap.commissionAddressAmount != null && `${safeRender(recap.commissionCurrency) || '$'}${formatNumber(recap.commissionAddressAmount)}`}
+                      </span>
+                    </div>
+                  )}
+                  {(recap.commissionBrokerPct != null || recap.commissionBrokerAmount != null) && (
+                    <div className="flex justify-between text-sm py-1.5">
+                      <span className="text-muted-foreground">Broker Commission</span>
+                      <span className="font-medium">
+                        {recap.commissionBrokerPct != null && `${recap.commissionBrokerPct}%`}
+                        {recap.commissionBrokerPct != null && recap.commissionBrokerAmount != null && ' · '}
+                        {recap.commissionBrokerAmount != null && `${safeRender(recap.commissionCurrency) || '$'}${formatNumber(recap.commissionBrokerAmount)}`}
+                      </span>
                     </div>
                   )}
                 </CardContent>
@@ -188,6 +243,12 @@ export default async function FixtureDetailPage({ params }: Props) {
                 <CField label="CP Form" field={recap.cpForm} />
                 <CField label="Arbitration" field={recap.arbitration} />
                 <CField label="Law" field={recap.law} />
+                {recap.acknowledgementDeadline && (
+                  <div className="mt-2 p-2 bg-orange-50 border border-orange-200 rounded text-sm">
+                    <strong className="text-orange-800">⏱ Acknowledgement Deadline:</strong>
+                    <span className="ml-2 text-orange-900">{recap.acknowledgementDeadline}</span>
+                  </div>
+                )}
                 {recap.subs.length > 0 && (
                   <div className="mt-2">
                     <span className="text-sm text-muted-foreground">Subs:</span>
