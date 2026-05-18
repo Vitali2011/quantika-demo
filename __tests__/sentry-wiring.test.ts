@@ -255,6 +255,7 @@ describe("instrumentation-client.ts — sentry-tuning (onRouterTransitionStart +
     jest.doMock("@sentry/nextjs", () => ({ ...sentryTuningMock(), init: mockInit }));
 
     process.env.NEXT_PUBLIC_SENTRY_DSN = DSN;
+    // @ts-expect-error - readonly in strict types but writable at runtime
     process.env.NODE_ENV = "production";
     await import("../instrumentation-client");
 
@@ -302,6 +303,7 @@ describe("instrumentation-client.ts — sentry-tuning (onRouterTransitionStart +
     jest.doMock("@sentry/nextjs", () => ({ ...sentryTuningMock(), init: mockInit }));
 
     process.env.NEXT_PUBLIC_SENTRY_DSN = DSN;
+    // @ts-expect-error - readonly in strict types but writable at runtime
     process.env.NODE_ENV = "production";
     await import("../instrumentation-client");
 

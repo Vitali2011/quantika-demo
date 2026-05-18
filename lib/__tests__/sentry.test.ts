@@ -92,11 +92,13 @@ describe("sentry.server.config — prod sampling (sentry-tuning PART C)", () => 
   const savedNodeEnv = process.env.NODE_ENV;
 
   afterEach(() => {
+    // @ts-expect-error - readonly in strict types but writable at runtime
     process.env.NODE_ENV = savedNodeEnv;
   });
 
   it("F1 — tracesSampleRate is 0.1 in production", () => {
     process.env.SENTRY_DSN = "https://test@sentry.io/456";
+    // @ts-expect-error - readonly in strict types but writable at runtime
     process.env.NODE_ENV = "production";
     jest.isolateModules(() => {
       require("../../sentry.server.config");
@@ -108,6 +110,7 @@ describe("sentry.server.config — prod sampling (sentry-tuning PART C)", () => 
 
   it("F2 — tracesSampleRate is 1.0 in development (regression guard)", () => {
     process.env.SENTRY_DSN = "https://test@sentry.io/456";
+    // @ts-expect-error - readonly in strict types but writable at runtime
     process.env.NODE_ENV = "development";
     jest.isolateModules(() => {
       require("../../sentry.server.config");
@@ -122,11 +125,13 @@ describe("sentry.edge.config — prod sampling (sentry-tuning PART C)", () => {
   const savedNodeEnv = process.env.NODE_ENV;
 
   afterEach(() => {
+    // @ts-expect-error - readonly in strict types but writable at runtime
     process.env.NODE_ENV = savedNodeEnv;
   });
 
   it("G1 — tracesSampleRate is 0.1 in production", () => {
     process.env.SENTRY_DSN = "https://test@sentry.io/789";
+    // @ts-expect-error - readonly in strict types but writable at runtime
     process.env.NODE_ENV = "production";
     jest.isolateModules(() => {
       require("../../sentry.edge.config");
@@ -138,6 +143,7 @@ describe("sentry.edge.config — prod sampling (sentry-tuning PART C)", () => {
 
   it("G2 — tracesSampleRate is 1.0 in development (regression guard)", () => {
     process.env.SENTRY_DSN = "https://test@sentry.io/789";
+    // @ts-expect-error - readonly in strict types but writable at runtime
     process.env.NODE_ENV = "development";
     jest.isolateModules(() => {
       require("../../sentry.edge.config");
