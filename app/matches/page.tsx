@@ -28,7 +28,7 @@ export default function MatchesPage() {
               <li key={`${match.vessel}-${match.date}`} className="bg-white rounded-lg border p-4">
                 <div className="font-medium">{match.vessel}</div>
                 <div className="text-sm text-gray-600">{match.route}</div>
-                <div className="text-xs text-gray-400 mt-1">
+                <div className="text-xs text-gray-500 mt-1">
                   Score: {match.score} · {match.date}
                 </div>
               </li>

@@ -150,7 +150,7 @@ export default async function DashboardPage() {
               <p className="text-sm font-semibold text-gray-900">Charterer Credit</p>
               <p className="text-xs text-gray-500">Credit profiles for blue-chip charterers</p>
             </div>
-            <span className="text-gray-400 text-sm">→</span>
+            <span className="text-gray-500 text-sm">→</span>
           </Link>
         )}
 
@@ -179,7 +179,7 @@ export default async function DashboardPage() {
             Top Priorities
           </h2>
           {priorityCards.length === 0 ? (
-            <p className="text-sm text-gray-400 bg-white border border-gray-200 rounded-lg px-4 py-3">
+            <p className="text-sm text-gray-500 bg-white border border-gray-200 rounded-lg px-4 py-3">
               No matches to prioritise yet.
             </p>
           ) : (
@@ -236,7 +236,7 @@ export default async function DashboardPage() {
               <span className="font-semibold text-gray-900">Full Inbox Breakdown</span>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-500">{emails.length} emails total</span>
-                <span className="text-gray-400 text-xs select-none">▼</span>
+                <span className="text-gray-500 text-xs select-none">▼</span>
               </div>
             </div>
             <div className="space-y-1">
@@ -325,7 +325,7 @@ export default async function DashboardPage() {
                       <span className="font-medium text-red-800">⛔</span>
                       <div className="flex-1">
                         <span className="font-medium">{b.cargoEmailId}</span>
-                        <span className="text-gray-400 mx-1">×</span>
+                        <span className="text-gray-500 mx-1">×</span>
                         <span className="font-medium">{b.vesselEmailId}</span>
                       </div>
                       <span className="text-red-600 text-xs max-w-sm truncate">{b.filterReason}</span>
@@ -354,7 +354,7 @@ export default async function DashboardPage() {
                       <span className="font-medium text-orange-700">🚫</span>
                       <div className="flex-1">
                         <span className="font-medium">{b.cargoEmailId}</span>
-                        <span className="text-gray-400 mx-1">×</span>
+                        <span className="text-gray-500 mx-1">×</span>
                         <span className="font-medium">{b.vesselEmailId}</span>
                       </div>
                       <span className="text-orange-600 text-xs max-w-sm truncate">{b.filterReason}</span>
@@ -372,7 +372,7 @@ export default async function DashboardPage() {
             Active Negotiations (recap ready)
           </h2>
           {recaps.length === 0 ? (
-            <p className="text-sm text-gray-400 bg-white border border-gray-200 rounded-lg px-4 py-3">
+            <p className="text-sm text-gray-500 bg-white border border-gray-200 rounded-lg px-4 py-3">
               No active negotiations found. Recaps are generated for threads with 5+ messages.
             </p>
           ) : (
@@ -392,7 +392,7 @@ export default async function DashboardPage() {
                         terms agreed
                       </p>
                     </div>
-                    <span className="shrink-0 ml-3 text-xs text-gray-400">→</span>
+                    <span className="shrink-0 ml-3 text-xs text-gray-500">→</span>
                   </div>
                 </Link>
               ))}

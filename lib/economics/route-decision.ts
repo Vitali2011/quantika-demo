@@ -261,7 +261,6 @@ async function llmReason(
     timeoutHandle = setTimeout(() => resolve(fallback), LLM_REASON_TIMEOUT_MS);
   });
 
-  console.time('cold:llm-reason');
   try {
     // wave-γ-1 hardening: bound the internal LLM timeout to LLM_REASON_TIMEOUT_MS.
     // Without this option, callAiText falls back to the 85s default, so the
@@ -281,7 +280,6 @@ async function llmReason(
     const result = await Promise.race([aiPromise, timeoutPromise]);
     return result;
   } finally {
-    console.timeEnd('cold:llm-reason');
     clearTimeout(timeoutHandle);
   }
 }
@@ -295,17 +293,12 @@ export async function compareRoutes(
   daResolver?: DaResolver,
   jwcSystemContext?: string,
 ): Promise<RouteCompareResult> {
-  // βf3-06: timing markers for cold-start profiling
-  console.time('cold:distances');
   const dist = lookupDistances(origin, destination);
-  console.timeEnd('cold:distances');
 
   const ctx: CompareInput = { vessel, cargo, marketRates, daResolver };
 
-  console.time('cold:scoring');
   const suez = buildLeg(origin, destination, dist.suezNm, true, ctx);
   const cape = buildLeg(origin, destination, dist.capeNm, false, ctx);
-  console.timeEnd('cold:scoring');
 
   const decision = decideRoute({
     suez: {
