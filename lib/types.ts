@@ -280,7 +280,7 @@ export interface ParsedFixtureRecap {
   dischPortAgent: string | null;
   // Vessel details
   vesselDwt: number | null;
-  vesselDraft: number | null;
+  vesselDraft: string | null;  // PR #231: compound string preserving design/max/etc
   vesselGeared: boolean | null;
   // Legal
   cpForm: string | null;
@@ -292,6 +292,13 @@ export interface ParsedFixtureRecap {
   commissionBase: string | null;
   commissionAmount: number | null;
   commissionCurrency: string | null;
+  commissionAddressPct: number | null;     // PR #231
+  commissionAddressAmount: number | null;  // PR #231
+  commissionBrokerPct: number | null;      // PR #231
+  commissionBrokerAmount: number | null;   // PR #231
+  // Operations
+  despatchRate: string | null;             // PR #231 (FD/HD interpreted text)
+  acknowledgementDeadline: string | null;  // PR #231 (broker response deadline)
   // Subs
   subs: string[];
   confidentiality: boolean;

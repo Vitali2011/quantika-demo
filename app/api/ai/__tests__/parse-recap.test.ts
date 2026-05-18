@@ -362,7 +362,42 @@ describe('parseRecapAIResponse', () => {
     const result = parseRecapAIResponse(raw, 'email-7');
     expect(result.vesselGeared).toBe(true);
     expect(result.vesselDwt).toBe(75000);
-    expect(result.vesselDraft).toBe(14.5);
+    // PR #231: vesselDraft is now string|null (was number|null) — coerces number input.
+    expect(result.vesselDraft).toBe('14.5');
+  });
+
+  // Regression: PR #231 surfaces 5 schema fields (despatch, ack_deadline,
+  // commission_address/broker pct/amount) that PRs #220 #223 added to schema
+  // but parser never read — Gemini extracted, parser threw away.
+  it('surfaces despatch_rate, acknowledgement_deadline, and commission_*_pct/amount', () => {
+    const raw = JSON.stringify({
+      despatch_rate: { value: 'Full despatch (FD) at EUR 1,500 per day pro rata' },
+      acknowledgement_deadline: 'within 30 mins of transmission',
+      commission_address_pct: 1.25,
+      commission_address_amount: 750.00,
+      commission_broker_pct: 2.5,
+      commission_broker_amount: 1500.00,
+      subs: [],
+      additional_terms: [],
+      unknown_terms: [],
+    });
+    const result = parseRecapAIResponse(raw, 'email-h2');
+    expect(result.despatchRate).toBe('Full despatch (FD) at EUR 1,500 per day pro rata');
+    expect(result.acknowledgementDeadline).toBe('within 30 mins of transmission');
+    expect(result.commissionAddressPct).toBe(1.25);
+    expect(result.commissionAddressAmount).toBe(750.00);
+    expect(result.commissionBrokerPct).toBe(2.5);
+    expect(result.commissionBrokerAmount).toBe(1500.00);
+  });
+
+  // Regression: PR #231 vesselDraft preserves compound string ("design / max").
+  it('preserves vessel_draft compound string instead of truncating to first number', () => {
+    const raw = JSON.stringify({
+      vessel_draft: { value: '4.70 m (design) / 6.35 m (maximum)' },
+      subs: [], additional_terms: [], unknown_terms: [],
+    });
+    const result = parseRecapAIResponse(raw, 'email-draft');
+    expect(result.vesselDraft).toBe('4.70 m (design) / 6.35 m (maximum)');
   });
 
   // Regression: PR #223 renamed unknown_terms inner key from "note" to "context"
