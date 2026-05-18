@@ -9,6 +9,13 @@
 // Use in-memory SQLite for session tests so each jest.resetModules() starts fresh
 process.env.SESSIONS_DB_PATH = ':memory:';
 
+// Polyfill TextEncoder/TextDecoder for jsdom test environment (needed by postal-mime/resend)
+if (typeof global.TextEncoder === 'undefined') {
+  const { TextEncoder, TextDecoder } = require('util');
+  global.TextEncoder = TextEncoder;
+  global.TextDecoder = TextDecoder;
+}
+
 // spec-βf-18: Pipedrive OAuth refresh requires client credentials. Default these
 // so unit tests that exercise the refresh path don't have to set them
 // individually. Tests that specifically validate "missing env" delete them.
