@@ -60,7 +60,6 @@ describe('GET /api/matches', () => {
   afterEach(() => {
     db.close();
     process.env.MATCHES_ENABLED = originalEnv;
-    jest.resetModules();
   });
 
   // PI4 — feature flag OFF
@@ -200,7 +199,6 @@ describe('POST /api/matches', () => {
   afterEach(() => {
     db.close();
     process.env.MATCHES_ENABLED = originalEnv;
-    jest.resetModules();
   });
 
   // PI4 — feature flag OFF

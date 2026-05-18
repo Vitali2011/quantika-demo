@@ -83,7 +83,6 @@ describe('PATCH /api/matches/[id] — feature flag', () => {
   afterEach(() => {
     db.close();
     process.env.MATCHES_ENABLED = originalEnv;
-    jest.resetModules();
   });
 
   it('returns 503 when MATCHES_ENABLED=false (PI4)', async () => {
@@ -118,7 +117,6 @@ describe('PATCH /api/matches/[id] — auth', () => {
   afterEach(() => {
     db.close();
     process.env.MATCHES_ENABLED = originalEnv;
-    jest.resetModules();
   });
 
   it('returns 401 when no session', async () => {
@@ -155,7 +153,6 @@ describe('PATCH /api/matches/[id] — valid transitions', () => {
   afterEach(() => {
     db.close();
     process.env.MATCHES_ENABLED = originalEnv;
-    jest.resetModules();
   });
 
   it('returns 200 and updated StoredMatch for shortlist → saved', async () => {
@@ -296,7 +293,6 @@ describe('PATCH /api/matches/[id] — invalid transitions → 400', () => {
   afterEach(() => {
     db.close();
     process.env.MATCHES_ENABLED = originalEnv;
-    jest.resetModules();
   });
 
   it('shortlist → shortlist returns 400', async () => {
@@ -348,7 +344,6 @@ describe('PATCH /api/matches/[id] — not found → 404', () => {
   afterEach(() => {
     db.close();
     process.env.MATCHES_ENABLED = originalEnv;
-    jest.resetModules();
   });
 
   it('returns 404 when match id does not exist', async () => {
@@ -382,7 +377,6 @@ describe('PATCH /api/matches/[id] — body validation', () => {
   afterEach(() => {
     db.close();
     process.env.MATCHES_ENABLED = originalEnv;
-    jest.resetModules();
   });
 
   it('returns 400 when status field is missing', async () => {

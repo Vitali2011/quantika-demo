@@ -58,7 +58,7 @@ describe('app/matches/page.tsx', () => {
   it('passes matches data down to MatchesClient as a prop', () => {
     const src = readSource(pagePath);
     // MatchesClient should receive initialMatches or matches prop
-    expect(src).toMatch(/MatchesClient.*matches|matches.*MatchesClient/s);
+    expect(src).toMatch(/MatchesClient.*matches|matches.*MatchesClient/);
   });
 
   it('is an async server component (uses async function or async page)', () => {
@@ -186,7 +186,7 @@ describe('app/matches/MatchesClient.tsx — action buttons', () => {
   it('sends status in request body when action triggered', () => {
     const src = readSource(clientPath);
     // Body should include status field
-    expect(src).toMatch(/status.*saved|status.*dismissed|status.*archived|body.*status/s);
+    expect(src).toMatch(/status.*saved|status.*dismissed|status.*archived|body.*status/);
   });
 });
 

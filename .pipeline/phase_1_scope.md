@@ -1,60 +1,104 @@
-# Phase 1 Scope — Coverage Backfill: Untested API Routes
+# Phase 1 SCOPE — matches-m1
 
 ## Assumptions (Rule A)
 
-Понимаю задачу как: написать тесты покрытия для 11 существующих non-LLM API route'ов, которые сейчас не покрыты тестами. Impl уже существует — тесты должны быть GREEN против существующей impl и поднять coverage gate в CI.
+Понимаю задачу как: создать полный stack для ручного сохранения/управления матчами (cargo ↔ vessel) — DB migration, typed repository, API routes (GET/POST/PATCH), и UI. POST /api/matches принимает {cargo_id, vessel_id} где cargo_id = emailId из session.parsedCargos, vessel_id = emailId из session.parsedVessels; вызывает pair-analyzer для scoring; сохраняет в DB.
 
-Альтернатива: добавить только smoke-тесты (1-2 на route). Иду по полному покрытию (3-5 тестов на route): spec требует ≥80% line coverage per route.
+Альтернатива: cargo_id/vessel_id как отдельные entity IDs — но в M1 нет таблицы cargos/vessels; session is the source of truth.
 
-## Routes в scope (11)
+Иду по email ID из session, потому что: существующий /api/ai/match работает на session.parsedCargos/parsedVessels; entity IDs — это M2+.
 
-| Route | Handler | Auth | DB | Test file |
-|-------|---------|------|----|-----------|
-| `admin/market/upload-csv` | POST | requireAdmin (X-Admin-Token) | migration_027 | `__tests__/api/admin/market/upload-csv.test.ts` |
-| `audit` | GET + POST | requireSession | migration_002 | `__tests__/api/audit.test.ts` |
-| `auth/logout` | POST | none | none | `__tests__/api/auth/logout.test.ts` |
-| `canal/[canal_code]` | GET | none | none (pure fn) | `__tests__/api/canal.test.ts` |
-| `demo-scenarios/[id]` | GET | none | none (pure fn) | `__tests__/api/demo-scenarios.test.ts` |
-| `economics` | POST | CSRF only | none (mock computeEconomics) | `__tests__/api/economics.test.ts` |
-| `extension/context` | GET | requireSession | none (session in-memory) | `__tests__/api/extension-context.test.ts` |
-| `health` | GET | none | none (mock getSessionCount) | `__tests__/api/health-root.test.ts` |
-| `market/tmi` | GET | none | migration_027 | `__tests__/api/market-tmi.test.ts` |
-| `port-da/[port_code]` | GET | none | migration_010 | `__tests__/api/port-da.test.ts` |
-| `session` | DELETE | none (cookie) | none | `__tests__/api/session.test.ts` |
+## Affected Files
 
-## Exclusions
+### New production files
+1. `lib/migrations/032-matches.ts` — matches table migration
+2. `lib/matching/matches-repository.ts` — CRUD + transition validation
+3. `app/api/matches/route.ts` — GET + POST
+4. `app/api/matches/[id]/route.ts` — PATCH
+5. `app/matches/MatchesClient.tsx` — client component (action buttons, optimistic update)
+6. `app/matches/page.tsx` — replace DEMO_MATCHES skeleton (server fetch)
 
-- `ai/*` — LLM-heavy, expensive, prohibited
-- `vessel/[imo]` — parallel parser session conflict
-- `emails/fetch` — Gmail conflict
-- `voyage/*`, `laytime/*`, `charterers*` — already covered
-- `auth/login`, `auth/google` — OAuth flow complexity
+### Modified
+7. `lib/migrations/index.ts` — add migration032 import + allMigrations entry
 
-## Boundaries
+### Test files (Rule G)
+8. `lib/migrations/__tests__/032-matches.test.ts`
+9. `lib/matching/__tests__/matches-repository.test.ts`
+10. `__tests__/api/matches.test.ts`
+11. `__tests__/api/matches-id.test.ts`
+12. `__tests__/matches-page.test.tsx`
 
-**Can Change:** `__tests__/api/` — new test files only
+## Can Change / Cannot Change / Must Not Break
 
-**Cannot Change:** Any production file (`app/api/`, `lib/`)
+### Can Change
+- `app/matches/page.tsx`
+- `lib/migrations/index.ts`
 
-**Must Not Break:** All existing tests (full `npm test` suite)
+### Cannot Change
+- `lib/matching/pair-analyzer.ts`
+- `lib/matching/reason-enricher.ts`
+- `lib/types.ts` (existing Match type unchanged; new StoredMatch lives in repository)
+- All other files outside scope
 
-## Mock Strategy
+### Must Not Break
+- All existing tests (npm test green)
+- Session-based matching flow (/api/ai/match)
+- middleware.ts auth logic
 
-| Dependency | Mock |
-|-----------|------|
-| `@/lib/session` / requireSession | `jest.mock(() => ({ requireSession: jest.fn(() => ({ session: {...}, sessionId: 'test-sid' })) }))` |
-| `@/lib/session-store` / getStore | `jest.mock(() => ({ getStore: jest.fn(() => ({ getDatabase: () => testDb, getDb: () => testDb, getSessionCount: () => 3, deleteSession: jest.fn() })) }))` |
-| `@/lib/csrf` | `jest.mock(() => ({ validateCsrf: jest.fn(() => true), checkCsrfRequest: jest.fn(() => true) }))` |
-| `@/lib/economics` / computeEconomics | `jest.mock(() => ({ computeEconomics: jest.fn().mockResolvedValue({...}) }))` |
-| Admin token | `process.env.ADMIN_TOKEN = 'test-admin-token'` + `X-Admin-Token` header |
+## Interface Contracts
 
-## Test template (3-5 tests per route)
+### StoredMatch (matches-repository.ts)
+```typescript
+export type MatchStatus = 'shortlist' | 'saved' | 'dismissed' | 'archived';
 
-1. Auth → 401 (for auth routes) OR CSRF → 403 (for CSRF routes)
-2. Validation error → 400 (missing/invalid input)
-3. Happy path → 200/201 + expected JSON shape
-4. Not found → 404 (for [id] / [code] params routes)
-5. Error handling → 500 (mock failure where applicable)
+export interface StoredMatch {
+  id: number;
+  cargo_id: string;
+  vessel_id: string;
+  score: number;
+  reason: string;        // JSON.stringify(matchReasons[])
+  status: MatchStatus;
+  user_id: string | null;
+  created_at: number;
+  updated_at: number;
+}
+```
 
-## Open Questions
-(none)
+### Repository functions
+```typescript
+listMatches(db, opts: { status?: MatchStatus; sortBy: 'score'|'created_at'; sortDir: 'asc'|'desc'; limit?: number; offset?: number }): StoredMatch[]
+getMatch(db, id: number): StoredMatch | null
+createMatch(db, input: { cargo_id, vessel_id, score, reason, status?, user_id? }): StoredMatch
+updateMatchStatus(db, id: number, newStatus: MatchStatus): StoredMatch
+// throws InvalidTransitionError for invalid transitions
+```
+
+### Valid status transitions
+- shortlist → saved | dismissed | archived
+- saved → archived | dismissed
+- dismissed → archived | saved
+- archived → saved
+
+## Cross-Cutting Surface (Rule C)
+
+| File | Symbol | Risk |
+|------|--------|------|
+| `lib/types.ts` | `Match` | LOW — StoredMatch is separate, no collision |
+| `lib/session-store.ts` | `getStore` | LOW — same pattern as other routes |
+| `lib/session.ts` | `requireSession` | LOW — same pattern |
+| `lib/migrations/index.ts` | `allMigrations` | MEDIUM — must add migration032 correctly |
+
+## Feature-flag wiring (Rule D)
+`MATCHES_ENABLED` is server-side only — no NEXT_PUBLIC_*. Default ON ('true'). Wiring check N/A for SSG.
+
+## Rule F (Admin endpoint)
+`/api/matches` is NOT under /api/admin/ → no AUTH_BYPASS_PATHS change.
+
+## Rule E (Seed coverage)
+`matches` table: user-generated data, no seed needed.
+
+## Gotchas Acknowledged
+- [x] Worktree форкается от origin/main → передаём тесты inline в Phase 2b
+- [x] PI3: логируем каждый принятый patch
+- [x] Dynamic imports: grep lazy/import() после impl
+- [x] MATCHES_ENABLED server-side → wiring check N/A
