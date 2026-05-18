@@ -1,18 +1,26 @@
 {
   "phase": "3",
-  "qi_persona": "security-auditor",
-  "classes_checked": [6, 9, 10],
+  "qi_persona": "default",
+  "classes_checked": [1, 7, 8, 9, 10],
   "findings": [
     {
-      "class": 6,
+      "class": 10,
       "severity": "LOW",
-      "summary": "Not applicable — AUTH_BYPASS_PATHS uses Set.has() (exact match, no substring)",
-      "file": "middleware.ts:24"
+      "summary": "sentry.client.config.ts kept alongside instrumentation-client.ts — potential double-init when DSN is set (idempotent, zero impact while DSN unset)",
+      "file": "sentry.client.config.ts"
+    },
+    {
+      "class": 9,
+      "severity": "LOW",
+      "summary": "app/error.tsx displays error.message directly — minor info exposure on authenticated error page",
+      "file": "app/error.tsx"
     }
   ],
-  "verdict": "PASS",
+  "verdict": "APPROVE-WITH-FOLLOWUPS",
   "pi3_compliance": true,
   "phase_2_verdict_read": true,
   "phase_2_test_rewrite_count_observed": 0,
-  "fail_rework_round": 0
+  "fail_rework_round": 0,
+  "regression_note": "2 pre-existing failing suites (compare-routes-perf timing, jwc adapter) confirmed pre-existing on main branch. No new failures introduced.",
+  "build_result": "PASS (NODE_OPTIONS=--max-old-space-size=4096 required due to VPS constraint)"
 }

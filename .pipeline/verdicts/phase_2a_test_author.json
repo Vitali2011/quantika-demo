@@ -1,12 +1,21 @@
 {
   "phase": "2a",
-  "tests_written": 2,
-  "test_files": ["__tests__/middleware-auth.test.ts"],
+  "task": "sentry-wiring",
+  "tests_written": 10,
+  "test_files": ["__tests__/sentry-wiring.test.ts"],
   "red_verified": true,
-  "red_command": "npx jest --testPathPatterns=middleware-auth --no-coverage",
-  "red_command_output": "● middleware auth guard › bypass paths (no auth required) › bypasses auth for /api/whatsapp/webhook\n\n    expect(received).not.toBe(expected) // Object.is equality\n\n    Expected: not 302\n\n      67 |         const res = await runMiddleware(req);\n      68 |         // Should NOT redirect to /login\n    > 69 |         expect(res.status).not.toBe(302);\n         |                                ^\n      70 |         // Allow 200 (next()) or non-redirect\n      71 |         const location = res.headers.get('location');\n      72 |         if (location) {\n\n      at Object.toBe (__tests__/middleware-auth.test.ts:69:32)\n\n  ● middleware auth guard › bypass paths (no auth required) › bypasses auth for /api/integrations/pipedrive/webhook\n\n    expect(received).not.toBe(expected) // Object.is equality\n\n    Expected: not 302\n\n      67 |         const res = await runMiddleware(req);\n      68 |         // Should NOT redirect to /login\n    > 69 |         expect(res.status).not.toBe(302);\n         |                                ^\n      70 |         // Allow 200 (next()) or non-redirect\n      71 |         const location = res.headers.get('location');\n      72 |         if (location) {\n\n      at Object.toBe (__tests__/middleware-auth.test.ts:69:32)\n\nTest Suites: 1 failed, 1 total\nTests:       2 failed, 17 passed, 19 total\nSnapshots:   0 total\nTime:        1.553 s, estimated 2 s\nRan all test suites matching middleware-auth.",
-  "assumptions_count": 3,
+  "red_command": "npx jest __tests__/sentry-wiring.test.ts --no-coverage",
+  "red_command_output": "Expected: [Error: boom]\n    Number of calls: 0\n      181 |\n      182 |\n    > 183 |     expect(mockCaptureException).toHaveBeenCalledWith(testError);\n           |                                  ^\n      184 |   });\n\nTest Suites: 1 failed, 1 total\nTests:       2 failed, 8 passed, 10 total\nSnapshots:   0 total\nTime:        0.786 s, estimated 1 s\nRan all test suites matching __tests__/sentry-wiring.test.ts.",
+  "failing_tests": [
+    "A3 — instrumentation-client happy path: Sentry.init called with DSN + tracesSampleRate",
+    "C2 — global-error: captureException called via useEffect when error prop provided"
+  ],
+  "passing_tests_note": "A1,A2 pass because stub correctly does NOT call init (absence behavior). B1-B3 pass because existing sentry.server.config.ts is already correct (spec says no changes needed). C1,D1,D2 pass as structural smoke tests on stubs.",
+  "assumptions_count": 6,
   "spec_ambiguities_flagged": [],
-  "boundary_classes_covered": [9],
-  "behavioral_tests_count": 2
+  "boundary_classes_covered": [1, 7, 9],
+  "behavioral_tests_count": 5,
+  "stubs_created": ["instrumentation-client.ts", "app/global-error.tsx", "app/error.tsx"],
+  "testing_library_available": false,
+  "component_tests_strategy": "node-env mock of react.useEffect — jsdom not available"
 }
