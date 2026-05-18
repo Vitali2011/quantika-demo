@@ -1,21 +1,30 @@
 {
   "phase": "2a",
-  "task": "sentry-wiring",
-  "tests_written": 10,
-  "test_files": ["__tests__/sentry-wiring.test.ts"],
-  "red_verified": true,
-  "red_command": "npx jest __tests__/sentry-wiring.test.ts --no-coverage",
-  "red_command_output": "Expected: [Error: boom]\n    Number of calls: 0\n      181 |\n      182 |\n    > 183 |     expect(mockCaptureException).toHaveBeenCalledWith(testError);\n           |                                  ^\n      184 |   });\n\nTest Suites: 1 failed, 1 total\nTests:       2 failed, 8 passed, 10 total\nSnapshots:   0 total\nTime:        0.786 s, estimated 1 s\nRan all test suites matching __tests__/sentry-wiring.test.ts.",
-  "failing_tests": [
-    "A3 — instrumentation-client happy path: Sentry.init called with DSN + tracesSampleRate",
-    "C2 — global-error: captureException called via useEffect when error prop provided"
+  "task": "matches-m1",
+  "tests_written": 133,
+  "test_files": [
+    "lib/migrations/__tests__/032-matches.test.ts",
+    "lib/matching/__tests__/matches-repository.test.ts",
+    "__tests__/api/matches.test.ts",
+    "__tests__/api/matches-id.test.ts",
+    "__tests__/matches-page.test.tsx"
   ],
-  "passing_tests_note": "A1,A2 pass because stub correctly does NOT call init (absence behavior). B1-B3 pass because existing sentry.server.config.ts is already correct (spec says no changes needed). C1,D1,D2 pass as structural smoke tests on stubs.",
-  "assumptions_count": 6,
-  "spec_ambiguities_flagged": [],
-  "boundary_classes_covered": [1, 7, 9],
-  "behavioral_tests_count": 5,
-  "stubs_created": ["instrumentation-client.ts", "app/global-error.tsx", "app/error.tsx"],
-  "testing_library_available": false,
-  "component_tests_strategy": "node-env mock of react.useEffect — jsdom not available"
+  "red_verified": true,
+  "red_command": "cd /home/marychenka/work/quantika-demo/.worktrees/matches-m1 && ./node_modules/.bin/jest --testPathPatterns='032-matches|matches-repository|__tests__/api/matches|matches-page' --passWithNoTests 2>&1 | tail -30",
+  "red_command_output": "FAIL __tests__/api/matches-id.test.ts\n  ● Test suite failed to run\n\n    Cannot find module '../../lib/migrations/032-matches' from '__tests__/api/matches-id.test.ts'\n\n      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/index.js:895:11)\n      at Object.<anonymous> (__tests__/api/matches-id.test.ts:27:60)\n\n\nTest Suites: 5 failed, 1 passed, 6 total\nTests:       27 failed, 8 passed, 35 total\nSnapshots:   0 total\nTime:        5.218 s\nRan all test suites matching 032-matches|matches-repository|__tests__/api/matches|matches-page.",
+  "red_state_reason": "All 5 new test suites FAIL — implementation modules do not exist yet (032-matches.ts, matches-repository.ts, app/api/matches/route.ts, app/api/matches/[id]/route.ts, MatchesClient.tsx)",
+  "assumptions_count": 7,
+  "spec_ambiguities_flagged": [
+    "POST body: score and reason fields unspecified — impl assigns defaults or client supplies them",
+    "GET response envelope: spec shows { matches: StoredMatch[] } but does not specify pagination metadata",
+    "archived → saved is the only valid archived transition — archived → dismissed invalid confirmed by the invalid-list"
+  ],
+  "boundary_classes_covered": [1, 3, 5, 9, 10],
+  "behavioral_tests_count": 56,
+  "transition_tests": {
+    "valid_transitions": 8,
+    "invalid_transitions": 8,
+    "api_valid": 8,
+    "api_invalid": 4
+  }
 }

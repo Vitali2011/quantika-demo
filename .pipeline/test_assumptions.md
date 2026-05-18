@@ -107,3 +107,60 @@
   in a real product. The spec lists one global CTA. This is assumed to be a page-level button,
   not per-card. If the design puts "Contact Sales" only on the Enterprise card, the test still
   passes as long as exactly one matching link exists.
+
+---
+
+# Phase 2a — Matches M1 Assumptions
+
+1. **POST /api/matches assigns score/reason defaults**: The spec says POST accepts only
+   `cargo_id` and `vessel_id`. The test assumes the implementation assigns a sensible default
+   score (e.g., 0 or 50) and an empty-object reason (`"{}"`) when creating a match via the
+   API. If the route requires score/reason in the body as well, the POST happy-path test must
+   be updated to include those fields.
+
+2. **Empty string cargo_id/vessel_id is rejected by POST validation (400)**: The spec says
+   "missing cargo_id or vessel_id → 400" but does not address empty-string values explicitly.
+   Tests assume that `""` is semantically equivalent to "missing" and should also return 400.
+   If the impl accepts empty strings, two tests in the POST suite will fail and the spec should
+   be revisited.
+
+3. **updateMatchStatus throws an Error whose message contains "Invalid transition"**: The spec
+   says 'Throws error (with message "Invalid transition")'. Tests use `.toThrow(/Invalid
+transition/i)`. If the implementation throws a different error subclass (e.g., a custom
+   `TransitionError`) whose `.message` doesn't contain that phrase, 8 repository transition
+   tests will fail — the contract should be clarified.
+
+4. **timestamps (created_at, updated_at) are Unix milliseconds (INTEGER)**: The schema shows
+   `created_at INTEGER NOT NULL`. Tests insert `Date.now()` (milliseconds) and assert that
+   `typeof created_at === 'number'`. If the implementation stores epoch seconds (UNIX_TIMESTAMP)
+   or ISO strings, timestamp assertions will need adjustment.
+
+5. **MatchesClient.tsx receives initial matches as a prop named `initialMatches` or `matches`**:
+   The spec says "server fetch" in page.tsx and "optimistic update" in MatchesClient. Tests
+   assume the server component fetches matches and passes them as a prop. If the client
+   component fetches independently via useEffect, the page.tsx assertion
+   `MatchesClient.*matches` will fail and the prop-passing contract must be renegotiated.
+
+6. **Status filter in MatchesClient is a client-side filter over the initial prop data**:
+   Tests assert state management (`useState`) for the filter. If the implementation triggers
+   a server roundtrip (e.g., router.push with ?status= query) for filtering instead of local
+   state filtering, the `useState.*status` regex test will fail.
+
+7. **migration032 has `name: "matches"` (exactly that string)**: The test asserts
+   `migration032.name === 'matches'`. Some migrations in this codebase use hyphenated names
+   (e.g., "email-cache"). If the impl uses "032-matches" or another variation, that test fails.
+
+## Spec Ambiguities Flagged — M1
+
+- **POST body: score and reason fields unspecified**: The spec's POST contract only lists
+  `cargo_id` and `vessel_id` as required body fields. It does not specify how score and reason
+  are populated. Tests assume API-assigned defaults (not client-supplied).
+
+- **GET response envelope**: The spec shows `{ matches: StoredMatch[] }` as the response shape.
+  Tests assert this exact envelope. Any additional wrapper fields (e.g., `total`, `pagination`)
+  are not tested but would not break these tests as long as `matches` key is present.
+
+- **archived → saved is the only valid transition out of archived**: The spec lists
+  `archived → saved` but does not explicitly state that `archived → dismissed` is invalid
+  until the invalid-transitions list. Tests cover both the explicit valid and all explicit
+  invalid transitions from the spec.
