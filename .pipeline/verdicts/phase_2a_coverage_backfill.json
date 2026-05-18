@@ -1,0 +1,29 @@
+{
+  "phase": "2a",
+  "task": "coverage-backfill",
+  "tests_written": 38,
+  "test_files": [
+    "__tests__/api/audit.test.ts",
+    "__tests__/api/auth/logout.test.ts",
+    "__tests__/api/canal.test.ts",
+    "__tests__/api/demo-scenarios.test.ts",
+    "__tests__/api/economics.test.ts",
+    "__tests__/api/extension-context.test.ts",
+    "__tests__/api/health-root.test.ts",
+    "__tests__/api/market-tmi.test.ts",
+    "__tests__/api/port-da.test.ts",
+    "__tests__/api/session.test.ts"
+  ],
+  "green_verified": true,
+  "green_command": "npx jest __tests__/api/audit.test.ts __tests__/api/auth/logout.test.ts __tests__/api/canal.test.ts __tests__/api/demo-scenarios.test.ts __tests__/api/economics.test.ts __tests__/api/extension-context.test.ts __tests__/api/health-root.test.ts __tests__/api/market-tmi.test.ts __tests__/api/port-da.test.ts __tests__/api/session.test.ts --no-coverage --forceExit",
+  "green_command_output": "Test Suites: 10 passed, 10 total\nTests:       38 passed, 38 total\nSnapshots:   0 total\nTime:        8.938 s",
+  "assumptions_count": 6,
+  "spec_ambiguities_flagged": [
+    "demo-scenarios: spec said IDs are '01','05','08','11','15' but actual JSON fixture files use full slugs like '01-karasu-mykolaiv-idle' and '05-ru-flag-mykolaiv-sanctioned' — corrected in tests",
+    "admin/upload-csv: spec listed this as one of 11 files to create, but file already existed at __tests__/api/admin/market/upload-csv.test.ts with comprehensive coverage — not re-created",
+    "audit GET 200 path for own sessionId: not included in the 5 required tests (spec said write 5); confirmed 403 coverage covers the inverse case adequately"
+  ],
+  "boundary_classes_covered": [1, 3, 5, 6, 7, 8, 9],
+  "behavioral_tests_count": 38,
+  "note_on_upload_csv": "upload-csv.test.ts already existed with 16 tests — counted as part of the covered routes but not re-created"
+}

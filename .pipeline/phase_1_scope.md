@@ -1,78 +1,60 @@
-# Phase 1 SCOPE — p9-sentry-wiring-v2
+# Phase 1 Scope — Coverage Backfill: Untested API Routes
 
 ## Assumptions (Rule A)
 
-Понимаю задачу как: wire @sentry/nextjs optional DSN — Sentry no-op когда DSN не задан.
-Альтернатива: всегда включённый Sentry с fallback DSN.
-Иду по opt-in: task явно требует zero overhead когда DSN absent.
+Понимаю задачу как: написать тесты покрытия для 11 существующих non-LLM API route'ов, которые сейчас не покрыты тестами. Impl уже существует — тесты должны быть GREEN против существующей impl и поднять coverage gate в CI.
 
-## Current State
+Альтернатива: добавить только smoke-тесты (1-2 на route). Иду по полному покрытию (3-5 тестов на route): spec требует ≥80% line coverage per route.
 
-Already exist and correct:
+## Routes в scope (11)
 
-- `sentry.server.config.ts` — guards on `SENTRY_DSN` (if dsn) Sentry.init(...)
-- `sentry.edge.config.ts` — same guard
-- `sentry.client.config.ts` — OLD webpack pattern, guards on NEXT_PUBLIC_SENTRY_DSN (TO DELETE)
-- `instrumentation.ts` — loads server/edge configs
-- `next.config.mjs` — withSentryConfig(nextConfig, { silent: true, org: "", project: "" })
-- `.env.local.example` — SENTRY_DSN= and NEXT_PUBLIC_SENTRY_DSN= placeholders
+| Route | Handler | Auth | DB | Test file |
+|-------|---------|------|----|-----------|
+| `admin/market/upload-csv` | POST | requireAdmin (X-Admin-Token) | migration_027 | `__tests__/api/admin/market/upload-csv.test.ts` |
+| `audit` | GET + POST | requireSession | migration_002 | `__tests__/api/audit.test.ts` |
+| `auth/logout` | POST | none | none | `__tests__/api/auth/logout.test.ts` |
+| `canal/[canal_code]` | GET | none | none (pure fn) | `__tests__/api/canal.test.ts` |
+| `demo-scenarios/[id]` | GET | none | none (pure fn) | `__tests__/api/demo-scenarios.test.ts` |
+| `economics` | POST | CSRF only | none (mock computeEconomics) | `__tests__/api/economics.test.ts` |
+| `extension/context` | GET | requireSession | none (session in-memory) | `__tests__/api/extension-context.test.ts` |
+| `health` | GET | none | none (mock getSessionCount) | `__tests__/api/health-root.test.ts` |
+| `market/tmi` | GET | none | migration_027 | `__tests__/api/market-tmi.test.ts` |
+| `port-da/[port_code]` | GET | none | migration_010 | `__tests__/api/port-da.test.ts` |
+| `session` | DELETE | none (cookie) | none | `__tests__/api/session.test.ts` |
 
-## Files in Scope
+## Exclusions
 
-| File                        | Action                                                    |
-| --------------------------- | --------------------------------------------------------- |
-| `instrumentation-client.ts` | CREATE — client Sentry init, NEXT_PUBLIC_SENTRY_DSN guard |
-| `sentry.client.config.ts`   | DELETE — old webpack pattern                              |
-| `app/global-error.tsx`      | CREATE — root error boundary, captureException            |
-| `app/error.tsx`             | CREATE — root error UI                                    |
-| `next.config.mjs`           | MODIFY — sourcemaps: { disable: true }                    |
+- `ai/*` — LLM-heavy, expensive, prohibited
+- `vessel/[imo]` — parallel parser session conflict
+- `emails/fetch` — Gmail conflict
+- `voyage/*`, `laytime/*`, `charterers*` — already covered
+- `auth/login`, `auth/google` — OAuth flow complexity
 
-## Interface Contracts
+## Boundaries
 
-### instrumentation-client.ts
+**Can Change:** `__tests__/api/` — new test files only
 
-Module-level side effect (no exports needed):
+**Cannot Change:** Any production file (`app/api/`, `lib/`)
 
-```typescript
-// Reads process.env.NEXT_PUBLIC_SENTRY_DSN
-// If falsy (undefined / ""): Sentry.init is NOT called
-// If truthy: Sentry.init({ dsn: <value>, tracesSampleRate: 1.0 }) is called
-```
+**Must Not Break:** All existing tests (full `npm test` suite)
 
-### sentry.server.config.ts (existing — interface only, no changes)
+## Mock Strategy
 
-```typescript
-// Reads process.env.SENTRY_DSN
-// If falsy: Sentry.init NOT called
-// If truthy: Sentry.init({ dsn: <value>, tracesSampleRate: 1.0 }) called
-```
+| Dependency | Mock |
+|-----------|------|
+| `@/lib/session` / requireSession | `jest.mock(() => ({ requireSession: jest.fn(() => ({ session: {...}, sessionId: 'test-sid' })) }))` |
+| `@/lib/session-store` / getStore | `jest.mock(() => ({ getStore: jest.fn(() => ({ getDatabase: () => testDb, getDb: () => testDb, getSessionCount: () => 3, deleteSession: jest.fn() })) }))` |
+| `@/lib/csrf` | `jest.mock(() => ({ validateCsrf: jest.fn(() => true), checkCsrfRequest: jest.fn(() => true) }))` |
+| `@/lib/economics` / computeEconomics | `jest.mock(() => ({ computeEconomics: jest.fn().mockResolvedValue({...}) }))` |
+| Admin token | `process.env.ADMIN_TOKEN = 'test-admin-token'` + `X-Admin-Token` header |
 
-### app/global-error.tsx
+## Test template (3-5 tests per route)
 
-```typescript
-"use client";
-// Props: { error: Error & { digest?: string }, reset: () => void }
-// useEffect: calls Sentry.captureException(error) when error changes
-// Must include <html><body> wrapper (Next.js requirement for global-error)
-// Renders a reset button that calls reset()
-```
+1. Auth → 401 (for auth routes) OR CSRF → 403 (for CSRF routes)
+2. Validation error → 400 (missing/invalid input)
+3. Happy path → 200/201 + expected JSON shape
+4. Not found → 404 (for [id] / [code] params routes)
+5. Error handling → 500 (mock failure where applicable)
 
-### app/error.tsx
-
-```typescript
-"use client";
-// Props: { error: Error & { digest?: string }, reset: () => void }
-// No Sentry call (global-error handles it)
-// Renders error message and reset button
-```
-
-## Rule G
-
-Triggered: YES — ≥3 production files in scope.
-Mode: Phase 2a (test-author cold-context) → Phase 2b (impl).
-
-## Boundary Classes Planned
-
-- Class 1 (Empty): NEXT_PUBLIC_SENTRY_DSN="" (empty string) → should NOT init Sentry
-- Class 7 (Config): env var names consistent across configs
-- Class 9 (E2E): Sentry.init called/not-called verifiable via jest module isolation
+## Open Questions
+(none)
