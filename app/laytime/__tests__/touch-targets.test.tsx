@@ -68,7 +68,7 @@ describe('components/psc/PscSearchForm.tsx — touch-target class on search butt
   it('search button has touch-target class', async () => {
     // Try default export first, then named export (components may use either)
     const pscModule = await import('@/components/psc/PscSearchForm');
-    const PscSearchForm = pscModule.default ?? pscModule.PscSearchForm;
+    const PscSearchForm = (pscModule as any).default ?? pscModule.PscSearchForm;
     render(<PscSearchForm />);
 
     const searchButton = screen.getByRole('button', { name: /search/i });
