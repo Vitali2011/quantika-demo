@@ -425,4 +425,33 @@ describe('POST /api/ai/explain-deal', () => {
     const req = makeRequest({ matchIndex: 0 }, 'sess-1');
     await expect(POST(req)).rejects.toThrow('unexpected');
   });
+
+  // Regression: parseSections must anchor header matches so prose mentions
+  // like "Considering the Market Context" don't false-split a section.
+  it('does not false-match header inside body prose', async () => {
+    mockGetSession.mockReturnValue(baseSession);
+    // Model output where "Market Context" appears INSIDE Deal Rationale prose
+    // before the real "Deal Rationale" header — naive indexOf would split here.
+    mockCallAiText.mockResolvedValue(`Market Context
+Bulk freight market is firm.
+
+Deal Rationale
+Considering the Market Context above, this vessel matches the cargo well.
+DWT 25,000 fits the stem of 20,000 MT.
+
+Key Risks
+- Tight laycan window
+- Port congestion at discharge
+
+Recommended Next Steps
+Verify vessel certificates and confirm bunker plan.`);
+    const req = makeRequest({ matchIndex: 0 }, 'sess-1');
+    const res = await POST(req);
+    const body = await res.json();
+    const drs = body.sections.find((s: { heading: string }) => s.heading === 'Deal Rationale');
+    // Deal Rationale must contain its full prose, not be truncated at the
+    // "Market Context" mention.
+    expect(drs.content).toContain('Considering the Market Context above');
+    expect(drs.content).toContain('DWT 25,000');
+  });
 });

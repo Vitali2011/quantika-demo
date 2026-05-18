@@ -59,12 +59,30 @@ function parseSections(
 ): ExplainDealSection[] {
   const sections: ExplainDealSection[] = [];
 
+  // Anchor headers to a heading-like context so we don't false-match the
+  // phrase inside body prose (e.g. "Considering the Market Context, ...").
+  // Accept: start-of-line, markdown bold (**Header**), numbered prefix (1.),
+  // optional leading hash. Falls back to indexOf if no anchored match found.
+  function findHeader(haystack: string, header: string): number {
+    const escaped = header.replace(/[.*+?^\${}()|[\]\\]/g, '\\$&');
+    // Try anchored matches first: line-start optionally preceded by **, ##, or N.
+    const anchored = new RegExp(
+      `(^|\\n)\\s*(?:\\*\\*|#{1,4}\\s*|\\d+\\.\\s*)?${escaped}(?:\\*\\*|:)?\\s*(?=\\n|$)`,
+    );
+    const m = anchored.exec(haystack);
+    if (m) {
+      // Position of the actual header text, not the leading whitespace/markers
+      return m.index + m[0].indexOf(header);
+    }
+    // Fallback to substring scan (legacy behavior)
+    return haystack.indexOf(header);
+  }
+
   for (let i = 0; i < headers.length; i++) {
     const header = headers[i];
     const nextHeader = headers[i + 1];
 
-    // Find the position of this header in the text
-    const headerIdx = text.indexOf(header);
+    const headerIdx = findHeader(text, header);
     if (headerIdx === -1) {
       // Header not found — include empty section so UI knows structure
       sections.push({ heading: header, content: '' });
@@ -73,12 +91,12 @@ function parseSections(
 
     // Content starts after the header line
     const afterHeader = text.slice(headerIdx + header.length);
-    // Strip leading newlines/colons
+    // Strip leading newlines/colons/markdown
     const contentStart = afterHeader.replace(/^[\s:*\n]+/, '');
 
     let content: string;
     if (nextHeader) {
-      const nextIdx = contentStart.indexOf(nextHeader);
+      const nextIdx = findHeader(contentStart, nextHeader);
       content = nextIdx !== -1
         ? contentStart.slice(0, nextIdx).trim()
         : contentStart.trim();
