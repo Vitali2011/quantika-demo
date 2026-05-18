@@ -1,3 +1,21 @@
+# Test Assumptions — Phase 2a (Test Author — Coverage Backfill)
+
+## Coverage Backfill (10 API route test files, 38 tests)
+
+1. **demo-scenarios fixture IDs are full slugs, not short numeric codes**: The spec said valid IDs are '01', '05', '08', '11', '15'. The actual JSON fixture files embed full slug IDs like `01-karasu-mykolaiv-idle` and `05-ru-flag-mykolaiv-sanctioned`. Verified by reading both the loader and JSON files directly. Tests use the actual slugs.
+
+2. **economics route cache isolation via jest.doMock after resetModules**: The economics route holds an in-process `Map` cache keyed by route+date. After `jest.resetModules()`, re-importing creates a fresh Map. Tests use `jest.doMock()` per-test after `resetModules` to ensure both CSRF and computeEconomics mocks are fresh — avoiding stale mock references from top-level `jest.mock()` hoisting.
+
+3. **audit uses checkCsrfRequest, economics uses validateCsrf**: Both exports from `@/lib/csrf` but different functions. Confirmed by reading each route's import. Tests mock the correct function for each endpoint.
+
+4. **port-da repository uses getDatabase() not getDb()**: Confirmed by reading `lib/port-da/repository.ts`. The session-store mock must expose `getDatabase` (not `getDb` as the upload-csv route uses). Tests set up the mock accordingly.
+
+5. **DELETE /api/session is always-200, no auth required**: Design intent: best-effort cookie cleanup. If no session_id cookie is present, deleteSession is not called but 200 is still returned. Tests verify both paths.
+
+6. **admin/upload-csv already had comprehensive coverage**: The file `__tests__/api/admin/market/upload-csv.test.ts` existed with 16 tests covering all boundary classes before this phase. Not re-created. Counted as already-covered for the 11-route list.
+
+---
+
 # Test Assumptions — Phase 2a (Test Author — Sentry Wiring)
 
 ## Sentry Wiring
