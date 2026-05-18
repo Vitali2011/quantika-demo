@@ -1,0 +1,22 @@
+{
+  "phase": "2a",
+  "task_id": "ux-polish-batch",
+  "tests_written": 15,
+  "test_files": [
+    "app/__tests__/page-skeleton.test.tsx",
+    "app/__tests__/error-boundaries.test.tsx"
+  ],
+  "red_verified": true,
+  "red_command": "./node_modules/.bin/jest app/__tests__/page-skeleton.test.tsx app/__tests__/error-boundaries.test.tsx --no-coverage",
+  "red_command_output": "Cannot find module '@/components/ui/PageSkeleton' and Cannot find module '../dashboard/error' — 2 suites failed, 0 tests ran",
+  "assumptions_count": 4,
+  "assumptions": [
+    "error.tsx components use useEffect to call captureException (not sync call)",
+    "retry button text is 'Попробовать снова' (Russian, matching task spec)",
+    "contextual fallback text contains route name in English (Dashboard/Matches/PSC/Charterers)",
+    "loading.tsx components are visual-only — no unit tests needed per task spec"
+  ],
+  "spec_ambiguities_flagged": [],
+  "boundary_classes_covered": [1],
+  "behavioral_tests_count": 12
+}

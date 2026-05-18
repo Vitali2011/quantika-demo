@@ -128,8 +128,6 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // βf3-06: timing markers for cold-start profiling
-  console.time('cold:compare-routes-total');
   try {
     const result = await compareRoutes(
       body.origin,
@@ -140,7 +138,6 @@ export async function POST(req: NextRequest) {
       daResolver,
       jwcSystemContext,
     );
-    console.timeEnd('cold:compare-routes-total');
 
     // H2 (citation-validator): strip hallucinated citation tags from LLM reason.
     // Only runs when RAG is active and chunks were actually retrieved.
@@ -158,7 +155,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(response);
   } catch (err) {
-    console.timeEnd('cold:compare-routes-total');
     return NextResponse.json(
       { error: 'compare-routes failed', details: String(err) },
       { status: 500 },

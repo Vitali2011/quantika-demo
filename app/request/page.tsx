@@ -24,7 +24,7 @@ export default function RequestPage() {
           </a>
         </div>
 
-        <p className="text-sm text-gray-400">
+        <p className="text-sm text-gray-500">
           <Link href="/dashboard" className="underline hover:text-gray-600">
             ← Back to dashboard
           </Link>
