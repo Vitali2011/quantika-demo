@@ -360,6 +360,7 @@ export interface MatchHardFilters {
   cargoVessel: HardFilterCheck;
   destDraft: HardFilterCheck;
   destCrane: HardFilterCheck;
+  cargoWeight: HardFilterCheck;
 }
 
 /** Sanctions screening (see lib/validation/sanctions.ts). */

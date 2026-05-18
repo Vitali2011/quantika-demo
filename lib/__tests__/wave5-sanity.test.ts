@@ -98,6 +98,8 @@ describe('Fix 1 — destination port compatibility', () => {
       cargoType: 'BREAK_BULK',
       stowageFactor: null,
       grainCapacity: null,
+      dwtSummer: null,
+      dwcc: null,
     });
     expect(r.checks.destDraft.pass).toBe(false);
     expect(r.checks.destDraft.reason).toMatch(/draft/i);
@@ -116,6 +118,8 @@ describe('Fix 1 — destination port compatibility', () => {
       cargoType: 'BREAK_BULK',
       stowageFactor: null,
       grainCapacity: null,
+      dwtSummer: null,
+      dwcc: null,
     });
     expect(r.checks.destDraft.pass).toBe(true);
   });
@@ -132,6 +136,8 @@ describe('Fix 1 — destination port compatibility', () => {
       cargoType: 'BREAK_BULK',
       stowageFactor: null,
       grainCapacity: null,
+      dwtSummer: null,
+      dwcc: null,
     });
     // origin may or may not pass depending on Ravenna — destDraft must fail regardless
     expect(r.checks.destDraft.pass).toBe(false);
@@ -150,6 +156,8 @@ describe('Fix 1 — destination port compatibility', () => {
       cargoType: 'BREAK_BULK',
       stowageFactor: null,
       grainCapacity: null,
+      dwtSummer: null,
+      dwcc: null,
     });
     expect(r.checks.destCrane.pass).toBe(false);
     expect(r.checks.destCrane.reason).toMatch(/crane|gearless/i);
@@ -167,6 +175,8 @@ describe('Fix 1 — destination port compatibility', () => {
       cargoType: 'BREAK_BULK',
       stowageFactor: null,
       grainCapacity: null,
+      dwtSummer: null,
+      dwcc: null,
     });
     expect(r.checks.destDraft.pass).toBe(true);
     expect(r.checks.destCrane.pass).toBe(true);
