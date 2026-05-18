@@ -1,0 +1,24 @@
+{
+  "phase": "1",
+  "task_id": "sentry-tuning",
+  "task_description": "Sentry tuning batch: PART A onRouterTransitionStart hook, PART B Session Replay (10%/100% prod), PART C env-based tracesSampleRate (10% prod / 100% dev)",
+  "files_in_scope": [
+    "instrumentation-client.ts",
+    "sentry.server.config.ts",
+    "sentry.edge.config.ts",
+    "__tests__/sentry-wiring.test.ts",
+    "lib/__tests__/sentry.test.ts"
+  ],
+  "scope_size": 5,
+  "cross_cutting_surface": [],
+  "rule_g_triggered": false,
+  "rule_g_reason": "config-pr exclusion — Sentry init options only, not parser/auth/payments/cron/migration domain",
+  "boundary_classes_planned": [1, 7],
+  "gotchas_acknowledged": [
+    "@sentry/nextjs resolves to server build in node testEnvironment — client APIs (replayIntegration, captureRouterTransitionStart) must be mocked",
+    "A3 mock in sentry-wiring.test.ts needs replayIntegration added after PART B impl",
+    "process.env.NODE_ENV manipulation in node testEnvironment works via object spread copy"
+  ],
+  "assumptions_path": null,
+  "escalate_to": null
+}
