@@ -1,4 +1,7 @@
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { getSession } from '@/lib/session';
 import { getStore } from '@/lib/session-store';
 import { listMatches } from '@/lib/matching/matches-repository';
 import MatchesClient from './MatchesClient';
@@ -8,6 +11,14 @@ export const metadata: Metadata = {
 };
 
 export default async function MatchesPage() {
+  const cookieStore = await cookies();
+  const sessionId = cookieStore.get('session_id')?.value;
+  if (!sessionId) redirect('/');
+  const session = getSession(sessionId);
+  if (!session) redirect('/');
+
+  if (process.env.MATCHES_ENABLED === 'false') redirect('/');
+
   const db = getStore().getDatabase();
   const matches = listMatches(db, { sortBy: 'score', sortDir: 'desc' });
   return (

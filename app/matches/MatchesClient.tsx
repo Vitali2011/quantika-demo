@@ -108,6 +108,14 @@ export default function MatchesClient({ initialMatches }: Props) {
                     Archive
                   </button>
                 )}
+                {match.status === 'archived' && (
+                  <button
+                    onClick={() => handleAction(match.id, 'saved')}
+                    className="px-3 py-1 text-xs rounded bg-blue-100 text-blue-700 hover:bg-blue-200"
+                  >
+                    Restore
+                  </button>
+                )}
               </div>
             </li>
           ))}

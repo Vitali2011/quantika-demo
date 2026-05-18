@@ -15,20 +15,13 @@ function isFeatureEnabled(): boolean {
   return process.env.MATCHES_ENABLED === 'true';
 }
 
-function checkAuth(request: NextRequest): NextResponse | null {
-  const authResult = requireSession(request);
-  // If requireSession returned a truthy non-session value (e.g. a 401 NextResponse), return it
-  if (authResult && !((authResult as { session?: unknown }).session)) {
-    return authResult as NextResponse;
-  }
-  // If undefined or session object, proceed (skip auth or auth passed)
-  return null;
-}
-
 export async function PATCH(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
+  const authResult = requireSession(request);
+  if (authResult instanceof NextResponse) return authResult;
+
   if (!isFeatureEnabled()) {
     return NextResponse.json(
       { error: 'Feature disabled' },
@@ -36,12 +29,15 @@ export async function PATCH(
     );
   }
 
-  const authError = checkAuth(request);
-  if (authError) return authError;
-
   try {
     const { id: idStr } = await context.params;
     const id = parseInt(idStr, 10);
+    if (isNaN(id) || id < 1) {
+      return NextResponse.json(
+        { error: 'Invalid match id' },
+        { status: 400 }
+      );
+    }
 
     const body = await request.json();
     const { status } = body;
@@ -73,7 +69,7 @@ export async function PATCH(
       );
     }
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

@@ -15,26 +15,16 @@ function isFeatureEnabled(): boolean {
   return process.env.MATCHES_ENABLED === 'true';
 }
 
-function checkAuth(request: NextRequest): NextResponse | null {
-  const authResult = requireSession(request);
-  // If requireSession returned a truthy non-session value (e.g. a 401 NextResponse), return it
-  if (authResult && !((authResult as { session?: unknown }).session)) {
-    return authResult as NextResponse;
-  }
-  // If undefined or session object, proceed (skip auth or auth passed)
-  return null;
-}
-
 export async function GET(request: NextRequest): Promise<NextResponse> {
+  const authResult = requireSession(request);
+  if (authResult instanceof NextResponse) return authResult;
+
   if (!isFeatureEnabled()) {
     return NextResponse.json(
       { error: 'Feature disabled' },
       { status: 503 }
     );
   }
-
-  const authError = checkAuth(request);
-  if (authError) return authError;
 
   try {
     const db = getStore().getDatabase();
@@ -52,32 +42,34 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const sortDir = sortDirParam === 'asc' ? 'asc' : 'desc';
 
     const limitParam = searchParams.get('limit');
-    const limit = limitParam ? parseInt(limitParam, 10) : undefined;
+    const limitParsed = limitParam ? parseInt(limitParam, 10) : undefined;
+    const limit = limitParsed !== undefined && !isNaN(limitParsed) && limitParsed > 0 ? limitParsed : undefined;
 
     const offsetParam = searchParams.get('offset');
-    const offset = offsetParam ? parseInt(offsetParam, 10) : undefined;
+    const offsetParsed = offsetParam ? parseInt(offsetParam, 10) : undefined;
+    const offset = offsetParsed !== undefined && !isNaN(offsetParsed) && offsetParsed >= 0 ? offsetParsed : undefined;
 
     const matches = listMatches(db, { status, sortBy, sortDir, limit, offset });
 
     return NextResponse.json({ matches }, { status: 200 });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const authResult = requireSession(request);
+  if (authResult instanceof NextResponse) return authResult;
+
   if (!isFeatureEnabled()) {
     return NextResponse.json(
       { error: 'Feature disabled' },
       { status: 503 }
     );
   }
-
-  const authError = checkAuth(request);
-  if (authError) return authError;
 
   try {
     const body = await request.json();
@@ -102,16 +94,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const match = createMatch(db, {
       cargo_id,
       vessel_id,
-      score: typeof score === 'number' ? score : 0,
+      score: typeof score === 'number' && isFinite(score) ? Math.max(0, Math.min(100, Math.round(score))) : 0,
       reason: typeof reason === 'string' ? reason : '{}',
       status: VALID_STATUSES.includes(status as MatchStatus) ? (status as MatchStatus) : undefined,
       user_id: user_id ?? null,
     });
 
     return NextResponse.json(match, { status: 201 });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
