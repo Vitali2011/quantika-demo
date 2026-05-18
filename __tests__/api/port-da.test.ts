@@ -68,6 +68,24 @@ describe('GET /api/port-da/[port_code]', () => {
     expect(json.error).toMatch(/No port DA data/i);
   });
 
+  it('returns 400 for zero vessel_dwt (Class 3: negative/zero boundary)', async () => {
+    const { GET } = await import('@/app/api/port-da/[port_code]/route');
+    const req = new NextRequest('http://localhost/api/port-da/NLRTM?vessel_dwt=0');
+    const res = await GET(req, { params: Promise.resolve({ port_code: 'NLRTM' }) });
+    expect(res.status).toBe(400);
+    const json = await res.json();
+    expect(json.error).toMatch(/positive integer/i);
+  });
+
+  it('returns 400 for float vessel_dwt (Class 2: non-integer boundary)', async () => {
+    const { GET } = await import('@/app/api/port-da/[port_code]/route');
+    const req = new NextRequest('http://localhost/api/port-da/NLRTM?vessel_dwt=12345.5');
+    const res = await GET(req, { params: Promise.resolve({ port_code: 'NLRTM' }) });
+    expect(res.status).toBe(400);
+    const json = await res.json();
+    expect(json.error).toMatch(/positive integer/i);
+  });
+
   it('returns 200 with breakdown shape for seeded data', async () => {
     db.prepare(
       `INSERT INTO port_da_estimates (port_code, port_name, vessel_dwt_min, vessel_dwt_max, port_dues_usd, pilotage_usd, tugs_usd, stevedoring_usd_per_mt, cargo_type, confidence, source, updated_at)

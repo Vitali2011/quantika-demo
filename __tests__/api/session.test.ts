@@ -44,7 +44,7 @@ describe('DELETE /api/session', () => {
     expect(mockDeleteSession).not.toHaveBeenCalled();
   });
 
-  it('response Set-Cookie header clears session_id cookie', async () => {
+  it('response Set-Cookie header expires session_id cookie (deletion pattern)', async () => {
     const { DELETE } = await import('@/app/api/session/route');
     const req = new NextRequest('http://localhost/api/session', {
       method: 'DELETE',
@@ -53,5 +53,7 @@ describe('DELETE /api/session', () => {
     const res = await DELETE(req);
     const setCookie = res.headers.get('set-cookie') ?? '';
     expect(setCookie).toContain('session_id');
+    // Next.js cookie deletion uses Expires=epoch or Max-Age=0 — either signals deletion
+    expect(setCookie).toMatch(/Max-Age=0|Expires=Thu, 01 Jan 1970/i);
   });
 });

@@ -9,6 +9,7 @@
 import Database from 'better-sqlite3';
 import { NextRequest, NextResponse } from 'next/server';
 import migration002 from '@/lib/migrations/002-audit-events';
+import { logAuditEvent } from '@/lib/audit';
 
 let testDb: Database.Database;
 
@@ -75,6 +76,17 @@ describe('GET /api/audit', () => {
     const json = await res.json();
     expect(json.error).toBe('Forbidden');
   });
+
+  it('returns 200 with events when sessionId matches own session', async () => {
+    logAuditEvent({ sessionId: OWN_SESSION_ID, actor: 'user', action: 'confirmed' }, db);
+    const req = new NextRequest(`http://localhost/api/audit?sessionId=${OWN_SESSION_ID}`);
+    const res = await GET(req);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(Array.isArray(json.events)).toBe(true);
+    expect(json.events.length).toBeGreaterThan(0);
+    expect(json.events[0].actor).toBe('user');
+  });
 });
 
 describe('POST /api/audit', () => {
@@ -91,6 +103,17 @@ describe('POST /api/audit', () => {
 
   afterEach(() => {
     db.close();
+  });
+
+  it('returns 401 when no session', async () => {
+    mockRequireSession.mockReturnValue(NextResponse.json({ error: 'No session' }, { status: 401 }));
+    const req = new NextRequest('http://localhost/api/audit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ actor: 'user', action: 'confirmed' }),
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(401);
   });
 
   it('returns 403 when CSRF check fails', async () => {
