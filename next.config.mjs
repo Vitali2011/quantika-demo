@@ -8,4 +8,9 @@ const nextConfig = {
   },
 };
 
-export default withSentryConfig(nextConfig, { silent: true, org: "", project: "" });
+export default withSentryConfig(nextConfig, {
+  silent: true,
+  org: "",
+  project: "",
+  sourcemaps: { disable: true },
+});

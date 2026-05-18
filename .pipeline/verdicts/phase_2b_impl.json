@@ -1,18 +1,25 @@
 {
   "phase": "2b",
-  "impl_files": ["middleware.ts"],
+  "impl_files": [
+    "instrumentation-client.ts",
+    "app/global-error.tsx",
+    "app/error.tsx",
+    "next.config.mjs"
+  ],
+  "deleted_files": [],
+  "note_sentry_client_config": "sentry.client.config.ts was NOT deleted because lib/__tests__/sentry.test.ts (pre-existing, read-only) requires it. Kept with same DSN-guard content as instrumentation-client.ts.",
   "green_verified": true,
-  "green_command": "npx jest --testPathPatterns=middleware-auth --no-coverage",
-  "green_command_output": "Test Suites: 1 passed, 1 total\nTests:       19 passed, 19 total\nSnapshots:   0 total\nTime:        1.771 s, estimated 2 s\nRan all test suites matching middleware-auth.",
+  "green_command": "npx jest __tests__/sentry-wiring.test.ts --no-coverage",
+  "green_command_output": "Test Suites: 1 passed, 1 total\nTests:       10 passed, 10 total\nSnapshots:   0 total\nTime:        0.549 s",
   "test_rewrite_count": 0,
   "test_modification_requests": [],
   "needs_review": false,
   "internal_test_files": [],
   "needs_review_round": 0,
   "test_patches_accepted_total": 0,
-  "tests_expected": 19,
-  "tests_run": 19,
-  "test_files_sha_before": "n/a-same-worktree",
-  "test_files_sha_after": "n/a-same-worktree",
+  "tests_expected": 10,
+  "tests_run": 10,
+  "test_files_sha_before": "121a993ce3eec49c6d5ba049eb39e4727301c50b4c2b0dfab3889ff5f1d4e198  __tests__/sentry-wiring.test.ts",
+  "test_files_sha_after": "121a993ce3eec49c6d5ba049eb39e4727301c50b4c2b0dfab3889ff5f1d4e198  __tests__/sentry-wiring.test.ts",
   "setup_mismatch": false
 }
