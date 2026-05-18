@@ -99,7 +99,7 @@ NOT equivalent:
 Reply ONLY with JSON: {"equiv": true|false, "reason": "one short sentence"}`;
 
 async function judgePair(field: string, ref: unknown, model: unknown): Promise<Verdict> {
-  const userMsg = `FIELD: ${field}\nREF:   ${JSON.stringify(ref)}\nMODEL: ${JSON.stringify(model)}`;
+  const userMsg = `FIELD: ${field}\nREF:   ${JSON.stringify(toComparable(ref))}\nMODEL: ${JSON.stringify(toComparable(model))}`;
   let lastErr = 'unknown';
   for (let attempt = 1; attempt <= 4; attempt++) {
     try {
