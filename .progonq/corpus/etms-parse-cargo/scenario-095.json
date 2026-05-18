@@ -68,7 +68,9 @@
           "confidence": "confirmed",
           "source_text": "spot/ppt"
         },
-        "laycan": null,
+        "laycan": {
+          "value": "Spot / prompt"
+        },
         "loading_rate": {
           "value": null,
           "confidence": "confirmed",
@@ -172,7 +174,9 @@
           "confidence": "confirmed",
           "source_text": "spot/ppt"
         },
-        "laycan": null,
+        "laycan": {
+          "value": "Spot / prompt"
+        },
         "loading_rate": {
           "value": 1000,
           "confidence": "confirmed",

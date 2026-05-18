@@ -68,7 +68,7 @@
           "source_text": "Spot try vsl dates"
         },
         "laycan": {
-          "value": "Spot / prompt",
+          "value": "Spot",
           "confidence": "interpreted",
           "source_text": "Spot try vsl dates"
         },
@@ -171,7 +171,7 @@
           "source_text": "Spot try vsl dates"
         },
         "laycan": {
-          "value": "Spot / prompt",
+          "value": "Spot",
           "confidence": "interpreted",
           "source_text": "Spot try vsl dates"
         },
@@ -632,7 +632,10 @@
         ],
         "unknown_terms": [
           "Oa wable — unrecognized abbreviation in TC request context (possibly 'owners approval' or similar?)"
-        ]
+        ],
+        "laycan": {
+          "value": "Spot / prompt"
+        }
       }
     ]
   }
