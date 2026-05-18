@@ -60,6 +60,8 @@ describe("instrumentation-client.ts — NEXT_PUBLIC_SENTRY_DSN guard", () => {
     const mockInit = jest.fn();
     jest.doMock("@sentry/nextjs", () => ({
       init: mockInit,
+      captureRouterTransitionStart: jest.fn(),
+      replayIntegration: jest.fn(() => ({ name: "Replay" })),
       captureException: jest.fn(),
     }));
 
@@ -213,5 +215,103 @@ describe("app/error.tsx — structural contract (no jsdom)", () => {
 
     // Calling the component as a function should not throw
     expect(() => mod.default({ error: testError, reset: resetFn })).not.toThrow();
+  });
+});
+
+// ─── E. instrumentation-client.ts — sentry-tuning features ─────────────────
+
+const sentryTuningMock = () => ({
+  init: jest.fn(),
+  captureRouterTransitionStart: jest.fn(),
+  replayIntegration: jest.fn(() => ({ name: "Replay" })),
+  captureException: jest.fn(),
+});
+
+describe("instrumentation-client.ts — sentry-tuning (onRouterTransitionStart + Replay + prod sampling)", () => {
+  it("E1 — onRouterTransitionStart is exported as a function", async () => {
+    jest.doMock("@sentry/nextjs", sentryTuningMock);
+
+    const mod = await import("../instrumentation-client") as { onRouterTransitionStart?: unknown };
+    expect(typeof mod.onRouterTransitionStart).toBe("function");
+  });
+
+  it("E2 — tracesSampleRate is 1.0 in non-production (regression guard)", async () => {
+    const DSN = "https://testkey@sentry.io/123";
+    const mockInit = jest.fn();
+    jest.doMock("@sentry/nextjs", () => ({ ...sentryTuningMock(), init: mockInit }));
+
+    process.env.NEXT_PUBLIC_SENTRY_DSN = DSN;
+    // NODE_ENV is 'test' in this environment — not production
+    await import("../instrumentation-client");
+
+    expect(mockInit).toHaveBeenCalledWith(
+      expect.objectContaining({ tracesSampleRate: 1.0 })
+    );
+  });
+
+  it("E3 — tracesSampleRate is 0.1 in production (Class 7: NODE_ENV config cross-ref)", async () => {
+    const DSN = "https://testkey@sentry.io/123";
+    const mockInit = jest.fn();
+    jest.doMock("@sentry/nextjs", () => ({ ...sentryTuningMock(), init: mockInit }));
+
+    process.env.NEXT_PUBLIC_SENTRY_DSN = DSN;
+    // @ts-expect-error - readonly in strict types but writable at runtime
+    process.env.NODE_ENV = "production";
+    await import("../instrumentation-client");
+
+    expect(mockInit).toHaveBeenCalledWith(
+      expect.objectContaining({ tracesSampleRate: 0.1 })
+    );
+  });
+
+  it("E4 — integrations array contains replayIntegration result", async () => {
+    const DSN = "https://testkey@sentry.io/123";
+    const mockInit = jest.fn();
+    const replayInstance = { name: "Replay" };
+    jest.doMock("@sentry/nextjs", () => ({
+      ...sentryTuningMock(),
+      init: mockInit,
+      replayIntegration: jest.fn(() => replayInstance),
+    }));
+
+    process.env.NEXT_PUBLIC_SENTRY_DSN = DSN;
+    await import("../instrumentation-client");
+
+    expect(mockInit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        integrations: expect.arrayContaining([replayInstance]),
+      })
+    );
+  });
+
+  it("E5 — replaysSessionSampleRate is 0 in non-production (Class 7)", async () => {
+    const DSN = "https://testkey@sentry.io/123";
+    const mockInit = jest.fn();
+    jest.doMock("@sentry/nextjs", () => ({ ...sentryTuningMock(), init: mockInit }));
+
+    process.env.NEXT_PUBLIC_SENTRY_DSN = DSN;
+    await import("../instrumentation-client");
+
+    expect(mockInit).toHaveBeenCalledWith(
+      expect.objectContaining({ replaysSessionSampleRate: 0 })
+    );
+  });
+
+  it("E6 — replaysSessionSampleRate is 0.1 and replaysOnErrorSampleRate is 1.0 in production (Class 7)", async () => {
+    const DSN = "https://testkey@sentry.io/123";
+    const mockInit = jest.fn();
+    jest.doMock("@sentry/nextjs", () => ({ ...sentryTuningMock(), init: mockInit }));
+
+    process.env.NEXT_PUBLIC_SENTRY_DSN = DSN;
+    // @ts-expect-error - readonly in strict types but writable at runtime
+    process.env.NODE_ENV = "production";
+    await import("../instrumentation-client");
+
+    expect(mockInit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        replaysSessionSampleRate: 0.1,
+        replaysOnErrorSampleRate: 1.0,
+      })
+    );
   });
 });

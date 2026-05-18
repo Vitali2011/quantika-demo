@@ -1,0 +1,28 @@
+{
+  "phase": "2",
+  "mode": "single-agent",
+  "impl_files": [
+    "instrumentation-client.ts",
+    "sentry.server.config.ts",
+    "sentry.edge.config.ts"
+  ],
+  "test_files": [
+    "__tests__/sentry-wiring.test.ts",
+    "lib/__tests__/sentry.test.ts"
+  ],
+  "tests_total": 27,
+  "tests_green": 27,
+  "test_rewrite_count": 1,
+  "test_patches_accepted_total": 0,
+  "pi3_triggered": false,
+  "pi2_violations": [],
+  "pi4_flag_tests_added": false,
+  "class_11_pbt_added": false,
+  "rule_g_verdicts": {
+    "phase_2a": null,
+    "phase_2b": null,
+    "needs_review_rounds": 0
+  },
+  "green_verified": true,
+  "notes": "test_rewrite_count=1: updated A3 mock to add replayIntegration + captureRouterTransitionStart after PART B impl. This is a mock setup change, not an expected-value change — PI3 threshold not triggered (threshold=5 expected-value rewrites)."
+}
