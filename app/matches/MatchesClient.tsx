@@ -41,10 +41,9 @@ export default function MatchesClient({ initialMatches }: Props) {
     searchParams.has('dwt_min') ||
     searchParams.has('dwt_max')
   );
-  const [cargoTypes, setCargoTypes] = useState<string[]>(() => {
-    const v = searchParams.get('cargo_type');
-    return v ? v.split(',').filter(Boolean) : [];
-  });
+  const [cargoTypes, setCargoTypes] = useState<string[]>(() =>
+    searchParams.getAll('cargo_type').filter(Boolean)
+  );
   const [route, setRoute] = useState(() => searchParams.get('route') ?? '');
   const [laycan_from, setLaycanFrom] = useState(() => searchParams.get('laycan_from') ?? '');
   const [laycan_to, setLaycanTo] = useState(() => searchParams.get('laycan_to') ?? '');
