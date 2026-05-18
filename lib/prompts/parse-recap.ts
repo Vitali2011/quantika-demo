@@ -64,7 +64,10 @@ Extract fields:
 - vessel_name
 - vessel_yob: year of build (integer, if stated in the recap)
 - vessel_flag: flag state (if stated)
-- owners: shipowner or disponent owner
+- owners: SHIPOWNER or DISPONENT OWNER ONLY. Look for explicit "Owners:", "Owners/Managers:", "Disponent Owners:" prefix in the recap body. Do NOT use:
+    * email sender / signature / "From:" line — that is usually the broker
+    * "OWNERS:" label inside a one-line summary that names a different role (e.g. "OWNERS: KILYOS" where KILYOS is the agreed cargo account)
+  If the recap omits explicit owners disclosure, set value=null with confidence='uncertain' rather than guessing from headers.
 - charterers
 - account: cargo account / actual shipper if different from charterers
 - broker: broker(s) involved
@@ -83,11 +86,26 @@ Extract fields:
 - discharging_rate, discharging_terms, discharging_working_hours
 - demurrage_rate: per day rate
 - demurrage_payment: who pays, when
-- despatch_rate: if stated (complement of demurrage; e.g. "USD 2,250 per day / pro rata")
+- despatch_rate: complement of demurrage. INTERPRET standard BIMCO suffixes when present:
+    * "FD" or "FULL DESPATCH" -> despatch rate = SAME as demurrage rate (Full Despatch)
+    * "HD" or "HALF DESPATCH" -> despatch rate = HALF of demurrage rate
+    * "PDPR" -> per day pro rata (rate unit)
+    * "PDPR/FD ALL ENDS" -> Full Despatch all ends; rate equals demurrage by FD convention
+    * "PDPR FD BENDS" -> Full Despatch both ends; rate equals demurrage
+  Examples:
+    "DEMURRAGE: 1500 EURO PDPR FD" -> despatch_rate = "Full despatch (FD) at EUR 1,500 per day pro rata", confidence='interpreted'
+    "DEMURRAGE USD 8,500 PDPR/FD ALL ENDS" -> despatch_rate = "Full despatch (FD) all ends — USD 8,500 per day pro rata", confidence='interpreted'
+  If only a raw demurrage line is present with no FD/HD/despatch suffix, set despatch_rate=null.
 - load_port_agent
 - disch_port_agent
 - vessel_dwt
-- vessel_draft
+- vessel_draft: list ALL draft values stated in the recap, with their qualifiers. Include design/summer draft, maximum draft, and any cargo-dependent drafts ("max draft at X MT cargo: Y m", "owners warrant to load all cargo with Z m draft on arrival at PORT"). Format as compound string preserving each value's role. Examples:
+    "LOA/BEAM/DRAFT/DM 89,21/12,5M/4,70/6,35M" -> "4.70 m (design) / 6.35 m (maximum)"
+    "DWT 3,858 TON ON 5.84 MTR
+- Max Draft 5,50 metres" -> "5.84 m summer draught; max draft at 3000 MT cargo: 5.50 m"
+    "DWCC: 4000 MT on 6.5 M
+- OWNERS WARRANT TO LOAD WITH 6.9 METER DRAFT ARRIVAL GUYANA" -> "DWCC 4000 MT on 6.5 m draft; owners warrant to load all cargo with 6.9 m draft on arrival Guyana"
+  Single-value extraction (e.g. just "4.70M") loses critical operational context.
 - vessel_geared: boolean
 - cp_form: charter party form used (e.g. GENCON 94, NYPE 93)
 - arbitration: arbitration clause
