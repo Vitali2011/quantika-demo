@@ -45,6 +45,13 @@ function baseRecap(overrides: Partial<ParsedFixtureRecap> = {}): ParsedFixtureRe
     confidentiality: false,
     additionalTerms: [],
     unknownTerms: [],
+    // PR #231: surfaced 5 new schema fields
+    commissionAddressPct: null,
+    commissionAddressAmount: null,
+    commissionBrokerPct: null,
+    commissionBrokerAmount: null,
+    despatchRate: null,
+    acknowledgementDeadline: null,
     ...overrides,
   };
 }

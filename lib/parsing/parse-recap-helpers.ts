@@ -30,8 +30,15 @@ interface RawFixtureRecap {
   load_port_agent?: string | null;
   disch_port_agent?: string | null;
   vessel_dwt?: number | string | null;
-  vessel_draft?: number | string | null;
+  vessel_draft?: number | string | null;  // compound string per prompt PR #223
   vessel_geared?: boolean | null;
+  // PR #220 + #223 added these to schema; PR #231 surfaces them downstream:
+  despatch_rate?: unknown;
+  acknowledgement_deadline?: string | null;
+  commission_address_pct?: number | string | null;
+  commission_address_amount?: number | string | null;
+  commission_broker_pct?: number | string | null;
+  commission_broker_amount?: number | string | null;
   cp_form?: string | null;
   arbitration?: string | null;
   law?: string | null;
@@ -104,7 +111,18 @@ export function parseRecapAIResponse(raw: string, emailId: string): ParsedFixtur
     loadPortAgent: result.load_port_agent || null,
     dischPortAgent: result.disch_port_agent || null,
     vesselDwt: extractNum(result.vessel_dwt),
-    vesselDraft: extractNum(result.vessel_draft),
+    // PR #231: vessel_draft is now a compound string per prompt PR #223
+    // ("4.70 m (design) / 6.35 m (maximum)"). Preserve full string instead of
+    // extractNum which only kept the first number.
+    vesselDraft: typeof result.vessel_draft === "number" ? String(result.vessel_draft) : extractStrField(result.vessel_draft),
+    despatchRate: extractStrField(result.despatch_rate),
+    acknowledgementDeadline: typeof result.acknowledgement_deadline === 'string'
+      ? result.acknowledgement_deadline
+      : null,
+    commissionAddressPct: extractNum(result.commission_address_pct),
+    commissionAddressAmount: extractNum(result.commission_address_amount),
+    commissionBrokerPct: extractNum(result.commission_broker_pct),
+    commissionBrokerAmount: extractNum(result.commission_broker_amount),
     vesselGeared: result.vessel_geared != null ? Boolean(result.vessel_geared) : null,
     cpForm: result.cp_form || null,
     arbitration: result.arbitration || null,
