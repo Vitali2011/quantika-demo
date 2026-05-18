@@ -1,0 +1,23 @@
+{
+  "id": "etms-match-004-marginal-med-atlantic-gearless-bb",
+  "category": "marginal",
+  "cargo_ref": "etms-parse-cargo/scenario-018",
+  "vessel_ref": "etms-parse-vessel/scenario-020",
+  "expected": {
+    "should_be_hard_filtered": false,
+    "match_level": "possible",
+    "score_range": [35, 65],
+    "must_cite_facts": [
+      "DWT 3827 mt vs cargo 2720 mt (71% utilization)",
+      "Vessel open Skikda 18/19 May, cargo Nemrut laycan 15/18 May — vessel arrives AFTER laycan close",
+      "Gearless vessel for break-bulk cargo — depends on load/disch port crane availability"
+    ],
+    "must_NOT_invent": [
+      "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+      "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+      "Charterer-specific policy (e.g., 'Cargill strict on CII') — never allowed from external knowledge",
+      "Vetting clearance — only valid if vessel input has vetting fields"
+    ]
+  },
+  "notes": "Tests timing handling (vessel slightly late) + gearless-for-BB risk. Could go 'weak' if scorer is strict."
+}

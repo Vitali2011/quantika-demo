@@ -1,0 +1,15 @@
+{
+  "id": "etms-match-011-no-match-tiny-vessel",
+  "category": "no-match",
+  "cargo_ref": "etms-parse-cargo/scenario-054",
+  "vessel_ref": "etms-parse-vessel/scenario-004",
+  "expected": {
+    "should_be_hard_filtered": true,
+    "match_level": null,
+    "score_range": null,
+    "must_cite_facts": [],
+    "must_NOT_invent": [],
+    "hard_filter_reason": "DWT 2570 mt << cargo 12000 mt (vessel can carry ~21% of cargo)"
+  },
+  "notes": "Cargo 12000 mt Sfax→Dakar, vessel 2570 dwt Marmara. Vessel only carries 21% of cargo — physical impossibility. MUST be filtered."
+}

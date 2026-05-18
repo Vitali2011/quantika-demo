@@ -1,0 +1,15 @@
+{
+  "id": "etms-match-010-no-match-undersized-wrong-region",
+  "category": "no-match",
+  "cargo_ref": "etms-parse-cargo/scenario-012",
+  "vessel_ref": "etms-parse-vessel/scenario-036",
+  "expected": {
+    "should_be_hard_filtered": true,
+    "match_level": null,
+    "score_range": null,
+    "must_cite_facts": [],
+    "must_NOT_invent": [],
+    "hard_filter_reason": "DWT 32131 mt < cargo 55000 mt (vessel cannot lift cargo)"
+  },
+  "notes": "Cargo 55000 mt India→China, vessel 32131 dwt Marmara. Physical impossibility (size) + wrong continent. MUST be hard-filter dropped before LLM sees it. If pair appears in matches[], it's a critical bug."
+}
