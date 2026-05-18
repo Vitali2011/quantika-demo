@@ -57,6 +57,8 @@ describe('middleware auth guard', () => {
       '/api/admin/market/upload-csv',
       '/_next/static/chunks/main.js',
       '/_next/image?url=x',
+      '/api/whatsapp/webhook',
+      '/api/integrations/pipedrive/webhook',
     ];
 
     for (const path of bypassPaths) {

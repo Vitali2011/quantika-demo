@@ -1,18 +1,12 @@
 {
   "phase": "2a",
-  "tests_written": 9,
-  "test_files": [
-    "app/__tests__/upgrade-page.test.tsx",
-    "app/__tests__/matches-page.test.tsx"
-  ],
+  "tests_written": 2,
+  "test_files": ["__tests__/middleware-auth.test.ts"],
   "red_verified": true,
-  "red_command": "npx jest app/__tests__/upgrade-page.test.tsx app/__tests__/matches-page.test.tsx --no-coverage 2>&1 | tail -20",
-  "red_command_output": "41 |     render(<MatchesPage />);\n      42 |     // Spec: \"Submit your first deal request\" → /request\n    > 43 |     const link = screen.getByRole('link', { name: /submit your first deal request/i });\n         |                         ^\n      44 |     expect(link).toHaveAttribute('href', '/request');\n      45 |   });\n      46 | });\n\n      at Object.getElementError (../../node_modules/@testing-library/dom/dist/config.js:37:19)\n      at ../../node_modules/@testing-library/dom/dist/query-helpers.js:76:38\n      at ../../node_modules/@testing-library/dom/dist/query-helpers.js:52:17\n      at ../../node_modules/@testing-library/dom/dist/query-helpers.js:95:19\n      at Object.getByRole (app/__tests__/matches-page.test.tsx:43:25)\n\nTest Suites: 2 failed, 2 total\nTests:       9 failed, 9 total\nSnapshots:   0 total\nTime:        22.158 s\nRan all test suites matching app/__tests__/upgrade-page.test.tsx|app/__tests__/matches-page.test.tsx.",
-  "assumptions_count": 5,
-  "spec_ambiguities_flagged": [
-    "Matches populated state (vessel/route/score/date rows) not tested in phase 2a — deferred",
-    "Contact Sales CTA assumed page-level (not per-card) — getByRole will throw if multiple links exist"
-  ],
-  "boundary_classes_covered": [1, 9],
-  "behavioral_tests_count": 9
+  "red_command": "npx jest --testPathPatterns=middleware-auth --no-coverage",
+  "red_command_output": "● middleware auth guard › bypass paths (no auth required) › bypasses auth for /api/whatsapp/webhook\n\n    expect(received).not.toBe(expected) // Object.is equality\n\n    Expected: not 302\n\n      67 |         const res = await runMiddleware(req);\n      68 |         // Should NOT redirect to /login\n    > 69 |         expect(res.status).not.toBe(302);\n         |                                ^\n      70 |         // Allow 200 (next()) or non-redirect\n      71 |         const location = res.headers.get('location');\n      72 |         if (location) {\n\n      at Object.toBe (__tests__/middleware-auth.test.ts:69:32)\n\n  ● middleware auth guard › bypass paths (no auth required) › bypasses auth for /api/integrations/pipedrive/webhook\n\n    expect(received).not.toBe(expected) // Object.is equality\n\n    Expected: not 302\n\n      67 |         const res = await runMiddleware(req);\n      68 |         // Should NOT redirect to /login\n    > 69 |         expect(res.status).not.toBe(302);\n         |                                ^\n      70 |         // Allow 200 (next()) or non-redirect\n      71 |         const location = res.headers.get('location');\n      72 |         if (location) {\n\n      at Object.toBe (__tests__/middleware-auth.test.ts:69:32)\n\nTest Suites: 1 failed, 1 total\nTests:       2 failed, 17 passed, 19 total\nSnapshots:   0 total\nTime:        1.553 s, estimated 2 s\nRan all test suites matching middleware-auth.",
+  "assumptions_count": 3,
+  "spec_ambiguities_flagged": [],
+  "boundary_classes_covered": [9],
+  "behavioral_tests_count": 2
 }
