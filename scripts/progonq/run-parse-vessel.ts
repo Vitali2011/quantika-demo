@@ -252,12 +252,36 @@ export function scoreVesselItems(refItems: VesselItem[], modelItems: VesselItem[
 }
 
 function extractItems(raw: unknown): VesselItem[] {
-  if (Array.isArray(raw)) return raw as VesselItem[];
-  if (raw && typeof raw === 'object') {
-    const items = (raw as { items?: unknown }).items;
-    if (Array.isArray(items)) return items as VesselItem[];
+  let items: VesselItem[] = [];
+  if (Array.isArray(raw)) items = raw as VesselItem[];
+  else if (raw && typeof raw === 'object') {
+    const xs = (raw as { items?: unknown }).items;
+    if (Array.isArray(xs)) items = xs as VesselItem[];
   }
-  return [];
+  return dedupeVesselItems(items);
+}
+
+/**
+ * Defense against a Gemini quirk where the model "thinks aloud" inside a
+ * string field and ends up emitting hundreds of duplicate items until
+ * max_tokens cuts it off. See etms-parse-vessel-046 (Sep 2025): one
+ * vessel ADAMAR produced 941 duplicate entries because vessel_type
+ * contained the model's reasoning prose. Dedup by (vessel_name, imo).
+ */
+function dedupeVesselItems(items: VesselItem[]): VesselItem[] {
+  const seen = new Set<string>();
+  const out: VesselItem[] = [];
+  for (const it of items) {
+    const name = (typeof it.vessel_name === 'object' && it.vessel_name
+      ? String((it.vessel_name as { value?: unknown }).value ?? '')
+      : String(it.vessel_name ?? '')).trim().toUpperCase();
+    const imo = typeof it.imo === 'string' ? it.imo.trim() : String(it.imo ?? '').trim();
+    const key = `${name}|${imo}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(it);
+  }
+  return out;
 }
 
 async function runScenario(scenario: Scenario): Promise<RunResult> {
