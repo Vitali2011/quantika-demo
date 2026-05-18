@@ -49,7 +49,7 @@
     "@google/genai": "^2.4.0",
     "@sentry/nextjs": "^10.53.1",
     "@types/sanitize-html": "^2.16.1",
-    "better-sqlite3": "^11.10.0",
+    "better-sqlite3": "^12.10.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "fuzzysort": "^3.1.0",
