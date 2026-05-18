@@ -5,6 +5,10 @@ on:
   schedule:
     - cron: "0 4 * * 1" # Monday 04:00 UTC
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   e2e:
     name: E2E
