@@ -68,7 +68,7 @@
           "source_text": "spot prompt - can try beg march dates as well."
         },
         "laycan": {
-          "value": "Spot / early March 2026",
+          "value": "Spot / prompt - can try beg March 2026 dates as well",
           "confidence": "uncertain",
           "source_text": "spot prompt - can try beg march dates as well."
         },
@@ -163,7 +163,7 @@
           "source_text": "5-10 March"
         },
         "laycan": {
-          "value": "5–10 March 2026",
+          "value": "5/10 March 2026",
           "confidence": "confirmed",
           "source_text": "5-10 March"
         },

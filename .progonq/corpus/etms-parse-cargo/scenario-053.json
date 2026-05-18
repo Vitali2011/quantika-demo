@@ -67,7 +67,9 @@
           "confidence": "interpreted",
           "source_text": "spot - vsl dates"
         },
-        "laycan": null,
+        "laycan": {
+          "value": "Spot"
+        },
         "loading_rate": {
           "value": 2000,
           "confidence": "interpreted",

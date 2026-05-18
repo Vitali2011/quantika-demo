@@ -145,7 +145,7 @@
         "incoterms": null,
         "preferred_dates": null,
         "laycan": {
-          "value": "spot",
+          "value": "Spot",
           "confidence": "confirmed",
           "source_text": "L/c: spot"
         },
@@ -233,7 +233,7 @@
         "incoterms": null,
         "preferred_dates": null,
         "laycan": {
-          "value": "02-07.06.2026",
+          "value": "02/07 June 2026",
           "confidence": "confirmed",
           "source_text": "L/c: 02-07.06.2026"
         },

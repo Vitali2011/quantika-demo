@@ -59,7 +59,9 @@
           "confidence": "confirmed",
           "source_text": "Cgo Ready"
         },
-        "laycan": null,
+        "laycan": {
+          "value": "Cgo Ready"
+        },
         "loading_rate": {
           "value": 1500,
           "confidence": "confirmed",
