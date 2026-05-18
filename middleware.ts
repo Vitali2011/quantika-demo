@@ -20,6 +20,11 @@ const AUTH_BYPASS_PATHS = new Set([
   '/api/whatsapp/webhook',
   // Pipedrive webhook has its own HMAC-SHA256 signature verification
   '/api/integrations/pipedrive/webhook',
+  // WhatsApp internal ingest has its own x-quantika-internal token
+  '/api/whatsapp/ingest',
+  // Admin knowledge endpoints have their own X-Admin-Token check (requireAdmin)
+  '/api/admin/knowledge/refresh',
+  '/api/admin/knowledge-status',
 ]);
 
 const AUTH_BYPASS_PREFIXES = ['/_next/static', '/_next/image', '/_next/webpack'];
