@@ -364,4 +364,35 @@ describe('parseRecapAIResponse', () => {
     expect(result.vesselDwt).toBe(75000);
     expect(result.vesselDraft).toBe(14.5);
   });
+
+  // Regression: PR #223 renamed unknown_terms inner key from "note" to "context"
+  // to match GT, but UI + ParsedFixtureRecap.unknownTerms still read .note.
+  // Parser must normalize both shapes to canonical .note so UI keeps working.
+  it('normalizes unknown_terms.context (new Gemini schema) to .note', () => {
+    const raw = JSON.stringify({
+      unknown_terms: [
+        { term: 'APP B FITTED', context: 'Vessel description anomaly' },
+        { term: 'DM', context: 'Draft maximum suffix non-standard' },
+      ],
+      subs: [],
+      additional_terms: [],
+    });
+    const result = parseRecapAIResponse(raw, 'email-ctx');
+    expect(result.unknownTerms).toHaveLength(2);
+    expect(result.unknownTerms[0]).toEqual({
+      term: 'APP B FITTED',
+      note: 'Vessel description anomaly',
+    });
+    expect(result.unknownTerms[1].note).toBe('Draft maximum suffix non-standard');
+  });
+
+  it('preserves unknown_terms.note (legacy shape) unchanged', () => {
+    const raw = JSON.stringify({
+      unknown_terms: [{ term: 'LEGACY', note: 'old shape' }],
+      subs: [],
+      additional_terms: [],
+    });
+    const result = parseRecapAIResponse(raw, 'email-legacy');
+    expect(result.unknownTerms[0].note).toBe('old shape');
+  });
 });
