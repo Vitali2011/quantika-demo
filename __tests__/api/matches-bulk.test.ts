@@ -1,28 +1,6 @@
 // @ts-nocheck — RED phase: bulk route doesn't exist yet; impl agent creates it
 /**
  * RED tests — PATCH /api/matches/bulk + DELETE /api/matches/bulk
- *
- * Covers (Class 9 — E2E behavioral via real route handler imports):
- *   PATCH /api/matches/bulk:
- *   - Happy path: 3 matches, all valid transitions → 200, all updated
- *   - 1 invalid transition among 5 → 400, nothing committed (atomicity)
- *   - Match not found → 404
- *   - Empty ids → 400 (assumption documented)
- *   - Invalid status value → 400
- *   - Feature flag disabled → 503
- *   - No session → 401
- *
- *   DELETE /api/matches/bulk:
- *   - Happy path: 3 ids → 200, all deleted
- *   - Missing X-Admin-Token → 401
- *   - ADMIN_TOKEN env not set → 500
- *   - Match not found → 404
- *   - Empty ids → 400 (assumption documented)
- *   - No session → 401
- *   - Transaction atomic (verify DB unchanged on partial failure)
- *
- *   Boundary Class 6: bulk status value must exactly match enum (no substring catch)
- *   Boundary Class 9: real route handler, not string match
  */
 
 import Database from 'better-sqlite3';
@@ -54,10 +32,6 @@ const AUTHENTICATED_SESSION = {
   session: { id: 'sess-1', parsedCargos: [], parsedVessels: [] },
   sessionId: 'test-sid',
 };
-
-// ──────────────────────────────────────────────────────────────────────────────
-// Migration 033 helper
-// ──────────────────────────────────────────────────────────────────────────────
 
 function migration033Up(db: Database.Database): void {
   db.exec(`
@@ -115,13 +89,8 @@ function makeBulkDeleteRequest(body: unknown, adminToken?: string): NextRequest 
 
 beforeEach(() => {
   mockRequireSession.mockReturnValue(AUTHENTICATED_SESSION);
-  // Default: admin token is valid (returns null = allowed)
   mockRequireAdmin.mockReturnValue(null);
 });
-
-// ──────────────────────────────────────────────────────────────────────────────
-// PATCH /api/matches/bulk — feature flag
-// ──────────────────────────────────────────────────────────────────────────────
 
 describe('PATCH /api/matches/bulk — feature flag', () => {
   let db: Database.Database;
@@ -149,10 +118,6 @@ describe('PATCH /api/matches/bulk — feature flag', () => {
   });
 });
 
-// ──────────────────────────────────────────────────────────────────────────────
-// PATCH /api/matches/bulk — auth
-// ──────────────────────────────────────────────────────────────────────────────
-
 describe('PATCH /api/matches/bulk — auth', () => {
   let db: Database.Database;
   const originalEnv = process.env.MATCHES_ENABLED;
@@ -179,10 +144,6 @@ describe('PATCH /api/matches/bulk — auth', () => {
     expect(res.status).toBe(401);
   });
 });
-
-// ──────────────────────────────────────────────────────────────────────────────
-// PATCH /api/matches/bulk — happy path
-// ──────────────────────────────────────────────────────────────────────────────
 
 describe('PATCH /api/matches/bulk — happy path', () => {
   let db: Database.Database;
@@ -246,10 +207,6 @@ describe('PATCH /api/matches/bulk — happy path', () => {
   });
 });
 
-// ──────────────────────────────────────────────────────────────────────────────
-// PATCH /api/matches/bulk — invalid transition → 400 + atomic rollback
-// ──────────────────────────────────────────────────────────────────────────────
-
 describe('PATCH /api/matches/bulk — invalid transition → 400 + atomicity', () => {
   let db: Database.Database;
   const originalEnv = process.env.MATCHES_ENABLED;
@@ -266,9 +223,8 @@ describe('PATCH /api/matches/bulk — invalid transition → 400 + atomicity', (
   });
 
   it('1 invalid transition among 5 → 400 with failed_id', async () => {
-    // 4 valid shortlist matches + 1 archived (archived → saved is valid, archived → dismissed is NOT)
     const validIds = seedMatches(db, ['shortlist', 'shortlist', 'shortlist', 'shortlist']);
-    const invalidId = seedMatch(db, 'archived'); // archived → dismissed is INVALID
+    const invalidId = seedMatch(db, 'archived');
     const { PATCH } = await import('@/app/api/matches/bulk/route');
     const res = await PATCH(
       makeBulkPatchRequest({ ids: [...validIds, invalidId], status: 'dismissed' })
@@ -282,24 +238,19 @@ describe('PATCH /api/matches/bulk — invalid transition → 400 + atomicity', (
 
   it('nothing committed when any transition is invalid (atomicity)', async () => {
     const validId = seedMatch(db, 'shortlist');
-    const invalidId = seedMatch(db, 'archived'); // archived → dismissed INVALID
+    const invalidId = seedMatch(db, 'archived');
     const { PATCH } = await import('@/app/api/matches/bulk/route');
 
     await PATCH(
       makeBulkPatchRequest({ ids: [validId, invalidId], status: 'dismissed' })
     );
 
-    // DB should be unchanged: validId still has status 'shortlist'
     const row = db
       .prepare('SELECT status FROM matches WHERE id = ?')
       .get(validId) as { status: string } | undefined;
     expect(row?.status).toBe('shortlist');
   });
 });
-
-// ──────────────────────────────────────────────────────────────────────────────
-// PATCH /api/matches/bulk — not found → 404
-// ──────────────────────────────────────────────────────────────────────────────
 
 describe('PATCH /api/matches/bulk — not found', () => {
   let db: Database.Database;
@@ -330,10 +281,6 @@ describe('PATCH /api/matches/bulk — not found', () => {
   });
 });
 
-// ──────────────────────────────────────────────────────────────────────────────
-// PATCH /api/matches/bulk — body validation
-// ──────────────────────────────────────────────────────────────────────────────
-
 describe('PATCH /api/matches/bulk — body validation', () => {
   let db: Database.Database;
   const originalEnv = process.env.MATCHES_ENABLED;
@@ -362,7 +309,7 @@ describe('PATCH /api/matches/bulk — body validation', () => {
     const ids = seedMatches(db, ['shortlist']);
     const { PATCH } = await import('@/app/api/matches/bulk/route');
     const res = await PATCH(
-      makeBulkPatchRequest({ ids, status: 'pending' }) // 'pending' is not a valid MatchStatus
+      makeBulkPatchRequest({ ids, status: 'pending' })
     );
 
     expect(res.status).toBe(400);
@@ -379,8 +326,6 @@ describe('PATCH /api/matches/bulk — body validation', () => {
   });
 
   it('status "shortlist" as target → 400 (shortlist is not a valid target in bulk)', async () => {
-    // Assumption: PATCH bulk only accepts saved|dismissed|archived as target status
-    // shortlist cannot be a target (matches are created as shortlist, not moved back)
     const ids = seedMatches(db, ['shortlist']);
     const { PATCH } = await import('@/app/api/matches/bulk/route');
     const res = await PATCH(makeBulkPatchRequest({ ids, status: 'shortlist' }));
@@ -388,10 +333,6 @@ describe('PATCH /api/matches/bulk — body validation', () => {
     expect(res.status).toBe(400);
   });
 });
-
-// ──────────────────────────────────────────────────────────────────────────────
-// DELETE /api/matches/bulk — feature flag
-// ──────────────────────────────────────────────────────────────────────────────
 
 describe('DELETE /api/matches/bulk — feature flag', () => {
   let db: Database.Database;
@@ -419,10 +360,6 @@ describe('DELETE /api/matches/bulk — feature flag', () => {
     expect(res.status).toBe(503);
   });
 });
-
-// ──────────────────────────────────────────────────────────────────────────────
-// DELETE /api/matches/bulk — auth
-// ──────────────────────────────────────────────────────────────────────────────
 
 describe('DELETE /api/matches/bulk — auth', () => {
   let db: Database.Database;
@@ -454,7 +391,6 @@ describe('DELETE /api/matches/bulk — auth', () => {
   });
 
   it('returns 401 when X-Admin-Token is missing', async () => {
-    // Make requireAdmin return 401 (simulate missing token)
     mockRequireAdmin.mockReturnValueOnce(
       NextResponse.json(
         { error: 'Unauthorized: invalid or missing X-Admin-Token header' },
@@ -463,7 +399,7 @@ describe('DELETE /api/matches/bulk — auth', () => {
     );
     const ids = seedMatches(db, ['shortlist']);
     const { DELETE } = await import('@/app/api/matches/bulk/route');
-    const res = await DELETE(makeBulkDeleteRequest({ ids })); // no token in request
+    const res = await DELETE(makeBulkDeleteRequest({ ids }));
 
     expect(res.status).toBe(401);
   });
@@ -497,10 +433,6 @@ describe('DELETE /api/matches/bulk — auth', () => {
   });
 });
 
-// ──────────────────────────────────────────────────────────────────────────────
-// DELETE /api/matches/bulk — happy path
-// ──────────────────────────────────────────────────────────────────────────────
-
 describe('DELETE /api/matches/bulk — happy path', () => {
   let db: Database.Database;
   const originalEnv = process.env.MATCHES_ENABLED;
@@ -511,7 +443,6 @@ describe('DELETE /api/matches/bulk — happy path', () => {
     testDb = db;
     process.env.MATCHES_ENABLED = 'true';
     process.env.ADMIN_TOKEN = 'test-admin-secret';
-    // requireAdmin mock already returns null (allowed) from beforeEach above
   });
 
   afterEach(() => {
@@ -542,10 +473,6 @@ describe('DELETE /api/matches/bulk — happy path', () => {
     expect(remaining).toHaveLength(0);
   });
 });
-
-// ──────────────────────────────────────────────────────────────────────────────
-// DELETE /api/matches/bulk — not found → 404
-// ──────────────────────────────────────────────────────────────────────────────
 
 describe('DELETE /api/matches/bulk — not found', () => {
   let db: Database.Database;
@@ -580,10 +507,6 @@ describe('DELETE /api/matches/bulk — not found', () => {
   });
 });
 
-// ──────────────────────────────────────────────────────────────────────────────
-// DELETE /api/matches/bulk — body validation
-// ──────────────────────────────────────────────────────────────────────────────
-
 describe('DELETE /api/matches/bulk — body validation', () => {
   let db: Database.Database;
   const originalEnv = process.env.MATCHES_ENABLED;
@@ -612,10 +535,6 @@ describe('DELETE /api/matches/bulk — body validation', () => {
   });
 });
 
-// ──────────────────────────────────────────────────────────────────────────────
-// DELETE /api/matches/bulk — atomicity
-// ──────────────────────────────────────────────────────────────────────────────
-
 describe('DELETE /api/matches/bulk — atomicity', () => {
   let db: Database.Database;
   const originalEnv = process.env.MATCHES_ENABLED;
@@ -643,10 +562,8 @@ describe('DELETE /api/matches/bulk — atomicity', () => {
       makeBulkDeleteRequest({ ids: [validId, nonExistentId] }, 'test-admin-secret')
     );
 
-    // Should return 404 (not found)
     expect(res.status).toBe(404);
 
-    // DB should be unchanged: validId still exists
     const row = db
       .prepare('SELECT id FROM matches WHERE id = ?')
       .get(validId) as { id: number } | undefined;

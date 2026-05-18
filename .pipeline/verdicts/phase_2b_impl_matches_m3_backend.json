@@ -1,0 +1,25 @@
+{
+  "phase": "2b",
+  "track": "A-backend",
+  "impl_files": [
+    "lib/migrations/033-matches-score-breakdown.ts",
+    "lib/migrations/index.ts",
+    "lib/matching/matches-repository.ts",
+    "app/api/matches/route.ts",
+    "app/api/matches/bulk/route.ts"
+  ],
+  "green_verified": true,
+  "green_command": "npx jest --testPathPatterns=matches-repository-filters|matches-filters|matches-bulk --no-coverage",
+  "green_command_output": "Test Suites: 3 passed, 3 total\nTests:       68 passed, 68 total\nSnapshots:   0 total\nTime:        1.508 s\nRan all test suites matching matches-repository-filters|matches-filters|matches-bulk.",
+  "test_rewrite_count": 0,
+  "test_modification_requests": [],
+  "needs_review": false,
+  "internal_test_files": [],
+  "needs_review_round": 0,
+  "test_patches_accepted_total": 0,
+  "tests_expected": 68,
+  "tests_run": 68,
+  "test_files_sha_before": "95955410edf7db1719f1686b52935afe838ab5aeff0d0133bdfee6a87c7815bb  lib/matching/__tests__/matches-repository-filters.test.ts\n3221d6f22445f2e4f9bfbfece0e5904d2c8dc5383e21ce24e4c8c285038cb576  __tests__/api/matches-filters.test.ts\n3b4a6dd47dc81c736acece813a220b68e94aef80e160f9046390626c6d67170c  __tests__/api/matches-bulk.test.ts",
+  "test_files_sha_after": "95955410edf7db1719f1686b52935afe838ab5aeff0d0133bdfee6a87c7815bb  lib/matching/__tests__/matches-repository-filters.test.ts\n3221d6f22445f2e4f9bfbfece0e5904d2c8dc5383e21ce24e4c8c285038cb576  __tests__/api/matches-filters.test.ts\n3b4a6dd47dc81c736acece813a220b68e94aef80e160f9046390626c6d67170c  __tests__/api/matches-bulk.test.ts",
+  "setup_mismatch": false
+}
