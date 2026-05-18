@@ -1,0 +1,30 @@
+{
+  "phase": "4_deliver",
+  "feature": "matches-m3",
+  "verdict": "PASS",
+  "timestamp": "2026-05-18T14:00:00.000Z",
+  "branch": "orchestrator/matches-m3",
+  "base": "main",
+  "commits_count": 8,
+  "commits": [
+    "05a1319 test(matches-m3): RED — matches-repository-filters",
+    "fd241f8 test(matches-m3): RED — matches-filters",
+    "3b38163 test(matches-m3): RED — matches-bulk",
+    "956aeb5 test(matches-m3): verdict phase_2a_test_author_matches_m3_backend",
+    "1dc7fa1 test(matches-m3): RED — matches-client-m3 UI source analysis tests",
+    "16afd31 feat(matches-m3): M3 impl — migration 033, repo filters, bulk route, extended API (2b-A)",
+    "24477c9 feat(matches): M3 UI — filters panel, score breakdown, bulk actions + QI fixes",
+    "731ee00 chore(.pipeline): M3 QI verdict, scope doc, and phase 2b UI artifacts"
+  ],
+  "pr_url": "https://github.com/Vitali2011/quantika-demo/pull/234",
+  "pr_title": "feat(matches): M3 polish — filters + score breakdown + bulk [code-only]",
+  "pre_deliver_checks": {
+    "m3_tests": "128/128 PASS",
+    "total_tests": "5944/5950 PASS (6 pre-existing failures in compare-routes-perf + jwc/adapter)",
+    "lint_m3_files": "0 errors",
+    "lint_full": "0 errors, 21 pre-existing warnings",
+    "build": "OOM on this environment (pre-existing memory constraint, not M3-related)"
+  },
+  "pi3_compliance": "test_rewrite_count=0 in all verdicts",
+  "qi_verdict": "PASS (after fixing 2 HIGH + 3 MEDIUM pre-delivery)"
+}
