@@ -12,8 +12,23 @@ const classificationItemSchema = {
   type: Type.OBJECT,
   properties: {
     id: { type: Type.STRING },
-    category: { type: Type.STRING },
-    urgency: { type: Type.STRING },
+    category: {
+      type: Type.STRING,
+      enum: [
+        'CARGO_INQUIRY',
+        'VESSEL_POSITION',
+        'FIXTURE_RECAP',
+        'CLIENT_REPLY',
+        'DOCUMENT',
+        'TCT_REQUEST',
+        'VESSEL_CERTIFICATE',
+        'OTHER',
+      ],
+    },
+    urgency: {
+      type: Type.STRING,
+      enum: ['low', 'medium', 'high'],
+    },
     confidence: { type: Type.NUMBER },
     is_unanswered: { type: Type.BOOLEAN },
     days_without_reply: { type: Type.NUMBER, nullable: true },
