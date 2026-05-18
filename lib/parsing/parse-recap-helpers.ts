@@ -44,7 +44,7 @@ interface RawFixtureRecap {
   subs?: string[];
   confidentiality?: boolean | null;
   additional_terms?: string[];
-  unknown_terms?: Array<{ term: string; note: string }>;
+  unknown_terms?: Array<{ term: string; note?: string; context?: string }>;
 }
 
 /**
@@ -117,6 +117,12 @@ export function parseRecapAIResponse(raw: string, emailId: string): ParsedFixtur
     subs: Array.isArray(result.subs) ? result.subs : [],
     confidentiality: result.confidentiality != null ? Boolean(result.confidentiality) : false,
     additionalTerms: Array.isArray(result.additional_terms) ? result.additional_terms : [],
-    unknownTerms: Array.isArray(result.unknown_terms) ? result.unknown_terms : [],
+    // Normalize: Gemini schema field is "context"; legacy is "note". Map to canonical "note".
+    unknownTerms: Array.isArray(result.unknown_terms)
+      ? result.unknown_terms.map((ut) => ({
+          term: String(ut?.term ?? ''),
+          note: String(ut?.note ?? ut?.context ?? ''),
+        }))
+      : [],
   }) as ParsedFixtureRecap;
 }
