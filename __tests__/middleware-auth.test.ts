@@ -59,6 +59,9 @@ describe('middleware auth guard', () => {
       '/_next/image?url=x',
       '/api/whatsapp/webhook',
       '/api/integrations/pipedrive/webhook',
+      '/api/whatsapp/ingest',
+      '/api/admin/knowledge/refresh',
+      '/api/admin/knowledge-status',
     ];
 
     for (const path of bypassPaths) {
