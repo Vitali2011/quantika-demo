@@ -33,7 +33,7 @@ const unknownTermItem = {
   type: Type.OBJECT,
   properties: {
     term: { type: Type.STRING },
-    note: { type: Type.STRING },
+    context: { type: Type.STRING },
   },
 };
 
