@@ -1,9 +1,9 @@
 # Quantika Demo — ROADMAP (Текущее состояние)
 
-**Последний полный аудит:** 2026-05-17 (5-поточный код-аудит) + **2026-05-19 UI audit** через Playwright + Chrome MCP на проде demo.quantika.org
-**Последнее обновление:** 2026-05-19 (match parser baseline R0→R2, 5 PRs + **UI audit added §1.0 findings**)
-**Текущая версия:** prod HEAD после PR #240 (systemd quantika-demo.service на outreach-vps, NOT dev-vps)
-**Статус:** ⚠️ В проде на demo.quantika.org — основные потоки работают, но **4 критических drift'а** найдены UI audit'ом 2026-05-19 (см. §1.0)
+**Последний полный аудит:** 2026-05-17 (5-поточный код-аудит) + 2026-05-19 UI audit (Playwright+Chrome MCP) + **2026-05-19 ROADMAP reality audit** (claim vs prod sweep)
+**Последнее обновление:** 2026-05-19 — после reality audit: F1+F2+F10+F9 closed, C2 5-webhook gap уже резолвнут, port_master+eu_sanctions seed'нуты; **новый bug:** `roi_metrics=0` + `fx_rates=0` (investigation в работе)
+**Текущая версия:** prod HEAD после auto-deploy LIVE (#259, systemd quantika-demo.service на outreach-vps)
+**Статус:** ⚠️ Основные потоки работают; новый P0 — пустые таблицы при включённых флагах (см. §2)
 
 > **Живой документ.** Заменяет `ROADMAP-SESSION-PROMPT.md` (тот был разовый промпт-генератор, не state tracker).
 > Источники отчётов: `/root/orchestrator-state/audit-2026-05-17/{parsers,data,api,ui,waves}.md`
@@ -51,11 +51,12 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 **Что ещё блокирует pre-PMF:**
 
-- ⏸ C3 — EU_SANCTIONS_TOKEN refresh (5 мин user)
+- 🚨 **roi_metrics + fx_rates пустые** на проде при включённых `ROI_GUARANTEE_ENABLED` + `MULTI_CURRENCY_V2_ENABLED` — investigation в работе 2026-05-19
 - 📋 Match parser Phase B — port-master extensions + distance matrix + idle penalty calibration (R2 baseline ready, 6/11 residual readiness=unknown)
 - 📋 Recap corpus expansion 3→30 (waiting real recap emails в Gmail)
 - 📋 Classify urgency criteria (GT inconsistent, нужен annotator)
-- 📋 UX polish (mobile bottom nav, /upgrade заглушка, EXPLAIN_DEAL flag fix)
+- 📋 UX polish (mobile bottom nav, /upgrade заглушка)
+- ⏸ F8 RESEND_API_KEY — ждёт регистрации resend.com (user-only)
 
 **Следующие 7 дней:** webhook auth + parser quality + UX polish.
 **Следующие 30 дней:** mobile-first feature pages + monitoring (Sentry/UptimeRobot).
@@ -71,14 +72,14 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 **Результат:** 48 entries — 40 🟢 / 6 🟡 / 2 🔴. Real picture после deep-dive более существенная — **4 критических env drift'а + auth model gap**.
 
-#### 🚨 Critical drifts (ROADMAP/memory расходятся с prod env)
+#### ✅ Critical drifts — все закрыты (verified 2026-05-19 reality audit)
 
-| #      | Claim (ROADMAP/memory)                            | Prod reality                                                                          | Impact                                                                                                                                                     |
-| ------ | ------------------------------------------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **F1** | `AI_PROVIDER=gemini`, 7/7 scopes Gemini default   | `AI_PROVIDER=openai` на outreach-vps                                                  | LLM costs могут быть 5-15× выше; memory `project_quantika_demo_gemini_default_2026_05_17` потенциально wrong → нужно расследование (см. chip-task spawned) |
-| **F2** | `MATCH_PROVIDER=gemini`                           | `MATCH_PROVIDER=bedrock`                                                              | /matches scoring идёт через AWS Bedrock; cost + reliability риск (memory: Bedrock Opus access lost 2026-05-17)                                             |
-| **F3** | /matches M1+M3 LIVE (PR #227 + #234)              | ✅ **FIXED 2026-05-19** — MATCHES_ENABLED=true, rebuild + restart; HTTP 200           | Resolved                                                                                                                                                   |
-| **F4** | 8 γ-flags LIVE (batch-1/2/3 activated 2026-05-17) | ✅ **FIXED 2026-05-19** — все 3 флага true, NEXT_PUBLIC pairs обновлены, rebuild done | Resolved                                                                                                                                                   |
+| #      | Claim                   | Prod reality (verified 2026-05-19)           | Status                                                       |
+| ------ | ----------------------- | -------------------------------------------- | ------------------------------------------------------------ |
+| **F1** | `AI_PROVIDER=gemini`    | ✅ `AI_PROVIDER=gemini` в `.env.local`       | ✅ RESOLVED — chip-сессия 2026-05-19 закрыла manual env edit |
+| **F2** | `MATCH_PROVIDER=gemini` | ✅ `MATCH_PROVIDER=gemini`                   | ✅ RESOLVED — same chip-task                                 |
+| **F3** | /matches M1+M3 LIVE     | ✅ `MATCHES_ENABLED=true`, /matches HTTP 200 | ✅ RESOLVED                                                  |
+| **F4** | 8 γ-flags LIVE          | ✅ Все 8 флагов + NEXT_PUBLIC pairs          | ✅ RESOLVED                                                  |
 
 #### 🟠 High — broken pages
 
@@ -88,13 +89,13 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 | **F6** | `/charterers` (list) | 401 console error (page рендерится, но API call fails)                    | Same root cause as F5                                                                                       |
 | **F7** | `/processing`        | 403 console error                                                         | Likely same auth model gap                                                                                  |
 
-#### 📋 Medium — env vars missing
+#### 📋 Env vars status (verified 2026-05-19)
 
-| #       | Setting                | Status                                                                    |
-| ------- | ---------------------- | ------------------------------------------------------------------------- |
-| **F8**  | `RESEND_API_KEY`       | Не в prod env → email alerts silent skip (ROADMAP это знает, ⏸ ждёт user) |
-| **F9**  | `SENTRY_DSN`           | Не в prod env → Sentry wired (PR #209/#219) но inactive                   |
-| **F10** | `EXPLAIN_DEAL_ENABLED` | Не в prod env → флаг OFF на проде                                         |
+| #       | Setting                | Status                                                                         |
+| ------- | ---------------------- | ------------------------------------------------------------------------------ |
+| **F8**  | `RESEND_API_KEY`       | ⏸ Отсутствует на prod → ждёт регистрации resend.com user'ом                    |
+| **F9**  | `SENTRY_DSN`           | ✅ **LIVE 2026-05-19** — DSN выставлен на outreach-vps, errors уже ловятся     |
+| **F10** | `EXPLAIN_DEAL_ENABLED` | ✅ **LIVE 2026-05-19** — `true` + `NEXT_PUBLIC` pair, rebuild + restart pushed |
 
 #### 🟡 Systemic — auth model surprise
 
@@ -130,16 +131,17 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 **Bake-off вердикты:** разблокированы (judge через claude-cli работает).
 
-### 1.2 Data Layer (audit-data.md)
+### 1.2 Data Layer (verified 2026-05-19 reality audit)
 
-**31+ миграция применена.** **Большинство таблиц теперь заполнены** (значительный прогресс 2026-05-17):
+**31+ миграция применена.** **Большинство таблиц заполнены**, **но 2 пустые при включённых флагах** (P0 в §2):
 
-| Статус                    | Таблицы                                                                                                                                                                                                                                               |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ✅ Свежие, заполненные    | ofac_entities (18,959), schema_migrations, knowledge_sources (15), **market_indices (90), charterers (20), port_da_estimates (94), psc_detention_history (16), port_distances (17,985 = реальный complete target), roi_metrics (18), fx_rates (200)** |
-| ✅ RAG embedded           | **imsbc_fts (49), igc_fts (77), jwc_fts (8), bimco_fts (7)** — 141 chunks всего                                                                                                                                                                       |
-| ⚠️ Частичные              | baltic/bunker/eua (устарели, manual CSV upload)                                                                                                                                                                                                       |
-| ❌ НИКОГДА не seed-нулись | eu_sanctions (token expired), port_master, eca_zones, war_risk_zones                                                                                                                                                                                  |
+| Статус                      | Таблицы                                                                                                                                                                                                                                      |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ✅ Свежие, заполненные      | ofac_entities (18,959), schema_migrations, knowledge_sources, market_indices (92), charterers (20), port_da_estimates (94), psc_detention_history (16), port_distances (18,648), **eu_sanctions_entities (5,996)**, **port_master (11,767)** |
+| ✅ RAG embedded             | imsbc_fts (116), igc_fts (119), jwc_fts (7), bimco_fts (14) — counts выше чем заявлялось в audit 2026-05-17                                                                                                                                  |
+| 🚨 **EMPTY (при флаге ON)** | **roi_metrics (0)** — `ROI_GUARANTEE_ENABLED=true`; **fx_rates (0)** — `MULTI_CURRENCY_V2_ENABLED=true` — investigation в работе                                                                                                             |
+| ⚠️ Частичные                | baltic/bunker/eua (устарели, manual CSV upload), war_risk_zones (4)                                                                                                                                                                          |
+| ❌ Не seed-нулись           | eca_zones                                                                                                                                                                                                                                    |
 
 **RAG-архитектура:** гибрид FTS5+vec0 (sqlite). Vertex Search disabled (extractiveContentSpec Enterprise-only, наши engines Standard) — rollback на SQLite богаче.
 
@@ -158,12 +160,12 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 | HMAC                       | whatsapp webhook, pipedrive webhook                                                                                                         |
 | internal token             | whatsapp ingest                                                                                                                             |
 
-**🚨 HIGH GAP сохраняется — 5 webhooks НЕ в `AUTH_BYPASS_PATHS`:**
+**✅ AUTH_BYPASS_PATHS gap CLOSED (verified 2026-05-19):** все 5 webhook путей присутствуют в `middleware.ts` (lines 19-27) + покрыты тестами в `middleware-auth.test.ts` (bypassPaths lines 60-64):
 
-- `/api/whatsapp/webhook` — Meta получает 302→/login, отключит endpoint
-- `/api/whatsapp/ingest` — внутренний сервис ломается
-- `/api/integrations/pipedrive/webhook` — Pipedrive перестанет слать events
-- `/api/admin/knowledge/refresh` + `/api/admin/knowledge-status` — admin curl ломается
+- `/api/whatsapp/webhook` ✅
+- `/api/whatsapp/ingest` ✅
+- `/api/integrations/pipedrive/webhook` ✅
+- `/api/admin/knowledge/refresh` + `/api/admin/knowledge-status` ✅
 
 **Cron heartbeat coverage:** 5/5 скриптов теперь шлют (после PR #182 — localhost route bypasses CF header stripping).
 
@@ -193,8 +195,8 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 **Баги (актуально):**
 
-- `EXPLAIN_DEAL_ENABLED` — server-only env var без `NEXT_PUBLIC_` пары → UI кнопка рендерится, клик → 403 (НЕ исправлено)
-- `SubsCountdownWidget` — нет live `setInterval`, countdown заморожен после mount (НЕ исправлено, виджет live через γ-08 но без auto-tick)
+- ✅ `EXPLAIN_DEAL_ENABLED` — выставлен на проде 2026-05-19 с `NEXT_PUBLIC_` парой, rebuild + restart, smoke 200
+- ✅ `SubsCountdownWidget` — live `setInterval(... 60_000)` стоит в `components/deals/SubsCountdownWidget.tsx:37`; `components/deadlines/SubsCountdown.tsx` тикает каждую секунду. Тесты `.tick.test.tsx` зелёные. ROADMAP заявление было stale (PR #204 + #208 уже закрыли)
 
 ### 1.5 История волн (audit-waves.md)
 
@@ -220,28 +222,35 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 ## 2. Критические проблемы (cross-domain, требующие срочности)
 
-### 🚨 P0 — Блокируют другую работу
+### 🚨 P0 — Активные
 
-| #      | Issue                                                                 | Effort            | Блокирует                         | Статус            |
-| ------ | --------------------------------------------------------------------- | ----------------- | --------------------------------- | ----------------- |
-| **C1** | ~~Bedrock Opus 4.7 model access~~ → claude-cli replacement            | done              | ~~bake-off вердикты~~             | ✅ РЕШЕНО PR #186 |
-| **C2** | 5 webhooks не в AUTH_BYPASS_PATHS — WhatsApp/Pipedrive silent failure | 1 PR, ~30 мин     | WhatsApp delivery, Pipedrive sync | ⏸ ждёт user       |
-| **C3** | EU_SANCTIONS_TOKEN expired — sanctions sync падает с 05-16            | 5 мин (user only) | Sanctions screening live data     | ⏸ ждёт user       |
+| #      | Issue                                                                                                                | Effort     | Влияет на                                                    | Статус                                                                                                                                                                        |
+| ------ | -------------------------------------------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **C4** | `roi_metrics=0` на проде при `ROI_GUARANTEE_ENABLED=true` — tile рендерит "No voyages" заглушку, demo выглядит сыро  | ~5 мин SSH | ROI Guarantee widget — visual только, не crash               | 🆕 **NEW P1** — seed script `scripts/seed-roi-metrics.ts` готов, 18 синтетических фикстур, нужно запустить раз через SSH ИЛИ добавить в deploy.yml post-migration step        |
+| **C5** | `fx_rates=0` на проде при `MULTI_CURRENCY_V2_ENABLED=true` — но 4-tier fallback (cache→DB→frankfurter.app→hardcoded) | ~30-45 мин | Конверсия валют — работает через live API/hardcoded fallback | 🆕 **NEW P2** — не критично (живой API работает), но лучше зарегистрировать в cron как daily refresh: добавить slug в `scripts/knowledge/refresh.ts` KNOWN_SLUGS + cron entry |
+
+### ✅ P0 — Закрытые
+
+| #      | Issue                                     | Closed by                                                                              |
+| ------ | ----------------------------------------- | -------------------------------------------------------------------------------------- |
+| **C1** | Bedrock Opus 4.7 → claude-cli replacement | PR #186                                                                                |
+| **C2** | 5 webhooks AUTH_BYPASS_PATHS              | ✅ Все 5 в middleware.ts:19-27 (verified 2026-05-19) — PR #221 + позже                 |
+| **C3** | EU_SANCTIONS_TOKEN                        | ✅ Token `n00mo9i3` валиден (HTTP 200, 24.7MB), `knowledge_sources.eu-sanctions=fresh` |
 
 ### 🟠 P1 — Активация data layer
 
 **Полностью выполнено 2026-05-17.** Все таблицы заполнены (см. §1.2).
 
-| #      | Task                                                | Статус                                     |
-| ------ | --------------------------------------------------- | ------------------------------------------ |
-| **D1** | port_distances seed (17,985 = real complete target) | ✅ DONE                                    |
-| **D2** | market_indices (90 rows: BHSI/TMI/Drewry × 30d)     | ✅ DONE                                    |
-| **D3** | charterers (20 blue-chip names)                     | ✅ DONE                                    |
-| **D4** | port_master из `top-200-ports.json`                 | ⏸ deferred (не блокирует current features) |
-| **D5** | port_da_estimates (94 rows)                         | ✅ DONE                                    |
-| **D6** | psc_detention_history (16 rows)                     | ✅ DONE                                    |
-| **D7** | RAG embeddings imsbc/igc/jwc/bimco (141 chunks)     | ✅ DONE                                    |
-| **D8** | bimco_vec allowlist fix                             | ✅ DONE (PR #186)                          |
+| #      | Task                                                | Статус                                                |
+| ------ | --------------------------------------------------- | ----------------------------------------------------- |
+| **D1** | port_distances seed (17,985 = real complete target) | ✅ DONE                                               |
+| **D2** | market_indices (90 rows: BHSI/TMI/Drewry × 30d)     | ✅ DONE                                               |
+| **D3** | charterers (20 blue-chip names)                     | ✅ DONE                                               |
+| **D4** | port_master seed                                    | ✅ DONE — 11,767 строк на проде (verified 2026-05-19) |
+| **D5** | port_da_estimates (94 rows)                         | ✅ DONE                                               |
+| **D6** | psc_detention_history (16 rows)                     | ✅ DONE                                               |
+| **D7** | RAG embeddings imsbc/igc/jwc/bimco (141 chunks)     | ✅ DONE                                               |
+| **D8** | bimco_vec allowlist fix                             | ✅ DONE (PR #186)                                     |
 
 ### 🟡 P2 — Активация γ флагов
 
@@ -264,22 +273,22 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 ## 3. Приоритизированная Roadmap
 
-### Следующие 7 дней (refreshed 2026-05-19 после UI audit)
+### Следующие 7 дней (refreshed 2026-05-19 post-reality-audit)
 
-**Тема:** «Закрыть env drifts от UI audit + поднять качество парсеров»
+**Тема:** «Закрыть остаточные data layer gaps + parser quality + UX polish»
 
-Большая часть старого 7-day списка закрыта PR'ами #194-#233 (см. PR history). Новый приоритет — drift'ы из §1.0:
+Большая часть старого 7-day списка закрыта (см. ✅ P0 в §2). Остаток:
 
-1. ✓ **AUTO-DEPLOY LIVE 2026-05-19** — `.github/workflows/deploy.yml` LIVE в QD (#259 a1444f3) + AL (#200 a3a5b53). После merge `[code-only]` PR → GitHub Actions SSH'ится к outreach-vps → `/root/deploy.sh <service> <sha>` → install + build + restart + localhost health check + auto-rollback при fail. Auto-rollback prod-tested. Manual orchestrator `ssh + git pull + systemctl restart` теперь obsolete для code PRs.
-2. ✓ **F3+F4 DONE 2026-05-19** — MATCHES_ENABLED + 3 γ-flags activated; rebuild + systemctl restart; /matches HTTP 200.
-3. **F1+F2** — Расследовать AI_PROVIDER/MATCH_PROVIDER drift (prod = openai/bedrock vs ROADMAP claim Gemini). Chip-task spawned 2026-05-19. Решение либо update prod env, либо update memory `project_quantika_demo_gemini_default_2026_05_17` как wrong.
-4. **F5+F6+F7** — Fix /charterers/[id], /charterers, /processing — auth model gap (session_id required for API but demo_auth user не имеет). Chip-task spawned 2026-05-19.
-5. **C3** EU_SANCTIONS_TOKEN refresh (5 мин user) — token выставлен (`n00mo9i3`), но ROADMAP считал что expired — нужна проверка validity, не refresh.
-6. **F8** Resend API key — user-only (после регистрации на resend.com).
-7. **F9** Sentry DSN — user-only.
-8. **F10** EXPLAIN_DEAL_ENABLED env activation (если фича готова).
+1. ✓ **AUTO-DEPLOY LIVE 2026-05-19** — `.github/workflows/deploy.yml` LIVE QD (#259) + AL (#200). hands-off: PR `[code-only]` → CI → auto-merge → deploy.yml → SSH → health check + auto-rollback. Manual ssh+pull obsolete.
+2. ✓ **CI auto-rebase #265** — solves BEHIND mergeStateStatus для solo-developer auto-merge. После merge — petля размыкается автоматически.
+3. ✓ **F1/F2/F3/F4/F9/F10 закрыты** (см. §1.0). C2/C3 закрыты (§2 ✅ table).
+4. **NEW C4** — seed `roi_metrics` на проде (~5 мин SSH или 1 PR в deploy.yml).
+5. **NEW C5** — `fx_rates` в cron refresh (~30 мин, 1 PR).
+6. **F5+F6+F7** — auth model gap (`session_id` required for /charterers, /processing API). Chip-task earlier — F5+F6 closed via PR #254, F7 (/processing 403 CSRF) still открыт.
+7. **F8** Resend API key — user-only (после регистрации на resend.com).
+8. **Parser quality** — Phase B match parser (idle penalty, distance matrix), parse-recap corpus expansion (нужны real recap emails в Gmail).
 
-ETA: ~1-2 дня wall-clock с user input на пп. 4-7. Пп. 1-3 — agent-only, можно через chip-spawn.
+ETA: ~2-3 дня wall-clock. Большинство agent-only.
 
 ### Следующие 30 дней (остаток мая - середина июня)
 
