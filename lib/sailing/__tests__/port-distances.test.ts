@@ -680,3 +680,109 @@ describe('getPortDistance — previously-unknown verdict pairs (session gap-fill
     expect(normalizePortName('Marmara (Derince / Izmit range)')).toBe('Marmara');
   });
 });
+
+describe('normalizePortName — Phase 2D coverage (port DB aliases)', () => {
+  // ── Aliaga cluster (Turkish Aegean) ──
+  it('"Nemrut Bay" — Aliaga industrial complex', () => {
+    expect(normalizePortName('Nemrut Bay')).toBe('Aliaga');
+  });
+  it('"Nemrut" alone — Aliaga industrial complex', () => {
+    expect(normalizePortName('Nemrut')).toBe('Aliaga');
+  });
+
+  // ── Marmara cluster (Turkish Sea of Marmara) ──
+  it('"Yarımca" with Turkish diacritic — Marmara cluster', () => {
+    expect(normalizePortName('Yarımca')).toBe('Marmara');
+  });
+  it('"Yarimca" without diacritic — Marmara cluster', () => {
+    expect(normalizePortName('Yarimca')).toBe('Marmara');
+  });
+  it('"Diliskelesi" — Dilovasi cluster, Marmara south shore', () => {
+    expect(normalizePortName('Diliskelesi')).toBe('Marmara');
+  });
+  it('"Çanakkale" with diacritic — Dardanelles, Marmara entry', () => {
+    expect(normalizePortName('Çanakkale')).toBe('Marmara');
+  });
+  it('"Canakkale" without diacritic — Dardanelles, Marmara entry', () => {
+    expect(normalizePortName('Canakkale')).toBe('Marmara');
+  });
+  it('"Bandırma" with diacritic — Sea of Marmara', () => {
+    expect(normalizePortName('Bandırma')).toBe('Marmara');
+  });
+
+  // ── Black Sea / Danube ──
+  it('"Pivdennyi" — Ukrainian name for Yuzhny port', () => {
+    expect(normalizePortName('Pivdennyi')).toBe('Yuzhny');
+  });
+  it('"Yuzhne" — Ukrainian variant of Yuzhny', () => {
+    expect(normalizePortName('Yuzhne')).toBe('Yuzhny');
+  });
+  it('"Pivdennyi (Yuzhne)" — broker phrasing with bilingual hint', () => {
+    expect(normalizePortName('Pivdennyi (Yuzhne)')).toBe('Yuzhny');
+  });
+  it('"Giurgiulesti" — Moldovan Danube port, Izmail proxy', () => {
+    expect(normalizePortName('Giurgiulesti')).toBe('Izmail');
+  });
+  it('"Giurgiulești" with diacritic — Moldovan Danube port', () => {
+    expect(normalizePortName('Giurgiulești')).toBe('Izmail');
+  });
+  it('"Braila" — Romanian Danube port, Izmail proxy', () => {
+    expect(normalizePortName('Braila')).toBe('Izmail');
+  });
+  it('"Galati" — Romanian Danube port, Izmail proxy', () => {
+    expect(normalizePortName('Galati')).toBe('Izmail');
+  });
+  it('"Kavkaz" — Kerch Strait port, Novorossiysk proxy', () => {
+    expect(normalizePortName('Kavkaz')).toBe('Novorossiysk');
+  });
+
+  // ── Eastern Med ──
+  it('"Tartus" — Syrian port (now in KNOWN_PORTS)', () => {
+    expect(normalizePortName('Tartus')).toBe('Tartus');
+  });
+  it('"Tartous" — French/Arabic spelling variant', () => {
+    expect(normalizePortName('Tartous')).toBe('Tartus');
+  });
+  it('"Abu Qir" — Alexandria eastern terminal', () => {
+    expect(normalizePortName('Abu Qir')).toBe('Alexandria');
+  });
+  it('"Adabiya" — Suez Gulf bulk terminal', () => {
+    expect(normalizePortName('Adabiya')).toBe('Suez');
+  });
+
+  // ── Red Sea / Saudi ──
+  it('"King Abdullah Port" — KAEC at Rabigh, Jeddah proxy', () => {
+    expect(normalizePortName('King Abdullah Port')).toBe('Jeddah');
+  });
+  it('"KAEC" — King Abdullah Economic City', () => {
+    expect(normalizePortName('KAEC')).toBe('Jeddah');
+  });
+
+  // ── South Asia ──
+  it('"Kakinada Anchorage" — multi-word resolves via part-split', () => {
+    expect(normalizePortName('Kakinada Anchorage')).toBe('Kakinada');
+  });
+  it('"Kakinada" — South India port (now in KNOWN_PORTS)', () => {
+    expect(normalizePortName('Kakinada')).toBe('Kakinada');
+  });
+
+  // ── SE Asia ──
+  it('"Songkhla" — South Thailand port (now in KNOWN_PORTS)', () => {
+    expect(normalizePortName('Songkhla')).toBe('Songkhla');
+  });
+  it('"Ko Si Chang" — Gulf of Thailand anchorage, Bangkok proxy', () => {
+    expect(normalizePortName('Ko Si Chang')).toBe('Bangkok');
+  });
+  it('"Koh Sichang" — alt spelling, Bangkok proxy', () => {
+    expect(normalizePortName('Koh Sichang')).toBe('Bangkok');
+  });
+
+  // ── Negative: ambiguous regional phrasings still return null ──
+  it('"East Coast Greece" — vague region, returns null (no ambiguous alias)', () => {
+    expect(normalizePortName('East Coast Greece')).toBeNull();
+  });
+  it('"1 safe port Greece" — placeholder phrasing, returns null', () => {
+    expect(normalizePortName('1 safe port Greece')).toBeNull();
+  });
+});
+
