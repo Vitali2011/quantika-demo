@@ -3,9 +3,74 @@ import {
   checkCrane,
   checkVolume,
   checkCargoVesselCompat,
+  checkCargoWeight,
   runHardFilters,
   STOWAGE_FACTORS,
 } from '../match-filters';
+
+describe('checkCargoWeight', () => {
+  it('rejects when cargo weight far exceeds vessel DWT (no DWCC)', () => {
+    // N1 from R0 corpus: cargo 55000 mt × vessel 32131 dwt — ratio 1.71
+    const r = checkCargoWeight({ weightMt: 55000, dwtSummer: 32131, dwcc: null });
+    expect(r.pass).toBe(false);
+    expect(r.reason).toMatch(/exceeds vessel capacity/i);
+  });
+
+  it('rejects when cargo weight far exceeds vessel DWT (small vessel)', () => {
+    // N2 from R0 corpus: cargo 12000 mt × vessel 2570 dwt — ratio 4.67
+    const r = checkCargoWeight({ weightMt: 12000, dwtSummer: 2570, dwcc: null });
+    expect(r.pass).toBe(false);
+  });
+
+  it('prefers DWCC over DWT when both present', () => {
+    // DWCC 2000 means real cargo capacity is 2000, not 2570; cargo 2400 still fits within 5% margin
+    const r = checkCargoWeight({ weightMt: 2050, dwtSummer: 2570, dwcc: 2000 });
+    expect(r.pass).toBe(true);
+  });
+
+  it('rejects via DWCC when cargo clearly exceeds true cargo capacity', () => {
+    const r = checkCargoWeight({ weightMt: 2500, dwtSummer: 2570, dwcc: 2000 });
+    expect(r.pass).toBe(false);
+    expect(r.reason).toMatch(/DWCC/);
+  });
+
+  it('passes when cargo weight equals DWCC within margin', () => {
+    const r = checkCargoWeight({ weightMt: 2000, dwtSummer: 2570, dwcc: 2000 });
+    expect(r.pass).toBe(true);
+  });
+
+  it('passes when cargo weight is within DWT × 0.90 capacity', () => {
+    // dwt 10000 × 0.90 = 9000 effective; cargo 5000 fits
+    const r = checkCargoWeight({ weightMt: 5000, dwtSummer: 10000, dwcc: null });
+    expect(r.pass).toBe(true);
+  });
+
+  it('passes when cargo weightMt is null (unknown — graceful)', () => {
+    const r = checkCargoWeight({ weightMt: null, dwtSummer: 5000, dwcc: null });
+    expect(r.pass).toBe(true);
+  });
+
+  it('passes when both DWT and DWCC are null (unknown vessel capacity — graceful)', () => {
+    const r = checkCargoWeight({ weightMt: 5000, dwtSummer: null, dwcc: null });
+    expect(r.pass).toBe(true);
+  });
+
+  it('uses max of weightMt range for conservative check', () => {
+    // range 4000-6000, vessel 5000 DWT (capacity 4500 effective) — should reject
+    const r = checkCargoWeight({ weightMt: { min: 4000, max: 6000 }, dwtSummer: 5000, dwcc: null });
+    expect(r.pass).toBe(false);
+  });
+
+  it('5% margin tolerance: cargo 5200 vs DWCC 5000 = pass (within margin)', () => {
+    const r = checkCargoWeight({ weightMt: 5200, dwtSummer: null, dwcc: 5000 });
+    expect(r.pass).toBe(true);
+  });
+
+  it('5% margin tolerance: cargo 5300 vs DWCC 5000 = fail (exceeds margin)', () => {
+    const r = checkCargoWeight({ weightMt: 5300, dwtSummer: null, dwcc: 5000 });
+    expect(r.pass).toBe(false);
+  });
+});
 
 describe('checkDraft', () => {
   it('fails when vessel draft exceeds port max', () => {
@@ -150,6 +215,8 @@ describe('runHardFilters — destination port draft', () => {
       geared: true,
       draftMax: 12.0,   // exceeds Mykolaiv maxDraftM=10.5
       grainCapacity: 6000,
+      dwtSummer: 10000,
+      dwcc: null,
     });
     expect(r.pass).toBe(false);
     expect(r.checks.destDraft.pass).toBe(false);
@@ -169,6 +236,8 @@ describe('runHardFilters — destination port draft', () => {
       geared: true,
       draftMax: 12.0,
       grainCapacity: 6000,
+      dwtSummer: null,
+      dwcc: null,
     });
     expect(r.checks.destDraft.pass).toBe(false);
     expect(r.pass).toBe(false);
@@ -186,6 +255,8 @@ describe('runHardFilters — destination port draft', () => {
       geared: true,
       draftMax: 12.0,
       grainCapacity: 6000,
+      dwtSummer: null,
+      dwcc: null,
     });
     expect(r.checks.destDraft.pass).toBe(true);
     expect(r.checks.destCrane.pass).toBe(true);
@@ -203,6 +274,8 @@ describe('runHardFilters — destination port draft', () => {
       geared: false,
       draftMax: 12.0,
       grainCapacity: 6000,
+      dwtSummer: null,
+      dwcc: null,
     });
     expect(r.checks.destDraft.pass).toBe(true);
     expect(r.checks.destCrane.pass).toBe(true);
@@ -222,6 +295,8 @@ describe('runHardFilters — destination port crane', () => {
       geared: false,
       draftMax: 6.0,
       grainCapacity: 6000,
+      dwtSummer: null,
+      dwcc: null,
     });
     expect(r.pass).toBe(false);
     expect(r.checks.destCrane.pass).toBe(false);
@@ -240,6 +315,8 @@ describe('runHardFilters — destination port crane', () => {
       geared: true,
       draftMax: 6.0,
       grainCapacity: 6000,
+      dwtSummer: null,
+      dwcc: null,
     });
     expect(r.checks.destCrane.pass).toBe(true);
   });
@@ -256,6 +333,8 @@ describe('runHardFilters — destination port crane', () => {
       geared: false,
       draftMax: 13.0,   // exceeds Skikda maxDraftM=12
       grainCapacity: 6000,
+      dwtSummer: null,
+      dwcc: null,
     });
     expect(r.checks.destDraft.pass).toBe(false);
     expect(r.checks.destCrane.pass).toBe(false);
@@ -275,6 +354,8 @@ describe('runHardFilters', () => {
       geared: true,
       draftMax: 6.0,
       grainCapacity: 6000,
+      dwtSummer: null,
+      dwcc: null,
     });
     expect(r.pass).toBe(true);
     expect(r.failures).toHaveLength(0);
@@ -291,6 +372,8 @@ describe('runHardFilters', () => {
       geared: false,         // ok, Mykolaiv has cranes
       draftMax: 12.0,        // too deep
       grainCapacity: 5000,   // too small for 5000 MT wheat
+      dwtSummer: null,
+      dwcc: null,
     });
     expect(r.pass).toBe(false);
     expect(r.failures.length).toBeGreaterThanOrEqual(2); // draft + volume

@@ -76,6 +76,8 @@ describe('demo scenarios — pipeline outcomes', () => {
           geared: v.geared,
           draftMax: cfValue(v.draftMax),
           grainCapacity: v.grainCapacity,
+          dwtSummer: null,
+          dwcc: null,
         });
 
         const parsedLaycan = parseLaycan(c.laycan, refYear);
