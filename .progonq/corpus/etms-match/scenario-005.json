@@ -1,23 +1,15 @@
 {
   "id": "etms-match-005-marginal-oversize-vessel",
-  "category": "marginal",
+  "category": "no-match",
   "cargo_ref": "etms-parse-cargo/scenario-054",
   "vessel_ref": "etms-parse-vessel/scenario-036",
   "expected": {
-    "should_be_hard_filtered": false,
-    "match_level": "possible",
-    "score_range": [40, 70],
-    "must_cite_facts": [
-      "DWCC 31000 mt vs cargo 12000 mt — only 39% utilization (oversized vessel)",
-      "Vessel open Marmara, cargo loads Sfax — both Med, ~1500nm ballast",
-      "Spot dates"
-    ],
-    "must_NOT_invent": [
-      "P&I IG-club satisfied — only valid if vessel input has pi_club field",
-      "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
-      "Charterer-specific policy (e.g., 'Cargill strict on CII') — never allowed from external knowledge",
-      "Vetting clearance — only valid if vessel input has vetting fields"
-    ]
+    "should_be_hard_filtered": true,
+    "match_level": null,
+    "score_range": null,
+    "must_cite_facts": [],
+    "must_NOT_invent": [],
+    "hard_filter_reason": "Vessel draft 10.55m exceeds Sfax port max 10m — cannot berth at load port"
   },
-  "notes": "Capacity over-fit. Economically inefficient but feasible. Tests whether scorer penalizes low utilization."
+  "notes": "R0-corrected: this oversized vessel-036 (32k DWCC) cannot physically berth at Sfax (draft 10m max vs vessel 10.55m). Should be hard-filtered on draft check. R0 and R1 both correctly drop this pair — keeping as no-match aligns expectations with reality."
 }

@@ -19,5 +19,5 @@
       "Vetting clearance — only valid if vessel input has vetting fields"
     ]
   },
-  "notes": "Tests timing handling (vessel slightly late) + gearless-for-BB risk. Could go 'weak' if scorer is strict."
+  "notes": "Tests timing handling (vessel slightly late) + gearless-for-BB risk. Could go 'weak' if scorer is strict. [R1 confirm] 24/30 matches passed; 8 blocked by cargoWeight (sub-cargos that individually exceeded vessel capacity in this 30-cargo circular). Scoring spread 41-62 across remaining 24 = consistent \"possible\"."
 }
