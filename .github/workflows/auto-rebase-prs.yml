@@ -1,0 +1,64 @@
+name: Auto-rebase open [code-only] PRs on main push
+# Solves BEHIND mergeStateStatus blocker for solo-developer auto-merge.
+#
+# Why this exists: branch protection has strict=true (required_status_checks),
+# which means PR branches must contain the latest main commit before GitHub
+# will auto-merge them. When main moves, all open auto-merge PRs become
+# BEHIND and stall indefinitely.
+#
+# This workflow fires on push to main, finds all open [code-only] PRs that
+# are BEHIND and have auto-merge enabled, and calls GitHub's update-branch
+# API to merge main into them. CI then re-runs on the fresh base; if green,
+# native auto-merge fires.
+#
+# Safety: only touches PRs that are already [code-only] (tag or label) AND
+# already have auto-merge enabled by the author. We do not auto-enable
+# auto-merge here — that's auto-merge.yml's job at PR open time.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # manual trigger for one-off unsticking
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: auto-rebase-prs
+  cancel-in-progress: false
+
+jobs:
+  rebase-behind-prs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update branch on all open [code-only] PRs that are BEHIND
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -e
+          gh pr list \
+            --repo "$REPO" \
+            --state open \
+            --json number,title,labels,mergeStateStatus,autoMergeRequest \
+            --limit 50 \
+          | jq -c '.[]' \
+          | while read -r pr; do
+              num=$(echo "$pr" | jq -r '.number')
+              title=$(echo "$pr" | jq -r '.title')
+              state=$(echo "$pr" | jq -r '.mergeStateStatus')
+              auto=$(echo "$pr" | jq -r '.autoMergeRequest // empty')
+              if [ "$state" != "BEHIND" ] || [ -z "$auto" ]; then
+                continue
+              fi
+              has_label=$(echo "$pr" | jq -r '[.labels[].name] | index("code-only") // empty')
+              is_code_only_title=$(echo "$title" | grep -q '\[code-only\]' && echo "yes" || true)
+              if [ -z "$has_label" ] && [ -z "$is_code_only_title" ]; then
+                echo "Skip #$num: not [code-only]"
+                continue
+              fi
+              echo "Updating PR #$num: $title"
+              gh api -X PUT "/repos/$REPO/pulls/$num/update-branch" \
+                || echo "  warn: update-branch failed (likely conflict)"
+            done
