@@ -365,6 +365,15 @@ Extract per inquiry item:
 - discharge_terms: laytime cost-allocation and dispatch regime qualifiers, same rule as loading_terms.
 - commission_percent: broker commission if mentioned
 - commission_terms: e.g. "TTL BENDS", "address commission", "ADDCOMPUS", "pus"
+- freight_rate_usd: freight rate in USD per metric ton if EXPLICITLY stated in the email.
+  RULES:
+  - Extract ONLY when a specific dollar amount per MT/ton is written (e.g. "$18/MT", "USD 22 pmt", "18.50 usd/mt", "frt usd 20/mt").
+  - Return as a plain NUMBER (the numeric value only, e.g. 18.5).
+  - Do NOT infer or calculate from other fields. Null if not explicitly stated.
+  - Do NOT confuse with loading_rate (MT/day) or commission_percent.
+  - Example: "cargo 5000mt grain, frt usd 18/mt fio" → freight_rate_usd: 18
+  - Example: "5500mt salt $22 pmt shinc" → freight_rate_usd: 22
+  - Example: "cement 10000mt, no freight indicated" → freight_rate_usd: null
 - special_requirements: temperature, hazmat class, fumigation, vessel constraints (LOA max, beam max), etc. Do NOT put laytime cost terms (FIO, CQD, SHINC, SHEX) here — those go in loading_terms / discharge_terms. ALWAYS include NOR tendering conditions if present (WIPON, WIBON, WIFPON, WICCON or any combination) as a special_requirements entry — these are contractually critical laytime/demurrage terms that belong here. Include vessel size constraints (e.g. "LOA max 124m, beam max 18m") here.
 - stowage_factor: if mentioned — MUST be a STRING with original units (see STOWAGE FACTOR RULES)
 - missing_info: array of plain English strings (see missing_info RULES — never return objects or field names)
