@@ -63,6 +63,7 @@ export function buildGeminiSamplingFields(opts: AiOpts): Record<string, unknown>
   if (opts.topP !== undefined) cfg.topP = opts.topP;
   if (opts.topK !== undefined) cfg.topK = opts.topK;
   if (opts.seed !== undefined) cfg.seed = opts.seed;
+  if (opts.maxTokens !== undefined) cfg.maxOutputTokens = opts.maxTokens;
   return cfg;
 }
 

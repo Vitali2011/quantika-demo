@@ -37,6 +37,7 @@ describe("buildGeminiSamplingFields", () => {
     expect(cfg.seed).toBeUndefined();
     expect(cfg.topP).toBeUndefined();
     expect(cfg.topK).toBeUndefined();
+    expect(cfg.maxOutputTokens).toBeUndefined();
   });
 
   it("includes all provided sampling fields", () => {
@@ -45,6 +46,16 @@ describe("buildGeminiSamplingFields", () => {
     expect(cfg.topP).toBe(0.95);
     expect(cfg.topK).toBe(40);
     expect(cfg.seed).toBe(1);
+  });
+
+  it("maps maxTokens to maxOutputTokens for Gemini", () => {
+    const cfg = buildGeminiSamplingFields({ maxTokens: 8192 });
+    expect(cfg.maxOutputTokens).toBe(8192);
+  });
+
+  it("omits maxOutputTokens when maxTokens is not provided", () => {
+    const cfg = buildGeminiSamplingFields({ temperature: 0.5 });
+    expect(cfg.maxOutputTokens).toBeUndefined();
   });
 });
 
