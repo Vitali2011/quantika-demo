@@ -37,11 +37,10 @@ export default async function MatchesPage() {
 
   const db = getStore().getDatabase();
 
-  let matches = listMatches(db, { user_id: sessionId, sortBy: 'score', sortDir: 'desc' });
-  if (matches.length === 0 && session.matches.length > 0) {
+  if (session.matches.length > 0) {
     persistSessionMatches(db, sessionId, session.matches);
-    matches = listMatches(db, { user_id: sessionId, sortBy: 'score', sortDir: 'desc' });
   }
+  const matches = listMatches(db, { user_id: sessionId, sortBy: 'score', sortDir: 'desc' });
 
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-12">
