@@ -1,0 +1,44 @@
+name: Auto-merge (tag-based)
+# Enables GitHub's native auto-merge on PRs tagged [code-only] (in title) or
+# carrying the `code-only` label. Auto-merge then fires once required status
+# checks pass (Build / Test / TypeCheck + Audit).
+#
+# Safety guards:
+#   - Skip if title contains [deploy-affects] or [ops] (Rule 9 of orchestrator-day)
+#   - Skip on draft PRs
+#   - Skip if author is dependabot[bot] — that's handled by dependabot-auto-merge.yml
+#
+# Why this exists: previously orchestrator-day called `gh pr merge --auto --squash`
+# manually after every PR creation. This workflow automates that step so any
+# [code-only] PR self-queues for merge once CI is green.
+
+on:
+  pull_request:
+    types: [opened, edited, labeled, reopened, ready_for_review]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: auto-merge-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  enable-auto-merge:
+    if: >-
+      !github.event.pull_request.draft &&
+      github.actor != 'dependabot[bot]' &&
+      !contains(github.event.pull_request.title, '[deploy-affects]') &&
+      !contains(github.event.pull_request.title, '[ops]') &&
+      (
+        contains(github.event.pull_request.title, '[code-only]') ||
+        contains(github.event.pull_request.labels.*.name, 'code-only')
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable auto-merge (squash)
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

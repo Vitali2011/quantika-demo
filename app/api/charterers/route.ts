@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getStore } from '@/lib/session-store';
-import { requireSession } from '@/lib/session';
 import { listCharterers, upsertCharterer } from '@/lib/market/charterers-repository';
 import { randomBytes } from 'crypto';
 
@@ -14,6 +13,9 @@ export const dynamic = 'force-dynamic';
  * - POST: missing name/tier → 400 validation error
  * - POST: invalid tier → 400 validation error
  * - POST: empty name → 400 validation error
+ *
+ * Auth: gated by middleware demo_auth cookie. Charterers are shared reference
+ * data (not session-scoped), so no handler-level session_id check.
  */
 
 function isFeatureEnabled(): boolean {
@@ -21,9 +23,6 @@ function isFeatureEnabled(): boolean {
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  const authResult = requireSession(request);
-  if (authResult instanceof NextResponse) return authResult;
-
   if (!isFeatureEnabled()) {
     return NextResponse.json(
       { error: 'Feature disabled' },
@@ -47,9 +46,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  const authResult = requireSession(request);
-  if (authResult instanceof NextResponse) return authResult;
-
   if (!isFeatureEnabled()) {
     return NextResponse.json(
       { error: 'Feature disabled' },
