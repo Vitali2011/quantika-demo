@@ -20,11 +20,11 @@ import type { PortMaster } from './port-master';
 export const KNOWN_PORTS = [
   // Black Sea
   'Karasu', 'Istanbul', 'Mykolaiv', 'Odesa', 'Chornomorsk', 'Constanta', 'Varna', 'Burgas', 'Novorossiysk',
-  'Taman', 'Tuapse', 'Izmail',
+  'Taman', 'Tuapse', 'Izmail', 'Yuzhny',
   // Aegean / Eastern Med
   'Piraeus', 'Aliaga', 'Marmara', 'Derince', 'Antalya', 'Mersin', 'Iskenderun',
   // Eastern Med / Suez
-  'Alexandria', 'Suez',
+  'Alexandria', 'Suez', 'Tartus',
   // Central / Western Med
   'Ravenna', 'Marghera', 'Skikda', 'Casablanca',
   'Genoa', 'LaSpezia', 'Livorno', 'Naples', 'Trieste',
@@ -47,9 +47,9 @@ export const KNOWN_PORTS = [
   // Red Sea / Middle East
   'Jeddah', 'Djibouti', 'Aden', 'Dubai', 'BandarAbbas',
   // Indian Ocean / South Asia
-  'Mumbai', 'Chennai', 'Kolkata', 'Colombo', 'Karachi',
+  'Mumbai', 'Chennai', 'Kolkata', 'Colombo', 'Karachi', 'Kakinada',
   // SE Asia
-  'PortKlang', 'Jakarta', 'Manila', 'HoChiMinh', 'Bangkok',
+  'PortKlang', 'Jakarta', 'Manila', 'HoChiMinh', 'Bangkok', 'Songkhla',
   // East Asia
   'HongKong', 'Kaohsiung', 'Busan', 'Incheon', 'Qingdao', 'Ningbo',
   // Asia
@@ -93,11 +93,27 @@ const PORT_ALIASES: Record<string, KnownPort> = {
   'reni': 'Izmail',             // Reni is a nearby Danube port, use Izmail as proxy
   'izmail / reni': 'Izmail',
   'izmayil': 'Izmail',
+  'yuzhny': 'Yuzhny',
+  'pivdennyi': 'Yuzhny',        // Ukrainian name for Yuzhny port
+  'pivdenniy': 'Yuzhny',
+  'yuzhne': 'Yuzhny',
+  'pivdennyi (yuzhne)': 'Yuzhny',
+  'yuzhniy': 'Yuzhny',
+  'giurgiulesti': 'Izmail',     // Moldovan Danube port, ~80km from Izmail
+  'giurgiuleshti': 'Izmail',    // alt transliteration
+  'giurgiulești': 'Izmail',     // Romanian diacritic spelling
+  'braila': 'Izmail',           // Romanian Danube port, ~120km upstream
+  'brăila': 'Izmail',
+  'galati': 'Izmail',           // Romanian Danube port, ~80km upstream
+  'galați': 'Izmail',
+  'kavkaz': 'Novorossiysk',     // Port Kavkaz — Kerch Strait, ~200km from Novorossiysk
   // Aegean
   'piraeus': 'Piraeus',
   'pireus': 'Piraeus',
   'aliaga': 'Aliaga',
   'efesan': 'Aliaga',           // Efesan terminal in Aliaga bay
+  'nemrut': 'Aliaga',           // Nemrut Bay — Aliaga's main industrial complex
+  'nemrut bay': 'Aliaga',
   'izmir': 'Izmir',
   'smyrna': 'Izmir',            // former name
   'marmara': 'Marmara',
@@ -105,6 +121,13 @@ const PORT_ALIASES: Record<string, KnownPort> = {
   'marmara sea': 'Marmara',
   'sea of marmara': 'Marmara',
   'bandirma': 'Marmara',        // same Sea of Marmara region
+  'bandırma': 'Marmara',        // Turkish diacritic spelling
+  'yarimca': 'Marmara',         // Yarımca — Izmit Bay, Marmara cluster
+  'yarımca': 'Marmara',         // Turkish diacritic spelling
+  'diliskelesi': 'Marmara',     // Dilovasi industrial cluster — Marmara south shore
+  'dilovasi': 'Marmara',
+  'canakkale': 'Marmara',       // Çanakkale — Dardanelles strait, Marmara entry
+  'çanakkale': 'Marmara',       // Turkish diacritic spelling
   'hereke': 'Marmara',          // Hereke (Korfez Bay) — Marmara cluster
   'gemlik': 'Marmara',          // Gemlik Bay — south Marmara
   'mudanya': 'Marmara',         // Mudanya — south Marmara
@@ -123,10 +146,16 @@ const PORT_ALIASES: Record<string, KnownPort> = {
   'el dekheila': 'Alexandria',  // Alexandria El Dekheila terminal
   'eldekheila': 'Alexandria',
   'dekheila': 'Alexandria',
+  'abu qir': 'Alexandria',      // Abu Qir Bay — Alexandria's eastern terminal
+  'abukir': 'Alexandria',
+  'adabiya': 'Suez',            // Adabiya — bulk terminal in Suez Gulf, part of Suez port complex
   'ain sokhna': 'Suez',         // Ain Sokhna is on Suez Gulf, use Suez as proxy
   'sokhna': 'Suez',
   'suez': 'Suez',
   'port suez': 'Suez',
+  'tartus': 'Tartus',
+  'tartous': 'Tartus',          // French/Arabic spelling variant
+  'tartoos': 'Tartus',          // alt transliteration
   // Mediterranean
   'ravenna': 'Ravenna',
   'marghera': 'Marghera',
@@ -224,6 +253,9 @@ const PORT_ALIASES: Record<string, KnownPort> = {
   'georgetown': 'Georgetown',
   // Red Sea / Middle East
   'jeddah': 'Jeddah',
+  'king abdullah port': 'Jeddah',  // KAEC port at Rabigh, ~120km N of Jeddah — Red Sea
+  'king abdullah': 'Jeddah',
+  'kaec': 'Jeddah',
   'jidda': 'Jeddah',
   'jidah': 'Jeddah',
   'djibouti': 'Djibouti',
@@ -247,6 +279,10 @@ const PORT_ALIASES: Record<string, KnownPort> = {
   'calcutta': 'Kolkata',        // former name
   'colombo': 'Colombo',
   'karachi': 'Karachi',
+  'kakinada': 'Kakinada',
+  'kakinada anchorage': 'Kakinada',
+  'kakinada anch': 'Kakinada',
+  'kakinada deep water': 'Kakinada',
   // SE Asia
   'port klang': 'PortKlang',
   'portklang': 'PortKlang',
@@ -262,6 +298,10 @@ const PORT_ALIASES: Record<string, KnownPort> = {
   'bangkok': 'Bangkok',
   'laem chabang': 'Bangkok',    // Bangkok's main deep-water port
   'laemchabang': 'Bangkok',
+  'songkhla': 'Songkhla',
+  'koh sichang': 'Bangkok',     // Ko Si Chang anchorage — Gulf of Thailand, Bangkok proxy
+  'ko sichang': 'Bangkok',
+  'ko si chang': 'Bangkok',
   // East Asia
   'hong kong': 'HongKong',
   'hongkong': 'HongKong',
