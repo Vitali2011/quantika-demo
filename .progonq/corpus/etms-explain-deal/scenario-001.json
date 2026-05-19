@@ -1,0 +1,103 @@
+{
+  "id": "etms-explain-deal-001",
+  "source": "synthetic — Opus 4.7 composed (Phase E8 R0)",
+  "category": "strong-match",
+  "language": "en",
+  "input": {
+    "match": {
+      "cargoEmailId": "synthetic-cargo-ed-001",
+      "cargoItemIndex": 0,
+      "vesselEmailId": "synthetic-vessel-ed-001",
+      "vesselItemIndex": 0,
+      "score": 82,
+      "matchLevel": "good",
+      "matchReasons": [
+        "DWT 10500 comfortably fits cargo 8000 MT",
+        "Open Istanbul within Mediterranean laycan"
+      ],
+      "issues": ["TCE 14200 is 11% below market rate 15800"],
+      "economics": { "tce": 14200, "marketTce": 15800 }
+    },
+    "cargo": {
+      "emailId": "synthetic-cargo-ed-001",
+      "itemIndex": 0,
+      "originPort": { "value": "Antalya", "confidence": "confirmed" },
+      "originCountry": "Turkey",
+      "destinationPort": { "value": "Georgetown", "confidence": "confirmed" },
+      "destinationCountry": "Guyana",
+      "cargoDescription": { "value": "8000 MT barite in bulk", "confidence": "confirmed" },
+      "weightMt": { "value": 8000, "confidence": "confirmed" },
+      "weightMtMin": null,
+      "weightMtMax": null,
+      "volumeCbm": null,
+      "dimensions": null,
+      "cargoType": "bulk",
+      "containerType": null,
+      "quantity": null,
+      "incoterms": "FIOST",
+      "preferredDates": { "value": "1-15 June 2026", "confidence": "confirmed" },
+      "laycan": "1-15 June 2026",
+      "loadingRate": "1500 MTPD SHINC",
+      "dischargeRate": "1000 MTPD SHINC",
+      "commissionPercent": 3.75,
+      "commissionTerms": "TTL",
+      "specialRequirements": null,
+      "stowageFactor": null,
+      "missingInfo": []
+    },
+    "vessel": {
+      "emailId": "synthetic-vessel-ed-001",
+      "itemIndex": 0,
+      "vesselName": { "value": "MV PETRA", "confidence": "confirmed" },
+      "imo": "9123456",
+      "flag": "Malta",
+      "built": 2008,
+      "classSociety": "Bureau Veritas",
+      "pandi": "Gard",
+      "dwtSummer": { "value": 10500, "confidence": "confirmed" },
+      "dwcc": { "value": 10200, "confidence": "confirmed" },
+      "draftMax": { "value": 7.2, "confidence": "confirmed" },
+      "loa": 138.5,
+      "beam": 19.8,
+      "grt": 6500,
+      "nrt": 3200,
+      "holdsCount": 2,
+      "hatchesCount": 2,
+      "grainCapacity": 13800,
+      "grainCapacityUnit": "cbm",
+      "baleCapacity": 13100,
+      "holdDimensions": null,
+      "hatchDimensions": null,
+      "tankTopStrength": null,
+      "geared": true,
+      "craneCapacity": "2x25T",
+      "hatchType": "side-rolling",
+      "vesselType": "general cargo",
+      "openPosition": { "value": "Istanbul", "confidence": "confirmed" },
+      "openDate": { "value": "28 May 2026", "confidence": "confirmed" },
+      "direction": "westbound",
+      "restrictions": [],
+      "lastCargoes": "Steel coils, grain",
+      "speedLaden": "11 kts",
+      "speedBallast": "12 kts",
+      "consumption": "10 MT IFO laden",
+      "deckCapacity": null,
+      "specialFeatures": ["gearbox fitted", "clean last cargoes"]
+    }
+  },
+  "expected": {
+    "sections_present": [
+      "Market Context",
+      "Deal Rationale",
+      "Key Risks",
+      "Recommended Next Steps"
+    ],
+    "must_cite_facts": ["10500", "8000", "Antalya", "14200"],
+    "must_not_contain": [
+      "$45 per metric ton",
+      "vetting clearance passed",
+      "P&I IG-club approved"
+    ],
+    "language": "en"
+  }
+}

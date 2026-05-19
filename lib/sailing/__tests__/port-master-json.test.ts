@@ -41,6 +41,47 @@ describe('PortMaster type — extended fields', () => {
   });
 });
 
+describe('wave-2 — 10 new ports (Phase E5)', () => {
+  // Ports added in Phase E5 wave 2: Las Palmas, Poti, El Arish, Marmara, Sagunto,
+  // Savona, Figueira da Foz, Monfalcone, Jorf Lasfar, Banjul.
+  // Sources: latitude.to, MarineTraffic, cogoport.com, portcode.net, SeaRates.
+  const WAVE2: Array<[string, string, number, number]> = [
+    ['Las Palmas', 'ESLPA', 28.15, -15.42],
+    ['Poti',       'GEPTI', 42.15,  41.65],
+    ['El Arish',   'EGAAC', 31.13,  33.80],
+    ['Marmara',    'TRMAR', 40.99,  27.97],
+    ['Sagunto',    'ESSAG', 39.63,  -0.22],
+    ['Savona',     'ITSVN', 44.31,   8.49],
+    ['Figueira da Foz', 'PTFDF', 40.14, -8.85],
+    ['Monfalcone', 'ITMNF', 45.80,  13.54],
+    ['Jorf Lasfar','MAJFL', 33.13,  -8.62],
+    ['Banjul',     'GMBJL', 13.45, -16.58],
+  ];
+
+  // Runtime import deferred via require to keep the type-only test at top pure.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { getPortMaster } = require('../port-master');
+
+  it.each(WAVE2)('%s has UNLOCODE=%s and coordinates ≈(%s, %s)', (name, unlocode, lat, lon) => {
+    const m = getPortMaster(name);
+    expect(m).not.toBeNull();
+    expect(m.unlocode).toBe(unlocode);
+    expect(m.name).toBe(name);
+    expect(m.country).toHaveLength(2);
+    expect(m.lat).toBeCloseTo(lat as number, 0);
+    expect(m.lon).toBeCloseTo(lon as number, 0);
+  });
+
+  it('all 10 wave-2 ports have maxDraftM set', () => {
+    for (const [name] of WAVE2) {
+      const m = getPortMaster(name);
+      expect(m).not.toBeNull();
+      expect(typeof m!.maxDraftM).toBe('number');
+      expect(m!.maxDraftM).toBeGreaterThan(0);
+    }
+  });
+});
+
 describe('migrated 15 ports — UN/LOCODE + coordinates', () => {
   // Sanity: getPortMaster returns PortMaster with unlocode/lat/lon for each of the 15.
   const EXPECTED: Array<[string, string, number, number]> = [

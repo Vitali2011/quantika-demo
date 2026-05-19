@@ -342,6 +342,42 @@ export default function MatchesClient({ initialMatches }: Props) {
                     </div>
                   )}
 
+                  {/* Vague-region hint (Phase E3) */}
+                  {match.reason_structured && (() => {
+                    let vagueRegionAdjustment: number | undefined;
+                    try {
+                      const parsed = JSON.parse(match.reason_structured as string);
+                      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                        vagueRegionAdjustment = parsed.vagueRegionAdjustment;
+                      }
+                    } catch {
+                      vagueRegionAdjustment = undefined;
+                    }
+                    if (typeof vagueRegionAdjustment === 'number' && vagueRegionAdjustment < 0) {
+                      let hintText = '⚠ Vague location — ask for specific anchorage / load port';
+                      try {
+                        const parsed = JSON.parse(match.reason_structured as string);
+                        const components: ScoreComponent[] = Array.isArray(parsed)
+                          ? parsed
+                          : (Array.isArray(parsed.components) ? parsed.components : []);
+                        const geoComp = components.find((c) => c.label === 'Geographic proximity');
+                        if (geoComp?.reason?.includes('vessel position')) {
+                          hintText = '⚠ Vessel position vague — ask for specific anchorage';
+                        } else if (geoComp?.reason?.includes('cargo origin')) {
+                          hintText = '⚠ Cargo origin vague — ask for specific load port';
+                        }
+                      } catch {
+                        // use generic hint
+                      }
+                      return (
+                        <div className="mt-1 text-xs text-amber-700 bg-amber-50 rounded px-2 py-1">
+                          {hintText}
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
+
                   {/* Score Breakdown toggle */}
                   {match.reason_structured && (
                     <button
@@ -356,7 +392,10 @@ export default function MatchesClient({ initialMatches }: Props) {
                   {expandedBreakdown === match.id && match.reason_structured && (() => {
                     let components: ScoreComponent[] = [];
                     try {
-                      components = JSON.parse(match.reason_structured as string);
+                      const parsed = JSON.parse(match.reason_structured as string);
+                      components = Array.isArray(parsed)
+                        ? parsed
+                        : (Array.isArray(parsed.components) ? parsed.components : []);
                     } catch {
                       components = [];
                     }

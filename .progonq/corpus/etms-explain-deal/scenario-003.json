@@ -1,0 +1,107 @@
+{
+  "id": "etms-explain-deal-003",
+  "source": "synthetic — Opus 4.7 composed (Phase E8 R0)",
+  "category": "weak-match",
+  "language": "en",
+  "input": {
+    "match": {
+      "cargoEmailId": "synthetic-cargo-ed-003",
+      "cargoItemIndex": 0,
+      "vesselEmailId": "synthetic-vessel-ed-003",
+      "vesselItemIndex": 0,
+      "score": 44,
+      "matchLevel": "weak",
+      "matchReasons": [
+        "Vessel DWT covers cargo weight"
+      ],
+      "issues": [
+        "DWT 12000 significantly oversized for cargo 3000 MT — poor utilization",
+        "Open Rotterdam: 12+ day repositioning to Teignmouth",
+        "Vessel built 1989 — age risk for some ports",
+        "TCE 6800 far below market 14000"
+      ],
+      "economics": { "tce": 6800, "marketTce": 14000 }
+    },
+    "cargo": {
+      "emailId": "synthetic-cargo-ed-003",
+      "itemIndex": 0,
+      "originPort": { "value": "Teignmouth", "confidence": "confirmed" },
+      "originCountry": "United Kingdom",
+      "destinationPort": { "value": "Alexandria", "confidence": "confirmed" },
+      "destinationCountry": "Egypt",
+      "cargoDescription": { "value": "3000 MT China Clay in bulk", "confidence": "confirmed" },
+      "weightMt": { "value": 3000, "confidence": "confirmed" },
+      "weightMtMin": null,
+      "weightMtMax": null,
+      "volumeCbm": null,
+      "dimensions": null,
+      "cargoType": "bulk",
+      "containerType": null,
+      "quantity": null,
+      "incoterms": "FIOST",
+      "preferredDates": { "value": "25-28 July 2026", "confidence": "confirmed" },
+      "laycan": "25-28 July 2026",
+      "loadingRate": "1500 MTPD",
+      "dischargeRate": "1000 MTPD",
+      "commissionPercent": 3.75,
+      "commissionTerms": "TTL",
+      "specialRequirements": "Holds clean and dry prior loading",
+      "stowageFactor": null,
+      "missingInfo": []
+    },
+    "vessel": {
+      "emailId": "synthetic-vessel-ed-003",
+      "itemIndex": 0,
+      "vesselName": { "value": "MV NORDIC STAR", "confidence": "confirmed" },
+      "imo": "8901234",
+      "flag": "Vanuatu",
+      "built": 1989,
+      "classSociety": "IR Class",
+      "pandi": "Lodestar",
+      "dwtSummer": { "value": 12000, "confidence": "confirmed" },
+      "dwcc": { "value": 11500, "confidence": "confirmed" },
+      "draftMax": { "value": 6.8, "confidence": "confirmed" },
+      "loa": 145.0,
+      "beam": 21.5,
+      "grt": 7800,
+      "nrt": 4200,
+      "holdsCount": 3,
+      "hatchesCount": 3,
+      "grainCapacity": 15000,
+      "grainCapacityUnit": "cbm",
+      "baleCapacity": 14500,
+      "holdDimensions": null,
+      "hatchDimensions": null,
+      "tankTopStrength": null,
+      "geared": false,
+      "craneCapacity": null,
+      "hatchType": "pontoon",
+      "vesselType": "general cargo",
+      "openPosition": { "value": "Rotterdam", "confidence": "confirmed" },
+      "openDate": { "value": "13 July 2026", "confidence": "confirmed" },
+      "direction": "eastbound",
+      "restrictions": [],
+      "lastCargoes": "General cargo",
+      "speedLaden": "10.5 kts",
+      "speedBallast": "11 kts",
+      "consumption": "11 MT IFO laden",
+      "deckCapacity": null,
+      "specialFeatures": []
+    }
+  },
+  "expected": {
+    "sections_present": [
+      "Market Context",
+      "Deal Rationale",
+      "Key Risks",
+      "Recommended Next Steps"
+    ],
+    "must_cite_facts": ["3000", "12000", "Rotterdam", "6800"],
+    "must_not_contain": [
+      "$35 per metric ton",
+      "RightShip approved",
+      "Glencore charter"
+    ],
+    "language": "en"
+  }
+}
