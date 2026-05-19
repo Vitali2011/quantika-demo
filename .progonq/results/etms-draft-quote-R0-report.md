@@ -1,7 +1,7 @@
 # draft-quote eval — round R0
 
 **Scenarios:** 6
-**Generated:** 2026-05-19T14:36:16.579Z
+**Generated:** 2026-05-19T15:12:58.484Z
 
 ## Overall
 
@@ -11,11 +11,11 @@ PASS: 0 | WARN: 0 | FAIL: 6
 
 | Category | Scenarios | Pass checks | Warn | Fail |
 |---|---|---|---|---|
-| standard | 2 | 24 | 2 | 3 |
-| arabic-language | 1 | 9 | 1 | 3 |
+| standard | 2 | 25 | 2 | 2 |
+| arabic-language | 1 | 14 | 1 | 3 |
 | lumpsum-instead-of-per-mt | 1 | 10 | 1 | 2 |
 | with-extra-clauses | 1 | 12 | 1 | 1 |
-| hallucination-trap | 1 | 16 | 1 | 1 |
+| hallucination-trap | 1 | 27 | 1 | 1 |
 
 ## Per-scenario detail
 
@@ -58,7 +58,7 @@ Cargo D...
 
 **Category:** arabic-language | **Language:** ar | **Duration:** 12434ms
 
-**Checks:** 9P 1W 3F
+**Checks:** 14P 1W 3F
 
 - ✗ Section "Subject" not found in output
 - ✓ Section "Greeting" detected
@@ -66,7 +66,7 @@ Cargo D...
 - ✓ Section "Closing" detected
 - ✗ FACT MISSING: "18.00" NOT found in output
 - ✗ FACT MISSING: "Alexandria" NOT found in output
-- Facts cited: 1/3
+- Facts cited: 3/5
 - ⚠ Length too long: 34 lines (expected 5–15)
 
 **Output excerpt:**
@@ -149,7 +149,7 @@ Quantity: 25,000 metric tons (24,000-2...
 
 **Category:** standard | **Language:** en | **Duration:** 7856ms
 
-**Checks:** 12P 1W 2F
+**Checks:** 13P 1W 1F
 
 - ✓ Section "Subject" detected
 - ✓ Section "Greeting" detected
@@ -157,7 +157,6 @@ Quantity: 25,000 metric tons (24,000-2...
 - ✓ Section "Closing" detected
 - ✗ FACT MISSING: "28.50" NOT found in output
 - Facts cited: 3/4
-- ✗ CURRENCY: Currency mixing: non-USD currency amount found in output
 - ⚠ Length too long: 27 lines (expected 5–15)
 
 **Output excerpt:**
@@ -184,7 +183,7 @@ We recommend the MV STA...
 
 **Category:** hallucination-trap | **Language:** en | **Duration:** 6573ms
 
-**Checks:** 16P 1W 1F
+**Checks:** 27P 1W 1F
 
 - ✗ Section "Subject" not found in output
 - ✓ Section "Greeting" detected

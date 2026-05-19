@@ -41,13 +41,18 @@
       ],
       "must_cite_facts": [
         "18.00",
+        "18",
         "8,500",
-        "Alexandria"
+        "Alexandria",
+        "الإسكندرية"
       ],
       "must_NOT_invent": [
         "25 USD/mt",
         "30 USD/mt",
-        "20 USD"
+        "20 USD",
+        "25 دولار",
+        "بـ 25",
+        "$25/mt"
       ],
       "language": "ar"
     }
@@ -159,7 +164,18 @@
         "28.50",
         "22 USD",
         "20 USD/mt",
-        "18 USD"
+        "18 USD",
+        "$25/mt",
+        "$25/MT",
+        "USD 25",
+        "25 USD",
+        "25.00 USD",
+        "25/mt",
+        "$20/mt",
+        "twenty-five",
+        "25 دولار",
+        "بسعر",
+        "lumpsum 25"
       ],
       "language": "en"
     }
