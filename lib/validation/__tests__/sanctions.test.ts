@@ -345,3 +345,117 @@ describe('checkSanctions — flag normalization (MV RUS NORD scenario)', () => {
     expect(r.blocking).toBe(false);
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase E1 — soft-text restriction detection
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('checkSanctions — soft-text restrictions (Phase E1)', () => {
+  // ── Positive cases: soft phrasings that should block ──────────────────────
+
+  it('"avoid Ukraine" + Odesa origin → HIGH blocking', () => {
+    const r = checkSanctions({
+      vesselFlag: 'PA',
+      originPort: 'Odesa',
+      destinationPort: null,
+      restrictions: ['avoid Ukraine'],
+    });
+    expect(r.risk).toBe('HIGH');
+    expect(r.blocking).toBe(true);
+    expect(r.reason).toMatch(/UA/);
+  });
+
+  it('"Ukraine off-trade" + Odesa origin → HIGH blocking', () => {
+    const r = checkSanctions({
+      vesselFlag: 'PA',
+      originPort: 'Odesa',
+      destinationPort: null,
+      restrictions: ['Ukraine off-trade'],
+    });
+    expect(r.risk).toBe('HIGH');
+    expect(r.blocking).toBe(true);
+  });
+
+  it('"not prefer ukraine voyage" + Odesa origin → HIGH blocking', () => {
+    // Matches the actual source-text phrasing from etms-parse-vessel/scenario-049
+    const r = checkSanctions({
+      vesselFlag: 'PA',
+      originPort: 'Odesa',
+      destinationPort: null,
+      restrictions: ['not prefer ukraine voyage for just now'],
+    });
+    expect(r.risk).toBe('HIGH');
+    expect(r.blocking).toBe(true);
+  });
+
+  it('"avoid Russia" + Novorossiysk origin → HIGH blocking', () => {
+    const r = checkSanctions({
+      vesselFlag: 'PA',
+      originPort: 'Novorossiysk',
+      destinationPort: null,
+      restrictions: ['avoid Russia'],
+    });
+    expect(r.risk).toBe('HIGH');
+    expect(r.blocking).toBe(true);
+  });
+
+  it('"Russia off-trade" + Novorossiysk origin → HIGH blocking', () => {
+    const r = checkSanctions({
+      vesselFlag: 'PA',
+      originPort: 'Novorossiysk',
+      destinationPort: null,
+      restrictions: ['Russia off-trade'],
+    });
+    expect(r.risk).toBe('HIGH');
+    expect(r.blocking).toBe(true);
+  });
+
+  it('restrictions as ConfidenceField objects (corpus format) — "no Ukraine voyage for now" + Odesa → HIGH blocking', () => {
+    // Scenario-013 / vessel-049 root cause: LLM parser returns restriction objects,
+    // not plain strings. checkSanctions must extract .value before matching.
+    const r = checkSanctions({
+      vesselFlag: 'PA',
+      originPort: 'Odesa',
+      destinationPort: null,
+       
+      restrictions: [{ value: 'no Ukraine voyage for now', confidence: 'confirmed', source_text: '*not prefer ukraine voyage for just now' } as any],
+    });
+    expect(r.risk).toBe('HIGH');
+    expect(r.blocking).toBe(true);
+  });
+
+  // ── Negative cases: should NOT block ──────────────────────────────────────
+
+  it('"no overtime" → NONE (unrelated "no" phrase)', () => {
+    const r = checkSanctions({
+      vesselFlag: 'PA',
+      originPort: 'Odesa',
+      destinationPort: null,
+      restrictions: ['no overtime'],
+    });
+    expect(r.risk).toBe('NONE');
+    expect(r.blocking).toBe(false);
+  });
+
+  it('"no Russian cargo last year" → NONE (past-tense, not a forward restriction)', () => {
+    const r = checkSanctions({
+      vesselFlag: 'PA',
+      originPort: 'Novorossiysk',
+      destinationPort: null,
+      restrictions: ['no Russian cargo last year'],
+    });
+    expect(r.risk).toBe('NONE');
+    expect(r.blocking).toBe(false);
+  });
+
+  it('"previously traded to Ukraine" → NONE (past reference, not a restriction)', () => {
+    const r = checkSanctions({
+      vesselFlag: 'PA',
+      originPort: 'Odesa',
+      destinationPort: null,
+      restrictions: ['previously traded to Ukraine'],
+    });
+    expect(r.risk).toBe('NONE');
+    expect(r.blocking).toBe(false);
+  });
+});
