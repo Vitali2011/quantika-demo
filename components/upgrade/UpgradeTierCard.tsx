@@ -55,7 +55,8 @@ export function UpgradeTierCard({
           {cta.type === 'current' && (
             <button
               disabled
-              className="w-full px-4 py-2 text-sm text-gray-400 bg-gray-100 rounded cursor-not-allowed border border-gray-200"
+              aria-label={cta.label}
+              className="w-full px-4 py-3 min-h-[44px] text-sm text-gray-400 bg-gray-100 rounded cursor-not-allowed border border-gray-200"
             >
               {cta.label}
             </button>
@@ -63,7 +64,8 @@ export function UpgradeTierCard({
           {cta.type === 'upgrade' && (
             <a
               href={cta.href}
-              className="block w-full px-4 py-2 text-center text-sm font-semibold text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors"
+              aria-label={cta.label}
+              className="block w-full px-4 py-3 min-h-[44px] text-center text-sm font-semibold text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors"
             >
               {cta.label}
             </a>
@@ -71,8 +73,9 @@ export function UpgradeTierCard({
           {cta.type === 'contact' && (
             <a
               href={cta.href}
+              aria-label={cta.label}
               data-testid="enterprise-cta"
-              className="block w-full px-4 py-2 text-center text-sm font-medium text-gray-700 bg-white rounded hover:bg-gray-50 transition-colors border border-gray-300"
+              className="block w-full px-4 py-3 min-h-[44px] text-center text-sm font-medium text-gray-700 bg-white rounded hover:bg-gray-50 transition-colors border border-gray-300"
             >
               {cta.label}
             </a>
