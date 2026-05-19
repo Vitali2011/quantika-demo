@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import { cookies } from 'next/headers';
 import { getTrialState, daysRemaining, isExpired } from '@/lib/trial';
 import { TrialBanner } from '@/components/onboarding/TrialBanner';
+import BottomNav from '@/components/nav/BottomNav';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -44,6 +45,7 @@ export default async function RootLayout({
       <body className={inter.className}>
         <TrialBannerWrapper />
         {children}
+        <BottomNav />
       </body>
     </html>
   );
