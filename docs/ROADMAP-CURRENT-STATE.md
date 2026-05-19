@@ -3,7 +3,7 @@
 **Последний полный аудит:** 2026-05-17 (5-поточный код-аудит) + **2026-05-19 UI audit** через Playwright + Chrome MCP на проде demo.quantika.org
 **Последнее обновление:** 2026-05-19 (match parser baseline R0→R2, 5 PRs + **UI audit added §1.0 findings**)
 **Текущая версия:** prod HEAD после PR #240 (systemd quantika-demo.service на outreach-vps, NOT dev-vps)
-**Статус:** ⚠️ В проде на demo.quantika.org — основные потоки работают, но **4 критических drift'а** найдены UI audit'ом 2026-05-19 (см. §1.0)
+**Статус:** ✅ В проде на demo.quantika.org — 6 из 7 UI audit findings (F1-F6) closed в течение 2026-05-19; **F7 `/processing` 403** остаётся open (CSRF cookie issue, отдельный PR)
 
 > **Живой документ.** Заменяет `ROADMAP-SESSION-PROMPT.md` (тот был разовый промпт-генератор, не state tracker).
 > Источники отчётов: `/root/orchestrator-state/audit-2026-05-17/{parsers,data,api,ui,waves}.md`
@@ -71,22 +71,24 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 **Результат:** 48 entries — 40 🟢 / 6 🟡 / 2 🔴. Real picture после deep-dive более существенная — **4 критических env drift'а + auth model gap**.
 
-#### 🚨 Critical drifts (ROADMAP/memory расходятся с prod env)
+**Update 2026-05-19 после chip-tasks landed:** F1–F6 закрыты в течение того же дня. F7 (`/processing` 403) — separate root cause (CSRF cookie не выдаётся при логине), отдельный PR. Detail tables ниже сохранены для истории.
 
-| #      | Claim (ROADMAP/memory)                            | Prod reality                                                                                 | Impact                                                                                                                                                     |
-| ------ | ------------------------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **F1** | `AI_PROVIDER=gemini`, 7/7 scopes Gemini default   | `AI_PROVIDER=openai` на outreach-vps                                                         | LLM costs могут быть 5-15× выше; memory `project_quantika_demo_gemini_default_2026_05_17` потенциально wrong → нужно расследование (см. chip-task spawned) |
-| **F2** | `MATCH_PROVIDER=gemini`                           | `MATCH_PROVIDER=bedrock`                                                                     | /matches scoring идёт через AWS Bedrock; cost + reliability риск (memory: Bedrock Opus access lost 2026-05-17)                                             |
-| **F3** | /matches M1+M3 LIVE (PR #227 + #234)              | **`MATCHES_ENABLED` не выставлен** на prod env → `app/matches/page.tsx` редиректит на `/`    | /matches фактически недоступна demo users; единственная новая фича за неделю effectively dark                                                              |
-| **F4** | 8 γ-flags LIVE (batch-1/2/3 activated 2026-05-17) | 3 из 8 actually `false`: `MULTI_CURRENCY_V2_ENABLED`, `SUBS_TIMER_ENABLED`, `FUELEU_ENABLED` | γ-01 / γ-08 / γ-11 фичи не работают; ROADMAP §2.2 нужна правка (см. ниже)                                                                                  |
+#### 🚨 Critical drifts (ROADMAP/memory расходятся с prod env) — все FIXED
+
+| #      | Claim (ROADMAP/memory)                            | Prod reality (была)                                                                          | Resolution                                                                                                                                                                                                                    |
+| ------ | ------------------------------------------------- | -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **F1** | `AI_PROVIDER=gemini`, 7/7 scopes Gemini default   | `AI_PROVIDER=openai` на outreach-vps                                                         | ✅ **FIXED 2026-05-19** — env-incident утром 17 мая восстановил backup pre-Gemini. `AI_PROVIDER=gemini` выставлен на проде + systemctl restart. memory `project_quantika_demo_gemini_default_2026_05_17` обновлён с историей. |
+| **F2** | `MATCH_PROVIDER=gemini`                           | `MATCH_PROVIDER=bedrock`                                                                     | ✅ **FIXED 2026-05-19** — выставлено `MATCH_PROVIDER=gemini` на проде в том же edit как F1. Сэкономит на Bedrock Opus.                                                                                                        |
+| **F3** | /matches M1+M3 LIVE (PR #227 + #234)              | **`MATCHES_ENABLED` не выставлен** на prod env → `app/matches/page.tsx` редиректит на `/`    | ✅ **FIXED 2026-05-19** — `MATCHES_ENABLED=true` + restart. Smoke: /matches HTTP 200 без редиректа на `/`.                                                                                                                    |
+| **F4** | 8 γ-flags LIVE (batch-1/2/3 activated 2026-05-17) | 3 из 8 actually `false`: `MULTI_CURRENCY_V2_ENABLED`, `SUBS_TIMER_ENABLED`, `FUELEU_ENABLED` | ✅ **FIXED 2026-05-19** — все 3 включены `true` + NEXT_PUBLIC pair выставлен. Все 8 γ-flags действительно LIVE.                                                                                                               |
 
 #### 🟠 High — broken pages
 
-| #      | Page                 | Symptom                                                                   | Hypothesis                                                                                                  |
-| ------ | -------------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| **F5** | `/charterers/[id]`   | `Error: Failed to load charterer` + 401 console + 20s networkidle timeout | API requires `session_id` cookie, у demo user только `demo_auth` — нет fallback на demo data; см. chip-task |
-| **F6** | `/charterers` (list) | 401 console error (page рендерится, но API call fails)                    | Same root cause as F5                                                                                       |
-| **F7** | `/processing`        | 403 console error                                                         | Likely same auth model gap                                                                                  |
+| #      | Page                 | Symptom                                                                   | Resolution                                                                                                                                                                                                                         |
+| ------ | -------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **F5** | `/charterers/[id]`   | `Error: Failed to load charterer` + 401 console + 20s networkidle timeout | ✅ **FIXED 2026-05-19** — [PR #254](https://github.com/Vitali2011/quantika-demo/pull/254) (sha 11f01c9). Убрана redundant `requireSession` из /api/charterers handlers — charterers shared reference data, не привязаны к session. |
+| **F6** | `/charterers` (list) | 401 console error (page рендерится, но API call fails)                    | ✅ **FIXED 2026-05-19** — закрыт тем же PR #254. Smoke: /charterers HTTP 200, 10910 bytes content.                                                                                                                                 |
+| **F7** | `/processing`        | 403 console error                                                         | ⏸ **OPEN** — separate root cause (CSRF cookie не выдаётся при login). Отдельный PR. Trying chip-task spawn 2026-05-19.                                                                                                             |
 
 #### 📋 Medium — env vars missing
 
@@ -247,18 +249,18 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 **Полностью выполнено 2026-05-17.** Все 8 γ-флагов LIVE на проде.
 
-| Флаг                       | Статус                                                                                                           | PR/commit              |
-| -------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------- |
-| `SUBS_TIMER_V2` (γ-08)     | ✅ LIVE                                                                                                          | batch-1                |
-| `LAYTIME_ENGINE` (γ-05)    | ✅ LIVE                                                                                                          | batch-1                |
-| `BIMCO_RAG` (γ-09)         | ✅ LIVE                                                                                                          | batch-1                |
-| `CHARTERER_CREDIT` (γ-02)  | ✅ LIVE                                                                                                          | batch-2                |
-| `PSC_DETENTION` (γ-03)     | ✅ LIVE                                                                                                          | batch-2                |
-| `FUELEU` (γ-11)            | ❌ **DRIFT** — на проде `FUELEU_ENABLED=false` (2026-05-19 UI audit). См. §1.0 F4 + chip-task для re-activation. |
-| `ROI_GUARANTEE` (γ-18)     | ✅ LIVE                                                                                                          | batch-3 (PR #187 seed) |
-| `MULTI_CURRENCY_V2` (γ-01) | ❌ **DRIFT** — на проде `MULTI_CURRENCY_V2_ENABLED=false`. См. §1.0 F4.                                          |
-| `SUBS_TIMER_V2` (γ-08)     | ❌ **DRIFT** — на проде `SUBS_TIMER_ENABLED=false`. См. §1.0 F4.                                                 |
-| `MATCHES_ENABLED` (M1+M3)  | ❌ **NOT SET** — флаг не выставлен на prod env → /matches редиректит. См. §1.0 F3.                               |
+| Флаг                       | Статус                                              | PR/commit              |
+| -------------------------- | --------------------------------------------------- | ---------------------- |
+| `SUBS_TIMER_V2` (γ-08)     | ✅ LIVE                                             | batch-1                |
+| `LAYTIME_ENGINE` (γ-05)    | ✅ LIVE                                             | batch-1                |
+| `BIMCO_RAG` (γ-09)         | ✅ LIVE                                             | batch-1                |
+| `CHARTERER_CREDIT` (γ-02)  | ✅ LIVE                                             | batch-2                |
+| `PSC_DETENTION` (γ-03)     | ✅ LIVE                                             | batch-2                |
+| `FUELEU` (γ-11)            | ✅ LIVE (re-activated 2026-05-19 после §1.0 F4 fix) | batch-2 + 2026-05-19   |
+| `ROI_GUARANTEE` (γ-18)     | ✅ LIVE                                             | batch-3 (PR #187 seed) |
+| `MULTI_CURRENCY_V2` (γ-01) | ✅ LIVE (re-activated 2026-05-19 после §1.0 F4 fix) | batch-3 + 2026-05-19   |
+| `SUBS_TIMER_V2` (γ-08)     | ✅ LIVE (re-activated 2026-05-19 после §1.0 F4 fix) | batch-1 + 2026-05-19   |
+| `MATCHES_ENABLED` (M1+M3)  | ✅ LIVE (выставлен 2026-05-19 после §1.0 F3 fix)    | 2026-05-19             |
 
 ---
 
@@ -270,13 +272,14 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 Большая часть старого 7-day списка закрыта PR'ами #194-#233 (см. PR history). Новый приоритет — drift'ы из §1.0:
 
-1. **F3+F4** — Activate `MATCHES_ENABLED` + 3 γ-flags (MULTI_CURRENCY_V2, SUBS_TIMER_V2, FUELEU) на outreach-vps. Chip-task spawned 2026-05-19. ETA 30 мин (env edit + pm2 restart + verify).
-2. **F1+F2** — Расследовать AI_PROVIDER/MATCH_PROVIDER drift (prod = openai/bedrock vs ROADMAP claim Gemini). Chip-task spawned 2026-05-19. Решение либо update prod env, либо update memory `project_quantika_demo_gemini_default_2026_05_17` как wrong.
-3. **F5+F6+F7** — Fix /charterers/[id], /charterers, /processing — auth model gap (session_id required for API but demo_auth user не имеет). Chip-task spawned 2026-05-19.
-4. **C3** EU_SANCTIONS_TOKEN refresh (5 мин user) — token выставлен (`n00mo9i3`), но ROADMAP считал что expired — нужна проверка validity, не refresh.
-5. **F8** Resend API key — user-only (после регистрации на resend.com).
-6. **F9** Sentry DSN — user-only.
-7. **F10** EXPLAIN_DEAL_ENABLED env activation (если фича готова).
+1. ✅ **F3+F4 DONE 2026-05-19** — `MATCHES_ENABLED=true` + 3 γ-flags (MULTI_CURRENCY_V2, SUBS_TIMER_V2, FUELEU) выставлены на outreach-vps + restart. Smoke: /matches HTTP 200.
+2. ✅ **F1+F2 DONE 2026-05-19** — `AI_PROVIDER=gemini` + `MATCH_PROVIDER=gemini` на проде после env-incident recovery (17 мая утром backup восстановил pre-Gemini state). Memory обновлена с историей.
+3. ✅ **F5+F6 DONE 2026-05-19** — [PR #254](https://github.com/Vitali2011/quantika-demo/pull/254) (sha 11f01c9): убрана redundant `requireSession` из /api/charterers handlers. Smoke: /charterers HTTP 200.
+4. ⏸ **F7 OPEN** — /processing 403, отдельный root cause (CSRF cookie не выдаётся при login). Отдельный PR. Chip-task spawned 2026-05-19.
+5. **C3** EU_SANCTIONS_TOKEN refresh (5 мин user) — token выставлен (`n00mo9i3`), но ROADMAP считал что expired — нужна проверка validity, не refresh.
+6. **F8** Resend API key — user-only (после регистрации на resend.com).
+7. **F9** Sentry DSN — user-only.
+8. **F10** EXPLAIN_DEAL_ENABLED env activation (если фича готова).
 
 ETA: ~1-2 дня wall-clock с user input на пп. 4-7. Пп. 1-3 — agent-only, можно через chip-spawn.
 
