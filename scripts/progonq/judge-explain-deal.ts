@@ -89,6 +89,14 @@ export interface ScenarioVerdict {
  * WARN: header found but content is effectively empty (whitespace only)
  * FAIL: header not found in text
  */
+function lineAnchoredIdx(text: string, header: string): number {
+  const escaped = header.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp('(^|\\n)' + escaped, 'i');
+  const m = re.exec(text);
+  if (!m) return -1;
+  return m.index + m[1].length;
+}
+
 export function checkSections(text: string, expectedHeaders: string[]): SectionCheck[] {
   const results: SectionCheck[] = [];
 
@@ -96,17 +104,17 @@ export function checkSections(text: string, expectedHeaders: string[]): SectionC
     const header = expectedHeaders[i];
     const nextHeader = expectedHeaders[i + 1];
 
-    const headerIdx = text.indexOf(header);
+    const headerIdx = lineAnchoredIdx(text, header);
     if (headerIdx === -1) {
       results.push({ header, verdict: 'FAIL', note: `Section "${header}" not found in output` });
       continue;
     }
 
-    // Extract content between this header and the next
+    // Extract content between this header and the next (use line-anchored search for next too)
     const afterHeader = text.slice(headerIdx + header.length);
     let content: string;
     if (nextHeader) {
-      const nextIdx = afterHeader.indexOf(nextHeader);
+      const nextIdx = lineAnchoredIdx(afterHeader, nextHeader);
       content = nextIdx !== -1 ? afterHeader.slice(0, nextIdx) : afterHeader;
     } else {
       content = afterHeader;
@@ -231,7 +239,7 @@ export function judgeOne(r: RunResult): ScenarioVerdict {
   const factChecks = checkCitedFacts(r.raw_text, r.expected.must_cite_facts);
   for (const fc of factChecks) {
     if (fc.verdict === 'PASS') passCount++;
-    else { warnCount++; notes.push(`⚠ FACT MISSING: ${fc.note}`); }
+    else { failCount++; notes.push(`✗ FACT MISSING: ${fc.note}`); }
   }
   if (factChecks.length > 0) {
     const cited = factChecks.filter(f => f.verdict === 'PASS').length;
