@@ -22,6 +22,7 @@ import DashboardError from '@/app/dashboard/error';
 import MatchesError from '@/app/matches/error';
 import PscError from '@/app/psc/error';
 import CharterersError from '@/app/charterers/error';
+import ProcessingError from '@/app/processing/error';
 
 function makeError(message = 'test error') {
   return Object.assign(new Error(message), { digest: 'test-digest' });
@@ -109,6 +110,27 @@ describe('Charterers error boundary', () => {
   it('renders retry button and calls reset on click', () => {
     const reset = jest.fn();
     render(<CharterersError error={makeError()} reset={reset} />);
+    const btn = screen.getByRole('button', { name: /попробовать снова/i });
+    fireEvent.click(btn);
+    expect(reset).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('Processing error boundary', () => {
+  it('renders contextual fallback mentioning processing', () => {
+    render(<ProcessingError error={makeError()} reset={jest.fn()} />);
+    expect(screen.getByText(/processing/i)).toBeInTheDocument();
+  });
+
+  it('calls captureException with the error on mount', () => {
+    const error = makeError();
+    render(<ProcessingError error={error} reset={jest.fn()} />);
+    expect(mockCaptureException).toHaveBeenCalledWith(error);
+  });
+
+  it('renders retry button and calls reset on click', () => {
+    const reset = jest.fn();
+    render(<ProcessingError error={makeError()} reset={reset} />);
     const btn = screen.getByRole('button', { name: /попробовать снова/i });
     fireEvent.click(btn);
     expect(reset).toHaveBeenCalledTimes(1);
