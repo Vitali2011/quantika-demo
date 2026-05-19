@@ -1,7 +1,16 @@
+'use client';
+
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { Lock, Trash2, EyeOff } from 'lucide-react';
+import { initAnalytics, track } from '@/lib/analytics';
 
 export function EmailUploadCTA() {
+  useEffect(() => {
+    initAnalytics();
+    track('cta_upload_viewed');
+  }, []);
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-white px-6">
       <div className="w-full max-w-md text-center space-y-8">
@@ -19,15 +28,16 @@ export function EmailUploadCTA() {
           <Link
             href="/processing"
             aria-label="Go to email processing to upload your first email"
+            onClick={() => track('cta_upload_clicked')}
             className="inline-flex items-center justify-center rounded-md border border-transparent bg-foreground text-background px-6 py-3 text-sm font-medium hover:opacity-90 transition-opacity w-full sm:w-auto"
           >
             Upload &amp; analyse emails
           </Link>
-          <form method="POST" action="/api/sample">
+          <form method="POST" action="/api/sample" className="w-full sm:w-auto" onSubmit={() => track('cta_sample_clicked')}>
             <button
               type="submit"
               aria-label="Try the app with pre-loaded sample freight emails"
-              className="inline-flex items-center justify-center rounded-md border border-input bg-background px-6 py-3 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors"
+              className="inline-flex items-center justify-center rounded-md border border-input bg-background px-6 py-3 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors w-full sm:w-auto"
             >
               Try with Sample Data
             </button>
@@ -45,7 +55,7 @@ export function EmailUploadCTA() {
           <div className="flex items-start gap-3">
             <Trash2 className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-medium">Data deleted after demo</p>
+              <p className="text-sm font-medium">Data deleted after session</p>
               <p className="text-xs text-muted-foreground">Your data is processed in memory and deleted automatically</p>
             </div>
           </div>
