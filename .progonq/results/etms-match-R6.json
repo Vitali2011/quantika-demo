@@ -1,0 +1,5181 @@
+[
+  {
+    "scenario_id": "etms-match-001-strong-marmara-bsea",
+    "category": "no-match",
+    "duration_ms": 2266,
+    "cargo_ref": "etms-parse-cargo/scenario-042",
+    "vessel_ref": "etms-parse-vessel/scenario-004",
+    "expected": {
+      "should_be_hard_filtered": true,
+      "match_level": null,
+      "score_range": null,
+      "must_cite_facts": [],
+      "must_NOT_invent": [],
+      "hard_filter_reason": "DWCC 2000 mt < cargo 2500 mt — cargo exceeds vessel cargo capacity (overload)"
+    },
+    "matches": [],
+    "blocked_matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-042",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-004",
+        "vesselItemIndex": 0,
+        "filterReason": "cargo 2500 mt exceeds vessel capacity 2000 mt (DWCC) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 2500 mt exceeds vessel capacity 2000 mt (DWCC) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-042",
+        "cargoItemIndex": 1,
+        "vesselEmailId": "etms-parse-vessel-004",
+        "vesselItemIndex": 0,
+        "filterReason": "cargo 10300 mt exceeds vessel capacity 2000 mt (DWCC) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 10300 mt exceeds vessel capacity 2000 mt (DWCC) by more than 5% tolerance"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario_id": "etms-match-002-strong-eastmed-bulk",
+    "category": "strong",
+    "duration_ms": 19313,
+    "cargo_ref": "etms-parse-cargo/scenario-024",
+    "vessel_ref": "etms-parse-vessel/scenario-048",
+    "expected": {
+      "should_be_hard_filtered": false,
+      "match_level": "possible",
+      "score_range": [
+        40,
+        60
+      ],
+      "must_cite_facts": [
+        "DWT 8100 mt vs cargo 5000 mt (62% utilization)",
+        "Vessel open Nemrut Bay, cargo loads Mersin — both East Med, ~400nm",
+        "Both spot dates",
+        "Bulk cargo OK gearless (assuming load port has cranes)"
+      ],
+      "must_NOT_invent": [
+        "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+        "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+        "Charterer-specific policy (e.g., 'Cargill strict on CII') — never allowed from external knowledge",
+        "Vetting clearance — only valid if vessel input has vetting fields"
+      ]
+    },
+    "matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-024",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-048",
+        "vesselItemIndex": 0,
+        "score": 47,
+        "matchLevel": "possible",
+        "matchReasons": [
+          "DWT 8,100 mt vs cargo 5,000 mt → about 62% utilization, leaving reasonable deadweight margin.",
+          "Readiness sailing_days=1.17 from Aliaga/Nemrut area to Mersin, with arrival_date 2026-05-02 provided by readiness.",
+          "GENERAL CARGO vessel with 3 holds and hold depths up to 11.20 m can physically present workable space for a 5,000 mt bulk rice parcel.",
+          "Approximate hold box volume from stated dimensions is over 11,000 cbm vs grain-style default estimate ~6,750 cbm for 5,000 mt × 1.35 cbm/mt."
+        ],
+        "issues": [
+          "Readiness verdict 'idle' — arrives 2026-05-02, gap_days=16.83 before laycan start per readiness explanation, creating significant waiting-time risk.",
+          "Vessel restriction 'No European ports for now' — voyage Mersin/Tartous should be checked against owner's trading limits.",
+          "DWCC not specified; assessment uses DWT 8,100 mt against cargo 5,000 mt.",
+          "Vessel is gearless; confirm Mersin and Tartous bulk rice loading/discharge equipment availability for 5,000 mt.",
+          "Vessel idle 17d before laycan (extended, > 14d) — owner likely won't wait unpaid"
+        ],
+        "readiness": {
+          "openDate": "2026-05-01",
+          "laycanStart": "2026-05-19",
+          "laycanEnd": "2026-05-19",
+          "distanceNm": 350,
+          "distanceExact": true,
+          "speedKn": 12.5,
+          "sailingDays": 1.17,
+          "arrivalDate": "2026-05-02",
+          "gapDays": 16.83,
+          "verdict": "idle",
+          "explanation": "Vessel open Aliaga 2026-05-01 → arrives Mersin ~2026-05-02 → 17d idle before laycan starts 2026-05-19 — owner likely won't wait.",
+          "isSpot": false
+        },
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        },
+        "dateIssues": [],
+        "sanctions": {
+          "risk": "NONE",
+          "blocking": false
+        },
+        "scoreBreakdown": {
+          "components": [
+            {
+              "label": "Geographic proximity",
+              "points": 16,
+              "max": 20,
+              "reason": "short ballast 350nm",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo type match",
+              "points": 12,
+              "max": 20,
+              "reason": "MPP vessel with sufficient grain capacity for bulk",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo handling (cranes)",
+              "points": 12,
+              "max": 15,
+              "reason": "gearless vessel + shore cranes available",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Volume / hold fit",
+              "points": 12,
+              "max": 15,
+              "reason": "cargo uses ~66% of grain capacity — comfortable",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Laycan fit",
+              "points": 10,
+              "max": 20,
+              "reason": "vessel idle before laycan — owner cost risk",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "DWT class fit",
+              "points": 10,
+              "max": 10,
+              "reason": "cargo 5000mt on 8100mt DWT — well-matched",
+              "confidenceMultiplier": 1
+            }
+          ],
+          "basePhysical": 72,
+          "readinessAdjustment": -25,
+          "sanctionsAdjustment": 0,
+          "vagueRegionAdjustment": 0,
+          "finalScore": 47,
+          "confidenceAdjustedScore": 72
+        },
+        "confidence": {
+          "level": "missing",
+          "blockSend": false,
+          "blockedFields": [],
+          "fieldConfidences": [
+            {
+              "field": "cargo.weightMt",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "5000mts unpeeled rice in bulk"
+            },
+            {
+              "field": "cargo.laycanStart",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.laycanEnd",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.originPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Mersin,Turkey / Syria,Tartous"
+            },
+            {
+              "field": "cargo.destinationPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Mersin,Turkey / Syria,Tartous"
+            },
+            {
+              "field": "vessel.imo",
+              "level": "missing"
+            }
+          ]
+        }
+      }
+    ],
+    "blocked_matches": []
+  },
+  {
+    "scenario_id": "etms-match-003-strong-aegean-bsea",
+    "category": "strong",
+    "duration_ms": 16668,
+    "cargo_ref": "etms-parse-cargo/scenario-030",
+    "vessel_ref": "etms-parse-vessel/scenario-028",
+    "expected": {
+      "should_be_hard_filtered": false,
+      "match_level": "good",
+      "score_range": [
+        65,
+        80
+      ],
+      "must_cite_facts": [
+        "DWCC 6750 mt vs cargo 10000 mt — vessel UNDER-LIFTS by ~3250 mt (only 67% of cargo)",
+        "Vessel open Marmara 22-23 May, cargo Aliaga laycan 25/30 May — timing fits",
+        "Geared vessel"
+      ],
+      "must_NOT_invent": [
+        "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+        "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+        "Charterer-specific policy (e.g., 'Cargill strict on CII') — never allowed from external knowledge",
+        "Vetting clearance — only valid if vessel input has vetting fields"
+      ]
+    },
+    "matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-030",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-028",
+        "vesselItemIndex": 1,
+        "score": 73.6,
+        "matchLevel": "good",
+        "matchReasons": [
+          "DWT 17,000 mt vs cargo 10,000 mt → about 59% utilization, giving sufficient weight margin.",
+          "BULK cargo 'Bulk clay' on a 17,000 DWT BULK CARRIER is a standard cargo/vessel type match.",
+          "Readiness verdict 'ideal' — arrives 2026-05-29 with gap_days=0.87 against the 25/30 May 2026 laycan.",
+          "Readiness gives sailing_days=5.13 from Gibraltar Range to Aliaga, arriving within the laycan window.",
+          "Vessel geared on 17,000 DWT carrier"
+        ],
+        "issues": [
+          "DWCC not specified for vessel item 1 — capacity assessment uses dwt_summer 17,000 mt against cargo 10,000 mt.",
+          "Vessel name is 'MV TBN' — actual nominated vessel particulars/class details are not yet identified.",
+          "Hold dimensions are not specified — no hold geometry check available for 10,000 mt bulk clay.",
+          "Cargo special requirement: 'Total laytime: 6 days (no load/discharge split specified)' — load/discharge rate split remains unclear."
+        ],
+        "readiness": {
+          "openDate": "2026-05-24",
+          "laycanStart": "2026-05-30",
+          "laycanEnd": "2026-05-30",
+          "distanceNm": 1540,
+          "distanceExact": false,
+          "speedKn": 12.5,
+          "sailingDays": 5.13,
+          "arrivalDate": "2026-05-29",
+          "gapDays": 0.87,
+          "verdict": "ideal",
+          "explanation": "Vessel open Gibraltar 2026-05-24 → arrives Aliaga ~2026-05-29 → 1d before laycan starts 2026-05-30 — clean window.",
+          "isSpot": false
+        },
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        },
+        "dateIssues": [],
+        "sanctions": {
+          "risk": "NONE",
+          "blocking": false
+        },
+        "scoreBreakdown": {
+          "components": [
+            {
+              "label": "Geographic proximity",
+              "points": 8,
+              "max": 20,
+              "reason": "long ballast 1540nm — acceptable for tramp trade",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo type match",
+              "points": 11.2,
+              "max": 20,
+              "reason": "bulk-class vessel, cargo history unclear",
+              "confidenceMultiplier": 0.7
+            },
+            {
+              "label": "Cargo handling (cranes)",
+              "points": 15,
+              "max": 15,
+              "reason": "vessel geared — no shore-crane dependency",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Volume / hold fit",
+              "points": 8.399999999999999,
+              "max": 15,
+              "reason": "cargo uses ~2% of grain capacity — comfortable",
+              "confidenceMultiplier": 0.7
+            },
+            {
+              "label": "Laycan fit",
+              "points": 14,
+              "max": 20,
+              "reason": "ideal timing — arrives cleanly before laycan",
+              "confidenceMultiplier": 0.7
+            },
+            {
+              "label": "DWT class fit",
+              "points": 7,
+              "max": 10,
+              "reason": "cargo 10000mt on 17000mt DWT — well-matched",
+              "confidenceMultiplier": 0.7
+            }
+          ],
+          "basePhysical": 81,
+          "readinessAdjustment": 10,
+          "sanctionsAdjustment": 0,
+          "vagueRegionAdjustment": 0,
+          "finalScore": 73.6,
+          "confidenceAdjustedScore": 63.6
+        },
+        "confidence": {
+          "level": "missing",
+          "blockSend": false,
+          "blockedFields": [],
+          "fieldConfidences": [
+            {
+              "field": "cargo.weightMt",
+              "level": "inferred",
+              "score": 0.65,
+              "sourceQuote": "abt 10.000t blk clay"
+            },
+            {
+              "field": "cargo.laycanStart",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.laycanEnd",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.originPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Aliaga / Varna"
+            },
+            {
+              "field": "cargo.destinationPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Aliaga / Varna"
+            },
+            {
+              "field": "vessel.imo",
+              "level": "missing"
+            }
+          ]
+        }
+      }
+    ],
+    "blocked_matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-030",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-028",
+        "vesselItemIndex": 0,
+        "filterReason": "cargo 10000 mt exceeds vessel capacity 6750 mt (DWCC) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 10000 mt exceeds vessel capacity 6750 mt (DWCC) by more than 5% tolerance"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario_id": "etms-match-004-marginal-med-atlantic-gearless-bb",
+    "category": "marginal",
+    "duration_ms": 372133,
+    "cargo_ref": "etms-parse-cargo/scenario-018",
+    "vessel_ref": "etms-parse-vessel/scenario-020",
+    "expected": {
+      "should_be_hard_filtered": false,
+      "match_level": null,
+      "score_range": [
+        15,
+        75
+      ],
+      "must_cite_facts": [
+        "DWT 3827 mt vs cargo 2720 mt (71% utilization)",
+        "Vessel open Skikda 18/19 May, cargo Nemrut laycan 15/18 May — vessel arrives AFTER laycan close",
+        "Gearless vessel for break-bulk cargo — depends on load/disch port crane availability"
+      ],
+      "must_NOT_invent": [
+        "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+        "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+        "Charterer-specific policy (e.g., 'Cargill strict on CII') — never allowed from external knowledge",
+        "Vetting clearance — only valid if vessel input has vetting fields"
+      ]
+    },
+    "matches": [],
+    "blocked_matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-018",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-020",
+        "vesselItemIndex": 0,
+        "filterReason": "Vessel open Skikda 2026-05-18 → arrives Aliaga ~2026-05-21 → 4d after laycan starts 2026-05-18 — misses laycan."
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-018",
+        "cargoItemIndex": 1,
+        "vesselEmailId": "etms-parse-vessel-020",
+        "vesselItemIndex": 0,
+        "filterReason": "cargo 6630 mt exceeds vessel capacity 3444 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 6630 mt exceeds vessel capacity 3444 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-018",
+        "cargoItemIndex": 1,
+        "vesselEmailId": "etms-parse-vessel-020",
+        "vesselItemIndex": 1,
+        "filterReason": "cargo 6630 mt exceeds vessel capacity 3444 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 6630 mt exceeds vessel capacity 3444 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-018",
+        "cargoItemIndex": 1,
+        "vesselEmailId": "etms-parse-vessel-020",
+        "vesselItemIndex": 2,
+        "filterReason": "cargo needs ~8951m³ (6630mt × 1.35 stowage) but vessel grain capacity is 4620m³; cargo 6630 mt exceeds vessel capacity 3519 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": false,
+            "reason": "cargo needs ~8951m³ (6630mt × 1.35 stowage) but vessel grain capacity is 4620m³"
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 6630 mt exceeds vessel capacity 3519 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-018",
+        "cargoItemIndex": 1,
+        "vesselEmailId": "etms-parse-vessel-020",
+        "vesselItemIndex": 3,
+        "filterReason": "cargo 6630 mt exceeds vessel capacity 3890 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 6630 mt exceeds vessel capacity 3890 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-018",
+        "cargoItemIndex": 1,
+        "vesselEmailId": "etms-parse-vessel-020",
+        "vesselItemIndex": 4,
+        "filterReason": "cargo 6630 mt exceeds vessel capacity 4000 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 6630 mt exceeds vessel capacity 4000 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-018",
+        "cargoItemIndex": 1,
+        "vesselEmailId": "etms-parse-vessel-020",
+        "vesselItemIndex": 5,
+        "filterReason": "cargo 6630 mt exceeds vessel capacity 4000 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 6630 mt exceeds vessel capacity 4000 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-018",
+        "cargoItemIndex": 1,
+        "vesselEmailId": "etms-parse-vessel-020",
+        "vesselItemIndex": 6,
+        "filterReason": "cargo 6630 mt exceeds vessel capacity 4009 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 6630 mt exceeds vessel capacity 4009 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-018",
+        "cargoItemIndex": 1,
+        "vesselEmailId": "etms-parse-vessel-020",
+        "vesselItemIndex": 7,
+        "filterReason": "cargo needs ~8951m³ (6630mt × 1.35 stowage) but vessel grain capacity is 6165.7m³; cargo 6630 mt exceeds vessel capacity 4720 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": false,
+            "reason": "cargo needs ~8951m³ (6630mt × 1.35 stowage) but vessel grain capacity is 6165.7m³"
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 6630 mt exceeds vessel capacity 4720 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario_id": "etms-match-005-marginal-oversize-vessel",
+    "category": "no-match",
+    "duration_ms": 2263,
+    "cargo_ref": "etms-parse-cargo/scenario-054",
+    "vessel_ref": "etms-parse-vessel/scenario-036",
+    "expected": {
+      "should_be_hard_filtered": true,
+      "match_level": null,
+      "score_range": null,
+      "must_cite_facts": [],
+      "must_NOT_invent": [],
+      "hard_filter_reason": "Vessel draft 10.55m exceeds Sfax port max 10m — cannot berth at load port"
+    },
+    "matches": [],
+    "blocked_matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-054",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-036",
+        "vesselItemIndex": 0,
+        "filterReason": "vessel draft 10.55m exceeds port max 10m",
+        "hardFilters": {
+          "draft": {
+            "pass": false,
+            "reason": "vessel draft 10.55m exceeds port max 10m"
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario_id": "etms-match-006-marginal-redsea-eastmed-tight",
+    "category": "marginal",
+    "duration_ms": 18054,
+    "cargo_ref": "etms-parse-cargo/scenario-060",
+    "vessel_ref": "etms-parse-vessel/scenario-012",
+    "expected": {
+      "should_be_hard_filtered": false,
+      "match_level": "possible",
+      "score_range": [
+        40,
+        70
+      ],
+      "must_cite_facts": [
+        "DWT 5328 mt vs cargo 3000 mt (56% utilization)",
+        "Vessel open Red Sea PROMPT, cargo Iskenderun laycan 11/15 May — Suez transit ~4-6 days",
+        "Geared vessel suitable for break-bulk"
+      ],
+      "must_NOT_invent": [
+        "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+        "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+        "Charterer-specific policy (e.g., 'Cargill strict on CII') — never allowed from external knowledge",
+        "Vetting clearance — only valid if vessel input has vetting fields"
+      ]
+    },
+    "matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-060",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-012",
+        "vesselItemIndex": 0,
+        "score": 40.6,
+        "matchLevel": "possible",
+        "matchReasons": [
+          "DWT 5,328.4 mt vs cargo 3,000 mt → about 56% utilization, leaving nominal deadweight margin.",
+          "GENERAL CARGO vessel with geared=true is commercially suitable for BREAK_BULK cement in big bags of 3,000 mt.",
+          "Hold dimensions are stated as Hold 1: 32.64m × 13.26m × 7.82m and Hold 2: 32m × 13.26m × 7.82m, giving two boxed cargo spaces for big-bag stowage."
+        ],
+        "issues": [
+          "Readiness verdict 'unknown' — arrival_date=null and gap_days=null for laycan 11/15 May 2026; readiness says vessel position 'Red Sea' is a sea/basin, not a port.",
+          "DWCC not specified; using DWT 5,328.4 mt vs cargo 3,000 mt, but bunkers/stores margin should be checked.",
+          "Crane capacity not specified for geared=true; confirm vessel gear can handle cement big bags for the 3,000 mt shipment.",
+          "Loading/discharge rates not provided; cargo states 4 total laytime days, but port productivity cannot be checked.",
+          "Cargo special requirement says 'exclusive firm cargo — do not recirculate'; commercial handling instruction must be observed for this 1 cargo lot."
+        ],
+        "readiness": {
+          "openDate": "2026-05-01",
+          "laycanStart": "2026-05-15",
+          "laycanEnd": "2026-05-15",
+          "distanceNm": null,
+          "distanceExact": null,
+          "speedKn": 12.5,
+          "sailingDays": null,
+          "arrivalDate": null,
+          "gapDays": null,
+          "verdict": "unknown",
+          "explanation": "Vessel position: 'Red Sea' is a sea/basin, not a port. Ask for a specific load/discharge port.",
+          "isSpot": false
+        },
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        },
+        "dateIssues": [],
+        "sanctions": {
+          "risk": "NONE",
+          "blocking": false
+        },
+        "scoreBreakdown": {
+          "components": [
+            {
+              "label": "Geographic proximity",
+              "points": 2,
+              "max": 20,
+              "reason": "position vague (vessel position: sea name) — cannot estimate proximity precisely",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo type match",
+              "points": 16,
+              "max": 20,
+              "reason": "MPP vessel — ideal for breakbulk/project",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo handling (cranes)",
+              "points": 15,
+              "max": 15,
+              "reason": "vessel geared — no shore-crane dependency",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Volume / hold fit",
+              "points": 12,
+              "max": 15,
+              "reason": "cargo uses ~33% of grain capacity — comfortable",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Laycan fit",
+              "points": 5.6,
+              "max": 20,
+              "reason": "timing unknown (missing dates or port)",
+              "confidenceMultiplier": 0.7
+            },
+            {
+              "label": "DWT class fit",
+              "points": 10,
+              "max": 10,
+              "reason": "cargo 3000mt on 5328.4mt DWT — well-matched",
+              "confidenceMultiplier": 1
+            }
+          ],
+          "basePhysical": 63,
+          "readinessAdjustment": 0,
+          "sanctionsAdjustment": 0,
+          "vagueRegionAdjustment": -20,
+          "finalScore": 40.6,
+          "confidenceAdjustedScore": 60.6
+        },
+        "confidence": {
+          "level": "missing",
+          "blockSend": false,
+          "blockedFields": [],
+          "fieldConfidences": [
+            {
+              "field": "cargo.weightMt",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "3000 mts cement in big bags"
+            },
+            {
+              "field": "cargo.laycanStart",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.laycanEnd",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.originPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Iskenderun / 1 Greece"
+            },
+            {
+              "field": "cargo.destinationPort",
+              "level": "inferred",
+              "score": 0.65,
+              "sourceQuote": "Iskenderun / 1 Greece"
+            },
+            {
+              "field": "vessel.imo",
+              "level": "missing"
+            }
+          ]
+        }
+      }
+    ],
+    "blocked_matches": []
+  },
+  {
+    "scenario_id": "etms-match-007-weak-idle-months",
+    "category": "weak",
+    "duration_ms": 43689,
+    "cargo_ref": "etms-parse-cargo/scenario-066",
+    "vessel_ref": "etms-parse-vessel/scenario-040",
+    "expected": {
+      "should_be_hard_filtered": false,
+      "match_level": "weak",
+      "score_range": [
+        10,
+        40
+      ],
+      "must_cite_facts": [
+        "Vessel open Ravenna 02-03 March, cargo Izmail laycan 11 May+ — vessel would idle ~2 MONTHS",
+        "Wrong region: vessel Adriatic, cargo Black Sea — long ballast through Bosphorus",
+        "DWCC 14500 mt vs cargo 5000 mt (35% utilization)"
+      ],
+      "must_NOT_invent": [
+        "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+        "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+        "Charterer-specific policy (e.g., 'Cargill strict on CII') — never allowed from external knowledge",
+        "Vetting clearance — only valid if vessel input has vetting fields"
+      ]
+    },
+    "matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-066",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-040",
+        "vesselItemIndex": 5,
+        "score": 37.8,
+        "matchLevel": "weak",
+        "matchReasons": [
+          "DWT 22,000 mt vs wheat cargo 5,000 mt nominal / 5,500 mt max → about 23-25% of DWT, so deadweight intake is ample.",
+          "GENERAL CARGO vessel with 22,000 DWT is larger than required for the 4,500-5,500 mt wheat parcel but physically capable.",
+          "Readiness verdict 'idle' — arrives 2026-04-28, 12.91 days before laycan start, with sailing_days=13.09 from Beira to Izmail.",
+          "Vessel is geared=true for a wheat cargo with stated loading rate 2,000 mt/day and discharge rate 1,500 mt/day."
+        ],
+        "issues": [
+          "Vessel arrives 12.91 days early — idle time before 11 May laycan start may affect owner economics.",
+          "Vessel position stale — 16d old, may already be fixed",
+          "DWCC is not specified for the 22,000 DWT vessel — intake confidence relies on DWT rather than cargo-capacity data.",
+          "Hold dimensions/capacity not specified — wheat volume fit cannot be independently checked beyond DWT 22,000 mt.",
+          "Vessel idle 13d before laycan — owner likely won't wait unpaid",
+          "Vessel position stale — 16d old, may already be fixed"
+        ],
+        "readiness": {
+          "openDate": "2026-04-15",
+          "laycanStart": "2026-05-11",
+          "laycanEnd": "2026-05-11",
+          "distanceNm": 3927,
+          "distanceExact": false,
+          "speedKn": 12.5,
+          "sailingDays": 13.09,
+          "arrivalDate": "2026-04-28",
+          "gapDays": 12.91,
+          "verdict": "idle",
+          "explanation": "Vessel open Beira 2026-04-15 → arrives Izmail ~2026-04-28 → 13d idle before laycan starts 2026-05-11 — owner likely won't wait.",
+          "isSpot": false
+        },
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        },
+        "dateIssues": [
+          "Vessel position stale — 16d old, may already be fixed"
+        ],
+        "sanctions": {
+          "risk": "NONE",
+          "blocking": false
+        },
+        "scoreBreakdown": {
+          "components": [
+            {
+              "label": "Geographic proximity",
+              "points": 4,
+              "max": 20,
+              "reason": "very long ballast 3930nm — requires economic justification",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo type match",
+              "points": 12,
+              "max": 20,
+              "reason": "MPP vessel with sufficient grain capacity for bulk",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo handling (cranes)",
+              "points": 15,
+              "max": 15,
+              "reason": "vessel geared — no shore-crane dependency",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Volume / hold fit",
+              "points": 12,
+              "max": 15,
+              "reason": "cargo uses ~1% of grain capacity — comfortable",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Laycan fit",
+              "points": 7,
+              "max": 20,
+              "reason": "vessel idle before laycan — owner cost risk",
+              "confidenceMultiplier": 0.7
+            },
+            {
+              "label": "DWT class fit",
+              "points": 2.8,
+              "max": 10,
+              "reason": "cargo ≪ vessel DWT — diseconomic",
+              "confidenceMultiplier": 0.7
+            }
+          ],
+          "basePhysical": 57,
+          "readinessAdjustment": -15,
+          "sanctionsAdjustment": 0,
+          "vagueRegionAdjustment": 0,
+          "finalScore": 37.8,
+          "confidenceAdjustedScore": 52.8
+        },
+        "confidence": {
+          "level": "missing",
+          "blockSend": false,
+          "blockedFields": [],
+          "fieldConfidences": [
+            {
+              "field": "cargo.weightMt",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "5000 mts +/- 10% of wheat"
+            },
+            {
+              "field": "cargo.laycanStart",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.laycanEnd",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.originPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Izmail / Samsun or Marmara or Izmir"
+            },
+            {
+              "field": "cargo.destinationPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Izmail / Samsun or Marmara or Izmir"
+            },
+            {
+              "field": "vessel.imo",
+              "level": "missing"
+            }
+          ]
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-066",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-040",
+        "vesselItemIndex": 1,
+        "score": 36.6,
+        "matchLevel": "weak",
+        "matchReasons": [
+          "DWCC 6,700 mt vs wheat cargo 5,000 mt nominal / 5,500 mt max → about 75-82% utilization, efficient intake.",
+          "GENERAL CARGO vessel with 6,976 DWT is sized for the 4,500-5,500 mt wheat cargo range.",
+          "Vessel is geared=true and cargo loading/discharge rates are 2,000 mt/day load and 1,500 mt/day discharge, reducing reliance on shore gear."
+        ],
+        "issues": [
+          "Readiness verdict 'unknown' — arrival_date=null and gap_days=null because open position 'East Coast Greece' is a coastal range, not a specific port.",
+          "Vessel position very stale — 53d old, may already be fixed",
+          "Hold dimensions/capacity not specified — wheat volume fit cannot be independently checked beyond DWCC 6,700 mt.",
+          "Vessel position very stale — 53d old, may already be fixed"
+        ],
+        "readiness": {
+          "openDate": "2026-03-09",
+          "laycanStart": "2026-05-11",
+          "laycanEnd": "2026-05-11",
+          "distanceNm": null,
+          "distanceExact": null,
+          "speedKn": 12.5,
+          "sailingDays": null,
+          "arrivalDate": null,
+          "gapDays": null,
+          "verdict": "unknown",
+          "explanation": "Vessel position: 'East Coast Greece' is a coastal range, not a specific port. Ask for a specific anchorage or load port.",
+          "isSpot": false
+        },
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        },
+        "dateIssues": [
+          "Vessel position very stale — 53d old, may already be fixed"
+        ],
+        "sanctions": {
+          "risk": "NONE",
+          "blocking": false
+        },
+        "scoreBreakdown": {
+          "components": [
+            {
+              "label": "Geographic proximity",
+              "points": 2,
+              "max": 20,
+              "reason": "position vague (vessel position: coast descriptor) — cannot estimate proximity precisely",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo type match",
+              "points": 12,
+              "max": 20,
+              "reason": "MPP vessel with sufficient grain capacity for bulk",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo handling (cranes)",
+              "points": 15,
+              "max": 15,
+              "reason": "vessel geared — no shore-crane dependency",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Volume / hold fit",
+              "points": 12,
+              "max": 15,
+              "reason": "cargo uses ~2% of grain capacity — comfortable",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Laycan fit",
+              "points": 5.6,
+              "max": 20,
+              "reason": "timing unknown (missing dates or port)",
+              "confidenceMultiplier": 0.7
+            },
+            {
+              "label": "DWT class fit",
+              "points": 10,
+              "max": 10,
+              "reason": "cargo 4500–5500mt on 6976mt DWT — well-matched",
+              "confidenceMultiplier": 1
+            }
+          ],
+          "basePhysical": 59,
+          "readinessAdjustment": 0,
+          "sanctionsAdjustment": 0,
+          "vagueRegionAdjustment": -20,
+          "finalScore": 36.6,
+          "confidenceAdjustedScore": 56.6
+        },
+        "confidence": {
+          "level": "missing",
+          "blockSend": false,
+          "blockedFields": [],
+          "fieldConfidences": [
+            {
+              "field": "cargo.weightMt",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "5000 mts +/- 10% of wheat"
+            },
+            {
+              "field": "cargo.laycanStart",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.laycanEnd",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.originPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Izmail / Samsun or Marmara or Izmir"
+            },
+            {
+              "field": "cargo.destinationPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Izmail / Samsun or Marmara or Izmir"
+            },
+            {
+              "field": "vessel.imo",
+              "level": "missing"
+            }
+          ]
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-066",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-040",
+        "vesselItemIndex": 0,
+        "score": 33,
+        "matchLevel": "weak",
+        "matchReasons": [
+          "DWCC 14,500 mt vs wheat cargo 5,000 mt nominal / 5,500 mt max → about 34-38% utilization, ample intake.",
+          "GENERAL CARGO / BOX vessel with 14,888 DWT is commercially suitable for a 5,000 mt BULK wheat parcel from Izmail to Samsun.",
+          "Readiness verdict 'idle' — arrives 2026-03-04, 67.65 days before laycan start, with sailing_days=2.35 from Ravenna to Izmail."
+        ],
+        "issues": [
+          "Vessel arrives 67.65 days early — idle time before 11 May laycan start is commercially unattractive for owners.",
+          "Vessel position very stale — 60d old, may already be fixed",
+          "Hold dimensions/capacity not specified — wheat volume fit cannot be independently checked beyond DWCC 14,500 mt.",
+          "Vessel idle 68d before laycan (severe, > 30d) — owner likely won't wait unpaid",
+          "Vessel position very stale — 60d old, may already be fixed"
+        ],
+        "readiness": {
+          "openDate": "2026-03-02",
+          "laycanStart": "2026-05-11",
+          "laycanEnd": "2026-05-11",
+          "distanceNm": 705,
+          "distanceExact": false,
+          "speedKn": 12.5,
+          "sailingDays": 2.35,
+          "arrivalDate": "2026-03-04",
+          "gapDays": 67.65,
+          "verdict": "idle",
+          "explanation": "Vessel open Ravenna 2026-03-02 → arrives Izmail ~2026-03-04 → 68d idle before laycan starts 2026-05-11 — owner likely won't wait.",
+          "isSpot": false
+        },
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        },
+        "dateIssues": [
+          "Vessel position very stale — 60d old, may already be fixed"
+        ],
+        "sanctions": {
+          "risk": "NONE",
+          "blocking": false
+        },
+        "scoreBreakdown": {
+          "components": [
+            {
+              "label": "Geographic proximity",
+              "points": 16,
+              "max": 20,
+              "reason": "short ballast 710nm",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo type match",
+              "points": 12,
+              "max": 20,
+              "reason": "MPP vessel with sufficient grain capacity for bulk",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo handling (cranes)",
+              "points": 15,
+              "max": 15,
+              "reason": "vessel geared — no shore-crane dependency",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Volume / hold fit",
+              "points": 12,
+              "max": 15,
+              "reason": "cargo uses ~1% of grain capacity — comfortable",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Laycan fit",
+              "points": 7,
+              "max": 20,
+              "reason": "vessel idle before laycan — owner cost risk",
+              "confidenceMultiplier": 0.7
+            },
+            {
+              "label": "DWT class fit",
+              "points": 6,
+              "max": 10,
+              "reason": "cargo min only 30% of DWT — vessel under-utilised",
+              "confidenceMultiplier": 1
+            }
+          ],
+          "basePhysical": 71,
+          "readinessAdjustment": -35,
+          "sanctionsAdjustment": 0,
+          "vagueRegionAdjustment": 0,
+          "finalScore": 33,
+          "confidenceAdjustedScore": 68
+        },
+        "confidence": {
+          "level": "missing",
+          "blockSend": false,
+          "blockedFields": [],
+          "fieldConfidences": [
+            {
+              "field": "cargo.weightMt",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "5000 mts +/- 10% of wheat"
+            },
+            {
+              "field": "cargo.laycanStart",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.laycanEnd",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.originPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Izmail / Samsun or Marmara or Izmir"
+            },
+            {
+              "field": "cargo.destinationPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Izmail / Samsun or Marmara or Izmir"
+            },
+            {
+              "field": "vessel.imo",
+              "level": "missing"
+            }
+          ]
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-066",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-040",
+        "vesselItemIndex": 3,
+        "score": 33,
+        "matchLevel": "weak",
+        "matchReasons": [
+          "DWCC 14,500 mt vs wheat cargo 5,000 mt nominal / 5,500 mt max → about 34-38% utilization, ample intake.",
+          "GENERAL CARGO / BOX vessel with 14,888 DWT is suitable in size for the 5,000 mt BULK wheat parcel.",
+          "Readiness verdict 'idle' — arrives 2026-03-17, 54.57 days before laycan start, with sailing_days=1.43 from Marmara to Izmail."
+        ],
+        "issues": [
+          "Vessel arrives 54.57 days early — idle time before 11 May laycan start is commercially unattractive for owners.",
+          "Vessel position very stale — 46d old, may already be fixed",
+          "Hold dimensions/capacity not specified — wheat volume fit cannot be independently checked beyond DWCC 14,500 mt.",
+          "Vessel idle 55d before laycan (severe, > 30d) — owner likely won't wait unpaid",
+          "Vessel position very stale — 46d old, may already be fixed"
+        ],
+        "readiness": {
+          "openDate": "2026-03-16",
+          "laycanStart": "2026-05-11",
+          "laycanEnd": "2026-05-11",
+          "distanceNm": 430,
+          "distanceExact": true,
+          "speedKn": 12.5,
+          "sailingDays": 1.43,
+          "arrivalDate": "2026-03-17",
+          "gapDays": 54.57,
+          "verdict": "idle",
+          "explanation": "Vessel open Marmara 2026-03-16 → arrives Izmail ~2026-03-17 → 55d idle before laycan starts 2026-05-11 — owner likely won't wait.",
+          "isSpot": false
+        },
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        },
+        "dateIssues": [
+          "Vessel position very stale — 46d old, may already be fixed"
+        ],
+        "sanctions": {
+          "risk": "NONE",
+          "blocking": false
+        },
+        "scoreBreakdown": {
+          "components": [
+            {
+              "label": "Geographic proximity",
+              "points": 16,
+              "max": 20,
+              "reason": "short ballast 430nm",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo type match",
+              "points": 12,
+              "max": 20,
+              "reason": "MPP vessel with sufficient grain capacity for bulk",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo handling (cranes)",
+              "points": 15,
+              "max": 15,
+              "reason": "vessel geared — no shore-crane dependency",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Volume / hold fit",
+              "points": 12,
+              "max": 15,
+              "reason": "cargo uses ~1% of grain capacity — comfortable",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Laycan fit",
+              "points": 7,
+              "max": 20,
+              "reason": "vessel idle before laycan — owner cost risk",
+              "confidenceMultiplier": 0.7
+            },
+            {
+              "label": "DWT class fit",
+              "points": 6,
+              "max": 10,
+              "reason": "cargo min only 30% of DWT — vessel under-utilised",
+              "confidenceMultiplier": 1
+            }
+          ],
+          "basePhysical": 71,
+          "readinessAdjustment": -35,
+          "sanctionsAdjustment": 0,
+          "vagueRegionAdjustment": 0,
+          "finalScore": 33,
+          "confidenceAdjustedScore": 68
+        },
+        "confidence": {
+          "level": "missing",
+          "blockSend": false,
+          "blockedFields": [],
+          "fieldConfidences": [
+            {
+              "field": "cargo.weightMt",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "5000 mts +/- 10% of wheat"
+            },
+            {
+              "field": "cargo.laycanStart",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.laycanEnd",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.originPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Izmail / Samsun or Marmara or Izmir"
+            },
+            {
+              "field": "cargo.destinationPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Izmail / Samsun or Marmara or Izmir"
+            },
+            {
+              "field": "vessel.imo",
+              "level": "missing"
+            }
+          ]
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-066",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-040",
+        "vesselItemIndex": 2,
+        "score": 32.6,
+        "matchLevel": "weak",
+        "matchReasons": [
+          "DWCC 14,500 mt vs wheat cargo 5,000 mt nominal / 5,500 mt max → about 34-38% utilization, ample intake.",
+          "GENERAL CARGO / BOX vessel with 14,888 DWT can physically cover the 4,500-5,500 mt wheat parcel size.",
+          "Vessel is geared=true for a BULK wheat cargo with stated loading rate 2,000 mt/day and discharge rate 1,500 mt/day."
+        ],
+        "issues": [
+          "Readiness verdict 'unknown' — arrival_date=null and gap_days=null because open position 'Tunisia' is a country, not a specific port.",
+          "Vessel position very stale — 50d old, may already be fixed",
+          "Open position is too broad for ballast planning — sailing_days=null from Tunisia to Izmail.",
+          "Hold dimensions/capacity not specified — wheat volume fit cannot be independently checked beyond DWCC 14,500 mt.",
+          "Vessel position very stale — 50d old, may already be fixed"
+        ],
+        "readiness": {
+          "openDate": "2026-03-12",
+          "laycanStart": "2026-05-11",
+          "laycanEnd": "2026-05-11",
+          "distanceNm": null,
+          "distanceExact": null,
+          "speedKn": 12.5,
+          "sailingDays": null,
+          "arrivalDate": null,
+          "gapDays": null,
+          "verdict": "unknown",
+          "explanation": "Vessel position: 'Tunisia' is a country, not a port. Ask for the specific load/discharge port.",
+          "isSpot": false
+        },
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        },
+        "dateIssues": [
+          "Vessel position very stale — 50d old, may already be fixed"
+        ],
+        "sanctions": {
+          "risk": "NONE",
+          "blocking": false
+        },
+        "scoreBreakdown": {
+          "components": [
+            {
+              "label": "Geographic proximity",
+              "points": 2,
+              "max": 20,
+              "reason": "position vague (vessel position: country only) — cannot estimate proximity precisely",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo type match",
+              "points": 12,
+              "max": 20,
+              "reason": "MPP vessel with sufficient grain capacity for bulk",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo handling (cranes)",
+              "points": 15,
+              "max": 15,
+              "reason": "vessel geared — no shore-crane dependency",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Volume / hold fit",
+              "points": 12,
+              "max": 15,
+              "reason": "cargo uses ~1% of grain capacity — comfortable",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Laycan fit",
+              "points": 5.6,
+              "max": 20,
+              "reason": "timing unknown (missing dates or port)",
+              "confidenceMultiplier": 0.7
+            },
+            {
+              "label": "DWT class fit",
+              "points": 6,
+              "max": 10,
+              "reason": "cargo min only 30% of DWT — vessel under-utilised",
+              "confidenceMultiplier": 1
+            }
+          ],
+          "basePhysical": 55,
+          "readinessAdjustment": 0,
+          "sanctionsAdjustment": 0,
+          "vagueRegionAdjustment": -20,
+          "finalScore": 32.6,
+          "confidenceAdjustedScore": 52.6
+        },
+        "confidence": {
+          "level": "missing",
+          "blockSend": false,
+          "blockedFields": [],
+          "fieldConfidences": [
+            {
+              "field": "cargo.weightMt",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "5000 mts +/- 10% of wheat"
+            },
+            {
+              "field": "cargo.laycanStart",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.laycanEnd",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.originPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Izmail / Samsun or Marmara or Izmir"
+            },
+            {
+              "field": "cargo.destinationPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Izmail / Samsun or Marmara or Izmir"
+            },
+            {
+              "field": "vessel.imo",
+              "level": "missing"
+            }
+          ]
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-066",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-040",
+        "vesselItemIndex": 4,
+        "score": 28,
+        "matchLevel": "weak",
+        "matchReasons": [
+          "DWCC 17,500 mt vs wheat cargo 5,000 mt nominal / 5,500 mt max → about 29-31% utilization, ample intake.",
+          "GENERAL CARGO / BOX vessel capacity 17,500 mt DWCC covers the full 4,500-5,500 mt wheat cargo range."
+        ],
+        "issues": [
+          "Readiness verdict 'unknown' — arrival_date=null and gap_days=null because open position 'Aegean Sea' is a sea/basin, not a specific port.",
+          "Vessel open_date is PROMPT with open=null and close=null — exact readiness date is missing.",
+          "Vessel is gearless=false for cargo operations, but shore gear availability at Izmail/Samsun is not specified in the input.",
+          "Hold dimensions/capacity not specified — wheat volume fit cannot be independently checked beyond DWCC 17,500 mt.",
+          "Open area Aegean Sea is closer to the Black Sea trade than East Africa, but readiness has no sailing_days number for Izmail."
+        ],
+        "readiness": {
+          "openDate": "2026-05-01",
+          "laycanStart": "2026-05-11",
+          "laycanEnd": "2026-05-11",
+          "distanceNm": null,
+          "distanceExact": null,
+          "speedKn": 12.5,
+          "sailingDays": null,
+          "arrivalDate": null,
+          "gapDays": null,
+          "verdict": "unknown",
+          "explanation": "Vessel position: 'Aegean Sea' is a sea/basin, not a port. Ask for a specific load/discharge port.",
+          "isSpot": false
+        },
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        },
+        "dateIssues": [],
+        "sanctions": {
+          "risk": "NONE",
+          "blocking": false
+        },
+        "scoreBreakdown": {
+          "components": [
+            {
+              "label": "Geographic proximity",
+              "points": 1.4,
+              "max": 20,
+              "reason": "position vague (vessel position: sea name) — cannot estimate proximity precisely",
+              "confidenceMultiplier": 0.7
+            },
+            {
+              "label": "Cargo type match",
+              "points": 12,
+              "max": 20,
+              "reason": "MPP vessel with sufficient grain capacity for bulk",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo handling (cranes)",
+              "points": 12,
+              "max": 15,
+              "reason": "gearless vessel + shore cranes available",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Volume / hold fit",
+              "points": 12,
+              "max": 15,
+              "reason": "cargo uses ~1% of grain capacity — comfortable",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Laycan fit",
+              "points": 5.6,
+              "max": 20,
+              "reason": "timing unknown (missing dates or port)",
+              "confidenceMultiplier": 0.7
+            },
+            {
+              "label": "DWT class fit",
+              "points": 5,
+              "max": 10,
+              "reason": "weight or DWT unknown",
+              "confidenceMultiplier": 1
+            }
+          ],
+          "basePhysical": 51,
+          "readinessAdjustment": 0,
+          "sanctionsAdjustment": 0,
+          "vagueRegionAdjustment": -20,
+          "finalScore": 28,
+          "confidenceAdjustedScore": 48
+        },
+        "confidence": {
+          "level": "missing",
+          "blockSend": false,
+          "blockedFields": [],
+          "fieldConfidences": [
+            {
+              "field": "cargo.weightMt",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "5000 mts +/- 10% of wheat"
+            },
+            {
+              "field": "cargo.laycanStart",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.laycanEnd",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.originPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Izmail / Samsun or Marmara or Izmir"
+            },
+            {
+              "field": "cargo.destinationPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Izmail / Samsun or Marmara or Izmir"
+            },
+            {
+              "field": "vessel.imo",
+              "level": "missing"
+            }
+          ]
+        }
+      }
+    ],
+    "blocked_matches": []
+  },
+  {
+    "scenario_id": "etms-match-008-weak-oversize-late-gearless-bb",
+    "category": "no-match",
+    "duration_ms": 2631,
+    "cargo_ref": "etms-parse-cargo/scenario-006",
+    "vessel_ref": "etms-parse-vessel/scenario-052",
+    "expected": {
+      "should_be_hard_filtered": true,
+      "match_level": null,
+      "score_range": null,
+      "must_cite_facts": [],
+      "must_NOT_invent": [],
+      "hard_filter_reason": "DWCC 1600 mt << cargo 4800 mt — vessel only carries 33% of cargo (severe under-lift)"
+    },
+    "matches": [],
+    "blocked_matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-006",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-052",
+        "vesselItemIndex": 0,
+        "filterReason": "cargo 4800 mt exceeds vessel capacity 1600 mt (DWCC) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 4800 mt exceeds vessel capacity 1600 mt (DWCC) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-006",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-052",
+        "vesselItemIndex": 1,
+        "filterReason": "cargo 4800 mt exceeds vessel capacity 1600 mt (DWCC) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 4800 mt exceeds vessel capacity 1600 mt (DWCC) by more than 5% tolerance"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario_id": "etms-match-009-weak-months-late",
+    "category": "weak",
+    "duration_ms": 17633,
+    "cargo_ref": "etms-parse-cargo/scenario-036",
+    "vessel_ref": "etms-parse-vessel/scenario-008",
+    "expected": {
+      "should_be_hard_filtered": false,
+      "match_level": "weak",
+      "score_range": [
+        10,
+        30
+      ],
+      "must_cite_facts": [
+        "Vessel open Casablanca 01-05 October, cargo Vasto laycan 10/15 May — vessel ~5 MONTHS late",
+        "DWT 8300 mt vs cargo 2500 mt (30% utilization — oversized)",
+        "Geared vessel for break-bulk OK"
+      ],
+      "must_NOT_invent": [
+        "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+        "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+        "Charterer-specific policy (e.g., 'Cargill strict on CII') — never allowed from external knowledge",
+        "Vetting clearance — only valid if vessel input has vetting fields"
+      ]
+    },
+    "matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-036",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-008",
+        "vesselItemIndex": 0,
+        "score": 25.799999999999997,
+        "matchLevel": "weak",
+        "matchReasons": [
+          "DWT 8,300 mt vs cargo 2,500 mt gives about 30% utilization, so weight intake is comfortably within summer deadweight.",
+          "Vessel type GENERAL CARGO matches BREAK_BULK gypsum boards cargo of 2,500 mt.",
+          "Vessel geared on 8,300 DWT carrier",
+          "Declared hold dimensions across 4 holds total roughly 14,470 cbm geometric volume vs cargo requirement minimum 5,000 cbm bale capacity."
+        ],
+        "issues": [
+          "Readiness verdict 'idle' — vessel arrives Vasto 2025-10-04 with gap_days=222.1 before laycan start, creating very long idle risk.",
+          "Vessel position very stale — 212d old, may already be fixed",
+          "Certified bale_capacity_cbm is not specified — cargo special requirement says minimum 5,000 CBM bale capacity for gypsum boards.",
+          "Cargo laycan is 10/15 May 2026, while vessel open date is 2025-10-01/2025-10-05, leaving a 222.1 day timing mismatch per readiness.",
+          "Vessel idle 222d before laycan (severe, > 30d) — owner likely won't wait unpaid",
+          "Vessel position very stale — 212d old, may already be fixed"
+        ],
+        "readiness": {
+          "openDate": "2025-10-01",
+          "laycanStart": "2026-05-15",
+          "laycanEnd": "2026-05-15",
+          "distanceNm": 1171,
+          "distanceExact": false,
+          "speedKn": 12.5,
+          "sailingDays": 3.9,
+          "arrivalDate": "2025-10-04",
+          "gapDays": 222.1,
+          "verdict": "idle",
+          "explanation": "Vessel open Casablanca 2025-10-01 → arrives Vasto ~2025-10-04 → 222d idle before laycan starts 2026-05-15 — owner likely won't wait.",
+          "isSpot": false
+        },
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        },
+        "dateIssues": [
+          "Vessel position very stale — 212d old, may already be fixed"
+        ],
+        "sanctions": {
+          "risk": "NONE",
+          "blocking": false
+        },
+        "scoreBreakdown": {
+          "components": [
+            {
+              "label": "Geographic proximity",
+              "points": 12,
+              "max": 20,
+              "reason": "medium ballast 1170nm — typical for dry bulk",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo type match",
+              "points": 11.2,
+              "max": 20,
+              "reason": "MPP vessel — ideal for breakbulk/project",
+              "confidenceMultiplier": 0.7
+            },
+            {
+              "label": "Cargo handling (cranes)",
+              "points": 15,
+              "max": 15,
+              "reason": "vessel geared — no shore-crane dependency",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Volume / hold fit",
+              "points": 8.399999999999999,
+              "max": 15,
+              "reason": "cargo uses ~17% of grain capacity — comfortable",
+              "confidenceMultiplier": 0.7
+            },
+            {
+              "label": "Laycan fit",
+              "points": 10,
+              "max": 20,
+              "reason": "vessel idle before laycan — owner cost risk",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "DWT class fit",
+              "points": 4.199999999999999,
+              "max": 10,
+              "reason": "cargo min only 30% of DWT — vessel under-utilised",
+              "confidenceMultiplier": 0.7
+            }
+          ],
+          "basePhysical": 71,
+          "readinessAdjustment": -35,
+          "sanctionsAdjustment": 0,
+          "vagueRegionAdjustment": 0,
+          "finalScore": 25.799999999999997,
+          "confidenceAdjustedScore": 60.8
+        },
+        "confidence": {
+          "level": "missing",
+          "blockSend": false,
+          "blockedFields": [],
+          "fieldConfidences": [
+            {
+              "field": "cargo.weightMt",
+              "level": "inferred",
+              "score": 0.65,
+              "sourceQuote": "abt 2.500mt gypsum boards"
+            },
+            {
+              "field": "cargo.laycanStart",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.laycanEnd",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.originPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Vasto / 1 Cyprus"
+            },
+            {
+              "field": "cargo.destinationPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Vasto / 1 Cyprus"
+            },
+            {
+              "field": "vessel.imo",
+              "level": "missing"
+            }
+          ]
+        }
+      }
+    ],
+    "blocked_matches": []
+  },
+  {
+    "scenario_id": "etms-match-010-no-match-undersized-wrong-region",
+    "category": "no-match",
+    "duration_ms": 2325,
+    "cargo_ref": "etms-parse-cargo/scenario-012",
+    "vessel_ref": "etms-parse-vessel/scenario-036",
+    "expected": {
+      "should_be_hard_filtered": true,
+      "match_level": null,
+      "score_range": null,
+      "must_cite_facts": [],
+      "must_NOT_invent": [],
+      "hard_filter_reason": "DWT 32131 mt < cargo 55000 mt (vessel cannot lift cargo)"
+    },
+    "matches": [],
+    "blocked_matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-012",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-036",
+        "vesselItemIndex": 0,
+        "filterReason": "cargo 60500 mt exceeds vessel capacity 31000 mt (DWCC) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 60500 mt exceeds vessel capacity 31000 mt (DWCC) by more than 5% tolerance"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario_id": "etms-match-011-no-match-tiny-vessel",
+    "category": "no-match",
+    "duration_ms": 1698,
+    "cargo_ref": "etms-parse-cargo/scenario-054",
+    "vessel_ref": "etms-parse-vessel/scenario-004",
+    "expected": {
+      "should_be_hard_filtered": true,
+      "match_level": null,
+      "score_range": null,
+      "must_cite_facts": [],
+      "must_NOT_invent": [],
+      "hard_filter_reason": "DWT 2570 mt << cargo 12000 mt (vessel can carry ~21% of cargo)"
+    },
+    "matches": [],
+    "blocked_matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-054",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-004",
+        "vesselItemIndex": 0,
+        "filterReason": "cargo 12000 mt exceeds vessel capacity 2000 mt (DWCC) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 12000 mt exceeds vessel capacity 2000 mt (DWCC) by more than 5% tolerance"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario_id": "etms-match-012-no-match-sanctions-ukraine-odesa",
+    "category": "no-match",
+    "duration_ms": 1776,
+    "cargo_ref": "etms-parse-cargo/scenario-091",
+    "vessel_ref": "etms-parse-vessel/scenario-011",
+    "expected": {
+      "should_be_hard_filtered": true,
+      "match_level": null,
+      "score_range": null,
+      "must_cite_facts": [],
+      "must_NOT_invent": [],
+      "hard_filter_reason": "vessel restriction \"No Ukraine trading\" matches Odesa origin (Ukraine) — HIGH sanctions risk, blocking"
+    },
+    "matches": [],
+    "blocked_matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-091",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-011",
+        "vesselItemIndex": 0,
+        "filterReason": "vessel draft 13.3m exceeds port max 13m",
+        "hardFilters": {
+          "draft": {
+            "pass": false,
+            "reason": "vessel draft 13.3m exceeds port max 13m"
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario_id": "etms-match-013-no-match-sanctions-ukraine-soya-odesa",
+    "category": "no-match",
+    "duration_ms": 16106,
+    "cargo_ref": "etms-parse-cargo/scenario-088",
+    "vessel_ref": "etms-parse-vessel/scenario-049",
+    "expected": {
+      "should_be_hard_filtered": true,
+      "match_level": null,
+      "score_range": null,
+      "must_cite_facts": [],
+      "must_NOT_invent": [],
+      "hard_filter_reason": "vessel restriction \"no Ukraine voyage for now\" matches Odesa origin (Ukraine) — HIGH sanctions risk, blocking"
+    },
+    "matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-088",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-049",
+        "vesselItemIndex": 0,
+        "score": 25.9,
+        "matchLevel": "weak",
+        "matchReasons": [
+          "DWCC 10,000 mt vs cargo 6,500–7,500 mt gives 75% utilization at max quantity, so deadweight capacity is sufficient.",
+          "Vessel open Istanbul / Marmara Sea with sailing_days=1.23 to Odesa per readiness, giving short ballast distance operationally.",
+          "GENERAL CARGO vessel of 10,430 DWT can technically carry BULK soyabean cargo of 7,500 mt if holds and intake are confirmed."
+        ],
+        "issues": [
+          "Vessel restriction 'no Ukraine voyage for now' conflicts with cargo origin_port='Odesa' in Ukraine.",
+          "Readiness verdict 'idle' — arrives 2024-08-23 with gap_days=633.77 before laycan start per readiness.",
+          "Vessel position very stale — 617d old, may already be fixed",
+          "Vessel is gearless=false only if interpreted as no gear available; port/shore-crane arrangements for 7,500 mt bulk soyabean at Odesa are not specified.",
+          "Vessel grain/bale capacity not provided — cargo stowage factor approximately 51 cannot be checked against hold volume.",
+          "Vessel idle 634d before laycan (severe, > 30d) — owner likely won't wait unpaid",
+          "Vessel position very stale — 617d old, may already be fixed"
+        ],
+        "readiness": {
+          "openDate": "2024-08-22",
+          "laycanStart": "2026-05-19",
+          "laycanEnd": "2026-05-19",
+          "distanceNm": 370,
+          "distanceExact": true,
+          "speedKn": 12.5,
+          "sailingDays": 1.23,
+          "arrivalDate": "2024-08-23",
+          "gapDays": 633.77,
+          "verdict": "idle",
+          "explanation": "Vessel open Istanbul 2024-08-22 → arrives Odesa ~2024-08-23 → 634d idle before laycan starts 2026-05-19 — owner likely won't wait.",
+          "isSpot": false
+        },
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        },
+        "dateIssues": [
+          "Vessel position very stale — 617d old, may already be fixed"
+        ],
+        "sanctions": {
+          "risk": "NONE",
+          "blocking": false
+        },
+        "scoreBreakdown": {
+          "components": [
+            {
+              "label": "Geographic proximity",
+              "points": 16,
+              "max": 20,
+              "reason": "short ballast 370nm",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo type match",
+              "points": 8.399999999999999,
+              "max": 20,
+              "reason": "MPP vessel with sufficient grain capacity for bulk",
+              "confidenceMultiplier": 0.7
+            },
+            {
+              "label": "Cargo handling (cranes)",
+              "points": 12,
+              "max": 15,
+              "reason": "gearless vessel + shore cranes available",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Volume / hold fit",
+              "points": 10.5,
+              "max": 15,
+              "reason": "cargo uses ~85% of grain capacity — ideal utilisation",
+              "confidenceMultiplier": 0.7
+            },
+            {
+              "label": "Laycan fit",
+              "points": 7,
+              "max": 20,
+              "reason": "vessel idle before laycan — owner cost risk",
+              "confidenceMultiplier": 0.7
+            },
+            {
+              "label": "DWT class fit",
+              "points": 7,
+              "max": 10,
+              "reason": "cargo 6500–7500mt on 10430mt DWT — well-matched",
+              "confidenceMultiplier": 0.7
+            }
+          ],
+          "basePhysical": 75,
+          "readinessAdjustment": -35,
+          "sanctionsAdjustment": 0,
+          "vagueRegionAdjustment": 0,
+          "finalScore": 25.9,
+          "confidenceAdjustedScore": 60.9
+        },
+        "confidence": {
+          "level": "missing",
+          "blockSend": false,
+          "blockedFields": [],
+          "fieldConfidences": [
+            {
+              "field": "cargo.weightMt",
+              "level": "inferred",
+              "score": 0.65,
+              "sourceQuote": "6500-7500k soyabean"
+            },
+            {
+              "field": "cargo.laycanStart",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.laycanEnd",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.originPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Odesa – tbs/marmara/izmir range /mersin range"
+            },
+            {
+              "field": "cargo.destinationPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "tbs/marmara/izmir range /mersin range"
+            },
+            {
+              "field": "vessel.imo",
+              "level": "missing"
+            }
+          ]
+        }
+      }
+    ],
+    "blocked_matches": []
+  },
+  {
+    "scenario_id": "etms-match-014-no-match-draft-izmail-shallow",
+    "category": "no-match",
+    "duration_ms": 1856,
+    "cargo_ref": "etms-parse-cargo/scenario-009",
+    "vessel_ref": "etms-parse-vessel/scenario-036",
+    "expected": {
+      "should_be_hard_filtered": true,
+      "match_level": null,
+      "score_range": null,
+      "must_cite_facts": [],
+      "must_NOT_invent": [],
+      "hard_filter_reason": "vessel draft 10.55 m exceeds Izmail port max draft 7.1 m — cannot load"
+    },
+    "matches": [],
+    "blocked_matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-009",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-036",
+        "vesselItemIndex": 0,
+        "filterReason": "vessel draft 10.55m exceeds port max 7.1m; cargo type BREAK_BULK requires MPP or general-cargo vessel, vessel is BULK CARRIER",
+        "hardFilters": {
+          "draft": {
+            "pass": false,
+            "reason": "vessel draft 10.55m exceeds port max 7.1m"
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": false,
+            "reason": "cargo type BREAK_BULK requires MPP or general-cargo vessel, vessel is BULK CARRIER"
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario_id": "etms-match-015-no-match-draft-reni-river",
+    "category": "no-match",
+    "duration_ms": 4250,
+    "cargo_ref": "etms-parse-cargo/scenario-078",
+    "vessel_ref": "etms-parse-vessel/scenario-027",
+    "expected": {
+      "should_be_hard_filtered": true,
+      "match_level": null,
+      "score_range": null,
+      "must_cite_facts": [],
+      "must_NOT_invent": [],
+      "hard_filter_reason": "vessel draft 9.573 m exceeds Reni port max draft 7.0 m (Danube river port) — cannot load"
+    },
+    "matches": [],
+    "blocked_matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-078",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-027",
+        "vesselItemIndex": 0,
+        "filterReason": "vessel draft 9.573m exceeds port max 7.1m",
+        "hardFilters": {
+          "draft": {
+            "pass": false,
+            "reason": "vessel draft 9.573m exceeds port max 7.1m"
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario_id": "etms-match-016-marginal-multi-cargo-black-sea-fanout",
+    "category": "marginal",
+    "duration_ms": 14787,
+    "cargo_ref": "etms-parse-cargo/scenario-037",
+    "vessel_ref": "etms-parse-vessel/scenario-027",
+    "expected": {
+      "should_be_hard_filtered": false,
+      "match_level": "weak",
+      "score_range": [
+        25,
+        65
+      ],
+      "must_cite_facts": [
+        "Cargo email contains 6 items, vessel matched against each separately (fanout)",
+        "At least one Black Sea item (e.g. Chornomorsk→Douala 30000 mt or Reni→Marmara) potentially compatible with vessel DWT 32328 mt",
+        "Vessel open Adriatic, several cargo origins are Black Sea — 1-2 day Bosphorus ballast",
+        "Multiple items have null/unspecified weights → confidence penalty"
+      ],
+      "must_NOT_invent": [
+        "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+        "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+        "Specific cargo nominated as primary — system should evaluate items independently, not pick favorite",
+        "Reni/Giurgiulesti draft compatibility — vessel-027 draft 9.573 m exceeds Reni 7.0 m and Giurgiulesti is shallow Danube; only Chornomorsk/POC items pass draft"
+      ]
+    },
+    "matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-037",
+        "cargoItemIndex": 3,
+        "vesselEmailId": "etms-parse-vessel-027",
+        "vesselItemIndex": 0,
+        "score": 31,
+        "matchLevel": "weak",
+        "matchReasons": [
+          "DWCC 31,500 mt vs cargo max 6,000 mt → about 19% utilization, so capacity is ample but commercially light.",
+          "Cargo type BULK corn matches MV LADY ZEHMA as a 32,328 DWT bulk carrier.",
+          "Vessel is geared and cargo loading/discharge terms show 1,000/1,000 mt per day, so no immediate gear conflict is shown."
+        ],
+        "issues": [
+          "Readiness verdict 'unknown' — arrival_date=null, gap_days=null, sailing_days=null for laycan 'Spot'.",
+          "Readiness explanation: Vessel position 'Adriatic' is a sea/basin, not a port; ask for a specific load/discharge port.",
+          "Cargo origin is listed as 'POC (Port of Chornomorsk — unconfirmed abbreviation, see missing_info)' for cargo item 3, so load-port confirmation is needed.",
+          "Cargo weight is a range 4,000-6,000 mt; intake and freight basis need confirmation before fixing."
+        ],
+        "readiness": {
+          "openDate": "2026-05-01",
+          "laycanStart": "2026-05-19",
+          "laycanEnd": "2026-05-19",
+          "distanceNm": null,
+          "distanceExact": null,
+          "speedKn": 12.5,
+          "sailingDays": null,
+          "arrivalDate": null,
+          "gapDays": null,
+          "verdict": "unknown",
+          "explanation": "Vessel position: 'Adriatic' is a sea/basin, not a port. Ask for a specific load/discharge port.",
+          "isSpot": false
+        },
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        },
+        "dateIssues": [],
+        "sanctions": {
+          "risk": "NONE",
+          "blocking": false
+        },
+        "scoreBreakdown": {
+          "components": [
+            {
+              "label": "Geographic proximity",
+              "points": 0.8,
+              "max": 20,
+              "reason": "position vague (vessel position: sea name) — cannot estimate proximity precisely",
+              "confidenceMultiplier": 0.4
+            },
+            {
+              "label": "Cargo type match",
+              "points": 16,
+              "max": 20,
+              "reason": "bulk-class vessel, cargo history unclear",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo handling (cranes)",
+              "points": 15,
+              "max": 15,
+              "reason": "vessel geared — no shore-crane dependency",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Volume / hold fit",
+              "points": 8.399999999999999,
+              "max": 15,
+              "reason": "cargo uses ~1% of grain capacity — comfortable",
+              "confidenceMultiplier": 0.7
+            },
+            {
+              "label": "Laycan fit",
+              "points": 8,
+              "max": 20,
+              "reason": "timing unknown (missing dates or port)",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "DWT class fit",
+              "points": 2.8,
+              "max": 10,
+              "reason": "cargo ≪ vessel DWT — diseconomic",
+              "confidenceMultiplier": 0.7
+            }
+          ],
+          "basePhysical": 57,
+          "readinessAdjustment": 0,
+          "sanctionsAdjustment": 0,
+          "vagueRegionAdjustment": -20,
+          "finalScore": 31,
+          "confidenceAdjustedScore": 51
+        },
+        "confidence": {
+          "level": "uncertain",
+          "blockSend": true,
+          "blockedFields": [
+            "cargo.originPort"
+          ],
+          "fieldConfidences": [
+            {
+              "field": "cargo.weightMt",
+              "level": "inferred",
+              "score": 0.65,
+              "sourceQuote": "4000-6000  mts of corn, sf 51, wog"
+            },
+            {
+              "field": "cargo.laycanStart",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.laycanEnd",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.originPort",
+              "level": "uncertain",
+              "score": 0.3,
+              "sourceQuote": "POC - EC Greece"
+            },
+            {
+              "field": "cargo.destinationPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "POC - EC Greece"
+            },
+            {
+              "field": "vessel.imo",
+              "level": "missing"
+            }
+          ]
+        }
+      }
+    ],
+    "blocked_matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-037",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-027",
+        "vesselItemIndex": 0,
+        "filterReason": "vessel draft 9.573m exceeds port max 7.1m",
+        "hardFilters": {
+          "draft": {
+            "pass": false,
+            "reason": "vessel draft 9.573m exceeds port max 7.1m"
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-037",
+        "cargoItemIndex": 1,
+        "vesselEmailId": "etms-parse-vessel-027",
+        "vesselItemIndex": 0,
+        "filterReason": "vessel draft 9.573m exceeds port max 7.1m",
+        "hardFilters": {
+          "draft": {
+            "pass": false,
+            "reason": "vessel draft 9.573m exceeds port max 7.1m"
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-037",
+        "cargoItemIndex": 2,
+        "vesselEmailId": "etms-parse-vessel-027",
+        "vesselItemIndex": 0,
+        "filterReason": "vessel draft 9.573m exceeds port max 7.1m",
+        "hardFilters": {
+          "draft": {
+            "pass": false,
+            "reason": "vessel draft 9.573m exceeds port max 7.1m"
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-037",
+        "cargoItemIndex": 4,
+        "vesselEmailId": "etms-parse-vessel-027",
+        "vesselItemIndex": 0,
+        "filterReason": "cargo type BREAK_BULK requires MPP or general-cargo vessel, vessel is BULK CARRIER",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": false,
+            "reason": "cargo type BREAK_BULK requires MPP or general-cargo vessel, vessel is BULK CARRIER"
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-037",
+        "cargoItemIndex": 5,
+        "vesselEmailId": "etms-parse-vessel-027",
+        "vesselItemIndex": 0,
+        "filterReason": "vessel draft 9.573m exceeds port max 8.5m",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": false,
+            "reason": "vessel draft 9.573m exceeds port max 8.5m"
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario_id": "etms-match-017-weak-multi-cargo-sparse-asia-fanout",
+    "category": "weak",
+    "duration_ms": 38916,
+    "cargo_ref": "etms-parse-cargo/scenario-059",
+    "vessel_ref": "etms-parse-vessel/scenario-046",
+    "expected": {
+      "should_be_hard_filtered": false,
+      "match_level": "weak",
+      "score_range": [
+        5,
+        35
+      ],
+      "must_cite_facts": [
+        "Cargo email contains 11 items, most with null weight — sparse data",
+        "Vessel MV ADAMAR open East Coast India dwt 17660 mt, draft 8.598 m, geared",
+        "A few items in same region (Ras Al Khaimah→Shuaiba 50000 mt, Fujairah→Mogadishu 50000 mt) overload vessel — should hard-filter individually",
+        "Remaining BREAK_BULK items with null weight produce low-confidence weak matches"
+      ],
+      "must_NOT_invent": [
+        "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+        "Specific freight rate or laycan window beyond what cargo email states",
+        "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+        "Charterer name or shipper identity unless explicit in cargo email"
+      ]
+    },
+    "matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-059",
+        "cargoItemIndex": 3,
+        "vesselEmailId": "etms-parse-vessel-046",
+        "vesselItemIndex": 0,
+        "score": 33,
+        "matchLevel": "weak",
+        "matchReasons": [
+          "MV ADAMAR is a MULTIPURPOSE DRY CARGO vessel with DWCC 16,850 mt, a relevant ship type for BREAK_BULK sawn timber in bundles.",
+          "Vessel is geared and has DWT 17,660.15 mt, which supports bundled timber handling where port gear availability is not stated.",
+          "Readiness verdict 'unknown' — arrival_date=null and gap_days=null for the Prompt 2026 requirement because the open position is only 'East Coast India'."
+        ],
+        "issues": [
+          "Vessel position very stale — 209d old, may already be fixed",
+          "Cargo weight is unknown for sawn timber cargo item 3, so DWCC 16,850 mt utilization cannot be checked.",
+          "Hold dimensions are not provided for MV ADAMAR, so timber bundle length/height fit and any on-deck loading arrangement cannot be verified.",
+          "Cargo loads Bintulu while vessel is only described as open 'East Coast India', so ballast distance cannot be quantified from the 2025-10-04/2025-10-08 open window.",
+          "Vessel position very stale — 209d old, may already be fixed"
+        ],
+        "readiness": {
+          "openDate": "2025-10-04",
+          "laycanStart": "2026-05-19",
+          "laycanEnd": "2026-05-19",
+          "distanceNm": null,
+          "distanceExact": null,
+          "speedKn": 12.5,
+          "sailingDays": null,
+          "arrivalDate": null,
+          "gapDays": null,
+          "verdict": "unknown",
+          "explanation": "Vessel position: 'East Coast India' is a coastal range, not a specific port. Ask for a specific anchorage or load port.",
+          "isSpot": false
+        },
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        },
+        "dateIssues": [
+          "Vessel position very stale — 209d old, may already be fixed"
+        ],
+        "sanctions": {
+          "risk": "NONE",
+          "blocking": false
+        },
+        "scoreBreakdown": {
+          "components": [
+            {
+              "label": "Geographic proximity",
+              "points": 2,
+              "max": 20,
+              "reason": "position vague (vessel position: coast descriptor) — cannot estimate proximity precisely",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo type match",
+              "points": 16,
+              "max": 20,
+              "reason": "MPP vessel — ideal for breakbulk/project",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo handling (cranes)",
+              "points": 15,
+              "max": 15,
+              "reason": "vessel geared — no shore-crane dependency",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Volume / hold fit",
+              "points": 7,
+              "max": 15,
+              "reason": "cargo weight or grain capacity unknown",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Laycan fit",
+              "points": 8,
+              "max": 20,
+              "reason": "timing unknown (missing dates or port)",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "DWT class fit",
+              "points": 5,
+              "max": 10,
+              "reason": "weight or DWT unknown",
+              "confidenceMultiplier": 1
+            }
+          ],
+          "basePhysical": 53,
+          "readinessAdjustment": 0,
+          "sanctionsAdjustment": 0,
+          "vagueRegionAdjustment": -20,
+          "finalScore": 33,
+          "confidenceAdjustedScore": 53
+        },
+        "confidence": {
+          "level": "missing",
+          "blockSend": false,
+          "blockedFields": [],
+          "fieldConfidences": [
+            {
+              "field": "cargo.weightMt",
+              "level": "missing"
+            },
+            {
+              "field": "cargo.laycanStart",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.laycanEnd",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.originPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Bintulu"
+            },
+            {
+              "field": "cargo.destinationPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Sohar"
+            },
+            {
+              "field": "vessel.imo",
+              "level": "missing"
+            }
+          ]
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-059",
+        "cargoItemIndex": 4,
+        "vesselEmailId": "etms-parse-vessel-046",
+        "vesselItemIndex": 0,
+        "score": 33,
+        "matchLevel": "weak",
+        "matchReasons": [
+          "MV ADAMAR is a MULTIPURPOSE DRY CARGO vessel with DWCC 16,850 mt, a plausible vessel class for BREAK_BULK pine sawn timber.",
+          "Vessel is geared and has DWT 17,660.15 mt, which is useful for timber handling where shore crane details are not given.",
+          "Readiness verdict 'unknown' — arrival_date=null and gap_days=null for the End May 2026 laycan because the open position is only 'East Coast India'."
+        ],
+        "issues": [
+          "Vessel position very stale — 209d old, may already be fixed",
+          "Cargo weight is unknown for pine sawn timber cargo item 4, so DWCC 16,850 mt utilization cannot be checked.",
+          "Cargo stowage factor is stated as about 52, but no cargo quantity is provided, so volume intake against MV ADAMAR's hold capacity cannot be verified.",
+          "Hold dimensions are not provided for MV ADAMAR, so timber bundle length/height fit cannot be verified.",
+          "Cargo loads Lirquén while vessel is only described as open 'East Coast India', so the long ballast requirement cannot be quantified from the 2025-10-04/2025-10-08 open window.",
+          "Vessel position very stale — 209d old, may already be fixed"
+        ],
+        "readiness": {
+          "openDate": "2025-10-04",
+          "laycanStart": "2026-05-25",
+          "laycanEnd": "2026-05-31",
+          "distanceNm": null,
+          "distanceExact": null,
+          "speedKn": 12.5,
+          "sailingDays": null,
+          "arrivalDate": null,
+          "gapDays": null,
+          "verdict": "unknown",
+          "explanation": "Vessel position: 'East Coast India' is a coastal range, not a specific port. Ask for a specific anchorage or load port.",
+          "isSpot": false
+        },
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        },
+        "dateIssues": [
+          "Vessel position very stale — 209d old, may already be fixed"
+        ],
+        "sanctions": {
+          "risk": "NONE",
+          "blocking": false
+        },
+        "scoreBreakdown": {
+          "components": [
+            {
+              "label": "Geographic proximity",
+              "points": 2,
+              "max": 20,
+              "reason": "position vague (vessel position: coast descriptor) — cannot estimate proximity precisely",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo type match",
+              "points": 16,
+              "max": 20,
+              "reason": "MPP vessel — ideal for breakbulk/project",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo handling (cranes)",
+              "points": 15,
+              "max": 15,
+              "reason": "vessel geared — no shore-crane dependency",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Volume / hold fit",
+              "points": 7,
+              "max": 15,
+              "reason": "cargo weight or grain capacity unknown",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Laycan fit",
+              "points": 8,
+              "max": 20,
+              "reason": "timing unknown (missing dates or port)",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "DWT class fit",
+              "points": 5,
+              "max": 10,
+              "reason": "weight or DWT unknown",
+              "confidenceMultiplier": 1
+            }
+          ],
+          "basePhysical": 53,
+          "readinessAdjustment": 0,
+          "sanctionsAdjustment": 0,
+          "vagueRegionAdjustment": -20,
+          "finalScore": 33,
+          "confidenceAdjustedScore": 53
+        },
+        "confidence": {
+          "level": "missing",
+          "blockSend": false,
+          "blockedFields": [],
+          "fieldConfidences": [
+            {
+              "field": "cargo.weightMt",
+              "level": "missing"
+            },
+            {
+              "field": "cargo.laycanStart",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.laycanEnd",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.originPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Lirquén"
+            },
+            {
+              "field": "cargo.destinationPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Fujairah"
+            },
+            {
+              "field": "vessel.imo",
+              "level": "missing"
+            }
+          ]
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-059",
+        "cargoItemIndex": 7,
+        "vesselEmailId": "etms-parse-vessel-046",
+        "vesselItemIndex": 0,
+        "score": 28.200000000000003,
+        "matchLevel": "weak",
+        "matchReasons": [
+          "MV ADAMAR is a MULTIPURPOSE DRY CARGO vessel with DWCC 16,850 mt, broadly suitable for BREAK_BULK MDF cargo from Panjang.",
+          "Vessel is geared and has DWT 17,660.15 mt, which is positive for MDF handling where shore crane availability is not stated.",
+          "Readiness verdict 'unknown' — arrival_date=null and gap_days=null for the Early May 2026 laycan because the open position is only 'East Coast India'."
+        ],
+        "issues": [
+          "Vessel position very stale — 209d old, may already be fixed",
+          "Cargo weight is unknown for MDF cargo item 7, so DWCC 16,850 mt utilization cannot be checked.",
+          "Hold dimensions are not provided for MV ADAMAR, so MDF package/stacking fit cannot be verified.",
+          "Cargo loads Panjang while vessel is only described as open 'East Coast India', so ballast distance cannot be quantified from the 2025-10-04/2025-10-08 open window.",
+          "Vessel position very stale — 209d old, may already be fixed"
+        ],
+        "readiness": {
+          "openDate": "2025-10-04",
+          "laycanStart": "2026-05-01",
+          "laycanEnd": "2026-05-05",
+          "distanceNm": null,
+          "distanceExact": null,
+          "speedKn": 12.5,
+          "sailingDays": null,
+          "arrivalDate": null,
+          "gapDays": null,
+          "verdict": "unknown",
+          "explanation": "Vessel position: 'East Coast India' is a coastal range, not a specific port. Ask for a specific anchorage or load port.",
+          "isSpot": false
+        },
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        },
+        "dateIssues": [
+          "Vessel position very stale — 209d old, may already be fixed"
+        ],
+        "sanctions": {
+          "risk": "NONE",
+          "blocking": false
+        },
+        "scoreBreakdown": {
+          "components": [
+            {
+              "label": "Geographic proximity",
+              "points": 2,
+              "max": 20,
+              "reason": "position vague (vessel position: coast descriptor) — cannot estimate proximity precisely",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo type match",
+              "points": 11.2,
+              "max": 20,
+              "reason": "MPP vessel — ideal for breakbulk/project",
+              "confidenceMultiplier": 0.7
+            },
+            {
+              "label": "Cargo handling (cranes)",
+              "points": 15,
+              "max": 15,
+              "reason": "vessel geared — no shore-crane dependency",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Volume / hold fit",
+              "points": 7,
+              "max": 15,
+              "reason": "cargo weight or grain capacity unknown",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Laycan fit",
+              "points": 8,
+              "max": 20,
+              "reason": "timing unknown (missing dates or port)",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "DWT class fit",
+              "points": 5,
+              "max": 10,
+              "reason": "weight or DWT unknown",
+              "confidenceMultiplier": 1
+            }
+          ],
+          "basePhysical": 53,
+          "readinessAdjustment": 0,
+          "sanctionsAdjustment": 0,
+          "vagueRegionAdjustment": -20,
+          "finalScore": 28.200000000000003,
+          "confidenceAdjustedScore": 48.2
+        },
+        "confidence": {
+          "level": "missing",
+          "blockSend": false,
+          "blockedFields": [],
+          "fieldConfidences": [
+            {
+              "field": "cargo.weightMt",
+              "level": "missing"
+            },
+            {
+              "field": "cargo.laycanStart",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.laycanEnd",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.originPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Panjang"
+            },
+            {
+              "field": "cargo.destinationPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Jeddah"
+            },
+            {
+              "field": "vessel.imo",
+              "level": "missing"
+            }
+          ]
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-059",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-046",
+        "vesselItemIndex": 0,
+        "score": 25.800000000000004,
+        "matchLevel": "weak",
+        "matchReasons": [
+          "MV ADAMAR is a MULTIPURPOSE DRY CARGO vessel with DWCC 16,850 mt, broadly suitable for BREAK_BULK MDF cargo loading from Chennai/Kattupalli/Ennore.",
+          "Vessel is geared and has DWT 17,660.15 mt, which is positive for breakbulk MDF handling where shore gear details are not provided.",
+          "Readiness verdict 'unknown' — arrival_date=null and gap_days=null for the Mid-end May 2026 laycan because the open position is only 'East Coast India'."
+        ],
+        "issues": [
+          "Vessel position very stale — 209d old, may already be fixed",
+          "Cargo weight is unknown for MDF cargo item 0, so DWCC 16,850 mt utilization cannot be checked.",
+          "Hold dimensions are not provided for MV ADAMAR, so MDF package/stacking fit cannot be verified.",
+          "Vessel position very stale — 209d old, may already be fixed"
+        ],
+        "readiness": {
+          "openDate": "2025-10-04",
+          "laycanStart": "2026-05-25",
+          "laycanEnd": "2026-05-31",
+          "distanceNm": null,
+          "distanceExact": null,
+          "speedKn": 12.5,
+          "sailingDays": null,
+          "arrivalDate": null,
+          "gapDays": null,
+          "verdict": "unknown",
+          "explanation": "Vessel position: 'East Coast India' is a coastal range, not a specific port. Ask for a specific anchorage or load port.",
+          "isSpot": false
+        },
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        },
+        "dateIssues": [
+          "Vessel position very stale — 209d old, may already be fixed"
+        ],
+        "sanctions": {
+          "risk": "NONE",
+          "blocking": false
+        },
+        "scoreBreakdown": {
+          "components": [
+            {
+              "label": "Geographic proximity",
+              "points": 2,
+              "max": 20,
+              "reason": "position vague (vessel position: coast descriptor) — cannot estimate proximity precisely",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo type match",
+              "points": 11.2,
+              "max": 20,
+              "reason": "MPP vessel — ideal for breakbulk/project",
+              "confidenceMultiplier": 0.7
+            },
+            {
+              "label": "Cargo handling (cranes)",
+              "points": 15,
+              "max": 15,
+              "reason": "vessel geared — no shore-crane dependency",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Volume / hold fit",
+              "points": 7,
+              "max": 15,
+              "reason": "cargo weight or grain capacity unknown",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Laycan fit",
+              "points": 5.6,
+              "max": 20,
+              "reason": "timing unknown (missing dates or port)",
+              "confidenceMultiplier": 0.7
+            },
+            {
+              "label": "DWT class fit",
+              "points": 5,
+              "max": 10,
+              "reason": "weight or DWT unknown",
+              "confidenceMultiplier": 1
+            }
+          ],
+          "basePhysical": 53,
+          "readinessAdjustment": 0,
+          "sanctionsAdjustment": 0,
+          "vagueRegionAdjustment": -20,
+          "finalScore": 25.800000000000004,
+          "confidenceAdjustedScore": 45.800000000000004
+        },
+        "confidence": {
+          "level": "missing",
+          "blockSend": false,
+          "blockedFields": [],
+          "fieldConfidences": [
+            {
+              "field": "cargo.weightMt",
+              "level": "missing"
+            },
+            {
+              "field": "cargo.laycanStart",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.laycanEnd",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.originPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Chennai or Kattupalli or Ennore Port"
+            },
+            {
+              "field": "cargo.destinationPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Sohar or Khorfakkan or Fujairah (preferred)"
+            },
+            {
+              "field": "vessel.imo",
+              "level": "missing"
+            }
+          ]
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-059",
+        "cargoItemIndex": 6,
+        "vesselEmailId": "etms-parse-vessel-046",
+        "vesselItemIndex": 0,
+        "score": 23.4,
+        "matchLevel": "weak",
+        "matchReasons": [
+          "MV ADAMAR is a MULTIPURPOSE DRY CARGO vessel with DWCC 16,850 mt, broadly suitable for an unspecified BREAK_BULK cargo from Durban.",
+          "Vessel is geared and has DWT 17,660.15 mt, which is positive for breakbulk discharge where only a 2,000 mt discharge rate is provided.",
+          "Readiness verdict 'unknown' — arrival_date=null and gap_days=null for the End May 2026 laycan because the open position is only 'East Coast India'."
+        ],
+        "issues": [
+          "Vessel position very stale — 209d old, may already be fixed",
+          "Cargo commodity is not specified for cargo item 6, so compatibility confidence is lower despite BREAK_BULK cargo_type.",
+          "Cargo weight is unknown for cargo item 6, so DWCC 16,850 mt utilization cannot be checked.",
+          "Hold dimensions are not provided for MV ADAMAR, so breakbulk parcel fit cannot be verified.",
+          "Cargo loads Durban while vessel is only described as open 'East Coast India', so ballast distance cannot be quantified from the 2025-10-04/2025-10-08 open window.",
+          "Vessel position very stale — 209d old, may already be fixed"
+        ],
+        "readiness": {
+          "openDate": "2025-10-04",
+          "laycanStart": "2026-05-25",
+          "laycanEnd": "2026-05-31",
+          "distanceNm": null,
+          "distanceExact": null,
+          "speedKn": 12.5,
+          "sailingDays": null,
+          "arrivalDate": null,
+          "gapDays": null,
+          "verdict": "unknown",
+          "explanation": "Vessel position: 'East Coast India' is a coastal range, not a specific port. Ask for a specific anchorage or load port.",
+          "isSpot": false
+        },
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        },
+        "dateIssues": [
+          "Vessel position very stale — 209d old, may already be fixed"
+        ],
+        "sanctions": {
+          "risk": "NONE",
+          "blocking": false
+        },
+        "scoreBreakdown": {
+          "components": [
+            {
+              "label": "Geographic proximity",
+              "points": 2,
+              "max": 20,
+              "reason": "position vague (vessel position: coast descriptor) — cannot estimate proximity precisely",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo type match",
+              "points": 6.4,
+              "max": 20,
+              "reason": "MPP vessel — ideal for breakbulk/project",
+              "confidenceMultiplier": 0.4
+            },
+            {
+              "label": "Cargo handling (cranes)",
+              "points": 15,
+              "max": 15,
+              "reason": "vessel geared — no shore-crane dependency",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Volume / hold fit",
+              "points": 7,
+              "max": 15,
+              "reason": "cargo weight or grain capacity unknown",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Laycan fit",
+              "points": 8,
+              "max": 20,
+              "reason": "timing unknown (missing dates or port)",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "DWT class fit",
+              "points": 5,
+              "max": 10,
+              "reason": "weight or DWT unknown",
+              "confidenceMultiplier": 1
+            }
+          ],
+          "basePhysical": 53,
+          "readinessAdjustment": 0,
+          "sanctionsAdjustment": 0,
+          "vagueRegionAdjustment": -20,
+          "finalScore": 23.4,
+          "confidenceAdjustedScore": 43.4
+        },
+        "confidence": {
+          "level": "missing",
+          "blockSend": false,
+          "blockedFields": [],
+          "fieldConfidences": [
+            {
+              "field": "cargo.weightMt",
+              "level": "missing"
+            },
+            {
+              "field": "cargo.laycanStart",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.laycanEnd",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.originPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Durban"
+            },
+            {
+              "field": "cargo.destinationPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Bejaia"
+            },
+            {
+              "field": "vessel.imo",
+              "level": "missing"
+            }
+          ]
+        }
+      }
+    ],
+    "blocked_matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-059",
+        "cargoItemIndex": 1,
+        "vesselEmailId": "etms-parse-vessel-046",
+        "vesselItemIndex": 0,
+        "filterReason": "cargo 55000 mt exceeds vessel capacity 16850 mt (DWCC) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 55000 mt exceeds vessel capacity 16850 mt (DWCC) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-059",
+        "cargoItemIndex": 2,
+        "vesselEmailId": "etms-parse-vessel-046",
+        "vesselItemIndex": 0,
+        "filterReason": "cargo 55000 mt exceeds vessel capacity 16850 mt (DWCC) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 55000 mt exceeds vessel capacity 16850 mt (DWCC) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-059",
+        "cargoItemIndex": 5,
+        "vesselEmailId": "etms-parse-vessel-046",
+        "vesselItemIndex": 0,
+        "filterReason": "vessel draft 8.598m exceeds port max 8m",
+        "hardFilters": {
+          "draft": {
+            "pass": false,
+            "reason": "vessel draft 8.598m exceeds port max 8m"
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-059",
+        "cargoItemIndex": 8,
+        "vesselEmailId": "etms-parse-vessel-046",
+        "vesselItemIndex": 0,
+        "filterReason": "vessel draft 8.598m exceeds port max 8m",
+        "hardFilters": {
+          "draft": {
+            "pass": false,
+            "reason": "vessel draft 8.598m exceeds port max 8m"
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-059",
+        "cargoItemIndex": 9,
+        "vesselEmailId": "etms-parse-vessel-046",
+        "vesselItemIndex": 0,
+        "filterReason": "vessel draft 8.598m exceeds port max 8.5m",
+        "hardFilters": {
+          "draft": {
+            "pass": false,
+            "reason": "vessel draft 8.598m exceeds port max 8.5m"
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-059",
+        "cargoItemIndex": 10,
+        "vesselEmailId": "etms-parse-vessel-046",
+        "vesselItemIndex": 0,
+        "filterReason": "vessel draft 8.598m exceeds port max 8.5m; cargo 25000 mt exceeds vessel capacity 16850 mt (DWCC) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": false,
+            "reason": "vessel draft 8.598m exceeds port max 8.5m"
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 25000 mt exceeds vessel capacity 16850 mt (DWCC) by more than 5% tolerance"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario_id": "etms-match-018-marginal-multi-vessel-east-med-fanout",
+    "category": "marginal",
+    "duration_ms": 3087,
+    "cargo_ref": "etms-parse-cargo/scenario-024",
+    "vessel_ref": "etms-parse-vessel/scenario-020",
+    "expected": {
+      "should_be_hard_filtered": false,
+      "match_level": "possible",
+      "score_range": [
+        35,
+        70
+      ],
+      "must_cite_facts": [
+        "Vessel email contains 8 GULF-series vessels, cargo matched against each (fanout)",
+        "Cargo Mersin→Tartous 5000 mt bulk spot — East Med short-haul",
+        "Several vessels open in Med region (EMED, CMED, Aegean, Marmara) — 1-3 day repositioning",
+        "Vessel DWT range 3827-5244 — closest fit MV GULF EXPRESS 5244 (95% utilization)"
+      ],
+      "must_NOT_invent": [
+        "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+        "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+        "Geared/gearless status — vessel-020 entries do not specify, do not assume",
+        "Specific draft compatibility for Mersin (14.5 m) — vessels' drafts not provided, do not invent"
+      ]
+    },
+    "matches": [],
+    "blocked_matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-024",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-020",
+        "vesselItemIndex": 0,
+        "filterReason": "cargo 5000 mt exceeds vessel capacity 3444 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 5000 mt exceeds vessel capacity 3444 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-024",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-020",
+        "vesselItemIndex": 1,
+        "filterReason": "cargo 5000 mt exceeds vessel capacity 3444 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 5000 mt exceeds vessel capacity 3444 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-024",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-020",
+        "vesselItemIndex": 2,
+        "filterReason": "cargo needs ~6750m³ (5000mt × 1.35 stowage) but vessel grain capacity is 4620m³; cargo 5000 mt exceeds vessel capacity 3519 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": false,
+            "reason": "cargo needs ~6750m³ (5000mt × 1.35 stowage) but vessel grain capacity is 4620m³"
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 5000 mt exceeds vessel capacity 3519 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-024",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-020",
+        "vesselItemIndex": 3,
+        "filterReason": "cargo 5000 mt exceeds vessel capacity 3890 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 5000 mt exceeds vessel capacity 3890 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-024",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-020",
+        "vesselItemIndex": 4,
+        "filterReason": "cargo 5000 mt exceeds vessel capacity 4000 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 5000 mt exceeds vessel capacity 4000 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-024",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-020",
+        "vesselItemIndex": 5,
+        "filterReason": "cargo 5000 mt exceeds vessel capacity 4000 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 5000 mt exceeds vessel capacity 4000 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-024",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-020",
+        "vesselItemIndex": 6,
+        "filterReason": "cargo 5000 mt exceeds vessel capacity 4009 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 5000 mt exceeds vessel capacity 4009 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-024",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-020",
+        "vesselItemIndex": 7,
+        "filterReason": "cargo needs ~6750m³ (5000mt × 1.35 stowage) but vessel grain capacity is 6165.7m³; cargo 5000 mt exceeds vessel capacity 4720 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": false,
+            "reason": "cargo needs ~6750m³ (5000mt × 1.35 stowage) but vessel grain capacity is 6165.7m³"
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 5000 mt exceeds vessel capacity 4720 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario_id": "etms-match-019-weak-multi-vessel-mixed-region-fanout",
+    "category": "weak",
+    "duration_ms": 2050,
+    "cargo_ref": "etms-parse-cargo/scenario-022",
+    "vessel_ref": "etms-parse-vessel/scenario-018",
+    "expected": {
+      "should_be_hard_filtered": false,
+      "match_level": "weak",
+      "score_range": [
+        10,
+        40
+      ],
+      "must_cite_facts": [
+        "Vessel email contains 10 SKY/SEA-series vessels, cargo matched against each (fanout)",
+        "Cargo Savona→Samsun 10000 mt bulk 11/14 May — Med→Black Sea via Bosphorus",
+        "Vessel DWT range 3662-6795 — all under-lift cargo 10000 mt (smallest 36%, largest 68% utilization)",
+        "Most SKY vessels are 3662-5128 dwt — physical impossibility for 10000 mt as single carry"
+      ],
+      "must_NOT_invent": [
+        "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+        "Open date — vessel-018 entries have null open_date, do not invent timing",
+        "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+        "Two-vessel split shipment — system should not propose combining vessels"
+      ]
+    },
+    "matches": [],
+    "blocked_matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-022",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-018",
+        "vesselItemIndex": 0,
+        "filterReason": "cargo 11000 mt exceeds vessel capacity 4616 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 11000 mt exceeds vessel capacity 4616 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-022",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-018",
+        "vesselItemIndex": 1,
+        "filterReason": "cargo 11000 mt exceeds vessel capacity 3439 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 11000 mt exceeds vessel capacity 3439 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-022",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-018",
+        "vesselItemIndex": 2,
+        "filterReason": "cargo 11000 mt exceeds vessel capacity 3439 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 11000 mt exceeds vessel capacity 3439 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-022",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-018",
+        "vesselItemIndex": 3,
+        "filterReason": "cargo 11000 mt exceeds vessel capacity 3296 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 11000 mt exceeds vessel capacity 3296 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-022",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-018",
+        "vesselItemIndex": 4,
+        "filterReason": "cargo 11000 mt exceeds vessel capacity 3803 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 11000 mt exceeds vessel capacity 3803 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-022",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-018",
+        "vesselItemIndex": 5,
+        "filterReason": "cargo 11000 mt exceeds vessel capacity 3439 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 11000 mt exceeds vessel capacity 3439 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-022",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-018",
+        "vesselItemIndex": 6,
+        "filterReason": "cargo 11000 mt exceeds vessel capacity 6116 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 11000 mt exceeds vessel capacity 6116 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-022",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-018",
+        "vesselItemIndex": 7,
+        "filterReason": "cargo 11000 mt exceeds vessel capacity 4615 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 11000 mt exceeds vessel capacity 4615 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-022",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-018",
+        "vesselItemIndex": 8,
+        "filterReason": "cargo 11000 mt exceeds vessel capacity 3769 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 11000 mt exceeds vessel capacity 3769 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-022",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-018",
+        "vesselItemIndex": 9,
+        "filterReason": "cargo 11000 mt exceeds vessel capacity 4112 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 11000 mt exceeds vessel capacity 4112 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario_id": "etms-match-020-no-match-cargo-vessel-project-on-bulker",
+    "category": "no-match",
+    "duration_ms": 2307,
+    "cargo_ref": "etms-parse-cargo/scenario-001",
+    "vessel_ref": "etms-parse-vessel/scenario-011",
+    "expected": {
+      "should_be_hard_filtered": true,
+      "match_level": null,
+      "score_range": null,
+      "must_cite_facts": [],
+      "must_NOT_invent": [],
+      "hard_filter_reason": "cargo type PROJECT (14 oversized storage tanks) incompatible with vessel category bulk (MV GLORY TOM is BULK CARRIER) — needs MPP/heavy-lift"
+    },
+    "matches": [],
+    "blocked_matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-001",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-011",
+        "vesselItemIndex": 0,
+        "filterReason": "cargo type PROJECT requires MPP / heavy-lift vessel, vessel is BULK CARRIER; vessel draft 13.3m exceeds port max 12.5m",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": false,
+            "reason": "cargo type PROJECT requires MPP / heavy-lift vessel, vessel is BULK CARRIER"
+          },
+          "destDraft": {
+            "pass": false,
+            "reason": "vessel draft 13.3m exceeds port max 12.5m"
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        }
+      },
+      {
+        "cargoEmailId": "etms-parse-cargo-001",
+        "cargoItemIndex": 1,
+        "vesselEmailId": "etms-parse-vessel-011",
+        "vesselItemIndex": 0,
+        "filterReason": "vessel draft 13.3m exceeds port max 11m; cargo type BREAK_BULK requires MPP or general-cargo vessel, vessel is BULK CARRIER; vessel draft 13.3m exceeds port max 10.5m",
+        "hardFilters": {
+          "draft": {
+            "pass": false,
+            "reason": "vessel draft 13.3m exceeds port max 11m"
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": false,
+            "reason": "cargo type BREAK_BULK requires MPP or general-cargo vessel, vessel is BULK CARRIER"
+          },
+          "destDraft": {
+            "pass": false,
+            "reason": "vessel draft 13.3m exceeds port max 10.5m"
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario_id": "etms-match-021-no-match-cargo-vessel-breakbulk-on-bulker",
+    "category": "no-match",
+    "duration_ms": 3986,
+    "cargo_ref": "etms-parse-cargo/scenario-002",
+    "vessel_ref": "etms-parse-vessel/scenario-011",
+    "expected": {
+      "should_be_hard_filtered": true,
+      "match_level": null,
+      "score_range": null,
+      "must_cite_facts": [],
+      "must_NOT_invent": [],
+      "hard_filter_reason": "cargo type BREAK_BULK (cement in sling, 30000 mt) incompatible with vessel category bulk (MV GLORY TOM is BULK CARRIER) — needs MPP/general-cargo"
+    },
+    "matches": [],
+    "blocked_matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-002",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-011",
+        "vesselItemIndex": 0,
+        "filterReason": "cargo type BREAK_BULK requires MPP or general-cargo vessel, vessel is BULK CARRIER",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": false,
+            "reason": "cargo type BREAK_BULK requires MPP or general-cargo vessel, vessel is BULK CARRIER"
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario_id": "etms-match-022-weak-russia-route-no-flag-block",
+    "category": "weak",
+    "duration_ms": 12108,
+    "cargo_ref": "etms-parse-cargo/scenario-083",
+    "vessel_ref": "etms-parse-vessel/scenario-026",
+    "expected": {
+      "should_be_hard_filtered": false,
+      "match_level": "possible",
+      "score_range": [
+        40,
+        65
+      ],
+      "must_cite_facts": [
+        "Cargo Tuapse (Russia, Black Sea) → Gijón (Spain) 7000 mt anthracite bulk spot",
+        "Vessel MV LADY HATICE Agadir 18930 dwt, draft 8.49 m, Liberia flag, geared",
+        "Vessel flag Liberia (LR) — not RU/IR/BY → checkSanctions returns risk=NONE, no hard-filter",
+        "Long ballast Agadir → Tuapse (Atlantic → Gibraltar → Mediterranean → Bosphorus → Black Sea) ~8-10 days"
+      ],
+      "must_NOT_invent": [
+        "Sanctions risk — vessel flag is Liberia, not RU/IR/BY; do not invent sanctions concerns",
+        "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+        "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+        "Charterer-specific EU compliance policy — not in cargo data"
+      ]
+    },
+    "matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-083",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-026",
+        "vesselItemIndex": 0,
+        "score": 51.2,
+        "matchLevel": "possible",
+        "matchReasons": [
+          "DWCC 18,200 mt vs cargo 7,000 mt anthracite gives about 38% utilization, so deadweight capacity is sufficient.",
+          "Vessel MV LADY HATICE is geared and has 18,930 DWT, which can support a 7,000 mt bulk parcel if holds are suitable.",
+          "Open date 18/19 May 2026 is explicitly stated for Agadir, but readiness verdict is 'unknown' with gap_days=null and arrival_date=null."
+        ],
+        "issues": [
+          "Readiness verdict 'unknown' — gap_days=null and arrival_date=null; explanation: Insufficient data to compute readiness (unparseable date or unknown port).",
+          "Geographic/timing feasibility uncertain because sailing_days=null from Agadir to Tuapse in the readiness data.",
+          "Hold dimensions are not provided for MV LADY HATICE — anthracite stowage factor 43 cannot be checked against hold capacity from the vessel data.",
+          "Vessel type is GENERAL CARGO rather than a listed bulk carrier, so bulk anthracite handling suitability should be confirmed for the 7,000 mt parcel."
+        ],
+        "readiness": {
+          "openDate": "2026-05-18",
+          "laycanStart": "2026-05-19",
+          "laycanEnd": "2026-05-19",
+          "distanceNm": null,
+          "distanceExact": null,
+          "speedKn": 12.5,
+          "sailingDays": null,
+          "arrivalDate": null,
+          "gapDays": null,
+          "verdict": "unknown",
+          "explanation": "Insufficient data to compute readiness (unparseable date or unknown port).",
+          "isSpot": false
+        },
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        },
+        "dateIssues": [],
+        "sanctions": {
+          "risk": "NONE",
+          "blocking": false
+        },
+        "scoreBreakdown": {
+          "components": [
+            {
+              "label": "Geographic proximity",
+              "points": 6,
+              "max": 20,
+              "reason": "distance could not be computed from available port data",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo type match",
+              "points": 12,
+              "max": 20,
+              "reason": "MPP vessel with sufficient grain capacity for bulk",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo handling (cranes)",
+              "points": 15,
+              "max": 15,
+              "reason": "vessel geared — no shore-crane dependency",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Volume / hold fit",
+              "points": 8.399999999999999,
+              "max": 15,
+              "reason": "cargo uses ~1% of grain capacity — comfortable",
+              "confidenceMultiplier": 0.7
+            },
+            {
+              "label": "Laycan fit",
+              "points": 5.6,
+              "max": 20,
+              "reason": "timing unknown (missing dates or port)",
+              "confidenceMultiplier": 0.7
+            },
+            {
+              "label": "DWT class fit",
+              "points": 4.199999999999999,
+              "max": 10,
+              "reason": "cargo min only 37% of DWT — vessel under-utilised",
+              "confidenceMultiplier": 0.7
+            }
+          ],
+          "basePhysical": 59,
+          "readinessAdjustment": 0,
+          "sanctionsAdjustment": 0,
+          "vagueRegionAdjustment": 0,
+          "finalScore": 51.2,
+          "confidenceAdjustedScore": 51.2
+        },
+        "confidence": {
+          "level": "missing",
+          "blockSend": false,
+          "blockedFields": [],
+          "fieldConfidences": [
+            {
+              "field": "cargo.weightMt",
+              "level": "inferred",
+              "score": 0.65,
+              "sourceQuote": "7.000 mts mins"
+            },
+            {
+              "field": "cargo.laycanStart",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.laycanEnd",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.originPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "TUAPSE / GIJON"
+            },
+            {
+              "field": "cargo.destinationPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "TUAPSE / GIJON"
+            },
+            {
+              "field": "vessel.imo",
+              "level": "missing"
+            }
+          ]
+        }
+      }
+    ],
+    "blocked_matches": []
+  },
+  {
+    "scenario_id": "etms-match-023-strong-perfect-spot-med-black-sea",
+    "category": "strong",
+    "duration_ms": 3479,
+    "cargo_ref": "etms-parse-cargo/scenario-022",
+    "vessel_ref": "etms-parse-vessel/scenario-035",
+    "expected": {
+      "should_be_hard_filtered": false,
+      "match_level": "good",
+      "score_range": [
+        70,
+        90
+      ],
+      "must_cite_facts": [
+        "DWT 10074 mt vs cargo 10000 mt (99% utilization — near-perfect fit)",
+        "Vessel open Gibraltar, cargo loads Savona — Western Med ~3 days ballast to Italian Riviera",
+        "Cargo laycan 11/14 May 2026 — vessel spot, dates align tightly",
+        "Vessel geared MPP (2×30T cranes + 1×30T derrick) suitable for bulk loading"
+      ],
+      "must_NOT_invent": [
+        "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+        "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+        "Charterer-specific policy (e.g., 'Cargill strict on CII') — never allowed from external knowledge",
+        "Vetting clearance — only valid if vessel input has vetting fields"
+      ]
+    },
+    "matches": [],
+    "blocked_matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-022",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-035",
+        "vesselItemIndex": 0,
+        "filterReason": "cargo 11000 mt exceeds vessel capacity 9067 mt (DWT × 0.9) by more than 5% tolerance",
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": false,
+            "reason": "cargo 11000 mt exceeds vessel capacity 9067 mt (DWT × 0.9) by more than 5% tolerance"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario_id": "etms-match-024-marginal-spot-aligned-long-ballast",
+    "category": "marginal",
+    "duration_ms": 2564,
+    "cargo_ref": "etms-parse-cargo/scenario-015",
+    "vessel_ref": "etms-parse-vessel/scenario-026",
+    "expected": {
+      "should_be_hard_filtered": false,
+      "match_level": "possible",
+      "score_range": [
+        35,
+        70
+      ],
+      "must_cite_facts": [
+        "DWT 18930 mt vs cargo 10500 mt (55% utilization)",
+        "Cargo Varna West → Alexandria 10500 mt bulk laycan 14/16 May 2026",
+        "Vessel MV LADY HATICE open Agadir, geared, draft 8.49 m fits Varna (11.5 m) and Alexandria (12.5 m)",
+        "Long ballast Agadir → Varna (~10-12 days via Gibraltar + Bosphorus)"
+      ],
+      "must_NOT_invent": [
+        "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+        "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+        "Sanctions concern — Bulgaria origin / Egypt destination + Liberia flag = no sanctions",
+        "Specific freight rate — neither cargo nor vessel provides one"
+      ]
+    },
+    "matches": [],
+    "blocked_matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-015",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-026",
+        "vesselItemIndex": 0,
+        "filterReason": "Vessel open Agadir 2026-05-18 → arrives Varna ~2026-05-24 → 8d after laycan starts 2026-05-16 — misses laycan."
+      }
+    ]
+  },
+  {
+    "scenario_id": "etms-match-025-weak-sparse-cargo-null-weight",
+    "category": "weak",
+    "duration_ms": 14759,
+    "cargo_ref": "etms-parse-cargo/scenario-026",
+    "vessel_ref": "etms-parse-vessel/scenario-013",
+    "expected": {
+      "should_be_hard_filtered": false,
+      "match_level": "possible",
+      "score_range": [
+        35,
+        55
+      ],
+      "must_cite_facts": [
+        "Cargo Thisvi (Greece) → Monfalcone (Italy NE Adriatic) bulk, weight UNSPECIFIED in cargo email",
+        "Vessel MV IMI Vassiliko 4300 dwt, draft 5.62 m, MPP, gearless",
+        "Cargo laycan 17/22 May 2026 — vessel spot",
+        "Null weight on cargo input → cargoWeight hard-filter silently passes, score confidence penalty applies"
+      ],
+      "must_NOT_invent": [
+        "Specific cargo weight (e.g. '4000 mt') — cargo email did not state weight",
+        "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+        "Cargo description detail beyond \"bulk\" — desc not in cargo email",
+        "Crane requirement — Thisvi/Monfalcone port crane availability unknown, vessel gearless"
+      ]
+    },
+    "matches": [
+      {
+        "cargoEmailId": "etms-parse-cargo-026",
+        "cargoItemIndex": 0,
+        "vesselEmailId": "etms-parse-vessel-013",
+        "vesselItemIndex": 0,
+        "score": 43.6,
+        "matchLevel": "possible",
+        "matchReasons": [
+          "Vessel opens Vassiliko on 15/16 May 2026 against cargo laycan 17/22 May 2026, but readiness verdict is 'unknown'.",
+          "Hold dimensions 63.6 x 11.0 x 8.4m are stated, giving at least basic physical hold data for the broker to review.",
+          "Cargo type is BULK and vessel type is MPP with 4,300 DWT / 4,080 DWCC, so carriage may be technically possible only if cargo quantity is small enough."
+        ],
+        "issues": [
+          "Readiness verdict 'unknown' — arrival_date=null and gap_days=null; explanation: Insufficient data to compute readiness (unparseable date or unknown port).",
+          "Cargo weight is not specified, so DWT/DWCC fit cannot be confirmed against vessel DWCC 4,080 mt.",
+          "Special requirement 'Box-shaped vessel (BOX) required' is unresolved — vessel type shown as MPP and BOX status is not stated.",
+          "Special requirement 'Vessel DWT range: 12,000–14,000 DWT' conflicts with MV IMI at 4,300 DWT.",
+          "Special requirement '6 total laytime days SSHEX EIU' must be checked commercially because loading_rate and discharge_rate are both null.",
+          "Special requirement 'Free disbursement accounts both ends (free d/as bends)' is a commercial term to be carried into negotiations."
+        ],
+        "readiness": {
+          "openDate": "2026-05-15",
+          "laycanStart": "2026-05-22",
+          "laycanEnd": "2026-05-22",
+          "distanceNm": null,
+          "distanceExact": null,
+          "speedKn": 12.5,
+          "sailingDays": null,
+          "arrivalDate": null,
+          "gapDays": null,
+          "verdict": "unknown",
+          "explanation": "Insufficient data to compute readiness (unparseable date or unknown port).",
+          "isSpot": false
+        },
+        "hardFilters": {
+          "draft": {
+            "pass": true
+          },
+          "crane": {
+            "pass": true
+          },
+          "volume": {
+            "pass": true
+          },
+          "cargoVessel": {
+            "pass": true
+          },
+          "destDraft": {
+            "pass": true
+          },
+          "destCrane": {
+            "pass": true
+          },
+          "cargoWeight": {
+            "pass": true
+          }
+        },
+        "dateIssues": [],
+        "sanctions": {
+          "risk": "NONE",
+          "blocking": false
+        },
+        "scoreBreakdown": {
+          "components": [
+            {
+              "label": "Geographic proximity",
+              "points": 6,
+              "max": 20,
+              "reason": "distance could not be computed from available port data",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo type match",
+              "points": 12,
+              "max": 20,
+              "reason": "MPP vessel with sufficient grain capacity for bulk",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Cargo handling (cranes)",
+              "points": 8,
+              "max": 15,
+              "reason": "gearless vessel, port crane availability unverified",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Volume / hold fit",
+              "points": 7,
+              "max": 15,
+              "reason": "cargo weight or grain capacity unknown",
+              "confidenceMultiplier": 1
+            },
+            {
+              "label": "Laycan fit",
+              "points": 5.6,
+              "max": 20,
+              "reason": "timing unknown (missing dates or port)",
+              "confidenceMultiplier": 0.7
+            },
+            {
+              "label": "DWT class fit",
+              "points": 5,
+              "max": 10,
+              "reason": "weight or DWT unknown",
+              "confidenceMultiplier": 1
+            }
+          ],
+          "basePhysical": 46,
+          "readinessAdjustment": 0,
+          "sanctionsAdjustment": 0,
+          "vagueRegionAdjustment": 0,
+          "finalScore": 43.6,
+          "confidenceAdjustedScore": 43.6
+        },
+        "confidence": {
+          "level": "missing",
+          "blockSend": false,
+          "blockedFields": [],
+          "fieldConfidences": [
+            {
+              "field": "cargo.weightMt",
+              "level": "inferred",
+              "score": 0.9
+            },
+            {
+              "field": "cargo.laycanStart",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.laycanEnd",
+              "level": "inferred",
+              "score": 0.7
+            },
+            {
+              "field": "cargo.originPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Thisvi  / Monfalcone"
+            },
+            {
+              "field": "cargo.destinationPort",
+              "level": "verified",
+              "score": 0.9,
+              "sourceQuote": "Thisvi  / Monfalcone"
+            },
+            {
+              "field": "vessel.imo",
+              "level": "missing"
+            }
+          ]
+        }
+      }
+    ],
+    "blocked_matches": []
+  }
+]

@@ -1,0 +1,48 @@
+name: Deploy to prod
+# Triggers after push to main (post auto-merge). SSH to outreach-vps under
+# deploy-only key, invokes /root/deploy.sh dispatcher which routes to
+# /root/deploy-quantika-demo.sh.
+#
+# Health check + auto-rollback live in deploy-quantika-demo.sh (60s window).
+# Concurrency group prevents stampedes; in-flight deploy finishes before next.
+#
+# paths-ignore: pure docs/config changes don't deploy (still merge to main,
+# just no rebuild). Workflow self-changes (.github/**) also skip deploy to
+# avoid infinite-loop after workflow edits.
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
+      - ".claude/**"
+      - ".github/**"
+      - ".specs/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Setup SSH key + known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "${{ secrets.PROD_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H 185.249.225.169 >> ~/.ssh/known_hosts 2>/dev/null
+      - name: Trigger deploy
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+              -o StrictHostKeyChecking=accept-new \
+              -o ConnectTimeout=10 \
+              root@185.249.225.169 \
+              "quantika-demo ${{ github.sha }}"
