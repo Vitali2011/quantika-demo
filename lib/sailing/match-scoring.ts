@@ -200,6 +200,20 @@ export function applyOverloadGuard(
  * Optional cargo/vessel parameters enable the DWCC overload hard guard to run
  * in the same pass as readiness scoring.
  */
+/**
+ * Compute idle-verdict score penalty scaled by gap magnitude.
+ * Phase B calibration: 67-day idle was scoring same as 5-day idle (-15);
+ * extended idle is much worse for charterers because owner cost-risk compounds
+ * (vessel sits idle accruing operating costs, has alternative cargo bids, etc.).
+ */
+export function idleScorePenalty(gapDays: number | null | undefined): number {
+  if (gapDays == null || !Number.isFinite(gapDays)) return -15;
+  const days = Math.abs(gapDays);
+  if (days > 30) return -35;
+  if (days > 14) return -25;
+  return -15;
+}
+
 export function applyReadinessScoring(
   match: Match,
   readiness: MatchReadiness | undefined,
@@ -219,10 +233,12 @@ export function applyReadinessScoring(
         updated.score = Math.min(100, match.score + 10);
         break;
       case 'idle': {
-        updated.score = Math.max(0, match.score - 15);
+        const penalty = idleScorePenalty(readiness.gapDays);
+        updated.score = Math.max(0, match.score + penalty);
         const days = readiness.gapDays != null ? Math.round(readiness.gapDays) : null;
+        const severity = penalty <= -35 ? ' (severe, > 30d)' : penalty <= -25 ? ' (extended, > 14d)' : '';
         const issue = days != null
-          ? `Vessel idle ${days}d before laycan — owner likely won't wait unpaid`
+          ? `Vessel idle ${days}d before laycan${severity} — owner likely won't wait unpaid`
           : 'Vessel idle for several days before laycan — check willingness to hold';
         updated.issues = Array.isArray(match.issues) ? [...match.issues, issue] : [issue];
         break;
@@ -458,7 +474,7 @@ export function computeScoreBreakdown(input: ScoreBreakdownInput): ScoreBreakdow
   let readinessAdjustment = 0;
   switch (readiness?.verdict) {
     case 'ideal': readinessAdjustment = 10;  break;
-    case 'idle':  readinessAdjustment = -15; break;
+    case 'idle':  readinessAdjustment = idleScorePenalty(readiness.gapDays); break;
     case 'late':  readinessAdjustment = -30; break;
   }
 
