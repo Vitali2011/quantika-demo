@@ -225,3 +225,63 @@ describe('top-30 ports — LOCODE and name resolve consistently', () => {
     },
   );
 });
+
+// ── Wave-2 ports (Phase E5) ──────────────────────────────────────────────────
+
+const WAVE2_PORTS: Array<{ code: string; name: string }> = [
+  { code: 'ESLPA', name: 'Las Palmas' },
+  { code: 'GEPTI', name: 'Poti' },
+  { code: 'EGAAC', name: 'El Arish' },
+  { code: 'TRMAR', name: 'Marmara' },
+  { code: 'ESSAG', name: 'Sagunto' },
+  { code: 'ITSVN', name: 'Savona' },
+  { code: 'PTFDF', name: 'Figueira da Foz' },
+  { code: 'ITMNF', name: 'Monfalcone' },
+  { code: 'MAJFL', name: 'Jorf Lasfar' },
+  { code: 'GMBJL', name: 'Banjul' },
+];
+
+describe('wave-2 ports — all present in port-master.json', () => {
+  const ports = PORTS_JSON as Array<{ unlocode?: string; name?: string }>;
+  const locodes = new Set(ports.map((p) => p.unlocode).filter(Boolean));
+
+  it.each(WAVE2_PORTS)('$code ($name) is present in port-master.json', ({ code }) => {
+    expect(locodes.has(code)).toBe(true);
+  });
+});
+
+describe('wave-2 ports — LOCODE and name resolve consistently', () => {
+  it.each(WAVE2_PORTS)(
+    '$code/$name: resolvePort(code) and resolvePort(name) give same portCode+portName',
+    ({ code, name }) => {
+      const byCode = resolvePort(code);
+      const byName = resolvePort(name);
+
+      expect(byCode).not.toBeNull();
+      expect(byName).not.toBeNull();
+
+      expect(byCode!.portCode).toBe(byName!.portCode);
+      expect(byCode!.portName).toBe(byName!.portName);
+    },
+  );
+});
+
+describe('wave-2 ports — alias resolution', () => {
+  it('Las Palmas resolves alias "L.PALM" → ESLPA', () => {
+    const r = resolvePort('L.PALM');
+    expect(r).not.toBeNull();
+    expect(r!.portCode).toBe('ESLPA');
+  });
+
+  it('El Arish resolves alias "Al Arish" → EGAAC', () => {
+    const r = resolvePort('Al Arish');
+    expect(r).not.toBeNull();
+    expect(r!.portCode).toBe('EGAAC');
+  });
+
+  it('Poti resolves alias "Poti Sea Port" → GEPTI', () => {
+    const r = resolvePort('Poti Sea Port');
+    expect(r).not.toBeNull();
+    expect(r!.portCode).toBe('GEPTI');
+  });
+});
