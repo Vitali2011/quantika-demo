@@ -217,6 +217,28 @@ export function countryToBloc(cc: string | null): Bloc {
 // Main check
 // ────────────────────────────────────────────────────────────────────────────
 
+// Soft-text patterns for forward-looking voyage restrictions.
+// Each pattern key is an ISO-2 country code; the regex covers common
+// broker phrasings that implicitly exclude a region without using the
+// canonical "no russia" / "no ukraine" form.
+//
+// Negative-lookahead `(?!.*\b(last|previous|formerly|used to)\b)` on
+// the joined string prevents past-tense references from triggering a
+// block (e.g. "no Russian cargo last year").
+const SOFT_RESTRICTION_PATTERNS: Record<string, RegExp> = {
+  // "avoid Ukraine", "avoiding Ukraine"
+  // "Ukraine off-trade", "UA off-hire" etc.
+  // "not prefer ukraine ...", "prefers no ukraine"
+  UA: /\b(avoid\s+ukr|avoid\s+ukraine|ukraine\s+off.trade|ukr\s+off.trade|not\s+prefer\s+ukr|not\s+prefer\s+ukraine|prefer\s+no\s+ukraine)\b/i,
+  RU: /\b(avoid\s+rus|avoid\s+russia|russia\s+off.trade|rus\s+off.trade|not\s+prefer\s+rus|not\s+prefer\s+russia|prefer\s+no\s+russia)\b/i,
+  IR: /\b(avoid\s+iran|iran\s+off.trade|not\s+prefer\s+iran)\b/i,
+  BY: /\b(avoid\s+belarus|belarus\s+off.trade|not\s+prefer\s+belarus)\b/i,
+};
+
+// Past-tense markers that indicate a restriction is historical, not forward-looking.
+// If present in the full restriction string, soft patterns should not fire.
+const PAST_TENSE_MARKER = /\b(last\s+year|last\s+month|previously|formerly|used\s+to|before\s+sanctions|prior\s+to)\b/i;
+
 const RESTRICTED_REGION_PATTERNS: Record<string, RegExp> = {
   RU: /\b(no\s+rus|no\s+russia|not\s+russia|anti.?russia|except\s+russia)\b/i,
   UA: /\b(no\s+ukr|no\s+ukraine|not\s+ukraine)\b/i,
@@ -233,6 +255,19 @@ function routeCountries(originPort: string | null, destinationPort: string | nul
   return countries;
 }
 
+/**
+ * Normalize a single restriction entry that may be either a plain string or
+ * a ConfidenceField-like object `{ value: string, ... }` (as returned by the
+ * LLM parser and stored in the eval corpus).  Returns the string value.
+ */
+function restrictionToString(r: unknown): string {
+  if (typeof r === 'string') return r;
+  if (r !== null && typeof r === 'object' && 'value' in (r as object)) {
+    return String((r as { value: unknown }).value);
+  }
+  return String(r);
+}
+
 export function checkSanctions(input: SanctionsInput): SanctionsCheck {
   // Normalize free-form flag string (e.g. "Russian Federation") to ISO-2 ("RU")
   // before any comparison — the LLM may return full country names.
@@ -241,8 +276,11 @@ export function checkSanctions(input: SanctionsInput): SanctionsCheck {
   const countries = routeCountries(input.originPort, input.destinationPort);
   const blocs = new Set(Array.from(countries).map(c => countryToBloc(c)));
 
-  // Vessel's own restrictions (free-text)
-  const joinedRestrictions = input.restrictions.join(' ');
+  // Vessel's own restrictions (free-text).
+  // Restrictions may arrive as plain strings OR as ConfidenceField objects
+  // {value, confidence, source_text} when loaded directly from the eval corpus;
+  // normalize each entry before joining.
+  const joinedRestrictions = input.restrictions.map(restrictionToString).join(' ');
   for (const [cc, pat] of Object.entries(RESTRICTED_REGION_PATTERNS)) {
     if (pat.test(joinedRestrictions) && countries.has(cc)) {
       return {
@@ -250,6 +288,20 @@ export function checkSanctions(input: SanctionsInput): SanctionsCheck {
         blocking: true,
         reason: `vessel restriction explicitly excludes ${cc}, route includes ${cc}`,
       };
+    }
+  }
+
+  // Soft-text restrictions: "avoid Ukraine", "<country> off-trade", "not prefer <country>" etc.
+  // Only fires when the restriction is forward-looking (no past-tense markers).
+  if (!PAST_TENSE_MARKER.test(joinedRestrictions)) {
+    for (const [cc, pat] of Object.entries(SOFT_RESTRICTION_PATTERNS)) {
+      if (pat.test(joinedRestrictions) && countries.has(cc)) {
+        return {
+          risk: 'HIGH',
+          blocking: true,
+          reason: `vessel soft restriction excludes ${cc} voyages, route includes ${cc}`,
+        };
+      }
     }
   }
 
