@@ -1,30 +1,17 @@
 {
   "phase": "2a",
-  "task": "matches-m1",
-  "tests_written": 133,
-  "test_files": [
-    "lib/migrations/__tests__/032-matches.test.ts",
-    "lib/matching/__tests__/matches-repository.test.ts",
-    "__tests__/api/matches.test.ts",
-    "__tests__/api/matches-id.test.ts",
-    "__tests__/matches-page.test.tsx"
-  ],
+  "tests_written": 22,
+  "test_files": ["scripts/progonq/__tests__/judge-explain-deal.test.ts"],
   "red_verified": true,
-  "red_command": "cd /home/marychenka/work/quantika-demo/.worktrees/matches-m1 && ./node_modules/.bin/jest --testPathPatterns='032-matches|matches-repository|__tests__/api/matches|matches-page' --passWithNoTests 2>&1 | tail -30",
-  "red_command_output": "FAIL __tests__/api/matches-id.test.ts\n  ● Test suite failed to run\n\n    Cannot find module '../../lib/migrations/032-matches' from '__tests__/api/matches-id.test.ts'\n\n      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/index.js:895:11)\n      at Object.<anonymous> (__tests__/api/matches-id.test.ts:27:60)\n\n\nTest Suites: 5 failed, 1 passed, 6 total\nTests:       27 failed, 8 passed, 35 total\nSnapshots:   0 total\nTime:        5.218 s\nRan all test suites matching 032-matches|matches-repository|__tests__/api/matches|matches-page.",
-  "red_state_reason": "All 5 new test suites FAIL — implementation modules do not exist yet (032-matches.ts, matches-repository.ts, app/api/matches/route.ts, app/api/matches/[id]/route.ts, MatchesClient.tsx)",
-  "assumptions_count": 7,
+  "red_command": "npx jest scripts/progonq/__tests__/judge-explain-deal.test.ts --no-coverage",
+  "red_command_output": "FAIL: Cannot find module '../judge-explain-deal' — 0 tests total",
+  "assumptions_count": 4,
   "spec_ambiguities_flagged": [
-    "POST body: score and reason fields unspecified — impl assigns defaults or client supplies them",
-    "GET response envelope: spec shows { matches: StoredMatch[] } but does not specify pagination metadata",
-    "archived → saved is the only valid archived transition — archived → dismissed invalid confirmed by the invalid-list"
+    "Empty sections → WARN not FAIL (lenient for R0 baseline)",
+    "Language detection: >20% Arabic chars = ar",
+    "must_cite_facts are literal keyword strings",
+    "Comma-normalized numbers: 8,000 matches fact 8000"
   ],
-  "boundary_classes_covered": [1, 3, 5, 9, 10],
-  "behavioral_tests_count": 56,
-  "transition_tests": {
-    "valid_transitions": 8,
-    "invalid_transitions": 8,
-    "api_valid": 8,
-    "api_invalid": 4
-  }
+  "boundary_classes_covered": [1, 5, 8, 10],
+  "behavioral_tests_count": 22
 }
