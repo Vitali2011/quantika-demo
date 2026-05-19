@@ -270,13 +270,14 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 Большая часть старого 7-day списка закрыта PR'ами #194-#233 (см. PR history). Новый приоритет — drift'ы из §1.0:
 
-1. ✓ **F3+F4 DONE 2026-05-19** — MATCHES_ENABLED + 3 γ-flags activated; rebuild + systemctl restart; /matches HTTP 200.
-2. **F1+F2** — Расследовать AI_PROVIDER/MATCH_PROVIDER drift (prod = openai/bedrock vs ROADMAP claim Gemini). Chip-task spawned 2026-05-19. Решение либо update prod env, либо update memory `project_quantika_demo_gemini_default_2026_05_17` как wrong.
-3. **F5+F6+F7** — Fix /charterers/[id], /charterers, /processing — auth model gap (session_id required for API but demo_auth user не имеет). Chip-task spawned 2026-05-19.
-4. **C3** EU_SANCTIONS_TOKEN refresh (5 мин user) — token выставлен (`n00mo9i3`), но ROADMAP считал что expired — нужна проверка validity, не refresh.
-5. **F8** Resend API key — user-only (после регистрации на resend.com).
-6. **F9** Sentry DSN — user-only.
-7. **F10** EXPLAIN_DEAL_ENABLED env activation (если фича готова).
+1. ✓ **AUTO-DEPLOY LIVE 2026-05-19** — `.github/workflows/deploy.yml` LIVE в QD (#259 a1444f3) + AL (#200 a3a5b53). После merge `[code-only]` PR → GitHub Actions SSH'ится к outreach-vps → `/root/deploy.sh <service> <sha>` → install + build + restart + localhost health check + auto-rollback при fail. Auto-rollback prod-tested. Manual orchestrator `ssh + git pull + systemctl restart` теперь obsolete для code PRs.
+2. ✓ **F3+F4 DONE 2026-05-19** — MATCHES_ENABLED + 3 γ-flags activated; rebuild + systemctl restart; /matches HTTP 200.
+3. **F1+F2** — Расследовать AI_PROVIDER/MATCH_PROVIDER drift (prod = openai/bedrock vs ROADMAP claim Gemini). Chip-task spawned 2026-05-19. Решение либо update prod env, либо update memory `project_quantika_demo_gemini_default_2026_05_17` как wrong.
+4. **F5+F6+F7** — Fix /charterers/[id], /charterers, /processing — auth model gap (session_id required for API but demo_auth user не имеет). Chip-task spawned 2026-05-19.
+5. **C3** EU_SANCTIONS_TOKEN refresh (5 мин user) — token выставлен (`n00mo9i3`), но ROADMAP считал что expired — нужна проверка validity, не refresh.
+6. **F8** Resend API key — user-only (после регистрации на resend.com).
+7. **F9** Sentry DSN — user-only.
+8. **F10** EXPLAIN_DEAL_ENABLED env activation (если фича готова).
 
 ETA: ~1-2 дня wall-clock с user input на пп. 4-7. Пп. 1-3 — agent-only, можно через chip-spawn.
 
