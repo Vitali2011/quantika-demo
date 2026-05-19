@@ -6848,5 +6848,126 @@
     "icePort": false,
     "dataConfidence": "high",
     "sourceNote": "Chittagong Port Authority"
+  },
+  {
+    "unlocode": "ITVST",
+    "name": "Vasto",
+    "country": "IT",
+    "lat": 42.117,
+    "lon": 14.708,
+    "maxDraftM": 9.5,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "note": "Italian Adriatic coast, Abruzzo; commercial/fishing port (Phase C1)"
+  },
+  {
+    "unlocode": "GBBIR",
+    "name": "Birkenhead",
+    "country": "GB",
+    "lat": 53.394,
+    "lon": -3.014,
+    "maxDraftM": 11.5,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "note": "Mersey estuary, part of Port of Liverpool; container & ro-ro (Phase C1)"
+  },
+  {
+    "unlocode": "IEGRN",
+    "name": "Greenore",
+    "country": "IE",
+    "lat": 54.033,
+    "lon": -6.133,
+    "maxDraftM": 8.5,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "note": "Carlingford Lough, NE Ireland; general cargo/bulk (Phase C1)"
+  },
+  {
+    "unlocode": "EGDAM",
+    "name": "Damietta",
+    "country": "EG",
+    "lat": 31.467,
+    "lon": 31.817,
+    "maxDraftM": 14.5,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "note": "Nile delta, major Egyptian container & grain port (Phase C1)"
+  },
+  {
+    "unlocode": "TNBIZ",
+    "name": "Bizerte",
+    "country": "TN",
+    "lat": 37.275,
+    "lon": 9.875,
+    "maxDraftM": 11.0,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "note": "Northern Tunisia; petroleum, bulk, general cargo (Phase C1)"
+  },
+  {
+    "unlocode": "DZBJA",
+    "name": "Bejaia",
+    "country": "DZ",
+    "lat": 36.760,
+    "lon": 5.094,
+    "maxDraftM": 12.0,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "note": "Algerian Med coast; oil terminal + container + grain (Phase C1)"
+  },
+  {
+    "unlocode": "ITTPS",
+    "name": "Trapani",
+    "country": "IT",
+    "lat": 38.017,
+    "lon": 12.517,
+    "maxDraftM": 8.0,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "note": "Western Sicily; salt, fishing, regional cargo & ferry (Phase C1)"
+  },
+  {
+    "unlocode": "ITPZL",
+    "name": "Pozzallo",
+    "country": "IT",
+    "lat": 36.717,
+    "lon": 14.850,
+    "maxDraftM": 7.5,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "note": "Southern Sicily, Ragusa province; ferry + commercial (Phase C1)"
+  },
+  {
+    "unlocode": "AEFJR",
+    "name": "Fujairah",
+    "country": "AE",
+    "lat": 25.117,
+    "lon": 56.350,
+    "maxDraftM": 16.0,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "note": "UAE Gulf of Oman coast; major bunkering & oil terminal (Phase C1)"
+  },
+  {
+    "unlocode": "OMSOH",
+    "name": "Sohar",
+    "country": "OM",
+    "lat": 24.500,
+    "lon": 56.633,
+    "maxDraftM": 17.0,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "note": "Omani deepwater port; container, bulk, petrochem (Phase C1)"
+  },
+  {
+    "unlocode": "GNCKY",
+    "name": "Conakry",
+    "country": "GN",
+    "lat": 9.517,
+    "lon": -13.717,
+    "maxDraftM": 11.0,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "note": "Guinea capital; bauxite, alumina, container & general (Phase C1)"
   }
 ]

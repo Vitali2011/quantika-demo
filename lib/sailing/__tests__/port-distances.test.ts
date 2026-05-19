@@ -1,10 +1,19 @@
 import { getPortDistance, normalizePortName, KNOWN_PORTS } from '../port-distances';
 
 describe('normalizePortName — fuzzy length-ratio guard (Phase B)', () => {
-  it('"Vasto" does NOT match "Vladivostok" (length ratio 2.2 > 2.0)', () => {
-    // Regression: previously fuzzy gave Vasto→Vladivostok at score 0.311
-    // resulting in a bogus 5693nm distance for Casablanca→Vasto pairs.
-    expect(normalizePortName('Vasto')).toBe(null);
+  it('"Vasto" resolves to canonical Vasto, NOT Vladivostok (Phase C1)', () => {
+    // Originally (Phase B) "Vasto" returned null because it was not a known
+    // port AND the length-ratio guard blocked the fuzzy Vasto→Vladivostok
+    // false positive. Phase C1 promotes Vasto to a canonical port-master
+    // entry, so it now resolves to itself. The Vladivostok regression
+    // remains guarded by FUZZY_LEN_RATIO_MAX.
+    expect(normalizePortName('Vasto')).toBe('Vasto');
+  });
+
+  it('"Vladivstk" does NOT cross-match Vasto (length-ratio guard still works)', () => {
+    // Length-ratio guard regression: a typo of Vladivostok must NOT collapse
+    // onto the much shorter "Vasto" via fuzzy match.
+    expect(normalizePortName('Vladivstk')).not.toBe('Vasto');
   });
 
   it('"Karsu" still resolves to "Karasu" (legit typo, ratio 1.2)', () => {
@@ -822,3 +831,64 @@ describe('normalizePortName — Phase 2D coverage (port DB aliases)', () => {
   });
 });
 
+
+
+describe('Phase C1: new port-master entries', () => {
+  // Each new canonical port resolves to itself (identity), plus a sample alias.
+  // Coordinates and metadata live in data/ports/port-master.json.
+
+  it('"Vasto" — Italian Adriatic port (canonical)', () => {
+    expect(normalizePortName('Vasto')).toBe('Vasto');
+  });
+  it('"Birkenhead" — Mersey/Liverpool group port', () => {
+    expect(normalizePortName('Birkenhead')).toBe('Birkenhead');
+  });
+  it('"Greenore" — NE Ireland Carlingford Lough port', () => {
+    expect(normalizePortName('Greenore')).toBe('Greenore');
+  });
+  it('"Damietta" — Egyptian Med container/grain port', () => {
+    expect(normalizePortName('Damietta')).toBe('Damietta');
+  });
+  it('"damietta port" — lowercase alias resolves to Damietta', () => {
+    expect(normalizePortName('damietta port')).toBe('Damietta');
+  });
+  it('"Bizerte" — northern Tunisia port', () => {
+    expect(normalizePortName('Bizerte')).toBe('Bizerte');
+  });
+  it('"Bizerta" — French/older spelling alias', () => {
+    expect(normalizePortName('Bizerta')).toBe('Bizerte');
+  });
+  it('"Bejaia" — Algerian Med coast port', () => {
+    expect(normalizePortName('Bejaia')).toBe('Bejaia');
+  });
+  it('"Bougie" — colonial French alias for Bejaia', () => {
+    expect(normalizePortName('Bougie')).toBe('Bejaia');
+  });
+  it('"Trapani" — western Sicily port', () => {
+    expect(normalizePortName('Trapani')).toBe('Trapani');
+  });
+  it('"Pozzallo" — southern Sicily port', () => {
+    expect(normalizePortName('Pozzallo')).toBe('Pozzallo');
+  });
+  it('"Fujairah" — UAE Gulf of Oman bunkering hub', () => {
+    expect(normalizePortName('Fujairah')).toBe('Fujairah');
+  });
+  it('"Sohar" — Omani deepwater port', () => {
+    expect(normalizePortName('Sohar')).toBe('Sohar');
+  });
+  it('"Conakry" — Guinea capital port', () => {
+    expect(normalizePortName('Conakry')).toBe('Conakry');
+  });
+
+  it('getPortDistance(Vasto, Casablanca) returns positive distance (was null pre-C1)', () => {
+    const d = getPortDistance('Vasto', 'Casablanca');
+    expect(d).not.toBeNull();
+    expect(d!.nm).toBeGreaterThan(0);
+  });
+
+  it('getPortDistance(Fujairah, Singapore) returns positive distance', () => {
+    const d = getPortDistance('Fujairah', 'Singapore');
+    expect(d).not.toBeNull();
+    expect(d!.nm).toBeGreaterThan(0);
+  });
+});

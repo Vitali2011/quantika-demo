@@ -30,13 +30,21 @@ export const KNOWN_PORTS = [
   'Genoa', 'LaSpezia', 'Livorno', 'Naples', 'Trieste',
   'Barcelona', 'Valencia', 'Algeciras', 'Marseille', 'Gibraltar',
   'Tunis', 'Izmir',
+  // Phase C1 — Italian Adriatic / Sicily
+  'Vasto', 'Trapani', 'Pozzallo',
+  // Phase C1 — North Africa Med
+  'Damietta', 'Bizerte', 'Bejaia',
   // Northern Europe
   'Antwerp', 'Hamburg', 'Rotterdam', 'Bremen', 'Halsvik', 'Gdansk',
   'Felixstowe', 'Southampton', 'Liverpool', 'LeHavre', 'Dunkirk', 'Zeebrugge',
+  // Phase C1 — UK/Ireland additions
+  'Birkenhead', 'Greenore',
   'Aarhus', 'Goteborg', 'Helsinki', 'Tallinn',
   'Haugesund',
   // Atlantic
   'Bayonne', 'Dakar', 'Lagos', 'Nacala',
+  // Phase C1 — West Africa addition
+  'Conakry',
   'Georgetown',
   'Tangier',
   // Americas
@@ -46,6 +54,8 @@ export const KNOWN_PORTS = [
   'BuenosAires', 'Paranagua', 'Callao', 'Valparaiso',
   // Red Sea / Middle East
   'Jeddah', 'Djibouti', 'Aden', 'Dubai', 'BandarAbbas',
+  // Phase C1 — Arabian Gulf / Gulf of Oman additions
+  'Fujairah', 'Sohar',
   // Indian Ocean / South Asia
   'Mumbai', 'Chennai', 'Kolkata', 'Colombo', 'Karachi', 'Kakinada',
   // SE Asia
@@ -331,6 +341,37 @@ const PORT_ALIASES: Record<string, KnownPort> = {
   'abidjan': 'Abidjan',
   'lome': 'Lome',
   'lomé': 'Lome',
+  // ── Phase C1 — new canonical entries (port-master.json extension) ──
+  'vasto': 'Vasto',
+  'vasto port': 'Vasto',
+  'porto di vasto': 'Vasto',
+  'birkenhead': 'Birkenhead',
+  'port of birkenhead': 'Birkenhead',
+  'greenore': 'Greenore',
+  'greenore port': 'Greenore',
+  'damietta': 'Damietta',
+  'damietta port': 'Damietta',
+  'dumyat': 'Damietta',
+  'bizerte': 'Bizerte',
+  'bizerta': 'Bizerte',
+  'bejaia': 'Bejaia',
+  'bejaïa': 'Bejaia',
+  'bgayet': 'Bejaia',
+  'bougie': 'Bejaia',
+  'trapani': 'Trapani',
+  'porto di trapani': 'Trapani',
+  'pozzallo': 'Pozzallo',
+  'porto di pozzallo': 'Pozzallo',
+  'fujairah': 'Fujairah',
+  'port of fujairah': 'Fujairah',
+  'fujayrah': 'Fujairah',
+  'sohar': 'Sohar',
+  'port of sohar': 'Sohar',
+  'suhar': 'Sohar',
+  'conakry': 'Conakry',
+  'port of conakry': 'Conakry',
+  'konakry': 'Conakry',
+
 };
 
 /**

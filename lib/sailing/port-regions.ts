@@ -144,6 +144,19 @@ const PORT_REGION_MAP: Record<KnownPort, PortRegion> = {
   'Singapore':    'Asia',
   'Tokyo':        'Asia',
   'Shanghai':     'Asia',
+  // ── Phase C1 additions ──
+  'Vasto':        'Mediterranean',
+  'Trapani':      'Mediterranean',
+  'Pozzallo':     'Mediterranean',
+  'Damietta':     'Mediterranean',
+  'Bizerte':      'Mediterranean',
+  'Bejaia':       'Mediterranean',
+  'Birkenhead':   'NorthernEurope',
+  'Greenore':     'NorthernEurope',
+  'Fujairah':     'MiddleEast',
+  'Sohar':        'MiddleEast',
+  'Conakry':      'WestAfrica',
+
 };
 
 /**
