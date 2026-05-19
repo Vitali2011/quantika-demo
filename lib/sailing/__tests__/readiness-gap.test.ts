@@ -309,3 +309,90 @@ describe('calculateReadinessGap — spot upper-threshold (spec-03)', () => {
     expect(r.verdict).toBe('idle');
   });
 });
+
+describe('calculateReadinessGap — vague-region UX (Phase C2)', () => {
+  const T = new Date('2025-09-05T00:00:00Z');
+  const RY = 2025;
+
+  it('vague vessel position "East Coast Greece" → specific explanation', () => {
+    const r = calculateReadinessGap(
+      { openDate: '5 Sep', openPosition: 'East Coast Greece', speedLaden: null, dwtSummer: 5200 },
+      { laycan: '15-25 Sep', originPort: 'Mykolaiv' },
+      { refYear: RY, today: T },
+    );
+    expect(r.verdict).toBe('unknown');
+    expect(r.distanceNm).toBeNull();
+    expect(r.explanation).toMatch(/East Coast Greece/);
+    expect(r.explanation).toMatch(/coastal range|specific|anchorage|load port/i);
+    expect(r.explanation).not.toBe('Insufficient data to compute readiness (unparseable date or unknown port).');
+  });
+
+  it('vague cargo origin "Red Sea" → specific explanation', () => {
+    const r = calculateReadinessGap(
+      { openDate: '5 Sep', openPosition: 'Karasu', speedLaden: null, dwtSummer: 5200 },
+      { laycan: '15-25 Sep', originPort: 'Red Sea' },
+      { refYear: RY, today: T },
+    );
+    expect(r.verdict).toBe('unknown');
+    expect(r.explanation).toMatch(/Red Sea/);
+    expect(r.explanation).toMatch(/sea\/basin|specific load/i);
+  });
+
+  it('vague vessel position "Aegean Sea" → specific explanation', () => {
+    const r = calculateReadinessGap(
+      { openDate: '5 Sep', openPosition: 'Aegean Sea', speedLaden: null, dwtSummer: 5200 },
+      { laycan: '15-25 Sep', originPort: 'Mykolaiv' },
+      { refYear: RY, today: T },
+    );
+    expect(r.verdict).toBe('unknown');
+    expect(r.explanation).toMatch(/Aegean Sea/);
+  });
+
+  it('country-only vague cargo "Tunisia" → specific explanation', () => {
+    const r = calculateReadinessGap(
+      { openDate: '5 Sep', openPosition: 'Karasu', speedLaden: null, dwtSummer: 5200 },
+      { laycan: '15-25 Sep', originPort: 'Tunisia' },
+      { refYear: RY, today: T },
+    );
+    expect(r.verdict).toBe('unknown');
+    expect(r.explanation).toMatch(/Tunisia/);
+    expect(r.explanation).toMatch(/country/i);
+  });
+
+  it('BOTH sides vague → combined explanation', () => {
+    const r = calculateReadinessGap(
+      { openDate: '5 Sep', openPosition: 'East Coast Greece', speedLaden: null, dwtSummer: 5200 },
+      { laycan: '15-25 Sep', originPort: 'Red Sea' },
+      { refYear: RY, today: T },
+    );
+    expect(r.verdict).toBe('unknown');
+    expect(r.explanation).toMatch(/Vessel position/i);
+    expect(r.explanation).toMatch(/Cargo origin/i);
+  });
+
+  it('regression: "Marmara" still resolves and does NOT trigger vague hint', () => {
+    const r = calculateReadinessGap(
+      { openDate: '5 Sep', openPosition: 'Marmara', speedLaden: null, dwtSummer: 5200 },
+      { laycan: '15-25 Sep', originPort: 'Mykolaiv' },
+      { refYear: RY, today: T },
+    );
+    // Either a numeric verdict (resolved → distance computed) or unknown — but
+    // if unknown, the explanation must NOT contain the vague-region template.
+    if (r.verdict === 'unknown') {
+      expect(r.explanation).not.toMatch(/coastal range|sea\/basin|country/i);
+    } else {
+      expect(r.distanceNm).not.toBeNull();
+    }
+  });
+
+  it('regression: truly unknown port "Atlantis" → generic insufficient-data fallback (not vague)', () => {
+    const r = calculateReadinessGap(
+      { openDate: '5 Sep', openPosition: 'Atlantis', speedLaden: null, dwtSummer: 5200 },
+      { laycan: '15-25 Sep', originPort: 'Mykolaiv' },
+      { refYear: RY, today: T },
+    );
+    expect(r.verdict).toBe('unknown');
+    // "Atlantis" is not a sea/coast/country pattern → falls back to generic.
+    expect(r.explanation).toBe('Insufficient data to compute readiness (unparseable date or unknown port).');
+  });
+});

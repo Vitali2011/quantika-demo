@@ -27,6 +27,7 @@
 import { parseVesselOpenDate, parseLaycan } from './date-parsing';
 import { isLaycanExpired } from './date-sanity';
 import { getPortDistance, normalizePortName } from './port-distances';
+import { isVagueRegion } from './vague-region-detector';
 import { BUNKER_DEFAULTS, VESSEL_CLASS, VesselClassName } from '../constants';
 
 /** Maximum gap (days) for a spot vessel to still qualify as 'ideal'.
@@ -123,10 +124,14 @@ function buildExplanation(args: {
   gapDays: number | null;
   verdict: ReadinessVerdict;
   isSpot?: boolean;
+  /** Optional override — when caller has already built a specific explanation
+   *  (e.g. vague-region detection), inject it directly bypassing the generic
+   *  "insufficient data" template. */
+  unknownExplanation?: string;
 }): string {
-  const { vesselPort, cargoPort, openDate, arrivalDate, laycanStart, gapDays, verdict, isSpot } = args;
+  const { vesselPort, cargoPort, openDate, arrivalDate, laycanStart, gapDays, verdict, isSpot, unknownExplanation } = args;
   if (verdict === 'unknown') {
-    return 'Insufficient data to compute readiness (unparseable date or unknown port).';
+    return unknownExplanation ?? 'Insufficient data to compute readiness (unparseable date or unknown port).';
   }
   const gap = Math.abs(Math.round(gapDays ?? 0));
   const openStr = openDate ? `open ${vesselPort} ${openDate}` : `open ${vesselPort ?? 'port'}`;
@@ -204,8 +209,28 @@ export function calculateReadinessGap(
     };
   }
 
-  // If any critical input is missing → unknown
+  // If any critical input is missing → unknown.
+  // BUT: when distance is the missing piece, check whether vessel.openPosition
+  // or cargo.originPort is a vague region (e.g. "East Coast Greece", "Red Sea",
+  // "Tunisia") — surface a specific, actionable hint instead of the generic
+  // "insufficient data" message. Verdict stays 'unknown' (we don't invent
+  // a distance), only the explanation gets richer.
   if (!openDateObj || !laycanRange || distanceNm == null) {
+    let unknownExplanation: string | undefined;
+    if (distanceNm == null) {
+      const vesselVague = isVagueRegion(vessel.openPosition);
+      const cargoVague = isVagueRegion(cargo.originPort);
+      const parts: string[] = [];
+      if (vesselVague.vague && vesselVague.suggestion) {
+        parts.push(`Vessel position: ${vesselVague.suggestion}`);
+      }
+      if (cargoVague.vague && cargoVague.suggestion) {
+        parts.push(`Cargo origin: ${cargoVague.suggestion}`);
+      }
+      if (parts.length > 0) {
+        unknownExplanation = parts.join(' ');
+      }
+    }
     return {
       openDate: openDateObj ? isoDay(openDateObj) : null,
       laycanStart: laycanRange ? isoDay(laycanRange.start) : null,
@@ -226,6 +251,7 @@ export function calculateReadinessGap(
         gapDays: null,
         verdict: 'unknown',
         isSpot,
+        unknownExplanation,
       }),
       isSpot,
     };
