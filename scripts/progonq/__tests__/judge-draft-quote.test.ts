@@ -475,3 +475,41 @@ describe('checkSections — adversarial mid-sentence', () => {
     expect(subj?.verdict).toBe('FAIL');
   });
 });
+
+// ─── QA Round-2 reproducers ───────────────────────────────────────────────────
+
+describe('checkCurrencyConsistency — rate-line restriction (QA round-2 H1)', () => {
+  it('demurrage EUR line does not trigger currency check false positive', () => {
+    // Standard GENCON clause: EUR demurrage is legitimate, not a freight rate fabrication.
+    // Currency check must only fire on lines containing rate/freight keywords.
+    const text = [
+      'Subject: Freight Quote — Karasu to Puerto Limon',
+      'Dear Marina,',
+      'Freight rate: 22.50 USD/MT FIO',
+      'Demurrage: EUR 1,500 PDPR FD.',
+      'Best regards, Quantika',
+    ].join('\n');
+    const result = checkCurrencyConsistency(text);
+    expect(result.passed).toBe(true);
+  });
+});
+
+describe('scenario-002 corpus — Arabic guards (QA round-2 H2)', () => {
+  it('scenario-002 must_cite_facts includes Arabic Alexandria equivalent', () => {
+    // Arabic model writes "الإسكندرية" not "Alexandria" — corpus must include both.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const s = require('../../../.progonq/corpus/etms-draft-quote/scenario-002.json');
+    expect(s.expected.must_cite_facts).toContain('الإسكندرية');
+  });
+});
+
+describe('scenario-006 corpus — comprehensive rate guards (QA round-2 CRITICAL)', () => {
+  it('scenario-006 must_NOT_invent catches $25/mt fabrication via corpus guards', () => {
+    // Model could fabricate "$25/mt" — must be caught by the scenario guard list.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const s = require('../../../.progonq/corpus/etms-draft-quote/scenario-006.json');
+    const invented = 'Our freight rate is $25/mt FIOST for this shipment.';
+    const results = checkHallucinations(invented, s.expected.must_NOT_invent);
+    expect(results.some(r => !r.passed)).toBe(true);
+  });
+});
