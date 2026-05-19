@@ -28,12 +28,23 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 **🎯 Стратегия моделей (актуализация 2026-05-17 поздний вечер):** код миграции на Gemini уже сделан (Wave γ, 2026-05-05). На проде AI_PROVIDER=gemini + MATCH_PROVIDER=gemini → **7/7 scopes через Gemini default**. claude-cli остаётся для eval judge. Сейчас в отдельной user-сессии идёт bake-off конкретных Gemini моделей per parser. Подробности в §1.1.
 
+**Что изменилось 18 мая (parser audits wave + M1):**
+
+- ✅ **15 PR merged** по парсерам: schema/prompt audits, eval harness recap, dedup для vessel hallucination, hotfix unknown_terms, surface 5 schema fields, UI display
+- ✅ parse-vessel **dwcc 51.9%→94.9%, open_position 19.7%→92%, open_date 27.7%→91.1%** (был silent-null months из-за schema rename)
+- ✅ parse-cargo cargo 91.8% / laycan 93.2% (GT normalization waves)
+- ✅ parse-recap eval harness built, baseline 55.8% (noisy на 3 scenarios)
+- ✅ /matches LIVE (PR #227 M1 foundation)
+- ✅ 3 missing webhook routes добавлены в AUTH_BYPASS (PR #221) — после rebuild на правильном хосте outreach-vps работают
+- 🟡 Discovered: prod = outreach-vps (NOT dev-vps); 14 PRs не были на проде до systemctl restart
+
 **Что ещё блокирует pre-PMF:**
 
-- ⏸ C2 — 5 webhooks auth bypass (нужен user)
 - ⏸ C3 — EU_SANCTIONS_TOKEN refresh (5 мин user)
-- 📋 Parser quality финализация (parse-cargo R5, parse-vessel dwcc 51.9%, parse-recap/match baselines)
-- 📋 UX polish (mobile bottom nav, /upgrade /matches заглушки, EXPLAIN_DEAL flag fix)
+- 📋 Match parser baseline (нет eval вообще — следующая итерация)
+- 📋 Recap corpus expansion 3→30 (waiting real recap emails в Gmail)
+- 📋 Classify urgency criteria (GT inconsistent, нужен annotator)
+- 📋 UX polish (mobile bottom nav, /upgrade заглушка, EXPLAIN_DEAL flag fix)
 
 **Следующие 7 дней:** webhook auth + parser quality + UX polish.
 **Следующие 30 дней:** mobile-first feature pages + monitoring (Sentry/UptimeRobot).

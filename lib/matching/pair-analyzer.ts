@@ -82,6 +82,8 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
     geared: v.geared,
     draftMax: cfValue(v.draftMax),
     grainCapacity: v.grainCapacity,
+    dwtSummer: cfValue(v.dwtSummer),
+    dwcc: cfValue(v.dwcc),
   });
 
   const hardFilters: MatchHardFilters = {
@@ -91,6 +93,7 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
     cargoVessel: hf.checks.cargoVessel,
     destDraft: hf.checks.destDraft,
     destCrane: hf.checks.destCrane,
+    cargoWeight: hf.checks.cargoWeight,
   };
 
   const parsedLaycan = parseLaycan(c.laycan, refYear);

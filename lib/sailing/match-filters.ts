@@ -134,6 +134,53 @@ export function checkVolume(input: VolumeCheckInput): FilterResult {
 }
 
 // ────────────────────────────────────────────────────────────────────────────
+// Cargo weight check — "can vessel physically lift this weight?"
+//   Prefers DWCC (true cargo carrying capacity, after bunkers/stores deduction).
+//   Falls back to DWT × 0.90 (typical 10% deduction for fuel/water/stores).
+//   Fails when cargo weight exceeds capacity by more than 5% margin ("abt").
+//   If both DWCC and DWT are missing → graceful pass.
+// ────────────────────────────────────────────────────────────────────────────
+
+const WEIGHT_MARGIN = 1.05;        // 5% tolerance for "abt" / about-this-weight
+const DWT_TO_DWCC_RATIO = 0.90;    // typical cargo capacity = 90% of DWT
+
+export interface CargoWeightCheckInput {
+  weightMt: Range<number> | number | null;
+  dwtSummer: number | null;
+  dwcc: number | null;
+}
+
+export function checkCargoWeight(input: CargoWeightCheckInput): FilterResult {
+  const { weightMt, dwtSummer, dwcc } = input;
+  // Use max bound for conservative capacity check (worst-case scenario)
+  const effectiveWeight = isRange<number>(weightMt) ? weightMt.max : weightMt;
+  if (effectiveWeight == null || !Number.isFinite(effectiveWeight) || effectiveWeight <= 0) {
+    return { pass: true };
+  }
+
+  // Resolve effective vessel capacity: prefer DWCC (true cargo capacity)
+  let effectiveCapacity: number | null = null;
+  let capacitySource = '';
+  if (dwcc != null && Number.isFinite(dwcc) && dwcc > 0) {
+    effectiveCapacity = dwcc;
+    capacitySource = 'DWCC';
+  } else if (dwtSummer != null && Number.isFinite(dwtSummer) && dwtSummer > 0) {
+    effectiveCapacity = dwtSummer * DWT_TO_DWCC_RATIO;
+    capacitySource = `DWT × ${DWT_TO_DWCC_RATIO}`;
+  }
+  if (effectiveCapacity == null) return { pass: true };
+
+  const capacityWithMargin = effectiveCapacity * WEIGHT_MARGIN;
+  if (effectiveWeight > capacityWithMargin) {
+    return {
+      pass: false,
+      reason: `cargo ${Math.round(effectiveWeight)} mt exceeds vessel capacity ${Math.round(effectiveCapacity)} mt (${capacitySource}) by more than 5% tolerance`,
+    };
+  }
+  return { pass: true };
+}
+
+// ────────────────────────────────────────────────────────────────────────────
 // Cargo type × vessel type compatibility
 // ────────────────────────────────────────────────────────────────────────────
 
@@ -213,6 +260,8 @@ export interface HardFilterInput {
   geared: boolean | null;
   draftMax: number | null;
   grainCapacity: number | null;
+  dwtSummer: number | null;
+  dwcc: number | null;
 }
 
 export interface HardFilterResult {
@@ -225,6 +274,7 @@ export interface HardFilterResult {
     cargoVessel: FilterResult;
     destDraft: FilterResult;
     destCrane: FilterResult;
+    cargoWeight: FilterResult;
   };
 }
 
@@ -243,6 +293,11 @@ export function runHardFilters(input: HardFilterInput): HardFilterResult {
   });
   const destDraft = checkDraft(input.destinationPort ?? null, input.draftMax);
   const destCrane = checkCrane(input.destinationPort ?? null, input.geared);
+  const cargoWeight = checkCargoWeight({
+    weightMt: input.weightMt,
+    dwtSummer: input.dwtSummer,
+    dwcc: input.dwcc,
+  });
 
   const failures: string[] = [];
   if (!draft.pass && draft.reason) failures.push(draft.reason);
@@ -251,11 +306,12 @@ export function runHardFilters(input: HardFilterInput): HardFilterResult {
   if (!cargoVessel.pass && cargoVessel.reason) failures.push(cargoVessel.reason);
   if (!destDraft.pass && destDraft.reason) failures.push(destDraft.reason);
   if (!destCrane.pass && destCrane.reason) failures.push(destCrane.reason);
+  if (!cargoWeight.pass && cargoWeight.reason) failures.push(cargoWeight.reason);
 
   return {
     pass: failures.length === 0,
     failures,
-    checks: { draft, crane, volume, cargoVessel, destDraft, destCrane },
+    checks: { draft, crane, volume, cargoVessel, destDraft, destCrane, cargoWeight },
   };
 }
 
