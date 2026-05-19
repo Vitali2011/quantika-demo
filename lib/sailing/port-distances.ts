@@ -1177,6 +1177,22 @@ export function normalizePortName(raw: string | null | undefined): string | null
   return null;
 }
 
+// ── Tier 2: pre-populated searoute JSON ─────────────────────────────────────
+// Lazy-loaded once on first use; overrideable in tests via _setSearouteJsonForTest.
+let _searouteJson: Map<string, number> | null = null;
+
+function getSearouteJson(): Map<string, number> {
+  if (_searouteJson !== null) return _searouteJson;
+  const raw = require('@/data/distances/searoute-pairs.json') as Record<string, number>;
+  _searouteJson = new Map(Object.entries(raw));
+  return _searouteJson;
+}
+
+/** Override the searoute JSON map for unit tests. Pass null to reset to file-backed loader. */
+export function _setSearouteJsonForTest(m: Map<string, number> | null): void {
+  _searouteJson = m;
+}
+
 /** Result of a port-pair distance lookup. */
 export interface PortDistanceResult {
   /** Distance in nautical miles (rounded). */
@@ -1225,6 +1241,13 @@ export function getPortDistance(
   const [first, second] = [a, b].sort();
   const matrix = DISTANCES_NM[`${first}|${second}`];
   if (matrix != null) return { nm: matrix, exact: true };
+
+  // Tier 2: pre-populated searoute JSON (~106k pairs, exact sea routes)
+  if (process.env.DISTANCE_USE_SEAROUTE_JSON !== 'false') {
+    const sj = getSearouteJson();
+    const sjNm = sj.get(`${first}|${second}`);
+    if (sjNm != null) return { nm: sjNm, exact: true };
+  }
 
   // Haversine fallback — needs lat/lon from port-master. Lazy import to avoid
   // a circular dependency between port-master.ts (which imports normalizePortName
