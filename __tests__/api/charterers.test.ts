@@ -271,39 +271,46 @@ describe('POST /api/charterers', () => {
   });
 });
 
-describe('Auth: /api/charterers', () => {
+describe('Auth contract: handler bypasses requireSession (demo flow)', () => {
+  let db: Database.Database;
   const originalEnv = process.env.CHARTERER_CREDIT_ENABLED;
 
   beforeEach(() => {
+    db = new Database(':memory:');
+    migration026.up(db);
+    testDb = db;
     process.env.CHARTERER_CREDIT_ENABLED = 'true';
+    // Simulate "no session_id" state. If handler called requireSession
+    // (which it must NOT — auth gating belongs to middleware demo_auth),
+    // this mock forces 401 and the assertions below would fail.
+    // Regression contract: re-adding requireSession to the handler breaks these tests.
+    mockRequireSession.mockReturnValue(
+      NextResponse.json({ error: 'No session' }, { status: 401 })
+    );
   });
 
   afterEach(() => {
+    db.close();
     process.env.CHARTERER_CREDIT_ENABLED = originalEnv;
   });
 
-  // PI4 RC test — auth returns 401 when no session
-  it('GET returns 401 when session is missing', async () => {
-    mockRequireSession.mockReturnValueOnce(
-      NextResponse.json({ error: 'No session' }, { status: 401 })
-    );
-
+  it('GET returns 200 with empty list when no session_id is available', async () => {
     const { GET } = await import('@/app/api/charterers/route');
     const res = await GET(new NextRequest('http://localhost/api/charterers'));
-    expect(res.status).toBe(401);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.charterers).toEqual([]);
   });
 
-  it('POST returns 401 when session is missing', async () => {
-    mockRequireSession.mockReturnValueOnce(
-      NextResponse.json({ error: 'No session' }, { status: 401 })
-    );
-
+  it('POST returns 201 when no session_id is available (demo user can create)', async () => {
     const { POST } = await import('@/app/api/charterers/route');
     const req = new NextRequest('http://localhost/api/charterers', {
       method: 'POST',
-      body: JSON.stringify({ name: 'Test', tier: 'blue-chip' }),
+      body: JSON.stringify({ name: 'Demo Corp', tier: 'blue-chip' }),
     });
     const res = await POST(req);
-    expect(res.status).toBe(401);
+    expect(res.status).toBe(201);
+    const json = await res.json();
+    expect(json.name).toBe('Demo Corp');
   });
 });
