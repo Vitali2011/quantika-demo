@@ -137,10 +137,10 @@ export function FabVoice({
       data-state={state}
       aria-label={label}
       onClick={onPress}
-      className={`fixed bottom-20 right-6 w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-white ${
+      className={`fixed right-6 w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-white ${
         state === 'recording' ? 'bg-red-500 animate-pulse' : 'bg-blue-600'
       }`}
-      style={{ position: 'fixed', bottom: 80, right: 24, zIndex: 40 }}
+      style={{ position: 'fixed', bottom: 'var(--fab-voice-bottom)', right: 24, zIndex: 40 }}
     >
       <span aria-hidden style={{ fontSize: 24 }}>
         {state === 'recording' ? '■' : state === 'uploading' ? '…' : state === 'done' ? '✓' : '🎤'}

@@ -32,7 +32,7 @@ export default function BottomNav() {
     <nav
       role="navigation"
       aria-label="Main navigation"
-      className="md:hidden fixed bottom-0 left-0 right-0 h-14 bg-background border-t border-border z-30 flex items-center justify-around"
+      className="md:hidden fixed bottom-0 left-0 right-0 min-h-14 pb-[env(safe-area-inset-bottom,0px)] bg-background border-t border-border z-30 flex items-center justify-around"
     >
       <Link
         href="/dashboard"

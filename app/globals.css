@@ -47,3 +47,20 @@
     min-width: 44px;
   }
 }
+
+/* Mobile BottomNav content clearance — prevents last 56px being hidden under nav */
+@media (max-width: 767px) {
+  body {
+    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* FabVoice responsive bottom: 80px+safe-area on mobile, 24px on desktop */
+:root {
+  --fab-voice-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+}
+@media (min-width: 768px) {
+  :root {
+    --fab-voice-bottom: 24px;
+  }
+}
