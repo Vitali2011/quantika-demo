@@ -1,86 +1,13 @@
 {
   "phase": "3",
-  "qi_persona": "coverage-backfill",
-  "classes_checked": [1, 2, 3, 5, 6, 9],
-  "scope": "10 new test files for 11 API routes (coverage-backfill wave)",
+  "qi_persona": "default",
+  "classes_checked": [1, 5, 8, 10],
   "findings": [
-    {
-      "class": 9,
-      "severity": "HIGH",
-      "summary": "session.test.ts: Set-Cookie deletion assertion is too weak — only checks cookie name is present, never asserts Max-Age=0 or equivalent; real deletion not verified",
-      "file": "__tests__/api/session.test.ts:54-56",
-      "remediation": "Add: expect(setCookie).toMatch(/Max-Age=0/i) and expect(setCookie).toMatch(/Expires=Thu, 01 Jan 1970/i) OR verify the set-cookie value is the empty/expired form"
-    },
-    {
-      "class": 9,
-      "severity": "HIGH",
-      "summary": "audit.test.ts: GET /api/audit happy path never tested — no 200 response exercised for either inquiryId or sessionId branch; only error paths (401/400/403) are covered",
-      "file": "__tests__/api/audit.test.ts:39-78",
-      "remediation": "Add test: seed an event via logAuditEvent, then GET ?sessionId=OWN_SESSION_ID and expect 200 with events array. Also add: GET ?inquiryId=... with own-session event → 200"
-    },
-    {
-      "class": 9,
-      "severity": "MEDIUM",
-      "summary": "audit.test.ts: POST /api/audit no-auth path is untested — requireSession returning 401 is never exercised on POST; only CSRF and valid-body paths are covered",
-      "file": "__tests__/api/audit.test.ts:80-122",
-      "remediation": "Add test: mockRequireSession returning NextResponse 401, call POST, expect 401"
-    },
-    {
-      "class": 9,
-      "severity": "MEDIUM",
-      "summary": "canal.test.ts: Suez 200 happy path is not tested — only the missing vessel_nt error (400) is covered; the successful quoteCanal('suez', ...) code path is dark",
-      "file": "__tests__/api/canal.test.ts:38-45",
-      "remediation": "Add test: GET /api/canal/suez?vessel_dwt=50000&vessel_type=tanker&vessel_nt=30000 → expect 200 with at least one numeric field"
-    },
-    {
-      "class": 2,
-      "severity": "MEDIUM",
-      "summary": "canal.test.ts: Non-finite vessel_dwt (e.g. 'abc', 'NaN', 'Infinity') is not tested — route rejects via parsePositiveFinite but Class 2 boundary is absent",
-      "file": "__tests__/api/canal.test.ts:20-27",
-      "remediation": "Add test: vessel_dwt=abc → expect 400 with error matching /finite positive/i"
-    },
-    {
-      "class": 3,
-      "severity": "MEDIUM",
-      "summary": "port-da.test.ts: Zero vessel_dwt is not tested — route checks vesselDwt <= 0 and returns 400, but this boundary (Class 3: negative/zero) is uncovered",
-      "file": "__tests__/api/port-da.test.ts:43-50",
-      "remediation": "Add test: vessel_dwt=0 → expect 400 with error matching /positive integer/i"
-    },
-    {
-      "class": 2,
-      "severity": "MEDIUM",
-      "summary": "port-da.test.ts: Float vessel_dwt (e.g. '12345.5') is not tested — route rejects non-integers via Number.isInteger check but Class 2 boundary is absent",
-      "file": "__tests__/api/port-da.test.ts:43-50",
-      "remediation": "Add test: vessel_dwt=12345.5 → expect 400 with error matching /positive integer/i"
-    },
-    {
-      "class": 9,
-      "severity": "LOW",
-      "summary": "economics.test.ts: In-process cache (15-min TTL) is never tested — same request twice should not call computeEconomics a second time, but no cache-hit assertion exists",
-      "file": "__tests__/api/economics.test.ts:74-91",
-      "remediation": "Add test: call POST twice with same body in same module scope, assert computeEconomics mock was called exactly once"
-    },
-    {
-      "class": 1,
-      "severity": "LOW",
-      "summary": "economics.test.ts: Missing route.toPort is not separately tested — only fromPort-missing is exercised; symmetric branch is dark",
-      "file": "__tests__/api/economics.test.ts:37-54",
-      "remediation": "Add test: body with fromPort present but toPort missing → expect 400"
-    },
-    {
-      "class": 9,
-      "severity": "LOW",
-      "summary": "health-root.test.ts: version hardcoded to '0.1.0' in dedicated test — brittle assertion breaks on any version bump without signalling a real regression",
-      "file": "__tests__/api/health-root.test.ts:35-40",
-      "remediation": "Replace with: expect(typeof json.version).toBe('string') and expect(json.version.length).toBeGreaterThan(0), or import VERSION from the route"
-    }
+    {"class": 8, "severity": "MEDIUM", "summary": "Duplicate fact string in scenario-002 must_cite_facts", "file": ".progonq/corpus/etms-explain-deal/scenario-002.json"}
   ],
   "verdict": "APPROVE-WITH-FOLLOWUPS",
-  "block_reason": null,
-  "rework_applied": "HIGH-1 + HIGH-2 fixed in commit 1bc392e. HIGH-1: session.test.ts now asserts Expires=epoch cookie deletion. HIGH-2: audit.test.ts now tests GET 200 with seeded event + POST no-auth 401. MEDIUM: canal NaN boundary + suez happy path added; port-da zero/float DWT added.",
-  "followups": ["economics cache hit test (LOW)", "economics missing toPort (LOW)", "health-root version test brittle (LOW)"],
   "pi3_compliance": true,
   "phase_2_verdict_read": true,
   "phase_2_test_rewrite_count_observed": 0,
-  "fail_rework_round": 1
+  "fail_rework_round": 0
 }
