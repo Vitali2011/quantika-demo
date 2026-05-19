@@ -63,6 +63,7 @@ const vesselItemSchema = {
     consumption_ballast: { type: Type.NUMBER, nullable: true },
     consumption_laden: { type: Type.NUMBER, nullable: true },
   },
+  required: ['vessel_name', 'built', 'dwt_summer', 'flag', 'open_position'],
 };
 
 export const PARSE_VESSEL_SCHEMA = {
