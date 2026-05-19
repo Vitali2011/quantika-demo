@@ -14,6 +14,11 @@ name: Auto-rebase open [code-only] PRs on main push
 # Safety: only touches PRs that are already [code-only] (tag or label) AND
 # already have auto-merge enabled by the author. We do not auto-enable
 # auto-merge here — that's auto-merge.yml's job at PR open time.
+#
+# SETUP REQUIRED: Create a PAT with repo+workflow scope at GitHub Settings →
+# Developer settings → Personal access tokens → Fine-grained tokens.
+# Add as repo secret AUTO_REBASE_PAT. Without it, CI nudge uses GITHUB_TOKEN
+# (anti-recursion: CI may not re-trigger, branch protection may block merge).
 
 on:
   push:
@@ -39,13 +44,20 @@ jobs:
       - name: Update branch on all open [code-only] PRs that are BEHIND
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # AUTO_REBASE_PAT must have repo+workflow scope so the nudge-push
+          # fires pull_request:synchronize. GITHUB_TOKEN pushes are suppressed
+          # by GitHub's anti-recursion guard and will NOT trigger CI re-run.
+          GH_TOKEN_NUDGE: ${{ secrets.AUTO_REBASE_PAT || secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
         run: |
           set -e
+          if [ -z "${{ secrets.AUTO_REBASE_PAT }}" ]; then
+            echo "warn: AUTO_REBASE_PAT not set — nudge push uses GITHUB_TOKEN (CI re-trigger may be suppressed by anti-recursion)"
+          fi
           # Configure git for authenticated pushes used in the nudge-CI step below.
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
-          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN_NUDGE}@github.com/${REPO}.git"
 
           gh pr list \
             --repo "$REPO" \
