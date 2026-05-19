@@ -58,6 +58,7 @@ const cargoItemSchema = {
     discharge_terms: { type: Type.STRING, nullable: true },
     commission_percent: { type: Type.NUMBER, nullable: true },
     commission_terms: { type: Type.STRING, nullable: true },
+    freight_rate_usd: { type: Type.NUMBER, nullable: true },
     special_requirements: { type: Type.STRING, nullable: true },
     stowage_factor: { type: Type.STRING, nullable: true },
     missing_info: { type: Type.ARRAY, items: { type: Type.STRING } },
