@@ -1,8 +1,8 @@
 # Quantika Demo — ROADMAP (Текущее состояние)
 
 **Последний полный аудит:** 2026-05-17 (5-поточный параллельный аудит)
-**Последнее обновление:** 2026-05-17 вечер (после Plan A)
-**Текущая версия:** v1.4.0-eval-qa, prod HEAD после PR #194
+**Последнее обновление:** 2026-05-19 (match parser baseline R0→R2, 5 PRs merged)
+**Текущая версия:** prod HEAD после PR #240 (systemd quantika-demo.service на outreach-vps, NOT dev-vps)
 **Статус:** ✅ Стабильно в проде на demo.quantika.org
 
 > **Живой документ.** Заменяет `ROADMAP-SESSION-PROMPT.md` (тот был разовый промпт-генератор, не state tracker).
@@ -28,6 +28,17 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 **🎯 Стратегия моделей (актуализация 2026-05-17 поздний вечер):** код миграции на Gemini уже сделан (Wave γ, 2026-05-05). На проде AI_PROVIDER=gemini + MATCH_PROVIDER=gemini → **7/7 scopes через Gemini default**. claude-cli остаётся для eval judge. Сейчас в отдельной user-сессии идёт bake-off конкретных Gemini моделей per parser. Подробности в §1.1.
 
+**Что изменилось 19 мая (match parser baseline saga — 5 PRs):**
+
+- ✅ **#235** eval harness — 11-scenario corpus + runner + judge для match parser (последний без eval)
+- ✅ **#236** hard-filter cargoWeight — DWCC×1.05 reject, физически невозможные пары больше не идут в LLM
+- ✅ **#237** readiness=unknown fix — port hints (Hereke→Marmara) + date object handling ({open,close,display})
+- ✅ **#239** corpus calibration — R0 expected → R1 reality (3 → 5 no-match scenarios, S1/M2/W2 reclassified)
+- ✅ **#240** port DB coverage +10.8pp — 40 aliases + 4 ports (Nemrut→Aliaga, Pivdennyi→Yuzhny etc.), broker corpus resolution 57.3%→68.1%
+- ✅ **R0→R2 wins:** no-match hard-filter 0/2→5/5 PASS; W3 (5 mo late) score 47.8 possible → 34.8 weak; M1 top match 62.8 → 70.6 good (readiness ideal gap 2.33d); 0 hallucinations через 3 итерации
+- 📋 **6/11 scenarios всё ещё readiness=unknown** — distance matrix gaps (Marmara↔Aliaga, Red Sea→Iskenderun, Ravenna→Izmail) — Phase B candidate
+- 📋 **W1 (60-day idle)** всё ещё score 60.6 possible — idle penalty smell в match-scoring.ts — Phase B candidate
+
 **Что изменилось 18 мая (parser audits wave + M1):**
 
 - ✅ **15 PR merged** по парсерам: schema/prompt audits, eval harness recap, dedup для vessel hallucination, hotfix unknown_terms, surface 5 schema fields, UI display
@@ -41,7 +52,7 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 **Что ещё блокирует pre-PMF:**
 
 - ⏸ C3 — EU_SANCTIONS_TOKEN refresh (5 мин user)
-- 📋 Match parser baseline (нет eval вообще — следующая итерация)
+- 📋 Match parser Phase B — port-master extensions + distance matrix + idle penalty calibration (R2 baseline ready, 6/11 residual readiness=unknown)
 - 📋 Recap corpus expansion 3→30 (waiting real recap emails в Gmail)
 - 📋 Classify urgency criteria (GT inconsistent, нужен annotator)
 - 📋 UX polish (mobile bottom nav, /upgrade заглушка, EXPLAIN_DEAL flag fix)
