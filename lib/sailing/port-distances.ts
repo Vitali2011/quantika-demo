@@ -371,6 +371,16 @@ const PORT_ALIASES: Record<string, KnownPort> = {
   'conakry': 'Conakry',
   'port of conakry': 'Conakry',
   'konakry': 'Conakry',
+  // ── Phase G1 — Ligurian coast explicit aliases ──
+  'savona': 'Savona',
+  'porto di savona': 'Savona',
+  'vado ligure': 'Vado Ligure',
+  'vado': 'Vado Ligure',
+  'vado ligure sech': 'Vado Ligure',
+  'savona-vado': 'Vado Ligure',   // compound name — resolves to ITVDL (separate UNLOCODE)
+  'figueira': 'Figueira da Foz',
+  'figueira da foz': 'Figueira da Foz',
+  'figueira foz': 'Figueira da Foz',
 
 };
 

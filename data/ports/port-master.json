@@ -7065,7 +7065,7 @@
     "country": "IT",
     "lat": 44.312,
     "lon": 8.494,
-    "maxDraftM": 15.0,
+    "maxDraftM": 14.5,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 250,
@@ -7074,9 +7074,28 @@
     "icePort": false,
     "dataConfidence": "high",
     "sourceNote": "maritimeoptima.com/ITSVN; SeaRates/Savona; MarineTraffic",
-    "aliases": ["Savona-Vado", "Porto di Savona"],
-    "_note": "Includes Vado Ligure SECH terminal — confirm specific berth for >12m vessels",
+    "aliases": ["Porto di Savona"],
+    "_note": "Savona Alti Fondali berths max 14.5m. For Vado Ligure SECH terminal (separate port ITVDL), see that entry.",
     "note": "Italian Ligurian coast; RORO, container, bulk — common Western Med cargo origin (Phase E5)"
+  },
+  {
+    "unlocode": "ITVDL",
+    "name": "Vado Ligure",
+    "country": "IT",
+    "lat": 44.273,
+    "lon": 8.435,
+    "maxDraftM": 17.25,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "maxLOA": 300,
+    "cargoBerthTypes": ["bulk", "container", "general"],
+    "tidal": false,
+    "icePort": false,
+    "dataConfidence": "high",
+    "sourceNote": "MagicPort/ITVDL; MarineTraffic; cogoport.com/Vado-Ligure",
+    "aliases": ["Vado", "Vado Ligure SECH", "Savona-Vado"],
+    "_note": "SECH terminal handles container + bulk; 17.25m berth depth. Adjacent to Savona ITSVN but separate UNLOCODE.",
+    "note": "Italian Ligurian coast; SECH container/bulk terminal with deep berths (Phase G1)"
   },
   {
     "unlocode": "PTFDF",
@@ -7094,8 +7113,8 @@
     "dataConfidence": "high",
     "sourceNote": "cogoport.com/Figueira da Foz; latitude.to; MarineTraffic PTFDF",
     "aliases": ["Figueira", "Figueira Foz", "Porto de Figueira da Foz"],
-    "_note": "Bar depth at HW reaches 6.5m, but inner cargo berths cap at 4.9-6.1m. Conservative 5.5m for vessel-fit checks.",
-    "note": "Portuguese river port on Mondego; forest products/pulp/grain; tidal access, max draft 6.5 m (Phase E5)"
+    "_note": "Conservative 5.5m for inner cargo berths (Costa do Sol, Penedo da Saudade). Bar reaches 6.5m at HW spring tides, but inner berths cap at 4.9-6.1m. Tidal — large vessels schedule around HW.",
+    "note": "Portuguese river port on Mondego; forest products/pulp/grain; tidal access (Phase E5)"
   },
   {
     "unlocode": "ITMNF",

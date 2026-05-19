@@ -371,8 +371,7 @@ export default function MatchesClient({ initialMatches }: Props) {
                       }
                       return (
                         <div
-                          role="alert"
-                          aria-live="polite"
+                          role="status"
                           className="mt-1 text-xs text-amber-700 bg-amber-50 rounded px-2 py-1"
                         >
                           {hintText}
