@@ -7065,7 +7065,7 @@
     "country": "IT",
     "lat": 44.312,
     "lon": 8.494,
-    "maxDraftM": 10.0,
+    "maxDraftM": 15.0,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "maxLOA": 250,
@@ -7075,6 +7075,7 @@
     "dataConfidence": "high",
     "sourceNote": "maritimeoptima.com/ITSVN; SeaRates/Savona; MarineTraffic",
     "aliases": ["Savona-Vado", "Porto di Savona"],
+    "_note": "Includes Vado Ligure SECH terminal — confirm specific berth for >12m vessels",
     "note": "Italian Ligurian coast; RORO, container, bulk — common Western Med cargo origin (Phase E5)"
   },
   {
@@ -7083,7 +7084,7 @@
     "country": "PT",
     "lat": 40.143,
     "lon": -8.846,
-    "maxDraftM": 6.5,
+    "maxDraftM": 5.5,
     "hasShoreCranes": true,
     "berthType": "river",
     "maxLOA": 180,
@@ -7093,6 +7094,7 @@
     "dataConfidence": "high",
     "sourceNote": "cogoport.com/Figueira da Foz; latitude.to; MarineTraffic PTFDF",
     "aliases": ["Figueira", "Figueira Foz", "Porto de Figueira da Foz"],
+    "_note": "Bar depth at HW reaches 6.5m, but inner cargo berths cap at 4.9-6.1m. Conservative 5.5m for vessel-fit checks.",
     "note": "Portuguese river port on Mondego; forest products/pulp/grain; tidal access, max draft 6.5 m (Phase E5)"
   },
   {
