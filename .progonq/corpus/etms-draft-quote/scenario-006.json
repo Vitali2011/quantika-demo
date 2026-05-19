@@ -88,7 +88,7 @@
   "expected": {
     "sections_present": ["Subject", "Greeting", "Terms", "Closing"],
     "must_cite_facts": ["[RATE TO BE CONFIRMED]", "Piraeus", "Tunis"],
-    "must_NOT_invent": ["25 USD/mt", "23.50 USD", "$30 per", "USD 28", "28.50", "22 USD", "20 USD/mt", "18 USD"],
+    "must_NOT_invent": ["25 USD/mt", "23.50 USD", "$30 per", "USD 28", "28.50", "22 USD", "20 USD/mt", "18 USD", "$25/mt", "$25/MT", "USD 25", "25 USD", "25.00 USD", "25/mt", "$20/mt", "twenty-five", "25 دولار", "بسعر", "lumpsum 25"],
     "language": "en"
   }
 }

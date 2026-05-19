@@ -79,8 +79,8 @@
   },
   "expected": {
     "sections_present": ["Subject", "Greeting", "Terms", "Closing"],
-    "must_cite_facts": ["18.00", "8,500", "Alexandria"],
-    "must_NOT_invent": ["25 USD/mt", "30 USD/mt", "20 USD"],
+    "must_cite_facts": ["18.00", "18", "8,500", "8500", "Alexandria", "الإسكندرية", "جدة", "Jeddah"],
+    "must_NOT_invent": ["25 USD/mt", "30 USD/mt", "20 USD", "25 دولار", "بـ 25", "$25/mt"],
     "language": "ar"
   }
 }

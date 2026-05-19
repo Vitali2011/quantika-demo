@@ -207,17 +207,29 @@ export function checkHallucinations(text: string, guards: string[]): Hallucinati
  *
  * Detects patterns like "30 EUR/MT", "€ 1200", "GBP 500", "£45".
  *
- * passed=true: no non-USD currency amounts found
- * passed=false: non-USD currency amount found alongside (or instead of) USD
+ * Only inspects lines that contain freight/rate keywords — demurrage and
+ * despatch lines legitimately carry different currencies (GENCON clause) and
+ * must not trigger a false positive.
+ *
+ * passed=true: no non-USD currency amounts found on rate lines
+ * passed=false: non-USD currency amount found on a rate/freight line
  */
 export function checkCurrencyConsistency(text: string): CurrencyCheck {
-  // No \b prefix — the digit in "30 EUR" is mid-token (e.g. "30 EUR/MT" → "0 EUR" matches \d\s*EUR)
+  // Only check lines that look like freight/rate lines; skip demurrage/despatch.
+  const rateLinePattern = /\b(freight|rate|lumpsum|lump\s*sum|WS|f\.f\.|per\s*mt|per\s*ton)\b/i;
+  const demurragePattern = /\b(demurrage|despatch)\b/i;
   const mixedPattern = /(EUR\s*\d|\d\s*EUR|€\s*\d|\d\s*€|GBP\s*\d|\d\s*GBP|£\s*\d|\d\s*£)/i;
-  const hasMix = mixedPattern.test(text);
+
+  const hasMix = text.split('\n').some(line => {
+    if (demurragePattern.test(line)) return false;
+    if (!rateLinePattern.test(line)) return false;
+    return mixedPattern.test(line);
+  });
+
   return {
     passed: !hasMix,
     note: hasMix
-      ? 'Currency mixing: non-USD currency amount found in output'
+      ? 'Currency mixing: non-USD currency amount found on a freight/rate line'
       : 'Currency consistent (USD only or no currency mentioned)',
   };
 }
