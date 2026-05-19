@@ -31,7 +31,7 @@ export function LandingPageClient() {
               type="submit"
               className="inline-flex items-center justify-center rounded-md border border-transparent bg-foreground text-background px-6 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
             >
-              Demo: ETMS Circulars
+              ETMS Circulars
             </button>
           </form>
           <form method="POST" action="/api/sample" onSubmit={() => track('sample_started')}>
@@ -55,7 +55,7 @@ export function LandingPageClient() {
           <div className="flex items-start gap-3">
             <Trash2 className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-medium">Data deleted after demo</p>
+              <p className="text-sm font-medium">Data deleted after session</p>
               <p className="text-xs text-muted-foreground">Your data is processed in memory and deleted automatically</p>
             </div>
           </div>
