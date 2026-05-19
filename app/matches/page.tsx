@@ -1,14 +1,30 @@
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import type Database from 'better-sqlite3';
 import { getSession } from '@/lib/session';
 import { getStore } from '@/lib/session-store';
-import { listMatches } from '@/lib/matching/matches-repository';
+import { listMatches, createMatch } from '@/lib/matching/matches-repository';
+import type { Match } from '@/lib/types';
 import MatchesClient from './MatchesClient';
 
 export const metadata: Metadata = {
   title: 'Your Recent Matches — Quantika',
 };
+
+function persistSessionMatches(db: Database.Database, sessionId: string, sessionMatches: Match[]): void {
+  for (const m of sessionMatches) {
+    createMatch(db, {
+      cargo_id: m.cargoEmailId,
+      vessel_id: m.vesselEmailId,
+      score: Math.max(0, Math.min(100, Math.round(m.score))),
+      reason: m.matchReasons[0] ?? '',
+      status: 'shortlist',
+      user_id: sessionId,
+      reason_structured: m.scoreBreakdown ? JSON.stringify(m.scoreBreakdown) : null,
+    });
+  }
+}
 
 export default async function MatchesPage() {
   const cookieStore = await cookies();
@@ -20,7 +36,13 @@ export default async function MatchesPage() {
   if (process.env.MATCHES_ENABLED !== "true") redirect('/');
 
   const db = getStore().getDatabase();
-  const matches = listMatches(db, { sortBy: 'score', sortDir: 'desc' });
+
+  let matches = listMatches(db, { user_id: sessionId, sortBy: 'score', sortDir: 'desc' });
+  if (matches.length === 0 && session.matches.length > 0) {
+    persistSessionMatches(db, sessionId, session.matches);
+    matches = listMatches(db, { user_id: sessionId, sortBy: 'score', sortDir: 'desc' });
+  }
+
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-12">
       <div className="max-w-2xl mx-auto space-y-6">

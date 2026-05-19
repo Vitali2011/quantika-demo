@@ -50,6 +50,7 @@ export interface ListMatchesOptions {
   score_min?: number;
   dwt_min?: number;
   dwt_max?: number;
+  user_id?: string | null;
 }
 
 const VALID_TRANSITIONS: Record<MatchStatus, MatchStatus[]> = {
@@ -132,6 +133,7 @@ export function listMatches(db: Database.Database, opts: ListMatchesOptions): St
     score_min,
     dwt_min,
     dwt_max,
+    user_id,
   } = opts;
 
   const allowedSortBy = sortBy === 'created_at' ? 'created_at' : 'score';
@@ -143,6 +145,11 @@ export function listMatches(db: Database.Database, opts: ListMatchesOptions): St
   if (status) {
     conditions.push(`status = ?`);
     params.push(status);
+  }
+
+  if (user_id !== undefined && user_id !== null) {
+    conditions.push(`user_id = ?`);
+    params.push(user_id);
   }
 
   if (cargo_type && cargo_type.length > 0) {
