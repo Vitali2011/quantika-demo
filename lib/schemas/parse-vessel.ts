@@ -29,6 +29,24 @@ const confidenceFieldNumber = {
   required: ['value', 'confidence'],
 };
 
+const confidenceFieldDate = {
+  type: Type.OBJECT,
+  properties: {
+    value: {
+      type: Type.OBJECT,
+      nullable: true,
+      properties: {
+        open: { type: Type.STRING, nullable: true },
+        close: { type: Type.STRING, nullable: true },
+        display: { type: Type.STRING, nullable: true },
+      },
+    },
+    confidence: { type: Type.STRING },
+    source_text: { type: Type.STRING },
+  },
+  required: ['value', 'confidence'],
+};
+
 const vesselItemSchema = {
   type: Type.OBJECT,
   properties: {
@@ -48,7 +66,7 @@ const vesselItemSchema = {
     gear_description: { type: Type.STRING, nullable: true },
     open_position: confidenceFieldString,
     dwcc: confidenceFieldNumber,
-    open_date: confidenceFieldString,
+    open_date: confidenceFieldDate,
     last_cargoes: { type: Type.STRING, nullable: true },
     vessel_type: { type: Type.STRING, nullable: true },
     class_society: { type: Type.STRING, nullable: true },
