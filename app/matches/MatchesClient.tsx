@@ -370,7 +370,11 @@ export default function MatchesClient({ initialMatches }: Props) {
                         // use generic hint
                       }
                       return (
-                        <div className="mt-1 text-xs text-amber-700 bg-amber-50 rounded px-2 py-1">
+                        <div
+                          role="alert"
+                          aria-live="polite"
+                          className="mt-1 text-xs text-amber-700 bg-amber-50 rounded px-2 py-1"
+                        >
                           {hintText}
                         </div>
                       );
