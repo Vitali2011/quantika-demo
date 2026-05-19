@@ -1,5 +1,54 @@
 import { getPortDistance, normalizePortName, KNOWN_PORTS } from '../port-distances';
 
+describe('normalizePortName — parenthetical hint fallback (Phase 2C)', () => {
+  it('"Hereke (Marmara)" resolves via parenthetical hint to Marmara', () => {
+    // Hereke is a small port in the Sea of Marmara — primary name resolves
+    // directly via the new alias entry, OR via parenthetical fallback if absent.
+    expect(normalizePortName('Hereke (Marmara)')).toBe('Marmara');
+  });
+
+  it('"Some Obscure Port (Marmara)" — unknown primary, hint rescues', () => {
+    expect(normalizePortName('Some Obscure Port (Marmara)')).toBe('Marmara');
+  });
+
+  it('"Bay of Biscay (Bayonne/Bilbao range)" — slash-separated hint tokens', () => {
+    // Either Bayonne or Bilbao resolution acceptable — both are valid hints
+    const r = normalizePortName('Bay of Biscay (Bayonne/Bilbao range)');
+    expect(['Bayonne', 'Bilbao']).toContain(r);
+  });
+
+  it('"Alexandria (EG)" — 2-letter country code skipped, primary still matches', () => {
+    // Primary "Alexandria" resolves directly; parenthetical (EG) is just a hint.
+    expect(normalizePortName('Alexandria (EG)')).toBe('Alexandria');
+  });
+
+  it('"Unknown Place (XX)" — country-code-only hint, returns null', () => {
+    // Only a 2-letter code in parens → no usable hint, no fallback → null
+    expect(normalizePortName('Unknown Place (XX)')).toBe(null);
+  });
+
+  it('"Marmara Sea" resolves to Marmara (new alias)', () => {
+    expect(normalizePortName('Marmara Sea')).toBe('Marmara');
+  });
+
+  it('"Hereke" alone resolves via direct alias (new)', () => {
+    expect(normalizePortName('Hereke')).toBe('Marmara');
+  });
+
+  it('"Gemlik" — south Marmara cluster, new alias', () => {
+    expect(normalizePortName('Gemlik')).toBe('Marmara');
+  });
+
+  it('"sea of marmara" — case-insensitive new alias', () => {
+    expect(normalizePortName('sea of marmara')).toBe('Marmara');
+  });
+
+  it('Primary name takes precedence over hint when both resolve', () => {
+    // "Antwerp (Rotterdam range)" — both are valid ports, primary wins
+    expect(normalizePortName('Antwerp (Rotterdam range)')).toBe('Antwerp');
+  });
+});
+
 describe('normalizePortName — JSON-only ports (port-master corpus)', () => {
   it('fuzzy-matches Fos-sur-Mer with dropped letter to canonical JSON name', () => {
     // "Fos-sr-Mer" is a dropped-'u' typo of "Fos-sur-Mer".
