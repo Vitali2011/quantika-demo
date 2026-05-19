@@ -5,6 +5,8 @@ export const metadata: Metadata = {
   title: 'Upgrade Your Quantika Plan',
 };
 
+const PLAN_IDS = { PRO: 'pro' } as const;
+
 const TIERS = [
   {
     name: 'Free',
@@ -18,7 +20,7 @@ const TIERS = [
     price: '$49',
     priceNote: '/mo',
     features: ['Unlimited deals', 'AI explain-deal', 'WhatsApp digest', 'RAG clauses'],
-    cta: { type: 'upgrade' as const, href: '/billing/checkout?plan=pro', label: 'Upgrade to Pro' },
+    cta: { type: 'upgrade' as const, href: `/billing/checkout?plan=${PLAN_IDS.PRO}`, label: 'Upgrade to Pro' },
     highlighted: true,
   },
   {

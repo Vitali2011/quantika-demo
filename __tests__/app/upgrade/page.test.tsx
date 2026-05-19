@@ -43,4 +43,10 @@ describe('/upgrade page — T1 polish', () => {
   it('Free tier shows "You\'re on this plan" disabled indicator', () => {
     expect(screen.getByText(/you.re on this plan/i)).toBeInTheDocument();
   });
+
+  it('interactive CTA elements have aria-label attributes (F2)', () => {
+    expect(screen.getByRole('button')).toHaveAttribute('aria-label');
+    expect(screen.getByRole('link', { name: /upgrade to pro/i })).toHaveAttribute('aria-label');
+    expect(screen.getByTestId('enterprise-cta')).toHaveAttribute('aria-label');
+  });
 });
