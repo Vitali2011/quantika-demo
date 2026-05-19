@@ -4,11 +4,22 @@ name: Deploy to prod
 # /root/deploy-quantika-demo.sh.
 #
 # Health check + auto-rollback live in deploy-quantika-demo.sh (60s window).
-# Concurrency group prevents stampedes; in-flight deploy finishes before next.
+#
+# Concurrency group (cancel-in-progress: false) behaviour:
+#   Only ONE deploy runs at a time. While a deploy is in-flight, GitHub keeps
+#   at most ONE additional run pending — a newer push discards the previous
+#   pending run. Result: N code-touching merges in quick succession may produce
+#   fewer than N deploy runs (the in-flight finishes, then the LATEST pending
+#   fires). This is intentional: it avoids deploying stale intermediate commits
+#   and prevents run stampedes. If you expect N deploys for N merges, use
+#   cancel-in-progress: true instead (each merge gets its own slot, but earlier
+#   ones get killed).
 #
 # paths-ignore: pure docs/config changes don't deploy (still merge to main,
 # just no rebuild). Workflow self-changes (.github/**) also skip deploy to
 # avoid infinite-loop after workflow edits.
+# Note: GitHub evaluates paths-ignore against the squash-merge commit diff,
+# not individual PR commits. Mixed PRs (code + docs) trigger deploy.
 
 on:
   push:
@@ -46,10 +57,10 @@ jobs:
               -o ConnectTimeout=10 \
               root@185.249.225.169 \
               "quantika-demo ${{ github.sha }}"
-      - name: Post-deploy seed guard
-        run: |
-          ssh -i ~/.ssh/deploy_key \
-              -o StrictHostKeyChecking=accept-new \
-              -o ConnectTimeout=10 \
-              root@185.249.225.169 \
-              "bash /root/quantika-demo/scripts/ops/post-deploy-seed.sh"
+      # Post-deploy seed guard: NOT called from here.
+      # The SSH key uses a forced command: command="/root/deploy.sh $SSH_ORIGINAL_COMMAND"
+      # which routes by service name. Sending "bash /path/to/script.sh" makes deploy.sh
+      # receive "bash" as the service name → "ERROR: unknown service: bash".
+      # Seed logic must live inside /root/deploy-quantika-demo.sh on the VPS (after the
+      # health check, before exit). See docs/runbooks/post-deploy-seed.md for manual run
+      # instructions and the VPS integration note.

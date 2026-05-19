@@ -32,16 +32,25 @@ jobs:
   rebase-behind-prs:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
       - name: Update branch on all open [code-only] PRs that are BEHIND
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
         run: |
           set -e
+          # Configure git for authenticated pushes used in the nudge-CI step below.
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
+
           gh pr list \
             --repo "$REPO" \
             --state open \
-            --json number,title,labels,mergeStateStatus,autoMergeRequest \
+            --json number,title,labels,mergeStateStatus,autoMergeRequest,headRefName \
             --limit 50 \
           | jq -c '.[]' \
           | while read -r pr; do
@@ -49,6 +58,7 @@ jobs:
               title=$(echo "$pr" | jq -r '.title')
               state=$(echo "$pr" | jq -r '.mergeStateStatus')
               auto=$(echo "$pr" | jq -r '.autoMergeRequest // empty')
+              branch=$(echo "$pr" | jq -r '.headRefName')
               if [ "$state" != "BEHIND" ] || [ -z "$auto" ]; then
                 continue
               fi
@@ -58,7 +68,24 @@ jobs:
                 echo "Skip #$num: not [code-only]"
                 continue
               fi
-              echo "Updating PR #$num: $title"
-              gh api -X PUT "/repos/$REPO/pulls/$num/update-branch" \
-                || echo "  warn: update-branch failed (likely conflict)"
+              echo "Updating PR #$num: $title (branch: $branch)"
+              if gh api -X PUT "/repos/$REPO/pulls/$num/update-branch"; then
+                # Nudge CI: the update-branch REST API call (under GITHUB_TOKEN) does not
+                # fire pull_request:synchronize — GitHub's anti-recursion suppresses events
+                # from API mutations made by GITHUB_TOKEN. A direct git push to the PR branch
+                # (a different target than this workflow's push-to-main trigger) does fire the
+                # synchronize event, which causes CI to re-run on the updated PR branch.
+                # Uses git commit-tree to avoid a branch checkout, keeping the working tree clean.
+                git fetch origin "$branch" \
+                  && parent=$(git rev-parse "origin/$branch") \
+                  && tree=$(git rev-parse "origin/$branch^{tree}") \
+                  && commit=$(git commit-tree \
+                       -m "ci: nudge CI after auto-rebase [skip cd]" \
+                       -p "$parent" "$tree") \
+                  && git push origin "${commit}:refs/heads/${branch}" \
+                  && echo "  CI nudge pushed to $branch" \
+                  || echo "  warn: CI nudge push failed for $branch (non-fatal)"
+              else
+                echo "  warn: update-branch failed (likely conflict)"
+              fi
             done
