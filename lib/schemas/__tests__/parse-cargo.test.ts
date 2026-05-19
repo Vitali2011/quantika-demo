@@ -41,3 +41,16 @@ describe('PARSE_CARGO_SCHEMA multi-port fields', () => {
     expect(itemProps.weight_per_port.nullable).toBe(true);
   });
 });
+
+describe('PARSE_CARGO_SCHEMA freight_rate_usd field', () => {
+  const itemProps = (PARSE_CARGO_SCHEMA as any).properties.items.items.properties;
+
+  it('includes freight_rate_usd as NUMBER', () => {
+    expect(itemProps.freight_rate_usd).toBeDefined();
+    expect(itemProps.freight_rate_usd.type).toBe('NUMBER');
+  });
+
+  it('freight_rate_usd is nullable', () => {
+    expect(itemProps.freight_rate_usd.nullable).toBe(true);
+  });
+});
