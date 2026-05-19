@@ -95,7 +95,9 @@
     "must_cite_facts": ["9500", "7500", "13500"],
     "must_not_contain": [
       "$40 per metric ton",
-      "vetting clearance approved"
+      "vetting clearance approved",
+      "40$ للطن المتري",
+      "تخليص الفحص معتمد"
     ],
     "language": "ar"
   }

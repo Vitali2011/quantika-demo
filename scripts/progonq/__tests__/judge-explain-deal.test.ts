@@ -182,6 +182,51 @@ describe('detectLanguage', () => {
   });
 });
 
+// ─── QA Round-2 reproducers ──────────────────────────────────────────────────
+
+describe('checkSections — QA R2 adversarial', () => {
+  it('header embedded mid-sentence (no standalone header line) → FAIL, not false PASS', () => {
+    // "Market Context" appears inside Deal Rationale body, not as a section header line
+    const text = `Deal Rationale\nThis is strong from a Market Context perspective.\n\nKey Risks\nSome risks.\n\nRecommended Next Steps\nCall broker.`;
+    const results = checkSections(text, EN_HEADERS);
+    const mc = results.find(r => r.header === 'Market Context');
+    expect(mc).toBeDefined();
+    expect(mc!.verdict).toBe('FAIL');
+  });
+});
+
+describe('checkHallucinations — QA R2 Arabic guards', () => {
+  it('Arabic output with Arabic hallucination string → caught by Arabic guard', () => {
+    const arabicText =
+      'سياق السوق\nالسوق نشط.\n\nمبررات الصفقة\nالحمولة 7500 طن بسعر 40$ للطن المتري.\n\nالمخاطر الرئيسية\nمخاطر.\n\nالخطوات التالية الموصى بها\nاتصل.';
+    const guards = [
+      '40$ للطن المتري',
+      'تخليص الفحص معتمد',
+      '$40 per metric ton',
+      'vetting clearance approved',
+    ];
+    const results = checkHallucinations(arabicText, guards);
+    const caught = results.find(r => !r.passed);
+    expect(caught).toBeDefined();
+  });
+});
+
+describe('judgeOne — QA R2 fact severity', () => {
+  it('zero must_cite_facts present → overall FAIL, not WARN', () => {
+    const r = makeRunResult({
+      raw_text: `Market Context\nGood conditions.\n\nDeal Rationale\nGood fit.\n\nKey Risks\nSome risks.\n\nRecommended Next Steps\nCall broker.`,
+      expected: {
+        sections_present: EN_HEADERS,
+        must_cite_facts: ['10500', '8000'], // neither appears in raw_text
+        must_not_contain: [],
+        language: 'en',
+      },
+    });
+    const v = judgeOne(r);
+    expect(v.overall).toBe('FAIL');
+  });
+});
+
 // ─── judgeOne integration ─────────────────────────────────────────────────────
 
 describe('judgeOne', () => {
