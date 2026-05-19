@@ -129,12 +129,48 @@ describe('computeScoreBreakdown', () => {
     expect(b.readinessAdjustment).toBe(10);
   });
 
-  it('idle readiness subtracts 15', () => {
+  it('idle readiness subtracts 15 for short idle (≤14d)', () => {
+    // mkReadiness default gapDays=3.5 → short-idle tier
     const b = computeScoreBreakdown({
       match: mkMatch(70),
       cargo: mkCargo(),
       vessel: mkVessel(),
       readiness: mkReadiness('idle'),
+      sanctions: { risk: 'NONE', blocking: false } as MatchSanctions,
+    });
+    expect(b.readinessAdjustment).toBe(-15);
+  });
+
+  it('idle readiness subtracts 25 for extended idle (15-30d)', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(70),
+      cargo: mkCargo(),
+      vessel: mkVessel(),
+      readiness: { ...mkReadiness('idle'), gapDays: 20 },
+      sanctions: { risk: 'NONE', blocking: false } as MatchSanctions,
+    });
+    expect(b.readinessAdjustment).toBe(-25);
+  });
+
+  it('idle readiness subtracts 35 for severe idle (>30d)', () => {
+    // Phase B finding: 67-day idle was scoring same as 5-day idle
+    // before this fix. Severe idle = -35 (closer to 'late' penalty).
+    const b = computeScoreBreakdown({
+      match: mkMatch(70),
+      cargo: mkCargo(),
+      vessel: mkVessel(),
+      readiness: { ...mkReadiness('idle'), gapDays: 67 },
+      sanctions: { risk: 'NONE', blocking: false } as MatchSanctions,
+    });
+    expect(b.readinessAdjustment).toBe(-35);
+  });
+
+  it('idle with missing gapDays falls back to -15 (graceful)', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(70),
+      cargo: mkCargo(),
+      vessel: mkVessel(),
+      readiness: { ...mkReadiness('idle'), gapDays: null },
       sanctions: { risk: 'NONE', blocking: false } as MatchSanctions,
     });
     expect(b.readinessAdjustment).toBe(-15);
