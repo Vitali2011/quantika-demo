@@ -1,0 +1,1122 @@
+{
+  "7efbc583eb559ab3": {
+    "equiv": false,
+    "reason": "The port names have a spelling difference ('Figueira' vs 'Figuera') which makes them non-equivalent."
+  },
+  "a3250071f7748e96": {
+    "equiv": false,
+    "reason": "The reference describes a date range (April 2-5, 2018) while the model describes a single date (April 2, 2018), which are different windows."
+  },
+  "82946c2b61afe14e": {
+    "equiv": true,
+    "reason": "The country suffix 'Morocco' in the reference is decorative as per equivalence rules."
+  },
+  "42d2ce7135d96343": {
+    "equiv": false,
+    "reason": "The reference value specifies a date range (13-15 August 2018), while the model value specifies a single date (13 August 2018), making them different windows."
+  },
+  "4725b9b138fdf2bd": {
+    "equiv": false,
+    "reason": "One location is null while the other is not."
+  },
+  "587a24ece887c29f": {
+    "equiv": false,
+    "reason": "One value is null, while the other specifies 'spot'."
+  },
+  "b41abb711ad0e27d": {
+    "equiv": false,
+    "reason": "One location is null while the other is not."
+  },
+  "9c8b91232780091f": {
+    "equiv": false,
+    "reason": "One value is a specific date, while the other is null."
+  },
+  "74addb7f7904ba14": {
+    "equiv": false,
+    "reason": "One location is null while the other is specified."
+  },
+  "55c6dcf7123d1a79": {
+    "equiv": false,
+    "reason": "One laycan value is null while the other is specified, therefore they are not equivalent."
+  },
+  "395719114fb90952": {
+    "equiv": false,
+    "reason": "One location is specified, while the other is null."
+  },
+  "2eccdfbb2a69ae19": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date."
+  },
+  "92c97e75ba483a34": {
+    "equiv": false,
+    "reason": "One location is specified as 'Haugesund' while the other is null, and null on one is not equivalent."
+  },
+  "34e7e0f66683a631": {
+    "equiv": false,
+    "reason": "One value is null while the other specifies a date."
+  },
+  "4a91c21eb630afda": {
+    "equiv": true,
+    "reason": "identical strings"
+  },
+  "c8a6e73f117b8ed6": {
+    "equiv": true,
+    "reason": "Both dates refer to the same single day in different formats."
+  },
+  "797065af1d9313d4": {
+    "equiv": false,
+    "reason": "One name is null and the other is not, which means they are not equivalent."
+  },
+  "01d593cfa40c3cc5": {
+    "equiv": false,
+    "reason": "One location is null, while the other is specified as Biscay."
+  },
+  "405b78b30b44e979": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date, so they are not equivalent."
+  },
+  "5527de852f861e0f": {
+    "equiv": true,
+    "reason": "identical strings"
+  },
+  "2e0434f8e70ce5dc": {
+    "equiv": false,
+    "reason": "The reference date range '01-05 October' does not specify a year, so it cannot be confirmed to match the specific year (2025) provided in the model's date range."
+  },
+  "4bc59a1524efc495": {
+    "equiv": true,
+    "reason": "identical strings"
+  },
+  "ca73269c493c80f0": {
+    "equiv": true,
+    "reason": "identical strings"
+  },
+  "1fcea77500be982c": {
+    "equiv": false,
+    "reason": "One location is specified, and the other is null, which means they are not equivalent."
+  },
+  "4f537ef98e2e0c16": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range."
+  },
+  "911a84a17a4efefe": {
+    "equiv": false,
+    "reason": "One location is null while the other is specified as 'Red Sea'."
+  },
+  "edd608a3d825897b": {
+    "equiv": false,
+    "reason": "One value is null while the other is not, which means they are not equivalent."
+  },
+  "b2b724bd077fa284": {
+    "equiv": true,
+    "reason": "identical strings"
+  },
+  "af49dee1ca43e24c": {
+    "equiv": true,
+    "reason": "Both describe the same two-day window from May 15th to May 16th, 2026."
+  },
+  "3adc15af92379da0": {
+    "equiv": true,
+    "reason": "The locations are identical, differing only in casing."
+  },
+  "0d1c216ffdb81ac4": {
+    "equiv": true,
+    "reason": "The open and close dates '2026-05-15' and '2026-05-20' extracted from the reference string match the model's 'open' and 'close' values."
+  },
+  "59ded34978a657c2": {
+    "equiv": true,
+    "reason": "The country suffix is decorative and can be omitted."
+  },
+  "531323efd6553915": {
+    "equiv": true,
+    "reason": "The reference string specifies the exact same date range as the open and close dates in the model object."
+  },
+  "bdfb5e6a2f9aaa1b": {
+    "equiv": false,
+    "reason": "One location is null while the other is specified as 'Yemen'."
+  },
+  "6d4d3ccec6b206ec": {
+    "equiv": false,
+    "reason": "One value is 'SPOT' and the other is null, which are not considered equivalent."
+  },
+  "0040b6783fc9584a": {
+    "equiv": false,
+    "reason": "One location is null, and the other is 'Marmara Sea', so they are not equivalent."
+  },
+  "741a662394b87ccc": {
+    "equiv": false,
+    "reason": "One value is null while the other is not, which means they are not equivalent."
+  },
+  "d91a5d836d398115": {
+    "equiv": false,
+    "reason": "One location is null while the other is not."
+  },
+  "eafb82caf96aa595": {
+    "equiv": false,
+    "reason": "One value is null, while the other specifies a date range."
+  },
+  "71430d6594d7db12": {
+    "equiv": false,
+    "reason": "One position is specified as 'Ravenna' while the other is null."
+  },
+  "0d2b96c027008031": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range."
+  },
+  "2f61754b3dccf5a3": {
+    "equiv": false,
+    "reason": "One location is null, while the other is not, violating the null equivalence rule."
+  },
+  "16ba04ac2d3638b4": {
+    "equiv": false,
+    "reason": "One value is a specific date range while the other is null, which are not considered equivalent."
+  },
+  "a48461a02ee174d1": {
+    "equiv": false,
+    "reason": "One location is null, the other is not."
+  },
+  "442bf117dbbb7f85": {
+    "equiv": false,
+    "reason": "One value is a specific date range while the other is null, making them not equivalent."
+  },
+  "3f60b0ecdb197e53": {
+    "equiv": false,
+    "reason": "One value is a specific date range while the other is null, making them non-equivalent."
+  },
+  "e370fc9f13e9685d": {
+    "equiv": false,
+    "reason": "One of the open positions is null."
+  },
+  "f573c25e258d2952": {
+    "equiv": false,
+    "reason": "One value is null while the other specifies a date range, thus they are not equivalent."
+  },
+  "15446a7f4301e50b": {
+    "equiv": false,
+    "reason": "One location is null while the other is not, which means they are not equivalent."
+  },
+  "2176c3638c9bdb86": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range, making them not equivalent."
+  },
+  "73565ddc3eff8b89": {
+    "equiv": false,
+    "reason": "One location is null, and the other is Jorf Lasfar."
+  },
+  "4549bff23de5b0fa": {
+    "equiv": false,
+    "reason": "One value is a specific date range, while the other is null, making them not equivalent."
+  },
+  "dfb4e22a53bfe735": {
+    "equiv": false,
+    "reason": "One location is null, the other is not."
+  },
+  "9821ffce6be18687": {
+    "equiv": false,
+    "reason": "One location is null, the other is not."
+  },
+  "0eabd1673931a8f8": {
+    "equiv": false,
+    "reason": "One value is a specific date range while the other is null, which are not considered equivalent."
+  },
+  "cbc1b669826a82ad": {
+    "equiv": true,
+    "reason": "identical strings"
+  },
+  "17bc5280c51c60c5": {
+    "equiv": true,
+    "reason": "identical strings"
+  },
+  "5a4517ded7581181": {
+    "equiv": false,
+    "reason": "One location is specified, while the other is null."
+  },
+  "d2122c394dedb2b7": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range, so they are not equivalent."
+  },
+  "cf5bae7effd1d426": {
+    "equiv": false,
+    "reason": "One location is specified as 'WC Greece' while the other is null."
+  },
+  "0c4abb1eaf7400cd": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range, making them not equivalent."
+  },
+  "1a93c6c86a2b2f55": {
+    "equiv": false,
+    "reason": "One location is specified as 'EMED' while the other is null, which means they are not equivalent."
+  },
+  "1224b0aa02c061ac": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range."
+  },
+  "17b997b8e9ab4663": {
+    "equiv": false,
+    "reason": "One location is null, which makes them not equivalent."
+  },
+  "aced63047e8e9810": {
+    "equiv": false,
+    "reason": "One date is null while the other has a value."
+  },
+  "9cb0b1d9002a9aff": {
+    "equiv": false,
+    "reason": "One location is specified as 'Aegean' while the other is null, thus they are not equivalent."
+  },
+  "741713b57740aa0d": {
+    "equiv": false,
+    "reason": "Null on one side makes them not equivalent."
+  },
+  "35efc434f3b63c54": {
+    "equiv": false,
+    "reason": "One value is null while the other is not, which means they are not equivalent."
+  },
+  "37ed46cd20db7c97": {
+    "equiv": false,
+    "reason": "One value is null while the other is not, therefore they are not equivalent."
+  },
+  "0bc4a982fa5fbba8": {
+    "equiv": false,
+    "reason": "One description is null while the other is not."
+  },
+  "01bf515762e2526e": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range."
+  },
+  "e5c48cfe671d3eab": {
+    "equiv": false,
+    "reason": "One location is specified as null, while the other is 'Hodeidah', making them non-equivalent."
+  },
+  "173291fd47ab05eb": {
+    "equiv": false,
+    "reason": "One value is null while the other is not."
+  },
+  "3deb66ad534cb008": {
+    "equiv": true,
+    "reason": "identical strings"
+  },
+  "4f00130c40113b4b": {
+    "equiv": false,
+    "reason": "One value indicates prompt availability, while the other specifies a future date, which are not equivalent."
+  },
+  "3f0093cb548a3d30": {
+    "equiv": true,
+    "reason": "The locations are identical, differing only in capitalization."
+  },
+  "de23c625cb3377bc": {
+    "equiv": true,
+    "reason": "Both 'spot' and 'SPOT' refer to immediate availability and are considered equivalent by definition."
+  },
+  "a2b5759af9183bba": {
+    "equiv": true,
+    "reason": "The locations 'Sevilla' and 'SEVILLA' are identical, differing only in case."
+  },
+  "523bace631127a56": {
+    "equiv": false,
+    "reason": "The reference specifies a range from May 7th to May 8th, while the model specifies only May 7th."
+  },
+  "cc0b3b0db63411b8": {
+    "equiv": true,
+    "reason": "identical strings"
+  },
+  "038ed95404e274ee": {
+    "equiv": true,
+    "reason": "The reference string and the model object both specify the same date range: May 18 to May 19, 2026."
+  },
+  "17a521352b35abcc": {
+    "equiv": true,
+    "reason": "identical strings"
+  },
+  "0fdf47bfc78061e8": {
+    "equiv": true,
+    "reason": "Both values indicate immediate availability, matching the 'spot' equivalence rule."
+  },
+  "0e59d25d46474663": {
+    "equiv": true,
+    "reason": "The prefix 'M/V' is ignored, and the remaining names are identical."
+  },
+  "a837e3bfd0ccb17a": {
+    "equiv": true,
+    "reason": "Both descriptions refer to the Marmara Sea, differing only in casing."
+  },
+  "98cfea7735887cc5": {
+    "equiv": true,
+    "reason": "Both values represent the same date range: May 22-23, 2026."
+  },
+  "2011234a5957921f": {
+    "equiv": true,
+    "reason": "'Gibraltar Range' is commonly used to refer to the location of Gibraltar in maritime position reporting."
+  },
+  "bd8e04382174aba6": {
+    "equiv": true,
+    "reason": "The date ranges '24-25 May 2026' and '2026-05-24 to 2026-05-25' are identical despite format differences."
+  },
+  "b4ed11d042916953": {
+    "equiv": false,
+    "reason": "One location is specified, the other is null."
+  },
+  "37b471f23ca95289": {
+    "equiv": false,
+    "reason": "One value is a specific date range, while the other is null, making them not equivalent."
+  },
+  "a213d51a73b03243": {
+    "equiv": false,
+    "reason": "One location is null while the other has a value."
+  },
+  "44d79e518b168c8f": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range, making them non-equivalent."
+  },
+  "de420412d4cdb587": {
+    "equiv": false,
+    "reason": "One location is null while the other is specified."
+  },
+  "d1bcb11c94569de4": {
+    "equiv": false,
+    "reason": "One value is null while the other specifies a date range."
+  },
+  "c113fb36ec7f735b": {
+    "equiv": false,
+    "reason": "One location is null, while the other is not."
+  },
+  "9375938d78b75fc0": {
+    "equiv": false,
+    "reason": "One value is null while the other specifies a date range, so they are not equivalent."
+  },
+  "b3de7722449226c8": {
+    "equiv": true,
+    "reason": "identical strings"
+  },
+  "9a2536ec7334dac9": {
+    "equiv": false,
+    "reason": "A 'Prompt' availability means immediate, which is not equivalent to a specific future date."
+  },
+  "5db2b4c45114a8d6": {
+    "equiv": false,
+    "reason": "One position is null while the other specifies a location."
+  },
+  "fdc23dbbff64bfb3": {
+    "equiv": false,
+    "reason": "One date value is null while the other is specified, therefore they are not equivalent."
+  },
+  "0de7054fac171537": {
+    "equiv": false,
+    "reason": "The model name includes additional information '(EX PARAKLITOS)' that is not present in the reference name."
+  },
+  "b5cc1a812a0e36aa": {
+    "equiv": true,
+    "reason": "identical strings"
+  },
+  "53f8b14166b4c175": {
+    "equiv": false,
+    "reason": "The reference specifies a date range (11-12 Feb 2026) while the model specifies a single date (11 Feb 2026)."
+  },
+  "e0b0e6327520bbb2": {
+    "equiv": false,
+    "reason": "The model name includes previous vessel names ('EX ALI AYKIN', 'EX YALIKOY') which are not present in the reference name, making them different."
+  },
+  "3019508842e8cdfc": {
+    "equiv": true,
+    "reason": "identical strings"
+  },
+  "243556834337b53c": {
+    "equiv": true,
+    "reason": "Both values represent the same single date, just in different formats."
+  },
+  "947a6fc233db9376": {
+    "equiv": false,
+    "reason": "One location is null, while the other is an unknown string, which is not equivalent to null."
+  },
+  "d2419f45075a48bd": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date, which are not considered equivalent."
+  },
+  "1e2ad14ede1a71f0": {
+    "equiv": true,
+    "reason": "identical strings"
+  },
+  "59e0999720883211": {
+    "equiv": false,
+    "reason": "The reference 'SPOT' means immediately available, which is not equivalent to a specific future date '2026-02-02'."
+  },
+  "2edc9a7e8dfd6447": {
+    "equiv": true,
+    "reason": "The 'M/V' prefix is decorative and both names normalize to 'GOYNUK'."
+  },
+  "c3852f4903d8c9a1": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range."
+  },
+  "66a121163b569705": {
+    "equiv": false,
+    "reason": "One vessel name is null while the other is not."
+  },
+  "02b5faaf63944ad3": {
+    "equiv": false,
+    "reason": "One location is null while the other is not."
+  },
+  "e54b412cd93af3bd": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range, so they are not equivalent."
+  },
+  "4e02ccfdbb49ad4b": {
+    "equiv": false,
+    "reason": "One vessel name is null while the other is not."
+  },
+  "8303eb742e5575e3": {
+    "equiv": false,
+    "reason": "One value is null while the other is not."
+  },
+  "6691310a4f2a1880": {
+    "equiv": false,
+    "reason": "One of the vessel names is null, which means they are not equivalent."
+  },
+  "245787b3605f7e14": {
+    "equiv": false,
+    "reason": "One location is specified as 'Danube River' while the other is null, which means they are not equivalent."
+  },
+  "620ef59f782c3531": {
+    "equiv": false,
+    "reason": "One value is null while the other is not, indicating they are not equivalent."
+  },
+  "19ecfce60978d52f": {
+    "equiv": false,
+    "reason": "One name is null, the other is not."
+  },
+  "52bd393f3bfb82d5": {
+    "equiv": false,
+    "reason": "One location is null while the other is not."
+  },
+  "f49d137c3a64c024": {
+    "equiv": false,
+    "reason": "One value is null while the other specifies a date range."
+  },
+  "9ec5d054d8f665fe": {
+    "equiv": false,
+    "reason": "One location is null while the other is not, which means they are not equivalent."
+  },
+  "1d30c7cdefbaa207": {
+    "equiv": false,
+    "reason": "One location is specified as null while the other is 'Mostaganem', thus they are not equivalent."
+  },
+  "597ec50aadf55664": {
+    "equiv": false,
+    "reason": "One value is null while the other is not, which means they are not equivalent."
+  },
+  "6e5c4073663be8f7": {
+    "equiv": false,
+    "reason": "The core names 'SKY WISH' and 'Sky Dolphin' are different."
+  },
+  "338e28aac98cd63a": {
+    "equiv": false,
+    "reason": "One location is specified, the other is null."
+  },
+  "01077eeb621fa691": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range."
+  },
+  "13ed868817936828": {
+    "equiv": false,
+    "reason": "The core names 'SKY DOLPHIN' and 'SKY WISH' are different."
+  },
+  "0b58779bbdb6d6ca": {
+    "equiv": false,
+    "reason": "One location is null while the other is specified, so they are not equivalent."
+  },
+  "ffdb796ea82517d2": {
+    "equiv": false,
+    "reason": "The names 'SKY FEYZ' and 'SKY FALCON' are different."
+  },
+  "baaa7ddc5c654c10": {
+    "equiv": false,
+    "reason": "One location is specified as 'Alexandria' while the other is null."
+  },
+  "0a1251696226d314": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range, hence not equivalent."
+  },
+  "eccec3d14b0a0e28": {
+    "equiv": false,
+    "reason": "The core names 'SKY EAGLE' and 'SKY LBS' are different."
+  },
+  "3355e2eb537362c3": {
+    "equiv": false,
+    "reason": "One location is specified as null, while the other is not."
+  },
+  "67804376eab0dc3c": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range, making them non-equivalent."
+  },
+  "9d7796da0a4c2cc8": {
+    "equiv": false,
+    "reason": "The normalized names 'sky falcon' and 'sky feyz' are different."
+  },
+  "4918ff18ff33fc64": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range, making them non-equivalent."
+  },
+  "07dce928ea12351f": {
+    "equiv": false,
+    "reason": "The core names 'SKY LBS' and 'SKY EAGLE' are different."
+  },
+  "5b62d7508a3781e5": {
+    "equiv": false,
+    "reason": "One open position description is null while the other is not."
+  },
+  "00d864b1aa4edb67": {
+    "equiv": false,
+    "reason": "One value is a specific date range while the other is null, making them non-equivalent."
+  },
+  "73705a1cb34b2ad7": {
+    "equiv": false,
+    "reason": "One value is null while the other is not, which makes them not equivalent."
+  },
+  "331aae37271c0962": {
+    "equiv": true,
+    "reason": "identical strings"
+  },
+  "6fe134552b7b4552": {
+    "equiv": true,
+    "reason": "\"Mid-March 2026\" represents the period 11-20 March 2026, and \"2026-03-15\" falls within this range."
+  },
+  "be70c379e425923e": {
+    "equiv": false,
+    "reason": "One of the descriptions is null while the other is not, therefore they are not equivalent."
+  },
+  "2142afd4ff23ce6a": {
+    "equiv": false,
+    "reason": "One value is a specific date range while the other is null, making them not equivalent."
+  },
+  "eee3a4a5f9e90156": {
+    "equiv": false,
+    "reason": "One location is null, while the other is not, therefore they are not equivalent."
+  },
+  "6545daa23c7c0ba1": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range."
+  },
+  "20e2119a182d8b6b": {
+    "equiv": false,
+    "reason": "One location is null while the other is not, which are considered not equivalent."
+  },
+  "201798652b8f95cf": {
+    "equiv": false,
+    "reason": "One value is null while the other specifies a date range, making them non-equivalent."
+  },
+  "99c0b7d45a01fff4": {
+    "equiv": false,
+    "reason": "One value is null while the other specifies a date range, making them not equivalent."
+  },
+  "d1a1018c72c5c3a3": {
+    "equiv": true,
+    "reason": "Ignoring the decorative prefix 'M/V', both names are 'TBN'."
+  },
+  "efd72d83c1ec6fe3": {
+    "equiv": false,
+    "reason": "One value is specified as 'PROMPT' while the other is null, which are not considered equivalent."
+  },
+  "65bf8c5c4b876ef7": {
+    "equiv": false,
+    "reason": "One of the vessel names is null, which means they are not equivalent."
+  },
+  "3376b7d0e9d5e797": {
+    "equiv": false,
+    "reason": "One location is null while the other is not."
+  },
+  "818d80ea20793fc0": {
+    "equiv": false,
+    "reason": "One value is null while the other specifies a date range."
+  },
+  "35d7390abf1d4dc9": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range, making them non-equivalent."
+  },
+  "faf53e2df74aef26": {
+    "equiv": false,
+    "reason": "One location is specified as null while the other is not."
+  },
+  "4d20058cce049c98": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range."
+  },
+  "47ea6acac3e8773d": {
+    "equiv": false,
+    "reason": "One location is null while the other is not."
+  },
+  "cf7ab7970f06e86f": {
+    "equiv": false,
+    "reason": "One value is null while the other specifies a date range."
+  },
+  "eef4655339dc47ae": {
+    "equiv": false,
+    "reason": "One location is null while the other is not."
+  },
+  "2ae2f61558e9c475": {
+    "equiv": false,
+    "reason": "One value is null and the other is not, which means they are not equivalent according to the rules."
+  },
+  "4d560dc817991573": {
+    "equiv": false,
+    "reason": "One description is null while the other is not, which implies non-equivalence."
+  },
+  "7655a171347ff7aa": {
+    "equiv": false,
+    "reason": "One value is null while the other specifies a date range."
+  },
+  "280eeb84e5ef08b5": {
+    "equiv": false,
+    "reason": "One location is null while the other is not."
+  },
+  "7f57f048d63850e6": {
+    "equiv": false,
+    "reason": "One laycan value is null while the other is specified."
+  },
+  "cab698b314f3c38f": {
+    "equiv": false,
+    "reason": "One location is null while the other is not, which means they are not equivalent."
+  },
+  "00246f17175e6fae": {
+    "equiv": false,
+    "reason": "Null on one value means they are not equivalent."
+  },
+  "b32f0c47c8b3a549": {
+    "equiv": true,
+    "reason": "Both descriptions refer to the exact same location with only case differences."
+  },
+  "196be90553495a8a": {
+    "equiv": true,
+    "reason": "Both describe the date range from April 24, 2026, to April 26, 2026."
+  },
+  "9c4d57bfba9ab8e9": {
+    "equiv": true,
+    "reason": "The descriptions are identical, ignoring case."
+  },
+  "fb92cabdbc87c3a2": {
+    "equiv": true,
+    "reason": "Both values represent the date range April 25-27, 2026."
+  },
+  "c660de5af738e822": {
+    "equiv": false,
+    "reason": "One value is null while the other is not, which means they are not equivalent."
+  },
+  "b739f755e48bb308": {
+    "equiv": false,
+    "reason": "One of the values is null, while the other is a specific date range."
+  },
+  "c25bc6eea3ea809e": {
+    "equiv": false,
+    "reason": "One location is specified as 'Jeddah' while the other is null."
+  },
+  "be53b0936631dfbc": {
+    "equiv": false,
+    "reason": "One value is a specific date and the other is null."
+  },
+  "1ac1930a5f935be9": {
+    "equiv": false,
+    "reason": "Null on one side is not equivalent to a non-null value."
+  },
+  "a9f2dfeb2102dbd0": {
+    "equiv": false,
+    "reason": "One value is a specific date range while the other is null, which are not considered equivalent."
+  },
+  "bb87234b9df14dd8": {
+    "equiv": true,
+    "reason": "The country suffix is decorative, and the port names are identical."
+  },
+  "083d5de8cf096f8f": {
+    "equiv": true,
+    "reason": "Both values represent the single date September 5, 2024, with only format variations."
+  },
+  "26b271400abc6444": {
+    "equiv": false,
+    "reason": "The model name includes an 'ex' designation, making it different from the reference name."
+  },
+  "266c119249e19aa2": {
+    "equiv": true,
+    "reason": "identical strings"
+  },
+  "b90b3ec8f1450d89": {
+    "equiv": false,
+    "reason": "'Istanbul / Marmara Sea' refers to a broader area that includes Istanbul and other parts of the Marmara Sea, which is not the same as just 'Istanbul'."
+  },
+  "e4380086ef94647d": {
+    "equiv": false,
+    "reason": "One is a date range and the other is a single date, which are different windows."
+  },
+  "f6581e6712d34275": {
+    "equiv": true,
+    "reason": "The prefix 'M/V' is ignored, making both names 'AVAT 1', which are identical."
+  },
+  "0ca55e519bdfa8c3": {
+    "equiv": true,
+    "reason": "Both descriptions refer to 'Agadir or West Mediterranean', with 'ANY' being a decorative qualifier."
+  },
+  "51b7986a8e90ab6b": {
+    "equiv": true,
+    "reason": "Both describe the same date range: August 22-25, 2024."
+  },
+  "0fdb749fa524b255": {
+    "equiv": true,
+    "reason": "Both descriptions refer to Alexandria, Egypt, with only case difference."
+  },
+  "fca759252d2bb09c": {
+    "equiv": false,
+    "reason": "The reference specifies a date range (July 4-5, 2024) while the model specifies a single day (July 4, 2024), which are not the same window."
+  },
+  "e4a59f18d56856a1": {
+    "equiv": true,
+    "reason": "The locations are identical, differing only in capitalization."
+  },
+  "205e79ad07d0599b": {
+    "equiv": true,
+    "reason": "Both values are null, which is considered equivalent."
+  },
+  "2008e943379c2aa1": {
+    "equiv": true,
+    "reason": "Both descriptions refer to the same location, 'Canakkale', differing only in case."
+  },
+  "b4ae2d1a382407cf": {
+    "equiv": true,
+    "reason": "Both dates represent July 5, 2024, differing only in format."
+  },
+  "4704585a3dcec09b": {
+    "equiv": false,
+    "reason": "One location is specified as 'Eastern Mediterranean' while the other is null, making them non-equivalent."
+  },
+  "f6c29142145d1f3a": {
+    "equiv": false,
+    "reason": "One value is null while the other is not, which makes them not equivalent."
+  },
+  "c43bbbadc5fe1920": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date, therefore they are not equivalent."
+  },
+  "d28cc6a34c16bc12": {
+    "equiv": false,
+    "reason": "One description is null while the other is not, making them non-equivalent."
+  },
+  "24ef389d648bea01": {
+    "equiv": false,
+    "reason": "One value is a specific date range, while the other is null, thus they are not equivalent."
+  },
+  "3ba9ef6091bad258": {
+    "equiv": false,
+    "reason": "One location is specified, while the other is null."
+  },
+  "c29babd1b8e5c35d": {
+    "equiv": false,
+    "reason": "One of the values is null while the other is not."
+  },
+  "70f3972acc8dc048": {
+    "equiv": false,
+    "reason": "One location is specified as 'Busan' while the other is null."
+  },
+  "e1f442de51d039f0": {
+    "equiv": false,
+    "reason": "One date value is null, while the other specifies a concrete range."
+  },
+  "eb79ffa4ebee3987": {
+    "equiv": false,
+    "reason": "One value is null while the other specifies a date range."
+  },
+  "7f43b46da1286329": {
+    "equiv": false,
+    "reason": "One description is null while the other is not, which means they are not equivalent."
+  },
+  "fbcb79f6611f11ad": {
+    "equiv": false,
+    "reason": "One location is specified while the other is null, which means they are not equivalent."
+  },
+  "0c9790ab3e577a10": {
+    "equiv": false,
+    "reason": "One value is a date range while the other is null, making them non-equivalent."
+  },
+  "327ee100af91852f": {
+    "equiv": false,
+    "reason": "One location is specified while the other is null, which means they are not equivalent."
+  },
+  "1f57dcf82a75e622": {
+    "equiv": false,
+    "reason": "One value is a specific date range while the other is null, which makes them not equivalent."
+  },
+  "ad16f2a7e8ed8950": {
+    "equiv": false,
+    "reason": "One location is specified while the other is null, which means they are not equivalent."
+  },
+  "de8798fc274448ce": {
+    "equiv": false,
+    "reason": "One of the values is null, while the other specifies a concrete date range."
+  },
+  "598a56e6ebb6bdfd": {
+    "equiv": false,
+    "reason": "One location is null while the other is specified, making them not equivalent."
+  },
+  "0ae0fb5521c90e4b": {
+    "equiv": false,
+    "reason": "One value is null while the other specifies a date."
+  },
+  "bf7eb48f81869993": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range."
+  },
+  "79fdbb44615799d5": {
+    "equiv": false,
+    "reason": "One value is null while the other is specified."
+  },
+  "980bb04973b92e4b": {
+    "equiv": false,
+    "reason": "One location is specified as 'Vassiliko' while the other is null, which means they are not equivalent."
+  },
+  "9d952d80a38dda2b": {
+    "equiv": false,
+    "reason": "One of the values is null while the other is not."
+  },
+  "7b1d75029586499c": {
+    "equiv": false,
+    "reason": "One location is specified, and the other is null, which means they are not equivalent."
+  },
+  "57352c0998a5f418": {
+    "equiv": false,
+    "reason": "One laycan value is null while the other is specified."
+  },
+  "b18838d46f9ece12": {
+    "equiv": false,
+    "reason": "One vessel name is null while the other is not."
+  },
+  "4310ca167f06ab11": {
+    "equiv": false,
+    "reason": "One location is null while the other is specified as 'YEMEN'."
+  },
+  "1fc61b7afea5ab25": {
+    "equiv": false,
+    "reason": "The names 'HACI HILMI II' and 'TBN' are different after ignoring prefixes and formatting."
+  },
+  "2563105c29c85564": {
+    "equiv": false,
+    "reason": "The core names 'TBN' and 'HACI HILMI II' are completely different."
+  },
+  "17418c7245ba4c19": {
+    "equiv": false,
+    "reason": "One location is specified as 'Sevilla' and the other is null, so they are not equivalent."
+  },
+  "7c60fa70ec093481": {
+    "equiv": false,
+    "reason": "One of the values is null, which makes them not equivalent."
+  },
+  "5afa531a907509a7": {
+    "equiv": false,
+    "reason": "One location is specified as 'Agadir' and the other is null, which makes them not equivalent."
+  },
+  "21894658742e67a1": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range, making them not equivalent."
+  },
+  "8d429bf12c2fc59e": {
+    "equiv": false,
+    "reason": "One value is null while the other specifies a date range."
+  },
+  "2ae309ba4e320976": {
+    "equiv": false,
+    "reason": "One value is a specific date range while the other is null."
+  },
+  "85fe1e9e974c9d47": {
+    "equiv": false,
+    "reason": "The vessel names 'EMINE ANNE' and 'FIRTINA S' are distinct."
+  },
+  "98ddb2bc144f453d": {
+    "equiv": false,
+    "reason": "West Black Sea and Aegean Sea are distinct maritime locations."
+  },
+  "d38b05133e4fdefb": {
+    "equiv": false,
+    "reason": "The reference specifies a date range (14-16 May), while the model specifies a single, different date (12 May 2026)."
+  },
+  "abe8839f0bf04ed1": {
+    "equiv": false,
+    "reason": "One vessel name is null while the other is not."
+  },
+  "abc5eddf12db9341": {
+    "equiv": false,
+    "reason": "One location is specified as null, while the other is 'WEST BLACK SEA'."
+  },
+  "9539c8d35fc25187": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date, making them non-equivalent."
+  },
+  "d9d3314c80f332d5": {
+    "equiv": false,
+    "reason": "One location is null, while the other is specified."
+  },
+  "4b5845ca523579dd": {
+    "equiv": false,
+    "reason": "One value is null while the other is 'Prompt'."
+  },
+  "664073ecb875935e": {
+    "equiv": false,
+    "reason": "One location is specified as 'Bizerte' while the other is null, making them not equivalent."
+  },
+  "919044b1f19abe04": {
+    "equiv": false,
+    "reason": "One value is null while the other specifies a date range."
+  },
+  "a2b74cb9cf39ffbd": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date."
+  },
+  "0ab3e173d84d7df0": {
+    "equiv": false,
+    "reason": "One value is null while the other is not, indicating they are not equivalent."
+  },
+  "20a37ad13ee121df": {
+    "equiv": false,
+    "reason": "One location is null, the other is not."
+  },
+  "e332f7f3f7f3fed5": {
+    "equiv": false,
+    "reason": "One value is a date range and the other is null, which means they are not equivalent."
+  },
+  "a3be54ee4e28d8eb": {
+    "equiv": false,
+    "reason": "One location is null, which means they are not equivalent."
+  },
+  "61e335a2477b4fc0": {
+    "equiv": false,
+    "reason": "One value is a specific date range while the other is null, which makes them not equivalent."
+  },
+  "27ade88a5c38be68": {
+    "equiv": false,
+    "reason": "One location is null while the other is specified, making them non-equivalent."
+  },
+  "ff0538f6b9095397": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range, making them not equivalent."
+  },
+  "c3f239b96ca5d441": {
+    "equiv": true,
+    "reason": "identical strings"
+  },
+  "45014578476a44e6": {
+    "equiv": true,
+    "reason": "Both dates refer to the same specific day, just in different formats."
+  },
+  "28edaaef99f5043f": {
+    "equiv": false,
+    "reason": "One location is null while the other is specified, therefore they are not equivalent."
+  },
+  "7177fabdbbe22fe5": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date, violating the equivalence rule for nulls."
+  },
+  "2e8ebf099a3f53d3": {
+    "equiv": false,
+    "reason": "One name is null while the other is not."
+  },
+  "c2f9405124675fe0": {
+    "equiv": false,
+    "reason": "One location is null while the other is specified, making them not equivalent."
+  },
+  "f8116a8d73132a64": {
+    "equiv": false,
+    "reason": "One location is null while the other is specified."
+  },
+  "390e93f199727f81": {
+    "equiv": false,
+    "reason": "One location is null while the other is not."
+  },
+  "a3f4bd5fd55f1b0e": {
+    "equiv": false,
+    "reason": "One value is a specific date range, while the other is null."
+  },
+  "e30a63830a15074a": {
+    "equiv": false,
+    "reason": "One location is null while the other is a specific port."
+  },
+  "488c853f370298f4": {
+    "equiv": false,
+    "reason": "One description is null while the other is not, which makes them not equivalent."
+  },
+  "7e52f770b06ffdf2": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range, making them not equivalent."
+  },
+  "1b943685c0fdfe98": {
+    "equiv": false,
+    "reason": "One location is specified, while the other is null, making them not equivalent."
+  },
+  "3364251c123b187b": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range."
+  },
+  "6960bda7100eb2b6": {
+    "equiv": false,
+    "reason": "One location is null, while the other is specified."
+  },
+  "142d6d35b7a35060": {
+    "equiv": false,
+    "reason": "One location is null while the other is specified, hence they are not equivalent."
+  },
+  "5f599429263caaa4": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date, making them non-equivalent."
+  },
+  "3a58bef75948658b": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range."
+  },
+  "38b657da9b8e5f93": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date range."
+  },
+  "9a5532b2102eb19c": {
+    "equiv": false,
+    "reason": "One location is null while the other is not, which means they are not equivalent."
+  },
+  "2fdb9af6dd079a87": {
+    "equiv": false,
+    "reason": "One value is a specific date range, while the other is null."
+  },
+  "22a586777b62e61e": {
+    "equiv": true,
+    "reason": "identical strings"
+  },
+  "81a1454dd0ace11c": {
+    "equiv": true,
+    "reason": "Both dates represent the same single day, just in different formats."
+  },
+  "6be063765d61dcee": {
+    "equiv": true,
+    "reason": "identical strings"
+  },
+  "bfaaa07ffcaa3214": {
+    "equiv": false,
+    "reason": "The reference specifies a date range (Feb 10-15) while the model specifies a single date (Feb 10), which are different windows."
+  },
+  "d3b7d9c48d4c66f5": {
+    "equiv": true,
+    "reason": "identical strings"
+  },
+  "8336d80046d05006": {
+    "equiv": false,
+    "reason": "The reference specifies a date range from 25th to 29th February, while the model specifies only the 25th February."
+  },
+  "ebdc25373285ca3a": {
+    "equiv": true,
+    "reason": "identical strings"
+  },
+  "35f0f3eca5058b36": {
+    "equiv": false,
+    "reason": "One value represents a date range, while the other represents a single date."
+  },
+  "1a07beb21c2c4ae2": {
+    "equiv": false,
+    "reason": "One value represents a date range (March 10-15, 2024) while the other represents a single date (March 10, 2024), which are different windows."
+  },
+  "297c232a7dbd4020": {
+    "equiv": true,
+    "reason": "identical strings"
+  },
+  "c862ca442bbe65a9": {
+    "equiv": false,
+    "reason": "One value is null while the other is a specific date."
+  }
+}

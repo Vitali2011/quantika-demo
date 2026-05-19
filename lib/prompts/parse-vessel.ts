@@ -154,8 +154,8 @@ Extract per vessel:
 - built: year built
 - class_society: e.g. BV, LR, DNV, NK, ABS
 - p_and_i: P&I club
-- dwt_summer: deadweight tonnage (summer)
-- dwcc: deadweight cargo capacity
+- dwt_summer: deadweight tonnage (summer). Stated in email as "X DWT", "X dwt", "X mt deadweight", "X DWAT". Extract the numeric value as a ConfidenceField.
+- dwcc: deadweight cargo capacity. CRITICAL DISTINCTION FROM DWT: DWCC is always LESS than DWT (DWT = DWCC + fuel, water, stores, ballast, provisions). Extract dwcc ONLY when the email explicitly states a DWCC figure — look for keywords "DWCC", "CC", "cargo cap", "cargo capacity" followed by a tonnage. If the email gives DWT only (with no separate DWCC figure), set dwcc=null. NEVER set dwcc = dwt_summer. NEVER derive dwcc from dwt.
 - draft_max: maximum draft in meters. IMPORTANT: if the email gives draft only as part of the DWCC line (e.g. "DWCC 11,800 mts at 7.8m draft"), use that value as draft_max with confidence='interpreted' and note in source_text that it is the DWCC draft — the vessel's structural maximum draft may differ. Only use confidence='confirmed' if the email explicitly states "Max draft: X" or "Draft summer: X".
 - loa: length overall in meters
 - beam: beam in meters
@@ -173,7 +173,7 @@ Extract per vessel:
 - grain_capacity_unit: MUST be lowercase — either "cbm" or "cbft". Never uppercase "CBM" or "CBFT".
 - crane_capacity: e.g. "4 x 30T"
 - hatch_type: e.g. MacGregor, folding, pontoon
-- vessel_type: e.g. BULK CARRIER, MPP, GENERAL CARGO, CONTAINER, RORO, TANKER
+- vessel_type: vessel class — SHORT LABEL only: BULK CARRIER, MPP, GENERAL CARGO, CONTAINER, RORO, TANKER, HEAVYLIFT. CRITICAL: vessel_type is a classification label, NOT a description field. Do NOT embed DWT figures, crane specs, open positions, dates, grain capacity, or any other field values inside vessel_type — each of those has its own dedicated field.
 - cii_rating: IMO Carbon Intensity Indicator grade. One of "A" | "B" | "C" | "D" | "E" | null.
   IMPORTANT: CII rating frequently appears ONLY in the subject line as
   "CII Grade X", "CII X", or "IMO CII Grade X" — always check the Subject:
@@ -293,6 +293,7 @@ Fields \`imo\`, \`dwt_summer\`, \`dwcc\`, \`built\`, \`loa\`, \`beam\`, \`draft_
 \`holds_count\`, \`hatches_count\`, \`grain_capacity\`, \`bale_capacity\`, \`tank_top_strength\`,
 \`deck_capacity\`, \`speed_laden\`, \`speed_ballast\` MUST be numbers (not strings).
 Example: imo=9401256 (number), NOT imo="9401256" (string).
+NULL vs ZERO for ConfidenceField numeric fields (built, dwt_summer, dwcc, loa, beam, etc.): when absent from the email, omit the field entirely (return null for the whole field). Do NOT return {value: 0} as a substitute for "not present" — zero is a valid number meaning the email literally states "0". Only use 0 if the source text contains the value zero.
 
 FIELD NAMES — exact spelling required:
 Use exact field names from the schema above. Critical examples that are commonly mis-spelled:
