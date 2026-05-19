@@ -69,6 +69,26 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const _dwtMax = dwtMaxParam ? parseInt(dwtMaxParam, 10) : undefined;
     const dwtMax = _dwtMax !== undefined && !isNaN(_dwtMax) ? _dwtMax : undefined;
 
+    // Reverse / out-of-domain range validation (return 400, not silently empty).
+    if (dwtMin !== undefined && dwtMax !== undefined && dwtMin > dwtMax) {
+      return NextResponse.json(
+        { error: 'dwt_min must be <= dwt_max' },
+        { status: 400 }
+      );
+    }
+    if (laycanFromMs !== undefined && laycanToMs !== undefined && laycanFromMs > laycanToMs) {
+      return NextResponse.json(
+        { error: 'laycan_from must be <= laycan_to' },
+        { status: 400 }
+      );
+    }
+    if (scoreMin !== undefined && (scoreMin < 0 || scoreMin > 100)) {
+      return NextResponse.json(
+        { error: 'score_min must be between 0 and 100' },
+        { status: 400 }
+      );
+    }
+
     const matches = listMatches(db, {
       status,
       sortBy,

@@ -152,8 +152,14 @@ export function listMatches(db: Database.Database, opts: ListMatchesOptions): St
   }
 
   if (route !== undefined && route !== '') {
-    conditions.push(`(LOWER(load_port) LIKE LOWER(?) OR LOWER(discharge_port) LIKE LOWER(?))`);
-    const pattern = `%${route}%`;
+    // Escape SQL LIKE metacharacters so user input matches literally.
+    // Backslash must be escaped first; ESCAPE '\' tells SQLite to treat
+    // \%, \_, \\ as literal characters.
+    const escaped = route.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_');
+    conditions.push(
+      `(LOWER(load_port) LIKE LOWER(?) ESCAPE '\\' OR LOWER(discharge_port) LIKE LOWER(?) ESCAPE '\\')`
+    );
+    const pattern = `%${escaped}%`;
     params.push(pattern, pattern);
   }
 

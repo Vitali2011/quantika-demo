@@ -1,6 +1,5 @@
-// @ts-nocheck — RED phase: route doesn't support M3 filters yet; impl agent adds them
 /**
- * RED tests — GET /api/matches — M3 advanced filter query params
+ * Tests — GET /api/matches — M3 advanced filter query params
  *
  * Covers (Class 9 — E2E behavioral via real NextRequest/NextResponse route import):
  *   - ?cargo_type=grain → filters by single cargo_type
