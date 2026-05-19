@@ -169,6 +169,7 @@ Extract per vessel:
 - p_and_i: P&I club
 - dwt_summer: deadweight tonnage (summer)
 - dwcc: deadweight cargo capacity
+  DWCC EXTRACTION RULE: Extract dwcc ONLY when the email explicitly states a DWCC value (e.g. "DWCC 28,500 MT", "deadweight cargo capacity: 28,500"). Do NOT infer dwcc from dwt_summer when dwcc is not explicitly mentioned. When dwcc is not stated → set dwcc = null.
 - draft_max: maximum draft in meters. IMPORTANT: if the email gives draft only as part of the DWCC line (e.g. "DWCC 11,800 mts at 7.8m draft"), use that value as draft_max with confidence='interpreted' and note in source_text that it is the DWCC draft — the vessel's structural maximum draft may differ. Only use confidence='confirmed' if the email explicitly states "Max draft: X" or "Draft summer: X".
 - loa: length overall in meters
 - beam: beam in meters
