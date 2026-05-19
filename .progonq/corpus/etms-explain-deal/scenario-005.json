@@ -1,0 +1,80 @@
+{
+  "id": "etms-explain-deal-005",
+  "source": "synthetic — Opus 4.7 composed (Phase E8 R0)",
+  "category": "null-cargo-edge-case",
+  "language": "en",
+  "input": {
+    "match": {
+      "cargoEmailId": "synthetic-cargo-ed-005",
+      "cargoItemIndex": 0,
+      "vesselEmailId": "synthetic-vessel-ed-005",
+      "vesselItemIndex": 0,
+      "score": 65,
+      "matchLevel": "moderate",
+      "matchReasons": [
+        "DWT range compatible with vessel capacity"
+      ],
+      "issues": [
+        "Cargo data unavailable — parse error",
+        "Cannot fully evaluate cargo-vessel compatibility"
+      ],
+      "economics": null
+    },
+    "cargo": null,
+    "vessel": {
+      "emailId": "synthetic-vessel-ed-005",
+      "itemIndex": 0,
+      "vesselName": { "value": "MV ADRIATIC SKY", "confidence": "confirmed" },
+      "imo": "9456789",
+      "flag": "Malta",
+      "built": 2015,
+      "classSociety": "ABS",
+      "pandi": "Skuld",
+      "dwtSummer": { "value": 14000, "confidence": "confirmed" },
+      "dwcc": { "value": 13700, "confidence": "confirmed" },
+      "draftMax": { "value": 8.3, "confidence": "confirmed" },
+      "loa": 155.0,
+      "beam": 22.0,
+      "grt": 9500,
+      "nrt": 5000,
+      "holdsCount": 3,
+      "hatchesCount": 3,
+      "grainCapacity": 18500,
+      "grainCapacityUnit": "cbm",
+      "baleCapacity": 17800,
+      "holdDimensions": null,
+      "hatchDimensions": null,
+      "tankTopStrength": null,
+      "geared": true,
+      "craneCapacity": "3x25T",
+      "hatchType": "folding",
+      "vesselType": "multipurpose",
+      "openPosition": { "value": "Split", "confidence": "confirmed" },
+      "openDate": { "value": "20 June 2026", "confidence": "confirmed" },
+      "direction": "southbound",
+      "restrictions": [],
+      "lastCargoes": "Project cargo, steel",
+      "speedLaden": "13 kts",
+      "speedBallast": "13.5 kts",
+      "consumption": "14 MT MGO laden",
+      "deckCapacity": "800 MT",
+      "specialFeatures": ["heavy-lift 120T", "tweendeck"]
+    }
+  },
+  "expected": {
+    "sections_present": [
+      "Market Context",
+      "Deal Rationale",
+      "Key Risks",
+      "Recommended Next Steps"
+    ],
+    "must_cite_facts": ["14000", "Split"],
+    "must_not_contain": [
+      "$28 per ton",
+      "cargo weight is 12000",
+      "origin port Odessa",
+      "Cargill charterer"
+    ],
+    "language": "en"
+  }
+}

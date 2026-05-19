@@ -1,0 +1,107 @@
+{
+  "id": "etms-explain-deal-002",
+  "source": "synthetic — Opus 4.7 composed (Phase E8 R0)",
+  "category": "marginal-match",
+  "language": "en",
+  "input": {
+    "match": {
+      "cargoEmailId": "synthetic-cargo-ed-002",
+      "cargoItemIndex": 0,
+      "vesselEmailId": "synthetic-vessel-ed-002",
+      "vesselItemIndex": 0,
+      "score": 61,
+      "matchLevel": "marginal",
+      "matchReasons": [
+        "DWT 18500 covers cargo 15000 MT with margin",
+        "Vessel geared, charterer requires geared tonnage"
+      ],
+      "issues": [
+        "TCE 11200 is 25% below market 15000",
+        "Vessel ETA 5 June: 4-day gap before laycan 1 June",
+        "Last cargo: fertilizers — cleaning required"
+      ],
+      "economics": { "tce": 11200, "marketTce": 15000 }
+    },
+    "cargo": {
+      "emailId": "synthetic-cargo-ed-002",
+      "itemIndex": 0,
+      "originPort": { "value": "Karasu", "confidence": "confirmed" },
+      "originCountry": "Turkey",
+      "destinationPort": { "value": "Dakar", "confidence": "confirmed" },
+      "destinationCountry": "Senegal",
+      "cargoDescription": { "value": "15000 MT grain in bulk", "confidence": "confirmed" },
+      "weightMt": { "value": 15000, "confidence": "confirmed" },
+      "weightMtMin": 14000,
+      "weightMtMax": 16000,
+      "volumeCbm": null,
+      "dimensions": null,
+      "cargoType": "bulk",
+      "containerType": null,
+      "quantity": null,
+      "incoterms": "FIO",
+      "preferredDates": { "value": "1-10 June 2026", "confidence": "confirmed" },
+      "laycan": "1-10 June 2026",
+      "loadingRate": "2000 MTPD SHINC",
+      "dischargeRate": "1500 MTPD SHINC",
+      "commissionPercent": 3.75,
+      "commissionTerms": "TTL",
+      "specialRequirements": "Grain-fitted vessel required",
+      "stowageFactor": "1.35 CBM/MT",
+      "missingInfo": []
+    },
+    "vessel": {
+      "emailId": "synthetic-vessel-ed-002",
+      "itemIndex": 0,
+      "vesselName": { "value": "MV ATLAS STAR", "confidence": "confirmed" },
+      "imo": "9234567",
+      "flag": "Cyprus",
+      "built": 2003,
+      "classSociety": "DNV",
+      "pandi": "UK P&I Club",
+      "dwtSummer": { "value": 18500, "confidence": "confirmed" },
+      "dwcc": { "value": 18200, "confidence": "confirmed" },
+      "draftMax": { "value": 9.1, "confidence": "confirmed" },
+      "loa": 162.0,
+      "beam": 24.2,
+      "grt": 11500,
+      "nrt": 6200,
+      "holdsCount": 4,
+      "hatchesCount": 4,
+      "grainCapacity": 23500,
+      "grainCapacityUnit": "cbm",
+      "baleCapacity": 22800,
+      "holdDimensions": null,
+      "hatchDimensions": null,
+      "tankTopStrength": null,
+      "geared": true,
+      "craneCapacity": "4x30T",
+      "hatchType": "folding",
+      "vesselType": "bulk carrier",
+      "openPosition": { "value": "Black Sea", "confidence": "confirmed" },
+      "openDate": { "value": "5 June 2026", "confidence": "confirmed" },
+      "direction": "southbound",
+      "restrictions": [],
+      "lastCargoes": "Fertilizers",
+      "speedLaden": "12.5 kts",
+      "speedBallast": "13 kts",
+      "consumption": "16 MT IFO laden",
+      "deckCapacity": null,
+      "specialFeatures": ["grain-fitted"]
+    }
+  },
+  "expected": {
+    "sections_present": [
+      "Market Context",
+      "Deal Rationale",
+      "Key Risks",
+      "Recommended Next Steps"
+    ],
+    "must_cite_facts": ["15000", "11200", "Karasu"],
+    "must_not_contain": [
+      "$22 per ton",
+      "sanctions cleared",
+      "vetting approved by RightShip"
+    ],
+    "language": "en"
+  }
+}
