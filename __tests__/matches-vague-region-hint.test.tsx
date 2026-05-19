@@ -105,3 +105,19 @@ describe('MatchesClient.tsx — vague-region hint conditionality', () => {
     expect(src).toMatch(/vagueRegionAdjustment|reason_structured/);
   });
 });
+
+// ──────────────────────────────────────────────────────────────────────────────
+// 7. Accessibility — role + aria-live (Phase F1 QA fix)
+// ──────────────────────────────────────────────────────────────────────────────
+
+describe('MatchesClient.tsx — vague-region hint accessibility', () => {
+  it('hint div has role="alert"', () => {
+    const src = readSource();
+    expect(src).toMatch(/role=["']alert["']/);
+  });
+
+  it('hint div has aria-live="polite"', () => {
+    const src = readSource();
+    expect(src).toMatch(/aria-live=["']polite["']/);
+  });
+});

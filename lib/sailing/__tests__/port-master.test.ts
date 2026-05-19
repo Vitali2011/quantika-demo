@@ -143,3 +143,28 @@ describe('port-master gap-fill: Bug E1 — 4 missing ports', () => {
     expect(getPortMaster('ANTALYA')).toEqual(getPortMaster('Antalya'));
   });
 });
+
+describe('port-master Phase F1 — Savona + Figueira da Foz draft corrections', () => {
+  it('Savona (ITSVN) maxDraftM is 15 (includes Vado Ligure SECH terminal)', () => {
+    const m = getPortMaster('Savona');
+    expect(m).not.toBeNull();
+    expect(m!.maxDraftM).toBe(15);
+  });
+
+  it('"Savona-Vado" alias is present in port-master JSON aliases field', () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const ports = require('@/data/ports/port-master.json') as Array<{ unlocode: string; aliases?: string[] }>;
+    const savona = ports.find((p) => p.unlocode === 'ITSVN');
+    expect(savona?.aliases).toContain('Savona-Vado');
+  });
+
+  it('Figueira da Foz (PTFDF) maxDraftM is 5.5 (conservative cargo berth depth)', () => {
+    const m = getPortMaster('Figueira da Foz');
+    expect(m).not.toBeNull();
+    expect(m!.maxDraftM).toBe(5.5);
+  });
+
+  it('Figueira da Foz is tidal', () => {
+    expect(getPortMaster('Figueira da Foz')!.tidal).toBe(true);
+  });
+});
