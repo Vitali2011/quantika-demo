@@ -1,0 +1,15 @@
+{
+  "id": "etms-match-012-no-match-sanctions-ukraine-odesa",
+  "category": "no-match",
+  "cargo_ref": "etms-parse-cargo/scenario-091",
+  "vessel_ref": "etms-parse-vessel/scenario-011",
+  "expected": {
+    "should_be_hard_filtered": true,
+    "match_level": null,
+    "score_range": null,
+    "must_cite_facts": [],
+    "must_NOT_invent": [],
+    "hard_filter_reason": "vessel restriction \"No Ukraine trading\" matches Odesa origin (Ukraine) — HIGH sanctions risk, blocking"
+  },
+  "notes": "Cargo Odesa→East Coast Italy 12000 mt wheat. Vessel MV GLORY TOM Casablanca 63695 dwt has explicit restrictions list including \"No Ukraine trading\" — regex /\\bno\\s+ukr\\b/i matches, route includes UA → checkSanctions returns risk=HIGH blocking=true → pair-analyzer filters out before LLM. Tests the vessel.restrictions sanctions path (not flag-based). Note: vessel 63695 dwt also overloads cargo at 535% — either filter is sufficient, sanctions is primary."
+}

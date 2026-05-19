@@ -1,0 +1,24 @@
+{
+  "id": "etms-match-017-weak-multi-cargo-sparse-asia-fanout",
+  "category": "weak",
+  "cargo_ref": "etms-parse-cargo/scenario-059",
+  "vessel_ref": "etms-parse-vessel/scenario-046",
+  "expected": {
+    "should_be_hard_filtered": false,
+    "match_level": "weak",
+    "score_range": [5, 35],
+    "must_cite_facts": [
+      "Cargo email contains 11 items, most with null weight — sparse data",
+      "Vessel MV ADAMAR open East Coast India dwt 17660 mt, draft 8.598 m, geared",
+      "A few items in same region (Ras Al Khaimah→Shuaiba 50000 mt, Fujairah→Mogadishu 50000 mt) overload vessel — should hard-filter individually",
+      "Remaining BREAK_BULK items with null weight produce low-confidence weak matches"
+    ],
+    "must_NOT_invent": [
+      "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+      "Specific freight rate or laycan window beyond what cargo email states",
+      "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+      "Charterer name or shipper identity unless explicit in cargo email"
+    ]
+  },
+  "notes": "Multi-cargo sparse-data fanout. Cargo-059 has 11 items, several with null weights and vague origin/destination ('Sudan port unspecified', 'Lirquén' Chile). Vessel-046 ADAMAR East Coast India 17660 dwt geared MPP. Tests robustness against null fields — overall match level should be weak because most pairs either hard-filter (50K mt items overload) or produce low confidence (null weights, unknown ports)."
+}

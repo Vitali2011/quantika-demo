@@ -1,0 +1,15 @@
+{
+  "id": "etms-match-015-no-match-draft-reni-river",
+  "category": "no-match",
+  "cargo_ref": "etms-parse-cargo/scenario-078",
+  "vessel_ref": "etms-parse-vessel/scenario-027",
+  "expected": {
+    "should_be_hard_filtered": true,
+    "match_level": null,
+    "score_range": null,
+    "must_cite_facts": [],
+    "must_NOT_invent": [],
+    "hard_filter_reason": "vessel draft 9.573 m exceeds Reni port max draft 7.0 m (Danube river port) — cannot load"
+  },
+  "notes": "Cargo Reni (UAREN, river port, port-master draft 7.0 m) → Tartous, 7300 mt bulk wheat, spot. Vessel MV LADY ZEHMA Adriatic dwt=32328 draft=9.573 m. checkDraft fails: 9.573 > 7.0. Tests inland river port (Danube) draft restriction. Also note vessel UA-route — if vessel had \"no Ukraine\" restriction this would double-block; current corpus vessel-027 has no such restriction → pure draft path."
+}

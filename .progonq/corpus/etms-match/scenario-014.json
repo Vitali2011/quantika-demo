@@ -1,0 +1,15 @@
+{
+  "id": "etms-match-014-no-match-draft-izmail-shallow",
+  "category": "no-match",
+  "cargo_ref": "etms-parse-cargo/scenario-009",
+  "vessel_ref": "etms-parse-vessel/scenario-036",
+  "expected": {
+    "should_be_hard_filtered": true,
+    "match_level": null,
+    "score_range": null,
+    "must_cite_facts": [],
+    "must_NOT_invent": [],
+    "hard_filter_reason": "vessel draft 10.55 m exceeds Izmail port max draft 7.1 m — cannot load"
+  },
+  "notes": "Cargo Izmail (UAIZM, port-master draft 7.1 m) → Antalya, 1500 mt break-bulk coal tar pitch big-bags. Vessel MV LADY MERAL Marmara dwt=32131 draft=10.55 m. checkDraft(originPort, draft_max) → 10.55 > 7.1 → fail. Pure draft hard-filter test (origin port shallow). Vessel is also 20× oversized for cargo — secondary under-utilization concern, but draft alone is decisive."
+}
