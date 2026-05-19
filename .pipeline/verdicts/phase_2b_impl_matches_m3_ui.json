@@ -1,0 +1,19 @@
+{
+  "phase": "2b",
+  "track": "B-ui",
+  "impl_files": ["app/matches/MatchesClient.tsx"],
+  "green_verified": true,
+  "green_command": "npx jest matches-client-m3 --no-coverage",
+  "green_command_output": "Test Suites: 1 passed, 1 total\nTests:       60 passed, 60 total\nSnapshots:   0 total\nTime:        0.736 s, estimated 1 s\nRan all test suites matching matches-client-m3.",
+  "test_rewrite_count": 0,
+  "test_modification_requests": [],
+  "needs_review": false,
+  "internal_test_files": [],
+  "needs_review_round": 0,
+  "test_patches_accepted_total": 0,
+  "tests_expected": 60,
+  "tests_run": 60,
+  "test_files_sha_before": "89ffc9d929777fb7aa9f3942a7800e057120a1f914e7ec6333e8577a6b4f9eec  __tests__/matches-client-m3.test.tsx",
+  "test_files_sha_after": "89ffc9d929777fb7aa9f3942a7800e057120a1f914e7ec6333e8577a6b4f9eec  __tests__/matches-client-m3.test.tsx",
+  "setup_mismatch": false
+}

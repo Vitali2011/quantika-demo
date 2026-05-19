@@ -1,0 +1,103 @@
+{
+  "phase": "3_qi",
+  "feature": "matches-m3",
+  "verdict": "PASS",
+  "timestamp": "2026-05-18T13:00:00.000Z",
+  "reviewer": "qi-agent-independent",
+  "initial_verdict": "FAIL",
+  "fixes_applied": true,
+  "fixes_summary": [
+    "H1 FIXED: setMatches(data) → setMatches(data.matches) in handleApplyFilters, handleClearFilters, handleBulkAction (MatchesClient.tsx lines ~94, ~112, ~149)",
+    "H2 FIXED: bulk PATCH body { ids, action } → { ids, status: action } (MatchesClient.tsx line ~137)",
+    "M1 FIXED: params.set('cargo_type', cargoTypes.join(',')) → for loop with params.append('cargo_type', ct) (MatchesClient.tsx line ~80)",
+    "M2 FIXED: added isNaN guard for dwtMin and dwtMax in GET /api/matches (route.ts lines ~64-66)",
+    "M3 FIXED: added isNaN guard for laycanFromMs and laycanToMs in GET /api/matches (route.ts lines ~57-58)"
+  ],
+  "post_fix_test_result": "128/128 M3 tests green (matches-bulk + matches-filters + matches-repository-filters + matches-client-m3)",
+  "findings": {
+    "critical": [],
+    "high": [],
+    "medium": [],
+    "low": [
+      {
+        "id": "L1",
+        "file": "lib/migrations/033-matches-score-breakdown.ts",
+        "lines": [7, 15],
+        "title": "Migration is not idempotent; re-run would throw SQLite 'duplicate column name' error",
+        "detail": "SQLite ALTER TABLE ADD COLUMN does not support IF NOT EXISTS. The migration runner itself tracks applied versions via schema version table, so this is only a risk if migration 033 up() is called directly (not through the runner). Acceptable LOW risk."
+      },
+      {
+        "id": "L2",
+        "file": "app/api/matches/bulk/route.ts",
+        "lines": [19, 24],
+        "title": "Feature flag checked before session auth in PATCH bulk — minor pattern inconsistency",
+        "detail": "PATCH bulk checks isFeatureEnabled() before requireSession(). Other handlers check auth first. Not a security issue (503 before 401 leaks no info) but inconsistent. Not fixed to minimize PI3 risk (no test covers this ordering)."
+      }
+    ],
+    "info": [
+      {
+        "id": "I1",
+        "file": "lib/matching/matches-repository.ts",
+        "title": "LOWER() wrapping for route LIKE filter is correct and injection-safe",
+        "detail": "Route filter uses LOWER(load_port) LIKE LOWER(?) with ? placeholder. Safe from SQL injection. Correctly handles ASCII case-insensitivity."
+      },
+      {
+        "id": "I2",
+        "title": "Static-analysis tests cannot catch runtime data-shape bugs (design limitation noted)",
+        "detail": "The 60 UI tests (matches-client-m3.test.tsx) use fs.readFileSync + regex. They confirmed API call patterns but could not detect the setMatches(data) vs setMatches(data.matches) mismatch (H1) or the { action } vs { status } body key mismatch (H2). These are runtime behavioral bugs that required human/QI review to catch. This is a known trade-off of the static-analysis test strategy used by this project."
+      }
+    ]
+  },
+  "boundary_checks": {
+    "class_1_empty": "PASS",
+    "class_2_nan": "PASS",
+    "class_3_negative": "PASS",
+    "class_5_dispatch": "PASS",
+    "class_6_substring": "PASS",
+    "class_9_e2e": "PASS"
+  },
+  "boundary_check_notes": {
+    "class_1_empty": "Empty ids → 400. Empty cargo_type array skips IN filter. Filter panel renders with empty matches list.",
+    "class_2_nan": "PASS (post-fix) — dwtMin/dwtMax and laycan timestamps now guarded with isNaN checks matching the limit/offset pattern.",
+    "class_3_negative": "Math.max(0, score_min) in repository clamps negatives to 0.",
+    "class_5_dispatch": "BULK_PATCH_VALID_TARGET_STATUSES.includes() rejects 'shortlist' and all non-enum values.",
+    "class_6_substring": "Array.includes() for status validation — exact match. 'save' does not match 'saved'.",
+    "class_9_e2e": "PASS (post-fix) — filter flow now correctly uses data.matches, cargo_type uses multi-value params, laycan overlap semantics correct."
+  },
+  "security_checks": {
+    "feature_flag": "PASS",
+    "session_auth": "PASS",
+    "admin_auth": "PASS",
+    "sql_injection": "PASS",
+    "input_validation": "PASS"
+  },
+  "security_check_notes": {
+    "feature_flag": "MATCHES_ENABLED checked in all 4 handlers (GET, POST, PATCH bulk, DELETE bulk). Returns 503 when disabled.",
+    "session_auth": "requireSession() in all 4 handlers. Returns 401 on missing/expired session.",
+    "admin_auth": "requireAdmin() in DELETE bulk only. Returns 500 if ADMIN_TOKEN unconfigured, 401 if header missing/wrong.",
+    "sql_injection": "All params use ? placeholders. No string interpolation of user values into SQL. Sort allowlist prevents injection via sort_by/sort_dir.",
+    "input_validation": "PASS (post-fix) — NaN guards added for dwtMin/dwtMax and laycan timestamps."
+  },
+  "pi3_compliance": {
+    "backend_test_rewrite_count": 0,
+    "ui_test_rewrite_count": 0,
+    "compliant": true,
+    "notes": "phase_2b verdicts confirm test_rewrite_count=0 for both backend and UI. Fixes applied in Phase 3 are production-code-only changes; no test expectations were modified."
+  },
+  "type_safety_checks": {
+    "stored_match_7_new_fields": "PASS",
+    "reason_structured_typed_string_null": "PASS",
+    "list_matches_options_7_filters": "PASS"
+  },
+  "migration_checks": {
+    "uses_alter_table": "PASS",
+    "all_columns_nullable": "PASS",
+    "idempotency_guard": "FAIL (LOW — runner-level protection exists)"
+  },
+  "laycan_semantics_check": {
+    "verdict": "PASS",
+    "detail": "laycan_end >= laycan_from AND laycan_start <= laycan_to — correct range-overlap semantics (not containment)."
+  },
+  "pass_criteria": "0 CRITICAL + 0 HIGH = PASS",
+  "verdict_reason": "All HIGH and MEDIUM findings fixed. 2 LOW findings remain (non-blocking). 128/128 M3 tests pass post-fix."
+}

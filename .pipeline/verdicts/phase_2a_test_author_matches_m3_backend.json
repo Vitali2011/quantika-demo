@@ -1,0 +1,24 @@
+{
+  "phase": "2a",
+  "track": "A-backend",
+  "tests_written": 68,
+  "test_files": [
+    "lib/matching/__tests__/matches-repository-filters.test.ts",
+    "__tests__/api/matches-filters.test.ts",
+    "__tests__/api/matches-bulk.test.ts"
+  ],
+  "red_verified": true,
+  "red_command": "npx jest --testPathPatterns 'matches-repository-filters|matches-filters|matches-bulk' --no-coverage",
+  "red_command_output": "Test Suites: 3 failed, 3 total\nTests: 57 failed, 11 passed, 68 total\nSnapshots: 0 total\nTime: 2.075 s\nRan all test suites matching matches-repository-filters|matches-filters|matches-bulk.",
+  "assumptions_count": 7,
+  "spec_ambiguities_flagged": [
+    "Empty ids array in bulk PATCH/DELETE — spec silent; tests assume 400 rejection",
+    "Negative score_min — spec only says 'score >= score_min'; tests assume clamped to 0 / ignored",
+    "PATCH /api/matches/bulk accepts only saved|dismissed|archived as target status (not shortlist)",
+    "Laycan filter overlap semantics: laycan_start <= laycan_to AND laycan_end >= laycan_from (rows with null excluded when filter active)",
+    "Route filter uses case-insensitive LIKE '%route%' on both load_port and discharge_port",
+    "requireAdmin is mocked in bulk DELETE tests — verifies handler passes result to caller, not header parsing internals",
+    "Invalid score_min (NaN) silently ignored by API layer — returns all matches rather than 400"
+  ],
+  "boundary_classes_covered": [1, 2, 3, 5, 6, 9]
+}

@@ -49,7 +49,40 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const offsetParsed = offsetParam ? parseInt(offsetParam, 10) : undefined;
     const offset = offsetParsed !== undefined && !isNaN(offsetParsed) && offsetParsed >= 0 ? offsetParsed : undefined;
 
-    const matches = listMatches(db, { status, sortBy, sortDir, limit, offset });
+    const cargoTypes = searchParams.getAll('cargo_type');
+    const route = searchParams.get('route') ?? undefined;
+
+    const laycanFrom = searchParams.get('laycan_from');
+    const laycanTo = searchParams.get('laycan_to');
+    const _laycanFromMs = laycanFrom ? new Date(laycanFrom).getTime() : undefined;
+    const _laycanToMs = laycanTo ? new Date(laycanTo).getTime() : undefined;
+    const laycanFromMs = _laycanFromMs !== undefined && !isNaN(_laycanFromMs) ? _laycanFromMs : undefined;
+    const laycanToMs = _laycanToMs !== undefined && !isNaN(_laycanToMs) ? _laycanToMs : undefined;
+
+    const scoreMinParam = searchParams.get('score_min');
+    const scoreMin = scoreMinParam !== null && !isNaN(Number(scoreMinParam)) ? Number(scoreMinParam) : undefined;
+
+    const dwtMinParam = searchParams.get('dwt_min');
+    const _dwtMin = dwtMinParam ? parseInt(dwtMinParam, 10) : undefined;
+    const dwtMin = _dwtMin !== undefined && !isNaN(_dwtMin) ? _dwtMin : undefined;
+    const dwtMaxParam = searchParams.get('dwt_max');
+    const _dwtMax = dwtMaxParam ? parseInt(dwtMaxParam, 10) : undefined;
+    const dwtMax = _dwtMax !== undefined && !isNaN(_dwtMax) ? _dwtMax : undefined;
+
+    const matches = listMatches(db, {
+      status,
+      sortBy,
+      sortDir,
+      limit,
+      offset,
+      cargo_type: cargoTypes,
+      route,
+      laycan_from: laycanFromMs,
+      laycan_to: laycanToMs,
+      score_min: scoreMin,
+      dwt_min: dwtMin,
+      dwt_max: dwtMax,
+    });
 
     return NextResponse.json({ matches }, { status: 200 });
   } catch {
@@ -73,7 +106,21 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   try {
     const body = await request.json();
-    const { cargo_id, vessel_id, score, reason, status, user_id } = body;
+    const {
+      cargo_id,
+      vessel_id,
+      score,
+      reason,
+      status,
+      user_id,
+      reason_structured,
+      cargo_type,
+      load_port,
+      discharge_port,
+      laycan_start,
+      laycan_end,
+      vessel_dwt,
+    } = body;
 
     if (!cargo_id || typeof cargo_id !== 'string' || cargo_id.trim() === '') {
       return NextResponse.json(
@@ -98,6 +145,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       reason: typeof reason === 'string' ? reason : '{}',
       status: VALID_STATUSES.includes(status as MatchStatus) ? (status as MatchStatus) : undefined,
       user_id: user_id ?? null,
+      reason_structured: reason_structured ?? null,
+      cargo_type: cargo_type ?? null,
+      load_port: load_port ?? null,
+      discharge_port: discharge_port ?? null,
+      laycan_start: laycan_start ?? null,
+      laycan_end: laycan_end ?? null,
+      vessel_dwt: vessel_dwt ?? null,
     });
 
     return NextResponse.json(match, { status: 201 });

@@ -1,0 +1,18 @@
+{
+  "phase": "2a",
+  "track": "B-ui",
+  "tests_written": 60,
+  "test_files": ["__tests__/matches-client-m3.test.tsx"],
+  "red_verified": true,
+  "red_command": "npx jest --testPathPatterns=matches-client-m3 --no-coverage",
+  "red_command_output": "Tests:       48 failed, 12 passed, 60 total\nSnapshots:   0 total\nTime:        1.05 s\nRan all test suites matching matches-client-m3.\n\nTest Suites: 1 failed, 1 total\n\nSample failure (last shown):\n  at Object.toMatch (__tests__/matches-client-m3.test.tsx:412:17)\n  expect(src).toMatch(/grain.*coal.*ore.*container.*project|grain[\\s\\S]{0,200}coal[\\s\\S]{0,200}ore[\\s\\S]{0,200}container[\\s\\S]{0,200}project/)\n  Received: string (current MatchesClient.tsx — pre-M3, no filter panel or bulk actions)",
+  "assumptions_count": 5,
+  "spec_ambiguities_flagged": [
+    "Breakdown state persistence: spec allows either URL ?breakdown=<id> OR localStorage — impl must document choice; tests assert component-level useState pattern",
+    "Checkbox visibility: spec allows 'hidden until first selection' OR 'always visible' — tests assume always-visible; impl must document choice",
+    "Delete (admin) button: spec allows 'visible but disabled' OR 'always visible' — tests assert button always rendered; conditional render would break tests",
+    "Filter API trigger timing: spec says 'filter changes trigger API call' but does not specify Apply-button vs debounced-input; tests only verify the URL pattern exists",
+    "Archive All confirm threshold: spec says N > 5; tests assert literal '> 5' in source — impl must use that exact comparison"
+  ],
+  "boundary_classes_covered": [1, 5, 9, 10]
+}

@@ -1,0 +1,52 @@
+{
+  "phase": "1",
+  "task_id": "matches-m3",
+  "task_description": "M3 polish: advanced DB filters (7 new filter params), score breakdown UI (reason_structured column + expandable panel), bulk actions API (PATCH bulk status atomic + DELETE admin-only) + UI (checkboxes, sticky footer, confirm modal)",
+  "files_in_scope": [
+    "lib/migrations/033-matches-score-breakdown.ts",
+    "lib/migrations/index.ts",
+    "lib/matching/matches-repository.ts",
+    "app/api/matches/route.ts",
+    "app/api/matches/bulk/route.ts",
+    "app/matches/MatchesClient.tsx",
+    "__tests__/api/matches-filters.test.ts",
+    "__tests__/api/matches-bulk.test.ts",
+    "lib/matching/__tests__/matches-repository-filters.test.ts",
+    "__tests__/matches-client-m3.test.tsx"
+  ],
+  "scope_size": 10,
+  "cross_cutting_surface": [
+    {"file": "lib/matching/matches-repository.ts", "symbol": "listMatches,createMatch,StoredMatch", "risk": "HIGH"},
+    {"file": "app/api/matches/route.ts", "symbol": "GET/POST handlers", "risk": "HIGH"},
+    {"file": "app/api/matches/bulk/route.ts", "symbol": "PATCH/DELETE bulk", "risk": "HIGH"},
+    {"file": "__tests__/api/matches.test.ts", "symbol": "existing GET/POST tests", "risk": "MEDIUM"},
+    {"file": "__tests__/api/matches-id.test.ts", "symbol": "existing PATCH tests", "risk": "LOW"}
+  ],
+  "rule_g_triggered": true,
+  "rule_g_reason": "scope≥3 production files, includes migration + API + UI",
+  "boundary_classes_planned": [1, 2, 3, 5, 6, 7, 9, 10],
+  "gotchas_acknowledged": ["worktree-from-main", "pi3-needs-review", "sqlite-in-clause-array-spreading", "confirm-modal-state-not-url"],
+  "assumptions_path": ".pipeline/phase_1_scope_matches_m3.md",
+  "key_assumptions": [
+    "No cargos/vessels entity tables — filter metadata denormalized into matches table as nullable columns",
+    "reason_structured stores existing ScoreBreakdown type (components[] array), not spec's named shape",
+    "DELETE /api/matches/bulk uses double auth (requireSession + requireAdmin), no AUTH_BYPASS_PATHS needed",
+    "Backward compatible: new columns nullable, existing createMatch callers unaffected"
+  ],
+  "work_fronts": [
+    {
+      "id": "A",
+      "name": "Backend",
+      "files": ["lib/migrations/033-matches-score-breakdown.ts", "lib/migrations/index.ts", "lib/matching/matches-repository.ts", "app/api/matches/route.ts", "app/api/matches/bulk/route.ts"],
+      "test_files": ["__tests__/api/matches-filters.test.ts", "__tests__/api/matches-bulk.test.ts", "lib/matching/__tests__/matches-repository-filters.test.ts"]
+    },
+    {
+      "id": "B",
+      "name": "UI",
+      "files": ["app/matches/MatchesClient.tsx"],
+      "test_files": ["__tests__/matches-client-m3.test.tsx"]
+    }
+  ],
+  "overlap_check": "CLEAR — no file shared between Front A and Front B",
+  "escalate_to": null
+}

@@ -164,3 +164,86 @@ transition/i)`. If the implementation throws a different error subclass (e.g., a
   `archived → saved` but does not explicitly state that `archived → dismissed` is invalid
   until the invalid-transitions list. Tests cover both the explicit valid and all explicit
   invalid transitions from the spec.
+
+---
+
+# Phase 2a — Matches M3 Backend Assumptions
+
+1. **Empty ids array in bulk endpoints is rejected with 400**: The spec does not define
+   behavior for an empty `ids` array in PATCH or DELETE bulk. Tests assume `{ ids: [] }`
+   is rejected with 400 (a no-op bulk action is likely a client mistake). If the
+   implementation treats it as a valid no-op returning 200 with `updated: []` or
+   `deleted: []`, two tests must be updated to use `expect(res.status).toBe(200)`.
+
+2. **Negative score_min is treated as 0 (applies no effective filter)**: The spec says
+   `score >= score_min` but does not specify how to handle negative values. Tests assume
+   negative score_min is silently clamped to 0, so all rows qualify. If the impl rejects
+   negative score_min with 400, tests in the repository and API filter suites must be
+   updated accordingly.
+
+3. **PATCH /api/matches/bulk rejects 'shortlist' as target status with 400**: The spec
+   states valid body statuses are `saved|dismissed|archived`. Tests assume 'shortlist'
+   as a target is invalid (400), consistent with the spec's enumeration. If the impl
+   accepts any valid MatchStatus including 'shortlist' as a target (and validates
+   transitions individually), this specific test needs revision.
+
+4. **Laycan filter uses range-overlap semantics (not containment)**: The spec states
+   `laycan_start <= laycan_to AND laycan_end >= laycan_from`. Tests encode this as
+   "the match's laycan window overlaps with the query window" — a match starting before
+   the query window but ending within it IS included. Rows with null laycan_start or
+   laycan_end are excluded when any laycan filter is active.
+
+5. **Route filter searches load_port OR discharge_port with LIKE '%route%'**: The spec
+   explicitly states this. Tests verify both fields independently and case-insensitively.
+   The assumption is that SQLite LIKE is used (case-insensitive by default for ASCII).
+   If non-ASCII port names are used, LOWER() wrapping may be needed.
+
+6. **DELETE /api/matches/bulk uses requireAdmin mock, not real X-Admin-Token header
+   matching**: Tests mock `requireAdmin` directly at the module level. The mock returns
+   null (allowed) by default and returns 401/500 responses when configured. This means
+   tests verify that the route handler correctly passes the result of `requireAdmin` to
+   the caller — they do NOT test that `requireAdmin` itself reads the header correctly
+   (that is covered by `lib/auth/admin.ts` unit tests elsewhere).
+
+7. **PATCH /api/matches/bulk accepts `saved|dismissed|archived` as valid target statuses
+   only**: The spec body definition says `status: 'saved'|'dismissed'|'archived'`. Tests
+   verify that 'shortlist' and non-enum values like 'pending' or 'save' are rejected with 400. If the spec is amended to allow 'shortlist' as a bulk target (e.g., to un-shortlist
+   matching), tests Class 6 assertions will need revision.
+
+---
+
+# Phase 2a — Matches M3 UI Assumptions
+
+1. **Score breakdown state persisted in component-level useState (not URL or localStorage)**:
+   The spec says either URL `?breakdown=<id>` or localStorage is acceptable. Tests assert
+   a state variable named `expandedBreakdown` (or similar) exists at the component level.
+   Assumption: the impl agent uses `useState` for this. If the impl uses URL params instead,
+   tests for `expandedBreakdown` will fail and the contract is still met via the URL state
+   assertions (which also cover this indirectly). The impl agent should document the actual
+   choice in a comment in MatchesClient.tsx.
+
+2. **Bulk checkbox visibility is always-visible (not hidden until another is selected)**:
+   The spec says "hidden when no other checkboxes selected OR always visible — document
+   choice". Tests assert `type="checkbox"` appears in the source without conditional hide
+   logic. If the impl hides checkboxes behind a hover/first-selection interaction, the
+   checkbox tests still pass (the `type="checkbox"` attribute must appear in the JSX
+   regardless of visibility logic). The impl agent must document the choice.
+
+3. **Delete (admin) button is always rendered but disabled without admin token**:
+   The spec says "visible but disabled unless user has provided admin token OR always
+   visible". Tests only verify the button text "Delete" and the word "admin" appear; they
+   do not assert `disabled` attribute or token-checking logic. If the impl conditionally
+   renders Delete only when an admin token is present, the test will fail when no token is
+   in state (because the Delete text won't appear). The impl must always render the button.
+
+4. **Filter API call is triggered after "Apply" click, not on each keystroke**:
+   The spec says filter changes trigger an API call to `/api/matches?<filter_params>`.
+   Tests assert that `/api/matches?` or `/api/matches${` appears in the source. This does
+   not mandate debouncing or immediate-change behavior. The impl agent may choose either
+   pattern (Apply-button-triggered or debounced-input-triggered) — tests only verify the
+   URL pattern exists in the source.
+
+5. **"Archive All when N > 5" confirm check uses `> 5`, not `>= 5` or `> 4`**:
+   The spec says "when N > 5". Tests assert the literal `> 5` pattern in source. If the
+   impl uses `>= 6` (equivalent but not literally `> 5`), the source-level regex will
+   fail. The impl should use `> 5` explicitly.
