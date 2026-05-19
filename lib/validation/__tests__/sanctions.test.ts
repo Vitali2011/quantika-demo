@@ -459,3 +459,38 @@ describe('checkSanctions — soft-text restrictions (Phase E1)', () => {
     expect(r.blocking).toBe(false);
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase E1 Round 2 — QA adversarial reproducers
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('checkSanctions — soft-text per-restriction past-tense (QA Round 2)', () => {
+  // QA HIGH: mixed restrictions — one historical, one forward-looking
+  // The historical entry should be skipped individually; the forward-looking
+  // 'avoid Ukraine' entry MUST still block.
+  it('mixed restrictions [historical, forward-looking] → HIGH blocking (per-restriction past-tense)', () => {
+    const r = checkSanctions({
+      vesselFlag: 'PA',
+      originPort: 'Odesa',
+      destinationPort: null,
+      restrictions: [
+        'no Russian cargo last year',  // historical — must be skipped individually
+        'avoid Ukraine',               // forward-looking — must still block
+      ],
+    });
+    expect(r.risk).toBe('HIGH');
+    expect(r.blocking).toBe(true);
+  });
+
+  // QA MEDIUM: "no longer" indicates a LIFTED restriction — should NOT block
+  it('"no longer avoid Ukraine" → NONE (lifted restriction)', () => {
+    const r = checkSanctions({
+      vesselFlag: 'PA',
+      originPort: 'Odesa',
+      destinationPort: null,
+      restrictions: ['no longer avoid Ukraine'],
+    });
+    expect(r.risk).toBe('NONE');
+    expect(r.blocking).toBe(false);
+  });
+});
