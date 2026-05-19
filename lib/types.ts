@@ -423,6 +423,8 @@ export interface ScoreBreakdown {
   readinessAdjustment: number;
   sanctionsAdjustment: number;
   finalScore: number;
+  /** Penalty applied when vessel position or cargo origin is a vague geographic region (e.g. 'East Coast Greece'). */
+  vagueRegionAdjustment?: number;
   /** Sum of confidence-weighted component points (may be lower than basePhysical). */
   confidenceAdjustedScore?: number;
 }

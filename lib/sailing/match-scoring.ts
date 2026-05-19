@@ -28,6 +28,7 @@ function getMinMultiplier(...fields: (ConfidenceField<unknown> | null | undefine
 }
 import { portHasShoreCranes } from './port-master';
 import { STOWAGE_FACTORS, checkCargoVesselCompat } from './match-filters';
+import { isVagueRegion } from './vague-region-detector';
 
 // ────────────────────────────────────────────────────────────────────────────
 // Cargo history keyword sets for scoring quality within compatible pairs
@@ -273,7 +274,16 @@ export function applyReadinessScoring(
 // Geographic proximity — piecewise step scoring
 // ────────────────────────────────────────────────────────────────────────────
 
-function scoreGeographicProximity(distanceNm: number | null): { points: number; reason: string } {
+function scoreGeographicProximity(
+  distanceNm: number | null,
+  vagueLabel: string | null = null,
+): { points: number; reason: string } {
+  if (vagueLabel) {
+    return {
+      points: 2,
+      reason: `position vague (${vagueLabel}) — cannot estimate proximity precisely`,
+    };
+  }
   if (distanceNm == null) {
     return { points: 6, reason: 'distance could not be computed from available port data' };
   }
@@ -329,8 +339,20 @@ export function computeScoreBreakdown(input: ScoreBreakdownInput): ScoreBreakdow
 
   // 1. Geographic proximity
   // Confidence: cargo.originPort, vessel.openPosition
+  // Phase D2: detect vague-region (e.g. 'East Coast Greece', 'Tunisia') — if so, cap geo points
+  // and apply a flat score penalty so vague pairs drop to the 'weak' tier.
   const distance = readiness?.distanceNm ?? null;
-  const { points: distRaw, reason: distReason } = scoreGeographicProximity(distance);
+  const vesselPosVague = isVagueRegion(cfValue(vessel.openPosition));
+  const cargoOriginVague = isVagueRegion(cfValue(cargo.originPort));
+  const vagueDetection = vesselPosVague.vague
+    ? { label: `vessel position: ${vesselPosVague.pattern}`, pattern: vesselPosVague.pattern }
+    : cargoOriginVague.vague
+      ? { label: `cargo origin: ${cargoOriginVague.pattern}`, pattern: cargoOriginVague.pattern }
+      : null;
+  const { points: distRaw, reason: distReason } = scoreGeographicProximity(
+    distance,
+    vagueDetection?.label ?? null,
+  );
   const distMult = getMinMultiplier(cargo.originPort, vessel.openPosition);
   components.push({ label: 'Geographic proximity', points: distRaw * distMult, max: 20, reason: distReason, confidenceMultiplier: distMult });
 
@@ -482,13 +504,26 @@ export function computeScoreBreakdown(input: ScoreBreakdownInput): ScoreBreakdow
   let sanctionsAdjustment = 0;
   if (sanctions?.risk === 'MEDIUM') sanctionsAdjustment = -10;
 
-  const finalScore = Math.max(0, Math.min(100, confidenceAdjustedScore + readinessAdjustment + sanctionsAdjustment));
+  // Vague-region adjustment (Phase D2): when vessel position or cargo origin is a broad
+  // geographic descriptor (sea name, country only, coast range, etc.), we cannot reliably
+  // assess timing OR proximity. Apply a flat penalty so such pairs naturally drop into
+  // the 'weak' tier — the broker should re-engage the owner for a specific port.
+  const vagueRegionAdjustment = vagueDetection ? -20 : 0;
+
+  const finalScore = Math.max(
+    0,
+    Math.min(
+      100,
+      confidenceAdjustedScore + readinessAdjustment + sanctionsAdjustment + vagueRegionAdjustment,
+    ),
+  );
 
   return {
     components,
     basePhysical,
     readinessAdjustment,
     sanctionsAdjustment,
+    vagueRegionAdjustment,
     finalScore,
     confidenceAdjustedScore,
   };
