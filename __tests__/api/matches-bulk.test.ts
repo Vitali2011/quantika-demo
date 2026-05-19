@@ -1,6 +1,5 @@
-// @ts-nocheck — RED phase: bulk route doesn't exist yet; impl agent creates it
 /**
- * RED tests — PATCH /api/matches/bulk + DELETE /api/matches/bulk
+ * Tests — PATCH /api/matches/bulk + DELETE /api/matches/bulk
  */
 
 import Database from 'better-sqlite3';
