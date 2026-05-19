@@ -31,20 +31,25 @@ const KNOWN_SLUGS = [
   'igc',
   'unlocode',
   'baltic-indices',
+  'fx-rates',
 ] as const;
 
-const handlers: Record<string, () => Promise<void>> = Object.fromEntries(
-  KNOWN_SLUGS.map((slug) => [
-    slug,
-    async () => {
-      const modulePath = `./sources/${slug}`;
-      const mod = await import(modulePath);
-      await mod.refresh();
-    },
-  ]),
-);
+/** Returns the slug→handler dispatch map. Exported for testability. */
+export function getHandlers(): Record<string, () => Promise<void>> {
+  return Object.fromEntries(
+    KNOWN_SLUGS.map((slug) => [
+      slug,
+      async () => {
+        const modulePath = `./sources/${slug}`;
+        const mod = await import(modulePath);
+        await mod.refresh();
+      },
+    ]),
+  );
+}
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
+  const handlers = getHandlers();
   const slug = process.argv[2];
 
   if (!slug) {

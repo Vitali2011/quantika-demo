@@ -46,3 +46,10 @@ jobs:
               -o ConnectTimeout=10 \
               root@185.249.225.169 \
               "quantika-demo ${{ github.sha }}"
+      - name: Post-deploy seed guard
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+              -o StrictHostKeyChecking=accept-new \
+              -o ConnectTimeout=10 \
+              root@185.249.225.169 \
+              "bash /root/quantika-demo/scripts/ops/post-deploy-seed.sh"
