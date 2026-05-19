@@ -71,13 +71,37 @@ function phraseToRange(phrase: string, year: number, monthIdx0: number): [number
  * @param refYear   year to use when only month/day are given
  * @param today     reference "now" for TODAY/spot (defaults to `new Date()`)
  */
+/**
+ * Extract a usable date string from a structured vessel-open-date value.
+ *
+ * The fixture-recap parser may emit `open_date.value` as either:
+ *   - a plain string (legacy / simple format), or
+ *   - an object {open: ISO|null, close: ISO|null, display: string|null}
+ *     where `open` is the parsed ISO date for range-start, and `display`
+ *     is the original human-readable text ("spot", "01-05 March", etc.).
+ *
+ * Prefers `open` (ISO-formatted, easier to parse) then `display` (fallback
+ * for phrase-style values like "spot"/"prompt"/"end March").
+ */
+function normalizeOpenDateInput(raw: unknown): string | null {
+  if (raw == null) return null;
+  if (typeof raw === 'string') return raw;
+  if (typeof raw === 'object') {
+    const obj = raw as { open?: unknown; display?: unknown };
+    if (typeof obj.open === 'string' && obj.open.trim()) return obj.open;
+    if (typeof obj.display === 'string' && obj.display.trim()) return obj.display;
+  }
+  return null;
+}
+
 export function parseVesselOpenDate(
-  raw: string | null | undefined,
+  raw: string | { open?: string | null; close?: string | null; display?: string | null } | null | undefined,
   refYear: number = new Date().getUTCFullYear(),
   today: Date = new Date(),
 ): Date | null {
-  if (!raw || typeof raw !== 'string') return null;
-  const s = raw.trim();
+  const normalized = normalizeOpenDateInput(raw);
+  if (!normalized) return null;
+  const s = normalized.trim();
   if (!s) return null;
 
   // TODAY / spot / prompt → reference "now"

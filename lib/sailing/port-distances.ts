@@ -102,7 +102,14 @@ const PORT_ALIASES: Record<string, KnownPort> = {
   'smyrna': 'Izmir',            // former name
   'marmara': 'Marmara',
   'marmara island': 'Marmara',
+  'marmara sea': 'Marmara',
+  'sea of marmara': 'Marmara',
   'bandirma': 'Marmara',        // same Sea of Marmara region
+  'hereke': 'Marmara',          // Hereke (Korfez Bay) — Marmara cluster
+  'gemlik': 'Marmara',          // Gemlik Bay — south Marmara
+  'mudanya': 'Marmara',         // Mudanya — south Marmara
+  'tekirdag': 'Marmara',        // Tekirdag — north Marmara
+  'tekirdağ': 'Marmara',
   'derince': 'Derince',         // Derince/Izmit — own canonical entry (hasShoreCranes fix)
   'izmit': 'Derince',           // Izmit is adjacent to Derince on Gulf of Izmit
   'izmit-derince': 'Derince',
@@ -953,36 +960,82 @@ export function setFuzzyCorpus(entries: Array<{ lookup: string; canonical: strin
  *   - Legacy aliases: "Odessa" → "Odesa", "Efesan" → "Aliaga", "Nikolaev" → "Mykolaiv"
  *   - Partial substring fallback: tries longest alias key that appears in the input
  */
+/**
+ * Extract parenthetical hint tokens from a raw port name.
+ * Example: "Hereke (Marmara)" → ["marmara"]; "Bay of Biscay (Bayonne/Bilbao range)" → ["bayonne", "bilbao"].
+ * Filters out 2-letter country codes (e.g. "TR", "EG") and noise words ("range", "cluster", "region", "area").
+ */
+function extractParenHints(raw: string): string[] {
+  const hints: string[] = [];
+  const pat = /\(([^)]+)\)/g;
+  let m: RegExpExecArray | null;
+  const noise = /\b(range|cluster|region|area)\b/gi;
+  while ((m = pat.exec(raw)) !== null) {
+    const content = m[1].replace(noise, '').trim();
+    if (!content) continue;
+    // Split on slash/comma/space to get individual port-name candidates
+    const tokens = content.split(/[\s/,]+/).filter(Boolean);
+    for (const tok of tokens) {
+      const lower = tok.toLowerCase();
+      // Skip 2-letter ISO country codes
+      if (/^[a-z]{2}$/.test(lower)) continue;
+      hints.push(lower);
+    }
+  }
+  return hints;
+}
+
 export function normalizePortName(raw: string | null | undefined): string | null {
   if (!raw || typeof raw !== 'string') return null;
+  // Capture parenthetical hints BEFORE stripping (used as fallback if primary name fails)
+  const parenHints = extractParenHints(raw);
   let s = stripCountry(stripParenthetical(raw)).trim();
   s = stripCountryCodeSuffix(s);
   s = stripPortPrefix(s);
-  if (!s) return null;
 
-  // Direct lowercase alias lookup
-  const direct = PORT_ALIASES[s.toLowerCase()];
-  if (direct) return direct;
+  if (s) {
+    // Direct lowercase alias lookup
+    const direct = PORT_ALIASES[s.toLowerCase()];
+    if (direct) return direct;
 
-  // Try each word/segment separately (handles "Bay of Biscay Bayonne" or "Izmir/Aliaga")
-  const parts = s.split(/[\s/()\-,]+/).filter(Boolean);
-  for (const part of parts) {
-    const hit = PORT_ALIASES[part.toLowerCase()];
-    if (hit) return hit;
+    // Try each word/segment separately (handles "Bay of Biscay Bayonne" or "Izmir/Aliaga")
+    const parts = s.split(/[\s/()\-,]+/).filter(Boolean);
+    for (const part of parts) {
+      const hit = PORT_ALIASES[part.toLowerCase()];
+      if (hit) return hit;
+    }
+
+    // Fuzzy fallback (typos, casing) — uses fuzzysort over alias + canonical
+    // names. fuzzysort v3 scores are in [0,1] (not the legacy negative scale).
+    // Threshold 0.3 is the empirical floor that catches single-letter typos
+    // ("Karsu"→Karasu scores ~0.35) while filtering near-garbage subsequences.
+    // Minimum length guard: inputs shorter than 4 chars are too ambiguous for
+    // fuzzy matching and are left to the direct alias table above.
+    const corpus = getFuzzyCorpus();
+    const cleaned = s.toLowerCase();
+    if (cleaned.length >= 4) {
+      const results = fuzzysort.go(cleaned, corpus, { key: 'lookup', threshold: 0.3, limit: 1 });
+      if (results.length > 0) {
+        return results[0].obj.canonical;
+      }
+    }
   }
 
-  // Fuzzy fallback (typos, casing) — uses fuzzysort over alias + canonical
-  // names. fuzzysort v3 scores are in [0,1] (not the legacy negative scale).
-  // Threshold 0.3 is the empirical floor that catches single-letter typos
-  // ("Karsu"→Karasu scores ~0.35) while filtering near-garbage subsequences.
-  // Minimum length guard: inputs shorter than 4 chars are too ambiguous for
-  // fuzzy matching and are left to the direct alias table above.
-  const corpus = getFuzzyCorpus();
-  const cleaned = s.toLowerCase();
-  if (cleaned.length < 4) return null;
-  const results = fuzzysort.go(cleaned, corpus, { key: 'lookup', threshold: 0.3, limit: 1 });
-  if (results.length > 0) {
-    return results[0].obj.canonical;
+  // Parenthetical-hint fallback: e.g. "Hereke (Marmara)" — primary "Hereke" failed,
+  // but "Marmara" is a known cluster name. This is broker-style geographic hinting
+  // ("[obscure port] ([known region])") that the parser surfaces in the cargo input.
+  for (const hint of parenHints) {
+    const direct = PORT_ALIASES[hint];
+    if (direct) return direct;
+  }
+  // Second pass on hints via fuzzy fallback
+  for (const hint of parenHints) {
+    if (hint.length < 4) continue;
+    const corpus = getFuzzyCorpus();
+    const results = fuzzysort.go(hint, corpus, { key: 'lookup', threshold: 0.3, limit: 1 });
+    if (results.length > 0) {
+      return results[0].obj.canonical;
+    }
   }
 
   return null;
