@@ -683,3 +683,177 @@ describe('Range-aware DWT scoring', () => {
     expect(c.points).toBe(10);
   });
 });
+
+// ────────────────────────────────────────────────────────────────────────────
+// Phase D2: vague-region penalty
+//
+// When vessel.openPosition or cargo.originPort is a broad geographic
+// descriptor (e.g. 'East Coast Greece', 'Tunisia', 'Aegean Sea') rather than a
+// specific port, distance cannot be estimated and the pair carries no
+// actionable timing signal. Cap the Geographic-proximity component AND apply a
+// flat `vagueRegionAdjustment` so the final score drops into the 'weak' tier.
+// ────────────────────────────────────────────────────────────────────────────
+
+describe('Vague-region penalty — Phase D2', () => {
+  const sanctions = { risk: 'NONE', blocking: false } as MatchSanctions;
+
+  it('vessel open-position is a country only → geo capped at 2 pts and vagueRegionAdjustment = -15', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo(),  // Karasu — specific port
+      vessel: mkVessel({ openPosition: { value: 'Tunisia', confidence: 'confirmed' } }),
+      readiness: mkReadinessWithDist(null),
+      sanctions,
+    });
+    const geo = geoComponent(b);
+    expect(geo.points).toBe(2);
+    expect(geo.reason).toMatch(/vague/);
+    expect(geo.reason).toMatch(/country only/);
+    expect(b.vagueRegionAdjustment).toBe(-20);
+  });
+
+  it('vessel position is a sea name → vague penalty applied', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo(),
+      vessel: mkVessel({ openPosition: { value: 'Aegean Sea', confidence: 'confirmed' } }),
+      readiness: mkReadinessWithDist(null),
+      sanctions,
+    });
+    const geo = geoComponent(b);
+    expect(geo.points).toBe(2);
+    expect(geo.reason).toMatch(/sea name/);
+    expect(b.vagueRegionAdjustment).toBe(-20);
+  });
+
+  it('vessel position is a coast descriptor → vague penalty applied', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo(),
+      vessel: mkVessel({ openPosition: { value: 'East Coast Greece', confidence: 'confirmed' } }),
+      readiness: mkReadinessWithDist(null),
+      sanctions,
+    });
+    const geo = geoComponent(b);
+    expect(geo.points).toBe(2);
+    expect(geo.reason).toMatch(/coast descriptor/);
+    expect(b.vagueRegionAdjustment).toBe(-20);
+  });
+
+  it('cargo origin is vague (country only) → penalty applied even if vessel position is specific', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({ originPort: { value: 'Greece', confidence: 'confirmed' } }),
+      vessel: mkVessel(),  // Karasu — specific
+      readiness: mkReadinessWithDist(null),
+      sanctions,
+    });
+    const geo = geoComponent(b);
+    expect(geo.points).toBe(2);
+    expect(geo.reason).toMatch(/cargo origin/);
+    expect(b.vagueRegionAdjustment).toBe(-20);
+  });
+
+  it('both sides specific → NO vague penalty, scoring unchanged', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo(),  // Karasu
+      vessel: mkVessel(),  // Karasu
+      readiness: mkReadinessWithDist(400),
+      sanctions,
+    });
+    const geo = geoComponent(b);
+    expect(geo.points).toBe(16);  // 400nm → 16 pts (short ballast tier)
+    expect(b.vagueRegionAdjustment).toBe(0);
+  });
+
+  it('null distance with both sides specific → null-distance path (6 pts), NOT vague path', () => {
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo(),
+      vessel: mkVessel(),
+      readiness: mkReadinessWithDist(null),
+      sanctions,
+    });
+    const geo = geoComponent(b);
+    expect(geo.points).toBe(6);
+    expect(geo.reason).toMatch(/distance could not be computed/);
+    expect(b.vagueRegionAdjustment).toBe(0);
+  });
+
+  it('vessel position vague → vague-region penalty drops finalScore vs same pair with specific port', () => {
+    // Reproduce W1 vessel-1 / 'East Coast Greece' scenario.
+    const readinessNullDist: MatchReadiness = {
+      openDate: '2025-09-05',
+      laycanStart: '2025-09-10',
+      laycanEnd: '2025-09-12',
+      distanceNm: null,
+      speedKn: null,
+      sailingDays: null,
+      arrivalDate: null,
+      gapDays: null,
+      verdict: 'unknown',
+      explanation: 'distance unavailable',
+    };
+    const vaguePair = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo(),
+      vessel: mkVessel({ openPosition: { value: 'East Coast Greece', confidence: 'confirmed' } }),
+      readiness: readinessNullDist,
+      sanctions,
+    });
+    const specificPair = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo(),
+      vessel: mkVessel(),  // Karasu (specific port)
+      readiness: readinessNullDist,
+      sanctions,
+    });
+    expect(vaguePair.vagueRegionAdjustment).toBe(-20);
+    expect(specificPair.vagueRegionAdjustment).toBe(0);
+    // Vague pair should be at least 20 points lower than the otherwise-identical specific pair.
+    expect(specificPair.finalScore - vaguePair.finalScore).toBeGreaterThanOrEqual(20);
+  });
+
+  it('vague-region penalty pushes a borderline-possible match into the weak tier', () => {
+    // W1-style scenario with weaker non-geo signal (no cargo history, no specific stowage).
+    const b = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({
+        cargoDescription: { value: 'general cargo', confidence: 'interpreted' },
+        cargoType: 'OTHER',
+        weightMt: { value: 4500, confidence: 'interpreted' },
+      }),
+      vessel: mkVessel({
+        openPosition: { value: 'Tunisia', confidence: 'interpreted' },
+        geared: null,
+        lastCargoes: null,
+      }),
+      readiness: mkReadinessWithDist(null),
+      sanctions,
+    });
+    expect(b.vagueRegionAdjustment).toBe(-20);
+    // Score should land in or near the weak tier — exact threshold depends on other fields.
+    expect(b.finalScore).toBeLessThan(50);
+  });
+
+  it('vague pattern label reflects which side is vague (vessel vs cargo)', () => {
+    const bVessel = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo(),
+      vessel: mkVessel({ openPosition: { value: 'Red Sea', confidence: 'confirmed' } }),
+      readiness: mkReadinessWithDist(null),
+      sanctions,
+    });
+    expect(geoComponent(bVessel).reason).toMatch(/vessel position/);
+
+    const bCargo = computeScoreBreakdown({
+      match: mkMatch(),
+      cargo: mkCargo({ originPort: { value: 'Red Sea', confidence: 'confirmed' } }),
+      vessel: mkVessel(),
+      readiness: mkReadinessWithDist(null),
+      sanctions,
+    });
+    expect(geoComponent(bCargo).reason).toMatch(/cargo origin/);
+  });
+});
