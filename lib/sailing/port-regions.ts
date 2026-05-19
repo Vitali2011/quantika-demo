@@ -62,6 +62,7 @@ const PORT_REGION_MAP: Record<KnownPort, PortRegion> = {
   'Barcelona':    'Mediterranean',
   'Valencia':     'Mediterranean',
   'Algeciras':    'Mediterranean',
+  'Gibraltar':    'Mediterranean',
   'Marseille':    'Mediterranean',
   'Tunis':        'Mediterranean',
   'Izmir':        'Mediterranean',
