@@ -1,27 +1,19 @@
 {
   "phase": "2b",
   "impl_files": [
-    "lib/migrations/032-matches.ts",
-    "lib/migrations/index.ts",
-    "lib/matching/matches-repository.ts",
-    "app/api/matches/route.ts",
-    "app/api/matches/[id]/route.ts",
-    "app/matches/page.tsx",
-    "app/matches/MatchesClient.tsx"
+    "scripts/progonq/judge-explain-deal.ts",
+    "scripts/progonq/run-explain-deal.ts"
   ],
   "green_verified": true,
-  "green_command": "./node_modules/.bin/jest --testPathPatterns '032-matches|matches-repository|api/matches|matches-page'",
-  "green_command_output": "Test Suites: 5 passed, 5 total\nTests: 136 passed, 136 total\nSnapshots: 0 total\nTime: 1.795s",
+  "green_command": "npx jest scripts/progonq/__tests__/judge-explain-deal.test.ts --no-coverage",
+  "green_command_output": "Tests: 22 passed, 22 total",
   "test_rewrite_count": 0,
   "test_modification_requests": [],
   "needs_review": false,
   "internal_test_files": [],
   "needs_review_round": 0,
   "test_patches_accepted_total": 0,
-  "tests_expected": 133,
-  "tests_run": 136,
-  "test_files_sha_before": "b48297667da955e260fb1799580f4ee5be3759c776cb8cde4eb3ea30ba3f7765 lib/migrations/__tests__/032-matches.test.ts\n700543504efacde7e2fe9707ca2d93ebc023888a2d6381e1a6c91ea9139e35ab lib/matching/__tests__/matches-repository.test.ts\n2bc7fe8b77c206e29b50111a2380189e18ebaca807b54dbb1830ca861930fb18 __tests__/api/matches.test.ts\n2644ec5e6fc673a04e68b526070c1114ba6153d9352f81ea41d52ab8d195b6f2 __tests__/api/matches-id.test.ts\n5a400c25c88ff61721764b3ea5dd688f1e3bb229c8ceddb473e9f5a3b8596e48 __tests__/matches-page.test.tsx",
-  "test_files_sha_after": "b48297667da955e260fb1799580f4ee5be3759c776cb8cde4eb3ea30ba3f7765 lib/migrations/__tests__/032-matches.test.ts\n700543504efacde7e2fe9707ca2d93ebc023888a2d6381e1a6c91ea9139e35ab lib/matching/__tests__/matches-repository.test.ts\n2bc7fe8b77c206e29b50111a2380189e18ebaca807b54dbb1830ca861930fb18 __tests__/api/matches.test.ts\n2644ec5e6fc673a04e68b526070c1114ba6153d9352f81ea41d52ab8d195b6f2 __tests__/api/matches-id.test.ts\n5a400c25c88ff61721764b3ea5dd688f1e3bb229c8ceddb473e9f5a3b8596e48 __tests__/matches-page.test.tsx",
-  "setup_mismatch": false,
-  "orchestrator_notes": "3 auth tests + 2 regex TS errors fixed by orchestrator after 2b: removed jest.resetModules() (broke mock refs; feature flag is runtime-checked), removed /s flag (ES2018, target is ES2017). Deleted app/__tests__/matches-page.test.tsx (tested DEMO_MATCHES skeleton, obsolete after M1 replacement). Tests grew from 133 to 136 (3 auth tests now counted, were previously red). test_rewrite_count=0: no expected values changed."
+  "tests_expected": 22,
+  "tests_run": 22,
+  "setup_mismatch": false
 }
