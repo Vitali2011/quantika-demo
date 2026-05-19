@@ -45,7 +45,7 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 - ✅ parse-vessel **dwcc 51.9%→94.9%, open_position 19.7%→92%, open_date 27.7%→91.1%** (был silent-null months из-за schema rename)
 - ✅ parse-cargo cargo 91.8% / laycan 93.2% (GT normalization waves)
 - ✅ parse-recap eval harness built, baseline 55.8% (noisy на 3 scenarios)
-- ⚠️ /matches: M1 + M3 код merged (PR #227 + #234), **но `MATCHES_ENABLED` НЕ выставлен на prod env** → редиректит на `/` (см. §1.0 finding)
+- ✅ /matches: M1 + M3 LIVE — MATCHES_ENABLED=true выставлен 2026-05-19, rebuild + systemctl restart
 - ✅ 3 missing webhook routes добавлены в AUTH_BYPASS (PR #221) — после rebuild на правильном хосте outreach-vps работают
 - 🟡 Discovered: prod = outreach-vps (NOT dev-vps); 14 PRs не были на проде до systemctl restart
 
@@ -73,12 +73,12 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 #### 🚨 Critical drifts (ROADMAP/memory расходятся с prod env)
 
-| #      | Claim (ROADMAP/memory)                            | Prod reality                                                                                 | Impact                                                                                                                                                     |
-| ------ | ------------------------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **F1** | `AI_PROVIDER=gemini`, 7/7 scopes Gemini default   | `AI_PROVIDER=openai` на outreach-vps                                                         | LLM costs могут быть 5-15× выше; memory `project_quantika_demo_gemini_default_2026_05_17` потенциально wrong → нужно расследование (см. chip-task spawned) |
-| **F2** | `MATCH_PROVIDER=gemini`                           | `MATCH_PROVIDER=bedrock`                                                                     | /matches scoring идёт через AWS Bedrock; cost + reliability риск (memory: Bedrock Opus access lost 2026-05-17)                                             |
-| **F3** | /matches M1+M3 LIVE (PR #227 + #234)              | **`MATCHES_ENABLED` не выставлен** на prod env → `app/matches/page.tsx` редиректит на `/`    | /matches фактически недоступна demo users; единственная новая фича за неделю effectively dark                                                              |
-| **F4** | 8 γ-flags LIVE (batch-1/2/3 activated 2026-05-17) | 3 из 8 actually `false`: `MULTI_CURRENCY_V2_ENABLED`, `SUBS_TIMER_ENABLED`, `FUELEU_ENABLED` | γ-01 / γ-08 / γ-11 фичи не работают; ROADMAP §2.2 нужна правка (см. ниже)                                                                                  |
+| #      | Claim (ROADMAP/memory)                            | Prod reality                                                                          | Impact                                                                                                                                                     |
+| ------ | ------------------------------------------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **F1** | `AI_PROVIDER=gemini`, 7/7 scopes Gemini default   | `AI_PROVIDER=openai` на outreach-vps                                                  | LLM costs могут быть 5-15× выше; memory `project_quantika_demo_gemini_default_2026_05_17` потенциально wrong → нужно расследование (см. chip-task spawned) |
+| **F2** | `MATCH_PROVIDER=gemini`                           | `MATCH_PROVIDER=bedrock`                                                              | /matches scoring идёт через AWS Bedrock; cost + reliability риск (memory: Bedrock Opus access lost 2026-05-17)                                             |
+| **F3** | /matches M1+M3 LIVE (PR #227 + #234)              | ✅ **FIXED 2026-05-19** — MATCHES_ENABLED=true, rebuild + restart; HTTP 200           | Resolved                                                                                                                                                   |
+| **F4** | 8 γ-flags LIVE (batch-1/2/3 activated 2026-05-17) | ✅ **FIXED 2026-05-19** — все 3 флага true, NEXT_PUBLIC pairs обновлены, rebuild done | Resolved                                                                                                                                                   |
 
 #### 🟠 High — broken pages
 
@@ -247,18 +247,18 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 **Полностью выполнено 2026-05-17.** Все 8 γ-флагов LIVE на проде.
 
-| Флаг                       | Статус                                                                                                           | PR/commit              |
-| -------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------- |
-| `SUBS_TIMER_V2` (γ-08)     | ✅ LIVE                                                                                                          | batch-1                |
-| `LAYTIME_ENGINE` (γ-05)    | ✅ LIVE                                                                                                          | batch-1                |
-| `BIMCO_RAG` (γ-09)         | ✅ LIVE                                                                                                          | batch-1                |
-| `CHARTERER_CREDIT` (γ-02)  | ✅ LIVE                                                                                                          | batch-2                |
-| `PSC_DETENTION` (γ-03)     | ✅ LIVE                                                                                                          | batch-2                |
-| `FUELEU` (γ-11)            | ❌ **DRIFT** — на проде `FUELEU_ENABLED=false` (2026-05-19 UI audit). См. §1.0 F4 + chip-task для re-activation. |
-| `ROI_GUARANTEE` (γ-18)     | ✅ LIVE                                                                                                          | batch-3 (PR #187 seed) |
-| `MULTI_CURRENCY_V2` (γ-01) | ❌ **DRIFT** — на проде `MULTI_CURRENCY_V2_ENABLED=false`. См. §1.0 F4.                                          |
-| `SUBS_TIMER_V2` (γ-08)     | ❌ **DRIFT** — на проде `SUBS_TIMER_ENABLED=false`. См. §1.0 F4.                                                 |
-| `MATCHES_ENABLED` (M1+M3)  | ❌ **NOT SET** — флаг не выставлен на prod env → /matches редиректит. См. §1.0 F3.                               |
+| Флаг                       | Статус                                                                 | PR/commit              |
+| -------------------------- | ---------------------------------------------------------------------- | ---------------------- |
+| `SUBS_TIMER_V2` (γ-08)     | ✅ LIVE                                                                | batch-1                |
+| `LAYTIME_ENGINE` (γ-05)    | ✅ LIVE                                                                | batch-1                |
+| `BIMCO_RAG` (γ-09)         | ✅ LIVE                                                                | batch-1                |
+| `CHARTERER_CREDIT` (γ-02)  | ✅ LIVE                                                                | batch-2                |
+| `PSC_DETENTION` (γ-03)     | ✅ LIVE                                                                | batch-2                |
+| `FUELEU` (γ-11)            | ✅ **LIVE** — re-activated 2026-05-19 (was DRIFT; env fixed + rebuild) |
+| `ROI_GUARANTEE` (γ-18)     | ✅ LIVE                                                                | batch-3 (PR #187 seed) |
+| `MULTI_CURRENCY_V2` (γ-01) | ✅ **LIVE** — re-activated 2026-05-19 (was DRIFT; env fixed + rebuild) |
+| `SUBS_TIMER_V2` (γ-08)     | ✅ **LIVE** — re-activated 2026-05-19 (was DRIFT; env fixed + rebuild) |
+| `MATCHES_ENABLED` (M1+M3)  | ✅ **LIVE** — activated 2026-05-19 (was NOT SET; env fixed + rebuild)  |
 
 ---
 
@@ -270,7 +270,7 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 Большая часть старого 7-day списка закрыта PR'ами #194-#233 (см. PR history). Новый приоритет — drift'ы из §1.0:
 
-1. **F3+F4** — Activate `MATCHES_ENABLED` + 3 γ-flags (MULTI_CURRENCY_V2, SUBS_TIMER_V2, FUELEU) на outreach-vps. Chip-task spawned 2026-05-19. ETA 30 мин (env edit + pm2 restart + verify).
+1. ✓ **F3+F4 DONE 2026-05-19** — MATCHES_ENABLED + 3 γ-flags activated; rebuild + systemctl restart; /matches HTTP 200.
 2. **F1+F2** — Расследовать AI_PROVIDER/MATCH_PROVIDER drift (prod = openai/bedrock vs ROADMAP claim Gemini). Chip-task spawned 2026-05-19. Решение либо update prod env, либо update memory `project_quantika_demo_gemini_default_2026_05_17` как wrong.
 3. **F5+F6+F7** — Fix /charterers/[id], /charterers, /processing — auth model gap (session_id required for API but demo_auth user не имеет). Chip-task spawned 2026-05-19.
 4. **C3** EU_SANCTIONS_TOKEN refresh (5 мин user) — token выставлен (`n00mo9i3`), но ROADMAP считал что expired — нужна проверка validity, не refresh.
