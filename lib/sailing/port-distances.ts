@@ -977,6 +977,37 @@ const DISTANCES_NM: Record<string, number> = {
   'Durban|Singapore': 4600,
   'CapeTown|Singapore': 6000,
   'Nacala|Durban': 1400,
+  // ── Phase D1: hand-curated corridor distances ──
+  // Pairs covering Suez transit, Bosphorus, Gibraltar, Adriatic and UK↔Continent
+  // corridors where haversine fallback is 40-60% under-shoot.
+  // Verified against existing matrix anchors (Alexandria|Suez=200, Dubai|Suez=2250,
+  // Liverpool|Rotterdam=400, Marghera|Ravenna=90) and BIMCO/searoutes references.
+  // Damietta (East Med, Egypt) — coastal anchor + Suez/Bosphorus/Atlantic corridors
+  'Alexandria|Damietta': 130,
+  'Damietta|Suez': 150,
+  'Damietta|Piraeus': 610,
+  'Damietta|Istanbul': 820,
+  'Antwerp|Damietta': 3490,
+  'Damietta|Rotterdam': 3510,
+  'Damietta|Hamburg': 3610,
+  // Vasto (mid Adriatic, Italy) — Adriatic + Bosphorus corridors
+  'Ravenna|Vasto': 210,
+  'Marghera|Vasto': 290,
+  'Piraeus|Vasto': 620,
+  'Istanbul|Vasto': 900,
+  'Odesa|Vasto': 1290,
+  // Fujairah / Sohar (Gulf of Oman) — Suez/Indian Ocean corridors
+  'Fujairah|Suez': 2200,
+  'Fujairah|Singapore': 3050,
+  'Sohar|Suez': 2230,
+  // Birkenhead (UK NW, Mersey) — Continent + Gibraltar corridors
+  // Anchored to Liverpool (same port complex, ~200m apart on Mersey)
+  'Birkenhead|Rotterdam': 400,
+  'Antwerp|Birkenhead': 420,
+  'Birkenhead|Hamburg': 580,
+  'Birkenhead|Casablanca': 1450,
+  'Birkenhead|Damietta': 3500,
+
 };
 
 function stripCountry(raw: string): string {

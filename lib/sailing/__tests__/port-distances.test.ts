@@ -892,3 +892,90 @@ describe('Phase C1: new port-master entries', () => {
     expect(d!.nm).toBeGreaterThan(0);
   });
 });
+
+describe('getPortDistance — Phase D1 hand-curated corridor pairs', () => {
+  // Each pair verified against BIMCO/searoutes-style anchors in the matrix.
+  // exact:true confirms the lookup hits the curated table, not haversine fallback.
+
+  describe('Damietta (East Med, Egypt)', () => {
+    it('Damietta ↔ Alexandria (coastal Egypt) = 130 NM exact', () => {
+      const d = getPortDistance('Damietta', 'Alexandria');
+      expect(d).toEqual({ nm: 130, exact: true });
+    });
+    it('Damietta ↔ Suez (Med to Suez Canal mouth) = 150 NM exact', () => {
+      expect(getPortDistance('Damietta', 'Suez')).toEqual({ nm: 150, exact: true });
+    });
+    it('Damietta ↔ Piraeus (Aegean crossing) = 610 NM exact', () => {
+      expect(getPortDistance('Damietta', 'Piraeus')).toEqual({ nm: 610, exact: true });
+    });
+    it('Damietta ↔ Istanbul (through Bosphorus) = 820 NM exact', () => {
+      expect(getPortDistance('Damietta', 'Istanbul')).toEqual({ nm: 820, exact: true });
+    });
+    it('Damietta ↔ Antwerp (via Gibraltar) = 3490 NM exact (haversine would be ~2400)', () => {
+      expect(getPortDistance('Damietta', 'Antwerp')).toEqual({ nm: 3490, exact: true });
+    });
+    it('Damietta ↔ Rotterdam (via Gibraltar) = 3510 NM exact', () => {
+      expect(getPortDistance('Damietta', 'Rotterdam')).toEqual({ nm: 3510, exact: true });
+    });
+    it('Damietta ↔ Hamburg (via Gibraltar) = 3610 NM exact', () => {
+      expect(getPortDistance('Damietta', 'Hamburg')).toEqual({ nm: 3610, exact: true });
+    });
+  });
+
+  describe('Vasto (mid Adriatic, Italy)', () => {
+    it('Vasto ↔ Ravenna (Adriatic Italian coast) = 210 NM exact', () => {
+      expect(getPortDistance('Vasto', 'Ravenna')).toEqual({ nm: 210, exact: true });
+    });
+    it('Vasto ↔ Marghera (top Adriatic) = 290 NM exact', () => {
+      expect(getPortDistance('Vasto', 'Marghera')).toEqual({ nm: 290, exact: true });
+    });
+    it('Vasto ↔ Piraeus (Otranto + Aegean) = 620 NM exact', () => {
+      expect(getPortDistance('Vasto', 'Piraeus')).toEqual({ nm: 620, exact: true });
+    });
+    it('Vasto ↔ Istanbul (via Aegean + Bosphorus) = 900 NM exact', () => {
+      expect(getPortDistance('Vasto', 'Istanbul')).toEqual({ nm: 900, exact: true });
+    });
+    it('Vasto ↔ Odesa (Adriatic to Black Sea via Bosphorus) = 1290 NM exact', () => {
+      expect(getPortDistance('Vasto', 'Odesa')).toEqual({ nm: 1290, exact: true });
+    });
+  });
+
+  describe('Fujairah / Sohar (Gulf of Oman bunkering)', () => {
+    it('Fujairah ↔ Suez (Indian Ocean + Red Sea) = 2200 NM exact', () => {
+      expect(getPortDistance('Fujairah', 'Suez')).toEqual({ nm: 2200, exact: true });
+    });
+    it('Fujairah ↔ Singapore (east trade route) = 3050 NM exact', () => {
+      expect(getPortDistance('Fujairah', 'Singapore')).toEqual({ nm: 3050, exact: true });
+    });
+    it('Sohar ↔ Suez (similar to Fujairah, ~30 NM closer) = 2230 NM exact', () => {
+      expect(getPortDistance('Sohar', 'Suez')).toEqual({ nm: 2230, exact: true });
+    });
+  });
+
+  describe('Birkenhead (UK NW, Mersey — Liverpool sister port)', () => {
+    it('Birkenhead ↔ Rotterdam (UK → Continent) = 400 NM exact', () => {
+      expect(getPortDistance('Birkenhead', 'Rotterdam')).toEqual({ nm: 400, exact: true });
+    });
+    it('Birkenhead ↔ Antwerp = 420 NM exact', () => {
+      expect(getPortDistance('Birkenhead', 'Antwerp')).toEqual({ nm: 420, exact: true });
+    });
+    it('Birkenhead ↔ Hamburg = 580 NM exact', () => {
+      expect(getPortDistance('Birkenhead', 'Hamburg')).toEqual({ nm: 580, exact: true });
+    });
+    it('Birkenhead ↔ Casablanca (UK → Morocco) = 1450 NM exact', () => {
+      expect(getPortDistance('Birkenhead', 'Casablanca')).toEqual({ nm: 1450, exact: true });
+    });
+    it('Birkenhead ↔ Damietta (UK → East Med via Gibraltar) = 3500 NM exact', () => {
+      expect(getPortDistance('Birkenhead', 'Damietta')).toEqual({ nm: 3500, exact: true });
+    });
+  });
+
+  describe('symmetry — reversed argument order returns same exact distance', () => {
+    it('Suez → Fujairah = Fujairah → Suez', () => {
+      expect(getPortDistance('Suez', 'Fujairah')).toEqual(getPortDistance('Fujairah', 'Suez'));
+    });
+    it('Odesa → Vasto = Vasto → Odesa', () => {
+      expect(getPortDistance('Odesa', 'Vasto')).toEqual(getPortDistance('Vasto', 'Odesa'));
+    });
+  });
+});
