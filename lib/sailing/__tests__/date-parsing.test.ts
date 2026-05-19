@@ -119,3 +119,49 @@ describe('parseLaycan', () => {
     expect(parseLaycan('xxx', REF)).toBeNull();
   });
 });
+
+
+describe('parseVesselOpenDate — object-shaped input (Phase 2C)', () => {
+  it('accepts {open: ISO, close: ISO, display} — uses .open ISO date', () => {
+    const r = parseVesselOpenDate({
+      open: '2026-05-22',
+      close: '2026-05-23',
+      display: '22-23 May 2026',
+    });
+    expect(r).not.toBeNull();
+    expect(r!.toISOString().slice(0, 10)).toBe('2026-05-22');
+  });
+
+  it('accepts {open: null, close: null, display: "spot"} — falls back to .display', () => {
+    const today = new Date(Date.UTC(2026, 4, 19));
+    const r = parseVesselOpenDate({ open: null, close: null, display: 'spot' }, 2026, today);
+    expect(r).not.toBeNull();
+    expect(r!.toISOString().slice(0, 10)).toBe('2026-05-19');
+  });
+
+  it('accepts {display: "01-05 March"} — uses display phrase', () => {
+    const r = parseVesselOpenDate({ open: null, close: null, display: '01-05 March' }, 2026);
+    expect(r).not.toBeNull();
+    expect(r!.toISOString().slice(0, 7)).toBe('2026-03');
+  });
+
+  it('returns null for {open: null, close: null, display: null}', () => {
+    expect(parseVesselOpenDate({ open: null, close: null, display: null })).toBeNull();
+  });
+
+  it('returns null for {}', () => {
+    expect(parseVesselOpenDate({})).toBeNull();
+  });
+
+  it('still accepts plain string input (legacy)', () => {
+    const r = parseVesselOpenDate('2026-05-22');
+    expect(r).not.toBeNull();
+    expect(r!.toISOString().slice(0, 10)).toBe('2026-05-22');
+  });
+
+  it('returns null for null/undefined', () => {
+    expect(parseVesselOpenDate(null)).toBeNull();
+    expect(parseVesselOpenDate(undefined)).toBeNull();
+  });
+});
+
