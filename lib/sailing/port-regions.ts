@@ -156,6 +156,10 @@ const PORT_REGION_MAP: Record<KnownPort, PortRegion> = {
   'Fujairah':     'MiddleEast',
   'Sohar':        'MiddleEast',
   'Conakry':      'WestAfrica',
+  // ── Phase G1 additions ──
+  'Savona':           'Mediterranean',
+  'Vado Ligure':      'Mediterranean',
+  'Figueira da Foz':  'Atlantic',
 
 };
 
