@@ -3,22 +3,14 @@ name: CI
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - "**.md"
-      - "docs/**"
-      - ".claude/**"
-      - ".specs/**"
-      - "README*"
-      - "*.svg"
   pull_request:
     branches: [main]
-    paths-ignore:
-      - "**.md"
-      - "docs/**"
-      - ".claude/**"
-      - ".specs/**"
-      - "README*"
-      - "*.svg"
+
+# Note: previously had paths-ignore for docs/**, *.md, .claude/**, .specs/**, README*, *.svg —
+# removed 2026-05-20 because (a) repo is now public → CI minutes are free, and (b) branch
+# protection requires Build/Test/TypeCheck as Required status checks, so docs-only PRs
+# were stuck "Expected — Waiting for status to be reported" and could only merge via
+# admin-bypass click. Running full CI on docs PRs is cheap and unblocks the merge flow.
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
