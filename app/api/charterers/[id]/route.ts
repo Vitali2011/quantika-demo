@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getStore } from '@/lib/session-store';
-import { requireSession } from '@/lib/session';
 import {
   getCharterer,
   upsertCharterer,
@@ -16,6 +15,9 @@ export const dynamic = 'force-dynamic';
  * - PUT: updates charterer or 404
  * - DELETE: deletes charterer or 404
  * - Empty id → 404 or routing error
+ *
+ * Auth: gated by middleware demo_auth cookie. Charterers are shared reference
+ * data (not session-scoped), so no handler-level session_id check.
  */
 
 function isFeatureEnabled(): boolean {
@@ -26,9 +28,6 @@ export async function GET(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
-  const authResult = requireSession(request);
-  if (authResult instanceof NextResponse) return authResult;
-
   if (!isFeatureEnabled()) {
     return NextResponse.json(
       { error: 'Feature disabled' },
@@ -62,9 +61,6 @@ export async function PUT(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
-  const authResult = requireSession(request);
-  if (authResult instanceof NextResponse) return authResult;
-
   if (!isFeatureEnabled()) {
     return NextResponse.json(
       { error: 'Feature disabled' },
@@ -124,9 +120,6 @@ export async function DELETE(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
-  const authResult = requireSession(request);
-  if (authResult instanceof NextResponse) return authResult;
-
   if (!isFeatureEnabled()) {
     return NextResponse.json(
       { error: 'Feature disabled' },

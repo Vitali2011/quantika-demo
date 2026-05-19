@@ -259,57 +259,93 @@ describe('DELETE /api/charterers/[id]', () => {
   });
 });
 
-describe('Auth: /api/charterers/[id]', () => {
+describe('Auth contract: handler bypasses requireSession (demo flow)', () => {
+  let db: Database.Database;
   const originalEnv = process.env.CHARTERER_CREDIT_ENABLED;
 
   beforeEach(() => {
+    db = new Database(':memory:');
+    migration026.up(db);
+    testDb = db;
     process.env.CHARTERER_CREDIT_ENABLED = 'true';
+    // Simulate "no session_id" state. If any handler called requireSession,
+    // this mock would force 401 and the assertions below would fail.
+    // Regression contract: re-adding requireSession to a handler breaks these tests.
+    mockRequireSession.mockReturnValue(
+      NextResponse.json({ error: 'No session' }, { status: 401 })
+    );
   });
 
   afterEach(() => {
+    db.close();
     process.env.CHARTERER_CREDIT_ENABLED = originalEnv;
   });
 
-  // PI4 RC test — auth returns 401 when no session
-  it('GET returns 401 when session is missing', async () => {
-    mockRequireSession.mockReturnValueOnce(
-      NextResponse.json({ error: 'No session' }, { status: 401 })
-    );
+  it('GET returns 200 for existing charterer when no session_id is available', async () => {
+    upsertCharterer(db, {
+      id: 'c1',
+      name: 'Demo Corp',
+      tier: 'blue-chip',
+      payment_history: '[]',
+      require_lc: 0,
+      notes: null,
+    });
 
     const { GET } = await import('@/app/api/charterers/[id]/route');
     const res = await GET(
       new NextRequest('http://localhost/api/charterers/c1'),
       { params: Promise.resolve({ id: 'c1' }) }
     );
-    expect(res.status).toBe(401);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.name).toBe('Demo Corp');
   });
 
-  it('PUT returns 401 when session is missing', async () => {
-    mockRequireSession.mockReturnValueOnce(
-      NextResponse.json({ error: 'No session' }, { status: 401 })
+  it('GET returns 404 for missing charterer when no session_id (not 401)', async () => {
+    const { GET } = await import('@/app/api/charterers/[id]/route');
+    const res = await GET(
+      new NextRequest('http://localhost/api/charterers/missing-id'),
+      { params: Promise.resolve({ id: 'missing-id' }) }
     );
+    expect(res.status).toBe(404);
+  });
+
+  it('PUT returns 200 when no session_id is available', async () => {
+    upsertCharterer(db, {
+      id: 'c1',
+      name: 'Original',
+      tier: 'blue-chip',
+      payment_history: '[]',
+      require_lc: 0,
+      notes: null,
+    });
 
     const { PUT } = await import('@/app/api/charterers/[id]/route');
     const res = await PUT(
       new NextRequest('http://localhost/api/charterers/c1', {
         method: 'PUT',
-        body: JSON.stringify({ name: 'Test' }),
+        body: JSON.stringify({ name: 'Updated' }),
       }),
       { params: Promise.resolve({ id: 'c1' }) }
     );
-    expect(res.status).toBe(401);
+    expect(res.status).toBe(200);
   });
 
-  it('DELETE returns 401 when session is missing', async () => {
-    mockRequireSession.mockReturnValueOnce(
-      NextResponse.json({ error: 'No session' }, { status: 401 })
-    );
+  it('DELETE returns 204 when no session_id is available', async () => {
+    upsertCharterer(db, {
+      id: 'c1',
+      name: 'Demo',
+      tier: 'blue-chip',
+      payment_history: '[]',
+      require_lc: 0,
+      notes: null,
+    });
 
     const { DELETE } = await import('@/app/api/charterers/[id]/route');
     const res = await DELETE(
       new NextRequest('http://localhost/api/charterers/c1', { method: 'DELETE' }),
       { params: Promise.resolve({ id: 'c1' }) }
     );
-    expect(res.status).toBe(401);
+    expect(res.status).toBe(204);
   });
 });
