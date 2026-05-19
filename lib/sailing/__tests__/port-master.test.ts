@@ -145,17 +145,19 @@ describe('port-master gap-fill: Bug E1 — 4 missing ports', () => {
 });
 
 describe('port-master Phase F1 — Savona + Figueira da Foz draft corrections', () => {
-  it('Savona (ITSVN) maxDraftM is 15 (includes Vado Ligure SECH terminal)', () => {
+  // PI3: expectation updated — Savona actual berth max is 14.5m (Alti Fondali), not 15m
+  it('Savona (ITSVN) maxDraftM is 14.5 (Alti Fondali berths, verified MagicPort/SeaRates)', () => {
     const m = getPortMaster('Savona');
     expect(m).not.toBeNull();
-    expect(m!.maxDraftM).toBe(15);
+    expect(m!.maxDraftM).toBe(14.5);
   });
 
-  it('"Savona-Vado" alias is present in port-master JSON aliases field', () => {
+  // PI3: expectation updated — "Savona-Vado" alias removed (it refers to ITVDL, not ITSVN)
+  it('"Savona-Vado" alias is NOT present in ITSVN (belongs to separate UNLOCODE ITVDL)', () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const ports = require('@/data/ports/port-master.json') as Array<{ unlocode: string; aliases?: string[] }>;
     const savona = ports.find((p) => p.unlocode === 'ITSVN');
-    expect(savona?.aliases).toContain('Savona-Vado');
+    expect(savona?.aliases).not.toContain('Savona-Vado');
   });
 
   it('Figueira da Foz (PTFDF) maxDraftM is 5.5 (conservative cargo berth depth)', () => {
@@ -166,5 +168,46 @@ describe('port-master Phase F1 — Savona + Figueira da Foz draft corrections', 
 
   it('Figueira da Foz is tidal', () => {
     expect(getPortMaster('Figueira da Foz')!.tidal).toBe(true);
+  });
+});
+
+describe('port-master Phase G1 — Vado Ligure ITVDL (new entry)', () => {
+  it('Vado Ligure entry exists in port-master', () => {
+    expect(getPortMaster('Vado Ligure')).not.toBeNull();
+  });
+
+  it('Vado Ligure resolves by alias "Vado"', () => {
+    expect(getPortMaster('Vado')).not.toBeNull();
+    expect(getPortMaster('Vado')!.unlocode).toBe('ITVDL');
+  });
+
+  it('Vado Ligure resolves by alias "Savona-Vado"', () => {
+    expect(getPortMaster('Savona-Vado')).not.toBeNull();
+    expect(getPortMaster('Savona-Vado')!.unlocode).toBe('ITVDL');
+  });
+
+  it('Vado Ligure (ITVDL) maxDraftM is 17.25 (SECH terminal berth depth)', () => {
+    const m = getPortMaster('Vado Ligure');
+    expect(m!.maxDraftM).toBe(17.25);
+  });
+
+  it('Vado Ligure portCanHandleDraft: 17m vessel passes', () => {
+    const r = portCanHandleDraft('Vado Ligure', 17.0);
+    expect(r.ok).toBe(true);
+  });
+
+  it('Vado Ligure portCanHandleDraft: 17.5m vessel blocked (exceeds 17.25m)', () => {
+    const r = portCanHandleDraft('Vado Ligure', 17.5);
+    expect(r.ok).toBe(false);
+  });
+
+  it('Savona (ITSVN) portCanHandleDraft: 14.5m vessel passes', () => {
+    const r = portCanHandleDraft('Savona', 14.5);
+    expect(r.ok).toBe(true);
+  });
+
+  it('Savona (ITSVN) portCanHandleDraft: 15.1m vessel blocked (exceeds 14.5m)', () => {
+    const r = portCanHandleDraft('Savona', 15.1);
+    expect(r.ok).toBe(false);
   });
 });

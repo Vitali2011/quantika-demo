@@ -50,6 +50,7 @@ export interface ListMatchesOptions {
   score_min?: number;
   dwt_min?: number;
   dwt_max?: number;
+  user_id?: string | null;
 }
 
 const VALID_TRANSITIONS: Record<MatchStatus, MatchStatus[]> = {
@@ -69,7 +70,7 @@ export function createMatch(db: Database.Database, input: CreateMatchInput): Sto
   const status: MatchStatus = input.status ?? 'shortlist';
   const user_id = input.user_id !== undefined ? input.user_id : null;
 
-  let id: number;
+  let result: { lastInsertRowid: number | bigint; changes: number };
 
   if (hasM3Columns(db)) {
     const reason_structured = input.reason_structured ?? null;
@@ -81,13 +82,13 @@ export function createMatch(db: Database.Database, input: CreateMatchInput): Sto
     const vessel_dwt = input.vessel_dwt ?? null;
 
     const stmt = db.prepare(
-      `INSERT INTO matches
+      `INSERT OR IGNORE INTO matches
          (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at,
           reason_structured, cargo_type, load_port, discharge_port,
           laycan_start, laycan_end, vessel_dwt)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     );
-    const result = stmt.run(
+    result = stmt.run(
       input.cargo_id,
       input.vessel_id,
       input.score,
@@ -104,17 +105,28 @@ export function createMatch(db: Database.Database, input: CreateMatchInput): Sto
       laycan_end,
       vessel_dwt,
     );
-    id = result.lastInsertRowid as number;
   } else {
     const stmt = db.prepare(
-      `INSERT INTO matches (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at)
+      `INSERT OR IGNORE INTO matches (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
     );
-    const result = stmt.run(input.cargo_id, input.vessel_id, input.score, input.reason, status, user_id, now, now);
-    id = result.lastInsertRowid as number;
+    result = stmt.run(input.cargo_id, input.vessel_id, input.score, input.reason, status, user_id, now, now);
   }
 
-  return getMatch(db, id) as StoredMatch;
+  if (result.changes === 0) {
+    // Duplicate silently ignored by UNIQUE constraint — return the existing row.
+    const existing = db
+      .prepare(
+        `SELECT * FROM matches
+         WHERE cargo_id = ? AND vessel_id = ?
+           AND (user_id = ? OR (user_id IS NULL AND ? IS NULL))
+         LIMIT 1`,
+      )
+      .get(input.cargo_id, input.vessel_id, user_id, user_id) as StoredMatch | undefined;
+    return existing!;
+  }
+
+  return getMatch(db, result.lastInsertRowid as number) as StoredMatch;
 }
 
 export function getMatch(db: Database.Database, id: number): StoredMatch | null {
@@ -132,6 +144,7 @@ export function listMatches(db: Database.Database, opts: ListMatchesOptions): St
     score_min,
     dwt_min,
     dwt_max,
+    user_id,
   } = opts;
 
   const allowedSortBy = sortBy === 'created_at' ? 'created_at' : 'score';
@@ -143,6 +156,11 @@ export function listMatches(db: Database.Database, opts: ListMatchesOptions): St
   if (status) {
     conditions.push(`status = ?`);
     params.push(status);
+  }
+
+  if (user_id !== undefined && user_id !== null) {
+    conditions.push(`user_id = ?`);
+    params.push(user_id);
   }
 
   if (cargo_type && cargo_type.length > 0) {
