@@ -111,13 +111,16 @@ describe('MatchesClient.tsx — vague-region hint conditionality', () => {
 // ──────────────────────────────────────────────────────────────────────────────
 
 describe('MatchesClient.tsx — vague-region hint accessibility', () => {
-  it('hint div has role="alert"', () => {
+  // PI3: expectation updated — role="status" (implicit polite, no NVDA contradiction)
+  it('hint div has role="status" (not "alert" — status is correct for advisory hints)', () => {
     const src = readSource();
-    expect(src).toMatch(/role=["']alert["']/);
+    expect(src).toMatch(/role=["']status["']/);
+    expect(src).not.toMatch(/role=["']alert["']/);
   });
 
-  it('hint div has aria-live="polite"', () => {
+  // PI3: expectation updated — explicit aria-live removed (implied by role=status)
+  it('hint div does NOT have explicit aria-live (implied by role=status)', () => {
     const src = readSource();
-    expect(src).toMatch(/aria-live=["']polite["']/);
+    expect(src).not.toMatch(/aria-live=["']polite["']/);
   });
 });
