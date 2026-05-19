@@ -1,0 +1,167 @@
+[
+  {
+    "scenario_id": "etms-draft-quote-001",
+    "category": "standard",
+    "language": "en",
+    "duration_ms": 8336,
+    "raw_text": "Dear Marina Capelli,\n\nThank you for your inquiry regarding the shipment of Hot Rolled Coils.\n\nWe are pleased to provide you with the following freight quote based on the details provided:\n\nRoute:\nOrigin: Karasu, Turkey\nDestination: Puerto Limon, Costa Rica\n\nVessel Details:\nVessel Name: MV PETRA (Handysize Bulk Carrier)\nBuilt: 2007\nDWT: 14,200 MT\nDWCC: 13,850 MT\nCranes: 3 x 25T deck cranes\n\nCargo Details:\nCommodity: Hot Rolled Coils (HRC)\nWeight: 10,400 Metric Tons (MT)\nDescription: Breakbulk cargo, with individual coil weight not exceeding 20 MT.\nLaycan: June 2026\nVessel Open: Karasu, Turkey around June 8, 2026\n\nCommercial Terms:\nFreight Rate: 23.50 USD per Metric Ton\nDischarge Terms: Liner Out (LO)\nLoading Terms: To be advised\n\nValidity:\nThis quote is valid for 7 calendar days from the date of this email.\n\nTo finalize this offer and proceed with a firm booking, please confirm the following outstanding details:\n1.  Exact loading dates required within June 2026.\n2.  Specific loading terms (e.g., Free In, Liner In).\n3.  Applicable Incoterms.\n\nWe look forward to your prompt response.\n\nBest regards,\n\nQuantika",
+    "expected": {
+      "sections_present": [
+        "Subject",
+        "Greeting",
+        "Terms",
+        "Closing"
+      ],
+      "must_cite_facts": [
+        "23.50",
+        "Karasu",
+        "Puerto Limon"
+      ],
+      "must_NOT_invent": [
+        "35 USD/mt",
+        "30 USD/mt",
+        "40 EUR/mt",
+        "35.00 USD"
+      ],
+      "language": "en"
+    }
+  },
+  {
+    "scenario_id": "etms-draft-quote-002",
+    "category": "arabic-language",
+    "language": "ar",
+    "duration_ms": 12434,
+    "raw_text": "عزيزي أحمد الرشيدي،\n\nيسعدنا أن نقدم لكم عرض سعر شحن بخصوص استفساركم لشحنة الحبوب.\n\nتفاصيل المسار والشحنة:\nالسلعة: قمح سائب\nالكمية: 8,500 طن متري (الحد الأدنى 8,000 طن متري، الحد الأقصى 9,000 طن متري)\nشروط الإنكوترمز: CIF\nميناء التحميل: الإسكندرية، مصر\nميناء التفريغ: جدة، المملكة العربية السعودية\nفترة التحميل/الإلغاء (Laycan): 15 - 25 يونيو 2026\nمعدل التحميل: 3,000 طن متري يومياً\nمعدل التفريغ: 2,000 طن متري يومياً\nمتطلبات خاصة: شهادة صحة نباتية مطلوبة؛ دليل تحميل الحبوب متوفر على متن السفينة.\n\nالسفينة المقترحة:\nاسم السفينة: MV AL-NOUR\nالنوع: سفينة بضائع سائبة من فئة Handysize\nالحمولة الساكنة (DWT): 12,000 طن متري (سعة الحمولة الصافية DWCC: 11,700 طن متري)\nالعلم: البحرين\nسنة الصنع: 2004\nجمعية التصنيف: LR\nنادي الحماية والتعويض (P&I): UK P&I\nسعة الحبوب: 15,200 متر مكعب\nالرافعات: مزودة (2 × رافعة بقدرة 30 طن)\nالموقع المتاح: الإسكندرية، تاريخ الوصول المتوقع: 13 يونيو 2026\nآخر الشحنات: حبوب، أسمدة.\n\nسعر الشحن:\n[RATE TO BE CONFIRMED]\nسعر الشحن التجاري: 18 دولار أمريكي للطن المتري\n\nالعمولة:\n2.5% ATDN SHINC (في جميع الأوقات ليلاً ونهاراً بما في ذلك أيام الآحاد والعطلات الرسمية) لكلا الطرفين.\n\nالشروط والأحكام:\nصلاحية العرض: هذا العرض صالح لمدة 7 أيام من تاريخه.\n\nيرجى عدم التردد في الاتصال بنا في حال وجود أي استفسارات أو لطلب مزيد من التوضيحات. نتطلع إلى تأكيدكم.\n\nمع خالص التقدير،\nكوانتيكا",
+    "expected": {
+      "sections_present": [
+        "Subject",
+        "Greeting",
+        "Terms",
+        "Closing"
+      ],
+      "must_cite_facts": [
+        "18.00",
+        "8,500",
+        "Alexandria"
+      ],
+      "must_NOT_invent": [
+        "25 USD/mt",
+        "30 USD/mt",
+        "20 USD"
+      ],
+      "language": "ar"
+    }
+  },
+  {
+    "scenario_id": "etms-draft-quote-003",
+    "category": "lumpsum-instead-of-per-mt",
+    "language": "en",
+    "duration_ms": 7975,
+    "raw_text": "Dear Serkan Varan,\n\nThank you for your inquiry regarding the shipment of your project cargo.\n\nWe are pleased to provide the following preliminary freight quotation for the carriage of your storage tanks from Marmara, Turkey to Vera Cruz, Mexico.\n\nRoute:\nOrigin: Marmara, Turkey\nDestination: Vera Cruz, Mexico\n\nCargo Details:\nCommodity: 14 pieces of Storage Tanks (10 x 160m3 VT Storage Tanks, 4 x 80m3 GMMOS Tanks)\nTotal Weight: 186 Metric Tons\nTotal Volume: 2120 Cubic Meters\nDimensions:\n  - 10 units: 4.3m (L) x 15.7m (H) x 4.3m (W) each\n  - 4 units: 12.1m (L) x 3.2m (H) x 3.2m (W) each\nLoading Window (Laycan): 15-20 June 2026\nSpecial Note: On-deck stowage is acceptable.\n\nProposed Vessel:\nMV HELIOS\nType: General Cargo, Open Hatch\nCranes: 1 x 40T deck crane\nOpen Position: Marmara, as of 12 June 2026\nThe MV HELIOS is well-suited for project cargo and heavy lifts.\n\nFreight Rate:\n[RATE TO BE CONFIRMED]\n\nCommercial Terms:\nBasis: GENCON Charter Party terms.\nCommission: 3.75% Total Commission (TTL), payable as per GENCON CP.\nBill of Lading: On-deck B/L to be signed.\n\nTo finalize this quotation and ensure accurate planning, please confirm the following:\n1.  Whether shore or vessel crane/gear is specifically required for handling the oversized tanks during loading and discharge operations.\n2.  The exact port rotation and number of discharge ports, if different from a single discharge at Vera Cruz.\n\nValidity:\nThis quotation is valid for seven (7) calendar days from the date of this email.\n\nWe look forward to your confirmation of the pending details and are available to discuss this further at your convenience.\n\nBest regards,\n\nQuantika",
+    "expected": {
+      "sections_present": [
+        "Subject",
+        "Greeting",
+        "Terms",
+        "Closing"
+      ],
+      "must_cite_facts": [
+        "42,000",
+        "Marmara",
+        "Vera Cruz"
+      ],
+      "must_NOT_invent": [
+        "per metric ton",
+        "per MT",
+        "USD/mt"
+      ],
+      "language": "en"
+    }
+  },
+  {
+    "scenario_id": "etms-draft-quote-004",
+    "category": "with-extra-clauses",
+    "language": "en",
+    "duration_ms": 8789,
+    "raw_text": "Subject: Freight Quote Inquiry - Novorossiysk to Istanbul - Steam Coal - MV BLACK SEA STAR\n\nDear Dmitri Volkov,\n\nThank you for your freight inquiry. We are pleased to offer a quote for the carriage of your cargo.\n\nBased on the details provided, we propose the following:\n\nRoute: Novorossiysk, Russia to Istanbul, Turkey\nCargo: Steam coal in bulk, Russian origin\nQuantity: 25,000 metric tons (24,000-26,000 MT)\nStowage Factor: 1.20 m3/MT\nLoading Port: Novorossiysk\nDischarge Port: Istanbul\nLaycan: 01-15 July 2026\nIncoterms: FOB\n\nVessel: MV BLACK SEA STAR\nType: Supramax Bulk Carrier\nDWT: 56,000 MT (DWCC 54,800 MT)\nFlag: Marshall Islands\nBuilt: 2010\nP&I: Gard (IG Group Club)\nOpen Position: Novorossiysk, eta 28 June 2026\n\nLoading Rate: 5,000 MTPD SHINC\nDischarge Rate: 4,000 MTPD SHINC\n\nFreight Rate: [RATE TO BE CONFIRMED]\nCommission: 3.75% TTL ATDN\n\nSpecial Requirements:\n- Coal Certificate required\n- Vessel to be P&I insured with IG Club (fulfilled by Gard)\n\nAdditional Clauses:\n- War Risk Premium: 0.25% of declared cargo value (Black Sea trading area)\n- Sanctions Exclusions Clause: Russian-origin coal only, BIMCO Sanctions Clause 2022 to apply\n- Additional insurance rider required for Black Sea routing\n\nThis quote is valid for 7 calendar days from the date of this email. We await your confirmation to proceed.\n\nPlease let us know if you require any further clarification or assistance.\n\nBest regards,\n\nQuantika",
+    "expected": {
+      "sections_present": [
+        "Subject",
+        "Greeting",
+        "Terms",
+        "Closing"
+      ],
+      "must_cite_facts": [
+        "22.50",
+        "Novorossiysk",
+        "Istanbul",
+        "war risk"
+      ],
+      "must_NOT_invent": [
+        "30 USD/mt",
+        "35 USD",
+        "20 EUR"
+      ],
+      "language": "en"
+    }
+  },
+  {
+    "scenario_id": "etms-draft-quote-005",
+    "category": "standard",
+    "language": "en",
+    "duration_ms": 7856,
+    "raw_text": "Subject: Freight Quote for China Clay - Teignmouth to Alexandria\n\nDear Elif Kisabacak,\n\nThank you for your freight inquiry.\n\nWe are pleased to offer the following quote for the shipment of China Clay:\n\nRoute: Teignmouth, United Kingdom to Alexandria, Egypt\nCargo: China Clay in bulk (STW/DWT)\nQuantity: 3,000 MT\nCargo Type: BULK\nLaycan: 25–28 July 2026\n\nVessel Recommendation:\nWe recommend the MV STAD, a Vanuatu-flagged GENERAL CARGO vessel, built 1989.\nKey specifications: DWT Summer 3,222 MT, DWCC 3,050 MT, 1 Hold / 1 Hatch, Gearless (shore cranes by charterers).\nThe MV STAD is expected to be open and available in Teignmouth, UK on 25 July 2026, aligning with your preferred loading dates.\n\nRate: [RATE TO BE CONFIRMED]\n\nTerms & Conditions:\nLoading Rate: Please advise loading rate at Teignmouth.\nDischarge Rate: Shore cranes to be supplied by charterers.\nCommission: 3.75% TTL GENCON 76.\nSpecial Requirements: Grab loading/discharge, holds clean and dry prior loading, China Clay Association B/L form.\nDemurrage: EUR 1,500 PDPR FD.\nCharter Party: GENCON 76.\nArbitration: London, English law.\nIncoterms: Please specify your preferred Incoterms for this shipment.\n\nThis quote is valid for 7 days from the date of this email, subject to vessel availability and re-confirmation.\n\nPlease do not hesitate to contact us should you require any further information or clarification.\n\nBest regards,\n\nQuantika",
+    "expected": {
+      "sections_present": [
+        "Subject",
+        "Greeting",
+        "Terms",
+        "Closing"
+      ],
+      "must_cite_facts": [
+        "28.50",
+        "Teignmouth",
+        "Alexandria",
+        "MV STAD"
+      ],
+      "must_NOT_invent": [
+        "30 USD/mt",
+        "35 USD/mt",
+        "25 USD/mt",
+        "EUR/mt"
+      ],
+      "language": "en"
+    }
+  },
+  {
+    "scenario_id": "etms-draft-quote-006",
+    "category": "hallucination-trap",
+    "language": "en",
+    "duration_ms": 6573,
+    "raw_text": "Dear Nikos Papadopoulos,\n\nThank you for your inquiry. We are pleased to provide an indicative freight quote for your cargo movement from Piraeus, Greece to Tunis, Tunisia, based on the information provided.\n\nCargo Details:\n  Commodity: Bagged NPK fertilizer, 50 kg bags on pallets\n  Quantity: 5,200 metric tons (MT)\n  Packaging: 50 kg bags on pallets\n  Special Requirements: Fertilizer-compatible holds; no previous coal or grain cargo contamination; fumigation certificate required.\n\nRoute & Terms:\n  Origin Port: Piraeus, Greece\n  Destination Port: Tunis, Tunisia\n  Incoterms: CFR (Cost and Freight)\n  Laycan: August 2026. Please confirm the exact laycan dates within August 2026 for final fixture.\n\nFreight Rate:\n  Freight Rate: [RATE TO BE CONFIRMED] per metric ton.\n\nClarifications Required:\n  To finalize this offer, we kindly request clarification regarding the loading and discharge port terms.\n\nValidity:\nThis indicative quote is valid for 7 calendar days from the date of this email.\n\nWe look forward to your confirmation and are available to discuss any further details.\n\nBest regards,\n\nQuantika",
+    "expected": {
+      "sections_present": [
+        "Subject",
+        "Greeting",
+        "Terms",
+        "Closing"
+      ],
+      "must_cite_facts": [
+        "[RATE TO BE CONFIRMED]",
+        "Piraeus",
+        "Tunis"
+      ],
+      "must_NOT_invent": [
+        "25 USD/mt",
+        "23.50 USD",
+        "$30 per",
+        "USD 28",
+        "28.50",
+        "22 USD",
+        "20 USD/mt",
+        "18 USD"
+      ],
+      "language": "en"
+    }
+  }
+]
