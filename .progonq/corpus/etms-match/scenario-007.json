@@ -19,5 +19,5 @@
       "Vetting clearance — only valid if vessel input has vetting fields"
     ]
   },
-  "notes": "Heavy idle (~60 days). Should score low. Tests readiness.verdict=idle handling."
+  "notes": "Heavy idle (~60 days). Should score low. Tests readiness.verdict=idle handling. [R1 finding] PARSER FINDING: 6 matches scored 50-66 (\"possible\") despite vessel open 60 days BEFORE laycan. Parser is too generous on idle vessels — expected weak (<35). Once readiness verdict transitions from \"unknown\" to \"idle\" (Phase 2D adds Ravenna-Izmail distance), idle penalty should kick in. If not — separate prompt fix needed."
 }

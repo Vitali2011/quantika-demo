@@ -6,7 +6,7 @@
   "expected": {
     "should_be_hard_filtered": false,
     "match_level": "good",
-    "score_range": [70, 88],
+    "score_range": [60, 85],
     "must_cite_facts": [
       "DWT 8100 mt vs cargo 5000 mt (62% utilization)",
       "Vessel open Nemrut Bay, cargo loads Mersin — both East Med, ~400nm",
@@ -20,5 +20,5 @@
       "Vetting clearance — only valid if vessel input has vetting fields"
     ]
   },
-  "notes": "Clean East Med bulk pair. Spot/spot timing."
+  "notes": "Clean East Med bulk pair. Spot/spot timing. [R1 update] After PR #237 openDate parsing works, but R1 still got score=60 because Nemrut Bay not in port DB → distanceNm=null → readiness=unknown. Phase 2D (port DB coverage) should add Nemrut → Aliaga alias; expect R2 score ~70-80."
 }

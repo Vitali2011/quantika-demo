@@ -1,23 +1,15 @@
 {
   "id": "etms-match-001-strong-marmara-bsea",
-  "category": "strong",
+  "category": "no-match",
   "cargo_ref": "etms-parse-cargo/scenario-042",
   "vessel_ref": "etms-parse-vessel/scenario-004",
   "expected": {
-    "should_be_hard_filtered": false,
-    "match_level": "good",
-    "score_range": [70, 90],
-    "must_cite_facts": [
-      "DWCC ~2000 mt vs cargo ~2500 mt (utilization fits, may be slight overload — flag)",
-      "Vessel open Marmara, cargo loads Hereke (same Marmara cluster) — minimal ballast",
-      "Geared vessel suitable for break-bulk cargo"
-    ],
-    "must_NOT_invent": [
-      "P&I IG-club satisfied — only valid if vessel input has pi_club field",
-      "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
-      "Charterer-specific policy (e.g., 'Cargill strict on CII') — never allowed from external knowledge",
-      "Vetting clearance — only valid if vessel input has vetting fields"
-    ]
+    "should_be_hard_filtered": true,
+    "match_level": null,
+    "score_range": null,
+    "must_cite_facts": [],
+    "must_NOT_invent": [],
+    "hard_filter_reason": "DWCC 2000 mt < cargo 2500 mt — cargo exceeds vessel cargo capacity (overload)"
   },
-  "notes": "Marmara→Constanta short ballast. DWCC vs cargo weight is borderline (cargo 2500 > DWCC 2000) — may be downgraded to 'possible' if scorer treats this as overload. Either good (70-85) or possible (60-75) is acceptable baseline."
+  "notes": "R0-corrected: my original \"good\" rating ignored DWCC overload. Vessel-004 DWCC=2000 mt, cargo=2500 mt → overload by 25%, exceeds 5% \"abt\" margin. Should be hard-filtered, NOT shown to broker as weak match. PR #236 cargoWeight check now correctly blocks this pair."
 }

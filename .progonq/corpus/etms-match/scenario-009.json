@@ -19,5 +19,5 @@
       "Vetting clearance — only valid if vessel input has vetting fields"
     ]
   },
-  "notes": "Massive timing miss. Should score very low or be filtered."
+  "notes": "Massive timing miss. Should score very low or be filtered. [R1 finding] PARSER FINDING: scored 47.8 (\"possible\") despite vessel open ~5 months AFTER cargo laycan (October vs May). Parser too lenient on late vessels. After Phase 2D fixes Casablanca→Vasto distance, readiness verdict should be \"late\" or \"idle\", which should drag score below 35."
 }
