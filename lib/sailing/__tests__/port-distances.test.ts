@@ -1,5 +1,41 @@
 import { getPortDistance, normalizePortName, KNOWN_PORTS } from '../port-distances';
 
+describe('normalizePortName — fuzzy length-ratio guard (Phase B)', () => {
+  it('"Vasto" does NOT match "Vladivostok" (length ratio 2.2 > 2.0)', () => {
+    // Regression: previously fuzzy gave Vasto→Vladivostok at score 0.311
+    // resulting in a bogus 5693nm distance for Casablanca→Vasto pairs.
+    expect(normalizePortName('Vasto')).toBe(null);
+  });
+
+  it('"Karsu" still resolves to "Karasu" (legit typo, ratio 1.2)', () => {
+    expect(normalizePortName('Karsu')).toBe('Karasu');
+  });
+
+  it('"Fos-sr-Mer" still resolves to "Fos-sur-Mer" (dropped letter, ratio 1.1)', () => {
+    expect(normalizePortName('Fos-sr-Mer')).toBe('Fos-sur-Mer');
+  });
+
+  it('returns null for very short queries (< 4 chars)', () => {
+    expect(normalizePortName('ab')).toBe(null);
+  });
+});
+
+describe('normalizePortName — explicit alias additions (Phase B)', () => {
+  it('"Gibraltar Range" resolves to "Gibraltar" via direct alias', () => {
+    // "Gibraltar" was in port-master.json but missing from PORT_ALIASES.
+    // Phase B adds it explicitly so common compound forms resolve directly.
+    expect(normalizePortName('Gibraltar Range')).toBe('Gibraltar');
+  });
+
+  it('"Gibraltar" alone resolves directly', () => {
+    expect(normalizePortName('Gibraltar')).toBe('Gibraltar');
+  });
+
+  it('"Adriatic" alone still returns null (vague region, no specific port)', () => {
+    expect(normalizePortName('Adriatic')).toBe(null);
+  });
+});
+
 describe('normalizePortName — parenthetical hint fallback (Phase 2C)', () => {
   it('"Hereke (Marmara)" resolves via parenthetical hint to Marmara', () => {
     // Hereke is a small port in the Sea of Marmara — primary name resolves

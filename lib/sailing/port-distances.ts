@@ -28,7 +28,7 @@ export const KNOWN_PORTS = [
   // Central / Western Med
   'Ravenna', 'Marghera', 'Skikda', 'Casablanca',
   'Genoa', 'LaSpezia', 'Livorno', 'Naples', 'Trieste',
-  'Barcelona', 'Valencia', 'Algeciras', 'Marseille',
+  'Barcelona', 'Valencia', 'Algeciras', 'Marseille', 'Gibraltar',
   'Tunis', 'Izmir',
   // Northern Europe
   'Antwerp', 'Hamburg', 'Rotterdam', 'Bremen', 'Halsvik', 'Gdansk',
@@ -175,6 +175,8 @@ const PORT_ALIASES: Record<string, KnownPort> = {
   'barcelona': 'Barcelona',
   'valencia': 'Valencia',
   'algeciras': 'Algeciras',
+  'gibraltar': 'Gibraltar',     // present in port-master.json but missing from aliases
+  'gibraltar range': 'Gibraltar',
   'marseille': 'Marseille',
   'marseilles': 'Marseille',
   'tunis': 'Tunis',
@@ -986,6 +988,26 @@ export function setFuzzyCorpus(entries: Array<{ lookup: string; canonical: strin
   _fuzzyCorpus = entries;
 }
 
+/**
+ * Length-ratio guard for fuzzy matches.
+ * Rejects pairs whose length difference exceeds 2x — prevents false positives
+ * like "Vasto" (5 chars) matching "Vladivostok" (11 chars, ratio 2.2).
+ * Real typos almost always preserve length within ~1.2x.
+ */
+const FUZZY_LEN_RATIO_MAX = 2.0;
+const FUZZY_THRESHOLD = 0.30;   // original empirical floor for typo matches; length-ratio guard handles cross-name false positives
+
+function fuzzyMatchPort(query: string): string | null {
+  if (query.length < 4) return null;
+  const corpus = getFuzzyCorpus();
+  const results = fuzzysort.go(query, corpus, { key: 'lookup', threshold: FUZZY_THRESHOLD, limit: 1 });
+  if (results.length === 0) return null;
+  const matched = results[0].obj.lookup;
+  const ratio = Math.max(query.length, matched.length) / Math.min(query.length, matched.length);
+  if (ratio > FUZZY_LEN_RATIO_MAX) return null;
+  return results[0].obj.canonical;
+}
+
 
 /**
  * Normalize a free-form port name to its canonical form used in the distance table.
@@ -1045,20 +1067,12 @@ export function normalizePortName(raw: string | null | undefined): string | null
       if (hit) return hit;
     }
 
-    // Fuzzy fallback (typos, casing) — uses fuzzysort over alias + canonical
-    // names. fuzzysort v3 scores are in [0,1] (not the legacy negative scale).
-    // Threshold 0.3 is the empirical floor that catches single-letter typos
-    // ("Karsu"→Karasu scores ~0.35) while filtering near-garbage subsequences.
-    // Minimum length guard: inputs shorter than 4 chars are too ambiguous for
-    // fuzzy matching and are left to the direct alias table above.
-    const corpus = getFuzzyCorpus();
-    const cleaned = s.toLowerCase();
-    if (cleaned.length >= 4) {
-      const results = fuzzysort.go(cleaned, corpus, { key: 'lookup', threshold: 0.3, limit: 1 });
-      if (results.length > 0) {
-        return results[0].obj.canonical;
-      }
-    }
+    // Fuzzy fallback for full string (typos, casing). Uses fuzzysort over
+    // PORT_ALIASES + KNOWN_PORTS + port-master.json corpus with length-ratio
+    // guard ≤ 2.0 to prevent false positives where a short query matches a
+    // long canonical name (e.g. Vasto→Vladivostok at score 0.311, ratio 2.2).
+    const fuzzy = fuzzyMatchPort(s.toLowerCase());
+    if (fuzzy) return fuzzy;
   }
 
   // Parenthetical-hint fallback: e.g. "Hereke (Marmara)" — primary "Hereke" failed,
@@ -1068,14 +1082,10 @@ export function normalizePortName(raw: string | null | undefined): string | null
     const direct = PORT_ALIASES[hint];
     if (direct) return direct;
   }
-  // Second pass on hints via fuzzy fallback
+  // Second pass on hints via fuzzy fallback (with length-ratio guard)
   for (const hint of parenHints) {
-    if (hint.length < 4) continue;
-    const corpus = getFuzzyCorpus();
-    const results = fuzzysort.go(hint, corpus, { key: 'lookup', threshold: 0.3, limit: 1 });
-    if (results.length > 0) {
-      return results[0].obj.canonical;
-    }
+    const fuzzy = fuzzyMatchPort(hint);
+    if (fuzzy) return fuzzy;
   }
 
   return null;
