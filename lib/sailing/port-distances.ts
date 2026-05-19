@@ -1104,9 +1104,28 @@ export interface PortDistanceResult {
  *
  * Resolution order:
  *   1. Same canonical port → { nm: 0, exact: true }
- *   2. Hardcoded sea-route matrix → { nm, exact: true }
+ *   2. Hardcoded sea-route matrix → { nm, exact: true }   ~500 hand-curated pairs (BIMCO-style)
  *   3. Haversine great-circle from getPortMaster lat/lon → { nm, exact: false }
  *   4. null (unknown port or no coords available)
+ *
+ * Accuracy note (Phase C3 audit, 2026-05-19):
+ *   - Matrix entries are calibrated against BIMCO Distance Tables; error <5%.
+ *   - Haversine fallback is reliable (±15%) for OPEN-OCEAN pairs without
+ *     mandatory canal transits or land obstacles, e.g. Atlantic crossings,
+ *     Indian-Ocean legs, Pacific transits.
+ *   - Haversine is SYSTEMATICALLY WRONG (40-60% under) for corridors that
+ *     require mandatory sea-route detours:
+ *       • Med ↔ Black Sea (Bosphorus/Dardanelles required, haversine cuts
+ *         through Balkans/Turkey)
+ *       • Arabian Gulf / Red Sea ↔ Med (Suez Canal required, haversine cuts
+ *         through Sinai / Arabian Peninsula)
+ *       • North Sea ↔ Med (Gibraltar required for long routes, haversine
+ *         cuts through France/Spain)
+ *       • Adriatic ↔ Aegean ↔ Black Sea (haversine cuts through Balkans)
+ *   - Consumers that rely on distance for laycan-fit / TCE math should treat
+ *     exact=false results as advisory and prefer exact-matrix pairs when
+ *     possible. Adding a corridor to DISTANCES_NM upgrades all consumers
+ *     transparently.
  */
 export function getPortDistance(
   from: string | null | undefined,
