@@ -235,9 +235,10 @@ const SOFT_RESTRICTION_PATTERNS: Record<string, RegExp> = {
   BY: /\b(avoid\s+belarus|belarus\s+off.trade|not\s+prefer\s+belarus)\b/i,
 };
 
-// Past-tense markers that indicate a restriction is historical, not forward-looking.
-// If present in the full restriction string, soft patterns should not fire.
-const PAST_TENSE_MARKER = /\b(last\s+year|last\s+month|previously|formerly|used\s+to|before\s+sanctions|prior\s+to)\b/i;
+// Past-tense markers that indicate a restriction is historical/lifted, not forward-looking.
+// Applied per-restriction entry — an entry matching this marker is skipped individually
+// so it cannot suppress checks on other entries in the same list.
+const PAST_TENSE_MARKER = /\b(last\s+year|last\s+month|previously|formerly|used\s+to|before\s+sanctions|prior\s+to|no\s+longer)\b/i;
 
 const RESTRICTED_REGION_PATTERNS: Record<string, RegExp> = {
   RU: /\b(no\s+rus|no\s+russia|not\s+russia|anti.?russia|except\s+russia)\b/i,
@@ -292,10 +293,13 @@ export function checkSanctions(input: SanctionsInput): SanctionsCheck {
   }
 
   // Soft-text restrictions: "avoid Ukraine", "<country> off-trade", "not prefer <country>" etc.
-  // Only fires when the restriction is forward-looking (no past-tense markers).
-  if (!PAST_TENSE_MARKER.test(joinedRestrictions)) {
+  // Applied per-restriction entry: entries matching PAST_TENSE_MARKER (historical/lifted)
+  // are skipped individually so one historical entry cannot suppress forward-looking ones.
+  for (const rawEntry of input.restrictions) {
+    const entry = restrictionToString(rawEntry);
+    if (PAST_TENSE_MARKER.test(entry)) continue;
     for (const [cc, pat] of Object.entries(SOFT_RESTRICTION_PATTERNS)) {
-      if (pat.test(joinedRestrictions) && countries.has(cc)) {
+      if (pat.test(entry) && countries.has(cc)) {
         return {
           risk: 'HIGH',
           blocking: true,
