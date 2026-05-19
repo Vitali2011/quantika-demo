@@ -1,0 +1,24 @@
+{
+  "id": "etms-match-019-weak-multi-vessel-mixed-region-fanout",
+  "category": "weak",
+  "cargo_ref": "etms-parse-cargo/scenario-022",
+  "vessel_ref": "etms-parse-vessel/scenario-018",
+  "expected": {
+    "should_be_hard_filtered": false,
+    "match_level": "weak",
+    "score_range": [10, 40],
+    "must_cite_facts": [
+      "Vessel email contains 10 SKY/SEA-series vessels, cargo matched against each (fanout)",
+      "Cargo Savona→Samsun 10000 mt bulk 11/14 May — Med→Black Sea via Bosphorus",
+      "Vessel DWT range 3662-6795 — all under-lift cargo 10000 mt (smallest 36%, largest 68% utilization)",
+      "Most SKY vessels are 3662-5128 dwt — physical impossibility for 10000 mt as single carry"
+    ],
+    "must_NOT_invent": [
+      "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+      "Open date — vessel-018 entries have null open_date, do not invent timing",
+      "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+      "Two-vessel split shipment — system should not propose combining vessels"
+    ]
+  },
+  "notes": "Multi-vessel under-lift fanout. Cargo 10000 mt vs 10 vessels ranging 3662-6795 dwt — all undersized. Most pairs should hard-filter (cargoWeight check fails) since DWT < cargo. Only the largest (SEA LINE 6795) is below threshold (68% of cargo). Tests fanout + cargoWeight check across multiple vessels. Several positions (Ravenna, Marmara, EMED, Izmit) geographically reasonable, but size dominates."
+}

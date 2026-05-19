@@ -1,0 +1,24 @@
+{
+  "id": "etms-match-018-marginal-multi-vessel-east-med-fanout",
+  "category": "marginal",
+  "cargo_ref": "etms-parse-cargo/scenario-024",
+  "vessel_ref": "etms-parse-vessel/scenario-020",
+  "expected": {
+    "should_be_hard_filtered": false,
+    "match_level": "possible",
+    "score_range": [35, 70],
+    "must_cite_facts": [
+      "Vessel email contains 8 GULF-series vessels, cargo matched against each (fanout)",
+      "Cargo Mersin→Tartous 5000 mt bulk spot — East Med short-haul",
+      "Several vessels open in Med region (EMED, CMED, Aegean, Marmara) — 1-3 day repositioning",
+      "Vessel DWT range 3827-5244 — closest fit MV GULF EXPRESS 5244 (95% utilization)"
+    ],
+    "must_NOT_invent": [
+      "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+      "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+      "Geared/gearless status — vessel-020 entries do not specify, do not assume",
+      "Specific draft compatibility for Mersin (14.5 m) — vessels' drafts not provided, do not invent"
+    ]
+  },
+  "notes": "Multi-vessel fanout test. Cargo-024 (Mersin→Tartous 5000 mt) matched against 8 GULF vessels in vessel-020. Vessels range 3827-5244 dwt. Largest GULF EXPRESS 5244 is best size fit. Tests that all 8 cargo×vessel pairs are evaluated, not just first/last. Score expected upper-marginal because several vessels are East Med spot positions."
+}

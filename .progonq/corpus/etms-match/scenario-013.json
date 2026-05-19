@@ -1,0 +1,15 @@
+{
+  "id": "etms-match-013-no-match-sanctions-ukraine-soya-odesa",
+  "category": "no-match",
+  "cargo_ref": "etms-parse-cargo/scenario-088",
+  "vessel_ref": "etms-parse-vessel/scenario-049",
+  "expected": {
+    "should_be_hard_filtered": true,
+    "match_level": null,
+    "score_range": null,
+    "must_cite_facts": [],
+    "must_NOT_invent": [],
+    "hard_filter_reason": "vessel restriction \"no Ukraine voyage for now\" matches Odesa origin (Ukraine) — HIGH sanctions risk, blocking"
+  },
+  "notes": "Cargo Odesa→TBS 7500 mt soyabean SF~51. Vessel MV PROPUS Marmara 10430 dwt restriction \"no Ukraine voyage for now\" — regex /\\bno\\s+ukr\\b/i matches \"no Ukraine\", route countries includes UA → blocking=true. Tests softer phrasing (\"voyage for now\") still triggers. Size-wise cargo 7500 < dwt 10430 fits (72% util), so without sanctions this would otherwise be a possible match — clean isolation of the sanctions path."
+}

@@ -1,0 +1,15 @@
+{
+  "id": "etms-match-020-no-match-cargo-vessel-project-on-bulker",
+  "category": "no-match",
+  "cargo_ref": "etms-parse-cargo/scenario-001",
+  "vessel_ref": "etms-parse-vessel/scenario-011",
+  "expected": {
+    "should_be_hard_filtered": true,
+    "match_level": null,
+    "score_range": null,
+    "must_cite_facts": [],
+    "must_NOT_invent": [],
+    "hard_filter_reason": "cargo type PROJECT (14 oversized storage tanks) incompatible with vessel category bulk (MV GLORY TOM is BULK CARRIER) — needs MPP/heavy-lift"
+  },
+  "notes": "Cargo-001: 14 pcs storage tanks (10×160m3 + 4×80m3), dimensions 4.3×15.7×4.3 m and 12.1×3.2×3.2 m, on-deck stowage. Cargo type = PROJECT. Vessel-011 MV GLORY TOM type = \"BULK CARRIER\" → categorizeVessel → 'bulk'. COMPATIBILITY[PROJECT][bulk] = false → checkCargoVesselCompat fails → hard-filter via cargoVessel path. Tests the cargo-type compatibility matrix path, independent of size."
+}

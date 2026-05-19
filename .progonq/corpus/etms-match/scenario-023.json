@@ -1,0 +1,24 @@
+{
+  "id": "etms-match-023-strong-perfect-spot-med-black-sea",
+  "category": "strong",
+  "cargo_ref": "etms-parse-cargo/scenario-022",
+  "vessel_ref": "etms-parse-vessel/scenario-035",
+  "expected": {
+    "should_be_hard_filtered": false,
+    "match_level": "good",
+    "score_range": [70, 90],
+    "must_cite_facts": [
+      "DWT 10074 mt vs cargo 10000 mt (99% utilization — near-perfect fit)",
+      "Vessel open Gibraltar, cargo loads Savona — Western Med ~3 days ballast to Italian Riviera",
+      "Cargo laycan 11/14 May 2026 — vessel spot, dates align tightly",
+      "Vessel geared MPP (2×30T cranes + 1×30T derrick) suitable for bulk loading"
+    ],
+    "must_NOT_invent": [
+      "P&I IG-club satisfied — only valid if vessel input has pi_club field",
+      "Hold cleanliness restriction — only valid if cargo.restrictions[] literally contains it",
+      "Charterer-specific policy (e.g., 'Cargill strict on CII') — never allowed from external knowledge",
+      "Vetting clearance — only valid if vessel input has vetting fields"
+    ]
+  },
+  "notes": "Designed as a clean strong-match: 99% size fit, 3-day ballast, spot/spot timing alignment, geared MPP on bulk cargo (works). Tests upper-bound scoring. Savona (port-master draft 7.5+ m, present in some configs) and Samsun (12.5 m) — vessel draft 9.219 m fits both. Cargo Savona→Samsun via Bosphorus ~6 days laden. Tween-decker classification (MPP family) compatible with BULK per matrix."
+}

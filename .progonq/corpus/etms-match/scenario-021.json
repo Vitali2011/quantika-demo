@@ -1,0 +1,15 @@
+{
+  "id": "etms-match-021-no-match-cargo-vessel-breakbulk-on-bulker",
+  "category": "no-match",
+  "cargo_ref": "etms-parse-cargo/scenario-002",
+  "vessel_ref": "etms-parse-vessel/scenario-011",
+  "expected": {
+    "should_be_hard_filtered": true,
+    "match_level": null,
+    "score_range": null,
+    "must_cite_facts": [],
+    "must_NOT_invent": [],
+    "hard_filter_reason": "cargo type BREAK_BULK (cement in sling, 30000 mt) incompatible with vessel category bulk (MV GLORY TOM is BULK CARRIER) — needs MPP/general-cargo"
+  },
+  "notes": "Cargo-002 Suez→Nacala 30000 mt cement in slings (BREAK_BULK). Vessel-011 GLORY TOM type = \"BULK CARRIER\" → categorizeVessel returns 'bulk'. COMPATIBILITY[BREAK_BULK][bulk] = false → hard-filter via cargoVessel. Note: size-wise vessel 63695 dwt easily fits 30000 mt cargo, and route Suez→Nacala is feasible — sanctions restrictions also do not apply to this route. Pure cargo-type compatibility test, clean isolation."
+}
