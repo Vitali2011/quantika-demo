@@ -154,8 +154,8 @@ function asNumber(v: unknown): number | null {
 }
 
 export function withinTolerance(ref: number | null, model: number | null, tolerance = 0.05): boolean {
-  if (ref === null && model === null) return true;
-  if (ref === null || model === null) return false;
+  if (ref === null) return true;   // unannotated ref — don't penalize model
+  if (model === null) return false;
   if (ref === 0) return model === 0;
   return Math.abs(ref - model) / Math.abs(ref) <= tolerance;
 }
@@ -166,11 +166,13 @@ function ciEqual(a: string | null, b: string | null): boolean {
   return a.trim().toLowerCase() === b.trim().toLowerCase();
 }
 
-function normalizeVesselName(s: string | null): string | null {
+export function normalizeVesselName(s: string | null): string | null {
   if (!s) return s;
   return s
     .toUpperCase()
-    .replace(/^(M[\s.]*V[.\s]*|MS[.\s]*|SS[.\s]*|MT[.\s]*)/i, '')
+    .replace(/^(M[\s./]*V[.\s/]*|MS[.\s]*|SS[.\s]*|MT[.\s]*)/i, '')
+    .replace(/\s*\(EX[\s-][^)]+\)/gi, '')
+    .replace(/\s*['"]{1,2}\s*EX\s+[^'"]+['"]{1,2}/gi, '')
     .replace(/[^A-Z0-9 ]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
@@ -182,6 +184,8 @@ function normalizeImo(s: string | null): string | null {
   return m ? m[0] : null;
 }
 
+// TODO: replace positional pairing with greedy best-match by normalized vessel_name
+// to handle multi-vessel scenarios where model returns vessels in different order (affects ~2 scenarios).
 export function scoreVesselItems(refItems: VesselItem[], modelItems: VesselItem[]): VesselMatchResult[] {
   const results: VesselMatchResult[] = [];
   const maxLen = Math.max(refItems.length, modelItems.length);
@@ -209,13 +213,13 @@ export function scoreVesselItems(refItems: VesselItem[], modelItems: VesselItem[
 
     const vesselNameMatch = ciEqual(normalizeVesselName(refName), normalizeVesselName(modelName));
     const imoMatch =
-      refImo === null && modelImo === null
+      refImo === null
         ? true
-        : refImo === null || modelImo === null
+        : modelImo === null
           ? false
           : normalizeImo(refImo) === normalizeImo(modelImo);
-    const flagMatch = ciEqual(refFlag, modelFlag);
-    const builtMatch = refBuilt === modelBuilt;
+    const flagMatch = refFlag === null ? true : ciEqual(refFlag, modelFlag);
+    const builtMatch = refBuilt === null ? true : refBuilt === modelBuilt;
     const dwtMatch = withinTolerance(refDwt, modelDwt);
     const dwccMatch = withinTolerance(refDwcc, modelDwcc);
 

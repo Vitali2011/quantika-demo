@@ -1,4 +1,4 @@
-import { scoreVesselItems, withinTolerance } from '../run-parse-vessel';
+import { scoreVesselItems, withinTolerance, normalizeVesselName } from '../run-parse-vessel';
 
 function field<T>(value: T | null): { value: T; confidence: string } | null {
   return value === null ? null : { value, confidence: 'confirmed' };
@@ -18,15 +18,20 @@ function makeRef(overrides: Record<string, unknown> = {}) {
   };
 }
 
+describe('normalizeVesselName', () => {
+  it('strips M/V prefix with slash', () => expect(normalizeVesselName('M/V GOYNUK')).toBe('GOYNUK'));
+  it('strips ex-name in parentheses', () => expect(normalizeVesselName('MV LADY ZEHMA (EX CASSIOPEIA STAR)')).toBe('LADY ZEHMA'));
+  it('strips quoted ex-name', () => expect(normalizeVesselName("MV ALI (EX-STAR)")).toBe('ALI'));
+});
+
 describe('withinTolerance (numeric ±5%)', () => {
   it('exact match → true', () => expect(withinTolerance(3000, 3000)).toBe(true));
   it('within 5% → true', () => expect(withinTolerance(3000, 3140)).toBe(true));
   it('outside 5% → false', () => expect(withinTolerance(3000, 3200)).toBe(false));
   it('both null → true', () => expect(withinTolerance(null, null)).toBe(true));
-  it('one null → false', () => {
-    expect(withinTolerance(null, 100)).toBe(false);
-    expect(withinTolerance(100, null)).toBe(false);
-  });
+  it('ref null (unannotated) → true', () => expect(withinTolerance(null, 4000)).toBe(true));
+  it('ref has value, model null → false', () => expect(withinTolerance(3858, null)).toBe(false));
+  it('model null, ref not null → false', () => expect(withinTolerance(100, null)).toBe(false));
 });
 
 describe('scoreVesselItems', () => {
