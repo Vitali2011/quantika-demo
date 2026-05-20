@@ -194,7 +194,19 @@ Extract per vessel:
   header in addition to the body. Do not return "unknown" or any free-text;
   if not present return null. Plain field (not a ConfidenceField object).
 - open_position: port or area where vessel is/will be available
-- open_date: date vessel is available. If given as a range in slash notation (e.g. "10/12 May 2026"), this is a LAYCAN WINDOW (earliest open / latest open). Store the value as a structured object: { open: "2026-05-10", close: "2026-05-12", display: "10/12 May 2026" } with confidence='interpreted' and preserve the original notation in source_text. For a single date (e.g. "open 15 May"), store as { open: "2026-05-15", close: null, display: "15 May 2026" } with confidence='confirmed'.
+- open_date: date vessel is available. If given as a range WITH explicit year in slash notation (e.g. "10/12 May 2026"), this is a LAYCAN WINDOW (earliest open / latest open). Store the value as a structured object: { open: "2026-05-10", close: "2026-05-12", display: "10/12 May 2026" } with confidence='interpreted' and preserve the original notation in source_text. For a single date WITH explicit year (e.g. "open 15 May 2026"), store as { open: "2026-05-15", close: null, display: "15 May 2026" } with confidence='confirmed'.
+
+  OPEN_DATE YEAR RULE — NO YEAR INFERENCE:
+  When the email mentions a date WITHOUT an explicit year (e.g. "1-5 Oct", "prompt/spot", "End August", "01 JUN", "18/19 MAY", "22-23rd May"):
+  - Set open: null, close: null
+  - Set display: the original date string verbatim — copy exact characters and case from the email
+  - Set confidence: "confirmed" if the date is clearly stated, "interpreted" if vague or derived
+  - NEVER infer, guess, or append a year that is not explicitly present in the email text
+
+  OPEN_DATE DISPLAY FORMAT — WHEN YEAR IS EXPLICIT:
+  When year IS explicitly stated in the email (e.g. "13-15 August 2018", "25/28 July 2017", "ETA 20 May 2026"):
+  - Normalize display to title case: "13-15 August 2018" not "13-15 AUGUST 2018"
+  - Preserve month abbreviations as written in the email (abbreviated if abbreviated, full if full)
 - direction: intended GEOGRAPHIC trading direction (e.g. "seeking Far East", "open for Middle East/India", "via Suez to Mediterranean"). MUST be geographic — if the email only says "seeking suitable employment", "keen to fix", or similar commercial phrases without a geographic direction, set direction to null. NOTE: if the email contains an explicit POL → POD route for THIS vessel (e.g. "Iskenderun → Liverpool", "loading Antwerp / discharging Lagos"), use that route as direction (e.g. value="Iskenderun to Liverpool", confidence='confirmed', source_text="POL: Iskenderun POD: Liverpool"). Do NOT do this for cargo-inquiry emails — only when the route belongs to an offered vessel.
 - restrictions: array of restrictions (e.g. "no Ukraine", "no IMO cargo", "no grain")
 - last_cargoes: comma-separated string of recent cargoes.
