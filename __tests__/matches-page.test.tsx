@@ -26,6 +26,23 @@ function readSource(filePath: string): string {
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
+// app/matches/page.tsx — bug #292: sample data bypass for MATCHES_ENABLED
+// ──────────────────────────────────────────────────────────────────────────────
+
+describe('app/matches/page.tsx — sample data bypass (bug #292)', () => {
+  it('reads isSampleData from session to bypass MATCHES_ENABLED check', () => {
+    const src = readSource(pagePath);
+    expect(src).toMatch(/isSampleData/);
+  });
+
+  it('MATCHES_ENABLED guard is conditional on isSampleData (not unconditional redirect)', () => {
+    const src = readSource(pagePath);
+    // Must have compound guard: feature flag off AND not sample data → redirect
+    expect(src).toMatch(/MATCHES_ENABLED.*isSampleData|isSampleData.*MATCHES_ENABLED/);
+  });
+});
+
+// ──────────────────────────────────────────────────────────────────────────────
 // app/matches/page.tsx
 // ──────────────────────────────────────────────────────────────────────────────
 

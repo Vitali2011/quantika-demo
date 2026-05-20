@@ -33,7 +33,7 @@ export default async function MatchesPage() {
   const session = getSession(sessionId);
   if (!session) redirect('/');
 
-  if (process.env.MATCHES_ENABLED !== "true") redirect('/');
+  if (process.env.MATCHES_ENABLED !== "true" && !session.isSampleData) redirect('/');
 
   const db = getStore().getDatabase();
 
