@@ -1193,6 +1193,32 @@ export function _setSearouteJsonForTest(m: Map<string, number> | null): void {
   _searouteJson = m;
 }
 
+// ── Tier 3: on-the-fly searoute ──────────────────────────────────────────────
+type LiveSearouteFn = (a: { lat: number; lon: number }, b: { lat: number; lon: number }) => { nm: number } | null;
+let _liveSearouteTestMode = false;
+let _liveSearouteTestFn: LiveSearouteFn | null = null;
+
+function getLiveSearouteFn(): LiveSearouteFn | null {
+  if (_liveSearouteTestMode) return _liveSearouteTestFn;
+  try {
+    const { computeSearouteCached } = require('./searoute-client') as typeof import('./searoute-client');
+    return computeSearouteCached;
+  } catch {
+    return null;
+  }
+}
+
+/** Override tier-3 searoute implementation for tests. Pass null to reset to real impl. */
+export function _setLiveSearouteForTest(fn: LiveSearouteFn | null): void {
+  if (fn === null) {
+    _liveSearouteTestMode = false;
+    _liveSearouteTestFn = null;
+  } else {
+    _liveSearouteTestMode = true;
+    _liveSearouteTestFn = fn;
+  }
+}
+
 /** Result of a port-pair distance lookup. */
 export interface PortDistanceResult {
   /** Distance in nautical miles (rounded). */
@@ -1207,8 +1233,10 @@ export interface PortDistanceResult {
  * Resolution order:
  *   1. Same canonical port → { nm: 0, exact: true }
  *   2. Hardcoded sea-route matrix → { nm, exact: true }   ~500 hand-curated pairs (BIMCO-style)
- *   3. Haversine great-circle from getPortMaster lat/lon → { nm, exact: false }
- *   4. null (unknown port or no coords available)
+ *   3. Pre-populated searoute JSON → { nm, exact: true }  ~106k pairs (B5a)
+ *   4. On-the-fly searoute (searoute-ts, canal-aware) → { nm, exact: true }  (B5b)
+ *   5. Haversine great-circle from getPortMaster lat/lon → { nm, exact: false }
+ *   6. null (unknown port or no coords available)
  *
  * Accuracy note (Phase C3 audit, 2026-05-19):
  *   - Matrix entries are calibrated against BIMCO Distance Tables; error <5%.
@@ -1249,12 +1277,9 @@ export function getPortDistance(
     if (sjNm != null) return { nm: sjNm, exact: true };
   }
 
-  // Haversine fallback — needs lat/lon from port-master. Lazy import to avoid
-  // a circular dependency between port-master.ts (which imports normalizePortName
-  // from us) and this file.
-   
+  // Tiers 3+4 need port-master coords. Lazy require avoids circular deps
+  // (port-master.ts imports normalizePortName from this file).
   const { getPortMaster } = require('./port-master') as typeof import('./port-master');
-   
   const { haversineDistanceNm } = require('./haversine') as typeof import('./haversine');
 
   const pa = getPortMaster(a);
@@ -1263,5 +1288,15 @@ export function getPortDistance(
   if (pa.lat == null || pa.lon == null || pb.lat == null || pb.lon == null) return null;
   if (!Number.isFinite(pa.lat) || !Number.isFinite(pa.lon) || !Number.isFinite(pb.lat) || !Number.isFinite(pb.lon)) return null;
 
+  // Tier 3: on-the-fly searoute (canal/strait-aware, exact sea routes)
+  if (process.env.DISTANCE_USE_SEAROUTE_LIVE !== 'false') {
+    const liveFn = getLiveSearouteFn();
+    if (liveFn) {
+      const live = liveFn({ lat: pa.lat, lon: pa.lon }, { lat: pb.lat, lon: pb.lon });
+      if (live != null) return { nm: live.nm, exact: true };
+    }
+  }
+
+  // Tier 4: haversine great-circle (exact: false — unreliable for canal corridors)
   return { nm: haversineDistanceNm(pa.lat, pa.lon, pb.lat, pb.lon), exact: false };
 }
