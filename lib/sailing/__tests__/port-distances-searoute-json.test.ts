@@ -1,9 +1,10 @@
 import { getPortDistance, _setSearouteJsonForTest } from '../port-distances';
 
 afterEach(() => {
-  // Reset injected map and env flag after each test
+  // Reset injected map and env flags after each test
   _setSearouteJsonForTest(null);
   delete process.env.DISTANCE_USE_SEAROUTE_JSON;
+  delete process.env.DISTANCE_USE_SEAROUTE_LIVE;
 });
 
 describe('getPortDistance — tier 2 (searoute JSON)', () => {
@@ -41,8 +42,9 @@ describe('getPortDistance — tier 2 (searoute JSON)', () => {
   });
 
   it('falls through to haversine when pair is not in JSON', () => {
-    // Inject an empty map — no tier 2 hits
+    // Inject an empty map — no tier 2 hits. Disable tier 3 to test tier 2 isolation.
     _setSearouteJsonForTest(new Map());
+    process.env.DISTANCE_USE_SEAROUTE_LIVE = 'false';
     // Rotterdam→Hamburg is in DISTANCES_NM at 470 nm, so it won't reach haversine.
     // Use a pair with no matrix entry and no JSON entry → haversine fallback (exact: false).
     const result = getPortDistance('Rotterdam', 'Durban');
@@ -54,6 +56,7 @@ describe('getPortDistance — tier 2 (searoute JSON)', () => {
 
   it('DISTANCE_USE_SEAROUTE_JSON=false skips tier 2 entirely', () => {
     process.env.DISTANCE_USE_SEAROUTE_JSON = 'false';
+    process.env.DISTANCE_USE_SEAROUTE_LIVE = 'false';
     _setSearouteJsonForTest(new Map([['Durban|Rotterdam', 9500]]));
     // Tier 2 disabled → haversine fallback (exact: false)
     const result = getPortDistance('Rotterdam', 'Durban');
