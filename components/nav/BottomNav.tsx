@@ -59,7 +59,7 @@ export default function BottomNav() {
         <span>Market</span>
       </Link>
       <Link
-        href="/upgrade"
+        href="/more"
         aria-current={undefined}
         className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full text-xs"
       >
