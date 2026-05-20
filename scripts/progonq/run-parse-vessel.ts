@@ -184,15 +184,37 @@ function normalizeImo(s: string | null): string | null {
   return m ? m[0] : null;
 }
 
-// TODO: replace positional pairing with greedy best-match by normalized vessel_name
-// to handle multi-vessel scenarios where model returns vessels in different order (affects ~2 scenarios).
 export function scoreVesselItems(refItems: VesselItem[], modelItems: VesselItem[]): VesselMatchResult[] {
   const results: VesselMatchResult[] = [];
+  const used = new Set<number>();
+
+  function findBestMatch(refName: string, items: VesselItem[]): number {
+    for (let j = 0; j < items.length; j++) {
+      if (used.has(j)) continue;
+      const mName = normalizeVesselName(asString(getFieldValue(items[j]?.vessel_name)));
+      if (refName && mName && refName === mName) return j;
+    }
+    for (let j = 0; j < items.length; j++) {
+      if (!used.has(j)) return j;
+    }
+    return -1;
+  }
+
   const maxLen = Math.max(refItems.length, modelItems.length);
 
   for (let i = 0; i < maxLen; i++) {
     const ref = refItems[i] ?? null;
-    const model = modelItems[i] ?? null;
+    let model: VesselItem | null = null;
+
+    if (ref !== null) {
+      const refName = normalizeVesselName(asString(getFieldValue(ref?.vessel_name))) ?? '';
+      const bestIdx = findBestMatch(refName, modelItems);
+      if (bestIdx !== -1) { model = modelItems[bestIdx]; used.add(bestIdx); }
+    } else {
+      for (let j = 0; j < modelItems.length; j++) {
+        if (!used.has(j)) { model = modelItems[j]; used.add(j); break; }
+      }
+    }
 
     const refName = asString(getFieldValue(ref?.vessel_name));
     const modelName = asString(getFieldValue(model?.vessel_name));
