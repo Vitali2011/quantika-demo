@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
       const prompt = buildVesselPrompt(email);
       let raw: string;
       try {
-        raw = await callAiText('PARSE_VESSEL', VESSEL_POSITION_PARSER_PROMPT, prompt, { timeoutMs: endpointLlmTimeout(60), responseSchema: PARSE_VESSEL_SCHEMA, maxTokens: 8192 });
+        raw = await callAiText('PARSE_VESSEL', VESSEL_POSITION_PARSER_PROMPT, prompt, { timeoutMs: endpointLlmTimeout(60), responseSchema: PARSE_VESSEL_SCHEMA, maxTokens: 8192, maxRetries: 1 });
       } catch (err) {
         // γ-1: per-email timeout isolation — a single LLM timeout must NOT
         // poison the whole batch. Skip this email; user retries the route.
