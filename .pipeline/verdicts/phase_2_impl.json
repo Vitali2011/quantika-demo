@@ -1,10 +1,14 @@
 {
   "phase": "2",
   "mode": "single-agent",
-  "impl_files": ["scripts/progonq/run-parse-vessel.ts"],
+  "impl_files": [
+    "app/api/ai/parse-vessel/route.ts",
+    "lib/schemas/parse-vessel.ts",
+    "scripts/progonq/judge-parse-vessel.ts"
+  ],
   "test_files": [],
-  "tests_total": 47,
-  "tests_green": 47,
+  "tests_total": 103,
+  "tests_green": 99,
   "test_rewrite_count": 0,
   "test_patches_accepted_total": 0,
   "pi3_triggered": false,

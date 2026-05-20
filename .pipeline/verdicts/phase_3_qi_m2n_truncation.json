@@ -1,0 +1,18 @@
+{
+  "phase": "3",
+  "qi_persona": "default",
+  "classes_checked": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+  "findings": [
+    {
+      "class": 7,
+      "severity": "LOW",
+      "summary": "run-parse-vessel.ts eval runner uses maxTokens=16000; prod route now uses 16384 — minor eval-vs-prod skew, non-blocking",
+      "file": "scripts/progonq/run-parse-vessel.ts"
+    }
+  ],
+  "verdict": "PASS",
+  "pi3_compliance": true,
+  "phase_2_verdict_read": true,
+  "phase_2_test_rewrite_count_observed": 0,
+  "fail_rework_round": 0
+}
