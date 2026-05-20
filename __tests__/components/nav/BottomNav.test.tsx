@@ -50,7 +50,7 @@ describe('BottomNav — mobile bottom navigation (RED phase)', () => {
     expect(screen.getByRole('link', { name: /home/i })).toHaveAttribute('href', '/dashboard');
     expect(screen.getByRole('link', { name: /matches/i })).toHaveAttribute('href', '/matches');
     expect(screen.getByRole('link', { name: /market/i })).toHaveAttribute('href', '/market');
-    expect(screen.getByRole('link', { name: /more/i })).toHaveAttribute('href', '/upgrade');
+    expect(screen.getByRole('link', { name: /more/i })).toHaveAttribute('href', '/more');
   });
 
   /**
