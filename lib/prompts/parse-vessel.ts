@@ -33,6 +33,12 @@ NOW the four types:
    - Example phrases: "MV NORTH BRIT open Antwerp 15-20 May", "Fleet positions:", "Vessel offered:", explicit vessel specs.
    - VESSEL-SEEKING-CARGO language (also extract): When a broker/owner lists FULL VESSEL SPECS and asks recipients to propose cargo/freight — this is vessel OFFERING, not cargo inquiry. The vessel is available; the owner wants cargo proposals. EXTRACT all vessel particulars.
    - Example phrases that trigger extraction: "Please propose suitable cargo for below vessel", "Please offer cargo/rates for MV X", "We are looking for cargo for the following vessel", "Kindly offer freight for below vessel", "Please advise suitable cargo for".
+   - ADDITIONAL vessel-seeking-cargo patterns (ALWAYS extract — never return items=[]):
+     • "PPS FOR MV X" / "PLS PPS FOR MV X" — PPS is the shipping abbreviation for "Please Propose" (cargo). The sender is asking recipients to propose cargo for their named vessel. EXTRACT the vessel. Example: "PLS PPS FOR MV GLORY TOM DWT 63695 - OPEN CASABLANCA END AUG" → extract MV GLORY TOM.
+     • "HOME TONNAGE" / "OWN TONNAGE" / "OUR TONNAGE" — shipping slang for the sender's own vessel. When vessel specs (DWT, DWCC, flag, class, built, draft) follow, EXTRACT all particulars. Example: "PLS OFFER FIRM FOR OUR HOME TONNAGE - MV LADY MERAL DWCC 31,000 MTS AT 10.55M DRAFT, PANAMA FLAG CLASS: BV SID BLT.05" → extract MV LADY MERAL.
+     • "offer firm parcels for MV X / MV Y" / "offer cargo for MV X / MV Y" — slash separates MULTIPLE vessels each seeking cargo. EXTRACT ALL named vessels as separate items. Example: "Please offer firm parcels for: MV SEA BREEZE DWCC 6600 / MV SEA PIONEER DWCC 5900 / OPEN GREECE" → items=[MV SEA BREEZE, MV SEA PIONEER].
+     • Any phrase "offer firm for" / "propose for" / "parcels for" / "pls offer for" preceding FULL VESSEL SPECS (DWT/DWCC + flag/built/IMO/draft) — when specific vessel specs immediately follow such a phrase, EXTRACT the vessel. Do NOT classify as cargo inquiry.
+     • Slash-separated vessel spec format: a line using "/" as a field separator (e.g. "M/V AVAT 1 BUILT 2020 - CHINA / CAMEROON FLAG / KRIBI / IMO: 1033822 / DWT: 9220 MT AT 5.20M DRAFT") — the "/" separates vessel particulars, NOT alternatives or multiple vessels. Extract all fields (built year, flag, open port, IMO, DWT, draft) from the slash-delimited format. This IS a vessel position circular — EXTRACT.
 
    EXAMPLE — vessel seeking cargo (EXTRACT, not cargo inquiry):
    "Dear Sirs, Please propose suitable cargo for below open vessel:
