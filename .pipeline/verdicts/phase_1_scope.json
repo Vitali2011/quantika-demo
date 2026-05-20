@@ -1,14 +1,18 @@
 {
   "phase": "1",
-  "task_id": "m2p-body-chars",
-  "task_description": "Increase MAX_BODY_CHARS from 5000 to 8000 in run-parse-vessel.ts to expose full spec blocks for GULF ANGEL/EXPRESS in scenario-020.",
-  "files_in_scope": ["scripts/progonq/run-parse-vessel.ts"],
-  "scope_size": 1,
+  "task_id": "m2n-truncation",
+  "task_description": "Two-part fix: (1) increase maxTokens 8192→16384 so Gemini JSON isn't truncated mid-string; (2) add maxLength to schema string fields to prevent 30-40K char output; (3) fix judge false-100% score when model_output=null due to parse error.",
+  "files_in_scope": [
+    "app/api/ai/parse-vessel/route.ts",
+    "lib/schemas/parse-vessel.ts",
+    "scripts/progonq/judge-parse-vessel.ts"
+  ],
+  "scope_size": 3,
   "cross_cutting_surface": [],
   "rule_g_triggered": false,
   "rule_g_reason": null,
-  "boundary_classes_planned": [7],
-  "gotchas_acknowledged": [],
-  "assumptions_path": null,
+  "boundary_classes_planned": [1, 4, 8],
+  "gotchas_acknowledged": ["worktree-from-main", "pi3-needs-review"],
+  "assumptions_path": ".pipeline/phase_1_scope.md",
   "escalate_to": null
 }

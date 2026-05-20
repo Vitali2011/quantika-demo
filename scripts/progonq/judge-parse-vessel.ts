@@ -184,7 +184,11 @@ async function main() {
       if (itemRate === 1) semanticMatches++;
     }
 
-    r.semantic_match_rate = total === 0 ? 1 : semanticMatches / total;
+    if (r.error) {
+      r.semantic_match_rate = 0;
+    } else {
+      r.semantic_match_rate = total === 0 ? 1 : semanticMatches / total;
+    }
   }
 
   writeFileSync(resultsPath, JSON.stringify(results, null, 2));

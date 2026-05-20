@@ -14,7 +14,7 @@ const confidenceFieldString = {
   properties: {
     value: { type: Type.STRING },
     confidence: { type: Type.STRING },
-    source_text: { type: Type.STRING },
+    source_text: { type: Type.STRING, maxLength: 300 },
   },
   required: ['value', 'confidence'],
 };
@@ -24,7 +24,7 @@ const confidenceFieldNumber = {
   properties: {
     value: { type: Type.NUMBER },
     confidence: { type: Type.STRING },
-    source_text: { type: Type.STRING },
+    source_text: { type: Type.STRING, maxLength: 300 },
   },
   required: ['value', 'confidence'],
 };
@@ -42,7 +42,7 @@ const confidenceFieldDate = {
       },
     },
     confidence: { type: Type.STRING },
-    source_text: { type: Type.STRING },
+    source_text: { type: Type.STRING, maxLength: 300 },
   },
   required: ['value', 'confidence'],
 };
@@ -50,9 +50,9 @@ const confidenceFieldDate = {
 const vesselItemSchema = {
   type: Type.OBJECT,
   properties: {
-    vessel_name: confidenceFieldString,
-    imo: { type: Type.STRING, nullable: true },
-    flag: { type: Type.STRING, nullable: true },
+    vessel_name: { ...confidenceFieldString, properties: { ...confidenceFieldString.properties, value: { type: Type.STRING, maxLength: 200 } } },
+    imo: { type: Type.STRING, nullable: true, maxLength: 20 },
+    flag: { type: Type.STRING, nullable: true, maxLength: 100 },
     built: confidenceFieldNumber,
     dwt_summer: confidenceFieldNumber,
     draft_max: confidenceFieldNumber,
@@ -64,7 +64,7 @@ const vesselItemSchema = {
     hatches_count: { type: Type.NUMBER, nullable: true },
     geared: { type: Type.BOOLEAN, nullable: true },
     gear_description: { type: Type.STRING, nullable: true },
-    open_position: confidenceFieldString,
+    open_position: { ...confidenceFieldString, properties: { ...confidenceFieldString.properties, value: { type: Type.STRING, maxLength: 300 } } },
     dwcc: { ...confidenceFieldNumber, nullable: true },
     open_date: confidenceFieldDate,
     last_cargoes: { type: Type.STRING, nullable: true },
