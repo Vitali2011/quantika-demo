@@ -26,6 +26,8 @@ const DEFAULT_TIMEOUT_MS = 85_000;
 export interface LlmCallOptions {
   timeoutMs?: number;
   signal?: AbortSignal;
+  /** Override SDK-level retry count for this request (OpenAI default: 2). */
+  maxRetries?: number;
 }
 
 /**
@@ -97,7 +99,7 @@ export async function callAiJson<T>(
       stream: true,
       temperature: 0.1,
       max_tokens: maxTokens,
-    }, { signal: controller.signal });
+    }, { signal: controller.signal, maxRetries: options?.maxRetries });
 
     let content = '';
     for await (const chunk of stream) {
@@ -169,7 +171,7 @@ export async function callAiText(
       ],
       stream: true,
       temperature: 0.3,
-    }, { signal: controller.signal });
+    }, { signal: controller.signal, maxRetries: options?.maxRetries });
 
     let content = '';
     for await (const chunk of stream) {

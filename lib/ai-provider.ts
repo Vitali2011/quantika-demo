@@ -49,6 +49,14 @@ export interface AiOpts {
   topK?: number;
   /** Random seed for reproducibility (Gemini Vertex AI supports). */
   seed?: number;
+  /**
+   * Maximum number of retries on transient failures (e.g. 429, 503).
+   * - Gemini: maps to httpOptions.retryOptions.attempts (attempts = maxRetries + 1). SDK default: 4 retries.
+   * - OpenAI: maps to per-request maxRetries option. SDK default: 2 retries.
+   * - Bedrock: no SDK-level retries; not used.
+   * Set to 1 for latency-sensitive scopes (e.g. PARSE_VESSEL) to avoid retry storms on slow responses.
+   */
+  maxRetries?: number;
   /** Max USD budget per claude-cli call (default: 0.05). Only used by claude-cli provider. */
   maxBudgetUsd?: number;
 }
@@ -78,6 +86,18 @@ export function buildBedrockSamplingFields(opts: AiOpts): Record<string, unknown
   if (opts.temperature !== undefined) cfg.temperature = opts.temperature;
   if (opts.topP !== undefined) cfg.top_p = opts.topP;
   return cfg;
+}
+
+/**
+ * Returns Gemini httpOptions with retryOptions when maxRetries is set.
+ * Gemini SDK retryOptions.attempts includes the initial call, so attempts = maxRetries + 1.
+ * Returns undefined when maxRetries is not specified (SDK uses its default of 5 attempts).
+ */
+export function buildGeminiHttpOptions(
+  opts: AiOpts,
+): { retryOptions?: { attempts?: number } } | undefined {
+  if (opts.maxRetries === undefined) return undefined;
+  return { retryOptions: { attempts: opts.maxRetries + 1 } };
 }
 
 export interface ImageInput {
@@ -432,7 +452,7 @@ async function callOpenAiJson<T>(
     model,
     undefined as T,
     opts?.maxTokens ?? 16000,
-    { timeoutMs: opts?.timeoutMs, signal: opts?.signal },
+    { timeoutMs: opts?.timeoutMs, signal: opts?.signal, maxRetries: opts?.maxRetries },
   );
   return result;
 }
@@ -448,7 +468,7 @@ async function callOpenAiText(
     user,
     system,
     model,
-    { timeoutMs: opts?.timeoutMs, signal: opts?.signal },
+    { timeoutMs: opts?.timeoutMs, signal: opts?.signal, maxRetries: opts?.maxRetries },
   );
 }
 
@@ -473,7 +493,7 @@ async function callGeminiText(
 ): Promise<{ text: string; usage?: Usage }> {
   assertGeminiEnv();
   const { GoogleGenAI } = require('@google/genai') as {
-    GoogleGenAI: new (opts: { vertexai: boolean; project: string; location: string }) => {
+    GoogleGenAI: new (opts: { vertexai: boolean; project: string; location: string; httpOptions?: { retryOptions?: { attempts?: number } } }) => {
       models: {
         generateContent: (params: {
           model: string;
@@ -493,10 +513,12 @@ async function callGeminiText(
     };
   };
 
+  const geminiHttpOpts = opts ? buildGeminiHttpOptions(opts) : undefined;
   const ai = new GoogleGenAI({
     vertexai: true,
     project: process.env.GOOGLE_CLOUD_PROJECT!,
     location: process.env.GOOGLE_CLOUD_LOCATION ?? 'us-central1',
+    ...(geminiHttpOpts ? { httpOptions: geminiHttpOpts } : {}),
   });
 
   // Build config — handle both Deep Think (thinkingConfig) and structured output (responseSchema).
