@@ -90,6 +90,21 @@ export default function MatchesClient({ initialMatches }: Props) {
     }
   }, [router]);
 
+  // Export current visible matches as PDF download
+  function handleExportPdf() {
+    const params = new URLSearchParams();
+    for (const ct of cargoTypes) params.append('cargo_type', ct);
+    if (route) params.set('route', route);
+    if (laycan_from) params.set('laycan_from', laycan_from);
+    if (laycan_to) params.set('laycan_to', laycan_to);
+    if (score_min) params.set('score_min', score_min);
+    if (dwt_min) params.set('dwt_min', dwt_min);
+    if (dwt_max) params.set('dwt_max', dwt_max);
+    if (filterStatus) params.set('status', filterStatus);
+    const qs = params.toString();
+    window.open(qs ? `/api/matches/export/pdf?${qs}` : '/api/matches/export/pdf', '_blank');
+  }
+
   // Single match action
   async function handleAction(id: number, status: MatchStatus) {
     const res = await fetch(`/api/matches/${id}`, {
@@ -177,6 +192,13 @@ export default function MatchesClient({ initialMatches }: Props) {
           className="px-3 py-1 rounded-full text-sm border bg-white text-gray-700 border-gray-300 ml-2"
         >
           Advanced Filters
+        </button>
+        <button
+          onClick={handleExportPdf}
+          className="px-3 py-1 rounded-full text-sm border bg-white text-gray-700 border-gray-300 ml-auto"
+          title="Export current matches as PDF"
+        >
+          Export PDF
         </button>
       </div>
 
