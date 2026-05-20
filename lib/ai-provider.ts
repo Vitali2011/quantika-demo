@@ -148,15 +148,11 @@ const COST_TABLE_PER_M_TOKENS: Record<string, { in: number; out: number }> = {
   // Deep Think suffix is used by the eval script to track thinkingBudget runs separately in ai_audit.
   // Billing rate is the same underlying model, but output token usage is higher in practice (2-3×).
   'gemini:gemini-2.5-pro-deepthink': { in: 1.25, out: 5.0 },
-  // Claude Opus 4.7 — AWS Bedrock cross-region inference profiles (no date suffix starting Opus 4.x)
-  'bedrock:us.anthropic.claude-opus-4-7': { in: 15, out: 75 },
-  'bedrock:eu.anthropic.claude-opus-4-7': { in: 15, out: 75 },
-  'bedrock:global.anthropic.claude-opus-4-7': { in: 15, out: 75 },
+  // Claude Opus 4.7 — AWS Bedrock direct inference (no cross-region us./eu./global. prefix)
+  'bedrock:anthropic.claude-opus-4-7': { in: 15, out: 75 },
   // Claude Sonnet 4.6 — cost-optimized alternative: ~5× cheaper than Opus 4.7
-  // Use case: per-scope override via MATCH_BEDROCK_MODEL=us.anthropic.claude-sonnet-4-6
-  'bedrock:us.anthropic.claude-sonnet-4-6': { in: 3, out: 15 },
-  'bedrock:eu.anthropic.claude-sonnet-4-6': { in: 3, out: 15 },
-  'bedrock:global.anthropic.claude-sonnet-4-6': { in: 3, out: 15 },
+  // Per-scope override: MATCH_MODEL=anthropic.claude-sonnet-4-6 (with MATCH_PROVIDER=bedrock)
+  'bedrock:anthropic.claude-sonnet-4-6': { in: 3, out: 15 },
 };
 
 export function computeCostUsd(
@@ -432,7 +428,7 @@ export function getModel(scope: string): string {
     case 'gemini':
       return process.env.AI_MODEL_GEMINI_DEFAULT ?? 'gemini-2.5-flash';
     case 'bedrock':
-      return process.env.BEDROCK_MODEL_ID ?? 'us.anthropic.claude-opus-4-7';
+      return process.env.BEDROCK_MODEL_ID ?? 'anthropic.claude-opus-4-7';
     case 'claude-cli':
       return 'claude-opus-4-7';
     case 'openai':

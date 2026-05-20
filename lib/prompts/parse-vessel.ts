@@ -31,6 +31,18 @@ NOW the four types:
    - Sender perspective: SHIPOWNER or BROKER offering a vessel.
    - Signals: a specific vessel name + "open [port]", "available", "promptly", "spot", "ETA", explicit DWT/IMO/Built/Flag, fleet positions, vessel particulars, L/C history.
    - Example phrases: "MV NORTH BRIT open Antwerp 15-20 May", "Fleet positions:", "Vessel offered:", explicit vessel specs.
+   - VESSEL-SEEKING-CARGO language (also extract): When a broker/owner lists FULL VESSEL SPECS and asks recipients to propose cargo/freight — this is vessel OFFERING, not cargo inquiry. The vessel is available; the owner wants cargo proposals. EXTRACT all vessel particulars.
+   - Example phrases that trigger extraction: "Please propose suitable cargo for below vessel", "Please offer cargo/rates for MV X", "We are looking for cargo for the following vessel", "Kindly offer freight for below vessel", "Please advise suitable cargo for".
+
+   EXAMPLE — vessel seeking cargo (EXTRACT, not cargo inquiry):
+   "Dear Sirs, Please propose suitable cargo for below open vessel:
+    MV DELTA STAR, 28,500 DWT, Built 2004, Flag: Panama, IMO 9123456
+    Open: Rotterdam spot / ETA ARA 20-22 May
+    Geared 3x30T, grain cap 35,000 cbm"
+   → items=[{vessel_name: "MV DELTA STAR", dwt_summer: 28500, built: 2004, flag: "Panama", imo: 9123456, open_position: "Rotterdam", geared: true, ...}]
+   Rationale: full vessel specs are listed BY THE OWNER/BROKER — this is a vessel position. The
+   "please propose cargo" phrasing means the owner WANTS cargo, making the vessel available.
+   This is functionally identical to "MV DELTA STAR open Rotterdam spot."
 
 3. **FIXTURE RECAP** (extract vessel — same as type 1):
    - Sender perspective: OWNER's broker confirming a fixed deal between owner and charterer
@@ -60,7 +72,8 @@ Laycan: 15-20 May 2026  Freight: USD 32/mt FIO"
 DECISION RULE:
 - Is the email a certificate/administrative document (P&I Blue Card, class cert, etc.)? → return items=[] (HIGHEST PRIORITY — check this first even if vessel particulars are listed).
 - Does the email name a specific vessel that is being offered for charter or that has been fixed? → extract.
-- Does the email request a vessel (any vessel matching specs) for a cargo? → return items=[].
+- Does the email list FULL VESSEL SPECS (name + DWT + built + flag + open position) while asking recipients to "propose cargo", "offer freight", or "advise suitable cargo"? → this is vessel OFFERING (owner/broker is seeking cargo for an available vessel) — EXTRACT. Do NOT classify as cargo inquiry.
+- Does the email request a vessel (any vessel matching specs) for a cargo, WITHOUT naming a specific vessel? → return items=[].
 - If mixed or unclear → err on items=[] (returning empty is SAFER than fabricating).
 
 CRITICAL ANTI-PATTERN — NEVER map cargo-side fields to vessel fields:
@@ -156,6 +169,7 @@ Extract per vessel:
 - p_and_i: P&I club
 - dwt_summer: deadweight tonnage (summer)
 - dwcc: deadweight cargo capacity
+  DWCC EXTRACTION RULE: Extract dwcc ONLY when the email explicitly states a DWCC value (e.g. "DWCC 28,500 MT", "deadweight cargo capacity: 28,500"). Do NOT infer dwcc from dwt_summer when dwcc is not explicitly mentioned. When dwcc is not stated → set dwcc = null.
 - draft_max: maximum draft in meters. IMPORTANT: if the email gives draft only as part of the DWCC line (e.g. "DWCC 11,800 mts at 7.8m draft"), use that value as draft_max with confidence='interpreted' and note in source_text that it is the DWCC draft — the vessel's structural maximum draft may differ. Only use confidence='confirmed' if the email explicitly states "Max draft: X" or "Draft summer: X".
 - loa: length overall in meters
 - beam: beam in meters

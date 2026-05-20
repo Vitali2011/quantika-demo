@@ -176,6 +176,7 @@ export interface ParsedCargo {
   dischargeRate: string | null;
   commissionPercent: number | null;
   commissionTerms: string | null;
+  freightRateUsd?: number | null;
   specialRequirements: string | null;
   stowageFactor: string | null;
   missingInfo: string[];
