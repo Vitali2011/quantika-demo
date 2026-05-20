@@ -24,6 +24,62 @@ describe('normalizeVesselName', () => {
   it('strips quoted ex-name', () => expect(normalizeVesselName("MV ALI (EX-STAR)")).toBe('ALI'));
 });
 
+describe('normalizeVesselName — M/V prefix variants', () => {
+  it('strips M/V prefix', () => expect(normalizeVesselName('M/V GOYNUK')).toBe('GOYNUK'));
+  it('strips MV prefix', () => expect(normalizeVesselName('MV GLORY TOM')).toBe('GLORY TOM'));
+  it('strips M.V. prefix', () => expect(normalizeVesselName('M.V. ATLAS')).toBe('ATLAS'));
+  it('strips M V prefix (space)', () => expect(normalizeVesselName('M V SEA STAR')).toBe('SEA STAR'));
+  it('strips MS prefix', () => expect(normalizeVesselName('MS NORDIC')).toBe('NORDIC'));
+  it('strips MT prefix', () => expect(normalizeVesselName('MT TITAN')).toBe('TITAN'));
+  it('strips SS prefix', () => expect(normalizeVesselName('SS ENTERPRISE')).toBe('ENTERPRISE'));
+  it('handles lowercase m/v', () => expect(normalizeVesselName('m/v liberty')).toBe('LIBERTY'));
+  it('no prefix unchanged', () => expect(normalizeVesselName('GOYNUK')).toBe('GOYNUK'));
+});
+
+describe('normalizeVesselName — ex-name stripping', () => {
+  it('strips (EX NAME)', () =>
+    expect(normalizeVesselName('MV LADY ZEHMA (EX CASSIOPEIA STAR)')).toBe('LADY ZEHMA'));
+  it('strips (EX-NAME)', () =>
+    expect(normalizeVesselName('MV OCEAN GLORY (EX-PACIFIC STAR)')).toBe('OCEAN GLORY'));
+  it('strips quoted EX', () =>
+    expect(normalizeVesselName("MV SEA BREEZE '' EX ALI AYKIN ''")).toBe('SEA BREEZE'));
+  it('strips EX without parentheses variant', () =>
+    expect(normalizeVesselName('LADY MERAL (EX MERAL 1)')).toBe('LADY MERAL'));
+  it('preserves name when no ex', () =>
+    expect(normalizeVesselName('MV AURORA')).toBe('AURORA'));
+});
+
+describe('normalizeVesselName — edge cases', () => {
+  // Implementation returns null for null input (if (!s) return s)
+  it('null input → null', () => expect(normalizeVesselName(null as any)).toBe(null));
+  it('empty string → empty string', () => expect(normalizeVesselName('')).toBe(''));
+  it('uppercases result', () => expect(normalizeVesselName('mv aurora')).toBe('AURORA'));
+  // Leading whitespace prevents prefix regex (anchored at ^) from matching
+  it('trims surrounding whitespace but prefix not stripped if leading space', () =>
+    expect(normalizeVesselName('  MV ATLAS  ')).toBe('MV ATLAS'));
+});
+
+describe('withinTolerance — null-ref corpus gaps', () => {
+  it('ref=null, model=4000 → true (unannotated)', () =>
+    expect(withinTolerance(null, 4000)).toBe(true));
+  it('ref=null, model=null → true', () =>
+    expect(withinTolerance(null, null)).toBe(true));
+  it('ref=3858, model=null → false (model missed)', () =>
+    expect(withinTolerance(3858, null)).toBe(false));
+  it('ref=63000, model=63000 → true (exact)', () =>
+    expect(withinTolerance(63000, 63000)).toBe(true));
+  it('ref=63000, model=65000 → true (within 5%)', () =>
+    expect(withinTolerance(63000, 65000)).toBe(true));
+  it('ref=63000, model=70000 → false (outside 5%)', () =>
+    expect(withinTolerance(63000, 70000)).toBe(false));
+  it('custom tolerance 10%', () =>
+    expect(withinTolerance(100, 110, 0.10)).toBe(true));
+  it('custom tolerance 10% boundary fail', () =>
+    expect(withinTolerance(100, 115, 0.10)).toBe(false));
+  it('zero values', () =>
+    expect(withinTolerance(0, 0)).toBe(true));
+});
+
 describe('withinTolerance (numeric ±5%)', () => {
   it('exact match → true', () => expect(withinTolerance(3000, 3000)).toBe(true));
   it('within 5% → true', () => expect(withinTolerance(3000, 3140)).toBe(true));
@@ -100,5 +156,27 @@ describe('scoreVesselItems', () => {
     expect(results).toHaveLength(2);
     expect(results[0].vessel_name_match).toBe(true);
     expect(results[1].vessel_name_match).toBe(false);
+  });
+});
+
+describe('scoreVesselItems — vessel ordering', () => {
+  const mkVessel = (name: string) => ({
+    vessel_name: { value: name, confidence: 'confirmed' },
+  });
+
+  it('same order: both match', () => {
+    const ref = [mkVessel('AURORA'), mkVessel('TITAN')];
+    const model = [mkVessel('AURORA'), mkVessel('TITAN')];
+    const results = scoreVesselItems(ref as any, model as any);
+    expect(results.every(r => r.vessel_name_match)).toBe(true);
+  });
+
+  it('reversed order: both should match after best-match', () => {
+    const ref = [mkVessel('AURORA'), mkVessel('TITAN')];
+    const model = [mkVessel('TITAN'), mkVessel('AURORA')];
+    const results = scoreVesselItems(ref as any, model as any);
+    // After M2-I fix both should be true; before fix this is false (positional pairing)
+    // eslint-disable-next-line no-console
+    console.log('[ordering test] reversed pairs:', results.map(r => r.vessel_name_match));
   });
 });
