@@ -29,6 +29,7 @@ interface VesselMatch {
   ref_vessel_name: string | null; model_vessel_name: string | null;
   ref_open_position: string | null; model_open_position: string | null;
   ref_open_date: string | null; model_open_date: string | null;
+  ref_flag?: string | null; model_flag?: string | null;
   vessel_name_match: boolean;
   imo_match: boolean; flag_match: boolean; built_match: boolean;
   dwt_match: boolean; dwcc_match: boolean;
@@ -79,6 +80,16 @@ Equivalence rules:
 - Aliases match: "ARA" = "Amsterdam/Rotterdam/Antwerp range".
 - "Spot" / "promptly" / "available" qualifiers are decorative.
 - Different ports do NOT match.
+- Null on both = equivalent. Null on one = NOT equivalent.
+Reply ONLY with JSON: {"equiv": true|false, "reason": "one short sentence"}`;
+
+export const FLAG_JUDGE = `You decide whether two vessel flag / country-of-registration values refer to the same country or territory.
+Equivalence rules:
+- City name for a country's capital = country itself: "Belize City" = "Belize", "Port Louis" = "Mauritius".
+- Abbreviated or partial name: "ST VINCENT" = "Saint Vincent and the Grenadines".
+- Territory = parent state: "Madeira" = "Portugal", "Gibraltar" = "United Kingdom".
+- Case and punctuation: ignore.
+- Different countries do NOT match.
 - Null on both = equivalent. Null on one = NOT equivalent.
 Reply ONLY with JSON: {"equiv": true|false, "reason": "one short sentence"}`;
 
@@ -155,11 +166,12 @@ async function main() {
         : await getCached(cache, 'vessel_name:', m.ref_vessel_name, m.model_vessel_name, VESSEL_NAME_JUDGE, stats);
       const posV = await getCached(cache, 'open_position:', m.ref_open_position, m.model_open_position, OPEN_POSITION_JUDGE, stats);
       const dateV = await getCached(cache, 'open_date:', m.ref_open_date, m.model_open_date, OPEN_DATE_JUDGE, stats);
+      const flagV = await getCached(cache, 'flag:', m.ref_flag ?? null, m.model_flag ?? null, FLAG_JUDGE, stats);
 
       m.semantic_field_match = {
         vessel_name: nameV.equiv,
         imo: m.imo_match,
-        flag: m.flag_match,
+        flag: flagV.equiv,
         built: m.built_match,
         dwt_summer: m.dwt_match,
         dwcc: m.dwcc_match,
