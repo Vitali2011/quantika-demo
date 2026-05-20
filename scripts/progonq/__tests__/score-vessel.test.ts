@@ -80,4 +80,25 @@ describe('scoreVesselItems', () => {
   it('both 0-items → empty list (caller handles)', () => {
     expect(scoreVesselItems([], [])).toEqual([]);
   });
+
+  it('best-match: swapped vessel order → both match by name', () => {
+    const refA = makeRef({ vessel_name: field('MV ALPHA') });
+    const refB = makeRef({ vessel_name: field('MV BETA') });
+    const modelB = makeRef({ vessel_name: field('MV BETA') });
+    const modelA = makeRef({ vessel_name: field('MV ALPHA') });
+    const results = scoreVesselItems([refA, refB], [modelB, modelA]);
+    expect(results).toHaveLength(2);
+    expect(results[0].vessel_name_match).toBe(true);
+    expect(results[1].vessel_name_match).toBe(true);
+  });
+
+  it('best-match: model missing one vessel → matched vessel scores, unmatched gets null model', () => {
+    const refA = makeRef({ vessel_name: field('MV ALPHA') });
+    const refB = makeRef({ vessel_name: field('MV BETA') });
+    const modelA = makeRef({ vessel_name: field('MV ALPHA') });
+    const results = scoreVesselItems([refA, refB], [modelA]);
+    expect(results).toHaveLength(2);
+    expect(results[0].vessel_name_match).toBe(true);
+    expect(results[1].vessel_name_match).toBe(false);
+  });
 });
