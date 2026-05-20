@@ -1,0 +1,20 @@
+{
+  "phase": "2",
+  "mode": "single-agent",
+  "impl_files": ["scripts/progonq/run-parse-vessel.ts"],
+  "test_files": [],
+  "tests_total": 47,
+  "tests_green": 47,
+  "test_rewrite_count": 0,
+  "test_patches_accepted_total": 0,
+  "pi3_triggered": false,
+  "pi2_violations": [],
+  "pi4_flag_tests_added": null,
+  "class_11_pbt_added": null,
+  "rule_g_verdicts": {
+    "phase_2a": null,
+    "phase_2b": null,
+    "needs_review_rounds": 0
+  },
+  "green_verified": true
+}

@@ -17,7 +17,7 @@ import { VESSEL_POSITION_PARSER_PROMPT } from '@/lib/prompts';
 import { PARSE_VESSEL_SCHEMA } from '@/lib/schemas';
 
 const SCOPE = 'PARSE_VESSEL';
-const MAX_BODY_CHARS = 5000;
+const MAX_BODY_CHARS = 8000;
 const REQUEST_DELAY_MS = 400;
 
 const CORPUS_DIR = path.resolve(process.cwd(), '.progonq/corpus/etms-parse-vessel');

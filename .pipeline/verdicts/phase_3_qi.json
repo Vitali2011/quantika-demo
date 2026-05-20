@@ -1,11 +1,9 @@
 {
   "phase": "3",
   "qi_persona": "default",
-  "classes_checked": [1, 5, 8, 10],
-  "findings": [
-    {"class": 8, "severity": "MEDIUM", "summary": "Duplicate fact string in scenario-002 must_cite_facts", "file": ".progonq/corpus/etms-explain-deal/scenario-002.json"}
-  ],
-  "verdict": "APPROVE-WITH-FOLLOWUPS",
+  "classes_checked": [7, 8],
+  "findings": [],
+  "verdict": "PASS",
   "pi3_compliance": true,
   "phase_2_verdict_read": true,
   "phase_2_test_rewrite_count_observed": 0,
