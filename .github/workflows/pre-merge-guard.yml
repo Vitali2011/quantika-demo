@@ -1,0 +1,41 @@
+name: pre-merge-guard
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  pre-merge-guard:
+    name: pre-merge-guard
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: "Rule #14 - merge target must be main"
+        run: |
+          BASE="${{ github.event.pull_request.base.ref }}"
+          if [ "$BASE" != "main" ]; then
+            echo "::error::PR targets '$BASE', not 'main' - merged work would not reach production. Re-point the PR base to main."
+            exit 1
+          fi
+          echo "OK: merge target = main"
+
+      - name: "Rule #12 - no blocklisted files"
+        run: |
+          # Blocklist - держать в синхроне с orchestrator-day references/blocklisted-files.md
+          BLOCKLIST=".github/workflows/claude-security-review.yml"
+          CHANGED=$(gh pr diff "${{ github.event.pull_request.number }}" --repo "${{ github.repository }}" --name-only)
+          HIT=0
+          while IFS= read -r bad; do
+            [ -z "$bad" ] && continue
+            if echo "$CHANGED" | grep -qxF "$bad"; then
+              echo "::error::Blocklisted file present in PR: $bad - remove it in this same PR."
+              HIT=1
+            fi
+          done <<< "$BLOCKLIST"
+          if [ "$HIT" -ne 0 ]; then exit 1; fi
+          echo "OK: no blocklisted files in PR"
