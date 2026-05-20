@@ -65,7 +65,7 @@ const vesselItemSchema = {
     geared: { type: Type.BOOLEAN, nullable: true },
     gear_description: { type: Type.STRING, nullable: true },
     open_position: confidenceFieldString,
-    dwcc: confidenceFieldNumber,
+    dwcc: { ...confidenceFieldNumber, nullable: true },
     open_date: confidenceFieldDate,
     last_cargoes: { type: Type.STRING, nullable: true },
     vessel_type: { type: Type.STRING, nullable: true },
