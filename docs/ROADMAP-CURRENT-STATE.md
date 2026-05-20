@@ -1,9 +1,9 @@
 # Quantika Demo — ROADMAP (Текущее состояние)
 
 **Последний полный аудит:** 2026-05-17 (5-поточный код-аудит) + 2026-05-19 UI audit (Playwright+Chrome MCP) + **2026-05-19 ROADMAP reality audit** (claim vs prod sweep)
-**Последнее обновление:** 2026-05-19 — после reality audit: F1+F2+F10+F9 closed, C2 5-webhook gap уже резолвнут, port_master+eu_sanctions seed'нуты; **новый bug:** `roi_metrics=0` + `fx_rates=0` (investigation в работе)
+**Последнее обновление:** 2026-05-20 — searoute tier 2+3 LIVE (B5a #288 + B5b #289); /qa-walker: 4 бага fixed (#295 /more+logout, #296 /matches session, #297 aria+mobile); ops tasks #28/#29/#48 closed
 **Текущая версия:** prod HEAD после auto-deploy LIVE (#259, systemd quantika-demo.service на outreach-vps)
-**Статус:** ⚠️ Основные потоки работают; новый P0 — пустые таблицы при включённых флагах (см. §2)
+**Статус:** 🟢 Основные потоки работают; port_distances 5-tier с searoute (32-163% точнее для canal routes); /matches доступен после sample data flow
 
 > **Живой документ.** Заменяет `ROADMAP-SESSION-PROMPT.md` (тот был разовый промпт-генератор, не state tracker).
 > Источники отчётов: `/root/orchestrator-state/audit-2026-05-17/{parsers,data,api,ui,waves}.md`
@@ -27,6 +27,17 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 - ✅ parse-cargo GT нормализован (PR #197, 43 fixtures)
 
 **🎯 Стратегия моделей (актуализация 2026-05-17 поздний вечер):** код миграции на Gemini уже сделан (Wave γ, 2026-05-05). На проде AI_PROVIDER=gemini + MATCH_PROVIDER=gemini → **7/7 scopes через Gemini default**. claude-cli остаётся для eval judge. Сейчас в отдельной user-сессии идёт bake-off конкретных Gemini моделей per parser. Подробности в §1.1.
+
+**Что изменилось за 2026-05-20:**
+
+- ✅ **B5a #288** — pre-populated searoute JSON (tier 2): 105,011 пар, canal routes 32-163% точнее haversine
+- ✅ **B5b #289** — on-the-fly searoute-ts (tier 3): LRU cache 10K entries, ~30-50ms cold / <1ms warm
+- ✅ **#295** — создана `/more` page + рабочая кнопка Logout (POST /api/auth/logout → /login)
+- ✅ **#296** — /matches session fix: sample data flow теперь корректно распознаётся guard'ом (`isSampleData` flag)
+- ✅ **#297** — aria-valuetext формат исправлен ("0 %" → "0%") + SAN badge overflow на 375px мобильном
+- ✅ **#299** — design docs committed (qa-walker-design.md + searoute-integration-design.md)
+- ✅ **ops #28/#29/#48** — AUTO_REBASE_PAT verified, nudge CI working, deploy.yml documented; subagent template RC-D: PR title MUST contain [code-only]
+- ✅ **Distance QA** — 9111/9111 тестов PASS, tier ordering verified (tier 1 > tier 2 > haversine)
 
 **Что изменилось 19 мая (match parser baseline saga — 5 PRs):**
 
@@ -135,13 +146,13 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 **31+ миграция применена.** **Большинство таблиц заполнены**, **но 2 пустые при включённых флагах** (P0 в §2):
 
-| Статус                      | Таблицы                                                                                                                                                                                                                                      |
-| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ✅ Свежие, заполненные      | ofac_entities (18,959), schema_migrations, knowledge_sources, market_indices (92), charterers (20), port_da_estimates (94), psc_detention_history (16), port_distances (18,648), **eu_sanctions_entities (5,996)**, **port_master (11,767)** |
-| ✅ RAG embedded             | imsbc_fts (116), igc_fts (119), jwc_fts (7), bimco_fts (14) — counts выше чем заявлялось в audit 2026-05-17                                                                                                                                  |
-| 🚨 **EMPTY (при флаге ON)** | **roi_metrics (0)** — `ROI_GUARANTEE_ENABLED=true`; **fx_rates (0)** — `MULTI_CURRENCY_V2_ENABLED=true` — investigation в работе                                                                                                             |
-| ⚠️ Частичные                | baltic/bunker/eua (устарели, manual CSV upload), war_risk_zones (4)                                                                                                                                                                          |
-| ❌ Не seed-нулись           | eca_zones                                                                                                                                                                                                                                    |
+| Статус                      | Таблицы                                                                                                                                                                                                                                                                                                           |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ✅ Свежие, заполненные      | ofac_entities (18,959), schema_migrations, knowledge_sources, market_indices (92), charterers (20), port_da_estimates (94), psc_detention_history (16), port_distances (18,648) + **searoute JSON 105,011 пар (tier 2) + live tier 3** ✅ 2026-05-20, **eu_sanctions_entities (5,996)**, **port_master (11,767)** |
+| ✅ RAG embedded             | imsbc_fts (116), igc_fts (119), jwc_fts (7), bimco_fts (14) — counts выше чем заявлялось в audit 2026-05-17                                                                                                                                                                                                       |
+| 🚨 **EMPTY (при флаге ON)** | **roi_metrics (0)** — `ROI_GUARANTEE_ENABLED=true`; **fx_rates (0)** — `MULTI_CURRENCY_V2_ENABLED=true` — investigation в работе                                                                                                                                                                                  |
+| ⚠️ Частичные                | baltic/bunker/eua (устарели, manual CSV upload), war_risk_zones (4)                                                                                                                                                                                                                                               |
+| ❌ Не seed-нулись           | eca_zones                                                                                                                                                                                                                                                                                                         |
 
 **RAG-архитектура:** гибрид FTS5+vec0 (sqlite). Vertex Search disabled (extractiveContentSpec Enterprise-only, наши engines Standard) — rollback на SQLite богаче.
 
@@ -301,7 +312,7 @@ ETA: ~2-3 дня wall-clock. Большинство agent-only.
 5. **MEDIUM/LOW backlog** из QA reports (continuous)
 6. **Mobile bottom nav + touch targets enforcement**
 7. **Test coverage для 17 untested routes + missing component tests**
-8. **/upgrade + /matches** — заменить заглушки на реальный контент
+8. **/upgrade** — заменить заглушку на реальный контент (✅ /matches уже live с M1+M3, session fix #296)
 9. **Sentry + UptimeRobot** интеграция (когда аккаунты готовы)
 10. **port_master seed** (D4 — отложен, может понадобиться для расширенных features)
 
@@ -363,4 +374,4 @@ ETA: ~2-3 дня wall-clock. Большинство agent-only.
 
 ---
 
-🤖 Сгенерировано 5-stream system audit (parsers/data/api/ui/waves) + synthesis оркестратором + обновлено вечером 2026-05-17 после Plan A.
+🤖 Сгенерировано 5-stream system audit (parsers/data/api/ui/waves) + synthesis оркестратором. Последнее обновление: 2026-05-20 (searoute B5a+B5b, /qa-walker bugs, ops cleanup).
