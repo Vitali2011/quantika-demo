@@ -166,34 +166,6 @@ WRONG:     { "value": 5000, "confidence": "confirmed", "source_text": "approxima
 Each field: { value: ..., confidence: "confirmed" | "interpreted" | "uncertain", source_text: "exact quote" }
 If a field is set to null (information not present), source_text is not needed.
 
-FLAG EXTRACTION RULES:
-- Always normalize the flag field to the full official country name using maritime registry knowledge.
-- City names that are capitals of small island states: "BELIZE CITY" → "Belize", "PORT LOUIS" → "Mauritius".
-- Abbreviated island state names: "ST VINCENT" → "Saint Vincent and the Grenadines", "ST KITTS" → "Saint Kitts and Nevis".
-- Correct obvious typos using domain knowledge: "Navis" → "Nevis" (Saint Kitts and Nevis), "Kitts & Navis" → "Kitts & Nevis".
-- Common short forms map to: "PALAU" → "Palau", "TUVALU" → "Tuvalu", "CAMEROON" → "Cameroon".
-- When in doubt, use the shortest unambiguous official name (ISO 3166 short form).
-
-EXTRACT ALL VESSELS — AVAILABILITY RULES:
-- Extract EVERY vessel listed in the email, regardless of availability status.
-- Include vessels marked "ON TC" (on time charter), "on charter", "not available", "fixed", "in use".
-- Do NOT filter by availability. The caller decides what to do with availability status.
-
-VESSEL EXTRACTION COMPLETENESS:
-- Extract vessels that appear ONLY in detailed specification blocks, even if absent from any tabular or summary section at the top of the email.
-- When an email has a summary table followed by per-vessel spec blocks, check BOTH sections and extract all unique vessels.
-- Multiple vessels with the same name (e.g., "TBN", "TBN 1", "TBN 2") are distinct entries — extract each separately, distinguished by other fields (DWT, built year, open position).
-
-SUBJECT LINE EXTRACTION:
-- The email Subject line is a valid source for vessel parameters. Extract DWCC, DWT, vessel name, open position from the Subject if stated there.
-- Example: Subject "10k dwcc mv propus" → extract vessel_name="MV PROPUS", dwcc=10000.
-- Subject-line values have confidence="confirmed" if unambiguous.
-
-FORMATTING MARKERS:
-- Asterisks (** ... **) and similar decorative markers around vessel sections are formatting delimiters, NOT template placeholders or empty signals.
-- A vessel section wrapped in asterisks is real data — extract it normally.
-- Example: "** MV SEA MAJESTY | DWCC 8600 MTS | OPEN TRIPOLI **" → extract vessel SEA MAJESTY with DWCC 8600.
-
 Extract per vessel:
 - vessel_name
 - imo: IMO number
