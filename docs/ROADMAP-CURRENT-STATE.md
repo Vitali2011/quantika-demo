@@ -1,7 +1,7 @@
 # Quantika Demo — ROADMAP (Текущее состояние)
 
 **Последний полный аудит:** 2026-05-17 (5-поточный код-аудит) + 2026-05-19 UI audit (Playwright+Chrome MCP) + **2026-05-19 ROADMAP reality audit** (claim vs prod sweep)
-**Последнее обновление:** 2026-05-21 — parse-vessel R5→R8 (8 PR #298-#310); revert #310 M2-O prompt (-13 регрессия); pre-merge-guard workflow #302 LIVE
+**Последнее обновление:** 2026-05-21 (evening) — C1a #319 (+4 BIMCO charters, RAG bimco_vec 7→31), B1 #317 (M3 bulk actions polish), C1 design #318; prod-snapshot saved; GCP new project quantika-demo-496307 confirmed working
 **Текущая версия:** prod HEAD после auto-deploy LIVE (#259, systemd quantika-demo.service на outreach-vps)
 **Статус:** 🟢 Основные потоки работают; parse-vessel в активной итерации (R8 baseline после revert); pre-merge-guard LIVE
 
@@ -38,6 +38,16 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 - ✅ **#309** fix maxTokens 16384 + schema maxLength + judge error fix
 - ⚠️ **#310 REVERT** — M2-O prompt changes вызвали -13 регрессию (R7→R8) → reverted; нужна новая стратегия
 - 📋 **parse-vessel** — в активной итерации, R8 baseline после revert; следующий шаг: анализ что именно регрессировало
+
+**Что изменилось за 2026-05-21 (вечер):**
+
+- ✅ **#319** feat(bimco): C1a — +4 charters (NYPE 1946 +12 clauses, SHELLVOY 6 +10, BALTIME +1 summary, CONGENBILL +1 summary); bimco_vec 7→31 rows fresh; FTS retrieval verified "NYPE time charter" returns relevant chunks
+- ✅ **#318** docs(superpowers): C1 RAG shipping refs expansion design spec (master design for C1a/b/c sub-specs)
+- ✅ **#317** feat(matches): M3 bulk actions polish — filter persistence + select-all + CSV export
+- ✅ Prod RAG refresh BIMCO via `scripts/knowledge/cron/refresh-bimco-rag.ts` (Vertex AI working на новом GCP project `quantika-demo-496307`)
+- 🛠 **Infra knowledge captured:** `~/orchestrator-state/quantika-demo/prod-snapshot-2026-05-21.md` (hosts/services/DB/GCP/refresh patterns) + memory `reference_quantika_prod_infra.md`
+- ⚠️ **GCP discovery:** old project `quantika-demo-2026` decommissioned (CONSUMER_INVALID на dev-vps); new prod project `quantika-demo-496307` working на outreach-vps
+- 📋 **Open follow-ups:** #316 D1 post-deploy verify [deploy-affects] — manual review pending; auto-merge BLOCKED race condition (workaround `--admin`); auto-rebase workflow timing issue
 
 **Что изменилось за 2026-05-20:**
 
