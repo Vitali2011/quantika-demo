@@ -187,4 +187,11 @@ describe('bimco-adapter', () => {
 
     expect(rows.length).toBeGreaterThanOrEqual(10);
   });
+
+  // TC-BA-15: SHELLVOY 6 entries persist (>= 8)
+  it('persists SHELLVOY 6 charter entries (>= 8)', async () => {
+    await syncBimcoRag(db, false);
+    const rows = db.prepare(`SELECT metadata FROM bimco_fts WHERE metadata LIKE '%"SHELLVOY 6"%'`).all() as any[];
+    expect(rows.length).toBeGreaterThanOrEqual(8);
+  });
 });
