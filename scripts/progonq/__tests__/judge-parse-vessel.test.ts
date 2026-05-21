@@ -37,7 +37,6 @@ describe('FLAG_JUDGE prompt', () => {
 });
 
 // Skipped: requires live LLM API
-// eslint-disable-next-line jest/no-disabled-tests
 describe.skip('FLAG_JUDGE integration (requires API)', () => {
   it('ST VINCENT = Saint Vincent and the Grenadines → equiv=true', async () => {
     // Would call judgePair("ST VINCENT", "Saint Vincent and the Grenadines", FLAG_JUDGE)
