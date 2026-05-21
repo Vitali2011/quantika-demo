@@ -176,4 +176,15 @@ describe('bimco-adapter', () => {
 
     expect(reportSyncSuccess).toHaveBeenCalled();
   });
+
+  // TC-BA-14: NYPE 1946 entries present in fixture and persisted
+  it('persists NYPE 1946 charter entries (>= 10)', async () => {
+    await syncBimcoRag(db, false);
+
+    const rows = db.prepare(`
+      SELECT metadata FROM bimco_fts WHERE metadata LIKE '%"NYPE 1946"%'
+    `).all() as any[];
+
+    expect(rows.length).toBeGreaterThanOrEqual(10);
+  });
 });
