@@ -43,27 +43,31 @@ Deploy order: C1a → C1b → C1c (migration 030 last so prod не получи�
 
 ## Sub-spec C1a: BIMCO +4 charters
 
+> **Revised 2026-05-21 after code archeology:** initial draft assumed per-charter fixture files; реальная архитектура — single `fixture.ts` со всеми clauses + `CharterPartyType` literal union в `types.ts`. Existing fixtures = mock-style summaries (~30-60 слов, 7 total: GENCON 2022:3, HEAVYCON:2, PROJECTCON:2), not full charter texts. C1a добавляет entries в existing файлы (не создаёт новые), и добавляемые NYPE/SHELLVOY clauses тоже идут как **mock-style summaries** для consistency (10-15 ключевых clauses каждый, не полный текст ~30-40), чтобы соблюдать существующий fixture-stiль и не раздуть один файл.
+
 ### Components
 
 | File | Type | Description |
 |---|---|---|
-| `lib/knowledge/sources/bimco/nype-1946.fixture.ts` | NEW fixture | Structured clauses (~30-40); source: NYPE 1946 (pre-1928 public domain, lots of mirrors) |
-| `lib/knowledge/sources/bimco/shellvoy-6.fixture.ts` | NEW fixture | Structured clauses (~30-40); source: shell.com forms-and-tcs (public) |
-| `lib/knowledge/sources/bimco/baltime-summary.fixture.ts` | NEW fixture | 1 chunk summary (type=time-charter, BIMCO European alt to NYPE); source: Wikipedia + academic ref |
-| `lib/knowledge/sources/bimco/congenbill-summary.fixture.ts` | NEW fixture | 1 chunk summary (B/L paired with GENCON); source: Wikipedia |
-| `lib/knowledge/sources/bimco/index.ts` | update | Register 4 new fixtures в exported list |
-| `lib/knowledge/sources/bimco/__tests__/extended-charters.test.ts` | NEW test | Validate chunk structure + assert `charterParty` metadata field |
+| `lib/knowledge/sources/bimco/types.ts` | update | Extend `CharterPartyType` literal union: add `'NYPE 1946' \| 'SHELLVOY 6' \| 'BALTIME' \| 'CONGENBILL'` (4 new) |
+| `lib/knowledge/sources/bimco/fixture.ts` | update | Append entries в `BIMCO_FIXTURE_CLAUSES` array: NYPE 1946 (10-15 mock-style clauses), SHELLVOY 6 (10-15), BALTIME (1 summary chunk), CONGENBILL (1 summary chunk) — total ~22-32 new entries |
+| `lib/knowledge/sources/bimco/chunker.ts` | update | Extend `VALID_CHARTER_PARTIES` const array на те же 4 значения (синхронизировать с types.ts) |
+| `__tests__/lib/knowledge/sources/bimco/bimco-adapter.test.ts` | update | TC-BA-09 — заменить `expect(result.stored).toBe(7)` на динамический расчёт (`BIMCO_FIXTURE_CLAUSES.length`); add 2-3 new TC validating presence of NYPE/SHELLVOY/BALTIME/CONGENBILL entries via charterParty filter |
+
+**Не создаются:** new fixture files, new test file, new adapter, new index.ts. Все 4 файла — update existing.
 
 ### Data flow
 
-1. `npm run knowledge:refresh bimco` → reads all bimco fixtures (existing + 4 new) → embedAndStore via Vertex 768-dim → existing `bimco_vec` + `bimco_fts` tables (no migration)
-2. Smoke retrieval: query `"NYPE time charter withdrawal clause"` → hits `bimco_vec` → returns nype-1946 chunks с `charterParty: 'NYPE 1946'`
+1. `syncBimcoRag(db)` → читает существующий `BIMCO_FIXTURE_CLAUSES` (now ~29-39 entries вместо 7) → maps to Chunk[] → `embedAndStore` via Vertex 768-dim → existing `bimco_vec` + `bimco_fts` tables (no migration)
+2. Smoke retrieval: query `"NYPE time charter withdrawal"` → hit `bimco_fts` (FTS5 BM25) → returns entries с `charterParty: 'NYPE 1946'` в metadata
+3. Test mode: TC-BA-10/11 (FTS populated, metadata JSON) уже проверяют structure; новые TC проверяют что отдельные charterParty values присутствуют
 
 ### Acceptance
 
-- 4 new fixture files compile + tests pass
-- After `knowledge:refresh bimco` — `bimco_vec` row_count увеличилось (assert in cron test)
-- Smoke retrieval queries return expected fixture chunks (Vitest-style assert)
+- `types.ts` + `fixture.ts` + `chunker.ts` compile + типы синхронизированы (CharterPartyType ↔ VALID_CHARTER_PARTIES)
+- `bimco-adapter.test.ts` все TC проходят (TC-BA-09 updated, новые passing)
+- `npm run knowledge:refresh bimco` (или эквивалентный cron путь) — exit 0, governance reportSyncSuccess
+- Smoke FTS query (через debug script или e2e test) для каждой из 4 charterParty: ≥1 hit
 
 ### Tag: `[code-only]`
 
