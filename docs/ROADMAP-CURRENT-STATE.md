@@ -1,9 +1,9 @@
 # Quantika Demo — ROADMAP (Текущее состояние)
 
 **Последний полный аудит:** 2026-05-17 (5-поточный код-аудит) + 2026-05-19 UI audit (Playwright+Chrome MCP) + **2026-05-19 ROADMAP reality audit** (claim vs prod sweep)
-**Последнее обновление:** 2026-05-20 — searoute tier 2+3 LIVE (B5a #288 + B5b #289); /qa-walker: 4 бага fixed (#295 /more+logout, #296 /matches session, #297 aria+mobile); ops tasks #28/#29/#48 closed
+**Последнее обновление:** 2026-05-21 — parse-vessel R5→R8 (8 PR #298-#310); revert #310 M2-O prompt (-13 регрессия); pre-merge-guard workflow #302 LIVE
 **Текущая версия:** prod HEAD после auto-deploy LIVE (#259, systemd quantika-demo.service на outreach-vps)
-**Статус:** 🟢 Основные потоки работают; port_distances 5-tier с searoute (32-163% точнее для canal routes); /matches доступен после sample data flow
+**Статус:** 🟢 Основные потоки работают; parse-vessel в активной итерации (R8 baseline после revert); pre-merge-guard LIVE
 
 > **Живой документ.** Заменяет `ROADMAP-SESSION-PROMPT.md` (тот был разовый промпт-генератор, не state tracker).
 > Источники отчётов: `/root/orchestrator-state/audit-2026-05-17/{parsers,data,api,ui,waves}.md`
@@ -27,6 +27,17 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 - ✅ parse-cargo GT нормализован (PR #197, 43 fixtures)
 
 **🎯 Стратегия моделей (актуализация 2026-05-17 поздний вечер):** код миграции на Gemini уже сделан (Wave γ, 2026-05-05). На проде AI_PROVIDER=gemini + MATCH_PROVIDER=gemini → **7/7 scopes через Gemini default**. claude-cli остаётся для eval judge. Сейчас в отдельной user-сессии идёт bake-off конкретных Gemini моделей per parser. Подробности в §1.1.
+
+**Что изменилось за 2026-05-21:**
+
+- ✅ **#298** parse-vessel R5 — open_date no-year-inference + display title-case
+- ✅ **#300** fix eval runner — M/V normalization + ex-name strip + null ref tolerance
+- ✅ **#302** ci: pre-merge-guard workflow [deploy-affects] LIVE — блокирует merge без явного approve для deploy-affects PR
+- ✅ **#303-#307** parse-vessel eval fixes — best-match pairing, LLM flag equivalence, edge-case coverage, MAX_BODY_CHARS 5000→8000, maxTokens 16384
+- ✅ **#308** parse-vessel R7 — flag normalization, TC vessels, subject DWCC, TBN dedup, SSL format
+- ✅ **#309** fix maxTokens 16384 + schema maxLength + judge error fix
+- ⚠️ **#310 REVERT** — M2-O prompt changes вызвали -13 регрессию (R7→R8) → reverted; нужна новая стратегия
+- 📋 **parse-vessel** — в активной итерации, R8 baseline после revert; следующий шаг: анализ что именно регрессировало
 
 **Что изменилось за 2026-05-20:**
 
@@ -126,15 +137,15 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 **🎯 Реальный статус (2026-05-18 вечер):** Wave parser audits завершена — 11 PR за день (#197, #205, #216-218, #220-224, #226). Найден и исправлен production bug class: Gemini structured-output schema field names не совпадали с downstream contract в 2 парсерах (vessel + recap), silent-null months.
 
-| Парсер       | Прод-провайдер     | Точность                                                                                          | Eval                                  | Статус                                                                                                          |
-| ------------ | ------------------ | ------------------------------------------------------------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| classify     | gemini-flash       | **cat 100%**, urgency 70.8%                                                                       | progonq R9 ✅                         | R4 prompt active; urgency BLOCKED (GT inconsistent, см. memory)                                                 |
-| parse-cargo  | gemini-pro         | cargo **91.8%**, laycan **93.2%** (PR #197+#205 GT normalization)                                 | progonq R27 ✅ 3-run median           | semantic_full 91.6%, стабилизировано                                                                            |
-| parse-vessel | gemini-pro         | dwcc **94.9%** (было 62.8%), open_position **92%** (было 19.7%), open_date **91.1%** (было 27.7%) | progonq R1 ✅                         | PR #216 schema mismatch исправлен — было silent-null. semantic_full 8.9→19.6%                                   |
-| parse-recap  | gemini-pro         | overall 45-58% (noisy на 3 scenarios)                                                             | progonq ✅ harness #218 + schema #220 | Corpus expansion blocked — public fixture recaps конфиденциальны, ждём real recap emails в Gmail                |
-| match        | gemini (model TBD) | н/д                                                                                               | **нет baseline**                      | scope для следующей итерации после M1 (orchestrator session)                                                    |
-| explain-deal | gemini-2.5-pro     | н/д (text-gen)                                                                                    | нет eval, дизайн готов                | parseSections regression-proof (PR #226). Eval harness design в `docs/plans/2026-05-18-text-gen-eval-design.md` |
-| draft-quote  | gemini-2.5-pro     | н/д (text-gen)                                                                                    | нет eval                              | требует Phase 2 от text-gen eval плана                                                                          |
+| Парсер       | Прод-провайдер     | Точность                                                                                                                        | Eval                                  | Статус                                                                                                                                 |
+| ------------ | ------------------ | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| classify     | gemini-flash       | **cat 100%**, urgency 70.8%                                                                                                     | progonq R9 ✅                         | R4 prompt active; urgency BLOCKED (GT inconsistent, см. memory)                                                                        |
+| parse-cargo  | gemini-pro         | cargo **91.8%**, laycan **93.2%** (PR #197+#205 GT normalization)                                                               | progonq R27 ✅ 3-run median           | semantic_full 91.6%, стабилизировано                                                                                                   |
+| parse-vessel | gemini-pro         | dwcc **94.9%**, open_position **92%**, open_date **91.1%** (PR #216); R5→R8 активная итерация — revert #310 после -13 регрессии | progonq R8 ⚠️ (после revert)          | R5-R7 улучшения: flag norm, TBN dedup, SSL, maxTokens 16384. M2-O prompt вызвал регрессию → reverted. Следующий шаг: root cause анализ |
+| parse-recap  | gemini-pro         | overall 45-58% (noisy на 3 scenarios)                                                                                           | progonq ✅ harness #218 + schema #220 | Corpus expansion blocked — public fixture recaps конфиденциальны, ждём real recap emails в Gmail                                       |
+| match        | gemini (model TBD) | н/д                                                                                                                             | **нет baseline**                      | scope для следующей итерации после M1 (orchestrator session)                                                                           |
+| explain-deal | gemini-2.5-pro     | н/д (text-gen)                                                                                                                  | нет eval, дизайн готов                | parseSections regression-proof (PR #226). Eval harness design в `docs/plans/2026-05-18-text-gen-eval-design.md`                        |
+| draft-quote  | gemini-2.5-pro     | н/д (text-gen)                                                                                                                  | нет eval                              | требует Phase 2 от text-gen eval плана                                                                                                 |
 
 **Provider routing (текущий, на проде):** **7/7 scopes default через Gemini** (AI_PROVIDER=gemini + MATCH_PROVIDER=gemini). ClipProxy/OpenAI + claude-cli больше не активны по умолчанию (только если env override вернуть). claude-cli остаётся для eval judge (через --print, не runtime).
 
