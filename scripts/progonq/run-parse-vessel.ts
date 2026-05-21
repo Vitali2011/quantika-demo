@@ -178,6 +178,16 @@ export function normalizeVesselName(s: string | null): string | null {
     .trim();
 }
 
+export function normalizeFlag(s: string | null): string {
+  if (!s) return '';
+  return s
+    .toLowerCase()
+    .replace(/\bst\.?\s+/g, 'saint ')   // St. / St → Saint
+    .replace(/\s*&\s*/g, ' and ')        // & → and
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function normalizeImo(s: string | null): string | null {
   if (!s) return s;
   const m = s.match(/\d+/);
@@ -240,7 +250,7 @@ export function scoreVesselItems(refItems: VesselItem[], modelItems: VesselItem[
         : modelImo === null
           ? false
           : normalizeImo(refImo) === normalizeImo(modelImo);
-    const flagMatch = refFlag === null ? true : ciEqual(refFlag, modelFlag);
+    const flagMatch = refFlag === null ? true : normalizeFlag(refFlag) === normalizeFlag(modelFlag);
     const builtMatch = refBuilt === null ? true : refBuilt === modelBuilt;
     const dwtMatch = withinTolerance(refDwt, modelDwt);
     const dwccMatch = withinTolerance(refDwcc, modelDwcc);
