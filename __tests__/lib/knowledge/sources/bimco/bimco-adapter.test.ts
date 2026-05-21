@@ -194,4 +194,11 @@ describe('bimco-adapter', () => {
     const rows = db.prepare(`SELECT metadata FROM bimco_fts WHERE metadata LIKE '%"SHELLVOY 6"%'`).all() as any[];
     expect(rows.length).toBeGreaterThanOrEqual(8);
   });
+
+  // TC-BA-16: BALTIME summary entry persists
+  it('persists BALTIME summary entry', async () => {
+    await syncBimcoRag(db, false);
+    const rows = db.prepare(`SELECT metadata FROM bimco_fts WHERE metadata LIKE '%"BALTIME"%'`).all() as any[];
+    expect(rows.length).toBe(1);
+  });
 });

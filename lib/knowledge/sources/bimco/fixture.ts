@@ -241,4 +241,14 @@ export const BIMCO_FIXTURE_CLAUSES: BimcoClause[] = [
     text: "Each party warrants compliance with applicable sanctions regimes (UN, EU, UK, US OFAC). Charterer's nominated cargo, ports and counterparties shall not be sanctioned. Owner may refuse voyage instructions that would expose vessel to sanctions liability.",
     sourceUrl: 'https://www.shell.com/business-customers/trading-and-supply/trading/shipping-and-maritime/forms-and-tcs.html',
   },
+
+  // ===== BALTIME (BIMCO Standard Time Charter) — summary, full text paywalled =====
+  {
+    id: 'baltime-summary',
+    charterParty: 'BALTIME',
+    clauseNumber: 'SUMMARY',
+    title: 'BALTIME Standard Time Charter Overview',
+    text: 'BALTIME is the BIMCO Standard Time Charter (originally 1939, revised 2001) used for dry bulk and general cargo trades. Distinguished from NYPE by European drafting conventions, English law default, clearer off-hire and trading limits clauses. Common for shorter-period charters in tramp markets. Full text via BIMCO membership only — this summary based on academic descriptions and BIMCO public abstract.',
+    sourceUrl: 'https://www.bimco.org/contracts-and-clauses/bimco-contracts/baltime-2001',
+  },
 ];
