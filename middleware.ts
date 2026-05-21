@@ -72,6 +72,13 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       const loginUrl = new URL('/login', getRequestBaseUrl(request));
       return NextResponse.redirect(loginUrl, { status: 302 });
     }
+
+    // /processing requires a csrf_token cookie (set by Google OAuth or /api/sample).
+    // Demo-auth-only users navigating here directly have no session or CSRF token,
+    // so the pipeline would immediately 403 on all API calls. Redirect to upload CTA instead.
+    if (pathname === '/processing' && !request.cookies.get('csrf_token')?.value) {
+      return NextResponse.redirect(new URL('/', getRequestBaseUrl(request)), { status: 302 });
+    }
   }
 
   // ── CSRF + Rate-limit guard (existing logic, untouched) ───────────────────
