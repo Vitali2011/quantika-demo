@@ -1,4 +1,4 @@
-import { scoreVesselItems, withinTolerance, normalizeVesselName } from '../run-parse-vessel';
+import { scoreVesselItems, withinTolerance, normalizeVesselName, normalizeFlag } from '../run-parse-vessel';
 
 function field<T>(value: T | null): { value: T; confidence: string } | null {
   return value === null ? null : { value, confidence: 'confirmed' };
@@ -156,6 +156,33 @@ describe('scoreVesselItems', () => {
     expect(results).toHaveLength(2);
     expect(results[0].vessel_name_match).toBe(true);
     expect(results[1].vessel_name_match).toBe(false);
+  });
+});
+
+describe('normalizeFlag', () => {
+  it('& → and: Antigua & Barbuda equals Antigua and Barbuda', () =>
+    expect(normalizeFlag('Antigua & Barbuda')).toBe(normalizeFlag('Antigua and Barbuda')));
+
+  it('St + & → Saint + and: St Kitts & Nevis equals Saint Kitts and Nevis', () =>
+    expect(normalizeFlag('St Kitts & Nevis')).toBe(normalizeFlag('Saint Kitts and Nevis')));
+
+  it('St. + & → Saint + and: St. Kitts & Nevis equals Saint Kitts and Nevis', () =>
+    expect(normalizeFlag('St. Kitts & Nevis')).toBe(normalizeFlag('Saint Kitts and Nevis')));
+
+  it('case insensitive: Panama equals panama', () =>
+    expect(normalizeFlag('Panama')).toBe(normalizeFlag('panama')));
+
+  it('null → empty string', () =>
+    expect(normalizeFlag(null)).toBe(''));
+
+  it('idempotent: normalizeFlag(normalizeFlag(s)) === normalizeFlag(s) for sample inputs', () => {
+    const samples = [
+      'Antigua & Barbuda', 'St Kitts & Nevis', 'St. Vincent & Grenadines',
+      'Panama', 'Saint Kitts and Nevis', 'Marshall Islands', '', 'Belize',
+    ];
+    for (const s of samples) {
+      expect(normalizeFlag(normalizeFlag(s))).toBe(normalizeFlag(s));
+    }
   });
 });
 
