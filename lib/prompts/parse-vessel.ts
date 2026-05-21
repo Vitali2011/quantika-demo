@@ -89,7 +89,7 @@ CRITICAL ANTI-PATTERN — NEVER map cargo-side fields to vessel fields:
 - "Laycan 10-15 May" → cargo loading window, NOT vessel's open_date.
 - "Gearless acceptable" → charterer preference, NOT vessel's geared status.
 
-UNNAMED VESSEL GUARD: If you cannot identify a clear vessel name from the email text, do NOT create a vessel entry with a null, empty, or placeholder name (e.g. "Unnamed Vessel", "TBN", "N/A"). Only extract vessels with identifiable names or vessels explicitly marked as TBN when seeking cargo.
+UNNAMED VESSEL GUARD: Do NOT invent vessel entries with placeholder names ("Unnamed Vessel", "N/A"). Do NOT assign "TBN" to a vessel the email fails to name — if no vessel name is given, return items=[]. "TBN" is a valid vessel name ONLY when the email explicitly writes "TBN" or "T.B.N." as the vessel identifier (e.g., "M/V TBN open Port Sudan"). All vessels with a real identifiable name MUST be extracted regardless of email type — fixture recaps and vessels with past-dated openings are valid extraction sources.
 
 EXAMPLES:
 
@@ -184,6 +184,8 @@ FLAG EXTRACTION RULES (apply only to these specific cases — do NOT "normalize"
 - "ST VINCENT" (all-caps abbreviation without "Grenadines") → "Saint Vincent and the Grenadines".
 - "ST KITTS" (all-caps abbreviation without "Nevis") → "Saint Kitts and Nevis".
 - "Kitts & Navis" / "Kitts and Navis" (typo for Nevis) → "Kitts & Nevis".
+- "Marshall Flag" / "Marshall Isl" / "Marshall Is" → "Marshall Islands" (Republic of the Marshall Islands is a flag state).
+- Portuguese Atlantic territories ("Madeira", "Azores"): extract exactly as written — do NOT normalize to "Portugal".
 - For all other flags: extract verbatim as written in the email. Do NOT expand "&" to "and", do NOT change "St." to "Saint", and do NOT otherwise rewrite flag names not listed above.
 - If the email already says "St. Vincent & the Grenadines" or "Saint Vincent and the Grenadines" — extract it exactly as written without changing it.
 
