@@ -174,6 +174,30 @@ If a field is set to null (information not present), source_text is not needed.
 
 SUBJECT LINE AS DATA SOURCE: The email Subject line is a valid source — extract DWCC, DWT, and vessel name from the Subject if stated there (e.g. Subject "10k dwcc mv propus" → DWCC=10000, vessel=PROPUS).
 
+FLAG EXTRACTION RULES (apply only to these specific cases — do NOT "normalize" other flag names):
+- "BELIZE CITY" → "Belize" (city is not the flag state, Belize is the flag state).
+- "ST VINCENT" (all-caps abbreviation without "Grenadines") → "Saint Vincent and the Grenadines".
+- "ST KITTS" (all-caps abbreviation without "Nevis") → "Saint Kitts and Nevis".
+- "Kitts & Navis" / "Kitts and Navis" (typo for Nevis) → "Kitts & Nevis".
+- "MADEIRA" used as flag → "Portugal" (Madeira is a Portuguese autonomous region, not an independent flag state).
+- For all other flags: extract verbatim as written in the email. Do NOT expand "&" to "and", do NOT change "St." to "Saint", and do NOT otherwise rewrite flag names not listed above.
+- If the email already says "St. Vincent & the Grenadines" or "Saint Vincent and the Grenadines" — extract it exactly as written without changing it.
+
+TC VESSELS IN FLEET POSITIONS:
+- When an email is a vessel position circular where an owner lists their fleet, include vessels marked "ON TC" (on time charter), "on charter", or "currently fixed" — these are still part of the owner's fleet position list.
+- Only apply this rule when the surrounding context is clearly a fleet position list (multiple vessels from one owner).
+- Do NOT apply in cargo inquiry emails or certificate documents.
+
+FLEET COMPLETENESS — SUMMARY TABLE + SPEC BLOCKS:
+- Some fleet emails have a summary table at the top (vessel name + DWT + open position) followed by detailed spec blocks below.
+- Extract ALL vessels that appear in EITHER the summary table OR the spec blocks. Do not stop after reading the summary table.
+- If a vessel is listed in the summary table but has no spec block, extract what's available from the summary line.
+
+FORMATTING MARKERS:
+- Rows of asterisks (** ... **) or (*** *** ***) are section delimiters, NOT empty signals.
+- A vessel section wrapped in asterisks or star separators is real data — extract it normally.
+- Example: "**********\n\nMV SEA MAJESTY\n\nDWCC 8600 MTS ... OPEN @ TRIPOLI\n**********" → extract vessel SEA MAJESTY with DWCC 8600.
+
 Extract per vessel:
 - vessel_name
 - imo: IMO number
