@@ -127,4 +127,26 @@ describe('bimco-chunker', () => {
     const result = chunkBimco('   \n\n\t  ', 'GENCON 2022');
     expect(result).toEqual([]);
   });
+
+  // TC-BC-NEW-01: chunker accepts NYPE 1946 as valid charterParty
+  it("accepts NYPE 1946 as valid charterParty without throwing", () => {
+    const rawText = "1. Description of Vessel\nThe vessel is described as M/V Test...";
+    expect(() => chunkBimco(rawText, "NYPE 1946" as any)).not.toThrow();
+  });
+
+  // TC-BC-NEW-02: chunker accepts SHELLVOY 6
+  it("accepts SHELLVOY 6 as valid charterParty", () => {
+    const rawText = "1. Voyage Description\nVessel to load at...";
+    expect(() => chunkBimco(rawText, "SHELLVOY 6" as any)).not.toThrow();
+  });
+
+  // TC-BC-NEW-03: chunker accepts BALTIME as valid charterParty
+  it("accepts BALTIME as valid charterParty", () => {
+    expect(() => chunkBimco("1. Period\nText.", "BALTIME" as any)).not.toThrow();
+  });
+
+  // TC-BC-NEW-04: chunker accepts CONGENBILL as valid charterParty
+  it("accepts CONGENBILL as valid charterParty", () => {
+    expect(() => chunkBimco("1. Title\nText.", "CONGENBILL" as any)).not.toThrow();
+  });
 });
