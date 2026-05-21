@@ -122,6 +122,12 @@ with {open, close, display}), wrap the entire complex object inside the \`value\
 
 MULTI-ITEM: One email may contain MULTIPLE vessel positions (e.g., a fleet list or multiple vessels from the same owner). Return ALL vessels as separate items.
 
+Extract ALL vessels regardless of charter status — include vessels marked "ON TC", "on charter", "fixed", or "not available".
+
+Extract vessels that appear ONLY in detailed specification blocks even if absent from any tabular summary at the top of the email.
+
+Multiple vessels with the same name (e.g. "TBN") are distinct entries — extract each separately using other fields (DWT, built, open_position) to distinguish them.
+
 CONFIDENCE LEVELS AND MANDATORY SOURCE QUOTING:
 - "confirmed": value is literally quoted or directly extracted from the email — no inference or derivation needed. Use confirmed even when the value is embedded in a compound phrase (e.g. "DWCC 3600 at 4.9m draft" → draft_max=4.9 is confirmed; "Built: 2003" → built=2003 is confirmed). MUST include source_text.
 - "interpreted": value required calculation, resolving an abbreviation, or inferring from context (e.g. "abt 45,000 mt"; "built 15 years ago" → you computed the year). MUST include source_text.
@@ -166,10 +172,12 @@ WRONG:     { "value": 5000, "confidence": "confirmed", "source_text": "approxima
 Each field: { value: ..., confidence: "confirmed" | "interpreted" | "uncertain", source_text: "exact quote" }
 If a field is set to null (information not present), source_text is not needed.
 
+SUBJECT LINE AS DATA SOURCE: The email Subject line is a valid source — extract DWCC, DWT, and vessel name from the Subject if stated there (e.g. Subject "10k dwcc mv propus" → DWCC=10000, vessel=PROPUS).
+
 Extract per vessel:
 - vessel_name
 - imo: IMO number
-- flag: flag state
+- flag: flag state. Normalize to the official country name: "BELIZE CITY" → "Belize", "ST VINCENT" → "Saint Vincent and the Grenadines", correct obvious typos using maritime knowledge ("Navis" → "Nevis").
 - built: year built
 - class_society: e.g. BV, LR, DNV, NK, ABS
 - p_and_i: P&I club
@@ -305,6 +313,8 @@ Always include \`unknown_terms\` as an array — empty \`[]\` if no unrecognized
 the field. Flag any abbreviation, contract form, or jurisdiction acronym not in the glossary
 above (e.g. HEAVYCON, LMAA, ATUTC, AWIWL, TCT, GENCON, NYPE, BIMCO, etc.). Include the term
 verbatim and a brief reason (e.g. "HEAVYCON — BIMCO heavy-lift charter form, not in glossary").
+
+Asterisk markers (** ... **) around vessel name sections are formatting delimiters, not template placeholders. Extract vessel data from sections enclosed in asterisks normally.
 
 TEMPLATE PLACEHOLDERS (anti-hallucination):
 Email body may contain unresolved template tokens like \`{{LAYCAN_START}}\`, \`{{LAYCAN_END}}\`,
