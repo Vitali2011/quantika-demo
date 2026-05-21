@@ -186,6 +186,29 @@ describe('normalizeFlag', () => {
   });
 });
 
+describe('flagMatch prefix logic (via scoreVesselItems)', () => {
+  it('Saint Vincent is prefix of Saint Vincent and the Grenadines → flag_match true', () => {
+    const ref = [makeRef({ flag: field('Saint Vincent') })];
+    const model = [makeRef({ flag: field('Saint Vincent and the Grenadines') })];
+    const [r] = scoreVesselItems(ref, model);
+    expect(r.flag_match).toBe(true);
+  });
+
+  it('Panama vs Panama → flag_match true (exact)', () => {
+    const ref = [makeRef({ flag: field('Panama') })];
+    const model = [makeRef({ flag: field('Panama') })];
+    const [r] = scoreVesselItems(ref, model);
+    expect(r.flag_match).toBe(true);
+  });
+
+  it('Panama vs Portugal → flag_match false (no prefix)', () => {
+    const ref = [makeRef({ flag: field('Panama') })];
+    const model = [makeRef({ flag: field('Portugal') })];
+    const [r] = scoreVesselItems(ref, model);
+    expect(r.flag_match).toBe(false);
+  });
+});
+
 describe('scoreVesselItems — vessel ordering', () => {
   const mkVessel = (name: string) => ({
     vessel_name: { value: name, confidence: 'confirmed' },
