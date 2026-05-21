@@ -250,7 +250,12 @@ export function scoreVesselItems(refItems: VesselItem[], modelItems: VesselItem[
         : modelImo === null
           ? false
           : normalizeImo(refImo) === normalizeImo(modelImo);
-    const flagMatch = refFlag === null ? true : normalizeFlag(refFlag) === normalizeFlag(modelFlag);
+    const nRef = normalizeFlag(refFlag);
+    const nModel = normalizeFlag(modelFlag);
+    const flagMatch = refFlag === null ? true :
+      nRef === nModel ||
+      (nRef.length > 4 && nModel.startsWith(nRef)) ||
+      (nModel.length > 4 && nRef.startsWith(nModel));
     const builtMatch = refBuilt === null ? true : refBuilt === modelBuilt;
     const dwtMatch = withinTolerance(refDwt, modelDwt);
     const dwccMatch = withinTolerance(refDwcc, modelDwcc);
