@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import type { StoredMatch, MatchStatus } from '@/lib/matching/matches-repository';
+import { matchesToCsv } from '@/lib/matching/matches-csv';
 
 interface Props {
   initialMatches: StoredMatch[];
@@ -25,7 +26,10 @@ export default function MatchesClient({ initialMatches }: Props) {
 
   // Core state
   const [matches, setMatches] = useState<StoredMatch[]>(initialMatches);
-  const [filterStatus, setFilterStatus] = useState<MatchStatus | null>(null);
+  const [filterStatus, setFilterStatus] = useState<MatchStatus | null>(() => {
+    const s = searchParams.get('status');
+    return s && (ALL_STATUSES as string[]).includes(s) ? (s as MatchStatus) : null;
+  });
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [expandedBreakdown, setExpandedBreakdown] = useState<number | null>(null);
   const [showModal, setShowModal] = useState<{ action: string; count: number } | null>(null);
@@ -61,6 +65,7 @@ export default function MatchesClient({ initialMatches }: Props) {
     if (score_min) params.set('score_min', score_min);
     if (dwt_min) params.set('dwt_min', dwt_min);
     if (dwt_max) params.set('dwt_max', dwt_max);
+    if (filterStatus) params.set('status', filterStatus);
 
     const qs = params.toString();
     router.push(qs ? `/matches?${qs}` : '/matches');
@@ -70,7 +75,7 @@ export default function MatchesClient({ initialMatches }: Props) {
       const data = await res.json();
       setMatches(data.matches);
     }
-  }, [cargoTypes, route, laycan_from, laycan_to, score_min, dwt_min, dwt_max, router]);
+  }, [cargoTypes, route, laycan_from, laycan_to, score_min, dwt_min, dwt_max, filterStatus, router]);
 
   // Clear Filters handler
   const handleClearFilters = useCallback(async () => {
@@ -81,6 +86,7 @@ export default function MatchesClient({ initialMatches }: Props) {
     setScoreMin('');
     setDwtMin('');
     setDwtMax('');
+    setFilterStatus(null);
     router.push('/matches');
 
     const res = await fetch('/api/matches');
@@ -131,6 +137,19 @@ export default function MatchesClient({ initialMatches }: Props) {
     setBulkError(null);
   }
 
+  // Export selected matches as CSV
+  function handleExportCsv() {
+    const selected = matches.filter((m) => selectedIds.has(m.id));
+    const csv = matchesToCsv(selected);
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `matches-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   // Toggle checkbox selection
   function toggleSelect(id: number) {
     setSelectedIds((prev) => {
@@ -144,6 +163,16 @@ export default function MatchesClient({ initialMatches }: Props) {
     });
   }
 
+  // Select all / deselect all visible matches
+  function toggleSelectAll() {
+    const allSelected = filtered.length > 0 && filtered.every((m) => selectedIds.has(m.id));
+    if (allSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filtered.map((m) => m.id)));
+    }
+  }
+
   // Toggle score breakdown expansion
   function toggleBreakdown(id: number) {
     setExpandedBreakdown((prev) => (prev === id ? null : id));
@@ -153,12 +182,25 @@ export default function MatchesClient({ initialMatches }: Props) {
     (m) => !filterStatus || m.status === filterStatus
   );
 
+  // Update status filter and persist to URL
+  function applyStatusFilter(status: MatchStatus | null) {
+    setFilterStatus(status);
+    const params = new URLSearchParams(searchParams.toString());
+    if (status) {
+      params.set('status', status);
+    } else {
+      params.delete('status');
+    }
+    const qs = params.toString();
+    router.replace(qs ? `/matches?${qs}` : '/matches');
+  }
+
   return (
     <div className="space-y-4">
       {/* Status filter chips */}
       <div className="flex gap-2 flex-wrap">
         <button
-          onClick={() => setFilterStatus(null)}
+          onClick={() => applyStatusFilter(null)}
           className={`px-3 py-1 rounded-full text-sm border ${!filterStatus ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300'}`}
         >
           All
@@ -166,7 +208,7 @@ export default function MatchesClient({ initialMatches }: Props) {
         {ALL_STATUSES.map((s) => (
           <button
             key={s}
-            onClick={() => setFilterStatus(s)}
+            onClick={() => applyStatusFilter(s)}
             className={`px-3 py-1 rounded-full text-sm border capitalize ${filterStatus === s ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300'}`}
           >
             {s}
@@ -304,168 +346,183 @@ export default function MatchesClient({ initialMatches }: Props) {
           <p className="text-gray-500">No matches yet</p>
         </div>
       ) : (
-        <ul className="space-y-4">
-          {filtered.map((match) => (
-            <li key={match.id} className="bg-white rounded-lg border p-4 space-y-2">
-              <div className="flex items-start gap-3">
-                {/* Checkbox for bulk selection */}
-                <div className="pt-1">
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.has(match.id)}
-                    onChange={() => toggleSelect(match.id)}
-                    className="w-4 h-4 cursor-pointer"
-                  />
-                </div>
+        <>
+          {/* Select all header */}
+          <div className="flex items-center gap-2 px-1 py-1">
+            <input
+              type="checkbox"
+              className="w-4 h-4 cursor-pointer"
+              checked={filtered.every((m) => selectedIds.has(m.id))}
+              onChange={toggleSelectAll}
+            />
+            <span className="text-xs text-gray-500 select-none">
+              Select all ({filtered.length})
+            </span>
+          </div>
 
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-medium text-sm">
-                        Cargo: <span className="text-gray-700">{match.cargo_id}</span>
-                      </div>
-                      <div className="font-medium text-sm">
-                        Vessel: <span className="text-gray-700">{match.vessel_id}</span>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-lg font-bold text-blue-600">{match.score}%</div>
-                      <div className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 capitalize">
-                        {match.status}
-                      </div>
-                    </div>
+          <ul className="space-y-4">
+            {filtered.map((match) => (
+              <li key={match.id} className="bg-white rounded-lg border p-4 space-y-2">
+                <div className="flex items-start gap-3">
+                  {/* Checkbox for bulk selection */}
+                  <div className="pt-1">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(match.id)}
+                      onChange={() => toggleSelect(match.id)}
+                      className="w-4 h-4 cursor-pointer"
+                    />
                   </div>
 
-                  {match.reason && (
-                    <div className="text-xs text-gray-500 truncate">
-                      {match.reason}
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-medium text-sm">
+                          Cargo: <span className="text-gray-700">{match.cargo_id}</span>
+                        </div>
+                        <div className="font-medium text-sm">
+                          Vessel: <span className="text-gray-700">{match.vessel_id}</span>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-blue-600">{match.score}%</div>
+                        <div className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 capitalize">
+                          {match.status}
+                        </div>
+                      </div>
                     </div>
-                  )}
 
-                  {/* Vague-region hint (Phase E3) */}
-                  {match.reason_structured && (() => {
-                    let vagueRegionAdjustment: number | undefined;
-                    try {
-                      const parsed = JSON.parse(match.reason_structured as string);
-                      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-                        vagueRegionAdjustment = parsed.vagueRegionAdjustment;
-                      }
-                    } catch {
-                      vagueRegionAdjustment = undefined;
-                    }
-                    if (typeof vagueRegionAdjustment === 'number' && vagueRegionAdjustment < 0) {
-                      let hintText = '⚠ Vague location — ask for specific anchorage / load port';
+                    {match.reason && (
+                      <div className="text-xs text-gray-500 truncate">
+                        {match.reason}
+                      </div>
+                    )}
+
+                    {/* Vague-region hint (Phase E3) */}
+                    {match.reason_structured && (() => {
+                      let vagueRegionAdjustment: number | undefined;
                       try {
                         const parsed = JSON.parse(match.reason_structured as string);
-                        const components: ScoreComponent[] = Array.isArray(parsed)
-                          ? parsed
-                          : (Array.isArray(parsed.components) ? parsed.components : []);
-                        const geoComp = components.find((c) => c.label === 'Geographic proximity');
-                        if (geoComp?.reason?.includes('vessel position')) {
-                          hintText = '⚠ Vessel position vague — ask for specific anchorage';
-                        } else if (geoComp?.reason?.includes('cargo origin')) {
-                          hintText = '⚠ Cargo origin vague — ask for specific load port';
+                        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                          vagueRegionAdjustment = parsed.vagueRegionAdjustment;
                         }
                       } catch {
-                        // use generic hint
+                        vagueRegionAdjustment = undefined;
+                      }
+                      if (typeof vagueRegionAdjustment === 'number' && vagueRegionAdjustment < 0) {
+                        let hintText = '⚠ Vague location — ask for specific anchorage / load port';
+                        try {
+                          const parsed = JSON.parse(match.reason_structured as string);
+                          const components: ScoreComponent[] = Array.isArray(parsed)
+                            ? parsed
+                            : (Array.isArray(parsed.components) ? parsed.components : []);
+                          const geoComp = components.find((c) => c.label === 'Geographic proximity');
+                          if (geoComp?.reason?.includes('vessel position')) {
+                            hintText = '⚠ Vessel position vague — ask for specific anchorage';
+                          } else if (geoComp?.reason?.includes('cargo origin')) {
+                            hintText = '⚠ Cargo origin vague — ask for specific load port';
+                          }
+                        } catch {
+                          // use generic hint
+                        }
+                        return (
+                          <div
+                            role="status"
+                            className="mt-1 text-xs text-amber-700 bg-amber-50 rounded px-2 py-1"
+                          >
+                            {hintText}
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
+
+                    {/* Score Breakdown toggle */}
+                    {match.reason_structured && (
+                      <button
+                        onClick={() => toggleBreakdown(match.id)}
+                        className="text-xs text-blue-600 hover:underline mt-1"
+                      >
+                        {expandedBreakdown === match.id ? 'Hide Breakdown' : 'Show Breakdown'}
+                      </button>
+                    )}
+
+                    {/* Score Breakdown panel */}
+                    {expandedBreakdown === match.id && match.reason_structured && (() => {
+                      let components: ScoreComponent[] = [];
+                      try {
+                        const parsed = JSON.parse(match.reason_structured as string);
+                        components = Array.isArray(parsed)
+                          ? parsed
+                          : (Array.isArray(parsed.components) ? parsed.components : []);
+                      } catch {
+                        components = [];
                       }
                       return (
-                        <div
-                          role="status"
-                          className="mt-1 text-xs text-amber-700 bg-amber-50 rounded px-2 py-1"
-                        >
-                          {hintText}
+                        <div className="mt-2 space-y-2 border-t pt-2">
+                          <h4 className="text-xs font-semibold text-gray-600">Score Breakdown</h4>
+                          {components.map((comp, idx) => (
+                            <div key={idx} className="space-y-0.5">
+                              <div className="flex justify-between text-xs">
+                                <span className="font-medium">{comp.label}</span>
+                                <span>{comp.points} / {comp.max} points</span>
+                              </div>
+                              <div className="w-full bg-gray-200 rounded-full h-1.5">
+                                <div
+                                  className="bg-blue-500 h-1.5 rounded-full"
+                                  style={{ width: `${((comp.points / comp.max) * 100).toFixed(0)}%` }}
+                                />
+                              </div>
+                              {comp.reason && (
+                                <p className="text-xs text-gray-500">{comp.reason}</p>
+                              )}
+                            </div>
+                          ))}
                         </div>
                       );
-                    }
-                    return null;
-                  })()}
+                    })()}
 
-                  {/* Score Breakdown toggle */}
-                  {match.reason_structured && (
-                    <button
-                      onClick={() => toggleBreakdown(match.id)}
-                      className="text-xs text-blue-600 hover:underline mt-1"
-                    >
-                      {expandedBreakdown === match.id ? 'Hide Breakdown' : 'Show Breakdown'}
-                    </button>
-                  )}
-
-                  {/* Score Breakdown panel */}
-                  {expandedBreakdown === match.id && match.reason_structured && (() => {
-                    let components: ScoreComponent[] = [];
-                    try {
-                      const parsed = JSON.parse(match.reason_structured as string);
-                      components = Array.isArray(parsed)
-                        ? parsed
-                        : (Array.isArray(parsed.components) ? parsed.components : []);
-                    } catch {
-                      components = [];
-                    }
-                    return (
-                      <div className="mt-2 space-y-2 border-t pt-2">
-                        <h4 className="text-xs font-semibold text-gray-600">Score Breakdown</h4>
-                        {components.map((comp, idx) => (
-                          <div key={idx} className="space-y-0.5">
-                            <div className="flex justify-between text-xs">
-                              <span className="font-medium">{comp.label}</span>
-                              <span>{comp.points} / {comp.max} points</span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-1.5">
-                              <div
-                                className="bg-blue-500 h-1.5 rounded-full"
-                                style={{ width: `${((comp.points / comp.max) * 100).toFixed(0)}%` }}
-                              />
-                            </div>
-                            {comp.reason && (
-                              <p className="text-xs text-gray-500">{comp.reason}</p>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    );
-                  })()}
-
-                  {/* Action buttons */}
-                  <div className="flex gap-2 mt-2">
-                    {match.status !== 'saved' && match.status !== 'archived' && (
-                      <button
-                        onClick={() => handleAction(match.id, 'saved')}
-                        className="px-3 py-1 text-xs rounded bg-green-100 text-green-700 hover:bg-green-200"
-                      >
-                        Save
-                      </button>
-                    )}
-                    {match.status !== 'dismissed' && match.status !== 'archived' && (
-                      <button
-                        onClick={() => handleAction(match.id, 'dismissed')}
-                        className="px-3 py-1 text-xs rounded bg-red-100 text-red-700 hover:bg-red-200"
-                      >
-                        Dismiss
-                      </button>
-                    )}
-                    {match.status !== 'archived' && (
-                      <button
-                        onClick={() => handleAction(match.id, 'archived')}
-                        className="px-3 py-1 text-xs rounded bg-gray-100 text-gray-600 hover:bg-gray-200"
-                      >
-                        Archive
-                      </button>
-                    )}
-                    {match.status === 'archived' && (
-                      <button
-                        onClick={() => handleAction(match.id, 'saved')}
-                        className="px-3 py-1 text-xs rounded bg-blue-100 text-blue-700 hover:bg-blue-200"
-                      >
-                        Restore
-                      </button>
-                    )}
+                    {/* Action buttons */}
+                    <div className="flex gap-2 mt-2">
+                      {match.status !== 'saved' && match.status !== 'archived' && (
+                        <button
+                          onClick={() => handleAction(match.id, 'saved')}
+                          className="px-3 py-1 text-xs rounded bg-green-100 text-green-700 hover:bg-green-200"
+                        >
+                          Save
+                        </button>
+                      )}
+                      {match.status !== 'dismissed' && match.status !== 'archived' && (
+                        <button
+                          onClick={() => handleAction(match.id, 'dismissed')}
+                          className="px-3 py-1 text-xs rounded bg-red-100 text-red-700 hover:bg-red-200"
+                        >
+                          Dismiss
+                        </button>
+                      )}
+                      {match.status !== 'archived' && (
+                        <button
+                          onClick={() => handleAction(match.id, 'archived')}
+                          className="px-3 py-1 text-xs rounded bg-gray-100 text-gray-600 hover:bg-gray-200"
+                        >
+                          Archive
+                        </button>
+                      )}
+                      {match.status === 'archived' && (
+                        <button
+                          onClick={() => handleAction(match.id, 'saved')}
+                          className="px-3 py-1 text-xs rounded bg-blue-100 text-blue-700 hover:bg-blue-200"
+                        >
+                          Restore
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </li>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
 
       {/* Sticky footer for bulk actions */}
@@ -478,6 +535,12 @@ export default function MatchesClient({ initialMatches }: Props) {
             <span className="text-xs text-red-600">{bulkError}</span>
           )}
           <div className="flex gap-2 ml-auto">
+            <button
+              onClick={handleExportCsv}
+              className="px-3 py-1.5 text-sm rounded bg-blue-100 text-blue-700 hover:bg-blue-200"
+            >
+              Export CSV
+            </button>
             <button
               onClick={() => handleBulkAction('saved')}
               className="px-3 py-1.5 text-sm rounded bg-green-100 text-green-700 hover:bg-green-200"
