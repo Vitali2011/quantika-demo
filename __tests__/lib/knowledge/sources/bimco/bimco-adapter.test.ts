@@ -126,12 +126,13 @@ describe('bimco-adapter', () => {
     expect(Number.isFinite(result.stored)).toBe(true);
   });
 
-  // TC-BA-09: Verify stored count matches fixture length
+  // TC-BA-09: Verify stored count matches fixture length (dynamic — survives fixture extension)
   it('returns stored count matching fixture clauses', async () => {
     const result = await syncBimcoRag(db, false);
-
-    // Fixture has 7 clauses (see lib/knowledge/sources/bimco/fixture.ts)
-    expect(result.stored).toBe(7);
+    // Use requireActual to bypass any jest.mock() on fixture (e.g. TC-BA-07 empty mock)
+    const { BIMCO_FIXTURE_CLAUSES } = jest.requireActual('@/lib/knowledge/sources/bimco/fixture') as { BIMCO_FIXTURE_CLAUSES: unknown[] };
+    expect(result.stored).toBe(BIMCO_FIXTURE_CLAUSES.length);
+    expect(result.stored).toBeGreaterThanOrEqual(7); // sanity floor (existing 3 charters)
   });
 
   // TC-BA-10: Verify FTS table populated correctly
