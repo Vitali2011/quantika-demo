@@ -251,4 +251,14 @@ export const BIMCO_FIXTURE_CLAUSES: BimcoClause[] = [
     text: 'BALTIME is the BIMCO Standard Time Charter (originally 1939, revised 2001) used for dry bulk and general cargo trades. Distinguished from NYPE by European drafting conventions, English law default, clearer off-hire and trading limits clauses. Common for shorter-period charters in tramp markets. Full text via BIMCO membership only — this summary based on academic descriptions and BIMCO public abstract.',
     sourceUrl: 'https://www.bimco.org/contracts-and-clauses/bimco-contracts/baltime-2001',
   },
+
+  // ===== CONGENBILL (BIMCO Bill of Lading for GENCON voyages) — summary, full text paywalled =====
+  {
+    id: 'congenbill-summary',
+    charterParty: 'CONGENBILL',
+    clauseNumber: 'SUMMARY',
+    title: 'CONGENBILL Bill of Lading Overview',
+    text: 'CONGENBILL is the BIMCO standard bill of lading for use with GENCON voyage charter parties (current edition 2022). Incorporates GENCON terms by reference, provides title to goods and evidence of contract of carriage. Used worldwide in dry bulk trades. Three originals issued per shipment; consignee endorsement required for cargo release. Full B/L text paywalled via BIMCO membership — summary based on public BIMCO contract index.',
+    sourceUrl: 'https://www.bimco.org/contracts-and-clauses/bimco-contracts/congenbill-2022',
+  },
 ];

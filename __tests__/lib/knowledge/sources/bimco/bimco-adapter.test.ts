@@ -201,4 +201,11 @@ describe('bimco-adapter', () => {
     const rows = db.prepare(`SELECT metadata FROM bimco_fts WHERE metadata LIKE '%"BALTIME"%'`).all() as any[];
     expect(rows.length).toBe(1);
   });
+
+  // TC-BA-17: CONGENBILL summary entry persists
+  it('persists CONGENBILL summary entry', async () => {
+    await syncBimcoRag(db, false);
+    const rows = db.prepare(`SELECT metadata FROM bimco_fts WHERE metadata LIKE '%"CONGENBILL"%'`).all() as any[];
+    expect(rows.length).toBe(1);
+  });
 });
