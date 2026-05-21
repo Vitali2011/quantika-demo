@@ -1,0 +1,25 @@
+[Unit]
+Description=Quantika FX rates daily refresh from frankfurter.app
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=quantika
+Group=quantika
+WorkingDirectory=/opt/quantika
+ExecStart=/usr/bin/node /opt/quantika/scripts/knowledge/cron/refresh-fx-rates.js
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=quantika-fx-rates
+TimeoutStartSec=5min
+EnvironmentFile=/opt/quantika/.env.production
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/quantika
+
+[Install]
+WantedBy=multi-user.target
