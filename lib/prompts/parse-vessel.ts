@@ -89,6 +89,8 @@ CRITICAL ANTI-PATTERN — NEVER map cargo-side fields to vessel fields:
 - "Laycan 10-15 May" → cargo loading window, NOT vessel's open_date.
 - "Gearless acceptable" → charterer preference, NOT vessel's geared status.
 
+UNNAMED VESSEL GUARD: If you cannot identify a clear vessel name from the email text, do NOT create a vessel entry with a null, empty, or placeholder name (e.g. "Unnamed Vessel", "TBN", "N/A"). Only extract vessels with identifiable names or vessels explicitly marked as TBN when seeking cargo.
+
 EXAMPLES:
 
 INPUT A (vessel position circular — extract):
@@ -172,14 +174,16 @@ WRONG:     { "value": 5000, "confidence": "confirmed", "source_text": "approxima
 Each field: { value: ..., confidence: "confirmed" | "interpreted" | "uncertain", source_text: "exact quote" }
 If a field is set to null (information not present), source_text is not needed.
 
-SUBJECT LINE AS DATA SOURCE: The email Subject line is a valid source — extract DWCC, DWT, and vessel name from the Subject if stated there (e.g. Subject "10k dwcc mv propus" → DWCC=10000, vessel=PROPUS).
+IMPORTANT — SUBJECT LINE IS AUTHORITATIVE:
+The email Subject line is a valid and authoritative data source. Always extract DWCC, DWT, and vessel name from the Subject when stated there.
+If the Subject line contains "Nk dwcc" or "N dwcc" (where N is a number), extract that as dwcc. "k" suffix means thousands: "10k" = 10,000; "28k" = 28,000; "5.5k" = 5,500.
+Example: Subject "10k dwcc mv propus" → dwcc = 10000 MT, vessel = PROPUS. Subject "28k dwt bulk carrier open rotterdam" → dwt = 28000.
 
 FLAG EXTRACTION RULES (apply only to these specific cases — do NOT "normalize" other flag names):
 - "BELIZE CITY" → "Belize" (city is not the flag state, Belize is the flag state).
 - "ST VINCENT" (all-caps abbreviation without "Grenadines") → "Saint Vincent and the Grenadines".
 - "ST KITTS" (all-caps abbreviation without "Nevis") → "Saint Kitts and Nevis".
 - "Kitts & Navis" / "Kitts and Navis" (typo for Nevis) → "Kitts & Nevis".
-- "MADEIRA" used as flag → "Portugal" (Madeira is a Portuguese autonomous region, not an independent flag state).
 - For all other flags: extract verbatim as written in the email. Do NOT expand "&" to "and", do NOT change "St." to "Saint", and do NOT otherwise rewrite flag names not listed above.
 - If the email already says "St. Vincent & the Grenadines" or "Saint Vincent and the Grenadines" — extract it exactly as written without changing it.
 
