@@ -735,6 +735,14 @@ const DISTANCES_NM: Record<string, number> = {
   'Iskenderun|Piraeus': 660,
   'Alexandria|Iskenderun': 470,
   'Istanbul|Iskenderun': 780,
+  'Aliaga|Iskenderun': 420,
+  'Iskenderun|Marmara': 510,
+  'Iskenderun|Mykolaiv': 800,
+  'Iskenderun|Odesa': 760,
+  'Constanta|Iskenderun': 590,
+  'Iskenderun|Novorossiysk': 830,
+  'Iskenderun|Skikda': 900,
+  'Iskenderun|Ravenna': 1130,
 
   // ── Izmir standalone ──
   'Izmir|Istanbul': 290,
