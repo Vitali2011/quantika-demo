@@ -5,6 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch: # used by auto-rebase-prs.yml to nudge CI after update-branch
 
 # Note: previously had paths-ignore for docs/**, *.md, .claude/**, .specs/**, README*, *.svg —
 # removed 2026-05-20 because (a) repo is now public → CI minutes are free, and (b) branch
