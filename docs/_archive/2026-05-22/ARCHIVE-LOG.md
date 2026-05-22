@@ -7,3 +7,5 @@
 
 Оставлены в корне (есть ссылки): `ROADMAP_MVP.md` (из кода `lib/parsing/parse-cargo-ai.ts`),
 `ROADMAP.md` (из session-промптов `.claude/`, `docs/ROADMAP-SESSION-PROMPT.md`).
+- `SESSION_STATE_2026-04-16.md` -> `docs/_archive/2026-05-22/SESSION_STATE_2026-04-16.md` — audit: stale top-level doc
+- `HOTFIX_PROMPTS.md` -> `docs/_archive/2026-05-22/HOTFIX_PROMPTS.md` — audit: stale top-level doc
