@@ -1,7 +1,7 @@
 # Quantika Demo — ROADMAP (Текущее состояние)
 
 **Последний полный аудит:** 2026-05-17 (5-поточный код-аудит) + 2026-05-19 UI audit (Playwright+Chrome MCP) + **2026-05-19 ROADMAP reality audit** (claim vs prod sweep)
-**Последнее обновление:** 2026-05-21 (evening) — C1a #319 (+4 BIMCO charters, RAG bimco_vec 7→31), B1 #317 (M3 bulk actions polish), C1 design #318; prod-snapshot saved; GCP new project quantika-demo-496307 confirmed working
+**Последнее обновление:** 2026-05-22 — F7 #322 (/processing 403→200), R8 root-cause #324 (measurement artifact), C5 fx_rates #323/#327 (daily timer LIVE, 212 rows), R15 #326 (56/56 100%), auto-merge race #328, post-deploy verify #316
 **Текущая версия:** prod HEAD после auto-deploy LIVE (#259, systemd quantika-demo.service на outreach-vps)
 **Статус:** 🟢 Основные потоки работают; parse-vessel в активной итерации (R8 baseline после revert); pre-merge-guard LIVE
 
@@ -48,6 +48,15 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 - 🛠 **Infra knowledge captured:** `~/orchestrator-state/quantika-demo/prod-snapshot-2026-05-21.md` (hosts/services/DB/GCP/refresh patterns) + memory `reference_quantika_prod_infra.md`
 - ⚠️ **GCP discovery:** old project `quantika-demo-2026` decommissioned (CONSUMER_INVALID на dev-vps); new prod project `quantika-demo-496307` working на outreach-vps
 - 📋 **Open follow-ups:** #316 D1 post-deploy verify [deploy-affects] — manual review pending; auto-merge BLOCKED race condition (workaround `--admin`); auto-rebase workflow timing issue
+
+**Что изменилось за 2026-05-22:**
+
+- ✅ **#322** fix(auth): F7 /processing 403→200 для demo_auth-only users — auth gap закрыт
+- ✅ **#324** docs(parse-vessel): R8 regression root-cause analysis — вывод: -13 была measurement artifact (тест-паринг алгоритм), **не регрессия промпта**; R8 baseline валиден
+- ✅ **#323 + #327** feat(cron)/fix(ops): C5 fx_rates — systemd timer daily 03:00 UTC LIVE на prod (212 rows загружено); User=root fix (npx tsx pattern согласован с prod)
+- ✅ **#326** fix(parse-vessel): R15 — 5 сценариев (sc-002/003/031/034/040) исправлены; eval 56/56 = **100%**
+- ✅ **#328** fix(ci): auto-merge BEHIND race — workflow_dispatch вместо git-nudge; auto-rebase open PRs on main push LIVE
+- ✅ **#316** feat(ops): post-deploy verify script + CI HTTP health step — merged
 
 **Что изменилось за 2026-05-20:**
 
@@ -169,9 +178,8 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 | Статус                      | Таблицы                                                                                                                                                                                                                                                                                                           |
 | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ✅ Свежие, заполненные      | ofac_entities (18,959), schema_migrations, knowledge_sources, market_indices (92), charterers (20), port_da_estimates (94), psc_detention_history (16), port_distances (18,648) + **searoute JSON 105,011 пар (tier 2) + live tier 3** ✅ 2026-05-20, **eu_sanctions_entities (5,996)**, **port_master (11,767)** |
+| ✅ Свежие, заполненные      | ofac_entities (18,959), schema_migrations, knowledge_sources, market_indices (92), charterers (20), port_da_estimates (94), psc_detention_history (16), port_distances (18,648) + **searoute JSON 105,011 пар (tier 2) + live tier 3** ✅ 2026-05-20, **eu_sanctions_entities (5,996)**, **port_master (11,767)**, **roi_metrics (18)** ✅ seed 2026-05-22, **fx_rates (212)** ✅ daily timer 03:00 UTC (PR #323/#327) |
 | ✅ RAG embedded             | imsbc_fts (116), igc_fts (119), jwc_fts (7), bimco_fts (14) — counts выше чем заявлялось в audit 2026-05-17                                                                                                                                                                                                       |
-| 🚨 **EMPTY (при флаге ON)** | **roi_metrics (0)** — `ROI_GUARANTEE_ENABLED=true`; **fx_rates (0)** — `MULTI_CURRENCY_V2_ENABLED=true` — investigation в работе                                                                                                                                                                                  |
 | ⚠️ Частичные                | baltic/bunker/eua (устарели, manual CSV upload), war_risk_zones (4)                                                                                                                                                                                                                                               |
 | ❌ Не seed-нулись           | eca_zones                                                                                                                                                                                                                                                                                                         |
 
@@ -256,18 +264,17 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 ### 🚨 P0 — Активные
 
-| #      | Issue                                                                                                                | Effort     | Влияет на                                                    | Статус                                                                                                                                                                        |
-| ------ | -------------------------------------------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **C4** | `roi_metrics=0` на проде при `ROI_GUARANTEE_ENABLED=true` — tile рендерит "No voyages" заглушку, demo выглядит сыро  | ~5 мин SSH | ROI Guarantee widget — visual только, не crash               | 🆕 **NEW P1** — seed script `scripts/seed-roi-metrics.ts` готов, 18 синтетических фикстур, нужно запустить раз через SSH ИЛИ добавить в deploy.yml post-migration step        |
-| **C5** | `fx_rates=0` на проде при `MULTI_CURRENCY_V2_ENABLED=true` — но 4-tier fallback (cache→DB→frankfurter.app→hardcoded) | ~30-45 мин | Конверсия валют — работает через live API/hardcoded fallback | 🆕 **NEW P2** — не критично (живой API работает), но лучше зарегистрировать в cron как daily refresh: добавить slug в `scripts/knowledge/refresh.ts` KNOWN_SLUGS + cron entry |
+_(пусто — C4/C5 закрыты 2026-05-22)_
 
 ### ✅ P0 — Закрытые
 
-| #      | Issue                                     | Closed by                                                                              |
-| ------ | ----------------------------------------- | -------------------------------------------------------------------------------------- |
-| **C1** | Bedrock Opus 4.7 → claude-cli replacement | PR #186                                                                                |
-| **C2** | 5 webhooks AUTH_BYPASS_PATHS              | ✅ Все 5 в middleware.ts:19-27 (verified 2026-05-19) — PR #221 + позже                 |
-| **C3** | EU_SANCTIONS_TOKEN                        | ✅ Token `n00mo9i3` валиден (HTTP 200, 24.7MB), `knowledge_sources.eu-sanctions=fresh` |
+| #      | Issue                                                                                        | Closed by                                                                                          |
+| ------ | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **C1** | Bedrock Opus 4.7 → claude-cli replacement                                                    | PR #186                                                                                            |
+| **C2** | 5 webhooks AUTH_BYPASS_PATHS                                                                 | ✅ Все 5 в middleware.ts:19-27 (verified 2026-05-19) — PR #221 + позже                             |
+| **C3** | EU_SANCTIONS_TOKEN                                                                           | ✅ Token `n00mo9i3` валиден (HTTP 200, 24.7MB), `knowledge_sources.eu-sanctions=fresh`             |
+| **C4** | `roi_metrics=0` при `ROI_GUARANTEE_ENABLED=true` — tile рендерил "No voyages" заглушку       | ✅ seed 18 строк (scripts/seed-roi-metrics.ts) — 2026-05-22                                        |
+| **C5** | `fx_rates=0` при `MULTI_CURRENCY_V2_ENABLED=true` — конверсия через hardcoded fallback        | ✅ daily timer 03:00 UTC LIVE, 212 rows — PR #323 (cron) + #327 (User=root fix) — 2026-05-22       |
 
 ### 🟠 P1 — Активация data layer
 
