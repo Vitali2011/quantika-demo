@@ -16,9 +16,11 @@ const SCRIPT = path.resolve(__dirname, '../data-integrity-check.ts');
 const TSX = path.resolve(__dirname, '../../node_modules/.bin/tsx');
 
 function runScript(args: string[]): { stdout: string; stderr: string; code: number } {
+  // Destructure out keys the child process should not inherit (NODE_ENV is readonly in Next.js types)
+  const { SESSIONS_DB_PATH: _s, NODE_ENV: _n, ...childEnv } = process.env;
   const result = spawnSync(TSX, ['--no-deprecation', SCRIPT, ...args], {
     encoding: 'utf8',
-    env: { ...process.env, SESSIONS_DB_PATH: undefined, NODE_ENV: undefined },
+    env: childEnv as unknown as NodeJS.ProcessEnv,
   });
   return {
     stdout: result.stdout ?? '',
