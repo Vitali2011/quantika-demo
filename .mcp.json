@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "sqlite": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@mokei/mcp-sqlite",
+        "--db",
+        "/Users/jarvis/work/quantika-demo/data/quantika.db"
+      ]
+    }
+  }
+}
