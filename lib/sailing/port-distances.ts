@@ -1030,6 +1030,16 @@ const DISTANCES_NM: Record<string, number> = {
   'Birkenhead|Casablanca': 1450,
   'Birkenhead|Damietta': 3500,
 
+  // ── Phase B: Adriatic↔Danube and Red Sea↔East Med corridors ──
+  // Promoted from searoute JSON (Tier 2) to hand-curated matrix (Tier 1).
+  // Both corridors require mandatory canal/strait transits that make haversine
+  // unreliable (~40% under-estimate); exact values verified against searoute-ts.
+  //
+  // Ravenna → Corinth Canal → Aegean → Dardanelles → Bosphorus → Izmail
+  'Izmail|Ravenna': 1210,
+  // Jeddah → Suez Canal (Red Sea entrance) → Port Said → Eastern Med → Iskenderun
+  'Iskenderun|Jeddah': 1140,
+
 };
 
 function stripCountry(raw: string): string {
