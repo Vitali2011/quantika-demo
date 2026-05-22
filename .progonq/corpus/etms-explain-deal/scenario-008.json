@@ -1,0 +1,110 @@
+{
+  "id": "etms-explain-deal-008",
+  "source": "synthetic — Opus 4.7 composed (Phase E8 R1)",
+  "category": "missing-freight-no-economics",
+  "language": "en",
+  "_note": "Economics field is absent (not available). Tests that model handles missing TCE/freight data gracefully without hallucinating specific rate figures.",
+  "input": {
+    "match": {
+      "cargoEmailId": "synthetic-cargo-ed-008",
+      "cargoItemIndex": 0,
+      "vesselEmailId": "synthetic-vessel-ed-008",
+      "vesselItemIndex": 0,
+      "score": 58,
+      "matchLevel": "possible",
+      "matchReasons": [
+        "DWT 16000 covers cargo 13000 MT",
+        "Geared vessel suits bulk cargo loading requirements"
+      ],
+      "issues": [
+        "Freight rate data unavailable — economics not computed",
+        "Vessel age 2001 — possible port state control risk",
+        "Open position Lagos requires 4-day northbound repositioning"
+      ],
+      "economics": null
+    },
+    "cargo": {
+      "emailId": "synthetic-cargo-ed-008",
+      "itemIndex": 0,
+      "originPort": { "value": "Tema", "confidence": "confirmed" },
+      "originCountry": "Ghana",
+      "destinationPort": { "value": "Antwerp", "confidence": "confirmed" },
+      "destinationCountry": "Belgium",
+      "cargoDescription": { "value": "13000 MT cocoa beans in bags", "confidence": "confirmed" },
+      "weightMt": { "value": 13000, "confidence": "confirmed" },
+      "weightMtMin": 12000,
+      "weightMtMax": 14000,
+      "volumeCbm": null,
+      "dimensions": null,
+      "cargoType": "bulk",
+      "containerType": null,
+      "quantity": null,
+      "incoterms": "FOB",
+      "preferredDates": { "value": "20-30 June 2026", "confidence": "confirmed" },
+      "laycan": "20-30 June 2026",
+      "loadingRate": "800 MTPD",
+      "dischargeRate": "600 MTPD",
+      "commissionPercent": 3.75,
+      "commissionTerms": "TTL",
+      "specialRequirements": "Holds to be clean, odour-free. No prior chemical cargo.",
+      "stowageFactor": "1.6 CBM/MT",
+      "missingInfo": ["freight rate not provided by shipper"]
+    },
+    "vessel": {
+      "emailId": "synthetic-vessel-ed-008",
+      "itemIndex": 0,
+      "vesselName": { "value": "MV WEST AFRICAN SPIRIT", "confidence": "confirmed" },
+      "imo": "9112233",
+      "flag": "Liberia",
+      "built": 2001,
+      "classSociety": "Bureau Veritas",
+      "pandi": "Swedish Club",
+      "dwtSummer": { "value": 16000, "confidence": "confirmed" },
+      "dwcc": { "value": 15700, "confidence": "confirmed" },
+      "draftMax": { "value": 8.5, "confidence": "confirmed" },
+      "loa": 158.0,
+      "beam": 23.0,
+      "grt": 10200,
+      "nrt": 5500,
+      "holdsCount": 3,
+      "hatchesCount": 3,
+      "grainCapacity": 20800,
+      "grainCapacityUnit": "cbm",
+      "baleCapacity": 20100,
+      "holdDimensions": null,
+      "hatchDimensions": null,
+      "tankTopStrength": null,
+      "geared": true,
+      "craneCapacity": "3x25T",
+      "hatchType": "folding",
+      "vesselType": "general cargo",
+      "openPosition": { "value": "Lagos", "confidence": "confirmed" },
+      "openDate": { "value": "15 June 2026", "confidence": "confirmed" },
+      "direction": "northbound",
+      "restrictions": [],
+      "lastCargoes": "Rice, sugar",
+      "speedLaden": "11.5 kts",
+      "speedBallast": "12 kts",
+      "consumption": "14 MT IFO laden",
+      "deckCapacity": null,
+      "specialFeatures": ["clean holds certified", "fumigation equipment onboard"]
+    }
+  },
+  "expected": {
+    "sections_present": [
+      "Market Context",
+      "Deal Rationale",
+      "Key Risks",
+      "Recommended Next Steps"
+    ],
+    "must_cite_facts": ["16000", "13000", "Tema", "Antwerp"],
+    "must_not_contain": [
+      "TCE of $14500",
+      "TCE $14,500",
+      "freight rate agreed at $32",
+      "economics confirm profitable voyage",
+      "TCE 14500"
+    ],
+    "language": "en"
+  }
+}

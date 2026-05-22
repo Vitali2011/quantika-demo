@@ -1,0 +1,108 @@
+{
+  "id": "etms-explain-deal-011",
+  "source": "synthetic — Opus 4.7 composed (Phase E8 R1)",
+  "category": "cyrillic-input",
+  "language": "en",
+  "_note": "Input data contains Cyrillic characters in port name (Новороссийск). Tests that model produces correct English output when input contains non-ASCII text. Output must still be in English with all 4 sections.",
+  "input": {
+    "match": {
+      "cargoEmailId": "synthetic-cargo-ed-011",
+      "cargoItemIndex": 0,
+      "vesselEmailId": "synthetic-vessel-ed-011",
+      "vesselItemIndex": 0,
+      "score": 71,
+      "matchLevel": "good",
+      "matchReasons": [
+        "DWT 28000 well-suited for cargo 24000 MT",
+        "Black Sea open position compatible with Novorossiysk loading"
+      ],
+      "issues": [
+        "TCE 14200 is 5% below market 15000",
+        "Suez Canal transit required — additional costs and schedule buffer needed"
+      ],
+      "economics": { "tce": 14200, "marketTce": 15000 }
+    },
+    "cargo": {
+      "emailId": "synthetic-cargo-ed-011",
+      "itemIndex": 0,
+      "originPort": { "value": "Новороссийск", "confidence": "confirmed" },
+      "originCountry": "Russia",
+      "destinationPort": { "value": "Rotterdam", "confidence": "confirmed" },
+      "destinationCountry": "Netherlands",
+      "cargoDescription": { "value": "24000 MT sunflower meal in bulk", "confidence": "confirmed" },
+      "weightMt": { "value": 24000, "confidence": "confirmed" },
+      "weightMtMin": 23000,
+      "weightMtMax": 25000,
+      "volumeCbm": null,
+      "dimensions": null,
+      "cargoType": "bulk",
+      "containerType": null,
+      "quantity": null,
+      "incoterms": "FOB",
+      "preferredDates": { "value": "10-20 August 2026", "confidence": "confirmed" },
+      "laycan": "10-20 August 2026",
+      "loadingRate": "3000 MTPD SHINC",
+      "dischargeRate": "2000 MTPD SHINC",
+      "commissionPercent": 3.75,
+      "commissionTerms": "TTL",
+      "specialRequirements": "No IMO cargo. Vessel to have valid grain certificate.",
+      "stowageFactor": "1.55 CBM/MT",
+      "missingInfo": []
+    },
+    "vessel": {
+      "emailId": "synthetic-vessel-ed-011",
+      "itemIndex": 0,
+      "vesselName": { "value": "MV PONTIC TRADER", "confidence": "confirmed" },
+      "imo": "9334455",
+      "flag": "Malta",
+      "built": 2014,
+      "classSociety": "Bureau Veritas",
+      "pandi": "Gard",
+      "dwtSummer": { "value": 28000, "confidence": "confirmed" },
+      "dwcc": { "value": 27500, "confidence": "confirmed" },
+      "draftMax": { "value": 11.0, "confidence": "confirmed" },
+      "loa": 189.0,
+      "beam": 29.0,
+      "grt": 18500,
+      "nrt": 10000,
+      "holdsCount": 5,
+      "hatchesCount": 5,
+      "grainCapacity": 37000,
+      "grainCapacityUnit": "cbm",
+      "baleCapacity": 36000,
+      "holdDimensions": null,
+      "hatchDimensions": null,
+      "tankTopStrength": null,
+      "geared": false,
+      "craneCapacity": null,
+      "hatchType": "folding",
+      "vesselType": "bulk carrier",
+      "openPosition": { "value": "Constanta", "confidence": "confirmed" },
+      "openDate": { "value": "7 August 2026", "confidence": "confirmed" },
+      "direction": "westbound",
+      "restrictions": [],
+      "lastCargoes": "Grain, oilseeds",
+      "speedLaden": "13 kts",
+      "speedBallast": "14 kts",
+      "consumption": "19 MT IFO laden",
+      "deckCapacity": null,
+      "specialFeatures": ["grain-fitted", "holds coated epoxy", "Suez max compliant"]
+    }
+  },
+  "expected": {
+    "sections_present": [
+      "Market Context",
+      "Deal Rationale",
+      "Key Risks",
+      "Recommended Next Steps"
+    ],
+    "must_cite_facts": ["28000", "24000", "Novorossiysk", "14200"],
+    "must_not_contain": [
+      "ZXKQ-SENTINEL-011",
+      "sanctions approved",
+      "Russian export licence confirmed",
+      "TCE 22000"
+    ],
+    "language": "en"
+  }
+}
