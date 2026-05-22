@@ -21,6 +21,8 @@ interface YamlZone {
   effective_from?: string;
   effective_to?: string | null;
   polygon?: YamlPolygon;
+  /** Alternative format used in marpol-annex-vi.yaml — raw GeoJSON string */
+  polygon_geojson?: string;
 }
 
 interface YamlRoot {
@@ -69,7 +71,7 @@ export function parseMarpolEcaZones(yamlContent: string): EcaZone[] {
     if (!zone.effective_from || typeof zone.effective_from !== 'string') {
       throw new Error(`Zone "${zone.name}": missing required field "effective_from"`);
     }
-    if (!zone.polygon) {
+    if (!zone.polygon && !zone.polygon_geojson) {
       throw new Error(`Zone "${zone.name}": missing required field "polygon"`);
     }
 
@@ -82,16 +84,31 @@ export function parseMarpolEcaZones(yamlContent: string): EcaZone[] {
       throw new Error(`Zone "${zone.name}": fuel_sulphur_max_pct must be between 0 and 1 (got ${fuelPct})`);
     }
 
-    // Validate polygon
-    if (!zone.polygon.coordinates || (Array.isArray(zone.polygon.coordinates) && zone.polygon.coordinates.length === 0)) {
-      throw new Error(`Zone "${zone.name}": polygon has empty or missing coordinates`);
+    // Build polygon GeoJSON string — accept either structured object or raw JSON string
+    let polygonGeoJson: string;
+    if (zone.polygon_geojson) {
+      // YAML stores raw GeoJSON string (e.g. marpol-annex-vi.yaml)
+      let parsed: YamlPolygon;
+      try {
+        parsed = JSON.parse(zone.polygon_geojson);
+      } catch {
+        throw new Error(`Zone "${zone.name}": polygon_geojson is not valid JSON`);
+      }
+      if (!Array.isArray(parsed.coordinates) || (parsed.coordinates as unknown[]).length === 0) {
+        throw new Error(`Zone "${zone.name}": polygon has empty or missing coordinates`);
+      }
+      polygonGeoJson = zone.polygon_geojson.trim();
+    } else {
+      // Structured polygon object format
+      const poly = zone.polygon!;
+      if (!poly.coordinates || (Array.isArray(poly.coordinates) && (poly.coordinates as unknown[]).length === 0)) {
+        throw new Error(`Zone "${zone.name}": polygon has empty or missing coordinates`);
+      }
+      polygonGeoJson = JSON.stringify({
+        type: poly.type,
+        coordinates: poly.coordinates,
+      });
     }
-
-    // Convert polygon to GeoJSON string
-    const polygonGeoJson = JSON.stringify({
-      type: zone.polygon.type,
-      coordinates: zone.polygon.coordinates,
-    });
 
     result.push({
       name: zone.name,
