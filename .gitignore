@@ -66,6 +66,7 @@ next-env.d.ts
 /.progonq/results/
 /.progonq/budget.json
 /.progonq/state.json
+/.progonq/cache/*.json
 
 # wave-γ-data-l5c-v1: private artefacts (IMSBC PDF, intermediate LLM outputs)
 /.private/
