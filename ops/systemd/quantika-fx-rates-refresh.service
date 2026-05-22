@@ -5,21 +5,13 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
-User=quantika
-Group=quantika
-WorkingDirectory=/opt/quantika
-ExecStart=/usr/bin/node /opt/quantika/scripts/knowledge/cron/refresh-fx-rates.js
+User=root
+WorkingDirectory=/root/quantika-demo
+ExecStart=/usr/bin/npx tsx --env-file=.env.local scripts/knowledge/cron/refresh-fx-rates.ts
 StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=quantika-fx-rates
 TimeoutStartSec=5min
-EnvironmentFile=/opt/quantika/.env.production
-
-NoNewPrivileges=true
-PrivateTmp=true
-ProtectSystem=strict
-ProtectHome=true
-ReadWritePaths=/opt/quantika
 
 [Install]
 WantedBy=multi-user.target
