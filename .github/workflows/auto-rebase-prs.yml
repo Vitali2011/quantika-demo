@@ -7,18 +7,16 @@ name: Auto-rebase open [code-only] PRs on main push
 # BEHIND and stall indefinitely.
 #
 # This workflow fires on push to main, finds all open [code-only] PRs that
-# are BEHIND and have auto-merge enabled, and calls GitHub's update-branch
-# API to merge main into them. CI then re-runs on the fresh base; if green,
-# native auto-merge fires.
+# are BEHIND and have auto-merge enabled, calls GitHub's update-branch API
+# to merge main into them, then dispatches ci.yml via workflow_dispatch so
+# required checks run on the new HEAD commit and native auto-merge can fire.
 #
-# Safety: only touches PRs that are already [code-only] (tag or label) AND
-# already have auto-merge enabled by the author. We do not auto-enable
-# auto-merge here — that's auto-merge.yml's job at PR open time.
-#
-# SETUP REQUIRED: Create a PAT with repo+workflow scope at GitHub Settings →
-# Developer settings → Personal access tokens → Fine-grained tokens.
-# Add as repo secret AUTO_REBASE_PAT. Without it, CI nudge uses GITHUB_TOKEN
-# (anti-recursion: CI may not re-trigger, branch protection may block merge).
+# Why workflow_dispatch instead of git-nudge-push:
+#   update-branch (and any git push) via GITHUB_TOKEN do not fire
+#   pull_request:synchronize events — GitHub's anti-recursion guard suppresses
+#   all workflow triggers from events created by GITHUB_TOKEN in a workflow.
+#   workflow_dispatch is exempt from this restriction: dispatching a *different*
+#   workflow (ci.yml) via GITHUB_TOKEN is explicitly allowed.
 
 on:
   push:
@@ -28,6 +26,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write # required for gh workflow run (workflow_dispatch API)
 
 concurrency:
   group: auto-rebase-prs
@@ -37,27 +36,16 @@ jobs:
   rebase-behind-prs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
-
       - name: Update branch on all open [code-only] PRs that are BEHIND
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # AUTO_REBASE_PAT must have repo+workflow scope so the nudge-push
-          # fires pull_request:synchronize. GITHUB_TOKEN pushes are suppressed
-          # by GitHub's anti-recursion guard and will NOT trigger CI re-run.
-          GH_TOKEN_NUDGE: ${{ secrets.AUTO_REBASE_PAT || secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
         run: |
           set -e
-          if [ -z "${{ secrets.AUTO_REBASE_PAT }}" ]; then
-            echo "warn: AUTO_REBASE_PAT not set — nudge push uses GITHUB_TOKEN (CI re-trigger may be suppressed by anti-recursion)"
-          fi
-          # Configure git for authenticated pushes used in the nudge-CI step below.
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config user.name "github-actions[bot]"
-          git remote set-url origin "https://x-access-token:${GH_TOKEN_NUDGE}@github.com/${REPO}.git"
+
+          # Wait for GitHub to propagate BEHIND status to open PRs after the push.
+          # Without this delay, gh pr list may see stale CLEAN/MERGEABLE statuses.
+          sleep 20
 
           gh pr list \
             --repo "$REPO" \
@@ -82,22 +70,15 @@ jobs:
               fi
               echo "Updating PR #$num: $title (branch: $branch)"
               if gh api -X PUT "/repos/$REPO/pulls/$num/update-branch"; then
-                # Nudge CI: the update-branch REST API call (under GITHUB_TOKEN) does not
-                # fire pull_request:synchronize — GitHub's anti-recursion suppresses events
-                # from API mutations made by GITHUB_TOKEN. A direct git push to the PR branch
-                # (a different target than this workflow's push-to-main trigger) does fire the
-                # synchronize event, which causes CI to re-run on the updated PR branch.
-                # Uses git commit-tree to avoid a branch checkout, keeping the working tree clean.
-                git fetch origin "$branch" \
-                  && parent=$(git rev-parse "origin/$branch") \
-                  && tree=$(git rev-parse "origin/$branch^{tree}") \
-                  && commit=$(git commit-tree \
-                       -m "ci: nudge CI after auto-rebase [skip cd]" \
-                       -p "$parent" "$tree") \
-                  && git push origin "${commit}:refs/heads/${branch}" \
-                  && echo "  CI nudge pushed to $branch" \
-                  || echo "  warn: CI nudge push failed for $branch (non-fatal)"
+                # update-branch returns 202 Accepted (async) — give GitHub a moment
+                # to complete the merge before dispatching CI on the new HEAD.
+                sleep 5
+                if gh workflow run ci.yml --repo "$REPO" --ref "$branch"; then
+                  echo "  CI dispatched for $branch"
+                else
+                  echo "  warn: could not dispatch CI for $branch — manual re-run may be needed"
+                fi
               else
-                echo "  warn: update-branch failed (likely conflict)"
+                echo "  warn: update-branch failed (likely conflict or PR already up to date)"
               fi
             done
