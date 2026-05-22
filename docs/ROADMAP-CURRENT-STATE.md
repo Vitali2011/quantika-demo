@@ -1,7 +1,7 @@
 # Quantika Demo — ROADMAP (Текущее состояние)
 
 **Последний полный аудит:** 2026-05-17 (5-поточный код-аудит) + 2026-05-19 UI audit (Playwright+Chrome MCP) + **2026-05-19 ROADMAP reality audit** (claim vs prod sweep)
-**Последнее обновление:** 2026-05-22 (итог дня) — prod deploy incident+fix (#344), ECA live eca_zones=4 (#338), 6 PR merged (#336/#337/#338/#340/#344/#345), 3 PR in-flight
+**Последнее обновление:** 2026-05-22 (поздний вечер) — #341 manual deploy, 11 PR merged, worktree cleanup ~120→9, auto-deploy trigger debt 🔴
 **Текущая версия:** prod HEAD после auto-deploy LIVE (#259, systemd quantika-demo.service на outreach-vps)
 **Статус:** 🟢 Основные потоки работают; parse-vessel в активной итерации (R8 baseline после revert); pre-merge-guard LIVE
 
@@ -78,6 +78,14 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 - 📋 **IN-FLIGHT** (open PR, валидируются): **#341** (market real-data + systemd timer + UI «as-of-date»), **#342** (matches auto compute+persist догоняющий триггер + UI + E2E poll), **#343** (parse-cargo: `cargo_description` 15.5%→85% +69pp, commission +6.8pp)
 - 📋 **НАХОДКИ:** EU-санкции на проде в порядке (5,996 rows — аудит мерил dev-базу, была ложная тревога); `data-integrity` вердикты: `market_indices` + `war_risk` требуют внимания; eval judge = `claude-cli` (не Haiku); overflow работает без Gemini
 - 📋 **BACKLOG:** ~95 устаревших worktree (cleanup); старые open PR **#276** (parse-vessel, DIRTY) и **#299** (docs) — решить судьбу
+
+**Что изменилось за 2026-05-22 (поздний вечер — addendum):**
+
+- ✅ **PR-финал дня (merged):** #336 / #337 / #338 / #340 / #341 / #342 / #343 / #344 / #345 / #346 / #299. Closed: **#276** (parse-vessel superseded R16) и **#339** (заместил #342).
+- ✅ **#341 market real-data + systemd timer + UI «as-of-date» LIVE** — auto-merged успешно, НО auto-deploy **НЕ** сработал (см. инфра-долг ниже) → задеплоен **ВРУЧНУЮ** на prod. Итог: Market UI показывает «по состоянию на <дату>»; systemd-таймер `quantika-market-indices-refresh` установлен и active (авто-рефреш ежедневно). Nav-кнопка **#345** Market Intelligence → «View all» live в `/dashboard`.
+- ✅ **Worktree-гигиена:** ~120 → 9 (root@ 5 + mikanovich@ 4); удалено **66 + 13 + 21** устаревших worktree.
+- 📝 **Process notes:** eval judge = `claude-cli` (не Haiku); overflow работает без Gemini → parser-eval запускается на root@.
+- 🔴 **ОТКРЫТЫЙ ИНФРА-ДОЛГ (приоритет №1 следующей сессии): AUTO-DEPLOY TRIGGER СЛОМАН.** Auto-merge работает, но `deploy.yml` НЕ триггерится при завершении GitHub native auto-merge (merge атрибутируется боту, а не `AUTO_REBASE_PAT`). PR **#344** (`GITHUB_TOKEN → AUTO_REBASE_PAT`) НЕ решил полностью. Нужен настоящий фикс: `workflow_run`-триггер после CI на main **ИЛИ** `repository_dispatch` из auto-merge workflow. Пока не починено — каждый merge требует **РУЧНОГО деплоя**, прод отстаёт от main.
 
 **Что изменилось за 2026-05-20:**
 
@@ -432,4 +440,4 @@ ETA: ~2-3 дня wall-clock. Большинство agent-only. **Bottleneck т�
 
 ---
 
-🤖 Сгенерировано 5-stream system audit (parsers/data/api/ui/waves) + synthesis оркестратором. Последнее обновление: 2026-05-22 (prod deploy incident+fix, ECA live, 6 PR merged, 3 in-flight).
+🤖 Сгенерировано 5-stream system audit (parsers/data/api/ui/waves) + synthesis оркестратором. Последнее обновление: 2026-05-22 вечер (#341 manual deploy, 11 PR merged, worktree cleanup, auto-deploy trigger debt open).
