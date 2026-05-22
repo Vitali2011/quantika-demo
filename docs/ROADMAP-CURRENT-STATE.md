@@ -409,6 +409,13 @@ ETA: ~2-3 дня wall-clock. Большинство agent-only. **Bottleneck т�
 **Runbooks:** `docs/runbooks/wave-gamma-flag-activation.md`
 **Env backups:** `.env.local.before-*-YYYYMMDD-HHMM` (incident recovery)
 
+## Archived / Consolidated (2026-05-22)
+
+Этот файл — единственный актуальный роадмап. Старые wave-планы 2026-04 сведены в архив (без потери данных):
+- [_archive/2026-05-22/ROADMAP_WAVE2.md](_archive/2026-05-22/ROADMAP_WAVE2.md), [ROADMAP-features.md](_archive/2026-05-22/ROADMAP-features.md), [ROADMAP-infra.md](_archive/2026-05-22/ROADMAP-infra.md) — без внешних ссылок.
+
+Оставлены в корне (на них есть ссылки, трогать нельзя без правок кода/промптов): `ROADMAP_MVP.md` (ссылка из кода `lib/parsing/parse-cargo-ai.ts`) и `ROADMAP.md` (ссылки из session-промптов).
+
 ---
 
 🤖 Сгенерировано 5-stream system audit (parsers/data/api/ui/waves) + synthesis оркестратором. Последнее обновление: 2026-05-20 (searoute B5a+B5b, /qa-walker bugs, ops cleanup).
