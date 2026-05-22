@@ -94,7 +94,7 @@ export function parseMarpolEcaZones(yamlContent: string): EcaZone[] {
       } catch {
         throw new Error(`Zone "${zone.name}": polygon_geojson is not valid JSON`);
       }
-      if (!parsed.coordinates || (Array.isArray(parsed.coordinates) && (parsed.coordinates as unknown[]).length === 0)) {
+      if (!Array.isArray(parsed.coordinates) || (parsed.coordinates as unknown[]).length === 0) {
         throw new Error(`Zone "${zone.name}": polygon has empty or missing coordinates`);
       }
       polygonGeoJson = zone.polygon_geojson.trim();
