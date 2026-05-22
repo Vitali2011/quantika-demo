@@ -1,7 +1,7 @@
 # Quantika Demo — ROADMAP (Текущее состояние)
 
 **Последний полный аудит:** 2026-05-17 (5-поточный код-аудит) + 2026-05-19 UI audit (Playwright+Chrome MCP) + **2026-05-19 ROADMAP reality audit** (claim vs prod sweep)
-**Последнее обновление:** 2026-05-22 — F7 #322 (/processing 403→200), R8 root-cause #324 (measurement artifact), C5 fx_rates #323/#327 (daily timer LIVE, 212 rows), R15 #326 (56/56 100%), auto-merge race #328, post-deploy verify #316
+**Последнее обновление:** 2026-05-22 (итог дня) — prod deploy incident+fix (#344), ECA live eca_zones=4 (#338), 6 PR merged (#336/#337/#338/#340/#344/#345), 3 PR in-flight
 **Текущая версия:** prod HEAD после auto-deploy LIVE (#259, systemd quantika-demo.service на outreach-vps)
 **Статус:** 🟢 Основные потоки работают; parse-vessel в активной итерации (R8 baseline после revert); pre-merge-guard LIVE
 
@@ -64,6 +64,20 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
   - **#334** — §1.1 обновлён реальными числами (был stale «нет baseline/eval»)
 - 📋 **Parser quality итог: 4/7 парсеров готовы** (parse-vessel, match, explain-deal, draft-quote). parse-cargo стабилен (R5 marginal). **2 заблокированы на данных партнёра** (см. ниже).
 - 🔴 **classify (urgency 70.8%) + parse-recap (45-58%) — ждут данных от партнёра.** Опросник готов: `~/quantika-partner-questionnaire.md` (MacBook, лёгкая версия). Нужно: (1) ~10 реальных recap-писем; (2) 15-20 писем с меткой URGENT/NORMAL/LOW. После получения → калибровать обе модели до 95%+. **Следующая сессия начинается отсюда.**
+
+**Что изменилось за 2026-05-22 (итог дня):**
+
+- 🚨 **ИНЦИДЕНТ+ФИКС auto-deploy:** прод застрял на #334 — git был на ветке `docs/flag-activation`, не `main`; `GITHUB_TOKEN` не триггерил `deploy.yml`. Фикс: прод переведён на `main` + ручной деплой; deploy-триггер починен **#344** (auto-merge через `AUTO_REBASE_PAT`). Прод теперь на **#338**, health 200. ✅
+- ✅ **ECA live:** `eca_zones` было 0 — парсер не понимал `polygon_geojson`. Фикс парсера **#338** + seed на проде → `eca_zones=4` LIVE. ECA топливная надбавка для EU/North Sea рейсов заработала (раньше молча возвращала 0).
+- ✅ **#336** — 73 route-теста, 0 багов (baseline coverage audit)
+- ✅ **#337** — ai-grounding аудит: 9 галлюцинаций в `explain-deal` Market Context (3 сценария)
+- ✅ **#338** — data-integrity аудит 21 таблицы + eca parser fix; `/test-skill` поймал BUG-1 (`Array.isArray`), пофикшено в рамках PR; результат 57/57
+- ✅ **#340** — data source-of-truth: env-aware аудит + prod→dev snapshot + seed inventory
+- ✅ **#344** — deploy-trigger fix (AUTO_REBASE_PAT вместо GITHUB_TOKEN)
+- ✅ **#345** — nav: Market link на /dashboard + active state в BottomNav
+- 📋 **IN-FLIGHT** (open PR, валидируются): **#341** (market real-data + systemd timer + UI «as-of-date»), **#342** (matches auto compute+persist догоняющий триггер + UI + E2E poll), **#343** (parse-cargo: `cargo_description` 15.5%→85% +69pp, commission +6.8pp)
+- 📋 **НАХОДКИ:** EU-санкции на проде в порядке (5,996 rows — аудит мерил dev-базу, была ложная тревога); `data-integrity` вердикты: `market_indices` + `war_risk` требуют внимания; eval judge = `claude-cli` (не Haiku); overflow работает без Gemini
+- 📋 **BACKLOG:** ~95 устаревших worktree (cleanup); старые open PR **#276** (parse-vessel, DIRTY) и **#299** (docs) — решить судьбу
 
 **Что изменилось за 2026-05-20:**
 
@@ -184,10 +198,10 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 | Статус                      | Таблицы                                                                                                                                                                                                                                                                                                           |
 | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ✅ Свежие, заполненные      | ofac_entities (18,959), schema_migrations, knowledge_sources, market_indices (92), charterers (20), port_da_estimates (94), psc_detention_history (16), port_distances (18,648) + **searoute JSON 105,011 пар (tier 2) + live tier 3** ✅ 2026-05-20, **eu_sanctions_entities (5,996)**, **port_master (11,767)**, **roi_metrics (18)** ✅ seed 2026-05-22, **fx_rates (212)** ✅ daily timer 03:00 UTC (PR #323/#327) |
+| ✅ Свежие, заполненные      | ofac_entities (18,959), schema_migrations, knowledge_sources, market_indices (92), charterers (20), port_da_estimates (94), psc_detention_history (16), port_distances (18,648) + **searoute JSON 105,011 пар (tier 2) + live tier 3** ✅ 2026-05-20, **eu_sanctions_entities (5,996)**, **port_master (11,767)**, **roi_metrics (18)** ✅ seed 2026-05-22, **fx_rates (212)** ✅ daily timer 03:00 UTC (PR #323/#327), **eca_zones (4)** ✅ parser fix + seed 2026-05-22 (PR #338) |
 | ✅ RAG embedded             | imsbc_fts (116), igc_fts (119), jwc_fts (7), bimco_fts (14) — counts выше чем заявлялось в audit 2026-05-17                                                                                                                                                                                                       |
 | ⚠️ Частичные                | baltic/bunker/eua (устарели, manual CSV upload), war_risk_zones (4)                                                                                                                                                                                                                                               |
-| ❌ Не seed-нулись           | eca_zones                                                                                                                                                                                                                                                                                                         |
+| ✅ Исправлено 2026-05-22    | eca_zones (0→4) — parser fix polygon_geojson + seed (PR #338)                                                                                                                                                                                                                                                    |
 
 **RAG-архитектура:** гибрид FTS5+vec0 (sqlite). Vertex Search disabled (extractiveContentSpec Enterprise-only, наши engines Standard) — rollback на SQLite богаче.
 
@@ -411,4 +425,4 @@ ETA: ~2-3 дня wall-clock. Большинство agent-only. **Bottleneck т�
 
 ---
 
-🤖 Сгенерировано 5-stream system audit (parsers/data/api/ui/waves) + synthesis оркестратором. Последнее обновление: 2026-05-20 (searoute B5a+B5b, /qa-walker bugs, ops cleanup).
+🤖 Сгенерировано 5-stream system audit (parsers/data/api/ui/waves) + synthesis оркестратором. Последнее обновление: 2026-05-22 (prod deploy incident+fix, ECA live, 6 PR merged, 3 in-flight).
