@@ -7,6 +7,7 @@ import { matchesToCsv } from '@/lib/matching/matches-csv';
 
 interface Props {
   initialMatches: StoredMatch[];
+  isComputing?: boolean;
 }
 
 const ALL_STATUSES: MatchStatus[] = ['shortlist', 'saved', 'dismissed', 'archived'];
@@ -20,7 +21,7 @@ interface ScoreComponent {
   reason: string;
 }
 
-export default function MatchesClient({ initialMatches }: Props) {
+export default function MatchesClient({ initialMatches, isComputing = false }: Props) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -342,8 +343,19 @@ export default function MatchesClient({ initialMatches }: Props) {
 
       {/* Match list */}
       {filtered.length === 0 ? (
-        <div className="bg-white rounded-lg border p-8 text-center">
-          <p className="text-gray-500">No matches yet</p>
+        <div className="bg-white rounded-lg border p-8 text-center space-y-2">
+          {isComputing ? (
+            <>
+              <p className="text-gray-700 font-medium" data-testid="computing-state">
+                Processing your enquiries…
+              </p>
+              <p className="text-sm text-gray-500">
+                Matches are being computed in the background. Refresh in a moment.
+              </p>
+            </>
+          ) : (
+            <p className="text-gray-500">No matches yet</p>
+          )}
         </div>
       ) : (
         <>
