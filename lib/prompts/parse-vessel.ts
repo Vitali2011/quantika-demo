@@ -163,8 +163,10 @@ For numeric fields (DWT, DWCC, LOA, beam, draft, built-year, grain capacity, etc
 CRITICAL: never use 'interpreted' for an exact number with no hedge just because you "interpreted the context". If the number is typed, it's confirmed.
 
 CRITICAL: source_text is REQUIRED for every ConfidenceField. It MUST be a verbatim
-substring copied character-for-character from the email body. Omitting source_text is
-a parsing error. Paraphrasing is NOT allowed — copy the exact characters.
+substring copied character-for-character from the email body. Keep source_text BRIEF —
+use the shortest unique substring that identifies the value (typically 20–100 characters;
+never copy entire paragraphs or long contract clauses). Omitting source_text is a parsing
+error. Paraphrasing is NOT allowed — copy the exact characters.
 
 CORRECT:   { "value": "Rotterdam", "confidence": "confirmed", "source_text": "Load: Rotterdam" }
 CORRECT:   { "value": 5000, "confidence": "interpreted", "source_text": "abt 5k mts wheat" }
@@ -188,6 +190,7 @@ FLAG EXTRACTION RULES (apply only to these specific cases — do NOT "normalize"
 - Portuguese Atlantic territories ("Madeira", "Azores"): extract exactly as written — do NOT normalize to "Portugal".
 - For all other flags: extract verbatim as written in the email. Do NOT expand "&" to "and", do NOT change "St." to "Saint", and do NOT otherwise rewrite flag names not listed above.
 - If the email already says "St. Vincent & the Grenadines" or "Saint Vincent and the Grenadines" — extract it exactly as written without changing it.
+- "Vanatu" (typo, one 'u' missing) → "Vanuatu".
 
 TC VESSELS IN FLEET POSITIONS:
 - When an email is a vessel position circular where an owner lists their fleet, include vessels marked "ON TC" (on time charter), "on charter", or "currently fixed" — these are still part of the owner's fleet position list.
@@ -213,7 +216,7 @@ Extract per vessel:
 - p_and_i: P&I club
 - dwt_summer: deadweight tonnage (summer)
 - dwcc: deadweight cargo capacity
-  DWCC EXTRACTION RULE: Extract dwcc ONLY when the email explicitly states a DWCC value (e.g. "DWCC 28,500 MT", "deadweight cargo capacity: 28,500"). Do NOT infer dwcc from dwt_summer when dwcc is not explicitly mentioned. When dwcc is not stated → set dwcc = null.
+  DWCC EXTRACTION RULE: Extract dwcc ONLY when the email explicitly states a DWCC value. Recognized forms: "DWCC 28,500 MT", "deadweight cargo capacity: 28,500", "3.600 CC" (where CC = Cargo Capacity; note "." may be a European thousands separator → 3.600 = 3,600), "28k CC", "DWCC" in any case. Do NOT infer dwcc from dwt_summer when dwcc is not explicitly mentioned. When dwcc is not stated → set dwcc = null.
 - draft_max: maximum draft in meters. IMPORTANT: if the email gives draft only as part of the DWCC line (e.g. "DWCC 11,800 mts at 7.8m draft"), use that value as draft_max with confidence='interpreted' and note in source_text that it is the DWCC draft — the vessel's structural maximum draft may differ. Only use confidence='confirmed' if the email explicitly states "Max draft: X" or "Draft summer: X".
 - loa: length overall in meters
 - beam: beam in meters
@@ -340,9 +343,12 @@ and source_text quoting the load port mention (e.g. "Load: Iskenderun").
 
 UNKNOWN_TERMS — always include:
 Always include \`unknown_terms\` as an array — empty \`[]\` if no unrecognized terms. Never omit
-the field. Flag any abbreviation, contract form, or jurisdiction acronym not in the glossary
-above (e.g. HEAVYCON, LMAA, ATUTC, AWIWL, TCT, GENCON, NYPE, BIMCO, etc.). Include the term
-verbatim and a brief reason (e.g. "HEAVYCON — BIMCO heavy-lift charter form, not in glossary").
+the field. Flag ONLY abbreviations or terms you genuinely cannot interpret from shipping context.
+Do NOT flag: standard charter party terms (SSHINC, SSHEX, FIOST, FIOS, PDPR, FD, SOF, NOR,
+BSS, WOG, GENCON, BIMCO standard form names, laytime clauses, demurrage terms, arbitration
+clauses) — these are recognized even if not in the glossary. Only include a term if it is
+genuinely unrecognizable from shipping/chartering domain knowledge. Keep reason strings brief
+(≤20 words).
 
 Asterisk markers (** ... **) around vessel name sections are formatting delimiters, not template placeholders. Extract vessel data from sections enclosed in asterisks normally.
 
