@@ -213,9 +213,17 @@ export default async function DashboardPage() {
 
         {/* ── Market Intelligence ────────────────────────────────── */}
         <section>
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-            Market Intelligence
-          </h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
+              Market Intelligence
+            </h2>
+            <Link
+              href="/market"
+              className="text-xs text-gray-500 hover:text-gray-900 transition-colors"
+            >
+              View all →
+            </Link>
+          </div>
           <MarketIntelligence noActiveDeals={noActiveDeals} />
         </section>
 

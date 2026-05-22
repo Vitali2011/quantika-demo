@@ -85,3 +85,14 @@ lib/sample-data/etms-emails.json
 /docs/ROADMAP-WAVES.md
 /docs/RETRO-WAVE-ALPHA.md
 /docs/QUANTIKA-UX-VISION.md
+/docs/strategy/
+
+# Runtime / working artifacts — local only (added 2026-05-22, repo hygiene)
+.claude/worktrees/
+.claude/.specs/
+.claude/start-preview.sh
+.pipeline/
+.worktrees/
+.test-review-*/
+**/playwright-report-rag/
+.env*.stale*
