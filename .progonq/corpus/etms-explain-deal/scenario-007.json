@@ -1,0 +1,110 @@
+{
+  "id": "etms-explain-deal-007",
+  "source": "synthetic — Opus 4.7 composed (Phase E8 R1)",
+  "category": "multi-cargo-parcels",
+  "language": "en",
+  "_note": "Multi-commodity parcel cargo: steel pipes + project equipment on same voyage. Tests LLM handling of complex cargo descriptions with different stowage requirements.",
+  "input": {
+    "match": {
+      "cargoEmailId": "synthetic-cargo-ed-007",
+      "cargoItemIndex": 0,
+      "vesselEmailId": "synthetic-vessel-ed-007",
+      "vesselItemIndex": 0,
+      "score": 76,
+      "matchLevel": "good",
+      "matchReasons": [
+        "DWT 22000 accommodates combined parcel 18500 MT with reasonable margin",
+        "Vessel geared 4x30T suitable for both bulk and breakbulk components",
+        "Open Gdansk aligns with Baltic loading port"
+      ],
+      "issues": [
+        "TCE 13800 is 8% below market 15000",
+        "Mixed cargo stowage plan needed — requires careful hold allocation",
+        "Project cargo component requires extra securing time"
+      ],
+      "economics": { "tce": 13800, "marketTce": 15000 }
+    },
+    "cargo": {
+      "emailId": "synthetic-cargo-ed-007",
+      "itemIndex": 0,
+      "originPort": { "value": "Gdansk", "confidence": "confirmed" },
+      "originCountry": "Poland",
+      "destinationPort": { "value": "Aqaba", "confidence": "confirmed" },
+      "destinationCountry": "Jordan",
+      "cargoDescription": { "value": "15000 MT steel pipes + 3500 MT project equipment (pumps, valves)", "confidence": "confirmed" },
+      "weightMt": { "value": 18500, "confidence": "confirmed" },
+      "weightMtMin": 17000,
+      "weightMtMax": 19000,
+      "volumeCbm": null,
+      "dimensions": null,
+      "cargoType": "breakbulk",
+      "containerType": null,
+      "quantity": null,
+      "incoterms": "CFR",
+      "preferredDates": { "value": "5-15 July 2026", "confidence": "confirmed" },
+      "laycan": "5-15 July 2026",
+      "loadingRate": "1800 MTPD",
+      "dischargeRate": "1200 MTPD",
+      "commissionPercent": 2.5,
+      "commissionTerms": "TTL",
+      "specialRequirements": "Geared vessel required, holds to be pre-surveyed for project cargo",
+      "stowageFactor": null,
+      "missingInfo": ["stowage plan for project component required from charterer"]
+    },
+    "vessel": {
+      "emailId": "synthetic-vessel-ed-007",
+      "itemIndex": 0,
+      "vesselName": { "value": "MV BALTIC HORIZON", "confidence": "confirmed" },
+      "imo": "9678901",
+      "flag": "Cyprus",
+      "built": 2012,
+      "classSociety": "DNV",
+      "pandi": "Gard",
+      "dwtSummer": { "value": 22000, "confidence": "confirmed" },
+      "dwcc": { "value": 21500, "confidence": "confirmed" },
+      "draftMax": { "value": 9.8, "confidence": "confirmed" },
+      "loa": 170.0,
+      "beam": 26.0,
+      "grt": 13500,
+      "nrt": 7200,
+      "holdsCount": 4,
+      "hatchesCount": 4,
+      "grainCapacity": 28500,
+      "grainCapacityUnit": "cbm",
+      "baleCapacity": 27000,
+      "holdDimensions": null,
+      "hatchDimensions": null,
+      "tankTopStrength": "15 MT/m²",
+      "geared": true,
+      "craneCapacity": "4x30T",
+      "hatchType": "folding",
+      "vesselType": "general cargo",
+      "openPosition": { "value": "Gdansk", "confidence": "confirmed" },
+      "openDate": { "value": "3 July 2026", "confidence": "confirmed" },
+      "direction": "southbound",
+      "restrictions": [],
+      "lastCargoes": "Steel coils, machinery",
+      "speedLaden": "12 kts",
+      "speedBallast": "13 kts",
+      "consumption": "15 MT IFO laden",
+      "deckCapacity": "1200 MT",
+      "specialFeatures": ["tweendeck", "lashing points for project cargo", "tank top 15t/m2"]
+    }
+  },
+  "expected": {
+    "sections_present": [
+      "Market Context",
+      "Deal Rationale",
+      "Key Risks",
+      "Recommended Next Steps"
+    ],
+    "must_cite_facts": ["22000", "18500", "Gdansk", "13800"],
+    "must_not_contain": [
+      "$48 per metric ton agreed",
+      "Suez Canal pre-cleared",
+      "BIMCO charter signed",
+      "cargo insured by Lloyd's"
+    ],
+    "language": "en"
+  }
+}
