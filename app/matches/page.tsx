@@ -42,9 +42,10 @@ export default async function MatchesPage() {
   }
   const matches = listMatches(db, { user_id: sessionId, sortBy: 'score', sortDir: 'desc' });
 
-  // Show a "computing" state when inventory exists but no matches have landed yet.
-  const hasInventory = session.parsedCargos.length > 0 || session.parsedVessels.length > 0;
-  const isComputing = hasInventory && matches.length === 0;
+  // Computing only when BOTH cargo and vessel are present — matches require both sides.
+  const hasCargo = session.parsedCargos.length > 0;
+  const hasVessel = session.parsedVessels.length > 0;
+  const isComputing = hasCargo && hasVessel && matches.length === 0;
 
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-12">

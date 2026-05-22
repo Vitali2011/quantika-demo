@@ -143,8 +143,9 @@ describe('computeAndPersistMatches — adversarial', () => {
       parsedVessels: unknown[],
       matches: unknown[],
     ): boolean {
-      const hasInventory = parsedCargos.length > 0 || parsedVessels.length > 0;
-      return hasInventory && matches.length === 0;
+      const hasCargo = parsedCargos.length > 0;
+      const hasVessel = parsedVessels.length > 0;
+      return hasCargo && hasVessel && matches.length === 0;
     }
 
     // The background compute only fires when BOTH cargos AND vessels are non-empty
