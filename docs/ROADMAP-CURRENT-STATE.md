@@ -57,6 +57,13 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 - ✅ **#326** fix(parse-vessel): R15 — 5 сценариев (sc-002/003/031/034/040) исправлены; eval 56/56 = **100%**
 - ✅ **#328** fix(ci): auto-merge BEHIND race — workflow_dispatch вместо git-nudge; auto-rebase open PRs on main push LIVE
 - ✅ **#316** feat(ops): post-deploy verify script + CI HTTP health step — merged
+- ✅ **Wave 3 — Parser quality (#331/#332/#333/#334)** — 3 параллельные сессии:
+  - **draft-quote #331** — R0 6/6 fail → **R3 6/6 PASS** (3 раунда prompt-правок)
+  - **explain-deal #332** — R0 6/6 → **R1 11/11 PASS** (корпус 6→11 + Arabic fix)
+  - **match #333** — **R7 0/25 fail** (+8 Iskenderun distance pairs; distance-matrix C3 = docs-only)
+  - **#334** — §1.1 обновлён реальными числами (был stale «нет baseline/eval»)
+- 📋 **Parser quality итог: 4/7 парсеров готовы** (parse-vessel, match, explain-deal, draft-quote). parse-cargo стабилен (R5 marginal). **2 заблокированы на данных партнёра** (см. ниже).
+- 🔴 **classify (urgency 70.8%) + parse-recap (45-58%) — ждут данных от партнёра.** Опросник готов: `~/quantika-partner-questionnaire.md` (MacBook, лёгкая версия). Нужно: (1) ~10 реальных recap-писем; (2) 15-20 писем с меткой URGENT/NORMAL/LOW. После получения → калибровать обе модели до 95%+. **Следующая сессия начинается отсюда.**
 
 **Что изменилось за 2026-05-20:**
 
@@ -323,9 +330,9 @@ _(пусто — C4/C5 закрыты 2026-05-22)_
 4. ✓ **C4 закрыт 2026-05-22** — seed `roi_metrics` на проде (18 строк).
 5. ✓ **C5 закрыт 2026-05-22** — `fx_rates` daily timer 03:00 UTC LIVE (PR #323/#327).
 6. **F5+F6+F7 закрыты** — auth model gap. F5+F6 via PR #254, **F7 (/processing 403 CSRF) via PR #322 (2026-05-22)**.
-7. **Parser quality** — Phase B match parser (idle penalty, distance matrix), parse-recap corpus expansion (нужны real recap emails в Gmail).
+7. ✓ **Parser quality (agent-side) закрыто 2026-05-22** — match R7 0/25, explain-deal R1 11/11, draft-quote R3 6/6, parse-vessel R16 56/56 (#331-334). **Остаток только на данных партнёра:** classify urgency (70.8%) + parse-recap (45-58%) — опросник `~/quantika-partner-questionnaire.md` готов, ждём ~10 recap + 15-20 размеченных писем → калибровка до 95%+.
 
-ETA: ~2-3 дня wall-clock. Большинство agent-only.
+ETA: ~2-3 дня wall-clock. Большинство agent-only. **Bottleneck теперь — данные партнёра, не разработка.**
 
 ### Следующие 30 дней (остаток мая - середина июня)
 
