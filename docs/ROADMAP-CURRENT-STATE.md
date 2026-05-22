@@ -92,12 +92,11 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 **Что ещё блокирует pre-PMF:**
 
-- 🚨 **roi_metrics + fx_rates пустые** на проде при включённых `ROI_GUARANTEE_ENABLED` + `MULTI_CURRENCY_V2_ENABLED` — investigation в работе 2026-05-19
+- ✅ **roi_metrics + fx_rates** — закрыто 2026-05-22 (C4 seed 18 строк + C5 daily timer 03:00 UTC, см. §2 Закрытые)
 - 📋 Match parser Phase B — port-master extensions + distance matrix + idle penalty calibration (R2 baseline ready, 6/11 residual readiness=unknown)
 - 📋 Recap corpus expansion 3→30 (waiting real recap emails в Gmail)
 - 📋 Classify urgency criteria (GT inconsistent, нужен annotator)
 - 📋 UX polish (mobile bottom nav, /upgrade заглушка)
-- ⏸ F8 RESEND_API_KEY — ждёт регистрации resend.com (user-only)
 
 **Следующие 7 дней:** webhook auth + parser quality + UX polish.
 **Следующие 30 дней:** mobile-first feature pages + monitoring (Sentry/UptimeRobot).
@@ -321,11 +320,10 @@ _(пусто — C4/C5 закрыты 2026-05-22)_
 1. ✓ **AUTO-DEPLOY LIVE 2026-05-19** — `.github/workflows/deploy.yml` LIVE QD (#259) + AL (#200). hands-off: PR `[code-only]` → CI → auto-merge → deploy.yml → SSH → health check + auto-rollback. Manual ssh+pull obsolete.
 2. ✓ **CI auto-rebase #265** — solves BEHIND mergeStateStatus для solo-developer auto-merge. После merge — petля размыкается автоматически.
 3. ✓ **F1/F2/F3/F4/F9/F10 закрыты** (см. §1.0). C2/C3 закрыты (§2 ✅ table).
-4. **NEW C4** — seed `roi_metrics` на проде (~5 мин SSH или 1 PR в deploy.yml).
-5. **NEW C5** — `fx_rates` в cron refresh (~30 мин, 1 PR).
-6. **F5+F6+F7** — auth model gap (`session_id` required for /charterers, /processing API). Chip-task earlier — F5+F6 closed via PR #254, F7 (/processing 403 CSRF) still открыт.
-7. **F8** Resend API key — user-only (после регистрации на resend.com).
-8. **Parser quality** — Phase B match parser (idle penalty, distance matrix), parse-recap corpus expansion (нужны real recap emails в Gmail).
+4. ✓ **C4 закрыт 2026-05-22** — seed `roi_metrics` на проде (18 строк).
+5. ✓ **C5 закрыт 2026-05-22** — `fx_rates` daily timer 03:00 UTC LIVE (PR #323/#327).
+6. **F5+F6+F7 закрыты** — auth model gap. F5+F6 via PR #254, **F7 (/processing 403 CSRF) via PR #322 (2026-05-22)**.
+7. **Parser quality** — Phase B match parser (idle penalty, distance matrix), parse-recap corpus expansion (нужны real recap emails в Gmail).
 
 ETA: ~2-3 дня wall-clock. Большинство agent-only.
 
@@ -371,6 +369,10 @@ ETA: ~2-3 дня wall-clock. Большинство agent-only.
 - White-label
 - Public API (Veson/Kpler/MarineTraffic)
 - Team collaboration
+
+### Deferred — user-blocked (не приоритет, разблокируется решением Виталия)
+
+- ⏸ **F8 RESEND_API_KEY** — транзакционная почта (alerts/digest). Ждёт регистрации на resend.com и получения API-ключа (user-only). После выдачи ключа — выставить на prod + smoke. Понижено в приоритет 2026-05-22 (не блокирует core flow, есть fallback). Не входит в 7/30/90-day планы до получения ключа.
 
 ---
 
