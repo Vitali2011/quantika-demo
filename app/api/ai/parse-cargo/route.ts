@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
+import { computeAndPersistMatches } from '@/lib/matching/compute-matches';
+import { getStore } from '@/lib/session-store';
 import { callAiJson as callAiJsonShim } from '@/lib/ai-provider';
 import { PARSE_CARGO_SCHEMA } from '@/lib/schemas';
 import { LLMTimeoutError } from '@/lib/openai';
@@ -214,5 +216,13 @@ export async function POST(request: NextRequest) {
     session.parsedVessels,
   );
   updateSession(sessionId, { parsedCargos: mergedCargos, processedEmails });
+
+  // Background catch-up: if vessels are already parsed, compute+persist matches now.
+  if (process.env.MATCHES_ENABLED === 'true' && mergedCargos.length > 0 && session.parsedVessels.length > 0) {
+    const db = getStore().getDatabase();
+    void computeAndPersistMatches(mergedCargos, session.parsedVessels, sessionId, db)
+      .catch((err) => console.error('[catch-up-match] cargo trigger failed:', err));
+  }
+
   return NextResponse.json({ count: mergedCargos.length });
 }
