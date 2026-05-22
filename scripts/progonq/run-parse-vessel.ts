@@ -172,7 +172,7 @@ export function normalizeVesselName(s: string | null): string | null {
     .toUpperCase()
     .replace(/^(M[\s./]*V[.\s/]*|MS[.\s]*|SS[.\s]*|MT[.\s]*)/i, '')
     .replace(/\s*\(EX[\s-][^)]+\)/gi, '')
-    .replace(/\s*['"]{1,2}\s*EX\s+[^'"]+['"]{1,2}/gi, '')
+    .replace(/\s*['"'‘’“”]{1,2}\s*EX\s+[^'"'‘’“”]+['"'‘’“”]{1,2}/gi, '')
     .replace(/[^A-Z0-9 ]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
@@ -317,7 +317,10 @@ function dedupeVesselItems(items: VesselItem[]): VesselItem[] {
       ? String((it.vessel_name as { value?: unknown }).value ?? '')
       : String(it.vessel_name ?? '')).trim().toUpperCase();
     const imo = typeof it.imo === 'string' ? it.imo.trim() : String(it.imo ?? '').trim();
-    const key = `${name}|${imo}`;
+    const dwccVal = (typeof it.dwcc === 'object' && it.dwcc
+      ? String((it.dwcc as { value?: unknown }).value ?? '')
+      : String(it.dwcc ?? '')).trim();
+    const key = `${name}|${imo}|${dwccVal}`;
     if (seen.has(key)) continue;
     seen.add(key);
     out.push(it);

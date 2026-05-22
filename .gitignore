@@ -54,6 +54,9 @@ next-env.d.ts
 # UN/LOCODE source CSVs (regenerable from UNECE) — keep out of repo
 /scripts/.cache/
 
+# runtime caches (CII lookups, etc.)
+/.cache/
+
 # wave-pipeline artifacts (never commit)
 /.wave/
 /.specs/
