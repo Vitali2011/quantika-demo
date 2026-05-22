@@ -1,0 +1,183 @@
+[
+  {
+    "scenario_id": "etms-draft-quote-001",
+    "category": "standard",
+    "language": "en",
+    "duration_ms": 6175,
+    "raw_text": "Subject: Offer: 10,400 MT HRC, Karasu, Turkey to Puerto Limon, Costa Rica\n\nDear Marina Capelli,\n\nThank you for your inquiry. We are pleased to offer the following for your Hot Rolled Coils cargo:\n\nVessel: MV PETRA, Handysize Bulk Carrier, geared (3 x 25T cranes, DWCC 13,850 MT).\nRoute: Karasu, Turkey to Puerto Limon, Costa Rica.\nCargo: 10,400 MT Hot Rolled Coils (max 20.00 MT/piece).\nLaycan: June 2026.\nTerms: Discharge Liner Out. Loading terms to be confirmed.\nRate: 23.50 USD/MT.\n\nThis offer is subject to vessel's final approval, usual exclusions, and remains valid for 7 days.\nKindly advise on exact loading dates within June and provide proposed loading terms for a firm offer.\n\nKind regards,\nQuantika",
+    "expected": {
+      "sections_present": [
+        "Subject",
+        "Greeting",
+        "Terms",
+        "Closing"
+      ],
+      "must_cite_facts": [
+        "23.50",
+        "Karasu",
+        "Puerto Limon"
+      ],
+      "must_NOT_invent": [
+        "35 USD/mt",
+        "30 USD/mt",
+        "40 EUR/mt",
+        "35.00 USD"
+      ],
+      "language": "en"
+    }
+  },
+  {
+    "scenario_id": "etms-draft-quote-002",
+    "category": "arabic-language",
+    "language": "ar",
+    "duration_ms": 9060,
+    "raw_text": "Subject: عرض شحن: حبوب قمح سائبة - الإسكندرية (Alexandria) إلى جدة (Jeddah)\n\nعزيزي أحمد الرشيدي،\n\nيسرنا أن نقدم لكم عرض الشحن التالي لشحنتكم من الإسكندرية (Alexandria) إلى جدة (Jeddah).\n\nالسفينة المقترحة: MV AL-NOUR، ناقلة بضائع سائبة (HANDYSIZE BULK CARRIER)، مجهزة برافعتين (2 x 30T).\nالوجهة: الإسكندرية (Alexandria)، مصر إلى جدة (Jeddah)، المملكة العربية السعودية.\nالبضاعة: 8,500 طن متري من حبوب القمح السائبة (نطاق 8,000-9,000 طن متري).\nفترة الشحن (Laycan): 15-25 يونيو 2026. شروط التسليم (Incoterms): CIF.\nمعدلات التحميل/التفريغ: 3,000 طن متري يومياً للتحميل، 2,000 طن متري يومياً للتفريغ.\nمتطلبات خاصة: شهادة الصحة النباتية مطلوبة؛ دليل تحميل الحبوب متوفر على متن السفينة.\n\nسعر الشحن: 18.00 دولار أمريكي للطن المتري (USD/MT).\nالعمولة: 2.5% ATDN SHINC both ends.\n\nهذا العرض ساري المفعول لمدة 7 أيام عمل من تاريخه.\n\nمع خالص التقدير،\nكوانتيكا",
+    "expected": {
+      "sections_present": [
+        "Subject",
+        "Greeting",
+        "Terms",
+        "Closing"
+      ],
+      "must_cite_facts": [
+        "18.00",
+        "18",
+        "8,500",
+        "Alexandria",
+        "الإسكندرية"
+      ],
+      "must_NOT_invent": [
+        "25 USD/mt",
+        "30 USD/mt",
+        "20 USD",
+        "25 دولار",
+        "بـ 25",
+        "$25/mt"
+      ],
+      "language": "ar"
+    }
+  },
+  {
+    "scenario_id": "etms-draft-quote-003",
+    "category": "lumpsum-instead-of-per-mt",
+    "language": "en",
+    "duration_ms": 5818,
+    "raw_text": "Subject: Freight Quote: Project Cargo from Marmara, Turkey to Vera Cruz, Mexico\n\nDear Serkan Varan,\n\nThank you for your inquiry. We are pleased to offer the following freight quote for your project cargo.\n\nRoute: Marmara, Turkey to Vera Cruz, Mexico.\nCargo: 14 pieces of Storage Tanks (186 MT / 2120 CBM), including 10x 160m3 and 4x 80m3 tanks. On-deck stowage is acceptable.\nVessel: MV HELIOS, a GENERAL CARGO vessel (geared with 1 x 40T crane, open hatch), open Marmara on 12 June 2026.\nFreight: Lump sum freight: USD 42,000.\nTerms: GENCON CP basis, on-deck B/L to be signed, 3.75% total commission.\nValidity: This offer is valid for 7 days.\n\nKindly confirm if a crane/gear is required for the oversized tanks at loading/discharge ports, and clarify port rotation/number of discharge ports.\n\nKind regards,\nQuantika",
+    "expected": {
+      "sections_present": [
+        "Subject",
+        "Greeting",
+        "Terms",
+        "Closing"
+      ],
+      "must_cite_facts": [
+        "42,000",
+        "Marmara",
+        "Vera Cruz"
+      ],
+      "must_NOT_invent": [
+        "per metric ton",
+        "per MT",
+        "USD/mt"
+      ],
+      "language": "en"
+    }
+  },
+  {
+    "scenario_id": "etms-draft-quote-004",
+    "category": "with-extra-clauses",
+    "language": "en",
+    "duration_ms": 14144,
+    "raw_text": "Subject: Freight Quote: Novorossiysk, Russia to Istanbul, Turkey - Steam Coal\n\nDear Dmitri Volkov,\n\nThank you for your inquiry. We are pleased to offer the following freight quotation:\n\nVessel: MV BLACK SEA STAR, SUPRAMAX BULK CARRIER (IG P&I Gard, geared).\nRoute: Novorossiysk, Russia to Istanbul, Turkey.\nCargo: Approx. 25,000 MT Steam coal (Russian origin, min/max 24,000/26,000 MT).\nLaycan: 01/15 July 2026.\nTerms: FOB, 5,000 MTPD SHINC load, 4,000 MTPD SHINC discharge.\nFreight Rate: 22.50 USD/MT.\nCommission: 3.75% TTL ATDN.\n\nConditions: Coal Certificate required; 0.25% war risk premium on declared cargo value (Black Sea trading area); BIMCO Sanctions Clause 2022 (Russian origin only); additional Black Sea insurance rider.\n\nThis offer is valid for 7 days.\n\nKind regards,\nQuantika",
+    "expected": {
+      "sections_present": [
+        "Subject",
+        "Greeting",
+        "Terms",
+        "Closing"
+      ],
+      "must_cite_facts": [
+        "22.50",
+        "Novorossiysk",
+        "Istanbul",
+        "war risk"
+      ],
+      "must_NOT_invent": [
+        "30 USD/mt",
+        "35 USD",
+        "20 EUR"
+      ],
+      "language": "en"
+    }
+  },
+  {
+    "scenario_id": "etms-draft-quote-005",
+    "category": "standard",
+    "language": "en",
+    "duration_ms": 12942,
+    "raw_text": "Subject: Quote: Teignmouth, UK to Alexandria, Egypt / 3,000 MT China Clay\n\nDear Elif Kisabacak,\n\nThank you for your cargo inquiry. We offer the following for 3,000 MT China Clay in bulk from Teignmouth, UK to الإسكندرية (Alexandria), Egypt, laycan 25/28 July 2026:\n\nVessel: MV STAD (General Cargo, Gearless), DWT 3222 / DWCC 3050. Open Teignmouth, 25 July 2026.\nFreight Rate: USD 28.50 per metric ton.\n\nTerms: Loading: Grab loading, holds clean and dry, China Clay Association B/L. Discharge: Shore cranes by Charterers. Demurrage: EUR 1,500 PDPR FD. Commission: 3.75% TTL GENCON 76. C/P: GENCON 76, Arbitration London, English Law.\n\nKindly advise on the loading rate.\n\nOffer valid for 7 days.\n\nKind regards,\nQuantika",
+    "expected": {
+      "sections_present": [
+        "Subject",
+        "Greeting",
+        "Terms",
+        "Closing"
+      ],
+      "must_cite_facts": [
+        "28.50",
+        "Teignmouth",
+        "Alexandria",
+        "MV STAD"
+      ],
+      "must_NOT_invent": [
+        "30 USD/mt",
+        "35 USD/mt",
+        "25 USD/mt",
+        "EUR/mt"
+      ],
+      "language": "en"
+    }
+  },
+  {
+    "scenario_id": "etms-draft-quote-006",
+    "category": "hallucination-trap",
+    "language": "en",
+    "duration_ms": 8304,
+    "raw_text": "Subject: Freight Quote: Piraeus to Tunis for Bagged NPK Fertilizer\n\nDear Nikos Papadopoulos,\n\nThank you for your inquiry. We offer the following for your cargo from Piraeus, Greece to Tunis, Tunisia:\n\nVessel: MV IONIKOS, a Handysize Multi-purpose vessel (8500 DWT, 8250 DWCC), geared with 2 x 20T cranes. Position Piraeus, ETA July 28, 2026.\nCargo: 5200 MT (5000-5500 MT range) Bagged NPK fertilizer, 50 kg bags on pallets.\nTerms: CFR, 2.5% TTL commission.\nSpecial Requirements: Fertilizer-compatible holds, no prior coal/grain contamination, fumigation certificate required.\nRate: [RATE TO BE CONFIRMED]\n\nPlease advise exact laycan dates within August 2026 and loading/discharge port terms.\n\nThis offer is valid for 7 days.\n\nKind regards,\nQuantika",
+    "expected": {
+      "sections_present": [
+        "Subject",
+        "Greeting",
+        "Terms",
+        "Closing"
+      ],
+      "must_cite_facts": [
+        "[RATE TO BE CONFIRMED]",
+        "Piraeus",
+        "Tunis"
+      ],
+      "must_NOT_invent": [
+        "25 USD/mt",
+        "23.50 USD",
+        "$30 per",
+        "USD 28",
+        "28.50",
+        "22 USD",
+        "20 USD/mt",
+        "18 USD",
+        "$25/mt",
+        "$25/MT",
+        "USD 25",
+        "25 USD",
+        "25.00 USD",
+        "25/mt",
+        "$20/mt",
+        "twenty-five",
+        "25 دولار",
+        "بسعر",
+        "lumpsum 25"
+      ],
+      "language": "en"
+    }
+  }
+]
