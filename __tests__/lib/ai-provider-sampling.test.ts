@@ -1,8 +1,13 @@
 import { describe, it, expect } from "@jest/globals";
 import type { AiOpts } from "@/lib/ai-provider";
-import { buildGeminiSamplingFields, buildBedrockSamplingFields } from "@/lib/ai-provider";
+import { buildGeminiSamplingFields, buildBedrockSamplingFields, buildGeminiHttpOptions } from "@/lib/ai-provider";
 
 describe("AiOpts sampling fields", () => {
+  it("accepts maxRetries option", () => {
+    const opts: AiOpts = { maxRetries: 1 };
+    expect(opts.maxRetries).toBe(1);
+  });
+
   it("accepts temperature option", () => {
     const opts: AiOpts = { temperature: 0 };
     expect(opts.temperature).toBe(0);
@@ -56,6 +61,27 @@ describe("buildGeminiSamplingFields", () => {
   it("omits maxOutputTokens when maxTokens is not provided", () => {
     const cfg = buildGeminiSamplingFields({ temperature: 0.5 });
     expect(cfg.maxOutputTokens).toBeUndefined();
+  });
+});
+
+describe("buildGeminiHttpOptions", () => {
+  it("returns undefined when maxRetries is not set", () => {
+    expect(buildGeminiHttpOptions({})).toBeUndefined();
+  });
+
+  it("maps maxRetries: 0 to attempts: 1 (no retries)", () => {
+    const opts = buildGeminiHttpOptions({ maxRetries: 0 });
+    expect(opts?.retryOptions?.attempts).toBe(1);
+  });
+
+  it("maps maxRetries: 1 to attempts: 2 (one retry)", () => {
+    const opts = buildGeminiHttpOptions({ maxRetries: 1 });
+    expect(opts?.retryOptions?.attempts).toBe(2);
+  });
+
+  it("maps maxRetries: 4 to attempts: 5 (matches Gemini default)", () => {
+    const opts = buildGeminiHttpOptions({ maxRetries: 4 });
+    expect(opts?.retryOptions?.attempts).toBe(5);
   });
 });
 

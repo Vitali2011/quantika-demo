@@ -17,6 +17,11 @@ Real broker corpus is blocked pending Vitali manual annotation (task #6).
 | scenario-004 | arabic-mode | AR | 78 | Alexandria→Jeddah, Arabic output expected |
 | scenario-005 | null-cargo-edge-case | EN | 65 | cargo=null, tests graceful handling |
 | scenario-006 | hallucination-sentinel | EN | 73 | Mersin→Casablanca, sentinel guards in must_not_contain |
+| scenario-007 | multi-cargo-parcels | EN | 76 | Gdansk→Aqaba, steel pipes + project cargo parcels |
+| scenario-008 | missing-freight-no-economics | EN | 58 | Tema→Antwerp, economics=null, tests no hallucinated rates |
+| scenario-009 | very-strong-match | EN | 94 | Piraeus→Mumbai, score 94 TCE above market zero repositioning |
+| scenario-010 | conflicting-dates | EN | 38 | Immingham→Tunis, vessel open 5 days after laycan closes |
+| scenario-011 | cyrillic-input | EN | 71 | Новороссийск→Rotterdam, Cyrillic in port name tests EN output |
 
 ## Scenario schema
 
@@ -64,3 +69,10 @@ For Phase E8 R1+ (prompt tuning iterations) or real broker corpus (task #6):
 2. Set `"source": "real — manually annotated by <broker> YYYY-MM-DD"` for real examples
 3. Run: `npx tsx --env-file=.env.local scripts/progonq/run-explain-deal.ts --round R1`
 4. Judge: `npx tsx scripts/progonq/judge-explain-deal.ts --round R1`
+
+## Phase E8 R1 (2026-05-22)
+
+Added scenarios 007–011 covering: multi-cargo-parcels, missing-freight-no-economics,
+very-strong-match, conflicting-dates, cyrillic-input.
+Also fixed Arabic section headers: added explicit no-markdown instruction to
+`EXPLAIN_DEAL_SYSTEM_PROMPT_AR` to prevent `**...**` wrapping that caused R0 FAIL on scenario-004.

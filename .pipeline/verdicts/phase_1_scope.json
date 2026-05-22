@@ -1,26 +1,18 @@
 {
   "phase": "1",
-  "task_id": "coverage-backfill",
-  "task_description": "Add tests for 11 untested non-LLM API routes to raise coverage gate in CI. Impl exists — test-author persona only.",
+  "task_id": "m2n-truncation",
+  "task_description": "Two-part fix: (1) increase maxTokens 8192→16384 so Gemini JSON isn't truncated mid-string; (2) add maxLength to schema string fields to prevent 30-40K char output; (3) fix judge false-100% score when model_output=null due to parse error.",
   "files_in_scope": [
-    "__tests__/api/admin/market/upload-csv.test.ts",
-    "__tests__/api/audit.test.ts",
-    "__tests__/api/auth/logout.test.ts",
-    "__tests__/api/canal.test.ts",
-    "__tests__/api/demo-scenarios.test.ts",
-    "__tests__/api/economics.test.ts",
-    "__tests__/api/extension-context.test.ts",
-    "__tests__/api/health-root.test.ts",
-    "__tests__/api/market-tmi.test.ts",
-    "__tests__/api/port-da.test.ts",
-    "__tests__/api/session.test.ts"
+    "app/api/ai/parse-vessel/route.ts",
+    "lib/schemas/parse-vessel.ts",
+    "scripts/progonq/judge-parse-vessel.ts"
   ],
-  "scope_size": 11,
+  "scope_size": 3,
   "cross_cutting_surface": [],
-  "rule_g_triggered": true,
-  "rule_g_reason": "scope≥3|auth",
-  "boundary_classes_planned": [1, 3, 5, 6, 9],
-  "gotchas_acknowledged": ["worktree-from-main"],
+  "rule_g_triggered": false,
+  "rule_g_reason": null,
+  "boundary_classes_planned": [1, 4, 8],
+  "gotchas_acknowledged": ["worktree-from-main", "pi3-needs-review"],
   "assumptions_path": ".pipeline/phase_1_scope.md",
   "escalate_to": null
 }

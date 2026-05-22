@@ -1,0 +1,17 @@
+{
+  "phase": "4",
+  "checklist": {
+    "tests_output_shown": true,
+    "no_junk_markers": true,
+    "secrets_preflight": true,
+    "pi3_resolved": true,
+    "pi2_resolved": true,
+    "cross_cutting_verified": true,
+    "admin_middleware_whitelist": null
+  },
+  "deploy_target": "none",
+  "smoke_passed": null,
+  "commit_sha": "a3031df",
+  "pr_url": "https://github.com/Vitali2011/quantika-demo/pull/309",
+  "branch": "orchestrator/m2n-truncation"
+}

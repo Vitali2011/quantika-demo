@@ -47,11 +47,15 @@ next-env.d.ts
 !/data/ports/
 /data/ports/.cache/
 !/data/knowledge/
+!/data/distances/
 /data/ports/*.skeleton.json
 /data/ports/*.draft.json
 
 # UN/LOCODE source CSVs (regenerable from UNECE) — keep out of repo
 /scripts/.cache/
+
+# runtime caches (CII lookups, etc.)
+/.cache/
 
 # wave-pipeline artifacts (never commit)
 /.wave/
@@ -62,6 +66,7 @@ next-env.d.ts
 /.progonq/results/
 /.progonq/budget.json
 /.progonq/state.json
+/.progonq/cache/*.json
 
 # wave-γ-data-l5c-v1: private artefacts (IMSBC PDF, intermediate LLM outputs)
 /.private/
@@ -80,3 +85,14 @@ lib/sample-data/etms-emails.json
 /docs/ROADMAP-WAVES.md
 /docs/RETRO-WAVE-ALPHA.md
 /docs/QUANTIKA-UX-VISION.md
+/docs/strategy/
+
+# Runtime / working artifacts — local only (added 2026-05-22, repo hygiene)
+.claude/worktrees/
+.claude/.specs/
+.claude/start-preview.sh
+.pipeline/
+.worktrees/
+.test-review-*/
+**/playwright-report-rag/
+.env*.stale*

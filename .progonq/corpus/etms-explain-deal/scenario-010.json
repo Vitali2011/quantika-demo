@@ -1,0 +1,110 @@
+{
+  "id": "etms-explain-deal-010",
+  "source": "synthetic — Opus 4.7 composed (Phase E8 R1)",
+  "category": "conflicting-dates",
+  "language": "en",
+  "_note": "Hard date conflict: vessel open date (20 July) is 5 days AFTER laycan closes (15 July). Tests that model correctly identifies and flags this fatal scheduling risk rather than ignoring it.",
+  "input": {
+    "match": {
+      "cargoEmailId": "synthetic-cargo-ed-010",
+      "cargoItemIndex": 0,
+      "vesselEmailId": "synthetic-vessel-ed-010",
+      "vesselItemIndex": 0,
+      "score": 38,
+      "matchLevel": "weak",
+      "matchReasons": [
+        "DWT 14500 fits cargo 12000 MT"
+      ],
+      "issues": [
+        "CRITICAL: Vessel open 20 July — laycan closes 15 July (5-day overshoot)",
+        "Date conflict makes this nomination unviable without laycan extension",
+        "TCE 10500 is 30% below market 15000"
+      ],
+      "economics": { "tce": 10500, "marketTce": 15000 },
+      "dateIssues": ["vessel cannot arrive before laycan end"]
+    },
+    "cargo": {
+      "emailId": "synthetic-cargo-ed-010",
+      "itemIndex": 0,
+      "originPort": { "value": "Immingham", "confidence": "confirmed" },
+      "originCountry": "United Kingdom",
+      "destinationPort": { "value": "Tunis", "confidence": "confirmed" },
+      "destinationCountry": "Tunisia",
+      "cargoDescription": { "value": "12000 MT coal in bulk", "confidence": "confirmed" },
+      "weightMt": { "value": 12000, "confidence": "confirmed" },
+      "weightMtMin": 11000,
+      "weightMtMax": 13000,
+      "volumeCbm": null,
+      "dimensions": null,
+      "cargoType": "bulk",
+      "containerType": null,
+      "quantity": null,
+      "incoterms": "FIOST",
+      "preferredDates": { "value": "5-15 July 2026", "confidence": "confirmed" },
+      "laycan": "5-15 July 2026",
+      "loadingRate": "3000 MTPD SHINC",
+      "dischargeRate": "2000 MTPD",
+      "commissionPercent": 3.75,
+      "commissionTerms": "TTL",
+      "specialRequirements": null,
+      "stowageFactor": null,
+      "missingInfo": []
+    },
+    "vessel": {
+      "emailId": "synthetic-vessel-ed-010",
+      "itemIndex": 0,
+      "vesselName": { "value": "MV NORTH SEA EXPLORER", "confidence": "confirmed" },
+      "imo": "9223344",
+      "flag": "Isle of Man",
+      "built": 2007,
+      "classSociety": "ClassNK",
+      "pandi": "North P&I Club",
+      "dwtSummer": { "value": 14500, "confidence": "confirmed" },
+      "dwcc": { "value": 14100, "confidence": "confirmed" },
+      "draftMax": { "value": 8.1, "confidence": "confirmed" },
+      "loa": 152.0,
+      "beam": 22.5,
+      "grt": 9400,
+      "nrt": 5000,
+      "holdsCount": 3,
+      "hatchesCount": 3,
+      "grainCapacity": 19000,
+      "grainCapacityUnit": "cbm",
+      "baleCapacity": 18300,
+      "holdDimensions": null,
+      "hatchDimensions": null,
+      "tankTopStrength": null,
+      "geared": true,
+      "craneCapacity": "3x25T",
+      "hatchType": "folding",
+      "vesselType": "bulk carrier",
+      "openPosition": { "value": "Rotterdam", "confidence": "confirmed" },
+      "openDate": { "value": "20 July 2026", "confidence": "confirmed" },
+      "direction": "southbound",
+      "restrictions": [],
+      "lastCargoes": "Coal, coke",
+      "speedLaden": "12 kts",
+      "speedBallast": "12.5 kts",
+      "consumption": "13 MT IFO laden",
+      "deckCapacity": null,
+      "specialFeatures": []
+    }
+  },
+  "expected": {
+    "sections_present": [
+      "Market Context",
+      "Deal Rationale",
+      "Key Risks",
+      "Recommended Next Steps"
+    ],
+    "must_cite_facts": ["14500", "12000", "Immingham", "10500"],
+    "must_not_contain": [
+      "vessel arrives on time",
+      "laycan is comfortably met",
+      "no date issues",
+      "scheduling is viable",
+      "ZXKQ-SENTINEL-010"
+    ],
+    "language": "en"
+  }
+}

@@ -178,16 +178,14 @@ describe('getPortDistance', () => {
     expect(getPortDistance('Odessa', 'Karasu')).toEqual(getPortDistance('Odesa', 'Karasu'));
   });
 
-  it('haversine fallback for un-matrixed pair (Karasu ↔ Bayonne not in matrix)', () => {
+  it('tier-2 JSON lookup for un-matrixed pair (Karasu ↔ Bayonne not in hand-curated matrix)', () => {
     const d = getPortDistance('Karasu', 'Bayonne');
     expect(d).not.toBeNull();
-    expect(d!.exact).toBe(false);
-    // Karasu (41°N 30°E) to Bayonne (43°N -1°E) great-circle straight across
-    // Europe is ~1400-1500 NM. The real SEA route via Bosphorus + Med +
-    // Gibraltar is ~3100 NM, but haversine ignores land. UI marks "~" so
-    // brokers know it's an approximation — this is the documented trade-off.
-    expect(d!.nm).toBeGreaterThan(1300);
-    expect(d!.nm).toBeLessThan(1700);
+    // Tier 2 (searoute JSON) now covers this pair — returns exact sea-route distance
+    // via Bosphorus + Med + Gibraltar (~2700-3100nm), not haversine great-circle (~1500nm).
+    expect(d!.exact).toBe(true);
+    expect(d!.nm).toBeGreaterThan(2000);
+    expect(d!.nm).toBeLessThan(3500);
   });
 
   it('returns null when one port lacks coords for haversine fallback', () => {

@@ -168,6 +168,12 @@ cargo_description MUST be human-readable English. Required contents:
 13. When stowage equals deadweight, write exactly: "stowage equals deadweight" — NOT an expanded phrase.
     ✗ "stowage factor equals full deadweight capacity"
     ✓ "Steel, stowage equals deadweight"
+14. CRITICAL FORMAT: cargo_description MUST be a ConfidenceField object — NOT a plain string.
+    Return: { "value": "<human-readable description per rules 1–13>", "confidence": "interpreted", "source_text": "<verbatim raw cargo text from email>" }
+    confidence is almost always "interpreted" (you expanded abbreviations and normalized the text).
+    source_text is the raw email fragment describing the cargo (verbatim, character-for-character).
+    ✗ "cargo_description": "Clinker in bulk"
+    ✓ "cargo_description": { "value": "Clinker in bulk", "confidence": "confirmed", "source_text": "clinker in bulk" }
 
 === STOWAGE FACTOR RULES ===
 
@@ -363,7 +369,7 @@ Extract per inquiry item:
 - loading_terms: laytime cost-allocation and dispatch regime qualifiers — see LAYTIME EXTRACTION RULES (EXTENDED). Extract ONLY explicitly written abbreviations. Uppercase the output.
 - discharge_rate: NUMERIC cargo-handling rate only, same rule as loading_rate.
 - discharge_terms: laytime cost-allocation and dispatch regime qualifiers, same rule as loading_terms.
-- commission_percent: broker commission if mentioned
+- commission_percent: broker commission if mentioned. MUST be a ConfidenceField with numeric value: { "value": <number>, "confidence": "confirmed"|"interpreted", "source_text": "<verbatim text>" }. ✗ commission_percent: 2.5 ✓ commission_percent: { "value": 2.5, "confidence": "confirmed", "source_text": "2.5% ttl" }
 - commission_terms: e.g. "TTL BENDS", "address commission", "ADDCOMPUS", "pus"
 - freight_rate_usd: freight rate in USD per metric ton if EXPLICITLY stated in the email.
   RULES:
@@ -402,7 +408,7 @@ Example 2 — Port alternatives (vessel chooses one):
 
 Email: "PLS PROPOSE FOR: 25000 mt clinker in bulk, El Arish OR El Dekheila / POC, 7-15/Jun, 12000x/8000x, 2.5 pct ttl"
 
-Output: {"items": [{"origin_port": {"value": "El Arish", "confidence": "confirmed", "source_text": "El Arish OR El Dekheila"}, "origin_port_alternatives": ["El Dekheila"], "destination_port": {"value": "Port of Call", "confidence": "interpreted", "source_text": "POC"}, "weight_mt": {"value": 25000, "confidence": "confirmed", "source_text": "25000 mt clinker"}, "cargo_type": "BULK"}]}
+Output: {"items": [{"origin_port": {"value": "El Arish", "confidence": "confirmed", "source_text": "El Arish OR El Dekheila"}, "origin_port_alternatives": ["El Dekheila"], "destination_port": {"value": "Port of Call", "confidence": "interpreted", "source_text": "POC"}, "weight_mt": {"value": 25000, "confidence": "confirmed", "source_text": "25000 mt clinker"}, "cargo_description": {"value": "Clinker in bulk", "confidence": "confirmed", "source_text": "clinker in bulk"}, "cargo_type": "BULK"}]}
 
 ---
 

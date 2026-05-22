@@ -127,14 +127,23 @@ export default function MarketPage() {
           <MarketBenchmarkChart
             indexName="bhsi"
             data={(bhsiData ?? []).map((d) => ({ date: d.index_date, value: d.value }))}
+            asOfDate={bhsiData?.[0]?.index_date}
+            source={bhsiData?.[0]?.source}
+            unit={bhsiData?.[0]?.unit}
           />
           <MarketBenchmarkChart
             indexName="tmi"
             data={(tmiData ?? []).map((d) => ({ date: d.index_date, value: d.value }))}
+            asOfDate={tmiData?.[0]?.index_date}
+            source={tmiData?.[0]?.source}
+            unit={tmiData?.[0]?.unit}
           />
           <MarketBenchmarkChart
             indexName="drewry-bb"
             data={(drewryData ?? []).map((d) => ({ date: d.index_date, value: d.value }))}
+            asOfDate={drewryData?.[0]?.index_date}
+            source={drewryData?.[0]?.source}
+            unit={drewryData?.[0]?.unit}
           />
         </div>
       </div>

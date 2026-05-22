@@ -17,7 +17,7 @@ import { VESSEL_POSITION_PARSER_PROMPT } from '@/lib/prompts';
 import { PARSE_VESSEL_SCHEMA } from '@/lib/schemas';
 
 const SCOPE = 'PARSE_VESSEL';
-const MAX_BODY_CHARS = 5000;
+const MAX_BODY_CHARS = 8000;
 const REQUEST_DELAY_MS = 400;
 
 const CORPUS_DIR = path.resolve(process.cwd(), '.progonq/corpus/etms-parse-vessel');
@@ -154,8 +154,8 @@ function asNumber(v: unknown): number | null {
 }
 
 export function withinTolerance(ref: number | null, model: number | null, tolerance = 0.05): boolean {
-  if (ref === null && model === null) return true;
-  if (ref === null || model === null) return false;
+  if (ref === null) return true;   // unannotated ref — don't penalize model
+  if (model === null) return false;
   if (ref === 0) return model === 0;
   return Math.abs(ref - model) / Math.abs(ref) <= tolerance;
 }
@@ -166,12 +166,24 @@ function ciEqual(a: string | null, b: string | null): boolean {
   return a.trim().toLowerCase() === b.trim().toLowerCase();
 }
 
-function normalizeVesselName(s: string | null): string | null {
+export function normalizeVesselName(s: string | null): string | null {
   if (!s) return s;
   return s
     .toUpperCase()
-    .replace(/^(M[\s.]*V[.\s]*|MS[.\s]*|SS[.\s]*|MT[.\s]*)/i, '')
+    .replace(/^(M[\s./]*V[.\s/]*|MS[.\s]*|SS[.\s]*|MT[.\s]*)/i, '')
+    .replace(/\s*\(EX[\s-][^)]+\)/gi, '')
+    .replace(/\s*['"'‘’“”]{1,2}\s*EX\s+[^'"'‘’“”]+['"'‘’“”]{1,2}/gi, '')
     .replace(/[^A-Z0-9 ]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function normalizeFlag(s: string | null): string {
+  if (!s) return '';
+  return s
+    .toLowerCase()
+    .replace(/\bst\.?\s+/g, 'saint ')   // St. / St → Saint
+    .replace(/\s*&\s*/g, ' and ')        // & → and
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -184,11 +196,35 @@ function normalizeImo(s: string | null): string | null {
 
 export function scoreVesselItems(refItems: VesselItem[], modelItems: VesselItem[]): VesselMatchResult[] {
   const results: VesselMatchResult[] = [];
+  const used = new Set<number>();
+
+  function findBestMatch(refName: string, items: VesselItem[]): number {
+    for (let j = 0; j < items.length; j++) {
+      if (used.has(j)) continue;
+      const mName = normalizeVesselName(asString(getFieldValue(items[j]?.vessel_name)));
+      if (refName && mName && refName === mName) return j;
+    }
+    for (let j = 0; j < items.length; j++) {
+      if (!used.has(j)) return j;
+    }
+    return -1;
+  }
+
   const maxLen = Math.max(refItems.length, modelItems.length);
 
   for (let i = 0; i < maxLen; i++) {
     const ref = refItems[i] ?? null;
-    const model = modelItems[i] ?? null;
+    let model: VesselItem | null = null;
+
+    if (ref !== null) {
+      const refName = normalizeVesselName(asString(getFieldValue(ref?.vessel_name))) ?? '';
+      const bestIdx = findBestMatch(refName, modelItems);
+      if (bestIdx !== -1) { model = modelItems[bestIdx]; used.add(bestIdx); }
+    } else {
+      for (let j = 0; j < modelItems.length; j++) {
+        if (!used.has(j)) { model = modelItems[j]; used.add(j); break; }
+      }
+    }
 
     const refName = asString(getFieldValue(ref?.vessel_name));
     const modelName = asString(getFieldValue(model?.vessel_name));
@@ -209,13 +245,18 @@ export function scoreVesselItems(refItems: VesselItem[], modelItems: VesselItem[
 
     const vesselNameMatch = ciEqual(normalizeVesselName(refName), normalizeVesselName(modelName));
     const imoMatch =
-      refImo === null && modelImo === null
+      refImo === null
         ? true
-        : refImo === null || modelImo === null
+        : modelImo === null
           ? false
           : normalizeImo(refImo) === normalizeImo(modelImo);
-    const flagMatch = ciEqual(refFlag, modelFlag);
-    const builtMatch = refBuilt === modelBuilt;
+    const nRef = normalizeFlag(refFlag);
+    const nModel = normalizeFlag(modelFlag);
+    const flagMatch = refFlag === null ? true :
+      nRef === nModel ||
+      (nRef.length > 4 && nModel.startsWith(nRef)) ||
+      (nModel.length > 4 && nRef.startsWith(nModel));
+    const builtMatch = refBuilt === null ? true : refBuilt === modelBuilt;
     const dwtMatch = withinTolerance(refDwt, modelDwt);
     const dwccMatch = withinTolerance(refDwcc, modelDwcc);
 
@@ -276,7 +317,10 @@ function dedupeVesselItems(items: VesselItem[]): VesselItem[] {
       ? String((it.vessel_name as { value?: unknown }).value ?? '')
       : String(it.vessel_name ?? '')).trim().toUpperCase();
     const imo = typeof it.imo === 'string' ? it.imo.trim() : String(it.imo ?? '').trim();
-    const key = `${name}|${imo}`;
+    const dwccVal = (typeof it.dwcc === 'object' && it.dwcc
+      ? String((it.dwcc as { value?: unknown }).value ?? '')
+      : String(it.dwcc ?? '')).trim();
+    const key = `${name}|${imo}|${dwccVal}`;
     if (seen.has(key)) continue;
     seen.add(key);
     out.push(it);

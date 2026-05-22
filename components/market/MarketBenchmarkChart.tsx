@@ -18,9 +18,15 @@ interface DataPoint {
 interface Props {
   indexName: string;
   data: DataPoint[];
+  /** Most recent index_date for the "as of" label (YYYY-MM-DD). */
+  asOfDate?: string;
+  /** Source URL or identifier shown below the title. */
+  source?: string;
+  /** Unit label, e.g. "USD/day" or "USD/FEU". */
+  unit?: string;
 }
 
-export function MarketBenchmarkChart({ indexName, data }: Props) {
+export function MarketBenchmarkChart({ indexName, data, asOfDate, source, unit }: Props) {
   // Feature flag check
   if (process.env.NEXT_PUBLIC_MARKET_BENCHMARK_FULL_ENABLED !== 'true') {
     return null;
@@ -55,7 +61,22 @@ export function MarketBenchmarkChart({ indexName, data }: Props) {
 
   return (
     <div className="rounded border border-gray-200 p-4">
-      <h3 className="mb-4 text-lg font-semibold">{indexName.toUpperCase()}</h3>
+      <h3 className="mb-1 text-lg font-semibold">{indexName.toUpperCase()}</h3>
+      {(asOfDate || source || unit) && (
+        <p className="mb-3 text-xs text-gray-500">
+          {unit && <span>{unit}</span>}
+          {asOfDate && (
+            <span>
+              {unit ? ' · ' : ''}по состоянию на {asOfDate}
+            </span>
+          )}
+          {source && (
+            <span title={source}>
+              {(unit || asOfDate) ? ' · ' : ''}источник
+            </span>
+          )}
+        </p>
+      )}
 
       <div className="mb-4 flex gap-4 text-sm">
         <div>

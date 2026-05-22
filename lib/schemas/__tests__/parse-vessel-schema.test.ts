@@ -32,4 +32,12 @@ describe('PARSE_VESSEL_SCHEMA — vesselItemSchema required fields', () => {
       expect(itemSchema.properties[field]).toBeDefined();
     }
   });
+
+  it('dwcc is not in required (optional/nullable)', () => {
+    expect(itemSchema.required).not.toContain('dwcc');
+  });
+
+  it('dwcc field allows null (nullable: true)', () => {
+    expect(itemSchema.properties.dwcc.nullable).toBe(true);
+  });
 });

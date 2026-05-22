@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 import { requireSession, updateSession } from '@/lib/session';
+import { computeAndPersistMatches } from '@/lib/matching/compute-matches';
+import { getStore } from '@/lib/session-store';
 import { callAiText } from '@/lib/ai-provider';
 import { PARSE_VESSEL_SCHEMA } from '@/lib/schemas';
 import { LLMTimeoutError } from '@/lib/openai';
@@ -59,7 +61,7 @@ export async function POST(request: NextRequest) {
       const prompt = buildVesselPrompt(email);
       let raw: string;
       try {
-        raw = await callAiText('PARSE_VESSEL', VESSEL_POSITION_PARSER_PROMPT, prompt, { timeoutMs: endpointLlmTimeout(60), responseSchema: PARSE_VESSEL_SCHEMA, maxTokens: 8192 });
+        raw = await callAiText('PARSE_VESSEL', VESSEL_POSITION_PARSER_PROMPT, prompt, { timeoutMs: endpointLlmTimeout(60), responseSchema: PARSE_VESSEL_SCHEMA, maxTokens: 16384, maxRetries: 1 });
       } catch (err) {
         // γ-1: per-email timeout isolation — a single LLM timeout must NOT
         // poison the whole batch. Skip this email; user retries the route.
@@ -133,5 +135,14 @@ export async function POST(request: NextRequest) {
     mergedVessels,
   );
   updateSession(sessionId, { parsedVessels: mergedVessels, processedEmails });
+
+  // Background catch-up: if cargo is already parsed, compute+persist matches now
+  // so the user sees them without having to trigger /api/ai/match manually.
+  if (process.env.MATCHES_ENABLED === 'true' && mergedVessels.length > 0 && session.parsedCargos.length > 0) {
+    const db = getStore().getDatabase();
+    void computeAndPersistMatches(session.parsedCargos, mergedVessels, sessionId, db)
+      .catch((err) => console.error('[catch-up-match] vessel trigger failed:', err));
+  }
+
   return NextResponse.json({ count: mergedVessels.length });
 }

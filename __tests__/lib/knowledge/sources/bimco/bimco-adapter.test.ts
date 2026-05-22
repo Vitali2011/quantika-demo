@@ -126,12 +126,13 @@ describe('bimco-adapter', () => {
     expect(Number.isFinite(result.stored)).toBe(true);
   });
 
-  // TC-BA-09: Verify stored count matches fixture length
+  // TC-BA-09: Verify stored count matches fixture length (dynamic — survives fixture extension)
   it('returns stored count matching fixture clauses', async () => {
     const result = await syncBimcoRag(db, false);
-
-    // Fixture has 7 clauses (see lib/knowledge/sources/bimco/fixture.ts)
-    expect(result.stored).toBe(7);
+    // Use requireActual to bypass any jest.mock() on fixture (e.g. TC-BA-07 empty mock)
+    const { BIMCO_FIXTURE_CLAUSES } = jest.requireActual('@/lib/knowledge/sources/bimco/fixture') as { BIMCO_FIXTURE_CLAUSES: unknown[] };
+    expect(result.stored).toBe(BIMCO_FIXTURE_CLAUSES.length);
+    expect(result.stored).toBeGreaterThanOrEqual(7); // sanity floor (existing 3 charters)
   });
 
   // TC-BA-10: Verify FTS table populated correctly
@@ -175,5 +176,37 @@ describe('bimco-adapter', () => {
     await syncBimcoRag(db, false);
 
     expect(reportSyncSuccess).toHaveBeenCalled();
+  });
+
+  // TC-BA-14: NYPE 1946 entries present in fixture and persisted
+  it('persists NYPE 1946 charter entries (>= 10)', async () => {
+    await syncBimcoRag(db, false);
+
+    const rows = db.prepare(`
+      SELECT metadata FROM bimco_fts WHERE metadata LIKE '%"NYPE 1946"%'
+    `).all() as any[];
+
+    expect(rows.length).toBeGreaterThanOrEqual(10);
+  });
+
+  // TC-BA-15: SHELLVOY 6 entries persist (>= 8)
+  it('persists SHELLVOY 6 charter entries (>= 8)', async () => {
+    await syncBimcoRag(db, false);
+    const rows = db.prepare(`SELECT metadata FROM bimco_fts WHERE metadata LIKE '%"SHELLVOY 6"%'`).all() as any[];
+    expect(rows.length).toBeGreaterThanOrEqual(8);
+  });
+
+  // TC-BA-16: BALTIME summary entry persists
+  it('persists BALTIME summary entry', async () => {
+    await syncBimcoRag(db, false);
+    const rows = db.prepare(`SELECT metadata FROM bimco_fts WHERE metadata LIKE '%"BALTIME"%'`).all() as any[];
+    expect(rows.length).toBe(1);
+  });
+
+  // TC-BA-17: CONGENBILL summary entry persists
+  it('persists CONGENBILL summary entry', async () => {
+    await syncBimcoRag(db, false);
+    const rows = db.prepare(`SELECT metadata FROM bimco_fts WHERE metadata LIKE '%"CONGENBILL"%'`).all() as any[];
+    expect(rows.length).toBe(1);
   });
 });

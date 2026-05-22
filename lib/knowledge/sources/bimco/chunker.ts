@@ -11,14 +11,22 @@
 
 import type { BimcoClause, CharterPartyType } from './types';
 
-const VALID_CHARTER_PARTIES: CharterPartyType[] = ['GENCON 2022', 'HEAVYCON', 'PROJECTCON'];
+const VALID_CHARTER_PARTIES: CharterPartyType[] = [
+  'GENCON 2022',
+  'HEAVYCON',
+  'PROJECTCON',
+  'NYPE 1946',
+  'SHELLVOY 6',
+  'BALTIME',
+  'CONGENBILL',
+];
 
 /**
  * Chunks raw charter party text into individual BimcoClause objects.
  * Each clause is identified by patterns like "Clause N:" or numbered sections.
  *
  * @param rawText - Raw charter party document text
- * @param charterParty - Charter party type (GENCON 2022, HEAVYCON, PROJECTCON)
+ * @param charterParty - Charter party type (GENCON 2022, HEAVYCON, PROJECTCON, NYPE 1946, SHELLVOY 6, BALTIME, CONGENBILL)
  * @returns Array of BimcoClause objects
  * @throws TypeError if rawText is not a string
  * @throws Error if charterParty is not valid

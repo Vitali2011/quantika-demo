@@ -142,4 +142,26 @@ describe('middleware auth guard', () => {
       expect(res.headers.get('location')).toContain('/login');
     });
   });
+
+  describe('/processing guard — csrf_token required', () => {
+    it('redirects demo_auth user to / when no csrf_token cookie', async () => {
+      const cookie = await makeValidCookie();
+      const req = makeReq('/processing', cookie);
+      const res = await runMiddleware(req);
+      expect(res.status).toBe(302);
+      const location = res.headers.get('location') ?? '';
+      expect(location).toBe('http://localhost/');
+    });
+
+    it('passes /processing when demo_auth and csrf_token are both present', async () => {
+      const cookie = await makeValidCookie();
+      const csrfToken = 'a'.repeat(64);
+      const req = new NextRequest('http://localhost/processing', {
+        headers: { cookie: `demo_auth=${cookie}; csrf_token=${csrfToken}` },
+      });
+      const res = await runMiddleware(req);
+      expect(res.status).not.toBe(302);
+      expect(res.status).not.toBe(403);
+    });
+  });
 });

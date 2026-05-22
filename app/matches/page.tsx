@@ -33,7 +33,7 @@ export default async function MatchesPage() {
   const session = getSession(sessionId);
   if (!session) redirect('/');
 
-  if (process.env.MATCHES_ENABLED !== "true") redirect('/');
+  if (process.env.MATCHES_ENABLED !== "true" && !session.isSampleData) redirect('/');
 
   const db = getStore().getDatabase();
 
@@ -42,11 +42,16 @@ export default async function MatchesPage() {
   }
   const matches = listMatches(db, { user_id: sessionId, sortBy: 'score', sortDir: 'desc' });
 
+  // Computing only when BOTH cargo and vessel are present — matches require both sides.
+  const hasCargo = session.parsedCargos.length > 0;
+  const hasVessel = session.parsedVessels.length > 0;
+  const isComputing = hasCargo && hasVessel && matches.length === 0;
+
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-12">
       <div className="max-w-2xl mx-auto space-y-6">
         <h1 className="text-2xl font-bold">Your Recent Matches</h1>
-        <MatchesClient initialMatches={matches} />
+        <MatchesClient initialMatches={matches} isComputing={isComputing} />
       </div>
     </main>
   );

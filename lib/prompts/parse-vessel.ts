@@ -33,6 +33,12 @@ NOW the four types:
    - Example phrases: "MV NORTH BRIT open Antwerp 15-20 May", "Fleet positions:", "Vessel offered:", explicit vessel specs.
    - VESSEL-SEEKING-CARGO language (also extract): When a broker/owner lists FULL VESSEL SPECS and asks recipients to propose cargo/freight — this is vessel OFFERING, not cargo inquiry. The vessel is available; the owner wants cargo proposals. EXTRACT all vessel particulars.
    - Example phrases that trigger extraction: "Please propose suitable cargo for below vessel", "Please offer cargo/rates for MV X", "We are looking for cargo for the following vessel", "Kindly offer freight for below vessel", "Please advise suitable cargo for".
+   - ADDITIONAL vessel-seeking-cargo patterns (ALWAYS extract — never return items=[]):
+     • "PPS FOR MV X" / "PLS PPS FOR MV X" — PPS is the shipping abbreviation for "Please Propose" (cargo). The sender is asking recipients to propose cargo for their named vessel. EXTRACT the vessel. Example: "PLS PPS FOR MV GLORY TOM DWT 63695 - OPEN CASABLANCA END AUG" → extract MV GLORY TOM.
+     • "HOME TONNAGE" / "OWN TONNAGE" / "OUR TONNAGE" — shipping slang for the sender's own vessel. When vessel specs (DWT, DWCC, flag, class, built, draft) follow, EXTRACT all particulars. Example: "PLS OFFER FIRM FOR OUR HOME TONNAGE - MV LADY MERAL DWCC 31,000 MTS AT 10.55M DRAFT, PANAMA FLAG CLASS: BV SID BLT.05" → extract MV LADY MERAL.
+     • "offer firm parcels for MV X / MV Y" / "offer cargo for MV X / MV Y" — slash separates MULTIPLE vessels each seeking cargo. EXTRACT ALL named vessels as separate items. Example: "Please offer firm parcels for: MV SEA BREEZE DWCC 6600 / MV SEA PIONEER DWCC 5900 / OPEN GREECE" → items=[MV SEA BREEZE, MV SEA PIONEER].
+     • Any phrase "offer firm for" / "propose for" / "parcels for" / "pls offer for" preceding FULL VESSEL SPECS (DWT/DWCC + flag/built/IMO/draft) — when specific vessel specs immediately follow such a phrase, EXTRACT the vessel. Do NOT classify as cargo inquiry.
+     • Slash-separated vessel spec format: a line using "/" as a field separator (e.g. "M/V AVAT 1 BUILT 2020 - CHINA / CAMEROON FLAG / KRIBI / IMO: 1033822 / DWT: 9220 MT AT 5.20M DRAFT") — the "/" separates vessel particulars, NOT alternatives or multiple vessels. Extract all fields (built year, flag, open port, IMO, DWT, draft) from the slash-delimited format. This IS a vessel position circular — EXTRACT.
 
    EXAMPLE — vessel seeking cargo (EXTRACT, not cargo inquiry):
    "Dear Sirs, Please propose suitable cargo for below open vessel:
@@ -83,6 +89,8 @@ CRITICAL ANTI-PATTERN — NEVER map cargo-side fields to vessel fields:
 - "Laycan 10-15 May" → cargo loading window, NOT vessel's open_date.
 - "Gearless acceptable" → charterer preference, NOT vessel's geared status.
 
+UNNAMED VESSEL GUARD: Do NOT invent vessel entries with placeholder names ("Unnamed Vessel", "N/A"). Do NOT assign "TBN" to a vessel the email fails to name — if no vessel name is given, return items=[]. "TBN" is a valid vessel name ONLY when the email explicitly writes "TBN" or "T.B.N." as the vessel identifier (e.g., "M/V TBN open Port Sudan"). All vessels with a real identifiable name MUST be extracted regardless of email type — fixture recaps and vessels with past-dated openings are valid extraction sources.
+
 EXAMPLES:
 
 INPUT A (vessel position circular — extract):
@@ -115,6 +123,12 @@ with {open, close, display}), wrap the entire complex object inside the \`value\
     confidence: "interpreted", source_text: "10/12 May 2026" }
 
 MULTI-ITEM: One email may contain MULTIPLE vessel positions (e.g., a fleet list or multiple vessels from the same owner). Return ALL vessels as separate items.
+
+Extract ALL vessels regardless of charter status — include vessels marked "ON TC", "on charter", "fixed", or "not available".
+
+Extract vessels that appear ONLY in detailed specification blocks even if absent from any tabular summary at the top of the email.
+
+Multiple vessels with the same name (e.g. "TBN") are distinct entries — extract each separately using other fields (DWT, built, open_position) to distinguish them.
 
 CONFIDENCE LEVELS AND MANDATORY SOURCE QUOTING:
 - "confirmed": value is literally quoted or directly extracted from the email — no inference or derivation needed. Use confirmed even when the value is embedded in a compound phrase (e.g. "DWCC 3600 at 4.9m draft" → draft_max=4.9 is confirmed; "Built: 2003" → built=2003 is confirmed). MUST include source_text.
@@ -149,8 +163,10 @@ For numeric fields (DWT, DWCC, LOA, beam, draft, built-year, grain capacity, etc
 CRITICAL: never use 'interpreted' for an exact number with no hedge just because you "interpreted the context". If the number is typed, it's confirmed.
 
 CRITICAL: source_text is REQUIRED for every ConfidenceField. It MUST be a verbatim
-substring copied character-for-character from the email body. Omitting source_text is
-a parsing error. Paraphrasing is NOT allowed — copy the exact characters.
+substring copied character-for-character from the email body. Keep source_text BRIEF —
+use the shortest unique substring that identifies the value (typically 20–100 characters;
+never copy entire paragraphs or long contract clauses). Omitting source_text is a parsing
+error. Paraphrasing is NOT allowed — copy the exact characters.
 
 CORRECT:   { "value": "Rotterdam", "confidence": "confirmed", "source_text": "Load: Rotterdam" }
 CORRECT:   { "value": 5000, "confidence": "interpreted", "source_text": "abt 5k mts wheat" }
@@ -160,15 +176,47 @@ WRONG:     { "value": 5000, "confidence": "confirmed", "source_text": "approxima
 Each field: { value: ..., confidence: "confirmed" | "interpreted" | "uncertain", source_text: "exact quote" }
 If a field is set to null (information not present), source_text is not needed.
 
+IMPORTANT — SUBJECT LINE IS AUTHORITATIVE:
+The email Subject line is a valid and authoritative data source. Always extract DWCC, DWT, and vessel name from the Subject when stated there.
+If the Subject line contains "Nk dwcc" or "N dwcc" (where N is a number), extract that as dwcc. "k" suffix means thousands: "10k" = 10,000; "28k" = 28,000; "5.5k" = 5,500.
+Example: Subject "10k dwcc mv propus" → dwcc = 10000 MT, vessel = PROPUS. Subject "28k dwt bulk carrier open rotterdam" → dwt = 28000.
+
+FLAG EXTRACTION RULES (apply only to these specific cases — do NOT "normalize" other flag names):
+- "BELIZE CITY" → "Belize" (city is not the flag state, Belize is the flag state).
+- "ST VINCENT" (all-caps abbreviation without "Grenadines") → "Saint Vincent and the Grenadines".
+- "ST KITTS" (all-caps abbreviation without "Nevis") → "Saint Kitts and Nevis".
+- "Kitts & Navis" / "Kitts and Navis" (typo for Nevis) → "Kitts & Nevis".
+- "Marshall Flag" / "Marshall Isl" / "Marshall Is" → "Marshall Islands" (Republic of the Marshall Islands is a flag state).
+- Portuguese Atlantic territories ("Madeira", "Azores"): extract exactly as written — do NOT normalize to "Portugal".
+- For all other flags: extract verbatim as written in the email. Do NOT expand "&" to "and", do NOT change "St." to "Saint", and do NOT otherwise rewrite flag names not listed above.
+- If the email already says "St. Vincent & the Grenadines" or "Saint Vincent and the Grenadines" — extract it exactly as written without changing it.
+- "Vanatu" (typo, one 'u' missing) → "Vanuatu".
+
+TC VESSELS IN FLEET POSITIONS:
+- When an email is a vessel position circular where an owner lists their fleet, include vessels marked "ON TC" (on time charter), "on charter", or "currently fixed" — these are still part of the owner's fleet position list.
+- Only apply this rule when the surrounding context is clearly a fleet position list (multiple vessels from one owner).
+- Do NOT apply in cargo inquiry emails or certificate documents.
+
+FLEET COMPLETENESS — SUMMARY TABLE + SPEC BLOCKS:
+- Some fleet emails have a summary table at the top (vessel name + DWT + open position) followed by detailed spec blocks below.
+- Extract ALL vessels that appear in EITHER the summary table OR the spec blocks. Do not stop after reading the summary table.
+- If a vessel is listed in the summary table but has no spec block, extract what's available from the summary line.
+
+FORMATTING MARKERS:
+- Rows of asterisks (** ... **) or (*** *** ***) are section delimiters, NOT empty signals.
+- A vessel section wrapped in asterisks or star separators is real data — extract it normally.
+- Example: "**********\n\nMV SEA MAJESTY\n\nDWCC 8600 MTS ... OPEN @ TRIPOLI\n**********" → extract vessel SEA MAJESTY with DWCC 8600.
+
 Extract per vessel:
 - vessel_name
 - imo: IMO number
-- flag: flag state
+- flag: flag state. Normalize to the official country name: "BELIZE CITY" → "Belize", "ST VINCENT" → "Saint Vincent and the Grenadines", correct obvious typos using maritime knowledge ("Navis" → "Nevis").
 - built: year built
 - class_society: e.g. BV, LR, DNV, NK, ABS
 - p_and_i: P&I club
 - dwt_summer: deadweight tonnage (summer)
 - dwcc: deadweight cargo capacity
+  DWCC EXTRACTION RULE: Extract dwcc ONLY when the email explicitly states a DWCC value. Recognized forms: "DWCC 28,500 MT", "deadweight cargo capacity: 28,500", "3.600 CC" (where CC = Cargo Capacity; note "." may be a European thousands separator → 3.600 = 3,600), "28k CC", "DWCC" in any case. Do NOT infer dwcc from dwt_summer when dwcc is not explicitly mentioned. When dwcc is not stated → set dwcc = null.
 - draft_max: maximum draft in meters. IMPORTANT: if the email gives draft only as part of the DWCC line (e.g. "DWCC 11,800 mts at 7.8m draft"), use that value as draft_max with confidence='interpreted' and note in source_text that it is the DWCC draft — the vessel's structural maximum draft may differ. Only use confidence='confirmed' if the email explicitly states "Max draft: X" or "Draft summer: X".
 - loa: length overall in meters
 - beam: beam in meters
@@ -193,7 +241,19 @@ Extract per vessel:
   header in addition to the body. Do not return "unknown" or any free-text;
   if not present return null. Plain field (not a ConfidenceField object).
 - open_position: port or area where vessel is/will be available
-- open_date: date vessel is available. If given as a range in slash notation (e.g. "10/12 May 2026"), this is a LAYCAN WINDOW (earliest open / latest open). Store the value as a structured object: { open: "2026-05-10", close: "2026-05-12", display: "10/12 May 2026" } with confidence='interpreted' and preserve the original notation in source_text. For a single date (e.g. "open 15 May"), store as { open: "2026-05-15", close: null, display: "15 May 2026" } with confidence='confirmed'.
+- open_date: date vessel is available. If given as a range WITH explicit year in slash notation (e.g. "10/12 May 2026"), this is a LAYCAN WINDOW (earliest open / latest open). Store the value as a structured object: { open: "2026-05-10", close: "2026-05-12", display: "10/12 May 2026" } with confidence='interpreted' and preserve the original notation in source_text. For a single date WITH explicit year (e.g. "open 15 May 2026"), store as { open: "2026-05-15", close: null, display: "15 May 2026" } with confidence='confirmed'.
+
+  OPEN_DATE YEAR RULE — NO YEAR INFERENCE:
+  When the email mentions a date WITHOUT an explicit year (e.g. "1-5 Oct", "prompt/spot", "End August", "01 JUN", "18/19 MAY", "22-23rd May"):
+  - Set open: null, close: null
+  - Set display: the original date string verbatim — copy exact characters and case from the email
+  - Set confidence: "confirmed" if the date is clearly stated, "interpreted" if vague or derived
+  - NEVER infer, guess, or append a year that is not explicitly present in the email text
+
+  OPEN_DATE DISPLAY FORMAT — WHEN YEAR IS EXPLICIT:
+  When year IS explicitly stated in the email (e.g. "13-15 August 2018", "25/28 July 2017", "ETA 20 May 2026"):
+  - Normalize display to title case: "13-15 August 2018" not "13-15 AUGUST 2018"
+  - Preserve month abbreviations as written in the email (abbreviated if abbreviated, full if full)
 - direction: intended GEOGRAPHIC trading direction (e.g. "seeking Far East", "open for Middle East/India", "via Suez to Mediterranean"). MUST be geographic — if the email only says "seeking suitable employment", "keen to fix", or similar commercial phrases without a geographic direction, set direction to null. NOTE: if the email contains an explicit POL → POD route for THIS vessel (e.g. "Iskenderun → Liverpool", "loading Antwerp / discharging Lagos"), use that route as direction (e.g. value="Iskenderun to Liverpool", confidence='confirmed', source_text="POL: Iskenderun POD: Liverpool"). Do NOT do this for cargo-inquiry emails — only when the route belongs to an offered vessel.
 - restrictions: array of restrictions (e.g. "no Ukraine", "no IMO cargo", "no grain")
 - last_cargoes: comma-separated string of recent cargoes.
@@ -283,9 +343,14 @@ and source_text quoting the load port mention (e.g. "Load: Iskenderun").
 
 UNKNOWN_TERMS — always include:
 Always include \`unknown_terms\` as an array — empty \`[]\` if no unrecognized terms. Never omit
-the field. Flag any abbreviation, contract form, or jurisdiction acronym not in the glossary
-above (e.g. HEAVYCON, LMAA, ATUTC, AWIWL, TCT, GENCON, NYPE, BIMCO, etc.). Include the term
-verbatim and a brief reason (e.g. "HEAVYCON — BIMCO heavy-lift charter form, not in glossary").
+the field. Flag ONLY abbreviations or terms you genuinely cannot interpret from shipping context.
+Do NOT flag: standard charter party terms (SSHINC, SSHEX, FIOST, FIOS, PDPR, FD, SOF, NOR,
+BSS, WOG, GENCON, BIMCO standard form names, laytime clauses, demurrage terms, arbitration
+clauses) — these are recognized even if not in the glossary. Only include a term if it is
+genuinely unrecognizable from shipping/chartering domain knowledge. Keep reason strings brief
+(≤20 words).
+
+Asterisk markers (** ... **) around vessel name sections are formatting delimiters, not template placeholders. Extract vessel data from sections enclosed in asterisks normally.
 
 TEMPLATE PLACEHOLDERS (anti-hallucination):
 Email body may contain unresolved template tokens like \`{{LAYCAN_START}}\`, \`{{LAYCAN_END}}\`,

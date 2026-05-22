@@ -64,3 +64,27 @@ jobs:
       # Seed logic must live inside /root/deploy-quantika-demo.sh on the VPS (after the
       # health check, before exit). See docs/runbooks/post-deploy-seed.md for manual run
       # instructions and the VPS integration note.
+      #
+      # Post-deploy verify: DB checks (schema migrations, fx_rates, env vars) also run
+      # inside /root/deploy-quantika-demo.sh via scripts/ops/verify-deploy.sh.
+      # HTTP checks (4-5) run here from CI against the public URL.
+      - name: Post-deploy verify (HTTP health)
+        env:
+          ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+        run: |
+          BASE_URL="https://demo.quantika.org"
+          echo "[verify] GET ${BASE_URL}/api/health"
+          curl -fsS --max-time 15 "${BASE_URL}/api/health" \
+            || { echo "[verify] FAIL: /api/health did not return 200 — check VPS: pm2 status quantika-demo"; exit 1; }
+          echo "[verify] /api/health OK"
+
+          if [[ -n "${ADMIN_TOKEN:-}" ]]; then
+            echo "[verify] GET ${BASE_URL}/api/admin/knowledge-status"
+            curl -fsS --max-time 15 \
+              -H "X-Admin-Token: ${ADMIN_TOKEN}" \
+              "${BASE_URL}/api/admin/knowledge-status" \
+              || { echo "[verify] FAIL: /api/admin/knowledge-status — check ADMIN_TOKEN secret or app status"; exit 1; }
+            echo "[verify] /api/admin/knowledge-status OK"
+          else
+            echo "[verify] SKIP: ADMIN_TOKEN secret not configured in GitHub Actions"
+          fi

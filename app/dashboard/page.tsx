@@ -213,9 +213,17 @@ export default async function DashboardPage() {
 
         {/* ── Market Intelligence ────────────────────────────────── */}
         <section>
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-            Market Intelligence
-          </h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
+              Market Intelligence
+            </h2>
+            <Link
+              href="/market"
+              className="text-xs text-gray-500 hover:text-gray-900 transition-colors"
+            >
+              View all →
+            </Link>
+          </div>
           <MarketIntelligence noActiveDeals={noActiveDeals} />
         </section>
 
@@ -320,16 +328,16 @@ export default async function DashboardPage() {
                   {sanctionsBlocked.map((b, i) => (
                     <div
                       key={i}
-                      className="flex items-center gap-3 p-3 bg-red-50 border border-red-200 rounded-lg text-sm"
+                      className="flex items-center gap-3 p-3 bg-red-50 border border-red-200 rounded-lg text-sm overflow-hidden"
                     >
-                      <span className="font-medium text-red-800">⛔</span>
-                      <div className="flex-1">
+                      <span className="font-medium text-red-800 shrink-0">⛔</span>
+                      <div className="flex-1 min-w-0">
                         <span className="font-medium">{b.cargoEmailId}</span>
                         <span className="text-gray-500 mx-1">×</span>
                         <span className="font-medium">{b.vesselEmailId}</span>
                       </div>
-                      <span className="text-red-600 text-xs max-w-sm truncate">{b.filterReason}</span>
-                      <span className="px-2 py-0.5 bg-red-600 text-white text-xs rounded-full">
+                      <span className="text-red-600 text-xs min-w-0 truncate">{b.filterReason}</span>
+                      <span className="px-2 py-0.5 bg-red-600 text-white text-xs rounded-full shrink-0">
                         SANCTIONS
                       </span>
                     </div>
@@ -349,15 +357,15 @@ export default async function DashboardPage() {
                   {filterBlocked.map((b, i) => (
                     <div
                       key={i}
-                      className="flex items-center gap-3 p-3 bg-orange-50 border border-orange-200 rounded-lg text-sm"
+                      className="flex items-center gap-3 p-3 bg-orange-50 border border-orange-200 rounded-lg text-sm overflow-hidden"
                     >
-                      <span className="font-medium text-orange-700">🚫</span>
-                      <div className="flex-1">
+                      <span className="font-medium text-orange-700 shrink-0">🚫</span>
+                      <div className="flex-1 min-w-0">
                         <span className="font-medium">{b.cargoEmailId}</span>
                         <span className="text-gray-500 mx-1">×</span>
                         <span className="font-medium">{b.vesselEmailId}</span>
                       </div>
-                      <span className="text-orange-600 text-xs max-w-sm truncate">{b.filterReason}</span>
+                      <span className="text-orange-600 text-xs min-w-0 truncate">{b.filterReason}</span>
                     </div>
                   ))}
                 </div>
