@@ -1,0 +1,17 @@
+[Unit]
+Description=Quantika market indices refresh (BHSI from handybulk.com, Drewry WCI)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=/root/quantika-demo
+ExecStart=/usr/bin/npx tsx --env-file=.env.local scripts/knowledge/cron/refresh-market-indices.ts
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=quantika-market-indices
+TimeoutStartSec=5min
+
+[Install]
+WantedBy=multi-user.target
