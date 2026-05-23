@@ -1,7 +1,7 @@
 # Quantika Demo — ROADMAP (Текущее состояние)
 
 **Последний полный аудит:** 2026-05-17 (5-поточный код-аудит) + 2026-05-19 UI audit (Playwright+Chrome MCP) + **2026-05-19 ROADMAP reality audit** (claim vs prod sweep)
-**Последнее обновление:** 2026-05-24 (раннее утро) — qa-walker re-test wave 2: 6 bugs closed (W1 SECURITY #399, W2 #400/#401/#404, W3 #402/#403) — 4-волновой план: 7 PR merged (#365-#371), 4 GH issues closed (#359 #361 #364 + #360 #362 #363), mobile UX audit findings закрыты (1 CRIT через rebuild + 4 HIGH + 3 LOW)
+**Последнее обновление:** 2026-05-24 (утро) — qa-walker LOOP COMPLETE: 2 iter, 0 CRIT/0 HIGH open, prod stable. 14 PR за день (#405-#422) — 4-волновой план: 7 PR merged (#365-#371), 4 GH issues closed (#359 #361 #364 + #360 #362 #363), mobile UX audit findings закрыты (1 CRIT через rebuild + 4 HIGH + 3 LOW)
 **Текущая версия:** prod HEAD после auto-deploy LIVE (#259, systemd quantika-demo.service на outreach-vps)
 **Статус:** 🟢 Основные потоки работают; parse-vessel в активной итерации (R8 baseline после revert); pre-merge-guard LIVE
 
@@ -126,6 +126,15 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 - ✅ **W2**: #370 `fix(ux): mobile polish — H-2/H-3/H-4/H-5` — 8 touch-targets /matches на ≥44px, bulk-footer clearance BottomNav, /upgrade в /more nav, /more populated (Upgrade/Dashboard/Help/Logout). H-1 prod build-gap закрылся auto-deploy'ем W0/W1
 - ✅ **W3**: #371 `fix(cleanup): LOW mass-cleanup` closes **#360** (benchmark link 404 → http:// guard) + **#362** (SANCTIONS badge mistag → pair-analyzer primary-cause filter) + **#363** (sitemap.xml 404 → public/robots.txt + sitemap.xml) + audit LOW L-1/L-2/L-3 (RU empty-state, design tokens на /upgrade, safe-area на /more)
 - 📋 **Autonomous wave-driver**: 4 волны выполнены через cron-loop (CronCreate каждые 15м → dispatch.sh → tmux fire-and-forget → done-watcher → wake), zero-touch после первой команды. Конфликт на /more/page.tsx между W2 (nav links) и W3 (safe-area) резолвлен оркестратором inline.
+
+**Что изменилось за 2026-05-24 (утро — qa-loop iter 1 + iter 2 COMPLETE):**
+
+- ✅ **qa-walker iter 1** нашёл 6 новых: #413 (root: stale chunks 500 от duplicate Constanta|Marghera) + #414 logout regression + #415/#416/#419 cascade от #413 + #417 /more 404 + #418 /upgrade 404.
+- 🚨 **PROD INCIDENT (~10 мин downtime):** prod build упал на TS duplicate property → .next пустой → systemd crash-loop. Hotfix: SSH outreach-vps, sed remove дубли, NODE_OPTIONS rebuild, systemctl restart. Восстановлено HEALTH 200. PR #420 зафиксировал в git.
+- ✅ **iter 1 fix-wave:** #420 (dedup, hotfix prod) + #421 (#414 logout regression guard) + #422 (#417 #418 /more+/upgrade nav). Cascade #415 #416 #419 закрыты verified.
+- ✅ **qa-walker iter 2 PASS — 0 CRIT/0 HIGH open.** Все qa-walker issues закрыты. #395 #418 false-positives закрыты verified. Loop STOP.
+- 📋 **Lessons:** (1) Phase B + Match conflict не пойман CI (duplicate TS keys) — добавить pre-merge TS check; (2) rm -rf .next перед rebuild = риск, better blue-green deploy с .next.new directory.
+- 📋 **INFO non-blocking:** /market показывает данные as of 2026-05-14 (10 дней stale) — systemd timer #341 не триггерил pull с 2026-05-22.
 
 **Что изменилось за 2026-05-24 (раннее утро — qa-walker re-test wave 2):**
 
