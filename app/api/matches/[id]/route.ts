@@ -15,6 +15,39 @@ function isFeatureEnabled(): boolean {
   return process.env.MATCHES_ENABLED === 'true';
 }
 
+export async function GET(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+): Promise<NextResponse> {
+  const authResult = requireSession(request);
+  if (authResult instanceof NextResponse) return authResult;
+  const { sessionId } = authResult;
+
+  if (!isFeatureEnabled()) {
+    return NextResponse.json({ error: 'Feature disabled' }, { status: 503 });
+  }
+
+  try {
+    const { id: idStr } = await context.params;
+    const id = parseInt(idStr, 10);
+    if (isNaN(id) || id < 1) {
+      return NextResponse.json({ error: 'Invalid match id' }, { status: 400 });
+    }
+
+    const db = getStore().getDatabase();
+    const match = getMatch(db, id);
+
+    // Return 404 for both missing matches and matches owned by other sessions
+    if (!match || match.user_id !== sessionId) {
+      return NextResponse.json({ error: `Match not found: ${id}` }, { status: 404 });
+    }
+
+    return NextResponse.json(match, { status: 200 });
+  } catch {
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
 export async function PATCH(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
