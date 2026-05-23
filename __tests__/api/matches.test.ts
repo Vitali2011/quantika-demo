@@ -101,7 +101,7 @@ describe('GET /api/matches', () => {
     db.prepare(
       `INSERT INTO matches (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-    ).run('cargo-1', 'vessel-1', 80, '{}', 'shortlist', null, Date.now(), Date.now());
+    ).run('cargo-1', 'vessel-1', 80, '{}', 'shortlist', 'test-sid', Date.now(), Date.now());
 
     const { GET } = await import('@/app/api/matches/route');
     const res = await GET(new NextRequest('http://localhost/api/matches'));
@@ -122,11 +122,11 @@ describe('GET /api/matches', () => {
     db.prepare(
       `INSERT INTO matches (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-    ).run('c1', 'v1', 80, '{}', 'shortlist', null, Date.now(), Date.now());
+    ).run('c1', 'v1', 80, '{}', 'shortlist', 'test-sid', Date.now(), Date.now());
     db.prepare(
       `INSERT INTO matches (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-    ).run('c2', 'v2', 70, '{}', 'saved', null, Date.now(), Date.now());
+    ).run('c2', 'v2', 70, '{}', 'saved', 'test-sid', Date.now(), Date.now());
 
     const { GET } = await import('@/app/api/matches/route');
     const res = await GET(

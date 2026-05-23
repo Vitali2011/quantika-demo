@@ -77,7 +77,7 @@ function seedMatch(db: Database.Database, fields: SeedFields = {}): void {
     fields.score ?? 75,
     '{}',
     'shortlist',
-    null,
+    'test-sid',
     Date.now(),
     Date.now(),
     fields.cargo_type ?? null,

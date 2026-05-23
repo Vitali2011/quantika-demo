@@ -18,6 +18,7 @@ function isFeatureEnabled(): boolean {
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const authResult = requireSession(request);
   if (authResult instanceof NextResponse) return authResult;
+  const { sessionId } = authResult;
 
   if (!isFeatureEnabled()) {
     return NextResponse.json(
@@ -102,6 +103,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       score_min: scoreMin,
       dwt_min: dwtMin,
       dwt_max: dwtMax,
+      user_id: sessionId,
     });
 
     return NextResponse.json({ matches }, { status: 200 });
@@ -116,6 +118,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const authResult = requireSession(request);
   if (authResult instanceof NextResponse) return authResult;
+  const { sessionId } = authResult;
 
   if (!isFeatureEnabled()) {
     return NextResponse.json(
@@ -164,7 +167,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       score: typeof score === 'number' && isFinite(score) ? Math.max(0, Math.min(100, Math.round(score))) : 0,
       reason: typeof reason === 'string' ? reason : '{}',
       status: VALID_STATUSES.includes(status as MatchStatus) ? (status as MatchStatus) : undefined,
-      user_id: user_id ?? null,
+      user_id: sessionId,
       reason_structured: reason_structured ?? null,
       cargo_type: cargo_type ?? null,
       load_port: load_port ?? null,
