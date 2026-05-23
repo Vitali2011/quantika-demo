@@ -87,7 +87,7 @@ export function MarketBenchmarkChart({ indexName, data, asOfDate, source, unit }
       <div className="mb-4 flex gap-4 text-sm">
         <div>
           <span className="text-gray-500">Current: </span>
-          <strong>{validData[validData.length - 1].value.toFixed(2)}</strong>
+          <strong>{validData[0].value.toFixed(2)}</strong>
         </div>
         <div>
           <span className="text-gray-500">Min: </span>
