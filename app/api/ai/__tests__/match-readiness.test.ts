@@ -39,13 +39,32 @@ describe('applyReadinessScoring', () => {
     expect(m.readiness?.verdict).toBe('ideal');
   });
 
-  it('idle verdict: -15 score + issue added with day count', () => {
+  it('idle verdict: -15 score + issue added with day count (short idle ≤14d)', () => {
     const m = applyReadinessScoring(baseMatch({ score: 75 }), readinessOf('idle', 9));
     expect(m.score).toBe(60);
     expect(m.matchLevel).toBe('possible');
     expect(m.issues).toHaveLength(1);
     expect(m.issues[0]).toMatch(/idle/i);
     expect(m.issues[0]).toMatch(/9/);
+  });
+
+  it('idle verdict: extended (>14d) → -25 penalty, issue notes extended severity', () => {
+    const m = applyReadinessScoring(baseMatch({ score: 75 }), readinessOf('idle', 20));
+    expect(m.score).toBe(50);
+    expect(m.matchLevel).toBe('possible');
+    expect(m.issues).toHaveLength(1);
+    expect(m.issues[0]).toMatch(/idle/i);
+    expect(m.issues[0]).toMatch(/extended/i);
+  });
+
+  it('idle verdict: severe (>30d) → -35 penalty, W1-style 60d idle drops to weak tier', () => {
+    // Phase B finding: a "possible" match (score 70) with 60-day idle must land in 'weak'.
+    const m = applyReadinessScoring(baseMatch({ score: 70 }), readinessOf('idle', 60));
+    expect(m.score).toBe(35);
+    expect(m.matchLevel).toBe('weak');
+    expect(m.issues).toHaveLength(1);
+    expect(m.issues[0]).toMatch(/idle/i);
+    expect(m.issues[0]).toMatch(/severe/i);
   });
 
   it('late verdict: -30 score + issue', () => {
