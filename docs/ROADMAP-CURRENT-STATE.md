@@ -1,7 +1,7 @@
 # Quantika Demo — ROADMAP (Текущее состояние)
 
 **Последний полный аудит:** 2026-05-17 (5-поточный код-аудит) + 2026-05-19 UI audit (Playwright+Chrome MCP) + **2026-05-19 ROADMAP reality audit** (claim vs prod sweep)
-**Последнее обновление:** 2026-05-23 (вечер) — qa-walker 4-волновой план: 22 issues закрыты, 8 PR merged (#383-#391) — 4-волновой план: 7 PR merged (#365-#371), 4 GH issues closed (#359 #361 #364 + #360 #362 #363), mobile UX audit findings закрыты (1 CRIT через rebuild + 4 HIGH + 3 LOW)
+**Последнее обновление:** 2026-05-23 (поздний вечер) — Wave A2 hotfix: #396 (sample-no-OAuth #394) + #397 (demo match M3 fields #393) — 4-волновой план: 7 PR merged (#365-#371), 4 GH issues closed (#359 #361 #364 + #360 #362 #363), mobile UX audit findings закрыты (1 CRIT через rebuild + 4 HIGH + 3 LOW)
 **Текущая версия:** prod HEAD после auto-deploy LIVE (#259, systemd quantika-demo.service на outreach-vps)
 **Статус:** 🟢 Основные потоки работают; parse-vessel в активной итерации (R8 baseline после revert); pre-merge-guard LIVE
 
@@ -126,6 +126,12 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 - ✅ **W2**: #370 `fix(ux): mobile polish — H-2/H-3/H-4/H-5` — 8 touch-targets /matches на ≥44px, bulk-footer clearance BottomNav, /upgrade в /more nav, /more populated (Upgrade/Dashboard/Help/Logout). H-1 prod build-gap закрылся auto-deploy'ем W0/W1
 - ✅ **W3**: #371 `fix(cleanup): LOW mass-cleanup` closes **#360** (benchmark link 404 → http:// guard) + **#362** (SANCTIONS badge mistag → pair-analyzer primary-cause filter) + **#363** (sitemap.xml 404 → public/robots.txt + sitemap.xml) + audit LOW L-1/L-2/L-3 (RU empty-state, design tokens на /upgrade, safe-area на /more)
 - 📋 **Autonomous wave-driver**: 4 волны выполнены через cron-loop (CronCreate каждые 15м → dispatch.sh → tmux fire-and-forget → done-watcher → wake), zero-touch после первой команды. Конфликт на /more/page.tsx между W2 (nav links) и W3 (safe-area) резолвлен оркестратором inline.
+
+**Что изменилось за 2026-05-23 (поздний вечер — Wave A2 hotfix):**
+
+- ✅ **#396** fix(emails): sample-data shortcut bypasses Gmail OAuth (#394) — наш предыдущий #384 покрыл status 500→401 + cleanup, но sample-mode всё ещё ходил в OAuth. Detect server-side session → пропуск OAuth → load fixtures. 3 PI2 tests + cold-QA PASS.
+- ✅ **#397** fix(matching): populate M3 fields in demo seed match (#393) — наш #383 покрыл runtime computeAndPersistMatches, но «Guaranteed demo match for EconomicsTab» seed creator писал hardcoded row с NULL. Extracted persist-session-matches.ts helper (same pattern), seed теперь populates cargo_type/load_port/discharge_port/vessel_dwt/laycan. Bonus: parseLaycan accepts «..» separator. 4 PI2 + cold-QA PASS.
+- 📋 **Lesson:** qa-walker re-test нашёл оба узких фикса. Pattern: fix root cause widely (cover ВСЕ creators того же класса), не один путь.
 
 **Что изменилось за 2026-05-23 (вечер — qa-walker 4 waves, ~4ч автономно):**
 
