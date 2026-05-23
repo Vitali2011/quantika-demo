@@ -59,6 +59,12 @@ export function MarketBenchmarkChart({ indexName, data, asOfDate, source, unit }
   const maxValue = Math.max(...validData.map((d) => d.value));
   const minValue = Math.min(...validData.map((d) => d.value));
 
+  const sorted = validData.map((d) => d.value).slice().sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  const median =
+    sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+  const outlierThreshold = median * 3;
+
   return (
     <div className="rounded border border-gray-200 p-4">
       <h3 className="mb-1 text-lg font-semibold">{indexName.toUpperCase()}</h3>
@@ -67,12 +73,12 @@ export function MarketBenchmarkChart({ indexName, data, asOfDate, source, unit }
           {unit && <span>{unit}</span>}
           {asOfDate && (
             <span>
-              {unit ? ' · ' : ''}по состоянию на {asOfDate}
+              {unit ? ' · ' : ''}as of {asOfDate}
             </span>
           )}
           {source && (
             <span title={source}>
-              {(unit || asOfDate) ? ' · ' : ''}источник
+              {(unit || asOfDate) ? ' · ' : ''}Source
             </span>
           )}
         </p>
@@ -108,10 +114,22 @@ export function MarketBenchmarkChart({ indexName, data, asOfDate, source, unit }
               .reverse()
               .map((item, idx) => {
                 const pct = ((item.value - minValue) / (maxValue - minValue || 1)) * 100;
+                const isOutlier = median > 0 && item.value > outlierThreshold;
                 return (
                   <tr key={idx} className="border-t border-gray-100">
                     <td className="px-2 py-1 text-gray-600">{item.date}</td>
-                    <td className="px-2 py-1 text-right font-mono">{item.value.toFixed(2)}</td>
+                    <td className="px-2 py-1 text-right font-mono">
+                      {item.value.toFixed(2)}
+                      {isOutlier && (
+                        <span
+                          className="ml-1 text-amber-500"
+                          title="Value is more than 3x the median — possible data anomaly"
+                          data-testid="outlier-marker"
+                        >
+                          &#9888;
+                        </span>
+                      )}
+                    </td>
                     <td className="px-2 py-1">
                       <div className="h-2 w-full rounded bg-gray-100">
                         <div
