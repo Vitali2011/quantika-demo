@@ -202,7 +202,7 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
       <div className="flex gap-2 flex-wrap">
         <button
           onClick={() => applyStatusFilter(null)}
-          className={`px-3 py-1 rounded-full text-sm border ${!filterStatus ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300'}`}
+          className={`px-3 py-2.5 rounded-full text-sm border min-h-[44px] ${!filterStatus ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300'}`}
         >
           All
         </button>
@@ -210,14 +210,14 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
           <button
             key={s}
             onClick={() => applyStatusFilter(s)}
-            className={`px-3 py-1 rounded-full text-sm border capitalize ${filterStatus === s ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300'}`}
+            className={`px-3 py-2.5 rounded-full text-sm border capitalize min-h-[44px] ${filterStatus === s ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300'}`}
           >
             {s}
           </button>
         ))}
         <button
           onClick={() => setFiltersOpen((o) => !o)}
-          className="px-3 py-1 rounded-full text-sm border bg-white text-gray-700 border-gray-300 ml-2"
+          className="px-3 py-2.5 rounded-full text-sm border bg-white text-gray-700 border-gray-300 ml-2 min-h-[44px]"
         >
           Advanced Filters
         </button>
@@ -499,7 +499,7 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
                       {match.status !== 'saved' && match.status !== 'archived' && (
                         <button
                           onClick={() => handleAction(match.id, 'saved')}
-                          className="px-3 py-1 text-xs rounded bg-green-100 text-green-700 hover:bg-green-200"
+                          className="px-3 py-3 text-xs rounded bg-green-100 text-green-700 hover:bg-green-200 min-h-[44px]"
                         >
                           Save
                         </button>
@@ -507,7 +507,7 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
                       {match.status !== 'dismissed' && match.status !== 'archived' && (
                         <button
                           onClick={() => handleAction(match.id, 'dismissed')}
-                          className="px-3 py-1 text-xs rounded bg-red-100 text-red-700 hover:bg-red-200"
+                          className="px-3 py-3 text-xs rounded bg-red-100 text-red-700 hover:bg-red-200 min-h-[44px]"
                         >
                           Dismiss
                         </button>
@@ -515,7 +515,7 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
                       {match.status !== 'archived' && (
                         <button
                           onClick={() => handleAction(match.id, 'archived')}
-                          className="px-3 py-1 text-xs rounded bg-gray-100 text-gray-600 hover:bg-gray-200"
+                          className="px-3 py-3 text-xs rounded bg-gray-100 text-gray-600 hover:bg-gray-200 min-h-[44px]"
                         >
                           Archive
                         </button>
@@ -523,7 +523,7 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
                       {match.status === 'archived' && (
                         <button
                           onClick={() => handleAction(match.id, 'saved')}
-                          className="px-3 py-1 text-xs rounded bg-blue-100 text-blue-700 hover:bg-blue-200"
+                          className="px-3 py-3 text-xs rounded bg-blue-100 text-blue-700 hover:bg-blue-200 min-h-[44px]"
                         >
                           Restore
                         </button>
@@ -539,7 +539,7 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
 
       {/* Sticky footer for bulk actions */}
       {selectedIds.size > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg px-4 py-3 flex items-center gap-3 z-50 sticky-bulk-footer">
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg px-4 py-3 pb-[calc(56px+env(safe-area-inset-bottom,0px))] flex items-center gap-3 z-50 sticky-bulk-footer">
           <span className="text-sm font-medium text-gray-700">
             Selected {selectedIds.size} {selectedIds.size === 1 ? 'match' : 'matches'}
           </span>
@@ -549,19 +549,19 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
           <div className="flex gap-2 ml-auto">
             <button
               onClick={handleExportCsv}
-              className="px-3 py-1.5 text-sm rounded bg-blue-100 text-blue-700 hover:bg-blue-200"
+              className="px-3 py-3 text-sm rounded bg-blue-100 text-blue-700 hover:bg-blue-200 min-h-[44px]"
             >
               Export CSV
             </button>
             <button
               onClick={() => handleBulkAction('saved')}
-              className="px-3 py-1.5 text-sm rounded bg-green-100 text-green-700 hover:bg-green-200"
+              className="px-3 py-3 text-sm rounded bg-green-100 text-green-700 hover:bg-green-200 min-h-[44px]"
             >
               Save All
             </button>
             <button
               onClick={() => handleBulkAction('dismissed')}
-              className="px-3 py-1.5 text-sm rounded bg-red-100 text-red-700 hover:bg-red-200"
+              className="px-3 py-3 text-sm rounded bg-red-100 text-red-700 hover:bg-red-200 min-h-[44px]"
             >
               Dismiss All
             </button>
@@ -573,13 +573,13 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
                   handleBulkAction('archived');
                 }
               }}
-              className="px-3 py-1.5 text-sm rounded bg-gray-100 text-gray-700 hover:bg-gray-200"
+              className="px-3 py-3 text-sm rounded bg-gray-100 text-gray-700 hover:bg-gray-200 min-h-[44px]"
             >
               Archive All
             </button>
             <button
               onClick={() => setShowModal({ action: 'delete', count: selectedIds.size })}
-              className="px-3 py-1.5 text-sm rounded bg-red-600 text-white hover:bg-red-700"
+              className="px-3 py-3 text-sm rounded bg-red-600 text-white hover:bg-red-700 min-h-[44px]"
             >
               Delete (admin)
             </button>
