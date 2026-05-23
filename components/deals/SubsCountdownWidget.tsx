@@ -7,7 +7,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getChartererGraceDays, normalizeDeadline } from '@/lib/deadlines/subs-guardian';
 
 export interface SubsCountdownWidgetProps {
@@ -27,16 +27,24 @@ function SubsCountdownInner({
   subsDeadline,
   chartererTier,
 }: SubsCountdownWidgetProps) {
-  const [tick, setTick] = useState(0);
-  // tick is intentional: computeRemaining calls Date.now() internally, which is not a
-  // React dep but must re-run every interval. tick forces that recomputation.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const remaining = useMemo(() => computeRemaining(subsDeadline), [subsDeadline, tick]);
+  // Defer Date.now() to post-mount: SSR and first client paint must produce
+  // identical HTML, otherwise React #418 hydration mismatch fires (same fix
+  // pattern as SubsCountdown — null sentinel → placeholder until useEffect).
+  const [remaining, setRemaining] = useState<number | null>(null);
 
   useEffect(() => {
-    const id = setInterval(() => setTick(n => n + 1), 60_000);
+    setRemaining(computeRemaining(subsDeadline));
+    const id = setInterval(() => setRemaining(computeRemaining(subsDeadline)), 60_000);
     return () => clearInterval(id);
   }, [subsDeadline]);
+
+  if (remaining === null) {
+    return (
+      <div data-testid={`subs-countdown-${dealId}`} suppressHydrationWarning>
+        --
+      </div>
+    );
+  }
 
   if (isNaN(remaining)) {
     return <div>Invalid deadline</div>;
