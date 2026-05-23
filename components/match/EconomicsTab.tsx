@@ -253,13 +253,13 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
               </div>
 
               <div className="mt-2 pt-2 border-t border-blue-200">
-                {fuelEuResult.isCompliant ? (
-                  <div className="flex items-center gap-1.5 text-green-700">
+                {fuelEuResult.ghgIntensityActual <= fuelEuResult.ghgIntensityTarget ? (
+                  <div data-testid="fueleu-compliant" className="flex items-center gap-1.5 text-green-700">
                     <span className="text-base">✓</span>
                     <span className="font-medium">Compliant</span>
                   </div>
-                ) : (
-                  <div className="space-y-1">
+                ) : fuelEuResult.totalEnergyMj > 0 ? (
+                  <div data-testid="fueleu-penalty" className="space-y-1">
                     <div className="flex items-center gap-1.5 text-orange-700">
                       <span className="text-base">⚠</span>
                       <span className="font-medium">
@@ -269,6 +269,11 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
                     <div className="text-gray-500">
                       ≈ ${fuelEuResult.penaltyUsd.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                     </div>
+                  </div>
+                ) : (
+                  <div data-testid="fueleu-noncompliant" className="flex items-center gap-1.5 text-orange-700">
+                    <span className="text-base">⚠</span>
+                    <span className="font-medium">Non-compliant fuel type</span>
                   </div>
                 )}
               </div>
