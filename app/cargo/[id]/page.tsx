@@ -42,7 +42,6 @@ export default async function CargoDetailPage({ params }: Props) {
   const statusCfg = processed ? STATUS_CONFIG[processed.status] : null;
   const emailMeta = {
     emailBody: email.body || email.snippet,
-    emailFrom: email.from,
     emailDate: email.date,
     emailSubject: email.subject,
   };

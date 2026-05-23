@@ -9,7 +9,6 @@ interface Props {
   confidence?: 'confirmed' | 'interpreted' | 'uncertain';
   sourceText?: string;
   emailBody?: string;
-  emailFrom?: string;
   emailDate?: string;
   emailSubject?: string;
 }
@@ -30,7 +29,7 @@ const VALID_CONF = new Set(['confirmed', 'interpreted', 'uncertain']);
 
 export function ClickableField({
   label, value, unit, confidence,
-  sourceText, emailBody, emailFrom, emailDate, emailSubject,
+  sourceText, emailBody, emailDate, emailSubject,
 }: Props) {
   const rendered = value != null ? String(value) : '';
   if (!rendered || rendered === 'NaN') return null;
@@ -47,7 +46,7 @@ export function ClickableField({
     </>
   );
 
-  const hasPopover = !!(sourceText && emailBody && emailFrom && emailDate && emailSubject);
+  const hasPopover = !!(sourceText && emailBody && emailDate && emailSubject);
 
   return (
     <div className="flex justify-between text-sm py-1 border-b border-gray-100">
@@ -57,7 +56,6 @@ export function ClickableField({
           <SourceQuotePopover
             sourceText={sourceText!}
             emailBody={emailBody!}
-            emailFrom={emailFrom!}
             emailDate={emailDate!}
             emailSubject={emailSubject!}
             confidence={confidence ?? 'confirmed'}
