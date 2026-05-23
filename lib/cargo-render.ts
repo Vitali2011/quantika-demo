@@ -1,4 +1,25 @@
+import { isRange, type Range } from '@/lib/types';
 import { safeRender } from '@/lib/ui-render';
+import { formatNumber } from '@/lib/utils';
+
+/**
+ * Format a quantity value (plain number or Range) into a human-readable string.
+ * Returns null when the value is absent or invalid — callers skip rendering.
+ * Pure function, no React deps — unit-testable in isolation.
+ */
+export function formatQuantity(q: Range<number> | number | null | undefined): string | null {
+  if (q == null) return null;
+  if (isRange<number>(q)) {
+    const { min, max, unit } = q;
+    const suffix = unit ? ` ${unit}` : '';
+    if (min === max) return `${formatNumber(min)}${suffix}`;
+    return `${formatNumber(min)}–${formatNumber(max)}${suffix}`;
+  }
+  if (typeof q === 'number' && !isNaN(q)) {
+    return formatNumber(q);
+  }
+  return null;
+}
 
 /**
  * βf2-02: Normalise specialRequirements before rendering.
