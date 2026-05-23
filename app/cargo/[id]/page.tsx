@@ -12,7 +12,7 @@ import { cfValue } from '@/lib/types';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
 import { ClickableField } from '@/components/clickable-field';
 import { safeRender, getConf, ConfIcon } from '@/lib/ui-render';
-import { renderSpecialRequirements } from '@/lib/cargo-render';
+import { renderSpecialRequirements, formatQuantity } from '@/lib/cargo-render';
 import { SanctionsBadge } from '@/components/vessel/SanctionsBadge';
 
 interface Props {
@@ -153,6 +153,22 @@ export default async function CargoDetailPage({ params }: Props) {
                       sourceText={cargo.cargoDescription.sourceText}
                       {...emailMeta}
                     />
+                  )}
+
+                  {/* Quantity */}
+                  {formatQuantity(cargo.quantity) && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="font-medium">Quantity:</span>
+                      {formatQuantity(cargo.quantity)}
+                    </div>
+                  )}
+
+                  {/* Laycan */}
+                  {cargo.laycan && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="font-medium">Laycan:</span>
+                      {cargo.laycan}
+                    </div>
                   )}
 
                   {/* Weight */}
