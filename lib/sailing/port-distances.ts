@@ -1066,8 +1066,6 @@ const DISTANCES_NM: Record<string, number> = {
   'Marghera|Novorossiysk': 1540,   // Novorossiysk|Ravenna=1530 +10nm Marghera offset
   'Burgas|Marghera': 1210,         // Burgas|Ravenna=1200 +10nm
   'Marghera|Varna': 1170,          // Ravenna|Varna=1160 +10nm
-  'Constanta|Marghera': 1260,      // Constanta|Ravenna=1250 +10nm
-  'Karasu|Marghera': 1155,         // Karasu|Ravenna=1145 +10nm
   'Izmail|Marghera': 1220,         // Izmail|Ravenna=1210 +10nm
   'Marghera|Taman': 1580,          // Marghera|Novorossiysk=1540 + Novorossiysk|Taman=40
   'Marghera|Tuapse': 1620,         // Marghera|Novorossiysk=1540 + Novorossiysk|Tuapse=80
