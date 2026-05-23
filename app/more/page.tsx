@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 export default function MorePage() {
   return (
-    <div className="flex min-h-[calc(100vh-56px)] flex-col p-6">
+    <div className="flex min-h-[calc(100vh-56px-env(safe-area-inset-bottom,0px))] flex-col p-6">
       <div className="w-full max-w-sm mx-auto rounded-xl border border-border bg-card p-8 shadow-sm space-y-6">
         <div>
           <h1 className="mb-1 text-xl font-semibold">More</h1>

@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /processing
+Disallow: /admin
+
+Sitemap: https://demo.quantika.org/sitemap.xml

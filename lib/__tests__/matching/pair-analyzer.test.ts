@@ -254,6 +254,40 @@ describe('analyzePairs', () => {
     expect(result.blockedMatches[0].filterReason).toContain('draft too deep');
   });
 
+  // PI2 — #362: SANCTIONS badge must not appear on non-sanctions reasons.
+  // A pair that fails a hard filter first must NOT get sanctions set on the
+  // BlockedMatch, even when checkSanctions also returns blocking=true.
+  it('does not set sanctions on BlockedMatch when hard filter fails before sanctions', async () => {
+    const cargo = makeCargo();
+    const vessel = makeVessel();
+
+    const { runHardFilters } = jest.requireMock('@/lib/sailing/match-filters');
+    runHardFilters.mockReturnValue({
+      pass: false,
+      failures: ['DWT too small (15000t < 25000t min)'],
+      checks: {
+        draft: { pass: true },
+        crane: { pass: true },
+        volume: { pass: true },
+        cargoVessel: { pass: false },
+        cargoWeight: { pass: false },
+      },
+    });
+
+    const { checkSanctions } = jest.requireMock('@/lib/validation/sanctions');
+    checkSanctions.mockReturnValueOnce({ risk: 'HIGH', blocking: true, reason: 'IR-flagged vessel' });
+
+    const result = await analyzePairs([cargo], [vessel], emptyAiScorer);
+
+    expect(result.blockedMatches).toHaveLength(1);
+    // Primary reason is the hard filter, not sanctions
+    expect(result.blockedMatches[0].filterReason).toContain('DWT too small');
+    // sanctions must NOT be set — otherwise the dashboard shows a false SANCTIONS badge
+    expect(result.blockedMatches[0].sanctions).toBeUndefined();
+
+    checkSanctions.mockReturnValue({ risk: 'NONE', blocking: false });
+  });
+
   describe('aiScorer failure resilience', () => {
     beforeEach(() => {
       // Reset hard filters to pass (default) so pairs reach aiScorer
