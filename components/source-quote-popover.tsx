@@ -6,7 +6,6 @@ interface Props {
   children: React.ReactNode;
   sourceText: string;
   emailBody: string;
-  emailFrom: string;
   emailDate: string;
   emailSubject: string;
   confidence: 'confirmed' | 'interpreted' | 'uncertain';
@@ -31,7 +30,7 @@ const CONF_META = {
 };
 
 export function SourceQuotePopover({
-  children, sourceText, emailBody, emailFrom, emailDate, emailSubject, confidence, label,
+  children, sourceText, emailBody, emailDate, emailSubject, confidence, label,
 }: Props) {
   const snippet = getContextSnippet(emailBody, sourceText);
   const meta = CONF_META[confidence] ?? CONF_META.confirmed;
@@ -63,7 +62,6 @@ export function SourceQuotePopover({
             </div>
             <p className="text-xs text-gray-500 italic">{meta.text}</p>
             <div className="border-t pt-2 text-xs text-gray-400 space-y-0.5">
-              <p>From: {emailFrom}</p>
               <p>Date: {new Date(emailDate).toLocaleDateString('en-US', { timeZone: 'UTC' })}</p>
               <p className="truncate">Subject: {emailSubject}</p>
             </div>
