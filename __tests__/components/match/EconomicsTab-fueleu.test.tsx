@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { EconomicsTab } from '@/components/match/EconomicsTab';
 
 describe('EconomicsTab FuelEU tile', () => {
@@ -38,14 +38,14 @@ describe('EconomicsTab FuelEU tile', () => {
     expect(fuelSelect).toHaveValue('hfo'); // default
   });
 
-  test('FuelEU tile shows compliance badge when compliant', () => {
+  test('FuelEU tile shows non-compliant badge for HFO (91.27 > target 91.16)', () => {
     process.env.NEXT_PUBLIC_FUELEU_ENABLED = 'true';
 
     render(<EconomicsTab />);
 
-    // Default: HFO is non-compliant (91.27 > 91.16)
-    // But without voyage data, totalEnergy=0, so it should be compliant
-    expect(screen.getByText(/Compliant/i)).toBeInTheDocument();
+    // HFO WtW GHG intensity (91.27) exceeds target (91.16) → non-compliant
+    expect(screen.getByTestId('fueleu-noncompliant')).toBeInTheDocument();
+    expect(screen.queryByTestId('fueleu-compliant')).not.toBeInTheDocument();
   });
 
   test('FuelEU tile shows penalty when non-compliant with voyage data', () => {
@@ -106,5 +106,55 @@ describe('EconomicsTab FuelEU tile', () => {
     render(<EconomicsTab />);
 
     expect(screen.getByText(/GHG intensity/i)).toBeInTheDocument();
+  });
+});
+
+describe('FuelEU badge — compliance inversion fix (PI2 behavioral)', () => {
+  beforeEach(() => {
+    process.env.NEXT_PUBLIC_FUELEU_ENABLED = 'true';
+  });
+
+  afterEach(() => {
+    delete process.env.NEXT_PUBLIC_FUELEU_ENABLED;
+  });
+
+  test('WtW > target: HFO (91.27 g/MJ) above 91.16 target → non-compliant badge, no compliant badge', () => {
+    render(<EconomicsTab />);
+
+    expect(screen.getByTestId('fueleu-noncompliant')).toBeInTheDocument();
+    expect(screen.queryByTestId('fueleu-compliant')).not.toBeInTheDocument();
+  });
+
+  test('WtW < target: LNG (75.21 g/MJ) below 91.16 target → compliant badge', () => {
+    render(<EconomicsTab />);
+    fireEvent.change(screen.getByLabelText('Fuel type'), { target: { value: 'lng' } });
+
+    expect(screen.getByTestId('fueleu-compliant')).toBeInTheDocument();
+    expect(screen.queryByTestId('fueleu-noncompliant')).not.toBeInTheDocument();
+  });
+
+  test('WtW > target + voyage data: HFO with routeDistanceNm → penalty badge (not bare non-compliant)', () => {
+    const vessel = {
+      emailId: '1',
+      itemIndex: 0,
+      vesselName: { value: 'MV Test', confidence: 'confirmed' as const },
+      dwtSummer: { value: 50000, confidence: 'confirmed' as const },
+      speedLaden: '14 kts',
+      consumption: '30 mt/day',
+      openPosition: null,
+      openDate: null,
+      restrictions: [],
+      specialFeatures: [],
+    };
+
+    render(
+      <EconomicsTab
+        vessel={vessel as unknown as import('@/lib/types').ParsedVessel}
+        routeDistanceNm={5000}
+      />
+    );
+
+    expect(screen.getByTestId('fueleu-penalty')).toBeInTheDocument();
+    expect(screen.queryByTestId('fueleu-compliant')).not.toBeInTheDocument();
   });
 });
