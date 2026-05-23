@@ -22,12 +22,17 @@ function isMarketActive(pathname: string): boolean {
   return pathname === '/market';
 }
 
+function isMoreActive(pathname: string): boolean {
+  return pathname === '/more';
+}
+
 export default function BottomNav() {
   const pathname = usePathname();
 
   const homeActive = isHomeActive(pathname);
   const matchesActive = isMatchesActive(pathname);
   const marketActive = isMarketActive(pathname);
+  const moreActive = isMoreActive(pathname);
 
   return (
     <nav
@@ -70,8 +75,11 @@ export default function BottomNav() {
       </Link>
       <Link
         href="/more"
-        aria-current={undefined}
-        className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full text-xs text-muted-foreground"
+        aria-current={moreActive ? 'page' : undefined}
+        className={cn(
+          'flex flex-col items-center justify-center gap-0.5 flex-1 h-full text-xs',
+          moreActive ? 'text-foreground' : 'text-muted-foreground',
+        )}
       >
         <Menu className="size-5" aria-hidden="true" />
         <span>More</span>

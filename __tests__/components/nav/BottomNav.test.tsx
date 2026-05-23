@@ -104,4 +104,20 @@ describe('BottomNav — mobile bottom navigation (RED phase)', () => {
     expect(screen.getByRole('link', { name: /home/i })).not.toHaveAttribute('aria-current', 'page');
     expect(screen.getByRole('link', { name: /market/i })).not.toHaveAttribute('aria-current', 'page');
   });
+
+  /**
+   * TDD-6: Regression #417 — More tab active on /more.
+   */
+  it('TDD-6: More tab has aria-current="page" when pathname is /more', () => {
+    mockUsePathname.mockReturnValue('/more');
+    render(<BottomNav />);
+
+    const moreLink = screen.getByRole('link', { name: /more/i });
+    expect(moreLink).toHaveAttribute('aria-current', 'page');
+
+    // Other tabs must NOT be active
+    expect(screen.getByRole('link', { name: /home/i })).not.toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: /matches/i })).not.toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: /market/i })).not.toHaveAttribute('aria-current', 'page');
+  });
 });
