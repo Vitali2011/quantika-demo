@@ -67,6 +67,9 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       : null;
 
     if (!payload) {
+      if (pathname.startsWith('/api/')) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
       // Redirect to /login preserving the original URL as `next` param is intentionally omitted
       // (simple demo — no deep-link restoration needed)
       const loginUrl = new URL('/login', getRequestBaseUrl(request));
