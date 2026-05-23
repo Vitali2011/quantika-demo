@@ -48,9 +48,9 @@ export default async function DashboardPage() {
       <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="max-w-md w-full text-center space-y-4">
           <div className="text-4xl">📭</div>
-          <h1 className="text-xl font-bold text-gray-900">No emails yet</h1>
+          <h1 className="text-xl font-bold text-gray-900">Нет писем</h1>
           <p className="text-sm text-gray-500">
-            Load your emails to start analyzing cargo inquiries, vessel positions, and negotiations.
+            Загрузите письма, чтобы начать анализ грузовых запросов, позиций судов и переговоров.
           </p>
           <Link
             href="/processing"

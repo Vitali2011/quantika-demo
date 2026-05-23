@@ -38,11 +38,11 @@ const TRUST_QUOTE = {
 
 export default function UpgradePage() {
   return (
-    <main className="min-h-screen bg-gray-50 px-4 py-12">
+    <main className="min-h-screen bg-background px-4 py-12">
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold text-gray-900">Upgrade Your Quantika Plan</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-foreground">Upgrade Your Quantika Plan</h1>
+          <p className="text-sm text-muted-foreground">
             Trusted by freight brokers and charterers on the spot market.
           </p>
         </div>
@@ -53,9 +53,9 @@ export default function UpgradePage() {
           ))}
         </div>
 
-        <blockquote className="max-w-lg mx-auto border-l-4 border-blue-200 pl-4 text-sm text-gray-600 italic">
+        <blockquote className="max-w-lg mx-auto border-l-4 border-blue-200 pl-4 text-sm text-muted-foreground italic">
           &ldquo;{TRUST_QUOTE.text}&rdquo;
-          <cite className="block mt-1 not-italic text-gray-400 text-xs">
+          <cite className="block mt-1 not-italic text-muted-foreground/70 text-xs">
             — {TRUST_QUOTE.author}
           </cite>
         </blockquote>

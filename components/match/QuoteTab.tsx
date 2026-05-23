@@ -62,14 +62,16 @@ export function QuoteTab({ cargoEmailId, confidence }: QuoteTabProps) {
         ) : benchmark ? (
           <>
             <p className="text-xs text-gray-700">{formatBenchmarkReference(benchmark)}</p>
-            <a
-              href={benchmark.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-blue-500 underline"
-            >
-              source
-            </a>
+            {benchmark.sourceUrl.startsWith('http') && (
+              <a
+                href={benchmark.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-blue-500 underline"
+              >
+                source
+              </a>
+            )}
           </>
         ) : (
           <p className="text-xs text-gray-400">📊 Benchmark unavailable</p>

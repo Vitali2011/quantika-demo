@@ -202,7 +202,9 @@ export async function analyzePairs(
         vesselItemIndex: a.vesselItemIndex,
         filterReason: a.filterReason ?? 'filtered',
       };
-      if (a.sanctions.blocking) {
+      // Only tag sanctions when it was the primary block cause — hard-filter / date / readiness failures take priority.
+      const hfFailed = Object.values(a.hardFilters).some((c) => c != null && !c.pass);
+      if (a.sanctions.blocking && !hfFailed && a.dateIssues.length === 0 && a.readiness.verdict !== 'late') {
         blocked.sanctions = a.sanctions;
       }
       if (a.hardFilters && Object.values(a.hardFilters).some((c) => c != null && !c.pass)) {
