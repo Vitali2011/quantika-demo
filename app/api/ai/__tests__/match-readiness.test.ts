@@ -109,3 +109,58 @@ describe('applyReadinessScoring', () => {
     expect(applyReadinessScoring(baseMatch({ score: 40 }), readinessOf('idle', 8)).matchLevel).toBe('weak');
   });
 });
+
+// MED-01: boundary alignment — applyReadinessScoring must use deriveMatchLevel thresholds (>=, not >)
+describe('applyReadinessScoring boundary alignment with deriveMatchLevel', () => {
+  // These boundary tests pin the CORRECT behavior after the MED-01 fix.
+  // Before the fix, the inline formula used > 70 and > 40 (exclusive),
+  // while deriveMatchLevel uses >= 70 and >= 40 (inclusive).
+
+  it('score exactly 70 + tight: matchLevel must be good (>= threshold)', () => {
+    const m = applyReadinessScoring(baseMatch({ score: 70 }), readinessOf('tight', 0));
+    expect(m.score).toBe(70);
+    expect(m.matchLevel).toBe('good');
+  });
+
+  it('score exactly 40 + tight: matchLevel must be possible (>= threshold)', () => {
+    const m = applyReadinessScoring(baseMatch({ score: 40 }), readinessOf('tight', 0));
+    expect(m.score).toBe(40);
+    expect(m.matchLevel).toBe('possible');
+  });
+
+  it('score 30 + ideal (+10 = 40): matchLevel must be possible (>= 40)', () => {
+    const m = applyReadinessScoring(baseMatch({ score: 30 }), readinessOf('ideal', 2));
+    expect(m.score).toBe(40);
+    expect(m.matchLevel).toBe('possible');
+  });
+
+  it('score 60 + ideal (+10 = 70): matchLevel must be good (>= 70)', () => {
+    const m = applyReadinessScoring(baseMatch({ score: 60 }), readinessOf('ideal', 2));
+    expect(m.score).toBe(70);
+    expect(m.matchLevel).toBe('good');
+  });
+
+  it('score 69 + tight: matchLevel must be possible (below 70)', () => {
+    const m = applyReadinessScoring(baseMatch({ score: 69 }), readinessOf('tight', 0));
+    expect(m.score).toBe(69);
+    expect(m.matchLevel).toBe('possible');
+  });
+
+  it('score 39 + tight: matchLevel must be weak (below 40)', () => {
+    const m = applyReadinessScoring(baseMatch({ score: 39 }), readinessOf('tight', 0));
+    expect(m.score).toBe(39);
+    expect(m.matchLevel).toBe('weak');
+  });
+
+  it('matchLevel from applyReadinessScoring matches deriveMatchLevel at score boundaries', () => {
+    const { deriveMatchLevel } = require('@/lib/sailing/match-scoring');
+    const verdicts = ['tight', 'unknown'] as const;
+    const boundaryScores = [0, 39, 40, 41, 69, 70, 71, 100];
+    for (const verdict of verdicts) {
+      for (const score of boundaryScores) {
+        const m = applyReadinessScoring(baseMatch({ score }), readinessOf(verdict, 0));
+        expect(m.matchLevel).toBe(deriveMatchLevel(score));
+      }
+    }
+  });
+});
