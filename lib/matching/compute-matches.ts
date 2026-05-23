@@ -1,10 +1,12 @@
 import type Database from 'better-sqlite3';
 import type { ParsedCargo, ParsedVessel } from '@/lib/types';
+import { cfValue } from '@/lib/types';
 import { analyzePairs, type AiScorer, type RawMatch } from '@/lib/matching/pair-analyzer';
 import { createMatch, listMatches } from '@/lib/matching/matches-repository';
 import { callAiJson } from '@/lib/ai-provider';
 import { MATCH_PROMPT } from '@/lib/prompts';
 import { endpointLlmTimeout } from '@/lib/openai-helpers';
+import { parseLaycan } from '@/lib/sailing/date-parsing';
 
 /**
  * Compute matches for a session and persist them to the DB.
@@ -38,7 +40,19 @@ export async function computeAndPersistMatches(
 
   const { matches } = await analyzePairs(cargos, vessels, aiScorer);
 
+  const cargoMap = new Map(cargos.map((c) => [`${c.emailId}|${c.itemIndex}`, c]));
+  const vesselMap = new Map(vessels.map((v) => [`${v.emailId}|${v.itemIndex}`, v]));
+
   for (const m of matches) {
+    const cargo = cargoMap.get(`${m.cargoEmailId}|${m.cargoItemIndex}`);
+    const vessel = vesselMap.get(`${m.vesselEmailId}|${m.vesselItemIndex}`);
+    const laycan = cargo ? parseLaycan(cargo.laycan) : null;
+    const cargoType = cargo
+      ? (typeof cargo.cargoType === 'object' && cargo.cargoType !== null && 'value' in cargo.cargoType
+          ? (cargo.cargoType as unknown as { value: string }).value
+          : cargo.cargoType as string)
+      : null;
+
     createMatch(db, {
       cargo_id: m.cargoEmailId,
       vessel_id: m.vesselEmailId,
@@ -47,6 +61,12 @@ export async function computeAndPersistMatches(
       status: 'shortlist',
       user_id: sessionId,
       reason_structured: m.scoreBreakdown ? JSON.stringify(m.scoreBreakdown) : null,
+      cargo_type: cargoType ?? null,
+      load_port: cargo ? cfValue(cargo.originPort) : null,
+      discharge_port: cargo ? cfValue(cargo.destinationPort) : null,
+      laycan_start: laycan ? laycan.start.getTime() : null,
+      laycan_end: laycan ? laycan.end.getTime() : null,
+      vessel_dwt: vessel ? cfValue(vessel.dwtSummer) : null,
     });
   }
 
