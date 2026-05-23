@@ -7,6 +7,7 @@ import { callAiJson } from '@/lib/ai-provider';
 import { MATCH_PROMPT } from '@/lib/prompts';
 import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { parseLaycan } from '@/lib/sailing/date-parsing';
+import { getPortDistance } from '@/lib/sailing/port-distances';
 
 /**
  * Compute matches for a session and persist them to the DB.
@@ -53,6 +54,10 @@ export async function computeAndPersistMatches(
           : cargo.cargoType as string)
       : null;
 
+    const loadPort = cargo ? cfValue(cargo.originPort) : null;
+    const dischargePort = cargo ? cfValue(cargo.destinationPort) : null;
+    const distanceResult = loadPort && dischargePort ? getPortDistance(loadPort, dischargePort) : null;
+
     createMatch(db, {
       cargo_id: m.cargoEmailId,
       vessel_id: m.vesselEmailId,
@@ -62,11 +67,13 @@ export async function computeAndPersistMatches(
       user_id: sessionId,
       reason_structured: m.scoreBreakdown ? JSON.stringify(m.scoreBreakdown) : null,
       cargo_type: cargoType ?? null,
-      load_port: cargo ? cfValue(cargo.originPort) : null,
-      discharge_port: cargo ? cfValue(cargo.destinationPort) : null,
+      load_port: loadPort,
+      discharge_port: dischargePort,
       laycan_start: laycan ? laycan.start.getTime() : null,
       laycan_end: laycan ? laycan.end.getTime() : null,
       vessel_dwt: vessel ? cfValue(vessel.dwtSummer) : null,
+      tce_usd_per_day: null,
+      distance_nm: distanceResult ? distanceResult.nm : null,
     });
   }
 

@@ -440,6 +440,16 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
                               DWT: {match.vessel_dwt.toLocaleString()}
                             </div>
                           )}
+                          {match.distance_nm != null && (
+                            <div className="text-xs text-gray-500">
+                              Distance: {match.distance_nm.toLocaleString()} nm
+                            </div>
+                          )}
+                          {match.tce_usd_per_day != null && (
+                            <div className="text-xs font-medium text-emerald-700">
+                              TCE: ${match.tce_usd_per_day.toLocaleString()}/day
+                            </div>
+                          )}
                         </div>
                         <div className="text-right flex-none">
                           <div className="text-lg font-bold text-blue-600">{match.score}%</div>

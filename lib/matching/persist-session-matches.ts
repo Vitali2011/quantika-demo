@@ -3,6 +3,7 @@ import { cfValue } from '@/lib/types';
 import type { Match, ParsedCargo, ParsedVessel } from '@/lib/types';
 import { createMatch } from '@/lib/matching/matches-repository';
 import { parseLaycan } from '@/lib/sailing/date-parsing';
+import { getPortDistance } from '@/lib/sailing/port-distances';
 
 export function persistSessionMatches(
   db: Database.Database,
@@ -19,6 +20,10 @@ export function persistSessionMatches(
     const vessel = vesselMap.get(`${m.vesselEmailId}|${m.vesselItemIndex}`);
     const laycan = cargo ? parseLaycan(cargo.laycan) : null;
 
+    const loadPort = cargo ? cfValue(cargo.originPort) : null;
+    const dischargePort = cargo ? cfValue(cargo.destinationPort) : null;
+    const distanceResult = loadPort && dischargePort ? getPortDistance(loadPort, dischargePort) : null;
+
     createMatch(db, {
       cargo_id: m.cargoEmailId,
       vessel_id: m.vesselEmailId,
@@ -28,11 +33,13 @@ export function persistSessionMatches(
       user_id: sessionId,
       reason_structured: m.scoreBreakdown ? JSON.stringify(m.scoreBreakdown) : null,
       cargo_type: cargo ? cargo.cargoType : null,
-      load_port: cargo ? cfValue(cargo.originPort) : null,
-      discharge_port: cargo ? cfValue(cargo.destinationPort) : null,
+      load_port: loadPort,
+      discharge_port: dischargePort,
       laycan_start: laycan ? laycan.start.getTime() : null,
       laycan_end: laycan ? laycan.end.getTime() : null,
       vessel_dwt: vessel ? cfValue(vessel.dwtSummer) : null,
+      tce_usd_per_day: null,
+      distance_nm: distanceResult ? distanceResult.nm : null,
     });
   }
 }
