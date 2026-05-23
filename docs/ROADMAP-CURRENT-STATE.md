@@ -1,7 +1,7 @@
 # Quantika Demo — ROADMAP (Текущее состояние)
 
 **Последний полный аудит:** 2026-05-17 (5-поточный код-аудит) + 2026-05-19 UI audit (Playwright+Chrome MCP) + **2026-05-19 ROADMAP reality audit** (claim vs prod sweep)
-**Последнее обновление:** 2026-05-23 (вечер) — qa-walker 4-волновой план: 21 issue закрыт за день, 7 PR merged — 4-волновой план: 7 PR merged (#365-#371), 4 GH issues closed (#359 #361 #364 + #360 #362 #363), mobile UX audit findings закрыты (1 CRIT через rebuild + 4 HIGH + 3 LOW)
+**Последнее обновление:** 2026-05-23 (вечер) — qa-walker 4-волновой план: 22 issues закрыты, 8 PR merged (#383-#391) — 4-волновой план: 7 PR merged (#365-#371), 4 GH issues closed (#359 #361 #364 + #360 #362 #363), mobile UX audit findings закрыты (1 CRIT через rebuild + 4 HIGH + 3 LOW)
 **Текущая версия:** prod HEAD после auto-deploy LIVE (#259, systemd quantika-demo.service на outreach-vps)
 **Статус:** 🟢 Основные потоки работают; parse-vessel в активной итерации (R8 baseline после revert); pre-merge-guard LIVE
 
@@ -133,7 +133,7 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 - ✅ **Wave B (HIGH /matches UI):** #385 — 5 issues одной веткой (#375 overflow, #374 bulk toolbar, #373 filter dup, #350 sort, #348 clickable cards) + bonus #349 cargo/route/dwt display из #378 fields. 168/168 green.
 - ✅ **Wave C (HIGH data/security):** #386 (#377 BHSI/TOEPFER live из market_indices + stale marker) + #387 (#354 TMI outlier marker + #353 RU→EN labels) + #388 (#355 server-side XSS sanitization, /test-skill 29 adversarial vectors 0 VULN).
 - ✅ **Wave D (LOW polish + verify-close):** #389 — 4 fixes (#357 hydration, #356 email dup, #351 Quote draft generator, #352 logout verified) + 6 verified-close (#294 #291 #292 #293 #362 #352). 21 qa-walker issue из 22 закрыто.
-- 📋 **Q001 остался:** #363 sitemap.xml — файл существует в public/ но middleware блокирует. 1-line patch для следующей сессии (AUTH_BYPASS_PATHS += '/sitemap.xml').
+- ✅ **#391** Q001 закрыт — 3-line patch в middleware.ts (AUTH_BYPASS_PATHS += /sitemap.xml + /robots.txt). **22/22 qa-walker issues закрыто за день.**
 
 **Что изменилось за 2026-05-23 (день — 3-параллельных, ~1.5ч):**
 
