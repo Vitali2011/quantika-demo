@@ -92,6 +92,7 @@ export interface MarketBenchmark {
   period: string;                      // 'Apr 2026' | 'W17 2026'
   sourceUrl: string;                   // canonical URL where it was scraped
   fetchedAt: string;                   // ISO 8601
+  stale?: boolean;                     // true if index_date is >7 days old
 }
 
 // Helper to extract value from ConfidenceField
