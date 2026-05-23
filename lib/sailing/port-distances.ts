@@ -125,6 +125,8 @@ const PORT_ALIASES: Record<string, KnownPort> = {
   'piraeus': 'Piraeus',
   'pireus': 'Piraeus',
   'aliaga': 'Aliaga',
+  'aliağa': 'Aliaga',           // Turkish diacritic spelling
+  'petkim': 'Aliaga',           // Petkim petrochemical terminal in Aliaga bay
   'efesan': 'Aliaga',           // Efesan terminal in Aliaga bay
   'nemrut': 'Aliaga',           // Nemrut Bay — Aliaga's main industrial complex
   'nemrut bay': 'Aliaga',
@@ -1039,6 +1041,21 @@ const DISTANCES_NM: Record<string, number> = {
   'Izmail|Ravenna': 1210,
   // Jeddah → Suez Canal (Red Sea entrance) → Port Said → Eastern Med → Iskenderun
   'Iskenderun|Jeddah': 1140,
+
+  // ── Phase B v2: Black Sea port → Med/Adriatic missing pairs ──
+  // These pairs were causing readiness=unknown for common Black Sea→Med routes.
+  // All route via Bosphorus (mandatory chokepoint); haversine cuts through Balkans
+  // and underestimates by 40-60%. Values derived from adjacent anchors in the matrix
+  // (e.g. Burgas|Istanbul + Istanbul|Piraeus; Varna|Istanbul + Istanbul|Ravenna).
+  'Burgas|Piraeus': 580,           // Burgas→Bosphorus(150nm)→Aegean→Piraeus(430nm)
+  'Burgas|Ravenna': 1200,          // Burgas→Bosphorus(150nm)→Aegean→Adriatic→Ravenna(1050nm)
+  'Novorossiysk|Piraeus': 895,     // Novorossiysk→Bosphorus(480nm)→Aegean→Piraeus(430nm) ≈895
+  'Novorossiysk|Ravenna': 1530,    // Novorossiysk→Bosphorus(480nm)→Dardanelles→Adriatic→Ravenna
+  'Piraeus|Varna': 620,            // Varna→Bosphorus(185nm)→Aegean→Piraeus(430nm) ≈620
+  'Ravenna|Varna': 1160,           // Varna|Constanta=90; Constanta|Ravenna=1250; Varna closer→1160
+  'Marmara|Ravenna': 980,          // Marmara→Dardanelles→Aegean→Adriatic→Ravenna; Istanbul|Ravenna=1050, Marmara 70nm closer to exit
+  'Izmail|Piraeus': 840,           // Izmail→Black Sea coastal→Bosphorus(300nm)→Aegean→Piraeus(430nm) + routing factor
+  'Aliaga|Izmail': 580,            // Aliaga→Aegean→Bosphorus(275nm)→Black Sea→Izmail(300nm) + routing
 
 };
 
