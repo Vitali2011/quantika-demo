@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from 'react';
+import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import type { StoredMatch, MatchStatus } from '@/lib/matching/matches-repository';
 import { matchesToCsv } from '@/lib/matching/matches-csv';
@@ -35,6 +36,7 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
   const [expandedBreakdown, setExpandedBreakdown] = useState<number | null>(null);
   const [showModal, setShowModal] = useState<{ action: string; count: number } | null>(null);
   const [bulkError, setBulkError] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<'score' | 'freshness'>('score');
 
   // Filter panel state — lazy-initialized from URL search params on first render
   const [filtersOpen, setFiltersOpen] = useState(() =>
@@ -179,9 +181,16 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
     setExpandedBreakdown((prev) => (prev === id ? null : id));
   }
 
-  const filtered = matches.filter(
-    (m) => !filterStatus || m.status === filterStatus
-  );
+  // Client-side filter: status + cargo_type; then sort by score or freshness
+  const filtered = matches
+    .filter(
+      (m) =>
+        (!filterStatus || m.status === filterStatus) &&
+        (cargoTypes.length === 0 || cargoTypes.includes(m.cargo_type ?? ''))
+    )
+    .sort((a, b) =>
+      sortBy === 'freshness' ? b.created_at - a.created_at : b.score - a.score
+    );
 
   // Update status filter and persist to URL
   function applyStatusFilter(status: MatchStatus | null) {
@@ -197,7 +206,7 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 overflow-x-hidden">
       {/* Status filter chips */}
       <div className="flex gap-2 flex-wrap">
         <button
@@ -220,6 +229,25 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
           className="px-3 py-2.5 rounded-full text-sm border bg-white text-gray-700 border-gray-300 ml-2 min-h-[44px]"
         >
           Advanced Filters
+        </button>
+      </div>
+
+      {/* Sort controls (#350) */}
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-gray-500">Sort:</span>
+        <button
+          onClick={() => setSortBy('score')}
+          data-testid="sort-score"
+          className={`px-3 py-1.5 rounded text-xs border ${sortBy === 'score' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300'}`}
+        >
+          Score
+        </button>
+        <button
+          onClick={() => setSortBy('freshness')}
+          data-testid="sort-freshness"
+          className={`px-3 py-1.5 rounded text-xs border ${sortBy === 'freshness' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300'}`}
+        >
+          Freshness
         </button>
       </div>
 
@@ -374,10 +402,10 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
 
           <ul className="space-y-4">
             {filtered.map((match) => (
-              <li key={match.id} className="bg-white rounded-lg border p-4 space-y-2">
-                <div className="flex items-start gap-3">
+              <li key={match.id} className="bg-white rounded-lg border overflow-hidden">
+                <div className="flex items-start gap-3 p-4">
                   {/* Checkbox for bulk selection */}
-                  <div className="pt-1">
+                  <div className="pt-1 flex-none">
                     <input
                       type="checkbox"
                       checked={selectedIds.has(match.id)}
@@ -386,70 +414,88 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
                     />
                   </div>
 
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-medium text-sm">
-                          Cargo: <span className="text-gray-700">{match.cargo_id}</span>
+                  <div className="flex-1 min-w-0">
+                    {/* Clickable card info — wrapped in Link (#348) */}
+                    <Link href={`/match/${match.id}`} className="block">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <div className="font-medium text-sm">
+                            Cargo: <span className="text-gray-700">{match.cargo_id}</span>
+                          </div>
+                          <div className="font-medium text-sm">
+                            Vessel: <span className="text-gray-700">{match.vessel_id}</span>
+                          </div>
+                          {match.cargo_type && (
+                            <span className="inline-block text-xs bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded mt-0.5">
+                              {match.cargo_type}
+                            </span>
+                          )}
+                          {(match.load_port || match.discharge_port) && (
+                            <div className="text-xs text-gray-500 mt-0.5 truncate">
+                              {[match.load_port, match.discharge_port].filter(Boolean).join(' → ')}
+                            </div>
+                          )}
+                          {match.vessel_dwt && (
+                            <div className="text-xs text-gray-500">
+                              DWT: {match.vessel_dwt.toLocaleString()}
+                            </div>
+                          )}
                         </div>
-                        <div className="font-medium text-sm">
-                          Vessel: <span className="text-gray-700">{match.vessel_id}</span>
+                        <div className="text-right flex-none">
+                          <div className="text-lg font-bold text-blue-600">{match.score}%</div>
+                          <div className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 capitalize">
+                            {match.status}
+                          </div>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-blue-600">{match.score}%</div>
-                        <div className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 capitalize">
-                          {match.status}
-                        </div>
-                      </div>
-                    </div>
 
-                    {match.reason && (
-                      <div className="text-xs text-gray-500 truncate">
-                        {match.reason}
-                      </div>
-                    )}
+                      {match.reason && (
+                        <div className="text-xs text-gray-500 truncate mt-1">
+                          {match.reason}
+                        </div>
+                      )}
 
-                    {/* Vague-region hint (Phase E3) */}
-                    {match.reason_structured && (() => {
-                      let vagueRegionAdjustment: number | undefined;
-                      try {
-                        const parsed = JSON.parse(match.reason_structured as string);
-                        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-                          vagueRegionAdjustment = parsed.vagueRegionAdjustment;
-                        }
-                      } catch {
-                        vagueRegionAdjustment = undefined;
-                      }
-                      if (typeof vagueRegionAdjustment === 'number' && vagueRegionAdjustment < 0) {
-                        let hintText = '⚠ Vague location — ask for specific anchorage / load port';
+                      {/* Vague-region hint (Phase E3) */}
+                      {match.reason_structured && (() => {
+                        let vagueRegionAdjustment: number | undefined;
                         try {
                           const parsed = JSON.parse(match.reason_structured as string);
-                          const components: ScoreComponent[] = Array.isArray(parsed)
-                            ? parsed
-                            : (Array.isArray(parsed.components) ? parsed.components : []);
-                          const geoComp = components.find((c) => c.label === 'Geographic proximity');
-                          if (geoComp?.reason?.includes('vessel position')) {
-                            hintText = '⚠ Vessel position vague — ask for specific anchorage';
-                          } else if (geoComp?.reason?.includes('cargo origin')) {
-                            hintText = '⚠ Cargo origin vague — ask for specific load port';
+                          if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                            vagueRegionAdjustment = parsed.vagueRegionAdjustment;
                           }
                         } catch {
-                          // use generic hint
+                          vagueRegionAdjustment = undefined;
                         }
-                        return (
-                          <div
-                            role="status"
-                            className="mt-1 text-xs text-amber-700 bg-amber-50 rounded px-2 py-1"
-                          >
-                            {hintText}
-                          </div>
-                        );
-                      }
-                      return null;
-                    })()}
+                        if (typeof vagueRegionAdjustment === 'number' && vagueRegionAdjustment < 0) {
+                          let hintText = '⚠ Vague location — ask for specific anchorage / load port';
+                          try {
+                            const parsed = JSON.parse(match.reason_structured as string);
+                            const components: ScoreComponent[] = Array.isArray(parsed)
+                              ? parsed
+                              : (Array.isArray(parsed.components) ? parsed.components : []);
+                            const geoComp = components.find((c) => c.label === 'Geographic proximity');
+                            if (geoComp?.reason?.includes('vessel position')) {
+                              hintText = '⚠ Vessel position vague — ask for specific anchorage';
+                            } else if (geoComp?.reason?.includes('cargo origin')) {
+                              hintText = '⚠ Cargo origin vague — ask for specific load port';
+                            }
+                          } catch {
+                            // use generic hint
+                          }
+                          return (
+                            <div
+                              role="status"
+                              className="mt-1 text-xs text-amber-700 bg-amber-50 rounded px-2 py-1"
+                            >
+                              {hintText}
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
+                    </Link>
 
-                    {/* Score Breakdown toggle */}
+                    {/* Score Breakdown toggle — outside Link to avoid nested button-in-anchor */}
                     {match.reason_structured && (
                       <button
                         onClick={() => toggleBreakdown(match.id)}
@@ -495,7 +541,7 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
                     })()}
 
                     {/* Action buttons */}
-                    <div className="flex gap-2 mt-2">
+                    <div className="flex gap-2 mt-2 flex-wrap">
                       {match.status !== 'saved' && match.status !== 'archived' && (
                         <button
                           onClick={() => handleAction(match.id, 'saved')}
@@ -537,16 +583,19 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
         </>
       )}
 
-      {/* Sticky footer for bulk actions */}
+      {/* Sticky footer for bulk actions (#374) */}
       {selectedIds.size > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg px-4 py-3 pb-[calc(56px+env(safe-area-inset-bottom,0px))] flex items-center gap-3 z-50 sticky-bulk-footer">
+        <div
+          data-testid="bulk-toolbar"
+          className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg px-4 py-3 pb-[calc(56px+env(safe-area-inset-bottom,0px))] flex items-center gap-3 z-50 sticky-bulk-footer"
+        >
           <span className="text-sm font-medium text-gray-700">
             Selected {selectedIds.size} {selectedIds.size === 1 ? 'match' : 'matches'}
           </span>
           {bulkError && (
             <span className="text-xs text-red-600">{bulkError}</span>
           )}
-          <div className="flex gap-2 ml-auto">
+          <div className="flex gap-2 ml-auto flex-wrap">
             <button
               onClick={handleExportCsv}
               className="px-3 py-3 text-sm rounded bg-blue-100 text-blue-700 hover:bg-blue-200 min-h-[44px]"
