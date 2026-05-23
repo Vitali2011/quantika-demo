@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getStore } from '@/lib/session-store';
 import { listCharterers, upsertCharterer } from '@/lib/market/charterers-repository';
+import { sanitizeText } from '@/lib/sanitize-text';
 import { randomBytes } from 'crypto';
 
 export const dynamic = 'force-dynamic';
@@ -85,22 +86,31 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const db = getStore().getDatabase();
     const id = randomBytes(16).toString('hex');
 
+    const sanitizedName = sanitizeText(name.trim());
+    if (!sanitizedName) {
+      return NextResponse.json(
+        { error: 'Field "name" is required and cannot be empty' },
+        { status: 400 }
+      );
+    }
+    const sanitizedNotes = notes != null ? sanitizeText(String(notes)) : null;
+
     upsertCharterer(db, {
       id,
-      name: name.trim(),
+      name: sanitizedName,
       tier: tier as ChartererTier,
       payment_history: '[]',
       require_lc: require_lc ?? 0,
-      notes: notes ?? null,
+      notes: sanitizedNotes,
     });
 
     const charterer = {
       id,
-      name: name.trim(),
+      name: sanitizedName,
       tier: tier as ChartererTier,
       payment_history: '[]',
       require_lc: require_lc ?? 0,
-      notes: notes ?? null,
+      notes: sanitizedNotes,
     };
 
     return NextResponse.json(charterer, { status: 201 });

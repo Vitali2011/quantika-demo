@@ -5,6 +5,7 @@ import {
   upsertCharterer,
   deleteCharterer,
 } from '@/lib/market/charterers-repository';
+import { sanitizeText } from '@/lib/sanitize-text';
 
 export const dynamic = 'force-dynamic';
 
@@ -95,14 +96,29 @@ export async function PUT(
       }
     }
 
+    // Sanitize text fields before storing
+    let sanitizedName: string | undefined;
+    if (name !== undefined) {
+      sanitizedName = sanitizeText(String(name));
+      if (!sanitizedName) {
+        return NextResponse.json(
+          { error: 'Field "name" cannot be empty' },
+          { status: 400 }
+        );
+      }
+    }
+    const sanitizedNotes = notes !== undefined
+      ? (notes != null ? sanitizeText(String(notes)) : null)
+      : undefined;
+
     // Update with new values or keep existing
     upsertCharterer(db, {
       id,
-      name: name ?? existing.name,
+      name: sanitizedName ?? existing.name,
       tier: tier ?? existing.tier,
       payment_history: payment_history ?? existing.payment_history,
       require_lc: require_lc !== undefined ? require_lc : existing.require_lc,
-      notes: notes !== undefined ? notes : existing.notes,
+      notes: sanitizedNotes !== undefined ? sanitizedNotes : existing.notes,
     });
 
     const updated = getCharterer(db, id);
