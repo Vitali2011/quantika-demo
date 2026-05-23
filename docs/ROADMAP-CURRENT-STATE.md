@@ -1,7 +1,7 @@
 # Quantika Demo — ROADMAP (Текущее состояние)
 
 **Последний полный аудит:** 2026-05-17 (5-поточный код-аудит) + 2026-05-19 UI audit (Playwright+Chrome MCP) + **2026-05-19 ROADMAP reality audit** (claim vs prod sweep)
-**Последнее обновление:** 2026-05-23 (поздний вечер) — Wave A2 hotfix: #396 (sample-no-OAuth #394) + #397 (demo match M3 fields #393) — 4-волновой план: 7 PR merged (#365-#371), 4 GH issues closed (#359 #361 #364 + #360 #362 #363), mobile UX audit findings закрыты (1 CRIT через rebuild + 4 HIGH + 3 LOW)
+**Последнее обновление:** 2026-05-24 (раннее утро) — qa-walker re-test wave 2: 6 bugs closed (W1 SECURITY #399, W2 #400/#401/#404, W3 #402/#403) — 4-волновой план: 7 PR merged (#365-#371), 4 GH issues closed (#359 #361 #364 + #360 #362 #363), mobile UX audit findings закрыты (1 CRIT через rebuild + 4 HIGH + 3 LOW)
 **Текущая версия:** prod HEAD после auto-deploy LIVE (#259, systemd quantika-demo.service на outreach-vps)
 **Статус:** 🟢 Основные потоки работают; parse-vessel в активной итерации (R8 baseline после revert); pre-merge-guard LIVE
 
@@ -126,6 +126,15 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 - ✅ **W2**: #370 `fix(ux): mobile polish — H-2/H-3/H-4/H-5` — 8 touch-targets /matches на ≥44px, bulk-footer clearance BottomNav, /upgrade в /more nav, /more populated (Upgrade/Dashboard/Help/Logout). H-1 prod build-gap закрылся auto-deploy'ем W0/W1
 - ✅ **W3**: #371 `fix(cleanup): LOW mass-cleanup` closes **#360** (benchmark link 404 → http:// guard) + **#362** (SANCTIONS badge mistag → pair-analyzer primary-cause filter) + **#363** (sitemap.xml 404 → public/robots.txt + sitemap.xml) + audit LOW L-1/L-2/L-3 (RU empty-state, design tokens на /upgrade, safe-area на /more)
 - 📋 **Autonomous wave-driver**: 4 волны выполнены через cron-loop (CronCreate каждые 15м → dispatch.sh → tmux fire-and-forget → done-watcher → wake), zero-touch после первой команды. Конфликт на /more/page.tsx между W2 (nav links) и W3 (safe-area) резолвлен оркестратором inline.
+
+**Что изменилось за 2026-05-24 (раннее утро — qa-walker re-test wave 2):**
+
+- ✅ **W1 SECURITY** #406 (#399 cargo_type filter снимал session_id WHERE → cross-session leak): 3 edits route.ts + 7 PI2 isolation tests. /test-skill PASS 0 CRIT / 0 HIGH (cross-session, SQL inj, auth bypass, timing, NULL, empty, replay), 1 LOW non-exploitable.
+- ✅ **W2** #407 (#401 migration 035 TCE+distance_nm), #408 (#404 SubsCountdownWidget useMemo→useState hydration #418 — новый source после #357), #409 (#400 /match/[id] page + GET /api/matches/[id]).
+- ✅ **W3** #410 (#402 BHSI ORDER BY DESC — был oldest вместо newest), #411 (#403 EUA price в EconomicsTab + N/A fallback + stale marker).
+- 📋 **Match Phase B advanced #405** (был утром): corpus 25→39 100% (15 distance pairs + 2 aliases + 14 scenarios).
+- 📋 **Q002 deferred:** matches listMatches() defense-in-depth (non-exploitable, internal fail-safe для cross-session, никакого пути эксплойта в коде).
+- 📋 **Next:** /qa-walker LOOP iter 1 — Playwright против prod чтобы проверить что 6 свежих фиксов + старые не регрессировали.
 
 **Что изменилось за 2026-05-23 (поздний вечер — Wave A2 hotfix):**
 
