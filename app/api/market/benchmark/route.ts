@@ -79,6 +79,7 @@ export async function GET(request: Request): Promise<NextResponse> {
     const db = getStore().getDatabase();
     const row = getLatestEuaPrice(db);
     if (row) {
+      const ageMs = Date.now() - new Date(row.price_date).getTime();
       benchmark = {
         indicator: typedIndicator,
         value: row.price_eur_per_tco2,
@@ -86,6 +87,7 @@ export async function GET(request: Request): Promise<NextResponse> {
         period: row.price_date,
         sourceUrl: row.source,
         fetchedAt: new Date().toISOString(),
+        stale: ageMs > STALE_THRESHOLD_MS,
       };
     }
   }

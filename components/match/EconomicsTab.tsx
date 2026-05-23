@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import type { ParsedVessel, ParsedCargo } from '@/lib/types';
 import { RouteCompareModal } from '@/components/economics/RouteCompareModal';
 import { calculateFuelEu } from '@/lib/economics/fueleu';
@@ -55,6 +55,25 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
   const [bunkerGrade, setBunkerGrade] = useState<BunkerGrade>('VLSFO');
   const [displayCurrency, setDisplayCurrency] = useState<DisplayCurrency>('USD');
   const [fuelType, setFuelType] = useState('hfo');
+  const [euaData, setEuaData] = useState<{ value: number; period: string; stale?: boolean } | null>(null);
+  const [euaPhase, setEuaPhase] = useState<'loading' | 'ok' | 'unavailable'>('loading');
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/market/benchmark?indicator=EUA')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: { value: number; period: string; stale?: boolean } | null) => {
+        if (cancelled) return;
+        if (data && typeof data.value === 'number') {
+          setEuaData(data);
+          setEuaPhase('ok');
+        } else {
+          setEuaPhase('unavailable');
+        }
+      })
+      .catch(() => { if (!cancelled) setEuaPhase('unavailable'); });
+    return () => { cancelled = true; };
+  }, []);
 
   const compareInputs = useMemo(() => {
     const origin = cargo?.originPort?.value ?? '';
@@ -90,12 +109,12 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
     const manual = bunkerPriceUsdPerMt !== '' ? Number(bunkerPriceUsdPerMt) : undefined;
     return {
       bunkerPriceUsdPerMt: manual ?? 0,
-      euaPriceEur: 75,
+      euaPriceEur: euaData?.value ?? 75,
       // pass port/grade for auto-resolve when price is empty
       bunkerPort,
       bunkerGrade,
     };
-  }, [bunkerPriceUsdPerMt, bunkerPort, bunkerGrade]);
+  }, [bunkerPriceUsdPerMt, bunkerPort, bunkerGrade, euaData]);
 
   const fuelEuEnabled = process.env.NEXT_PUBLIC_FUELEU_ENABLED === 'true';
 
@@ -203,6 +222,28 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
           )}
         </div>
       )}
+
+      {/* EUA / EU ETS live price */}
+      <div data-testid="eua-price-tile" className="rounded border border-gray-200 bg-gray-50 p-3 space-y-1">
+        <h3 className="text-xs font-semibold text-gray-700">EUA / EU ETS Price</h3>
+        <div className="flex items-center justify-between text-xs">
+          {euaPhase === 'loading' ? (
+            <span className="text-gray-400 animate-pulse">Loading…</span>
+          ) : euaPhase === 'ok' && euaData ? (
+            <>
+              <span data-testid="eua-value" className="font-medium text-gray-900">
+                €{euaData.value.toFixed(2)}/tCO₂
+              </span>
+              <span className="text-gray-400">{euaData.period}</span>
+            </>
+          ) : (
+            <span data-testid="eua-na" className="text-gray-400">N/A</span>
+          )}
+        </div>
+        {euaData?.stale && (
+          <p data-testid="eua-stale" className="text-xs text-amber-600">⚠ Stale data</p>
+        )}
+      </div>
 
       {fuelEuEnabled && (
         <div
