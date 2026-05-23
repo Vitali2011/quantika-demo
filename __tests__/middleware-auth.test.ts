@@ -80,7 +80,8 @@ describe('middleware auth guard', () => {
   });
 
   describe('page routes without auth cookie redirect to /login', () => {
-    const pagePaths = ['/', '/dashboard', '/matches', '/market'];
+    // Regression: /more (#417) and /upgrade (#418) must not 404 — auth guard redirects to /login
+    const pagePaths = ['/', '/dashboard', '/matches', '/market', '/more', '/upgrade'];
 
     for (const path of pagePaths) {
       it(`redirects to /login for ${path} without cookie`, async () => {
