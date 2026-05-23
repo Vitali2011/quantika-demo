@@ -96,11 +96,13 @@ const PORT_ALIASES: Record<string, KnownPort> = {
   'constanta': 'Constanta',
   'constantza': 'Constanta',
   'konstanta': 'Constanta',
+  'konstantsa': 'Constanta',     // Russian/Bulgarian transliteration variant
   'varna': 'Varna',
   'burgas': 'Burgas',
   'bourgas': 'Burgas',
   'novorossiysk': 'Novorossiysk',
   'novorossiisk': 'Novorossiysk',
+  'novorossisk': 'Novorossiysk', // common typo — missing 'iy'
   'taman': 'Taman',
   'tuapse': 'Tuapse',
   'izmail': 'Izmail',
@@ -1056,6 +1058,32 @@ const DISTANCES_NM: Record<string, number> = {
   'Marmara|Ravenna': 980,          // Marmara→Dardanelles→Aegean→Adriatic→Ravenna; Istanbul|Ravenna=1050, Marmara 70nm closer to exit
   'Izmail|Piraeus': 840,           // Izmail→Black Sea coastal→Bosphorus(300nm)→Aegean→Piraeus(430nm) + routing factor
   'Aliaga|Izmail': 580,            // Aliaga→Aegean→Bosphorus(275nm)→Black Sea→Izmail(300nm) + routing
+
+  // ── Phase B advanced: Marghera↔Black Sea (all missing from searoute JSON) ──
+  // Marghera (Porto Marghera/Venice) is 90nm north of Ravenna in the north Adriatic.
+  // Marghera|Piraeus=710 vs Ravenna|Piraeus=700 (+10nm offset). All values derived
+  // from Ravenna baseline +10nm; verified against Marghera|Odesa=1430 already in matrix.
+  'Marghera|Novorossiysk': 1540,   // Novorossiysk|Ravenna=1530 +10nm Marghera offset
+  'Burgas|Marghera': 1210,         // Burgas|Ravenna=1200 +10nm
+  'Marghera|Varna': 1170,          // Ravenna|Varna=1160 +10nm
+  'Constanta|Marghera': 1260,      // Constanta|Ravenna=1250 +10nm
+  'Karasu|Marghera': 1155,         // Karasu|Ravenna=1145 +10nm
+  'Izmail|Marghera': 1220,         // Izmail|Ravenna=1210 +10nm
+  'Marghera|Taman': 1580,          // Marghera|Novorossiysk=1540 + Novorossiysk|Taman=40
+  'Marghera|Tuapse': 1620,         // Marghera|Novorossiysk=1540 + Novorossiysk|Tuapse=80
+  'Marghera|Yuzhny': 1460,         // Marghera|Odesa=1430 + ~30nm for Yuzhny (east of Odessa)
+
+  // ── Phase B advanced: intra-MENA corridors (Tier 1 promotion from searoute JSON) ──
+  // Red Sea/East Med pairs requiring Suez Canal transit — haversine cuts through Sinai.
+  'Alexandria|Jeddah': 910,        // via Suez Canal: Alexandria|Suez=200 + Suez|Jeddah=700 + ~10nm
+  'Mersin|Tartus': 150,            // direct Eastern Med coastal: Mersin(TR)→Tartus(SY)
+  'Piraeus|Tartus': 655,           // Aegean→Eastern Med: Piraeus→(Rhodes area)→Tartus
+
+  // ── Phase B advanced: Far East feeder corridors (Tier 1 promotion) ──
+  // Short SE Asian feeder routes — open-ocean, haversine reliable but promoting for clarity.
+  'Bangkok|Songkhla': 345,         // Gulf of Thailand: Bangkok→Songkhla (southern Thailand)
+  'Singapore|Songkhla': 575,       // Malacca Strait→Gulf of Thailand: Singapore→Songkhla
+  'Kakinada|Chennai': 190,         // Bay of Bengal coast: Kakinada→Chennai (India east coast)
 
 };
 

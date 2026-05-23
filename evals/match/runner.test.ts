@@ -1,5 +1,5 @@
 /**
- * evals/match/runner.test.ts — 25-scenario eval for the match scoring layer.
+ * evals/match/runner.test.ts — 39-scenario eval for the match scoring layer.
  *
  * Tests three distinct behaviors in a single suite:
  *   A. Port-pair resolution  — 6 pairs that were returning readiness=unknown due to
@@ -8,11 +8,14 @@
  *      -35 severe-idle penalty; shorter idles must stay 'possible'.
  *   C. Vague-region detection — sea names / country-only inputs must trigger the
  *      -20 vagueRegionAdjustment and return readiness=unknown.
+ *   I. Idle penalty boundary conditions — exact breakpoints at gapDays 14 and 30.
+ *   J. Extended corridors — Adriatic↔Black Sea, intra-MENA, Far East feeders.
+ *   K. Fuzzy port matching — typos, transliterations, alias resolution.
  *
  * Run: npx jest evals/match/runner
  */
 import { calculateReadinessGap } from '@/lib/sailing/readiness-gap';
-import { computeScoreBreakdown, deriveMatchLevel } from '@/lib/sailing/match-scoring';
+import { computeScoreBreakdown, deriveMatchLevel, idleScorePenalty } from '@/lib/sailing/match-scoring';
 import type { Match, MatchReadiness, ParsedCargo, ParsedVessel } from '@/lib/types';
 
 // Fixed reference date — all laycans in these scenarios are in Jun/Jul/Aug 2026.
@@ -387,5 +390,133 @@ describe('H — graceful degradation', () => {
       OPTS,
     );
     expect(r.verdict).toBe('unknown');
+  });
+});
+
+// ── I. Idle penalty boundary conditions ──────────────────────────────────────
+// Verifies the breakpoints in idleScorePenalty: >14d → -25; >30d → -35.
+// W3-W5 edge cases: exactly at boundary values must use the LOWER (less punishing) tier.
+
+describe('I — idle penalty boundary conditions', () => {
+  it('SC-26 gapDays=0 — penalty -15 (0d idle: floor tier, not > 14)', () => {
+    expect(idleScorePenalty(0)).toBe(-15);
+  });
+
+  it('SC-27 gapDays=7 — penalty -15 (short idle ≤ 14d threshold)', () => {
+    expect(idleScorePenalty(7)).toBe(-15);
+  });
+
+  it('SC-28 gapDays=14 — penalty -15 (exact boundary: 14 is NOT > 14)', () => {
+    expect(idleScorePenalty(14)).toBe(-15);
+  });
+
+  it('SC-29 gapDays=15 — penalty -25 (15 crosses >14d threshold)', () => {
+    expect(idleScorePenalty(15)).toBe(-25);
+  });
+
+  it('SC-30 gapDays=30 — penalty -25 (exact boundary: 30 is NOT > 30)', () => {
+    expect(idleScorePenalty(30)).toBe(-25);
+  });
+
+  it('SC-31 gapDays=31 — penalty -35 (31 crosses >30d severe threshold)', () => {
+    expect(idleScorePenalty(31)).toBe(-35);
+  });
+});
+
+// ── J. Extended corridors ─────────────────────────────────────────────────────
+// New distance pairs: Adriatic↔Black Sea (Marghera), intra-MENA, Far East feeders.
+
+describe('J — extended corridors', () => {
+  it('SC-32 Mersin→Tartus (~150nm, Tier 2) — verdict not unknown, short coastal', () => {
+    const r = calculateReadinessGap(
+      { openDate: '2026-06-01', openPosition: 'Mersin', speedLaden: null, dwtSummer: null },
+      { laycan: '2026-06-05', originPort: 'Tartus' },
+      OPTS,
+    );
+    expect(r.verdict).not.toBe('unknown');
+    expect(r.distanceNm).toBeGreaterThan(100);
+    expect(r.distanceNm).toBeLessThan(300);
+  });
+
+  it('SC-33 Alexandria→Jeddah (~910nm, via Suez) — verdict not unknown', () => {
+    const r = calculateReadinessGap(
+      { openDate: '2026-06-01', openPosition: 'Alexandria', speedLaden: null, dwtSummer: null },
+      { laycan: '2026-06-15', originPort: 'Jeddah' },
+      OPTS,
+    );
+    expect(r.verdict).not.toBe('unknown');
+    expect(r.distanceNm).toBeGreaterThan(700);
+    expect(r.distanceNm).toBeLessThan(1100);
+  });
+
+  it('SC-34 Trieste→Novorossiysk (~1519nm, Tier 2) — long Adriatic↔Black Sea ballast', () => {
+    const r = calculateReadinessGap(
+      { openDate: '2026-06-01', openPosition: 'Trieste', speedLaden: null, dwtSummer: null },
+      { laycan: '2026-07-10', originPort: 'Novorossiysk' },
+      OPTS,
+    );
+    expect(r.verdict).not.toBe('unknown');
+    expect(r.distanceNm).toBeGreaterThan(1400);
+  });
+
+  it('SC-35 Marghera→Novorossiysk (1540nm, Tier 1 hand-curated) — exact distance', () => {
+    const r = calculateReadinessGap(
+      { openDate: '2026-06-01', openPosition: 'Marghera', speedLaden: null, dwtSummer: null },
+      { laycan: '2026-07-10', originPort: 'Novorossiysk' },
+      OPTS,
+    );
+    expect(r.verdict).not.toBe('unknown');
+    expect(r.distanceNm).toBe(1540);
+  });
+
+  it('SC-36 Bangkok→Songkhla (~345nm, Tier 1) — Far East feeder, verdict not unknown', () => {
+    const r = calculateReadinessGap(
+      { openDate: '2026-06-01', openPosition: 'Bangkok', speedLaden: null, dwtSummer: null },
+      { laycan: '2026-06-04', originPort: 'Songkhla' },
+      OPTS,
+    );
+    expect(r.verdict).not.toBe('unknown');
+    expect(r.distanceNm).toBeGreaterThan(200);
+    expect(r.distanceNm).toBeLessThan(500);
+  });
+});
+
+// ── K. Fuzzy port matching ────────────────────────────────────────────────────
+// Typos, transliterations, and alias variants that appear in real broker emails.
+
+describe('K — fuzzy port matching', () => {
+  it('SC-37 "Konstantsa" → resolves to Constanta, distance to Piraeus computed', () => {
+    const r = calculateReadinessGap(
+      { openDate: '2026-06-01', openPosition: 'Konstantsa', speedLaden: null, dwtSummer: null },
+      { laycan: '2026-06-12', originPort: 'Piraeus' },
+      OPTS,
+    );
+    // Konstantsa resolves to Constanta; Constanta|Piraeus=790nm in matrix
+    expect(r.verdict).not.toBe('unknown');
+    expect(r.distanceNm).toBeGreaterThan(600);
+    expect(r.distanceNm).toBeLessThan(950);
+  });
+
+  it('SC-38 "Novorossisk" (common typo) → resolves to Novorossiysk, distance computed', () => {
+    const r = calculateReadinessGap(
+      { openDate: '2026-06-01', openPosition: 'Novorossisk', speedLaden: null, dwtSummer: null },
+      { laycan: '2026-06-15', originPort: 'Piraeus' },
+      OPTS,
+    );
+    // Novorossisk → Novorossiysk; Novorossiysk|Piraeus=895nm
+    expect(r.verdict).not.toBe('unknown');
+    expect(r.distanceNm).toBeGreaterThan(700);
+    expect(r.distanceNm).toBeLessThan(1100);
+  });
+
+  it('SC-39 "Porto Marghera" → resolves to Marghera, uses new Tier 1 pair for Novorossiysk', () => {
+    const r = calculateReadinessGap(
+      { openDate: '2026-06-01', openPosition: 'Porto Marghera', speedLaden: null, dwtSummer: null },
+      { laycan: '2026-07-10', originPort: 'Novorossiysk' },
+      OPTS,
+    );
+    // Porto Marghera → Marghera alias (already in PORT_ALIASES); Marghera|Novorossiysk=1540
+    expect(r.verdict).not.toBe('unknown');
+    expect(r.distanceNm).toBe(1540);
   });
 });
