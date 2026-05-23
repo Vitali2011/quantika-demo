@@ -103,4 +103,39 @@ describe('GET /api/market/benchmark — EUA (issue #177)', () => {
     const res = await GET(makeRequest('EUA'));
     expect(res.status).toBe(404);
   });
+
+  it('R-403-1: EUA stale=true when price_date is >7 days old (closes #403)', async () => {
+    mockGetLatestEuaPrice.mockReturnValue({
+      price_date: '2020-01-01',
+      price_eur_per_tco2: 72.65,
+      contract_type: 'spot',
+      source: 'eex-static',
+      fetched_at: '2020-01-01T00:00:00Z',
+    });
+
+    const res = await GET(makeRequest('EUA'));
+    const json = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(json.stale).toBe(true);
+    expect(json.value).toBe(72.65);
+  });
+
+  it('R-403-2: EUA stale=false when price_date is recent (closes #403)', async () => {
+    const today = new Date().toISOString().slice(0, 10);
+    mockGetLatestEuaPrice.mockReturnValue({
+      price_date: today,
+      price_eur_per_tco2: 68.5,
+      contract_type: 'spot',
+      source: 'eex-live',
+      fetched_at: new Date().toISOString(),
+    });
+
+    const res = await GET(makeRequest('EUA'));
+    const json = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(json.stale).toBe(false);
+    expect(json.value).toBe(68.5);
+  });
 });
