@@ -1,7 +1,7 @@
 # Quantika Demo — ROADMAP (Текущее состояние)
 
 **Последний полный аудит:** 2026-05-17 (5-поточный код-аудит) + 2026-05-19 UI audit (Playwright+Chrome MCP) + **2026-05-19 ROADMAP reality audit** (claim vs prod sweep)
-**Последнее обновление:** 2026-05-22 (поздний вечер) — #341 manual deploy, 11 PR merged, worktree cleanup ~120→9, auto-deploy trigger debt 🔴
+**Последнее обновление:** 2026-05-23 (утро) — 4-волновой план: 7 PR merged (#365-#371), 4 GH issues closed (#359 #361 #364 + #360 #362 #363), mobile UX audit findings закрыты (1 CRIT через rebuild + 4 HIGH + 3 LOW)
 **Текущая версия:** prod HEAD после auto-deploy LIVE (#259, systemd quantika-demo.service на outreach-vps)
 **Статус:** 🟢 Основные потоки работают; parse-vessel в активной итерации (R8 baseline после revert); pre-merge-guard LIVE
 
@@ -118,6 +118,14 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 - ✅ /matches: M1 + M3 LIVE — MATCHES_ENABLED=true выставлен 2026-05-19, rebuild + systemctl restart
 - ✅ 3 missing webhook routes добавлены в AUTH_BYPASS (PR #221) — после rebuild на правильном хосте outreach-vps работают
 - 🟡 Discovered: prod = outreach-vps (NOT dev-vps); 14 PRs не были на проде до systemctl restart
+
+**Что изменилось за 2026-05-23 (4-волновой план — 7 PR за утро):**
+
+- ✅ **W0**: #365 `match Phase B` (distance corridors Izmail-Ravenna/Iskenderun-Jeddah + tiered idle penalty tests, QA cold PASS 0/0) + #366 docs/audits/mobile-ux-2026-05-22.md (16 findings, 7 экранов)
+- ✅ **W1 (parallel × 3 + 2 cold-QA)**: #367 `fix(middleware): 401 JSON for /api/*` closes **#364** (auth-risk, /test-skill PASS) · #368 `feat(cargo-detail): quantity + laycan AI fields` closes **#361** · #369 `fix(fueleu): correct compliance badge — WtW > target is non-compliant` closes **#359** (logic-risk, /test-skill PASS)
+- ✅ **W2**: #370 `fix(ux): mobile polish — H-2/H-3/H-4/H-5` — 8 touch-targets /matches на ≥44px, bulk-footer clearance BottomNav, /upgrade в /more nav, /more populated (Upgrade/Dashboard/Help/Logout). H-1 prod build-gap закрылся auto-deploy'ем W0/W1
+- ✅ **W3**: #371 `fix(cleanup): LOW mass-cleanup` closes **#360** (benchmark link 404 → http:// guard) + **#362** (SANCTIONS badge mistag → pair-analyzer primary-cause filter) + **#363** (sitemap.xml 404 → public/robots.txt + sitemap.xml) + audit LOW L-1/L-2/L-3 (RU empty-state, design tokens на /upgrade, safe-area на /more)
+- 📋 **Autonomous wave-driver**: 4 волны выполнены через cron-loop (CronCreate каждые 15м → dispatch.sh → tmux fire-and-forget → done-watcher → wake), zero-touch после первой команды. Конфликт на /more/page.tsx между W2 (nav links) и W3 (safe-area) резолвлен оркестратором inline.
 
 **Что ещё блокирует pre-PMF:**
 
