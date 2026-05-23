@@ -1,7 +1,7 @@
 # Quantika Demo — ROADMAP (Текущее состояние)
 
 **Последний полный аудит:** 2026-05-17 (5-поточный код-аудит) + 2026-05-19 UI audit (Playwright+Chrome MCP) + **2026-05-19 ROADMAP reality audit** (claim vs prod sweep)
-**Последнее обновление:** 2026-05-23 (утро) — 4-волновой план: 7 PR merged (#365-#371), 4 GH issues closed (#359 #361 #364 + #360 #362 #363), mobile UX audit findings закрыты (1 CRIT через rebuild + 4 HIGH + 3 LOW)
+**Последнее обновление:** 2026-05-23 (утро→день) — 3-параллельных PR закрывают roadmap items #3-#5 — 4-волновой план: 7 PR merged (#365-#371), 4 GH issues closed (#359 #361 #364 + #360 #362 #363), mobile UX audit findings закрыты (1 CRIT через rebuild + 4 HIGH + 3 LOW)
 **Текущая версия:** prod HEAD после auto-deploy LIVE (#259, systemd quantika-demo.service на outreach-vps)
 **Статус:** 🟢 Основные потоки работают; parse-vessel в активной итерации (R8 baseline после revert); pre-merge-guard LIVE
 
@@ -127,6 +127,13 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 - ✅ **W3**: #371 `fix(cleanup): LOW mass-cleanup` closes **#360** (benchmark link 404 → http:// guard) + **#362** (SANCTIONS badge mistag → pair-analyzer primary-cause filter) + **#363** (sitemap.xml 404 → public/robots.txt + sitemap.xml) + audit LOW L-1/L-2/L-3 (RU empty-state, design tokens на /upgrade, safe-area на /more)
 - 📋 **Autonomous wave-driver**: 4 волны выполнены через cron-loop (CronCreate каждые 15м → dispatch.sh → tmux fire-and-forget → done-watcher → wake), zero-touch после первой команды. Конфликт на /more/page.tsx между W2 (nav links) и W3 (safe-area) резолвлен оркестратором inline.
 
+**Что изменилось за 2026-05-23 (день — 3-параллельных, ~1.5ч):**
+
+- ✅ **#380** test(api): coverage для 3 untested routes — 50→53/53 (100%), 20 новых тестов (auth-google, extension-draft, whatsapp-ingest/webhook). PI3 compliant.
+- ✅ **#381** fix(match): Phase B v2 — 2 port aliases (aliağa/petkim → Aliaga) + 8 distance pairs. **W1 root-cause:** Novorossiysk|Piraeus=895nm missing → readiness=unknown → score 60.6 possible. Fixed → idle penalty -35 → score≈31 weak. 25/25 evals + 348/348 tests. /test-skill PASS (0 CRIT/0 HIGH, 1 LOW cosmetic).
+- ✅ **#379** fix(matching): MED-01 align — applyReadinessScoring → deriveMatchLevel (1-line, ≥70/≥40 boundary consistent). 101/101 green. /test-skill PASS (0 CRIT/0 HIGH).
+- 📋 **Roadmap backlog обновлён:** №3 route tests = ✅, №4 Match Phase B core (port+distance+idle) = ✅, №5 MED-01 = ✅. Остаются: Sentry/UptimeRobot setup (UptimeRobot ждёт Vitali регистрацию), parser calibration (партнёрские данные).
+
 **Что ещё блокирует pre-PMF:**
 
 - ✅ **roi_metrics + fx_rates** — закрыто 2026-05-22 (C4 seed 18 строк + C5 daily timer 03:00 UTC, см. §2 Закрытые)
@@ -192,15 +199,15 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 **🎯 Реальный статус (2026-05-18 вечер):** Wave parser audits завершена — 11 PR за день (#197, #205, #216-218, #220-224, #226). Найден и исправлен production bug class: Gemini structured-output schema field names не совпадали с downstream contract в 2 парсерах (vessel + recap), silent-null months.
 
-| Парсер       | Прод-провайдер     | Точность                                                                                                                        | Eval                                  | Статус                                                                                                                                 |
-| ------------ | ------------------ | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| classify     | gemini-flash       | **cat 100%**, urgency 70.8%                                                                                                     | progonq R9 ✅                         | R4 prompt active; urgency BLOCKED (GT inconsistent, см. memory)                                                                        |
-| parse-cargo  | gemini-pro         | cargo **91.8%**, laycan **93.2%** (PR #197+#205 GT normalization)                                                               | progonq R27 ✅ 3-run median           | semantic_full 91.6%, стабилизировано                                                                                                   |
-| parse-vessel | gemini-pro         | dwcc **94.9%**, open_position **92%**, open_date **91.1%** (PR #216) | progonq **R16 56/56 = 100%** ✅ (PR #326, 2026-05-22) | R8 «-13 регрессия» оказалась measurement artifact (#324). R15→R16: sc-002/003/031/034/040 закрыты. Стабильно. |
-| parse-recap  | gemini-pro         | overall 45-58% (noisy на 3 scenarios)                                                                                           | progonq ✅ harness #218 + schema #220 | Corpus expansion blocked — public fixture recaps конфиденциальны, ждём real recap emails в Gmail                                       |
-| match        | gemini             | **progonq R7 0/25 fail** ✅ (2026-05-22) | progonq R0→R7, 25 scenarios | R0 #235 → R7 #333. idle penalty #244, Gibraltar/aliases #243, +8 Iskenderun distance pairs (#333). distance-matrix C3 audit = docs-only. |
-| explain-deal | gemini-2.5-pro     | **R1 11/11 PASS** ✅ (text-gen) | progonq R1 (#332, 2026-05-22) | Eval harness #261 (R0 6/6) → R1 corpus 6→11 + Arabic prompt fix (#332). Зелёный. |
-| draft-quote  | gemini-2.5-pro     | **R3 6/6 PASS** ✅ (text-gen) | progonq R0→R3 (#331, 2026-05-22) | Harness #272 (R0 6/6 fail) → R3 6/6 pass за 3 раунда prompt-правок (#331). |
+| Парсер       | Прод-провайдер | Точность                                                             | Eval                                                  | Статус                                                                                                                                   |
+| ------------ | -------------- | -------------------------------------------------------------------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| classify     | gemini-flash   | **cat 100%**, urgency 70.8%                                          | progonq R9 ✅                                         | R4 prompt active; urgency BLOCKED (GT inconsistent, см. memory)                                                                          |
+| parse-cargo  | gemini-pro     | cargo **91.8%**, laycan **93.2%** (PR #197+#205 GT normalization)    | progonq R27 ✅ 3-run median                           | semantic_full 91.6%, стабилизировано                                                                                                     |
+| parse-vessel | gemini-pro     | dwcc **94.9%**, open_position **92%**, open_date **91.1%** (PR #216) | progonq **R16 56/56 = 100%** ✅ (PR #326, 2026-05-22) | R8 «-13 регрессия» оказалась measurement artifact (#324). R15→R16: sc-002/003/031/034/040 закрыты. Стабильно.                            |
+| parse-recap  | gemini-pro     | overall 45-58% (noisy на 3 scenarios)                                | progonq ✅ harness #218 + schema #220                 | Corpus expansion blocked — public fixture recaps конфиденциальны, ждём real recap emails в Gmail                                         |
+| match        | gemini         | **progonq R7 0/25 fail** ✅ (2026-05-22)                             | progonq R0→R7, 25 scenarios                           | R0 #235 → R7 #333. idle penalty #244, Gibraltar/aliases #243, +8 Iskenderun distance pairs (#333). distance-matrix C3 audit = docs-only. |
+| explain-deal | gemini-2.5-pro | **R1 11/11 PASS** ✅ (text-gen)                                      | progonq R1 (#332, 2026-05-22)                         | Eval harness #261 (R0 6/6) → R1 corpus 6→11 + Arabic prompt fix (#332). Зелёный.                                                         |
+| draft-quote  | gemini-2.5-pro | **R3 6/6 PASS** ✅ (text-gen)                                        | progonq R0→R3 (#331, 2026-05-22)                      | Harness #272 (R0 6/6 fail) → R3 6/6 pass за 3 раунда prompt-правок (#331).                                                               |
 
 **Provider routing (текущий, на проде):** **7/7 scopes default через Gemini** (AI_PROVIDER=gemini + MATCH_PROVIDER=gemini). ClipProxy/OpenAI + claude-cli больше не активны по умолчанию (только если env override вернуть). claude-cli остаётся для eval judge (через --print, не runtime).
 
@@ -212,12 +219,12 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 **31+ миграция применена.** **Большинство таблиц заполнены**, **но 2 пустые при включённых флагах** (P0 в §2):
 
-| Статус                      | Таблицы                                                                                                                                                                                                                                                                                                           |
-| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ✅ Свежие, заполненные      | ofac_entities (18,959), schema_migrations, knowledge_sources, market_indices (92), charterers (20), port_da_estimates (94), psc_detention_history (16), port_distances (18,648) + **searoute JSON 105,011 пар (tier 2) + live tier 3** ✅ 2026-05-20, **eu_sanctions_entities (5,996)**, **port_master (11,767)**, **roi_metrics (18)** ✅ seed 2026-05-22, **fx_rates (212)** ✅ daily timer 03:00 UTC (PR #323/#327), **eca_zones (4)** ✅ parser fix + seed 2026-05-22 (PR #338) |
-| ✅ RAG embedded             | imsbc_fts (116), igc_fts (119), jwc_fts (7), bimco_fts (14) — counts выше чем заявлялось в audit 2026-05-17                                                                                                                                                                                                       |
-| ⚠️ Частичные                | baltic/bunker/eua (устарели, manual CSV upload), war_risk_zones (4)                                                                                                                                                                                                                                               |
-| ✅ Исправлено 2026-05-22    | eca_zones (0→4) — parser fix polygon_geojson + seed (PR #338)                                                                                                                                                                                                                                                    |
+| Статус                   | Таблицы                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ✅ Свежие, заполненные   | ofac_entities (18,959), schema_migrations, knowledge_sources, market_indices (92), charterers (20), port_da_estimates (94), psc_detention_history (16), port_distances (18,648) + **searoute JSON 105,011 пар (tier 2) + live tier 3** ✅ 2026-05-20, **eu_sanctions_entities (5,996)**, **port_master (11,767)**, **roi_metrics (18)** ✅ seed 2026-05-22, **fx_rates (212)** ✅ daily timer 03:00 UTC (PR #323/#327), **eca_zones (4)** ✅ parser fix + seed 2026-05-22 (PR #338) |
+| ✅ RAG embedded          | imsbc_fts (116), igc_fts (119), jwc_fts (7), bimco_fts (14) — counts выше чем заявлялось в audit 2026-05-17                                                                                                                                                                                                                                                                                                                                                                         |
+| ⚠️ Частичные             | baltic/bunker/eua (устарели, manual CSV upload), war_risk_zones (4)                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ✅ Исправлено 2026-05-22 | eca_zones (0→4) — parser fix polygon_geojson + seed (PR #338)                                                                                                                                                                                                                                                                                                                                                                                                                       |
 
 **RAG-архитектура:** гибрид FTS5+vec0 (sqlite). Vertex Search disabled (extractiveContentSpec Enterprise-only, наши engines Standard) — rollback на SQLite богаче.
 
@@ -304,13 +311,13 @@ _(пусто — C4/C5 закрыты 2026-05-22)_
 
 ### ✅ P0 — Закрытые
 
-| #      | Issue                                                                                        | Closed by                                                                                          |
-| ------ | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| **C1** | Bedrock Opus 4.7 → claude-cli replacement                                                    | PR #186                                                                                            |
-| **C2** | 5 webhooks AUTH_BYPASS_PATHS                                                                 | ✅ Все 5 в middleware.ts:19-27 (verified 2026-05-19) — PR #221 + позже                             |
-| **C3** | EU_SANCTIONS_TOKEN                                                                           | ✅ Token `n00mo9i3` валиден (HTTP 200, 24.7MB), `knowledge_sources.eu-sanctions=fresh`             |
-| **C4** | `roi_metrics=0` при `ROI_GUARANTEE_ENABLED=true` — tile рендерил "No voyages" заглушку       | ✅ seed 18 строк (scripts/seed-roi-metrics.ts) — 2026-05-22                                        |
-| **C5** | `fx_rates=0` при `MULTI_CURRENCY_V2_ENABLED=true` — конверсия через hardcoded fallback        | ✅ daily timer 03:00 UTC LIVE, 212 rows — PR #323 (cron) + #327 (User=root fix) — 2026-05-22       |
+| #      | Issue                                                                                  | Closed by                                                                                    |
+| ------ | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| **C1** | Bedrock Opus 4.7 → claude-cli replacement                                              | PR #186                                                                                      |
+| **C2** | 5 webhooks AUTH_BYPASS_PATHS                                                           | ✅ Все 5 в middleware.ts:19-27 (verified 2026-05-19) — PR #221 + позже                       |
+| **C3** | EU_SANCTIONS_TOKEN                                                                     | ✅ Token `n00mo9i3` валиден (HTTP 200, 24.7MB), `knowledge_sources.eu-sanctions=fresh`       |
+| **C4** | `roi_metrics=0` при `ROI_GUARANTEE_ENABLED=true` — tile рендерил "No voyages" заглушку | ✅ seed 18 строк (scripts/seed-roi-metrics.ts) — 2026-05-22                                  |
+| **C5** | `fx_rates=0` при `MULTI_CURRENCY_V2_ENABLED=true` — конверсия через hardcoded fallback | ✅ daily timer 03:00 UTC LIVE, 212 rows — PR #323 (cron) + #327 (User=root fix) — 2026-05-22 |
 
 ### 🟠 P1 — Активация data layer
 
@@ -442,7 +449,8 @@ ETA: ~2-3 дня wall-clock. Большинство agent-only. **Bottleneck т�
 ## Archived / Consolidated (2026-05-22)
 
 Этот файл — единственный актуальный роадмап. Старые wave-планы 2026-04 сведены в архив (без потери данных):
-- [_archive/2026-05-22/ROADMAP_WAVE2.md](_archive/2026-05-22/ROADMAP_WAVE2.md), [ROADMAP-features.md](_archive/2026-05-22/ROADMAP-features.md), [ROADMAP-infra.md](_archive/2026-05-22/ROADMAP-infra.md) — без внешних ссылок.
+
+- [\_archive/2026-05-22/ROADMAP_WAVE2.md](_archive/2026-05-22/ROADMAP_WAVE2.md), [ROADMAP-features.md](_archive/2026-05-22/ROADMAP-features.md), [ROADMAP-infra.md](_archive/2026-05-22/ROADMAP-infra.md) — без внешних ссылок.
 
 Оставлены в корне (на них есть ссылки, трогать нельзя без правок кода/промптов): `ROADMAP_MVP.md` (ссылка из кода `lib/parsing/parse-cargo-ai.ts`) и `ROADMAP.md` (ссылки из session-промптов).
 
