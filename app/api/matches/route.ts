@@ -143,6 +143,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       laycan_start,
       laycan_end,
       vessel_dwt,
+      tce_usd_per_day,
+      distance_nm,
     } = body;
 
     if (!cargo_id || typeof cargo_id !== 'string' || cargo_id.trim() === '') {
@@ -175,6 +177,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       laycan_start: laycan_start ?? null,
       laycan_end: laycan_end ?? null,
       vessel_dwt: vessel_dwt ?? null,
+      tce_usd_per_day: typeof tce_usd_per_day === 'number' && isFinite(tce_usd_per_day) ? tce_usd_per_day : null,
+      distance_nm: typeof distance_nm === 'number' && isFinite(distance_nm) ? distance_nm : null,
     });
 
     return NextResponse.json(match, { status: 201 });

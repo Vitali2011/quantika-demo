@@ -19,6 +19,8 @@ export interface StoredMatch {
   laycan_start: number | null;
   laycan_end: number | null;
   vessel_dwt: number | null;
+  tce_usd_per_day: number | null;
+  distance_nm: number | null;
 }
 
 export interface CreateMatchInput {
@@ -35,6 +37,8 @@ export interface CreateMatchInput {
   laycan_start?: number | null;
   laycan_end?: number | null;
   vessel_dwt?: number | null;
+  tce_usd_per_day?: number | null;
+  distance_nm?: number | null;
 }
 
 export interface ListMatchesOptions {
@@ -65,6 +69,11 @@ function hasM3Columns(db: Database.Database): boolean {
   return cols.some((c) => c.name === 'reason_structured');
 }
 
+function hasTceColumns(db: Database.Database): boolean {
+  const cols = db.prepare(`PRAGMA table_info(matches)`).all() as Array<{ name: string }>;
+  return cols.some((c) => c.name === 'tce_usd_per_day');
+}
+
 export function createMatch(db: Database.Database, input: CreateMatchInput): StoredMatch {
   const now = Date.now();
   const status: MatchStatus = input.status ?? 'shortlist';
@@ -72,7 +81,44 @@ export function createMatch(db: Database.Database, input: CreateMatchInput): Sto
 
   let result: { lastInsertRowid: number | bigint; changes: number };
 
-  if (hasM3Columns(db)) {
+  if (hasTceColumns(db)) {
+    const reason_structured = input.reason_structured ?? null;
+    const cargo_type = input.cargo_type ?? null;
+    const load_port = input.load_port ?? null;
+    const discharge_port = input.discharge_port ?? null;
+    const laycan_start = input.laycan_start ?? null;
+    const laycan_end = input.laycan_end ?? null;
+    const vessel_dwt = input.vessel_dwt ?? null;
+    const tce_usd_per_day = input.tce_usd_per_day ?? null;
+    const distance_nm = input.distance_nm ?? null;
+
+    const stmt = db.prepare(
+      `INSERT OR IGNORE INTO matches
+         (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at,
+          reason_structured, cargo_type, load_port, discharge_port,
+          laycan_start, laycan_end, vessel_dwt, tce_usd_per_day, distance_nm)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    );
+    result = stmt.run(
+      input.cargo_id,
+      input.vessel_id,
+      input.score,
+      input.reason,
+      status,
+      user_id,
+      now,
+      now,
+      reason_structured,
+      cargo_type,
+      load_port,
+      discharge_port,
+      laycan_start,
+      laycan_end,
+      vessel_dwt,
+      tce_usd_per_day,
+      distance_nm,
+    );
+  } else if (hasM3Columns(db)) {
     const reason_structured = input.reason_structured ?? null;
     const cargo_type = input.cargo_type ?? null;
     const load_port = input.load_port ?? null;
