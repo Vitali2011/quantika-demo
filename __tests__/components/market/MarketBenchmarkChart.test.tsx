@@ -56,6 +56,32 @@ describe('MarketBenchmarkChart — #353 EN labels', () => {
   });
 });
 
+describe('MarketBenchmarkChart — #402 Current value = newest (DESC data from API)', () => {
+  it('shows the first array element as Current when data is DESC-ordered (newest first)', () => {
+    // getIndexHistory returns ORDER BY index_date DESC — newest row is [0]
+    const descData = [
+      { date: '2026-05-10', value: 851 }, // newest — must show as Current
+      { date: '2026-05-09', value: 720 },
+      { date: '2026-05-08', value: 650 },
+      { date: '2026-05-07', value: 327 }, // oldest — must NOT show as Current
+    ];
+
+    render(
+      React.createElement(MarketBenchmarkChart, {
+        indexName: 'bhsi',
+        data: descData,
+        unit: 'index',
+      }),
+    );
+
+    const currentLabel = screen.getByText('Current:');
+    const currentRow = currentLabel.closest('div')!;
+    // 851 is the newest; 327 is the oldest — component must display 851.00
+    expect(within(currentRow).getByText('851.00')).toBeInTheDocument();
+    expect(within(currentRow).queryByText('327.00')).not.toBeInTheDocument();
+  });
+});
+
 describe('MarketBenchmarkChart — #354 outlier marker', () => {
   it('marks a value >3x median with outlier-marker', () => {
     // median of [1100, 1150, 1200, 1180, 12841] sorted = [1100, 1150, 1180, 1200, 12841]
