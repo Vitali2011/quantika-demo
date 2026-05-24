@@ -1196,6 +1196,18 @@ function extractParenHints(raw: string): string[] {
 
 export function normalizePortName(raw: string | null | undefined): string | null {
   if (!raw || typeof raw !== 'string') return null;
+
+  // UNLOCODE fast path: 5-char all-caps code like "NLRTM" / "CNSHA" → canonical name.
+  // Port values from the demo seed and some cargo parsers carry UNLOCODE instead of
+  // human names, causing distance lookups to silently return null. Resolve via the
+  // byUnlocode index in PortMasterIndex before falling through to the alias table.
+  const trimmedRaw = raw.trim();
+  if (/^[A-Z]{2}[A-Z2-9]{3}$/.test(trimmedRaw)) {
+    const portMaster = loadPortMasterFromJson(PORTS_JSON as unknown as PortMaster[]);
+    const entry = portMaster.byUnlocode(trimmedRaw);
+    if (entry?.name) return normalizePortName(entry.name);
+  }
+
   // Capture parenthetical hints BEFORE stripping (used as fallback if primary name fails)
   const parenHints = extractParenHints(raw);
   let s = stripCountry(stripParenthetical(raw)).trim();
