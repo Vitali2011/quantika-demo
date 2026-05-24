@@ -28,3 +28,34 @@
   --ds-info: #1d4ed8;
   --ds-info-soft: #eff6ff;
 }
+
+/* Dark mode prep — not active (no toggle yet). Apply via data-theme="dark" on <html>. */
+[data-theme="dark"] {
+  /* Surface */
+  --ds-bg: #0f172a;
+  --ds-surface: #1e293b;
+  --ds-surface-muted: #334155;
+  --ds-border: #334155;
+  --ds-border-strong: #475569;
+
+  /* Text */
+  --ds-text: #f1f5f9;
+  --ds-text-muted: #94a3b8;
+  --ds-text-subtle: #64748b;
+
+  /* Brand accent — amber preserved for contrast on dark navy */
+  --ds-accent: #fbbf24;
+  --ds-accent-fg: #0f172a;
+  --ds-accent-soft: #422006;
+  --ds-accent-soft-fg: #fde68a;
+
+  /* Semantic */
+  --ds-success: #34d399;
+  --ds-success-soft: #064e3b;
+  --ds-warn: #fbbf24;
+  --ds-warn-soft: #451a03;
+  --ds-danger: #f87171;
+  --ds-danger-soft: #450a0a;
+  --ds-info: #60a5fa;
+  --ds-info-soft: #1e3a5f;
+}

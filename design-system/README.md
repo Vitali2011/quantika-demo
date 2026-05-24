@@ -49,6 +49,24 @@ R1 НЕ удаляет старые компоненты. Они продолж�
 
 **Не используй design-system и shadcn в одном новом компоненте** — выбирай одно.
 
+## Dark mode (prep, not active)
+
+Token overrides for `[data-theme="dark"]` are defined in `tokens/colors.css`.
+To activate, set `data-theme="dark"` on `<html>`. No toggle UI is implemented yet (R6.5).
+
+Key dark overrides:
+- `--ds-bg: #0f172a` (slate-950)
+- `--ds-surface: #1e293b` (slate-800)
+- `--ds-accent: #fbbf24` → inverted: amber becomes the primary button, navy becomes fg
+- All semantic colors adjusted for dark-background contrast
+
+## A11y
+
+- Skip-to-content link is rendered in `AppShell` — visually hidden until focused
+- All icon-only buttons carry `aria-label`
+- Transitions use `--ds-motion-*` tokens; `prefers-reduced-motion` zeros all durations
+- Axe baseline specs: `tests/a11y/pages/` (run via `npm run test:a11y`)
+
 ## Tests
 
 ```bash

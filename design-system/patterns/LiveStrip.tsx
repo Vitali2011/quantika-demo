@@ -37,7 +37,7 @@ export function LiveStrip({ jobs }: { jobs: LiveJob[] }) {
         aria-valuemax={100}
       >
         <div
-          className="h-full bg-amber-500 transition-all duration-300"
+          className="h-full bg-amber-500 transition-all duration-ds-slow"
           style={{ width: `${avgPercent}%` }}
         />
       </div>
