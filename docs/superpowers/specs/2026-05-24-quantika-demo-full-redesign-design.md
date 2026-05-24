@@ -217,8 +217,12 @@ URL query ?mode=X overrides preferred_mode for current view
 | 8 | **Email inbox** `/email` | **B Stream of action-cards** + **📄 Original кнопка** | Каждое письмо = карточка с parsed-полями и actions (Accept / Edit / Reject). Low-confidence (<80%) подсвечены amber. Mobile = swipe-style. |
 | 9 | **Onboarding** flow | **B Pre-loaded demo + persistent banner** + **mode auto-detect** | Юзер сразу видит работающий продукт с DEMO-данными. Banner «Connect Gmail (1 OAuth)». Mode (charterer/owner) auto-detect по первому реальному email'у. |
 | 10 | **Upgrade / billing** `/upgrade` | **B Usage-aware utilitarian внутри продукта** + **A Classic 3-tier как страница «See all plans»** | В nav кликнул Upgrade → видит current plan + usage bars + contextual upgrade prompt. Лендинг A — ссылка для сравнения. |
+| 11 | **Landing page** `/` (public, незалогиненные) | **A Product-demo hero** (живой LiveStrip встроен) + **features-strip + pricing pill из B** | Aha-moment за 5 сек: посетитель видит LiveStrip работающий прямо в hero. Trust-logos. Features 3 иконки. Pricing pill ведёт на `/upgrade`. |
+| 12 | **Settings / Account** `/settings` (NEW route) | **A Sidebar + content** (Stripe/Linear-стандарт) | 10 разделов (Profile/Password/Notifications/Integrations/Team/API/Billing/Payment/Invoices/Export/Danger). Default = Integrations (самая частая причина прийти). URL anchors (`/settings/integrations`) для shareable links. |
+| 13 | **Notifications center** | **A Bell dropdown only** (MVP, YAGNI) | Bell сверху → popup с tabs (All/Matches/Replies/Alerts). 5-7 последних, «View all» внизу. Правила настраиваются в Settings → Notifications. Full page вынесена до момента, когда юзеры реально начнут терять старые уведомления. |
+| 14 | **Help / Docs** (in-app) | **A AI chat-help (floating)** + reuse RAG-индекса (Knowledge Phase 2) | Floating «? Help» в bottom-right на всех страницах кроме landing. AI отвечает из docs+RAG, cites sources (guides/videos). Полный docs.quantika.org вынесен до момента когда контента нарастёт 30+. |
 
-### Применение паттернов на остальные ~15 страниц (без отдельного brainstorm)
+### Применение паттернов на остальные страницы (без отдельного brainstorm)
 
 Эти экраны получают design-system + один из закреплённых паттернов:
 
@@ -236,6 +240,17 @@ URL query ?mode=X overrides preferred_mode for current view
 | Vessel detail (`/vessel/[id]`) | Split + AI side-panel (как Match detail но read-only stats) |
 | Fixture (`/fixture`) | Read-only Recap view (no edit) |
 | Admin/* | Не трогаем в R5 (внутренние страницы, низкий priority) |
+| Error pages (`error.tsx`, `global-error.tsx`, `not-found.tsx`) | Standard design-system treatment: friendly copy + Action-CTA («Go to Dashboard», «Report») |
+| Loading skeletons (`loading.tsx`) | `Skeleton` primitive из design-system, layout-matching текущей странице |
+
+### Новые routes, которые нужно создать в R2/R5
+
+| Route | Когда | Что |
+|---|---|---|
+| `/settings/*` | R2 (часть AppShell — добавить роутинг) + R5 (контент) | Sidebar nav + 10 разделов из экрана 12 |
+| `/api/jobs/stream` | R4 (LiveStrip) | SSE endpoint для live processing |
+| `/api/me` (PATCH) | R2 (ModeSwitcher) | Update preferred_mode |
+| Floating Help button | R3 (часть AIBar) или R5 (отдельно) | Использует тот же AI-bar backend |
 
 ### Связь с R-структурой
 
