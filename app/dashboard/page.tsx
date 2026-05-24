@@ -173,6 +173,23 @@ export default async function DashboardPage() {
         {/* ── ✨ Fresh matches ────────────────────────────────────── */}
         <DashboardFreshMatches matches={freshMatchesData} />
 
+        {/* ── 📊 Market Intelligence ─────────────────────────────── */}
+        <section>
+          <h2 className="text-sm font-semibold text-ds-text-muted uppercase tracking-wide mb-3">
+            Market Intelligence
+          </h2>
+          <Link
+            href="/market"
+            className="flex items-center justify-between p-4 bg-ds-surface border border-ds-border rounded-ds-lg hover:bg-ds-surface-muted transition-colors"
+          >
+            <div>
+              <p className="text-sm font-semibold text-ds-text">Market Indices</p>
+              <p className="text-xs text-ds-text-muted">BDI, bunker prices, freight benchmarks</p>
+            </div>
+            <span className="text-ds-text-subtle text-sm">→</span>
+          </Link>
+        </section>
+
         {/* ── 📥 Inbox ───────────────────────────────────────────── */}
         <DashboardInboxSection
           counts={categoryCounts as InboxCounts}
