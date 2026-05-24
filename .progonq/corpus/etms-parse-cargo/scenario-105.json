@@ -1,0 +1,92 @@
+{
+  "id": "etms-parse-cargo-105",
+  "source_email_id": "synth-r28-010",
+  "category": "incomplete_data",
+  "input": {
+    "subject": "FW: 12,000mt iron ore Saldanha Bay / Rotterdam",
+    "from": "synth@test.quantika.app",
+    "date": "2026-02-20T09:00:00.000Z",
+    "body": "Pls offer as per subject.\n\nLaycan: 01/10 March 2026\n2.5% ttl"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Saldanha Bay",
+          "confidence": "confirmed",
+          "source_text": "12,000mt iron ore Saldanha Bay / Rotterdam"
+        },
+        "origin_country": {
+          "value": "South Africa",
+          "confidence": "interpreted",
+          "source_text": "Saldanha Bay"
+        },
+        "destination_port": {
+          "value": "Rotterdam",
+          "confidence": "confirmed",
+          "source_text": "12,000mt iron ore Saldanha Bay / Rotterdam"
+        },
+        "destination_country": {
+          "value": "Netherlands",
+          "confidence": "interpreted",
+          "source_text": "Rotterdam"
+        },
+        "cargo_description": {
+          "value": "Iron ore in bulk",
+          "confidence": "uncertain",
+          "source_text": "iron ore"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 12000,
+          "confidence": "confirmed",
+          "source_text": "12,000mt iron ore Saldanha Bay / Rotterdam"
+        },
+        "weight_mt_min": null,
+        "weight_mt_max": null,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "uncertain",
+          "source_text": "iron ore"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "01/10 March 2026",
+          "confidence": "confirmed",
+          "source_text": "Laycan: 01/10 March 2026"
+        },
+        "laycan": {
+          "value": "01/10 March 2026",
+          "confidence": "confirmed",
+          "source_text": "Laycan: 01/10 March 2026"
+        },
+        "loading_rate": null,
+        "loading_terms": null,
+        "discharge_rate": null,
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl"
+        },
+        "special_requirements": null,
+        "stowage_factor": null,
+        "missing_info": [
+          "All cargo details (type, form, stowage, grade) inferred from subject line only — body contains no cargo description",
+          "Iron ore type and grade not specified",
+          "Loading and discharge terms not stated",
+          "Demurrage and despatch rates not stated"
+        ]
+      }
+    ]
+  }
+}

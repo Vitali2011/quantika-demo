@@ -1,0 +1,91 @@
+{
+  "id": "etms-parse-cargo-096",
+  "source_email_id": "synth-r28-001",
+  "category": "numeric_edge",
+  "input": {
+    "subject": "FW: 50k mt bulk sugar Santos/Rotterdam",
+    "from": "synth@test.quantika.app",
+    "date": "2026-01-10T09:00:00.000Z",
+    "body": "Pls propose vsl for:\n\n50k mt bulk sugar\nSantos / Rotterdam\nspot\n2.5% ttl\n"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Santos",
+          "confidence": "confirmed",
+          "source_text": "Santos / Rotterdam"
+        },
+        "origin_country": {
+          "value": "Brazil",
+          "confidence": "interpreted",
+          "source_text": "Santos / Rotterdam"
+        },
+        "destination_port": {
+          "value": "Rotterdam",
+          "confidence": "confirmed",
+          "source_text": "Santos / Rotterdam"
+        },
+        "destination_country": {
+          "value": "Netherlands",
+          "confidence": "interpreted",
+          "source_text": "Santos / Rotterdam"
+        },
+        "cargo_description": {
+          "value": "Bulk sugar",
+          "confidence": "confirmed",
+          "source_text": "50k mt bulk sugar"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 50000,
+          "confidence": "confirmed",
+          "source_text": "50k mt bulk sugar"
+        },
+        "weight_mt_min": null,
+        "weight_mt_max": null,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "bulk sugar"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Spot",
+          "confidence": "confirmed",
+          "source_text": "spot"
+        },
+        "laycan": {
+          "value": "Spot",
+          "confidence": "interpreted",
+          "source_text": "spot"
+        },
+        "loading_rate": null,
+        "loading_terms": null,
+        "discharge_rate": null,
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl"
+        },
+        "special_requirements": null,
+        "stowage_factor": null,
+        "missing_info": [
+          "Specific loading terminal at Santos not stated",
+          "Demurrage and despatch rates not stated",
+          "Loading and discharge terms (FIO/CQD etc.) not stated"
+        ]
+      }
+    ]
+  }
+}

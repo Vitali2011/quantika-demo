@@ -1,0 +1,102 @@
+{
+  "id": "etms-parse-cargo-107",
+  "source_email_id": "synth-r28-012",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: fertilizer Yuzhne/Colombo EOM",
+    "from": "synth@test.quantika.app",
+    "date": "2026-04-18T10:00:00.000Z",
+    "body": "Pls propose for:\n\n20,000 mt bulk urea\nYuzhne / Colombo\nLaycan: EOM\n8000/6000 SHINC\n2.5% ttl\n"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Pivdennyi (Yuzhne)",
+          "confidence": "confirmed",
+          "source_text": "Yuzhne"
+        },
+        "origin_country": {
+          "value": "Ukraine",
+          "confidence": "interpreted",
+          "source_text": "Yuzhne"
+        },
+        "destination_port": {
+          "value": "Colombo",
+          "confidence": "confirmed",
+          "source_text": "Yuzhne / Colombo"
+        },
+        "destination_country": {
+          "value": "Sri Lanka",
+          "confidence": "interpreted",
+          "source_text": "Colombo"
+        },
+        "cargo_description": {
+          "value": "Bulk urea",
+          "confidence": "confirmed",
+          "source_text": "20,000 mt bulk urea"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 20000,
+          "confidence": "confirmed",
+          "source_text": "20,000 mt bulk urea"
+        },
+        "weight_mt_min": null,
+        "weight_mt_max": null,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "bulk urea"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": null,
+        "laycan": {
+          "value": "End of April 2026",
+          "confidence": "interpreted",
+          "source_text": "EOM"
+        },
+        "loading_rate": {
+          "value": 8000,
+          "confidence": "confirmed",
+          "source_text": "8000/6000 SHINC"
+        },
+        "loading_terms": {
+          "value": "SHINC",
+          "confidence": "confirmed",
+          "source_text": "8000/6000 SHINC"
+        },
+        "discharge_rate": {
+          "value": 6000,
+          "confidence": "confirmed",
+          "source_text": "8000/6000 SHINC"
+        },
+        "discharge_terms": {
+          "value": "SHINC",
+          "confidence": "confirmed",
+          "source_text": "8000/6000 SHINC"
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl"
+        },
+        "special_requirements": null,
+        "stowage_factor": null,
+        "missing_info": [
+          "Exact laycan dates not specified — 'EOM' interpreted as End of Month (April 2026 based on email date)",
+          "Demurrage and despatch rates not stated"
+        ]
+      }
+    ]
+  }
+}
