@@ -209,8 +209,8 @@ export default function DesignPage() {
           </Button>
           <Tooltip.Provider>
             <Tooltip.Root>
-              <Tooltip.Trigger asChild>
-                <Button variant="secondary">Hover tooltip</Button>
+              <Tooltip.Trigger render={<Button variant="secondary" />}>
+                Hover tooltip
               </Tooltip.Trigger>
               <Tooltip.Content>Tip text</Tooltip.Content>
             </Tooltip.Root>

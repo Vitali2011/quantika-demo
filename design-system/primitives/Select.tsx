@@ -8,9 +8,10 @@ const Root = Base.Root;
 const Trigger = forwardRef<
   HTMLButtonElement,
   React.ComponentPropsWithoutRef<typeof Base.Trigger> & { placeholder?: string }
->(({ className, placeholder, ...props }, ref) => (
+>(({ className, placeholder, 'aria-label': ariaLabel, ...props }, ref) => (
   <Base.Trigger
     ref={ref}
+    aria-label={ariaLabel ?? placeholder}
     className={cn(
       'inline-flex h-9 items-center justify-between gap-2 rounded-ds-md border border-ds-border bg-ds-surface px-3 text-sm text-ds-text',
       'outline-none focus-visible:ring-2 focus-visible:ring-ds-accent/40',
@@ -20,7 +21,7 @@ const Trigger = forwardRef<
     {...props}
   >
     <Base.Value placeholder={placeholder} />
-    <Base.Icon>▾</Base.Icon>
+    <Base.Icon aria-hidden="true">▾</Base.Icon>
   </Base.Trigger>
 ));
 Trigger.displayName = 'Select.Trigger';
