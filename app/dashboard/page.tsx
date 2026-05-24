@@ -16,6 +16,7 @@ import { DashboardKpiStrip } from '@/components/dashboard/DashboardKpiStrip';
 import { DashboardTodoSection } from '@/components/dashboard/DashboardTodoSection';
 import { DashboardFreshMatches } from '@/components/dashboard/DashboardFreshMatches';
 import { DashboardInboxSection } from '@/components/dashboard/DashboardInboxSection';
+import type { InboxCounts } from '@/components/dashboard/DashboardInboxSection';
 import { Badge } from '@/design-system/primitives';
 
 const PRIORITY_ORDER: Record<PriorityLevel, number> = { urgent: 0, attention: 1, ok: 2 };
@@ -110,9 +111,9 @@ export default async function DashboardPage() {
           ? match.readiness.gapDays * 24
           : undefined;
       const priority = classifyPriority({ confidence: match.confidence, readinessGap });
-      const summary = match.matchReasons[0] || `Match #${i + 1}`;
-      const insight = match.readiness?.explanation || `Level: ${match.matchLevel}`;
-      return { priority, summary, insight, href: `/match/${i}` };
+      const matchSummary = match.matchReasons[0] || `Match #${i + 1}`;
+      const keyInsight = match.readiness?.explanation || `Level: ${match.matchLevel}`;
+      return { priority, matchSummary, keyInsight, href: `/match/${i}` };
     })
     .sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority]);
 
@@ -174,7 +175,7 @@ export default async function DashboardPage() {
 
         {/* ── 📥 Inbox ───────────────────────────────────────────── */}
         <DashboardInboxSection
-          counts={categoryCounts}
+          counts={categoryCounts as InboxCounts}
           totalEmails={emails.length}
           needsAction={needsActionCargo.length}
         />

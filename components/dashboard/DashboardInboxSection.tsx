@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Card, Badge } from '@/design-system/primitives';
 
-interface InboxCounts {
+export interface InboxCounts {
   CARGO_INQUIRY: number;
   VESSEL_POSITION: number;
   FIXTURE_RECAP: number;
