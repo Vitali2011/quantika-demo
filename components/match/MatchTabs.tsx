@@ -22,9 +22,12 @@ interface MatchTabsProps {
   vessel?: ParsedVessel;
   cargo?: ParsedCargo;
   cargoEmailId?: string;
+  matchDbId?: number;
+  storedFreightRate?: number | null;
+  freightRateSource?: string | null;
 }
 
-export function MatchTabs({ match, vessel, cargo, cargoEmailId }: MatchTabsProps) {
+export function MatchTabs({ match, vessel, cargo, cargoEmailId, matchDbId, storedFreightRate, freightRateSource }: MatchTabsProps) {
   const [activeTab, setActiveTab] = useState<TabId>('vessels');
   const uid = useId();
 
@@ -71,6 +74,9 @@ export function MatchTabs({ match, vessel, cargo, cargoEmailId }: MatchTabsProps
             vessel={vessel}
             cargo={cargo}
             routeDistanceNm={match.readiness?.distanceNm ?? null}
+            matchDbId={matchDbId}
+            storedFreightRate={storedFreightRate}
+            freightRateSource={freightRateSource}
           />
         )}
         {activeTab === 'passport' && (

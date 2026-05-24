@@ -261,8 +261,7 @@ export function applyReadinessScoring(
         break;
     }
 
-    // Recalculate matchLevel from adjusted score
-    updated.matchLevel = (updated.score > 70 ? 'good' : updated.score > 40 ? 'possible' : 'weak') as MatchLevel;
+    updated.matchLevel = deriveMatchLevel(updated.score);
   }
 
   // DWCC overload hard guard — must run after score/level adjustment so it

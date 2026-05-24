@@ -6,7 +6,7 @@ import { upsertIndex, type MarketIndexRow } from './market-indices-repository';
 const INDEX_FILES: Record<string, { file: string; unit: string }> = {
   bhsi: { file: 'bhsi-snapshots.csv', unit: 'USD/day' },
   tmi: { file: 'toepfer-tmi-snapshots.csv', unit: 'USD/day' },
-  'drewry-bb': { file: 'drewry-breakbulk-snapshots.csv', unit: 'USD/TEU' },
+  'drewry-bb': { file: 'drewry-breakbulk-snapshots.csv', unit: 'USD/FEU' },
 };
 
 const DEFAULT_DATA_DIR = path.join(process.cwd(), 'lib', 'sample-data', 'market');

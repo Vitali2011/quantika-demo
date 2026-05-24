@@ -49,14 +49,19 @@ function buildTree(body: string, highlights: Highlight[]): Node[] {
 export function EmailBodyViewer({ body, highlights }: Props) {
   const firstMarkRef = useRef<HTMLElement | null>(null);
 
+  // Normalize CRLF → LF before render: the HTML parser normalises \r\n to \n
+  // in text nodes, so leaving \r\n in the React virtual DOM causes a
+  // server/client text-node mismatch (React hydration error #418).
+  const normalizedBody = body.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
   useEffect(() => {
     if (window.location.hash === '#highlight' && firstMarkRef.current) {
       firstMarkRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, []);
 
-  const tree = buildTree(body, highlights);
-  const dir = detectTextDirection(body);
+  const tree = buildTree(normalizedBody, highlights);
+  const dir = detectTextDirection(normalizedBody);
   const ctx = { firstAssigned: false };
 
   const renderRange = (start: number, end: number, nodes: Node[]): ReactNode[] => {
@@ -65,7 +70,7 @@ export function EmailBodyViewer({ body, highlights }: Props) {
     let key = 0;
     for (const n of nodes) {
       if (cursor < n.span.start) {
-        result.push(<span key={`t-${key++}`}>{body.slice(cursor, n.span.start)}</span>);
+        result.push(<span key={`t-${key++}`}>{normalizedBody.slice(cursor, n.span.start)}</span>);
       }
       const isFirst = !ctx.firstAssigned;
       if (isFirst) ctx.firstAssigned = true;
@@ -82,14 +87,14 @@ export function EmailBodyViewer({ body, highlights }: Props) {
       cursor = n.span.end;
     }
     if (cursor < end) {
-      result.push(<span key={`t-${key++}`}>{body.slice(cursor, end)}</span>);
+      result.push(<span key={`t-${key++}`}>{normalizedBody.slice(cursor, end)}</span>);
     }
     return result;
   };
 
   return (
     <pre dir={dir} className="text-sm whitespace-pre-wrap font-sans leading-relaxed">
-      {tree.length === 0 ? body : renderRange(0, body.length, tree)}
+      {tree.length === 0 ? normalizedBody : renderRange(0, normalizedBody.length, tree)}
     </pre>
   );
 }

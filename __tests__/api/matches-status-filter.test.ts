@@ -46,7 +46,7 @@ function seedMatch(db: Database.Database, status: MatchStatus, cargoId: string):
   db.prepare(
     `INSERT INTO matches (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-  ).run(cargoId, 'vessel-1', 75, '{}', status, null, Date.now(), Date.now());
+  ).run(cargoId, 'vessel-1', 75, '{}', status, 'test-sid', Date.now(), Date.now());
 }
 
 beforeEach(() => {

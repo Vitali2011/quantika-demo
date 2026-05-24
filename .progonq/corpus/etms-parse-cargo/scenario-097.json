@@ -1,0 +1,120 @@
+{
+  "id": "etms-parse-cargo-097",
+  "source_email_id": "synth-r28-002",
+  "category": "numeric_edge",
+  "input": {
+    "subject": "FW: 40-50k mt grain Black Sea / EMED",
+    "from": "synth@test.quantika.app",
+    "date": "2026-05-20T08:00:00.000Z",
+    "body": "Dear brokers,\n\nPloffer for below:\n\n40-50k mt bulk grain\nOdesa / Istanbul or Izmir chopt\nlaycan 10/20 June 2026\n12000/8000 SHINC\n2% ttl\n"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Odesa",
+          "confidence": "confirmed",
+          "source_text": "Odesa / Istanbul or Izmir chopt"
+        },
+        "origin_country": {
+          "value": "Ukraine",
+          "confidence": "interpreted",
+          "source_text": "Odesa / Istanbul or Izmir chopt"
+        },
+        "destination_port": {
+          "value": "Istanbul",
+          "confidence": "confirmed",
+          "source_text": "Istanbul or Izmir chopt"
+        },
+        "destination_port_alternatives": ["Izmir"],
+        "destination_country": {
+          "value": "Turkey",
+          "confidence": "interpreted",
+          "source_text": "Istanbul or Izmir chopt"
+        },
+        "cargo_description": {
+          "value": "Bulk grain",
+          "confidence": "confirmed",
+          "source_text": "40-50k mt bulk grain"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 50000,
+          "confidence": "interpreted",
+          "source_text": "40-50k mt bulk grain"
+        },
+        "weight_mt_min": {
+          "value": 40000,
+          "confidence": "confirmed",
+          "source_text": "40-50k mt bulk grain"
+        },
+        "weight_mt_max": {
+          "value": 50000,
+          "confidence": "confirmed",
+          "source_text": "40-50k mt bulk grain"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "bulk grain"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "10/20 June 2026",
+          "confidence": "confirmed",
+          "source_text": "laycan 10/20 June 2026"
+        },
+        "laycan": {
+          "value": "10/20 June 2026",
+          "confidence": "confirmed",
+          "source_text": "laycan 10/20 June 2026"
+        },
+        "loading_rate": {
+          "value": 12000,
+          "confidence": "confirmed",
+          "source_text": "12000/8000 SHINC"
+        },
+        "loading_terms": {
+          "value": "SHINC",
+          "confidence": "confirmed",
+          "source_text": "12000/8000 SHINC"
+        },
+        "discharge_rate": {
+          "value": 8000,
+          "confidence": "confirmed",
+          "source_text": "12000/8000 SHINC"
+        },
+        "discharge_terms": {
+          "value": "SHINC",
+          "confidence": "confirmed",
+          "source_text": "12000/8000 SHINC"
+        },
+        "commission_percent": {
+          "value": 2.0,
+          "confidence": "confirmed",
+          "source_text": "2% ttl"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "2% ttl"
+        },
+        "special_requirements": {
+          "value": "Izmir as charterers' option alternative discharge port",
+          "confidence": "confirmed",
+          "source_text": "Istanbul or Izmir chopt"
+        },
+        "stowage_factor": null,
+        "missing_info": [
+          "Final discharge port nomination pending (charterer's option: Istanbul or Izmir)",
+          "Grain commodity type not specified (wheat, corn, barley, etc.)",
+          "Demurrage and despatch rates not stated"
+        ]
+      }
+    ]
+  }
+}

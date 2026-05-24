@@ -1,0 +1,99 @@
+{
+  "id": "etms-parse-cargo-108",
+  "source_email_id": "synth-r28-013",
+  "category": "numeric_edge",
+  "input": {
+    "subject": "FW: 30k mt phosphate BATS/EMED 2H-May",
+    "from": "synth@test.quantika.app",
+    "date": "2026-04-22T09:00:00.000Z",
+    "body": "Dear All,\n\nPls offer for below:\n\n30k mt bulk phosphate rock\nBATS / EMED\n2H-May 2026\n5000/3000 FHINC\n2% ttl\n\nBrgds"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Batumi",
+          "confidence": "confirmed",
+          "source_text": "BATS"
+        },
+        "origin_country": {
+          "value": "Georgia",
+          "confidence": "interpreted",
+          "source_text": "BATS"
+        },
+        "destination_port": {
+          "value": "Eastern Mediterranean port (unspecified)",
+          "confidence": "interpreted",
+          "source_text": "EMED"
+        },
+        "destination_country": null,
+        "cargo_description": {
+          "value": "Bulk phosphate rock",
+          "confidence": "confirmed",
+          "source_text": "30k mt bulk phosphate rock"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 30000,
+          "confidence": "confirmed",
+          "source_text": "30k mt bulk phosphate rock"
+        },
+        "weight_mt_min": null,
+        "weight_mt_max": null,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "bulk phosphate rock"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": null,
+        "laycan": {
+          "value": "Second half of May 2026",
+          "confidence": "interpreted",
+          "source_text": "2H-May 2026"
+        },
+        "loading_rate": {
+          "value": 5000,
+          "confidence": "confirmed",
+          "source_text": "5000/3000 FHINC"
+        },
+        "loading_terms": {
+          "value": "FHINC",
+          "confidence": "confirmed",
+          "source_text": "5000/3000 FHINC"
+        },
+        "discharge_rate": {
+          "value": 3000,
+          "confidence": "confirmed",
+          "source_text": "5000/3000 FHINC"
+        },
+        "discharge_terms": {
+          "value": "FHINC",
+          "confidence": "confirmed",
+          "source_text": "5000/3000 FHINC"
+        },
+        "commission_percent": {
+          "value": 2.0,
+          "confidence": "confirmed",
+          "source_text": "2% ttl"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "2% ttl"
+        },
+        "special_requirements": null,
+        "stowage_factor": null,
+        "missing_info": [
+          "Specific Eastern Mediterranean discharge port not nominated",
+          "Phosphate rock grade/BPL content not stated",
+          "Demurrage and despatch rates not stated"
+        ]
+      }
+    ]
+  }
+}

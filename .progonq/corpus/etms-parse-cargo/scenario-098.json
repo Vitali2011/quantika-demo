@@ -1,0 +1,106 @@
+{
+  "id": "etms-parse-cargo-098",
+  "source_email_id": "synth-r28-003",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: bulk wheat Santos/Rotterdam eom-jan/eom-feb",
+    "from": "synth@test.quantika.app",
+    "date": "2026-01-08T10:00:00.000Z",
+    "body": "Dear All,\n\nPls propose for:\n\n35,000 mt bulk wheat sf 47-49 wog\nSantos / Rotterdam\nLaycan: eom-jan / eom-feb\n10000/10000 SHINC\n2.5% ttl\n\nBrgds"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Santos",
+          "confidence": "confirmed",
+          "source_text": "Santos / Rotterdam"
+        },
+        "origin_country": {
+          "value": "Brazil",
+          "confidence": "interpreted",
+          "source_text": "Santos / Rotterdam"
+        },
+        "destination_port": {
+          "value": "Rotterdam",
+          "confidence": "confirmed",
+          "source_text": "Santos / Rotterdam"
+        },
+        "destination_country": {
+          "value": "Netherlands",
+          "confidence": "interpreted",
+          "source_text": "Santos / Rotterdam"
+        },
+        "cargo_description": {
+          "value": "Bulk wheat, stowage factor 47–49, without guarantee",
+          "confidence": "interpreted",
+          "source_text": "35,000 mt bulk wheat sf 47-49 wog"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 35000,
+          "confidence": "confirmed",
+          "source_text": "35,000 mt bulk wheat sf 47-49 wog"
+        },
+        "weight_mt_min": null,
+        "weight_mt_max": null,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "bulk wheat"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": null,
+        "laycan": {
+          "value": "End January / End February 2026",
+          "confidence": "interpreted",
+          "source_text": "eom-jan / eom-feb"
+        },
+        "loading_rate": {
+          "value": 10000,
+          "confidence": "confirmed",
+          "source_text": "10000/10000 SHINC"
+        },
+        "loading_terms": {
+          "value": "SHINC",
+          "confidence": "confirmed",
+          "source_text": "10000/10000 SHINC"
+        },
+        "discharge_rate": {
+          "value": 10000,
+          "confidence": "confirmed",
+          "source_text": "10000/10000 SHINC"
+        },
+        "discharge_terms": {
+          "value": "SHINC",
+          "confidence": "confirmed",
+          "source_text": "10000/10000 SHINC"
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl"
+        },
+        "special_requirements": null,
+        "stowage_factor": {
+          "value": "abt 47–49 ft³/MT WOG",
+          "confidence": "confirmed",
+          "source_text": "sf 47-49 wog"
+        },
+        "missing_info": [
+          "Exact laycan window not specified — 'eom-jan / eom-feb' interpreted as End January / End February 2026",
+          "Demurrage and despatch rates not stated"
+        ]
+      }
+    ]
+  }
+}

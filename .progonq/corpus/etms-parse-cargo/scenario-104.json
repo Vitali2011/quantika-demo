@@ -1,0 +1,92 @@
+{
+  "id": "etms-parse-cargo-104",
+  "source_email_id": "synth-r28-009",
+  "category": "incomplete_data",
+  "input": {
+    "subject": "FW: 15,000mt cement Aqaba / Berbera",
+    "from": "synth@test.quantika.app",
+    "date": "2026-06-01T08:00:00.000Z",
+    "body": "Pls propose suitable vsl for below.\n\n15,000 mt\nAqaba to Berbera\n10/15 July 2026\n3% ttl\n\nBrgds"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Aqaba",
+          "confidence": "confirmed",
+          "source_text": "Aqaba to Berbera"
+        },
+        "origin_country": {
+          "value": "Jordan",
+          "confidence": "interpreted",
+          "source_text": "Aqaba to Berbera"
+        },
+        "destination_port": {
+          "value": "Berbera",
+          "confidence": "confirmed",
+          "source_text": "Aqaba to Berbera"
+        },
+        "destination_country": {
+          "value": "Somalia",
+          "confidence": "interpreted",
+          "source_text": "Aqaba to Berbera"
+        },
+        "cargo_description": {
+          "value": "Cement in bulk",
+          "confidence": "uncertain",
+          "source_text": "cement"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 15000,
+          "confidence": "confirmed",
+          "source_text": "15,000 mt"
+        },
+        "weight_mt_min": null,
+        "weight_mt_max": null,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "uncertain",
+          "source_text": "cement"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "10/15 July 2026",
+          "confidence": "confirmed",
+          "source_text": "10/15 July 2026"
+        },
+        "laycan": {
+          "value": "10/15 July 2026",
+          "confidence": "confirmed",
+          "source_text": "10/15 July 2026"
+        },
+        "loading_rate": null,
+        "loading_terms": null,
+        "discharge_rate": null,
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 3.0,
+          "confidence": "confirmed",
+          "source_text": "3% ttl"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "3% ttl"
+        },
+        "special_requirements": null,
+        "stowage_factor": null,
+        "missing_info": [
+          "Cargo type not confirmed in email body — 'cement' inferred from subject line only",
+          "Loading and discharge terms (FIO/CQD/SHINC etc.) not stated",
+          "Demurrage and despatch rates not stated",
+          "Cement form (bulk/bagged/jumbo bags) not specified"
+        ]
+      }
+    ]
+  }
+}

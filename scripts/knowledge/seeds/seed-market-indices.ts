@@ -77,9 +77,9 @@ export function seedMarketIndices(): void {
   }
   console.log(`  ✓ Seeded ${tmiData.length} TMI rows`);
 
-  // Drewry Breakbulk: range ~$1500-1700 USD/TEU
+  // Drewry WCI composite: range ~$1500-1700 USD/FEU (per 40ft container)
   const drewryData = generateSyntheticData('drewry-bb', 30, 1600, 200);
-  console.log('Seeding Drewry Breakbulk Index...');
+  console.log('Seeding Drewry WCI composite (drewry-bb)...');
   for (const row of drewryData) {
     const id = `drewry-bb-${row.date}`;
     upsertIndex(db, {
@@ -87,7 +87,7 @@ export function seedMarketIndices(): void {
       index_name: 'drewry-bb',
       index_date: row.date,
       value: row.value,
-      unit: 'USD/TEU',
+      unit: 'USD/FEU',
       source: 'seed-synthetic',
       fetched_at: new Date().toISOString(),
     });

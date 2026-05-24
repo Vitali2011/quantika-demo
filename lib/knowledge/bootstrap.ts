@@ -176,6 +176,32 @@ export const KNOWLEDGE_REGISTRY: RegisterSourceInput[] = [
     refresh_command: 'npx tsx scripts/knowledge/cron/refresh-eua.ts',
     primary_table: 'eua_prices',
   },
+  // === Market indices ===
+  {
+    slug: 'market-bhsi',
+    name: 'Baltic Handysize Index (handybulk.com)',
+    kind: 'structured_rows',
+    category: 'market',
+    source_url: 'https://www.handybulk.com/',
+    license: 'Public scrape (fair use)',
+    refresh_mode: 'auto-daily',
+    stale_threshold_days: 3,
+    refresh_command: 'npx tsx scripts/knowledge/cron/refresh-market-indices.ts',
+    primary_table: 'market_indices',
+  },
+  {
+    slug: 'market-drewry-wci',
+    name: 'Drewry World Container Index composite',
+    kind: 'structured_rows',
+    category: 'market',
+    source_url:
+      'https://www.drewry.co.uk/supply-chain-advisors/supply-chain-expertise/world-container-index-assessed-by-drewry',
+    license: 'Public scrape (fair use)',
+    refresh_mode: 'auto-daily',
+    stale_threshold_days: 10,
+    refresh_command: 'npx tsx scripts/knowledge/cron/refresh-market-indices.ts',
+    primary_table: 'market_indices',
+  },
 ];
 
 /**

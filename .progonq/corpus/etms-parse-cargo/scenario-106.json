@@ -1,0 +1,96 @@
+{
+  "id": "etms-parse-cargo-106",
+  "source_email_id": "synth-r28-011",
+  "category": "numeric_edge",
+  "input": {
+    "subject": "FW: rice Bangkok/POC abt 5-8k mt",
+    "from": "synth@test.quantika.app",
+    "date": "2026-03-10T07:00:00.000Z",
+    "body": "Pls offer for:\n\nabt 5-8k mt rice in bb 50 kgs pp bags\nBangkok / POC\nspot\n3% ttl\n"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Bangkok",
+          "confidence": "confirmed",
+          "source_text": "Bangkok / POC"
+        },
+        "origin_country": {
+          "value": "Thailand",
+          "confidence": "interpreted",
+          "source_text": "Bangkok / POC"
+        },
+        "destination_port": {
+          "value": "Port of Call (unspecified)",
+          "confidence": "interpreted",
+          "source_text": "POC"
+        },
+        "destination_country": null,
+        "cargo_description": {
+          "value": "Rice in big bags, 50 kg polypropylene bags",
+          "confidence": "interpreted",
+          "source_text": "abt 5-8k mt rice in bb 50 kgs pp bags"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 8000,
+          "confidence": "interpreted",
+          "source_text": "abt 5-8k mt rice in bb 50 kgs pp bags"
+        },
+        "weight_mt_min": {
+          "value": 5000,
+          "confidence": "interpreted",
+          "source_text": "abt 5-8k mt rice in bb 50 kgs pp bags"
+        },
+        "weight_mt_max": {
+          "value": 8000,
+          "confidence": "interpreted",
+          "source_text": "abt 5-8k mt rice in bb 50 kgs pp bags"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "confirmed",
+          "source_text": "rice in bb 50 kgs pp bags"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "Spot",
+          "confidence": "confirmed",
+          "source_text": "spot"
+        },
+        "laycan": {
+          "value": "Spot",
+          "confidence": "interpreted",
+          "source_text": "spot"
+        },
+        "loading_rate": null,
+        "loading_terms": null,
+        "discharge_rate": null,
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 3.0,
+          "confidence": "confirmed",
+          "source_text": "3% ttl"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "3% ttl"
+        },
+        "special_requirements": null,
+        "stowage_factor": null,
+        "missing_info": [
+          "Specific discharge port not nominated (Port of Call)",
+          "Rice variety/grade not specified",
+          "Loading and discharge terms not stated",
+          "Demurrage and despatch rates not stated"
+        ]
+      }
+    ]
+  }
+}

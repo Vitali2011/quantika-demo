@@ -6,6 +6,7 @@ import { ConfidenceBadge } from './ConfidenceBadge';
 import type { MatchConfidence } from '@/lib/confidence';
 import type { MarketBenchmark } from '@/lib/types';
 import { formatBenchmarkReference } from '@/lib/market/benchmark';
+import { csrfFetch } from '@/lib/csrf-client';
 
 interface QuoteTabProps {
   cargoEmailId?: string;
@@ -14,9 +15,30 @@ interface QuoteTabProps {
 
 export function QuoteTab({ cargoEmailId, confidence }: QuoteTabProps) {
   const [draft, setDraft] = useState('');
+  const [generating, setGenerating] = useState(false);
+  const [generateError, setGenerateError] = useState('');
   const [benchmark, setBenchmark] = useState<MarketBenchmark | null | 'loading'>('loading');
   const blockSend = confidence?.blockSend ?? false;
   const blockedFields = confidence?.blockedFields ?? [];
+
+  async function generateDraft() {
+    if (!cargoEmailId) return;
+    setGenerating(true);
+    setGenerateError('');
+    try {
+      const res = await csrfFetch('/api/ai/draft-quote', {
+        method: 'POST',
+        body: JSON.stringify({ emailId: cargoEmailId }),
+      });
+      const data = await res.json() as { draft?: string; error?: string };
+      if (!res.ok) throw new Error(data.error ?? 'Failed to generate draft');
+      setDraft(data.draft ?? '');
+    } catch (err) {
+      setGenerateError(err instanceof Error ? err.message : 'Failed to generate draft');
+    } finally {
+      setGenerating(false);
+    }
+  }
 
   useEffect(() => {
     fetch('/api/market/benchmark?indicator=TOEPFER_TMI')
@@ -32,10 +54,24 @@ export function QuoteTab({ cargoEmailId, confidence }: QuoteTabProps) {
       )}
 
       <div className="space-y-2">
-        <label className="block text-xs font-medium text-gray-600">Draft Quote</label>
+        <div className="flex items-center gap-2">
+          <label className="block text-xs font-medium text-gray-600">Draft Quote</label>
+          {cargoEmailId && (
+            <button
+              onClick={generateDraft}
+              disabled={generating}
+              className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+            >
+              {generating ? 'Generating…' : 'Generate'}
+            </button>
+          )}
+        </div>
+        {generateError && (
+          <p className="text-xs text-red-600">{generateError}</p>
+        )}
         <textarea
           className="w-full rounded border border-gray-200 p-3 text-sm resize-y min-h-[120px]"
-          placeholder="Draft quote text will appear here…"
+          placeholder="Click Generate to create an AI draft quote…"
           value={draft}
           onChange={e => setDraft(e.target.value)}
         />
@@ -62,14 +98,16 @@ export function QuoteTab({ cargoEmailId, confidence }: QuoteTabProps) {
         ) : benchmark ? (
           <>
             <p className="text-xs text-gray-700">{formatBenchmarkReference(benchmark)}</p>
-            <a
-              href={benchmark.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-blue-500 underline"
-            >
-              source
-            </a>
+            {benchmark.sourceUrl.startsWith('http') && (
+              <a
+                href={benchmark.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-blue-500 underline"
+              >
+                source
+              </a>
+            )}
           </>
         ) : (
           <p className="text-xs text-gray-400">📊 Benchmark unavailable</p>

@@ -250,7 +250,7 @@ export default function ChartererPage() {
               </p>
               <p className="mt-1">
                 <span className="font-medium">Created:</span>{' '}
-                {new Date(charterer.created_at).toLocaleDateString()}
+                {new Date(charterer.created_at).toLocaleDateString('en-US', { timeZone: 'UTC' })}
               </p>
             </div>
           </CardContent>

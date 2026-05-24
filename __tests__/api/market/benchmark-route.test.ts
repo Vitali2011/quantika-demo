@@ -2,17 +2,19 @@
  * Integration tests for GET /api/market/benchmark route (spec-01).
  *
  * Route logic:
- * 1. DB-first: getLatestBalticIndex(db, indicator) for BHSI and TOEPFER_TMI
+ * 1. DB-first: getLatestIndex(db, indexName) from market_indices for BHSI and TOEPFER_TMI
  * 2. Fallback: getCurrentBenchmark(indicator) (scraper for TMI)
  * 3. 404 if no data (not 503)
+ * 4. stale=true if index_date is >7 days old
  *
  * Requirements:
- * - ?indicator=BHSI → 200 with value: 650 (from DB)
- * - ?indicator=TOEPFER_TMI → 200 with value: 12683 (from DB)
+ * - ?indicator=BHSI → 200 with value from market_indices
+ * - ?indicator=TOEPFER_TMI → 200 with value from market_indices
+ * - stale row (>7 days) → 200 with stale=true
+ * - missing row → fallback to scraper or 404
  * - ?indicator=DREWRY_BREAKBULK → 404 (no data)
  * - no indicator → 400
  * - invalid indicator → 400
- * - missing data → 404 (not 503)
  */
 
 import { GET } from '@/app/api/market/benchmark/route';
@@ -24,11 +26,11 @@ jest.mock('@/lib/session-store', () => ({
   getStore: jest.fn(() => ({ getDatabase: mockGetDatabase })),
 }));
 
-// ─── Mock baltic-repository ───────────────────────────────────────────────────
+// ─── Mock market-indices-repository ───────────────────────────────────────────
 
-const mockGetLatestBalticIndex = jest.fn();
-jest.mock('@/lib/market/baltic-repository', () => ({
-  getLatestBalticIndex: (...args: unknown[]) => mockGetLatestBalticIndex(...args),
+const mockGetLatestIndex = jest.fn();
+jest.mock('@/lib/market/market-indices-repository', () => ({
+  getLatestIndex: (...args: unknown[]) => mockGetLatestIndex(...args),
 }));
 
 // ─── Mock getCurrentBenchmark (scraper fallback) ──────────────────────────────
@@ -47,8 +49,11 @@ function makeRequest(indicator?: string): Request {
   return new Request(url);
 }
 
-const BHSI_ROW = { index_code: 'BHSI', value: 650, price_date: '2026-05-09', source: 'static-seed' };
-const TMI_ROW = { index_code: 'TOEPFER_TMI', value: 12683, price_date: '2026-05-09', source: 'static-seed' };
+const TODAY = new Date().toISOString().slice(0, 10);
+const STALE_DATE = '2020-01-01';
+
+const BHSI_ROW = { id: 'bhsi-2026-05-09', index_name: 'bhsi', index_date: '2026-05-09', value: 650, unit: 'USD/day', source: 'https://www.handybulk.com/', fetched_at: '2026-05-09T10:00:00.000Z' };
+const TMI_ROW = { id: 'tmi-2026-05-09', index_name: 'tmi', index_date: '2026-05-09', value: 12683, unit: 'USD/day', source: 'static-seed', fetched_at: '2026-05-09T10:00:00.000Z' };
 
 // ─── Tests ───────────────────────────────────────────────────────────────────
 
@@ -58,8 +63,8 @@ beforeEach(() => {
 });
 
 describe('GET /api/market/benchmark — DB path', () => {
-  it('R-1: ?indicator=BHSI → 200 with value=650 from DB', async () => {
-    mockGetLatestBalticIndex.mockReturnValue(BHSI_ROW);
+  it('R-1: ?indicator=BHSI → 200 with value=650 from market_indices', async () => {
+    mockGetLatestIndex.mockReturnValue(BHSI_ROW);
 
     const res = await GET(makeRequest('BHSI'));
     const json = await res.json();
@@ -70,8 +75,8 @@ describe('GET /api/market/benchmark — DB path', () => {
     expect(json.unit).toBe('index');
   });
 
-  it('R-2: ?indicator=TOEPFER_TMI → 200 with value=12683 from DB', async () => {
-    mockGetLatestBalticIndex.mockReturnValue(TMI_ROW);
+  it('R-2: ?indicator=TOEPFER_TMI → 200 with value=12683 from market_indices', async () => {
+    mockGetLatestIndex.mockReturnValue(TMI_ROW);
 
     const res = await GET(makeRequest('TOEPFER_TMI'));
     const json = await res.json();
@@ -84,8 +89,8 @@ describe('GET /api/market/benchmark — DB path', () => {
     expect(mockGetCurrentBenchmark).not.toHaveBeenCalled();
   });
 
-  it('R-3: TOEPFER_TMI falls back to scraper when DB has no row', async () => {
-    mockGetLatestBalticIndex.mockReturnValue(null);
+  it('R-3: TOEPFER_TMI falls back to scraper when market_indices has no row', async () => {
+    mockGetLatestIndex.mockReturnValue(null);
     const scraperBenchmark = {
       indicator: 'TOEPFER_TMI' as const,
       value: 13000,
@@ -103,6 +108,28 @@ describe('GET /api/market/benchmark — DB path', () => {
     expect(json.value).toBe(13000);
     expect(mockGetCurrentBenchmark).toHaveBeenCalledTimes(1);
   });
+
+  it('R-9: recent row (today) → stale=false', async () => {
+    mockGetLatestIndex.mockReturnValue({ ...BHSI_ROW, index_date: TODAY });
+
+    const res = await GET(makeRequest('BHSI'));
+    const json = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(json.stale).toBe(false);
+    expect(json.value).toBe(650);
+  });
+
+  it('R-10: stale row (>7 days) → stale=true, value still present', async () => {
+    mockGetLatestIndex.mockReturnValue({ ...BHSI_ROW, index_date: STALE_DATE });
+
+    const res = await GET(makeRequest('BHSI'));
+    const json = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(json.stale).toBe(true);
+    expect(json.value).toBe(650);
+  });
 });
 
 describe('GET /api/market/benchmark — null / error paths', () => {
@@ -116,8 +143,8 @@ describe('GET /api/market/benchmark — null / error paths', () => {
     expect(json.error).toMatch(/DREWRY_BREAKBULK/);
   });
 
-  it('R-5: BHSI with no DB row → 404 (no scraper fallback for BHSI)', async () => {
-    mockGetLatestBalticIndex.mockReturnValue(null);
+  it('R-5: BHSI with no market_indices row → 404 (no scraper fallback for BHSI)', async () => {
+    mockGetLatestIndex.mockReturnValue(null);
     mockGetCurrentBenchmark.mockResolvedValue(null);
 
     const res = await GET(makeRequest('BHSI'));
@@ -126,7 +153,7 @@ describe('GET /api/market/benchmark — null / error paths', () => {
   });
 
   it('R-6: 404 response has descriptive error message', async () => {
-    mockGetLatestBalticIndex.mockReturnValue(null);
+    mockGetLatestIndex.mockReturnValue(null);
     mockGetCurrentBenchmark.mockResolvedValue(null);
 
     const res = await GET(makeRequest('BHSI'));
@@ -134,6 +161,14 @@ describe('GET /api/market/benchmark — null / error paths', () => {
 
     expect(typeof json.error).toBe('string');
     expect(json.error.length).toBeGreaterThan(0);
+  });
+
+  it('R-11: missing market_indices row (TOEPFER_TMI) → 404 when scraper also null', async () => {
+    mockGetLatestIndex.mockReturnValue(null);
+    mockGetCurrentBenchmark.mockResolvedValue(null);
+
+    const res = await GET(makeRequest('TOEPFER_TMI'));
+    expect(res.status).toBe(404);
   });
 });
 

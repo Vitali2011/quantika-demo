@@ -1,0 +1,110 @@
+{
+  "id": "etms-parse-cargo-110",
+  "source_email_id": "synth-r28-015",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: 25-30k mt clinker Novorossiysk/Alexandria 1H-June",
+    "from": "synth@test.quantika.app",
+    "date": "2026-05-10T07:30:00.000Z",
+    "body": "Hi,\n\nPls propose for below cargo.\n\n25-30k mt bulk clinker\nNovorossiysk / Alexandria\n1H-June 2026\n6000/4000 SHINC\n2.5% ttl\n\nBrgds"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Novorossiysk",
+          "confidence": "confirmed",
+          "source_text": "Novorossiysk / Alexandria"
+        },
+        "origin_country": {
+          "value": "Russia",
+          "confidence": "interpreted",
+          "source_text": "Novorossiysk / Alexandria"
+        },
+        "destination_port": {
+          "value": "Alexandria",
+          "confidence": "confirmed",
+          "source_text": "Novorossiysk / Alexandria"
+        },
+        "destination_country": {
+          "value": "Egypt",
+          "confidence": "interpreted",
+          "source_text": "Alexandria"
+        },
+        "cargo_description": {
+          "value": "Bulk clinker",
+          "confidence": "confirmed",
+          "source_text": "25-30k mt bulk clinker"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 30000,
+          "confidence": "interpreted",
+          "source_text": "25-30k mt bulk clinker"
+        },
+        "weight_mt_min": {
+          "value": 25000,
+          "confidence": "confirmed",
+          "source_text": "25-30k mt bulk clinker"
+        },
+        "weight_mt_max": {
+          "value": 30000,
+          "confidence": "confirmed",
+          "source_text": "25-30k mt bulk clinker"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "bulk clinker"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": null,
+        "laycan": {
+          "value": "First half of June 2026",
+          "confidence": "interpreted",
+          "source_text": "1H-June 2026"
+        },
+        "loading_rate": {
+          "value": 6000,
+          "confidence": "confirmed",
+          "source_text": "6000/4000 SHINC"
+        },
+        "loading_terms": {
+          "value": "SHINC",
+          "confidence": "confirmed",
+          "source_text": "6000/4000 SHINC"
+        },
+        "discharge_rate": {
+          "value": 4000,
+          "confidence": "confirmed",
+          "source_text": "6000/4000 SHINC"
+        },
+        "discharge_terms": {
+          "value": "SHINC",
+          "confidence": "confirmed",
+          "source_text": "6000/4000 SHINC"
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl"
+        },
+        "special_requirements": null,
+        "stowage_factor": null,
+        "missing_info": [
+          "Exact laycan dates not specified — '1H-June 2026' interpreted as first half of June 2026 (1–15 June)",
+          "Demurrage and despatch rates not stated"
+        ]
+      }
+    ]
+  }
+}

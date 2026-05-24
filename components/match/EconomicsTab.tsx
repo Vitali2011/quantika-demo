@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import type { ParsedVessel, ParsedCargo } from '@/lib/types';
 import { RouteCompareModal } from '@/components/economics/RouteCompareModal';
 import { calculateFuelEu } from '@/lib/economics/fueleu';
@@ -16,6 +16,9 @@ interface EconomicsTabProps {
    * (shows "Voyage distance n/a") instead of using a hardcoded constant.
    */
   routeDistanceNm?: number | null;
+  matchDbId?: number | null;
+  storedFreightRate?: number | null;
+  freightRateSource?: string | null;
 }
 
 function parseLeadingNumber(s: string | null | undefined): number {
@@ -48,13 +51,65 @@ const DISPLAY_RATES: Record<DisplayCurrency, number> = {
   USD: 1, EUR: 0.926, GBP: 0.787, NOK: 10.87, AED: 3.67,
 };
 
-export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm }: EconomicsTabProps) {
+export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm, matchDbId, storedFreightRate, freightRateSource }: EconomicsTabProps) {
   const [open, setOpen] = useState(false);
   const [bunkerPriceUsdPerMt, setBunkerPriceUsdPerMt] = useState('');
+  const [overrideRate, setOverrideRate] = useState(storedFreightRate != null ? String(storedFreightRate) : '');
+  const [overrideTce, setOverrideTce] = useState<number | null>(null);
+  const [overrideSaving, setOverrideSaving] = useState(false);
+  const [overrideError, setOverrideError] = useState<string | null>(null);
   const [bunkerPort, setBunkerPort] = useState<BunkerPort>('SGSIN');
   const [bunkerGrade, setBunkerGrade] = useState<BunkerGrade>('VLSFO');
   const [displayCurrency, setDisplayCurrency] = useState<DisplayCurrency>('USD');
   const [fuelType, setFuelType] = useState('hfo');
+  const [euaData, setEuaData] = useState<{ value: number; period: string; stale?: boolean } | null>(null);
+  const [euaPhase, setEuaPhase] = useState<'loading' | 'ok' | 'unavailable'>('loading');
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/market/benchmark?indicator=EUA')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: { value: number; period: string; stale?: boolean } | null) => {
+        if (cancelled) return;
+        if (data && typeof data.value === 'number') {
+          setEuaData(data);
+          setEuaPhase('ok');
+        } else {
+          setEuaPhase('unavailable');
+        }
+      })
+      .catch(() => { if (!cancelled) setEuaPhase('unavailable'); });
+    return () => { cancelled = true; };
+  }, []);
+
+  const handleOverrideSubmit = useCallback(async () => {
+    if (!matchDbId) return;
+    const rate = parseFloat(overrideRate);
+    if (!Number.isFinite(rate) || rate <= 0) {
+      setOverrideError('Enter a positive rate (USD/mt)');
+      return;
+    }
+    setOverrideSaving(true);
+    setOverrideError(null);
+    try {
+      const res = await fetch(`/api/matches/${matchDbId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ freight_rate_usd_per_mt: rate }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setOverrideError((data as { error?: string }).error ?? `Error ${res.status}`);
+      } else {
+        const updated = await res.json();
+        setOverrideTce(updated.tce_usd_per_day ?? null);
+      }
+    } catch {
+      setOverrideError('Network error');
+    } finally {
+      setOverrideSaving(false);
+    }
+  }, [matchDbId, overrideRate]);
 
   const compareInputs = useMemo(() => {
     const origin = cargo?.originPort?.value ?? '';
@@ -90,12 +145,12 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
     const manual = bunkerPriceUsdPerMt !== '' ? Number(bunkerPriceUsdPerMt) : undefined;
     return {
       bunkerPriceUsdPerMt: manual ?? 0,
-      euaPriceEur: 75,
+      euaPriceEur: euaData?.value ?? 75,
       // pass port/grade for auto-resolve when price is empty
       bunkerPort,
       bunkerGrade,
     };
-  }, [bunkerPriceUsdPerMt, bunkerPort, bunkerGrade]);
+  }, [bunkerPriceUsdPerMt, bunkerPort, bunkerGrade, euaData]);
 
   const fuelEuEnabled = process.env.NEXT_PUBLIC_FUELEU_ENABLED === 'true';
 
@@ -126,6 +181,52 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
 
   return (
     <div data-testid="tab-economics" className="space-y-4 text-sm">
+      {/* Freight rate override */}
+      {matchDbId != null && (
+        <div data-testid="freight-rate-override" className="rounded border border-blue-200 bg-blue-50 p-3 space-y-2">
+          <h3 className="text-xs font-semibold text-blue-900">Freight Rate Override</h3>
+          {storedFreightRate != null && (
+            <p className="text-xs text-gray-600">
+              Current: <span className="font-medium">${storedFreightRate}/mt</span>
+              {freightRateSource === 'estimated' && (
+                <span className="ml-1 text-amber-700 bg-amber-100 px-1 rounded">est</span>
+              )}
+            </p>
+          )}
+          {overrideTce != null && (
+            <p data-testid="override-tce-result" className="text-xs font-medium text-emerald-700">
+              Recalculated TCE: ${overrideTce.toLocaleString()}/day
+            </p>
+          )}
+          <div className="flex gap-2 items-end">
+            <div className="flex-1">
+              <label className="text-xs text-gray-600 block mb-0.5">Rate (USD/mt)</label>
+              <input
+                data-testid="freight-rate-input"
+                type="number"
+                value={overrideRate}
+                onChange={(e) => { setOverrideRate(e.target.value); setOverrideTce(null); setOverrideError(null); }}
+                placeholder="e.g. 28"
+                min={0}
+                step={0.1}
+                className="w-full border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-400"
+              />
+            </div>
+            <button
+              data-testid="freight-rate-submit"
+              onClick={handleOverrideSubmit}
+              disabled={overrideSaving || !overrideRate}
+              className="px-3 py-1.5 text-xs rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+            >
+              {overrideSaving ? '…' : 'Recalculate'}
+            </button>
+          </div>
+          {overrideError && (
+            <p data-testid="freight-rate-error" className="text-xs text-red-600">{overrideError}</p>
+          )}
+        </div>
+      )}
+
       {commissionPercent != null && (
         <div>
           <span className="text-gray-500">Commission</span>
@@ -204,6 +305,28 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
         </div>
       )}
 
+      {/* EUA / EU ETS live price */}
+      <div data-testid="eua-price-tile" className="rounded border border-gray-200 bg-gray-50 p-3 space-y-1">
+        <h3 className="text-xs font-semibold text-gray-700">EUA / EU ETS Price</h3>
+        <div className="flex items-center justify-between text-xs">
+          {euaPhase === 'loading' ? (
+            <span className="text-gray-400 animate-pulse">Loading…</span>
+          ) : euaPhase === 'ok' && euaData ? (
+            <>
+              <span data-testid="eua-value" className="font-medium text-gray-900">
+                €{euaData.value.toFixed(2)}/tCO₂
+              </span>
+              <span className="text-gray-400">{euaData.period}</span>
+            </>
+          ) : (
+            <span data-testid="eua-na" className="text-gray-400">N/A</span>
+          )}
+        </div>
+        {euaData?.stale && (
+          <p data-testid="eua-stale" className="text-xs text-amber-600">⚠ Stale data</p>
+        )}
+      </div>
+
       {fuelEuEnabled && (
         <div
           data-testid="fueleu-tile"
@@ -253,13 +376,13 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
               </div>
 
               <div className="mt-2 pt-2 border-t border-blue-200">
-                {fuelEuResult.isCompliant ? (
-                  <div className="flex items-center gap-1.5 text-green-700">
+                {fuelEuResult.ghgIntensityActual <= fuelEuResult.ghgIntensityTarget ? (
+                  <div data-testid="fueleu-compliant" className="flex items-center gap-1.5 text-green-700">
                     <span className="text-base">✓</span>
                     <span className="font-medium">Compliant</span>
                   </div>
-                ) : (
-                  <div className="space-y-1">
+                ) : fuelEuResult.totalEnergyMj > 0 ? (
+                  <div data-testid="fueleu-penalty" className="space-y-1">
                     <div className="flex items-center gap-1.5 text-orange-700">
                       <span className="text-base">⚠</span>
                       <span className="font-medium">
@@ -269,6 +392,11 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
                     <div className="text-gray-500">
                       ≈ ${fuelEuResult.penaltyUsd.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                     </div>
+                  </div>
+                ) : (
+                  <div data-testid="fueleu-noncompliant" className="flex items-center gap-1.5 text-orange-700">
+                    <span className="text-base">⚠</span>
+                    <span className="font-medium">Non-compliant fuel type</span>
                   </div>
                 )}
               </div>

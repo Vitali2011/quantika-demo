@@ -14,7 +14,7 @@ name: Auto-merge (tag-based)
 
 on:
   pull_request:
-    types: [opened, edited, labeled, reopened, ready_for_review]
+    types: [opened, edited, labeled, reopened, ready_for_review, closed]
 
 permissions:
   contents: write
@@ -27,6 +27,7 @@ concurrency:
 jobs:
   enable-auto-merge:
     if: >-
+      github.event.action != 'closed' &&
       !github.event.pull_request.draft &&
       github.actor != 'dependabot[bot]' &&
       !contains(github.event.pull_request.title, '[deploy-affects]') &&
@@ -42,3 +43,48 @@ jobs:
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.AUTO_REBASE_PAT || secrets.GITHUB_TOKEN }}
+
+  # Triggered when a PR is merged (closed event with merged=true).
+  # Sends a repository_dispatch(prod-deploy) to deploy.yml.
+  #
+  # Why this job instead of on:push in deploy.yml:
+  #   GitHub native auto-merge completes via github-merge-queue[bot]. GitHub's
+  #   anti-recursion guard suppresses on:push triggers for bot-authored pushes,
+  #   so deploy.yml never fires after auto-merged PRs. The pull_request:closed
+  #   webhook event is NOT suppressed — it fires for ALL merges regardless of
+  #   who performed them. repository_dispatch sent via AUTO_REBASE_PAT from
+  #   this job bypasses the recursion guard and reliably triggers deploy.yml.
+  #
+  # paths-skip (mirrors old paths-ignore in deploy.yml):
+  #   checkout merge commit → git diff HEAD~1 HEAD → if ALL changed files are
+  #   in docs/**, *.md, .claude/**, .github/**, .specs/** → skip dispatch.
+  trigger-deploy:
+    if: github.event.action == 'closed' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 2
+
+      - name: Check for deploy-relevant changes
+        id: paths
+        run: |
+          count=$(git diff --name-only HEAD~1 HEAD \
+            | grep -cvE '^(docs/|[^/]*\.md$|\.claude/|\.github/|\.specs/)' \
+            || true)
+          echo "has_code=$([ "$count" -gt 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      - name: Dispatch prod-deploy
+        if: steps.paths.outputs.has_code == 'true'
+        run: |
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/${{ github.repository }}/dispatches" \
+            -f event_type=prod-deploy \
+            -F 'client_payload[sha]=${{ github.event.pull_request.merge_commit_sha }}'
+        env:
+          GH_TOKEN: ${{ secrets.AUTO_REBASE_PAT }}

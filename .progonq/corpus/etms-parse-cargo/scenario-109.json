@@ -1,0 +1,93 @@
+{
+  "id": "etms-parse-cargo-109",
+  "source_email_id": "synth-r28-014",
+  "category": "incomplete_data",
+  "input": {
+    "subject": "FW: steel billets Marmara/Antwerp",
+    "from": "synth@test.quantika.app",
+    "date": "2026-05-05T08:00:00.000Z",
+    "body": "As per subject.\n\n8,500 mt\n20/30 May 2026\n2.5%"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Marmara",
+          "confidence": "confirmed",
+          "source_text": "steel billets Marmara/Antwerp"
+        },
+        "origin_country": {
+          "value": "Turkey",
+          "confidence": "interpreted",
+          "source_text": "Marmara"
+        },
+        "destination_port": {
+          "value": "Antwerp",
+          "confidence": "confirmed",
+          "source_text": "Marmara/Antwerp"
+        },
+        "destination_country": {
+          "value": "Belgium",
+          "confidence": "interpreted",
+          "source_text": "Antwerp"
+        },
+        "cargo_description": {
+          "value": "Steel billets",
+          "confidence": "uncertain",
+          "source_text": "steel billets"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 8500,
+          "confidence": "confirmed",
+          "source_text": "8,500 mt"
+        },
+        "weight_mt_min": null,
+        "weight_mt_max": null,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BREAK_BULK",
+          "confidence": "uncertain",
+          "source_text": "steel billets"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "20/30 May 2026",
+          "confidence": "confirmed",
+          "source_text": "20/30 May 2026"
+        },
+        "laycan": {
+          "value": "20/30 May 2026",
+          "confidence": "confirmed",
+          "source_text": "20/30 May 2026"
+        },
+        "loading_rate": null,
+        "loading_terms": null,
+        "discharge_rate": null,
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5%"
+        },
+        "commission_terms": {
+          "value": "Not specified (likely brokerage)",
+          "confidence": "uncertain",
+          "source_text": "2.5%"
+        },
+        "special_requirements": null,
+        "stowage_factor": null,
+        "missing_info": [
+          "All cargo details inferred from subject line — body contains no commodity description",
+          "Steel billet specifications (grade, dimensions, unit weight) not stated",
+          "Loading and discharge terms not stated",
+          "Demurrage and despatch rates not stated",
+          "Commission type not specified"
+        ]
+      }
+    ]
+  }
+}

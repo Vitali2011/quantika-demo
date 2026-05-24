@@ -1,30 +1,15 @@
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import type Database from 'better-sqlite3';
 import { getSession } from '@/lib/session';
 import { getStore } from '@/lib/session-store';
-import { listMatches, createMatch } from '@/lib/matching/matches-repository';
-import type { Match } from '@/lib/types';
+import { listMatches } from '@/lib/matching/matches-repository';
+import { persistSessionMatches } from '@/lib/matching/persist-session-matches';
 import MatchesClient from './MatchesClient';
 
 export const metadata: Metadata = {
   title: 'Your Recent Matches — Quantika',
 };
-
-function persistSessionMatches(db: Database.Database, sessionId: string, sessionMatches: Match[]): void {
-  for (const m of sessionMatches) {
-    createMatch(db, {
-      cargo_id: m.cargoEmailId,
-      vessel_id: m.vesselEmailId,
-      score: Math.max(0, Math.min(100, Math.round(m.score))),
-      reason: m.matchReasons[0] ?? '',
-      status: 'shortlist',
-      user_id: sessionId,
-      reason_structured: m.scoreBreakdown ? JSON.stringify(m.scoreBreakdown) : null,
-    });
-  }
-}
 
 export default async function MatchesPage() {
   const cookieStore = await cookies();
@@ -38,15 +23,20 @@ export default async function MatchesPage() {
   const db = getStore().getDatabase();
 
   if (session.matches.length > 0) {
-    persistSessionMatches(db, sessionId, session.matches);
+    persistSessionMatches(db, sessionId, session.matches, session.parsedCargos, session.parsedVessels);
   }
   const matches = listMatches(db, { user_id: sessionId, sortBy: 'score', sortDir: 'desc' });
+
+  // Computing only when BOTH cargo and vessel are present — matches require both sides.
+  const hasCargo = session.parsedCargos.length > 0;
+  const hasVessel = session.parsedVessels.length > 0;
+  const isComputing = hasCargo && hasVessel && matches.length === 0;
 
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-12">
       <div className="max-w-2xl mx-auto space-y-6">
         <h1 className="text-2xl font-bold">Your Recent Matches</h1>
-        <MatchesClient initialMatches={matches} />
+        <MatchesClient initialMatches={matches} isComputing={isComputing} />
       </div>
     </main>
   );

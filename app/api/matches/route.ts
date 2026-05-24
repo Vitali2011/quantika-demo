@@ -18,6 +18,7 @@ function isFeatureEnabled(): boolean {
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const authResult = requireSession(request);
   if (authResult instanceof NextResponse) return authResult;
+  const { sessionId } = authResult;
 
   if (!isFeatureEnabled()) {
     return NextResponse.json(
@@ -102,6 +103,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       score_min: scoreMin,
       dwt_min: dwtMin,
       dwt_max: dwtMax,
+      user_id: sessionId,
     });
 
     return NextResponse.json({ matches }, { status: 200 });
@@ -116,6 +118,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const authResult = requireSession(request);
   if (authResult instanceof NextResponse) return authResult;
+  const { sessionId } = authResult;
 
   if (!isFeatureEnabled()) {
     return NextResponse.json(
@@ -140,6 +143,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       laycan_start,
       laycan_end,
       vessel_dwt,
+      tce_usd_per_day,
+      distance_nm,
     } = body;
 
     if (!cargo_id || typeof cargo_id !== 'string' || cargo_id.trim() === '') {
@@ -164,7 +169,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       score: typeof score === 'number' && isFinite(score) ? Math.max(0, Math.min(100, Math.round(score))) : 0,
       reason: typeof reason === 'string' ? reason : '{}',
       status: VALID_STATUSES.includes(status as MatchStatus) ? (status as MatchStatus) : undefined,
-      user_id: user_id ?? null,
+      user_id: sessionId,
       reason_structured: reason_structured ?? null,
       cargo_type: cargo_type ?? null,
       load_port: load_port ?? null,
@@ -172,6 +177,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       laycan_start: laycan_start ?? null,
       laycan_end: laycan_end ?? null,
       vessel_dwt: vessel_dwt ?? null,
+      tce_usd_per_day: typeof tce_usd_per_day === 'number' && isFinite(tce_usd_per_day) ? tce_usd_per_day : null,
+      distance_nm: typeof distance_nm === 'number' && isFinite(distance_nm) ? distance_nm : null,
     });
 
     return NextResponse.json(match, { status: 201 });

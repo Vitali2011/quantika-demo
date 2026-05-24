@@ -54,6 +54,16 @@ export async function POST(request: NextRequest) {
       message: `Loaded ${truncatedEmails.length} emails`,
     });
   } catch (err) {
+    // Google API 401/403 means the OAuth token is expired or revoked; surface as
+    // 401 so the client can redirect to re-auth instead of showing a generic 500.
+    const googleStatus =
+      typeof err === 'object' && err !== null
+        ? ((err as { response?: { status?: number } }).response?.status ??
+           (err as { status?: number }).status)
+        : undefined;
+    if (googleStatus === 401 || googleStatus === 403) {
+      return NextResponse.json({ error: 'Gmail auth expired, please reconnect' }, { status: 401 });
+    }
     logger.error({ err }, 'Email fetch error');
     return NextResponse.json({ error: 'Failed to fetch emails' }, { status: 500 });
   }

@@ -65,7 +65,6 @@ export default async function VesselDetailPage({ params }: Props) {
 
   const emailMeta = {
     emailBody: email.body || email.snippet,
-    emailFrom: email.from,
     emailDate: email.date,
     emailSubject: email.subject,
   };

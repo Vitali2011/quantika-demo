@@ -1,7 +1,7 @@
 # Quantika Demo — ROADMAP (Текущее состояние)
 
 **Последний полный аудит:** 2026-05-17 (5-поточный код-аудит) + 2026-05-19 UI audit (Playwright+Chrome MCP) + **2026-05-19 ROADMAP reality audit** (claim vs prod sweep)
-**Последнее обновление:** 2026-05-22 — F7 #322 (/processing 403→200), R8 root-cause #324 (measurement artifact), C5 fx_rates #323/#327 (daily timer LIVE, 212 rows), R15 #326 (56/56 100%), auto-merge race #328, post-deploy verify #316
+**Последнее обновление:** 2026-05-24 (день, финал) — **qa-walker run #6 PASSED, 0 errors**. Closing the loop: 3 hydration sources fixed (#408/#425/#430), TCE LIVE, match economy real. 19 PR за сутки (#405-#430). — 4-волновой план: 7 PR merged (#365-#371), 4 GH issues closed (#359 #361 #364 + #360 #362 #363), mobile UX audit findings закрыты (1 CRIT через rebuild + 4 HIGH + 3 LOW)
 **Текущая версия:** prod HEAD после auto-deploy LIVE (#259, systemd quantika-demo.service на outreach-vps)
 **Статус:** 🟢 Основные потоки работают; parse-vessel в активной итерации (R8 baseline после revert); pre-merge-guard LIVE
 
@@ -65,6 +65,28 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 - 📋 **Parser quality итог: 4/7 парсеров готовы** (parse-vessel, match, explain-deal, draft-quote). parse-cargo стабилен (R5 marginal). **2 заблокированы на данных партнёра** (см. ниже).
 - 🔴 **classify (urgency 70.8%) + parse-recap (45-58%) — ждут данных от партнёра.** Опросник готов: `~/quantika-partner-questionnaire.md` (MacBook, лёгкая версия). Нужно: (1) ~10 реальных recap-писем; (2) 15-20 писем с меткой URGENT/NORMAL/LOW. После получения → калибровать обе модели до 95%+. **Следующая сессия начинается отсюда.**
 
+**Что изменилось за 2026-05-22 (итог дня):**
+
+- 🚨 **ИНЦИДЕНТ+ФИКС auto-deploy:** прод застрял на #334 — git был на ветке `docs/flag-activation`, не `main`; `GITHUB_TOKEN` не триггерил `deploy.yml`. Фикс: прод переведён на `main` + ручной деплой; deploy-триггер починен **#344** (auto-merge через `AUTO_REBASE_PAT`). Прод теперь на **#338**, health 200. ✅
+- ✅ **ECA live:** `eca_zones` было 0 — парсер не понимал `polygon_geojson`. Фикс парсера **#338** + seed на проде → `eca_zones=4` LIVE. ECA топливная надбавка для EU/North Sea рейсов заработала (раньше молча возвращала 0).
+- ✅ **#336** — 73 route-теста, 0 багов (baseline coverage audit)
+- ✅ **#337** — ai-grounding аудит: 9 галлюцинаций в `explain-deal` Market Context (3 сценария)
+- ✅ **#338** — data-integrity аудит 21 таблицы + eca parser fix; `/test-skill` поймал BUG-1 (`Array.isArray`), пофикшено в рамках PR; результат 57/57
+- ✅ **#340** — data source-of-truth: env-aware аудит + prod→dev snapshot + seed inventory
+- ✅ **#344** — deploy-trigger fix (AUTO_REBASE_PAT вместо GITHUB_TOKEN)
+- ✅ **#345** — nav: Market link на /dashboard + active state в BottomNav
+- 📋 **IN-FLIGHT** (open PR, валидируются): **#341** (market real-data + systemd timer + UI «as-of-date»), **#342** (matches auto compute+persist догоняющий триггер + UI + E2E poll), **#343** (parse-cargo: `cargo_description` 15.5%→85% +69pp, commission +6.8pp)
+- 📋 **НАХОДКИ:** EU-санкции на проде в порядке (5,996 rows — аудит мерил dev-базу, была ложная тревога); `data-integrity` вердикты: `market_indices` + `war_risk` требуют внимания; eval judge = `claude-cli` (не Haiku); overflow работает без Gemini
+- 📋 **BACKLOG:** ~95 устаревших worktree (cleanup); старые open PR **#276** (parse-vessel, DIRTY) и **#299** (docs) — решить судьбу
+
+**Что изменилось за 2026-05-22 (поздний вечер — addendum):**
+
+- ✅ **PR-финал дня (merged):** #336 / #337 / #338 / #340 / #341 / #342 / #343 / #344 / #345 / #346 / #299. Closed: **#276** (parse-vessel superseded R16) и **#339** (заместил #342).
+- ✅ **#341 market real-data + systemd timer + UI «as-of-date» LIVE** — auto-merged успешно, НО auto-deploy **НЕ** сработал (см. инфра-долг ниже) → задеплоен **ВРУЧНУЮ** на prod. Итог: Market UI показывает «по состоянию на <дату>»; systemd-таймер `quantika-market-indices-refresh` установлен и active (авто-рефреш ежедневно). Nav-кнопка **#345** Market Intelligence → «View all» live в `/dashboard`.
+- ✅ **Worktree-гигиена:** ~120 → 9 (root@ 5 + mikanovich@ 4); удалено **66 + 13 + 21** устаревших worktree.
+- 📝 **Process notes:** eval judge = `claude-cli` (не Haiku); overflow работает без Gemini → parser-eval запускается на root@.
+- 🔴 **ОТКРЫТЫЙ ИНФРА-ДОЛГ (приоритет №1 следующей сессии): AUTO-DEPLOY TRIGGER СЛОМАН.** Auto-merge работает, но `deploy.yml` НЕ триггерится при завершении GitHub native auto-merge (merge атрибутируется боту, а не `AUTO_REBASE_PAT`). PR **#344** (`GITHUB_TOKEN → AUTO_REBASE_PAT`) НЕ решил полностью. Нужен настоящий фикс: `workflow_run`-триггер после CI на main **ИЛИ** `repository_dispatch` из auto-merge workflow. Пока не починено — каждый merge требует **РУЧНОГО деплоя**, прод отстаёт от main.
+
 **Что изменилось за 2026-05-20:**
 
 - ✅ **B5a #288** — pre-populated searoute JSON (tier 2): 105,011 пар, canal routes 32-163% точнее haversine
@@ -96,6 +118,68 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 - ✅ /matches: M1 + M3 LIVE — MATCHES_ENABLED=true выставлен 2026-05-19, rebuild + systemctl restart
 - ✅ 3 missing webhook routes добавлены в AUTH_BYPASS (PR #221) — после rebuild на правильном хосте outreach-vps работают
 - 🟡 Discovered: prod = outreach-vps (NOT dev-vps); 14 PRs не были на проде до systemctl restart
+
+**Что изменилось за 2026-05-23 (4-волновой план — 7 PR за утро):**
+
+- ✅ **W0**: #365 `match Phase B` (distance corridors Izmail-Ravenna/Iskenderun-Jeddah + tiered idle penalty tests, QA cold PASS 0/0) + #366 docs/audits/mobile-ux-2026-05-22.md (16 findings, 7 экранов)
+- ✅ **W1 (parallel × 3 + 2 cold-QA)**: #367 `fix(middleware): 401 JSON for /api/*` closes **#364** (auth-risk, /test-skill PASS) · #368 `feat(cargo-detail): quantity + laycan AI fields` closes **#361** · #369 `fix(fueleu): correct compliance badge — WtW > target is non-compliant` closes **#359** (logic-risk, /test-skill PASS)
+- ✅ **W2**: #370 `fix(ux): mobile polish — H-2/H-3/H-4/H-5` — 8 touch-targets /matches на ≥44px, bulk-footer clearance BottomNav, /upgrade в /more nav, /more populated (Upgrade/Dashboard/Help/Logout). H-1 prod build-gap закрылся auto-deploy'ем W0/W1
+- ✅ **W3**: #371 `fix(cleanup): LOW mass-cleanup` closes **#360** (benchmark link 404 → http:// guard) + **#362** (SANCTIONS badge mistag → pair-analyzer primary-cause filter) + **#363** (sitemap.xml 404 → public/robots.txt + sitemap.xml) + audit LOW L-1/L-2/L-3 (RU empty-state, design tokens на /upgrade, safe-area на /more)
+- 📋 **Autonomous wave-driver**: 4 волны выполнены через cron-loop (CronCreate каждые 15м → dispatch.sh → tmux fire-and-forget → done-watcher → wake), zero-touch после первой команды. Конфликт на /more/page.tsx между W2 (nav links) и W3 (safe-area) резолвлен оркестратором inline.
+
+**Что закрыто финально (2026-05-24 ~09:30):**
+
+- ✅ **#430 hydration src-3** (MatchesClient.tsx toLocaleString без locale — Node SSR vs browser разные разделители; pin 'en-US'). 3-я и финальная итерация #418-цепочки.
+- ✅ **qa-walker run #6: 0 errors** — все 3 hydration источника закрыты, prod stable.
+- 📋 **Cleanup:** 22 worktrees → 5; 2 merged branches deleted.
+
+**Что изменилось за 2026-05-24 (день — экономика match LIVE):**
+
+- ✅ **#424 parse-cargo R28** — K-suffix + 1H/2H/EOM laycan + 6 port abbreviations + 15 synthetic scenarios. Prompt iteration с R27 baseline 91.8/93.2/91.6%.
+- ✅ **#425 #404 hydration source-2** — SourceTable + charterers/[id] toLocaleDateString без timeZone давали SSR mismatch. Pin UTC + 2 regression tests.
+- ✅ **#427 distance_nm populate gap** — UNLOCODE fast path в normalizePortName. distance возвращал NULL для 95% matches (UNLOCODE CNSHA не матчился к 'Shanghai'). 803/803 green, cold-QA 0 CRIT/HIGH/MED.
+- ✅ **#428 TCE feature** — estimateFreightRate (baseline по cargo class × distance factor) + migration 036 + PATCH manual override + UI input. Match Economics теперь non-NULL TCE для большинства matches. 13 файлов, cold-QA PASS (2 MED follow-ups: storedFreightRate badge refresh).
+- 📋 **Бизнес-итог:** брокер открывает /matches → видит cargo/ports/laycan/dwt/distance/TCE сразу + может править ставку в Economics tab → пересчёт. Реальная economic snapshot, не demo placeholder.
+- 📋 **TCE follow-ups (LOW):** (a) Baltic live rates puller вместо statics; (b) UX badge refresh after manual override.
+
+**Что изменилось за 2026-05-24 (утро — qa-loop iter 1 + iter 2 COMPLETE):**
+
+- ✅ **qa-walker iter 1** нашёл 6 новых: #413 (root: stale chunks 500 от duplicate Constanta|Marghera) + #414 logout regression + #415/#416/#419 cascade от #413 + #417 /more 404 + #418 /upgrade 404.
+- 🚨 **PROD INCIDENT (~10 мин downtime):** prod build упал на TS duplicate property → .next пустой → systemd crash-loop. Hotfix: SSH outreach-vps, sed remove дубли, NODE_OPTIONS rebuild, systemctl restart. Восстановлено HEALTH 200. PR #420 зафиксировал в git.
+- ✅ **iter 1 fix-wave:** #420 (dedup, hotfix prod) + #421 (#414 logout regression guard) + #422 (#417 #418 /more+/upgrade nav). Cascade #415 #416 #419 закрыты verified.
+- ✅ **qa-walker iter 2 PASS — 0 CRIT/0 HIGH open.** Все qa-walker issues закрыты. #395 #418 false-positives закрыты verified. Loop STOP.
+- 📋 **Lessons:** (1) Phase B + Match conflict не пойман CI (duplicate TS keys) — добавить pre-merge TS check; (2) rm -rf .next перед rebuild = риск, better blue-green deploy с .next.new directory.
+- 📋 **INFO non-blocking:** /market показывает данные as of 2026-05-14 (10 дней stale) — systemd timer #341 не триггерил pull с 2026-05-22.
+
+**Что изменилось за 2026-05-24 (раннее утро — qa-walker re-test wave 2):**
+
+- ✅ **W1 SECURITY** #406 (#399 cargo_type filter снимал session_id WHERE → cross-session leak): 3 edits route.ts + 7 PI2 isolation tests. /test-skill PASS 0 CRIT / 0 HIGH (cross-session, SQL inj, auth bypass, timing, NULL, empty, replay), 1 LOW non-exploitable.
+- ✅ **W2** #407 (#401 migration 035 TCE+distance_nm), #408 (#404 SubsCountdownWidget useMemo→useState hydration #418 — новый source после #357), #409 (#400 /match/[id] page + GET /api/matches/[id]).
+- ✅ **W3** #410 (#402 BHSI ORDER BY DESC — был oldest вместо newest), #411 (#403 EUA price в EconomicsTab + N/A fallback + stale marker).
+- 📋 **Match Phase B advanced #405** (был утром): corpus 25→39 100% (15 distance pairs + 2 aliases + 14 scenarios).
+- 📋 **Q002 deferred:** matches listMatches() defense-in-depth (non-exploitable, internal fail-safe для cross-session, никакого пути эксплойта в коде).
+- 📋 **Next:** /qa-walker LOOP iter 1 — Playwright против prod чтобы проверить что 6 свежих фиксов + старые не регрессировали.
+
+**Что изменилось за 2026-05-23 (поздний вечер — Wave A2 hotfix):**
+
+- ✅ **#396** fix(emails): sample-data shortcut bypasses Gmail OAuth (#394) — наш предыдущий #384 покрыл status 500→401 + cleanup, но sample-mode всё ещё ходил в OAuth. Detect server-side session → пропуск OAuth → load fixtures. 3 PI2 tests + cold-QA PASS.
+- ✅ **#397** fix(matching): populate M3 fields in demo seed match (#393) — наш #383 покрыл runtime computeAndPersistMatches, но «Guaranteed demo match for EconomicsTab» seed creator писал hardcoded row с NULL. Extracted persist-session-matches.ts helper (same pattern), seed теперь populates cargo_type/load_port/discharge_port/vessel_dwt/laycan. Bonus: parseLaycan accepts «..» separator. 4 PI2 + cold-QA PASS.
+- 📋 **Lesson:** qa-walker re-test нашёл оба узких фикса. Pattern: fix root cause widely (cover ВСЕ creators того же класса), не один путь.
+
+**Что изменилось за 2026-05-23 (вечер — qa-walker 4 waves, ~4ч автономно):**
+
+- ✅ **Wave A (CRITICAL):** #383 (#378 matches NULL fields — root cause: 6 columns миграции 033 не передавались в createMatch) + #384 (#376 /api/emails/fetch 500 на 2-м запуске — stale Gmail OAuth state, logout cleanup). Оба /test-skill PASS.
+- ✅ **Wave B (HIGH /matches UI):** #385 — 5 issues одной веткой (#375 overflow, #374 bulk toolbar, #373 filter dup, #350 sort, #348 clickable cards) + bonus #349 cargo/route/dwt display из #378 fields. 168/168 green.
+- ✅ **Wave C (HIGH data/security):** #386 (#377 BHSI/TOEPFER live из market_indices + stale marker) + #387 (#354 TMI outlier marker + #353 RU→EN labels) + #388 (#355 server-side XSS sanitization, /test-skill 29 adversarial vectors 0 VULN).
+- ✅ **Wave D (LOW polish + verify-close):** #389 — 4 fixes (#357 hydration, #356 email dup, #351 Quote draft generator, #352 logout verified) + 6 verified-close (#294 #291 #292 #293 #362 #352). 21 qa-walker issue из 22 закрыто.
+- ✅ **#391** Q001 закрыт — 3-line patch в middleware.ts (AUTH_BYPASS_PATHS += /sitemap.xml + /robots.txt). **22/22 qa-walker issues закрыто за день.**
+
+**Что изменилось за 2026-05-23 (день — 3-параллельных, ~1.5ч):**
+
+- ✅ **#380** test(api): coverage для 3 untested routes — 50→53/53 (100%), 20 новых тестов (auth-google, extension-draft, whatsapp-ingest/webhook). PI3 compliant.
+- ✅ **#381** fix(match): Phase B v2 — 2 port aliases (aliağa/petkim → Aliaga) + 8 distance pairs. **W1 root-cause:** Novorossiysk|Piraeus=895nm missing → readiness=unknown → score 60.6 possible. Fixed → idle penalty -35 → score≈31 weak. 25/25 evals + 348/348 tests. /test-skill PASS (0 CRIT/0 HIGH, 1 LOW cosmetic).
+- ✅ **#379** fix(matching): MED-01 align — applyReadinessScoring → deriveMatchLevel (1-line, ≥70/≥40 boundary consistent). 101/101 green. /test-skill PASS (0 CRIT/0 HIGH).
+- 📋 **Roadmap backlog обновлён:** №3 route tests = ✅, №4 Match Phase B core (port+distance+idle) = ✅, №5 MED-01 = ✅. Остаются: Sentry/UptimeRobot setup (UptimeRobot ждёт Vitali регистрацию), parser calibration (партнёрские данные).
 
 **Что ещё блокирует pre-PMF:**
 
@@ -162,15 +246,15 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 **🎯 Реальный статус (2026-05-18 вечер):** Wave parser audits завершена — 11 PR за день (#197, #205, #216-218, #220-224, #226). Найден и исправлен production bug class: Gemini structured-output schema field names не совпадали с downstream contract в 2 парсерах (vessel + recap), silent-null months.
 
-| Парсер       | Прод-провайдер     | Точность                                                                                                                        | Eval                                  | Статус                                                                                                                                 |
-| ------------ | ------------------ | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| classify     | gemini-flash       | **cat 100%**, urgency 70.8%                                                                                                     | progonq R9 ✅                         | R4 prompt active; urgency BLOCKED (GT inconsistent, см. memory)                                                                        |
-| parse-cargo  | gemini-pro         | cargo **91.8%**, laycan **93.2%** (PR #197+#205 GT normalization)                                                               | progonq R27 ✅ 3-run median           | semantic_full 91.6%, стабилизировано                                                                                                   |
-| parse-vessel | gemini-pro         | dwcc **94.9%**, open_position **92%**, open_date **91.1%** (PR #216) | progonq **R16 56/56 = 100%** ✅ (PR #326, 2026-05-22) | R8 «-13 регрессия» оказалась measurement artifact (#324). R15→R16: sc-002/003/031/034/040 закрыты. Стабильно. |
-| parse-recap  | gemini-pro         | overall 45-58% (noisy на 3 scenarios)                                                                                           | progonq ✅ harness #218 + schema #220 | Corpus expansion blocked — public fixture recaps конфиденциальны, ждём real recap emails в Gmail                                       |
-| match        | gemini             | **progonq R7 0/25 fail** ✅ (2026-05-22) | progonq R0→R7, 25 scenarios | R0 #235 → R7 #333. idle penalty #244, Gibraltar/aliases #243, +8 Iskenderun distance pairs (#333). distance-matrix C3 audit = docs-only. |
-| explain-deal | gemini-2.5-pro     | **R1 11/11 PASS** ✅ (text-gen) | progonq R1 (#332, 2026-05-22) | Eval harness #261 (R0 6/6) → R1 corpus 6→11 + Arabic prompt fix (#332). Зелёный. |
-| draft-quote  | gemini-2.5-pro     | **R3 6/6 PASS** ✅ (text-gen) | progonq R0→R3 (#331, 2026-05-22) | Harness #272 (R0 6/6 fail) → R3 6/6 pass за 3 раунда prompt-правок (#331). |
+| Парсер       | Прод-провайдер | Точность                                                             | Eval                                                  | Статус                                                                                                                                   |
+| ------------ | -------------- | -------------------------------------------------------------------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| classify     | gemini-flash   | **cat 100%**, urgency 70.8%                                          | progonq R9 ✅                                         | R4 prompt active; urgency BLOCKED (GT inconsistent, см. memory)                                                                          |
+| parse-cargo  | gemini-pro     | cargo **91.8%**, laycan **93.2%** (PR #197+#205 GT normalization)    | progonq R27 ✅ 3-run median                           | semantic_full 91.6%, стабилизировано                                                                                                     |
+| parse-vessel | gemini-pro     | dwcc **94.9%**, open_position **92%**, open_date **91.1%** (PR #216) | progonq **R16 56/56 = 100%** ✅ (PR #326, 2026-05-22) | R8 «-13 регрессия» оказалась measurement artifact (#324). R15→R16: sc-002/003/031/034/040 закрыты. Стабильно.                            |
+| parse-recap  | gemini-pro     | overall 45-58% (noisy на 3 scenarios)                                | progonq ✅ harness #218 + schema #220                 | Corpus expansion blocked — public fixture recaps конфиденциальны, ждём real recap emails в Gmail                                         |
+| match        | gemini         | **progonq R7 0/25 fail** ✅ (2026-05-22)                             | progonq R0→R7, 25 scenarios                           | R0 #235 → R7 #333. idle penalty #244, Gibraltar/aliases #243, +8 Iskenderun distance pairs (#333). distance-matrix C3 audit = docs-only. |
+| explain-deal | gemini-2.5-pro | **R1 11/11 PASS** ✅ (text-gen)                                      | progonq R1 (#332, 2026-05-22)                         | Eval harness #261 (R0 6/6) → R1 corpus 6→11 + Arabic prompt fix (#332). Зелёный.                                                         |
+| draft-quote  | gemini-2.5-pro | **R3 6/6 PASS** ✅ (text-gen)                                        | progonq R0→R3 (#331, 2026-05-22)                      | Harness #272 (R0 6/6 fail) → R3 6/6 pass за 3 раунда prompt-правок (#331).                                                               |
 
 **Provider routing (текущий, на проде):** **7/7 scopes default через Gemini** (AI_PROVIDER=gemini + MATCH_PROVIDER=gemini). ClipProxy/OpenAI + claude-cli больше не активны по умолчанию (только если env override вернуть). claude-cli остаётся для eval judge (через --print, не runtime).
 
@@ -182,12 +266,12 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 **31+ миграция применена.** **Большинство таблиц заполнены**, **но 2 пустые при включённых флагах** (P0 в §2):
 
-| Статус                      | Таблицы                                                                                                                                                                                                                                                                                                           |
-| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ✅ Свежие, заполненные      | ofac_entities (18,959), schema_migrations, knowledge_sources, market_indices (92), charterers (20), port_da_estimates (94), psc_detention_history (16), port_distances (18,648) + **searoute JSON 105,011 пар (tier 2) + live tier 3** ✅ 2026-05-20, **eu_sanctions_entities (5,996)**, **port_master (11,767)**, **roi_metrics (18)** ✅ seed 2026-05-22, **fx_rates (212)** ✅ daily timer 03:00 UTC (PR #323/#327) |
-| ✅ RAG embedded             | imsbc_fts (116), igc_fts (119), jwc_fts (7), bimco_fts (14) — counts выше чем заявлялось в audit 2026-05-17                                                                                                                                                                                                       |
-| ⚠️ Частичные                | baltic/bunker/eua (устарели, manual CSV upload), war_risk_zones (4)                                                                                                                                                                                                                                               |
-| ❌ Не seed-нулись           | eca_zones                                                                                                                                                                                                                                                                                                         |
+| Статус                   | Таблицы                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ✅ Свежие, заполненные   | ofac_entities (18,959), schema_migrations, knowledge_sources, market_indices (92), charterers (20), port_da_estimates (94), psc_detention_history (16), port_distances (18,648) + **searoute JSON 105,011 пар (tier 2) + live tier 3** ✅ 2026-05-20, **eu_sanctions_entities (5,996)**, **port_master (11,767)**, **roi_metrics (18)** ✅ seed 2026-05-22, **fx_rates (212)** ✅ daily timer 03:00 UTC (PR #323/#327), **eca_zones (4)** ✅ parser fix + seed 2026-05-22 (PR #338) |
+| ✅ RAG embedded          | imsbc_fts (116), igc_fts (119), jwc_fts (7), bimco_fts (14) — counts выше чем заявлялось в audit 2026-05-17                                                                                                                                                                                                                                                                                                                                                                         |
+| ⚠️ Частичные             | baltic/bunker/eua (устарели, manual CSV upload), war_risk_zones (4)                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ✅ Исправлено 2026-05-22 | eca_zones (0→4) — parser fix polygon_geojson + seed (PR #338)                                                                                                                                                                                                                                                                                                                                                                                                                       |
 
 **RAG-архитектура:** гибрид FTS5+vec0 (sqlite). Vertex Search disabled (extractiveContentSpec Enterprise-only, наши engines Standard) — rollback на SQLite богаче.
 
@@ -274,13 +358,13 @@ _(пусто — C4/C5 закрыты 2026-05-22)_
 
 ### ✅ P0 — Закрытые
 
-| #      | Issue                                                                                        | Closed by                                                                                          |
-| ------ | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| **C1** | Bedrock Opus 4.7 → claude-cli replacement                                                    | PR #186                                                                                            |
-| **C2** | 5 webhooks AUTH_BYPASS_PATHS                                                                 | ✅ Все 5 в middleware.ts:19-27 (verified 2026-05-19) — PR #221 + позже                             |
-| **C3** | EU_SANCTIONS_TOKEN                                                                           | ✅ Token `n00mo9i3` валиден (HTTP 200, 24.7MB), `knowledge_sources.eu-sanctions=fresh`             |
-| **C4** | `roi_metrics=0` при `ROI_GUARANTEE_ENABLED=true` — tile рендерил "No voyages" заглушку       | ✅ seed 18 строк (scripts/seed-roi-metrics.ts) — 2026-05-22                                        |
-| **C5** | `fx_rates=0` при `MULTI_CURRENCY_V2_ENABLED=true` — конверсия через hardcoded fallback        | ✅ daily timer 03:00 UTC LIVE, 212 rows — PR #323 (cron) + #327 (User=root fix) — 2026-05-22       |
+| #      | Issue                                                                                  | Closed by                                                                                    |
+| ------ | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| **C1** | Bedrock Opus 4.7 → claude-cli replacement                                              | PR #186                                                                                      |
+| **C2** | 5 webhooks AUTH_BYPASS_PATHS                                                           | ✅ Все 5 в middleware.ts:19-27 (verified 2026-05-19) — PR #221 + позже                       |
+| **C3** | EU_SANCTIONS_TOKEN                                                                     | ✅ Token `n00mo9i3` валиден (HTTP 200, 24.7MB), `knowledge_sources.eu-sanctions=fresh`       |
+| **C4** | `roi_metrics=0` при `ROI_GUARANTEE_ENABLED=true` — tile рендерил "No voyages" заглушку | ✅ seed 18 строк (scripts/seed-roi-metrics.ts) — 2026-05-22                                  |
+| **C5** | `fx_rates=0` при `MULTI_CURRENCY_V2_ENABLED=true` — конверсия через hardcoded fallback | ✅ daily timer 03:00 UTC LIVE, 212 rows — PR #323 (cron) + #327 (User=root fix) — 2026-05-22 |
 
 ### 🟠 P1 — Активация data layer
 
@@ -412,10 +496,11 @@ ETA: ~2-3 дня wall-clock. Большинство agent-only. **Bottleneck т�
 ## Archived / Consolidated (2026-05-22)
 
 Этот файл — единственный актуальный роадмап. Старые wave-планы 2026-04 сведены в архив (без потери данных):
-- [_archive/2026-05-22/ROADMAP_WAVE2.md](_archive/2026-05-22/ROADMAP_WAVE2.md), [ROADMAP-features.md](_archive/2026-05-22/ROADMAP-features.md), [ROADMAP-infra.md](_archive/2026-05-22/ROADMAP-infra.md) — без внешних ссылок.
+
+- [\_archive/2026-05-22/ROADMAP_WAVE2.md](_archive/2026-05-22/ROADMAP_WAVE2.md), [ROADMAP-features.md](_archive/2026-05-22/ROADMAP-features.md), [ROADMAP-infra.md](_archive/2026-05-22/ROADMAP-infra.md) — без внешних ссылок.
 
 Оставлены в корне (на них есть ссылки, трогать нельзя без правок кода/промптов): `ROADMAP_MVP.md` (ссылка из кода `lib/parsing/parse-cargo-ai.ts`) и `ROADMAP.md` (ссылки из session-промптов).
 
 ---
 
-🤖 Сгенерировано 5-stream system audit (parsers/data/api/ui/waves) + synthesis оркестратором. Последнее обновление: 2026-05-20 (searoute B5a+B5b, /qa-walker bugs, ops cleanup).
+🤖 Сгенерировано 5-stream system audit (parsers/data/api/ui/waves) + synthesis оркестратором. Последнее обновление: 2026-05-22 вечер (#341 manual deploy, 11 PR merged, worktree cleanup, auto-deploy trigger debt open).

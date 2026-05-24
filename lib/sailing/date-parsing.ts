@@ -176,8 +176,8 @@ export function parseLaycan(
   const s = raw.trim();
   if (!s) return null;
 
-  // ISO range "2025-09-15 to 2025-09-25" / "2025-09-15 - 2025-09-25"
-  const isoRange = s.match(/(\d{4})-(\d{1,2})-(\d{1,2})\s*(?:to|[-–])\s*(\d{4})-(\d{1,2})-(\d{1,2})/);
+  // ISO range "2025-09-15 to 2025-09-25" / "2025-09-15 - 2025-09-25" / "2025-09-15 .. 2025-09-25"
+  const isoRange = s.match(/(\d{4})-(\d{1,2})-(\d{1,2})\s*(?:to|[-–]|\.\.)\s*(\d{4})-(\d{1,2})-(\d{1,2})/);
   if (isoRange) {
     return {
       start: mkUtc(Number(isoRange[1]), Number(isoRange[2]) - 1, Number(isoRange[3])),
