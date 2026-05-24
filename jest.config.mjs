@@ -16,6 +16,8 @@ const config = {
     '/tests/e2e/kpi-timeout\\.spec\\.ts$',
     // R1 visual regression specs (run via playwright, not jest)
     '/tests/visual/',
+    // R6 a11y specs (run via playwright.a11y.config.ts, not jest)
+    '/tests/a11y/',
     ...(process.cwd().includes('/.wave/') ? [] : ['/.wave/']),
     ...(process.cwd().includes('/.claude/worktrees/') ? [] : ['/\\.claude/worktrees/']),
   ],

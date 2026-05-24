@@ -16,6 +16,8 @@
     "test:smoke:prod": "SMOKE_BASE_URL=https://demo.quantika.org playwright test --config=__tests__/e2e/playwright.config.smoke.ts smoke/tier1-health.spec.ts",
     "test:smoke:tier1": "playwright test --config=__tests__/e2e/playwright.config.smoke.ts smoke/tier1-health.spec.ts",
     "test:e2e": "playwright test",
+    "test:a11y": "playwright test --config=playwright.a11y.config.ts",
+    "analyze": "ANALYZE=true next build --webpack",
     "build:extension": "cd extensions/gmail && npm install --no-audit --no-fund --silent && npm run build",
     "knowledge:status": "npx tsx scripts/knowledge/status.ts",
     "knowledge:refresh": "npx tsx scripts/knowledge/refresh.ts",
@@ -74,6 +76,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",
     "@eslint/eslintrc": "^3.3.1",
+    "@next/bundle-analyzer": "^16.2.6",
     "@playwright/test": "^1.60.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
