@@ -33,6 +33,9 @@ function SubsCountdownInner({
   const [remaining, setRemaining] = useState<number | null>(null);
 
   useEffect(() => {
+    // Initial compute is sync (tests use fake-timers, can't wait async deferral).
+    // Hydration safety (#408) is preserved by null initial state + suppressHydrationWarning.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setRemaining(computeRemaining(subsDeadline));
     const id = setInterval(() => setRemaining(computeRemaining(subsDeadline)), 60_000);
     return () => clearInterval(id);
