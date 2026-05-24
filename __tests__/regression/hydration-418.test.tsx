@@ -141,3 +141,26 @@ describe('charterers/[id] toLocaleDateString UTC pin (#418-source-2)', () => {
     }
   });
 });
+
+// ---------------------------------------------------------------------------
+// #426 — MatchesClient toLocaleString locale pin (DWT, distance_nm, TCE)
+// ---------------------------------------------------------------------------
+describe('MatchesClient toLocaleString locale pin (#426)', () => {
+  let src: string;
+
+  beforeAll(() => {
+    const p = path.join(ROOT, 'app/matches/MatchesClient.tsx');
+    src = fs.readFileSync(p, 'utf-8');
+  });
+
+  it('all toLocaleString calls in MatchesClient include en-US locale', () => {
+    // Without a locale, server (Node.js) and browser may use different number
+    // separators (e.g. "1,234" vs "1 234") → React #418 hydration mismatch.
+    // Fix: toLocaleString('en-US') — deterministic on both server and client.
+    const calls = [...src.matchAll(/\.toLocaleString\s*\([^)]*\)/g)];
+    expect(calls.length).toBeGreaterThan(0);
+    for (const [call] of calls) {
+      expect(call).toMatch(/['"]en-US['"]/);
+    }
+  });
+});
