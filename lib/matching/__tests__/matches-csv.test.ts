@@ -19,6 +19,10 @@ function makeMatch(overrides: Partial<StoredMatch> = {}): StoredMatch {
     laycan_start: null,
     laycan_end: null,
     vessel_dwt: null,
+    tce_usd_per_day: null,
+    distance_nm: null,
+    freight_rate_usd_per_mt: null,
+    freight_rate_source: null,
     ...overrides,
   };
 }
