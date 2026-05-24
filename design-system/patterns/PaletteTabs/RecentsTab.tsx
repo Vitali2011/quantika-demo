@@ -7,6 +7,7 @@ interface Recent { href: string; label: string; ts: number }
 export function RecentsTab({ onSelect }: { onSelect: () => void }) {
   const [items, setItems] = useState<Recent[]>([]);
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount init from localStorage
     try { setItems(JSON.parse(localStorage.getItem('quantika.recents') || '[]')); } catch { /* ignore */ }
   }, []);
   if (items.length === 0) {

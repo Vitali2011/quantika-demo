@@ -9,7 +9,9 @@ export function HelpTab({ query }: { query: string }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- early-return setState legitimate
     if (query.length < 3) { setData(null); return; }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     const ctrl = new AbortController();
     fetch('/api/help/ask', {
