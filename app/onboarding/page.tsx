@@ -76,7 +76,7 @@ export default async function OnboardingPage() {
 
         {/* Mode auto-detect hint */}
         <p className="text-xs text-ds-text-muted bg-ds-surface border border-ds-border rounded-ds-md px-3 py-2">
-          We'll auto-detect your role (charterer / shipowner) from your first real email.
+          We&apos;ll auto-detect your role (charterer / shipowner) from your first real email.
         </p>
 
         <form action={handleStart} className="space-y-4">
