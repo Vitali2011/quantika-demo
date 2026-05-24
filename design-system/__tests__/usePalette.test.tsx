@@ -44,6 +44,14 @@ describe('usePalette', () => {
     expect(screen.getByTestId('state')).toHaveTextContent('open');
   });
 
+  it('removes keydown listener when PaletteProvider unmounts (no leak)', () => {
+    const removeSpy = jest.spyOn(window, 'removeEventListener');
+    const { unmount } = render(<PaletteProvider><Probe /></PaletteProvider>);
+    unmount();
+    expect(removeSpy).toHaveBeenCalledWith('keydown', expect.any(Function));
+    removeSpy.mockRestore();
+  });
+
   it('open with specific tab changes activeTab', () => {
     function TabProbe() {
       const { open, isOpen, activeTab } = usePalette();

@@ -58,4 +58,44 @@ describe('POST /api/help/ask', () => {
     const res = await POST(req);
     expect(res.status).toBe(401);
   });
+
+  it('rejects numeric query (non-string type injection)', async () => {
+    const { POST } = await import('@/app/api/help/ask/route');
+    const req = await makeRequest({ query: 12345 });
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+  });
+
+  it('rejects null query', async () => {
+    const { POST } = await import('@/app/api/help/ask/route');
+    const req = await makeRequest({ query: null });
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+  });
+
+  it('rejects object query (type confusion)', async () => {
+    const { POST } = await import('@/app/api/help/ask/route');
+    const req = await makeRequest({ query: { $gt: '' } });
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+  });
+
+  it('rejects missing body (no query key)', async () => {
+    const { POST } = await import('@/app/api/help/ask/route');
+    const req = await makeRequest({});
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+  });
+
+  it('rejects malformed JSON body (returns 400)', async () => {
+    const { POST } = await import('@/app/api/help/ask/route');
+    const req = new NextRequest('http://localhost/api/help/ask', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: 'not-json{{',
+    });
+    const res = await POST(req);
+    // json().catch(() => ({})) → query undefined → 400
+    expect(res.status).toBe(400);
+  });
 });

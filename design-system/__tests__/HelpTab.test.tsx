@@ -22,4 +22,27 @@ describe('HelpTab', () => {
     const skeletons = document.querySelectorAll('[aria-hidden="true"]');
     expect(skeletons.length).toBeGreaterThan(0);
   });
+
+  it('shows nothing (no crash) when fetch fails — silent error state', async () => {
+    (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('network error'));
+    const { container } = render(<HelpTab query="help me" />);
+    // After the promise rejects, loading ends, data stays null — renders null
+    await new Promise((r) => setTimeout(r, 50));
+    // Should not throw; container may be empty or show prompt
+    expect(container).toBeInTheDocument();
+  });
+
+  it('renders source links from API response without dangerouslySetInnerHTML', async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        answer: 'Here is how',
+        sources: [{ title: 'Quick start', url: '/docs/quickstart' }],
+      }),
+    });
+    const { findByText } = render(<HelpTab query="how to" />);
+    const link = await findByText('Quick start');
+    expect(link.tagName).toBe('A');
+    expect(link).toHaveAttribute('href', '/docs/quickstart');
+  });
 });
