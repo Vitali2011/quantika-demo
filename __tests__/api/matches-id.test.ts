@@ -50,7 +50,7 @@ function seedMatch(
       `INSERT INTO matches (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
     )
-    .run('c1', 'v1', 75, '{}', status, null, Date.now(), Date.now());
+    .run('c1', 'v1', 75, '{}', status, 'test-sid', Date.now(), Date.now());
   return res.lastInsertRowid as number;
 }
 
