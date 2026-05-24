@@ -34,13 +34,12 @@ export default function CharterersPage() {
 
   if (!isFeatureEnabled) {
     return (
-      <main className="min-h-screen bg-gray-50 py-8 px-4">
-        <div className="max-w-5xl mx-auto">
-          <div className="border rounded-lg bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold mb-2">Feature Not Enabled</h2>
-            <p className="text-sm text-muted-foreground">
-              Charterer credit tracking is not enabled. Contact your administrator
-              to enable this feature.
+      <main style={{ minHeight: '100vh', background: 'var(--ds-bg)', padding: '32px 16px' }}>
+        <div style={{ maxWidth: 960, margin: '0 auto' }}>
+          <div style={{ border: '1px solid var(--ds-border)', borderRadius: 10, background: 'var(--ds-surface)', padding: 24 }}>
+            <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 8, color: 'var(--ds-text)' }}>Feature Not Enabled</h2>
+            <p style={{ fontSize: 14, color: 'var(--ds-text-muted)' }}>
+              Charterer credit tracking is not enabled. Contact your administrator to enable this feature.
             </p>
           </div>
         </div>
@@ -49,16 +48,52 @@ export default function CharterersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-5xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Charterers</h1>
+    <main style={{ minHeight: '100vh', background: 'var(--ds-bg)', paddingBottom: 64 }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px' }}>
+
+        {/* Page header */}
+        <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '28px 0 20px' }}>
+          <div>
+            <h1 style={{ fontSize: 22, fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--ds-text)', lineHeight: 1.2 }}>
+              Charterers
+            </h1>
+            {charterers.length > 0 && (
+              <span style={{ fontSize: 13, color: 'var(--ds-text-muted)', fontFamily: '"Geist Mono", ui-monospace, monospace' }}>
+                {charterers.length} contacts
+              </span>
+            )}
+          </div>
           <button
             onClick={() => setShowForm((v) => !v)}
-            className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              padding: '8px 16px',
+              fontSize: 14, fontWeight: 500,
+              background: 'var(--ds-accent)', color: 'var(--ds-accent-fg)',
+              border: 'none', borderRadius: 8,
+              cursor: 'pointer',
+              letterSpacing: '-0.01em',
+            }}
           >
+            <span aria-hidden style={{ fontSize: 16, lineHeight: 1 }}>+</span>
             Add Charterer
           </button>
+        </header>
+
+        {/* Legend */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16, fontFamily: '"Geist Mono", ui-monospace, monospace', fontSize: 11, color: 'var(--ds-text-muted)' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ width: 14, height: 8, borderRadius: 3, background: 'var(--ds-accent-soft)', border: '1px solid var(--ds-border)', display: 'inline-block' }} />
+            Hot
+          </span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ width: 14, height: 8, borderRadius: 3, background: 'var(--ds-surface)', border: '1px solid var(--ds-border)', display: 'inline-block' }} />
+            Warm
+          </span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ width: 14, height: 8, borderRadius: 3, background: 'var(--ds-bg)', border: '1px solid var(--ds-border)', display: 'inline-block' }} />
+            Cold
+          </span>
         </div>
 
         {showForm && (
@@ -66,7 +101,6 @@ export default function CharterersPage() {
             onCreated={(newCharterer) => {
               setCharterers((prev) => [...prev, newCharterer]);
               setShowForm(false);
-              // Refresh from server to get canonical data
               fetch('/api/charterers')
                 .then((r) => r.json())
                 .then((data) => setCharterers(data.charterers ?? []));
@@ -75,10 +109,11 @@ export default function CharterersPage() {
           />
         )}
 
+        {/* Table card */}
         {loading ? (
-          <p className="text-sm text-muted-foreground py-4 text-center">Loading...</p>
+          <p style={{ fontSize: 14, color: 'var(--ds-text-muted)', padding: '32px 0', textAlign: 'center' }}>Loading…</p>
         ) : (
-          <div className="border rounded-lg bg-white shadow-sm">
+          <div style={{ border: '1px solid var(--ds-border)', borderRadius: 10, background: 'var(--ds-surface)', overflow: 'hidden' }}>
             <CharterersTable charterers={charterers} />
           </div>
         )}
