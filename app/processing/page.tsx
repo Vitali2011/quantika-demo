@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Progress } from '@/components/ui/progress';
 import { track } from '@/lib/analytics';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { PIPELINE_STEPS, STEP_GROUPS, type PipelineStep, type PipelineStepGroup } from '@/lib/pipeline';
@@ -40,6 +39,14 @@ function stepIcon(status: StepStatus) {
   return '○';
 }
 
+function stepLabelClass(status: StepStatus): string {
+  if (status === 'active') return 'font-medium text-ds-text';
+  if (status === 'done') return 'text-ds-text-muted';
+  if (status === 'error') return 'text-ds-danger';
+  if (status === 'skipped') return 'text-ds-warn';
+  return 'text-ds-text-subtle';
+}
+
 export default function ProcessingPage() {
   const router = useRouter();
   const [statuses, setStatuses] = useState<StepStatus[]>(PIPELINE_STEPS.map(() => 'pending'));
@@ -69,7 +76,6 @@ export default function ProcessingPage() {
 
         const groupIndices = group.steps.map((_, i) => flatIdx + i);
 
-        // Mark all steps in group as active
         setStatuses(prev => {
           const next = [...prev];
           groupIndices.forEach(idx => { next[idx] = 'active'; });
@@ -158,17 +164,17 @@ export default function ProcessingPage() {
   }, [router]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center px-6 bg-white">
+    <main className="flex min-h-screen flex-col items-center justify-center px-6 bg-ds-bg">
       <div className="w-full max-w-md space-y-6 text-center">
         <div className="space-y-2">
-          <h2 className="text-xl font-semibold">Analyzing your inbox...</h2>
-          <p className="text-sm text-muted-foreground">This takes 30–60 seconds</p>
+          <h2 className="text-xl font-semibold text-ds-text">Analyzing your inbox...</h2>
+          <p className="text-sm text-ds-text-muted">This takes 30–60 seconds</p>
         </div>
 
         {(isActive || (progress === 0 && !fatalError)) && (
           <div className="flex flex-col items-center gap-2">
             <svg
-              className="animate-spin h-10 w-10 text-primary"
+              className="animate-spin h-10 w-10 text-ds-accent"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -181,15 +187,25 @@ export default function ProcessingPage() {
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               />
             </svg>
-            <p className="w-full text-sm font-medium text-foreground" role="status">
+            <p className="w-full text-sm font-medium text-ds-text" role="status">
               Analysing your freight quote…
             </p>
           </div>
         )}
 
+        {/* Progress bar — DS token variant replacing shadcn Progress */}
         <div className="space-y-1">
-          <Progress value={progress} className="h-2" />
-          <p className="text-xs text-muted-foreground">{progress}%</p>
+          <div className="w-full bg-ds-border rounded-ds-full h-2 overflow-hidden">
+            <div
+              className="h-2 bg-ds-accent rounded-ds-full transition-all duration-ds-slow"
+              style={{ width: `${progress}%` }}
+              role="progressbar"
+              aria-valuenow={progress}
+              aria-valuemin={0}
+              aria-valuemax={100}
+            />
+          </div>
+          <p className="text-xs text-ds-text-muted">{progress}%</p>
         </div>
 
         <ul className="text-left space-y-2" aria-label="Processing steps" aria-live="polite">
@@ -202,13 +218,7 @@ export default function ProcessingPage() {
               aria-current={statuses[i] === 'active' ? 'step' : undefined}
             >
               <span className="w-5 text-center shrink-0" aria-hidden="true">{stepIcon(statuses[i])}</span>
-              <span className={
-                statuses[i] === 'active' ? 'font-medium text-foreground' :
-                statuses[i] === 'done' ? 'text-muted-foreground' :
-                statuses[i] === 'error' ? 'text-destructive' :
-                statuses[i] === 'skipped' ? 'text-yellow-600' :
-                'text-muted-foreground/50'
-              }>
+              <span className={stepLabelClass(statuses[i])}>
                 {statuses[i] === 'done' ? step.label.replace('...', ' ✓') :
                  statuses[i] === 'skipped' ? step.label.replace('...', ' (skipped)') :
                  step.label}
@@ -219,15 +229,15 @@ export default function ProcessingPage() {
 
         {progress > 0 && progress < 100 && !fatalError && (
           <div className="mt-4 text-center">
-            <div className="text-xs text-muted-foreground mb-1">Currently processing:</div>
-            <div className="text-sm font-medium text-foreground/70 transition-all duration-500 truncate max-w-sm mx-auto">
+            <div className="text-xs text-ds-text-muted mb-1">Currently processing:</div>
+            <div className="text-sm font-medium text-ds-text-subtle transition-all duration-500 truncate max-w-sm mx-auto">
               —— {SAMPLE_SUBJECTS[subjectIndex]} ——
             </div>
           </div>
         )}
 
         {fatalError && (
-          <div className="mt-4 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+          <div className="mt-4 rounded-ds-md border border-ds-danger/50 bg-ds-danger-soft p-3 text-sm text-ds-danger">
             <p className="font-medium">Something went wrong</p>
             {failedStep && STEP_ERROR_MESSAGES[failedStep] ? (
               <p className="mt-1 font-medium">
