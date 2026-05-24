@@ -77,7 +77,6 @@ export default function UpgradePage() {
     <main className="min-h-screen bg-ds-bg px-4 py-12">
       <div className="max-w-4xl mx-auto space-y-8">
         <Suspense fallback={null}>
-          {/* @ts-expect-error async server component */}
           <UsageBanner />
         </Suspense>
 

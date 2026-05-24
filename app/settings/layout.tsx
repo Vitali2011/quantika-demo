@@ -17,7 +17,7 @@ const SECTIONS = [
   { id: 'invoices',      label: 'Invoices' },
   { id: 'export',        label: 'Export data' },
   { id: 'danger',        label: 'Danger zone', danger: true },
-] as const;
+] as readonly { id: string; label: string; danger?: boolean }[];
 
 export default async function SettingsLayout({ children }: { children: ReactNode }) {
   const authConfig = getAuthConfig();
