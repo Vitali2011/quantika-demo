@@ -35,6 +35,32 @@ const MOCK_CHARTERERS = [
   { id: 'c3', name: 'WeakCo', tier: 'weak', require_lc: 1, notes: 'Risky' },
 ];
 
+describe('CharterersTable HOT/WARM/COLD status', () => {
+  it('assigns data-status=hot to blue-chip, warm to second, cold to weak', async () => {
+    const { CharterersTable } = await import('@/components/charterers/CharterersTable');
+    const charterers = [
+      { id: 'a1', name: 'Alpha', tier: 'blue-chip' as const, require_lc: 0, notes: null },
+      { id: 'b2', name: 'Beta',  tier: 'second'    as const, require_lc: 0, notes: null },
+      { id: 'c3', name: 'Gamma', tier: 'weak'      as const, require_lc: 0, notes: null },
+    ];
+    const { container } = render(<CharterersTable charterers={charterers} />);
+    const rows = container.querySelectorAll('tr[data-status]');
+    const statuses = Array.from(rows).map((r) => r.getAttribute('data-status'));
+    expect(statuses).toEqual(['hot', 'warm', 'cold']);
+  });
+
+  it('renders Last note snippet in italic for charterer with notes', async () => {
+    const { CharterersTable } = await import('@/components/charterers/CharterersTable');
+    const charterers = [
+      { id: 'd4', name: 'Delta', tier: 'second' as const, require_lc: 0, notes: 'Confirm cargo at $28/MT' },
+    ];
+    const { container } = render(<CharterersTable charterers={charterers} />);
+    const snippet = container.querySelector('span[style*="italic"]');
+    expect(snippet).not.toBeNull();
+    expect(snippet?.textContent).toContain('Confirm cargo at $28/MT');
+  });
+});
+
 describe('CharterersPage', () => {
   const originalEnv = process.env.NEXT_PUBLIC_CHARTERER_CREDIT_ENABLED;
 

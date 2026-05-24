@@ -54,87 +54,119 @@ export function NewChartererModal({ onCreated, onCancel }: Props) {
     }
   }
 
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    border: '1px solid var(--ds-border)',
+    borderRadius: 7,
+    padding: '8px 12px',
+    fontSize: 14,
+    color: 'var(--ds-text)',
+    background: 'var(--ds-surface)',
+    outline: 'none',
+  };
+
+  const labelStyle: React.CSSProperties = {
+    display: 'block',
+    fontSize: 13,
+    fontWeight: 500,
+    color: 'var(--ds-text-muted)',
+    marginBottom: 6,
+  };
+
   return (
-    <div className="border rounded-lg bg-white p-6 shadow-sm mt-4">
-      <h2 className="text-lg font-semibold mb-4">New Charterer</h2>
+    <div style={{
+      border: '1px solid var(--ds-border)',
+      borderRadius: 10,
+      background: 'var(--ds-surface)',
+      padding: 24,
+      marginBottom: 16,
+    }}>
+      <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 20, color: 'var(--ds-text)', letterSpacing: '-0.01em' }}>
+        New Charterer
+      </h2>
 
       {error && (
-        <p className="text-sm text-red-600 mb-3">{error}</p>
+        <p style={{ fontSize: 13, color: 'var(--ds-danger)', marginBottom: 12 }}>{error}</p>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div>
-          <label htmlFor="charterer-name" className="block text-sm font-medium text-gray-700 mb-1">
-            Name
-          </label>
+          <label htmlFor="charterer-name" style={labelStyle}>Name</label>
           <input
             id="charterer-name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            style={inputStyle}
             placeholder="e.g. Cargill International"
           />
         </div>
 
         <div>
-          <label htmlFor="charterer-tier" className="block text-sm font-medium text-gray-700 mb-1">
-            Tier
-          </label>
+          <label htmlFor="charterer-tier" style={labelStyle}>Tier</label>
           <select
             id="charterer-tier"
             value={tier}
             onChange={(e) => setTier(e.target.value as 'blue-chip' | 'second' | 'weak')}
-            className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            style={inputStyle}
           >
-            <option value="blue-chip">Blue-chip</option>
-            <option value="second">Second</option>
-            <option value="weak">Weak</option>
+            <option value="blue-chip">Blue-chip (Hot)</option>
+            <option value="second">Second (Warm)</option>
+            <option value="weak">Weak (Cold)</option>
           </select>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <input
             id="charterer-require-lc"
             type="checkbox"
             checked={requireLc}
             onChange={(e) => setRequireLc(e.target.checked)}
-            className="h-4 w-4"
+            style={{ width: 16, height: 16 }}
           />
-          <label htmlFor="charterer-require-lc" className="text-sm font-medium text-gray-700">
+          <label htmlFor="charterer-require-lc" style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-muted)' }}>
             Letter of Credit Required
           </label>
         </div>
 
         <div>
-          <label htmlFor="charterer-notes" className="block text-sm font-medium text-gray-700 mb-1">
-            Notes
-          </label>
+          <label htmlFor="charterer-notes" style={labelStyle}>Notes</label>
           <textarea
             id="charterer-notes"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={3}
-            className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Optional notes..."
+            style={{ ...inputStyle, resize: 'vertical' }}
+            placeholder="Optional notes…"
           />
         </div>
 
-        <div className="flex gap-3 justify-end">
+        <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 text-sm border rounded hover:bg-gray-50"
+            style={{
+              padding: '8px 16px', fontSize: 14,
+              border: '1px solid var(--ds-border)', borderRadius: 7,
+              background: 'var(--ds-surface)', color: 'var(--ds-text)',
+              cursor: 'pointer',
+            }}
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={submitting}
-            className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+            style={{
+              padding: '8px 16px', fontSize: 14, fontWeight: 500,
+              border: 'none', borderRadius: 7,
+              background: 'var(--ds-accent)', color: 'var(--ds-accent-fg)',
+              cursor: submitting ? 'not-allowed' : 'pointer',
+              opacity: submitting ? 0.6 : 1,
+            }}
           >
-            {submitting ? 'Saving...' : 'Save'}
+            {submitting ? 'Saving…' : 'Save'}
           </button>
         </div>
       </form>
