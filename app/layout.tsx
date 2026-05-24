@@ -3,7 +3,11 @@ import { Inter } from 'next/font/google';
 import { cookies } from 'next/headers';
 import { getTrialState, daysRemaining, isExpired } from '@/lib/trial';
 import { TrialBanner } from '@/components/onboarding/TrialBanner';
-import BottomNav from '@/components/nav/BottomNav';
+import { getAuthConfig } from '@/lib/auth/config';
+import { verifyAuthCookie, AUTH_COOKIE_NAME } from '@/lib/auth/cookie';
+import { getStore } from '@/lib/session-store';
+import { ModeProvider, AppShell } from '@/design-system/patterns';
+import type { Mode } from '@/design-system/patterns';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -31,21 +35,95 @@ async function TrialBannerWrapper() {
   }
 }
 
+async function resolveInitialMode(cookieHeader: string | null): Promise<Mode> {
+  try {
+    const authConfig = getAuthConfig();
+    const secret = authConfig.secret;
+    if (!secret) return 'charterer';
+    if (!cookieHeader) return 'charterer';
+
+    // Parse cookie header to extract demo_auth value
+    const authCookieValue = cookieHeader
+      .split(';')
+      .map(s => s.trim())
+      .find(s => s.startsWith(`${AUTH_COOKIE_NAME}=`))
+      ?.slice(AUTH_COOKIE_NAME.length + 1);
+    if (!authCookieValue) return 'charterer';
+
+    const payload = await verifyAuthCookie(authCookieValue, secret);
+    if (!payload) return 'charterer';
+
+    const db = getStore().getDatabase();
+    const row = db
+      .prepare<[string], { preferred_mode: Mode }>('SELECT preferred_mode FROM user_preferences WHERE username = ?')
+      .get(payload.user);
+    if (row?.preferred_mode === 'owner') return 'owner';
+  } catch {
+    // Non-critical — fall through to default
+  }
+  return 'charterer';
+}
+
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const cookieStore = await cookies();
+  const authConfig = getAuthConfig();
+
+  // Check if user is authenticated to decide whether to wrap with AppShell
+  let isAuthenticated = !authConfig.enabled; // if auth disabled → demo mode, always show shell
+  let username: string | null = null;
+
+  if (authConfig.enabled && authConfig.secret) {
+    const cookieValue = cookieStore.get(AUTH_COOKIE_NAME)?.value;
+    if (cookieValue) {
+      const payload = await verifyAuthCookie(cookieValue, authConfig.secret).catch(() => null);
+      if (payload) {
+        isAuthenticated = true;
+        username = payload.user;
+      }
+    }
+  } else if (!authConfig.enabled) {
+    username = 'demo';
+  }
+
   // The UI chrome is English; per-content RTL handling lives next to the
   // content (EmailBodyViewer derives dir from the body via detectTextDirection).
   // Browser Accept-Language used to leak ru/de/he into <html> and broke
   // mixed-locale demo scenarios — see stab/rtl-per-content.
+  if (!isAuthenticated) {
+    return (
+      <html lang="en" dir="ltr">
+        <body className={inter.className}>
+          {children}
+        </body>
+      </html>
+    );
+  }
+
+  // Resolve preferred_mode from DB (username is set when isAuthenticated)
+  let initialMode: Mode = 'charterer';
+  if (username) {
+    try {
+      const db = getStore().getDatabase();
+      const row = db
+        .prepare<[string], { preferred_mode: Mode }>('SELECT preferred_mode FROM user_preferences WHERE username = ?')
+        .get(username);
+      if (row?.preferred_mode === 'owner') initialMode = 'owner';
+    } catch {
+      // Non-critical — default to charterer
+    }
+  }
+
   return (
     <html lang="en" dir="ltr">
       <body className={inter.className}>
         <TrialBannerWrapper />
-        {children}
-        <BottomNav />
+        <ModeProvider initial={initialMode}>
+          <AppShell>{children}</AppShell>
+        </ModeProvider>
       </body>
     </html>
   );
