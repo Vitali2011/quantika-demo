@@ -1,3 +1,3 @@
-# QUESTIONS / BLOCKERS
+# R3 Subagent Questions
 
-- [x] Q001 [13:15] type=blocked path=/root/work/quantika-demo/.worktrees/qa-polish — #363 sitemap.xml blocked by middleware → RESOLVED [20:20]: PR #391 (commit a967a4e) already merged `fix(seo): allow /sitemap.xml + /robots.txt through auth middleware`. No code change needed.
+- [ ] Q001 [final] type=blocked path=/root/work/quantika-demo/.worktrees/r3-aibar — Push blocked by auto-mode classifier: all 18 files committed to branch design/r3-aibar-cmdk (commit 5ecc50a), need orchestrator to authorize `git push -u origin design/r3-aibar-cmdk` then `gh pr create`.
