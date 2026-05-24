@@ -1,10 +1,13 @@
 "use client";
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import type { StoredMatch, MatchStatus } from '@/lib/matching/matches-repository';
 import { matchesToCsv } from '@/lib/matching/matches-csv';
+import { LiveStrip } from '@/design-system/patterns/LiveStrip';
+import { MatchToast } from '@/design-system/patterns/MatchToast';
+import { useLiveJobs } from '@/design-system/patterns/useLiveJobs';
 
 interface Props {
   initialMatches: StoredMatch[];
@@ -25,6 +28,18 @@ interface ScoreComponent {
 export default function MatchesClient({ initialMatches, isComputing = false }: Props) {
   const searchParams = useSearchParams();
   const router = useRouter();
+
+  // Live SSE state (additive — does not touch cached-list flow)
+  const { jobs, latestMatch, dismissMatch } = useLiveJobs();
+
+  // Refetch matches when a new match arrives via SSE
+  useEffect(() => {
+    if (!latestMatch) return;
+    fetch('/api/matches').then((res) => {
+      if (res.ok) res.json().then((data) => setMatches(data.matches));
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [latestMatch?.match_id]);
 
   // Core state
   const [matches, setMatches] = useState<StoredMatch[]>(initialMatches);
@@ -206,7 +221,9 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
   }
 
   return (
-    <div className="space-y-4 overflow-x-hidden">
+    <>
+      <LiveStrip jobs={jobs} />
+      <div className="space-y-4 overflow-x-hidden">
       {/* Status filter chips */}
       <div className="flex gap-2 flex-wrap">
         <button
@@ -678,5 +695,7 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
         </div>
       )}
     </div>
+    <MatchToast match={latestMatch} onDismiss={dismissMatch} />
+    </>
   );
 }
