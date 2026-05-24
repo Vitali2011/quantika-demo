@@ -11,3 +11,8 @@ export { useMode } from './useMode';
 export { PaletteProvider, usePalette } from './usePalette';
 export type { Mode, ModeContextValue } from './ModeProvider';
 export type { PaletteTab } from './usePalette';
+export { LiveStrip } from './LiveStrip';
+export { LiveStripCard } from './LiveStripCard';
+export { MatchToast } from './MatchToast';
+export { useLiveJobs } from './useLiveJobs';
+export type { LiveJob, NewMatch } from './useLiveJobs';
