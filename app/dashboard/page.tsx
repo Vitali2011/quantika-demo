@@ -192,7 +192,7 @@ export default async function DashboardPage() {
 
         {/* ── 📥 Inbox ───────────────────────────────────────────── */}
         <DashboardInboxSection
-          counts={categoryCounts as InboxCounts}
+          counts={categoryCounts as unknown as InboxCounts}
           totalEmails={emails.length}
           needsAction={needsActionCargo.length}
         />
