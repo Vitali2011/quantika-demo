@@ -151,6 +151,7 @@ export function SourceTable({ sources }: SourceTableProps) {
                               year: 'numeric',
                               month: 'short',
                               day: 'numeric',
+                              timeZone: 'UTC',
                             })
                           : 'Never'}
                       </td>

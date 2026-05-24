@@ -96,3 +96,48 @@ describe('SubsCountdownWidget SSR determinism (#404)', () => {
     expect(html).not.toMatch(/\d+ hours/);
   });
 });
+
+// ---------------------------------------------------------------------------
+// #418-source-2 — SourceTable and charterers/[id] toLocaleDateString UTC pin
+// ---------------------------------------------------------------------------
+import fs from 'fs';
+import path from 'path';
+
+const ROOT = path.resolve(__dirname, '../..');
+
+describe('SourceTable toLocaleDateString UTC pin (#418-source-2)', () => {
+  let src: string;
+
+  beforeAll(() => {
+    const p = path.join(ROOT, 'app/admin/knowledge/_components/SourceTable.tsx');
+    src = fs.readFileSync(p, 'utf-8');
+  });
+
+  it('toLocaleDateString call in SourceTable includes timeZone: UTC', () => {
+    // Without timeZone: 'UTC', server (UTC) and client (user-local TZ) produce
+    // different date strings near midnight → React #418 hydration mismatch.
+    const calls = [...src.matchAll(/\.toLocaleDateString\s*\([^)]*\)/g)];
+    expect(calls.length).toBeGreaterThan(0);
+    for (const [call] of calls) {
+      expect(call).toMatch(/timeZone\s*:\s*['"]UTC['"]/);
+    }
+  });
+});
+
+describe('charterers/[id] toLocaleDateString UTC pin (#418-source-2)', () => {
+  let src: string;
+
+  beforeAll(() => {
+    const p = path.join(ROOT, 'app/charterers/[id]/page.tsx');
+    src = fs.readFileSync(p, 'utf-8');
+  });
+
+  it('toLocaleDateString call in charterers page includes timeZone: UTC', () => {
+    // Same invariant: bare toLocaleDateString() with no timeZone is a hydration risk.
+    const calls = [...src.matchAll(/\.toLocaleDateString\s*\([^)]*\)/g)];
+    expect(calls.length).toBeGreaterThan(0);
+    for (const [call] of calls) {
+      expect(call).toMatch(/timeZone\s*:\s*['"]UTC['"]/);
+    }
+  });
+});
