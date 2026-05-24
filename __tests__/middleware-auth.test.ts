@@ -62,6 +62,8 @@ describe('middleware auth guard', () => {
       '/api/whatsapp/ingest',
       '/api/admin/knowledge/refresh',
       '/api/admin/knowledge-status',
+      '/sitemap.xml',
+      '/robots.txt',
       '/design',
     ];
 
