@@ -62,6 +62,7 @@ describe('middleware auth guard', () => {
       '/api/whatsapp/ingest',
       '/api/admin/knowledge/refresh',
       '/api/admin/knowledge-status',
+      '/design',
     ];
 
     for (const path of bypassPaths) {
