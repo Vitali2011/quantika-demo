@@ -8,10 +8,10 @@ export const metadata: Metadata = {
 export default function MorePage() {
   return (
     <div className="flex min-h-[calc(100vh-56px-env(safe-area-inset-bottom,0px))] flex-col p-6">
-      <div className="w-full max-w-sm mx-auto rounded-xl border border-border bg-card p-8 shadow-sm space-y-6">
+      <div className="w-full max-w-sm mx-auto rounded-ds-lg border border-ds-border bg-ds-surface p-8 shadow-sm space-y-6">
         <div>
-          <h1 className="mb-1 text-xl font-semibold">More</h1>
-          <p className="text-sm text-muted-foreground">Quantika Demo</p>
+          <h1 className="mb-1 text-xl font-semibold text-ds-text">More</h1>
+          <p className="text-sm text-ds-text-muted">Quantika Demo</p>
         </div>
 
         <nav aria-label="More navigation">
@@ -19,23 +19,23 @@ export default function MorePage() {
             <li>
               <Link
                 href="/upgrade"
-                className="flex items-center justify-between w-full rounded-lg px-4 py-3 text-sm font-medium text-foreground hover:bg-muted min-h-[44px]"
+                className="flex items-center justify-between w-full rounded-ds-md px-4 py-3 text-sm font-medium text-ds-text hover:bg-ds-surface-muted transition-colors duration-ds-fast min-h-[44px]"
               >
                 Upgrade to Pro
-                <span className="text-muted-foreground text-xs">→</span>
+                <span className="text-ds-text-muted text-xs">→</span>
               </Link>
             </li>
             <li>
               <Link
                 href="/dashboard"
-                className="flex items-center justify-between w-full rounded-lg px-4 py-3 text-sm font-medium text-foreground hover:bg-muted min-h-[44px]"
+                className="flex items-center justify-between w-full rounded-ds-md px-4 py-3 text-sm font-medium text-ds-text hover:bg-ds-surface-muted transition-colors duration-ds-fast min-h-[44px]"
               >
                 Dashboard
-                <span className="text-muted-foreground text-xs">→</span>
+                <span className="text-ds-text-muted text-xs">→</span>
               </Link>
             </li>
             <li>
-              <span className="flex items-center justify-between w-full rounded-lg px-4 py-3 text-sm font-medium text-muted-foreground min-h-[44px]">
+              <span className="flex items-center justify-between w-full rounded-ds-md px-4 py-3 text-sm font-medium text-ds-text-muted min-h-[44px]">
                 Help &amp; FAQ
                 <span className="text-xs">Coming soon</span>
               </span>
@@ -46,7 +46,7 @@ export default function MorePage() {
         <form method="POST" action="/api/auth/logout">
           <button
             type="submit"
-            className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted min-h-[44px]"
+            className="w-full rounded-ds-md border border-ds-border bg-ds-surface px-4 py-2.5 text-sm font-medium text-ds-text transition-colors duration-ds-fast hover:bg-ds-surface-muted min-h-[44px]"
             aria-label="Log out of Quantika"
           >
             Log out
