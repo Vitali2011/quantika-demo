@@ -74,6 +74,7 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
   const [dwt_max, setDwtMax] = useState(() => searchParams.get('dwt_max') ?? '');
 
   // Apply Filters handler
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization -- pre-existing async useCallback, refactor in R5
   const handleApplyFilters = useCallback(async () => {
     const params = new URLSearchParams();
     for (const ct of cargoTypes) params.append('cargo_type', ct);
@@ -96,6 +97,7 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
   }, [cargoTypes, route, laycan_from, laycan_to, score_min, dwt_min, dwt_max, filterStatus, router]);
 
   // Clear Filters handler
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization -- pre-existing async useCallback, refactor in R5
   const handleClearFilters = useCallback(async () => {
     setCargoTypes([]);
     setRoute('');
