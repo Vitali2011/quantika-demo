@@ -4,8 +4,10 @@ import { requireSession } from '@/lib/session';
 import {
   getMatch,
   updateMatchStatus,
+  updateMatchFreightRate,
 } from '@/lib/matching/matches-repository';
 import type { MatchStatus } from '@/lib/matching/matches-repository';
+import { estimateFreightRate, computeEstimatedTce } from '@/lib/matching/tce-calculator';
 
 export const dynamic = 'force-dynamic';
 
@@ -54,6 +56,7 @@ export async function PATCH(
 ): Promise<NextResponse> {
   const authResult = requireSession(request);
   if (authResult instanceof NextResponse) return authResult;
+  const { sessionId } = authResult;
 
   if (!isFeatureEnabled()) {
     return NextResponse.json(
@@ -73,22 +76,43 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const { status } = body;
+    const { status, freight_rate_usd_per_mt } = body;
 
+    const db = getStore().getDatabase();
+    const existing = getMatch(db, id);
+
+    if (!existing || existing.user_id !== sessionId) {
+      return NextResponse.json(
+        { error: `Match not found: ${id}` },
+        { status: 404 }
+      );
+    }
+
+    // Freight rate override path
+    if (freight_rate_usd_per_mt !== undefined) {
+      const rate = Number(freight_rate_usd_per_mt);
+      if (!Number.isFinite(rate) || rate <= 0) {
+        return NextResponse.json(
+          { error: 'freight_rate_usd_per_mt must be a positive number' },
+          { status: 400 }
+        );
+      }
+      const freightEst = { rate, source: 'manual' as const, confidence: 1.0 };
+      const tceEst = computeEstimatedTce(
+        freightEst,
+        existing.distance_nm ?? 0,
+        existing.vessel_dwt ?? 0,
+        0,
+      );
+      const updated = updateMatchFreightRate(db, id, rate, tceEst.tce_usd_per_day, 'manual');
+      return NextResponse.json(updated, { status: 200 });
+    }
+
+    // Status update path
     if (!status || typeof status !== 'string' || !VALID_STATUSES.includes(status as MatchStatus)) {
       return NextResponse.json(
         { error: 'Field "status" is required and must be one of: shortlist, saved, dismissed, archived' },
         { status: 400 }
-      );
-    }
-
-    const db = getStore().getDatabase();
-
-    const existing = getMatch(db, id);
-    if (!existing) {
-      return NextResponse.json(
-        { error: `Match not found: ${id}` },
-        { status: 404 }
       );
     }
 
