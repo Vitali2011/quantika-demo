@@ -1,0 +1,30 @@
+/* Maritime Deep — semantic tokens */
+:root {
+  /* Surface */
+  --ds-bg: #f8fafc;          /* slate-50 — page background */
+  --ds-surface: #ffffff;     /* cards, panels */
+  --ds-surface-muted: #fafbfc;
+  --ds-border: #e2e8f0;      /* slate-200 */
+  --ds-border-strong: #cbd5e1;
+
+  /* Text */
+  --ds-text: #0f172a;        /* slate-900 — primary text */
+  --ds-text-muted: #64748b;  /* slate-500 */
+  --ds-text-subtle: #94a3b8; /* slate-400 — captions */
+
+  /* Brand accent — navy + amber */
+  --ds-accent: #0f172a;          /* primary buttons, active tab */
+  --ds-accent-fg: #fbbf24;       /* amber-400 — text on accent, highlights */
+  --ds-accent-soft: #fef3c7;     /* amber-100 — soft pills/badges */
+  --ds-accent-soft-fg: #92400e;  /* amber-800 — text on soft */
+
+  /* Semantic */
+  --ds-success: #047857;
+  --ds-success-soft: #ecfdf5;
+  --ds-warn: #b45309;
+  --ds-warn-soft: #fef3c7;
+  --ds-danger: #b91c1c;
+  --ds-danger-soft: #fee2e2;
+  --ds-info: #1d4ed8;
+  --ds-info-soft: #eff6ff;
+}

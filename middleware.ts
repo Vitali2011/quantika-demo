@@ -28,6 +28,8 @@ const AUTH_BYPASS_PATHS = new Set([
   // Public SEO files
   '/sitemap.xml',
   '/robots.txt',
+  // Design preview page — internal gallery, no sensitive data
+  '/design',
 ]);
 
 const AUTH_BYPASS_PREFIXES = ['/_next/static', '/_next/image', '/_next/webpack'];
@@ -70,6 +72,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       : null;
 
     if (!payload) {
+      // API clients don't follow redirects — return 401 JSON for /api/* routes
       if (pathname.startsWith('/api/')) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }

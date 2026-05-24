@@ -1,0 +1,25 @@
+:root {
+  --ds-font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --ds-font-mono: ui-monospace, SFMono-Regular, "SF Mono", monospace;
+
+  /* Type scale (px) */
+  --ds-text-xs: 0.75rem;    /* 12 */
+  --ds-text-sm: 0.875rem;   /* 14 */
+  --ds-text-base: 1rem;     /* 16 */
+  --ds-text-lg: 1.125rem;   /* 18 */
+  --ds-text-xl: 1.25rem;    /* 20 */
+  --ds-text-2xl: 1.5rem;    /* 24 */
+  --ds-text-3xl: 1.875rem;  /* 30 */
+  --ds-text-4xl: 2.25rem;   /* 36 */
+
+  /* Line-height */
+  --ds-leading-tight: 1.2;
+  --ds-leading-normal: 1.5;
+  --ds-leading-relaxed: 1.7;
+
+  /* Weight */
+  --ds-weight-regular: 400;
+  --ds-weight-medium: 500;
+  --ds-weight-semibold: 600;
+  --ds-weight-bold: 700;
+}
