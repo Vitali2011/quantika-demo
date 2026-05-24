@@ -11,6 +11,7 @@ import Database from 'better-sqlite3';
 import migration032 from '@/lib/migrations/032-matches';
 import migration033 from '@/lib/migrations/033-matches-score-breakdown';
 import migration034 from '@/lib/migrations/034-matches-unique-constraint';
+import migration035 from '@/lib/migrations/035-matches-tce-distance';
 import { persistSessionMatches } from '@/lib/matching/persist-session-matches';
 import { listMatches } from '@/lib/matching/matches-repository';
 import { resolveSyntheticCargo, resolveSyntheticVessel } from '@/lib/sample-data/synthetic-economics';
@@ -21,6 +22,7 @@ function freshDb(): Database.Database {
   migration032.up(db);
   migration033.up(db);
   migration034.up(db);
+  migration035.up(db);
   return db;
 }
 
@@ -84,4 +86,5 @@ describe('persistSessionMatches — M3 field write-through (demo match, #393)', 
     expect(match.laycan_end).toBeNull();
     expect(match.vessel_dwt).toBeNull();
   });
+
 });

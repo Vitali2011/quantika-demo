@@ -226,6 +226,51 @@ describe('normalizePortName — fuzzy fallback (Wave 4)', () => {
   });
 });
 
+describe('normalizePortName — UNLOCODE fast path (#407 populate gap)', () => {
+  it('NLRTM resolves to Rotterdam', () => {
+    expect(normalizePortName('NLRTM')).toBe('Rotterdam');
+  });
+
+  it('CNSHA resolves to Shanghai', () => {
+    expect(normalizePortName('CNSHA')).toBe('Shanghai');
+  });
+
+  it('DEHAM resolves to Hamburg', () => {
+    expect(normalizePortName('DEHAM')).toBe('Hamburg');
+  });
+
+  it('BEANR resolves to Antwerp', () => {
+    expect(normalizePortName('BEANR')).toBe('Antwerp');
+  });
+
+  it('unknown UNLOCODE returns null gracefully', () => {
+    expect(normalizePortName('XYZQW')).toBeNull();
+  });
+});
+
+describe('getPortDistance — UNLOCODE input (#407 populate gap)', () => {
+  it('CNSHA ↔ NLRTM returns non-null distance', () => {
+    const d = getPortDistance('CNSHA', 'NLRTM');
+    expect(d).not.toBeNull();
+    expect(d!.nm).toBeGreaterThan(0);
+  });
+
+  it('CNSHA ↔ NLRTM equals Shanghai ↔ Rotterdam', () => {
+    const byCode = getPortDistance('CNSHA', 'NLRTM');
+    const byName = getPortDistance('Shanghai', 'Rotterdam');
+    expect(byCode).toEqual(byName);
+  });
+
+  it('unknown UNLOCODE in either position returns null', () => {
+    expect(getPortDistance('XYZQW', 'NLRTM')).toBeNull();
+    expect(getPortDistance('CNSHA', 'XYZQW')).toBeNull();
+  });
+
+  it('CNSHA ↔ CNSHA (same port) returns 0', () => {
+    expect(getPortDistance('CNSHA', 'CNSHA')).toEqual({ nm: 0, exact: true });
+  });
+});
+
 describe('KNOWN_PORTS coverage', () => {
   it('includes all sample-data ports', () => {
     const expected = [
