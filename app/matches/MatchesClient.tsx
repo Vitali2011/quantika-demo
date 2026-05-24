@@ -437,17 +437,17 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
                           )}
                           {match.vessel_dwt && (
                             <div className="text-xs text-gray-500">
-                              DWT: {match.vessel_dwt.toLocaleString()}
+                              DWT: {match.vessel_dwt.toLocaleString('en-US')}
                             </div>
                           )}
                           {match.distance_nm != null && (
                             <div className="text-xs text-gray-500">
-                              Distance: {match.distance_nm.toLocaleString()} nm
+                              Distance: {match.distance_nm.toLocaleString('en-US')} nm
                             </div>
                           )}
                           {match.tce_usd_per_day != null && (
                             <div className="text-xs font-medium text-emerald-700 flex items-center gap-1">
-                              TCE: ${match.tce_usd_per_day.toLocaleString()}/day
+                              TCE: ${match.tce_usd_per_day.toLocaleString('en-US')}/day
                               {match.freight_rate_source === 'estimated' && (
                                 <span className="text-xs bg-amber-100 text-amber-700 px-1 rounded" title="Estimated freight rate">est</span>
                               )}
