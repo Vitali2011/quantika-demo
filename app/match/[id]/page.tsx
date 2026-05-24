@@ -162,6 +162,9 @@ export default async function MatchDetailPage({ params }: Props) {
               vessel={vessel}
               cargo={cargo}
               cargoEmailId={cargoEmail?.id}
+              matchDbId={storedMatch.id}
+              storedFreightRate={storedMatch.freight_rate_usd_per_mt}
+              freightRateSource={storedMatch.freight_rate_source}
             />
 
             {cargo && cargoEmail && (
