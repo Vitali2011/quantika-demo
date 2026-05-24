@@ -25,6 +25,9 @@ const AUTH_BYPASS_PATHS = new Set([
   // Admin knowledge endpoints have their own X-Admin-Token check (requireAdmin)
   '/api/admin/knowledge/refresh',
   '/api/admin/knowledge-status',
+  // Public SEO files
+  '/sitemap.xml',
+  '/robots.txt',
   // Design preview page — internal gallery, no sensitive data
   '/design',
 ]);

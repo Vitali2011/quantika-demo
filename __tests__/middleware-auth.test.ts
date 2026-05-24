@@ -80,15 +80,31 @@ describe('middleware auth guard', () => {
     }
   });
 
-  describe('protected routes without auth cookie', () => {
-    const protectedPaths = ['/', '/dashboard', '/api/ai/match', '/api/emails/parse'];
+  describe('page routes without auth cookie redirect to /login', () => {
+    // Regression: /more (#417) and /upgrade (#418) must not 404 — auth guard redirects to /login
+    const pagePaths = ['/', '/dashboard', '/matches', '/market', '/more', '/upgrade'];
 
-    for (const path of protectedPaths) {
+    for (const path of pagePaths) {
       it(`redirects to /login for ${path} without cookie`, async () => {
         const req = makeReq(path);
         const res = await runMiddleware(req);
         expect(res.status).toBe(302);
         expect(res.headers.get('location')).toContain('/login');
+      });
+    }
+  });
+
+  describe('API routes without auth cookie return 401 JSON', () => {
+    const apiPaths = ['/api/ai/match', '/api/emails/parse', '/api/matches', '/api/vessels'];
+
+    for (const path of apiPaths) {
+      it(`returns 401 JSON for ${path} without cookie`, async () => {
+        const req = makeReq(path);
+        const res = await runMiddleware(req);
+        expect(res.status).toBe(401);
+        expect(res.headers.get('content-type')).toContain('application/json');
+        const body = await res.json();
+        expect(body).toEqual({ error: 'Unauthorized' });
       });
     }
   });
