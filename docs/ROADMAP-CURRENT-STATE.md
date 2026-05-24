@@ -493,6 +493,30 @@ ETA: ~2-3 дня wall-clock. Большинство agent-only. **Bottleneck т�
 **Runbooks:** `docs/runbooks/wave-gamma-flag-activation.md`
 **Env backups:** `.env.local.before-*-YYYYMMDD-HHMM` (incident recovery)
 
+## Full Redesign R1-R6 — COMPLETED 2026-05-25
+
+Полный редизайн UI/UX завершён. Все 22 страницы мигрированы на Maritime Deep design-system.
+
+| Wave | Что сделано |
+|------|-------------|
+| R1 | Design-system foundation — Maritime Deep tokens, 15 primitives, `/design` preview page |
+| R2 | AppShell + ModeSwitcher (charterer/owner mode), persistent navigation |
+| R3 | AIBar + ⌘K command palette + HelpFAB |
+| R4 | LiveStrip + SSE jobs + match toasts |
+| R5 | 22 страницы мигрированы (Dashboard, Matches, Match/[id], Cargo, Vessels, Charterers, Market, Recap, Email, Onboarding, Upgrade, Settings, Laytime, PSC, Commission, Clauses, Request, Processing, Summary, More, Vessel/[id], Fixture) |
+| R6 | A11y baseline — Playwright+axe specs для всех 23 страниц (WCAG 2.1 AA); Lighthouse CI gate (perf ≥0.85, a11y ≥0.95); living docs |
+
+**Specs:** `docs/superpowers/specs/2026-05-24-quantika-demo-full-redesign-design.md`
+**Plans:** `docs/superpowers/plans/2026-05-24-r6-a11y-perf-plan.md`
+**Design overview:** `docs/design-system.md`
+
+**Open follow-ups (R6.5):**
+- Migrate remaining `components/ui/` usages (40 imports, 22 files) → delete legacy dir (Q002)
+- Activate dark mode toggle (tokens drafted)
+- Lighthouse CI в GitHub Actions workflow (нужен `@lhci/cli` install)
+
+---
+
 ## Archived / Consolidated (2026-05-22)
 
 Этот файл — единственный актуальный роадмап. Старые wave-планы 2026-04 сведены в архив (без потери данных):
