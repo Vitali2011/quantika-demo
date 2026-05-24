@@ -14,7 +14,7 @@ const source = fs.readFileSync(pagePath, 'utf8');
 describe('BlockedPairsCard mobile overflow (Bug #293)', () => {
   it('SANCTIONS badge has shrink-0 to prevent compression on narrow viewports', () => {
     // The SANCTIONS badge span must have shrink-0 in its className
-    expect(source).toContain('rounded-full shrink-0');
+    expect(source).toContain('rounded-ds-full shrink-0');
   });
 
   it('reason span does not use max-w-sm (384px > 375px viewport, causes overflow)', () => {

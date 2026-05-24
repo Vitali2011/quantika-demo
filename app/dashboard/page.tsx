@@ -4,22 +4,23 @@ import Link from 'next/link';
 import { getSession } from '@/lib/session';
 import { filterByCategory, getEmailCounts, groupByContact } from '@/lib/dashboard-queries';
 import { EmailCard, EmailSection, ActionPanel } from '@/components/dashboard';
-import { MorningHeader } from '@/components/dashboard/MorningHeader';
-import { WhileYouWereAwayCard } from '@/components/dashboard/WhileYouWereAwayCard';
 import { countAwaitingApproval } from '@/lib/auto-prequote/queue';
-import { PriorityCard } from '@/components/dashboard/PriorityCard';
 import { InboxBreakdown } from '@/components/dashboard/InboxBreakdown';
-import { MarketIntelligence } from '@/components/dashboard/MarketIntelligence';
 import { RoiSummaryTile } from '@/components/dashboard/RoiSummaryTile';
 import SubsCountdownWidget from '@/components/deals/SubsCountdownWidget';
 import { classifyPriority } from '@/lib/sailing/priority-classifier';
 import type { PriorityLevel } from '@/lib/sailing/priority-classifier';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
 import { formatNumber } from '@/lib/utils';
+import { DashboardKpiStrip } from '@/components/dashboard/DashboardKpiStrip';
+import { DashboardTodoSection } from '@/components/dashboard/DashboardTodoSection';
+import { DashboardFreshMatches } from '@/components/dashboard/DashboardFreshMatches';
+import { DashboardInboxSection } from '@/components/dashboard/DashboardInboxSection';
+import type { InboxCounts } from '@/components/dashboard/DashboardInboxSection';
+import { Badge } from '@/design-system/primitives';
 
 const PRIORITY_ORDER: Record<PriorityLevel, number> = { urgent: 0, attention: 1, ok: 2 };
 
-// Demo data for SubsCountdownWidget (F-01) — static, server-safe
 const DEMO_DEAL_ID = 'demo-deal-001';
 const DEMO_SUBS_DEADLINE = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
 
@@ -45,21 +46,21 @@ export default async function DashboardPage() {
 
   if (emails.length === 0) {
     return (
-      <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-ds-bg flex items-center justify-center px-4">
         <div className="max-w-md w-full text-center space-y-4">
           <div className="text-4xl">📭</div>
-          <h1 className="text-xl font-bold text-gray-900">Нет писем</h1>
-          <p className="text-sm text-gray-500">
-            Загрузите письма, чтобы начать анализ грузовых запросов, позиций судов и переговоров.
+          <h1 className="text-xl font-bold text-ds-text">No emails yet</h1>
+          <p className="text-sm text-ds-text-muted">
+            Upload emails to start analysing freight inquiries, vessel positions, and negotiations.
           </p>
           <Link
             href="/processing"
-            className="inline-block px-6 py-3 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors"
+            className="inline-block px-6 py-3 bg-ds-accent text-ds-accent-fg text-sm font-medium rounded-ds-md hover:bg-ds-accent/90 transition-colors"
           >
-            Загрузить письма
+            Upload emails
           </Link>
         </div>
-      </main>
+      </div>
     );
   }
 
@@ -74,14 +75,6 @@ export default async function DashboardPage() {
   const otherRows = [...clientReplyRows, ...documentRows, ...otherOnlyRows];
 
   const needsActionCargo = cargoRows.filter((r) => r.statusGroup === 'NEEDS_ACTION');
-  const oldestDays =
-    needsActionCargo.length > 0
-      ? Math.max(...needsActionCargo.map((r) => r.processed.daysWithoutReply || 0))
-      : 0;
-
-  const goodMatches = matches.filter(
-    (m) => m.matchLevel === 'good' || m.matchLevel === 'possible',
-  );
 
   const commissionLines =
     commissionSummary?.totalByCurrency
@@ -107,64 +100,41 @@ export default async function DashboardPage() {
   const topContacts = allContacts.slice(0, 10);
   const maxContactEmails = topContacts.length > 0 ? topContacts[0].count : 1;
 
-  // Build priority cards for good matches
+  const goodMatches = matches.filter(
+    (m) => m.matchLevel === 'good' || m.matchLevel === 'possible',
+  );
+
   const priorityCards = goodMatches
     .map((match, i) => {
       const readinessGap =
         match.readiness?.gapDays !== null && match.readiness?.gapDays !== undefined
-          ? match.readiness.gapDays * 24 // convert days → hours
+          ? match.readiness.gapDays * 24
           : undefined;
       const priority = classifyPriority({ confidence: match.confidence, readinessGap });
-      const summary = match.matchReasons[0] || `Match #${i + 1}`;
-      const insight = match.readiness?.explanation || `Level: ${match.matchLevel}`;
-      return { priority, summary, insight, href: `/match/${i}` };
+      const matchSummary = match.matchReasons[0] || `Match #${i + 1}`;
+      const keyInsight = match.readiness?.explanation || `Level: ${match.matchLevel}`;
+      return { priority, matchSummary, keyInsight, href: `/match/${i}` };
     })
     .sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority]);
 
-  const urgentCount = priorityCards.filter((c) => c.priority === 'urgent').length;
+  const freshMatchesData = goodMatches.map((m, i) => ({
+    score: m.score,
+    matchLevel: m.matchLevel,
+    matchReasons: m.matchReasons,
+    index: i,
+  }));
+
   const noActiveDeals = goodMatches.length === 0;
 
-
   return (
-    <main className="min-h-screen bg-gray-50 py-4 sm:py-8 px-3 sm:px-4">
+    <div className="bg-ds-bg min-h-screen">
       <AnalyticsTracker event="dashboard_viewed" />
-      <div className="max-w-3xl mx-auto space-y-6">
+      <div className="max-w-3xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-6">
 
-        {/* ── β-15: While You Were Away digest ───────────────────── */}
-        <WhileYouWereAwayCard
-          pendingDrafts={countAwaitingApproval()}
-          voiceMemosProcessed={0}
-          errors={0}
-        />
-
-        {/* ── γ-18: ROI Summary Tile (feature flag) ──────────────── */}
+        {/* ── ROI Summary (feature flag) ──────────────────────────── */}
         {process.env.NEXT_PUBLIC_ROI_GUARANTEE_ENABLED === 'true' && <RoiSummaryTile />}
 
-        {/* ── Charterer Credit (feature flag) ────────────────────── */}
-        {process.env.NEXT_PUBLIC_CHARTERER_CREDIT_ENABLED === 'true' && (
-          <Link
-            href="/charterers"
-            className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
-          >
-            <div>
-              <p className="text-sm font-semibold text-gray-900">Charterer Credit</p>
-              <p className="text-xs text-gray-500">Credit profiles for blue-chip charterers</p>
-            </div>
-            <span className="text-gray-500 text-sm">→</span>
-          </Link>
-        )}
-
-        {/* ── Morning Header ─────────────────────────────────────── */}
-        <div>
-          <MorningHeader userName="Broker" alertCount={urgentCount} />
-          {isSample && (
-            <span className="inline-block mt-1 px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
-              Sample data
-            </span>
-          )}
-        </div>
-
-        {/* ── F-01: Subs Countdown Widget (feature flag) ─────────── */}
+        {/* ── Subs Countdown (feature flag) ──────────────────────── */}
         {process.env.NEXT_PUBLIC_SUBS_TIMER_V2_ENABLED === 'true' && (
           <SubsCountdownWidget
             dealId={DEMO_DEAL_ID}
@@ -173,105 +143,151 @@ export default async function DashboardPage() {
           />
         )}
 
-        {/* ── Top Priorities ─────────────────────────────────────── */}
-        <section>
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-            Top Priorities
-          </h2>
-          {priorityCards.length === 0 ? (
-            <p className="text-sm text-gray-500 bg-white border border-gray-200 rounded-lg px-4 py-3">
-              No matches to prioritise yet.
-            </p>
-          ) : (
-            <div className="space-y-2">
-              {priorityCards.map((card, i) => (
-                <PriorityCard
-                  key={i}
-                  priority={card.priority}
-                  matchSummary={card.summary}
-                  keyInsight={card.insight}
-                  reviewHref={card.href}
-                />
-              ))}
-            </div>
-          )}
-        </section>
-
-        {/* ── Inbox Breakdown ────────────────────────────────────── */}
-        <section>
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-            Inbox Breakdown
-          </h2>
-          <InboxBreakdown
-            cargoInquiries={categoryCounts.CARGO_INQUIRY}
-            vesselPositions={categoryCounts.VESSEL_POSITION}
-            fixtureRecaps={categoryCounts.FIXTURE_RECAP}
-            clientReplies={categoryCounts.CLIENT_REPLY}
-            noise={categoryCounts.OTHER + categoryCounts.DOCUMENT}
-          />
-        </section>
-
-        {/* ── Market Intelligence ────────────────────────────────── */}
-        <section>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
-              Market Intelligence
-            </h2>
-            <Link
-              href="/market"
-              className="text-xs text-gray-500 hover:text-gray-900 transition-colors"
-            >
-              View all →
-            </Link>
+        {/* ── Header ─────────────────────────────────────────────── */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-lg font-semibold text-ds-text">Dashboard</h1>
+            {isSample && (
+              <span className="inline-block mt-0.5 px-2 py-0.5 rounded text-xs font-medium bg-ds-warn-soft text-ds-warn">
+                Sample data
+              </span>
+            )}
           </div>
-          <MarketIntelligence noActiveDeals={noActiveDeals} />
+          {countAwaitingApproval() > 0 && (
+            <Badge variant="warn" data-testid="pending-drafts-badge">
+              {countAwaitingApproval()} drafts pending
+            </Badge>
+          )}
+        </div>
+
+        {/* ── 4 KPI tiles ────────────────────────────────────────── */}
+        <DashboardKpiStrip
+          openMatches={goodMatches.length}
+          activeCargoes={cargoRows.length}
+          activeVessels={vesselRows.length}
+        />
+
+        {/* ── 🎯 To do today ─────────────────────────────────────── */}
+        <DashboardTodoSection cards={priorityCards} />
+
+        {/* ── ✨ Fresh matches ────────────────────────────────────── */}
+        <DashboardFreshMatches matches={freshMatchesData} />
+
+        {/* ── 📊 Market Intelligence ─────────────────────────────── */}
+        <section>
+          <h2 className="text-sm font-semibold text-ds-text-muted uppercase tracking-wide mb-3">
+            Market Intelligence
+          </h2>
+          <Link
+            href="/market"
+            className="flex items-center justify-between p-4 bg-ds-surface border border-ds-border rounded-ds-lg hover:bg-ds-surface-muted transition-colors"
+          >
+            <div>
+              <p className="text-sm font-semibold text-ds-text">Market Indices</p>
+              <p className="text-xs text-ds-text-muted">BDI, bunker prices, freight benchmarks</p>
+            </div>
+            <span className="text-ds-text-subtle text-sm">→</span>
+          </Link>
         </section>
 
-        {/* ── Action Panel (existing) ────────────────────────────── */}
+        {/* ── 📥 Inbox ───────────────────────────────────────────── */}
+        <DashboardInboxSection
+          counts={categoryCounts as unknown as InboxCounts}
+          totalEmails={emails.length}
+          needsAction={needsActionCargo.length}
+        />
+
+        {/* ── Charterer Credit (feature flag) ────────────────────── */}
+        {process.env.NEXT_PUBLIC_CHARTERER_CREDIT_ENABLED === 'true' && (
+          <Link
+            href="/charterers"
+            className="flex items-center justify-between p-4 bg-ds-surface border border-ds-border rounded-ds-lg hover:bg-ds-surface-muted transition-colors"
+          >
+            <div>
+              <p className="text-sm font-semibold text-ds-text">Charterer Credit</p>
+              <p className="text-xs text-ds-text-muted">Credit profiles for blue-chip charterers</p>
+            </div>
+            <span className="text-ds-text-subtle text-sm">→</span>
+          </Link>
+        )}
+
+        {/* ── Action Panel ───────────────────────────────────────── */}
         <ActionPanel
           needsActionCargo={needsActionCargo}
           goodMatches={goodMatches}
           fixtureRows={fixtureRows}
           commissionSummary={commissionSummary}
           commissionLines={commissionLines}
-          oldestDays={oldestDays}
+          oldestDays={
+            needsActionCargo.length > 0
+              ? Math.max(...needsActionCargo.map((r) => r.processed.daysWithoutReply || 0))
+              : 0
+          }
         />
 
+        {/* ── Active Negotiations ─────────────────────────────────── */}
+        {recaps.length > 0 && (
+          <section>
+            <h2 className="text-sm font-semibold text-ds-text-muted uppercase tracking-wide mb-3">
+              Active Negotiations
+            </h2>
+            <div className="space-y-2">
+              {recaps.map((recap) => (
+                <Link
+                  key={recap.threadId}
+                  href={`/recap/${recap.threadId}`}
+                  className="block focus-visible:ring-2 focus-visible:ring-ds-accent/40 rounded-ds-md outline-none"
+                >
+                  <div className="flex items-center justify-between p-3 rounded-ds-md hover:bg-ds-surface-muted transition-colors border border-ds-border bg-ds-surface">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-ds-text truncate">{recap.subject}</p>
+                      <p className="text-xs text-ds-text-muted">
+                        {recap.emailCount} emails · {recap.dateRange} ·{' '}
+                        {recap.points.filter((p) => p.status === 'AGREED').length}/{recap.points.length}{' '}
+                        terms agreed
+                      </p>
+                    </div>
+                    <span className="shrink-0 ml-3 text-xs text-ds-text-subtle">→</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* ── Full Inbox (collapsible) ───────────────────────────── */}
-        <details className="border border-gray-300 rounded-xl overflow-hidden">
-          <summary className="px-3 sm:px-5 py-3 sm:py-4 bg-white cursor-pointer hover:bg-gray-50 list-none">
-            <div className="flex items-center justify-between mb-3">
-              <span className="font-semibold text-gray-900">Full Inbox Breakdown</span>
+        <details className="border border-ds-border rounded-ds-lg overflow-hidden">
+          <summary className="px-4 py-3 bg-ds-surface cursor-pointer hover:bg-ds-surface-muted list-none">
+            <div className="flex items-center justify-between mb-2">
+              <span className="font-semibold text-ds-text text-sm">Full Inbox</span>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">{emails.length} emails total</span>
-                <span className="text-gray-500 text-xs select-none">▼</span>
+                <span className="text-sm text-ds-text-muted">{emails.length} emails</span>
+                <span className="text-ds-text-subtle text-xs select-none">▼</span>
               </div>
             </div>
             <div className="space-y-1">
               {(
                 [
-                  { key: 'CARGO_INQUIRY', emoji: '📦', label: 'Cargo Inquiries', count: categoryCounts.CARGO_INQUIRY },
-                  { key: 'VESSEL_POSITION', emoji: '🚢', label: 'Vessel Positions', count: categoryCounts.VESSEL_POSITION },
-                  { key: 'FIXTURE_RECAP', emoji: '📋', label: 'Fixture Recaps', count: categoryCounts.FIXTURE_RECAP },
-                  { key: 'VESSEL_CERTIFICATE', emoji: '📜', label: 'Vessel Certificates', count: categoryCounts.VESSEL_CERTIFICATE },
-                  { key: 'TCT_REQUEST', emoji: '⏱', label: 'TCT Requests', count: categoryCounts.TCT_REQUEST },
-                  { key: 'DOCUMENT', emoji: '📄', label: 'Documents', count: categoryCounts.DOCUMENT },
-                  { key: 'CLIENT_REPLY', emoji: '💬', label: 'Client Replies', count: categoryCounts.CLIENT_REPLY },
-                  { key: 'OTHER', emoji: '📁', label: 'Other', count: categoryCounts.OTHER },
-                ] as { key: string; emoji: string; label: string; count: number }[]
+                  { key: 'CARGO_INQUIRY', label: 'Cargo Inquiries', count: categoryCounts.CARGO_INQUIRY },
+                  { key: 'VESSEL_POSITION', label: 'Vessel Positions', count: categoryCounts.VESSEL_POSITION },
+                  { key: 'FIXTURE_RECAP', label: 'Fixture Recaps', count: categoryCounts.FIXTURE_RECAP },
+                  { key: 'VESSEL_CERTIFICATE', label: 'Vessel Certificates', count: categoryCounts.VESSEL_CERTIFICATE },
+                  { key: 'TCT_REQUEST', label: 'TCT Requests', count: categoryCounts.TCT_REQUEST },
+                  { key: 'DOCUMENT', label: 'Documents', count: categoryCounts.DOCUMENT },
+                  { key: 'CLIENT_REPLY', label: 'Client Replies', count: categoryCounts.CLIENT_REPLY },
+                  { key: 'OTHER', label: 'Other', count: categoryCounts.OTHER },
+                ] as { key: string; label: string; count: number }[]
               )
                 .filter((item) => item.count > 0)
-                .map(({ key, emoji, label, count }) => (
-                  <div key={key} className="flex items-center justify-between py-0.5 px-2">
-                    <span className="text-sm text-gray-600">
-                      {emoji} {label}
-                    </span>
-                    <span className="text-sm font-semibold text-gray-800 tabular-nums">{count}</span>
+                .map(({ key, label, count }) => (
+                  <div key={key} className="flex items-center justify-between py-0.5 px-1">
+                    <span className="text-xs text-ds-text-muted">{label}</span>
+                    <span className="text-xs font-semibold text-ds-text tabular-nums">{count}</span>
                   </div>
                 ))}
             </div>
           </summary>
-          <div className="bg-gray-50 px-4 py-4 space-y-3" id="inbox">
+          <div className="bg-ds-bg px-4 py-4 space-y-3" id="inbox">
             <div id="cargo">
               <EmailSection category="CARGO_INQUIRY" rows={cargoRows} totalCount={categoryCounts.CARGO_INQUIRY} />
             </div>
@@ -292,14 +308,14 @@ export default async function DashboardPage() {
               </div>
             )}
             {categoryCounts.DOCUMENT + categoryCounts.CLIENT_REPLY + categoryCounts.OTHER > 0 && (
-              <details className="border border-gray-200 rounded-lg overflow-hidden">
-                <summary className="flex items-center justify-between px-4 py-3 bg-white cursor-pointer hover:bg-gray-50 list-none">
-                  <span className="font-medium text-gray-800">Other</span>
-                  <span className="ml-2 px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-700">
+              <details className="border border-ds-border rounded-ds-md overflow-hidden">
+                <summary className="flex items-center justify-between px-4 py-3 bg-ds-surface cursor-pointer hover:bg-ds-surface-muted list-none">
+                  <span className="font-medium text-ds-text text-sm">Other</span>
+                  <span className="ml-2 px-2 py-0.5 rounded text-xs font-semibold bg-ds-surface-muted text-ds-text-muted">
                     {categoryCounts.DOCUMENT + categoryCounts.CLIENT_REPLY + categoryCounts.OTHER}
                   </span>
                 </summary>
-                <div className="bg-white px-4 pb-4 pt-2 space-y-1">
+                <div className="bg-ds-surface px-4 pb-4 pt-2 space-y-1">
                   {otherRows.map((row) => (
                     <EmailCard key={row.email.id} row={row} href={`/cargo/${row.email.id}`} />
                   ))}
@@ -309,63 +325,70 @@ export default async function DashboardPage() {
           </div>
         </details>
 
+        {/* ── Inbox Breakdown (summary) ───────────────────────────── */}
+        {!noActiveDeals && (
+          <section>
+            <h2 className="text-sm font-semibold text-ds-text-muted uppercase tracking-wide mb-3">
+              Inbox Breakdown
+            </h2>
+            <InboxBreakdown
+              cargoInquiries={categoryCounts.CARGO_INQUIRY}
+              vesselPositions={categoryCounts.VESSEL_POSITION}
+              fixtureRecaps={categoryCounts.FIXTURE_RECAP}
+              clientReplies={categoryCounts.CLIENT_REPLY}
+              noise={categoryCounts.OTHER + categoryCounts.DOCUMENT}
+            />
+          </section>
+        )}
+
         {/* ── Blocked Matches ────────────────────────────────────── */}
         {blockedMatches.length > 0 && (
-          <section className="mt-4">
-            <h2 className="text-lg font-semibold text-red-700 mb-3">
+          <section className="mt-2">
+            <h2 className="text-sm font-semibold text-ds-danger uppercase tracking-wide mb-3">
               🚫 Blocked Pairs ({blockedMatches.length})
             </h2>
-            <p className="text-sm text-gray-500 mb-4">
-              These cargo-vessel pairs were filtered out before matching due to sanctions, physical
-              constraints, or compatibility issues.
-            </p>
             {sanctionsBlocked.length > 0 && (
-              <div className="mb-4">
-                <h3 className="text-sm font-semibold text-red-800 mb-2 flex items-center gap-1">
-                  ⛔ Sanctions ({sanctionsBlocked.length})
-                </h3>
-                <div className="space-y-2">
-                  {sanctionsBlocked.map((b, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center gap-3 p-3 bg-red-50 border border-red-200 rounded-lg text-sm overflow-hidden"
-                    >
-                      <span className="font-medium text-red-800 shrink-0">⛔</span>
-                      <div className="flex-1 min-w-0">
-                        <span className="font-medium">{b.cargoEmailId}</span>
-                        <span className="text-gray-500 mx-1">×</span>
-                        <span className="font-medium">{b.vesselEmailId}</span>
-                      </div>
-                      <span className="text-red-600 text-xs min-w-0 truncate">{b.filterReason}</span>
-                      <span className="px-2 py-0.5 bg-red-600 text-white text-xs rounded-full shrink-0">
-                        SANCTIONS
-                      </span>
+              <div className="mb-4 space-y-2">
+                {sanctionsBlocked.map((b, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-3 p-3 bg-ds-danger-soft border border-ds-danger/20 rounded-ds-md text-sm overflow-hidden"
+                  >
+                    <span className="font-medium text-ds-danger shrink-0">⛔</span>
+                    <div className="flex-1 min-w-0">
+                      <span className="font-medium text-ds-text">{b.cargoEmailId}</span>
+                      <span className="text-ds-text-muted mx-1">×</span>
+                      <span className="font-medium text-ds-text">{b.vesselEmailId}</span>
                     </div>
-                  ))}
-                </div>
+                    <span className="text-ds-danger text-xs min-w-0 truncate">{b.filterReason}</span>
+                    <span className="px-2 py-0.5 bg-ds-danger text-white text-xs rounded-ds-full shrink-0">
+                      SANCTIONS
+                    </span>
+                  </div>
+                ))}
               </div>
             )}
             {filterBlocked.length > 0 && (
-              <details className="border border-orange-200 rounded-xl overflow-hidden">
-                <summary className="flex items-center justify-between px-4 py-3 bg-orange-50 cursor-pointer hover:bg-orange-100 list-none">
-                  <span className="text-sm font-semibold text-orange-800">
+              <details className="border border-ds-warn/30 rounded-ds-lg overflow-hidden">
+                <summary className="flex items-center justify-between px-4 py-3 bg-ds-warn-soft cursor-pointer hover:opacity-90 list-none">
+                  <span className="text-sm font-semibold text-ds-warn">
                     🚫 Hard Filter Fails ({filterBlocked.length})
                   </span>
-                  <span className="text-orange-500 text-xs select-none">▼</span>
+                  <span className="text-ds-warn text-xs select-none">▼</span>
                 </summary>
-                <div className="bg-white px-4 pb-4 pt-2 space-y-2">
+                <div className="bg-ds-surface px-4 pb-4 pt-2 space-y-2">
                   {filterBlocked.map((b, i) => (
                     <div
                       key={i}
-                      className="flex items-center gap-3 p-3 bg-orange-50 border border-orange-200 rounded-lg text-sm overflow-hidden"
+                      className="flex items-center gap-3 p-3 bg-ds-warn-soft border border-ds-warn/20 rounded-ds-md text-sm overflow-hidden"
                     >
-                      <span className="font-medium text-orange-700 shrink-0">🚫</span>
+                      <span className="font-medium text-ds-warn shrink-0">🚫</span>
                       <div className="flex-1 min-w-0">
-                        <span className="font-medium">{b.cargoEmailId}</span>
-                        <span className="text-gray-500 mx-1">×</span>
-                        <span className="font-medium">{b.vesselEmailId}</span>
+                        <span className="font-medium text-ds-text">{b.cargoEmailId}</span>
+                        <span className="text-ds-text-muted mx-1">×</span>
+                        <span className="font-medium text-ds-text">{b.vesselEmailId}</span>
                       </div>
-                      <span className="text-orange-600 text-xs min-w-0 truncate">{b.filterReason}</span>
+                      <span className="text-ds-warn text-xs min-w-0 truncate">{b.filterReason}</span>
                     </div>
                   ))}
                 </div>
@@ -374,63 +397,29 @@ export default async function DashboardPage() {
           </section>
         )}
 
-        {/* ── Recaps ─────────────────────────────────────────────── */}
-        <div>
-          <h2 className="text-base font-semibold text-gray-900 mb-3">
-            Active Negotiations (recap ready)
-          </h2>
-          {recaps.length === 0 ? (
-            <p className="text-sm text-gray-500 bg-white border border-gray-200 rounded-lg px-4 py-3">
-              No active negotiations found. Recaps are generated for threads with 5+ messages.
-            </p>
-          ) : (
-            <div className="space-y-2">
-              {recaps.map((recap) => (
-                <Link
-                  key={recap.threadId}
-                  href={`/recap/${recap.threadId}`}
-                  className="block focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-400 rounded-lg"
-                >
-                  <div className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 transition-colors border border-gray-200 bg-white">
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-gray-900 truncate">{recap.subject}</p>
-                      <p className="text-xs text-gray-500">
-                        {recap.emailCount} emails · {recap.dateRange} ·{' '}
-                        {recap.points.filter((p) => p.status === 'AGREED').length}/{recap.points.length}{' '}
-                        terms agreed
-                      </p>
-                    </div>
-                    <span className="shrink-0 ml-3 text-xs text-gray-500">→</span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-
         {/* ── Network ────────────────────────────────────────────── */}
         {topContacts.length > 0 && (
-          <details className="border border-gray-300 rounded-xl overflow-hidden">
-            <summary className="flex items-center justify-between px-5 py-4 bg-white cursor-pointer hover:bg-gray-50 list-none">
-              <span className="font-semibold text-gray-900">Your Network</span>
-              <span className="text-sm text-gray-500">from {emails.length} emails</span>
+          <details className="border border-ds-border rounded-ds-lg overflow-hidden">
+            <summary className="flex items-center justify-between px-5 py-4 bg-ds-surface cursor-pointer hover:bg-ds-surface-muted list-none">
+              <span className="font-semibold text-ds-text text-sm">Your Network</span>
+              <span className="text-sm text-ds-text-muted">from {emails.length} emails</span>
             </summary>
-            <div className="bg-white px-4 pb-4 pt-2">
+            <div className="bg-ds-surface px-4 pb-4 pt-2">
               {topContacts.map((contact, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center gap-3 py-2 border-b border-gray-100 last:border-0"
+                  className="flex items-center gap-3 py-2 border-b border-ds-border last:border-0"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between mb-1">
-                      <p className="text-sm font-medium text-gray-900 truncate">{contact.name}</p>
-                      <span className="shrink-0 ml-3 text-xs font-semibold text-gray-600">
+                      <p className="text-sm font-medium text-ds-text truncate">{contact.name}</p>
+                      <span className="shrink-0 ml-3 text-xs font-semibold text-ds-text-muted">
                         {contact.count} {contact.count === 1 ? 'email' : 'emails'}
                       </span>
                     </div>
-                    <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-1.5 w-full bg-ds-surface-muted rounded-ds-full overflow-hidden">
                       <div
-                        className="h-full bg-blue-400 rounded-full"
+                        className="h-full bg-ds-accent rounded-ds-full"
                         style={{ width: `${Math.round((contact.count / maxContactEmails) * 100)}%` }}
                       />
                     </div>
@@ -442,24 +431,23 @@ export default async function DashboardPage() {
         )}
 
         {/* ── Disclaimer ─────────────────────────────────────────── */}
-        <div className="rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3">
-          <p className="text-xs text-yellow-800">
-            <strong>⚠️ Disclaimer:</strong> This analysis is generated by AI and may contain errors or
-            omissions. All information should be independently verified before making business
-            decisions. Commission estimates are based on extracted recap data and may not reflect final
-            agreed amounts.
+        <div className="rounded-ds-md border border-ds-warn/30 bg-ds-warn-soft px-4 py-3">
+          <p className="text-xs text-ds-warn">
+            <strong>⚠️ Disclaimer:</strong> This analysis is AI-generated and may contain errors.
+            All information should be independently verified before making business decisions.
+            Commission estimates are based on extracted recap data and may not reflect final agreed amounts.
           </p>
         </div>
 
         <div className="flex justify-end">
           <Link
             href="/summary"
-            className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors"
+            className="px-4 py-2 bg-ds-accent text-ds-accent-fg text-sm font-medium rounded-ds-md hover:bg-ds-accent/90 transition-colors"
           >
             View Summary &amp; Impact →
           </Link>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
