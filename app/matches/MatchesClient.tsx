@@ -101,6 +101,7 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
   // Auto-switch to cards on mobile after mount
   useEffect(() => {
     if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount detection
       setDensity('cards');
     }
   }, []);
