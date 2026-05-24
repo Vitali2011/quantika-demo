@@ -6,3 +6,8 @@ export { AIBarPlaceholder } from './AIBarPlaceholder';
 export { ModeProvider } from './ModeProvider';
 export { useMode } from './useMode';
 export type { Mode, ModeContextValue } from './ModeProvider';
+export { LiveStrip } from './LiveStrip';
+export { LiveStripCard } from './LiveStripCard';
+export { MatchToast } from './MatchToast';
+export { useLiveJobs } from './useLiveJobs';
+export type { LiveJob, NewMatch } from './useLiveJobs';
