@@ -1,7 +1,7 @@
 # Quantika Demo — ROADMAP (Текущее состояние)
 
 **Последний полный аудит:** 2026-05-17 (5-поточный код-аудит) + 2026-05-19 UI audit (Playwright+Chrome MCP) + **2026-05-19 ROADMAP reality audit** (claim vs prod sweep)
-**Последнее обновление:** 2026-05-24 (утро) — qa-walker LOOP COMPLETE: 2 iter, 0 CRIT/0 HIGH open, prod stable. 14 PR за день (#405-#422) — 4-волновой план: 7 PR merged (#365-#371), 4 GH issues closed (#359 #361 #364 + #360 #362 #363), mobile UX audit findings закрыты (1 CRIT через rebuild + 4 HIGH + 3 LOW)
+**Последнее обновление:** 2026-05-24 (день) — TCE LIVE + distance populate + parse-cargo R28 + #404 src2. Match теперь возвращает реальную экономику. 18 PR за сутки (#405-#428) — 4-волновой план: 7 PR merged (#365-#371), 4 GH issues closed (#359 #361 #364 + #360 #362 #363), mobile UX audit findings закрыты (1 CRIT через rebuild + 4 HIGH + 3 LOW)
 **Текущая версия:** prod HEAD после auto-deploy LIVE (#259, systemd quantika-demo.service на outreach-vps)
 **Статус:** 🟢 Основные потоки работают; parse-vessel в активной итерации (R8 baseline после revert); pre-merge-guard LIVE
 
@@ -126,6 +126,15 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 - ✅ **W2**: #370 `fix(ux): mobile polish — H-2/H-3/H-4/H-5` — 8 touch-targets /matches на ≥44px, bulk-footer clearance BottomNav, /upgrade в /more nav, /more populated (Upgrade/Dashboard/Help/Logout). H-1 prod build-gap закрылся auto-deploy'ем W0/W1
 - ✅ **W3**: #371 `fix(cleanup): LOW mass-cleanup` closes **#360** (benchmark link 404 → http:// guard) + **#362** (SANCTIONS badge mistag → pair-analyzer primary-cause filter) + **#363** (sitemap.xml 404 → public/robots.txt + sitemap.xml) + audit LOW L-1/L-2/L-3 (RU empty-state, design tokens на /upgrade, safe-area на /more)
 - 📋 **Autonomous wave-driver**: 4 волны выполнены через cron-loop (CronCreate каждые 15м → dispatch.sh → tmux fire-and-forget → done-watcher → wake), zero-touch после первой команды. Конфликт на /more/page.tsx между W2 (nav links) и W3 (safe-area) резолвлен оркестратором inline.
+
+**Что изменилось за 2026-05-24 (день — экономика match LIVE):**
+
+- ✅ **#424 parse-cargo R28** — K-suffix + 1H/2H/EOM laycan + 6 port abbreviations + 15 synthetic scenarios. Prompt iteration с R27 baseline 91.8/93.2/91.6%.
+- ✅ **#425 #404 hydration source-2** — SourceTable + charterers/[id] toLocaleDateString без timeZone давали SSR mismatch. Pin UTC + 2 regression tests.
+- ✅ **#427 distance_nm populate gap** — UNLOCODE fast path в normalizePortName. distance возвращал NULL для 95% matches (UNLOCODE CNSHA не матчился к 'Shanghai'). 803/803 green, cold-QA 0 CRIT/HIGH/MED.
+- ✅ **#428 TCE feature** — estimateFreightRate (baseline по cargo class × distance factor) + migration 036 + PATCH manual override + UI input. Match Economics теперь non-NULL TCE для большинства matches. 13 файлов, cold-QA PASS (2 MED follow-ups: storedFreightRate badge refresh).
+- 📋 **Бизнес-итог:** брокер открывает /matches → видит cargo/ports/laycan/dwt/distance/TCE сразу + может править ставку в Economics tab → пересчёт. Реальная economic snapshot, не demo placeholder.
+- 📋 **TCE follow-ups (LOW):** (a) Baltic live rates puller вместо statics; (b) UX badge refresh after manual override.
 
 **Что изменилось за 2026-05-24 (утро — qa-loop iter 1 + iter 2 COMPLETE):**
 
