@@ -1,0 +1,103 @@
+{
+  "id": "etms-parse-cargo-099",
+  "source_email_id": "synth-r28-004",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: coal Murmansk/Rotterdam 1H-March",
+    "from": "synth@test.quantika.app",
+    "date": "2026-02-15T11:00:00.000Z",
+    "body": "Dear All,\n\nPls offer for:\n\n35,000 mt bulk coal\nLoad: Murmansk\nDisch: Rotterdam\nLaycan: 1H-March 2026\n8000/8000 SHINC\n3% ttl\n\nBrgds"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Murmansk",
+          "confidence": "confirmed",
+          "source_text": "Load: Murmansk"
+        },
+        "origin_country": {
+          "value": "Russia",
+          "confidence": "interpreted",
+          "source_text": "Load: Murmansk"
+        },
+        "destination_port": {
+          "value": "Rotterdam",
+          "confidence": "confirmed",
+          "source_text": "Disch: Rotterdam"
+        },
+        "destination_country": {
+          "value": "Netherlands",
+          "confidence": "interpreted",
+          "source_text": "Disch: Rotterdam"
+        },
+        "cargo_description": {
+          "value": "Bulk coal",
+          "confidence": "confirmed",
+          "source_text": "35,000 mt bulk coal"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 35000,
+          "confidence": "confirmed",
+          "source_text": "35,000 mt bulk coal"
+        },
+        "weight_mt_min": null,
+        "weight_mt_max": null,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "bulk coal"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": null,
+        "laycan": {
+          "value": "First half of March 2026",
+          "confidence": "interpreted",
+          "source_text": "1H-March 2026"
+        },
+        "loading_rate": {
+          "value": 8000,
+          "confidence": "confirmed",
+          "source_text": "8000/8000 SHINC"
+        },
+        "loading_terms": {
+          "value": "SHINC",
+          "confidence": "confirmed",
+          "source_text": "8000/8000 SHINC"
+        },
+        "discharge_rate": {
+          "value": 8000,
+          "confidence": "confirmed",
+          "source_text": "8000/8000 SHINC"
+        },
+        "discharge_terms": {
+          "value": "SHINC",
+          "confidence": "confirmed",
+          "source_text": "8000/8000 SHINC"
+        },
+        "commission_percent": {
+          "value": 3.0,
+          "confidence": "confirmed",
+          "source_text": "3% ttl"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "3% ttl"
+        },
+        "special_requirements": null,
+        "stowage_factor": null,
+        "missing_info": [
+          "Coal specification (type, calorific value, sulphur content) not stated",
+          "Demurrage and despatch rates not stated",
+          "Exact laycan dates not specified — '1H-March 2026' interpreted as first half of March 2026 (1–15 March)"
+        ]
+      }
+    ]
+  }
+}

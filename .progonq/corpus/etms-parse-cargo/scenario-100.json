@@ -1,0 +1,114 @@
+{
+  "id": "etms-parse-cargo-100",
+  "source_email_id": "synth-r28-005",
+  "category": "hedged_language",
+  "input": {
+    "subject": "FW: wheat Pivdennyi/Karachi 2H April 2026",
+    "from": "synth@test.quantika.app",
+    "date": "2026-03-20T09:00:00.000Z",
+    "body": "Pls propose for:\n\n28,000 mt 10% moloo bulk wheat sf 47-49 wog\nPivdennyi / Karachi\n2H April 2026\n10000/8000 SHINC\n2.5% ttl\n"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Pivdennyi (Yuzhne)",
+          "confidence": "confirmed",
+          "source_text": "Pivdennyi / Karachi"
+        },
+        "origin_country": {
+          "value": "Ukraine",
+          "confidence": "interpreted",
+          "source_text": "Pivdennyi / Karachi"
+        },
+        "destination_port": {
+          "value": "Karachi",
+          "confidence": "confirmed",
+          "source_text": "Pivdennyi / Karachi"
+        },
+        "destination_country": {
+          "value": "Pakistan",
+          "confidence": "interpreted",
+          "source_text": "Pivdennyi / Karachi"
+        },
+        "cargo_description": {
+          "value": "Bulk wheat, stowage factor 47–49, without guarantee",
+          "confidence": "interpreted",
+          "source_text": "28,000 mt 10% moloo bulk wheat sf 47-49 wog"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 28000,
+          "confidence": "confirmed",
+          "source_text": "28,000 mt 10% moloo bulk wheat sf 47-49 wog"
+        },
+        "weight_mt_min": {
+          "value": 25200,
+          "confidence": "interpreted",
+          "source_text": "28,000 mt 10% moloo bulk wheat sf 47-49 wog"
+        },
+        "weight_mt_max": {
+          "value": 30800,
+          "confidence": "interpreted",
+          "source_text": "28,000 mt 10% moloo bulk wheat sf 47-49 wog"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "bulk wheat"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": null,
+        "laycan": {
+          "value": "Second half of April 2026",
+          "confidence": "interpreted",
+          "source_text": "2H April 2026"
+        },
+        "loading_rate": {
+          "value": 10000,
+          "confidence": "confirmed",
+          "source_text": "10000/8000 SHINC"
+        },
+        "loading_terms": {
+          "value": "SHINC",
+          "confidence": "confirmed",
+          "source_text": "10000/8000 SHINC"
+        },
+        "discharge_rate": {
+          "value": 8000,
+          "confidence": "confirmed",
+          "source_text": "10000/8000 SHINC"
+        },
+        "discharge_terms": {
+          "value": "SHINC",
+          "confidence": "confirmed",
+          "source_text": "10000/8000 SHINC"
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl"
+        },
+        "special_requirements": null,
+        "stowage_factor": {
+          "value": "abt 47–49 ft³/MT WOG",
+          "confidence": "confirmed",
+          "source_text": "sf 47-49 wog"
+        },
+        "missing_info": [
+          "Exact laycan dates not specified — '2H April 2026' interpreted as second half of April 2026 (16–30 April)",
+          "Demurrage and despatch rates not stated"
+        ]
+      }
+    ]
+  }
+}

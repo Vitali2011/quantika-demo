@@ -1,0 +1,102 @@
+{
+  "id": "etms-parse-cargo-101",
+  "source_email_id": "synth-r28-006",
+  "category": "single_cargo",
+  "input": {
+    "subject": "FW: salt NOVOR / EMED",
+    "from": "synth@test.quantika.app",
+    "date": "2026-05-12T08:30:00.000Z",
+    "body": "Pls offer vsl for:\n\n10,000 mt bulk salt\nNOVOR / EMED\nlaycan 15/20 June 2026\n5000/3000 SHINC\n2.5% ttl\n"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Novorossiysk",
+          "confidence": "confirmed",
+          "source_text": "NOVOR"
+        },
+        "origin_country": {
+          "value": "Russia",
+          "confidence": "interpreted",
+          "source_text": "NOVOR"
+        },
+        "destination_port": {
+          "value": "Eastern Mediterranean port (unspecified)",
+          "confidence": "interpreted",
+          "source_text": "EMED"
+        },
+        "destination_country": null,
+        "cargo_description": {
+          "value": "Bulk salt",
+          "confidence": "confirmed",
+          "source_text": "10,000 mt bulk salt"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 10000,
+          "confidence": "confirmed",
+          "source_text": "10,000 mt bulk salt"
+        },
+        "weight_mt_min": null,
+        "weight_mt_max": null,
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "bulk salt"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "15/20 June 2026",
+          "confidence": "confirmed",
+          "source_text": "laycan 15/20 June 2026"
+        },
+        "laycan": {
+          "value": "15/20 June 2026",
+          "confidence": "confirmed",
+          "source_text": "laycan 15/20 June 2026"
+        },
+        "loading_rate": {
+          "value": 5000,
+          "confidence": "confirmed",
+          "source_text": "5000/3000 SHINC"
+        },
+        "loading_terms": {
+          "value": "SHINC",
+          "confidence": "confirmed",
+          "source_text": "5000/3000 SHINC"
+        },
+        "discharge_rate": {
+          "value": 3000,
+          "confidence": "confirmed",
+          "source_text": "5000/3000 SHINC"
+        },
+        "discharge_terms": {
+          "value": "SHINC",
+          "confidence": "confirmed",
+          "source_text": "5000/3000 SHINC"
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl"
+        },
+        "special_requirements": null,
+        "stowage_factor": null,
+        "missing_info": [
+          "Specific Eastern Mediterranean discharge port not nominated",
+          "Demurrage and despatch rates not stated"
+        ]
+      }
+    ]
+  }
+}

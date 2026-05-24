@@ -1,0 +1,102 @@
+{
+  "id": "etms-parse-cargo-103",
+  "source_email_id": "synth-r28-008",
+  "category": "single_cargo",
+  "input": {
+    "subject": "FW: corn PIVD / Haifa",
+    "from": "synth@test.quantika.app",
+    "date": "2026-05-15T08:00:00.000Z",
+    "body": "Pls propose vsl for below:\n\n5,000-6,000 mt bulk corn sf 51 wog\nPIVD / Haifa\n15-20 June 2026\n2.5% ttl\n\nBrgds"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Pivdennyi (Yuzhne)",
+          "confidence": "confirmed",
+          "source_text": "PIVD"
+        },
+        "origin_country": {
+          "value": "Ukraine",
+          "confidence": "interpreted",
+          "source_text": "PIVD"
+        },
+        "destination_port": {
+          "value": "Haifa",
+          "confidence": "confirmed",
+          "source_text": "PIVD / Haifa"
+        },
+        "destination_country": {
+          "value": "Israel",
+          "confidence": "interpreted",
+          "source_text": "PIVD / Haifa"
+        },
+        "cargo_description": {
+          "value": "Bulk corn, stowage factor 51, without guarantee",
+          "confidence": "interpreted",
+          "source_text": "5,000-6,000 mt bulk corn sf 51 wog"
+        },
+        "cargo_origin_country": null,
+        "weight_mt": {
+          "value": 6000,
+          "confidence": "interpreted",
+          "source_text": "5,000-6,000 mt bulk corn sf 51 wog"
+        },
+        "weight_mt_min": {
+          "value": 5000,
+          "confidence": "confirmed",
+          "source_text": "5,000-6,000 mt bulk corn sf 51 wog"
+        },
+        "weight_mt_max": {
+          "value": 6000,
+          "confidence": "confirmed",
+          "source_text": "5,000-6,000 mt bulk corn sf 51 wog"
+        },
+        "volume_cbm": null,
+        "dimensions": null,
+        "cargo_type": {
+          "value": "BULK",
+          "confidence": "confirmed",
+          "source_text": "bulk corn"
+        },
+        "container_type": null,
+        "quantity": null,
+        "incoterms": null,
+        "preferred_dates": {
+          "value": "15-20 June 2026",
+          "confidence": "confirmed",
+          "source_text": "15-20 June 2026"
+        },
+        "laycan": {
+          "value": "15/20 June 2026",
+          "confidence": "confirmed",
+          "source_text": "15-20 June 2026"
+        },
+        "loading_rate": null,
+        "loading_terms": null,
+        "discharge_rate": null,
+        "discharge_terms": null,
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl"
+        },
+        "commission_terms": {
+          "value": "TTL",
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl"
+        },
+        "special_requirements": null,
+        "stowage_factor": {
+          "value": "51 ft³/MT WOG",
+          "confidence": "confirmed",
+          "source_text": "sf 51 wog"
+        },
+        "missing_info": [
+          "Loading and discharge terms (FIO/CQD/SHINC etc.) not stated",
+          "Demurrage and despatch rates not stated"
+        ]
+      }
+    ]
+  }
+}

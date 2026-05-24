@@ -32,6 +32,14 @@ PORT OPERATIONS:
 - CONT / Continent = European Continent (ARA range)
 - BLTC / BST = Baltic
 
+PORT NAME ABBREVIATIONS (expand to canonical port name in origin_port / destination_port):
+- NOVOR / NOVOROS / NOVOROSS = Novorossiysk (Russia, Black Sea)
+- ISK = Iskenderun (Turkey, Eastern Mediterranean)
+- PIVD / YUZH / YUZHNE = Pivdennyi (Yuzhne) (Ukraine, Black Sea); also written as "Pivdennyi (Yuzhne)" or just "Yuzhne"
+- BATS / BATM = Batumi (Georgia, Black Sea)
+- ILYCH / ILL = Chornomorsk (Ukraine, Black Sea; former name Ilichevsk)
+- SOUTH UKRAINE / S.UKR = South Ukraine port (unspecified)
+
 CARGO ABBREVIATIONS (always expand in cargo_description):
 - HRC = Hot Rolled Coils
 - HRCPO = Hot Rolled Coils Pickled & Oiled
@@ -231,6 +239,10 @@ Allowed extractions:
 - Literal "Spot" / "Spot-onward" → laycan = "Spot", confidence='interpreted'.
 - Literal "spot/vsls dates" (or equivalent substring) → laycan = "Spot — vessel's dates", confidence='interpreted'.
 - Literal "PPT" or "Prompt" → laycan = "Prompt", confidence='interpreted'.
+- "1H [Month]" / "1H-[Month]" (first half) → laycan = "First half of [Month] YYYY", confidence='interpreted'. Example: "1H-March 2026" → "First half of March 2026".
+- "2H [Month]" / "2H-[Month]" (second half) → laycan = "Second half of [Month] YYYY", confidence='interpreted'. Example: "2H April 2026" → "Second half of April 2026".
+- "EOM" / "eom" (end of month) without month name → laycan = "End of [Month] YYYY" where Month is derived from email date, confidence='interpreted'. Example: email date April 2026, "EOM" → "End of April 2026".
+- "eom-[month]" / "EOM [Month]" (end of specific month) → laycan = "End [Month] YYYY", confidence='interpreted'. Example: "eom-jan" → "End January [YYYY]"; "eom-jan / eom-feb" → "End January / End February [YYYY]".
 
 If none of the above apply: laycan = null. Do NOT guess "Spot" from
 contextual hints ("asap", "urgent", "vessel ready", absence of any window).
@@ -350,7 +362,8 @@ Extract per inquiry item:
 - cargo_description: full description of goods (see CARGO DESCRIPTION RULES — always expand abbreviations)
 - cargo_origin_country: the COUNTRY OF ORIGIN of the cargo itself — NOT the load port country. This is relevant when the email mentions the cargo's provenance separately from the load port (e.g. "Indonesian origin thermal coal loaded at Dammam" → cargo_origin_country = "Indonesia", while origin_country = "Saudi Arabia"). Null if not stated. Source: phrases like "[Country] origin", "from [Country]", "[Country]-produced", "[Country] coal/grain/etc."
 - weight_mt: number (metric tons).
-  RANGE RULE: If cargo weight is given as an explicit range (e.g. "4000/4800 MT", "5000-5500 MT"), return the UPPER BOUND as weight_mt (confidence='interpreted'). Also populate weight_mt_min and weight_mt_max.
+  K-SUFFIX RULE: "k" or "K" after a number means ×1000 metric tons. "50k mt" = 50,000 MT; "40-50k mt" = range of 40,000–50,000 MT; "abt 5-8k mt" = approximately 5,000–8,000 MT. Apply this conversion before all other rules.
+  RANGE RULE: If cargo weight is given as an explicit range (e.g. "4000/4800 MT", "5000-5500 MT", "40-50k mt"), return the UPPER BOUND as weight_mt (confidence='interpreted'). Also populate weight_mt_min and weight_mt_max.
   MOLOO RULE: MOLOO (More or Less Owner's Option) is a CONTRACT TOLERANCE clause — NOT a weight range. "28,000 mts (10% MOLOO)" means the nominal quantity is 28,000 mts and the owner may load ±10% at their option. Set weight_mt = 28000 (the nominal stated value). Set weight_mt_min = 25200 and weight_mt_max = 30800 to record the tolerance bounds. Do NOT set weight_mt to the MOLOO maximum (30800). "Abt 28,000 mts (10% MOLOO)" → weight_mt=28000 with confidence='interpreted' (due to "abt"), weight_mt_min=25200, weight_mt_max=30800.
   MOLCHOPT RULE: Same as MOLOO but charterer controls the tolerance. "2,720mts 2PCT MOLCHOPT" → weight_mt=2720, weight_mt_min=2666 (2720×0.98), weight_mt_max=2774 (2720×1.02).
   SINGLE VALUE: If a single definite number is given with no hedge, weight_mt = weight_mt_min = weight_mt_max = that number, confidence='confirmed'.
