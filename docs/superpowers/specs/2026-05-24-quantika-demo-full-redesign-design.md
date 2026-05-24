@@ -197,7 +197,51 @@ URL query ?mode=X overrides preferred_mode for current view
 
 **Итого:** ~30 рабочих дней (~4-6 нед с переключениями), полностью bg-параллелится R2/R3 и R4/R5.
 
-**Этот spec покрывает только R1 (Design-system foundation)** — это первый sub-project. R2-R6 получают отдельные specs после R1.
+**Этот spec покрывает R1 + per-screen specifications для R5** (см. §5a ниже). R2/R3/R4/R6 получают отдельные specs после R1 merged.
+
+---
+
+## 5a. Per-screen specifications (вход в R5)
+
+Дополнительный deep brainstorm 2026-05-24 (10 экранов, выбор A/B/C для каждого). Эти решения фиксируются ЗДЕСЬ чтобы R5 (per-section polish) не пересматривал layout-вопросы — только применял design-system к уже выбранному layout'у.
+
+| # | Экран | Layout | Ключевые детали |
+|---|---|---|---|
+| 1 | **Dashboard** `/` | **A Agenda-first + KPI-полоска из B сверху** | «Что мне сегодня сделать» — задачи + matches + inbox. Сверху ленточка 4 KPI (BDI / Open matches / Active cargoes / HSS rate). |
+| 2 | **Matches** `/matches` | **B Table-first + Cards/Table toggle** | Default на desktop = Table (~12 строк), на mobile = Cards. Toggle в filter-bar. Поверх — LiveStrip (см. §3.5). |
+| 3 | **Match detail** `/match/[id]` | **B Split + sticky AI side-panel** | Главное слева (Vessel/Cargo/Map), справа — AI summary + Quote/Counter/Decline + контрагент-инфа. На mobile → bottom-sheet. |
+| 4 | **Cargo + Vessels** `/cargo`,`/vessels` | **B Table + AI-add bar + side-modal** | Один паттерн на обе сущности. Сверху AI-add bar («вставь email → распарсилось»). Click row → side panel detail. |
+| 5 | **Charterers** `/charterers` | **A Table** (как Cargo/Vessels) + **колонка Last-snippet** + **HOT/WARM/COLD coloring** | Консистентно с другими CRUD. Снимок последнего email + цвет по recency. |
+| 6 | **Market** `/market` | **A Multi-section digest** (KPI tiles + Routes + Fixtures + Knowledge) + **click → B drill-down** | Default = digest. Click по KPI/маршруту → focused chart + history. |
+| 7 | **Recap** `/recap` | **B Form-first + AI assist** + **Sources panel из A** | Форма с подсветкой missing-полей. AI заполняет что может, panel справа показывает sources («email Boris 21 May → freight»). Кнопка «Generate full text» → email/PDF. |
+| 8 | **Email inbox** `/email` | **B Stream of action-cards** + **📄 Original кнопка** | Каждое письмо = карточка с parsed-полями и actions (Accept / Edit / Reject). Low-confidence (<80%) подсвечены amber. Mobile = swipe-style. |
+| 9 | **Onboarding** flow | **B Pre-loaded demo + persistent banner** + **mode auto-detect** | Юзер сразу видит работающий продукт с DEMO-данными. Banner «Connect Gmail (1 OAuth)». Mode (charterer/owner) auto-detect по первому реальному email'у. |
+| 10 | **Upgrade / billing** `/upgrade` | **B Usage-aware utilitarian внутри продукта** + **A Classic 3-tier как страница «See all plans»** | В nav кликнул Upgrade → видит current plan + usage bars + contextual upgrade prompt. Лендинг A — ссылка для сравнения. |
+
+### Применение паттернов на остальные ~15 страниц (без отдельного brainstorm)
+
+Эти экраны получают design-system + один из закреплённых паттернов:
+
+| Экран | Паттерн |
+|---|---|
+| Laytime calculator (`/laytime`) | Form-first + AI assist (как Recap) — поля Time, AI считает; sources panel показывает CP-клаузы |
+| PSC (`/psc`) | Table-first как Cargo/Vessels (port × inspection findings) |
+| Commission (`/commission`) | Table + side-modal (как Cargo) |
+| Clauses (`/clauses`) | Table + side-modal с rich-text edit |
+| Request (`/request`) | Form-first (как Recap), AI suggests на основе match |
+| Processing (`/processing`) | LiveStrip-like full-page (variant главного паттерна) |
+| Summary (`/summary`) | Read-only digest (как Market section но узкий) |
+| More menu | Cмpлый список ссылок в drawer-стиле |
+| Login (`/login`) | Standard auth screen — token из design-system, layout default |
+| Vessel detail (`/vessel/[id]`) | Split + AI side-panel (как Match detail но read-only stats) |
+| Fixture (`/fixture`) | Read-only Recap view (no edit) |
+| Admin/* | Не трогаем в R5 (внутренние страницы, низкий priority) |
+
+### Связь с R-структурой
+
+- **R1** (текущий) реализует design-system, на котором всё это строится.
+- **R5** (per-section polish) применяет таблицу §5a — `pageSpec → layout pattern → design-system primitives`. Никаких новых layout-решений в R5.
+- При imp R5 разбивается на ~5 параллельных subagent'ов: по 2-3 экрана на каждого, паттерн уже фиксирован.
 
 ---
 
