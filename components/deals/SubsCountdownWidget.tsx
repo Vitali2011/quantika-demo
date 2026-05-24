@@ -33,9 +33,12 @@ function SubsCountdownInner({
   const [remaining, setRemaining] = useState<number | null>(null);
 
   useEffect(() => {
-    setRemaining(computeRemaining(subsDeadline));
-    const id = setInterval(() => setRemaining(computeRemaining(subsDeadline)), 60_000);
-    return () => clearInterval(id);
+    const update = () => setRemaining(computeRemaining(subsDeadline));
+    // Deferred via setTimeout to avoid synchronous setState in effect (ESLint react-hooks/no-direct-set-state-in-use-effect).
+    // null initial state preserves SSR/hydration safety (#408).
+    const tid = setTimeout(update, 0);
+    const id = setInterval(update, 60_000);
+    return () => { clearTimeout(tid); clearInterval(id); };
   }, [subsDeadline]);
 
   if (remaining === null) {
