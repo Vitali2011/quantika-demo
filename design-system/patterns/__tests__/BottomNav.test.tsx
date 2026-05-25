@@ -17,9 +17,9 @@ jest.mock('next/link', () => {
 
 // lucide-react icon mocks to avoid svg rendering issues
 jest.mock('lucide-react', () => ({
-  Home: () => <svg data-testid="icon-home" />,
   Sparkles: () => <svg data-testid="icon-sparkles" />,
   Box: () => <svg data-testid="icon-box" />,
+  Zap: () => <svg data-testid="icon-zap" />,
   MoreHorizontal: () => <svg data-testid="icon-more" />,
   LogOut: () => <svg data-testid="icon-logout" />,
 }));
@@ -30,12 +30,12 @@ describe('BottomNav', () => {
     global.fetch = jest.fn().mockResolvedValue({ ok: true }) as typeof global.fetch;
   });
 
-  it('renders 4 nav links with labels', () => {
+  it('renders nav with Matches, mode-primary, AI, More', () => {
     render(<ModeProvider initial="charterer"><BottomNav /></ModeProvider>);
-    expect(screen.getByRole('link', { name: /dashboard/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /matches/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /cargo/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /more/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /ai command palette/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /^more$/i })).toBeInTheDocument();
   });
 
   it('charterer mode shows Cargo link', () => {
@@ -47,5 +47,14 @@ describe('BottomNav', () => {
     render(<ModeProvider initial="owner"><BottomNav /></ModeProvider>);
     expect(screen.getByRole('link', { name: /vessels/i })).toHaveAttribute('href', '/vessels');
     expect(screen.queryByRole('link', { name: /cargo/i })).not.toBeInTheDocument();
+  });
+
+  it('AI button dispatches open-command-palette event', () => {
+    const listener = jest.fn();
+    window.addEventListener('open-command-palette', listener);
+    render(<ModeProvider initial="charterer"><BottomNav /></ModeProvider>);
+    screen.getByRole('button', { name: /ai command palette/i }).click();
+    expect(listener).toHaveBeenCalled();
+    window.removeEventListener('open-command-palette', listener);
   });
 });
