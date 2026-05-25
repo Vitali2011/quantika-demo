@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useMode } from './useMode';
 import { ModeSwitcher } from './ModeSwitcher';
 import { DarkToggle } from './DarkToggle';
+import { Bell } from 'lucide-react';
 import { cn } from '@/design-system/primitives/_utils';
 
 const MORE_ITEMS = [
@@ -36,6 +37,13 @@ export function TopNav() {
         <MoreDropdown />
       </nav>
       <div className="ml-auto shrink-0 flex items-center gap-2">
+        <button
+          type="button"
+          aria-label="Notifications"
+          className="inline-flex items-center justify-center w-9 h-9 rounded-ds-md text-ds-text-muted hover:text-ds-text hover:bg-ds-surface-muted transition-colors duration-ds-fast"
+        >
+          <Bell className="h-5 w-5" aria-hidden="true" />
+        </button>
         <DarkToggle />
         <ModeSwitcher />
       </div>
