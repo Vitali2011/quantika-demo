@@ -10,6 +10,7 @@ import { MatchToast } from '@/design-system/patterns/MatchToast';
 import { useLiveJobs } from '@/design-system/patterns/useLiveJobs';
 import { useMode } from '@/design-system/patterns/useMode';
 import { filterMatchesByMode } from '@/lib/matching/mode-filter';
+import { useToast } from '@/components/ui/toast';
 
 interface Props {
   initialMatches: StoredMatch[];
@@ -72,6 +73,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
   const searchParams = useSearchParams();
   const router = useRouter();
   const { isOwner } = useMode();
+  const toast = useToast();
 
   // Live SSE state (additive — does not touch cached-list flow)
   const { jobs, latestMatch, dismissMatch } = useLiveJobs();
@@ -182,6 +184,11 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
     if (res.ok) {
       const updated: StoredMatch = await res.json();
       setMatches((prev) => prev.map((m) => (m.id === id ? updated : m)));
+      if (status === 'saved') toast.success('Match saved');
+      else if (status === 'dismissed') toast.info('Match dismissed');
+      else if (status === 'archived') toast.info('Match archived');
+    } else {
+      toast.error('Action failed — please try again');
     }
   }
 
