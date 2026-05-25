@@ -1,4 +1,6 @@
 export { AppShell } from './AppShell';
+export { ThemeProvider, useTheme } from './ThemeProvider';
+export { DarkToggle } from './DarkToggle';
 export { ToastProvider, useToast, ToastContainer } from '@/components/ui/toast';
 export { TopNav } from './TopNav';
 export { BottomNav } from './BottomNav';

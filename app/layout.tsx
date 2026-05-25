@@ -13,6 +13,9 @@ import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
+// Inline script runs before React hydration to prevent flash on dark-mode first paint.
+const THEME_SCRIPT = `(function(){try{var c=document.cookie.match(/quantika_theme=(dark|light)/);var t=c?c[1]:(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');if(t==='dark'){document.documentElement.setAttribute('data-theme','dark');document.documentElement.classList.add('dark')}}catch(e){}})()`;
+
 export const metadata: Metadata = {
   title: 'Quantika Demo — AI for Freight Email',
   description: 'See how AI handles your freight email in 2 minutes',
@@ -96,7 +99,10 @@ export default async function RootLayout({
   // mixed-locale demo scenarios — see stab/rtl-per-content.
   if (!isAuthenticated) {
     return (
-      <html lang="en" dir="ltr">
+      <html lang="en" dir="ltr" suppressHydrationWarning>
+        <head>
+          <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        </head>
         <body className={inter.className}>
           {children}
         </body>
@@ -122,7 +128,10 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="en" dir="ltr">
+    <html lang="en" dir="ltr" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className={inter.className}>
         <Suspense fallback={null}>
           <TrialBannerWrapper />
