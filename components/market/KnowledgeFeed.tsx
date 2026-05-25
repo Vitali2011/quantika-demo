@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 
 interface KnowledgeRow {
   icon: string;
@@ -21,15 +22,15 @@ const ICON_CLS = {
 
 export function KnowledgeFeed() {
   return (
-    <section className="bg-white rounded-2xl border border-slate-200 p-6">
+    <section id="knowledge" className="bg-white rounded-2xl border border-slate-200 p-6">
       <div className="flex items-center justify-between pb-[18px] mb-1.5 border-b border-dashed border-slate-200">
         <div className="font-mono text-[11px] tracking-[0.14em] uppercase text-slate-500 flex items-center gap-2">
           <span className="text-sm">📚</span>
           Knowledge feed
         </div>
-        <span className="font-mono text-xs text-slate-500">
+        <Link href="/admin/knowledge" className="font-mono text-xs text-slate-500 hover:text-ds-accent transition-colors">
           library <span className="ml-1">→</span>
-        </span>
+        </Link>
       </div>
 
       {ARTICLES.map((row, i) => (

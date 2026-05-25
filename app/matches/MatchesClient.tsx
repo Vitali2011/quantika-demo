@@ -741,7 +741,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
           /* ===== TABLE VIEW ===== */
           <section className="bg-ds-surface border border-ds-border rounded-[14px] overflow-hidden" aria-label="Matches table">
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-sm" style={{ tableLayout: 'fixed', minWidth: '700px' }}>
+              <table className="w-full border-collapse text-sm" style={{ tableLayout: 'fixed', minWidth: '970px' }}>
                 <colgroup>
                   <col style={{ width: '96px' }} />
                   <col style={{ width: '178px' }} />

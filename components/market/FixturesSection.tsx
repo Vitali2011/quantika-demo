@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 
 interface FixtureRow {
   vessel: string;
@@ -19,16 +20,16 @@ const FIXTURES: FixtureRow[] = [
 
 export function FixturesSection() {
   return (
-    <section className="bg-white rounded-2xl border border-slate-200 p-6">
+    <section id="fixtures" className="bg-white rounded-2xl border border-slate-200 p-6">
       <div className="flex items-center justify-between pb-[18px] mb-1.5 border-b border-dashed border-slate-200">
         <div className="font-mono text-[11px] tracking-[0.14em] uppercase text-slate-500 flex items-center gap-2">
           <span className="text-sm">🔥</span>
           Recent fixtures{' '}
           <span className="normal-case tracking-normal font-normal text-slate-400">(last 24h)</span>
         </div>
-        <span className="font-mono text-xs text-slate-500">
+        <Link href="/market#fixtures" className="font-mono text-xs text-slate-500 hover:text-ds-accent transition-colors">
           fixture log <span className="ml-1">→</span>
-        </span>
+        </Link>
       </div>
 
       {FIXTURES.map((row, i) => (
