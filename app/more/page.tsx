@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { DarkToggle } from '@/design-system/patterns';
 
 export const metadata: Metadata = {
   title: 'More — Quantika',
@@ -34,12 +33,6 @@ export default function MorePage() {
                 Dashboard
                 <span className="text-ds-text-muted text-xs">→</span>
               </Link>
-            </li>
-            <li>
-              <span className="flex items-center justify-between w-full rounded-ds-md px-4 py-3 text-sm font-medium text-ds-text min-h-[44px]">
-                Appearance
-                <DarkToggle />
-              </span>
             </li>
             <li>
               <span className="flex items-center justify-between w-full rounded-ds-md px-4 py-3 text-sm font-medium text-ds-text-muted min-h-[44px]">

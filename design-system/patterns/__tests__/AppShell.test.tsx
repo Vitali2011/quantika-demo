@@ -27,8 +27,6 @@ jest.mock('lucide-react', () => ({
   Box: () => <svg data-testid="icon-box" />,
   MoreHorizontal: () => <svg data-testid="icon-more" />,
   LogOut: () => <svg data-testid="icon-logout" />,
-  Sun: () => <svg data-testid="icon-sun" />,
-  Moon: () => <svg data-testid="icon-moon" />,
 }));
 
 describe('AppShell', () => {

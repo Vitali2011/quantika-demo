@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useMode } from './useMode';
 import { ModeSwitcher } from './ModeSwitcher';
-import { DarkToggle } from './DarkToggle';
 import { cn } from '@/design-system/primitives/_utils';
 
 const MORE_ITEMS = [
@@ -35,8 +34,7 @@ export function TopNav() {
         <NavLink href="/market">Market</NavLink>
         <MoreDropdown />
       </nav>
-      <div className="ml-auto shrink-0 flex items-center gap-2">
-        <DarkToggle />
+      <div className="ml-auto shrink-0">
         <ModeSwitcher />
       </div>
     </header>
