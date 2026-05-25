@@ -3,9 +3,10 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
-import { Card, Button } from '@/design-system/primitives';
+import { Card } from '@/design-system/primitives';
 import { formatDate, decodeHtmlEntities } from '@/lib/utils';
 import type { EmailCategory } from '@/lib/types';
+import { EmailActionButtons } from '@/components/email/EmailActionButtons';
 
 export const metadata: Metadata = {
   title: 'Email Inbox — Quantika',
@@ -136,15 +137,7 @@ export default async function EmailInboxPage() {
 
                 {/* Action buttons */}
                 <div className="flex items-center gap-2 pt-1">
-                  <Button variant="primary" size="sm" disabled>
-                    Accept
-                  </Button>
-                  <Button variant="secondary" size="sm" disabled>
-                    Edit
-                  </Button>
-                  <Button variant="ghost" size="sm" disabled className="text-ds-danger hover:bg-red-50">
-                    Reject
-                  </Button>
+                  <EmailActionButtons emailId={email.id} />
                   <div className="flex-1" />
                   <Link
                     href={`/email/${email.id}`}
