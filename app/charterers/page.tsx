@@ -8,7 +8,7 @@
  * - Modal submit → POST /api/charterers → refresh list
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CharterersTable, type Charterer } from '@/components/charterers/CharterersTable';
 import { NewChartererModal } from '@/components/charterers/NewChartererModal';
 
@@ -19,6 +19,16 @@ export default function CharterersPage() {
   const [charterers, setCharterers] = useState<Charterer[]>([]);
   const [loading, setLoading] = useState(isFeatureEnabled);
   const [showForm, setShowForm] = useState(false);
+  const [filterQuery, setFilterQuery] = useState('');
+  const [sortOrder, setSortOrder] = useState<'recent' | 'alpha'>('recent');
+
+  const displayed = useMemo(() => {
+    const filtered = filterQuery
+      ? charterers.filter(c => c.name.toLowerCase().includes(filterQuery.toLowerCase()))
+      : charterers;
+    if (sortOrder === 'alpha') return [...filtered].sort((a, b) => a.name.localeCompare(b.name));
+    return filtered;
+  }, [charterers, filterQuery, sortOrder]);
 
   useEffect(() => {
     if (!isFeatureEnabled) return;
@@ -59,7 +69,7 @@ export default function CharterersPage() {
             </h1>
             {charterers.length > 0 && (
               <span style={{ fontSize: 13, color: 'var(--ds-text-muted)', fontFamily: '"Geist Mono", ui-monospace, monospace' }}>
-                {charterers.length} contacts
+                {filterQuery ? `${displayed.length} of ${charterers.length}` : charterers.length} contacts
               </span>
             )}
           </div>
@@ -79,6 +89,46 @@ export default function CharterersPage() {
             Add Charterer
           </button>
         </header>
+
+        {/* FilterBar */}
+        <div style={{ display: 'flex', gap: 10, marginBottom: 14, alignItems: 'center' }}>
+          <input
+            type="search"
+            aria-label="Search by company"
+            placeholder="Search by company…"
+            value={filterQuery}
+            onChange={(e) => setFilterQuery(e.target.value)}
+            style={{
+              flex: 1,
+              height: 36,
+              padding: '0 12px',
+              fontSize: 14,
+              border: '1px solid var(--ds-border)',
+              borderRadius: 8,
+              background: 'var(--ds-surface)',
+              color: 'var(--ds-text)',
+              outline: 'none',
+            }}
+          />
+          <select
+            aria-label="Sort order"
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value as 'recent' | 'alpha')}
+            style={{
+              height: 36,
+              padding: '0 10px',
+              fontSize: 13,
+              border: '1px solid var(--ds-border)',
+              borderRadius: 8,
+              background: 'var(--ds-surface)',
+              color: 'var(--ds-text)',
+              cursor: 'pointer',
+            }}
+          >
+            <option value="recent">Recent</option>
+            <option value="alpha">Alphabetical</option>
+          </select>
+        </div>
 
         {/* Legend */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16, fontFamily: '"Geist Mono", ui-monospace, monospace', fontSize: 11, color: 'var(--ds-text-muted)' }}>
@@ -114,7 +164,7 @@ export default function CharterersPage() {
           <p style={{ fontSize: 14, color: 'var(--ds-text-muted)', padding: '32px 0', textAlign: 'center' }}>Loading…</p>
         ) : (
           <div style={{ border: '1px solid var(--ds-border)', borderRadius: 10, background: 'var(--ds-surface)', overflow: 'hidden' }}>
-            <CharterersTable charterers={charterers} />
+            <CharterersTable charterers={displayed} />
           </div>
         )}
       </div>
