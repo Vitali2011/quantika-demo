@@ -61,7 +61,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const maxAge = config.cookieDays * 86_400;
   const isProduction = process.env.NODE_ENV === 'production';
 
-  const response = NextResponse.redirect(new URL('/', baseUrl), { status: 303 });
+  const response = NextResponse.redirect(new URL('/dashboard', baseUrl), { status: 303 });
   response.headers.set(
     'Set-Cookie',
     [
