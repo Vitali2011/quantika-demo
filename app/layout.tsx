@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Inter } from 'next/font/google';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { getTrialState, daysRemaining, isExpired } from '@/lib/trial';
 import { TrialBanner } from '@/components/onboarding/TrialBanner';
 import { getAuthConfig } from '@/lib/auth/config';
@@ -74,6 +74,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const cookieStore = await cookies();
+  const headersList = await headers();
+  const currentPath = headersList.get('x-pathname') ?? '';
   const authConfig = getAuthConfig();
 
   // Check if user is authenticated to decide whether to wrap with AppShell
@@ -97,7 +99,7 @@ export default async function RootLayout({
   // content (EmailBodyViewer derives dir from the body via detectTextDirection).
   // Browser Accept-Language used to leak ru/de/he into <html> and broke
   // mixed-locale demo scenarios — see stab/rtl-per-content.
-  if (!isAuthenticated) {
+  if (!isAuthenticated || currentPath === '/login') {
     return (
       <html lang="en" dir="ltr" suppressHydrationWarning>
         <head>

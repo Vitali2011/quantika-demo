@@ -108,8 +108,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             style={{
               width: '100%',
               padding: '0.7rem',
-              background: '#2563eb',
-              color: '#fff',
+              background: 'var(--ds-accent)',
+              color: 'var(--ds-accent-fg)',
               border: 'none',
               borderRadius: '8px',
               fontWeight: 600,
