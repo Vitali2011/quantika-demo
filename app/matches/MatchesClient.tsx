@@ -101,6 +101,16 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
 
   // CD design state
   const [density, setDensity] = useState<Density>('table');
+  const [nowUtc, setNowUtc] = useState<string>("");
+  useEffect(() => {
+    const tick = () => {
+      const d = new Date();
+      setNowUtc(`${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}`);
+    };
+    tick();
+    const id = setInterval(tick, 60000);
+    return () => clearInterval(id);
+  }, []);
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
 
   // Auto-switch to cards on mobile after mount
@@ -302,6 +312,12 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
     <>
       <LiveStrip jobs={jobs} />
       <div className="space-y-4 overflow-x-hidden">
+
+        {nowUtc && (
+          <div className="flex justify-end">
+            <span className="text-xs text-muted-foreground">AUTO-REFRESH · {nowUtc} UTC</span>
+          </div>
+        )}
 
         {/* ===== PRIMARY FILTER BAR (CD design) ===== */}
         <div className="flex items-center justify-between gap-3 flex-wrap">
