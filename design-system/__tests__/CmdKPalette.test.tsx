@@ -3,6 +3,12 @@
  */
 import '@testing-library/jest-dom';
 import { render, screen, act } from '@testing-library/react';
+
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ push: jest.fn(), replace: jest.fn(), prefetch: jest.fn() }),
+  usePathname: () => '/',
+  useSearchParams: () => new URLSearchParams(),
+}));
 import { ModeProvider } from '../patterns/ModeProvider';
 import { PaletteProvider, usePalette } from '../patterns/usePalette';
 import { CmdKPalette } from '../patterns/CmdKPalette';
