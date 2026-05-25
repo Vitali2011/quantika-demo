@@ -13,7 +13,7 @@ interface IndexData {
   source: string;
 }
 
-const KPI_TILES = [
+const BALTIC_TILES = [
   {
     key: 'bdi',
     label: 'BDI',
@@ -53,6 +53,39 @@ const KPI_TILES = [
     sparklinePath: 'M2 6 L10 7 L17 5 L24 8 L31 7 L38 10 L46 11 L54 13',
     sparklineDir: 'down' as const,
     delta: { pct: '−0.5%', pts: '−8 pts', dir: 'down' as const },
+  },
+] as const;
+
+const COMMODITY_TILES = [
+  {
+    key: 'vlsfo',
+    label: 'VLSFO',
+    subLabel: 'Rotterdam',
+    url: '/api/market/bunker-kpi?grade=VLSFO',
+    unit: 'USD/mt',
+    sparklinePath: 'M2 10 L10 9 L17 11 L24 8 L31 9 L38 7 L46 8 L54 6',
+    sparklineDir: 'up' as const,
+    delta: { pct: '+0.5%', pts: '+4 $/mt', dir: 'up' as const },
+  },
+  {
+    key: 'mgo',
+    label: 'MGO',
+    subLabel: 'Rotterdam',
+    url: '/api/market/bunker-kpi?grade=MGO',
+    unit: 'USD/mt',
+    sparklinePath: 'M2 8 L10 9 L17 7 L24 10 L31 8 L38 11 L46 9 L54 12',
+    sparklineDir: 'down' as const,
+    delta: { pct: '−0.3%', pts: '−4 $/mt', dir: 'down' as const },
+  },
+  {
+    key: 'eua',
+    label: 'EUA',
+    subLabel: 'carbon · spot',
+    url: '/api/market/eua-kpi',
+    unit: '€/tCO₂',
+    sparklinePath: 'M2 12 L10 10 L17 9 L24 11 L31 8 L38 7 L46 6 L54 4',
+    sparklineDir: 'up' as const,
+    delta: { pct: '+1.8%', pts: '+1.3 €', dir: 'up' as const },
   },
 ] as const;
 
@@ -177,22 +210,40 @@ export default function MarketPage() {
           </div>
         </header>
 
-        {/* KPI Strip — 4 Baltic index tiles */}
-        <section aria-label="Baltic indices" className="grid grid-cols-4 gap-4 mb-10">
-          {KPI_TILES.map((tile) => (
-            <MarketKpiTile
-              key={tile.key}
-              label={tile.label}
-              subLabel={tile.subLabel}
-              url={tile.url}
-              unit={tile.unit}
-              sparklinePath={tile.sparklinePath}
-              sparklineDir={tile.sparklineDir}
-              delta={tile.delta}
-              isActive={activeKpi === tile.key}
-              onClick={() => setActiveKpi(activeKpi === tile.key ? null : tile.key)}
-            />
-          ))}
+        {/* KPI Strip — Baltic indices + bunker + EUA */}
+        <section aria-label="Market KPIs" className="mb-10 space-y-3">
+          <div className="grid grid-cols-4 gap-4">
+            {BALTIC_TILES.map((tile) => (
+              <MarketKpiTile
+                key={tile.key}
+                label={tile.label}
+                subLabel={tile.subLabel}
+                url={tile.url}
+                unit={tile.unit}
+                sparklinePath={tile.sparklinePath}
+                sparklineDir={tile.sparklineDir}
+                delta={tile.delta}
+                isActive={activeKpi === tile.key}
+                onClick={() => setActiveKpi(activeKpi === tile.key ? null : tile.key)}
+              />
+            ))}
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            {COMMODITY_TILES.map((tile) => (
+              <MarketKpiTile
+                key={tile.key}
+                label={tile.label}
+                subLabel={tile.subLabel}
+                url={tile.url}
+                unit={tile.unit}
+                sparklinePath={tile.sparklinePath}
+                sparklineDir={tile.sparklineDir}
+                delta={tile.delta}
+                isActive={activeKpi === tile.key}
+                onClick={() => setActiveKpi(activeKpi === tile.key ? null : tile.key)}
+              />
+            ))}
+          </div>
         </section>
 
         {/* TODO: drill-down chart for activeKpi — future feature */}
