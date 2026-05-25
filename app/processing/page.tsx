@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { track } from '@/lib/analytics';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { PIPELINE_STEPS, STEP_GROUPS, type PipelineStep, type PipelineStepGroup } from '@/lib/pipeline';
+import { useToast } from '@/components/ui/toast';
 
 type StepStatus = 'pending' | 'active' | 'done' | 'error' | 'skipped';
 
@@ -47,8 +48,12 @@ function stepLabelClass(status: StepStatus): string {
   return 'text-ds-text-subtle';
 }
 
+const PARSE_CARGO_IDX = PIPELINE_STEPS.findIndex(s => s.endpoint === '/api/ai/parse-cargo');
+
 export default function ProcessingPage() {
   const router = useRouter();
+  const toast = useToast();
+  const parsedToastFired = useRef(false);
   const [statuses, setStatuses] = useState<StepStatus[]>(PIPELINE_STEPS.map(() => 'pending'));
   const [fatalError, setFatalError] = useState<string | null>(null);
   const [failedStep, setFailedStep] = useState<string | null>(null);
@@ -64,6 +69,17 @@ export default function ProcessingPage() {
     }, 2000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (
+      PARSE_CARGO_IDX >= 0 &&
+      statuses[PARSE_CARGO_IDX] === 'done' &&
+      !parsedToastFired.current
+    ) {
+      parsedToastFired.current = true;
+      toast.info('Emails parsed — matching vessels...');
+    }
+  }, [statuses, toast]);
 
   useEffect(() => {
     let cancelled = false;
