@@ -1,9 +1,9 @@
 # Quantika Demo — ROADMAP (Текущее состояние)
 
 **Последний полный аудит:** 2026-05-17 (5-поточный код-аудит) + 2026-05-19 UI audit (Playwright+Chrome MCP) + **2026-05-19 ROADMAP reality audit** (claim vs prod sweep)
-**Последнее обновление:** 2026-05-25 (ночь, финал) — **🎉 FULL REDESIGN R1-R6 COMPLETE**. 17 PRs merged за 24h sprint (#432-#447). Maritime Deep design-system LIVE на 22 страницах. Pixel-perfect (Claude Design user-loop) на 7 ключевых. Mode-aware charterer↔owner. LiveStrip + SSE real-time. AIBar + ⌘K palette + HelpFAB. A11y baseline 24 specs WCAG2AA. Lighthouse CI gate config ready. См. §Full Redesign ниже.
-**Текущая версия:** prod HEAD `d6182b5` (R6-final) auto-deploy LIVE на outreach-vps
-**Статус:** 🟢 Production-quality SaaS UI. Tech debt non-blocking: components/ui 40 stale imports (R5 incomplete cleanup → R6.5 follow-up), Lighthouse workflow wiring, dark-mode activation toggle.
+**Последнее обновление:** 2026-05-25 (день, wiring pass) — **🔌 POST-REDESIGN BACKEND WIRING COMPLETE**. 4 gap'а закрыты: Settings save endpoints (#449), AIBar email-paste flow (#457), Generic toast system (#458), Mode-aware content charterer↔owner (#459). Все 4 QA PASS, auto-deploy LIVE.
+**Текущая версия:** prod HEAD `5f936af` (toast system, последний merge) auto-deploy LIVE на outreach-vps
+**Статус:** 🟢 Production-quality SaaS UI + backend wiring ~90%. Открытые followup: (1) rate-limiter `/api/parser/email` (MEDIUM, non-blocking), (2) Mode M1 = UX-choice (принято), (3) R6.5 dark-mode toggle, (4) components/ui 40 stale imports.
 
 > **Живой документ.** Заменяет `ROADMAP-SESSION-PROMPT.md` (тот был разовый промпт-генератор, не state tracker).
 > Источники отчётов: `/root/orchestrator-state/audit-2026-05-17/{parsers,data,api,ui,waves}.md`
