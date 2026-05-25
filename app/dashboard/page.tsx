@@ -2,6 +2,8 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
+import { getStore } from '@/lib/session-store';
+import { listMatches } from '@/lib/matching/matches-repository';
 import { filterByCategory, getEmailCounts, groupByContact } from '@/lib/dashboard-queries';
 import { EmailCard, EmailSection, ActionPanel } from '@/components/dashboard';
 import { countAwaitingApproval } from '@/lib/auto-prequote/queue';
@@ -104,6 +106,14 @@ export default async function DashboardPage() {
     (m) => m.matchLevel === 'good' || m.matchLevel === 'possible',
   );
 
+  // Compute avgTce from DB matches (returns [] when MATCHES_ENABLED=false)
+  const db = getStore().getDatabase();
+  const dbMatches = listMatches(db, { user_id: sessionId, sortBy: 'score', sortDir: 'desc' });
+  const tceValues = dbMatches.map((m) => m.tce_usd_per_day).filter((v): v is number => v != null);
+  const avgTce = tceValues.length > 0
+    ? Math.round(tceValues.reduce((a, b) => a + b, 0) / tceValues.length)
+    : null;
+
   const priorityCards = goodMatches
     .map((match, i) => {
       const readinessGap =
@@ -165,6 +175,8 @@ export default async function DashboardPage() {
           openMatches={goodMatches.length}
           activeCargoes={cargoRows.length}
           activeVessels={vesselRows.length}
+          fixtureCount={fixtureRows.length}
+          avgTce={avgTce}
         />
 
         {/* ── 🎯 To do today ─────────────────────────────────────── */}
