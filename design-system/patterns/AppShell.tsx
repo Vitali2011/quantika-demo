@@ -6,29 +6,32 @@ import { AIBar } from './AIBar';
 import { CmdKPalette } from './CmdKPalette';
 import { HelpFAB } from './HelpFAB';
 import { PaletteProvider } from './usePalette';
+import { ThemeProvider } from './ThemeProvider';
 import { ToastProvider } from '@/components/ui/toast/toast-context';
 import { ToastContainer } from '@/components/ui/toast/toast-container';
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
-    <ToastProvider>
-      <PaletteProvider>
-        <div className="min-h-screen bg-ds-bg text-ds-text flex flex-col">
-          <a
-            href="#main-content"
-            className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-ds-accent focus:text-ds-accent-fg focus:px-3 focus:py-2 focus:rounded-ds-md focus:font-medium"
-          >
-            Skip to content
-          </a>
-          <TopNav />
-          <AIBar />
-          <main id="main-content" className="flex-1 pb-16 md:pb-0">{children}</main>
-          <BottomNav />
-          <HelpFAB />
-          <CmdKPalette />
-          <ToastContainer />
-        </div>
-      </PaletteProvider>
-    </ToastProvider>
+    <ThemeProvider>
+      <ToastProvider>
+        <PaletteProvider>
+          <div className="min-h-screen bg-ds-bg text-ds-text flex flex-col">
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-ds-accent focus:text-ds-accent-fg focus:px-3 focus:py-2 focus:rounded-ds-md focus:font-medium"
+            >
+              Skip to content
+            </a>
+            <TopNav />
+            <AIBar />
+            <main id="main-content" className="flex-1 pb-16 md:pb-0">{children}</main>
+            <BottomNav />
+            <HelpFAB />
+            <CmdKPalette />
+            <ToastContainer />
+          </div>
+        </PaletteProvider>
+      </ToastProvider>
+    </ThemeProvider>
   );
 }
