@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { Inter } from 'next/font/google';
 import { cookies } from 'next/headers';
 import { getTrialState, daysRemaining, isExpired } from '@/lib/trial';
@@ -123,7 +124,9 @@ export default async function RootLayout({
   return (
     <html lang="en" dir="ltr">
       <body className={inter.className}>
-        <TrialBannerWrapper />
+        <Suspense fallback={null}>
+          <TrialBannerWrapper />
+        </Suspense>
         <ModeProvider initial={initialMode}>
           <AppShell>{children}</AppShell>
         </ModeProvider>
