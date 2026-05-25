@@ -1,9 +1,9 @@
 # Quantika Demo — ROADMAP (Текущее состояние)
 
 **Последний полный аудит:** 2026-05-17 (5-поточный код-аудит) + 2026-05-19 UI audit (Playwright+Chrome MCP) + **2026-05-19 ROADMAP reality audit** (claim vs prod sweep)
-**Последнее обновление:** 2026-05-24 (день, финал) — **qa-walker run #6 PASSED, 0 errors**. Closing the loop: 3 hydration sources fixed (#408/#425/#430), TCE LIVE, match economy real. 19 PR за сутки (#405-#430). — 4-волновой план: 7 PR merged (#365-#371), 4 GH issues closed (#359 #361 #364 + #360 #362 #363), mobile UX audit findings закрыты (1 CRIT через rebuild + 4 HIGH + 3 LOW)
-**Текущая версия:** prod HEAD после auto-deploy LIVE (#259, systemd quantika-demo.service на outreach-vps)
-**Статус:** 🟢 Основные потоки работают; parse-vessel в активной итерации (R8 baseline после revert); pre-merge-guard LIVE
+**Последнее обновление:** 2026-05-25 (ночь, финал) — **🎉 FULL REDESIGN R1-R6 COMPLETE**. 17 PRs merged за 24h sprint (#432-#447). Maritime Deep design-system LIVE на 22 страницах. Pixel-perfect (Claude Design user-loop) на 7 ключевых. Mode-aware charterer↔owner. LiveStrip + SSE real-time. AIBar + ⌘K palette + HelpFAB. A11y baseline 24 specs WCAG2AA. Lighthouse CI gate config ready. См. §Full Redesign ниже.
+**Текущая версия:** prod HEAD `d6182b5` (R6-final) auto-deploy LIVE на outreach-vps
+**Статус:** 🟢 Production-quality SaaS UI. Tech debt non-blocking: components/ui 40 stale imports (R5 incomplete cleanup → R6.5 follow-up), Lighthouse workflow wiring, dark-mode activation toggle.
 
 > **Живой документ.** Заменяет `ROADMAP-SESSION-PROMPT.md` (тот был разовый промпт-генератор, не state tracker).
 > Источники отчётов: `/root/orchestrator-state/audit-2026-05-17/{parsers,data,api,ui,waves}.md`
