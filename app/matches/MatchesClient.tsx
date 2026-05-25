@@ -9,10 +9,13 @@ import { LiveStrip } from '@/design-system/patterns/LiveStrip';
 import { MatchToast } from '@/design-system/patterns/MatchToast';
 import { useLiveJobs } from '@/design-system/patterns/useLiveJobs';
 import { useMode } from '@/design-system/patterns/useMode';
+import { filterMatchesByMode } from '@/lib/matching/mode-filter';
 
 interface Props {
   initialMatches: StoredMatch[];
   isComputing?: boolean;
+  cargoEmailIds?: string[];
+  vesselEmailIds?: string[];
 }
 
 const ALL_STATUSES: MatchStatus[] = ['shortlist', 'saved', 'dismissed', 'archived'];
@@ -65,7 +68,7 @@ function fmtTce(v: number | null): string {
   return '$' + (v / 1000).toFixed(1) + 'k';
 }
 
-export default function MatchesClient({ initialMatches, isComputing = false }: Props) {
+export default function MatchesClient({ initialMatches, isComputing = false, cargoEmailIds = [], vesselEmailIds = [] }: Props) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { isOwner } = useMode();
@@ -251,10 +254,17 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
     setExpandedBreakdown((prev) => (prev === id ? null : id));
   }
 
-  // Client-side filter: status + cargo_type + quick filter; then sort
+  // Mode-based count for "All" chip: charterer sees cargo-side, owner sees vessel-side
+  const modeFiltered = filterMatchesByMode(matches, isOwner, cargoEmailIds, vesselEmailIds);
+
+  // Client-side filter: mode + status + cargo_type + quick filter; then sort
   const filtered = matches
     .filter(
       (m) =>
+        // mode filter: charterer sees cargo-side matches, owner sees vessel-side
+        (isOwner
+          ? vesselEmailIds.length === 0 || vesselEmailIds.includes(m.vessel_id)
+          : cargoEmailIds.length === 0 || cargoEmailIds.includes(m.cargo_id)) &&
         (!filterStatus || m.status === filterStatus) &&
         (cargoTypes.length === 0 || cargoTypes.includes(m.cargo_type ?? '')) &&
         (quickFilter === 'all' ||
@@ -291,7 +301,7 @@ export default function MatchesClient({ initialMatches, isComputing = false }: P
           {/* Quick filter chips */}
           <div className="flex items-center gap-2 flex-wrap" role="tablist" aria-label="Filter">
             {([
-              { id: 'all' as QuickFilter, label: 'All', count: matches.length },
+              { id: 'all' as QuickFilter, label: 'All', count: modeFiltered.length },
               { id: 'fresh' as QuickFilter, label: 'Fresh', count: undefined },
               { id: 'score80' as QuickFilter, label: 'Score 80+', count: undefined },
               { id: 'dwt50_60' as QuickFilter, label: 'DWT 50–60k', count: undefined },

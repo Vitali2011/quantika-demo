@@ -103,9 +103,12 @@ export default async function RootLayout({
     );
   }
 
-  // Resolve preferred_mode from DB (username is set when isAuthenticated)
+  // Resolve preferred_mode: cookie fast-path first, then DB
   let initialMode: Mode = 'charterer';
-  if (username) {
+  const modeCookie = cookieStore.get('preferred_mode')?.value;
+  if (modeCookie === 'owner' || modeCookie === 'charterer') {
+    initialMode = modeCookie;
+  } else if (username) {
     try {
       const db = getStore().getDatabase();
       const row = db

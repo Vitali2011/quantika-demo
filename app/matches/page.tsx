@@ -32,11 +32,17 @@ export default async function MatchesPage() {
   const hasVessel = session.parsedVessels.length > 0;
   const isComputing = hasCargo && hasVessel && matches.length === 0;
 
+  const cargoEmailIds = session.parsedCargos.map((c) => c.emailId);
+  const vesselEmailIds = session.parsedVessels.map((v) => v.emailId);
+
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-12">
       <div className="max-w-2xl mx-auto space-y-6">
         <h1 className="text-2xl font-bold">Your Recent Matches</h1>
-        <MatchesClient initialMatches={matches} isComputing={isComputing} />
+        <MatchesClient initialMatches={matches} isComputing={isComputing}
+          cargoEmailIds={cargoEmailIds}
+          vesselEmailIds={vesselEmailIds}
+        />
       </div>
     </main>
   );

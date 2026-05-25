@@ -21,6 +21,10 @@ export function ModeProvider({ initial, children }: { initial: Mode; children: R
 
   const setMode = useCallback((m: Mode) => {
     setModeState(m);
+    // persist to cookie for SSR fast-path
+    if (typeof document !== 'undefined') {
+      document.cookie = `preferred_mode=${m}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Lax`;
+    }
     // optimistic; fire-and-forget PATCH
     fetch('/api/me', {
       method: 'PATCH',
