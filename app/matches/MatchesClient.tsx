@@ -69,6 +69,14 @@ function fmtTce(v: number | null): string {
   return '$' + (v / 1000).toFixed(1) + 'k';
 }
 
+function fmtLaycan(start: number | null, end: number | null): string {
+  if (!start && !end) return '—';
+  const fmt = (ts: number) => new Date(ts * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  if (start && end) return `${fmt(start)}–${fmt(end)}`;
+  if (start) return fmt(start);
+  return fmt(end!);
+}
+
 export default function MatchesClient({ initialMatches, isComputing = false, cargoEmailIds = [], vesselEmailIds = [] }: Props) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -770,7 +778,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                 </colgroup>
                 <thead>
                   <tr className="bg-ds-surface-muted border-b border-ds-border">
-                    {(['Score', 'Vessel', 'Route', 'DWT', 'TCE / day', 'Cargo', 'Age', ''] as const).map((h, i) => (
+                    {(['Score', 'Vessel', 'Route', 'DWT', 'TCE / day', 'Cargo', 'Laycan', ''] as const).map((h, i) => (
                       <th
                         key={i}
                         className={`font-mono text-[10.5px] tracking-[0.14em] uppercase text-ds-text-muted font-medium py-[14px] px-3 whitespace-nowrap ${i === 0 ? 'text-left pl-5' : i >= 3 && i <= 6 ? 'text-right' : 'text-left'} ${i === 7 ? 'pr-5' : ''}`}
@@ -842,11 +850,10 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                             {match.cargo_type ?? '—'}
                           </span>
                         </td>
-                        {/* Age */}
+                        {/* Laycan */}
                         <td className="py-[13px] px-3 text-right align-middle">
-                          <span className={`font-mono text-[12.5px] whitespace-nowrap inline-flex items-center gap-[5px] justify-end ${fresh ? 'text-emerald-600 font-semibold' : 'text-ds-text-muted'}`}>
-                            {fresh && <span className="w-[5px] h-[5px] rounded-full bg-emerald-600 inline-block flex-shrink-0" />}
-                            {formatAge(match.created_at)}
+                          <span className="font-mono text-[12.5px] whitespace-nowrap text-ds-text-muted">
+                            {fmtLaycan(match.laycan_start, match.laycan_end)}
                           </span>
                         </td>
                         {/* Actions */}
