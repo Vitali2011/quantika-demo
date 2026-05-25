@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/session';
 import { cfValue } from '@/lib/types';
+import { fmtOpenDate } from '@/lib/vessels-utils';
 import VesselsClient, { type VesselRow } from './VesselsClient';
 
 export const metadata: Metadata = {
@@ -24,6 +25,7 @@ function fmtDwt(dwt: number | null): string | null {
   if (dwt >= 1000) return `${Math.round(dwt / 1000)}k`;
   return String(dwt);
 }
+
 
 export default async function VesselsPage() {
   const cookieStore = await cookies();
@@ -47,7 +49,7 @@ export default async function VesselsPage() {
       vesselKey: getVesselKey(vessel.vesselType),
       dwtSummer: fmtDwt(dwtVal),
       openPosition: cfValue(vessel.openPosition) ?? null,
-      openDate: cfValue(vessel.openDate) ?? null,
+      openDate: fmtOpenDate(vessel.openDate),
       status: hasMatch ? 'match' : 'open',
       sourceTag: email ? 'Email' : 'Manual',
       sourceName: email
