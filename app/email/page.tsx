@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
 import { Card, Button } from '@/design-system/primitives';
-import { formatDate } from '@/lib/utils';
+import { formatDate, decodeHtmlEntities } from '@/lib/utils';
 import type { EmailCategory } from '@/lib/types';
 
 export const metadata: Metadata = {
@@ -90,7 +90,7 @@ export default async function EmailInboxPage() {
         </div>
 
         {sorted.map(({ email, processed }) => {
-          const isLowConfidence = processed && processed.confidence < 80;
+          const isLowConfidence = processed && processed.confidence < 0.8;
           const category = processed?.type;
 
           return (
@@ -114,7 +114,7 @@ export default async function EmailInboxPage() {
                       )}
                       {isLowConfidence && (
                         <span className="inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-ds-sm border border-amber-300 text-amber-700 bg-amber-50">
-                          Low confidence {processed.confidence}%
+                          Low confidence {Math.round(processed.confidence * 100)}%
                         </span>
                       )}
                     </div>
@@ -131,7 +131,7 @@ export default async function EmailInboxPage() {
 
                 {/* Snippet */}
                 <p className="text-sm text-ds-text-muted line-clamp-2 leading-relaxed">
-                  {email.snippet}
+                  {decodeHtmlEntities(email.snippet)}
                 </p>
 
                 {/* Action buttons */}
