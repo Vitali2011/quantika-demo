@@ -25,8 +25,9 @@ export function TopNav() {
 
   return (
     <header className="hidden md:flex items-center gap-6 bg-ds-surface border-b border-ds-border px-6 py-3 sticky top-0 z-30">
-      <Link href="/dashboard" className="text-ds-accent font-bold text-lg shrink-0" aria-label="Quantika home">
-        Q
+      <Link href="/dashboard" className="flex items-center gap-2 shrink-0" aria-label="Quantika home">
+        <span className="w-7 h-7 rounded-[6px] bg-ds-accent text-ds-accent-fg inline-flex items-center justify-center font-bold text-sm flex-shrink-0">Q</span>
+        <span className="font-bold text-[15px] tracking-tight text-ds-text">Quantika</span>
       </Link>
       <nav className="flex items-center gap-6 text-sm" aria-label="Primary navigation">
         <NavLink href="/dashboard">Dashboard</NavLink>

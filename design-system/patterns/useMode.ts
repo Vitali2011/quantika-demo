@@ -4,14 +4,14 @@ import { ModeContext, type Mode } from './ModeProvider';
 
 const COPY: Record<Mode, Record<string, string>> = {
   charterer: {
-    'aibar.placeholder': 'Спроси про груз или кинь email от брокера…',
+    'aibar.placeholder': 'Ask anything про груз — Show fresh HSS matches above 85 score',
     'nav.thirdSlot': 'Cargo',
     'nav.fourthSlot': 'Vessels',
     'page.title.suffix': 'Charterer',
     'matches.empty.cta': 'Загрузи первый груз → найдём суда',
   },
   owner: {
-    'aibar.placeholder': 'Спроси про судно или кинь open-position email…',
+    'aibar.placeholder': 'Ask anything про судно — Show fresh HSS matches above 85 score',
     'nav.thirdSlot': 'Vessels',
     'nav.fourthSlot': 'Cargo',
     'page.title.suffix': 'Owner',
