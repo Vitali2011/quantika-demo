@@ -15,6 +15,12 @@ jest.mock('next/link', () => {
   return Link;
 });
 
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ push: jest.fn(), replace: jest.fn(), back: jest.fn(), forward: jest.fn(), refresh: jest.fn(), prefetch: jest.fn() }),
+  usePathname: () => '/',
+  useSearchParams: () => new URLSearchParams(),
+}));
+
 jest.mock('lucide-react', () => ({
   Home: () => <svg data-testid="icon-home" />,
   Sparkles: () => <svg data-testid="icon-sparkles" />,
