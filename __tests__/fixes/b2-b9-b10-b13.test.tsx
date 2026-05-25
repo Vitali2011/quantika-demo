@@ -47,7 +47,7 @@ describe('B2 — AIBar placeholder is English', () => {
       React.createElement(
         ModeProvider,
         { initial: mode },
-        React.createElement(PaletteProvider, null, React.createElement(AIBar)),
+        React.createElement(PaletteProvider, { children: React.createElement(AIBar) }),
       ),
     );
   }
