@@ -23,8 +23,8 @@ describe('GET /api/market/eua-kpi', () => {
   it('returns 404 when DB has no EUA data', async () => {
     testDb.exec('DELETE FROM eua_prices');
     const { GET } = await import('@/app/api/market/eua-kpi/route');
-    const req = new Request('http://localhost/api/market/eua-kpi');
-    const res = await GET(req);
+    
+    const res = await GET();
     expect(res.status).toBe(404);
     const json = await res.json();
     expect(json.error).toMatch(/no eua data/i);
@@ -32,8 +32,8 @@ describe('GET /api/market/eua-kpi', () => {
 
   it('returns value, unit, period for seeded spot row', async () => {
     const { GET } = await import('@/app/api/market/eua-kpi/route');
-    const req = new Request('http://localhost/api/market/eua-kpi');
-    const res = await GET(req);
+    
+    const res = await GET();
     expect(res.status).toBe(200);
     const json = await res.json();
     expect(json.value).toBe(72.65);
@@ -50,8 +50,8 @@ describe('GET /api/market/eua-kpi', () => {
       .run('2026-05-20', 75.10);
 
     const { GET } = await import('@/app/api/market/eua-kpi/route');
-    const req = new Request('http://localhost/api/market/eua-kpi');
-    const res = await GET(req);
+    
+    const res = await GET();
     expect(res.status).toBe(200);
     const json = await res.json();
     expect(json.value).toBe(75.10);
