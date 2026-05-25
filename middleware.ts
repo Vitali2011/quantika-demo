@@ -121,6 +121,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     const response = NextResponse.next();
     response.headers.set('X-RateLimit-Remaining', String(remaining));
     response.headers.set('X-RateLimit-Limit', '20');
+    response.headers.set('x-pathname', pathname);
     return response;
   }
 
@@ -133,7 +134,9 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     }
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+  response.headers.set('x-pathname', pathname);
+  return response;
 }
 
 export const config = {
