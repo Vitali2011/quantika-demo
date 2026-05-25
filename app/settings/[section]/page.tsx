@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { Card, Button, Input, Switch } from '@/design-system/primitives';
+import { Card, Button, Input } from '@/design-system/primitives';
+import { ProfileForm } from './_forms/ProfileForm';
+import { PasswordForm } from './_forms/PasswordForm';
+import { NotificationsForm } from './_forms/NotificationsForm';
 
 const VALID_SECTIONS = [
   'profile', 'password', 'notifications', 'integrations',
@@ -89,21 +92,19 @@ function ProfileSection() {
         <h2 className="text-base font-semibold text-ds-text">Profile</h2>
         <p className="text-sm text-ds-text-muted mt-0.5">Manage your personal information.</p>
       </div>
-      <div className="space-y-4 max-w-sm">
-        <div className="space-y-1">
-          <label className="text-xs font-medium text-ds-text-muted" htmlFor="display-name">
-            Display name
-          </label>
-          <Input id="display-name" placeholder="Your name" disabled />
-        </div>
-        <div className="space-y-1">
-          <label className="text-xs font-medium text-ds-text-muted" htmlFor="email-addr">
-            Email
-          </label>
-          <Input id="email-addr" type="email" placeholder="you@example.com" disabled />
-        </div>
-        <Button variant="primary" size="sm" disabled>Save changes</Button>
+      <ProfileForm />
+    </div>
+  );
+}
+
+function PasswordSection() {
+  return (
+    <div className="space-y-6" data-testid="settings-password">
+      <div>
+        <h2 className="text-base font-semibold text-ds-text">Password</h2>
+        <p className="text-sm text-ds-text-muted mt-0.5">Update your account password.</p>
       </div>
+      <PasswordForm />
     </div>
   );
 }
@@ -115,24 +116,7 @@ function NotificationsSection() {
         <h2 className="text-base font-semibold text-ds-text">Notifications</h2>
         <p className="text-sm text-ds-text-muted mt-0.5">Control how and when Quantika contacts you.</p>
       </div>
-      <div className="space-y-3">
-        {[
-          { label: 'New match found', description: 'When AI finds a cargo-vessel match', defaultOn: true },
-          { label: 'Email digest', description: 'Daily summary of freight activity', defaultOn: true },
-          { label: 'Urgent action required', description: 'Time-sensitive cargo or vessel positions', defaultOn: true },
-          { label: 'Weekly market report', description: 'BHSI, TMI and rate summaries', defaultOn: false },
-        ].map(({ label, description }) => (
-          <Card key={label} padding="md">
-            <div className="flex items-center gap-4">
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-ds-text">{label}</p>
-                <p className="text-xs text-ds-text-muted">{description}</p>
-              </div>
-              <Switch disabled defaultChecked />
-            </div>
-          </Card>
-        ))}
-      </div>
+      <NotificationsForm />
     </div>
   );
 }
@@ -214,11 +198,12 @@ export default async function SettingsSectionPage({
   if (!isValidSection(section)) notFound();
 
   switch (section) {
-    case 'integrations': return <IntegrationsSection />;
-    case 'profile':      return <ProfileSection />;
+    case 'integrations':  return <IntegrationsSection />;
+    case 'profile':       return <ProfileSection />;
+    case 'password':      return <PasswordSection />;
     case 'notifications': return <NotificationsSection />;
-    case 'api':          return <ApiSection />;
-    case 'danger':       return <DangerSection />;
-    default:             return <ComingSoonSection section={section} />;
+    case 'api':           return <ApiSection />;
+    case 'danger':        return <DangerSection />;
+    default:              return <ComingSoonSection section={section} />;
   }
 }
