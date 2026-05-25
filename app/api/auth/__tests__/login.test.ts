@@ -39,12 +39,12 @@ function makeRequest(body: Record<string, string>): Request {
 }
 
 describe('POST /api/auth/login', () => {
-  it('redirects to / with Set-Cookie on valid credentials', async () => {
+  it('redirects to /dashboard with Set-Cookie on valid credentials', async () => {
     const POST = await getHandler();
     const req = makeRequest({ user: 'admin', password: 'secret' });
     const res = await POST(req as Parameters<typeof POST>[0]);
     expect(res.status).toBe(303);
-    expect(res.headers.get('location')).toMatch(/\/$/); // ends with /
+    expect(res.headers.get('location')).toMatch(/\/dashboard/);
     const cookie = res.headers.get('set-cookie');
     expect(cookie).toContain('demo_auth=');
     expect(cookie).toContain('HttpOnly');

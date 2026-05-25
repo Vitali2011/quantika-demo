@@ -62,11 +62,11 @@ describe('POST /api/auth/login', () => {
     expect(res.headers.get('location')).toMatch(/\/login\?error=1/);
   });
 
-  it('redirects to / and sets demo_auth cookie on correct credentials (JSON)', async () => {
+  it('redirects to /dashboard and sets demo_auth cookie on correct credentials (JSON)', async () => {
     const { POST } = await import('@/app/api/auth/login/route');
     const res = await POST(makeJsonReq({ user: 'testuser', password: 'testpass' }));
     expect(res.status).toBe(303);
-    expect(res.headers.get('location')).toMatch(/\/$|^http:\/\/localhost\/$/);
+    expect(res.headers.get('location')).toMatch(/\/dashboard/);
     const setCookie = res.headers.get('set-cookie') ?? '';
     expect(setCookie).toContain('demo_auth=');
     expect(setCookie).toContain('HttpOnly');

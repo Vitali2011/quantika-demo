@@ -15,11 +15,18 @@ jest.mock('next/link', () => {
   return Link;
 });
 
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ push: jest.fn(), replace: jest.fn(), back: jest.fn(), forward: jest.fn(), refresh: jest.fn(), prefetch: jest.fn() }),
+  usePathname: () => '/',
+  useSearchParams: () => new URLSearchParams(),
+}));
+
 jest.mock('lucide-react', () => ({
   Home: () => <svg data-testid="icon-home" />,
   Sparkles: () => <svg data-testid="icon-sparkles" />,
   Box: () => <svg data-testid="icon-box" />,
   MoreHorizontal: () => <svg data-testid="icon-more" />,
+  LogOut: () => <svg data-testid="icon-logout" />,
 }));
 
 describe('AppShell', () => {

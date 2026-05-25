@@ -84,6 +84,16 @@ function MoreDropdown() {
             </Link>
           </li>
         ))}
+        <li className="border-t border-ds-border mt-1 pt-1">
+          <form method="POST" action="/api/auth/logout">
+            <button
+              type="submit"
+              className="block w-full text-left px-3 py-1.5 text-sm text-ds-text hover:bg-ds-surface-muted"
+            >
+              Log out
+            </button>
+          </form>
+        </li>
       </ul>
     </details>
   );

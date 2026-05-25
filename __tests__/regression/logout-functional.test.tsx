@@ -137,3 +137,91 @@ describe('REGRESSION #352/#414 — L3: middleware bypasses /api/auth/logout', ()
     expect(res.status).not.toBe(302);
   });
 });
+
+// ---------------------------------------------------------------------------
+// L4 — TopNav MoreDropdown must contain logout form (#453)
+// ---------------------------------------------------------------------------
+
+describe('REGRESSION #453 — L4: TopNav MoreDropdown has logout form', () => {
+  const topNavPath = path.join(ROOT, 'design-system', 'patterns', 'TopNav.tsx');
+  let source: string;
+
+  beforeAll(() => {
+    source = fs.readFileSync(topNavPath, 'utf-8');
+  });
+
+  it('design-system/patterns/TopNav.tsx exists', () => {
+    expect(fs.existsSync(topNavPath)).toBe(true);
+  });
+
+  it('MoreDropdown contains a <form> POSTing to /api/auth/logout', () => {
+    expect(source).toContain('action="/api/auth/logout"');
+    expect(source).toContain('method="POST"');
+  });
+
+  it('MoreDropdown contains a Log out submit button', () => {
+    expect(source).toMatch(/Log\s+out/);
+    expect(source).toContain('type="submit"');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// L5 — BottomNav must contain logout form (#453 mobile)
+// ---------------------------------------------------------------------------
+
+describe('REGRESSION #453 — L5: BottomNav has logout form', () => {
+  const bottomNavPath = path.join(ROOT, 'design-system', 'patterns', 'BottomNav.tsx');
+  let source: string;
+
+  beforeAll(() => {
+    source = fs.readFileSync(bottomNavPath, 'utf-8');
+  });
+
+  it('design-system/patterns/BottomNav.tsx exists', () => {
+    expect(fs.existsSync(bottomNavPath)).toBe(true);
+  });
+
+  it('BottomNav contains a <form> POSTing to /api/auth/logout', () => {
+    expect(source).toContain('action="/api/auth/logout"');
+    expect(source).toContain('method="POST"');
+  });
+
+  it('BottomNav contains a Log out button', () => {
+    expect(source).toMatch(/Log\s+out/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// L6 — POST /api/auth/login must redirect to /dashboard (#454)
+// ---------------------------------------------------------------------------
+
+describe('REGRESSION #454 — L6: POST /api/auth/login redirects to /dashboard', () => {
+  it('redirects to /dashboard (not /) on valid credentials', async () => {
+    process.env.DEMO_AUTH_ENABLED = 'true';
+    process.env.DEMO_AUTH_USER = 'admin';
+    process.env.DEMO_AUTH_PASSWORD = 'secret';
+    process.env.DEMO_AUTH_SECRET = 'test-secret-key-that-is-long-enough!';
+    const { POST } = await import('@/app/api/auth/login/route');
+    const req = new NextRequest('http://localhost/api/auth/login', {
+      method: 'POST',
+      body: new URLSearchParams({ user: 'admin', password: 'secret' }).toString(),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(303);
+    expect(res.headers.get('location')).toMatch(/\/dashboard/);
+  });
+
+  it('does NOT redirect to bare / on valid credentials', async () => {
+    const { POST } = await import('@/app/api/auth/login/route');
+    const req = new NextRequest('http://localhost/api/auth/login', {
+      method: 'POST',
+      body: new URLSearchParams({ user: 'admin', password: 'secret' }).toString(),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    });
+    const res = await POST(req);
+    const location = res.headers.get('location') ?? '';
+    // Must not redirect to bare root — that was the bug
+    expect(location).not.toMatch(/^http:\/\/localhost\/$/);
+  });
+});
