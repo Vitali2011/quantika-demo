@@ -316,8 +316,8 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 - ✅ BottomSheet + SwipeCard + FabVoice (haptics, focus trap, gestures)
 - ⚠️ Feature-страницы (laytime, market, PSC) — desktop-first, нет `sm:` fallback
-- ❌ Bottom navigation
-- ❌ Touch target min-h-44px enforcement
+- ✅ Bottom navigation — BottomNav в AppShell (R2 redesign, #434)
+- ✅ Touch target min-h-44px enforcement — #370 (8 targets ≥44px) + R6 a11y baseline (#447, WCAG AA, 24 страницы)
 
 **RTL:** только контент email (ExplainDealModal AR mode). Full UI RTL — нет (no i18n, no logical CSS properties).
 
@@ -427,7 +427,7 @@ ETA: ~2-3 дня wall-clock. Большинство agent-only. **Bottleneck т�
 3. **match progonq baseline** — давно пора
 4. **parse-recap fix-loop** — улучшить с 70% baseline (PR #193 идентифицировал weakest fields)
 5. **MEDIUM/LOW backlog** из QA reports (continuous)
-6. **Mobile bottom nav + touch targets enforcement**
+6. ✅ **Mobile bottom nav + touch targets enforcement** — закрыто R1-R6 redesign (BottomNav #434) + #370/#447
 7. **Test coverage для 17 untested routes + missing component tests**
 8. **/upgrade** — заменить заглушку на реальный контент (✅ /matches уже live с M1+M3, session fix #296)
 9. **Sentry + UptimeRobot** интеграция (когда аккаунты готовы)
