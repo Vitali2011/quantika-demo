@@ -124,14 +124,6 @@ export function ActionPanel({
             )}
           </div>
         </div>
-        {commissionSummary && commissionSummary.details.length > 0 && (
-          <Link
-            href="/commission"
-            className="shrink-0 ml-4 px-3 py-1.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
-          >
-            See Breakdown
-          </Link>
-        )}
       </div>
     </div>
   );

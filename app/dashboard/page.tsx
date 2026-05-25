@@ -267,76 +267,6 @@ export default async function DashboardPage() {
           </section>
         )}
 
-        {/* ── Full Inbox (collapsible) ───────────────────────────── */}
-        <details className="border border-ds-border rounded-ds-lg overflow-hidden">
-          <summary className="px-4 py-3 bg-ds-surface cursor-pointer hover:bg-ds-surface-muted list-none">
-            <div className="flex items-center justify-between mb-2">
-              <span className="font-semibold text-ds-text text-sm">Full Inbox</span>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-ds-text-muted">{emails.length} emails</span>
-                <span className="text-ds-text-subtle text-xs select-none">▼</span>
-              </div>
-            </div>
-            <div className="space-y-1">
-              {(
-                [
-                  { key: 'CARGO_INQUIRY', label: 'Cargo Inquiries', count: categoryCounts.CARGO_INQUIRY },
-                  { key: 'VESSEL_POSITION', label: 'Vessel Positions', count: categoryCounts.VESSEL_POSITION },
-                  { key: 'FIXTURE_RECAP', label: 'Fixture Recaps', count: categoryCounts.FIXTURE_RECAP },
-                  { key: 'VESSEL_CERTIFICATE', label: 'Vessel Certificates', count: categoryCounts.VESSEL_CERTIFICATE },
-                  { key: 'TCT_REQUEST', label: 'TCT Requests', count: categoryCounts.TCT_REQUEST },
-                  { key: 'DOCUMENT', label: 'Documents', count: categoryCounts.DOCUMENT },
-                  { key: 'CLIENT_REPLY', label: 'Client Replies', count: categoryCounts.CLIENT_REPLY },
-                  { key: 'OTHER', label: 'Other', count: categoryCounts.OTHER },
-                ] as { key: string; label: string; count: number }[]
-              )
-                .filter((item) => item.count > 0)
-                .map(({ key, label, count }) => (
-                  <div key={key} className="flex items-center justify-between py-0.5 px-1">
-                    <span className="text-xs text-ds-text-muted">{label}</span>
-                    <span className="text-xs font-semibold text-ds-text tabular-nums">{count}</span>
-                  </div>
-                ))}
-            </div>
-          </summary>
-          <div className="bg-ds-bg px-4 py-4 space-y-3" id="inbox">
-            <div id="cargo">
-              <EmailSection category="CARGO_INQUIRY" rows={cargoRows} totalCount={categoryCounts.CARGO_INQUIRY} />
-            </div>
-            <div>
-              <EmailSection category="VESSEL_POSITION" rows={vesselRows} totalCount={categoryCounts.VESSEL_POSITION} />
-            </div>
-            <div id="fixture">
-              <EmailSection category="FIXTURE_RECAP" rows={fixtureRows} totalCount={categoryCounts.FIXTURE_RECAP} />
-            </div>
-            {categoryCounts.VESSEL_CERTIFICATE > 0 && (
-              <div id="vessel-certificates">
-                <EmailSection category="VESSEL_CERTIFICATE" rows={vesselCertRows} totalCount={categoryCounts.VESSEL_CERTIFICATE} />
-              </div>
-            )}
-            {categoryCounts.TCT_REQUEST > 0 && (
-              <div id="tct-requests">
-                <EmailSection category="TCT_REQUEST" rows={tctRequestRows} totalCount={categoryCounts.TCT_REQUEST} />
-              </div>
-            )}
-            {categoryCounts.DOCUMENT + categoryCounts.CLIENT_REPLY + categoryCounts.OTHER > 0 && (
-              <details className="border border-ds-border rounded-ds-md overflow-hidden">
-                <summary className="flex items-center justify-between px-4 py-3 bg-ds-surface cursor-pointer hover:bg-ds-surface-muted list-none">
-                  <span className="font-medium text-ds-text text-sm">Other</span>
-                  <span className="ml-2 px-2 py-0.5 rounded text-xs font-semibold bg-ds-surface-muted text-ds-text-muted">
-                    {categoryCounts.DOCUMENT + categoryCounts.CLIENT_REPLY + categoryCounts.OTHER}
-                  </span>
-                </summary>
-                <div className="bg-ds-surface px-4 pb-4 pt-2 space-y-1">
-                  {otherRows.map((row) => (
-                    <EmailCard key={row.email.id} row={row} href={`/cargo/${row.email.id}`} />
-                  ))}
-                </div>
-              </details>
-            )}
-          </div>
-        </details>
-
         {/* ── Inbox Breakdown (summary) ───────────────────────────── */}
         {!noActiveDeals && (
           <section>
@@ -409,56 +339,6 @@ export default async function DashboardPage() {
           </section>
         )}
 
-        {/* ── Network ────────────────────────────────────────────── */}
-        {topContacts.length > 0 && (
-          <details className="border border-ds-border rounded-ds-lg overflow-hidden">
-            <summary className="flex items-center justify-between px-5 py-4 bg-ds-surface cursor-pointer hover:bg-ds-surface-muted list-none">
-              <span className="font-semibold text-ds-text text-sm">Your Network</span>
-              <span className="text-sm text-ds-text-muted">from {emails.length} emails</span>
-            </summary>
-            <div className="bg-ds-surface px-4 pb-4 pt-2">
-              {topContacts.map((contact, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center gap-3 py-2 border-b border-ds-border last:border-0"
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <p className="text-sm font-medium text-ds-text truncate">{contact.name}</p>
-                      <span className="shrink-0 ml-3 text-xs font-semibold text-ds-text-muted">
-                        {contact.count} {contact.count === 1 ? 'email' : 'emails'}
-                      </span>
-                    </div>
-                    <div className="h-1.5 w-full bg-ds-surface-muted rounded-ds-full overflow-hidden">
-                      <div
-                        className="h-full bg-ds-accent rounded-ds-full"
-                        style={{ width: `${Math.round((contact.count / maxContactEmails) * 100)}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </details>
-        )}
-
-        {/* ── Disclaimer ─────────────────────────────────────────── */}
-        <div className="rounded-ds-md border border-ds-warn/30 bg-ds-warn-soft px-4 py-3">
-          <p className="text-xs text-ds-warn">
-            <strong>⚠️ Disclaimer:</strong> This analysis is AI-generated and may contain errors.
-            All information should be independently verified before making business decisions.
-            Commission estimates are based on extracted recap data and may not reflect final agreed amounts.
-          </p>
-        </div>
-
-        <div className="flex justify-end">
-          <Link
-            href="/summary"
-            className="px-4 py-2 bg-ds-accent text-ds-accent-fg text-sm font-medium rounded-ds-md hover:bg-ds-accent/90 transition-colors"
-          >
-            View Summary &amp; Impact →
-          </Link>
-        </div>
       </div>
     </div>
   );
