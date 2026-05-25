@@ -47,4 +47,50 @@ describe('CmdKPalette', () => {
     act(() => { screen.getByText('open-palette').click(); });
     expect(screen.getByText(/find vessel/i)).toBeInTheDocument();
   });
+
+  it('opens with Cmd+K (Mac)', () => {
+    render(
+      <ModeProvider initial="charterer">
+        <PaletteProvider>
+          <CmdKPalette />
+        </PaletteProvider>
+      </ModeProvider>,
+    );
+    act(() => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { metaKey: true, key: 'k', bubbles: true }));
+    });
+    expect(screen.getByPlaceholderText(/search or ask/i)).toBeInTheDocument();
+  });
+
+  it('opens with Ctrl+K (Windows/Linux)', () => {
+    render(
+      <ModeProvider initial="charterer">
+        <PaletteProvider>
+          <CmdKPalette />
+        </PaletteProvider>
+      </ModeProvider>,
+    );
+    act(() => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { ctrlKey: true, key: 'k', bubbles: true }));
+    });
+    expect(screen.getByPlaceholderText(/search or ask/i)).toBeInTheDocument();
+  });
+
+  it('closes on second Cmd+K press', () => {
+    render(
+      <ModeProvider initial="charterer">
+        <PaletteProvider>
+          <CmdKPalette />
+        </PaletteProvider>
+      </ModeProvider>,
+    );
+    act(() => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { metaKey: true, key: 'k', bubbles: true }));
+    });
+    expect(screen.getByPlaceholderText(/search or ask/i)).toBeInTheDocument();
+    act(() => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { metaKey: true, key: 'k', bubbles: true }));
+    });
+    expect(screen.queryByPlaceholderText(/search or ask/i)).not.toBeInTheDocument();
+  });
 });

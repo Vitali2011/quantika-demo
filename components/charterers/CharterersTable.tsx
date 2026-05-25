@@ -73,7 +73,7 @@ export function CharterersTable({ charterers }: Props) {
         </colgroup>
         <thead>
           <tr>
-            {['Name', 'LC Req.', 'Last note', 'Status'].map((h, i) => (
+            {['Company', 'LC Req.', 'Last Contact', 'Status'].map((h, i) => (
               <th
                 key={h}
                 style={{
