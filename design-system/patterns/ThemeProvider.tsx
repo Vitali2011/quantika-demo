@@ -29,7 +29,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const saved = document.cookie.match(new RegExp(`${COOKIE}=(dark|light)`))?.[1] as Theme | undefined;
-    const resolved = saved ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const prefersDark = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const resolved = saved ?? (prefersDark ? 'dark' : 'light');
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount init from cookie/media query
     setTheme(resolved);
     applyTheme(resolved);
   }, []);
