@@ -44,11 +44,11 @@ import { AIBar } from '@/design-system/patterns/AIBar';
 describe('B2 — AIBar placeholder is English', () => {
   function renderAIBar(mode: 'charterer' | 'owner') {
     return render(
-      React.createElement(
-        ModeProvider,
-        { initial: mode },
-        React.createElement(PaletteProvider, {} as any, React.createElement(AIBar)),
-      ),
+      <ModeProvider initial={mode}>
+        <PaletteProvider>
+          <AIBar />
+        </PaletteProvider>
+      </ModeProvider>,
     );
   }
 
