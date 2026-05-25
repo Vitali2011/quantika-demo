@@ -5,10 +5,20 @@ import { CARGO_INQUIRY_PARSER_PROMPT } from '@/lib/prompts';
 import { parseCargoAIResponse, type RawCargoItem } from '@/lib/parsing/parse-cargo-ai';
 import { PARSE_CARGO_SCHEMA } from '@/lib/schemas';
 import { cfValue } from '@/lib/types';
+import { parserEmailRateLimiter } from '@/lib/rate-limit';
 
 export async function POST(req: NextRequest) {
   const authResult = requireSession(req);
   if (authResult instanceof NextResponse) return authResult;
+  const { sessionId } = authResult;
+
+  const { allowed, retryAfterMs } = parserEmailRateLimiter.check(sessionId);
+  if (!allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests' },
+      { status: 429, headers: { 'Retry-After': String(Math.ceil(retryAfterMs / 1000)) } },
+    );
+  }
 
   const body = await req.json().catch(() => ({})) as { text?: unknown };
   const text = typeof body.text === 'string' ? body.text.trim() : null;
