@@ -1,9 +1,10 @@
 /**
  * @jest-environment jsdom
  *
- * PI2 behavioral tests for bug batch B2+B9+B10+B13.
+ * PI2 behavioral tests for bug batch B2+B8+B9+B10+B13.
  *
  * B2: AIBar placeholder must be English (not Russian).
+ * B8: /dashboard must NOT contain the yellow AI-generated disclaimer banner.
  * B9: /market footer links must have href attributes.
  * B10: Matches table minWidth must be ≥970px so CARGO/LAYCAN columns are never clipped.
  * B13: TopNav logo must render both the amber Q square and the "Quantika" wordmark.
@@ -105,6 +106,22 @@ describe('B10 — Matches table minWidth covers all columns', () => {
     expect(match).not.toBeNull();
     const minWidth = parseInt(match![1], 10);
     expect(minWidth).toBeGreaterThanOrEqual(970);
+  });
+});
+
+// ─── B8: /dashboard has no AI disclaimer banner ──────────────────────────────
+
+describe('B8 — /dashboard has no yellow AI-generated disclaimer banner', () => {
+  it('dashboard page source does not contain the disclaimer text', () => {
+    const src = readSrc('app/dashboard/page.tsx');
+    expect(src).not.toMatch(/This analysis is AI-generated/);
+    expect(src).not.toMatch(/⚠️ Disclaimer/);
+  });
+
+  it('dashboard page source does not contain the disclaimer paragraph text', () => {
+    const src = readSrc('app/dashboard/page.tsx');
+    expect(src).not.toContain('All information should be independently verified');
+    expect(src).not.toContain('Commission estimates are based on extracted recap data');
   });
 });
 
