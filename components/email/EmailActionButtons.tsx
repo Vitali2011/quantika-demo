@@ -40,7 +40,7 @@ export function EmailActionButtons({ emailId }: EmailActionButtonsProps) {
   }
 
   function handleEdit() {
-    window.location.href = `/email/${emailId}`;
+    window.location.assign(`/email/${emailId}`);
   }
 
   if (done) {
