@@ -58,6 +58,8 @@ describe('MetricHistoryPanel — #529 panel visible + chart', () => {
     });
 
     expect(global.fetch).toHaveBeenCalledWith('/api/market/indices?name=bdi&days=30');
+    // #544: when API returns rows, panel must NOT show "No data available"
+    expect(screen.queryByText('No data available')).not.toBeInTheDocument();
   });
 
   it('calls onClose when close button is clicked', () => {
