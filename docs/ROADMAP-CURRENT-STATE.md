@@ -16,6 +16,24 @@ Quantika Demo прошла **Wave α → β → βf×3 → γ (Scale + Vertex + 
 
 **Wave α MVP scope = 12 ✅ / 5 🟡 / 0 ❌.**
 
+**Что изменилось за 2026-05-26 (12-bug QA wave + skill v3.10→v3.11.2):**
+
+- ✅ **12 QA-багов закрыты** через 6 parallel waves (PR #546-#551):
+  - W-A #549: market — #545 BDI stale + #544 panel + #487 footer
+  - W-B #547: matches — #490 auto-refresh UTC + #489 heading + #488 1440px overflow
+  - W-C #546: mobile — #508 BottomNav 4-link + #482 cargo row→side-panel
+  - W-D #548: branding — #491 logo Q+Quantika + #486 убран AI banner
+  - W-E #551: email — #484 Accept/Edit/Reject клик-handlers
+  - W-F #550: hydration — #543 clientNow state вместо Date.now() в render
+- ✅ **#552 hotfix** — lint react-hooks/immutability в MatchesClient + logout-functional test после 12-bug wave
+- 🚨 **RC дня:** утренний `gh pr merge --admin --squash` x6 bypass'нул auto-merge.yml → repository_dispatch не сработал → deploy.yml не зафаерился. Prod stagnant ~5ч на старом sha 515cff4. Заметил только после повторного check. Fix: hotfix #552 пошёл через нормальный auto-merge → deploy.yml сработал автоматически.
+- 🔧 **Skill orchestrator-day:** v3.10.0 → **v3.11.2 mechanical Discipline Gates**. RED-GREEN-REFACTOR:
+  - v3.10.0/v3.10.1 — subagent-side literal-output (Pre-PASS + Branch-first)
+  - v3.11.0/v3.11.1 — orchestrator-side prose markers (ROADMAP*READ / CHAIN*<topic> / PRE_MERGE_CHECK / PREVIEW_OPENED) — adversarial QA FAIL 3-4/5 под pressure (markers режутся)
+  - v3.11.2 — **mechanical** `dispatch.sh --gate-markers` (exit 2 без regex match для ROADMAP*READ + CHAIN* + BUNDLE_TIER при bundle). Adversarial QA PASS 6/6. Dogfood на real-world #552 успешно.
+- 📋 **Open:** #544 (qa-walker partial — panel opens "No data available", новый sub-bug); 3 dependabot major bumps (tailwindcss 4 / googleapis 172 / eslint 10).
+- 📋 **Lessons:** (1) --admin --squash обходит deploy chain (репо полагается на repository_dispatch из auto-merge.yml); (2) prose-правила скилла бесполезны под pressure — нужен mechanical enforcement (exit 2 в bash); (3) Bundle = MAX(tier), не AVG — главная RC классификации волн.
+
 **Что изменилось за 2026-05-17:**
 
 - ✅ Hot-restore env-incident (`.env.local` truncated, prod молча тлел 22h)
@@ -497,20 +515,21 @@ ETA: ~2-3 дня wall-clock. Большинство agent-only. **Bottleneck т�
 
 Полный редизайн UI/UX завершён. Все 22 страницы мигрированы на Maritime Deep design-system.
 
-| Wave | Что сделано |
-|------|-------------|
-| R1 | Design-system foundation — Maritime Deep tokens, 15 primitives, `/design` preview page |
-| R2 | AppShell + ModeSwitcher (charterer/owner mode), persistent navigation |
-| R3 | AIBar + ⌘K command palette + HelpFAB |
-| R4 | LiveStrip + SSE jobs + match toasts |
-| R5 | 22 страницы мигрированы (Dashboard, Matches, Match/[id], Cargo, Vessels, Charterers, Market, Recap, Email, Onboarding, Upgrade, Settings, Laytime, PSC, Commission, Clauses, Request, Processing, Summary, More, Vessel/[id], Fixture) |
-| R6 | A11y baseline — Playwright+axe specs для всех 23 страниц (WCAG 2.1 AA); Lighthouse CI gate (perf ≥0.85, a11y ≥0.95); living docs |
+| Wave | Что сделано                                                                                                                                                                                                                            |
+| ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R1   | Design-system foundation — Maritime Deep tokens, 15 primitives, `/design` preview page                                                                                                                                                 |
+| R2   | AppShell + ModeSwitcher (charterer/owner mode), persistent navigation                                                                                                                                                                  |
+| R3   | AIBar + ⌘K command palette + HelpFAB                                                                                                                                                                                                   |
+| R4   | LiveStrip + SSE jobs + match toasts                                                                                                                                                                                                    |
+| R5   | 22 страницы мигрированы (Dashboard, Matches, Match/[id], Cargo, Vessels, Charterers, Market, Recap, Email, Onboarding, Upgrade, Settings, Laytime, PSC, Commission, Clauses, Request, Processing, Summary, More, Vessel/[id], Fixture) |
+| R6   | A11y baseline — Playwright+axe specs для всех 23 страниц (WCAG 2.1 AA); Lighthouse CI gate (perf ≥0.85, a11y ≥0.95); living docs                                                                                                       |
 
 **Specs:** `docs/superpowers/specs/2026-05-24-quantika-demo-full-redesign-design.md`
 **Plans:** `docs/superpowers/plans/2026-05-24-r6-a11y-perf-plan.md`
 **Design overview:** `docs/design-system.md`
 
 **Open follow-ups (R6.5):**
+
 - Migrate remaining `components/ui/` usages (40 imports, 22 files) → delete legacy dir (Q002)
 - Activate dark mode toggle (tokens drafted)
 - Lighthouse CI в GitHub Actions workflow (нужен `@lhci/cli` install)
