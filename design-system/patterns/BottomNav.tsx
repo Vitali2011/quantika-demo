@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Layers, Box, Sparkles, MoreHorizontal, LogOut } from 'lucide-react';
+import { Layers, Box, Sparkles, MoreHorizontal } from 'lucide-react';
 import { useMode } from './useMode';
 import { cn } from '@/design-system/primitives/_utils';
 
@@ -67,18 +67,6 @@ export function BottomNav() {
         <MoreHorizontal size={20} aria-hidden="true" />
         <span className="text-[10px] font-medium">More</span>
       </Link>
-      <form method="POST" action="/api/auth/logout" className="flex-1">
-        <button
-          type="submit"
-          className={cn(
-            'w-full h-full flex flex-col items-center justify-center gap-0.5 text-ds-text-muted hover:text-ds-text min-h-[44px]',
-          )}
-          aria-label="Log out"
-        >
-          <LogOut size={20} aria-hidden="true" />
-          <span className="text-[10px] font-medium">Log out</span>
-        </button>
-      </form>
     </nav>
   );
 }

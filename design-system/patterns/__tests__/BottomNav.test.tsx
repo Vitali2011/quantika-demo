@@ -21,7 +21,6 @@ jest.mock('lucide-react', () => ({
   Box: () => <svg data-testid="icon-box" />,
   Sparkles: () => <svg data-testid="icon-sparkles" />,
   MoreHorizontal: () => <svg data-testid="icon-more" />,
-  LogOut: () => <svg data-testid="icon-logout" />,
 }));
 
 describe('BottomNav', () => {
@@ -72,5 +71,12 @@ describe('BottomNav', () => {
     expect(screen.getByTestId('icon-sparkles')).toBeInTheDocument();
     // Matches uses layers icon (not sparkle)
     expect(screen.getByTestId('icon-layers')).toBeInTheDocument();
+  });
+
+  // #508 — LogOut must not appear in mobile nav; it lives on the More page
+  it('#508: Log out button is not rendered in mobile BottomNav', () => {
+    render(<ModeProvider initial="charterer"><BottomNav /></ModeProvider>);
+    expect(screen.queryByLabelText(/log out/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/log out/i)).not.toBeInTheDocument();
   });
 });
