@@ -167,6 +167,25 @@ describe('CharterersPage', () => {
     expect(screen.getByLabelText(/tier/i)).toBeInTheDocument();
   });
 
+  // #520: Import Gmail button
+  it('shows Import Gmail button when feature is enabled', async () => {
+    process.env.NEXT_PUBLIC_CHARTERER_CREDIT_ENABLED = 'true';
+
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ charterers: [] }),
+      })
+    ) as jest.Mock;
+
+    const { default: CharterersPage } = await import('@/app/charterers/page');
+    render(<CharterersPage />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /import gmail/i })).toBeInTheDocument();
+    });
+  });
+
   it('submits form and refreshes list', async () => {
     process.env.NEXT_PUBLIC_CHARTERER_CREDIT_ENABLED = 'true';
 

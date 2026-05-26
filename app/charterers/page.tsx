@@ -73,21 +73,37 @@ export default function CharterersPage() {
               </span>
             )}
           </div>
-          <button
-            onClick={() => setShowForm((v) => !v)}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              padding: '8px 16px',
-              fontSize: 14, fontWeight: 500,
-              background: 'var(--ds-accent)', color: 'var(--ds-accent-fg)',
-              border: 'none', borderRadius: 8,
-              cursor: 'pointer',
-              letterSpacing: '-0.01em',
-            }}
-          >
-            <span aria-hidden style={{ fontSize: 16, lineHeight: 1 }}>+</span>
-            Add Charterer
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button
+              aria-label="Import Gmail"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                padding: '8px 16px',
+                fontSize: 14, fontWeight: 500,
+                background: 'var(--ds-surface)', color: 'var(--ds-text)',
+                border: '1px solid var(--ds-border)', borderRadius: 8,
+                cursor: 'pointer',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              Import Gmail
+            </button>
+            <button
+              onClick={() => setShowForm((v) => !v)}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                padding: '8px 16px',
+                fontSize: 14, fontWeight: 500,
+                background: 'var(--ds-accent)', color: 'var(--ds-accent-fg)',
+                border: 'none', borderRadius: 8,
+                cursor: 'pointer',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              <span aria-hidden style={{ fontSize: 16, lineHeight: 1 }}>+</span>
+              Add Charterer
+            </button>
+          </div>
         </header>
 
         {/* FilterBar */}

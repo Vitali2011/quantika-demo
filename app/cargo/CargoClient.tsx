@@ -490,7 +490,8 @@ export default function CargoClient({ rows, total }: Props) {
               <colgroup>
                 <col style={{ width: '220px' }} />
                 <col style={{ width: '90px' }} />
-                <col style={{ width: '170px' }} />
+                <col style={{ width: '140px' }} />
+                <col style={{ width: '140px' }} />
                 <col style={{ width: '140px' }} />
                 <col style={{ width: '110px' }} />
                 <col />
@@ -501,7 +502,8 @@ export default function CargoClient({ rows, total }: Props) {
                   {[
                     { label: 'Cargo', align: '' },
                     { label: 'Qty', align: 'text-right' },
-                    { label: 'Route', align: '' },
+                    { label: 'Load', align: '' },
+                    { label: 'Discharge', align: '' },
                     { label: 'Laycan', align: '' },
                     { label: 'Status', align: '' },
                     { label: 'Source', align: '' },
@@ -541,16 +543,11 @@ export default function CargoClient({ rows, total }: Props) {
                     <td className="px-3.5 py-3.5 text-right font-mono text-[13.5px] text-[#0f172a] tabular-nums whitespace-nowrap">
                       {row.quantity ?? <span className="text-[#94a3b8]">—</span>}
                     </td>
-                    <td className="px-3.5 py-3.5 font-mono text-[13px] text-[#0f172a] whitespace-nowrap">
-                      {row.originPort ? (
-                        <>
-                          <span>{abbr(row.originPort)}</span>
-                          <span className="text-[#cbd5e1] mx-1">→</span>
-                          <span>{row.destinationPort ? abbr(row.destinationPort) : '?'}</span>
-                        </>
-                      ) : (
-                        <span className="text-[#94a3b8]">—</span>
-                      )}
+                    <td className="px-3.5 py-3.5 text-[13.5px] text-[#0f172a] whitespace-nowrap">
+                      {row.originPort ?? <span className="text-[#94a3b8]">—</span>}
+                    </td>
+                    <td className="px-3.5 py-3.5 text-[13.5px] text-[#0f172a] whitespace-nowrap">
+                      {row.destinationPort ?? <span className="text-[#94a3b8]">—</span>}
                     </td>
                     <td className="px-3.5 py-3.5 font-mono text-[12.5px] text-[#0f172a] whitespace-nowrap">
                       {row.laycan ?? <span className="text-[#94a3b8]">—</span>}
