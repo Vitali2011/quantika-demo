@@ -101,6 +101,7 @@ export default function MarketPage() {
   const [bhsiData, setBhsiData] = useState<IndexData[] | null>(null);
   const [tmiData, setTmiData] = useState<IndexData[] | null>(null);
   const [drewryData, setDrewryData] = useState<IndexData[] | null>(null);
+  const [bdiPeriod, setBdiPeriod] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeKpi, setActiveKpi] = useState<string | null>(null);
@@ -121,10 +122,11 @@ export default function MarketPage() {
       }
 
       try {
-        const [bhsiRes, tmiRes, drewryRes] = await Promise.all([
+        const [bhsiRes, tmiRes, drewryRes, bdiRes] = await Promise.all([
           fetch('/api/market/indices?name=bhsi&days=30'),
           fetch('/api/market/indices?name=tmi&days=30'),
           fetch('/api/market/indices?name=drewry-bb&days=30'),
+          fetch('/api/market/baltic-kpi?code=BDI'),
         ]);
 
         if (!bhsiRes.ok || !tmiRes.ok || !drewryRes.ok) {
@@ -144,6 +146,11 @@ export default function MarketPage() {
         setBhsiData(bhsi);
         setTmiData(tmi);
         setDrewryData(drewry);
+
+        if (bdiRes.ok) {
+          const bdi = await bdiRes.json();
+          setBdiPeriod(typeof bdi.period === 'string' ? bdi.period : null);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load data');
       } finally {
@@ -204,10 +211,11 @@ export default function MarketPage() {
     );
   }
 
-  const latestDate = [latestIndexDate(bhsiData), latestIndexDate(tmiData), latestIndexDate(drewryData)]
+  // Use the OLDEST date across all data sources: if any source is stale the label should reflect it.
+  const latestDate = [latestIndexDate(bhsiData), latestIndexDate(tmiData), latestIndexDate(drewryData), bdiPeriod]
     .filter((d): d is string => d !== null)
     .sort()
-    .at(-1) ?? null;
+    .at(0) ?? null;
   const isStale = latestDate !== null && now > 0 && now - new Date(latestDate).getTime() > MS_PER_DAY;
 
   return (

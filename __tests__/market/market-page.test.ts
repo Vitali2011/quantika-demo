@@ -131,4 +131,36 @@ describe('MarketPage — sync badge staleness', () => {
 
     expect(screen.queryByText(/last sync:/i)).not.toBeInTheDocument();
   });
+
+  it('#545 — LAST SYNC shows BDI period date when BDI is older than market_indices data', async () => {
+    // BDI period is 17 days old; market_indices data (bhsi/tmi/drewry) is 5 days old.
+    // The LAST SYNC label must show the older BDI date (min across all sources).
+    const bdiDate = new Date(Date.now() - 17 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const indicesDate = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+    global.fetch = jest.fn((url: RequestInfo | URL) => {
+      const href = typeof url === 'string' ? url : url.toString();
+      if (href.includes('baltic-kpi')) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ value: 1450, unit: 'points', period: bdiDate }),
+        });
+      }
+      return Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve([{ index_date: indicesDate, value: 500, unit: 'points', source: 'test' }]),
+      });
+    }) as jest.Mock;
+
+    render(React.createElement(MarketPage));
+
+    await waitFor(() => {
+      expect(screen.getByText(/last sync:/i)).toBeInTheDocument();
+    });
+
+    // The label should show bdiDate, not indicesDate
+    expect(screen.getByText(new RegExp(bdiDate))).toBeInTheDocument();
+    expect(screen.queryByText(new RegExp(indicesDate))).not.toBeInTheDocument();
+  });
 });
