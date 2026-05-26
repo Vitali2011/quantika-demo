@@ -26,9 +26,9 @@ export default async function MatchDetailPage({ params }: Props) {
 
   const cookieStore = await cookies();
   const sessionId = cookieStore.get('session_id')?.value;
-  if (!sessionId) redirect('/');
+  if (!sessionId) redirect('/dashboard');
   const session = getSession(sessionId);
-  if (!session) redirect('/');
+  if (!session) redirect('/dashboard');
 
   if (isNaN(dbId) || dbId < 1) notFound();
 
