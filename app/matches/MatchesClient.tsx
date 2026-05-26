@@ -12,6 +12,7 @@ import { useMode } from '@/design-system/patterns/useMode';
 import { filterMatchesByMode } from '@/lib/matching/mode-filter';
 import { useToast } from '@/components/ui/toast';
 import { abbrPort } from '@/lib/utils/abbr-port';
+import { fmtLaycan } from '@/lib/utils/fmt-laycan';
 
 interface Props {
   initialMatches: StoredMatch[];
@@ -70,13 +71,6 @@ function fmtTce(v: number | null): string {
   return '$' + (v / 1000).toFixed(1) + 'k';
 }
 
-function fmtLaycan(start: number | null, end: number | null): string {
-  if (!start && !end) return '—';
-  const fmt = (ts: number) => new Date(ts * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  if (start && end) return `${fmt(start)}–${fmt(end)}`;
-  if (start) return fmt(start);
-  return fmt(end!);
-}
 
 export default function MatchesClient({ initialMatches, isComputing = false, cargoEmailIds = [], vesselEmailIds = [] }: Props) {
   const searchParams = useSearchParams();
@@ -371,7 +365,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
               >
                 <option data-testid="sort-score" value="score">Score</option>
                 <option data-testid="sort-freshness" value="freshness">Freshness</option>
-                {isOwner && <option value="tce">TCE/day</option>}
+                <option data-testid="sort-tce" value="tce">TCE/day</option>
               </select>
             </div>
 

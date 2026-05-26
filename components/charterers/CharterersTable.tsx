@@ -60,11 +60,11 @@ const TH_STYLE: React.CSSProperties = {
 };
 
 const HEADERS: { label: string; align: 'left' | 'right' }[] = [
-  { label: 'Company',      align: 'left'  },
-  { label: 'Email',        align: 'left'  },
-  { label: 'LC Req.',      align: 'right' },
-  { label: 'Last Contact', align: 'left'  },
-  { label: 'Status',       align: 'left'  },
+  { label: 'Name',               align: 'left'  },
+  { label: 'Email',              align: 'left'  },
+  { label: 'Last Contact',       align: 'right' },
+  { label: 'Last Email Snippet', align: 'left'  },
+  { label: 'Status',             align: 'left'  },
 ];
 
 export function CharterersTable({ charterers }: Props) {

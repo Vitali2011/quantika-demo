@@ -86,3 +86,49 @@ describe('MarketPage — graceful empty state on API errors', () => {
     expect(screen.queryByText(/no market data available/i)).not.toBeInTheDocument();
   });
 });
+
+describe('MarketPage — sync badge staleness', () => {
+  beforeAll(() => {
+    process.env.NEXT_PUBLIC_MARKET_BENCHMARK_FULL_ENABLED = 'true';
+  });
+  afterAll(() => {
+    process.env.NEXT_PUBLIC_MARKET_BENCHMARK_FULL_ENABLED = ORIGINAL_ENV;
+  });
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('shows LAST SYNC badge (not Live · synced) when data is >24h old', async () => {
+    const staleDate = new Date(Date.now() - 17 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const staleData = [{ index_date: staleDate, value: 500, unit: 'points', source: 'test' }];
+
+    global.fetch = jest.fn(() =>
+      Promise.resolve({ ok: true, json: () => Promise.resolve(staleData) })
+    ) as jest.Mock;
+
+    render(React.createElement(MarketPage));
+
+    await waitFor(() => {
+      expect(screen.getByText(/last sync:/i)).toBeInTheDocument();
+    });
+
+    expect(screen.queryByText(/live · synced/i)).not.toBeInTheDocument();
+  });
+
+  it('shows Live · synced badge when data is <24h old', async () => {
+    const freshDate = new Date().toISOString().slice(0, 10);
+    const freshData = [{ index_date: freshDate, value: 500, unit: 'points', source: 'test' }];
+
+    global.fetch = jest.fn(() =>
+      Promise.resolve({ ok: true, json: () => Promise.resolve(freshData) })
+    ) as jest.Mock;
+
+    render(React.createElement(MarketPage));
+
+    await waitFor(() => {
+      expect(screen.getByText(/live · synced/i)).toBeInTheDocument();
+    });
+
+    expect(screen.queryByText(/last sync:/i)).not.toBeInTheDocument();
+  });
+});
