@@ -12,7 +12,7 @@ import { useMode } from '@/design-system/patterns/useMode';
 import { filterMatchesByMode } from '@/lib/matching/mode-filter';
 import { useToast } from '@/components/ui/toast';
 import { abbrPort } from '@/lib/utils/abbr-port';
-import { fmtLaycan } from '@/lib/utils/fmt-laycan';
+import { fmtLaycan, isLaycanExpired } from '@/lib/utils/fmt-laycan';
 
 interface Props {
   initialMatches: StoredMatch[];
@@ -62,7 +62,19 @@ function formatAge(ts: number): string {
 // sits near the 2-hour boundary (same fix pattern as SubsCountdown).
 function isFreshMatch(m: StoredMatch, now: number): boolean {
   if (now === 0) return false; // pre-mount sentinel → no fresh badge in SSR
+  if (isLaycanExpired(m.laycan_end, m.laycan_start, Math.floor(now / 1000))) return false;
   return now / 1000 - m.created_at < 7200;
+}
+
+// Display score is capped at 70 for expired laycans — the stored score reflects
+// conditions at match-creation time, but once the cargo window has passed the
+// match is no longer actionable at the original confidence level.
+function effectiveScore(m: StoredMatch, nowMs: number): number {
+  if (nowMs === 0) return m.score;
+  if (isLaycanExpired(m.laycan_end, m.laycan_start, Math.floor(nowMs / 1000))) {
+    return Math.min(m.score, 70);
+  }
+  return m.score;
 }
 
 function fmtDwt(v: number | null): string {
@@ -297,7 +309,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
         (cargoTypes.length === 0 || cargoTypes.includes(m.cargo_type ?? '')) &&
         (quickFilter === 'all' ||
           (quickFilter === 'fresh' && isFreshMatch(m, clientNow)) ||
-          (quickFilter === 'score80' && m.score >= 80) ||
+          (quickFilter === 'score80' && effectiveScore(m, clientNow) >= 80) ||
           (quickFilter === 'dwt50_60' && m.vessel_dwt != null && m.vessel_dwt >= 50000 && m.vessel_dwt <= 60000))
     )
     .sort((a, b) => {
@@ -464,6 +476,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                 <label className="block text-xs font-medium text-gray-600 mb-1">Laycan From</label>
                 <input
                   type="date"
+                  lang="en"
                   value={laycan_from}
                   onChange={(e) => setLaycanFrom(e.target.value)}
                   className="border rounded px-2 py-1 text-sm w-full"
@@ -473,6 +486,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                 <label className="block text-xs font-medium text-gray-600 mb-1">Laycan To</label>
                 <input
                   type="date"
+                  lang="en"
                   value={laycan_to}
                   onChange={(e) => setLaycanTo(e.target.value)}
                   className="border rounded px-2 py-1 text-sm w-full"
@@ -625,7 +639,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                             )}
                           </div>
                           <div className="text-right flex-none">
-                            <div className="text-lg font-bold text-blue-600">{match.score}%</div>
+                            <div className="text-lg font-bold text-blue-600">{effectiveScore(match, clientNow)}%</div>
                             <div className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 capitalize">
                               {match.status}
                             </div>
@@ -804,8 +818,8 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                         {/* Score */}
                         <td className={`py-[13px] px-3 pl-5 align-middle${fresh ? ' [box-shadow:inset_3px_0_0_#16a34a]' : ''}`}>
                           <div className="flex items-center gap-2">
-                            <span className={`inline-flex items-center justify-center h-[26px] px-[11px] rounded-full font-mono text-[12.5px] font-medium ${scoreClass(match.score)}`}>
-                              {match.score}
+                            <span className={`inline-flex items-center justify-center h-[26px] px-[11px] rounded-full font-mono text-[12.5px] font-medium ${scoreClass(effectiveScore(match, clientNow))}`}>
+                              {effectiveScore(match, clientNow)}
                             </span>
                             {fresh && (
                               <span className="inline-flex items-center h-[18px] px-[7px] rounded-full font-mono text-[9.5px] tracking-[0.08em] uppercase bg-emerald-600 text-white font-semibold">
