@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useCallback, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 export type Mode = 'charterer' | 'owner';
 
@@ -11,13 +11,16 @@ export interface ModeContextValue {
 export const ModeContext = createContext<ModeContextValue | null>(null);
 
 export function ModeProvider({ initial, children }: { initial: Mode; children: ReactNode }) {
-  const [mode, setModeState] = useState<Mode>(() => {
-    if (typeof window === 'undefined') return initial;
+  const [mode, setModeState] = useState<Mode>(initial);
+
+  // Hydration-safe: read URL ?mode= param after mount only.
+  // Reading window.location.search inside useState initializer causes React
+  // error #419 (server returns `initial`, client may return a different value).
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const urlMode = params.get('mode');
-    if (urlMode === 'charterer' || urlMode === 'owner') return urlMode;
-    return initial;
-  });
+    if (urlMode === 'charterer' || urlMode === 'owner') setModeState(urlMode);
+  }, []);
 
   const setMode = useCallback((m: Mode) => {
     setModeState(m);
