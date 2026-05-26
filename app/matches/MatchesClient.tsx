@@ -371,7 +371,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
               >
                 <option data-testid="sort-score" value="score">Score</option>
                 <option data-testid="sort-freshness" value="freshness">Freshness</option>
-                {isOwner && <option value="tce">TCE/day</option>}
+                <option data-testid="sort-tce" value="tce">TCE/day</option>
               </select>
             </div>
 
