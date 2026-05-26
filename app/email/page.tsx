@@ -43,9 +43,9 @@ const CATEGORY_COLORS: Record<EmailCategory, string> = {
 export default async function EmailInboxPage() {
   const cookieStore = await cookies();
   const sessionId = cookieStore.get('session_id')?.value;
-  if (!sessionId) redirect('/');
+  if (!sessionId) redirect('/dashboard');
   const session = getSession(sessionId);
-  if (!session) redirect('/');
+  if (!session) redirect('/dashboard');
 
   const { emails, processedEmails } = session;
 
