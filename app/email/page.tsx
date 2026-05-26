@@ -23,6 +23,12 @@ const CATEGORY_LABELS: Record<EmailCategory, string> = {
   OTHER: 'Other',
 };
 
+function getEmailConfidenceTier(score: number): 'high' | 'medium' | 'low' {
+  if (score > 0.8) return 'high';
+  if (score >= 0.5) return 'medium';
+  return 'low';
+}
+
 const CATEGORY_COLORS: Record<EmailCategory, string> = {
   CARGO_INQUIRY: 'text-blue-700 bg-blue-50 border-blue-200',
   VESSEL_POSITION: 'text-emerald-700 bg-emerald-50 border-emerald-200',
@@ -91,14 +97,14 @@ export default async function EmailInboxPage() {
         </div>
 
         {sorted.map(({ email, processed }) => {
-          const isLowConfidence = processed && processed.confidence < 0.8;
+          const confidenceTier = processed ? getEmailConfidenceTier(processed.confidence) : null;
           const category = processed?.type;
 
           return (
             <Card
               key={email.id}
               padding="none"
-              className={isLowConfidence ? 'border-amber-300 ring-1 ring-amber-200' : ''}
+              className={confidenceTier === 'low' ? 'border-amber-300 ring-1 ring-amber-200' : ''}
             >
               <div className="p-4 space-y-3">
                 {/* Header row */}
@@ -113,9 +119,14 @@ export default async function EmailInboxPage() {
                           {CATEGORY_LABELS[category]}
                         </span>
                       )}
-                      {isLowConfidence && (
+                      {confidenceTier === 'low' && (
                         <span className="inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-ds-sm border border-amber-300 text-amber-700 bg-amber-50">
-                          Low confidence {Math.round(processed.confidence * 100)}%
+                          Low confidence {Math.round(processed!.confidence * 100)}%
+                        </span>
+                      )}
+                      {confidenceTier === 'medium' && (
+                        <span className="inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-ds-sm border border-yellow-300 text-yellow-700 bg-yellow-50">
+                          Medium confidence {Math.round(processed!.confidence * 100)}%
                         </span>
                       )}
                     </div>
