@@ -1,29 +1,18 @@
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
-import { getStore } from '@/lib/session-store';
-import { listMatches } from '@/lib/matching/matches-repository';
-import { filterByCategory, getEmailCounts, groupByContact } from '@/lib/dashboard-queries';
-import { EmailCard, EmailSection, ActionPanel } from '@/components/dashboard';
+import { filterByCategory } from '@/lib/dashboard-queries';
 import { countAwaitingApproval } from '@/lib/auto-prequote/queue';
-import { InboxBreakdown } from '@/components/dashboard/InboxBreakdown';
-import { RoiSummaryTile } from '@/components/dashboard/RoiSummaryTile';
-import SubsCountdownWidget from '@/components/deals/SubsCountdownWidget';
 import { classifyPriority } from '@/lib/sailing/priority-classifier';
 import type { PriorityLevel } from '@/lib/sailing/priority-classifier';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
-import { formatNumber } from '@/lib/utils';
 import { DashboardKpiStrip } from '@/components/dashboard/DashboardKpiStrip';
 import { DashboardTodoSection } from '@/components/dashboard/DashboardTodoSection';
 import { DashboardFreshMatches } from '@/components/dashboard/DashboardFreshMatches';
-import { DashboardInboxSection } from '@/components/dashboard/DashboardInboxSection';
-import type { InboxCounts } from '@/components/dashboard/DashboardInboxSection';
+import { MorningHeader } from '@/components/dashboard/MorningHeader';
 import { Badge } from '@/design-system/primitives';
 
 const PRIORITY_ORDER: Record<PriorityLevel, number> = { urgent: 0, attention: 1, ok: 2 };
-
-const DEMO_DEAL_ID = 'demo-deal-001';
-const DEMO_SUBS_DEADLINE = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
@@ -54,8 +43,6 @@ export default async function DashboardPage() {
     emails,
     processedEmails,
     matches,
-    recaps,
-    commissionSummary,
     blockedMatches: rawBlockedMatches,
   } = session;
 
@@ -84,52 +71,10 @@ export default async function DashboardPage() {
   }
 
   const cargoRows = filterByCategory(emails, processedEmails, 'CARGO_INQUIRY');
-  const vesselRows = filterByCategory(emails, processedEmails, 'VESSEL_POSITION');
-  const fixtureRows = filterByCategory(emails, processedEmails, 'FIXTURE_RECAP');
-  const clientReplyRows = filterByCategory(emails, processedEmails, 'CLIENT_REPLY');
-  const documentRows = filterByCategory(emails, processedEmails, 'DOCUMENT');
-  const vesselCertRows = filterByCategory(emails, processedEmails, 'VESSEL_CERTIFICATE');
-  const tctRequestRows = filterByCategory(emails, processedEmails, 'TCT_REQUEST');
-  const otherOnlyRows = filterByCategory(emails, processedEmails, 'OTHER');
-  const otherRows = [...clientReplyRows, ...documentRows, ...otherOnlyRows];
-
-  const needsActionCargo = cargoRows.filter((r) => r.statusGroup === 'NEEDS_ACTION');
-
-  const commissionLines =
-    commissionSummary?.totalByCurrency
-      .map(
-        (t) =>
-          `~${t.currency} ${formatNumber(t.amount, { maximumFractionDigits: 0 })}`,
-      )
-      .join(' + ') || null;
-
-  const categoryCounts = getEmailCounts({
-    CARGO_INQUIRY: cargoRows,
-    VESSEL_POSITION: vesselRows,
-    FIXTURE_RECAP: fixtureRows,
-    CLIENT_REPLY: clientReplyRows,
-    DOCUMENT: documentRows,
-    VESSEL_CERTIFICATE: vesselCertRows,
-    TCT_REQUEST: tctRequestRows,
-    OTHER: otherOnlyRows,
-  });
-
-  const isSample = session.isSampleData === true;
-  const allContacts = groupByContact(emails);
-  const topContacts = allContacts.slice(0, 10);
-  const maxContactEmails = topContacts.length > 0 ? topContacts[0].count : 1;
 
   const goodMatches = matches.filter(
     (m) => m.matchLevel === 'good' || m.matchLevel === 'possible',
   );
-
-  // Compute avgTce from DB matches (returns [] when MATCHES_ENABLED=false)
-  const db = getStore().getDatabase();
-  const dbMatches = listMatches(db, { user_id: sessionId, sortBy: 'score', sortDir: 'desc' });
-  const tceValues = dbMatches.map((m) => m.tce_usd_per_day).filter((v): v is number => v != null);
-  const avgTce = tceValues.length > 0
-    ? Math.round(tceValues.reduce((a, b) => a + b, 0) / tceValues.length)
-    : null;
 
   const priorityCards = goodMatches
     .map((match, i) => {
@@ -151,49 +96,35 @@ export default async function DashboardPage() {
     index: i,
   }));
 
-  const noActiveDeals = goodMatches.length === 0;
+  const rawName = session.accountId?.split('@')[0] ?? 'there';
+  const userName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
 
   return (
     <div className="bg-ds-bg min-h-screen">
       <AnalyticsTracker event="dashboard_viewed" />
       <div className="max-w-3xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-6">
 
-        {/* ── ROI Summary (feature flag) ──────────────────────────── */}
-        {process.env.NEXT_PUBLIC_ROI_GUARANTEE_ENABLED === 'true' && <RoiSummaryTile />}
-
-        {/* ── Subs Countdown (feature flag) ──────────────────────── */}
-        {process.env.NEXT_PUBLIC_SUBS_TIMER_V2_ENABLED === 'true' && (
-          <SubsCountdownWidget
-            dealId={DEMO_DEAL_ID}
-            subsDeadline={DEMO_SUBS_DEADLINE}
-            chartererTier="blue-chip"
-          />
-        )}
-
         {/* ── Header ─────────────────────────────────────────────── */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-lg font-semibold text-ds-text">Dashboard</h1>
-            {isSample && (
-              <span className="inline-block mt-0.5 px-2 py-0.5 rounded text-xs font-medium bg-ds-warn-soft text-ds-warn">
+        <div className="flex items-start justify-between">
+          <MorningHeader userName={userName} alertCount={countAwaitingApproval()} />
+          <div className="flex flex-col items-end gap-1">
+            {session.isSampleData && (
+              <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-ds-warn-soft text-ds-warn">
                 Sample data
               </span>
             )}
+            {countAwaitingApproval() > 0 && (
+              <Badge variant="warn" data-testid="pending-drafts-badge">
+                {countAwaitingApproval()} drafts pending
+              </Badge>
+            )}
           </div>
-          {countAwaitingApproval() > 0 && (
-            <Badge variant="warn" data-testid="pending-drafts-badge">
-              {countAwaitingApproval()} drafts pending
-            </Badge>
-          )}
         </div>
 
         {/* ── 4 KPI tiles ────────────────────────────────────────── */}
         <DashboardKpiStrip
           openMatches={goodMatches.length}
           activeCargoes={cargoRows.length}
-          activeVessels={vesselRows.length}
-          fixtureCount={fixtureRows.length}
-          avgTce={avgTce}
         />
 
         {/* ── 🎯 To do today ─────────────────────────────────────── */}
@@ -219,13 +150,6 @@ export default async function DashboardPage() {
           </Link>
         </section>
 
-        {/* ── 📥 Inbox ───────────────────────────────────────────── */}
-        <DashboardInboxSection
-          counts={categoryCounts as unknown as InboxCounts}
-          totalEmails={emails.length}
-          needsAction={needsActionCargo.length}
-        />
-
         {/* ── Charterer Credit (feature flag) ────────────────────── */}
         {process.env.NEXT_PUBLIC_CHARTERER_CREDIT_ENABLED === 'true' && (
           <Link
@@ -238,66 +162,6 @@ export default async function DashboardPage() {
             </div>
             <span className="text-ds-text-subtle text-sm">→</span>
           </Link>
-        )}
-
-        {/* ── Action Panel ───────────────────────────────────────── */}
-        <ActionPanel
-          needsActionCargo={needsActionCargo}
-          goodMatches={goodMatches}
-          fixtureRows={fixtureRows}
-          commissionSummary={commissionSummary}
-          commissionLines={commissionLines}
-          oldestDays={
-            needsActionCargo.length > 0
-              ? Math.max(...needsActionCargo.map((r) => r.processed.daysWithoutReply || 0))
-              : 0
-          }
-        />
-
-        {/* ── Active Negotiations ─────────────────────────────────── */}
-        {recaps.length > 0 && (
-          <section>
-            <h2 className="text-sm font-semibold text-ds-text-muted uppercase tracking-wide mb-3">
-              Active Negotiations
-            </h2>
-            <div className="space-y-2">
-              {recaps.map((recap) => (
-                <Link
-                  key={recap.threadId}
-                  href={`/recap/${recap.threadId}`}
-                  className="block focus-visible:ring-2 focus-visible:ring-ds-accent/40 rounded-ds-md outline-none"
-                >
-                  <div className="flex items-center justify-between p-3 rounded-ds-md hover:bg-ds-surface-muted transition-colors border border-ds-border bg-ds-surface">
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-ds-text truncate">{recap.subject}</p>
-                      <p className="text-xs text-ds-text-muted">
-                        {recap.emailCount} emails · {recap.dateRange} ·{' '}
-                        {recap.points.filter((p) => p.status === 'AGREED').length}/{recap.points.length}{' '}
-                        terms agreed
-                      </p>
-                    </div>
-                    <span className="shrink-0 ml-3 text-xs text-ds-text-subtle">→</span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ── Inbox Breakdown (summary) ───────────────────────────── */}
-        {!noActiveDeals && (
-          <section>
-            <h2 className="text-sm font-semibold text-ds-text-muted uppercase tracking-wide mb-3">
-              Inbox Breakdown
-            </h2>
-            <InboxBreakdown
-              cargoInquiries={categoryCounts.CARGO_INQUIRY}
-              vesselPositions={categoryCounts.VESSEL_POSITION}
-              fixtureRecaps={categoryCounts.FIXTURE_RECAP}
-              clientReplies={categoryCounts.CLIENT_REPLY}
-              noise={categoryCounts.OTHER + categoryCounts.DOCUMENT}
-            />
-          </section>
         )}
 
         {/* ── Blocked Matches ────────────────────────────────────── */}

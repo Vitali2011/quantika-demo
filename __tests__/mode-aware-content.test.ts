@@ -153,34 +153,34 @@ describe('MatchesClient — mode-aware filtering wiring', () => {
 // Source analysis: DashboardKpiStrip — mode-aware KPIs
 // ─────────────────────────────────────────────────────────────────────────────
 
-describe('DashboardKpiStrip — mode-aware KPIs', () => {
+describe('DashboardKpiStrip — fixed KPI tiles (#523)', () => {
   const src = fs.readFileSync(
     path.join(ROOT, 'components/dashboard/DashboardKpiStrip.tsx'),
     'utf8',
   );
 
-  it('accepts fixtureCount prop', () => {
-    expect(src).toMatch(/fixtureCount/);
+  it('accepts openMatches prop', () => {
+    expect(src).toMatch(/openMatches/);
   });
 
-  it('accepts avgTce prop', () => {
-    expect(src).toMatch(/avgTce/);
+  it('accepts activeCargoes prop', () => {
+    expect(src).toMatch(/activeCargoes/);
   });
 
-  it('shows "Avg TCE Saved" in charterer mode tiles', () => {
-    expect(src).toMatch(/Avg TCE Saved/);
+  it('shows "Open Matches" tile', () => {
+    expect(src).toMatch(/Open Matches/);
   });
 
-  it('shows "Fixtures Secured" in owner mode tiles', () => {
-    expect(src).toMatch(/Fixtures Secured/);
+  it('shows "Active Cargoes" tile', () => {
+    expect(src).toMatch(/Active Cargoes/);
   });
 
-  it('shows "Vessels Available" in owner mode tiles', () => {
-    expect(src).toMatch(/Vessels Available/);
+  it('shows "BDI" market tile', () => {
+    expect(src).toMatch(/BDI/);
   });
 
-  it('shows "Matches Found" in charterer mode tiles', () => {
-    expect(src).toMatch(/Matches Found/);
+  it('shows "HSS MED RATE" market tile', () => {
+    expect(src).toMatch(/HSS MED RATE/);
   });
 });
 
