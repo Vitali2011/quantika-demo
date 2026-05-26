@@ -57,8 +57,12 @@ function formatAge(ts: number): string {
   return new Date(ts * 1000).toLocaleDateString('en-US', { weekday: 'short' });
 }
 
-function isFreshMatch(m: StoredMatch): boolean {
-  return Date.now() / 1000 - m.created_at < 7200;
+// Defer Date.now() to post-mount: SSR and first client paint must produce
+// identical HTML, otherwise React #418 hydration mismatch fires when a match
+// sits near the 2-hour boundary (same fix pattern as SubsCountdown).
+function isFreshMatch(m: StoredMatch, now: number): boolean {
+  if (now === 0) return false; // pre-mount sentinel → no fresh badge in SSR
+  return now / 1000 - m.created_at < 7200;
 }
 
 function fmtDwt(v: number | null): string {
@@ -105,10 +109,14 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
   // CD design state
   const [density, setDensity] = useState<Density>('table');
   const [nowUtc, setNowUtc] = useState<string>("");
+  // Hydration-safe clock: starts at 0 (matches SSR), set post-mount to avoid
+  // React #418 text-content mismatch on the "fresh" badge (#543).
+  const [clientNow, setClientNow] = useState<number>(0);
   useEffect(() => {
     const tick = () => {
       const d = new Date();
       setNowUtc(`${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}`);
+      setClientNow(Date.now());
     };
     tick();
     const id = setInterval(tick, 60000);
@@ -288,7 +296,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
         (!filterStatus || m.status === filterStatus) &&
         (cargoTypes.length === 0 || cargoTypes.includes(m.cargo_type ?? '')) &&
         (quickFilter === 'all' ||
-          (quickFilter === 'fresh' && isFreshMatch(m)) ||
+          (quickFilter === 'fresh' && isFreshMatch(m, clientNow)) ||
           (quickFilter === 'score80' && m.score >= 80) ||
           (quickFilter === 'dwt50_60' && m.vessel_dwt != null && m.vessel_dwt >= 50000 && m.vessel_dwt <= 60000))
     )
@@ -785,7 +793,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                 </thead>
                 <tbody>
                   {filtered.map((match) => {
-                    const fresh = isFreshMatch(match);
+                    const fresh = isFreshMatch(match, clientNow);
                     return (
                       <tr
                         key={match.id}
