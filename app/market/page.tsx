@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { MarketKpiTile } from '@/components/market/MarketKpiTile';
+import { MetricHistoryPanel } from '@/components/market/MetricHistoryPanel';
 import { RoutesSection } from '@/components/market/RoutesSection';
 import { FixturesSection } from '@/components/market/FixturesSection';
 import { KnowledgeFeed } from '@/components/market/KnowledgeFeed';
@@ -246,7 +247,18 @@ export default function MarketPage() {
           </div>
         </section>
 
-        {/* TODO: drill-down chart for activeKpi — future feature */}
+        {/* Metric history side panel */}
+        {activeKpi != null && (() => {
+          const tile = [...BALTIC_TILES, ...COMMODITY_TILES].find((t) => t.key === activeKpi);
+          return tile ? (
+            <MetricHistoryPanel
+              kpiKey={activeKpi}
+              label={tile.label}
+              unit={tile.unit}
+              onClose={() => setActiveKpi(null)}
+            />
+          ) : null;
+        })()}
 
         {/* Routes section */}
         <RoutesSection />
