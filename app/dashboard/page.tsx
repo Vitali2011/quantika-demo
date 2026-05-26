@@ -1,5 +1,4 @@
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
 import { filterByCategory } from '@/lib/dashboard-queries';
@@ -18,9 +17,27 @@ const PRIORITY_ORDER: Record<PriorityLevel, number> = { urgent: 0, attention: 1,
 export default async function DashboardPage() {
   const cookieStore = await cookies();
   const sessionId = cookieStore.get('session_id')?.value;
-  if (!sessionId) redirect('/');
-  const session = getSession(sessionId);
-  if (!session) redirect('/');
+  const session = sessionId ? getSession(sessionId) : null;
+
+  if (!session) {
+    return (
+      <div className="min-h-screen bg-ds-bg flex items-center justify-center px-4">
+        <div className="max-w-md w-full text-center space-y-4">
+          <div className="text-4xl">📭</div>
+          <h1 className="text-xl font-bold text-ds-text">No emails yet</h1>
+          <p className="text-sm text-ds-text-muted">
+            Upload emails to start analysing freight inquiries, vessel positions, and negotiations.
+          </p>
+          <Link
+            href="/processing"
+            className="inline-block px-6 py-3 bg-ds-accent text-ds-accent-fg text-sm font-medium rounded-ds-md hover:bg-ds-accent/90 transition-colors"
+          >
+            Upload emails
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const {
     emails,

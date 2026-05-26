@@ -43,4 +43,25 @@ describe('CharterersTable column labels', () => {
     render(<CharterersTable charterers={[]} />);
     expect(screen.getByText(/no charterers found/i)).toBeInTheDocument();
   });
+
+  // #520: Email column + headers visible even when empty
+  it('shows Email column header', () => {
+    render(<CharterersTable charterers={SAMPLE} />);
+    expect(screen.getByRole('columnheader', { name: /^email$/i })).toBeInTheDocument();
+  });
+
+  it('shows table headers even when charterers list is empty', () => {
+    render(<CharterersTable charterers={[]} />);
+    expect(screen.getByRole('columnheader', { name: /company/i })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: /^email$/i })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: /status/i })).toBeInTheDocument();
+  });
+
+  it('renders email when provided', () => {
+    const withEmail: Charterer[] = [
+      { id: '1', name: 'Alpha Corp', tier: 'blue-chip', require_lc: 0, notes: null, email: 'alpha@corp.com' },
+    ];
+    render(<CharterersTable charterers={withEmail} />);
+    expect(screen.getByText('alpha@corp.com')).toBeInTheDocument();
+  });
 });
