@@ -21,12 +21,8 @@ export const metadata: Metadata = {
   description: 'See how AI handles your freight email in 2 minutes',
 };
 
-async function TrialBannerWrapper() {
+async function TrialBannerWrapper({ sessionId }: { sessionId: string }) {
   try {
-    const cookieStore = await cookies();
-    const sessionId = cookieStore.get('session_id')?.value;
-    if (!sessionId) return null;
-
     const trial = await getTrialState(sessionId);
     if (!trial) return null;
 
@@ -112,6 +108,8 @@ export default async function RootLayout({
     );
   }
 
+  const sessionId = cookieStore.get('session_id')?.value;
+
   // Resolve preferred_mode: cookie fast-path first, then DB
   let initialMode: Mode = 'charterer';
   const modeCookie = cookieStore.get('preferred_mode')?.value;
@@ -135,9 +133,11 @@ export default async function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body className={inter.className}>
-        <Suspense fallback={null}>
-          <TrialBannerWrapper />
-        </Suspense>
+        {sessionId && (
+          <Suspense fallback={null}>
+            <TrialBannerWrapper sessionId={sessionId} />
+          </Suspense>
+        )}
         <ModeProvider initial={initialMode}>
           <AppShell>{children}</AppShell>
         </ModeProvider>
