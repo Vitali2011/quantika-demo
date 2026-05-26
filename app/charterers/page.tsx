@@ -8,7 +8,7 @@
  * - Modal submit → POST /api/charterers → refresh list
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CharterersTable, type Charterer } from '@/components/charterers/CharterersTable';
 import { NewChartererModal } from '@/components/charterers/NewChartererModal';
 
@@ -19,6 +19,21 @@ export default function CharterersPage() {
   const [charterers, setCharterers] = useState<Charterer[]>([]);
   const [loading, setLoading] = useState(isFeatureEnabled);
   const [showForm, setShowForm] = useState(false);
+  const [filterQuery, setFilterQuery] = useState('');
+  const [sortOrder, setSortOrder] = useState<'contact-desc' | 'contact-asc' | 'alpha'>('contact-desc');
+
+  const displayed = useMemo(() => {
+    const q = filterQuery.toLowerCase();
+    const filtered = q
+      ? charterers.filter(c =>
+          c.name.toLowerCase().includes(q) ||
+          (c.email?.toLowerCase().includes(q) ?? false)
+        )
+      : charterers;
+    if (sortOrder === 'alpha') return [...filtered].sort((a, b) => a.name.localeCompare(b.name));
+    if (sortOrder === 'contact-asc') return [...filtered].sort((a, b) => (a.created_at ?? '').localeCompare(b.created_at ?? ''));
+    return [...filtered].sort((a, b) => (b.created_at ?? '').localeCompare(a.created_at ?? ''));
+  }, [charterers, filterQuery, sortOrder]);
 
   useEffect(() => {
     if (!isFeatureEnabled) return;
@@ -59,26 +74,83 @@ export default function CharterersPage() {
             </h1>
             {charterers.length > 0 && (
               <span style={{ fontSize: 13, color: 'var(--ds-text-muted)', fontFamily: '"Geist Mono", ui-monospace, monospace' }}>
-                {charterers.length} contacts
+                {filterQuery ? `${displayed.length} of ${charterers.length}` : charterers.length} contacts
               </span>
             )}
           </div>
-          <button
-            onClick={() => setShowForm((v) => !v)}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button
+              aria-label="Import Gmail"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                padding: '8px 16px',
+                fontSize: 14, fontWeight: 500,
+                background: 'var(--ds-surface)', color: 'var(--ds-text)',
+                border: '1px solid var(--ds-border)', borderRadius: 8,
+                cursor: 'pointer',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              Import Gmail
+            </button>
+            <button
+              onClick={() => setShowForm((v) => !v)}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                padding: '8px 16px',
+                fontSize: 14, fontWeight: 500,
+                background: 'var(--ds-accent)', color: 'var(--ds-accent-fg)',
+                border: 'none', borderRadius: 8,
+                cursor: 'pointer',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              <span aria-hidden style={{ fontSize: 16, lineHeight: 1 }}>+</span>
+              Add Charterer
+            </button>
+          </div>
+        </header>
+
+        {/* FilterBar */}
+        <div style={{ display: 'flex', gap: 10, marginBottom: 14, alignItems: 'center' }}>
+          <input
+            type="search"
+            aria-label="Search charterers"
+            placeholder="Search by name or email…"
+            value={filterQuery}
+            onChange={(e) => setFilterQuery(e.target.value)}
             style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              padding: '8px 16px',
-              fontSize: 14, fontWeight: 500,
-              background: 'var(--ds-accent)', color: 'var(--ds-accent-fg)',
-              border: 'none', borderRadius: 8,
+              flex: 1,
+              height: 36,
+              padding: '0 12px',
+              fontSize: 14,
+              border: '1px solid var(--ds-border)',
+              borderRadius: 8,
+              background: 'var(--ds-surface)',
+              color: 'var(--ds-text)',
+              outline: 'none',
+            }}
+          />
+          <select
+            aria-label="Sort order"
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value as 'contact-desc' | 'contact-asc' | 'alpha')}
+            style={{
+              height: 36,
+              padding: '0 10px',
+              fontSize: 13,
+              border: '1px solid var(--ds-border)',
+              borderRadius: 8,
+              background: 'var(--ds-surface)',
+              color: 'var(--ds-text)',
               cursor: 'pointer',
-              letterSpacing: '-0.01em',
             }}
           >
-            <span aria-hidden style={{ fontSize: 16, lineHeight: 1 }}>+</span>
-            Add Charterer
-          </button>
-        </header>
+            <option value="contact-desc">Last Contact ↓</option>
+            <option value="contact-asc">Last Contact ↑</option>
+            <option value="alpha">Company A–Z</option>
+          </select>
+        </div>
 
         {/* Legend */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16, fontFamily: '"Geist Mono", ui-monospace, monospace', fontSize: 11, color: 'var(--ds-text-muted)' }}>
@@ -114,7 +186,7 @@ export default function CharterersPage() {
           <p style={{ fontSize: 14, color: 'var(--ds-text-muted)', padding: '32px 0', textAlign: 'center' }}>Loading…</p>
         ) : (
           <div style={{ border: '1px solid var(--ds-border)', borderRadius: 10, background: 'var(--ds-surface)', overflow: 'hidden' }}>
-            <CharterersTable charterers={charterers} />
+            <CharterersTable charterers={displayed} />
           </div>
         )}
       </div>

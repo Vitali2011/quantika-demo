@@ -63,3 +63,36 @@ export function sanitizeEmailBody(body: string): string {
     .replace(/\n{3,}/g, '\n\n')
     .trim();
 }
+
+const HTML_ENTITY_MAP: Record<string, string> = {
+  amp: '&',
+  lt: '<',
+  gt: '>',
+  quot: '"',
+  apos: "'",
+  nbsp: ' ',
+};
+
+/**
+ * Decode common HTML entities (named + numeric) in a plain text string.
+ * Safe for SSR — does not use DOMParser. Use before rendering text that
+ * may contain entity-encoded characters (e.g. email snippets/bodies).
+ */
+export function decodeHtmlEntities(s: string): string {
+  if (!s) return s;
+  return s.replace(/&(#x?[0-9a-fA-F]+|[a-zA-Z]+);/g, (match, ent) => {
+    if (ent[0] === '#') {
+      const code = ent[1] === 'x' || ent[1] === 'X'
+        ? parseInt(ent.slice(2), 16)
+        : parseInt(ent.slice(1), 10);
+      if (!Number.isFinite(code) || code < 0 || code > 0x10ffff) return match;
+      try {
+        return String.fromCodePoint(code);
+      } catch {
+        return match;
+      }
+    }
+    const mapped = HTML_ENTITY_MAP[ent.toLowerCase()];
+    return mapped ?? match;
+  });
+}

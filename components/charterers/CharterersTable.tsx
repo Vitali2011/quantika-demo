@@ -8,6 +8,8 @@ export interface Charterer {
   tier: 'blue-chip' | 'second' | 'weak';
   require_lc: number;
   notes: string | null;
+  email?: string | null;
+  created_at?: string;
 }
 
 type ContactStatus = 'hot' | 'warm' | 'cold';
@@ -45,15 +47,28 @@ interface Props {
   charterers: Charterer[];
 }
 
-export function CharterersTable({ charterers }: Props) {
-  if (charterers.length === 0) {
-    return (
-      <p className="text-sm py-8 text-center" style={{ color: 'var(--ds-text-muted)' }}>
-        No charterers found. Add one to get started.
-      </p>
-    );
-  }
+const TH_STYLE: React.CSSProperties = {
+  fontFamily: '"Geist Mono", ui-monospace, "SF Mono", Menlo, monospace',
+  fontSize: 10.5,
+  letterSpacing: '0.14em',
+  textTransform: 'uppercase',
+  color: 'var(--ds-text-subtle)',
+  fontWeight: 500,
+  padding: '14px 16px',
+  borderBottom: '1px solid var(--ds-border)',
+  background: 'var(--ds-surface-muted)',
+  whiteSpace: 'nowrap',
+};
 
+const HEADERS: { label: string; align: 'left' | 'right' }[] = [
+  { label: 'Name',               align: 'left'  },
+  { label: 'Email',              align: 'left'  },
+  { label: 'Last Contact',       align: 'right' },
+  { label: 'Last Email Snippet', align: 'left'  },
+  { label: 'Status',             align: 'left'  },
+];
+
+export function CharterersTable({ charterers }: Props) {
   return (
     <div style={{ overflowX: 'auto' }}>
       <table
@@ -67,36 +82,31 @@ export function CharterersTable({ charterers }: Props) {
       >
         <colgroup>
           <col style={{ width: 220 }} />
+          <col style={{ width: 180 }} />
           <col style={{ width: 70 }} />
           <col style={{ width: 200 }} />
           <col style={{ width: 90 }} />
         </colgroup>
         <thead>
           <tr>
-            {['Name', 'LC Req.', 'Last note', 'Status'].map((h, i) => (
-              <th
-                key={h}
-                style={{
-                  textAlign: i === 1 ? 'right' : 'left',
-                  fontFamily: '"Geist Mono", ui-monospace, "SF Mono", Menlo, monospace',
-                  fontSize: 10.5,
-                  letterSpacing: '0.14em',
-                  textTransform: 'uppercase',
-                  color: 'var(--ds-text-subtle)',
-                  fontWeight: 500,
-                  padding: '14px 16px',
-                  borderBottom: '1px solid var(--ds-border)',
-                  background: 'var(--ds-surface-muted)',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {h}
+            {HEADERS.map(({ label, align }) => (
+              <th key={label} style={{ ...TH_STYLE, textAlign: align }}>
+                {label}
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {charterers.map((c) => {
+          {charterers.length === 0 ? (
+            <tr>
+              <td
+                colSpan={HEADERS.length}
+                style={{ padding: '32px 16px', textAlign: 'center', color: 'var(--ds-text-muted)', fontSize: 14 }}
+              >
+                No charterers found. Add one to get started.
+              </td>
+            </tr>
+          ) : charterers.map((c) => {
             const status = tierToStatus(c.tier);
             const rowBg =
               status === 'hot' ? 'var(--ds-accent-soft)' :
@@ -147,6 +157,11 @@ export function CharterersTable({ charterers }: Props) {
                       </span>
                     </div>
                   </Link>
+                </td>
+
+                {/* Email */}
+                <td style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border)', verticalAlign: 'middle', fontFamily: '"Geist Mono", ui-monospace, monospace', fontSize: 13, color: 'var(--ds-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {c.email ?? <span style={{ color: 'var(--ds-text-subtle)' }}>—</span>}
                 </td>
 
                 {/* LC Required */}

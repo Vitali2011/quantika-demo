@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useMode } from './useMode';
 import { ModeSwitcher } from './ModeSwitcher';
 import { DarkToggle } from './DarkToggle';
+import { Bell } from 'lucide-react';
 import { cn } from '@/design-system/primitives/_utils';
 
 const MORE_ITEMS = [
@@ -24,8 +25,9 @@ export function TopNav() {
 
   return (
     <header className="hidden md:flex items-center gap-6 bg-ds-surface border-b border-ds-border px-6 py-3 sticky top-0 z-30">
-      <Link href="/dashboard" className="text-ds-accent font-bold text-lg shrink-0" aria-label="Quantika home">
-        Q
+      <Link href="/dashboard" className="flex items-center gap-2 shrink-0" aria-label="Quantika home">
+        <span className="w-7 h-7 rounded-[6px] bg-ds-accent text-ds-accent-fg inline-flex items-center justify-center font-bold text-sm flex-shrink-0">Q</span>
+        <span className="font-bold text-[15px] tracking-tight text-ds-text">Quantika</span>
       </Link>
       <nav className="flex items-center gap-6 text-sm" aria-label="Primary navigation">
         <NavLink href="/dashboard">Dashboard</NavLink>
@@ -36,6 +38,13 @@ export function TopNav() {
         <MoreDropdown />
       </nav>
       <div className="ml-auto shrink-0 flex items-center gap-2">
+        <button
+          type="button"
+          aria-label="Notifications"
+          className="inline-flex items-center justify-center w-9 h-9 rounded-ds-md text-ds-text-muted hover:text-ds-text hover:bg-ds-surface-muted transition-colors duration-ds-fast"
+        >
+          <Bell className="h-5 w-5" aria-hidden="true" />
+        </button>
         <DarkToggle />
         <ModeSwitcher />
       </div>

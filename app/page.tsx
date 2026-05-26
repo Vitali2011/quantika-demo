@@ -1,15 +1,15 @@
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/session';
-import { EmailUploadCTA } from '@/components/onboarding/EmailUploadCTA';
-import { LandingPageClient } from '@/components/LandingPageClient';
+import { PublicLanding } from '@/components/PublicLanding';
 
 export default async function LandingPage() {
   const cookieStore = await cookies();
   const sessionId = cookieStore.get('session_id')?.value;
 
-  if (!sessionId || !getSession(sessionId)) {
-    return <EmailUploadCTA />;
+  if (sessionId && getSession(sessionId)) {
+    redirect('/dashboard');
   }
 
-  return <LandingPageClient />;
+  return <PublicLanding />;
 }

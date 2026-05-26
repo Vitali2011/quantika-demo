@@ -110,6 +110,41 @@ describe('ModeProvider — cookie persist for SSR', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Regression: #479 — hydration mismatch (React error #419)
+// ModeProvider must NOT read window.location.search in the useState initializer.
+// Server returns `initial`; client initializer with window access can return a
+// different value → mismatch. Fix: read URL params in useEffect (post-mount only).
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('ModeProvider — hydration safety (#479)', () => {
+  const src = fs.readFileSync(
+    path.join(ROOT, 'design-system/patterns/ModeProvider.tsx'),
+    'utf8',
+  );
+
+  it('passes `initial` directly to useState (no lazy initializer accessing window)', () => {
+    // The fix: useState(initial) — no arrow-function initializer that reads window
+    expect(src).toMatch(/useState<Mode>\s*\(\s*initial\s*\)/);
+  });
+
+  it('does NOT read window.location.search inside useState initializer', () => {
+    // Detect the anti-pattern: lazy initializer arrow fn + window access
+    const lazyWindowPattern = /useState\s*\(\s*\(\s*\)\s*=>\s*\{[^}]*window\s*\.\s*location/;
+    expect(src).not.toMatch(lazyWindowPattern);
+  });
+
+  it('reads URL params in useEffect (post-hydration) instead', () => {
+    expect(src).toMatch(/useEffect/);
+    expect(src).toMatch(/window\.location\.search/);
+  });
+
+  it('imports useEffect from react', () => {
+    expect(src).toMatch(/useEffect/);
+    expect(src).toMatch(/from\s+['"]react['"]/);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Source analysis: layout.tsx — cookie fast path
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -153,34 +188,34 @@ describe('MatchesClient — mode-aware filtering wiring', () => {
 // Source analysis: DashboardKpiStrip — mode-aware KPIs
 // ─────────────────────────────────────────────────────────────────────────────
 
-describe('DashboardKpiStrip — mode-aware KPIs', () => {
+describe('DashboardKpiStrip — fixed KPI tiles (#523)', () => {
   const src = fs.readFileSync(
     path.join(ROOT, 'components/dashboard/DashboardKpiStrip.tsx'),
     'utf8',
   );
 
-  it('accepts fixtureCount prop', () => {
-    expect(src).toMatch(/fixtureCount/);
+  it('accepts openMatches prop', () => {
+    expect(src).toMatch(/openMatches/);
   });
 
-  it('accepts avgTce prop', () => {
-    expect(src).toMatch(/avgTce/);
+  it('accepts activeCargoes prop', () => {
+    expect(src).toMatch(/activeCargoes/);
   });
 
-  it('shows "Avg TCE Saved" in charterer mode tiles', () => {
-    expect(src).toMatch(/Avg TCE Saved/);
+  it('shows "Open Matches" tile', () => {
+    expect(src).toMatch(/Open Matches/);
   });
 
-  it('shows "Fixtures Secured" in owner mode tiles', () => {
-    expect(src).toMatch(/Fixtures Secured/);
+  it('shows "Active Cargoes" tile', () => {
+    expect(src).toMatch(/Active Cargoes/);
   });
 
-  it('shows "Vessels Available" in owner mode tiles', () => {
-    expect(src).toMatch(/Vessels Available/);
+  it('shows "BDI" market tile', () => {
+    expect(src).toMatch(/BDI/);
   });
 
-  it('shows "Matches Found" in charterer mode tiles', () => {
-    expect(src).toMatch(/Matches Found/);
+  it('shows "HSS MED RATE" market tile', () => {
+    expect(src).toMatch(/HSS MED RATE/);
   });
 });
 

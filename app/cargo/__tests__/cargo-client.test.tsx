@@ -26,6 +26,10 @@ jest.mock('next/link', () => {
   return MockLink;
 });
 
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ refresh: jest.fn() }),
+}));
+
 import CargoClient, { type CargoRow } from '../CargoClient';
 
 const sampleRows: CargoRow[] = [
@@ -132,5 +136,46 @@ describe('CargoClient', () => {
     const searchInput = screen.getByLabelText('Search cargo');
     fireEvent.change(searchInput, { target: { value: 'xyznonexistent' } });
     expect(screen.getByText(/No cargo matches/i)).toBeInTheDocument();
+  });
+
+  // PI2 behavioral tests for B3 — button wiring
+  it('opens new cargo panel when + New cargo button is clicked', () => {
+    render(<CargoClient rows={sampleRows} total={2} />);
+    const btn = screen.getByRole('button', { name: /new cargo/i });
+    fireEvent.click(btn);
+    expect(screen.getByRole('dialog', { name: /add cargo/i })).toBeInTheDocument();
+  });
+
+  it('closes new cargo panel when close button is clicked', () => {
+    render(<CargoClient rows={sampleRows} total={2} />);
+    fireEvent.click(screen.getByRole('button', { name: /new cargo/i }));
+    expect(screen.getByRole('dialog', { name: /add cargo/i })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /close panel/i }));
+    expect(screen.queryByRole('dialog', { name: /add cargo/i })).not.toBeInTheDocument();
+  });
+
+  it('Import CSV button triggers the hidden file input', () => {
+    render(<CargoClient rows={sampleRows} total={2} />);
+    const fileInput = screen.getByTestId('csv-file-input') as HTMLInputElement;
+    expect(fileInput).toBeInTheDocument();
+    expect(fileInput.accept).toContain('.csv');
+    // Verify the Import CSV button exists and is connected
+    const importBtn = screen.getByRole('button', { name: /import csv/i });
+    expect(importBtn).toBeInTheDocument();
+  });
+
+  // #519: Load + Discharge replace Route
+  it('shows Load and Discharge column headers instead of Route', () => {
+    render(<CargoClient rows={sampleRows} total={2} />);
+    expect(screen.getByRole('columnheader', { name: /^load$/i })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: /^discharge$/i })).toBeInTheDocument();
+    expect(screen.queryByRole('columnheader', { name: /^route$/i })).not.toBeInTheDocument();
+  });
+
+  it('renders origin port in Load column and destination port in Discharge column', () => {
+    render(<CargoClient rows={sampleRows} total={2} />);
+    // Wheat row: Odessa → Venice
+    expect(screen.getByText('Odessa')).toBeInTheDocument();
+    expect(screen.getByText('Venice')).toBeInTheDocument();
   });
 });

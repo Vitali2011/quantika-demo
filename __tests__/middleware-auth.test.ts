@@ -162,6 +162,23 @@ describe('middleware auth guard', () => {
     });
   });
 
+  describe('x-pathname header on passthrough', () => {
+    it('sets x-pathname on /login bypass passthrough', async () => {
+      const req = makeReq('/login');
+      const res = await runMiddleware(req);
+      expect(res.status).not.toBe(302);
+      expect(res.headers.get('x-pathname')).toBe('/login');
+    });
+
+    it('sets x-pathname on authenticated page passthrough', async () => {
+      const cookie = await makeValidCookie();
+      const req = makeReq('/dashboard', cookie);
+      const res = await runMiddleware(req);
+      expect(res.status).not.toBe(302);
+      expect(res.headers.get('x-pathname')).toBe('/dashboard');
+    });
+  });
+
   describe('/processing guard — csrf_token required', () => {
     it('redirects demo_auth user to / when no csrf_token cookie', async () => {
       const cookie = await makeValidCookie();

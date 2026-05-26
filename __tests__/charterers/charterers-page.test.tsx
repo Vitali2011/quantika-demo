@@ -35,6 +35,15 @@ const MOCK_CHARTERERS = [
   { id: 'c3', name: 'WeakCo', tier: 'weak', require_lc: 1, notes: 'Risky' },
 ];
 
+describe('CharterersTable column headers', () => {
+  it('renders exact reference header labels: Name / Email / Last Contact / Last Email Snippet / Status', async () => {
+    const { CharterersTable } = await import('@/components/charterers/CharterersTable');
+    const { container } = render(<CharterersTable charterers={[]} />);
+    const ths = Array.from(container.querySelectorAll('th')).map((th) => th.textContent?.trim());
+    expect(ths).toEqual(['Name', 'Email', 'Last Contact', 'Last Email Snippet', 'Status']);
+  });
+});
+
 describe('CharterersTable HOT/WARM/COLD status', () => {
   it('assigns data-status=hot to blue-chip, warm to second, cold to weak', async () => {
     const { CharterersTable } = await import('@/components/charterers/CharterersTable');
@@ -165,6 +174,25 @@ describe('CharterersPage', () => {
 
     expect(screen.getByLabelText(/name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/tier/i)).toBeInTheDocument();
+  });
+
+  // #520: Import Gmail button
+  it('shows Import Gmail button when feature is enabled', async () => {
+    process.env.NEXT_PUBLIC_CHARTERER_CREDIT_ENABLED = 'true';
+
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ charterers: [] }),
+      })
+    ) as jest.Mock;
+
+    const { default: CharterersPage } = await import('@/app/charterers/page');
+    render(<CharterersPage />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /import gmail/i })).toBeInTheDocument();
+    });
   });
 
   it('submits form and refreshes list', async () => {

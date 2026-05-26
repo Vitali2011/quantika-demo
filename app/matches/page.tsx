@@ -10,7 +10,7 @@ import MatchesClient from './MatchesClient';
 import PageSkeleton from '@/components/ui/PageSkeleton';
 
 export const metadata: Metadata = {
-  title: 'Your Recent Matches — Quantika',
+  title: 'Matches — Quantika',
 };
 
 export default async function MatchesPage() {
@@ -39,8 +39,8 @@ export default async function MatchesPage() {
 
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-12">
-      <div className="max-w-2xl mx-auto space-y-6">
-        <h1 className="text-2xl font-bold">Your Recent Matches</h1>
+      <div className="max-w-5xl mx-auto space-y-6">
+        <h1 className="text-2xl font-bold">Matches {matches.length} results</h1>
         <Suspense fallback={<PageSkeleton />}>
           <MatchesClient initialMatches={matches} isComputing={isComputing}
             cargoEmailIds={cargoEmailIds}

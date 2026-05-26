@@ -11,6 +11,8 @@ import { useLiveJobs } from '@/design-system/patterns/useLiveJobs';
 import { useMode } from '@/design-system/patterns/useMode';
 import { filterMatchesByMode } from '@/lib/matching/mode-filter';
 import { useToast } from '@/components/ui/toast';
+import { abbrPort } from '@/lib/utils/abbr-port';
+import { fmtLaycan } from '@/lib/utils/fmt-laycan';
 
 interface Props {
   initialMatches: StoredMatch[];
@@ -55,8 +57,12 @@ function formatAge(ts: number): string {
   return new Date(ts * 1000).toLocaleDateString('en-US', { weekday: 'short' });
 }
 
-function isFreshMatch(m: StoredMatch): boolean {
-  return Date.now() / 1000 - m.created_at < 7200;
+// Defer Date.now() to post-mount: SSR and first client paint must produce
+// identical HTML, otherwise React #418 hydration mismatch fires when a match
+// sits near the 2-hour boundary (same fix pattern as SubsCountdown).
+function isFreshMatch(m: StoredMatch, now: number): boolean {
+  if (now === 0) return false; // pre-mount sentinel → no fresh badge in SSR
+  return now / 1000 - m.created_at < 7200;
 }
 
 function fmtDwt(v: number | null): string {
@@ -69,11 +75,15 @@ function fmtTce(v: number | null): string {
   return '$' + (v / 1000).toFixed(1) + 'k';
 }
 
+
 export default function MatchesClient({ initialMatches, isComputing = false, cargoEmailIds = [], vesselEmailIds = [] }: Props) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { isOwner } = useMode();
   const toast = useToast();
+
+  // Core state
+  const [matches, setMatches] = useState<StoredMatch[]>(initialMatches);
 
   // Live SSE state (additive — does not touch cached-list flow)
   const { jobs, latestMatch, dismissMatch } = useLiveJobs();
@@ -86,9 +96,6 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [latestMatch?.match_id]);
-
-  // Core state
-  const [matches, setMatches] = useState<StoredMatch[]>(initialMatches);
   const [filterStatus, setFilterStatus] = useState<MatchStatus | null>(() => {
     const s = searchParams.get('status');
     return s && (ALL_STATUSES as string[]).includes(s) ? (s as MatchStatus) : null;
@@ -101,6 +108,20 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
 
   // CD design state
   const [density, setDensity] = useState<Density>('table');
+  const [nowUtc, setNowUtc] = useState<string>("");
+  // Hydration-safe clock: starts at 0 (matches SSR), set post-mount to avoid
+  // React #418 text-content mismatch on the "fresh" badge (#543).
+  const [clientNow, setClientNow] = useState<number>(0);
+  useEffect(() => {
+    const tick = () => {
+      const d = new Date();
+      setNowUtc(`${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}`);
+      setClientNow(Date.now());
+    };
+    tick();
+    const id = setInterval(tick, 60000);
+    return () => clearInterval(id);
+  }, []);
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
 
   // Auto-switch to cards on mobile after mount
@@ -275,7 +296,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
         (!filterStatus || m.status === filterStatus) &&
         (cargoTypes.length === 0 || cargoTypes.includes(m.cargo_type ?? '')) &&
         (quickFilter === 'all' ||
-          (quickFilter === 'fresh' && isFreshMatch(m)) ||
+          (quickFilter === 'fresh' && isFreshMatch(m, clientNow)) ||
           (quickFilter === 'score80' && m.score >= 80) ||
           (quickFilter === 'dwt50_60' && m.vessel_dwt != null && m.vessel_dwt >= 50000 && m.vessel_dwt <= 60000))
     )
@@ -302,6 +323,12 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
     <>
       <LiveStrip jobs={jobs} />
       <div className="space-y-4 overflow-x-hidden">
+
+        {nowUtc && (
+          <div className="flex justify-end">
+            <span className="text-xs text-muted-foreground">AUTO-REFRESH · {nowUtc} UTC</span>
+          </div>
+        )}
 
         {/* ===== PRIMARY FILTER BAR (CD design) ===== */}
         <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -346,7 +373,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
               >
                 <option data-testid="sort-score" value="score">Score</option>
                 <option data-testid="sort-freshness" value="freshness">Freshness</option>
-                {isOwner && <option value="tce">TCE/day</option>}
+                <option data-testid="sort-tce" value="tce">TCE/day</option>
               </select>
             </div>
 
@@ -741,7 +768,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
           /* ===== TABLE VIEW ===== */
           <section className="bg-ds-surface border border-ds-border rounded-[14px] overflow-hidden" aria-label="Matches table">
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-sm" style={{ tableLayout: 'fixed', minWidth: '700px' }}>
+              <table className="w-full border-collapse text-sm" style={{ tableLayout: 'fixed', minWidth: '970px' }}>
                 <colgroup>
                   <col style={{ width: '96px' }} />
                   <col style={{ width: '178px' }} />
@@ -754,7 +781,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                 </colgroup>
                 <thead>
                   <tr className="bg-ds-surface-muted border-b border-ds-border">
-                    {(['Score', 'Vessel', 'Route', 'DWT', 'TCE / day', 'Cargo', 'Age', ''] as const).map((h, i) => (
+                    {(['Score', 'Vessel', 'Route', 'DWT', 'TCE / day', 'Cargo', 'Laycan', ''] as const).map((h, i) => (
                       <th
                         key={i}
                         className={`font-mono text-[10.5px] tracking-[0.14em] uppercase text-ds-text-muted font-medium py-[14px] px-3 whitespace-nowrap ${i === 0 ? 'text-left pl-5' : i >= 3 && i <= 6 ? 'text-right' : 'text-left'} ${i === 7 ? 'pr-5' : ''}`}
@@ -766,7 +793,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                 </thead>
                 <tbody>
                   {filtered.map((match) => {
-                    const fresh = isFreshMatch(match);
+                    const fresh = isFreshMatch(match, clientNow);
                     return (
                       <tr
                         key={match.id}
@@ -800,9 +827,9 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                         <td className="py-[13px] px-3 align-middle">
                           {(match.load_port || match.discharge_port) ? (
                             <span className="font-mono text-[13px] inline-flex items-center gap-2 whitespace-nowrap">
-                              {match.load_port && <span>{match.load_port.slice(0, 4).toUpperCase()}</span>}
+                              {match.load_port && <span>{abbrPort(match.load_port)}</span>}
                               {match.load_port && match.discharge_port && <span className="text-slate-300">→</span>}
-                              {match.discharge_port && <span>{match.discharge_port.slice(0, 4).toUpperCase()}</span>}
+                              {match.discharge_port && <span>{abbrPort(match.discharge_port)}</span>}
                             </span>
                           ) : (
                             <span className="font-mono text-slate-300">—</span>
@@ -826,11 +853,10 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                             {match.cargo_type ?? '—'}
                           </span>
                         </td>
-                        {/* Age */}
+                        {/* Laycan */}
                         <td className="py-[13px] px-3 text-right align-middle">
-                          <span className={`font-mono text-[12.5px] whitespace-nowrap inline-flex items-center gap-[5px] justify-end ${fresh ? 'text-emerald-600 font-semibold' : 'text-ds-text-muted'}`}>
-                            {fresh && <span className="w-[5px] h-[5px] rounded-full bg-emerald-600 inline-block flex-shrink-0" />}
-                            {formatAge(match.created_at)}
+                          <span className="font-mono text-[12.5px] whitespace-nowrap text-ds-text-muted">
+                            {fmtLaycan(match.laycan_start, match.laycan_end)}
                           </span>
                         </td>
                         {/* Actions */}
