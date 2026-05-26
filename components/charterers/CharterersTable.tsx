@@ -9,6 +9,7 @@ export interface Charterer {
   require_lc: number;
   notes: string | null;
   email?: string | null;
+  created_at?: string;
 }
 
 type ContactStatus = 'hot' | 'warm' | 'cold';

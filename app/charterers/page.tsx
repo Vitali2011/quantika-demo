@@ -20,14 +20,19 @@ export default function CharterersPage() {
   const [loading, setLoading] = useState(isFeatureEnabled);
   const [showForm, setShowForm] = useState(false);
   const [filterQuery, setFilterQuery] = useState('');
-  const [sortOrder, setSortOrder] = useState<'recent' | 'alpha'>('recent');
+  const [sortOrder, setSortOrder] = useState<'contact-desc' | 'contact-asc' | 'alpha'>('contact-desc');
 
   const displayed = useMemo(() => {
-    const filtered = filterQuery
-      ? charterers.filter(c => c.name.toLowerCase().includes(filterQuery.toLowerCase()))
+    const q = filterQuery.toLowerCase();
+    const filtered = q
+      ? charterers.filter(c =>
+          c.name.toLowerCase().includes(q) ||
+          (c.email?.toLowerCase().includes(q) ?? false)
+        )
       : charterers;
     if (sortOrder === 'alpha') return [...filtered].sort((a, b) => a.name.localeCompare(b.name));
-    return filtered;
+    if (sortOrder === 'contact-asc') return [...filtered].sort((a, b) => (a.created_at ?? '').localeCompare(b.created_at ?? ''));
+    return [...filtered].sort((a, b) => (b.created_at ?? '').localeCompare(a.created_at ?? ''));
   }, [charterers, filterQuery, sortOrder]);
 
   useEffect(() => {
@@ -110,8 +115,8 @@ export default function CharterersPage() {
         <div style={{ display: 'flex', gap: 10, marginBottom: 14, alignItems: 'center' }}>
           <input
             type="search"
-            aria-label="Search by company"
-            placeholder="Search by company…"
+            aria-label="Search charterers"
+            placeholder="Search by name or email…"
             value={filterQuery}
             onChange={(e) => setFilterQuery(e.target.value)}
             style={{
@@ -129,7 +134,7 @@ export default function CharterersPage() {
           <select
             aria-label="Sort order"
             value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value as 'recent' | 'alpha')}
+            onChange={(e) => setSortOrder(e.target.value as 'contact-desc' | 'contact-asc' | 'alpha')}
             style={{
               height: 36,
               padding: '0 10px',
@@ -141,8 +146,9 @@ export default function CharterersPage() {
               cursor: 'pointer',
             }}
           >
-            <option value="recent">Recent</option>
-            <option value="alpha">Alphabetical</option>
+            <option value="contact-desc">Last Contact ↓</option>
+            <option value="contact-asc">Last Contact ↑</option>
+            <option value="alpha">Company A–Z</option>
           </select>
         </div>
 
