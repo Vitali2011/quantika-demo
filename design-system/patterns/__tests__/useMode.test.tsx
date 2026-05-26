@@ -38,12 +38,12 @@ describe('useMode (design-system)', () => {
 
   it('t() returns mode-aware copy for charterer', () => {
     render(<ModeProvider initial="charterer"><Probe /></ModeProvider>);
-    expect(screen.getByTestId('copy').textContent).toMatch(/груз/i);
+    expect(screen.getByTestId('copy').textContent).toMatch(/cargo/i);
   });
 
   it('t() returns mode-aware copy for owner', () => {
     render(<ModeProvider initial="owner"><Probe /></ModeProvider>);
-    expect(screen.getByTestId('copy').textContent).toMatch(/судно/i);
+    expect(screen.getByTestId('copy').textContent).toMatch(/vessel/i);
   });
 
   it('setMode updates context', () => {
