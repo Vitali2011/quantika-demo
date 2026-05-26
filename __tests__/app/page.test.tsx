@@ -23,7 +23,7 @@ import { PublicLanding } from '../../components/PublicLanding';
 
 const mockCookies = cookies as jest.Mock;
 const mockGetSession = getSession as jest.Mock;
-const mockRedirect = redirect as jest.Mock;
+const mockRedirect = redirect as unknown as jest.Mock;
 
 describe('LandingPage — routing', () => {
   beforeEach(() => {
