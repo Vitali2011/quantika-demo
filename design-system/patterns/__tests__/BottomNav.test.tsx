@@ -21,7 +21,6 @@ jest.mock('lucide-react', () => ({
   Box: () => <svg data-testid="icon-box" />,
   Sparkles: () => <svg data-testid="icon-sparkles" />,
   MoreHorizontal: () => <svg data-testid="icon-more" />,
-  LogOut: () => <svg data-testid="icon-logout" />,
 }));
 
 describe('BottomNav', () => {
@@ -30,23 +29,22 @@ describe('BottomNav', () => {
     global.fetch = jest.fn().mockResolvedValue({ ok: true }) as typeof global.fetch;
   });
 
-  it('renders nav with Matches, mode-primary, AI, More', () => {
+  it('renders nav with Matches, Cargo+Vessels, AI, More', () => {
     render(<ModeProvider initial="charterer"><BottomNav /></ModeProvider>);
     expect(screen.getByRole('link', { name: /matches/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /cargo/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /cargo\+vessels/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /ai command palette/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /^more$/i })).toBeInTheDocument();
   });
 
-  it('charterer mode shows Cargo link', () => {
+  it('charterer mode shows Cargo+Vessels link to /cargo', () => {
     render(<ModeProvider initial="charterer"><BottomNav /></ModeProvider>);
-    expect(screen.getByRole('link', { name: /cargo/i })).toHaveAttribute('href', '/cargo');
+    expect(screen.getByRole('link', { name: /cargo\+vessels/i })).toHaveAttribute('href', '/cargo');
   });
 
-  it('owner mode shows Vessels link instead of Cargo', () => {
+  it('owner mode shows Cargo+Vessels link to /vessels', () => {
     render(<ModeProvider initial="owner"><BottomNav /></ModeProvider>);
-    expect(screen.getByRole('link', { name: /vessels/i })).toHaveAttribute('href', '/vessels');
-    expect(screen.queryByRole('link', { name: /cargo/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /cargo\+vessels/i })).toHaveAttribute('href', '/vessels');
   });
 
   it('AI button dispatches open-command-palette event', () => {
@@ -58,14 +56,16 @@ describe('BottomNav', () => {
     window.removeEventListener('open-command-palette', listener);
   });
 
-  // #508 / #456 — spec requires exactly 4 navigation tabs: Matches, Cargo+Vessels, AI, More
-  it('#508/#456: nav has 4 tabs (Matches, Cargo/Vessels, AI, More) with AI label and sparkle icon', () => {
+  // #508 — spec requires exactly 4 navigation tabs: Matches, Cargo+Vessels, AI, More
+  it('#508: nav has exactly 4 tabs (Matches, Cargo+Vessels, AI, More) — no Log out in BottomNav', () => {
     render(<ModeProvider initial="charterer"><BottomNav /></ModeProvider>);
     // All 4 required tab labels must be present
     expect(screen.getByText('Matches')).toBeInTheDocument();
-    expect(screen.getByText('Cargo')).toBeInTheDocument();
+    expect(screen.getByText('Cargo+Vessels')).toBeInTheDocument();
     expect(screen.getByText('AI')).toBeInTheDocument();
     expect(screen.getByText('More')).toBeInTheDocument();
+    // Log out must NOT appear in BottomNav (it lives in /more page and TopNav)
+    expect(screen.queryByText(/log out/i)).not.toBeInTheDocument();
     // AI rendered as a button (not a link) — opens command palette
     expect(screen.getByRole('button', { name: /ai command palette/i })).toBeInTheDocument();
     // AI uses sparkle icon
