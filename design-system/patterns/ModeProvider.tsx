@@ -19,6 +19,7 @@ export function ModeProvider({ initial, children }: { initial: Mode; children: R
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const urlMode = params.get('mode');
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (urlMode === 'charterer' || urlMode === 'owner') setModeState(urlMode);
   }, []);
 

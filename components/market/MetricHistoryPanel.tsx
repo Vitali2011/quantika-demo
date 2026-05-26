@@ -18,21 +18,17 @@ interface Props {
 }
 
 export function MetricHistoryPanel({ kpiKey, label, unit, onClose }: Props) {
-  const [data, setData] = useState<{ date: string; value: number }[] | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [result, setResult] = useState<{ key: string; data: { date: string; value: number }[] } | null>(null);
+  const loading = result?.key !== kpiKey;
 
   useEffect(() => {
-    setLoading(true);
-    setData(null);
     fetch(`/api/market/indices?name=${encodeURIComponent(kpiKey)}&days=30`)
       .then((r) => (r.ok ? r.json() : []))
       .then((rows: RawRow[]) => {
-        setData(rows.map((r) => ({ date: r.index_date, value: r.value })));
-        setLoading(false);
+        setResult({ key: kpiKey, data: rows.map((r) => ({ date: r.index_date, value: r.value })) });
       })
       .catch(() => {
-        setData([]);
-        setLoading(false);
+        setResult({ key: kpiKey, data: [] });
       });
   }, [kpiKey]);
 
@@ -71,7 +67,7 @@ export function MetricHistoryPanel({ kpiKey, label, unit, onClose }: Props) {
         {loading ? (
           <p className="text-sm text-slate-400 animate-pulse">Loading…</p>
         ) : (
-          <MarketBenchmarkChart indexName={label} data={data ?? []} unit={unit} />
+          <MarketBenchmarkChart indexName={label} data={result?.data ?? []} unit={unit} />
         )}
       </div>
     </aside>

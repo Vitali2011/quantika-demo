@@ -82,6 +82,9 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
   const { isOwner } = useMode();
   const toast = useToast();
 
+  // Core state
+  const [matches, setMatches] = useState<StoredMatch[]>(initialMatches);
+
   // Live SSE state (additive — does not touch cached-list flow)
   const { jobs, latestMatch, dismissMatch } = useLiveJobs();
 
@@ -93,9 +96,6 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [latestMatch?.match_id]);
-
-  // Core state
-  const [matches, setMatches] = useState<StoredMatch[]>(initialMatches);
   const [filterStatus, setFilterStatus] = useState<MatchStatus | null>(() => {
     const s = searchParams.get('status');
     return s && (ALL_STATUSES as string[]).includes(s) ? (s as MatchStatus) : null;

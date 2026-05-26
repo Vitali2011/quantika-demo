@@ -166,10 +166,11 @@ describe('REGRESSION #453 — L4: TopNav MoreDropdown has logout form', () => {
 });
 
 // ---------------------------------------------------------------------------
-// L5 — BottomNav must contain logout form (#453 mobile)
+// L5 — BottomNav must NOT contain logout directly (#508 spec: 4 tabs only)
+//       Logout lives on /more page (L1) and TopNav MoreDropdown (L4).
 // ---------------------------------------------------------------------------
 
-describe('REGRESSION #453 — L5: BottomNav has logout form', () => {
+describe('REGRESSION #508 — L5: BottomNav does NOT have inline logout (moved to /more)', () => {
   const bottomNavPath = path.join(ROOT, 'design-system', 'patterns', 'BottomNav.tsx');
   let source: string;
 
@@ -181,13 +182,12 @@ describe('REGRESSION #453 — L5: BottomNav has logout form', () => {
     expect(fs.existsSync(bottomNavPath)).toBe(true);
   });
 
-  it('BottomNav contains a <form> POSTing to /api/auth/logout', () => {
-    expect(source).toContain('action="/api/auth/logout"');
-    expect(source).toContain('method="POST"');
+  it('BottomNav does not inline a logout form (logout delegates to /more page)', () => {
+    expect(source).not.toContain('action="/api/auth/logout"');
   });
 
-  it('BottomNav contains a Log out button', () => {
-    expect(source).toMatch(/Log\s+out/);
+  it('BottomNav does not render Log out text directly (delegates to /more)', () => {
+    expect(source).not.toMatch(/Log\s+out/);
   });
 });
 
