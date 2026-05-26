@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Sparkles, Box, Zap, MoreHorizontal, LogOut } from 'lucide-react';
+import { Layers, Box, Sparkles, MoreHorizontal, LogOut } from 'lucide-react';
 import { useMode } from './useMode';
 import { cn } from '@/design-system/primitives/_utils';
 
@@ -9,7 +9,7 @@ export function BottomNav() {
   const { isCharterer } = useMode();
   const pathname = usePathname();
   const items = [
-    { href: '/matches', label: 'Matches', Icon: Sparkles },
+    { href: '/matches', label: 'Matches', Icon: Layers },
     {
       href: isCharterer ? '/cargo' : '/vessels',
       label: isCharterer ? 'Cargo' : 'Vessels',
@@ -52,7 +52,7 @@ export function BottomNav() {
         className="flex-1 flex flex-col items-center justify-center gap-0.5 min-h-[44px] text-ds-text-muted hover:text-ds-text transition-colors"
         aria-label="AI command palette"
       >
-        <Zap size={20} aria-hidden="true" />
+        <Sparkles size={20} aria-hidden="true" />
         <span className="text-[10px] font-medium">AI</span>
       </button>
       <Link
