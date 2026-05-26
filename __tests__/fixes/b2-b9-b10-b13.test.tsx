@@ -5,7 +5,7 @@
  *
  * B2: AIBar placeholder must be English (not Russian).
  * B9: /market footer links must have href attributes.
- * B10: Matches table minWidth must be ≥970px so CARGO/AGE columns are never clipped.
+ * B10: Matches table minWidth must be ≥970px so CARGO/LAYCAN columns are never clipped.
  * B13: TopNav logo must render both the amber Q square and the "Quantika" wordmark.
  */
 

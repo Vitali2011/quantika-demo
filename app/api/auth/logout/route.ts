@@ -14,13 +14,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   const response = NextResponse.redirect(new URL('/login', getRequestBaseUrl(request)), { status: 303 });
 
+  const isProduction = process.env.NODE_ENV === 'production';
+  const securePart = isProduction ? '; Secure' : '';
+
   // Clear the auth cookie by setting Max-Age=0
   response.headers.set(
     'Set-Cookie',
-    `${AUTH_COOKIE_NAME}=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax`,
+    `${AUTH_COOKIE_NAME}=; Path=/; Max-Age=0; HttpOnly${securePart}; SameSite=Lax`,
   );
   // Clear OAuth session cookies so the browser cannot reuse the deleted session.
-  response.headers.append('Set-Cookie', 'session_id=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax');
+  response.headers.append('Set-Cookie', `session_id=; Path=/; Max-Age=0; HttpOnly${securePart}; SameSite=Lax`);
   response.headers.append('Set-Cookie', 'csrf_token=; Path=/; Max-Age=0; SameSite=Strict');
 
   return response;

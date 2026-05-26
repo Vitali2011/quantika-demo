@@ -35,6 +35,15 @@ const MOCK_CHARTERERS = [
   { id: 'c3', name: 'WeakCo', tier: 'weak', require_lc: 1, notes: 'Risky' },
 ];
 
+describe('CharterersTable column headers', () => {
+  it('renders exact reference header labels: Name / Email / Last Contact / Last Email Snippet / Status', async () => {
+    const { CharterersTable } = await import('@/components/charterers/CharterersTable');
+    const { container } = render(<CharterersTable charterers={[]} />);
+    const ths = Array.from(container.querySelectorAll('th')).map((th) => th.textContent?.trim());
+    expect(ths).toEqual(['Name', 'Email', 'Last Contact', 'Last Email Snippet', 'Status']);
+  });
+});
+
 describe('CharterersTable HOT/WARM/COLD status', () => {
   it('assigns data-status=hot to blue-chip, warm to second, cold to weak', async () => {
     const { CharterersTable } = await import('@/components/charterers/CharterersTable');

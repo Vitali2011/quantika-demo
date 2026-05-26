@@ -24,7 +24,7 @@ jest.mock('next/navigation', () => ({
 jest.mock('lucide-react', () => ({
   Home: () => <svg data-testid="icon-home" />,
   Bell: () => <svg data-testid="icon-bell" />,
-  Zap: () => <svg data-testid="icon-zap" />,
+  Layers: () => <svg data-testid="icon-layers" />,
   Sparkles: () => <svg data-testid="icon-sparkles" />,
   Box: () => <svg data-testid="icon-box" />,
   MoreHorizontal: () => <svg data-testid="icon-more" />,

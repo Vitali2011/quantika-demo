@@ -88,4 +88,28 @@ describe('MatchesClient.tsx — sort controls (#350)', () => {
     // Must have .sort in this block
     expect(filteredBlock).toMatch(/\.sort\s*\(/);
   });
+
+  it('sort dropdown includes TCE option unconditionally (#528)', () => {
+    const src = readSource();
+    // TCE option must exist
+    expect(src).toMatch(/value="tce"/);
+    // Must NOT be gated behind isOwner
+    expect(src).not.toMatch(/isOwner\s*&&\s*<option[^>]*value="tce"/);
+  });
+
+  it('sort by tce uses tce_usd_per_day descending comparator (#528)', () => {
+    const src = readSource();
+    // Comparator must sort by tce_usd_per_day numerically descending
+    expect(src).toMatch(/sortBy\s*===\s*['"]tce['"]/);
+    expect(src).toMatch(/tce_usd_per_day/);
+    // b - a order means descending
+    expect(src).toMatch(/b\.tce_usd_per_day.*-.*a\.tce_usd_per_day|b\.tce_usd_per_day.*a\.tce_usd_per_day/);
+  });
+
+  it('sort dropdown has data-testid on all 3 options (#528)', () => {
+    const src = readSource();
+    expect(src).toMatch(/data-testid="sort-score"/);
+    expect(src).toMatch(/data-testid="sort-freshness"/);
+    expect(src).toMatch(/data-testid="sort-tce"/);
+  });
 });
