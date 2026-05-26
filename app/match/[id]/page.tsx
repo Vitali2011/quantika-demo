@@ -5,6 +5,7 @@ import { ChevronLeft } from 'lucide-react';
 import { getSession } from '@/lib/session';
 import { getStore } from '@/lib/session-store';
 import { getMatch } from '@/lib/matching/matches-repository';
+import { fmtLaycan } from '@/lib/utils/fmt-laycan';
 import { Badge } from '@/components/ui/badge';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
 import { MatchTabs } from '@/components/match/MatchTabs';
@@ -60,16 +61,9 @@ export default async function MatchDetailPage({ params }: Props) {
     ? (MATCH_LEVEL_BADGE[sessionMatch.matchLevel] ?? MATCH_LEVEL_BADGE.possible)
     : null;
 
-  const laycanStart = storedMatch.laycan_start
-    ? new Date(storedMatch.laycan_start).toLocaleDateString()
+  const laycanDisplay = (storedMatch.laycan_start || storedMatch.laycan_end)
+    ? fmtLaycan(storedMatch.laycan_start, storedMatch.laycan_end)
     : null;
-  const laycanEnd = storedMatch.laycan_end
-    ? new Date(storedMatch.laycan_end).toLocaleDateString()
-    : null;
-  const laycanDisplay =
-    laycanStart && laycanEnd
-      ? `${laycanStart} – ${laycanEnd}`
-      : (laycanStart ?? laycanEnd ?? null);
 
   const routeMeta = [storedMatch.load_port, storedMatch.discharge_port]
     .filter(Boolean)
