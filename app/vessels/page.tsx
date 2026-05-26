@@ -30,9 +30,9 @@ function fmtDwt(dwt: number | null): string | null {
 export default async function VesselsPage() {
   const cookieStore = await cookies();
   const sessionId = cookieStore.get('session_id')?.value;
-  if (!sessionId) redirect('/');
+  if (!sessionId) redirect('/dashboard');
   const session = getSession(sessionId);
-  if (!session) redirect('/');
+  if (!session) redirect('/dashboard');
 
   const rows: VesselRow[] = session.parsedVessels.map((vessel) => {
     const email = session.emails.find((e) => e.id === vessel.emailId);

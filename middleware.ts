@@ -82,6 +82,11 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       return NextResponse.redirect(loginUrl, { status: 302 });
     }
 
+    // Authenticated users on the public landing page belong on /dashboard (#560)
+    if (pathname === '/') {
+      return NextResponse.redirect(new URL('/dashboard', getRequestBaseUrl(request)), { status: 302 });
+    }
+
     // /processing requires a csrf_token cookie (set by Google OAuth or /api/sample).
     // Demo-auth-only users navigating here directly have no session or CSRF token,
     // so the pipeline would immediately 403 on all API calls. Redirect to upload CTA instead.
