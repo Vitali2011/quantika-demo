@@ -110,6 +110,41 @@ describe('ModeProvider — cookie persist for SSR', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Regression: #479 — hydration mismatch (React error #419)
+// ModeProvider must NOT read window.location.search in the useState initializer.
+// Server returns `initial`; client initializer with window access can return a
+// different value → mismatch. Fix: read URL params in useEffect (post-mount only).
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('ModeProvider — hydration safety (#479)', () => {
+  const src = fs.readFileSync(
+    path.join(ROOT, 'design-system/patterns/ModeProvider.tsx'),
+    'utf8',
+  );
+
+  it('passes `initial` directly to useState (no lazy initializer accessing window)', () => {
+    // The fix: useState(initial) — no arrow-function initializer that reads window
+    expect(src).toMatch(/useState<Mode>\s*\(\s*initial\s*\)/);
+  });
+
+  it('does NOT read window.location.search inside useState initializer', () => {
+    // Detect the anti-pattern: lazy initializer arrow fn + window access
+    const lazyWindowPattern = /useState\s*\(\s*\(\s*\)\s*=>\s*\{[^}]*window\s*\.\s*location/;
+    expect(src).not.toMatch(lazyWindowPattern);
+  });
+
+  it('reads URL params in useEffect (post-hydration) instead', () => {
+    expect(src).toMatch(/useEffect/);
+    expect(src).toMatch(/window\.location\.search/);
+  });
+
+  it('imports useEffect from react', () => {
+    expect(src).toMatch(/useEffect/);
+    expect(src).toMatch(/from\s+['"]react['"]/);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Source analysis: layout.tsx — cookie fast path
 // ─────────────────────────────────────────────────────────────────────────────
 
