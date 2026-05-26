@@ -65,7 +65,7 @@ describe('POST /api/auth/logout', () => {
   });
 
   it('adds Secure flag to demo_auth clearing cookie in production', async () => {
-    process.env.NODE_ENV = 'production';
+    (process.env as { NODE_ENV?: string }).NODE_ENV = 'production';
     const res = await callLogout({ demo_auth: 'some-signed-token' });
     const setCookies = res.headers.getSetCookie?.() ?? res.headers.get('set-cookie')?.split(',') ?? [];
     const demoAuthClear = setCookies.find(c => c.startsWith('demo_auth='));
@@ -73,7 +73,7 @@ describe('POST /api/auth/logout', () => {
   });
 
   it('omits Secure flag in non-production', async () => {
-    process.env.NODE_ENV = 'test';
+    (process.env as { NODE_ENV?: string }).NODE_ENV = 'test';
     const res = await callLogout({ demo_auth: 'some-signed-token' });
     const setCookies = res.headers.getSetCookie?.() ?? res.headers.get('set-cookie')?.split(',') ?? [];
     const demoAuthClear = setCookies.find(c => c.startsWith('demo_auth='));
