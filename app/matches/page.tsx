@@ -16,11 +16,11 @@ export const metadata: Metadata = {
 export default async function MatchesPage() {
   const cookieStore = await cookies();
   const sessionId = cookieStore.get('session_id')?.value;
-  if (!sessionId) redirect('/');
+  if (!sessionId) redirect('/dashboard');
   const session = getSession(sessionId);
-  if (!session) redirect('/');
+  if (!session) redirect('/dashboard');
 
-  if (process.env.MATCHES_ENABLED !== "true" && !session.isSampleData) redirect('/');
+  if (process.env.MATCHES_ENABLED !== "true" && !session.isSampleData) redirect('/dashboard');
 
   const db = getStore().getDatabase();
 

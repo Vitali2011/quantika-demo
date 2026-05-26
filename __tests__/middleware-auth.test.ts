@@ -112,12 +112,12 @@ describe('middleware auth guard', () => {
   });
 
   describe('protected routes with valid auth cookie', () => {
-    it('passes through / with valid cookie', async () => {
+    it('redirects / to /dashboard with valid cookie (#560)', async () => {
       const cookie = await makeValidCookie();
       const req = makeReq('/', cookie);
       const res = await runMiddleware(req);
-      // Should not redirect to login
-      expect(res.status).not.toBe(302);
+      expect(res.status).toBe(302);
+      expect(res.headers.get('location')).toContain('/dashboard');
     });
 
     it('passes through /api/ai/match with valid cookie (CSRF check will follow)', async () => {
@@ -126,6 +126,33 @@ describe('middleware auth guard', () => {
       const req = makeReq('/dashboard', cookie);
       const res = await runMiddleware(req);
       expect(res.status).not.toBe(302);
+    });
+
+    it('passes through /matches with valid cookie (session_id check is page-level)', async () => {
+      const cookie = await makeValidCookie();
+      const req = makeReq('/matches', cookie);
+      const res = await runMiddleware(req);
+      expect(res.status).not.toBe(302);
+    });
+  });
+
+  describe('acceptance criteria for #559 and #560', () => {
+    it('#559 — GET /matches without auth cookie redirects to /login (NOT /)', async () => {
+      const req = makeReq('/matches');
+      const res = await runMiddleware(req);
+      expect(res.status).toBe(302);
+      const location = res.headers.get('location') ?? '';
+      expect(location).toContain('/login');
+      expect(location).not.toBe('http://localhost/');
+    });
+
+    it('#560 — GET / with valid session redirects to /dashboard (NOT public landing)', async () => {
+      const cookie = await makeValidCookie();
+      const req = makeReq('/', cookie);
+      const res = await runMiddleware(req);
+      expect(res.status).toBe(302);
+      const location = res.headers.get('location') ?? '';
+      expect(location).toContain('/dashboard');
     });
   });
 
