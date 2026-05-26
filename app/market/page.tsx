@@ -107,7 +107,8 @@ export default function MarketPage() {
 
   useEffect(() => {
     // Hydration-safe: capture clock on mount so render stays pure.
-    setNow(Date.now());
+    const raf = requestAnimationFrame(() => setNow(Date.now()));
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   useEffect(() => {
