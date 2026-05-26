@@ -4,18 +4,18 @@ import { ModeContext, type Mode } from './ModeProvider';
 
 const COPY: Record<Mode, Record<string, string>> = {
   charterer: {
-    'aibar.placeholder': 'Ask anything про груз — Show fresh HSS matches above 85 score',
+    'aibar.placeholder': 'Ask anything about cargo — Show fresh HSS matches above 85 score',
     'nav.thirdSlot': 'Cargo',
     'nav.fourthSlot': 'Vessels',
     'page.title.suffix': 'Charterer',
-    'matches.empty.cta': 'Загрузи первый груз → найдём суда',
+    'matches.empty.cta': 'Upload your first cargo → find vessels',
   },
   owner: {
-    'aibar.placeholder': 'Ask anything про судно — Show fresh HSS matches above 85 score',
+    'aibar.placeholder': 'Ask anything about vessels — Show fresh HSS matches above 85 score',
     'nav.thirdSlot': 'Vessels',
     'nav.fourthSlot': 'Cargo',
     'page.title.suffix': 'Owner',
-    'matches.empty.cta': 'Добавь первое судно → найдём грузы',
+    'matches.empty.cta': 'Add your first vessel → find cargo',
   },
 };
 

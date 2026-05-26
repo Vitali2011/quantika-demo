@@ -4,6 +4,7 @@ import { useState, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useMode } from '@/design-system/patterns/useMode';
+import { abbrPort } from '@/lib/utils/abbr-port';
 
 export type CargoRow = {
   id: string;
@@ -35,16 +36,7 @@ const COMMOD: Record<string, { bg: string; text: string; label: string }> = {
   bulk:    { bg: '#e2e8f0', text: '#334155', label: 'BK' },
 };
 
-function abbr(port: string): string {
-  if (port.length <= 5 && port === port.toUpperCase()) return port;
-  const words = port.trim().split(/[\s,/\-]+/).filter(Boolean);
-  if (words.length === 1) return port.slice(0, 4).toUpperCase();
-  return words
-    .map((w) => w[0])
-    .join('')
-    .slice(0, 4)
-    .toUpperCase();
-}
+const abbr = abbrPort;
 
 function CommodityBadge({ ck }: { ck: string }) {
   const s = COMMOD[ck] ?? COMMOD.bulk;
