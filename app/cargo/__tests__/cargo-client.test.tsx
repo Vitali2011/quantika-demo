@@ -163,4 +163,19 @@ describe('CargoClient', () => {
     const importBtn = screen.getByRole('button', { name: /import csv/i });
     expect(importBtn).toBeInTheDocument();
   });
+
+  // #519: Load + Discharge replace Route
+  it('shows Load and Discharge column headers instead of Route', () => {
+    render(<CargoClient rows={sampleRows} total={2} />);
+    expect(screen.getByRole('columnheader', { name: /^load$/i })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: /^discharge$/i })).toBeInTheDocument();
+    expect(screen.queryByRole('columnheader', { name: /^route$/i })).not.toBeInTheDocument();
+  });
+
+  it('renders origin port in Load column and destination port in Discharge column', () => {
+    render(<CargoClient rows={sampleRows} total={2} />);
+    // Wheat row: Odessa → Venice
+    expect(screen.getByText('Odessa')).toBeInTheDocument();
+    expect(screen.getByText('Venice')).toBeInTheDocument();
+  });
 });
