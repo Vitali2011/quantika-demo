@@ -45,6 +45,39 @@ describe('EmailBodyViewer — CRLF normalisation (fix #357, hydration #418)', ()
   });
 });
 
+describe('EmailBodyViewer — HTML entity decoding (fix #474)', () => {
+  it('decodes named HTML entities before display', () => {
+    const body = 'Cargo: 5000 MT &amp; more\nPrice: &quot;negotiable&quot;';
+    const { container } = render(
+      <EmailBodyViewer body={body} highlights={[]} />,
+    );
+    const pre = container.querySelector('pre');
+    expect(pre!.textContent).toContain('5000 MT & more');
+    expect(pre!.textContent).toContain('"negotiable"');
+    expect(pre!.textContent).not.toContain('&amp;');
+    expect(pre!.textContent).not.toContain('&quot;');
+  });
+
+  it('decodes numeric entity &#39; to apostrophe', () => {
+    const body = "It&#39;s a valid fixture";
+    const { container } = render(
+      <EmailBodyViewer body={body} highlights={[]} />,
+    );
+    const pre = container.querySelector('pre');
+    expect(pre!.textContent).toBe("It's a valid fixture");
+  });
+
+  it('decodes doubly-encoded entity: &amp;amp; renders as &amp;', () => {
+    // Gmail sometimes double-encodes: &amp;amp; → one decode pass → &amp;
+    const body = 'Cargill &amp;amp; Partners';
+    const { container } = render(
+      <EmailBodyViewer body={body} highlights={[]} />,
+    );
+    const pre = container.querySelector('pre');
+    expect(pre!.textContent).toBe('Cargill &amp; Partners');
+  });
+});
+
 describe('EmailBodyViewer — RTL auto-detection (stab/rtl-per-content)', () => {
   it('renders <pre dir="rtl"> for Arabic body', () => {
     const arabicBody =

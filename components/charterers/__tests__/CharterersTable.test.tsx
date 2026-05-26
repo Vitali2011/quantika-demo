@@ -20,16 +20,16 @@ const SAMPLE: Charterer[] = [
 ];
 
 describe('CharterersTable column labels', () => {
-  it('shows Company column header (not NAME)', () => {
+  it('shows Name column header (not Company) — #503', () => {
     render(<CharterersTable charterers={SAMPLE} />);
-    expect(screen.getByRole('columnheader', { name: /company/i })).toBeInTheDocument();
-    expect(screen.queryByRole('columnheader', { name: /^name$/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: /^name$/i })).toBeInTheDocument();
+    expect(screen.queryByRole('columnheader', { name: /^company$/i })).not.toBeInTheDocument();
   });
 
-  it('shows Last Contact column header (not LAST NOTE)', () => {
+  it('shows Last Email Snippet column header (not LC Req.) — #503', () => {
     render(<CharterersTable charterers={SAMPLE} />);
-    expect(screen.getByRole('columnheader', { name: /last contact/i })).toBeInTheDocument();
-    expect(screen.queryByRole('columnheader', { name: /last note/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: /last email snippet/i })).toBeInTheDocument();
+    expect(screen.queryByRole('columnheader', { name: /lc req/i })).not.toBeInTheDocument();
   });
 
   it('renders all rows', () => {
@@ -52,7 +52,7 @@ describe('CharterersTable column labels', () => {
 
   it('shows table headers even when charterers list is empty', () => {
     render(<CharterersTable charterers={[]} />);
-    expect(screen.getByRole('columnheader', { name: /company/i })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: /^name$/i })).toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: /^email$/i })).toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: /status/i })).toBeInTheDocument();
   });
