@@ -49,10 +49,8 @@ describe('MatchesClient.tsx — #498 Laycan column', () => {
     expect(src).toMatch(/fmtLaycan\(match\.laycan_start,\s*match\.laycan_end\)/);
   });
 
-  it('fmtLaycan helper formats two timestamps as a date range', () => {
+  it('fmtLaycan is imported from lib/utils/fmt-laycan (extracted utility)', () => {
     const src = readSource();
-    // Helper must reference both start and end and format with toLocaleDateString
-    expect(src).toMatch(/fmtLaycan/);
-    expect(src).toMatch(/toLocaleDateString/);
+    expect(src).toMatch(/fmtLaycan.*from.*fmt-laycan|fmt-laycan.*fmtLaycan/);
   });
 });
