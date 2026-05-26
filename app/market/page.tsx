@@ -103,6 +103,12 @@ export default function MarketPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeKpi, setActiveKpi] = useState<string | null>(null);
+  const [now, setNow] = useState<number>(0);
+
+  useEffect(() => {
+    // Hydration-safe: capture clock on mount so render stays pure.
+    setNow(Date.now());
+  }, []);
 
   useEffect(() => {
     async function loadData() {
@@ -200,7 +206,7 @@ export default function MarketPage() {
     .filter((d): d is string => d !== null)
     .sort()
     .at(-1) ?? null;
-  const isStale = latestDate !== null && Date.now() - new Date(latestDate).getTime() > MS_PER_DAY;
+  const isStale = latestDate !== null && now > 0 && now - new Date(latestDate).getTime() > MS_PER_DAY;
 
   return (
     <main className="min-h-screen bg-slate-50">
