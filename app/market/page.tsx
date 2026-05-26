@@ -89,6 +89,13 @@ const COMMODITY_TILES = [
   },
 ] as const;
 
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+function latestIndexDate(data: IndexData[] | null): string | null {
+  if (!data || data.length === 0) return null;
+  return data.reduce((best, d) => (d.index_date > best ? d.index_date : best), data[0].index_date);
+}
+
 export default function MarketPage() {
   const [bhsiData, setBhsiData] = useState<IndexData[] | null>(null);
   const [tmiData, setTmiData] = useState<IndexData[] | null>(null);
@@ -96,6 +103,13 @@ export default function MarketPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeKpi, setActiveKpi] = useState<string | null>(null);
+  const [now, setNow] = useState<number>(0);
+
+  useEffect(() => {
+    // Hydration-safe: capture clock on mount so render stays pure.
+    const raf = requestAnimationFrame(() => setNow(Date.now()));
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   useEffect(() => {
     async function loadData() {
@@ -189,6 +203,12 @@ export default function MarketPage() {
     );
   }
 
+  const latestDate = [latestIndexDate(bhsiData), latestIndexDate(tmiData), latestIndexDate(drewryData)]
+    .filter((d): d is string => d !== null)
+    .sort()
+    .at(-1) ?? null;
+  const isStale = latestDate !== null && now > 0 && now - new Date(latestDate).getTime() > MS_PER_DAY;
+
   return (
     <main className="min-h-screen bg-slate-50">
       <div className="mx-auto max-w-7xl px-16 pb-16">
@@ -204,10 +224,17 @@ export default function MarketPage() {
               <span className="text-slate-900">London 16:30 GMT</span>
             </p>
           </div>
-          <div className="flex items-center gap-2 font-mono text-[11.5px] uppercase tracking-widest text-slate-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-600 animate-pulse" />
-            Live · synced
-          </div>
+          {isStale ? (
+            <div className="flex items-center gap-2 font-mono text-[11.5px] uppercase tracking-widest text-slate-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+              Last sync: {latestDate}
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 font-mono text-[11.5px] uppercase tracking-widest text-slate-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-600 animate-pulse" />
+              Live · synced
+            </div>
+          )}
         </header>
 
         {/* KPI Strip — Baltic indices + bunker + EUA */}
