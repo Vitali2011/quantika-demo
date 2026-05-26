@@ -8,9 +8,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import Database from 'better-sqlite3';
+import migration019 from '@/lib/migrations/019-port-master-baltic-indices';
 import migration027 from '@/lib/migrations/027-market-indices';
 import { parseBhsiHtml, refreshBhsi, HandybulkStructureChangedError } from '../bhsi-adapter';
 import { getLatestIndex } from '../market-indices-repository';
+import { getLatestBalticIndex } from '../baltic-repository';
 
 const FIXTURE_HTML = fs.readFileSync(
   path.join(__dirname, 'fixtures', 'handybulk-bhsi.html'),
@@ -19,6 +21,7 @@ const FIXTURE_HTML = fs.readFileSync(
 
 function makeDb(): Database.Database {
   const db = new Database(':memory:');
+  migration019.up(db);
   migration027.up(db);
   return db;
 }
@@ -113,6 +116,21 @@ describe('refreshBhsi (PI2: real DB upsert)', () => {
     const fakeFetcher = jest.fn().mockRejectedValue(new Error('Network error'));
 
     await expect(refreshBhsi(db, fakeFetcher)).rejects.toThrow('Network error');
+
+    db.close();
+  });
+
+  it('also upserts BHSI row into baltic_indices (fix #558)', async () => {
+    const db = makeDb();
+    const fakeFetcher = jest.fn().mockResolvedValue(FIXTURE_HTML);
+
+    await refreshBhsi(db, fakeFetcher);
+
+    const row = getLatestBalticIndex(db, 'BHSI');
+    expect(row).not.toBeNull();
+    expect(row!.value).toBe(530);
+    expect(row!.price_date).toBe('2026-05-22');
+    expect(row!.index_code).toBe('BHSI');
 
     db.close();
   });

@@ -1,5 +1,6 @@
 import type Database from 'better-sqlite3';
 import { upsertIndex } from './market-indices-repository';
+import { upsertBalticIndex } from './baltic-repository';
 
 export const HANDYBULK_URL = 'https://www.handybulk.com/';
 
@@ -73,6 +74,15 @@ export async function refreshBhsi(
     unit: 'USD/day',
     source: HANDYBULK_URL,
     fetched_at: new Date().toISOString(),
+  });
+
+  // Also write to baltic_indices: /api/market/baltic-kpi and /api/market/indices
+  // both read BHSI from baltic_indices, not market_indices (#558).
+  upsertBalticIndex(db, {
+    index_code: 'BHSI',
+    value: parsed.value,
+    price_date: parsed.date,
+    source: HANDYBULK_URL,
   });
 
   return { rowsChanged: 1 };
