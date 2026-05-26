@@ -476,6 +476,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                 <label className="block text-xs font-medium text-gray-600 mb-1">Laycan From</label>
                 <input
                   type="date"
+                  lang="en"
                   value={laycan_from}
                   onChange={(e) => setLaycanFrom(e.target.value)}
                   className="border rounded px-2 py-1 text-sm w-full"
@@ -485,6 +486,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                 <label className="block text-xs font-medium text-gray-600 mb-1">Laycan To</label>
                 <input
                   type="date"
+                  lang="en"
                   value={laycan_to}
                   onChange={(e) => setLaycanTo(e.target.value)}
                   className="border rounded px-2 py-1 text-sm w-full"
