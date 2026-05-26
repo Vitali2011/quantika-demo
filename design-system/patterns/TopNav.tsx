@@ -32,7 +32,7 @@ export function TopNav() {
       <nav className="flex items-center gap-6 text-sm" aria-label="Primary navigation">
         <NavLink href="/dashboard">Dashboard</NavLink>
         <NavLink href="/matches">Matches</NavLink>
-        <NavLink href={third.href} isModePrimary>{third.label}</NavLink>
+        <NavLink href={third.href}>{third.label}</NavLink>
         <NavLink href={fourth.href}>{fourth.label}</NavLink>
         <NavLink href="/market">Market</NavLink>
         <MoreDropdown />
@@ -52,7 +52,7 @@ export function TopNav() {
   );
 }
 
-function NavLink({ href, children, isModePrimary }: { href: string; children: React.ReactNode; isModePrimary?: boolean }) {
+function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
   const pathname = usePathname();
   const isActive = pathname != null && (pathname === href || (href !== '/dashboard' && pathname.startsWith(href + '/')));
 
@@ -62,11 +62,7 @@ function NavLink({ href, children, isModePrimary }: { href: string; children: Re
       aria-current={isActive ? 'page' : undefined}
       className={cn(
         'font-medium transition-colors duration-ds-fast',
-        isActive
-          ? 'text-ds-text'
-          : isModePrimary
-            ? 'text-ds-accent/80 hover:text-ds-accent'
-            : 'text-ds-text-muted hover:text-ds-text',
+        isActive ? 'text-ds-text' : 'text-ds-text-muted hover:text-ds-text',
       )}
     >
       {children}
