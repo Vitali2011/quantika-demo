@@ -19,6 +19,7 @@ import {
   reportSyncFailure,
 } from '@/lib/knowledge/governance';
 import { refreshBhsi } from '@/lib/market/bhsi-adapter';
+import { refreshBdi } from '@/lib/market/bdi-adapter';
 import { refreshDrewryWci } from '@/lib/market/drewry-adapter';
 import type Database from 'better-sqlite3';
 
@@ -47,10 +48,11 @@ export async function main(): Promise<void> {
 
   const db = getStore().getDb();
 
+  const okBdi = await runOne(db, 'market-bdi', (d) => refreshBdi(d));
   const okBhsi = await runOne(db, 'market-bhsi', (d) => refreshBhsi(d));
   const okDrewry = await runOne(db, 'market-drewry-wci', (d) => refreshDrewryWci(d));
 
-  const success = okBhsi || okDrewry;
+  const success = okBdi || okBhsi || okDrewry;
   console.log(
     `[${CRON_NAME}] ${success ? '✓ Completed successfully' : '✗ All sources failed'}`,
   );
