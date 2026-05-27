@@ -195,4 +195,56 @@ describe('CargoClient', () => {
     expect(screen.getByText('Odessa')).toBeInTheDocument();
     expect(screen.getByText('Venice')).toBeInTheDocument();
   });
+
+  // #594: commodity filter
+  it('renders commodity filter select with All option', () => {
+    render(<CargoClient rows={sampleRows} total={2} />);
+    const commoditySelect = screen.getByLabelText('Filter by commodity');
+    expect(commoditySelect).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: /commodity.*all/i })).toBeInTheDocument();
+  });
+
+  it('commodity filter hides non-matching rows', () => {
+    render(<CargoClient rows={sampleRows} total={2} />);
+    const commoditySelect = screen.getByLabelText('Filter by commodity');
+    // Select 'grain' (Wheat row has commodityKey='grain', Coal has 'coal')
+    fireEvent.change(commoditySelect, { target: { value: 'grain' } });
+    expect(screen.getByText('Wheat')).toBeInTheDocument();
+    expect(screen.queryByText('Coal')).not.toBeInTheDocument();
+  });
+
+  it('commodity filter shows no-match state when no rows match', () => {
+    render(<CargoClient rows={sampleRows} total={2} />);
+    const commoditySelect = screen.getByLabelText('Filter by commodity');
+    fireEvent.change(commoditySelect, { target: { value: 'clinker' } });
+    expect(screen.getByText(/No cargo matches/i)).toBeInTheDocument();
+  });
+
+  // #594: laycan filter
+  it('renders laycan filter select with Any option', () => {
+    render(<CargoClient rows={sampleRows} total={2} />);
+    const laycanSelect = screen.getByLabelText('Filter by laycan');
+    expect(laycanSelect).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: /laycan.*any/i })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: /this month/i })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: /next month/i })).toBeInTheDocument();
+  });
+
+  it('laycan filter "this month" shows only rows whose laycan month matches current month', () => {
+    const now = new Date();
+    const thisMonthAbbr = now.toLocaleString('en', { month: 'short' }); // e.g. "May"
+    const nextDate = new Date(now.getFullYear(), now.getMonth() + 1, 5);
+    const nextMonthAbbr = nextDate.toLocaleString('en', { month: 'short' });
+
+    const thisMonthRows = [
+      { ...sampleRows[0], id: 'tm:0', laycan: `01–10 ${thisMonthAbbr}` },
+      { ...sampleRows[1], id: 'nm:0', laycan: `01–10 ${nextMonthAbbr}` },
+    ];
+    render(<CargoClient rows={thisMonthRows} total={2} />);
+    const laycanSelect = screen.getByLabelText('Filter by laycan');
+    fireEvent.change(laycanSelect, { target: { value: 'this_month' } });
+    // Only this-month row should be visible
+    expect(screen.getByText('Wheat')).toBeInTheDocument();
+    expect(screen.queryByText('Coal')).not.toBeInTheDocument();
+  });
 });

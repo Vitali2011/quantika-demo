@@ -297,12 +297,23 @@ function parseCsvText(
     .filter((r) => r.commodity || r.originPort);
 }
 
+const MONTH_ABBRS = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+
+function extractLaycanMonth(laycan: string | null): number | null {
+  if (!laycan) return null;
+  const lower = laycan.toLowerCase();
+  const idx = MONTH_ABBRS.findIndex((m) => lower.includes(m));
+  return idx === -1 ? null : idx;
+}
+
 export default function CargoClient({ rows, total }: Props) {
   const { isCharterer } = useMode();
   const router = useRouter();
   const csvInputRef = useRef<HTMLInputElement>(null);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'open' | 'match'>('all');
+  const [commodityFilter, setCommodityFilter] = useState('all');
+  const [laycanFilter, setLaycanFilter] = useState<'all' | 'this_month' | 'next_month'>('all');
   const [selected, setSelected] = useState<CargoRow | null>(null);
   const [parseText, setParseText] = useState('');
   const [showNewCargoPanel, setShowNewCargoPanel] = useState(false);
@@ -341,9 +352,30 @@ export default function CargoClient({ rows, total }: Props) {
     }
   }
 
+  const uniqueCommodities = useMemo(() => {
+    const seen = new Set<string>();
+    return rows.reduce<Array<{ key: string; label: string }>>((acc, r) => {
+      if (!seen.has(r.commodityKey)) {
+        seen.add(r.commodityKey);
+        acc.push({ key: r.commodityKey, label: COMMOD[r.commodityKey]?.label ?? r.commodityKey.toUpperCase() });
+      }
+      return acc;
+    }, []);
+  }, [rows]);
+
   const filtered = useMemo(() => {
+    const now = new Date();
+    const thisMonth = now.getMonth();
+    const nextMonth = (thisMonth + 1) % 12;
     return rows.filter((r) => {
       if (statusFilter !== 'all' && r.status !== statusFilter) return false;
+      if (commodityFilter !== 'all' && r.commodityKey !== commodityFilter) return false;
+      if (laycanFilter !== 'all') {
+        const m = extractLaycanMonth(r.laycan);
+        if (m === null) return false;
+        if (laycanFilter === 'this_month' && m !== thisMonth) return false;
+        if (laycanFilter === 'next_month' && m !== nextMonth) return false;
+      }
       if (search) {
         const q = search.toLowerCase();
         return (
@@ -355,7 +387,7 @@ export default function CargoClient({ rows, total }: Props) {
       }
       return true;
     });
-  }, [rows, search, statusFilter]);
+  }, [rows, search, statusFilter, commodityFilter, laycanFilter]);
 
   const parsePlaceholder = isCharterer
     ? 'Paste email from broker or describe cargo in words — AI will parse automatically…'
@@ -457,6 +489,27 @@ export default function CargoClient({ rows, total }: Props) {
             <option value="all">Status: All</option>
             <option value="open">Open</option>
             <option value="match">Match</option>
+          </select>
+          <select
+            value={commodityFilter}
+            onChange={(e) => setCommodityFilter(e.target.value)}
+            className="h-9 px-3 bg-white border border-[#e2e8f0] rounded-[9px] text-[13px] text-[#0f172a] cursor-pointer outline-none"
+            aria-label="Filter by commodity"
+          >
+            <option value="all">Commodity: All</option>
+            {uniqueCommodities.map(({ key, label }) => (
+              <option key={key} value={key}>{label}</option>
+            ))}
+          </select>
+          <select
+            value={laycanFilter}
+            onChange={(e) => setLaycanFilter(e.target.value as 'all' | 'this_month' | 'next_month')}
+            className="h-9 px-3 bg-white border border-[#e2e8f0] rounded-[9px] text-[13px] text-[#0f172a] cursor-pointer outline-none"
+            aria-label="Filter by laycan"
+          >
+            <option value="all">Laycan: Any</option>
+            <option value="this_month">This month</option>
+            <option value="next_month">Next month</option>
           </select>
           <div className="flex-1" />
           <span className="font-mono text-[11.5px] text-[#64748b]">
