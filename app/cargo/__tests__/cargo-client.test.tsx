@@ -247,4 +247,29 @@ describe('CargoClient', () => {
     expect(screen.getByText('Wheat')).toBeInTheDocument();
     expect(screen.queryByText('Coal')).not.toBeInTheDocument();
   });
+
+  // #606 regression: columns collapse with large datasets (table-layout:auto + w-full without min-w)
+  it('table has min-width class to prevent column collapse at 80 rows', () => {
+    const bigRows: CargoRow[] = Array.from({ length: 80 }, (_, i) => ({
+      id: `big:${i}`,
+      emailId: `email-${i}`,
+      itemIndex: i % 3,
+      commodity: `Steel Mill Coil – High Tensile – Batch ${i} – ASTM A572 Grade 50`,
+      cargoType: 'BULK',
+      commodityKey: i % 2 === 0 ? 'bulk' : 'grain',
+      originPort: 'Novorossiysk',
+      destinationPort: 'Port of Rotterdam',
+      quantity: `${30000 + i * 100} MT`,
+      laycan: '01–15 Jun',
+      status: (i % 3 === 0 ? 'match' : 'open') as 'open' | 'match',
+      sourceTag: 'Email',
+      sourceName: 'TradeFlow Commodities International',
+    }));
+    render(<CargoClient rows={bigRows} total={80} />);
+    // All 8 headers must remain in DOM regardless of row count
+    expect(screen.getAllByRole('columnheader')).toHaveLength(8);
+    // Table must have a min-w class so overflow-x-auto is triggered instead of column compression
+    const table = document.querySelector('table[role="grid"]');
+    expect(table?.className).toMatch(/min-w-/);
+  });
 });
