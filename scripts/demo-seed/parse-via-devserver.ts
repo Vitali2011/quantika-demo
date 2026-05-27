@@ -18,7 +18,14 @@
  */
 import * as fs from 'fs';
 import * as path from 'path';
+// Next.js auto-loads .env.local in the dev-server, but this CLI runs under
+// `tsx` which doesn't — load it manually so DEMO_AUTH_SECRET etc. are visible.
+import 'dotenv/config';
+import dotenv from 'dotenv';
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local'), override: false });
 import { getStore } from '@/lib/session-store';
+import { signAuthCookie, AUTH_COOKIE_NAME } from '@/lib/auth/cookie';
+import { generateCsrfToken } from '@/lib/csrf';
 import type { Email } from '@/lib/types';
 import { normalizeRawEmail, type FlatEmail } from './analyze';
 import {
@@ -86,10 +93,34 @@ function flatToEmail(flat: FlatEmail): Email {
   };
 }
 
+interface AuthCookies {
+  demoAuth: string;
+  csrfToken: string;
+}
+
+async function buildAuthCookies(): Promise<AuthCookies> {
+  // DEMO_AUTH cookie — middleware verifies this first. We sign it locally
+  // using the same secret + helper as /api/auth/login.
+  const secret = process.env.DEMO_AUTH_SECRET;
+  if (!secret) {
+    throw new Error(
+      'DEMO_AUTH_SECRET is not set in process.env — load .env.local before running this script ' +
+        '(npx tsx already does this; check that the file exists).',
+    );
+  }
+  const user = process.env.DEMO_AUTH_USER ?? 'admin';
+  const days = parseInt(process.env.DEMO_AUTH_COOKIE_DAYS ?? '30', 10);
+  const demoAuth = await signAuthCookie(user, secret, days);
+  // CSRF — middleware enforces double-submit (cookie matches header)
+  const csrfToken = generateCsrfToken();
+  return { demoAuth, csrfToken };
+}
+
 async function callEndpoint(
   baseUrl: string,
   endpoint: string,
   sessionId: string,
+  auth: AuthCookies,
 ): Promise<{ ok: boolean; status: number; body: string }> {
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(), PER_CALL_TIMEOUT_MS);
@@ -98,7 +129,9 @@ async function callEndpoint(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Cookie: `session_id=${sessionId}`,
+        // Three cookies: session, demo_auth (middleware), csrf (CSRF guard)
+        Cookie: `session_id=${sessionId}; ${AUTH_COOKIE_NAME}=${auth.demoAuth}; csrf_token=${auth.csrfToken}`,
+        'X-CSRF-Token': auth.csrfToken,
       },
       body: '{}',
       signal: ctl.signal,
@@ -153,11 +186,14 @@ async function main() {
   store.updateSession(sessionId, { emails });
   console.log(`[parse-via-devserver] seeded session ${sessionId}`);
 
+  const auth = await buildAuthCookies();
+  console.log('[parse-via-devserver] signed demo_auth cookie + csrf token');
+
   try {
     for (const ep of ENDPOINTS) {
       console.log(`[parse-via-devserver] POST ${ep} ...`);
       const t0 = Date.now();
-      const res = await callEndpoint(args.baseUrl, ep, sessionId);
+      const res = await callEndpoint(args.baseUrl, ep, sessionId, auth);
       const dt = ((Date.now() - t0) / 1000).toFixed(1);
       console.log(`  ← ${res.status} in ${dt}s — ${res.body.slice(0, 200)}`);
       if (!res.ok) {
