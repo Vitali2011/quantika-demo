@@ -55,7 +55,7 @@ export function RoutesSection() {
             $/d (Supramax)
           </span>
         </div>
-        <Link href="/market#routes" className="font-mono text-xs text-slate-500 hover:text-ds-accent transition-colors">
+        <Link href="/routes" className="font-mono text-xs text-slate-500 hover:text-ds-accent transition-colors">
           all routes <span className="ml-1">→</span>
         </Link>
       </div>
