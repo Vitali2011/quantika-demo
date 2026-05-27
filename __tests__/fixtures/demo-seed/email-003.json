@@ -1,0 +1,65 @@
+{
+  "id": "fixture003aabbcc5566",
+  "historyId": "9000003",
+  "messages": [
+    {
+      "id": "fixture003aabbcc5566",
+      "threadId": "fixture003aabbcc5566",
+      "labelIds": [
+        "INBOX",
+        "CATEGORY_PERSONAL"
+      ],
+      "snippet": "fixture-003 VESSEL OPEN M/V FIXTURE WIND Antwerp end April open_date 28 April 2026",
+      "payload": {
+        "partId": "",
+        "mimeType": "multipart/mixed",
+        "filename": "",
+        "headers": [
+          {
+            "name": "From",
+            "value": "DEMO BROKER <broker@demo.local>"
+          },
+          {
+            "name": "To",
+            "value": "<demo@demo.local>"
+          },
+          {
+            "name": "Subject",
+            "value": "fixture-003 - VESSEL OPEN - M/V FIXTURE WIND - Antwerp end April"
+          },
+          {
+            "name": "Date",
+            "value": "Mon, 20 Apr 2026 08:00:00 +0000"
+          },
+          {
+            "name": "Message-ID",
+            "value": "<fixture-003@demo.local>"
+          }
+        ],
+        "body": {
+          "size": 0
+        },
+        "parts": [
+          {
+            "partId": "0",
+            "mimeType": "text/plain",
+            "filename": "",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "text/plain; charset=\"utf-8\""
+              }
+            ],
+            "body": {
+              "size": 430,
+              "data": "U3ViamVjdDogZml4dHVyZS0wMDMgLSBWRVNTRUwgT1BFTiAtIE0vViBGSVhUVVJFIFdJTkQgLSBBbnR3ZXJwIGVuZCBBcHJpbApGcm9tOiBicm9rZXJAZGVtby5sb2NhbApEYXRlOiBNb24sIDIwIEFwciAyMDI2IDA4OjAwOjAwICswMDAwCgpEZWFyIEFsbCwKClBsZWFzZSBub3RlIGZvbGxvd2luZyB2ZXNzZWwgaXMgb3BlbiBhbmQgc2Vla2luZyBlbXBsb3ltZW50OgoKVkVTU0VMOiBNL1YgRklYVFVSRSBXSU5EClRZUEU6IEhhbmR5bWF4IEJ1bGsgQ2FycmllcgpEV1Q6IDUyLDQ1MCBNVCBvbiAxMS4ybQpCVUlMVDogMjAxNSwgSmFwYW4KT1BFTjogQW50d2VycCwgTmV0aGVybGFuZHMKT1BFTiBEQVRFOiAyOCBBcHJpbCAyMDI2CkxBU1QgQ0FSR086IEdyYWluClNQRUVEOiAxNCBrbiBsb2FkZWQgLyAxNC41IGtuIGJhbGxhc3Qgb24gMjggTVQgSUZPCgpQbGVhc2UgcmV2ZXJ0IHdpdGggYW55IHN1aXRhYmxlIGNhcmdvLgoKREVNTyBCUk9LRVIKYnJva2VyQGRlbW8ubG9jYWwK"
+            }
+          }
+        ]
+      },
+      "sizeEstimate": 1550,
+      "historyId": "9000003",
+      "internalDate": "1774944000000"
+    }
+  ]
+}

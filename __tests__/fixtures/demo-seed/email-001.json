@@ -1,0 +1,65 @@
+{
+  "id": "fixture001aabbcc1122",
+  "historyId": "9000001",
+  "messages": [
+    {
+      "id": "fixture001aabbcc1122",
+      "threadId": "fixture001aabbcc1122",
+      "labelIds": [
+        "INBOX",
+        "CATEGORY_PERSONAL"
+      ],
+      "snippet": "fixture-001 CARGO ENQUIRY WHEAT Hamburg/Alexandria LAYCAN 15-20 April 2026 on behalf of FIXTURE GRAIN CO",
+      "payload": {
+        "partId": "",
+        "mimeType": "multipart/mixed",
+        "filename": "",
+        "headers": [
+          {
+            "name": "From",
+            "value": "DEMO BROKER <broker@demo.local>"
+          },
+          {
+            "name": "To",
+            "value": "<demo@demo.local>"
+          },
+          {
+            "name": "Subject",
+            "value": "fixture-001 - CARGO ENQUIRY - WHEAT - Hamburg/Alexandria"
+          },
+          {
+            "name": "Date",
+            "value": "Sat, 05 Apr 2026 09:15:00 +0000"
+          },
+          {
+            "name": "Message-ID",
+            "value": "<fixture-001@demo.local>"
+          }
+        ],
+        "body": {
+          "size": 0
+        },
+        "parts": [
+          {
+            "partId": "0",
+            "mimeType": "text/plain",
+            "filename": "",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "text/plain; charset=\"utf-8\""
+              }
+            ],
+            "body": {
+              "size": 412,
+              "data": "U3ViamVjdDogZml4dHVyZS0wMDEgLSBDQVJHTyBFTlFVSVJZIC0gV0hFQVQgLSBIYW1idXJnL0FsZXhhbmRyaWEKRnJvbTogYnJva2VyQGRlbW8ubG9jYWwKRGF0ZTogU2F0LCAwNSBBcHIgMjAyNiAwOToxNTowMCArMDAwMAoKRGVhciBBbGwsCgpQbGVhc2UgZmluZCBiZWxvdyBjYXJnbyBlbnF1aXJ5IG9uIGJlaGFsZiBvZiBGSVhUVVJFIEdSQUlOIENPOgoKQ0FSR086IDI1LDAwMCBNVCBXSEVBVCAoMTAlIE1PTE9PKQpMT0FEIFBPUlQ6IEhhbWJ1cmcsIEdlcm1hbnkKRElTQ0ggUE9SVDogQWxleGFuZHJpYSwgRWd5cHQKTEFZQ0FOOiAxNS0yMCBBcHJpbCAyMDI2CkZSRUlHSFQ6IEFzIHBlciBtYXJrZXQKQ09NTTogMS4yNSUgVE9UQUwKCktpbmRseSByZXZlcnQgd2l0aCB5b3VyIGJlc3QgdmVzc2VsIG9mZmVycy4KCkRFTU8gQlJPS0VSCmJyb2tlckBkZW1vLmxvY2FsCg"
+            }
+          }
+        ]
+      },
+      "sizeEstimate": 1500,
+      "historyId": "9000001",
+      "internalDate": "1775365800000"
+    }
+  ]
+}
