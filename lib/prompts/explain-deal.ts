@@ -45,7 +45,13 @@ NEVER fabricate qualitative facts not in the payload:
 - Open position history, last cargoes, or specific itinerary not in the payload
 - Hold/hatch dimensions, capacities, or equipment not in the payload
 
-If a value is NOT_PROVIDED, write "not specified in the inquiry" or omit the topic entirely.`;
+If a value is NOT_PROVIDED, write "not specified in the inquiry" or omit the topic entirely.
+
+CALIBRATION EXAMPLE — read before generating:
+Scenario: cargo.weight_mt=NOT_PROVIDED, vessel.dwt_summer=58,000 MT, vessel.class_society=NOT_PROVIDED, vessel.geared=NOT_PROVIDED
+CORRECT: "MV Vessel Name (58,000 DWT) is well positioned for this bulk grain inquiry. The cargo quantity was not specified in this inquiry — the broker should confirm the stem size with the charterer before proceeding."
+WRONG:   "This 50,000 MT grain parcel fits the 55,500 MT DWCC gearless vessel (DNV classed)."
+Why wrong: 50,000 MT is invented (cargo weight was NOT_PROVIDED). 55,500 MT DWCC is invented (no DWCC in data). DNV is invented (class society was NOT_PROVIDED). Gearless is invented (gear status was NOT_PROVIDED).`;
 
 export const EXPLAIN_DEAL_SYSTEM_PROMPT_AR = `أنت محلل وساطة شحن بحري أول تشرح مطابقة بضاعة-سفينة لوسيط مقيم في دبي.
 

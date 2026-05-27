@@ -41,7 +41,19 @@ export function extractSpecNumbers(text: string): number[] {
 }
 
 /**
+ * Extract large numeric values embedded in a string field (e.g. "1500 MTPD SHINC" → 1500).
+ * Used to allow the LLM to cite operational rates and description-embedded quantities
+ * that are present in string-typed payload fields.
+ */
+function extractNumsFromStringField(s: string | null | undefined): number[] {
+  if (!s) return [];
+  return extractSpecNumbers(s);
+}
+
+/**
  * Collect all large numeric values from the match payload that the LLM is allowed to cite.
+ * Includes both typed numeric fields and large numbers embedded in string-typed fields
+ * (loading/discharge rates, cargo descriptions) to avoid false-positive strips.
  * Only includes numbers ≥ LARGE_NUMBER_THRESHOLD and not year-like.
  */
 export function buildPayloadNumberSet(
@@ -55,6 +67,9 @@ export function buildPayloadNumberSet(
     if (typeof v === 'number' && isFinite(v) && v >= LARGE_NUMBER_THRESHOLD && !isYearLike(v)) {
       nums.add(v);
     }
+  };
+  const addFromString = (s: string | null | undefined) => {
+    for (const n of extractNumsFromStringField(s)) nums.add(n);
   };
 
   if (cargo) {
@@ -70,6 +85,14 @@ export function buildPayloadNumberSet(
       add(cargo.quantity.max);
     }
     if (cargo.weightPerPort) cargo.weightPerPort.forEach(add);
+    // String fields that may embed operational rates or component weights
+    addFromString(cargo.loadingRate);
+    addFromString(cargo.dischargeRate);
+    addFromString(
+      typeof cargo.cargoDescription === 'object' && cargo.cargoDescription !== null
+        ? (cargo.cargoDescription as { value?: string }).value
+        : (cargo.cargoDescription as unknown) as string | undefined,
+    );
   }
 
   if (vessel) {
@@ -82,16 +105,27 @@ export function buildPayloadNumberSet(
     add(vessel.nrt);
     add(vessel.grainCapacity);
     add(vessel.baleCapacity);
+    // String-embedded capacities (e.g. craneCapacity "4x30T" — numbers below threshold, harmless)
+    addFromString(vessel.speedLaden);
+    addFromString(vessel.consumption);
+    // IMO is stored as string but cited by model
+    addFromString(vessel.imo);
   }
 
   if (match.economics) {
     add(match.economics.totalUsd);
     const bd = match.economics.breakdown;
-    add(bd.bunkerCost);
-    add(bd.euEtsAmount);
-    add(bd.warRiskPremium);
-    if (bd.warRiskTotal !== undefined) add(bd.warRiskTotal);
-    if (bd.splitBunkerSavings !== undefined) add(bd.splitBunkerSavings);
+    if (bd) {
+      add(bd.bunkerCost);
+      add(bd.euEtsAmount);
+      add(bd.warRiskPremium);
+      if (bd.warRiskTotal !== undefined) add(bd.warRiskTotal);
+      if (bd.splitBunkerSavings !== undefined) add(bd.splitBunkerSavings);
+    }
+    // Custom tce/marketTce fields used in corpus scenarios (not in EconomicsResult type)
+    const econAny = match.economics as unknown as Record<string, unknown>;
+    if (typeof econAny.tce === 'number') add(econAny.tce);
+    if (typeof econAny.marketTce === 'number') add(econAny.marketTce);
   }
 
   return nums;

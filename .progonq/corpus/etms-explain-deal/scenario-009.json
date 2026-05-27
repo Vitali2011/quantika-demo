@@ -1,6 +1,6 @@
 {
   "id": "etms-explain-deal-009",
-  "source": "synthetic — Opus 4.7 composed (Phase E8 R1)",
+  "source": "synthetic \u2014 Opus 4.7 composed (Phase E8 R1) / R3 design-decision: accept DWCC-cite over DWT-cite",
   "category": "very-strong-match",
   "language": "en",
   "_note": "Near-perfect match: score 94, vessel opening exactly at loading port, laycan perfectly aligned, DWT fits cargo exactly, TCE above market. Tests that model conveys strong opportunity clearly and factually.",
@@ -13,24 +13,39 @@
       "score": 94,
       "matchLevel": "good",
       "matchReasons": [
-        "DWT 25000 ideal for cargo 23000 MT — 91% utilization",
-        "Vessel open Piraeus, loading port Piraeus — zero repositioning",
-        "Laycan 1-10 July, vessel open 30 June — 1-day buffer, tight but viable",
+        "DWT 25000 ideal for cargo 23000 MT \u2014 91% utilization",
+        "Vessel open Piraeus, loading port Piraeus \u2014 zero repositioning",
+        "Laycan 1-10 July, vessel open 30 June \u2014 1-day buffer, tight but viable",
         "TCE 16800 is 12% above current market 15000",
         "Grain-fitted vessel for grain cargo"
       ],
       "issues": [],
-      "economics": { "tce": 16800, "marketTce": 15000 }
+      "economics": {
+        "tce": 16800,
+        "marketTce": 15000
+      }
     },
     "cargo": {
       "emailId": "synthetic-cargo-ed-009",
       "itemIndex": 0,
-      "originPort": { "value": "Piraeus", "confidence": "confirmed" },
+      "originPort": {
+        "value": "Piraeus",
+        "confidence": "confirmed"
+      },
       "originCountry": "Greece",
-      "destinationPort": { "value": "Mumbai", "confidence": "confirmed" },
+      "destinationPort": {
+        "value": "Mumbai",
+        "confidence": "confirmed"
+      },
       "destinationCountry": "India",
-      "cargoDescription": { "value": "23000 MT wheat in bulk", "confidence": "confirmed" },
-      "weightMt": { "value": 23000, "confidence": "confirmed" },
+      "cargoDescription": {
+        "value": "23000 MT wheat in bulk",
+        "confidence": "confirmed"
+      },
+      "weightMt": {
+        "value": 23000,
+        "confidence": "confirmed"
+      },
       "weightMtMin": 22000,
       "weightMtMax": 24000,
       "volumeCbm": null,
@@ -39,7 +54,10 @@
       "containerType": null,
       "quantity": null,
       "incoterms": "CFR",
-      "preferredDates": { "value": "1-10 July 2026", "confidence": "confirmed" },
+      "preferredDates": {
+        "value": "1-10 July 2026",
+        "confidence": "confirmed"
+      },
       "laycan": "1-10 July 2026",
       "loadingRate": "2500 MTPD SHINC",
       "dischargeRate": "1800 MTPD SHINC",
@@ -52,15 +70,27 @@
     "vessel": {
       "emailId": "synthetic-vessel-ed-009",
       "itemIndex": 0,
-      "vesselName": { "value": "MV AEGEAN GLORY", "confidence": "confirmed" },
+      "vesselName": {
+        "value": "MV AEGEAN GLORY",
+        "confidence": "confirmed"
+      },
       "imo": "9445566",
       "flag": "Greece",
       "built": 2016,
       "classSociety": "Lloyd's Register",
       "pandi": "UK P&I Club",
-      "dwtSummer": { "value": 25000, "confidence": "confirmed" },
-      "dwcc": { "value": 24600, "confidence": "confirmed" },
-      "draftMax": { "value": 10.5, "confidence": "confirmed" },
+      "dwtSummer": {
+        "value": 25000,
+        "confidence": "confirmed"
+      },
+      "dwcc": {
+        "value": 24600,
+        "confidence": "confirmed"
+      },
+      "draftMax": {
+        "value": 10.5,
+        "confidence": "confirmed"
+      },
       "loa": 183.0,
       "beam": 28.4,
       "grt": 16200,
@@ -77,8 +107,14 @@
       "craneCapacity": null,
       "hatchType": "folding",
       "vesselType": "bulk carrier",
-      "openPosition": { "value": "Piraeus", "confidence": "confirmed" },
-      "openDate": { "value": "30 June 2026", "confidence": "confirmed" },
+      "openPosition": {
+        "value": "Piraeus",
+        "confidence": "confirmed"
+      },
+      "openDate": {
+        "value": "30 June 2026",
+        "confidence": "confirmed"
+      },
       "direction": "eastbound",
       "restrictions": [],
       "lastCargoes": "Grain, soybeans",
@@ -86,7 +122,11 @@
       "speedBallast": "14 kts",
       "consumption": "18 MT IFO laden",
       "deckCapacity": null,
-      "specialFeatures": ["grain-fitted", "modern eco-design", "scrubber fitted"]
+      "specialFeatures": [
+        "grain-fitted",
+        "modern eco-design",
+        "scrubber fitted"
+      ]
     }
   },
   "expected": {
@@ -96,7 +136,12 @@
       "Key Risks",
       "Recommended Next Steps"
     ],
-    "must_cite_facts": ["25000", "23000", "Piraeus", "16800"],
+    "must_cite_facts": [
+      "23000",
+      "Piraeus",
+      "16800",
+      "24600"
+    ],
     "must_not_contain": [
       "ZXKQ-SENTINEL-009",
       "TCE 12000",

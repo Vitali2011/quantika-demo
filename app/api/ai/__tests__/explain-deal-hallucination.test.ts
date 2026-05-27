@@ -219,11 +219,14 @@ describe('buildPayloadNumberSet', () => {
     expect(nums.has(58000)).toBe(true);
   });
 
-  it('excludes nothing when cargo has no weight (null fields)', () => {
+  it('excludes cargo weight when null; includes vessel DWT and IMO string-number', () => {
     const nums = buildPayloadNumberSet(fixtureMatchA, fixtureCargoA, fixtureVesselA);
-    // Only vessel DWT should be present; no cargo weight
-    expect(nums.size).toBe(1);
-    expect(nums.has(58000)).toBe(true);
+    // fixtureVesselA.imo = '9876543' — extracted from string field to prevent false-positive strips
+    expect(nums.has(58000)).toBe(true);   // vessel DWT
+    expect(nums.has(9876543)).toBe(true); // IMO number from string field
+    // no cargo weight added (weightMt null)
+    expect(nums.has(50000)).toBe(false);
+    expect(nums.has(55500)).toBe(false);
   });
 
   it('includes cargo weightMt and weightMtMin/Max when present', () => {
