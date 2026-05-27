@@ -71,26 +71,42 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
 }
 
 function MoreDropdown() {
+  const pathname = usePathname();
+  const isMoreActive = pathname != null && MORE_ITEMS.some(
+    (it) => pathname === it.href || pathname.startsWith(it.href + '/'),
+  );
+
   return (
     <details className="relative">
       <summary
-        className="text-ds-text-muted hover:text-ds-text font-medium cursor-pointer list-none"
+        className={cn(
+          'font-medium cursor-pointer list-none',
+          isMoreActive ? 'text-ds-text' : 'text-ds-text-muted hover:text-ds-text',
+        )}
         role="button"
         aria-label="More"
+        aria-current={isMoreActive ? 'true' : undefined}
       >
         ⋯ More
       </summary>
       <ul className="absolute right-0 mt-2 min-w-[180px] bg-ds-surface border border-ds-border rounded-ds-md shadow-lg py-1 z-40">
-        {MORE_ITEMS.map((it) => (
-          <li key={it.href}>
-            <Link
-              href={it.href}
-              className="block px-3 py-1.5 text-sm text-ds-text hover:bg-ds-surface-muted"
-            >
-              {it.label}
-            </Link>
-          </li>
-        ))}
+        {MORE_ITEMS.map((it) => {
+          const isActive = pathname != null && (pathname === it.href || pathname.startsWith(it.href + '/'));
+          return (
+            <li key={it.href}>
+              <Link
+                href={it.href}
+                aria-current={isActive ? 'page' : undefined}
+                className={cn(
+                  'block px-3 py-1.5 text-sm',
+                  isActive ? 'text-ds-text font-medium bg-ds-surface-muted' : 'text-ds-text hover:bg-ds-surface-muted',
+                )}
+              >
+                {it.label}
+              </Link>
+            </li>
+          );
+        })}
         <li className="border-t border-ds-border mt-1 pt-1">
           <form method="POST" action="/api/auth/logout">
             <button
