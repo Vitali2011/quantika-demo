@@ -19,11 +19,7 @@ import {
   EXPLAIN_DEAL_SYSTEM_PROMPT_AR,
 } from '@/lib/prompts';
 import { ExplainDealBodySchema } from '@/lib/api-schemas';
-import {
-  validateExplainDealResponse,
-  buildRetryPrompt,
-  buildPayloadNumberSet,
-} from '@/lib/explain-deal-validator';
+import { stripInventedContent } from '@/lib/explain-deal-validator';
 
 export const maxDuration = 60;
 
@@ -48,10 +44,16 @@ export type ExplainDealSection = {
   content: string;
 };
 
+export type ExplainDealWarning = {
+  type: 'invented_numerics' | 'forbidden_tokens';
+  values: (string | number)[];
+};
+
 export type ExplainDealResponse = {
   sections: ExplainDealSection[];
   language: 'en' | 'ar';
   model: string;
+  warnings?: ExplainDealWarning[];
 };
 
 /**
@@ -176,24 +178,29 @@ export async function POST(request: NextRequest) {
     const llmOpts = { timeoutMs: endpointLlmTimeout(maxDuration), model: modelOverride };
     const rawText = await callAiText('EXPLAIN_DEAL', systemPrompt, userPrompt, llmOpts);
 
-    // A2: post-response numeric validation — retry once if invented numbers found
-    const validation = validateExplainDealResponse(rawText, match, cargo ?? null, vessel ?? null);
-    let finalText = rawText;
-    if (!validation.valid) {
-      const payloadNumbers = buildPayloadNumberSet(match, cargo ?? null, vessel ?? null);
-      const retryPrompt = buildRetryPrompt(userPrompt, validation.inventedNumbers, payloadNumbers);
-      finalText = await callAiText('EXPLAIN_DEAL', systemPrompt, retryPrompt, llmOpts);
-    }
+    // R2 (#589): strip-not-retry — post-process the response by replacing invented
+    // numerics and forbidden qualitative tokens with inline redaction markers.
+    // Retry approach (R1) was ineffective: Gemini re-invents the same values.
+    const stripped = stripInventedContent(rawText, match, cargo ?? null, vessel ?? null);
 
-    const sections = parseSections(finalText, headers);
+    const sections = parseSections(stripped.text, headers);
     const usedModel =
       modelOverride ??
       (process.env.AI_MODEL_HEAVY ?? 'gpt-5.5');
+
+    const warnings: ExplainDealWarning[] = [];
+    if (stripped.inventedNumbers.length > 0) {
+      warnings.push({ type: 'invented_numerics', values: stripped.inventedNumbers });
+    }
+    if (stripped.forbiddenTokens.length > 0) {
+      warnings.push({ type: 'forbidden_tokens', values: stripped.forbiddenTokens });
+    }
 
     const response: ExplainDealResponse = {
       sections,
       language,
       model: usedModel,
+      ...(warnings.length > 0 ? { warnings } : {}),
     };
 
     return NextResponse.json(response);
@@ -220,30 +227,68 @@ function buildUserPrompt(
   vessel: import('@/lib/types').ParsedVessel | null,
   matchIndex: number,
 ): string {
-  // A1: explicit numeric anchor — list key numbers so LLM sees them before the JSON blob
+  // R2 hard-anchor: every field is listed with either its value or "NOT_PROVIDED".
+  // The LLM must NOT mention any NOT_PROVIDED field (FORBIDDEN clause below).
+  const fmt = (v: unknown): string => {
+    if (v === null || v === undefined || v === '') return 'NOT_PROVIDED';
+    if (typeof v === 'object' && 'value' in (v as { value?: unknown })) {
+      const val = (v as { value: unknown }).value;
+      return val === null || val === undefined || val === '' ? 'NOT_PROVIDED' : String(val);
+    }
+    return String(v);
+  };
+
   const cargoWeight =
     cargo?.weightMt?.value ?? cargo?.weightMtMin ?? cargo?.weightMtMax ?? null;
-  const vesselDwt = vessel?.dwtSummer?.value ?? null;
-  const vesselDwcc = vessel?.dwcc?.value ?? null;
-  const totalCost = match.economics?.totalUsd ?? null;
+  const cargoQuantity = (() => {
+    if (!cargo?.quantity) return null;
+    if (typeof cargo.quantity === 'number') return cargo.quantity;
+    if (typeof cargo.quantity === 'object' && 'min' in cargo.quantity) {
+      return `${cargo.quantity.min}–${cargo.quantity.max}`;
+    }
+    return null;
+  })();
 
-  const anchorLines = [
-    `Cargo weight: ${cargoWeight !== null ? `${cargoWeight} MT` : 'not specified'}`,
-    `Vessel DWT: ${vesselDwt !== null ? `${vesselDwt} MT` : 'not specified'}`,
-    vesselDwcc !== null ? `Vessel DWCC: ${vesselDwcc} MT` : null,
-    totalCost !== null ? `Total voyage cost: USD ${totalCost}` : null,
-  ]
-    .filter(Boolean)
-    .join('\n- ');
+  const payloadLines = [
+    `cargo.type: ${fmt(cargo?.cargoType)}`,
+    `cargo.description: ${fmt(cargo?.cargoDescription)}`,
+    `cargo.weight_mt: ${cargoWeight !== null ? `${cargoWeight} MT` : 'NOT_PROVIDED'}`,
+    `cargo.quantity: ${cargoQuantity !== null ? cargoQuantity : 'NOT_PROVIDED'}`,
+    `cargo.stowage_factor: ${fmt(cargo?.stowageFactor)}`,
+    `cargo.origin_port: ${fmt(cargo?.originPort)}`,
+    `cargo.destination_port: ${fmt(cargo?.destinationPort)}`,
+    `cargo.laycan: ${fmt(cargo?.laycan)}`,
+    `vessel.name: ${fmt(vessel?.vesselName)}`,
+    `vessel.imo: ${fmt(vessel?.imo)}`,
+    `vessel.type: ${fmt(vessel?.vesselType)}`,
+    `vessel.flag: ${fmt(vessel?.flag)}`,
+    `vessel.built: ${fmt(vessel?.built)}`,
+    `vessel.dwt_summer: ${vessel?.dwtSummer?.value ? `${vessel.dwtSummer.value} MT` : 'NOT_PROVIDED'}`,
+    `vessel.dwcc: ${vessel?.dwcc?.value ? `${vessel.dwcc.value} MT` : 'NOT_PROVIDED'}`,
+    `vessel.class_society: ${fmt(vessel?.classSociety)}`,
+    `vessel.geared: ${vessel?.geared === null || vessel?.geared === undefined ? 'NOT_PROVIDED' : String(vessel.geared)}`,
+    `vessel.holds_count: ${fmt(vessel?.holdsCount)}`,
+    `vessel.grain_capacity: ${vessel?.grainCapacity ? String(vessel.grainCapacity) : 'NOT_PROVIDED'}`,
+    `vessel.open_position: ${fmt(vessel?.openPosition)}`,
+    `vessel.open_date: ${fmt(vessel?.openDate)}`,
+    `economics.total_usd: ${match.economics?.totalUsd ? `USD ${match.economics.totalUsd}` : 'NOT_PROVIDED'}`,
+  ].join('\n- ');
 
-  return `MATCH DATA (index ${matchIndex}):
+  return `MATCH PAYLOAD (index ${matchIndex}) — use ONLY these values; NEVER infer, estimate, or default:
+- ${payloadLines}
 
-NUMERIC ANCHOR — cite ONLY these values; for anything absent write "not specified":
-- ${anchorLines}
+FORBIDDEN — do NOT mention any field marked NOT_PROVIDED. Do NOT fabricate:
+- Stowage factors in m³/MT or any unit (if cargo.stowage_factor is NOT_PROVIDED)
+- Vessel class societies (DNV, LR, ABS, BV, NK, RINA, CCS, KR, etc.) other than the exact value above
+- Gear status (gearless, geared, crane-fitted) if vessel.geared is NOT_PROVIDED
+- Specific quantities, capacities, DWT, DWCC, or freight rates not listed above
+- Open position history, last cargoes, hold/hatch dimensions not in the payload
 
 Score: ${match.score}/100 (${match.matchLevel.toUpperCase()})
 Match Reasons: ${match.matchReasons.join('; ') || 'none'}
 Issues: ${match.issues.join('; ') || 'none'}
+
+FULL DATA (for context only — do NOT use any value missing from the MATCH PAYLOAD anchor above):
 
 CARGO:
 ${cargo ? JSON.stringify(cargo, null, 2) : 'Not available'}
@@ -257,5 +302,5 @@ ${match.economics ? JSON.stringify(match.economics, null, 2) : 'Not available'}
 SCORE BREAKDOWN:
 ${match.scoreBreakdown ? JSON.stringify(match.scoreBreakdown, null, 2) : 'Not available'}
 
-Please produce the 4-section narrative based on this data.`;
+Please produce the 4-section narrative using ONLY values from the MATCH PAYLOAD anchor.`;
 }

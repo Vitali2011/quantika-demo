@@ -14,6 +14,7 @@ import {
   buildPayloadNumberSet,
   validateExplainDealResponse,
   buildRetryPrompt,
+  stripInventedContent,
 } from '@/lib/explain-deal-validator';
 import { POST } from '@/app/api/ai/explain-deal/route';
 import { NextRequest } from 'next/server';
@@ -313,6 +314,111 @@ describe('buildRetryPrompt', () => {
   });
 });
 
+// ── Unit tests: stripInventedContent (R2 strip-not-retry) ────────────────────
+
+describe('stripInventedContent — numeric stripping (#589 R2)', () => {
+  it('strips comma-formatted invented numbers', () => {
+    const text = 'A 50,000 MT grain parcel for the vessel.';
+    const r = stripInventedContent(text, fixtureMatchA, fixtureCargoA, fixtureVesselA);
+    expect(r.text).not.toContain('50,000');
+    expect(r.text).toContain('[redacted: not in match data]');
+    expect(r.inventedNumbers).toContain(50000);
+  });
+
+  it('strips unformatted 4+ digit invented numbers (e.g. 50000 without comma)', () => {
+    const text = 'The cargo is 50000 MT and DWCC 55500 MT.';
+    const r = stripInventedContent(text, fixtureMatchA, fixtureCargoA, fixtureVesselA);
+    expect(r.text).not.toMatch(/\b50000\b/);
+    expect(r.text).not.toMatch(/\b55500\b/);
+    expect(r.inventedNumbers).toEqual(expect.arrayContaining([50000, 55500]));
+  });
+
+  it('preserves payload numbers (58,000 DWT is real for fixtureA)', () => {
+    const text = 'MV Black Sea Star has 58,000 DWT.';
+    const r = stripInventedContent(text, fixtureMatchA, fixtureCargoA, fixtureVesselA);
+    expect(r.text).toContain('58,000');
+    expect(r.inventedNumbers).toHaveLength(0);
+  });
+
+  it('preserves numbers within 2% tolerance', () => {
+    const text = 'The vessel is approximately 58,500 DWT.';
+    const r = stripInventedContent(text, fixtureMatchA, fixtureCargoA, fixtureVesselA);
+    expect(r.text).toContain('58,500');
+    expect(r.inventedNumbers).toHaveLength(0);
+  });
+
+  it('does not strip year-like numbers (2018, 2026)', () => {
+    const text = 'Built in 2018, open from 2026-07-01.';
+    const r = stripInventedContent(text, fixtureMatchA, fixtureCargoA, fixtureVesselA);
+    expect(r.text).toContain('2018');
+    expect(r.text).toContain('2026');
+  });
+
+  it('does not strip small numbers (scores, hold counts)', () => {
+    const text = 'Score 74/100 with 5 holds and 5 hatches.';
+    const r = stripInventedContent(text, fixtureMatchA, fixtureCargoA, fixtureVesselA);
+    expect(r.text).toContain('74');
+    expect(r.text).toContain('5 holds');
+  });
+});
+
+describe('stripInventedContent — qualitative tokens (#589 R2)', () => {
+  it('strips stowage factor mentions when cargo.stowageFactor is null', () => {
+    const text = 'The cargo has a stowage factor of 1.25 m³/MT.';
+    const r = stripInventedContent(text, fixtureMatchA, fixtureCargoA, fixtureVesselA);
+    expect(r.text).not.toContain('1.25');
+    expect(r.text).toContain('[redacted: stowage factor not in match data]');
+    expect(r.forbiddenTokens.some((t) => /stowage\s*factor/i.test(t))).toBe(true);
+  });
+
+  it('strips invented class society (DNV when vessel.classSociety=LR)', () => {
+    const text = 'The vessel is DNV classed and operates under Greek flag.';
+    const r = stripInventedContent(text, fixtureMatchA, fixtureCargoA, fixtureVesselA);
+    expect(r.text).not.toContain('DNV');
+    expect(r.text).toContain('[redacted: class society not in match data]');
+    expect(r.forbiddenTokens).toContain('DNV');
+  });
+
+  it('preserves the payload-listed class society (LR)', () => {
+    const text = 'The vessel is LR classed.';
+    const r = stripInventedContent(text, fixtureMatchA, fixtureCargoA, fixtureVesselA);
+    expect(r.text).toContain('LR');
+    expect(r.forbiddenTokens.filter((t) => t === 'LR')).toHaveLength(0);
+  });
+
+  it('strips ABS/NK/BV/RINA when not in payload', () => {
+    const text = 'Class: ABS. Survey by BV recently. Listed in NK registry.';
+    const r = stripInventedContent(text, fixtureMatchA, fixtureCargoA, fixtureVesselA);
+    expect(r.text).not.toContain('ABS');
+    expect(r.text).not.toContain('BV');
+    expect(r.text).not.toContain('NK');
+  });
+
+  it('strips gear status when vessel.geared is null', () => {
+    const vesselNullGear: ParsedVessel = { ...fixtureVesselA, geared: null };
+    const text = 'The vessel is gearless, with no cranes onboard.';
+    const r = stripInventedContent(text, fixtureMatchA, fixtureCargoA, vesselNullGear);
+    expect(r.text).not.toContain('gearless');
+    expect(r.text).toContain('[redacted: gear status not in match data]');
+    expect(r.forbiddenTokens).toContain('gearless');
+  });
+
+  it('does NOT strip gear status when vessel.geared is explicit (false in fixtureA)', () => {
+    // fixtureVesselA.geared = false — payload provides this field
+    const text = 'The vessel is gearless.';
+    const r = stripInventedContent(text, fixtureMatchA, fixtureCargoA, fixtureVesselA);
+    expect(r.text).toContain('gearless');
+    expect(r.forbiddenTokens).not.toContain('gearless');
+  });
+
+  it('preserves stowage factor when cargo.stowageFactor is provided', () => {
+    const cargoWithSF: ParsedCargo = { ...fixtureCargoA, stowageFactor: '1.30' };
+    const text = 'The cargo stowage factor of 1.30 is typical for coal.';
+    const r = stripInventedContent(text, fixtureMatchA, cargoWithSF, fixtureVesselA);
+    expect(r.text).toContain('1.30');
+  });
+});
+
 // ── Behavioral: route retry flow ──────────────────────────────────────────────
 
 describe('POST /api/ai/explain-deal — hallucination retry (#589)', () => {
@@ -355,41 +461,40 @@ describe('POST /api/ai/explain-deal — hallucination retry (#589)', () => {
     counterparties: [],
   };
 
-  it('retries once when first LLM response contains invented numbers', async () => {
+  it('strips invented numbers from response (R2: no retry, post-process inline)', async () => {
     mockGetSession.mockReturnValue(baseSession);
 
-    // First call: hallucinated response (50,000 MT invented, 55,500 DWCC invented)
+    // Hallucinated response: 50,000 MT and 55,500 MT DWCC are NOT in the payload
+    // (cargoWeight=null, dwcc=null, only dwt=58000 is real).
     const hallucinatedResponse =
       'Market Context\nGrain market is active.\n\n' +
       'Deal Rationale\nThis 50,000 MT grain parcel fits the 55,500 MT DWCC vessel well.\n\n' +
       'Key Risks\n- Tight laycan\n\n' +
       'Recommended Next Steps\nContact owner.';
 
-    // Second call: corrected response (cites actual 58,000 DWT, no invented numbers)
-    const correctedResponse =
-      'Market Context\nGrain market is active in Black Sea.\n\n' +
-      'Deal Rationale\nMV Black Sea Star (58,000 DWT) is suitable. Cargo weight is not specified.\n\n' +
-      'Key Risks\n- Cargo weight not confirmed\n\n' +
-      'Recommended Next Steps\nConfirm cargo quantity before fixing.';
-
-    mockCallAiText
-      .mockResolvedValueOnce(hallucinatedResponse)
-      .mockResolvedValueOnce(correctedResponse);
+    mockCallAiText.mockResolvedValueOnce(hallucinatedResponse);
 
     const req = makeRequest({ matchIndex: 0 }, 'sess-qa');
     const res = await POST(req);
 
     expect(res.status).toBe(200);
-    // Route must have called callAiText twice (initial + retry)
-    expect(mockCallAiText).toHaveBeenCalledTimes(2);
+    // R2: strip-not-retry — exactly one LLM call, then post-process
+    expect(mockCallAiText).toHaveBeenCalledTimes(1);
 
     const body = await res.json();
-    // Response should use the corrected (second) text
     const rationale = body.sections.find(
       (s: { heading: string }) => s.heading === 'Deal Rationale',
     );
-    expect(rationale?.content).toContain('58,000 DWT');
-    expect(rationale?.content).not.toContain('50,000 MT');
+    // Invented numerics replaced with redaction marker; no raw "50,000" or "55,500"
+    expect(rationale?.content).not.toContain('50,000');
+    expect(rationale?.content).not.toContain('55,500');
+    expect(rationale?.content).toContain('[redacted: not in match data]');
+    // Warnings exposed in response metadata
+    expect(body.warnings).toBeDefined();
+    const numericWarning = body.warnings.find(
+      (w: { type: string }) => w.type === 'invented_numerics',
+    );
+    expect(numericWarning?.values).toEqual(expect.arrayContaining([50000, 55500]));
   });
 
   it('does not retry when first LLM response has no invented numbers', async () => {
@@ -410,32 +515,29 @@ describe('POST /api/ai/explain-deal — hallucination retry (#589)', () => {
     expect(mockCallAiText).toHaveBeenCalledTimes(1);
   });
 
-  it('retry prompt contains the invented numbers and correction instruction', async () => {
+  it('anchor prompt includes NOT_PROVIDED markers and FORBIDDEN clause', async () => {
     mockGetSession.mockReturnValue(baseSession);
 
-    const hallucinatedResponse =
-      'Market Context\nGrain market.\n\n' +
-      'Deal Rationale\n50,000 MT grain fits 55,500 DWCC.\n\n' +
-      'Key Risks\n- None\n\n' +
-      'Recommended Next Steps\nFix the deal.';
-
-    const correctedResponse =
+    const validResponse =
       'Market Context\nGrain market.\n\n' +
       'Deal Rationale\nVessel 58,000 DWT suits bulk grain. Weight not specified.\n\n' +
       'Key Risks\n- Weight unknown\n\n' +
       'Recommended Next Steps\nConfirm weight.';
 
-    mockCallAiText
-      .mockResolvedValueOnce(hallucinatedResponse)
-      .mockResolvedValueOnce(correctedResponse);
+    mockCallAiText.mockResolvedValueOnce(validResponse);
 
     const req = makeRequest({ matchIndex: 0 }, 'sess-qa');
     await POST(req);
 
-    // The second callAiText call (retry) must pass the correction prompt
-    const [, , retryUserPrompt] = mockCallAiText.mock.calls[1];
-    expect(retryUserPrompt).toContain('CORRECTION REQUIRED');
-    expect(retryUserPrompt).toContain('50000');
-    expect(retryUserPrompt).toContain('55500');
+    // R2 hard-anchor: prompt must list NOT_PROVIDED for missing fields and
+    // include the FORBIDDEN section so Gemini knows what to skip.
+    const [, , userPrompt] = mockCallAiText.mock.calls[0];
+    expect(userPrompt).toContain('MATCH PAYLOAD');
+    expect(userPrompt).toContain('NOT_PROVIDED');
+    expect(userPrompt).toContain('cargo.weight_mt: NOT_PROVIDED');
+    expect(userPrompt).toContain('vessel.dwcc: NOT_PROVIDED');
+    expect(userPrompt).toContain('cargo.stowage_factor: NOT_PROVIDED');
+    expect(userPrompt).toContain('FORBIDDEN');
+    expect(userPrompt).toContain('vessel.dwt_summer: 58000 MT');
   });
 });

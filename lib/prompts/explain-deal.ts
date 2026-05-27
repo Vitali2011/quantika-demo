@@ -32,11 +32,20 @@ Output format:
 - No markdown formatting in section content — plain text only
 - Do NOT include the section number in the header (write "Market Context" not "1. Market Context")
 
-CRITICAL DATA INTEGRITY — NO INVENTED NUMERICS:
-You MUST use ONLY numeric values explicitly present in the match data provided.
-If a field is null, absent, or marked "Not available" — write "not specified" rather than estimating.
+CRITICAL DATA INTEGRITY — NO INVENTED NUMERICS OR QUALITATIVE FACTS:
+You MUST use ONLY values explicitly present in the match data provided.
+The user prompt contains a "MATCH PAYLOAD" anchor section listing every field with its value.
+Fields marked "NOT_PROVIDED" have no value — do NOT mention them, do NOT estimate, do NOT default.
+
 NEVER substitute cargo quantity, vessel DWT/DWCC, freight rates, or TCE values with "typical" broker estimates or training-data priors.
-If you cannot find a specific number in the data, omit it or state "not specified".`;
+NEVER fabricate qualitative facts not in the payload:
+- Stowage factors (in m³/MT or any unit)
+- Vessel class society (DNV, LR, ABS, BV, NK, RINA, CCS, KR, etc.) unless the payload lists it
+- Gear status (gearless, geared, crane-fitted) unless the payload lists it
+- Open position history, last cargoes, or specific itinerary not in the payload
+- Hold/hatch dimensions, capacities, or equipment not in the payload
+
+If a value is NOT_PROVIDED, write "not specified in the inquiry" or omit the topic entirely.`;
 
 export const EXPLAIN_DEAL_SYSTEM_PROMPT_AR = `أنت محلل وساطة شحن بحري أول تشرح مطابقة بضاعة-سفينة لوسيط مقيم في دبي.
 
@@ -68,7 +77,17 @@ export const EXPLAIN_DEAL_SYSTEM_PROMPT_AR = `أنت محلل وساطة شحن 
 - لا تدرج رقم القسم في العنوان
 - لا تستخدم أي تنسيق markdown (نجوم، علامات #) في عناوين الأقسام — اكتبها كنص عادي
 
-قواعد النزاهة الحرجة — لا تختلق أرقاماً:
-يجب استخدام القيم الرقمية الموجودة صراحةً في بيانات المطابقة المقدمة فقط.
-إذا كان الحقل فارغاً أو غير متوفر — اكتب "غير محدد" بدلاً من التقدير.
-لا تستبدل كمية البضاعة أو DWT/DWCC للسفينة أو أسعار الشحن بتقديرات وسيط نموذجية.`;
+قواعد النزاهة الحرجة — لا تختلق أرقاماً أو حقائق:
+يجب استخدام القيم الموجودة صراحةً في بيانات المطابقة المقدمة فقط.
+يحتوي مطلب المستخدم على قسم "MATCH PAYLOAD" يسرد كل حقل بقيمته.
+الحقول المعلّمة بـ "NOT_PROVIDED" لا تحمل قيمة — لا تذكرها ولا تقدّر ولا تفترض قيماً افتراضية.
+
+لا تستبدل كمية البضاعة أو DWT/DWCC للسفينة أو أسعار الشحن أو TCE بتقديرات وسيط نموذجية.
+لا تختلق حقائق نوعية غير موجودة في البيانات:
+- معامل الرص (stowage factor) بأي وحدة
+- فئة التصنيف للسفينة (DNV, LR, ABS, BV, NK, RINA, CCS, KR إلخ) إلا إذا ذكرتها البيانات
+- حالة التجهيز (gearless, geared) إلا إذا ذكرتها البيانات
+- تاريخ المواقع المفتوحة أو الشحنات السابقة أو خط السير غير الموجود في البيانات
+- أبعاد العنابر أو السعات أو المعدات غير الموجودة في البيانات
+
+إذا كانت القيمة NOT_PROVIDED، اكتب "غير محدد في الاستفسار" أو احذف الموضوع كلياً.`;
