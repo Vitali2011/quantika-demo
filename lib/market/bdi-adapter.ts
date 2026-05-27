@@ -1,8 +1,18 @@
 import type Database from 'better-sqlite3';
 import { upsertBalticIndex } from './baltic-repository';
 
-// stooq.com free CSV endpoint for Baltic Dry Index (BDI), newest row first.
+// stooq.com is now API-key-gated; HANDYBULK_BDI_URL is the active source.
+// Kept for backward-compat (existing unit tests still cover the CSV path).
 export const STOOQ_BDI_URL = 'https://stooq.com/q/d/l/?s=bdi&i=d';
+
+// handybulk.com/baltic-dry-index/ — daily BDI summaries in paragraph format.
+export const HANDYBULK_BDI_URL = 'https://www.handybulk.com/baltic-dry-index/';
+
+const MONTH_MAP: Record<string, string> = {
+  january: '01', february: '02', march: '03', april: '04',
+  may: '05', june: '06', july: '07', august: '08',
+  september: '09', october: '10', november: '11', december: '12',
+};
 
 export class BdiStructureChangedError extends Error {
   constructor(msg: string) {
@@ -12,9 +22,8 @@ export class BdiStructureChangedError extends Error {
 }
 
 /**
- * Parses BDI value and date from a stooq.com CSV string.
- * Expected header: Date,Open,High,Low,Close,Volume (newest row first).
- * Returns null if the structure has changed or no rows are present.
+ * @deprecated stooq.com now requires an API key. Use parseBdiHtml() instead.
+ * Kept exported so existing tests continue to cover the CSV path.
  */
 export function parseBdiCsv(csv: string): { value: number; date: string } | null {
   const lines = csv.trim().split('\n');
@@ -37,27 +46,61 @@ export function parseBdiCsv(csv: string): { value: number; date: string } | null
   return { value, date };
 }
 
-export type CsvFetcher = (url: string) => Promise<string>;
+/**
+ * Parses BDI value and date from handybulk.com/baltic-dry-index/ HTML.
+ * Scans for the first DD-Month-YYYY entry whose following text contains
+ * "Baltic Dry Index (BDI) … X,XXX points".
+ * Returns null if no matching entry is found.
+ */
+export function parseBdiHtml(html: string): { value: number; date: string } | null {
+  const dateRegex =
+    /(\d{1,2})-(January|February|March|April|May|June|July|August|September|October|November|December)-(\d{4})/gi;
 
-const defaultFetcher: CsvFetcher = async (url) => {
+  let m: RegExpExecArray | null;
+  while ((m = dateRegex.exec(html)) !== null) {
+    const [, day, monthName, year] = m;
+    const month = MONTH_MAP[monthName.toLowerCase()];
+    if (!month) continue;
+
+    const date = `${year}-${month}-${day.padStart(2, '0')}`;
+    const ctx = html.slice(m.index, m.index + 1500);
+
+    const bdiM = ctx.match(
+      /Baltic Dry Index[^(]*\(BDI\)[^.]*?(\d{1,2},\d{3}|\d{4,5})\s*points/i,
+    );
+    if (!bdiM) continue;
+
+    const value = parseFloat(bdiM[1].replace(/,/g, ''));
+    if (!Number.isFinite(value) || value <= 0) continue;
+
+    return { value, date };
+  }
+
+  return null;
+}
+
+export type CsvFetcher = (url: string) => Promise<string>;
+export type HtmlFetcher = (url: string) => Promise<string>;
+
+const defaultFetcher: HtmlFetcher = async (url) => {
   const res = await fetch(url, {
     headers: { 'User-Agent': 'Quantika-Demo/1.0 (+https://demo.quantika.org)' },
     signal: AbortSignal.timeout(30_000),
   });
-  if (!res.ok) throw new Error(`Stooq BDI fetch failed: HTTP ${res.status}`);
+  if (!res.ok) throw new Error(`Handybulk BDI fetch failed: HTTP ${res.status}`);
   return res.text();
 };
 
 export async function refreshBdi(
   db: Database.Database,
-  fetcher: CsvFetcher = defaultFetcher,
+  fetcher: HtmlFetcher = defaultFetcher,
 ): Promise<{ rowsChanged: number }> {
-  const csv = await fetcher(STOOQ_BDI_URL);
+  const html = await fetcher(HANDYBULK_BDI_URL);
 
-  const parsed = parseBdiCsv(csv);
+  const parsed = parseBdiHtml(html);
   if (!parsed) {
     throw new BdiStructureChangedError(
-      'BDI value not found in CSV — stooq page structure may have changed',
+      'BDI value not found in HTML — handybulk page structure may have changed',
     );
   }
 
@@ -65,7 +108,7 @@ export async function refreshBdi(
     index_code: 'BDI',
     value: parsed.value,
     price_date: parsed.date,
-    source: STOOQ_BDI_URL,
+    source: HANDYBULK_BDI_URL,
   });
 
   return { rowsChanged: 1 };

@@ -2,7 +2,7 @@
  * Behavioral tests for lib/market/bhsi-adapter.ts
  *
  * PI2: calls parseBhsiHtml() with real HTML input (not string-match only).
- * Uses fixture HTML that mirrors the expected handybulk.com table structure.
+ * Uses fixture HTML that mirrors handybulk.com/baltic-dry-index/ paragraph format.
  */
 
 import * as fs from 'fs';
@@ -33,7 +33,7 @@ describe('parseBhsiHtml', () => {
     expect(result!.value).toBe(530);
   });
 
-  it('parses date from DD/MM/YYYY format', () => {
+  it('parses date from DD-Month-YYYY format', () => {
     const result = parseBhsiHtml(FIXTURE_HTML);
     expect(result!.date).toBe('2026-05-22');
   });
@@ -55,13 +55,14 @@ describe('parseBhsiHtml', () => {
 
   it('parses comma-formatted value', () => {
     const html =
-      '<table><tr><td>BHSI</td><td>1,234</td><td>22/05/2026</td></tr></table>';
+      '<p>The Baltic Handysize Index (BHSI) increased by 10 points to 1,234 points.</p>';
     const result = parseBhsiHtml(html);
     expect(result!.value).toBe(1234);
   });
 
-  it('falls back to today when date column absent', () => {
-    const html = '<table><tr><td>BHSI</td><td>530</td></tr></table>';
+  it('falls back to today when no date entry precedes BHSI value', () => {
+    const html =
+      '<p>The Baltic Handysize Index (BHSI) decreased by 5 points to 530 points.</p>';
     const result = parseBhsiHtml(html);
     expect(result).not.toBeNull();
     expect(result!.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
