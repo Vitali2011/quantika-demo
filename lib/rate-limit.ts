@@ -54,3 +54,4 @@ export class RateLimiter {
 }
 
 export const aiRateLimiter = new RateLimiter({ windowMs: 60_000, maxRequests: 20 });
+export const parserEmailRateLimiter = new RateLimiter({ windowMs: 60_000, maxRequests: 20 });

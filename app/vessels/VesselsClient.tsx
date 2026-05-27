@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useMode } from '@/design-system/patterns/useMode';
+import { abbrPort } from '@/lib/utils/abbr-port';
 
 export type VesselRow = {
   id: string;
@@ -33,16 +34,7 @@ const VESSEL_TYPE: Record<string, { bg: string; text: string; label: string }> =
   other:   { bg: '#e2e8f0', text: '#334155', label: 'VSL' },
 };
 
-function abbr(port: string): string {
-  if (port.length <= 5 && port === port.toUpperCase()) return port;
-  const words = port.trim().split(/[\s,/\-]+/).filter(Boolean);
-  if (words.length === 1) return port.slice(0, 4).toUpperCase();
-  return words
-    .map((w) => w[0])
-    .join('')
-    .slice(0, 4)
-    .toUpperCase();
-}
+const abbr = abbrPort;
 
 function VesselTypeBadge({ vk, label }: { vk: string; label: string }) {
   const s = VESSEL_TYPE[vk] ?? VESSEL_TYPE.other;

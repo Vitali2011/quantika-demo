@@ -1,7 +1,11 @@
 import type Database from 'better-sqlite3';
 import { upsertIndex } from './market-indices-repository';
+import { upsertBalticIndex } from './baltic-repository';
 
-export const HANDYBULK_URL = 'https://www.handybulk.com/';
+// The homepage (https://www.handybulk.com/) is now fully JS-rendered with no
+// static BHSI table.  The /baltic-dry-index/ subpage serves daily paragraph
+// summaries in static HTML that include BHSI values.
+export const HANDYBULK_URL = 'https://www.handybulk.com/baltic-dry-index/';
 
 export class HandybulkStructureChangedError extends Error {
   constructor(msg: string) {
@@ -10,15 +14,24 @@ export class HandybulkStructureChangedError extends Error {
   }
 }
 
-// Match <td>BHSI</td><td>530</td><td>22/05/2026</td>
-const BHSI_VALUE_PATTERN =
-  /<td[^>]*>\s*BHSI\s*<\/td>\s*<td[^>]*>\s*([\d,]+(?:\.\d+)?)\s*<\/td>/i;
+const MONTH_MAP: Record<string, string> = {
+  january: '01', february: '02', march: '03', april: '04',
+  may: '05', june: '06', july: '07', august: '08',
+  september: '09', october: '10', november: '11', december: '12',
+};
 
-const BHSI_DATE_PATTERN =
-  /<td[^>]*>\s*BHSI\s*<\/td>\s*<td[^>]*>[\d,]+(?:\.\d+)?\s*<\/td>\s*<td[^>]*>\s*(\d{2}\/\d{2}\/\d{4})\s*<\/td>/i;
+// Match: "Baltic Handysize Index (BHSI) ... to 843 points" or "... to 1,234 points"
+const BHSI_VALUE_PATTERN =
+  /Baltic Handysize Index[^(]*\(BHSI\)[^.]*?(\d{1,2},\d{3}|\d{3,4})\s*points/i;
+
+// Match: DD-Month-YYYY (e.g. 22-May-2026)
+const DATE_PATTERN =
+  /(\d{1,2})-(January|February|March|April|May|June|July|August|September|October|November|December)-(\d{4})/gi;
 
 /**
- * Parses BHSI value and date from handybulk.com HTML.
+ * Parses BHSI value and date from handybulk.com/baltic-dry-index/ HTML.
+ * Finds the first "Baltic Handysize Index (BHSI) ... NNN points" sentence and
+ * the nearest DD-Month-YYYY date that precedes it.
  * Returns null if the page structure has changed and the value cannot be found.
  */
 export function parseBhsiHtml(html: string): { value: number; date: string } | null {
@@ -26,14 +39,20 @@ export function parseBhsiHtml(html: string): { value: number; date: string } | n
   if (!valueMatch) return null;
 
   const value = parseFloat(valueMatch[1].replace(/,/g, ''));
-  if (!Number.isFinite(value) || value < 0) return null;
+  if (!Number.isFinite(value) || value <= 0) return null;
 
-  // Extract date DD/MM/YYYY → YYYY-MM-DD; fall back to today if absent
-  const dateMatch = html.match(BHSI_DATE_PATTERN);
+  // Find the latest DD-Month-YYYY date that appears before the BHSI value
+  const beforeValue = html.slice(0, html.indexOf(valueMatch[0]));
+  const dateMatches = [...beforeValue.matchAll(DATE_PATTERN)];
+
   let indexDate: string;
-  if (dateMatch) {
-    const parts = dateMatch[1].split('/');
-    indexDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+  if (dateMatches.length > 0) {
+    const last = dateMatches[dateMatches.length - 1];
+    const [, day, monthName, year] = last;
+    const month = MONTH_MAP[monthName.toLowerCase()];
+    indexDate = month
+      ? `${year}-${month}-${day.padStart(2, '0')}`
+      : new Date().toISOString().slice(0, 10);
   } else {
     indexDate = new Date().toISOString().slice(0, 10);
   }
@@ -48,7 +67,7 @@ const defaultFetcher: HtmlFetcher = async (url) => {
     headers: { 'User-Agent': 'Quantika-Demo/1.0 (+https://demo.quantika.org)' },
     signal: AbortSignal.timeout(30_000),
   });
-  if (!res.ok) throw new Error(`Handybulk fetch failed: HTTP ${res.status}`);
+  if (!res.ok) throw new Error(`Handybulk BHSI fetch failed: HTTP ${res.status}`);
   return res.text();
 };
 
@@ -73,6 +92,15 @@ export async function refreshBhsi(
     unit: 'USD/day',
     source: HANDYBULK_URL,
     fetched_at: new Date().toISOString(),
+  });
+
+  // /api/market/baltic-kpi and /api/market/indices both read BHSI from
+  // baltic_indices, not market_indices (#558).
+  upsertBalticIndex(db, {
+    index_code: 'BHSI',
+    value: parsed.value,
+    price_date: parsed.date,
+    source: HANDYBULK_URL,
   });
 
   return { rowsChanged: 1 };

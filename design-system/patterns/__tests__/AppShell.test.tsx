@@ -23,10 +23,14 @@ jest.mock('next/navigation', () => ({
 
 jest.mock('lucide-react', () => ({
   Home: () => <svg data-testid="icon-home" />,
+  Bell: () => <svg data-testid="icon-bell" />,
+  Layers: () => <svg data-testid="icon-layers" />,
   Sparkles: () => <svg data-testid="icon-sparkles" />,
   Box: () => <svg data-testid="icon-box" />,
   MoreHorizontal: () => <svg data-testid="icon-more" />,
   LogOut: () => <svg data-testid="icon-logout" />,
+  Sun: () => <svg data-testid="icon-sun" />,
+  Moon: () => <svg data-testid="icon-moon" />,
 }));
 
 describe('AppShell', () => {
@@ -64,14 +68,14 @@ describe('AppShell', () => {
     expect(screen.getByRole('button', { name: /charterer/i })).toHaveAttribute('aria-pressed', 'true');
   });
 
-  it('renders both TopNav and BottomNav (Dashboard appears twice)', () => {
+  it('renders both TopNav and BottomNav (Matches appears in both)', () => {
     render(
       <ModeProvider initial="charterer">
         <AppShell><div>page</div></AppShell>
       </ModeProvider>,
     );
-    const dashLinks = screen.getAllByRole('link', { name: /dashboard/i });
+    const matchLinks = screen.getAllByRole('link', { name: /matches/i });
     // One in TopNav + one in BottomNav
-    expect(dashLinks.length).toBeGreaterThanOrEqual(2);
+    expect(matchLinks.length).toBeGreaterThanOrEqual(2);
   });
 });

@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 
 type DeltaDir = 'up' | 'down' | 'flat';
 
@@ -45,7 +46,7 @@ function DeltaBadge({ pct, dir }: { pct: string; dir: DeltaDir }) {
 
 export function RoutesSection() {
   return (
-    <section className="bg-white rounded-2xl border border-slate-200 p-6 mb-6">
+    <section id="routes" className="bg-white rounded-2xl border border-slate-200 p-6 mb-6">
       <div className="flex items-center justify-between pb-[18px] mb-1.5 border-b border-dashed border-slate-200">
         <div className="font-mono text-[11px] tracking-[0.14em] uppercase text-slate-500 flex items-center gap-2">
           <span className="text-sm">📈</span>
@@ -54,9 +55,9 @@ export function RoutesSection() {
             $/d (Supramax)
           </span>
         </div>
-        <span className="font-mono text-xs text-slate-500">
+        <Link href="/market#routes" className="font-mono text-xs text-slate-500 hover:text-ds-accent transition-colors">
           all routes <span className="ml-1">→</span>
-        </span>
+        </Link>
       </div>
 
       {ROUTES.map((row) => (

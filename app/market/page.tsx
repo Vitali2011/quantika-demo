@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { MarketKpiTile } from '@/components/market/MarketKpiTile';
+import { MetricHistoryPanel } from '@/components/market/MetricHistoryPanel';
 import { RoutesSection } from '@/components/market/RoutesSection';
 import { FixturesSection } from '@/components/market/FixturesSection';
 import { KnowledgeFeed } from '@/components/market/KnowledgeFeed';
@@ -13,7 +14,7 @@ interface IndexData {
   source: string;
 }
 
-const KPI_TILES = [
+const BALTIC_TILES = [
   {
     key: 'bdi',
     label: 'BDI',
@@ -56,13 +57,61 @@ const KPI_TILES = [
   },
 ] as const;
 
+const COMMODITY_TILES = [
+  {
+    key: 'vlsfo',
+    label: 'VLSFO',
+    subLabel: 'Rotterdam',
+    url: '/api/market/bunker-kpi?grade=VLSFO',
+    unit: 'USD/mt',
+    sparklinePath: 'M2 10 L10 9 L17 11 L24 8 L31 9 L38 7 L46 8 L54 6',
+    sparklineDir: 'up' as const,
+    delta: { pct: '+0.5%', pts: '+4 $/mt', dir: 'up' as const },
+  },
+  {
+    key: 'mgo',
+    label: 'MGO',
+    subLabel: 'Rotterdam',
+    url: '/api/market/bunker-kpi?grade=MGO',
+    unit: 'USD/mt',
+    sparklinePath: 'M2 8 L10 9 L17 7 L24 10 L31 8 L38 11 L46 9 L54 12',
+    sparklineDir: 'down' as const,
+    delta: { pct: '−0.3%', pts: '−4 $/mt', dir: 'down' as const },
+  },
+  {
+    key: 'eua',
+    label: 'EUA',
+    subLabel: 'carbon · spot',
+    url: '/api/market/eua-kpi',
+    unit: '€/tCO₂',
+    sparklinePath: 'M2 12 L10 10 L17 9 L24 11 L31 8 L38 7 L46 6 L54 4',
+    sparklineDir: 'up' as const,
+    delta: { pct: '+1.8%', pts: '+1.3 €', dir: 'up' as const },
+  },
+] as const;
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+function latestIndexDate(data: IndexData[] | null): string | null {
+  if (!data || data.length === 0) return null;
+  return data.reduce((best, d) => (d.index_date > best ? d.index_date : best), data[0].index_date);
+}
+
 export default function MarketPage() {
   const [bhsiData, setBhsiData] = useState<IndexData[] | null>(null);
   const [tmiData, setTmiData] = useState<IndexData[] | null>(null);
   const [drewryData, setDrewryData] = useState<IndexData[] | null>(null);
+  const [bdiPeriod, setBdiPeriod] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeKpi, setActiveKpi] = useState<string | null>(null);
+  const [now, setNow] = useState<number>(0);
+
+  useEffect(() => {
+    // Hydration-safe: capture clock on mount so render stays pure.
+    const raf = requestAnimationFrame(() => setNow(Date.now()));
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   useEffect(() => {
     async function loadData() {
@@ -73,10 +122,11 @@ export default function MarketPage() {
       }
 
       try {
-        const [bhsiRes, tmiRes, drewryRes] = await Promise.all([
+        const [bhsiRes, tmiRes, drewryRes, bdiRes] = await Promise.all([
           fetch('/api/market/indices?name=bhsi&days=30'),
           fetch('/api/market/indices?name=tmi&days=30'),
           fetch('/api/market/indices?name=drewry-bb&days=30'),
+          fetch('/api/market/baltic-kpi?code=BDI'),
         ]);
 
         if (!bhsiRes.ok || !tmiRes.ok || !drewryRes.ok) {
@@ -96,6 +146,11 @@ export default function MarketPage() {
         setBhsiData(bhsi);
         setTmiData(tmi);
         setDrewryData(drewry);
+
+        if (bdiRes.ok) {
+          const bdi = await bdiRes.json();
+          setBdiPeriod(typeof bdi.period === 'string' ? bdi.period : null);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load data');
       } finally {
@@ -156,6 +211,13 @@ export default function MarketPage() {
     );
   }
 
+  // Use the OLDEST date across all data sources: if any source is stale the label should reflect it.
+  const latestDate = [latestIndexDate(bhsiData), latestIndexDate(tmiData), latestIndexDate(drewryData), bdiPeriod]
+    .filter((d): d is string => d !== null)
+    .sort()
+    .at(0) ?? null;
+  const isStale = latestDate !== null && now > 0 && now - new Date(latestDate).getTime() > MS_PER_DAY;
+
   return (
     <main className="min-h-screen bg-slate-50">
       <div className="mx-auto max-w-7xl px-16 pb-16">
@@ -171,31 +233,69 @@ export default function MarketPage() {
               <span className="text-slate-900">London 16:30 GMT</span>
             </p>
           </div>
-          <div className="flex items-center gap-2 font-mono text-[11.5px] uppercase tracking-widest text-slate-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-600 animate-pulse" />
-            Live · synced
-          </div>
+          {isStale ? (
+            <div className="flex items-center gap-2 font-mono text-[11.5px] uppercase tracking-widest text-slate-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+              Last sync: {latestDate}
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 font-mono text-[11.5px] uppercase tracking-widest text-slate-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-600 animate-pulse" />
+              Live · synced
+            </div>
+          )}
         </header>
 
-        {/* KPI Strip — 4 Baltic index tiles */}
-        <section aria-label="Baltic indices" className="grid grid-cols-4 gap-4 mb-10">
-          {KPI_TILES.map((tile) => (
-            <MarketKpiTile
-              key={tile.key}
-              label={tile.label}
-              subLabel={tile.subLabel}
-              url={tile.url}
-              unit={tile.unit}
-              sparklinePath={tile.sparklinePath}
-              sparklineDir={tile.sparklineDir}
-              delta={tile.delta}
-              isActive={activeKpi === tile.key}
-              onClick={() => setActiveKpi(activeKpi === tile.key ? null : tile.key)}
-            />
-          ))}
+        {/* KPI Strip — Baltic indices + bunker + EUA */}
+        <section aria-label="Market KPIs" className="mb-10 space-y-3">
+          <div className="grid grid-cols-4 gap-4">
+            {BALTIC_TILES.map((tile) => (
+              <MarketKpiTile
+                key={tile.key}
+                label={tile.label}
+                subLabel={tile.subLabel}
+                url={tile.url}
+                unit={tile.unit}
+                sparklinePath={tile.sparklinePath}
+                sparklineDir={tile.sparklineDir}
+                delta={tile.delta}
+                isActive={activeKpi === tile.key}
+                isStale={isStale}
+                onClick={() => setActiveKpi(activeKpi === tile.key ? null : tile.key)}
+              />
+            ))}
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            {COMMODITY_TILES.map((tile) => (
+              <MarketKpiTile
+                key={tile.key}
+                label={tile.label}
+                subLabel={tile.subLabel}
+                url={tile.url}
+                unit={tile.unit}
+                sparklinePath={tile.sparklinePath}
+                sparklineDir={tile.sparklineDir}
+                delta={tile.delta}
+                isActive={activeKpi === tile.key}
+                isStale={isStale}
+                onClick={() => setActiveKpi(activeKpi === tile.key ? null : tile.key)}
+              />
+            ))}
+          </div>
         </section>
 
-        {/* TODO: drill-down chart for activeKpi — future feature */}
+        {/* Metric history side panel */}
+        {activeKpi != null && (() => {
+          const tile = [...BALTIC_TILES, ...COMMODITY_TILES].find((t) => t.key === activeKpi);
+          return tile ? (
+            <MetricHistoryPanel
+              kpiKey={activeKpi}
+              label={tile.label}
+              unit={tile.unit}
+              onClose={() => setActiveKpi(null)}
+            />
+          ) : null;
+        })()}
 
         {/* Routes section */}
         <RoutesSection />

@@ -2,15 +2,17 @@
  * Behavioral tests for lib/market/bhsi-adapter.ts
  *
  * PI2: calls parseBhsiHtml() with real HTML input (not string-match only).
- * Uses fixture HTML that mirrors the expected handybulk.com table structure.
+ * Uses fixture HTML that mirrors handybulk.com/baltic-dry-index/ paragraph format.
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
 import Database from 'better-sqlite3';
+import migration019 from '@/lib/migrations/019-port-master-baltic-indices';
 import migration027 from '@/lib/migrations/027-market-indices';
 import { parseBhsiHtml, refreshBhsi, HandybulkStructureChangedError } from '../bhsi-adapter';
 import { getLatestIndex } from '../market-indices-repository';
+import { getLatestBalticIndex } from '../baltic-repository';
 
 const FIXTURE_HTML = fs.readFileSync(
   path.join(__dirname, 'fixtures', 'handybulk-bhsi.html'),
@@ -19,6 +21,7 @@ const FIXTURE_HTML = fs.readFileSync(
 
 function makeDb(): Database.Database {
   const db = new Database(':memory:');
+  migration019.up(db);
   migration027.up(db);
   return db;
 }
@@ -30,7 +33,7 @@ describe('parseBhsiHtml', () => {
     expect(result!.value).toBe(530);
   });
 
-  it('parses date from DD/MM/YYYY format', () => {
+  it('parses date from DD-Month-YYYY format', () => {
     const result = parseBhsiHtml(FIXTURE_HTML);
     expect(result!.date).toBe('2026-05-22');
   });
@@ -52,13 +55,14 @@ describe('parseBhsiHtml', () => {
 
   it('parses comma-formatted value', () => {
     const html =
-      '<table><tr><td>BHSI</td><td>1,234</td><td>22/05/2026</td></tr></table>';
+      '<p>The Baltic Handysize Index (BHSI) increased by 10 points to 1,234 points.</p>';
     const result = parseBhsiHtml(html);
     expect(result!.value).toBe(1234);
   });
 
-  it('falls back to today when date column absent', () => {
-    const html = '<table><tr><td>BHSI</td><td>530</td></tr></table>';
+  it('falls back to today when no date entry precedes BHSI value', () => {
+    const html =
+      '<p>The Baltic Handysize Index (BHSI) decreased by 5 points to 530 points.</p>';
     const result = parseBhsiHtml(html);
     expect(result).not.toBeNull();
     expect(result!.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
@@ -113,6 +117,21 @@ describe('refreshBhsi (PI2: real DB upsert)', () => {
     const fakeFetcher = jest.fn().mockRejectedValue(new Error('Network error'));
 
     await expect(refreshBhsi(db, fakeFetcher)).rejects.toThrow('Network error');
+
+    db.close();
+  });
+
+  it('also upserts BHSI row into baltic_indices (fix #558)', async () => {
+    const db = makeDb();
+    const fakeFetcher = jest.fn().mockResolvedValue(FIXTURE_HTML);
+
+    await refreshBhsi(db, fakeFetcher);
+
+    const row = getLatestBalticIndex(db, 'BHSI');
+    expect(row).not.toBeNull();
+    expect(row!.value).toBe(530);
+    expect(row!.price_date).toBe('2026-05-22');
+    expect(row!.index_code).toBe('BHSI');
 
     db.close();
   });

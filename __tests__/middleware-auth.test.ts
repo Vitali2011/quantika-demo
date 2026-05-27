@@ -49,6 +49,7 @@ async function makeValidCookie(): Promise<string> {
 describe('middleware auth guard', () => {
   describe('bypass paths (no auth required)', () => {
     const bypassPaths = [
+      '/',
       '/login',
       '/api/auth/login',
       '/api/auth/logout',
@@ -65,6 +66,8 @@ describe('middleware auth guard', () => {
       '/sitemap.xml',
       '/robots.txt',
       '/design',
+      '/api/market/baltic-kpi',
+      '/api/market/bunker-kpi',
     ];
 
     for (const path of bypassPaths) {
@@ -84,7 +87,8 @@ describe('middleware auth guard', () => {
 
   describe('page routes without auth cookie redirect to /login', () => {
     // Regression: /more (#417) and /upgrade (#418) must not 404 — auth guard redirects to /login
-    const pagePaths = ['/', '/dashboard', '/matches', '/market', '/more', '/upgrade'];
+    // Note: '/' is excluded — it is now in AUTH_BYPASS_PATHS (public landing for anon users)
+    const pagePaths = ['/dashboard', '/matches', '/market', '/more', '/upgrade'];
 
     for (const path of pagePaths) {
       it(`redirects to /login for ${path} without cookie`, async () => {
@@ -112,11 +116,11 @@ describe('middleware auth guard', () => {
   });
 
   describe('protected routes with valid auth cookie', () => {
-    it('passes through / with valid cookie', async () => {
+    it('passes through / with valid cookie — redirect to /dashboard handled by app/page.tsx (#560)', async () => {
       const cookie = await makeValidCookie();
       const req = makeReq('/', cookie);
       const res = await runMiddleware(req);
-      // Should not redirect to login
+      // middleware bypasses '/' entirely; app/page.tsx performs the /dashboard redirect
       expect(res.status).not.toBe(302);
     });
 
@@ -126,6 +130,34 @@ describe('middleware auth guard', () => {
       const req = makeReq('/dashboard', cookie);
       const res = await runMiddleware(req);
       expect(res.status).not.toBe(302);
+    });
+
+    it('passes through /matches with valid cookie (session_id check is page-level)', async () => {
+      const cookie = await makeValidCookie();
+      const req = makeReq('/matches', cookie);
+      const res = await runMiddleware(req);
+      expect(res.status).not.toBe(302);
+    });
+  });
+
+  describe('acceptance criteria for #559 and #560', () => {
+    it('#559 — GET /matches without auth cookie redirects to /login (NOT /)', async () => {
+      const req = makeReq('/matches');
+      const res = await runMiddleware(req);
+      expect(res.status).toBe(302);
+      const location = res.headers.get('location') ?? '';
+      expect(location).toContain('/login');
+      expect(location).not.toBe('http://localhost/');
+    });
+
+    it('#560 — GET / with valid session passes through middleware (app/page.tsx redirects to /dashboard)', async () => {
+      const cookie = await makeValidCookie();
+      const req = makeReq('/', cookie);
+      const res = await runMiddleware(req);
+      // '/' is bypassed — middleware does not redirect; app/page.tsx does redirect('/dashboard')
+      expect(res.status).not.toBe(302);
+      const location = res.headers.get('location') ?? '';
+      expect(location).not.toContain('/login');
     });
   });
 
@@ -144,21 +176,38 @@ describe('middleware auth guard', () => {
   });
 
   describe('DEMO_AUTH_ENABLED=true with missing secret', () => {
-    it('returns 500 when secret is missing', async () => {
+    it('returns 500 when secret is missing on protected route', async () => {
       process.env.DEMO_AUTH_ENABLED = 'true';
       delete process.env.DEMO_AUTH_SECRET;
-      const req = makeReq('/');
+      const req = makeReq('/dashboard');
       const res = await runMiddleware(req);
       expect(res.status).toBe(500);
     });
   });
 
   describe('tampered / invalid cookie', () => {
-    it('redirects to /login for tampered cookie', async () => {
-      const req = makeReq('/', 'tampered.invalidsig');
+    it('redirects to /login for tampered cookie on protected route', async () => {
+      const req = makeReq('/dashboard', 'tampered.invalidsig');
       const res = await runMiddleware(req);
       expect(res.status).toBe(302);
       expect(res.headers.get('location')).toContain('/login');
+    });
+  });
+
+  describe('x-pathname header on passthrough', () => {
+    it('sets x-pathname on /login bypass passthrough', async () => {
+      const req = makeReq('/login');
+      const res = await runMiddleware(req);
+      expect(res.status).not.toBe(302);
+      expect(res.headers.get('x-pathname')).toBe('/login');
+    });
+
+    it('sets x-pathname on authenticated page passthrough', async () => {
+      const cookie = await makeValidCookie();
+      const req = makeReq('/dashboard', cookie);
+      const res = await runMiddleware(req);
+      expect(res.status).not.toBe(302);
+      expect(res.headers.get('x-pathname')).toBe('/dashboard');
     });
   });
 

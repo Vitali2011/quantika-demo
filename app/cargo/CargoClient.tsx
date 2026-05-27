@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useMode } from '@/design-system/patterns/useMode';
+import { abbrPort } from '@/lib/utils/abbr-port';
 
 export type CargoRow = {
   id: string;
@@ -34,16 +36,7 @@ const COMMOD: Record<string, { bg: string; text: string; label: string }> = {
   bulk:    { bg: '#e2e8f0', text: '#334155', label: 'BK' },
 };
 
-function abbr(port: string): string {
-  if (port.length <= 5 && port === port.toUpperCase()) return port;
-  const words = port.trim().split(/[\s,/\-]+/).filter(Boolean);
-  if (words.length === 1) return port.slice(0, 4).toUpperCase();
-  return words
-    .map((w) => w[0])
-    .join('')
-    .slice(0, 4)
-    .toUpperCase();
-}
+const abbr = abbrPort;
 
 function CommodityBadge({ ck }: { ck: string }) {
   const s = COMMOD[ck] ?? COMMOD.bulk;
@@ -155,16 +148,234 @@ function SidePanel({ row, onClose }: { row: CargoRow; onClose: () => void }) {
   );
 }
 
+interface NewCargoForm {
+  commodity: string;
+  originPort: string;
+  destinationPort: string;
+  quantityMt: string;
+  laycan: string;
+}
+
+const EMPTY_FORM: NewCargoForm = {
+  commodity: '',
+  originPort: '',
+  destinationPort: '',
+  quantityMt: '',
+  laycan: '',
+};
+
+function NewCargoPanel({
+  onClose,
+  onSaved,
+}: {
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const [form, setForm] = useState<NewCargoForm>(EMPTY_FORM);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!form.commodity.trim()) {
+      setError('Commodity is required');
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/cargo/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: [
+            {
+              commodity: form.commodity,
+              originPort: form.originPort || undefined,
+              destinationPort: form.destinationPort || undefined,
+              quantityMt: form.quantityMt ? parseFloat(form.quantityMt) : null,
+              laycan: form.laycan || undefined,
+            },
+          ],
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error((data as { error?: string }).error ?? `HTTP ${res.status}`);
+      }
+      onSaved();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save');
+      setSaving(false);
+    }
+  }
+
+  return (
+    <>
+      <div className="fixed inset-0 z-40 bg-black/20" onClick={onClose} aria-hidden="true" />
+      <aside
+        className="fixed right-0 top-0 bottom-0 z-50 w-[420px] bg-white border-l border-[#e2e8f0] overflow-y-auto shadow-xl"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Add cargo"
+      >
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[#f1f3f7]">
+          <h3 className="text-[15px] font-semibold text-[#0f172a]">New cargo</h3>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-[8px] grid place-items-center text-[#64748b] hover:bg-[#f1f5f9] hover:text-[#0f172a] transition-colors text-lg leading-none"
+            aria-label="Close panel"
+          >
+            ×
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="px-5 py-5 space-y-4">
+          {error && (
+            <p className="text-[13px] text-red-600 bg-red-50 border border-red-200 rounded-[8px] px-3 py-2">
+              {error}
+            </p>
+          )}
+          {[
+            { label: 'Commodity', name: 'commodity', placeholder: 'e.g. Wheat', required: true },
+            { label: 'Origin port', name: 'originPort', placeholder: 'e.g. Odessa' },
+            { label: 'Destination port', name: 'destinationPort', placeholder: 'e.g. Rotterdam' },
+            { label: 'Quantity MT', name: 'quantityMt', placeholder: 'e.g. 35000' },
+            { label: 'Laycan', name: 'laycan', placeholder: 'e.g. 01–15 Jul 2026' },
+          ].map(({ label, name, placeholder, required }) => (
+            <div key={name}>
+              <label className="block font-mono text-[10.5px] uppercase tracking-wider text-[#94a3b8] mb-1.5">
+                {label}
+                {required && <span className="text-red-500 ml-0.5">*</span>}
+              </label>
+              <input
+                type="text"
+                value={form[name as keyof NewCargoForm]}
+                onChange={(e) => setForm((f) => ({ ...f, [name]: e.target.value }))}
+                placeholder={placeholder}
+                className="w-full h-9 px-3 bg-[#f8fafc] border border-[#e2e8f0] rounded-[9px] text-[13.5px] text-[#0f172a] placeholder:text-[#94a3b8] outline-none focus:border-[#6366f1] focus:bg-white transition-colors"
+                aria-label={label}
+              />
+            </div>
+          ))}
+          <button
+            type="submit"
+            disabled={saving}
+            className="flex items-center justify-center gap-1.5 h-9 w-full rounded-[9px] bg-[#0f172a] text-white text-sm font-medium hover:-translate-y-px disabled:opacity-50 transition-all mt-2"
+            style={{ boxShadow: '0 1px 0 rgba(255,255,255,0.06) inset, 0 1px 2px rgba(15,23,42,0.15)' }}
+          >
+            {saving ? 'Saving…' : 'Add cargo'}
+          </button>
+        </form>
+      </aside>
+    </>
+  );
+}
+
+function parseCsvText(
+  text: string,
+): Array<{ commodity: string; originPort: string; destinationPort: string; quantityMt: number | null; laycan: string }> {
+  const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+  if (lines.length === 0) return [];
+  const firstLower = lines[0].toLowerCase();
+  const hasHeader =
+    firstLower.includes('commodity') ||
+    firstLower.includes('origin') ||
+    firstLower.includes('cargo');
+  const dataLines = hasHeader ? lines.slice(1) : lines;
+  return dataLines
+    .map((line) => {
+      const cols = line.split(',').map((c) => c.trim());
+      const qty = cols[3] ? parseFloat(cols[3]) : NaN;
+      return {
+        commodity: cols[0] ?? '',
+        originPort: cols[1] ?? '',
+        destinationPort: cols[2] ?? '',
+        quantityMt: Number.isFinite(qty) ? qty : null,
+        laycan: cols[4] ?? '',
+      };
+    })
+    .filter((r) => r.commodity || r.originPort);
+}
+
+const MONTH_ABBRS = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+
+function extractLaycanMonth(laycan: string | null): number | null {
+  if (!laycan) return null;
+  const lower = laycan.toLowerCase();
+  const idx = MONTH_ABBRS.findIndex((m) => lower.includes(m));
+  return idx === -1 ? null : idx;
+}
+
 export default function CargoClient({ rows, total }: Props) {
   const { isCharterer } = useMode();
+  const router = useRouter();
+  const csvInputRef = useRef<HTMLInputElement>(null);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'open' | 'match'>('all');
+  const [commodityFilter, setCommodityFilter] = useState('all');
+  const [laycanFilter, setLaycanFilter] = useState<'all' | 'this_month' | 'next_month'>('all');
   const [selected, setSelected] = useState<CargoRow | null>(null);
   const [parseText, setParseText] = useState('');
+  const [showNewCargoPanel, setShowNewCargoPanel] = useState(false);
+  const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  function showNote(type: 'success' | 'error', message: string) {
+    setNotification({ type, message });
+    setTimeout(() => setNotification(null), 4000);
+  }
+
+  async function handleCsvFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+    const text = await file.text();
+    const items = parseCsvText(text);
+    if (items.length === 0) {
+      showNote('error', 'No valid rows found in CSV. Expected: commodity,origin,destination,quantity_mt,laycan');
+      return;
+    }
+    try {
+      const res = await fetch('/api/cargo/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error((data as { error?: string }).error ?? `HTTP ${res.status}`);
+      }
+      const { added } = (await res.json()) as { added: number };
+      showNote('success', `${added} cargo item${added !== 1 ? 's' : ''} imported`);
+      router.refresh();
+    } catch (err) {
+      showNote('error', err instanceof Error ? err.message : 'Import failed');
+    }
+  }
+
+  const uniqueCommodities = useMemo(() => {
+    const seen = new Set<string>();
+    return rows.reduce<Array<{ key: string; label: string }>>((acc, r) => {
+      if (!seen.has(r.commodityKey)) {
+        seen.add(r.commodityKey);
+        acc.push({ key: r.commodityKey, label: COMMOD[r.commodityKey]?.label ?? r.commodityKey.toUpperCase() });
+      }
+      return acc;
+    }, []);
+  }, [rows]);
 
   const filtered = useMemo(() => {
+    const now = new Date();
+    const thisMonth = now.getMonth();
+    const nextMonth = (thisMonth + 1) % 12;
     return rows.filter((r) => {
       if (statusFilter !== 'all' && r.status !== statusFilter) return false;
+      if (commodityFilter !== 'all' && r.commodityKey !== commodityFilter) return false;
+      if (laycanFilter !== 'all') {
+        const m = extractLaycanMonth(r.laycan);
+        if (m === null) return false;
+        if (laycanFilter === 'this_month' && m !== thisMonth) return false;
+        if (laycanFilter === 'next_month' && m !== nextMonth) return false;
+      }
       if (search) {
         const q = search.toLowerCase();
         return (
@@ -176,7 +387,7 @@ export default function CargoClient({ rows, total }: Props) {
       }
       return true;
     });
-  }, [rows, search, statusFilter]);
+  }, [rows, search, statusFilter, commodityFilter, laycanFilter]);
 
   const parsePlaceholder = isCharterer
     ? 'Paste email from broker or describe cargo in words — AI will parse automatically…'
@@ -238,12 +449,18 @@ export default function CargoClient({ rows, total }: Props) {
             </span>
           </h2>
           <div className="flex items-center gap-2.5">
-            <button className="h-[38px] px-3.5 rounded-[9px] border border-[#e2e8f0] bg-white text-[13.5px] font-medium text-[#0f172a] flex items-center gap-2 hover:border-[#cbd5e1] hover:bg-[#fafbfc] transition-all">
+            <button
+              onClick={() => csvInputRef.current?.click()}
+              className="h-[38px] px-3.5 rounded-[9px] border border-[#e2e8f0] bg-white text-[13.5px] font-medium text-[#0f172a] flex items-center gap-2 hover:border-[#cbd5e1] hover:bg-[#fafbfc] transition-all"
+              aria-label="Import CSV"
+            >
               ⇪ Import CSV
             </button>
             <button
+              onClick={() => setShowNewCargoPanel(true)}
               className="h-[38px] px-3.5 rounded-[9px] bg-[#0f172a] text-white text-[13.5px] font-medium flex items-center gap-2 transition-all hover:-translate-y-px"
               style={{ boxShadow: '0 1px 0 rgba(255,255,255,0.06) inset, 0 1px 2px rgba(15,23,42,0.15)' }}
+              aria-label="New cargo"
             >
               + New cargo
             </button>
@@ -273,6 +490,27 @@ export default function CargoClient({ rows, total }: Props) {
             <option value="open">Open</option>
             <option value="match">Match</option>
           </select>
+          <select
+            value={commodityFilter}
+            onChange={(e) => setCommodityFilter(e.target.value)}
+            className="h-9 px-3 bg-white border border-[#e2e8f0] rounded-[9px] text-[13px] text-[#0f172a] cursor-pointer outline-none"
+            aria-label="Filter by commodity"
+          >
+            <option value="all">Commodity: All</option>
+            {uniqueCommodities.map(({ key, label }) => (
+              <option key={key} value={key}>{label}</option>
+            ))}
+          </select>
+          <select
+            value={laycanFilter}
+            onChange={(e) => setLaycanFilter(e.target.value as 'all' | 'this_month' | 'next_month')}
+            className="h-9 px-3 bg-white border border-[#e2e8f0] rounded-[9px] text-[13px] text-[#0f172a] cursor-pointer outline-none"
+            aria-label="Filter by laycan"
+          >
+            <option value="all">Laycan: Any</option>
+            <option value="this_month">This month</option>
+            <option value="next_month">Next month</option>
+          </select>
           <div className="flex-1" />
           <span className="font-mono text-[11.5px] text-[#64748b]">
             {filtered.length} of {total} · sorted by laycan
@@ -281,7 +519,7 @@ export default function CargoClient({ rows, total }: Props) {
 
         {/* Table */}
         <div
-          className="bg-white border border-[#e2e8f0] rounded-[14px] overflow-hidden mb-3.5"
+          className="bg-white border border-[#e2e8f0] rounded-[14px] overflow-hidden overflow-x-auto mb-3.5"
           data-testid="cargo-table-card"
         >
           {rows.length === 0 ? (
@@ -297,7 +535,8 @@ export default function CargoClient({ rows, total }: Props) {
               <colgroup>
                 <col style={{ width: '220px' }} />
                 <col style={{ width: '90px' }} />
-                <col style={{ width: '170px' }} />
+                <col style={{ width: '140px' }} />
+                <col style={{ width: '140px' }} />
                 <col style={{ width: '140px' }} />
                 <col style={{ width: '110px' }} />
                 <col />
@@ -308,7 +547,8 @@ export default function CargoClient({ rows, total }: Props) {
                   {[
                     { label: 'Cargo', align: '' },
                     { label: 'Qty', align: 'text-right' },
-                    { label: 'Route', align: '' },
+                    { label: 'Load', align: '' },
+                    { label: 'Discharge', align: '' },
                     { label: 'Laycan', align: '' },
                     { label: 'Status', align: '' },
                     { label: 'Source', align: '' },
@@ -348,16 +588,11 @@ export default function CargoClient({ rows, total }: Props) {
                     <td className="px-3.5 py-3.5 text-right font-mono text-[13.5px] text-[#0f172a] tabular-nums whitespace-nowrap">
                       {row.quantity ?? <span className="text-[#94a3b8]">—</span>}
                     </td>
-                    <td className="px-3.5 py-3.5 font-mono text-[13px] text-[#0f172a] whitespace-nowrap">
-                      {row.originPort ? (
-                        <>
-                          <span>{abbr(row.originPort)}</span>
-                          <span className="text-[#cbd5e1] mx-1">→</span>
-                          <span>{row.destinationPort ? abbr(row.destinationPort) : '?'}</span>
-                        </>
-                      ) : (
-                        <span className="text-[#94a3b8]">—</span>
-                      )}
+                    <td className="px-3.5 py-3.5 text-[13.5px] text-[#0f172a] whitespace-nowrap">
+                      {row.originPort ?? <span className="text-[#94a3b8]">—</span>}
+                    </td>
+                    <td className="px-3.5 py-3.5 text-[13.5px] text-[#0f172a] whitespace-nowrap">
+                      {row.destinationPort ?? <span className="text-[#94a3b8]">—</span>}
                     </td>
                     <td className="px-3.5 py-3.5 font-mono text-[12.5px] text-[#0f172a] whitespace-nowrap">
                       {row.laycan ?? <span className="text-[#94a3b8]">—</span>}
@@ -396,6 +631,38 @@ export default function CargoClient({ rows, total }: Props) {
       </div>
 
       {selected && <SidePanel row={selected} onClose={() => setSelected(null)} />}
+      {showNewCargoPanel && (
+        <NewCargoPanel
+          onClose={() => setShowNewCargoPanel(false)}
+          onSaved={() => {
+            setShowNewCargoPanel(false);
+            router.refresh();
+          }}
+        />
+      )}
+      <input
+        ref={csvInputRef}
+        type="file"
+        accept=".csv,text/csv"
+        className="sr-only"
+        aria-hidden="true"
+        tabIndex={-1}
+        onChange={handleCsvFile}
+        data-testid="csv-file-input"
+      />
+      {notification && (
+        <div
+          role="status"
+          aria-live="polite"
+          className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] px-4 py-2.5 rounded-[10px] text-[13.5px] font-medium shadow-lg border ${
+            notification.type === 'success'
+              ? 'bg-[#ecfdf5] text-[#166534] border-[#d1fae5]'
+              : 'bg-red-50 text-red-700 border-red-200'
+          }`}
+        >
+          {notification.message}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
-import { Card, Button } from '@/design-system/primitives';
+import { Card } from '@/design-system/primitives';
+import { RecapGenerateCard } from '@/components/recap/RecapGenerateCard';
 
 export const metadata: Metadata = {
   title: 'Negotiation Recap — Quantika',
@@ -12,9 +12,22 @@ export const metadata: Metadata = {
 export default async function RecapIndexPage() {
   const cookieStore = await cookies();
   const sessionId = cookieStore.get('session_id')?.value;
-  if (!sessionId) redirect('/');
-  const session = getSession(sessionId);
-  if (!session) redirect('/');
+  const session = sessionId ? getSession(sessionId) : null;
+
+  if (!session) {
+    return (
+      <main className="min-h-screen bg-ds-bg flex items-center justify-center px-4">
+        <div className="max-w-md w-full text-center space-y-4">
+          <div className="text-4xl">📭</div>
+          <h1 className="text-xl font-bold text-ds-text">No negotiations yet</h1>
+          <p className="text-sm text-ds-text-muted">Upload emails to start tracking fixture negotiations.</p>
+          <Link href="/processing" className="inline-flex items-center gap-2 rounded-ds-md bg-ds-accent px-5 py-2.5 text-sm font-semibold text-ds-accent-fg hover:bg-ds-accent/90 transition-colors duration-ds-fast">
+            Upload emails
+          </Link>
+        </div>
+      </main>
+    );
+  }
 
   const { recaps, emails, parsedCargos, parsedVessels } = session;
 
@@ -34,30 +47,7 @@ export default async function RecapIndexPage() {
           <div className="lg:col-span-2 space-y-4">
             {/* AI Assist card */}
             <Card padding="md">
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <span aria-hidden="true">✨</span>
-                  <h2 className="text-sm font-semibold text-ds-text">AI Assist</h2>
-                  <span className="ml-auto text-xs text-ds-text-muted">Powered by Quantika AI</span>
-                </div>
-                <textarea
-                  placeholder="Paste email thread or describe negotiation terms…"
-                  rows={4}
-                  className="w-full rounded-ds-md border border-ds-border bg-ds-surface px-3 py-2 text-sm text-ds-text placeholder:text-ds-text-muted resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-ds-accent/40 transition-colors duration-ds-fast"
-                  disabled
-                />
-                <div className="flex items-center gap-2">
-                  <Button variant="primary" size="sm" disabled>
-                    Generate recap
-                  </Button>
-                  <Button variant="secondary" size="sm" disabled>
-                    Export PDF
-                  </Button>
-                  <Button variant="ghost" size="sm" disabled>
-                    Send email
-                  </Button>
-                </div>
-              </div>
+              <RecapGenerateCard />
             </Card>
 
             {/* Missing fields highlight */}
@@ -71,7 +61,7 @@ export default async function RecapIndexPage() {
                     { label: 'Load port', value: parsedCargos[0]?.originPort?.value ?? '—', filled: !!parsedCargos[0]?.originPort },
                     { label: 'Disch port', value: parsedCargos[0]?.destinationPort?.value ?? '—', filled: !!parsedCargos[0]?.destinationPort },
                     { label: 'Laycan', value: parsedCargos[0]?.laycan ?? '—', filled: !!parsedCargos[0]?.laycan },
-                    { label: 'Freight', value: parsedCargos[0]?.freightRateUsd ? `$${parsedCargos[0].freightRateUsd}/mt` : '—', filled: !!parsedCargos[0]?.freightRateUsd },
+                    { label: 'Freight', value: parsedCargos[0]?.freightRateUsd ? `$${parsedCargos[0].freightRateUsd}/mt` : '—', filled: parsedCargos.length > 0 },
                   ].map(({ label, value, filled }) => (
                     <div
                       key={label}

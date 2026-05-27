@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Inter } from 'next/font/google';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { getTrialState, daysRemaining, isExpired } from '@/lib/trial';
 import { TrialBanner } from '@/components/onboarding/TrialBanner';
 import { getAuthConfig } from '@/lib/auth/config';
@@ -13,17 +13,16 @@ import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
+// Inline script runs before React hydration to prevent flash on dark-mode first paint.
+const THEME_SCRIPT = `(function(){try{var c=document.cookie.match(/quantika_theme=(dark|light)/);var t=c?c[1]:(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');if(t==='dark'){document.documentElement.setAttribute('data-theme','dark');document.documentElement.classList.add('dark')}}catch(e){}})()`;
+
 export const metadata: Metadata = {
   title: 'Quantika Demo — AI for Freight Email',
   description: 'See how AI handles your freight email in 2 minutes',
 };
 
-async function TrialBannerWrapper() {
+async function TrialBannerWrapper({ sessionId }: { sessionId: string }) {
   try {
-    const cookieStore = await cookies();
-    const sessionId = cookieStore.get('session_id')?.value;
-    if (!sessionId) return null;
-
     const trial = await getTrialState(sessionId);
     if (!trial) return null;
 
@@ -71,6 +70,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const cookieStore = await cookies();
+  const headersList = await headers();
+  const currentPath = headersList.get('x-pathname') ?? '';
   const authConfig = getAuthConfig();
 
   // Check if user is authenticated to decide whether to wrap with AppShell
@@ -94,15 +95,20 @@ export default async function RootLayout({
   // content (EmailBodyViewer derives dir from the body via detectTextDirection).
   // Browser Accept-Language used to leak ru/de/he into <html> and broke
   // mixed-locale demo scenarios — see stab/rtl-per-content.
-  if (!isAuthenticated) {
+  if (!isAuthenticated || currentPath === '/login') {
     return (
-      <html lang="en" dir="ltr">
+      <html lang="en" dir="ltr" suppressHydrationWarning>
+        <head>
+          <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        </head>
         <body className={inter.className}>
           {children}
         </body>
       </html>
     );
   }
+
+  const sessionId = cookieStore.get('session_id')?.value;
 
   // Resolve preferred_mode: cookie fast-path first, then DB
   let initialMode: Mode = 'charterer';
@@ -122,11 +128,16 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="en" dir="ltr">
+    <html lang="en" dir="ltr" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className={inter.className}>
-        <Suspense fallback={null}>
-          <TrialBannerWrapper />
-        </Suspense>
+        {sessionId && (
+          <Suspense fallback={null}>
+            <TrialBannerWrapper sessionId={sessionId} />
+          </Suspense>
+        )}
         <ModeProvider initial={initialMode}>
           <AppShell>{children}</AppShell>
         </ModeProvider>

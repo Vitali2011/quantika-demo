@@ -7,6 +7,8 @@ import { getRequestBaseUrl } from '@/lib/auth/redirect-url';
 
 // Paths that bypass the auth guard entirely
 const AUTH_BYPASS_PATHS = new Set([
+  // Public landing — anonymous users see PublicLanding; logged-in redirect handled by app/page.tsx
+  '/',
   '/login',
   '/api/auth/login',
   '/api/auth/logout',
@@ -30,6 +32,9 @@ const AUTH_BYPASS_PATHS = new Set([
   '/robots.txt',
   // Design preview page — internal gallery, no sensitive data
   '/design',
+  // Market KPI endpoints — public index data (BDI/BHSI/bunker prices), safe for anonymous
+  '/api/market/baltic-kpi',
+  '/api/market/bunker-kpi',
 ]);
 
 const AUTH_BYPASS_PREFIXES = ['/_next/static', '/_next/image', '/_next/webpack'];
@@ -121,6 +126,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     const response = NextResponse.next();
     response.headers.set('X-RateLimit-Remaining', String(remaining));
     response.headers.set('X-RateLimit-Limit', '20');
+    response.headers.set('x-pathname', pathname);
     return response;
   }
 
@@ -133,7 +139,9 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     }
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+  response.headers.set('x-pathname', pathname);
+  return response;
 }
 
 export const config = {

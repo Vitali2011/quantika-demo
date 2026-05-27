@@ -74,21 +74,21 @@ describe('DashboardFreshMatches', () => {
     score: 85,
     matchLevel: 'good',
     matchReasons: ['Compatible port range', 'Laycan overlap'],
-    index: 0,
+    id: 1,
   };
 
   const midScoreMatch = {
     score: 62,
     matchLevel: 'possible',
     matchReasons: ['Partial overlap'],
-    index: 1,
+    id: 2,
   };
 
   const lowScoreMatch = {
     score: 45,
     matchLevel: 'possible',
     matchReasons: [],
-    index: 2,
+    id: 3,
   };
 
   it('renders empty state when no matches', () => {
@@ -128,7 +128,7 @@ describe('DashboardFreshMatches', () => {
       score: 50 + i,
       matchLevel: 'possible',
       matchReasons: [`Reason ${i}`],
-      index: i,
+      id: i + 1,
     }));
     const el = DashboardFreshMatches({ matches: manyMatches });
     const text = JSON.stringify(el);
@@ -138,11 +138,11 @@ describe('DashboardFreshMatches', () => {
     expect(text).not.toContain('Reason 5');
   });
 
-  it('links each match to /match/:index', () => {
+  it('links each match to /match/:id', () => {
     const el = DashboardFreshMatches({ matches: [highScoreMatch, midScoreMatch] });
     const text = JSON.stringify(el);
-    expect(text).toContain('/match/0');
     expect(text).toContain('/match/1');
+    expect(text).toContain('/match/2');
   });
 });
 

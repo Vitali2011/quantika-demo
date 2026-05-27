@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
-import { Card, Button } from '@/design-system/primitives';
-import { formatDate } from '@/lib/utils';
+import { Card } from '@/design-system/primitives';
+import { formatDate, decodeHtmlEntities } from '@/lib/utils';
 import type { EmailCategory } from '@/lib/types';
+import { EmailActionButtons } from '@/components/email/EmailActionButtons';
 
 export const metadata: Metadata = {
   title: 'Email Inbox — Quantika',
@@ -22,6 +22,12 @@ const CATEGORY_LABELS: Record<EmailCategory, string> = {
   OTHER: 'Other',
 };
 
+function getEmailConfidenceTier(score: number): 'high' | 'medium' | 'low' {
+  if (score > 0.8) return 'high';
+  if (score >= 0.5) return 'medium';
+  return 'low';
+}
+
 const CATEGORY_COLORS: Record<EmailCategory, string> = {
   CARGO_INQUIRY: 'text-blue-700 bg-blue-50 border-blue-200',
   VESSEL_POSITION: 'text-emerald-700 bg-emerald-50 border-emerald-200',
@@ -36,13 +42,9 @@ const CATEGORY_COLORS: Record<EmailCategory, string> = {
 export default async function EmailInboxPage() {
   const cookieStore = await cookies();
   const sessionId = cookieStore.get('session_id')?.value;
-  if (!sessionId) redirect('/');
-  const session = getSession(sessionId);
-  if (!session) redirect('/');
+  const session = sessionId ? getSession(sessionId) : null;
 
-  const { emails, processedEmails } = session;
-
-  if (emails.length === 0) {
+  if (!session || session.emails.length === 0) {
     return (
       <main className="min-h-screen bg-ds-bg flex items-center justify-center px-4">
         <div className="max-w-md text-center space-y-4">
@@ -62,6 +64,7 @@ export default async function EmailInboxPage() {
     );
   }
 
+  const { emails, processedEmails } = session;
   // Merge emails with their processing classification
   const processedMap = new Map(processedEmails.map((p) => [p.emailId, p]));
   const emailRows = emails.map((email) => ({
@@ -90,14 +93,14 @@ export default async function EmailInboxPage() {
         </div>
 
         {sorted.map(({ email, processed }) => {
-          const isLowConfidence = processed && processed.confidence < 80;
+          const confidenceTier = processed ? getEmailConfidenceTier(processed.confidence) : null;
           const category = processed?.type;
 
           return (
             <Card
               key={email.id}
               padding="none"
-              className={isLowConfidence ? 'border-amber-300 ring-1 ring-amber-200' : ''}
+              className={confidenceTier === 'low' ? 'border-amber-300 ring-1 ring-amber-200' : ''}
             >
               <div className="p-4 space-y-3">
                 {/* Header row */}
@@ -112,9 +115,14 @@ export default async function EmailInboxPage() {
                           {CATEGORY_LABELS[category]}
                         </span>
                       )}
-                      {isLowConfidence && (
+                      {confidenceTier === 'low' && (
                         <span className="inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-ds-sm border border-amber-300 text-amber-700 bg-amber-50">
-                          Low confidence {processed.confidence}%
+                          Low confidence {Math.round(processed!.confidence * 100)}%
+                        </span>
+                      )}
+                      {confidenceTier === 'medium' && (
+                        <span className="inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-ds-sm border border-yellow-300 text-yellow-700 bg-yellow-50">
+                          Medium confidence {Math.round(processed!.confidence * 100)}%
                         </span>
                       )}
                     </div>
@@ -131,20 +139,12 @@ export default async function EmailInboxPage() {
 
                 {/* Snippet */}
                 <p className="text-sm text-ds-text-muted line-clamp-2 leading-relaxed">
-                  {email.snippet}
+                  {decodeHtmlEntities(email.snippet)}
                 </p>
 
                 {/* Action buttons */}
                 <div className="flex items-center gap-2 pt-1">
-                  <Button variant="primary" size="sm" disabled>
-                    Accept
-                  </Button>
-                  <Button variant="secondary" size="sm" disabled>
-                    Edit
-                  </Button>
-                  <Button variant="ghost" size="sm" disabled className="text-ds-danger hover:bg-red-50">
-                    Reject
-                  </Button>
+                  <EmailActionButtons emailId={email.id} />
                   <div className="flex-1" />
                   <Link
                     href={`/email/${email.id}`}

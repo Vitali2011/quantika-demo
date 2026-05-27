@@ -59,6 +59,15 @@ const REF_LOW = {
 const EMAIL_DATE_ISO = '2026-04-05T14:00:00Z';
 
 describe('scoreNormalized', () => {
+  // Freeze time so recomputeDays('2026-04-05T14:00:00Z') === 36 (exactly 36d gap).
+  // Without this, Date.now() drifts and daysMatch(ref=recomputed, model=41) fails once
+  // drift exceeds the ±10d tolerance (EMAIL_DATE_ISO is fixed, real time is not).
+  beforeAll(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2026-05-11T14:00:00Z'));
+  });
+  afterAll(() => jest.useRealTimers());
+
   it('normalizes CARGO_INQUIRY low→medium, so medium model urgency matches', () => {
     const model = { ...REF_LOW, urgency: 'medium', days_without_reply: 41 };
     const r = scoreNormalized(REF_LOW, model, EMAIL_DATE_ISO);
