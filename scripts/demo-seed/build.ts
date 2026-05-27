@@ -6,7 +6,9 @@ import Database from 'better-sqlite3';
 import { runMigrations } from '@/lib/migrations/runner';
 import { allMigrations } from '@/lib/migrations/index';
 import { ManifestSchema, type Manifest } from './manifest-schema';
-import { normalizeRawEmail, type FlatEmail } from './analyze';
+import { normalizeRawEmail, extractFacts, type FlatEmail } from './analyze';
+
+const PARSER_VERSION = 'demo-seed-v1';
 
 const MONTH_NAMES = [
   'January','February','March','April','May','June',
@@ -118,6 +120,11 @@ export async function build(opts: BuildOptions): Promise<void> {
             @to_addr, @subject, @date, @body, @snippet, @label_ids, @fetched_at)
   `);
 
+  const insertParsed = db.prepare(`
+    INSERT INTO parsed_results (account_id, gmail_message_id, parse_type, parser_version, result_json, parsed_at)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `);
+
   const tx = db.transaction(() => {
     for (const email of corpus) {
       const offset = manifest.offsets[email.threadId];
@@ -183,6 +190,36 @@ export async function build(opts: BuildOptions): Promise<void> {
         label_ids: '[]',
         fetched_at: manifest.generated_at,
       });
+
+      // Populate parsed_results using regex-based extractFacts (LLM-free)
+      const facts = extractFacts({
+        threadId: email.threadId,
+        messageId: email.messageId,
+        fromName: anonFromName,
+        fromEmail: anonFromEmail,
+        subject: anonSubject,
+        date: shiftedDate,
+        body: anonBody,
+      });
+
+      // Always insert classify row
+      insertParsed.run('demo', email.messageId, 'classify', PARSER_VERSION,
+        JSON.stringify({ category: facts.category }), manifest.generated_at);
+
+      // Insert category-specific row if relevant dates extracted
+      if (facts.category === 'cargo' && (facts.laycanStart || facts.laycanEnd)) {
+        insertParsed.run('demo', email.messageId, 'cargo', PARSER_VERSION,
+          JSON.stringify({
+            laycan: facts.laycanStart && facts.laycanEnd
+              ? { start: facts.laycanStart.toISOString(), end: facts.laycanEnd.toISOString() }
+              : null,
+          }),
+          manifest.generated_at);
+      } else if (facts.category === 'vessel' && facts.openDate) {
+        insertParsed.run('demo', email.messageId, 'vessel', PARSER_VERSION,
+          JSON.stringify({ openDate: facts.openDate.toISOString() }),
+          manifest.generated_at);
+      }
     }
 
     db.prepare(

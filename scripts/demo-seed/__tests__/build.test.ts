@@ -90,3 +90,19 @@ describe('build (Tasks 15+16) — anonymization + leak validator', () => {
     ).rejects.toThrow(/anonymization leak/i);
   });
 });
+
+describe('build (Task 17) — parsed_results population', () => {
+  let tmpDb: string;
+  beforeEach(() => { tmpDb = path.join(os.tmpdir(), `demo-seed-${Date.now()}.db`); });
+  afterEach(() => { if (fs.existsSync(tmpDb)) fs.unlinkSync(tmpDb); });
+
+  it('populates parsed_results with classify and cargo/vessel rows', async () => {
+    await build({ rawDir: FIXTURES, manifestPath: FIX_MANIFEST, outDb: tmpDb });
+    const db = new Database(tmpDb);
+    const count = db.prepare('SELECT COUNT(*) as c FROM parsed_results').get() as { c: number };
+    expect(count.c).toBeGreaterThan(0);
+    const sample = db.prepare('SELECT parse_type FROM parsed_results LIMIT 1').get() as { parse_type: string };
+    expect(['classify', 'cargo', 'vessel', 'recap', 'other']).toContain(sample.parse_type);
+    db.close();
+  });
+});

@@ -50,7 +50,7 @@ export interface FlatEmail {
 }
 
 // Parsed facts extracted from email body using pure string parsing (no LLM).
-interface ParsedFacts {
+export interface ParsedFacts {
   category: 'cargo' | 'vessel' | 'recap' | 'other';
   laycanStart?: Date;
   laycanEnd?: Date;
@@ -149,7 +149,7 @@ function readCorpus(rawDir: string): FlatEmail[] {
  * Classify email and extract date facts using pure string parsing.
  * No LLM calls — uses subject keywords + regex extraction + lib/sailing/date-parsing.
  */
-function extractFacts(email: FlatEmail): ParsedFacts {
+export function extractFacts(email: FlatEmail): ParsedFacts {
   const subjectLower = (email.subject ?? '').toLowerCase();
   const body = email.body;
 
