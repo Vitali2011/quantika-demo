@@ -20,6 +20,7 @@ import {
 } from '@/lib/prompts';
 import { ExplainDealBodySchema } from '@/lib/api-schemas';
 import { stripInventedContent } from '@/lib/explain-deal-validator';
+import { buildExplainDealUserPrompt } from '@/lib/explain-deal-prompt';
 
 export const maxDuration = 60;
 
@@ -160,7 +161,7 @@ export async function POST(request: NextRequest) {
     (v) => v.emailId === match.vesselEmailId && v.itemIndex === match.vesselItemIndex,
   );
 
-  const userPrompt = buildUserPrompt(match, cargo ?? null, vessel ?? null, matchIndex);
+  const userPrompt = buildExplainDealUserPrompt(match, cargo ?? null, vessel ?? null, matchIndex);
   const systemPrompt =
     language === 'ar' ? EXPLAIN_DEAL_SYSTEM_PROMPT_AR : EXPLAIN_DEAL_SYSTEM_PROMPT_EN;
   const headers = language === 'ar' ? SECTION_HEADERS_AR : SECTION_HEADERS_EN;
@@ -175,7 +176,9 @@ export async function POST(request: NextRequest) {
       : undefined);
 
   try {
-    const llmOpts = { timeoutMs: endpointLlmTimeout(maxDuration), model: modelOverride };
+    // R3 (#589): lower temperature reduces hallucination of "typical" shipping values.
+    // Gemini 2.5 Pro defaults to ~1.0; 0.3 anchors responses closer to the provided data.
+    const llmOpts = { timeoutMs: endpointLlmTimeout(maxDuration), model: modelOverride, temperature: 0.3 };
     const rawText = await callAiText('EXPLAIN_DEAL', systemPrompt, userPrompt, llmOpts);
 
     // R2 (#589): strip-not-retry — post-process the response by replacing invented
@@ -219,88 +222,3 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function buildUserPrompt(
-  match: import('@/lib/types').Match,
-  cargo: import('@/lib/types').ParsedCargo | null,
-  vessel: import('@/lib/types').ParsedVessel | null,
-  matchIndex: number,
-): string {
-  // R2 hard-anchor: every field is listed with either its value or "NOT_PROVIDED".
-  // The LLM must NOT mention any NOT_PROVIDED field (FORBIDDEN clause below).
-  const fmt = (v: unknown): string => {
-    if (v === null || v === undefined || v === '') return 'NOT_PROVIDED';
-    if (typeof v === 'object' && 'value' in (v as { value?: unknown })) {
-      const val = (v as { value: unknown }).value;
-      return val === null || val === undefined || val === '' ? 'NOT_PROVIDED' : String(val);
-    }
-    return String(v);
-  };
-
-  const cargoWeight =
-    cargo?.weightMt?.value ?? cargo?.weightMtMin ?? cargo?.weightMtMax ?? null;
-  const cargoQuantity = (() => {
-    if (!cargo?.quantity) return null;
-    if (typeof cargo.quantity === 'number') return cargo.quantity;
-    if (typeof cargo.quantity === 'object' && 'min' in cargo.quantity) {
-      return `${cargo.quantity.min}–${cargo.quantity.max}`;
-    }
-    return null;
-  })();
-
-  const payloadLines = [
-    `cargo.type: ${fmt(cargo?.cargoType)}`,
-    `cargo.description: ${fmt(cargo?.cargoDescription)}`,
-    `cargo.weight_mt: ${cargoWeight !== null ? `${cargoWeight} MT` : 'NOT_PROVIDED'}`,
-    `cargo.quantity: ${cargoQuantity !== null ? cargoQuantity : 'NOT_PROVIDED'}`,
-    `cargo.stowage_factor: ${fmt(cargo?.stowageFactor)}`,
-    `cargo.origin_port: ${fmt(cargo?.originPort)}`,
-    `cargo.destination_port: ${fmt(cargo?.destinationPort)}`,
-    `cargo.laycan: ${fmt(cargo?.laycan)}`,
-    `vessel.name: ${fmt(vessel?.vesselName)}`,
-    `vessel.imo: ${fmt(vessel?.imo)}`,
-    `vessel.type: ${fmt(vessel?.vesselType)}`,
-    `vessel.flag: ${fmt(vessel?.flag)}`,
-    `vessel.built: ${fmt(vessel?.built)}`,
-    `vessel.dwt_summer: ${vessel?.dwtSummer?.value ? `${vessel.dwtSummer.value} MT` : 'NOT_PROVIDED'}`,
-    `vessel.dwcc: ${vessel?.dwcc?.value ? `${vessel.dwcc.value} MT` : 'NOT_PROVIDED'}`,
-    `vessel.class_society: ${fmt(vessel?.classSociety)}`,
-    `vessel.geared: ${vessel?.geared === null || vessel?.geared === undefined ? 'NOT_PROVIDED' : String(vessel.geared)}`,
-    `vessel.holds_count: ${fmt(vessel?.holdsCount)}`,
-    `vessel.grain_capacity: ${vessel?.grainCapacity ? String(vessel.grainCapacity) : 'NOT_PROVIDED'}`,
-    `vessel.open_position: ${fmt(vessel?.openPosition)}`,
-    `vessel.open_date: ${fmt(vessel?.openDate)}`,
-    `economics.total_usd: ${match.economics?.totalUsd ? `USD ${match.economics.totalUsd}` : 'NOT_PROVIDED'}`,
-  ].join('\n- ');
-
-  return `MATCH PAYLOAD (index ${matchIndex}) — use ONLY these values; NEVER infer, estimate, or default:
-- ${payloadLines}
-
-FORBIDDEN — do NOT mention any field marked NOT_PROVIDED. Do NOT fabricate:
-- Stowage factors in m³/MT or any unit (if cargo.stowage_factor is NOT_PROVIDED)
-- Vessel class societies (DNV, LR, ABS, BV, NK, RINA, CCS, KR, etc.) other than the exact value above
-- Gear status (gearless, geared, crane-fitted) if vessel.geared is NOT_PROVIDED
-- Specific quantities, capacities, DWT, DWCC, or freight rates not listed above
-- Open position history, last cargoes, hold/hatch dimensions not in the payload
-
-Score: ${match.score}/100 (${match.matchLevel.toUpperCase()})
-Match Reasons: ${match.matchReasons.join('; ') || 'none'}
-Issues: ${match.issues.join('; ') || 'none'}
-
-FULL DATA (for context only — do NOT use any value missing from the MATCH PAYLOAD anchor above):
-
-CARGO:
-${cargo ? JSON.stringify(cargo, null, 2) : 'Not available'}
-
-VESSEL:
-${vessel ? JSON.stringify(vessel, null, 2) : 'Not available'}
-
-ECONOMICS:
-${match.economics ? JSON.stringify(match.economics, null, 2) : 'Not available'}
-
-SCORE BREAKDOWN:
-${match.scoreBreakdown ? JSON.stringify(match.scoreBreakdown, null, 2) : 'Not available'}
-
-Please produce the 4-section narrative using ONLY values from the MATCH PAYLOAD anchor.`;
-}

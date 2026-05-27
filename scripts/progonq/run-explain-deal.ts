@@ -17,6 +17,7 @@ import {
   EXPLAIN_DEAL_SYSTEM_PROMPT_EN,
   EXPLAIN_DEAL_SYSTEM_PROMPT_AR,
 } from '@/lib/prompts';
+import { buildExplainDealUserPrompt } from '@/lib/explain-deal-prompt';
 import type { Match, ParsedCargo, ParsedVessel } from '@/lib/types';
 import type { RunResult, ExpectedCriteria } from './judge-explain-deal';
 
@@ -86,30 +87,6 @@ function parseSections(text: string, headers: readonly string[]) {
   });
 }
 
-// ─── Prompt builder (mirrors route.ts buildUserPrompt) ────────────────────────
-
-function buildUserPrompt(match: Match, cargo: ParsedCargo | null, vessel: ParsedVessel | null): string {
-  return `MATCH DATA:
-
-Score: ${match.score}/100 (${match.matchLevel.toUpperCase()})
-Match Reasons: ${match.matchReasons.join('; ') || 'none'}
-Issues: ${match.issues.join('; ') || 'none'}
-
-CARGO:
-${cargo ? JSON.stringify(cargo, null, 2) : 'Not available'}
-
-VESSEL:
-${vessel ? JSON.stringify(vessel, null, 2) : 'Not available'}
-
-ECONOMICS:
-${match.economics ? JSON.stringify(match.economics, null, 2) : 'Not available'}
-
-SCORE BREAKDOWN:
-${match.scoreBreakdown ? JSON.stringify(match.scoreBreakdown, null, 2) : 'Not available'}
-
-Please produce the 4-section narrative based on this data.`;
-}
-
 // ─── Runner ───────────────────────────────────────────────────────────────────
 
 function sleep(ms: number) { return new Promise((r) => setTimeout(r, ms)); }
@@ -118,13 +95,17 @@ async function runScenario(sc: ExplainDealScenario): Promise<RunResult> {
   const t0 = Date.now();
   const headers = sc.language === 'ar' ? SECTION_HEADERS_AR : SECTION_HEADERS_EN;
   const systemPrompt = sc.language === 'ar' ? EXPLAIN_DEAL_SYSTEM_PROMPT_AR : EXPLAIN_DEAL_SYSTEM_PROMPT_EN;
-  const userPrompt = buildUserPrompt(sc.input.match, sc.input.cargo, sc.input.vessel);
+  // Use production buildUserPrompt for parity with route.ts (principle #13, R3 BUG-A fix).
+  // Scenario index is always 0 in the corpus runner — the anchor label is cosmetic only.
+  const userPrompt = buildExplainDealUserPrompt(sc.input.match, sc.input.cargo, sc.input.vessel, 0);
 
   let lastErr = '';
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
+      // R3: temperature 0.3 matches production route.ts — reduces hallucination
       const rawText = await callAiText(SCOPE, systemPrompt, userPrompt, {
         timeoutMs: 90_000,
+        temperature: 0.3,
       });
       const sections = parseSections(rawText, headers);
       return {
