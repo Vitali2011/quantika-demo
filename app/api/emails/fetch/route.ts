@@ -6,10 +6,15 @@ import { fetchGmailEmails } from '@/lib/google';
 import { logger } from '@/lib/logger';
 import { getSession, updateSession } from '@/lib/session';
 import { truncateText } from '@/lib/utils';
+import { isDemoMode } from '@/lib/demo-mode';
 
 export const maxDuration = 30;
 
 export async function POST(request: NextRequest) {
+  if (isDemoMode()) {
+    return NextResponse.json({ skipped: 'demo_mode' });
+  }
+
   const sessionId = request.cookies.get('session_id')?.value;
   if (!sessionId) {
     return NextResponse.json({ error: 'No session' }, { status: 401 });
