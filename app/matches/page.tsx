@@ -33,6 +33,17 @@ export default async function MatchesPage() {
     );
   }
 
+  if (process.env.MATCHES_ENABLED === 'false' && !session.isSampleData) {
+    return (
+      <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="max-w-md w-full text-center space-y-4">
+          <h1 className="text-xl font-bold">Matches coming soon</h1>
+          <p className="text-sm text-gray-500">This feature is not yet enabled.</p>
+        </div>
+      </main>
+    );
+  }
+
   const db = getStore().getDatabase();
 
   if (session.matches.length > 0) {
