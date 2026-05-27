@@ -106,5 +106,101 @@ describe('TopNav', () => {
       expect(active).toHaveLength(1);
       expect(active[0]).toHaveTextContent('Market');
     });
+
+    it('Vessels is active on /vessels in owner mode', () => {
+      mockUsePathname.mockReturnValue('/vessels');
+      const { container } = render(<ModeProvider initial="owner"><TopNav /></ModeProvider>);
+      const active = activeLinks(container);
+      expect(active).toHaveLength(1);
+      expect(active[0]).toHaveTextContent('Vessels');
+    });
+
+    it('Dashboard is active on /dashboard', () => {
+      mockUsePathname.mockReturnValue('/dashboard');
+      const { container } = render(<ModeProvider initial="charterer"><TopNav /></ModeProvider>);
+      const active = activeLinks(container);
+      expect(active).toHaveLength(1);
+      expect(active[0]).toHaveTextContent('Dashboard');
+    });
+  });
+
+  describe('active-state — issue #566 (Dashboard regression)', () => {
+    const activeLinks = (container: HTMLElement) =>
+      Array.from(container.querySelectorAll('nav[aria-label="Primary navigation"] > a[aria-current="page"]'));
+
+    it('Dashboard is NOT active on /matches — only Matches is active', () => {
+      mockUsePathname.mockReturnValue('/matches');
+      const { container } = render(<ModeProvider initial="charterer"><TopNav /></ModeProvider>);
+      const active = activeLinks(container);
+      expect(active).toHaveLength(1);
+      expect(active[0]).toHaveTextContent('Matches');
+      expect(active[0]).not.toHaveTextContent('Dashboard');
+    });
+
+    it('Dashboard is NOT active on /cargo — only Cargo is active', () => {
+      mockUsePathname.mockReturnValue('/cargo');
+      const { container } = render(<ModeProvider initial="charterer"><TopNav /></ModeProvider>);
+      const active = activeLinks(container);
+      expect(active).toHaveLength(1);
+      expect(active[0]).toHaveTextContent('Cargo');
+    });
+
+    it('Dashboard is NOT active on /vessels — only Vessels is active (owner mode)', () => {
+      mockUsePathname.mockReturnValue('/vessels');
+      const { container } = render(<ModeProvider initial="owner"><TopNav /></ModeProvider>);
+      const active = activeLinks(container);
+      expect(active).toHaveLength(1);
+      expect(active[0]).toHaveTextContent('Vessels');
+    });
+  });
+
+  describe('active-state — issue #568 (More dropdown)', () => {
+    const primaryActiveLinks = (container: HTMLElement) =>
+      Array.from(container.querySelectorAll('nav[aria-label="Primary navigation"] > a[aria-current="page"]'));
+    const dropdownActiveLinks = (container: HTMLElement) =>
+      Array.from(container.querySelectorAll('details a[aria-current="page"]'));
+    const moreSummary = (container: HTMLElement) =>
+      container.querySelector('summary[aria-label="More"]') as HTMLElement | null;
+
+    it('Charterers dropdown link has aria-current on /charterers', () => {
+      mockUsePathname.mockReturnValue('/charterers');
+      const { container } = render(<ModeProvider initial="charterer"><TopNav /></ModeProvider>);
+      const active = dropdownActiveLinks(container);
+      expect(active).toHaveLength(1);
+      expect(active[0]).toHaveTextContent('Charterers');
+      expect(active[0]).toHaveAttribute('aria-current', 'page');
+    });
+
+    it('Recap dropdown link has aria-current on /recap', () => {
+      mockUsePathname.mockReturnValue('/recap');
+      const { container } = render(<ModeProvider initial="charterer"><TopNav /></ModeProvider>);
+      const active = dropdownActiveLinks(container);
+      expect(active).toHaveLength(1);
+      expect(active[0]).toHaveTextContent('Recap');
+    });
+
+    it('More summary is highlighted (aria-current=true) when on a More sub-page', () => {
+      mockUsePathname.mockReturnValue('/charterers');
+      const { container } = render(<ModeProvider initial="charterer"><TopNav /></ModeProvider>);
+      expect(moreSummary(container)).toHaveAttribute('aria-current', 'true');
+    });
+
+    it('More summary has no aria-current when on a primary nav page', () => {
+      mockUsePathname.mockReturnValue('/matches');
+      const { container } = render(<ModeProvider initial="charterer"><TopNav /></ModeProvider>);
+      expect(moreSummary(container)).not.toHaveAttribute('aria-current');
+    });
+
+    it('no primary nav link is active on /charterers', () => {
+      mockUsePathname.mockReturnValue('/charterers');
+      const { container } = render(<ModeProvider initial="charterer"><TopNav /></ModeProvider>);
+      expect(primaryActiveLinks(container)).toHaveLength(0);
+    });
+
+    it('no primary nav link is active on /email', () => {
+      mockUsePathname.mockReturnValue('/email');
+      const { container } = render(<ModeProvider initial="charterer"><TopNav /></ModeProvider>);
+      expect(primaryActiveLinks(container)).toHaveLength(0);
+    });
   });
 });
