@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import type { Manifest, OffsetEntry } from './manifest-schema';
+import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
 
 export interface AnalyzeOptions {
   rawDir: string;
@@ -44,6 +45,14 @@ export interface FlatEmail {
   subject?: string;
   date: string;       // ISO string derived from internalDate
   body: string;       // decoded text/plain body
+}
+
+// Parsed facts extracted from email body using pure string parsing (no LLM).
+interface ParsedFacts {
+  category: 'cargo' | 'vessel' | 'recap' | 'other';
+  laycanStart?: Date;
+  laycanEnd?: Date;
+  openDate?: Date;
 }
 
 function decodeBase64Url(b64url: string): string {
@@ -116,6 +125,52 @@ function readCorpus(rawDir: string): FlatEmail[] {
   });
 }
 
+/**
+ * Classify email and extract date facts using pure string parsing.
+ * No LLM calls — uses subject keywords + regex extraction + lib/sailing/date-parsing.
+ */
+function extractFacts(email: FlatEmail): ParsedFacts {
+  const subjectLower = (email.subject ?? '').toLowerCase();
+  const body = email.body;
+
+  // Classify by subject keywords
+  let category: ParsedFacts['category'] = 'other';
+  if (/recap|fixture confirmed|cp signed/i.test(subjectLower)) {
+    category = 'recap';
+  } else if (/vessel\s*(open|position|avail)|tbn\s*vessel|open\s*vessel/i.test(subjectLower)) {
+    category = 'vessel';
+  } else if (/cargo|enquiry|inquiry|shipment|freight/i.test(subjectLower)) {
+    category = 'cargo';
+  }
+
+  const facts: ParsedFacts = { category };
+
+  if (category === 'cargo') {
+    // Extract LAYCAN: <string> from body
+    const laycanMatch = body.match(/\bLAYCAN[:\s]+([^\n]+)/i);
+    if (laycanMatch) {
+      const laycanStr = laycanMatch[1].trim();
+      const refYear = new Date(email.date).getUTCFullYear();
+      const range = parseLaycan(laycanStr, refYear);
+      if (range) {
+        facts.laycanStart = range.start;
+        facts.laycanEnd = range.end;
+      }
+    }
+  } else if (category === 'vessel') {
+    // Extract OPEN DATE: <string> from body
+    const openDateMatch = body.match(/\bOPEN\s+DATE[:\s]+([^\n]+)/i);
+    if (openDateMatch) {
+      const openDateStr = openDateMatch[1].trim();
+      const refYear = new Date(email.date).getUTCFullYear();
+      const d = parseVesselOpenDate(openDateStr, refYear);
+      if (d) facts.openDate = d;
+    }
+  }
+
+  return facts;
+}
+
 export async function analyze(opts: AnalyzeOptions): Promise<Manifest> {
   const corpus = readCorpus(opts.rawDir);
   const frozen = new Date(opts.frozenDate + 'T00:00:00.000Z');
@@ -123,14 +178,33 @@ export async function analyze(opts: AnalyzeOptions): Promise<Manifest> {
   const offsets: Record<string, OffsetEntry> = {};
   for (const email of corpus) {
     const emailD = new Date(email.date);
-    const days = Math.round((frozen.getTime() - emailD.getTime()) / 86_400_000);
-    // Naive: place email ~7 days before frozenDate. Real parser logic added in Task 10.
-    const offsetDays = -days + -7;
-    offsets[email.threadId] = {
-      offsetDays,
-      rationale: 'naive: place email ~7 days before frozenDate',
-      shifted_fields: ['email.date'],
-    };
+    const facts = extractFacts(email);
+
+    const shifted: string[] = ['email.date'];
+    let offsetDays: number;
+    let rationale: string;
+
+    if (facts.category === 'cargo' && facts.laycanStart && facts.laycanEnd) {
+      // Place laycan midpoint at frozenDate + 7d
+      const midLay = new Date((facts.laycanStart.getTime() + facts.laycanEnd.getTime()) / 2);
+      const target = new Date(frozen.getTime() + 7 * 86_400_000);
+      offsetDays = Math.round((target.getTime() - midLay.getTime()) / 86_400_000);
+      shifted.push('laycan_start', 'laycan_end');
+      rationale = `laycan midpoint ${midLay.toISOString().slice(0, 10)} → ${target.toISOString().slice(0, 10)}`;
+    } else if (facts.category === 'vessel' && facts.openDate) {
+      // Place open_date at frozenDate + 3d
+      const target = new Date(frozen.getTime() + 3 * 86_400_000);
+      offsetDays = Math.round((target.getTime() - facts.openDate.getTime()) / 86_400_000);
+      shifted.push('open_date');
+      rationale = `open_date ${facts.openDate.toISOString().slice(0, 10)} → ${target.toISOString().slice(0, 10)}`;
+    } else {
+      // Fallback: place email ~7 days before frozenDate
+      const days = Math.round((frozen.getTime() - emailD.getTime()) / 86_400_000);
+      offsetDays = -days + -7;
+      rationale = `email.date ${emailD.toISOString().slice(0, 10)} → frozenDate ${opts.frozenDate} (fallback)`;
+    }
+
+    offsets[email.threadId] = { offsetDays, rationale, shifted_fields: shifted };
   }
 
   return {
