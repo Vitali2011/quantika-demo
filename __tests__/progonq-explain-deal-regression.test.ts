@@ -138,6 +138,14 @@ const nullClassVessel: ParsedVessel = {
   specialFeatures: [],
 };
 
+// ── BC7 — vessel-name false positive fixtures ─────────────────────────────────
+
+const dnvNameVessel: ParsedVessel = {
+  ...nullClassVessel,
+  vesselName: { value: 'MV DNV Star', confidence: 'confirmed' },
+  classSociety: 'LR', // different society — DNV is NOT the class
+};
+
 // ── R3 regression: buildPayloadNumberSet improvements ─────────────────────────
 
 describe('buildPayloadNumberSet — R3 regression (#589)', () => {
@@ -351,5 +359,51 @@ describe('POST /api/ai/explain-deal — R3 temperature + strip (#589)', () => {
     // 1500 MTPD is from payload loadingRate — must NOT be stripped
     expect(steps?.content).toContain('1500');
     expect(body.warnings).toBeUndefined();
+  });
+});
+
+// ── BC7 — vessel-name false positive (#604) ───────────────────────────────────
+
+describe('stripInventedContent — BC7 vessel-name false positive (#604)', () => {
+  it('does NOT strip class-society token when it appears as part of vessel.name', () => {
+    // vessel.name = "MV DNV Star", classSociety = "LR"
+    // LLM correctly cites the vessel by name — DNV is part of the name, not an invented class
+    const result = stripInventedContent(
+      'The vessel MV DNV Star has been LR classed and is suitable for this voyage.',
+      nullWeightMatch,
+      nullWeightCargo,
+      dnvNameVessel,
+    );
+    // DNV is in vessel.name → must be preserved
+    expect(result.text).toContain('DNV Star');
+    expect(result.forbiddenTokens).not.toContain('DNV');
+  });
+
+  it('still strips class-society token when NOT part of vessel.name', () => {
+    // vessel.name = "MV DNV Star", but response invents "ABS classed"
+    const result = stripInventedContent(
+      'The vessel MV DNV Star is ABS classed.',
+      nullWeightMatch,
+      nullWeightCargo,
+      dnvNameVessel,
+    );
+    // ABS is not in vessel.name and not the payload class (LR) → must be stripped
+    expect(result.text).not.toContain('ABS');
+    expect(result.forbiddenTokens).toContain('ABS');
+    // DNV (from vessel name) must remain intact
+    expect(result.text).toContain('DNV Star');
+  });
+
+  it('allows payload classSociety token regardless of vessel.name', () => {
+    // vessel.classSociety = "LR" → LR mention in response is always OK
+    const result = stripInventedContent(
+      'MV DNV Star is LR classed.',
+      nullWeightMatch,
+      nullWeightCargo,
+      dnvNameVessel,
+    );
+    expect(result.text).toContain('LR');
+    expect(result.forbiddenTokens).not.toContain('LR');
+    expect(result.text).toContain('DNV');
   });
 });

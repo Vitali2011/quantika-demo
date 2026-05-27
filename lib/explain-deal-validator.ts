@@ -246,15 +246,18 @@ export function stripInventedContent(
   }
 
   // 3. Strip class society mentions that don't match vessel.classSociety.
+  //    Exception: preserve token if it's a substring of vessel.name (vessel named after society).
   const payloadClass = vessel?.classSociety
     ? normalizeClassSocietyToken(vessel.classSociety)
     : null;
+  const vesselNameUpper = (vessel?.vesselName?.value ?? '').toUpperCase();
   for (const candidate of CLASS_SOCIETIES) {
     const escaped = candidate.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const re = new RegExp(`\\b${escaped}\\b`, 'g');
     stripped = stripped.replace(re, (raw) => {
       const norm = normalizeClassSocietyToken(raw);
       if (payloadClass && norm === payloadClass) return raw;
+      if (vesselNameUpper.includes(raw.toUpperCase())) return raw;
       forbiddenTokens.push(raw);
       return REDACTION_CLASS;
     });
