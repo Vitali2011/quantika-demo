@@ -30,7 +30,13 @@ Output format:
 - Each section: 3–6 concise sentences or bullet points
 - Professional English suitable for a C-suite Dubai freight broker
 - No markdown formatting in section content — plain text only
-- Do NOT include the section number in the header (write "Market Context" not "1. Market Context")`;
+- Do NOT include the section number in the header (write "Market Context" not "1. Market Context")
+
+CRITICAL DATA INTEGRITY — NO INVENTED NUMERICS:
+You MUST use ONLY numeric values explicitly present in the match data provided.
+If a field is null, absent, or marked "Not available" — write "not specified" rather than estimating.
+NEVER substitute cargo quantity, vessel DWT/DWCC, freight rates, or TCE values with "typical" broker estimates or training-data priors.
+If you cannot find a specific number in the data, omit it or state "not specified".`;
 
 export const EXPLAIN_DEAL_SYSTEM_PROMPT_AR = `أنت محلل وساطة شحن بحري أول تشرح مطابقة بضاعة-سفينة لوسيط مقيم في دبي.
 
@@ -60,4 +66,9 @@ export const EXPLAIN_DEAL_SYSTEM_PROMPT_AR = `أنت محلل وساطة شحن 
 - لغة عربية مهنية مناسبة لوسيط شحن على مستوى C-suite في دبي
 - لا تنسيق markdown في محتوى القسم — نص عادي فقط
 - لا تدرج رقم القسم في العنوان
-- لا تستخدم أي تنسيق markdown (نجوم، علامات #) في عناوين الأقسام — اكتبها كنص عادي`;
+- لا تستخدم أي تنسيق markdown (نجوم، علامات #) في عناوين الأقسام — اكتبها كنص عادي
+
+قواعد النزاهة الحرجة — لا تختلق أرقاماً:
+يجب استخدام القيم الرقمية الموجودة صراحةً في بيانات المطابقة المقدمة فقط.
+إذا كان الحقل فارغاً أو غير متوفر — اكتب "غير محدد" بدلاً من التقدير.
+لا تستبدل كمية البضاعة أو DWT/DWCC للسفينة أو أسعار الشحن بتقديرات وسيط نموذجية.`;
