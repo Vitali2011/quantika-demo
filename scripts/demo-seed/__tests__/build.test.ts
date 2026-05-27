@@ -28,4 +28,24 @@ describe('build (Phase 1)', () => {
     expect(row.frozen_date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     db.close();
   });
+
+  it('shifts email.date by manifest offsetDays', async () => {
+    await build({ rawDir: FIXTURES, manifestPath: FIX_MANIFEST, outDb: tmpDb });
+    const db = new Database(tmpDb);
+    // fixture-001: original internalDate 1775365800000 → 2026-04-05; offsetDays=45 → 2026-05-20
+    const row = db.prepare("SELECT date FROM emails WHERE gmail_message_id = 'fixture001aabbcc1122'").get() as { date: string };
+    expect(row.date.slice(0, 10)).toBe('2026-05-20');
+    db.close();
+  });
+
+  it('shifts date strings in body matching laycan patterns', async () => {
+    await build({ rawDir: FIXTURES, manifestPath: FIX_MANIFEST, outDb: tmpDb });
+    const db = new Database(tmpDb);
+    // fixture-001 body has "LAYCAN: 15-20 April 2026"; with +45d → crosses month boundary
+    // 15 April + 45d = 30 May; 20 April + 45d = 4 June → "30 May - 4 June 2026"
+    const row = db.prepare("SELECT body FROM emails WHERE gmail_message_id = 'fixture001aabbcc1122'").get() as { body: string };
+    expect(row.body).not.toMatch(/15-20 April 2026/);
+    expect(row.body).toMatch(/30 May - 4 June 2026/i);
+    db.close();
+  });
 });
