@@ -7,6 +7,14 @@ import { runMigrations } from '@/lib/migrations/runner';
 import { allMigrations } from '@/lib/migrations/index';
 import { ManifestSchema, type Manifest } from './manifest-schema';
 import { normalizeRawEmail, extractFacts, type FlatEmail } from './analyze';
+import { loadLlmCacheIfAny } from './llm-cache';
+import {
+  cfValue,
+  type ParsedCargo,
+  type ParsedVessel,
+  type ParsedFixtureRecap,
+} from '@/lib/types';
+import { parseLaycan } from '@/lib/sailing/date-parsing';
 
 const PARSER_VERSION = 'demo-seed-v1';
 
@@ -58,6 +66,35 @@ function shiftBodyDates(body: string, offsetDays: number): string {
   return out;
 }
 
+// Shift the dates inside an LLM-parsed ParsedCargo: only the free-text
+// `laycan` field carries dates. We push it through the same body-date
+// shifter so "10-15 May 2026" → "25-30 May 2026" (offset = +15d).
+function shiftedCargo(c: ParsedCargo, offsetDays: number): ParsedCargo {
+  return {
+    ...c,
+    laycan: c.laycan ? shiftBodyDates(c.laycan, offsetDays) : c.laycan,
+  };
+}
+
+// Shift the dates inside an LLM-parsed ParsedVessel: only openDate.value
+// (ISO yyyy-mm-dd) is shifted.
+function shiftedVessel(v: ParsedVessel, offsetDays: number): ParsedVessel {
+  if (!v.openDate) return v;
+  const iso = v.openDate.value;
+  if (!iso.match(/^\d{4}-\d{2}-\d{2}/)) return v;
+  const d = new Date(iso + (iso.length === 10 ? 'T00:00:00Z' : ''));
+  if (isNaN(d.getTime())) return v;
+  d.setUTCDate(d.getUTCDate() + offsetDays);
+  const shifted = d.toISOString().slice(0, 10);
+  return { ...v, openDate: { ...v.openDate, value: shifted } };
+}
+
+// Recaps aren't matched, so no shift is required for the matches loop
+// to work. Keep as identity for the symmetry of the per-email block.
+function shiftedRecap(r: ParsedFixtureRecap, _offsetDays: number): ParsedFixtureRecap {
+  return r;
+}
+
 export interface BuildOptions {
   rawDir: string;
   manifestPath: string;
@@ -106,6 +143,9 @@ function hashManifest(m: Manifest): string {
 export async function build(opts: BuildOptions): Promise<void> {
   const manifest = loadManifest(opts.manifestPath);
   const corpus = loadCorpus(opts.rawDir);
+  // Prefer real LLM-parsed data when a hash-matching cache is present.
+  // Falls back to regex extractFacts when absent (CI-safe).
+  const llmCache = loadLlmCacheIfAny(opts.rawDir);
 
   if (fs.existsSync(opts.outDb)) fs.unlinkSync(opts.outDb);
   const db = new Database(opts.outDb);
@@ -193,34 +233,90 @@ export async function build(opts: BuildOptions): Promise<void> {
         fetched_at: manifest.generated_at,
       });
 
-      // Populate parsed_results using regex-based extractFacts (LLM-free)
-      const facts = extractFacts({
-        threadId: email.threadId,
-        messageId: email.messageId,
-        fromName: anonFromName,
-        fromEmail: anonFromEmail,
-        subject: anonSubject,
-        date: shiftedDate,
-        body: anonBody,
-      });
+      // Populate parsed_results. Cache-prefer: write real LLM rows when a
+      // matching .llm-cache/<hash>.json is present, fall back to the regex
+      // extractFacts path otherwise (CI-safe — fixture corpus uses regex).
+      if (llmCache) {
+        const cls = llmCache.classifications.find((c) => c.emailId === email.messageId);
+        if (cls) {
+          insertParsed.run(
+            'demo', email.messageId, 'classify', PARSER_VERSION,
+            JSON.stringify(cls), manifest.generated_at,
+          );
+        }
 
-      // Always insert classify row
-      insertParsed.run('demo', email.messageId, 'classify', PARSER_VERSION,
-        JSON.stringify({ category: facts.category }), manifest.generated_at);
+        for (const cargo of llmCache.parsedCargos.filter((c) => c.emailId === email.messageId)) {
+          const shifted = shiftedCargo(cargo, offset.offsetDays);
+          // Pre-compute laycan {start,end} ISO so the matches loop below can
+          // read structured dates directly. parseLaycan is the same helper
+          // used by the matching engine in prod.
+          let laycanRange: { start: string; end: string } | null = null;
+          if (shifted.laycan) {
+            const refYear = new Date(shiftedDate).getUTCFullYear();
+            const r = parseLaycan(shifted.laycan, refYear);
+            if (r) laycanRange = { start: r.start.toISOString(), end: r.end.toISOString() };
+          }
+          insertParsed.run(
+            'demo', email.messageId, 'cargo', PARSER_VERSION,
+            JSON.stringify({ ...shifted, laycan: laycanRange ?? shifted.laycan }),
+            manifest.generated_at,
+          );
+        }
 
-      // Insert category-specific row if relevant dates extracted
-      if (facts.category === 'cargo' && (facts.laycanStart || facts.laycanEnd)) {
-        insertParsed.run('demo', email.messageId, 'cargo', PARSER_VERSION,
-          JSON.stringify({
-            laycan: facts.laycanStart && facts.laycanEnd
-              ? { start: facts.laycanStart.toISOString(), end: facts.laycanEnd.toISOString() }
-              : null,
-          }),
-          manifest.generated_at);
-      } else if (facts.category === 'vessel' && facts.openDate) {
-        insertParsed.run('demo', email.messageId, 'vessel', PARSER_VERSION,
-          JSON.stringify({ openDate: facts.openDate.toISOString() }),
-          manifest.generated_at);
+        for (const vessel of llmCache.parsedVessels.filter((v) => v.emailId === email.messageId)) {
+          const shifted = shiftedVessel(vessel, offset.offsetDays);
+          const openIso = cfValue(shifted.openDate);
+          // Persist openDate as a top-level ISO string (matches the regex
+          // path shape that the matches loop already reads).
+          insertParsed.run(
+            'demo', email.messageId, 'vessel', PARSER_VERSION,
+            JSON.stringify({
+              ...shifted,
+              openDate: openIso
+                ? new Date(
+                    openIso.length === 10 ? openIso + 'T00:00:00Z' : openIso,
+                  ).toISOString()
+                : null,
+            }),
+            manifest.generated_at,
+          );
+        }
+
+        for (const recap of llmCache.parsedFixtureRecaps.filter((r) => r.emailId === email.messageId)) {
+          insertParsed.run(
+            'demo', email.messageId, 'recap', PARSER_VERSION,
+            JSON.stringify(shiftedRecap(recap, offset.offsetDays)),
+            manifest.generated_at,
+          );
+        }
+      } else {
+        // Regex fallback — original LLM-free path. Kept for CI and fresh worktrees.
+        const facts = extractFacts({
+          threadId: email.threadId,
+          messageId: email.messageId,
+          fromName: anonFromName,
+          fromEmail: anonFromEmail,
+          subject: anonSubject,
+          date: shiftedDate,
+          body: anonBody,
+        });
+
+        insertParsed.run('demo', email.messageId, 'classify', PARSER_VERSION,
+          JSON.stringify({ category: facts.category }), manifest.generated_at);
+
+        if (facts.category === 'cargo' && (facts.laycanStart || facts.laycanEnd)) {
+          insertParsed.run('demo', email.messageId, 'cargo', PARSER_VERSION,
+            JSON.stringify({
+              laycan: facts.laycanStart && facts.laycanEnd
+                ? { start: facts.laycanStart.toISOString(), end: facts.laycanEnd.toISOString() }
+                : null,
+            }),
+            manifest.generated_at);
+        } else if (facts.category === 'vessel' && facts.openDate) {
+          insertParsed.run('demo', email.messageId, 'vessel', PARSER_VERSION,
+            JSON.stringify({ openDate: facts.openDate.toISOString() }),
+            manifest.generated_at);
+        }
       }
     }
 
