@@ -42,6 +42,24 @@ export default function MorePage() {
               </span>
             </li>
             <li>
+              <Link
+                href="/about"
+                className="flex items-center justify-between w-full rounded-ds-md px-4 py-3 text-sm font-medium text-ds-text hover:bg-ds-surface-muted transition-colors duration-ds-fast min-h-[44px]"
+              >
+                About Quantika
+                <span className="text-ds-text-muted text-xs">→</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/pricing"
+                className="flex items-center justify-between w-full rounded-ds-md px-4 py-3 text-sm font-medium text-ds-text hover:bg-ds-surface-muted transition-colors duration-ds-fast min-h-[44px]"
+              >
+                Pricing
+                <span className="text-ds-text-muted text-xs">→</span>
+              </Link>
+            </li>
+            <li>
               <span className="flex items-center justify-between w-full rounded-ds-md px-4 py-3 text-sm font-medium text-ds-text-muted min-h-[44px]">
                 Help &amp; FAQ
                 <span className="text-xs">Coming soon</span>
