@@ -14,6 +14,7 @@
 
 import { getChannelsForStage, type EscalationStage } from './escalation-policy';
 import { tryRecordDispatch } from '../db/queries/dispatches';
+import { now as clockNow } from '../clock';
 
 export type { EscalationStage } from './escalation-policy';
 
@@ -41,7 +42,7 @@ const HOUR_MS = 3_600_000;
 
 export function computeStage(
   deadlineAt: string | number,
-  now: Date = new Date(),
+  now: Date = clockNow(),
 ): EscalationStage | 'pending' {
   const remaining = normalizeDeadline(deadlineAt).getTime() - now.getTime();
   if (remaining <= 0) return 'expired';
@@ -72,7 +73,7 @@ const noopDispatcher: DispatcherFn = async () => {
 export async function processDeadline(
   deadline: SubsDeadline,
   dispatcher: DispatcherFn = noopDispatcher,
-  now: Date = new Date(),
+  now: Date = clockNow(),
 ): Promise<ProcessResult> {
   const newStage = computeStage(deadline.deadlineAt, now);
 

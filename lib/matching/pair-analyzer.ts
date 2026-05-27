@@ -19,6 +19,7 @@ import { checkSanctions } from '@/lib/validation/sanctions';
 import { enrichReasons } from '@/lib/matching/reason-enricher';
 import { formatNumber } from '@/lib/utils';
 import { LLMTimeoutError } from '@/lib/openai';
+import { now } from '@/lib/clock';
 
 export interface RawMatch {
   cargo_email_id?: string;
@@ -174,7 +175,7 @@ export async function analyzePairs(
     return { matches: [], blockedMatches: [] };
   }
 
-  const today = options?.today ?? new Date();
+  const today = options?.today ?? now();
   const currentYear = today.getUTCFullYear();
   const refYear = options?.refYear ?? currentYear;
 

@@ -3,6 +3,7 @@
  * Enriches numberless reasons with data from structured match fields.
  */
 import { formatNumber } from '@/lib/utils';
+import { now } from '@/lib/clock';
 
 export interface MatchContext {
   vesselDwt?: number | null;
@@ -58,7 +59,7 @@ const ENRICHMENT_RULES: Array<{
   {
     pattern: /built|age|year|modern|old/i,
     enrich: (ctx) => {
-      if (ctx.vesselBuilt) return `Vessel built ${ctx.vesselBuilt} (${new Date().getFullYear() - ctx.vesselBuilt} years old)`;
+      if (ctx.vesselBuilt) return `Vessel built ${ctx.vesselBuilt} (${now().getFullYear() - ctx.vesselBuilt} years old)`;
       return null;
     },
   },
