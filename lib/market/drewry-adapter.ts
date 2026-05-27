@@ -11,8 +11,12 @@ export class DrewryStructureChangedError extends Error {
   }
 }
 
-// "Composite" heading then dollar value in next element, e.g. <div>$2,365</div>
-const WCI_VALUE_PATTERN =
+// Current page structure (2026-05+): inline bullet text, e.g. "WCI) increased 6% to $2,712 per 40ft"
+const WCI_VALUE_PATTERN_CURRENT =
+  /World Container Index\s*\(WCI\)[^$]{0,200}\$\s*([\d,]+(?:\.\d+)?)/i;
+
+// Legacy page structure: dedicated composite card, e.g. <h3>Composite</h3><div>$2,365</div>
+const WCI_VALUE_PATTERN_LEGACY =
   /Composite[\s\S]{0,300}?\$\s*([\d,]+(?:\.\d+)?)/i;
 
 // "DD Month YYYY" date string (e.g. "15 May 2026")
@@ -31,7 +35,7 @@ const MONTHS: Record<string, string> = {
  * Returns null if the value cannot be found (page structure changed).
  */
 export function parseWciHtml(html: string): { value: number; date: string } | null {
-  const valueMatch = html.match(WCI_VALUE_PATTERN);
+  const valueMatch = html.match(WCI_VALUE_PATTERN_CURRENT) ?? html.match(WCI_VALUE_PATTERN_LEGACY);
   if (!valueMatch) return null;
 
   const value = parseFloat(valueMatch[1].replace(/,/g, ''));
