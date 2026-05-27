@@ -60,6 +60,21 @@ export interface BuildOptions {
   rawDir: string;
   manifestPath: string;
   outDb: string;
+  forbiddenSubstrings?: string[];
+}
+
+/**
+ * Replace all occurrences of keys in `map` within `text`, case-insensitively.
+ * Longer keys are replaced first to avoid partial-match issues.
+ */
+function applyAnonymization(text: string, map: Record<string, string>): string {
+  const entries = Object.entries(map).sort((a, b) => b[0].length - a[0].length);
+  let out = text;
+  for (const [original, alias] of entries) {
+    const escaped = original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    out = out.replace(new RegExp(escaped, 'gi'), alias);
+  }
+  return out;
 }
 
 function loadManifest(p: string): Manifest {
@@ -113,18 +128,58 @@ export async function build(opts: BuildOptions): Promise<void> {
       const shiftedBody = shiftBodyDates(email.body ?? '', offset.offsetDays);
       const shiftedSubject = shiftBodyDates(email.subject ?? '', offset.offsetDays);
 
+      // Build combined anonymization map: vessels + charterers + brokers (body/subject)
+      const bodyMap: Record<string, string> = {
+        ...manifest.anonymization.vessels,
+        ...manifest.anonymization.charterers,
+        ...manifest.anonymization.brokers,
+      };
+      const anonBody = applyAnonymization(shiftedBody, bodyMap);
+      const anonSubject = applyAnonymization(shiftedSubject, bodyMap);
+
+      // from_name: direct lookup in brokers map (case-insensitive key match)
+      const fromNameRaw = email.fromName ?? '';
+      const brokerKey = Object.keys(manifest.anonymization.brokers).find(
+        (k) => k.toLowerCase() === fromNameRaw.toLowerCase(),
+      );
+      const anonFromName = brokerKey
+        ? manifest.anonymization.brokers[brokerKey]
+        : fromNameRaw;
+
+      // from_email: direct lookup in sender_emails map
+      const fromEmailRaw = email.fromEmail ?? '';
+      const anonFromEmail =
+        manifest.anonymization.sender_emails[fromEmailRaw] ?? fromEmailRaw;
+
+      // Leak validation (Task 16)
+      const forbidden = opts.forbiddenSubstrings ?? [];
+      for (const needle of forbidden) {
+        for (const [field, value] of [
+          ['body', anonBody],
+          ['subject', anonSubject],
+          ['from_name', anonFromName],
+          ['from_email', anonFromEmail],
+        ] as [string, string][]) {
+          if (value.includes(needle)) {
+            throw new Error(
+              `anonymization leak in ${email.threadId} (${field}): "${needle}" still present after replacement`,
+            );
+          }
+        }
+      }
+
       insertEmail.run({
         account_id: 'demo',
         gmail_message_id: email.messageId,
         thread_id: email.threadId,
-        from_addr: email.fromEmail ?? '',
-        from_name: email.fromName ?? '',
-        from_email: email.fromEmail ?? '',
+        from_addr: anonFromEmail,
+        from_name: anonFromName,
+        from_email: anonFromEmail,
         to_addr: '',
-        subject: shiftedSubject,
+        subject: anonSubject,
         date: shiftedDate,
-        body: shiftedBody,
-        snippet: shiftedBody.slice(0, 200),
+        body: anonBody,
+        snippet: anonBody.slice(0, 200),
         label_ids: '[]',
         fetched_at: manifest.generated_at,
       });

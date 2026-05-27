@@ -49,3 +49,44 @@ describe('build (Phase 1)', () => {
     db.close();
   });
 });
+
+describe('build (Tasks 15+16) — anonymization + leak validator', () => {
+  let tmpDb: string;
+  beforeEach(() => { tmpDb = path.join(os.tmpdir(), `demo-seed-${Date.now()}.db`); });
+  afterEach(() => { if (fs.existsSync(tmpDb)) fs.unlinkSync(tmpDb); });
+
+  it('replaces broker name in body (DEMO BROKER → BROKER 1)', async () => {
+    await build({ rawDir: FIXTURES, manifestPath: FIX_MANIFEST, outDb: tmpDb });
+    const db = new Database(tmpDb);
+    const row = db.prepare("SELECT body FROM emails WHERE gmail_message_id = 'fixture001aabbcc1122'").get() as { body: string };
+    expect(row.body).not.toMatch(/DEMO BROKER/i);
+    expect(row.body).toMatch(/BROKER 1/i);
+    db.close();
+  });
+
+  it('replaces charterer name in body (FIXTURE GRAIN CO → GRAIN TRADER A)', async () => {
+    await build({ rawDir: FIXTURES, manifestPath: FIX_MANIFEST, outDb: tmpDb });
+    const db = new Database(tmpDb);
+    const row = db.prepare("SELECT body FROM emails WHERE gmail_message_id = 'fixture001aabbcc1122'").get() as { body: string };
+    expect(row.body).not.toMatch(/FIXTURE GRAIN CO/i);
+    expect(row.body).toMatch(/GRAIN TRADER A/i);
+    db.close();
+  });
+
+  it('replaces sender email in from_email column and broker name in from_name', async () => {
+    await build({ rawDir: FIXTURES, manifestPath: FIX_MANIFEST, outDb: tmpDb });
+    const db = new Database(tmpDb);
+    const row = db.prepare("SELECT from_email, from_name FROM emails WHERE gmail_message_id = 'fixture001aabbcc1122'").get() as { from_email: string; from_name: string };
+    expect(row.from_email).not.toBe('broker@demo.local');
+    expect(row.from_email).toBe('broker1@demo.local');
+    expect(row.from_name).toBe('BROKER 1');
+    db.close();
+  });
+
+  it('throws anonymization leak error when forbiddenSubstrings appear in output', async () => {
+    // 'BROKER 1' is the alias — it WILL appear in the anonymized output → leak detected
+    await expect(
+      build({ rawDir: FIXTURES, manifestPath: FIX_MANIFEST, outDb: tmpDb, forbiddenSubstrings: ['BROKER 1'] })
+    ).rejects.toThrow(/anonymization leak/i);
+  });
+});
