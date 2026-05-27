@@ -15,6 +15,7 @@ import { buildVesselPrompt, parseVesselAIResponse } from '@/lib/parsing/parse-ve
 import { buildProcessedEmails } from '@/lib/classification-service';
 import { getCachedParses, saveParsedResults, hashParserVersion } from '@/lib/email-cache';
 import pLimit from 'p-limit';
+import { isDemoMode } from '@/lib/demo-mode';
 
 export const maxDuration = 60;
 
@@ -24,6 +25,11 @@ export async function POST(request: NextRequest) {
   const result = requireSession(request);
   if (result instanceof NextResponse) return result;
   const { session, sessionId } = result;
+
+  // DEMO_MODE: block live LLM; serve pre-seeded data or return cached count.
+  if (isDemoMode()) {
+    return NextResponse.json({ count: session.parsedVessels?.length ?? 0, cached: true });
+  }
 
   // wave-γ-1.5-A: demo guests get pre-seeded vessel positions — skip live LLM entirely.
   if (session.isSampleData === true && session.parsedVessels.length > 0) {
