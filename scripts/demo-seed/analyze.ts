@@ -2,6 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type { Manifest, OffsetEntry } from './manifest-schema';
 import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
+import { cfValue } from '@/lib/types';
+import { loadLlmCacheIfAny, type LlmCache } from './llm-cache';
 
 export interface AnalyzeOptions {
   rawDir: string;
@@ -198,6 +200,78 @@ export function extractFacts(email: FlatEmail): ParsedFacts {
   return facts;
 }
 
+/**
+ * Build ParsedFacts for an email from a pre-computed LLM cache.
+ * Returns the same shape as the regex `extractFacts`, populated with
+ * real LLM data when the email was processed. When the cache contains
+ * no rows for this email, returns category='other' so the offset logic
+ * falls back to the email-date heuristic.
+ */
+export function extractFactsFromCache(
+  email: FlatEmail,
+  cache: LlmCache,
+): ParsedFacts {
+  const cls = cache.classifications.find((c) => c.emailId === email.messageId);
+  const cargoRows = cache.parsedCargos.filter((c) => c.emailId === email.messageId);
+  const vesselRows = cache.parsedVessels.filter((v) => v.emailId === email.messageId);
+  const recapRows = cache.parsedFixtureRecaps.filter((r) => r.emailId === email.messageId);
+
+  let category: ParsedFacts['category'] = 'other';
+  switch (cls?.category) {
+    case 'CARGO_INQUIRY':
+      category = 'cargo';
+      break;
+    case 'VESSEL_POSITION':
+      category = 'vessel';
+      break;
+    case 'FIXTURE_RECAP':
+      category = 'recap';
+      break;
+    default:
+      category = 'other';
+  }
+
+  const facts: ParsedFacts = {
+    category,
+    vesselNames: [],
+    brokers: email.fromName ? [email.fromName] : [],
+    senderEmails: email.fromEmail ? [email.fromEmail] : [],
+    charterers: [],
+  };
+
+  if (category === 'cargo' && cargoRows.length > 0) {
+    const cargo = cargoRows[0];
+    if (cargo.laycan) {
+      const refYear = new Date(email.date).getUTCFullYear();
+      const range = parseLaycan(cargo.laycan, refYear);
+      if (range) {
+        facts.laycanStart = range.start;
+        facts.laycanEnd = range.end;
+      }
+    }
+  }
+
+  if (category === 'vessel' && vesselRows.length > 0) {
+    const vessel = vesselRows[0];
+    const openIso = cfValue(vessel.openDate);
+    if (openIso) {
+      const d = new Date(openIso);
+      if (!isNaN(d.getTime())) facts.openDate = d;
+    }
+    const vName = cfValue(vessel.vesselName);
+    if (vName) facts.vesselNames.push(vName);
+  }
+
+  if (category === 'recap' && recapRows.length > 0) {
+    const ch = cfValue(recapRows[0].charterers);
+    if (ch) facts.charterers.push(ch);
+    const vName = cfValue(recapRows[0].vesselName);
+    if (vName) facts.vesselNames.push(vName);
+  }
+
+  return facts;
+}
+
 export async function analyze(opts: AnalyzeOptions): Promise<Manifest> {
   // Sort corpus by threadId for deterministic counter assignment
   const corpus = readCorpus(opts.rawDir).sort((a, b) => a.threadId.localeCompare(b.threadId));
@@ -224,10 +298,17 @@ export async function analyze(opts: AnalyzeOptions): Promise<Manifest> {
     anonymization[kind][real] = `${prefix} ${counters[kind]}`;
   }
 
+  // Prefer LLM cache when present; fall back to regex extractFacts otherwise.
+  // This is the only knob distinguishing analyze() with and without LLM data.
+  const llmCache = loadLlmCacheIfAny(opts.rawDir);
+  const sourceTag = llmCache ? 'cache' : 'regex';
+
   const offsets: Record<string, OffsetEntry> = {};
   for (const email of corpus) {
     const emailD = new Date(email.date);
-    const facts = extractFacts(email);
+    const facts = llmCache
+      ? extractFactsFromCache(email, llmCache)
+      : extractFacts(email);
 
     // Populate anonymization map from extracted names
     for (const v of facts.vesselNames) alias('vessels', v, 'M/V DEMO');
@@ -245,18 +326,18 @@ export async function analyze(opts: AnalyzeOptions): Promise<Manifest> {
       const target = new Date(frozen.getTime() + 7 * 86_400_000);
       offsetDays = Math.round((target.getTime() - midLay.getTime()) / 86_400_000);
       shifted.push('laycan_start', 'laycan_end');
-      rationale = `laycan midpoint ${midLay.toISOString().slice(0, 10)} → ${target.toISOString().slice(0, 10)}`;
+      rationale = `${sourceTag}: laycan midpoint ${midLay.toISOString().slice(0, 10)} → ${target.toISOString().slice(0, 10)}`;
     } else if (facts.category === 'vessel' && facts.openDate) {
       // Place open_date at frozenDate + 3d
       const target = new Date(frozen.getTime() + 3 * 86_400_000);
       offsetDays = Math.round((target.getTime() - facts.openDate.getTime()) / 86_400_000);
       shifted.push('open_date');
-      rationale = `open_date ${facts.openDate.toISOString().slice(0, 10)} → ${target.toISOString().slice(0, 10)}`;
+      rationale = `${sourceTag}: open_date ${facts.openDate.toISOString().slice(0, 10)} → ${target.toISOString().slice(0, 10)}`;
     } else {
       // Fallback: place email ~7 days before frozenDate
       const days = Math.round((frozen.getTime() - emailD.getTime()) / 86_400_000);
       offsetDays = -days + -7;
-      rationale = `email.date ${emailD.toISOString().slice(0, 10)} → frozenDate ${opts.frozenDate} (fallback)`;
+      rationale = `${sourceTag}: email.date ${emailD.toISOString().slice(0, 10)} → frozenDate ${opts.frozenDate} (fallback)`;
     }
 
     offsets[email.threadId] = { offsetDays, rationale, shifted_fields: shifted };
