@@ -278,3 +278,37 @@ export async function analyze(opts: AnalyzeOptions): Promise<Manifest> {
     },
   };
 }
+
+async function main() {
+  const argv = process.argv.slice(2);
+  const arg = (k: string) => {
+    const i = argv.indexOf(k);
+    return i === -1 ? undefined : argv[i + 1];
+  };
+
+  const rawDir = arg('--raw-dir') ?? path.resolve(process.cwd(), '.private/raw-emails');
+  const frozenDate = arg('--frozen-date');
+  if (!frozenDate) {
+    console.error('Usage: tsx scripts/demo-seed/analyze.ts --frozen-date YYYY-MM-DD [--raw-dir DIR] [--out FILE]');
+    process.exit(2);
+  }
+  const demoWindowDays = parseInt(arg('--window') ?? '14', 10);
+  const outFile = arg('--out') ?? path.resolve(process.cwd(), 'scripts/demo-seed/manifest.json');
+
+  // If existing manifest present — re-use anonymization (additive)
+  let seedAnon: Manifest['anonymization'] | undefined;
+  if (fs.existsSync(outFile)) {
+    try {
+      const prev = JSON.parse(fs.readFileSync(outFile, 'utf8'));
+      seedAnon = prev.anonymization;
+    } catch {/* ignore */}
+  }
+
+  const manifest = await analyze({ rawDir, frozenDate, demoWindowDays, seedAnonymization: seedAnon });
+  fs.writeFileSync(outFile, JSON.stringify(manifest, null, 2) + '\n');
+  console.log(`Wrote ${outFile}: ${manifest.raw_emails_count} emails, ${Object.keys(manifest.offsets).length} offsets`);
+}
+
+if (require.main === module) {
+  main().catch(e => { console.error(e); process.exit(1); });
+}
