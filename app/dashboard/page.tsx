@@ -106,15 +106,14 @@ export default async function DashboardPage() {
     })
     .sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority]);
 
-  const freshMatchesData = goodMatches.map((m) => {
-    const dbId = matchIdMap.get(`${m.cargoEmailId}|${m.vesselEmailId}`);
-    return {
+  const freshMatchesData = goodMatches
+    .filter((m) => matchIdMap.get(`${m.cargoEmailId}|${m.vesselEmailId}`) != null)
+    .map((m) => ({
       score: m.score,
       matchLevel: m.matchLevel,
       matchReasons: m.matchReasons,
-      id: dbId ?? 0,
-    };
-  });
+      id: matchIdMap.get(`${m.cargoEmailId}|${m.vesselEmailId}`)!,
+    }));
 
   const rawName = session.accountId?.split('@')[0] ?? 'there';
   const userName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
