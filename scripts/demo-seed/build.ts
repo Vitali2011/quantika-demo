@@ -135,11 +135,13 @@ export async function build(opts: BuildOptions): Promise<void> {
       const shiftedBody = shiftBodyDates(email.body ?? '', offset.offsetDays);
       const shiftedSubject = shiftBodyDates(email.subject ?? '', offset.offsetDays);
 
-      // Build combined anonymization map: vessels + charterers + brokers (body/subject)
+      // Build combined anonymization map: vessels + charterers + brokers + sender_emails (body/subject)
+      // sender_emails included so forwarded/quoted email addresses in body are also anonymized
       const bodyMap: Record<string, string> = {
         ...manifest.anonymization.vessels,
         ...manifest.anonymization.charterers,
         ...manifest.anonymization.brokers,
+        ...manifest.anonymization.sender_emails,
       };
       const anonBody = applyAnonymization(shiftedBody, bodyMap);
       const anonSubject = applyAnonymization(shiftedSubject, bodyMap);
@@ -280,4 +282,33 @@ export async function build(opts: BuildOptions): Promise<void> {
 
   tx();
   db.close();
+}
+
+async function main() {
+  const argv = process.argv.slice(2);
+  const arg = (k: string) => { const i = argv.indexOf(k); return i === -1 ? undefined : argv[i+1]; };
+  const rawDir = arg('--raw-dir') ?? path.resolve(process.cwd(), '.private/raw-emails');
+  const manifestPath = arg('--manifest') ?? path.resolve(process.cwd(), 'scripts/demo-seed/manifest.json');
+  const outDb = arg('--out') ?? path.resolve(process.cwd(), 'data/demo-seed.db');
+
+  await build({ rawDir, manifestPath, outDb, forbiddenSubstrings: loadForbidden(manifestPath) });
+  const stats = fs.statSync(outDb);
+  console.log(`Wrote ${outDb} (${(stats.size / 1024 / 1024).toFixed(2)} MB)`);
+}
+
+function loadForbidden(manifestPath: string): string[] {
+  const m = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const keys = [
+    ...Object.keys(m.anonymization.vessels),
+    ...Object.keys(m.anonymization.charterers),
+    ...Object.keys(m.anonymization.brokers),
+    ...Object.keys(m.anonymization.sender_emails),
+  ];
+  // Additional forbidden substrings — known PII patterns
+  const extra = ['etm-services.net', 'ETM Services'];
+  return [...new Set([...keys, ...extra])].filter(k => k.length >= 3);
+}
+
+if (require.main === module) {
+  main().catch(e => { console.error(e); process.exit(1); });
 }
