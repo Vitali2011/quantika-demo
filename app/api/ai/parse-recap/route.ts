@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
 
   // DEMO_MODE: block live LLM; serve pre-seeded recaps or cached count.
   if (isDemoMode()) {
-    return NextResponse.json({ count: session.parsedRecaps?.length ?? 0, cached: true });
+    return NextResponse.json({ count: session.parsedFixtureRecaps?.length ?? 0, cached: true });
   }
 
   const fixtureIds = session.classifications
