@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
+import { getStore } from '@/lib/session-store';
 import { filterByCategory } from '@/lib/dashboard-queries';
 import { countAwaitingApproval } from '@/lib/auto-prequote/queue';
 import { classifyPriority } from '@/lib/sailing/priority-classifier';
@@ -11,6 +12,8 @@ import { DashboardTodoSection } from '@/components/dashboard/DashboardTodoSectio
 import { DashboardFreshMatches } from '@/components/dashboard/DashboardFreshMatches';
 import { MorningHeader } from '@/components/dashboard/MorningHeader';
 import { Badge } from '@/design-system/primitives';
+import { persistSessionMatches } from '@/lib/matching/persist-session-matches';
+import { listMatches } from '@/lib/matching/matches-repository';
 
 const PRIORITY_ORDER: Record<PriorityLevel, number> = { urgent: 0, attention: 1, ok: 2 };
 
@@ -81,6 +84,13 @@ export default async function DashboardPage() {
     (m) => m.matchLevel === 'good' || m.matchLevel === 'possible',
   );
 
+  const db = getStore().getDatabase();
+  if (matches.length > 0) {
+    persistSessionMatches(db, sessionId!, matches, session.parsedCargos, session.parsedVessels);
+  }
+  const storedMatches = listMatches(db, { user_id: sessionId!, sortBy: 'score', sortDir: 'desc' });
+  const matchIdMap = new Map(storedMatches.map((sm) => [`${sm.cargo_id}|${sm.vessel_id}`, sm.id]));
+
   const priorityCards = goodMatches
     .map((match, i) => {
       const readinessGap =
@@ -90,16 +100,21 @@ export default async function DashboardPage() {
       const priority = classifyPriority({ confidence: match.confidence, readinessGap });
       const matchSummary = match.matchReasons[0] || `Match #${i + 1}`;
       const keyInsight = match.readiness?.explanation || `Level: ${match.matchLevel}`;
-      return { priority, matchSummary, keyInsight, href: `/match/${i}` };
+      const dbId = matchIdMap.get(`${match.cargoEmailId}|${match.vesselEmailId}`);
+      const href = dbId != null ? `/match/${dbId}` : '/matches';
+      return { priority, matchSummary, keyInsight, href };
     })
     .sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority]);
 
-  const freshMatchesData = goodMatches.map((m, i) => ({
-    score: m.score,
-    matchLevel: m.matchLevel,
-    matchReasons: m.matchReasons,
-    index: i,
-  }));
+  const freshMatchesData = goodMatches.map((m) => {
+    const dbId = matchIdMap.get(`${m.cargoEmailId}|${m.vesselEmailId}`);
+    return {
+      score: m.score,
+      matchLevel: m.matchLevel,
+      matchReasons: m.matchReasons,
+      id: dbId ?? 0,
+    };
+  });
 
   const rawName = session.accountId?.split('@')[0] ?? 'there';
   const userName = rawName.charAt(0).toUpperCase() + rawName.slice(1);

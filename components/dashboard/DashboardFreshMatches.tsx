@@ -5,7 +5,7 @@ export interface FreshMatchItem {
   score: number;
   matchLevel: string;
   matchReasons: string[];
-  index: number;
+  id: number;
 }
 
 function scoreToPillVariant(score: number): 'success' | 'warn' | 'default' {
@@ -47,11 +47,11 @@ export function DashboardFreshMatches({ matches }: DashboardFreshMatchesProps) {
       ) : (
         <div className="space-y-2">
           {top.map((match) => {
-            const reason = match.matchReasons[0] || `Match #${match.index + 1}`;
+            const reason = match.matchReasons[0] || `Match #${match.id}`;
             return (
               <Link
-                key={match.index}
-                href={`/match/${match.index}`}
+                key={match.id}
+                href={`/match/${match.id}`}
                 className="block outline-none focus-visible:ring-2 focus-visible:ring-ds-accent/40 rounded-ds-md"
               >
                 <Card padding="sm" interactive>
