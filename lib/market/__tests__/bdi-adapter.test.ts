@@ -1,13 +1,14 @@
 /**
  * Behavioral tests for lib/market/bdi-adapter.ts
  *
- * PI2: calls parseBdiCsv() with real CSV input (not string-match only).
- * Uses inline fixture CSV that mirrors stooq.com format.
+ * PI2: calls parseBdiCsv() / parseBdiHtml() with real input (not string-match only).
+ * parseBdiCsv tests use inline CSV (stooq legacy path, kept for coverage).
+ * parseBdiHtml + refreshBdi tests use FIXTURE_HTML mirroring handybulk.com format.
  */
 
 import Database from 'better-sqlite3';
 import migration019 from '@/lib/migrations/019-port-master-baltic-indices';
-import { parseBdiCsv, refreshBdi, BdiStructureChangedError } from '../bdi-adapter';
+import { parseBdiCsv, parseBdiHtml, refreshBdi, BdiStructureChangedError } from '../bdi-adapter';
 import { getLatestBalticIndex } from '../baltic-repository';
 
 const FIXTURE_CSV = [
@@ -15,6 +16,15 @@ const FIXTURE_CSV = [
   '2026-05-26,1440,1465,1425,1455,0',
   '2026-05-23,1410,1445,1405,1440,0',
 ].join('\n');
+
+// Mirrors handybulk.com/baltic-dry-index/ paragraph format. Value 1,455 / 2026-05-26
+// matches the expectations carried over from FIXTURE_CSV so no assertion changes needed.
+const FIXTURE_HTML = `<div>
+  <p>26-May-2026</p>
+  <div><p>The Baltic Dry Index (BDI) increased by 15 points to reach 1,455 points. The Baltic Handysize Index (BHSI) decreased by 2 points to 530 points.</p></div>
+  <p>23-May-2026</p>
+  <div><p>The Baltic Dry Index (BDI) decreased by 25 points to reach 1,440 points.</p></div>
+</div>`;
 
 function makeDb(): Database.Database {
   const db = new Database(':memory:');
@@ -61,10 +71,37 @@ describe('parseBdiCsv', () => {
   });
 });
 
+describe('parseBdiHtml', () => {
+  it('parses BDI value from fixture HTML (PI2: real parser call)', () => {
+    const result = parseBdiHtml(FIXTURE_HTML);
+    expect(result).not.toBeNull();
+    expect(result!.value).toBe(1455);
+  });
+
+  it('parses ISO date from DD-Month-YYYY header', () => {
+    const result = parseBdiHtml(FIXTURE_HTML);
+    expect(result!.date).toBe('2026-05-26');
+  });
+
+  it('returns null for empty string (boundary: empty)', () => {
+    expect(parseBdiHtml('')).toBeNull();
+  });
+
+  it('returns null when no BDI paragraph is present', () => {
+    expect(parseBdiHtml('<p>26-May-2026</p><p>No shipping data here.</p>')).toBeNull();
+  });
+
+  it('returns null when there is no date entry', () => {
+    expect(
+      parseBdiHtml('The Baltic Dry Index (BDI) rose to 2,991 points.'),
+    ).toBeNull();
+  });
+});
+
 describe('refreshBdi (PI2: real DB upsert)', () => {
   it('upserts BDI row into baltic_indices', async () => {
     const db = makeDb();
-    const fakeFetcher = jest.fn().mockResolvedValue(FIXTURE_CSV);
+    const fakeFetcher = jest.fn().mockResolvedValue(FIXTURE_HTML);
 
     await refreshBdi(db, fakeFetcher);
 
@@ -79,7 +116,7 @@ describe('refreshBdi (PI2: real DB upsert)', () => {
 
   it('is idempotent — second call with same date does not duplicate', async () => {
     const db = makeDb();
-    const fakeFetcher = jest.fn().mockResolvedValue(FIXTURE_CSV);
+    const fakeFetcher = jest.fn().mockResolvedValue(FIXTURE_HTML);
 
     await refreshBdi(db, fakeFetcher);
     await refreshBdi(db, fakeFetcher);
@@ -94,11 +131,9 @@ describe('refreshBdi (PI2: real DB upsert)', () => {
     db.close();
   });
 
-  it('throws BdiStructureChangedError when CSV has only a header row', async () => {
+  it('throws BdiStructureChangedError when HTML contains no BDI entry', async () => {
     const db = makeDb();
-    const fakeFetcher = jest
-      .fn()
-      .mockResolvedValue('Date,Open,High,Low,Close,Volume\n');
+    const fakeFetcher = jest.fn().mockResolvedValue('<html><body>no data</body></html>');
 
     await expect(refreshBdi(db, fakeFetcher)).rejects.toThrow(BdiStructureChangedError);
 

@@ -1,0 +1,22 @@
+# /etc/cron.d/quantika-market-refresh
+#
+# Daily BDI/BHSI refresh for Quantika Demo.
+# Baltic Exchange publishes ~1 PM London; run at 07:00 CEST (05:00 UTC)
+# on weekdays to pick up previous-day data.
+#
+# INSTALLATION (run after deploy):
+#   sudo cp scripts/ops/quantika-market-refresh.cron /etc/cron.d/quantika-market-refresh
+#   sudo chmod 644 /etc/cron.d/quantika-market-refresh
+#   sudo chown root:root /etc/cron.d/quantika-market-refresh
+#
+# VERIFY:
+#   tail -f /var/log/quantika-market-refresh.log
+#
+# MANUAL RUN (from app directory):
+#   cd /root/work/quantika-demo && npx tsx scripts/knowledge/cron/refresh-market-indices.ts
+
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# weekdays at 05:00 UTC (07:00 CEST / 08:00 BY)
+0 5 * * 1-5 root cd /root/work/quantika-demo && npx tsx scripts/knowledge/cron/refresh-market-indices.ts >> /var/log/quantika-market-refresh.log 2>&1
