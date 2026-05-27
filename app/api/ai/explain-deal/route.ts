@@ -19,6 +19,11 @@ import {
   EXPLAIN_DEAL_SYSTEM_PROMPT_AR,
 } from '@/lib/prompts';
 import { ExplainDealBodySchema } from '@/lib/api-schemas';
+import {
+  validateExplainDealResponse,
+  buildRetryPrompt,
+  buildPayloadNumberSet,
+} from '@/lib/explain-deal-validator';
 
 export const maxDuration = 60;
 
@@ -168,12 +173,19 @@ export async function POST(request: NextRequest) {
       : undefined);
 
   try {
-    const rawText = await callAiText('EXPLAIN_DEAL', systemPrompt, userPrompt, {
-      timeoutMs: endpointLlmTimeout(maxDuration),
-      model: modelOverride,
-    });
+    const llmOpts = { timeoutMs: endpointLlmTimeout(maxDuration), model: modelOverride };
+    const rawText = await callAiText('EXPLAIN_DEAL', systemPrompt, userPrompt, llmOpts);
 
-    const sections = parseSections(rawText, headers);
+    // A2: post-response numeric validation — retry once if invented numbers found
+    const validation = validateExplainDealResponse(rawText, match, cargo ?? null, vessel ?? null);
+    let finalText = rawText;
+    if (!validation.valid) {
+      const payloadNumbers = buildPayloadNumberSet(match, cargo ?? null, vessel ?? null);
+      const retryPrompt = buildRetryPrompt(userPrompt, validation.inventedNumbers, payloadNumbers);
+      finalText = await callAiText('EXPLAIN_DEAL', systemPrompt, retryPrompt, llmOpts);
+    }
+
+    const sections = parseSections(finalText, headers);
     const usedModel =
       modelOverride ??
       (process.env.AI_MODEL_HEAVY ?? 'gpt-5.5');
@@ -208,7 +220,26 @@ function buildUserPrompt(
   vessel: import('@/lib/types').ParsedVessel | null,
   matchIndex: number,
 ): string {
+  // A1: explicit numeric anchor — list key numbers so LLM sees them before the JSON blob
+  const cargoWeight =
+    cargo?.weightMt?.value ?? cargo?.weightMtMin ?? cargo?.weightMtMax ?? null;
+  const vesselDwt = vessel?.dwtSummer?.value ?? null;
+  const vesselDwcc = vessel?.dwcc?.value ?? null;
+  const totalCost = match.economics?.totalUsd ?? null;
+
+  const anchorLines = [
+    `Cargo weight: ${cargoWeight !== null ? `${cargoWeight} MT` : 'not specified'}`,
+    `Vessel DWT: ${vesselDwt !== null ? `${vesselDwt} MT` : 'not specified'}`,
+    vesselDwcc !== null ? `Vessel DWCC: ${vesselDwcc} MT` : null,
+    totalCost !== null ? `Total voyage cost: USD ${totalCost}` : null,
+  ]
+    .filter(Boolean)
+    .join('\n- ');
+
   return `MATCH DATA (index ${matchIndex}):
+
+NUMERIC ANCHOR — cite ONLY these values; for anything absent write "not specified":
+- ${anchorLines}
 
 Score: ${match.score}/100 (${match.matchLevel.toUpperCase()})
 Match Reasons: ${match.matchReasons.join('; ') || 'none'}
