@@ -531,7 +531,7 @@ export default function CargoClient({ rows, total }: Props) {
               No cargo matches the current filters.
             </div>
           ) : (
-            <table className="w-full border-collapse text-sm" role="grid">
+            <table className="w-full min-w-[1100px] border-collapse text-sm" role="grid">
               <colgroup>
                 <col style={{ width: '220px' }} />
                 <col style={{ width: '90px' }} />
