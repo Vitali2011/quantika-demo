@@ -20,7 +20,7 @@ export function HelpTab({ query }: { query: string }) {
       body: JSON.stringify({ query }),
       signal: ctrl.signal,
     })
-      .then((r) => r.json())
+      .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
       .then((d: Answer) => setData(d))
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -42,7 +42,7 @@ export function HelpTab({ query }: { query: string }) {
   return (
     <div className="p-4 space-y-3">
       <p className="text-sm text-ds-text leading-relaxed">{data.answer}</p>
-      {data.sources.length > 0 && (
+      {(data.sources?.length ?? 0) > 0 && (
         <div className="text-xs text-ds-text-muted">
           <span className="font-semibold">Sources:</span>{' '}
           {data.sources.map((s, i) => (

@@ -52,19 +52,24 @@ export default async function DashboardPage() {
 
   if (emails.length === 0) {
     return (
-      <div className="min-h-screen bg-ds-bg flex items-center justify-center px-4">
-        <div className="max-w-md w-full text-center space-y-4">
-          <div className="text-4xl">📭</div>
-          <h1 className="text-xl font-bold text-ds-text">No emails yet</h1>
-          <p className="text-sm text-ds-text-muted">
-            Upload emails to start analysing freight inquiries, vessel positions, and negotiations.
-          </p>
-          <Link
-            href="/processing"
-            className="inline-block px-6 py-3 bg-ds-accent text-ds-accent-fg text-sm font-medium rounded-ds-md hover:bg-ds-accent/90 transition-colors"
-          >
-            Upload emails
-          </Link>
+      <div className="bg-ds-bg min-h-screen">
+        <div className="max-w-3xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-6">
+          <DashboardKpiStrip openMatches={0} activeCargoes={0} />
+          <div className="flex items-center justify-center py-12">
+            <div className="max-w-md w-full text-center space-y-4">
+              <div className="text-4xl">📭</div>
+              <h1 className="text-xl font-bold text-ds-text">No emails yet</h1>
+              <p className="text-sm text-ds-text-muted">
+                Upload emails to start analysing freight inquiries, vessel positions, and negotiations.
+              </p>
+              <Link
+                href="/processing"
+                className="inline-block px-6 py-3 bg-ds-accent text-ds-accent-fg text-sm font-medium rounded-ds-md hover:bg-ds-accent/90 transition-colors"
+              >
+                Upload emails
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     );

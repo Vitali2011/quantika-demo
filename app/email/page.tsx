@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
 import { Card } from '@/design-system/primitives';
@@ -43,13 +42,9 @@ const CATEGORY_COLORS: Record<EmailCategory, string> = {
 export default async function EmailInboxPage() {
   const cookieStore = await cookies();
   const sessionId = cookieStore.get('session_id')?.value;
-  if (!sessionId) redirect('/dashboard');
-  const session = getSession(sessionId);
-  if (!session) redirect('/dashboard');
+  const session = sessionId ? getSession(sessionId) : null;
 
-  const { emails, processedEmails } = session;
-
-  if (emails.length === 0) {
+  if (!session || session.emails.length === 0) {
     return (
       <main className="min-h-screen bg-ds-bg flex items-center justify-center px-4">
         <div className="max-w-md text-center space-y-4">
@@ -69,6 +64,7 @@ export default async function EmailInboxPage() {
     );
   }
 
+  const { emails, processedEmails } = session;
   // Merge emails with their processing classification
   const processedMap = new Map(processedEmails.map((p) => [p.emailId, p]));
   const emailRows = emails.map((email) => ({
