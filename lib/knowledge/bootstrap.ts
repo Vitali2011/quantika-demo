@@ -179,10 +179,10 @@ export const KNOWLEDGE_REGISTRY: RegisterSourceInput[] = [
   // === Market indices ===
   {
     slug: 'market-bdi',
-    name: 'Baltic Dry Index (stooq.com CSV)',
+    name: 'Baltic Dry Index (handybulk.com daily summary)',
     kind: 'structured_rows',
     category: 'market',
-    source_url: 'https://stooq.com/q/d/l/?s=bdi&i=d',
+    source_url: 'https://www.handybulk.com/baltic-dry-index/',
     license: 'Public scrape (fair use)',
     refresh_mode: 'auto-daily',
     stale_threshold_days: 3,
@@ -191,10 +191,10 @@ export const KNOWLEDGE_REGISTRY: RegisterSourceInput[] = [
   },
   {
     slug: 'market-bhsi',
-    name: 'Baltic Handysize Index (handybulk.com)',
+    name: 'Baltic Handysize Index (handybulk.com daily summary)',
     kind: 'structured_rows',
     category: 'market',
-    source_url: 'https://www.handybulk.com/',
+    source_url: 'https://www.handybulk.com/baltic-dry-index/',
     license: 'Public scrape (fair use)',
     refresh_mode: 'auto-daily',
     stale_threshold_days: 3,
