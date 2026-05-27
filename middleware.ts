@@ -7,6 +7,8 @@ import { getRequestBaseUrl } from '@/lib/auth/redirect-url';
 
 // Paths that bypass the auth guard entirely
 const AUTH_BYPASS_PATHS = new Set([
+  // Public landing — anonymous users see PublicLanding; logged-in redirect handled by app/page.tsx
+  '/',
   '/login',
   '/api/auth/login',
   '/api/auth/logout',
@@ -80,11 +82,6 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       // (simple demo — no deep-link restoration needed)
       const loginUrl = new URL('/login', getRequestBaseUrl(request));
       return NextResponse.redirect(loginUrl, { status: 302 });
-    }
-
-    // Authenticated users on the public landing page belong on /dashboard (#560)
-    if (pathname === '/') {
-      return NextResponse.redirect(new URL('/dashboard', getRequestBaseUrl(request)), { status: 302 });
     }
 
     // /processing requires a csrf_token cookie (set by Google OAuth or /api/sample).
