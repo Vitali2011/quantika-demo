@@ -48,6 +48,7 @@ next-env.d.ts
 /data/ports/.cache/
 !/data/knowledge/
 !/data/distances/
+!/data/demo-seed.db
 /data/ports/*.skeleton.json
 /data/ports/*.draft.json
 

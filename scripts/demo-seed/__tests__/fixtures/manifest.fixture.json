@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-05-27T10:00:00.000Z",
+  "raw_emails_dir": "__tests__/fixtures/demo-seed",
+  "raw_emails_count": 5,
+  "frozenDate": "2026-05-20",
+  "demo_window_days": 14,
+  "offsets": {
+    "fixture001aabbcc1122": { "offsetDays": 45, "rationale": "test", "shifted_fields": ["email.date"] },
+    "fixture002aabbcc3344": { "offsetDays": 120, "rationale": "test", "shifted_fields": ["email.date"] },
+    "fixture003aabbcc5566": { "offsetDays": 30, "rationale": "test", "shifted_fields": ["email.date"] },
+    "fixture004aabbcc7788": { "offsetDays": 15, "rationale": "test", "shifted_fields": ["email.date"] },
+    "fixture005aabbcc9900": { "offsetDays": 25, "rationale": "test", "shifted_fields": ["email.date"] }
+  },
+  "anonymization": {
+    "vessels": { "M/V FIXTURE WIND": "M/V SEAGULL 1", "M/V FIXTURE STAR": "M/V SEAGULL 2" },
+    "charterers": { "FIXTURE GRAIN CO": "GRAIN TRADER A" },
+    "brokers": { "DEMO BROKER": "BROKER 1" },
+    "sender_emails": { "broker@demo.local": "broker1@demo.local" }
+  },
+  "stats": { "active_laycans_after_shift": 0, "stale_laycans_after_shift": 0, "anonymization_unknowns": [] }
+}

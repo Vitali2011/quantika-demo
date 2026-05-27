@@ -6,8 +6,16 @@ import { parseCargoAIResponse, type RawCargoItem } from '@/lib/parsing/parse-car
 import { PARSE_CARGO_SCHEMA } from '@/lib/schemas';
 import { cfValue } from '@/lib/types';
 import { parserEmailRateLimiter } from '@/lib/rate-limit';
+import { isDemoMode } from '@/lib/demo-mode';
 
 export async function POST(req: NextRequest) {
+  if (isDemoMode()) {
+    return NextResponse.json(
+      { error: 'demo_mode', message: 'LLM parsing disabled in demo mode' },
+      { status: 403 },
+    );
+  }
+
   const authResult = requireSession(req);
   if (authResult instanceof NextResponse) return authResult;
   const { sessionId } = authResult;

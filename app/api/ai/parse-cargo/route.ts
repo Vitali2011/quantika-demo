@@ -24,6 +24,7 @@ import {
   parseCargoAIResponse,
   type RawCargoItem,
 } from '@/lib/parsing/parse-cargo-ai';
+import { isDemoMode } from '@/lib/demo-mode';
 
 // parseCargoAIResponse historically lived in this route; keep it re-exported
 // so existing importers (app/api/ai/__tests__/parse-cargo-multiport.test.ts)
@@ -54,6 +55,11 @@ export async function POST(request: NextRequest) {
   const authResult = requireSession(request);
   if (authResult instanceof NextResponse) return authResult;
   const { session, sessionId } = authResult;
+
+  // DEMO_MODE: block live LLM; serve pre-seeded data or return cached count.
+  if (isDemoMode()) {
+    return NextResponse.json({ count: session.parsedCargos?.length ?? 0, cached: true });
+  }
 
   // wave-γ-3-demo: demo guests get pre-seeded cargoes — skip live LLM entirely.
   if (session.isSampleData === true && session.parsedCargos.length > 0) {
