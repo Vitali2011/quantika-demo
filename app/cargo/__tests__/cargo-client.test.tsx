@@ -172,6 +172,23 @@ describe('CargoClient', () => {
     expect(screen.queryByRole('columnheader', { name: /^route$/i })).not.toBeInTheDocument();
   });
 
+  // #587: all 8 column headers present — regression guard for column-collapse bug
+  it('renders all 8 column headers in the DOM', () => {
+    render(<CargoClient rows={sampleRows} total={2} />);
+    const expectedHeaders = ['Cargo', 'Qty', 'Load', 'Discharge', 'Laycan', 'Status', 'Source', '⋯'];
+    expectedHeaders.forEach((label) => {
+      expect(screen.getByRole('columnheader', { name: label })).toBeInTheDocument();
+    });
+    expect(screen.getAllByRole('columnheader')).toHaveLength(8);
+  });
+
+  // #587: table card allows horizontal scroll (overflow-x-auto) — prevents clip regression
+  it('table card wrapper has overflow-x-auto class', () => {
+    render(<CargoClient rows={sampleRows} total={2} />);
+    const card = screen.getByTestId('cargo-table-card');
+    expect(card.className).toMatch(/overflow-x-auto/);
+  });
+
   it('renders origin port in Load column and destination port in Discharge column', () => {
     render(<CargoClient rows={sampleRows} total={2} />);
     // Wheat row: Odessa → Venice
