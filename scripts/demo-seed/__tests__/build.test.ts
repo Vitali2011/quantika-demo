@@ -4,6 +4,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
 import Database from 'better-sqlite3';
+import * as sqliteVec from 'sqlite-vec';
 
 const FIXTURES = path.resolve(__dirname, '../../../__tests__/fixtures/demo-seed');
 const FIX_MANIFEST = path.resolve(__dirname, 'fixtures/manifest.fixture.json');
@@ -103,6 +104,29 @@ describe('build (Task 17) — parsed_results population', () => {
     expect(count.c).toBeGreaterThan(0);
     const sample = db.prepare('SELECT parse_type FROM parsed_results LIMIT 1').get() as { parse_type: string };
     expect(['classify', 'cargo', 'vessel', 'recap', 'other']).toContain(sample.parse_type);
+    db.close();
+  });
+});
+
+describe('build (Task 18) — pre-compute matches', () => {
+  let tmpDb: string;
+  beforeEach(() => { tmpDb = path.join(os.tmpdir(), `demo-seed-${Date.now()}.db`); });
+  afterEach(() => { if (fs.existsSync(tmpDb)) fs.unlinkSync(tmpDb); });
+
+  it('pre-computes matches table from cargo×vessel pairings', async () => {
+    await build({ rawDir: FIXTURES, manifestPath: FIX_MANIFEST, outDb: tmpDb });
+    const db = new Database(tmpDb);
+    sqliteVec.load(db);
+    const count = db.prepare('SELECT COUNT(*) as c FROM matches').get() as {c: number};
+    // Fixtures: 2 cargo (001, 002) × 2 vessel (003, 004) = up to 4 candidate pairs
+    // Real count depends on offset arithmetic; expect at least 1
+    expect(count.c).toBeGreaterThanOrEqual(1);
+
+    const sample = db.prepare('SELECT cargo_id, vessel_id, score FROM matches LIMIT 1').get() as any;
+    expect(sample.cargo_id).toBeTruthy();
+    expect(sample.vessel_id).toBeTruthy();
+    expect(typeof sample.score).toBe('number');
+    expect(sample.score).toBeGreaterThan(0);
     db.close();
   });
 });

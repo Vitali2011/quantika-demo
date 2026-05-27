@@ -222,6 +222,57 @@ export async function build(opts: BuildOptions): Promise<void> {
       }
     }
 
+    // Pre-compute matches via simple laycan↔open_date pairing (no real match engine needed)
+    const cargoRows = db.prepare(`
+      SELECT pr.gmail_message_id AS cargo_id, pr.result_json
+      FROM parsed_results pr
+      WHERE pr.parse_type = 'cargo'
+    `).all() as Array<{cargo_id: string; result_json: string}>;
+
+    const vesselRows = db.prepare(`
+      SELECT pr.gmail_message_id AS vessel_id, pr.result_json
+      FROM parsed_results pr
+      WHERE pr.parse_type = 'vessel'
+    `).all() as Array<{vessel_id: string; result_json: string}>;
+
+    const insertMatch = db.prepare(`
+      INSERT INTO matches (cargo_id, vessel_id, score, reason, status, created_at, updated_at, laycan_start, laycan_end)
+      VALUES (?, ?, ?, ?, 'shortlist', ?, ?, ?, ?)
+    `);
+
+    const nowMs = new Date(manifest.frozenDate + 'T00:00:00.000Z').getTime();
+
+    for (const c of cargoRows) {
+      const cargo = JSON.parse(c.result_json);
+      if (!cargo.laycan?.start || !cargo.laycan?.end) continue;
+      const layStart = new Date(cargo.laycan.start).getTime();
+      const layEnd = new Date(cargo.laycan.end).getTime();
+
+      for (const v of vesselRows) {
+        const vessel = JSON.parse(v.result_json);
+        if (!vessel.openDate) continue;
+        const openMs = new Date(vessel.openDate).getTime();
+
+        // Skip: vessel opens too late (more than 7d after laycan ends)
+        if (openMs > layEnd + 7 * 86_400_000) continue;
+
+        let score = 75;
+        if (openMs >= layStart && openMs <= layEnd) score += 15; // within window
+        else if (openMs < layStart) score += 10; // ready early
+
+        insertMatch.run(
+          c.cargo_id,
+          v.vessel_id,
+          score,
+          `auto-shortlist: open ${vessel.openDate.slice(0, 10)} vs laycan ${cargo.laycan.start.slice(0, 10)}..${cargo.laycan.end.slice(0, 10)}`,
+          nowMs,
+          nowMs,
+          layStart,
+          layEnd,
+        );
+      }
+    }
+
     db.prepare(
       'INSERT INTO demo_seed_meta (id, frozen_date, manifest_hash) VALUES (1, ?, ?)',
     ).run(manifest.frozenDate, hashManifest(manifest));
