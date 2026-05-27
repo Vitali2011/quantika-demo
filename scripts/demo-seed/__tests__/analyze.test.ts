@@ -45,4 +45,40 @@ describe('analyze (Phase 0)', () => {
     );
     expect(entry.rationale).toMatch(/open_date/i);
   });
+
+  it('builds anonymization map for vessels/charterers/brokers/senders', async () => {
+    const m = await analyze({ rawDir: FIXTURES, frozenDate: '2026-05-20', demoWindowDays: 14 });
+    expect(m.anonymization.vessels).toBeDefined();
+    expect(m.anonymization.charterers).toBeDefined();
+    expect(m.anonymization.brokers).toBeDefined();
+    expect(m.anonymization.sender_emails).toBeDefined();
+  });
+
+  it('preserves pre-existing anonymization mappings (additive)', async () => {
+    const seed = {
+      vessels: { 'M/V REAL ONE': 'M/V SEAGULL 1' },
+      charterers: {}, brokers: {}, sender_emails: {},
+    };
+    const m = await analyze({
+      rawDir: FIXTURES,
+      frozenDate: '2026-05-20',
+      demoWindowDays: 14,
+      seedAnonymization: seed,
+    });
+    expect(m.anonymization.vessels['M/V REAL ONE']).toBe('M/V SEAGULL 1');
+  });
+
+  it('extracts broker name from Gmail From header into anonymization map', async () => {
+    const m = await analyze({ rawDir: FIXTURES, frozenDate: '2026-05-20', demoWindowDays: 14 });
+    // Fixtures use "DEMO BROKER" as From name
+    expect(m.anonymization.brokers).toHaveProperty('DEMO BROKER');
+    expect(m.anonymization.brokers['DEMO BROKER']).toMatch(/^BROKER \d+$/);
+  });
+
+  it('extracts vessel names from body via regex', async () => {
+    const m = await analyze({ rawDir: FIXTURES, frozenDate: '2026-05-20', demoWindowDays: 14 });
+    // Fixture email-003 body/subject contains "M/V FIXTURE WIND"
+    const vesselKeys = Object.keys(m.anonymization.vessels);
+    expect(vesselKeys.some(k => /FIXTURE WIND/i.test(k))).toBe(true);
+  });
 });

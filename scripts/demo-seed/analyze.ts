@@ -7,6 +7,8 @@ export interface AnalyzeOptions {
   rawDir: string;
   frozenDate: string; // YYYY-MM-DD
   demoWindowDays: number;
+  /** Pre-existing aliases to preserve (additive — new names get new counters). */
+  seedAnonymization?: Manifest['anonymization'];
 }
 
 // Gmail thread JSON shape (from .private/raw-emails/*.json)
@@ -53,6 +55,24 @@ interface ParsedFacts {
   laycanStart?: Date;
   laycanEnd?: Date;
   openDate?: Date;
+  vesselNames: string[];   // regex-extracted from body/subject (best-effort)
+  brokers: string[];       // from Gmail From header name
+  senderEmails: string[];  // from Gmail From header email
+  charterers: string[];    // always empty (requires LLM); populate via seedAnonymization
+}
+
+/** Vessel name pattern: M/V or M/T followed by uppercase name until a delimiter. */
+const VESSEL_NAME_RE = /\bM\/[VT]\s+([A-Z][A-Z0-9\s\-]+?)(?=[,.\n]|$|\s+(?:DWT|DWCC|TBN|ETA|open|opens|FLAG|tradi|built))/gi;
+
+function extractVesselNames(text: string): string[] {
+  const names: string[] = [];
+  let m: RegExpExecArray | null;
+  VESSEL_NAME_RE.lastIndex = 0;
+  while ((m = VESSEL_NAME_RE.exec(text)) !== null) {
+    const name = ('M/V ' + m[1]).trim().replace(/\s+/g, ' ');
+    if (name.length > 4) names.push(name);
+  }
+  return [...new Set(names)];
 }
 
 function decodeBase64Url(b64url: string): string {
@@ -143,7 +163,14 @@ function extractFacts(email: FlatEmail): ParsedFacts {
     category = 'cargo';
   }
 
-  const facts: ParsedFacts = { category };
+  // Extract vessel names from subject + body (best-effort regex)
+  const vesselNames = extractVesselNames((email.subject ?? '') + '\n' + body);
+
+  // Broker name and sender email come from Gmail From header
+  const brokers = email.fromName ? [email.fromName] : [];
+  const senderEmails = email.fromEmail ? [email.fromEmail] : [];
+
+  const facts: ParsedFacts = { category, vesselNames, brokers, senderEmails, charterers: [] };
 
   if (category === 'cargo') {
     // Extract LAYCAN: <string> from body
@@ -172,13 +199,41 @@ function extractFacts(email: FlatEmail): ParsedFacts {
 }
 
 export async function analyze(opts: AnalyzeOptions): Promise<Manifest> {
-  const corpus = readCorpus(opts.rawDir);
+  // Sort corpus by threadId for deterministic counter assignment
+  const corpus = readCorpus(opts.rawDir).sort((a, b) => a.threadId.localeCompare(b.threadId));
   const frozen = new Date(opts.frozenDate + 'T00:00:00.000Z');
+
+  // Build anonymization map starting from seed (additive — preserve existing aliases)
+  const seed = opts.seedAnonymization;
+  const anonymization: Manifest['anonymization'] = {
+    vessels: seed ? { ...seed.vessels } : {},
+    charterers: seed ? { ...seed.charterers } : {},
+    brokers: seed ? { ...seed.brokers } : {},
+    sender_emails: seed ? { ...seed.sender_emails } : {},
+  };
+  const counters = {
+    vessels: Object.keys(anonymization.vessels).length,
+    charterers: Object.keys(anonymization.charterers).length,
+    brokers: Object.keys(anonymization.brokers).length,
+    sender_emails: Object.keys(anonymization.sender_emails).length,
+  };
+
+  function alias(kind: keyof typeof counters, real: string, prefix: string): void {
+    if (!real || anonymization[kind][real]) return;
+    counters[kind] += 1;
+    anonymization[kind][real] = `${prefix} ${counters[kind]}`;
+  }
 
   const offsets: Record<string, OffsetEntry> = {};
   for (const email of corpus) {
     const emailD = new Date(email.date);
     const facts = extractFacts(email);
+
+    // Populate anonymization map from extracted names
+    for (const v of facts.vesselNames) alias('vessels', v, 'M/V DEMO');
+    for (const b of facts.brokers) alias('brokers', b, 'BROKER');
+    for (const e of facts.senderEmails) alias('sender_emails', e, 'SENDER');
+    for (const c of facts.charterers) alias('charterers', c, 'CHARTERER');
 
     const shifted: string[] = ['email.date'];
     let offsetDays: number;
@@ -215,7 +270,7 @@ export async function analyze(opts: AnalyzeOptions): Promise<Manifest> {
     frozenDate: opts.frozenDate,
     demo_window_days: opts.demoWindowDays,
     offsets,
-    anonymization: { vessels: {}, charterers: {}, brokers: {}, sender_emails: {} },
+    anonymization,
     stats: {
       active_laycans_after_shift: 0,
       stale_laycans_after_shift: 0,
