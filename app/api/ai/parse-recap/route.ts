@@ -11,6 +11,7 @@ import { summarizeCommissions } from '@/lib/commission';
 import { getCachedParses, saveParsedResults, hashParserVersion } from '@/lib/email-cache';
 import { parseRecapAIResponse } from '@/lib/parsing/parse-recap-helpers';
 import pLimit from 'p-limit';
+import { isDemoMode } from '@/lib/demo-mode';
 
 export const maxDuration = 120;
 
@@ -20,6 +21,11 @@ export async function POST(request: NextRequest) {
   const result = requireSession(request);
   if (result instanceof NextResponse) return result;
   const { session, sessionId } = result;
+
+  // DEMO_MODE: block live LLM; serve pre-seeded recaps or cached count.
+  if (isDemoMode()) {
+    return NextResponse.json({ count: session.parsedFixtureRecaps?.length ?? 0, cached: true });
+  }
 
   const fixtureIds = session.classifications
     .filter(c => c.category === 'FIXTURE_RECAP')

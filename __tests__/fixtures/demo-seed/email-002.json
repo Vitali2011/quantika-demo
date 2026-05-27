@@ -1,0 +1,65 @@
+{
+  "id": "fixture002aabbcc3344",
+  "historyId": "9000002",
+  "messages": [
+    {
+      "id": "fixture002aabbcc3344",
+      "threadId": "fixture002aabbcc3344",
+      "labelIds": [
+        "INBOX",
+        "CATEGORY_PERSONAL"
+      ],
+      "snippet": "fixture-002 CARGO STEEL COILS Rotterdam/Jeddah LAYCAN 5-10 February 2026 on behalf of FIXTURE STEEL LTD",
+      "payload": {
+        "partId": "",
+        "mimeType": "multipart/mixed",
+        "filename": "",
+        "headers": [
+          {
+            "name": "From",
+            "value": "DEMO BROKER <broker@demo.local>"
+          },
+          {
+            "name": "To",
+            "value": "<demo@demo.local>"
+          },
+          {
+            "name": "Subject",
+            "value": "fixture-002 - CARGO - STEEL COILS - Rotterdam/Jeddah"
+          },
+          {
+            "name": "Date",
+            "value": "Thu, 15 Jan 2026 11:30:00 +0000"
+          },
+          {
+            "name": "Message-ID",
+            "value": "<fixture-002@demo.local>"
+          }
+        ],
+        "body": {
+          "size": 0
+        },
+        "parts": [
+          {
+            "partId": "0",
+            "mimeType": "text/plain",
+            "filename": "",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "text/plain; charset=\"utf-8\""
+              }
+            ],
+            "body": {
+              "size": 380,
+              "data": "U3ViamVjdDogZml4dHVyZS0wMDIgLSBDQVJHTyAtIFNURUVMIENPSUxTIC0gUm90dGVyZGFtL0plZGRhaApGcm9tOiBicm9rZXJAZGVtby5sb2NhbApEYXRlOiBUaHUsIDE1IEphbiAyMDI2IDExOjMwOjAwICswMDAwCgpEZWFyIFBhcnRuZXJzLAoKRmlybSBjYXJnbyBlbnF1aXJ5IG9uIGJlaGFsZiBvZiBGSVhUVVJFIFNURUVMIExURDoKCkNBUkdPOiAxOCw1MDAgTVQgU1RFRUwgQ09JTFMKTE9BRCBQT1JUOiBSb3R0ZXJkYW0sIE5ldGhlcmxhbmRzCkRJU0NIIFBPUlQ6IEplZGRhaCwgU2F1ZGkgQXJhYmlhCkxBWUNBTjogNS0xMCBGZWJydWFyeSAyMDI2CkZSRUlHSFQ6IFdTIG1hcmtldApDT01NOiAxLjI1JSBUVEwKClBsZWFzZSBzZW5kIHlvdXIgb2ZmZXJzIEFTQVAuCgpSZWdhcmRzLApERU1PIEJST0tFUgpicm9rZXJAZGVtby5sb2NhbAo"
+            }
+          }
+        ]
+      },
+      "sizeEstimate": 1400,
+      "historyId": "9000002",
+      "internalDate": "1768210200000"
+    }
+  ]
+}

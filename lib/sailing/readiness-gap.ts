@@ -29,6 +29,7 @@ import { isLaycanExpired } from './date-sanity';
 import { getPortDistance, normalizePortName } from './port-distances';
 import { isVagueRegion } from './vague-region-detector';
 import { BUNKER_DEFAULTS, VESSEL_CLASS, VesselClassName } from '../constants';
+import { now } from '../clock';
 
 /** Maximum gap (days) for a spot vessel to still qualify as 'ideal'.
  *  Beyond this, the owner won't hold the vessel unpaid — verdict degrades to 'idle'. */
@@ -169,8 +170,8 @@ export function calculateReadinessGap(
   cargo: CargoInput,
   opts: CalcOptions = {},
 ): ReadinessGap {
-  const refYear = opts.refYear ?? new Date().getUTCFullYear();
-  const today = opts.today ?? new Date();
+  const refYear = opts.refYear ?? now().getUTCFullYear();
+  const today = opts.today ?? now();
 
   // Spot detection: honour explicit flag OR detect from raw open-date string.
   const isSpot = vessel.isSpot ?? detectSpot(vessel.openDate);

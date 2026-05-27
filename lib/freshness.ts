@@ -1,6 +1,7 @@
 import { EmailCategory, ParsedCargo, ParsedVessel } from './types';
 import { FRESHNESS_CONFIG } from './freshness-config';
 import { parseLaycan, parseVesselOpenDate } from './sailing/date-parsing';
+import { now } from './clock';
 
 function addDays(date: Date, days: number): Date {
   const result = new Date(date);
@@ -65,5 +66,5 @@ export function isStale(expiryDate: string | null): boolean {
   if (!expiryDate) return false;
   const expiry = parseIso(expiryDate);
   if (!expiry) return false;
-  return new Date() > expiry;
+  return now() > expiry;
 }

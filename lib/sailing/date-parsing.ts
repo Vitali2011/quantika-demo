@@ -9,6 +9,8 @@
  * readiness gap numerically instead of asking the LLM to eyeball strings.
  */
 
+import { now } from '../clock';
+
 const MONTH_MAP: Record<string, number> = {
   jan: 0, january: 0,
   feb: 1, february: 1,
@@ -96,8 +98,8 @@ function normalizeOpenDateInput(raw: unknown): string | null {
 
 export function parseVesselOpenDate(
   raw: string | { open?: string | null; close?: string | null; display?: string | null } | null | undefined,
-  refYear: number = new Date().getUTCFullYear(),
-  today: Date = new Date(),
+  refYear: number = now().getUTCFullYear(),
+  today: Date = now(),
 ): Date | null {
   const normalized = normalizeOpenDateInput(raw);
   if (!normalized) return null;
@@ -170,7 +172,7 @@ export interface DateRange {
  */
 export function parseLaycan(
   raw: string | null | undefined,
-  refYear: number = new Date().getUTCFullYear(),
+  refYear: number = now().getUTCFullYear(),
 ): DateRange | null {
   if (!raw || typeof raw !== 'string') return null;
   const s = raw.trim();

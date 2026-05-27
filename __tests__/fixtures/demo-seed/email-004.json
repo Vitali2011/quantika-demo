@@ -1,0 +1,65 @@
+{
+  "id": "fixture004aabbcc7788",
+  "historyId": "9000004",
+  "messages": [
+    {
+      "id": "fixture004aabbcc7788",
+      "threadId": "fixture004aabbcc7788",
+      "labelIds": [
+        "INBOX",
+        "CATEGORY_PERSONAL"
+      ],
+      "snippet": "fixture-004 TBN VESSEL OPEN M/V FIXTURE STAR Hamburg May 2026 open_date 8 May 2026",
+      "payload": {
+        "partId": "",
+        "mimeType": "multipart/mixed",
+        "filename": "",
+        "headers": [
+          {
+            "name": "From",
+            "value": "DEMO BROKER <broker@demo.local>"
+          },
+          {
+            "name": "To",
+            "value": "<demo@demo.local>"
+          },
+          {
+            "name": "Subject",
+            "value": "fixture-004 - TBN VESSEL OPEN - M/V FIXTURE STAR - Hamburg May 2026"
+          },
+          {
+            "name": "Date",
+            "value": "Fri, 01 May 2026 14:20:00 +0000"
+          },
+          {
+            "name": "Message-ID",
+            "value": "<fixture-004@demo.local>"
+          }
+        ],
+        "body": {
+          "size": 0
+        },
+        "parts": [
+          {
+            "partId": "0",
+            "mimeType": "text/plain",
+            "filename": "",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "text/plain; charset=\"utf-8\""
+              }
+            ],
+            "body": {
+              "size": 450,
+              "data": "U3ViamVjdDogZml4dHVyZS0wMDQgLSBUQk4gVkVTU0VMIE9QRU4gLSBNL1YgRklYVFVSRSBTVEFSIC0gSGFtYnVyZyBNYXkgMjAyNgpGcm9tOiBicm9rZXJAZGVtby5sb2NhbApEYXRlOiBGcmksIDAxIE1heSAyMDI2IDE0OjIwOjAwICswMDAwCgpEZWFyIFZhbHVlZCBQYXJ0bmVycywKCk0vViBGSVhUVVJFIFNUQVIgaXMgYXZhaWxhYmxlOgoKVkVTU0VMOiBNL1YgRklYVFVSRSBTVEFSClRZUEU6IFBhbmFtYXggQnVsayBDYXJyaWVyCkRXVDogNzYsODAwIE1UIG9uIDEzLjhtCkJVSUxUOiAyMDE4LCBDaGluYQpDTEFTUzogTksKT1BFTjogSGFtYnVyZywgR2VybWFueQpPUEVOIERBVEU6IDggTWF5IDIwMjYKTEFTVCBDQVJHTzogSXJvbiBPcmUKR0VBUjogNCB4IDMwVCBjcmFuZXMKU1BFRUQvQ09OUzogMTIuNSBrbiAvIDMyIE1UIElGTwoKQ2hhcnRlcmVycyBpbnRlcmVzdGVkIHBsZWFzZSByZXZlcnQuCgpERU1PIEJST0tFUgpicm9rZXJAZGVtby5sb2NhbAo"
+            }
+          }
+        ]
+      },
+      "sizeEstimate": 1600,
+      "historyId": "9000004",
+      "internalDate": "1746109200000"
+    }
+  ]
+}

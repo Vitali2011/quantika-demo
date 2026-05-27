@@ -1,0 +1,65 @@
+{
+  "id": "fixture005aabbcc9900",
+  "historyId": "9000005",
+  "messages": [
+    {
+      "id": "fixture005aabbcc9900",
+      "threadId": "fixture005aabbcc9900",
+      "labelIds": [
+        "INBOX",
+        "CATEGORY_PERSONAL"
+      ],
+      "snippet": "fixture-005 RECAP M/V FIXTURE WIND FIXTURE GRAIN CO WHEAT Hamburg/Alexandria FREIGHT USD 22.50 PMPT",
+      "payload": {
+        "partId": "",
+        "mimeType": "multipart/mixed",
+        "filename": "",
+        "headers": [
+          {
+            "name": "From",
+            "value": "DEMO BROKER <broker@demo.local>"
+          },
+          {
+            "name": "To",
+            "value": "<demo@demo.local>"
+          },
+          {
+            "name": "Subject",
+            "value": "fixture-005 - RECAP - M/V FIXTURE WIND / FIXTURE GRAIN CO - WHEAT"
+          },
+          {
+            "name": "Date",
+            "value": "Wed, 22 Apr 2026 16:45:00 +0000"
+          },
+          {
+            "name": "Message-ID",
+            "value": "<fixture-005@demo.local>"
+          }
+        ],
+        "body": {
+          "size": 0
+        },
+        "parts": [
+          {
+            "partId": "0",
+            "mimeType": "text/plain",
+            "filename": "",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "text/plain; charset=\"utf-8\""
+              }
+            ],
+            "body": {
+              "size": 390,
+              "data": "U3ViamVjdDogZml4dHVyZS0wMDUgLSBSRUNBUCAtIE0vViBGSVhUVVJFIFdJTkQgLyBGSVhUVVJFIEdSQUlOIENPIC0gV0hFQVQKRnJvbTogYnJva2VyQGRlbW8ubG9jYWwKRGF0ZTogV2VkLCAyMiBBcHIgMjAyNiAxNjo0NTowMCArMDAwMAoKRGVhciBBbGwsCgpXZSBhcmUgcGxlYXNlZCB0byBjb25maXJtIHRoZSBmb2xsb3dpbmcgZml4dHVyZToKClZFU1NFTDogTS9WIEZJWFRVUkUgV0lORApDSEFSVEVSRVI6IEZJWFRVUkUgR1JBSU4gQ08KQ0FSR086IDI1LDAwMCBNVCBXSEVBVApMT0FEOiBIYW1idXJnCkRJU0NIOiBBbGV4YW5kcmlhCkxBWUNBTjogMjUtMjggQXByaWwgMjAyNgpGUkVJR0hUOiBVU0QgMjIuNTAgUE1QVApDT01NOiAxLjI1JSBUVEwgVE8gREVNTyBCUk9LRVIKClN1YmplY3QgdG8gbG9naWNhbC9waHlzaWNhbCByZWNhcC4gQWxsIG90aGVyIHRlcm1zIGFzIHBlciBHZW5jb24gQ1AuCgpERU1PIEJST0tFUgpicm9rZXJAZGVtby5sb2NhbAo"
+            }
+          }
+        ]
+      },
+      "sizeEstimate": 1350,
+      "historyId": "9000005",
+      "internalDate": "1745340300000"
+    }
+  ]
+}
