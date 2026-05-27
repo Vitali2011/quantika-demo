@@ -466,7 +466,7 @@ export default function CargoClient({ rows, total }: Props) {
 
         {/* Table */}
         <div
-          className="bg-white border border-[#e2e8f0] rounded-[14px] overflow-hidden mb-3.5"
+          className="bg-white border border-[#e2e8f0] rounded-[14px] overflow-hidden overflow-x-auto mb-3.5"
           data-testid="cargo-table-card"
         >
           {rows.length === 0 ? (
