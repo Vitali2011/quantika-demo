@@ -159,8 +159,8 @@ describe('MarketPage — sync badge staleness', () => {
       expect(screen.getByText(/last sync:/i)).toBeInTheDocument();
     });
 
-    // The label should show bdiDate, not indicesDate
-    expect(screen.getByText(new RegExp(bdiDate))).toBeInTheDocument();
+    // The label should show bdiDate, not indicesDate (scope to badge to avoid collision with KnowledgeFeed hardcoded dates)
+    expect(screen.getByText(/last sync:/i).textContent).toContain(bdiDate);
     expect(screen.queryByText(new RegExp(indicesDate))).not.toBeInTheDocument();
   });
 });

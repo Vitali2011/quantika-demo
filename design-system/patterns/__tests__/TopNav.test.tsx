@@ -16,8 +16,16 @@ jest.mock('next/link', () => {
   return Link;
 });
 
+const mockUsePathname = jest.fn();
+jest.mock('next/navigation', () => ({
+  usePathname: () => mockUsePathname(),
+  useRouter: () => ({ push: jest.fn(), replace: jest.fn(), prefetch: jest.fn() }),
+  useSearchParams: () => new URLSearchParams(),
+}));
+
 describe('TopNav', () => {
   beforeEach(() => {
+    mockUsePathname.mockReturnValue('/dashboard');
     window.history.pushState({}, '', '/');
     global.fetch = jest.fn().mockResolvedValue({ ok: true }) as typeof global.fetch;
   });
@@ -51,5 +59,52 @@ describe('TopNav', () => {
     render(<ModeProvider initial="charterer"><TopNav /></ModeProvider>);
     expect(screen.getByRole('button', { name: /charterer/i })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: /owner/i })).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  describe('active-state — issue #555', () => {
+    const activeLinks = (container: HTMLElement) =>
+      Array.from(container.querySelectorAll('nav[aria-label="Primary navigation"] > a[aria-current="page"]'));
+
+    it('no nav item is active on /settings', () => {
+      mockUsePathname.mockReturnValue('/settings');
+      const { container } = render(<ModeProvider initial="charterer"><TopNav /></ModeProvider>);
+      expect(activeLinks(container)).toHaveLength(0);
+    });
+
+    it('no nav item is active on /email', () => {
+      mockUsePathname.mockReturnValue('/email');
+      const { container } = render(<ModeProvider initial="charterer"><TopNav /></ModeProvider>);
+      expect(activeLinks(container)).toHaveLength(0);
+    });
+
+    it('no nav item is active on /processing', () => {
+      mockUsePathname.mockReturnValue('/processing');
+      const { container } = render(<ModeProvider initial="charterer"><TopNav /></ModeProvider>);
+      expect(activeLinks(container)).toHaveLength(0);
+    });
+
+    it('Matches is active on /matches', () => {
+      mockUsePathname.mockReturnValue('/matches');
+      const { container } = render(<ModeProvider initial="charterer"><TopNav /></ModeProvider>);
+      const active = activeLinks(container);
+      expect(active).toHaveLength(1);
+      expect(active[0]).toHaveTextContent('Matches');
+    });
+
+    it('Cargo is active on /cargo in charterer mode', () => {
+      mockUsePathname.mockReturnValue('/cargo');
+      const { container } = render(<ModeProvider initial="charterer"><TopNav /></ModeProvider>);
+      const active = activeLinks(container);
+      expect(active).toHaveLength(1);
+      expect(active[0]).toHaveTextContent('Cargo');
+    });
+
+    it('Market is active on /market', () => {
+      mockUsePathname.mockReturnValue('/market');
+      const { container } = render(<ModeProvider initial="charterer"><TopNav /></ModeProvider>);
+      const active = activeLinks(container);
+      expect(active).toHaveLength(1);
+      expect(active[0]).toHaveTextContent('Market');
+    });
   });
 });

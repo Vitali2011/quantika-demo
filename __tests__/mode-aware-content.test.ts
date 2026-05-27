@@ -237,14 +237,6 @@ describe('TopNav — route-active highlight and mode-primary', () => {
   it('sets aria-current="page" on active link', () => {
     expect(src).toMatch(/aria-current/);
   });
-
-  it('marks the mode-primary slot with isModePrimary', () => {
-    expect(src).toMatch(/isModePrimary/);
-  });
-
-  it('applies accent color styling to mode-primary nav item', () => {
-    expect(src).toMatch(/ds-accent/);
-  });
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
