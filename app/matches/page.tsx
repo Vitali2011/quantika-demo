@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+import Link from 'next/link';
 import { getSession } from '@/lib/session';
 import { getStore } from '@/lib/session-store';
 import { listMatches } from '@/lib/matching/matches-repository';
@@ -16,18 +16,40 @@ export const metadata: Metadata = {
 export default async function MatchesPage() {
   const cookieStore = await cookies();
   const sessionId = cookieStore.get('session_id')?.value;
-  if (!sessionId) redirect('/dashboard');
-  const session = getSession(sessionId);
-  if (!session) redirect('/dashboard');
+  const session = sessionId ? getSession(sessionId) : null;
 
-  if (process.env.MATCHES_ENABLED !== "true" && !session.isSampleData) redirect('/dashboard');
+  if (!session) {
+    return (
+      <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="max-w-md w-full text-center space-y-4">
+          <div className="text-4xl">📭</div>
+          <h1 className="text-xl font-bold">No emails yet</h1>
+          <p className="text-sm text-gray-500">Upload emails to start finding vessel–cargo matches.</p>
+          <Link href="/processing" className="inline-block px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+            Upload emails
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
+  if (process.env.MATCHES_ENABLED === 'false' && !session.isSampleData) {
+    return (
+      <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="max-w-md w-full text-center space-y-4">
+          <h1 className="text-xl font-bold">Matches coming soon</h1>
+          <p className="text-sm text-gray-500">This feature is not yet enabled.</p>
+        </div>
+      </main>
+    );
+  }
 
   const db = getStore().getDatabase();
 
   if (session.matches.length > 0) {
-    persistSessionMatches(db, sessionId, session.matches, session.parsedCargos, session.parsedVessels);
+    persistSessionMatches(db, sessionId!, session.matches, session.parsedCargos, session.parsedVessels);
   }
-  const matches = listMatches(db, { user_id: sessionId, sortBy: 'score', sortDir: 'desc' });
+  const matches = listMatches(db, { user_id: sessionId!, sortBy: 'score', sortDir: 'desc' });
 
   // Computing only when BOTH cargo and vessel are present — matches require both sides.
   const hasCargo = session.parsedCargos.length > 0;

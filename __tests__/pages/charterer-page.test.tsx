@@ -107,4 +107,39 @@ describe('Charterer page', () => {
       expect(screen.getByText('Charterer not found')).toBeInTheDocument();
     });
   });
+
+  // #578: breadcrumb must link back to /charterers, not /dashboard
+  it('breadcrumb says Back to Charterers, not Back to Dashboard', async () => {
+    process.env.NEXT_PUBLIC_CHARTERER_CREDIT_ENABLED = 'true';
+
+    const { useParams } = await import('next/navigation');
+    (useParams as jest.Mock).mockReturnValue({ id: 'c1' });
+
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            id: 'c1',
+            name: 'Bunge',
+            tier: 'blue-chip',
+            payment_history: '[]',
+            require_lc: 0,
+            notes: null,
+            created_at: '2026-01-01',
+          }),
+      })
+    ) as jest.Mock;
+
+    const ChartererPage = (await import('@/app/charterers/[id]/page')).default;
+    render(<ChartererPage />);
+
+    await waitFor(() => {
+      const backLink = screen.getByText(/Back to Charterers/i);
+      expect(backLink).toBeInTheDocument();
+      expect(backLink.closest('a')).toHaveAttribute('href', '/charterers');
+    });
+
+    expect(screen.queryByText(/Back to Dashboard/i)).not.toBeInTheDocument();
+  });
 });

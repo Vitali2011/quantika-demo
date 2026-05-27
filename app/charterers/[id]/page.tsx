@@ -107,10 +107,10 @@ export default function ChartererPage() {
       <main className="min-h-screen bg-gray-50 py-8 px-4">
         <div className="max-w-3xl mx-auto space-y-6">
           <Link
-            href="/dashboard"
+            href="/charterers"
             className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
           >
-            <ChevronLeft className="h-4 w-4" /> Back to Dashboard
+            <ChevronLeft className="h-4 w-4" /> Back to Charterers
           </Link>
           <Card>
             <CardHeader>
@@ -148,10 +148,10 @@ export default function ChartererPage() {
       <div className="max-w-3xl mx-auto space-y-6">
         {/* Back link */}
         <Link
-          href="/dashboard"
+          href="/charterers"
           className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
         >
-          <ChevronLeft className="h-4 w-4" /> Back to Dashboard
+          <ChevronLeft className="h-4 w-4" /> Back to Charterers
         </Link>
 
         {/* Header */}

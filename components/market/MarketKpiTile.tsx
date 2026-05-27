@@ -20,6 +20,7 @@ export interface MarketKpiTileProps {
   sparklineDir: SparkDir;
   delta: MarketKpiTileDelta;
   isActive?: boolean;
+  isStale?: boolean;
   onClick?: () => void;
   timeoutMs?: number;
   fetchImpl?: typeof fetch;
@@ -62,6 +63,7 @@ export function MarketKpiTile({
   sparklineDir,
   delta,
   isActive = false,
+  isStale = false,
   onClick,
   timeoutMs = FETCH_TIMEOUT_MS,
   fetchImpl,
@@ -169,14 +171,19 @@ export function MarketKpiTile({
 
       {/* Footer: delta badge + period */}
       <div className="flex items-center gap-2 font-mono text-xs text-slate-400">
-        <span
-          className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full font-mono text-[11.5px] font-medium ${DELTA_CLS[delta.dir]}`}
-        >
-          {delta.dir === 'up' && <DeltaArrowUp />}
-          {delta.dir === 'down' && <DeltaArrowDown />}
-          {delta.pct}
-        </span>
-        <span>24h · {delta.pts}</span>
+        {!isStale && (
+          <>
+            <span
+              className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full font-mono text-[11.5px] font-medium ${DELTA_CLS[delta.dir]}`}
+            >
+              {delta.dir === 'up' && <DeltaArrowUp />}
+              {delta.dir === 'down' && <DeltaArrowDown />}
+              {delta.pct}
+            </span>
+            <span>24h · {delta.pts}</span>
+          </>
+        )}
+        {isStale && <span className="text-amber-500 text-[11px]">stale data</span>}
       </div>
     </div>
   );

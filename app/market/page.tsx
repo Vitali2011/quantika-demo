@@ -260,6 +260,7 @@ export default function MarketPage() {
                 sparklineDir={tile.sparklineDir}
                 delta={tile.delta}
                 isActive={activeKpi === tile.key}
+                isStale={isStale}
                 onClick={() => setActiveKpi(activeKpi === tile.key ? null : tile.key)}
               />
             ))}
@@ -276,6 +277,7 @@ export default function MarketPage() {
                 sparklineDir={tile.sparklineDir}
                 delta={tile.delta}
                 isActive={activeKpi === tile.key}
+                isStale={isStale}
                 onClick={() => setActiveKpi(activeKpi === tile.key ? null : tile.key)}
               />
             ))}

@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
 import { Card } from '@/design-system/primitives';
@@ -13,9 +12,22 @@ export const metadata: Metadata = {
 export default async function RecapIndexPage() {
   const cookieStore = await cookies();
   const sessionId = cookieStore.get('session_id')?.value;
-  if (!sessionId) redirect('/dashboard');
-  const session = getSession(sessionId);
-  if (!session) redirect('/dashboard');
+  const session = sessionId ? getSession(sessionId) : null;
+
+  if (!session) {
+    return (
+      <main className="min-h-screen bg-ds-bg flex items-center justify-center px-4">
+        <div className="max-w-md w-full text-center space-y-4">
+          <div className="text-4xl">📭</div>
+          <h1 className="text-xl font-bold text-ds-text">No negotiations yet</h1>
+          <p className="text-sm text-ds-text-muted">Upload emails to start tracking fixture negotiations.</p>
+          <Link href="/processing" className="inline-flex items-center gap-2 rounded-ds-md bg-ds-accent px-5 py-2.5 text-sm font-semibold text-ds-accent-fg hover:bg-ds-accent/90 transition-colors duration-ds-fast">
+            Upload emails
+          </Link>
+        </div>
+      </main>
+    );
+  }
 
   const { recaps, emails, parsedCargos, parsedVessels } = session;
 
