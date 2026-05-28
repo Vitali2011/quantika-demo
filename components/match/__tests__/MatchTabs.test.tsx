@@ -10,6 +10,7 @@ import type { MatchConfidence } from '@/lib/confidence';
 
 // Mock AuditTrail to avoid real fetch calls
 jest.mock('@/components/audit-trail', () => ({
+  __esModule: true,
   default: ({ inquiryId }: { inquiryId: string }) => (
     <div data-testid="audit-trail" data-inquiry-id={inquiryId}>Audit Trail</div>
   ),
@@ -131,6 +132,22 @@ describe('MatchTabs', () => {
       const match = { ...baseMatch, confidence: mockConfidenceBlocked };
       const { container } = render(<MatchTabs match={match} />);
       expect(container.firstChild).toHaveClass('border-orange-500');
+    });
+  });
+
+  describe('Generate button in Quote tab (fix #638)', () => {
+    it('is enabled when cargoEmailId prop is passed', () => {
+      render(<MatchTabs match={baseMatch} cargoEmailId="cargo-email-1" />);
+      fireEvent.click(screen.getByRole('tab', { name: /quote/i }));
+      const btn = screen.getByRole('button', { name: /generate/i });
+      expect(btn).not.toBeDisabled();
+    });
+
+    it('is disabled when cargoEmailId prop is absent', () => {
+      render(<MatchTabs match={baseMatch} />);
+      fireEvent.click(screen.getByRole('tab', { name: /quote/i }));
+      const btn = screen.getByRole('button', { name: /generate/i });
+      expect(btn).toBeDisabled();
     });
   });
 
