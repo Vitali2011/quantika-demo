@@ -30,4 +30,19 @@ describe('MorningHeader', () => {
     const text = JSON.stringify(el);
     expect(text).toMatch(/[Gg]ood morning/);
   });
+
+  it('shows "Good morning!" without name when userName is omitted — no "There" fallback (#627)', () => {
+    const el = MorningHeader({ alertCount: 0 });
+    const text = JSON.stringify(el);
+    expect(text).toMatch(/Good morning!/);
+    expect(text).not.toContain('There');
+    expect(text).not.toMatch(/Good morning, 👋/);
+  });
+
+  it('shows "Good morning!" without name when userName is empty string — no "There" fallback (#627)', () => {
+    const el = MorningHeader({ userName: '', alertCount: 0 });
+    const text = JSON.stringify(el);
+    expect(text).toMatch(/Good morning!/);
+    expect(text).not.toContain('There');
+  });
 });
