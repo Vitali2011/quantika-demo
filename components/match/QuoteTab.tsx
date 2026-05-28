@@ -56,15 +56,13 @@ export function QuoteTab({ cargoEmailId, confidence }: QuoteTabProps) {
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <label className="block text-xs font-medium text-gray-600">Draft Quote</label>
-          {cargoEmailId && (
-            <button
-              onClick={generateDraft}
-              disabled={generating}
-              className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-700 hover:bg-gray-200 disabled:opacity-50"
-            >
-              {generating ? 'Generating…' : 'Generate'}
-            </button>
-          )}
+          <button
+            onClick={generateDraft}
+            disabled={generating || !cargoEmailId}
+            className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+          >
+            {generating ? 'Generating…' : 'Generate'}
+          </button>
         </div>
         {generateError && (
           <p className="text-xs text-red-600">{generateError}</p>
@@ -80,7 +78,7 @@ export function QuoteTab({ cargoEmailId, confidence }: QuoteTabProps) {
       <div className="flex gap-2">
         <button
           className="rounded bg-blue-600 px-4 py-2 text-white text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed"
-          disabled={blockSend}
+          disabled={blockSend || !draft.trim()}
           title={blockSend ? `${blockedFields.length} critical field(s) uncertain: ${blockedFields.join(', ')}` : undefined}
         >
           Send Quote

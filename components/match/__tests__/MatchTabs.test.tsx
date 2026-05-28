@@ -135,18 +135,28 @@ describe('MatchTabs', () => {
   });
 
   describe('Send Quote button', () => {
-    it('is enabled when blockSend is false', () => {
+    it('is disabled when draft is empty (blockSend=false)', () => {
       const match = { ...baseMatch, confidence: mockConfidenceVerified };
       render(<MatchTabs match={match} />);
       fireEvent.click(screen.getByRole('tab', { name: /quote/i }));
       const btn = screen.getByRole('button', { name: /send quote/i });
+      expect(btn).toBeDisabled();
+    });
+
+    it('is enabled when draft has content and blockSend is false', () => {
+      const match = { ...baseMatch, confidence: mockConfidenceVerified };
+      render(<MatchTabs match={match} />);
+      fireEvent.click(screen.getByRole('tab', { name: /quote/i }));
+      fireEvent.change(screen.getByRole('textbox'), { target: { value: 'USD 15/MT offer' } });
+      const btn = screen.getByRole('button', { name: /send quote/i });
       expect(btn).not.toBeDisabled();
     });
 
-    it('is disabled when blockSend is true', () => {
+    it('is disabled when blockSend is true even with draft content', () => {
       const match = { ...baseMatch, confidence: mockConfidenceBlocked };
       render(<MatchTabs match={match} />);
       fireEvent.click(screen.getByRole('tab', { name: /quote/i }));
+      fireEvent.change(screen.getByRole('textbox'), { target: { value: 'USD 15/MT offer' } });
       const btn = screen.getByRole('button', { name: /send quote/i });
       expect(btn).toBeDisabled();
     });
