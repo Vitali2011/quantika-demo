@@ -185,6 +185,90 @@ describe('MatchesClient — mode-aware filtering wiring', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Source analysis: MatchesClient — mode-aware column headers (#630)
+// Regression: columns must swap Vessel↔Cargo based on mode.
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('MatchesClient — mode-aware column headers (#630)', () => {
+  const src = fs.readFileSync(path.join(ROOT, 'app/matches/MatchesClient.tsx'), 'utf8');
+
+  it('column headers array is mode-conditional (not hardcoded)', () => {
+    // Must contain isOwner conditional with two header arrays, not one static array
+    expect(src).toMatch(/isOwner[\s\S]*?Score.*Cargo[\s\S]*?Score.*Vessel|Score.*Vessel[\s\S]*?Score.*Cargo/);
+  });
+
+  it('charterer headers have Vessel before Cargo', () => {
+    // In charterer branch: Score | Vessel | ... | Cargo
+    expect(src).toMatch(/'Score',\s*'Vessel',.*?'Cargo'/);
+  });
+
+  it('owner headers have Cargo before Vessel', () => {
+    // In owner branch: Score | Cargo | ... | Vessel
+    expect(src).toMatch(/'Score',\s*'Cargo',.*?'Vessel'/);
+  });
+
+  it('column 2 cell is mode-conditional (vessel vs cargo)', () => {
+    // Comment marker confirms the conditional swap is present for column 2
+    expect(src).toMatch(/Column 2:.*Vessel.*charterer.*or.*Cargo.*owner/);
+  });
+
+  it('sortBy resets on mode change via useEffect', () => {
+    // Must have useEffect watching isOwner to reset sortBy
+    expect(src).toMatch(/useEffect[\s\S]{0,100}setSortBy[\s\S]{0,100}isOwner|isOwner[\s\S]{0,100}setSortBy/m);
+  });
+
+  it('column 6 cell is mode-conditional (cargo vs vessel)', () => {
+    // Symmetric to column 2: in owner mode column 6 shows Vessel; in charterer mode, Cargo
+    expect(src).toMatch(/Column 6:.*Cargo.*charterer.*or.*Vessel.*owner/);
+  });
+
+  it('owner header array has exactly 8 columns', () => {
+    // Extract the owner header array and count entries
+    const ownerMatch = src.match(/'Score',\s*'Cargo',\s*'Route',\s*'DWT',\s*'TCE \/ day',\s*'Vessel',\s*'Laycan',\s*''/);
+    expect(ownerMatch).not.toBeNull();
+  });
+
+  it('charterer header array has exactly 8 columns', () => {
+    // Extract the charterer header array and count entries
+    const chartererMatch = src.match(/'Score',\s*'Vessel',\s*'Route',\s*'DWT',\s*'TCE \/ day',\s*'Cargo',\s*'Laycan',\s*''/);
+    expect(chartererMatch).not.toBeNull();
+  });
+
+  it('sortBy reset does NOT reset filter chips (cargoTypes, route, etc.)', () => {
+    // The derived-state-during-render pattern must only call setSortBy — not setCargoTypes, setRoute, etc.
+    // Anchor on the comment that marks the block, then read the next 250 chars.
+    const marker = src.indexOf('Derived-state-during-render resets sort on mode switch');
+    expect(marker).toBeGreaterThan(-1);
+    const block = src.slice(marker, marker + 250);
+    expect(block).not.toMatch(/setCargoTypes|setRoute|setLaycan|setScore|setDwt|setFilterStatus|setQuickFilter/);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Source analysis: AIBar — reads mode from useMode hook (H3 regression, #630)
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('AIBar — reactive mode-aware placeholder (#630)', () => {
+  const src = fs.readFileSync(
+    path.join(ROOT, 'design-system/patterns/AIBar.tsx'),
+    'utf8',
+  );
+
+  it('imports useMode hook (not static copy)', () => {
+    expect(src).toMatch(/useMode/);
+    expect(src).toMatch(/from.*useMode/);
+  });
+
+  it('renders placeholder via t() translation function (reactive)', () => {
+    expect(src).toMatch(/t\(['"]aibar\.placeholder['"]\)/);
+  });
+
+  it('does NOT hardcode a static placeholder string', () => {
+    expect(src).not.toMatch(/Ask anything about (vessels|cargo)/);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Source analysis: DashboardKpiStrip — mode-aware KPIs
 // ─────────────────────────────────────────────────────────────────────────────
 

@@ -106,8 +106,8 @@ export default async function DashboardPage() {
       id: matchIdMap.get(`${m.cargoEmailId}|${m.vesselEmailId}`)!,
     }));
 
-  const rawName = session.accountId?.split('@')[0] ?? 'there';
-  const userName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+  const rawName = session.accountId?.split('@')[0] ?? '';
+  const userName = rawName ? rawName.charAt(0).toUpperCase() + rawName.slice(1) : '';
 
   return (
     <div className="bg-ds-bg min-h-screen">
