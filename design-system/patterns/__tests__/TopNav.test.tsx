@@ -61,6 +61,14 @@ describe('TopNav', () => {
     expect(screen.getByRole('button', { name: /owner/i })).toHaveAttribute('aria-pressed', 'false');
   });
 
+  it('renders bell/notifications button in top-right area — issue #628', () => {
+    render(<ModeProvider initial="charterer"><TopNav /></ModeProvider>);
+    const bellBtn = screen.getByRole('button', { name: /notifications/i });
+    expect(bellBtn).toBeInTheDocument();
+    // SVG icon should be present inside the button
+    expect(bellBtn.querySelector('svg')).not.toBeNull();
+  });
+
   describe('active-state — issue #555', () => {
     const activeLinks = (container: HTMLElement) =>
       Array.from(container.querySelectorAll('nav[aria-label="Primary navigation"] > a[aria-current="page"]'));
