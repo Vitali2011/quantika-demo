@@ -83,7 +83,7 @@ export default async function MatchDetailPage({ params }: Props) {
     cargoType: storedMatch.cargo_type,
     vesselDwt: storedMatch.vessel_dwt,
     laycanDisplay,
-    cargoEmailId: cargoEmail?.id,
+    cargoEmailId: sessionMatch?.cargoEmailId,
     hasSessionMatch: !!sessionMatch,
   };
 
@@ -229,7 +229,7 @@ export default async function MatchDetailPage({ params }: Props) {
                   match={sessionMatch}
                   vessel={vessel}
                   cargo={cargo}
-                  cargoEmailId={cargoEmail?.id}
+                  cargoEmailId={sessionMatch.cargoEmailId}
                   matchDbId={storedMatch.id}
                   storedFreightRate={storedMatch.freight_rate_usd_per_mt}
                   freightRateSource={storedMatch.freight_rate_source}
