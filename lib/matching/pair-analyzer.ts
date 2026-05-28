@@ -307,6 +307,9 @@ export async function analyzePairs(
       issues: Array.isArray(m.issues) ? m.issues : [],
     }))
     .filter((m: Match) => {
+      // Reject matches where LLM returned null/undefined IDs — empty-string cargoEmailId
+      // causes "Quote requires session data" on /match/[id] (panel checks !cargoEmailId).
+      if (!m.cargoEmailId || !m.vesselEmailId) return false;
       const key = pairKey(m.cargoEmailId, m.cargoItemIndex, m.vesselEmailId, m.vesselItemIndex);
       return !filteredOutKeys.has(key);
     });

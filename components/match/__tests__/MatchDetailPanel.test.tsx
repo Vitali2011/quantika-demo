@@ -26,6 +26,26 @@ const BASE_PROPS = {
   hasSessionMatch: true,
 };
 
+describe('MatchDetailPanel — Generate Quote button visibility (#633)', () => {
+  it('shows Generate Quote button when cargoEmailId is set', () => {
+    render(<MatchDetailPanel {...BASE_PROPS} cargoEmailId="cargo-123" />);
+    expect(screen.getByRole('button', { name: /generate quote/i })).toBeInTheDocument();
+    expect(screen.queryByText(/requires session data/i)).not.toBeInTheDocument();
+  });
+
+  it('shows "Quote requires session data" when cargoEmailId is absent', () => {
+    render(<MatchDetailPanel {...BASE_PROPS} />);
+    expect(screen.getByText(/quote requires session data/i)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /generate quote/i })).not.toBeInTheDocument();
+  });
+
+  it('shows "Quote requires session data" when cargoEmailId is empty string', () => {
+    render(<MatchDetailPanel {...BASE_PROPS} cargoEmailId="" />);
+    expect(screen.getByText(/quote requires session data/i)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /generate quote/i })).not.toBeInTheDocument();
+  });
+});
+
 describe('MatchDetailPanel hydration safety (#616)', () => {
   it('renders DWT with stable locale formatting (guards SSR/CSR hydration mismatch)', () => {
     // Simulate Node.js small-ICU behavior: toLocaleString() without an explicit locale
