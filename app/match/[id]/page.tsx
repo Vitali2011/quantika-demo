@@ -74,6 +74,12 @@ export default async function MatchDetailPage({ params }: Props) {
     laycanDisplay,
   ].filter(Boolean).join(' · ');
 
+  // Use sessionMatch.cargoEmailId when available; fall back to storedMatch.cargo_id
+  // when sessionMatch was found but its cargoEmailId is empty (LLM returned null IDs —
+  // pair-analyzer bug guard) or when storedMatch.cargo_id was the canonical ID all along.
+  const effectiveCargoEmailId =
+    sessionMatch?.cargoEmailId || storedMatch.cargo_id || undefined;
+
   const panelProps = {
     matchDbId: storedMatch.id,
     score: storedMatch.score,
@@ -83,7 +89,7 @@ export default async function MatchDetailPage({ params }: Props) {
     cargoType: storedMatch.cargo_type,
     vesselDwt: storedMatch.vessel_dwt,
     laycanDisplay,
-    cargoEmailId: sessionMatch?.cargoEmailId,
+    cargoEmailId: effectiveCargoEmailId,
     hasSessionMatch: !!sessionMatch,
   };
 
@@ -229,7 +235,7 @@ export default async function MatchDetailPage({ params }: Props) {
                   match={sessionMatch}
                   vessel={vessel}
                   cargo={cargo}
-                  cargoEmailId={sessionMatch.cargoEmailId}
+                  cargoEmailId={effectiveCargoEmailId}
                   matchDbId={storedMatch.id}
                   storedFreightRate={storedMatch.freight_rate_usd_per_mt}
                   freightRateSource={storedMatch.freight_rate_source}
