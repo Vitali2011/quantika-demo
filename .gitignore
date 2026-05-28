@@ -101,3 +101,8 @@ lib/sample-data/etms-emails.json
 # Demo-seed LLM cache (Task 1 — feat/demo-llm-cache-parsing)
 scripts/demo-seed/.llm-cache/
 .private/.llm-cache/
+
+# /progong adversarial loop workspace — ephemeral artifacts
+.progong/results/
+.progong/budget.json
+.progong/state.json
