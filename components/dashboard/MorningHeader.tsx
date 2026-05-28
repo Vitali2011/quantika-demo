@@ -1,5 +1,5 @@
 interface MorningHeaderProps {
-  userName: string;
+  userName?: string;
   alertCount: number;
 }
 
@@ -16,12 +16,13 @@ const dateFormatter = new Intl.DateTimeFormat('en-GB', {
 
 export function MorningHeader({ userName, alertCount }: MorningHeaderProps) {
   const today = dateFormatter.format(new Date());
+  const greeting = userName ? `Good morning, ${userName} 👋` : 'Good morning! 👋';
 
   return (
     <div className="space-y-1">
       <div className="flex items-center gap-3">
         <h1 className="text-xl font-bold text-gray-900">
-          Good morning, {userName} 👋
+          {greeting}
         </h1>
         {alertCount > 0 && (
           <span className="inline-flex items-center justify-center h-6 min-w-6 px-1.5 rounded-full bg-red-500 text-white text-xs font-bold">
