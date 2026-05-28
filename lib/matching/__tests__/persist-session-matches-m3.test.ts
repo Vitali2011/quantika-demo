@@ -33,7 +33,7 @@ const DEMO_MATCH: Match = {
   vesselItemIndex: 0,
   score: 92,
   matchLevel: 'good',
-  matchReasons: ['Guaranteed demo match for EconomicsTab'],
+  matchReasons: ['Good DWT fit — 58,000 mt vessel vs 50,000 mt grain cargo'],
   issues: [],
 };
 
@@ -65,12 +65,13 @@ describe('persistSessionMatches — M3 field write-through (demo match, #393)', 
     expect(match.laycan_start!).toBeLessThan(match.laycan_end!);
   });
 
-  it('reason field is "Guaranteed demo match for EconomicsTab"', () => {
+  it('reason field contains realistic match text without internal template tokens', () => {
     const db = freshDb();
     persistSessionMatches(db, 'session-demo-3', [DEMO_MATCH], [demoCargo], [demoVessel]);
 
     const [match] = listMatches(db, { sortBy: 'score', sortDir: 'desc' });
-    expect(match.reason).toBe('Guaranteed demo match for EconomicsTab');
+    expect(match.reason).toBe('Good DWT fit — 58,000 mt vessel vs 50,000 mt grain cargo');
+    expect(match.reason).not.toContain('EconomicsTab');
   });
 
   it('null-safe: no parsed cargo/vessel → M3 fields stored as null (no crash)', () => {
