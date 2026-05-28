@@ -1,0 +1,133 @@
+name: Post-Deploy Smoke
+
+# После успешного deploy.yml → SSH dev-vps → headless playwright прогон 5
+# prod routes → JSON+screenshots в ~/orchestrator-state/.../post-deploy-checks/<pr#>/
+# → comment на PR (PASS/FAIL).
+#
+# Smoke выполняется на dev-vps (НЕ outreach-vps), потому что:
+# - PROD_SSH_KEY на outreach-vps locked-down (forced-command /root/deploy.sh)
+# - dev-vps уже имеет playwright + chromium + достаточно ресурсов для headless
+# - smoke read-only через https — prod box смешивать с QA box не нужно
+#
+# Failure НЕ откатывает deploy — это сигнал, не gate. Rollback живёт в deploy.yml
+# (60s health-check + auto-revert). Smoke смотрит шире: visual rendering + DOM.
+#
+# Required secrets: DEV_VPS_SSH_KEY (ed25519, open SSH, не forced-command).
+
+on:
+  workflow_run:
+    workflows: ["Deploy to prod"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: "PR# (для manual re-run)"
+        required: false
+        default: "manual"
+      sha:
+        description: "merge SHA (если PR не указан)"
+        required: false
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: post-deploy-smoke
+  cancel-in-progress: false
+
+jobs:
+  smoke:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Resolve PR# + SHA
+        id: resolve
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            PR="${{ github.event.inputs.pr }}"
+            SHA="${{ github.event.inputs.sha }}"
+          else
+            SHA="${{ github.event.workflow_run.head_sha }}"
+            PR=$(gh pr list --state merged --search "$SHA" \
+                  --json number --jq '.[0].number' \
+                  --repo "${{ github.repository }}" 2>/dev/null || true)
+            [ -z "$PR" ] && PR="manual"
+          fi
+          echo "pr=$PR" >> "$GITHUB_OUTPUT"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "Resolved: PR=#$PR SHA=$SHA"
+
+      - name: Setup SSH to dev-vps
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          echo "${{ secrets.DEV_VPS_SSH_KEY }}" > ~/.ssh/dev_vps_key
+          chmod 600 ~/.ssh/dev_vps_key
+          ssh-keyscan -H 157.173.124.116 >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Run smoke on dev-vps
+        id: smoke
+        continue-on-error: true
+        run: |
+          PR="${{ steps.resolve.outputs.pr }}"
+          set +e
+          ssh -i ~/.ssh/dev_vps_key \
+              -o StrictHostKeyChecking=accept-new \
+              -o ConnectTimeout=15 \
+              root@157.173.124.116 \
+              "bash /root/post-deploy-smoke/run-quantika.sh $PR" \
+              | tee smoke-output.txt
+          RC=${PIPESTATUS[0]}
+          echo "rc=$RC" >> "$GITHUB_OUTPUT"
+          # Pull JSON summary back для downstream parse
+          scp -i ~/.ssh/dev_vps_key \
+              -o StrictHostKeyChecking=accept-new \
+              "root@157.173.124.116:orchestrator-state/quantika-demo/post-deploy-checks/$PR/summary.json" \
+              ./summary.json 2>/dev/null || echo '{"overall":"ERROR","routes_passed":0,"routes_checked":0}' > summary.json
+          exit 0
+
+      - name: Upload smoke artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: post-deploy-smoke-${{ steps.resolve.outputs.pr }}
+          path: |
+            summary.json
+            smoke-output.txt
+          retention-days: 30
+
+      - name: Comment on PR
+        if: steps.resolve.outputs.pr != 'manual'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ steps.resolve.outputs.pr }}
+          RC: ${{ steps.smoke.outputs.rc }}
+        run: |
+          OVERALL=$(jq -r .overall summary.json 2>/dev/null || echo "ERROR")
+          PASSED=$(jq -r '.routes_passed // 0' summary.json)
+          TOTAL=$(jq -r '.routes_checked // 0' summary.json)
+          FAILED_ROUTES=$(jq -r '[.results[] | select(.pass==false) | .route] | join(", ")' summary.json 2>/dev/null || echo "")
+
+          if [ "$OVERALL" = "PASS" ]; then ICON="✅"; else ICON="❌"; fi
+
+          BODY="$ICON **Post-deploy smoke**: \`$OVERALL\` ($PASSED/$TOTAL routes)"
+          if [ "$OVERALL" != "PASS" ] && [ -n "$FAILED_ROUTES" ]; then
+            BODY="$BODY
+
+          Failed routes: $FAILED_ROUTES"
+          fi
+          BODY="$BODY
+
+          Artifacts on dev-vps: \`~/orchestrator-state/quantika-demo/post-deploy-checks/$PR/\` (summary.json + 5 screenshots)
+          GH artifact: [post-deploy-smoke-$PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+
+          gh pr comment "$PR" --body "$BODY" --repo "${{ github.repository }}"
+
+      - name: Fail workflow if smoke failed
+        if: steps.smoke.outputs.rc != '0'
+        run: |
+          echo "::error::Smoke failed (exit ${{ steps.smoke.outputs.rc }})"
+          exit 1
