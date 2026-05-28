@@ -38,6 +38,8 @@ const AUTH_BYPASS_PATHS = new Set([
   // Market KPI endpoints — public index data (BDI/BHSI/bunker prices), safe for anonymous
   '/api/market/baltic-kpi',
   '/api/market/bunker-kpi',
+  // benchmark endpoint is "Intentionally public" per route comment (no PII, commodity data only)
+  '/api/market/benchmark',
 ]);
 
 const AUTH_BYPASS_PREFIXES = ['/_next/static', '/_next/image', '/_next/webpack'];
