@@ -185,6 +185,64 @@ describe('MatchesClient — mode-aware filtering wiring', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Source analysis: MatchesClient — mode-aware column headers (#630)
+// Regression: columns must swap Vessel↔Cargo based on mode.
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('MatchesClient — mode-aware column headers (#630)', () => {
+  const src = fs.readFileSync(path.join(ROOT, 'app/matches/MatchesClient.tsx'), 'utf8');
+
+  it('column headers array is mode-conditional (not hardcoded)', () => {
+    // Must contain isOwner conditional with two header arrays, not one static array
+    expect(src).toMatch(/isOwner[\s\S]*?Score.*Cargo[\s\S]*?Score.*Vessel|Score.*Vessel[\s\S]*?Score.*Cargo/);
+  });
+
+  it('charterer headers have Vessel before Cargo', () => {
+    // In charterer branch: Score | Vessel | ... | Cargo
+    expect(src).toMatch(/'Score',\s*'Vessel',.*?'Cargo'/);
+  });
+
+  it('owner headers have Cargo before Vessel', () => {
+    // In owner branch: Score | Cargo | ... | Vessel
+    expect(src).toMatch(/'Score',\s*'Cargo',.*?'Vessel'/);
+  });
+
+  it('column 2 cell is mode-conditional (vessel vs cargo)', () => {
+    // Comment marker confirms the conditional swap is present for column 2
+    expect(src).toMatch(/Column 2:.*Vessel.*charterer.*or.*Cargo.*owner/);
+  });
+
+  it('sortBy resets on mode change via useEffect', () => {
+    // Must have useEffect watching isOwner to reset sortBy
+    expect(src).toMatch(/useEffect[\s\S]{0,100}setSortBy[\s\S]{0,100}isOwner|isOwner[\s\S]{0,100}setSortBy/m);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Source analysis: AIBar — reads mode from useMode hook (H3 regression, #630)
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('AIBar — reactive mode-aware placeholder (#630)', () => {
+  const src = fs.readFileSync(
+    path.join(ROOT, 'design-system/patterns/AIBar.tsx'),
+    'utf8',
+  );
+
+  it('imports useMode hook (not static copy)', () => {
+    expect(src).toMatch(/useMode/);
+    expect(src).toMatch(/from.*useMode/);
+  });
+
+  it('renders placeholder via t() translation function (reactive)', () => {
+    expect(src).toMatch(/t\(['"]aibar\.placeholder['"]\)/);
+  });
+
+  it('does NOT hardcode a static placeholder string', () => {
+    expect(src).not.toMatch(/Ask anything about (vessels|cargo)/);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Source analysis: DashboardKpiStrip — mode-aware KPIs
 // ─────────────────────────────────────────────────────────────────────────────
 
