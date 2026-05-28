@@ -303,6 +303,14 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
   // Mode-based count for "All" chip: charterer sees cargo-side, owner sees vessel-side
   const modeFiltered = filterMatchesByMode(matches, isOwner, cargoEmailIds, vesselEmailIds);
 
+  // All-chip count: mode + status + advanced filters (excluding quick-filter so the badge
+  // reflects "how many match your current advanced criteria" regardless of quick-filter tab)
+  const allChipCount = modeFiltered.filter(
+    (m) =>
+      (!filterStatus || m.status === filterStatus) &&
+      (cargoTypes.length === 0 || cargoTypes.includes(m.cargo_type ?? ''))
+  ).length;
+
   // Client-side filter: mode + status + cargo_type + quick filter; then sort
   const filtered = matches
     .filter(
@@ -353,7 +361,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
           {/* Quick filter chips */}
           <div className="flex items-center gap-2 flex-wrap" role="tablist" aria-label="Filter">
             {([
-              { id: 'all' as QuickFilter, label: 'All', count: modeFiltered.length },
+              { id: 'all' as QuickFilter, label: 'All', count: allChipCount },
               { id: 'fresh' as QuickFilter, label: 'Fresh', count: undefined },
               { id: 'score80' as QuickFilter, label: 'Score 80+', count: undefined },
               { id: 'dwt50_60' as QuickFilter, label: 'DWT 50–60k', count: undefined },
