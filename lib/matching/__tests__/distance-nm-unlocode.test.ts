@@ -45,7 +45,7 @@ const DEMO_MATCH: Match = {
   vesselItemIndex: 0,
   score: 92,
   matchLevel: 'good',
-  matchReasons: ['Guaranteed demo match for EconomicsTab'],
+  matchReasons: ['Good DWT fit — 58,000 mt vessel vs 50,000 mt grain cargo'],
   issues: [],
 };
 
