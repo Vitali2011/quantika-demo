@@ -1,7 +1,14 @@
 // scripts/demo-seed/reconcile.ts
+import * as fs from 'fs';
+import * as path from 'path';
 import { cfValue } from '@/lib/types';
-import type { LlmCache } from './llm-cache';
+import { callAiText, extractJson } from '@/lib/ai-provider';
+import { corpusHash, loadLlmCacheIfAny, type LlmCache } from './llm-cache';
 import type { Manifest } from './manifest-schema';
+import { readReconcileCache, writeReconcileCache } from './reconcile-cache';
+
+const DEFAULT_RAW = '.private/raw-emails';
+const RECONCILE_TIMEOUT_MS = 120_000;
 
 export type EntityKind = 'vessel' | 'charterer' | 'broker' | 'sender_email';
 
@@ -90,4 +97,45 @@ export function parseReconcileResponse(raw: string, mentions: EntityMention[]): 
     }
   }
   return { anonymization, canonical, conflicts: parsed.conflicts ?? [] };
+}
+
+export async function reconcile(opts: { rawDir: string; model?: string }): Promise<ReconcileResult> {
+  const cache = loadLlmCacheIfAny(opts.rawDir);
+  if (!cache) throw new Error(`[reconcile] no llm-cache for ${opts.rawDir} — run seed:parse first`);
+  const mentions = collectMentions(cache);
+  const hash = corpusHash(opts.rawDir);
+
+  let rawJson = readReconcileCache(opts.rawDir, hash);
+  if (!rawJson) {
+    const { system, user } = buildReconcilePrompt(mentions);
+    const text = await callAiText('RECONCILE', system, user, {
+      timeoutMs: RECONCILE_TIMEOUT_MS,
+      model: opts.model ?? 'claude-opus-4-8',
+    });
+    rawJson = extractJson(text);
+    writeReconcileCache(opts.rawDir, hash, rawJson);
+  }
+  return parseReconcileResponse(rawJson, mentions);
+}
+
+if (require.main === module) {
+  const argv = process.argv.slice(2);
+  const get = (k: string) => {
+    const i = argv.indexOf(k);
+    return i === -1 ? undefined : argv[i + 1];
+  };
+  const rawDir = path.resolve(get('--raw-dir') ?? DEFAULT_RAW);
+  const model = get('--model') ?? 'claude-opus-4-8';
+  reconcile({ rawDir, model })
+    .then((r) => {
+      const out = path.join(rawDir, '.reconcile-cache', 'result.json');
+      fs.writeFileSync(out, JSON.stringify(r, null, 2) + '\n');
+      console.log(
+        `[reconcile] ${Object.keys(r.canonical).length} aliases grouped, ${r.conflicts.length} conflicts. Wrote ${out}`,
+      );
+    })
+    .catch((e) => {
+      console.error(e);
+      process.exit(1);
+    });
 }

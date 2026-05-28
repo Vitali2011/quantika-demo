@@ -1,8 +1,12 @@
+import * as os from 'os';
+import * as fs from 'fs';
+import * as path from 'path';
 import {
   collectMentions,
   parseReconcileResponse,
   type EntityMention,
 } from '../reconcile';
+import { writeReconcileCache, readReconcileCache } from '../reconcile-cache';
 import type { LlmCache } from '../llm-cache';
 
 function emptyCache(): LlmCache {
@@ -51,5 +55,18 @@ describe('parseReconcileResponse', () => {
     const a = parseReconcileResponse(opusJson, mentions);
     const b = parseReconcileResponse(opusJson, mentions);
     expect(a.anonymization).toEqual(b.anonymization);
+  });
+});
+
+describe('reconcile-cache', () => {
+  it('round-trips raw grouping json', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rec-'));
+    try {
+      writeReconcileCache(dir, 'abc', '{"groups":[],"conflicts":[]}');
+      expect(readReconcileCache(dir, 'abc')).toBe('{"groups":[],"conflicts":[]}\n');
+      expect(readReconcileCache(dir, 'missing')).toBeNull();
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
   });
 });
