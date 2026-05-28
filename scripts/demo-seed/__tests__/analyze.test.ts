@@ -119,7 +119,7 @@ describe('analyze with LLM cache', () => {
       parsedVessels: [],
       parsedFixtureRecaps: [],
     };
-    writeCache(FIXTURES, cache);
+    writeCache(FIXTURES, cache as unknown as import('../llm-cache').LlmCache);
     try {
       const m = await analyze({ rawDir: FIXTURES, frozenDate: '2026-05-20', demoWindowDays: 14 });
       const rationales = Object.values(m.offsets).map((o) => o.rationale).join('|');
@@ -151,7 +151,7 @@ describe('analyze with LLM cache', () => {
       parsedVessels: [],
       parsedFixtureRecaps: [],
     };
-    writeCache(FIXTURES, cache);
+    writeCache(FIXTURES, cache as unknown as import('../llm-cache').LlmCache);
     try {
       const m = await analyze({ rawDir: FIXTURES, frozenDate: '2026-05-20', demoWindowDays: 14 });
       // The threadId for firstId — find it via offsets values that mention laycan midpoint

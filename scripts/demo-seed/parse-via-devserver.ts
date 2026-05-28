@@ -66,7 +66,7 @@ function parseArgs(argv: string[]): Args {
 async function probeServer(baseUrl: string): Promise<boolean> {
   try {
     const ctl = new AbortController();
-    const t = setTimeout(() => ctl.abort(), 2000);
+    const t = setTimeout(() => ctl.abort(), 30_000);
     const r = await fetch(baseUrl, { signal: ctl.signal });
     clearTimeout(t);
     return r.status < 500;
@@ -153,9 +153,18 @@ async function main() {
   const hash = corpusHash(args.rawDir);
   console.log(`[parse-via-devserver] corpus hash: ${hash}`);
 
-  if (loadLlmCacheIfAny(args.rawDir)) {
-    console.log('[parse-via-devserver] cache hit — nothing to do.');
-    return;
+  const existingCache = loadLlmCacheIfAny(args.rawDir);
+  if (existingCache) {
+    const total =
+      existingCache.classifications.length +
+      existingCache.parsedCargos.length +
+      existingCache.parsedVessels.length +
+      existingCache.parsedFixtureRecaps.length;
+    if (total > 0) {
+      console.log('[parse-via-devserver] cache hit — nothing to do.');
+      return;
+    }
+    console.log('[parse-via-devserver] cache file exists but is empty — re-parsing.');
   }
 
   if (args.dryRun) {
