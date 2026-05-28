@@ -56,7 +56,7 @@ function PanelContent({
     loadPort && { label: 'Load Port', value: loadPort },
     dischargePort && { label: 'Discharge Port', value: dischargePort },
     cargoType && { label: 'Cargo', value: cargoType },
-    vesselDwt && { label: 'Vessel DWT', value: `${vesselDwt.toLocaleString()} MT` },
+    vesselDwt && { label: 'Vessel DWT', value: `${vesselDwt.toLocaleString('en-US')} MT` },
     laycanDisplay && { label: 'Laycan', value: laycanDisplay },
     { label: 'Status', value: status },
   ].filter(Boolean) as { label: string; value: string }[];
