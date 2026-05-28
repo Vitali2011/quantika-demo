@@ -164,6 +164,58 @@ describe('middleware auth guard', () => {
     });
   });
 
+  describe('login rate-limiter (M-1)', () => {
+    it('returns 429 after 10 POST /api/auth/login from the same IP within the window', async () => {
+      const makeLoginReq = () =>
+        new NextRequest('http://localhost/api/auth/login', {
+          method: 'POST',
+          headers: { 'x-forwarded-for': '1.2.3.4' },
+        });
+
+      // First 10 attempts must pass through (not throttled)
+      for (let i = 0; i < 10; i++) {
+        const res = await runMiddleware(makeLoginReq());
+        expect(res.status).not.toBe(429);
+      }
+
+      // 11th attempt from same IP must be rate-limited
+      const res = await runMiddleware(makeLoginReq());
+      expect(res.status).toBe(429);
+    });
+
+    it('does NOT throttle GET /api/auth/login (only POST)', async () => {
+      const makeGetReq = () =>
+        new NextRequest('http://localhost/api/auth/login', {
+          method: 'GET',
+          headers: { 'x-forwarded-for': '5.6.7.8' },
+        });
+
+      for (let i = 0; i < 15; i++) {
+        const res = await runMiddleware(makeGetReq());
+        expect(res.status).not.toBe(429);
+      }
+    });
+
+    it('tracks IPs independently — different IP is not blocked when another is', async () => {
+      const makeReqFromIp = (ip: string) =>
+        new NextRequest('http://localhost/api/auth/login', {
+          method: 'POST',
+          headers: { 'x-forwarded-for': ip },
+        });
+
+      // Exhaust limit for IP A
+      for (let i = 0; i < 10; i++) {
+        await runMiddleware(makeReqFromIp('10.0.0.1'));
+      }
+      const blockedRes = await runMiddleware(makeReqFromIp('10.0.0.1'));
+      expect(blockedRes.status).toBe(429);
+
+      // IP B should still be allowed
+      const otherRes = await runMiddleware(makeReqFromIp('10.0.0.2'));
+      expect(otherRes.status).not.toBe(429);
+    });
+  });
+
   describe('DEMO_AUTH_ENABLED=false', () => {
     it('bypasses auth entirely when disabled', async () => {
       process.env.DEMO_AUTH_ENABLED = 'false';

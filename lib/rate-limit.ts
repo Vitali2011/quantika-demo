@@ -55,3 +55,5 @@ export class RateLimiter {
 
 export const aiRateLimiter = new RateLimiter({ windowMs: 60_000, maxRequests: 20 });
 export const parserEmailRateLimiter = new RateLimiter({ windowMs: 60_000, maxRequests: 20 });
+// 10 attempts per 15 min per IP — blocks credential brute-force on the demo login endpoint
+export const loginRateLimiter = new RateLimiter({ windowMs: 15 * 60_000, maxRequests: 10 });

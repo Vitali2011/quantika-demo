@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkCsrfRequest } from '@/lib/csrf';
-import { aiRateLimiter } from '@/lib/rate-limit';
+import { aiRateLimiter, loginRateLimiter } from '@/lib/rate-limit';
 import { getAuthConfig } from '@/lib/auth/config';
 import { verifyAuthCookie, AUTH_COOKIE_NAME } from '@/lib/auth/cookie';
 import { getRequestBaseUrl } from '@/lib/auth/redirect-url';
@@ -97,6 +97,19 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     // so the pipeline would immediately 403 on all API calls. Redirect to upload CTA instead.
     if (pathname === '/processing' && !request.cookies.get('csrf_token')?.value) {
       return NextResponse.redirect(new URL('/', getRequestBaseUrl(request)), { status: 302 });
+    }
+  }
+
+  // ── Login brute-force guard ────────────────────────────────────────────────
+  if (pathname === '/api/auth/login' && request.method === 'POST') {
+    const forwarded = request.headers.get('x-forwarded-for');
+    const ip = forwarded ? forwarded.split(',')[0].trim() : 'anonymous';
+    const { allowed, retryAfterMs } = loginRateLimiter.check(ip);
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests' },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil(retryAfterMs / 1000)) } },
+      );
     }
   }
 
