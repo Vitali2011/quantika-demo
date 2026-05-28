@@ -216,6 +216,32 @@ describe('MatchesClient — mode-aware column headers (#630)', () => {
     // Must have useEffect watching isOwner to reset sortBy
     expect(src).toMatch(/useEffect[\s\S]{0,100}setSortBy[\s\S]{0,100}isOwner|isOwner[\s\S]{0,100}setSortBy/m);
   });
+
+  it('column 6 cell is mode-conditional (cargo vs vessel)', () => {
+    // Symmetric to column 2: in owner mode column 6 shows Vessel; in charterer mode, Cargo
+    expect(src).toMatch(/Column 6:.*Cargo.*charterer.*or.*Vessel.*owner/);
+  });
+
+  it('owner header array has exactly 8 columns', () => {
+    // Extract the owner header array and count entries
+    const ownerMatch = src.match(/'Score',\s*'Cargo',\s*'Route',\s*'DWT',\s*'TCE \/ day',\s*'Vessel',\s*'Laycan',\s*''/);
+    expect(ownerMatch).not.toBeNull();
+  });
+
+  it('charterer header array has exactly 8 columns', () => {
+    // Extract the charterer header array and count entries
+    const chartererMatch = src.match(/'Score',\s*'Vessel',\s*'Route',\s*'DWT',\s*'TCE \/ day',\s*'Cargo',\s*'Laycan',\s*''/);
+    expect(chartererMatch).not.toBeNull();
+  });
+
+  it('sortBy reset effect does NOT reset filter chips (cargoTypes, route, etc.)', () => {
+    // The useEffect watching [isOwner] must only call setSortBy — not setCargoTypes, setRoute, etc.
+    // Anchor on the comment that marks the exact effect, then read the next 250 chars.
+    const marker = src.indexOf('Reset sort default when mode switches');
+    expect(marker).toBeGreaterThan(-1);
+    const block = src.slice(marker, marker + 250);
+    expect(block).not.toMatch(/setCargoTypes|setRoute|setLaycan|setScore|setDwt|setFilterStatus|setQuickFilter/);
+  });
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
