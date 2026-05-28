@@ -105,7 +105,7 @@ describe('CargoClient', () => {
     const rows = screen.getAllByRole('row');
     // rows[0] is thead, rows[1] is first tbody row
     fireEvent.click(rows[1]);
-    const panel = screen.getByRole('complementary', { name: /Cargo detail/i });
+    const panel = screen.getByRole('dialog', { name: /Cargo detail/i });
     expect(panel).toBeInTheDocument();
     // Panel should contain the commodity name
     expect(panel).toHaveTextContent('Wheat');
@@ -116,14 +116,11 @@ describe('CargoClient', () => {
     const tableRows = screen.getAllByRole('row');
     fireEvent.click(tableRows[1]);
     // Panel is open
-    expect(screen.getByRole('complementary')).toBeInTheDocument();
-    // The backdrop is the fixed div with bg-black/20 that wraps behind the panel
-    // Use the closest full-inset backdrop (has onClick for close)
-    const panel = screen.getByRole('complementary');
+    expect(screen.getByRole('dialog', { name: /Cargo detail/i })).toBeInTheDocument();
     // Simulate close via the close button instead of backdrop (reliable in jsdom)
     const closeBtn = screen.getByLabelText('Close panel');
     fireEvent.click(closeBtn);
-    expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog', { name: /Cargo detail/i })).not.toBeInTheDocument();
   });
 
   it('shows empty state when no cargo items', () => {
