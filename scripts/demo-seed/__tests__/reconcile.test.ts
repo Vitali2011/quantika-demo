@@ -70,3 +70,65 @@ describe('reconcile-cache', () => {
     }
   });
 });
+
+describe('reconcile QA hardening (adversarial findings)', () => {
+  it('LEAK GUARD: auto-anonymizes a mention Opus dropped from its grouping', () => {
+    const mentions: EntityMention[] = [
+      { kind: 'vessel', raw: 'M/V GROUPED', emailId: 'e1' },
+      { kind: 'charterer', raw: 'DROPPED CORP', emailId: 'e2' },
+    ];
+    // Opus grouped only the vessel; "DROPPED CORP" omitted entirely.
+    const opusJson = JSON.stringify({
+      groups: [{ kind: 'vessel', canonical: 'M/V GROUPED', aliases: ['M/V GROUPED'] }],
+      conflicts: [],
+    });
+    const r = parseReconcileResponse(opusJson, mentions);
+    expect(r.anonymization.charterers['DROPPED CORP']).toMatch(/^GRAIN TRADER /);
+    expect(r.conflicts.some((c) => c.includes('DROPPED CORP'))).toBe(true);
+  });
+
+  it('charterer pseudonyms never break past Z (27th = AA)', () => {
+    const mentions: EntityMention[] = Array.from({ length: 27 }, (_, i) => ({
+      kind: 'charterer' as const,
+      raw: `C${i}`,
+      emailId: `e${i}`,
+    }));
+    const groups = mentions.map((m) => ({ kind: 'charterer', canonical: m.raw, aliases: [m.raw] }));
+    const r = parseReconcileResponse(JSON.stringify({ groups, conflicts: [] }), mentions);
+    expect(r.anonymization.charterers['C0']).toBe('GRAIN TRADER A');
+    expect(r.anonymization.charterers['C25']).toBe('GRAIN TRADER Z');
+    expect(r.anonymization.charterers['C26']).toBe('GRAIN TRADER AA');
+  });
+
+  it('throws a clear error on malformed Opus JSON / missing groups', () => {
+    expect(() => parseReconcileResponse('not json', [])).toThrow(/invalid JSON/);
+    expect(() => parseReconcileResponse('{"conflicts":[]}', [])).toThrow(/missing "groups"/);
+  });
+
+  it('duplicate alias across groups keeps first pseudonym + records conflict', () => {
+    const mentions: EntityMention[] = [{ kind: 'vessel', raw: 'AMBIG', emailId: 'e1' }];
+    const opusJson = JSON.stringify({
+      groups: [
+        { kind: 'vessel', canonical: 'AMBIG ONE', aliases: ['AMBIG'] },
+        { kind: 'vessel', canonical: 'AMBIG TWO', aliases: ['AMBIG'] },
+      ],
+      conflicts: [],
+    });
+    const r = parseReconcileResponse(opusJson, mentions);
+    expect(r.anonymization.vessels['AMBIG']).toBe('M/V SEAGULL 1');
+    expect(r.conflicts.some((c) => /overlap/i.test(c))).toBe(true);
+  });
+
+  it('collectMentions dedupes an identical charterer===account mention', () => {
+    const cache = emptyCache();
+    cache.parsedFixtureRecaps = [
+      {
+        emailId: 'e1',
+        charterers: { value: 'ACME', confidence: 'confirmed', source_text: 'x' },
+        account: { value: 'ACME', confidence: 'confirmed', source_text: 'x' },
+      } as any,
+    ];
+    const m = collectMentions(cache);
+    expect(m.filter((x) => x.raw === 'ACME' && x.emailId === 'e1')).toHaveLength(1);
+  });
+});

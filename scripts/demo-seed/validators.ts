@@ -37,8 +37,8 @@ export function sanityCheckRows(rows: ParsedRow[]): SanityIssue[] {
         if (o.value === 'null') {
           issues.push({ kind: 'NULL_STRING', emailId: r.gmail_message_id, detail: 'value is the string "null"' });
         }
-        if (o.value === 0 && o.source_text === '') {
-          issues.push({ kind: 'ZERO_NUMERIC', emailId: r.gmail_message_id, detail: 'value 0 with empty source_text' });
+        if (o.value === 0 && (o.source_text === '' || o.source_text === null)) {
+          issues.push({ kind: 'ZERO_NUMERIC', emailId: r.gmail_message_id, detail: 'value 0 with empty/null source_text' });
         }
         if ('vessel_yob' in o && o.vessel_yob === 0) {
           issues.push({ kind: 'ZERO_YOB', emailId: r.gmail_message_id, detail: 'vessel_yob is 0' });
