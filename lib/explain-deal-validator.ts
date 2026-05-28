@@ -138,6 +138,40 @@ function isWithinTolerance(n: number, allowed: Set<number>): boolean {
   return false;
 }
 
+/**
+ * Common port/city names Gemini invents in shipping narrations when absent from
+ * the match payload. Used by stripInventedContent to detect hallucinated locations.
+ */
+const PORT_NAMES: readonly string[] = [
+  // Asia-Pacific
+  'Singapore', 'Hong Kong', 'Busan', 'Yokohama', 'Kobe', 'Tokyo', 'Manila',
+  'Jakarta', 'Surabaya', 'Port Klang', 'Colombo',
+  // China
+  'Shanghai', 'Tianjin', 'Qingdao', 'Ningbo', 'Shenzhen', 'Guangzhou', 'Dalian',
+  // Middle East
+  'Dubai', 'Fujairah', 'Jeddah', 'Dammam', 'Aqaba', 'Muscat',
+  // Europe (North/West)
+  'Rotterdam', 'Hamburg', 'Antwerp', 'Amsterdam', 'Bremen', 'Bremerhaven',
+  'Marseille', 'Barcelona', 'Bilbao', 'Genoa', 'Trieste',
+  // Europe (Baltic)
+  'Gdansk', 'Gdynia', 'Riga', 'Tallinn', 'Helsinki', 'Gothenburg', 'Copenhagen',
+  // Med/Black Sea
+  'Piraeus', 'Thessaloniki', 'Istanbul', 'Izmir', 'Constanta', 'Novorossiysk',
+  'Odessa', 'Batumi', 'Varna',
+  // Africa
+  'Durban', 'Cape Town', 'Richards Bay', 'Lagos', 'Abidjan', 'Mombasa',
+  'Dar es Salaam',
+  // Americas
+  'Houston', 'New Orleans', 'Tampa', 'Baltimore', 'Vancouver', 'Montreal',
+  'Santos', 'Paranagua', 'Tubarao', 'Rosario', 'Valparaiso',
+  // Australia
+  'Melbourne', 'Brisbane', 'Fremantle', 'Newcastle',
+  // India
+  'Mumbai', 'Chennai', 'Haldia', 'Visakhapatnam', 'Kandla',
+  // Eastern Med / North Africa
+  'Alexandria', 'Port Said', 'Damietta',
+];
+
 /** Class society abbreviations Gemini commonly invents when classSociety is null. */
 const CLASS_SOCIETIES = [
   'DNV',
@@ -161,9 +195,39 @@ const REDACTION_NUMBER = '[redacted: not in match data]';
 const REDACTION_CLASS = '[redacted: class society not in match data]';
 const REDACTION_GEAR = '[redacted: gear status not in match data]';
 const REDACTION_STOWAGE = '[redacted: stowage factor not in match data]';
+const REDACTION_LOCATION = '[redacted: location not in match data]';
 
 function normalizeClassSocietyToken(raw: string): string {
   return raw.toUpperCase().replace(/[\s-]/g, '').replace(/[‘’']/g, '');
+}
+
+/**
+ * Extract all location names from the match payload that the LLM is allowed to cite.
+ * Returns uppercase tokens so callers can do case-insensitive membership checks.
+ */
+export function extractAllowedLocationTokens(
+  cargo: ParsedCargo | null,
+  vessel: ParsedVessel | null,
+): Set<string> {
+  const tokens = new Set<string>();
+  const add = (v: string | null | undefined) => {
+    if (v) tokens.add(v.toUpperCase().trim());
+  };
+
+  if (cargo) {
+    add(cargo.originPort?.value);
+    add(cargo.destinationPort?.value);
+    if (cargo.originPortAlternatives) cargo.originPortAlternatives.forEach(add);
+    if (cargo.originPortRotation) cargo.originPortRotation.forEach(add);
+    if (cargo.destinationPortAlternatives) cargo.destinationPortAlternatives.forEach(add);
+    if (cargo.destinationPortRotation) cargo.destinationPortRotation.forEach(add);
+  }
+
+  if (vessel) {
+    add(vessel.openPosition?.value);
+  }
+
+  return tokens;
 }
 
 export type ValidationResult = {
@@ -268,6 +332,21 @@ export function stripInventedContent(
     stripped = stripped.replace(/\b(gearless|geared)\b/gi, (raw) => {
       forbiddenTokens.push(raw);
       return REDACTION_GEAR;
+    });
+  }
+
+  // 5. Strip port/city names absent from the match payload.
+  //    Only checks names from PORT_NAMES list to avoid stripping legitimate capitalized words.
+  //    Exception: preserve if the name is part of vessel.vesselName (BC7-style).
+  const allowedLocations = extractAllowedLocationTokens(cargo, vessel);
+  for (const portName of PORT_NAMES) {
+    const escaped = portName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const re = new RegExp(`\\b${escaped}\\b`, 'gi');
+    stripped = stripped.replace(re, (raw) => {
+      if (allowedLocations.has(raw.toUpperCase())) return raw;
+      if (vesselNameUpper.includes(raw.toUpperCase())) return raw;
+      forbiddenTokens.push(raw);
+      return REDACTION_LOCATION;
     });
   }
 

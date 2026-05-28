@@ -21,6 +21,7 @@ import {
   buildPayloadNumberSet,
   validateExplainDealResponse,
   stripInventedContent,
+  extractAllowedLocationTokens,
 } from '@/lib/explain-deal-validator';
 import { buildExplainDealUserPrompt, fmtAnchorValue } from '@/lib/explain-deal-prompt';
 import { POST } from '@/app/api/ai/explain-deal/route';
@@ -405,5 +406,162 @@ describe('stripInventedContent — BC7 vessel-name false positive (#604)', () =>
     expect(result.text).toContain('LR');
     expect(result.forbiddenTokens).not.toContain('LR');
     expect(result.text).toContain('DNV');
+  });
+});
+
+// ── R5 — location/port hallucination (#589) ───────────────────────────────────
+
+// Fixtures for R5 location tests
+const cnshaVessel: ParsedVessel = {
+  ...nullClassVessel,
+  openPosition: { value: 'CNSHA', confidence: 'confirmed' },
+};
+
+const rotterdamCargo: ParsedCargo = {
+  ...nullWeightCargo,
+  originPort: { value: 'Shanghai', confidence: 'confirmed' },
+  destinationPort: { value: 'Rotterdam', confidence: 'confirmed' },
+};
+
+const shanghaiHamburgCargo: ParsedCargo = {
+  ...nullWeightCargo,
+  originPort: { value: 'Shanghai', confidence: 'confirmed' },
+  destinationPort: { value: 'Hamburg', confidence: 'confirmed' },
+};
+
+const singaporeNameVessel: ParsedVessel = {
+  ...nullClassVessel,
+  vesselName: { value: 'MV Singapore Star', confidence: 'confirmed' },
+  openPosition: { value: 'Constanta', confidence: 'confirmed' },
+};
+
+describe('extractAllowedLocationTokens (#589 R5)', () => {
+  it('includes openPosition, originPort, destinationPort as uppercase tokens', () => {
+    const tokens = extractAllowedLocationTokens(nullWeightCargo, nullClassVessel);
+    // nullClassVessel.openPosition = 'Constanta', nullWeightCargo.originPort = 'Constanta'
+    expect(tokens.has('CONSTANTA')).toBe(true);
+    // nullWeightCargo.destinationPort = 'Alexandria'
+    expect(tokens.has('ALEXANDRIA')).toBe(true);
+  });
+
+  it('includes originPortAlternatives and destinationPortAlternatives', () => {
+    const cargo: ParsedCargo = {
+      ...nullWeightCargo,
+      originPortAlternatives: ['Hamburg', 'Antwerp'],
+      destinationPortAlternatives: ['Rotterdam', 'Amsterdam'],
+    };
+    const tokens = extractAllowedLocationTokens(cargo, null);
+    expect(tokens.has('HAMBURG')).toBe(true);
+    expect(tokens.has('ANTWERP')).toBe(true);
+    expect(tokens.has('ROTTERDAM')).toBe(true);
+    expect(tokens.has('AMSTERDAM')).toBe(true);
+  });
+
+  it('includes originPortRotation and destinationPortRotation', () => {
+    const cargo: ParsedCargo = {
+      ...nullWeightCargo,
+      originPortRotation: ['Gdansk', 'Gdynia'],
+    };
+    const tokens = extractAllowedLocationTokens(cargo, null);
+    expect(tokens.has('GDANSK')).toBe(true);
+    expect(tokens.has('GDYNIA')).toBe(true);
+  });
+
+  it('returns empty set when cargo and vessel have no location fields', () => {
+    const vesselNoPos: ParsedVessel = { ...nullClassVessel, openPosition: null };
+    const cargoNoPorts: ParsedCargo = {
+      ...nullWeightCargo,
+      originPort: null,
+      destinationPort: null,
+    };
+    const tokens = extractAllowedLocationTokens(cargoNoPorts, vesselNoPos);
+    expect(tokens.size).toBe(0);
+  });
+});
+
+describe('stripInventedContent — R5 location guard (#589)', () => {
+  it('strips invented port "Singapore" when payload openPosition is CNSHA', () => {
+    const result = stripInventedContent(
+      'The vessel is currently open in Singapore and ready to load.',
+      nullWeightMatch,
+      nullWeightCargo,
+      cnshaVessel,
+    );
+    expect(result.text).not.toContain('Singapore');
+    expect(result.text).toContain('[redacted');
+    expect(result.forbiddenTokens).toContain('Singapore');
+  });
+
+  it('strips invented port "Constanta" when payload has only Rotterdam/Shanghai ports', () => {
+    const result = stripInventedContent(
+      'Loading will take place in Constanta per the fixture.',
+      nullWeightMatch,
+      rotterdamCargo,
+      cnshaVessel,
+    );
+    expect(result.text).not.toContain('Constanta');
+    expect(result.forbiddenTokens).toContain('Constanta');
+  });
+
+  it('preserves "Rotterdam" when it appears in payload destinationPort', () => {
+    const result = stripInventedContent(
+      'The cargo will be discharged in Rotterdam.',
+      nullWeightMatch,
+      rotterdamCargo,
+      nullClassVessel,
+    );
+    expect(result.text).toContain('Rotterdam');
+    expect(result.forbiddenTokens).not.toContain('Rotterdam');
+  });
+
+  it('preserves port name when it appears in vessel.vesselName (BC7-style protection)', () => {
+    const result = stripInventedContent(
+      'MV Singapore Star will proceed to load the cargo.',
+      nullWeightMatch,
+      nullWeightCargo,
+      singaporeNameVessel,
+    );
+    expect(result.text).toContain('Singapore');
+    expect(result.forbiddenTokens).not.toContain('Singapore');
+  });
+
+  it('strips invented port but preserves real ports in same response (mixed)', () => {
+    const result = stripInventedContent(
+      'Vessel loading in Shanghai and transiting via Singapore before Hamburg discharge.',
+      nullWeightMatch,
+      shanghaiHamburgCargo,
+      cnshaVessel,
+    );
+    expect(result.text).toContain('Shanghai');
+    expect(result.text).not.toContain('Singapore');
+    expect(result.text).toContain('Hamburg');
+    expect(result.forbiddenTokens).toContain('Singapore');
+    expect(result.forbiddenTokens).not.toContain('Shanghai');
+    expect(result.forbiddenTokens).not.toContain('Hamburg');
+  });
+
+  it('strips invented port when vessel openPosition is null', () => {
+    const vesselNoPos: ParsedVessel = { ...nullClassVessel, openPosition: null };
+    const result = stripInventedContent(
+      'Vessel expected open in Singapore next week.',
+      nullWeightMatch,
+      nullWeightCargo,
+      vesselNoPos,
+    );
+    // nullWeightCargo has originPort=Constanta, destinationPort=Alexandria — neither is Singapore
+    expect(result.text).not.toContain('Singapore');
+    expect(result.forbiddenTokens).toContain('Singapore');
+  });
+
+  it('does not strip port when it appears only in allowedLocations (no false positive)', () => {
+    // openPosition='Constanta', originPort='Constanta' → Constanta is allowed
+    const result = stripInventedContent(
+      'The vessel is open in Constanta and cargo loads from Constanta.',
+      nullWeightMatch,
+      nullWeightCargo,
+      nullClassVessel,
+    );
+    expect(result.text).toContain('Constanta');
+    expect(result.forbiddenTokens).not.toContain('Constanta');
   });
 });
