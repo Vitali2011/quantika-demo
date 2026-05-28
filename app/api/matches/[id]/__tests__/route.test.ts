@@ -8,6 +8,7 @@
  *   - wrong session id → 404 (session isolation #399)
  *   - invalid id format → 400
  *   - no session → 401
+ *   - slug lookup → 200 / 404 (stable cross-session IDs #631)
  *   - feature disabled → 503
  */
 
@@ -16,6 +17,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import migration032 from '@/lib/migrations/032-matches';
 import migration033 from '@/lib/migrations/033-matches-score-breakdown';
 import { requireSession } from '@/lib/session';
+import { toMatchSlug } from '@/lib/matching/match-slug';
 
 let testDb: Database.Database;
 
@@ -195,5 +197,67 @@ describe('GET /api/matches/[id] — PI2 behavioral (valid / missing / wrong-sess
     const res = await GET(makeGetRequest('0'), { params: Promise.resolve({ id: '0' }) });
 
     expect(res.status).toBe(400);
+  });
+});
+
+describe('GET /api/matches/[id] — slug lookup (#631 stable match IDs)', () => {
+  let db: Database.Database;
+
+  beforeEach(() => {
+    db = freshDb();
+    testDb = db;
+    process.env.MATCHES_ENABLED = 'true';
+    mockRequireSession.mockReturnValue(SESSION_A);
+  });
+
+  afterEach(() => {
+    db.close();
+    delete process.env.MATCHES_ENABLED;
+  });
+
+  it('PI2-slug: returns 200 when looked up by stable slug', async () => {
+    seedMatch(db, 'user-a', { cargo_type: 'iron ore', load_port: 'BRVIX' });
+    const slug = toMatchSlug('cargo-1', 'vessel-1');
+    const { GET } = await import('@/app/api/matches/[id]/route');
+    const res = await GET(makeGetRequest(slug), { params: Promise.resolve({ id: slug }) });
+
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.cargo_id).toBe('cargo-1');
+    expect(body.vessel_id).toBe('vessel-1');
+  });
+
+  it('PI2-slug-missing: returns 404 for unknown slug', async () => {
+    const slug = toMatchSlug('unknown-cargo', 'unknown-vessel');
+    const { GET } = await import('@/app/api/matches/[id]/route');
+    const res = await GET(makeGetRequest(slug), { params: Promise.resolve({ id: slug }) });
+
+    expect(res.status).toBe(404);
+  });
+
+  it('PI2-slug-wrong-session: returns 404 for slug owned by other session', async () => {
+    seedMatch(db, 'user-b');
+    const slug = toMatchSlug('cargo-1', 'vessel-1');
+    mockRequireSession.mockReturnValueOnce(SESSION_A);
+    const { GET } = await import('@/app/api/matches/[id]/route');
+    const res = await GET(makeGetRequest(slug), { params: Promise.resolve({ id: slug }) });
+
+    expect(res.status).toBe(404);
+  });
+
+  it('PI2-slug-stable: same slug works after match row would have new autoincrement id', async () => {
+    // Simulate reseed: insert matches in different DB, same cargo+vessel → new autoincrement id
+    const slug = toMatchSlug('cargo-1', 'vessel-1');
+    // Insert a different match first (bumps autoincrement)
+    db.prepare(
+      `INSERT INTO matches (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at)
+       VALUES ('other-cargo', 'other-vessel', 50, '{}', 'shortlist', 'user-a', 0, 0)`,
+    ).run();
+    // Now insert our target match — autoincrement id is 2 now instead of 1
+    seedMatch(db, 'user-a');
+    const { GET } = await import('@/app/api/matches/[id]/route');
+    const res = await GET(makeGetRequest(slug), { params: Promise.resolve({ id: slug }) });
+
+    expect(res.status).toBe(200);
   });
 });

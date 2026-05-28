@@ -11,6 +11,7 @@ import { safeRender, getConf, ConfIcon } from '@/lib/ui-render';
 import { renderSpecialRequirements, formatQuantity } from '@/lib/cargo-render';
 import { SanctionsBadge } from '@/components/vessel/SanctionsBadge';
 import { Anchor, FileText, Ship } from 'lucide-react';
+import { toMatchSlug } from '@/lib/matching/match-slug';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -331,7 +332,7 @@ export default async function CargoDetailPage({ params }: Props) {
                 const dwtRaw = vessel ? cfValue(vessel.dwtSummer) : null;
                 const dwtStr = dwtRaw != null ? formatNumber(Number(dwtRaw)) : '?';
                 return (
-                  <Link key={i} href={`/match/${session.matches.indexOf(match)}`}>
+                  <Link key={i} href={`/match/${toMatchSlug(match.cargoEmailId, match.vesselEmailId)}`}>
                     <div className="p-3 rounded-[8px] border border-[#e2e8f0] hover:bg-[#f8fafc] transition-colors cursor-pointer">
                       <div className="flex justify-between items-start">
                         <div>
