@@ -234,10 +234,10 @@ describe('MatchesClient — mode-aware column headers (#630)', () => {
     expect(chartererMatch).not.toBeNull();
   });
 
-  it('sortBy reset effect does NOT reset filter chips (cargoTypes, route, etc.)', () => {
-    // The useEffect watching [isOwner] must only call setSortBy — not setCargoTypes, setRoute, etc.
-    // Anchor on the comment that marks the exact effect, then read the next 250 chars.
-    const marker = src.indexOf('Reset sort default when mode switches');
+  it('sortBy reset does NOT reset filter chips (cargoTypes, route, etc.)', () => {
+    // The derived-state-during-render pattern must only call setSortBy — not setCargoTypes, setRoute, etc.
+    // Anchor on the comment that marks the block, then read the next 250 chars.
+    const marker = src.indexOf('Derived-state-during-render resets sort on mode switch');
     expect(marker).toBeGreaterThan(-1);
     const block = src.slice(marker, marker + 250);
     expect(block).not.toMatch(/setCargoTypes|setRoute|setLaycan|setScore|setDwt|setFilterStatus|setQuickFilter/);

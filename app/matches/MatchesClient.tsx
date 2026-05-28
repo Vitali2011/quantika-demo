@@ -117,11 +117,12 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
   const [showModal, setShowModal] = useState<{ action: string; count: number } | null>(null);
   const [bulkError, setBulkError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortBy>(() => isOwner ? 'tce' : 'score');
-  // Reset sort default when mode switches (charterer → score, owner → tce)
-  useEffect(() => {
+  // Derived-state-during-render resets sort on mode switch without cascading renders.
+  const [prevIsOwner, setPrevIsOwner] = useState(isOwner);
+  if (prevIsOwner !== isOwner) {
+    setPrevIsOwner(isOwner);
     setSortBy(isOwner ? 'tce' : 'score');
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOwner]);
+  }
 
   // CD design state
   const [density, setDensity] = useState<Density>('table');
