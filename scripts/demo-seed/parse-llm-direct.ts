@@ -16,7 +16,7 @@ import 'dotenv/config';
 import dotenv from 'dotenv';
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local'), override: false });
 
-import { callAiJson, callAiText } from '@/lib/ai-provider';
+import { callAiJson, callAiText, extractJson } from '@/lib/ai-provider';
 import { getClassifyPrompt } from '@/lib/prompts/classify';
 import { CARGO_INQUIRY_PARSER_PROMPT } from '@/lib/prompts/parse-cargo';
 import { VESSEL_POSITION_PARSER_PROMPT } from '@/lib/prompts/parse-vessel';
@@ -38,11 +38,16 @@ const DEFAULT_CLASSIFY_BATCH = 15;
 const LLM_TIMEOUT_MS = 120_000;
 
 let SEED_MODEL = 'claude-opus-4-8';
+// Per-call USD ceiling for claude-cli. Each nested `claude --print` pays ~$0.12
+// cache-creation overhead + work, so the ai-provider default of 0.05 aborts every
+// call. This is a cap, not a charge — actual cost per call is ~$0.3.
+let SEED_MAX_BUDGET = 5.0;
 
 interface Args {
   rawDir: string;
   classifyBatchSize: number;
   model: string;
+  maxBudget: number;
 }
 
 function parseArgs(argv: string[]): Args {
@@ -51,6 +56,7 @@ function parseArgs(argv: string[]): Args {
     rawDir: path.resolve(get('--raw-dir') ?? DEFAULT_RAW),
     classifyBatchSize: parseInt(get('--batch-size') ?? String(DEFAULT_CLASSIFY_BATCH), 10),
     model: get('--model') ?? 'claude-opus-4-8',
+    maxBudget: parseFloat(get('--max-budget') ?? '5'),
   };
 }
 
@@ -91,7 +97,7 @@ async function classifyBatch(emails: Email[], batchIdx: number, total: number): 
     'CLASSIFY',
     getClassifyPrompt(),
     `Today's date: ${todayIso}\n\n${JSON.stringify(batch)}`,
-    { timeoutMs: LLM_TIMEOUT_MS, responseSchema: CLASSIFY_SCHEMA, model: SEED_MODEL },
+    { timeoutMs: LLM_TIMEOUT_MS, responseSchema: CLASSIFY_SCHEMA, model: SEED_MODEL, maxBudgetUsd: SEED_MAX_BUDGET },
   );
   console.log(`${((Date.now() - t0) / 1000).toFixed(1)}s`);
   return result.classifications ?? [];
@@ -109,8 +115,9 @@ async function parseCargoBatch(emails: Email[]): Promise<ParsedCargo[]> {
         timeoutMs: LLM_TIMEOUT_MS,
         responseSchema: PARSE_CARGO_SCHEMA,
         model: SEED_MODEL,
+        maxBudgetUsd: SEED_MAX_BUDGET,
       });
-      const parsed = parseCargoAIResponse(raw, email.id);
+      const parsed = parseCargoAIResponse(extractJson(raw), email.id);
       results.push(...parsed);
       console.log(`${((Date.now() - t0) / 1000).toFixed(1)}s → ${parsed.length} cargoes`);
     } catch (e) {
@@ -132,8 +139,9 @@ async function parseVesselBatch(emails: Email[]): Promise<ParsedVessel[]> {
         timeoutMs: LLM_TIMEOUT_MS,
         responseSchema: PARSE_VESSEL_SCHEMA,
         model: SEED_MODEL,
+        maxBudgetUsd: SEED_MAX_BUDGET,
       });
-      const parsed = parseVesselAIResponse(raw, email.id, email.subject);
+      const parsed = parseVesselAIResponse(extractJson(raw), email.id, email.subject);
       const fallbacked = applyGearedFallback(parsed, email.body);
       results.push(...fallbacked);
       console.log(`${((Date.now() - t0) / 1000).toFixed(1)}s → ${parsed.length} vessels`);
@@ -156,8 +164,9 @@ async function parseRecapBatch(emails: Email[]): Promise<ParsedFixtureRecap[]> {
         timeoutMs: LLM_TIMEOUT_MS,
         responseSchema: PARSE_RECAP_SCHEMA,
         model: SEED_MODEL,
+        maxBudgetUsd: SEED_MAX_BUDGET,
       });
-      const parsed = parseRecapAIResponse(raw, email.id);
+      const parsed = parseRecapAIResponse(extractJson(raw), email.id);
       if (parsed) results.push(parsed);
       console.log(`${((Date.now() - t0) / 1000).toFixed(1)}s → ${parsed ? 1 : 0} recaps`);
     } catch (e) {
@@ -170,6 +179,7 @@ async function parseRecapBatch(emails: Email[]): Promise<ParsedFixtureRecap[]> {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   SEED_MODEL = args.model;
+  SEED_MAX_BUDGET = args.maxBudget;
 
   if (!fs.existsSync(args.rawDir)) {
     console.error(`Raw dir does not exist: ${args.rawDir}`);
