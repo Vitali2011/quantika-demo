@@ -134,7 +134,7 @@ async function parseVesselBatch(emails: Email[]): Promise<ParsedVessel[]> {
         model: SEED_MODEL,
       });
       const parsed = parseVesselAIResponse(raw, email.id, email.subject);
-      const fallbacked = parsed.map(v => applyGearedFallback(v));
+      const fallbacked = applyGearedFallback(parsed, email.body);
       results.push(...fallbacked);
       console.log(`${((Date.now() - t0) / 1000).toFixed(1)}s → ${parsed.length} vessels`);
     } catch (e) {
