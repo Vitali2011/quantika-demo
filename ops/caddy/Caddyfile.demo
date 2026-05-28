@@ -1,5 +1,15 @@
 demo.quantika.org {
-    encode gzip zstd
+    # Exclude SSE path from compression — gzip/zstd buffers the infinite stream
+    # before flushing, causing a proxy timeout → HTTP 503. (#626)
+    @compressible {
+        not path /api/jobs/stream
+    }
+    encode @compressible gzip zstd
     header /api/* Cache-Control "no-store"
-    reverse_proxy localhost:3000
+    # flush_interval -1: stream bytes to client immediately, no proxy buffering.
+    # Required for SSE — without this, events are held in the upstream buffer
+    # and clients never receive them.
+    reverse_proxy localhost:3000 {
+        flush_interval -1
+    }
 }

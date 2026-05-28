@@ -12,6 +12,8 @@ export async function GET(req: NextRequest) {
 
   const encoder = new TextEncoder();
 
+  let cleanup: (() => void) | null = null;
+
   const stream = new ReadableStream({
     start(controller) {
       const send = (event: { type: string; data: unknown }) => {
@@ -24,7 +26,18 @@ export async function GET(req: NextRequest) {
         }
       };
 
-      controller.enqueue(encoder.encode(': connected\n\n'));
+      // Guard: if request was already aborted before stream setup, close immediately.
+      if (req.signal.aborted) {
+        try { controller.close(); } catch { /* already closed */ }
+        return;
+      }
+
+      try {
+        controller.enqueue(encoder.encode(': connected\n\n'));
+      } catch {
+        // stream already closed before first write
+        return;
+      }
 
       const off = jobEvents.subscribe(sessionId, send);
 
@@ -36,15 +49,20 @@ export async function GET(req: NextRequest) {
         }
       }, 25000);
 
-      req.signal.addEventListener('abort', () => {
+      cleanup = () => {
         off();
         clearInterval(hb);
-        try {
-          controller.close();
-        } catch {
-          // already closed
-        }
+        try { controller.close(); } catch { /* already closed */ }
+      };
+
+      req.signal.addEventListener('abort', () => {
+        cleanup?.();
+        cleanup = null;
       });
+    },
+    cancel() {
+      cleanup?.();
+      cleanup = null;
     },
   });
 
