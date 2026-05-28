@@ -37,7 +37,7 @@ describe('spec-03: demo seed-match for EconomicsTab', () => {
       vesselItemIndex: 0,
       score: 92,
       matchLevel: 'good' as const,
-      matchReasons: ['Guaranteed demo match for EconomicsTab'],
+      matchReasons: ['Good DWT fit — 58,000 mt vessel vs 50,000 mt grain cargo'],
       issues: [],
     };
 
