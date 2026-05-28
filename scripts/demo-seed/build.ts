@@ -14,7 +14,7 @@ import {
   type ParsedVessel,
   type ParsedFixtureRecap,
 } from '@/lib/types';
-import { parseLaycan } from '@/lib/sailing/date-parsing';
+import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
 
 const PARSER_VERSION = 'demo-seed-v1';
 
@@ -72,7 +72,8 @@ function shiftBodyDates(body: string, offsetDays: number): string {
 function shiftedCargo(c: ParsedCargo, offsetDays: number): ParsedCargo {
   return {
     ...c,
-    laycan: c.laycan ? shiftBodyDates(c.laycan, offsetDays) : c.laycan,
+    // LLM output is not always a string here (can be null / object); only shift strings.
+    laycan: typeof c.laycan === 'string' ? shiftBodyDates(c.laycan, offsetDays) : c.laycan,
   };
 }
 
@@ -81,7 +82,8 @@ function shiftedCargo(c: ParsedCargo, offsetDays: number): ParsedCargo {
 function shiftedVessel(v: ParsedVessel, offsetDays: number): ParsedVessel {
   if (!v.openDate) return v;
   const iso = v.openDate.value;
-  if (!iso.match(/^\d{4}-\d{2}-\d{2}/)) return v;
+  // LLM output is not always a string here (can be number / null); only shift ISO strings.
+  if (typeof iso !== 'string' || !iso.match(/^\d{4}-\d{2}-\d{2}/)) return v;
   const d = new Date(iso + (iso.length === 10 ? 'T00:00:00Z' : ''));
   if (isNaN(d.getTime())) return v;
   d.setUTCDate(d.getUTCDate() + offsetDays);
@@ -110,10 +112,25 @@ function applyAnonymization(text: string, map: Record<string, string>): string {
   const entries = Object.entries(map).sort((a, b) => b[0].length - a[0].length);
   let out = text;
   for (const [original, alias] of entries) {
-    const escaped = original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    // Escape regex metachars, then make internal whitespace flexible: real names
+    // in the source emails have irregular spacing ("LEPRO TRADE LP  IRELAND" with
+    // a double space) that the normalized canonical key would otherwise miss.
+    const escaped = original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
     out = out.replace(new RegExp(escaped, 'gi'), alias);
   }
   return out;
+}
+
+// Forwarded broker emails carry dozens of real addresses (To/From/Cc/signatures)
+// that the entity-name map never sees. Email addresses are an unambiguous pattern,
+// so redact every one to a generic demo address — no over-replacement risk.
+function redactEmails(text: string): string {
+  return text
+    // Real addresses → generic demo address; skip ones already at demo.local so
+    // curated per-sender pseudonyms (broker1@demo.local) are preserved.
+    .replace(/[\w.+-]+@(?!demo\.local\b)[\w.-]+\.[a-z]{2,}/gi, 'broker@demo.local')
+    // Bare company domains (no @) that appear in URLs/signatures, e.g. "mrcship.com".
+    .replace(/\b[a-z0-9][a-z0-9-]+\.(?:com|net|org|co|biz|info|gr|tr|eg)(?:\.[a-z]{2})?\b/gi, 'demo.local');
 }
 
 function loadManifest(p: string): Manifest {
@@ -183,8 +200,8 @@ export async function build(opts: BuildOptions): Promise<void> {
         ...manifest.anonymization.brokers,
         ...manifest.anonymization.sender_emails,
       };
-      const anonBody = applyAnonymization(shiftedBody, bodyMap);
-      const anonSubject = applyAnonymization(shiftedSubject, bodyMap);
+      const anonBody = redactEmails(applyAnonymization(shiftedBody, bodyMap));
+      const anonSubject = redactEmails(applyAnonymization(shiftedSubject, bodyMap));
 
       // from_name: direct lookup in brokers map (case-insensitive key match)
       const fromNameRaw = email.fromName ?? '';
@@ -195,10 +212,11 @@ export async function build(opts: BuildOptions): Promise<void> {
         ? manifest.anonymization.brokers[brokerKey]
         : fromNameRaw;
 
-      // from_email: direct lookup in sender_emails map
+      // from_email: direct lookup in sender_emails map, then redact any residual address
       const fromEmailRaw = email.fromEmail ?? '';
-      const anonFromEmail =
-        manifest.anonymization.sender_emails[fromEmailRaw] ?? fromEmailRaw;
+      const anonFromEmail = redactEmails(
+        manifest.anonymization.sender_emails[fromEmailRaw] ?? fromEmailRaw,
+      );
 
       // Leak validation (Task 16)
       const forbidden = opts.forbiddenSubstrings ?? [];
@@ -233,60 +251,93 @@ export async function build(opts: BuildOptions): Promise<void> {
         fetched_at: manifest.generated_at,
       });
 
+      // Anonymize the structured parsed JSON too — charterer/vessel/broker names
+      // Opus extracted live inside result_json, and the UI reads parsed_results.
+      // Body-only anonymization would leak them. Re-check forbidden on the result.
+      const anonJson = (items: unknown[]): string => {
+        const s = redactEmails(applyAnonymization(JSON.stringify(items), bodyMap));
+        for (const needle of forbidden) {
+          if (s.includes(needle)) {
+            throw new Error(
+              `anonymization leak in ${email.threadId} (parsed_results): "${needle}" still present`,
+            );
+          }
+        }
+        return s;
+      };
+
       // Populate parsed_results. Cache-prefer: write real LLM rows when a
       // matching .llm-cache/<hash>.json is present, fall back to the regex
       // extractFacts path otherwise (CI-safe — fixture corpus uses regex).
       if (llmCache) {
+        // parsed_results is UNIQUE per (account_id, gmail_message_id, parse_type,
+        // parser_version) and prod (lib/email-cache.ts) stores result_json as a
+        // JSON ARRAY of items, one row per email. Emails routinely carry multiple
+        // cargoes/vessels, so group per email into one array row — inserting one
+        // row per item violates the unique key.
         const cls = llmCache.classifications.find((c) => c.emailId === email.messageId);
         if (cls) {
           insertParsed.run(
             'demo', email.messageId, 'classify', PARSER_VERSION,
-            JSON.stringify(cls), manifest.generated_at,
+            anonJson([cls]), manifest.generated_at,
           );
         }
 
-        for (const cargo of llmCache.parsedCargos.filter((c) => c.emailId === email.messageId)) {
-          const shifted = shiftedCargo(cargo, offset.offsetDays);
-          // Pre-compute laycan {start,end} ISO so the matches loop below can
-          // read structured dates directly. parseLaycan is the same helper
-          // used by the matching engine in prod.
-          let laycanRange: { start: string; end: string } | null = null;
-          if (shifted.laycan) {
-            const refYear = new Date(shiftedDate).getUTCFullYear();
-            const r = parseLaycan(shifted.laycan, refYear);
-            if (r) laycanRange = { start: r.start.toISOString(), end: r.end.toISOString() };
-          }
+        const cargoes = llmCache.parsedCargos
+          .filter((c) => c.emailId === email.messageId)
+          .map((cargo) => {
+            const shifted = shiftedCargo(cargo, offset.offsetDays);
+            // Pre-compute laycan {start,end} ISO so the matches loop below can
+            // read structured dates directly. parseLaycan is the same helper
+            // used by the matching engine in prod.
+            let laycanRange: { start: string; end: string } | null = null;
+            if (shifted.laycan) {
+              const refYear = new Date(shiftedDate).getUTCFullYear();
+              const r = parseLaycan(shifted.laycan, refYear);
+              if (r) laycanRange = { start: r.start.toISOString(), end: r.end.toISOString() };
+            }
+            return { ...shifted, laycan: laycanRange ?? shifted.laycan };
+          });
+        if (cargoes.length > 0) {
           insertParsed.run(
             'demo', email.messageId, 'cargo', PARSER_VERSION,
-            JSON.stringify({ ...shifted, laycan: laycanRange ?? shifted.laycan }),
-            manifest.generated_at,
+            anonJson(cargoes), manifest.generated_at,
           );
         }
 
-        for (const vessel of llmCache.parsedVessels.filter((v) => v.emailId === email.messageId)) {
-          const shifted = shiftedVessel(vessel, offset.offsetDays);
-          const openIso = cfValue(shifted.openDate);
-          // Persist openDate as a top-level ISO string (matches the regex
-          // path shape that the matches loop already reads).
+        const vessels = llmCache.parsedVessels
+          .filter((v) => v.emailId === email.messageId)
+          .map((vessel) => {
+            const shifted = shiftedVessel(vessel, offset.offsetDays);
+            // Top-level ISO openDate for the matches loop. Vessel open dates are
+            // usually loose ("22-24 August", "end Feb"), so parse the raw string
+            // then apply the per-email day offset (parse-then-shift) to land it in
+            // the frozen window. parseVesselOpenDate handles the loose formats.
+            const rawOpen = cfValue(vessel.openDate);
+            let openDateIso: string | null = null;
+            if (typeof rawOpen === 'string') {
+              const d = parseVesselOpenDate(rawOpen, new Date(email.date).getUTCFullYear());
+              if (d) {
+                d.setUTCDate(d.getUTCDate() + offset.offsetDays);
+                openDateIso = d.toISOString();
+              }
+            }
+            return { ...shifted, openDate: openDateIso };
+          });
+        if (vessels.length > 0) {
           insertParsed.run(
             'demo', email.messageId, 'vessel', PARSER_VERSION,
-            JSON.stringify({
-              ...shifted,
-              openDate: openIso
-                ? new Date(
-                    openIso.length === 10 ? openIso + 'T00:00:00Z' : openIso,
-                  ).toISOString()
-                : null,
-            }),
-            manifest.generated_at,
+            anonJson(vessels), manifest.generated_at,
           );
         }
 
-        for (const recap of llmCache.parsedFixtureRecaps.filter((r) => r.emailId === email.messageId)) {
+        const recaps = llmCache.parsedFixtureRecaps
+          .filter((r) => r.emailId === email.messageId)
+          .map((recap) => shiftedRecap(recap, offset.offsetDays));
+        if (recaps.length > 0) {
           insertParsed.run(
             'demo', email.messageId, 'recap', PARSER_VERSION,
-            JSON.stringify(shiftedRecap(recap, offset.offsetDays)),
-            manifest.generated_at,
+            anonJson(recaps), manifest.generated_at,
           );
         }
       } else {
@@ -340,35 +391,57 @@ export async function build(opts: BuildOptions): Promise<void> {
 
     const nowMs = new Date(manifest.frozenDate + 'T00:00:00.000Z').getTime();
 
-    for (const c of cargoRows) {
-      const cargo = JSON.parse(c.result_json);
-      if (!cargo.laycan?.start || !cargo.laycan?.end) continue;
-      const layStart = new Date(cargo.laycan.start).getTime();
-      const layEnd = new Date(cargo.laycan.end).getTime();
-
-      for (const v of vesselRows) {
-        const vessel = JSON.parse(v.result_json);
-        if (!vessel.openDate) continue;
-        const openMs = new Date(vessel.openDate).getTime();
-
-        // Skip: vessel opens too late (more than 7d after laycan ends)
-        if (openMs > layEnd + 7 * 86_400_000) continue;
-
-        let score = 75;
-        if (openMs >= layStart && openMs <= layEnd) score += 15; // within window
-        else if (openMs < layStart) score += 10; // ready early
-
-        insertMatch.run(
-          c.cargo_id,
-          v.vessel_id,
-          score,
-          `auto-shortlist: open ${vessel.openDate.slice(0, 10)} vs laycan ${cargo.laycan.start.slice(0, 10)}..${cargo.laycan.end.slice(0, 10)}`,
-          nowMs,
-          nowMs,
-          layStart,
-          layEnd,
-        );
+    // result_json is a JSON array of items per email (prod contract). Flatten
+    // vessels once; tolerate both array and legacy single-object shapes.
+    const asItems = (json: string): Record<string, unknown>[] => {
+      const parsed = JSON.parse(json);
+      return Array.isArray(parsed) ? parsed : [parsed];
+    };
+    const allVessels: Array<{ vesselId: string; openMs: number; openIso: string }> = [];
+    for (const v of vesselRows) {
+      for (const vessel of asItems(v.result_json)) {
+        if (!vessel.openDate || typeof vessel.openDate !== 'string') continue;
+        allVessels.push({ vesselId: v.vessel_id, openMs: new Date(vessel.openDate).getTime(), openIso: vessel.openDate });
       }
+    }
+
+    // Dedupe to one match per (cargo email, vessel email) pair — emails carry
+    // multiple cargoes/vessels but cargo_id/vessel_id are email-level. Keep best score.
+    const best = new Map<
+      string,
+      { cargoId: string; vesselId: string; score: number; reason: string; layStart: number; layEnd: number }
+    >();
+    for (const c of cargoRows) {
+      for (const cargo of asItems(c.result_json)) {
+        const laycan = cargo.laycan as { start?: string; end?: string } | null | undefined;
+        if (!laycan?.start || !laycan?.end) continue;
+        const layStart = new Date(laycan.start).getTime();
+        const layEnd = new Date(laycan.end).getTime();
+
+        for (const v of allVessels) {
+          if (v.openMs > layEnd + 7 * 86_400_000) continue; // opens >7d after laycan end
+
+          let score = 75;
+          if (v.openMs >= layStart && v.openMs <= layEnd) score += 15; // within window
+          else if (v.openMs < layStart) score += 10; // ready early
+
+          const key = `${c.cargo_id}|${v.vesselId}`;
+          const prev = best.get(key);
+          if (!prev || score > prev.score) {
+            best.set(key, {
+              cargoId: c.cargo_id,
+              vesselId: v.vesselId,
+              score,
+              reason: `auto-shortlist: open ${v.openIso.slice(0, 10)} vs laycan ${laycan.start.slice(0, 10)}..${laycan.end.slice(0, 10)}`,
+              layStart,
+              layEnd,
+            });
+          }
+        }
+      }
+    }
+    for (const m of best.values()) {
+      insertMatch.run(m.cargoId, m.vesselId, m.score, m.reason, nowMs, nowMs, m.layStart, m.layEnd);
     }
 
     db.prepare(

@@ -36,6 +36,42 @@ async function main(): Promise<void> {
   console.log('[seed-all] 2/5 reconcile (Opus analyst)…');
   const rec = await reconcile({ rawDir, model });
 
+  // Known-PII substrings the entity-name reconciler won't map on its own (bare
+  // sender domain + broker name appear in every forwarded ETM email). They MUST be
+  // in the anonymization MAP (not only build's leak-check forbidden list), or build
+  // checks for them yet never replaces them → hard leak failure. Reconcile pseudonyms
+  // for full email addresses are longer keys, so build's longest-first replace handles
+  // "x@etm-services.net" before this bare-domain fallback fires.
+  rec.anonymization.sender_emails['etm-services.net'] = 'demo.local';
+  rec.anonymization.sender_emails['etm-services'] = 'demo-broker';
+  rec.anonymization.brokers['ETM Services'] = 'DEMO BROKER';
+
+  // Expand each canonical name into shorter forms so partial mentions are also
+  // anonymized — emails use "Varan" for "Varan Shipping", "SIS MARINE" for the
+  // full company name, etc. Map the significant first token (≥4 chars, not a
+  // generic shipping/corporate word) and the 2-word prefix to the same pseudonym.
+  const STOP = new Set([
+    'shipping', 'marine', 'maritime', 'trade', 'trading', 'services', 'service', 'management',
+    'group', 'company', 'lines', 'line', 'bulk', 'grain', 'chartering', 'international', 'global',
+    'and', 'the', 'of', 'for', 'dept', 'department', 'shipmanagement',
+  ]);
+  const expandBucket = (map: Record<string, string>): void => {
+    for (const [real, pseudo] of Object.entries({ ...map })) {
+      const words = real.split(/[\s,/\-()]+/).filter(Boolean);
+      const w0 = words[0]?.toLowerCase() ?? '';
+      if (words[0] && words[0].length >= 4 && !STOP.has(w0) && !(words[0] in map)) {
+        map[words[0]] = pseudo;
+      }
+      if (words.length >= 2 && !STOP.has(w0)) {
+        const p2 = `${words[0]} ${words[1]}`;
+        if (!(p2 in map)) map[p2] = pseudo;
+      }
+    }
+  };
+  expandBucket(rec.anonymization.vessels);
+  expandBucket(rec.anonymization.charterers);
+  expandBucket(rec.anonymization.brokers);
+
   // 3. Analyze (offsets + merge reconcile anonymization)
   console.log('[seed-all] 3/5 analyze (date offsets)…');
   const manifest = await analyze({ rawDir, frozenDate, demoWindowDays: 14, seedAnonymization: rec.anonymization });
