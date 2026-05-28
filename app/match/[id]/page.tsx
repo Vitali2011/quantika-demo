@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 import { getSession } from '@/lib/session';
 import { getStore } from '@/lib/session-store';
-import { getMatch } from '@/lib/matching/matches-repository';
+import { getMatch, getMatchBySlug } from '@/lib/matching/matches-repository';
+import { fromMatchSlug } from '@/lib/matching/match-slug';
 import { fmtLaycan } from '@/lib/utils/fmt-laycan';
 import { Badge } from '@/components/ui/badge';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
@@ -23,7 +24,6 @@ const MATCH_LEVEL_BADGE: Record<string, { label: string }> = {
 
 export default async function MatchDetailPage({ params }: Props) {
   const { id } = await params;
-  const dbId = parseInt(id, 10);
 
   const cookieStore = await cookies();
   const sessionId = cookieStore.get('session_id')?.value;
@@ -31,10 +31,18 @@ export default async function MatchDetailPage({ params }: Props) {
   const session = getSession(sessionId);
   if (!session) redirect('/dashboard');
 
-  if (isNaN(dbId) || dbId < 1) notFound();
-
   const db = getStore().getDatabase();
-  const storedMatch = getMatch(db, dbId);
+  let storedMatch;
+
+  if (/^\d+$/.test(id)) {
+    const dbId = parseInt(id, 10);
+    if (dbId < 1) notFound();
+    storedMatch = getMatch(db, dbId);
+  } else {
+    const keys = fromMatchSlug(id);
+    if (!keys) notFound();
+    storedMatch = getMatchBySlug(db, keys.cargo_id, keys.vessel_id, sessionId);
+  }
 
   // Session isolation: 404 if match not found or belongs to another session
   if (!storedMatch || storedMatch.user_id !== sessionId) notFound();

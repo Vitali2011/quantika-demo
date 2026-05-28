@@ -231,6 +231,20 @@ export function getMatch(db: Database.Database, id: number): StoredMatch | null 
   return row ?? null;
 }
 
+export function getMatchBySlug(
+  db: Database.Database,
+  cargoId: string,
+  vesselId: string,
+  userId: string,
+): StoredMatch | null {
+  const row = db
+    .prepare(
+      `SELECT * FROM matches WHERE cargo_id = ? AND vessel_id = ? AND user_id = ? LIMIT 1`,
+    )
+    .get(cargoId, vesselId, userId) as StoredMatch | undefined;
+  return row ?? null;
+}
+
 export function listMatches(db: Database.Database, opts: ListMatchesOptions): StoredMatch[] {
   const { status, sortBy, sortDir, limit, offset } = opts;
   const {
