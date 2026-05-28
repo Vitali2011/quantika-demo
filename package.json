@@ -39,7 +39,12 @@
     "sync:corpus:vps": "bash scripts/sync-corpus-vps.sh",
     "corpus:extract": "tsx scripts/extract-corpus-cases.ts",
     "prepare": "husky",
-    "build:sample-data": "npx tsx scripts/build-sample-data.ts"
+    "build:sample-data": "npx tsx scripts/build-sample-data.ts",
+    "seed:parse": "AI_PROVIDER=claude-cli tsx scripts/demo-seed/parse-llm-direct.ts",
+    "seed:reconcile": "AI_PROVIDER=claude-cli tsx scripts/demo-seed/reconcile.ts",
+    "seed:build": "tsx scripts/demo-seed/build.ts",
+    "seed:validate": "tsx scripts/demo-seed/validators.ts",
+    "seed:all": "AI_PROVIDER=claude-cli tsx scripts/demo-seed/seed-all.ts"
   },
   "dependencies": {
     "@anthropic-ai/bedrock-sdk": "^0.29.2",

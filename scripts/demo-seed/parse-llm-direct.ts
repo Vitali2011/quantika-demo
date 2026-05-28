@@ -37,9 +37,12 @@ const DEFAULT_RAW = '.private/raw-emails';
 const DEFAULT_CLASSIFY_BATCH = 15;
 const LLM_TIMEOUT_MS = 120_000;
 
+let SEED_MODEL = 'claude-opus-4-8';
+
 interface Args {
   rawDir: string;
   classifyBatchSize: number;
+  model: string;
 }
 
 function parseArgs(argv: string[]): Args {
@@ -47,6 +50,7 @@ function parseArgs(argv: string[]): Args {
   return {
     rawDir: path.resolve(get('--raw-dir') ?? DEFAULT_RAW),
     classifyBatchSize: parseInt(get('--batch-size') ?? String(DEFAULT_CLASSIFY_BATCH), 10),
+    model: get('--model') ?? 'claude-opus-4-8',
   };
 }
 
@@ -87,7 +91,7 @@ async function classifyBatch(emails: Email[], batchIdx: number, total: number): 
     'CLASSIFY',
     getClassifyPrompt(),
     `Today's date: ${todayIso}\n\n${JSON.stringify(batch)}`,
-    { timeoutMs: LLM_TIMEOUT_MS, responseSchema: CLASSIFY_SCHEMA },
+    { timeoutMs: LLM_TIMEOUT_MS, responseSchema: CLASSIFY_SCHEMA, model: SEED_MODEL },
   );
   console.log(`${((Date.now() - t0) / 1000).toFixed(1)}s`);
   return result.classifications ?? [];
@@ -104,6 +108,7 @@ async function parseCargoBatch(emails: Email[]): Promise<ParsedCargo[]> {
       const raw = await callAiText('PARSE_CARGO', CARGO_INQUIRY_PARSER_PROMPT, prompts[i], {
         timeoutMs: LLM_TIMEOUT_MS,
         responseSchema: PARSE_CARGO_SCHEMA,
+        model: SEED_MODEL,
       });
       const parsed = parseCargoAIResponse(raw, email.id);
       results.push(...parsed);
@@ -126,6 +131,7 @@ async function parseVesselBatch(emails: Email[]): Promise<ParsedVessel[]> {
       const raw = await callAiText('PARSE_VESSEL', VESSEL_POSITION_PARSER_PROMPT, prompt, {
         timeoutMs: LLM_TIMEOUT_MS,
         responseSchema: PARSE_VESSEL_SCHEMA,
+        model: SEED_MODEL,
       });
       const parsed = parseVesselAIResponse(raw, email.id, email.subject);
       const fallbacked = parsed.map(v => applyGearedFallback(v));
@@ -149,6 +155,7 @@ async function parseRecapBatch(emails: Email[]): Promise<ParsedFixtureRecap[]> {
       const raw = await callAiText('PARSE_RECAP', FIXTURE_RECAP_PARSER_PROMPT, userPrompt, {
         timeoutMs: LLM_TIMEOUT_MS,
         responseSchema: PARSE_RECAP_SCHEMA,
+        model: SEED_MODEL,
       });
       const parsed = parseRecapAIResponse(raw, email.id);
       if (parsed) results.push(parsed);
@@ -162,6 +169,7 @@ async function parseRecapBatch(emails: Email[]): Promise<ParsedFixtureRecap[]> {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
+  SEED_MODEL = args.model;
 
   if (!fs.existsSync(args.rawDir)) {
     console.error(`Raw dir does not exist: ${args.rawDir}`);
