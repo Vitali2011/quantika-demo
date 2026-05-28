@@ -11,7 +11,7 @@
  *
  * Input Contract (integration level):
  * - All migrations must run without errors
- * - Bootstrap must register exactly 17 sources from KNOWLEDGE_REGISTRY
+ * - Bootstrap must register exactly 18 sources from KNOWLEDGE_REGISTRY
  * - OFAC refresh with valid XML must result in status='fresh', consecutive_failures=0
  * - getDistance must cache results and return { distanceNm, source: 'cache' } on second call
  * - listSources must return SourceRow[] with health_signal computed correctly
@@ -105,7 +105,7 @@ describe('Knowledge Phase 1 Integration Smoke', () => {
     expect(tableNames).toContain('eca_zones');
   });
 
-  it('bootstraps registry with exactly 17 sources from KNOWLEDGE_REGISTRY', () => {
+  it('bootstraps registry with exactly 18 sources from KNOWLEDGE_REGISTRY', () => {
     migration013.up(db);
 
     bootstrapKnowledgeSources(db);
@@ -113,11 +113,11 @@ describe('Knowledge Phase 1 Integration Smoke', () => {
     const count = (
       db.prepare('SELECT COUNT(*) AS c FROM knowledge_sources').get() as any
     ).c;
-    expect(count).toBe(17);
-    expect(KNOWLEDGE_REGISTRY).toHaveLength(17);
+    expect(count).toBe(18);
+    expect(KNOWLEDGE_REGISTRY).toHaveLength(18);
 
     const sources = listSources(db);
-    expect(sources).toHaveLength(17);
+    expect(sources).toHaveLength(18);
 
     // Verify Phase 1 sources are registered
     const slugs = sources.map((s) => s.slug);
