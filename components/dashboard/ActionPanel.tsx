@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Match, CommissionSummary } from '@/lib/types';
+import { toMatchSlug } from '@/lib/matching/match-slug';
 import type { EmailRow } from '@/lib/dashboard-queries';
 import { EmailCard } from './EmailCard';
 
@@ -61,7 +62,7 @@ export function ActionPanel({
           </summary>
           <div className="bg-white px-4 pb-4 pt-2 space-y-1">
             {goodMatches.map((match, i) => (
-              <Link key={i} href={`/match/${i}`}>
+              <Link key={i} href={`/match/${toMatchSlug(match.cargoEmailId, match.vesselEmailId)}`}>
                 <div className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200 bg-white">
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-gray-900 truncate">

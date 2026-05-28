@@ -3,9 +3,11 @@ import { getStore } from '@/lib/session-store';
 import { requireSession } from '@/lib/session';
 import {
   getMatch,
+  getMatchBySlug,
   updateMatchStatus,
   updateMatchFreightRate,
 } from '@/lib/matching/matches-repository';
+import { fromMatchSlug } from '@/lib/matching/match-slug';
 import type { MatchStatus } from '@/lib/matching/matches-repository';
 import { estimateFreightRate, computeEstimatedTce } from '@/lib/matching/tce-calculator';
 
@@ -31,17 +33,26 @@ export async function GET(
 
   try {
     const { id: idStr } = await context.params;
-    const id = parseInt(idStr, 10);
-    if (isNaN(id) || id < 1) {
-      return NextResponse.json({ error: 'Invalid match id' }, { status: 400 });
-    }
-
     const db = getStore().getDatabase();
-    const match = getMatch(db, id);
+
+    let match;
+    if (/^\d+$/.test(idStr)) {
+      const numId = parseInt(idStr, 10);
+      if (numId < 1) {
+        return NextResponse.json({ error: 'Invalid match id' }, { status: 400 });
+      }
+      match = getMatch(db, numId);
+    } else {
+      const keys = fromMatchSlug(idStr);
+      if (!keys) {
+        return NextResponse.json({ error: 'Invalid match id' }, { status: 400 });
+      }
+      match = getMatchBySlug(db, keys.cargo_id, keys.vessel_id, sessionId);
+    }
 
     // Return 404 for both missing matches and matches owned by other sessions
     if (!match || match.user_id !== sessionId) {
-      return NextResponse.json({ error: `Match not found: ${id}` }, { status: 404 });
+      return NextResponse.json({ error: `Match not found: ${idStr}` }, { status: 404 });
     }
 
     return NextResponse.json(match, { status: 200 });
