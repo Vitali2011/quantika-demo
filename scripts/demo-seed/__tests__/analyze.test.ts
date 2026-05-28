@@ -81,6 +81,22 @@ describe('analyze (Phase 0)', () => {
     const vesselKeys = Object.keys(m.anonymization.vessels);
     expect(vesselKeys.some(k => /FIXTURE WIND/i.test(k))).toBe(true);
   });
+
+  it('honors seedAnonymization passed in (reconcile pseudonyms win)', async () => {
+    const seeded = {
+      vessels: { 'M/V SPRING WIND': 'M/V SEAGULL 1' },
+      charterers: {},
+      brokers: {},
+      sender_emails: {},
+    };
+    const m = await analyze({
+      rawDir: FIXTURES,
+      frozenDate: '2026-05-20',
+      demoWindowDays: 14,
+      seedAnonymization: seeded,
+    });
+    expect(m.anonymization.vessels['M/V SPRING WIND']).toBe('M/V SEAGULL 1');
+  });
 });
 
 describe('analyze with LLM cache', () => {
