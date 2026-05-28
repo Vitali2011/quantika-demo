@@ -234,7 +234,7 @@ describe('Knowledge Phase 1 Integration Smoke', () => {
     expect(res.status).toBe(200);
     const json = await res.json();
     expect(json.status).toBe('healthy');
-    expect(json.sources_fresh).toBe(17);
+    expect(json.sources_fresh).toBe(18);
     expect(json.sources_failed).toBe(0);
   });
 
@@ -269,6 +269,6 @@ describe('Knowledge Phase 1 Integration Smoke', () => {
     // Since OFAC is fresh but others are never_synced, status should be degraded
     // (never_synced sources don't fail health check but are counted as stale)
     expect(json.sources_fresh).toBe(1); // Only OFAC
-    expect(json.sources_stale).toBe(16); // Others never synced
+    expect(json.sources_stale).toBe(17); // Others never synced
   });
 });
