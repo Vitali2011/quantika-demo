@@ -531,7 +531,7 @@ export default function CargoClient({ rows, total }: Props) {
               No cargo matches the current filters.
             </div>
           ) : (
-            <table className="w-full min-w-[1100px] border-collapse text-sm" role="grid">
+            <table className="w-full min-w-[1100px] table-fixed border-collapse text-sm" role="grid">
               <colgroup>
                 <col style={{ width: '220px' }} />
                 <col style={{ width: '90px' }} />
@@ -572,7 +572,7 @@ export default function CargoClient({ rows, total }: Props) {
                     role="row"
                     aria-selected={selected?.id === row.id}
                   >
-                    <td className="px-3.5 py-3.5">
+                    <td className="px-3.5 py-3.5 max-w-[220px] overflow-hidden">
                       <div className="flex items-center gap-3">
                         <CommodityBadge ck={row.commodityKey} />
                         <div className="flex flex-col min-w-0">
