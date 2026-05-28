@@ -77,7 +77,8 @@ function SidePanel({ row, onClose }: { row: CargoRow; onClose: () => void }) {
       />
       <aside
         className="fixed right-0 top-0 bottom-0 z-50 w-[420px] bg-white border-l border-[#e2e8f0] overflow-y-auto shadow-xl"
-        role="complementary"
+        role="dialog"
+        aria-modal="true"
         aria-label="Cargo detail"
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-[#f1f3f7]">
