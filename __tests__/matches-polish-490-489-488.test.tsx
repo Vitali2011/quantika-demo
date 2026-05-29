@@ -29,8 +29,9 @@ describe('app/matches/page.tsx — table fits at 1440px (#488)', () => {
 
   it('uses a container ≥ max-w-5xl so table fits without horizontal scroll', () => {
     const src = readSource(pagePath);
-    // max-w-5xl (1024px) or wider accommodates the 970px table at 1440px viewport
-    expect(src).toMatch(/max-w-5xl|max-w-6xl|max-w-7xl|max-w-screen/);
+    // max-w-5xl (1024px) or wider accommodates the 970px table at 1440px viewport;
+    // max-w-[1280px] matches /cargo full-width container
+    expect(src).toMatch(/max-w-5xl|max-w-6xl|max-w-7xl|max-w-screen|max-w-\[1280/);
   });
 });
 

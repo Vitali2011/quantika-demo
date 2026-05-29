@@ -43,6 +43,104 @@ interface RawVesselItem {
   items?: RawVesselItem[];
 }
 
+// ─── Provider artefact normalizers (Gemini-specific) ────────────────────────
+// See .progong/gemini-quirks.md for full documentation.
+
+const MONTH_NAME_RE = /\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\b/i;
+
+function isConfField(v: unknown): v is { value: unknown; confidence?: unknown; source_text?: unknown } {
+  return v !== null && typeof v === 'object' && 'value' in (v as object);
+}
+
+function nullIfNullString(v: unknown): unknown {
+  if (isConfField(v) && (v.value === 'null' || v.value === null)) return null;
+  return v;
+}
+
+function nullIfZeroNumeric(v: unknown): unknown {
+  if (isConfField(v) && v.value === 0 && (!v.source_text || v.source_text === '')) return null;
+  return v;
+}
+
+function nullBuiltIfCalendarDate(v: unknown): unknown {
+  if (!isConfField(v)) return v;
+  const src = typeof v.source_text === 'string' ? v.source_text : '';
+  if (MONTH_NAME_RE.test(src)) return null;
+  return v;
+}
+
+const SQM_OR_CM_PROD_RE = /sqm|sq\.?m\b|\bcm\b|cbm/i;
+const SPEED_UNIT_PROD_RE = /\bknts?\b|\bknots?\b|\bkts?\b/i;
+const THREE_DIM_PROD_RE = /\d+\s*[Xx×]\s*\d+\s*[Xx×]\s*\d+/;
+const CBFT_PROD_RE = /\bcbft\b|\bcuft\b|ft³|ft3/i;
+const CBFT_TO_CBM_PROD = 35.314667;
+
+function nullIfSqmOrCmDimension(v: unknown): unknown {
+  if (!isConfField(v)) return v;
+  const src = typeof v.source_text === 'string' ? v.source_text : '';
+  if (SQM_OR_CM_PROD_RE.test(src) || THREE_DIM_PROD_RE.test(src)) return null;
+  return v;
+}
+
+function nullIfSpeedAsDraft(v: unknown): unknown {
+  if (!isConfField(v)) return v;
+  const src = typeof v.source_text === 'string' ? v.source_text : '';
+  if (SPEED_UNIT_PROD_RE.test(src)) return null;
+  return v;
+}
+
+function convertCbftToCbm(v: unknown): unknown {
+  if (!isConfField(v)) return v;
+  const src = typeof v.source_text === 'string' ? v.source_text : '';
+  if (CBFT_PROD_RE.test(src) && typeof v.value === 'number' && v.value > 0) {
+    return { ...v, value: Math.round(v.value / CBFT_TO_CBM_PROD), confidence: 'interpreted' };
+  }
+  return v;
+}
+
+const FLAG_PROD_RE = /\bflag\b/i;
+// FLAG_INFERRED: vessel_flag uncertain without "flag" keyword in source_text → null
+function nullIfVesselFlagInferred(v: unknown): unknown {
+  if (!isConfField(v)) return v;
+  const src = typeof v.source_text === 'string' ? v.source_text : '';
+  if (v.confidence === 'uncertain' && !FLAG_PROD_RE.test(src)) return null;
+  return v;
+}
+
+function preNormalizeRawVessel(item: RawVesselItem): RawVesselItem {
+  const out = { ...item } as Record<string, unknown>;
+
+  // NULL_STRING: all keys
+  for (const k of Object.keys(out)) out[k] = nullIfNullString(out[k]);
+
+  // ZERO_NUMERIC: vessel dimension/capacity ConfidenceFields
+  for (const k of ['loa', 'beam', 'draft_max', 'grt', 'nrt', 'grain_capacity', 'bale_capacity', 'dwt_summer', 'dwcc']) {
+    if (k in out) out[k] = nullIfZeroNumeric(out[k]);
+  }
+
+  // SQM/CM/CBM GUARD: deck area, bag dims, volume must not become loa/beam/draft_max
+  for (const k of ['loa', 'beam', 'draft_max']) {
+    if (k in out) out[k] = nullIfSqmOrCmDimension(out[k]);
+  }
+
+  // SPEED_AS_DRAFT: draft_max from speed source (e.g. "13 knts") → null
+  if ('draft_max' in out) out['draft_max'] = nullIfSpeedAsDraft(out['draft_max']);
+
+  // CBFT→CBM: grain/bale capacity unit conversion
+  for (const k of ['grain_capacity', 'bale_capacity']) {
+    if (k in out) out[k] = convertCbftToCbm(out[k]);
+  }
+
+  // BUILT_FROM_DATE: null out when source_text contains a month name
+  if ('built' in out) out['built'] = nullBuiltIfCalendarDate(out['built']);
+
+  // FLAG_INFERRED: vessel_flag uncertain without "flag" keyword in source → null
+  if ('vessel_flag' in out) out['vessel_flag'] = nullIfVesselFlagInferred(out['vessel_flag']);
+
+  return out as RawVesselItem;
+}
+// ────────────────────────────────────────────────────────────────────────────
+
 /**
  * Extract IMO CII rating (A-E) from a subject line.
  * Patterns: "CII Grade D", "CII D", "Grade D" (when in CII context).
@@ -111,7 +209,8 @@ export function parseVesselAIResponse(raw: string, emailId: string, subject?: st
   const items = Array.isArray(result.items) ? result.items : [result];
   const parsed: ParsedVessel[] = [];
 
-  items.forEach((item, idx) => {
+  items.forEach((rawItem, idx) => {
+    const item = preNormalizeRawVessel(rawItem);
     parsed.push(calibrateAll({
       emailId,
       itemIndex: idx,

@@ -117,6 +117,12 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
   const [showModal, setShowModal] = useState<{ action: string; count: number } | null>(null);
   const [bulkError, setBulkError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortBy>(() => isOwner ? 'tce' : 'score');
+  // Derived-state-during-render resets sort on mode switch without cascading renders.
+  const [prevIsOwner, setPrevIsOwner] = useState(isOwner);
+  if (prevIsOwner !== isOwner) {
+    setPrevIsOwner(isOwner);
+    setSortBy(isOwner ? 'tce' : 'score');
+  }
 
   // CD design state
   const [density, setDensity] = useState<Density>('table');
@@ -297,6 +303,14 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
   // Mode-based count for "All" chip: charterer sees cargo-side, owner sees vessel-side
   const modeFiltered = filterMatchesByMode(matches, isOwner, cargoEmailIds, vesselEmailIds);
 
+  // All-chip count: mode + status + advanced filters (excluding quick-filter so the badge
+  // reflects "how many match your current advanced criteria" regardless of quick-filter tab)
+  const allChipCount = modeFiltered.filter(
+    (m) =>
+      (!filterStatus || m.status === filterStatus) &&
+      (cargoTypes.length === 0 || cargoTypes.includes(m.cargo_type ?? ''))
+  ).length;
+
   // Client-side filter: mode + status + cargo_type + quick filter; then sort
   const filtered = matches
     .filter(
@@ -334,7 +348,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
   return (
     <>
       <LiveStrip jobs={jobs} />
-      <div className="space-y-4 overflow-x-hidden">
+      <div className="space-y-4">
 
         {nowUtc && (
           <div className="flex justify-end">
@@ -347,7 +361,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
           {/* Quick filter chips */}
           <div className="flex items-center gap-2 flex-wrap" role="tablist" aria-label="Filter">
             {([
-              { id: 'all' as QuickFilter, label: 'All', count: modeFiltered.length },
+              { id: 'all' as QuickFilter, label: 'All', count: allChipCount },
               { id: 'fresh' as QuickFilter, label: 'Fresh', count: undefined },
               { id: 'score80' as QuickFilter, label: 'Score 80+', count: undefined },
               { id: 'dwt50_60' as QuickFilter, label: 'DWT 50–60k', count: undefined },
@@ -570,7 +584,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
           </div>
         ) : density === 'cards' ? (
           /* ===== CARDS VIEW ===== */
-          <>
+          <div className="overflow-x-hidden">
             {/* Select all header */}
             <div className="flex items-center gap-2 px-1 py-1">
               <input
@@ -777,7 +791,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                 </li>
               ))}
             </ul>
-          </>
+          </div>
         ) : (
           /* ===== TABLE VIEW ===== */
           <section className="bg-ds-surface border border-ds-border rounded-[14px] overflow-hidden" aria-label="Matches table">
@@ -795,10 +809,13 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                 </colgroup>
                 <thead>
                   <tr className="bg-ds-surface-muted border-b border-ds-border">
-                    {(['Score', 'Vessel', 'Route', 'DWT', 'TCE / day', 'Cargo', 'Laycan', ''] as const).map((h, i) => (
+                    {(isOwner
+                      ? ['Score', 'Cargo', 'Route', 'DWT', 'TCE / day', 'Vessel', 'Laycan', '']
+                      : ['Score', 'Vessel', 'Route', 'DWT', 'TCE / day', 'Cargo', 'Laycan', '']
+                    ).map((h, i) => (
                       <th
                         key={i}
-                        className={`font-mono text-[10.5px] tracking-[0.14em] uppercase text-ds-text-muted font-medium py-[14px] px-3 whitespace-nowrap ${i === 0 ? 'text-left pl-5' : i >= 3 && i <= 6 ? 'text-right' : 'text-left'} ${i === 7 ? 'pr-5' : ''}`}
+                        className={`font-mono text-[10.5px] tracking-[0.14em] uppercase text-ds-text-muted font-medium py-[14px] px-3 whitespace-nowrap ${i === 0 ? 'text-left pl-5' : i === 3 || i === 4 || i === 6 ? 'text-right' : 'text-left'} ${i === 7 ? 'pr-5' : ''}`}
                       >
                         {h}
                       </th>
@@ -828,15 +845,23 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                             )}
                           </div>
                         </td>
-                        {/* Vessel */}
-                        <td className="py-[13px] px-3 align-middle">
-                          <div className="flex items-center gap-[10px]">
-                            <span className="w-7 h-7 rounded-[7px] bg-ds-accent text-ds-accent-fg flex-shrink-0 inline-flex items-center justify-center font-mono text-[11.5px] font-medium">
-                              {vesselInitials(match.vessel_id)}
+                        {/* Column 2: Vessel (charterer) or Cargo (owner) */}
+                        {isOwner ? (
+                          <td className="py-[13px] px-3 align-middle">
+                            <span className={`font-mono text-[13px] whitespace-nowrap ${match.cargo_type ? '' : 'text-slate-300'}`}>
+                              {match.cargo_type ?? '—'}
                             </span>
-                            <span className="font-medium text-sm tracking-[-0.005em] truncate">{match.vessel_id}</span>
-                          </div>
-                        </td>
+                          </td>
+                        ) : (
+                          <td className="py-[13px] px-3 align-middle">
+                            <div className="flex items-center gap-[10px]">
+                              <span className="w-7 h-7 rounded-[7px] bg-ds-accent text-ds-accent-fg flex-shrink-0 inline-flex items-center justify-center font-mono text-[11.5px] font-medium">
+                                {vesselInitials(match.vessel_id)}
+                              </span>
+                              <span className="font-medium text-sm tracking-[-0.005em] break-words">{match.vessel_id}</span>
+                            </div>
+                          </td>
+                        )}
                         {/* Route */}
                         <td className="py-[13px] px-3 align-middle">
                           {(match.load_port || match.discharge_port) ? (
@@ -861,12 +886,23 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                             {fmtTce(match.tce_usd_per_day)}
                           </span>
                         </td>
-                        {/* Cargo */}
-                        <td className="py-[13px] px-3 align-middle">
-                          <span className={`font-mono text-[13px] whitespace-nowrap ${match.cargo_type ? '' : 'text-slate-300'}`}>
-                            {match.cargo_type ?? '—'}
-                          </span>
-                        </td>
+                        {/* Column 6: Cargo (charterer) or Vessel (owner) */}
+                        {isOwner ? (
+                          <td className="py-[13px] px-3 align-middle">
+                            <div className="flex items-center gap-[10px]">
+                              <span className="w-7 h-7 rounded-[7px] bg-ds-accent text-ds-accent-fg flex-shrink-0 inline-flex items-center justify-center font-mono text-[11.5px] font-medium">
+                                {vesselInitials(match.vessel_id)}
+                              </span>
+                              <span className="font-medium text-sm tracking-[-0.005em] break-words">{match.vessel_id}</span>
+                            </div>
+                          </td>
+                        ) : (
+                          <td className="py-[13px] px-3 align-middle">
+                            <span className={`font-mono text-[13px] whitespace-nowrap ${match.cargo_type ? '' : 'text-slate-300'}`}>
+                              {match.cargo_type ?? '—'}
+                            </span>
+                          </td>
+                        )}
                         {/* Laycan */}
                         <td className="py-[13px] px-3 text-right align-middle">
                           <span className="font-mono text-[12.5px] whitespace-nowrap text-ds-text-muted">
