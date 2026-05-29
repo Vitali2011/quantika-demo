@@ -76,17 +76,46 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       .join('; '),
   );
 
-  // In DEMO_MODE, auto-seed a sample data session so /matches shows data immediately.
+  // In DEMO_MODE, auto-seed a session from the frozen snapshot (demo-seed.db) so
+  // /matches shows the audited demo data immediately. The legacy "Try sample data"
+  // button still uses createDemoSession via /api/sample — left unchanged.
   if (process.env.DEMO_MODE === 'true') {
-    const { createDemoSession } = await import('@/lib/sample-data/create-demo-session');
-    const sessionId = createDemoSession();
-    response.cookies.set('session_id', sessionId, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: 'lax',
-      maxAge: 3600,
-      path: '/',
-    });
+    const { createSession } = await import('@/lib/session');
+    const { hydrateDemoSession } = await import('@/lib/demo-mode/hydrate-demo-session');
+    const { generateCsrfToken } = await import('@/lib/csrf');
+    const sessionId = createSession('demo-seed');
+    hydrateDemoSession(sessionId);
+    // Append (do NOT use response.cookies.set — it would clobber the auth cookie
+    // already set above via headers.set('Set-Cookie', ...)). Separate Set-Cookie
+    // headers coexist, so demo_auth + session_id + csrf_token all survive.
+    response.headers.append(
+      'Set-Cookie',
+      [
+        `session_id=${sessionId}`,
+        'Path=/',
+        'Max-Age=3600',
+        'HttpOnly',
+        isProduction ? 'Secure' : '',
+        'SameSite=Lax',
+      ]
+        .filter(Boolean)
+        .join('; '),
+    );
+    // csrf_token (double-submit, JS-readable) so demo /api/ai/* calls pass the middleware CSRF check.
+    const csrfToken = generateCsrfToken();
+    response.headers.append(
+      'Set-Cookie',
+      [
+        `csrf_token=${csrfToken}`,
+        'Path=/',
+        'Max-Age=3600',
+        isProduction ? 'Secure' : '',
+        'SameSite=Strict',
+      ]
+        .filter(Boolean)
+        .join('; '),
+    );
+    response.headers.set('X-CSRF-Token', csrfToken);
   }
 
   return response;

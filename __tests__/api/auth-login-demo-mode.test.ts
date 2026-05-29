@@ -1,8 +1,10 @@
 /**
- * Regression test for #573: /matches shows empty state in demo
+ * Regression test for #573 + frozen-snapshot wiring.
  *
- * In DEMO_MODE=true, POST /api/auth/login must auto-create a sample data
- * session and set the session_id cookie so /matches has data immediately.
+ * In DEMO_MODE=true, POST /api/auth/login must auto-create a session hydrated
+ * from the frozen snapshot (demo-seed.db, via hydrateDemoSession) and set the
+ * session_id + csrf_token cookies so /matches shows the audited demo data
+ * immediately and demo /api/ai/* calls pass the CSRF check.
  */
 import { NextRequest } from 'next/server';
 
@@ -23,8 +25,12 @@ describe('POST /api/auth/login — DEMO_MODE session seeding', () => {
       NODE_ENV: 'test',
     };
 
-    jest.doMock('@/lib/sample-data/create-demo-session', () => ({
-      createDemoSession: jest.fn().mockReturnValue(DEMO_SESSION_ID),
+    // Auto-seed now creates a session and hydrates it from the frozen snapshot.
+    jest.doMock('@/lib/session', () => ({
+      createSession: jest.fn().mockReturnValue(DEMO_SESSION_ID),
+    }));
+    jest.doMock('@/lib/demo-mode/hydrate-demo-session', () => ({
+      hydrateDemoSession: jest.fn(),
     }));
   });
 
@@ -49,13 +55,24 @@ describe('POST /api/auth/login — DEMO_MODE session seeding', () => {
     const allCookies = cookies.join('; ');
     expect(allCookies).toContain('session_id=');
     expect(allCookies).toContain(DEMO_SESSION_ID);
+    // The auth cookie must coexist (regression guard: session_id must not clobber it).
+    expect(allCookies).toContain('demo_auth=');
   });
 
-  it('calls createDemoSession on successful login when DEMO_MODE=true', async () => {
-    const { createDemoSession } = await import('@/lib/sample-data/create-demo-session');
+  it('hydrates the session from the frozen snapshot on successful login when DEMO_MODE=true', async () => {
+    const { hydrateDemoSession } = await import('@/lib/demo-mode/hydrate-demo-session');
     const { POST } = await import('@/app/api/auth/login/route');
     await POST(makeFormReq({ user: 'admin', password: 'demo' }));
-    expect(createDemoSession).toHaveBeenCalledTimes(1);
+    expect(hydrateDemoSession).toHaveBeenCalledTimes(1);
+    expect(hydrateDemoSession).toHaveBeenCalledWith(DEMO_SESSION_ID);
+  });
+
+  it('sets a csrf_token cookie on successful demo login (so /api/ai/* passes CSRF)', async () => {
+    const { POST } = await import('@/app/api/auth/login/route');
+    const res = await POST(makeFormReq({ user: 'admin', password: 'demo' }));
+    const cookies = res.headers.getSetCookie?.() ?? [res.headers.get('set-cookie') ?? ''];
+    const allCookies = cookies.join('; ');
+    expect(allCookies).toContain('csrf_token=');
   });
 
   it('does NOT set session_id cookie when DEMO_MODE is not set', async () => {
@@ -69,10 +86,10 @@ describe('POST /api/auth/login — DEMO_MODE session seeding', () => {
     expect(allCookies).not.toContain('session_id=');
   });
 
-  it('does NOT call createDemoSession on failed login', async () => {
-    const { createDemoSession } = await import('@/lib/sample-data/create-demo-session');
+  it('does NOT hydrate a session on failed login', async () => {
+    const { hydrateDemoSession } = await import('@/lib/demo-mode/hydrate-demo-session');
     const { POST } = await import('@/app/api/auth/login/route');
     await POST(makeFormReq({ user: 'admin', password: 'wrong-password' }));
-    expect(createDemoSession).not.toHaveBeenCalled();
+    expect(hydrateDemoSession).not.toHaveBeenCalled();
   });
 });
