@@ -618,10 +618,10 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
                             <div className="font-medium text-sm">
-                              Cargo: <span className="text-gray-700">{match.cargo_id}</span>
+                              Cargo: <span className="text-gray-700">{match.cargo_ref ?? match.cargo_id}</span>
                             </div>
                             <div className="font-medium text-sm">
-                              Vessel: <span className="text-gray-700">{match.vessel_id}</span>
+                              Vessel: <span className="text-gray-700">{match.vessel_name ?? match.vessel_id}</span>
                             </div>
                             {match.cargo_type && (
                               <span className="inline-block text-xs bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded mt-0.5">
@@ -856,9 +856,9 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                           <td className="py-[13px] px-3 align-middle">
                             <div className="flex items-center gap-[10px]">
                               <span className="w-7 h-7 rounded-[7px] bg-ds-accent text-ds-accent-fg flex-shrink-0 inline-flex items-center justify-center font-mono text-[11.5px] font-medium">
-                                {vesselInitials(match.vessel_id)}
+                                {vesselInitials(match.vessel_name ?? match.vessel_id)}
                               </span>
-                              <span className="font-medium text-sm tracking-[-0.005em] break-words">{match.vessel_id}</span>
+                              <span className="font-medium text-sm tracking-[-0.005em] break-words">{match.vessel_name ?? match.vessel_id}</span>
                             </div>
                           </td>
                         )}
@@ -891,9 +891,9 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                           <td className="py-[13px] px-3 align-middle">
                             <div className="flex items-center gap-[10px]">
                               <span className="w-7 h-7 rounded-[7px] bg-ds-accent text-ds-accent-fg flex-shrink-0 inline-flex items-center justify-center font-mono text-[11.5px] font-medium">
-                                {vesselInitials(match.vessel_id)}
+                                {vesselInitials(match.vessel_name ?? match.vessel_id)}
                               </span>
-                              <span className="font-medium text-sm tracking-[-0.005em] break-words">{match.vessel_id}</span>
+                              <span className="font-medium text-sm tracking-[-0.005em] break-words">{match.vessel_name ?? match.vessel_id}</span>
                             </div>
                           </td>
                         ) : (

@@ -65,6 +65,8 @@ export function persistSessionMatches(
       distance_nm: distanceResult ? distanceResult.nm : null,
       freight_rate_usd_per_mt,
       freight_rate_source,
+      vessel_name: vessel ? (cfValue(vessel.vesselName) ?? null) : null,
+      cargo_ref: cargo ? (cfValue(cargo.cargoDescription) ?? null) : null,
     });
   }
 }
