@@ -215,10 +215,10 @@ describe('middleware auth guard', () => {
       expect(otherRes.status).not.toBe(429);
     });
 
-    it('XFF spoofing — rotating leftmost hop does NOT bypass the limit; rightmost (Caddy-appended) IP is trusted', async () => {
-      // Behind Caddy reverse_proxy the real client IP is APPENDED as the
-      // rightmost X-Forwarded-For entry. The leftmost is client-controlled and
-      // can be rotated arbitrarily. The limiter must key on the rightmost hop.
+    it('XFF spoofing — rotating leftmost hop does NOT bypass the limit; rightmost (Caddy-appended) IP is trusted (CF-Connecting-IP absent fallback)', async () => {
+      // Fallback path: no CF-Connecting-IP header (single-proxy / local Caddy-only dev).
+      // The leftmost XFF entry is client-controlled and can be rotated arbitrarily.
+      // The limiter must key on the rightmost XFF hop in this fallback case.
       const REAL_IP = '203.0.113.7';
       const makeSpoofedReq = (spoofedLeftHop: string) =>
         new NextRequest('http://localhost/api/auth/login', {
@@ -226,10 +226,6 @@ describe('middleware auth guard', () => {
           headers: { 'x-forwarded-for': `${spoofedLeftHop}, ${REAL_IP}` },
         });
 
-      // 10 requests, each rotating the leftmost (claimed) IP, same rightmost real IP.
-      // With the buggy leftmost-keyed limiter, every request looks like a new IP
-      // and never throttles. With the rightmost-hop fix, all 10 share the same
-      // key and the 11th request — even with yet another fresh leftmost — is 429.
       for (let i = 0; i < 10; i++) {
         const res = await runMiddleware(makeSpoofedReq(`198.51.100.${i}`));
         expect(res.status).not.toBe(429);
@@ -237,6 +233,80 @@ describe('middleware auth guard', () => {
 
       const blockedRes = await runMiddleware(makeSpoofedReq('192.0.2.99'));
       expect(blockedRes.status).toBe(429);
+    });
+
+    it('CF-Connecting-IP is the authoritative limiter key when present (prod: behind Cloudflare)', async () => {
+      // Behind Cloudflare (demo.quantika.org → Cloudflare → Caddy → app), Cloudflare
+      // OVERWRITES X-Forwarded-For and sets CF-Connecting-IP to the real client IP.
+      // Clients cannot spoof CF-Connecting-IP (CF strips any client-supplied value).
+      // Therefore CF-Connecting-IP must take priority over XFF rightmost hop.
+      const REAL_CLIENT_IP = '198.51.100.42';
+      const makeReq = () =>
+        new NextRequest('http://localhost/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'cf-connecting-ip': REAL_CLIENT_IP,
+            // XFF would be Cloudflare edge IPs in prod; not used when CF header present
+            'x-forwarded-for': '162.158.1.1',
+          },
+        });
+
+      for (let i = 0; i < 10; i++) {
+        const res = await runMiddleware(makeReq());
+        expect(res.status).not.toBe(429);
+      }
+      const blockedRes = await runMiddleware(makeReq());
+      expect(blockedRes.status).toBe(429);
+    });
+
+    it('CF-Connecting-IP fixed + rotating XFF does NOT bypass the limit (spoof attempt behind Cloudflare)', async () => {
+      // Attacker controls XFF (can put anything inside Cloudflare-stripped tunnel
+      // attempts), but CANNOT control CF-Connecting-IP. Even if XFF rotates each
+      // request, the limiter must key on CF-Connecting-IP, so the 11th attempt 429s.
+      const REAL_CLIENT_IP = '203.0.113.99';
+      const makeReq = (rotatingXff: string) =>
+        new NextRequest('http://localhost/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'cf-connecting-ip': REAL_CLIENT_IP,
+            'x-forwarded-for': rotatingXff,
+          },
+        });
+
+      for (let i = 0; i < 10; i++) {
+        const res = await runMiddleware(makeReq(`198.51.100.${i}, 162.158.${i}.1`));
+        expect(res.status).not.toBe(429);
+      }
+
+      const blockedRes = await runMiddleware(makeReq('192.0.2.250, 162.158.99.99'));
+      expect(blockedRes.status).toBe(429);
+    });
+
+    it('different CF-Connecting-IPs are tracked independently (sharing CF edge IP must not throttle other users)', async () => {
+      // Multiple real clients share the same Cloudflare edge IP. If we keyed on
+      // XFF-rightmost behind CF, all users on the same CF edge would share a
+      // bucket and throttle each other. Test: two different CF-Connecting-IPs
+      // sharing the same XFF rightmost (CF edge) must NOT block each other.
+      const SHARED_CF_EDGE = '162.158.42.42';
+      const makeReq = (cfConnectingIp: string) =>
+        new NextRequest('http://localhost/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'cf-connecting-ip': cfConnectingIp,
+            'x-forwarded-for': SHARED_CF_EDGE,
+          },
+        });
+
+      // Exhaust limit for client A
+      for (let i = 0; i < 10; i++) {
+        await runMiddleware(makeReq('203.0.113.1'));
+      }
+      const blockedA = await runMiddleware(makeReq('203.0.113.1'));
+      expect(blockedA.status).toBe(429);
+
+      // Client B (different CF-Connecting-IP, same CF edge) must still be allowed
+      const allowedB = await runMiddleware(makeReq('203.0.113.2'));
+      expect(allowedB.status).not.toBe(429);
     });
   });
 

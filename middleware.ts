@@ -57,14 +57,26 @@ function isCsrfPath(pathname: string): boolean {
   return CSRF_PATHS.some(p => pathname.startsWith(p));
 }
 
-// Behind the prod Caddy reverse proxy the real client IP is APPENDED to
-// X-Forwarded-For as the rightmost hop (Caddy default — see ops/caddy/Caddyfile.demo).
-// The leftmost entries are sent by the client and trivially spoofable, so an
-// attacker rotating the leftmost value would otherwise bypass any IP-keyed limiter.
-// Read the rightmost hop only — it is the single trusted proxy's verdict on who the client is.
-function clientIpFromForwarded(headerValue: string | null): string | null {
-  if (!headerValue) return null;
-  const parts = headerValue.split(',').map((s) => s.trim()).filter(Boolean);
+// Prod topology: demo.quantika.org → Cloudflare (proxied/orange) → Caddy → Next app.
+// Cloudflare OVERWRITES X-Forwarded-For and sets CF-Connecting-IP to the real client IP.
+// Clients CANNOT spoof CF-Connecting-IP — Cloudflare strips any client-supplied value at
+// its edge, so behind CF that header is the authoritative client IP and is the right key.
+//
+// Fallback (no CF header — single-proxy / local Caddy-only dev): use the rightmost
+// X-Forwarded-For hop, which is what the single trusted local proxy appends. The
+// leftmost XFF entries are client-controlled and trivially spoofable; never trust them.
+//
+// Why CF-Connecting-IP MUST take priority over XFF behind Cloudflare:
+//   1. Rightmost XFF behind CF is the CF edge IP (~shared across thousands of users).
+//      Keying on it would throttle unrelated clients sharing the same edge.
+//   2. XFF inside the CF tunnel can carry client-supplied values; rotating them
+//      would bypass a limiter that consults XFF instead of CF-Connecting-IP.
+function clientIpFromRequest(headers: Headers): string | null {
+  const cfConnectingIp = headers.get('cf-connecting-ip')?.trim();
+  if (cfConnectingIp) return cfConnectingIp;
+  const xff = headers.get('x-forwarded-for');
+  if (!xff) return null;
+  const parts = xff.split(',').map((s) => s.trim()).filter(Boolean);
   return parts.length > 0 ? parts[parts.length - 1] : null;
 }
 
@@ -113,7 +125,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
   // ── Login brute-force guard ────────────────────────────────────────────────
   if (pathname === '/api/auth/login' && request.method === 'POST') {
-    const ip = clientIpFromForwarded(request.headers.get('x-forwarded-for')) ?? 'anonymous';
+    const ip = clientIpFromRequest(request.headers) ?? 'anonymous';
     const { allowed, retryAfterMs } = loginRateLimiter.check(ip);
     if (!allowed) {
       return NextResponse.json(
@@ -128,7 +140,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
   if (isAiRoute) {
     const sessionId = request.cookies.get('session_id')?.value;
-    const clientIp = clientIpFromForwarded(request.headers.get('x-forwarded-for'));
+    const clientIp = clientIpFromRequest(request.headers);
     const key = sessionId ?? clientIp ?? 'anonymous';
 
     const { allowed, remaining, retryAfterMs } = aiRateLimiter.check(key);
