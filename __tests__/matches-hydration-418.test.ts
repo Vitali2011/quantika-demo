@@ -31,24 +31,20 @@ describe('MatchesClient hydration safety (#543 regression)', () => {
     expect(src()).toMatch(/if\s*\(\s*now\s*===\s*0\s*\)\s*return false/);
   });
 
-  it('clientNow state is initialised to 0 (not Date.now())', () => {
-    // useState(0) ensures the server-rendered initial value matches the
-    // client's initial render — React #418 is impossible when both start
-    // from the same sentinel.
-    expect(src()).toMatch(/clientNow.*useState.*0/);
-    expect(src()).not.toMatch(/clientNow.*useState.*Date\.now/);
+  it('clientNow falls back to the 0 sentinel (not Date.now()) for SSR safety', () => {
+    // The clock now comes from useNow(): in live mode it yields null pre-mount so
+    // clientNow resolves to the 0 sentinel — server and client first paint match,
+    // making React #418 impossible. (In DEMO_MODE useNow returns a frozen constant,
+    // also SSR-safe.)
+    expect(src()).toMatch(/clientNow\s*=\s*nowMs\s*\?\?\s*0/);
+    expect(src()).not.toMatch(/clientNow.*=.*Date\.now/);
   });
 
-  it('setClientNow is called inside useEffect, not during render', () => {
-    // The actual Date.now() must only run after mount (in useEffect) so it
-    // never executes during SSR or the synchronous hydration pass.
-    expect(src()).toMatch(/setClientNow\(Date\.now\(\)\)/);
-    // Verify useEffect wraps the call (setClientNow should not appear before
-    // the first useEffect in the source file)
-    const setIdx = src().indexOf('setClientNow(Date.now())');
-    const effectIdx = src().indexOf('useEffect(');
-    expect(effectIdx).toBeGreaterThan(-1);
-    expect(setIdx).toBeGreaterThan(effectIdx);
+  it('sources its clock from the hydration-safe useNow hook (no render-time Date.now for the badge)', () => {
+    // Date.now() deferral to post-mount now lives inside useNow (verified by
+    // use-now.test.tsx). MatchesClient must consume the hook, never read the wall
+    // clock during render.
+    expect(src()).toMatch(/const nowMs = useNow\(\s*60000\s*\)/);
   });
 
   it('isFreshMatch in JSX row loop receives clientNow argument', () => {

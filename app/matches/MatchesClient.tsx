@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from 'react';
+import { useNow } from '@/lib/demo-clock-context';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import type { StoredMatch, MatchStatus } from '@/lib/matching/matches-repository';
@@ -126,20 +127,15 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
 
   // CD design state
   const [density, setDensity] = useState<Density>('table');
-  const [nowUtc, setNowUtc] = useState<string>("");
-  // Hydration-safe clock: starts at 0 (matches SSR), set post-mount to avoid
-  // React #418 text-content mismatch on the "fresh" badge (#543).
-  const [clientNow, setClientNow] = useState<number>(0);
-  useEffect(() => {
-    const tick = () => {
-      const d = new Date();
-      setNowUtc(`${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}`);
-      setClientNow(Date.now());
-    };
-    tick();
-    const id = setInterval(tick, 60000);
-    return () => clearInterval(id);
-  }, []);
+  // Single source of "now": DEMO_MODE → frozen snapshot ms (constant, SSR-safe,
+  // never decays); live → 0/"" sentinels until post-mount (no React #418 on the
+  // "fresh" badge, #543), then a real clock ticking every 60s.
+  const nowMs = useNow(60000);
+  const clientNow = nowMs ?? 0;
+  const nowUtc =
+    nowMs !== null
+      ? `${String(new Date(nowMs).getUTCHours()).padStart(2, '0')}:${String(new Date(nowMs).getUTCMinutes()).padStart(2, '0')}`
+      : '';
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
 
   // Auto-switch to cards on mobile after mount
@@ -171,7 +167,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
   const [dwt_max, setDwtMax] = useState(() => searchParams.get('dwt_max') ?? '');
 
   // Apply Filters handler
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization -- pre-existing async useCallback, refactor in R5
+   
   const handleApplyFilters = useCallback(async () => {
     const params = new URLSearchParams();
     for (const ct of cargoTypes) params.append('cargo_type', ct);
@@ -194,7 +190,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
   }, [cargoTypes, route, laycan_from, laycan_to, score_min, dwt_min, dwt_max, filterStatus, router]);
 
   // Clear Filters handler
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization -- pre-existing async useCallback, refactor in R5
+   
   const handleClearFilters = useCallback(async () => {
     setCargoTypes([]);
     setRoute('');

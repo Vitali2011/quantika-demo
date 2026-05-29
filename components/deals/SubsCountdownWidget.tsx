@@ -7,8 +7,9 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { getChartererGraceDays, normalizeDeadline } from '@/lib/deadlines/subs-guardian';
+import { useNow } from '@/lib/demo-clock-context';
 
 export interface SubsCountdownWidgetProps {
   dealId: string;
@@ -16,9 +17,9 @@ export interface SubsCountdownWidgetProps {
   chartererTier?: 'blue-chip' | 'second' | 'weak';
 }
 
-function computeRemaining(subsDeadline: string | number): number {
+function computeRemaining(subsDeadline: string | number, nowMs: number): number {
   const deadline = normalizeDeadline(subsDeadline);
-  return deadline.getTime() - Date.now();
+  return deadline.getTime() - nowMs;
 }
 
 // Inner component holds hooks; only mounted when flag is enabled.
@@ -27,19 +28,11 @@ function SubsCountdownInner({
   subsDeadline,
   chartererTier,
 }: SubsCountdownWidgetProps) {
-  // Defer Date.now() to post-mount: SSR and first client paint must produce
-  // identical HTML, otherwise React #418 hydration mismatch fires (same fix
-  // pattern as SubsCountdown — null sentinel → placeholder until useEffect).
-  const [remaining, setRemaining] = useState<number | null>(null);
-
-  useEffect(() => {
-    // Initial compute is sync (tests use fake-timers, can't wait async deferral).
-    // Hydration safety (#408) is preserved by null initial state + suppressHydrationWarning.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setRemaining(computeRemaining(subsDeadline));
-    const id = setInterval(() => setRemaining(computeRemaining(subsDeadline)), 60_000);
-    return () => clearInterval(id);
-  }, [subsDeadline]);
+  // Single source of "now": DEMO_MODE → frozen snapshot time (constant, SSR-safe);
+  // live → null until post-mount (deterministic placeholder, no #418), then a real
+  // clock ticking every 60s. Hydration safety preserved by the null sentinel below.
+  const nowMs = useNow(60_000);
+  const remaining = nowMs !== null ? computeRemaining(subsDeadline, nowMs) : null;
 
   if (remaining === null) {
     return (

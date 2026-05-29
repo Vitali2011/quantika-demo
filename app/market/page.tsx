@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useNow } from '@/lib/demo-clock-context';
 import { MarketKpiTile } from '@/components/market/MarketKpiTile';
 import { MetricHistoryPanel } from '@/components/market/MetricHistoryPanel';
 import { RoutesSection } from '@/components/market/RoutesSection';
@@ -105,13 +106,9 @@ export default function MarketPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeKpi, setActiveKpi] = useState<string | null>(null);
-  const [now, setNow] = useState<number>(0);
-
-  useEffect(() => {
-    // Hydration-safe: capture clock on mount so render stays pure.
-    const raf = requestAnimationFrame(() => setNow(Date.now()));
-    return () => cancelAnimationFrame(raf);
-  }, []);
+  // DEMO_MODE → frozen snapshot time (constant, SSR-safe); live → 0 until
+  // post-mount, then the real clock. Keeps render pure / hydration-safe.
+  const now = useNow() ?? 0;
 
   useEffect(() => {
     async function loadData() {

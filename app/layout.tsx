@@ -9,6 +9,9 @@ import { verifyAuthCookie, AUTH_COOKIE_NAME } from '@/lib/auth/cookie';
 import { getStore } from '@/lib/session-store';
 import { ModeProvider, AppShell } from '@/design-system/patterns';
 import type { Mode } from '@/design-system/patterns';
+import { isDemoMode } from '@/lib/demo-mode';
+import { now as clockNow } from '@/lib/clock';
+import { DemoClockProvider } from '@/lib/demo-clock-context';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -127,6 +130,18 @@ export default async function RootLayout({
     }
   }
 
+  // Frozen "now" (ms) for client relative-date displays in DEMO_MODE; null in
+  // live mode so the client uses the real browser clock. Reuses clock.now() as
+  // the single source; tolerant if demo_seed_meta is absent.
+  let demoFrozenMs: number | null = null;
+  if (isDemoMode()) {
+    try {
+      demoFrozenMs = clockNow().getTime();
+    } catch {
+      demoFrozenMs = null;
+    }
+  }
+
   return (
     <html lang="en" dir="ltr" suppressHydrationWarning>
       <head>
@@ -138,9 +153,11 @@ export default async function RootLayout({
             <TrialBannerWrapper sessionId={sessionId} />
           </Suspense>
         )}
-        <ModeProvider initial={initialMode}>
-          <AppShell>{children}</AppShell>
-        </ModeProvider>
+        <DemoClockProvider frozenMs={demoFrozenMs}>
+          <ModeProvider initial={initialMode}>
+            <AppShell>{children}</AppShell>
+          </ModeProvider>
+        </DemoClockProvider>
       </body>
     </html>
   );

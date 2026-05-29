@@ -74,15 +74,16 @@ describe('app/matches/MatchesClient.tsx — AUTO-REFRESH UTC indicator (#490)', 
     expect(src).toMatch(/UTC/);
   });
 
-  it('uses setInterval to update time every 60s', () => {
+  it('refreshes on a 60s cadence via the hydration-safe useNow clock', () => {
     const src = readSource(clientPath);
-    expect(src).toMatch(/setInterval.*60000|60000.*setInterval/);
+    // The 60s tick now lives inside useNow(60000) (no inline setInterval).
+    expect(src).toMatch(/useNow\(\s*60000\s*\)/);
   });
 
   it('uses SSR-safe empty initial state (no server/client mismatch)', () => {
     const src = readSource(clientPath);
-    // Empty string initial state prevents hydration mismatch
-    expect(src).toMatch(/useState.*""\s*\)|useState\(""\)/);
+    // nowUtc falls back to '' until the clock resolves → server and client first paint match
+    expect(src).toMatch(/nowUtc[\s\S]{0,300}:\s*''/);
   });
 
   it('renders indicator conditionally only when time is set (no flash on SSR)', () => {

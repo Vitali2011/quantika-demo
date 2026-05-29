@@ -5,6 +5,7 @@ import { getLatestIndex } from '@/lib/market/market-indices-repository';
 import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
 import { getLatestEuaPrice } from '@/lib/market/eua-repository';
 import { getStore } from '@/lib/session-store';
+import { now as clockNow } from '@/lib/clock';
 
 const VALID_INDICATORS: ReadonlySet<string> = new Set<MarketIndicator>([
   'TOEPFER_TMI',
@@ -50,7 +51,7 @@ export async function GET(request: Request): Promise<NextResponse> {
     if (indexName) {
       const row = getLatestIndex(db, indexName);
       if (row) {
-        const ageMs = Date.now() - new Date(row.index_date).getTime();
+        const ageMs = clockNow().getTime() - new Date(row.index_date).getTime();
         benchmark = {
           indicator: typedIndicator,
           value: row.value,
@@ -79,7 +80,7 @@ export async function GET(request: Request): Promise<NextResponse> {
     const db = getStore().getDatabase();
     const row = getLatestEuaPrice(db);
     if (row) {
-      const ageMs = Date.now() - new Date(row.price_date).getTime();
+      const ageMs = clockNow().getTime() - new Date(row.price_date).getTime();
       benchmark = {
         indicator: typedIndicator,
         value: row.price_eur_per_tco2,

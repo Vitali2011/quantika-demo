@@ -8,7 +8,8 @@
  * CTA «Draft extension request» (β-11 plan-first или mailto fallback).
  */
 
-import { useEffect, useState, type ReactElement } from 'react';
+import { type ReactElement } from 'react';
+import { useNow } from '@/lib/demo-clock-context';
 import {
   computeStage,
   type EscalationStage,
@@ -43,20 +44,11 @@ function formatRemaining(ms: number): string {
 }
 
 export function SubsCountdown(props: SubsCountdownProps): ReactElement {
-  // Defer `new Date()` to post-mount: SSR and client first paint must produce
-  // identical HTML, otherwise React #418 hydration mismatch fires. We use a
-  // null sentinel and render a deterministic placeholder until useEffect runs.
-  const [now, setNow] = useState<Date | null>(null);
-
-  useEffect(() => {
-    // Intentional cascading render: the first `setNow` flips from the null
-    // SSR placeholder to a real Date post-mount, which is the canonical
-    // React fix for hydration mismatches with time-based content.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setNow(new Date());
-    const id = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(id);
-  }, []);
+  // Single source of "now": in DEMO_MODE useNow() returns the frozen snapshot
+  // time (constant, SSR-safe, no decay); in live mode it returns null until
+  // post-mount (deterministic placeholder, no #418), then a ticking real clock.
+  const nowMs = useNow(1000);
+  const now = nowMs !== null ? new Date(nowMs) : null;
 
   // Pre-mount placeholder — deterministic, no Date(), no #418.
   if (now === null) {
