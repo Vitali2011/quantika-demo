@@ -400,8 +400,9 @@ export async function build(opts: BuildOptions): Promise<void> {
     `).all() as Array<{vessel_id: string; result_json: string}>;
 
     const insertMatch = db.prepare(`
-      INSERT INTO matches (cargo_id, vessel_id, score, reason, status, created_at, updated_at, laycan_start, laycan_end)
-      VALUES (?, ?, ?, ?, 'shortlist', ?, ?, ?, ?)
+      INSERT INTO matches (cargo_id, vessel_id, score, reason, status, created_at, updated_at,
+                           laycan_start, laycan_end, vessel_dwt, load_port, discharge_port)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     const nowMs = new Date(manifest.frozenDate + 'T00:00:00.000Z').getTime();
@@ -412,11 +413,27 @@ export async function build(opts: BuildOptions): Promise<void> {
       const parsed = JSON.parse(json);
       return Array.isArray(parsed) ? parsed : [parsed];
     };
-    const allVessels: Array<{ vesselId: string; openMs: number; openIso: string }> = [];
+    const allVessels: Array<{
+      vesselId: string; openMs: number; openIso: string;
+      dwt: number; openPosition: string | null;
+    }> = [];
     for (const v of vesselRows) {
       for (const vessel of asItems(v.result_json)) {
         if (!vessel.openDate || typeof vessel.openDate !== 'string') continue;
-        allVessels.push({ vesselId: v.vessel_id, openMs: new Date(vessel.openDate).getTime(), openIso: vessel.openDate });
+        const dwt =
+          typeof vessel.dwtSummer === 'number' ? vessel.dwtSummer :
+          typeof vessel.dwcc === 'number' ? vessel.dwcc : 0;
+        const openPosition =
+          vessel.openPosition && typeof vessel.openPosition === 'string'
+            ? vessel.openPosition
+            : null;
+        allVessels.push({
+          vesselId: v.vessel_id,
+          openMs: new Date(vessel.openDate).getTime(),
+          openIso: vessel.openDate,
+          dwt,
+          openPosition,
+        });
       }
     }
 
@@ -424,7 +441,11 @@ export async function build(opts: BuildOptions): Promise<void> {
     // multiple cargoes/vessels but cargo_id/vessel_id are email-level. Keep best score.
     const best = new Map<
       string,
-      { cargoId: string; vesselId: string; score: number; reason: string; layStart: number; layEnd: number }
+      {
+        cargoId: string; vesselId: string; score: number; reason: string;
+        layStart: number; layEnd: number; vesselDwt: number;
+        loadPort: string | null; dischargePort: string | null;
+      }
     >();
     for (const c of cargoRows) {
       for (const cargo of asItems(c.result_json)) {
@@ -433,12 +454,37 @@ export async function build(opts: BuildOptions): Promise<void> {
         const layStart = new Date(laycan.start).getTime();
         const layEnd = new Date(laycan.end).getTime();
 
-        for (const v of allVessels) {
-          if (v.openMs > layEnd + 7 * 86_400_000) continue; // opens >7d after laycan end
+        // Extract cargo weight and destination port for DWT check + port fields
+        const cargoWeightMt =
+          typeof cargo.weightMt === 'number' ? cargo.weightMt : 0;
+        const cargoDestPort =
+          cargo.destinationPort && typeof cargo.destinationPort === 'string'
+            ? cargo.destinationPort
+            : null;
+        const cargoOriginPort =
+          cargo.originPort && typeof cargo.originPort === 'string'
+            ? cargo.originPort
+            : null;
 
-          let score = 75;
-          if (v.openMs >= layStart && v.openMs <= layEnd) score += 15; // within window
-          else if (v.openMs < layStart) score += 10; // ready early
+        for (const v of allVessels) {
+          // Skip vessels that can't carry the cargo (90% utilization limit)
+          if (cargoWeightMt > 0 && v.dwt > 0 && cargoWeightMt > v.dwt * 0.90) continue;
+          // Skip vessels opening too late
+          if (v.openMs > layEnd + 7 * 86_400_000) continue;
+
+          // Score with meaningful spread
+          let score = 60;
+          if (v.openMs >= layStart && v.openMs <= layEnd) score += 25; // perfect timing
+          else if (v.openMs < layStart) score += 15; // ready early (small repositioning cost)
+          else score += 5; // opens slightly after laycan but within grace
+
+          // DWT fitness bonus (well-utilized vessel)
+          if (cargoWeightMt > 0 && v.dwt > 0) {
+            const util = cargoWeightMt / v.dwt;
+            if (util >= 0.50 && util <= 0.88) score += 15; // good utilization
+            else if (util > 0.88 && util <= 0.90) score += 10; // tight but valid
+            else if (util < 0.50) score += 3; // over-capacity vessel
+          }
 
           const key = `${c.cargo_id}|${v.vesselId}`;
           const prev = best.get(key);
@@ -450,13 +496,33 @@ export async function build(opts: BuildOptions): Promise<void> {
               reason: `auto-shortlist: open ${v.openIso.slice(0, 10)} vs laycan ${laycan.start.slice(0, 10)}..${laycan.end.slice(0, 10)}`,
               layStart,
               layEnd,
+              vesselDwt: v.dwt,
+              loadPort: cargoOriginPort ?? v.openPosition,
+              dischargePort: cargoDestPort,
             });
           }
         }
       }
     }
+    // Cap fan-out: keep top 6 matches per cargo (by score desc) to avoid near-cartesian product
+    type BestEntry = { cargoId: string; vesselId: string; score: number; reason: string; layStart: number; layEnd: number; vesselDwt: number; loadPort: string | null; dischargePort: string | null };
+    const perCargo = new Map<string, BestEntry[]>();
     for (const m of best.values()) {
-      insertMatch.run(m.cargoId, m.vesselId, m.score, m.reason, nowMs, nowMs, m.layStart, m.layEnd);
+      const arr = perCargo.get(m.cargoId) ?? [];
+      arr.push(m);
+      perCargo.set(m.cargoId, arr);
+    }
+    for (const arr of perCargo.values()) {
+      arr.sort((a, b) => b.score - a.score);
+      for (const m of arr.slice(0, 6)) {
+        insertMatch.run(
+          m.cargoId, m.vesselId, m.score, m.reason, 'shortlist', nowMs, nowMs,
+          m.layStart, m.layEnd,
+          m.vesselDwt || null,
+          m.loadPort ?? null,
+          m.dischargePort ?? null,
+        );
+      }
     }
 
     db.prepare(
