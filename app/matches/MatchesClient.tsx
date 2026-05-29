@@ -815,7 +815,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                     ).map((h, i) => (
                       <th
                         key={i}
-                        className={`font-mono text-[10.5px] tracking-[0.14em] uppercase text-ds-text-muted font-medium py-[14px] px-3 whitespace-nowrap ${i === 0 ? 'text-left pl-5' : i >= 3 && i <= 6 ? 'text-right' : 'text-left'} ${i === 7 ? 'pr-5' : ''}`}
+                        className={`font-mono text-[10.5px] tracking-[0.14em] uppercase text-ds-text-muted font-medium py-[14px] px-3 whitespace-nowrap ${i === 0 ? 'text-left pl-5' : i === 3 || i === 4 || i === 6 ? 'text-right' : 'text-left'} ${i === 7 ? 'pr-5' : ''}`}
                       >
                         {h}
                       </th>
