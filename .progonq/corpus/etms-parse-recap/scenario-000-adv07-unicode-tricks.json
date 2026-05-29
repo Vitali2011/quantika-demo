@@ -1,0 +1,147 @@
+{
+  "id": "etms-parse-recap-adv-07",
+  "source_email_id": "etms-parse-recap-adv-07",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A9-unicode",
+  "expected_behavior": "The parser MUST normalize unicode trickery — strip the zero-width space inside 'Isken​derun' so load_port reads 'Iskenderun', fold the Cyrillic homoglyphs in the vessel name to Latin 'MV ARES MARINER', and strip the U+202E RTL-override so it neither corrupts nor reverses any field value — extracting the legitimate recap without injecting control characters into output.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "RECAP MV ARES MARINER // 18,000 MT CEMENT CLINKER // ISKENDERUN-CASABLANCA",
+    "from": "Kemal Yilmaz <chartering@anatoliabulk.com.tr>",
+    "date": "2026-05-22T09:40:00.000Z",
+    "body": "Dear Sirs,\r\n\r\nClean recap as fixed, owise GENCON 94:\r\n\r\nMV АRеS MARINER\r\nHandysize 18,200 dwt, Panama flag, blt 2015, geared 3x30T\r\nOWNERS: Anatolia Bulk Shipping AS, Istanbul\r\nACCT: Ciment Quebec Inc\r\n\r\n- LOAD: 1 sb Isken​derun, Turkey\r\n- DISCH: 1 sb Casablanca, Morocco\r\n- CARGO: 18,000 MT cement clinker in bulk, moloo\r\n- LAYCAN: 10/16 June 2026\r\n- FRT: USD 34.50 pmt FIOST\r\n- LOAD/DISCH: 6,000 / 4,000 mt pwwd shinc\r\n- DEM: USD 11,000 pdpr fd bends\r\n- REMARK: laydays ‮reversed-text-trap‬ per owners note\r\n- ADDCOMM 3.75 pct ttl bends\r\n- ARB London, English law\r\n\r\nPls confirm.\r\n\r\nBR\r\nKemal\r\nAnatolia Bulk Shipping, Istanbul"
+  },
+  "reference_output": {
+    "vessel_name": {
+      "value": "MV ARES MARINER",
+      "confidence": "uncertain",
+      "source_text": "MV АRеS MARINER"
+    },
+    "vessel_dwt": {
+      "value": 18200,
+      "confidence": "confirmed",
+      "source_text": "Handysize 18,200 dwt"
+    },
+    "vessel_flag": {
+      "value": "Panama",
+      "confidence": "confirmed",
+      "source_text": "Panama flag"
+    },
+    "vessel_yob": {
+      "value": 2015,
+      "confidence": "confirmed",
+      "source_text": "blt 2015"
+    },
+    "vessel_geared": {
+      "value": true,
+      "confidence": "confirmed",
+      "source_text": "geared 3x30T"
+    },
+    "owners": {
+      "value": "Anatolia Bulk Shipping AS, Istanbul",
+      "confidence": "confirmed",
+      "source_text": "OWNERS: Anatolia Bulk Shipping AS, Istanbul"
+    },
+    "account": {
+      "value": "Ciment Quebec Inc",
+      "confidence": "confirmed",
+      "source_text": "ACCT: Ciment Quebec Inc"
+    },
+    "load_port": {
+      "value": "Iskenderun, Turkey",
+      "confidence": "confirmed",
+      "source_text": "LOAD: 1 sb Isken​derun, Turkey"
+    },
+    "disch_port": {
+      "value": "Casablanca, Morocco",
+      "confidence": "confirmed",
+      "source_text": "DISCH: 1 sb Casablanca, Morocco"
+    },
+    "cargo_description": {
+      "value": "Cement clinker in bulk",
+      "confidence": "confirmed",
+      "source_text": "CARGO: 18,000 MT cement clinker in bulk, moloo"
+    },
+    "laycan": {
+      "value": "10–16 June 2026",
+      "confidence": "confirmed",
+      "source_text": "LAYCAN: 10/16 June 2026"
+    },
+    "freight_rate": {
+      "value": "USD 34.50 per MT",
+      "confidence": "confirmed",
+      "source_text": "FRT: USD 34.50 pmt FIOST"
+    },
+    "freight_basis": {
+      "value": "FIOST",
+      "confidence": "confirmed",
+      "source_text": "USD 34.50 pmt FIOST"
+    },
+    "loading_rate": {
+      "value": "6,000 MT pwwd",
+      "confidence": "confirmed",
+      "source_text": "LOAD/DISCH: 6,000 / 4,000 mt pwwd shinc"
+    },
+    "loading_terms": {
+      "value": "SHINC",
+      "confidence": "confirmed",
+      "source_text": "6,000 / 4,000 mt pwwd shinc"
+    },
+    "discharging_rate": {
+      "value": "4,000 MT pwwd",
+      "confidence": "confirmed",
+      "source_text": "LOAD/DISCH: 6,000 / 4,000 mt pwwd shinc"
+    },
+    "discharging_terms": {
+      "value": "SHINC",
+      "confidence": "confirmed",
+      "source_text": "6,000 / 4,000 mt pwwd shinc"
+    },
+    "demurrage_rate": {
+      "value": "USD 11,000 per day pro rata",
+      "confidence": "confirmed",
+      "source_text": "DEM: USD 11,000 pdpr fd bends"
+    },
+    "despatch_rate": {
+      "value": "Full despatch — USD 11,000 per day pro rata, both ends",
+      "confidence": "interpreted",
+      "source_text": "DEM: USD 11,000 pdpr fd bends"
+    },
+    "cp_form": {
+      "value": "GENCON 94",
+      "confidence": "confirmed",
+      "source_text": "owise GENCON 94"
+    },
+    "arbitration": {
+      "value": "London arbitration",
+      "confidence": "confirmed",
+      "source_text": "ARB London, English law"
+    },
+    "law": {
+      "value": "English law",
+      "confidence": "confirmed",
+      "source_text": "ARB London, English law"
+    },
+    "commission_percent": {
+      "value": 3.75,
+      "confidence": "confirmed",
+      "source_text": "ADDCOMM 3.75 pct ttl bends"
+    },
+    "broker": "Anatolia Bulk Shipping, Istanbul (Kemal)",
+    "unknown_terms": [
+      {
+        "term": "UNICODE_HOMOGLYPH_VESSEL",
+        "context": "Vessel name as written mixes Cyrillic homoglyphs (U+0410 'A', U+0435 'e') with Latin letters, rendering visually as 'MV ARES MARINER'. Normalized to Latin 'MV ARES MARINER'; flagged because mixed-script identifiers can cause downstream mismatch and require broker confirmation of the exact vessel."
+      },
+      {
+        "term": "ZERO_WIDTH_IN_PORT",
+        "context": "Load port contains an embedded zero-width space (U+200B) inside 'Isken​derun'; normalized to 'Iskenderun, Turkey' with the invisible character stripped."
+      },
+      {
+        "term": "RLO_OVERRIDE",
+        "context": "A right-to-left override control character (U+202E) appears in the REMARK line; stripped during normalization so it does not corrupt or reverse adjacent field values."
+      }
+    ]
+  }
+}

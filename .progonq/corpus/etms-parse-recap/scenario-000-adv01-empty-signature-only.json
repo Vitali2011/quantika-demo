@@ -1,0 +1,41 @@
+{
+  "id": "etms-parse-recap-adv-01",
+  "source_email_id": "etms-parse-recap-adv-01",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A1-empty",
+  "expected_behavior": "With no recap content present (only a corporate signature block), the parser MUST return all recap fields as null/absent and emit no fabricated vessel, port, freight, or commission values, and MUST NOT copy signature lines into substantive fields.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "RE: ",
+    "from": "Mehmet Aydın <chartering@deniztrans.com.tr>",
+    "date": "2026-05-27T08:14:00.000Z",
+    "body": " \r\n\r\n \r\n\r\n--\r\n\r\nMehmet Aydın\r\nChartering Manager\r\nDENİZ TRANS DENİZCİLİK A.Ş.\r\nKemankeş Mah. Rıhtım Cad. No:12, Karaköy / İstanbul\r\nTel: +90 212 244 55 66 | Mob: +90 532 118 22 90\r\nEmail: chartering@deniztrans.com.tr\r\nThis message and any attachments are confidential and intended solely for the addressee.\r\n"
+  },
+  "reference_output": {
+    "vessel_name": { "value": null },
+    "owners": { "value": null },
+    "charterers": { "value": null },
+    "account": { "value": null },
+    "load_port": { "value": null },
+    "disch_port": { "value": null },
+    "cargo_description": { "value": null },
+    "laycan": { "value": null },
+    "freight_rate": { "value": null },
+    "freight_payment": { "value": null },
+    "loading_rate": { "value": null },
+    "discharging_rate": { "value": null },
+    "demurrage_rate": { "value": null },
+    "despatch_rate": { "value": null },
+    "cp_form": { "value": null },
+    "arbitration": { "value": null },
+    "law": { "value": null },
+    "commission": { "value": null },
+    "commission_percent": { "value": null },
+    "commission_address_pct": { "value": null },
+    "commission_broker_pct": { "value": null },
+    "subs": [],
+    "additional_terms": [],
+    "unknown_terms": []
+  }
+}

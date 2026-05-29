@@ -1,0 +1,30 @@
+{
+  "id": "etms-parse-vessel-adv-06",
+  "source_email_id": "etms-parse-vessel-adv-06",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A6-missing-req",
+  "expected_behavior": "A vague enquiry names a vessel but gives neither DWT nor any open position/date (only a generic availability note); the parser must either return items=[] or return a single MV BLUE HORIZON item with dwt_summer, open_position and open_date set to null/uncertain — it must NOT hallucinate a tonnage or a port.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "MV BLUE HORIZON - any interest?",
+    "from": "Dimitris Pappas <d.pappas@aegean-brokers.gr>",
+    "date": "2026-05-28T16:09:21.000Z",
+    "body": "Hi mate,\r\n\r\nHope all well your side. Quick one — do you have anything moving for our MV BLUE HORIZON in the coming weeks? She is a tidy little geared box, well maintained, owners are flexible and keen to work with you again after the last fixture went smoothly.\r\n\r\nNo firm position yet, just sounding the market. Let me know if anything comes up and I'll get you full specs + itinerary.\r\n\r\nCheers,\r\nDimitris"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": { "value": "MV BLUE HORIZON", "confidence": "confirmed", "source_text": "MV BLUE HORIZON" },
+        "imo": null,
+        "flag": null,
+        "built": { "value": null, "confidence": "uncertain", "source_text": "" },
+        "dwt_summer": { "value": null, "confidence": "uncertain", "source_text": "" },
+        "dwcc": null,
+        "geared": true,
+        "open_position": { "value": null, "confidence": "uncertain", "source_text": "No firm position yet, just sounding the market" },
+        "open_date": { "value": { "open": null, "close": null, "display": null }, "confidence": "uncertain", "source_text": "No firm position yet" }
+      }
+    ]
+  }
+}

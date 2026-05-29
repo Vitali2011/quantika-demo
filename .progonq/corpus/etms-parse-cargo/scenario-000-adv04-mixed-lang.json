@@ -1,0 +1,55 @@
+{
+  "id": "etms-parse-cargo-adv-04",
+  "source_email_id": "etms-parse-cargo-adv-04",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A4-mixed-lang",
+  "expected_behavior": "The email mixes English, Turkish and Arabic in one cargo enquiry; the parser MUST extract origin Iskenderun, destination Alexandria, ~12,500 MT cement clinker in bulk, laycan 5-10 June 2026, without being confused by the language switching or treating non-English words as port names.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "Merhaba - clinker enq ISK / alex عاجل",
+    "from": "Mehmet Yildiz <m.yildiz@boraz-denizcilik.com.tr>",
+    "date": "2026-05-25T14:20:55.000Z",
+    "body": "Merhaba Sherif bey,\r\n\r\nNasilsiniz? Umarim iyisinizdir. We have firm cargo asagidaki gibi, lutfen en iyi navlun veriniz:\r\n\r\nCargo: cement clinker dökme (in bulk)\r\nMiktar (qty): abt 12,500 mts\r\nYukleme limani / load port: ISK (Iskenderun)\r\nالتفريغ / disch: Alexandria 1 sb\r\nLaycan: 5-10 Haziran 2026 (June)\r\nTahliye orani / disch rate: 2500 mt/day shex\r\nKomisyon: 3.75% ttl pus\r\n\r\nشكرا - tesekkurler, please revert asap.\r\n\r\nSaygilar,\r\nMehmet"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Iskenderun",
+          "confidence": "confirmed",
+          "source_text": "Yukleme limani / load port: ISK (Iskenderun)"
+        },
+        "destination_port": {
+          "value": "Alexandria",
+          "confidence": "confirmed",
+          "source_text": "التفريغ / disch: Alexandria 1 sb"
+        },
+        "cargo_description": {
+          "value": "Cement clinker in bulk",
+          "confidence": "interpreted",
+          "source_text": "Cargo: cement clinker dökme (in bulk)"
+        },
+        "weight_mt": {
+          "value": 12500,
+          "confidence": "interpreted",
+          "source_text": "Miktar (qty): abt 12,500 mts"
+        },
+        "cargo_type": "BULK",
+        "laycan": {
+          "value": "5-10 June 2026",
+          "confidence": "confirmed",
+          "source_text": "Laycan: 5-10 Haziran 2026 (June)"
+        },
+        "discharge_rate": "2500 MT/day",
+        "discharge_terms": "SHEX",
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "Komisyon: 3.75% ttl pus"
+        },
+        "commission_terms": "TTL PUS"
+      }
+    ]
+  }
+}
