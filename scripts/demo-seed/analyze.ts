@@ -340,7 +340,7 @@ export async function analyze(opts: AnalyzeOptions): Promise<Manifest> {
       // spread derived from the last 3 hex chars of threadId (0-4095 → % 21 = 0..20 days).
       // Fixed from: "-days + -7" which had wrong sign (moved emails backwards in time).
       const totalDays = Math.round((frozen.getTime() - emailD.getTime()) / 86_400_000);
-      const spread = parseInt(email.threadId.slice(-3), 16) % 21; // 0..20 deterministic days back
+      const spread = parseInt(email.threadId.slice(-6), 16) % 21; // 0..20 deterministic days back (6 hex chars = 24 bits for uniform distribution)
       offsetDays = totalDays - spread; // emailD + (totalDays - spread) = frozen - spread
       rationale = `${sourceTag}: email.date ${emailD.toISOString().slice(0, 10)} → frozenDate -${spread}d (fallback)`;
     }

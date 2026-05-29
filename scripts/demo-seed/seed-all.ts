@@ -53,14 +53,23 @@ async function main(): Promise<void> {
         if (name !== name.toUpperCase() && !rec.anonymization.brokers[name.toUpperCase()]) {
           rec.anonymization.brokers[name.toUpperCase()] = `CONTACT ${contactCounter}`;
         }
-        // Add first name only (for "Dear Sherif" patterns) if length >= 3
+        // Add first AND last name individually (for "Dear Sherif", "Schuster" in quoted headers).
+        // Skip generic English/corporate words to prevent false-positive body corruption.
+        const NAME_STOP = new Set([
+          'and', 'the', 'of', 'for', 'say', 'co', 'bv', 'nv', 'llc', 'ltd', 'inc', 'srl',
+          'mr', 'mrs', 'ms', 'dr', 'capt', 'dept', 'group', 'corp', 'via', 'attn',
+        ]);
         const parts = name.split(/\s+/);
-        const firstName = parts[0];
-        if (firstName && firstName.length >= 3 && !rec.anonymization.brokers[firstName]) {
-          rec.anonymization.brokers[firstName] = `CONTACT ${contactCounter}`;
-        }
-        if (firstName && firstName !== firstName.toUpperCase() && !rec.anonymization.brokers[firstName.toUpperCase()]) {
-          rec.anonymization.brokers[firstName.toUpperCase()] = `CONTACT ${contactCounter}`;
+        for (const part of parts) {
+          if (part.length < 3) continue;
+          if (NAME_STOP.has(part.toLowerCase())) continue;
+          if (!rec.anonymization.brokers[part]) {
+            rec.anonymization.brokers[part] = `CONTACT ${contactCounter}`;
+          }
+          const upper = part.toUpperCase();
+          if (upper !== part && !rec.anonymization.brokers[upper]) {
+            rec.anonymization.brokers[upper] = `CONTACT ${contactCounter}`;
+          }
         }
       }
     }
@@ -95,6 +104,17 @@ async function main(): Promise<void> {
   rec.anonymization.sender_emails['etm-services'] = 'demo-broker';
   rec.anonymization.brokers['ETM Services'] = 'DEMO BROKER';
 
+  // Residual PII names that the reconcile step or originalSender loop won't add:
+  // salutation first-names ("Dear Elif"), display-name surnames, To: company variants.
+  for (const [raw, alias] of [
+    ['Elif', 'CONTACT 80'], ['ELIF', 'CONTACT 80'],
+    ['SEA TRANSIT DENIZ TASIMACILIGI', 'TRANSIT BROKER'],
+    ['Sea Transit Deniz Tasimaciligi', 'TRANSIT BROKER'],
+    ['SEA TRANSIT', 'TRANSIT BROKER'], ['Sea Transit', 'TRANSIT BROKER'],
+  ] as [string, string][]) {
+    if (!rec.anonymization.brokers[raw]) rec.anonymization.brokers[raw] = alias;
+  }
+
   // Expand each canonical name into shorter forms so partial mentions are also
   // anonymized — emails use "Varan" for "Varan Shipping", "SIS MARINE" for the
   // full company name, etc. Map the significant first token (≥4 chars, not a
@@ -114,7 +134,8 @@ async function main(): Promise<void> {
       if (words[0] && words[0].length >= 4 && !STOP.has(w0) && !(words[0] in map) && !aliasHasVesselPrefix) {
         map[words[0]] = pseudo;
       }
-      if (words.length >= 2 && !STOP.has(w0)) {
+      // Require both words >= 2 chars to prevent "M V" from vessel names (L4 corruption).
+      if (words.length >= 2 && !STOP.has(w0) && words[0].length >= 2 && words[1].length >= 2) {
         const p2 = `${words[0]} ${words[1]}`;
         if (!(p2 in map)) map[p2] = pseudo;
       }

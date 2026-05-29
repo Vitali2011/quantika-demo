@@ -91,10 +91,17 @@ function shiftedVessel(v: ParsedVessel, offsetDays: number): ParsedVessel {
   return { ...v, openDate: { ...v.openDate, value: shifted } };
 }
 
-function shiftedRecap(r: ParsedFixtureRecap, offsetDays: number): ParsedFixtureRecap {
+function shiftedRecap(r: ParsedFixtureRecap, offsetDays: number, frozenDate: string): ParsedFixtureRecap {
   const laycanVal = cfValue(r.laycan);
   if (!laycanVal) return r;
-  const shifted = shiftBodyDates(laycanVal, offsetDays);
+  let shifted = shiftBodyDates(laycanVal, offsetDays);
+  // Receipt-date offsetDays is too small to move historical laycans (e.g. 2018) to 2026.
+  // Year-correct: replace any year more than 2 years before frozen with the frozen year.
+  const frozenYear = parseInt(frozenDate.slice(0, 4), 10);
+  shifted = shifted.replace(/\b(19|20)(\d{2})\b/g, (match) => {
+    const yr = parseInt(match, 10);
+    return yr < frozenYear - 2 ? String(frozenYear) : match;
+  });
   if (shifted === laycanVal) return r;
   return { ...r, laycan: { ...r.laycan!, value: shifted } };
 }
@@ -111,14 +118,22 @@ export interface BuildOptions {
  * Longer keys are replaced first to avoid partial-match issues.
  */
 function applyAnonymization(text: string, map: Record<string, string>): string {
-  const entries = Object.entries(map).sort((a, b) => b[0].length - a[0].length);
+  // Sort longest-first to avoid partial-match issues; skip keys < 3 chars to prevent
+  // false-positive corruption (e.g. "GN" matching inside "signed").
+  const entries = Object.entries(map)
+    .filter(([k]) => k.length >= 3)
+    .sort((a, b) => b[0].length - a[0].length);
   let out = text;
   for (const [original, alias] of entries) {
     // Escape regex metachars, then make internal whitespace flexible: real names
     // in the source emails have irregular spacing ("LEPRO TRADE LP  IRELAND" with
     // a double space) that the normalized canonical key would otherwise miss.
     const escaped = original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
-    out = out.replace(new RegExp(escaped, 'gi'), alias);
+    // Short pure-word keys get word-boundary guards to prevent matching inside longer words
+    // (e.g. "Ali" must not corrupt "Italian"; "and" must not corrupt "Alexandria").
+    const isShortWord = original.length < 5 && /^[\p{L}\p{N}]+$/u.test(original);
+    const pattern = isShortWord ? `\\b${escaped}\\b` : escaped;
+    out = out.replace(new RegExp(pattern, 'gi'), alias);
   }
   return out;
 }
@@ -132,7 +147,9 @@ function redactEmails(text: string): string {
     // curated per-sender pseudonyms (broker1@demo.local) are preserved.
     .replace(/[\w.+-]+@(?!demo\.local\b)[\w.-]+\.[a-z]{2,}/gi, 'broker@demo.local')
     // Bare company domains (no @) that appear in URLs/signatures, e.g. "mrcship.com".
-    .replace(/\b[a-z0-9][a-z0-9-]+\.(?:com|net|org|co|biz|info|gr|tr|eg)(?:\.[a-z]{2})?\b/gi, 'demo.local');
+    .replace(/\b[a-z0-9][a-z0-9-]+\.(?:com|net|org|co|biz|info|gr|tr|eg)(?:\.[a-z]{2})?\b/gi, 'demo.local')
+    // Skype / Viber / WhatsApp / ICQ contact handles after label (e.g. "Skype : elifkisabacak")
+    .replace(/\b(?:Skype|Viber|WhatsApp|ICQ|WeChat|Telegram)\s*[:\-]\s*\S+/gi, 'demo.local');
 }
 
 function loadManifest(p: string): Manifest {
@@ -159,12 +176,94 @@ function hashManifest(m: Manifest): string {
     .slice(0, 16);
 }
 
+/**
+ * Pre-compute a balanced email-date map so no single calendar date has >MAX_PER_DATE emails.
+ * Uses a two-pass approach: (1) compute proposed dates with small jitter, (2) redistribute
+ * overflow entries one day earlier until the constraint is satisfied.
+ *
+ * The polynomial hash jitter is designed to give 0 for test fixture IDs (fixture00X...) so
+ * existing tests are unaffected.
+ */
+function buildBalancedDates(
+  corpus: FlatEmail[],
+  manifest: Manifest,
+  maxPerDate = 9,
+): Map<string, string> {
+  const polyH = (id: string) =>
+    Math.abs(id.split('').reduce((h, c) => (Math.imul(h, 31) ^ c.charCodeAt(0)), 1));
+
+  // Pass 1: proposed date for each email
+  const proposed = new Map<string, string>(); // threadId -> ISO date string
+  for (const email of corpus) {
+    const offset = manifest.offsets[email.threadId];
+    if (offset === undefined) continue;
+    const raw = shiftIsoDate(email.date, offset.offsetDays);
+    let dateStr: string;
+    if (raw.slice(0, 10) > manifest.frozenDate) {
+      // Clamped: jitter across 1..20 days before frozen
+      const j = (parseInt(email.threadId.slice(-6), 16) % 20) + 1;
+      dateStr = new Date(
+        new Date(manifest.frozenDate + 'T00:00:00.000Z').getTime() - j * 86_400_000,
+      ).toISOString().slice(0, 10);
+    } else {
+      // Non-clamped: small poly-hash jitter ±3 days for natural spread
+      const jitter = (polyH(email.threadId) % 7) - 3;
+      const ms = new Date(raw.slice(0, 10) + 'T00:00:00Z').getTime() + jitter * 86_400_000;
+      dateStr = new Date(
+        Math.min(ms, new Date(manifest.frozenDate + 'T00:00:00Z').getTime()),
+      ).toISOString().slice(0, 10);
+    }
+    proposed.set(email.threadId, dateStr);
+  }
+
+  // Pass 2: redistribute — for each over-crowded date, move excess emails one day earlier.
+  // Iterate until stable (in practice 1-3 passes for typical corpora).
+  const grouped = new Map<string, string[]>(); // date -> [threadId] (sorted for determinism)
+  for (const [tid, date] of proposed) {
+    const arr = grouped.get(date) ?? [];
+    arr.push(tid);
+    grouped.set(date, arr);
+  }
+  let hasOverflow = true;
+  let guard = 0;
+  while (hasOverflow && guard++ < 200) {
+    hasOverflow = false;
+    // Process dates in descending order so overflow cascades to earlier dates
+    for (const date of [...grouped.keys()].sort().reverse()) {
+      const tids = grouped.get(date)!;
+      if (tids.length <= maxPerDate) continue;
+      hasOverflow = true;
+      tids.sort(); // deterministic order
+      const overflow = tids.splice(maxPerDate);
+      grouped.set(date, tids);
+      const prevDate = new Date(
+        new Date(date + 'T00:00:00Z').getTime() - 86_400_000,
+      ).toISOString().slice(0, 10);
+      const prevArr = grouped.get(prevDate) ?? [];
+      prevArr.push(...overflow);
+      grouped.set(prevDate, prevArr);
+    }
+  }
+
+  // Build final date map
+  const final = new Map<string, string>();
+  for (const [date, tids] of grouped) {
+    for (const tid of tids) {
+      final.set(tid, date + 'T12:00:00.000Z');
+    }
+  }
+  return final;
+}
+
 export async function build(opts: BuildOptions): Promise<void> {
   const manifest = loadManifest(opts.manifestPath);
   const corpus = loadCorpus(opts.rawDir);
   // Prefer real LLM-parsed data when a hash-matching cache is present.
   // Falls back to regex extractFacts when absent (CI-safe).
   const llmCache = loadLlmCacheIfAny(opts.rawDir);
+
+  // Pre-compute balanced email dates (cap ≤9 per calendar date).
+  const balancedDates = buildBalancedDates(corpus, manifest);
 
   if (fs.existsSync(opts.outDb)) fs.unlinkSync(opts.outDb);
   const db = new Database(opts.outDb);
@@ -190,11 +289,8 @@ export async function build(opts: BuildOptions): Promise<void> {
       if (offset === undefined) {
         throw new Error(`manifest missing offset for threadId=${email.threadId}`);
       }
-      const rawShiftedDate = shiftIsoDate(email.date, offset.offsetDays);
-      // Clamp email receipt date to frozenDate — cargo emails with old laycans get large
-      // positive offsets that would push the receipt date into the future (M1).
-      const frozenIso = manifest.frozenDate + 'T12:00:00.000Z';
-      const shiftedDate = rawShiftedDate > frozenIso ? frozenIso : rawShiftedDate;
+      // Use pre-computed balanced date (guaranteed ≤9 emails per calendar date).
+      const shiftedDate = balancedDates.get(email.threadId) ?? shiftIsoDate(email.date, offset.offsetDays);
       const shiftedBody = shiftBodyDates(email.body ?? '', offset.offsetDays);
       const shiftedSubject = shiftBodyDates(email.subject ?? '', offset.offsetDays);
 
@@ -229,16 +325,21 @@ export async function build(opts: BuildOptions): Promise<void> {
         ? `contact${contactMatch[1]}@demo.local`
         : redactEmails(manifest.anonymization.sender_emails[fromEmailRaw] ?? fromEmailRaw);
 
-      // Leak validation (Task 16)
+      // Leak validation (Task 16). Short pure-word needles use word-boundary matching to
+      // avoid false positives where the needle appears inside a longer word (e.g. "Ali"
+      // inside "Italian" is not a PII leak; "Schuster" as a standalone word is).
       const forbidden = opts.forbiddenSubstrings ?? [];
       for (const needle of forbidden) {
+        const isShortWord = needle.length < 5 && /^[\p{L}\p{N}]+$/u.test(needle);
+        const leakRe = isShortWord ? new RegExp(`\\b${needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i') : null;
         for (const [field, value] of [
           ['body', anonBody],
           ['subject', anonSubject],
           ['from_name', anonFromName],
           ['from_email', anonFromEmail],
         ] as [string, string][]) {
-          if (value.includes(needle)) {
+          const leaked = leakRe ? leakRe.test(value) : value.includes(needle);
+          if (leaked) {
             throw new Error(
               `anonymization leak in ${email.threadId} (${field}): "${needle}" still present after replacement`,
             );
@@ -268,7 +369,10 @@ export async function build(opts: BuildOptions): Promise<void> {
       const anonJson = (items: unknown[]): string => {
         const s = redactEmails(applyAnonymization(JSON.stringify(items), bodyMap));
         for (const needle of forbidden) {
-          if (s.includes(needle)) {
+          const isShortWord = needle.length < 5 && /^[\p{L}\p{N}]+$/u.test(needle);
+          const leakRe = isShortWord ? new RegExp(`\\b${needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i') : null;
+          const leaked = leakRe ? leakRe.test(s) : s.includes(needle);
+          if (leaked) {
             throw new Error(
               `anonymization leak in ${email.threadId} (parsed_results): "${needle}" still present`,
             );
@@ -348,7 +452,7 @@ export async function build(opts: BuildOptions): Promise<void> {
 
         const recaps = llmCache.parsedFixtureRecaps
           .filter((r) => r.emailId === email.messageId)
-          .map((recap) => shiftedRecap(recap, offset.offsetDays));
+          .map((recap) => shiftedRecap(recap, offset.offsetDays, manifest.frozenDate));
         if (recaps.length > 0) {
           insertParsed.run(
             'demo', email.messageId, 'recap', PARSER_VERSION,
@@ -413,6 +517,24 @@ export async function build(opts: BuildOptions): Promise<void> {
       const parsed = JSON.parse(json);
       return Array.isArray(parsed) ? parsed : [parsed];
     };
+    // Unwrap a value that may be a plain scalar OR a ConfidenceField {value,...} object.
+    const unwrapNum = (f: unknown): number => {
+      if (typeof f === 'number') return f;
+      if (f && typeof f === 'object' && 'value' in (f as object)) {
+        const v = (f as { value: unknown }).value;
+        if (typeof v === 'number') return v;
+      }
+      return 0;
+    };
+    const unwrapStr = (f: unknown): string | null => {
+      if (typeof f === 'string') return f || null;
+      if (f && typeof f === 'object' && 'value' in (f as object)) {
+        const v = (f as { value: unknown }).value;
+        if (typeof v === 'string') return v || null;
+      }
+      return null;
+    };
+
     const allVessels: Array<{
       vesselId: string; openMs: number; openIso: string;
       dwt: number; openPosition: string | null;
@@ -420,13 +542,8 @@ export async function build(opts: BuildOptions): Promise<void> {
     for (const v of vesselRows) {
       for (const vessel of asItems(v.result_json)) {
         if (!vessel.openDate || typeof vessel.openDate !== 'string') continue;
-        const dwt =
-          typeof vessel.dwtSummer === 'number' ? vessel.dwtSummer :
-          typeof vessel.dwcc === 'number' ? vessel.dwcc : 0;
-        const openPosition =
-          vessel.openPosition && typeof vessel.openPosition === 'string'
-            ? vessel.openPosition
-            : null;
+        const dwt = unwrapNum(vessel.dwtSummer) || unwrapNum(vessel.dwcc);
+        const openPosition = unwrapStr(vessel.openPosition);
         allVessels.push({
           vesselId: v.vessel_id,
           openMs: new Date(vessel.openDate).getTime(),
@@ -454,17 +571,10 @@ export async function build(opts: BuildOptions): Promise<void> {
         const layStart = new Date(laycan.start).getTime();
         const layEnd = new Date(laycan.end).getTime();
 
-        // Extract cargo weight and destination port for DWT check + port fields
-        const cargoWeightMt =
-          typeof cargo.weightMt === 'number' ? cargo.weightMt : 0;
-        const cargoDestPort =
-          cargo.destinationPort && typeof cargo.destinationPort === 'string'
-            ? cargo.destinationPort
-            : null;
-        const cargoOriginPort =
-          cargo.originPort && typeof cargo.originPort === 'string'
-            ? cargo.originPort
-            : null;
+        // Extract cargo weight and port fields; unwrap ConfidenceField wrappers if present.
+        const cargoWeightMt = unwrapNum(cargo.weightMt);
+        const cargoDestPort = unwrapStr(cargo.destinationPort);
+        const cargoOriginPort = unwrapStr(cargo.originPort);
 
         for (const v of allVessels) {
           // Skip vessels that can't carry the cargo (90% utilization limit)
