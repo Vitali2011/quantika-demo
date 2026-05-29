@@ -267,6 +267,29 @@ Allowed extractions:
 If none of the above apply: laycan = null. Do NOT guess "Spot" from
 contextual hints ("asap", "urgent", "vessel ready", absence of any window).
 
+=== CONFLICTING VALUES RULE (universal — applies to EVERY field) ===
+
+When the email gives TWO OR MORE different values for the SAME field (e.g. two
+tonnages for one cargo stem, two laycans, two load rates) and the email does NOT
+explicitly state which one is operative/final, you MUST NOT silently pick one and
+mark it 'confirmed'. Instead:
+  1. Set that field's confidence = 'uncertain' (never 'confirmed').
+  2. Put the field value to the FIRST stated candidate (do not fabricate a midpoint).
+  3. Record BOTH candidates in missing_info as a human-readable note, e.g.
+     "Conflicting tonnage: cargo line states 'abt 30,000 mts' but recap states
+     '25,000 mt 10% moloo' — quantity to be confirmed".
+  ✗ weight_mt = {value: 25000, confidence: 'confirmed', ...} when the email also says
+     "abt 30,000 mts" for the same stem → WRONG (silent pick + false confidence)
+  ✓ weight_mt = {value: 30000, confidence: 'uncertain', source_text: "abt 30,000 mts..."}
+     AND missing_info contains a note naming BOTH candidate tonnages.
+
+RESOLVED-CONFLICT CARVE-OUT: This rule fires ONLY for UNRESOLVED conflicts. If the
+email explicitly states which value is operative ("the agreed quantity is 25,000 mt
+— ignore the earlier figure", "this is the operative number", "pls work to these
+dates", "amend your records to X"), then USE the operative value with
+confidence='confirmed' and do NOT add a missing_info conflict note. Do not over-hedge
+a conflict the sender already resolved.
+
 === missing_info RULES ===
 
 missing_info MUST be a plain string array (string[]). Each element is a human-readable English sentence describing ONE specific missing piece of information.
