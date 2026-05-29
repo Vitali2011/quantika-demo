@@ -5,7 +5,7 @@ import * as path from 'path';
 import * as sqliteVec from 'sqlite-vec';
 import { runMigrations } from '@/lib/migrations/runner';
 import { allMigrations } from '@/lib/migrations/index';
-import { migrateDatabase } from '@/scripts/migrate';
+import { migrateDatabase, resolveDbPath } from '@/scripts/migrate';
 
 function countApplied(dbPath: string): number {
   const db = new Database(dbPath, { readonly: true });
@@ -62,5 +62,35 @@ describe('scripts/migrate — eager schema migration against the configured DB p
     expect(countApplied(served)).toBe(allMigrations.length);
     // default-named db in the same dir must remain untouched
     expect(fs.existsSync(path.join(tmpDir, 'sessions.db'))).toBe(false);
+  });
+});
+
+describe('resolveDbPath — env resolution (guards the #677 silent ghost-DB class)', () => {
+  const ORIGINAL = process.env.SESSIONS_DB_PATH;
+  const DEFAULT = path.join(process.cwd(), 'data', 'sessions.db');
+
+  afterEach(() => {
+    if (ORIGINAL === undefined) delete process.env.SESSIONS_DB_PATH;
+    else process.env.SESSIONS_DB_PATH = ORIGINAL;
+  });
+
+  it('falls back to the default when SESSIONS_DB_PATH is unset', () => {
+    delete process.env.SESSIONS_DB_PATH;
+    expect(resolveDbPath()).toBe(DEFAULT);
+  });
+
+  it('falls back to the default when SESSIONS_DB_PATH is empty — not a ghost "" db (MED-1)', () => {
+    process.env.SESSIONS_DB_PATH = '';
+    expect(resolveDbPath()).toBe(DEFAULT);
+  });
+
+  it('uses a relative SESSIONS_DB_PATH as-is', () => {
+    process.env.SESSIONS_DB_PATH = 'data/demo-seed.db';
+    expect(resolveDbPath()).toBe('data/demo-seed.db');
+  });
+
+  it('uses an absolute SESSIONS_DB_PATH as-is', () => {
+    process.env.SESSIONS_DB_PATH = '/srv/quantika/demo-seed.db';
+    expect(resolveDbPath()).toBe('/srv/quantika/demo-seed.db');
   });
 });

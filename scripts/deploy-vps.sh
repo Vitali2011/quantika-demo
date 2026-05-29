@@ -33,6 +33,8 @@ bash ops/caddy/install-caddy-config.sh "$(pwd)"
 # data/demo-seed.db (SESSIONS_DB_PATH in .env.local) — so the served DB was never
 # migrated/seeded at deploy time and relied on the fragile, error-swallowing lazy
 # first-request migration path. Source runtime env so we touch the right database.
+# NOTE: values in .env.local with spaces MUST be quoted (SESSIONS_DB_PATH="a b.db");
+# an unquoted space would break `. ./.env.local` under `set -euo pipefail`.
 if [ -f .env.local ]; then
     set -a
     # shellcheck disable=SC1091

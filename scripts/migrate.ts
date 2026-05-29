@@ -33,7 +33,10 @@ export interface MigrateResult {
  * the app serves.
  */
 export function resolveDbPath(): string {
-  return process.env.SESSIONS_DB_PATH ?? path.join(process.cwd(), 'data', 'sessions.db');
+  // `||` (not `??`): an empty SESSIONS_DB_PATH must fall back to the default,
+  // otherwise migrate.ts would silently migrate a ghost "" database and report
+  // success while the real served DB stays behind — the exact #677 failure class.
+  return process.env.SESSIONS_DB_PATH || path.join(process.cwd(), 'data', 'sessions.db');
 }
 
 /**
