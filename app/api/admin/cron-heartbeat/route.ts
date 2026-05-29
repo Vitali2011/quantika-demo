@@ -113,8 +113,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       last_seen_at: lastSeenAt,
     });
   } catch (error) {
+    // L-8: log server-side, do not reflect the raw error string to the client.
+    console.error('[cron-heartbeat] failed to store heartbeat:', error);
     return NextResponse.json(
-      { error: 'Failed to store heartbeat', details: String(error) },
+      { error: 'Failed to store heartbeat' },
       { status: 500 }
     );
   }

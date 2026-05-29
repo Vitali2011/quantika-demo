@@ -51,8 +51,10 @@ export async function GET(
 
     return NextResponse.json(charterer, { status: 200 });
   } catch (error) {
+    // L-8: log the real error server-side, return a generic message to the client.
+    console.error('[charterers/:id] request failed:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
@@ -125,8 +127,10 @@ export async function PUT(
 
     return NextResponse.json(updated, { status: 200 });
   } catch (error) {
+    // L-8: log the real error server-side, return a generic message to the client.
+    console.error('[charterers/:id] request failed:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
@@ -160,8 +164,10 @@ export async function DELETE(
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {
+    // L-8: log the real error server-side, return a generic message to the client.
+    console.error('[charterers/:id] request failed:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

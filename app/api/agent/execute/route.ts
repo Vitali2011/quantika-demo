@@ -69,8 +69,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     );
     return NextResponse.json(result, { status: 200 });
   } catch (err) {
+    // L-8: log server-side, return a stable generic code (no raw message leak).
+    console.error('[agent/execute] executePlan failed:', err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'execute_failed' },
+      { error: 'execute_failed' },
       { status: 400 },
     );
   }
