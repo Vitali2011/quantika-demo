@@ -1,8 +1,8 @@
 # Quantika Demo — ROADMAP (Текущее состояние)
 
 **Последний полный аудит:** 2026-05-17 (5-поточный код-аудит) + 2026-05-19 UI audit (Playwright+Chrome MCP) + **2026-05-19 ROADMAP reality audit** (claim vs prod sweep)
-**Последнее обновление:** 2026-05-25 (день, wiring pass) — **🔌 POST-REDESIGN BACKEND WIRING COMPLETE**. 4 gap'а закрыты: Settings save endpoints (#449), AIBar email-paste flow (#457), Generic toast system (#458), Mode-aware content charterer↔owner (#459). Все 4 QA PASS, auto-deploy LIVE.
-**Текущая версия:** prod HEAD `5f936af` (toast system, последний merge) auto-deploy LIVE на outreach-vps
+**Последнее обновление:** 2026-05-29 (qa-walker backlog sweep) — **14 PR closed**: Wave M (#641/#642/#643) + Wave L 11 issues (#625-#635) across 4 batches of 3. Все QA PASS + post-deploy smoke 5/5. Notable: #628 bell=false-positive (icon existed, only test added); #631 stable match-slug DB migration; #634 sentry double-init fix; #649 needed lint-fix round. **#589 AI-hallucinations DEFERRED** (root cause found: validator compares port codes NLRTM vs city names Rotterdam → false-positive redaction; WIP branch progong/589-r6).
+**Текущая версия:** prod HEAD `857a9d6` (sentry double-init fix #658) auto-deploy LIVE на outreach-vps
 **Статус:** 🟢 Production-quality SaaS UI + backend wiring ~90%. Открытые followup: (1) rate-limiter `/api/parser/email` (MEDIUM, non-blocking), (2) Mode M1 = UX-choice (принято), (3) R6.5 dark-mode toggle, (4) components/ui 40 stale imports.
 
 > **Живой документ.** Заменяет `ROADMAP-SESSION-PROMPT.md` (тот был разовый промпт-генератор, не state tracker).
@@ -547,3 +547,40 @@ ETA: ~2-3 дня wall-clock. Большинство agent-only. **Bottleneck т�
 ---
 
 🤖 Сгенерировано 5-stream system audit (parsers/data/api/ui/waves) + synthesis оркестратором. Последнее обновление: 2026-05-22 вечер (#341 manual deploy, 11 PR merged, worktree cleanup, auto-deploy trigger debt open).
+
+## 📍 2026-05-28 — R5 wave + qa-walker R2 (snapshot)
+
+### Today closed (17 PR merged за 24h)
+
+Initial: #597 #598 #599 #601 #602 #605 #607 #608 #609 #610 #611 #612 #613 #614
+R5: #619 (cargo CSS column-level) · #620 (location strip) · #621 (KPI middleware) · #622 (Counter modal) · #623 (Quote Generate) · #624 (React #418 locale)
+
+### Open (15 issues)
+
+**🔴 Critical (demo-blockers):**
+
+- **#589** R6 — AI hallucinations narration: 5 раундов fix (R1-R5) tests green но prod runtime НЕ применяет strip. Hypothesis H5-H8: validator не вызывается в narration codepath / input shape Markdown / client-side post-process / cached seed. Diag-R6 dispatch отложен на новую сессию.
+- **#637** Counter modal POST → 404. Backend endpoint /api/counter отсутствует. UI готов (PR #622).
+- **#638** Generate button disabled regression (PR #623 added UI но disabled-state логика сломана).
+
+**🟠 High (qa-walker round 2, 11 issues #625-#635):**
+
+- Match-IDs unstable; Sentry POSTs silent errors; AppShell Bell missing; /dashboard personalization broken («Good morning, There»); /dashboard template token visible; /api/jobs/stream 503; /cargo /vessels row-click broken; /matches filter count + ModeSwitcher columns; Quote Generate session data; BLOCKED PAIRS internal data leak.
+- **#636** — /cargo text wrap (R3 follow-up к PR #619 — колонки видны но overlap).
+
+**Backlog (user-blocked):**
+
+- Партнёрские данные (10 recap + 15-20 emails) → calibrate classify (70.8%) + parse-recap (45-58%)
+- Resend API key → email notifications (F8)
+- UptimeRobot signup
+- Tailwind 4 migration sprint
+
+### In-flight
+
+- **progong** (PR #603) — `/progong` cross-family bake-off для prompts (parse-cargo/vessel/recap/classify). ~5h20m runtime, phase TUNING_R10, prompts updated 14:12. После завершения — new PR cherry-picked, populate demo-seed.db (>50 matches).
+
+### Lessons (2026-05-28)
+
+1. **Reality-check важен** — green tests + green CI + green deploy ≠ работает on prod. qa-walker round 1 нашёл что R1-R3 не сработали, round 2 нашёл что R5 решил только location gap (R3/R3b/Wave3 strips НЕ применяются в narration codepath на prod).
+2. **Production-harness parity (progonq Principle 13)** — нужен для validator. Unit test вызывает stripInventedContent(textChunk) на чистом input, prod может разбивать narration на Markdown sections, headers, list items — validator получает другую shape.
+3. **Gate 3 PREVIEW_OPENED violation** — 5 PRs прошли merge без orchestrator-side visual preview, переложил всё на user-checklist. v3.13.0 enforcement в pre-merge-check.sh planned.
