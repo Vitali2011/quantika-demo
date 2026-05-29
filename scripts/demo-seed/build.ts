@@ -326,8 +326,12 @@ export async function build(opts: BuildOptions): Promise<void> {
             // the frozen window. parseVesselOpenDate handles the loose formats.
             const rawOpen = cfValue(vessel.openDate);
             let openDateIso: string | null = null;
-            if (typeof rawOpen === 'string') {
-              const d = parseVesselOpenDate(rawOpen, new Date(email.date).getUTCFullYear());
+            if (rawOpen != null) {
+              // parseVesselOpenDate handles both string and {open,close,display} object forms
+              const d = parseVesselOpenDate(
+                rawOpen as string | { open?: string | null; close?: string | null; display?: string | null },
+                new Date(email.date).getUTCFullYear(),
+              );
               if (d) {
                 d.setUTCDate(d.getUTCDate() + offset.offsetDays);
                 openDateIso = d.toISOString();

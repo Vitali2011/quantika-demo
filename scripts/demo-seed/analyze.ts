@@ -253,10 +253,12 @@ export function extractFactsFromCache(
 
   if (category === 'vessel' && vesselRows.length > 0) {
     const vessel = vesselRows[0];
-    const openIso = cfValue(vessel.openDate);
-    if (openIso) {
-      const d = new Date(openIso);
-      if (!isNaN(d.getTime())) facts.openDate = d;
+    const rawOpenDate = cfValue(vessel.openDate);
+    if (rawOpenDate) {
+      const refYear = new Date(email.date).getUTCFullYear();
+       
+      const d = parseVesselOpenDate(rawOpenDate as any, refYear);
+      if (d && !isNaN(d.getTime())) facts.openDate = d;
     }
     const vName = cfValue(vessel.vesselName);
     if (vName) facts.vesselNames.push(vName);
