@@ -21,6 +21,7 @@ import * as path from 'path';
 import { getDb } from '../lib/db';
 import { runMigrations } from '../lib/migrations/runner';
 import { allMigrations } from '../lib/migrations/index';
+import { callAiJson } from '../lib/ai-provider';
 
 // --------------------------------------------------------------------------
 // Types
@@ -98,24 +99,16 @@ Required JSON shape:
 }
 Use realistic estimates. Respond with JSON only.`;
 
-  const apiKey = process.env['OPENAI_API_KEY'] ?? '';
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
-    body: JSON.stringify({
-      model,
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0,
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`LLM API error: ${response.status} ${response.statusText}`);
-  }
-
-  const data = await response.json() as { choices: Array<{ message: { content: string } }> };
-  const raw = data.choices[0]?.message?.content ?? '{}';
-  return JSON.parse(raw) as LlmGapBracket;
+  // Route through the unified ai-provider shim (scope SEED_PORT_DA) instead of a
+  // raw OpenAI fetch: this honors AI_PROVIDER / SEED_PORT_DA_PROVIDER, applies a
+  // bounded timeout, runs extractJson before JSON.parse, and writes an ai_audit
+  // row. `model` is passed through so per-bracket model overrides still apply.
+  return callAiJson<LlmGapBracket>(
+    'seed_port_da',
+    'You are a port cost estimator. Respond with JSON only (no markdown).',
+    prompt,
+    { model, temperature: 0, timeoutMs: 30_000 },
+  );
 };
 
 // --------------------------------------------------------------------------

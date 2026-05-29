@@ -58,6 +58,10 @@ const MARKET = { bunkerPriceUsdPerMt: 620, euaPriceEur: 75 };
 describe('compareRoutes — β-06', () => {
   beforeEach(() => {
     mockedCallAiText.mockReset();
+    // U2: route-decision now routes through @/lib/ai-provider. Pin
+    // AI_PROVIDER=openai so the shim delegates to the mocked @/lib/openai layer
+    // asserted below (ambient .env sets AI_PROVIDER=gemini).
+    process.env.AI_PROVIDER = 'openai';
   });
 
   it('returns side-by-side TCE for Suez and Cape with a recommendation', async () => {
