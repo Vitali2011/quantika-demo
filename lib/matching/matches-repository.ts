@@ -340,6 +340,31 @@ export function listMatches(db: Database.Database, opts: ListMatchesOptions): St
   return db.prepare(query).all(...params) as StoredMatch[];
 }
 
+/**
+ * Delete per-session match copies whose session no longer exists.
+ *
+ * In DEMO_MODE, persistSessionMatches writes a per-session copy (user_id =
+ * sessionId) of every seeded match on each /dashboard or /matches render. Those
+ * copies are correct for session isolation but are never removed when a session
+ * ends, so the served demo-seed.db grows by ~436 rows per login forever. This
+ * prunes copies whose sessionId is no longer present in the `sessions` table
+ * (expired / evicted / logged out), bounding the table to live sessions and, on
+ * the first post-deploy logins, wiping the accumulated bloat. Seeded snapshot
+ * rows (user_id IS NULL) are authoritative and are never touched.
+ *
+ * Returns the number of rows deleted.
+ */
+export function deleteOrphanSessionMatches(db: Database.Database): number {
+  const result = db
+    .prepare(
+      `DELETE FROM matches
+         WHERE user_id IS NOT NULL
+           AND NOT EXISTS (SELECT 1 FROM sessions WHERE sessions.id = matches.user_id)`,
+    )
+    .run();
+  return result.changes;
+}
+
 export function updateMatchFreightRate(
   db: Database.Database,
   id: number,
