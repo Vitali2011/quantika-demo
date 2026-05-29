@@ -22,6 +22,23 @@
 
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { createHash, timingSafeEqual } from 'crypto';
+
+/**
+ * Constant-time comparison of two strings (L-3). Both sides are hashed to a
+ * fixed-width sha256 digest first, then compared with crypto.timingSafeEqual.
+ * Hashing collapses inputs of any length to equal-width (32-byte) digests, so the
+ * comparison is constant-time REGARDLESS of input length — the previous pad-to-
+ * max(len) approach leaked the secret length through length-dependent work, a
+ * timing oracle. Equal digest widths also mean timingSafeEqual never throws.
+ * sha256 of distinct strings differs with overwhelming probability, so digest
+ * equality is equivalent to string equality for this auth check.
+ */
+function timingSafeStrEqual(a: string, b: string): boolean {
+  const da = createHash('sha256').update(a, 'utf8').digest();
+  const db = createHash('sha256').update(b, 'utf8').digest();
+  return timingSafeEqual(da, db);
+}
 
 export function requireAdmin(req: NextRequest): NextResponse | null {
   const expected = process.env.ADMIN_TOKEN;
@@ -34,7 +51,7 @@ export function requireAdmin(req: NextRequest): NextResponse | null {
   }
 
   const provided = req.headers.get('X-Admin-Token');
-  if (!provided || provided !== expected) {
+  if (!provided || !timingSafeStrEqual(provided, expected)) {
     return NextResponse.json(
       { error: 'Unauthorized: invalid or missing X-Admin-Token header' },
       { status: 401 },

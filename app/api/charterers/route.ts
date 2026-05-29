@@ -39,8 +39,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json({ charterers }, { status: 200 });
   } catch (error) {
+    // L-8: log the real error server-side, return a generic message to the client.
+    console.error('[charterers] request failed:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
@@ -115,8 +117,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json(charterer, { status: 201 });
   } catch (error) {
+    // L-8: log the real error server-side, return a generic message to the client.
+    console.error('[charterers] request failed:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

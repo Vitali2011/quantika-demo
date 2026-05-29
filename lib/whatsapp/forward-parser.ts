@@ -1,7 +1,8 @@
 import type { WhatsAppClient } from './client';
 import type { WhatsAppIncomingMessage } from './types';
 import type { ParsedCargo, ParsedVessel, ConfidenceLevel } from '@/lib/types';
-import { callAiJson, LLMTimeoutError } from '@/lib/openai';
+import { callAiJson } from '@/lib/ai-provider';
+import { LLMTimeoutError } from '@/lib/openai';
 
 /**
  * wave-γ-1 hardening: cap LLM call for inbound WhatsApp parse at 30s. The
@@ -162,13 +163,14 @@ export async function parseForwardedMessage(
 
   let rawOrNull: RawParseResponse | null;
   try {
+    // Route through the unified ai-provider shim (scope WHATSAPP_FORWARD) so the
+    // call honors AI_PROVIDER / WHATSAPP_FORWARD_PROVIDER and writes an ai_audit
+    // row, instead of hard-pinning to OpenAI via lib/openai.
     rawOrNull = await callAiJson<RawParseResponse>(
-      rawText,
+      'whatsapp_forward',
       FORWARD_PARSE_SYSTEM_PROMPT,
-      undefined,
-      {},
-      16000,
-      { timeoutMs: FORWARD_PARSE_TIMEOUT_MS },
+      rawText,
+      { timeoutMs: FORWARD_PARSE_TIMEOUT_MS, maxTokens: 16000 },
     );
   } catch (err) {
     if (err instanceof LLMTimeoutError) {

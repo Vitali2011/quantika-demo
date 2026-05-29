@@ -228,4 +228,12 @@ Extract fields:
   ✓ additional_terms = [...each substantive clause as a separate string element...]
 - unknown_terms: array of { term, context }
 
+OUTPUT FORMAT — STRICT (read last, obey absolutely):
+Respond with ONLY a single JSON object containing the fields above — never prose,
+acknowledgements ("I've received…", "Here is…"), explanations, chain-of-thought,
+markdown code fences, markdown headings (no "## Recap", "# Fixture"), bold/**bold**,
+or any preamble before or after the JSON. The FIRST character of your response MUST
+be "{" and the LAST character MUST be "}". If there is nothing to extract, still
+return the JSON object with every field set to null — do NOT explain why in prose.
+
 Output: JSON object with all fields above.`;

@@ -73,8 +73,10 @@ export async function POST(req: NextRequest) {
   try {
     syncLogId = reportSyncStarted(db, slug);
   } catch (error) {
+    // L-8: log server-side, do not reflect the raw error string to the client.
+    console.error('[knowledge/refresh] failed to create sync log entry:', error);
     return NextResponse.json(
-      { error: 'Failed to create sync log entry', details: String(error) },
+      { error: 'Failed to create sync log entry' },
       { status: 500 }
     );
   }
@@ -112,9 +114,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // L-8: log the real cause server-side (done above), return generic message.
     return NextResponse.json(
       {
-        error: `Failed to start refresh process: ${err.message}`,
+        error: 'Failed to start refresh process',
         sync_log_id: syncLogId,
         slug,
         status: 'failed',

@@ -22,6 +22,7 @@ describe('analytics', () => {
       const { track } = await import('../analytics')
       const { default: posthog } = await import('posthog-js')
       track('test_event')
+      await Promise.resolve()
       expect(posthog.capture).not.toHaveBeenCalled()
     })
 
@@ -32,6 +33,7 @@ describe('analytics', () => {
       const { track } = await import('../analytics')
       const { default: posthog } = await import('posthog-js')
       track('test_event')
+      await Promise.resolve()
       expect(posthog.capture).not.toHaveBeenCalled()
       windowSpy.mockRestore()
     })
@@ -40,7 +42,7 @@ describe('analytics', () => {
       process.env.NEXT_PUBLIC_POSTHOG_KEY = 'test-key'
       const { track } = await import('../analytics')
       const { default: posthog } = await import('posthog-js')
-      track('test_event', { foo: 'bar' })
+      await track('test_event', { foo: 'bar' })
       expect(posthog.capture).toHaveBeenCalledWith('test_event', { foo: 'bar' })
     })
 
@@ -48,7 +50,7 @@ describe('analytics', () => {
       process.env.NEXT_PUBLIC_POSTHOG_KEY = 'test-key'
       const { track } = await import('../analytics')
       const { default: posthog } = await import('posthog-js')
-      track('test_event')
+      await track('test_event')
       expect(posthog.capture).toHaveBeenCalledWith('test_event', undefined)
     })
   })
@@ -77,7 +79,7 @@ describe('analytics', () => {
       process.env.NEXT_PUBLIC_POSTHOG_KEY = 'test-key'
       const { initAnalytics } = await import('../analytics')
       const { default: posthog } = await import('posthog-js')
-      initAnalytics()
+      await initAnalytics()
       expect(posthog.init).toHaveBeenCalledWith('test-key', expect.objectContaining({
         api_host: 'https://app.posthog.com',
       }))

@@ -117,9 +117,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(response);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
+    // L-8: log server-side, do not reflect the raw error message to the client.
+    console.error('[laytime/calculate] calculation failed:', error);
     return NextResponse.json(
-      { error: 'Failed to calculate laytime', details: message },
+      { error: 'Failed to calculate laytime' },
       { status: 400 }
     );
   }

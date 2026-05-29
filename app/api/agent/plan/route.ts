@@ -38,8 +38,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const plan = await buildPlan(parsed.data.goal, parsed.data.context ?? {});
     return NextResponse.json(plan, { status: 200 });
   } catch (err) {
+    // L-8: log server-side, return a stable generic code (no raw message leak).
+    console.error('[agent/plan] buildPlan failed:', err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'plan_failed' },
+      { error: 'plan_failed' },
       { status: 500 },
     );
   }

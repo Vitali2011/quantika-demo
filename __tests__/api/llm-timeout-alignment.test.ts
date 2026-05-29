@@ -146,6 +146,10 @@ beforeEach(() => {
   mockCallAiJson.mockReset();
   mockCallAiText.mockResolvedValue('AI response text');
   mockCallAiJson.mockResolvedValue({});
+  // U2: these routes/sub-calls go through @/lib/ai-provider. Pin
+  // AI_PROVIDER=openai so the shim delegates to the mocked @/lib/openai layer
+  // asserted below (ambient .env sets AI_PROVIDER=gemini).
+  process.env.AI_PROVIDER = 'openai';
 });
 
 // ── 1. draft-quote (maxDuration=30 → 25_000) ──────────────────────────────

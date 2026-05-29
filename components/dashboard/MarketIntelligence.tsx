@@ -1,5 +1,3 @@
-'use client';
-
 import { KpiCard } from '@/components/market/KpiCard';
 
 interface MarketIntelligenceProps {

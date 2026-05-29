@@ -51,7 +51,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(summary, { status: 200 });
   } catch (error: any) {
+    // L-8: log server-side, return generic message (no raw error.message leak).
     console.error("GET /api/analytics/roi error:", error);
-    return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

@@ -39,11 +39,13 @@ export async function GET(): Promise<NextResponse> {
       { status: httpStatus },
     );
   } catch (error) {
+    // L-8: log server-side, do not reflect the raw error message to the client.
+    console.error('[health/knowledge] health check failed:', error);
     return NextResponse.json(
       {
         status: 'error',
         timestamp: new Date().toISOString(),
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: 'Internal server error',
       },
       { status: 500 },
     );

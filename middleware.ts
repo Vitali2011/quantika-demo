@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkCsrfRequest } from '@/lib/csrf';
-import { aiRateLimiter } from '@/lib/rate-limit';
+import { aiRateLimiter, loginRateLimiter, adminRateLimiter } from '@/lib/rate-limit';
 import { getAuthConfig } from '@/lib/auth/config';
 import { verifyAuthCookie, AUTH_COOKIE_NAME } from '@/lib/auth/cookie';
 import { getRequestBaseUrl } from '@/lib/auth/redirect-url';
@@ -57,8 +57,95 @@ function isCsrfPath(pathname: string): boolean {
   return CSRF_PATHS.some(p => pathname.startsWith(p));
 }
 
+// Fail-closed bucket: a SINGLE shared key so that, when no trusted client IP can
+// be derived, everyone is throttled together rather than each attacker getting
+// their own fresh bucket. Over-throttling is acceptable; a bypass is not.
+const SHARED_BUCKET = '__shared__';
+
+/**
+ * Client key for the brute-force throttles (M-1 / L-3), derived from a TRUSTED
+ * source so an attacker cannot rotate it per request to defeat the limiter.
+ *
+ * The left-most X-Forwarded-For entry is CLIENT-CONTROLLED (Caddy only appends,
+ * never rewrites) and must never be used as the key again. The trust model is
+ * selected by RATE_LIMIT_CLIENT_IP_SOURCE and is FAIL-CLOSED:
+ *
+ *  - 'cf'          → CF-Connecting-IP. Safe in prod because Cloudflare OVERWRITES
+ *                    any client-supplied value with the true client IP. If the
+ *                    header is absent (request didn't transit CF) → fail-closed.
+ *  - 'xff-trusted' → the IP observed by the OUTERMOST trusted hop. Reads
+ *                    TRUSTED_PROXY_COUNT (N = number of trusted appending hops,
+ *                    e.g. Caddy = 1) and takes the X-Forwarded-For token at index
+ *                    (len - N): the last N tokens were appended by trusted hops,
+ *                    so tokens[len - N] is the first trusted-appended value and
+ *                    everything to its LEFT is attacker-controlled and ignored.
+ *                    If the list is shorter than N (or N is misconfigured) →
+ *                    fail-closed.
+ *  - 'xrealip'     → X-Real-IP, ONLY when the front proxy OVERWRITES it from a
+ *                    trusted value (a bare reverse_proxy does NOT). Explicit opt-in.
+ *  - unset / 'none' / anything else → NO trusted source. We trust NO client-settable
+ *                    header here (x-real-ip and the left-most X-Forwarded-For are both
+ *                    spoofable behind a bare proxy) → fail-closed to SHARED_BUCKET.
+ *
+ * In every misconfigured/missing/short case we return SHARED_BUCKET rather than an
+ * attacker-chosen value — a missing config must never grant unlimited attempts.
+ */
+function rateLimitKey(request: NextRequest): string {
+  const source = process.env.RATE_LIMIT_CLIENT_IP_SOURCE;
+
+  if (source === 'cf') {
+    const cf = request.headers.get('cf-connecting-ip')?.trim();
+    return cf || SHARED_BUCKET; // absent CF header → fail-closed
+  }
+
+  if (source === 'xff-trusted') {
+    const n = Number.parseInt(process.env.TRUSTED_PROXY_COUNT ?? '', 10);
+    if (!Number.isInteger(n) || n < 1) return SHARED_BUCKET; // misconfigured → fail-closed
+    const forwarded = request.headers.get('x-forwarded-for');
+    if (!forwarded) return SHARED_BUCKET;
+    const tokens = forwarded.split(',').map((t) => t.trim()).filter(Boolean);
+    if (tokens.length < n) return SHARED_BUCKET; // list shorter than N trusted hops → fail-closed
+    return tokens[tokens.length - n] || SHARED_BUCKET;
+  }
+
+  if (source === 'xrealip') {
+    // Explicit opt-in: ONLY safe when the front proxy OVERWRITES X-Real-IP from a
+    // trusted value. A bare `reverse_proxy` (e.g. the demo Caddyfile) does NOT, so
+    // this must never be the default.
+    return request.headers.get('x-real-ip')?.trim() || SHARED_BUCKET;
+  }
+
+  // No trusted source configured → fail-closed. We must NOT trust any
+  // client-settable header here: both x-real-ip and the left-most X-Forwarded-For
+  // pass through a bare proxy unchanged, so honouring either reopens the
+  // rotate-header bypass (cold-QA R2-BUG-1).
+  return SHARED_BUCKET;
+}
+
+function tooManyRequests(retryAfterMs: number): NextResponse {
+  const retryAfterSec = Math.ceil(retryAfterMs / 1000);
+  return NextResponse.json(
+    { error: 'Too many requests' },
+    { status: 429, headers: { 'Retry-After': String(retryAfterSec) } },
+  );
+}
+
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
+
+  // ── Brute-force throttles (M-1 / L-3) ─────────────────────────────────────
+  // Applied before the auth guard because /api/auth/login is in AUTH_BYPASS_PATHS
+  // and /api/admin/* endpoints carry their own shared-secret auth — neither path
+  // would otherwise be rate-limited by the /api/ai/* block below.
+  if (request.method === 'POST' && pathname === '/api/auth/login') {
+    const { allowed, retryAfterMs } = loginRateLimiter.check(rateLimitKey(request));
+    if (!allowed) return tooManyRequests(retryAfterMs);
+  }
+
+  if (pathname.startsWith('/api/admin/')) {
+    const { allowed, retryAfterMs } = adminRateLimiter.check(rateLimitKey(request));
+    if (!allowed) return tooManyRequests(retryAfterMs);
+  }
 
   // ── Auth guard ────────────────────────────────────────────────────────────
   const authConfig = getAuthConfig();

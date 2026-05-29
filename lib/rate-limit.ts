@@ -55,3 +55,12 @@ export class RateLimiter {
 
 export const aiRateLimiter = new RateLimiter({ windowMs: 60_000, maxRequests: 20 });
 export const parserEmailRateLimiter = new RateLimiter({ windowMs: 60_000, maxRequests: 20 });
+
+// M-1: brute-force protection on POST /api/auth/login. Stricter than the AI
+// limiter — a real user logs in a handful of times per minute, an attacker
+// hammers it. 5 attempts / 60s per IP.
+export const loginRateLimiter = new RateLimiter({ windowMs: 60_000, maxRequests: 5 });
+
+// L-3: throttle credential-guessing against /api/admin/* shared-secret endpoints.
+// Admin tooling is low-frequency; cap at 10 attempts / 60s per IP.
+export const adminRateLimiter = new RateLimiter({ windowMs: 60_000, maxRequests: 10 });

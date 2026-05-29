@@ -56,6 +56,11 @@ describe('parseForwardedMessage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     client = new MockWhatsAppClient();
+    // U2: forward-parser now routes through @/lib/ai-provider (was hard-pinned to
+    // @/lib/openai). Pin AI_PROVIDER=openai so the shim delegates to the mocked
+    // openai layer asserted below (otherwise the ambient .env AI_PROVIDER=gemini
+    // would route past these mocks).
+    process.env.AI_PROVIDER = 'openai';
     // Default: AI returns a parsed cargo
     mockCallAiJson.mockResolvedValue(MOCK_PARSED_CARGO);
   });

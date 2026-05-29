@@ -68,7 +68,9 @@ describe('POST /api/economics', () => {
     expect(res.status).toBe(500);
     const json = await res.json();
     expect(json.error).toMatch(/Economics calculation failed/i);
-    expect(json.detail).toMatch(/external API failure/i);
+    // L-8: the raw internal error message must NOT be reflected to the client.
+    expect(json.detail).toBeUndefined();
+    expect(JSON.stringify(json)).not.toMatch(/external API failure/i);
   });
 
   it('returns 200 with mocked result on happy path', async () => {

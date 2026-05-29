@@ -1,5 +1,3 @@
-'use client';
-
 import { SourceQuotePopover } from './source-quote-popover';
 
 interface Props {
