@@ -1,0 +1,54 @@
+{
+  "id": "etms-parse-cargo-adv-03",
+  "source_email_id": "etms-parse-cargo-adv-03",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A3-arabic-rtl",
+  "expected_behavior": "The cargo enquiry is written entirely in Arabic (RTL); the parser MUST still extract origin Damietta, destination Jeddah, ~15,000 MT urea in big bags, and laycan early June 2026, transliterating port/commodity names to English without dropping the cargo because of the script.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "طلب شحن - يوريا في اكياس كبيرة",
+    "from": "شركة النيل للشحن <chartering@alnilshipping.com.eg>",
+    "date": "2026-05-28T07:35:12.000Z",
+    "body": "السادة الافاضل،\r\n\r\nتحية طيبة وبعد،\r\n\r\nنرجو تقديم افضل سعر شحن (فيرم) للبضاعة التالية:\r\n\r\nالبضاعة: يوريا معبأة في اكياس كبيرة (بيج باجز)\r\nالكمية: حوالي 15000 طن متري\r\nميناء التحميل: دمياط (مرسى واحد امن)\r\nميناء التفريغ: جدة (مرسى واحد امن)\r\nفترة التحميل: اوائل يونيو 2026\r\nمعدل التفريغ: 3000 طن يوميا ايام العمل\r\nالعمولة: 2.5% اجمالي\r\n\r\nبرجاء الرد بأسرع وقت.\r\n\r\nمع خالص التحية،\r\nاحمد منصور\r\nقسم الاستئجار - شركة النيل للشحن"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Damietta",
+          "confidence": "confirmed",
+          "source_text": "ميناء التحميل: دمياط (مرسى واحد امن)"
+        },
+        "destination_port": {
+          "value": "Jeddah",
+          "confidence": "confirmed",
+          "source_text": "ميناء التفريغ: جدة (مرسى واحد امن)"
+        },
+        "cargo_description": {
+          "value": "Urea in big bags",
+          "confidence": "interpreted",
+          "source_text": "البضاعة: يوريا معبأة في اكياس كبيرة (بيج باجز)"
+        },
+        "weight_mt": {
+          "value": 15000,
+          "confidence": "interpreted",
+          "source_text": "الكمية: حوالي 15000 طن متري"
+        },
+        "cargo_type": "BREAK_BULK",
+        "laycan": {
+          "value": "Early June 2026",
+          "confidence": "interpreted",
+          "source_text": "فترة التحميل: اوائل يونيو 2026"
+        },
+        "discharge_rate": "3000 MT/day",
+        "discharge_terms": "WWD",
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "العمولة: 2.5% اجمالي"
+        }
+      }
+    ]
+  }
+}

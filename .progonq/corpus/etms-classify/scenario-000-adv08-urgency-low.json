@@ -1,0 +1,25 @@
+{
+  "id": "etms-classify-adv-08",
+  "source_email_id": "etms-classify-adv-08",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "SPECIAL-urgency-low",
+  "expected_behavior": "This is a routine FYI weekly market report with no cargo/vessel action item; the parser must classify it as OTHER with urgency low and not mistake market commentary for a CARGO_INQUIRY.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "Weekly Dry Bulk Market Report — Week 22 / 2026 (FYI)",
+    "from": "Research Desk <research@balticfreightreport.com>",
+    "date": "2026-05-25T16:00:00.000Z",
+    "body": "Dear Clients,\r\n\r\nPlease find below our weekly dry bulk market commentary — for your information only, no action required.\r\n\r\nCAPESIZE: BCI 5TC averaged USD 18,450/day this week, up 3.2% w-o-w on firmer Pacific iron ore demand ex West Australia.\r\n\r\nPANAMAX: P5TC steady at USD 13,900/day; Atlantic grain season supporting ECSA fronthaul.\r\n\r\nSUPRAMAX: S10TC softened to USD 14,200/day amid thin Indian Ocean activity.\r\n\r\nHANDYSIZE: largely sideways, USD 13,100/day.\r\n\r\nBunker (VLSFO Singapore): USD 612/mt. Sentiment cautious ahead of month-end.\r\n\r\nFull PDF report attached. Have a good weekend.\r\n\r\nKind regards,\r\nResearch Desk\r\nBaltic Freight Report Ltd"
+  },
+  "reference_output": {
+    "id": "etms-classify-adv-08",
+    "category": "OTHER",
+    "urgency": "low",
+    "confidence": 0.85,
+    "is_unanswered": false,
+    "days_without_reply": 4,
+    "original_sender": "Research Desk",
+    "original_sender_company": "Baltic Freight Report Ltd"
+  }
+}

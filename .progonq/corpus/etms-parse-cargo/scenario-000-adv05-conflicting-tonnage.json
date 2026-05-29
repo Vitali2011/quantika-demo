@@ -1,0 +1,57 @@
+{
+  "id": "etms-parse-cargo-adv-05",
+  "source_email_id": "etms-parse-cargo-adv-05",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A5-conflicting",
+  "expected_behavior": "The email states two contradictory tonnages for the same single cargo (\"abt 30,000 mts\" in the cargo line vs \"25,000 mt 10% moloo\" in the recap line) and two contradictory laycans (\"laycan 8-14 June\" vs \"ETA loadport 20 June\"); the parser MUST surface the conflict (low/uncertain confidence and a missing_info note) and MUST NOT silently merge them into a single confirmed value.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "Novoross / Iskenderun - wheat firm",
+    "from": "Yulia Petrova <y.petrova@azovgrain-chart.com>",
+    "date": "2026-05-24T09:48:30.000Z",
+    "body": "Dear Sherif,\r\n\r\nGood morning. Pls quote firm for our grain stem:\r\n\r\nCgo: abt 30,000 mts milling wheat in bulk, stw abt 47-49'\r\nLoad: 1 sb Novorossiysk\r\nDisch: 1 sb Iskenderun\r\nLaycan: 8-14 June 2026\r\nLoad rate 8000 mt shinc / disch 5000 mt shinc\r\n2.5% addcom\r\n\r\nFor good order recap of the firm details below:\r\n>> 25,000 mt 10% moloo milling wheat\r\n>> Novoross / Iskenderun\r\n>> ETA loadport 20 June 2026\r\n\r\nPls revert ur best lumpsum.\r\n\r\nBrgds,\r\nYulia"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Novorossiysk",
+          "confidence": "confirmed",
+          "source_text": "Load: 1 sb Novorossiysk"
+        },
+        "destination_port": {
+          "value": "Iskenderun",
+          "confidence": "confirmed",
+          "source_text": "Disch: 1 sb Iskenderun"
+        },
+        "cargo_description": {
+          "value": "Milling wheat in bulk, stowage factor 47-49",
+          "confidence": "interpreted",
+          "source_text": "Cgo: abt 30,000 mts milling wheat in bulk, stw abt 47-49'"
+        },
+        "weight_mt": {
+          "value": 30000,
+          "confidence": "uncertain",
+          "source_text": "abt 30,000 mts milling wheat in bulk"
+        },
+        "stowage_factor": "abt 47-49 ft³/MT",
+        "laycan": {
+          "value": "8-14 June 2026",
+          "confidence": "uncertain",
+          "source_text": "Laycan: 8-14 June 2026"
+        },
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5% addcom"
+        },
+        "missing_info": [
+          "Conflicting tonnage: cargo line states 'abt 30,000 mts' but recap states '25,000 mt 10% moloo' — quantity to be confirmed",
+          "Conflicting dates: laycan stated as 8-14 June 2026 but recap gives ETA loadport 20 June 2026 — to be confirmed",
+          "Demurrage and despatch rates not stated"
+        ]
+      }
+    ]
+  }
+}

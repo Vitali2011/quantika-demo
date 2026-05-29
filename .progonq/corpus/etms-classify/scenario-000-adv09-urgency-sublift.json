@@ -1,0 +1,25 @@
+{
+  "id": "etms-classify-adv-09",
+  "source_email_id": "etms-classify-adv-09",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "SPECIAL-urgency-sublift",
+  "expected_behavior": "A pure sub-lift / partial cancellation notice on an ongoing fixture with no new charter-party clauses must be classified as CLIENT_REPLY with urgency high (sub-lift rule), NOT FIXTURE_RECAP.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "RE: MV STELLA / our acct - subs lifted",
+    "from": "Operations <ops@levantgrain.com>",
+    "date": "2026-05-28T13:42:17.000Z",
+    "body": "Dear Mehmet,\r\n\r\nReverting on MV STELLA / wheat Constanta-Alexandria.\r\n\r\nWe are pleased to confirm our charterers have LIFTED ALL SUBJECTS on the fixture this morning. All terms exactly as per our recap of 26 May — no changes, nothing further to add.\r\n\r\nHowever please note one of the two part-cargoes has been SUB-LIFTED short: charterers can only stem abt 8,000 mt of the second parcel instead of 12,000 mt, balance cancelled. Kindly advise owners ASAP so they can refix the freed space; this affects the stem and we need owners' acknowledgement today.\r\n\r\nPls revert most urgently.\r\n\r\nBest regards,\r\nLayla Haddad\r\nLevant Grain Trading S.A.L."
+  },
+  "reference_output": {
+    "id": "etms-classify-adv-09",
+    "category": "CLIENT_REPLY",
+    "urgency": "high",
+    "confidence": 0.85,
+    "is_unanswered": true,
+    "days_without_reply": 1,
+    "original_sender": "Layla Haddad",
+    "original_sender_company": "Levant Grain Trading S.A.L."
+  }
+}

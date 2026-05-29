@@ -1,0 +1,18 @@
+{
+  "id": "etms-parse-cargo-adv-06",
+  "source_email_id": "etms-parse-cargo-adv-06",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A6-missing-req",
+  "expected_behavior": "This is a vague enquiry that names no commodity, no quantity and no route (only a generic ask for tonnage \"somewhere in the Med next month\"); the parser MUST return {\"items\":[]} (or a single item with all core fields null/uncertain and a missing_info note) and MUST NOT hallucinate a port, commodity, or tonnage.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "tonnage availability?",
+    "from": "Georgios Marinakis <g.marinakis@helleniccharter.gr>",
+    "date": "2026-05-29T06:11:09.000Z",
+    "body": "Hi Sherif,\r\n\r\nHope all good your side. Quick one - do you have any handysize/supra tonnage opening up somewhere in the Med next month? Client may have something moving but nothing firm yet, just sounding out the market for indication levels.\r\n\r\nWill send full details once I have them confirmed.\r\n\r\nRgds,\r\nGeorgios"
+  },
+  "reference_output": {
+    "items": []
+  }
+}
