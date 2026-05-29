@@ -42,9 +42,9 @@ function shiftBodyDates(body: string, offsetDays: number): string {
     shiftIsoDate(`${y}-${mo}-${d}T00:00:00Z`, offsetDays).slice(0, 10),
   );
 
-  // "DD-DD Month YYYY" range (e.g. "15-20 April 2026")
+  // "DD-DD Month YYYY" or "DD/DD Month YYYY" range (e.g. "15-20 April 2026", "02/05 April 2018")
   out = out.replace(
-    /\b(\d{1,2})\s*-\s*(\d{1,2})\s+(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+(\d{4})\b/gi,
+    /\b(\d{1,2})\s*[-\/]\s*(\d{1,2})\s+(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+(\d{4})\b/gi,
     (_match, d1, d2, mon, y) => {
       const monthIdx = MONTH_NAMES.findIndex((m) =>
         m.toLowerCase().startsWith(mon.slice(0, 3).toLowerCase()),
@@ -91,10 +91,12 @@ function shiftedVessel(v: ParsedVessel, offsetDays: number): ParsedVessel {
   return { ...v, openDate: { ...v.openDate, value: shifted } };
 }
 
-// Recaps aren't matched, so no shift is required for the matches loop
-// to work. Keep as identity for the symmetry of the per-email block.
-function shiftedRecap(r: ParsedFixtureRecap, _offsetDays: number): ParsedFixtureRecap {
-  return r;
+function shiftedRecap(r: ParsedFixtureRecap, offsetDays: number): ParsedFixtureRecap {
+  const laycanVal = cfValue(r.laycan);
+  if (!laycanVal) return r;
+  const shifted = shiftBodyDates(laycanVal, offsetDays);
+  if (shifted === laycanVal) return r;
+  return { ...r, laycan: { ...r.laycan!, value: shifted } };
 }
 
 export interface BuildOptions {
@@ -188,7 +190,11 @@ export async function build(opts: BuildOptions): Promise<void> {
       if (offset === undefined) {
         throw new Error(`manifest missing offset for threadId=${email.threadId}`);
       }
-      const shiftedDate = shiftIsoDate(email.date, offset.offsetDays);
+      const rawShiftedDate = shiftIsoDate(email.date, offset.offsetDays);
+      // Clamp email receipt date to frozenDate — cargo emails with old laycans get large
+      // positive offsets that would push the receipt date into the future (M1).
+      const frozenIso = manifest.frozenDate + 'T12:00:00.000Z';
+      const shiftedDate = rawShiftedDate > frozenIso ? frozenIso : rawShiftedDate;
       const shiftedBody = shiftBodyDates(email.body ?? '', offset.offsetDays);
       const shiftedSubject = shiftBodyDates(email.subject ?? '', offset.offsetDays);
 

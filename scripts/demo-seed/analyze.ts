@@ -334,10 +334,13 @@ export async function analyze(opts: AnalyzeOptions): Promise<Manifest> {
       shifted.push('open_date');
       rationale = `${sourceTag}: open_date ${facts.openDate.toISOString().slice(0, 10)} → ${target.toISOString().slice(0, 10)}`;
     } else {
-      // Fallback: place email ~7 days before frozenDate
-      const days = Math.round((frozen.getTime() - emailD.getTime()) / 86_400_000);
-      offsetDays = -days + -7;
-      rationale = `${sourceTag}: email.date ${emailD.toISOString().slice(0, 10)} → frozenDate ${opts.frozenDate} (fallback)`;
+      // Fallback: place email within [frozenDate-20d, frozenDate] using a deterministic
+      // spread derived from the last 3 hex chars of threadId (0-4095 → % 21 = 0..20 days).
+      // Fixed from: "-days + -7" which had wrong sign (moved emails backwards in time).
+      const totalDays = Math.round((frozen.getTime() - emailD.getTime()) / 86_400_000);
+      const spread = parseInt(email.threadId.slice(-3), 16) % 21; // 0..20 deterministic days back
+      offsetDays = totalDays - spread; // emailD + (totalDays - spread) = frozen - spread
+      rationale = `${sourceTag}: email.date ${emailD.toISOString().slice(0, 10)} → frozenDate -${spread}d (fallback)`;
     }
 
     offsets[email.threadId] = { offsetDays, rationale, shifted_fields: shifted };
