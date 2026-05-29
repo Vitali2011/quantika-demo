@@ -403,7 +403,12 @@ export function callClaudeCliRaw(
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { spawnSync } = require('child_process') as typeof import('child_process');
 
-  const budget = opts?.maxBudgetUsd ?? 0.05;
+  // Eval-ergonomics: large parser/vessel system prompts (~32-35 KB) plus the
+  // baked-in Claude-Code context can exceed the 0.05 default before any output,
+  // turning every call into a false error_max_budget_usd. Allow an env override
+  // for eval runs (CLAUDE_CLI_MAX_BUDGET_USD). Explicit opts still win; absent
+  // both, the historical 0.05 default is preserved.
+  const budget = opts?.maxBudgetUsd ?? (Number(process.env.CLAUDE_CLI_MAX_BUDGET_USD) || 0.05);
   const args = ['--print', '--model', model, '--output-format', 'json', '--max-budget-usd', String(budget)];
   if (system) {
     args.push('--system-prompt', system);

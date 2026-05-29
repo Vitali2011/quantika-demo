@@ -146,4 +146,52 @@ describe('callClaudeCliRaw', () => {
     expect(idx).toBeGreaterThan(-1);
     expect(args[idx + 1]).toBe('0.1');
   });
+
+  // U4 (#675): eval-ergonomics — CLAUDE_CLI_MAX_BUDGET_USD env fallback.
+  // Large parser system prompts blow past the 0.05 default before any output,
+  // producing false error_max_budget_usd on every eval call. The audit's
+  // uncommitted affordance is now permanent. (audit Top-10, "Harness affordance")
+  describe('CLAUDE_CLI_MAX_BUDGET_USD env fallback', () => {
+    const original = process.env.CLAUDE_CLI_MAX_BUDGET_USD;
+    afterEach(() => {
+      if (original === undefined) delete process.env.CLAUDE_CLI_MAX_BUDGET_USD;
+      else process.env.CLAUDE_CLI_MAX_BUDGET_USD = original;
+    });
+
+    it('uses CLAUDE_CLI_MAX_BUDGET_USD when set and no opts override', () => {
+      process.env.CLAUDE_CLI_MAX_BUDGET_USD = '0.30';
+      childProcess.spawnSync.mockReturnValue(OK_RESPONSE('ok'));
+      callClaudeCliRaw('s', 'u', 'claude-opus-4-7');
+      const [, args] = childProcess.spawnSync.mock.calls[0] as [string, string[]];
+      const idx = args.indexOf('--max-budget-usd');
+      expect(args[idx + 1]).toBe('0.3');
+    });
+
+    it('opts.maxBudgetUsd overrides the env var', () => {
+      process.env.CLAUDE_CLI_MAX_BUDGET_USD = '0.30';
+      childProcess.spawnSync.mockReturnValue(OK_RESPONSE('ok'));
+      callClaudeCliRaw('s', 'u', 'claude-opus-4-7', { maxBudgetUsd: 0.12 });
+      const [, args] = childProcess.spawnSync.mock.calls[0] as [string, string[]];
+      const idx = args.indexOf('--max-budget-usd');
+      expect(args[idx + 1]).toBe('0.12');
+    });
+
+    it('falls back to 0.05 default when env is unset', () => {
+      delete process.env.CLAUDE_CLI_MAX_BUDGET_USD;
+      childProcess.spawnSync.mockReturnValue(OK_RESPONSE('ok'));
+      callClaudeCliRaw('s', 'u', 'claude-opus-4-7');
+      const [, args] = childProcess.spawnSync.mock.calls[0] as [string, string[]];
+      const idx = args.indexOf('--max-budget-usd');
+      expect(args[idx + 1]).toBe('0.05');
+    });
+
+    it('falls back to 0.05 default when env is non-numeric garbage', () => {
+      process.env.CLAUDE_CLI_MAX_BUDGET_USD = 'not-a-number';
+      childProcess.spawnSync.mockReturnValue(OK_RESPONSE('ok'));
+      callClaudeCliRaw('s', 'u', 'claude-opus-4-7');
+      const [, args] = childProcess.spawnSync.mock.calls[0] as [string, string[]];
+      const idx = args.indexOf('--max-budget-usd');
+      expect(args[idx + 1]).toBe('0.05');
+    });
+  });
 });
