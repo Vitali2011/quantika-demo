@@ -130,3 +130,59 @@ describe('build (Task 18) — pre-compute matches', () => {
     db.close();
   });
 });
+
+describe('build with LLM cache → parsed_results from cache + matches', () => {
+  let tmpDb: string;
+  beforeEach(() => { tmpDb = path.join(os.tmpdir(), `demo-seed-cache-${Date.now()}.db`); });
+  afterEach(() => { if (fs.existsSync(tmpDb)) fs.unlinkSync(tmpDb); });
+
+  it('writes real cargo+vessel parsed_results from cache and produces matches', async () => {
+    const { writeCache, corpusHash } = require('../llm-cache') as typeof import('../llm-cache');
+
+    const files = fs.readdirSync(FIXTURES).filter(f => f.endsWith('.json')).sort();
+    const ids = files.map(f => {
+      const raw = JSON.parse(fs.readFileSync(`${FIXTURES}/${f}`, 'utf8'));
+      return raw.messages?.[0]?.id ?? raw.id ?? f.replace('.json', '');
+    });
+    // 2 cargo + 2 vessel emails
+    const [c1, c2, v1, v2] = ids;
+
+    const hash = corpusHash(FIXTURES);
+    const cache = {
+      corpusHash: hash,
+      generatedAt: '2026-05-27T20:00:00.000Z',
+      classifications: [
+        { emailId: c1, category: 'CARGO_INQUIRY' },
+        { emailId: c2, category: 'CARGO_INQUIRY' },
+        { emailId: v1, category: 'VESSEL_POSITION' },
+        { emailId: v2, category: 'VESSEL_POSITION' },
+      ],
+      parsedCargos: [
+        { emailId: c1, itemIndex: 0, laycan: '10-15 May 2026' },
+        { emailId: c2, itemIndex: 0, laycan: '12-18 May 2026' },
+      ],
+      parsedVessels: [
+        { emailId: v1, itemIndex: 0, openDate: { value: '2026-05-12', confidence: 'high' } },
+        { emailId: v2, itemIndex: 0, openDate: { value: '2026-05-15', confidence: 'high' } },
+      ],
+      parsedFixtureRecaps: [],
+    };
+    writeCache(FIXTURES, cache as any);
+
+    try {
+      await build({ rawDir: FIXTURES, manifestPath: FIX_MANIFEST, outDb: tmpDb });
+      const db = new Database(tmpDb);
+      sqliteVec.load(db);
+      const parsedCount = db.prepare(
+        "SELECT COUNT(*) AS c FROM parsed_results WHERE parse_type IN ('cargo','vessel')",
+      ).get() as { c: number };
+      expect(parsedCount.c).toBeGreaterThanOrEqual(4);
+      const matchCount = db.prepare('SELECT COUNT(*) AS c FROM matches').get() as { c: number };
+      expect(matchCount.c).toBeGreaterThan(0);
+      db.close();
+    } finally {
+      fs.unlinkSync(`${FIXTURES}/.llm-cache/${hash}.json`);
+      fs.rmdirSync(`${FIXTURES}/.llm-cache`);
+    }
+  });
+});
