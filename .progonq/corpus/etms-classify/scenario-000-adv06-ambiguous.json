@@ -1,0 +1,25 @@
+{
+  "id": "etms-classify-adv-06",
+  "source_email_id": "etms-classify-adv-06",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A10-ambiguous",
+  "expected_behavior": "The email is genuinely dual-intent (offers an open Supramax position AND asks for a back-haul cargo); the parser must pick one defensible category (VESSEL_POSITION or CARGO_INQUIRY) with confidence reflecting the ambiguity (not near 1.0) and must not crash or invent a third category.",
+  "worst_severity": "low-confidence-but-correct",
+  "input": {
+    "subject": "open Supramax EC India 02/05 jun + need backhaul cargo",
+    "from": "Vikram Nair <vikram@oceanlinkbrokers.in>",
+    "date": "2026-05-26T10:18:30.000Z",
+    "body": "Gd day all,\r\n\r\nWe control below tonnage, also working a cargo — open to both:\r\n\r\nMV OCEAN PRIDE\r\n- Supramax, 56,800 dwt on 12.65m ssw\r\n- blt 2013, grabs fitted, holds clean\r\n- open Visakhapatnam 02/05 jun, spot\r\n\r\nIn parallel, for the same vsl ballasting back we are LOOKING for a backhaul:\r\n- any harmless bulk abt 50,000 mt 10% moloo\r\n- PG / WC India range, disch EC India / Bangladesh\r\n- laycan mid/end jun\r\n\r\nPls advise firm cargoes that fit, or owners with competing tonnage. 3.75% adcom.\r\n\r\nBrgds,\r\nVikram Nair\r\nOceanLink Brokers Pvt Ltd"
+  },
+  "reference_output": {
+    "id": "etms-classify-adv-06",
+    "category": "VESSEL_POSITION",
+    "urgency": "high",
+    "confidence": 0.6,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Vikram Nair",
+    "original_sender_company": "OceanLink Brokers Pvt Ltd"
+  }
+}

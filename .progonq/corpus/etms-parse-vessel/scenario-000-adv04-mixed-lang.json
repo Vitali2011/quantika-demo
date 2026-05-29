@@ -1,0 +1,31 @@
+{
+  "id": "etms-parse-vessel-adv-04",
+  "source_email_id": "etms-parse-vessel-adv-04",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A4-mixed-lang",
+  "expected_behavior": "The email mixes English, Turkish and Arabic in one position circular; the parser must extract MV DENIZ KARTAL with dwt_summer 12800, dwcc 12200, flag (Turkey), and open_position (Mersin), correctly reading values regardless of the surrounding-language words for built/open/ready.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "MV DENIZ KARTAL // açık Mersin // open prompt",
+    "from": "Selin Arslan <ops@karadeniz-chartering.com.tr>",
+    "date": "2026-05-26T13:27:44.000Z",
+    "body": "Merhaba / Dear all / السادة,\r\n\r\nAşağıdaki gemimiz için uygun yük öneriniz beklenmektedir. Pls propose cargo:\r\n\r\nMV DENIZ KARTAL\r\nDWT 12.800 mt / DWCC 12.200 mt\r\nFlag: Türk (Turkey) bayrağı\r\nyapım yılı / built 2012\r\nopen Mersin spsb, hazır / ready 31 May\r\ngüvertesiz vinçsiz (gearless), tek ambar / single hold box\r\nمتاحة فوراً للحمولة المناسبة\r\nson yükler / L/C: çelik / steel coils, klinker, buğday\r\n\r\nİyi çalışmalar / Best rgds,\r\nSelin"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": { "value": "MV DENIZ KARTAL", "confidence": "confirmed", "source_text": "MV DENIZ KARTAL" },
+        "imo": null,
+        "flag": { "value": "Turkey", "confidence": "interpreted", "source_text": "Flag: Türk (Turkey) bayrağı" },
+        "built": { "value": 2012, "confidence": "confirmed", "source_text": "yapım yılı / built 2012" },
+        "dwt_summer": { "value": 12800, "confidence": "confirmed", "source_text": "DWT 12.800 mt" },
+        "dwcc": { "value": 12200, "confidence": "confirmed", "source_text": "DWCC 12.200 mt" },
+        "geared": false,
+        "open_position": { "value": "Mersin", "confidence": "confirmed", "source_text": "open Mersin spsb" },
+        "open_date": { "value": { "open": null, "close": null, "display": "ready 31 May" }, "confidence": "confirmed", "source_text": "hazır / ready 31 May" },
+        "last_cargoes": { "value": "steel coils, klinker, buğday", "confidence": "interpreted", "source_text": "L/C: çelik / steel coils, klinker, buğday" }
+      }
+    ]
+  }
+}

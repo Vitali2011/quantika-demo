@@ -1,0 +1,56 @@
+{
+  "id": "etms-parse-cargo-adv-10",
+  "source_email_id": "etms-parse-cargo-adv-10",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A10-ambiguous",
+  "expected_behavior": "The token 'Santos' appears as both a person (the contact/signatory 'Mr. Santos' / 'Santos') and as the discharge port; the parser MUST resolve the destination_port to the port Santos from the route line 'Paranagua / Santos' and MUST NOT treat the person name in the greeting/signature as a port nor confuse the load port.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "Paranagua / Santos - soybean firm",
+    "from": "Paulo Santos <p.santos@brchartering.com.br>",
+    "date": "2026-05-26T15:40:11.000Z",
+    "body": "Dear Mr. Santos,\r\n\r\nFollowing our call, pls find firm cargo from Santos office below:\r\n\r\nCargo: 28,000 mts soybeans in bulk\r\nLoad: 1 sb Paranagua\r\nDisch: 1 sb Santos\r\nLaycan: 10-18 June 2026\r\nLoad 12000 / disch 8000 shinc\r\n3.75% ttl\r\n\r\nPls revert via Santos directly.\r\n\r\nBest regards,\r\nPaulo Santos\r\nBR Chartering Ltda"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Paranaguá",
+          "confidence": "confirmed",
+          "source_text": "Load: 1 sb Paranagua"
+        },
+        "destination_port": {
+          "value": "Santos",
+          "confidence": "confirmed",
+          "source_text": "Disch: 1 sb Santos"
+        },
+        "cargo_description": {
+          "value": "Soybeans in bulk",
+          "confidence": "confirmed",
+          "source_text": "Cargo: 28,000 mts soybeans in bulk"
+        },
+        "weight_mt": {
+          "value": 28000,
+          "confidence": "confirmed",
+          "source_text": "28,000 mts soybeans in bulk"
+        },
+        "cargo_type": "BULK",
+        "laycan": {
+          "value": "10-18 June 2026",
+          "confidence": "confirmed",
+          "source_text": "Laycan: 10-18 June 2026"
+        },
+        "loading_rate": "12000 MT/day",
+        "discharge_rate": "8000 MT/day",
+        "loading_terms": "SHINC",
+        "discharge_terms": "SHINC",
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75% ttl"
+        }
+      }
+    ]
+  }
+}

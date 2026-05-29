@@ -1,0 +1,49 @@
+{
+  "id": "etms-parse-recap-adv-08",
+  "source_email_id": "etms-parse-recap-adv-08",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "SPECIAL-laycan-conflict",
+  "expected_behavior": "Given the recap stating the laycan twice with different windows (25–30 May 2026 in the laycan line versus 'lifting/laydays 01–07 June 2026' later), the parser MUST NOT emit a single high-confidence laycan — it must surface the discrepancy (laycan with reduced confidence noting both windows and/or a LAYCAN_CONFLICT entry in unknown_terms) without silently dropping or averaging the two windows.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "RECAP // MV BLACK SEA STAR // 6,500 MT STEEL BILLETS // NIKOLAEV-ALEXANDRIA",
+    "from": "Olena Tkachenko <chartering@dnipromar.com>",
+    "date": "2026-05-21T12:00:00.000Z",
+    "body": "Dear partners,\r\n\r\nRecap clean as agreed, owise GENCON 94:\r\n\r\nMV BLACK SEA STAR\r\nGeneral cargo / single-decker, 8,400 dwt, Moldova flag, blt 2008\r\nOWNERS: Dnipro Maritime Ltd\r\nACCT: Metinvest International SA\r\n\r\n- LOAD: 1 sb Nikolaev, Ukraine\r\n- DISCH: 1 sb Alexandria, Egypt\r\n- CARGO: 6,500 MT steel billets in bulk, 5 pct moloo\r\n- LAYCAN: 25/30 May 2026\r\n- FRT: USD 44.00 pmt FIOST\r\n- LOAD/DISCH: 1,500 / 1,200 mt pwwd shex\r\n- DEM: EUR 6,000 pdpr // DES half dem\r\n- ADDCOMM 2.5 pct + 1.25 pct bro\r\n- ARB London, English law\r\n\r\nNB further to charterers' latest message the agreed lifting / laydays are 01/07 June 2026 owing to the berth congestion at Nikolaev — pls work to these laydays for ETA planning.\r\n\r\nBR\r\nOlena\r\nDnipro Maritime, Odessa"
+  },
+  "reference_output": {
+    "vessel_name": { "value": "MV BLACK SEA STAR", "confidence": "confirmed", "source_text": "MV BLACK SEA STAR" },
+    "vessel_dwt": { "value": 8400, "confidence": "confirmed", "source_text": "8,400 dwt" },
+    "vessel_flag": { "value": "Moldova", "confidence": "confirmed", "source_text": "Moldova flag" },
+    "vessel_yob": { "value": 2008, "confidence": "confirmed", "source_text": "blt 2008" },
+    "owners": { "value": "Dnipro Maritime Ltd", "confidence": "confirmed", "source_text": "OWNERS: Dnipro Maritime Ltd" },
+    "account": { "value": "Metinvest International SA", "confidence": "confirmed", "source_text": "ACCT: Metinvest International SA" },
+    "load_port": { "value": "Nikolaev, Ukraine", "confidence": "confirmed", "source_text": "LOAD: 1 sb Nikolaev, Ukraine" },
+    "disch_port": { "value": "Alexandria, Egypt", "confidence": "confirmed", "source_text": "DISCH: 1 sb Alexandria, Egypt" },
+    "cargo_description": { "value": "Steel billets in bulk", "confidence": "confirmed", "source_text": "CARGO: 6,500 MT steel billets in bulk, 5 pct moloo" },
+    "laycan": {
+      "value": "Conflicting: 25–30 May 2026 (LAYCAN line) vs 01–07 June 2026 (later 'lifting/laydays' due to Nikolaev congestion) — broker to confirm operative window",
+      "confidence": "uncertain",
+      "source_text": "LAYCAN: 25/30 May 2026"
+    },
+    "freight_rate": { "value": "USD 44.00 per MT", "confidence": "confirmed", "source_text": "FRT: USD 44.00 pmt FIOST" },
+    "freight_basis": { "value": "FIOST", "confidence": "confirmed", "source_text": "USD 44.00 pmt FIOST" },
+    "loading_rate": { "value": "1,500 MT pwwd", "confidence": "confirmed", "source_text": "LOAD/DISCH: 1,500 / 1,200 mt pwwd shex" },
+    "loading_terms": { "value": "SHEX", "confidence": "confirmed", "source_text": "1,500 / 1,200 mt pwwd shex" },
+    "discharging_rate": { "value": "1,200 MT pwwd", "confidence": "confirmed", "source_text": "LOAD/DISCH: 1,500 / 1,200 mt pwwd shex" },
+    "discharging_terms": { "value": "SHEX", "confidence": "confirmed", "source_text": "1,500 / 1,200 mt pwwd shex" },
+    "demurrage_rate": { "value": "EUR 6,000 per day pro rata", "confidence": "confirmed", "source_text": "DEM: EUR 6,000 pdpr" },
+    "despatch_rate": { "value": "Half despatch — EUR 3,000 per day pro rata", "confidence": "interpreted", "source_text": "DES half dem" },
+    "cp_form": { "value": "GENCON 94", "confidence": "confirmed", "source_text": "owise GENCON 94" },
+    "arbitration": { "value": "London arbitration", "confidence": "confirmed", "source_text": "ARB London, English law" },
+    "law": { "value": "English law", "confidence": "confirmed", "source_text": "ARB London, English law" },
+    "commission_address_pct": { "value": 2.5, "confidence": "confirmed", "source_text": "ADDCOMM 2.5 pct" },
+    "commission_broker_pct": { "value": 1.25, "confidence": "confirmed", "source_text": "1.25 pct bro" },
+    "commission_percent": { "value": 3.75, "confidence": "interpreted", "source_text": "ADDCOMM 2.5 pct + 1.25 pct bro" },
+    "broker": "Dnipro Maritime, Odessa (Olena Tkachenko)",
+    "unknown_terms": [
+      { "term": "LAYCAN_CONFLICT", "context": "Recap states laycan twice with different windows: 'LAYCAN: 25/30 May 2026' versus a later note 'the agreed lifting / laydays are 01/07 June 2026 owing to the berth congestion at Nikolaev'. Windows do not overlap — flagged for broker to confirm the operative laycan." }
+    ]
+  }
+}

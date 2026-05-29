@@ -1,0 +1,38 @@
+{
+  "id": "etms-parse-vessel-adv-11",
+  "source_email_id": "etms-parse-vessel-adv-11",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "SPECIAL-dwcc-vs-dwt",
+  "expected_behavior": "The circular states BOTH summer DWT and DWCC explicitly and in an order/format designed to bait a swap (\"56,000 dwt / 53,200 dwcc\" plus a confusing 'cargo intake abt 53,200' restatement); the parser must map dwt_summer=56000 and dwcc=53200 to the correct distinct fields and must NOT swap them or set dwcc equal to dwt.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "MV ANATOLIAN BREEZE - 56,000 dwt / 53,200 dwcc - open Gemlik",
+    "from": "Emre Kaya <chartering@marmara-bulk.com.tr>",
+    "date": "2026-05-26T12:03:41.000Z",
+    "body": "Dear Sirs,\r\n\r\nGd day. Pls propose suitable cargo for our Supramax open Marmara below:\r\n\r\nMV ANATOLIAN BREEZE\r\n56,000 dwt / 53,200 dwcc on 12.85m SSW draft\r\nMax cargo intake abt 53,200 mts on summer marks\r\nFlag: Panama, Built 2012, IMO 9598742\r\nGeared 4 x 35T cranes, grain 71,200 cbm / bale 68,400 cbm\r\nHolds/Hatches 5/5, box shaped\r\nOpen Gemlik spsb 1sb, laycan 03/06 Jun 2026\r\nL/C: grain, steel products, fertilizer\r\n\r\nBest rgds,\r\nEmre"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": { "value": "MV ANATOLIAN BREEZE", "confidence": "confirmed", "source_text": "MV ANATOLIAN BREEZE" },
+        "imo": 9598742,
+        "flag": { "value": "Panama", "confidence": "confirmed", "source_text": "Flag: Panama" },
+        "built": { "value": 2012, "confidence": "confirmed", "source_text": "Built 2012" },
+        "dwt_summer": { "value": 56000, "confidence": "confirmed", "source_text": "56,000 dwt / 53,200 dwcc" },
+        "dwcc": { "value": 53200, "confidence": "confirmed", "source_text": "56,000 dwt / 53,200 dwcc" },
+        "draft_max": { "value": 12.85, "confidence": "interpreted", "source_text": "53,200 dwcc on 12.85m SSW draft" },
+        "geared": true,
+        "crane_capacity": { "value": "4 x 35T", "confidence": "confirmed", "source_text": "Geared 4 x 35T cranes" },
+        "grain_capacity": { "value": 71200, "confidence": "confirmed", "source_text": "grain 71,200 cbm" },
+        "grain_capacity_unit": "cbm",
+        "bale_capacity": 68400,
+        "holds_count": 5,
+        "hatches_count": 5,
+        "open_position": { "value": "Gemlik", "confidence": "confirmed", "source_text": "Open Gemlik spsb 1sb" },
+        "open_date": { "value": { "open": "2026-06-03", "close": "2026-06-06", "display": "03/06 Jun 2026" }, "confidence": "interpreted", "source_text": "laycan 03/06 Jun 2026" },
+        "last_cargoes": { "value": "grain, steel products, fertilizer", "confidence": "confirmed", "source_text": "L/C: grain, steel products, fertilizer" }
+      }
+    ]
+  }
+}

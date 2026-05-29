@@ -1,0 +1,25 @@
+{
+  "id": "etms-classify-adv-04",
+  "source_email_id": "etms-classify-adv-04",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A4-mixed-lang",
+  "expected_behavior": "Despite the body mixing English, Arabic and Turkish, the parser must recognise this as a CARGO_INQUIRY (steel rebar Iskenderun to Misurata, ~18,000 MT, laycan mid-June) with urgency high and not default to OTHER.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "enquiry / rebar Iskenderun - Misurata / yük talebi",
+    "from": "Mehmet Yildirim <m.yildirim@bosphorusbulk.com.tr>",
+    "date": "2026-05-25T14:25:11.000Z",
+    "body": "Merhaba / Dear all,\r\n\r\nMüşterimiz adına aşağıdaki yük için en iyi navlununuzu rica ederiz / pls quote yr best freight for acct of our principals:\r\n\r\n- Cargo: steel rebar in bundles (inşaat demiri / حديد تسليح)\r\n- Qty: abt 18,000 mt 10% moloo\r\n- Load: 1sb Iskenderun (yükleme limanı)\r\n- Disch: 1sb Misurata, Libya (تفريغ)\r\n- Laycan: 14/18 June\r\n- Yükleme 4,000 mt / boşaltma 2,500 mt SHEX\r\n- komisyon / addcomm 2.5%\r\n\r\nLütfen FIOST esasına göre teklif veriniz. En kısa sürede dönüş rica olunur.\r\n\r\nSaygılarımla / Best rgds,\r\nMehmet Yildirim\r\nBosphorus Bulk Denizcilik A.S."
+  },
+  "reference_output": {
+    "id": "etms-classify-adv-04",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.78,
+    "is_unanswered": true,
+    "days_without_reply": 4,
+    "original_sender": "Mehmet Yildirim",
+    "original_sender_company": "Bosphorus Bulk Denizcilik A.S."
+  }
+}
