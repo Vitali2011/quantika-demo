@@ -12,6 +12,12 @@ name: Post-Deploy Smoke
 # Failure НЕ откатывает deploy — это сигнал, не gate. Rollback живёт в deploy.yml
 # (60s health-check + auto-revert). Smoke смотрит шире: visual rendering + DOM.
 #
+# Resilience (smoke.mjs): прод рестартует через `pm2 restart` (hard, brief downtime),
+# а Caddyfile.demo — bare reverse_proxy без health_uri, поэтому в окне рестарта Caddy
+# отдаёт 5xx. Чтобы не ловить false-negative, smoke (a) поллит /api/health до 200 перед
+# проверкой routes и (b) ретраит каждый route на транзиентных 5xx/сетевых сбоях.
+# overall=PASS только если health поднялся И все routes отрендерились.
+#
 # Required secrets: DEV_VPS_SSH_KEY (ed25519, open SSH, не forced-command).
 
 on:
@@ -61,12 +67,23 @@ jobs:
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
           echo "Resolved: PR=#$PR SHA=$SHA"
 
+      - name: Checkout (for smoke script sync)
+        uses: actions/checkout@v4
+
       - name: Setup SSH to dev-vps
         run: |
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
           echo "${{ secrets.DEV_VPS_SSH_KEY }}" > ~/.ssh/dev_vps_key
           chmod 600 ~/.ssh/dev_vps_key
           ssh-keyscan -H 157.173.124.116 >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Sync smoke scripts to dev-vps
+        run: |
+          scp -i ~/.ssh/dev_vps_key \
+              -o StrictHostKeyChecking=accept-new \
+              scripts/post-deploy-smoke/smoke.mjs \
+              scripts/post-deploy-smoke/run-quantika.sh \
+              root@157.173.124.116:/root/post-deploy-smoke/
 
       - name: Run smoke on dev-vps
         id: smoke
@@ -110,10 +127,17 @@ jobs:
           PASSED=$(jq -r '.routes_passed // 0' summary.json)
           TOTAL=$(jq -r '.routes_checked // 0' summary.json)
           FAILED_ROUTES=$(jq -r '[.results[] | select(.pass==false) | .route] | join(", ")' summary.json 2>/dev/null || echo "")
+          HEALTHY=$(jq -r '.health.healthy // "?"' summary.json 2>/dev/null || echo "?")
+          HEALTH_WAIT=$(jq -r '.health.waited_ms // 0' summary.json 2>/dev/null || echo 0)
 
           if [ "$OVERALL" = "PASS" ]; then ICON="✅"; else ICON="❌"; fi
 
-          BODY="$ICON **Post-deploy smoke**: \`$OVERALL\` ($PASSED/$TOTAL routes)"
+          BODY="$ICON **Post-deploy smoke**: \`$OVERALL\` ($PASSED/$TOTAL routes · health up in ${HEALTH_WAIT}ms)"
+          if [ "$OVERALL" != "PASS" ] && [ "$HEALTHY" != "true" ]; then
+            BODY="$BODY
+
+          ⚠️ App never reported healthy within the poll window (\`/api/health\` failed after ${HEALTH_WAIT}ms) — likely a real outage, not a restart blip."
+          fi
           if [ "$OVERALL" != "PASS" ] && [ -n "$FAILED_ROUTES" ]; then
             BODY="$BODY
 
