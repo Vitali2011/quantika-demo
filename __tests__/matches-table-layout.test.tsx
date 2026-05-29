@@ -54,6 +54,29 @@ describe('MatchesClient.tsx — VESSEL column wraps long names (#636 pattern)', 
   });
 });
 
+describe('MatchesClient.tsx — table header/body column alignment (#662 regression)', () => {
+  let src: string;
+  beforeAll(() => { src = readSource(clientPath); });
+
+  it('CARGO/VESSEL column header (i=5) is text-left, not text-right', () => {
+    // Bug: old rule `i >= 3 && i <= 6 ? 'text-right'` right-aligned i=5 (Cargo/Vessel)
+    // but the body cell is left-aligned, causing header↔body column misalignment.
+    expect(src).not.toMatch(/i >= 3 && i <= 6 \? 'text-right'/);
+  });
+
+  it('only DWT (i=3), TCE (i=4), Laycan (i=6) headers are right-aligned', () => {
+    expect(src).toMatch(/i === 3 \|\| i === 4 \|\| i === 6 \? 'text-right' : 'text-left'/);
+  });
+
+  it('thead column count matches tbody column count (8 each)', () => {
+    const tableSection = src.slice(src.indexOf('TABLE VIEW'));
+    const colCount = (tableSection.match(/<col /g) ?? []).length;
+    expect(colCount).toBe(8);
+    expect(tableSection).toMatch(/'Score', 'Vessel', 'Route', 'DWT', 'TCE \/ day', 'Cargo', 'Laycan', ''/);
+    expect(tableSection).toMatch(/'Score', 'Cargo', 'Route', 'DWT', 'TCE \/ day', 'Vessel', 'Laycan', ''/);
+  });
+});
+
 describe('app/matches/page.tsx — full-width container matches /cargo', () => {
   let src: string;
   beforeAll(() => { src = readSource(pagePath); });
