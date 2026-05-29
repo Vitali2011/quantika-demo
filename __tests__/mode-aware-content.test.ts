@@ -40,6 +40,8 @@ function makeMatch(id: number, cargoId: string, vesselId: string): StoredMatch {
     user_id: 'session-1',
     created_at: 1000000,
     updated_at: 1000000,
+    vessel_name: null,
+    cargo_ref: null,
   };
 }
 

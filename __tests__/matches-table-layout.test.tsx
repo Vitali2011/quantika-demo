@@ -38,7 +38,7 @@ describe('MatchesClient.tsx — VESSEL column wraps long names (#636 pattern)', 
 
   it('table view vessel cells use break-words class', () => {
     const tableSection = src.slice(src.indexOf('TABLE VIEW'));
-    expect(tableSection).toMatch(/break-words[^>]*>\{match\.vessel_id\}|className="[^"]*break-words[^"]*"[^>]*>\{match\.vessel_id\}/);
+    expect(tableSection).toMatch(/break-words[^>]*>\{match\.vessel_name \?\? match\.vessel_id\}|className="[^"]*break-words[^"]*"[^>]*>\{match\.vessel_name \?\? match\.vessel_id\}/);
   });
 
   it('outer wrapper does not use overflow-x-hidden (which clips scrollable table)', () => {
