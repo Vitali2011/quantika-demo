@@ -12,10 +12,25 @@ Headless playwright check на prod (`https://demo.quantika.org`) после у�
 - Полный screenshot каждого route (1280×800 viewport)
 
 Outputs:
+
 - `~/orchestrator-state/quantika-demo/post-deploy-checks/<pr#>/summary.json`
 - `~/orchestrator-state/quantika-demo/post-deploy-checks/<pr#>/<route>.png` (5 файлов)
 
 Exit 0 = все 5 routes PASS · exit 1 = хоть один FAIL.
+
+## Resilience (anti-false-negative)
+
+Прод рестартует через `pm2 restart` (hard, brief downtime), а `Caddyfile.demo` — bare
+`reverse_proxy` без `health_uri`, поэтому в окне рестарта Caddy отдаёт 5xx. Чтобы smoke
+не падал на этом окне (а только на настоящих регрессиях):
+
+- **(a) health-gate** — перед проверкой routes поллит `/api/health` до 200 (до 90s,
+  интервал 3s). `overall=PASS` только если health поднялся **и** все routes отрендерились.
+- **(b) route retry** — каждый route ретраит до 3× с линейным backoff, но **только на
+  транзиентных** сбоях (network error / status 0 / 5xx). Реальный 4xx или error-marker
+  падает сразу (`attempts=1`) — настоящие регрессии не маскируются.
+
+`summary.json` содержит блок `health: { healthy, attempts, waited_ms, last_error }`.
 
 ## Manual run (на dev-vps)
 
@@ -42,8 +57,8 @@ auto-merge.yml → repository_dispatch (prod-deploy)
 
 ## Required GH Secrets
 
-| Secret | Что | Где использован |
-|---|---|---|
+| Secret            | Что                                                   | Где использован         |
+| ----------------- | ----------------------------------------------------- | ----------------------- |
 | `DEV_VPS_SSH_KEY` | ed25519 private key (открытый SSH, не forced-command) | `post-deploy-smoke.yml` |
 
 `PROD_SSH_KEY` НЕ переиспользуется — он locked-down (forced-command `/root/deploy.sh`), не может запускать произвольный bash.
@@ -53,7 +68,9 @@ auto-merge.yml → repository_dispatch (prod-deploy)
 - Добавить route: edit `ROUTES_DEFAULT` в `smoke.mjs` или передать `SMOKE_ROUTES="/foo,/bar"` env var.
 - Изменить timeout: `SMOKE_TIMEOUT=20000` (ms).
 - Custom base URL: `SMOKE_BASE_URL=https://staging...`.
-- Console-error фильтр в `smoke.mjs` line ~57 — расширь regex для новых noise patterns.
+- Health-gate: `SMOKE_HEALTH_PATH=/api/health`, `SMOKE_HEALTH_TIMEOUT_MS=90000`, `SMOKE_HEALTH_INTERVAL_MS=3000`, `SMOKE_HEALTH_PROBE_TIMEOUT_MS=5000`.
+- Route retry: `SMOKE_ROUTE_ATTEMPTS=3`, `SMOKE_ROUTE_BACKOFF_MS=3000` (линейный backoff).
+- Console-error фильтр в `smoke.mjs` — расширь regex для новых noise patterns.
 
 ## Phase 3 (orchestrator-day integration)
 

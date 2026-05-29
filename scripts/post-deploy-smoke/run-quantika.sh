@@ -19,6 +19,7 @@ RC=$?
 echo "=== POST-DEPLOY SMOKE · PR #$PR · $BASE ==="
 if command -v jq >/dev/null; then
   jq -r '"overall=" + .overall + "  passed=" + (.routes_passed|tostring) + "/" + (.routes_checked|tostring) + "  failed=" + (.routes_failed|tostring)' "$OUTDIR/summary.json"
+  jq -r '"health=" + (.health.healthy|tostring) + "  (waited " + (.health.waited_ms|tostring) + "ms, " + (.health.attempts|tostring) + " attempts)"' "$OUTDIR/summary.json"
   echo "--- per-route ---"
   jq -r '.results[] | "  " + (if .pass then "✓" else "✗" end) + " " + .route + " (status=" + (.status|tostring) + ", " + (.duration_ms|tostring) + "ms)" + (if .error_markers|length>0 then " markers=" + (.error_markers|join(",")) else "" end) + (if .error then " error=" + .error else "" end)' "$OUTDIR/summary.json"
 else
