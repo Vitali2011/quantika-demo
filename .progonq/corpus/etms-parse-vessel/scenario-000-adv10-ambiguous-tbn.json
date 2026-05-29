@@ -1,0 +1,30 @@
+{
+  "id": "etms-parse-vessel-adv-10",
+  "source_email_id": "etms-parse-vessel-adv-10",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A10-ambiguous",
+  "expected_behavior": "The vessel identifier is the literal placeholder 'MV TBN' (to-be-named) with only a tentative dwt range and open area; the parser must extract it as vessel_name 'MV TBN' (a valid identifier when explicitly written) but must NOT invent particulars — built, flag and IMO stay null, and the hedged dwt must be interpreted not confirmed, never a fabricated real vessel.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "TBN nominated - W.Med / abt 35k dwt Handy",
+    "from": "Lorenzo Ricci <chartering@tirreno-shipbrokers.it>",
+    "date": "2026-05-27T15:40:12.000Z",
+    "body": "Dear Sirs,\r\n\r\nFor below cargo we intend to nominate a TBN, pls work on indication basis:\r\n\r\nMV TBN (owners to nominate on fixing)\r\nabt 35,000 dwt Handysize, gearless\r\nOpen W.Med, prompt / first half June\r\n\r\nOwners reserve right to substitute with sister vessel of similar size/spec.\r\nFull particulars + name to follow on firm.\r\n\r\nPls indicate freight idea bss above.\r\n\r\nBrgds,\r\nLorenzo"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": { "value": "MV TBN", "confidence": "confirmed", "source_text": "MV TBN (owners to nominate on fixing)" },
+        "imo": null,
+        "flag": null,
+        "built": { "value": null, "confidence": "uncertain", "source_text": "" },
+        "dwt_summer": { "value": 35000, "confidence": "interpreted", "source_text": "abt 35,000 dwt Handysize" },
+        "dwcc": null,
+        "geared": false,
+        "open_position": { "value": "W.Med", "confidence": "confirmed", "source_text": "Open W.Med, prompt / first half June" },
+        "open_date": { "value": { "open": null, "close": null, "display": "prompt / first half June" }, "confidence": "interpreted", "source_text": "prompt / first half June" }
+      }
+    ]
+  }
+}

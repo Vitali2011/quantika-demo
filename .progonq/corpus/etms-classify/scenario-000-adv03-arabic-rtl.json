@@ -1,0 +1,25 @@
+{
+  "id": "etms-classify-adv-03",
+  "source_email_id": "etms-classify-adv-03",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A3-arabic-rtl",
+  "expected_behavior": "The parser must understand the Arabic-language cargo enquiry (gypsum, Ain Sukhna to Mundra, ~28,000 MT, laycan early June) and classify it as CARGO_INQUIRY with urgency high, not OTHER, despite the RTL script.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "طلب نولون - جبس / العين السخنة الى موندرا",
+    "from": "Ahmed Saleh <a.saleh@nile-shipbrokers.com>",
+    "date": "2026-05-26T08:40:00.000Z",
+    "body": "السادة الأفاضل،\r\n\r\nتحية طيبة وبعد،\r\n\r\nنرجو موافاتنا بأفضل سعر نولون لشحنة الجبس السائب التالية نيابة عن موكلينا:\r\n\r\n- البضاعة: جبس سائب (bulk gypsum)\r\n- الكمية: حوالي 28,000 طن متري بزيادة او نقصان 10% باختيار المالك\r\n- ميناء الشحن: العين السخنة (1 رصيف آمن)\r\n- ميناء التفريغ: موندرا، الهند (1 رصيف آمن)\r\n- فترة التحضير (laycan): 03/07 يونيو\r\n- معدل الشحن 10,000 طن / التفريغ 6,000 طن أيام عمل\r\n- العمولة 3.75%\r\n\r\nبرجاء الإفادة بأفضل عرض نولون للطن الواحد في أقرب وقت.\r\n\r\nمع خالص التحية،\r\nأحمد صالح\r\nNile Shipbrokers Co."
+  },
+  "reference_output": {
+    "id": "etms-classify-adv-03",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.8,
+    "is_unanswered": true,
+    "days_without_reply": 3,
+    "original_sender": "Ahmed Saleh",
+    "original_sender_company": "Nile Shipbrokers Co."
+  }
+}

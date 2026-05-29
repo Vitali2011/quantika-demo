@@ -1,0 +1,43 @@
+{
+  "id": "etms-parse-recap-adv-04",
+  "source_email_id": "etms-parse-recap-adv-04",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A6-missing-req",
+  "expected_behavior": "Given a skeletal recap that names only vessel, charterer/account and laycan with every other term explicitly 'TBA / balance terms to follow', the parser MUST extract only the few stated fields and set all unstated required fields (load_port, disch_port, cargo, freight_rate, loading/discharging rates, demurrage) to null with no hallucinated ports, cargo, or numbers.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "FIXED - MV ASIA PIONEER / CMOC - BALANCE TERMS TBA",
+    "from": "Anna Kowalski <chartering@balticchart.pl>",
+    "date": "2026-05-28T09:30:00.000Z",
+    "body": "Morning,\r\n\r\nGood news — we have fixed MV ASIA PIONEER to CMOC (acct), clean on main terms this afternoon.\r\n\r\nLaycan 15/22 June 2026.\r\n\r\nBalance of terms (cargo qty, load/disch ports, freight, laytime, dem/des, comm, cp form) TBA — full recap to follow from owners' brokers once charterers confirm stem. Pls hold tonnage.\r\n\r\nWill revert with the detailed recap tomorrow.\r\n\r\nBR\r\nAnna\r\nBaltic Chartering Sp. z o.o."
+  },
+  "reference_output": {
+    "vessel_name": { "value": "MV ASIA PIONEER", "confidence": "confirmed", "source_text": "fixed MV ASIA PIONEER" },
+    "account": { "value": "CMOC", "confidence": "confirmed", "source_text": "fixed MV ASIA PIONEER to CMOC (acct)" },
+    "charterers": { "value": null, "confidence": "uncertain", "source_text": "fixed MV ASIA PIONEER to CMOC (acct)" },
+    "owners": { "value": null },
+    "load_port": { "value": null },
+    "disch_port": { "value": null },
+    "cargo_description": { "value": null },
+    "cargo_quantity_min": { "value": null },
+    "cargo_quantity_max": { "value": null },
+    "laycan": { "value": "15–22 June 2026", "confidence": "confirmed", "source_text": "Laycan 15/22 June 2026" },
+    "freight_rate": { "value": null },
+    "freight_payment": { "value": null },
+    "loading_rate": { "value": null },
+    "discharging_rate": { "value": null },
+    "demurrage_rate": { "value": null },
+    "despatch_rate": { "value": null },
+    "cp_form": { "value": null },
+    "commission": { "value": null },
+    "commission_percent": { "value": null },
+    "broker": "Baltic Chartering Sp. z o.o. (Anna Kowalski)",
+    "subs": [],
+    "additional_terms": [
+      "Balance of terms (cargo quantity, load/discharge ports, freight, laytime, demurrage/despatch, commission, CP form) TBA — full recap to follow from owners' brokers once charterers confirm stem.",
+      "Charterers requested to hold tonnage pending detailed recap."
+    ],
+    "unknown_terms": []
+  }
+}

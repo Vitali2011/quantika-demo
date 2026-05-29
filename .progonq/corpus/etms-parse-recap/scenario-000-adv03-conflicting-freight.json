@@ -1,0 +1,49 @@
+{
+  "id": "etms-parse-recap-adv-03",
+  "source_email_id": "etms-parse-recap-adv-03",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A5-conflicting",
+  "expected_behavior": "Given two contradictory freight rates for the same single cargo (USD 28 pmt in one line, USD 32 pmt in another), the parser MUST NOT silently pick one as confirmed — it must surface the conflict (e.g. freight_rate with reduced confidence noting both values, and/or a FREIGHT_CONFLICT entry in unknown_terms) rather than emit a single high-confidence rate or a garbled merge.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "RECAP MV GULF TRADER // 32,000 MT CEMENT CLINKER // FUJAIRAH-MOMBASA",
+    "from": "Gulf Maritime Brokers LLC <ops@gulfmaritime.ae>",
+    "date": "2026-05-25T11:05:00.000Z",
+    "body": "Good morning all,\r\n\r\nRecap clean fixture as agreed today, owise GENCON 94:\r\n\r\nMV GULF TRADER - Handymax 38,400 dwt, Marshall Islands flag, blt 2011\r\nOWNERS: Emirates Shipping Line FZE\r\nCHRTRS / ACCT: Lafarge Emirates Cement\r\n\r\nLOAD: 1 sb Fujairah, UAE\r\nDISCH: 1 sb Mombasa, Kenya\r\nCARGO: 32,000 MT cement clinker in bulk, moloo\r\nLAYCAN: 12/18 June 2026\r\n\r\nFREIGHT: USD 28 PMT FIOST, lumpsum basis declared cargo, freight 95 pct within 3 bd after completion of loading and s/r b/l, balance 5 pct after disch within 5 bd of owners' inv.\r\n\r\nLOAD/DISCH: 9,000 / 6,000 mt pwwd shinc\r\nDEM: USD 14,000 pdpr // DES half dem\r\n\r\nPls note as discussed with charterers earlier the agreed all-in freight is USD 32 pmt FIOST and not as some of the working copies show — this is the operative number for the CP. Kindly amend your records.\r\n\r\nADDCOMM 3.75 pct ttl bends\r\nARB London / English law\r\n\r\nBrgds\r\nFaisal\r\nGulf Maritime Brokers LLC, Dubai"
+  },
+  "reference_output": {
+    "vessel_name": { "value": "MV GULF TRADER", "confidence": "confirmed", "source_text": "MV GULF TRADER" },
+    "vessel_dwt": { "value": 38400, "confidence": "confirmed", "source_text": "Handymax 38,400 dwt" },
+    "vessel_flag": { "value": "Marshall Islands", "confidence": "confirmed", "source_text": "Marshall Islands flag" },
+    "vessel_yob": { "value": 2011, "confidence": "confirmed", "source_text": "blt 2011" },
+    "owners": { "value": "Emirates Shipping Line FZE", "confidence": "confirmed", "source_text": "OWNERS: Emirates Shipping Line FZE" },
+    "charterers": { "value": "Lafarge Emirates Cement", "confidence": "confirmed", "source_text": "CHRTRS / ACCT: Lafarge Emirates Cement" },
+    "account": { "value": "Lafarge Emirates Cement", "confidence": "confirmed", "source_text": "CHRTRS / ACCT: Lafarge Emirates Cement" },
+    "load_port": { "value": "Fujairah, UAE", "confidence": "confirmed", "source_text": "LOAD: 1 sb Fujairah, UAE" },
+    "disch_port": { "value": "Mombasa, Kenya", "confidence": "confirmed", "source_text": "DISCH: 1 sb Mombasa, Kenya" },
+    "cargo_description": { "value": "Cement clinker in bulk", "confidence": "confirmed", "source_text": "CARGO: 32,000 MT cement clinker in bulk, moloo" },
+    "laycan": { "value": "12–18 June 2026", "confidence": "confirmed", "source_text": "LAYCAN: 12/18 June 2026" },
+    "freight_rate": {
+      "value": "USD 32 per MT (conflict: line 1 states USD 28 PMT FIOST; later clarification states USD 32 pmt FIOST as the operative CP number) — broker to confirm",
+      "confidence": "uncertain",
+      "source_text": "FREIGHT: USD 28 PMT FIOST"
+    },
+    "freight_basis": { "value": "FIOST", "confidence": "confirmed", "source_text": "USD 28 PMT FIOST" },
+    "freight_payment": { "value": "95 pct within 3 banking days after completion of loading and signed/released B/L, balance 5 pct after discharge within 5 banking days of owners' invoice", "confidence": "confirmed", "source_text": "freight 95 pct within 3 bd after completion of loading and s/r b/l, balance 5 pct after disch within 5 bd of owners' inv." },
+    "loading_rate": { "value": "9,000 MT pwwd", "confidence": "confirmed", "source_text": "LOAD/DISCH: 9,000 / 6,000 mt pwwd shinc" },
+    "loading_terms": { "value": "SHINC", "confidence": "confirmed", "source_text": "9,000 / 6,000 mt pwwd shinc" },
+    "discharging_rate": { "value": "6,000 MT pwwd", "confidence": "confirmed", "source_text": "LOAD/DISCH: 9,000 / 6,000 mt pwwd shinc" },
+    "discharging_terms": { "value": "SHINC", "confidence": "confirmed", "source_text": "9,000 / 6,000 mt pwwd shinc" },
+    "demurrage_rate": { "value": "USD 14,000 per day pro rata", "confidence": "confirmed", "source_text": "DEM: USD 14,000 pdpr" },
+    "despatch_rate": { "value": "Half despatch — USD 7,000 per day pro rata", "confidence": "interpreted", "source_text": "DES half dem" },
+    "cp_form": { "value": "GENCON 94", "confidence": "confirmed", "source_text": "owise GENCON 94" },
+    "arbitration": { "value": "London arbitration", "confidence": "confirmed", "source_text": "ARB London / English law" },
+    "law": { "value": "English law", "confidence": "confirmed", "source_text": "ARB London / English law" },
+    "commission_percent": { "value": 3.75, "confidence": "confirmed", "source_text": "ADDCOMM 3.75 pct ttl bends" },
+    "broker": "Gulf Maritime Brokers LLC, Dubai",
+    "unknown_terms": [
+      { "term": "FREIGHT_CONFLICT", "context": "Two freight rates stated for the same cargo: 'FREIGHT: USD 28 PMT FIOST' versus a later line 'the agreed all-in freight is USD 32 pmt FIOST ... this is the operative number for the CP'. Values conflict — flagged for broker confirmation; the clarification line indicates 32 is intended as operative." }
+    ]
+  }
+}

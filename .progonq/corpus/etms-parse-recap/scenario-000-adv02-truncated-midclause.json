@@ -1,0 +1,47 @@
+{
+  "id": "etms-parse-recap-adv-02",
+  "source_email_id": "etms-parse-recap-adv-02",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A2-truncated",
+  "expected_behavior": "The parser MUST extract only the fields fully present before the mid-clause cut-off (vessel, owners, account, load/disch ports, cargo, laycan, freight rate, loading rate) and MUST set the truncated demurrage value to null or low-confidence rather than inventing a completed number, while not crashing on the dangling fragment.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "MV NORDIC HAWK / 28,500 MT UREA IN BULK / DAMIETTA-PARANAGUA - RECAP",
+    "from": "Carlos Ferreira <ops@atlanticbulk.com.br>",
+    "date": "2026-05-26T16:42:00.000Z",
+    "body": "Gents,\r\n\r\nPleased to recap below clean fixed today, subs lifted:\r\n\r\nMV NORDIC HAWK\r\nSupramax, 58,200 DWT, Panama flag, blt 2014, geared 4x30T cranes/grabs\r\n\r\nOWNERS: Nordic Bulk Carriers A/S, Hellerup\r\nACCT: Yara International ASA\r\n\r\n- CARGO: abt 28,500 MT urea in bulk, 10 pct moloo chopt\r\n- LOAD: 1 sb Damietta, Egypt\r\n- DISCH: 1 sb Paranagua, Brazil\r\n- LAYCAN: 04/10 June 2026\r\n- FRT: USD 41.50 pmt FIOST 1/1\r\n- LOADRATE: 12,000 mt pwwd shinc\r\n- DISCH: 8,000 mt pwwd shinc\r\n- DEM/DES: USD 18,500 / 9,250 pdpr fd bends\r\n- ADDCOMM 2.5 pct plus 1.25 pct bro\r\n- ARB London, English law, LMAA terms\r\n- Owners to confirm last 3 cargoes prior to ld\r\n- Demurrage payable within 30 days of receipt of owners inv together with supporting docs, time sheets duly signed by master and abt 25,000 MT whe"
+  },
+  "reference_output": {
+    "vessel_name": { "value": "MV NORDIC HAWK", "confidence": "confirmed", "source_text": "MV NORDIC HAWK" },
+    "vessel_dwt": { "value": 58200, "confidence": "confirmed", "source_text": "58,200 DWT" },
+    "vessel_flag": { "value": "Panama", "confidence": "confirmed", "source_text": "Panama flag" },
+    "vessel_yob": { "value": 2014, "confidence": "confirmed", "source_text": "blt 2014" },
+    "vessel_geared": { "value": true, "confidence": "confirmed", "source_text": "geared 4x30T cranes/grabs" },
+    "owners": { "value": "Nordic Bulk Carriers A/S, Hellerup", "confidence": "confirmed", "source_text": "OWNERS: Nordic Bulk Carriers A/S, Hellerup" },
+    "account": { "value": "Yara International ASA", "confidence": "confirmed", "source_text": "ACCT: Yara International ASA" },
+    "load_port": { "value": "Damietta, Egypt", "confidence": "confirmed", "source_text": "LOAD: 1 sb Damietta, Egypt" },
+    "disch_port": { "value": "Paranagua, Brazil", "confidence": "confirmed", "source_text": "DISCH: 1 sb Paranagua, Brazil" },
+    "cargo_description": { "value": "Urea in bulk", "confidence": "confirmed", "source_text": "CARGO: abt 28,500 MT urea in bulk" },
+    "cargo_quantity_min": { "value": 25650, "confidence": "interpreted", "source_text": "abt 28,500 MT urea in bulk, 10 pct moloo chopt" },
+    "cargo_quantity_max": { "value": 31350, "confidence": "interpreted", "source_text": "abt 28,500 MT urea in bulk, 10 pct moloo chopt" },
+    "laycan": { "value": "04–10 June 2026", "confidence": "confirmed", "source_text": "LAYCAN: 04/10 June 2026" },
+    "freight_rate": { "value": "USD 41.50 per MT", "confidence": "confirmed", "source_text": "FRT: USD 41.50 pmt FIOST 1/1" },
+    "freight_basis": { "value": "FIOST 1/1", "confidence": "confirmed", "source_text": "USD 41.50 pmt FIOST 1/1" },
+    "loading_rate": { "value": "12,000 MT pwwd", "confidence": "confirmed", "source_text": "LOADRATE: 12,000 mt pwwd shinc" },
+    "loading_terms": { "value": "SHINC", "confidence": "confirmed", "source_text": "12,000 mt pwwd shinc" },
+    "discharging_rate": { "value": "8,000 MT pwwd", "confidence": "confirmed", "source_text": "DISCH: 8,000 mt pwwd shinc" },
+    "discharging_terms": { "value": "SHINC", "confidence": "confirmed", "source_text": "8,000 mt pwwd shinc" },
+    "demurrage_rate": { "value": "USD 18,500 per day pro rata", "confidence": "confirmed", "source_text": "DEM/DES: USD 18,500 / 9,250 pdpr fd bends" },
+    "despatch_rate": { "value": "USD 9,250 per day pro rata (full despatch, both ends)", "confidence": "confirmed", "source_text": "DEM/DES: USD 18,500 / 9,250 pdpr fd bends" },
+    "demurrage_payment": { "value": null, "confidence": "uncertain", "source_text": "Demurrage payable within 30 days of receipt of owners inv together with supporting docs, time sheets duly signed by master and" },
+    "arbitration": { "value": "London arbitration, LMAA terms", "confidence": "confirmed", "source_text": "ARB London, English law, LMAA terms" },
+    "law": { "value": "English law", "confidence": "confirmed", "source_text": "ARB London, English law, LMAA terms" },
+    "commission_address_pct": { "value": 2.5, "confidence": "confirmed", "source_text": "ADDCOMM 2.5 pct" },
+    "commission_broker_pct": { "value": 1.25, "confidence": "confirmed", "source_text": "1.25 pct bro" },
+    "commission_percent": { "value": 3.75, "confidence": "interpreted", "source_text": "ADDCOMM 2.5 pct plus 1.25 pct bro" },
+    "unknown_terms": [
+      { "term": "TRUNCATED_RECAP", "context": "The email ends mid-clause at 'time sheets duly signed by master and abt 25,000 MT whe' — the demurrage-payment clause and any subsequent terms are cut off; downstream fields incomplete and require the full recap." }
+    ]
+  }
+}
