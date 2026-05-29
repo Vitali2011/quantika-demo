@@ -78,6 +78,8 @@ const longVesselMatch: StoredMatch = {
   distance_nm: null,
   freight_rate_usd_per_mt: null,
   freight_rate_source: null,
+  vessel_name: null,
+  cargo_ref: null,
 };
 
 describe('MatchesClient — long vessel name wraps (#662)', () => {

@@ -134,7 +134,7 @@ export default async function MatchDetailPage({ params }: Props) {
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2 mb-1">
                 <h1 className="text-lg sm:text-2xl font-semibold text-white truncate">
-                  MV {storedMatch.vessel_id}
+                  {storedMatch.vessel_name ?? storedMatch.vessel_id}
                 </h1>
                 {badgeCfg && (
                   <Badge className="bg-ds-accent-soft text-ds-accent-soft-fg border-0 text-xs">
@@ -170,7 +170,7 @@ export default async function MatchDetailPage({ params }: Props) {
                 <dl className="space-y-1 text-sm">
                   <div className="flex justify-between gap-2">
                     <dt className="text-ds-text-muted">Name</dt>
-                    <dd className="font-medium text-ds-text truncate">{storedMatch.vessel_id}</dd>
+                    <dd className="font-medium text-ds-text truncate">{storedMatch.vessel_name ?? storedMatch.vessel_id}</dd>
                   </div>
                   {storedMatch.vessel_dwt && (
                     <div className="flex justify-between gap-2">

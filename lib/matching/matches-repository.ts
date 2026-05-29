@@ -23,6 +23,8 @@ export interface StoredMatch {
   distance_nm: number | null;
   freight_rate_usd_per_mt: number | null;
   freight_rate_source: string | null;
+  vessel_name: string | null;
+  cargo_ref: string | null;
 }
 
 export interface CreateMatchInput {
@@ -43,6 +45,8 @@ export interface CreateMatchInput {
   distance_nm?: number | null;
   freight_rate_usd_per_mt?: number | null;
   freight_rate_source?: string | null;
+  vessel_name?: string | null;
+  cargo_ref?: string | null;
 }
 
 export interface ListMatchesOptions {
@@ -83,6 +87,11 @@ function hasFreightRateColumns(db: Database.Database): boolean {
   return cols.some((c) => c.name === 'freight_rate_usd_per_mt');
 }
 
+function hasVesselNameColumns(db: Database.Database): boolean {
+  const cols = db.prepare(`PRAGMA table_info(matches)`).all() as Array<{ name: string }>;
+  return cols.some((c) => c.name === 'vessel_name');
+}
+
 export function createMatch(db: Database.Database, input: CreateMatchInput): StoredMatch {
   const now = Date.now();
   const status: MatchStatus = input.status ?? 'shortlist';
@@ -90,7 +99,53 @@ export function createMatch(db: Database.Database, input: CreateMatchInput): Sto
 
   let result: { lastInsertRowid: number | bigint; changes: number };
 
-  if (hasFreightRateColumns(db)) {
+  if (hasVesselNameColumns(db)) {
+    const reason_structured = input.reason_structured ?? null;
+    const cargo_type = input.cargo_type ?? null;
+    const load_port = input.load_port ?? null;
+    const discharge_port = input.discharge_port ?? null;
+    const laycan_start = input.laycan_start ?? null;
+    const laycan_end = input.laycan_end ?? null;
+    const vessel_dwt = input.vessel_dwt ?? null;
+    const tce_usd_per_day = input.tce_usd_per_day ?? null;
+    const distance_nm = input.distance_nm ?? null;
+    const freight_rate_usd_per_mt = input.freight_rate_usd_per_mt ?? null;
+    const freight_rate_source = input.freight_rate_source ?? null;
+    const vessel_name = input.vessel_name ?? null;
+    const cargo_ref = input.cargo_ref ?? null;
+
+    const stmt = db.prepare(
+      `INSERT OR IGNORE INTO matches
+         (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at,
+          reason_structured, cargo_type, load_port, discharge_port,
+          laycan_start, laycan_end, vessel_dwt, tce_usd_per_day, distance_nm,
+          freight_rate_usd_per_mt, freight_rate_source, vessel_name, cargo_ref)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    );
+    result = stmt.run(
+      input.cargo_id,
+      input.vessel_id,
+      input.score,
+      input.reason,
+      status,
+      user_id,
+      now,
+      now,
+      reason_structured,
+      cargo_type,
+      load_port,
+      discharge_port,
+      laycan_start,
+      laycan_end,
+      vessel_dwt,
+      tce_usd_per_day,
+      distance_nm,
+      freight_rate_usd_per_mt,
+      freight_rate_source,
+      vessel_name,
+      cargo_ref,
+    );
+  } else if (hasFreightRateColumns(db)) {
     const reason_structured = input.reason_structured ?? null;
     const cargo_type = input.cargo_type ?? null;
     const load_port = input.load_port ?? null;

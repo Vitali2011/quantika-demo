@@ -23,6 +23,8 @@ function makeMatch(overrides: Partial<StoredMatch> = {}): StoredMatch {
     distance_nm: null,
     freight_rate_usd_per_mt: null,
     freight_rate_source: null,
+    vessel_name: null,
+    cargo_ref: null,
     ...overrides,
   };
 }
