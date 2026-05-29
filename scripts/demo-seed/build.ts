@@ -129,11 +129,14 @@ function applyAnonymization(text: string, map: Record<string, string>): string {
     // in the source emails have irregular spacing ("LEPRO TRADE LP  IRELAND" with
     // a double space) that the normalized canonical key would otherwise miss.
     const escaped = original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
-    // Short pure-word keys get word-boundary guards to prevent matching inside longer words
-    // (e.g. "Ali" must not corrupt "Italian"; "and" must not corrupt "Alexandria").
-    const isShortWord = original.length < 5 && /^[\p{L}\p{N}]+$/u.test(original);
-    const pattern = isShortWord ? `\\b${escaped}\\b` : escaped;
-    out = out.replace(new RegExp(pattern, 'gi'), alias);
+    // Use lookarounds to prevent matching inside longer words:
+    // "Company" must not corrupt JSON key "originalSenderCompany";
+    // "Operation" must not corrupt "Operations Director".
+    const firstIsWord = /\w/.test(original[0]);
+    const lastIsWord = /\w/.test(original[original.length - 1]);
+    const startBound = firstIsWord ? '(?<!\\w)' : '';
+    const endBound = lastIsWord ? '(?!\\w)' : '';
+    out = out.replace(new RegExp(`${startBound}${escaped}${endBound}`, 'gi'), alias);
   }
   return out;
 }
@@ -255,12 +258,109 @@ function buildBalancedDates(
   return final;
 }
 
+// Words that indicate a phrase is a company/place, not a person name.
+const NON_PERSON_FIRST_WORDS = new Set([
+  'agence', 'agency', 'egypt', 'egyptian', 'ramps', 'foztrafego', 'agemafric',
+  'operations', 'logistics', 'shipping', 'chartering', 'maritime', 'services',
+  'company', 'limited', 'group', 'trading', 'trade', 'navigation', 'corporation',
+  'management', 'transport', 'brickdam', 'stabroek', 'georgetown',
+]);
+
+/**
+ * Scan LLM cache agent contact fields + raw email body "Pic :" patterns to
+ * find person names that aren't in the manifest anonymization maps. Returns a
+ * supplemental map of realName → "AGENT N" aliases (deterministic ordering).
+ */
+function buildContactNameMap(
+  corpus: FlatEmail[],
+  llmCache: NonNullable<ReturnType<typeof loadLlmCacheIfAny>>,
+  existingMap: Record<string, string>,
+): Record<string, string> {
+  const coveredLower = new Set(Object.keys(existingMap).map((k) => k.toLowerCase()));
+  const candidates: string[] = [];
+
+  function tryAdd(raw: string): void {
+    const name = raw.trim().replace(/^(?:Mr\.?|Mrs\.?|Ms\.?|Dr\.?|Capt\.?)\s+/i, '').trim();
+    if (!name) return;
+    const key = name.toLowerCase();
+    if (coveredLower.has(key)) return;
+    const parts = name.split(/\s+/);
+    if (parts.length < 2 || parts.length > 4) return;
+    if (parts.some((p) => p.length < 2)) return;
+    if (NON_PERSON_FIRST_WORDS.has(parts[0].toLowerCase())) return;
+    if (!candidates.includes(name)) candidates.push(name);
+  }
+
+  // 1. LLM cache: extract first person-name segment from port agent contact fields
+  const MR_RE = /\bMr\b\.?\s+|\bMrs\b\.?\s+|\bMs\b\.?\s+|\bDr\b\.?\s+/gi;
+  for (const recap of llmCache.parsedFixtureRecaps) {
+    for (const field of ['dischPortAgent', 'loadPortAgent']) {
+      const v = (recap as unknown as Record<string, unknown>)[field];
+      if (!v || typeof v !== 'object') continue;
+      const rf = v as { value?: unknown; source_text?: unknown };
+      for (const txt of [rf.value, rf.source_text]) {
+        if (typeof txt !== 'string' || !txt.trim()) continue;
+        // First segment before comma/newline is often the person name
+        const firstSeg = txt.split(/[,\n\r]/)[0].trim();
+        tryAdd(firstSeg);
+        // Also scan for Mr/Mrs/Ms/Dr patterns in the full value
+        const cleaned = txt.replace(MR_RE, '');
+        const NAME_RE = /\b([A-Z][a-zA-ZÀ-ɏ]+(?:\s+[A-Z][a-zA-ZÀ-ɏ]+)+)\b/g;
+        let m: RegExpExecArray | null;
+        while ((m = NAME_RE.exec(cleaned)) !== null) {
+          tryAdd(m[1]);
+        }
+      }
+    }
+  }
+
+  // 2. Raw email body: "Pic : Mr FirstName LastName" patterns
+  const PIC_RE = /\bPic\s*:\s*(?:Mr\.?\s+|Mrs\.?\s+|Ms\.?\s+|Dr\.?\s+)?([A-Z][a-zA-ZÀ-ɏ]+(?:\s+[A-Z][a-zA-ZÀ-ɏ]+)+)/gi;
+  for (const email of corpus) {
+    PIC_RE.lastIndex = 0;
+    let m: RegExpExecArray | null;
+    while ((m = PIC_RE.exec(email.body ?? '')) !== null) {
+      tryAdd(m[1].trim().split(/[:\s]+/)[0] + ' ' + m[1].trim().split(/\s+/).slice(1).join(' '));
+    }
+  }
+
+  // Sort for determinism; assign AGENT N aliases
+  candidates.sort();
+  const result: Record<string, string> = {};
+  candidates.forEach((name, i) => {
+    const alias = `AGENT ${i + 1}`;
+    result[name] = alias;
+    result[name.toUpperCase()] = alias;
+    for (const part of name.split(/\s+/)) {
+      if (part.length >= 4 && !coveredLower.has(part.toLowerCase())) {
+        result[part] = alias;
+        result[part.toUpperCase()] = alias;
+        coveredLower.add(part.toLowerCase());
+      }
+    }
+    coveredLower.add(name.toLowerCase());
+  });
+  return result;
+}
+
 export async function build(opts: BuildOptions): Promise<void> {
   const manifest = loadManifest(opts.manifestPath);
   const corpus = loadCorpus(opts.rawDir);
   // Prefer real LLM-parsed data when a hash-matching cache is present.
   // Falls back to regex extractFacts when absent (CI-safe).
   const llmCache = loadLlmCacheIfAny(opts.rawDir);
+
+  // Build supplemental map for person names that appear in port-agent contact
+  // fields and raw email body "Pic :" lines but aren't in the manifest.
+  const baseAnonymizationMap: Record<string, string> = {
+    ...manifest.anonymization.vessels,
+    ...manifest.anonymization.charterers,
+    ...manifest.anonymization.brokers,
+    ...manifest.anonymization.sender_emails,
+  };
+  const contactMap = llmCache
+    ? buildContactNameMap(corpus, llmCache, baseAnonymizationMap)
+    : {};
 
   // Pre-compute balanced email dates (cap ≤9 per calendar date).
   const balancedDates = buildBalancedDates(corpus, manifest);
@@ -301,6 +401,7 @@ export async function build(opts: BuildOptions): Promise<void> {
         ...manifest.anonymization.charterers,
         ...manifest.anonymization.brokers,
         ...manifest.anonymization.sender_emails,
+        ...contactMap,
       };
       const anonBody = redactEmails(applyAnonymization(shiftedBody, bodyMap));
       const anonSubject = redactEmails(applyAnonymization(shiftedSubject, bodyMap));
