@@ -82,7 +82,10 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
   }
 
   const matchRows = db.prepare(
-    `SELECT cargo_id, vessel_id, score, reason, reason_structured FROM matches`,
+    // Only the seeded snapshot rows (user_id IS NULL). Per-session copies that
+    // persistSessionMatches writes (user_id = sessionId) must NOT be re-read here,
+    // or the demo's match set would grow/duplicate with every login.
+    `SELECT cargo_id, vessel_id, score, reason, reason_structured FROM matches WHERE user_id IS NULL`,
   ).all() as MatchRow[];
 
   const matches: Match[] = matchRows.map((r) => ({
