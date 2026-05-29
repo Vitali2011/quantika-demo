@@ -31,11 +31,33 @@ describe('getRequestBaseUrl', () => {
     expect(getRequestBaseUrl(req)).toBe('https://demo.quantika.org');
   });
 
-  it('falls back to Host header with https when X-Forwarded-* missing (public host)', () => {
+  it('does NOT honor an untrusted public Host header (fail-closed → safe default)', () => {
     const req = makeReq('http://localhost:3000/api/auth/login', {
-      host: 'demo.quantika.org',
+      host: 'tenant.example.com',
     });
-    expect(getRequestBaseUrl(req)).toBe('https://demo.quantika.org');
+    const result = getRequestBaseUrl(req);
+    expect(result).toBe('https://demo.quantika.org');
+    expect(result).not.toContain('tenant.example.com');
+  });
+
+  it('does not turn a spoofed Host into an open redirect (BUG-3)', () => {
+    const req = makeReq('http://localhost:3000/dashboard', { host: 'evil.example' });
+    const result = getRequestBaseUrl(req);
+    expect(result).toBe('https://demo.quantika.org');
+    expect(result).not.toContain('evil.example');
+  });
+
+  it('fail-closed invariant: never echoes an untrusted non-local Host', () => {
+    const hostiles = [
+      'evil.example', 'attacker.com', 'demo.quantika.org.evil.net',
+      'localhost.evil.com', '127.0.0.1.evil.com', 'evil.com:8080', 'xn--80ak6aa92e.com',
+    ];
+    for (const h of hostiles) {
+      const req = makeReq('http://localhost:3000/dashboard', { host: h });
+      const result = getRequestBaseUrl(req);
+      expect(result).toBe('https://demo.quantika.org');
+      expect(result).not.toContain(h);
+    }
   });
 
   it('falls back to Host with http for localhost (dev)', () => {
