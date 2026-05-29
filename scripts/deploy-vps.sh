@@ -28,8 +28,24 @@ unset NODE_OPTIONS
 echo "==> Installing Caddy config..."
 bash ops/caddy/install-caddy-config.sh "$(pwd)"
 
-echo "==> Seeding port-DA estimates..."
-SESSIONS_DB_PATH=data/sessions.db npx tsx scripts/seed-port-da.ts
+# Resolve the served DB the SAME way the app does, then migrate + seed THAT db.
+# Root cause of #677: this step hardcoded data/sessions.db, but DEMO_MODE serves
+# data/demo-seed.db (SESSIONS_DB_PATH in .env.local) — so the served DB was never
+# migrated/seeded at deploy time and relied on the fragile, error-swallowing lazy
+# first-request migration path. Source runtime env so we touch the right database.
+if [ -f .env.local ]; then
+    set -a
+    # shellcheck disable=SC1091
+    . ./.env.local
+    set +a
+fi
+export SESSIONS_DB_PATH="${SESSIONS_DB_PATH:-data/sessions.db}"
+
+echo "==> Migrating served DB ($SESSIONS_DB_PATH) to latest schema..."
+npx tsx scripts/migrate.ts
+
+echo "==> Seeding port-DA estimates ($SESSIONS_DB_PATH)..."
+npx tsx scripts/seed-port-da.ts
 
 echo "==> Restarting PM2 (--update-env picks up .env.local changes)..."
 npx pm2 restart quantika-demo --update-env
