@@ -81,10 +81,11 @@ const SHARED_BUCKET = '__shared__';
  *                    everything to its LEFT is attacker-controlled and ignored.
  *                    If the list is shorter than N (or N is misconfigured) →
  *                    fail-closed.
- *  - unset / 'none' / anything else → no trusted source configured. We honour
- *                    x-real-ip ONLY as an explicit secondary, under the documented
- *                    assumption that the front proxy sets it from a trusted value;
- *                    otherwise → fail-closed. We NEVER fall back to raw XFF.
+ *  - 'xrealip'     → X-Real-IP, ONLY when the front proxy OVERWRITES it from a
+ *                    trusted value (a bare reverse_proxy does NOT). Explicit opt-in.
+ *  - unset / 'none' / anything else → NO trusted source. We trust NO client-settable
+ *                    header here (x-real-ip and the left-most X-Forwarded-For are both
+ *                    spoofable behind a bare proxy) → fail-closed to SHARED_BUCKET.
  *
  * In every misconfigured/missing/short case we return SHARED_BUCKET rather than an
  * attacker-chosen value — a missing config must never grant unlimited attempts.
@@ -107,9 +108,18 @@ function rateLimitKey(request: NextRequest): string {
     return tokens[tokens.length - n] || SHARED_BUCKET;
   }
 
-  // No trusted source configured. x-real-ip is the only documented secondary;
-  // never the spoofable left-most X-Forwarded-For token.
-  return request.headers.get('x-real-ip')?.trim() || SHARED_BUCKET;
+  if (source === 'xrealip') {
+    // Explicit opt-in: ONLY safe when the front proxy OVERWRITES X-Real-IP from a
+    // trusted value. A bare `reverse_proxy` (e.g. the demo Caddyfile) does NOT, so
+    // this must never be the default.
+    return request.headers.get('x-real-ip')?.trim() || SHARED_BUCKET;
+  }
+
+  // No trusted source configured → fail-closed. We must NOT trust any
+  // client-settable header here: both x-real-ip and the left-most X-Forwarded-For
+  // pass through a bare proxy unchanged, so honouring either reopens the
+  // rotate-header bypass (cold-QA R2-BUG-1).
+  return SHARED_BUCKET;
 }
 
 function tooManyRequests(retryAfterMs: number): NextResponse {

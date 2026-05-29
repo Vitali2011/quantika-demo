@@ -126,4 +126,29 @@ describe('BUG-1 — (d) source unset: fail-closed shared bucket', () => {
     }
     expect((await runMiddleware(loginReq({ 'x-forwarded-for': '9.9.9.200' }))).status).toBe(429);
   });
+
+  it('R2-BUG-1: rotating X-Real-IP must NOT bypass when source is unset (fail-closed)', async () => {
+    // cold-QA round-2 HIGH: the default branch used to trust client-settable
+    // x-real-ip, so rotating it per request defeated the limiter (bare Caddy proxy
+    // passes the client value through). After the fix the default trusts NO client
+    // header → all rotated requests collapse into the one shared bucket.
+    for (let i = 0; i < LOGIN_CAP; i++) {
+      const res = await runMiddleware(loginReq({ 'x-real-ip': `4.4.4.${i}` }));
+      expect(res.status).not.toBe(429);
+    }
+    expect((await runMiddleware(loginReq({ 'x-real-ip': '4.4.4.99' }))).status).toBe(429);
+  });
+});
+
+describe('xrealip mode — explicit opt-in trusts X-Real-IP per value', () => {
+  beforeEach(() => setEnv({ RATE_LIMIT_CLIENT_IP_SOURCE: 'xrealip' }));
+
+  it('buckets per X-Real-IP value (only safe when proxy overwrites it)', async () => {
+    for (let i = 0; i < LOGIN_CAP; i++) {
+      await runMiddleware(loginReq({ 'x-real-ip': '5.5.5.5' }));
+    }
+    // same IP over cap → 429; a distinct IP is its own bucket → still served.
+    expect((await runMiddleware(loginReq({ 'x-real-ip': '5.5.5.5' }))).status).toBe(429);
+    expect((await runMiddleware(loginReq({ 'x-real-ip': '6.6.6.6' }))).status).not.toBe(429);
+  });
 });
