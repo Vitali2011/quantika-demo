@@ -132,11 +132,13 @@ function applyAnonymization(text: string, map: Record<string, string>): string {
     // Use lookarounds to prevent matching inside longer words:
     // "Company" must not corrupt JSON key "originalSenderCompany";
     // "Operation" must not corrupt "Operations Director".
+    // Use lookarounds to prevent matching inside longer words:
+    // "Company" must not corrupt JSON key "originalSenderCompany";
+    // "Operation" must not corrupt "Operations Director";
+    // "Co." must not corrupt "co.in" (end bound always, not only for word-ending keys).
     const firstIsWord = /\w/.test(original[0]);
-    const lastIsWord = /\w/.test(original[original.length - 1]);
     const startBound = firstIsWord ? '(?<!\\w)' : '';
-    const endBound = lastIsWord ? '(?!\\w)' : '';
-    out = out.replace(new RegExp(`${startBound}${escaped}${endBound}`, 'gi'), alias);
+    out = out.replace(new RegExp(`${startBound}${escaped}(?!\\w)`, 'gi'), alias);
   }
   return out;
 }
@@ -146,6 +148,9 @@ function applyAnonymization(text: string, map: Record<string, string>): string {
 // so redact every one to a generic demo address — no over-replacement risk.
 function redactEmails(text: string): string {
   return text
+    // MIME-encoded words (=?charset?encoding?content?=) may embed real addresses/domains;
+    // replace them wholesale before the plain-text patterns below run.
+    .replace(/=\?[^?]+\?[qQbB]\?[^?]+\?=/g, 'broker@demo.local')
     // Real addresses → generic demo address; skip ones already at demo.local so
     // curated per-sender pseudonyms (broker1@demo.local) are preserved.
     .replace(/[\w.+-]+@(?!demo\.local\b)[\w.-]+\.[a-z]{2,}/gi, 'broker@demo.local')
@@ -426,21 +431,22 @@ export async function build(opts: BuildOptions): Promise<void> {
         ? `contact${contactMatch[1]}@demo.local`
         : redactEmails(manifest.anonymization.sender_emails[fromEmailRaw] ?? fromEmailRaw);
 
-      // Leak validation (Task 16). Short pure-word needles use word-boundary matching to
-      // avoid false positives where the needle appears inside a longer word (e.g. "Ali"
-      // inside "Italian" is not a PII leak; "Schuster" as a standalone word is).
+      // Leak validation (Task 16). Mirror applyAnonymization's word-boundary logic exactly:
+      // always add (?<!\w) at start for word-starting needles and (?!\w) at end for ALL needles
+      // so "Co." inside "Co.INC" and "SERVICE" inside "SERVICES" are not false positives.
       const forbidden = opts.forbiddenSubstrings ?? [];
       for (const needle of forbidden) {
-        const isShortWord = needle.length < 5 && /^[\p{L}\p{N}]+$/u.test(needle);
-        const leakRe = isShortWord ? new RegExp(`\\b${needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i') : null;
+        const escapedNeedle = needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const firstIsWord = /\w/.test(needle[0]);
+        const startBound = firstIsWord ? '(?<!\\w)' : '';
+        const leakRe = new RegExp(`${startBound}${escapedNeedle}(?!\\w)`, 'i');
         for (const [field, value] of [
           ['body', anonBody],
           ['subject', anonSubject],
           ['from_name', anonFromName],
           ['from_email', anonFromEmail],
         ] as [string, string][]) {
-          const leaked = leakRe ? leakRe.test(value) : value.includes(needle);
-          if (leaked) {
+          if (leakRe.test(value)) {
             throw new Error(
               `anonymization leak in ${email.threadId} (${field}): "${needle}" still present after replacement`,
             );
@@ -470,10 +476,12 @@ export async function build(opts: BuildOptions): Promise<void> {
       const anonJson = (items: unknown[]): string => {
         const s = redactEmails(applyAnonymization(JSON.stringify(items), bodyMap));
         for (const needle of forbidden) {
-          const isShortWord = needle.length < 5 && /^[\p{L}\p{N}]+$/u.test(needle);
-          const leakRe = isShortWord ? new RegExp(`\\b${needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i') : null;
-          const leaked = leakRe ? leakRe.test(s) : s.includes(needle);
-          if (leaked) {
+          // Mirror applyAnonymization's word-boundary logic exactly (always-end-bound).
+          const escaped = needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const firstIsWord = /\w/.test(needle[0]);
+          const startBound = firstIsWord ? '(?<!\\w)' : '';
+          const leakRe = new RegExp(`${startBound}${escaped}(?!\\w)`, 'i');
+          if (leakRe.test(s)) {
             throw new Error(
               `anonymization leak in ${email.threadId} (parsed_results): "${needle}" still present`,
             );

@@ -115,6 +115,23 @@ async function main(): Promise<void> {
     if (!rec.anonymization.brokers[raw]) rec.anonymization.brokers[raw] = alias;
   }
 
+  // Compound-word and Unicode-variant forms that word-boundary guards in applyAnonymization
+  // correctly leave intact as substrings (e.g. "Agantaship" is one token, not "Aganta"+"ship")
+  // but that still identify the company/person if left in the DB.
+  // Istanbul: Turkish locale uses İ (U+0130) instead of ASCII I; JS regex /i flag doesn't equate them.
+  const istanbulAlias = rec.anonymization.brokers['Istanbul'] ?? rec.anonymization.brokers['ISTANBUL'] ?? 'CONTACT 3';
+  const agantaAlias = rec.anonymization.charterers['Aganta'] ?? rec.anonymization.charterers['Aganta Shipping'] ?? 'GRAIN TRADER H';
+  const multiAlias = rec.anonymization.charterers['Multiservice'] ?? rec.anonymization.charterers['Multiservice Shipping'] ?? 'GRAIN TRADER AL';
+  for (const [raw, alias] of [
+    ['İstanbul', istanbulAlias], ['İSTANBUL', istanbulAlias],
+    ['Agantaship', agantaAlias], ['AGANTASHIP', agantaAlias],
+    ['Multiserviceshipping', multiAlias], ['MULTISERVICESHIPPING', multiAlias],
+  ] as [string, string][]) {
+    if (!rec.anonymization.brokers[raw] && !rec.anonymization.charterers[raw]) {
+      rec.anonymization.charterers[raw] = alias;
+    }
+  }
+
   // Expand each canonical name into shorter forms so partial mentions are also
   // anonymized — emails use "Varan" for "Varan Shipping", "SIS MARINE" for the
   // full company name, etc. Map the significant first token (≥4 chars, not a
