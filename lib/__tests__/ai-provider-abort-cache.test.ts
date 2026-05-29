@@ -166,13 +166,16 @@ describe('callBedrockText threads abortSignal + requestTimeout', () => {
   it('marks the system block with cache_control ephemeral (MATCH prefix caching)', async () => {
     setEnv(BEDROCK_ENV);
     const { callAiText } = require('@/lib/ai-provider');
-    await callAiText('match', 'STATIC-MATCH-PREFIX', 'user', {});
+    // BUG-2: cache_control is gated to a MATCH-sized prefix (>= CACHE_MIN_CHARS=4000).
+    // Short prompts intentionally skip the breakpoint (covered by ai-provider-bedrock-cache.test.ts).
+    const matchPrefix = 'STATIC-MATCH-PREFIX '.repeat(250);
+    await callAiText('match', matchPrefix, 'user', {});
 
     // InvokeModelCommand receives the JSON-stringified payload as body.
     const cmdArg = mockBedrockSend.mock.calls[0][0];
     const payload = JSON.parse(cmdArg.body);
     expect(Array.isArray(payload.system)).toBe(true);
-    expect(payload.system[0].text).toBe('STATIC-MATCH-PREFIX');
+    expect(payload.system[0].text).toBe(matchPrefix);
     expect(payload.system[0].cache_control).toEqual({ type: 'ephemeral' });
   });
 
