@@ -584,7 +584,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
           </div>
         ) : density === 'cards' ? (
           /* ===== CARDS VIEW ===== */
-          <>
+          <div className="overflow-x-hidden">
             {/* Select all header */}
             <div className="flex items-center gap-2 px-1 py-1">
               <input
@@ -791,7 +791,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                 </li>
               ))}
             </ul>
-          </>
+          </div>
         ) : (
           /* ===== TABLE VIEW ===== */
           <section className="bg-ds-surface border border-ds-border rounded-[14px] overflow-hidden" aria-label="Matches table">
