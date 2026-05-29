@@ -81,4 +81,106 @@ describe('analyze (Phase 0)', () => {
     const vesselKeys = Object.keys(m.anonymization.vessels);
     expect(vesselKeys.some(k => /FIXTURE WIND/i.test(k))).toBe(true);
   });
+
+  it('honors seedAnonymization passed in (reconcile pseudonyms win)', async () => {
+    const seeded = {
+      vessels: { 'M/V SPRING WIND': 'M/V SEAGULL 1' },
+      charterers: {},
+      brokers: {},
+      sender_emails: {},
+    };
+    const m = await analyze({
+      rawDir: FIXTURES,
+      frozenDate: '2026-05-20',
+      demoWindowDays: 14,
+      seedAnonymization: seeded,
+    });
+    expect(m.anonymization.vessels['M/V SPRING WIND']).toBe('M/V SEAGULL 1');
+  });
+});
+
+describe('analyze with LLM cache', () => {
+  // Lazily import to avoid loading llm-cache helpers during regex-path tests
+  // (those tests run in CI where the cache file is never present).
+  const fs = require('fs') as typeof import('fs');
+  const { writeCache, corpusHash } = require('../llm-cache') as typeof import('../llm-cache');
+
+  function readFixtureEmailIds(): string[] {
+    return fs
+      .readdirSync(FIXTURES)
+      .filter((f: string) => f.endsWith('.json'))
+      .map((f: string) => {
+        const raw = JSON.parse(fs.readFileSync(`${FIXTURES}/${f}`, 'utf8'));
+        return raw.messages?.[0]?.id ?? raw.id ?? f.replace('.json', '');
+      });
+  }
+
+  it('rationales contain "cache:" prefix when LLM cache is present', async () => {
+    const hash = corpusHash(FIXTURES);
+    const ids = readFixtureEmailIds();
+    const cache = {
+      corpusHash: hash,
+      generatedAt: '2026-05-27T20:00:00.000Z',
+      classifications: ids.map((id: string) => ({
+        emailId: id,
+        category: 'CARGO_INQUIRY',
+        isUnanswered: false,
+        urgency: 'normal',
+        daysWithoutReply: null,
+        confidence: 1,
+        originalSender: null,
+        originalSenderCompany: null,
+      })),
+      parsedCargos: [],
+      parsedVessels: [],
+      parsedFixtureRecaps: [],
+    };
+    writeCache(FIXTURES, cache as unknown as import('../llm-cache').LlmCache);
+    try {
+      const m = await analyze({ rawDir: FIXTURES, frozenDate: '2026-05-20', demoWindowDays: 14 });
+      const rationales = Object.values(m.offsets).map((o) => o.rationale).join('|');
+      expect(rationales).toMatch(/cache:/);
+    } finally {
+      fs.unlinkSync(`${FIXTURES}/.llm-cache/${hash}.json`);
+      fs.rmdirSync(`${FIXTURES}/.llm-cache`);
+    }
+  });
+
+  it('pulls laycan from cache.parsedCargos when present', async () => {
+    const hash = corpusHash(FIXTURES);
+    const ids = readFixtureEmailIds();
+    const firstId = ids[0];
+    const cache = {
+      corpusHash: hash,
+      generatedAt: '2026-05-27T20:00:00.000Z',
+      classifications: [{
+        emailId: firstId,
+        category: 'CARGO_INQUIRY',
+        isUnanswered: false,
+        urgency: 'normal',
+        daysWithoutReply: null,
+        confidence: 1,
+        originalSender: null,
+        originalSenderCompany: null,
+      }],
+      parsedCargos: [{ emailId: firstId, itemIndex: 0, laycan: '10-15 May 2026' }],
+      parsedVessels: [],
+      parsedFixtureRecaps: [],
+    };
+    writeCache(FIXTURES, cache as unknown as import('../llm-cache').LlmCache);
+    try {
+      const m = await analyze({ rawDir: FIXTURES, frozenDate: '2026-05-20', demoWindowDays: 14 });
+      // The threadId for firstId — find it via offsets values that mention laycan midpoint
+      const matchingEntry = Object.values(m.offsets).find((o) =>
+        /cache: laycan midpoint/.test(o.rationale),
+      );
+      expect(matchingEntry).toBeDefined();
+      expect(matchingEntry!.shifted_fields).toEqual(
+        expect.arrayContaining(['laycan_start', 'laycan_end']),
+      );
+    } finally {
+      fs.unlinkSync(`${FIXTURES}/.llm-cache/${hash}.json`);
+      fs.rmdirSync(`${FIXTURES}/.llm-cache`);
+    }
+  });
 });

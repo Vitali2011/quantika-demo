@@ -10,6 +10,7 @@ import { ClickableField } from '@/components/clickable-field';
 import { safeRender, getConf, ConfIcon } from '@/lib/ui-render';
 import { formatDate } from '@/lib/utils';
 import { lookupCii } from '@/lib/imo/cii-lookup';
+import { toMatchSlug } from '@/lib/matching/match-slug';
 import { CiiRatingBadge } from '@/components/vessel/CiiRatingBadge';
 import { SanctionsBadge } from '@/components/vessel/SanctionsBadge';
 import { PscHistoryLink } from '@/components/vessel/PscHistoryLink';
@@ -218,7 +219,7 @@ export default async function VesselDetailPage({ params }: Props) {
                 const cargo = session.parsedCargos.find(c => c.emailId === match.cargoEmailId && c.itemIndex === match.cargoItemIndex);
                 const levelLabel = match.matchLevel === 'good' ? '✅ GOOD' : match.matchLevel === 'possible' ? '🟡 POSSIBLE' : '⚠️ WEAK';
                 return (
-                  <Link key={i} href={`/match/${session.matches.indexOf(match)}`}>
+                  <Link key={i} href={`/match/${toMatchSlug(match.cargoEmailId, match.vesselEmailId)}`}>
                     <div className="p-3 rounded-ds-md border border-ds-border hover:bg-ds-surface-muted transition-colors duration-ds-fast cursor-pointer">
                       <div className="flex justify-between items-start">
                         <div>

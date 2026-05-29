@@ -1,6 +1,11 @@
 /**
  * Tests for Sentry no-op guard behavior (spec-13).
  * Verifies Sentry.init is NOT called when DSN env vars are absent.
+ *
+ * sentry.client.config.ts was intentionally removed — it caused Sentry to
+ * initialise twice on the client (withSentryConfig webpack injection +
+ * instrumentation-client.ts Next.js hook) producing 3+ POSTs per page load.
+ * instrumentation-client.ts is the single client-side init point.
  */
 /* eslint-disable @typescript-eslint/no-require-imports */
 
@@ -17,22 +22,19 @@ beforeEach(() => {
   delete process.env.NEXT_RUNTIME;
 });
 
-describe("sentry.client.config", () => {
-  it("does not call Sentry.init when NEXT_PUBLIC_SENTRY_DSN is absent", () => {
-    jest.isolateModules(() => {
-      require("../../sentry.client.config");
-      expect(mockInit).not.toHaveBeenCalled();
-    });
-  });
-
-  it("calls Sentry.init when NEXT_PUBLIC_SENTRY_DSN is set", () => {
-    process.env.NEXT_PUBLIC_SENTRY_DSN = "https://test@sentry.io/123";
-    jest.isolateModules(() => {
-      require("../../sentry.client.config");
-      expect(mockInit).toHaveBeenCalledWith(
-        expect.objectContaining({ dsn: "https://test@sentry.io/123" })
-      );
-    });
+// Regression guard: sentry.client.config.ts must NOT exist — its presence
+// would cause withSentryConfig to inject a second Sentry.init alongside
+// instrumentation-client.ts, duplicating every client-side Sentry event.
+describe("sentry.client.config — absence guard (no double-init)", () => {
+  it("H1 — sentry.client.config.ts does not exist (prevents duplicate client-side Sentry.init)", () => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const fs = require("fs") as typeof import("fs");
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const path = require("path") as typeof import("path");
+    const clientConfigPath = path.resolve(__dirname, "../../sentry.client.config.ts");
+    const clientConfigJsPath = path.resolve(__dirname, "../../sentry.client.config.js");
+    expect(fs.existsSync(clientConfigPath)).toBe(false);
+    expect(fs.existsSync(clientConfigJsPath)).toBe(false);
   });
 });
 

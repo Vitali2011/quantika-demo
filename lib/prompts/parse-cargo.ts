@@ -61,6 +61,7 @@ CARGO ABBREVIATIONS (always expand in cargo_description):
 - ttl / TTL = total commission
 - firm = legally binding offer (opposite of "indication")
 - ploffer = please offer (request for quotation)
+- Pcgo / PCGO = Partial Cargo (NOT "Project Cargo"). "Pcgo ok" = partial cargo acceptable — the vessel owner may fill remaining capacity with other cargoes alongside the named cargo. NEVER interpret "Pcgo ok" or "PCGO OK" as "Project cargo acceptable".
 
 === PORT HANDLING RULES ===
 
@@ -85,6 +86,10 @@ RULE 2 — Preserve ALL alternative ports (charterer's option):
 - "Odesa or Chornomorsk chopt" → destination_port = "Odesa or Chornomorsk"
 - "Puerto Limon or Caldera" → destination_port = "Puerto Limon or Caldera"
 - NEVER truncate to just the first port in a chopt list.
+
+CHOPT CONFIDENCE RULE: When origin_port or destination_port contains alternatives joined by "or" (CHOPT = charterers' option), the actual port is not yet elected. Use confidence='interpreted', NEVER 'confirmed'.
+  ✗ destination_port = {value: "Odesa or Chornomorsk", confidence: 'confirmed', ...} → WRONG: final port TBD
+  ✓ destination_port = {value: "Odesa or Chornomorsk", confidence: 'interpreted', source_text: "Odesa or Chornomorsk chopt"}
 
 RULE 3 — Preserve port count prefixes ("1 sp", "2 sp", "1 safe port"):
 - "1 sp Spanish Mediterranean" → origin_port = "1 safe port Spanish Mediterranean"
@@ -222,6 +227,13 @@ Previous rules still apply:
 - "FIO SHINC both ends" → loading_terms = "FIO SHINC", discharge_terms = "FIO SHINC", loading_rate = null, discharge_rate = null.
 - NEVER route FIO, CQD, SHINC, SHEX, SATPMSHEX to special_requirements.
 
+LINER OUT RULE: "Liner out" / "liner out" describes DISCHARGE terms only — the carrier bears the cost of unloading cargo at the destination port. It says nothing about loading terms. When only "liner out" appears in the email:
+  → discharge_terms = "Liner out"
+  → loading_terms = null (not stated — do NOT infer FILO from "liner out" alone)
+  FILO (Free In Liner Out) means loading is at charterers' cost (FI) AND discharge is at vessel operator's cost (Liner Out). FILO requires BOTH "free in" / "FI" AND "liner out" in the source text. "Liner out" alone is only a discharge term.
+  ✗ loading_terms = "FILO" from "liner out terms" alone → WRONG: loading terms not stated
+  ✓ discharge_terms = "Liner out", loading_terms = null when only "liner out" appears
+
 === LAYCAN RULES ===
 
 DEFAULT: If the email does NOT contain an explicit date or loading window,
@@ -229,13 +241,21 @@ return laycan = null. Do NOT infer values like "Spot", "Prompt", or
 "vessel's dates" from context — emit them ONLY when those literal words
 actually appear in the source text.
 
+INNER EMAIL DATE RULE (critical for forwarded emails):
+When the email is forwarded, it contains TWO date contexts:
+  - Outer date: the forwarding date (when it was relayed to you)
+  - Inner date: the original "Sent:" date inside the forwarded message body
+For laycan year inference, ALWAYS use the INNER email's "Sent:" date as the reference year.
+  Example: outer forwarding date = 2026, inner email "Sent: Thursday, 9 May 2019" → use 2019 as the year context.
+  "15/20 june" in a May 2019 inner email → laycan = "15-20 June 2019" (not 2026).
+
 Allowed extractions:
 - Explicit date or date range: return verbatim (with year from email date if
   only a day/month is given), confidence='confirmed' when full calendar dates
   given, confidence='interpreted' for loose windows.
 - Month only (no day range), and a month name appears literally: return
-  "Month YYYY" with confidence='interpreted'. Use the email date for year
-  context when only a month is given.
+  "Month YYYY" with confidence='interpreted'. Use the INNER email date for year
+  context when only a month is given (see INNER EMAIL DATE RULE above).
 - Literal "Spot" / "Spot-onward" → laycan = "Spot", confidence='interpreted'.
 - Literal "spot/vsls dates" (or equivalent substring) → laycan = "Spot — vessel's dates", confidence='interpreted'.
 - Literal "PPT" or "Prompt" → laycan = "Prompt", confidence='interpreted'.
@@ -296,6 +316,12 @@ If a field is set to null (information not present), source_text is not needed.
 TCT GUARD: If the email describes a time-charter trip (contains TCT, "trip charter", "period charter", daily hire rate, delivery/redelivery ports, or charter duration in months) rather than a specific cargo lifting, do NOT attempt to extract cargo fields. Return empty items array and set missing_info: ["This appears to be a TCT/period charter request, not a voyage cargo inquiry"].
 TCT GUARD clarification — charter duration is always in MONTHS or YEARS (e.g., "6 months", "min 12 / max 18 months"); "4 ttl days" or "10/20 days" = laytime terms for loading/discharging, NOT charter duration.
 
+TERMS TEMPLATE WARNING: A subject line ending in "// [PORT] TERMS" or "[PORT] TERMS" (e.g., "// ALEXANDRIA TERMS", "// GENCON TERMS") names a CHARTER PARTY TERMS TEMPLATE — it does NOT name a cargo port. Do NOT extract the template port as origin_port or destination_port.
+  ✗ destination_port = "Alexandria" from subject "MV STAD, TRIGNMOUTH // ALEXANDRIA TERMS" → "ALEXANDRIA TERMS" is a CP template name, not a port
+  ✓ Ignore the subject terms-template label; extract ports from the body only
+
+FIXTURE TERMS GUARD: Return empty items array if the email is a charter party acceptance message — when the body contains phrases like "chrtrs full terms a/e as fllws for X mins", "charterers' terms as follows for X hours", "please find attached charterers' full terms for X minutes". These are fixture terms documents offered for time-limited acceptance, NOT cargo inquiries.
+
 VESSEL POSITION GUARD: Also return empty items array if the email is a vessel availability/tonnage circular where a shipowner or operator is offering their vessel for employment. Identifies: (1) vessel capacity specs (DWCC, DWT) combined with vessel type descriptors (SID = single-deck, BOX = box-hold, GLESS = gearless, OHG = open-hatch) — these describe the ship, not the cargo; (2) "open [PORT] [date]/onw" or "open [PORT] ppt" — describes where the vessel is currently available; (3) "=> [REGION]" or "looking for employment in [REGION]" — describes preferred trading area, not a discharge port for specific cargo; (4) "line up [tonnage] DWCC" or "please line up [X/Y] dwcc [date] [location]" without a named commodity — this is a request to provide a vessel of that capacity, not a cargo movement. These emails read as "we have a ship available at X, seeking cargo toward Y" — NOT as a shipper seeking transportation for a specific cargo. Return empty items[] and set missing_info: ["This appears to be a vessel availability/tonnage circular, not a cargo inquiry"].
 IMPORTANT negative examples — these ARE cargo inquiries (do NOT trigger the guard):
 - "pls propose [suitable] vessels for our [cargo]" = shipper asking broker to find tonnage for specific cargo → PARSE as cargo inquiry
@@ -337,6 +363,9 @@ A single physical cargo movement may involve multiple ports. Distinguish three c
 
 WHEN IN DOUBT: if commodity differs OR tonnages are clearly separate parcels → split into 2 items. If same commodity with same (or total) tonnage and only the port varies → multi-port rules (A or B).
 
+CHOPT ADDITIONAL COMMODITY RULE: When a base cargo is accompanied by an OPTIONAL additional commodity marked "IN CHOPT" (e.g., "+ 1500 MT bagged cement IN CHOPT"), the optional cargo is a SEPARATE item — do NOT merge by summing weights.
+  Example: "MIN 3000 MTONS BARYTE IN BIG BAGS IN CHOPT + 1500 MTS BAGGED CEMENT IN CHOPT" → 2 items: (1) baryte 3000MT, (2) bagged cement 1500MT.
+
 === EXTRACT ALL DISTINCT CARGO OFFERS ===
 
 When a single email contains MULTIPLE distinct cargo offers, extract ONE ITEM PER OFFER — do not merge them.
@@ -363,7 +392,9 @@ Extract per inquiry item:
 - cargo_origin_country: the COUNTRY OF ORIGIN of the cargo itself — NOT the load port country. This is relevant when the email mentions the cargo's provenance separately from the load port (e.g. "Indonesian origin thermal coal loaded at Dammam" → cargo_origin_country = "Indonesia", while origin_country = "Saudi Arabia"). Null if not stated. Source: phrases like "[Country] origin", "from [Country]", "[Country]-produced", "[Country] coal/grain/etc."
 - weight_mt: number (metric tons).
   K-SUFFIX RULE: "k" or "K" after a number means ×1000 metric tons. "50k mt" = 50,000 MT; "40-50k mt" = range of 40,000–50,000 MT; "abt 5-8k mt" = approximately 5,000–8,000 MT. Apply this conversion before all other rules.
-  RANGE RULE: If cargo weight is given as an explicit range (e.g. "4000/4800 MT", "5000-5500 MT", "40-50k mt"), return the UPPER BOUND as weight_mt (confidence='interpreted'). Also populate weight_mt_min and weight_mt_max.
+  RANGE RULE: If cargo weight is given as an explicit range (e.g. "4000/4800 MT", "5000-5500 MT", "40-50k mt"), set weight_mt=null (no single definitive quantity — information is a range, not a single value). Populate weight_mt_min (lower bound) and weight_mt_max (upper bound) only.
+  ✗ weight_mt=4400 from "4000-4800 mts salt" → WRONG (midpoint is fabricated — shippers did not say 4400)
+  ✓ weight_mt=null, weight_mt_min=4000, weight_mt_max=4800 from "4000-4800 mts salt"
   MOLOO RULE: MOLOO (More or Less Owner's Option) is a CONTRACT TOLERANCE clause — NOT a weight range. "28,000 mts (10% MOLOO)" means the nominal quantity is 28,000 mts and the owner may load ±10% at their option. Set weight_mt = 28000 (the nominal stated value). Set weight_mt_min = 25200 and weight_mt_max = 30800 to record the tolerance bounds. Do NOT set weight_mt to the MOLOO maximum (30800). "Abt 28,000 mts (10% MOLOO)" → weight_mt=28000 with confidence='interpreted' (due to "abt"), weight_mt_min=25200, weight_mt_max=30800.
   MOLCHOPT RULE: Same as MOLOO but charterer controls the tolerance. "2,720mts 2PCT MOLCHOPT" → weight_mt=2720, weight_mt_min=2666 (2720×0.98), weight_mt_max=2774 (2720×1.02).
   SINGLE VALUE: If a single definite number is given with no hedge, weight_mt = weight_mt_min = weight_mt_max = that number, confidence='confirmed'.
@@ -371,18 +402,29 @@ Extract per inquiry item:
 - weight_mt_min: lower bound of weight range if given as a range, else null
 - weight_mt_max: upper bound of weight range if given as a range, else null
 - volume_cbm: number (cubic meters)
+  VOLUME_CBM RULE: When cargo items have EXPLICITLY STATED individual volumes (e.g., "160 m3 VT Storage (10 tanks)", "80 m3 GMMOS Tanks (4 tanks)"), compute volume_cbm = SUM of (stated_volume × item_count) for each type. Do NOT use bounding-box dimensions (L×H×W) when explicit per-unit volumes are already stated.
+  ✗ volume_cbm from L×H×W bounding box when explicit volumes are given
+  ✓ "160 m3 VT Storage (10 tanks)" + "80 m3 GMMOS Tanks (4 tanks)" → volume_cbm = (160×10) + (80×4) = 1920 cbm
+  The L×H×W dimensions serve stowage planning — they are NOT the cargo volume when the email separately states explicit volumes.
+  CRITICAL — NEVER compute volume_cbm from bag or cargo package dimensions (e.g., "110×110×65 cm big bags", "ABT 1.5 MT BIG BAGS MAX 5 TIERS ABT 110X110X65 CM", "135x125x115 cm"). Bag/package dimensions are packing specifications for stowage planning — NOT cargo volumetric data. Set volume_cbm = null unless the email explicitly states a total volumetric figure (e.g., "approx 2000 cbm", "cargo volume 1500 cbm").
+  ✗ volume_cbm computed from 110×110×65 cm × quantity_of_bags → WRONG (no explicit total volume stated)
+  ✓ volume_cbm = null when only bag dimensions are given without an explicit total volume figure
 - dimensions: e.g. "12m x 3m x 2.5m"
 - cargo_type: one of FCL / LCL / BREAK_BULK / BULK / PROJECT / AIR / RORO / OTHER
 - container_type: e.g. 20GP, 40HC, 40RF (null if not containerized)
 - quantity: number of discrete units or lots (e.g. number of containers, reels, big bags). CRITICAL: Do NOT put cargo weight (MT) into quantity. If the email says "quantity 3500mt" treat it as weight_mt=3500, not quantity=3500. If no discrete unit count is given, leave quantity null. Example: "2 x 40HC" → quantity=2; "8000mt bulk" → quantity=null, weight_mt=8000.
 - incoterms: e.g. FOB, CFR, CIF, EXW, DDP
-- preferred_dates: loading or shipping dates mentioned
+- preferred_dates: loading or shipping dates mentioned in the EMAIL BODY. NEVER extract a date from the subject-line suffix. Subject lines often end with the EMAIL CIRCULATION DATE in "DD.MM.YY" or "DD.MM.YYYY" format (e.g., "4000-4800 mts salt Egypt-Odesa - 07.08.25" — "07.08.25" is the circulation date, not a cargo date). Extract preferred_dates ONLY from the body text. If the body only says "spot" or "cargo ready" with no specific date, preferred_dates.value = "Spot" or "Cargo Ready" as appropriate.
 - laycan: laycan window if specified (see LAYCAN RULES — never null when a time window is named). CONFIDENCE RULE: If laycan contains uncertainty markers ("TBC", "TBD", "pending", "to be confirmed", "exact dates TBC", "approx"), use confidence='uncertain'. If laycan is stated as a loose window ("end May / early June") without specific dates, use confidence='interpreted'. Only use confidence='confirmed' when specific calendar dates are given (e.g. "1/5 May 2025", "15-20 June 2025").
 - loading_rate: NUMERIC cargo-handling rate only — e.g. "5,000 MT/day", "2,500c". Do NOT put cost-allocation terms (FIO, FIOST, CQD) here. If only a laytime term is given with no MT/day number, leave loading_rate null. Do NOT put "1 WWD" here — that belongs in loading_terms.
 - loading_terms: laytime cost-allocation and dispatch regime qualifiers — see LAYTIME EXTRACTION RULES (EXTENDED). Extract ONLY explicitly written abbreviations. Uppercase the output.
 - discharge_rate: NUMERIC cargo-handling rate only, same rule as loading_rate.
 - discharge_terms: laytime cost-allocation and dispatch regime qualifiers, same rule as loading_terms.
 - commission_percent: broker commission if mentioned. MUST be a ConfidenceField with numeric value: { "value": <number>, "confidence": "confirmed"|"interpreted", "source_text": "<verbatim text>" }. ✗ commission_percent: 2.5 ✓ commission_percent: { "value": 2.5, "confidence": "confirmed", "source_text": "2.5% ttl" }
+  MULTIPLE COMMISSION LINES: When an email has more than one commission line for the same cargo (e.g., "4 ttl" then "Gcn 3.75 ttl"), capture the FIRST line as commission_percent.value (primary). ALL commission lines must appear in commission_terms as a concatenated string.
+  ✗ commission_percent={value:3.75} — dropping the "4 ttl" primary
+  ✓ commission_percent={value:4, confidence:"confirmed", source_text:"4 ttl"}, commission_terms="4% TTL; Gcn 3.75% TTL"
+  "Gcn" preceding a commission may mean "General cargo" or reference the Gencon form — capture verbatim.
 - commission_terms: e.g. "TTL BENDS", "address commission", "ADDCOMPUS", "pus"
 - freight_rate_usd: freight rate in USD per metric ton if EXPLICITLY stated in the email.
   RULES:
@@ -394,14 +436,28 @@ Extract per inquiry item:
   - Example: "5500mt salt $22 pmt shinc" → freight_rate_usd: 22
   - Example: "cement 10000mt, no freight indicated" → freight_rate_usd: null
 - special_requirements: temperature, hazmat class, fumigation, vessel constraints (LOA max, beam max), etc. Do NOT put laytime cost terms (FIO, CQD, SHINC, SHEX) here — those go in loading_terms / discharge_terms. ALWAYS include NOR tendering conditions if present (WIPON, WIBON, WIFPON, WICCON or any combination) as a special_requirements entry — these are contractually critical laytime/demurrage terms that belong here. Include vessel size constraints (e.g. "LOA max 124m, beam max 18m") here.
+  GEARLESS ACCEPTABILITY RULE: "Gearless w.able", "gearless acceptable", "gless a/e", "gearless ok", "gearless accepted" mean a gearless vessel is ACCEPTABLE (charterer is flexible) — NOT that a gearless vessel is required. Write "Gearless vessel acceptable" not "Gearless vessel required".
+  ✗ special_requirements="Gearless vessel required" from "Gearless w.able" → correct: "Gearless vessel acceptable"
+  ANTI-FABRICATION RULE: NEVER add vessel suitability requirements not explicitly stated in the email. Do NOT write "Project cargo acceptable", "Heavy-lift crane required", "Max LOA XX m", or any other vessel constraint unless those exact words or clear equivalents appear in the email body. Only capture what the shipper actually wrote.
 - stowage_factor: if mentioned — MUST be a STRING with original units (see STOWAGE FACTOR RULES)
 - missing_info: array of plain English strings (see missing_info RULES — never return objects or field names)
 
 CARGO TYPE RULES:
-- BULK: free-flowing, unpackaged cargo (grain, coal, fertilizer, ore, cement, sugar, and scrap described as "loose").
-- BREAK_BULK: individually packaged/unitized cargo (steel coils, pipes, timber, machinery, bags on pallets, reels, HMS in bales/bundles, big bags).
+- BULK: free-flowing commodity traded by weight/tonnage, loaded by grabs or conveyors (grain, coal, fertilizer, ore, cement, clinker, sugar, scrap described as "loose", rock phosphate, gypsum, salt).
+- BREAK_BULK: individually packaged/unitized cargo where each unit is handled separately (steel coils, pipes, timber, machinery, reels, HMS in bales/bundles).
 - "loose" modifier always implies BULK. Example: "steel scrap loose" → BULK. "steel scrap in bundles" → BREAK_BULK.
-- Big bags (BB) = BREAK_BULK (individually unitized). "Salt in BB" = BREAK_BULK.
+
+ALWAYS-BULK COMMODITIES (even when shipped in bags or big bags):
+The following are BULK regardless of packaging, because they are priced per ton and loaded by grabs:
+  salt, rock salt, halite, coal, grain (wheat, corn, soy, barley, sorghum, rice), fertilizer (urea, DAP, MAP, MOP, NPK), iron ore, bauxite, clinker, phosphate, rock phosphate, cement.
+  Example: "salt in big-bags" → BULK. "wheat in bags" → BULK. "fertilizer in big bags" → BULK. "cement in slings" → BULK.
+
+BIG BAGS / BAGGED CARGO (nuanced):
+- If the commodity is on the ALWAYS-BULK list above → BULK even if shipped in big bags.
+- If the commodity is a specialty mineral, chemical, or project good (barite, gypsum powder, chemical granules, machinery parts) AND the email specifies bag dimensions, unit weights, or stacking tier limits → BREAK_BULK (the units require specific handling).
+- "Barite in b.b, 1500mts SHINC / 1000mts SHINC" → BREAK_BULK (specialty mineral with differential load/discharge rate indicating unitized handling).
+  ✗ "salt in big-bags" → BREAK_BULK (wrong — salt is always-bulk)
+  ✓ "salt in big-bags" → BULK
 
 IMPORTANT: Do NOT confuse "loading rate" or "discharge rate" (which are cargo handling rates in MT/day, SHINC, etc.) with "loading port" or "discharge port" (which are actual port names). Loading/discharge rates are operational terms, not locations. For example, "2500c/1750x" is a loading/discharge rate notation, NOT a port name.
 
