@@ -57,15 +57,59 @@ function isCsrfPath(pathname: string): boolean {
   return CSRF_PATHS.some(p => pathname.startsWith(p));
 }
 
+// Fail-closed bucket: a SINGLE shared key so that, when no trusted client IP can
+// be derived, everyone is throttled together rather than each attacker getting
+// their own fresh bucket. Over-throttling is acceptable; a bypass is not.
+const SHARED_BUCKET = '__shared__';
+
 /**
- * Best-effort client key for rate limiting. Behind a reverse proxy the real
- * client IP arrives in x-forwarded-for (left-most entry); fall back to
- * x-real-ip, then a constant bucket so a missing header can't bypass the limit.
+ * Client key for the brute-force throttles (M-1 / L-3), derived from a TRUSTED
+ * source so an attacker cannot rotate it per request to defeat the limiter.
+ *
+ * The left-most X-Forwarded-For entry is CLIENT-CONTROLLED (Caddy only appends,
+ * never rewrites) and must never be used as the key again. The trust model is
+ * selected by RATE_LIMIT_CLIENT_IP_SOURCE and is FAIL-CLOSED:
+ *
+ *  - 'cf'          → CF-Connecting-IP. Safe in prod because Cloudflare OVERWRITES
+ *                    any client-supplied value with the true client IP. If the
+ *                    header is absent (request didn't transit CF) → fail-closed.
+ *  - 'xff-trusted' → the IP observed by the OUTERMOST trusted hop. Reads
+ *                    TRUSTED_PROXY_COUNT (N = number of trusted appending hops,
+ *                    e.g. Caddy = 1) and takes the X-Forwarded-For token at index
+ *                    (len - N): the last N tokens were appended by trusted hops,
+ *                    so tokens[len - N] is the first trusted-appended value and
+ *                    everything to its LEFT is attacker-controlled and ignored.
+ *                    If the list is shorter than N (or N is misconfigured) →
+ *                    fail-closed.
+ *  - unset / 'none' / anything else → no trusted source configured. We honour
+ *                    x-real-ip ONLY as an explicit secondary, under the documented
+ *                    assumption that the front proxy sets it from a trusted value;
+ *                    otherwise → fail-closed. We NEVER fall back to raw XFF.
+ *
+ * In every misconfigured/missing/short case we return SHARED_BUCKET rather than an
+ * attacker-chosen value — a missing config must never grant unlimited attempts.
  */
 function rateLimitKey(request: NextRequest): string {
-  const forwarded = request.headers.get('x-forwarded-for');
-  if (forwarded) return forwarded.split(',')[0].trim();
-  return request.headers.get('x-real-ip')?.trim() ?? 'anonymous';
+  const source = process.env.RATE_LIMIT_CLIENT_IP_SOURCE;
+
+  if (source === 'cf') {
+    const cf = request.headers.get('cf-connecting-ip')?.trim();
+    return cf || SHARED_BUCKET; // absent CF header → fail-closed
+  }
+
+  if (source === 'xff-trusted') {
+    const n = Number.parseInt(process.env.TRUSTED_PROXY_COUNT ?? '', 10);
+    if (!Number.isInteger(n) || n < 1) return SHARED_BUCKET; // misconfigured → fail-closed
+    const forwarded = request.headers.get('x-forwarded-for');
+    if (!forwarded) return SHARED_BUCKET;
+    const tokens = forwarded.split(',').map((t) => t.trim()).filter(Boolean);
+    if (tokens.length < n) return SHARED_BUCKET; // list shorter than N trusted hops → fail-closed
+    return tokens[tokens.length - n] || SHARED_BUCKET;
+  }
+
+  // No trusted source configured. x-real-ip is the only documented secondary;
+  // never the spoofable left-most X-Forwarded-For token.
+  return request.headers.get('x-real-ip')?.trim() || SHARED_BUCKET;
 }
 
 function tooManyRequests(retryAfterMs: number): NextResponse {

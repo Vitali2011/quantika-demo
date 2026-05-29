@@ -22,26 +22,22 @@
 
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { timingSafeEqual } from 'crypto';
+import { createHash, timingSafeEqual } from 'crypto';
 
 /**
- * Constant-time comparison of two strings (L-3). Encodes to UTF-8 bytes and
- * compares with crypto.timingSafeEqual. timingSafeEqual throws on unequal
- * lengths, so we compare both a length-equality flag and a fixed-length digest
- * to avoid leaking the secret length through early-return timing.
+ * Constant-time comparison of two strings (L-3). Both sides are hashed to a
+ * fixed-width sha256 digest first, then compared with crypto.timingSafeEqual.
+ * Hashing collapses inputs of any length to equal-width (32-byte) digests, so the
+ * comparison is constant-time REGARDLESS of input length — the previous pad-to-
+ * max(len) approach leaked the secret length through length-dependent work, a
+ * timing oracle. Equal digest widths also mean timingSafeEqual never throws.
+ * sha256 of distinct strings differs with overwhelming probability, so digest
+ * equality is equivalent to string equality for this auth check.
  */
 function timingSafeStrEqual(a: string, b: string): boolean {
-  const aBuf = Buffer.from(a, 'utf8');
-  const bBuf = Buffer.from(b, 'utf8');
-  // Compare against a fixed-length representation so length mismatch does not
-  // short-circuit. We hash neither — just pad to equal length deterministically.
-  const len = Math.max(aBuf.length, bBuf.length);
-  const aPad = Buffer.alloc(len);
-  const bPad = Buffer.alloc(len);
-  aBuf.copy(aPad);
-  bBuf.copy(bPad);
-  const equalBytes = timingSafeEqual(aPad, bPad);
-  return equalBytes && aBuf.length === bBuf.length;
+  const da = createHash('sha256').update(a, 'utf8').digest();
+  const db = createHash('sha256').update(b, 'utf8').digest();
+  return timingSafeEqual(da, db);
 }
 
 export function requireAdmin(req: NextRequest): NextResponse | null {

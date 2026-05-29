@@ -22,6 +22,12 @@ beforeEach(() => {
     // Disable the auth guard so we isolate the rate-limit behaviour.
     DEMO_AUTH_ENABLED: 'false',
     NODE_ENV: 'test',
+    // BUG-1: rateLimitKey() now derives the client key from a TRUSTED source.
+    // These tests use an honest single-IP X-Forwarded-For, so trust one appending
+    // hop (Caddy) — with N=1 the trusted-offset is index 0 = that single IP, which
+    // exercises the limiter exactly as before (this is setup, not weakening).
+    RATE_LIMIT_CLIENT_IP_SOURCE: 'xff-trusted',
+    TRUSTED_PROXY_COUNT: '1',
   };
 });
 

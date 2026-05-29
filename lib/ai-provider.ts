@@ -136,6 +136,32 @@ export function buildBedrockSamplingFields(opts: AiOpts): Record<string, unknown
 }
 
 /**
+ * Minimum system-prompt length (chars) before we attach an Anthropic prompt-caching
+ * breakpoint. Bedrock requires a minimum cacheable prefix (~1024 tokens for Claude);
+ * a cache_control marker below that can't form a cache block and is wasted. We gate
+ * on characters as a cheap proxy: at ~3-4 chars/token, 4000 chars is conservatively
+ * above ~1024 tokens, so only a genuinely large static prefix (e.g. MATCH_PROMPT
+ * ~28k chars) carries the breakpoint; short calls (e.g. "hi") do not.
+ */
+export const CACHE_MIN_CHARS = 4000;
+
+type BedrockSystemField =
+  | string
+  | Array<{ type: 'text'; text: string; cache_control: { type: 'ephemeral' } }>;
+
+/**
+ * Builds the Bedrock `system` field, attaching a cache_control ephemeral breakpoint
+ * ONLY when the prefix is large enough to be worth caching (>= CACHE_MIN_CHARS).
+ * Below the threshold it returns a plain string with no breakpoint.
+ */
+export function buildBedrockSystemField(system: string): BedrockSystemField {
+  if (system.length >= CACHE_MIN_CHARS) {
+    return [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }];
+  }
+  return system;
+}
+
+/**
  * Returns Gemini httpOptions with retryOptions when maxRetries is set.
  * Gemini SDK retryOptions.attempts includes the initial call, so attempts = maxRetries + 1.
  * Returns undefined when maxRetries is not specified (SDK uses its default of 5 attempts).
@@ -736,8 +762,9 @@ async function callBedrockText(
     // cache_control on the system block: Anthropic prompt caching bills the
     // large static prefix (e.g. MATCH_PROMPT ~6956 tok) at the cheaper cache-read
     // rate on warm hits. `system` accepts a content-block array; the ephemeral
-    // breakpoint marks everything up to here as cacheable.
-    system: [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }],
+    // breakpoint marks everything up to here as cacheable. Gated by prefix size so
+    // short prompts don't carry a wasted breakpoint (see buildBedrockSystemField).
+    system: buildBedrockSystemField(system),
     messages: [{ role: 'user', content: user }],
   };
 
