@@ -10,6 +10,7 @@ import type { MatchConfidence } from '@/lib/confidence';
 
 // Mock AuditTrail to avoid real fetch calls
 jest.mock('@/components/audit-trail', () => ({
+  __esModule: true,
   default: ({ inquiryId }: { inquiryId: string }) => (
     <div data-testid="audit-trail" data-inquiry-id={inquiryId}>Audit Trail</div>
   ),
@@ -134,19 +135,45 @@ describe('MatchTabs', () => {
     });
   });
 
+  describe('Generate button in Quote tab (fix #638)', () => {
+    it('is enabled when cargoEmailId prop is passed', () => {
+      render(<MatchTabs match={baseMatch} cargoEmailId="cargo-email-1" />);
+      fireEvent.click(screen.getByRole('tab', { name: /quote/i }));
+      const btn = screen.getByRole('button', { name: /generate/i });
+      expect(btn).not.toBeDisabled();
+    });
+
+    it('is disabled when cargoEmailId prop is absent', () => {
+      render(<MatchTabs match={baseMatch} />);
+      fireEvent.click(screen.getByRole('tab', { name: /quote/i }));
+      const btn = screen.getByRole('button', { name: /generate/i });
+      expect(btn).toBeDisabled();
+    });
+  });
+
   describe('Send Quote button', () => {
-    it('is enabled when blockSend is false', () => {
+    it('is disabled when draft is empty (blockSend=false)', () => {
       const match = { ...baseMatch, confidence: mockConfidenceVerified };
       render(<MatchTabs match={match} />);
       fireEvent.click(screen.getByRole('tab', { name: /quote/i }));
       const btn = screen.getByRole('button', { name: /send quote/i });
+      expect(btn).toBeDisabled();
+    });
+
+    it('is enabled when draft has content and blockSend is false', () => {
+      const match = { ...baseMatch, confidence: mockConfidenceVerified };
+      render(<MatchTabs match={match} />);
+      fireEvent.click(screen.getByRole('tab', { name: /quote/i }));
+      fireEvent.change(screen.getByRole('textbox'), { target: { value: 'USD 15/MT offer' } });
+      const btn = screen.getByRole('button', { name: /send quote/i });
       expect(btn).not.toBeDisabled();
     });
 
-    it('is disabled when blockSend is true', () => {
+    it('is disabled when blockSend is true even with draft content', () => {
       const match = { ...baseMatch, confidence: mockConfidenceBlocked };
       render(<MatchTabs match={match} />);
       fireEvent.click(screen.getByRole('tab', { name: /quote/i }));
+      fireEvent.change(screen.getByRole('textbox'), { target: { value: 'USD 15/MT offer' } });
       const btn = screen.getByRole('button', { name: /send quote/i });
       expect(btn).toBeDisabled();
     });

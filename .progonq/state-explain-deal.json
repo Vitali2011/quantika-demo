@@ -1,0 +1,19 @@
+{
+  "run_id": "explain-deal-589-r3-2026-05-27",
+  "round": 0,
+  "consecutive_passes": 0,
+  "phase": "SETUP_COMPLETE",
+  "started_at": "2026-05-27T00:00:00Z",
+  "parity_smoke_passed": false,
+  "model_parity": "DIFFERS",
+  "exit_mode": "PARTIAL_PROGONB_REQUIRED",
+  "abort_reason": null,
+  "hypothesis_status": {
+    "H1_strip_regex_mismatch": "INVESTIGATING",
+    "H2_strip_on_structured_json": "LOW_PRIORITY",
+    "H3_entry_guard_absent": "PARTIALLY_ADDRESSED_IN_R2",
+    "H4_temperature_high": "CONFIRMED_FIX_PENDING",
+    "H5_build_cache_stale": "RULED_OUT",
+    "H6_gemini_default_knowledge": "CONFIRMED_NEED_FEW_SHOT"
+  }
+}

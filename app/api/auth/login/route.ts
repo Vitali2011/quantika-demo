@@ -55,7 +55,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.redirect(new URL('/login?error=1', baseUrl), { status: 303 });
   }
 
-  // Credentials valid — sign and set cookie
+  // Credentials valid — sign and set auth cookie
   const secret = config.secret ?? '';
   const cookieValue = await signAuthCookie(config.user, secret, config.cookieDays);
   const maxAge = config.cookieDays * 86_400;
@@ -75,6 +75,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       .filter(Boolean)
       .join('; '),
   );
+
+  // In DEMO_MODE, auto-seed a sample data session so /matches shows data immediately.
+  if (process.env.DEMO_MODE === 'true') {
+    const { createDemoSession } = await import('@/lib/sample-data/create-demo-session');
+    const sessionId = createDemoSession();
+    response.cookies.set('session_id', sessionId, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'lax',
+      maxAge: 3600,
+      path: '/',
+    });
+  }
 
   return response;
 }

@@ -30,7 +30,28 @@ Output format:
 - Each section: 3–6 concise sentences or bullet points
 - Professional English suitable for a C-suite Dubai freight broker
 - No markdown formatting in section content — plain text only
-- Do NOT include the section number in the header (write "Market Context" not "1. Market Context")`;
+- Do NOT include the section number in the header (write "Market Context" not "1. Market Context")
+
+CRITICAL DATA INTEGRITY — NO INVENTED NUMERICS OR QUALITATIVE FACTS:
+You MUST use ONLY values explicitly present in the match data provided.
+The user prompt contains a "MATCH PAYLOAD" anchor section listing every field with its value.
+Fields marked "NOT_PROVIDED" have no value — do NOT mention them, do NOT estimate, do NOT default.
+
+NEVER substitute cargo quantity, vessel DWT/DWCC, freight rates, or TCE values with "typical" broker estimates or training-data priors.
+NEVER fabricate qualitative facts not in the payload:
+- Stowage factors (in m³/MT or any unit)
+- Vessel class society (DNV, LR, ABS, BV, NK, RINA, CCS, KR, etc.) unless the payload lists it
+- Gear status (gearless, geared, crane-fitted) unless the payload lists it
+- Open position history, last cargoes, or specific itinerary not in the payload
+- Hold/hatch dimensions, capacities, or equipment not in the payload
+
+If a value is NOT_PROVIDED, write "not specified in the inquiry" or omit the topic entirely.
+
+CALIBRATION EXAMPLE — read before generating:
+Scenario: cargo.weight_mt=NOT_PROVIDED, vessel.dwt_summer=58,000 MT, vessel.class_society=NOT_PROVIDED, vessel.geared=NOT_PROVIDED
+CORRECT: "MV Vessel Name (58,000 DWT) is well positioned for this bulk grain inquiry. The cargo quantity was not specified in this inquiry — the broker should confirm the stem size with the charterer before proceeding."
+WRONG:   "This 50,000 MT grain parcel fits the 55,500 MT DWCC gearless vessel (DNV classed)."
+Why wrong: 50,000 MT is invented (cargo weight was NOT_PROVIDED). 55,500 MT DWCC is invented (no DWCC in data). DNV is invented (class society was NOT_PROVIDED). Gearless is invented (gear status was NOT_PROVIDED).`;
 
 export const EXPLAIN_DEAL_SYSTEM_PROMPT_AR = `أنت محلل وساطة شحن بحري أول تشرح مطابقة بضاعة-سفينة لوسيط مقيم في دبي.
 
@@ -60,4 +81,19 @@ export const EXPLAIN_DEAL_SYSTEM_PROMPT_AR = `أنت محلل وساطة شحن 
 - لغة عربية مهنية مناسبة لوسيط شحن على مستوى C-suite في دبي
 - لا تنسيق markdown في محتوى القسم — نص عادي فقط
 - لا تدرج رقم القسم في العنوان
-- لا تستخدم أي تنسيق markdown (نجوم، علامات #) في عناوين الأقسام — اكتبها كنص عادي`;
+- لا تستخدم أي تنسيق markdown (نجوم، علامات #) في عناوين الأقسام — اكتبها كنص عادي
+
+قواعد النزاهة الحرجة — لا تختلق أرقاماً أو حقائق:
+يجب استخدام القيم الموجودة صراحةً في بيانات المطابقة المقدمة فقط.
+يحتوي مطلب المستخدم على قسم "MATCH PAYLOAD" يسرد كل حقل بقيمته.
+الحقول المعلّمة بـ "NOT_PROVIDED" لا تحمل قيمة — لا تذكرها ولا تقدّر ولا تفترض قيماً افتراضية.
+
+لا تستبدل كمية البضاعة أو DWT/DWCC للسفينة أو أسعار الشحن أو TCE بتقديرات وسيط نموذجية.
+لا تختلق حقائق نوعية غير موجودة في البيانات:
+- معامل الرص (stowage factor) بأي وحدة
+- فئة التصنيف للسفينة (DNV, LR, ABS, BV, NK, RINA, CCS, KR إلخ) إلا إذا ذكرتها البيانات
+- حالة التجهيز (gearless, geared) إلا إذا ذكرتها البيانات
+- تاريخ المواقع المفتوحة أو الشحنات السابقة أو خط السير غير الموجود في البيانات
+- أبعاد العنابر أو السعات أو المعدات غير الموجودة في البيانات
+
+إذا كانت القيمة NOT_PROVIDED، اكتب "غير محدد في الاستفسار" أو احذف الموضوع كلياً.`;

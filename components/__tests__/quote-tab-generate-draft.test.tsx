@@ -38,10 +38,12 @@ describe('QuoteTab — Generate Draft button (fix #351)', () => {
     expect(screen.getByRole('button', { name: /generate/i })).toBeInTheDocument();
   });
 
-  it('does NOT show Generate button when cargoEmailId is absent', () => {
+  it('shows Generate button as disabled when cargoEmailId is absent', () => {
     mockFetchResponses('');
     render(<QuoteTab />);
-    expect(screen.queryByRole('button', { name: /generate/i })).toBeNull();
+    const btn = screen.getByRole('button', { name: /generate/i });
+    expect(btn).toBeInTheDocument();
+    expect(btn).toBeDisabled();
   });
 
   it('POSTs to /api/ai/draft-quote with emailId on click', async () => {
@@ -92,5 +94,20 @@ describe('QuoteTab — Generate Draft button (fix #351)', () => {
     await waitFor(() => {
       expect(screen.getByText('Service unavailable')).toBeInTheDocument();
     });
+  });
+
+  it('Send Quote is disabled when draft textarea is empty', () => {
+    mockFetchResponses('');
+    render(<QuoteTab cargoEmailId="email-001" />);
+    const sendBtn = screen.getByRole('button', { name: /send quote/i });
+    expect(sendBtn).toBeDisabled();
+  });
+
+  it('Send Quote is enabled after draft textarea is filled', () => {
+    mockFetchResponses('');
+    render(<QuoteTab cargoEmailId="email-001" />);
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'USD 15/MT' } });
+    const sendBtn = screen.getByRole('button', { name: /send quote/i });
+    expect(sendBtn).not.toBeDisabled();
   });
 });

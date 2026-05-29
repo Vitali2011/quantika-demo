@@ -1,0 +1,80 @@
+project: quantika-demo
+run_id: explain-deal-589-r3-2026-05-27
+
+target_prompts:
+  - path: lib/prompts/explain-deal.ts
+    role: hallucination_guard_narrator
+    export: EXPLAIN_DEAL_SYSTEM_PROMPT_EN
+  - path: app/api/ai/explain-deal/route.ts
+    role: user_prompt_builder
+    function: buildUserPrompt
+  - path: lib/explain-deal-validator.ts
+    role: strip_validator
+    function: stripInventedContent
+
+categories:
+  - name: strong-match
+    description: "Both cargo weight and vessel DWT known; response must cite actual values."
+    samples_per_round: 3
+  - name: null-weight-known-dwt
+    description: "Cargo weight null, vessel DWT present — LLM must NOT invent cargo weight."
+    samples_per_round: 3
+  - name: both-null
+    description: "Both cargo weight and vessel DWT unknown — all numeric mentions forbidden."
+    samples_per_round: 2
+  - name: qualitative-only
+    description: "No class society, no gear status, no stowage factor — all these must be absent."
+    samples_per_round: 3
+
+domain_expert:
+  role: |
+    Senior dry-bulk/general cargo broker, 20+ years MENA/Mediterranean/Black Sea trades.
+    Deeply familiar with typical LLM hallucination patterns in shipping narratives:
+    'typical' grain quantities (45,000–55,000 MT), DNV/LR class defaults, gearless defaults,
+    stowage factor defaults (1.25 m³/MT). Goal: catch every invented value, every invented fact.
+  perspective: |
+    Extremely skeptical of AI-generated shipping analysis. Will flag ANY number that doesn't
+    match the input data. Will flag ANY class society name not in the input. Will flag ANY
+    gear status claim not in the input. Will flag stowage factors, last-port history, CII grades
+    unless explicitly in the payload. Not fooled by 'approximately' or 'typically'.
+
+agents_per_case: 1
+critic_agreement: auto
+
+severity_rubric_path: .progonq/severity-rubric.md
+exit_criteria:
+  consecutive_passes: 2
+  pass_threshold: { critical: 0, high: 0 }
+
+stack:
+  language: typescript
+  test_runner: jest
+
+models:
+  progonq_run: gemini-2.5-flash     # flash for corpus runs (cheaper)
+  production: gemini-2.5-pro        # prod uses gemini-2.5-pro (route.ts line 174)
+  note: |
+    progonq_run != production → exit mode PARTIAL_PROGONB_REQUIRED per principle #14.
+    HOWEVER: flash is LESS instruction-following than pro → if flash PASSes, pro should too.
+    The hallucination pattern (inventing 50k MT, DNV, gearless) is worse with higher-temp pro.
+    So PASS on flash = conservative lower bound. We'll confirm on pro via final smoke.
+
+llm_client:
+  wrapper_module: lib/ai-provider
+  wrapper_export: callAiText
+  scope: EXPLAIN_DEAL
+
+production_parity:
+  entrypoint: app/api/ai/explain-deal/route.ts::buildUserPrompt + callAiText
+  smoke_case: .progonq/corpus/etms-explain-deal/scenario-001.json
+  divergence_whitelist: []
+
+budget:
+  max_rounds: 20
+  max_tokens_usd: 30
+  abort_on_repeated_issue: 3
+
+post_exit:
+  fresh_corpus_size: 6
+  generate_regression_tests: true
+  regression_path: __tests__/progonq-explain-deal-regression.test.ts

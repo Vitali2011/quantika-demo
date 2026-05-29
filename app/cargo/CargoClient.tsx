@@ -77,7 +77,8 @@ function SidePanel({ row, onClose }: { row: CargoRow; onClose: () => void }) {
       />
       <aside
         className="fixed right-0 top-0 bottom-0 z-50 w-[420px] bg-white border-l border-[#e2e8f0] overflow-y-auto shadow-xl"
-        role="complementary"
+        role="dialog"
+        aria-modal="true"
         aria-label="Cargo detail"
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-[#f1f3f7]">
@@ -531,7 +532,7 @@ export default function CargoClient({ rows, total }: Props) {
               No cargo matches the current filters.
             </div>
           ) : (
-            <table className="w-full border-collapse text-sm" role="grid">
+            <table className="w-full min-w-[1100px] table-fixed border-collapse text-sm" role="grid">
               <colgroup>
                 <col style={{ width: '220px' }} />
                 <col style={{ width: '90px' }} />
@@ -572,7 +573,7 @@ export default function CargoClient({ rows, total }: Props) {
                     role="row"
                     aria-selected={selected?.id === row.id}
                   >
-                    <td className="px-3.5 py-3.5">
+                    <td className="px-3.5 py-3.5 max-w-[220px] overflow-hidden">
                       <div className="flex items-center gap-3">
                         <CommodityBadge ck={row.commodityKey} />
                         <div className="flex flex-col min-w-0">
@@ -588,10 +589,10 @@ export default function CargoClient({ rows, total }: Props) {
                     <td className="px-3.5 py-3.5 text-right font-mono text-[13.5px] text-[#0f172a] tabular-nums whitespace-nowrap">
                       {row.quantity ?? <span className="text-[#94a3b8]">—</span>}
                     </td>
-                    <td className="px-3.5 py-3.5 text-[13.5px] text-[#0f172a] whitespace-nowrap">
+                    <td className="px-3.5 py-3.5 text-[13.5px] text-[#0f172a] break-words">
                       {row.originPort ?? <span className="text-[#94a3b8]">—</span>}
                     </td>
-                    <td className="px-3.5 py-3.5 text-[13.5px] text-[#0f172a] whitespace-nowrap">
+                    <td className="px-3.5 py-3.5 text-[13.5px] text-[#0f172a] break-words">
                       {row.destinationPort ?? <span className="text-[#94a3b8]">—</span>}
                     </td>
                     <td className="px-3.5 py-3.5 font-mono text-[12.5px] text-[#0f172a] whitespace-nowrap">

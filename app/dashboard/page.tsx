@@ -42,16 +42,7 @@ export default async function DashboardPage() {
     );
   }
 
-  const {
-    emails,
-    processedEmails,
-    matches,
-    blockedMatches: rawBlockedMatches,
-  } = session;
-
-  const blockedMatches = rawBlockedMatches || [];
-  const sanctionsBlocked = blockedMatches.filter((b) => b.sanctions?.blocking);
-  const filterBlocked = blockedMatches.filter((b) => !b.sanctions?.blocking);
+  const { emails, processedEmails, matches } = session;
 
   if (emails.length === 0) {
     return (
@@ -106,18 +97,17 @@ export default async function DashboardPage() {
     })
     .sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority]);
 
-  const freshMatchesData = goodMatches.map((m) => {
-    const dbId = matchIdMap.get(`${m.cargoEmailId}|${m.vesselEmailId}`);
-    return {
+  const freshMatchesData = goodMatches
+    .filter((m) => matchIdMap.get(`${m.cargoEmailId}|${m.vesselEmailId}`) != null)
+    .map((m) => ({
       score: m.score,
       matchLevel: m.matchLevel,
       matchReasons: m.matchReasons,
-      id: dbId ?? 0,
-    };
-  });
+      id: matchIdMap.get(`${m.cargoEmailId}|${m.vesselEmailId}`)!,
+    }));
 
-  const rawName = session.accountId?.split('@')[0] ?? 'there';
-  const userName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+  const rawName = session.accountId?.split('@')[0] ?? '';
+  const userName = rawName ? rawName.charAt(0).toUpperCase() + rawName.slice(1) : '';
 
   return (
     <div className="bg-ds-bg min-h-screen">
@@ -182,62 +172,6 @@ export default async function DashboardPage() {
             </div>
             <span className="text-ds-text-subtle text-sm">→</span>
           </Link>
-        )}
-
-        {/* ── Blocked Matches ────────────────────────────────────── */}
-        {blockedMatches.length > 0 && (
-          <section className="mt-2">
-            <h2 className="text-sm font-semibold text-ds-danger uppercase tracking-wide mb-3">
-              🚫 Blocked Pairs ({blockedMatches.length})
-            </h2>
-            {sanctionsBlocked.length > 0 && (
-              <div className="mb-4 space-y-2">
-                {sanctionsBlocked.map((b, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-3 p-3 bg-ds-danger-soft border border-ds-danger/20 rounded-ds-md text-sm overflow-hidden"
-                  >
-                    <span className="font-medium text-ds-danger shrink-0">⛔</span>
-                    <div className="flex-1 min-w-0">
-                      <span className="font-medium text-ds-text">{b.cargoEmailId}</span>
-                      <span className="text-ds-text-muted mx-1">×</span>
-                      <span className="font-medium text-ds-text">{b.vesselEmailId}</span>
-                    </div>
-                    <span className="text-ds-danger text-xs min-w-0 truncate">{b.filterReason}</span>
-                    <span className="px-2 py-0.5 bg-ds-danger text-white text-xs rounded-ds-full shrink-0">
-                      SANCTIONS
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-            {filterBlocked.length > 0 && (
-              <details className="border border-ds-warn/30 rounded-ds-lg overflow-hidden">
-                <summary className="flex items-center justify-between px-4 py-3 bg-ds-warn-soft cursor-pointer hover:opacity-90 list-none">
-                  <span className="text-sm font-semibold text-ds-warn">
-                    🚫 Hard Filter Fails ({filterBlocked.length})
-                  </span>
-                  <span className="text-ds-warn text-xs select-none">▼</span>
-                </summary>
-                <div className="bg-ds-surface px-4 pb-4 pt-2 space-y-2">
-                  {filterBlocked.map((b, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center gap-3 p-3 bg-ds-warn-soft border border-ds-warn/20 rounded-ds-md text-sm overflow-hidden"
-                    >
-                      <span className="font-medium text-ds-warn shrink-0">🚫</span>
-                      <div className="flex-1 min-w-0">
-                        <span className="font-medium text-ds-text">{b.cargoEmailId}</span>
-                        <span className="text-ds-text-muted mx-1">×</span>
-                        <span className="font-medium text-ds-text">{b.vesselEmailId}</span>
-                      </div>
-                      <span className="text-ds-warn text-xs min-w-0 truncate">{b.filterReason}</span>
-                    </div>
-                  ))}
-                </div>
-              </details>
-            )}
-          </section>
         )}
 
       </div>

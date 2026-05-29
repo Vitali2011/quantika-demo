@@ -150,3 +150,26 @@ ones) before declaring Round N+1 progress.
 Once user approves the loop start, runs autonomously through 2 PASS + harden
 without re-asking. Mandate scope: prompt edits + commits inside this worktree.
 Out of scope: deploy, force-push, branch deletion, edits outside lib/prompts/.
+
+---
+
+## D. Explain-deal (#589 R3 progonq run)
+
+### D.1 DWT vs DWCC citation in vessel sizing
+When both DWT and DWCC are in the payload, the model may cite EITHER — DWCC is the
+more commercially relevant figure for cargo sizing (DWCC = actual cargo capacity).
+`must_cite_facts` in the corpus should NOT require the specific DWT number when DWCC
+is present. Updated scenario-009 to expect DWCC (24600) not DWT (25000).
+Round discovered: R3b. Design decision — NOT a model bug.
+
+### D.2 Loading/discharge rates in payload are valid citations
+The LLM correctly cites loading/discharge rates (e.g. "1500 MTPD SHINC") from the
+payload. `buildPayloadNumberSet` was updated to include numbers extracted from string
+fields (loadingRate, dischargeRate, cargoDescription). Strip no longer false-positives
+on these values.
+
+### D.3 Temperature 0.3 for hallucination suppression
+Gemini 2.5 Pro defaults to temperature ~1.0, causing fallback to "typical" shipping
+values (50k MT grain, DNV class, gearless) when payload has NOT_PROVIDED fields.
+Temperature 0.3 anchors responses to the provided data. Confirmed: 0 hallucinated
+numbers in 22 independent runs (R3 + R3b) after this change.

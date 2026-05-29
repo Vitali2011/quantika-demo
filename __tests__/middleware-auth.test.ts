@@ -68,6 +68,9 @@ describe('middleware auth guard', () => {
       '/design',
       '/api/market/baltic-kpi',
       '/api/market/bunker-kpi',
+      '/api/market/benchmark',
+      '/about',
+      '/pricing',
     ];
 
     for (const path of bypassPaths) {

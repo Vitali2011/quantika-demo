@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { X, FileText, XCircle, ChevronUp, RotateCcw } from 'lucide-react';
+import { X, FileText, XCircle, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { csrfFetch } from '@/lib/csrf-client';
+import { CounterModal } from './CounterModal';
 
 export interface MatchDetailPanelProps {
   matchDbId: number;
@@ -55,7 +56,7 @@ function PanelContent({
     loadPort && { label: 'Load Port', value: loadPort },
     dischargePort && { label: 'Discharge Port', value: dischargePort },
     cargoType && { label: 'Cargo', value: cargoType },
-    vesselDwt && { label: 'Vessel DWT', value: `${vesselDwt.toLocaleString()} MT` },
+    vesselDwt && { label: 'Vessel DWT', value: `${vesselDwt.toLocaleString('en-US')} MT` },
     laycanDisplay && { label: 'Laycan', value: laycanDisplay },
     { label: 'Status', value: status },
   ].filter(Boolean) as { label: string; value: string }[];
@@ -102,11 +103,7 @@ function PanelContent({
           ) : (
             <p className="text-xs text-ds-text-subtle">Quote requires session data</p>
           )}
-          {/* TODO: wire Counter to endpoint when available */}
-          <Button size="sm" variant="outline" className="w-full justify-start gap-2 text-xs" disabled>
-            <RotateCcw className="h-3.5 w-3.5" />
-            Counter
-          </Button>
+          <CounterModal matchDbId={matchDbId} />
           <Button
             size="sm"
             variant="destructive"

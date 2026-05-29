@@ -19,6 +19,8 @@ import {
   EXPLAIN_DEAL_SYSTEM_PROMPT_AR,
 } from '@/lib/prompts';
 import { ExplainDealBodySchema } from '@/lib/api-schemas';
+import { stripInventedContent } from '@/lib/explain-deal-validator';
+import { buildExplainDealUserPrompt } from '@/lib/explain-deal-prompt';
 
 export const maxDuration = 60;
 
@@ -43,10 +45,16 @@ export type ExplainDealSection = {
   content: string;
 };
 
+export type ExplainDealWarning = {
+  type: 'invented_numerics' | 'forbidden_tokens';
+  values: (string | number)[];
+};
+
 export type ExplainDealResponse = {
   sections: ExplainDealSection[];
   language: 'en' | 'ar';
   model: string;
+  warnings?: ExplainDealWarning[];
 };
 
 /**
@@ -153,7 +161,7 @@ export async function POST(request: NextRequest) {
     (v) => v.emailId === match.vesselEmailId && v.itemIndex === match.vesselItemIndex,
   );
 
-  const userPrompt = buildUserPrompt(match, cargo ?? null, vessel ?? null, matchIndex);
+  const userPrompt = buildExplainDealUserPrompt(match, cargo ?? null, vessel ?? null, matchIndex);
   const systemPrompt =
     language === 'ar' ? EXPLAIN_DEAL_SYSTEM_PROMPT_AR : EXPLAIN_DEAL_SYSTEM_PROMPT_EN;
   const headers = language === 'ar' ? SECTION_HEADERS_AR : SECTION_HEADERS_EN;
@@ -168,20 +176,34 @@ export async function POST(request: NextRequest) {
       : undefined);
 
   try {
-    const rawText = await callAiText('EXPLAIN_DEAL', systemPrompt, userPrompt, {
-      timeoutMs: endpointLlmTimeout(maxDuration),
-      model: modelOverride,
-    });
+    // R3 (#589): lower temperature reduces hallucination of "typical" shipping values.
+    // Gemini 2.5 Pro defaults to ~1.0; 0.3 anchors responses closer to the provided data.
+    const llmOpts = { timeoutMs: endpointLlmTimeout(maxDuration), model: modelOverride, temperature: 0.3 };
+    const rawText = await callAiText('EXPLAIN_DEAL', systemPrompt, userPrompt, llmOpts);
 
-    const sections = parseSections(rawText, headers);
+    // R2 (#589): strip-not-retry — post-process the response by replacing invented
+    // numerics and forbidden qualitative tokens with inline redaction markers.
+    // Retry approach (R1) was ineffective: Gemini re-invents the same values.
+    const stripped = stripInventedContent(rawText, match, cargo ?? null, vessel ?? null);
+
+    const sections = parseSections(stripped.text, headers);
     const usedModel =
       modelOverride ??
       (process.env.AI_MODEL_HEAVY ?? 'gpt-5.5');
+
+    const warnings: ExplainDealWarning[] = [];
+    if (stripped.inventedNumbers.length > 0) {
+      warnings.push({ type: 'invented_numerics', values: stripped.inventedNumbers });
+    }
+    if (stripped.forbiddenTokens.length > 0) {
+      warnings.push({ type: 'forbidden_tokens', values: stripped.forbiddenTokens });
+    }
 
     const response: ExplainDealResponse = {
       sections,
       language,
       model: usedModel,
+      ...(warnings.length > 0 ? { warnings } : {}),
     };
 
     return NextResponse.json(response);
@@ -200,31 +222,3 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function buildUserPrompt(
-  match: import('@/lib/types').Match,
-  cargo: import('@/lib/types').ParsedCargo | null,
-  vessel: import('@/lib/types').ParsedVessel | null,
-  matchIndex: number,
-): string {
-  return `MATCH DATA (index ${matchIndex}):
-
-Score: ${match.score}/100 (${match.matchLevel.toUpperCase()})
-Match Reasons: ${match.matchReasons.join('; ') || 'none'}
-Issues: ${match.issues.join('; ') || 'none'}
-
-CARGO:
-${cargo ? JSON.stringify(cargo, null, 2) : 'Not available'}
-
-VESSEL:
-${vessel ? JSON.stringify(vessel, null, 2) : 'Not available'}
-
-ECONOMICS:
-${match.economics ? JSON.stringify(match.economics, null, 2) : 'Not available'}
-
-SCORE BREAKDOWN:
-${match.scoreBreakdown ? JSON.stringify(match.scoreBreakdown, null, 2) : 'Not available'}
-
-Please produce the 4-section narrative based on this data.`;
-}

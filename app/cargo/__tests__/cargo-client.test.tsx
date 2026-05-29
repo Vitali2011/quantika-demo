@@ -105,7 +105,7 @@ describe('CargoClient', () => {
     const rows = screen.getAllByRole('row');
     // rows[0] is thead, rows[1] is first tbody row
     fireEvent.click(rows[1]);
-    const panel = screen.getByRole('complementary', { name: /Cargo detail/i });
+    const panel = screen.getByRole('dialog', { name: /Cargo detail/i });
     expect(panel).toBeInTheDocument();
     // Panel should contain the commodity name
     expect(panel).toHaveTextContent('Wheat');
@@ -116,14 +116,11 @@ describe('CargoClient', () => {
     const tableRows = screen.getAllByRole('row');
     fireEvent.click(tableRows[1]);
     // Panel is open
-    expect(screen.getByRole('complementary')).toBeInTheDocument();
-    // The backdrop is the fixed div with bg-black/20 that wraps behind the panel
-    // Use the closest full-inset backdrop (has onClick for close)
-    const panel = screen.getByRole('complementary');
+    expect(screen.getByRole('dialog', { name: /Cargo detail/i })).toBeInTheDocument();
     // Simulate close via the close button instead of backdrop (reliable in jsdom)
     const closeBtn = screen.getByLabelText('Close panel');
     fireEvent.click(closeBtn);
-    expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog', { name: /Cargo detail/i })).not.toBeInTheDocument();
   });
 
   it('shows empty state when no cargo items', () => {
@@ -246,5 +243,30 @@ describe('CargoClient', () => {
     // Only this-month row should be visible
     expect(screen.getByText('Wheat')).toBeInTheDocument();
     expect(screen.queryByText('Coal')).not.toBeInTheDocument();
+  });
+
+  // #606 regression: columns collapse with large datasets (table-layout:auto + w-full without min-w)
+  it('table has min-width class to prevent column collapse at 80 rows', () => {
+    const bigRows: CargoRow[] = Array.from({ length: 80 }, (_, i) => ({
+      id: `big:${i}`,
+      emailId: `email-${i}`,
+      itemIndex: i % 3,
+      commodity: `Steel Mill Coil – High Tensile – Batch ${i} – ASTM A572 Grade 50`,
+      cargoType: 'BULK',
+      commodityKey: i % 2 === 0 ? 'bulk' : 'grain',
+      originPort: 'Novorossiysk',
+      destinationPort: 'Port of Rotterdam',
+      quantity: `${30000 + i * 100} MT`,
+      laycan: '01–15 Jun',
+      status: (i % 3 === 0 ? 'match' : 'open') as 'open' | 'match',
+      sourceTag: 'Email',
+      sourceName: 'TradeFlow Commodities International',
+    }));
+    render(<CargoClient rows={bigRows} total={80} />);
+    // All 8 headers must remain in DOM regardless of row count
+    expect(screen.getAllByRole('columnheader')).toHaveLength(8);
+    // Table must have a min-w class so overflow-x-auto is triggered instead of column compression
+    const table = document.querySelector('table[role="grid"]');
+    expect(table?.className).toMatch(/min-w-/);
   });
 });
