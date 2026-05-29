@@ -1,0 +1,33 @@
+{
+  "id": "etms-parse-vessel-adv-12",
+  "source_email_id": "etms-parse-vessel-adv-12",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "SPECIAL-open-position-fuzzy",
+  "expected_behavior": "The open position is given only as a region/spot ('spot E.Med, prompt') with a vague open_date and no year; the parser must extract MV LEVANT TRADER with open_position kept as the region 'E.Med' (not narrowed to a specific port) and open_date with open/close null and display 'prompt' — it must NOT fabricate a precise port like Iskenderun nor invent a concrete date or year.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "MV LEVANT TRADER - spot E.Med prompt",
+    "from": "Yusuf Demir <chartering@levantine-shipping.com>",
+    "date": "2026-05-28T08:22:09.000Z",
+    "body": "Dear Sirs,\r\n\r\nGd day. Kindly propose suitable cargo for our geared Handy:\r\n\r\nMV LEVANT TRADER\r\nDWT 17,800 mt / DWCC 16,900 mt at 8.4m draft\r\nFlag: Cyprus, Built 2007, IMO 9377104\r\nGeared 3 x 25T, single deck box holds\r\nspot E.Med, prompt (awaiting redelivery, exact port tbc)\r\nL/C: bagged cement, clinker, steel\r\n\r\nWill confirm precise open port + dates once current voyage completes.\r\n\r\nBrgds,\r\nYusuf"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": { "value": "MV LEVANT TRADER", "confidence": "confirmed", "source_text": "MV LEVANT TRADER" },
+        "imo": 9377104,
+        "flag": { "value": "Cyprus", "confidence": "confirmed", "source_text": "Flag: Cyprus" },
+        "built": { "value": 2007, "confidence": "confirmed", "source_text": "Built 2007" },
+        "dwt_summer": { "value": 17800, "confidence": "confirmed", "source_text": "DWT 17,800 mt" },
+        "dwcc": { "value": 16900, "confidence": "confirmed", "source_text": "DWCC 16,900 mt at 8.4m draft" },
+        "draft_max": { "value": 8.4, "confidence": "interpreted", "source_text": "DWCC 16,900 mt at 8.4m draft" },
+        "geared": true,
+        "crane_capacity": { "value": "3 x 25T", "confidence": "confirmed", "source_text": "Geared 3 x 25T" },
+        "open_position": { "value": "E.Med", "confidence": "interpreted", "source_text": "spot E.Med, prompt (awaiting redelivery, exact port tbc)" },
+        "open_date": { "value": { "open": null, "close": null, "display": "prompt" }, "confidence": "interpreted", "source_text": "spot E.Med, prompt" },
+        "last_cargoes": { "value": "bagged cement, clinker, steel", "confidence": "confirmed", "source_text": "L/C: bagged cement, clinker, steel" }
+      }
+    ]
+  }
+}

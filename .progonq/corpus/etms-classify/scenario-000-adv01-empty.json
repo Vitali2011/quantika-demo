@@ -1,0 +1,25 @@
+{
+  "id": "etms-classify-adv-01",
+  "source_email_id": "etms-classify-adv-01",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A1-empty",
+  "expected_behavior": "With no parseable content (only a signature/sign-off), the parser must classify category as OTHER with urgency low and not hallucinate cargo, sender or reply state.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "RE:",
+    "from": "Khaled Mansour <k.mansour@gulfbrokers.ae>",
+    "date": "2026-05-28T09:14:03.000Z",
+    "body": "\r\n\r\n\r\nBest regards,\r\nKhaled Mansour\r\nGulf Brokers DMCC\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "id": "etms-classify-adv-01",
+    "category": "OTHER",
+    "urgency": "low",
+    "confidence": 0.6,
+    "is_unanswered": false,
+    "days_without_reply": 1,
+    "original_sender": null,
+    "original_sender_company": "Gulf Brokers DMCC"
+  }
+}

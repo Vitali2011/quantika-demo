@@ -1,0 +1,18 @@
+{
+  "id": "etms-parse-vessel-adv-01",
+  "source_email_id": "etms-parse-vessel-adv-01",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A1-empty",
+  "expected_behavior": "With no vessel particulars anywhere in the body (only a forwarded blank line plus a broker signature block), the parser must return {\"items\":[]} and must not fabricate a vessel from the signature company name or phone numbers.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "RE: tonnage",
+    "from": "Chartering Desk <chartering@medbulk-brokers.com>",
+    "date": "2026-05-26T09:14:03.000Z",
+    "body": "\r\n \r\n\r\n \r\n\r\nBest rgds,\r\n\r\nKaan Demirtas\r\nCHARTERING / S&P\r\nMEDBULK BROKERS LTD\r\nKarakoy, Istanbul, Turkey\r\nTel: +90 212 245 11 90\r\nMob: +90 532 661 04 22\r\nE-mail: chartering@medbulk-brokers.com\r\nSkype: kaan.medbulk\r\n\r\n--\r\nThis message and any attachments are confidential and intended solely for the addressee.\r\n"
+  },
+  "reference_output": {
+    "items": []
+  }
+}

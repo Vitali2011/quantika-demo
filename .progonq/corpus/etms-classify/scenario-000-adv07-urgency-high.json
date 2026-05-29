@@ -1,0 +1,25 @@
+{
+  "id": "etms-classify-adv-07",
+  "source_email_id": "etms-classify-adv-07",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "SPECIAL-urgency-high",
+  "expected_behavior": "With explicit urgency language and a laycan cancelling tomorrow, the parser must classify this CARGO_INQUIRY with urgency high (not medium/low).",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "URGENT — firm offer COB today / coal Richards Bay - Mundra",
+    "from": "Sanjay Gupta <s.gupta@meridianchartering.com>",
+    "date": "2026-05-29T06:30:00.000Z",
+    "body": "Dear Owners,\r\n\r\nURGENT — laycan cancels tomorrow, we need a firm offer by COB today or charterers will go elsewhere.\r\n\r\n- Cargo: steam coal in bulk\r\n- Qty: abt 75,000 mt 10% moloo\r\n- Load: 1sb Richards Bay\r\n- Disch: 1sb Mundra\r\n- Laycan: 30 May / 31 May (cancelling 31 May 2359 hrs)\r\n- Load 45,000 / disch 25,000 mt shinc\r\n- 2.5% addcomm + 1.25%\r\n\r\nKindly revert most urgently with firm freight per mt fio. This is time critical.\r\n\r\nBest regards,\r\nSanjay Gupta\r\nMeridian Chartering Pte Ltd"
+  },
+  "reference_output": {
+    "id": "etms-classify-adv-07",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.95,
+    "is_unanswered": true,
+    "days_without_reply": 0,
+    "original_sender": "Sanjay Gupta",
+    "original_sender_company": "Meridian Chartering Pte Ltd"
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "id": "etms-parse-cargo-adv-12",
+  "source_email_id": "etms-parse-cargo-adv-12",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "SPECIAL-laycan-multiport",
+  "expected_behavior": "The email contains two distinct cargoes: cargo A is ONE bagged-rice movement discharging at two rotation ports with an explicit per-port tonnage split (Banjul 18,000 + Dakar 12,000, total 30,000) on one laycan, and cargo B is a SEPARATE bulk-sugar lifting on a different laycan; the parser MUST emit exactly two items — item A with destination_port_rotation=[Banjul,Dakar], weight_per_port=[18000,12000], weight_mt=30000 and laycan 8-15 June, item B as its own cargo — and MUST NOT merge them or misassign the laycan/per-port weights across cargoes.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "Kandla / W.Africa rotation + Conakry sugar",
+    "from": "Rajesh Nair <r.nair@indusbrokers.in>",
+    "date": "2026-05-24T08:55:27.000Z",
+    "body": "Dear Sherif,\r\n\r\nGd day. Two firm cargoes for ur best frt ideas, pls keep separate:\r\n\r\nCARGO A:\r\n30,000 mts rice in big bags, Kandla / Banjul + Dakar (combined disch, vsl calls both)\r\nload split: Banjul 18,000 + Dakar 12,000\r\nLaycan: 8-15 June 2026\r\nLoad 6000 shinc / disch 3000+2500 shinc respectively\r\n2.5% ttl\r\n\r\nCARGO B:\r\n14,500 mts white sugar in bulk, Mundra / Conakry\r\nLaycan: 18-25 June 2026\r\nLoad 5000 / disch 2000 shex\r\n3.75% ttl\r\n\r\nPls revert both separately. Brgds, Rajesh"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Kandla",
+          "confidence": "confirmed",
+          "source_text": "Kandla / Banjul + Dakar"
+        },
+        "destination_port": {
+          "value": "Banjul",
+          "confidence": "confirmed",
+          "source_text": "Banjul 18,000"
+        },
+        "destination_port_rotation": ["Banjul", "Dakar"],
+        "weight_per_port": [18000, 12000],
+        "cargo_description": {
+          "value": "Rice in big bags",
+          "confidence": "interpreted",
+          "source_text": "30,000 mts rice in big bags"
+        },
+        "weight_mt": {
+          "value": 30000,
+          "confidence": "confirmed",
+          "source_text": "30,000 mts rice in big bags"
+        },
+        "cargo_type": "BREAK_BULK",
+        "laycan": {
+          "value": "8-15 June 2026",
+          "confidence": "confirmed",
+          "source_text": "Laycan: 8-15 June 2026"
+        },
+        "loading_rate": "6000 MT/day",
+        "loading_terms": "SHINC",
+        "discharge_terms": "SHINC",
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl"
+        }
+      },
+      {
+        "origin_port": {
+          "value": "Mundra",
+          "confidence": "confirmed",
+          "source_text": "Mundra / Conakry"
+        },
+        "destination_port": {
+          "value": "Conakry",
+          "confidence": "confirmed",
+          "source_text": "Mundra / Conakry"
+        },
+        "cargo_description": {
+          "value": "White sugar in bulk",
+          "confidence": "confirmed",
+          "source_text": "14,500 mts white sugar in bulk"
+        },
+        "weight_mt": {
+          "value": 14500,
+          "confidence": "confirmed",
+          "source_text": "14,500 mts white sugar in bulk"
+        },
+        "cargo_type": "BULK",
+        "laycan": {
+          "value": "18-25 June 2026",
+          "confidence": "confirmed",
+          "source_text": "Laycan: 18-25 June 2026"
+        },
+        "loading_rate": "5000 MT/day",
+        "discharge_rate": "2000 MT/day",
+        "discharge_terms": "SHEX",
+        "commission_percent": {
+          "value": 3.75,
+          "confidence": "confirmed",
+          "source_text": "3.75% ttl"
+        }
+      }
+    ]
+  }
+}

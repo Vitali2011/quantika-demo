@@ -1,0 +1,32 @@
+{
+  "id": "etms-parse-vessel-adv-03",
+  "source_email_id": "etms-parse-vessel-adv-03",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A3-arabic-rtl",
+  "expected_behavior": "The position circular is written entirely in Arabic (RTL); the parser must still extract the named vessel MV NOUR AL BAHR with dwt_summer 28500, flag (Egypt), and open_position (Damietta / دمياط), mapping the Arabic shipping terms correctly and never returning items=[] just because the language is non-Latin.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "سفينة مفتوحة - دمياط",
+    "from": "قسم الشحن <chartering@nile-maritime.com.eg>",
+    "date": "2026-05-25T08:05:11.000Z",
+    "body": "السادة الأفاضل،\r\n\r\nتحية طيبة وبعد،\r\n\r\nنعرض عليكم السفينة التالية المفتوحة، برجاء اقتراح حمولة مناسبة:\r\n\r\nالسفينة: MV NOUR AL BAHR\r\nالحمولة الساكنة الصيفية: 28٬500 طن\r\nالعلم: مصري\r\nسنة البناء: 2009\r\nالغاطس الأقصى: 9٫8 متر\r\nمفتوحة في ميناء دمياط - جاهزة 2 يونيو\r\nبدون أوناش (gearless) - عنبر واحد صندوقي الشكل\r\nآخر البضائع: حديد تسليح، كلنكر، قمح\r\n\r\nفي انتظار عروضكم.\r\n\r\nمع خالص التحية،\r\nمحمد عبد الرحمن\r\nنايل ماريتايم"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": { "value": "MV NOUR AL BAHR", "confidence": "confirmed", "source_text": "السفينة: MV NOUR AL BAHR" },
+        "imo": null,
+        "flag": { "value": "Egypt", "confidence": "interpreted", "source_text": "العلم: مصري" },
+        "built": { "value": 2009, "confidence": "confirmed", "source_text": "سنة البناء: 2009" },
+        "dwt_summer": { "value": 28500, "confidence": "confirmed", "source_text": "الحمولة الساكنة الصيفية: 28٬500 طن" },
+        "dwcc": null,
+        "draft_max": { "value": 9.8, "confidence": "confirmed", "source_text": "الغاطس الأقصى: 9٫8 متر" },
+        "geared": false,
+        "open_position": { "value": "Damietta", "confidence": "interpreted", "source_text": "مفتوحة في ميناء دمياط" },
+        "open_date": { "value": { "open": null, "close": null, "display": "جاهزة 2 يونيو" }, "confidence": "confirmed", "source_text": "جاهزة 2 يونيو" },
+        "last_cargoes": { "value": "rebar, clinker, wheat", "confidence": "interpreted", "source_text": "آخر البضائع: حديد تسليح، كلنكر، قمح" }
+      }
+    ]
+  }
+}
