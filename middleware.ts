@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkCsrfRequest } from '@/lib/csrf';
-import { aiRateLimiter } from '@/lib/rate-limit';
+import { aiRateLimiter, loginRateLimiter, adminRateLimiter } from '@/lib/rate-limit';
 import { getAuthConfig } from '@/lib/auth/config';
 import { verifyAuthCookie, AUTH_COOKIE_NAME } from '@/lib/auth/cookie';
 import { getRequestBaseUrl } from '@/lib/auth/redirect-url';
@@ -57,8 +57,41 @@ function isCsrfPath(pathname: string): boolean {
   return CSRF_PATHS.some(p => pathname.startsWith(p));
 }
 
+/**
+ * Best-effort client key for rate limiting. Behind a reverse proxy the real
+ * client IP arrives in x-forwarded-for (left-most entry); fall back to
+ * x-real-ip, then a constant bucket so a missing header can't bypass the limit.
+ */
+function rateLimitKey(request: NextRequest): string {
+  const forwarded = request.headers.get('x-forwarded-for');
+  if (forwarded) return forwarded.split(',')[0].trim();
+  return request.headers.get('x-real-ip')?.trim() ?? 'anonymous';
+}
+
+function tooManyRequests(retryAfterMs: number): NextResponse {
+  const retryAfterSec = Math.ceil(retryAfterMs / 1000);
+  return NextResponse.json(
+    { error: 'Too many requests' },
+    { status: 429, headers: { 'Retry-After': String(retryAfterSec) } },
+  );
+}
+
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
+
+  // ── Brute-force throttles (M-1 / L-3) ─────────────────────────────────────
+  // Applied before the auth guard because /api/auth/login is in AUTH_BYPASS_PATHS
+  // and /api/admin/* endpoints carry their own shared-secret auth — neither path
+  // would otherwise be rate-limited by the /api/ai/* block below.
+  if (request.method === 'POST' && pathname === '/api/auth/login') {
+    const { allowed, retryAfterMs } = loginRateLimiter.check(rateLimitKey(request));
+    if (!allowed) return tooManyRequests(retryAfterMs);
+  }
+
+  if (pathname.startsWith('/api/admin/')) {
+    const { allowed, retryAfterMs } = adminRateLimiter.check(rateLimitKey(request));
+    if (!allowed) return tooManyRequests(retryAfterMs);
+  }
 
   // ── Auth guard ────────────────────────────────────────────────────────────
   const authConfig = getAuthConfig();

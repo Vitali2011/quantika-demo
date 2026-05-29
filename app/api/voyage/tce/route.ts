@@ -167,9 +167,11 @@ async function resolveDistanceNm(
     );
     return { distanceNm: result.distanceNm };
   } catch (err) {
+    // L-8: log server-side, return a generic message (no raw error leak).
+    console.error('[voyage/tce] distance auto-resolve failed:', err);
     return {
       distanceNm: 0,
-      error: `Cannot auto-resolve distance: ${err instanceof Error ? err.message : String(err)}`,
+      error: 'Cannot auto-resolve distance',
     };
   }
 }

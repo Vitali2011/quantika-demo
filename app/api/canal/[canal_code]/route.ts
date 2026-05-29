@@ -72,8 +72,10 @@ export async function GET(
       const result = quoteCanal('suez', suezInput);
       return NextResponse.json(result);
     } catch (err) {
+      // L-8: log server-side, return generic message.
+      console.error('[canal] quoteCanal failed:', err);
       return NextResponse.json(
-        { error: (err as Error).message },
+        { error: 'Internal server error' },
         { status: 500 }
       );
     }
@@ -89,8 +91,10 @@ export async function GET(
     const result = quoteCanal(canal_code as CanalCode, input);
     return NextResponse.json(result);
   } catch (err) {
+    // L-8: log server-side, return generic message.
+    console.error('[canal] quoteCanal failed:', err);
     return NextResponse.json(
-      { error: (err as Error).message },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

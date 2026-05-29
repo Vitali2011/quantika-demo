@@ -54,9 +54,10 @@ export async function POST(request: NextRequest) {
     cache.set(cacheKey, { result, cachedAt: Date.now() });
     return NextResponse.json(result);
   } catch (err) {
-    console.error('[economics] computeEconomics failed:', (err as Error).message);
+    // L-8: log server-side, do not reflect the raw error message to the client.
+    console.error('[economics] computeEconomics failed:', err);
     return NextResponse.json(
-      { error: 'Economics calculation failed', detail: (err as Error).message },
+      { error: 'Economics calculation failed' },
       { status: 500 }
     );
   }

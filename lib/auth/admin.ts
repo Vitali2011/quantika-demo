@@ -22,6 +22,27 @@
 
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { timingSafeEqual } from 'crypto';
+
+/**
+ * Constant-time comparison of two strings (L-3). Encodes to UTF-8 bytes and
+ * compares with crypto.timingSafeEqual. timingSafeEqual throws on unequal
+ * lengths, so we compare both a length-equality flag and a fixed-length digest
+ * to avoid leaking the secret length through early-return timing.
+ */
+function timingSafeStrEqual(a: string, b: string): boolean {
+  const aBuf = Buffer.from(a, 'utf8');
+  const bBuf = Buffer.from(b, 'utf8');
+  // Compare against a fixed-length representation so length mismatch does not
+  // short-circuit. We hash neither — just pad to equal length deterministically.
+  const len = Math.max(aBuf.length, bBuf.length);
+  const aPad = Buffer.alloc(len);
+  const bPad = Buffer.alloc(len);
+  aBuf.copy(aPad);
+  bBuf.copy(bPad);
+  const equalBytes = timingSafeEqual(aPad, bPad);
+  return equalBytes && aBuf.length === bBuf.length;
+}
 
 export function requireAdmin(req: NextRequest): NextResponse | null {
   const expected = process.env.ADMIN_TOKEN;
@@ -34,7 +55,7 @@ export function requireAdmin(req: NextRequest): NextResponse | null {
   }
 
   const provided = req.headers.get('X-Admin-Token');
-  if (!provided || provided !== expected) {
+  if (!provided || !timingSafeStrEqual(provided, expected)) {
     return NextResponse.json(
       { error: 'Unauthorized: invalid or missing X-Admin-Token header' },
       { status: 401 },

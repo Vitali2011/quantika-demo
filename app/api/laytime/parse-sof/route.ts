@@ -70,9 +70,10 @@ export async function POST(request: NextRequest) {
     const result = parseSof(typedBody.text);
     return NextResponse.json(result);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
+    // L-8: log server-side, do not reflect the raw error message to the client.
+    console.error('[laytime/parse-sof] parse failed:', error);
     return NextResponse.json(
-      { error: "Failed to parse SOF", details: message },
+      { error: "Failed to parse SOF" },
       { status: 500 }
     );
   }

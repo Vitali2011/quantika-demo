@@ -47,11 +47,28 @@ export async function GET(req: NextRequest): Promise<Response> {
     authUrl.searchParams.set('redirect_uri', redirectUri);
     authUrl.searchParams.set('state', csrfState);
 
+    // L-4: harden the CSRF-state cookie.
+    // - Secure: never send the state over plaintext HTTP (skipped in dev so the
+    //   localhost flow still works without TLS).
+    // - Max-Age: bound the cookie's lifetime to the OAuth round-trip (10 min)
+    //   instead of leaving a dangling session cookie.
+    const isProduction = process.env.NODE_ENV === 'production';
+    const stateCookie = [
+      `${STATE_COOKIE}=${csrfState}`,
+      'HttpOnly',
+      'Path=/',
+      'SameSite=Lax',
+      'Max-Age=600',
+      isProduction ? 'Secure' : '',
+    ]
+      .filter(Boolean)
+      .join('; ');
+
     return new Response(null, {
       status: 302,
       headers: {
         location: authUrl.toString(),
-        'set-cookie': `${STATE_COOKIE}=${csrfState}; HttpOnly; Path=/; SameSite=Lax`,
+        'set-cookie': stateCookie,
       },
     });
   }

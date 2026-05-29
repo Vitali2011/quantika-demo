@@ -1,12 +1,28 @@
 import { NextRequest } from 'next/server';
 import { getRequestBaseUrl } from '@/lib/auth/redirect-url';
 
+const ORIGINAL_ENV = process.env;
+
+beforeEach(() => {
+  // L-1: these legacy cases assume forwarded headers are honoured. After the
+  // hardening that only happens behind the explicit TRUST_PROXY_HEADERS opt-in,
+  // and only when NEXT_PUBLIC_APP_URL is not set. Reset both per test.
+  process.env = { ...ORIGINAL_ENV };
+  delete process.env.NEXT_PUBLIC_APP_URL;
+  delete process.env.TRUST_PROXY_HEADERS;
+});
+
+afterAll(() => {
+  process.env = ORIGINAL_ENV;
+});
+
 function makeReq(url: string, headers: Record<string, string> = {}): NextRequest {
   return new NextRequest(url, { headers });
 }
 
 describe('getRequestBaseUrl', () => {
-  it('uses X-Forwarded-Host + X-Forwarded-Proto when present (Caddy reverse proxy)', () => {
+  it('uses X-Forwarded-Host + X-Forwarded-Proto when present and TRUST_PROXY_HEADERS=true (Caddy reverse proxy)', () => {
+    process.env.TRUST_PROXY_HEADERS = 'true';
     const req = makeReq('http://localhost:3000/api/auth/login', {
       'x-forwarded-host': 'demo.quantika.org',
       'x-forwarded-proto': 'https',
@@ -36,7 +52,8 @@ describe('getRequestBaseUrl', () => {
     expect(getRequestBaseUrl(req)).toBe('http://127.0.0.1:3000');
   });
 
-  it('respects explicit X-Forwarded-Proto even if Host looks like localhost', () => {
+  it('respects explicit X-Forwarded-Proto even if Host looks like localhost (TRUST_PROXY_HEADERS=true)', () => {
+    process.env.TRUST_PROXY_HEADERS = 'true';
     const req = makeReq('http://localhost:3000/api/auth/login', {
       'x-forwarded-host': 'demo.quantika.org',
       'x-forwarded-proto': 'http',
