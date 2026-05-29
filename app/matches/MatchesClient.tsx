@@ -348,7 +348,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
   return (
     <>
       <LiveStrip jobs={jobs} />
-      <div className="space-y-4 overflow-x-hidden">
+      <div className="space-y-4">
 
         {nowUtc && (
           <div className="flex justify-end">
@@ -858,7 +858,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                               <span className="w-7 h-7 rounded-[7px] bg-ds-accent text-ds-accent-fg flex-shrink-0 inline-flex items-center justify-center font-mono text-[11.5px] font-medium">
                                 {vesselInitials(match.vessel_id)}
                               </span>
-                              <span className="font-medium text-sm tracking-[-0.005em] truncate">{match.vessel_id}</span>
+                              <span className="font-medium text-sm tracking-[-0.005em] break-words">{match.vessel_id}</span>
                             </div>
                           </td>
                         )}
@@ -893,7 +893,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                               <span className="w-7 h-7 rounded-[7px] bg-ds-accent text-ds-accent-fg flex-shrink-0 inline-flex items-center justify-center font-mono text-[11.5px] font-medium">
                                 {vesselInitials(match.vessel_id)}
                               </span>
-                              <span className="font-medium text-sm tracking-[-0.005em] truncate">{match.vessel_id}</span>
+                              <span className="font-medium text-sm tracking-[-0.005em] break-words">{match.vessel_id}</span>
                             </div>
                           </td>
                         ) : (
