@@ -348,7 +348,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
   return (
     <>
       <LiveStrip jobs={jobs} />
-      <div className="space-y-4 overflow-x-hidden">
+      <div className="space-y-4">
 
         {nowUtc && (
           <div className="flex justify-end">
@@ -584,7 +584,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
           </div>
         ) : density === 'cards' ? (
           /* ===== CARDS VIEW ===== */
-          <>
+          <div className="overflow-x-hidden">
             {/* Select all header */}
             <div className="flex items-center gap-2 px-1 py-1">
               <input
@@ -791,7 +791,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                 </li>
               ))}
             </ul>
-          </>
+          </div>
         ) : (
           /* ===== TABLE VIEW ===== */
           <section className="bg-ds-surface border border-ds-border rounded-[14px] overflow-hidden" aria-label="Matches table">
@@ -815,7 +815,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                     ).map((h, i) => (
                       <th
                         key={i}
-                        className={`font-mono text-[10.5px] tracking-[0.14em] uppercase text-ds-text-muted font-medium py-[14px] px-3 whitespace-nowrap ${i === 0 ? 'text-left pl-5' : i >= 3 && i <= 6 ? 'text-right' : 'text-left'} ${i === 7 ? 'pr-5' : ''}`}
+                        className={`font-mono text-[10.5px] tracking-[0.14em] uppercase text-ds-text-muted font-medium py-[14px] px-3 whitespace-nowrap ${i === 0 ? 'text-left pl-5' : i === 3 || i === 4 || i === 6 ? 'text-right' : 'text-left'} ${i === 7 ? 'pr-5' : ''}`}
                       >
                         {h}
                       </th>
@@ -858,7 +858,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                               <span className="w-7 h-7 rounded-[7px] bg-ds-accent text-ds-accent-fg flex-shrink-0 inline-flex items-center justify-center font-mono text-[11.5px] font-medium">
                                 {vesselInitials(match.vessel_id)}
                               </span>
-                              <span className="font-medium text-sm tracking-[-0.005em] truncate">{match.vessel_id}</span>
+                              <span className="font-medium text-sm tracking-[-0.005em] break-words">{match.vessel_id}</span>
                             </div>
                           </td>
                         )}
@@ -893,7 +893,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                               <span className="w-7 h-7 rounded-[7px] bg-ds-accent text-ds-accent-fg flex-shrink-0 inline-flex items-center justify-center font-mono text-[11.5px] font-medium">
                                 {vesselInitials(match.vessel_id)}
                               </span>
-                              <span className="font-medium text-sm tracking-[-0.005em] truncate">{match.vessel_id}</span>
+                              <span className="font-medium text-sm tracking-[-0.005em] break-words">{match.vessel_id}</span>
                             </div>
                           </td>
                         ) : (

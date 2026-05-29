@@ -30,13 +30,23 @@ CRITICAL DOCUMENT vs VESSEL_POSITION DISTINCTION:
 - DOCUMENT applies ONLY when the email's primary purpose is to forward or acknowledge receipt of a standalone document (certificate, B/L, invoice). If the email both offers a vessel AND attaches terms, classify as VESSEL_POSITION.
 - Similarly, a CARGO_INQUIRY that attaches rate sheets or cargo specs remains CARGO_INQUIRY.
 
+ORIGINAL SENDER RULES — READ CAREFULLY:
+
+CRITICAL: original_sender must come from the FROM: line of the relevant email, NEVER from TO: or Cc:.
+- Determine the relevant FROM: line based on email type (see FORWARDED EMAIL HANDLING below).
+- If the FROM: line contains a personal name (e.g. "John Smith <john@company.com>"), use that name as original_sender.
+- If the FROM: line contains ONLY a company/department name with no personal name (e.g. "Varan Shipping - Chartering Dept. <chartering@varanshipping.com>"), use that company/department name as original_sender — do NOT fabricate or infer a personal name.
+- NEVER use the TO: or Cc: recipient as original_sender. The recipient is the party you work for, not the sender.
+- NEVER infer personal names from company names, domain names, or prior knowledge.
+- If no personal name can be identified, original_sender = the company/display name from the FROM: line.
+
 FORWARDED EMAIL HANDLING:
 - If the email body contains forwarded content (indicated by "---------- Forwarded message ---------", "From:", "Fwd:", "FW:", or similar), determine the original_sender based on the EMAIL TYPE:
   • CARGO_INQUIRY / TCT_REQUEST: original_sender = the author of the inner/forwarded message (e.g. the cargo owner or shipper requesting a vessel). Extract original_sender_company from the INNER message's signature.
   • VESSEL_POSITION: original_sender = the FORWARDER — the broker who circulated the vessel position to your team. This is your trading counterparty for fixing. The inner shipowner details are secondary and typically disclosed only once negotiations proceed. Extract original_sender_company from the OUTER/FORWARDER's signature.
   • DOCUMENT / VESSEL_CERTIFICATE: original_sender = the FORWARDER (the person who sent the outer email to the team requesting action like "please acknowledge receipt") — NOT the inner document issuer. Extract original_sender_company from the OUTER/FORWARDER's signature.
 - The "from" field in input may be the person who forwarded, not the original sender.
-- original_sender_company: ALWAYS read from the email SIGNATURE block (lines after the sender's name listing job title and company), NOT from the email address domain. The signature contains the FULL legal entity name. Copy it EXACTLY including all suffixes. Examples: "Saudi Bulk Traders Co." (NOT "Saudi Bulk"), "Atlas Maritime S.A." (NOT "Atlas Maritime"), "Royal Gulf Phosphates LLC" (NOT "RG Phosphates"). Only use email domain as last-resort fallback if NO signature block exists.
+- original_sender_company: ALWAYS read from the email SIGNATURE block (lines after the sender's name listing job title and company), NOT from the email address domain. The signature contains the FULL legal entity name. Copy it EXACTLY including all suffixes. Examples: "Saudi Bulk Traders Co." (NOT "Saudi Bulk"), "Atlas Maritime S.A." (NOT "Atlas Maritime"), "Royal Gulf Phosphates LLC" (NOT "RG Phosphates"). Only use email domain as last-resort fallback if NO signature block exists. NEVER append city/country information that is not present in the signature.
 
 IMPORTANT CLASSIFICATION HINTS:
 - If subject contains "certificate", "cert", "P&I", "class cert", "BL", "invoice", "packing list" AND the body's main content is forwarding that document → DOCUMENT
@@ -57,7 +67,7 @@ Also determine:
 - urgency — apply these rules BY CATEGORY:
   • CARGO_INQUIRY: "high" if laycan opens within 30 days AND the laycan dates are specific enough to act on (a definite date or narrow window). "medium" if laycan > 30 days away OR laycan dates are genuinely TBD/TBC/pending (even if the rough window is within 30 days — you cannot start vessel search without a committed date range). NOTE: "low" is NOT valid for CARGO_INQUIRY — use "medium" as the minimum. Rule: "End May / Early June (exact dates TBC)" → medium (TBC dominates even though the approximate window is within 30 days). TEMPLATE PLACEHOLDERS: If laycan dates contain unresolved template tokens (e.g. {{LAYCAN_START}}, {{LAYCAN_END}}, {{LAYCAN_MONTH}}), treat them as TBD — urgency = "medium".
   • TCT_REQUEST: "high" if delivery/laycan opens within 20 days OR explicit urgency language. "medium" otherwise. NOTE: "low" is NOT valid for TCT_REQUEST.
-  • VESSEL_POSITION: "high" ONLY IF open date is within 5 days OR email contains explicit urgency language ("last chance", "firm offer expiry", "deadline today"). "medium" for ALL other vessel position circulars — a position circular is the normal trading flow; the default is "medium" unless the open window is imminent. "low" is NOT valid for VESSEL_POSITION.
+  • VESSEL_POSITION: DEFAULT = "medium". Use "high" ONLY when BOTH: (a) open date is literally within 5 calendar days from today, AND (b) you can confirm this from an explicit date in the email. Use "high" also for explicit urgency phrases ("last chance", "firm offer expiry", "deadline today", "firm for X hours"). ALL other vessel position circulars — including open dates 7–30+ days out, fleet lists, circulars with no date — are "medium". "low" is NOT valid for VESSEL_POSITION. DO NOT upgrade to "high" just because a vessel is opening soon — 30-day open positions are normal market flow. DO NOT upgrade to "high" for fleet lists or MPP circulars.
   • FIXTURE_RECAP: always "high" (subs deadline running, requires acknowledgement within hours).
   • CLIENT_REPLY: "high" if sub-lift notification ("subs lifted", "subjects lifted") or has explicit reply deadline (e.g. "revert by COB today", "within 24h"). "medium" otherwise.
   • DOCUMENT / VESSEL_CERTIFICATE: "low" (informational, no urgent action).

@@ -39,6 +39,7 @@ NOW the four types:
      • "offer firm parcels for MV X / MV Y" / "offer cargo for MV X / MV Y" — slash separates MULTIPLE vessels each seeking cargo. EXTRACT ALL named vessels as separate items. Example: "Please offer firm parcels for: MV SEA BREEZE DWCC 6600 / MV SEA PIONEER DWCC 5900 / OPEN GREECE" → items=[MV SEA BREEZE, MV SEA PIONEER].
      • Any phrase "offer firm for" / "propose for" / "parcels for" / "pls offer for" preceding FULL VESSEL SPECS (DWT/DWCC + flag/built/IMO/draft) — when specific vessel specs immediately follow such a phrase, EXTRACT the vessel. Do NOT classify as cargo inquiry.
      • Slash-separated vessel spec format: a line using "/" as a field separator (e.g. "M/V AVAT 1 BUILT 2020 - CHINA / CAMEROON FLAG / KRIBI / IMO: 1033822 / DWT: 9220 MT AT 5.20M DRAFT") — the "/" separates vessel particulars, NOT alternatives or multiple vessels. Extract all fields (built year, flag, open port, IMO, DWT, draft) from the slash-delimited format. This IS a vessel position circular — EXTRACT.
+     • TIME-LIMITED CHARTER OFFER: "chrtrs full terms a/e as fllws for X mins" / "a/e as follows for X hours" / "charterers' terms enclosed for X minutes" WITH full vessel specs (DWT/DWCC, LOA/BEAM, flag, class) — the vessel is being offered with charterers' terms valid for a limited window. EXTRACT all vessel particulars. Example: "Please find attached chrtrs full terms a/e as fllws for 30 mins: MV STAD, SID, BOX, 1989 BLT, DWT/DWCC 3222/3050 MT, VANUATU FLAG..." → EXTRACT MV STAD.
 
    EXAMPLE — vessel seeking cargo (EXTRACT, not cargo inquiry):
    "Dear Sirs, Please propose suitable cargo for below open vessel:
@@ -149,6 +150,130 @@ Rule: when the source text contains the exact value — even embedded in a compo
 
 NUMERIC FIELDS — SPECIFIC RULE:
 
+MISSING FIELD = NULL: If a numeric field is NOT mentioned anywhere in the email, set that field to null (plain null — NOT a ConfidenceField object). Do NOT return {value: 0, confidence: "uncertain", source_text: ""} — a value of 0 is semantically wrong for DWT, built year, LOA, beam, etc. Only return a ConfidenceField object when you have actual source text.
+EXAMPLES:
+  - built NOT in email → built: null  ✓  (NOT built: {value: 0, confidence: "uncertain", source_text: ""} ✗)
+  - beam NOT in email → beam: null   ✓
+  - grt NOT in email → grt: null     ✓
+
+IMO CARGO / DANGEROUS GOODS DESIGNATION (two distinct systems — do NOT confuse):
+
+System A — MARPOL Annex II cargo type (ROMAN NUMERALS only — applies to chemical/NLS tankers):
+  "IMO I", "IMO II", "IMO III", "Type I", "Type II", "Type III" — MARPOL Annex II cargo-type certificates.
+  These certify a CHEMICAL TANKER or NLS (noxious liquid substance) tanker for bulk liquid hazardous cargo of a given pollution category.
+  → Capture in special_features as "MARPOL IMO Type [I/II/III] certified"
+  → "IMO I Fitted", "Type I Tanker" → special_features=["MARPOL IMO Type I certified"]
+  → NEVER assign to the "imo" field (that field is the vessel's IMO registration number only)
+  → NEVER apply to MPP, general cargo, bulk carrier, or coaster vessels — MARPOL Annex II is for tankers only.
+
+System B — IMDG Code dangerous goods class (Arabic numerals — applies to ALL vessel types):
+  "IMO 1", "IMO 1.1", "IMO 2", "IMO 1.4S", "IMO 2.1", "IMO 3" etc. — IMDG Code class designations for PACKAGED dangerous goods carriage certification.
+  → Arabic integer WITHOUT decimal: "IMO 1", "IMO 2", "IMO 3" = IMDG Class 1/2/3 certification → "IMDG Class [N] certified"
+  → Arabic WITH decimal: "IMO 1.1", "IMO 2.1" = IMDG Class subdivision → "IMDG Class [X.X] certified"
+  "IMO 1" = Class 1: vessel certified to carry IMDG Class 1 packaged dangerous goods (explosives).
+  "IMO 1.1" = Class 1, Division 1.1: mass explosion hazard.
+  → "IMO 1 Fitted" on an MPP/GC/bulk/coaster → special_features=["IMDG Class 1 certified"]
+  → "IMO 1.1 & App B Fitted" → special_features=["IMDG Class 1.1 certified", "Appendix B fitted"]
+  → NEVER annotate IMDG classes as "MARPOL" — completely different regulatory systems.
+
+Disambiguation rule:
+  • Roman numeral (I, II, III) → MARPOL Annex II Type (System A) — chemical/NLS tankers ONLY
+  • Arabic number WITH decimal (1.1, 2.1, 3.1) → IMDG Code class (System B)
+  • Arabic integer WITHOUT decimal (1, 2, 3) on an MPP / general cargo / bulk / coaster → IMDG Class (System B) → "IMDG Class N certified"
+  KEY: "IMO 1 Fitted" on a dry cargo MPP/GC vessel = IMDG Class 1 (explosives carriage approval), NOT MARPOL Type I. MARPOL Type I is a tanker certification. A BOX-hold coaster with "IMO 1 Fitted" is NOT a chemical tanker.
+
+CRITICAL — NEVER omit special_features when the email contains:
+  "IMO [digit.digit]" (e.g. "IMO 1.1", "IMO 2.1") → IMDG class → MUST be in special_features
+  "App B" or "Appendix B" → MUST be in special_features as "Appendix B fitted"
+  "CO2 fitted", ice class (e.g. "Ice 1A"), grabs, cranes → MUST be in special_features
+  "IMO 1.1 & App B Fitted" → special_features=["IMDG Class 1.1 certified", "Appendix B fitted"]
+  WRONG: special_features=[] or special_features=null when these tokens appear in the email.
+
+HOLD GEOMETRY vs VESSEL TYPE:
+"BOX", "SID" (Single Integral Double-bottom), "box shaped", "box hold" describe the SHAPE OF THE CARGO HOLD — not the vessel type.
+  → vessel_type for a small coaster with a box-shaped single hold (DWT < 5,000) = "GENERAL_CARGO"
+  → Put hold geometry in special_features: "box-shaped hold", "single integral double-bottom (SID)"
+  ✗ vessel_type="BOX" from "SID, BOX, 1989 BLT"
+  ✓ vessel_type="GENERAL_CARGO", special_features=["SID box-shaped hold"]
+  ✗ vessel_type="BOX" from "box shaped 1 single hold"
+  ✓ vessel_type="GENERAL_CARGO", special_features=["box-shaped single hold"]
+
+CRITICAL — BOX/SID ANNOTATION IS MANDATORY: When the email contains "SID", "BOX", or "box shaped" describing the hold, you MUST add the hold-geometry annotation to special_features. Omitting it is a HIGH-severity bug.
+  ✗ special_features=[] when "SID, BOX" in vessel spec → WRONG
+  ✗ special_features=["Appendix B fitted"] when "SID, BOX" in spec but BOX annotation omitted → WRONG
+  ✓ special_features=["SID box-shaped hold", "Appendix B fitted"] when both present → CORRECT
+  ✓ special_features=["box-shaped single hold", "IMDG Class 1.1 certified"] for "box shaped 1 single hold" + "imo 1.1"
+
+Examples:
+  "3.600 CC / BOX / IMO 1 Fitted" → dwcc=3600, vessel_type="GENERAL_CARGO", special_features=["box-shaped hold", "IMDG Class 1 certified"]
+  "SID, BOX, 1989 BLT, DWT/DWCC 3222/3050" → vessel_type="GENERAL_CARGO", special_features=["SID box-shaped hold"], built=1989, dwt_summer=3222, dwcc=3050
+  "box shaped 1 single hold" → vessel_type="GENERAL_CARGO", special_features=["box-shaped single hold"]
+  "IMO 1 Fitted" / "App B Fitted" on an MPP/GC vessel → special_features=["IMDG Class 1 certified", "Appendix B fitted"]
+  "IMO 1.1 & App B Fitted" → special_features=["IMDG Class 1.1 certified", "Appendix B fitted"]
+
+FIELD TYPE GUARDS — avoid these common field-confusion errors:
+
+BUILT (year of build):
+  Only extract a year explicitly labeled "built", "BLT", "year of build", "YOB", "Yr.Built" or similar vessel spec label.
+  NEVER extract from: email send date, email subject-line date, forwarded-message "Sent:" date, laycan dates, cargo dates, charter-party dates.
+  ✗ built=2025 from subject "Ocean7 Projects — 21 May 2025" → correct: built=null
+  ✗ built=2021 from "LAYCAN: 23-26 FEB 2021" → correct: built=null (that is a cargo laycan, not a build year)
+
+LOA AND BEAM (linear dimensions in meters):
+  Only extract values in LINEAR METERS labeled "LOA", "L.O.A.", "length overall", "beam", "BM", "breadth", "width".
+  NEVER assign sqm (square meters = deck area) to loa or beam. sqm is area; loa/beam are length.
+  ✗ loa=2900 or beam=2900 from "2900sqm" → correct: loa=null, deck_capacity=2900
+  ✗ beam=1200 from "1200sqm" → correct: beam=null, deck_capacity=1200
+  "LOA/BEAM/DEPTH MOULDED 94.5/14.00/7,00 MTR" → loa=94.5 m, beam=14.0 m ✓
+
+DRAFT_MAX (maximum draft in meters):
+  Only extract values in meters with explicit label "draft", "max draft", "DFT", "draught", "drft", "max. draught", or as part of "DWT X mts at Y.Ym draft".
+  NEVER extract from: cbm grain capacity, cbft bale capacity, speed in knots (kn/knts/knots), DEPTH MOULDED.
+  ✗ draft_max=13 from "13 knts" (that is speed in knots) → correct: draft_max=null, speed_laden=13
+  ✗ draft_max=9600 from "9,600 cbm" (grain capacity) → correct: draft_max=null, grain_capacity=9600
+  DEPTH MOULDED vs DRAFT: "DEPTH MOULDED" (or "D.M." with dots) is the structural depth of the vessel shell — it is NOT the operating draft.
+  ✗ draft_max=7 from "LOA/BEAM/DEPTH MOULDED 94.5/14.00/7,00 MTR" → WRONG (DEPTH MOULDED ≠ draft)
+  ✓ loa=94.5 m, beam=14.0 m from this string; draft_max=null (no "draft" label present)
+  DESIGN MAXIMUM DRAFT (DM): When vessel dimensions use the 4-value "DRAFT/DM X/Y" notation (LOA/BEAM/DRAFT/DM), "DRAFT" is the operational draft and "DM" is the Design Maximum draft → draft_max = DM (the last value).
+  ✗ draft_max=4.70 from "LOA/BEAM/DRAFT/DM 89,21/12,5M/4,70/6,35M" → WRONG (4.70 = DRAFT field, not DM)
+  ✓ draft_max=6.35 from "LOA/BEAM/DRAFT/DM 89,21/12,5M/4,70/6,35M" (6.35 = DM = Design Maximum draft)
+  KEY: "D.M." (with dots, 3-value string) = DEPTH MOULDED (structural depth, NOT draft); "DM" in "DRAFT/DM" pair (4-value string) = Design Maximum Draft.
+  PORT-SPECIFIC ARRIVAL DRAFT EXCEPTION: When a draft value is qualified by a destination port name, "arrival [PORT]", "on arrival [PORT]", "[PORT] draft", or "arrival [COUNTRY]", it is a PORT-SPECIFIC OPERATIONAL CONSTRAINT, not the vessel's structural design maximum draft. Set draft_max=null.
+  ✗ draft_max=6.9 from "DWCC at 6.9 m Georgetown draft" → null (port-specific loading constraint)
+  ✗ draft_max=6.9 from "OWNERS WARRANT TO LOAD WITH 6.9 METER DRAFT ARRIVAL GUAYANA" → null (arrival-at-port warranty)
+  ✓ draft_max=5.5 from "Max Draft 5,50 metres" (no port qualifier) → structural maximum
+
+DWT_SUMMER vs DWCC:
+  dwt_summer: only from text labeled "DWT", "DEADWEIGHT", "SUMMER DWT", "D/W", or the LEFT value in "DWT/DWCC X/Y".
+  NEVER use DWCC as dwt_summer. DWCC is always less than DWT.
+  ✗ dwt_summer=4500 from "DWCC 4500 mtons" → correct: dwcc=4500, dwt_summer=null
+  "DWT/DWCC 3222/3050" → dwt_summer=3222, dwcc=3050 ✓
+
+CARGO / BAG DIMENSIONS:
+  Bag/cargo dimensions (e.g., "110X110X65 CM" for big bags, "135x125x115 cm") are CARGO PACKAGE dimensions in centimeters, NOT vessel dimensions in meters.
+  NEVER assign cargo bag dimensions to loa, beam, draft_max, or any vessel field.
+  ✗ loa=110, beam=110 from "110X110X65 CM big bags" → correct: loa=null, beam=null
+  ✗ loa=1.1 from "ABT 110X110X65 CM" (centimeters divided by 100) → correct: loa=null, beam=null
+
+GRAIN/BALE CAPACITY UNITS:
+  grain_capacity and bale_capacity are ALWAYS in cubic meters (CBM/cbm).
+  When source says "cbft", "CBFT", "cuft", "ft³" → it is in cubic feet — convert to CBM: divide by 35.315.
+  ✗ grain_capacity=140000 from "GRAIN 140,000CBFT" (wrong — not converted)
+  ✓ grain_capacity=3963 from "GRAIN 140,000CBFT" (140000 ÷ 35.315 ≈ 3963 cbm), confidence='interpreted', source_text="GRAIN 140,000CBFT"
+  When source says "CBM" or "cbm" → use the number directly.
+  "GRAIN/BALE 3000/2950 CBM" → grain_capacity=3000, bale_capacity=2950
+
+GRAIN CAPACITY ANTI-FABRICATION:
+  Extract grain_capacity ONLY from text explicitly labeled "grain", "grain cap", "grain cubic", "GKC", or "GRAIN/BALE X/Y" format.
+  When the email states only bale capacity ("bale X cbm") with no separate grain figure → grain_capacity=null.
+  NEVER set grain_capacity = bale_capacity by default — grain and bale are distinct measurements.
+  ✗ grain_capacity=2851 when email says only "bale 2851 cbm" → WRONG (grain not stated)
+  ✓ grain_capacity=null when only bale capacity is present in the email
+  ✓ grain_capacity=3000, bale_capacity=2950 from "GRAIN/BALE 3000/2950 CBM"
+  EXCEPTION — COMBINED GRAIN/BALE FORMAT: When source says "grain/bale X" (single figure for both), grain = bale = X. Both MUST be populated.
+  ✓ grain_capacity=2851, bale_capacity=2851 from "hold cap. grain/bale abt 100682 cbft" (100682 ÷ 35.315 ≈ 2851 cbm)
+  ✗ grain_capacity=null from "hold cap. grain/bale abt 100682 cbft" → WRONG (combined notation = both equal)
+
 For numeric fields (DWT, DWCC, LOA, beam, draft, built-year, grain capacity, etc.):
 
 - confidence='confirmed' ALWAYS when: the source text contains the exact number with no hedge word. Example: "DWT: 3,850 mts" → {value: 3850, confidence: 'confirmed'}. Example: "Built: 2003" → {value: 2003, confidence: 'confirmed'}. Example: "LOA 85.6m" → {value: 85.6, confidence: 'confirmed'}.
@@ -218,6 +343,7 @@ Extract per vessel:
 - dwcc: deadweight cargo capacity
   DWCC EXTRACTION RULE: Extract dwcc ONLY when the email explicitly states a DWCC value. Recognized forms: "DWCC 28,500 MT", "deadweight cargo capacity: 28,500", "3.600 CC" (where CC = Cargo Capacity; note "." may be a European thousands separator → 3.600 = 3,600), "28k CC", "DWCC" in any case. Do NOT infer dwcc from dwt_summer when dwcc is not explicitly mentioned. When dwcc is not stated → set dwcc = null.
 - draft_max: maximum draft in meters. IMPORTANT: if the email gives draft only as part of the DWCC line (e.g. "DWCC 11,800 mts at 7.8m draft"), use that value as draft_max with confidence='interpreted' and note in source_text that it is the DWCC draft — the vessel's structural maximum draft may differ. Only use confidence='confirmed' if the email explicitly states "Max draft: X" or "Draft summer: X".
+  PORT-SPECIFIC ARRIVAL DRAFT: When draft is qualified by a port name or arrival context ("Georgetown draft", "arrival Guyana", "arrival draft at [PORT]"), it is an OPERATIONAL port constraint — NOT the structural design max. Set draft_max=null in this case (see DRAFT_MAX guard above).
 - loa: length overall in meters
 - beam: beam in meters
 - grt: gross register tonnage
@@ -241,6 +367,14 @@ Extract per vessel:
   header in addition to the body. Do not return "unknown" or any free-text;
   if not present return null. Plain field (not a ConfidenceField object).
 - open_position: port or area where vessel is/will be available
+LAYCAN ≠ OPEN_DATE: "LAYCAN: 23-26 FEB 2021" is a CARGO LOADING WINDOW — NOT the vessel's open_date. Do NOT use a cargo laycan as the vessel's open_date. open_date comes from the vessel's own schedule: "ETA Antalya 24-25/2" → display="24-25 Feb", "open Rotterdam spot" → value='spot'. Only use laycan start as open_date fallback (confidence='interpreted') when the email has a laycan AND no vessel schedule/ETA.
+  ✗ open_date from "LAYCAN: 23-26 FEB 2021" when email also says "ITINERARY: eta Antalya 24-25/2" → WRONG
+  ✓ open_date display="24-25 Feb" from "eta Antalya 24-25/2" → vessel schedule takes priority
+
+OUTPUT SCHEMA DISCIPLINE: Only return fields listed in the extraction schema. Do NOT add unlisted fields such as 'operator', 'manager', 'trading_name', or 'company'. If a vessel operator's name appears only in the email signature or "From:" line with no explicit "Owners:" / "Manager:" / "Operator:" label in the body, do NOT populate owner or p_and_i from the signature — set those fields to null.
+  ✗ operator="AGANTA SHIPPING AND TRADING LLC." inferred from email signature → WRONG (field not in schema)
+  ✓ operator field: does not exist — omit entirely from output
+
 - open_date: date vessel is available. If given as a range WITH explicit year in slash notation (e.g. "10/12 May 2026"), this is a LAYCAN WINDOW (earliest open / latest open). Store the value as a structured object: { open: "2026-05-10", close: "2026-05-12", display: "10/12 May 2026" } with confidence='interpreted' and preserve the original notation in source_text. For a single date WITH explicit year (e.g. "open 15 May 2026"), store as { open: "2026-05-15", close: null, display: "15 May 2026" } with confidence='confirmed'.
 
   OPEN_DATE YEAR RULE — NO YEAR INFERENCE:
@@ -285,6 +419,14 @@ Extract per vessel:
 - consumption: IMPORTANT — if consumption values are preceded by "abt", "about", "approx" or similar hedge, use confidence='interpreted' for the consumption field. Do NOT use confidence='confirmed' when the source text says "abt 18 MT IFO". This is a contractual qualifier — misrepresenting consumption as confirmed affects charter negotiations.
 - deck_capacity: deck cargo capacity (MT or sqm)
 - special_features: array of notable vessel features. MUST be populated from any of: onboard equipment notes (grabs, bulldozers, tank-cleaning capability), suitability declarations ("Suitable for: X, Y, Z"), exclusions ("No grabs", "No tank-cleaning", "Food-grade only"), and standout characteristics ("Laker-dimensioned", "Ice-class 1A", "Box-shaped holds", "CO2 fitted"). Extract each as a separate array element. Do NOT leave special_features empty when such information is present in the email.
+  IMO CERTIFICATION: "Suitable for imo 1.1 cargoes" → special_features=["IMDG Class 1.1 certified"]; "IMO 1.1 & App B Fitted" → special_features=["IMDG Class 1.1 certified", "Appendix B fitted"]; "IMO 1 Fitted" on MPP/GC vessel → special_features=["IMDG Class 1 certified"].
+  NEVER return special_features=[] when "imo 1", "imo 1.1", "imo 2.1", "App B", "Co2 fitted", grabs, or ice class appear in the email.
+  ICE CLASS: When a vessel spec contains an ice class designation ("Ice 1A", "Ice 1B", "1A Super", "Ice A", "ICE CLASS 1C", etc.), extract it into special_features as "Ice class: [designation]". In pipe-compact format each comma-separated field is a separate spec — "Ice 1A" on its own is the ice class.
+  ✓ "IMO 1, 14700cbm, Ice 1A" → special_features=["IMDG Class 1 certified", "Ice class: 1A"]
+  ✗ special_features missing Ice annotation when "Ice 1A" is a comma-separated token in the spec line → WRONG
+  GREAT LAKES / SEAWAY FITTED: When vessel spec contains standalone "Lakes" token (referring to Great Lakes / St. Lawrence Seaway), extract as "Great Lakes/Seaway fitted" in special_features.
+  ✓ "IMO 1, 18700 cbm, Lakes" → special_features=["IMDG Class 1 certified", "Great Lakes/Seaway fitted"]
+  ✗ special_features missing "Great Lakes/Seaway fitted" when "Lakes" appears as a bare token in the vessel spec → WRONG
 
 LAST_CARGOES EXAMPLES:
 
@@ -336,8 +478,13 @@ Input email body (fragment):
 Output for last_cargoes:
   {value: "grain, bauxite, iron ore", confidence: "confirmed", sourceText: "last loads: grain, bauxite, iron ore"}
 
-FIXTURE RECAP — open_position derivation:
-When extracting from a fixture recap, derive \`open_position\` from the load port:
+OPEN_POSITION PRIORITY RULE:
+If the email EXPLICITLY states the vessel's current location with a label such as "Present Position:", "Current Position:", "PP:", "Presently at:", or "Position: [PORT]", ALWAYS use that as open_position with confidence='confirmed'. This takes priority over load port derivation, itinerary ETAs, and the fixture-recap rule below.
+  ✓ open_position="Algiers" from "PRESENT POSITION: At Algiers, discharging bananas" — confirmed
+  ✗ open_position="Antalya" from load port when email says "PRESENT POSITION: At Algiers" — WRONG
+
+FIXTURE RECAP — open_position derivation (ONLY when no explicit Present Position label exists):
+When extracting from a fixture recap with NO explicit "Present Position:" label, derive \`open_position\` from the load port:
 the vessel will be (or was) at the load port at laycan start. Use confidence='interpreted',
 and source_text quoting the load port mention (e.g. "Load: Iskenderun").
 
