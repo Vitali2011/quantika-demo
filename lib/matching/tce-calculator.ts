@@ -38,10 +38,12 @@ export interface TceEstimate {
   freight_rate_source: 'estimated' | 'manual';
 }
 
-// Parse a leading number from strings like "12.5 knots", "25 mt/day"
-export function parseLeadingNumber(s: string | null | undefined): number {
-  if (!s) return 0;
-  const m = s.match(/(\d+(?:\.\d+)?)/);
+// Parse a leading number from values like "12.5 knots", "25 mt/day", or a raw
+// number (LLM-parsed fields can arrive as numbers, not strings).
+export function parseLeadingNumber(s: string | number | null | undefined): number {
+  if (s == null) return 0;
+  if (typeof s === 'number') return Number.isFinite(s) ? s : 0;
+  const m = String(s).match(/(\d+(?:\.\d+)?)/);
   return m ? Number(m[1]) : 0;
 }
 
