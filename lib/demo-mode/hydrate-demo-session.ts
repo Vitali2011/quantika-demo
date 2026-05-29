@@ -3,6 +3,7 @@ import { getStore } from '@/lib/session-store';
 import { updateSession } from '@/lib/session';
 import { buildProcessedEmails } from '@/lib/classification-service';
 import { deriveMatchLevel } from '@/lib/sailing/match-scoring';
+import { deleteOrphanSessionMatches } from '@/lib/matching/matches-repository';
 import { logger } from '@/lib/logger';
 import type {
   Email, Classification, ParsedCargo, ParsedVessel, ParsedFixtureRecap, Match, ScoreBreakdown, SessionData,
@@ -82,7 +83,10 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
   }
 
   const matchRows = db.prepare(
-    `SELECT cargo_id, vessel_id, score, reason, reason_structured FROM matches`,
+    // Only the seeded snapshot rows (user_id IS NULL). Per-session copies that
+    // persistSessionMatches writes (user_id = sessionId) must NOT be re-read here,
+    // or the demo's match set would grow/duplicate with every login.
+    `SELECT cargo_id, vessel_id, score, reason, reason_structured FROM matches WHERE user_id IS NULL`,
   ).all() as MatchRow[];
 
   const matches: Match[] = matchRows.map((r) => ({
@@ -114,6 +118,13 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
 
 export function hydrateDemoSession(sessionId: string): void {
   const db = getStore().getDatabase();
+  // Prune per-session match copies left by sessions that have ended. persistSessionMatches
+  // writes ~436 copies (user_id = sessionId) on every /dashboard and /matches render; nothing
+  // removes them when the session expires, so demo-seed.db grows ~436 rows per login. This
+  // keeps the table bounded to live sessions and, after deploy, clears the accumulated bloat
+  // on the first logins. Seeded rows (user_id IS NULL) — which buildDemoSessionBlob reads —
+  // are authoritative and never touched.
+  deleteOrphanSessionMatches(db);
   const blob = buildDemoSessionBlob(db);
   if (blob.emails.length === 0) {
     logger.warn({ sessionId }, 'demo hydrate: 0 emails — demo-seed.db may be empty/incomplete');

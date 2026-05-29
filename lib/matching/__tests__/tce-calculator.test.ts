@@ -49,6 +49,15 @@ describe('parseLeadingNumber', () => {
   it('returns 0 for undefined', () => {
     expect(parseLeadingNumber(undefined)).toBe(0);
   });
+
+  it('returns a raw number unchanged (LLM-parsed fields can be numbers, not strings)', () => {
+    expect(parseLeadingNumber(12.5)).toBe(12.5);
+    expect(parseLeadingNumber(0)).toBe(0);
+  });
+
+  it('returns 0 for a non-finite number', () => {
+    expect(parseLeadingNumber(NaN)).toBe(0);
+  });
 });
 
 describe('estimateFreightRate', () => {

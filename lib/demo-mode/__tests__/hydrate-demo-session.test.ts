@@ -34,6 +34,10 @@ function makeSeedDb(): Database.Database {
     VALUES ('e1','e2',88,'Good fit','shortlist',NULL,0,0,NULL)`).run();
   db.prepare(`INSERT INTO matches (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at, reason_structured)
     VALUES ('e1','e2b',66,'Possible fit','shortlist',NULL,0,0,NULL)`).run();
+  // A per-session copy (user_id != NULL), as persistSessionMatches writes on prod.
+  // buildDemoSessionBlob must IGNORE these and read only the seeded (NULL) rows.
+  db.prepare(`INSERT INTO matches (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at, reason_structured)
+    VALUES ('e1','e2',88,'session copy','shortlist','sess-xyz',0,0,NULL)`).run();
   return db;
 }
 
@@ -48,7 +52,8 @@ describe('buildDemoSessionBlob', () => {
     expect(blob.parsedCargos).toHaveLength(1);
     expect(blob.parsedVessels).toHaveLength(1);
     expect(blob.classifications).toHaveLength(1);
-    expect(blob.matches).toHaveLength(2);
+    expect(blob.matches).toHaveLength(2); // only seeded (user_id NULL) rows; the session copy is excluded
+    expect(blob.matches.every((m) => m.matchReasons[0] !== 'session copy')).toBe(true);
     expect(blob.matches[0]).toMatchObject({
       cargoEmailId: 'e1', cargoItemIndex: 0, vesselEmailId: 'e2',
       vesselItemIndex: 0, score: 88, matchLevel: 'good', matchReasons: ['Good fit'],
