@@ -1,5 +1,3 @@
-'use client';
-
 import Link from 'next/link';
 import { Card } from '@/design-system/primitives';
 import { KpiCard } from '@/components/market/KpiCard';
