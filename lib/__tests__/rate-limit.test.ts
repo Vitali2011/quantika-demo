@@ -61,6 +61,16 @@ describe('RateLimiter', () => {
     jest.useRealTimers();
   });
 
+  it('store size stays bounded under flood of unique keys (memory-DoS guard)', () => {
+    // Without a cap, an attacker rotating fake IPs forever would grow the
+    // internal Map unbounded → process OOM. The limiter must bound its store.
+    const limiter = new RateLimiter({ windowMs: 60_000, maxRequests: 5, maxEntries: 100 });
+    for (let i = 0; i < 1000; i++) {
+      limiter.check(`unique-ip-${i}`);
+    }
+    expect(limiter.size()).toBeLessThanOrEqual(100);
+  });
+
   it('gc removes stale keys', () => {
     jest.useFakeTimers();
     const limiter = new RateLimiter({ windowMs: 1_000, maxRequests: 5 });

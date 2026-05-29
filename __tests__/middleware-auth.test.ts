@@ -214,6 +214,30 @@ describe('middleware auth guard', () => {
       const otherRes = await runMiddleware(makeReqFromIp('10.0.0.2'));
       expect(otherRes.status).not.toBe(429);
     });
+
+    it('XFF spoofing — rotating leftmost hop does NOT bypass the limit; rightmost (Caddy-appended) IP is trusted', async () => {
+      // Behind Caddy reverse_proxy the real client IP is APPENDED as the
+      // rightmost X-Forwarded-For entry. The leftmost is client-controlled and
+      // can be rotated arbitrarily. The limiter must key on the rightmost hop.
+      const REAL_IP = '203.0.113.7';
+      const makeSpoofedReq = (spoofedLeftHop: string) =>
+        new NextRequest('http://localhost/api/auth/login', {
+          method: 'POST',
+          headers: { 'x-forwarded-for': `${spoofedLeftHop}, ${REAL_IP}` },
+        });
+
+      // 10 requests, each rotating the leftmost (claimed) IP, same rightmost real IP.
+      // With the buggy leftmost-keyed limiter, every request looks like a new IP
+      // and never throttles. With the rightmost-hop fix, all 10 share the same
+      // key and the 11th request — even with yet another fresh leftmost — is 429.
+      for (let i = 0; i < 10; i++) {
+        const res = await runMiddleware(makeSpoofedReq(`198.51.100.${i}`));
+        expect(res.status).not.toBe(429);
+      }
+
+      const blockedRes = await runMiddleware(makeSpoofedReq('192.0.2.99'));
+      expect(blockedRes.status).toBe(429);
+    });
   });
 
   describe('DEMO_AUTH_ENABLED=false', () => {

@@ -57,6 +57,17 @@ function isCsrfPath(pathname: string): boolean {
   return CSRF_PATHS.some(p => pathname.startsWith(p));
 }
 
+// Behind the prod Caddy reverse proxy the real client IP is APPENDED to
+// X-Forwarded-For as the rightmost hop (Caddy default — see ops/caddy/Caddyfile.demo).
+// The leftmost entries are sent by the client and trivially spoofable, so an
+// attacker rotating the leftmost value would otherwise bypass any IP-keyed limiter.
+// Read the rightmost hop only — it is the single trusted proxy's verdict on who the client is.
+function clientIpFromForwarded(headerValue: string | null): string | null {
+  if (!headerValue) return null;
+  const parts = headerValue.split(',').map((s) => s.trim()).filter(Boolean);
+  return parts.length > 0 ? parts[parts.length - 1] : null;
+}
+
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
 
@@ -102,8 +113,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
   // ── Login brute-force guard ────────────────────────────────────────────────
   if (pathname === '/api/auth/login' && request.method === 'POST') {
-    const forwarded = request.headers.get('x-forwarded-for');
-    const ip = forwarded ? forwarded.split(',')[0].trim() : 'anonymous';
+    const ip = clientIpFromForwarded(request.headers.get('x-forwarded-for')) ?? 'anonymous';
     const { allowed, retryAfterMs } = loginRateLimiter.check(ip);
     if (!allowed) {
       return NextResponse.json(
@@ -118,8 +128,8 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
   if (isAiRoute) {
     const sessionId = request.cookies.get('session_id')?.value;
-    const forwarded = request.headers.get('x-forwarded-for');
-    const key = sessionId ?? forwarded ?? 'anonymous';
+    const clientIp = clientIpFromForwarded(request.headers.get('x-forwarded-for'));
+    const key = sessionId ?? clientIp ?? 'anonymous';
 
     const { allowed, remaining, retryAfterMs } = aiRateLimiter.check(key);
 
