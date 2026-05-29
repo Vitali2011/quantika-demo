@@ -1,0 +1,25 @@
+{
+  "id": "etms-classify-adv-10",
+  "source_email_id": "etms-classify-adv-10",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "SPECIAL-days-stale",
+  "expected_behavior": "For a cargo enquiry dated 2026-03-20 with no reply, the parser must classify CARGO_INQUIRY, set is_unanswered true and compute days_without_reply from the email date to today (2026-05-29), i.e. approximately 70 days — it must NOT output 0 or a 365 default.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "cargo enq - bagged sugar Santos / Lattakia",
+    "from": "Carlos Mendes <c.mendes@atlanticobrokers.com.br>",
+    "date": "2026-03-20T09:25:00.000Z",
+    "body": "Dear Sirs,\r\n\r\nGd day. Kindly quote yr best freight idea for acct of our principals:\r\n\r\n- Cargo: sugar in 50kg bags\r\n- Qty: abt 22,000 mt 5% moloo\r\n- Load: 1sb Santos\r\n- Disch: 1sb Lattakia\r\n- Laycan: 05/12 Apr\r\n- Load 4,500 / disch 3,000 mt shex\r\n- 2.5% addcomm + 1.25%\r\n\r\nPls revert with frt per mt liner out. Trust to hear from you soon.\r\n\r\nBest regards,\r\nCarlos Mendes\r\nAtlantico Brokers Ltda"
+  },
+  "reference_output": {
+    "id": "etms-classify-adv-10",
+    "category": "CARGO_INQUIRY",
+    "urgency": "medium",
+    "confidence": 0.85,
+    "is_unanswered": true,
+    "days_without_reply": 70,
+    "original_sender": "Carlos Mendes",
+    "original_sender_company": "Atlantico Brokers Ltda"
+  }
+}

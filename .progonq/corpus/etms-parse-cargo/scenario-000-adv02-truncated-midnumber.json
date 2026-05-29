@@ -1,0 +1,48 @@
+{
+  "id": "etms-parse-cargo-adv-02",
+  "source_email_id": "etms-parse-cargo-adv-02",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A2-truncated",
+  "expected_behavior": "The email is cut off mid-number (\"abt 25,000 MT whe\"), so the parser MUST extract origin Constanta and the partial details with low confidence, set weight_mt to null or uncertain (NOT fabricate 25000 as confirmed), and NOT invent the missing discharge port.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "FW: cnst / open med - grain enq",
+    "from": "ETMS - Management <management@etm-services.net>",
+    "date": "2026-05-27T11:02:41.000Z",
+    "body": "\r\n-----Original Message-----\r\nFrom: Cereal Brokers SRL <ops@cerealbrokers.ro>\r\nSent: Wednesday, 27 May 2026 10:58\r\nTo: chartering <chartering@etm-services.net>\r\nSubject: cnst / open med - grain enq\r\n\r\nDear Sherif,\r\n\r\nGd day. Pls work hard on below firm cargo and revert your best:\r\n\r\nLoad 1 sb Constanta\r\nDisch 1 sb"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Constanța",
+          "confidence": "confirmed",
+          "source_text": "Load 1 sb Constanta"
+        },
+        "destination_port": {
+          "value": null,
+          "confidence": "uncertain",
+          "source_text": "Disch 1 sb"
+        },
+        "cargo_description": {
+          "value": null,
+          "confidence": "uncertain",
+          "source_text": "grain enq"
+        },
+        "weight_mt": {
+          "value": null,
+          "confidence": "uncertain",
+          "source_text": "Disch 1 sb"
+        },
+        "laycan": null,
+        "missing_info": [
+          "Email appears truncated mid-line after 'Disch 1 sb' — discharge port not stated",
+          "Cargo quantity not stated (only subject hints at grain)",
+          "Commodity not specified beyond subject 'grain enq'",
+          "Laycan / loading window not stated"
+        ]
+      }
+    ]
+  }
+}

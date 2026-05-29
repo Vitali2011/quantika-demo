@@ -1,0 +1,35 @@
+{
+  "id": "etms-parse-vessel-adv-05",
+  "source_email_id": "etms-parse-vessel-adv-05",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A5-conflicting",
+  "expected_behavior": "The circular gives two contradictory open dates for the same vessel (\"open Jeddah 10 May\" vs \"ready 20 May\"); the parser must extract MV RED SEA PEARL once, must not duplicate the vessel, and must surface the conflict by lowering open_date confidence to uncertain rather than silently picking one date as confirmed.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "MV RED SEA PEARL - open Jeddah",
+    "from": "Faisal Al-Harbi <chartering@arabiangulf-shipping.com>",
+    "date": "2026-05-24T07:33:50.000Z",
+    "body": "Dear Sirs,\r\n\r\nGood day. Pls propose suitable cargo for our Handysize below:\r\n\r\nMV RED SEA PEARL\r\nDWT 32,400 mts / DWCC 30,900 mts at 9.9m draft\r\nFlag: Marshall Islands, Built 2011, IMO 9556231\r\nGeared 4 x 30T MacGregor cranes\r\nGrain 42,000 cbm\r\n\r\nOpen Jeddah 10 May, spsb 1sb\r\n\r\n... however pls note master advises she is ready 20 May after completion of current discharge.\r\n\r\nL/C: bagged cement, clinker, gypsum\r\n\r\nBest rgds,\r\nFaisal"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": { "value": "MV RED SEA PEARL", "confidence": "confirmed", "source_text": "MV RED SEA PEARL" },
+        "imo": 9556231,
+        "flag": { "value": "Marshall Islands", "confidence": "confirmed", "source_text": "Flag: Marshall Islands" },
+        "built": { "value": 2011, "confidence": "confirmed", "source_text": "Built 2011" },
+        "dwt_summer": { "value": 32400, "confidence": "confirmed", "source_text": "DWT 32,400 mts" },
+        "dwcc": { "value": 30900, "confidence": "confirmed", "source_text": "DWCC 30,900 mts at 9.9m draft" },
+        "draft_max": { "value": 9.9, "confidence": "interpreted", "source_text": "DWCC 30,900 mts at 9.9m draft" },
+        "geared": true,
+        "crane_capacity": { "value": "4 x 30T", "confidence": "confirmed", "source_text": "Geared 4 x 30T MacGregor cranes" },
+        "grain_capacity": { "value": 42000, "confidence": "confirmed", "source_text": "Grain 42,000 cbm" },
+        "grain_capacity_unit": "cbm",
+        "open_position": { "value": "Jeddah", "confidence": "confirmed", "source_text": "Open Jeddah 10 May, spsb 1sb" },
+        "open_date": { "value": { "open": null, "close": null, "display": "10 May (per circular) / ready 20 May (per master) — conflicting" }, "confidence": "uncertain", "source_text": "Open Jeddah 10 May ... she is ready 20 May" },
+        "last_cargoes": { "value": "bagged cement, clinker, gypsum", "confidence": "confirmed", "source_text": "L/C: bagged cement, clinker, gypsum" }
+      }
+    ]
+  }
+}

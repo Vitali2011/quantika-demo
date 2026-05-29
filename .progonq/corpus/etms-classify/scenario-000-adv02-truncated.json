@@ -1,0 +1,25 @@
+{
+  "id": "etms-classify-adv-02",
+  "source_email_id": "etms-classify-adv-02",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A2-truncated",
+  "expected_behavior": "The parser must classify the visible content as CARGO_INQUIRY (cement clinker enquiry) and not crash or fabricate the cut-off tonnage/laycan beyond what is legible.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "cargo enq - clinker yanbu / chittagong",
+    "from": "Reem Al-Otaibi <reem@redseachartering.com>",
+    "date": "2026-05-27T11:02:50.000Z",
+    "body": "Dear Sirs,\r\n\r\nGd day. On behalf of our principals pls quote frt for:\r\n\r\n- Cement clinker in bulk\r\n- abt 32,000 mt 10% moloo\r\n- 1sb Yanbu / 1sb Chittagong\r\n- laycan 08/12 jun\r\n- load 12,000 mt shinc / disch 8,000 mt sh\r\n\r\nawaiting yr best frt idea per mt fio, addcomm 2.5 pct plus our 1.25 pct. also kindly advise if yr principals can stem the abt 25,000 MT whe"
+  },
+  "reference_output": {
+    "id": "etms-classify-adv-02",
+    "category": "CARGO_INQUIRY",
+    "urgency": "high",
+    "confidence": 0.82,
+    "is_unanswered": true,
+    "days_without_reply": 2,
+    "original_sender": "Reem Al-Otaibi",
+    "original_sender_company": "Red Sea Chartering"
+  }
+}

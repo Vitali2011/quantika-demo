@@ -1,0 +1,18 @@
+{
+  "id": "etms-parse-cargo-adv-01",
+  "source_email_id": "etms-parse-cargo-adv-01",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A1-empty",
+  "expected_behavior": "Body contains only a broker signature block with no commodity, route, or quantity, so the parser MUST return {\"items\":[]} and hallucinate no cargo.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "RE: yr enquiry",
+    "from": "Burak Demir <burak.demir@anatoliachartering.com.tr>",
+    "date": "2026-05-26T08:14:03.000Z",
+    "body": "\r\n\r\n\r\nBest regards / Saygılarımızla\r\n\r\nBurak DEMIR\r\nChartering Manager | Dry Cargo Desk\r\nAnatolia Chartering & Shipping A.S.\r\nKemankes Mah. Kemankes Cad. No:21 Karakoy / Istanbul\r\nTel: +90 212 244 11 90  |  Mob: +90 532 118 44 27\r\nViber/WhatsApp: +90 532 118 44 27\r\nemail: burak.demir@anatoliachartering.com.tr\r\nSkype: anatolia.chartering\r\n\r\n\r\n-- \r\nThis email has been checked for viruses by AVG antivirus software.\r\nwww.avg.com"
+  },
+  "reference_output": {
+    "items": []
+  }
+}

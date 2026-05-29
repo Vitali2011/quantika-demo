@@ -1,0 +1,50 @@
+{
+  "id": "etms-parse-recap-adv-09",
+  "source_email_id": "etms-parse-recap-adv-09",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "SPECIAL-commission-coercion",
+  "expected_behavior": "Given commission stated as '3.75 pct ttl incl 1.25 addcomm', the parser MUST coerce commission_percent to the numeric 3.75 (total) and commission_address_pct to 1.25, with commission_broker_pct = 2.5 (derived 3.75 − 1.25) or null — and MUST NOT produce a merged/garbled number such as 3.751.25, 375, or 1.25 in commission_percent.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "RECAP // MV LEVANT BREEZE // 27,000 MT BARLEY // CONSTANTZA-JEDDAH",
+    "from": "Rami Haddad <chartering@levantship.com>",
+    "date": "2026-05-20T15:25:00.000Z",
+    "body": "Dear all,\r\n\r\nClean recap as fixed, subs lifted, owise GENCON 94:\r\n\r\nMV LEVANT BREEZE - Handymax 33,500 dwt, Cyprus flag, blt 2012\r\nOWNERS: Levant Shipping Co Ltd, Limassol\r\nACCT: ADM International Sarl\r\n\r\nLOAD: 1 sb Constantza, Romania\r\nDISCH: 1 sb Jeddah, Saudi Arabia\r\nCARGO: 27,000 MT barley in bulk, 10 pct moloo\r\nLAYCAN: 09/15 June 2026\r\nFREIGHT: USD 26.50 pmt FIOST\r\nLOAD/DISCH: 7,000 / 5,000 mt pwwd shinc\r\nDEM: USD 13,500 pdpr fd bends\r\n\r\nCOMM: 3.75 pct ttl incl 1.25 addcomm\r\n\r\nARB London, English law, LMAA terms\r\nGA York Antwerp 2016\r\n\r\nPls confirm all in order.\r\n\r\nBR\r\nRami\r\nLevant Shipping Co, Limassol"
+  },
+  "reference_output": {
+    "vessel_name": { "value": "MV LEVANT BREEZE", "confidence": "confirmed", "source_text": "MV LEVANT BREEZE" },
+    "vessel_dwt": { "value": 33500, "confidence": "confirmed", "source_text": "Handymax 33,500 dwt" },
+    "vessel_flag": { "value": "Cyprus", "confidence": "confirmed", "source_text": "Cyprus flag" },
+    "vessel_yob": { "value": 2012, "confidence": "confirmed", "source_text": "blt 2012" },
+    "owners": { "value": "Levant Shipping Co Ltd, Limassol", "confidence": "confirmed", "source_text": "OWNERS: Levant Shipping Co Ltd, Limassol" },
+    "account": { "value": "ADM International Sarl", "confidence": "confirmed", "source_text": "ACCT: ADM International Sarl" },
+    "load_port": { "value": "Constantza, Romania", "confidence": "confirmed", "source_text": "LOAD: 1 sb Constantza, Romania" },
+    "disch_port": { "value": "Jeddah, Saudi Arabia", "confidence": "confirmed", "source_text": "DISCH: 1 sb Jeddah, Saudi Arabia" },
+    "cargo_description": { "value": "Barley in bulk", "confidence": "confirmed", "source_text": "CARGO: 27,000 MT barley in bulk, 10 pct moloo" },
+    "cargo_quantity_min": { "value": 24300, "confidence": "interpreted", "source_text": "27,000 MT barley in bulk, 10 pct moloo" },
+    "cargo_quantity_max": { "value": 29700, "confidence": "interpreted", "source_text": "27,000 MT barley in bulk, 10 pct moloo" },
+    "laycan": { "value": "09–15 June 2026", "confidence": "confirmed", "source_text": "LAYCAN: 09/15 June 2026" },
+    "freight_rate": { "value": "USD 26.50 per MT", "confidence": "confirmed", "source_text": "FREIGHT: USD 26.50 pmt FIOST" },
+    "freight_basis": { "value": "FIOST", "confidence": "confirmed", "source_text": "USD 26.50 pmt FIOST" },
+    "loading_rate": { "value": "7,000 MT pwwd", "confidence": "confirmed", "source_text": "LOAD/DISCH: 7,000 / 5,000 mt pwwd shinc" },
+    "loading_terms": { "value": "SHINC", "confidence": "confirmed", "source_text": "7,000 / 5,000 mt pwwd shinc" },
+    "discharging_rate": { "value": "5,000 MT pwwd", "confidence": "confirmed", "source_text": "LOAD/DISCH: 7,000 / 5,000 mt pwwd shinc" },
+    "discharging_terms": { "value": "SHINC", "confidence": "confirmed", "source_text": "7,000 / 5,000 mt pwwd shinc" },
+    "demurrage_rate": { "value": "USD 13,500 per day pro rata", "confidence": "confirmed", "source_text": "DEM: USD 13,500 pdpr fd bends" },
+    "despatch_rate": { "value": "Full despatch — USD 13,500 per day pro rata, both ends", "confidence": "interpreted", "source_text": "DEM: USD 13,500 pdpr fd bends" },
+    "cp_form": { "value": "GENCON 94", "confidence": "confirmed", "source_text": "owise GENCON 94" },
+    "arbitration": { "value": "London arbitration, LMAA terms", "confidence": "confirmed", "source_text": "ARB London, English law, LMAA terms" },
+    "law": { "value": "English law", "confidence": "confirmed", "source_text": "ARB London, English law, LMAA terms" },
+    "commission": { "value": "3.75% total commission including 1.25% address commission", "confidence": "confirmed", "source_text": "COMM: 3.75 pct ttl incl 1.25 addcomm" },
+    "commission_percent": { "value": 3.75, "confidence": "confirmed", "source_text": "3.75 pct ttl incl 1.25 addcomm" },
+    "commission_address_pct": { "value": 1.25, "confidence": "confirmed", "source_text": "3.75 pct ttl incl 1.25 addcomm" },
+    "commission_broker_pct": { "value": 2.5, "confidence": "interpreted", "source_text": "3.75 pct ttl incl 1.25 addcomm" },
+    "commission_base": { "value": "freight", "confidence": "interpreted", "source_text": "3.75 pct ttl incl 1.25 addcomm" },
+    "broker": "Levant Shipping Co, Limassol (Rami Haddad)",
+    "additional_terms": [
+      "GA York Antwerp Rules 2016."
+    ],
+    "unknown_terms": []
+  }
+}

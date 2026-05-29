@@ -1,0 +1,60 @@
+{
+  "id": "etms-parse-cargo-adv-11",
+  "source_email_id": "etms-parse-cargo-adv-11",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "SPECIAL-laycan-fuzzy",
+  "expected_behavior": "The laycan is given ambiguously as a numeric range '05/06/2026 - 09/06/2026' (DD/MM vs MM/DD undecidable) reinforced by the loose phrase 'end May / early Jun'; the parser MUST NOT silently commit to one calendar interpretation — it should return the laycan with confidence='uncertain' (or 'interpreted'), preserve the source ambiguity, and flag it in missing_info rather than asserting a confirmed date.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "Ravenna / Alexandria - steel coils",
+    "from": "Laura Bianchi <l.bianchi@adriaticbrokers.it>",
+    "date": "2026-05-23T12:09:51.000Z",
+    "body": "Dear Sherif,\r\n\r\nPls quote firm for our steel parcel:\r\n\r\nCargo: 9,500 mts HRC, uw abt 12/18 ts per coil\r\nLoad: 1 sb Ravenna\r\nDisch: 1 sb Alexandria\r\nLaycan: 05/06/2026 - 09/06/2026 (abt end May / early Jun)\r\nLoad 4000 / disch 3000 shex\r\n2.5% ttl\r\n\r\nNB dates tbc by shippers.\r\n\r\nBrgds,\r\nLaura"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "origin_port": {
+          "value": "Ravenna",
+          "confidence": "confirmed",
+          "source_text": "Load: 1 sb Ravenna"
+        },
+        "destination_port": {
+          "value": "Alexandria",
+          "confidence": "confirmed",
+          "source_text": "Disch: 1 sb Alexandria"
+        },
+        "cargo_description": {
+          "value": "Hot Rolled Coils (HRC), unit weight approximately 12-18 tonnes per coil",
+          "confidence": "interpreted",
+          "source_text": "Cargo: 9,500 mts HRC, uw abt 12/18 ts per coil"
+        },
+        "weight_mt": {
+          "value": 9500,
+          "confidence": "confirmed",
+          "source_text": "9,500 mts HRC"
+        },
+        "cargo_type": "BREAK_BULK",
+        "laycan": {
+          "value": "05/06/2026 - 09/06/2026 (end May / early June 2026)",
+          "confidence": "uncertain",
+          "source_text": "Laycan: 05/06/2026 - 09/06/2026 (abt end May / early Jun)"
+        },
+        "loading_rate": "4000 MT/day",
+        "discharge_rate": "3000 MT/day",
+        "loading_terms": "SHEX",
+        "discharge_terms": "SHEX",
+        "commission_percent": {
+          "value": 2.5,
+          "confidence": "confirmed",
+          "source_text": "2.5% ttl"
+        },
+        "missing_info": [
+          "Laycan date format ambiguous: '05/06/2026' could be 5 June or 6 May (DD/MM vs MM/DD); the parenthetical 'end May / early Jun' adds a further loose window — exact dates to be confirmed by shippers",
+          "Demurrage and despatch rates not stated"
+        ]
+      }
+    ]
+  }
+}

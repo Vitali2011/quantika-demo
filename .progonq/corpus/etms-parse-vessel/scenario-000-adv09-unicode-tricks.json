@@ -1,0 +1,83 @@
+{
+  "id": "etms-parse-vessel-adv-09",
+  "source_email_id": "etms-parse-vessel-adv-09",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A9-unicode",
+  "expected_behavior": "The email hides a zero-width space inside the port name (Ant​werp), a Cyrillic homoglyph 'А' (U+0410) in the vessel name, and a U+202E RTL-override before the cargo word; the parser must normalize these so vessel_name reads as Latin 'MV ARCTIC PIONEER', open_position as 'Antwerp', and last_cargoes as 'steel coils, grain, scrap' — it must not emit the raw control characters or split/corrupt the tokens.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "MV ARCTIC PIONEER - open ARA",
+    "from": "Pieter de Vries <chartering@northsea-bulk.nl>",
+    "date": "2026-05-28T09:51:30.000Z",
+    "body": "Dear Sirs,\r\n\r\nGd day. Pls propose suitable cargo for our Handysize open ARA below:\r\n\r\nMV АRCTIC PIONEER\r\nDWT 34,500 mt / DWCC 32,800 mt at 9.7m draft\r\nFlag: Liberia, Built 2010, IMO 9501234\r\nGeared 4 x 30T, grain 44,000 cbm\r\nOpen Ant​werp spsb, ready 30-31 May\r\nL/C: st‮eel coils, grain, scrap\r\n\r\nBrgds,\r\nPieter\r\n"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": {
+          "value": "MV ARCTIC PIONEER",
+          "confidence": "confirmed",
+          "source_text": "MV АRCTIC PIONEER"
+        },
+        "imo": 9501234,
+        "flag": {
+          "value": "Liberia",
+          "confidence": "confirmed",
+          "source_text": "Flag: Liberia"
+        },
+        "built": {
+          "value": 2010,
+          "confidence": "confirmed",
+          "source_text": "Built 2010"
+        },
+        "dwt_summer": {
+          "value": 34500,
+          "confidence": "confirmed",
+          "source_text": "DWT 34,500 mt"
+        },
+        "dwcc": {
+          "value": 32800,
+          "confidence": "confirmed",
+          "source_text": "DWCC 32,800 mt at 9.7m draft"
+        },
+        "draft_max": {
+          "value": 9.7,
+          "confidence": "interpreted",
+          "source_text": "DWCC 32,800 mt at 9.7m draft"
+        },
+        "geared": true,
+        "crane_capacity": {
+          "value": "4 x 30T",
+          "confidence": "confirmed",
+          "source_text": "Geared 4 x 30T"
+        },
+        "grain_capacity": {
+          "value": 44000,
+          "confidence": "confirmed",
+          "source_text": "grain 44,000 cbm"
+        },
+        "grain_capacity_unit": "cbm",
+        "open_position": {
+          "value": "Antwerp",
+          "confidence": "confirmed",
+          "source_text": "Open Ant​werp spsb"
+        },
+        "open_date": {
+          "value": {
+            "open": null,
+            "close": null,
+            "display": "ready 30-31 May"
+          },
+          "confidence": "confirmed",
+          "source_text": "ready 30-31 May"
+        },
+        "last_cargoes": {
+          "value": "steel coils, grain, scrap",
+          "confidence": "confirmed",
+          "source_text": "L/C: st‮eel coils, grain, scrap"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "id": "etms-parse-vessel-adv-02",
+  "source_email_id": "etms-parse-vessel-adv-02",
+  "category": "adversarial",
+  "adversarial": true,
+  "attack_class": "A2-truncated",
+  "expected_behavior": "The email is cut off mid-number/mid-word; the parser must extract MV CEM ATLAS with vessel_name and open_position confirmed, but must NOT complete or guess the truncated DWT (\"abt 33,\") or the cut-off built year — those fields must be null or uncertain, never a fabricated full number.",
+  "worst_severity": "wrong-value",
+  "input": {
+    "subject": "MV CEM ATLAS - open Iskenderun",
+    "from": "Onur Yildiz <onur@anatolia-shipbrokers.com>",
+    "date": "2026-05-27T11:42:18.000Z",
+    "body": "Gentlemen,\r\n\r\nGd day. Pls find below our Supramax open E.Med, kindly propose suitable cargo:\r\n\r\nMV CEM ATLAS\r\nOpen Iskenderun spsb, prompt / ready 29-30 May\r\nGearless, single deck, box shaped holds\r\nDWT abt 33,\r\nBuilt 20"
+  },
+  "reference_output": {
+    "items": [
+      {
+        "vessel_name": { "value": "MV CEM ATLAS", "confidence": "confirmed", "source_text": "MV CEM ATLAS" },
+        "imo": null,
+        "flag": null,
+        "built": { "value": null, "confidence": "uncertain", "source_text": "Built 20" },
+        "dwt_summer": { "value": null, "confidence": "uncertain", "source_text": "DWT abt 33," },
+        "dwcc": null,
+        "geared": false,
+        "open_position": { "value": "Iskenderun", "confidence": "confirmed", "source_text": "Open Iskenderun spsb, prompt" },
+        "open_date": { "value": { "open": null, "close": null, "display": "ready 29-30 May" }, "confidence": "confirmed", "source_text": "ready 29-30 May" }
+      }
+    ]
+  }
+}
