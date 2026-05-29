@@ -300,6 +300,25 @@ describe('POST /api/ai/match — provider migration (γv-06)', () => {
     expect((opts as { timeoutMs?: number }).timeoutMs).toBeGreaterThan(0);
   });
 
+  // U2 (issue 663): the route must thread request.signal so a client disconnect
+  // cancels the in-flight LLM call. Without this, the LLMTimeoutError catch is
+  // dead code on gemini/bedrock.
+  it('threads request.signal into callAiJson opts (client-disconnect cancellation)', async () => {
+    mockGetSession.mockReturnValue(baseSession);
+    mockAnalyzePairs.mockImplementation(async (cargos, vessels, aiScorer) => {
+      await aiScorer({ cargoData: cargos, vesselData: vessels, readinessData: [] });
+      return { matches: [], blockedMatches: [] };
+    });
+    mockCallAiJson.mockResolvedValue({ matches: [] });
+
+    const req = makeRequest('session-1');
+    await POST(req);
+
+    const [, , , opts] = mockCallAiJson.mock.calls[0];
+    expect((opts as { signal?: AbortSignal }).signal).toBeDefined();
+    expect((opts as { signal?: AbortSignal }).signal).toBe(req.signal);
+  });
+
   // ── Provider-specific routing ─────────────────────────────────────────────────
   // These tests verify that MATCH_PROVIDER env drives provider selection through shim
 

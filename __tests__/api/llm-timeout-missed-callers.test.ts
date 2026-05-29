@@ -31,6 +31,10 @@ const mockJson = callAiJson as jest.MockedFunction<typeof callAiJson>;
 beforeEach(() => {
   mockText.mockReset();
   mockJson.mockReset();
+  // U2: these call sites now route through @/lib/ai-provider. Pin
+  // AI_PROVIDER=openai so the shim delegates to the mocked @/lib/openai layer
+  // asserted below (ambient .env sets AI_PROVIDER=gemini).
+  process.env.AI_PROVIDER = 'openai';
 });
 
 describe('route-decision.llmReason — bounded LLM timeout', () => {

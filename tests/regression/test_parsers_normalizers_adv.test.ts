@@ -60,6 +60,10 @@ describe('ATTACK-4 — forward-parser adversarial edge cases', () => {
     jest.resetAllMocks();
     // Re-setup mockClient.downloadMedia default after reset
     mockClientDownloadMedia.mockResolvedValue({ url: 'http://mock/media', mimeType: 'image/jpeg' });
+    // U2: forward-parser now routes through @/lib/ai-provider (was hard-pinned to
+    // @/lib/openai). Pin AI_PROVIDER=openai so the shim delegates to the mocked
+    // @/lib/openai layer asserted here (ambient .env sets AI_PROVIDER=gemini).
+    process.env.AI_PROVIDER = 'openai';
   });
 
   // ---- BUG CANDIDATE: cargoType always hardcoded to 'BULK' ----

@@ -91,7 +91,10 @@ export async function POST(request: NextRequest) {
       'MATCH',
       matchSystemPrompt,
       promptPayload,
-      { timeoutMs: endpointLlmTimeout(120) },
+      // Thread request.signal so a client disconnect cancels the in-flight LLM
+      // call. Without this the gemini/bedrock branches never see an abort and
+      // the LLMTimeoutError catch below is dead code on those providers.
+      { timeoutMs: endpointLlmTimeout(120), signal: request.signal },
     );
 
     return result.matches || [];

@@ -13,6 +13,53 @@ import { logger } from '@/lib/logger';
 import { getStore } from '@/lib/session-store';
 import * as openaiLib from '@/lib/openai';
 
+const DEFAULT_TIMEOUT_MS = 85_000;
+
+/**
+ * Compose an internal timeout AbortController with an optional caller-supplied
+ * signal. Mirrors lib/openai.ts `buildAbortController` so gemini/bedrock get the
+ * same abort+timeout semantics the openai branch already has.
+ *
+ * Returns the controller (its `.signal` is what providers must thread through),
+ * the resolved timeoutMs, and a `cleanup()` that clears the timer + detaches the
+ * external listener. Whichever of {internal timeout, external signal} fires
+ * first aborts the controller.
+ */
+function buildAbortController(opts: AiOpts | undefined): {
+  controller: AbortController;
+  cleanup: () => void;
+  timeoutMs: number;
+} {
+  const timeoutMs = opts?.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => {
+    controller.abort();
+  }, timeoutMs);
+  if (typeof (timeoutId as NodeJS.Timeout).unref === 'function') {
+    (timeoutId as NodeJS.Timeout).unref();
+  }
+
+  const externalSignal = opts?.signal;
+  let externalListener: (() => void) | undefined;
+  if (externalSignal) {
+    if (externalSignal.aborted) {
+      controller.abort();
+    } else {
+      externalListener = () => controller.abort();
+      externalSignal.addEventListener('abort', externalListener);
+    }
+  }
+
+  const cleanup = () => {
+    clearTimeout(timeoutId);
+    if (externalSignal && externalListener) {
+      externalSignal.removeEventListener('abort', externalListener);
+    }
+  };
+
+  return { controller, cleanup, timeoutMs };
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type Provider = 'openai' | 'gemini' | 'bedrock' | 'claude-cli';
@@ -507,6 +554,7 @@ async function callGeminiText(
             topP?: number;
             topK?: number;
             seed?: number;
+            abortSignal?: AbortSignal;
           };
         }) => Promise<{ text: string; usageMetadata?: GeminiUsageMetadata }>;
       };
@@ -532,6 +580,7 @@ async function callGeminiText(
     topP?: number;
     topK?: number;
     seed?: number;
+    abortSignal?: AbortSignal;
   } = { systemInstruction: system };
 
   if (opts?.thinkingBudget !== undefined) {
@@ -548,7 +597,14 @@ async function callGeminiText(
 
   Object.assign(config, buildGeminiSamplingFields(opts ?? {}));
 
-  const timeoutMs = opts?.timeoutMs ?? 85_000;
+  // Thread abortSignal + timeoutMs: compose the caller's signal with an internal
+  // timeout controller. The composed signal is passed to the SDK so a
+  // client-disconnect (caller signal) OR the timeout actually CANCELS the
+  // in-flight Vertex request instead of leaking it. The Promise.race below still
+  // surfaces a typed LLMTimeoutError to the caller on timeout.
+  const { controller, cleanup, timeoutMs } = buildAbortController(opts);
+  config.abortSignal = controller.signal;
+
   let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
   const timeoutPromise = new Promise<never>((_, reject) => {
     timeoutHandle = setTimeout(
@@ -567,8 +623,17 @@ async function callGeminiText(
       timeoutPromise,
     ]);
     return { text: response.text ?? '', usage: extractGeminiUsage(response.usageMetadata) };
+  } catch (err) {
+    // If the composed signal aborted (caller disconnect OR timeout), surface a
+    // typed LLMTimeoutError so route-level `instanceof LLMTimeoutError` handling
+    // (504 response) is reachable on the gemini path — previously dead code.
+    if (controller.signal.aborted && !(err instanceof openaiLib.LLMTimeoutError)) {
+      throw new openaiLib.LLMTimeoutError(`Gemini aborted after ${timeoutMs}ms`);
+    }
+    throw err;
   } finally {
     clearTimeout(timeoutHandle);
+    cleanup();
   }
 }
 
@@ -634,11 +699,22 @@ async function callBedrockText(
 ): Promise<{ text: string; usage?: Usage }> {
   assertBedrockEnv();
   const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime') as {
-    BedrockRuntimeClient: new (opts: { region: string; credentials: { accessKeyId: string; secretAccessKey: string } }) => {
-      send: (cmd: unknown) => Promise<{ body: Uint8Array }>;
+    BedrockRuntimeClient: new (opts: {
+      region: string;
+      credentials: { accessKeyId: string; secretAccessKey: string };
+      requestHandler?: { requestTimeout?: number };
+    }) => {
+      send: (cmd: unknown, options?: { abortSignal?: AbortSignal }) => Promise<{ body: Uint8Array }>;
     };
     InvokeModelCommand: new (opts: { modelId: string; contentType: string; accept: string; body: string }) => unknown;
   };
+
+  // Thread abortSignal + timeoutMs: compose caller signal with internal timeout.
+  // - requestHandler.requestTimeout caps the socket-level wait at timeoutMs.
+  // - client.send(cmd, { abortSignal }) cancels the in-flight request when the
+  //   composed signal fires (caller disconnect OR timeout) — previously BOTH
+  //   were dropped, so MATCH_PROVIDER=bedrock calls could hang up to maxDuration.
+  const { controller, cleanup, timeoutMs } = buildAbortController(opts);
 
   const client = new BedrockRuntimeClient({
     region: process.env.AWS_REGION!,
@@ -646,12 +722,17 @@ async function callBedrockText(
       accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
     },
+    requestHandler: { requestTimeout: timeoutMs },
   });
 
   const payload = {
     anthropic_version: 'bedrock-2023-05-31',
     ...buildBedrockSamplingFields(opts ?? {}),
-    system,
+    // cache_control on the system block: Anthropic prompt caching bills the
+    // large static prefix (e.g. MATCH_PROMPT ~6956 tok) at the cheaper cache-read
+    // rate on warm hits. `system` accepts a content-block array; the ephemeral
+    // breakpoint marks everything up to here as cacheable.
+    system: [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }],
     messages: [{ role: 'user', content: user }],
   };
 
@@ -662,10 +743,21 @@ async function callBedrockText(
     body: JSON.stringify(payload),
   });
 
-  const response = await client.send(cmd);
-  const decoded = new TextDecoder().decode(response.body);
-  const parsed = JSON.parse(decoded) as { content: Array<{ text?: string }>; usage?: BedrockUsage };
-  return { text: parsed.content?.[0]?.text ?? '', usage: extractBedrockUsage(parsed.usage) };
+  try {
+    const response = await client.send(cmd, { abortSignal: controller.signal });
+    const decoded = new TextDecoder().decode(response.body);
+    const parsed = JSON.parse(decoded) as { content: Array<{ text?: string }>; usage?: BedrockUsage };
+    return { text: parsed.content?.[0]?.text ?? '', usage: extractBedrockUsage(parsed.usage) };
+  } catch (err) {
+    // Surface a typed LLMTimeoutError on abort/timeout so route-level
+    // `instanceof LLMTimeoutError` (504) is reachable on the bedrock path.
+    if (controller.signal.aborted && !(err instanceof openaiLib.LLMTimeoutError)) {
+      throw new openaiLib.LLMTimeoutError(`Bedrock aborted after ${timeoutMs}ms`);
+    }
+    throw err;
+  } finally {
+    cleanup();
+  }
 }
 
 async function callBedrockAudio(

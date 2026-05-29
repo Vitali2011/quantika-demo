@@ -41,6 +41,13 @@ import { callAiJson } from '@/lib/openai';
 
 const mockCallAiJson = callAiJson as jest.MockedFunction<typeof callAiJson>;
 
+// U2: forward-parser now routes through @/lib/ai-provider (was hard-pinned to
+// @/lib/openai). Pin AI_PROVIDER=openai so the shim delegates to the mocked
+// @/lib/openai layer asserted here (ambient .env sets AI_PROVIDER=gemini).
+beforeEach(() => {
+  process.env.AI_PROVIDER = 'openai';
+});
+
 // Helper: build a minimal WhatsAppIncomingMessage with arbitrary type
 function makeMsg(type: string, extra: Record<string, unknown> = {}): WhatsAppIncomingMessage {
   return {

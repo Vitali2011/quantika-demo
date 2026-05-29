@@ -14,7 +14,7 @@
  */
 
 import { calculateTCE, type VoyageInput, type TCEBreakdown } from './voyage-calculator';
-import { callAiText } from '@/lib/openai';
+import { callAiText } from '@/lib/ai-provider';
 
 // βf3-06: LLM reason timeout — cap the AI explain call so cold-start ≤5s.
 // The LLM path is non-critical (fallback template is always available).
@@ -267,10 +267,13 @@ async function llmReason(
     // outer Promise.race resolves with `fallback` while the LLM keeps streaming
     // for ~80s, consuming CLI proxy quota and a connection slot. Defense-in-depth:
     // we still keep the outer race in case callAiText hangs in some other way.
+    // Route through the unified ai-provider shim (scope ROUTE_DECISION) so the
+    // call honors AI_PROVIDER / ROUTE_DECISION_PROVIDER and writes an ai_audit
+    // row, instead of hard-pinning to OpenAI via lib/openai.
     const aiPromise = callAiText(
-      prompt,
+      'route_decision',
       systemPrompt,
-      undefined,
+      prompt,
       { timeoutMs: LLM_REASON_TIMEOUT_MS },
     ).then(text => {
       const trimmed = (text ?? '').trim();
