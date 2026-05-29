@@ -548,13 +548,28 @@ async function callGeminiText(
 
   Object.assign(config, buildGeminiSamplingFields(opts ?? {}));
 
-  const response = await ai.models.generateContent({
-    model,
-    contents: [{ role: 'user', parts: [{ text: user }] }],
-    config,
+  const timeoutMs = opts?.timeoutMs ?? 85_000;
+  let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutHandle = setTimeout(
+      () => reject(new openaiLib.LLMTimeoutError(`Gemini timed out after ${timeoutMs}ms`)),
+      timeoutMs,
+    );
   });
 
-  return { text: response.text ?? '', usage: extractGeminiUsage(response.usageMetadata) };
+  try {
+    const response = await Promise.race([
+      ai.models.generateContent({
+        model,
+        contents: [{ role: 'user', parts: [{ text: user }] }],
+        config,
+      }),
+      timeoutPromise,
+    ]);
+    return { text: response.text ?? '', usage: extractGeminiUsage(response.usageMetadata) };
+  } finally {
+    clearTimeout(timeoutHandle);
+  }
 }
 
 async function callGeminiVision(

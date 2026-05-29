@@ -1,0 +1,81 @@
+project: quantika-demo-parse-prompts
+
+target_prompts:
+  - path: lib/prompts/classify.ts
+    role: classifier
+    export: CLASSIFICATION_SYSTEM_PROMPT
+  - path: lib/prompts/parse-cargo.ts
+    role: cargo-extractor
+    export: CARGO_INQUIRY_PARSER_PROMPT
+  - path: lib/prompts/parse-vessel.ts
+    role: vessel-extractor
+    export: VESSEL_POSITION_PARSER_PROMPT
+  - path: lib/prompts/parse-recap.ts
+    role: recap-extractor
+    export: FIXTURE_RECAP_PARSER_PROMPT
+
+categories:
+  - name: CARGO_INQUIRY
+    description: "Client or broker asking for vessel/rate for specific cargo"
+    samples_per_round: 4
+  - name: VESSEL_POSITION
+    description: "Vessel available for charter, position circular, fleet list"
+    samples_per_round: 3
+  - name: FIXTURE_RECAP
+    description: "Agreed terms recap, fixture note, CP recap"
+    samples_per_round: 2
+  - name: EDGE_CASES
+    description: "Documents, certificates, ambiguous, multi-item"
+    samples_per_round: 2
+
+# 3 models — Principle #14
+models:
+  generation: gemini-2.5-flash        # cycle model
+  production: gemini-2.5-flash        # prod model (matches generation → FULL exit)
+  critic: claude-opus-4-7             # cold-session Opus critic
+
+gemini_config:
+  temperature: 0.2
+  top_p: 0.95
+  thinking_budget: 0                  # Flash: 0 disables thinking
+  max_output_tokens: 8192
+  safety_settings: default
+  response_mime_type: "application/json"
+  use_response_schema: true
+
+sampling:
+  samples_per_case: 1                 # N=1 for speed (VPS budget), retry on FAIL
+  agreement_rule: majority
+
+critic:
+  family: claude
+  role: "Senior shipping broker with 20 years experience in dry-bulk chartering, Black Sea/Mediterranean/Baltic corridors"
+  perspective: "Extremely skeptical — your job is to find semantic errors the parser made, not to confirm correctness"
+  agents_per_case: 1
+
+production_parity:
+  entrypoint: "callAiJson via lib/ai-provider.ts"
+  smoke_case: "corpus/CARGO_INQUIRY/sample-001.json"
+  divergence_whitelist: []
+
+severity_rubric_path: .progong/severity-rubric.md
+
+exit_criteria:
+  consecutive_passes: 2
+  pass_threshold:
+    critical: 0
+    high: 0
+
+stack:
+  language: typescript
+  test_runner: jest
+
+budget:
+  max_rounds: 15
+  max_tokens_usd: 25
+  abort_on_repeated_issue: 3
+
+post_exit:
+  fresh_corpus_size: 4
+  generate_regression_tests: true
+  regression_path: __tests__/progong-parse-regression.test.ts
