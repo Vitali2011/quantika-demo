@@ -203,8 +203,11 @@ export async function build(opts: BuildOptions): Promise<void> {
       const anonBody = redactEmails(applyAnonymization(shiftedBody, bodyMap));
       const anonSubject = redactEmails(applyAnonymization(shiftedSubject, bodyMap));
 
-      // from_name: direct lookup in brokers map (case-insensitive key match)
-      const fromNameRaw = email.fromName ?? '';
+      // Use originalSender from LLM classifications for realistic sender variety (M7/H1).
+      // All 153 emails come from ONE inbox (management@etm-services.net), so raw fromName
+      // is always the same. originalSender is who actually sent the broker inquiry.
+      const cls = llmCache?.classifications.find((c) => c.emailId === email.messageId);
+      const fromNameRaw = cls?.originalSender?.trim() ?? email.fromName ?? '';
       const brokerKey = Object.keys(manifest.anonymization.brokers).find(
         (k) => k.toLowerCase() === fromNameRaw.toLowerCase(),
       );
@@ -212,11 +215,13 @@ export async function build(opts: BuildOptions): Promise<void> {
         ? manifest.anonymization.brokers[brokerKey]
         : fromNameRaw;
 
-      // from_email: direct lookup in sender_emails map, then redact any residual address
+      // Derive per-contact fake email from anonymized contact name for variety (M7).
+      // Falls back to sender_emails map lookup → redact.
+      const contactMatch = anonFromName.match(/\bCONTACT\s+(\d+)\b/i);
       const fromEmailRaw = email.fromEmail ?? '';
-      const anonFromEmail = redactEmails(
-        manifest.anonymization.sender_emails[fromEmailRaw] ?? fromEmailRaw,
-      );
+      const anonFromEmail = contactMatch
+        ? `contact${contactMatch[1]}@demo.local`
+        : redactEmails(manifest.anonymization.sender_emails[fromEmailRaw] ?? fromEmailRaw);
 
       // Leak validation (Task 16)
       const forbidden = opts.forbiddenSubstrings ?? [];

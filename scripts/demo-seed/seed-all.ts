@@ -36,6 +36,55 @@ async function main(): Promise<void> {
   console.log('[seed-all] 2/5 reconcile (Opus analyst)…');
   const rec = await reconcile({ rawDir, model });
 
+  // H1/M7: Add real person names from originalSender to brokers map so they get
+  // anonymized in body text and assigned as per-email from_name (sender variety)
+  const seedCache = loadLlmCacheIfAny(rawDir);
+  if (seedCache) {
+    let contactCounter = 0;
+    const seenContacts = new Set<string>();
+    for (const cls of seedCache.classifications) {
+      const name = cls.originalSender?.trim();
+      if (!name || seenContacts.has(name.toLowerCase())) continue;
+      seenContacts.add(name.toLowerCase());
+      if (!rec.anonymization.brokers[name]) {
+        contactCounter++;
+        rec.anonymization.brokers[name] = `CONTACT ${contactCounter}`;
+        // Add uppercase form too
+        if (name !== name.toUpperCase() && !rec.anonymization.brokers[name.toUpperCase()]) {
+          rec.anonymization.brokers[name.toUpperCase()] = `CONTACT ${contactCounter}`;
+        }
+        // Add first name only (for "Dear Sherif" patterns) if length >= 3
+        const parts = name.split(/\s+/);
+        const firstName = parts[0];
+        if (firstName && firstName.length >= 3 && !rec.anonymization.brokers[firstName]) {
+          rec.anonymization.brokers[firstName] = `CONTACT ${contactCounter}`;
+        }
+        if (firstName && firstName !== firstName.toUpperCase() && !rec.anonymization.brokers[firstName.toUpperCase()]) {
+          rec.anonymization.brokers[firstName.toUpperCase()] = `CONTACT ${contactCounter}`;
+        }
+      }
+    }
+  }
+
+  // M5: Add known leaked vessel names that appear in email subjects/bodies
+  const M5_LEAKED_VESSELS: Record<string, string> = {
+    'Gandolf': 'M/V SEAGULL 200',
+    'SC GUOJI': 'M/V SEAGULL 201',
+    'YU LAN': 'M/V SEAGULL 202',
+    'SSF DREAM': 'M/V SEAGULL 203',
+    'Everest Bay': 'M/V SEAGULL 204',
+    'Green Magic': 'M/V SEAGULL 205',
+  };
+  for (const [real, alias] of Object.entries(M5_LEAKED_VESSELS)) {
+    if (!rec.anonymization.vessels[real]) {
+      rec.anonymization.vessels[real] = alias;
+    }
+    // Also add uppercase variant
+    if (real.toUpperCase() !== real && !rec.anonymization.vessels[real.toUpperCase()]) {
+      rec.anonymization.vessels[real.toUpperCase()] = alias;
+    }
+  }
+
   // Known-PII substrings the entity-name reconciler won't map on its own (bare
   // sender domain + broker name appear in every forwarded ETM email). They MUST be
   // in the anonymization MAP (not only build's leak-check forbidden list), or build
@@ -59,7 +108,10 @@ async function main(): Promise<void> {
     for (const [real, pseudo] of Object.entries({ ...map })) {
       const words = real.split(/[\s,/\-()]+/).filter(Boolean);
       const w0 = words[0]?.toLowerCase() ?? '';
-      if (words[0] && words[0].length >= 4 && !STOP.has(w0) && !(words[0] in map)) {
+      // Don't add bare first-word shortcut when alias already has a vessel prefix —
+      // otherwise "MV SEAGULL N" in body would become "MV M/V SEAGULL N" (L4).
+      const aliasHasVesselPrefix = pseudo.startsWith('M/V ') || pseudo.startsWith('M/T ');
+      if (words[0] && words[0].length >= 4 && !STOP.has(w0) && !(words[0] in map) && !aliasHasVesselPrefix) {
         map[words[0]] = pseudo;
       }
       if (words.length >= 2 && !STOP.has(w0)) {
