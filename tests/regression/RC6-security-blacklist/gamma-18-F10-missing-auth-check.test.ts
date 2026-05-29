@@ -4,6 +4,17 @@
 // Fix: Added requireSession() check -> returns 401 for unauthenticated requests
 // Spec: spec/gamma-18-roi-guarantee-workflow
 // DO NOT DELETE — see references/regression_lock_workflow.md
+//
+// ⚠️ U5 / #679 — SUPERSEDED. This file is DISHONEST AND DEAD:
+//   (a) it lives under tests/regression/, which jest.config.mjs ignores, so it
+//       has NEVER run; and
+//   (b) it jest.mock()s @/lib/session, so `requireSession` here is a re-implemented
+//       MOCK — deleting the real auth call from the route would not turn it red.
+// The honest, mutation-verified replacement lives at
+//   __tests__/api/analytics/roi-auth.test.ts
+// which exercises the REAL requireSession against a REAL in-memory session store.
+// Kept (not deleted) only to honour the regression_lock_workflow "DO NOT DELETE"
+// convention; treat roi-auth.test.ts as authoritative.
 
 import Database from "better-sqlite3";
 import { NextRequest } from "next/server";
