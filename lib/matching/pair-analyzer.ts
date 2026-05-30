@@ -17,6 +17,8 @@ import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
 import { validateDates } from '@/lib/sailing/date-sanity';
 import { checkSanctions } from '@/lib/validation/sanctions';
 import { enrichReasons } from '@/lib/matching/reason-enricher';
+import { buildMatchEconomics, parseLeadingNumber } from '@/lib/matching/tce-calculator';
+import { getPortDistance } from '@/lib/sailing/port-distances';
 import { formatNumber } from '@/lib/utils';
 import { LLMTimeoutError } from '@/lib/openai';
 import { now } from '@/lib/clock';
@@ -611,6 +613,48 @@ export async function analyzePairs(
     } else {
       mainMatches.push(m);
     }
+  }
+
+  // ── Economics enrichment (spec L2 #5 + #6) ─────────────────────────────────
+  // Display-only: computed AFTER the realism partition so it can never affect
+  // score, ranking, or bucketing. Only good/possible main matches get economics.
+  // Distance is the laden voyage (load → discharge) via getPortDistance — the same
+  // source compute-matches.ts uses to persist tce_usd_per_day, so the per-day
+  // figure here equals the persisted column. JWC war-risk (#6) is folded in by
+  // buildMatchEconomics. No data → economics stays undefined (never throws).
+  const economicsCalcAt = new Date().toISOString();
+  for (const m of mainMatches) {
+    const cargo = cargos.find(
+      (c) => c.emailId === m.cargoEmailId && c.itemIndex === m.cargoItemIndex,
+    );
+    const vessel = vessels.find(
+      (v) => v.emailId === m.vesselEmailId && v.itemIndex === m.vesselItemIndex,
+    );
+    if (!cargo || !vessel) continue;
+
+    const loadPort = cfValue(cargo.originPort);
+    const dischargePort = cfValue(cargo.destinationPort);
+    const distanceResult =
+      loadPort && dischargePort ? getPortDistance(loadPort, dischargePort) : null;
+    if (!distanceResult || !(distanceResult.nm > 0)) continue;
+
+    const cargoType =
+      typeof cargo.cargoType === 'object' && cargo.cargoType !== null && 'value' in cargo.cargoType
+        ? (cargo.cargoType as unknown as { value: string }).value
+        : (cargo.cargoType as string | null);
+
+    const econ = buildMatchEconomics({
+      cargoType,
+      distanceNm: distanceResult.nm,
+      vesselDwt: cfValue(vessel.dwtSummer) ?? 0,
+      quantityMt: cfValue(cargo.weightMt) ?? 0,
+      speedKts: parseLeadingNumber(vessel.speedLaden),
+      consumptionMt: parseLeadingNumber(vessel.consumption),
+      loadPort,
+      dischargePort,
+      calculatedAt: economicsCalcAt,
+    });
+    if (econ) m.economics = econ;
   }
 
   return { matches: mainMatches, lowConfidenceMatches, insufficientData, blockedMatches };
