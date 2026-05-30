@@ -241,7 +241,9 @@ describe('analyzePairs — demo realism (79×51), levers 1+2+5', () => {
       const vessel = vessels.find(
         (v) => v.emailId === m.vesselEmailId && v.itemIndex === m.vesselItemIndex,
       );
-      const cls = classifyVesselByDwt(vessel ? cfValue(vessel.dwtSummer) : null);
+      const dwt = vessel ? cfValue(vessel.dwtSummer) : null;
+      if (dwt == null) return false; // unknown DWT → ballast guard skipped (conservative)
+      const cls = classifyVesselByDwt(dwt);
       return dist > BALLAST_GOOD_MAX_NM[cls];
     });
     expect(offenders).toHaveLength(0);

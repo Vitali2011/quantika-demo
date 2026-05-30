@@ -195,11 +195,18 @@ const GOOD_CAP_SCORE = 69;
 /** True when the cargo is explicitly flagged as a part cargo / part load / part
  *  lot. In handysize/breakbulk one vessel routinely lifts several small parcels,
  *  so low utilisation is expected and must NOT be penalised as disproportion.
- *  Bare "parcel" is intentionally not matched — it would over-exempt full small
- *  lots and let genuinely disproportionate matches survive as 'good'. */
+ *
+ *  Tolerant of real broker phrasing: plurals ("part cargoes", "part loads"),
+ *  the "p/c" abbreviation, and arbitrary separators (space/underscore/hyphen,
+ *  zero or more — "partcargo", "part_cargo", "part  cargo"). The left `\bpart`
+ *  boundary keeps it from firing on "counterpart cargo" / "departure cargo" /
+ *  "partial cargo". Bare "parcel" is intentionally not matched — it would
+ *  over-exempt full small lots and let disproportionate matches survive 'good'. */
 export function isPartCargo(cargoDescription: string | null | undefined): boolean {
   if (!cargoDescription) return false;
-  return /\bpart[\s-]?cargo\b|\bpart[\s-]?load\b|\bpart[\s-]?lot\b/i.test(cargoDescription);
+  return /\bpart[\s_-]*(?:cargo(?:es|s)?|load(?:s)?|lot(?:s)?)\b|\bp\s*\/\s*c\b/i.test(
+    cargoDescription,
+  );
 }
 
 export interface BallastSizeCapInput {
@@ -219,9 +226,9 @@ export interface BallastSizeCapInput {
  *
  * Pure — returns a shallow copy; only ever lowers the tier, never raises it;
  * idempotent (won't duplicate BALLAST:/SIZE: issue text). Missing data never
- * triggers a cap (conservative): unknown distance skips the ballast guard,
- * unknown capacity skips the size guard. Part-cargo loads are exempt from the
- * size guard.
+ * triggers a cap (conservative): unknown distance OR unknown vessel DWT skips
+ * the ballast guard (we can't pick a class radius without a DWT), unknown
+ * capacity skips the size guard. Part-cargo loads are exempt from the size guard.
  */
 export function applyBallastSizeCap(input: BallastSizeCapInput): Match {
   const { match, distanceNm, vesselDwt, vesselDwcc, cargoWeightMax, cargoDescription } = input;
@@ -231,8 +238,10 @@ export function applyBallastSizeCap(input: BallastSizeCapInput): Match {
 
   const newIssues: string[] = [];
 
-  // Lever 3 — ballast distance vs the vessel-class radius.
-  if (distanceNm != null && Number.isFinite(distanceNm)) {
+  // Lever 3 — ballast distance vs the vessel-class radius. Skip when DWT is
+  // unknown: classifyVesselByDwt would default to handysize (the strictest
+  // radius) and demote on an assumption — not conservative on missing data.
+  if (vesselDwt != null && distanceNm != null && Number.isFinite(distanceNm)) {
     const cls = classifyVesselByDwt(vesselDwt);
     const maxNm = BALLAST_GOOD_MAX_NM[cls];
     if (distanceNm > maxNm) {

@@ -890,6 +890,20 @@ describe('isPartCargo', () => {
     expect(isPartCargo('grain, part load')).toBe(true);
     expect(isPartCargo('part lot of pipes')).toBe(true);
   });
+  it('matches real broker variants — plurals, p/c, loose separators', () => {
+    expect(isPartCargo('2 part cargoes of steel coils')).toBe(true);
+    expect(isPartCargo('vessel can take 2 part loads')).toBe(true);
+    expect(isPartCargo('steel, p/c basis')).toBe(true);
+    expect(isPartCargo('part  cargo of bagged urea')).toBe(true); // double space
+    expect(isPartCargo('part_cargo')).toBe(true);
+    expect(isPartCargo('partcargo')).toBe(true); // no separator
+  });
+  it('does not false-positive on near-miss substrings', () => {
+    expect(isPartCargo('counterpart cargo')).toBe(false);
+    expect(isPartCargo('departure cargo nomination')).toBe(false);
+    expect(isPartCargo('partial cargo')).toBe(false);
+    expect(isPartCargo('parcel of wheat')).toBe(false);
+  });
   it('does not match full-cargo or unrelated descriptions', () => {
     expect(isPartCargo('full cargo of wheat')).toBe(false);
     expect(isPartCargo('steel slabs')).toBe(false);
@@ -931,6 +945,12 @@ describe('applyBallastSizeCap — ballast + size realism cap', () => {
     it('skips the ballast guard when distance is unknown', () => {
       const out = applyBallastSizeCap(capInput({ distanceNm: null }));
       expect(out.matchLevel).toBe('good');
+    });
+
+    it('skips the ballast guard when vessel DWT is unknown (no class → no assumption)', () => {
+      const out = applyBallastSizeCap(capInput({ distanceNm: 1600, vesselDwt: null }));
+      expect(out.matchLevel).toBe('good');
+      expect(out.issues?.some((i) => i.startsWith('BALLAST:'))).toBe(false);
     });
 
     it('uses the documented per-class thresholds', () => {
