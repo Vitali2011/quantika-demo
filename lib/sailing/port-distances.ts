@@ -1364,6 +1364,15 @@ function endpointCoords(
       return { lat: pm.lat, lon: pm.lon, viaCentroid: false };
     }
   }
+  // Detector-vague strings (sea names, country-only, coast descriptors — e.g.
+  // "Red Sea", "Aegean", "East Coast Greece") are DELIBERATELY left as `unknown`
+  // by the matching core, which surfaces an actionable broker hint + a -20 score
+  // penalty. We must not fabricate a distance for those — it would silently flip
+  // their verdict and break that just-shipped UX. Centroids only fill the broker
+  // shorthand the detector does NOT flag (e.g. "Continent", "WC India", "US Gulf").
+  // Lazy require avoids the port-distances ⇄ vague-region-detector import cycle.
+  const { isVagueRegion } = require('./vague-region-detector') as typeof import('./vague-region-detector');
+  if (isVagueRegion(raw).vague) return null;
   const rc = regionCentroid(raw);
   if (rc) return { lat: rc.lat, lon: rc.lon, viaCentroid: true };
   return null;

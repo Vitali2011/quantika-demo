@@ -49,7 +49,10 @@ const SPOT_LAYCAN = /\b(spot|prompt|promt|cargo ready|ready)\b/i;
 
 const isoDay = (ms: number) => new Date(ms).toISOString().slice(0, 10);
 const addDays = (ms: number, days: number) => ms + days * DAY;
-const median = (xs: number[]) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)];
+// Lower-middle element — deterministic, and for the common 2-element fixture the
+// earlier date anchors to `now` (the test contract). Math.floor(len/2) would pick
+// the UPPER-middle, shifting the whole set ~half a window too far.
+const median = (xs: number[]) => [...xs].sort((a, b) => a - b)[Math.floor((xs.length - 1) / 2)];
 
 function dayFloor(d: Date): number {
   return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
@@ -83,8 +86,16 @@ export function rebaseParsedCargoes(
   const nowMs = dayFloor(now);
   const window = opts.spotLaycanWindowDays ?? 10;
 
+  // Spot/ready phrases must be detected FIRST: parseLaycan('Spot') falls through
+  // to the vessel-date parser, which resolves 'spot' to a zero-width range at the
+  // real `new Date()` — that both pollutes the epoch (non-deterministic) and skips
+  // the spot-window branch. Excluding them keeps the epoch deterministic.
+  const isSpot = (laycan: ParsedCargo['laycan']) =>
+    typeof laycan === 'string' && SPOT_LAYCAN.test(laycan);
+
   const starts: number[] = [];
   for (const c of cargoes) {
+    if (isSpot(c.laycan)) continue;
     const r = parseLaycan(c.laycan, CORPUS_REF_YEAR);
     if (r) starts.push(r.start.getTime());
   }
@@ -95,14 +106,14 @@ export function rebaseParsedCargoes(
   const shift = Math.round((target - epoch) / DAY);
 
   return cargoes.map((c) => {
+    if (isSpot(c.laycan)) {
+      return { ...c, laycan: `${isoDay(nowMs)} to ${isoDay(addDays(nowMs, window))}` };
+    }
     const r = parseLaycan(c.laycan, CORPUS_REF_YEAR);
     if (r) {
       const start = addDays(r.start.getTime(), shift);
       const end = addDays(r.end.getTime(), shift);
       return { ...c, laycan: `${isoDay(start)} to ${isoDay(end)}` };
-    }
-    if (typeof c.laycan === 'string' && SPOT_LAYCAN.test(c.laycan)) {
-      return { ...c, laycan: `${isoDay(nowMs)} to ${isoDay(addDays(nowMs, window))}` };
     }
     return { ...c };
   });
