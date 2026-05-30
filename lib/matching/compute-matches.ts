@@ -40,6 +40,14 @@ export async function computeAndPersistMatches(
     return result.matches ?? [];
   };
 
+  // Realism buckets (handover 2026-05-30, point 2): we intentionally take ONLY the
+  // main `matches` here. The auto-precompute → DB path is a curated *shortlist*, and
+  // the matches table has no column for the lowConfidenceMatches / insufficientData
+  // buckets — persisting them would pollute the shortlist and would need a schema
+  // migration (out of scope). The buckets are NOT lost: the live POST /api/ai/match
+  // path computes the same partition and persists all buckets to the session
+  // (see app/api/ai/match/route.ts + its route tests). So this path shows the
+  // shortlist; the full bucketed list is served live.
   const { matches } = await analyzePairs(cargos, vessels, aiScorer);
 
   const cargoMap = new Map(cargos.map((c) => [`${c.emailId}|${c.itemIndex}`, c]));
