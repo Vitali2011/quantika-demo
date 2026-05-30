@@ -1334,6 +1334,53 @@ export function getPortDistance(
   from: string | null | undefined,
   to: string | null | undefined,
 ): PortDistanceResult | null {
+  const direct = computeDirectDistance(from, to);
+  if (direct != null) return direct;
+  // Wave A: vague maritime ranges (e.g. "WC India", "Continent") don't resolve
+  // to a real port, so the direct path returns null. Fall back to a region
+  // centroid for an APPROXIMATE great-circle distance (exact:false). Real ports
+  // resolve first, so a centroid never shadows a curated/searoute result.
+  return centroidFallbackDistance(from, to);
+}
+
+/** Resolve an endpoint to coords via the port-master, or — when it is not a real
+ *  port — a vague-region centroid. `viaCentroid` marks the approximate case. */
+function endpointCoords(
+  raw: string | null | undefined,
+  getPortMaster: typeof import('./port-master')['getPortMaster'],
+): { lat: number; lon: number; viaCentroid: boolean } | null {
+  const canon = normalizePortName(raw);
+  if (canon) {
+    const pm = getPortMaster(canon);
+    if (pm && pm.lat != null && pm.lon != null && Number.isFinite(pm.lat) && Number.isFinite(pm.lon)) {
+      return { lat: pm.lat, lon: pm.lon, viaCentroid: false };
+    }
+  }
+  const rc = regionCentroid(raw);
+  if (rc) return { lat: rc.lat, lon: rc.lon, viaCentroid: true };
+  return null;
+}
+
+/** Great-circle distance using a vague-region centroid for any endpoint that is
+ *  not a real port. Returns null unless at least one endpoint needed a centroid
+ *  (otherwise the direct path already decided). Always exact:false. */
+function centroidFallbackDistance(
+  from: string | null | undefined,
+  to: string | null | undefined,
+): PortDistanceResult | null {
+  const { getPortMaster } = require('./port-master') as typeof import('./port-master');
+  const { haversineDistanceNm } = require('./haversine') as typeof import('./haversine');
+  const ca = endpointCoords(from, getPortMaster);
+  const cb = endpointCoords(to, getPortMaster);
+  if (!ca || !cb) return null;
+  if (!ca.viaCentroid && !cb.viaCentroid) return null; // both real → direct already decided
+  return { nm: haversineDistanceNm(ca.lat, ca.lon, cb.lat, cb.lon), exact: false };
+}
+
+function computeDirectDistance(
+  from: string | null | undefined,
+  to: string | null | undefined,
+): PortDistanceResult | null {
   const a = normalizePortName(from);
   const b = normalizePortName(to);
   if (!a || !b) return null;
