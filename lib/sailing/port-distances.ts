@@ -1122,10 +1122,17 @@ function getFuzzyCorpus(): { lookup: string; canonical: string }[] {
   for (const p of KNOWN_PORTS) {
     seen.set(p.toLowerCase(), p);
   }
-  // Inject all port-master.json entries — canonical = port.name, key = lowercased name
+  // Inject all port-master.json entries — canonical = port.name, key = lowercased
+  // name AND each lowercased alias (aliases were previously dead for name
+  // normalization — only getPortMaster's byAlias index used them).
   const portMaster = loadPortMasterFromJson(PORTS_JSON as unknown as PortMaster[]);
   for (const [nameLower, entry] of Array.from(portMaster.entries())) {
-    if (entry.name && !seen.has(nameLower)) seen.set(nameLower, entry.name);
+    if (!entry.name) continue;
+    if (!seen.has(nameLower)) seen.set(nameLower, entry.name);
+    for (const alias of entry.aliases ?? []) {
+      const aliasLower = alias.toLowerCase();
+      if (!seen.has(aliasLower)) seen.set(aliasLower, entry.name);
+    }
   }
   _fuzzyCorpus = Array.from(seen.entries()).map(([lookup, canonical]) => ({ lookup, canonical }));
   return _fuzzyCorpus;
