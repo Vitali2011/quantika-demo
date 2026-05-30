@@ -28,16 +28,24 @@ const DEFAULT_SPEED_KTS = 12;
 const DEFAULT_CONSUMPTION_MT_PER_DAY = 25;
 const DEFAULT_VESSEL_VALUE_USD = 22_000_000;
 
+/**
+ * Freight-rate provenance for the resolveFreightRate waterfall (Wave #7, L2 #7).
+ * Free-text-compatible with the `freight_rate_source` DB column. Defined here (not in
+ * freight-resolver) so computeEstimatedTce can accept any tier's source without a
+ * circular import.
+ */
+export type FreightRateSource = 'manual' | 'parsed' | 'baltic' | 'estimated';
+
 export interface FreightRateEstimate {
   rate: number;
-  source: 'estimated' | 'manual';
+  source: FreightRateSource;
   confidence: number;
 }
 
 export interface TceEstimate {
   tce_usd_per_day: number;
   freight_rate_usd_per_mt: number;
-  freight_rate_source: 'estimated' | 'manual';
+  freight_rate_source: FreightRateSource;
   /** Full deterministic voyage breakdown (additive, spec L2 #5). */
   breakdown: TCEBreakdown;
 }
@@ -146,6 +154,12 @@ export interface MatchEconomicsInput {
   calculatedAt: string;
   /** Vessel value for the war-risk hull premium. Defaults to DEFAULT_VESSEL_VALUE_USD. */
   vesselValueUsd?: number;
+  /**
+   * Pre-resolved freight rate from the Wave #7 waterfall (manual/parsed/baltic/estimate).
+   * When omitted, falls back to estimateFreightRate (tier 3) — preserving legacy behaviour
+   * so existing callers/tests are unaffected.
+   */
+  resolvedFreight?: FreightRateEstimate | null;
 }
 
 /**
@@ -163,7 +177,8 @@ export interface MatchEconomicsInput {
 export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult | null {
   if (!(input.distanceNm > 0)) return null;
 
-  const freight = estimateFreightRate(input.cargoType, input.distanceNm, input.vesselDwt);
+  const freight =
+    input.resolvedFreight ?? estimateFreightRate(input.cargoType, input.distanceNm, input.vesselDwt);
   const tce = computeEstimatedTce(
     freight,
     input.distanceNm,

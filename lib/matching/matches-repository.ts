@@ -1,4 +1,5 @@
 import type Database from 'better-sqlite3';
+import type { FreightRateSource } from '@/lib/matching/tce-calculator';
 
 export type MatchStatus = 'shortlist' | 'saved' | 'dismissed' | 'archived';
 
@@ -486,7 +487,7 @@ export function updateMatchFreightRate(
   id: number,
   freight_rate_usd_per_mt: number,
   tce_usd_per_day: number,
-  source: 'manual' | 'estimated' = 'manual',
+  source: FreightRateSource = 'manual',
 ): StoredMatch {
   const existing = getMatch(db, id);
   if (!existing) throw new Error(`Match not found: ${id}`);

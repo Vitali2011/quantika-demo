@@ -8,7 +8,9 @@ import { MATCH_PROMPT } from '@/lib/prompts';
 import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { parseLaycan } from '@/lib/sailing/date-parsing';
 import { getPortDistance } from '@/lib/sailing/port-distances';
-import { estimateFreightRate, computeEstimatedTce, parseLeadingNumber } from '@/lib/matching/tce-calculator';
+import { computeEstimatedTce, parseLeadingNumber } from '@/lib/matching/tce-calculator';
+import { resolveFreightRate } from '@/lib/matching/freight-resolver';
+import { getBalticDayRate } from '@/lib/market/baltic-freight';
 
 /**
  * Compute matches for a session and persist them to the DB.
@@ -48,7 +50,10 @@ export async function computeAndPersistMatches(
   // path computes the same partition and persists all buckets to the session
   // (see app/api/ai/match/route.ts + its route tests). So this path shows the
   // shortlist; the full bucketed list is served live.
-  const { matches } = await analyzePairs(cargos, vessels, aiScorer);
+  // Pass db so the economics-enrichment loop in analyzePairs can resolve the same
+  // Baltic tier-2 rate the persisted tce_usd_per_day column uses → match.economics
+  // stays consistent with the DB column on the auto-precompute path (code-review #2).
+  const { matches } = await analyzePairs(cargos, vessels, aiScorer, { db });
 
   const cargoMap = new Map(cargos.map((c) => [`${c.emailId}|${c.itemIndex}`, c]));
   const vesselMap = new Map(vessels.map((v) => [`${v.emailId}|${v.itemIndex}`, v]));
@@ -77,8 +82,19 @@ export async function computeAndPersistMatches(
     let freight_rate_source: string | null = null;
 
     if (distanceResult && distanceResult.nm > 0) {
-      const freightEst = estimateFreightRate(cargoType, distanceResult.nm, vesselDwt);
-      const tceEst = computeEstimatedTce(freightEst, distanceResult.nm, vesselDwt, quantityMt, speedKts, consumptionMt);
+      const resolved = resolveFreightRate({
+        cargoType,
+        parsedFreightRateUsdPerMt: cargo?.freightRateUsd ?? null,
+        vesselDwt,
+        quantityMt,
+        distanceNm: distanceResult.nm,
+        speedKts,
+        balticDayRate: getBalticDayRate(db, vesselDwt),
+      });
+      const tceEst = computeEstimatedTce(
+        { rate: resolved.value, source: resolved.source, confidence: resolved.confidence },
+        distanceResult.nm, vesselDwt, quantityMt, speedKts, consumptionMt,
+      );
       tce_usd_per_day = tceEst.tce_usd_per_day;
       freight_rate_usd_per_mt = tceEst.freight_rate_usd_per_mt;
       freight_rate_source = tceEst.freight_rate_source;

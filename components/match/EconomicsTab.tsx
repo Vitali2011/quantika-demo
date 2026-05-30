@@ -5,6 +5,7 @@ import type { ParsedVessel, ParsedCargo } from '@/lib/types';
 import { RouteCompareModal } from '@/components/economics/RouteCompareModal';
 import { calculateFuelEu } from '@/lib/economics/fueleu';
 import { estimateVoyageDays } from '@/lib/economics/voyage-days';
+import { freightBadge, FREIGHT_BADGE_CLASSES } from '@/lib/matching/freight-badge';
 
 interface EconomicsTabProps {
   commissionPercent?: number | null;
@@ -58,6 +59,9 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
   const [overrideTce, setOverrideTce] = useState<number | null>(null);
   const [overrideSaving, setOverrideSaving] = useState(false);
   const [overrideError, setOverrideError] = useState<string | null>(null);
+  const [currentRate, setCurrentRate] = useState<number | null>(storedFreightRate ?? null);
+  const [currentSource, setCurrentSource] = useState<string | null>(freightRateSource ?? null);
+  const [resetting, setResetting] = useState(false);
   const [bunkerPort, setBunkerPort] = useState<BunkerPort>('SGSIN');
   const [bunkerGrade, setBunkerGrade] = useState<BunkerGrade>('VLSFO');
   const [displayCurrency, setDisplayCurrency] = useState<DisplayCurrency>('USD');
@@ -103,6 +107,8 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
       } else {
         const updated = await res.json();
         setOverrideTce(updated.tce_usd_per_day ?? null);
+        setCurrentRate(updated.freight_rate_usd_per_mt ?? rate);
+        setCurrentSource(updated.freight_rate_source ?? 'manual');
       }
     } catch {
       setOverrideError('Network error');
@@ -110,6 +116,36 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
       setOverrideSaving(false);
     }
   }, [matchDbId, overrideRate]);
+
+  // Reset a sticky manual override back to the automatic (waterfall) rate (Wave #7).
+  const handleReset = useCallback(async () => {
+    if (!matchDbId) return;
+    setResetting(true);
+    setOverrideError(null);
+    try {
+      const res = await fetch(`/api/matches/${matchDbId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reset_freight_rate: true }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setOverrideError((data as { error?: string }).error ?? `Error ${res.status}`);
+      } else {
+        const updated = await res.json();
+        setCurrentRate(updated.freight_rate_usd_per_mt ?? null);
+        setCurrentSource(updated.freight_rate_source ?? 'estimated');
+        setOverrideTce(updated.tce_usd_per_day ?? null);
+        setOverrideRate(
+          updated.freight_rate_usd_per_mt != null ? String(updated.freight_rate_usd_per_mt) : '',
+        );
+      }
+    } catch {
+      setOverrideError('Network error');
+    } finally {
+      setResetting(false);
+    }
+  }, [matchDbId]);
 
   const compareInputs = useMemo(() => {
     const origin = cargo?.originPort?.value ?? '';
@@ -185,13 +221,39 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
       {matchDbId != null && (
         <div data-testid="freight-rate-override" className="rounded border border-blue-200 bg-blue-50 p-3 space-y-2">
           <h3 className="text-xs font-semibold text-blue-900">Freight Rate Override</h3>
-          {storedFreightRate != null && (
-            <p className="text-xs text-gray-600">
-              Current: <span className="font-medium">${storedFreightRate}/mt</span>
-              {freightRateSource === 'estimated' && (
-                <span className="ml-1 text-amber-700 bg-amber-100 px-1 rounded">est</span>
-              )}
-            </p>
+          {currentRate != null && (() => {
+            const badge = freightBadge(currentSource);
+            return (
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-xs text-gray-600">
+                  Current:{' '}
+                  <span className={`font-medium ${badge.dimmed ? 'text-gray-400' : ''}`}>
+                    ${currentRate}/mt
+                  </span>
+                  <span
+                    data-testid="freight-rate-badge"
+                    className={`ml-1 px-1 rounded ${FREIGHT_BADGE_CLASSES[badge.tone]}`}
+                    title={badge.title}
+                  >
+                    {badge.label}
+                  </span>
+                </p>
+                {currentSource === 'manual' && (
+                  <button
+                    type="button"
+                    data-testid="freight-rate-reset"
+                    onClick={handleReset}
+                    disabled={resetting}
+                    className="text-xs text-blue-600 hover:underline disabled:opacity-50 flex-none"
+                  >
+                    {resetting ? '…' : 'Reset to auto'}
+                  </button>
+                )}
+              </div>
+            );
+          })()}
+          {currentSource === 'estimated' && (
+            <p className="text-xs text-amber-700">≈ estimate — rate not confirmed</p>
           )}
           {overrideTce != null && (
             <p data-testid="override-tce-result" className="text-xs font-medium text-emerald-700">

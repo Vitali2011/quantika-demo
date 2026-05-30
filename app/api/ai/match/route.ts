@@ -6,6 +6,7 @@ import { LLMTimeoutError } from '@/lib/openai';
 import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { MATCH_PROMPT } from '@/lib/prompts';
 import { analyzePairs, AiScorer, RawMatch } from '@/lib/matching/pair-analyzer';
+import { getStore } from '@/lib/session-store';
 import { isRagEnabled } from '@/lib/knowledge/flags';
 import type { Match } from '@/lib/types';
 
@@ -106,7 +107,11 @@ export async function POST(request: NextRequest) {
       blockedMatches,
       lowConfidenceMatches = [],
       insufficientData = [],
-    } = await analyzePairs(parsedCargos, parsedVessels, aiScorer, { refYear, today });
+    } = await analyzePairs(parsedCargos, parsedVessels, aiScorer, {
+      refYear,
+      today,
+      db: getStore().getDatabase(),
+    });
 
     // Idempotency guard: if this is a sample-data session, preserve the demo
     // economics match injected by /api/sample so EconomicsTab remains accessible
