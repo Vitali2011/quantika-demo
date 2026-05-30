@@ -19,6 +19,10 @@ interface Props {
   isComputing?: boolean;
   cargoEmailIds?: string[];
   vesselEmailIds?: string[];
+  /** "Manual review" bucket (weak score / idle large gap), read-only. Wave B. */
+  lowConfidenceMatches?: StoredMatch[];
+  /** "Not enough data" bucket (unknown verdict), read-only. Wave B. */
+  insufficientData?: StoredMatch[];
 }
 
 const ALL_STATUSES: MatchStatus[] = ['shortlist', 'saved', 'dismissed', 'archived'];
@@ -34,6 +38,7 @@ interface ScoreComponent {
 type QuickFilter = 'all' | 'fresh' | 'score80' | 'dwt50_60';
 type SortBy = 'score' | 'freshness' | 'tce';
 type Density = 'table' | 'cards';
+type Tab = 'matches' | 'review' | 'insufficient';
 
 const SORT_LABELS: Record<SortBy, string> = { score: 'Score', freshness: 'Freshness', tce: 'TCE/day' };
 
@@ -94,7 +99,7 @@ function fmtTce(v: number | null): string {
 }
 
 
-export default function MatchesClient({ initialMatches, isComputing = false, cargoEmailIds = [], vesselEmailIds = [] }: Props) {
+export default function MatchesClient({ initialMatches, isComputing = false, cargoEmailIds = [], vesselEmailIds = [], lowConfidenceMatches = [], insufficientData = [] }: Props) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { isOwner } = useMode();
@@ -148,6 +153,9 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
     return () => clearInterval(id);
   }, []);
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
+
+  // Bucket tabs (Wave B): main matches vs the two read-only realism buckets.
+  const [activeTab, setActiveTab] = useState<Tab>('matches');
 
   // Auto-switch to cards on mobile after mount
   useEffect(() => {
@@ -367,6 +375,102 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
             <span className="text-xs text-muted-foreground">AUTO-REFRESH · {nowUtc} UTC</span>
           </div>
         )}
+
+        {/* ===== BUCKET TABS (Wave B) — main list + two read-only realism buckets ===== */}
+        <div className="flex items-center gap-1 border-b border-ds-border" role="tablist" aria-label="Match buckets">
+          {([
+            { id: 'matches' as Tab, label: 'Матчи', count: modeFiltered.length, testid: 'tab-matches' },
+            { id: 'review' as Tab, label: 'На проверку', count: lowConfidenceMatches.length, testid: 'tab-review' },
+            { id: 'insufficient' as Tab, label: 'Мало данных', count: insufficientData.length, testid: 'tab-insufficient' },
+          ]).map(({ id, label, count, testid }) => (
+            <button
+              key={id}
+              role="tab"
+              data-testid={testid}
+              aria-selected={activeTab === id}
+              onClick={() => setActiveTab(id)}
+              className={`relative -mb-px px-4 py-2.5 text-sm border-b-2 transition-colors ${
+                activeTab === id
+                  ? 'border-blue-600 text-blue-600 font-medium'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              {label} <span className="font-mono text-xs text-gray-400">({count})</span>
+            </button>
+          ))}
+        </div>
+
+        {/* ===== READ-ONLY BUCKET LIST (review / insufficient tabs) ===== */}
+        {activeTab !== 'matches' && (() => {
+          const bucketRows = activeTab === 'review' ? lowConfidenceMatches : insufficientData;
+          const emptyText = activeTab === 'review'
+            ? 'Нет пар на проверку'
+            : 'Нет пар с недостатком данных';
+          if (bucketRows.length === 0) {
+            return (
+              <div className="bg-white rounded-lg border p-8 text-center">
+                <p className="text-gray-500">{emptyText}</p>
+              </div>
+            );
+          }
+          return (
+            <ul className="space-y-4" data-testid="bucket-list">
+              {bucketRows.map((match) => (
+                // Composite key: a cargo↔vessel pair is unique within a bucket, and only
+                // one bucket renders per tab — so this never collides with the other bucket's
+                // synthetic ids regardless of row counts.
+                <li key={`${match.cargo_id}|${match.vessel_id}`} className="bg-white rounded-lg border overflow-hidden">
+                  <div className="flex items-start gap-3 p-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <div className="font-medium text-sm">
+                            Cargo: <span className="text-gray-700">{match.cargo_id}</span>
+                          </div>
+                          <div className="font-medium text-sm">
+                            Vessel: <span className="text-gray-700">{match.vessel_id}</span>
+                          </div>
+                          {match.cargo_type && (
+                            <span className="inline-block text-xs bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded mt-0.5">
+                              {match.cargo_type}
+                            </span>
+                          )}
+                          {(match.load_port || match.discharge_port) && (
+                            <div className="text-xs text-gray-500 mt-0.5 truncate">
+                              {[match.load_port, match.discharge_port].filter(Boolean).join(' → ')}
+                            </div>
+                          )}
+                          {match.vessel_dwt && (
+                            <div className="text-xs text-gray-500">
+                              DWT: {match.vessel_dwt.toLocaleString('en-US')}
+                            </div>
+                          )}
+                          {match.tce_usd_per_day != null && (
+                            <div className="text-xs font-medium text-emerald-700">
+                              TCE: ${match.tce_usd_per_day.toLocaleString('en-US')}/day
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-right flex-none">
+                          <div className="text-lg font-bold text-blue-600">{match.score}%</div>
+                          <div className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 capitalize">
+                            {match.status}
+                          </div>
+                        </div>
+                      </div>
+                      {match.reason && (
+                        <div className="text-xs text-gray-500 truncate mt-1">{match.reason}</div>
+                      )}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          );
+        })()}
+
+        {/* ===== MAIN MATCH TAB (filters + list) ===== */}
+        {activeTab === 'matches' && (<>
 
         {/* ===== PRIMARY FILTER BAR (CD design) ===== */}
         <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -1006,6 +1110,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
             </div>
           </section>
         )}
+        </>)}
 
         {/* Sticky footer for bulk actions (#374) */}
         {selectedIds.size > 0 && (
