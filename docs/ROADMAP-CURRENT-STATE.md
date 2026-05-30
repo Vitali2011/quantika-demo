@@ -1,8 +1,8 @@
 # Quantika Demo — ROADMAP (Текущее состояние)
 
 **Последний полный аудит:** 2026-05-17 (5-поточный код-аудит) + 2026-05-19 UI audit (Playwright+Chrome MCP) + **2026-05-19 ROADMAP reality audit** (claim vs prod sweep)
-**Последнее обновление:** 2026-05-29 (qa-walker backlog sweep) — **14 PR closed**: Wave M (#641/#642/#643) + Wave L 11 issues (#625-#635) across 4 batches of 3. Все QA PASS + post-deploy smoke 5/5. Notable: #628 bell=false-positive (icon existed, only test added); #631 stable match-slug DB migration; #634 sentry double-init fix; #649 needed lint-fix round. **#589 AI-hallucinations DEFERRED** (root cause found: validator compares port codes NLRTM vs city names Rotterdam → false-positive redaction; WIP branch progong/589-r6).
-**Текущая версия:** prod HEAD `857a9d6` (sentry double-init fix #658) auto-deploy LIVE на outreach-vps
+**Последнее обновление:** 2026-05-30 (matching-realism pipeline → prod) — **3 PR merged** (rebased on fresh main, CI green, auto-deploy LIVE): **#694** fix/matching-realism (core — weak/idle/unknown → lowConfidence/insufficient buckets, levers 1+2+5) `c390e6f`; **#696** fix/matching-data-freshness (rebase laycan/open to now + 12 demo ports, unknown↓) `aaf90f0`; **#698** fix/matching-economics-wiring (attach match.economics: TCE $/day + JWC war-risk, count/ranking unchanged) `c47727c`. QA PASS all 3 (0 regressions). #696 lifted core test bound matches.length 200→450 (founder-approved ~322 main). **#697** (bucket-UI 3 tabs) + **#699** still OPEN/draft — not merged this round. Prior: 2026-05-29 (qa-walker backlog sweep) 14 PR closed (Wave M+L), **#589 AI-hallucinations DEFERRED** (validator port-code vs city-name false-positive; WIP progong/589-r6).
+**Текущая версия:** prod HEAD `c47727c` (#698 match.economics wiring) auto-deploy LIVE на outreach-vps
 **Статус:** 🟢 Production-quality SaaS UI + backend wiring ~90%. Открытые followup: (1) rate-limiter `/api/parser/email` (MEDIUM, non-blocking), (2) Mode M1 = UX-choice (принято), (3) R6.5 dark-mode toggle, (4) components/ui 40 stale imports.
 
 > **Живой документ.** Заменяет `ROADMAP-SESSION-PROMPT.md` (тот был разовый промпт-генератор, не state tracker).
