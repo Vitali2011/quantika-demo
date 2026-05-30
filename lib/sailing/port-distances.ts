@@ -15,6 +15,7 @@ import fuzzysort from 'fuzzysort';
 import PORTS_JSON from '@/data/ports/port-master.json';
 import { loadPortMasterFromJson } from './port-master-loader';
 import type { PortMaster } from './port-master';
+import { regionCentroid } from './region-centroids';
 
 /** Canonical port names used as map keys. */
 export const KNOWN_PORTS = [
