@@ -84,8 +84,14 @@ describe('analyzePairs — Map-based lookup', () => {
       today: new Date('2025-04-01'),
     });
 
-    expect(result.matches).toHaveLength(1);
-    const m = result.matches[0];
+    // NEW CONTRACT (handover 2026-05-30, levers 1+2+5): analyzePairs partitions
+    // non-blocked pairs across matches / lowConfidenceMatches / insufficientData.
+    // These synthetic ports aren't in the distance matrix → verdict 'unknown' →
+    // the pair lands in insufficientData, not matches. The lookup still attaches
+    // readiness/hardFilters to every analyzed pair, which is what this test checks.
+    const all = [...result.matches, ...result.lowConfidenceMatches, ...result.insufficientData];
+    expect(all).toHaveLength(1);
+    const m = all[0];
     expect(m.cargoEmailId).toBe('email-cargo-1');
     expect(m.vesselEmailId).toBe('email-vessel-1');
     // readiness/hardFilters should be attached via the analysis lookup
@@ -117,8 +123,10 @@ describe('analyzePairs — Map-based lookup', () => {
       today: new Date('2025-04-01'),
     });
 
-    // Both matches should have hardFilters attached (proves lookup worked)
-    const matchWithFilters = result.matches.filter(m => m.hardFilters !== undefined);
+    // Both analyzed pairs should have hardFilters attached (proves lookup worked).
+    // NEW CONTRACT: pairs may land in any bucket — check the union (see note above).
+    const all = [...result.matches, ...result.lowConfidenceMatches, ...result.insufficientData];
+    const matchWithFilters = all.filter(m => m.hardFilters !== undefined);
     expect(matchWithFilters.length).toBeGreaterThanOrEqual(2);
   });
 

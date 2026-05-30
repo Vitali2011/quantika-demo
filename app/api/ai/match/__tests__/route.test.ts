@@ -155,7 +155,7 @@ describe('POST /api/ai/match — provider migration (γv-06)', () => {
     jest.clearAllMocks();
     mockUpdateSession.mockReturnValue(true);
     // Default: analyzePairs returns empty matches (enough for non-crash tests)
-    mockAnalyzePairs.mockResolvedValue({ matches: [], blockedMatches: [] });
+    mockAnalyzePairs.mockResolvedValue({ matches: [], lowConfidenceMatches: [], insufficientData: [], blockedMatches: [] });
   });
 
   // ── Auth / CSRF ─────────────────────────────────────────────────────────────
@@ -219,7 +219,7 @@ describe('POST /api/ai/match — provider migration (γv-06)', () => {
         vesselData: vessels,
         readinessData: [],
       });
-      return { matches: [], blockedMatches: [] };
+      return { matches: [], lowConfidenceMatches: [], insufficientData: [], blockedMatches: [] };
     });
     // Route's aiScorer calls callAiJson through ai-provider shim
     mockCallAiJson.mockResolvedValue({ matches: [] });
@@ -236,7 +236,7 @@ describe('POST /api/ai/match — provider migration (γv-06)', () => {
     mockGetSession.mockReturnValue(baseSession);
     mockAnalyzePairs.mockImplementation(async (cargos, vessels, aiScorer) => {
       await aiScorer({ cargoData: cargos, vesselData: vessels, readinessData: [] });
-      return { matches: [], blockedMatches: [] };
+      return { matches: [], lowConfidenceMatches: [], insufficientData: [], blockedMatches: [] };
     });
     mockCallAiJson.mockResolvedValue({ matches: [] });
 
@@ -251,7 +251,7 @@ describe('POST /api/ai/match — provider migration (γv-06)', () => {
     mockGetSession.mockReturnValue(baseSession);
     mockAnalyzePairs.mockImplementation(async (cargos, vessels, aiScorer) => {
       await aiScorer({ cargoData: cargos, vesselData: vessels, readinessData: [] });
-      return { matches: [], blockedMatches: [] };
+      return { matches: [], lowConfidenceMatches: [], insufficientData: [], blockedMatches: [] };
     });
     mockCallAiJson.mockResolvedValue({ matches: [] });
 
@@ -269,7 +269,7 @@ describe('POST /api/ai/match — provider migration (γv-06)', () => {
     mockGetSession.mockReturnValue(baseSession);
     mockAnalyzePairs.mockImplementation(async (cargos, vessels, aiScorer) => {
       await aiScorer({ cargoData: cargos, vesselData: vessels, readinessData: [] });
-      return { matches: [], blockedMatches: [] };
+      return { matches: [], lowConfidenceMatches: [], insufficientData: [], blockedMatches: [] };
     });
     mockCallAiJson.mockResolvedValue({ matches: [] });
 
@@ -288,7 +288,7 @@ describe('POST /api/ai/match — provider migration (γv-06)', () => {
     mockGetSession.mockReturnValue(baseSession);
     mockAnalyzePairs.mockImplementation(async (cargos, vessels, aiScorer) => {
       await aiScorer({ cargoData: cargos, vesselData: vessels, readinessData: [] });
-      return { matches: [], blockedMatches: [] };
+      return { matches: [], lowConfidenceMatches: [], insufficientData: [], blockedMatches: [] };
     });
     mockCallAiJson.mockResolvedValue({ matches: [] });
 
@@ -338,7 +338,7 @@ describe('POST /api/ai/match — provider migration (γv-06)', () => {
       issues: [],
     };
 
-    mockAnalyzePairs.mockResolvedValue({ matches: [mockMatch], blockedMatches: [] });
+    mockAnalyzePairs.mockResolvedValue({ matches: [mockMatch], lowConfidenceMatches: [], insufficientData: [], blockedMatches: [] });
 
     const req = makeRequest('session-1');
     const res = await POST(req);
@@ -356,7 +356,7 @@ describe('POST /api/ai/match — provider migration (γv-06)', () => {
     mockGetSession.mockReturnValue(baseSession);
     mockAnalyzePairs.mockImplementation(async (cargos, vessels, aiScorer) => {
       await aiScorer({ cargoData: cargos, vesselData: vessels, readinessData: [] });
-      return { matches: [], blockedMatches: [] };
+      return { matches: [], lowConfidenceMatches: [], insufficientData: [], blockedMatches: [] };
     });
     mockCallAiJson.mockResolvedValue({ matches: [] });
 
@@ -378,7 +378,7 @@ describe('POST /api/ai/match — provider migration (γv-06)', () => {
     mockGetSession.mockReturnValue(baseSession);
     mockAnalyzePairs.mockImplementation(async (cargos, vessels, aiScorer) => {
       await aiScorer({ cargoData: cargos, vesselData: vessels, readinessData: [] });
-      return { matches: [], blockedMatches: [] };
+      return { matches: [], lowConfidenceMatches: [], insufficientData: [], blockedMatches: [] };
     });
     mockCallAiJson.mockResolvedValue({ matches: [] });
 
@@ -435,6 +435,8 @@ describe('POST /api/ai/match — provider migration (γv-06)', () => {
           issues: [],
         },
       ],
+      lowConfidenceMatches: [],
+      insufficientData: [],
       blockedMatches: [
         {
           cargoEmailId: 'cargo-001',
