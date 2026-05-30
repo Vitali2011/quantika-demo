@@ -101,12 +101,12 @@ export async function POST(request: NextRequest) {
   };
 
   try {
-    const { matches, blockedMatches } = await analyzePairs(
-      parsedCargos,
-      parsedVessels,
-      aiScorer,
-      { refYear, today },
-    );
+    const {
+      matches,
+      blockedMatches,
+      lowConfidenceMatches = [],
+      insufficientData = [],
+    } = await analyzePairs(parsedCargos, parsedVessels, aiScorer, { refYear, today });
 
     // Idempotency guard: if this is a sample-data session, preserve the demo
     // economics match injected by /api/sample so EconomicsTab remains accessible
@@ -130,8 +130,18 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    updateSession(sessionId, { matches: finalMatches, blockedMatches });
-    return NextResponse.json({ count: finalMatches.length, blockedCount: blockedMatches.length });
+    updateSession(sessionId, {
+      matches: finalMatches,
+      lowConfidenceMatches,
+      insufficientData,
+      blockedMatches,
+    });
+    return NextResponse.json({
+      count: finalMatches.length,
+      blockedCount: blockedMatches.length,
+      lowConfidenceCount: lowConfidenceMatches.length,
+      insufficientCount: insufficientData.length,
+    });
   } catch (err) {
     if (err instanceof LLMTimeoutError) {
       return NextResponse.json(

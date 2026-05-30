@@ -13,6 +13,8 @@ const config = {
     '^.+\\.tsx?$': ['ts-jest', {
       tsconfig: {
         moduleResolution: 'node',
+        ignoreDeprecations: '6.0',
+        rootDir: '.',
       },
     }],
   },

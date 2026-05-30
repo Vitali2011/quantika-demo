@@ -260,3 +260,36 @@ describe('computeAndPersistMatches — M3 field write-through', () => {
     expect(all).toHaveLength(1);
   });
 });
+
+// Handover 2026-05-30, point 2 — realism-bucket boundary for the auto-precompute path.
+//
+// The DB matches table is a curated shortlist with no bucket columns, so the
+// auto-precompute path persists ONLY the main `matches`; the lowConfidenceMatches
+// / insufficientData buckets are intentionally not written here (they would
+// pollute the shortlist and need a schema migration — out of scope). The buckets
+// are NOT lost: the live POST /api/ai/match path persists all of them to the
+// session. This test pins that deliberate boundary so a future change can't
+// silently dump low-confidence / unknown pairs into the shortlist.
+describe('computeAndPersistMatches — realism-bucket boundary (point 2)', () => {
+  it('persists only the main matches; low-confidence + insufficient-data buckets are not written to the shortlist', async () => {
+    const db = freshDb();
+
+    (analyzePairs as jest.Mock).mockResolvedValueOnce({
+      matches: [makeMatch({ vesselEmailId: 'v-main', score: 70 })],
+      lowConfidenceMatches: [makeMatch({ vesselEmailId: 'v-weak', score: 20 })],
+      insufficientData: [makeMatch({ vesselEmailId: 'v-unknown', score: 40 })],
+      blockedMatches: [],
+    });
+
+    const count = await computeAndPersistMatches([makeCargo()], [makeVessel()], 'session-buckets', db);
+
+    // Only the single main match is persisted to the DB shortlist.
+    expect(count).toBe(1);
+    const rows = listMatches(db, { sortBy: 'score', sortDir: 'desc' });
+    expect(rows).toHaveLength(1);
+    const vesselIds = rows.map((r) => r.vessel_id);
+    expect(vesselIds).toContain('v-main');
+    expect(vesselIds).not.toContain('v-weak');
+    expect(vesselIds).not.toContain('v-unknown');
+  });
+});

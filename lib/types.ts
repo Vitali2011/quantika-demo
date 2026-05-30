@@ -485,6 +485,12 @@ export interface SessionData {
   matches: Match[];
   /** Pairs blocked deterministically (sanctions, hard filters, dates) before the LLM stage. */
   blockedMatches?: BlockedMatch[];
+  /** "Manual review" bucket — weak score OR idle with a large date gap. Kept out of
+   *  the main `matches` list but preserved so brokers can still inspect them (levers 1+2). */
+  lowConfidenceMatches?: Match[];
+  /** "Not enough data" bucket — pairs with an `unknown` readiness verdict (no distance/
+   *  dates), excluded from the main list but preserved (lever 5). */
+  insufficientData?: Match[];
   recaps: Recap[];
   commissionSummary: CommissionSummary | null;
   counterparties: Counterparty[];
