@@ -43,6 +43,10 @@ jest.mock('@/lib/sailing/match-scoring', () => ({
   deriveMatchLevel: jest.fn().mockImplementation((score: number) =>
     score > 70 ? 'good' : score > 40 ? 'possible' : 'weak',
   ),
+  // Wave C: cap is exercised by its own unit tests + match-realism-buckets
+  // (real engine). Here it is a passthrough so the bucket/sort contracts under
+  // test are unaffected by the cap.
+  applyBallastSizeCap: jest.fn().mockImplementation((input) => input.match),
 }));
 
 jest.mock('@/lib/sailing/date-parsing', () => ({

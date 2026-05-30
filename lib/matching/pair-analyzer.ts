@@ -11,7 +11,7 @@ import type {
 import { cfValue, isRange } from '@/lib/types';
 import { computeMatchConfidence } from '@/lib/confidence';
 import { calculateReadinessGap, detectSpot } from '@/lib/sailing/readiness-gap';
-import { applyReadinessScoring, computeScoreBreakdown, deriveMatchLevel } from '@/lib/sailing/match-scoring';
+import { applyReadinessScoring, computeScoreBreakdown, deriveMatchLevel, applyBallastSizeCap } from '@/lib/sailing/match-scoring';
 import { runHardFilters } from '@/lib/sailing/match-filters';
 import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
 import { validateDates } from '@/lib/sailing/date-sanity';
@@ -548,6 +548,35 @@ export async function analyzePairs(
       );
       allMatches[i] = applyReadinessScoring(m, undefined, matchCargo, matchVessel);
     }
+  }
+
+  // ── Ballast + size realism cap (Wave C, levers 3 + 4) ──────────────────────
+  // Scores are now final. Demote any 'good' match whose vessel must ballast
+  // beyond its class radius (lever 3) or whose cargo fills too little of the
+  // vessel — deadfreight (lever 4) — to 'possible'. Part-cargo loads are exempt
+  // from the size cut. Runs BEFORE the realism partition so a capped match stays
+  // in the main list as 'possible' (it still shows, flagged), never bucketed by
+  // this step. Only ever lowers the tier (see applyBallastSizeCap).
+  for (let i = 0; i < allMatches.length; i++) {
+    const m = allMatches[i];
+    if (m.matchLevel !== 'good') continue;
+    const analysis = analysisMap.get(
+      pairKey(m.cargoEmailId, m.cargoItemIndex, m.vesselEmailId, m.vesselItemIndex),
+    );
+    const capCargo = cargos.find(
+      (c) => c.emailId === m.cargoEmailId && c.itemIndex === m.cargoItemIndex,
+    );
+    const capVessel = vessels.find(
+      (v) => v.emailId === m.vesselEmailId && v.itemIndex === m.vesselItemIndex,
+    );
+    allMatches[i] = applyBallastSizeCap({
+      match: m,
+      distanceNm: analysis?.readiness?.distanceNm ?? null,
+      vesselDwt: capVessel ? cfValue(capVessel.dwtSummer) : null,
+      vesselDwcc: capVessel ? cfValue(capVessel.dwcc) : null,
+      cargoWeightMax: capCargo ? (capCargo.weightMtMax ?? cfValue(capCargo.weightMt)) : null,
+      cargoDescription: capCargo ? cfValue(capCargo.cargoDescription) : null,
+    });
   }
 
   // Dedupe: pairs in blockedMatches must not appear in matches
