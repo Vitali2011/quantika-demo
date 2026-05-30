@@ -67,6 +67,12 @@ export interface EconomicsResult {
     bunker: string;                    // ISO 8601 of bunker price scrape
     eua: string;                       // ISO 8601 of EUA price scrape
   };
+  /**
+   * Headline Time-Charter-Equivalent ($/day). Additive (spec L2 #5): present when
+   * economics is computed in the matching pipeline (buildMatchEconomics); absent
+   * for the legacy /api/economics shape.
+   */
+  tceUsdPerDay?: number;
 }
 
 // ── FuelEU Maritime (Spec γ-11) ──

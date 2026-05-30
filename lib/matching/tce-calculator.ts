@@ -1,4 +1,6 @@
-import { calculateTCE } from '@/lib/economics/voyage-calculator';
+import { calculateTCE, type TCEBreakdown } from '@/lib/economics/voyage-calculator';
+import { calculateWarRiskPremium } from '@/lib/economics/war-risk';
+import type { EconomicsResult } from '@/lib/types';
 
 // Ballpark base freight rates (USD/mt) per cargo class
 const BASE_RATES: Record<string, number> = {
@@ -36,14 +38,23 @@ export interface TceEstimate {
   tce_usd_per_day: number;
   freight_rate_usd_per_mt: number;
   freight_rate_source: 'estimated' | 'manual';
+  /** Full deterministic voyage breakdown (additive, spec L2 #5). */
+  breakdown: TCEBreakdown;
 }
 
-// Parse a leading number from values like "12.5 knots", "25 mt/day", or a raw
-// number (LLM-parsed fields can arrive as numbers, not strings).
-export function parseLeadingNumber(s: string | number | null | undefined): number {
+// Parse a leading number from strings like "12.5 knots", "25 mt/day", a raw
+// number (LLM-parsed fields can arrive as numbers, not strings), or a
+// ConfidenceField object ({ value, confidence, source_text }). Real/demo parsed
+// data stores speed/consumption as any of these despite the string typing, so
+// tolerate all rather than throw on `.match`.
+export function parseLeadingNumber(s: unknown): number {
   if (s == null) return 0;
   if (typeof s === 'number') return Number.isFinite(s) ? s : 0;
-  const m = String(s).match(/(\d+(?:\.\d+)?)/);
+  if (typeof s === 'object' && 'value' in (s as Record<string, unknown>)) {
+    return parseLeadingNumber((s as { value: unknown }).value);
+  }
+  if (typeof s !== 'string') return 0;
+  const m = s.match(/(\d+(?:\.\d+)?)/);
   return m ? Number(m[1]) : 0;
 }
 
@@ -118,5 +129,69 @@ export function computeEstimatedTce(
     tce_usd_per_day: result.daily_tce_usd,
     freight_rate_usd_per_mt: freightRate.rate,
     freight_rate_source: freightRate.source,
+    breakdown: result.breakdown,
+  };
+}
+
+export interface MatchEconomicsInput {
+  cargoType: string | null;
+  distanceNm: number;
+  vesselDwt: number;
+  quantityMt: number;
+  speedKts: number;
+  consumptionMt: number;
+  loadPort: string | null;
+  dischargePort: string | null;
+  /** ISO 8601 timestamp; passed in so the result is deterministic/testable. */
+  calculatedAt: string;
+  /** Vessel value for the war-risk hull premium. Defaults to DEFAULT_VESSEL_VALUE_USD. */
+  vesselValueUsd?: number;
+}
+
+/**
+ * Build the EconomicsResult attached to a Match (spec L2 #5 + #6).
+ *
+ * Reuses estimateFreightRate + computeEstimatedTce so `tceUsdPerDay` is identical
+ * to the `tce_usd_per_day` value compute-matches.ts persists to the DB column.
+ * JWC war-risk (#6) is computed separately with the REAL load/discharge ports and
+ * surfaced as a breakdown line item — the per-day figure excludes it (the TCE
+ * engine blanks the route ports), mirroring the persisted column and the live
+ * economics breakdown, where war risk is a separate cost line.
+ *
+ * Returns null when distance is unavailable → caller leaves match.economics undefined.
+ */
+export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult | null {
+  if (!(input.distanceNm > 0)) return null;
+
+  const freight = estimateFreightRate(input.cargoType, input.distanceNm, input.vesselDwt);
+  const tce = computeEstimatedTce(
+    freight,
+    input.distanceNm,
+    input.vesselDwt,
+    input.quantityMt,
+    input.speedKts,
+    input.consumptionMt,
+  );
+
+  const war = calculateWarRiskPremium({
+    route: { fromPort: input.loadPort ?? '', toPort: input.dischargePort ?? '' },
+    vesselValueUsd: input.vesselValueUsd ?? DEFAULT_VESSEL_VALUE_USD,
+  });
+
+  return {
+    breakdown: {
+      bunkerCost: tce.breakdown.bunker_usd,
+      bunkerPort: input.loadPort ?? '',
+      euEtsAmount: tce.breakdown.ets_eur,
+      euEtsApplicable: tce.breakdown.applicable.ets,
+      warRiskPremium: war.premiumUsd,
+      warRiskZones: war.zones,
+      warRiskTotal: war.breakdown?.totalPremiumUsd,
+      warRiskBreakdown: war.breakdown,
+    },
+    totalUsd: tce.breakdown.total_costs_usd + war.premiumUsd,
+    calculatedAt: input.calculatedAt,
+    dataFreshness: { bunker: 'estimated', eua: 'estimated' },
+    tceUsdPerDay: tce.tce_usd_per_day,
   };
 }
