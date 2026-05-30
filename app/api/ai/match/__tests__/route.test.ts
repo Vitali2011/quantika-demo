@@ -307,7 +307,7 @@ describe('POST /api/ai/match — provider migration (γv-06)', () => {
     mockGetSession.mockReturnValue(baseSession);
     mockAnalyzePairs.mockImplementation(async (cargos, vessels, aiScorer) => {
       await aiScorer({ cargoData: cargos, vesselData: vessels, readinessData: [] });
-      return { matches: [], blockedMatches: [] };
+      return { matches: [], lowConfidenceMatches: [], insufficientData: [], blockedMatches: [] };
     });
     mockCallAiJson.mockResolvedValue({ matches: [] });
 
