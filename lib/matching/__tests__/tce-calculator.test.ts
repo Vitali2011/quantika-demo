@@ -27,6 +27,7 @@ import {
   estimateFreightRate,
   computeEstimatedTce,
   parseLeadingNumber,
+  buildMatchEconomics,
 } from '@/lib/matching/tce-calculator';
 
 describe('parseLeadingNumber', () => {
@@ -50,13 +51,31 @@ describe('parseLeadingNumber', () => {
     expect(parseLeadingNumber(undefined)).toBe(0);
   });
 
-  it('returns a raw number unchanged (LLM-parsed fields can be numbers, not strings)', () => {
+  // Real/demo parsed data stores speed/consumption as ConfidenceField objects
+  // ({ value, confidence, source_text }) or raw numbers, despite the string typing.
+  // parseLeadingNumber must tolerate both rather than crash on `.match` (L2 wiring).
+  // (raw-number tolerance also guards the frozen-demo dashboard crash, #684.)
+  it('returns a finite number unchanged', () => {
+    expect(parseLeadingNumber(13)).toBe(13);
     expect(parseLeadingNumber(12.5)).toBe(12.5);
     expect(parseLeadingNumber(0)).toBe(0);
   });
 
-  it('returns 0 for a non-finite number', () => {
+  it('returns 0 for non-finite numbers', () => {
     expect(parseLeadingNumber(NaN)).toBe(0);
+    expect(parseLeadingNumber(Infinity)).toBe(0);
+  });
+
+  it('unwraps a ConfidenceField object with a numeric value', () => {
+    expect(parseLeadingNumber({ value: 13, confidence: 'confirmed', source_text: '13 knts' })).toBe(13);
+  });
+
+  it('unwraps a ConfidenceField object with a string value', () => {
+    expect(parseLeadingNumber({ value: '12.5 knots', confidence: 'estimated' })).toBe(12.5);
+  });
+
+  it('returns 0 for an object without a value field', () => {
+    expect(parseLeadingNumber({ confidence: 'estimated' })).toBe(0);
   });
 });
 
@@ -152,5 +171,53 @@ describe('computeEstimatedTce', () => {
     const tce_low = computeEstimatedTce(low, 3000, 50000, 45000).tce_usd_per_day;
     const tce_high = computeEstimatedTce(high, 3000, 50000, 45000).tce_usd_per_day;
     expect(tce_high).toBeGreaterThan(tce_low);
+  });
+});
+
+describe('buildMatchEconomics', () => {
+  const CALC_AT = '2026-05-30T00:00:00.000Z';
+  const base = {
+    cargoType: 'GRAIN',
+    distanceNm: 3000,
+    vesselDwt: 50000,
+    quantityMt: 45000,
+    speedKts: 12,
+    consumptionMt: 25,
+    loadPort: 'Rotterdam',
+    dischargePort: 'Hamburg',
+    calculatedAt: CALC_AT,
+  };
+
+  it('returns null when distance is not positive', () => {
+    expect(buildMatchEconomics({ ...base, distanceNm: 0 })).toBeNull();
+    expect(buildMatchEconomics({ ...base, distanceNm: -5 })).toBeNull();
+  });
+
+  it('populates a finite tceUsdPerDay identical to computeEstimatedTce', () => {
+    const econ = buildMatchEconomics(base);
+    expect(econ).not.toBeNull();
+    expect(Number.isFinite(econ!.tceUsdPerDay!)).toBe(true);
+
+    const freight = estimateFreightRate(base.cargoType, base.distanceNm, base.vesselDwt);
+    const tce = computeEstimatedTce(
+      freight, base.distanceNm, base.vesselDwt, base.quantityMt, base.speedKts, base.consumptionMt,
+    );
+    // Per-day TCE must match the value compute-matches.ts persists to the DB column.
+    expect(econ!.tceUsdPerDay).toBe(tce.tce_usd_per_day);
+    expect(econ!.calculatedAt).toBe(CALC_AT);
+  });
+
+  it('non-HRA route → empty war-risk zones, zero premium', () => {
+    const econ = buildMatchEconomics(base);
+    expect(econ!.breakdown.warRiskZones).toEqual([]);
+    expect(econ!.breakdown.warRiskPremium).toBe(0);
+    expect(econ!.breakdown.warRiskBreakdown).toBeUndefined();
+  });
+
+  it('surfaces JWC war-risk when load port is in a high-risk area (#6)', () => {
+    const econ = buildMatchEconomics({ ...base, loadPort: 'Lagos', dischargePort: 'Hamburg' });
+    expect(econ!.breakdown.warRiskZones.length).toBeGreaterThan(0);
+    expect(econ!.breakdown.warRiskPremium).toBeGreaterThan(0);
+    expect(econ!.breakdown.warRiskBreakdown!.totalPremiumUsd).toBeGreaterThan(0);
   });
 });
