@@ -2,13 +2,16 @@
  * Pre-parsed cargo / vessel / classification fixture loader for the demo
  * (POST /api/sample). After the ETMS corpus migration (2026-05-14) the JSON
  * fixtures hold corpus-derived records with ABSOLUTE laycan / openDate values
- * (real LLM output against frozen email bodies), so the resolvers are
- * effectively passthrough.
+ * (real LLM output against frozen email bodies).
  *
- * The only date resolution that still happens is for the two synthetic
- * economics-matching records (lib/sample-data/synthetic-economics.ts), which
- * are appended at seed-time so the EconomicsTab demo always has a future
- * laycan and a fresh openDate.
+ * Wave A (2026-05-30): the corpus resolvers now REBASE those absolute dates onto
+ * `now` (lib/sample-data/rebase-parsed.ts), preserving each set's internal spread
+ * so demo match counts stay stable across run dates (was drifting 1418 → 67 as
+ * laycans expired). Spot/prompt and display=TODAY values resolve to `now`.
+ *
+ * The two synthetic economics-matching records (lib/sample-data/synthetic-economics.ts)
+ * are appended at seed-time with their own relative offsets so the EconomicsTab
+ * demo always has a future laycan and a fresh openDate.
  */
 
 import type {
@@ -20,6 +23,7 @@ import type {
 } from '@/lib/types';
 import { buildProcessedEmails } from '@/lib/classification-service';
 import { resolveSyntheticCargo, resolveSyntheticVessel } from './synthetic-economics';
+import { rebaseParsedCargoes, rebaseParsedVessels } from './rebase-parsed';
 import cargoesFixture from './demo-parsed-cargoes.json';
 import classificationsFixture from './demo-classifications.json';
 import vesselsFixture from './demo-parsed-vessels.json';
@@ -31,7 +35,7 @@ import vesselsFixture from './demo-parsed-vessels.json';
  */
 export function resolveDemoParsedCargoes(now: Date): ParsedCargo[] {
   const corpus = cargoesFixture as unknown as ParsedCargo[];
-  return [...corpus, resolveSyntheticCargo(now)];
+  return [...rebaseParsedCargoes(corpus, now), resolveSyntheticCargo(now)];
 }
 
 /**
@@ -48,7 +52,7 @@ export function resolveDemoClassifications(): Classification[] {
  */
 export function resolveDemoParsedVessels(now: Date): ParsedVessel[] {
   const corpus = vesselsFixture as unknown as ParsedVessel[];
-  return [...corpus, resolveSyntheticVessel(now)];
+  return [...rebaseParsedVessels(corpus, now), resolveSyntheticVessel(now)];
 }
 
 /**

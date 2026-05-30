@@ -22,6 +22,8 @@ import fixtureRecaps from '@/lib/sample-data/fixture-recaps.json';
 import clientReplies from '@/lib/sample-data/client-replies.json';
 import documents from '@/lib/sample-data/documents.json';
 import vesselCerts from '@/lib/sample-data/vessel-certs.json';
+import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
+import { cfValue } from '@/lib/types';
 import type { ParsedCargo } from '@/lib/types';
 
 const NOW = new Date('2026-05-10T00:00:00.000Z');
@@ -73,6 +75,39 @@ describe('resolveDemoParsedCargoes', () => {
     const r1 = resolveDemoParsedCargoes(NOW);
     const r2 = resolveDemoParsedCargoes(NOW);
     expect(r1.map((c) => c.laycan)).toEqual(r2.map((c) => c.laycan));
+  });
+});
+
+describe('resolveDemoParsedCargoes — Wave A freshness contract', () => {
+  // Post Wave A the resolver REBASES corpus laycans onto `now` (was passthrough
+  // of frozen absolute dates). Median corpus laycan must track `now`, even for a
+  // run date far from the corpus epoch — otherwise demo match counts drift.
+  it('rebases corpus laycans so the median sits within a month of now', () => {
+    const now = new Date('2027-01-15T00:00:00.000Z'); // far from corpus epoch (May 2026)
+    const cargoes = resolveDemoParsedCargoes(now).filter((c) => c.emailId !== 'demo-cargo-economics');
+    const starts = cargoes
+      .map((c) => parseLaycan(c.laycan, now.getUTCFullYear()))
+      .filter((r): r is NonNullable<typeof r> => r != null)
+      .map((r) => r.start.getTime())
+      .sort((a, b) => a - b);
+    expect(starts.length).toBeGreaterThan(10);
+    const median = starts[Math.floor(starts.length / 2)];
+    const driftDays = Math.abs(median - now.getTime()) / 86_400_000;
+    expect(driftDays).toBeLessThan(31);
+  });
+
+  it('rebases corpus vessel opens so the median sits within ~2 months of now', () => {
+    const now = new Date('2027-01-15T00:00:00.000Z');
+    const vessels = resolveDemoParsedVessels(now).filter((v) => v.emailId !== 'demo-vessel-economics');
+    const opens = vessels
+      .map((v) => parseVesselOpenDate(cfValue(v.openDate) as never, now.getUTCFullYear(), now))
+      .filter((d): d is Date => d != null)
+      .map((d) => d.getTime())
+      .sort((a, b) => a - b);
+    expect(opens.length).toBeGreaterThan(10);
+    const median = opens[Math.floor(opens.length / 2)];
+    const driftDays = Math.abs(median - now.getTime()) / 86_400_000;
+    expect(driftDays).toBeLessThan(62);
   });
 });
 
