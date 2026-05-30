@@ -857,3 +857,176 @@ describe('Vague-region penalty — Phase D2', () => {
     expect(geoComponent(bCargo).reason).toMatch(/cargo origin/);
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Ballast + size realism cap (Wave C — levers 3 + 4, handover 2026-05-30)
+// ─────────────────────────────────────────────────────────────────────────────
+
+import {
+  applyBallastSizeCap,
+  isPartCargo,
+  BALLAST_GOOD_MAX_NM,
+  PROPORTION_GOOD_MIN_UTIL,
+  type BallastSizeCapInput,
+} from '../match-scoring';
+
+function capInput(over: Partial<BallastSizeCapInput> = {}): BallastSizeCapInput {
+  return {
+    match: mkMatch(81, 'good'),
+    distanceNm: null,
+    vesselDwt: 5200, // handysize
+    vesselDwcc: null,
+    cargoWeightMax: null,
+    cargoDescription: null,
+    ...over,
+  };
+}
+
+describe('isPartCargo', () => {
+  it('matches explicit part-cargo phrasing', () => {
+    expect(isPartCargo('Mobile machinery, part cargo')).toBe(true);
+    expect(isPartCargo('steel coils part-cargo')).toBe(true);
+    expect(isPartCargo('PART CARGO of bagged urea')).toBe(true);
+    expect(isPartCargo('grain, part load')).toBe(true);
+    expect(isPartCargo('part lot of pipes')).toBe(true);
+  });
+  it('does not match full-cargo or unrelated descriptions', () => {
+    expect(isPartCargo('full cargo of wheat')).toBe(false);
+    expect(isPartCargo('steel slabs')).toBe(false);
+    expect(isPartCargo('PC strand 2500mt')).toBe(false);
+    expect(isPartCargo(null)).toBe(false);
+    expect(isPartCargo(undefined)).toBe(false);
+    expect(isPartCargo('')).toBe(false);
+  });
+});
+
+describe('applyBallastSizeCap — ballast + size realism cap', () => {
+  describe('lever 3 — ballast distance, class-aware', () => {
+    it('caps a good handysize match with far ballast (1580nm) to possible', () => {
+      const out = applyBallastSizeCap(capInput({ distanceNm: 1580 }));
+      expect(out.score).toBeLessThan(70);
+      expect(out.matchLevel).toBe('possible');
+      expect(out.issues?.some((i) => i.startsWith('BALLAST:'))).toBe(true);
+    });
+
+    it('keeps a good handysize match with short ballast (580nm) as good', () => {
+      const out = applyBallastSizeCap(capInput({ distanceNm: 580 }));
+      expect(out.score).toBe(81);
+      expect(out.matchLevel).toBe('good');
+      expect(out.issues ?? []).toHaveLength(0);
+    });
+
+    it('keeps a good handysize match with very short ballast (205nm) as good', () => {
+      const out = applyBallastSizeCap(capInput({ distanceNm: 205 }));
+      expect(out.matchLevel).toBe('good');
+    });
+
+    it('does not cap a capesize at 3000nm but caps a handysize at the same distance', () => {
+      const cape = applyBallastSizeCap(capInput({ distanceNm: 3000, vesselDwt: 120000 }));
+      expect(cape.matchLevel).toBe('good');
+      const handy = applyBallastSizeCap(capInput({ distanceNm: 3000, vesselDwt: 5200 }));
+      expect(handy.matchLevel).toBe('possible');
+    });
+
+    it('skips the ballast guard when distance is unknown', () => {
+      const out = applyBallastSizeCap(capInput({ distanceNm: null }));
+      expect(out.matchLevel).toBe('good');
+    });
+
+    it('uses the documented per-class thresholds', () => {
+      expect(BALLAST_GOOD_MAX_NM.handysize).toBe(1500);
+      expect(BALLAST_GOOD_MAX_NM.supramax).toBeGreaterThan(BALLAST_GOOD_MAX_NM.handysize);
+      expect(BALLAST_GOOD_MAX_NM.panamax).toBeGreaterThan(BALLAST_GOOD_MAX_NM.supramax);
+      expect(BALLAST_GOOD_MAX_NM.capesize).toBeGreaterThan(BALLAST_GOOD_MAX_NM.panamax);
+    });
+  });
+
+  describe('lever 4 — size proportion, part-cargo exempt', () => {
+    it('caps a good low-util (34%) non-part-cargo match to possible', () => {
+      const out = applyBallastSizeCap(
+        capInput({ distanceNm: 200, vesselDwt: 7300, cargoWeightMax: 2500, cargoDescription: 'PC strand' }),
+      );
+      expect(out.matchLevel).toBe('possible');
+      expect(out.issues?.some((i) => i.startsWith('SIZE:'))).toBe(true);
+    });
+
+    it('keeps a good low-util (5%) PART-CARGO match as good (exempt)', () => {
+      const out = applyBallastSizeCap(
+        capInput({ distanceNm: 200, vesselDwt: 50000, cargoWeightMax: 2500, cargoDescription: 'Mobile machinery, part cargo' }),
+      );
+      expect(out.matchLevel).toBe('good');
+      expect(out.issues?.some((i) => i.startsWith('SIZE:'))).toBe(false);
+    });
+
+    it('keeps a good high-util (75%) match as good', () => {
+      const out = applyBallastSizeCap(
+        capInput({ distanceNm: 200, vesselDwt: 8000, cargoWeightMax: 6000, cargoDescription: 'wheat in bulk' }),
+      );
+      expect(out.matchLevel).toBe('good');
+    });
+
+    it('uses DWCC over DWT for utilisation when present', () => {
+      // cargo 4000 / dwcc 5000 = 80% (good) even though /dwt 9000 = 44% would cap
+      const out = applyBallastSizeCap(
+        capInput({ distanceNm: 200, vesselDwt: 9000, vesselDwcc: 5000, cargoWeightMax: 4000 }),
+      );
+      expect(out.matchLevel).toBe('good');
+    });
+
+    it('treats exactly the threshold util as good, just below as capped', () => {
+      expect(PROPORTION_GOOD_MIN_UTIL).toBe(0.5);
+      const atThreshold = applyBallastSizeCap(
+        capInput({ distanceNm: 200, vesselDwt: 10000, cargoWeightMax: 5000 }), // 0.50
+      );
+      expect(atThreshold.matchLevel).toBe('good');
+      const justBelow = applyBallastSizeCap(
+        capInput({ distanceNm: 200, vesselDwt: 10000, cargoWeightMax: 4900 }), // 0.49
+      );
+      expect(justBelow.matchLevel).toBe('possible');
+    });
+
+    it('skips the size guard when capacity is unknown', () => {
+      const out = applyBallastSizeCap(
+        capInput({ distanceNm: 200, vesselDwt: null, vesselDwcc: null, cargoWeightMax: 2500 }),
+      );
+      expect(out.matchLevel).toBe('good');
+    });
+  });
+
+  describe('invariants', () => {
+    it('never raises a lower tier — a possible match is left untouched', () => {
+      const out = applyBallastSizeCap({
+        match: mkMatch(60, 'possible'),
+        distanceNm: 5000,
+        vesselDwt: 5200,
+        vesselDwcc: null,
+        cargoWeightMax: 100,
+        cargoDescription: null,
+      });
+      expect(out.score).toBe(60);
+      expect(out.matchLevel).toBe('possible');
+      expect(out.issues ?? []).toHaveLength(0);
+    });
+
+    it('is idempotent — a second pass does not duplicate the issue', () => {
+      const once = applyBallastSizeCap(capInput({ distanceNm: 1580 }));
+      const twice = applyBallastSizeCap({
+        match: once,
+        distanceNm: 1580,
+        vesselDwt: 5200,
+        vesselDwcc: null,
+        cargoWeightMax: null,
+        cargoDescription: null,
+      });
+      const ballastIssues = (twice.issues ?? []).filter((i) => i.startsWith('BALLAST:'));
+      expect(ballastIssues).toHaveLength(1);
+    });
+
+    it('does not mutate the input match', () => {
+      const input = mkMatch(81, 'good');
+      applyBallastSizeCap({ ...capInput({ distanceNm: 1580 }), match: input });
+      expect(input.score).toBe(81);
+      expect(input.matchLevel).toBe('good');
+    });
+  });
+});
