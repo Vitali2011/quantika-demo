@@ -6,8 +6,15 @@
  * This file attacks the gaps that suite does NOT cover.
  *
  * Each `it` is labelled:
- *   [BUG]      — asserts the CORRECT behavior per the acceptance contract; FAILS today => PR bug.
- *   [BEHAVIOR] — pins down actual current behavior (passes); flags a soundness concern in a comment.
+ *   [BUG]      — found a real defect on first QA pass; the fix (commit 0962133)
+ *                hardened isPartCargo + the null-DWT guard, so these now PASS and
+ *                stand as regression guards. The "misses it" comments below describe
+ *                the PRE-FIX regex (`[\s-]?`, `\bcargo\b`), kept for provenance.
+ *   [FIXED]    — a soundness concern from the first pass, now resolved in code.
+ *
+ * NOTE: jest.config.mjs excludes /tests/regression/ from `npm test`; the
+ * contract-critical cases are mirrored in lib/sailing/__tests__/match-scoring.test.ts
+ * (which DOES run in CI). This file is the cold-start QA artifact.
  */
 import {
   applyBallastSizeCap,

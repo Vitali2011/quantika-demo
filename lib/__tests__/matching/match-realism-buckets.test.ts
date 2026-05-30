@@ -271,25 +271,9 @@ describe('analyzePairs — demo realism (79×51), levers 1+2+5', () => {
     expect(offenders).toHaveLength(0);
   });
 
-  it('legit part-cargo low-util pairs are NOT demoted out of good (exemption holds)', async () => {
-    // Synthetic part-cargo: 5% util, short ballast, ideal timing → stays good.
-    const partCargo = makeCargo({
-      emailId: 'pc-1',
-      cargoDescription: { value: 'Mobile machinery, part cargo', confidence: 'confirmed' },
-      weightMt: { value: 400, confidence: 'confirmed' },
-      cargoType: 'BREAK_BULK',
-    });
-    const bigVessel = makeVessel({
-      emailId: 'pv-1',
-      vesselType: 'general cargo',
-      dwtSummer: { value: 8000, confidence: 'confirmed' },
-    });
-    const result = await analyzePairs([partCargo], [bigVessel], offline, { refYear: 2026, today: TODAY });
-    // It must survive in the main list (not bucketed) and keep a non-weak tier;
-    // crucially it carries NO SIZE: cap flag despite ~5% utilisation.
-    const all = [...result.matches, ...result.lowConfidenceMatches];
-    const pc = all.find((m) => m.cargoEmailId === 'pc-1');
-    expect(pc).toBeDefined();
-    expect((pc!.issues ?? []).some((i) => i.startsWith('SIZE:'))).toBe(false);
-  });
+  // NB: the part-cargo size exemption is unit-tested directly in
+  // lib/sailing/__tests__/match-scoring.test.ts (a score-81 'good' part-cargo at
+  // 5% util stays good). A full-engine integration test is omitted on purpose —
+  // the offline sweep cannot reliably produce a 'good'-tier synthetic part-cargo
+  // pair, so the cap would early-return and the assertion would be a tautology.
 });

@@ -1042,11 +1042,67 @@ describe('applyBallastSizeCap — ballast + size realism cap', () => {
       expect(ballastIssues).toHaveLength(1);
     });
 
+    it('dedup: a still-good match already carrying a BALLAST: note gets no duplicate (and is still demoted)', () => {
+      // Exercises the dedup filter directly (score ≥ 70, so not the early-return path):
+      // a prior BALLAST: issue must suppress the new one, but the score still drops.
+      const out = applyBallastSizeCap({
+        match: { ...mkMatch(81, 'good'), issues: ['BALLAST: prior note'] },
+        distanceNm: 1580,
+        vesselDwt: 5200,
+        vesselDwcc: null,
+        cargoWeightMax: null,
+        cargoDescription: null,
+      });
+      expect(out.score).toBe(69);
+      expect(out.matchLevel).toBe('possible');
+      expect((out.issues ?? []).filter((i) => i.startsWith('BALLAST:'))).toHaveLength(1);
+    });
+
     it('does not mutate the input match', () => {
       const input = mkMatch(81, 'good');
       applyBallastSizeCap({ ...capInput({ distanceNm: 1580 }), match: input });
       expect(input.score).toBe(81);
       expect(input.matchLevel).toBe('good');
+    });
+  });
+
+  describe('numeric edges & combined triggers', () => {
+    it('skips the ballast guard on non-finite or negative distance', () => {
+      for (const d of [NaN, Infinity, -500]) {
+        expect(applyBallastSizeCap(capInput({ distanceNm: d })).matchLevel).toBe('good');
+      }
+    });
+
+    it('skips the size guard on zero/negative cargo weight or negative capacity', () => {
+      expect(applyBallastSizeCap(capInput({ distanceNm: 100, vesselDwt: 10000, cargoWeightMax: 0 })).matchLevel).toBe('good');
+      expect(applyBallastSizeCap(capInput({ distanceNm: 100, vesselDwt: 10000, cargoWeightMax: -500 })).matchLevel).toBe('good');
+      expect(applyBallastSizeCap(capInput({ distanceNm: 100, vesselDwt: -1, vesselDwcc: -1, cargoWeightMax: 5000 })).matchLevel).toBe('good');
+    });
+
+    it('treats DWCC of 0 as missing and falls back to DWT', () => {
+      // dwcc 0 → use dwt 10000; 4000/10000 = 40% < 0.5 → capped on size.
+      const out = applyBallastSizeCap(
+        capInput({ distanceNm: 100, vesselDwt: 10000, vesselDwcc: 0, cargoWeightMax: 4000 }),
+      );
+      expect(out.matchLevel).toBe('possible');
+      expect(out.issues?.some((i) => i.startsWith('SIZE:'))).toBe(true);
+    });
+
+    it('caps a barely-good (score exactly 70) match to 69', () => {
+      const out = applyBallastSizeCap({ ...capInput({ distanceNm: 5000 }), match: mkMatch(70, 'good') });
+      expect(out.score).toBe(69);
+      expect(out.matchLevel).toBe('possible');
+    });
+
+    it('both ballast and size trigger → single cap to 69, both issues present', () => {
+      const out = applyBallastSizeCap(
+        capInput({ distanceNm: 5000, vesselDwt: 8000, cargoWeightMax: 2000, cargoDescription: 'bulk wheat' }), // 25% util
+      );
+      expect(out.score).toBe(69);
+      expect(out.matchLevel).toBe('possible');
+      const issues = out.issues ?? [];
+      expect(issues.some((i) => i.startsWith('BALLAST:'))).toBe(true);
+      expect(issues.some((i) => i.startsWith('SIZE:'))).toBe(true);
     });
   });
 });
