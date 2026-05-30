@@ -8838,7 +8838,10 @@
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "Puertos del Estado"
+    "sourceNote": "Puertos del Estado",
+    "aliases": [
+      "La Coruna"
+    ]
   },
   {
     "unlocode": "ESVGO",
