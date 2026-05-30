@@ -142,23 +142,33 @@ describe('analyzePairs', () => {
     (emptyAiScorer as jest.Mock).mockResolvedValue([]);
   });
 
-  it('returns empty matches and blockedMatches when both inputs are empty', async () => {
+  // NEW CONTRACT (handover 2026-05-30, levers 1+2+5): analyzePairs now always
+  // returns the realism buckets alongside matches/blockedMatches. The empty-input
+  // shape therefore has four keys, not two.
+  const EMPTY_RESULT = {
+    matches: [],
+    lowConfidenceMatches: [],
+    insufficientData: [],
+    blockedMatches: [],
+  };
+
+  it('returns empty matches and buckets when both inputs are empty', async () => {
     const result = await analyzePairs([], [], emptyAiScorer);
-    expect(result).toEqual({ matches: [], blockedMatches: [] });
+    expect(result).toEqual(EMPTY_RESULT);
     expect(emptyAiScorer).not.toHaveBeenCalled();
   });
 
   it('returns empty matches when vessels list is empty', async () => {
     const cargo = makeCargo();
     const result = await analyzePairs([cargo], [], emptyAiScorer);
-    expect(result).toEqual({ matches: [], blockedMatches: [] });
+    expect(result).toEqual(EMPTY_RESULT);
     expect(emptyAiScorer).not.toHaveBeenCalled();
   });
 
   it('returns empty matches when cargos list is empty', async () => {
     const vessel = makeVessel();
     const result = await analyzePairs([], [vessel], emptyAiScorer);
-    expect(result).toEqual({ matches: [], blockedMatches: [] });
+    expect(result).toEqual(EMPTY_RESULT);
     expect(emptyAiScorer).not.toHaveBeenCalled();
   });
 
@@ -187,7 +197,10 @@ describe('analyzePairs', () => {
     expect(result.matches[0].vesselEmailId).toBe(vessel.emailId);
   });
 
-  it('sorts multiple matches by score descending', async () => {
+  // NEW CONTRACT (handover 2026-05-30, lever 1): the main `matches` list keeps
+  // only good/possible pairs, sorted by score desc. A `weak` pair (score 30) is no
+  // longer in the main list — it moves to `lowConfidenceMatches` ("manual review").
+  it('sorts good/possible matches by score descending; weak drops to lowConfidenceMatches', async () => {
     const cargo1 = makeCargo('cargo-1', 0);
     const cargo2 = makeCargo('cargo-2', 0);
     const cargo3 = makeCargo('cargo-3', 0);
@@ -216,10 +229,13 @@ describe('analyzePairs', () => {
     const aiScorer: AiScorer = jest.fn().mockResolvedValue(rawMatches);
     const result = await analyzePairs([cargo1, cargo2, cargo3], [vessel], aiScorer);
 
-    expect(result.matches).toHaveLength(3);
+    // Main list: only good (80) + possible (60), sorted desc.
+    expect(result.matches).toHaveLength(2);
     expect(result.matches[0].score).toBe(80);
     expect(result.matches[1].score).toBe(60);
-    expect(result.matches[2].score).toBe(30);
+    // Weak (30) preserved in the low-confidence bucket, not lost.
+    expect(result.lowConfidenceMatches).toHaveLength(1);
+    expect(result.lowConfidenceMatches[0].score).toBe(30);
   });
 
   it('calls aiScorer exactly once even with multiple cargos and vessels', async () => {

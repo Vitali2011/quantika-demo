@@ -455,7 +455,10 @@ describe('POST /api/ai/match — provider migration (γv-06)', () => {
     expect(body.blockedCount).toBe(1);
   });
 
-  it('updates session with matches and blockedMatches after scoring', async () => {
+  // NEW CONTRACT (handover 2026-05-30, levers 1+2+5): the route persists the
+  // realism buckets to the session alongside matches/blockedMatches so the moved
+  // pairs are retrievable (not lost).
+  it('updates session with matches, blockedMatches, and realism buckets after scoring', async () => {
     mockGetSession.mockReturnValue(baseSession);
     const expectedMatches = [
       {
@@ -469,14 +472,59 @@ describe('POST /api/ai/match — provider migration (γv-06)', () => {
         issues: [],
       },
     ];
-    mockAnalyzePairs.mockResolvedValue({ matches: expectedMatches, blockedMatches: [] });
+    const lowConf = [
+      {
+        cargoEmailId: 'cargo-001', cargoItemIndex: 0, vesselEmailId: 'vessel-weak', vesselItemIndex: 0,
+        score: 25, matchLevel: 'weak' as const, matchReasons: [], issues: [],
+      },
+    ];
+    const insufficient = [
+      {
+        cargoEmailId: 'cargo-001', cargoItemIndex: 0, vesselEmailId: 'vessel-unknown', vesselItemIndex: 0,
+        score: 40, matchLevel: 'possible' as const, matchReasons: [], issues: [],
+      },
+    ];
+    mockAnalyzePairs.mockResolvedValue({
+      matches: expectedMatches,
+      lowConfidenceMatches: lowConf,
+      insufficientData: insufficient,
+      blockedMatches: [],
+    });
 
     const req = makeRequest('session-1');
     await POST(req);
 
     expect(mockUpdateSession).toHaveBeenCalledWith('session-1', {
       matches: expectedMatches,
+      lowConfidenceMatches: lowConf,
+      insufficientData: insufficient,
       blockedMatches: [],
     });
+  });
+
+  it('returns lowConfidenceCount and insufficientCount in the response', async () => {
+    mockGetSession.mockReturnValue(baseSession);
+    mockAnalyzePairs.mockResolvedValue({
+      matches: [
+        { cargoEmailId: 'c', cargoItemIndex: 0, vesselEmailId: 'v', vesselItemIndex: 0, score: 60, matchLevel: 'possible' as const, matchReasons: [], issues: [] },
+      ],
+      lowConfidenceMatches: [
+        { cargoEmailId: 'c', cargoItemIndex: 0, vesselEmailId: 'v2', vesselItemIndex: 0, score: 25, matchLevel: 'weak' as const, matchReasons: [], issues: [] },
+        { cargoEmailId: 'c', cargoItemIndex: 0, vesselEmailId: 'v3', vesselItemIndex: 0, score: 30, matchLevel: 'weak' as const, matchReasons: [], issues: [] },
+      ],
+      insufficientData: [
+        { cargoEmailId: 'c', cargoItemIndex: 0, vesselEmailId: 'v4', vesselItemIndex: 0, score: 40, matchLevel: 'possible' as const, matchReasons: [], issues: [] },
+      ],
+      blockedMatches: [],
+    });
+
+    const req = makeRequest('session-1');
+    const res = await POST(req);
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.count).toBe(1);
+    expect(body.lowConfidenceCount).toBe(2);
+    expect(body.insufficientCount).toBe(1);
   });
 });

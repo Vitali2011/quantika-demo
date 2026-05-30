@@ -38,6 +38,36 @@ export type AiScorer = (payload: {
   readinessData: object[];
 }) => Promise<RawMatch[]>;
 
+/**
+ * Idle hard-exclusion threshold (handover 2026-05-30, lever 2).
+ *
+ * An evaluable pair whose vessel must sit idle MORE than this many days before
+ * the laycan opens is moved out of the main match list (→ lowConfidenceMatches),
+ * the same way `late` is already hard-filtered. Owners don't hold a vessel idle
+ * for 3+ weeks for a single cargo.
+ *
+ * Relationship to SPOT_IDEAL_MAX_GAP_DAYS (30, lib/sailing/readiness-gap.ts):
+ * that constant governs the verdict *classification* boundary (when a spot vessel
+ * flips ideal→idle). This one governs the *exclusion* boundary (when an idle pair
+ * is too idle to surface). 21 < 30 ⇒ any spot vessel already classified idle
+ * (gap > 30) is also excluded here, while a non-spot vessel idle 6–21 days stays
+ * (penalised, possibly weak) and ≥3-week idle is bucketed.
+ */
+export const IDLE_HARD_MAX_GAP_DAYS = 21;
+
+/** Outcome of the matching pipeline: the main "worth calling" list plus the
+ *  preserved side-buckets (no pair is ever dropped — see the partition below). */
+export interface AnalyzePairsResult {
+  /** Main list — good/possible, evaluable, meaningful timing. */
+  matches: Match[];
+  /** "Manual review" — weak score OR idle with a large date gap (levers 1 + 2). */
+  lowConfidenceMatches: Match[];
+  /** "Not enough data" — unknown verdict, engine couldn't evaluate (lever 5). */
+  insufficientData: Match[];
+  /** Hard-filter / date / late / sanctions blocks (unchanged). */
+  blockedMatches: BlockedMatch[];
+}
+
 interface PairAnalysis {
   cargoEmailId: string;
   cargoItemIndex: number;
@@ -170,9 +200,9 @@ export async function analyzePairs(
   vessels: ParsedVessel[],
   aiScorer: AiScorer,
   options?: { refYear?: number; today?: Date },
-): Promise<{ matches: Match[]; blockedMatches: BlockedMatch[] }> {
+): Promise<AnalyzePairsResult> {
   if (cargos.length === 0 || vessels.length === 0) {
-    return { matches: [], blockedMatches: [] };
+    return { matches: [], lowConfidenceMatches: [], insufficientData: [], blockedMatches: [] };
   }
 
   const today = options?.today ?? now();
@@ -290,7 +320,7 @@ export async function analyzePairs(
       '[pair-analyzer] aiScorer failed — returning hard-filter blockedMatches without AI-scored matches:',
       aiErr instanceof Error ? aiErr.message : String(aiErr),
     );
-    return { matches: [], blockedMatches };
+    return { matches: [], lowConfidenceMatches: [], insufficientData: [], blockedMatches };
   }
 
   const rawMatches: Match[] = rawAiMatches
@@ -555,5 +585,33 @@ export async function analyzePairs(
 
   matches.sort((a, b) => b.score - a.score);
 
-  return { matches, blockedMatches };
+  // ── Realism partition (handover 2026-05-30, levers 1 + 2 + 5) ──────────────
+  // Split the scored, non-blocked pairs into three buckets so the main list
+  // surfaces only "worth calling" candidates. No data is dropped — every pair
+  // lands in exactly one bucket (conservation tested in match-realism-buckets).
+  //   5. unknown verdict → insufficientData. Checked FIRST: an unknown pair still
+  //      scores ≥40 ("possible"), so a pure score cutoff would not remove it.
+  //   2. idle with a large date gap → lowConfidence. Checked before the score
+  //      cutoff: a high-utilisation idle pair can still score ≥40. The 'idle'
+  //      verdict is only assigned for gapDays > 5 (see classifyVerdict), so this
+  //      condition always fires on a positive "vessel waits" gap, never a negative one.
+  //   1. weak score → lowConfidence. Trims the un-cutoff sweep residue.
+  const mainMatches: Match[] = [];
+  const lowConfidenceMatches: Match[] = [];
+  const insufficientData: Match[] = [];
+  for (const m of matches) {
+    const verdict = m.readiness?.verdict;
+    const gapDays = m.readiness?.gapDays;
+    if (verdict === 'unknown') {
+      insufficientData.push(m);
+    } else if (verdict === 'idle' && gapDays != null && gapDays > IDLE_HARD_MAX_GAP_DAYS) {
+      lowConfidenceMatches.push(m);
+    } else if (m.matchLevel === 'weak') {
+      lowConfidenceMatches.push(m);
+    } else {
+      mainMatches.push(m);
+    }
+  }
+
+  return { matches: mainMatches, lowConfidenceMatches, insufficientData, blockedMatches };
 }
