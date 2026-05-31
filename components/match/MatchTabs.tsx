@@ -77,6 +77,9 @@ export function MatchTabs({ match, vessel, cargo, cargoEmailId, matchDbId, store
             matchDbId={matchDbId}
             storedFreightRate={storedFreightRate}
             freightRateSource={freightRateSource}
+            warRiskPremium={match.economics?.breakdown?.warRiskPremium ?? null}
+            warRiskZones={match.economics?.breakdown?.warRiskZones ?? null}
+            warRiskBreakdown={match.economics?.breakdown?.warRiskBreakdown ?? null}
           />
         )}
         {activeTab === 'passport' && (

@@ -6,6 +6,7 @@ import { RouteCompareModal } from '@/components/economics/RouteCompareModal';
 import { calculateFuelEu } from '@/lib/economics/fueleu';
 import { estimateVoyageDays } from '@/lib/economics/voyage-days';
 import { freightBadge, FREIGHT_BADGE_CLASSES } from '@/lib/matching/freight-badge';
+import type { WarRiskBreakdown } from '@/lib/economics/war-risk';
 
 interface EconomicsTabProps {
   commissionPercent?: number | null;
@@ -20,6 +21,9 @@ interface EconomicsTabProps {
   matchDbId?: number | null;
   storedFreightRate?: number | null;
   freightRateSource?: string | null;
+  warRiskPremium?: number | null;
+  warRiskZones?: string[] | null;
+  warRiskBreakdown?: WarRiskBreakdown | null;
 }
 
 function parseLeadingNumber(s: string | null | undefined): number {
@@ -52,7 +56,7 @@ const DISPLAY_RATES: Record<DisplayCurrency, number> = {
   USD: 1, EUR: 0.926, GBP: 0.787, NOK: 10.87, AED: 3.67,
 };
 
-export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm, matchDbId, storedFreightRate, freightRateSource }: EconomicsTabProps) {
+export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm, matchDbId, storedFreightRate, freightRateSource, warRiskPremium, warRiskZones, warRiskBreakdown }: EconomicsTabProps) {
   const [open, setOpen] = useState(false);
   const [bunkerPriceUsdPerMt, setBunkerPriceUsdPerMt] = useState('');
   const [overrideRate, setOverrideRate] = useState(storedFreightRate != null ? String(storedFreightRate) : '');
@@ -484,9 +488,54 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
         </button>
       </div>
 
-      <div className="rounded border border-dashed border-gray-300 p-4 text-gray-400 text-center text-xs">
-        Bunker / ETS / war-risk costs — coming in spec-08 (Wave 2)
-      </div>
+      {/* JWC war-risk breakdown */}
+      {warRiskPremium != null && warRiskPremium > 0 && warRiskBreakdown ? (
+        <div data-testid="warrisk-section" className="rounded border border-orange-200 bg-orange-50 p-3 space-y-2">
+          <h3 className="text-xs font-semibold text-orange-900">JWC War Risk (per voyage)</h3>
+          {warRiskZones && warRiskZones.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {warRiskZones.map((zone) => (
+                <span
+                  key={zone}
+                  className="px-1.5 py-0.5 rounded bg-orange-100 text-orange-800 text-xs"
+                >
+                  {zone}
+                </span>
+              ))}
+            </div>
+          )}
+          <div className="space-y-1 text-xs">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Hull premium:</span>
+              <span data-testid="warrisk-hull" className="font-medium">
+                ${warRiskBreakdown.hullPremiumUsd.toLocaleString()}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Crew war bonus:</span>
+              <span data-testid="warrisk-crew" className="font-medium">
+                ${warRiskBreakdown.crewWarBonusUsd.toLocaleString()}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">P&amp;I surcharge:</span>
+              <span data-testid="warrisk-pi" className="font-medium">
+                ${warRiskBreakdown.piSurchargeUsd.toLocaleString()}
+              </span>
+            </div>
+            <div className="flex justify-between pt-1 border-t border-orange-200">
+              <span className="text-gray-700 font-medium">Total:</span>
+              <span data-testid="warrisk-total" className="font-semibold text-orange-900">
+                ${warRiskBreakdown.totalPremiumUsd.toLocaleString()}
+              </span>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div data-testid="warrisk-none" className="rounded border border-gray-200 bg-gray-50 p-3 text-xs text-gray-500">
+          No JWC war risk zones on this route
+        </div>
+      )}
 
       {compareInputs.ready && (
         <RouteCompareModal
