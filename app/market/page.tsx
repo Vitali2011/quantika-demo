@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { MarketKpiTile } from '@/components/market/MarketKpiTile';
+import { MarketBenchmarkChart } from '@/components/market/MarketBenchmarkChart';
 import { MetricHistoryPanel } from '@/components/market/MetricHistoryPanel';
 import { RoutesSection } from '@/components/market/RoutesSection';
 import { FixturesSection } from '@/components/market/FixturesSection';
@@ -296,6 +297,38 @@ export default function MarketPage() {
             />
           ) : null;
         })()}
+
+        {/* Freight market index charts — BHSI, TMI, Drewry breakbulk */}
+        {(bhsiData?.length || tmiData?.length || drewryData?.length) ? (
+          <section aria-label="Market index charts" className="mb-10">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              {bhsiData && bhsiData.length > 0 && (
+                <MarketBenchmarkChart
+                  indexName="bhsi"
+                  data={bhsiData.map((d) => ({ date: d.index_date, value: d.value }))}
+                  asOfDate={latestIndexDate(bhsiData) ?? undefined}
+                  unit={bhsiData[0]?.unit}
+                />
+              )}
+              {tmiData && tmiData.length > 0 && (
+                <MarketBenchmarkChart
+                  indexName="tmi"
+                  data={tmiData.map((d) => ({ date: d.index_date, value: d.value }))}
+                  asOfDate={latestIndexDate(tmiData) ?? undefined}
+                  unit={tmiData[0]?.unit}
+                />
+              )}
+              {drewryData && drewryData.length > 0 && (
+                <MarketBenchmarkChart
+                  indexName="drewry-bb"
+                  data={drewryData.map((d) => ({ date: d.index_date, value: d.value }))}
+                  asOfDate={latestIndexDate(drewryData) ?? undefined}
+                  unit={drewryData[0]?.unit}
+                />
+              )}
+            </div>
+          </section>
+        ) : null}
 
         {/* Routes section */}
         <RoutesSection />

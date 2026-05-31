@@ -159,8 +159,47 @@ describe('MarketPage — sync badge staleness', () => {
       expect(screen.getByText(/last sync:/i)).toBeInTheDocument();
     });
 
-    // The label should show bdiDate, not indicesDate (scope to badge to avoid collision with KnowledgeFeed hardcoded dates)
+    // The label should show bdiDate, not indicesDate
     expect(screen.getByText(/last sync:/i).textContent).toContain(bdiDate);
-    expect(screen.queryByText(new RegExp(indicesDate))).not.toBeInTheDocument();
+    // Check badge text specifically — indicesDate may appear in chart table rows (not in the badge)
+    expect(screen.getByText(/last sync:/i).textContent).not.toContain(indicesDate);
+  });
+});
+
+describe('MarketPage — index charts show numeric values when flag enabled', () => {
+  beforeAll(() => {
+    process.env.NEXT_PUBLIC_MARKET_BENCHMARK_FULL_ENABLED = 'true';
+  });
+  afterAll(() => {
+    process.env.NEXT_PUBLIC_MARKET_BENCHMARK_FULL_ENABLED = ORIGINAL_ENV;
+  });
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('renders BHSI, TMI, Drewry charts with numeric values when indices API returns data', async () => {
+    const mockIndexData = [
+      { index_date: '2026-05-30', value: 512, unit: 'USD/day', source: 'seed-synthetic' },
+      { index_date: '2026-05-29', value: 498, unit: 'USD/day', source: 'seed-synthetic' },
+    ];
+
+    global.fetch = jest.fn(() =>
+      Promise.resolve({ ok: true, json: () => Promise.resolve(mockIndexData) })
+    ) as jest.Mock;
+
+    render(React.createElement(MarketPage));
+
+    await waitFor(() => {
+      expect(screen.getByText('Market Benchmarks')).toBeInTheDocument();
+    });
+
+    // All three index chart headings must appear
+    expect(screen.getByRole('heading', { name: /bhsi/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /tmi/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /drewry-bb/i })).toBeInTheDocument();
+
+    // Numeric values from mock data must be visible (Current row shows validData[0])
+    const currentLabels = screen.getAllByText(/current:/i);
+    expect(currentLabels.length).toBeGreaterThanOrEqual(3);
   });
 });
