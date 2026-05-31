@@ -31,6 +31,7 @@ import type {
   ParsedVessel,
 } from '@/lib/types';
 import { cfValue } from '@/lib/types';
+import { computeVesselVetting } from './vessel-vetting';
 import { classifyVesselByDwt } from './readiness-gap';
 import { BALLAST_GOOD_MAX_NM, isPartCargo } from './match-scoring';
 import { portHasShoreCranes } from './port-master';
@@ -38,18 +39,21 @@ import { STOWAGE_FACTORS } from './match-filters';
 
 // ── Weights — sum to 100. Tunable per anchor calibration. ──────────────────
 //
-// Brief baseline: util 25 · timing 20 · ballast 20 · classFit 12 · hard-gate
-// marginals 23 (cargoType 8 + cranes 8 + volume 4 + draft 3). These are
-// STARTING WEIGHTS — the loop tunes them against the anchor scorecard.
+// L3 vetting added (weight 9). Existing 8 factors scaled × (91/100) to keep
+// total = 100. Anchor thresholds preserved — LOW pairs hit caps before linear
+// sum matters; HIGH slabs pair gains 5.4 pts from unknown vetting → still ≥88.
+//   util 23 · timing 18 · ballast 18 · classFit 11 · cargoType 7 · cranes 7
+//   volume 4 · draft 3 · vetting 9 = 100
 export const FIT_WEIGHTS: Record<FitFactor, number> = {
-  utilisation: 25,
-  timing: 20,
-  ballast: 20,
-  classFit: 12,
-  cargoType: 8,
-  cranes: 8,
+  utilisation: 23,
+  timing: 18,
+  ballast: 18,
+  classFit: 11,
+  cargoType: 7,
+  cranes: 7,
   volume: 4,
   draft: 3,
+  vetting: 9,
 };
 
 const TOTAL_WEIGHT = Object.values(FIT_WEIGHTS).reduce((a, b) => a + b, 0);
@@ -375,6 +379,33 @@ export function scoreDraft(hardFilters: MatchHardFilters | undefined): FitBreakd
   return { factor: 'draft', label: 'Draft / port headroom', weight: w, score: 0, rationale: draftCheck.reason ?? 'vessel exceeds port draft' };
 }
 
+/** Vetting — 5-factor soft signal: flag (Paris MoU) / class (IACS) / age / P&I / CII.
+ *  Score 0..1 from computeVesselVetting, multiplied by weight.
+ *  When refYear is absent and built is set, age falls back to unknown (neutral).
+ *  unknown ≠ penalty — consistent with UNKNOWN_SHARE pattern above.
+ */
+export function scoreVetting(vessel: ParsedVessel, refYear?: number): FitBreakdownComponent {
+  const w = FIT_WEIGHTS.vetting;
+  // If refYear not provided, treat age as unknown by zeroing built temporarily.
+  const effectiveVessel = refYear != null
+    ? vessel
+    : { ...vessel, built: null };
+  const effectiveRefYear = refYear ?? 0;
+  const result = computeVesselVetting(effectiveVessel, { refYear: effectiveRefYear });
+  const rationale = result.badges.length > 0
+    ? `vetting concerns: ${result.badges.join(', ')}`
+    : result.factors.every((f) => f.verdict === 'unknown')
+      ? 'vetting data unavailable — scored neutral'
+      : 'vetting clean — no concerns flagged';
+  return {
+    factor: 'vetting',
+    label: 'Vessel vetting',
+    weight: w,
+    score: Math.round(w * result.score * 10) / 10,
+    rationale,
+  };
+}
+
 // ────────────────────────────────────────────────────────────────────────────
 // Top-level — composes all components, applies sanctions, returns fit-%.
 // ────────────────────────────────────────────────────────────────────────────
@@ -385,10 +416,12 @@ export interface FitBreakdownInput {
   readiness: MatchReadiness | undefined;
   sanctions: MatchSanctions | undefined;
   hardFilters: MatchHardFilters | undefined;
+  /** Calendar year used for vessel-age arithmetic. If absent, age is treated as unknown. */
+  refYear?: number;
 }
 
 export function computeFitBreakdown(input: FitBreakdownInput): FitBreakdown {
-  const { cargo, vessel, readiness, sanctions, hardFilters } = input;
+  const { cargo, vessel, readiness, sanctions, hardFilters, refYear } = input;
   const desc = cfValue(cargo.cargoDescription);
   const partCargo = isPartCargo(desc);
 
@@ -406,6 +439,7 @@ export function computeFitBreakdown(input: FitBreakdownInput): FitBreakdown {
     scoreCranes(vessel.geared, cfValue(cargo.originPort)),
     scoreVolume(cargoWtMax, desc, vessel.grainCapacity, cargo.stowageFactor),
     scoreDraft(hardFilters),
+    scoreVetting(vessel, refYear),
   ];
 
   const rawSum = components.reduce((a, c) => a + c.score, 0);
