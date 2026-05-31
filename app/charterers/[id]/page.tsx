@@ -165,7 +165,26 @@ export default function ChartererPage() {
         {/* Credit Info Card */}
         <Card>
           <CardHeader>
-            <CardTitle>Credit Information</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle>Credit Information</CardTitle>
+              <span
+                aria-label="Demo data"
+                style={{
+                  fontSize: 11,
+                  fontFamily: '"Geist Mono", ui-monospace, monospace',
+                  letterSpacing: '0.08em',
+                  fontWeight: 500,
+                  padding: '2px 8px',
+                  borderRadius: 4,
+                  background: '#fef9c3',
+                  color: '#854d0e',
+                  border: '1px solid #fde047',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Demo data
+              </span>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-2">
