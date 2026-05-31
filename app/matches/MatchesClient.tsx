@@ -43,6 +43,12 @@ function scoreClass(score: number): string {
   return 'bg-slate-100 text-slate-500 border border-slate-200';
 }
 
+function fitClass(pct: number): string {
+  if (pct >= 85) return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+  if (pct >= 60) return 'bg-amber-50 text-amber-800 border border-amber-200';
+  return 'bg-slate-100 text-slate-500 border border-slate-200';
+}
+
 function vesselInitials(vid: string): string {
   const parts = vid.split(/[\s_\-]+/);
   const a = parts[0]?.[0]?.toUpperCase() ?? '';
@@ -114,6 +120,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
   });
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [expandedBreakdown, setExpandedBreakdown] = useState<number | null>(null);
+  const [expandedFitBreakdown, setExpandedFitBreakdown] = useState<number | null>(null);
   const [showModal, setShowModal] = useState<{ action: string; count: number } | null>(null);
   const [bulkError, setBulkError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortBy>(() => isOwner ? 'tce' : 'score');
@@ -298,6 +305,11 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
   // Toggle score breakdown expansion
   function toggleBreakdown(id: number) {
     setExpandedBreakdown((prev) => (prev === id ? null : id));
+  }
+
+  // Toggle fit breakdown expansion
+  function toggleFitBreakdown(id: number) {
+    setExpandedFitBreakdown((prev) => (prev === id ? null : id));
   }
 
   // Mode-based count for "All" chip: charterer sees cargo-side, owner sees vessel-side
@@ -653,7 +665,16 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                             )}
                           </div>
                           <div className="text-right flex-none">
-                            <div className="text-lg font-bold text-blue-600">{effectiveScore(match, clientNow)}%</div>
+                            {match.fit_percent != null ? (
+                              <div className={`inline-flex items-center justify-center h-[32px] px-3 rounded-full font-mono text-sm font-semibold mb-0.5 ${fitClass(match.fit_percent)}`}>
+                                {Math.round(match.fit_percent)}% fit
+                              </div>
+                            ) : (
+                              <div className="text-lg font-bold text-blue-600">{effectiveScore(match, clientNow)}%</div>
+                            )}
+                            {match.fit_percent != null && (
+                              <div className="text-xs text-gray-400 font-mono">score {effectiveScore(match, clientNow)}</div>
+                            )}
                             <div className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 capitalize">
                               {match.status}
                             </div>
@@ -706,6 +727,17 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                         })()}
                       </Link>
 
+                      {/* Fit Breakdown toggle — outside Link to avoid nested button-in-anchor */}
+                      {match.fit_breakdown && (
+                        <button
+                          data-testid="fit-breakdown-toggle"
+                          onClick={() => toggleFitBreakdown(match.id)}
+                          className="text-xs text-emerald-600 hover:underline mt-1 mr-3"
+                        >
+                          {expandedFitBreakdown === match.id ? 'Hide Fit Breakdown' : 'Show Fit Breakdown'}
+                        </button>
+                      )}
+
                       {/* Score Breakdown toggle — outside Link to avoid nested button-in-anchor */}
                       {match.reason_structured && (
                         <button
@@ -715,6 +747,37 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                           {expandedBreakdown === match.id ? 'Hide Breakdown' : 'Show Breakdown'}
                         </button>
                       )}
+
+                      {/* Fit Breakdown panel */}
+                      {expandedFitBreakdown === match.id && match.fit_breakdown && (() => {
+                        let fb: { components: Array<{ factor: string; label: string; weight: number; score: number; rationale: string }> } | null = null;
+                        try { fb = JSON.parse(match.fit_breakdown as string); } catch { fb = null; }
+                        if (!fb || !Array.isArray(fb.components)) return null;
+                        return (
+                          <div className="mt-2 space-y-2 border-t pt-2">
+                            <h4 className="text-xs font-semibold text-emerald-700">Fit Breakdown</h4>
+                            {fb.components.map((c, idx) => (
+                              <div key={idx} className="space-y-0.5">
+                                <div className="flex justify-between text-xs">
+                                  <span className="font-medium">{c.label}</span>
+                                  <span className={`font-mono ${Math.round(c.score / c.weight * 100) >= 60 ? 'text-emerald-600' : 'text-slate-500'}`}>
+                                    {Math.round(c.score / c.weight * 100)}%
+                                  </span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                                  <div
+                                    className={`h-1.5 rounded-full ${Math.round(c.score / c.weight * 100) >= 60 ? 'bg-emerald-500' : 'bg-slate-400'}`}
+                                    style={{ width: `${Math.round(c.score / c.weight * 100)}%` }}
+                                  />
+                                </div>
+                                {c.rationale && (
+                                  <p className="text-xs text-gray-500">{c.rationale}</p>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })()}
 
                       {/* Score Breakdown panel */}
                       {expandedBreakdown === match.id && match.reason_structured && (() => {
@@ -832,12 +895,18 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                         className={`cursor-pointer transition-colors border-b border-ds-border/40 last:border-b-0 ${fresh ? 'hover:bg-emerald-500/[0.11]' : 'hover:bg-ds-surface-muted'}`}
                         style={fresh ? { background: 'rgba(22,163,74,0.07)' } : undefined}
                       >
-                        {/* Score */}
+                        {/* Score / Fit */}
                         <td className={`py-[13px] px-3 pl-5 align-middle${fresh ? ' [box-shadow:inset_3px_0_0_#16a34a]' : ''}`}>
                           <div className="flex items-center gap-2">
-                            <span className={`inline-flex items-center justify-center h-[26px] px-[11px] rounded-full font-mono text-[12.5px] font-medium ${scoreClass(effectiveScore(match, clientNow))}`}>
-                              {effectiveScore(match, clientNow)}
-                            </span>
+                            {match.fit_percent != null ? (
+                              <span className={`inline-flex items-center justify-center h-[26px] px-[11px] rounded-full font-mono text-[12.5px] font-medium ${fitClass(match.fit_percent)}`}>
+                                {Math.round(match.fit_percent)}%
+                              </span>
+                            ) : (
+                              <span className={`inline-flex items-center justify-center h-[26px] px-[11px] rounded-full font-mono text-[12.5px] font-medium ${scoreClass(effectiveScore(match, clientNow))}`}>
+                                {effectiveScore(match, clientNow)}
+                              </span>
+                            )}
                             {fresh && (
                               <span className="inline-flex items-center h-[18px] px-[7px] rounded-full font-mono text-[9.5px] tracking-[0.08em] uppercase bg-emerald-600 text-white font-semibold">
                                 fresh

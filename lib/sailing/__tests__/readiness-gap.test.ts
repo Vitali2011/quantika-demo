@@ -126,22 +126,24 @@ describe('calculateReadinessGap — Mustafa case', () => {
   });
 });
 
-describe('calculateReadinessGap — expired laycan', () => {
-  // TODAY is 2025-09-05; laycan "15-25 Jan" parsed with refYear=2025 → already expired.
-  it('expired laycan → verdict late, explanation contains "expired"', () => {
+describe('calculateReadinessGap — past-laycan vs recent vessel open (date-independent)', () => {
+  // Broker-loop 2026-05-31: verdict is computed from open-vs-laycan arithmetic only.
+  // A past laycan paired with a recent vessel-open yields arrival ≫ laycanStart → 'late'.
+  // The wall-clock today is NOT consulted — only the dates on the pair.
+  it('open 5 Sep + laycan 15-25 Jan (same year) → verdict late by arithmetic', () => {
     const r = calculateReadinessGap(
       { openDate: '5 Sep', openPosition: 'Karasu', speedLaden: null, dwtSummer: 5200 },
       { laycan: '15-25 Jan', originPort: 'Mykolaiv' },
       { refYear: 2025, today: TODAY },
     );
     expect(r.verdict).toBe('late');
-    expect(r.explanation).toMatch(/expired/i);
+    expect(r.explanation).toMatch(/after laycan|misses laycan/i);
     expect(r.gapDays).not.toBeNull();
     expect(r.gapDays!).toBeLessThan(0);
   });
 
-  it('expired laycan → gapDays is negative (days-after-end)', () => {
-    // laycan.end = 2025-01-25, today = 2025-09-05 → gap ≈ -222 days
+  it('open 5 Sep + laycan 15-25 Jan → gapDays ≈ -(sailingDays + days from laycanStart to openDate)', () => {
+    // laycan.start = Jan 15, arrival = Sep 5 + ~3d sailing ≈ Sep 8 → gap ≈ -236 days.
     const r = calculateReadinessGap(
       { openDate: '5 Sep', openPosition: 'Karasu', speedLaden: null, dwtSummer: 5200 },
       { laycan: '15-25 Jan', originPort: 'Mykolaiv' },
@@ -394,5 +396,33 @@ describe('calculateReadinessGap — vague-region UX (Phase C2)', () => {
     expect(r.verdict).toBe('unknown');
     // "Atlantis" is not a sea/coast/country pattern → falls back to generic.
     expect(r.explanation).toBe('Insufficient data to compute readiness (unparseable date or unknown port).');
+  });
+});
+
+describe('calculateReadinessGap — date-independence (broker-loop 2026-05-31)', () => {
+  // Scoring/отсев must NOT depend on wall-clock today. Two runs with very different
+  // `today` values, holding refYear and inputs constant, must yield identical
+  // verdict + gapDays for non-spot vessels (spot vessels intentionally pin their
+  // open date to today and are excluded from this invariant).
+  const vessel = { openDate: '13 Sep', openPosition: 'Karasu', speedLaden: null, dwtSummer: 5200 };
+  const cargo = { laycan: '15-25 Sep', originPort: 'Mykolaiv' };
+
+  it('same refYear, today=2026-05-01 vs 2030-01-01 → identical verdict + gapDays', () => {
+    const r1 = calculateReadinessGap(vessel, cargo, { refYear: 2025, today: new Date('2026-05-01T00:00:00Z') });
+    const r2 = calculateReadinessGap(vessel, cargo, { refYear: 2025, today: new Date('2030-01-01T00:00:00Z') });
+    expect(r2.verdict).toBe(r1.verdict);
+    expect(r2.gapDays).toBe(r1.gapDays);
+    expect(r2.arrivalDate).toBe(r1.arrivalDate);
+    expect(r2.sailingDays).toBe(r1.sailingDays);
+  });
+
+  it('past laycan + recent open → late on both today values, identical gap', () => {
+    const v = { openDate: '5 Sep', openPosition: 'Karasu', speedLaden: null, dwtSummer: 5200 };
+    const c = { laycan: '15-25 Jan', originPort: 'Mykolaiv' };
+    const r1 = calculateReadinessGap(v, c, { refYear: 2025, today: new Date('2025-09-05T00:00:00Z') });
+    const r2 = calculateReadinessGap(v, c, { refYear: 2025, today: new Date('2030-12-31T00:00:00Z') });
+    expect(r1.verdict).toBe('late');
+    expect(r2.verdict).toBe('late');
+    expect(r2.gapDays).toBe(r1.gapDays);
   });
 });

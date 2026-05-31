@@ -24,6 +24,7 @@ interface ParsedRow { parse_type: string; result_json: string; }
 interface MatchRow {
   cargo_id: string; vessel_id: string; score: number;
   reason: string | null; reason_structured: string | null;
+  fit_percent: number | null; fit_breakdown: string | null;
 }
 
 function safeJsonArray<T>(json: string, ctx: string): T[] {
@@ -82,11 +83,14 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
     }
   }
 
+  const hasFitCols = (db.prepare(`PRAGMA table_info(matches)`).all() as Array<{name:string}>).some(c => c.name === 'fit_percent');
   const matchRows = db.prepare(
     // Only the seeded snapshot rows (user_id IS NULL). Per-session copies that
     // persistSessionMatches writes (user_id = sessionId) must NOT be re-read here,
     // or the demo's match set would grow/duplicate with every login.
-    `SELECT cargo_id, vessel_id, score, reason, reason_structured FROM matches WHERE user_id IS NULL`,
+    hasFitCols
+      ? `SELECT cargo_id, vessel_id, score, reason, reason_structured, fit_percent, fit_breakdown FROM matches WHERE user_id IS NULL`
+      : `SELECT cargo_id, vessel_id, score, reason, reason_structured, NULL as fit_percent, NULL as fit_breakdown FROM matches WHERE user_id IS NULL`,
   ).all() as MatchRow[];
 
   const matches: Match[] = matchRows.map((r) => ({
@@ -99,6 +103,8 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
     matchReasons: r.reason ? [r.reason] : [],
     issues: [],
     scoreBreakdown: safeJsonObject<ScoreBreakdown>(r.reason_structured),
+    fitPercent: r.fit_percent ?? undefined,
+    fitBreakdown: safeJsonObject<import('@/lib/types').FitBreakdown>(r.fit_breakdown),
   }));
 
   const processedEmails = buildProcessedEmails(emails, classifications, parsedCargos, parsedVessels);

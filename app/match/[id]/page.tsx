@@ -99,6 +99,8 @@ export default async function MatchDetailPage({ params }: Props) {
     laycanDisplay,
     cargoEmailId: effectiveCargoEmailId,
     hasSessionMatch: !!sessionMatch,
+    fitPercent: storedMatch.fit_percent ?? null,
+    fitBreakdown: storedMatch.fit_breakdown ?? null,
   };
 
   return (

@@ -29,6 +29,7 @@ jest.mock('@/lib/sailing/readiness-gap', () => ({
     speedKn: null,
   }),
   detectSpot: jest.fn().mockReturnValue(false),
+  classifyVesselByDwt: jest.fn().mockReturnValue('handysize'),
 }));
 
 jest.mock('@/lib/sailing/match-filters', () => ({
@@ -56,6 +57,9 @@ jest.mock('@/lib/sailing/match-scoring', () => ({
   deriveMatchLevel: jest.fn().mockImplementation((score: number) =>
     score > 70 ? 'good' : score > 40 ? 'possible' : 'weak',
   ),
+  applyBallastSizeCap: jest.fn().mockImplementation((input) => input.match),
+  isPartCargo: jest.fn().mockReturnValue(false),
+  BALLAST_GOOD_MAX_NM: { handysize: 1500, supramax: 2000, panamax: 2500, capesize: 4000 },
 }));
 
 jest.mock('@/lib/sailing/date-parsing', () => ({
@@ -65,6 +69,7 @@ jest.mock('@/lib/sailing/date-parsing', () => ({
 
 jest.mock('@/lib/sailing/date-sanity', () => ({
   validateDates: jest.fn().mockReturnValue({ valid: true, issues: [] }),
+  isLaycanValid: jest.fn().mockReturnValue({ valid: true }),
 }));
 
 jest.mock('@/lib/validation/sanctions', () => ({
