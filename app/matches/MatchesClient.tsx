@@ -13,6 +13,7 @@ import { filterMatchesByMode } from '@/lib/matching/mode-filter';
 import { useToast } from '@/components/ui/toast';
 import { abbrPort } from '@/lib/utils/abbr-port';
 import { fmtLaycan, isLaycanExpired } from '@/lib/utils/fmt-laycan';
+import { freightBadge, FREIGHT_BADGE_CLASSES } from '@/lib/matching/freight-badge';
 
 interface Props {
   initialMatches: StoredMatch[];
@@ -186,7 +187,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
   const [dwt_max, setDwtMax] = useState(() => searchParams.get('dwt_max') ?? '');
 
   // Apply Filters handler
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization -- pre-existing async useCallback, refactor in R5
+   
   const handleApplyFilters = useCallback(async () => {
     const params = new URLSearchParams();
     for (const ct of cargoTypes) params.append('cargo_type', ct);
@@ -209,7 +210,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
   }, [cargoTypes, route, laycan_from, laycan_to, score_min, dwt_min, dwt_max, filterStatus, router]);
 
   // Clear Filters handler
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization -- pre-existing async useCallback, refactor in R5
+   
   const handleClearFilters = useCallback(async () => {
     setCargoTypes([]);
     setRoute('');
@@ -759,14 +760,15 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                                 Distance: {match.distance_nm.toLocaleString('en-US')} nm
                               </div>
                             )}
-                            {match.tce_usd_per_day != null && (
-                              <div className="text-xs font-medium text-emerald-700 flex items-center gap-1">
-                                TCE: ${match.tce_usd_per_day.toLocaleString('en-US')}/day
-                                {match.freight_rate_source === 'estimated' && (
-                                  <span className="text-xs bg-amber-100 text-amber-700 px-1 rounded" title="Estimated freight rate">est</span>
-                                )}
-                              </div>
-                            )}
+                            {match.tce_usd_per_day != null && (() => {
+                              const badge = freightBadge(match.freight_rate_source);
+                              return (
+                                <div className={`text-xs font-medium flex items-center gap-1 ${badge.dimmed ? 'text-gray-400' : 'text-emerald-700'}`}>
+                                  TCE: ${match.tce_usd_per_day.toLocaleString('en-US')}/day
+                                  <span className={`text-xs px-1 rounded ${FREIGHT_BADGE_CLASSES[badge.tone]}`} title={badge.title}>{badge.label}</span>
+                                </div>
+                              );
+                            })()}
                           </div>
                           <div className="text-right flex-none">
                             {match.fit_percent != null ? (

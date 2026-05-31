@@ -4,7 +4,9 @@ import type { Match, ParsedCargo, ParsedVessel } from '@/lib/types';
 import { createMatch } from '@/lib/matching/matches-repository';
 import { parseLaycan } from '@/lib/sailing/date-parsing';
 import { getPortDistance } from '@/lib/sailing/port-distances';
-import { estimateFreightRate, computeEstimatedTce, parseLeadingNumber } from '@/lib/matching/tce-calculator';
+import { computeEstimatedTce, parseLeadingNumber } from '@/lib/matching/tce-calculator';
+import { resolveFreightRate } from '@/lib/matching/freight-resolver';
+import { getBalticDayRate } from '@/lib/market/baltic-freight';
 
 export function persistSessionMatches(
   db: Database.Database,
@@ -40,8 +42,19 @@ export function persistSessionMatches(
     let freight_rate_source: string | null = null;
 
     if (distanceResult && distanceResult.nm > 0) {
-      const freightEst = estimateFreightRate(cargoTypeStr, distanceResult.nm, vesselDwt);
-      const tceEst = computeEstimatedTce(freightEst, distanceResult.nm, vesselDwt, quantityMt, speedKts, consumptionMt);
+      const resolved = resolveFreightRate({
+        cargoType: cargoTypeStr,
+        parsedFreightRateUsdPerMt: cargo?.freightRateUsd ?? null,
+        vesselDwt,
+        quantityMt,
+        distanceNm: distanceResult.nm,
+        speedKts,
+        balticDayRate: getBalticDayRate(db, vesselDwt),
+      });
+      const tceEst = computeEstimatedTce(
+        { rate: resolved.value, source: resolved.source, confidence: resolved.confidence },
+        distanceResult.nm, vesselDwt, quantityMt, speedKts, consumptionMt,
+      );
       tce_usd_per_day = tceEst.tce_usd_per_day;
       freight_rate_usd_per_mt = tceEst.freight_rate_usd_per_mt;
       freight_rate_source = tceEst.freight_rate_source;

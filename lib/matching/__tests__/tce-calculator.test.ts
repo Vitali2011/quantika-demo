@@ -150,6 +150,16 @@ describe('computeEstimatedTce', () => {
     expect(result.freight_rate_usd_per_mt).toBe(30);
   });
 
+  it('passes through waterfall sources (parsed / baltic) unchanged (Wave #7)', () => {
+    const parsed = computeEstimatedTce({ rate: 18, source: 'parsed', confidence: 0.9 }, 3000, 50000, 45000);
+    expect(parsed.freight_rate_source).toBe('parsed');
+    expect(parsed.freight_rate_usd_per_mt).toBe(18);
+
+    const baltic = computeEstimatedTce({ rate: 3.6, source: 'baltic', confidence: 0.5 }, 3000, 50000, 45000);
+    expect(baltic.freight_rate_source).toBe('baltic');
+    expect(baltic.freight_rate_usd_per_mt).toBe(3.6);
+  });
+
   it('zero distance uses 10-day fallback and still returns finite TCE', () => {
     const est = estimateFreightRate('BULK', 0, 50000);
     const result = computeEstimatedTce(est, 0, 50000, 45000);

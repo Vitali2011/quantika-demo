@@ -9,7 +9,8 @@ import {
 } from '@/lib/matching/matches-repository';
 import { fromMatchSlug } from '@/lib/matching/match-slug';
 import type { MatchStatus } from '@/lib/matching/matches-repository';
-import { estimateFreightRate, computeEstimatedTce } from '@/lib/matching/tce-calculator';
+import { computeEstimatedTce } from '@/lib/matching/tce-calculator';
+import { resolveFreightRate } from '@/lib/matching/freight-resolver';
 
 export const dynamic = 'force-dynamic';
 
@@ -87,7 +88,7 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const { status, freight_rate_usd_per_mt } = body;
+    const { status, freight_rate_usd_per_mt, reset_freight_rate } = body;
 
     const db = getStore().getDatabase();
     const existing = getMatch(db, id);
@@ -97,6 +98,33 @@ export async function PATCH(
         { error: `Match not found: ${id}` },
         { status: 404 }
       );
+    }
+
+    // Reset-to-auto path (Wave #7): clear a sticky manual override and recompute the
+    // automatic rate from the stored match fields. Without the original email/quantity
+    // context the waterfall resolves to the estimate tier; parsed/baltic re-apply on
+    // the next full recompute.
+    if (reset_freight_rate === true) {
+      const resolved = resolveFreightRate({
+        cargoType: existing.cargo_type,
+        vesselDwt: existing.vessel_dwt ?? 0,
+        quantityMt: 0,
+        distanceNm: existing.distance_nm ?? 0,
+      });
+      const tceEst = computeEstimatedTce(
+        { rate: resolved.value, source: resolved.source, confidence: resolved.confidence },
+        existing.distance_nm ?? 0,
+        existing.vessel_dwt ?? 0,
+        0,
+      );
+      const updated = updateMatchFreightRate(
+        db,
+        id,
+        resolved.value,
+        tceEst.tce_usd_per_day,
+        resolved.source,
+      );
+      return NextResponse.json(updated, { status: 200 });
     }
 
     // Freight rate override path

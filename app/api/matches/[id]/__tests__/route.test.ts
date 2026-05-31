@@ -10,12 +10,17 @@
  *   - no session → 401
  *   - slug lookup → 200 / 404 (stable cross-session IDs #631)
  *   - feature disabled → 503
+ *   - PATCH freight rate override (manual) + reset-to-auto (Wave #7)
  */
 
 import Database from 'better-sqlite3';
 import { NextRequest, NextResponse } from 'next/server';
 import migration032 from '@/lib/migrations/032-matches';
 import migration033 from '@/lib/migrations/033-matches-score-breakdown';
+import migration034 from '@/lib/migrations/034-matches-unique-constraint';
+import migration035 from '@/lib/migrations/035-matches-tce-distance';
+import migration036 from '@/lib/migrations/036-matches-freight-rate';
+import { estimateFreightRate } from '@/lib/matching/tce-calculator';
 import { requireSession } from '@/lib/session';
 import { toMatchSlug } from '@/lib/matching/match-slug';
 
@@ -259,5 +264,121 @@ describe('GET /api/matches/[id] — slug lookup (#631 stable match IDs)', () => 
     const res = await GET(makeGetRequest(slug), { params: Promise.resolve({ id: slug }) });
 
     expect(res.status).toBe(200);
+  });
+});
+
+describe('PATCH /api/matches/[id] — freight rate override + reset (Wave #7)', () => {
+  let db: Database.Database;
+
+  function freshDbFreight(): Database.Database {
+    const d = new Database(':memory:');
+    migration032.up(d);
+    migration033.up(d);
+    migration034.up(d);
+    migration035.up(d);
+    migration036.up(d);
+    return d;
+  }
+
+  function seedFreightMatch(
+    database: Database.Database,
+    userId: string,
+    opts: {
+      cargo_type?: string;
+      vessel_dwt?: number;
+      distance_nm?: number;
+      rate?: number;
+      source?: string;
+    } = {},
+  ): number {
+    const res = database
+      .prepare(
+        `INSERT INTO matches
+           (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at,
+            cargo_type, load_port, discharge_port, vessel_dwt, distance_nm, tce_usd_per_day,
+            freight_rate_usd_per_mt, freight_rate_source)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      )
+      .run(
+        'cargo-1',
+        'vessel-1',
+        80,
+        '{}',
+        'shortlist',
+        userId,
+        Date.now(),
+        Date.now(),
+        opts.cargo_type ?? 'GRAIN',
+        'NLRTM',
+        'DEHAM',
+        opts.vessel_dwt ?? 50000,
+        opts.distance_nm ?? 3000,
+        10000,
+        opts.rate ?? 99,
+        opts.source ?? 'manual',
+      );
+    return res.lastInsertRowid as number;
+  }
+
+  async function patch(id: number, body: unknown) {
+    const { PATCH } = await import('@/app/api/matches/[id]/route');
+    const req = new NextRequest(`http://localhost/api/matches/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return PATCH(req, { params: Promise.resolve({ id: String(id) }) });
+  }
+
+  beforeEach(() => {
+    db = freshDbFreight();
+    testDb = db;
+    process.env.MATCHES_ENABLED = 'true';
+    mockRequireSession.mockReturnValue(SESSION_A);
+  });
+
+  afterEach(() => {
+    db.close();
+    delete process.env.MATCHES_ENABLED;
+  });
+
+  it('manual override sets source=manual and the supplied rate', async () => {
+    const id = seedFreightMatch(db, 'user-a', { source: 'estimated', rate: 14 });
+    const res = await patch(id, { freight_rate_usd_per_mt: 25 });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.freight_rate_source).toBe('manual');
+    expect(body.freight_rate_usd_per_mt).toBe(25);
+    expect(Number.isFinite(body.tce_usd_per_day)).toBe(true);
+  });
+
+  it('rejects a non-positive manual rate with 400', async () => {
+    const id = seedFreightMatch(db, 'user-a', {});
+    expect((await patch(id, { freight_rate_usd_per_mt: 0 })).status).toBe(400);
+    expect((await patch(id, { freight_rate_usd_per_mt: -3 })).status).toBe(400);
+  });
+
+  it('reset_freight_rate clears a sticky manual override → estimate tier', async () => {
+    const id = seedFreightMatch(db, 'user-a', {
+      source: 'manual',
+      rate: 99,
+      cargo_type: 'GRAIN',
+      vessel_dwt: 50000,
+      distance_nm: 3000,
+    });
+    const res = await patch(id, { reset_freight_rate: true });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.freight_rate_source).toBe('estimated');
+    const est = estimateFreightRate('GRAIN', 3000, 50000);
+    expect(body.freight_rate_usd_per_mt).toBe(est.rate);
+    expect(body.freight_rate_usd_per_mt).not.toBe(99);
+    expect(Number.isFinite(body.tce_usd_per_day)).toBe(true);
+  });
+
+  it('reset on a match owned by another session → 404', async () => {
+    const id = seedFreightMatch(db, 'user-b', {});
+    mockRequireSession.mockReturnValueOnce(SESSION_A);
+    expect((await patch(id, { reset_freight_rate: true })).status).toBe(404);
   });
 });

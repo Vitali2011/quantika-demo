@@ -19,6 +19,9 @@ import { validateDates, isLaycanValid } from '@/lib/sailing/date-sanity';
 import { checkSanctions } from '@/lib/validation/sanctions';
 import { enrichReasons } from '@/lib/matching/reason-enricher';
 import { buildMatchEconomics, parseLeadingNumber } from '@/lib/matching/tce-calculator';
+import { resolveFreightRate } from '@/lib/matching/freight-resolver';
+import { getBalticDayRate } from '@/lib/market/baltic-freight';
+import type Database from 'better-sqlite3';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 import { formatNumber } from '@/lib/utils';
 import { LLMTimeoutError } from '@/lib/openai';
@@ -210,7 +213,7 @@ export async function analyzePairs(
   cargos: ParsedCargo[],
   vessels: ParsedVessel[],
   aiScorer: AiScorer,
-  options?: { refYear?: number; today?: Date },
+  options?: { refYear?: number; today?: Date; db?: Database.Database },
 ): Promise<AnalyzePairsResult> {
   if (cargos.length === 0 || vessels.length === 0) {
     return { matches: [], lowConfidenceMatches: [], insufficientData: [], blockedMatches: [] };
@@ -219,6 +222,7 @@ export async function analyzePairs(
   const today = options?.today ?? now();
   const currentYear = today.getUTCFullYear();
   const refYear = options?.refYear ?? currentYear;
+  const db = options?.db;
 
   // O(n²) pair analysis loop
   const analyses: PairAnalysis[] = [];
@@ -698,16 +702,33 @@ export async function analyzePairs(
         ? (cargo.cargoType as unknown as { value: string }).value
         : (cargo.cargoType as string | null);
 
+    const ecoDwt = cfValue(vessel.dwtSummer) ?? 0;
+    const ecoQty = cfValue(cargo.weightMt) ?? 0;
+    const ecoSpeed = parseLeadingNumber(vessel.speedLaden);
+    const resolvedFreight = resolveFreightRate({
+      cargoType,
+      parsedFreightRateUsdPerMt: cargo.freightRateUsd ?? null,
+      vesselDwt: ecoDwt,
+      quantityMt: ecoQty,
+      distanceNm: distanceResult.nm,
+      speedKts: ecoSpeed,
+      balticDayRate: db ? getBalticDayRate(db, ecoDwt) : null,
+    });
     const econ = buildMatchEconomics({
       cargoType,
       distanceNm: distanceResult.nm,
-      vesselDwt: cfValue(vessel.dwtSummer) ?? 0,
-      quantityMt: cfValue(cargo.weightMt) ?? 0,
-      speedKts: parseLeadingNumber(vessel.speedLaden),
+      vesselDwt: ecoDwt,
+      quantityMt: ecoQty,
+      speedKts: ecoSpeed,
       consumptionMt: parseLeadingNumber(vessel.consumption),
       loadPort,
       dischargePort,
       calculatedAt: economicsCalcAt,
+      resolvedFreight: {
+        rate: resolvedFreight.value,
+        source: resolvedFreight.source,
+        confidence: resolvedFreight.confidence,
+      },
     });
     if (econ) m.economics = econ;
   }
