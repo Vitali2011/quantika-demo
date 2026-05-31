@@ -7,6 +7,7 @@ import type { MatchConfidence } from '@/lib/confidence';
 import type { MarketBenchmark } from '@/lib/types';
 import { formatBenchmarkReference } from '@/lib/market/benchmark';
 import { csrfFetch } from '@/lib/csrf-client';
+import { useToast } from '@/components/ui/toast';
 
 interface QuoteTabProps {
   cargoEmailId?: string;
@@ -20,6 +21,17 @@ export function QuoteTab({ cargoEmailId, confidence }: QuoteTabProps) {
   const [benchmark, setBenchmark] = useState<MarketBenchmark | null | 'loading'>('loading');
   const blockSend = confidence?.blockSend ?? false;
   const blockedFields = confidence?.blockedFields ?? [];
+  const toast = useToast();
+
+  function handleSaveDraft() {
+    const key = `quote_draft_${cargoEmailId ?? 'no-id'}`;
+    sessionStorage.setItem(key, draft);
+    toast.success('Сохранено');
+  }
+
+  function handleSendQuote() {
+    toast.success('Отправлено');
+  }
 
   async function generateDraft() {
     if (!cargoEmailId) return;
@@ -80,10 +92,14 @@ export function QuoteTab({ cargoEmailId, confidence }: QuoteTabProps) {
           className="rounded bg-blue-600 px-4 py-2 text-white text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed"
           disabled={blockSend || !draft.trim()}
           title={blockSend ? `${blockedFields.length} critical field(s) uncertain: ${blockedFields.join(', ')}` : undefined}
+          onClick={handleSendQuote}
         >
           Send Quote
         </button>
-        <button className="rounded border border-gray-200 px-4 py-2 text-sm">
+        <button
+          className="rounded border border-gray-200 px-4 py-2 text-sm"
+          onClick={handleSaveDraft}
+        >
           Save Draft
         </button>
       </div>

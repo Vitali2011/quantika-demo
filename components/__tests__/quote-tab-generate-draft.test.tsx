@@ -8,6 +8,14 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { QuoteTab } from '@/components/match/QuoteTab';
+import { ToastProvider } from '@/components/ui/toast/toast-context';
+import { ToastContainer } from '@/components/ui/toast/toast-container';
+
+function renderWithToast(ui: React.ReactElement) {
+  return render(
+    <ToastProvider>{ui}<ToastContainer /></ToastProvider>
+  );
+}
 
 function mockFetchResponses(draftText: string) {
   global.fetch = jest.fn().mockImplementation((url: string) => {
@@ -34,13 +42,13 @@ afterEach(() => {
 describe('QuoteTab — Generate Draft button (fix #351)', () => {
   it('shows Generate button when cargoEmailId is provided', () => {
     mockFetchResponses('');
-    render(<QuoteTab cargoEmailId="email-001" />);
+    renderWithToast(<QuoteTab cargoEmailId="email-001" />);
     expect(screen.getByRole('button', { name: /generate/i })).toBeInTheDocument();
   });
 
   it('shows Generate button as disabled when cargoEmailId is absent', () => {
     mockFetchResponses('');
-    render(<QuoteTab />);
+    renderWithToast(<QuoteTab />);
     const btn = screen.getByRole('button', { name: /generate/i });
     expect(btn).toBeInTheDocument();
     expect(btn).toBeDisabled();
@@ -49,7 +57,7 @@ describe('QuoteTab — Generate Draft button (fix #351)', () => {
   it('POSTs to /api/ai/draft-quote with emailId on click', async () => {
     const draftText = 'Dear Captain, we offer USD 15/MT for the cargo.';
     mockFetchResponses(draftText);
-    render(<QuoteTab cargoEmailId="email-abc" />);
+    renderWithToast(<QuoteTab cargoEmailId="email-abc" />);
 
     fireEvent.click(screen.getByRole('button', { name: /generate/i }));
 
@@ -67,7 +75,7 @@ describe('QuoteTab — Generate Draft button (fix #351)', () => {
   it('populates the draft textarea with the API response', async () => {
     const draftText = 'Dear Captain, we offer USD 15/MT for the cargo.';
     mockFetchResponses(draftText);
-    render(<QuoteTab cargoEmailId="email-abc" />);
+    renderWithToast(<QuoteTab cargoEmailId="email-abc" />);
 
     fireEvent.click(screen.getByRole('button', { name: /generate/i }));
 
@@ -88,7 +96,7 @@ describe('QuoteTab — Generate Draft button (fix #351)', () => {
       return Promise.resolve({ ok: false, json: async () => ({}) } as Response);
     });
 
-    render(<QuoteTab cargoEmailId="email-abc" />);
+    renderWithToast(<QuoteTab cargoEmailId="email-abc" />);
     fireEvent.click(screen.getByRole('button', { name: /generate/i }));
 
     await waitFor(() => {
@@ -98,14 +106,14 @@ describe('QuoteTab — Generate Draft button (fix #351)', () => {
 
   it('Send Quote is disabled when draft textarea is empty', () => {
     mockFetchResponses('');
-    render(<QuoteTab cargoEmailId="email-001" />);
+    renderWithToast(<QuoteTab cargoEmailId="email-001" />);
     const sendBtn = screen.getByRole('button', { name: /send quote/i });
     expect(sendBtn).toBeDisabled();
   });
 
   it('Send Quote is enabled after draft textarea is filled', () => {
     mockFetchResponses('');
-    render(<QuoteTab cargoEmailId="email-001" />);
+    renderWithToast(<QuoteTab cargoEmailId="email-001" />);
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'USD 15/MT' } });
     const sendBtn = screen.getByRole('button', { name: /send quote/i });
     expect(sendBtn).not.toBeDisabled();
