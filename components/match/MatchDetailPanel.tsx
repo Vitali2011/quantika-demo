@@ -18,6 +18,8 @@ export interface MatchDetailPanelProps {
   laycanDisplay: string | null;
   cargoEmailId?: string;
   hasSessionMatch: boolean;
+  fitPercent?: number | null;
+  fitBreakdown?: string | null;
 }
 
 function PanelContent({
@@ -31,6 +33,8 @@ function PanelContent({
   laycanDisplay,
   cargoEmailId,
   hasSessionMatch,
+  fitPercent,
+  fitBreakdown,
 }: MatchDetailPanelProps) {
   const [declining, setDeclining] = useState(false);
   const [declineError, setDeclineError] = useState<string | null>(null);
@@ -140,6 +144,50 @@ function PanelContent({
           </CardContent>
         </Card>
       )}
+
+      {/* Fit Breakdown */}
+      {fitPercent != null && (() => {
+        const fbData = fitBreakdown ? (() => { try { return JSON.parse(fitBreakdown); } catch { return null; } })() : null;
+        const components: Array<{ label: string; weight: number; score: number; rationale: string }> =
+          fbData?.components ?? [];
+        const fitPct = Math.round(fitPercent);
+        const fitColor = fitPct >= 85 ? 'text-emerald-600' : fitPct >= 60 ? 'text-amber-600' : 'text-slate-500';
+        return (
+          <Card size="sm">
+            <CardHeader>
+              <CardTitle className="text-xs uppercase tracking-wide text-ds-text-muted flex items-center justify-between">
+                <span>Fit Score</span>
+                <span className={`font-mono text-sm font-semibold ${fitColor}`}>{fitPct}%</span>
+              </CardTitle>
+            </CardHeader>
+            {components.length > 0 && (
+              <CardContent>
+                <div className="space-y-2">
+                  {components.map((c, i) => (
+                    <div key={i} className="space-y-0.5">
+                      <div className="flex justify-between text-xs">
+                        <span className="font-medium text-ds-text">{c.label}</span>
+                        <span className={`font-mono ${Math.round(c.score / c.weight * 100) >= 60 ? 'text-emerald-600' : 'text-slate-400'}`}>
+                          {Math.round(c.score / c.weight * 100)}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-ds-surface-muted rounded-full h-1">
+                        <div
+                          className={`h-1 rounded-full ${Math.round(c.score / c.weight * 100) >= 60 ? 'bg-emerald-500' : 'bg-slate-300'}`}
+                          style={{ width: `${Math.round(c.score / c.weight * 100)}%` }}
+                        />
+                      </div>
+                      {c.rationale && (
+                        <p className="text-[11px] text-ds-text-muted leading-relaxed">{c.rationale}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            )}
+          </Card>
+        );
+      })()}
     </div>
   );
 }

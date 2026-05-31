@@ -67,6 +67,8 @@ export function persistSessionMatches(
       freight_rate_source,
       vessel_name: vessel ? (cfValue(vessel.vesselName) || null) : null,
       cargo_ref: cargo ? (cfValue(cargo.cargoDescription) || null) : null,
+      fit_percent: m.fitPercent ?? null,
+      fit_breakdown: m.fitBreakdown ? JSON.stringify(m.fitBreakdown) : null,
     });
   }
 }
