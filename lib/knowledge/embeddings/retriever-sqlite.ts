@@ -281,6 +281,11 @@ export async function retrieve(
   query: string,
   opts: RetrieveOptions
 ): Promise<RetrievedChunk[]> {
+  // Guard: RAG feature flag
+  if (!isRagEnabled()) {
+    throw new Error('RAG is not enabled');
+  }
+
   // Guard: empty/null/undefined query
   if (!query || query.trim().length === 0) {
     return [];

@@ -17,18 +17,40 @@ import { embedQuery } from '@/lib/knowledge/embeddings/client';
 
 describe('retriever boundary tests', () => {
   let db: Database.Database;
+  const origRag = process.env.KNOWLEDGE_RAG_ENABLED;
 
   beforeAll(() => {
+    process.env.KNOWLEDGE_RAG_ENABLED = 'true';
     db = getDb(':memory:');
     runMigrations(db, allMigrations);
   });
 
   afterAll(() => {
     db.close();
+    process.env.KNOWLEDGE_RAG_ENABLED = origRag;
   });
 
   afterEach(() => {
     jest.restoreAllMocks();
+  });
+
+  describe('TC-NBI-00: RAG feature flag disabled', () => {
+    it('throws Error("RAG is not enabled") when KNOWLEDGE_RAG_ENABLED=false', async () => {
+      const prev = process.env.KNOWLEDGE_RAG_ENABLED;
+      process.env.KNOWLEDGE_RAG_ENABLED = 'false';
+      try {
+        await expect(
+          retrieve('IMSBC bulk cargo stowage', {
+            vectorTable: 'imsbc_vec',
+            ftsTable: 'imsbc_fts',
+            db,
+          })
+        ).rejects.toThrow('RAG is not enabled');
+        expect(embedQuery).not.toHaveBeenCalled();
+      } finally {
+        process.env.KNOWLEDGE_RAG_ENABLED = prev;
+      }
+    });
   });
 
   describe('TC-NBI-01: empty query string', () => {
@@ -287,8 +309,10 @@ describe('retriever boundary tests', () => {
 
 describe('retriever integration tests', () => {
   let db: Database.Database;
+  const origRag = process.env.KNOWLEDGE_RAG_ENABLED;
 
   beforeAll(() => {
+    process.env.KNOWLEDGE_RAG_ENABLED = 'true';
     db = getDb(':memory:');
     runMigrations(db, allMigrations);
 
@@ -336,6 +360,7 @@ describe('retriever integration tests', () => {
 
   afterAll(() => {
     db.close();
+    process.env.KNOWLEDGE_RAG_ENABLED = origRag;
   });
 
   afterEach(() => {
