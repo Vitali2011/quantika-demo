@@ -23,6 +23,13 @@ import {
   type AiScorer,
 } from '@/lib/matching/pair-analyzer';
 import type { ParsedCargo, ParsedVessel } from '@/lib/types';
+import { cfValue } from '@/lib/types';
+import { classifyVesselByDwt } from '@/lib/sailing/readiness-gap';
+import {
+  BALLAST_GOOD_MAX_NM,
+  PROPORTION_GOOD_MIN_UTIL,
+  isPartCargo,
+} from '@/lib/sailing/match-scoring';
 
 const offline: AiScorer = jest.fn().mockResolvedValue([]);
 
@@ -218,4 +225,55 @@ describe('analyzePairs — demo realism (79×51), levers 1+2+5', () => {
       result.blockedMatches.length;
     expect(total).toBe(cargos.length * vessels.length);
   });
+
+  // ── Wave C — ballast + size hard cap (levers 3 + 4) ────────────────────────
+  // After the cap, a 'good' main match must respect its vessel-class ballast
+  // radius (lever 3) and, unless it is a part-cargo, the minimum utilisation
+  // (lever 4). A pair that violates either is demoted to 'possible' (it still
+  // shows, flagged), so it can no longer be 'good'.
+
+  it('lever 3: every main "good" match is within its vessel-class ballast radius', async () => {
+    const result = await analyzePairs(cargos, vessels, offline, { refYear: 2026, today: DEMO_TODAY });
+    const offenders = result.matches.filter((m) => {
+      if (m.matchLevel !== 'good') return false;
+      const dist = m.readiness?.distanceNm;
+      if (dist == null) return false;
+      const vessel = vessels.find(
+        (v) => v.emailId === m.vesselEmailId && v.itemIndex === m.vesselItemIndex,
+      );
+      const dwt = vessel ? cfValue(vessel.dwtSummer) : null;
+      if (dwt == null) return false; // unknown DWT → ballast guard skipped (conservative)
+      const cls = classifyVesselByDwt(dwt);
+      return dist > BALLAST_GOOD_MAX_NM[cls];
+    });
+    expect(offenders).toHaveLength(0);
+  });
+
+  it('lever 4: every main "good" non-part-cargo match meets the minimum utilisation', async () => {
+    const result = await analyzePairs(cargos, vessels, offline, { refYear: 2026, today: DEMO_TODAY });
+    const offenders = result.matches.filter((m) => {
+      if (m.matchLevel !== 'good') return false;
+      const cargo = cargos.find(
+        (c) => c.emailId === m.cargoEmailId && c.itemIndex === m.cargoItemIndex,
+      );
+      const vessel = vessels.find(
+        (v) => v.emailId === m.vesselEmailId && v.itemIndex === m.vesselItemIndex,
+      );
+      if (!cargo || !vessel) return false;
+      if (isPartCargo(cfValue(cargo.cargoDescription))) return false;
+      const dwcc = cfValue(vessel.dwcc);
+      const dwt = cfValue(vessel.dwtSummer);
+      const cap = dwcc != null && dwcc > 0 ? dwcc : dwt != null && dwt > 0 ? dwt : null;
+      const wt = cargo.weightMtMax ?? cfValue(cargo.weightMt);
+      if (cap == null || wt == null || wt <= 0) return false;
+      return wt / cap < PROPORTION_GOOD_MIN_UTIL;
+    });
+    expect(offenders).toHaveLength(0);
+  });
+
+  // NB: the part-cargo size exemption is unit-tested directly in
+  // lib/sailing/__tests__/match-scoring.test.ts (a score-81 'good' part-cargo at
+  // 5% util stays good). A full-engine integration test is omitted on purpose —
+  // the offline sweep cannot reliably produce a 'good'-tier synthetic part-cargo
+  // pair, so the cap would early-return and the assertion would be a tautology.
 });

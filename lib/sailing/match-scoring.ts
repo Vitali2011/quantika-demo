@@ -29,6 +29,8 @@ function getMinMultiplier(...fields: (ConfidenceField<unknown> | null | undefine
 import { portHasShoreCranes } from './port-master';
 import { STOWAGE_FACTORS, checkCargoVesselCompat } from './match-filters';
 import { isVagueRegion } from './vague-region-detector';
+import { classifyVesselByDwt } from './readiness-gap';
+import type { VesselClassName } from '@/lib/constants';
 
 // ────────────────────────────────────────────────────────────────────────────
 // Cargo history keyword sets for scoring quality within compatible pairs
@@ -155,6 +157,127 @@ export function deriveMatchLevel(score: number): MatchLevel {
   if (score >= 70) return 'good';
   if (score >= 40) return 'possible';
   return 'weak';
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Ballast + size realism cap (Wave C — levers 3 + 4, handover 2026-05-30)
+//
+// Ballast distance and cargo/vessel size proportion previously only nudged the
+// score. A 'good' match that needs an uneconomic ballast leg for its vessel
+// class (lever 3), or whose cargo fills too little of the vessel — deadfreight
+// (lever 4) — is not a candidate a broker would call. These guards cap such a
+// match to 'possible' (never below — the pair still shows, flagged with an
+// issue), EXCEPT legitimate part-cargo loads, where low utilisation is normal
+// in handysize/breakbulk trade (one vessel lifts several small parcels).
+// Research basis: docs/research/match-realism-2026-05/README.md (levers 3+4).
+// ────────────────────────────────────────────────────────────────────────────
+
+/** Class-aware maximum ballast distance (nm) for a match to still rank 'good'.
+ *  The demo fleet is small geared/near-sea tonnage (median ~7k DWT), region-bound
+ *  with a SHORT ballast radius; larger vessels cross basins under a ballast bonus.
+ *  handysize 1500nm is the research "worth-calling" ballast cap (match-realism funnel). */
+export const BALLAST_GOOD_MAX_NM: Record<VesselClassName, number> = {
+  handysize: 1500,
+  supramax: 2000,
+  panamax: 2500,
+  capesize: 4000,
+};
+
+/** Minimum cargo/vessel utilisation for a non-part-cargo match to rank 'good'.
+ *  Below this the vessel sails largely empty (deadfreight). A full cargo loads
+ *  85–98% of DWT; <50% is disproportion. util at exactly the threshold stays good. */
+export const PROPORTION_GOOD_MIN_UTIL = 0.5;
+
+/** Score a capped match is lowered to — just under the 'good' (≥70) threshold,
+ *  so deriveMatchLevel returns 'possible' while preserving relative order. */
+const GOOD_CAP_SCORE = 69;
+
+/** True when the cargo is explicitly flagged as a part cargo / part load / part
+ *  lot. In handysize/breakbulk one vessel routinely lifts several small parcels,
+ *  so low utilisation is expected and must NOT be penalised as disproportion.
+ *
+ *  Tolerant of real broker phrasing: plurals ("part cargoes", "part loads"),
+ *  the "p/c" abbreviation, and arbitrary separators (space/underscore/hyphen,
+ *  zero or more — "partcargo", "part_cargo", "part  cargo"). The left `\bpart`
+ *  boundary keeps it from firing on "counterpart cargo" / "departure cargo" /
+ *  "partial cargo". Bare "parcel" is intentionally not matched — it would
+ *  over-exempt full small lots and let disproportionate matches survive 'good'. */
+export function isPartCargo(cargoDescription: string | null | undefined): boolean {
+  if (!cargoDescription) return false;
+  return /\bpart[\s_-]*(?:cargo(?:es|s)?|load(?:s)?|lot(?:s)?)\b|\bp\s*\/\s*c\b/i.test(
+    cargoDescription,
+  );
+}
+
+export interface BallastSizeCapInput {
+  match: Match;
+  /** Ballast distance (open position → load port), from readiness.distanceNm. */
+  distanceNm: number | null;
+  vesselDwt: number | null;
+  vesselDwcc: number | null;
+  /** Cargo upper-bound weight (weightMtMax ?? weightMt). */
+  cargoWeightMax: number | null;
+  cargoDescription: string | null;
+}
+
+/**
+ * Cap a 'good' match to 'possible' on ballast distance (lever 3) or size
+ * disproportion (lever 4).
+ *
+ * Pure — returns a shallow copy; only ever lowers the tier, never raises it;
+ * idempotent (won't duplicate BALLAST:/SIZE: issue text). Missing data never
+ * triggers a cap (conservative): unknown distance OR unknown vessel DWT skips
+ * the ballast guard (we can't pick a class radius without a DWT), unknown
+ * capacity skips the size guard. Part-cargo loads are exempt from the size guard.
+ */
+export function applyBallastSizeCap(input: BallastSizeCapInput): Match {
+  const { match, distanceNm, vesselDwt, vesselDwcc, cargoWeightMax, cargoDescription } = input;
+
+  // Only a 'good'-tier match (score ≥ 70) can be capped; never raise a lower tier.
+  if (match.score < 70) return match;
+
+  const newIssues: string[] = [];
+
+  // Lever 3 — ballast distance vs the vessel-class radius. Skip when DWT is
+  // unknown: classifyVesselByDwt would default to handysize (the strictest
+  // radius) and demote on an assumption — not conservative on missing data.
+  if (vesselDwt != null && distanceNm != null && Number.isFinite(distanceNm)) {
+    const cls = classifyVesselByDwt(vesselDwt);
+    const maxNm = BALLAST_GOOD_MAX_NM[cls];
+    if (distanceNm > maxNm) {
+      newIssues.push(
+        `BALLAST: ${Math.round(distanceNm)}nm exceeds ${cls} ballast radius ${maxNm}nm — uneconomic, capped to possible`,
+      );
+    }
+  }
+
+  // Lever 4 — size proportion (utilisation), with part-cargo exemption.
+  const capacity = vesselDwcc != null && vesselDwcc > 0
+    ? vesselDwcc
+    : vesselDwt != null && vesselDwt > 0
+      ? vesselDwt
+      : null;
+  if (capacity != null && cargoWeightMax != null && cargoWeightMax > 0) {
+    const util = cargoWeightMax / capacity;
+    if (util < PROPORTION_GOOD_MIN_UTIL && !isPartCargo(cargoDescription)) {
+      newIssues.push(
+        `SIZE: cargo fills only ${Math.round(util * 100)}% of vessel (deadfreight) — disproportion, capped to possible`,
+      );
+    }
+  }
+
+  if (newIssues.length === 0) return match;
+
+  const updated: Match = { ...match };
+  updated.score = Math.min(updated.score, GOOD_CAP_SCORE);
+  updated.matchLevel = deriveMatchLevel(updated.score);
+  const existing = Array.isArray(updated.issues) ? updated.issues : [];
+  // Idempotent: drop any new issue whose tag (BALLAST:/SIZE:) is already present.
+  const fresh = newIssues.filter(
+    (i) => !existing.some((e) => e.startsWith(i.slice(0, i.indexOf(':') + 1))),
+  );
+  updated.issues = [...existing, ...fresh];
+  return updated;
 }
 
 /**
