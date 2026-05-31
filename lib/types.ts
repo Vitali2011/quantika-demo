@@ -375,6 +375,7 @@ export interface MatchHardFilters {
   destDraft: HardFilterCheck;
   destCrane: HardFilterCheck;
   cargoWeight: HardFilterCheck;
+  imsbc?: HardFilterCheck;
 }
 
 /** Sanctions screening (see lib/validation/sanctions.ts). */

@@ -14,6 +14,7 @@ import { calculateReadinessGap, detectSpot } from '@/lib/sailing/readiness-gap';
 import { applyReadinessScoring, computeScoreBreakdown, deriveMatchLevel, applyBallastSizeCap } from '@/lib/sailing/match-scoring';
 import { computeFitBreakdown } from '@/lib/sailing/fit-breakdown';
 import { runHardFilters } from '@/lib/sailing/match-filters';
+import { checkImsbcLoadability } from '@/lib/sailing/imsbc-check';
 import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
 import { validateDates, isLaycanValid } from '@/lib/sailing/date-sanity';
 import { checkSanctions } from '@/lib/validation/sanctions';
@@ -83,6 +84,7 @@ interface PairAnalysis {
   hardFilters: MatchHardFilters;
   sanctions: MatchSanctions;
   dateIssues: string[];
+  imsbcIssues: string[];
   filterOut: boolean;
   filterReason?: string;
 }
@@ -121,6 +123,7 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
     grainCapacity: v.grainCapacity,
     dwtSummer: cfValue(v.dwtSummer),
     dwcc: cfValue(v.dwcc),
+    vesselRestrictions: v.restrictions ?? [],
   });
 
   const hardFilters: MatchHardFilters = {
@@ -131,7 +134,14 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
     destDraft: hf.checks.destDraft,
     destCrane: hf.checks.destCrane,
     cargoWeight: hf.checks.cargoWeight,
+    imsbc: hf.checks.imsbc,
   };
+
+  const imsbcCheck = checkImsbcLoadability(cfValue(c.cargoDescription), { restrictions: v.restrictions ?? [] });
+  const imsbcIssues: string[] =
+    imsbcCheck.verdict === 'caution'
+      ? imsbcCheck.requirements.map((r) => `IMSBC Group ${imsbcCheck.group}: ${r}`)
+      : [];
 
   const parsedLaycan = parseLaycan(c.laycan, refYear);
   const parsedOpen = parseVesselOpenDate(cfValue(v.openDate), refYear, today);
@@ -183,6 +193,7 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
     hardFilters,
     sanctions,
     dateIssues: dateValidation.issues,
+    imsbcIssues,
     filterOut,
     filterReason,
   };
@@ -474,6 +485,7 @@ export async function analyzePairs(
       issues: [
         'Not selected by AI for detailed evaluation — review manually',
         ...(analysis.dateIssues.length > 0 ? analysis.dateIssues : []),
+        ...(analysis.imsbcIssues.length > 0 ? analysis.imsbcIssues : []),
         ...(analysis.sanctions.risk === 'MEDIUM' && analysis.sanctions.reason
           ? [`Sanctions: ${analysis.sanctions.reason}`]
           : []),
@@ -519,6 +531,9 @@ export async function analyzePairs(
     withReadiness.sanctions = analysis.sanctions;
     if (analysis.dateIssues.length > 0) {
       withReadiness.issues = [...(withReadiness.issues ?? []), ...analysis.dateIssues];
+    }
+    if (analysis.imsbcIssues.length > 0) {
+      withReadiness.issues = [...(withReadiness.issues ?? []), ...analysis.imsbcIssues];
     }
     if (analysis.sanctions.risk === 'MEDIUM' && analysis.sanctions.reason) {
       withReadiness.issues = [

@@ -15,6 +15,7 @@
 
 import { getPortMaster, portCanHandleDraft, portHasShoreCranes } from './port-master';
 import { CargoType, Range, isRange } from '../types';
+import { checkImsbcLoadability } from './imsbc-check';
 
 export interface FilterResult {
   pass: boolean;
@@ -249,6 +250,21 @@ export function checkCargoVesselCompat(input: CargoVesselCompatInput): FilterRes
 // Unified runner
 // ────────────────────────────────────────────────────────────────────────────
 
+// ────────────────────────────────────────────────────────────────────────────
+// IMSBC check — hard-gate ONLY when vessel explicitly restricts DG carriage
+//   and cargo is IMSBC Group B (chemical hazard).
+//   Group A/C/unknown → always passes here (caution surfaced separately).
+// ────────────────────────────────────────────────────────────────────────────
+
+export function checkImsbc(
+  cargoDescription: string | null,
+  vesselRestrictions?: string[],
+): FilterResult {
+  const result = checkImsbcLoadability(cargoDescription, { restrictions: vesselRestrictions });
+  if (result.verdict !== 'incompatible') return { pass: true };
+  return { pass: false, reason: result.rationale };
+}
+
 export interface HardFilterInput {
   cargoType: CargoType;
   originPort: string | null;
@@ -262,6 +278,7 @@ export interface HardFilterInput {
   grainCapacity: number | null;
   dwtSummer: number | null;
   dwcc: number | null;
+  vesselRestrictions?: string[];
 }
 
 export interface HardFilterResult {
@@ -275,6 +292,7 @@ export interface HardFilterResult {
     destDraft: FilterResult;
     destCrane: FilterResult;
     cargoWeight: FilterResult;
+    imsbc: FilterResult;
   };
 }
 
@@ -298,6 +316,7 @@ export function runHardFilters(input: HardFilterInput): HardFilterResult {
     dwtSummer: input.dwtSummer,
     dwcc: input.dwcc,
   });
+  const imsbc = checkImsbc(input.cargoDescription, input.vesselRestrictions);
 
   const failures: string[] = [];
   if (!draft.pass && draft.reason) failures.push(draft.reason);
@@ -307,11 +326,12 @@ export function runHardFilters(input: HardFilterInput): HardFilterResult {
   if (!destDraft.pass && destDraft.reason) failures.push(destDraft.reason);
   if (!destCrane.pass && destCrane.reason) failures.push(destCrane.reason);
   if (!cargoWeight.pass && cargoWeight.reason) failures.push(cargoWeight.reason);
+  if (!imsbc.pass && imsbc.reason) failures.push(imsbc.reason);
 
   return {
     pass: failures.length === 0,
     failures,
-    checks: { draft, crane, volume, cargoVessel, destDraft, destCrane, cargoWeight },
+    checks: { draft, crane, volume, cargoVessel, destDraft, destCrane, cargoWeight, imsbc },
   };
 }
 
