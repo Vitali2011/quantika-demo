@@ -116,4 +116,26 @@ describe('checkCompatibility — L5C matrix', () => {
       expect(prevs).toContain('coal');
     });
   });
+
+  describe('self-pair (same cargo) is always compatible', () => {
+    it('coal → coal: compatible (no self-pair in matrix, must not fail-closed)', () => {
+      const result = checkCompatibility(['coal'], 'coal');
+      expect(result.compatible).toBe(true);
+      expect(result.requires_manual_review).toBe(false);
+      expect(result.blocking_pairs).toHaveLength(0);
+    });
+
+    it('iron-ore → iron-ore: compatible', () => {
+      const result = checkCompatibility(['iron ore'], 'iron-ore');
+      expect(result.compatible).toBe(true);
+      expect(result.requires_manual_review).toBe(false);
+      expect(result.blocking_pairs).toHaveLength(0);
+    });
+
+    it('coal → grain: still prohibited (regression guard)', () => {
+      const result = checkCompatibility(['coal'], 'grain');
+      expect(result.compatible).toBe(false);
+      expect(result.blocking_pairs.map((bp) => bp.previous)).toContain('coal');
+    });
+  });
 });
