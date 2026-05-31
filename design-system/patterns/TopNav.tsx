@@ -72,7 +72,10 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
 
 function MoreDropdown() {
   const pathname = usePathname();
-  const isMoreActive = pathname != null && MORE_ITEMS.some(
+  const items = MORE_ITEMS.filter(it =>
+    it.href !== '/laytime' || process.env.NEXT_PUBLIC_LAYTIME_ENGINE_ENABLED === 'true',
+  );
+  const isMoreActive = pathname != null && items.some(
     (it) => pathname === it.href || pathname.startsWith(it.href + '/'),
   );
 
@@ -90,7 +93,7 @@ function MoreDropdown() {
         ⋯ More
       </summary>
       <ul className="absolute right-0 mt-2 min-w-[180px] bg-ds-surface border border-ds-border rounded-ds-md shadow-lg py-1 z-40">
-        {MORE_ITEMS.map((it) => {
+        {items.map((it) => {
           const isActive = pathname != null && (pathname === it.href || pathname.startsWith(it.href + '/'));
           return (
             <li key={it.href}>

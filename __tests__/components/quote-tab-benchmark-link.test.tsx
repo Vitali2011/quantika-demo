@@ -9,6 +9,14 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { QuoteTab } from '@/components/match/QuoteTab';
+import { ToastProvider } from '@/components/ui/toast/toast-context';
+import { ToastContainer } from '@/components/ui/toast/toast-container';
+
+function renderWithToast(ui: React.ReactElement) {
+  return render(
+    <ToastProvider>{ui}<ToastContainer /></ToastProvider>
+  );
+}
 
 function mockFetch(sourceUrl: string) {
   global.fetch = jest.fn().mockResolvedValue({
@@ -31,7 +39,7 @@ afterEach(() => {
 describe('QuoteTab benchmark source link (PI2 — #360)', () => {
   it('does NOT render an anchor when sourceUrl is "static-seed"', async () => {
     mockFetch('static-seed');
-    render(<QuoteTab />);
+    renderWithToast(<QuoteTab />);
 
     await waitFor(() => {
       expect(screen.queryByText('source')).not.toBeInTheDocument();
@@ -40,7 +48,7 @@ describe('QuoteTab benchmark source link (PI2 — #360)', () => {
 
   it('does NOT render an anchor when sourceUrl is a relative path', async () => {
     mockFetch('/some/relative/path');
-    render(<QuoteTab />);
+    renderWithToast(<QuoteTab />);
 
     await waitFor(() => {
       expect(screen.queryByText('source')).not.toBeInTheDocument();
@@ -50,7 +58,7 @@ describe('QuoteTab benchmark source link (PI2 — #360)', () => {
   it('renders anchor with correct href when sourceUrl is a valid https URL', async () => {
     const realUrl = 'https://heavyliftpfi.com/market-data/';
     mockFetch(realUrl);
-    render(<QuoteTab />);
+    renderWithToast(<QuoteTab />);
 
     await waitFor(() => {
       const link = screen.getByText('source');

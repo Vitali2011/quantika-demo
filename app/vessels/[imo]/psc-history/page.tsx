@@ -70,39 +70,33 @@ export default function PscHistoryPage({ params }: Props) {
     );
   }
 
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-gray-50 p-6">
-        <div className="mx-auto max-w-7xl">
-          <h1 className="mb-6 text-2xl font-bold">PSC Detention History</h1>
-          <p className="text-gray-500">Loading...</p>
-        </div>
-      </main>
-    );
-  }
-
-  if (error) {
-    return (
-      <main className="min-h-screen bg-gray-50 p-6">
-        <div className="mx-auto max-w-7xl">
-          <h1 className="mb-6 text-2xl font-bold">PSC Detention History</h1>
-          <div className="rounded border border-red-200 bg-red-50 p-4 text-red-800">
-            Error: {error}
-          </div>
-        </div>
-      </main>
-    );
-  }
-
   return (
     <main className="min-h-screen bg-gray-50 p-6">
       <div className="mx-auto max-w-7xl">
-        <h1 className="mb-6 text-2xl font-bold">PSC Detention History</h1>
+        <div className="mb-6 flex items-center gap-3">
+          <h1 className="text-2xl font-bold">PSC Detention History</h1>
+          <span
+            data-testid="demo-data-badge"
+            className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800 ring-1 ring-inset ring-amber-200"
+          >
+            Demo data
+          </span>
+        </div>
         <p className="mb-4 text-sm text-gray-500">IMO: {imo}</p>
 
-        {records.length === 0 ? (
+        {loading && <p className="text-gray-500">Loading...</p>}
+
+        {!loading && error && (
+          <div className="rounded border border-red-200 bg-red-50 p-4 text-red-800">
+            Error: {error}
+          </div>
+        )}
+
+        {!loading && !error && records.length === 0 && (
           <p className="text-gray-500">No inspection records found.</p>
-        ) : (
+        )}
+
+        {!loading && !error && records.length > 0 && (
           <div className="overflow-x-auto">
             <table className="min-w-full bg-white border border-gray-200 rounded-lg">
               <thead>

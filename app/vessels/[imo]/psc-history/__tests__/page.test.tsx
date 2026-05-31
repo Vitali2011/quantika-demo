@@ -4,7 +4,8 @@
  * @jest-environment jsdom
  */
 
-import { render } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
+import { Suspense } from 'react';
 import PscHistoryPage from '../page';
 
 // Mock Next.js modules
@@ -43,5 +44,22 @@ describe('PscHistoryPage', () => {
     );
 
     expect(container).toBeTruthy();
+  });
+
+  // Behavioral: Demo data badge is visible when feature enabled (async — use() suspends in React 19)
+  it('shows Demo data badge when feature enabled', async () => {
+    process.env.NEXT_PUBLIC_PSC_DETENTION_ENABLED = 'true';
+
+    await act(async () => {
+      render(
+        <Suspense fallback={null}>
+          <PscHistoryPage params={Promise.resolve({ imo: '9322180' })} />
+        </Suspense>,
+      );
+    });
+
+    const badge = screen.getByTestId('demo-data-badge');
+    expect(badge).not.toBeNull();
+    expect(badge.textContent).toBe('Demo data');
   });
 });

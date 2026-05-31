@@ -454,4 +454,94 @@ Verify vessel certificates and confirm bunker plan.`);
     expect(drs.content).toContain('Considering the Market Context above');
     expect(drs.content).toContain('DWT 25,000');
   });
+
+  // ── Demo mode ──────────────────────────────────────────────────────────────
+
+  describe('DEMO_MODE', () => {
+    const origDemo = process.env.DEMO_MODE;
+
+    beforeEach(() => {
+      process.env.DEMO_MODE = 'true';
+    });
+
+    afterEach(() => {
+      if (origDemo === undefined) delete process.env.DEMO_MODE;
+      else process.env.DEMO_MODE = origDemo;
+    });
+
+    it('returns 200 with 4 EN sections without calling callAiText', async () => {
+      mockGetSession.mockReturnValue(baseSession);
+      const req = makeRequest({ matchIndex: 0 }, 'sess-1');
+      const res = await POST(req);
+      expect(res.status).toBe(200);
+      expect(mockCallAiText).not.toHaveBeenCalled();
+      const body = await res.json();
+      expect(body.sections).toHaveLength(4);
+      expect(body.sections.map((s: { heading: string }) => s.heading)).toEqual([
+        'Market Context',
+        'Deal Rationale',
+        'Key Risks',
+        'Recommended Next Steps',
+      ]);
+    });
+
+    it('returns model="demo" and language="en"', async () => {
+      mockGetSession.mockReturnValue(baseSession);
+      const req = makeRequest({ matchIndex: 0 }, 'sess-1');
+      const res = await POST(req);
+      const body = await res.json();
+      expect(body.model).toBe('demo');
+      expect(body.language).toBe('en');
+    });
+
+    it('Deal Rationale section contains vessel name from match data', async () => {
+      mockGetSession.mockReturnValue(baseSession);
+      const req = makeRequest({ matchIndex: 0 }, 'sess-1');
+      const res = await POST(req);
+      const body = await res.json();
+      const rationale = body.sections.find((s: { heading: string }) => s.heading === 'Deal Rationale');
+      // baseVessel has vesselName.value = 'MV Test Star'
+      expect(rationale.content).toContain('MV Test Star');
+    });
+
+    it('Deal Rationale section contains match score', async () => {
+      mockGetSession.mockReturnValue(baseSession);
+      const req = makeRequest({ matchIndex: 0 }, 'sess-1');
+      const res = await POST(req);
+      const body = await res.json();
+      const rationale = body.sections.find((s: { heading: string }) => s.heading === 'Deal Rationale');
+      // baseMatch has score: 82
+      expect(rationale.content).toContain('82/100');
+    });
+
+    it('returns Arabic section headers when language=ar', async () => {
+      mockGetSession.mockReturnValue(baseSession);
+      const req = makeRequest({ matchIndex: 0, language: 'ar' }, 'sess-1');
+      const res = await POST(req);
+      expect(res.status).toBe(200);
+      expect(mockCallAiText).not.toHaveBeenCalled();
+      const body = await res.json();
+      expect(body.language).toBe('ar');
+      expect(body.sections.map((s: { heading: string }) => s.heading)).toEqual([
+        'سياق السوق',
+        'مبررات الصفقة',
+        'المخاطر الرئيسية',
+        'الخطوات التالية الموصى بها',
+      ]);
+    });
+
+    it('still requires a valid session in demo mode', async () => {
+      mockGetSession.mockReturnValue(null);
+      const req = makeRequest({ matchIndex: 0 }, 'bad-sess');
+      const res = await POST(req);
+      expect(res.status).toBe(401);
+    });
+
+    it('still validates matchIndex bounds in demo mode', async () => {
+      mockGetSession.mockReturnValue(baseSession);
+      const req = makeRequest({ matchIndex: 99 }, 'sess-1');
+      const res = await POST(req);
+      expect(res.status).toBe(404);
+    });
+  });
 });

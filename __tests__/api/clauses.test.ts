@@ -6,6 +6,7 @@
 import Database from 'better-sqlite3';
 import * as sqliteVec from 'sqlite-vec';
 import migration029 from '@/lib/migrations/029-bimco-rag';
+import { BIMCO_FIXTURE_CLAUSES } from '@/lib/knowledge/sources/bimco/fixture';
 
 let testDb: Database.Database;
 
@@ -234,6 +235,75 @@ describe('GET /api/knowledge/clauses', () => {
       expect(result).toHaveProperty('metadata');
       expect(typeof result.content).toBe('string');
       expect(typeof result.metadata).toBe('string');
+    }
+  });
+
+  // TC-API-12: Behavioral — fixture data seeded → search term returns relevant clause (PI2)
+  it('returns relevant clause when searching fixture term "laytime"', async () => {
+    process.env.BIMCO_RAG_ENABLED = 'true';
+
+    // Seed FTS table from fixture (mirrors what syncBimcoRag does without embedding API)
+    const stmt = db.prepare('INSERT INTO bimco_fts (content, metadata) VALUES (?, ?)');
+    for (const clause of BIMCO_FIXTURE_CLAUSES) {
+      stmt.run(
+        clause.text,
+        JSON.stringify({
+          source: 'bimco',
+          charterParty: clause.charterParty,
+          clauseNumber: clause.clauseNumber,
+          title: clause.title,
+          id: clause.id,
+        }),
+      );
+    }
+
+    const { GET } = await import('@/app/api/knowledge/clauses/route');
+    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=laytime');
+    const res = await GET(req);
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.results.length).toBeGreaterThan(0);
+
+    // "laytime" must appear in at least one result content (fixture: gencon2022-clause8, shellvoy6-clause7)
+    const hasLaytime = json.results.some((r: any) => r.content.toLowerCase().includes('laytime'));
+    expect(hasLaytime).toBe(true);
+
+    // Metadata must be parseable with charterParty present
+    const meta = JSON.parse(json.results[0].metadata);
+    expect(meta).toHaveProperty('charterParty');
+    expect(typeof meta.charterParty).toBe('string');
+  });
+
+  // TC-API-13: Behavioral — fixture data + cp filter returns only matching charter party
+  it('returns only GENCON 2022 clauses when cp=GENCON+2022 with fixture data', async () => {
+    process.env.BIMCO_RAG_ENABLED = 'true';
+
+    const stmt = db.prepare('INSERT INTO bimco_fts (content, metadata) VALUES (?, ?)');
+    for (const clause of BIMCO_FIXTURE_CLAUSES) {
+      stmt.run(
+        clause.text,
+        JSON.stringify({
+          source: 'bimco',
+          charterParty: clause.charterParty,
+          clauseNumber: clause.clauseNumber,
+          title: clause.title,
+          id: clause.id,
+        }),
+      );
+    }
+
+    const { GET } = await import('@/app/api/knowledge/clauses/route');
+    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=cargo&cp=GENCON+2022');
+    const res = await GET(req);
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.results.length).toBeGreaterThan(0);
+
+    for (const result of json.results) {
+      const meta = JSON.parse(result.metadata);
+      expect(meta.charterParty).toBe('GENCON 2022');
     }
   });
 });
