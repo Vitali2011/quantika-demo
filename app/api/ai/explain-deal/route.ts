@@ -21,6 +21,8 @@ import {
 import { ExplainDealBodySchema } from '@/lib/api-schemas';
 import { stripInventedContent } from '@/lib/explain-deal-validator';
 import { buildExplainDealUserPrompt } from '@/lib/explain-deal-prompt';
+import { isDemoMode } from '@/lib/demo-mode';
+import type { Match, ParsedCargo, ParsedVessel } from '@/lib/types';
 
 export const maxDuration = 60;
 
@@ -56,6 +58,85 @@ export type ExplainDealResponse = {
   model: string;
   warnings?: ExplainDealWarning[];
 };
+
+// ─── Demo Mode ─────────────────────────────────────────────────────────────────
+
+function buildDemoExplanation(
+  match: Match,
+  cargo: ParsedCargo | null,
+  vessel: ParsedVessel | null,
+  language: 'en' | 'ar',
+): ExplainDealResponse {
+  const cargoDesc = cargo?.cargoDescription?.value ?? cargo?.cargoType ?? 'bulk cargo';
+  const cargoWeight = cargo?.weightMt?.value ?? null;
+  const origin = cargo?.originPort?.value ?? 'load port';
+  const destination = cargo?.destinationPort?.value ?? 'discharge port';
+  const laycan = cargo?.laycan ?? 'TBD';
+  const vesselName = vessel?.vesselName?.value ?? 'the vessel';
+  const vesselType = vessel?.vesselType ?? 'bulk carrier';
+  const dwtSummer = vessel?.dwtSummer?.value ?? null;
+  const openPos = vessel?.openPosition?.value ?? null;
+  const openDate = vessel?.openDate?.value ?? null;
+  const reasons = match.matchReasons.join('; ') || 'cargo/vessel compatibility';
+  const issues = match.issues.length > 0 ? match.issues.join('; ') : null;
+
+  const weightStr = cargoWeight ? `${cargoWeight.toLocaleString('en-US')} MT ` : '';
+  const dwtStr = dwtSummer ? `${dwtSummer.toLocaleString('en-US')} DWT, ` : '';
+  const openParts = ([openPos && `Open: ${openPos}`, openDate && `(${openDate})`] as (string | false)[]).filter(Boolean) as string[];
+  const openStr = openParts.length > 0 ? ` ${openParts.join(' ')}.` : '';
+
+  if (language === 'ar') {
+    return {
+      sections: [
+        {
+          heading: 'سياق السوق',
+          content: `سوق شحن ${cargo?.cargoType ?? 'البضائع السائبة'} نشط على الخط ${origin} ← ${destination}. يدعم توافر السفن الإقليمي إمكانية تنفيذ الشريعة لهذا الطلب.`,
+        },
+        {
+          heading: 'مبررات الصفقة',
+          content: `${vesselName} (${dwtStr}${vesselType}) مناسبة لهذه البضاعة ${weightStr}(${cargoDesc}).${openStr} الليكان: ${laycan}. درجة التطابق: ${match.score}/100 (${match.matchLevel.toUpperCase()}). العوامل: ${reasons}.`,
+        },
+        {
+          heading: 'المخاطر الرئيسية',
+          content: issues
+            ? `المشكلات المرصودة: ${issues}. يجب معالجتها قبل تأكيد الشريعة.`
+            : `لا مخاوف رئيسية. تسري المخاطر القياسية: ازدحام الموانئ، تأخيرات الطقس، والتعرض للاستمرار.`,
+        },
+        {
+          heading: 'الخطوات التالية الموصى بها',
+          content: `1. تأكيد جاهزية البضاعة مع المستأجر.\n2. التواصل مع ملاك ${vesselName} لتأمين نافذة الليكان.\n3. التفاوض على الشحن ورسوم الاستمرار.\n4. ترتيب معاينة السفينة والتحقق من الشهادات.`,
+        },
+      ],
+      language: 'ar',
+      model: 'demo',
+    };
+  }
+
+  return {
+    sections: [
+      {
+        heading: 'Market Context',
+        content: `The ${cargo?.cargoType ?? 'bulk'} freight market is active on the ${origin} → ${destination} corridor. Regional vessel availability supports viable fixture potential for this inquiry.`,
+      },
+      {
+        heading: 'Deal Rationale',
+        content: `${vesselName} (${dwtStr}${vesselType}) is well-suited for this ${weightStr}${cargoDesc} cargo.${openStr} Laycan: ${laycan}. Match score: ${match.score}/100 (${match.matchLevel.toUpperCase()}). Key factors: ${reasons}.`,
+      },
+      {
+        heading: 'Key Risks',
+        content: issues
+          ? `Flagged issues: ${issues}. Broker should address these before fixture confirmation.`
+          : `No major flags identified. Standard risks apply: port congestion, weather delays on the route, and demurrage exposure if cargo is not ready by laycan.`,
+      },
+      {
+        heading: 'Recommended Next Steps',
+        content: `1. Confirm cargo readiness and exact stem with the charterer.\n2. Approach ${vesselName} owners to secure the laycan window.\n3. Negotiate freight rate and demurrage terms.\n4. Arrange vessel inspection and verify certificates if required.`,
+      },
+    ],
+    language: 'en',
+    model: 'demo',
+  };
+}
 
 /**
  * Parses LLM text output into structured sections.
@@ -160,6 +241,11 @@ export async function POST(request: NextRequest) {
   const vessel = session.parsedVessels.find(
     (v) => v.emailId === match.vesselEmailId && v.itemIndex === match.vesselItemIndex,
   );
+
+  // Demo mode: return template explanation without LLM call
+  if (isDemoMode()) {
+    return NextResponse.json(buildDemoExplanation(match, cargo ?? null, vessel ?? null, language));
+  }
 
   const userPrompt = buildExplainDealUserPrompt(match, cargo ?? null, vessel ?? null, matchIndex);
   const systemPrompt =
