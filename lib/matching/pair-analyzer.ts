@@ -653,6 +653,7 @@ export async function analyzePairs(
         readiness: analysis?.readiness,
         sanctions: analysis?.sanctions,
         hardFilters: analysis?.hardFilters,
+        refYear,
       });
       m.fitPercent = fb.fitPercent;
       m.fitBreakdown = fb;

@@ -258,7 +258,7 @@ describe('computeFitBreakdown — anchor scorecard', () => {
     const cargo = makeCargo();
     const vessel = makeVessel();
     const fb = computeFitBreakdown({ cargo, vessel, readiness: READY_IDEAL, sanctions: SANCTIONS_OK, hardFilters: HF_PASS });
-    expect(fb.components).toHaveLength(8);
+    expect(fb.components).toHaveLength(9);
     for (const c of fb.components) {
       expect(typeof c.label).toBe('string');
       expect(typeof c.rationale).toBe('string');
