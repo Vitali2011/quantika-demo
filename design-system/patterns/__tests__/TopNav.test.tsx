@@ -211,4 +211,40 @@ describe('TopNav', () => {
       expect(primaryActiveLinks(container)).toHaveLength(0);
     });
   });
+
+  describe('LAYTIME_ENGINE_ENABLED flag gate', () => {
+    const dropdownLinks = (container: HTMLElement) =>
+      Array.from(container.querySelectorAll('details a'));
+
+    afterEach(() => {
+      delete process.env.NEXT_PUBLIC_LAYTIME_ENGINE_ENABLED;
+    });
+
+    it('Laytime link absent from More dropdown when flag is off', () => {
+      render(<ModeProvider initial="charterer"><TopNav /></ModeProvider>);
+      const links = dropdownLinks(document.body);
+      expect(links.find(l => l.getAttribute('href') === '/laytime')).toBeUndefined();
+    });
+
+    it('Laytime link present in More dropdown when flag is on', () => {
+      process.env.NEXT_PUBLIC_LAYTIME_ENGINE_ENABLED = 'true';
+      render(<ModeProvider initial="charterer"><TopNav /></ModeProvider>);
+      const link = dropdownLinks(document.body).find(l => l.getAttribute('href') === '/laytime');
+      expect(link).toBeDefined();
+      expect(link).toHaveTextContent('Laytime');
+    });
+
+    it('More summary is highlighted on /laytime when flag is on', () => {
+      process.env.NEXT_PUBLIC_LAYTIME_ENGINE_ENABLED = 'true';
+      mockUsePathname.mockReturnValue('/laytime');
+      const { container } = render(<ModeProvider initial="charterer"><TopNav /></ModeProvider>);
+      expect(container.querySelector('summary[aria-label="More"]')).toHaveAttribute('aria-current', 'true');
+    });
+
+    it('More summary is NOT highlighted on /laytime when flag is off', () => {
+      mockUsePathname.mockReturnValue('/laytime');
+      const { container } = render(<ModeProvider initial="charterer"><TopNav /></ModeProvider>);
+      expect(container.querySelector('summary[aria-label="More"]')).not.toHaveAttribute('aria-current');
+    });
+  });
 });
