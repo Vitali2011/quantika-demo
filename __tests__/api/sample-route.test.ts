@@ -84,4 +84,27 @@ describe('POST /api/sample', () => {
     );
     expect(hasEconomicsMatch).toBe(true);
   });
+
+  it('demo session pre-seeds lowConfidenceMatches so "На проверку" tab is non-empty', async () => {
+    const { POST } = await import('@/app/api/sample/route');
+    const res = await POST(makeReq());
+    const cookies = res.headers.getSetCookie?.() ?? [res.headers.get('set-cookie') ?? ''];
+    const sessionCookie = cookies.find((c: string) => c.includes('session_id='));
+    const sessionId = sessionCookie?.match(/session_id=([^;]+)/)?.[1];
+    const session = getSession(sessionId!);
+    expect(session!.lowConfidenceMatches).toBeDefined();
+    expect(session!.lowConfidenceMatches!.length).toBeGreaterThan(0);
+    expect(session!.lowConfidenceMatches!.every((m) => m.matchLevel === 'weak')).toBe(true);
+  });
+
+  it('demo session pre-seeds insufficientData so "Мало данных" tab is non-empty', async () => {
+    const { POST } = await import('@/app/api/sample/route');
+    const res = await POST(makeReq());
+    const cookies = res.headers.getSetCookie?.() ?? [res.headers.get('set-cookie') ?? ''];
+    const sessionCookie = cookies.find((c: string) => c.includes('session_id='));
+    const sessionId = sessionCookie?.match(/session_id=([^;]+)/)?.[1];
+    const session = getSession(sessionId!);
+    expect(session!.insufficientData).toBeDefined();
+    expect(session!.insufficientData!.length).toBeGreaterThan(0);
+  });
 });

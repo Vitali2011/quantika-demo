@@ -13,6 +13,7 @@ type DemoBlob = Pick<
   SessionData,
   'emails' | 'classifications' | 'parsedCargos' | 'parsedVessels'
   | 'parsedFixtureRecaps' | 'processedEmails' | 'matches' | 'isSampleData' | 'accountId'
+  | 'lowConfidenceMatches' | 'insufficientData'
 >;
 
 interface EmailRow {
@@ -84,28 +85,46 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
   }
 
   const hasFitCols = (db.prepare(`PRAGMA table_info(matches)`).all() as Array<{name:string}>).some(c => c.name === 'fit_percent');
+  const selectCols = hasFitCols
+    ? 'cargo_id, vessel_id, score, reason, reason_structured, fit_percent, fit_breakdown'
+    : 'cargo_id, vessel_id, score, reason, reason_structured, NULL as fit_percent, NULL as fit_breakdown';
+
+  // Only the seeded snapshot rows (user_id IS NULL). Per-session copies that
+  // persistSessionMatches writes (user_id = sessionId) must NOT be re-read here,
+  // or the demo's match set would grow/duplicate with every login.
   const matchRows = db.prepare(
-    // Only the seeded snapshot rows (user_id IS NULL). Per-session copies that
-    // persistSessionMatches writes (user_id = sessionId) must NOT be re-read here,
-    // or the demo's match set would grow/duplicate with every login.
-    hasFitCols
-      ? `SELECT cargo_id, vessel_id, score, reason, reason_structured, fit_percent, fit_breakdown FROM matches WHERE user_id IS NULL`
-      : `SELECT cargo_id, vessel_id, score, reason, reason_structured, NULL as fit_percent, NULL as fit_breakdown FROM matches WHERE user_id IS NULL`,
+    `SELECT ${selectCols} FROM matches WHERE user_id IS NULL`,
   ).all() as MatchRow[];
 
-  const matches: Match[] = matchRows.map((r) => ({
-    cargoEmailId: r.cargo_id,
-    cargoItemIndex: 0,
-    vesselEmailId: r.vessel_id,
-    vesselItemIndex: 0,
-    score: r.score,
-    matchLevel: deriveMatchLevel(r.score),
-    matchReasons: r.reason ? [r.reason] : [],
-    issues: [],
-    scoreBreakdown: safeJsonObject<ScoreBreakdown>(r.reason_structured),
-    fitPercent: r.fit_percent ?? undefined,
-    fitBreakdown: safeJsonObject<import('@/lib/types').FitBreakdown>(r.fit_breakdown),
-  }));
+  // Realism buckets seeded by real-matches.ts (sentinel user_ids preserved
+  // by deleteOrphanSessionMatches). Hydrated into session so /matches bucket
+  // tabs are non-empty on first login without triggering LLM scoring.
+  const reviewRows = db.prepare(
+    `SELECT ${selectCols} FROM matches WHERE user_id = '__demo_review__'`,
+  ).all() as MatchRow[];
+  const insufficientRows = db.prepare(
+    `SELECT ${selectCols} FROM matches WHERE user_id = '__demo_insufficient__'`,
+  ).all() as MatchRow[];
+
+  function rowsToMatches(rows: MatchRow[]): Match[] {
+    return rows.map((r) => ({
+      cargoEmailId: r.cargo_id,
+      cargoItemIndex: 0,
+      vesselEmailId: r.vessel_id,
+      vesselItemIndex: 0,
+      score: r.score,
+      matchLevel: deriveMatchLevel(r.score),
+      matchReasons: r.reason ? [r.reason] : [],
+      issues: [],
+      scoreBreakdown: safeJsonObject<ScoreBreakdown>(r.reason_structured),
+      fitPercent: r.fit_percent ?? undefined,
+      fitBreakdown: safeJsonObject<import('@/lib/types').FitBreakdown>(r.fit_breakdown),
+    }));
+  }
+
+  const matches = rowsToMatches(matchRows);
+  const lowConfidenceMatches = rowsToMatches(reviewRows);
+  const insufficientData = rowsToMatches(insufficientRows);
 
   const processedEmails = buildProcessedEmails(emails, classifications, parsedCargos, parsedVessels);
 
@@ -117,6 +136,8 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
     parsedFixtureRecaps,
     processedEmails,
     matches,
+    lowConfidenceMatches,
+    insufficientData,
     isSampleData: true,
     accountId: 'demo',
   };

@@ -474,6 +474,7 @@ export function deleteOrphanSessionMatches(db: Database.Database): number {
     .prepare(
       `DELETE FROM matches
          WHERE user_id IS NOT NULL
+           AND user_id NOT IN ('__demo_review__', '__demo_insufficient__')
            AND NOT EXISTS (SELECT 1 FROM sessions WHERE sessions.id = matches.user_id)`,
     )
     .run();

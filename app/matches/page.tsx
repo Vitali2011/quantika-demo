@@ -6,6 +6,7 @@ import { getSession } from '@/lib/session';
 import { getStore } from '@/lib/session-store';
 import { listMatches } from '@/lib/matching/matches-repository';
 import { persistSessionMatches } from '@/lib/matching/persist-session-matches';
+import { toBucketRows } from '@/lib/matching/session-buckets';
 import MatchesClient from './MatchesClient';
 import PageSkeleton from '@/components/ui/PageSkeleton';
 
@@ -59,6 +60,23 @@ export default async function MatchesPage() {
   const cargoEmailIds = session.parsedCargos.map((c) => c.emailId);
   const vesselEmailIds = session.parsedVessels.map((v) => v.emailId);
 
+  // Realism buckets (Wave B). These live on the session as Match[] (set by
+  // POST /api/ai/match) and are NOT in the matches table, so we convert them to
+  // read-only StoredMatch rows here and thread them straight to the client.
+  // Distinct id ranges keep the two buckets' synthetic ids from colliding.
+  const lowConfidenceMatches = toBucketRows(
+    session.lowConfidenceMatches ?? [],
+    session.parsedCargos,
+    session.parsedVessels,
+    -1,
+  );
+  const insufficientData = toBucketRows(
+    session.insufficientData ?? [],
+    session.parsedCargos,
+    session.parsedVessels,
+    -1_000_000,
+  );
+
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-12">
       <div className="max-w-[1280px] mx-auto space-y-6">
@@ -67,6 +85,8 @@ export default async function MatchesPage() {
           <MatchesClient initialMatches={matches} isComputing={isComputing}
             cargoEmailIds={cargoEmailIds}
             vesselEmailIds={vesselEmailIds}
+            lowConfidenceMatches={lowConfidenceMatches}
+            insufficientData={insufficientData}
           />
         </Suspense>
       </div>

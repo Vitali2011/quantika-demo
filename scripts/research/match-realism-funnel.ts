@@ -17,15 +17,15 @@ import type { ParsedCargo, ParsedVessel } from '../../lib/types';
 import { cfValue } from '../../lib/types';
 import { runHardFilters } from '../../lib/sailing/match-filters';
 import { calculateReadinessGap, detectSpot } from '../../lib/sailing/readiness-gap';
-import { rebaseParsedCargoes, rebaseParsedVessels } from '../../lib/sample-data/rebase-parsed';
 
-// Reference "now". Wave A: fixtures are rebased onto this date (was a frozen
-// absolute corpus), so the realistic count no longer depends on when you run it.
+const cargos = cargoesFixture as unknown as ParsedCargo[];
+const vessels = vesselsFixture as unknown as ParsedVessel[];
+
+// Reference "now" — pick a date where the bulk of laycans are still in the
+// future (laycans cluster in May 2026). This is the BEST CASE for the engine
+// (fewest expired windows), so the realistic count we derive is an upper bound.
 const TODAY = new Date(Date.UTC(2026, 4, 1)); // 2026-05-01
 const REF_YEAR = 2026;
-
-const cargos = rebaseParsedCargoes(cargoesFixture as unknown as ParsedCargo[], TODAY);
-const vessels = rebaseParsedVessels(vesselsFixture as unknown as ParsedVessel[], TODAY);
 
 interface PairRow {
   cargoIdx: number;
@@ -195,13 +195,10 @@ p(`   Assessable share of baseline (verdict≠unknown): ${baseline.filter((r) =>
 p('');
 p('── SENSITIVITY TO "today" (data freshness) ──');
 for (const t of [new Date(Date.UTC(2026, 4, 1)), new Date(Date.UTC(2026, 4, 29)), new Date(Date.UTC(2026, 5, 15))]) {
-  // Wave A: rebase per-`today` so the data tracks the run date (stability check).
-  const cg = rebaseParsedCargoes(cargoesFixture as unknown as ParsedCargo[], t);
-  const vs = rebaseParsedVessels(vesselsFixture as unknown as ParsedVessel[], t);
   let bl = 0;
-  for (let ci = 0; ci < cg.length; ci++) {
-    for (let vi = 0; vi < vs.length; vi++) {
-      const c = cg[ci], v = vs[vi];
+  for (let ci = 0; ci < cargos.length; ci++) {
+    for (let vi = 0; vi < vessels.length; vi++) {
+      const c = cargos[ci], v = vessels[vi];
       const hf = runHardFilters({
         cargoType: c.cargoType, originPort: cfValue(c.originPort), destinationPort: cfValue(c.destinationPort),
         weightMt: c.weightMtMin != null && c.weightMtMax != null && c.weightMtMin !== c.weightMtMax ? { min: c.weightMtMin, max: c.weightMtMax } : cfValue(c.weightMt),
