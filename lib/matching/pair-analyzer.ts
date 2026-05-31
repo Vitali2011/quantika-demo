@@ -19,6 +19,7 @@ import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
 import { validateDates, isLaycanValid } from '@/lib/sailing/date-sanity';
 import { checkSanctions } from '@/lib/validation/sanctions';
 import { enrichReasons } from '@/lib/matching/reason-enricher';
+import { applyHoldCleanliness } from '@/lib/matching/hold-cleanliness';
 import { buildMatchEconomics, parseLeadingNumber } from '@/lib/matching/tce-calculator';
 import { resolveFreightRate } from '@/lib/matching/freight-resolver';
 import { getBalticDayRate } from '@/lib/market/baltic-freight';
@@ -657,6 +658,10 @@ export async function analyzePairs(
       });
       m.fitPercent = fb.fitPercent;
       m.fitBreakdown = fb;
+    }
+    // ── Hold cleanliness (L5C-matrix) ─────────────────────────────────────────
+    if (cargo && vessel) {
+      applyHoldCleanliness(m, cargo, vessel);
     }
   }
 

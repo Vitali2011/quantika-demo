@@ -254,6 +254,9 @@ export function checkCompatibility(
 
   for (const prev of prevCargoes) {
     if (!prev?.trim()) continue;
+    // Same normalized cargo is always compatible — skip matrix lookup to avoid
+    // false-positive fail-closed on self-pairs absent from the matrix (PR #708).
+    if (normalize(prev) === normalize(contaminationName)) continue;
     const lookup = lookupPair(prev, contaminationName);
     // extra_clean hint accumulates from BOTH matched and unmatched lookups —
     // inverted wildcards (e.g. *→DRI) contribute the hint even when verdict
