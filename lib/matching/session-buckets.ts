@@ -81,6 +81,8 @@ export function toBucketRows(
       distance_nm: distanceResult ? distanceResult.nm : null,
       freight_rate_usd_per_mt,
       freight_rate_source,
+      vessel_name: null,
+      cargo_ref: null,
     };
     return row;
   });
