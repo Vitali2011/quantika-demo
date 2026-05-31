@@ -4,6 +4,7 @@ import {
   checkVolume,
   checkCargoVesselCompat,
   checkCargoWeight,
+  checkImsbc,
   runHardFilters,
   STOWAGE_FACTORS,
 } from '../match-filters';
@@ -377,5 +378,125 @@ describe('runHardFilters', () => {
     });
     expect(r.pass).toBe(false);
     expect(r.failures.length).toBeGreaterThanOrEqual(2); // draft + volume
+  });
+});
+
+// ────────────────────────────────────────────────────────────────────────────
+// IMSBC hard-gate (checkImsbc)
+// ────────────────────────────────────────────────────────────────────────────
+
+describe('checkImsbc — hard-gate', () => {
+  it('Group C cargo → always passes', () => {
+    const r = checkImsbc('wheat');
+    expect(r.pass).toBe(true);
+  });
+
+  it('Group A cargo (iron ore) + DG restriction → passes (group A is not hard-blocked)', () => {
+    const r = checkImsbc('iron ore', ['no dangerous goods']);
+    expect(r.pass).toBe(true);
+  });
+
+  it('Group B cargo + no vessel restrictions → passes (caution only, not block)', () => {
+    const r = checkImsbc('coal', []);
+    expect(r.pass).toBe(true);
+  });
+
+  it('Group B cargo + DG restriction → blocked', () => {
+    const r = checkImsbc('coal', ['no dangerous goods']);
+    expect(r.pass).toBe(false);
+    expect(r.reason).toMatch(/vessel restrictions/i);
+  });
+
+  it('DRI + self-heating restriction → blocked', () => {
+    const r = checkImsbc('dri', ['no self-heating cargo', 'gearless']);
+    expect(r.pass).toBe(false);
+  });
+
+  it('unknown cargo + DG restriction → passes (unknown is neutral)', () => {
+    const r = checkImsbc('exotic pellets', ['no dangerous goods']);
+    expect(r.pass).toBe(true);
+  });
+
+  it('null cargo description → passes (graceful)', () => {
+    const r = checkImsbc(null, ['no dangerous goods']);
+    expect(r.pass).toBe(true);
+  });
+});
+
+describe('runHardFilters — IMSBC integration', () => {
+  it('Group B cargo + vessel DG restriction → runHardFilters fails', () => {
+    const r = runHardFilters({
+      cargoType: 'BULK',
+      originPort: null,
+      weightMt: null,
+      cargoDescription: 'coal',
+      stowageFactor: null,
+      vesselType: 'bulk carrier',
+      geared: true,
+      draftMax: null,
+      grainCapacity: null,
+      dwtSummer: null,
+      dwcc: null,
+      vesselRestrictions: ['no dangerous goods'],
+    });
+    expect(r.pass).toBe(false);
+    expect(r.checks.imsbc.pass).toBe(false);
+    expect(r.failures.some((f) => /vessel restrictions/i.test(f))).toBe(true);
+  });
+
+  it('Group B cargo + no restrictions → runHardFilters passes (caution only)', () => {
+    const r = runHardFilters({
+      cargoType: 'BULK',
+      originPort: null,
+      weightMt: null,
+      cargoDescription: 'coal',
+      stowageFactor: null,
+      vesselType: 'bulk carrier',
+      geared: true,
+      draftMax: null,
+      grainCapacity: null,
+      dwtSummer: null,
+      dwcc: null,
+      vesselRestrictions: [],
+    });
+    expect(r.pass).toBe(true);
+    expect(r.checks.imsbc.pass).toBe(true);
+  });
+
+  it('Group A cargo (iron ore) + DG restriction → runHardFilters passes (A not blocked)', () => {
+    const r = runHardFilters({
+      cargoType: 'BULK',
+      originPort: null,
+      weightMt: null,
+      cargoDescription: 'iron ore',
+      stowageFactor: null,
+      vesselType: 'bulk carrier',
+      geared: true,
+      draftMax: null,
+      grainCapacity: null,
+      dwtSummer: null,
+      dwcc: null,
+      vesselRestrictions: ['no dangerous goods'],
+    });
+    expect(r.pass).toBe(true);
+    expect(r.checks.imsbc.pass).toBe(true);
+  });
+
+  it('vesselRestrictions undefined → runHardFilters passes gracefully', () => {
+    const r = runHardFilters({
+      cargoType: 'BULK',
+      originPort: null,
+      weightMt: null,
+      cargoDescription: 'coal',
+      stowageFactor: null,
+      vesselType: 'bulk carrier',
+      geared: true,
+      draftMax: null,
+      grainCapacity: null,
+      dwtSummer: null,
+      dwcc: null,
+    });
+    expect(r.pass).toBe(true);
+    expect(r.checks.imsbc.pass).toBe(true);
   });
 });

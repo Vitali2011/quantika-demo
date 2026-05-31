@@ -1,0 +1,407 @@
+{
+  "_meta": {
+    "version": "imsbc-groups-v1",
+    "source": "IMSBC Code (IMO) — individual cargo schedules cross-validated with BIMCO, UK P&I Club, Marine Insight dry-bulk guides. Fail-closed: dual-group or ambiguous cargoes assigned most operationally restrictive group.",
+    "method": "Structural per-cargo group assignment from IMSBC Code schedules (IMO 2009+). Group A = liquefaction risk (TML cert required). Group B = chemical hazard (IMDG class). Group C = neither. Unknown cargo not in table → neutral (no restriction). Aliases resolved at runtime in lib/sailing/imsbc-check.ts TAXONOMY.",
+    "count": 74,
+    "date": "2026-05-31",
+    "coverageNote": "Covers all demo-parsed-cargoes.json cargoes + top bulk commodities. Excludes niche specialty chemicals and liquid/project cargo."
+  },
+  "cargoes": {
+    "iron ore": {
+      "group": "A",
+      "requirements": [
+        "TML certificate required before loading",
+        "moisture content declaration at loading port",
+        "monitoring for liquefaction during voyage"
+      ]
+    },
+    "zinc concentrate": {
+      "group": "A",
+      "requirements": [
+        "TML certificate required before loading",
+        "moisture content declaration at loading port",
+        "monitoring for liquefaction during voyage"
+      ]
+    },
+    "lead concentrate": {
+      "group": "A",
+      "requirements": [
+        "TML certificate required before loading",
+        "moisture content declaration at loading port",
+        "monitoring for liquefaction during voyage"
+      ]
+    },
+    "nickel ore": {
+      "group": "A",
+      "requirements": [
+        "TML certificate required before loading",
+        "moisture content declaration at loading port",
+        "high liquefaction risk — strict moisture control mandatory"
+      ]
+    },
+    "bauxite": {
+      "group": "A",
+      "requirements": [
+        "TML certificate required before loading",
+        "moisture content declaration at loading port",
+        "monitoring for liquefaction during voyage"
+      ]
+    },
+    "fluorspar": {
+      "group": "A",
+      "requirements": [
+        "TML certificate required before loading",
+        "moisture content declaration at loading port"
+      ]
+    },
+    "manganese ore": {
+      "group": "A",
+      "requirements": [
+        "TML certificate required before loading",
+        "moisture content declaration at loading port"
+      ]
+    },
+    "rock phosphate": {
+      "group": "A",
+      "requirements": [
+        "TML certificate required before loading",
+        "moisture content declaration at loading port"
+      ]
+    },
+    "mineral sand": {
+      "group": "A",
+      "requirements": [
+        "TML certificate required before loading",
+        "moisture content declaration at loading port"
+      ]
+    },
+    "ilmenite": {
+      "group": "A",
+      "requirements": [
+        "TML certificate required before loading",
+        "moisture content declaration at loading port"
+      ]
+    },
+    "iron sand": {
+      "group": "A",
+      "requirements": [
+        "TML certificate required before loading",
+        "moisture content declaration at loading port"
+      ]
+    },
+    "kaolin": {
+      "group": "A",
+      "requirements": [
+        "TML certificate required before loading (wet/fine grade)",
+        "moisture content declaration at loading port"
+      ]
+    },
+    "copper concentrate": {
+      "group": "B",
+      "imoClass": "4.2",
+      "requirements": [
+        "H2S gas monitoring required (toxic gas hazard)",
+        "TML certificate required (also Group A liquefaction risk)",
+        "moisture content declaration at loading",
+        "self-heating monitoring during voyage",
+        "dedicated voyage strongly preferred (dual Group A+B hazard)"
+      ]
+    },
+    "pyrite": {
+      "group": "B",
+      "imoClass": "4.2",
+      "requirements": [
+        "self-heating risk: temperature monitoring required",
+        "TML certificate required (also Group A liquefaction risk)",
+        "gas detector for H2S/SO2"
+      ]
+    },
+    "coal": {
+      "group": "B",
+      "imoClass": "4.2",
+      "requirements": [
+        "gas detector for methane (CH4) and CO required",
+        "self-heating monitoring during loading and voyage",
+        "holds ventilation required",
+        "no open flames near holds"
+      ]
+    },
+    "anthracite": {
+      "group": "B",
+      "imoClass": "4.2",
+      "requirements": [
+        "self-heating monitoring during loading and voyage",
+        "gas monitoring for CO",
+        "holds ventilation required"
+      ]
+    },
+    "coal tar pitch": {
+      "group": "B",
+      "imoClass": "4.2",
+      "requirements": [
+        "self-heating monitoring required",
+        "no ignition sources near holds",
+        "ventilation required"
+      ]
+    },
+    "met coke": {
+      "group": "B",
+      "imoClass": "4.2",
+      "requirements": [
+        "self-heating monitoring during loading and voyage",
+        "gas monitoring for CO",
+        "holds ventilation required"
+      ]
+    },
+    "petroleum coke": {
+      "group": "B",
+      "imoClass": "4.2",
+      "requirements": [
+        "self-heating monitoring required",
+        "CO gas monitoring",
+        "holds ventilation required"
+      ]
+    },
+    "dri": {
+      "group": "B",
+      "imoClass": "4.2",
+      "requirements": [
+        "dedicated voyage — no mixing with other cargoes",
+        "holds must be dry (moisture triggers self-heating and H2 gas)",
+        "temperature monitoring throughout voyage",
+        "inert gas atmosphere may be required",
+        "no contact with water — fire/explosion hazard"
+      ]
+    },
+    "sulphur": {
+      "group": "B",
+      "imoClass": "4.1",
+      "requirements": [
+        "flammable solid — no ignition sources",
+        "fire watch required",
+        "dust control during loading/discharge",
+        "SO2 gas monitoring recommended"
+      ]
+    },
+    "ammonium nitrate": {
+      "group": "B",
+      "imoClass": "5.1",
+      "requirements": [
+        "oxidizer — dedicated clean holds, no combustible residues",
+        "no contact with heat, oil, or flammable materials",
+        "temperature monitoring to prevent detonation risk",
+        "special approval from flag state may be required"
+      ]
+    },
+    "fertilizer": {
+      "group": "B",
+      "imoClass": "5.1",
+      "requirements": [
+        "ammonium nitrate based fertilizers: oxidizer — dedicated clean holds",
+        "verify fertilizer type: urea/potash/DAP may be Group C",
+        "no contact with heat, oil, or flammable materials"
+      ]
+    },
+    "ferrosilicon": {
+      "group": "B",
+      "imoClass": "4.3",
+      "requirements": [
+        "no contact with water or moisture (produces hydrogen gas)",
+        "holds must be completely dry before loading",
+        "gas monitoring for H2 required"
+      ]
+    },
+    "fishmeal": {
+      "group": "B",
+      "imoClass": "4.2",
+      "requirements": [
+        "self-heating risk (spontaneous combustion)",
+        "temperature monitoring during voyage",
+        "holds ventilation required",
+        "only stabilised fishmeal may be shipped in bulk"
+      ]
+    },
+    "rapeseed meal": {
+      "group": "B",
+      "imoClass": "4.2",
+      "requirements": [
+        "self-heating risk from oil content",
+        "temperature monitoring during voyage",
+        "holds ventilation required"
+      ]
+    },
+    "olive pomace": {
+      "group": "B",
+      "imoClass": "4.2",
+      "requirements": [
+        "high oil content — self-heating risk",
+        "temperature monitoring required",
+        "holds ventilation required"
+      ]
+    },
+    "charcoal": {
+      "group": "B",
+      "imoClass": "4.2",
+      "requirements": [
+        "self-heating monitoring required",
+        "CO gas monitoring",
+        "no ignition sources"
+      ]
+    },
+    "calcium carbide": {
+      "group": "B",
+      "imoClass": "4.3",
+      "requirements": [
+        "no contact with water (produces acetylene — explosive)",
+        "holds must be completely dry",
+        "special packaging required"
+      ]
+    },
+    "wheat": {
+      "group": "C"
+    },
+    "corn": {
+      "group": "C"
+    },
+    "rice": {
+      "group": "C"
+    },
+    "barley": {
+      "group": "C"
+    },
+    "soybean": {
+      "group": "C"
+    },
+    "oats": {
+      "group": "C"
+    },
+    "rye": {
+      "group": "C"
+    },
+    "sorghum": {
+      "group": "C"
+    },
+    "rapeseed": {
+      "group": "C"
+    },
+    "sunflower seeds": {
+      "group": "C"
+    },
+    "sesame seeds": {
+      "group": "C"
+    },
+    "malt": {
+      "group": "C"
+    },
+    "bran": {
+      "group": "C"
+    },
+    "cement": {
+      "group": "C"
+    },
+    "clinker": {
+      "group": "C"
+    },
+    "alumina": {
+      "group": "C"
+    },
+    "salt": {
+      "group": "C"
+    },
+    "gypsum": {
+      "group": "C"
+    },
+    "gypsum boards": {
+      "group": "C"
+    },
+    "sugar": {
+      "group": "C"
+    },
+    "limestone": {
+      "group": "C"
+    },
+    "marble": {
+      "group": "C"
+    },
+    "granite": {
+      "group": "C"
+    },
+    "sand": {
+      "group": "C"
+    },
+    "gravel": {
+      "group": "C"
+    },
+    "woodchips": {
+      "group": "C"
+    },
+    "wood pellets": {
+      "group": "C"
+    },
+    "timber": {
+      "group": "C"
+    },
+    "potash": {
+      "group": "C"
+    },
+    "urea": {
+      "group": "C"
+    },
+    "dap": {
+      "group": "C"
+    },
+    "map": {
+      "group": "C"
+    },
+    "soda ash": {
+      "group": "C"
+    },
+    "barite": {
+      "group": "C"
+    },
+    "clay": {
+      "group": "C"
+    },
+    "bentonite": {
+      "group": "C"
+    },
+    "slag": {
+      "group": "C"
+    },
+    "iron ore pellets": {
+      "group": "C"
+    },
+    "steel": {
+      "group": "C"
+    },
+    "pig iron": {
+      "group": "C"
+    },
+    "scrap": {
+      "group": "C"
+    },
+    "magnesite": {
+      "group": "C"
+    },
+    "talc": {
+      "group": "C"
+    },
+    "sodium nitrate": {
+      "group": "B",
+      "imoClass": "5.1",
+      "requirements": [
+        "oxidizer — keep away from combustibles and heat",
+        "dedicated clean holds required"
+      ]
+    },
+    "calcium hypochlorite": {
+      "group": "B",
+      "imoClass": "5.1",
+      "requirements": [
+        "oxidizer — dedicated clean holds",
+        "no contact with combustible materials"
+      ]
+    }
+  }
+}
