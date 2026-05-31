@@ -131,6 +131,74 @@ describe('build (Task 18) — pre-compute matches', () => {
   });
 });
 
+describe('build with LLM cache → fit_breakdown + tce columns populated', () => {
+  let tmpDb: string;
+  beforeEach(() => { tmpDb = path.join(os.tmpdir(), `demo-seed-fit-${Date.now()}.db`); });
+  afterEach(() => { if (fs.existsSync(tmpDb)) fs.unlinkSync(tmpDb); });
+
+  it('seed matches have fit_breakdown NOT NULL and tce_usd_per_day set', async () => {
+    const { writeCache, corpusHash } = require('../llm-cache') as typeof import('../llm-cache');
+
+    const files = fs.readdirSync(FIXTURES).filter(f => f.endsWith('.json')).sort();
+    const ids = files.map(f => {
+      const raw = JSON.parse(fs.readFileSync(`${FIXTURES}/${f}`, 'utf8'));
+      return raw.messages?.[0]?.id ?? raw.id ?? f.replace('.json', '');
+    });
+    const [c1, , v1] = ids;
+
+    const hash = corpusHash(FIXTURES);
+    const cache = {
+      corpusHash: hash,
+      generatedAt: '2026-05-27T20:00:00.000Z',
+      classifications: [
+        { emailId: c1, category: 'CARGO_INQUIRY' },
+        { emailId: v1, category: 'VESSEL_POSITION' },
+      ],
+      parsedCargos: [
+        { emailId: c1, itemIndex: 0, laycan: '10-15 May 2026',
+          weightMt: { value: 25000, confidence: 'high' },
+          originPort: { value: 'Rotterdam', confidence: 'high' } },
+      ],
+      parsedVessels: [
+        { emailId: v1, itemIndex: 0,
+          openDate: { value: '2026-05-12', confidence: 'high' },
+          openPosition: { value: 'Hamburg', confidence: 'high' },
+          dwtSummer: { value: 30000, confidence: 'high' } },
+      ],
+      parsedFixtureRecaps: [],
+    };
+    writeCache(FIXTURES, cache as any);
+
+    try {
+      await build({ rawDir: FIXTURES, manifestPath: FIX_MANIFEST, outDb: tmpDb });
+      const db = new Database(tmpDb);
+      sqliteVec.load(db);
+
+      const match = db.prepare(
+        'SELECT fit_percent, fit_breakdown, tce_usd_per_day FROM matches LIMIT 1',
+      ).get() as { fit_percent: number | null; fit_breakdown: string | null; tce_usd_per_day: number | null };
+
+      expect(match).toBeTruthy();
+      expect(match.fit_breakdown).not.toBeNull();
+      expect(match.fit_percent).not.toBeNull();
+      expect(typeof match.fit_percent).toBe('number');
+
+      const breakdown = JSON.parse(match.fit_breakdown!);
+      expect(breakdown.components).toBeDefined();
+      expect(Array.isArray(breakdown.components)).toBe(true);
+      expect(breakdown.components.length).toBeGreaterThan(0);
+
+      expect(match.tce_usd_per_day).not.toBeNull();
+      expect(typeof match.tce_usd_per_day).toBe('number');
+
+      db.close();
+    } finally {
+      fs.unlinkSync(`${FIXTURES}/.llm-cache/${hash}.json`);
+      fs.rmdirSync(`${FIXTURES}/.llm-cache`);
+    }
+  });
+});
+
 describe('build with LLM cache → parsed_results from cache + matches', () => {
   let tmpDb: string;
   beforeEach(() => { tmpDb = path.join(os.tmpdir(), `demo-seed-cache-${Date.now()}.db`); });

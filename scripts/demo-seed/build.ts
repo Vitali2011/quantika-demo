@@ -15,6 +15,10 @@ import {
   type ParsedFixtureRecap,
 } from '@/lib/types';
 import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
+import { computeFitBreakdown } from '@/lib/sailing/fit-breakdown';
+import { computeEstimatedTce, estimateFreightRate, parseLeadingNumber } from '@/lib/matching/tce-calculator';
+import { getPortDistance } from '@/lib/sailing/port-distances';
+import type { MatchReadiness } from '@/lib/types';
 
 const PARSER_VERSION = 'demo-seed-v1';
 
@@ -614,8 +618,9 @@ export async function build(opts: BuildOptions): Promise<void> {
 
     const insertMatch = db.prepare(`
       INSERT INTO matches (cargo_id, vessel_id, score, reason, status, created_at, updated_at,
-                           laycan_start, laycan_end, vessel_dwt, load_port, discharge_port)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                           laycan_start, laycan_end, vessel_dwt, load_port, discharge_port,
+                           tce_usd_per_day, distance_nm, fit_percent, fit_breakdown)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     const nowMs = new Date(manifest.frozenDate + 'T00:00:00.000Z').getTime();
@@ -647,6 +652,7 @@ export async function build(opts: BuildOptions): Promise<void> {
     const allVessels: Array<{
       vesselId: string; openMs: number; openIso: string;
       dwt: number; openPosition: string | null;
+      vesselItem: Record<string, unknown>;
     }> = [];
     for (const v of vesselRows) {
       for (const vessel of asItems(v.result_json)) {
@@ -659,6 +665,7 @@ export async function build(opts: BuildOptions): Promise<void> {
           openIso: vessel.openDate,
           dwt,
           openPosition,
+          vesselItem: vessel,
         });
       }
     }
@@ -671,6 +678,8 @@ export async function build(opts: BuildOptions): Promise<void> {
         cargoId: string; vesselId: string; score: number; reason: string;
         layStart: number; layEnd: number; vesselDwt: number;
         loadPort: string | null; dischargePort: string | null;
+        fitPercent: number | null; fitBreakdown: string | null;
+        tceUsdPerDay: number | null; distanceNm: number | null;
       }
     >();
     for (const c of cargoRows) {
@@ -708,6 +717,54 @@ export async function build(opts: BuildOptions): Promise<void> {
           const key = `${c.cargo_id}|${v.vesselId}`;
           const prev = best.get(key);
           if (!prev || score > prev.score) {
+            // Compute readiness from pre-parsed dates + port distance
+            const loadPort = cargoOriginPort ?? v.openPosition;
+            const distanceResult = getPortDistance(v.openPosition, cargoOriginPort);
+            const distanceNm = distanceResult?.nm ?? null;
+            const speedKn = parseLeadingNumber(v.vesselItem.speedLaden) || 12;
+            const sailingDays = distanceNm != null ? distanceNm / (speedKn * 24) : null;
+            const arrivalMs = sailingDays != null ? v.openMs + sailingDays * 86_400_000 : null;
+            const gapDays = arrivalMs != null ? (layStart - arrivalMs) / 86_400_000 : null;
+            const verdict: MatchReadiness['verdict'] =
+              gapDays == null ? 'unknown' :
+              gapDays < -1 ? 'late' :
+              gapDays < 0.5 ? 'tight' :
+              gapDays <= 5 ? 'ideal' : 'idle';
+            const readiness: MatchReadiness = {
+              openDate: v.openIso.slice(0, 10),
+              laycanStart: new Date(layStart).toISOString().slice(0, 10),
+              laycanEnd: new Date(layEnd).toISOString().slice(0, 10),
+              distanceNm,
+              speedKn,
+              sailingDays,
+              arrivalDate: arrivalMs != null ? new Date(arrivalMs).toISOString().slice(0, 10) : null,
+              gapDays,
+              verdict,
+              explanation: verdict,
+            };
+
+            // Run offline fit engine
+            const fitResult = computeFitBreakdown({
+              cargo: cargo as unknown as ParsedCargo,
+              vessel: v.vesselItem as unknown as ParsedVessel,
+              readiness,
+              sanctions: undefined,
+              hardFilters: undefined,
+              refYear: new Date(nowMs).getUTCFullYear(),
+            });
+
+            // Compute TCE
+            const qty = unwrapNum(cargo.weightMt);
+            const freightRate = estimateFreightRate(unwrapStr(cargo.cargoType), distanceNm ?? 0, v.dwt);
+            const tceResult = computeEstimatedTce(
+              freightRate,
+              distanceNm ?? 0,
+              v.dwt,
+              qty,
+              speedKn,
+              parseLeadingNumber(v.vesselItem.consumption),
+            );
+
             best.set(key, {
               cargoId: c.cargo_id,
               vesselId: v.vesselId,
@@ -716,15 +773,19 @@ export async function build(opts: BuildOptions): Promise<void> {
               layStart,
               layEnd,
               vesselDwt: v.dwt,
-              loadPort: cargoOriginPort ?? v.openPosition,
+              loadPort: loadPort,
               dischargePort: cargoDestPort,
+              fitPercent: fitResult.fitPercent,
+              fitBreakdown: JSON.stringify(fitResult),
+              tceUsdPerDay: tceResult.tce_usd_per_day,
+              distanceNm,
             });
           }
         }
       }
     }
     // Cap fan-out: keep top 6 matches per cargo (by score desc) to avoid near-cartesian product
-    type BestEntry = { cargoId: string; vesselId: string; score: number; reason: string; layStart: number; layEnd: number; vesselDwt: number; loadPort: string | null; dischargePort: string | null };
+    type BestEntry = { cargoId: string; vesselId: string; score: number; reason: string; layStart: number; layEnd: number; vesselDwt: number; loadPort: string | null; dischargePort: string | null; fitPercent: number | null; fitBreakdown: string | null; tceUsdPerDay: number | null; distanceNm: number | null };
     const perCargo = new Map<string, BestEntry[]>();
     for (const m of best.values()) {
       const arr = perCargo.get(m.cargoId) ?? [];
@@ -740,6 +801,10 @@ export async function build(opts: BuildOptions): Promise<void> {
           m.vesselDwt || null,
           m.loadPort ?? null,
           m.dischargePort ?? null,
+          m.tceUsdPerDay ?? null,
+          m.distanceNm ?? null,
+          m.fitPercent ?? null,
+          m.fitBreakdown ?? null,
         );
       }
     }
