@@ -17,8 +17,10 @@ import { embedQuery } from '@/lib/knowledge/embeddings/client';
 
 describe('RRF algorithm tests', () => {
   let db: Database.Database;
+  const origRag = process.env.KNOWLEDGE_RAG_ENABLED;
 
   beforeAll(() => {
+    process.env.KNOWLEDGE_RAG_ENABLED = 'true';
     db = getDb(':memory:');
     runMigrations(db, allMigrations);
 
@@ -55,6 +57,7 @@ describe('RRF algorithm tests', () => {
 
   afterAll(() => {
     db.close();
+    process.env.KNOWLEDGE_RAG_ENABLED = origRag;
   });
 
   afterEach(() => {
