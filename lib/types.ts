@@ -398,6 +398,9 @@ export interface Match {
   dateIssues?: string[];
   sanctions?: MatchSanctions;
   scoreBreakdown?: ScoreBreakdown;
+  /** Broker-facing transparent fit-% with per-factor breakdown (fit-loop 2026-05-31). */
+  fitPercent?: number;
+  fitBreakdown?: FitBreakdown;
   /** Confidence summary computed by the confidence engine (spec α-02). Optional for backward compat. */
   confidence?: import('./confidence').MatchConfidence;
   /** Economics enrichment computed by the economics engine (spec α-08). Optional — absent when data unavailable. */
@@ -441,6 +444,54 @@ export interface ScoreBreakdown {
   vagueRegionAdjustment?: number;
   /** Sum of confidence-weighted component points (may be lower than basePhysical). */
   confidenceAdjustedScore?: number;
+}
+
+/** Per-factor labelled sub-score in the broker-facing fit-% (fit-loop 2026-05-31). */
+export type FitFactor =
+  | 'utilisation'
+  | 'timing'
+  | 'ballast'
+  | 'classFit'
+  | 'cargoType'
+  | 'cranes'
+  | 'volume'
+  | 'draft';
+
+export interface FitBreakdownComponent {
+  factor: FitFactor;
+  label: string;
+  /** Maximum points this factor can contribute (the weight). */
+  weight: number;
+  /** Earned points, 0..weight. */
+  score: number;
+  /** Human-readable why the score is what it is — visible to the broker. */
+  rationale: string;
+}
+
+export interface FitBreakdown {
+  components: FitBreakdownComponent[];
+  /** Sum of component weights; usually 100. */
+  totalWeight: number;
+  /** Final transparent fit-%, 0..100. Sum of component scores minus sanctions penalty, clamped. */
+  fitPercent: number;
+  /** True when cargo description matches part-cargo phrasing (changes utilisation curve). */
+  partCargo: boolean;
+  /** Vessel class derived from DWT (used for ballast radius). */
+  vesselClass: string;
+  /** Pts deducted for MEDIUM sanctions risk (HIGH/blocking is filtered upstream). */
+  sanctionsPenalty: number;
+  /** Killing-factor cap that lowered the headline fitPercent below the linear sum
+   *  (e.g. 'late' verdict → cap 38). Null when no cap applied. */
+  appliedCap: { reason: string; ceiling: number } | null;
+  /** Raw inputs the breakdown was computed from — for transparency / debugging. */
+  inputs: {
+    distanceNm: number | null;
+    gapDays: number | null;
+    verdict: string;
+    utilisation: number | null;
+    vesselDwt: number | null;
+    cargoWtMax: number | null;
+  };
 }
 
 // ── Negotiation Recap ──

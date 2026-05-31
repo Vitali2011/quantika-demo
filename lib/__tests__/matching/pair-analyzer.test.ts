@@ -16,6 +16,7 @@ jest.mock('@/lib/sailing/readiness-gap', () => ({
     speedKn: null,
   }),
   detectSpot: jest.fn().mockReturnValue(false),
+  classifyVesselByDwt: jest.fn().mockReturnValue('handysize'),
 }));
 
 jest.mock('@/lib/sailing/match-filters', () => ({
@@ -47,6 +48,10 @@ jest.mock('@/lib/sailing/match-scoring', () => ({
   // (real engine). Here it is a passthrough so the bucket/sort contracts under
   // test are unaffected by the cap.
   applyBallastSizeCap: jest.fn().mockImplementation((input) => input.match),
+  // fit-loop 2026-05-31: fit-breakdown.ts imports these — surfaced here so the
+  // bucket/sort contracts under test still resolve the new fit-% wiring.
+  isPartCargo: jest.fn().mockReturnValue(false),
+  BALLAST_GOOD_MAX_NM: { handysize: 1500, supramax: 2000, panamax: 2500, capesize: 4000 },
 }));
 
 jest.mock('@/lib/sailing/date-parsing', () => ({
@@ -56,6 +61,7 @@ jest.mock('@/lib/sailing/date-parsing', () => ({
 
 jest.mock('@/lib/sailing/date-sanity', () => ({
   validateDates: jest.fn().mockReturnValue({ valid: true, issues: [] }),
+  isLaycanValid: jest.fn().mockReturnValue({ valid: true }),
 }));
 
 jest.mock('@/lib/validation/sanctions', () => ({

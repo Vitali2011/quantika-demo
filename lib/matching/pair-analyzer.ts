@@ -12,9 +12,10 @@ import { cfValue, isRange } from '@/lib/types';
 import { computeMatchConfidence } from '@/lib/confidence';
 import { calculateReadinessGap, detectSpot } from '@/lib/sailing/readiness-gap';
 import { applyReadinessScoring, computeScoreBreakdown, deriveMatchLevel, applyBallastSizeCap } from '@/lib/sailing/match-scoring';
+import { computeFitBreakdown } from '@/lib/sailing/fit-breakdown';
 import { runHardFilters } from '@/lib/sailing/match-filters';
 import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
-import { validateDates } from '@/lib/sailing/date-sanity';
+import { validateDates, isLaycanValid } from '@/lib/sailing/date-sanity';
 import { checkSanctions } from '@/lib/validation/sanctions';
 import { enrichReasons } from '@/lib/matching/reason-enricher';
 import { buildMatchEconomics, parseLeadingNumber } from '@/lib/matching/tce-calculator';
@@ -131,12 +132,20 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
 
   const parsedLaycan = parseLaycan(c.laycan, refYear);
   const parsedOpen = parseVesselOpenDate(cfValue(v.openDate), refYear, today);
+  // Kept for cosmetic issue display (stale-position note, expired-laycan note).
+  // filterOut intentionally does NOT use dateValidation.valid — that depends on
+  // wall-clock today and would re-introduce a date-dependence in отсев. The
+  // broker-loop mandate (2026-05-31) requires the matcher to judge timing only
+  // by open-vs-laycan arithmetic (readiness.verdict='late' if arrival > laycanStart
+  // by > 1d). Structural inversion (laycan.end < laycan.start, typo) STILL filters.
   const dateValidation = validateDates({
     openDate: parsedOpen,
     laycan: parsedLaycan,
     today,
     staleThresholdDays: 5,
   });
+  const structuralLaycan = isLaycanValid(parsedLaycan);
+  const structurallyInvalid = !structuralLaycan.valid;
 
   const sanctions: MatchSanctions = checkSanctions({
     vesselFlag: v.flag,
@@ -151,9 +160,9 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
   if (!hf.pass) {
     filterOut = true;
     filterReason = hf.failures.join('; ');
-  } else if (!dateValidation.valid) {
+  } else if (structurallyInvalid) {
     filterOut = true;
-    filterReason = dateValidation.issues.join('; ');
+    filterReason = `Laycan: ${structuralLaycan.reason ?? 'structurally invalid'}`;
   } else if (readiness.verdict === 'late') {
     filterOut = true;
     filterReason = readiness.explanation;
@@ -611,6 +620,23 @@ export async function analyzePairs(
     );
     if (cargo) {
       m.confidence = computeMatchConfidence(cargo, vessel ?? null);
+    }
+    // ── Broker-facing fit-% + breakdown (fit-loop 2026-05-31) ───────────────
+    // Continuous, per-factor, date-independent. Additive — does not replace
+    // legacy `score`/`matchLevel`, only surfaces a transparent broker view.
+    if (cargo && vessel) {
+      const analysis = analysisMap.get(
+        pairKey(m.cargoEmailId, m.cargoItemIndex, m.vesselEmailId, m.vesselItemIndex),
+      );
+      const fb = computeFitBreakdown({
+        cargo,
+        vessel,
+        readiness: analysis?.readiness,
+        sanctions: analysis?.sanctions,
+        hardFilters: analysis?.hardFilters,
+      });
+      m.fitPercent = fb.fitPercent;
+      m.fitBreakdown = fb;
     }
   }
 
