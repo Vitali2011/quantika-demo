@@ -8,7 +8,7 @@ import { Renderable } from '@/lib/types';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
 import { ClickableField } from '@/components/clickable-field';
 import { safeRender, getConf, ConfIcon } from '@/lib/ui-render';
-import { formatDate } from '@/lib/utils';
+import { formatDate, sanitizeEmailBody } from '@/lib/utils';
 import { lookupCii } from '@/lib/imo/cii-lookup';
 import { toMatchSlug } from '@/lib/matching/match-slug';
 import { CiiRatingBadge } from '@/components/vessel/CiiRatingBadge';
@@ -92,15 +92,6 @@ export default async function VesselDetailPage({ params }: Props) {
           <p className="text-sm text-ds-text-muted">From: {email.from} · {formatDate(email.date)}</p>
           {processed?.expiryDate && <p className="text-xs text-ds-text-muted">Active until {formatDate(processed.expiryDate)}</p>}
         </div>
-
-        {/* Original email */}
-        <Card padding="md">
-          <div className="flex flex-row items-center justify-between pb-2">
-            <h3 className="text-sm font-medium text-ds-text">Original Email</h3>
-            <a href={`/email/${id}#highlight`} className="text-xs text-ds-info hover:underline">View annotated →</a>
-          </div>
-          <pre className="text-sm whitespace-pre-wrap font-sans overflow-x-auto text-ds-text">{email.body || email.snippet}</pre>
-        </Card>
 
         {/* Vessel empty state */}
         {vessels.length === 0 && (
@@ -235,6 +226,17 @@ export default async function VesselDetailPage({ params }: Props) {
             </div>
           </Card>
         )}
+
+        {/* Original Email — expandable, collapsed by default (mirrors cargo detail) */}
+        <details className="rounded-ds-md border border-ds-border overflow-hidden bg-ds-surface">
+          <summary className="flex items-center gap-2 px-4 py-3 cursor-pointer select-none text-sm font-medium text-ds-text hover:bg-ds-surface-muted transition-colors list-none">
+            <span>Original Email</span>
+            <a href={`/email/${id}#highlight`} className="ml-auto text-xs text-ds-info hover:underline">View annotated →</a>
+          </summary>
+          <div className="px-4 pb-4 border-t border-ds-border">
+            <pre className="text-sm whitespace-pre-wrap font-sans overflow-x-auto text-ds-text pt-3">{sanitizeEmailBody(safeRender(email.body || email.snippet))}</pre>
+          </div>
+        </details>
       </div>
     </main>
   );
