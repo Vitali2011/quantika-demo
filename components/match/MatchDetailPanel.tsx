@@ -76,9 +76,11 @@ function PanelContent({
         </CardHeader>
         <CardContent>
           <p className="text-xs text-ds-text-muted leading-relaxed">
-            {hasSessionMatch
-              ? `Score ${score} reflects cargo/vessel compatibility — DWT, route alignment, and laycan window.`
-              : 'Session enrichment unavailable. Reload to refresh match data.'}
+            {fitPercent != null
+              ? `Fit ${Math.round(fitPercent)}% — взвешено по факторам ниже (сумма весов = 100).`
+              : !hasSessionMatch
+                ? 'Session enrichment unavailable. Reload to refresh match data.'
+                : null}
           </p>
         </CardContent>
       </Card>
