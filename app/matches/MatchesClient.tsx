@@ -37,11 +37,11 @@ interface ScoreComponent {
 }
 
 type QuickFilter = 'all' | 'fresh' | 'score80' | 'dwt50_60';
-type SortBy = 'score' | 'freshness' | 'tce';
+type SortBy = 'fit' | 'score' | 'freshness' | 'tce';
 type Density = 'table' | 'cards';
 type Tab = 'matches' | 'review' | 'insufficient';
 
-const SORT_LABELS: Record<SortBy, string> = { score: 'Score', freshness: 'Freshness', tce: 'TCE/day' };
+const SORT_LABELS: Record<SortBy, string> = { fit: 'Fit %', score: 'Score', freshness: 'Freshness', tce: 'TCE/day' };
 
 function scoreClass(score: number): string {
   if (score >= 93) return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
@@ -129,12 +129,12 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
   const [expandedFitBreakdown, setExpandedFitBreakdown] = useState<number | null>(null);
   const [showModal, setShowModal] = useState<{ action: string; count: number } | null>(null);
   const [bulkError, setBulkError] = useState<string | null>(null);
-  const [sortBy, setSortBy] = useState<SortBy>(() => isOwner ? 'tce' : 'score');
+  const [sortBy, setSortBy] = useState<SortBy>(() => isOwner ? 'tce' : 'fit');
   // Derived-state-during-render resets sort on mode switch without cascading renders.
   const [prevIsOwner, setPrevIsOwner] = useState(isOwner);
   if (prevIsOwner !== isOwner) {
     setPrevIsOwner(isOwner);
-    setSortBy(isOwner ? 'tce' : 'score');
+    setSortBy(isOwner ? 'tce' : 'fit');
   }
 
   // CD design state
@@ -350,6 +350,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
     .sort((a, b) => {
       if (sortBy === 'freshness') return b.created_at - a.created_at;
       if (sortBy === 'tce') return (b.tce_usd_per_day ?? 0) - (a.tce_usd_per_day ?? 0);
+      if (sortBy === 'fit') return (b.fit_percent ?? 0) - (a.fit_percent ?? 0);
       return b.score - a.score;
     });
 
@@ -514,6 +515,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                 onChange={(e) => setSortBy(e.target.value as SortBy)}
                 className="h-8 px-2 border border-ds-border rounded-lg bg-ds-surface text-ds-text text-xs font-mono cursor-pointer hover:border-ds-border-strong transition-colors"
               >
+                <option data-testid="sort-fit" value="fit">Fit %</option>
                 <option data-testid="sort-score" value="score">Score</option>
                 <option data-testid="sort-freshness" value="freshness">Freshness</option>
                 <option data-testid="sort-tce" value="tce">TCE/day</option>

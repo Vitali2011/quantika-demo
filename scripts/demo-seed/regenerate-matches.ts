@@ -128,21 +128,60 @@ async function main() {
     return [...best.values()];
   }
 
-  // Insufficient = passed hard gates but timing unknown (vague port/date). There
-  // are ~1000 such email-pairs; showing them all is noise, so cap to a
-  // representative top-N by score. Main + review are shown in full.
+  // Broker-facing one-line note: tier headline + the weakest 1-2 factors, so the
+  // broker sees AT A GLANCE what is missing on a non-perfect match (stored in
+  // `reason`, shown on the row + detail). The full per-factor breakdown is the
+  // expandable fit panel; this is the summary.
+  function gapNote(m: Match): string {
+    const fb = m.fitBreakdown;
+    const fit = Math.round(m.fitPercent ?? 0);
+    if (!fb) return m.matchReasons[0] ?? '';
+    const verdict = fb.inputs?.verdict;
+    if (verdict === 'unknown') return 'Timing unconfirmed — vague port/date; verify before calling';
+    const util = fb.inputs?.utilisation, dist = fb.inputs?.distanceNm, gap = fb.inputs?.gapDays;
+    const short = (factor: string): string => {
+      switch (factor) {
+        case 'utilisation': return util != null ? `under-utilised ${Math.round(util * 100)}%` : 'low utilisation';
+        case 'timing': return verdict === 'idle' ? `vessel idle ~${Math.abs(Math.round(gap ?? 0))}d pre-laycan` : verdict === 'tight' ? 'tight laycan timing' : 'timing risk';
+        case 'ballast': return dist != null ? `long ballast ~${Math.round(dist)}nm` : 'long ballast leg';
+        case 'vetting': return 'vetting unconfirmed';
+        case 'cranes': return 'crane availability unverified';
+        case 'classFit': return 'vessel size mismatch';
+        case 'volume': return 'hold volume tight';
+        case 'draft': return 'draft unverified';
+        case 'cargoType': return 'cargo-type fit marginal';
+        default: return factor;
+      }
+    };
+    const weak = (fb.components ?? [])
+      .filter((c) => c.weight >= 4 && c.score / c.weight < 0.72)
+      .sort((a, b) => a.score / a.weight - b.score / b.weight)
+      .slice(0, 2)
+      .map((c) => short(c.factor));
+    const cap = fb.appliedCap ? ` (capped: ${fb.appliedCap.reason})` : '';
+    if (fit >= 80 && weak.length === 0) return 'Strong fit — clean across factors';
+    const head = fit >= 80 ? 'Strong fit' : fit >= 70 ? 'Good fit' : 'Workable';
+    return weak.length ? `${head} — watch: ${weak.join(', ')}${cap}` : `${head}${cap}`;
+  }
+
+  // Main board = fit >= floor (broker audit); the weaker sub-floor tail (mostly
+  // deadfreight) is demoted to the review tab rather than hidden. Insufficient
+  // (timing unknown — vague port/date) is capped to a representative sample.
+  const MAIN_FIT_FLOOR = Number(arg('--fit-floor') ?? 60);
   const INSUF_CAP = Number(arg('--insuf-cap') ?? 60);
-  const mainClean = dedup(result.matches.filter((m) => m.confidence?.blockSend !== true));
-  const review = dedup(result.lowConfidenceMatches);
+  const mainAll = dedup(result.matches.filter((m) => m.confidence?.blockSend !== true));
+  const mainClean = mainAll.filter((m) => (m.fitPercent ?? 0) >= MAIN_FIT_FLOOR);
+  const demoted = mainAll.filter((m) => (m.fitPercent ?? 0) < MAIN_FIT_FLOOR);
+  const review = dedup([...result.lowConfidenceMatches, ...demoted]);
   const insufficient = dedup(result.insufficientData)
     .sort((a, b) => b.score - a.score)
     .slice(0, INSUF_CAP);
 
   const fits = (arr: Match[]) => arr.map((m) => m.fitPercent ?? 0).filter((n) => n > 0).sort((a, b) => a - b);
   const fm = fits(mainClean);
-  console.log(`[regen] BUCKETS (deduped to email-pair):`);
-  console.log(`  main (NULL):            ${mainClean.length}  · fit min ${fm[0]?.toFixed(0)} med ${fm[Math.floor(fm.length/2)]?.toFixed(0)} max ${fm[fm.length-1]?.toFixed(0)} · ≥70:${fm.filter(x=>x>=70).length} ≥60:${fm.filter(x=>x>=60).length}`);
-  console.log(`  review (__demo_review__):       ${review.length}`);
+  console.log(`[regen] BUCKETS (deduped to email-pair · main floor fit>=${MAIN_FIT_FLOOR}):`);
+  console.log(`  main (NULL):            ${mainClean.length}  · fit min ${fm[0]?.toFixed(0)} med ${fm[Math.floor(fm.length/2)]?.toFixed(0)} max ${fm[fm.length-1]?.toFixed(0)} · ≥80:${fm.filter(x=>x>=80).length} ≥70:${fm.filter(x=>x>=70).length}`);
+  console.log(`  review (__demo_review__):       ${review.length}  (engine-low ${dedup(result.lowConfidenceMatches).length} + demoted sub-floor ${demoted.length})`);
   console.log(`  insufficient (__demo_insufficient__): ${insufficient.length}`);
   console.log(`  (dropped main cleanliness-blocked: ${result.matches.filter((m) => m.confidence?.blockSend === true).length}; engine blocked total: ${result.blockedMatches.length})`);
 
@@ -170,7 +209,7 @@ async function main() {
       const voyage = loadPort && dischargePort ? getPortDistance(loadPort, dischargePort) : null;
       insert.run(
         m.cargoEmailId, m.vesselEmailId, m.cargoItemIndex, m.vesselItemIndex,
-        Math.max(0, Math.min(100, Math.round(m.score))), m.matchReasons[0] ?? '', userId,
+        Math.max(0, Math.min(100, Math.round(m.score))), gapNote(m), userId,
         nowMs, nowMs,
         m.scoreBreakdown ? JSON.stringify(m.scoreBreakdown) : null,
         cargo ? cargoTypeStr(cargo) : null,
