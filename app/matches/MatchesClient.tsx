@@ -14,6 +14,7 @@ import { useToast } from '@/components/ui/toast';
 import { abbrPort } from '@/lib/utils/abbr-port';
 import { fmtLaycan, isLaycanExpired } from '@/lib/utils/fmt-laycan';
 import { freightBadge, FREIGHT_BADGE_CLASSES } from '@/lib/matching/freight-badge';
+import { useDemoNow } from '@/lib/clock-client';
 
 interface Props {
   initialMatches: StoredMatch[];
@@ -139,20 +140,15 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
 
   // CD design state
   const [density, setDensity] = useState<Density>('table');
-  const [nowUtc, setNowUtc] = useState<string>("");
-  // Hydration-safe clock: starts at 0 (matches SSR), set post-mount to avoid
-  // React #418 text-content mismatch on the "fresh" badge (#543).
-  const [clientNow, setClientNow] = useState<number>(0);
-  useEffect(() => {
-    const tick = () => {
-      const d = new Date();
-      setNowUtc(`${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}`);
-      setClientNow(Date.now());
-    };
-    tick();
-    const id = setInterval(tick, 60000);
-    return () => clearInterval(id);
-  }, []);
+  // Hydration-safe demo clock: 0 on SSR, frozen demo timestamp after mount
+  // (or real Date.now() in non-demo mode). Avoids React #418 hydration mismatch.
+  const clientNow = useDemoNow();
+  const nowUtc = clientNow === 0
+    ? ""
+    : (() => {
+        const d = new Date(clientNow);
+        return `${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}`;
+      })();
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
 
   // Bucket tabs (Wave B): main matches vs the two read-only realism buckets.

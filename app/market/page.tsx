@@ -7,6 +7,7 @@ import { MetricHistoryPanel } from '@/components/market/MetricHistoryPanel';
 import { RoutesSection } from '@/components/market/RoutesSection';
 import { FixturesSection } from '@/components/market/FixturesSection';
 import { KnowledgeFeed } from '@/components/market/KnowledgeFeed';
+import { useDemoNow } from '@/lib/clock-client';
 
 interface IndexData {
   index_date: string;
@@ -106,13 +107,8 @@ export default function MarketPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeKpi, setActiveKpi] = useState<string | null>(null);
-  const [now, setNow] = useState<number>(0);
-
-  useEffect(() => {
-    // Hydration-safe: capture clock on mount so render stays pure.
-    const raf = requestAnimationFrame(() => setNow(Date.now()));
-    return () => cancelAnimationFrame(raf);
-  }, []);
+  // Hydration-safe demo clock: 0 on SSR, frozen demo timestamp after mount.
+  const now = useDemoNow();
 
   useEffect(() => {
     async function loadData() {

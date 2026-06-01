@@ -9,6 +9,9 @@ import { verifyAuthCookie, AUTH_COOKIE_NAME } from '@/lib/auth/cookie';
 import { getStore } from '@/lib/session-store';
 import { ModeProvider, AppShell } from '@/design-system/patterns';
 import type { Mode } from '@/design-system/patterns';
+import { isDemoMode } from '@/lib/demo-mode';
+import { demoNow } from '@/lib/clock';
+import { ClockProvider } from '@/lib/clock-client';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -74,6 +77,10 @@ export default async function RootLayout({
   const currentPath = headersList.get('x-pathname') ?? '';
   const authConfig = getAuthConfig();
 
+  // Demo-freshness clock: server reads frozen_date once; client context avoids
+  // NEXT_PUBLIC build-time bake. Non-demo → null (clients fall back to Date.now()).
+  const frozenMs = isDemoMode() ? demoNow() : null;
+
   // Check if user is authenticated to decide whether to wrap with AppShell
   let isAuthenticated = !authConfig.enabled; // if auth disabled → demo mode, always show shell
   let username: string | null = null;
@@ -102,7 +109,7 @@ export default async function RootLayout({
           <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         </head>
         <body className={inter.className}>
-          {children}
+          <ClockProvider frozenMs={frozenMs}>{children}</ClockProvider>
         </body>
       </html>
     );
@@ -133,14 +140,16 @@ export default async function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body className={inter.className}>
-        {sessionId && (
-          <Suspense fallback={null}>
-            <TrialBannerWrapper sessionId={sessionId} />
-          </Suspense>
-        )}
-        <ModeProvider initial={initialMode}>
-          <AppShell>{children}</AppShell>
-        </ModeProvider>
+        <ClockProvider frozenMs={frozenMs}>
+          {sessionId && (
+            <Suspense fallback={null}>
+              <TrialBannerWrapper sessionId={sessionId} />
+            </Suspense>
+          )}
+          <ModeProvider initial={initialMode}>
+            <AppShell>{children}</AppShell>
+          </ModeProvider>
+        </ClockProvider>
       </body>
     </html>
   );
