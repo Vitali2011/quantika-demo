@@ -64,6 +64,48 @@ describe('buildDemoSessionBlob', () => {
     db.close();
   });
 
+  it('reads cargo_item_index / vessel_item_index from seed rows (item-aware demo)', () => {
+    const db = new Database(':memory:');
+    db.exec(`
+      CREATE TABLE emails (
+        account_id TEXT, gmail_message_id TEXT, thread_id TEXT, from_addr TEXT,
+        from_name TEXT, from_email TEXT, to_addr TEXT, subject TEXT, date TEXT,
+        body TEXT, snippet TEXT, label_ids TEXT, fetched_at INTEGER
+      );
+      CREATE TABLE parsed_results (
+        account_id TEXT, gmail_message_id TEXT, parse_type TEXT, parser_version TEXT,
+        result_json TEXT, parsed_at INTEGER
+      );
+      CREATE TABLE matches (
+        id INTEGER PRIMARY KEY, cargo_id TEXT, vessel_id TEXT, score INTEGER,
+        reason TEXT, status TEXT, user_id TEXT, created_at INTEGER, updated_at INTEGER,
+        reason_structured TEXT, fit_percent REAL, fit_breakdown TEXT,
+        cargo_item_index INTEGER NOT NULL DEFAULT 0, vessel_item_index INTEGER NOT NULL DEFAULT 0
+      );
+    `);
+    db.prepare(`INSERT INTO emails (account_id, gmail_message_id, thread_id, from_addr, to_addr, subject, date, body, snippet, label_ids, fetched_at)
+      VALUES ('demo','e1','t1','a@demo.local','me@demo.local','Cargo X','2026-05-20','b','s','[]',0)`).run();
+    db.prepare(`INSERT INTO emails (account_id, gmail_message_id, thread_id, from_addr, to_addr, subject, date, body, snippet, label_ids, fetched_at)
+      VALUES ('demo','e2','t2','b@demo.local','me@demo.local','Vessels','2026-05-21','b','s','[]',0)`).run();
+    // Vessel email e2 carries TWO vessel items (index 0 and 1).
+    db.prepare(`INSERT INTO parsed_results (account_id, gmail_message_id, parse_type, parser_version, result_json, parsed_at)
+      VALUES ('demo','e1','cargo','v1','[{"emailId":"e1","itemIndex":0}]',0)`).run();
+    db.prepare(`INSERT INTO parsed_results (account_id, gmail_message_id, parse_type, parser_version, result_json, parsed_at)
+      VALUES ('demo','e2','vessel','v1','[{"emailId":"e2","itemIndex":0},{"emailId":"e2","itemIndex":1}]',0)`).run();
+    // The match pairs cargo item 0 with vessel ITEM 1.
+    db.prepare(`INSERT INTO matches (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at, reason_structured, fit_percent, fit_breakdown, cargo_item_index, vessel_item_index)
+      VALUES ('e1','e2',77,'Real engine match','shortlist',NULL,0,0,NULL,72.5,NULL,0,1)`).run();
+
+    const blob = buildDemoSessionBlob(db);
+    expect(blob.matches).toHaveLength(1);
+    expect(blob.matches[0]).toMatchObject({
+      cargoEmailId: 'e1', cargoItemIndex: 0,
+      vesselEmailId: 'e2', vesselItemIndex: 1,
+      score: 77, fitPercent: 72.5,
+    });
+    db.close();
+  });
+
   it('skips a malformed result_json row but keeps the valid rows (and warns)', () => {
     const db = makeSeedDb();
     db.prepare(`INSERT INTO parsed_results (account_id, gmail_message_id, parse_type, parser_version, result_json, parsed_at)
