@@ -277,6 +277,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
 
   useEffect(() => {
     if (!voyageInputData.ready || !voyageInputData.input) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional reset of async-derived state when inputs become invalid
       setVoyageBreakdown(null);
       setVoyageError(null);
       return;
