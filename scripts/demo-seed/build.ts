@@ -73,12 +73,18 @@ function shiftBodyDates(body: string, offsetDays: number): string {
 // Shift the dates inside an LLM-parsed ParsedCargo: only the free-text
 // `laycan` field carries dates. We push it through the same body-date
 // shifter so "10-15 May 2026" → "25-30 May 2026" (offset = +15d).
-function shiftedCargo(c: ParsedCargo, offsetDays: number): ParsedCargo {
-  return {
-    ...c,
-    // LLM output is not always a string here (can be null / object); only shift strings.
-    laycan: typeof c.laycan === 'string' ? shiftBodyDates(c.laycan, offsetDays) : c.laycan,
-  };
+// Year-correction mirrors shiftedRecap: stale years (e.g. "June 2019")
+// that shiftBodyDates can't move numerically are pinned to frozenYear.
+function shiftedCargo(c: ParsedCargo, offsetDays: number, frozenDate: string): ParsedCargo {
+  if (typeof c.laycan !== 'string') return c;
+  let shifted = shiftBodyDates(c.laycan, offsetDays);
+  const frozenYear = parseInt(frozenDate.slice(0, 4), 10);
+  shifted = shifted.replace(/\b(19|20)(\d{2})\b/g, (match) => {
+    const yr = parseInt(match, 10);
+    return yr < frozenYear - 2 ? String(frozenYear) : match;
+  });
+  if (shifted === c.laycan) return c;
+  return { ...c, laycan: shifted };
 }
 
 /**
@@ -527,7 +533,7 @@ export async function build(opts: BuildOptions): Promise<void> {
         const cargoes = llmCache.parsedCargos
           .filter((c) => c.emailId === email.messageId)
           .map((cargo) => {
-            const shifted = shiftedCargo(cargo, offset.offsetDays);
+            const shifted = shiftedCargo(cargo, offset.offsetDays, manifest.frozenDate);
             // Pre-compute laycan {start,end} ISO so the matches loop below can
             // read structured dates directly. parseLaycan is the same helper
             // used by the matching engine in prod.
