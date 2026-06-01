@@ -1,11 +1,11 @@
 [Unit]
-Description=Daily Quantika market indices refresh (BHSI + Drewry WCI)
+Description=Daily Quantika market indices refresh (BDI/BCI/BSI/BHSI/BPI + Drewry WCI)
 Requires=quantika-market-indices-refresh.service
 
 [Timer]
 # Daily at 06:00 UTC — Baltic Exchange publishes around 12:30 London time;
-# Drewry WCI is weekly (Thursday). Timer runs daily so BHSI is fresh;
-# WCI upsert is idempotent and will re-fetch but not create duplicates.
+# Drewry WCI is weekly (Thursday). Timer runs daily so Baltic indices are fresh;
+# all upserts are idempotent (ON CONFLICT) and do not create duplicates.
 OnCalendar=*-*-* 06:00:00 UTC
 RandomizedDelaySec=5min
 Persistent=true

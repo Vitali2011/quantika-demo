@@ -113,11 +113,11 @@ describe('Knowledge Phase 1 Integration Smoke', () => {
     const count = (
       db.prepare('SELECT COUNT(*) AS c FROM knowledge_sources').get() as any
     ).c;
-    expect(count).toBe(18);
-    expect(KNOWLEDGE_REGISTRY).toHaveLength(18);
+    expect(count).toBe(19);
+    expect(KNOWLEDGE_REGISTRY).toHaveLength(19);
 
     const sources = listSources(db);
-    expect(sources).toHaveLength(18);
+    expect(sources).toHaveLength(19);
 
     // Verify Phase 1 sources are registered
     const slugs = sources.map((s) => s.slug);
@@ -234,7 +234,7 @@ describe('Knowledge Phase 1 Integration Smoke', () => {
     expect(res.status).toBe(200);
     const json = await res.json();
     expect(json.status).toBe('healthy');
-    expect(json.sources_fresh).toBe(18);
+    expect(json.sources_fresh).toBe(19);
     expect(json.sources_failed).toBe(0);
   });
 
@@ -269,6 +269,6 @@ describe('Knowledge Phase 1 Integration Smoke', () => {
     // Since OFAC is fresh but others are never_synced, status should be degraded
     // (never_synced sources don't fail health check but are counted as stale)
     expect(json.sources_fresh).toBe(1); // Only OFAC
-    expect(json.sources_stale).toBe(17); // Others never synced
+    expect(json.sources_stale).toBe(18); // Others never synced (18 = 17 + market-handybulk added)
   });
 });

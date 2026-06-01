@@ -214,6 +214,18 @@ export const KNOWLEDGE_REGISTRY: RegisterSourceInput[] = [
     primary_table: 'market_indices',
   },
   {
+    slug: 'market-handybulk',
+    name: 'Baltic indices — HandyBulk daily (BDI/BCI/BSI/BHSI/BPI + TE fallback)',
+    kind: 'structured_rows',
+    category: 'market',
+    source_url: 'https://www.handybulk.com/baltic-dry-index/',
+    license: 'Public scrape (fair use)',
+    refresh_mode: 'auto-daily',
+    stale_threshold_days: 3,
+    refresh_command: 'npx tsx scripts/knowledge/cron/refresh-market-indices.ts',
+    primary_table: 'baltic_indices',
+  },
+  {
     slug: 'market-drewry-wci',
     name: 'Drewry World Container Index composite',
     kind: 'structured_rows',
