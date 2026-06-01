@@ -46,26 +46,13 @@ describe('MatchDetailPanel — Generate Quote button visibility (#633)', () => {
   });
 });
 
-describe('MatchDetailPanel hydration safety (#616)', () => {
-  it('renders DWT with stable locale formatting (guards SSR/CSR hydration mismatch)', () => {
-    // Simulate Node.js small-ICU behavior: toLocaleString() without an explicit locale
-    // returns bare digits with no thousands separator. Browsers add "," → React error 418.
-    const origFn = Number.prototype.toLocaleString;
-    jest.spyOn(Number.prototype, 'toLocaleString').mockImplementation(function (
-      this: number,
-      ...args: Parameters<typeof origFn>
-    ) {
-      if (!args[0]) return String(this); // mimic small-ICU Node: no separator
-      return origFn.apply(this, args);
-    });
-
+describe('MatchDetailPanel hydration safety (#616 — DWT moved to Svodka)', () => {
+  it('does NOT render DWT/MT in panel — DWT lives in server-side Svodka only', () => {
+    // DWT was removed from the client panel (Key Facts declutter). It now renders
+    // only in MatchWorksheet (server component) — no SSR/CSR hydration concern.
     render(<MatchDetailPanel {...BASE_PROPS} />);
-
-    // Without fix (no locale): renders "75000 MT" — test fails, exposing hydration bug.
-    // After fix (locale='en-US'): renders "75,000 MT" — test passes.
-    expect(screen.getByText(/75,000 MT/)).toBeInTheDocument();
-
-    jest.restoreAllMocks();
+    expect(screen.queryByText(/75,?000 MT/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/\bMT\b/)).not.toBeInTheDocument();
   });
 
   it('renders panel without DWT when vesselDwt is null', () => {

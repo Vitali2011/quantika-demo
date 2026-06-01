@@ -29,9 +29,10 @@ export function MatchWorksheet({ worksheet }: Props) {
 
   const { readiness: r, vessel: v, cargo: c, hardFilters: hf } = worksheet;
 
+  const capacityMt = v.dwcc ?? v.dwtSummer;
   const util =
-    v.dwtSummer != null && c.weightMt != null && v.dwtSummer > 0
-      ? Math.round((c.weightMt / v.dwtSummer) * 100)
+    capacityMt != null && capacityMt > 0 && c.weightMt != null
+      ? Math.round((c.weightMt / capacityMt) * 100)
       : null;
 
   const transitChain = (() => {
