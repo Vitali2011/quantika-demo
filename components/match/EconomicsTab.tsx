@@ -3,11 +3,13 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import type { ParsedVessel, ParsedCargo } from '@/lib/types';
 import { RouteCompareModal } from '@/components/economics/RouteCompareModal';
+import { VoyageBreakdownChart } from '@/components/economics/VoyageBreakdownChart';
 import { calculateFuelEu } from '@/lib/economics/fueleu';
 import { estimateVoyageDays } from '@/lib/economics/voyage-days';
 import { estimateVesselValueUsd } from '@/lib/economics/vessel-value';
 import { freightBadge, FREIGHT_BADGE_CLASSES } from '@/lib/matching/freight-badge';
 import type { WarRiskBreakdown } from '@/lib/economics/war-risk';
+import type { TCEBreakdown } from '@/lib/economics/voyage-calculator';
 
 interface EconomicsTabProps {
   commissionPercent?: number | null;
@@ -73,6 +75,9 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
   const [fuelType, setFuelType] = useState('hfo');
   const [euaData, setEuaData] = useState<{ value: number; period: string; stale?: boolean } | null>(null);
   const [euaPhase, setEuaPhase] = useState<'loading' | 'ok' | 'unavailable'>('loading');
+  const [voyageBreakdown, setVoyageBreakdown] = useState<TCEBreakdown | null>(null);
+  const [voyageLoading, setVoyageLoading] = useState(false);
+  const [voyageError, setVoyageError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -228,6 +233,81 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
     const speedKnots = parseLeadingNumber(vessel?.speedLaden);
     return estimateVoyageDays(routeDistanceNm, speedKnots);
   }, [vessel, routeDistanceNm, fuelEuEnabled]);
+
+  const voyageInputData = useMemo(() => {
+    const dwt = vessel?.dwtSummer?.value ?? 0;
+    const speedKts = parseLeadingNumber(vessel?.speedLaden);
+    const consumptionMtPerDay = parseLeadingNumber(vessel?.consumption);
+    const originPort = cargo?.originPort?.value ?? '';
+    const destinationPort = cargo?.destinationPort?.value ?? '';
+    const quantityMt = cargo?.weightMt?.value ?? 0;
+    const distanceNm = routeDistanceNm ?? 0;
+    const freightRateUsdPerMt = currentRate ?? storedFreightRate ?? 28;
+    const durationDays = estimateVoyageDays(distanceNm, speedKts);
+
+    const missing: string[] = [];
+    if (!speedKts) missing.push('vessel speed');
+    if (!consumptionMtPerDay) missing.push('fuel consumption');
+    if (!distanceNm) missing.push('route distance');
+
+    const ready =
+      missing.length === 0 &&
+      dwt > 0 &&
+      originPort.length > 0 &&
+      destinationPort.length > 0 &&
+      quantityMt > 0 &&
+      durationDays > 0;
+
+    return {
+      ready,
+      missing,
+      input: ready
+        ? {
+            vessel: { dwt, valueUsd: estimateVesselValueUsd(dwt), speedKts, consumptionMtPerDay },
+            route: { originPort, destinationPort, distanceNm },
+            cargo: { quantityMt, freightRateUsdPerMt },
+            bunkerPort,
+            bunkerGrade,
+            ...(bunkerPriceUsdPerMt !== '' ? { bunkerPriceUsdPerMt: Number(bunkerPriceUsdPerMt) } : {}),
+            durationDays,
+          }
+        : null,
+    };
+  }, [vessel, cargo, routeDistanceNm, currentRate, storedFreightRate, bunkerPort, bunkerGrade, bunkerPriceUsdPerMt]);
+
+  useEffect(() => {
+    if (!voyageInputData.ready || !voyageInputData.input) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional reset of async-derived state when inputs become invalid
+      setVoyageBreakdown(null);
+      setVoyageError(null);
+      return;
+    }
+    let cancelled = false;
+    setVoyageLoading(true);
+    setVoyageError(null);
+    fetch('/api/voyage/tce', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(voyageInputData.input),
+    })
+      .then((r) => r.json().then((d: unknown) => ({ ok: r.ok, d })))
+      .then(({ ok, d }: { ok: boolean; d: unknown }) => {
+        if (cancelled) return;
+        if (!ok) {
+          const err = d as { error?: string };
+          setVoyageError(typeof err.error === 'string' ? err.error : 'Calculation failed');
+          setVoyageLoading(false);
+          return;
+        }
+        const result = d as { breakdown: TCEBreakdown };
+        setVoyageBreakdown(result.breakdown ?? null);
+        setVoyageLoading(false);
+      })
+      .catch(() => {
+        if (!cancelled) { setVoyageError('Network error'); setVoyageLoading(false); }
+      });
+    return () => { cancelled = true; };
+  }, [voyageInputData]);
 
   return (
     <div data-testid="tab-economics" className="space-y-4 text-sm">
@@ -551,6 +631,24 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
           No JWC war risk zones on this route
         </div>
       )}
+
+      {/* Voyage P&L breakdown */}
+      <div data-testid="voyage-pnl-section" className="rounded border border-gray-200 bg-gray-50 p-3">
+        <h3 className="text-xs font-semibold text-gray-700 mb-2">Voyage P&amp;L</h3>
+        {voyageInputData.ready ? (
+          voyageLoading ? (
+            <p className="text-xs text-gray-400 animate-pulse">Calculating…</p>
+          ) : voyageError ? (
+            <p data-testid="voyage-error" className="text-xs text-red-600">{voyageError}</p>
+          ) : voyageBreakdown ? (
+            <VoyageBreakdownChart breakdown={voyageBreakdown} />
+          ) : null
+        ) : voyageInputData.missing.length > 0 ? (
+          <p data-testid="voyage-missing-hint" className="text-xs text-gray-500">
+            Missing: {voyageInputData.missing.join(', ')}
+          </p>
+        ) : null}
+      </div>
 
       {compareInputs.ready && (
         <RouteCompareModal
