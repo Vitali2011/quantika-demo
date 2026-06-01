@@ -421,6 +421,23 @@ _(пусто — C4/C5 закрыты 2026-05-22)_
 
 ## 3. Приоритизированная Roadmap
 
+### Phase 2 — Подключение «осиротевшего» кода (аудит 2026-06-01)
+
+Аудит 5+1 Sonnet-агентов (прод-верифицирован) нашёл готовый, оттестированный, но НЕ подключённый к UI код. Полный список: `~/orchestrator-state/quantika-demo/orphaned-code-audit-2026-06-01.md`.
+
+**Phase 1 (делаем сейчас):** Экономика рейса — подключить движок `/api/voyage/tce` + `VoyageBreakdownChart` + canal/port-DA в вкладку Economics. Промпт выдан.
+
+**Phase 2 (отложено — этот список):**
+
+1. **Живой дашборд (один PR):**
+   - `WhileYouWereAwayCard` — утренний дайджест (X черновиков ждут / Y голосовых / Z ошибок), скрыт если пусто.
+   - `MarketIntelligence` — KPI-полоса 2×2 (Toepfer TMI / BHSI / Бункер Роттердам / EUA) с graceful «Unavailable + Retry».
+   - `DashboardInboxSection` — «📥 Inbox» по категориям (грузы/суда/рекапы/ответы) + «N need action».
+   - `EmailUploadCTA` — онбординг пустого экрана для нового юзера («Upload your first email») + блок приватности.
+2. **`ApprovePlanModal`** — human-in-the-loop гейт для AI-агента (план → галочки → Approve & Execute → `/api/agent/execute`). ТРЕБУЕТ: (а) дизайн (вёрстка сейчас черновая), (б) upstream-планировщик, который генерирует `Plan`. Стратегический, не «один импорт».
+
+**Cleanup (низкий приоритет):** удалить мёртвые флаги на проде (`DEMURRAGE_ENABLED`/`SOF_PARSER_ENABLED`/`KNOWLEDGE_WAR_RISK_FROM_DB`/`SUBS_TIMER_ENABLED`/`MARKET_BENCHMARK_ENABLED` — код их не читает) + dead-code (`fetchEuaPrice` scraper, `/api/economics` legacy, `/api/market/tmi`).
+
 ### Следующие 7 дней (refreshed 2026-05-19 post-reality-audit)
 
 **Тема:** «Закрыть остаточные data layer gaps + parser quality + UX polish»
