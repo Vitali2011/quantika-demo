@@ -5,17 +5,26 @@
  * When a match sits near the 2-hour freshness boundary, server and client
  * produce different text (the "fresh" badge appears/disappears) → #418.
  *
- * Fix: isFreshMatch(m, now) accepts a `now` param; clientNow state starts at 0
+ * Fix: isFreshMatch(m, now) accepts a `now` param; the clock starts at 0
  * so SSR and first client paint both render no fresh badge (deterministic).
- * After mount, useEffect sets clientNow = Date.now().
+ * After mount, useEffect sets the real timestamp.
+ *
+ * As of the demo-clock refactor, MatchesClient delegates clock management
+ * to useDemoNow() (lib/clock-client.tsx) which owns the useState(0) +
+ * useEffect(Date.now()) pattern — keeping the React-418 guard intact.
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
 
 const clientPath = path.join(process.cwd(), 'app/matches/MatchesClient.tsx');
+const clockPath = path.join(process.cwd(), 'lib/clock-client.tsx');
+
 function src(): string {
   return fs.readFileSync(clientPath, 'utf8');
+}
+function clockSrc(): string {
+  return fs.readFileSync(clockPath, 'utf8');
 }
 
 describe('MatchesClient hydration safety (#543 regression)', () => {
@@ -31,24 +40,47 @@ describe('MatchesClient hydration safety (#543 regression)', () => {
     expect(src()).toMatch(/if\s*\(\s*now\s*===\s*0\s*\)\s*return false/);
   });
 
-  it('clientNow state is initialised to 0 (not Date.now())', () => {
-    // useState(0) ensures the server-rendered initial value matches the
-    // client's initial render — React #418 is impossible when both start
-    // from the same sentinel.
-    expect(src()).toMatch(/clientNow.*useState.*0/);
-    expect(src()).not.toMatch(/clientNow.*useState.*Date\.now/);
+  it('clientNow derives from a hook that initialises to 0 (not Date.now())', () => {
+    // After the demo-clock refactor, MatchesClient delegates clock management
+    // to useDemoNow() (lib/clock-client.tsx). The hydration-safe invariant is
+    // preserved: initial value is 0 (SSR sentinel), and Date.now() is only
+    // called post-mount inside a useEffect.
+
+    // MatchesClient must consume useDemoNow — not read Date.now() at render time.
+    expect(src()).toMatch(/useDemoNow/);
+    expect(src()).not.toMatch(/const clientNow\s*=\s*Date\.now/);
+
+    // useDemoNow itself must initialise state to 0 (the SSR sentinel),
+    // never to Date.now() which would fire during SSR.
+    expect(clockSrc()).toMatch(/useState[<\w\s>]*\(0\)/);
+    expect(clockSrc()).not.toMatch(/useState.*Date\.now/);
   });
 
-  it('setClientNow is called inside useEffect, not during render', () => {
-    // The actual Date.now() must only run after mount (in useEffect) so it
-    // never executes during SSR or the synchronous hydration pass.
-    expect(src()).toMatch(/setClientNow\(Date\.now\(\)\)/);
-    // Verify useEffect wraps the call (setClientNow should not appear before
-    // the first useEffect in the source file)
-    const setIdx = src().indexOf('setClientNow(Date.now())');
-    const effectIdx = src().indexOf('useEffect(');
+  it('Date.now() only fires inside useEffect, not during render', () => {
+    // Regression guard for #543: Date.now() must never execute during SSR or
+    // the synchronous hydration pass. In useDemoNow it's inside a useEffect
+    // callback — if it moves before the first useEffect, this guard catches it.
+    const cs = clockSrc();
+
+    // Strip block comments and line comments before position analysis so that
+    // JSDoc mentions of Date.now() (e.g. "clients fall back to real Date.now()")
+    // don't generate false positives. Spaces preserve character offsets.
+    const csCode = cs
+      .replace(/\/\*[\s\S]*?\*\//g, (m) => ' '.repeat(m.length))
+      .replace(/\/\/[^\n]*/g, (m) => ' '.repeat(m.length));
+
+    // Date.now() must appear somewhere in real code (used after mount).
+    expect(csCode).toMatch(/Date\.now\(\)/);
+
+    // Date.now() must NOT appear before the first useEffect( in code —
+    // any such occurrence would run at render/SSR time (the #418 footgun).
+    const effectIdx = csCode.indexOf('useEffect(');
     expect(effectIdx).toBeGreaterThan(-1);
-    expect(setIdx).toBeGreaterThan(effectIdx);
+    const codeBeforeEffect = csCode.slice(0, effectIdx);
+    expect(codeBeforeEffect).not.toMatch(/Date\.now\(\)/);
+
+    // MatchesClient must not call Date.now() directly at module/render scope.
+    expect(src()).not.toMatch(/const clientNow\s*=\s*.*Date\.now/);
   });
 
   it('isFreshMatch in JSX row loop receives clientNow argument', () => {
