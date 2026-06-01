@@ -20,9 +20,7 @@ import {
   reportSyncSuccess,
   reportSyncFailure,
 } from '@/lib/knowledge/governance';
-import { refreshBhsi } from '@/lib/market/bhsi-adapter';
-import { refreshBdi } from '@/lib/market/bdi-adapter';
-import { refreshBci } from '@/lib/market/bci-adapter';
+import { refreshAllBalticIndices } from '@/lib/market/handybulk-scraper';
 import { refreshDrewryWci } from '@/lib/market/drewry-adapter';
 import type Database from 'better-sqlite3';
 
@@ -51,12 +49,10 @@ export async function main(): Promise<void> {
 
   const db = getStore().getDb();
 
-  const okBdi = await runOne(db, 'market-bdi', (d) => refreshBdi(d));
-  const okBci = await runOne(db, 'market-bci', (d) => refreshBci(d));
-  const okBhsi = await runOne(db, 'market-bhsi', (d) => refreshBhsi(d));
+  const okHandybulk = await runOne(db, 'market-handybulk', (d) => refreshAllBalticIndices(d));
   const okDrewry = await runOne(db, 'market-drewry-wci', (d) => refreshDrewryWci(d));
 
-  const success = okBdi || okBci || okBhsi || okDrewry;
+  const success = okHandybulk || okDrewry;
   console.log(
     `[${CRON_NAME}] ${success ? '✓ Completed successfully' : '✗ All sources failed'}`,
   );
