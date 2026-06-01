@@ -2,7 +2,7 @@
 
 import { ReactNode, useEffect, useRef } from 'react';
 import { detectTextDirection } from '@/lib/i18n/rtl-detect';
-import { decodeHtmlEntities } from '@/lib/utils';
+import { decodeHtmlEntities, sanitizeEmailBody } from '@/lib/utils';
 
 export interface Highlight {
   text: string;
@@ -50,9 +50,9 @@ function buildTree(body: string, highlights: Highlight[]): Node[] {
 export function EmailBodyViewer({ body, highlights }: Props) {
   const firstMarkRef = useRef<HTMLElement | null>(null);
 
-  // Decode HTML entities first (fix #474), then normalize CRLF → LF.
-  // decodeHtmlEntities is safe: no innerHTML, pure string replacement.
-  const normalizedBody = decodeHtmlEntities(body).replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  // Decode HTML entities first (fix #474), normalize CRLF → LF, then sanitize.
+  // sanitizeEmailBody strips +++ separator lines and antivirus footers.
+  const normalizedBody = sanitizeEmailBody(decodeHtmlEntities(body).replace(/\r\n/g, '\n').replace(/\r/g, '\n'));
 
   useEffect(() => {
     if (window.location.hash === '#highlight' && firstMarkRef.current) {
