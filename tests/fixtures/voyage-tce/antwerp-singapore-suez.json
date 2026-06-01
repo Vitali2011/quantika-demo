@@ -29,11 +29,11 @@
     "canal_usd": 520000,
     "da_usd": 120000,
     "war_risk_usd": 26250,
-    "ets_eur": 59788.8,
-    "ets_usd": 64572,
+    "ets_eur": 60499.2,
+    "ets_usd": 65339,
     "gross_freight_usd": 1960000,
-    "total_costs_usd": 1202822,
-    "net_voyage_usd": 757178,
-    "daily_tce_usd": 30287
+    "total_costs_usd": 1203589,
+    "net_voyage_usd": 756411,
+    "daily_tce_usd": 30256
   }
 }
