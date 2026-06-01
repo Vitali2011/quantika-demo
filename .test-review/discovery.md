@@ -1,8 +1,99 @@
-# Phase 1 — Discovery
+# discovery.md — PR fix/demo-freshness-clock adversarial QA (2026-06-01)
+# Reviewer: cold-session test-skill (zero feature-session context)
 
-**Date:** 2026-04-28  
-**Reviewer:** test-skill (cold-start adversarial QA)  
-**Target:** `Vitali2011/quantika-demo` — PR #8 (wave-alpha → main)  
+---
+
+## Branch commit (relevant to this review)
+
+```
+b46020cc feat(clock): freeze demo-freshness clocks to seed frozen_date via demoNow()
+```
+
+## Changed files (clock-feature scope — filtered from 438-file diff)
+
+| File | Role |
+|------|------|
+| `lib/clock.ts` | NEW — server-side demoNow() + now() + today() |
+| `lib/clock-client.tsx` | NEW — ClockProvider + useDemoNow() hook |
+| `app/layout.tsx` | MODIFIED — wraps both render paths with ClockProvider |
+| `lib/classification-service.ts` | MODIFIED — daysWithoutReply uses demoNow() |
+| `app/matches/MatchesClient.tsx` | MODIFIED — clientNow via useDemoNow(); isFreshMatch/effectiveScore |
+| `app/market/page.tsx` | MODIFIED — staleness `now` via useDemoNow() |
+| `__tests__/demo-clock.test.ts` | NEW — behavioral tests for demoNow() |
+
+## Deny-list files (verified NOT touched by this clock feature)
+
+| File | demoNow imported? | Verdict |
+|------|-------------------|---------|
+| `lib/session-store.ts` | No | CLEAN — all Date.now() calls at L109, L139, L191 remain real-time |
+| `lib/trial.ts` | No | CLEAN — new Date() at L36, L37, L72, L76/84 remain real-time |
+| `lib/currency.ts` | No | CLEAN — Date.now() cache TTL at L45 remains real-time |
+
+## Allow-list wiring status (per plan docs/superpowers/plans/2026-06-01-demo-clock.md)
+
+| Plan item | File | Wired? | Notes |
+|-----------|------|--------|-------|
+| 1. MatchesClient clientNow | `app/matches/MatchesClient.tsx:145` | YES | useDemoNow() → isFreshMatch(m, clientNow) + effectiveScore(m, clientNow) |
+| 2. market staleness now | `app/market/page.tsx:111` | YES | useDemoNow(); isStale guard: `now > 0 &&` |
+| 3. fmt-laycan isLaycanExpired | `lib/utils/fmt-laycan.ts:18` | PARTIAL | nowSec param optional; callers in MatchesClient pass Math.floor(clientNow/1000). Direct callers without nowSec fall back to Date.now() |
+| 4. classification-service email-age | `lib/classification-service.ts:51` | YES | demoNow() used directly |
+| 5. readiness verdict now | `lib/sailing/readiness-gap.ts:172-173` | YES | opts.today ?? now() — now() from clock.ts |
+| 6. vetting refYear | `lib/matching/pair-analyzer.ts:235` | YES | today = options?.today ?? now(); refYear from today |
+| 7. recent-fixtures 24h | `components/market/FixturesSection.tsx` | N/A | Hardcoded static rows; no clock dependency |
+
+## Raw issues found
+
+### I1 — formatAge uses raw Date.now() [DEAD CODE]
+
+`app/matches/MatchesClient.tsx:67`: `formatAge` is defined but grep shows only 1 occurrence (the definition). It is never called in the render path. Dead code. Not a runtime bug since it never executes.
+
+```ts
+function formatAge(ts: number): string {
+  const diff = Date.now() / 1000 - ts;  // raw Date.now() — NOT demo-frozen
+  ...
+}
+```
+
+### I2 — isLaycanExpired default fallback is Date.now()
+
+`lib/utils/fmt-laycan.ts:18`: `const now = nowSec ?? Math.floor(Date.now() / 1000);`
+
+The optional `nowSec` param means any caller that omits it silently uses real wall-clock time. MatchesClient correctly passes `Math.floor(clientNow/1000)`. But if any future server-side caller adds a call without `nowSec`, it leaks real time in demo mode.
+
+### I3 — Safety-critical gap: no test verifying session-store uses real time
+
+`__tests__/demo-clock.test.ts` only checks that `clock.ts` does NOT EXPORT `getSessionExpiry` / `cleanupExpiredSessions`. It does NOT:
+- Import SessionStore and verify `expires_at < Date.now()` (not frozen)
+- Confirm that `session.getSession()` with a real-time expiry correctly expires
+- Confirm that `createSession()` sets `expires_at` relative to real Date.now(), not demoNow()
+
+The plan mandates: "Test (SAFETY-CRITICAL): a login session STILL expires on REAL time (session-store NOT frozen)." This test is **absent**.
+
+### I4 — getDemoFrozenDate module-level cache not reset in tests
+
+`lib/demo-mode.ts:12-21`: `_cachedFrozenDate` is module-level. The demo-clock test file does NOT import `_resetDemoFrozenDateCache`. However, in the test environment getDemoFrozenDate throws (no DB) so the cache stays null and tests pass correctly. Latent fragility: if Jest reuses the module across suites and another test populates the cache, the fallback path (DEMO_CLOCK / hardcoded) is never exercised.
+
+### I5 — ClockProvider wraps unauthenticated path (login page) in demo mode
+
+`app/layout.tsx:112`: The unauthenticated render path wraps `{children}` in `<ClockProvider frozenMs={frozenMs}>`. `frozenMs` is computed via `demoNow()` which internally catches the throw from `getDemoFrozenDate` when DB row is absent, falling back to env/hardcoded. Safe, but worth noting.
+
+### I6 — Non-demo mode: useDemoNow returns 0 before mount (SSR sentinel)
+
+`lib/clock-client.tsx:31`: Returns 0 on SSR. All callers guard `=== 0`:
+- `isFreshMatch`: `if (now === 0) return false` — correct
+- `effectiveScore`: `if (nowMs === 0) return m.score` — correct
+- market `isStale`: `now > 0 &&` guard — correct
+
+No SSR mismatch risk found for the guarded paths.
+
+### I7 — market page: .at(0) after .sort() picks oldest date
+
+`app/market/page.tsx:214-215`: The comment says "Use the OLDEST date across all sources" and `.sort().at(0)` gives the lexicographically smallest (oldest) date string. Correct per design intent ("if any source is stale the label should reflect it"). Not a bug.
+
+---
+
+# PREVIOUS REVIEW (PR #8 — wave-alpha, 2026-04-28 — unrelated)
+
 **Mode:** post-merge (PR already merged; treats `8821b12..4387573` as the review range)
 
 ---

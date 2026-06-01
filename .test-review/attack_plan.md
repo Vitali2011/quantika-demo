@@ -1,7 +1,103 @@
-# Phase 2 — Attack Surface
+# attack_plan.md — PR fix/demo-freshness-clock adversarial QA (2026-06-01)
+# Reviewer: cold-session test-skill
 
-**Classified by:** test-skill adversarial QA  
-**Date:** 2026-04-28
+## Attack Surface Classification
+
+### A1 — Dead code with wrong clock [MED] — formatAge
+
+**File:** `app/matches/MatchesClient.tsx:67`
+**Class:** frozen-too-little (partially unimplemented allow-list item)
+**Severity:** LOW (dead code — never called in render)
+**What would break:** If `formatAge` is ever called (e.g. a future dev wires it to a "created X ago" display), in demo mode it would show "Sun" / "Mon" (real wall-clock age from seed date), not "now" / "12:30". The match age would appear weeks-old instead of hours-old.
+**Test approach:** Static analysis or add a lint rule requiring dead code removal. If activating formatAge: pass `clientNow` as a parameter, not `Date.now()`.
+
+---
+
+### A2 — isLaycanExpired nowSec optional — future contamination risk [MED]
+
+**File:** `lib/utils/fmt-laycan.ts:18`
+**Class:** frozen-too-little (incomplete freeze boundary)
+**Severity:** MED
+**What would break:** Any caller that invokes `isLaycanExpired(end, start)` without passing `nowSec` will get real wall-clock time in demo mode. All current callers in MatchesClient correctly pass `Math.floor(clientNow/1000)`, but server-side code (pair-analyzer, matching engine) may call the `lib/sailing/date-sanity.ts` variant (different function) — that one takes a `today: Date` object and is correctly wired via `now()`. The `fmt-laycan` variant is only used in client components. Risk is forward-looking.
+**Test approach:** Verify that all current call-sites of `isLaycanExpired` from `lib/utils/fmt-laycan` pass explicit `nowSec`. Add a test asserting the function accepts a mock nowSec and returns the expected result (already partially covered in `__tests__/matches-556-laycan-expired.test.ts`).
+
+---
+
+### A3 — SAFETY-CRITICAL: No test verifying session expiry uses real time [HIGH]
+
+**File:** `__tests__/demo-clock.test.ts` (missing test)
+**Class:** deny-list contamination (test coverage gap)
+**Severity:** HIGH
+**What would break:** The plan mandates a safety-critical test that a login session still expires on real time when DEMO_MODE=true. If `session-store.ts` were accidentally modified to use `demoNow()` (e.g. a refactor), the existing test would NOT catch it. Sessions would never expire in demo mode → authentication bypass vulnerability.
+**Test approach:**
+```ts
+it('SAFETY-CRITICAL: session-store expires_at uses real Date.now(), NOT frozen clock', () => {
+  withEnv({ DEMO_MODE: 'true', DEMO_CLOCK: '2020-01-01' }, () => {
+    const before = Date.now();
+    const store = new SessionStore(':memory:');
+    const id = store.createSession('tok');
+    const row = store.getDatabase()
+      .prepare('SELECT expires_at FROM sessions WHERE id = ?').get(id);
+    const after = Date.now();
+    // expires_at must be within [before + TTL, after + TTL], NOT near 2020-01-01
+    const frozenNoon = new Date('2020-01-01T12:00:00.000Z').getTime();
+    expect(row.expires_at).toBeGreaterThan(before);
+    expect(row.expires_at).not.toBeCloseTo(frozenNoon, -3);
+  });
+});
+```
+
+---
+
+### A4 — getDemoFrozenDate cache persistence across Jest workers [LOW]
+
+**File:** `lib/demo-mode.ts:12-21`, `__tests__/demo-clock.test.ts`
+**Class:** SSR mismatch (test isolation)
+**Severity:** LOW
+**What would break:** If a Jest worker happens to populate `_cachedFrozenDate` before demo-clock tests run (e.g. a test that calls `getDemoFrozenDate` with a mocked DB), the demo-clock fallback path tests (T2, T3 in the suite) would read the stale cache and return a wrong frozen date without the DEMO_CLOCK env var. Tests would pass for the wrong reason or give false negatives.
+**Test approach:** Import `_resetDemoFrozenDateCache` from `@/lib/demo-mode` and call it in `beforeEach` of the demo-clock test suite.
+
+---
+
+### A5 — ClockProvider propagation: login path frozen even for unauthenticated users [LOW]
+
+**File:** `app/layout.tsx:109-115`
+**Class:** frozen-too-much (over-broad freezing)
+**Severity:** LOW
+**What would break:** In DEMO_MODE, the `ClockProvider` with `frozenMs` is applied to ALL children including the `/login` page. Login page does not display freshness-dependent data, but if any component within the unauthenticated shell ever calls `useDemoNow()`, it will receive the frozen timestamp rather than live time. Not a security risk; cosmetic at worst.
+**Test approach:** Verify that the login page renders without any clock-dependent display artifacts. Snapshot test or DOM check.
+
+---
+
+### A6 — Demo mode + DB missing: demoNow silently falls to hardcoded 2026-05-28 [LOW]
+
+**File:** `lib/clock.ts:42-49`
+**Class:** wrong boundary (silent fallback)
+**Severity:** LOW
+**What would break:** If `demo_seed_meta` is missing (e.g. fresh deploy without running seed script) AND `DEMO_CLOCK` is not set, `demoNow()` silently returns `2026-05-28T12:00:00.000Z`. This could confuse operators who changed the seed date but forgot to set the env var. No user-visible bug, but the hardcoded default could diverge from the actual seed.
+**Test approach:** Existing test T3 covers this case (PASS). Consider adding a warning log when falling through to the hardcoded default.
+
+---
+
+## Summary table
+
+| ID | File | Risk class | Severity | Test approach |
+|----|------|-----------|----------|---------------|
+| A1 | MatchesClient.tsx:67 (formatAge dead) | frozen-too-little | LOW | Static dead-code check; activate with clientNow param if used |
+| A2 | fmt-laycan.ts:18 (nowSec optional) | frozen-too-little | MED | Audit call-sites; add explicit nowSec pass requirement |
+| A3 | demo-clock.test.ts (missing session-expiry test) | deny-list contamination | HIGH | Add SAFETY-CRITICAL test for SessionStore expires_at vs real clock |
+| A4 | demo-mode.ts (cache not reset in tests) | SSR mismatch | LOW | beforeEach _resetDemoFrozenDateCache |
+| A5 | layout.tsx (ClockProvider on login path) | frozen-too-much | LOW | Snapshot/DOM test for login page |
+| A6 | clock.ts (hardcoded fallback) | wrong boundary | LOW | Existing T3 covers; add operator warning log |
+
+## Verdict
+
+**CONDITIONAL PASS** — no correctness bugs in the shipped runtime code (deny-list clean, allow-list fully wired). One HIGH gap in test coverage (A3 — safety-critical session-store test mandated by the plan but absent). Two MED risks (A2 dead-code, A3 coverage). Must add A3 test before merge.
+
+---
+
+# PREVIOUS REVIEW (attack plans from prior PRs below this line)
+
 
 ---
 
