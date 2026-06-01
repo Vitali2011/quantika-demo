@@ -116,8 +116,8 @@ describe('computeEconomics — REAL cost summation (only network mocked)', () =>
     // Suez routing → Red Sea HRA dominant (0.075%): 15M × 0.00075 = 11_250 hull.
     expect(result.breakdown.warRiskPremium).toBe(11_250);
     expect(result.breakdown.warRiskZones).toContain('Red Sea / Bab al-Mandeb HRA');
-    // ETS: 400 × 3.114 × 0.5 × 80 = 49_824 EUR.
-    expect(result.breakdown.euEtsAmount).toBe(49_824);
+    // ETS: 400 × 3.151 × 0.5 × 80 = 50_416 EUR.
+    expect(result.breakdown.euEtsAmount).toBe(50_416);
     expect(result.totalUsd).toBeGreaterThan(0);
   });
 

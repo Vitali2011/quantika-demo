@@ -72,8 +72,8 @@ describe('calculateEuEts — adversarial', () => {
       vlsfoBurnMt: 100,
       euaPrice: 87.5,
     });
-    // 100 * 3.114 * 1.0 * 87.5 = 27247.50
-    expect(result.amountEur).toBe(27247.5);
+    // 100 * 3.151 (VLSFO default) * 1.0 * 1.0 (phaseIn 2026) * 87.5 = 27571.25
+    expect(result.amountEur).toBe(27571.25);
     expect(result.applicable).toBe(true);
   });
 

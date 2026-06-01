@@ -13,7 +13,7 @@ describe('calculateEuEts', () => {
   });
 
   it('calculates correctly for 100% EU leg', () => {
-    // 200 × 3.114 × 1.0 × 87.5 = 54495
+    // 200 × 3.151 × 1.0 × 87.5 = 55142.5
     const result = calculateEuEts({
       distanceNm: 3000,
       euLegPercent: 1.0,
@@ -21,11 +21,11 @@ describe('calculateEuEts', () => {
       euaPrice: 87.5,
     });
     expect(result.applicable).toBe(true);
-    expect(result.amountEur).toBeCloseTo(54495, 0);
+    expect(result.amountEur).toBeCloseTo(55142.5, 0);
   });
 
   it('calculates correctly for 50% EU leg', () => {
-    // 200 × 3.114 × 0.5 × 87.5 = 27247.5
+    // 200 × 3.151 × 0.5 × 87.5 = 27571.25
     const result = calculateEuEts({
       distanceNm: 3000,
       euLegPercent: 0.5,
@@ -33,7 +33,7 @@ describe('calculateEuEts', () => {
       euaPrice: 87.5,
     });
     expect(result.applicable).toBe(true);
-    expect(result.amountEur).toBeCloseTo(27247.5, 0);
+    expect(result.amountEur).toBeCloseTo(27571.25, 0);
   });
 
   it('uses fallback EUA price of 87.50 when euaPrice is 0', () => {
@@ -59,13 +59,13 @@ describe('calculateEuEts', () => {
   });
 
   it('rounds amount to 2 decimal places', () => {
-    // 1 × 3.114 × 0.33 × 10 = 10.2762
+    // 1 × 3.151 × 0.33 × 10 = 10.3983
     const result = calculateEuEts({
       distanceNm: 1000,
       euLegPercent: 0.33,
       vlsfoBurnMt: 1,
       euaPrice: 10,
     });
-    expect(result.amountEur).toBe(Math.round(1 * 3.114 * 0.33 * 10 * 100) / 100);
+    expect(result.amountEur).toBe(Math.round(1 * 3.151 * 0.33 * 10 * 100) / 100);
   });
 });

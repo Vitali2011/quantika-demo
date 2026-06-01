@@ -1,6 +1,31 @@
-# findings.md — Phase 3 Adversarial QA
+# findings.md — PR #739 adversarial QA (2026-06-01)
+# Reviewer: cold-session test-skill, branch fix/eua-bunker-ets (synced 7c4e7a84)
 
-# PR #99: claude/rag-phase2-20260507
+## BUG-1 — HIGH — parseTradingEconomicsHtml: integer prices not extracted
+
+**File:** `lib/knowledge/eua/tradingeconomics-adapter.ts:20–51`
+
+All three parse strategies use `([\d]+\.[\d]+)` which requires a decimal point.
+Integer prices like `"Last":65` fail ALL three → throws TradingEconomicsParseError
+→ refreshTradingEconomics returns null → valid EUA price silently discarded.
+
+Repro: `parseTradingEconomicsHtml('<script>var te = {"Last":65};</script>')` → throws
+Expected: `{ price: 65, priceDate: '...' }`
+
+4 adversarial tests FAIL in `tests/regression/test_eua_bunker_ets_adversarial.test.ts`.
+Fix: change each regex from `([\d]+\.[\d]+)` to `([\d]+(?:\.[\d]+)?)`.
+
+## Passing (28/32 adversarial tests GREEN)
+- BunkerIndex whitespace (a02831ff), structural check, NaN price handling: PASS
+- ETS Cf=3.151 formula for all 4 fixtures: PASS
+- HFO/HSFO stayed 3.114 (no regression): PASS
+- Fixture drift from Cf=3.114: all <0.31% (well within ±2%): PASS
+- Existing 47 tests in 3 suites: PASS
+
+## VERDICT: BLOCK — BUG-1 HIGH (new file, not pre-existing on main)
+
+---
+# Legacy findings (PR #99: claude/rag-phase2-20260507)
 
 # Date: 2026-05-07
 
