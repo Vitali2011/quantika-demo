@@ -30,6 +30,7 @@ export interface StoredMatch {
   fit_breakdown?: string | null;
   cargo_item_index?: number | null;
   vessel_item_index?: number | null;
+  worksheet_json?: string | null;
 }
 
 export interface CreateMatchInput {
@@ -56,6 +57,7 @@ export interface CreateMatchInput {
   fit_breakdown?: string | null;
   cargo_item_index?: number | null;
   vessel_item_index?: number | null;
+  worksheet_json?: string | null;
 }
 
 export interface ListMatchesOptions {
@@ -111,6 +113,11 @@ function hasItemIndexColumns(db: Database.Database): boolean {
   return cols.some((c) => c.name === 'cargo_item_index');
 }
 
+function hasWorksheetColumn(db: Database.Database): boolean {
+  const cols = db.prepare(`PRAGMA table_info(matches)`).all() as Array<{ name: string }>;
+  return cols.some((c) => c.name === 'worksheet_json');
+}
+
 export function createMatch(db: Database.Database, input: CreateMatchInput): StoredMatch {
   const now = Date.now();
   const status: MatchStatus = input.status ?? 'shortlist';
@@ -139,6 +146,9 @@ export function createMatch(db: Database.Database, input: CreateMatchInput): Sto
     const withIdx = hasItemIndexColumns(db);
     const cargo_item_index = input.cargo_item_index ?? 0;
     const vessel_item_index = input.vessel_item_index ?? 0;
+    // Worksheet column (migration 045) — conditional for same reason.
+    const withWorksheet = hasWorksheetColumn(db);
+    const worksheet_json = input.worksheet_json ?? null;
 
     const stmt = db.prepare(
       `INSERT OR IGNORE INTO matches
@@ -146,8 +156,8 @@ export function createMatch(db: Database.Database, input: CreateMatchInput): Sto
           reason_structured, cargo_type, load_port, discharge_port,
           laycan_start, laycan_end, vessel_dwt, tce_usd_per_day, distance_nm,
           freight_rate_usd_per_mt, freight_rate_source, vessel_name, cargo_ref,
-          fit_percent, fit_breakdown${withIdx ? ', cargo_item_index, vessel_item_index' : ''})
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?${withIdx ? ', ?, ?' : ''})`
+          fit_percent, fit_breakdown${withIdx ? ', cargo_item_index, vessel_item_index' : ''}${withWorksheet ? ', worksheet_json' : ''})
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?${withIdx ? ', ?, ?' : ''}${withWorksheet ? ', ?' : ''})`
     );
     const args: Array<string | number | null> = [
       input.cargo_id,
@@ -175,6 +185,7 @@ export function createMatch(db: Database.Database, input: CreateMatchInput): Sto
       fit_breakdown,
     ];
     if (withIdx) args.push(cargo_item_index, vessel_item_index);
+    if (withWorksheet) args.push(worksheet_json);
     result = stmt.run(...args);
   } else if (hasVesselNameColumns(db)) {
     const reason_structured = input.reason_structured ?? null;

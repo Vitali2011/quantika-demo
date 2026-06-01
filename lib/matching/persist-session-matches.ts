@@ -84,6 +84,7 @@ export function persistSessionMatches(
       fit_breakdown: m.fitBreakdown ? JSON.stringify(m.fitBreakdown) : null,
       cargo_item_index: m.cargoItemIndex,
       vessel_item_index: m.vesselItemIndex,
+      worksheet_json: m.worksheet ? JSON.stringify(m.worksheet) : null,
     });
   }
 }

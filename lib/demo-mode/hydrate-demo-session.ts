@@ -27,6 +27,7 @@ interface MatchRow {
   reason: string | null; reason_structured: string | null;
   fit_percent: number | null; fit_breakdown: string | null;
   cargo_item_index: number | null; vessel_item_index: number | null;
+  worksheet_json: string | null;
 }
 
 function safeJsonArray<T>(json: string, ctx: string): T[] {
@@ -92,7 +93,10 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
   const idxCols = colNames.has('cargo_item_index')
     ? 'cargo_item_index, vessel_item_index'
     : 'NULL as cargo_item_index, NULL as vessel_item_index';
-  const selectCols = `cargo_id, vessel_id, score, reason, reason_structured, ${fitCols}, ${idxCols}`;
+  const worksheetCol = colNames.has('worksheet_json')
+    ? 'worksheet_json'
+    : 'NULL as worksheet_json';
+  const selectCols = `cargo_id, vessel_id, score, reason, reason_structured, ${fitCols}, ${idxCols}, ${worksheetCol}`;
 
   // Only the seeded snapshot rows (user_id IS NULL). Per-session copies that
   // persistSessionMatches writes (user_id = sessionId) must NOT be re-read here,
@@ -124,6 +128,7 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
       scoreBreakdown: safeJsonObject<ScoreBreakdown>(r.reason_structured),
       fitPercent: r.fit_percent ?? undefined,
       fitBreakdown: safeJsonObject<import('@/lib/types').FitBreakdown>(r.fit_breakdown),
+      worksheet: safeJsonObject<import('@/lib/types').MatchWorksheet>(r.worksheet_json ?? null),
     }));
   }
 

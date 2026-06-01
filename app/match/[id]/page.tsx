@@ -13,6 +13,8 @@ import { MatchTabs } from '@/components/match/MatchTabs';
 import { SourceAttributionSection } from '@/components/match/SourceAttributionSection';
 import { ExplainDealModal } from '@/components/match/ExplainDealModal';
 import { MatchDetailPanel, MatchDetailMobileSheet } from '@/components/match/MatchDetailPanel';
+import { MatchWorksheet } from '@/components/match/MatchWorksheet';
+import type { MatchWorksheet as MatchWorksheetType } from '@/lib/types';
 
 interface Props { params: Promise<{ id: string }>; }
 
@@ -102,6 +104,15 @@ export default async function MatchDetailPage({ params }: Props) {
     fitPercent: storedMatch.fit_percent ?? null,
     fitBreakdown: storedMatch.fit_breakdown ?? null,
   };
+
+  let worksheet: MatchWorksheetType | null = null;
+  if (storedMatch.worksheet_json) {
+    try {
+      worksheet = JSON.parse(storedMatch.worksheet_json) as MatchWorksheetType;
+    } catch {
+      // malformed JSON — degrade gracefully
+    }
+  }
 
   return (
     <main className="min-h-screen bg-ds-bg">
@@ -249,6 +260,9 @@ export default async function MatchDetailPage({ params }: Props) {
                 </dl>
               </div>
             </div>
+
+            {/* Match Worksheet — vessel×cargo summary (above tabs, null-safe) */}
+            <MatchWorksheet worksheet={worksheet} />
 
             {/* Rich tabs — only when session match is still available */}
             {sessionMatch && (
