@@ -18,8 +18,8 @@ export type Fetcher = (url: string) => Promise<string>;
  * Tries JSON-in-script first (more stable), falls back to HTML element.
  */
 export function parseTradingEconomicsHtml(html: string): { price: number; priceDate: string } {
-  // Strategy 1: JSON object embedded in <script> — "Last":65.50
-  const jsonMatch = html.match(/"Last"\s*:\s*([\d]+\.[\d]+)/);
+  // Strategy 1: JSON object embedded in <script> — "Last":65.50 or "Last":65
+  const jsonMatch = html.match(/"Last"\s*:\s*(\d+(?:\.\d+)?)/);
   if (jsonMatch) {
     const price = parseFloat(jsonMatch[1]);
     if (Number.isFinite(price)) {
@@ -28,7 +28,7 @@ export function parseTradingEconomicsHtml(html: string): { price: number; priceD
   }
 
   // Strategy 2: data-value attribute on price span
-  const dataMatch = html.match(/data-value="([\d]+\.[\d]+)"/);
+  const dataMatch = html.match(/data-value="(\d+(?:\.\d+)?)"/);
   if (dataMatch) {
     const price = parseFloat(dataMatch[1]);
     if (Number.isFinite(price)) {
@@ -37,7 +37,7 @@ export function parseTradingEconomicsHtml(html: string): { price: number; priceD
   }
 
   // Strategy 3: generic EUR price pattern near relevant context
-  const eurMatch = html.match(/id="last-price"[^>]*>([\d]+\.[\d]+)/);
+  const eurMatch = html.match(/id="last-price"[^>]*>(\d+(?:\.\d+)?)/);
   if (eurMatch) {
     const price = parseFloat(eurMatch[1]);
     if (Number.isFinite(price)) {
