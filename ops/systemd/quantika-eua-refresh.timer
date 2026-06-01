@@ -1,0 +1,12 @@
+[Unit]
+Description=Daily Quantika EUA price refresh
+Requires=quantika-eua-refresh.service
+
+[Timer]
+OnCalendar=*-*-* 04:00:00 UTC
+RandomizedDelaySec=5min
+Persistent=true
+Unit=quantika-eua-refresh.service
+
+[Install]
+WantedBy=timers.target

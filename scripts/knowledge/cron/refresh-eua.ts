@@ -2,11 +2,12 @@
 /**
  * Daily EUA (EU Allowance) price refresh cron script (BP-02)
  *
- * Primary:  EEX auction CSV (eex-auction)
- * Fallback: ICAP ETS prices (icap) — activated when EEX fails OR last price > 3 days old
+ * Primary:   EEX auction CSV (eex-auction)
+ * Fallback:  ICAP ETS prices (icap) — activated when EEX fails OR last price > 3 days old
+ * Tertiary:  TradingEconomics HTML scrape — activated when both EEX and ICAP fail
  *
- * Exit 0: at least one price obtained (EEX or ICAP).
- * Exit 1: both sources failed.
+ * Exit 0: at least one price obtained.
+ * Exit 1: all sources failed.
  *
  * Usage:
  *   npx tsx scripts/knowledge/cron/refresh-eua.ts
@@ -16,6 +17,7 @@ import { getStore } from '@/lib/session-store';
 import { reportSyncStarted, reportSyncSuccess, reportSyncFailure } from '@/lib/knowledge/governance';
 import { refreshEex } from '@/lib/knowledge/eua/eex-adapter';
 import { refreshIcap } from '@/lib/knowledge/eua/icap-adapter';
+import { refreshTradingEconomics } from '@/lib/knowledge/eua/tradingeconomics-adapter';
 
 const CRON_NAME = 'eua-daily';
 const FALLBACK_THRESHOLD_DAYS = 3;
@@ -73,7 +75,22 @@ export async function main(): Promise<void> {
     }
   }
 
-  const success = eexOk || icapOk;
+  // --- TradingEconomics tertiary fallback (demo scrape) ---
+  let teOk = false;
+  if (!eexOk && !icapOk) {
+    const teId = reportSyncStarted(db, 'eua-tradingeconomics');
+    try {
+      console.log('[TE] Fetching EUA price from TradingEconomics (tertiary fallback)...');
+      const r = await refreshTradingEconomics(db);
+      if (!r) { reportSyncFailure(db, teId, new Error('TE parse failed — null result')); console.warn('[TE] ✗ Null result — page structure changed or out-of-range'); }
+      else { reportSyncSuccess(db, teId, { rowsChanged: r.rowsChanged }); teOk = true; console.log(`[TE] ✓ Done: price=${r.price} date=${r.priceDate}`); }
+    } catch (e) {
+      reportSyncFailure(db, teId, e as Error);
+      console.error('[TE] ✗ Failed:', e);
+    }
+  }
+
+  const success = eexOk || icapOk || teOk;
   console.log(
     `[${CRON_NAME}] ${success ? '✓ Completed successfully' : '✗ All sources failed'}`
   );

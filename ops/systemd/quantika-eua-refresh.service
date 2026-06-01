@@ -1,0 +1,17 @@
+[Unit]
+Description=Quantika EUA price daily refresh (EEX → ICAP → TradingEconomics)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=/root/quantika-demo
+ExecStart=/usr/bin/npx tsx --env-file=.env.local scripts/knowledge/cron/refresh-eua.ts
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=quantika-eua
+TimeoutStartSec=5min
+
+[Install]
+WantedBy=multi-user.target

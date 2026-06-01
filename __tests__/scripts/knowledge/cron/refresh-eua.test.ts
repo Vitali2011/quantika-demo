@@ -20,9 +20,14 @@ jest.mock('@/lib/knowledge/eua/icap-adapter', () => ({
   refreshIcap: jest.fn(),
 }));
 
+jest.mock('@/lib/knowledge/eua/tradingeconomics-adapter', () => ({
+  refreshTradingEconomics: jest.fn(),
+}));
+
 import { getStore } from '@/lib/session-store';
 import { refreshEex } from '@/lib/knowledge/eua/eex-adapter';
 import { refreshIcap } from '@/lib/knowledge/eua/icap-adapter';
+import { refreshTradingEconomics } from '@/lib/knowledge/eua/tradingeconomics-adapter';
 
 function makeDb(): Database.Database {
   const db = new Database(':memory:');
@@ -40,6 +45,14 @@ function makeDb(): Database.Database {
   registerSource(db, {
     slug: 'eua-icap',
     name: 'ICAP ETS Prices',
+    kind: 'structured_rows',
+    category: 'market',
+    refresh_mode: 'auto-daily',
+    stale_threshold_days: 1,
+  });
+  registerSource(db, {
+    slug: 'eua-tradingeconomics',
+    name: 'TradingEconomics EU Carbon',
     kind: 'structured_rows',
     category: 'market',
     refresh_mode: 'auto-daily',
@@ -114,14 +127,44 @@ describe('refresh-eua cron — orchestration logic', () => {
     expect(mockExit).toHaveBeenCalledWith(0);
   });
 
-  it('both EEX and ICAP fail → exit 1', async () => {
+  it('EEX and ICAP fail → TE called → exit 0', async () => {
     (refreshEex as jest.Mock).mockRejectedValue(new Error('EEX down'));
     (refreshIcap as jest.Mock).mockRejectedValue(new Error('ICAP down'));
+    (refreshTradingEconomics as jest.Mock).mockResolvedValue({
+      rowsChanged: 1,
+      priceDate: '2026-06-01',
+      price: 65.50,
+    });
+
+    const { main } = await import('@/scripts/knowledge/cron/refresh-eua');
+    await main();
+
+    expect(refreshTradingEconomics).toHaveBeenCalledTimes(1);
+    expect(mockExit).toHaveBeenCalledWith(0);
+  });
+
+  it('all three sources fail → exit 1', async () => {
+    (refreshEex as jest.Mock).mockRejectedValue(new Error('EEX down'));
+    (refreshIcap as jest.Mock).mockRejectedValue(new Error('ICAP down'));
+    (refreshTradingEconomics as jest.Mock).mockRejectedValue(new Error('TE down'));
 
     const { main } = await import('@/scripts/knowledge/cron/refresh-eua');
     await main();
 
     expect(mockExit).toHaveBeenCalledWith(1);
+  });
+
+  it('TE NOT called when EEX succeeds (not a fallback in this case)', async () => {
+    (refreshEex as jest.Mock).mockResolvedValue({
+      rowsChanged: 1,
+      priceDate: new Date().toISOString().slice(0, 10),
+      price: 72.65,
+    });
+
+    const { main } = await import('@/scripts/knowledge/cron/refresh-eua');
+    await main();
+
+    expect(refreshTradingEconomics).not.toHaveBeenCalled();
   });
 
   it('governance reportSyncStarted called for eua-eex always', async () => {
