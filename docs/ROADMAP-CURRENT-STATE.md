@@ -435,6 +435,11 @@ _(пусто — C4/C5 закрыты 2026-05-22)_
    - `DashboardInboxSection` — «📥 Inbox» по категориям (грузы/суда/рекапы/ответы) + «N need action».
    - `EmailUploadCTA` — онбординг пустого экрана для нового юзера («Upload your first email») + блок приватности.
 2. **`ApprovePlanModal`** — human-in-the-loop гейт для AI-агента (план → галочки → Approve & Execute → `/api/agent/execute`). ТРЕБУЕТ: (а) дизайн (вёрстка сейчас черновая), (б) upstream-планировщик, который генерирует `Plan`. Стратегический, не «один импорт».
+3. **Оживить Market из наших данных (3 блока, сейчас захардкожено):**
+   - **Routes — TCE est. $/d** (`components/market/RoutesSection.tsx`, `const ROUTES`) → считать через наш `/api/voyage/tce` (стандартный Supramax + плечо + ставка), дельта из истории. ЗАВИСИТ от «эпопеи Economics-tab» (тот же TCE-движок). Бенчмарк рынка по плечам.
+   - **Recent fixtures (last 24h)** (`FixturesSection.tsx`) → из распарсенных fixture-recap писем (`parse-recap`, категория FIXTURE_RECAP). Самый «бесплатный» — наши же данные. «Правда рынка» по ставкам.
+   - **Knowledge feed** (`KnowledgeFeed.tsx`) → из нашей RAG-библиотеки (корпуса IMSBC/IGC/JWC/BIMCO, `/admin/knowledge`). Справочный стол брокера.
+   - Связанная data-freshness (отдельные промпты выданы): парсеры индексов — Baltic→HandyBulk, EUA→Trading Economics, bunker→Bunker Index (3 порта) — убирают «stale data».
 
 **Cleanup (низкий приоритет):** удалить мёртвые флаги на проде (`DEMURRAGE_ENABLED`/`SOF_PARSER_ENABLED`/`KNOWLEDGE_WAR_RISK_FROM_DB`/`SUBS_TIMER_ENABLED`/`MARKET_BENCHMARK_ENABLED` — код их не читает) + dead-code (`fetchEuaPrice` scraper, `/api/economics` legacy, `/api/market/tmi`).
 
