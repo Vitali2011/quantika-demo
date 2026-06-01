@@ -254,6 +254,39 @@ describe('computeFitBreakdown — anchor scorecard', () => {
     expect(fb2.components.map((c) => c.score)).toEqual(fb1.components.map((c) => c.score));
   });
 
+  it('SCORE-INVARIANT: rationale text changes must not shift any numeric score', () => {
+    // Fixed fixture — changing only rationale/why strings in fit-breakdown.ts
+    // must leave every component.score and fitPercent bit-for-bit identical.
+    const cargo = makeCargo({
+      cargoDescription: { value: 'steel slabs', confidence: 'confirmed' },
+      cargoType: 'BREAK_BULK',
+      weightMtMax: 4950,
+      weightMt: { value: 4950, confidence: 'confirmed' },
+    });
+    const vessel = makeVessel({
+      vesselType: 'MPP',
+      lastCargoes: 'steel slabs',
+      dwcc: { value: 5000, confidence: 'confirmed' },
+      dwtSummer: { value: 5200, confidence: 'confirmed' },
+      geared: true,
+    });
+    const readiness: MatchReadiness = { ...READY_IDEAL, distanceNm: 205 };
+    const fb = computeFitBreakdown({ cargo, vessel, readiness, sanctions: SANCTIONS_OK, hardFilters: HF_PASS });
+
+    expect(fb.fitPercent).toBe(91.8);
+    expect(fb.components.map((c) => ({ factor: c.factor, score: c.score }))).toEqual([
+      { factor: 'utilisation', score: 23 },
+      { factor: 'timing',      score: 18 },
+      { factor: 'ballast',     score: 14 },
+      { factor: 'classFit',    score: 11 },
+      { factor: 'cargoType',   score: 7 },
+      { factor: 'cranes',      score: 7 },
+      { factor: 'volume',      score: 3.4 },
+      { factor: 'draft',       score: 3 },
+      { factor: 'vetting',     score: 5.4 },
+    ]);
+  });
+
   it('breakdown lists all eight factors with non-null rationale', () => {
     const cargo = makeCargo();
     const vessel = makeVessel();
