@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  *
- * Tests: MatchDetailPanel — collapsible «Показать расчёт» under Fit Score (#fit-show-calc)
+ * Tests: MatchDetailPanel — collapsible 'Show calculation' under Fit Score (#fit-show-calc)
  *
  * Behavioral: renders component, clicks toggle, verifies DOM content.
  */
@@ -64,66 +64,76 @@ const mkBreakdown = (overrides?: object) =>
   });
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
-describe('MatchDetailPanel — Показать расчёт toggle', () => {
-  it('расчёт СВЁРНУТ по умолчанию: toggle button visible, calc строки не видны', () => {
+describe('MatchDetailPanel — Show calculation toggle', () => {
+  it('calc collapsed by default: toggle button visible, calc rows not visible', () => {
     render(
       <MatchDetailPanel {...BASE_PROPS} fitPercent={72} fitBreakdown={mkBreakdown()} />,
     );
-    expect(screen.getByRole('button', { name: 'Показать расчёт' })).toBeInTheDocument();
-    expect(screen.queryByText(/Сумма факторов/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Итог.*Fit/)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Show calculation' })).toBeInTheDocument();
+    expect(screen.queryByText(/Subtotal/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Fit score:/)).not.toBeInTheDocument();
   });
 
-  it('после клика: label меняется на «Скрыть расчёт», строки факторов и ИТОГ видны', () => {
+  it('after click: label changes to Hide calculation, factor rows and total visible', () => {
     render(
       <MatchDetailPanel {...BASE_PROPS} fitPercent={72} fitBreakdown={mkBreakdown()} />,
     );
-    fireEvent.click(screen.getByRole('button', { name: 'Показать расчёт' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Show calculation' }));
 
-    expect(screen.getByRole('button', { name: 'Скрыть расчёт' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Hide calculation' })).toBeInTheDocument();
     // per-factor labels visible (appear in both bar chart + calc rows, so getAllByText)
     expect(screen.getAllByText('Size / utilisation').length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText('Laycan fit').length).toBeGreaterThanOrEqual(1);
     // unique calc-section format: score / weight
     expect(screen.getByText(/11\.9 \/ 18/)).toBeInTheDocument();
     // reconciliation section
-    expect(screen.getByText(/Сумма факторов/)).toBeInTheDocument();
-    expect(screen.getByText(/Итог \(Fit\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Subtotal/)).toBeInTheDocument();
+    expect(screen.getByText(/Fit score:/)).toBeInTheDocument();
     // итог value matches headline fitPercent (72%)
     expect(screen.getAllByText(/72%/).length).toBeGreaterThanOrEqual(1);
     // no sanctions / cap lines
-    expect(screen.queryByText(/Штраф за санкции/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/потолок/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Sanctions penalty/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Capped/i)).not.toBeInTheDocument();
   });
 
-  it('повторный клик сворачивает (toggle закрывается)', () => {
+  it('rationale appears under each factor row in expanded calc section', () => {
     render(
       <MatchDetailPanel {...BASE_PROPS} fitPercent={72} fitBreakdown={mkBreakdown()} />,
     );
-    fireEvent.click(screen.getByRole('button', { name: 'Показать расчёт' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Скрыть расчёт' }));
-    expect(screen.queryByText(/Сумма факторов/)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Show calculation' }));
+    // rationale text is visible (rendered at least once — also in bar chart above)
+    expect(screen.getAllByText('Utilisation 72%').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('Tight window').length).toBeGreaterThanOrEqual(1);
   });
 
-  it('sanctionsPenalty=8 → строка «Штраф за санкции» с −8 видна после раскрытия', () => {
+  it('second click collapses (toggle closes)', () => {
+    render(
+      <MatchDetailPanel {...BASE_PROPS} fitPercent={72} fitBreakdown={mkBreakdown()} />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Show calculation' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Hide calculation' }));
+    expect(screen.queryByText(/Subtotal/)).not.toBeInTheDocument();
+  });
+
+  it('sanctionsPenalty=8 → Sanctions penalty row with −8 visible after expand', () => {
     const breakdown = mkBreakdown({ sanctionsPenalty: 8, fitPercent: 64 });
     render(
       <MatchDetailPanel {...BASE_PROPS} fitPercent={64} fitBreakdown={breakdown} />,
     );
-    fireEvent.click(screen.getByRole('button', { name: 'Показать расчёт' }));
-    expect(screen.getByText(/Штраф за санкции/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Show calculation' }));
+    expect(screen.getByText(/Sanctions penalty/)).toBeInTheDocument();
     expect(screen.getByText(/−8/)).toBeInTheDocument();
   });
 
-  it('sanctionsPenalty=0 → строка штрафа НЕ рендерится', () => {
+  it('sanctionsPenalty=0 → sanctions row not rendered', () => {
     render(
       <MatchDetailPanel {...BASE_PROPS} fitPercent={72} fitBreakdown={mkBreakdown()} />,
     );
-    fireEvent.click(screen.getByRole('button', { name: 'Показать расчёт' }));
-    expect(screen.queryByText(/Штраф за санкции/)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Show calculation' }));
+    expect(screen.queryByText(/Sanctions penalty/)).not.toBeInTheDocument();
   });
 
-  it('appliedCap → строка потолка с reason и ceiling видна после раскрытия', () => {
+  it('appliedCap → Capped row with reason and ceiling visible after expand', () => {
     const breakdown = mkBreakdown({
       appliedCap: { reason: 'Unvetted vessel', ceiling: 85 },
       fitPercent: 85,
@@ -131,35 +141,35 @@ describe('MatchDetailPanel — Показать расчёт toggle', () => {
     render(
       <MatchDetailPanel {...BASE_PROPS} fitPercent={85} fitBreakdown={breakdown} />,
     );
-    fireEvent.click(screen.getByRole('button', { name: 'Показать расчёт' }));
-    expect(screen.getByText(/потолок/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Show calculation' }));
+    expect(screen.getByText(/Capped/i)).toBeInTheDocument();
     expect(screen.getByText(/Unvetted vessel/)).toBeInTheDocument();
   });
 
-  it('appliedCap=null → строка потолка НЕ рендерится', () => {
+  it('appliedCap=null → Capped row not rendered', () => {
     render(
       <MatchDetailPanel {...BASE_PROPS} fitPercent={72} fitBreakdown={mkBreakdown()} />,
     );
-    fireEvent.click(screen.getByRole('button', { name: 'Показать расчёт' }));
-    expect(screen.queryByText(/потолок/i)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Show calculation' }));
+    expect(screen.queryByText(/Capped/i)).not.toBeInTheDocument();
   });
 
-  it('fitPercent=null → секция Fit Score и toggle НЕ рендерятся', () => {
+  it('fitPercent=null → Fit Score section and toggle not rendered', () => {
     render(
       <MatchDetailPanel {...BASE_PROPS} fitPercent={null} fitBreakdown={mkBreakdown()} />,
     );
-    expect(screen.queryByText('Показать расчёт')).not.toBeInTheDocument();
-    expect(screen.queryByText(/Сумма факторов/)).not.toBeInTheDocument();
+    expect(screen.queryByText('Show calculation')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Subtotal/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Fit Score/)).not.toBeInTheDocument();
   });
 
-  it('aria-expanded отражает состояние toggle', () => {
+  it('aria-expanded reflects toggle state', () => {
     render(
       <MatchDetailPanel {...BASE_PROPS} fitPercent={72} fitBreakdown={mkBreakdown()} />,
     );
-    const btn = screen.getByRole('button', { name: 'Показать расчёт' });
+    const btn = screen.getByRole('button', { name: 'Show calculation' });
     expect(btn).toHaveAttribute('aria-expanded', 'false');
     fireEvent.click(btn);
-    expect(screen.getByRole('button', { name: 'Скрыть расчёт' })).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('button', { name: 'Hide calculation' })).toHaveAttribute('aria-expanded', 'true');
   });
 });

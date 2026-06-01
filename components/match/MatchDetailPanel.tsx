@@ -192,7 +192,7 @@ function PanelContent({
                   aria-expanded={showCalc}
                   onClick={() => setShowCalc(v => !v)}
                 >
-                  {showCalc ? 'Скрыть расчёт' : 'Показать расчёт'}
+                  {showCalc ? 'Hide calculation' : 'Show calculation'}
                 </button>
                 {showCalc && (() => {
                   const rawSum = Math.round(components.reduce((s, c) => s + c.score, 0) * 10) / 10;
@@ -202,32 +202,37 @@ function PanelContent({
                   return (
                     <div className="mt-3 border-t border-ds-border pt-2 space-y-1">
                       {components.map((c, i) => (
-                        <div key={i} className="flex justify-between text-[11px] text-ds-text-muted gap-2">
-                          <span>{c.label}</span>
-                          <span className="font-mono shrink-0">
-                            {c.score} / {c.weight} ({Math.round(c.score / c.weight * 100)}%)
-                          </span>
+                        <div key={i} className="space-y-0.5">
+                          <div className="flex justify-between text-[11px] text-ds-text-muted gap-2">
+                            <span>{c.label}</span>
+                            <span className="font-mono shrink-0">
+                              {c.score} / {c.weight} · {Math.round(c.score / c.weight * 100)}%
+                            </span>
+                          </div>
+                          {c.rationale && (
+                            <p className="text-[11px] text-ds-text-subtle leading-snug">{c.rationale}</p>
+                          )}
                         </div>
                       ))}
                       <div className="border-t border-ds-border-subtle pt-1 mt-1 space-y-0.5">
                         <div className="flex justify-between text-[11px]">
-                          <span className="text-ds-text-muted">Сумма факторов:</span>
+                          <span className="text-ds-text-muted">Subtotal:</span>
                           <span className="font-mono">{rawSum} / {totalWeight}</span>
                         </div>
                         {sanctionsPenalty > 0 && (
                           <div className="flex justify-between text-[11px] text-red-500">
-                            <span>Штраф за санкции:</span>
+                            <span>Sanctions penalty:</span>
                             <span className="font-mono">−{sanctionsPenalty}</span>
                           </div>
                         )}
                         {appliedCap && (
                           <div className="flex justify-between text-[11px] text-amber-600">
-                            <span>Применён потолок: {appliedCap.reason}</span>
+                            <span>Capped: {appliedCap.reason}</span>
                             <span className="font-mono">→ {appliedCap.ceiling}</span>
                           </div>
                         )}
                         <div className="flex justify-between text-[11px] font-semibold text-ds-text">
-                          <span>Итог (Fit):</span>
+                          <span>Fit score:</span>
                           <span className="font-mono">{Math.round(fitPercent!)}%</span>
                         </div>
                       </div>

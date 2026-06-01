@@ -87,7 +87,7 @@ export function scoreUtilisation(
 ): FitBreakdownComponent {
   const w = FIT_WEIGHTS.utilisation;
   if (cargoWtMax == null || cargoWtMax <= 0 || vesselCapacity == null || vesselCapacity <= 0) {
-    return unknown('utilisation', 'Size / utilisation', 'cargo weight or vessel capacity unknown');
+    return unknown('utilisation', 'Size / utilisation', 'Cargo weight or vessel capacity not stated, scored conservatively.');
   }
   const util = cargoWtMax / vesselCapacity;
   // Piecewise curve, peak at 0.85–1.05:
@@ -115,14 +115,22 @@ export function scoreUtilisation(
     else share = 0.10;
   }
   const pct = Math.round(util * 100);
+  let utilizationRationale: string;
+  if (partCargo) {
+    utilizationRationale = `Cargo fills ~${pct}% of the ship — part cargo, deadfreight not charged.`;
+  } else if (util >= 0.85 && util <= 1.05) {
+    utilizationRationale = `Cargo fills ~${pct}% of the ship — a near-full load, almost no wasted space.`;
+  } else if (util > 1.05) {
+    utilizationRationale = `Cargo fills ~${pct}% of the ship — over-tonnaged.`;
+  } else {
+    utilizationRationale = `Cargo fills ~${pct}% of the ship — under-utilised, some deadfreight risk.`;
+  }
   return {
     factor: 'utilisation',
     label: 'Size / utilisation',
     weight: w,
     score: Math.round(w * share * 10) / 10,
-    rationale: partCargo
-      ? `cargo fills ~${pct}% of vessel — part-cargo (exempt from deadfreight penalty)`
-      : `cargo fills ~${pct}% of vessel${share >= 1 ? ' — peak utilisation' : share <= 0.4 ? ' — deadfreight' : ''}`,
+    rationale: utilizationRationale,
   };
 }
 
@@ -133,39 +141,37 @@ export function scoreUtilisation(
 export function scoreTiming(readiness: MatchReadiness | undefined): FitBreakdownComponent {
   const w = FIT_WEIGHTS.timing;
   if (!readiness) {
-    return unknown('timing', 'Laycan timing', 'no readiness data');
+    return unknown('timing', 'Laycan timing', 'No readiness data available, scored conservatively.');
   }
   const { verdict, gapDays } = readiness;
   if (verdict === 'unknown') {
-    return unknown('timing', 'Laycan timing', 'timing unknown — missing dates or port');
+    return unknown('timing', 'Laycan timing', 'Timing unknown — missing dates or port, scored conservatively.');
   }
   let share: number;
   let why: string;
   switch (verdict) {
     case 'ideal':
       share = 1.0;
-      why = 'arrives cleanly within laycan window';
+      why = 'Ship is free and arrives comfortably inside the loading window.';
       break;
     case 'tight':
       share = 0.7;
-      why = 'tight — cuts it fine but feasible';
+      why = 'Arrives just in time — cuts it fine but feasible.';
       break;
     case 'idle': {
       // Continuous penalty by idle length: 5d ≈ 0.6, 14d ≈ 0.4, 30d ≈ 0.2, >30d ≈ 0.1.
       const d = Math.abs(gapDays ?? 5);
       share = d <= 5 ? 0.65 : d <= 14 ? 0.45 : d <= 30 ? 0.25 : 0.1;
-      why = `vessel idle ~${Math.round(d)}d before laycan — owner cost risk`;
+      why = `Ship would sit idle ~${Math.round(d)} days before laycan — owner carrying-cost risk.`;
       break;
     }
     case 'late':
       share = 0.05;
-      why = gapDays != null
-        ? `vessel arrives ~${Math.abs(Math.round(gapDays))}d after laycan — misses window`
-        : 'vessel misses laycan window';
+      why = 'Ship arrives after the laycan ends — would miss the window.';
       break;
     default:
       share = UNKNOWN_SHARE;
-      why = 'timing not classified';
+      why = 'Timing could not be classified, scored conservatively.';
   }
   return {
     factor: 'timing',
@@ -186,10 +192,10 @@ export function scoreBallast(
 ): FitBreakdownComponent {
   const w = FIT_WEIGHTS.ballast;
   if (distanceNm == null || !Number.isFinite(distanceNm)) {
-    return unknown('ballast', 'Ballast distance', 'distance unknown (vague position or unmapped port)');
+    return unknown('ballast', 'Ballast distance', 'Distance to load port unknown — vessel position or port not mapped, scored conservatively.');
   }
   if (vesselDwt == null || !Number.isFinite(vesselDwt)) {
-    return unknown('ballast', 'Ballast distance', 'vessel DWT unknown — cannot pick class radius');
+    return unknown('ballast', 'Ballast distance', 'Vessel DWT not stated — cannot determine class range, scored conservatively.');
   }
   const cls = classifyVesselByDwt(vesselDwt);
   const radius = BALLAST_GOOD_MAX_NM[cls];
@@ -204,12 +210,17 @@ export function scoreBallast(
   else if (distanceNm <= radius) share = 1.0 - 0.6 * Math.sqrt(distanceNm / radius);
   else if (distanceNm <= radius * 2) share = 0.4 * (1 - (distanceNm - radius) / radius);
   else share = 0;
+  const ballastRationale = distanceNm <= 0
+    ? `~0 nm to reposition — practically on the doorstep.`
+    : share >= 0.9
+      ? `~${Math.round(distanceNm)} nm to reposition to load port — practically on the doorstep.`
+      : `~${Math.round(distanceNm)} nm to reposition to load port — within a ${cls}'s range (~${radius} nm) but not on the doorstep.`;
   return {
     factor: 'ballast',
     label: 'Ballast distance',
     weight: w,
     score: Math.round(w * Math.max(0, share) * 10) / 10,
-    rationale: `${Math.round(distanceNm)}nm ballast vs ${cls} radius ${radius}nm`,
+    rationale: ballastRationale,
   };
 }
 
@@ -224,7 +235,7 @@ export function scoreClassFit(
 ): FitBreakdownComponent {
   const w = FIT_WEIGHTS.classFit;
   if (cargoWtMax == null || cargoWtMax <= 0 || vesselDwt == null || vesselDwt <= 0) {
-    return unknown('classFit', 'Class fit', 'cargo weight or vessel DWT unknown');
+    return unknown('classFit', 'Class fit', 'Cargo weight or vessel DWT not stated, scored conservatively.');
   }
   // Ideal: vessel DWT 1.05–1.35× cargo (small headroom for bunkers/stores).
   // 1.0–1.05 OK; 1.35–2.0 acceptable; >2 oversized; <1 cargo bigger than vessel.
@@ -240,12 +251,21 @@ export function scoreClassFit(
   else if (ratio <= 2.0) share = 0.75;
   else if (ratio <= 3.0) share = 0.5;
   else share = 0.25;
+  const classFitSuffix = partCargo
+    ? 'normal for part-cargo parcels'
+    : ratio < 1.0
+      ? 'cargo bigger than ship — overloaded'
+      : ratio <= 1.35
+        ? 'the right size class for this parcel'
+        : ratio <= 2.0
+          ? 'slightly oversized for this cargo'
+          : 'oversized — some deadfreight likely';
   return {
     factor: 'classFit',
     label: 'Class fit',
     weight: w,
     score: Math.round(w * share * 10) / 10,
-    rationale: `vessel DWT ${vesselDwt} vs cargo ${cargoWtMax}mt — ratio ${ratio.toFixed(2)}`,
+    rationale: `Ship ${vesselDwt} dwt vs cargo ${cargoWtMax} mt (ratio ${ratio.toFixed(2)}) — ${classFitSuffix}.`,
   };
 }
 
@@ -259,37 +279,37 @@ export function scoreCargoTypeQuality(
 ): FitBreakdownComponent {
   const w = FIT_WEIGHTS.cargoType;
   if (!cargoType || !vesselType) {
-    return unknown('cargoType', 'Cargo type quality', 'cargo or vessel type unspecified');
+    return unknown('cargoType', 'Cargo type quality', 'Cargo or vessel type not stated, scored conservatively.');
   }
   const v = vesselType.toLowerCase();
   const lc = (lastCargoes ?? '').toLowerCase();
   let share = 0.7;
-  let why = `vessel: ${vesselType}`;
+  let why = `Vessel type ${vesselType} — compatibility not classified.`;
   if (cargoType === 'BULK') {
     if (/bulk|handysize|supramax|panamax|capesize|ultramax|handymax/.test(v)) {
       const hasBulkHistory = /grain|wheat|barley|coal|ore|fertilizer|urea|salt|sugar|cement|gypsum/.test(lc);
       share = hasBulkHistory ? 1.0 : 0.85;
-      why = hasBulkHistory ? 'bulk vessel + confirmed bulk cargo history' : 'bulk-class vessel';
+      why = hasBulkHistory ? 'Bulk-class ship matched to bulk cargo — confirmed loading history.' : 'Bulk-class ship matched to bulk cargo.';
     } else if (/mpp|multi-?purpose|general/.test(v)) {
       share = 0.55;
-      why = 'MPP vessel — fit marginal for bulk';
+      why = 'MPP vessel — fit marginal for bulk cargo.';
     }
   } else if (cargoType === 'BREAK_BULK' || cargoType === 'PROJECT') {
     if (/mpp|multi-?purpose|general|heavy.?lift/.test(v)) {
       const hasBBHistory = /steel|pipe|bagged|breakbulk|project|rebar|lumber|machinery/.test(lc);
       share = hasBBHistory ? 1.0 : 0.85;
-      why = hasBBHistory ? 'MPP + confirmed breakbulk/project history' : 'MPP — ideal for breakbulk';
+      why = hasBBHistory ? 'MPP ship suits breakbulk/project cargo — confirmed loading history.' : 'MPP ship suits breakbulk cargo — small deduction (not a purpose-built carrier).';
     } else if (/bulk/.test(v)) {
       share = 0.5;
-      why = 'bulker carrying breakbulk — geared bulker only';
+      why = 'Bulker carrying breakbulk — geared bulker only, small deduction.';
     }
   } else if (cargoType === 'FCL' || cargoType === 'LCL' || cargoType === 'CONTAINER') {
-    if (/container/.test(v)) { share = 1.0; why = 'container vessel'; }
+    if (/container/.test(v)) { share = 1.0; why = 'Container vessel matched to container cargo.'; }
   } else if (cargoType === 'RORO') {
-    if (/ro.?ro|car carrier/.test(v)) { share = 1.0; why = 'RORO vessel'; }
+    if (/ro.?ro|car carrier/.test(v)) { share = 1.0; why = 'RORO vessel matched to RORO cargo.'; }
   } else if (cargoType === 'OTHER') {
     share = 0.65;
-    why = 'cargo type unspecified — cannot grade';
+    why = 'Cargo type unspecified — cannot assess vessel suitability.';
   }
   return {
     factor: 'cargoType',
@@ -307,19 +327,19 @@ export function scoreCranes(
 ): FitBreakdownComponent {
   const w = FIT_WEIGHTS.cranes;
   if (geared === true) {
-    return { factor: 'cranes', label: 'Cranes', weight: w, score: w, rationale: 'vessel geared — no shore-crane dependency' };
+    return { factor: 'cranes', label: 'Cranes', weight: w, score: w, rationale: 'Ship is geared — no dependence on shore cranes.' };
   }
   if (geared === false) {
     const portCranes = portHasShoreCranes(loadPort);
     if (portCranes === true) {
-      return { factor: 'cranes', label: 'Cranes', weight: w, score: Math.round(w * 0.85 * 10) / 10, rationale: 'gearless + shore cranes available' };
+      return { factor: 'cranes', label: 'Cranes', weight: w, score: Math.round(w * 0.85 * 10) / 10, rationale: 'Ship is gearless, but the port has shore cranes — workable.' };
     }
     if (portCranes === false) {
-      return { factor: 'cranes', label: 'Cranes', weight: w, score: 0, rationale: 'gearless + no shore cranes — incompatible' };
+      return { factor: 'cranes', label: 'Cranes', weight: w, score: 0, rationale: 'Ship is gearless and the port has no cranes — not workable.' };
     }
-    return { factor: 'cranes', label: 'Cranes', weight: w, score: Math.round(w * 0.55 * 10) / 10, rationale: 'gearless + port crane availability unverified' };
+    return { factor: 'cranes', label: 'Cranes', weight: w, score: Math.round(w * 0.55 * 10) / 10, rationale: 'Ship is gearless; port crane availability not yet confirmed.' };
   }
-  return unknown('cranes', 'Cranes', 'vessel gear unknown');
+  return unknown('cranes', 'Cranes', 'Vessel gear status not stated, scored conservatively.');
 }
 
 /** Volume / hold fit — stowage ratio of cargo m³ to vessel grain capacity. */
@@ -331,7 +351,7 @@ export function scoreVolume(
 ): FitBreakdownComponent {
   const w = FIT_WEIGHTS.volume;
   if (!cargoWtMax || cargoWtMax <= 0 || !grainCapacity || grainCapacity <= 0) {
-    return unknown('volume', 'Volume / hold fit', 'cargo weight or vessel grain capacity unknown');
+    return unknown('volume', 'Volume / hold fit', 'Cargo weight or grain capacity not stated, scored conservatively.');
   }
   // Resolve stowage factor (explicit > keyword > default)
   let sf = 1.35;
@@ -351,10 +371,10 @@ export function scoreVolume(
   const ratio = requiredM3 / grainCapacity;
   let share: number;
   let why: string;
-  if (ratio <= 0.7) { share = 0.85; why = `~${Math.round(ratio * 100)}% of grain capacity — comfortable`; }
-  else if (ratio <= 0.9) { share = 1.0; why = `~${Math.round(ratio * 100)}% of grain capacity — ideal`; }
-  else if (ratio <= 1.0) { share = 0.85; why = `~${Math.round(ratio * 100)}% of grain capacity — tight fit`; }
-  else { share = 0.25; why = `~${Math.round(ratio * 100)}% of grain capacity — overflows`; }
+  if (ratio <= 0.7) { share = 0.85; why = `Cargo takes ~${Math.round(ratio * 100)}% of the ship's grain capacity — comfortable fit, room to spare.`; }
+  else if (ratio <= 0.9) { share = 1.0; why = `Cargo takes ~${Math.round(ratio * 100)}% of the ship's grain capacity — ideal fill.`; }
+  else if (ratio <= 1.0) { share = 0.85; why = `Cargo takes ~${Math.round(ratio * 100)}% of the ship's grain capacity — a tight but workable fit.`; }
+  else { share = 0.25; why = `Cargo takes ~${Math.round(ratio * 100)}% of the ship's grain capacity — cargo overflows the holds.`; }
   return {
     factor: 'volume',
     label: 'Volume / hold fit',
@@ -371,12 +391,12 @@ export function scoreDraft(hardFilters: MatchHardFilters | undefined): FitBreakd
   const w = FIT_WEIGHTS.draft;
   const draftCheck = hardFilters?.draft;
   if (!draftCheck) {
-    return unknown('draft', 'Draft / port headroom', 'draft check not performed');
+    return unknown('draft', 'Draft / port headroom', 'Draft check not performed, scored conservatively.');
   }
   if (draftCheck.pass) {
-    return { factor: 'draft', label: 'Draft / port headroom', weight: w, score: w, rationale: 'vessel within port draft limit' };
+    return { factor: 'draft', label: 'Draft / port headroom', weight: w, score: w, rationale: "Loaded ship sits within the port's draft limit." };
   }
-  return { factor: 'draft', label: 'Draft / port headroom', weight: w, score: 0, rationale: draftCheck.reason ?? 'vessel exceeds port draft' };
+  return { factor: 'draft', label: 'Draft / port headroom', weight: w, score: 0, rationale: `Ship draws too much for the port${draftCheck.reason ? ` — ${draftCheck.reason}` : ''}.` };
 }
 
 /** Vetting — 5-factor soft signal: flag (Paris MoU) / class (IACS) / age / P&I / CII.
@@ -393,10 +413,10 @@ export function scoreVetting(vessel: ParsedVessel, refYear?: number): FitBreakdo
   const effectiveRefYear = refYear ?? 0;
   const result = computeVesselVetting(effectiveVessel, { refYear: effectiveRefYear });
   const rationale = result.badges.length > 0
-    ? `vetting concerns: ${result.badges.join(', ')}`
+    ? `Items to confirm before fixing: ${result.badges.join(', ')}.`
     : result.factors.every((f) => f.verdict === 'unknown')
-      ? 'vetting data unavailable — scored neutral'
-      : 'vetting clean — no concerns flagged';
+      ? 'Vetting data unavailable — scored neutral.'
+      : 'Vetting clean — no open items.';
   return {
     factor: 'vetting',
     label: 'Vessel vetting',
