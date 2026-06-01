@@ -94,11 +94,6 @@ export default async function MatchDetailPage({ params }: Props) {
     matchDbId: storedMatch.id,
     score: storedMatch.score,
     status: storedMatch.status,
-    loadPort: storedMatch.load_port,
-    dischargePort: storedMatch.discharge_port,
-    cargoType: storedMatch.cargo_type,
-    vesselDwt: storedMatch.vessel_dwt,
-    laycanDisplay,
     cargoEmailId: effectiveCargoEmailId,
     hasSessionMatch: !!sessionMatch,
     fitPercent: storedMatch.fit_percent ?? null,
@@ -196,7 +191,7 @@ export default async function MatchDetailPage({ params }: Props) {
 
             {/* Match overview cards — Vessel + Cargo */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Vessel card */}
+              {/* Vessel card — Name + Fit% + Status only (DWT lives in Svodka) */}
               <div className="bg-ds-surface rounded-xl ring-1 ring-ds-border p-4 space-y-2">
                 <h2 className="text-xs font-semibold uppercase tracking-wide text-ds-text-muted">
                   Vessel
@@ -206,14 +201,6 @@ export default async function MatchDetailPage({ params }: Props) {
                     <dt className="text-ds-text-muted">Name</dt>
                     <dd className="font-medium text-ds-text truncate">{storedMatch.vessel_name ?? storedMatch.vessel_id}</dd>
                   </div>
-                  {storedMatch.vessel_dwt && (
-                    <div className="flex justify-between gap-2">
-                      <dt className="text-ds-text-muted">DWT</dt>
-                      <dd className="font-medium text-ds-text">
-                        {storedMatch.vessel_dwt.toLocaleString()} MT
-                      </dd>
-                    </div>
-                  )}
                   <div className="flex justify-between gap-2">
                     <dt className="text-ds-text-muted">Status</dt>
                     <dd className="font-medium text-ds-text capitalize">{storedMatch.status}</dd>
@@ -227,28 +214,16 @@ export default async function MatchDetailPage({ params }: Props) {
                 </dl>
               </div>
 
-              {/* Cargo card */}
+              {/* Cargo card — Route + Laycan only (details in Svodka) */}
               <div className="bg-ds-surface rounded-xl ring-1 ring-ds-border p-4 space-y-2">
                 <h2 className="text-xs font-semibold uppercase tracking-wide text-ds-text-muted">
                   Cargo
                 </h2>
                 <dl className="space-y-1 text-sm">
-                  {storedMatch.cargo_type && (
+                  {routeMeta && (
                     <div className="flex justify-between gap-2">
-                      <dt className="text-ds-text-muted">Type</dt>
-                      <dd className="font-medium text-ds-text capitalize">{storedMatch.cargo_type}</dd>
-                    </div>
-                  )}
-                  {storedMatch.load_port && (
-                    <div className="flex justify-between gap-2">
-                      <dt className="text-ds-text-muted">Load Port</dt>
-                      <dd className="font-medium text-ds-text truncate">{storedMatch.load_port}</dd>
-                    </div>
-                  )}
-                  {storedMatch.discharge_port && (
-                    <div className="flex justify-between gap-2">
-                      <dt className="text-ds-text-muted">Discharge</dt>
-                      <dd className="font-medium text-ds-text truncate">{storedMatch.discharge_port}</dd>
+                      <dt className="text-ds-text-muted">Route</dt>
+                      <dd className="font-medium text-ds-text truncate">{routeMeta}</dd>
                     </div>
                   )}
                   {laycanDisplay && (
@@ -294,7 +269,11 @@ export default async function MatchDetailPage({ params }: Props) {
                       ...(cargo.weightMt ? [{ label: 'Weight', value: cargo.weightMt }] : []),
                       ...(cargo.originPort ? [{ label: 'Load Port', value: cargo.originPort }] : []),
                       ...(cargo.destinationPort ? [{ label: 'Discharge Port', value: cargo.destinationPort }] : []),
-                      ...(cargo.preferredDates ? [{ label: 'Laycan', value: cargo.preferredDates }] : []),
+                      ...(laycanDisplay
+                    ? [{ label: 'Laycan', value: { value: laycanDisplay, confidence: 'confirmed' as const, sourceText: cargo.preferredDates?.sourceText } }]
+                    : cargo.preferredDates
+                      ? [{ label: 'Laycan', value: cargo.preferredDates }]
+                      : []),
                     ]}
                     originalEmail={cargoEmail.body}
                   />
