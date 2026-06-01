@@ -71,5 +71,27 @@ export default async function CargoPage() {
     };
   });
 
-  return <CargoClient rows={rows} total={rows.length} />;
+  // Collapse re-circulated duplicate cargoes (same parcel across several circular
+  // emails). Key on commodity + load port + quantity + laycan; discharge port is
+  // excluded (free-text wording noise splits true dupes). Genuinely different
+  // parcels (different route/qty/dates) stay separate; unknown-commodity rows are
+  // keyed by id. Prefer the row that already has a match.
+  const dedupedCargo = dedupRows(rows, (r) =>
+    r.commodity
+      ? `${r.commodity}|${r.originPort ?? ''}|${r.quantity ?? ''}|${JSON.stringify(r.laycan ?? '')}`
+      : r.id,
+  );
+
+  return <CargoClient rows={dedupedCargo} total={dedupedCargo.length} />;
+}
+
+/** Keep one row per content key, preferring a row that already has a match. */
+function dedupRows<T extends { status: 'open' | 'match' }>(rows: T[], key: (r: T) => string): T[] {
+  const seen = new Map<string, T>();
+  for (const r of rows) {
+    const k = key(r);
+    const prev = seen.get(k);
+    if (!prev || (r.status === 'match' && prev.status !== 'match')) seen.set(k, r);
+  }
+  return [...seen.values()];
 }

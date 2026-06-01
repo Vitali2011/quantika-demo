@@ -71,5 +71,27 @@ export default async function VesselsPage() {
     };
   });
 
-  return <VesselsClient rows={rows} total={rows.length} />;
+  // Collapse re-circulated duplicate vessels: the demo corpus carries the same
+  // vessel as items across several circular emails. Key on identity (name +
+  // open position + open date); a vessel at a genuinely different position/date
+  // stays as a separate row. Unknown-named rows are never collapsed (keyed by id).
+  // Prefer the row that already has a match so matched vessels stay visible.
+  const dedupedVessels = dedupRows(rows, (r) =>
+    r.vesselName && r.vesselName !== 'Unknown vessel'
+      ? `${r.vesselName}|${r.openPosition ?? ''}|${r.openDate ?? ''}`
+      : r.id,
+  );
+
+  return <VesselsClient rows={dedupedVessels} total={dedupedVessels.length} />;
+}
+
+/** Keep one row per content key, preferring a row that already has a match. */
+function dedupRows<T extends { status: 'open' | 'match' }>(rows: T[], key: (r: T) => string): T[] {
+  const seen = new Map<string, T>();
+  for (const r of rows) {
+    const k = key(r);
+    const prev = seen.get(k);
+    if (!prev || (r.status === 'match' && prev.status !== 'match')) seen.set(k, r);
+  }
+  return [...seen.values()];
 }
