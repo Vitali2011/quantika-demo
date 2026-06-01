@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
 import { cfValue } from '@/lib/types';
-import { formatQuantity } from '@/lib/cargo-render';
+import { formatQuantityCompact } from '@/lib/cargo-render';
 import { parseLaycan } from '@/lib/sailing/date-parsing';
 import { fmtLaycan } from '@/lib/utils/fmt-laycan';
 import CargoClient, { type CargoRow } from './CargoClient';
@@ -22,11 +22,6 @@ function getCommodityKey(desc: string | null): string {
   return 'bulk';
 }
 
-function fmtWeight(mt: number | null): string | null {
-  if (mt === null) return null;
-  if (mt >= 1000) return `${Math.round(mt / 1000)}k`;
-  return String(mt);
-}
 
 export default async function CargoPage() {
   const cookieStore = await cookies();
@@ -63,7 +58,7 @@ export default async function CargoPage() {
       commodityKey: getCommodityKey(descVal),
       originPort: cfValue(cargo.originPort) ?? null,
       destinationPort: cfValue(cargo.destinationPort) ?? null,
-      quantity: fmtWeight(weightMt) ?? formatQuantity(cargo.quantity),
+      quantity: formatQuantityCompact(weightMt, cargo.quantity),
       laycan: cargo.laycan ?? null,
       status: hasMatch ? 'match' : 'open',
       sourceTag: email ? 'Email' : 'Manual',

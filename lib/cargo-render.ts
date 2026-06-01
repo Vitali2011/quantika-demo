@@ -2,6 +2,39 @@ import { isRange, type Range } from '@/lib/types';
 import { safeRender } from '@/lib/ui-render';
 import { formatNumber } from '@/lib/utils';
 
+function fmtK(mt: number): string {
+  if (mt >= 1000) {
+    const k = Math.round((mt / 1000) * 10) / 10;
+    return `${k}k`;
+  }
+  return String(mt);
+}
+
+/**
+ * Compact k-notation formatter for the cargo list QTY column.
+ * Ranges: "4,300–4,500" → "4.3–4.5k"; singles: 22000 → "22k".
+ * Use formatQuantity for full-number display (cargo detail page).
+ */
+export function formatQuantityCompact(
+  weightMt: number | null,
+  q: Range<number> | number | null | undefined,
+): string | null {
+  if (weightMt !== null) return fmtK(weightMt);
+  if (q == null) return null;
+  if (isRange<number>(q)) {
+    const { min, max } = q;
+    if (min === max) return fmtK(min);
+    if (min >= 1000 && max >= 1000) {
+      const lo = Math.round((min / 1000) * 10) / 10;
+      const hi = Math.round((max / 1000) * 10) / 10;
+      return `${lo}–${hi}k`;
+    }
+    return `${fmtK(min)}–${fmtK(max)}`;
+  }
+  if (typeof q === 'number' && !isNaN(q)) return fmtK(q);
+  return null;
+}
+
 /**
  * Format a quantity value (plain number or Range) into a human-readable string.
  * Returns null when the value is absent or invalid — callers skip rendering.
