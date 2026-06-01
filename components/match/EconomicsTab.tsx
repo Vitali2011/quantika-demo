@@ -71,6 +71,9 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
   const [resetting, setResetting] = useState(false);
   const [bunkerPort, setBunkerPort] = useState<BunkerPort>('SGSIN');
   const [bunkerGrade, setBunkerGrade] = useState<BunkerGrade>('VLSFO');
+  const [bunkerPortManual, setBunkerPortManual] = useState(false);
+  const [bunkerReco, setBunkerReco] = useState<{ port: string; priceUsdPerMt: number; recommendation: string } | null>(null);
+  const [bunkerFallback, setBunkerFallback] = useState<string | null>(null);
   const [displayCurrency, setDisplayCurrency] = useState<DisplayCurrency>('USD');
   const [fuelType, setFuelType] = useState('hfo');
   const [euaData, setEuaData] = useState<{ value: number; period: string; stale?: boolean } | null>(null);
@@ -95,6 +98,31 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
       .catch(() => { if (!cancelled) setEuaPhase('unavailable'); });
     return () => { cancelled = true; };
   }, []);
+
+  const recoFrom = cargo?.originPort?.value;
+  const recoTo = cargo?.destinationPort?.value;
+  useEffect(() => {
+    if (!recoFrom || !recoTo) return;
+    let cancelled = false;
+    const url = `/api/voyage/bunker-recommendation?from=${encodeURIComponent(recoFrom)}&to=${encodeURIComponent(recoTo)}&grade=${bunkerGrade}`;
+    fetch(url)
+      .then((r) => r.ok ? r.json() : null)
+      .then((data: { fallback: boolean; message: string | null; port: string | null; priceUsdPerMt: number | null; recommendation: string | null; savingsUsd: number } | null) => {
+        if (cancelled || !data) return;
+        if (data.fallback) {
+          setBunkerFallback(data.message);
+          setBunkerReco(null);
+        } else if (data.port && data.priceUsdPerMt != null && data.recommendation) {
+          setBunkerFallback(null);
+          setBunkerReco({ port: data.port, priceUsdPerMt: data.priceUsdPerMt, recommendation: data.recommendation });
+          if (!bunkerPortManual && BUNKER_PORTS.some(p => p.value === data.port)) {
+            setBunkerPort(data.port as BunkerPort);
+          }
+        }
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [recoFrom, recoTo, bunkerGrade, bunkerPortManual]);
 
   const handleOverrideSubmit = useCallback(async () => {
     if (!matchDbId) return;
@@ -412,7 +440,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
         <div className="flex gap-2 mt-2">
           <select
             value={bunkerPort}
-            onChange={(e) => setBunkerPort(e.target.value as BunkerPort)}
+            onChange={(e) => { setBunkerPort(e.target.value as BunkerPort); setBunkerPortManual(true); }}
             aria-label="Bunker port"
             className="flex-1 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-400"
           >
@@ -435,6 +463,16 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
             ))}
           </select>
         </div>
+        {bunkerReco && (
+          <p data-testid="bunker-reco" className="text-xs text-blue-700 bg-blue-50 rounded px-2 py-1 mt-1">
+            {bunkerReco.recommendation}
+          </p>
+        )}
+        {bunkerFallback && (
+          <p data-testid="bunker-fallback" className="text-xs text-amber-600 mt-1">
+            {bunkerFallback}
+          </p>
+        )}
       </div>
 
       {MULTI_CURRENCY_V2_ENABLED && (
