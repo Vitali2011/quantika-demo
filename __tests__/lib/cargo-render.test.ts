@@ -9,7 +9,7 @@
  * Tests use pure-function calls, not string matching, satisfying PI2.
  */
 
-import { formatQuantity } from '@/lib/cargo-render';
+import { formatQuantity, formatQuantityCompact } from '@/lib/cargo-render';
 
 describe('formatQuantity', () => {
   // ── null / missing → field suppressed ──
@@ -64,6 +64,52 @@ describe('formatQuantity', () => {
   it('returns non-null for Range (field rendered when data present)', () => {
     const result = formatQuantity({ min: 5000, max: 10000 });
     expect(result).not.toBeNull();
+  });
+});
+
+describe('formatQuantityCompact', () => {
+  it('returns null when both weightMt and q are null', () => {
+    expect(formatQuantityCompact(null, null)).toBeNull();
+  });
+
+  it('returns null when both weightMt and q are undefined', () => {
+    expect(formatQuantityCompact(null, undefined)).toBeNull();
+  });
+
+  it('prefers weightMt over q — single weight compact', () => {
+    expect(formatQuantityCompact(22000, null)).toBe('22k');
+  });
+
+  it('compact k with one decimal — 4300 → "4.3k"', () => {
+    expect(formatQuantityCompact(4300, null)).toBe('4.3k');
+  });
+
+  it('drops trailing .0 — 10000 → "10k"', () => {
+    expect(formatQuantityCompact(10000, null)).toBe('10k');
+  });
+
+  it('range compact — founder example "4,300–4,500" → "4.3–4.5k"', () => {
+    expect(formatQuantityCompact(null, { min: 4300, max: 4500 })).toBe('4.3–4.5k');
+  });
+
+  it('range compact — "10,000–10,500" → "10–10.5k"', () => {
+    expect(formatQuantityCompact(null, { min: 10000, max: 10500 })).toBe('10–10.5k');
+  });
+
+  it('range compact — "3,000–3,500" → "3–3.5k"', () => {
+    expect(formatQuantityCompact(null, { min: 3000, max: 3500 })).toBe('3–3.5k');
+  });
+
+  it('range min===max → single compact value', () => {
+    expect(formatQuantityCompact(null, { min: 5000, max: 5000 })).toBe('5k');
+  });
+
+  it('plain number q fallback when weightMt is null', () => {
+    expect(formatQuantityCompact(null, 25000)).toBe('25k');
+  });
+
+  it('weightMt takes precedence over range q', () => {
+    expect(formatQuantityCompact(30000, { min: 4300, max: 4500 })).toBe('30k');
   });
 });
 
