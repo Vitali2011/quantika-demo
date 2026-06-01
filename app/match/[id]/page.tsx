@@ -71,9 +71,31 @@ export default async function MatchDetailPage({ params }: Props) {
     ? (MATCH_LEVEL_BADGE[sessionMatch.matchLevel] ?? MATCH_LEVEL_BADGE.possible)
     : null;
 
-  const laycanDisplay = (storedMatch.laycan_start || storedMatch.laycan_end)
-    ? fmtLaycan(storedMatch.laycan_start, storedMatch.laycan_end)
-    : null;
+  let worksheet: MatchWorksheetType | null = null;
+  if (storedMatch.worksheet_json) {
+    try {
+      worksheet = JSON.parse(storedMatch.worksheet_json) as MatchWorksheetType;
+    } catch {
+      // malformed JSON — degrade gracefully
+    }
+  }
+
+  // Unified laycan: storedMatch timestamps → worksheet computed window → raw cargo string → null
+  const laycanDisplay = (() => {
+    if (storedMatch.laycan_start || storedMatch.laycan_end) {
+      return fmtLaycan(storedMatch.laycan_start, storedMatch.laycan_end);
+    }
+    const rs = worksheet?.readiness?.laycanStart;
+    const re = worksheet?.readiness?.laycanEnd;
+    if (rs || re) {
+      const toTs = (iso: string) => Math.floor(new Date(iso + 'T00:00:00Z').getTime() / 1000);
+      return fmtLaycan(rs ? toTs(rs) : null, re ? toTs(re) : null);
+    }
+    if (cargo?.preferredDates?.value) {
+      return cargo.preferredDates.value;
+    }
+    return null;
+  })();
 
   const routeMeta = [storedMatch.load_port, storedMatch.discharge_port]
     .filter(Boolean)
@@ -99,15 +121,6 @@ export default async function MatchDetailPage({ params }: Props) {
     fitPercent: storedMatch.fit_percent ?? null,
     fitBreakdown: storedMatch.fit_breakdown ?? null,
   };
-
-  let worksheet: MatchWorksheetType | null = null;
-  if (storedMatch.worksheet_json) {
-    try {
-      worksheet = JSON.parse(storedMatch.worksheet_json) as MatchWorksheetType;
-    } catch {
-      // malformed JSON — degrade gracefully
-    }
-  }
 
   return (
     <main className="min-h-screen bg-ds-bg">
