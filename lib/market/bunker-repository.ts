@@ -24,6 +24,27 @@ export function getLatestBunkerPrice(
   return row ?? null;
 }
 
+export function getBunkerHistory(
+  db: Database.Database,
+  portUnlocode: string,
+  fuelGrade: string,
+  days: number,
+): BunkerPriceRow[] {
+  if (!db) throw new RangeError('db required');
+  if (!portUnlocode) throw new RangeError('portUnlocode required');
+  if (!fuelGrade) throw new RangeError('fuelGrade required');
+  if (!Number.isFinite(days) || days < 0) throw new RangeError('days must be non-negative finite');
+  if (days === 0) return [];
+
+  return db.prepare<[string, string, number], BunkerPriceRow>(`
+    SELECT port_unlocode, fuel_grade, price_usd_per_mt, price_date, source, fetched_at
+    FROM bunker_prices
+    WHERE port_unlocode = ? AND fuel_grade = ? AND price_date <= date('now')
+    ORDER BY price_date DESC
+    LIMIT ?
+  `).all(portUnlocode, fuelGrade, days);
+}
+
 export function upsertBunkerPrice(db: Database.Database, row: BunkerPriceRow): void {
   db.prepare(`
     INSERT INTO bunker_prices (port_unlocode, fuel_grade, price_usd_per_mt, price_date, source, fetched_at)

@@ -1,5 +1,7 @@
 import Database from 'better-sqlite3';
 import migration019 from '@/lib/migrations/019-port-master-baltic-indices';
+import migration023 from '@/lib/migrations/023-bunker-prices-rewrite';
+import migration024 from '@/lib/migrations/024-eua-prices-rewrite';
 import migration027 from '@/lib/migrations/027-market-indices';
 import { upsertIndex, type MarketIndexRow } from '@/lib/market/market-indices-repository';
 
@@ -247,6 +249,98 @@ describe('GET /api/market/indices — Baltic code history (#544)', () => {
   it('returns empty array when no Baltic history exists (not 404)', async () => {
     const { GET } = await import('@/app/api/market/indices/route');
     const req = new Request('http://localhost/api/market/indices?name=bdi&days=30');
+    const res = await GET(req);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json).toEqual([]);
+  });
+});
+
+// ── Bunker/EUA codes served from native tables (no flag gate) ────────────────
+
+describe('GET /api/market/indices — bunker and EUA history', () => {
+  let db: Database.Database;
+  const originalEnvLocal = process.env;
+
+  beforeEach(() => {
+    db = new Database(':memory:');
+    migration019.up(db);
+    migration023.up(db);
+    migration024.up(db);
+    migration027.up(db);
+    testDb = db;
+    process.env = { ...originalEnvLocal };
+  });
+
+  afterEach(() => {
+    db.close();
+    process.env = originalEnvLocal;
+  });
+
+  it('returns VLSFO history from bunker_prices without flag gate', async () => {
+    delete process.env.MARKET_BENCHMARK_FULL_ENABLED;
+    db.prepare(
+      `INSERT INTO bunker_prices (port_unlocode, fuel_grade, price_usd_per_mt, price_date, source, fetched_at)
+       VALUES ('NLRTM', 'VLSFO', 700, '2026-05-10', 'test', datetime('now'))`
+    ).run();
+
+    const { GET } = await import('@/app/api/market/indices/route');
+    const req = new Request('http://localhost/api/market/indices?name=vlsfo&days=30');
+    const res = await GET(req);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(Array.isArray(json)).toBe(true);
+    expect(json.length).toBeGreaterThan(0);
+    const newest = json[0];
+    expect(newest).toMatchObject({ index_date: '2026-05-10', value: 700, unit: 'USD/mt' });
+  });
+
+  it('returns MGO history from bunker_prices without flag gate', async () => {
+    delete process.env.MARKET_BENCHMARK_FULL_ENABLED;
+    db.prepare(
+      `INSERT INTO bunker_prices (port_unlocode, fuel_grade, price_usd_per_mt, price_date, source, fetched_at)
+       VALUES ('NLRTM', 'MGO', 1200, '2026-05-10', 'test', datetime('now'))`
+    ).run();
+
+    const { GET } = await import('@/app/api/market/indices/route');
+    const req = new Request('http://localhost/api/market/indices?name=mgo&days=30');
+    const res = await GET(req);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json[0]).toMatchObject({ value: 1200, unit: 'USD/mt' });
+  });
+
+  it('returns EUA history from eua_prices without flag gate', async () => {
+    delete process.env.MARKET_BENCHMARK_FULL_ENABLED;
+    db.prepare(
+      `INSERT INTO eua_prices (price_date, price_eur_per_tco2, contract_type, source, fetched_at)
+       VALUES ('2026-05-10', 78.2, 'spot', 'test', datetime('now'))`
+    ).run();
+
+    const { GET } = await import('@/app/api/market/indices/route');
+    const req = new Request('http://localhost/api/market/indices?name=eua&days=30');
+    const res = await GET(req);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(Array.isArray(json)).toBe(true);
+    expect(json.length).toBeGreaterThan(0);
+    expect(json[0]).toMatchObject({ value: 78.2, unit: '€/tCO₂' });
+  });
+
+  it('returns empty array for vlsfo when no data (not 404)', async () => {
+    db.exec(`DELETE FROM bunker_prices WHERE fuel_grade = 'VLSFO'`);
+    const { GET } = await import('@/app/api/market/indices/route');
+    const req = new Request('http://localhost/api/market/indices?name=vlsfo&days=30');
+    const res = await GET(req);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json).toEqual([]);
+  });
+
+  it('returns empty array for eua when no data (not 404)', async () => {
+    db.exec(`DELETE FROM eua_prices`);
+    const { GET } = await import('@/app/api/market/indices/route');
+    const req = new Request('http://localhost/api/market/indices?name=eua&days=30');
     const res = await GET(req);
     expect(res.status).toBe(200);
     const json = await res.json();
