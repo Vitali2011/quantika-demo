@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3';
 import migration024 from '@/lib/migrations/024-eua-prices-rewrite';
-import { getLatestEuaPrice, upsertEuaPrice } from '@/lib/market/eua-repository';
+import { getLatestEuaPrice, getEuaHistory, upsertEuaPrice } from '@/lib/market/eua-repository';
 
 describe('eua-repository', () => {
   let db: Database.Database;
@@ -82,5 +82,61 @@ describe('eua-repository', () => {
     expect(allRows).toHaveLength(1);
     expect(allRows[0].price_eur_per_tco2).toBe(80.0);
     expect(allRows[0].source).toBe('updated-source');
+  });
+});
+
+describe('getEuaHistory', () => {
+  let db: Database.Database;
+
+  beforeEach(() => {
+    db = new Database(':memory:');
+    db.exec('PRAGMA foreign_keys = ON');
+    migration024.up(db);
+  });
+
+  afterEach(() => db.close());
+
+  it('returns multiple rows ordered newest-first', () => {
+    db.prepare(
+      "INSERT INTO eua_prices (price_date, price_eur_per_tco2, contract_type, source, fetched_at) VALUES ('2026-05-10', 75.0, 'spot', 'test', datetime('now'))"
+    ).run();
+    const rows = getEuaHistory(db, 'spot', 30);
+    expect(rows.length).toBe(2);
+    expect(rows[0]!.price_date).toBe('2026-05-10');
+    expect(rows[1]!.price_date).toBe('2026-05-04');
+  });
+
+  it('respects days limit', () => {
+    // Start from 2026-05-11 to avoid UNIQUE conflict with migration024 seed at 2026-05-04
+    for (let i = 1; i <= 10; i++) {
+      db.prepare(
+        `INSERT INTO eua_prices (price_date, price_eur_per_tco2, contract_type, source, fetched_at) VALUES ('2026-05-${String(i + 10).padStart(2, '0')}', ${70 + i}, 'spot', 'test', datetime('now'))`
+      ).run();
+    }
+    const rows = getEuaHistory(db, 'spot', 5);
+    expect(rows.length).toBe(5);
+    expect(rows[0]!.price_date).toBe('2026-05-20');
+  });
+
+  it('returns empty array for days=0', () => {
+    const rows = getEuaHistory(db, 'spot', 0);
+    expect(rows).toEqual([]);
+  });
+
+  it('throws on negative days', () => {
+    expect(() => getEuaHistory(db, 'spot', -1)).toThrow(RangeError);
+  });
+
+  it('excludes future-dated rows', () => {
+    db.prepare(
+      "INSERT INTO eua_prices (price_date, price_eur_per_tco2, contract_type, source, fetched_at) VALUES ('2099-01-01', 9999, 'spot', 'future', datetime('now'))"
+    ).run();
+    const rows = getEuaHistory(db, 'spot', 30);
+    expect(rows.every((r) => r.price_date <= '2026-05-28')).toBe(true);
+  });
+
+  it('defaults to spot contract_type', () => {
+    const rows = getEuaHistory(db, 'spot', 30);
+    expect(rows.every((r) => r.contract_type === 'spot')).toBe(true);
   });
 });

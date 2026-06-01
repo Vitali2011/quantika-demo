@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3';
 import migration023 from '@/lib/migrations/023-bunker-prices-rewrite';
-import { getLatestBunkerPrice, upsertBunkerPrice } from '@/lib/market/bunker-repository';
+import { getLatestBunkerPrice, getBunkerHistory, upsertBunkerPrice } from '@/lib/market/bunker-repository';
 
 describe('bunker-repository', () => {
   let db: Database.Database;
@@ -76,5 +76,58 @@ describe('bunker-repository', () => {
     expect(row).not.toBeNull();
     expect(row!.price_usd_per_mt).toBe(900);
     expect(row!.source).toBe('updated-source');
+  });
+});
+
+describe('getBunkerHistory', () => {
+  let db: Database.Database;
+
+  beforeEach(() => {
+    db = new Database(':memory:');
+    db.exec('PRAGMA foreign_keys = ON');
+    migration023.up(db);
+  });
+
+  afterEach(() => db.close());
+
+  it('returns multiple rows ordered newest-first', () => {
+    // Use CNSHA port (no seed rows) to avoid UNIQUE conflicts with migration023 NLRTM seed
+    db.prepare(
+      "INSERT INTO bunker_prices (port_unlocode, fuel_grade, price_usd_per_mt, price_date, source, fetched_at) VALUES ('CNSHA', 'VLSFO', 700, '2026-05-10', 'test', datetime('now'))"
+    ).run();
+    db.prepare(
+      "INSERT INTO bunker_prices (port_unlocode, fuel_grade, price_usd_per_mt, price_date, source, fetched_at) VALUES ('CNSHA', 'VLSFO', 690, '2026-05-09', 'test', datetime('now'))"
+    ).run();
+    const rows = getBunkerHistory(db, 'CNSHA', 'VLSFO', 30);
+    expect(rows.length).toBe(2);
+    expect(rows[0]!.price_date).toBe('2026-05-10');
+  });
+
+  it('respects days limit', () => {
+    // Use CNSHA port to avoid UNIQUE conflicts with migration023 NLRTM/MGO seed row
+    for (let i = 1; i <= 10; i++) {
+      db.prepare(
+        `INSERT INTO bunker_prices (port_unlocode, fuel_grade, price_usd_per_mt, price_date, source, fetched_at) VALUES ('CNSHA', 'MGO', ${1200 + i}, '2026-05-${String(i).padStart(2, '0')}', 'test', datetime('now'))`
+      ).run();
+    }
+    const rows = getBunkerHistory(db, 'CNSHA', 'MGO', 5);
+    expect(rows.length).toBe(5);
+  });
+
+  it('returns empty array for days=0', () => {
+    const rows = getBunkerHistory(db, 'NLRTM', 'VLSFO', 0);
+    expect(rows).toEqual([]);
+  });
+
+  it('throws on negative days', () => {
+    expect(() => getBunkerHistory(db, 'NLRTM', 'VLSFO', -1)).toThrow(RangeError);
+  });
+
+  it('excludes future-dated rows', () => {
+    db.prepare(
+      "INSERT INTO bunker_prices (port_unlocode, fuel_grade, price_usd_per_mt, price_date, source, fetched_at) VALUES ('NLRTM', 'VLSFO', 9999, '2099-01-01', 'future', datetime('now'))"
+    ).run();
+    const rows = getBunkerHistory(db, 'NLRTM', 'VLSFO', 30);
+    expect(rows.every((r) => r.price_date <= '2026-05-28')).toBe(true);
   });
 });
