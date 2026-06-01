@@ -9,6 +9,24 @@ import { FixturesSection } from '@/components/market/FixturesSection';
 import { KnowledgeFeed } from '@/components/market/KnowledgeFeed';
 import { useDemoNow } from '@/lib/clock-client';
 
+/**
+ * Derives an SVG polyline path string from an ordered value array (oldest → newest).
+ * Maps data onto the tile sparkline viewBox "0 0 56 18".
+ * Returns '' when fewer than 2 points are available.
+ */
+function computeSparklinePath(values: number[]): string {
+  if (values.length < 2) return '';
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = max - min || 1;
+  const points = values.map((v, i) => {
+    const x = +(2 + (i / (values.length - 1)) * 52).toFixed(1);
+    const y = +(17 - ((v - min) / range) * 16).toFixed(1);
+    return `${x} ${y}`;
+  });
+  return `M${points[0]} ${points.slice(1).map((p) => `L${p}`).join(' ')}`;
+}
+
 interface IndexData {
   index_date: string;
   value: number;
@@ -104,6 +122,7 @@ export default function MarketPage() {
   const [tmiData, setTmiData] = useState<IndexData[] | null>(null);
   const [drewryData, setDrewryData] = useState<IndexData[] | null>(null);
   const [bdiPeriod, setBdiPeriod] = useState<string | null>(null);
+  const [tileHistories, setTileHistories] = useState<Record<string, number[]>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeKpi, setActiveKpi] = useState<string | null>(null);
@@ -148,6 +167,22 @@ export default function MarketPage() {
           const bdi = await bdiRes.json();
           setBdiPeriod(typeof bdi.period === 'string' ? bdi.period : null);
         }
+
+        // Fetch sparkline history for all 7 KPI tiles (no flag gate for Baltic/bunker/EUA).
+        const tileKeys = ['bdi', 'bci', 'bsi', 'bhsi', 'vlsfo', 'mgo', 'eua'];
+        const historyResponses = await Promise.all(
+          tileKeys.map((key) => fetch(`/api/market/indices?name=${key}&days=30`))
+        );
+        const histories: Record<string, number[]> = {};
+        for (let i = 0; i < tileKeys.length; i++) {
+          const res = historyResponses[i];
+          if (res && res.ok) {
+            const rows = (await res.json()) as IndexData[];
+            // Rows come back newest-first; reverse for oldest→newest (left→right in sparkline).
+            histories[tileKeys[i]!] = rows.map((r) => r.value).reverse();
+          }
+        }
+        setTileHistories(histories);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load data');
       } finally {
@@ -253,7 +288,7 @@ export default function MarketPage() {
                 subLabel={tile.subLabel}
                 url={tile.url}
                 unit={tile.unit}
-                sparklinePath={tile.sparklinePath}
+                sparklinePath={computeSparklinePath(tileHistories[tile.key] ?? []) || tile.sparklinePath}
                 sparklineDir={tile.sparklineDir}
                 delta={tile.delta}
                 isActive={activeKpi === tile.key}
@@ -270,7 +305,7 @@ export default function MarketPage() {
                 subLabel={tile.subLabel}
                 url={tile.url}
                 unit={tile.unit}
-                sparklinePath={tile.sparklinePath}
+                sparklinePath={computeSparklinePath(tileHistories[tile.key] ?? []) || tile.sparklinePath}
                 sparklineDir={tile.sparklineDir}
                 delta={tile.delta}
                 isActive={activeKpi === tile.key}

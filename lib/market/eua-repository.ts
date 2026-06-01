@@ -19,6 +19,24 @@ export function getLatestEuaPrice(db: Database.Database, contractType = 'spot'):
   return row ?? null;
 }
 
+export function getEuaHistory(
+  db: Database.Database,
+  contractType = 'spot',
+  days: number,
+): EuaPriceRow[] {
+  if (!db) throw new RangeError('db required');
+  if (!Number.isFinite(days) || days < 0) throw new RangeError('days must be non-negative finite');
+  if (days === 0) return [];
+
+  return db.prepare<[string, number], EuaPriceRow>(`
+    SELECT price_date, price_eur_per_tco2, contract_type, source, fetched_at
+    FROM eua_prices
+    WHERE contract_type = ? AND price_date <= date('now')
+    ORDER BY price_date DESC
+    LIMIT ?
+  `).all(contractType, days);
+}
+
 export function upsertEuaPrice(db: Database.Database, row: EuaPriceRow): void {
   db.prepare(`
     INSERT INTO eua_prices (price_date, price_eur_per_tco2, contract_type, source, fetched_at)
