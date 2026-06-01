@@ -55,10 +55,10 @@ export function parseBunkerIndexHtml(html: string): BunkerIndexEntry[] {
     // Only process target ports
     if (!TARGET_PORTS.has(portName)) continue;
 
-    // Extract VLSFO price: data-grade="VLSFO">price<
-    const vlsfoMatch = rowHtml.match(/data-grade="VLSFO"[^>]*>([\d.]+)/);
-    // Extract MGO price: data-grade="MGO">price<
-    const mgoMatch = rowHtml.match(/data-grade="MGO"[^>]*>([\d.]+)/);
+    // Extract VLSFO price: data-grade="VLSFO">price< (allow optional whitespace)
+    const vlsfoMatch = rowHtml.match(/data-grade="VLSFO"[^>]*>\s*([\d.]+)/);
+    // Extract MGO price: data-grade="MGO">price< (allow optional whitespace)
+    const mgoMatch = rowHtml.match(/data-grade="MGO"[^>]*>\s*([\d.]+)/);
 
     const entry: BunkerIndexEntry = { portName, unlocode };
     if (vlsfoMatch) {
