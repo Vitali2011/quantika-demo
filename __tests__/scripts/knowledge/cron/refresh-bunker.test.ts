@@ -13,16 +13,21 @@ jest.mock('@/lib/knowledge/bunker/shipandbunker-adapter', () => ({
     constructor(msg: string) { super(msg); this.name = 'ShipAndBunkerParseError'; }
   },
 }));
+jest.mock('@/lib/knowledge/bunker/bunkerindex-adapter', () => ({
+  refreshBunkerIndex: jest.fn(),
+}));
 jest.mock('@/lib/session-store', () => ({
   getStore: jest.fn(),
 }));
 
 import { refreshUsdaBunker } from '@/lib/knowledge/bunker/usda-adapter';
 import { refreshShipAndBunker } from '@/lib/knowledge/bunker/shipandbunker-adapter';
+import { refreshBunkerIndex } from '@/lib/knowledge/bunker/bunkerindex-adapter';
 import { getStore } from '@/lib/session-store';
 
 const mockRefreshUsda = refreshUsdaBunker as jest.MockedFunction<typeof refreshUsdaBunker>;
 const mockRefreshSnb = refreshShipAndBunker as jest.MockedFunction<typeof refreshShipAndBunker>;
+const mockRefreshBi = refreshBunkerIndex as jest.MockedFunction<typeof refreshBunkerIndex>;
 const mockGetStore = getStore as jest.MockedFunction<typeof getStore>;
 
 function makeDb(): Database.Database {
@@ -31,7 +36,7 @@ function makeDb(): Database.Database {
   migration013.up(db);
   migration023.up(db);
 
-  for (const slug of ['bunker-usda', 'bunker-shipandbunker']) {
+  for (const slug of ['bunker-usda', 'bunker-shipandbunker', 'bunker-bunkerindex']) {
     registerSource(db, {
       slug,
       name: slug,
@@ -54,6 +59,8 @@ describe('refresh-bunker cron', () => {
     exitSpy = jest.spyOn(process, 'exit').mockImplementation((() => {}) as any);
     jest.clearAllMocks();
     mockGetStore.mockReturnValue({ getDb: () => db } as any);
+    // Default BI to succeed (non-disruptive to existing tests)
+    mockRefreshBi.mockResolvedValue({ rowsChanged: 6 });
   });
 
   afterEach(() => {
@@ -61,7 +68,7 @@ describe('refresh-bunker cron', () => {
     exitSpy.mockRestore();
   });
 
-  it('exits 0 when both sources succeed', async () => {
+  it('exits 0 when both USDA and SnB succeed', async () => {
     mockRefreshUsda.mockResolvedValue({ rowsChanged: 10, upstreamVersion: '2026-05-08' });
     mockRefreshSnb.mockResolvedValue({ rowsChanged: 5 });
 
@@ -91,9 +98,21 @@ describe('refresh-bunker cron', () => {
     expect(exitSpy).toHaveBeenCalledWith(0);
   });
 
-  it('exits 1 when both sources fail', async () => {
+  it('exits 0 when only BunkerIndex succeeds (USDA and SnB fail)', async () => {
     mockRefreshUsda.mockRejectedValue(new Error('USDA down'));
     mockRefreshSnb.mockRejectedValue(new Error('SnB down'));
+    mockRefreshBi.mockResolvedValue({ rowsChanged: 6 });
+
+    const { main } = await import('@/scripts/knowledge/cron/refresh-bunker');
+    await main();
+
+    expect(exitSpy).toHaveBeenCalledWith(0);
+  });
+
+  it('exits 1 when all three sources fail', async () => {
+    mockRefreshUsda.mockRejectedValue(new Error('USDA down'));
+    mockRefreshSnb.mockRejectedValue(new Error('SnB down'));
+    mockRefreshBi.mockRejectedValue(new Error('BI down'));
 
     const { main } = await import('@/scripts/knowledge/cron/refresh-bunker');
     await main();
@@ -101,9 +120,10 @@ describe('refresh-bunker cron', () => {
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
 
-  it('records sync_log entries for both slugs independently', async () => {
+  it('records sync_log entries for all three slugs independently', async () => {
     mockRefreshUsda.mockResolvedValue({ rowsChanged: 10, upstreamVersion: '2026-05-08' });
     mockRefreshSnb.mockRejectedValue(new Error('SnB error'));
+    mockRefreshBi.mockResolvedValue({ rowsChanged: 6 });
 
     const { main } = await import('@/scripts/knowledge/cron/refresh-bunker');
     await main();
@@ -114,8 +134,12 @@ describe('refresh-bunker cron', () => {
     const snbLog = db.prepare(
       "SELECT * FROM knowledge_sync_log WHERE source_slug='bunker-shipandbunker' ORDER BY id DESC LIMIT 1"
     ).get() as any;
+    const biLog = db.prepare(
+      "SELECT * FROM knowledge_sync_log WHERE source_slug='bunker-bunkerindex' ORDER BY id DESC LIMIT 1"
+    ).get() as any;
 
     expect(usdaLog.status).toBe('success');
     expect(snbLog.status).toBe('failure');
+    expect(biLog.status).toBe('success');
   });
 });

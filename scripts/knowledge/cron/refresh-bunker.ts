@@ -2,10 +2,10 @@
 /**
  * Daily bunker price refresh cron script (BP-01)
  *
- * Orchestrates USDA (primary) + Ship&Bunker (fallback/cross-check) refresh.
+ * Orchestrates USDA (primary) + Ship&Bunker (fallback/cross-check) + BunkerIndex (VLSFO+MGO, NLRTM/SGSIN/AEFJR).
  * Each source is tracked independently in knowledge_sync_log.
  *
- * Exit code 0 if at least one source succeeded; exit 1 if both failed.
+ * Exit code 0 if at least one source succeeded; exit 1 if all failed.
  *
  * Usage:
  *   npx tsx scripts/knowledge/cron/refresh-bunker.ts
@@ -19,6 +19,7 @@ import {
 } from '@/lib/knowledge/governance';
 import { refreshUsdaBunker } from '@/lib/knowledge/bunker/usda-adapter';
 import { refreshShipAndBunker } from '@/lib/knowledge/bunker/shipandbunker-adapter';
+import { refreshBunkerIndex } from '@/lib/knowledge/bunker/bunkerindex-adapter';
 import type Database from 'better-sqlite3';
 
 async function runOne(
@@ -44,8 +45,9 @@ export async function main(): Promise<void> {
 
   const okUsda = await runOne(db, 'bunker-usda', refreshUsdaBunker);
   const okSnB = await runOne(db, 'bunker-shipandbunker', refreshShipAndBunker);
+  const okBi = await runOne(db, 'bunker-bunkerindex', refreshBunkerIndex);
 
-  process.exit(okUsda || okSnB ? 0 : 1);
+  process.exit(okUsda || okSnB || okBi ? 0 : 1);
 }
 
 if (require.main === module) {
