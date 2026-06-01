@@ -9,7 +9,16 @@ import type { ConfidenceField } from '@/lib/types';
 export function fmtOpenDate(field: ConfidenceField<string> | null | undefined): string | null {
   if (!field) return null;
   const val: unknown = field.value;
-  if (typeof val === 'string') return val || null;
+  if (typeof val === 'string') {
+    if (!val) return null;
+    if (val.includes('T')) {
+      const d = new Date(val);
+      if (!isNaN(d.getTime())) {
+        return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+      }
+    }
+    return val;
+  }
   if (typeof val === 'object' && val !== null) {
     const obj = val as { display?: string | null; open?: string | null };
     return obj.display ?? obj.open ?? null;

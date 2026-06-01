@@ -595,7 +595,7 @@ export default function CargoClient({ rows, total }: Props) {
                     <td className="px-3.5 py-3.5 text-[13.5px] text-[#0f172a] break-words">
                       {row.destinationPort ?? <span className="text-[#94a3b8]">—</span>}
                     </td>
-                    <td className="px-3.5 py-3.5 font-mono text-[12.5px] text-[#0f172a] whitespace-nowrap">
+                    <td className="px-3.5 py-3.5 font-mono text-[12.5px] text-[#0f172a]">
                       {row.laycan ?? <span className="text-[#94a3b8]">—</span>}
                     </td>
                     <td className="px-3.5 py-3.5">
