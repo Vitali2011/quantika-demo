@@ -14,6 +14,7 @@ import * as path from 'path';
 const ROOT = process.cwd();
 const pagePath = path.join(ROOT, 'app/matches/page.tsx');
 const clientPath = path.join(ROOT, 'app/matches/MatchesClient.tsx');
+const clockPath = path.join(ROOT, 'lib/clock-client.tsx');
 
 function readSource(p: string): string {
   return fs.readFileSync(p, 'utf8');
@@ -76,14 +77,16 @@ describe('app/matches/MatchesClient.tsx — AUTO-REFRESH UTC indicator (#490)', 
   });
 
   it('uses setInterval to update time every 60s', () => {
-    const src = readSource(clientPath);
-    expect(src).toMatch(/setInterval.*60000|60000.*setInterval/);
+    // setInterval now lives in useDemoNow() (lib/clock-client.tsx); verify there
+    const src = readSource(clockPath);
+    expect(src).toMatch(/setInterval.*60_?000|60_?000.*setInterval/);
   });
 
   it('uses SSR-safe empty initial state (no server/client mismatch)', () => {
     const src = readSource(clientPath);
-    // Empty string initial state prevents hydration mismatch
-    expect(src).toMatch(/useState.*""\s*\)|useState\(""\)/);
+    // clientNow === 0 is the pre-mount sentinel: SSR and first client paint produce
+    // identical HTML (no React #418 hydration mismatch). Guard must not be removed.
+    expect(src).toMatch(/clientNow\s*===\s*0/);
   });
 
   it('renders indicator conditionally only when time is set (no flash on SSR)', () => {

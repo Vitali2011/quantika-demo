@@ -10,6 +10,7 @@ import {
 } from '@/lib/types';
 import { UNANSWERED_THRESHOLD_HOURS } from '@/lib/constants';
 import { calculateExpiry, isStale } from '@/lib/freshness';
+import { demoNow } from '@/lib/clock';
 
 export interface AiClassification {
   id?: string;
@@ -47,7 +48,7 @@ export function detectReplyStatus(
   );
   const isUnanswered = isIncoming && !hasReply;
   const daysWithoutReply = isUnanswered
-    ? Math.floor((Date.now() - emailDate) / (1000 * 60 * 60 * 24))
+    ? Math.floor((demoNow() - emailDate) / (1000 * 60 * 60 * 24))
     : null;
 
   return { isIncoming, hasReply, isUnanswered, daysWithoutReply };
