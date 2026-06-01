@@ -81,6 +81,19 @@ function shiftedCargo(c: ParsedCargo, offsetDays: number): ParsedCargo {
   };
 }
 
+/**
+ * Realistic default speed/consumption for demo vessels missing these fields.
+ * handysize ~12.5 kts / 22 mt·day⁻¹, supramax ~13 / 26, panamax ~13.5 / 30, capesize ~14.5 / 38.
+ * Returns null when DWT is unknown (vessel stays incomplete → Compare button shows missing-hint).
+ */
+function defaultSpeedConsumption(dwt: number | null): { speedLaden: string; consumption: string } | null {
+  if (!dwt || dwt <= 0) return null;
+  if (dwt < 40_000) return { speedLaden: '12.5 kts', consumption: '22 mt/day' };
+  if (dwt < 65_000) return { speedLaden: '13 kts', consumption: '26 mt/day' };
+  if (dwt < 100_000) return { speedLaden: '13.5 kts', consumption: '30 mt/day' };
+  return { speedLaden: '14.5 kts', consumption: '38 mt/day' };
+}
+
 // Shift the dates inside an LLM-parsed ParsedVessel: only openDate.value
 // (ISO yyyy-mm-dd) is shifted.
 function shiftedVessel(v: ParsedVessel, offsetDays: number): ParsedVessel {
@@ -554,7 +567,20 @@ export async function build(opts: BuildOptions): Promise<void> {
                 openDateIso = d.toISOString();
               }
             }
-            return { ...shifted, openDate: openDateIso };
+            const base = { ...shifted, openDate: openDateIso };
+            // Seed speed/consumption defaults for demo vessels that lack them
+            if (!base.speedLaden || !base.consumption) {
+              const dwt = cfValue(base.dwtSummer) ?? cfValue(base.dwcc) ?? null;
+              const defaults = defaultSpeedConsumption(typeof dwt === 'number' ? dwt : null);
+              if (defaults) {
+                return {
+                  ...base,
+                  speedLaden: base.speedLaden || defaults.speedLaden,
+                  consumption: base.consumption || defaults.consumption,
+                };
+              }
+            }
+            return base;
           });
         if (vessels.length > 0) {
           insertParsed.run(
