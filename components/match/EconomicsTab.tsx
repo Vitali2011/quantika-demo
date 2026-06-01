@@ -5,6 +5,7 @@ import type { ParsedVessel, ParsedCargo } from '@/lib/types';
 import { RouteCompareModal } from '@/components/economics/RouteCompareModal';
 import { calculateFuelEu } from '@/lib/economics/fueleu';
 import { estimateVoyageDays } from '@/lib/economics/voyage-days';
+import { estimateVesselValueUsd } from '@/lib/economics/vessel-value';
 import { freightBadge, FREIGHT_BADGE_CLASSES } from '@/lib/matching/freight-badge';
 import type { WarRiskBreakdown } from '@/lib/economics/war-risk';
 
@@ -167,19 +168,28 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
       consumption > 0 &&
       quantityMt > 0;
 
+    const missing: string[] = [];
+    if (!origin) missing.push('load port');
+    if (!destination) missing.push('discharge port');
+    if (!dwt) missing.push('DWT');
+    if (!speedKts) missing.push('vessel speed');
+    if (!consumption) missing.push('fuel consumption');
+    if (!quantityMt) missing.push('cargo quantity');
+
     return {
       ready,
+      missing,
       origin,
       destination,
       vessel: {
         dwt,
-        valueUsd: 22_000_000,
+        valueUsd: estimateVesselValueUsd(dwt),
         speedKts,
         consumptionMtPerDay: consumption,
       },
-      cargo: { quantityMt, freightRateUsdPerMt: 28 },
+      cargo: { quantityMt, freightRateUsdPerMt: currentRate ?? storedFreightRate ?? 28 },
     };
-  }, [cargo, vessel]);
+  }, [cargo, vessel, currentRate, storedFreightRate]);
 
   const marketRates = useMemo(() => {
     const manual = bunkerPriceUsdPerMt !== '' ? Number(bunkerPriceUsdPerMt) : undefined;
@@ -486,6 +496,11 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
         >
           Compare Suez vs Cape
         </button>
+        {!compareInputs.ready && compareInputs.missing.length > 0 && (
+          <p data-testid="compare-missing-hint" className="mt-1 text-xs text-gray-500">
+            Missing: {compareInputs.missing.join(', ')}
+          </p>
+        )}
       </div>
 
       {/* JWC war-risk breakdown */}
