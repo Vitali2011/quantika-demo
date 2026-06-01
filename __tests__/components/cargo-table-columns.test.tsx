@@ -65,4 +65,19 @@ describe('/cargo table column layout (#606 R2)', () => {
     // must have overflow control — either truncate, overflow-hidden, or max-w-[220px]
     expect(cargotd!.className).toMatch(/truncate|overflow-hidden|max-w-\[220px\]/);
   });
+
+  it('TDD-4: QTY td has min-w so range quantities like "45,000–60,000" do not overflow into LOAD (#734)', () => {
+    const rangeRow: CargoRow = {
+      ...makeRow(0),
+      quantity: '45,000–60,000 mt',
+    };
+    render(<CargoClient rows={[rangeRow]} total={1} />);
+    const firstBodyRow = document.querySelector('tbody tr');
+    expect(firstBodyRow).toBeTruthy();
+    // QTY is the 2nd td (index 1)
+    const qtytd = firstBodyRow!.querySelectorAll('td')[1];
+    expect(qtytd).toBeTruthy();
+    // must have a min-w class to prevent range values from overlapping LOAD column
+    expect(qtytd!.className).toMatch(/min-w-\[/);
+  });
 });

@@ -586,7 +586,7 @@ export default function CargoClient({ rows, total }: Props) {
                         </div>
                       </div>
                     </td>
-                    <td className="px-3.5 py-3.5 text-right font-mono text-[13.5px] text-[#0f172a] tabular-nums whitespace-nowrap">
+                    <td className="px-3.5 py-3.5 text-right font-mono text-[13.5px] text-[#0f172a] tabular-nums whitespace-nowrap min-w-[8rem]">
                       {row.quantity ?? <span className="text-[#94a3b8]">—</span>}
                     </td>
                     <td className="px-3.5 py-3.5 text-[13.5px] text-[#0f172a] break-words">
