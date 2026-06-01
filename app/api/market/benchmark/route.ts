@@ -5,6 +5,8 @@ import { getLatestIndex } from '@/lib/market/market-indices-repository';
 import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
 import { getLatestEuaPrice } from '@/lib/market/eua-repository';
 import { getStore } from '@/lib/session-store';
+import { today } from '@/lib/clock';
+import { isDemoMode } from '@/lib/demo-mode';
 
 const VALID_INDICATORS: ReadonlySet<string> = new Set<MarketIndicator>([
   'TOEPFER_TMI',
@@ -84,7 +86,7 @@ export async function GET(request: Request): Promise<NextResponse> {
         indicator: typedIndicator,
         value: row.price_eur_per_tco2,
         unit: 'EUR/tCO₂',
-        period: row.price_date,
+        period: isDemoMode() ? today() : row.price_date,
         sourceUrl: row.source,
         fetchedAt: new Date().toISOString(),
         stale: ageMs > STALE_THRESHOLD_MS,

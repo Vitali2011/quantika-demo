@@ -1,3 +1,5 @@
+import { now } from '@/lib/clock';
+
 interface MorningHeaderProps {
   userName?: string;
   alertCount: number;
@@ -15,7 +17,7 @@ const dateFormatter = new Intl.DateTimeFormat('en-GB', {
 });
 
 export function MorningHeader({ userName, alertCount }: MorningHeaderProps) {
-  const today = dateFormatter.format(new Date());
+  const today = dateFormatter.format(now());
   const greeting = userName ? `Good morning, ${userName} 👋` : 'Good morning! 👋';
 
   return (
