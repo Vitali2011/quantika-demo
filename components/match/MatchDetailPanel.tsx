@@ -11,11 +11,16 @@ export interface MatchDetailPanelProps {
   matchDbId: number;
   score: number;
   status: string;
-  loadPort: string | null;
-  dischargePort: string | null;
-  cargoType: string | null;
-  vesselDwt: number | null;
-  laycanDisplay: string | null;
+  /** @deprecated no longer rendered — kept for test fixture compatibility */
+  loadPort?: string | null;
+  /** @deprecated no longer rendered — kept for test fixture compatibility */
+  dischargePort?: string | null;
+  /** @deprecated no longer rendered — kept for test fixture compatibility */
+  cargoType?: string | null;
+  /** @deprecated no longer rendered — kept for test fixture compatibility */
+  vesselDwt?: number | null;
+  /** @deprecated no longer rendered — kept for test fixture compatibility */
+  laycanDisplay?: string | null;
   cargoEmailId?: string;
   hasSessionMatch: boolean;
   fitPercent?: number | null;
@@ -24,13 +29,7 @@ export interface MatchDetailPanelProps {
 
 function PanelContent({
   matchDbId,
-  score,
   status,
-  loadPort,
-  dischargePort,
-  cargoType,
-  vesselDwt,
-  laycanDisplay,
   cargoEmailId,
   hasSessionMatch,
   fitPercent,
@@ -57,18 +56,22 @@ function PanelContent({
     }
   }
 
-  const keyFacts = [
-    loadPort && { label: 'Load Port', value: loadPort },
-    dischargePort && { label: 'Discharge Port', value: dischargePort },
-    cargoType && { label: 'Cargo', value: cargoType },
-    vesselDwt && { label: 'Vessel DWT', value: `${vesselDwt.toLocaleString('en-US')} MT` },
-    laycanDisplay && { label: 'Laycan', value: laycanDisplay },
-    { label: 'Status', value: status },
-  ].filter(Boolean) as { label: string; value: string }[];
+  const watchItem: string | null = (() => {
+    if (!fitBreakdown || fitPercent == null) return null;
+    try {
+      const fb = JSON.parse(fitBreakdown);
+      const comps: Array<{ label: string; weight: number; score: number; rationale: string }> =
+        fb.components ?? [];
+      const worst = comps
+        .filter(c => c.weight > 0 && c.rationale)
+        .sort((a, b) => (a.score / a.weight) - (b.score / b.weight))[0];
+      return worst?.rationale ?? null;
+    } catch { return null; }
+  })();
 
   return (
     <div className="space-y-3" data-testid="match-detail-panel">
-      {/* AI Summary */}
+      {/* AI Summary — one real watch-item insight from fit breakdown */}
       <Card size="sm">
         <CardHeader>
           <CardTitle className="text-xs uppercase tracking-wide text-ds-text-muted">
@@ -78,7 +81,7 @@ function PanelContent({
         <CardContent>
           <p className="text-xs text-ds-text-muted leading-relaxed">
             {fitPercent != null
-              ? `Fit ${Math.round(fitPercent)}% — взвешено по факторам ниже (сумма весов = 100).`
+              ? `Fit ${Math.round(fitPercent)}%${watchItem ? ` — Watch: ${watchItem}` : ''}`
               : !hasSessionMatch
                 ? 'Session enrichment unavailable. Reload to refresh match data.'
                 : null}
@@ -126,27 +129,6 @@ function PanelContent({
           )}
         </CardContent>
       </Card>
-
-      {/* Key Facts */}
-      {keyFacts.length > 0 && (
-        <Card size="sm">
-          <CardHeader>
-            <CardTitle className="text-xs uppercase tracking-wide text-ds-text-muted">
-              Key Facts
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <dl className="space-y-1.5">
-              {keyFacts.map(({ label, value }) => (
-                <div key={label} className="flex justify-between gap-2 text-xs">
-                  <dt className="text-ds-text-muted shrink-0">{label}</dt>
-                  <dd className="font-medium text-ds-text text-right truncate">{value}</dd>
-                </div>
-              ))}
-            </dl>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Fit Breakdown */}
       {fitPercent != null && (() => {
