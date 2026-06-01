@@ -10,6 +10,7 @@
  */
 
 import { demoNow } from '@/lib/clock';
+import { _resetDemoFrozenDateCache } from '@/lib/demo-mode';
 
 const FROZEN_DATE = '2026-05-28';
 const FROZEN_NOON_MS = new Date('2026-05-28T12:00:00.000Z').getTime();
@@ -32,6 +33,14 @@ function withEnv(vars: Record<string, string | undefined>, fn: () => void): void
 }
 
 describe('demoNow() — behavioral', () => {
+  beforeEach(() => {
+    _resetDemoFrozenDateCache();
+  });
+
+  afterEach(() => {
+    _resetDemoFrozenDateCache();
+  });
+
   it('non-demo mode: returns real timestamp (not frozen)', () => {
     withEnv({ DEMO_MODE: 'false', DEMO_CLOCK: undefined }, () => {
       const before = Date.now();
@@ -78,17 +87,23 @@ describe('demoNow() — behavioral', () => {
 });
 
 describe('demoNow() — deny-list guard (session/trial NOT frozen)', () => {
+  beforeEach(() => {
+    _resetDemoFrozenDateCache();
+  });
+
+  afterEach(() => {
+    _resetDemoFrozenDateCache();
+  });
+
   it('clock.ts does not export session-store utilities', () => {
     // If session-store is imported from clock.ts, these would be defined.
     // This ensures we never accidentally freeze session expiry.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const clockModule = require('@/lib/clock');
     expect(clockModule.getSessionExpiry).toBeUndefined();
     expect(clockModule.cleanupExpiredSessions).toBeUndefined();
   });
 
   it('clock.ts does not export trial utilities', () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const clockModule = require('@/lib/clock');
     expect(clockModule.getTrialState).toBeUndefined();
     expect(clockModule.isExpired).toBeUndefined();
