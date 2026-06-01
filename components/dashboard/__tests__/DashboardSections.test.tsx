@@ -67,6 +67,49 @@ describe('DashboardTodoSection', () => {
     // Badge renders with count
     expect(text).toContain('2');
   });
+
+  it('renders only first 5 cards when more than 5 provided', () => {
+    const manyCards = Array.from({ length: 8 }, (_, i) => ({
+      priority: 'ok' as const,
+      matchSummary: `Summary ${i}`,
+      keyInsight: `Insight ${i}`,
+      href: `/match/${i}`,
+    }));
+    const el = DashboardTodoSection({ cards: manyCards });
+    const text = JSON.stringify(el);
+    expect(text).toContain('Summary 0');
+    expect(text).toContain('Summary 1');
+    expect(text).toContain('Summary 2');
+    expect(text).toContain('Summary 3');
+    expect(text).toContain('Summary 4');
+    expect(text).not.toContain('Summary 5');
+  });
+
+  it('shows See all link and full badge count when cards exceed limit', () => {
+    const manyCards = Array.from({ length: 8 }, (_, i) => ({
+      priority: 'ok' as const,
+      matchSummary: `Summary ${i}`,
+      keyInsight: `Insight ${i}`,
+      href: `/match/${i}`,
+    }));
+    const el = DashboardTodoSection({ cards: manyCards });
+    const text = JSON.stringify(el);
+    expect(text).toContain('See all');
+    expect(text).toContain('/matches');
+    expect(text).toContain('8');
+  });
+
+  it('does not show See all link when cards are 5 or fewer', () => {
+    const fewCards = Array.from({ length: 5 }, (_, i) => ({
+      priority: 'ok' as const,
+      matchSummary: `Summary ${i}`,
+      keyInsight: `Insight ${i}`,
+      href: `/match/${i}`,
+    }));
+    const el = DashboardTodoSection({ cards: fewCards });
+    const text = JSON.stringify(el);
+    expect(text).not.toContain('See all');
+  });
 });
 
 describe('DashboardFreshMatches', () => {

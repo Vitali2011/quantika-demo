@@ -38,6 +38,7 @@ function PanelContent({
 }: MatchDetailPanelProps) {
   const [declining, setDeclining] = useState(false);
   const [declineError, setDeclineError] = useState<string | null>(null);
+  const [showCalc, setShowCalc] = useState(false);
 
   async function handleDecline() {
     if (!confirm('Mark this match as dismissed?')) return;
@@ -76,9 +77,11 @@ function PanelContent({
         </CardHeader>
         <CardContent>
           <p className="text-xs text-ds-text-muted leading-relaxed">
-            {hasSessionMatch
-              ? `Score ${score} reflects cargo/vessel compatibility — DWT, route alignment, and laycan window.`
-              : 'Session enrichment unavailable. Reload to refresh match data.'}
+            {fitPercent != null
+              ? `Fit ${Math.round(fitPercent)}% — взвешено по факторам ниже (сумма весов = 100).`
+              : !hasSessionMatch
+                ? 'Session enrichment unavailable. Reload to refresh match data.'
+                : null}
           </p>
         </CardContent>
       </Card>
@@ -183,6 +186,54 @@ function PanelContent({
                     </div>
                   ))}
                 </div>
+                <button
+                  type="button"
+                  className="mt-2 text-xs text-ds-text-muted underline underline-offset-2"
+                  aria-expanded={showCalc}
+                  onClick={() => setShowCalc(v => !v)}
+                >
+                  {showCalc ? 'Скрыть расчёт' : 'Показать расчёт'}
+                </button>
+                {showCalc && (() => {
+                  const rawSum = Math.round(components.reduce((s, c) => s + c.score, 0) * 10) / 10;
+                  const totalWeight: number = fbData?.totalWeight ?? 100;
+                  const sanctionsPenalty: number = fbData?.sanctionsPenalty ?? 0;
+                  const appliedCap: { reason: string; ceiling: number } | null = fbData?.appliedCap ?? null;
+                  return (
+                    <div className="mt-3 border-t border-ds-border pt-2 space-y-1">
+                      {components.map((c, i) => (
+                        <div key={i} className="flex justify-between text-[11px] text-ds-text-muted gap-2">
+                          <span>{c.label}</span>
+                          <span className="font-mono shrink-0">
+                            {c.score} / {c.weight} ({Math.round(c.score / c.weight * 100)}%)
+                          </span>
+                        </div>
+                      ))}
+                      <div className="border-t border-ds-border-subtle pt-1 mt-1 space-y-0.5">
+                        <div className="flex justify-between text-[11px]">
+                          <span className="text-ds-text-muted">Сумма факторов:</span>
+                          <span className="font-mono">{rawSum} / {totalWeight}</span>
+                        </div>
+                        {sanctionsPenalty > 0 && (
+                          <div className="flex justify-between text-[11px] text-red-500">
+                            <span>Штраф за санкции:</span>
+                            <span className="font-mono">−{sanctionsPenalty}</span>
+                          </div>
+                        )}
+                        {appliedCap && (
+                          <div className="flex justify-between text-[11px] text-amber-600">
+                            <span>Применён потолок: {appliedCap.reason}</span>
+                            <span className="font-mono">→ {appliedCap.ceiling}</span>
+                          </div>
+                        )}
+                        <div className="flex justify-between text-[11px] font-semibold text-ds-text">
+                          <span>Итог (Fit):</span>
+                          <span className="font-mono">{Math.round(fitPercent!)}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
               </CardContent>
             )}
           </Card>
