@@ -193,10 +193,14 @@ describe('MarketPage — index charts show numeric values when flag enabled', ()
       expect(screen.getByText('Market Benchmarks')).toBeInTheDocument();
     });
 
-    // All three index chart headings must appear
-    expect(screen.getByRole('heading', { name: /bhsi/i })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /tmi/i })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /drewry-bb/i })).toBeInTheDocument();
+    // All three index chart headings must appear.
+    // Use findByRole (async) so the assertion waits for the charts to render
+    // past the "Loading…" state — the "Market Benchmarks" heading above is
+    // present in BOTH the loading and loaded states, so waitFor on it can
+    // resolve before the index charts mount, making getByRole flaky.
+    expect(await screen.findByRole('heading', { name: /bhsi/i })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: /tmi/i })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: /drewry-bb/i })).toBeInTheDocument();
 
     // Numeric values from mock data must be visible (Current row shows validData[0])
     const currentLabels = screen.getAllByText(/current:/i);
