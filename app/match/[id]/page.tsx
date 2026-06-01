@@ -120,17 +120,38 @@ export default async function MatchDetailPage({ params }: Props) {
           </Link>
 
           <div className="flex items-center gap-4 sm:gap-6">
-            {/* Amber score pill */}
-            <div
-              className="flex-shrink-0 flex flex-col items-center justify-center rounded-full bg-ds-accent-soft text-ds-accent-soft-fg w-20 h-20 sm:w-24 sm:h-24"
-              data-testid="score-pill"
-              aria-label={`Match score: ${storedMatch.score}`}
-            >
-              <span className="font-mono text-3xl sm:text-4xl font-semibold leading-none">
-                {storedMatch.score}
-              </span>
-              <span className="text-xs font-medium opacity-60 mt-0.5">score</span>
-            </div>
+            {/* Score / Fit pill */}
+            {storedMatch.fit_percent != null ? (() => {
+              const fitPct = Math.round(storedMatch.fit_percent!);
+              const fitColor = fitPct >= 85
+                ? 'bg-emerald-100 text-emerald-800'
+                : fitPct >= 60
+                  ? 'bg-amber-100 text-amber-800'
+                  : 'bg-slate-100 text-slate-600';
+              return (
+                <div
+                  className={`flex-shrink-0 flex flex-col items-center justify-center rounded-full w-20 h-20 sm:w-24 sm:h-24 ${fitColor}`}
+                  data-testid="score-pill"
+                  aria-label={`Fit score: ${fitPct}%`}
+                >
+                  <span className="font-mono text-3xl sm:text-4xl font-semibold leading-none">
+                    {fitPct}%
+                  </span>
+                  <span className="text-xs font-medium opacity-60 mt-0.5">fit</span>
+                </div>
+              );
+            })() : (
+              <div
+                className="flex-shrink-0 flex flex-col items-center justify-center rounded-full bg-ds-accent-soft text-ds-accent-soft-fg w-20 h-20 sm:w-24 sm:h-24"
+                data-testid="score-pill"
+                aria-label={`Match score: ${storedMatch.score}`}
+              >
+                <span className="font-mono text-3xl sm:text-4xl font-semibold leading-none">
+                  {storedMatch.score}
+                </span>
+                <span className="text-xs font-medium opacity-60 mt-0.5">score</span>
+              </div>
+            )}
 
             {/* Headline + meta */}
             <div className="min-w-0 flex-1">
@@ -187,9 +208,9 @@ export default async function MatchDetailPage({ params }: Props) {
                     <dd className="font-medium text-ds-text capitalize">{storedMatch.status}</dd>
                   </div>
                   <div className="flex justify-between gap-2">
-                    <dt className="text-ds-text-muted">Score</dt>
+                    <dt className="text-ds-text-muted">{storedMatch.fit_percent != null ? 'Fit' : 'Score'}</dt>
                     <dd className="font-mono font-semibold text-ds-accent-soft-fg">
-                      {storedMatch.score}
+                      {storedMatch.fit_percent != null ? `${Math.round(storedMatch.fit_percent)}%` : storedMatch.score}
                     </dd>
                   </div>
                 </dl>

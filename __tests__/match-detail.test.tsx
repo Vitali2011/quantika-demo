@@ -135,6 +135,49 @@ describe('app/match/[id]/page.tsx — navigation', () => {
   });
 });
 
+describe('app/match/[id]/page.tsx — FIT% hero circle (#fit-primary)', () => {
+  it('data-testid="score-pill" is always present', () => {
+    const src = readSource(pagePath);
+    expect(src).toMatch(/data-testid="score-pill"/);
+  });
+
+  it('hero reads fit_percent from storedMatch', () => {
+    const src = readSource(pagePath);
+    expect(src).toMatch(/fit_percent/);
+  });
+
+  it('hero shows "fit" label when fit_percent is set (not "score")', () => {
+    const src = readSource(pagePath);
+    // The "fit" label must appear inside the score-pill block conditionally
+    // Pattern: fit_percent != null branch contains jsx text >fit<
+    expect(src).toMatch(/fit_percent.*!=.*null[\s\S]{0,1000}>fit</);
+  });
+
+  it('hero uses Math.round(fit_percent) when fit_percent != null', () => {
+    const src = readSource(pagePath);
+    expect(src).toMatch(/Math\.round.*fit_percent|fit_percent.*Math\.round/);
+  });
+
+  it('hero falls back to storedMatch.score + "score" when fit_percent is null', () => {
+    const src = readSource(pagePath);
+    // null branch still has "score" JSX text label
+    expect(src).toMatch(/>score</);
+  });
+});
+
+describe('app/match/[id]/page.tsx — Vessel card FIT% (#fit-primary)', () => {
+  it('vessel card shows "Fit" label when fit_percent is set', () => {
+    const src = readSource(pagePath);
+    expect(src).toMatch(/"Fit"|'Fit'/);
+  });
+
+  it('vessel card shows fit_percent value with % suffix when fit_percent is set', () => {
+    const src = readSource(pagePath);
+    // Pattern: fit_percent in vessel card with % in the template
+    expect(src).toMatch(/fit_percent[\s\S]{0,200}%/);
+  });
+});
+
 describe('app/api/matches/[id]/route.ts — GET handler', () => {
   it('exports GET function', () => {
     const src = readSource(routePath);
