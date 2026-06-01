@@ -264,7 +264,7 @@ export function parseVesselAIResponse(raw: string, emailId: string, subject?: st
       openPosition: toConfidence<string>(item.open_position),
       openDate: toConfidence<string>(item.open_date),
       direction: extractStr(item.direction),
-      restrictions: Array.isArray(item.restrictions) ? item.restrictions : [],
+      restrictions: Array.isArray(item.restrictions) ? item.restrictions.filter((x) => typeof x === 'string') : [],
       lastCargoes: (() => {
         let lc = item.last_cargoes;
         if (!lc) return null;

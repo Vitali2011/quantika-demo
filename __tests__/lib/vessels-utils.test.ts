@@ -48,4 +48,20 @@ describe('fmtOpenDate', () => {
     };
     expect(fmtOpenDate(field)).toBe('spot');
   });
+
+  it('formats ISO datetime string to day-month-year without time', () => {
+    expect(fmtOpenDate({ value: '2026-05-31T00:00:00.000Z', confidence: 'confirmed' })).toBe('31 May 2026');
+  });
+
+  it('formats ISO datetime with non-midnight time correctly', () => {
+    expect(fmtOpenDate({ value: '2026-01-15T12:30:00.000Z', confidence: 'confirmed' })).toBe('15 Jan 2026');
+  });
+
+  it('leaves date-only ISO string unchanged (no time component)', () => {
+    expect(fmtOpenDate({ value: '2026-05-22', confidence: 'confirmed' })).toBe('2026-05-22');
+  });
+
+  it('passes through non-date string gracefully', () => {
+    expect(fmtOpenDate({ value: 'not-a-date-xyz', confidence: 'confirmed' })).toBe('not-a-date-xyz');
+  });
 });
