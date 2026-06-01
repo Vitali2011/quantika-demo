@@ -117,15 +117,40 @@ async function main() {
   const cargoMap = new Map(cargos.map((c) => [`${c.emailId}|${c.itemIndex}`, c]));
   const vesselMap = new Map(vessels.map((v) => [`${v.emailId}|${v.itemIndex}`, v]));
 
-  function dedup(matches: Match[]): Match[] {
+  // Dedup by CONTENT identity, not email id: the demo corpus re-circulates the
+  // same vessel/cargo across several emails (different gmail-id, same content),
+  // which produced visually identical matches. Key = vessel name + cargo
+  // description + load port + laycan start. Discharge port is deliberately
+  // EXCLUDED — its free-text wording varies ("Greece (port unspecified)" vs
+  // "Greece port (unspecified)") and would split true dupes. Laycan start IS in
+  // the key, so genuinely different parcels (same cargo, different dates) stay.
+  function contentKey(m: Match): string {
+    const v = vesselMap.get(`${m.vesselEmailId}|${m.vesselItemIndex}`);
+    const c = cargoMap.get(`${m.cargoEmailId}|${m.cargoItemIndex}`);
+    const vn = (v ? cfValue(v.vesselName) : null) ?? m.vesselEmailId;
+    const desc = (c ? cfValue(c.cargoDescription) : null) ?? m.cargoEmailId;
+    const op = (c ? cfValue(c.originPort) : null) ?? '';
+    const lay = c ? parseLaycan(c.laycan, refYear) : null;
+    const ls = lay ? lay.start.getTime() : 0;
+    return `${vn}|${desc}|${op}|${ls}`;
+  }
+  function bestBy(matches: Match[], keyFn: (m: Match) => string): Match[] {
     const best = new Map<string, Match>();
     for (const m of matches) {
-      const key = `${m.cargoEmailId}|${m.vesselEmailId}`;
+      const key = keyFn(m);
       const prev = best.get(key);
       const f = m.fitPercent ?? -1, pf = prev?.fitPercent ?? -1;
       if (!prev || f > pf || (f === pf && m.score > prev.score)) best.set(key, m);
     }
     return [...best.values()];
+  }
+  // Pass 1: one match per (cargo email, vessel email) — REQUIRED by the unique
+  // index (cargo_id, vessel_id, user_id); picks the best item combo per pair.
+  // Pass 2: collapse cross-email content dupes (re-circulated vessel/cargo).
+  // Order matters: after pass 1 every survivor has a distinct email pair, so
+  // pass 2 never leaves two rows sharing (cargo_id, vessel_id) → no INSERT clash.
+  function dedup(matches: Match[]): Match[] {
+    return bestBy(bestBy(matches, (m) => `${m.cargoEmailId}|${m.vesselEmailId}`), contentKey);
   }
 
   // Broker-facing one-line note: tier headline + the weakest 1-2 factors, so the
