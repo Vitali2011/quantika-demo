@@ -17,6 +17,7 @@ const CII_D_E_PATTERN = /\bCII\s+rating\s+([DE])\b/i;
 /** Extracts CII rating D or E from vessel restrictions array. Returns null if none found. */
 function parseCiiDorE(restrictions: string[]): CiiRating | null {
   for (const r of restrictions) {
+    if (typeof r !== 'string') continue;
     const m = r.match(CII_D_E_PATTERN);
     if (m) return m[1].toUpperCase() as 'D' | 'E';
   }
@@ -54,7 +55,7 @@ function RejectedDetails({ vessel }: { vessel: ParsedVessel }) {
       </div>
       {vessel.restrictions.length > 0 && (
         <ul className="text-xs text-gray-500 list-disc ml-4">
-          {vessel.restrictions.map((r, i) => <li key={i}>{r}</li>)}
+          {vessel.restrictions.filter((r) => typeof r === 'string').map((r, i) => <li key={i}>{r}</li>)}
         </ul>
       )}
     </div>
