@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { getSession } from '@/lib/session';
 import { cfValue } from '@/lib/types';
 import { formatQuantity } from '@/lib/cargo-render';
+import { parseLaycan } from '@/lib/sailing/date-parsing';
+import { fmtLaycan } from '@/lib/utils/fmt-laycan';
 import CargoClient, { type CargoRow } from './CargoClient';
 
 export const metadata: Metadata = {
@@ -82,7 +84,19 @@ export default async function CargoPage() {
       : r.id,
   );
 
-  return <CargoClient rows={dedupedCargo} total={dedupedCargo.length} />;
+  const refYear = new Date().getUTCFullYear();
+  const displayRows = dedupedCargo.map((row) => {
+    if (!row.laycan) return row;
+    const parsed = parseLaycan(row.laycan, refYear);
+    if (!parsed) return row;
+    const laycan = fmtLaycan(
+      Math.floor(parsed.start.getTime() / 1000),
+      Math.floor(parsed.end.getTime() / 1000),
+    );
+    return { ...row, laycan };
+  });
+
+  return <CargoClient rows={displayRows} total={displayRows.length} />;
 }
 
 /** Keep one row per content key, preferring a row that already has a match. */
