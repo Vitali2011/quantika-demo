@@ -385,6 +385,39 @@ export interface MatchSanctions {
   blocking: boolean;
 }
 
+export interface WorksheetReadiness extends MatchReadiness {
+  openPosition: string | null;
+}
+
+export interface MatchWorksheet {
+  readiness: WorksheetReadiness;
+  vessel: {
+    draftMax: number | null;
+    grainCapacity: number | null;
+    grainCapacityUnit: 'cbm' | 'cbft' | null;
+    geared: boolean | null;
+    vesselType: string | null;
+    flag: string | null;
+    built: number | null;
+    pandi: string | null;
+    classSociety: string | null;
+    lastCargoes: string | null;
+    dwtSummer: number | null;
+    dwcc: number | null;
+  };
+  cargo: {
+    weightMt: number | null;
+    cargoType: string | null;
+    loadPort: string | null;
+    dischargePort: string | null;
+  };
+  hardFilters: {
+    draft: HardFilterCheck;
+    crane: HardFilterCheck;
+    volume: HardFilterCheck;
+  };
+}
+
 export interface Match {
   cargoEmailId: string;
   cargoItemIndex: number;
@@ -402,6 +435,8 @@ export interface Match {
   /** Broker-facing transparent fit-% with per-factor breakdown (fit-loop 2026-05-31). */
   fitPercent?: number;
   fitBreakdown?: FitBreakdown;
+  /** Detailed vessel×cargo summary persisted alongside the match (worksheet feature). */
+  worksheet?: MatchWorksheet;
   /** Confidence summary computed by the confidence engine (spec α-02). Optional for backward compat. */
   confidence?: import('./confidence').MatchConfidence;
   /** Economics enrichment computed by the economics engine (spec α-08). Optional — absent when data unavailable. */

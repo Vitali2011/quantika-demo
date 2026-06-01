@@ -34,7 +34,7 @@ import path from 'node:path';
 import { analyzePairs } from '@/lib/matching/pair-analyzer';
 import { parseLaycan } from '@/lib/sailing/date-parsing';
 import { getPortDistance } from '@/lib/sailing/port-distances';
-import { cfValue, type ParsedCargo, type ParsedVessel, type Match } from '@/lib/types';
+import { cfValue, type ParsedCargo, type ParsedVessel, type Match, type MatchWorksheet } from '@/lib/types';
 
 function arg(k: string): string | undefined {
   const i = process.argv.indexOf(k);
@@ -214,14 +214,52 @@ async function main() {
 
   // ── 4. Write: replace the seed buckets (NULL + sentinels). Orphan per-session
   //        UUID copies are left for the app's deleteOrphanSessionMatches to prune. ──
+  const hasWorksheetCol = (db.prepare(`PRAGMA table_info(matches)`).all() as Array<{name:string}>)
+    .some((c) => c.name === 'worksheet_json');
+
   const insert = db.prepare(`
     INSERT OR IGNORE INTO matches
       (cargo_id, vessel_id, cargo_item_index, vessel_item_index, score, reason, status, user_id,
        created_at, updated_at, reason_structured, cargo_type, load_port, discharge_port,
        laycan_start, laycan_end, vessel_dwt, tce_usd_per_day, distance_nm, vessel_name, cargo_ref,
-       fit_percent, fit_breakdown)
-    VALUES (?, ?, ?, ?, ?, ?, 'shortlist', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       fit_percent, fit_breakdown${hasWorksheetCol ? ', worksheet_json' : ''})
+    VALUES (?, ?, ?, ?, ?, ?, 'shortlist', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?${hasWorksheetCol ? ', ?' : ''})
   `);
+
+  function buildWorksheet(m: Match, cargo: ParsedCargo | undefined, vessel: ParsedVessel | undefined): MatchWorksheet | null {
+    if (!m.readiness) return null;
+    return {
+      readiness: {
+        ...m.readiness,
+        openPosition: vessel ? (cfValue(vessel.openPosition) ?? null) : null,
+      },
+      vessel: {
+        draftMax: vessel ? (cfValue(vessel.draftMax) ?? null) : null,
+        grainCapacity: vessel?.grainCapacity ?? null,
+        grainCapacityUnit: vessel?.grainCapacityUnit ?? null,
+        geared: vessel?.geared ?? null,
+        vesselType: vessel?.vesselType ?? null,
+        flag: vessel?.flag ?? null,
+        built: vessel?.built ?? null,
+        pandi: vessel?.pandi ?? null,
+        classSociety: vessel?.classSociety ?? null,
+        lastCargoes: vessel?.lastCargoes ?? null,
+        dwtSummer: vessel ? (cfValue(vessel.dwtSummer) ?? null) : null,
+        dwcc: vessel ? (cfValue(vessel.dwcc) ?? null) : null,
+      },
+      cargo: {
+        weightMt: cargo ? (cfValue(cargo.weightMt) ?? null) : null,
+        cargoType: cargo ? cargoTypeStr(cargo) : null,
+        loadPort: cargo ? (cfValue(cargo.originPort) ?? null) : null,
+        dischargePort: cargo ? (cfValue(cargo.destinationPort) ?? null) : null,
+      },
+      hardFilters: {
+        draft: m.hardFilters?.draft ?? { pass: true },
+        crane: m.hardFilters?.crane ?? { pass: true },
+        volume: m.hardFilters?.volume ?? { pass: true },
+      },
+    };
+  }
 
   function writeBucket(matches: Match[], userId: string | null): number {
     let n = 0;
@@ -232,7 +270,8 @@ async function main() {
       const dischargePort = cargo ? cfValue(cargo.destinationPort) : null;
       const lay = cargo ? parseLaycan(cargo.laycan, refYear) : null;
       const voyage = loadPort && dischargePort ? getPortDistance(loadPort, dischargePort) : null;
-      insert.run(
+      const ws = buildWorksheet(m, cargo, vessel);
+      const args: Array<string | number | null> = [
         m.cargoEmailId, m.vesselEmailId, m.cargoItemIndex, m.vesselItemIndex,
         Math.max(0, Math.min(100, Math.round(m.score))), gapNote(m), userId,
         nowMs, nowMs,
@@ -248,7 +287,9 @@ async function main() {
         cargo ? (cfValue(cargo.cargoDescription) || null) : null,
         m.fitPercent ?? null,
         m.fitBreakdown ? JSON.stringify(m.fitBreakdown) : null,
-      );
+      ];
+      if (hasWorksheetCol) args.push(ws ? JSON.stringify(ws) : null);
+      insert.run(...args);
       n++;
     }
     return n;
