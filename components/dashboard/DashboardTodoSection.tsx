@@ -21,11 +21,15 @@ const PRIORITY_LABEL: Record<PriorityLevel, string> = {
   ok: 'OK',
 };
 
+const VISIBLE_LIMIT = 5;
+
 interface DashboardTodoSectionProps {
   cards: TodoCard[];
 }
 
 export function DashboardTodoSection({ cards }: DashboardTodoSectionProps) {
+  const visible = cards.slice(0, VISIBLE_LIMIT);
+
   return (
     <section aria-labelledby="todo-heading">
       <div className="flex items-center justify-between mb-3">
@@ -35,7 +39,17 @@ export function DashboardTodoSection({ cards }: DashboardTodoSectionProps) {
         >
           🎯 To do today
         </h2>
-        {cards.length > 0 && <Badge variant="outline">{cards.length}</Badge>}
+        <div className="flex items-center gap-2">
+          {cards.length > 0 && <Badge variant="outline">{cards.length}</Badge>}
+          {cards.length > VISIBLE_LIMIT && (
+            <Link
+              href="/matches"
+              className="text-xs text-ds-text-muted hover:text-ds-text transition-colors duration-ds-fast"
+            >
+              See all →
+            </Link>
+          )}
+        </div>
       </div>
 
       {cards.length === 0 ? (
@@ -46,7 +60,7 @@ export function DashboardTodoSection({ cards }: DashboardTodoSectionProps) {
         </Card>
       ) : (
         <div className="space-y-2">
-          {cards.map((card, i) => (
+          {visible.map((card, i) => (
             <Link
               key={i}
               href={card.href}
