@@ -26,6 +26,7 @@ interface MatchRow {
   cargo_id: string; vessel_id: string; score: number;
   reason: string | null; reason_structured: string | null;
   fit_percent: number | null; fit_breakdown: string | null;
+  cargo_item_index: number | null; vessel_item_index: number | null;
 }
 
 function safeJsonArray<T>(json: string, ctx: string): T[] {
@@ -84,10 +85,14 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
     }
   }
 
-  const hasFitCols = (db.prepare(`PRAGMA table_info(matches)`).all() as Array<{name:string}>).some(c => c.name === 'fit_percent');
-  const selectCols = hasFitCols
-    ? 'cargo_id, vessel_id, score, reason, reason_structured, fit_percent, fit_breakdown'
-    : 'cargo_id, vessel_id, score, reason, reason_structured, NULL as fit_percent, NULL as fit_breakdown';
+  const colNames = new Set((db.prepare(`PRAGMA table_info(matches)`).all() as Array<{name:string}>).map((c) => c.name));
+  const fitCols = colNames.has('fit_percent')
+    ? 'fit_percent, fit_breakdown'
+    : 'NULL as fit_percent, NULL as fit_breakdown';
+  const idxCols = colNames.has('cargo_item_index')
+    ? 'cargo_item_index, vessel_item_index'
+    : 'NULL as cargo_item_index, NULL as vessel_item_index';
+  const selectCols = `cargo_id, vessel_id, score, reason, reason_structured, ${fitCols}, ${idxCols}`;
 
   // Only the seeded snapshot rows (user_id IS NULL). Per-session copies that
   // persistSessionMatches writes (user_id = sessionId) must NOT be re-read here,
@@ -109,9 +114,9 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
   function rowsToMatches(rows: MatchRow[]): Match[] {
     return rows.map((r) => ({
       cargoEmailId: r.cargo_id,
-      cargoItemIndex: 0,
+      cargoItemIndex: r.cargo_item_index ?? 0,
       vesselEmailId: r.vessel_id,
-      vesselItemIndex: 0,
+      vesselItemIndex: r.vessel_item_index ?? 0,
       score: r.score,
       matchLevel: deriveMatchLevel(r.score),
       matchReasons: r.reason ? [r.reason] : [],

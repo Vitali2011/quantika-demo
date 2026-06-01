@@ -28,6 +28,8 @@ export interface StoredMatch {
   cargo_ref: string | null;
   fit_percent?: number | null;
   fit_breakdown?: string | null;
+  cargo_item_index?: number | null;
+  vessel_item_index?: number | null;
 }
 
 export interface CreateMatchInput {
@@ -52,6 +54,8 @@ export interface CreateMatchInput {
   cargo_ref?: string | null;
   fit_percent?: number | null;
   fit_breakdown?: string | null;
+  cargo_item_index?: number | null;
+  vessel_item_index?: number | null;
 }
 
 export interface ListMatchesOptions {
@@ -102,6 +106,11 @@ function hasFitColumns(db: Database.Database): boolean {
   return cols.some((c) => c.name === 'fit_percent');
 }
 
+function hasItemIndexColumns(db: Database.Database): boolean {
+  const cols = db.prepare(`PRAGMA table_info(matches)`).all() as Array<{ name: string }>;
+  return cols.some((c) => c.name === 'cargo_item_index');
+}
+
 export function createMatch(db: Database.Database, input: CreateMatchInput): StoredMatch {
   const now = Date.now();
   const status: MatchStatus = input.status ?? 'shortlist';
@@ -125,6 +134,11 @@ export function createMatch(db: Database.Database, input: CreateMatchInput): Sto
     const cargo_ref = input.cargo_ref ?? null;
     const fit_percent = input.fit_percent ?? null;
     const fit_breakdown = input.fit_breakdown ?? null;
+    // Item-index columns (migration 044) — written only when present so a
+    // partially-migrated DB (older tests) still inserts via this branch.
+    const withIdx = hasItemIndexColumns(db);
+    const cargo_item_index = input.cargo_item_index ?? 0;
+    const vessel_item_index = input.vessel_item_index ?? 0;
 
     const stmt = db.prepare(
       `INSERT OR IGNORE INTO matches
@@ -132,10 +146,10 @@ export function createMatch(db: Database.Database, input: CreateMatchInput): Sto
           reason_structured, cargo_type, load_port, discharge_port,
           laycan_start, laycan_end, vessel_dwt, tce_usd_per_day, distance_nm,
           freight_rate_usd_per_mt, freight_rate_source, vessel_name, cargo_ref,
-          fit_percent, fit_breakdown)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+          fit_percent, fit_breakdown${withIdx ? ', cargo_item_index, vessel_item_index' : ''})
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?${withIdx ? ', ?, ?' : ''})`
     );
-    result = stmt.run(
+    const args: Array<string | number | null> = [
       input.cargo_id,
       input.vessel_id,
       input.score,
@@ -159,7 +173,9 @@ export function createMatch(db: Database.Database, input: CreateMatchInput): Sto
       cargo_ref,
       fit_percent,
       fit_breakdown,
-    );
+    ];
+    if (withIdx) args.push(cargo_item_index, vessel_item_index);
+    result = stmt.run(...args);
   } else if (hasVesselNameColumns(db)) {
     const reason_structured = input.reason_structured ?? null;
     const cargo_type = input.cargo_type ?? null;

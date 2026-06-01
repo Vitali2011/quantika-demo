@@ -82,6 +82,8 @@ export function persistSessionMatches(
       cargo_ref: cargo ? (cfValue(cargo.cargoDescription) || null) : null,
       fit_percent: m.fitPercent ?? null,
       fit_breakdown: m.fitBreakdown ? JSON.stringify(m.fitBreakdown) : null,
+      cargo_item_index: m.cargoItemIndex,
+      vessel_item_index: m.vesselItemIndex,
     });
   }
 }
