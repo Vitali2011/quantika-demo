@@ -3,6 +3,9 @@ import {
   extractDwt,
   asItems,
   patchVesselItem,
+  extractNumericValue,
+  normalizeSpeedField,
+  normalizeConsumptionField,
 } from '../scripts/demo-seed/patch-vessel-speed-consumption';
 
 // ── defaultSpeedConsumption ───────────────────────────────────────────────────
@@ -111,6 +114,100 @@ describe('asItems', () => {
     const items = asItems('{"vesselName":"mv Legacy"}');
     expect(items).toHaveLength(1);
     expect(items[0].vesselName).toBe('mv Legacy');
+  });
+});
+
+// ── extractNumericValue ───────────────────────────────────────────────────────
+
+describe('extractNumericValue', () => {
+  it('extracts plain integer', () => {
+    expect(extractNumericValue(13)).toBe(13);
+  });
+
+  it('extracts plain decimal', () => {
+    expect(extractNumericValue(12.5)).toBe(12.5);
+  });
+
+  it('extracts from ConfidenceField with numeric value', () => {
+    expect(extractNumericValue({ value: 13, confidence: 'confirmed', source_text: '13 knts' })).toBe(13);
+  });
+
+  it('extracts from ConfidenceField with string value', () => {
+    expect(extractNumericValue({ value: '13 knts', confidence: 'confirmed' })).toBe(13);
+  });
+
+  it('extracts from normalized string "13 kts"', () => {
+    expect(extractNumericValue('13 kts')).toBe(13);
+  });
+
+  it('extracts from non-normalized string "13 knts"', () => {
+    expect(extractNumericValue('13 knts')).toBe(13);
+  });
+
+  it('extracts from string "12.5 kts"', () => {
+    expect(extractNumericValue('12.5 kts')).toBe(12.5);
+  });
+
+  it('extracts from string "22 mt/day"', () => {
+    expect(extractNumericValue('22 mt/day')).toBe(22);
+  });
+
+  it('returns null for null', () => {
+    expect(extractNumericValue(null)).toBeNull();
+  });
+
+  it('returns null for zero', () => {
+    expect(extractNumericValue(0)).toBeNull();
+  });
+
+  it('returns null for empty string', () => {
+    expect(extractNumericValue('')).toBeNull();
+  });
+
+  it('returns null for ConfidenceField with zero value', () => {
+    expect(extractNumericValue({ value: 0, confidence: 'estimated' })).toBeNull();
+  });
+});
+
+// ── normalizeSpeedField / normalizeConsumptionField ───────────────────────────
+
+describe('normalizeSpeedField', () => {
+  it('normalizes ConfidenceField to "N kts"', () => {
+    expect(normalizeSpeedField({ value: 13, confidence: 'confirmed' })).toBe('13 kts');
+  });
+
+  it('normalizes plain number to "N kts"', () => {
+    expect(normalizeSpeedField(14)).toBe('14 kts');
+  });
+
+  it('normalizes non-standard string "13 knts" to "13 kts"', () => {
+    expect(normalizeSpeedField('13 knts')).toBe('13 kts');
+  });
+
+  it('round-trips already-normalized "13 kts" unchanged', () => {
+    expect(normalizeSpeedField('13 kts')).toBe('13 kts');
+  });
+
+  it('returns null for null', () => {
+    expect(normalizeSpeedField(null)).toBeNull();
+  });
+});
+
+describe('normalizeConsumptionField', () => {
+  it('normalizes ConfidenceField to "N mt/day"', () => {
+    expect(normalizeConsumptionField({ value: 22, confidence: 'confirmed' })).toBe('22 mt/day');
+  });
+
+  it('normalizes plain number to "N mt/day"', () => {
+    expect(normalizeConsumptionField(28)).toBe('28 mt/day');
+  });
+
+  it('round-trips already-normalized "22 mt/day" unchanged', () => {
+    expect(normalizeConsumptionField('22 mt/day')).toBe('22 mt/day');
+  });
+
+  it('returns null for null', () => {
+    expect(normalizeConsumptionField(null)).toBeNull();
   });
 });
 
@@ -230,5 +327,76 @@ describe('patchVesselItem', () => {
     expect(second).toBe(false);   // already populated → no-op
     expect(vessel.speedLaden).toBe('13 kts');
     expect(vessel.consumption).toBe('26 mt/day');
+  });
+
+  // ── Adversarial: existing-value preservation across all shapes ────────────
+  // These are the cases the original impl missed — real values were overwritten.
+
+  it('ConfidenceField speedLaden preserved — NOT overwritten with DWT default', () => {
+    const vessel: Record<string, unknown> = {
+      vesselName: 'MV CONFIRMED',
+      dwtSummer: { value: 28_000, confidence: 'confirmed' }, // small → default 12.5 kts
+      speedLaden: { value: 13, confidence: 'confirmed', source_text: '13 knts' }, // real = 13
+      consumption: null,
+    };
+    const modified = patchVesselItem(vessel);
+    expect(modified).toBe(true);
+    expect(vessel.speedLaden).toBe('13 kts');     // preserved, NOT '12.5 kts'
+    expect(vessel.consumption).toBe('22 mt/day'); // defaulted (was null)
+  });
+
+  it('non-normalized string "13 knts" normalized to "13 kts" — NOT overwritten with default', () => {
+    const vessel: Record<string, unknown> = {
+      vesselName: 'MV TYPO',
+      dwtSummer: { value: 28_000, confidence: 'confirmed' }, // small → default 12.5 kts
+      speedLaden: '13 knts', // non-standard string, real value 13
+      consumption: null,
+    };
+    const modified = patchVesselItem(vessel);
+    expect(modified).toBe(true);
+    expect(vessel.speedLaden).toBe('13 kts'); // normalized from '13 knts', NOT '12.5 kts'
+  });
+
+  it('plain number speedLaden preserved — NOT overwritten with DWT default', () => {
+    const vessel: Record<string, unknown> = {
+      vesselName: 'MV NUMBER',
+      dwtSummer: { value: 28_000, confidence: 'confirmed' }, // small → default 12.5 kts
+      speedLaden: 13,  // plain number
+      consumption: 22, // plain number
+    };
+    const modified = patchVesselItem(vessel);
+    expect(modified).toBe(true);
+    expect(vessel.speedLaden).toBe('13 kts');     // NOT '12.5 kts' default
+    expect(vessel.consumption).toBe('22 mt/day');
+  });
+
+  it('idempotent after normalizing ConfidenceField — second run is no-op', () => {
+    const vessel: Record<string, unknown> = {
+      vesselName: 'MV IDEMPOTENT',
+      dwtSummer: { value: 28_000, confidence: 'confirmed' },
+      speedLaden: { value: 13, confidence: 'confirmed' },
+      consumption: { value: 22, confidence: 'confirmed' },
+    };
+    const first = patchVesselItem(vessel);
+    expect(first).toBe(true);
+    expect(vessel.speedLaden).toBe('13 kts');
+    expect(vessel.consumption).toBe('22 mt/day');
+
+    const second = patchVesselItem(vessel);
+    expect(second).toBe(false); // already normalized → no-op
+    expect(vessel.speedLaden).toBe('13 kts');     // unchanged
+    expect(vessel.consumption).toBe('22 mt/day'); // unchanged
+  });
+
+  it('both ConfidenceField fields preserved — neither overwritten by DWT defaults', () => {
+    const vessel: Record<string, unknown> = {
+      vesselName: 'MV BOTH',
+      dwtSummer: { value: 56_000, confidence: 'confirmed' }, // handymax → default 13 kts / 26 mt/day
+      speedLaden: { value: 14, confidence: 'confirmed', source_text: '14 knts' },
+      consumption: { value: 28, confidence: 'confirmed', source_text: '28 mt/day' },
+    };
+    patchVesselItem(vessel);
+    expect(vessel.speedLaden).toBe('14 kts');     // NOT '13 kts' default
+    expect(vessel.consumption).toBe('28 mt/day'); // NOT '26 mt/day' default
   });
 });
