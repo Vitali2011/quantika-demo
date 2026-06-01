@@ -79,4 +79,12 @@ describe('cargo table — long region name wrap (#636)', () => {
     expect(td!.className).toMatch(/break-words/);
     expect(td!.className).not.toMatch(/whitespace-nowrap/);
   });
+
+  it('Laycan cell has no whitespace-nowrap (allows 2-line wrap)', () => {
+    render(<CargoClient rows={[longRegionRow]} total={1} />);
+    const laycanText = screen.getByText('01–15 Jul');
+    const td = laycanText.closest('td');
+    expect(td).not.toBeNull();
+    expect(td!.className).not.toMatch(/whitespace-nowrap/);
+  });
 });
