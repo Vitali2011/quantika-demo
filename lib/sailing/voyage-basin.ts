@@ -245,15 +245,28 @@ function shortestBasinPath(start: Basin, end: Basin): Basin[] {
 
 /**
  * Returns the set of basins the voyage's natural shortest corridor passes
- * through, inclusive of both endpoints. Empty set if either endpoint is
- * unknown — callers should treat empty as "skip the basin filter" (fail-open).
+ * through, inclusive of both endpoints.
+ *
+ * - Both endpoints classifiable → BFS shortest path (original behaviour).
+ * - One endpoint unknown → conservative corridor: known basin + its 1-hop
+ *   neighbours. Prevents global hubs (Pacific, EastAsia, AtlanticSouth …)
+ *   from passing through when the unknown endpoint also has no route distance
+ *   (distanceNm null), which would otherwise bypass the detour check too.
+ * - Both endpoints unknown → empty set (callers treat as fail-open).
  */
 export function voyageBasins(from: string, to: string): Set<Basin> {
   const fromBasin = portBasin(from);
   const toBasin = portBasin(to);
-  if (!fromBasin || !toBasin) return new Set();
-  const path = shortestBasinPath(fromBasin, toBasin);
-  return new Set(path);
+  if (!fromBasin && !toBasin) return new Set();
+  if (fromBasin && toBasin) {
+    const path = shortestBasinPath(fromBasin, toBasin);
+    return new Set(path);
+  }
+  // One endpoint known — use its basin + direct neighbours as a conservative
+  // corridor. This is intentionally narrow: it excludes basins that are
+  // reachable but require crossing open ocean (e.g. Pacific from BlackSea).
+  const known = fromBasin ?? toBasin!;
+  return new Set([known, ...ADJACENCY[known]]);
 }
 
 /**

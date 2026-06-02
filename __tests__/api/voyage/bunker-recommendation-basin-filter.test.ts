@@ -130,6 +130,25 @@ describe('Bug 1 — basin filter excludes out-of-corridor candidates', () => {
     expect(ports).not.toContain('USLAX');
   });
 
+  it('Bug basin-nodist — unknown to-port: global hubs excluded from BlackSea voyage', async () => {
+    // Simulates distanceNm=null scenario: to-port not in port-master → portBasin=null.
+    // Fixed behaviour: corridor = {BlackSea, EastMed} (from-basin + 1-hop neighbours).
+    const res = await GET(makeReq('ROCND', 'UNKNOWNXXX'));
+    const body = await res.json();
+    const ports = body.candidates.map((c: { port: string }) => c.port);
+    // Pacific, EastAsia, AtlanticSouth, NorthEurope, WestMed — all outside {BlackSea,EastMed}
+    expect(ports).not.toContain('USLAX');   // Pacific
+    expect(ports).not.toContain('SGSIN');   // EastAsia
+    expect(ports).not.toContain('BRSSZ');   // AtlanticSouth
+    expect(ports).not.toContain('ZADUR');   // SouthAfrica
+    expect(ports).not.toContain('NLRTM');   // NorthEurope
+    expect(ports).not.toContain('GIGIB');   // WestMed
+    expect(ports).not.toContain('ITAUG');   // WestMed
+    // BlackSea origin and EastMed neighbour are included
+    expect(ports).toContain('ROCND');       // BlackSea
+    expect(ports).toContain('GRPIR');       // EastMed
+  });
+
   it('Bug 3 — eff $/MT equals price + (devFuel + devTime)/liftTonnes for each row', async () => {
     const url =
       'http://localhost/api/voyage/bunker-recommendation' +
