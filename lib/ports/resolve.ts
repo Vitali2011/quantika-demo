@@ -80,14 +80,14 @@ function buildIndex(): PortIndex {
     const locode = port.unlocode.toUpperCase();
     byLocode.set(locode, port);
 
-    const nameLower = port.name.toLowerCase();
+    const nameLower = foldDiacritics(port.name.toLowerCase());
     // Don't overwrite an earlier entry with a worse one (first-wins)
     if (!byName.has(nameLower)) {
       byName.set(nameLower, port);
     }
 
     for (const alias of port.aliases ?? []) {
-      const aliasLower = alias.toLowerCase();
+      const aliasLower = foldDiacritics(alias.toLowerCase());
       if (!byAlias.has(aliasLower)) {
         byAlias.set(aliasLower, port);
       }
@@ -101,6 +101,17 @@ function buildIndex(): PortIndex {
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 const LOCODE_RE = /^[A-Za-z]{5}$/;
+
+/**
+ * Fold combining diacritical marks so re-parsed native spellings match the
+ * ASCII port-master entries: "Constanța"→"constanta", "Aliağa"→"aliaga",
+ * "Giurgiulești"→"giurgiulesti". Applied consistently to both index keys and
+ * lookup input. (Letters with no NFD decomposition — e.g. Turkish dotless "ı" —
+ * are unaffected; those ports are handled by explicit aliases instead.)
+ */
+function foldDiacritics(s: string): string {
+  return s.normalize('NFKD').replace(/\p{Diacritic}/gu, '');
+}
 
 function toResolvedPort(entry: PortEntry): ResolvedPort {
   return {
@@ -134,7 +145,7 @@ export function resolvePort(input: string): ResolvedPort | null {
     // Fall through to name search — 5-letter names like "Dubai" are possible
   }
 
-  const lower = trimmed.toLowerCase();
+  const lower = foldDiacritics(trimmed.toLowerCase());
 
   // ── Exact name match ────────────────────────────────────────────────────
   const byName = idx.byName.get(lower);
@@ -149,7 +160,7 @@ export function resolvePort(input: string): ResolvedPort | null {
   let bestEntry: PortEntry | undefined;
 
   for (const entry of idx.entries) {
-    const nameLower = entry.name.toLowerCase();
+    const nameLower = foldDiacritics(entry.name.toLowerCase());
     if (nameLower.includes(lower) || lower.includes(nameLower)) {
       bestEntry = entry;
       if (nameLower.startsWith(lower) || lower.startsWith(nameLower)) break; // good enough
@@ -161,7 +172,7 @@ export function resolvePort(input: string): ResolvedPort | null {
   // ── Partial alias match ─────────────────────────────────────────────────
   for (const entry of idx.entries) {
     for (const alias of entry.aliases ?? []) {
-      const aliasLower = alias.toLowerCase();
+      const aliasLower = foldDiacritics(alias.toLowerCase());
       if (aliasLower.includes(lower) || lower.includes(aliasLower)) {
         return toResolvedPort(entry);
       }
