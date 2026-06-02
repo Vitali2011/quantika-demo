@@ -198,6 +198,12 @@ export interface ParsedCargo {
   destinationPortAlternatives?: string[] | null;
   destinationPortRotation?: string[] | null;
   weightPerPort?: number[] | null;
+  maxVesselAgeYrs?: number | null;
+  gearRequired?: boolean | null;
+  maxLoaM?: number | null;
+  maxBeamM?: number | null;
+  flagRequired?: string | null;
+  classRequired?: string | null;
 }
 
 // ── Parsed Vessel ──

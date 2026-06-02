@@ -67,6 +67,12 @@ const cargoItemSchema = {
     destination_port_alternatives: { type: Type.ARRAY, items: { type: Type.STRING }, nullable: true },
     destination_port_rotation: { type: Type.ARRAY, items: { type: Type.STRING }, nullable: true },
     weight_per_port: { type: Type.ARRAY, items: { type: Type.NUMBER }, nullable: true },
+    max_vessel_age_yrs: { type: Type.NUMBER, nullable: true },
+    gear_required: { type: Type.BOOLEAN, nullable: true },
+    max_loa_m: { type: Type.NUMBER, nullable: true },
+    max_beam_m: { type: Type.NUMBER, nullable: true },
+    flag_required: { type: Type.STRING, nullable: true },
+    class_required: { type: Type.STRING, nullable: true },
   },
 };
 

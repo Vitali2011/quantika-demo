@@ -389,6 +389,38 @@ WHEN IN DOUBT: if commodity differs OR tonnages are clearly separate parcels →
 CHOPT ADDITIONAL COMMODITY RULE: When a base cargo is accompanied by an OPTIONAL additional commodity marked "IN CHOPT" (e.g., "+ 1500 MT bagged cement IN CHOPT"), the optional cargo is a SEPARATE item — do NOT merge by summing weights.
   Example: "MIN 3000 MTONS BARYTE IN BIG BAGS IN CHOPT + 1500 MTS BAGGED CEMENT IN CHOPT" → 2 items: (1) baryte 3000MT, (2) bagged cement 1500MT.
 
+=== VESSEL RESTRICTION FIELDS ===
+
+When the cargo inquiry specifies vessel requirements, extract them into the structured fields below IN ADDITION to keeping the raw phrase in special_requirements. These fields are additive — do NOT remove the restriction text from special_requirements.
+
+PATTERNS to extract:
+
+max_vessel_age_yrs (NUMBER | null):
+- "MAX 25 years", "max age 25yrs", "max 20 yrs", "built after 2000" (→ compute year from email date minus year = age)
+- "age max NN" → max_vessel_age_yrs = NN
+- If not stated → null
+
+gear_required (BOOLEAN | null):
+- "Vsl shd be geared", "NEED GEARED VSLS", "geared vessel required", "GRD/Grab fitted vsl req.", "gear req", "grd vsl needed" → true
+- "Gearless w.able", "gearless acceptable", "gless a/e", "gearless ok" → do NOT set to true (gear is NOT required; charterer accepts gearless)
+- If not stated → null (NEVER false)
+
+max_loa_m (NUMBER | null):
+- "max loa 145 mtr", "LOA max 124m", "max length 160m" → max_loa_m = number in metres
+- If not stated → null
+
+max_beam_m (NUMBER | null):
+- "max beam 16mtr", "beam max 18m", "max breadth 20m" → max_beam_m = number in metres
+- If not stated → null
+
+flag_required (STRING | null):
+- "FLAG HK", "HK flag only", "flag: Panama" → flag_required = ISO 2-letter or commonly used code, uppercase
+- If not stated → null
+
+class_required (STRING | null):
+- "CLASS CCS", "class required: BV", "DNV class" → class_required = classification society abbreviation
+- If not stated → null
+
 === EXTRACT ALL DISTINCT CARGO OFFERS ===
 
 When a single email contains MULTIPLE distinct cargo offers, extract ONE ITEM PER OFFER — do not merge them.
