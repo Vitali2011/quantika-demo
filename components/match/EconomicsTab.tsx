@@ -8,6 +8,7 @@ import { BunkerComparisonTable } from '@/components/economics/BunkerComparisonTa
 import type { BunkerCandidateResult } from '@/lib/economics/bunker-comparison';
 import { estimateVoyageDays } from '@/lib/economics/voyage-days';
 import { estimateVesselValueUsd } from '@/lib/economics/vessel-value';
+import { resolveConsMtPerDay } from '@/lib/economics/vessel-consumption';
 import { freightBadge, FREIGHT_BADGE_CLASSES } from '@/lib/matching/freight-badge';
 import type { WarRiskBreakdown } from '@/lib/economics/war-risk';
 import type { TCEBreakdown } from '@/lib/economics/voyage-calculator';
@@ -100,7 +101,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
   const recoTo = cargo?.destinationPort?.value;
   const recoDwt = vessel?.dwtSummer?.value ?? 0;
   const recoSpeed = parseLeadingNumber(vessel?.speedLaden);
-  const recoCons = parseLeadingNumber(vessel?.consumption);
+  const recoCons = resolveConsMtPerDay(parseLeadingNumber(vessel?.consumption), recoDwt);
   const recoVoyageDays = useMemo(
     () => estimateVoyageDays(routeDistanceNm, recoSpeed),
     [routeDistanceNm, recoSpeed],
@@ -217,7 +218,8 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
     const destination = cargo?.destinationPort?.value ?? '';
     const dwt = vessel?.dwtSummer?.value ?? 0;
     const speedKts = parseLeadingNumber(vessel?.speedLaden);
-    const consumption = parseLeadingNumber(vessel?.consumption);
+    const rawConsumption = parseLeadingNumber(vessel?.consumption);
+    const consumption = resolveConsMtPerDay(rawConsumption, dwt);
     const quantityMt = cargo?.weightMt?.value ?? 0;
 
     const ready =
@@ -225,7 +227,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
       destination.length > 0 &&
       dwt > 0 &&
       speedKts > 0 &&
-      consumption > 0 &&
+      rawConsumption > 0 &&
       quantityMt > 0;
 
     const missing: string[] = [];
@@ -233,7 +235,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
     if (!destination) missing.push('discharge port');
     if (!dwt) missing.push('DWT');
     if (!speedKts) missing.push('vessel speed');
-    if (!consumption) missing.push('fuel consumption');
+    if (!rawConsumption) missing.push('fuel consumption');
     if (!quantityMt) missing.push('cargo quantity');
 
     return {
@@ -265,7 +267,8 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
   const voyageInputData = useMemo(() => {
     const dwt = vessel?.dwtSummer?.value ?? 0;
     const speedKts = parseLeadingNumber(vessel?.speedLaden);
-    const consumptionMtPerDay = parseLeadingNumber(vessel?.consumption);
+    const rawConsumptionMtPerDay = parseLeadingNumber(vessel?.consumption);
+    const consumptionMtPerDay = resolveConsMtPerDay(rawConsumptionMtPerDay, dwt);
     const originPort = cargo?.originPort?.value ?? '';
     const destinationPort = cargo?.destinationPort?.value ?? '';
     const quantityMt = cargo?.weightMt?.value ?? 0;
@@ -275,7 +278,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
 
     const missing: string[] = [];
     if (!speedKts) missing.push('vessel speed');
-    if (!consumptionMtPerDay) missing.push('fuel consumption');
+    if (!rawConsumptionMtPerDay) missing.push('fuel consumption');
     if (!distanceNm) missing.push('route distance');
 
     const ready =
