@@ -1,5 +1,77 @@
-# attack_plan.md — PR fix/demo-freshness-clock adversarial QA (2026-06-01)
-# Reviewer: cold-session test-skill
+# attack_plan.md — feat-bunker-oilmonster-blacksea adversarial QA (2026-06-02)
+# Reviewer: cold-session adversarial QA
+
+## Attack Surface: OilMonster Adapter
+
+### File classification
+
+| File | Class | Attack techniques |
+|---|---|---|
+| `lib/knowledge/bunker/oilmonster-adapter.ts` | HTML parser + orchestrator | Adversarial HTML, edge cases, range validation gaps |
+| `parseOilMonsterPortHtml` | Per-port page parser | Regex fragility, missing decimal places, space before span |
+| `parseOilMonsterHtml` | Main table parser | Already well-tested; minor edge cases remain |
+| `refreshOilMonster` (per-port) | Orchestrator | Missing range validation for per-port prices |
+
+### Attack vectors identified
+
+#### B1 — Per-port prices have NO range validation [HIGH]
+
+**File:** `oilmonster-adapter.ts` lines 297-325
+**Finding:** The main table upsert validates prices against `RANGE_VLSFO [200, 2000]` and `RANGE_MGO [200, 2000]`. However per-port upserts (Istanbul TRIST, Piraeus GRPIR) have ZERO range validation. An unrealistic value like 99999.00 would be inserted directly into the DB.
+**Reproducibility:** Confirmed by code review. ROCND proxy also has no range validation.
+**Test needed:** YES — per-port out-of-range price should be rejected (or warn + skip)
+
+#### B2 — ROCND proxy also bypasses range validation [MEDIUM]
+
+**File:** `oilmonster-adapter.ts` lines 328-338
+**Finding:** `rocndPrice = Math.round((istanbulResult.vlsfo + BLACK_SEA_PREMIUM_USD) * 100) / 100` is upserted with no range check. If Istanbul returns an extreme value that somehow passes per-port (see B1), ROCND would amplify it.
+**Test needed:** Verify ROCND = Istanbul + 40 exactly with no float drift (confirmed OK), but flag the missing range check.
+
+#### B3 — Regex implicitly requires `<i>` arrow icon element [MEDIUM]
+
+**File:** `oilmonster-adapter.ts` line 189
+**Regex:** `/class="scrapitemprice"[\s\S]*?>([\d,]+\.\d{2})<span>\$US\/MT/`
+**Finding:** The non-greedy `[\s\S]*?>` match works ONLY because the `</i>` tag provides the `>` immediately before the price number. If OilMonster removes the arrow icon, the HTML becomes `>\\n947.00<span>` and the `\\n` before the price makes the regex fail (price would not follow immediately after a `>`).
+**Confirmed:** Tested in Node.js — without `<i></i>`, `\\n` before price → NO MATCH → StructureChangedError.
+**Test needed:** YES — document this fragility as a test that would catch a future site format change.
+
+#### B4 — Price must have EXACTLY 2 decimal places [LOW]
+
+**File:** `oilmonster-adapter.ts` line 189
+**Regex:** `[\d,]+\.\d{2}` — requires exactly 2 decimal digits
+**Finding:** Prices like `947.5` (1 decimal), `947` (no decimal), or `947.000` (3 decimals) would NOT match → throws StructureChangedError. This constraint is undocumented.
+**Real risk:** Low for current site (all prices end in .00 or .25), but not tested.
+
+#### B5 — Misleading test description name [LOW]
+
+**File:** `__tests__/lib/knowledge/bunker/oilmonster-adapter.test.ts` line 202
+**Finding:** Test is named `'throws OilMonsterParseError for non-numeric price text'` but the assertion is `expect(...).toThrow(OilMonsterStructureChangedError)`. The name says ParseError, the assertion says StructureChangedError. This is a test description bug only — the assertion itself is correct.
+
+#### B6 — Staleness boundary arithmetic [VERIFIED OK]
+
+**Finding:** `ageDays > MAX_AGE_DAYS` uses strict `>` so exactly 30 days = NOT stale (correct). Floating point: both `now` and `priceDate` midnight UTC, so division is exact. No off-by-one.
+**Confirmed:** Tested in Node.js — 30 days exactly returns `ageDays === 30`, which is NOT > 30.
+
+#### B7 — Constanta proxy arithmetic [VERIFIED OK]
+
+**Finding:** `Math.round((947.00 + 40) * 100) / 100 = 987.00` — exact, no float drift.
+**Confirmed:** Tested in Node.js.
+
+### Attack priority
+
+| ID | Severity | Has existing test? | Action |
+|---|---|---|---|
+| B1 | HIGH | No | Write adversarial test |
+| B2 | MEDIUM | No | Write adversarial test |
+| B3 | MEDIUM | Partial (fixture passes) | Write fragility test |
+| B4 | LOW | No | Document only |
+| B5 | LOW | Yes (wrong name only) | Document only |
+| B6 | LOW | Yes | Confirmed OK |
+| B7 | LOW | Yes | Confirmed OK |
+
+---
+
+# PREVIOUS REVIEW (attack plan from PR fix/demo-freshness-clock — 2026-06-01)
 
 ## Attack Surface Classification
 
