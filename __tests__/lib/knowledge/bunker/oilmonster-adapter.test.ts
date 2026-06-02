@@ -199,7 +199,7 @@ describe('parseOilMonsterPortHtml', () => {
     expect(() => parseOilMonsterPortHtml(html)).toThrow(OilMonsterStructureChangedError);
   });
 
-  it('throws OilMonsterParseError for non-numeric price text', () => {
+  it('throws OilMonsterStructureChangedError when price text not numeric (no digit match)', () => {
     const html =
       '<div class="scrapitemprice"><i></i>N/A<span>$US/MT</span></div>' +
       '<span>Price Date : <span class="cblue">2026-05-25</span></span>';
@@ -466,5 +466,38 @@ describe('refreshOilMonster per-port', () => {
   it('all per-port fail AND main table broken → rejects', async () => {
     const fetcher = jest.fn().mockRejectedValue(new Error('network down'));
     await expect(refreshOilMonster(db, fetcher, { now: NOW_DEMO })).rejects.toThrow('network down');
+  });
+
+  it('per-port VLSFO out-of-range → not written, warn logged, no ROCND proxy', async () => {
+    // Istanbul returns price below min range; should be skipped
+    const extremeHtml = loadFixture('oilmonster-istanbul-2026-06-02.html')
+      .replace(/>947\.00<span>\$US\/MT/, '>99.00<span>$US/MT');
+    const fetcher = makePerPortFetcher(
+      extremeHtml,
+      loadFixture('oilmonster-piraeus-2026-06-02.html'),
+    );
+    await refreshOilMonster(db, fetcher, { now: NOW_DEMO });
+
+    const trist = getLatestBunkerPrice(db, 'TRIST', 'VLSFO');
+    expect(trist).toBeNull(); // out-of-range, not written
+    const rocnd = getLatestBunkerPrice(db, 'ROCND', 'VLSFO');
+    expect(rocnd).toBeNull(); // no Istanbul basis → no proxy
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('out of range'));
+  });
+
+  it('parser: price with comma separator (1,007.00) → 1007.00', () => {
+    const html = loadFixture('oilmonster-istanbul-2026-06-02.html')
+      .replace(/>947\.00<span>\$US\/MT/, '>1,007.00<span>$US/MT');
+    const result = parseOilMonsterPortHtml(html);
+    expect(result.vlsfo).toBeCloseTo(1007.00, 2);
+  });
+
+  it('parser: price without arrow icon (whitespace only) still parses', () => {
+    // OilMonster may omit the arrow icon — \s* in regex handles this
+    const html =
+      '<div class="scrapitemprice">\n889.25<span>$US/MT</span></div>' +
+      '<span>Price Date : <span class="cblue">2026-05-26</span></span>';
+    const result = parseOilMonsterPortHtml(html);
+    expect(result.vlsfo).toBeCloseTo(889.25, 2);
   });
 });

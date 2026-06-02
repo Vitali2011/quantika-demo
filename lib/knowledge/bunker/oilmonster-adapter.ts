@@ -185,8 +185,8 @@ export function parseOilMonsterPortHtml(html: string): { vlsfo: number; priceDat
   }
 
   // Current price: first number immediately before <span>$US/MT inside the scrapitemprice div.
-  // The non-greedy [\s\S]*? skips the <i> arrow icon that precedes the number.
-  const priceMatch = /class="scrapitemprice"[\s\S]*?>([\d,]+\.\d{2})<span>\$US\/MT/.exec(html);
+  // \s* tolerates optional whitespace between tag-close and price (OilMonster can omit the icon).
+  const priceMatch = /class="scrapitemprice"[\s\S]*?>\s*([\d,]+\.\d{2})\s*<span>\$US\/MT/.exec(html);
   if (!priceMatch) {
     throw new OilMonsterStructureChangedError(
       'scrapitemprice div present but price not found before $US/MT',
@@ -308,6 +308,16 @@ export async function refreshOilMonster(
         continue;
       }
 
+      if (parsed.vlsfo < RANGE_VLSFO.min || parsed.vlsfo > RANGE_VLSFO.max) {
+        const last = getLatestBunkerPrice(db, unlocode, 'VLSFO');
+        console.warn(
+          `[OilMonster] ${unlocode} per-port VLSFO ${parsed.vlsfo} out of range ` +
+          `[${RANGE_VLSFO.min}–${RANGE_VLSFO.max}] — keeping last-good ` +
+          `(${last?.price_usd_per_mt ?? 'none'})`,
+        );
+        continue;
+      }
+
       upsertBunkerPrice(db, {
         port_unlocode: unlocode,
         fuel_grade: 'VLSFO',
@@ -324,18 +334,25 @@ export async function refreshOilMonster(
     }
   }
 
-  // Constanta proxy: derive from Istanbul if fresh
+  // Constanta proxy: derive from Istanbul if fresh and in range
   if (istanbulResult !== null) {
     const rocndPrice = Math.round((istanbulResult.vlsfo + BLACK_SEA_PREMIUM_USD) * 100) / 100;
-    upsertBunkerPrice(db, {
-      port_unlocode: 'ROCND',
-      fuel_grade: 'VLSFO',
-      price_usd_per_mt: rocndPrice,
-      price_date: istanbulResult.priceDate,
-      source: 'oilmonster-proxy',
-      fetched_at: fetchedAt,
-    });
-    rowsChanged++;
+    if (rocndPrice < RANGE_VLSFO.min || rocndPrice > RANGE_VLSFO.max) {
+      console.warn(
+        `[OilMonster] ROCND proxy price ${rocndPrice} out of range ` +
+        `[${RANGE_VLSFO.min}–${RANGE_VLSFO.max}] — skipping`,
+      );
+    } else {
+      upsertBunkerPrice(db, {
+        port_unlocode: 'ROCND',
+        fuel_grade: 'VLSFO',
+        price_usd_per_mt: rocndPrice,
+        price_date: istanbulResult.priceDate,
+        source: 'oilmonster-proxy',
+        fetched_at: fetchedAt,
+      });
+      rowsChanged++;
+    }
   }
 
   if (rowsChanged === 0) {
