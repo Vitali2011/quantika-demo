@@ -14,6 +14,7 @@ import { calculateTCE, type VoyageInput } from '@/lib/economics/voyage-calculato
 import { quoteCanal, type CanalCode, type SuezInput, type CanalInput } from '@/lib/economics/canals/index';
 import { getPortDa } from '@/lib/port-da/repository';
 import { resolvePort, type ResolvedPort } from '@/lib/ports/resolve';
+import { resolveVaguePort } from '@/lib/ports/resolve-vague';
 import { getDistance } from '@/lib/knowledge/distances/lookup';
 import { getStore } from '@/lib/session-store';
 import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
@@ -27,16 +28,22 @@ const LOCODE_RE = /^[A-Za-z]{5}$/;
  * - Known ports (name or LOCODE in our DB) → full resolve.
  * - Unknown LOCODE-format strings (5-char alpha) → synthetic pass-through for BC
  *   (preserves compatibility with callers using LOCODEs not yet in port-master.json).
- * - Unknown free-text names → null (caller should return 400).
+ * - Vague descriptors ("East Coast Greece port (unspecified)") → representative
+ *   basin port with approximate=true (Variant A) so P&L computes instead of a red
+ *   port_not_found; UI shows an amber "approximate port" note.
+ * - Genuinely-unknown free-text names → null (caller should return 400).
  */
-function resolvePortOrPassthrough(input: string): ResolvedPort | null {
+function resolvePortOrPassthrough(input: string): { port: ResolvedPort; approximate: boolean } | null {
   const resolved = resolvePort(input);
-  if (resolved) return resolved;
+  if (resolved) return { port: resolved, approximate: false };
   // BC: allow unknown 5-char LOCODE-format strings through as synthetic port
   if (LOCODE_RE.test(input)) {
     const code = input.toUpperCase();
-    return { portCode: code, portName: code, country: '', lat: 0, lon: 0, aliases: [] };
+    return { port: { portCode: code, portName: code, country: '', lat: 0, lon: 0, aliases: [] }, approximate: false };
   }
+  // Variant A: vague descriptor → representative basin port (approximate).
+  const vague = resolveVaguePort(input);
+  if (vague) return { port: vague, approximate: true };
   return null;
 }
 
@@ -195,19 +202,32 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const data = parsed.data;
 
   // Resolve ports at API entry — single source of truth for downstream
-  const originResolved = resolvePortOrPassthrough(data.route.originPort);
-  if (!originResolved) {
+  const originR = resolvePortOrPassthrough(data.route.originPort);
+  if (!originR) {
     return NextResponse.json(
       { error: 'port_not_found', input: 'originPort', value: data.route.originPort },
       { status: 400 },
     );
   }
-  const destinationResolved = resolvePortOrPassthrough(data.route.destinationPort);
-  if (!destinationResolved) {
+  const originResolved = originR.port;
+  const destinationR = resolvePortOrPassthrough(data.route.destinationPort);
+  if (!destinationR) {
     return NextResponse.json(
       { error: 'port_not_found', input: 'destinationPort', value: data.route.destinationPort },
       { status: 400 },
     );
+  }
+  const destinationResolved = destinationR.port;
+
+  // Variant A: vague descriptors resolved to a representative port — surface so
+  // the UI can flag the route as approximate (amber "confirm port") rather than
+  // presenting an approximate distance/P&L as exact.
+  const approximatePorts: Array<{ side: 'origin' | 'destination'; input: string; resolvedTo: string }> = [];
+  if (originR.approximate) {
+    approximatePorts.push({ side: 'origin', input: data.route.originPort, resolvedTo: originResolved.portName });
+  }
+  if (destinationR.approximate) {
+    approximatePorts.push({ side: 'destination', input: data.route.destinationPort, resolvedTo: destinationResolved.portName });
   }
 
   const canalUsd = resolveCanalUsd(data);
@@ -338,5 +358,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   };
 
   const result = calculateTCE(tceInput);
-  return NextResponse.json({ ...result, bunkerPriceSource, euaPriceSource, etsResolution });
+  return NextResponse.json({
+    ...result,
+    bunkerPriceSource,
+    euaPriceSource,
+    etsResolution,
+    ...(approximatePorts.length > 0 ? { approximatePorts } : {}),
+  });
 }
