@@ -431,6 +431,27 @@ export function scoreVetting(vessel: ParsedVessel, refYear?: number): FitBreakdo
 // Top-level — composes all components, applies sanctions, returns fit-%.
 // ────────────────────────────────────────────────────────────────────────────
 
+// EU / near-EU country & range keywords triggering PSC age scrutiny on discharge.
+// Substring match on the RAW descriptor (diacritics folded) — works on the vague
+// re-parsed strings ("East Coast Greece port (unspecified)") that
+// regionMatchesPort cannot resolve. Country names only — ambiguous basin phrases
+// ("Western Mediterranean") are intentionally excluded to avoid false positives.
+const EU_DISCHARGE_KEYWORDS =
+  /\b(greece|greek|italy|italian|romania|romanian|constanta|bulgaria|bulgarian|spain|spanish|france|french|netherlands|dutch|belgium|belgian|germany|german|croatia|croatian|slovenia|slovenian|portugal|portuguese|cyprus|cypriot|malta|maltese|poland|polish|european continent|ara range)\b/i;
+
+/**
+ * EU-discharge detector for the age cap. True when the port resolves to Europe
+ * via the canonical region map OR the raw descriptor names an EU/near-EU country.
+ * Isolated from regionMatchesPort so widening detection here does NOT affect the
+ * hard voyage-restriction gate (its other consumer).
+ */
+function isEuropeanDischarge(port: string | null | undefined): boolean {
+  if (!port) return false;
+  if (regionMatchesPort('europe', port)) return true;
+  const folded = port.normalize('NFKD').replace(/\p{Diacritic}/gu, '');
+  return EU_DISCHARGE_KEYWORDS.test(folded);
+}
+
 export interface FitBreakdownInput {
   cargo: ParsedCargo;
   vessel: ParsedVessel;
@@ -501,7 +522,7 @@ export function computeFitBreakdown(input: FitBreakdownInput): FitBreakdown {
   if (
     euDischargeAge != null &&
     euDischargeAge >= 25 &&
-    regionMatchesPort('europe', cfValue(cargo.destinationPort))
+    isEuropeanDischarge(cfValue(cargo.destinationPort))
   ) {
     caps.push({
       reason: `vessel ${euDischargeAge}yr + EU discharge — PSC/charterer age risk`,
