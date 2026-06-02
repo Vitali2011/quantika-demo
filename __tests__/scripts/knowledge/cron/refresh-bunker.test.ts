@@ -16,6 +16,9 @@ jest.mock('@/lib/knowledge/bunker/shipandbunker-adapter', () => ({
 jest.mock('@/lib/knowledge/bunker/bunkerindex-adapter', () => ({
   refreshBunkerIndex: jest.fn(),
 }));
+jest.mock('@/lib/knowledge/bunker/oilmonster-adapter', () => ({
+  refreshOilMonster: jest.fn(),
+}));
 jest.mock('@/lib/session-store', () => ({
   getStore: jest.fn(),
 }));
@@ -23,11 +26,13 @@ jest.mock('@/lib/session-store', () => ({
 import { refreshUsdaBunker } from '@/lib/knowledge/bunker/usda-adapter';
 import { refreshShipAndBunker } from '@/lib/knowledge/bunker/shipandbunker-adapter';
 import { refreshBunkerIndex } from '@/lib/knowledge/bunker/bunkerindex-adapter';
+import { refreshOilMonster } from '@/lib/knowledge/bunker/oilmonster-adapter';
 import { getStore } from '@/lib/session-store';
 
 const mockRefreshUsda = refreshUsdaBunker as jest.MockedFunction<typeof refreshUsdaBunker>;
 const mockRefreshSnb = refreshShipAndBunker as jest.MockedFunction<typeof refreshShipAndBunker>;
 const mockRefreshBi = refreshBunkerIndex as jest.MockedFunction<typeof refreshBunkerIndex>;
+const mockRefreshOm = refreshOilMonster as jest.MockedFunction<typeof refreshOilMonster>;
 const mockGetStore = getStore as jest.MockedFunction<typeof getStore>;
 
 function makeDb(): Database.Database {
@@ -36,7 +41,7 @@ function makeDb(): Database.Database {
   migration013.up(db);
   migration023.up(db);
 
-  for (const slug of ['bunker-usda', 'bunker-shipandbunker', 'bunker-bunkerindex']) {
+  for (const slug of ['bunker-usda', 'bunker-shipandbunker', 'bunker-bunkerindex', 'bunker-oilmonster']) {
     registerSource(db, {
       slug,
       name: slug,
@@ -59,8 +64,9 @@ describe('refresh-bunker cron', () => {
     exitSpy = jest.spyOn(process, 'exit').mockImplementation((() => {}) as any);
     jest.clearAllMocks();
     mockGetStore.mockReturnValue({ getDb: () => db } as any);
-    // Default BI to succeed (non-disruptive to existing tests)
+    // Default BI and OilMonster to succeed (non-disruptive to existing tests)
     mockRefreshBi.mockResolvedValue({ rowsChanged: 6 });
+    mockRefreshOm.mockResolvedValue({ rowsChanged: 10 });
   });
 
   afterEach(() => {
@@ -109,10 +115,11 @@ describe('refresh-bunker cron', () => {
     expect(exitSpy).toHaveBeenCalledWith(0);
   });
 
-  it('exits 1 when all three sources fail', async () => {
+  it('exits 1 when all four sources fail', async () => {
     mockRefreshUsda.mockRejectedValue(new Error('USDA down'));
     mockRefreshSnb.mockRejectedValue(new Error('SnB down'));
     mockRefreshBi.mockRejectedValue(new Error('BI down'));
+    mockRefreshOm.mockRejectedValue(new Error('OM down'));
 
     const { main } = await import('@/scripts/knowledge/cron/refresh-bunker');
     await main();
@@ -120,10 +127,23 @@ describe('refresh-bunker cron', () => {
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
 
-  it('records sync_log entries for all three slugs independently', async () => {
+  it('exits 0 when only OilMonster succeeds (all others fail)', async () => {
+    mockRefreshUsda.mockRejectedValue(new Error('USDA down'));
+    mockRefreshSnb.mockRejectedValue(new Error('SnB down'));
+    mockRefreshBi.mockRejectedValue(new Error('BI down'));
+    mockRefreshOm.mockResolvedValue({ rowsChanged: 10 });
+
+    const { main } = await import('@/scripts/knowledge/cron/refresh-bunker');
+    await main();
+
+    expect(exitSpy).toHaveBeenCalledWith(0);
+  });
+
+  it('records sync_log entries for all four slugs independently', async () => {
     mockRefreshUsda.mockResolvedValue({ rowsChanged: 10, upstreamVersion: '2026-05-08' });
     mockRefreshSnb.mockRejectedValue(new Error('SnB error'));
     mockRefreshBi.mockResolvedValue({ rowsChanged: 6 });
+    mockRefreshOm.mockResolvedValue({ rowsChanged: 10 });
 
     const { main } = await import('@/scripts/knowledge/cron/refresh-bunker');
     await main();
@@ -137,9 +157,13 @@ describe('refresh-bunker cron', () => {
     const biLog = db.prepare(
       "SELECT * FROM knowledge_sync_log WHERE source_slug='bunker-bunkerindex' ORDER BY id DESC LIMIT 1"
     ).get() as any;
+    const omLog = db.prepare(
+      "SELECT * FROM knowledge_sync_log WHERE source_slug='bunker-oilmonster' ORDER BY id DESC LIMIT 1"
+    ).get() as any;
 
     expect(usdaLog.status).toBe('success');
     expect(snbLog.status).toBe('failure');
     expect(biLog.status).toBe('success');
+    expect(omLog.status).toBe('success');
   });
 });
