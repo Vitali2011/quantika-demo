@@ -7,8 +7,11 @@
 
 import Database from 'better-sqlite3';
 import { NextRequest } from 'next/server';
-import { consFromDwt } from '@/app/api/voyage/bunker-recommendation/route';
-import { GET } from '@/app/api/voyage/bunker-recommendation/route';
+import {
+  consFromDwt,
+  clampConsForVesselClass,
+  GET,
+} from '@/app/api/voyage/bunker-recommendation/route';
 
 // ── Unit tests: consFromDwt ────────────────────────────────────────────────
 
@@ -62,6 +65,42 @@ describe('consFromDwt — DWT → t/day consumption curve', () => {
   });
 });
 
+// ── Unit tests: clampConsForVesselClass ────────────────────────────────────
+
+describe('clampConsForVesselClass — plausibility clamp (×1.8 threshold)', () => {
+  it('3200 DWT coaster: cons=22 (>6×1.8=10.8) → clamped to 6', () => {
+    expect(clampConsForVesselClass(22, 3_200)).toEqual({ cons: 6, clamped: true });
+  });
+
+  it('3200 DWT coaster: cons=10 (<10.8) → not clamped', () => {
+    expect(clampConsForVesselClass(10, 3_200)).toEqual({ cons: 10, clamped: false });
+  });
+
+  it('3200 DWT coaster: cons=10.8 (exactly at threshold) → not clamped (strict >)', () => {
+    expect(clampConsForVesselClass(10.8, 3_200)).toEqual({ cons: 10.8, clamped: false });
+  });
+
+  it('3200 DWT coaster: cons=11 (>10.8) → clamped to 6', () => {
+    expect(clampConsForVesselClass(11, 3_200)).toEqual({ cons: 6, clamped: true });
+  });
+
+  it('52000 DWT supramax: cons=35 (<28×1.8=50.4) → not clamped', () => {
+    expect(clampConsForVesselClass(35, 52_000)).toEqual({ cons: 35, clamped: false });
+  });
+
+  it('52000 DWT supramax: cons=55 (>50.4) → clamped to 28', () => {
+    expect(clampConsForVesselClass(55, 52_000)).toEqual({ cons: 28, clamped: true });
+  });
+
+  it('DWT=0 (unknown) → never clamps regardless of cons value', () => {
+    expect(clampConsForVesselClass(100, 0)).toEqual({ cons: 100, clamped: false });
+  });
+
+  it('DWT negative → treated as unknown, never clamps', () => {
+    expect(clampConsForVesselClass(50, -100)).toEqual({ cons: 50, clamped: false });
+  });
+});
+
 // ── Integration: SEAGULL 78 scenario (Bug 1 acceptance) ───────────────────
 
 let db: Database.Database;
@@ -112,14 +151,25 @@ describe('SEAGULL 78 — 3 200 DWT coaster, Nemrut Bay → Liverpool', () => {
     expect(body.capacityMt).toBe(224);
   });
 
-  it('when explicit consMtPerDay=22 provided → uses explicit (not DWT curve)', async () => {
+  it('consMtPerDay=22 for 3200 DWT coaster → clamped to 6 (implausible, >6×1.8=10.8)', async () => {
     const url =
       'http://localhost/api/voyage/bunker-recommendation' +
       '?from=ROCND&to=GBLIV&grade=VLSFO&dwt=3200&speedKn=10&consMtPerDay=22&voyageDays=10';
     const res = await GET(new NextRequest(url, { method: 'GET' }));
     const body = await res.json();
-    // explicit 22 t/day → (10+5)*22 = 330 t; cap = 224 → capped
-    expect(body.liftCapped).toBe(true);
-    expect(body.liftTonnes).toBe(224);
+    // 22 t/day > 6×1.8=10.8 → clamped to 6; lift=(10+5)*6=90; cap=224 → not capped
+    expect(body.liftCapped).toBe(false);
+    expect(body.liftTonnes).toBe(90);
+  });
+
+  it('supramax 52000 DWT with plausible consMtPerDay=30 → not clamped', async () => {
+    const url =
+      'http://localhost/api/voyage/bunker-recommendation' +
+      '?from=ROCND&to=GBLIV&grade=VLSFO&dwt=52000&speedKn=13&consMtPerDay=30&voyageDays=10';
+    const res = await GET(new NextRequest(url, { method: 'GET' }));
+    const body = await res.json();
+    // cons=30 < 28×1.8=50.4 → not clamped; lift=(10+5)*30=450; cap=floor(52000*0.07)=3640 → not capped
+    expect(body.liftCapped).toBe(false);
+    expect(body.liftTonnes).toBe(450);
   });
 });

@@ -20,8 +20,11 @@ import { optimizeSplitBunker } from '@/lib/economics/split-bunker';
 import { computeBunkerComparison } from '@/lib/economics/bunker-comparison';
 import { isCandidateInVoyageBasins } from '@/lib/sailing/voyage-basin';
 import { estimateBunkerLift } from '@/lib/economics/bunker-lift';
+import { consFromDwt, resolveConsMtPerDay } from '@/lib/economics/vessel-consumption';
 import type { BunkerPrice } from '@/lib/economics/bunker';
 import type { BunkerCandidateResult } from '@/lib/economics/bunker-comparison';
+
+export { consFromDwt } from '@/lib/economics/vessel-consumption';
 
 export const dynamic = 'force-dynamic';
 
@@ -51,24 +54,27 @@ const DETOUR_ABS_CAP_NM = 200;
 
 /** Vessel defaults for per-port effective $/MT math (Supramax representative). */
 const DEFAULT_SPEED_KN = 12.5;
-/** Fallback when DWT is also unknown — Supramax representative. */
-const DEFAULT_CONS_MT_PER_DAY = 28;
 const DEFAULT_LIFT_TONNES = 500;
 const DEFAULT_VESSEL_DAY_RATE_USD = 15000;
 
+/** Stored cons >1.8× the DWT-class midpoint is implausible (e.g. Supramax figure on a coaster). */
+const IMPLAUSIBLE_CONS_FACTOR = 1.8;
+
 /**
- * Estimate laden VLSFO consumption (t/day) from vessel DWT when no Q88 data.
- * Midpoints of realistic laden-service ranges per class.
- * When DWT is 0 (unknown) falls back to Supramax representative (28 t/day).
+ * Clamp a stored vessel consumption to the DWT-class midpoint when it is implausibly high.
+ * "Present-but-wrong" Q88 values (e.g. 22 t/day on a 3 200 DWT coaster) would otherwise
+ * bypass consFromDwt and produce a wildly over-sized bunker lift.
  */
-export function consFromDwt(dwt: number): number {
-  if (dwt <= 0)       return DEFAULT_CONS_MT_PER_DAY;
-  if (dwt <= 5_000)   return 6;   // coaster / small MPP
-  if (dwt <= 10_000)  return 10;  // small general cargo
-  if (dwt <= 35_000)  return 18;  // handysize
-  if (dwt <= 60_000)  return 28;  // supra/handymax
-  if (dwt <= 85_000)  return 33;  // panamax
-  return 40;                       // capesize / VLCC
+export function clampConsForVesselClass(
+  rawCons: number,
+  dwt: number,
+): { cons: number; clamped: boolean } {
+  if (dwt <= 0) return { cons: rawCons, clamped: false };
+  const classEst = consFromDwt(dwt);
+  if (rawCons > classEst * IMPLAUSIBLE_CONS_FACTOR) {
+    return { cons: classEst, clamped: true };
+  }
+  return { cons: rawCons, clamped: false };
 }
 
 function parseFiniteNumber(raw: string | null): number | null {
@@ -111,10 +117,14 @@ export async function GET(req: NextRequest): Promise<NextResponse<BunkerRecommen
   const voyageDaysParam = parseFiniteNumber(url.searchParams.get('voyageDays'));
 
   const speedKn = speedParam && speedParam > 0 ? speedParam : DEFAULT_SPEED_KN;
-  const consMtPerDay =
-    consParam && consParam > 0 ? consParam :
-    dwtParam && dwtParam > 0   ? consFromDwt(dwtParam) :
-    DEFAULT_CONS_MT_PER_DAY;
+
+  const rawCons = consParam ?? 0;
+  const consMtPerDay = resolveConsMtPerDay(rawCons, dwtParam ?? 0);
+  if (rawCons > 0 && consMtPerDay !== rawCons) {
+    console.warn(
+      `[bunker-rec] cons clamped: ${rawCons}→${consMtPerDay} t/day (DWT ${dwtParam ?? 0})`,
+    );
+  }
 
   const liftEstimate = estimateBunkerLift({
     dwt: dwtParam ?? 0,
