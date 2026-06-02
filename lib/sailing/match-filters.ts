@@ -270,6 +270,33 @@ export function checkVesselAge(input: VesselAgeCheckInput): FilterResult {
 }
 
 // ────────────────────────────────────────────────────────────────────────────
+// Gear-required check — cargo explicitly requires geared vessel
+// ────────────────────────────────────────────────────────────────────────────
+
+export interface GearRequiredCheckInput {
+  cargoGearRequired: boolean | null;
+  geared: boolean | null;
+  originPort: string | null;
+  destinationPort: string | null | undefined;
+}
+
+export function checkGearRequired(input: GearRequiredCheckInput): FilterResult {
+  const { cargoGearRequired, geared } = input;
+  // Not required or unknown → pass (conservative)
+  if (!cargoGearRequired) return { pass: true };
+  // Geared vessel satisfies requirement
+  if (geared === true) return { pass: true };
+  // Geared unknown → conservative pass
+  if (geared == null) return { pass: true };
+  // geared === false → check whether either port has shore cranes as substitute
+  const loadCranes = portHasShoreCranes(input.originPort);
+  if (loadCranes === true) return { pass: true };
+  const dischCranes = portHasShoreCranes(input.destinationPort ?? null);
+  if (dischCranes === true) return { pass: true };
+  return { pass: false, reason: 'cargo requires geared vessel; vessel is gearless and no confirmed shore cranes at load/discharge port' };
+}
+
+// ────────────────────────────────────────────────────────────────────────────
 // Vessel dimensions check — beam and LOA vs cargo port/cargo maximums
 // ────────────────────────────────────────────────────────────────────────────
 
