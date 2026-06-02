@@ -1757,7 +1757,11 @@
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
-    "sourceNote": "AdSP Mare Adriatico N."
+    "sourceNote": "AdSP Mare Adriatico N.",
+    "aliases": [
+      "Marghera",
+      "Porto Marghera"
+    ]
   },
   {
     "unlocode": "ITAOI",
@@ -2371,7 +2375,11 @@
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
-    "sourceNote": "Lloyd's Port Handbk"
+    "sourceNote": "Lloyd's Port Handbk",
+    "aliases": [
+      "Tartous",
+      "Tartous Port"
+    ]
   },
   {
     "unlocode": "EGPSD",
@@ -3474,7 +3482,11 @@
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "Pivdennyi port guide"
+    "sourceNote": "Pivdennyi port guide",
+    "aliases": [
+      "Pivdennyi",
+      "Yuzhne"
+    ]
   },
   {
     "unlocode": "UAILK",
@@ -7562,7 +7574,10 @@
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "API Veracruz profile"
+    "sourceNote": "API Veracruz profile",
+    "aliases": [
+      "Vera Cruz"
+    ]
   },
   {
     "unlocode": "MXATM",
@@ -9668,5 +9683,99 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "note": "Valletta — central Med bunkering hub"
+  },
+  {
+    "unlocode": "EGABU",
+    "name": "Abu Qir",
+    "country": "EG",
+    "lat": 31.32,
+    "lon": 30.06,
+    "maxDraftM": 10,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "note": "Egypt Med, near Alexandria"
+  },
+  {
+    "unlocode": "EGADA",
+    "name": "Adabiya",
+    "country": "EG",
+    "lat": 29.87,
+    "lon": 32.49,
+    "maxDraftM": 14,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "note": "Gulf of Suez bulk terminal"
+  },
+  {
+    "unlocode": "ROBRA",
+    "name": "Braila",
+    "country": "RO",
+    "lat": 45.27,
+    "lon": 27.96,
+    "maxDraftM": 7,
+    "hasShoreCranes": true,
+    "berthType": "river",
+    "note": "Danube river port"
+  },
+  {
+    "unlocode": "TRDIL",
+    "name": "Diliskelesi",
+    "country": "TR",
+    "lat": 40.77,
+    "lon": 29.53,
+    "maxDraftM": 14,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "note": "Gulf of Izmit (Gebze)"
+  },
+  {
+    "unlocode": "MDGIU",
+    "name": "Giurgiulesti",
+    "country": "MD",
+    "lat": 45.47,
+    "lon": 28.2,
+    "maxDraftM": 7,
+    "hasShoreCranes": true,
+    "berthType": "river",
+    "note": "Danube/Prut, Moldova free port",
+    "aliases": [
+      "Giurgiulești"
+    ]
+  },
+  {
+    "unlocode": "RUKAV",
+    "name": "Kavkaz",
+    "country": "RU",
+    "lat": 45.33,
+    "lon": 36.66,
+    "maxDraftM": 10,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "note": "Kerch Strait"
+  },
+  {
+    "unlocode": "RUTUA",
+    "name": "Tuapse",
+    "country": "RU",
+    "lat": 44.1,
+    "lon": 39.08,
+    "maxDraftM": 12,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "note": "Russia Black Sea"
+  },
+  {
+    "unlocode": "TRYAR",
+    "name": "Yarimca",
+    "country": "TR",
+    "lat": 40.76,
+    "lon": 29.87,
+    "maxDraftM": 15,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "note": "Gulf of Izmit (Korfez)",
+    "aliases": [
+      "Yarımca"
+    ]
   }
 ]
