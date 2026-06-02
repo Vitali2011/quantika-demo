@@ -111,3 +111,6 @@ scripts/demo-seed/.llm-cache/
 .progong/results/
 .progong/budget.json
 .progong/state.json
+
+# QA scratch (/test-skill adversarial output) — not for VCS
+.test-review/
