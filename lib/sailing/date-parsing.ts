@@ -300,6 +300,27 @@ export function parseLaycan(
     }
   }
 
+  // Open-ended forward laycan: "<date> onwards/onward", "from <date>", "<date> →".
+  // Broker semantics: loading window OPENS from this date forward — a real window,
+  // not a single day. Without this, "7 July 2026 onwards" / "From 15 May 2026"
+  // drop the keyword and fall through to the single-day parser → collapsed laycan
+  // (11 demo cargoes, founder Gate5 2026-06-02). Placed AFTER all range/phrase
+  // parsers so an explicit range ("15-25 May onwards") still wins as a range.
+  const FORWARD_WINDOW_DAYS = 14;
+  const hasOnwards = /\bonwards?\b|→/i.test(s);
+  const hasLeadingFrom = /^\s*from\b/i.test(s);
+  if (hasOnwards || hasLeadingFrom) {
+    const cleaned = s
+      .replace(/\bonwards?\b/gi, '')
+      .replace(/→/g, '')
+      .replace(/^\s*from\b/i, '')
+      .trim();
+    const d = parseVesselOpenDate(cleaned, refYear);
+    if (d) {
+      return { start: d, end: new Date(d.getTime() + FORWARD_WINDOW_DAYS * 86_400_000) };
+    }
+  }
+
   // Single day fallback — reuse vessel-open parser
   const single = parseVesselOpenDate(s, refYear);
   if (single) return { start: single, end: single };

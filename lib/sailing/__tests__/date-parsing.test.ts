@@ -190,3 +190,29 @@ describe('parseLaycan — fuzzy windows (founder 2026-06-02: no single-day colla
   });
 });
 
+describe('parseLaycan — open-ended laycan (founder Gate5 2026-06-02: "onwards"/"from" → forward window, not single day)', () => {
+  // Real failing shapes from the demo corpus (probe 2026-06-02): 11 cargoes
+  // collapsed to single-day because "onwards"/"onward"/"from" was ignored.
+  it('"7 July 2026 onwards" → forward window starting 7 July, not single day', () => {
+    const r = parseLaycan('7 July 2026 onwards', 2026)!;
+    expect(r.start.toISOString().slice(0, 10)).toBe('2026-07-07');
+    expect(r.start.getTime()).not.toBe(r.end.getTime());
+    expect(r.end.toISOString().slice(0, 10)).toBe('2026-07-21'); // start + 14d
+  });
+  it('"From 15 May 2026" → forward window starting 15 May', () => {
+    const r = parseLaycan('From 15 May 2026', 2026)!;
+    expect(r.start.toISOString().slice(0, 10)).toBe('2026-05-15');
+    expect(r.end.toISOString().slice(0, 10)).toBe('2026-05-29');
+    expect(r.start.getTime()).not.toBe(r.end.getTime());
+  });
+  it('"20 May 2026 onward" (singular) → forward window', () => {
+    const r = parseLaycan('20 May 2026 onward', 2026)!;
+    expect(r.start.toISOString().slice(0, 10)).toBe('2026-05-20');
+    expect(r.start.getTime()).not.toBe(r.end.getTime());
+  });
+  it('plain single-day "20 Sep" stays a true single day (NOT widened)', () => {
+    const r = parseLaycan('20 Sep', 2026)!;
+    expect(r.start.getTime()).toBe(r.end.getTime());
+  });
+});
+
