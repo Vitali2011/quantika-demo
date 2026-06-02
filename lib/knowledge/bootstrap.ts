@@ -153,18 +153,6 @@ export const KNOWLEDGE_REGISTRY: RegisterSourceInput[] = [
     primary_table: 'bunker_prices',
   },
   {
-    slug: 'bunker-bunkerindex',
-    name: 'BunkerIndex Spot Prices (NLRTM/SGSIN/AEFJR)',
-    kind: 'structured_rows',
-    category: 'market',
-    source_url: 'https://www.bunkerindex.com/',
-    license: 'Public scrape (fair use)',
-    refresh_mode: 'auto-daily',
-    stale_threshold_days: 3,
-    refresh_command: 'npx tsx scripts/knowledge/cron/refresh-bunker.ts',
-    primary_table: 'bunker_prices',
-  },
-  {
     slug: 'bunker-oilmonster',
     name: 'OilMonster Bunker Prices (all 5 hubs incl. GIGIB/USHOU)',
     kind: 'structured_rows',

@@ -4,20 +4,13 @@
  *
  * Attack surfaces:
  *   1. TradingEconomics parser: integer prices (no decimal point) — BUG-1 HIGH
- *   2. BunkerIndex parser: whitespace regression (commit a02831ff)
- *   3. BunkerIndex structural-check logic (AND gate, partial marker)
- *   4. ETS Cf=3.151 fixture math verification
+ *   2. ETS Cf=3.151 fixture math verification
  */
 
 import {
   parseTradingEconomicsHtml,
   TradingEconomicsParseError,
 } from '@/lib/knowledge/eua/tradingeconomics-adapter';
-
-import {
-  parseBunkerIndexHtml,
-  BunkerIndexParseError,
-} from '@/lib/knowledge/bunker/bunkerindex-adapter';
 
 import { cfForFuel, calculateEuEts } from '@/lib/economics/ets';
 
@@ -70,107 +63,7 @@ describe('[ADV] parseTradingEconomicsHtml — integer prices', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Surface 2 — BunkerIndex whitespace before price (commit a02831ff regression)
-//
-// The fix added \s* before [\d.]+ in the grade regex. Regression test ensures
-// the fix stays in future refactors.
-// ---------------------------------------------------------------------------
-
-const WHITESPACE_FIXTURES: Array<{ desc: string; html: string }> = [
-  {
-    desc: 'space between > and price',
-    html: `<table class="price-table"><tbody>
-      <tr data-port="Rotterdam" data-unlocode="NLRTM">
-        <td data-grade="VLSFO"> 529.00</td>
-        <td data-grade="MGO"> 731.00</td>
-      </tr></tbody></table>`,
-  },
-  {
-    desc: 'newline + indent before price',
-    html: `<table class="price-table"><tbody>
-      <tr data-port="Rotterdam" data-unlocode="NLRTM">
-        <td data-grade="VLSFO">
-          529.00</td>
-        <td data-grade="MGO">
-          731.00</td>
-      </tr></tbody></table>`,
-  },
-  {
-    desc: 'multiple spaces before price',
-    html: `<table class="price-table"><tbody>
-      <tr data-port="Rotterdam" data-unlocode="NLRTM">
-        <td data-grade="VLSFO">   529.00</td>
-        <td data-grade="MGO">   731.00</td>
-      </tr></tbody></table>`,
-  },
-];
-
-describe('[ADV] parseBunkerIndexHtml — whitespace before price (a02831ff regression)', () => {
-  for (const { desc, html } of WHITESPACE_FIXTURES) {
-    it(`parses VLSFO/MGO with ${desc}`, () => {
-      const entries = parseBunkerIndexHtml(html);
-      const rtm = entries.find(e => e.portName === 'Rotterdam');
-      expect(rtm).toBeDefined();
-      expect(rtm?.vlsfo).toBeCloseTo(529, 1);
-      expect(rtm?.mgo).toBeCloseTo(731, 1);
-    });
-  }
-});
-
-// ---------------------------------------------------------------------------
-// Surface 3 — BunkerIndex structural-check AND logic
-//
-// The guard: !html.includes('price-table') && !html.includes('bunkerPriceTable')
-// && !html.includes('data-grade') → throws only when ALL three absent.
-// Test: HTML with partial marker but no actual rows → returns [], no throw.
-// ---------------------------------------------------------------------------
-
-describe('[ADV] parseBunkerIndexHtml — structural-check edge cases', () => {
-  it('data-grade in column header only, no data-port rows → returns empty array (no throw)', () => {
-    // Passes structural check (has data-grade), but rowPattern finds no data-port rows
-    const html = `<table><thead>
-      <tr><th data-grade="VLSFO">VLSFO</th><th data-grade="MGO">MGO</th></tr>
-    </thead><tbody></tbody></table>`;
-    const entries = parseBunkerIndexHtml(html);
-    expect(entries).toHaveLength(0);
-  });
-
-  it('price-table class present but all port names unknown → returns empty array (no throw)', () => {
-    const html = `<table class="price-table"><tbody>
-      <tr data-port="PanamaCity" data-unlocode="PAPAC">
-        <td data-grade="VLSFO">480.00</td>
-      </tr>
-    </tbody></table>`;
-    const entries = parseBunkerIndexHtml(html);
-    expect(entries).toHaveLength(0); // PanamaCity not in TARGET_PORTS
-  });
-
-  it('NaN price (both grades) → entry skipped, not pushed', () => {
-    const html = `<table class="price-table"><tbody>
-      <tr data-port="Rotterdam" data-unlocode="NLRTM">
-        <td data-grade="VLSFO">N/A</td>
-        <td data-grade="MGO">N/A</td>
-      </tr>
-    </tbody></table>`;
-    // Both prices parse as NaN → Number.isFinite fails → no entry added
-    const entries = parseBunkerIndexHtml(html);
-    expect(entries).toHaveLength(0);
-  });
-
-  it('completely missing price elements → entry skipped (no undefined in results)', () => {
-    const html = `<table class="price-table"><tbody>
-      <tr data-port="Rotterdam" data-unlocode="NLRTM">
-        <td class="other">Rotterdam</td>
-      </tr>
-    </tbody></table>`;
-    const entries = parseBunkerIndexHtml(html);
-    expect(entries).toHaveLength(0);
-    expect(entries.every(e => e.vlsfo !== undefined || e.mgo !== undefined)).toBe(true);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Surface 4 — ETS Cf=3.151 fixture math verification
+// Surface 2 — ETS Cf=3.151 fixture math verification
 //
 // Verify exact ets_eur values from the 4 voyage fixtures match Cf=3.151.
 // These values are the reference the fixture regen was checked against.
@@ -267,7 +160,7 @@ describe('[ADV] ETS fixture Cf=3.151 math verification', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Surface 5 — HFO unchanged at 3.114 (no regression to old default)
+// Surface 3 — HFO unchanged at 3.114 (no regression to old default)
 // ---------------------------------------------------------------------------
 
 describe('[ADV] cfForFuel — HFO/HSFO stayed at 3.114 (no regression)', () => {
