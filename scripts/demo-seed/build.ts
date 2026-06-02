@@ -18,57 +18,11 @@ import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
 import { computeFitBreakdown } from '@/lib/sailing/fit-breakdown';
 import { computeEstimatedTce, estimateFreightRate, parseLeadingNumber } from '@/lib/matching/tce-calculator';
 import { getPortDistance } from '@/lib/sailing/port-distances';
+import { shiftBodyDates, shiftMonthYear, shiftIsoDate } from './date-utils';
 import type { MatchReadiness } from '@/lib/types';
 
 const PARSER_VERSION = 'demo-seed-v1';
 
-const MONTH_NAMES = [
-  'January','February','March','April','May','June',
-  'July','August','September','October','November','December',
-];
-
-function shiftIsoDate(iso: string, offsetDays: number): string {
-  const d = new Date(iso);
-  d.setUTCDate(d.getUTCDate() + offsetDays);
-  return d.toISOString();
-}
-
-/**
- * Shift dates in plain text body. Recognizes:
- *   - ISO "YYYY-MM-DD"
- *   - "DD-DD Month YYYY" range (e.g. "15-20 April 2026"), handles cross-month
- */
-function shiftBodyDates(body: string, offsetDays: number): string {
-  let out = body;
-
-  // ISO YYYY-MM-DD
-  out = out.replace(/\b(\d{4})-(\d{2})-(\d{2})\b/g, (_m, y, mo, d) =>
-    shiftIsoDate(`${y}-${mo}-${d}T00:00:00Z`, offsetDays).slice(0, 10),
-  );
-
-  // "DD-DD Month YYYY" or "DD/DD Month YYYY" range (e.g. "15-20 April 2026", "02/05 April 2018")
-  out = out.replace(
-    /\b(\d{1,2})\s*[-\/]\s*(\d{1,2})\s+(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+(\d{4})\b/gi,
-    (_match, d1, d2, mon, y) => {
-      const monthIdx = MONTH_NAMES.findIndex((m) =>
-        m.toLowerCase().startsWith(mon.slice(0, 3).toLowerCase()),
-      );
-      const start = new Date(Date.UTC(+y, monthIdx, +d1));
-      const end = new Date(Date.UTC(+y, monthIdx, +d2));
-      start.setUTCDate(start.getUTCDate() + offsetDays);
-      end.setUTCDate(end.getUTCDate() + offsetDays);
-      const sameMonth =
-        start.getUTCMonth() === end.getUTCMonth() &&
-        start.getUTCFullYear() === end.getUTCFullYear();
-      if (sameMonth) {
-        return `${start.getUTCDate()}-${end.getUTCDate()} ${MONTH_NAMES[start.getUTCMonth()]} ${start.getUTCFullYear()}`;
-      }
-      return `${start.getUTCDate()} ${MONTH_NAMES[start.getUTCMonth()]} - ${end.getUTCDate()} ${MONTH_NAMES[end.getUTCMonth()]} ${end.getUTCFullYear()}`;
-    },
-  );
-
-  return out;
-}
 
 // Shift the dates inside an LLM-parsed ParsedCargo: only the free-text
 // `laycan` field carries dates. We push it through the same body-date
@@ -100,18 +54,30 @@ function defaultSpeedConsumption(dwt: number | null): { speedLaden: string; cons
   return { speedLaden: '14.5 kts', consumption: '38 mt/day' };
 }
 
-// Shift the dates inside an LLM-parsed ParsedVessel: only openDate.value
-// (ISO yyyy-mm-dd) is shifted.
+// Shift the dates inside an LLM-parsed ParsedVessel: openDate.value (ISO yyyy-mm-dd)
+// plus any survey/drydock MM/YYYY dates in restriction strings (same offset).
+// Consistent rebasing prevents "due drydock at laycan" artifacts when only openDate shifts.
 function shiftedVessel(v: ParsedVessel, offsetDays: number): ParsedVessel {
-  if (!v.openDate) return v;
-  const iso = v.openDate.value;
-  // LLM output is not always a string here (can be number / null); only shift ISO strings.
-  if (typeof iso !== 'string' || !iso.match(/^\d{4}-\d{2}-\d{2}/)) return v;
-  const d = new Date(iso + (iso.length === 10 ? 'T00:00:00Z' : ''));
-  if (isNaN(d.getTime())) return v;
-  d.setUTCDate(d.getUTCDate() + offsetDays);
-  const shifted = d.toISOString().slice(0, 10);
-  return { ...v, openDate: { ...v.openDate, value: shifted } };
+  let next: ParsedVessel = v;
+
+  // Shift openDate
+  if (v.openDate) {
+    const iso = v.openDate.value;
+    if (typeof iso === 'string' && /^\d{4}-\d{2}-\d{2}/.test(iso)) {
+      const d = new Date(iso + (iso.length === 10 ? 'T00:00:00Z' : ''));
+      if (!isNaN(d.getTime())) {
+        d.setUTCDate(d.getUTCDate() + offsetDays);
+        next = { ...next, openDate: { ...v.openDate, value: d.toISOString().slice(0, 10) } };
+      }
+    }
+  }
+
+  // Shift survey/drydock MM/YYYY dates inside restriction strings by the same offset
+  if (next.restrictions && next.restrictions.length > 0) {
+    next = { ...next, restrictions: next.restrictions.map((r) => shiftMonthYear(r, offsetDays)) };
+  }
+
+  return next;
 }
 
 function shiftedRecap(r: ParsedFixtureRecap, offsetDays: number, frozenDate: string): ParsedFixtureRecap {
