@@ -21,6 +21,8 @@ import { checkVoyageRestriction, VoyageRestrictionResult } from './voyage-restri
 export interface FilterResult {
   pass: boolean;
   reason?: string;
+  /** Layer C: soft warning — pass=true but requires user confirmation (e.g. gearless+breakbulk+unverified cranes). */
+  warning?: boolean;
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -40,7 +42,11 @@ export function checkDraft(port: string | null | undefined, vesselDraftM: number
 //   gearless = NO vessel cranes. If geared=null (unknown) → graceful pass.
 // ────────────────────────────────────────────────────────────────────────────
 
-export function checkCrane(port: string | null | undefined, vesselGeared: boolean | null | undefined): FilterResult {
+export function checkCrane(
+  port: string | null | undefined,
+  vesselGeared: boolean | null | undefined,
+  cargoType?: string | null,
+): FilterResult {
   // Geared (has own cranes) — never blocked
   if (vesselGeared === true) return { pass: true };
   // Geared status unknown — can't verify
@@ -49,6 +55,10 @@ export function checkCrane(port: string | null | undefined, vesselGeared: boolea
   const portCranes = portHasShoreCranes(port);
   if (portCranes === false) {
     return { pass: false, reason: `gearless vessel cannot load at ${port} (no shore cranes)` };
+  }
+  // portCranes === null (unverified) + breakbulk cargo → amber warning (Layer C)
+  if (portCranes === null && cargoType === 'BREAK_BULK') {
+    return { pass: true, warning: true, reason: 'Confirm cranes (load/disch)' };
   }
   return { pass: true };
 }
@@ -437,7 +447,7 @@ export interface HardFilterResult {
 
 export function runHardFilters(input: HardFilterInput): HardFilterResult {
   const draft = checkDraft(input.originPort, input.draftMax);
-  const crane = checkCrane(input.originPort, input.geared);
+  const crane = checkCrane(input.originPort, input.geared, input.cargoType);
   const volume = checkVolume({
     weightMt: input.weightMt,
     cargoDescription: input.cargoDescription,
@@ -449,7 +459,7 @@ export function runHardFilters(input: HardFilterInput): HardFilterResult {
     vesselType: input.vesselType,
   });
   const destDraft = checkDraft(input.destinationPort ?? null, input.draftMax);
-  const destCrane = checkCrane(input.destinationPort ?? null, input.geared);
+  const destCrane = checkCrane(input.destinationPort ?? null, input.geared, input.cargoType);
   const cargoWeight = checkCargoWeight({
     weightMt: input.weightMt,
     dwtSummer: input.dwtSummer,

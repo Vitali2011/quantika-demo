@@ -122,6 +122,33 @@ describe('checkCrane', () => {
     const r = checkCrane('Atlantis', false);
     expect(r.pass).toBe(true);
   });
+
+  // Layer C: gearless + breakbulk + unverified port cranes → amber warning
+  it('gearless + BREAK_BULK + unknown port cranes → warning (amber), not green OK', () => {
+    // 'Atlantis' is unknown port → portHasShoreCranes returns null (unverified)
+    const r = checkCrane('Atlantis', false, 'BREAK_BULK');
+    expect(r.pass).toBe(true);
+    expect(r.warning).toBe(true);
+    expect(r.reason).toMatch(/confirm.cranes/i);
+  });
+
+  it('gearless + BULK (not breakbulk) + unknown port cranes → no warning (bulk terminals fine)', () => {
+    const r = checkCrane('Atlantis', false, 'BULK');
+    expect(r.pass).toBe(true);
+    expect(r.warning).toBeFalsy();
+  });
+
+  it('gearless + BREAK_BULK + port cranes confirmed (Mykolaiv) → green OK, no warning', () => {
+    const r = checkCrane('Mykolaiv', false, 'BREAK_BULK');
+    expect(r.pass).toBe(true);
+    expect(r.warning).toBeFalsy();
+  });
+
+  it('geared vessel + BREAK_BULK → green OK, no warning', () => {
+    const r = checkCrane('Atlantis', true, 'BREAK_BULK');
+    expect(r.pass).toBe(true);
+    expect(r.warning).toBeFalsy();
+  });
 });
 
 describe('checkVolume', () => {

@@ -9,7 +9,8 @@ function dash(val: string | number | boolean | null | undefined): string {
   return String(val);
 }
 
-function verdictBadge(pass: boolean, reason?: string): string {
+function verdictBadge(pass: boolean, reason?: string, warning?: boolean): string {
+  if (warning) return reason ? `⚠️ ${reason}` : '⚠️ Check';
   const icon = pass ? '✅' : '⚠️';
   return reason ? `${icon} ${reason}` : `${icon} ${pass ? 'OK' : 'Check'}`;
 }
@@ -85,7 +86,7 @@ export function MatchWorksheet({ worksheet }: Props) {
       label: '🏗 Cranes',
       vessel: v.geared != null ? (v.geared ? 'Geared ✅' : 'Gearless') : '—',
       cargoPort: hf.crane.reason ? hf.crane.reason : '—',
-      verdict: verdictBadge(hf.crane.pass, hf.crane.reason),
+      verdict: verdictBadge(hf.crane.pass, hf.crane.reason, hf.crane.warning),
     },
     {
       label: '🌊 Draft',

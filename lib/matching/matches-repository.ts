@@ -31,6 +31,8 @@ export interface StoredMatch {
   cargo_item_index?: number | null;
   vessel_item_index?: number | null;
   worksheet_json?: string | null;
+  /** Per-cargo rank by fit_percent desc (present only when listMatches called with topPerCargo). */
+  cargo_rank?: number;
 }
 
 export interface CreateMatchInput {
@@ -74,6 +76,8 @@ export interface ListMatchesOptions {
   dwt_min?: number;
   dwt_max?: number;
   user_id?: string | null;
+  /** Cap to the top-N shortlist matches per cargo by fit_percent. saved/dismissed always pass through. */
+  topPerCargo?: number;
 }
 
 const VALID_TRANSITIONS: Record<MatchStatus, MatchStatus[]> = {
@@ -389,7 +393,7 @@ export function getMatchBySlug(
 }
 
 export function listMatches(db: Database.Database, opts: ListMatchesOptions): StoredMatch[] {
-  const { status, sortBy, sortDir, limit, offset } = opts;
+  const { status, sortBy, sortDir, limit, offset, topPerCargo } = opts;
   const {
     cargo_type,
     route,
@@ -404,61 +408,103 @@ export function listMatches(db: Database.Database, opts: ListMatchesOptions): St
   const allowedSortBy = sortBy === 'created_at' ? 'created_at' : 'score';
   const allowedSortDir = sortDir === 'asc' ? 'ASC' : 'DESC';
 
-  const conditions: string[] = [];
-  const params: unknown[] = [];
+  // Shared helper to build non-status conditions (used for both paths below).
+  function buildBaseConditions() {
+    const conds: string[] = [];
+    const p: unknown[] = [];
+
+    if (user_id !== undefined && user_id !== null) {
+      conds.push(`user_id = ?`);
+      p.push(user_id);
+    }
+
+    if (cargo_type && cargo_type.length > 0) {
+      const placeholders = cargo_type.map(() => '?').join(', ');
+      conds.push(`cargo_type IN (${placeholders})`);
+      p.push(...cargo_type);
+    }
+
+    if (route !== undefined && route !== '') {
+      const escaped = route.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_');
+      conds.push(
+        `(LOWER(load_port) LIKE LOWER(?) ESCAPE '\\' OR LOWER(discharge_port) LIKE LOWER(?) ESCAPE '\\')`
+      );
+      const pattern = `%${escaped}%`;
+      p.push(pattern, pattern);
+    }
+
+    if (laycan_from !== undefined) {
+      conds.push(`laycan_end >= ?`);
+      p.push(laycan_from);
+    }
+
+    if (laycan_to !== undefined) {
+      conds.push(`laycan_start <= ?`);
+      p.push(laycan_to);
+    }
+
+    if (score_min !== undefined) {
+      const effectiveMin = Math.max(0, score_min);
+      conds.push(`score >= ?`);
+      p.push(effectiveMin);
+    }
+
+    if (dwt_min !== undefined) {
+      conds.push(`vessel_dwt >= ?`);
+      p.push(dwt_min);
+    }
+
+    if (dwt_max !== undefined) {
+      conds.push(`vessel_dwt <= ?`);
+      p.push(dwt_max);
+    }
+
+    return { conds, p };
+  }
+
+  // ── Top-N-per-cargo path (window function) ─────────────────────────────────
+  // When topPerCargo is set: rank all matches per cargo by fit_percent DESC,
+  // then surface rank ≤ N plus any saved/dismissed (explicit user state
+  // overrides the cap — spec Layer C).
+  if (topPerCargo !== undefined) {
+    const { conds, p } = buildBaseConditions();
+
+    const baseWhere = conds.length > 0 ? `WHERE ` + conds.join(` AND `) : ``;
+    let query = `
+      WITH ranked AS (
+        SELECT *,
+          ROW_NUMBER() OVER (
+            PARTITION BY cargo_id
+            ORDER BY COALESCE(fit_percent, -1) DESC, score DESC, id ASC
+          ) AS cargo_rank
+        FROM matches
+        ${baseWhere}
+      )
+      SELECT * FROM ranked
+      WHERE cargo_rank <= ? OR status IN ('saved', 'dismissed')
+      ORDER BY ${allowedSortBy} ${allowedSortDir}, id ${allowedSortDir}
+    `;
+    const queryParams: unknown[] = [...p, topPerCargo];
+    if (limit !== undefined) {
+      query += ` LIMIT ?`;
+      queryParams.push(limit);
+      if (offset !== undefined) {
+        query += ` OFFSET ?`;
+        queryParams.push(offset);
+      }
+    } else if (offset !== undefined) {
+      query += ` LIMIT -1 OFFSET ?`;
+      queryParams.push(offset);
+    }
+    return db.prepare(query).all(...queryParams) as StoredMatch[];
+  }
+
+  // ── Standard path ──────────────────────────────────────────────────────────
+  const { conds: conditions, p: params } = buildBaseConditions();
 
   if (status) {
     conditions.push(`status = ?`);
     params.push(status);
-  }
-
-  if (user_id !== undefined && user_id !== null) {
-    conditions.push(`user_id = ?`);
-    params.push(user_id);
-  }
-
-  if (cargo_type && cargo_type.length > 0) {
-    const placeholders = cargo_type.map(() => '?').join(', ');
-    conditions.push(`cargo_type IN (${placeholders})`);
-    params.push(...cargo_type);
-  }
-
-  if (route !== undefined && route !== '') {
-    // Escape SQL LIKE metacharacters so user input matches literally.
-    // Backslash must be escaped first; ESCAPE '\' tells SQLite to treat
-    // \%, \_, \\ as literal characters.
-    const escaped = route.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_');
-    conditions.push(
-      `(LOWER(load_port) LIKE LOWER(?) ESCAPE '\\' OR LOWER(discharge_port) LIKE LOWER(?) ESCAPE '\\')`
-    );
-    const pattern = `%${escaped}%`;
-    params.push(pattern, pattern);
-  }
-
-  if (laycan_from !== undefined) {
-    conditions.push(`laycan_end >= ?`);
-    params.push(laycan_from);
-  }
-
-  if (laycan_to !== undefined) {
-    conditions.push(`laycan_start <= ?`);
-    params.push(laycan_to);
-  }
-
-  if (score_min !== undefined) {
-    const effectiveMin = Math.max(0, score_min);
-    conditions.push(`score >= ?`);
-    params.push(effectiveMin);
-  }
-
-  if (dwt_min !== undefined) {
-    conditions.push(`vessel_dwt >= ?`);
-    params.push(dwt_min);
-  }
-
-  if (dwt_max !== undefined) {
-    conditions.push(`vessel_dwt <= ?`);
-    params.push(dwt_max);
   }
 
   let query = `SELECT * FROM matches`;
