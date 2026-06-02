@@ -15,6 +15,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 import { getStore } from '@/lib/session-store';
 import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
+import { getLatestEuaPrice } from '@/lib/market/eua-repository';
 import { optimizeSplitBunker } from '@/lib/economics/split-bunker';
 import { computeBunkerComparison } from '@/lib/economics/bunker-comparison';
 import { isCandidateInVoyageBasins } from '@/lib/sailing/voyage-basin';
@@ -190,6 +191,14 @@ export async function GET(req: NextRequest): Promise<NextResponse<BunkerRecommen
   const recommendedPort = result.bunkerPlan[0]?.port ?? onRouteWithPrices[0].port;
   const recommendedPrice = bunkerPrices.get(recommendedPort);
 
+  let euaPriceEur: number | undefined;
+  try {
+    const euaRow = getLatestEuaPrice(db);
+    euaPriceEur = euaRow?.price_eur_per_tco2 ?? undefined;
+  } catch {
+    // eua_prices table unavailable in this environment — carbon omitted from eff
+  }
+
   const candidates = computeBunkerComparison({
     candidates: onRouteWithPrices.map(({ port, price, deviationNm }) => ({
       port,
@@ -201,6 +210,7 @@ export async function GET(req: NextRequest): Promise<NextResponse<BunkerRecommen
     dailyConsMtPerDay: consMtPerDay,
     liftTonnes,
     vesselDayRateUsd: DEFAULT_VESSEL_DAY_RATE_USD,
+    euaPriceEur,
   });
 
   return NextResponse.json({

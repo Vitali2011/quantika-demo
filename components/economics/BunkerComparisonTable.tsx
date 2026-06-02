@@ -91,6 +91,7 @@ export function BunkerComparisonTable({
               <th className="py-1 pr-2 font-medium text-right">Крюк</th>
               <th className="py-1 pr-2 font-medium text-right">+Топл $</th>
               <th className="py-1 pr-2 font-medium text-right">Время×$сут</th>
+              <th className="py-1 pr-2 font-medium text-right">Углерод $/т</th>
               <th className="py-1 font-medium text-right">ЭФФ. $/т</th>
             </tr>
           </thead>
@@ -130,6 +131,9 @@ export function BunkerComparisonTable({
                   </td>
                   <td className="py-1 pr-2 text-right">
                     {c.timeCostUsd > 0 ? `$${c.timeCostUsd.toFixed(0)}` : '—'}
+                  </td>
+                  <td data-testid={`carbon-${i}`} className="py-1 pr-2 text-right text-slate-500">
+                    {c.carbonUsdPerMt > 0 ? `${c.carbonUsdPerMt.toFixed(2)}` : '—'}
                   </td>
                   <td data-testid={`eff-${i}`} className="py-1 text-right font-semibold">
                     {c.effectiveUsdPerMt.toFixed(2)}
