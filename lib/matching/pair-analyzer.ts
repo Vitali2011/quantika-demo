@@ -125,6 +125,19 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
     dwtSummer: cfValue(v.dwtSummer),
     dwcc: cfValue(v.dwcc),
     vesselRestrictions: v.restrictions ?? [],
+    // Layer B gates
+    vesselBuilt: v.built ?? null,
+    refYear,
+    cargoMaxVesselAgeYrs: c.maxVesselAgeYrs ?? null,
+    vesselBeam: v.beam ?? null,
+    vesselLoa: v.loa ?? null,
+    cargoMaxBeamM: c.maxBeamM ?? null,
+    cargoMaxLoaM: c.maxLoaM ?? null,
+    cargoGearRequired: c.gearRequired ?? null,
+    vesselFlag: v.flag ?? null,
+    vesselClassSociety: v.classSociety ?? null,
+    cargoFlagRequired: c.flagRequired ?? null,
+    cargoClassRequired: c.classRequired ?? null,
   });
 
   const hardFilters: MatchHardFilters = {
@@ -136,6 +149,11 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
     destCrane: hf.checks.destCrane,
     cargoWeight: hf.checks.cargoWeight,
     imsbc: hf.checks.imsbc,
+    vesselAge: hf.checks.vesselAge,
+    dimensions: hf.checks.dimensions,
+    gearRequired: hf.checks.gearRequired,
+    voyage: hf.checks.voyage,
+    flagClass: hf.checks.flagClass,
   };
 
   const imsbcCheck = checkImsbcLoadability(cfValue(c.cargoDescription), { restrictions: v.restrictions ?? [] });
