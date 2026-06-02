@@ -12,12 +12,6 @@ const MONTH_NAMES = [
   'July','August','September','October','November','December',
 ];
 
-function shiftIsoDate(iso: string, offsetDays: number): string {
-  const d = new Date(iso);
-  d.setUTCDate(d.getUTCDate() + offsetDays);
-  return d.toISOString();
-}
-
 /**
  * Shift dates in plain text body. Recognizes:
  *   - ISO "YYYY-MM-DD"
