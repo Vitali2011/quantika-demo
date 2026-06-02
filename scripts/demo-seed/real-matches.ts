@@ -131,6 +131,7 @@ async function main(): Promise<void> {
     fitPercent: number | null;
     fitBreakdown: string | null;
     worksheetJson: string | null;
+    reasonStructured: string | null;
     bucket: 'main' | 'review' | 'insufficient';
     readinessVerdict: string | null;
     gapDays: number | null;
@@ -301,6 +302,9 @@ async function main(): Promise<void> {
         freightRateSource,
         fitPercent: fb.fitPercent,
         fitBreakdown: JSON.stringify(fb),
+        // reason_structured drives the main-board score-breakdown expander
+        // (MatchesClient.tsx). Same per-factor breakdown as fit_breakdown.
+        reasonStructured: JSON.stringify(fb),
         // worksheet_json drives the cargo↔vessel comparison table (MatchWorksheet.tsx).
         // Mirror lib/types.ts MatchWorksheet shape; without it the detail table is blank.
         worksheetJson: JSON.stringify({
@@ -375,12 +379,12 @@ async function main(): Promise<void> {
       (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at,
        cargo_type, load_port, discharge_port, laycan_start, laycan_end, vessel_dwt,
        tce_usd_per_day, distance_nm, freight_rate_usd_per_mt, freight_rate_source,
-       fit_percent, fit_breakdown, worksheet_json)
+       fit_percent, fit_breakdown, worksheet_json, reason_structured)
     VALUES
       (?, ?, ?, ?, 'shortlist', ?, ?, ?,
        ?, ?, ?, ?, ?, ?,
        ?, ?, ?, ?,
-       ?, ?, ?)
+       ?, ?, ?, ?)
   `);
 
   const insertMany = db.transaction((seedRows: SeedRow[], userId: string | null) => {
@@ -389,7 +393,7 @@ async function main(): Promise<void> {
         r.cargoId, r.vesselId, r.score, r.reason, userId, nowMs, nowMs,
         r.cargoType, r.loadPort, r.dischargePort, r.laycanStart, r.laycanEnd, r.vesselDwt,
         r.tceUsdPerDay, r.distanceNm, r.freightRateUsdPerMt, r.freightRateSource,
-        r.fitPercent, r.fitBreakdown, r.worksheetJson,
+        r.fitPercent, r.fitBreakdown, r.worksheetJson, r.reasonStructured,
       );
     }
   });
