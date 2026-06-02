@@ -271,6 +271,42 @@ export function checkVesselAge(input: VesselAgeCheckInput): FilterResult {
 }
 
 // ────────────────────────────────────────────────────────────────────────────
+// Flag/class check — cargo requires specific flag or classification society
+// ────────────────────────────────────────────────────────────────────────────
+
+export interface FlagClassCheckInput {
+  cargoFlagRequired: string | null;
+  vesselFlag: string | null;
+  cargoClassRequired: string | null;
+  vesselClassSociety: string | null;
+}
+
+function normalizeFlag(s: string | null): string | null {
+  return s ? s.trim().toUpperCase() : null;
+}
+
+export function checkFlagClass(input: FlagClassCheckInput): FilterResult {
+  const { cargoFlagRequired, vesselFlag, cargoClassRequired, vesselClassSociety } = input;
+  if (cargoFlagRequired != null && vesselFlag != null) {
+    if (normalizeFlag(vesselFlag) !== normalizeFlag(cargoFlagRequired)) {
+      return {
+        pass: false,
+        reason: `cargo requires flag ${cargoFlagRequired.trim().toUpperCase()}; vessel flag is ${vesselFlag.trim()}`,
+      };
+    }
+  }
+  if (cargoClassRequired != null && vesselClassSociety != null) {
+    if (normalizeFlag(vesselClassSociety) !== normalizeFlag(cargoClassRequired)) {
+      return {
+        pass: false,
+        reason: `cargo requires class society ${cargoClassRequired.trim().toUpperCase()}; vessel class is ${vesselClassSociety.trim()}`,
+      };
+    }
+  }
+  return { pass: true };
+}
+
+// ────────────────────────────────────────────────────────────────────────────
 // Gear-required check — cargo explicitly requires geared vessel
 // ────────────────────────────────────────────────────────────────────────────
 
