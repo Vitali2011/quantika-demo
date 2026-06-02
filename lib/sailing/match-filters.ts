@@ -16,6 +16,7 @@
 import { getPortMaster, portCanHandleDraft, portHasShoreCranes } from './port-master';
 import { CargoType, Range, isRange } from '../types';
 import { checkImsbcLoadability } from './imsbc-check';
+import { checkVoyageRestriction, VoyageRestrictionResult } from './voyage-restriction';
 
 export interface FilterResult {
   pass: boolean;
@@ -247,6 +248,125 @@ export function checkCargoVesselCompat(input: CargoVesselCompatInput): FilterRes
 }
 
 // ────────────────────────────────────────────────────────────────────────────
+// Vessel age check — "is vessel young enough for this cargo?"
+// ────────────────────────────────────────────────────────────────────────────
+
+export interface VesselAgeCheckInput {
+  cargoMaxVesselAgeYrs: number | null;
+  vesselBuilt: number | null;
+  refYear: number | null;
+}
+
+export function checkVesselAge(input: VesselAgeCheckInput): FilterResult {
+  const { cargoMaxVesselAgeYrs, vesselBuilt, refYear } = input;
+  if (cargoMaxVesselAgeYrs == null || vesselBuilt == null || refYear == null) return { pass: true };
+  const age = refYear - vesselBuilt;
+  if (age > cargoMaxVesselAgeYrs) {
+    return {
+      pass: false,
+      reason: `vessel age ${age} years exceeds cargo max ${cargoMaxVesselAgeYrs} years`,
+    };
+  }
+  return { pass: true };
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Flag/class check — cargo requires specific flag or classification society
+// ────────────────────────────────────────────────────────────────────────────
+
+export interface FlagClassCheckInput {
+  cargoFlagRequired: string | null;
+  vesselFlag: string | null;
+  cargoClassRequired: string | null;
+  vesselClassSociety: string | null;
+}
+
+function normalizeFlag(s: string | null): string | null {
+  return s ? s.trim().toUpperCase() : null;
+}
+
+export function checkFlagClass(input: FlagClassCheckInput): FilterResult {
+  const { cargoFlagRequired, vesselFlag, cargoClassRequired, vesselClassSociety } = input;
+  const normFlagReq = normalizeFlag(cargoFlagRequired);
+  const normVesselFlag = normalizeFlag(vesselFlag);
+  // Both must be non-null/non-empty after normalization (conservative on unknown)
+  if (normFlagReq != null && normVesselFlag != null) {
+    if (normVesselFlag !== normFlagReq) {
+      return {
+        pass: false,
+        reason: `cargo requires flag ${normFlagReq}; vessel flag is ${vesselFlag?.trim() ?? ''}`,
+      };
+    }
+  }
+  const normClassReq = normalizeFlag(cargoClassRequired);
+  const normVesselClass = normalizeFlag(vesselClassSociety);
+  if (normClassReq != null && normVesselClass != null) {
+    if (normVesselClass !== normClassReq) {
+      return {
+        pass: false,
+        reason: `cargo requires class society ${normClassReq}; vessel class is ${vesselClassSociety?.trim() ?? ''}`,
+      };
+    }
+  }
+  return { pass: true };
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Gear-required check — cargo explicitly requires geared vessel
+// ────────────────────────────────────────────────────────────────────────────
+
+export interface GearRequiredCheckInput {
+  cargoGearRequired: boolean | null;
+  geared: boolean | null;
+  originPort: string | null;
+  destinationPort: string | null | undefined;
+}
+
+export function checkGearRequired(input: GearRequiredCheckInput): FilterResult {
+  const { cargoGearRequired, geared } = input;
+  // Not required or unknown → pass (conservative)
+  if (!cargoGearRequired) return { pass: true };
+  // Geared vessel satisfies requirement
+  if (geared === true) return { pass: true };
+  // Geared unknown → conservative pass
+  if (geared == null) return { pass: true };
+  // geared === false → check whether either port has shore cranes as substitute
+  const loadCranes = portHasShoreCranes(input.originPort);
+  if (loadCranes === true) return { pass: true };
+  const dischCranes = portHasShoreCranes(input.destinationPort ?? null);
+  if (dischCranes === true) return { pass: true };
+  return { pass: false, reason: 'cargo requires geared vessel; vessel is gearless and no confirmed shore cranes at load/discharge port' };
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Vessel dimensions check — beam and LOA vs cargo port/cargo maximums
+// ────────────────────────────────────────────────────────────────────────────
+
+export interface VesselDimensionsCheckInput {
+  vesselBeam: number | null;
+  vesselLoa: number | null;
+  cargoMaxBeamM: number | null;
+  cargoMaxLoaM: number | null;
+}
+
+export function checkVesselDimensions(input: VesselDimensionsCheckInput): FilterResult {
+  const { vesselBeam, vesselLoa, cargoMaxBeamM, cargoMaxLoaM } = input;
+  if (cargoMaxBeamM != null && vesselBeam != null && vesselBeam > cargoMaxBeamM) {
+    return {
+      pass: false,
+      reason: `vessel beam ${vesselBeam}m exceeds cargo max beam ${cargoMaxBeamM}m`,
+    };
+  }
+  if (cargoMaxLoaM != null && vesselLoa != null && vesselLoa > cargoMaxLoaM) {
+    return {
+      pass: false,
+      reason: `vessel LOA ${vesselLoa}m exceeds cargo max LOA ${cargoMaxLoaM}m`,
+    };
+  }
+  return { pass: true };
+}
+
+// ────────────────────────────────────────────────────────────────────────────
 // Unified runner
 // ────────────────────────────────────────────────────────────────────────────
 
@@ -279,6 +399,19 @@ export interface HardFilterInput {
   dwtSummer: number | null;
   dwcc: number | null;
   vesselRestrictions?: string[];
+  // Layer B gates
+  vesselBuilt?: number | null;
+  refYear?: number | null;
+  cargoMaxVesselAgeYrs?: number | null;
+  vesselBeam?: number | null;
+  vesselLoa?: number | null;
+  cargoMaxBeamM?: number | null;
+  cargoMaxLoaM?: number | null;
+  cargoGearRequired?: boolean | null;
+  vesselFlag?: string | null;
+  vesselClassSociety?: string | null;
+  cargoFlagRequired?: string | null;
+  cargoClassRequired?: string | null;
 }
 
 export interface HardFilterResult {
@@ -293,6 +426,12 @@ export interface HardFilterResult {
     destCrane: FilterResult;
     cargoWeight: FilterResult;
     imsbc: FilterResult;
+    // Layer B gates (optional — only present when inputs provided)
+    vesselAge?: FilterResult;
+    dimensions?: FilterResult;
+    gearRequired?: FilterResult;
+    voyage?: FilterResult;
+    flagClass?: FilterResult;
   };
 }
 
@@ -318,6 +457,37 @@ export function runHardFilters(input: HardFilterInput): HardFilterResult {
   });
   const imsbc = checkImsbc(input.cargoDescription, input.vesselRestrictions);
 
+  // Layer B gates
+  const vesselAge = checkVesselAge({
+    cargoMaxVesselAgeYrs: input.cargoMaxVesselAgeYrs ?? null,
+    vesselBuilt: input.vesselBuilt ?? null,
+    refYear: input.refYear ?? null,
+  });
+  const dimensions = checkVesselDimensions({
+    vesselBeam: input.vesselBeam ?? null,
+    vesselLoa: input.vesselLoa ?? null,
+    cargoMaxBeamM: input.cargoMaxBeamM ?? null,
+    cargoMaxLoaM: input.cargoMaxLoaM ?? null,
+  });
+  const gearRequired = checkGearRequired({
+    cargoGearRequired: input.cargoGearRequired ?? null,
+    geared: input.geared,
+    originPort: input.originPort,
+    destinationPort: input.destinationPort ?? null,
+  });
+  const voyageResult = checkVoyageRestriction({
+    vesselRestrictions: input.vesselRestrictions ?? [],
+    originPort: input.originPort,
+    destinationPort: input.destinationPort ?? null,
+  });
+  const voyage: FilterResult = { pass: voyageResult.pass, reason: voyageResult.reason };
+  const flagClass = checkFlagClass({
+    cargoFlagRequired: input.cargoFlagRequired ?? null,
+    vesselFlag: input.vesselFlag ?? null,
+    cargoClassRequired: input.cargoClassRequired ?? null,
+    vesselClassSociety: input.vesselClassSociety ?? null,
+  });
+
   const failures: string[] = [];
   if (!draft.pass && draft.reason) failures.push(draft.reason);
   if (!crane.pass && crane.reason) failures.push(crane.reason);
@@ -327,13 +497,25 @@ export function runHardFilters(input: HardFilterInput): HardFilterResult {
   if (!destCrane.pass && destCrane.reason) failures.push(destCrane.reason);
   if (!cargoWeight.pass && cargoWeight.reason) failures.push(cargoWeight.reason);
   if (!imsbc.pass && imsbc.reason) failures.push(imsbc.reason);
+  if (!vesselAge.pass && vesselAge.reason) failures.push(vesselAge.reason);
+  if (!dimensions.pass && dimensions.reason) failures.push(dimensions.reason);
+  if (!gearRequired.pass && gearRequired.reason) failures.push(gearRequired.reason);
+  if (!voyage.pass && voyage.reason) failures.push(voyage.reason);
+  if (!flagClass.pass && flagClass.reason) failures.push(flagClass.reason);
 
   return {
     pass: failures.length === 0,
     failures,
-    checks: { draft, crane, volume, cargoVessel, destDraft, destCrane, cargoWeight, imsbc },
+    checks: {
+      draft, crane, volume, cargoVessel, destDraft, destCrane, cargoWeight, imsbc,
+      vesselAge, dimensions, gearRequired, voyage, flagClass,
+    },
   };
 }
+
+// Re-export voyage restriction for external callers (pair-analyzer)
+export { checkVoyageRestriction };
+export type { VoyageRestrictionResult };
 
 // Unused export to satisfy coverage: callers use getPortMaster through port-master directly
 void getPortMaster;

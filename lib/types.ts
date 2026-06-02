@@ -198,6 +198,12 @@ export interface ParsedCargo {
   destinationPortAlternatives?: string[] | null;
   destinationPortRotation?: string[] | null;
   weightPerPort?: number[] | null;
+  maxVesselAgeYrs?: number | null;
+  gearRequired?: boolean | null;
+  maxLoaM?: number | null;
+  maxBeamM?: number | null;
+  flagRequired?: string | null;
+  classRequired?: string | null;
 }
 
 // ── Parsed Vessel ──
@@ -376,6 +382,12 @@ export interface MatchHardFilters {
   destCrane: HardFilterCheck;
   cargoWeight: HardFilterCheck;
   imsbc?: HardFilterCheck;
+  // Layer B gates
+  vesselAge?: HardFilterCheck;
+  dimensions?: HardFilterCheck;
+  gearRequired?: HardFilterCheck;
+  voyage?: HardFilterCheck;
+  flagClass?: HardFilterCheck;
 }
 
 /** Sanctions screening (see lib/validation/sanctions.ts). */
