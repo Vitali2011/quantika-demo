@@ -36,6 +36,7 @@ import { classifyVesselByDwt } from './readiness-gap';
 import { BALLAST_GOOD_MAX_NM, isPartCargo } from './match-scoring';
 import { portHasShoreCranes } from './port-master';
 import { STOWAGE_FACTORS } from './match-filters';
+import { regionMatchesPort } from './voyage-restriction';
 
 // ── Weights — sum to 100. Tunable per anchor calibration. ──────────────────
 //
@@ -430,6 +431,27 @@ export function scoreVetting(vessel: ParsedVessel, refYear?: number): FitBreakdo
 // Top-level — composes all components, applies sanctions, returns fit-%.
 // ────────────────────────────────────────────────────────────────────────────
 
+// EU / near-EU country & range keywords triggering PSC age scrutiny on discharge.
+// Substring match on the RAW descriptor (diacritics folded) — works on the vague
+// re-parsed strings ("East Coast Greece port (unspecified)") that
+// regionMatchesPort cannot resolve. Country names only — ambiguous basin phrases
+// ("Western Mediterranean") are intentionally excluded to avoid false positives.
+const EU_DISCHARGE_KEYWORDS =
+  /\b(greece|greek|italy|italian|romania|romanian|constanta|bulgaria|bulgarian|spain|spanish|france|french|netherlands|dutch|belgium|belgian|germany|german|croatia|croatian|slovenia|slovenian|portugal|portuguese|cyprus|cypriot|malta|maltese|poland|polish|european continent|ara range)\b/i;
+
+/**
+ * EU-discharge detector for the age cap. True when the port resolves to Europe
+ * via the canonical region map OR the raw descriptor names an EU/near-EU country.
+ * Isolated from regionMatchesPort so widening detection here does NOT affect the
+ * hard voyage-restriction gate (its other consumer).
+ */
+function isEuropeanDischarge(port: string | null | undefined): boolean {
+  if (!port) return false;
+  if (regionMatchesPort('europe', port)) return true;
+  const folded = port.normalize('NFKD').replace(/\p{Diacritic}/gu, '');
+  return EU_DISCHARGE_KEYWORDS.test(folded);
+}
+
 export interface FitBreakdownInput {
   cargo: ParsedCargo;
   vessel: ParsedVessel;
@@ -491,6 +513,23 @@ export function computeFitBreakdown(input: FitBreakdownInput): FitBreakdown {
       });
     }
   }
+  // EU-discharge age penalty (founder rule 2026-06-02): a 25yr+ vessel
+  // discharging at a European port faces PSC scrutiny + charterer reluctance.
+  // Soft signal — cap below the main-board floor so it drops off the board but
+  // stays visible in Review. NOT a hard knockout (distinct from the explicit
+  // cargo max-age hard gate in match-filters, which is a charterer's firm ban).
+  const euDischargeAge = refYear != null && vessel.built != null ? refYear - vessel.built : null;
+  if (
+    euDischargeAge != null &&
+    euDischargeAge >= 25 &&
+    isEuropeanDischarge(cfValue(cargo.destinationPort))
+  ) {
+    caps.push({
+      reason: `vessel ${euDischargeAge}yr + EU discharge — PSC/charterer age risk`,
+      ceiling: 55,
+    });
+  }
+
   let appliedCap: { reason: string; ceiling: number } | null = null;
   for (const c of caps) {
     if (fit > c.ceiling) {

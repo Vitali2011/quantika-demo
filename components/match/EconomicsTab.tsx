@@ -79,6 +79,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
   const [voyageBreakdown, setVoyageBreakdown] = useState<TCEBreakdown | null>(null);
   const [voyageLoading, setVoyageLoading] = useState(false);
   const [voyageError, setVoyageError] = useState<string | null>(null);
+  const [approxPorts, setApproxPorts] = useState<Array<{ side: string; input: string; resolvedTo: string }>>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -311,6 +312,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
       // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional reset of async-derived state when inputs become invalid
       setVoyageBreakdown(null);
       setVoyageError(null);
+      setApproxPorts([]);
       return;
     }
     let cancelled = false;
@@ -327,11 +329,13 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
         if (!ok) {
           const err = d as { error?: string };
           setVoyageError(typeof err.error === 'string' ? err.error : 'Calculation failed');
+          setApproxPorts([]);
           setVoyageLoading(false);
           return;
         }
-        const result = d as { breakdown: TCEBreakdown };
+        const result = d as { breakdown: TCEBreakdown; approximatePorts?: Array<{ side: string; input: string; resolvedTo: string }> };
         setVoyageBreakdown(result.breakdown ?? null);
+        setApproxPorts(result.approximatePorts ?? []);
         setVoyageLoading(false);
       })
       .catch(() => {
@@ -596,7 +600,15 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
           ) : voyageError ? (
             <p data-testid="voyage-error" className="text-xs text-red-600">{voyageError}</p>
           ) : voyageBreakdown ? (
-            <VoyageBreakdownChart breakdown={voyageBreakdown} />
+            <>
+              {approxPorts.length > 0 && (
+                <p data-testid="voyage-approx-ports" className="text-xs text-amber-600 mb-1">
+                  ⚠ Approximate port{approxPorts.length > 1 ? 's' : ''} — P&amp;L estimated:{' '}
+                  {approxPorts.map((a) => `${a.input} → ${a.resolvedTo}`).join('; ')}. Confirm before fixing.
+                </p>
+              )}
+              <VoyageBreakdownChart breakdown={voyageBreakdown} />
+            </>
           ) : null
         ) : voyageInputData.missing.length > 0 ? (
           <p data-testid="voyage-missing-hint" className="text-xs text-gray-500">

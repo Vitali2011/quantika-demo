@@ -285,3 +285,23 @@ describe('wave-2 ports — alias resolution', () => {
     expect(r!.portCode).toBe('GEPTI');
   });
 });
+
+describe('resolvePort — diacritic folding (Gate5 #4: re-parsed ports carry native diacritics)', () => {
+  // Re-parsed demo ports arrive with native diacritics ("Constanța", "Aliağa")
+  // that the ASCII port-master entries ("Constanta", "Aliaga") never matched →
+  // port_not_found → no P&L. Fold combining marks before lookup.
+  it('"Constanța" (ț) resolves identically to "Constanta"', () => {
+    const folded = resolvePort('Constanța');
+    const ascii = resolvePort('Constanta');
+    expect(ascii).not.toBeNull();
+    expect(folded).not.toBeNull();
+    expect(folded!.portCode).toBe(ascii!.portCode);
+  });
+  it('"Aliağa" (ğ) resolves identically to "Aliaga"', () => {
+    const folded = resolvePort('Aliağa');
+    const ascii = resolvePort('Aliaga');
+    expect(ascii).not.toBeNull();
+    expect(folded).not.toBeNull();
+    expect(folded!.portCode).toBe(ascii!.portCode);
+  });
+});

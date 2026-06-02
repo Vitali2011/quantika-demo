@@ -117,25 +117,26 @@ describe('app/matches/MatchesClient.tsx — bucket tabs', () => {
     expect(src).toMatch(/useState[^\n]*activeTab|activeTab[^\n]*useState|setActiveTab/);
   });
 
-  it('renders three tab buttons with stable testids', () => {
+  // #1 (founder Gate5 2026-06-02): Review/Insufficient tabs removed — board shows
+  // only the «Матчи» tab. These guards now assert the single-tab design.
+  it('renders only the Матчи tab (Review/Insufficient removed #1)', () => {
     const src = readSource(clientPath);
     expect(src).toMatch(/data-testid=/);
     expect(src).toMatch(/tab-matches/);
-    expect(src).toMatch(/tab-review/);
-    expect(src).toMatch(/tab-insufficient/);
+    expect(src).not.toMatch(/tab-review/);
+    expect(src).not.toMatch(/tab-insufficient/);
   });
 
-  it('labels the three tabs per the agreed design', () => {
+  it('labels the single Матчи tab (no Review/Insufficient labels)', () => {
     const src = readSource(clientPath);
     expect(src).toMatch(/Матчи/);
-    expect(src).toMatch(/На проверку/);
-    expect(src).toMatch(/Мало данных/);
+    expect(src).not.toMatch(/На проверку/);
+    expect(src).not.toMatch(/Мало данных/);
   });
 
-  it('shows counters in the tab headers (bucket lengths)', () => {
+  it('shows the matches counter in the tab header', () => {
     const src = readSource(clientPath);
-    expect(src).toMatch(/lowConfidenceMatches\.length/);
-    expect(src).toMatch(/insufficientData\.length/);
+    expect(src).toMatch(/modeFiltered\.length/);
   });
 
   it('renders an empty state for an empty bucket', () => {
