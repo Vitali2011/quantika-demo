@@ -2,6 +2,7 @@ import Database from 'better-sqlite3';
 import migration019 from '@/lib/migrations/019-port-master-baltic-indices';
 import migration023 from '@/lib/migrations/023-bunker-prices-rewrite';
 import migration024 from '@/lib/migrations/024-eua-prices-rewrite';
+import migration027 from '@/lib/migrations/027-market-indices';
 import {
   generateDates,
   generateSeries,
@@ -110,6 +111,7 @@ describe('seedMarketHistory', () => {
     migration019.up(db);
     migration023.up(db);
     migration024.up(db);
+    migration027.up(db);
   });
 
   afterEach(() => db.close());
@@ -198,5 +200,57 @@ describe('seedMarketHistory', () => {
       .prepare(`SELECT COUNT(*) as n FROM eua_prices WHERE source = 'demo-seed'`)
       .get() as { n: number };
     expect(m.n).toBe(0);
+  });
+
+  it('inserts 30 drewry-bb rows into market_indices', () => {
+    seedMarketHistory(db, false);
+
+    const row = db
+      .prepare(`SELECT COUNT(*) as n FROM market_indices WHERE index_name = 'drewry-bb' AND source = 'demo-seed'`)
+      .get() as { n: number };
+    expect(row.n).toBe(DAYS);
+  });
+
+  it('drewry-bb last value on frozen_date equals 2800', () => {
+    seedMarketHistory(db, false);
+
+    const row = db
+      .prepare(`SELECT value FROM market_indices WHERE index_name = 'drewry-bb' AND index_date = '2026-05-28' AND source = 'demo-seed'`)
+      .get() as { value: number } | undefined;
+    expect(row).toBeDefined();
+    expect(row!.value).toBe(2800);
+  });
+
+  it('drewry-bb all dates are <= frozen_date 2026-05-28', () => {
+    seedMarketHistory(db, false);
+
+    const bad = db
+      .prepare(`SELECT COUNT(*) as n FROM market_indices WHERE index_name = 'drewry-bb' AND source = 'demo-seed' AND index_date > '2026-05-28'`)
+      .get() as { n: number };
+    expect(bad.n).toBe(0);
+  });
+
+  it('drewry-bb is idempotent — re-running produces same 30 rows', () => {
+    seedMarketHistory(db, false);
+    seedMarketHistory(db, false);
+
+    const row = db
+      .prepare(`SELECT COUNT(*) as n FROM market_indices WHERE index_name = 'drewry-bb' AND source = 'demo-seed'`)
+      .get() as { n: number };
+    expect(row.n).toBe(DAYS);
+  });
+
+  it('dry mode writes nothing to market_indices', () => {
+    seedMarketHistory(db, true);
+
+    const row = db
+      .prepare(`SELECT COUNT(*) as n FROM market_indices WHERE source = 'demo-seed'`)
+      .get() as { n: number };
+    expect(row.n).toBe(0);
+  });
+
+  it('seedMarketHistory returns marketIndexRows = 30', () => {
+    const result = seedMarketHistory(db, false);
+    expect(result.marketIndexRows).toBe(DAYS);
   });
 });
