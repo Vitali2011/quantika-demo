@@ -287,19 +287,24 @@ function normalizeFlag(s: string | null): string | null {
 
 export function checkFlagClass(input: FlagClassCheckInput): FilterResult {
   const { cargoFlagRequired, vesselFlag, cargoClassRequired, vesselClassSociety } = input;
-  if (cargoFlagRequired != null && vesselFlag != null) {
-    if (normalizeFlag(vesselFlag) !== normalizeFlag(cargoFlagRequired)) {
+  const normFlagReq = normalizeFlag(cargoFlagRequired);
+  const normVesselFlag = normalizeFlag(vesselFlag);
+  // Both must be non-null/non-empty after normalization (conservative on unknown)
+  if (normFlagReq != null && normVesselFlag != null) {
+    if (normVesselFlag !== normFlagReq) {
       return {
         pass: false,
-        reason: `cargo requires flag ${cargoFlagRequired.trim().toUpperCase()}; vessel flag is ${vesselFlag.trim()}`,
+        reason: `cargo requires flag ${normFlagReq}; vessel flag is ${vesselFlag?.trim() ?? ''}`,
       };
     }
   }
-  if (cargoClassRequired != null && vesselClassSociety != null) {
-    if (normalizeFlag(vesselClassSociety) !== normalizeFlag(cargoClassRequired)) {
+  const normClassReq = normalizeFlag(cargoClassRequired);
+  const normVesselClass = normalizeFlag(vesselClassSociety);
+  if (normClassReq != null && normVesselClass != null) {
+    if (normVesselClass !== normClassReq) {
       return {
         pass: false,
-        reason: `cargo requires class society ${cargoClassRequired.trim().toUpperCase()}; vessel class is ${vesselClassSociety.trim()}`,
+        reason: `cargo requires class society ${normClassReq}; vessel class is ${vesselClassSociety?.trim() ?? ''}`,
       };
     }
   }
