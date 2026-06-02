@@ -9631,5 +9631,16 @@
     "hasShoreCranes": true,
     "berthType": "deep-sea",
     "note": "Tanzania south (Wave A)"
+  },
+  {
+    "unlocode": "MTMLA",
+    "name": "Malta",
+    "country": "MT",
+    "lat": 35.89,
+    "lon": 14.51,
+    "maxDraftM": 11,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "note": "Valletta — central Med bunkering hub"
   }
 ]
