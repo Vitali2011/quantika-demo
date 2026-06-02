@@ -117,9 +117,11 @@ function normalizeRegionKeyword(raw: string): string | null {
  * Returns only entries where we can identify a recognized region.
  * Non-voyage restrictions (DG, gear, etc.) are silently skipped.
  */
-export function parseVoyageExclusions(restrictions: string[]): VoyageExclusion[] {
+export function parseVoyageExclusions(restrictions: unknown[]): VoyageExclusion[] {
   const results: VoyageExclusion[] = [];
   for (const r of restrictions) {
+    // Guard: skip non-string entries (ConfidenceField objects, nulls, etc. from dirty data)
+    if (typeof r !== 'string') continue;
     const s = r.toLowerCase();
 
     // Try hard patterns first
@@ -194,11 +196,11 @@ export interface VoyageRestrictionResult {
  * Conservative on missing data: null port → cannot verify → pass.
  */
 export function checkVoyageRestriction(input: {
-  vesselRestrictions: string[];
+  vesselRestrictions: string[] | unknown[];
   originPort: string | null | undefined;
   destinationPort: string | null | undefined;
 }): VoyageRestrictionResult {
-  const exclusions = parseVoyageExclusions(input.vesselRestrictions);
+  const exclusions = parseVoyageExclusions(input.vesselRestrictions as unknown[]);
   if (exclusions.length === 0) return { pass: true };
 
   const softExclusions: VoyageExclusion[] = [];
