@@ -36,7 +36,15 @@ function extractColumnIndices(theadHtml: string): { vlsfoIdx: number; mgoIdx: nu
   const columns: string[] = [];
   let m: RegExpExecArray | null;
   while ((m = thPattern.exec(theadHtml)) !== null) {
-    columns.push(m[1].trim().toLowerCase());
+    // Strip child HTML elements (e.g. footnote <sup>1</sup>) including their text
+    // content before exact-match column detection; plain strip of tags leaves inner
+    // text ("VLSFO<sup>1</sup>" → "VLSFO1" not "VLSFO").
+    const label = m[1]
+      .replace(/<[a-zA-Z][^>]*>[\s\S]*?<\/[a-zA-Z]+>/g, '')
+      .replace(/<[^>]+>/g, '')
+      .trim()
+      .toLowerCase();
+    columns.push(label);
   }
   return {
     vlsfoIdx: columns.findIndex(c => c === 'vlsfo'),
@@ -45,10 +53,32 @@ function extractColumnIndices(theadHtml: string): { vlsfoIdx: number; mgoIdx: nu
 }
 
 function parseTdValue(tdContent: string): number | undefined {
-  const stripped = tdContent.replace(/<[^>]+>/g, '').trim();
+  // Decode &nbsp; entity (used for cell padding on some sites)
+  const decoded = tdContent.replace(/&nbsp;/gi, ' ');
+  const stripped = decoded.replace(/<[^>]+>/g, '').trim();
   if (stripped === '--' || stripped === '') return undefined;
-  const n = parseFloat(stripped.replace(/,/g, ''));
+  // Strip leading non-numeric prefix (e.g. '$', '€', 'USD ') before parseFloat
+  const cleaned = stripped.replace(/,/g, '').replace(/^[^0-9.-]+/, '');
+  const n = parseFloat(cleaned);
   return Number.isFinite(n) && n > 0 ? n : undefined;
+}
+
+// Strip non-price nested <table> elements iteratively (innermost first) to prevent
+// a lazy </tr> regex inside a <td> from truncating the outer data row.
+function flattenNestedTables(html: string): string {
+  // Match innermost tables that lack restable/gradelisttable class markers
+  const innermostNonPrice =
+    /<table(?![^>]*(?:restable|gradelisttable))[^>]*>((?:(?!<table)[\s\S])*?)<\/table>/gi;
+  let out = html;
+  let prev: string;
+  do {
+    prev = out;
+    // Keep text content; strip <tr>/<td> structure tags to defuse the row regex
+    out = out.replace(innermostNonPrice, (_, content) =>
+      content.replace(/<\/?(?:tr|td)[^>]*>/gi, ''),
+    );
+  } while (out !== prev);
+  return out;
 }
 
 /**
@@ -68,7 +98,8 @@ export function parseOilMonsterHtml(html: string): OilMonsterEntry[] {
     );
   }
 
-  const theadMatch = /<thead[^>]*>([\s\S]*?)<\/thead>/i.exec(html);
+  const flat = flattenNestedTables(html);
+  const theadMatch = /<thead[^>]*>([\s\S]*?)<\/thead>/i.exec(flat);
   if (!theadMatch) {
     throw new OilMonsterParseError('No thead found in OilMonster HTML');
   }
@@ -84,7 +115,7 @@ export function parseOilMonsterHtml(html: string): OilMonsterEntry[] {
   const rowPattern = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
   let rowMatch: RegExpExecArray | null;
 
-  while ((rowMatch = rowPattern.exec(html)) !== null) {
+  while ((rowMatch = rowPattern.exec(flat)) !== null) {
     const rowHtml = rowMatch[1];
 
     const tdPattern = /<td[^>]*>([\s\S]*?)<\/td>/gi;
