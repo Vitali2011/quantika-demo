@@ -1,65 +1,144 @@
-# findings.md — Layer C (matching-cap) adversarial QA (2026-06-02)
-# Reviewer: test-skill cold-start, commit e460a14e
+# findings.md — feat-bunker-oilmonster-blacksea adversarial QA (2026-06-02)
+# Reviewer: cold-session adversarial QA
+
+## Summary
+
+23 adversarial tests written to `tests/regression/oilmonster-adversarial.test.ts`. All 23 pass.
+The "DEMONSTRATES BUG" tests pass by asserting the CURRENT (buggy) behavior — they will FAIL
+once the bug is fixed, alerting developers to update expected behavior.
+
+## BUG-1 — HIGH — Per-port prices bypass range validation
+
+**File:** `lib/knowledge/bunker/oilmonster-adapter.ts` lines 311-318 (per-port upsert)
+**Severity:** HIGH — missing guard identical to the one applied on main table
+
+The main table enforces `RANGE_VLSFO = { min: 200, max: 2000 }` and rejects out-of-range prices
+with a `console.warn` + skip. The per-port upsert for Istanbul (TRIST) and Piraeus (GRPIR) has
+**no range validation**. An unrealistic scraper value like 99999.00 would be inserted directly.
+
+```ts
+// main table — range validated (correct)
+if (entry.vlsfo < RANGE_VLSFO.min || entry.vlsfo > RANGE_VLSFO.max) {
+  console.warn(`[OilMonster] ${entry.portName} VLSFO ${entry.vlsfo} out of range`);
+} else {
+  upsertBunkerPrice(db, { ... });  // only if in range
+  rowsChanged++;
+}
+
+// per-port — NO range check (BUG)
+upsertBunkerPrice(db, {
+  port_unlocode: unlocode,
+  fuel_grade: 'VLSFO',
+  price_usd_per_mt: parsed.vlsfo,  // any value accepted
+  ...
+});
+rowsChanged++;
+```
+
+**Regression test:** B1 tests in `tests/regression/oilmonster-adversarial.test.ts`
+- `DEMONSTRATES BUG: per-port Istanbul price 99999.00 is inserted without range check` — PASS (documents bug)
+- `DEMONSTRATES BUG: per-port Istanbul price 1.00 (below 200 floor) is inserted` — PASS (documents bug)
+
+**Fix:** Add range check before per-port `upsertBunkerPrice` call, identical to main table guard.
 
 ---
 
-## GAP-1 — MEDIUM — topPerCargo ignores limit/offset options
+## BUG-2 — MEDIUM — ROCND proxy bypasses range validation
 
-**File:** `lib/matching/matches-repository.ts` — `listMatches` topPerCargo path
-**Repro:** `listMatches(db, { sortBy:'score', sortDir:'desc', topPerCargo:3, limit:2 })` returns 6 rows, not 2
-**Root cause:** The topPerCargo CTE path has no LIMIT/OFFSET appended to the query
-**Impact:** Any caller combining `topPerCargo` + `limit` (or `offset`) gets wrong row count silently. Current board (`app/matches/page.tsx:53`) doesn't pass limit, so no current regression.
-**Severity:** MEDIUM (interface allows invalid combination; currently harmless; future footgun)
-**Fix:** Add LIMIT/OFFSET handling to the topPerCargo query path, same as the standard path
+**File:** `lib/knowledge/bunker/oilmonster-adapter.ts` lines 329-338 (Constanta proxy)
+**Severity:** MEDIUM — inherits BUG-1's extreme values and amplifies by +40
 
----
+If Istanbul returns an extreme price (see BUG-1), the ROCND proxy = Istanbul + 40 is also
+inserted without range validation. Example: Istanbul=99999.00 → ROCND=100039.00.
 
-## GAP-2 — MEDIUM — destCrane missing breakbulk amber warning
+**Regression test:** B2 tests in `tests/regression/oilmonster-adversarial.test.ts`
+- `DEMONSTRATES BUG: ROCND proxy = Istanbul(99999) + 40 is inserted without range check` — PASS
 
-**File:** `lib/sailing/match-filters.ts` — `runHardFilters`
-**Repro:** `runHardFilters({ cargoType:'BREAK_BULK', originPort:'Mykolaiv', destinationPort:'Atlantis', geared:false, ... })` → `checks.destCrane.warning` is undefined even though discharge port cranes unverified
-**Root cause:** Line `checkCrane(input.destinationPort ?? null, input.geared)` does NOT pass `cargoType` unlike the origin crane call
-**Impact:** If load port cranes confirmed but discharge cranes unknown + breakbulk vessel, UI shows ✅ OK instead of amber "Confirm cranes" for the discharge side. Spec says "Confirm cranes (load/disch)" suggesting both ports should trigger amber.
-**Severity:** MEDIUM (incomplete, not incorrect; MatchWorksheet only shows origin crane check; misleading for load-port-ok+discharge-unknown scenario)
-**Fix:** Pass `input.cargoType` to the destCrane call: `checkCrane(input.destinationPort ?? null, input.geared, input.cargoType)`
+**Fix:** Add range check for `rocndPrice` before upserting ROCND.
 
 ---
 
-## VERIFIED-OK-1 — warning contract enforced
+## BUG-3 — MEDIUM — Parser implicitly requires `<i>` arrow icon before price (fragile dependency)
 
-All checkCrane paths that return `warning:true` also return `pass:true`. Confirmed by A3 tests. No `warning:true + pass:false` path exists in current code. ✓
+**File:** `lib/knowledge/bunker/oilmonster-adapter.ts` line 189
+**Severity:** MEDIUM — will break if OilMonster removes the arrow icon from the price display
 
-## VERIFIED-OK-2 — score_min + topPerCargo
+The price regex `/class="scrapitemprice"[\s\S]*?>([\d,]+\.\d{2})<span>\$US\/MT/` relies on the
+non-greedy `[\s\S]*?>` finding the `>` at the END of the `</i>` closing tag before the price:
 
-Filters applied before window function ranking. Correct behavior confirmed. ✓
+```
+<div class="scrapitemprice">\n<i class="bi bi-arrow-down ..."></i>947.00<span>$US/MT</span>
+```
 
-## VERIFIED-OK-3 — tie-breaking stable
+If the arrow icon is removed, the HTML becomes:
+```
+<div class="scrapitemprice">\n947.00<span>$US/MT</span>
+```
 
-Same fit_percent ties broken by id ASC (insertion order). Deterministic. ✓
+The newline after `>` prevents the regex from matching — the `>` is not immediately followed by
+a price digit. Result: `OilMonsterStructureChangedError` thrown silently.
 
-## VERIFIED-OK-4 — archived matches
-
-Archived matches with rank≤N DO appear in topPerCargo results. This is pre-existing behavior (standard path also returns archived when no status filter). Not introduced by Layer C. Noted but not blocking.
-
----
-
-## Browser E2E Gate
-
-MatchWorksheet.tsx changed (UI). Gate triggered. App not running in this worktree — browser test not executable. `tests/regression/matching_cap_layerC.test.ts` covers the component render via JSON serialization (Node-based). No console errors or hydration errors observable without running app.
-
-**Browser E2E Gate: SKIPPED — app not running in worktree (component covered by JSON serialization tests)**
-
----
-
-## Pre-existing Issues (informational)
-
-- `app/matches/page.tsx:53` returns all statuses (no status filter) — archived matches appear on board. Pre-existing, not introduced by Layer C.
+**Verified:** `node -e` test confirmed — without `<i></i>`, `\\n` before price → NO MATCH.
+**Regression test:** B3 tests document this fragility with a failing test for the future scenario.
 
 ---
 
-## OLD FINDINGS (PR #739, 2026-06-01)
+## LOW-4 — Price must have EXACTLY 2 decimal places (undocumented constraint)
 
-# findings.md — PR #739 adversarial QA (2026-06-01)
+**File:** `lib/knowledge/bunker/oilmonster-adapter.ts` line 189
+**Severity:** LOW — real-world OilMonster prices consistently use 2 decimal places
+
+Regex `[\d,]+\.\d{2}` requires exactly 2 decimal digits. Prices with 1 decimal (`947.5`),
+3 decimals (`947.000`), or no decimal (`947`) throw `OilMonsterStructureChangedError`.
+This constraint is not documented in code comments.
+
+**Regression tests:** B4 tests document this behavior (3 tests for edge cases).
+
+---
+
+## LOW-5 — Misleading test name (documentation bug only)
+
+**File:** `__tests__/lib/knowledge/bunker/oilmonster-adapter.test.ts` line 202
+**Severity:** LOW — test assertion is correct, only the test name is wrong
+
+Test is named: `'throws OilMonsterParseError for non-numeric price text'`
+But the assertion is: `expect(...).toThrow(OilMonsterStructureChangedError)`
+
+The name says `ParseError`, the assertion says `StructureChangedError`. The assertion is
+correct (N/A doesn't match the price regex, so `priceMatch = null` → throws
+`StructureChangedError`). Only the test description is misleading.
+
+---
+
+## VERIFIED OK — Staleness boundary arithmetic
+
+Exactly 30 days old: `ageDays = 30`, `30 > 30 = false` → NOT stale (correct).
+31 days old: `ageDays = 31`, `31 > 30 = true` → stale (correct).
+Float division: both dates are UTC midnight, so `/ 86_400_000` is exact.
+**Regression tests:** B5 tests verify boundary cases.
+
+---
+
+## VERIFIED OK — Constanta proxy arithmetic
+
+`Math.round((947.00 + 40) * 100) / 100 = 987.00` — exact, no float drift.
+**Regression tests:** B2 happy-path test verifies exact equality.
+
+---
+
+## Totals (feat-bunker-oilmonster-blacksea)
+
+| Severity | Count | Production risk |
+|---|---|---|
+| HIGH | 1 (BUG-1) | DB corruption with extreme prices |
+| MEDIUM | 2 (BUG-2, BUG-3) | ROCND inherits BUG-1; fragile parser |
+| LOW | 2 (LOW-4, LOW-5) | Undocumented constraint; wrong test name |
+
+Tests written: 23 in `tests/regression/oilmonster-adversarial.test.ts` — all PASS (documenting current behavior).
+
+---
+
+# PREVIOUS REVIEW (PR #739 adversarial QA — 2026-06-01)
 # Reviewer: cold-session test-skill, branch fix/eua-bunker-ets (synced 7c4e7a84)
 
 ## BUG-1 — HIGH — parseTradingEconomicsHtml: integer prices not extracted
