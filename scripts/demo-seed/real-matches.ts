@@ -130,6 +130,7 @@ async function main(): Promise<void> {
     freightRateSource: string | null;
     fitPercent: number | null;
     fitBreakdown: string | null;
+    worksheetJson: string | null;
     bucket: 'main' | 'review' | 'insufficient';
     readinessVerdict: string | null;
     gapDays: number | null;
@@ -300,6 +301,27 @@ async function main(): Promise<void> {
         freightRateSource,
         fitPercent: fb.fitPercent,
         fitBreakdown: JSON.stringify(fb),
+        // worksheet_json drives the cargo↔vessel comparison table (MatchWorksheet.tsx).
+        // Mirror lib/types.ts MatchWorksheet shape; without it the detail table is blank.
+        worksheetJson: JSON.stringify({
+          readiness: { ...readiness, openPosition: cfValue(vessel.openPosition) },
+          vessel: {
+            draftMax: cfValue(vessel.draftMax),
+            grainCapacity: vessel.grainCapacity,
+            grainCapacityUnit: vessel.grainCapacityUnit,
+            geared: vessel.geared,
+            vesselType: vessel.vesselType,
+            flag: vessel.flag,
+            built: vessel.built,
+            pandi: vessel.pandi,
+            classSociety: vessel.classSociety,
+            lastCargoes: vessel.lastCargoes,
+            dwtSummer: cfValue(vessel.dwtSummer),
+            dwcc: cfValue(vessel.dwcc),
+          },
+          cargo: { weightMt: cfValue(cargo.weightMt), cargoType, loadPort, dischargePort },
+          hardFilters: { draft: hf.checks.draft, crane: hf.checks.crane, volume: hf.checks.volume },
+        }),
         bucket,
         readinessVerdict: readiness.verdict,
         gapDays: readiness.gapDays,
@@ -353,12 +375,12 @@ async function main(): Promise<void> {
       (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at,
        cargo_type, load_port, discharge_port, laycan_start, laycan_end, vessel_dwt,
        tce_usd_per_day, distance_nm, freight_rate_usd_per_mt, freight_rate_source,
-       fit_percent, fit_breakdown)
+       fit_percent, fit_breakdown, worksheet_json)
     VALUES
       (?, ?, ?, ?, 'shortlist', ?, ?, ?,
        ?, ?, ?, ?, ?, ?,
        ?, ?, ?, ?,
-       ?, ?)
+       ?, ?, ?)
   `);
 
   const insertMany = db.transaction((seedRows: SeedRow[], userId: string | null) => {
@@ -367,7 +389,7 @@ async function main(): Promise<void> {
         r.cargoId, r.vesselId, r.score, r.reason, userId, nowMs, nowMs,
         r.cargoType, r.loadPort, r.dischargePort, r.laycanStart, r.laycanEnd, r.vesselDwt,
         r.tceUsdPerDay, r.distanceNm, r.freightRateUsdPerMt, r.freightRateSource,
-        r.fitPercent, r.fitBreakdown,
+        r.fitPercent, r.fitBreakdown, r.worksheetJson,
       );
     }
   });
