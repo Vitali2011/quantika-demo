@@ -193,9 +193,67 @@ describe('isCandidateInVoyageBasins — Bug 1 acceptance', () => {
     expect(isCandidateInVoyageBasins('XXXXX', 'ROCND', 'GBLIV')).toBe(false);
   });
 
-  it('unknown endpoints → fail-open (true) to preserve existing behavior', () => {
-    // If we cannot classify endpoints, do not filter — let downstream detour-check decide.
-    expect(isCandidateInVoyageBasins('GIGIB', 'XXXXX', 'GBLIV')).toBe(true);
+  it('unknown from endpoint: candidate outside to-basin corridor is excluded', () => {
+    // from=XXXXX (unknown), to=GBLIV (NorthEurope) → corridor = {NorthEurope, AtlanticNorth}
+    // Gibraltar is WestMed — not in that corridor → excluded (conservative).
+    expect(isCandidateInVoyageBasins('GIGIB', 'XXXXX', 'GBLIV')).toBe(false);
+  });
+});
+
+describe('voyageBasins — one-endpoint-unknown (basin-nodist fix)', () => {
+  it('to=unknown → corridor = from-basin + 1-hop neighbours', () => {
+    // from=Constanta (BlackSea), to=unknown → {BlackSea, EastMed}
+    const b = voyageBasins('ROCND', 'XXXXX');
+    expect(b).toContain('BlackSea');
+    expect(b).toContain('EastMed');
+    expect(b).not.toContain('WestMed');
+    expect(b).not.toContain('Pacific');
+    expect(b).not.toContain('AtlanticSouth');
+    expect(b).not.toContain('AtlanticNorth');
+    expect(b).not.toContain('EastAsia');
+  });
+
+  it('from=unknown → corridor = to-basin + 1-hop neighbours', () => {
+    // from=unknown, to=Liverpool (NorthEurope) → {NorthEurope, AtlanticNorth}
+    const b = voyageBasins('XXXXX', 'GBLIV');
+    expect(b).toContain('NorthEurope');
+    expect(b).toContain('AtlanticNorth');
+    expect(b).not.toContain('Pacific');
+    expect(b).not.toContain('WestMed');
+    expect(b).not.toContain('EastAsia');
+  });
+});
+
+describe('isCandidateInVoyageBasins — one-endpoint-unknown (basin-nodist fix)', () => {
+  it('unknown to: USLAX excluded from BlackSea-based voyage', () => {
+    // from=ROCND (BlackSea), to=unknown → corridor={BlackSea,EastMed}
+    expect(isCandidateInVoyageBasins('USLAX', 'ROCND', 'XXXXX')).toBe(false);
+  });
+  it('unknown to: SGSIN excluded from BlackSea-based voyage', () => {
+    expect(isCandidateInVoyageBasins('SGSIN', 'ROCND', 'XXXXX')).toBe(false);
+  });
+  it('unknown to: BRSSZ excluded from BlackSea-based voyage', () => {
+    expect(isCandidateInVoyageBasins('BRSSZ', 'ROCND', 'XXXXX')).toBe(false);
+  });
+  it('unknown to: USNYC excluded from BlackSea-based voyage', () => {
+    // AtlanticNorth is not adjacent to BlackSea directly
+    expect(isCandidateInVoyageBasins('USNYC', 'ROCND', 'XXXXX')).toBe(false);
+  });
+  it('unknown to: CYLMS (EastMed) included in BlackSea-based voyage', () => {
+    // EastMed IS adjacent to BlackSea → in corridor
+    expect(isCandidateInVoyageBasins('CYLMS', 'ROCND', 'XXXXX')).toBe(true);
+  });
+  it('unknown to: USNYC excluded from EastMed-based voyage (AtlanticNorth not adjacent)', () => {
+    // from=GRPIR (EastMed), to=unknown → corridor={EastMed,BlackSea,WestMed,RedSea}
+    // AtlanticNorth is not adjacent to EastMed
+    expect(isCandidateInVoyageBasins('USNYC', 'GRPIR', 'XXXXX')).toBe(false);
+  });
+  it('unknown to: GIGIB (WestMed) included in EastMed-based voyage', () => {
+    // WestMed IS adjacent to EastMed
+    expect(isCandidateInVoyageBasins('GIGIB', 'GRPIR', 'XXXXX')).toBe(true);
+  });
+  it('both unknown → fail-open (GIGIB passes through)', () => {
+    expect(isCandidateInVoyageBasins('GIGIB', 'XXXXX', 'YYYYY')).toBe(true);
   });
 });
 

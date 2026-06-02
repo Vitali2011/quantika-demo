@@ -16,7 +16,7 @@ import { getPortDistance } from '@/lib/sailing/port-distances';
 import { getStore } from '@/lib/session-store';
 import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
 import { getLatestEuaPrice } from '@/lib/market/eua-repository';
-import { optimizeSplitBunker } from '@/lib/economics/split-bunker';
+import { formatNumber } from '@/lib/utils';
 import { computeBunkerComparison } from '@/lib/economics/bunker-comparison';
 import { isCandidateInVoyageBasins } from '@/lib/sailing/voyage-basin';
 import { estimateBunkerLift } from '@/lib/economics/bunker-lift';
@@ -210,15 +210,6 @@ export async function GET(req: NextRequest): Promise<NextResponse<BunkerRecommen
     onRouteWithPrices.map(({ port, price }) => [port, price]),
   );
 
-  const result = optimizeSplitBunker({
-    route: { fromPort: from, toPort: to, intermediatePorts: onRouteWithPrices.map(p => p.port) },
-    bunkerPrices,
-    consumptionMtPerDay: consMtPerDay,
-  });
-
-  const recommendedPort = result.bunkerPlan[0]?.port ?? onRouteWithPrices[0].port;
-  const recommendedPrice = bunkerPrices.get(recommendedPort);
-
   let euaPriceEur: number | undefined;
   try {
     const euaRow = getLatestEuaPrice(db);
@@ -227,6 +218,7 @@ export async function GET(req: NextRequest): Promise<NextResponse<BunkerRecommen
     // eua_prices table unavailable in this environment — carbon omitted from eff
   }
 
+  // Candidates sorted by effectiveUsdPerMt ASC (all-in: price + detour + carbon).
   const candidates = computeBunkerComparison({
     candidates: onRouteWithPrices.map(({ port, price, deviationNm }) => ({
       port,
@@ -241,13 +233,30 @@ export async function GET(req: NextRequest): Promise<NextResponse<BunkerRecommen
     euaPriceEur,
   });
 
+  // Winner = min effective $/MT — must match table's #1 row, not min raw price.
+  const effWinner = candidates[0];
+  const effLoser = candidates[candidates.length - 1];
+  const recommendedPort = effWinner?.port ?? onRouteWithPrices[0].port;
+  const recommendedPrice = bunkerPrices.get(recommendedPort);
+
+  const savingsUsd =
+    effWinner && effLoser && effWinner !== effLoser
+      ? Math.max(0, Math.round((effLoser.effectiveUsdPerMt - effWinner.effectiveUsdPerMt) * liftTonnes))
+      : 0;
+
+  const recommendation = effWinner
+    ? savingsUsd > 0
+      ? `Bunker at ${effWinner.port} (${effWinner.effectiveUsdPerMt} USD/MT eff.) — saves ~$${formatNumber(savingsUsd)} vs ${effLoser!.port}`
+      : `Bunker at ${effWinner.port} (${effWinner.effectiveUsdPerMt} USD/MT eff.)`
+    : null;
+
   return NextResponse.json({
     fallback: false,
     message: null,
     port: recommendedPort,
     priceUsdPerMt: recommendedPrice?.vlsfo ?? null,
-    recommendation: result.recommendation,
-    savingsUsd: result.savingsUsd,
+    recommendation,
+    savingsUsd,
     liftTonnes,
     capacityMt: liftEstimate.capacityMt,
     liftCapped: liftEstimate.capped,
