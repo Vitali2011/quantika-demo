@@ -175,6 +175,20 @@ async function main(): Promise<void> {
         grainCapacity: vessel.grainCapacity,
         dwtSummer: dwtSummer || null,
         dwcc: cfValue(vessel.dwcc),
+        vesselRestrictions: vessel.restrictions ?? [],
+        // Layer B gates (mirror lib/matching/pair-analyzer.ts)
+        vesselBuilt: vessel.built ?? null,
+        refYear,
+        cargoMaxVesselAgeYrs: cargo.maxVesselAgeYrs ?? null,
+        vesselBeam: vessel.beam ?? null,
+        vesselLoa: vessel.loa ?? null,
+        cargoMaxBeamM: cargo.maxBeamM ?? null,
+        cargoMaxLoaM: cargo.maxLoaM ?? null,
+        cargoGearRequired: cargo.gearRequired ?? null,
+        vesselFlag: vessel.flag ?? null,
+        vesselClassSociety: vessel.classSociety ?? null,
+        cargoFlagRequired: cargo.flagRequired ?? null,
+        cargoClassRequired: cargo.classRequired ?? null,
       });
       if (!hf.pass) continue;
 
