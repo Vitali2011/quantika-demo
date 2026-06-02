@@ -51,9 +51,25 @@ const DETOUR_ABS_CAP_NM = 200;
 
 /** Vessel defaults for per-port effective $/MT math (Supramax representative). */
 const DEFAULT_SPEED_KN = 12.5;
+/** Fallback when DWT is also unknown — Supramax representative. */
 const DEFAULT_CONS_MT_PER_DAY = 28;
 const DEFAULT_LIFT_TONNES = 500;
 const DEFAULT_VESSEL_DAY_RATE_USD = 15000;
+
+/**
+ * Estimate laden VLSFO consumption (t/day) from vessel DWT when no Q88 data.
+ * Midpoints of realistic laden-service ranges per class.
+ * When DWT is 0 (unknown) falls back to Supramax representative (28 t/day).
+ */
+export function consFromDwt(dwt: number): number {
+  if (dwt <= 0)       return DEFAULT_CONS_MT_PER_DAY;
+  if (dwt <= 5_000)   return 6;   // coaster / small MPP
+  if (dwt <= 10_000)  return 10;  // small general cargo
+  if (dwt <= 35_000)  return 18;  // handysize
+  if (dwt <= 60_000)  return 28;  // supra/handymax
+  if (dwt <= 85_000)  return 33;  // panamax
+  return 40;                       // capesize / VLCC
+}
 
 function parseFiniteNumber(raw: string | null): number | null {
   if (raw == null) return null;
@@ -96,7 +112,9 @@ export async function GET(req: NextRequest): Promise<NextResponse<BunkerRecommen
 
   const speedKn = speedParam && speedParam > 0 ? speedParam : DEFAULT_SPEED_KN;
   const consMtPerDay =
-    consParam && consParam > 0 ? consParam : DEFAULT_CONS_MT_PER_DAY;
+    consParam && consParam > 0 ? consParam :
+    dwtParam && dwtParam > 0   ? consFromDwt(dwtParam) :
+    DEFAULT_CONS_MT_PER_DAY;
 
   const liftEstimate = estimateBunkerLift({
     dwt: dwtParam ?? 0,
