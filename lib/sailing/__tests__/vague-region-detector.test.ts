@@ -16,11 +16,11 @@ describe('isVagueRegion — non-vague inputs (must NOT trip)', () => {
   it('returns vague=false for "Marmara" (whitelisted alias)', () => {
     expect(isVagueRegion('Marmara').vague).toBe(false);
   });
-  it('returns vague=false for "Marmara Sea" (whitelisted alias)', () => {
-    expect(isVagueRegion('Marmara Sea').vague).toBe(false);
+  it('returns vague=true for "Marmara Sea" (sea basin, not a specific port)', () => {
+    expect(isVagueRegion('Marmara Sea').vague).toBe(true);
   });
-  it('returns vague=false for "Sea of Marmara" (whitelisted alias)', () => {
-    expect(isVagueRegion('Sea of Marmara').vague).toBe(false);
+  it('returns vague=true for "Sea of Marmara" (sea basin, not a specific port)', () => {
+    expect(isVagueRegion('Sea of Marmara').vague).toBe(true);
   });
   it('returns vague=false for "Bay of Biscay" (whitelisted alias)', () => {
     expect(isVagueRegion('Bay of Biscay').vague).toBe(false);

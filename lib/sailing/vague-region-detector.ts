@@ -36,6 +36,9 @@ const SEA_NAMES = [
   'east china sea', 'south china sea', 'yellow sea', 'sea of japan',
   'norwegian sea', 'barents sea', 'irish sea', 'celtic sea',
   'tyrrhenian sea', 'ionian sea', 'ligurian sea', 'alboran sea',
+  // Sea of Marmara — incidentally aliased to "Marmara" port cluster in PORT_ALIASES,
+  // but still too vague as a vessel position (no precise anchorage/terminal).
+  'marmara sea', 'sea of marmara',
 ];
 
 /** Country names that brokers often use as "loose origin" without a port. */
@@ -86,11 +89,22 @@ export function isVagueRegion(portName: string | null | undefined): VagueRegionR
   const trimmed = portName.trim();
   if (!trimmed) return { vague: false };
 
-  // Safety: if it resolves to a known port via the existing pipeline, NOT vague.
-  // This protects "Marmara", "Marmara Sea", "Bay of Biscay", "Biscay" etc.
-  if (normalizePortName(trimmed)) return { vague: false };
-
   const lc = lcTrim(trimmed);
+
+  // Sea names are checked BEFORE normalizePortName: some sea names are incidentally
+  // aliased to port clusters in PORT_ALIASES (e.g. "marmara sea" → "Marmara" cluster)
+  // but are still too vague as vessel positions — no specific anchorage/terminal known.
+  if (SEA_NAMES.includes(lc)) {
+    return {
+      vague: true,
+      pattern: 'sea name',
+      suggestion: `'${trimmed}' is a sea/basin, not a port. Ask for a specific load/discharge port.`,
+    };
+  }
+
+  // Safety: if it resolves to a known port via the existing pipeline, NOT vague.
+  // This protects "Marmara" (the island/port), "Bay of Biscay", "Biscay" etc.
+  if (normalizePortName(trimmed)) return { vague: false };
 
   // Pattern 1: Compass + Coast (e.g. "East Coast Greece", "West Coast Africa")
   if (COAST_RX.test(lc)) {

@@ -42,9 +42,20 @@ export interface RawCargoItem {
   items?: RawCargoItem[];
 }
 
-/** Extract plain string from a value that may be a ConfidenceField object or a plain string */
+/** Extract plain string from a value that may be a ConfidenceField, array of them, or a plain string */
 function extractStr(v: unknown): string | null {
   if (v == null) return null;
+  if (Array.isArray(v)) {
+    // Array of ConfidenceField objects — join their .value strings with '; '
+    const parts = v
+      .map((e) => {
+        if (e == null) return null;
+        if (typeof e === 'object' && 'value' in e) return String((e as { value: unknown }).value) || null;
+        return String(e) || null;
+      })
+      .filter(Boolean) as string[];
+    return parts.length ? parts.join('; ') : null;
+  }
   if (typeof v === 'object' && 'value' in v) return String((v as { value: unknown }).value) || null;
   return String(v) || null;
 }
