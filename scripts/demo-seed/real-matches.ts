@@ -243,7 +243,9 @@ async function main(): Promise<void> {
         destCrane: hf.checks.destCrane,
         cargoWeight: hf.checks.cargoWeight,
       };
-      const fb = computeFitBreakdown({ cargo, vessel, readiness, sanctions, hardFilters });
+      // refYear MUST be passed: without it computeFitBreakdown treats vessel age as
+      // unknown → the EU-discharge 25yr+ cap (#2) and vetting age factor never fire.
+      const fb = computeFitBreakdown({ cargo, vessel, readiness, sanctions, hardFilters, refYear });
 
       // Economics
       const distanceResult =
