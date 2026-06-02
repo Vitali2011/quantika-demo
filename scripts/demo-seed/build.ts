@@ -149,6 +149,32 @@ function redactEmails(text: string): string {
     .replace(/\b(?:Skype|Viber|WhatsApp|ICQ|WeChat|Telegram)\s*[:\-]\s*\S+/gi, 'demo.local');
 }
 
+// Structured location fields that must never contain a CONTACT N anonymization token.
+// These are parsed by the LLM as port/position names; when anonymization replaces a broker
+// name that happens to also be a port name (e.g. "Istanbul" → "CONTACT 3"), the JSON-level
+// replacement corrupts the structured field. Sanitize after anonymization.
+const LOCATION_FIELDS = ['openPosition', 'originPort', 'destinationPort'] as const;
+const CONTACT_TOKEN_RE = /^CONTACT\s+\d+$/i;
+
+export function sanitizeContactTokensFromLocations(items: unknown[]): unknown[] {
+  return items.map((item) => {
+    if (!item || typeof item !== 'object') return item;
+    const obj = { ...(item as Record<string, unknown>) };
+    for (const field of LOCATION_FIELDS) {
+      const v = obj[field];
+      if (typeof v === 'string' && CONTACT_TOKEN_RE.test(v)) {
+        obj[field] = null;
+      } else if (v && typeof v === 'object' && 'value' in (v as object)) {
+        const cf = v as { value: unknown };
+        if (typeof cf.value === 'string' && CONTACT_TOKEN_RE.test(cf.value)) {
+          obj[field] = { ...(cf as object), value: null };
+        }
+      }
+    }
+    return obj;
+  });
+}
+
 function loadManifest(p: string): Manifest {
   const raw = JSON.parse(fs.readFileSync(p, 'utf8'));
   return ManifestSchema.parse(raw);
@@ -462,8 +488,13 @@ export async function build(opts: BuildOptions): Promise<void> {
       // Anonymize the structured parsed JSON too — charterer/vessel/broker names
       // Opus extracted live inside result_json, and the UI reads parsed_results.
       // Body-only anonymization would leak them. Re-check forbidden on the result.
+      // After anonymization, sanitize any CONTACT N tokens from structured location
+      // fields (openPosition, originPort, destinationPort) — a broker name that is
+      // also a port name (e.g. "Istanbul" → "CONTACT 3") must not corrupt the port field.
       const anonJson = (items: unknown[]): string => {
-        const s = redactEmails(applyAnonymization(JSON.stringify(items), bodyMap));
+        const anonymized = JSON.parse(redactEmails(applyAnonymization(JSON.stringify(items), bodyMap)));
+        const cleaned = sanitizeContactTokensFromLocations(Array.isArray(anonymized) ? anonymized : [anonymized]);
+        const s = JSON.stringify(cleaned);
         for (const needle of forbidden) {
           // Mirror applyAnonymization's word-boundary logic exactly (always-end-bound).
           const escaped = needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
