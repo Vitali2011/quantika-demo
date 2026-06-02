@@ -378,8 +378,8 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
         <div className="flex items-center gap-1 border-b border-ds-border" role="tablist" aria-label="Match buckets">
           {([
             { id: 'matches' as Tab, label: 'Матчи', count: modeFiltered.length, testid: 'tab-matches' },
-            { id: 'review' as Tab, label: 'На проверку', count: lowConfidenceMatches.length, testid: 'tab-review' },
-            { id: 'insufficient' as Tab, label: 'Мало данных', count: insufficientData.length, testid: 'tab-insufficient' },
+            // Review / Insufficient buckets hidden from the board (founder 2026-06-02):
+            // surface only the ironclad main matches. Buckets stay in DB, not shown.
           ]).map(({ id, label, count, testid }) => (
             <button
               key={id}

@@ -86,7 +86,12 @@ export function MatchWorksheet({ worksheet }: Props) {
       label: '🏗 Cranes',
       vessel: v.geared != null ? (v.geared ? 'Geared ✅' : 'Gearless') : '—',
       cargoPort: hf.crane.reason ? hf.crane.reason : '—',
-      verdict: verdictBadge(hf.crane.pass, hf.crane.reason, hf.crane.warning),
+      // Gearless + breakbulk → amber "confirm cranes" (founder 2026-06-02): bulk
+      // terminals handle gearless fine (green via hf.crane), but breakbulk needs
+      // confirmed load/disch cranes — never silently green.
+      verdict: v.geared === false && /break/i.test(c.cargoType ?? '')
+        ? '⚠️ Confirm cranes (load/disch)'
+        : verdictBadge(hf.crane.pass, hf.crane.reason, hf.crane.warning),
     },
     {
       label: '🌊 Draft',

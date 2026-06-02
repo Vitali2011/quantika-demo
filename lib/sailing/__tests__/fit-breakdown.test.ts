@@ -300,3 +300,34 @@ describe('computeFitBreakdown — anchor scorecard', () => {
     }
   });
 });
+
+describe('computeFitBreakdown — EU-discharge age penalty (founder rule 2026-06-02)', () => {
+  it('25yr+ vessel + EU discharge (Constanța) → capped ≤55 with EU age flag', () => {
+    const cargo = makeCargo({ destinationPort: { value: 'Constanța', confidence: 'confirmed' } });
+    const vessel = makeVessel({ built: 1999 }); // age 27 @ refYear 2026
+    const fb = computeFitBreakdown({ cargo, vessel, readiness: READY_IDEAL, sanctions: SANCTIONS_OK, hardFilters: HF_PASS, refYear: 2026 });
+    expect(fb.appliedCap?.reason).toMatch(/EU discharge/i);
+    expect(fb.fitPercent).toBeLessThanOrEqual(55);
+  });
+
+  it('young vessel (age 14) + EU discharge → NO EU-age cap', () => {
+    const cargo = makeCargo({ destinationPort: { value: 'Constanța', confidence: 'confirmed' } });
+    const vessel = makeVessel({ built: 2012 });
+    const fb = computeFitBreakdown({ cargo, vessel, readiness: READY_IDEAL, sanctions: SANCTIONS_OK, hardFilters: HF_PASS, refYear: 2026 });
+    expect(fb.appliedCap?.reason ?? '').not.toMatch(/EU discharge/i);
+  });
+
+  it('25yr+ vessel + NON-EU discharge (Lagos) → NO EU-age cap', () => {
+    const cargo = makeCargo({ destinationPort: { value: 'Lagos', confidence: 'confirmed' } });
+    const vessel = makeVessel({ built: 1999 });
+    const fb = computeFitBreakdown({ cargo, vessel, readiness: READY_IDEAL, sanctions: SANCTIONS_OK, hardFilters: HF_PASS, refYear: 2026 });
+    expect(fb.appliedCap?.reason ?? '').not.toMatch(/EU discharge/i);
+  });
+
+  it('built unknown + EU discharge → NO cap (conservative)', () => {
+    const cargo = makeCargo({ destinationPort: { value: 'Constanța', confidence: 'confirmed' } });
+    const vessel = makeVessel({ built: null });
+    const fb = computeFitBreakdown({ cargo, vessel, readiness: READY_IDEAL, sanctions: SANCTIONS_OK, hardFilters: HF_PASS, refYear: 2026 });
+    expect(fb.appliedCap?.reason ?? '').not.toMatch(/EU discharge/i);
+  });
+});

@@ -165,3 +165,28 @@ describe('parseVesselOpenDate — object-shaped input (Phase 2C)', () => {
   });
 });
 
+describe('parseLaycan — fuzzy windows (founder 2026-06-02: no single-day collapse)', () => {
+  it('"First half of May 2026" → May 1–15 range, not single day', () => {
+    const r = parseLaycan('First half of May 2026', 2026)!;
+    expect(r.start.toISOString().slice(0, 10)).toBe('2026-05-01');
+    expect(r.end.toISOString().slice(0, 10)).toBe('2026-05-15');
+    expect(r.start.getTime()).not.toBe(r.end.getTime());
+  });
+  it('"Second half of June" → June 16–30 range', () => {
+    const r = parseLaycan('Second half of June', 2026)!;
+    expect(r.start.toISOString().slice(0, 10)).toBe('2026-06-16');
+    expect(r.end.toISOString().slice(0, 10)).toBe('2026-06-30');
+  });
+  it('bare month "June 2019" → whole-month window at refYear, not single day', () => {
+    const r = parseLaycan('June 2019', 2026)!;
+    expect(r.start.toISOString().slice(0, 10)).toBe('2026-06-01');
+    expect(r.end.toISOString().slice(0, 10)).toBe('2026-06-30');
+    expect(r.start.getTime()).not.toBe(r.end.getTime());
+  });
+  it('existing day-range "15-25 Sep" still parses unchanged', () => {
+    const r = parseLaycan('15-25 Sep', 2026)!;
+    expect(r.start.toISOString().slice(0, 10)).toBe('2026-09-15');
+    expect(r.end.toISOString().slice(0, 10)).toBe('2026-09-25');
+  });
+});
+

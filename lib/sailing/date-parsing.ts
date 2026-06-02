@@ -273,6 +273,33 @@ export function parseLaycan(
     }
   }
 
+  // "first/second half of <Month>" → half-month window (NOT a single day).
+  // Must precede the single-day fallback: otherwise "First half of May 2026"
+  // mis-parses the "20" of "2026" as a day → collapsed single-day laycan.
+  const halfMonth = s.match(new RegExp(`\\b(first|1st|second|2nd)\\s+half\\s+(?:of\\s+)?${MONTH_RE.source}`, 'i'));
+  if (halfMonth) {
+    const mi = monthIdx(halfMonth[2]);
+    if (mi != null) {
+      const isFirst = /first|1st/i.test(halfMonth[1]);
+      const lastDay = new Date(Date.UTC(refYear, mi + 1, 0)).getUTCDate();
+      return {
+        start: mkUtc(refYear, mi, isFirst ? 1 : 16),
+        end: mkUtc(refYear, mi, isFirst ? 15 : lastDay),
+      };
+    }
+  }
+
+  // Bare "<Month>" or "<Month> <year>" (no day) → whole-month window, not a
+  // single day. Guards against month-only laycans ("June 2019") collapsing.
+  const monthOnly = s.match(new RegExp(`^\\s*${MONTH_RE.source}(?:[\\s,]+\\d{4})?\\s*$`, 'i'));
+  if (monthOnly) {
+    const mi = monthIdx(monthOnly[1]);
+    if (mi != null) {
+      const lastDay = new Date(Date.UTC(refYear, mi + 1, 0)).getUTCDate();
+      return { start: mkUtc(refYear, mi, 1), end: mkUtc(refYear, mi, lastDay) };
+    }
+  }
+
   // Single day fallback — reuse vessel-open parser
   const single = parseVesselOpenDate(s, refYear);
   if (single) return { start: single, end: single };

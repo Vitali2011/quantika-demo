@@ -36,6 +36,7 @@ import { classifyVesselByDwt } from './readiness-gap';
 import { BALLAST_GOOD_MAX_NM, isPartCargo } from './match-scoring';
 import { portHasShoreCranes } from './port-master';
 import { STOWAGE_FACTORS } from './match-filters';
+import { regionMatchesPort } from './voyage-restriction';
 
 // ── Weights — sum to 100. Tunable per anchor calibration. ──────────────────
 //
@@ -491,6 +492,23 @@ export function computeFitBreakdown(input: FitBreakdownInput): FitBreakdown {
       });
     }
   }
+  // EU-discharge age penalty (founder rule 2026-06-02): a 25yr+ vessel
+  // discharging at a European port faces PSC scrutiny + charterer reluctance.
+  // Soft signal — cap below the main-board floor so it drops off the board but
+  // stays visible in Review. NOT a hard knockout (distinct from the explicit
+  // cargo max-age hard gate in match-filters, which is a charterer's firm ban).
+  const euDischargeAge = refYear != null && vessel.built != null ? refYear - vessel.built : null;
+  if (
+    euDischargeAge != null &&
+    euDischargeAge >= 25 &&
+    regionMatchesPort('europe', cfValue(cargo.destinationPort))
+  ) {
+    caps.push({
+      reason: `vessel ${euDischargeAge}yr + EU discharge — PSC/charterer age risk`,
+      ceiling: 55,
+    });
+  }
+
   let appliedCap: { reason: string; ceiling: number } | null = null;
   for (const c of caps) {
     if (fit > c.ceiling) {
