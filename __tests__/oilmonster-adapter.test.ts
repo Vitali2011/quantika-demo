@@ -364,19 +364,20 @@ describe('refreshOilMonster — range validation', () => {
     expect(result.rowsChanged).toBe(1);
   });
 
-  it('skips price just above upper boundary (2001)', async () => {
-    const result = await runWith(makeHtml([makeRow('Rotterdam', '2001', '2001')]));
-    expect(result.rowsChanged).toBe(0);
+  it('throws when all prices out of range (2001) and no per-port rows written', async () => {
+    await expect(runWith(makeHtml([makeRow('Rotterdam', '2001', '2001')]))).rejects.toThrow(
+      /zero rows written/,
+    );
   });
 
-  it('returns rowsChanged=0 on broken HTML (OilMonsterParseError caught)', async () => {
-    const result = await runWith('<html>no table markers</html>');
-    expect(result.rowsChanged).toBe(0);
+  it('throws on broken HTML when no rows written (OilMonsterParseError caught)', async () => {
+    await expect(runWith('<html>no table markers</html>')).rejects.toThrow(/zero rows written/);
   });
 
-  it('returns rowsChanged=0 when no target port rows matched', async () => {
-    const result = await runWith(makeHtml([makeRow('Antwerp', '600', '700')]));
-    expect(result.rowsChanged).toBe(0);
+  it('throws when no target port rows matched and no rows written', async () => {
+    await expect(runWith(makeHtml([makeRow('Antwerp', '600', '700')]))).rejects.toThrow(
+      /zero rows written/,
+    );
   });
 
   it('propagates non-parse errors (network-style rejection)', async () => {

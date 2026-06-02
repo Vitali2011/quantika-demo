@@ -1,4 +1,43 @@
-# discovery.md — PR fix/demo-freshness-clock adversarial QA (2026-06-01)
+# discovery.md — feat-bunker-oilmonster-blacksea adversarial QA (2026-06-02)
+# Reviewer: cold-session adversarial QA (zero feature-session context)
+
+---
+
+## Branch commit (this review)
+
+```
+c2898042 feat(bunker): OilMonster per-port pages for Istanbul+Piraeus + Constanta proxy
+```
+
+## Changed files (oilmonster-blacksea scope)
+
+| File | Role |
+|------|------|
+| `lib/knowledge/bunker/oilmonster-adapter.ts` | NEW — HTML parser + refresh orchestrator |
+| `lib/knowledge/bunker/shipandbunker-adapter.ts` | CLEANUP — removed Piraeus/Istanbul entries |
+| `__tests__/lib/knowledge/bunker/oilmonster-adapter.test.ts` | NEW — 470 lines, per-port + refreshOilMonster |
+| `__tests__/oilmonster-adapter.test.ts` | UPDATED — 387 lines, structural/numeric/mapping |
+| `__tests__/fixtures/oilmonster-istanbul-2026-06-02.html` | NEW fixture (947.00, 2026-05-25) |
+| `__tests__/fixtures/oilmonster-piraeus-2026-06-02.html` | NEW fixture (889.25, 2026-05-26) |
+| `__tests__/fixtures/oilmonster-constantza-2026-06-02.html` | NEW fixture (585.00, 2024-09-12 - stale) |
+
+## Existing test run result
+
+75 tests, 2 suites — ALL PASS (`npx jest "oilmonster-adapter"`)
+
+## Fixture values confirmed
+
+| Port | Price | Date | Age vs NOW_DEMO (2026-06-02) |
+|---|---|---|---|
+| Istanbul (TRIST) | 947.00 | 2026-05-25 | 8 days (fresh, < 30) |
+| Piraeus (GRPIR) | 889.25 | 2026-05-26 | 7 days (fresh, < 30) |
+| Constantza | 585.00 | 2024-09-12 | ~628 days (stale, > 30) |
+
+Expected ROCND proxy = 947.00 + 40 = 987.00 (Math.round(987.00 * 100) / 100 = 987.00)
+
+---
+
+# PREVIOUS REVIEW (PR fix/demo-freshness-clock — 2026-06-01)
 # Reviewer: cold-session test-skill (zero feature-session context)
 
 ---
