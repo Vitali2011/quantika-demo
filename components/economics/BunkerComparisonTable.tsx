@@ -26,6 +26,12 @@ const PORT_NAMES: Record<string, string> = {
   USLAX: 'Los Angeles',
   ZADUR: 'Durban',
   MTMLA: 'Malta',
+  // Bug 4 — regional Med/Black Sea hubs added 2026-06-02
+  ROCND: 'Constanta',
+  EGPSD: 'Port Said',
+  ITAUG: 'Augusta',
+  ESCEU: 'Ceuta',
+  CYLMS: 'Limassol',
 };
 
 function portLabel(locode: string): string {
@@ -35,12 +41,16 @@ function portLabel(locode: string): string {
 interface BunkerComparisonTableProps {
   candidates: BunkerCandidateResult[];
   liftTonnes?: number;
+  capacityMt?: number;
+  liftCapped?: boolean;
   recommendedSplit?: string | null;
 }
 
 export function BunkerComparisonTable({
   candidates,
   liftTonnes,
+  capacityMt,
+  liftCapped,
   recommendedSplit,
 }: BunkerComparisonTableProps) {
   if (candidates.length === 0) {
@@ -56,6 +66,16 @@ export function BunkerComparisonTable({
       {liftTonnes != null && (
         <p data-testid="lift-header" className="text-xs font-medium text-gray-700">
           Нужно залить ~{liftTonnes.toLocaleString()} т
+          {capacityMt != null && capacityMt > 0 && (
+            <span className="ml-1 text-gray-500 font-normal">
+              (бункерная ёмкость ~{capacityMt.toLocaleString()} т)
+            </span>
+          )}
+          {liftCapped && (
+            <span data-testid="lift-capped-warn" className="ml-1 text-amber-700 font-normal">
+              ⚠ упёрлись в ёмкость — потребуется промежуточный бункер
+            </span>
+          )}
         </p>
       )}
 
@@ -71,6 +91,7 @@ export function BunkerComparisonTable({
               <th className="py-1 pr-2 font-medium text-right">Крюк</th>
               <th className="py-1 pr-2 font-medium text-right">+Топл $</th>
               <th className="py-1 pr-2 font-medium text-right">Время×$сут</th>
+              <th className="py-1 pr-2 font-medium text-right">Углерод $/т</th>
               <th className="py-1 font-medium text-right">ЭФФ. $/т</th>
             </tr>
           </thead>
@@ -110,6 +131,9 @@ export function BunkerComparisonTable({
                   </td>
                   <td className="py-1 pr-2 text-right">
                     {c.timeCostUsd > 0 ? `$${c.timeCostUsd.toFixed(0)}` : '—'}
+                  </td>
+                  <td data-testid={`carbon-${i}`} className="py-1 pr-2 text-right text-slate-500">
+                    {c.carbonUsdPerMt > 0 ? `${c.carbonUsdPerMt.toFixed(2)}` : '—'}
                   </td>
                   <td data-testid={`eff-${i}`} className="py-1 text-right font-semibold">
                     {c.effectiveUsdPerMt.toFixed(2)}
