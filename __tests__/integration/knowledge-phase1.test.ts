@@ -11,7 +11,7 @@
  *
  * Input Contract (integration level):
  * - All migrations must run without errors
- * - Bootstrap must register exactly 18 sources from KNOWLEDGE_REGISTRY
+ * - Bootstrap must register exactly 21 sources from KNOWLEDGE_REGISTRY
  * - OFAC refresh with valid XML must result in status='fresh', consecutive_failures=0
  * - getDistance must cache results and return { distanceNm, source: 'cache' } on second call
  * - listSources must return SourceRow[] with health_signal computed correctly
@@ -105,7 +105,7 @@ describe('Knowledge Phase 1 Integration Smoke', () => {
     expect(tableNames).toContain('eca_zones');
   });
 
-  it('bootstraps registry with exactly 18 sources from KNOWLEDGE_REGISTRY', () => {
+  it('bootstraps registry with exactly 21 sources from KNOWLEDGE_REGISTRY', () => {
     migration013.up(db);
 
     bootstrapKnowledgeSources(db);
@@ -113,11 +113,11 @@ describe('Knowledge Phase 1 Integration Smoke', () => {
     const count = (
       db.prepare('SELECT COUNT(*) AS c FROM knowledge_sources').get() as any
     ).c;
-    expect(count).toBe(19);
-    expect(KNOWLEDGE_REGISTRY).toHaveLength(19);
+    expect(count).toBe(21);
+    expect(KNOWLEDGE_REGISTRY).toHaveLength(21);
 
     const sources = listSources(db);
-    expect(sources).toHaveLength(19);
+    expect(sources).toHaveLength(21);
 
     // Verify Phase 1 sources are registered
     const slugs = sources.map((s) => s.slug);
@@ -234,7 +234,7 @@ describe('Knowledge Phase 1 Integration Smoke', () => {
     expect(res.status).toBe(200);
     const json = await res.json();
     expect(json.status).toBe('healthy');
-    expect(json.sources_fresh).toBe(19);
+    expect(json.sources_fresh).toBe(21);
     expect(json.sources_failed).toBe(0);
   });
 
@@ -269,6 +269,6 @@ describe('Knowledge Phase 1 Integration Smoke', () => {
     // Since OFAC is fresh but others are never_synced, status should be degraded
     // (never_synced sources don't fail health check but are counted as stale)
     expect(json.sources_fresh).toBe(1); // Only OFAC
-    expect(json.sources_stale).toBe(18); // Others never synced (18 = 17 + market-handybulk added)
+    expect(json.sources_stale).toBe(20); // Others never synced (20 = 18 + bunker-bunkerindex + bunker-oilmonster)
   });
 });
