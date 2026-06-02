@@ -1,7 +1,53 @@
-# test-skill Verdict — matching-gates-engine
+# test-skill Verdict — Layer C (matching-cap)
 
-**Date:** 2026-06-02  
-**Branch:** feat/matching-gates-engine  
+**Date:** 2026-06-02
+**Branch:** feat/matching-cap (commit e460a14e)
+**Mode:** adversarial
+
+## Verdict: APPROVE-WITH-FOLLOWUPS
+
+## Findings summary
+
+| Finding | Severity | Blocks? |
+|---------|----------|---------|
+| GAP-1: limit/offset ignored in topPerCargo path | MEDIUM | No |
+| GAP-2: destCrane missing breakbulk amber warning | MEDIUM | No |
+
+## Gate: PASS (no BLOCK-level findings)
+
+- No security bugs (SQL uses parameterized queries only)
+- No data loss / corruption
+- No breaking API change
+- No HIGH introduced by this PR
+- 8/8 adversarial regression tests pass
+- 1142/1142 existing tests pass (all maintained tests)
+
+## Required follow-ups before board uses topPerCargo
+
+1. **GAP-1 fix:** Add LIMIT/OFFSET support to topPerCargo query path
+   ```ts
+   // After the topPerCargo WHERE clause, add:
+   if (limit !== undefined) { query += ` LIMIT ?`; queryParams.push(limit); }
+   ```
+
+2. **GAP-2 fix:** Pass cargoType to destCrane call in runHardFilters
+   ```ts
+   const destCrane = checkCrane(input.destinationPort ?? null, input.geared, input.cargoType);
+   ```
+
+## Attack plan execution status
+
+| Attack | Status |
+|--------|--------|
+| A1 — LIMIT ignored | Confirmed gap (MEDIUM, not blocking) |
+| A2 — destCrane cargoType | Confirmed gap (MEDIUM, not blocking) |
+| A3 — warning contract | Verified OK |
+| A4 — score_min + topPerCargo | Verified OK |
+
+## OLD VERDICT (matching-gates-engine)
+
+**Date:** 2026-06-02
+**Branch:** feat/matching-gates-engine
 **Mode:** adversarial (inline, subagent constraint)
 
 ## Verdict: APPROVE

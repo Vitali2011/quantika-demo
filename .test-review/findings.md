@@ -1,3 +1,64 @@
+# findings.md — Layer C (matching-cap) adversarial QA (2026-06-02)
+# Reviewer: test-skill cold-start, commit e460a14e
+
+---
+
+## GAP-1 — MEDIUM — topPerCargo ignores limit/offset options
+
+**File:** `lib/matching/matches-repository.ts` — `listMatches` topPerCargo path
+**Repro:** `listMatches(db, { sortBy:'score', sortDir:'desc', topPerCargo:3, limit:2 })` returns 6 rows, not 2
+**Root cause:** The topPerCargo CTE path has no LIMIT/OFFSET appended to the query
+**Impact:** Any caller combining `topPerCargo` + `limit` (or `offset`) gets wrong row count silently. Current board (`app/matches/page.tsx:53`) doesn't pass limit, so no current regression.
+**Severity:** MEDIUM (interface allows invalid combination; currently harmless; future footgun)
+**Fix:** Add LIMIT/OFFSET handling to the topPerCargo query path, same as the standard path
+
+---
+
+## GAP-2 — MEDIUM — destCrane missing breakbulk amber warning
+
+**File:** `lib/sailing/match-filters.ts` — `runHardFilters`
+**Repro:** `runHardFilters({ cargoType:'BREAK_BULK', originPort:'Mykolaiv', destinationPort:'Atlantis', geared:false, ... })` → `checks.destCrane.warning` is undefined even though discharge port cranes unverified
+**Root cause:** Line `checkCrane(input.destinationPort ?? null, input.geared)` does NOT pass `cargoType` unlike the origin crane call
+**Impact:** If load port cranes confirmed but discharge cranes unknown + breakbulk vessel, UI shows ✅ OK instead of amber "Confirm cranes" for the discharge side. Spec says "Confirm cranes (load/disch)" suggesting both ports should trigger amber.
+**Severity:** MEDIUM (incomplete, not incorrect; MatchWorksheet only shows origin crane check; misleading for load-port-ok+discharge-unknown scenario)
+**Fix:** Pass `input.cargoType` to the destCrane call: `checkCrane(input.destinationPort ?? null, input.geared, input.cargoType)`
+
+---
+
+## VERIFIED-OK-1 — warning contract enforced
+
+All checkCrane paths that return `warning:true` also return `pass:true`. Confirmed by A3 tests. No `warning:true + pass:false` path exists in current code. ✓
+
+## VERIFIED-OK-2 — score_min + topPerCargo
+
+Filters applied before window function ranking. Correct behavior confirmed. ✓
+
+## VERIFIED-OK-3 — tie-breaking stable
+
+Same fit_percent ties broken by id ASC (insertion order). Deterministic. ✓
+
+## VERIFIED-OK-4 — archived matches
+
+Archived matches with rank≤N DO appear in topPerCargo results. This is pre-existing behavior (standard path also returns archived when no status filter). Not introduced by Layer C. Noted but not blocking.
+
+---
+
+## Browser E2E Gate
+
+MatchWorksheet.tsx changed (UI). Gate triggered. App not running in this worktree — browser test not executable. `tests/regression/matching_cap_layerC.test.ts` covers the component render via JSON serialization (Node-based). No console errors or hydration errors observable without running app.
+
+**Browser E2E Gate: SKIPPED — app not running in worktree (component covered by JSON serialization tests)**
+
+---
+
+## Pre-existing Issues (informational)
+
+- `app/matches/page.tsx:53` returns all statuses (no status filter) — archived matches appear on board. Pre-existing, not introduced by Layer C.
+
+---
+
+## OLD FINDINGS (PR #739, 2026-06-01)
+
 # findings.md — PR #739 adversarial QA (2026-06-01)
 # Reviewer: cold-session test-skill, branch fix/eua-bunker-ets (synced 7c4e7a84)
 

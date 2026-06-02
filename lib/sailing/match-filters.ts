@@ -459,7 +459,7 @@ export function runHardFilters(input: HardFilterInput): HardFilterResult {
     vesselType: input.vesselType,
   });
   const destDraft = checkDraft(input.destinationPort ?? null, input.draftMax);
-  const destCrane = checkCrane(input.destinationPort ?? null, input.geared);
+  const destCrane = checkCrane(input.destinationPort ?? null, input.geared, input.cargoType);
   const cargoWeight = checkCargoWeight({
     weightMt: input.weightMt,
     dwtSummer: input.dwtSummer,

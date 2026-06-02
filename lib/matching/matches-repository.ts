@@ -470,7 +470,7 @@ export function listMatches(db: Database.Database, opts: ListMatchesOptions): St
     const { conds, p } = buildBaseConditions();
 
     const baseWhere = conds.length > 0 ? `WHERE ` + conds.join(` AND `) : ``;
-    const query = `
+    let query = `
       WITH ranked AS (
         SELECT *,
           ROW_NUMBER() OVER (
@@ -485,6 +485,17 @@ export function listMatches(db: Database.Database, opts: ListMatchesOptions): St
       ORDER BY ${allowedSortBy} ${allowedSortDir}, id ${allowedSortDir}
     `;
     const queryParams: unknown[] = [...p, topPerCargo];
+    if (limit !== undefined) {
+      query += ` LIMIT ?`;
+      queryParams.push(limit);
+      if (offset !== undefined) {
+        query += ` OFFSET ?`;
+        queryParams.push(offset);
+      }
+    } else if (offset !== undefined) {
+      query += ` LIMIT -1 OFFSET ?`;
+      queryParams.push(offset);
+    }
     return db.prepare(query).all(...queryParams) as StoredMatch[];
   }
 

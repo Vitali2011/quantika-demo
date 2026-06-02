@@ -1,7 +1,22 @@
-# attack_plan.md — PR fix/demo-freshness-clock adversarial QA (2026-06-01)
-# Reviewer: cold-session test-skill
+# attack_plan.md — Layer C (matching-cap) adversarial QA (2026-06-02)
 
 ## Attack Surface Classification
+
+| File | Signal class | Severity | Attack technique |
+|---|---|---|---|
+| matches-repository.ts (topPerCargo) | DB query / window function | HIGH | Boundary: limit ignored, archived status leakage |
+| match-filters.ts (checkCrane warning) | Pure function | HIGH | destCrane not updated for breakbulk, cargoType variants |
+| MatchWorksheet.tsx (verdictBadge) | UI render | MEDIUM | warning+pass=false edge case |
+
+## Attack items
+
+### A1 — LIMIT silently ignored in topPerCargo path [HIGH]
+### A2 — destCrane missing breakbulk warning [HIGH]
+### A3 — warning=true + pass=false gives wrong display [MEDIUM]
+
+---
+# OLD CONTENT (demo-clock review 2026-06-01)
+
 
 ### A1 — Dead code with wrong clock [MED] — formatAge
 
