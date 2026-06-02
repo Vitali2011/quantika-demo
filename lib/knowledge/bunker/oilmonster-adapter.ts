@@ -5,13 +5,21 @@ import { upsertBunkerPrice, getLatestBunkerPrice } from '@/lib/market/bunker-rep
 
 export const OILMONSTER_URL = 'https://oilmonster.com/bunker-price';
 
-// Exact link-text → UNLOCODE; covers 5 BUNKER_CANDIDATES incl. Gibraltar and Houston
+// Exact link-text → UNLOCODE. Covers original 5 hubs + 5 Med/Black Sea regional
+// hubs added 2026-06-02 (Bug 4 coverage). OilMonster lists ~200 ports; entries
+// whose name appears on the page get quoted, others are silently skipped.
 const PORT_MAP: ReadonlyMap<string, string> = new Map([
   ['Rotterdam', 'NLRTM'],
   ['Singapore', 'SGSIN'],
   ['Fujairah', 'AEFJR'],
   ['Houston', 'USHOU'],
   ['Gibraltar', 'GIGIB'],
+  // Regional Med/Black Sea hubs (Bug 4)
+  ['Constanta', 'ROCND'],
+  ['Port Said', 'EGPSD'],
+  ['Augusta', 'ITAUG'],
+  ['Ceuta', 'ESCEU'],
+  ['Limassol', 'CYLMS'],
 ]);
 
 // Range bounds for price sanity — wider than bunkerindex due to broader port coverage
