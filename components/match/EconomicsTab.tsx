@@ -4,6 +4,8 @@ import { useState, useMemo, useEffect, useCallback } from 'react';
 import type { ParsedVessel, ParsedCargo } from '@/lib/types';
 import { RouteCompareModal } from '@/components/economics/RouteCompareModal';
 import { VoyageBreakdownChart } from '@/components/economics/VoyageBreakdownChart';
+import { BunkerComparisonTable } from '@/components/economics/BunkerComparisonTable';
+import type { BunkerCandidateResult } from '@/lib/economics/bunker-comparison';
 import { calculateFuelEu } from '@/lib/economics/fueleu';
 import { estimateVoyageDays } from '@/lib/economics/voyage-days';
 import { estimateVesselValueUsd } from '@/lib/economics/vessel-value';
@@ -74,6 +76,8 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
   const [bunkerPortManual, setBunkerPortManual] = useState(false);
   const [bunkerReco, setBunkerReco] = useState<{ port: string; priceUsdPerMt: number; recommendation: string } | null>(null);
   const [bunkerFallback, setBunkerFallback] = useState<string | null>(null);
+  const [bunkerCandidates, setBunkerCandidates] = useState<BunkerCandidateResult[]>([]);
+  const [bunkerRecommendedSplit, setBunkerRecommendedSplit] = useState<string | null>(null);
   const [displayCurrency, setDisplayCurrency] = useState<DisplayCurrency>('USD');
   const [fuelType, setFuelType] = useState('hfo');
   const [euaData, setEuaData] = useState<{ value: number; period: string; stale?: boolean } | null>(null);
@@ -107,14 +111,18 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
     const url = `/api/voyage/bunker-recommendation?from=${encodeURIComponent(recoFrom)}&to=${encodeURIComponent(recoTo)}&grade=${bunkerGrade}`;
     fetch(url)
       .then((r) => r.ok ? r.json() : null)
-      .then((data: { fallback: boolean; message: string | null; port: string | null; priceUsdPerMt: number | null; recommendation: string | null; savingsUsd: number } | null) => {
+      .then((data: { fallback: boolean; message: string | null; port: string | null; priceUsdPerMt: number | null; recommendation: string | null; savingsUsd: number; candidates: BunkerCandidateResult[] } | null) => {
         if (cancelled || !data) return;
         if (data.fallback) {
           setBunkerFallback(data.message);
           setBunkerReco(null);
+          setBunkerCandidates([]);
+          setBunkerRecommendedSplit(null);
         } else if (data.port && data.priceUsdPerMt != null && data.recommendation) {
           setBunkerFallback(null);
           setBunkerReco({ port: data.port, priceUsdPerMt: data.priceUsdPerMt, recommendation: data.recommendation });
+          setBunkerCandidates(data.candidates ?? []);
+          setBunkerRecommendedSplit(data.recommendation ?? null);
           if (!bunkerPortManual && BUNKER_PORTS.some(p => p.value === data.port)) {
             setBunkerPort(data.port as BunkerPort);
           }
@@ -463,17 +471,28 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
             ))}
           </select>
         </div>
-        {bunkerReco && (
-          <p data-testid="bunker-reco" className="text-xs text-blue-700 bg-blue-50 rounded px-2 py-1 mt-1">
-            {bunkerReco.recommendation}
-          </p>
-        )}
         {bunkerFallback && (
           <p data-testid="bunker-fallback" className="text-xs text-amber-600 mt-1">
             {bunkerFallback}
           </p>
         )}
+        {!bunkerFallback && bunkerReco && bunkerCandidates.length === 0 && (
+          <p data-testid="bunker-reco" className="text-xs text-blue-700 bg-blue-50 rounded px-2 py-1 mt-1">
+            {bunkerReco.recommendation}
+          </p>
+        )}
       </div>
+
+      {bunkerCandidates.length > 0 && (
+        <div data-testid="bunker-comparison-section" className="rounded border border-gray-200 bg-white p-3">
+          <h3 className="text-xs font-semibold text-gray-700 mb-2">Бункеровка — сравнение портов</h3>
+          <BunkerComparisonTable
+            candidates={bunkerCandidates}
+            liftTonnes={cargo?.weightMt?.value}
+            recommendedSplit={bunkerRecommendedSplit}
+          />
+        </div>
+      )}
 
       {MULTI_CURRENCY_V2_ENABLED && (
         <div className="space-y-1">
