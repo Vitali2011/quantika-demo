@@ -114,6 +114,14 @@ interface EuaSpec {
   noiseAbs: number;
 }
 
+interface IndexSpec {
+  indexName: string;
+  unit: string;
+  startValue: number;
+  endValue: number;
+  noiseAbs: number;
+}
+
 // Current demo values from frozen_date 2026-05-28.
 // Trend direction matches sparklineDir in app/market/page.tsx:
 //   BDI up, BCI up, BSI up, BHSI down, VLSFO up, MGO down, EUA up.
@@ -131,10 +139,17 @@ const BUNKER_SPECS: BunkerSpec[] = [
 
 const EUA_SPEC: EuaSpec = { startValue: 68.0, endValue: 78.2, noiseAbs: 1.2 };
 
+// Drewry World Container Index — breakbulk variant used in /market freight chart.
+// endValue 2800 = current demo value (2026-05-28 seed row); gentle uptrend.
+const INDEX_SPECS: IndexSpec[] = [
+  { indexName: 'drewry-bb', unit: 'USD/FEU', startValue: 2720, endValue: 2800, noiseAbs: 25 },
+];
+
 export interface SeedResult {
   balticRows: number;
   bunkerRows: number;
   euaRows: number;
+  marketIndexRows: number;
 }
 
 export function seedMarketHistory(db: Database.Database, dry: boolean): SeedResult {
@@ -142,6 +157,7 @@ export function seedMarketHistory(db: Database.Database, dry: boolean): SeedResu
   let balticRows = 0;
   let bunkerRows = 0;
   let euaRows = 0;
+  let marketIndexRows = 0;
   const now = new Date().toISOString();
 
   // ── Baltic indices ──────────────────────────────────────────────────────────
@@ -214,7 +230,32 @@ export function seedMarketHistory(db: Database.Database, dry: boolean): SeedResu
     euaRows++;
   }
 
-  return { balticRows, bunkerRows, euaRows };
+  // ── Market indices (drewry-bb) ──────────────────────────────────────────────
+  const marketStmt = dry ? null : db.prepare(`
+    INSERT INTO market_indices (id, index_name, index_date, value, unit, source, fetched_at)
+    VALUES (?, ?, ?, ?, ?, 'demo-seed', ?)
+    ON CONFLICT(index_name, index_date) DO UPDATE SET
+      value = excluded.value,
+      source = excluded.source,
+      fetched_at = excluded.fetched_at
+  `);
+
+  for (const spec of INDEX_SPECS) {
+    const values = generateSeries(spec.startValue, spec.endValue, DAYS, spec.noiseAbs, spec.indexName);
+    for (let i = 0; i < dates.length; i++) {
+      const date = dates[i]!;
+      const val = values[i]!;
+      if (dry) {
+        console.log(`[DRY] market_indices ${spec.indexName} ${date} = ${val} ${spec.unit}`);
+      } else {
+        const id = `${spec.indexName}-${date}`;
+        marketStmt!.run(id, spec.indexName, date, val, spec.unit, now);
+      }
+      marketIndexRows++;
+    }
+  }
+
+  return { balticRows, bunkerRows, euaRows, marketIndexRows };
 }
 
 if (require.main === module) {
@@ -232,9 +273,9 @@ if (require.main === module) {
     const result = seedMarketHistory(db, isDry);
 
     if (isDry) {
-      console.log(`\nWould write: ${result.balticRows} baltic + ${result.bunkerRows} bunker + ${result.euaRows} eua rows`);
+      console.log(`\nWould write: ${result.balticRows} baltic + ${result.bunkerRows} bunker + ${result.euaRows} eua + ${result.marketIndexRows} drewry rows`);
     } else {
-      console.log(`\n✓ Seeded ${result.balticRows} baltic + ${result.bunkerRows} bunker + ${result.euaRows} eua rows`);
+      console.log(`\n✓ Seeded ${result.balticRows} baltic + ${result.bunkerRows} bunker + ${result.euaRows} eua + ${result.marketIndexRows} drewry rows`);
       console.log('  Idempotent — safe to re-run.');
     }
   } finally {
