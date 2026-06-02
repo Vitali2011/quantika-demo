@@ -335,7 +335,7 @@ describe('computeFitBreakdown — EU-discharge age penalty (founder rule 2026-06
   // regionMatchesPort cannot match → 0 matches actually capped. Detection must
   // work on the raw descriptor via country-substring.
   it('25yr+ vessel + VAGUE EU discharge "East Coast Greece port (unspecified)" → capped ≤55', () => {
-    const cargo = makeCargo({ destinationPort: { value: 'East Coast Greece port (unspecified)', confidence: 'estimated' } });
+    const cargo = makeCargo({ destinationPort: { value: 'East Coast Greece port (unspecified)', confidence: 'uncertain' } });
     const vessel = makeVessel({ built: 1998 }); // age 28 @ refYear 2026
     const fb = computeFitBreakdown({ cargo, vessel, readiness: READY_IDEAL, sanctions: SANCTIONS_OK, hardFilters: HF_PASS, refYear: 2026 });
     expect(fb.appliedCap?.reason).toMatch(/EU discharge|EU PSC/i);
@@ -343,7 +343,7 @@ describe('computeFitBreakdown — EU-discharge age penalty (founder rule 2026-06
   });
 
   it('25yr+ vessel + VAGUE EU discharge "East Coast Italy port (unspecified)" → capped ≤55', () => {
-    const cargo = makeCargo({ destinationPort: { value: 'East Coast Italy port (unspecified)', confidence: 'estimated' } });
+    const cargo = makeCargo({ destinationPort: { value: 'East Coast Italy port (unspecified)', confidence: 'uncertain' } });
     const vessel = makeVessel({ built: 1998 });
     const fb = computeFitBreakdown({ cargo, vessel, readiness: READY_IDEAL, sanctions: SANCTIONS_OK, hardFilters: HF_PASS, refYear: 2026 });
     expect(fb.appliedCap?.reason).toMatch(/EU discharge|EU PSC/i);
@@ -351,7 +351,7 @@ describe('computeFitBreakdown — EU-discharge age penalty (founder rule 2026-06
   });
 
   it('25yr+ vessel + non-EU vague discharge "Egypt Mediterranean port (unspecified)" → NO EU-age cap', () => {
-    const cargo = makeCargo({ destinationPort: { value: 'Egypt Mediterranean port (unspecified)', confidence: 'estimated' } });
+    const cargo = makeCargo({ destinationPort: { value: 'Egypt Mediterranean port (unspecified)', confidence: 'uncertain' } });
     const vessel = makeVessel({ built: 1998 });
     const fb = computeFitBreakdown({ cargo, vessel, readiness: READY_IDEAL, sanctions: SANCTIONS_OK, hardFilters: HF_PASS, refYear: 2026 });
     expect(fb.appliedCap?.reason ?? '').not.toMatch(/EU discharge|EU PSC/i);
