@@ -18,57 +18,11 @@ import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
 import { computeFitBreakdown } from '@/lib/sailing/fit-breakdown';
 import { computeEstimatedTce, estimateFreightRate, parseLeadingNumber } from '@/lib/matching/tce-calculator';
 import { getPortDistance } from '@/lib/sailing/port-distances';
+import { shiftBodyDates, shiftMonthYear, shiftIsoDate } from './date-utils';
 import type { MatchReadiness } from '@/lib/types';
 
 const PARSER_VERSION = 'demo-seed-v1';
 
-const MONTH_NAMES = [
-  'January','February','March','April','May','June',
-  'July','August','September','October','November','December',
-];
-
-function shiftIsoDate(iso: string, offsetDays: number): string {
-  const d = new Date(iso);
-  d.setUTCDate(d.getUTCDate() + offsetDays);
-  return d.toISOString();
-}
-
-/**
- * Shift dates in plain text body. Recognizes:
- *   - ISO "YYYY-MM-DD"
- *   - "DD-DD Month YYYY" range (e.g. "15-20 April 2026"), handles cross-month
- */
-function shiftBodyDates(body: string, offsetDays: number): string {
-  let out = body;
-
-  // ISO YYYY-MM-DD
-  out = out.replace(/\b(\d{4})-(\d{2})-(\d{2})\b/g, (_m, y, mo, d) =>
-    shiftIsoDate(`${y}-${mo}-${d}T00:00:00Z`, offsetDays).slice(0, 10),
-  );
-
-  // "DD-DD Month YYYY" or "DD/DD Month YYYY" range (e.g. "15-20 April 2026", "02/05 April 2018")
-  out = out.replace(
-    /\b(\d{1,2})\s*[-\/]\s*(\d{1,2})\s+(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+(\d{4})\b/gi,
-    (_match, d1, d2, mon, y) => {
-      const monthIdx = MONTH_NAMES.findIndex((m) =>
-        m.toLowerCase().startsWith(mon.slice(0, 3).toLowerCase()),
-      );
-      const start = new Date(Date.UTC(+y, monthIdx, +d1));
-      const end = new Date(Date.UTC(+y, monthIdx, +d2));
-      start.setUTCDate(start.getUTCDate() + offsetDays);
-      end.setUTCDate(end.getUTCDate() + offsetDays);
-      const sameMonth =
-        start.getUTCMonth() === end.getUTCMonth() &&
-        start.getUTCFullYear() === end.getUTCFullYear();
-      if (sameMonth) {
-        return `${start.getUTCDate()}-${end.getUTCDate()} ${MONTH_NAMES[start.getUTCMonth()]} ${start.getUTCFullYear()}`;
-      }
-      return `${start.getUTCDate()} ${MONTH_NAMES[start.getUTCMonth()]} - ${end.getUTCDate()} ${MONTH_NAMES[end.getUTCMonth()]} ${end.getUTCFullYear()}`;
-    },
-  );
-
-  return out;
-}
 
 // Shift the dates inside an LLM-parsed ParsedCargo: only the free-text
 // `laycan` field carries dates. We push it through the same body-date
@@ -100,18 +54,30 @@ function defaultSpeedConsumption(dwt: number | null): { speedLaden: string; cons
   return { speedLaden: '14.5 kts', consumption: '38 mt/day' };
 }
 
-// Shift the dates inside an LLM-parsed ParsedVessel: only openDate.value
-// (ISO yyyy-mm-dd) is shifted.
+// Shift the dates inside an LLM-parsed ParsedVessel: openDate.value (ISO yyyy-mm-dd)
+// plus any survey/drydock MM/YYYY dates in restriction strings (same offset).
+// Consistent rebasing prevents "due drydock at laycan" artifacts when only openDate shifts.
 function shiftedVessel(v: ParsedVessel, offsetDays: number): ParsedVessel {
-  if (!v.openDate) return v;
-  const iso = v.openDate.value;
-  // LLM output is not always a string here (can be number / null); only shift ISO strings.
-  if (typeof iso !== 'string' || !iso.match(/^\d{4}-\d{2}-\d{2}/)) return v;
-  const d = new Date(iso + (iso.length === 10 ? 'T00:00:00Z' : ''));
-  if (isNaN(d.getTime())) return v;
-  d.setUTCDate(d.getUTCDate() + offsetDays);
-  const shifted = d.toISOString().slice(0, 10);
-  return { ...v, openDate: { ...v.openDate, value: shifted } };
+  let next: ParsedVessel = v;
+
+  // Shift openDate
+  if (v.openDate) {
+    const iso = v.openDate.value;
+    if (typeof iso === 'string' && /^\d{4}-\d{2}-\d{2}/.test(iso)) {
+      const d = new Date(iso + (iso.length === 10 ? 'T00:00:00Z' : ''));
+      if (!isNaN(d.getTime())) {
+        d.setUTCDate(d.getUTCDate() + offsetDays);
+        next = { ...next, openDate: { ...v.openDate, value: d.toISOString().slice(0, 10) } };
+      }
+    }
+  }
+
+  // Shift survey/drydock MM/YYYY dates inside restriction strings by the same offset
+  if (next.restrictions && next.restrictions.length > 0) {
+    next = { ...next, restrictions: next.restrictions.map((r) => shiftMonthYear(r, offsetDays)) };
+  }
+
+  return next;
 }
 
 function shiftedRecap(r: ParsedFixtureRecap, offsetDays: number, frozenDate: string): ParsedFixtureRecap {
@@ -181,6 +147,32 @@ function redactEmails(text: string): string {
     .replace(/\b[a-z0-9][a-z0-9-]+\.(?:com|net|org|co|biz|info|gr|tr|eg)(?:\.[a-z]{2})?\b/gi, 'demo.local')
     // Skype / Viber / WhatsApp / ICQ contact handles after label (e.g. "Skype : elifkisabacak")
     .replace(/\b(?:Skype|Viber|WhatsApp|ICQ|WeChat|Telegram)\s*[:\-]\s*\S+/gi, 'demo.local');
+}
+
+// Structured location fields that must never contain a CONTACT N anonymization token.
+// These are parsed by the LLM as port/position names; when anonymization replaces a broker
+// name that happens to also be a port name (e.g. "Istanbul" → "CONTACT 3"), the JSON-level
+// replacement corrupts the structured field. Sanitize after anonymization.
+const LOCATION_FIELDS = ['openPosition', 'originPort', 'destinationPort'] as const;
+const CONTACT_TOKEN_RE = /^CONTACT\s+\d+$/i;
+
+export function sanitizeContactTokensFromLocations(items: unknown[]): unknown[] {
+  return items.map((item) => {
+    if (!item || typeof item !== 'object') return item;
+    const obj = { ...(item as Record<string, unknown>) };
+    for (const field of LOCATION_FIELDS) {
+      const v = obj[field];
+      if (typeof v === 'string' && CONTACT_TOKEN_RE.test(v)) {
+        obj[field] = null;
+      } else if (v && typeof v === 'object' && 'value' in (v as object)) {
+        const cf = v as { value: unknown };
+        if (typeof cf.value === 'string' && CONTACT_TOKEN_RE.test(cf.value)) {
+          obj[field] = { ...(cf as object), value: null };
+        }
+      }
+    }
+    return obj;
+  });
 }
 
 function loadManifest(p: string): Manifest {
@@ -496,8 +488,13 @@ export async function build(opts: BuildOptions): Promise<void> {
       // Anonymize the structured parsed JSON too — charterer/vessel/broker names
       // Opus extracted live inside result_json, and the UI reads parsed_results.
       // Body-only anonymization would leak them. Re-check forbidden on the result.
+      // After anonymization, sanitize any CONTACT N tokens from structured location
+      // fields (openPosition, originPort, destinationPort) — a broker name that is
+      // also a port name (e.g. "Istanbul" → "CONTACT 3") must not corrupt the port field.
       const anonJson = (items: unknown[]): string => {
-        const s = redactEmails(applyAnonymization(JSON.stringify(items), bodyMap));
+        const anonymized = JSON.parse(redactEmails(applyAnonymization(JSON.stringify(items), bodyMap)));
+        const cleaned = sanitizeContactTokensFromLocations(Array.isArray(anonymized) ? anonymized : [anonymized]);
+        const s = JSON.stringify(cleaned);
         for (const needle of forbidden) {
           // Mirror applyAnonymization's word-boundary logic exactly (always-end-bound).
           const escaped = needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

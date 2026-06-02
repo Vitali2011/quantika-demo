@@ -243,7 +243,7 @@ async function parseVesselAll(
             prompt,
             { timeoutMs: endpointLlmTimeout(60), responseSchema: PARSE_VESSEL_SCHEMA },
           );
-          const items = parseVesselAIResponse(raw, email.id, email.subject);
+          const items = parseVesselAIResponse(raw, email.id, email.subject, email.body);
           const corrected = applyGearedFallback(items, email.body);
           out.push(...corrected);
         } catch (err) {

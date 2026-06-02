@@ -165,6 +165,27 @@ function extractStr(v: unknown): string | null {
   return String(v) || null;
 }
 
+// Regex patterns for common "built year" phrasing in vessel position emails.
+// "blt 1997", "BLT 1996", "built 2008-08 china", "1989 BLT", "YOB 2005", etc.
+// Must NOT match: "LAYCAN: 23-26 FEB 2021", "Ocean7 — 21 May 2025" (no blt/built label).
+const BLT_LABEL_YEAR_RX = /\b(?:blt|built|yob|yr\.?\s*built|year[\s-]of[\s-]build)\s+(\d{4})\b/i;
+const YEAR_BLT_LABEL_RX = /\b(\d{4})\s+(?:blt|built)\b/i;
+
+/**
+ * Extract vessel build year from free-form text using regex patterns.
+ * Used as a fallback when the LLM returns built=null but the email clearly states a year.
+ * Returns null when no labeled build year is found — never invents a year.
+ */
+export function extractBuiltYearFromText(text: string): number | null {
+  if (!text) return null;
+  const m = text.match(BLT_LABEL_YEAR_RX) ?? text.match(YEAR_BLT_LABEL_RX);
+  if (!m) return null;
+  const year = parseInt(m[1], 10);
+  // Sanity range: no vessel built before 1950 or more than a year from now (2030 ceiling)
+  if (year < 1950 || year > 2030) return null;
+  return year;
+}
+
 /** Build the user prompt string for a vessel position email. */
 export function buildVesselPrompt(email: Email): string {
   return `From: ${email.from}\nSubject: ${email.subject}\nDate: ${email.date}\n\n${email.body}`;
@@ -196,7 +217,7 @@ function normaliseCii(v: unknown): 'A' | 'B' | 'C' | 'D' | 'E' | null {
  *   falls back to a regex extraction of CII rating from the subject line
  *   if the LLM did not return one. LLM-provided value always wins.
  */
-export function parseVesselAIResponse(raw: string, emailId: string, subject?: string | null): ParsedVessel[] {
+export function parseVesselAIResponse(raw: string, emailId: string, subject?: string | null, emailBody?: string | null): ParsedVessel[] {
   let result: RawVesselItem;
   try {
     const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
@@ -227,7 +248,7 @@ export function parseVesselAIResponse(raw: string, emailId: string, subject?: st
         if (typeof f === 'object' && 'value' in f) return String((f as { value: unknown }).value) || null;
         return String(f) || null;
       })(),
-      built: extractNum(item.built),
+      built: extractNum(item.built) ?? (emailBody ? extractBuiltYearFromText(emailBody) : null),
       classSociety: extractStr(item.class_society),
       pandi: extractStr(item.p_and_i),
       dwtSummer: toConfidence<number>(item.dwt_summer),
