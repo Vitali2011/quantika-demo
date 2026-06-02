@@ -1,5 +1,5 @@
 [Unit]
-Description=Quantika bunker price daily refresh (USDA → Ship&Bunker → BunkerIndex)
+Description=Quantika bunker price daily refresh (USDA → Ship&Bunker → OilMonster)
 After=network-online.target
 Wants=network-online.target
 
