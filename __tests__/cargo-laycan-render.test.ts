@@ -38,10 +38,12 @@ describe('cargo laycan render — parse+format pipeline', () => {
     expect(result).toMatch(/Jun\s+25.+Jun\s+30|Jun 2[5-9]/);
   });
 
-  // "June 2019" bare month-year: parseLaycan returns null → fallback raw string, no crash.
-  it('bare "June 2019" → graceful fallback (raw string, not crash, not "—")', () => {
+  // "June 2019" bare month-year → whole-month range at refYear (founder 2026-06-02:
+  // month-year → range). Stale 2019 stripped like the "End June 2019" phrase case
+  // above — never a single day, never a stale-year raw passthrough.
+  it('bare "June 2019" → whole-month range at refYear (stale year stripped)', () => {
     const result = fmt('June 2019');
-    expect(result).toBe('June 2019'); // raw passthrough
+    expect(result).toBe('Jun 1–Jun 30');
     expect(result).not.toBe('—');
     expect(result).not.toBeNull();
   });

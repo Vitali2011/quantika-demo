@@ -86,12 +86,12 @@ export function MatchWorksheet({ worksheet }: Props) {
       label: '🏗 Cranes',
       vessel: v.geared != null ? (v.geared ? 'Geared ✅' : 'Gearless') : '—',
       cargoPort: hf.crane.reason ? hf.crane.reason : '—',
-      // Gearless + breakbulk → amber "confirm cranes" (founder 2026-06-02): bulk
-      // terminals handle gearless fine (green via hf.crane), but breakbulk needs
-      // confirmed load/disch cranes — never silently green.
-      verdict: v.geared === false && /break/i.test(c.cargoType ?? '')
-        ? '⚠️ Confirm cranes (load/disch)'
-        : verdictBadge(hf.crane.pass, hf.crane.reason, hf.crane.warning),
+      // Crane verdict comes entirely from the hard-filter layer (checkCrane),
+      // which already encodes founder rule 2026-06-02: gearless + breakbulk at an
+      // unverified port → {pass:true, warning:true, reason:'Confirm cranes'} → amber;
+      // confirmed cranes → ✅; no cranes → hard ⚠️. A component-level override here
+      // collapsed all three into amber, so defer to verdictBadge.
+      verdict: verdictBadge(hf.crane.pass, hf.crane.reason, hf.crane.warning),
     },
     {
       label: '🌊 Draft',
