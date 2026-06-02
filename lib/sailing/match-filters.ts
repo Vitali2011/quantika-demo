@@ -270,6 +270,34 @@ export function checkVesselAge(input: VesselAgeCheckInput): FilterResult {
 }
 
 // ────────────────────────────────────────────────────────────────────────────
+// Vessel dimensions check — beam and LOA vs cargo port/cargo maximums
+// ────────────────────────────────────────────────────────────────────────────
+
+export interface VesselDimensionsCheckInput {
+  vesselBeam: number | null;
+  vesselLoa: number | null;
+  cargoMaxBeamM: number | null;
+  cargoMaxLoaM: number | null;
+}
+
+export function checkVesselDimensions(input: VesselDimensionsCheckInput): FilterResult {
+  const { vesselBeam, vesselLoa, cargoMaxBeamM, cargoMaxLoaM } = input;
+  if (cargoMaxBeamM != null && vesselBeam != null && vesselBeam > cargoMaxBeamM) {
+    return {
+      pass: false,
+      reason: `vessel beam ${vesselBeam}m exceeds cargo max beam ${cargoMaxBeamM}m`,
+    };
+  }
+  if (cargoMaxLoaM != null && vesselLoa != null && vesselLoa > cargoMaxLoaM) {
+    return {
+      pass: false,
+      reason: `vessel LOA ${vesselLoa}m exceeds cargo max LOA ${cargoMaxLoaM}m`,
+    };
+  }
+  return { pass: true };
+}
+
+// ────────────────────────────────────────────────────────────────────────────
 // Unified runner
 // ────────────────────────────────────────────────────────────────────────────
 
