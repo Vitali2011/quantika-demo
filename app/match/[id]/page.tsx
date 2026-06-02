@@ -80,16 +80,17 @@ export default async function MatchDetailPage({ params }: Props) {
     }
   }
 
-  // Unified laycan: storedMatch timestamps → worksheet computed window → raw cargo string → null
+  // Unified laycan: worksheet readiness window (rebased) → storedMatch timestamps → raw cargo string → null
+  // Readiness wins so CARGO card aligns with the Time row in MatchWorksheet (both show rebased window).
   const laycanDisplay = (() => {
-    if (storedMatch.laycan_start || storedMatch.laycan_end) {
-      return fmtLaycan(storedMatch.laycan_start, storedMatch.laycan_end);
-    }
     const rs = worksheet?.readiness?.laycanStart;
     const re = worksheet?.readiness?.laycanEnd;
     if (rs || re) {
       const toTs = (iso: string) => Math.floor(new Date(iso + 'T00:00:00Z').getTime() / 1000);
       return fmtLaycan(rs ? toTs(rs) : null, re ? toTs(re) : null);
+    }
+    if (storedMatch.laycan_start || storedMatch.laycan_end) {
+      return fmtLaycan(storedMatch.laycan_start, storedMatch.laycan_end);
     }
     if (cargo?.preferredDates?.value) {
       return cargo.preferredDates.value;
