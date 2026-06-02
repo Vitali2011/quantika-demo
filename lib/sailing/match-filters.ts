@@ -16,6 +16,7 @@
 import { getPortMaster, portCanHandleDraft, portHasShoreCranes } from './port-master';
 import { CargoType, Range, isRange } from '../types';
 import { checkImsbcLoadability } from './imsbc-check';
+import { checkVoyageRestriction, VoyageRestrictionResult } from './voyage-restriction';
 
 export interface FilterResult {
   pass: boolean;
@@ -412,6 +413,10 @@ export function runHardFilters(input: HardFilterInput): HardFilterResult {
     checks: { draft, crane, volume, cargoVessel, destDraft, destCrane, cargoWeight, imsbc },
   };
 }
+
+// Re-export voyage restriction for external callers (pair-analyzer)
+export { checkVoyageRestriction };
+export type { VoyageRestrictionResult };
 
 // Unused export to satisfy coverage: callers use getPortMaster through port-master directly
 void getPortMaster;
