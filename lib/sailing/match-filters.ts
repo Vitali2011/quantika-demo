@@ -247,6 +247,29 @@ export function checkCargoVesselCompat(input: CargoVesselCompatInput): FilterRes
 }
 
 // ────────────────────────────────────────────────────────────────────────────
+// Vessel age check — "is vessel young enough for this cargo?"
+// ────────────────────────────────────────────────────────────────────────────
+
+export interface VesselAgeCheckInput {
+  cargoMaxVesselAgeYrs: number | null;
+  vesselBuilt: number | null;
+  refYear: number | null;
+}
+
+export function checkVesselAge(input: VesselAgeCheckInput): FilterResult {
+  const { cargoMaxVesselAgeYrs, vesselBuilt, refYear } = input;
+  if (cargoMaxVesselAgeYrs == null || vesselBuilt == null || refYear == null) return { pass: true };
+  const age = refYear - vesselBuilt;
+  if (age > cargoMaxVesselAgeYrs) {
+    return {
+      pass: false,
+      reason: `vessel age ${age} years exceeds cargo max ${cargoMaxVesselAgeYrs} years`,
+    };
+  }
+  return { pass: true };
+}
+
+// ────────────────────────────────────────────────────────────────────────────
 // Unified runner
 // ────────────────────────────────────────────────────────────────────────────
 
