@@ -371,6 +371,8 @@ export interface MatchReadiness {
 export interface HardFilterCheck {
   pass: boolean;
   reason?: string;
+  /** Layer C: soft warning — pass=true but requires user confirmation (e.g. gearless+breakbulk+unverified cranes). */
+  warning?: boolean;
 }
 
 export interface MatchHardFilters {
