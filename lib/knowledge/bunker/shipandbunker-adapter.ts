@@ -42,8 +42,8 @@ const LOCATION_TO_UNLOCODE: Record<string, string> = {
   'Gibraltar': 'GIGIB',
   'Las Palmas': 'ESLPA',
   'Barcelona': 'ESBCN',
-  'Piraeus': 'GRPIR',
-  'Istanbul': 'TRIST',
+  // Piraeus (GRPIR) and Istanbul (TRIST) are not quoted on the free S&B global page.
+  // East-Med/Black Sea coverage is provided by the OilMonster per-port adapter.
   'Colombo': 'LKCMB',
   'Port Klang': 'MYPKG',
   'Zhoushan': 'CNZOS',

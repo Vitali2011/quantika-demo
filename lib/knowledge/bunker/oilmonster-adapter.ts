@@ -3,24 +3,34 @@
 import type Database from 'better-sqlite3';
 import { upsertBunkerPrice, getLatestBunkerPrice } from '@/lib/market/bunker-repository';
 
-export const OILMONSTER_URL = 'https://oilmonster.com/bunker-price';
+export const OILMONSTER_URL = 'https://www.oilmonster.com/bunker-price';
 
-// Exact link-text → UNLOCODE. Covers original 5 hubs + 5 Med/Black Sea regional
-// hubs added 2026-06-02 (Bug 4 coverage). OilMonster lists ~200 ports; entries
-// whose name appears on the page get quoted, others are silently skipped.
+// Exact link-text → UNLOCODE. Covers 5 global hubs + Med regional hubs.
+// Istanbul (TRIST) and Piraeus (GRPIR) are served via per-port pages below.
+// Constanta (ROCND) is derived as a proxy from Istanbul — not from the main table.
 const PORT_MAP: ReadonlyMap<string, string> = new Map([
   ['Rotterdam', 'NLRTM'],
   ['Singapore', 'SGSIN'],
   ['Fujairah', 'AEFJR'],
   ['Houston', 'USHOU'],
   ['Gibraltar', 'GIGIB'],
-  // Regional Med/Black Sea hubs (Bug 4)
-  ['Constanta', 'ROCND'],
   ['Port Said', 'EGPSD'],
   ['Augusta', 'ITAUG'],
   ['Ceuta', 'ESCEU'],
   ['Limassol', 'CYLMS'],
 ]);
+
+// Per-port VLSFO pages for East-Med / Black Sea ports not in the main table.
+const PER_PORT_URLS: ReadonlyMap<string, string> = new Map([
+  ['TRIST', 'https://www.oilmonster.com/bunker-fuel-prices/istanbul-vlsfo-price/239/91'],
+  ['GRPIR', 'https://www.oilmonster.com/bunker-fuel-prices/piraeus-vlsfo-price/239/97'],
+]);
+
+// Black Sea premium applied to Istanbul price to derive Constanta (ROCND).
+const BLACK_SEA_PREMIUM_USD = 40;
+
+// Per-port prices older than this are skipped (auto-excludes dormant feeds).
+const MAX_AGE_DAYS = 30;
 
 // Range bounds for price sanity — wider than bunkerindex due to broader port coverage
 const RANGE_VLSFO = { min: 200, max: 2000 } as const;
@@ -28,6 +38,10 @@ const RANGE_MGO = { min: 200, max: 2000 } as const;
 
 export class OilMonsterParseError extends Error {
   constructor(msg: string) { super(msg); this.name = 'OilMonsterParseError'; }
+}
+
+export class OilMonsterStructureChangedError extends Error {
+  constructor(msg: string) { super(msg); this.name = 'OilMonsterStructureChangedError'; }
 }
 
 export interface OilMonsterEntry {
@@ -156,15 +170,60 @@ export function parseOilMonsterHtml(html: string): OilMonsterEntry[] {
 }
 
 /**
- * Fetch oilmonster.com, parse VLSFO+MGO for all 5 BUNKER_CANDIDATES, upsert to DB.
+ * Parses a single per-port VLSFO page from oilmonster.com.
  *
- * Out-of-range prices are skipped (last-good preserved), warn logged.
- * Broken HTML → rowsChanged=0 (no throw). Network errors propagate.
+ * Anchors on `class="scrapitemprice"` for the current price, skipping the
+ * arrow icon via non-greedy match. Price date is extracted from the
+ * "Price Date :" label in the page header. The history table (spprice/sphead
+ * classes) is NOT read — the scrapitemprice anchor is the only price source.
+ */
+export function parseOilMonsterPortHtml(html: string): { vlsfo: number; priceDate: string } {
+  if (!html.includes('scrapitemprice') || !html.includes('$US/MT')) {
+    throw new OilMonsterStructureChangedError(
+      'per-port page missing scrapitemprice or $US/MT anchor',
+    );
+  }
+
+  // Current price: first number immediately before <span>$US/MT inside the scrapitemprice div.
+  // The non-greedy [\s\S]*? skips the <i> arrow icon that precedes the number.
+  const priceMatch = /class="scrapitemprice"[\s\S]*?>([\d,]+\.\d{2})<span>\$US\/MT/.exec(html);
+  if (!priceMatch) {
+    throw new OilMonsterStructureChangedError(
+      'scrapitemprice div present but price not found before $US/MT',
+    );
+  }
+
+  const priceStr = priceMatch[1].replace(/,/g, '');
+  const vlsfo = parseFloat(priceStr);
+  if (!Number.isFinite(vlsfo) || vlsfo <= 0) {
+    throw new OilMonsterParseError(`non-numeric price in per-port page: ${priceMatch[1]}`);
+  }
+
+  const dateMatch = /Price Date\s*:\s*<span[^>]*>\s*(\d{4}-\d{2}-\d{2})/.exec(html);
+  if (!dateMatch) {
+    throw new OilMonsterStructureChangedError('price date not found in per-port page');
+  }
+
+  return { vlsfo, priceDate: dateMatch[1] };
+}
+
+/**
+ * Fetch oilmonster.com main page, parse VLSFO+MGO for all target ports, upsert to DB.
+ * Additionally fetches per-port pages for Istanbul (TRIST) and Piraeus (GRPIR).
+ * Derives Constanta (ROCND) as Istanbul + BLACK_SEA_PREMIUM_USD (source=oilmonster-proxy).
+ *
+ * Per-port errors are isolated — one failing port does not abort the run.
+ * Staleness guard skips per-port prices older than MAX_AGE_DAYS.
+ * Throws if zero rows are written (cron marks the source as failed).
  */
 export async function refreshOilMonster(
   db: Database.Database,
   fetcher: HtmlFetcher = defaultFetcher,
+  opts: { now?: Date } = {},
 ): Promise<{ rowsChanged: number }> {
+  const now = opts.now ?? new Date();
+  const fetchedAt = now.toISOString();
+
   const raw = await fetcher(OILMONSTER_URL);
 
   let entries: OilMonsterEntry[];
@@ -173,18 +232,16 @@ export async function refreshOilMonster(
   } catch (e) {
     if (e instanceof OilMonsterParseError) {
       console.warn(`[OilMonster] ${e.message}`);
-      return { rowsChanged: 0 };
+      entries = [];
+    } else {
+      throw e;
     }
-    throw e;
   }
 
   if (entries.length === 0) {
     console.warn('[OilMonster] No target port rows found — page structure may have changed');
-    return { rowsChanged: 0 };
   }
 
-  const fetchedAt = new Date().toISOString();
-  const priceDate = new Date().toISOString().slice(0, 10);
   let rowsChanged = 0;
 
   const upsert = db.transaction(() => {
@@ -202,7 +259,7 @@ export async function refreshOilMonster(
             port_unlocode: entry.unlocode,
             fuel_grade: 'VLSFO',
             price_usd_per_mt: entry.vlsfo,
-            price_date: priceDate,
+            price_date: now.toISOString().slice(0, 10),
             source: 'oilmonster',
             fetched_at: fetchedAt,
           });
@@ -223,7 +280,7 @@ export async function refreshOilMonster(
             port_unlocode: entry.unlocode,
             fuel_grade: 'MGO',
             price_usd_per_mt: entry.mgo,
-            price_date: priceDate,
+            price_date: now.toISOString().slice(0, 10),
             source: 'oilmonster',
             fetched_at: fetchedAt,
           });
@@ -234,12 +291,67 @@ export async function refreshOilMonster(
   });
   upsert();
 
+  // Per-port pages for East-Med ports
+  let istanbulResult: { vlsfo: number; priceDate: string } | null = null;
+
+  for (const [unlocode, url] of PER_PORT_URLS) {
+    try {
+      const html = await fetcher(url);
+      const parsed = parseOilMonsterPortHtml(html);
+
+      const ageDays = (now.getTime() - new Date(parsed.priceDate).getTime()) / 86_400_000;
+      if (ageDays > MAX_AGE_DAYS) {
+        console.warn(
+          `[OilMonster] ${unlocode} price date ${parsed.priceDate} is stale ` +
+          `(${Math.round(ageDays)}d > ${MAX_AGE_DAYS}d limit) — skipping`,
+        );
+        continue;
+      }
+
+      upsertBunkerPrice(db, {
+        port_unlocode: unlocode,
+        fuel_grade: 'VLSFO',
+        price_usd_per_mt: parsed.vlsfo,
+        price_date: parsed.priceDate,
+        source: 'oilmonster',
+        fetched_at: fetchedAt,
+      });
+      rowsChanged++;
+
+      if (unlocode === 'TRIST') istanbulResult = parsed;
+    } catch (e) {
+      console.warn(`[OilMonster] ${unlocode} per-port error: ${(e as Error).message}`);
+    }
+  }
+
+  // Constanta proxy: derive from Istanbul if fresh
+  if (istanbulResult !== null) {
+    const rocndPrice = Math.round((istanbulResult.vlsfo + BLACK_SEA_PREMIUM_USD) * 100) / 100;
+    upsertBunkerPrice(db, {
+      port_unlocode: 'ROCND',
+      fuel_grade: 'VLSFO',
+      price_usd_per_mt: rocndPrice,
+      price_date: istanbulResult.priceDate,
+      source: 'oilmonster-proxy',
+      fetched_at: fetchedAt,
+    });
+    rowsChanged++;
+  }
+
+  if (rowsChanged === 0) {
+    throw new Error('[OilMonster] zero rows written — all sources failed or returned stale data');
+  }
+
   return { rowsChanged };
 }
 
 async function defaultFetcher(url: string): Promise<string> {
   const res = await fetch(url, {
-    headers: { 'User-Agent': 'Quantika-Demo/1.0' },
+    headers: {
+      'User-Agent':
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
+        '(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+    },
     signal: AbortSignal.timeout(30_000),
   });
   if (!res.ok) throw new Error(`OilMonster fetch failed: ${res.status} ${url}`);
