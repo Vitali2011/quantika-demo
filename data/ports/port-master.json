@@ -113,7 +113,13 @@
     "maxDraftM": 14,
     "hasShoreCranes": true,
     "berthType": "terminal",
-    "note": "Aliaga bay incl. Efesan"
+    "note": "Aliaga bay incl. Efesan",
+    "aliases": [
+      "Nemrut Bay",
+      "Nemrut",
+      "Petkim",
+      "Efesan"
+    ]
   },
   {
     "unlocode": "EGALY",

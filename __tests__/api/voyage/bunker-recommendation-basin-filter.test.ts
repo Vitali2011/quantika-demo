@@ -120,6 +120,16 @@ describe('Bug 1 — basin filter excludes out-of-corridor candidates', () => {
     expect(body.liftCapped).toBe(false);
   });
 
+  it('Bug 2 (round-2) — "Nemrut Bay" resolves to EastMed corridor: USLAX NOT in candidates', async () => {
+    // port-master.json TRALI entry now has alias "Nemrut Bay" → portBasin = EastMed
+    // Corridor EastMed→NorthEurope = {EastMed,WestMed,AtlanticNorth,NorthEurope}
+    // USLAX (Pacific) is outside → correctly excluded even with null distances
+    const res = await GET(makeReq('Nemrut Bay', 'GBLIV'));
+    const body = await res.json();
+    const ports = body.candidates.map((c: { port: string }) => c.port);
+    expect(ports).not.toContain('USLAX');
+  });
+
   it('Bug 3 — eff $/MT equals price + (devFuel + devTime)/liftTonnes for each row', async () => {
     const url =
       'http://localhost/api/voyage/bunker-recommendation' +
