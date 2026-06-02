@@ -78,6 +78,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
   const [bunkerFallback, setBunkerFallback] = useState<string | null>(null);
   const [bunkerCandidates, setBunkerCandidates] = useState<BunkerCandidateResult[]>([]);
   const [bunkerRecommendedSplit, setBunkerRecommendedSplit] = useState<string | null>(null);
+  const [bunkerLift, setBunkerLift] = useState<{ liftTonnes: number; capacityMt: number; capped: boolean } | null>(null);
   const [displayCurrency, setDisplayCurrency] = useState<DisplayCurrency>('USD');
   const [fuelType, setFuelType] = useState('hfo');
   const [euaData, setEuaData] = useState<{ value: number; period: string; stale?: boolean } | null>(null);
@@ -105,24 +106,50 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
 
   const recoFrom = cargo?.originPort?.value;
   const recoTo = cargo?.destinationPort?.value;
+  const recoDwt = vessel?.dwtSummer?.value ?? 0;
+  const recoSpeed = parseLeadingNumber(vessel?.speedLaden);
+  const recoCons = parseLeadingNumber(vessel?.consumption);
+  const recoVoyageDays = useMemo(
+    () => estimateVoyageDays(routeDistanceNm, recoSpeed),
+    [routeDistanceNm, recoSpeed],
+  );
   useEffect(() => {
     if (!recoFrom || !recoTo) return;
     let cancelled = false;
-    const url = `/api/voyage/bunker-recommendation?from=${encodeURIComponent(recoFrom)}&to=${encodeURIComponent(recoTo)}&grade=${bunkerGrade}`;
+    const params = new URLSearchParams({
+      from: recoFrom,
+      to: recoTo,
+      grade: bunkerGrade,
+    });
+    if (recoDwt > 0) params.set('dwt', String(recoDwt));
+    if (recoSpeed > 0) params.set('speedKn', String(recoSpeed));
+    if (recoCons > 0) params.set('consMtPerDay', String(recoCons));
+    if (recoVoyageDays > 0) params.set('voyageDays', String(recoVoyageDays));
+    const url = `/api/voyage/bunker-recommendation?${params.toString()}`;
     fetch(url)
       .then((r) => r.ok ? r.json() : null)
-      .then((data: { fallback: boolean; message: string | null; port: string | null; priceUsdPerMt: number | null; recommendation: string | null; savingsUsd: number; candidates: BunkerCandidateResult[] } | null) => {
+      .then((data: { fallback: boolean; message: string | null; port: string | null; priceUsdPerMt: number | null; recommendation: string | null; savingsUsd: number; liftTonnes?: number; capacityMt?: number; liftCapped?: boolean; candidates: BunkerCandidateResult[] } | null) => {
         if (cancelled || !data) return;
         if (data.fallback) {
           setBunkerFallback(data.message);
           setBunkerReco(null);
           setBunkerCandidates([]);
           setBunkerRecommendedSplit(null);
+          setBunkerLift(null);
         } else if (data.port && data.priceUsdPerMt != null && data.recommendation) {
           setBunkerFallback(null);
           setBunkerReco({ port: data.port, priceUsdPerMt: data.priceUsdPerMt, recommendation: data.recommendation });
           setBunkerCandidates(data.candidates ?? []);
           setBunkerRecommendedSplit(data.recommendation ?? null);
+          setBunkerLift(
+            typeof data.liftTonnes === 'number'
+              ? {
+                  liftTonnes: data.liftTonnes,
+                  capacityMt: data.capacityMt ?? 0,
+                  capped: data.liftCapped ?? false,
+                }
+              : null,
+          );
           if (!bunkerPortManual && BUNKER_PORTS.some(p => p.value === data.port)) {
             setBunkerPort(data.port as BunkerPort);
           }
@@ -130,7 +157,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
       })
       .catch(() => {});
     return () => { cancelled = true; };
-  }, [recoFrom, recoTo, bunkerGrade, bunkerPortManual]);
+  }, [recoFrom, recoTo, bunkerGrade, bunkerPortManual, recoDwt, recoSpeed, recoCons, recoVoyageDays]);
 
   const handleOverrideSubmit = useCallback(async () => {
     if (!matchDbId) return;
@@ -488,7 +515,9 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
           <h3 className="text-xs font-semibold text-gray-700 mb-2">Бункеровка — сравнение портов</h3>
           <BunkerComparisonTable
             candidates={bunkerCandidates}
-            liftTonnes={cargo?.weightMt?.value}
+            liftTonnes={bunkerLift?.liftTonnes}
+            capacityMt={bunkerLift?.capacityMt}
+            liftCapped={bunkerLift?.capped}
             recommendedSplit={bunkerRecommendedSplit}
           />
         </div>

@@ -1511,6 +1511,26 @@
     "sourceNote": "Gibraltar Port Guide"
   },
   {
+    "unlocode": "ESCEU",
+    "name": "Ceuta",
+    "country": "ES",
+    "lat": 35.886,
+    "lon": -5.301,
+    "maxDraftM": 14,
+    "hasShoreCranes": true,
+    "berthType": "bay",
+    "maxLOA": 250,
+    "cargoBerthTypes": [
+      "general",
+      "RORO",
+      "tanker"
+    ],
+    "tidal": false,
+    "icePort": false,
+    "dataConfidence": "medium",
+    "sourceNote": "Spanish North African enclave bunker hub — alt to Gibraltar Strait"
+  },
+  {
     "unlocode": "FRMRS",
     "name": "Marseille",
     "country": "FR",
