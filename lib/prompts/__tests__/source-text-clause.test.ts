@@ -36,7 +36,7 @@ describe('source_text hardening clause — parse-vessel prompt', () => {
   });
 
   it('explicitly forbids ellipsis', () => {
-    expect(VESSEL_POSITION_PARSER_PROMPT).toContain('Do NOT add ellipsis');
+    expect(VESSEL_POSITION_PARSER_PROMPT).toContain('Do NOT insert new ellipsis');
   });
 
   it('explicitly forbids joining non-adjacent fragments', () => {

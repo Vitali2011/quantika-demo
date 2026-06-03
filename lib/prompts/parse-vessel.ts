@@ -289,7 +289,8 @@ CRITICAL: never use 'interpreted' for an exact number with no hedge just because
 
 CRITICAL: source_text is REQUIRED for every ConfidenceField. It MUST be an EXACT,
 CONTIGUOUS substring copied character-for-character from the email body.
-Do NOT add ellipsis (\`…\` or \`...\`), parentheticals, clarifications, or summaries.
+Do NOT insert new ellipsis (\`…\` or \`...\`), parentheticals, clarifications, or summaries
+not present verbatim in the original email.
 Do NOT join non-adjacent fragments with ellipsis or any separator.
 If the relevant text is long, copy a SHORTER exact contiguous substring rather than
 paraphrasing or eliding. Keep source_text BRIEF — use the shortest unique substring
