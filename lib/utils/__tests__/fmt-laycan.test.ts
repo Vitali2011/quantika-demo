@@ -1,8 +1,8 @@
 import { fmtLaycan } from '../fmt-laycan';
 
 describe('fmtLaycan — #498 laycan date range formatter', () => {
-  const MAY_10 = new Date('2026-05-10T12:00:00Z').getTime() / 1000;
-  const MAY_25 = new Date('2026-05-25T12:00:00Z').getTime() / 1000;
+  const MAY_10 = new Date('2026-05-10T12:00:00Z').getTime();
+  const MAY_25 = new Date('2026-05-25T12:00:00Z').getTime();
 
   it('returns "—" when both start and end are null', () => {
     expect(fmtLaycan(null, null)).toBe('—');

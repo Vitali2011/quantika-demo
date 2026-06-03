@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
 import { getStore } from '@/lib/session-store';
-import { listMatches } from '@/lib/matching/matches-repository';
+import { listMatches, type StoredMatch } from '@/lib/matching/matches-repository';
 import { persistSessionMatches } from '@/lib/matching/persist-session-matches';
 import { toBucketRows } from '@/lib/matching/session-buckets';
 import MatchesClient from './MatchesClient';
@@ -50,7 +50,8 @@ export default async function MatchesPage() {
   if (session.matches.length > 0) {
     persistSessionMatches(db, sessionId!, session.matches, session.parsedCargos, session.parsedVessels);
   }
-  const matches = listMatches(db, { user_id: sessionId!, sortBy: 'score', sortDir: 'desc' });
+  const rawMatches = listMatches(db, { user_id: sessionId!, sortBy: 'score', sortDir: 'desc' });
+  const matches = dedupMatches(rawMatches);
 
   // Computing only when BOTH cargo and vessel are present — matches require both sides.
   const hasCargo = session.parsedCargos.length > 0;
@@ -92,4 +93,14 @@ export default async function MatchesPage() {
       </div>
     </main>
   );
+}
+
+/** Keep one row per vessel_name+cargo_ref+load_port+laycan_start key (#787). */
+function dedupMatches(rows: StoredMatch[]): StoredMatch[] {
+  const seen = new Map<string, StoredMatch>();
+  for (const r of rows) {
+    const k = `${r.vessel_name ?? ''}|${r.cargo_ref ?? r.cargo_id}|${r.load_port ?? ''}|${r.laycan_start ?? ''}`;
+    if (!seen.has(k)) seen.set(k, r);
+  }
+  return [...seen.values()];
 }

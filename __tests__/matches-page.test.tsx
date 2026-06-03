@@ -234,3 +234,67 @@ describe('app/matches/MatchesClient.tsx — type imports', () => {
     expect(src).toMatch(/StoredMatch/);
   });
 });
+
+// ──────────────────────────────────────────────────────────────────────────────
+// #789 — render-side fit_percent >= 60 floor (structural + behavioral)
+// ──────────────────────────────────────────────────────────────────────────────
+
+describe('MatchesClient.tsx — fit_percent floor (#789)', () => {
+  it('filtered pipeline has fit_percent >= 60 guard in source', () => {
+    const src = readSource(clientPath);
+    expect(src).toMatch(/fit_percent\s*==\s*null\s*\|\|\s*m\.fit_percent\s*>=\s*60/);
+  });
+
+  it('behavioral: match with fit_percent=42 is excluded; null and 60+ pass through', () => {
+    const fitFloor = (m: { fit_percent: number | null }) =>
+      m.fit_percent == null || m.fit_percent >= 60;
+
+    expect(fitFloor({ fit_percent: 42 })).toBe(false);
+    expect(fitFloor({ fit_percent: 59 })).toBe(false);
+    expect(fitFloor({ fit_percent: 60 })).toBe(true);
+    expect(fitFloor({ fit_percent: 85 })).toBe(true);
+    expect(fitFloor({ fit_percent: null })).toBe(true);
+  });
+});
+
+// ──────────────────────────────────────────────────────────────────────────────
+// #787 — render-side dedup in page.tsx (structural + behavioral)
+// ──────────────────────────────────────────────────────────────────────────────
+
+describe('app/matches/page.tsx — content dedup (#787)', () => {
+  it('page.tsx calls dedupMatches in source', () => {
+    const src = readSource(pagePath);
+    expect(src).toMatch(/dedupMatches/);
+  });
+
+  it('dedup key includes vessel_name, cargo_ref, load_port, laycan_start', () => {
+    const src = readSource(pagePath);
+    expect(src).toMatch(/vessel_name/);
+    expect(src).toMatch(/cargo_ref/);
+    expect(src).toMatch(/load_port/);
+    expect(src).toMatch(/laycan_start/);
+  });
+
+  it('behavioral: identical vessel+cargo+port+laycan rows collapse to one', () => {
+    type Row = { id: number; vessel_name: string | null; cargo_ref: string | null; cargo_id: string; load_port: string | null; laycan_start: number | null };
+    function dedupMatches(rows: Row[]): Row[] {
+      const seen = new Map<string, Row>();
+      for (const r of rows) {
+        const k = `${r.vessel_name ?? ''}|${r.cargo_ref ?? r.cargo_id}|${r.load_port ?? ''}|${r.laycan_start ?? ''}`;
+        if (!seen.has(k)) seen.set(k, r);
+      }
+      return [...seen.values()];
+    }
+
+    const base = { vessel_name: 'MV ALPHA', cargo_ref: 'GRAIN-001', cargo_id: 'c1', load_port: 'UAODS', laycan_start: 1748908800000 };
+    const rows: Row[] = [
+      { ...base, id: 1 },
+      { ...base, id: 2 },
+      { ...base, id: 3, vessel_name: 'MV BETA' },
+    ];
+    const result = dedupMatches(rows);
+    expect(result.length).toBe(2);
+    expect(result[0].id).toBe(1);
+    expect(result[1].vessel_name).toBe('MV BETA');
+  });
+});

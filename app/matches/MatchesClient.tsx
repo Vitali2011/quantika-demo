@@ -74,8 +74,8 @@ function formatAge(ts: number): string {
 // sits near the 2-hour boundary (same fix pattern as SubsCountdown).
 function isFreshMatch(m: StoredMatch, now: number): boolean {
   if (now === 0) return false; // pre-mount sentinel → no fresh badge in SSR
-  if (isLaycanExpired(m.laycan_end, m.laycan_start, Math.floor(now / 1000))) return false;
-  return now / 1000 - m.created_at < 7200;
+  if (isLaycanExpired(m.laycan_end, m.laycan_start, now)) return false;
+  return now - m.created_at < 7200000;
 }
 
 // Display score is capped at 70 for expired laycans — the stored score reflects
@@ -83,7 +83,7 @@ function isFreshMatch(m: StoredMatch, now: number): boolean {
 // match is no longer actionable at the original confidence level.
 function effectiveScore(m: StoredMatch, nowMs: number): number {
   if (nowMs === 0) return m.score;
-  if (isLaycanExpired(m.laycan_end, m.laycan_start, Math.floor(nowMs / 1000))) {
+  if (isLaycanExpired(m.laycan_end, m.laycan_start, nowMs)) {
     return Math.min(m.score, 70);
   }
   return m.score;
@@ -327,7 +327,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
       (cargoTypes.length === 0 || cargoTypes.includes(m.cargo_type ?? ''))
   ).length;
 
-  // Client-side filter: mode + status + cargo_type + quick filter; then sort
+  // Client-side filter: mode + status + cargo_type + fit floor + quick filter; then sort
   const filtered = matches
     .filter(
       (m) =>
@@ -335,6 +335,8 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
         (isOwner
           ? vesselEmailIds.length === 0 || vesselEmailIds.includes(m.vessel_id)
           : cargoEmailIds.length === 0 || cargoEmailIds.includes(m.cargo_id)) &&
+        // render-side fit floor: hide sub-60% fit matches (#789)
+        (m.fit_percent == null || m.fit_percent >= 60) &&
         (!filterStatus || m.status === filterStatus) &&
         (cargoTypes.length === 0 || cargoTypes.includes(m.cargo_type ?? '')) &&
         (quickFilter === 'all' ||

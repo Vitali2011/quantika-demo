@@ -25,8 +25,8 @@ export function formatCargoLaycanDisplay(
   const parsed = parseLaycan(raw, refYear);
   if (!parsed) return raw;
   return fmtLaycan(
-    Math.floor(parsed.start.getTime() / 1000),
-    Math.floor(parsed.end.getTime() / 1000),
+    parsed.start.getTime(),
+    parsed.end.getTime(),
   );
 }
 

@@ -24,14 +24,14 @@ describe('worksheet readiness laycan → fmtLaycan roundtrip (behavioral)', () =
   it('converts ISO laycanStart/End to fmtLaycan-compatible Unix timestamps', () => {
     const isoStart = '2026-06-03';
     const isoEnd = '2026-06-06';
-    const toTs = (iso: string) => Math.floor(new Date(iso + 'T00:00:00Z').getTime() / 1000);
+    const toTs = (iso: string) => new Date(iso + 'T00:00:00Z').getTime();
     const result = fmtLaycan(toTs(isoStart), toTs(isoEnd));
     expect(result).toMatch(/Jun 3/);
     expect(result).toMatch(/Jun 6/);
   });
 
   it('single ISO date round-trips correctly', () => {
-    const toTs = (iso: string) => Math.floor(new Date(iso + 'T00:00:00Z').getTime() / 1000);
+    const toTs = (iso: string) => new Date(iso + 'T00:00:00Z').getTime();
     expect(fmtLaycan(toTs('2026-06-03'), null)).toMatch(/Jun 3/);
     expect(fmtLaycan(null, toTs('2026-06-06'))).toMatch(/Jun 6/);
   });
@@ -98,7 +98,7 @@ describe('app/match/[id]/page.tsx — laycan unified fallback chain (#laycan-uni
 // Mirrors the laycanDisplay IIFE logic to verify precedence without hitting Next.js server infra.
 
 describe('laycanDisplay precedence — behavioral (#laycan-precedence)', () => {
-  const toTs = (iso: string) => Math.floor(new Date(iso + 'T00:00:00Z').getTime() / 1000);
+  const toTs = (iso: string) => new Date(iso + 'T00:00:00Z').getTime();
 
   function computeLaycanDisplay(
     storedMatch: { laycan_start: number | null; laycan_end: number | null },
