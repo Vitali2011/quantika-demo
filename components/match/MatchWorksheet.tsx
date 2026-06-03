@@ -64,15 +64,15 @@ export function MatchWorksheet({ worksheet }: Props) {
     },
     {
       label: '⚖️ Weight',
-      vessel: v.dwtSummer != null ? `${v.dwtSummer.toLocaleString()} DWT${v.dwcc != null ? ` / ${v.dwcc.toLocaleString()} DWCC` : ''}` : '—',
-      cargoPort: c.weightMt != null ? `${c.weightMt.toLocaleString()} mt` : '—',
+      vessel: v.dwtSummer != null ? `${v.dwtSummer.toLocaleString('en-US')} DWT${v.dwcc != null ? ` / ${v.dwcc.toLocaleString('en-US')} DWCC` : ''}` : '—',
+      cargoPort: c.weightMt != null ? `${c.weightMt.toLocaleString('en-US')} mt` : '—',
       verdict: util != null
         ? `${util}% utilisation${util >= 85 ? ' ✅' : util >= 70 ? ' ⚠️' : ' ❌'}`
         : verdictBadge(hf.volume.pass, hf.volume.reason),
     },
     {
       label: '📦 Volume',
-      vessel: v.grainCapacity != null ? `${v.grainCapacity.toLocaleString()} ${v.grainCapacityUnit ?? 'cbm'}` : '—',
+      vessel: v.grainCapacity != null ? `${v.grainCapacity.toLocaleString('en-US')} ${v.grainCapacityUnit ?? 'cbm'}` : '—',
       cargoPort: '—',
       verdict: verdictBadge(hf.volume.pass, hf.volume.reason),
     },

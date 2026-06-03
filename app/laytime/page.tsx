@@ -469,8 +469,8 @@ export default function LaytimePage() {
                         </div>
 
                         <div className="text-xs text-ds-text-muted space-y-1">
-                          <div>Demurrage Rate: ${result.dd.breakdown.demurrageRate.toLocaleString()}/day</div>
-                          <div>Despatch Rate: ${result.dd.breakdown.despatchRate.toLocaleString()}/day</div>
+                          <div>Demurrage Rate: ${result.dd.breakdown.demurrageRate.toLocaleString('en-US')}/day</div>
+                          <div>Despatch Rate: ${result.dd.breakdown.despatchRate.toLocaleString('en-US')}/day</div>
                           <div>Demurrage Hours: {result.dd.breakdown.demurrageHours.toFixed(1)}h</div>
                           <div>Despatch Hours: {result.dd.breakdown.despatchHours.toFixed(1)}h</div>
                         </div>

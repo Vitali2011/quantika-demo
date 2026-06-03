@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthConfig } from '@/lib/auth/config';
 import { signAuthCookie, AUTH_COOKIE_NAME } from '@/lib/auth/cookie';
 import { getRequestBaseUrl } from '@/lib/auth/redirect-url';
+import { DEMO_SESSION_TTL_MS } from '@/lib/constants';
 
 /**
  * Constant-time string comparison to prevent timing attacks.
@@ -83,8 +84,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const { createSession } = await import('@/lib/session');
     const { hydrateDemoSession } = await import('@/lib/demo-mode/hydrate-demo-session');
     const { generateCsrfToken } = await import('@/lib/csrf');
-    const sessionId = createSession('demo-seed');
+    // Session TTL matches the auth cookie lifetime so both expire together.
+    const sessionTtlMs = config.cookieDays * 86_400 * 1000;
+    const sessionId = createSession('demo-seed', sessionTtlMs);
     hydrateDemoSession(sessionId);
+    const sessionMaxAge = config.cookieDays * 86_400;
     // Append (do NOT use response.cookies.set — it would clobber the auth cookie
     // already set above via headers.set('Set-Cookie', ...)). Separate Set-Cookie
     // headers coexist, so demo_auth + session_id + csrf_token all survive.
@@ -93,7 +97,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       [
         `session_id=${sessionId}`,
         'Path=/',
-        'Max-Age=3600',
+        `Max-Age=${sessionMaxAge}`,
         'HttpOnly',
         isProduction ? 'Secure' : '',
         'SameSite=Lax',
@@ -108,7 +112,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       [
         `csrf_token=${csrfToken}`,
         'Path=/',
-        'Max-Age=3600',
+        `Max-Age=${sessionMaxAge}`,
         isProduction ? 'Secure' : '',
         'SameSite=Strict',
       ]

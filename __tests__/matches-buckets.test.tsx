@@ -129,7 +129,7 @@ describe('app/matches/MatchesClient.tsx — bucket tabs', () => {
 
   it('labels the single Матчи tab (no Review/Insufficient labels)', () => {
     const src = readSource(clientPath);
-    expect(src).toMatch(/Матчи/);
+    expect(src).toMatch(/Matches/);
     expect(src).not.toMatch(/На проверку/);
     expect(src).not.toMatch(/Мало данных/);
   });
