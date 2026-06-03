@@ -324,9 +324,17 @@ CONFIDENCE RUBRIC:
 
 Rule: when the source text contains the exact value — even embedded in a compound phrase — use "confirmed". Only use "interpreted" when you actually derived or calculated the value.
 
-CRITICAL: source_text is REQUIRED for every ConfidenceField. It MUST be a verbatim
-substring copied character-for-character from the email body. Omitting source_text is
-a parsing error. Paraphrasing is NOT allowed — copy the exact characters.
+CRITICAL: source_text is REQUIRED for every ConfidenceField. It MUST be an EXACT,
+CONTIGUOUS substring copied character-for-character from the email body.
+Do NOT add ellipsis (\`…\` or \`...\`), parentheticals, clarifications, or summaries.
+Do NOT join non-adjacent fragments with ellipsis or any separator.
+If the relevant text is long, copy a SHORTER exact contiguous substring rather than
+paraphrasing or eliding.
+
+  ✗ source_text: "loads grain (HSS) … 25000mt"  ← inserted ellipsis joins non-adjacent fragments
+  ✓ source_text: "25000mt HSS"                  ← exact contiguous substring
+
+Omitting source_text is a parsing error. Paraphrasing is NOT allowed — copy the exact characters.
 
 CORRECT:   { "value": "Rotterdam", "confidence": "confirmed", "source_text": "Load: Rotterdam" }
 CORRECT:   { "value": 5000, "confidence": "interpreted", "source_text": "abt 5k mts wheat" }
