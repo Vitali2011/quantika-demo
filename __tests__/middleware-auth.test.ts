@@ -71,6 +71,7 @@ describe('middleware auth guard', () => {
       '/api/market/benchmark',
       '/about',
       '/pricing',
+      '/api/demo/rehydrate',
     ];
 
     for (const path of bypassPaths) {
