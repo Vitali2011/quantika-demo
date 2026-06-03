@@ -78,10 +78,12 @@ export default async function MatchesPage() {
     -1_000_000,
   );
 
+  const qualifyingCount = matches.filter((m) => (m.fit_percent ?? 0) >= 60).length;
+
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-12">
       <div className="max-w-[1280px] mx-auto space-y-6">
-        <h1 className="text-2xl font-bold">Matches {matches.length} results</h1>
+        <h1 className="text-2xl font-bold">Matches {qualifyingCount} results</h1>
         <Suspense fallback={<PageSkeleton />}>
           <MatchesClient initialMatches={matches} isComputing={isComputing}
             cargoEmailIds={cargoEmailIds}

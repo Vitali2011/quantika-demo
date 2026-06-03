@@ -318,6 +318,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
 
   // Mode-based count for "All" chip: charterer sees cargo-side, owner sees vessel-side
   const modeFiltered = filterMatchesByMode(matches, isOwner, cargoEmailIds, vesselEmailIds);
+  const floorFilteredCount = modeFiltered.filter((m) => (m.fit_percent ?? 0) >= 60).length;
 
   // All-chip count: mode + status + advanced filters (excluding quick-filter so the badge
   // reflects "how many match your current advanced criteria" regardless of quick-filter tab)
@@ -378,7 +379,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
         {/* ===== BUCKET TABS (Wave B) — main list + two read-only realism buckets ===== */}
         <div className="flex items-center gap-1 border-b border-ds-border" role="tablist" aria-label="Match buckets">
           {([
-            { id: 'matches' as Tab, label: 'Matches', count: modeFiltered.length, testid: 'tab-matches' },
+            { id: 'matches' as Tab, label: 'Matches', count: floorFilteredCount, testid: 'tab-matches' },
             // Review / Insufficient buckets hidden from the board (founder 2026-06-02):
             // surface only the ironclad main matches. Buckets stay in DB, not shown.
           ]).map(({ id, label, count, testid }) => (

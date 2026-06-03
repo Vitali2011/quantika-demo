@@ -154,6 +154,13 @@ describe('fmtLaycan (formatter parity)', () => {
     expect(fmtLaycan(ts, null)).toMatch(/Jun 15/);
     expect(fmtLaycan(null, ts)).toMatch(/Jun 15/);
   });
+
+  it('shows single date when start equals end (same-day laycan)', () => {
+    const ts = new Date('2026-05-15T00:00:00Z').getTime();
+    const result = fmtLaycan(ts, ts);
+    expect(result).toMatch(/May 15/);
+    expect(result).not.toContain('–');
+  });
 });
 
 // ── Structural: detail page uses fmtLaycan ───────────────────────────────────

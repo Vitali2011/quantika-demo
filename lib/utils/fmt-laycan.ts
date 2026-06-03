@@ -2,7 +2,7 @@ export function fmtLaycan(start: number | null, end: number | null): string {
   if (!start && !end) return '—';
   const fmt = (ts: number) =>
     new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
-  if (start && end) return `${fmt(start)}–${fmt(end)}`;
+  if (start && end && start !== end) return `${fmt(start)}–${fmt(end)}`;
   if (start) return fmt(start);
   return fmt(end!);
 }

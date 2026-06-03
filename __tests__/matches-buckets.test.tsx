@@ -136,7 +136,8 @@ describe('app/matches/MatchesClient.tsx — bucket tabs', () => {
 
   it('shows the matches counter in the tab header', () => {
     const src = readSource(clientPath);
-    expect(src).toMatch(/modeFiltered\.length/);
+    // Tab badge uses floor-filtered (≥60% fit) count — not pre-floor modeFiltered.length
+    expect(src).toMatch(/floorFilteredCount|modeFiltered\.filter.*fit_percent/);
   });
 
   it('renders an empty state for an empty bucket', () => {
