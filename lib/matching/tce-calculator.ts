@@ -142,10 +142,15 @@ export function computeEstimatedTce(
 ): TceEstimate {
   const safeDist = distance_nm > 0 ? distance_nm : 0;
   const safeDwt = vessel_dwt > 0 ? vessel_dwt : 10000;
-  const safeQty = quantity_mt > 0 ? quantity_mt : safeDwt * 0.9;
+  // Conservative estimate when cargo weight unknown: 65% of DWT avoids inflating freight revenue.
+  // Fit-breakdown already penalizes weight-not-stated; 90% fabricated a near-full load (#782).
+  const safeQty = quantity_mt > 0 ? quantity_mt : safeDwt * 0.65;
   const safeSpeed = speed_kts > 0 ? speed_kts : DEFAULT_SPEED_KTS;
   const safeCons = consumption_mt_per_day > 0 ? consumption_mt_per_day : DEFAULT_CONSUMPTION_MT_PER_DAY;
-  const durationDays = safeDist > 0 ? safeDist / (safeSpeed * 24) : 10;
+  // Round-trip duration: laden + ballast (≈ same distance) + 2 port days (load + discharge).
+  // Laden-only divided full freight by 1–4 days → absurd $/day on short voyages (#782).
+  const ladenDays = safeDist > 0 ? safeDist / (safeSpeed * 24) : 0;
+  const durationDays = safeDist > 0 ? ladenDays * 2 + 2 : 10;
 
   const result = calculateTCE({
     vessel: {
