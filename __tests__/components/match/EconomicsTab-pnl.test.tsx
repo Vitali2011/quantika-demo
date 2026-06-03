@@ -152,6 +152,42 @@ describe('EconomicsTab — voyage P&L chart', () => {
     expect(screen.getByTestId('voyage-missing-hint')).toHaveTextContent(/route distance/i);
   });
 
+  // Gate5 P&L: cargo weightMt absent (match 40098 Thisvi→Monfalcone) gave an EMPTY
+  // "Voyage P&L" block because voyageInputData.missing never listed cargo quantity —
+  // ready=false + missing=[] → render fell through to null. Must show the hint.
+  it('shows missing-hint when cargo quantity absent (no empty block)', async () => {
+    const noQty = { ...FULL_CARGO, weightMt: undefined };
+    await act(async () => {
+      render(
+        <EconomicsTab
+          vessel={FULL_VESSEL as any}
+          cargo={noQty as any}
+          routeDistanceNm={8500}
+          storedFreightRate={15}
+        />,
+      );
+    });
+    expect(screen.getByTestId('voyage-missing-hint')).toBeInTheDocument();
+    expect(screen.getByTestId('voyage-missing-hint')).toHaveTextContent(/cargo quantity/i);
+    expect(screen.queryByTestId('voyage-breakdown-chart')).not.toBeInTheDocument();
+  });
+
+  it('shows missing-hint when load/discharge ports absent (no empty block)', async () => {
+    const noPorts = { ...FULL_CARGO, originPort: undefined, destinationPort: undefined };
+    await act(async () => {
+      render(
+        <EconomicsTab
+          vessel={FULL_VESSEL as any}
+          cargo={noPorts as any}
+          routeDistanceNm={8500}
+          storedFreightRate={15}
+        />,
+      );
+    });
+    expect(screen.getByTestId('voyage-missing-hint')).toBeInTheDocument();
+    expect(screen.getByTestId('voyage-missing-hint')).toHaveTextContent(/load port|discharge port/i);
+  });
+
   it('shows missing-hint with no vessel/cargo at all', async () => {
     await act(async () => { render(<EconomicsTab />); });
     expect(screen.getByTestId('voyage-missing-hint')).toBeInTheDocument();

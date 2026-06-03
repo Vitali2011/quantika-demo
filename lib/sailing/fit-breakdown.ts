@@ -36,8 +36,8 @@ import { classifyVesselByDwt } from './readiness-gap';
 import { BALLAST_GOOD_MAX_NM, isPartCargo } from './match-scoring';
 import { portHasShoreCranes } from './port-master';
 import { STOWAGE_FACTORS } from './match-filters';
-import { regionMatchesPort } from './voyage-restriction';
 import { resolvePort } from '@/lib/ports/resolve';
+import { isEuCountry } from '@/lib/validation/sanctions';
 
 // ── Weights — sum to 100. Tunable per anchor calibration. ──────────────────
 //
@@ -464,10 +464,16 @@ const VAGUE_DESCRIPTOR_RX =
  */
 function isEuropeanDischarge(port: string | null | undefined): boolean {
   if (!port) return false;
-  if (regionMatchesPort('europe', port)) return true;
-  // A concrete port the region map did NOT place in Europe → trust that verdict.
-  if (resolvePort(port) !== null) return false;
-  // Not a vague area descriptor → do not guess EU from a bare country substring.
+  // Primary: a concrete port → EU iff its RESOLVED country is EU/EEA. This catches
+  // named EU ports the region map omits (Monfalcone/IT, Gijón/ES, Catania/IT,
+  // Thisvi/GR — founder Gate5 2026-06-03) AND correctly rejects non-EU Mediterranean
+  // ports (Bejaia/DZ, Alexandria/EG) that the 'europe' region map wrongly swept in
+  // via the Mediterranean basin. resolvePort folds diacritics (Constanța→Constanta).
+  const resolved = resolvePort(port);
+  if (resolved) return isEuCountry(resolved.country);
+  // Fallback: vague AREA descriptor (no concrete port resolves) that names an EU
+  // country ("East Coast Greece port (unspecified)"). Double-gated so a non-EU
+  // place name merely containing an EU-country word ("New Germany") is not flagged.
   if (!VAGUE_DESCRIPTOR_RX.test(port)) return false;
   const folded = port.normalize('NFKD').replace(/\p{Diacritic}/gu, '');
   return EU_DISCHARGE_KEYWORDS.test(folded);

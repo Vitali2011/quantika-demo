@@ -5,20 +5,14 @@
  * Covers the raw-text fallback introduced in app/cargo/page.tsx (risk-override).
  * Ref year 2026 for determinism; mirrors CORPUS_REF_YEAR used by rebase-parsed.
  */
-import { parseLaycan } from '@/lib/sailing/date-parsing';
+import { formatCargoLaycanDisplay } from '@/lib/cargo-render';
 import { fmtLaycan } from '@/lib/utils/fmt-laycan';
 
 const REF_YEAR = 2026;
 
-function fmt(raw: string | null): string | null {
-  if (!raw) return null;
-  const parsed = parseLaycan(raw, REF_YEAR);
-  if (!parsed) return raw; // fallback: keep raw string (not "—")
-  return fmtLaycan(
-    Math.floor(parsed.start.getTime() / 1000),
-    Math.floor(parsed.end.getTime() / 1000),
-  );
-}
+// Test the REAL display function used by app/cargo/page.tsx — not a local copy.
+// (A duplicated helper here would pass while the page kept the bug.)
+const fmt = (raw: string | null): string | null => formatCargoLaycanDisplay(raw, REF_YEAR);
 
 describe('cargo laycan render — parse+format pipeline', () => {
   // ── Canonical ISO range (post-rebase format) ──────────────────────────────
@@ -103,12 +97,23 @@ describe('cargo laycan render — parse+format pipeline', () => {
     expect(fmt('Cargo ready')).toBe('Cargo ready');
   });
 
-  it('"Spot" → single-date format (resolves to today)', () => {
-    // parseLaycan('Spot') → parseVesselOpenDate → today. Not null, not crash.
-    const result = fmt('Spot');
-    expect(result).not.toBeNull();
-    expect(result).not.toBe('Spot'); // was formatted
-    expect(typeof result).toBe('string');
+  // ── Gate5 #3: spot/prompt laycan → "Spot" label, not a collapsed single day ──
+  // Old bug: parseLaycan('Spot') → parseVesselOpenDate → today → "May 29–May 29".
+  // Matches use a 10-day rebase window; the cargo list just labels it Spot.
+  it('"Spot" → "Spot" label (no single-day collapse)', () => {
+    expect(fmt('Spot')).toBe('Spot');
+  });
+
+  it('"Spot — Prompt" → "Spot" label', () => {
+    expect(fmt('Spot — Prompt')).toBe('Spot');
+  });
+
+  it('"Spot — vessel\'s dates" → "Spot" label', () => {
+    expect(fmt("Spot — vessel's dates")).toBe('Spot');
+  });
+
+  it('"Prompt" → "Spot" label (prompt = immediately available)', () => {
+    expect(fmt('Prompt')).toBe('Spot');
   });
 
   // ── fmtLaycan itself: "—" only for both-null ──────────────────────────────

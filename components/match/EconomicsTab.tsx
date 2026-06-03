@@ -278,9 +278,13 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
     const durationDays = estimateVoyageDays(distanceNm, speedKts);
 
     const missing: string[] = [];
+    if (!originPort) missing.push('load port');
+    if (!destinationPort) missing.push('discharge port');
+    if (!dwt) missing.push('DWT');
     if (!speedKts) missing.push('vessel speed');
     if (!rawConsumptionMtPerDay) missing.push('fuel consumption');
     if (!distanceNm) missing.push('route distance');
+    if (!quantityMt) missing.push('cargo quantity');
 
     const ready =
       missing.length === 0 &&
