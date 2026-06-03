@@ -1040,10 +1040,13 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                         {/* Route */}
                         <td className="py-[13px] px-3 align-middle">
                           {(match.load_port || match.discharge_port) ? (
-                            <span className="font-mono text-[13px] inline-flex items-center gap-2 whitespace-nowrap">
-                              {match.load_port && <span>{match.load_port}</span>}
-                              {match.load_port && match.discharge_port && <span className="text-slate-300">→</span>}
-                              {match.discharge_port && <span>{match.discharge_port}</span>}
+                            <span
+                              className="font-mono text-[13px] flex items-center gap-1 overflow-hidden"
+                              title={[match.load_port, match.discharge_port].filter(Boolean).join(' → ')}
+                            >
+                              {match.load_port && <span className="truncate min-w-0">{match.load_port}</span>}
+                              {match.load_port && match.discharge_port && <span className="text-slate-300 flex-shrink-0">→</span>}
+                              {match.discharge_port && <span className="truncate min-w-0">{match.discharge_port}</span>}
                             </span>
                           ) : (
                             <span className="font-mono text-slate-300">—</span>
