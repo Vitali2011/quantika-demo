@@ -357,3 +357,39 @@ describe('computeFitBreakdown — EU-discharge age penalty (founder rule 2026-06
     expect(fb.appliedCap?.reason ?? '').not.toMatch(/EU discharge|EU PSC/i);
   });
 });
+
+describe('computeFitBreakdown — EU-discharge false-positive guard (cold QA 2026-06-02)', () => {
+  // Concrete NON-EU place names that merely CONTAIN an EU-country word must NOT
+  // trigger the 25yr+ EU-discharge cap. The loose country-substring fallback
+  // (EU_DISCHARGE_KEYWORDS) wrongly flagged these real, non-European ports.
+  it.each([
+    ['Dutch Harbor', 'Alaska — real US port'],
+    ['New Germany', 'Durban suburb, South Africa'],
+    ['Poland Spring', 'Maine, USA'],
+    ['Spanish Town', 'Jamaica'],
+    ['Spanish Wells', 'Bahamas'],
+    ['French Guiana', 'South America'],
+  ])('25yr+ vessel + non-EU "%s" (%s) → NO EU-age cap', (port) => {
+    const cargo = makeCargo({ destinationPort: { value: port, confidence: 'confirmed' } });
+    const vessel = makeVessel({ built: 1998 }); // age 28 @ refYear 2026
+    const fb = computeFitBreakdown({ cargo, vessel, readiness: READY_IDEAL, sanctions: SANCTIONS_OK, hardFilters: HF_PASS, refYear: 2026 });
+    expect(fb.appliedCap?.reason ?? '').not.toMatch(/EU discharge|EU PSC/i);
+    expect(fb.fitPercent).toBeGreaterThan(55);
+  });
+
+  // Vague EU region descriptors (no concrete port resolves) MUST still cap —
+  // guards the fix doesn't over-correct into false negatives. "European
+  // continent" specifically is not flagged vague by isVagueRegion, so it locks
+  // in the inline qualifier regex's coverage of "continent".
+  it.each([
+    'East Coast Greece port (unspecified)',
+    'East Coast Italy port (unspecified)',
+    'European continent',
+  ])('25yr+ vessel + vague EU "%s" → still capped ≤55', (port) => {
+    const cargo = makeCargo({ destinationPort: { value: port, confidence: 'uncertain' } });
+    const vessel = makeVessel({ built: 1998 });
+    const fb = computeFitBreakdown({ cargo, vessel, readiness: READY_IDEAL, sanctions: SANCTIONS_OK, hardFilters: HF_PASS, refYear: 2026 });
+    expect(fb.appliedCap?.reason).toMatch(/EU discharge|EU PSC/i);
+    expect(fb.fitPercent).toBeLessThanOrEqual(55);
+  });
+});

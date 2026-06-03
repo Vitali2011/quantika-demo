@@ -37,6 +37,7 @@ import { BALLAST_GOOD_MAX_NM, isPartCargo } from './match-scoring';
 import { portHasShoreCranes } from './port-master';
 import { STOWAGE_FACTORS } from './match-filters';
 import { regionMatchesPort } from './voyage-restriction';
+import { resolvePort } from '@/lib/ports/resolve';
 
 // ── Weights — sum to 100. Tunable per anchor calibration. ──────────────────
 //
@@ -439,15 +440,35 @@ export function scoreVetting(vessel: ParsedVessel, refYear?: number): FitBreakdo
 const EU_DISCHARGE_KEYWORDS =
   /\b(greece|greek|italy|italian|romania|romanian|constanta|bulgaria|bulgarian|spain|spanish|france|french|netherlands|dutch|belgium|belgian|germany|german|croatia|croatian|slovenia|slovenian|portugal|portuguese|cyprus|cypriot|malta|maltese|poland|polish|european continent|ara range)\b/i;
 
+// Region-vagueness markers. The country-substring fallback is consulted ONLY for
+// descriptors that read as a vague AREA — "East Coast Greece port (unspecified)",
+// "Greece (1 port)", "European Continent (ARA range)" — and never for concrete
+// place names that merely contain an EU-country word: "Dutch Harbor" (Alaska),
+// "New Germany" (Durban), "Poland Spring" (Maine), "Spanish Town", "French
+// Guiana". Without this gate the loose substring regex flagged those as EU.
+// (Cold QA 2026-06-02.)
+const VAGUE_DESCRIPTOR_RX =
+  /\b(unspecified|range|coast|ports?|anchorage|area|region|basin|cluster|terminal|continent|gulf)\b|\(/i;
+
 /**
- * EU-discharge detector for the age cap. True when the port resolves to Europe
- * via the canonical region map OR the raw descriptor names an EU/near-EU country.
- * Isolated from regionMatchesPort so widening detection here does NOT affect the
- * hard voyage-restriction gate (its other consumer).
+ * EU-discharge detector for the age cap. True when EITHER:
+ *   1. the port resolves to Europe via the canonical region map, OR
+ *   2. the descriptor is a vague AREA (no concrete port resolves) that names an
+ *      EU/near-EU country via EU_DISCHARGE_KEYWORDS.
+ *
+ * The country-substring fallback (2) is double-gated — `resolvePort` returns null
+ * (so it is not a concrete port) AND the text looks like a vague area — so a
+ * concrete non-EU port whose name merely contains an EU-country word is not
+ * mis-flagged. Isolated from regionMatchesPort so widening detection here does
+ * NOT affect the hard voyage-restriction gate (its other consumer).
  */
 function isEuropeanDischarge(port: string | null | undefined): boolean {
   if (!port) return false;
   if (regionMatchesPort('europe', port)) return true;
+  // A concrete port the region map did NOT place in Europe → trust that verdict.
+  if (resolvePort(port) !== null) return false;
+  // Not a vague area descriptor → do not guess EU from a bare country substring.
+  if (!VAGUE_DESCRIPTOR_RX.test(port)) return false;
   const folded = port.normalize('NFKD').replace(/\p{Diacritic}/gu, '');
   return EU_DISCHARGE_KEYWORDS.test(folded);
 }
