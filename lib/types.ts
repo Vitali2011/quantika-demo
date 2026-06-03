@@ -390,6 +390,7 @@ export interface MatchHardFilters {
   gearRequired?: HardFilterCheck;
   voyage?: HardFilterCheck;
   flagClass?: HardFilterCheck;
+  warPositionVoyage?: HardFilterCheck;
 }
 
 /** Sanctions screening (see lib/validation/sanctions.ts). */

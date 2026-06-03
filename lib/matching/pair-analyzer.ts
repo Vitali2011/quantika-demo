@@ -155,6 +155,7 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
     gearRequired: hf.checks.gearRequired,
     voyage: hf.checks.voyage,
     flagClass: hf.checks.flagClass,
+    warPositionVoyage: hf.checks.warPositionVoyage,
   };
 
   const imsbcCheck = checkImsbcLoadability(cfValue(c.cargoDescription), { restrictions: v.restrictions ?? [] });
