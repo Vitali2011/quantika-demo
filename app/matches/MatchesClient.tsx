@@ -318,12 +318,12 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
 
   // Mode-based count for "All" chip: charterer sees cargo-side, owner sees vessel-side
   const modeFiltered = filterMatchesByMode(matches, isOwner, cargoEmailIds, vesselEmailIds);
-  const floorFilteredCount = modeFiltered.filter((m) => (m.fit_percent ?? 0) >= 60).length;
+  const floorFilteredCount = modeFiltered.filter((m) => m.fit_percent == null || m.fit_percent >= 60).length;
 
-  // All-chip count: mode + status + advanced filters (excluding quick-filter so the badge
-  // reflects "how many match your current advanced criteria" regardless of quick-filter tab)
+  // All-chip count: mode + status + advanced filters + fit floor (same floor as visible list)
   const allChipCount = modeFiltered.filter(
     (m) =>
+      (m.fit_percent == null || m.fit_percent >= 60) &&
       (!filterStatus || m.status === filterStatus) &&
       (cargoTypes.length === 0 || cargoTypes.includes(m.cargo_type ?? ''))
   ).length;
@@ -738,7 +738,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                               Cargo: <span className="text-gray-700">{match.cargo_ref ?? match.cargo_id}</span>
                             </div>
                             <div className="font-medium text-sm">
-                              Vessel: <span className="text-gray-700">{match.vessel_name ?? 'TBN'}</span>
+                              Vessel: <span className="text-gray-700">{match.vessel_name?.trim() || 'TBN'}</span>
                             </div>
                             {match.cargo_type && (
                               <span className="inline-block text-xs bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded mt-0.5">
@@ -979,8 +979,8 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                 <thead>
                   <tr className="bg-ds-surface-muted border-b border-ds-border">
                     {(isOwner
-                      ? ['Score', 'Cargo', 'Route', 'DWT', 'TCE / day', 'Vessel', 'Laycan', '']
-                      : ['Score', 'Vessel', 'Route', 'DWT', 'TCE / day', 'Cargo', 'Laycan', '']
+                      ? ['FIT %', 'Cargo', 'Route', 'DWT', 'TCE / day', 'Vessel', 'Laycan', '']
+                      : ['FIT %', 'Vessel', 'Route', 'DWT', 'TCE / day', 'Cargo', 'Laycan', '']
                     ).map((h, i) => (
                       <th
                         key={i}
@@ -1031,9 +1031,9 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                           <td className="py-[13px] px-3 align-middle">
                             <div className="flex items-center gap-[10px]">
                               <span className="w-7 h-7 rounded-[7px] bg-ds-accent text-ds-accent-fg flex-shrink-0 inline-flex items-center justify-center font-mono text-[11.5px] font-medium">
-                                {vesselInitials(match.vessel_name ?? 'TBN')}
+                                {vesselInitials(match.vessel_name?.trim() || 'TBN')}
                               </span>
-                              <span className="font-medium text-sm tracking-[-0.005em] break-words">{match.vessel_name ?? 'TBN'}</span>
+                              <span className="font-medium text-sm tracking-[-0.005em] break-words">{match.vessel_name?.trim() || 'TBN'}</span>
                             </div>
                           </td>
                         )}
@@ -1069,9 +1069,9 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                           <td className="py-[13px] px-3 align-middle">
                             <div className="flex items-center gap-[10px]">
                               <span className="w-7 h-7 rounded-[7px] bg-ds-accent text-ds-accent-fg flex-shrink-0 inline-flex items-center justify-center font-mono text-[11.5px] font-medium">
-                                {vesselInitials(match.vessel_name ?? 'TBN')}
+                                {vesselInitials(match.vessel_name?.trim() || 'TBN')}
                               </span>
-                              <span className="font-medium text-sm tracking-[-0.005em] break-words">{match.vessel_name ?? 'TBN'}</span>
+                              <span className="font-medium text-sm tracking-[-0.005em] break-words">{match.vessel_name?.trim() || 'TBN'}</span>
                             </div>
                           </td>
                         ) : (

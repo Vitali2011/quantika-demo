@@ -38,8 +38,8 @@ describe('MatchesClient.tsx — VESSEL column wraps long names (#636 pattern)', 
 
   it('table view vessel cells use break-words class', () => {
     const tableSection = src.slice(src.indexOf('TABLE VIEW'));
-    // #786: TBN placeholder replaced raw vessel_id fallback — guard follows refactor
-    expect(tableSection).toMatch(/break-words[^>]*>\{match\.vessel_name \?\? 'TBN'\}|className="[^"]*break-words[^"]*"[^>]*>\{match\.vessel_name \?\? 'TBN'\}/);
+    // #806: null/empty/whitespace vessel_name → TBN (trim+or replaces null-coalesce)
+    expect(tableSection).toMatch(/break-words[^>]*>\{match\.vessel_name[\?.].*'TBN'\}|className="[^"]*break-words[^"]*"[^>]*>\{match\.vessel_name[\?.].*'TBN'\}/);
   });
 
   it('outer wrapper does not use overflow-x-hidden (which clips scrollable table)', () => {
@@ -73,8 +73,8 @@ describe('MatchesClient.tsx — table header/body column alignment (#662 regress
     const tableSection = src.slice(src.indexOf('TABLE VIEW'));
     const colCount = (tableSection.match(/<col /g) ?? []).length;
     expect(colCount).toBe(8);
-    expect(tableSection).toMatch(/'Score', 'Vessel', 'Route', 'DWT', 'TCE \/ day', 'Cargo', 'Laycan', ''/);
-    expect(tableSection).toMatch(/'Score', 'Cargo', 'Route', 'DWT', 'TCE \/ day', 'Vessel', 'Laycan', ''/);
+    expect(tableSection).toMatch(/'FIT %', 'Vessel', 'Route', 'DWT', 'TCE \/ day', 'Cargo', 'Laycan', ''/);
+    expect(tableSection).toMatch(/'FIT %', 'Cargo', 'Route', 'DWT', 'TCE \/ day', 'Vessel', 'Laycan', ''/);
   });
 });
 
