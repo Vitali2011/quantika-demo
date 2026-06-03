@@ -196,17 +196,17 @@ describe('MatchesClient — mode-aware column headers (#630)', () => {
 
   it('column headers array is mode-conditional (not hardcoded)', () => {
     // Must contain isOwner conditional with two header arrays, not one static array
-    expect(src).toMatch(/isOwner[\s\S]*?Score.*Cargo[\s\S]*?Score.*Vessel|Score.*Vessel[\s\S]*?Score.*Cargo/);
+    expect(src).toMatch(/isOwner[\s\S]*?FIT %.*Cargo[\s\S]*?FIT %.*Vessel|FIT %.*Vessel[\s\S]*?FIT %.*Cargo/);
   });
 
   it('charterer headers have Vessel before Cargo', () => {
-    // In charterer branch: Score | Vessel | ... | Cargo
-    expect(src).toMatch(/'Score',\s*'Vessel',.*?'Cargo'/);
+    // In charterer branch: FIT % | Vessel | ... | Cargo
+    expect(src).toMatch(/'FIT %',\s*'Vessel',.*?'Cargo'/);
   });
 
   it('owner headers have Cargo before Vessel', () => {
-    // In owner branch: Score | Cargo | ... | Vessel
-    expect(src).toMatch(/'Score',\s*'Cargo',.*?'Vessel'/);
+    // In owner branch: FIT % | Cargo | ... | Vessel
+    expect(src).toMatch(/'FIT %',\s*'Cargo',.*?'Vessel'/);
   });
 
   it('column 2 cell is mode-conditional (vessel vs cargo)', () => {
@@ -225,14 +225,14 @@ describe('MatchesClient — mode-aware column headers (#630)', () => {
   });
 
   it('owner header array has exactly 8 columns', () => {
-    // Extract the owner header array and count entries
-    const ownerMatch = src.match(/'Score',\s*'Cargo',\s*'Route',\s*'DWT',\s*'TCE \/ day',\s*'Vessel',\s*'Laycan',\s*''/);
+    // Extract the owner header array and count entries (#807 M1: Score→FIT %)
+    const ownerMatch = src.match(/'FIT %',\s*'Cargo',\s*'Route',\s*'DWT',\s*'TCE \/ day',\s*'Vessel',\s*'Laycan',\s*''/);
     expect(ownerMatch).not.toBeNull();
   });
 
   it('charterer header array has exactly 8 columns', () => {
-    // Extract the charterer header array and count entries
-    const chartererMatch = src.match(/'Score',\s*'Vessel',\s*'Route',\s*'DWT',\s*'TCE \/ day',\s*'Cargo',\s*'Laycan',\s*''/);
+    // Extract the charterer header array and count entries (#807 M1: Score→FIT %)
+    const chartererMatch = src.match(/'FIT %',\s*'Vessel',\s*'Route',\s*'DWT',\s*'TCE \/ day',\s*'Cargo',\s*'Laycan',\s*''/);
     expect(chartererMatch).not.toBeNull();
   });
 

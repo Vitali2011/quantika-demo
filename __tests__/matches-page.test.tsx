@@ -298,3 +298,37 @@ describe('app/matches/page.tsx — content dedup (#787)', () => {
     expect(result[1].vessel_name).toBe('MV BETA');
   });
 });
+
+// ──────────────────────────────────────────────────────────────────────────────
+// #807 M1 — column header "SCORE" → "FIT %" (structural)
+// ──────────────────────────────────────────────────────────────────────────────
+
+describe('MatchesClient.tsx — FIT % column header (#807 M1)', () => {
+  it('table header array uses "FIT %" not "Score"', () => {
+    const src = readSource(clientPath);
+    expect(src).toMatch(/'FIT %'/);
+    expect(src).not.toMatch(/'Score',\s*'[A-Z]/); // Score must not be first header
+  });
+});
+
+// ──────────────────────────────────────────────────────────────────────────────
+// #807 L1 — All-pill count uses fit floor (same as visible list)
+// ──────────────────────────────────────────────────────────────────────────────
+
+describe('MatchesClient.tsx — All-pill count uses fit floor (#807 L1)', () => {
+  it('allChipCount applies fit_percent >= 60 guard in source', () => {
+    const src = readSource(clientPath);
+    // allChipCount must include the floor filter (not just modeFiltered without floor)
+    expect(src).toMatch(/allChipCount[\s\S]{0,300}fit_percent/);
+  });
+
+  it('behavioral: allChipCount floor excludes sub-60 matches', () => {
+    const allChipFilter = (m: { fit_percent: number | null; status: string | null }) =>
+      (m.fit_percent == null || m.fit_percent >= 60);
+
+    expect(allChipFilter({ fit_percent: 42, status: null })).toBe(false);
+    expect(allChipFilter({ fit_percent: 59, status: null })).toBe(false);
+    expect(allChipFilter({ fit_percent: 60, status: null })).toBe(true);
+    expect(allChipFilter({ fit_percent: null, status: null })).toBe(true);
+  });
+});

@@ -49,7 +49,8 @@ const PORT_NAMES: Record<string, string> = {
   SGSIN: 'Singapore', NLRTM: 'Rotterdam', AEFJR: 'Fujairah',
   USHOU: 'Houston', GIGIB: 'Gibraltar', ESCEU: 'Ceuta',
   ESALG: 'Algeciras', BEANR: 'Antwerp', GRPIR: 'Piraeus',
-  ROCND: 'Constanta', EGPSD: 'Port Said', ITAUG: 'Augusta',
+  TRIST: 'Istanbul', ROCND: 'Constanta', EGPSD: 'Port Said', ITAUG: 'Augusta',
+  CYLMS: 'Limassol',
 };
 
 function portLabel(locode: string): string {
@@ -155,7 +156,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
 
   const handleOverrideSubmit = useCallback(async () => {
     if (!matchDbId) return;
-    const rate = parseFloat(overrideRate);
+    const rate = parseFloat(overrideRate.replace(',', '.'));
     if (!Number.isFinite(rate) || rate <= 0) {
       setOverrideError('Enter a positive rate (USD/mt)');
       return;
@@ -445,7 +446,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
         />
         {!bunkerPriceUsdPerMt && (
           <p className="text-xs text-gray-500 mt-1">
-            Leave empty to use latest spot price for {bunkerPort} {bunkerGrade}
+            Leave empty to use latest spot price for {portLabel(bunkerPort)} {bunkerGrade}
           </p>
         )}
         <div className="flex gap-2 mt-2">
