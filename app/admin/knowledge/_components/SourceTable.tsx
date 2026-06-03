@@ -156,7 +156,7 @@ export function SourceTable({ sources }: SourceTableProps) {
                           : 'Never'}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-500">
-                        {source.row_count?.toLocaleString() ?? '—'}
+                        {source.row_count?.toLocaleString('en-US') ?? '—'}
                       </td>
                       <td className="px-4 py-3 text-sm">
                         <button

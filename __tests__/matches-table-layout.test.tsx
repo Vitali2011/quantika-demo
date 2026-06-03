@@ -25,20 +25,21 @@ describe('MatchesClient.tsx — VESSEL column wraps long names (#636 pattern)', 
   it('table view vessel cells use break-words, not truncate', () => {
     // Extract the table view section (after "TABLE VIEW" comment)
     const tableSection = src.slice(src.indexOf('TABLE VIEW'));
-    // All vessel_id spans in table view must use break-words
-    const vesselSpans = [...tableSection.matchAll(/vessel_id[^<]*<\/span>/g)];
+    // All vessel name spans in table view must use break-words (#786: TBN fallback replaces vessel_id)
+    const vesselSpans = [...tableSection.matchAll(/break-words[^>]*>\{match\.vessel_name[^<]*<\/span>/g)];
     expect(vesselSpans.length).toBeGreaterThan(0);
 
-    // No vessel_id span in the table section should have truncate class
+    // No vessel name span in the table section should have truncate class
     const truncatedVessel = tableSection.match(
-      /className="[^"]*truncate[^"]*"[^>]*>\{match\.vessel_id\}/
+      /className="[^"]*truncate[^"]*"[^>]*>\{match\.vessel_name/
     );
     expect(truncatedVessel).toBeNull();
   });
 
   it('table view vessel cells use break-words class', () => {
     const tableSection = src.slice(src.indexOf('TABLE VIEW'));
-    expect(tableSection).toMatch(/break-words[^>]*>\{match\.vessel_name \?\? match\.vessel_id\}|className="[^"]*break-words[^"]*"[^>]*>\{match\.vessel_name \?\? match\.vessel_id\}/);
+    // #786: TBN placeholder replaced raw vessel_id fallback — guard follows refactor
+    expect(tableSection).toMatch(/break-words[^>]*>\{match\.vessel_name \?\? 'TBN'\}|className="[^"]*break-words[^"]*"[^>]*>\{match\.vessel_name \?\? 'TBN'\}/);
   });
 
   it('outer wrapper does not use overflow-x-hidden (which clips scrollable table)', () => {
