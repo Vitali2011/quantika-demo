@@ -16,7 +16,7 @@ import {
 } from '@/lib/types';
 import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
 import { computeFitBreakdown } from '@/lib/sailing/fit-breakdown';
-import { computeEstimatedTce, estimateFreightRate, parseLeadingNumber } from '@/lib/matching/tce-calculator';
+import { computeEstimatedTce, estimateFreightRate, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 import { shiftBodyDates, shiftMonthYear, shiftIsoDate } from './date-utils';
 import type { MatchReadiness } from '@/lib/types';
@@ -791,7 +791,7 @@ export async function build(opts: BuildOptions): Promise<void> {
               v.dwt,
               qty,
               speedKn,
-              parseLeadingNumber(v.vesselItem.consumption),
+              parseConsumption(v.vesselItem.consumption),
             );
 
             best.set(key, {

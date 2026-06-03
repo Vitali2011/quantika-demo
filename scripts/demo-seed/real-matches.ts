@@ -34,7 +34,7 @@ import { cfValue } from '@/lib/types';
 import type { ParsedCargo, ParsedVessel, MatchLevel } from '@/lib/types';
 import { computeFitBreakdown } from '@/lib/sailing/fit-breakdown';
 import { getPortDistance } from '@/lib/sailing/port-distances';
-import { estimateFreightRate, computeEstimatedTce, parseLeadingNumber } from '@/lib/matching/tce-calculator';
+import { estimateFreightRate, computeEstimatedTce, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
 import { IDLE_HARD_MAX_GAP_DAYS } from '@/lib/matching/pair-analyzer';
 import { rebaseParsedCargoes, rebaseParsedVessels } from '@/lib/sample-data/rebase-parsed';
 import rawCargoes from '@/lib/sample-data/demo-parsed-cargoes.json';
@@ -276,7 +276,7 @@ async function main(): Promise<void> {
       if (distanceResult && distanceResult.nm > 0) {
         const quantityMt = cfValue(cargo.weightMt) ?? 0;
         const speedKts = parseLeadingNumber(vessel.speedLaden);
-        const consumptionMt = parseLeadingNumber(vessel.consumption);
+        const consumptionMt = parseConsumption(vessel.consumption);
         const freightEst = estimateFreightRate(cargoType, distanceResult.nm, dwtSummer);
         const tceEst = computeEstimatedTce(
           freightEst, distanceResult.nm, dwtSummer, quantityMt, speedKts, consumptionMt,
