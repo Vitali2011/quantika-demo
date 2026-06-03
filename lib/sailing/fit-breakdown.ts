@@ -487,10 +487,12 @@ export interface FitBreakdownInput {
   hardFilters: MatchHardFilters | undefined;
   /** Calendar year used for vessel-age arithmetic. If absent, age is treated as unknown. */
   refYear?: number;
+  /** Pre-computed TCE $/day for the economic cap. Absent/undefined → no cap (conservative). */
+  tceUsdPerDay?: number;
 }
 
 export function computeFitBreakdown(input: FitBreakdownInput): FitBreakdown {
-  const { cargo, vessel, readiness, sanctions, hardFilters, refYear } = input;
+  const { cargo, vessel, readiness, sanctions, hardFilters, refYear, tceUsdPerDay } = input;
   const desc = cfValue(cargo.cargoDescription);
   const partCargo = isPartCargo(desc);
 
@@ -554,6 +556,15 @@ export function computeFitBreakdown(input: FitBreakdownInput): FitBreakdown {
     caps.push({
       reason: `vessel ${euDischargeAge}yr + EU discharge — PSC/charterer age risk`,
       ceiling: 55,
+    });
+  }
+  // Economic cap (C3 #783): a voyage that loses money cannot rank as a good match.
+  // tce < 0 → ceiling 40 (clearly below the 60 main-board floor → lands in Review).
+  // Absent/undefined → NO cap (conservative-on-missing).
+  if (tceUsdPerDay != null && tceUsdPerDay < 0) {
+    caps.push({
+      reason: `voyage loses money (TCE −$${Math.abs(Math.round(tceUsdPerDay)).toLocaleString('en-US')}/day) — uneconomic`,
+      ceiling: 40,
     });
   }
 

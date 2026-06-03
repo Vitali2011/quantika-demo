@@ -424,3 +424,89 @@ describe('computeFitBreakdown — EU-discharge by resolved country (Gate5 2026-0
     expect(fb.appliedCap?.reason ?? '').not.toMatch(/EU discharge|EU PSC/i);
   });
 });
+
+describe('computeFitBreakdown — economic cap (C3 #783)', () => {
+  // Base fixture: wheat 75% util, 580nm → baseline fit ∈ [70,85] — well above the 60 main-board floor
+  const cargo75 = makeCargo({
+    cargoDescription: { value: 'wheat in bulk', confidence: 'confirmed' },
+    weightMtMax: 3750, weightMt: { value: 3750, confidence: 'confirmed' },
+  });
+  const readiness580: MatchReadiness = { ...READY_IDEAL, distanceNm: 580 };
+
+  it('negative TCE → capped ≤ 40, appliedCap reason mentions loss/uneconomic', () => {
+    const fb = computeFitBreakdown({
+      cargo: cargo75, vessel: makeVessel(), readiness: readiness580,
+      sanctions: SANCTIONS_OK, hardFilters: HF_PASS,
+      tceUsdPerDay: -5000,
+    });
+    expect(fb.fitPercent).toBeLessThanOrEqual(40);
+    expect(fb.appliedCap?.reason).toMatch(/loss|uneconomic|TCE/i);
+  });
+
+  it('undefined TCE (absent) → NO cap, fit unchanged vs no-TCE baseline', () => {
+    const baseline = computeFitBreakdown({
+      cargo: cargo75, vessel: makeVessel(), readiness: readiness580,
+      sanctions: SANCTIONS_OK, hardFilters: HF_PASS,
+    });
+    const withUndef = computeFitBreakdown({
+      cargo: cargo75, vessel: makeVessel(), readiness: readiness580,
+      sanctions: SANCTIONS_OK, hardFilters: HF_PASS,
+      tceUsdPerDay: undefined,
+    });
+    expect(withUndef.fitPercent).toBe(baseline.fitPercent);
+    expect(withUndef.appliedCap?.reason ?? '').not.toMatch(/loss|uneconomic/i);
+  });
+
+  it('null TCE → NO cap (conservative)', () => {
+    const fb = computeFitBreakdown({
+      cargo: cargo75, vessel: makeVessel(), readiness: readiness580,
+      sanctions: SANCTIONS_OK, hardFilters: HF_PASS,
+      tceUsdPerDay: null as unknown as number,
+    });
+    expect(fb.fitPercent).toBeGreaterThan(40);
+    expect(fb.appliedCap?.reason ?? '').not.toMatch(/loss|uneconomic/i);
+  });
+
+  it('zero TCE → NO cap (only strictly negative triggers)', () => {
+    const fb = computeFitBreakdown({
+      cargo: cargo75, vessel: makeVessel(), readiness: readiness580,
+      sanctions: SANCTIONS_OK, hardFilters: HF_PASS,
+      tceUsdPerDay: 0,
+    });
+    expect(fb.fitPercent).toBeGreaterThan(40);
+    expect(fb.appliedCap?.reason ?? '').not.toMatch(/loss|uneconomic/i);
+  });
+
+  it('small-positive TCE (500 $/day) → NO cap', () => {
+    const fb = computeFitBreakdown({
+      cargo: cargo75, vessel: makeVessel(), readiness: readiness580,
+      sanctions: SANCTIONS_OK, hardFilters: HF_PASS,
+      tceUsdPerDay: 500,
+    });
+    expect(fb.fitPercent).toBeGreaterThan(40);
+  });
+
+  it('large-positive TCE (20 000 $/day) → NO cap, fit unchanged', () => {
+    const baseline = computeFitBreakdown({
+      cargo: cargo75, vessel: makeVessel(), readiness: readiness580,
+      sanctions: SANCTIONS_OK, hardFilters: HF_PASS,
+    });
+    const fb = computeFitBreakdown({
+      cargo: cargo75, vessel: makeVessel(), readiness: readiness580,
+      sanctions: SANCTIONS_OK, hardFilters: HF_PASS,
+      tceUsdPerDay: 20000,
+    });
+    expect(fb.fitPercent).toBe(baseline.fitPercent);
+  });
+
+  it('economic cap + EU-age cap: lowest ceiling wins (econ 40 < EU 55)', () => {
+    const cargoEU = makeCargo({ destinationPort: { value: 'Constanța', confidence: 'confirmed' } });
+    const vesselOld = makeVessel({ built: 1999 }); // 27yr @ refYear 2026
+    const fb = computeFitBreakdown({
+      cargo: cargoEU, vessel: vesselOld, readiness: READY_IDEAL,
+      sanctions: SANCTIONS_OK, hardFilters: HF_PASS,
+      refYear: 2026, tceUsdPerDay: -3000,
+    });
+    expect(fb.fitPercent).toBeLessThanOrEqual(40);
+  });
+});
