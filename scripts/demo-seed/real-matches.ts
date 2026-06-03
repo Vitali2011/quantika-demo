@@ -260,14 +260,9 @@ async function main(): Promise<void> {
         destCrane: hf.checks.destCrane,
         cargoWeight: hf.checks.cargoWeight,
       };
-      // refYear MUST be passed: without it computeFitBreakdown treats vessel age as
-      // unknown → the EU-discharge 25yr+ cap (#2) and vetting age factor never fire.
-      const fb = computeFitBreakdown({ cargo, vessel, readiness, sanctions, hardFilters, refYear });
-
-      // Economics
-      // Resolve ports via diacritic-fold + resolveVaguePort before distance lookup
-      // so diacritic names (Constanța, Aliağa) and vague descriptors
-      // (Greece 1 port, Western Mediterranean) yield a real sea distance.
+      // Economics — computed before fit breakdown so the economic cap (C3 #783) can demote
+      // loss-making voyages. Resolve ports via diacritic-fold + resolveVaguePort so diacritic
+      // names (Constanța, Aliağa) and vague descriptors yield a real sea distance.
       const resolvedLoad = resolvePortForDistance(loadPort);
       const resolvedDischarge = resolvePortForDistance(dischargePort);
       const distanceResult =
@@ -291,6 +286,13 @@ async function main(): Promise<void> {
         freightRateSource = tceEst.freight_rate_source;
         distanceNm = distanceResult.nm;
       }
+
+      // refYear MUST be passed: without it computeFitBreakdown treats vessel age as
+      // unknown → the EU-discharge 25yr+ cap (#2) and vetting age factor never fire.
+      const fb = computeFitBreakdown({
+        cargo, vessel, readiness, sanctions, hardFilters, refYear,
+        tceUsdPerDay: tceUsdPerDay ?? undefined,
+      });
 
       // Bucket assignment (mirrors pair-analyzer realism partition)
       let bucket: 'main' | 'review' | 'insufficient';
