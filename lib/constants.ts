@@ -59,7 +59,11 @@ export const AI_MODEL_LIGHT = process.env.AI_MODEL_LIGHT || 'gpt-5.5';
  *   (emails, classifications, matches, …). Extending beyond 1 hour increases
  *   `data/sessions.db` size proportionally — evaluate before raising the value.
  */
-export const SESSION_TTL_MS = 60 * 60 * 1000; // 1 hour
+export const SESSION_TTL_MS = 60 * 60 * 1000; // 1 hour — non-demo OAuth sessions
+// Demo sessions: default 30 days so session_id cookie and DB row outlive the demo_auth window.
+// Override via env for testing or custom deployments.
+export const DEMO_SESSION_TTL_MS =
+  parseInt(process.env.DEMO_SESSION_TTL_MS ?? '', 10) || 30 * 24 * 60 * 60 * 1000;
 export const EMAIL_FETCH_COUNT = 50;
 export const MIN_THREAD_LENGTH_FOR_RECAP = 5;
 export const MAX_EMAIL_BODY_CHARS = 3000;

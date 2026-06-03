@@ -40,6 +40,8 @@ const AUTH_BYPASS_PATHS = new Set([
   '/api/market/bunker-kpi',
   // benchmark endpoint is "Intentionally public" per route comment (no PII, commodity data only)
   '/api/market/benchmark',
+  // Demo session re-hydration: has its own demo_auth verification; must not loop back to auth guard
+  '/api/demo/rehydrate',
 ]);
 
 const AUTH_BYPASS_PREFIXES = ['/_next/static', '/_next/image', '/_next/webpack'];
@@ -184,6 +186,23 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     // so the pipeline would immediately 403 on all API calls. Redirect to upload CTA instead.
     if (pathname === '/processing' && !request.cookies.get('csrf_token')?.value) {
       return NextResponse.redirect(new URL('/', getRequestBaseUrl(request)), { status: 302 });
+    }
+
+    // Demo session re-hydration (#790): after SESSION_TTL_MS (1h default) the session_id
+    // cookie expires — same Max-Age as the session row. The demo_auth cookie lives
+    // cookieDays (default 30d), so the user is still authenticated but has no session_id.
+    // Server Component pages call getSession() → null → render 'No emails yet'. Redirect to
+    // /api/demo/rehydrate (a Node.js route handler) which creates a fresh session, sets the
+    // session_id cookie, and bounces the user back to this page. Skip for /api/* routes —
+    // those return JSON and must not be interrupted with a browser redirect.
+    if (
+      process.env.DEMO_MODE === 'true' &&
+      !request.cookies.get('session_id')?.value &&
+      !pathname.startsWith('/api/')
+    ) {
+      const rehydrateUrl = new URL('/api/demo/rehydrate', getRequestBaseUrl(request));
+      rehydrateUrl.searchParams.set('next', pathname);
+      return NextResponse.redirect(rehydrateUrl, { status: 302 });
     }
   }
 
