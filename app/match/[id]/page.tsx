@@ -15,6 +15,7 @@ import { ExplainDealModal } from '@/components/match/ExplainDealModal';
 import { MatchDetailPanel, MatchDetailMobileSheet } from '@/components/match/MatchDetailPanel';
 import { MatchWorksheet } from '@/components/match/MatchWorksheet';
 import type { MatchWorksheet as MatchWorksheetType } from '@/lib/types';
+import { cfValue } from '@/lib/types';
 
 interface Props { params: Promise<{ id: string }>; }
 
@@ -280,7 +281,7 @@ export default async function MatchDetailPage({ params }: Props) {
                   <SourceAttributionSection
                     fields={[
                       ...(cargo.cargoDescription ? [{ label: 'Cargo', value: cargo.cargoDescription }] : []),
-                      ...(cargo.weightMt ? [{ label: 'Weight', value: cargo.weightMt }] : []),
+                      ...(cargo.weightMt ? [{ label: 'Weight', value: { ...cargo.weightMt, value: cargo.weightMtMax ?? cfValue(cargo.weightMt) } }] : []),
                       ...(cargo.originPort ? [{ label: 'Load Port', value: cargo.originPort }] : []),
                       ...(cargo.destinationPort ? [{ label: 'Discharge Port', value: cargo.destinationPort }] : []),
                       ...(laycanDisplay
