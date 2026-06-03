@@ -35,6 +35,12 @@ export interface EuEtsInput {
   fuelType?: string;
   /** Calendar year for MRV phase-in. Default = current year (2026+ → 1.0). */
   year?: number;
+  /**
+   * EU ETS coverage factor — derived from whether voyage endpoints are in EU/EEA.
+   * Both EU → 1.0; exactly one EU → 0.5; neither → 0. Absent → 1.0 (backward-compat).
+   */
+  originEu?: boolean;
+  destEu?: boolean;
 }
 
 export interface EuEtsResult {
@@ -54,9 +60,18 @@ export function calculateEuEts(input: EuEtsInput): EuEtsResult {
     return { amountEur: 0, applicable: false };
   }
 
+  // EU ETS regulatory coverage: intra-EU=100%, in/out-EU=50%, extra-EU=0%.
+  // Absent flags → 1.0 (conservative backward-compat; avoids silent under-charge).
+  let coverageFactor = 1.0;
+  if (input.originEu !== undefined || input.destEu !== undefined) {
+    const euCount = (input.originEu ? 1 : 0) + (input.destEu ? 1 : 0);
+    coverageFactor = euCount === 2 ? 1.0 : euCount === 1 ? 0.5 : 0.0;
+  }
+  if (coverageFactor === 0) return { amountEur: 0, applicable: false };
+
   const cf = cfForFuel(fuelType ?? 'VLSFO');
   const phase = phaseIn(year ?? new Date().getFullYear());
-  const amount = vlsfoBurnMt * cf * euLegPercent * phase * euaPrice;
+  const amount = vlsfoBurnMt * cf * euLegPercent * phase * euaPrice * coverageFactor;
   return {
     amountEur: Math.round(amount * 100) / 100,
     applicable: amount > 0,

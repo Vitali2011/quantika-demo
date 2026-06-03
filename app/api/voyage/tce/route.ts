@@ -300,6 +300,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
   }
 
+  // ── EU endpoint flags (for ETS coverage factor) ─────────────────────────────
+  const originEu = isEuCountry(originResolved.country);
+  const destEu = isEuCountry(destinationResolved.country);
+
   // ── ETS euLegPercent auto-derive ──
   let resolvedEuLegPercent = data.euLegPercent;
   let etsMode: 'auto-derived' | 'manual' | 'not-applicable' = 'not-applicable';
@@ -310,16 +314,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       etsMode = 'manual';
       etsReason = 'caller-provided';
     } else {
-      const originEu = isEuCountry(originResolved.country);
-      const destEu = isEuCountry(destinationResolved.country);
       if (originEu && destEu) {
         resolvedEuLegPercent = 1.0;
         etsMode = 'auto-derived';
         etsReason = 'both legs EU (intra-EU voyage)';
       } else if (originEu || destEu) {
-        resolvedEuLegPercent = 0.5;
+        resolvedEuLegPercent = 1.0;
         etsMode = 'auto-derived';
-        etsReason = 'one leg EU (EU MRV 50% default)';
+        etsReason = 'one leg EU — 50% regulatory coverage factor applied';
       } else {
         etsMode = 'not-applicable';
         etsReason = 'no EU leg';
@@ -352,6 +354,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     euaPriceEur,
     durationDays: data.durationDays,
     euLegPercent: resolvedEuLegPercent,
+    originEu: data.includeEuETS ? originEu : undefined,
+    destEu: data.includeEuETS ? destEu : undefined,
     daysInHra: data.daysInHra,
     canalUsd,
     daUsd,

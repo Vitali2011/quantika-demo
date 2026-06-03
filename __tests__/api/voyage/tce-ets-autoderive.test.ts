@@ -114,7 +114,7 @@ describe('Spec-03: ETS auto-derive euLegPercent', () => {
     expect(body.breakdown.ets_usd).toBeGreaterThan(0);
   });
 
-  it('NLRTM → USNYC (one EU leg): euLegPercent=0.5, ets_usd>0, mode=auto-derived', async () => {
+  it('NLRTM → USNYC (one EU leg): euLegPercent=1.0, ets_usd>0, mode=auto-derived (50% coverage via factor)', async () => {
     const req = makeReq({
       vessel: baseVessel,
       route: {
@@ -135,7 +135,7 @@ describe('Spec-03: ETS auto-derive euLegPercent', () => {
     const body = await res.json();
 
     expect(body.etsResolution).toBeDefined();
-    expect(body.etsResolution.euLegPercent).toBe(0.5);
+    expect(body.etsResolution.euLegPercent).toBe(1.0);
     expect(body.etsResolution.mode).toBe('auto-derived');
     expect(body.breakdown.ets_usd).toBeGreaterThan(0);
   });
