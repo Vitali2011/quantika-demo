@@ -13,7 +13,16 @@ import Database from 'better-sqlite3';
 import * as sqliteVec from 'sqlite-vec';
 
 const SCRIPT = path.resolve(__dirname, '../data-integrity-check.ts');
-const TSX = path.resolve(__dirname, '../../node_modules/.bin/tsx');
+// Worktrees share node_modules with the repo root (4 levels up from scripts/__tests__/).
+// Direct checkouts have node_modules 2 levels up. Try both.
+function findTsx(): string {
+  const candidates = [
+    path.resolve(__dirname, '../../node_modules/.bin/tsx'),
+    path.resolve(__dirname, '../../../../node_modules/.bin/tsx'),
+  ];
+  return candidates.find(p => fs.existsSync(p)) ?? candidates[0];
+}
+const TSX = findTsx();
 
 function runScript(args: string[]): { stdout: string; stderr: string; code: number } {
   // Destructure out keys the child process should not inherit (NODE_ENV is readonly in Next.js types)

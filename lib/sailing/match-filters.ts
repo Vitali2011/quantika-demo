@@ -17,6 +17,8 @@ import { getPortMaster, portCanHandleDraft, portHasShoreCranes } from './port-ma
 import { CargoType, Range, isRange } from '../types';
 import { checkImsbcLoadability } from './imsbc-check';
 import { checkVoyageRestriction, VoyageRestrictionResult } from './voyage-restriction';
+import { isPortInHra } from '../economics/war-risk';
+import { portBasin, voyageBasins } from './voyage-basin';
 
 export interface FilterResult {
   pass: boolean;
@@ -377,6 +379,50 @@ export function checkVesselDimensions(input: VesselDimensionsCheckInput): Filter
 }
 
 // ────────────────────────────────────────────────────────────────────────────
+// War-risk open position + tiny vessel + intercontinental voyage gate
+//
+// A sub-handy vessel (DWT < SUB_HANDY_DWT_THRESHOLD) open in a JWC HRA zone
+// on a long intercontinental laden voyage (basin-path length ≥ 4) is
+// commercially implausible — no freight economics work at that distance from
+// a war zone on such a small ship.  Conservative: any null input → pass.
+// ────────────────────────────────────────────────────────────────────────────
+
+const SUB_HANDY_DWT_THRESHOLD = 25_000;
+const INTERCONTINENTAL_BASIN_HOPS = 3;
+
+export interface WarPositionVoyageCheckInput {
+  vesselOpenPosition: string | null;
+  dwtSummer: number | null;
+  originPort: string | null;
+  destinationPort: string | null;
+}
+
+function basinHopCount(from: string | null, to: string | null): number | null {
+  if (!from || !to) return null;
+  const fb = portBasin(from);
+  const tb = portBasin(to);
+  if (!fb || !tb) return null;
+  // voyageBasins returns the BFS corridor set; size = number of distinct basins traversed
+  return voyageBasins(from, to).size;
+}
+
+export function checkWarPositionVoyage(input: WarPositionVoyageCheckInput): FilterResult {
+  const { vesselOpenPosition, dwtSummer, originPort, destinationPort } = input;
+  // Conservative: any unknown input → cannot verify → pass
+  if (!vesselOpenPosition || dwtSummer == null || !originPort || !destinationPort) {
+    return { pass: true };
+  }
+  if (!isPortInHra(vesselOpenPosition)) return { pass: true };
+  if (dwtSummer >= SUB_HANDY_DWT_THRESHOLD) return { pass: true };
+  const hops = basinHopCount(originPort, destinationPort);
+  if (hops == null || hops < INTERCONTINENTAL_BASIN_HOPS) return { pass: true };
+  return {
+    pass: false,
+    reason: `vessel open in war-risk zone (${vesselOpenPosition}), DWT ${dwtSummer} < ${SUB_HANDY_DWT_THRESHOLD} mt, intercontinental voyage ${originPort}→${destinationPort} (${hops} basin hops) is commercially implausible`,
+  };
+}
+
+// ────────────────────────────────────────────────────────────────────────────
 // Unified runner
 // ────────────────────────────────────────────────────────────────────────────
 
@@ -422,6 +468,7 @@ export interface HardFilterInput {
   vesselClassSociety?: string | null;
   cargoFlagRequired?: string | null;
   cargoClassRequired?: string | null;
+  vesselOpenPosition?: string | null;
 }
 
 export interface HardFilterResult {
@@ -442,6 +489,7 @@ export interface HardFilterResult {
     gearRequired?: FilterResult;
     voyage?: FilterResult;
     flagClass?: FilterResult;
+    warPositionVoyage?: FilterResult;
   };
 }
 
@@ -497,6 +545,12 @@ export function runHardFilters(input: HardFilterInput): HardFilterResult {
     cargoClassRequired: input.cargoClassRequired ?? null,
     vesselClassSociety: input.vesselClassSociety ?? null,
   });
+  const warPositionVoyage = checkWarPositionVoyage({
+    vesselOpenPosition: input.vesselOpenPosition ?? null,
+    dwtSummer: input.dwtSummer ?? null,
+    originPort: input.originPort,
+    destinationPort: input.destinationPort ?? null,
+  });
 
   const failures: string[] = [];
   if (!draft.pass && draft.reason) failures.push(draft.reason);
@@ -512,13 +566,14 @@ export function runHardFilters(input: HardFilterInput): HardFilterResult {
   if (!gearRequired.pass && gearRequired.reason) failures.push(gearRequired.reason);
   if (!voyage.pass && voyage.reason) failures.push(voyage.reason);
   if (!flagClass.pass && flagClass.reason) failures.push(flagClass.reason);
+  if (!warPositionVoyage.pass && warPositionVoyage.reason) failures.push(warPositionVoyage.reason);
 
   return {
     pass: failures.length === 0,
     failures,
     checks: {
       draft, crane, volume, cargoVessel, destDraft, destCrane, cargoWeight, imsbc,
-      vesselAge, dimensions, gearRequired, voyage, flagClass,
+      vesselAge, dimensions, gearRequired, voyage, flagClass, warPositionVoyage,
     },
   };
 }

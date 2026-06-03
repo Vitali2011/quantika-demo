@@ -176,6 +176,22 @@ function portMatchesZone(port: string | ResolvedPort, zone: HraZone): boolean {
   });
 }
 
+/**
+ * Returns true if a free-text port string matches any JWC HRA zone keyword.
+ * Used by hard-filter gate to detect war-risk open positions.
+ */
+export function isPortInHra(portText: string | null | undefined): boolean {
+  if (!portText) return false;
+  const lower = portText.toLowerCase().replace(/-/g, ' ');
+  for (const zone of JWC_HRA_ZONES) {
+    for (const keyword of zone.ports) {
+      const re = new RegExp(`\\b${keyword}\\b`, 'i');
+      if (re.test(lower)) return true;
+    }
+  }
+  return false;
+}
+
 export function calculateWarRiskPremium(input: WarRiskInput): WarRiskResult {
   const { route, vesselValueUsd } = input;
 

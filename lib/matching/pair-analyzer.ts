@@ -138,6 +138,7 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
     vesselClassSociety: v.classSociety ?? null,
     cargoFlagRequired: c.flagRequired ?? null,
     cargoClassRequired: c.classRequired ?? null,
+    vesselOpenPosition: cfValue(v.openPosition) ?? null,
   });
 
   const hardFilters: MatchHardFilters = {
@@ -154,6 +155,7 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
     gearRequired: hf.checks.gearRequired,
     voyage: hf.checks.voyage,
     flagClass: hf.checks.flagClass,
+    warPositionVoyage: hf.checks.warPositionVoyage,
   };
 
   const imsbcCheck = checkImsbcLoadability(cfValue(c.cargoDescription), { restrictions: v.restrictions ?? [] });
