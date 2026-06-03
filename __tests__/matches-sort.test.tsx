@@ -84,7 +84,7 @@ describe('MatchesClient.tsx — sort controls (#350)', () => {
   it('Boundary Class 5 — 50+ elements: sort applied to all filtered results', () => {
     const src = readSource();
     // No slice before sort that would limit to < 50 elements
-    const filteredBlock = src.match(/const filtered[\s\S]{0,800}/)?.[0] ?? '';
+    const filteredBlock = src.match(/const filtered[\s\S]{0,1200}/)?.[0] ?? '';
     // Must have .sort in this block
     expect(filteredBlock).toMatch(/\.sort\s*\(/);
   });

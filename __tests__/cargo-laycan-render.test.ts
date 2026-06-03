@@ -122,8 +122,8 @@ describe('cargo laycan render — parse+format pipeline', () => {
   });
 
   it('fmtLaycan with valid timestamps produces month-day output', () => {
-    const start = Math.floor(new Date('2026-06-02T00:00:00Z').getTime() / 1000);
-    const end   = Math.floor(new Date('2026-06-09T00:00:00Z').getTime() / 1000);
+    const start = new Date('2026-06-02T00:00:00Z').getTime();
+    const end   = new Date('2026-06-09T00:00:00Z').getTime();
     expect(fmtLaycan(start, end)).toBe('Jun 2–Jun 9');
   });
 });

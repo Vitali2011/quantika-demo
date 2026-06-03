@@ -86,7 +86,7 @@ export default async function MatchDetailPage({ params }: Props) {
     const rs = worksheet?.readiness?.laycanStart;
     const re = worksheet?.readiness?.laycanEnd;
     if (rs || re) {
-      const toTs = (iso: string) => Math.floor(new Date(iso + 'T00:00:00Z').getTime() / 1000);
+      const toTs = (iso: string) => new Date(iso + 'T00:00:00Z').getTime();
       return fmtLaycan(rs ? toTs(rs) : null, re ? toTs(re) : null);
     }
     if (storedMatch.laycan_start || storedMatch.laycan_end) {

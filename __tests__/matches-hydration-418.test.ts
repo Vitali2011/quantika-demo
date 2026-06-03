@@ -101,30 +101,30 @@ describe('MatchesClient hydration safety (#543 regression)', () => {
 
 function isFreshMatch(m: { created_at: number }, now: number): boolean {
   if (now === 0) return false;
-  return now / 1000 - m.created_at < 7200;
+  return now - m.created_at < 7200000;
 }
 
 describe('isFreshMatch invariant (behavioral)', () => {
   it('returns false when now=0 regardless of created_at', () => {
-    const justCreated = { created_at: Date.now() / 1000 };
+    const justCreated = { created_at: Date.now() };
     expect(isFreshMatch(justCreated, 0)).toBe(false);
   });
 
   it('returns true for a match created 1 hour ago when now is real', () => {
     const now = Date.now();
-    const oneHourAgo = { created_at: now / 1000 - 3600 };
+    const oneHourAgo = { created_at: now - 3600000 };
     expect(isFreshMatch(oneHourAgo, now)).toBe(true);
   });
 
   it('returns false for a match created 3 hours ago', () => {
     const now = Date.now();
-    const threeHoursAgo = { created_at: now / 1000 - 10800 };
+    const threeHoursAgo = { created_at: now - 10800000 };
     expect(isFreshMatch(threeHoursAgo, now)).toBe(false);
   });
 
   it('boundary: match exactly at 7200s is not fresh', () => {
     const now = Date.now();
-    const atBoundary = { created_at: now / 1000 - 7200 };
+    const atBoundary = { created_at: now - 7200000 };
     expect(isFreshMatch(atBoundary, now)).toBe(false);
   });
 });
