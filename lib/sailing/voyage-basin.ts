@@ -71,6 +71,9 @@ const BASIN_OVERRIDES: Record<string, Basin> = {
   USBAL: 'AtlanticNorth', USSAV: 'AtlanticNorth', USORF: 'AtlanticNorth',
   PABLB: 'AtlanticNorth', SNDKR: 'AtlanticNorth', MACAS: 'AtlanticNorth',
   MATAN: 'AtlanticNorth', GYGEO: 'AtlanticNorth', FRBAY: 'AtlanticNorth',
+  // Gulf of Mexico — Mexico Atlantic/Caribbean ports (lon slightly west of bbox)
+  MXVER: 'AtlanticNorth', MXTAM: 'AtlanticNorth', MXALT: 'AtlanticNorth',
+  MXPRO: 'AtlanticNorth', MXCOS: 'AtlanticNorth',
   // AtlanticSouth — S.America east, W.Africa south of equator
   BRSSZ: 'AtlanticSouth', ARBUE: 'AtlanticSouth', BRPNG: 'AtlanticSouth',
   NGLAG: 'AtlanticSouth', CIABJ: 'AtlanticSouth', TGLFW: 'AtlanticSouth',
@@ -164,8 +167,8 @@ const BASIN_BBOX: Array<{ basin: Basin; lat: [number, number]; lon: [number, num
   { basin: 'Pacific',       lat: [-55, 65],    lon: [-180, -100] },
   // AtlanticSouth — S.America east coast, W.Africa south of equator
   { basin: 'AtlanticSouth', lat: [-55, 0],     lon: [-65, 15] },
-  // AtlanticNorth — N.America east, Mid-Atlantic, W.Africa north of equator, Iberian Atlantic
-  { basin: 'AtlanticNorth', lat: [0, 65],      lon: [-95, -6] },
+  // AtlanticNorth — N.America east, Mid-Atlantic, W.Africa north of equator, Iberian Atlantic, Gulf of Mexico
+  { basin: 'AtlanticNorth', lat: [0, 65],      lon: [-100, -6] },
 ];
 
 let _portByLocode: Map<string, PortRow> | null = null;

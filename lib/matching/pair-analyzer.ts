@@ -138,6 +138,7 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
     vesselClassSociety: v.classSociety ?? null,
     cargoFlagRequired: c.flagRequired ?? null,
     cargoClassRequired: c.classRequired ?? null,
+    vesselOpenPosition: cfValue(v.openPosition) ?? null,
   });
 
   const hardFilters: MatchHardFilters = {
