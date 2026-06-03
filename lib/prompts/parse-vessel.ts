@@ -287,11 +287,20 @@ For numeric fields (DWT, DWCC, LOA, beam, draft, built-year, grain capacity, etc
 
 CRITICAL: never use 'interpreted' for an exact number with no hedge just because you "interpreted the context". If the number is typed, it's confirmed.
 
-CRITICAL: source_text is REQUIRED for every ConfidenceField. It MUST be a verbatim
-substring copied character-for-character from the email body. Keep source_text BRIEF —
-use the shortest unique substring that identifies the value (typically 20–100 characters;
-never copy entire paragraphs or long contract clauses). Omitting source_text is a parsing
-error. Paraphrasing is NOT allowed — copy the exact characters.
+CRITICAL: source_text is REQUIRED for every ConfidenceField. It MUST be an EXACT,
+CONTIGUOUS substring copied character-for-character from the email body.
+Do NOT insert new ellipsis (\`…\` or \`...\`), parentheticals, clarifications, or summaries
+not present verbatim in the original email.
+Do NOT join non-adjacent fragments with ellipsis or any separator.
+If the relevant text is long, copy a SHORTER exact contiguous substring rather than
+paraphrasing or eliding. Keep source_text BRIEF — use the shortest unique substring
+that identifies the value (typically 20–100 characters; never copy entire paragraphs
+or long contract clauses).
+
+  ✗ source_text: "loads grain (HSS) … 25000mt"  ← inserted ellipsis joins non-adjacent fragments
+  ✓ source_text: "25000mt HSS"                  ← exact contiguous substring
+
+Omitting source_text is a parsing error. Paraphrasing is NOT allowed — copy the exact characters.
 
 CORRECT:   { "value": "Rotterdam", "confidence": "confirmed", "source_text": "Load: Rotterdam" }
 CORRECT:   { "value": 5000, "confidence": "interpreted", "source_text": "abt 5k mts wheat" }
