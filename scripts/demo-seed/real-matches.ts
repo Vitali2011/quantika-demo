@@ -45,8 +45,25 @@ import { calculateReadinessGap, detectSpot } from '@/lib/sailing/readiness-gap';
 import { runHardFilters } from '@/lib/sailing/match-filters';
 import { checkSanctions } from '@/lib/validation/sanctions';
 import { isLaycanValid } from '@/lib/sailing/date-sanity';
+import { resolvePort } from '@/lib/ports/resolve';
+import { resolveVaguePort } from '@/lib/ports/resolve-vague';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
+
+/**
+ * Resolve a raw port string to a canonical name for getPortDistance.
+ * Applies diacritic-fold + port-master lookup (resolvePort), then vague-port
+ * representative (resolveVaguePort) as fallback. Returns the raw string if
+ * both fail so normalizePortName in port-distances can attempt its own lookup.
+ */
+function resolvePortForDistance(raw: string | null): string | null {
+  if (!raw) return null;
+  const r = resolvePort(raw);
+  if (r) return r.portName;
+  const v = resolveVaguePort(raw);
+  if (v) return v.portName;
+  return raw;
+}
 
 function arg(k: string): string | undefined {
   const i = process.argv.indexOf(k);
@@ -248,8 +265,15 @@ async function main(): Promise<void> {
       const fb = computeFitBreakdown({ cargo, vessel, readiness, sanctions, hardFilters, refYear });
 
       // Economics
+      // Resolve ports via diacritic-fold + resolveVaguePort before distance lookup
+      // so diacritic names (Constanța, Aliağa) and vague descriptors
+      // (Greece 1 port, Western Mediterranean) yield a real sea distance.
+      const resolvedLoad = resolvePortForDistance(loadPort);
+      const resolvedDischarge = resolvePortForDistance(dischargePort);
       const distanceResult =
-        loadPort && dischargePort ? getPortDistance(loadPort, dischargePort) : null;
+        resolvedLoad && resolvedDischarge
+          ? getPortDistance(resolvedLoad, resolvedDischarge)
+          : null;
       let tceUsdPerDay: number | null = null;
       let distanceNm: number | null = null;
       let freightRateUsdPerMt: number | null = null;
