@@ -20,7 +20,7 @@ import { validateDates, isLaycanValid } from '@/lib/sailing/date-sanity';
 import { checkSanctions } from '@/lib/validation/sanctions';
 import { enrichReasons } from '@/lib/matching/reason-enricher';
 import { applyHoldCleanliness } from '@/lib/matching/hold-cleanliness';
-import { buildMatchEconomics, parseLeadingNumber } from '@/lib/matching/tce-calculator';
+import { buildMatchEconomics, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
 import { resolveFreightRate } from '@/lib/matching/freight-resolver';
 import { getBalticDayRate } from '@/lib/market/baltic-freight';
 import type Database from 'better-sqlite3';
@@ -759,7 +759,7 @@ export async function analyzePairs(
       vesselDwt: ecoDwt,
       quantityMt: ecoQty,
       speedKts: ecoSpeed,
-      consumptionMt: parseLeadingNumber(vessel.consumption),
+      consumptionMt: parseConsumption(vessel.consumption),
       loadPort,
       dischargePort,
       calculatedAt: economicsCalcAt,

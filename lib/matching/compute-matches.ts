@@ -8,7 +8,7 @@ import { MATCH_PROMPT } from '@/lib/prompts';
 import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { parseLaycan } from '@/lib/sailing/date-parsing';
 import { getPortDistance } from '@/lib/sailing/port-distances';
-import { computeEstimatedTce, parseLeadingNumber } from '@/lib/matching/tce-calculator';
+import { computeEstimatedTce, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
 import { resolveFreightRate } from '@/lib/matching/freight-resolver';
 import { getBalticDayRate } from '@/lib/market/baltic-freight';
 
@@ -75,7 +75,7 @@ export async function computeAndPersistMatches(
     const vesselDwt = vessel ? (cfValue(vessel.dwtSummer) ?? 0) : 0;
     const quantityMt = cargo ? (cfValue(cargo.weightMt) ?? 0) : 0;
     const speedKts = vessel ? parseLeadingNumber(vessel.speedLaden) : 0;
-    const consumptionMt = vessel ? parseLeadingNumber(vessel.consumption) : 0;
+    const consumptionMt = vessel ? parseConsumption(vessel.consumption) : 0;
 
     let tce_usd_per_day: number | null = null;
     let freight_rate_usd_per_mt: number | null = null;

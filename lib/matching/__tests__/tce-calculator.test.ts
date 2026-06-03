@@ -27,6 +27,7 @@ import {
   estimateFreightRate,
   computeEstimatedTce,
   parseLeadingNumber,
+  parseConsumption,
   buildMatchEconomics,
 } from '@/lib/matching/tce-calculator';
 
@@ -76,6 +77,64 @@ describe('parseLeadingNumber', () => {
 
   it('returns 0 for an object without a value field', () => {
     expect(parseLeadingNumber({ confidence: 'estimated' })).toBe(0);
+  });
+});
+
+describe('parseConsumption', () => {
+  const DEFAULT = 25; // DEFAULT_CONSUMPTION_MT_PER_DAY
+
+  it('extracts MT/D figure from "Ballast: IFO 180 M/E 3.7MT/D" — not the grade 180', () => {
+    expect(parseConsumption('Ballast: IFO 180 M/E 3.7MT/D; Laden: IFO 180 M/E 3.7MT/D')).toBe(3.7);
+  });
+
+  it('parses "abt 14 mt/day" → 14', () => {
+    expect(parseConsumption('abt 14 mt/day')).toBe(14);
+  });
+
+  it('parses bare number string "14.5" → 14.5', () => {
+    expect(parseConsumption('14.5')).toBe(14.5);
+  });
+
+  it('returns default for empty string', () => {
+    expect(parseConsumption('')).toBe(DEFAULT);
+  });
+
+  it('returns default for null', () => {
+    expect(parseConsumption(null)).toBe(DEFAULT);
+  });
+
+  it('returns default for undefined', () => {
+    expect(parseConsumption(undefined)).toBe(DEFAULT);
+  });
+
+  it('unwraps ConfidenceField {value:"3.7MT/D"} → 3.7', () => {
+    expect(parseConsumption({ value: '3.7MT/D', confidence: 'confirmed' })).toBe(3.7);
+  });
+
+  it('returns default for string with only a fuel-grade token (no MT/D figure)', () => {
+    expect(parseConsumption('IFO 180')).toBe(DEFAULT);
+    expect(parseConsumption('VLSFO M/E')).toBe(DEFAULT);
+  });
+
+  it('passes through a raw positive number', () => {
+    expect(parseConsumption(25)).toBe(25);
+    expect(parseConsumption(3.7)).toBe(3.7);
+  });
+
+  it('returns default for 0 or negative numbers', () => {
+    expect(parseConsumption(0)).toBe(DEFAULT);
+    expect(parseConsumption(-5)).toBe(DEFAULT);
+  });
+
+  it('LADY ANITA scenario: consumption 180→3.7 flips TCE from extreme negative to positive', () => {
+    const freight = estimateFreightRate('GRAIN', 3000, 28000);
+    const badCons = 180; // what parseLeadingNumber("IFO 180 M/E 3.7MT/D") would return
+    const goodCons = parseConsumption('Ballast: IFO 180 M/E 3.7MT/D');
+    const badTce = computeEstimatedTce(freight, 3000, 28000, 25000, 12, badCons);
+    const goodTce = computeEstimatedTce(freight, 3000, 28000, 25000, 12, goodCons);
+    expect(goodCons).toBe(3.7);
+    expect(goodTce.tce_usd_per_day).toBeGreaterThan(0);
+    expect(goodTce.tce_usd_per_day).toBeGreaterThan(badTce.tce_usd_per_day + 50_000);
   });
 });
 
