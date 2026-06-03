@@ -20,7 +20,7 @@ import { validateDates, isLaycanValid } from '@/lib/sailing/date-sanity';
 import { checkSanctions } from '@/lib/validation/sanctions';
 import { enrichReasons } from '@/lib/matching/reason-enricher';
 import { applyHoldCleanliness } from '@/lib/matching/hold-cleanliness';
-import { buildMatchEconomics, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
+import { buildMatchEconomics, estimateFreightRate, computeEstimatedTce, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
 import { resolveFreightRate } from '@/lib/matching/freight-resolver';
 import { getBalticDayRate } from '@/lib/market/baltic-freight';
 import type Database from 'better-sqlite3';
@@ -668,6 +668,27 @@ export async function analyzePairs(
       const analysis = analysisMap.get(
         pairKey(m.cargoEmailId, m.cargoItemIndex, m.vesselEmailId, m.vesselItemIndex),
       );
+      // Pre-fit TCE for economic cap (C3 #783): cheap arithmetic, no LLM.
+      // Missing distance → undefined → no cap (conservative).
+      let preFitTce: number | undefined;
+      const preFitLoadPort = cfValue(cargo.originPort);
+      const preFitDischargePort = cfValue(cargo.destinationPort);
+      const preFitDist = preFitLoadPort && preFitDischargePort
+        ? getPortDistance(preFitLoadPort, preFitDischargePort) : null;
+      if (preFitDist && preFitDist.nm > 0) {
+        const preFitCargoType =
+          typeof cargo.cargoType === 'object' && cargo.cargoType !== null && 'value' in cargo.cargoType
+            ? (cargo.cargoType as unknown as { value: string }).value
+            : (cargo.cargoType as string | null);
+        const preFitDwt = cfValue(vessel.dwtSummer) ?? 0;
+        const preFitQty = cfValue(cargo.weightMt) ?? 0;
+        const preFitSpeed = parseLeadingNumber(vessel.speedLaden);
+        const preFitCons = parseConsumption(vessel.consumption);
+        const freightEst = estimateFreightRate(preFitCargoType, preFitDist.nm, preFitDwt);
+        preFitTce = computeEstimatedTce(
+          freightEst, preFitDist.nm, preFitDwt, preFitQty, preFitSpeed, preFitCons,
+        ).tce_usd_per_day;
+      }
       const fb = computeFitBreakdown({
         cargo,
         vessel,
@@ -675,6 +696,7 @@ export async function analyzePairs(
         sanctions: analysis?.sanctions,
         hardFilters: analysis?.hardFilters,
         refYear,
+        tceUsdPerDay: preFitTce,
       });
       m.fitPercent = fb.fitPercent;
       m.fitBreakdown = fb;
