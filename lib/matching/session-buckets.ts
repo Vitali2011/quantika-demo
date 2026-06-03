@@ -3,7 +3,7 @@ import type { Match, ParsedCargo, ParsedVessel } from '@/lib/types';
 import type { StoredMatch } from '@/lib/matching/matches-repository';
 import { parseLaycan } from '@/lib/sailing/date-parsing';
 import { getPortDistance } from '@/lib/sailing/port-distances';
-import { estimateFreightRate, computeEstimatedTce, parseLeadingNumber } from '@/lib/matching/tce-calculator';
+import { estimateFreightRate, computeEstimatedTce, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
 
 /**
  * Convert the session-only realism buckets (`lowConfidenceMatches` /
@@ -47,7 +47,7 @@ export function toBucketRows(
       : null;
     const quantityMt = cargo ? (cfValue(cargo.weightMt) ?? 0) : 0;
     const speedKts = vessel ? parseLeadingNumber(vessel.speedLaden) : 0;
-    const consumptionMt = vessel ? parseLeadingNumber(vessel.consumption) : 0;
+    const consumptionMt = vessel ? parseConsumption(vessel.consumption) : 0;
 
     let tce_usd_per_day: number | null = null;
     let freight_rate_usd_per_mt: number | null = null;

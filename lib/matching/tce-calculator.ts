@@ -66,6 +66,41 @@ export function parseLeadingNumber(s: unknown): number {
   return m ? Number(m[1]) : 0;
 }
 
+// Matches an explicit MT/D unit: "3.7MT/D", "14 mt/day", "25 t/day"
+const MT_PER_DAY_RE = /(\d+(?:\.\d+)?)\s*(?:MT\/?D|mt\/?day|t\/day)/i;
+// Fuel-grade tokens that appear before the actual consumption figure
+const FUEL_GRADE_RE = /\b(?:IFO|VLSFO|LSMGO|MGO|HFO|HSFO)\s*\d+(?:\/\d+)?\b|M\/E|A\/E/gi;
+
+/**
+ * Parse a fuel-consumption field, skipping fuel-grade tokens like "IFO 180".
+ *
+ * parseLeadingNumber grabs the first digit sequence, which is the grade number
+ * (e.g. 180 from "IFO 180 M/E 3.7MT/D") rather than the actual MT/day figure.
+ * This function looks for an explicit MT/D unit first; if absent it strips grade
+ * tokens before falling back to a leading-number heuristic. Strings with no
+ * recoverable consumption figure return DEFAULT_CONSUMPTION_MT_PER_DAY.
+ */
+export function parseConsumption(s: unknown): number {
+  if (s == null) return DEFAULT_CONSUMPTION_MT_PER_DAY;
+  if (typeof s === 'number') return Number.isFinite(s) && s > 0 ? s : DEFAULT_CONSUMPTION_MT_PER_DAY;
+  if (typeof s === 'object' && 'value' in (s as Record<string, unknown>)) {
+    return parseConsumption((s as { value: unknown }).value);
+  }
+  if (typeof s !== 'string') return DEFAULT_CONSUMPTION_MT_PER_DAY;
+  const str = s.trim();
+  if (!str) return DEFAULT_CONSUMPTION_MT_PER_DAY;
+
+  const mtd = str.match(MT_PER_DAY_RE);
+  if (mtd) return Number(mtd[1]);
+
+  // Strip fuel-grade tokens then try a plain leading number
+  const stripped = str.replace(FUEL_GRADE_RE, ' ').replace(/\s+/g, ' ').trim();
+  const m = stripped.match(/(\d+(?:\.\d+)?)/);
+  if (m) return Number(m[1]);
+
+  return DEFAULT_CONSUMPTION_MT_PER_DAY;
+}
+
 // Longer voyages warrant higher rates per mt
 function distanceFactor(nm: number): number {
   if (nm <= 0) return 1.0;
@@ -107,10 +142,15 @@ export function computeEstimatedTce(
 ): TceEstimate {
   const safeDist = distance_nm > 0 ? distance_nm : 0;
   const safeDwt = vessel_dwt > 0 ? vessel_dwt : 10000;
-  const safeQty = quantity_mt > 0 ? quantity_mt : safeDwt * 0.9;
+  // Conservative estimate when cargo weight unknown: 65% of DWT avoids inflating freight revenue.
+  // Fit-breakdown already penalizes weight-not-stated; 90% fabricated a near-full load (#782).
+  const safeQty = quantity_mt > 0 ? quantity_mt : safeDwt * 0.65;
   const safeSpeed = speed_kts > 0 ? speed_kts : DEFAULT_SPEED_KTS;
   const safeCons = consumption_mt_per_day > 0 ? consumption_mt_per_day : DEFAULT_CONSUMPTION_MT_PER_DAY;
-  const durationDays = safeDist > 0 ? safeDist / (safeSpeed * 24) : 10;
+  // Round-trip duration: laden + ballast (≈ same distance) + 2 port days (load + discharge).
+  // Laden-only divided full freight by 1–4 days → absurd $/day on short voyages (#782).
+  const ladenDays = safeDist > 0 ? safeDist / (safeSpeed * 24) : 0;
+  const durationDays = safeDist > 0 ? ladenDays * 2 + 2 : 10;
 
   const result = calculateTCE({
     vessel: {

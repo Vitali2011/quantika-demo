@@ -27,6 +27,7 @@ import {
   estimateFreightRate,
   computeEstimatedTce,
   parseLeadingNumber,
+  parseConsumption,
   buildMatchEconomics,
 } from '@/lib/matching/tce-calculator';
 
@@ -76,6 +77,64 @@ describe('parseLeadingNumber', () => {
 
   it('returns 0 for an object without a value field', () => {
     expect(parseLeadingNumber({ confidence: 'estimated' })).toBe(0);
+  });
+});
+
+describe('parseConsumption', () => {
+  const DEFAULT = 25; // DEFAULT_CONSUMPTION_MT_PER_DAY
+
+  it('extracts MT/D figure from "Ballast: IFO 180 M/E 3.7MT/D" — not the grade 180', () => {
+    expect(parseConsumption('Ballast: IFO 180 M/E 3.7MT/D; Laden: IFO 180 M/E 3.7MT/D')).toBe(3.7);
+  });
+
+  it('parses "abt 14 mt/day" → 14', () => {
+    expect(parseConsumption('abt 14 mt/day')).toBe(14);
+  });
+
+  it('parses bare number string "14.5" → 14.5', () => {
+    expect(parseConsumption('14.5')).toBe(14.5);
+  });
+
+  it('returns default for empty string', () => {
+    expect(parseConsumption('')).toBe(DEFAULT);
+  });
+
+  it('returns default for null', () => {
+    expect(parseConsumption(null)).toBe(DEFAULT);
+  });
+
+  it('returns default for undefined', () => {
+    expect(parseConsumption(undefined)).toBe(DEFAULT);
+  });
+
+  it('unwraps ConfidenceField {value:"3.7MT/D"} → 3.7', () => {
+    expect(parseConsumption({ value: '3.7MT/D', confidence: 'confirmed' })).toBe(3.7);
+  });
+
+  it('returns default for string with only a fuel-grade token (no MT/D figure)', () => {
+    expect(parseConsumption('IFO 180')).toBe(DEFAULT);
+    expect(parseConsumption('VLSFO M/E')).toBe(DEFAULT);
+  });
+
+  it('passes through a raw positive number', () => {
+    expect(parseConsumption(25)).toBe(25);
+    expect(parseConsumption(3.7)).toBe(3.7);
+  });
+
+  it('returns default for 0 or negative numbers', () => {
+    expect(parseConsumption(0)).toBe(DEFAULT);
+    expect(parseConsumption(-5)).toBe(DEFAULT);
+  });
+
+  it('LADY ANITA scenario: consumption 180→3.7 flips TCE from extreme negative to positive', () => {
+    const freight = estimateFreightRate('GRAIN', 3000, 28000);
+    const badCons = 180; // what parseLeadingNumber("IFO 180 M/E 3.7MT/D") would return
+    const goodCons = parseConsumption('Ballast: IFO 180 M/E 3.7MT/D');
+    const badTce = computeEstimatedTce(freight, 3000, 28000, 25000, 12, badCons);
+    const goodTce = computeEstimatedTce(freight, 3000, 28000, 25000, 12, goodCons);
+    expect(goodCons).toBe(3.7);
+    expect(goodTce.tce_usd_per_day).toBeGreaterThan(0);
+    expect(goodTce.tce_usd_per_day).toBeGreaterThan(badTce.tce_usd_per_day + 50_000);
   });
 });
 
@@ -166,13 +225,37 @@ describe('computeEstimatedTce', () => {
     expect(Number.isFinite(result.tce_usd_per_day)).toBe(true);
   });
 
-  it('zero quantity uses dwt*0.9 fallback', () => {
+  it('zero quantity uses conservative dwt*0.65 fallback — lower freight than stated 45k qty', () => {
     const est = estimateFreightRate('BULK', 3000, 50000);
-    const withQty = computeEstimatedTce(est, 3000, 50000, 45000);
     const withZeroQty = computeEstimatedTce(est, 3000, 50000, 0);
-    // Both should be finite, zero-qty result uses 50000*0.9=45000 so should be similar
+    const withFullQty = computeEstimatedTce(est, 3000, 50000, 45000);
+    // Finite result with conservative fallback (50000 * 0.65 = 32500 < 45000).
     expect(Number.isFinite(withZeroQty.tce_usd_per_day)).toBe(true);
-    expect(withZeroQty.tce_usd_per_day).toBeCloseTo(withQty.tce_usd_per_day, -3);
+    // Conservative load → lower TCE than explicitly stated 45k cargo.
+    expect(withZeroQty.tce_usd_per_day).toBeLessThan(withFullQty.tce_usd_per_day);
+  });
+
+  // PI2 behavioral: round-trip duration exceeds laden-only, so $/day is realistic (#782).
+  it('round-trip voyage (3000nm) produces lower $/day than laden-only duration would', () => {
+    const est = estimateFreightRate('BULK', 3000, 50000);
+    // Round-trip: ladenDays(3000nm,12kts)=10.42 × 2 + 2portDays = 22.83 days.
+    // Laden-only would give 10.42 days → $/day ~2.2× higher (~$97k).
+    const roundTrip = computeEstimatedTce(est, 3000, 50000, 45000, 12, 25);
+    // Verify round-trip TCE is substantially below what laden-only would give.
+    // Laden-only net/$97k → round-trip net/22.83d = ~$36k — below the $50k threshold.
+    expect(roundTrip.tce_usd_per_day).toBeLessThan(50_000);
+    expect(Number.isFinite(roundTrip.tce_usd_per_day)).toBe(true);
+  });
+
+  // PI2 behavioral: SEAGULL 71-like case — 8.1k DWT small handysize, short voyage (#782 part b).
+  it('SEAGULL 71 scenario — 8.1k DWT, 700nm laden — TCE in plausible handysize range', () => {
+    const freight = estimateFreightRate('GRAIN', 700, 8100);
+    const result = computeEstimatedTce(freight, 700, 8100, 0, 12, 8);
+    // With round-trip duration (2×700nm + 2 port days) and conservative weight (8100×0.65=5265mt),
+    // TCE must be below $20k/day (old laden-only was ~$53k, clearly wrong for a small handysize).
+    expect(result.tce_usd_per_day).toBeLessThan(20_000);
+    // And finite — no NaN or Infinity.
+    expect(Number.isFinite(result.tce_usd_per_day)).toBe(true);
   });
 
   it('higher freight rate → higher TCE', () => {
