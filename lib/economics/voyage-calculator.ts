@@ -58,6 +58,9 @@ export interface VoyageInput {
   durationDays: number;
   /** EU leg percentage (0–1). Default 0 (no ETS). */
   euLegPercent?: number;
+  /** EU ETS coverage: true if origin/dest port is in EU/EEA. Absent → coverageFactor=1.0. */
+  originEu?: boolean;
+  destEu?: boolean;
   /** Days spent in HRA zones for war-risk premium. Default = durationDays. */
   daysInHra?: number;
   /** Pre-computed canal dues USD (from quoteCanal). 0 if no canal. */
@@ -185,6 +188,8 @@ export function calculateTCE(input: VoyageInput): TCEResult {
     euLegPercent,
     vlsfoBurnMt,
     euaPrice,
+    originEu: input.originEu,
+    destEu: input.destEu,
   });
   const etsEur = etsResult.amountEur;
   const etsUsd = Math.round(etsEur * EUR_TO_USD);
