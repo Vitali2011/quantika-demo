@@ -393,3 +393,34 @@ describe('computeFitBreakdown — EU-discharge false-positive guard (cold QA 202
     expect(fb.fitPercent).toBeLessThanOrEqual(55);
   });
 });
+
+describe('computeFitBreakdown — EU-discharge by resolved country (Gate5 2026-06-03)', () => {
+  // Real named EU ports NOT in the region map were missed (resolvePort!==null → false).
+  // Detection must be by the resolved port's COUNTRY (isEuCountry), not region map.
+  it.each([
+    ['Monfalcone', 'IT — founder Gate5: 1986 vessel showed fit 70, no flag'],
+    ['Catania', 'IT'],
+    ['Gijón', 'ES'],
+    ['Sagunto', 'ES'],
+    ['Thisvi', 'GR'],
+  ])('25yr+ vessel + EU port "%s" (%s) → capped ≤55 with age flag', (port) => {
+    const cargo = makeCargo({ destinationPort: { value: port, confidence: 'confirmed' } });
+    const vessel = makeVessel({ built: 1986 }); // age 40 @ refYear 2026
+    const fb = computeFitBreakdown({ cargo, vessel, readiness: READY_IDEAL, sanctions: SANCTIONS_OK, hardFilters: HF_PASS, refYear: 2026 });
+    expect(fb.appliedCap?.reason).toMatch(/EU discharge|EU PSC/i);
+    expect(fb.fitPercent).toBeLessThanOrEqual(55);
+  });
+
+  // Non-EU Mediterranean ports (Africa) must NOT cap — the region map ('europe'
+  // includes Mediterranean) wrongly flagged these as EU.
+  it.each([
+    ['Bejaia', 'DZ — Algeria'],
+    ['Alexandria', 'EG — Egypt'],
+    ['Tartus', 'SY — Syria'],
+  ])('25yr+ vessel + non-EU Med "%s" (%s) → NO EU-age cap', (port) => {
+    const cargo = makeCargo({ destinationPort: { value: port, confidence: 'confirmed' } });
+    const vessel = makeVessel({ built: 1986 });
+    const fb = computeFitBreakdown({ cargo, vessel, readiness: READY_IDEAL, sanctions: SANCTIONS_OK, hardFilters: HF_PASS, refYear: 2026 });
+    expect(fb.appliedCap?.reason ?? '').not.toMatch(/EU discharge|EU PSC/i);
+  });
+});
