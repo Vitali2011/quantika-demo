@@ -10,6 +10,8 @@ import type { TCEBreakdown } from '@/lib/economics/voyage-calculator';
 
 interface Props {
   breakdown: TCEBreakdown;
+  /** Canonical stored TCE from the DB row — shown as headline when provided. */
+  canonicalTceUsdPerDay?: number | null;
 }
 
 const SEGMENTS: Array<{ key: keyof TCEBreakdown; label: string; color: string }> = [
@@ -24,7 +26,7 @@ function fmtUsd(n: number): string {
   return `$${n.toLocaleString('en-US')}`;
 }
 
-export function VoyageBreakdownChart({ breakdown }: Props) {
+export function VoyageBreakdownChart({ breakdown, canonicalTceUsdPerDay }: Props) {
   const total = Math.max(1, breakdown.total_costs_usd);
 
   return (
@@ -32,7 +34,7 @@ export function VoyageBreakdownChart({ breakdown }: Props) {
       <div className="flex items-baseline justify-between text-sm">
         <span className="font-semibold">Voyage Cost Breakdown</span>
         <span className="text-gray-600">
-          Daily TCE: <strong>{fmtUsd(breakdown.daily_tce_usd)}</strong>
+          Daily TCE: <strong>{fmtUsd(canonicalTceUsdPerDay ?? breakdown.daily_tce_usd)}</strong>
         </span>
       </div>
 

@@ -274,6 +274,7 @@ export default async function MatchDetailPage({ params }: Props) {
                   storedFreightRate={storedMatch.freight_rate_usd_per_mt}
                   freightRateSource={storedMatch.freight_rate_source}
                   storedDistanceNm={storedMatch.distance_nm}
+                  storedTceUsdPerDay={storedMatch.tce_usd_per_day}
                 />
 
                 {cargo && cargoEmail && (

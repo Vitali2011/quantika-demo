@@ -24,6 +24,8 @@ interface EconomicsTabProps {
   warRiskPremium?: number | null;
   warRiskZones?: string[] | null;
   warRiskBreakdown?: WarRiskBreakdown | null;
+  /** Stored canonical TCE from the DB row (list == detail invariant). */
+  storedTceUsdPerDay?: number | null;
 }
 
 function parseLeadingNumber(s: string | null | undefined): number {
@@ -56,7 +58,7 @@ function portLabel(locode: string): string {
   return PORT_NAMES[locode] ?? locode;
 }
 
-export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm, matchDbId, storedFreightRate, freightRateSource, warRiskPremium, warRiskZones, warRiskBreakdown }: EconomicsTabProps) {
+export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm, matchDbId, storedFreightRate, freightRateSource, warRiskPremium, warRiskZones, warRiskBreakdown, storedTceUsdPerDay }: EconomicsTabProps) {
   const [open, setOpen] = useState(false);
   const [bunkerPriceUsdPerMt, setBunkerPriceUsdPerMt] = useState('');
   const [overrideRate, setOverrideRate] = useState(storedFreightRate != null ? String(storedFreightRate) : '');
@@ -611,7 +613,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
                   {approxPorts.map((a) => `${a.input} → ${a.resolvedTo}`).join('; ')}. Confirm before fixing.
                 </p>
               )}
-              <VoyageBreakdownChart breakdown={voyageBreakdown} />
+              <VoyageBreakdownChart breakdown={voyageBreakdown} canonicalTceUsdPerDay={storedTceUsdPerDay} />
             </>
           ) : null
         ) : voyageInputData.missing.length > 0 ? (

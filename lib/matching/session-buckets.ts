@@ -59,6 +59,11 @@ export function toBucketRows(
       freight_rate_usd_per_mt = tceEst.freight_rate_usd_per_mt;
       freight_rate_source = tceEst.freight_rate_source;
     }
+    // Prefer the canonical tce from the seed when present (same reason as persist-session-matches).
+    const storedTce = m.economics?.tceUsdPerDay;
+    if (storedTce != null && Number.isFinite(storedTce)) {
+      tce_usd_per_day = storedTce;
+    }
 
     const row: StoredMatch = {
       id: idStart - i,
