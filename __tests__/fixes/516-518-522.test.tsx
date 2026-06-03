@@ -111,10 +111,10 @@ describe('#516 — abbrPort: no "(" in output for common port names with country
     expect(result).not.toContain('(');
   });
 
-  it('MatchesClient.tsx uses abbrPort instead of raw .slice(0,4) for route display', () => {
+  it('MatchesClient.tsx renders full port names in the route cell (#785)', () => {
     const src = readSrc('app/matches/MatchesClient.tsx');
-    // Should import abbrPort
-    expect(src).toMatch(/import.*abbrPort.*abbr-port/);
+    // #785: full names rendered directly — no abbreviation function in route cell
+    expect(src).not.toMatch(/abbrPort\(match\.(load|discharge)_port\)/);
     // Should NOT have raw .slice(0,4).toUpperCase() on load_port/discharge_port
     expect(src).not.toMatch(/load_port\.slice\(0,\s*4\)\.toUpperCase/);
     expect(src).not.toMatch(/discharge_port\.slice\(0,\s*4\)\.toUpperCase/);

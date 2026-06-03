@@ -60,7 +60,7 @@ const LONG_VESSEL = 'MV Supra-Ultramax Eastern Mediterranean Pacific Star VIII';
 const longVesselMatch: StoredMatch = {
   id: 1,
   cargo_id: 'cargo:wrap:0',
-  vessel_id: LONG_VESSEL,
+  vessel_id: 'vessel-hash-abc123',
   score: 85,
   reason: 'test',
   status: 'shortlist',
@@ -78,7 +78,7 @@ const longVesselMatch: StoredMatch = {
   distance_nm: null,
   freight_rate_usd_per_mt: null,
   freight_rate_source: null,
-  vessel_name: null,
+  vessel_name: LONG_VESSEL,
   cargo_ref: null,
 };
 

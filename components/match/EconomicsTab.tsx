@@ -390,7 +390,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
           )}
           {overrideTce != null && (
             <p data-testid="override-tce-result" className="text-xs font-medium text-emerald-700">
-              Recalculated TCE: ${overrideTce.toLocaleString()}/day
+              Recalculated TCE: ${overrideTce.toLocaleString('en-US')}/day
             </p>
           )}
           <div className="flex gap-2 items-end">
@@ -491,7 +491,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
 
       {bunkerCandidates.length > 0 && (
         <div data-testid="bunker-comparison-section" className="rounded border border-gray-200 bg-white p-3">
-          <h3 className="text-xs font-semibold text-gray-700 mb-2">Бункеровка — сравнение портов</h3>
+          <h3 className="text-xs font-semibold text-gray-700 mb-2">Bunkering — port comparison</h3>
           <BunkerComparisonTable
             candidates={bunkerCandidates}
             liftTonnes={bunkerLift?.liftTonnes}
@@ -566,25 +566,25 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
             <div className="flex justify-between">
               <span className="text-gray-600">Hull premium:</span>
               <span data-testid="warrisk-hull" className="font-medium">
-                ${warRiskBreakdown.hullPremiumUsd.toLocaleString()}
+                ${warRiskBreakdown.hullPremiumUsd.toLocaleString('en-US')}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Crew war bonus:</span>
               <span data-testid="warrisk-crew" className="font-medium">
-                ${warRiskBreakdown.crewWarBonusUsd.toLocaleString()}
+                ${warRiskBreakdown.crewWarBonusUsd.toLocaleString('en-US')}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">P&amp;I surcharge:</span>
               <span data-testid="warrisk-pi" className="font-medium">
-                ${warRiskBreakdown.piSurchargeUsd.toLocaleString()}
+                ${warRiskBreakdown.piSurchargeUsd.toLocaleString('en-US')}
               </span>
             </div>
             <div className="flex justify-between pt-1 border-t border-orange-200">
               <span className="text-gray-700 font-medium">Total:</span>
               <span data-testid="warrisk-total" className="font-semibold text-orange-900">
-                ${warRiskBreakdown.totalPremiumUsd.toLocaleString()}
+                ${warRiskBreakdown.totalPremiumUsd.toLocaleString('en-US')}
               </span>
             </div>
           </div>

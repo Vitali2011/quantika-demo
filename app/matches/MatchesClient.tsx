@@ -11,7 +11,6 @@ import { useLiveJobs } from '@/design-system/patterns/useLiveJobs';
 import { useMode } from '@/design-system/patterns/useMode';
 import { filterMatchesByMode } from '@/lib/matching/mode-filter';
 import { useToast } from '@/components/ui/toast';
-import { abbrPort } from '@/lib/utils/abbr-port';
 import { fmtLaycan, isLaycanExpired } from '@/lib/utils/fmt-laycan';
 import { freightBadge, FREIGHT_BADGE_CLASSES } from '@/lib/matching/freight-badge';
 import { useDemoNow } from '@/lib/clock-client';
@@ -377,7 +376,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
         {/* ===== BUCKET TABS (Wave B) — main list + two read-only realism buckets ===== */}
         <div className="flex items-center gap-1 border-b border-ds-border" role="tablist" aria-label="Match buckets">
           {([
-            { id: 'matches' as Tab, label: 'Матчи', count: modeFiltered.length, testid: 'tab-matches' },
+            { id: 'matches' as Tab, label: 'Matches', count: modeFiltered.length, testid: 'tab-matches' },
             // Review / Insufficient buckets hidden from the board (founder 2026-06-02):
             // surface only the ironclad main matches. Buckets stay in DB, not shown.
           ]).map(({ id, label, count, testid }) => (
@@ -736,7 +735,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                               Cargo: <span className="text-gray-700">{match.cargo_ref ?? match.cargo_id}</span>
                             </div>
                             <div className="font-medium text-sm">
-                              Vessel: <span className="text-gray-700">{match.vessel_name ?? match.vessel_id}</span>
+                              Vessel: <span className="text-gray-700">{match.vessel_name ?? 'TBN'}</span>
                             </div>
                             {match.cargo_type && (
                               <span className="inline-block text-xs bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded mt-0.5">
@@ -1029,9 +1028,9 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                           <td className="py-[13px] px-3 align-middle">
                             <div className="flex items-center gap-[10px]">
                               <span className="w-7 h-7 rounded-[7px] bg-ds-accent text-ds-accent-fg flex-shrink-0 inline-flex items-center justify-center font-mono text-[11.5px] font-medium">
-                                {vesselInitials(match.vessel_name ?? match.vessel_id)}
+                                {vesselInitials(match.vessel_name ?? 'TBN')}
                               </span>
-                              <span className="font-medium text-sm tracking-[-0.005em] break-words">{match.vessel_name ?? match.vessel_id}</span>
+                              <span className="font-medium text-sm tracking-[-0.005em] break-words">{match.vessel_name ?? 'TBN'}</span>
                             </div>
                           </td>
                         )}
@@ -1039,9 +1038,9 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                         <td className="py-[13px] px-3 align-middle">
                           {(match.load_port || match.discharge_port) ? (
                             <span className="font-mono text-[13px] inline-flex items-center gap-2 whitespace-nowrap">
-                              {match.load_port && <span>{abbrPort(match.load_port)}</span>}
+                              {match.load_port && <span>{match.load_port}</span>}
                               {match.load_port && match.discharge_port && <span className="text-slate-300">→</span>}
-                              {match.discharge_port && <span>{abbrPort(match.discharge_port)}</span>}
+                              {match.discharge_port && <span>{match.discharge_port}</span>}
                             </span>
                           ) : (
                             <span className="font-mono text-slate-300">—</span>
@@ -1064,9 +1063,9 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                           <td className="py-[13px] px-3 align-middle">
                             <div className="flex items-center gap-[10px]">
                               <span className="w-7 h-7 rounded-[7px] bg-ds-accent text-ds-accent-fg flex-shrink-0 inline-flex items-center justify-center font-mono text-[11.5px] font-medium">
-                                {vesselInitials(match.vessel_name ?? match.vessel_id)}
+                                {vesselInitials(match.vessel_name ?? 'TBN')}
                               </span>
-                              <span className="font-medium text-sm tracking-[-0.005em] break-words">{match.vessel_name ?? match.vessel_id}</span>
+                              <span className="font-medium text-sm tracking-[-0.005em] break-words">{match.vessel_name ?? 'TBN'}</span>
                             </div>
                           </td>
                         ) : (
