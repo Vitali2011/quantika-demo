@@ -60,6 +60,15 @@ export function persistSessionMatches(
       freight_rate_source = tceEst.freight_rate_source;
     }
 
+    // Prefer the canonical tce from the session match (seed or pair-analyzer) over
+    // a live recompute. The recompute path above uses the Baltic tier which drifts
+    // from the seed's estimateFreightRate path — same pair, same distance, but
+    // divergent freight tiers produce catastrophic values (e.g. -$102k vs +$774).
+    const storedTce = m.economics?.tceUsdPerDay;
+    if (storedTce != null && Number.isFinite(storedTce)) {
+      tce_usd_per_day = storedTce;
+    }
+
     createMatch(db, {
       cargo_id: m.cargoEmailId,
       vessel_id: m.vesselEmailId,

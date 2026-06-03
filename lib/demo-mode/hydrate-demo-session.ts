@@ -28,6 +28,7 @@ interface MatchRow {
   fit_percent: number | null; fit_breakdown: string | null;
   cargo_item_index: number | null; vessel_item_index: number | null;
   worksheet_json: string | null;
+  tce_usd_per_day: number | null;
 }
 
 function safeJsonArray<T>(json: string, ctx: string): T[] {
@@ -96,7 +97,8 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
   const worksheetCol = colNames.has('worksheet_json')
     ? 'worksheet_json'
     : 'NULL as worksheet_json';
-  const selectCols = `cargo_id, vessel_id, score, reason, reason_structured, ${fitCols}, ${idxCols}, ${worksheetCol}`;
+  const tceCol = colNames.has('tce_usd_per_day') ? 'tce_usd_per_day' : 'NULL as tce_usd_per_day';
+  const selectCols = `cargo_id, vessel_id, score, reason, reason_structured, ${fitCols}, ${idxCols}, ${worksheetCol}, ${tceCol}`;
 
   // Only the seeded snapshot rows (user_id IS NULL). Per-session copies that
   // persistSessionMatches writes (user_id = sessionId) must NOT be re-read here,
@@ -116,20 +118,39 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
   ).all() as MatchRow[];
 
   function rowsToMatches(rows: MatchRow[]): Match[] {
-    return rows.map((r) => ({
-      cargoEmailId: r.cargo_id,
-      cargoItemIndex: r.cargo_item_index ?? 0,
-      vesselEmailId: r.vessel_id,
-      vesselItemIndex: r.vessel_item_index ?? 0,
-      score: r.score,
-      matchLevel: deriveMatchLevel(r.score),
-      matchReasons: r.reason ? [r.reason] : [],
-      issues: [],
-      scoreBreakdown: safeJsonObject<ScoreBreakdown>(r.reason_structured),
-      fitPercent: r.fit_percent ?? undefined,
-      fitBreakdown: safeJsonObject<import('@/lib/types').FitBreakdown>(r.fit_breakdown),
-      worksheet: safeJsonObject<import('@/lib/types').MatchWorksheet>(r.worksheet_json ?? null),
-    }));
+    return rows.map((r) => {
+      const tce = r.tce_usd_per_day;
+      // Carry the seed-computed TCE into economics.tceUsdPerDay so
+      // persistSessionMatches can prefer it over a live recompute.
+      const economics: import('@/lib/types').EconomicsResult | undefined =
+        tce != null && Number.isFinite(tce)
+          ? {
+              breakdown: {
+                bunkerCost: 0, bunkerPort: '', euEtsAmount: 0,
+                euEtsApplicable: false, warRiskPremium: 0, warRiskZones: [],
+              },
+              totalUsd: 0,
+              calculatedAt: new Date(0).toISOString(),
+              dataFreshness: { bunker: 'seed', eua: 'seed' },
+              tceUsdPerDay: tce,
+            }
+          : undefined;
+      return {
+        cargoEmailId: r.cargo_id,
+        cargoItemIndex: r.cargo_item_index ?? 0,
+        vesselEmailId: r.vessel_id,
+        vesselItemIndex: r.vessel_item_index ?? 0,
+        score: r.score,
+        matchLevel: deriveMatchLevel(r.score),
+        matchReasons: r.reason ? [r.reason] : [],
+        issues: [],
+        scoreBreakdown: safeJsonObject<ScoreBreakdown>(r.reason_structured),
+        fitPercent: r.fit_percent ?? undefined,
+        fitBreakdown: safeJsonObject<import('@/lib/types').FitBreakdown>(r.fit_breakdown),
+        worksheet: safeJsonObject<import('@/lib/types').MatchWorksheet>(r.worksheet_json ?? null),
+        economics,
+      };
+    });
   }
 
   const matches = rowsToMatches(matchRows);
