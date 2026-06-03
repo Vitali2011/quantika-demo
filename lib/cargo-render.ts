@@ -1,6 +1,34 @@
 import { isRange, type Range } from '@/lib/types';
 import { safeRender } from '@/lib/ui-render';
 import { formatNumber } from '@/lib/utils';
+import { parseLaycan } from '@/lib/sailing/date-parsing';
+import { fmtLaycan } from '@/lib/utils/fmt-laycan';
+import { detectSpot } from '@/lib/sailing/readiness-gap';
+
+/**
+ * Format a raw cargo `laycan` string for the /cargo list & detail card.
+ *
+ * Gate5 #3: a spot/prompt laycan ("Spot — Prompt", "Spot — vessel's dates")
+ * must render the "Spot" label — NOT a single collapsed day. The old path ran
+ * parseLaycan → parseVesselOpenDate → today, producing "May 29–May 29". Matching
+ * rebases spot cargoes onto a 10-day window; the cargo list only needs the label.
+ *
+ * Otherwise: parse to a date range and format; unparseable text passes through
+ * raw; null/empty → null (renders "—"). Pure function — unit-testable.
+ */
+export function formatCargoLaycanDisplay(
+  raw: string | null,
+  refYear: number,
+): string | null {
+  if (!raw) return null;
+  if (detectSpot(raw)) return 'Spot';
+  const parsed = parseLaycan(raw, refYear);
+  if (!parsed) return raw;
+  return fmtLaycan(
+    Math.floor(parsed.start.getTime() / 1000),
+    Math.floor(parsed.end.getTime() / 1000),
+  );
+}
 
 function fmtK(mt: number): string {
   if (mt >= 1000) {

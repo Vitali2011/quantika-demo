@@ -3,9 +3,7 @@ import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
 import { cfValue } from '@/lib/types';
-import { formatQuantityCompact } from '@/lib/cargo-render';
-import { parseLaycan } from '@/lib/sailing/date-parsing';
-import { fmtLaycan } from '@/lib/utils/fmt-laycan';
+import { formatQuantityCompact, formatCargoLaycanDisplay } from '@/lib/cargo-render';
 import CargoClient, { type CargoRow } from './CargoClient';
 
 export const metadata: Metadata = {
@@ -80,16 +78,10 @@ export default async function CargoPage() {
   );
 
   const refYear = new Date().getUTCFullYear();
-  const displayRows = dedupedCargo.map((row) => {
-    if (!row.laycan) return row;
-    const parsed = parseLaycan(row.laycan, refYear);
-    if (!parsed) return row;
-    const laycan = fmtLaycan(
-      Math.floor(parsed.start.getTime() / 1000),
-      Math.floor(parsed.end.getTime() / 1000),
-    );
-    return { ...row, laycan };
-  });
+  const displayRows = dedupedCargo.map((row) => ({
+    ...row,
+    laycan: formatCargoLaycanDisplay(row.laycan, refYear),
+  }));
 
   return <CargoClient rows={displayRows} total={displayRows.length} />;
 }
