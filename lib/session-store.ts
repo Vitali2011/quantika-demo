@@ -93,7 +93,7 @@ export class SessionStore {
     return this.db;
   }
 
-  createSession(accessToken: string): string {
+  createSession(accessToken: string, ttlMs: number = SESSION_TTL_MS): string {
     const count = this.getSessionCount();
     if (count >= MAX_SESSIONS) {
       // Evict oldest by created_at
@@ -125,7 +125,7 @@ export class SessionStore {
 
     this.db.prepare(
       'INSERT INTO sessions (id, access_token, created_at, expires_at, data) VALUES (?, ?, ?, ?, ?)'
-    ).run(id, accessToken, now, now + SESSION_TTL_MS, serializeData(session));
+    ).run(id, accessToken, now, now + ttlMs, serializeData(session));
 
     return id;
   }

@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { SessionData } from './types';
 import { getStore } from './session-store';
 
-export function createSession(accessToken: string): string {
+export function createSession(accessToken: string, ttlMs?: number): string {
   getStore().expireOldSessions();
-  return getStore().createSession(accessToken);
+  return getStore().createSession(accessToken, ttlMs);
 }
 
 export function getSession(id: string): SessionData | null {
