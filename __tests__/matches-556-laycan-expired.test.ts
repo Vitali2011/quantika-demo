@@ -165,13 +165,14 @@ describe('fmtLaycan (formatter parity)', () => {
 
 // ── Structural: detail page uses fmtLaycan ───────────────────────────────────
 
-describe('app/match/[id]/page.tsx — laycan formatter parity (#556)', () => {
-  it('imports fmtLaycan from fmt-laycan', () => {
-    expect(detailSrc()).toMatch(/fmtLaycan.*fmt-laycan|fmt-laycan.*fmtLaycan/);
+describe('app/match/[id]/page.tsx — laycan formatter parity (#556, #665)', () => {
+  it('imports shared laycan display util (resolveLaycanDisplay from laycan-display, #665)', () => {
+    // #665: detail page now uses shared resolveLaycanDisplay (which calls fmtLaycan internally)
+    expect(detailSrc()).toMatch(/resolveLaycanDisplay.*laycan-display|laycan-display.*resolveLaycanDisplay/);
   });
 
-  it('uses fmtLaycan for laycanDisplay (not inline toLocaleDateString)', () => {
-    expect(detailSrc()).toMatch(/fmtLaycan\s*\(/);
+  it('uses resolveLaycanDisplay for laycanDisplay (not inline toLocaleDateString)', () => {
+    expect(detailSrc()).toMatch(/resolveLaycanDisplay\s*\(/);
     // The old inline pattern (new Date(storedMatch.laycan_start).toLocaleDateString)
     // must be gone — it was producing locale-dependent format inconsistent with list view.
     expect(detailSrc()).not.toMatch(/new Date\(storedMatch\.laycan_start\)\.toLocaleDateString/);

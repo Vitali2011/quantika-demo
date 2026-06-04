@@ -44,44 +44,42 @@ describe('worksheet readiness laycan → fmtLaycan roundtrip (behavioral)', () =
 // ── Structural: page.tsx fallback chain ─────────────────────────────────────
 
 describe('app/match/[id]/page.tsx — laycan unified fallback chain (#laycan-unify)', () => {
-  it('derives laycanDisplay via IIFE with tiered fallback', () => {
+  it('derives laycanDisplay via shared resolveLaycanDisplay util (#665)', () => {
     const src = detailSrc();
-    expect(src).toMatch(/laycanDisplay\s*=\s*\(\s*\(\s*\)\s*=>/);
+    expect(src).toMatch(/resolveLaycanDisplay\s*\(/);
   });
 
-  it('first/wins tier: worksheet readiness laycanStart/End via fmtLaycan', () => {
+  it('first/wins tier: worksheet passed to resolveLaycanDisplay', () => {
     const src = detailSrc();
-    expect(src).toMatch(/worksheet\?\.readiness\?\.laycanStart/);
-    expect(src).toMatch(/worksheet\?\.readiness\?\.laycanEnd/);
-    // must convert ISO to timestamp and call fmtLaycan
-    expect(src).toMatch(/toTs\s*=.*new Date\(iso/);
-    expect(src).toMatch(/fmtLaycan\(rs\s*\?.*toTs/);
+    // resolveLaycanDisplay receives the worksheet object (carries readiness.laycanStart/End internally)
+    expect(src).toMatch(/resolveLaycanDisplay\s*\(\s*\{/);
+    expect(src).toMatch(/worksheet,/);
   });
 
-  it('second/fallback tier: storedMatch.laycan_start / laycan_end via fmtLaycan', () => {
+  it('second/fallback tier: storedMatch.laycan_start / laycan_end passed as storedStart/storedEnd', () => {
     const src = detailSrc();
-    expect(src).toMatch(/storedMatch\.laycan_start.*storedMatch\.laycan_end|storedMatch\.laycan_end.*storedMatch\.laycan_start/);
-    expect(src).toMatch(/fmtLaycan\(storedMatch\.laycan_start,\s*storedMatch\.laycan_end\)/);
+    expect(src).toMatch(/storedStart:\s*storedMatch\.laycan_start/);
+    expect(src).toMatch(/storedEnd:\s*storedMatch\.laycan_end/);
   });
 
-  it('worksheet readiness check appears BEFORE storedMatch check in source (precedence)', () => {
+  it('worksheet presence passed before storedMatch args (precedence reflected in arg order)', () => {
     const src = detailSrc();
-    const readinessIdx = src.indexOf('worksheet?.readiness?.laycanStart');
-    const storedMatchIdx = src.indexOf('fmtLaycan(storedMatch.laycan_start');
-    expect(readinessIdx).toBeGreaterThan(0);
-    expect(storedMatchIdx).toBeGreaterThan(0);
-    expect(readinessIdx).toBeLessThan(storedMatchIdx);
+    const worksheetArgIdx = src.indexOf('worksheet,');
+    const storedStartIdx = src.indexOf('storedStart: storedMatch.laycan_start');
+    expect(worksheetArgIdx).toBeGreaterThan(0);
+    expect(storedStartIdx).toBeGreaterThan(0);
+    expect(worksheetArgIdx).toBeLessThan(storedStartIdx);
   });
 
-  it('third tier: cargo.preferredDates.value', () => {
+  it('third tier: cargo.preferredDates.value passed as cargoRaw', () => {
     const src = detailSrc();
-    expect(src).toMatch(/cargo\?\.preferredDates\?\.value/);
+    expect(src).toMatch(/cargoRaw:\s*cargo\?\.preferredDates\?\.value/);
   });
 
   it('worksheet is parsed BEFORE laycanDisplay so fallback has access to it', () => {
     const src = detailSrc();
     const worksheetIdx = src.indexOf('worksheet = JSON.parse(storedMatch.worksheet_json)');
-    const laycanIdx = src.indexOf('laycanDisplay = (');
+    const laycanIdx = src.indexOf('laycanDisplay = resolveLaycanDisplay(');
     expect(worksheetIdx).toBeGreaterThan(0);
     expect(laycanIdx).toBeGreaterThan(0);
     expect(worksheetIdx).toBeLessThan(laycanIdx);
