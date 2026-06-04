@@ -8,6 +8,7 @@ import { listMatches, type StoredMatch } from '@/lib/matching/matches-repository
 import { persistSessionMatches } from '@/lib/matching/persist-session-matches';
 import { toBucketRows } from '@/lib/matching/session-buckets';
 import MatchesClient from './MatchesClient';
+import { resolveLaycanDisplay } from '@/lib/utils/laycan-display';
 import PageSkeleton from '@/components/ui/PageSkeleton';
 
 export const metadata: Metadata = {
@@ -53,6 +54,26 @@ export default async function MatchesPage() {
   const rawMatches = listMatches(db, { user_id: sessionId!, sortBy: 'score', sortDir: 'desc' });
   const matches = dedupMatches(rawMatches);
 
+  // (#665) Pre-resolve laycan_display server-side so the list shows the same
+  // readiness-rebased window as /match/[id] detail when a worksheet is present.
+  const refYear = new Date().getUTCFullYear();
+  const matchesWithDisplay = matches.map((m) => {
+    let worksheet: unknown = null;
+    if (m.worksheet_json) {
+      try { worksheet = JSON.parse(m.worksheet_json); } catch { worksheet = null; }
+    }
+    return {
+      ...m,
+      laycan_display: resolveLaycanDisplay({
+        worksheet: worksheet as never,
+        storedStart: m.laycan_start,
+        storedEnd: m.laycan_end,
+        cargoRaw: null,
+        refYear,
+      }),
+    };
+  });
+
   // Computing only when BOTH cargo and vessel are present — matches require both sides.
   const hasCargo = session.parsedCargos.length > 0;
   const hasVessel = session.parsedVessels.length > 0;
@@ -85,7 +106,7 @@ export default async function MatchesPage() {
       <div className="max-w-[1280px] mx-auto space-y-6">
         <h1 className="text-2xl font-bold">Matches {qualifyingCount} results</h1>
         <Suspense fallback={<PageSkeleton />}>
-          <MatchesClient initialMatches={matches} isComputing={isComputing}
+          <MatchesClient initialMatches={matchesWithDisplay} isComputing={isComputing}
             cargoEmailIds={cargoEmailIds}
             vesselEmailIds={vesselEmailIds}
             lowConfidenceMatches={lowConfidenceMatches}
