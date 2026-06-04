@@ -6,7 +6,7 @@ import { getSession } from '@/lib/session';
 import { getStore } from '@/lib/session-store';
 import { getMatch, getMatchBySlug } from '@/lib/matching/matches-repository';
 import { fromMatchSlug } from '@/lib/matching/match-slug';
-import { fmtLaycan } from '@/lib/utils/fmt-laycan';
+import { resolveLaycanDisplay } from '@/lib/utils/laycan-display';
 import { Badge } from '@/components/ui/badge';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
 import { MatchTabs } from '@/components/match/MatchTabs';
@@ -83,21 +83,14 @@ export default async function MatchDetailPage({ params }: Props) {
 
   // Unified laycan: worksheet readiness window (rebased) → storedMatch timestamps → raw cargo string → null
   // Readiness wins so CARGO card aligns with the Time row in MatchWorksheet (both show rebased window).
-  const laycanDisplay = (() => {
-    const rs = worksheet?.readiness?.laycanStart;
-    const re = worksheet?.readiness?.laycanEnd;
-    if (rs || re) {
-      const toTs = (iso: string) => new Date(iso + 'T00:00:00Z').getTime();
-      return fmtLaycan(rs ? toTs(rs) : null, re ? toTs(re) : null);
-    }
-    if (storedMatch.laycan_start || storedMatch.laycan_end) {
-      return fmtLaycan(storedMatch.laycan_start, storedMatch.laycan_end);
-    }
-    if (cargo?.preferredDates?.value) {
-      return cargo.preferredDates.value;
-    }
-    return null;
-  })();
+  // Shared with /matches list and /cargo via resolveLaycanDisplay (#665).
+  const laycanDisplay = resolveLaycanDisplay({
+    worksheet,
+    storedStart: storedMatch.laycan_start,
+    storedEnd: storedMatch.laycan_end,
+    cargoRaw: cargo?.preferredDates?.value ?? null,
+    refYear: new Date().getUTCFullYear(),
+  });
 
   const routeMeta = [storedMatch.load_port, storedMatch.discharge_port]
     .filter(Boolean)

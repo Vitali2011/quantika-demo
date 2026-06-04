@@ -402,12 +402,12 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
               <label className="text-xs text-gray-600 block mb-0.5">Rate (USD/mt)</label>
               <input
                 data-testid="freight-rate-input"
-                type="number"
+                type="text"
+                inputMode="decimal"
+                pattern="[0-9]*[.,]?[0-9]*"
                 value={overrideRate}
                 onChange={(e) => { setOverrideRate(e.target.value); setOverrideTce(null); setOverrideError(null); }}
                 placeholder="e.g. 28"
-                min={0}
-                step={0.1}
                 className="w-full border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-400"
               />
             </div>
