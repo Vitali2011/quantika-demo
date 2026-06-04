@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import type { ParsedVessel, ParsedCargo } from '@/lib/types';
+import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
 import { RouteCompareModal } from '@/components/economics/RouteCompareModal';
 import { VoyageBreakdownChart } from '@/components/economics/VoyageBreakdownChart';
 import { BunkerComparisonTable } from '@/components/economics/BunkerComparisonTable';
@@ -226,7 +227,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
     const speedKts = parseLeadingNumber(vessel?.speedLaden);
     const rawConsumption = parseLeadingNumber(vessel?.consumption);
     const consumption = resolveConsMtPerDay(rawConsumption, dwt);
-    const quantityMt = cargo?.weightMt?.value ?? 0;
+    const quantityMt = resolveCargoWeight(cargo ?? null) ?? 0;
 
     const ready =
       origin.length > 0 &&
@@ -277,7 +278,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
     const consumptionMtPerDay = resolveConsMtPerDay(rawConsumptionMtPerDay, dwt);
     const originPort = cargo?.originPort?.value ?? '';
     const destinationPort = cargo?.destinationPort?.value ?? '';
-    const quantityMt = cargo?.weightMt?.value ?? 0;
+    const quantityMt = resolveCargoWeight(cargo ?? null) ?? 0;
     const distanceNm = routeDistanceNm ?? 0;
     const freightRateUsdPerMt = currentRate ?? storedFreightRate ?? 28;
     const durationDays = estimateVoyageDays(distanceNm, speedKts);
@@ -403,12 +404,12 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
               <label className="text-xs text-gray-600 block mb-0.5">Rate (USD/mt)</label>
               <input
                 data-testid="freight-rate-input"
-                type="number"
+                type="text"
+                inputMode="decimal"
+                pattern="[0-9]*[.,]?[0-9]*"
                 value={overrideRate}
                 onChange={(e) => { setOverrideRate(e.target.value); setOverrideTce(null); setOverrideError(null); }}
                 placeholder="e.g. 28"
-                min={0}
-                step={0.1}
                 className="w-full border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-400"
               />
             </div>

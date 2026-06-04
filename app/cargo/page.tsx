@@ -3,7 +3,8 @@ import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
 import { cfValue } from '@/lib/types';
-import { formatQuantityCompact, formatCargoLaycanDisplay } from '@/lib/cargo-render';
+import { formatQuantityCompact } from '@/lib/cargo-render';
+import { resolveLaycanDisplay } from '@/lib/utils/laycan-display';
 import CargoClient, { type CargoRow } from './CargoClient';
 
 export const metadata: Metadata = {
@@ -80,7 +81,7 @@ export default async function CargoPage() {
   const refYear = new Date().getUTCFullYear();
   const displayRows = dedupedCargo.map((row) => ({
     ...row,
-    laycan: formatCargoLaycanDisplay(row.laycan, refYear),
+    laycan: resolveLaycanDisplay({ cargoRaw: row.laycan, refYear }),
   }));
 
   return <CargoClient rows={displayRows} total={displayRows.length} />;

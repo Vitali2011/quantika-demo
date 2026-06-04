@@ -6,18 +6,9 @@ import { LLMTimeoutError } from '@/lib/openai';
 import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { DRAFT_REPLY_SYSTEM_PROMPT } from '@/lib/prompts';
 import { DraftReplyBodySchema } from '@/lib/api-schemas';
+import { resolveSenderName } from '@/lib/utils/resolve-sender-name';
 
 export const maxDuration = 30;
-
-function extractClientName(email: { from: string; fromName: string | null; snippet: string; body: string }): string {
-  // 1. Use parsed fromName if available and not an email address
-  if (email.fromName && !email.fromName.includes('@')) {
-    return email.fromName;
-  }
-  // 2. Fallback to email local part
-  const match = email.from.match(/([^@<\s]+)@/);
-  return match ? match[1] : 'the client';
-}
 
 export async function POST(request: NextRequest) {
   if (!validateCsrf(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
@@ -44,11 +35,9 @@ export async function POST(request: NextRequest) {
     const parsedCargo = session.parsedCargos.find(r => r.emailId === emailId);
     const email = session.emails.find(e => e.id === emailId);
 
-    const clientName = extractClientName({
-      from: email?.from || '',
-      fromName: email?.fromName || null,
-      snippet: email?.snippet || '',
-      body: email?.body || '',
+    const clientName = resolveSenderName({
+      fromName: email?.fromName,
+      from: email?.from,
     });
 
     const userPrompt = `

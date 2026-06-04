@@ -31,6 +31,7 @@ import type {
   ParsedVessel,
 } from '@/lib/types';
 import { cfValue } from '@/lib/types';
+import { resolveCargoWeight } from './cargo-weight';
 import { computeVesselVetting } from './vessel-vetting';
 import { classifyVesselByDwt } from './readiness-gap';
 import { BALLAST_GOOD_MAX_NM, isPartCargo } from './match-scoring';
@@ -496,7 +497,7 @@ export function computeFitBreakdown(input: FitBreakdownInput): FitBreakdown {
   const desc = cfValue(cargo.cargoDescription);
   const partCargo = isPartCargo(desc);
 
-  const cargoWtMax = cargo.weightMtMax ?? cfValue(cargo.weightMt);
+  const cargoWtMax = resolveCargoWeight(cargo);
   const dwt = cfValue(vessel.dwtSummer);
   const dwcc = cfValue(vessel.dwcc);
   const capacity = dwcc != null && dwcc > 0 ? dwcc : dwt;

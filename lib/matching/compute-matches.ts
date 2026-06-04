@@ -1,6 +1,7 @@
 import type Database from 'better-sqlite3';
 import type { ParsedCargo, ParsedVessel } from '@/lib/types';
 import { cfValue } from '@/lib/types';
+import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
 import { analyzePairs, type AiScorer, type RawMatch } from '@/lib/matching/pair-analyzer';
 import { createMatch, listMatches } from '@/lib/matching/matches-repository';
 import { callAiJson } from '@/lib/ai-provider';
@@ -73,7 +74,7 @@ export async function computeAndPersistMatches(
     const distanceResult = loadPort && dischargePort ? getPortDistance(loadPort, dischargePort) : null;
 
     const vesselDwt = vessel ? (cfValue(vessel.dwtSummer) ?? 0) : 0;
-    const quantityMt = cargo ? (cfValue(cargo.weightMt) ?? 0) : 0;
+    const quantityMt = resolveCargoWeight(cargo) ?? 0;
     const speedKts = vessel ? parseLeadingNumber(vessel.speedLaden) : 0;
     const consumptionMt = vessel ? parseConsumption(vessel.consumption) : 0;
 

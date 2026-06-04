@@ -13,6 +13,7 @@ import { computeMatchConfidence } from '@/lib/confidence';
 import { calculateReadinessGap, detectSpot } from '@/lib/sailing/readiness-gap';
 import { applyReadinessScoring, computeScoreBreakdown, deriveMatchLevel, applyBallastSizeCap } from '@/lib/sailing/match-scoring';
 import { computeFitBreakdown } from '@/lib/sailing/fit-breakdown';
+import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
 import { runHardFilters } from '@/lib/sailing/match-filters';
 import { checkImsbcLoadability } from '@/lib/sailing/imsbc-check';
 import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
@@ -115,7 +116,7 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
     destinationPort: cfValue(c.destinationPort),
     weightMt: (c.weightMtMin !== null && c.weightMtMax !== null && c.weightMtMin !== c.weightMtMax)
       ? { min: c.weightMtMin, max: c.weightMtMax }
-      : cfValue(c.weightMt),
+      : resolveCargoWeight(c),
     cargoDescription: cfValue(c.cargoDescription),
     stowageFactor: c.stowageFactor,
     vesselType: v.vesselType,
@@ -766,7 +767,7 @@ export async function analyzePairs(
         : (cargo.cargoType as string | null);
 
     const ecoDwt = cfValue(vessel.dwtSummer) ?? 0;
-    const ecoQty = cfValue(cargo.weightMt) ?? 0;
+    const ecoQty = resolveCargoWeight(cargo) ?? 0;
     const ecoSpeed = parseLeadingNumber(vessel.speedLaden);
     const resolvedFreight = resolveFreightRate({
       cargoType,

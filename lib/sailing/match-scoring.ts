@@ -4,6 +4,7 @@ import type {
   ParsedCargo, ParsedVessel, ScoreBreakdown, ScoreBreakdownComponent,
 } from '@/lib/types';
 import { cfValue } from '@/lib/types';
+import { resolveCargoWeight } from './cargo-weight';
 
 // ────────────────────────────────────────────────────────────────────────────
 // Confidence multipliers (Spec-05)
@@ -296,7 +297,7 @@ export function applyOverloadGuard(
   vessel: ParsedVessel | null | undefined,
 ): Match {
   const dwcc = vessel ? cfValue(vessel.dwcc) : null;
-  const weightMax = cargo?.weightMtMax ?? (cargo ? cfValue(cargo.weightMt) : null);
+  const weightMax = resolveCargoWeight(cargo);
   if (dwcc != null && dwcc > 0 && weightMax != null && weightMax > dwcc) {
     const updated: Match = { ...match };
     updated.matchLevel = 'weak';

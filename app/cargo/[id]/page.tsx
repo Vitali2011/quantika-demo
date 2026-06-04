@@ -9,6 +9,7 @@ import { AnalyticsTracker } from '@/lib/analytics-tracker';
 import { ClickableField } from '@/components/clickable-field';
 import { safeRender, getConf, ConfIcon } from '@/lib/ui-render';
 import { renderSpecialRequirements, formatQuantity } from '@/lib/cargo-render';
+import { resolveLaycanDisplay } from '@/lib/utils/laycan-display';
 import { SanctionsBadge } from '@/components/vessel/SanctionsBadge';
 import { Anchor, FileText, Ship } from 'lucide-react';
 import { toMatchSlug } from '@/lib/matching/match-slug';
@@ -108,6 +109,11 @@ export default async function CargoDetailPage({ params }: Props) {
           const s = COMMOD[ck] ?? COMMOD.bulk;
           const weightMt = cfValue(cargo.weightMt);
           const quantityStr = fmtWeight(weightMt) ?? formatQuantity(cargo.quantity);
+          // (#665) Same readiness-rebased cascade as /cargo list and /match/[id].
+          const laycanDisplay = resolveLaycanDisplay({
+            cargoRaw: cargo.laycan,
+            refYear: new Date().getUTCFullYear(),
+          });
 
           return (
             <div key={idx} className="rounded-[12px] border border-[#e2e8f0] bg-white overflow-hidden shadow-sm">
@@ -164,10 +170,10 @@ export default async function CargoDetailPage({ params }: Props) {
                       <dd className="font-mono text-[13.5px] text-[#0f172a]">{quantityStr}</dd>
                     </>
                   )}
-                  {cargo.laycan && (
+                  {laycanDisplay && (
                     <>
                       <dt className="font-mono text-[10.5px] uppercase tracking-wider text-[#94a3b8]">Laycan</dt>
-                      <dd className="font-mono text-[13.5px] text-[#0f172a]">{cargo.laycan}</dd>
+                      <dd className="font-mono text-[13.5px] text-[#0f172a]">{laycanDisplay}</dd>
                     </>
                   )}
                   <dt className="font-mono text-[10.5px] uppercase tracking-wider text-[#94a3b8]">Status</dt>
