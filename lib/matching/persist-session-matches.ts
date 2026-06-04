@@ -8,6 +8,7 @@ import { getPortDistance } from '@/lib/sailing/port-distances';
 import { computeEstimatedTce, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
 import { resolveFreightRate } from '@/lib/matching/freight-resolver';
 import { getBalticDayRate } from '@/lib/market/baltic-freight';
+import { calculateReadinessGap, detectSpot } from '@/lib/sailing/readiness-gap';
 
 export function persistSessionMatches(
   db: Database.Database,
@@ -70,6 +71,50 @@ export function persistSessionMatches(
       tce_usd_per_day = storedTce;
     }
 
+    // Fail-closed: if the cargo laycan in parsedCargos disagrees with the stored
+    // worksheet laycan, recompute readiness rather than carrying stale data verbatim.
+    // This catches seed rows whose worksheet_json was built against a pre-normalization
+    // July laycan while parsed_results now has the correct June string (#821).
+    let worksheetJson: string | null = m.worksheet ? JSON.stringify(m.worksheet) : null;
+    if (m.worksheet && cargo && laycan) {
+      const storedLaycanStart = m.worksheet.readiness?.laycanStart ?? null;
+      const freshLaycanStart = laycan.start.toISOString().slice(0, 10);
+      if (storedLaycanStart !== freshLaycanStart) {
+        const vesselOpenDate = vessel ? cfValue(vessel.openDate) : null;
+        const freshReadiness = calculateReadinessGap(
+          {
+            openDate: vesselOpenDate,
+            openPosition: vessel ? cfValue(vessel.openPosition) : null,
+            speedLaden: vessel?.speedLaden ?? null,
+            dwtSummer: vessel ? (cfValue(vessel.dwtSummer) ?? null) : null,
+            isSpot: detectSpot(vesselOpenDate),
+          },
+          { laycan: cargo.laycan, originPort: cfValue(cargo.originPort) },
+        );
+        console.warn(
+          `[persist] worksheet_rebuild cargo=${m.cargoEmailId} vessel=${m.vesselEmailId}` +
+          ` stored=${storedLaycanStart} fresh=${freshLaycanStart}`,
+        );
+        worksheetJson = JSON.stringify({
+          ...m.worksheet,
+          readiness: {
+            openDate: freshReadiness.openDate,
+            laycanStart: freshReadiness.laycanStart,
+            laycanEnd: freshReadiness.laycanEnd,
+            distanceNm: freshReadiness.distanceNm,
+            distanceExact: freshReadiness.distanceExact,
+            speedKn: freshReadiness.speedKn,
+            sailingDays: freshReadiness.sailingDays,
+            arrivalDate: freshReadiness.arrivalDate,
+            gapDays: freshReadiness.gapDays,
+            verdict: freshReadiness.verdict,
+            explanation: freshReadiness.explanation,
+            openPosition: vessel ? (cfValue(vessel.openPosition) ?? null) : null,
+          },
+        });
+      }
+    }
+
     createMatch(db, {
       cargo_id: m.cargoEmailId,
       vessel_id: m.vesselEmailId,
@@ -94,7 +139,7 @@ export function persistSessionMatches(
       fit_breakdown: m.fitBreakdown ? JSON.stringify(m.fitBreakdown) : null,
       cargo_item_index: m.cargoItemIndex,
       vessel_item_index: m.vesselItemIndex,
-      worksheet_json: m.worksheet ? JSON.stringify(m.worksheet) : null,
+      worksheet_json: worksheetJson,
     });
   }
 }
