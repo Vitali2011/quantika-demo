@@ -6,16 +6,16 @@ import { NextRequest } from 'next/server';
 
 jest.mock('@/lib/csrf', () => ({ validateCsrf: jest.fn(() => true) }));
 jest.mock('@/lib/session', () => ({ requireSession: jest.fn() }));
-
-const callAiText = jest.fn(async () => 'Dear Sir/Madam,\n\nFollow-up.\n\nRegards');
 jest.mock('@/lib/ai-provider', () => ({
-  callAiText: (...args: unknown[]) => callAiText(...args),
+  callAiText: jest.fn(async () => 'Dear Sir/Madam,\n\nFollow-up.\n\nRegards'),
 }));
 
 import { requireSession } from '@/lib/session';
+import { callAiText } from '@/lib/ai-provider';
 import { POST } from '@/app/api/ai/draft-reply/route';
 
 const mockRequireSession = requireSession as jest.Mock;
+const mockCallAiText = callAiText as jest.Mock;
 
 function makeReq(body: unknown): NextRequest {
   return new NextRequest('http://localhost/api/ai/draft-reply', {
@@ -34,7 +34,7 @@ function sessionWith(email: { from: string; fromName: string | null }) {
 
 describe('POST /api/ai/draft-reply — greeting #812', () => {
   beforeEach(() => {
-    callAiText.mockClear();
+    mockCallAiText.mockClear();
     mockRequireSession.mockReset();
   });
 
@@ -42,7 +42,8 @@ describe('POST /api/ai/draft-reply — greeting #812', () => {
     mockRequireSession.mockReturnValue({ session: sessionWith(email), sessionId: 'sid' });
     const res = await POST(makeReq({ emailId: 'e1' }));
     expect(res.status).toBe(200);
-    const userPrompt = callAiText.mock.calls[0]?.[2] as string;
+    const calls = mockCallAiText.mock.calls as unknown[][];
+    const userPrompt = calls[0]?.[2] as string;
     return userPrompt;
   }
 
