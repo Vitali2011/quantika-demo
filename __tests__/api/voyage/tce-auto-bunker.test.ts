@@ -109,13 +109,12 @@ describe('TCE auto-bunker lookup (bp-03)', () => {
     expect(body.bunkerPriceSource.priceDate).toBe('2026-05-09');
   });
 
-  it('auto-resolves default port SGSIN VLSFO when bunkerPort/bunkerGrade omitted', async () => {
+  it('returns 400 bunker_port_required when bunkerPort omitted and no manual price', async () => {
     const req = makeReq(baseBody);
     const res = await POST(req);
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(400);
     const body = await res.json();
-    expect(body.bunkerPriceSource.value).toBe(801);
-    expect(body.bunkerPriceSource.mode).toBe('auto');
+    expect(body.error).toBe('bunker_port_required');
   });
 
   it('returns 422 when port not in DB (bunker_price_unavailable)', async () => {

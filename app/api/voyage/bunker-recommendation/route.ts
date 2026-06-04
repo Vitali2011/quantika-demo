@@ -52,6 +52,9 @@ const BUNKER_CANDIDATES = [
 const DETOUR_RATIO = 0.15;
 const DETOUR_ABS_CAP_NM = 200;
 
+/** A1: log a warning if any on-route candidate's price is older than this many days. */
+const BUNKER_STALE_DAYS = 7;
+
 /** Vessel defaults for per-port effective $/MT math (Supramax representative). */
 const DEFAULT_SPEED_KN = 12.5;
 const DEFAULT_LIFT_TONNES = 500;
@@ -156,6 +159,11 @@ export async function GET(req: NextRequest): Promise<NextResponse<BunkerRecommen
 
   const db = getStore().getDb();
 
+  // A1: compute stale threshold date string once
+  const staleThreshold = new Date();
+  staleThreshold.setDate(staleThreshold.getDate() - BUNKER_STALE_DAYS);
+  const staleThresholdStr = staleThreshold.toISOString().slice(0, 10);
+
   const onRouteWithPrices: Array<{ port: string; price: BunkerPrice; deviationNm: number }> = [];
 
   for (const candidate of BUNKER_CANDIDATES) {
@@ -166,6 +174,11 @@ export async function GET(req: NextRequest): Promise<NextResponse<BunkerRecommen
 
     const priceRow = getLatestBunkerPrice(db, candidate, grade);
     if (!priceRow) continue;
+
+    // A1: freshness watchdog — log stale price, no DB write
+    if (priceRow.price_date < staleThresholdStr) {
+      console.warn(`[bunker-rec] bunker_price_stale: ${candidate} last=${priceRow.price_date}`);
+    }
 
     let deviationNm = 0;
     if (directNm != null) {
