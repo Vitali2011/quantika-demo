@@ -7,6 +7,7 @@ import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { DRAFT_QUOTE_SYSTEM_PROMPT } from '@/lib/prompts';
 import { DraftQuoteBodySchema } from '@/lib/api-schemas';
 import { isRagEnabled } from '@/lib/knowledge/flags';
+import { resolveSenderName } from '@/lib/utils/resolve-sender-name';
 
 export const maxDuration = 30;
 
@@ -28,9 +29,7 @@ export async function POST(request: NextRequest) {
 
   const email = session.emails.find(e => e.id === emailId);
 
-  // Extract sender name from "Name <email>" or "Name" format
-  const fromRaw = email?.from || '';
-  const fromName = fromRaw.match(/^([^<]+)</)?.[1]?.trim() || fromRaw.split('@')[0] || 'Sir/Madam';
+  const fromName = resolveSenderName({ fromName: email?.fromName, from: email?.from });
 
   // RAG phase-3: IMSBC + IGC context retrieval for quote generation.
   // Enriches system prompt with cargo safety / hazmat / grain data.

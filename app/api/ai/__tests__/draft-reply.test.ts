@@ -186,24 +186,24 @@ describe('POST /api/ai/draft-reply', () => {
     expect(userPrompt).toContain('Alice Freight');
   });
 
-  it('falls back to email local part when fromName is null', async () => {
+  it('uses Sir/Madam when fromName is null and only an email address is available (#812)', async () => {
     const emailNoName = { ...baseEmail, fromName: null, from: 'bob@carrier.com' };
     mockGetSession.mockReturnValue({ ...baseSession, emails: [emailNoName] });
     mockCallAiText.mockResolvedValue('Draft');
     const req = makeRequest({ emailId: 'email-1' }, 'session-1');
     await POST(req);
     const [, , userPrompt] = mockCallAiText.mock.calls[0];
-    expect(userPrompt).toContain('bob');
+    expect(userPrompt).toContain('Sir/Madam');
   });
 
-  it('falls back to "the client" when no from field', async () => {
+  it('uses Sir/Madam when no from field (#812)', async () => {
     const emailEmpty = { ...baseEmail, fromName: null, from: '' };
     mockGetSession.mockReturnValue({ ...baseSession, emails: [emailEmpty] });
     mockCallAiText.mockResolvedValue('Draft');
     const req = makeRequest({ emailId: 'email-1' }, 'session-1');
     await POST(req);
     const [, , userPrompt] = mockCallAiText.mock.calls[0];
-    expect(userPrompt).toContain('the client');
+    expect(userPrompt).toContain('Sir/Madam');
   });
 
   // ── Case 2: pendingItems — negotiation follow-up ───────────────────────────

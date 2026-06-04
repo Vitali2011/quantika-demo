@@ -125,8 +125,10 @@ describe('#516 — abbrPort: no "(" in output for common port names with country
     expect(src).toMatch(/import.*abbrPort.*abbr-port/);
   });
 
-  it('VesselsClient.tsx uses abbrPort', () => {
+  it('VesselsClient.tsx renders openPosition directly — no abbrPort (polish #810)', () => {
     const src = readSrc('app/vessels/VesselsClient.tsx');
-    expect(src).toMatch(/import.*abbrPort.*abbr-port/);
+    // Polish #810: vessels open-position shows full port name, no abbreviation function
+    expect(src).not.toMatch(/import.*abbrPort.*abbr-port/);
+    expect(src).toMatch(/row\.openPosition/);
   });
 });

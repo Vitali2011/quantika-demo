@@ -3,7 +3,6 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useMode } from '@/design-system/patterns/useMode';
-import { abbrPort } from '@/lib/utils/abbr-port';
 
 export type VesselRow = {
   id: string;
@@ -33,8 +32,6 @@ const VESSEL_TYPE: Record<string, { bg: string; text: string; label: string }> =
   roro:    { bg: '#fce7f3', text: '#831843', label: 'RRO' },
   other:   { bg: '#e2e8f0', text: '#334155', label: 'VSL' },
 };
-
-const abbr = abbrPort;
 
 function VesselTypeBadge({ vk, label }: { vk: string; label: string }) {
   const s = VESSEL_TYPE[vk] ?? VESSEL_TYPE.other;
@@ -338,7 +335,7 @@ export default function VesselsClient({ rows, total }: Props) {
                     </td>
                     <td className="px-3.5 py-3.5 font-mono text-[13px] text-[#0f172a] whitespace-nowrap">
                       {row.openPosition ? (
-                        abbr(row.openPosition)
+                        row.openPosition
                       ) : (
                         <span className="text-[#94a3b8]">—</span>
                       )}
