@@ -252,7 +252,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     bunkerPriceUsdPerMt = data.bunkerPriceUsdPerMt;
     bunkerPriceSource = { value: data.bunkerPriceUsdPerMt, source: 'manual', mode: 'manual' };
   } else {
-    const port = (data.bunkerPort ?? 'SGSIN').toUpperCase();
+    if (!data.bunkerPort) {
+      return NextResponse.json({ error: 'bunker_port_required' }, { status: 400 });
+    }
+    const port = data.bunkerPort.toUpperCase();
     const grade = data.bunkerGrade ?? 'VLSFO';
     const db = getStore().getDb();
     const row = getLatestBunkerPrice(db, port, grade);

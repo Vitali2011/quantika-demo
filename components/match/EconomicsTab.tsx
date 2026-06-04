@@ -72,7 +72,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
   const [currentRate, setCurrentRate] = useState<number | null>(storedFreightRate ?? null);
   const [currentSource, setCurrentSource] = useState<string | null>(freightRateSource ?? null);
   const [resetting, setResetting] = useState(false);
-  const [bunkerPort, setBunkerPort] = useState<BunkerPort>('SGSIN');
+  const [bunkerPort, setBunkerPort] = useState<BunkerPort | null>(null);
   const [bunkerGrade, setBunkerGrade] = useState<BunkerGrade>('VLSFO');
   const [bunkerPortManual, setBunkerPortManual] = useState(false);
   const [bunkerReco, setBunkerReco] = useState<{ port: string; priceUsdPerMt: number; recommendation: string } | null>(null);
@@ -291,9 +291,11 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
     if (!rawConsumptionMtPerDay) missing.push('fuel consumption');
     if (!distanceNm) missing.push('route distance');
     if (!quantityMt) missing.push('cargo quantity');
+    if (!bunkerPort) missing.push('bunker port');
 
     const ready =
       missing.length === 0 &&
+      bunkerPort !== null &&
       dwt > 0 &&
       originPort.length > 0 &&
       destinationPort.length > 0 &&
@@ -451,12 +453,12 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
         />
         {!bunkerPriceUsdPerMt && (
           <p className="text-xs text-gray-500 mt-1">
-            Leave empty to use latest spot price for {portLabel(bunkerPort)} {bunkerGrade}
+            Leave empty to use latest spot price{bunkerPort ? ` for ${portLabel(bunkerPort)} ${bunkerGrade}` : ''}
           </p>
         )}
         <div className="flex gap-2 mt-2">
           <select
-            value={bunkerPort}
+            value={bunkerPort ?? ''}
             onChange={(e) => { setBunkerPort(e.target.value); setBunkerPortManual(true); }}
             aria-label="Bunker port"
             className="flex-1 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-400"
@@ -676,7 +678,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
           vessel={compareInputs.vessel}
           cargo={compareInputs.cargo}
           marketRates={marketRates}
-          bunkerPort={bunkerPort}
+          bunkerPort={bunkerPort ?? undefined}
           bunkerGrade={bunkerGrade}
           bunkerPriceManual={bunkerPriceUsdPerMt !== '' ? Number(bunkerPriceUsdPerMt) : undefined}
         />

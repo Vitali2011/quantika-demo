@@ -49,9 +49,8 @@ function mockFetchFor(vessel: Parameters<typeof EconomicsTab>[0]['vessel']) {
       return Promise.resolve({
         ok: true,
         json: () => Promise.resolve({
-          fallback: true,
-          message: 'No bunker port on this route',
-          port: null, priceUsdPerMt: null, recommendation: null,
+          fallback: false,
+          port: 'GIGIB', priceUsdPerMt: 650, recommendation: 'Bunker at Gibraltar',
           savingsUsd: 0, liftTonnes: 90, capacityMt: 224, liftCapped: false,
           candidates: [],
         }),
