@@ -51,6 +51,16 @@ function setupFetch(tceOk = true) {
     if ((url as string).includes('/api/market/benchmark')) {
       return Promise.resolve({ ok: true, json: () => Promise.resolve({ value: 75, period: 'Q1 2026' }) });
     }
+    if ((url as string).includes('/api/voyage/bunker-recommendation')) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({
+          fallback: false, port: 'NLRTM', priceUsdPerMt: 650,
+          recommendation: 'Bunker at Rotterdam', savingsUsd: 0,
+          liftTonnes: 400, capacityMt: 1500, liftCapped: false, candidates: [],
+        }),
+      });
+    }
     if ((url as string).includes('/api/voyage/tce')) {
       if (!tceOk) return Promise.resolve({ ok: false, json: () => Promise.resolve({ error: 'bunker_price_unavailable' }) });
       return Promise.resolve({ ok: true, json: () => Promise.resolve(MOCK_BREAKDOWN) });
