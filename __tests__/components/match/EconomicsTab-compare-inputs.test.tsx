@@ -68,7 +68,10 @@ describe('EconomicsTab — Compare button readiness', () => {
   });
 
   test('missing-hint lists cargo weight when absent', async () => {
-    const noCargo = { ...fullCargo, weightMt: null } as unknown as ParsedCargo;
+    // After #791: resolveCargoWeight also reads weightMtMax. "Missing weight" = both null.
+    const noCargo = {
+      ...fullCargo, weightMt: null, weightMtMin: null, weightMtMax: null,
+    } as unknown as ParsedCargo;
     await act(async () => { render(<EconomicsTab vessel={fullVessel} cargo={noCargo} />); });
     const hint = screen.getByTestId('compare-missing-hint');
     expect(hint.textContent).toMatch(/quantity|weight/i);

@@ -33,6 +33,7 @@ import { allMigrations } from '@/lib/migrations/index';
 import { cfValue } from '@/lib/types';
 import type { ParsedCargo, ParsedVessel, MatchLevel } from '@/lib/types';
 import { computeFitBreakdown } from '@/lib/sailing/fit-breakdown';
+import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 import { estimateFreightRate, computeEstimatedTce, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
 import { IDLE_HARD_MAX_GAP_DAYS } from '@/lib/matching/pair-analyzer';
@@ -164,7 +165,7 @@ async function main(): Promise<void> {
     const laycan = parseLaycan(cargo.laycan, refYear);
     const loadPort = cfValue(cargo.originPort);
     const dischargePort = cfValue(cargo.destinationPort);
-    const cargoWeightMt = cfValue(cargo.weightMt) ?? 0;
+    const cargoWeightMt = resolveCargoWeight(cargo) ?? 0;
     const cargoType =
       typeof cargo.cargoType === 'object' && cargo.cargoType !== null && 'value' in cargo.cargoType
         ? (cargo.cargoType as unknown as { value: string }).value
@@ -185,7 +186,7 @@ async function main(): Promise<void> {
           cargo.weightMtMin != null && cargo.weightMtMax != null &&
           cargo.weightMtMin !== cargo.weightMtMax
             ? { min: cargo.weightMtMin, max: cargo.weightMtMax }
-            : cfValue(cargo.weightMt),
+            : resolveCargoWeight(cargo),
         cargoDescription: cfValue(cargo.cargoDescription),
         stowageFactor: cargo.stowageFactor,
         vesselType: vessel.vesselType,
@@ -274,7 +275,7 @@ async function main(): Promise<void> {
       let freightRateUsdPerMt: number | null = null;
       let freightRateSource: string | null = null;
       if (distanceResult && distanceResult.nm > 0) {
-        const quantityMt = cfValue(cargo.weightMt) ?? 0;
+        const quantityMt = resolveCargoWeight(cargo) ?? 0;
         const speedKts = parseLeadingNumber(vessel.speedLaden);
         const consumptionMt = parseConsumption(vessel.consumption);
         const freightEst = estimateFreightRate(cargoType, distanceResult.nm, dwtSummer);
