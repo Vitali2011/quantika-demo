@@ -165,6 +165,28 @@ cargo_description MUST be human-readable English. Required contents:
 7. Normalize European decimal comma to period: "1,25" → "1.25"
 8. Do NOT copy-paste raw source text verbatim as cargo_description.
 9. For PROJECT cargo: dimensions and per-piece weights are MANDATORY.
+9a. PIECE-AGGREGATE RULE — for PROJECT or BREAK_BULK cargo, when the email gives
+    per-piece weights with explicit counts but NO aggregate cargo tonnage:
+    - Compute weight_mt = Σ (piece_count_i × piece_weight_i_in_metric_tons).
+    - Convert kg to metric tons (÷1000) before summing.
+    - Return weight_mt as a ConfidenceField with confidence='interpreted' and
+      source_text quoting the contiguous fragment of the email listing the
+      piece weights (e.g. "10 × 15,000 kg + 4 × 9,000 kg").
+    - Set weight_mt_min = weight_mt_max = computed_total (single derived value).
+    - ALSO append a missing_info note explaining the derivation:
+      "Aggregate cargo weight derived from per-piece weights: 10 × 15,000 kg
+       + 4 × 9,000 kg = 186 MT (sender did not state aggregate)."
+    Example:
+      Email body: "10x 15,000 kg storage tanks + 4x 9,000 kg additional units"
+      → weight_mt: { value: 186, confidence: "interpreted",
+                     source_text: "10x 15,000 kg storage tanks + 4x 9,000 kg additional units" }
+      → weight_mt_min: 186, weight_mt_max: 186
+      → missing_info: ["Aggregate cargo weight derived from per-piece weights:
+                       10 × 15,000 kg + 4 × 9,000 kg = 186 MT (sender did not state aggregate)."]
+    DO NOT apply this rule when:
+      - piece weights or counts are themselves ambiguous (use 'uncertain' or null);
+      - only one of count or per-piece weight is given;
+      - the cargo is BULK (per-piece weight doesn't apply).
 10. For BREAK_BULK: per-unit weight and packaging details are MANDATORY if given.
 10a. For BULK cargo: stowage factor is MANDATORY in cargo_description if stated in the email.
    ✗ Corn in bulk  (email says stw 51-52)
