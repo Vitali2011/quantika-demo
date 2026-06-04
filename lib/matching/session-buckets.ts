@@ -1,5 +1,6 @@
 import { cfValue } from '@/lib/types';
 import type { Match, ParsedCargo, ParsedVessel } from '@/lib/types';
+import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
 import type { StoredMatch } from '@/lib/matching/matches-repository';
 import { parseLaycan } from '@/lib/sailing/date-parsing';
 import { getPortDistance } from '@/lib/sailing/port-distances';
@@ -45,7 +46,7 @@ export function toBucketRows(
           ? (cargo.cargoType as unknown as { value: string }).value
           : cargo.cargoType as string)
       : null;
-    const quantityMt = cargo ? (cfValue(cargo.weightMt) ?? 0) : 0;
+    const quantityMt = resolveCargoWeight(cargo) ?? 0;
     const speedKts = vessel ? parseLeadingNumber(vessel.speedLaden) : 0;
     const consumptionMt = vessel ? parseConsumption(vessel.consumption) : 0;
 

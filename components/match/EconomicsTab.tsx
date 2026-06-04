@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import type { ParsedVessel, ParsedCargo } from '@/lib/types';
+import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
 import { RouteCompareModal } from '@/components/economics/RouteCompareModal';
 import { VoyageBreakdownChart } from '@/components/economics/VoyageBreakdownChart';
 import { BunkerComparisonTable } from '@/components/economics/BunkerComparisonTable';
@@ -224,7 +225,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
     const speedKts = parseLeadingNumber(vessel?.speedLaden);
     const rawConsumption = parseLeadingNumber(vessel?.consumption);
     const consumption = resolveConsMtPerDay(rawConsumption, dwt);
-    const quantityMt = cargo?.weightMt?.value ?? 0;
+    const quantityMt = resolveCargoWeight(cargo ?? null) ?? 0;
 
     const ready =
       origin.length > 0 &&
@@ -275,7 +276,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
     const consumptionMtPerDay = resolveConsMtPerDay(rawConsumptionMtPerDay, dwt);
     const originPort = cargo?.originPort?.value ?? '';
     const destinationPort = cargo?.destinationPort?.value ?? '';
-    const quantityMt = cargo?.weightMt?.value ?? 0;
+    const quantityMt = resolveCargoWeight(cargo ?? null) ?? 0;
     const distanceNm = routeDistanceNm ?? 0;
     const freightRateUsdPerMt = currentRate ?? storedFreightRate ?? 28;
     const durationDays = estimateVoyageDays(distanceNm, speedKts);

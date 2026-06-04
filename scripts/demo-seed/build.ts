@@ -16,6 +16,7 @@ import {
 } from '@/lib/types';
 import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
 import { computeFitBreakdown } from '@/lib/sailing/fit-breakdown';
+import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
 import { computeEstimatedTce, estimateFreightRate, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 import { shiftBodyDates, shiftMonthYear, shiftIsoDate } from './date-utils';
@@ -719,7 +720,7 @@ export async function build(opts: BuildOptions): Promise<void> {
         const layEnd = new Date(laycan.end).getTime();
 
         // Extract cargo weight and port fields; unwrap ConfidenceField wrappers if present.
-        const cargoWeightMt = unwrapNum(cargo.weightMt);
+        const cargoWeightMt = resolveCargoWeight(cargo as never) ?? 0;
         const cargoDestPort = unwrapStr(cargo.destinationPort);
         const cargoOriginPort = unwrapStr(cargo.originPort);
 
@@ -783,7 +784,7 @@ export async function build(opts: BuildOptions): Promise<void> {
             });
 
             // Compute TCE
-            const qty = unwrapNum(cargo.weightMt);
+            const qty = resolveCargoWeight(cargo as never) ?? 0;
             const freightRate = estimateFreightRate(unwrapStr(cargo.cargoType), distanceNm ?? 0, v.dwt);
             const tceResult = computeEstimatedTce(
               freightRate,

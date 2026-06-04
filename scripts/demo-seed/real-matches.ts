@@ -33,6 +33,7 @@ import { allMigrations } from '@/lib/migrations/index';
 import { cfValue } from '@/lib/types';
 import type { ParsedCargo, ParsedVessel, MatchLevel } from '@/lib/types';
 import { computeFitBreakdown } from '@/lib/sailing/fit-breakdown';
+import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 import { estimateFreightRate, computeEstimatedTce, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
 import { IDLE_HARD_MAX_GAP_DAYS } from '@/lib/matching/pair-analyzer';
@@ -68,6 +69,36 @@ function resolvePortForDistance(raw: string | null): string | null {
 function arg(k: string): string | undefined {
   const i = process.argv.indexOf(k);
   return i === -1 ? undefined : process.argv[i + 1];
+}
+
+/**
+ * Build the seed-matches INSERT SQL with optional cargo_item_index / vessel_item_index
+ * columns. Migration 044 adds these columns; older DBs without the column are tolerated
+ * via the `hasIdxCol` switch (mirrors regenerate-matches.ts:220).
+ *
+ * Exported so the seed-INSERT contract is unit-testable without booting the full seed
+ * pipeline (#791 cause B). DO NOT inline this back into the seed function — the test
+ * relies on the exported shape.
+ */
+export function buildMatchInsertSql(hasIdxCol: boolean): string {
+  return `
+    INSERT INTO matches
+      (cargo_id, vessel_id${hasIdxCol ? ', cargo_item_index, vessel_item_index' : ''},
+       score, reason, status, user_id, created_at, updated_at,
+       cargo_type, load_port, discharge_port, laycan_start, laycan_end, vessel_dwt,
+       tce_usd_per_day, distance_nm, freight_rate_usd_per_mt, freight_rate_source,
+       fit_percent, fit_breakdown, worksheet_json, reason_structured)
+    VALUES
+      (?, ?${hasIdxCol ? ', ?, ?' : ''}, ?, ?, 'shortlist', ?, ?, ?,
+       ?, ?, ?, ?, ?, ?,
+       ?, ?, ?, ?,
+       ?, ?, ?, ?)
+  `;
+}
+
+export function tableHasItemIndexCols(db: Database.Database): boolean {
+  const cols = db.prepare(`PRAGMA table_info(matches)`).all() as Array<{ name: string }>;
+  return cols.some((c) => c.name === 'cargo_item_index');
 }
 
 /**
@@ -132,6 +163,8 @@ async function main(): Promise<void> {
   interface SeedRow {
     cargoId: string;
     vesselId: string;
+    cargoItemIndex: number;
+    vesselItemIndex: number;
     score: number;
     matchLevel: MatchLevel;
     reason: string;
@@ -164,7 +197,7 @@ async function main(): Promise<void> {
     const laycan = parseLaycan(cargo.laycan, refYear);
     const loadPort = cfValue(cargo.originPort);
     const dischargePort = cfValue(cargo.destinationPort);
-    const cargoWeightMt = cfValue(cargo.weightMt) ?? 0;
+    const cargoWeightMt = resolveCargoWeight(cargo) ?? 0;
     const cargoType =
       typeof cargo.cargoType === 'object' && cargo.cargoType !== null && 'value' in cargo.cargoType
         ? (cargo.cargoType as unknown as { value: string }).value
@@ -185,7 +218,7 @@ async function main(): Promise<void> {
           cargo.weightMtMin != null && cargo.weightMtMax != null &&
           cargo.weightMtMin !== cargo.weightMtMax
             ? { min: cargo.weightMtMin, max: cargo.weightMtMax }
-            : cfValue(cargo.weightMt),
+            : resolveCargoWeight(cargo),
         cargoDescription: cfValue(cargo.cargoDescription),
         stowageFactor: cargo.stowageFactor,
         vesselType: vessel.vesselType,
@@ -274,7 +307,7 @@ async function main(): Promise<void> {
       let freightRateUsdPerMt: number | null = null;
       let freightRateSource: string | null = null;
       if (distanceResult && distanceResult.nm > 0) {
-        const quantityMt = cfValue(cargo.weightMt) ?? 0;
+        const quantityMt = resolveCargoWeight(cargo) ?? 0;
         const speedKts = parseLeadingNumber(vessel.speedLaden);
         const consumptionMt = parseConsumption(vessel.consumption);
         const freightEst = estimateFreightRate(cargoType, distanceResult.nm, dwtSummer);
@@ -315,6 +348,8 @@ async function main(): Promise<void> {
       const row: SeedRow = {
         cargoId: cargo.emailId,
         vesselId: vessel.emailId,
+        cargoItemIndex: cargo.itemIndex ?? 0,
+        vesselItemIndex: vessel.itemIndex ?? 0,
         score,
         matchLevel,
         reason,
@@ -402,23 +437,15 @@ async function main(): Promise<void> {
     `DELETE FROM matches WHERE user_id IS NULL OR user_id = '__demo_review__' OR user_id = '__demo_insufficient__'`,
   ).run();
 
-  const insert = db.prepare(`
-    INSERT INTO matches
-      (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at,
-       cargo_type, load_port, discharge_port, laycan_start, laycan_end, vessel_dwt,
-       tce_usd_per_day, distance_nm, freight_rate_usd_per_mt, freight_rate_source,
-       fit_percent, fit_breakdown, worksheet_json, reason_structured)
-    VALUES
-      (?, ?, ?, ?, 'shortlist', ?, ?, ?,
-       ?, ?, ?, ?, ?, ?,
-       ?, ?, ?, ?,
-       ?, ?, ?, ?)
-  `);
+  const hasIdxCol = tableHasItemIndexCols(db);
+  const insert = db.prepare(buildMatchInsertSql(hasIdxCol));
 
   const insertMany = db.transaction((seedRows: SeedRow[], userId: string | null) => {
     for (const r of seedRows) {
       insert.run(
-        r.cargoId, r.vesselId, r.score, r.reason, userId, nowMs, nowMs,
+        r.cargoId, r.vesselId,
+        ...(hasIdxCol ? [r.cargoItemIndex, r.vesselItemIndex] : []),
+        r.score, r.reason, userId, nowMs, nowMs,
         r.cargoType, r.loadPort, r.dischargePort, r.laycanStart, r.laycanEnd, r.vesselDwt,
         r.tceUsdPerDay, r.distanceNm, r.freightRateUsdPerMt, r.freightRateSource,
         r.fitPercent, r.fitBreakdown, r.worksheetJson, r.reasonStructured,
@@ -467,7 +494,9 @@ async function main(): Promise<void> {
   console.log('[real-matches] Done.');
 }
 
-main().catch((err) => {
-  console.error('[real-matches] FATAL:', err);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((err) => {
+    console.error('[real-matches] FATAL:', err);
+    process.exit(1);
+  });
+}
