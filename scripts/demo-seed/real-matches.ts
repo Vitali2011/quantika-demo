@@ -72,6 +72,36 @@ function arg(k: string): string | undefined {
 }
 
 /**
+ * Build the seed-matches INSERT SQL with optional cargo_item_index / vessel_item_index
+ * columns. Migration 044 adds these columns; older DBs without the column are tolerated
+ * via the `hasIdxCol` switch (mirrors regenerate-matches.ts:220).
+ *
+ * Exported so the seed-INSERT contract is unit-testable without booting the full seed
+ * pipeline (#791 cause B). DO NOT inline this back into the seed function — the test
+ * relies on the exported shape.
+ */
+export function buildMatchInsertSql(hasIdxCol: boolean): string {
+  return `
+    INSERT INTO matches
+      (cargo_id, vessel_id${hasIdxCol ? ', cargo_item_index, vessel_item_index' : ''},
+       score, reason, status, user_id, created_at, updated_at,
+       cargo_type, load_port, discharge_port, laycan_start, laycan_end, vessel_dwt,
+       tce_usd_per_day, distance_nm, freight_rate_usd_per_mt, freight_rate_source,
+       fit_percent, fit_breakdown, worksheet_json, reason_structured)
+    VALUES
+      (?, ?${hasIdxCol ? ', ?, ?' : ''}, ?, ?, 'shortlist', ?, ?, ?,
+       ?, ?, ?, ?, ?, ?,
+       ?, ?, ?, ?,
+       ?, ?, ?, ?)
+  `;
+}
+
+export function tableHasItemIndexCols(db: Database.Database): boolean {
+  const cols = db.prepare(`PRAGMA table_info(matches)`).all() as Array<{ name: string }>;
+  return cols.some((c) => c.name === 'cargo_item_index');
+}
+
+/**
  * Score a surviving pair using the same heuristic as build.ts:
  *   Base 60 + timing bonus (5-25) + DWT utilisation bonus (3-15)
  * Capped at 100. No LLM dependency.
@@ -133,6 +163,8 @@ async function main(): Promise<void> {
   interface SeedRow {
     cargoId: string;
     vesselId: string;
+    cargoItemIndex: number;
+    vesselItemIndex: number;
     score: number;
     matchLevel: MatchLevel;
     reason: string;
@@ -316,6 +348,8 @@ async function main(): Promise<void> {
       const row: SeedRow = {
         cargoId: cargo.emailId,
         vesselId: vessel.emailId,
+        cargoItemIndex: cargo.itemIndex ?? 0,
+        vesselItemIndex: vessel.itemIndex ?? 0,
         score,
         matchLevel,
         reason,
@@ -403,23 +437,15 @@ async function main(): Promise<void> {
     `DELETE FROM matches WHERE user_id IS NULL OR user_id = '__demo_review__' OR user_id = '__demo_insufficient__'`,
   ).run();
 
-  const insert = db.prepare(`
-    INSERT INTO matches
-      (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at,
-       cargo_type, load_port, discharge_port, laycan_start, laycan_end, vessel_dwt,
-       tce_usd_per_day, distance_nm, freight_rate_usd_per_mt, freight_rate_source,
-       fit_percent, fit_breakdown, worksheet_json, reason_structured)
-    VALUES
-      (?, ?, ?, ?, 'shortlist', ?, ?, ?,
-       ?, ?, ?, ?, ?, ?,
-       ?, ?, ?, ?,
-       ?, ?, ?, ?)
-  `);
+  const hasIdxCol = tableHasItemIndexCols(db);
+  const insert = db.prepare(buildMatchInsertSql(hasIdxCol));
 
   const insertMany = db.transaction((seedRows: SeedRow[], userId: string | null) => {
     for (const r of seedRows) {
       insert.run(
-        r.cargoId, r.vesselId, r.score, r.reason, userId, nowMs, nowMs,
+        r.cargoId, r.vesselId,
+        ...(hasIdxCol ? [r.cargoItemIndex, r.vesselItemIndex] : []),
+        r.score, r.reason, userId, nowMs, nowMs,
         r.cargoType, r.loadPort, r.dischargePort, r.laycanStart, r.laycanEnd, r.vesselDwt,
         r.tceUsdPerDay, r.distanceNm, r.freightRateUsdPerMt, r.freightRateSource,
         r.fitPercent, r.fitBreakdown, r.worksheetJson, r.reasonStructured,
@@ -468,7 +494,9 @@ async function main(): Promise<void> {
   console.log('[real-matches] Done.');
 }
 
-main().catch((err) => {
-  console.error('[real-matches] FATAL:', err);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((err) => {
+    console.error('[real-matches] FATAL:', err);
+    process.exit(1);
+  });
+}
