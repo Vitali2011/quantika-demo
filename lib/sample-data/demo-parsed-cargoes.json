@@ -19,9 +19,13 @@
       "confidence": "interpreted",
       "sourceText": "\nLxHxW 4.3m x 15.7m x4.3m - Weight 15000 kg each tank"
     },
-    "weightMt": null,
-    "weightMtMin": null,
-    "weightMtMax": null,
+    "weightMt": {
+      "value": 186,
+      "confidence": "interpreted",
+      "sourceText": "160 m3 VT Storage (10 tanks):\nLxHxW 4.3m x 15.7m x4.3m - Weight 15000 kg each tank\n80 m3 GMMOS Tanks (4 tanks): \nLxHxW 12.1m x 3.2m x3.2m - Weight 9000 kg each tank"
+    },
+    "weightMtMin": 186,
+    "weightMtMax": 186,
     "volumeCbm": 1920,
     "dimensions": "VT: 4.3m x 15.7m x 4.3m; GMMOS: 12.1m x 3.2m x 3.2m",
     "cargoType": "PROJECT",
