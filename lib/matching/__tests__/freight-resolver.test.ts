@@ -86,14 +86,20 @@ describe('resolveFreightRate — invalid input falls through', () => {
 });
 
 describe('resolveFreightRate — tier-2 math gives sane $/mt', () => {
-  it('matches (usdPerDay × voyageDays ÷ tonnes), rounded to 2dp', () => {
+  // Spec change (#819 Phase B(b)): conversion denominator is the SAME duration
+  // model used downstream in computeEstimatedTce — round-trip (laden*2 + 2 port
+  // days) — so revenue and bunker cost share a consistent voyage span. Using
+  // laden-only days here while costs run over round-trip under-stated freight
+  // ~7× and drove the −$102k vs +$774 sign flip the override guard was hiding.
+  it('matches (usdPerDay × round-trip days ÷ tonnes), rounded to 2dp', () => {
     const r = resolveFreightRate({ ...base, balticDayRate: balticInput });
-    const days = estimateVoyageDays(base.distanceNm, base.speedKts);
+    const ladenDays = estimateVoyageDays(base.distanceNm, base.speedKts);
+    const days = ladenDays > 0 ? ladenDays * 2 + 2 : 0;
     const expected = Math.round((balticInput.usdPerDay * days) / base.quantityMt * 100) / 100;
     expect(r.value).toBe(expected);
   });
 
-  it('is plausible ($0.5–$20/mt) on three representative routes', () => {
+  it('is plausible ($1–$40/mt) on three representative routes after RT-denom fix', () => {
     const routes = [
       { distanceNm: 3000, quantityMt: 45000, balticDayRate: { usdPerDay: 13500, date: 'd', indexCode: 'BSI_TC' } },
       { distanceNm: 6000, quantityMt: 30000, balticDayRate: { usdPerDay: 11500, date: 'd', indexCode: 'BHSI_TC' } },
@@ -102,8 +108,23 @@ describe('resolveFreightRate — tier-2 math gives sane $/mt', () => {
     for (const route of routes) {
       const r = resolveFreightRate({ ...base, ...route });
       expect(r.source).toBe('baltic');
-      expect(r.value).toBeGreaterThan(0.5);
-      expect(r.value).toBeLessThan(20);
+      expect(r.value).toBeGreaterThan(1);
+      expect(r.value).toBeLessThan(40);
     }
+  });
+
+  it('rate after RT fix ≈ 2× the laden-only rate (revenue under-statement was ~6-7× before fix)', () => {
+    // For voyages where laden days ≈ ballast days, RT = 2×laden + 2 → ≈ 2.2× larger.
+    const r = resolveFreightRate({ ...base, balticDayRate: balticInput });
+    const ladenDays = estimateVoyageDays(base.distanceNm, base.speedKts);
+    const oldRate = Math.round((balticInput.usdPerDay * ladenDays) / base.quantityMt * 100) / 100;
+    expect(r.value).toBeGreaterThanOrEqual(oldRate * 2);
+  });
+
+  it('guards ladenDays=0 (distance present but rounds to zero) → falls through to estimate', () => {
+    // estimateVoyageDays floors to 1 above 0, so to hit ladenDays=0 we use distance=0
+    // (already covered) — separately confirm the explicit "days > 0" guard remains.
+    const r = resolveFreightRate({ ...base, distanceNm: 0, balticDayRate: balticInput });
+    expect(r.source).toBe('estimated');
   });
 });

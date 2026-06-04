@@ -472,6 +472,13 @@ async function main() {
         lay ? lay.start.getTime() : null,
         lay ? lay.end.getTime() : null,
         vessel ? (cfValue(vessel.dwtSummer) ?? null) : null,
+        // #819 Phase B(b): stored tce_usd_per_day MUST come from the live
+        // voyage-calculator path (buildMatchEconomics via pair-analyzer) so the
+        // seed bucket and persistSessionMatches recompute agree numerically.
+        // pair-analyzer feeds resolveFreightRate (Tier-2 now uses round-trip
+        // days) into buildMatchEconomics → m.economics.tceUsdPerDay is the
+        // canonical one-truth value. Do NOT substitute a pre-computed or cached
+        // estimate here — it will diverge from persist's recompute.
         m.economics?.tceUsdPerDay ?? null,
         voyage ? voyage.nm : null,
         vessel ? (cfValue(vessel.vesselName) || null) : null,

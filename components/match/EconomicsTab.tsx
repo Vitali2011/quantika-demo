@@ -659,7 +659,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
                   {approxPorts.map((a) => `${a.input} → ${a.resolvedTo}`).join('; ')}. Confirm before fixing.
                 </p>
               )}
-              <VoyageBreakdownChart breakdown={voyageBreakdown} canonicalTceUsdPerDay={storedTceUsdPerDay} />
+              <VoyageBreakdownChart breakdown={voyageBreakdown} />
             </>
           ) : null
         ) : voyageInputData.missing.length > 0 ? (

@@ -30,4 +30,27 @@ describe('VoyageBreakdownChart', () => {
       showsDailyTce: screen.getByText(/17,880/).textContent !== null,
     }).toEqual({ hasChart: true, hasBunkerSeg: true, hasCanalSeg: true, showsDailyTce: true });
   });
+
+  it('headline Daily TCE reads breakdown.daily_tce_usd (live), not a stored canonical', () => {
+    // Phase B(b) #819: drop the stored-vs-live dual-source so the headline and
+    // Net Voyage share one truth. Passing a stale "canonical" must not override
+    // the live engine's per-day figure.
+    render(<VoyageBreakdownChart breakdown={sample} canonicalTceUsdPerDay={99999} />);
+    expect(screen.getByText(/17,880/).textContent).not.toBeNull();
+    expect(screen.queryByText(/99,999/)).toBeNull();
+  });
+
+  it('headline negative when live Net Voyage is negative (sign-convergence guard)', () => {
+    const lossSample: TCEBreakdown = {
+      ...sample,
+      gross_freight_usd: 100000,
+      total_costs_usd: 442400,
+      net_voyage_usd: -342400,
+      daily_tce_usd: -17120,
+    };
+    // Even if a stale stored canonical says +$21,066/day, the headline must reflect the live loss.
+    render(<VoyageBreakdownChart breakdown={lossSample} canonicalTceUsdPerDay={21066} />);
+    expect(screen.getByText(/-\$17,120/).textContent).not.toBeNull();
+    expect(screen.queryByText(/\$21,066/)).toBeNull();
+  });
 });

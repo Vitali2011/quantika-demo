@@ -10,7 +10,11 @@ import type { TCEBreakdown } from '@/lib/economics/voyage-calculator';
 
 interface Props {
   breakdown: TCEBreakdown;
-  /** Canonical stored TCE from the DB row — shown as headline when provided. */
+  /**
+   * Deprecated (#819 Phase B(b)): the headline now reads the live
+   * `breakdown.daily_tce_usd` for sign-convergence with Net Voyage. The prop is
+   * kept for backwards-compatibility on existing callers but is no longer used.
+   */
   canonicalTceUsdPerDay?: number | null;
 }
 
@@ -23,10 +27,13 @@ const SEGMENTS: Array<{ key: keyof TCEBreakdown; label: string; color: string }>
 ];
 
 function fmtUsd(n: number): string {
-  return `$${n.toLocaleString('en-US')}`;
+  // Broker convention: negatives render as `-$X`, not `$-X` (#819).
+  return n < 0
+    ? `-$${Math.abs(n).toLocaleString('en-US')}`
+    : `$${n.toLocaleString('en-US')}`;
 }
 
-export function VoyageBreakdownChart({ breakdown, canonicalTceUsdPerDay }: Props) {
+export function VoyageBreakdownChart({ breakdown }: Props) {
   const total = Math.max(1, breakdown.total_costs_usd);
 
   return (
@@ -34,7 +41,7 @@ export function VoyageBreakdownChart({ breakdown, canonicalTceUsdPerDay }: Props
       <div className="flex items-baseline justify-between text-sm">
         <span className="font-semibold">Voyage Cost Breakdown</span>
         <span className="text-gray-600">
-          Daily TCE: <strong>{fmtUsd(canonicalTceUsdPerDay ?? breakdown.daily_tce_usd)}</strong>
+          Daily TCE: <strong>{fmtUsd(breakdown.daily_tce_usd)}</strong>
         </span>
       </div>
 
