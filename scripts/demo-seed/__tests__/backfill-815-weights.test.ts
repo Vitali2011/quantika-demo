@@ -214,4 +214,178 @@ describe('backfill-815-weights', () => {
     // Summary must show 0 updates
     expect(output).toMatch(/updated=0/i);
   });
+
+  it('summary always includes all four counters', () => {
+    const { stdout, stderr } = runBackfill(dbPath);
+    const output = stdout + stderr;
+    expect(output).toMatch(/updated=\d+/);
+    expect(output).toMatch(/skipped-already-correct=\d+/);
+    expect(output).toMatch(/skipped-missing=\d+/);
+    expect(output).toMatch(/skipped-ambiguous=\d+/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// --allow-missing mode
+// ---------------------------------------------------------------------------
+
+/**
+ * Creates a DB where:
+ * - one fixture emailId has NO row              → SKIPPED-MISSING
+ * - one fixture emailId has an EMPTY items row  → SKIPPED-AMBIGUOUS (itemIndex OOB + no fingerprint match)
+ * - MARMARA_EMAIL_ID has STALE weights          → will be UPDATED
+ * - all other emailIds have correct fixture data → skipped-already-correct
+ */
+function createAllowMissingDb(dbPath: string): { missingId: string; ambiguousId: string } {
+  const fixture = JSON.parse(fs.readFileSync(FIXTURE_PATH, 'utf8')) as Array<{
+    emailId: string;
+    itemIndex: number;
+    [key: string]: unknown;
+  }>;
+
+  const byEmail = new Map<string, typeof fixture>();
+  for (const item of fixture) {
+    const arr = byEmail.get(item.emailId) ?? [];
+    arr.push(item);
+    byEmail.set(item.emailId, arr);
+  }
+
+  const otherIds = [...byEmail.keys()].filter((id) => id !== MARMARA_EMAIL_ID);
+  const MISSING_ID = otherIds[0];
+  const AMBIGUOUS_ID = otherIds[1];
+
+  const db = new Database(dbPath);
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS parsed_results (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      account_id TEXT NOT NULL DEFAULT 'demo',
+      gmail_message_id TEXT NOT NULL,
+      parse_type TEXT NOT NULL,
+      parser_version TEXT NOT NULL DEFAULT '1.0',
+      result_json TEXT NOT NULL,
+      parsed_at INTEGER NOT NULL DEFAULT 0
+    );
+  `);
+
+  const insert = db.prepare(
+    `INSERT INTO parsed_results (gmail_message_id, parse_type, result_json) VALUES (?, 'cargo', ?)`,
+  );
+
+  for (const [emailId, items] of byEmail) {
+    if (emailId === MISSING_ID) continue; // absent → SKIPPED-MISSING
+
+    if (emailId === AMBIGUOUS_ID) {
+      // Empty array: itemIndex OOB + no fingerprint match → SKIPPED-AMBIGUOUS
+      insert.run(emailId, JSON.stringify([]));
+      continue;
+    }
+
+    if (emailId === MARMARA_EMAIL_ID) {
+      insert.run(emailId, JSON.stringify([MARMARA_STALE_ITEM_0, MARMARA_ITEM_1]));
+      continue;
+    }
+
+    insert.run(emailId, JSON.stringify(items));
+  }
+
+  db.close();
+  return { missingId: MISSING_ID, ambiguousId: AMBIGUOUS_ID };
+}
+
+describe('backfill-815-weights --allow-missing', () => {
+  let tmpDir: string;
+
+  beforeEach(() => {
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'backfill-815-allowmissing-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  it('skips MISSING_ROW + AMBIGUOUS_MATCH, applies matched updates, exits 0', () => {
+    const db = path.join(tmpDir, 'test.db');
+    const { missingId, ambiguousId } = createAllowMissingDb(db);
+
+    const { stdout, stderr, exitCode } = runBackfill(db, ['--allow-missing']);
+    const output = stdout + stderr;
+
+    expect(exitCode).toBe(0);
+    expect(output).toMatch(/SKIPPED-MISSING/);
+    expect(output).toMatch(/SKIPPED-AMBIGUOUS/);
+
+    const conn = new Database(db, { readonly: true });
+    const sel = conn.prepare(
+      `SELECT result_json FROM parsed_results WHERE gmail_message_id=? AND parse_type='cargo'`,
+    );
+
+    // Marmara was updated
+    const marmaraRow = sel.get(MARMARA_EMAIL_ID) as { result_json: string };
+    const items = JSON.parse(marmaraRow.result_json);
+    expect(items[0].weightMtMax).toBe(186);
+    expect(items[0].weightMt).toMatchObject({ value: 186, confidence: 'interpreted' });
+
+    // Ambiguous row must be unchanged (empty array — never corrupted)
+    const ambiguousRow = sel.get(ambiguousId) as { result_json: string };
+    expect(JSON.parse(ambiguousRow.result_json)).toEqual([]);
+
+    // Missing row must still have no DB entry
+    const missingRow = sel.get(missingId);
+    expect(missingRow).toBeUndefined();
+
+    conn.close();
+  });
+
+  it('strict mode (no flag) with missing row → ABORT, no writes', () => {
+    const emptyDbPath = path.join(tmpDir, 'empty.db');
+    const emptyDb = new Database(emptyDbPath);
+    emptyDb.exec(`
+      CREATE TABLE parsed_results (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        account_id TEXT NOT NULL DEFAULT 'demo',
+        gmail_message_id TEXT NOT NULL,
+        parse_type TEXT NOT NULL,
+        parser_version TEXT NOT NULL DEFAULT '1.0',
+        result_json TEXT NOT NULL,
+        parsed_at INTEGER NOT NULL DEFAULT 0
+      );
+    `);
+    emptyDb.close();
+
+    const { stdout, stderr, exitCode } = runBackfill(emptyDbPath);
+    const output = stdout + stderr;
+
+    expect(exitCode).not.toBe(0);
+    expect(output).toMatch(/MISSING_ROW/);
+  });
+
+  it('--allow-missing --dry: exits 0, leaves DB unchanged, logs expected markers', () => {
+    const db = path.join(tmpDir, 'dry.db');
+    createAllowMissingDb(db);
+
+    const before = fs.readFileSync(db);
+    const { stdout, stderr, exitCode } = runBackfill(db, ['--allow-missing', '--dry']);
+    const after = fs.readFileSync(db);
+    const output = stdout + stderr;
+
+    expect(exitCode).toBe(0);
+    expect(before.equals(after)).toBe(true);
+    expect(output).toMatch(/SKIPPED-MISSING/);
+    expect(output).toMatch(/SKIPPED-AMBIGUOUS/);
+    expect(output).toMatch(/WOULD-UPDATE/);
+  });
+
+  it('--allow-missing idempotent: second run produces 0 updates', () => {
+    const db = path.join(tmpDir, 'idem.db');
+    createAllowMissingDb(db);
+
+    const r1 = runBackfill(db, ['--allow-missing']);
+    expect(r1.exitCode).toBe(0);
+
+    const r2 = runBackfill(db, ['--allow-missing']);
+    const output = r2.stdout + r2.stderr;
+    expect(r2.exitCode).toBe(0);
+    expect(output).not.toMatch(/\bUPDATED emailId=/);
+    expect(output).toMatch(/updated=0/i);
+  });
 });

@@ -7,11 +7,17 @@
  * changed by PR #815). All other fields are untouched.
  *
  * Usage:
- *   npx tsx scripts/demo-seed/backfill-815-weights.ts --db data/demo-seed.db [--dry]
+ *   npx tsx scripts/demo-seed/backfill-815-weights.ts --db data/demo-seed.db [--dry] [--allow-missing]
  *
- * --dry  Preview only — logs WOULD-UPDATE lines, writes nothing.
+ * --dry            Preview only — logs WOULD-UPDATE lines, writes nothing.
+ * --allow-missing  Skip MISSING_ROW and AMBIGUOUS_MATCH rows instead of aborting.
+ *                  Logs SKIPPED-MISSING / SKIPPED-AMBIGUOUS and proceeds with
+ *                  cleanly-matched updates. Without this flag (default), any
+ *                  MISSING_ROW or AMBIGUOUS_MATCH causes a non-zero exit (strict).
  *
- * Exits non-zero if ANY fixture cargo has no parsed_results row (MISSING_ROW).
+ * Summary line (always printed):
+ *   done — updated=N skipped-already-correct=M skipped-missing=K skipped-ambiguous=A
+ *
  * Idempotent: re-run on already-patched DB produces 0 changes.
  */
 
@@ -52,6 +58,7 @@ function arg(k: string): string | undefined {
 }
 
 const DRY = process.argv.includes('--dry');
+const ALLOW_MISSING = process.argv.includes('--allow-missing');
 const dbPath = arg('--db') ?? path.resolve(process.cwd(), 'data/demo-seed.db');
 const fixtureDir = path.resolve(process.cwd(), 'lib/sample-data/demo-parsed-cargoes.json');
 
@@ -67,7 +74,7 @@ function jsonEqual(a: unknown, b: unknown): boolean {
 }
 
 async function main() {
-  console.log(`[backfill-815] db=${dbPath}${DRY ? ' (DRY)' : ''}`);
+  console.log(`[backfill-815] db=${dbPath}${DRY ? ' (DRY)' : ''}${ALLOW_MISSING ? ' (allow-missing)' : ''}`);
 
   if (!fs.existsSync(dbPath)) {
     console.error(`[backfill-815] ERROR: db not found: ${dbPath}`);
@@ -93,7 +100,9 @@ async function main() {
 
   let updates = 0;
   let skipped = 0;
-  let missingRows = 0;
+  let skippedMissing = 0;
+  let skippedAmbiguous = 0;
+  let missingRows = 0; // strict-mode counter only; triggers abort at end
 
   // Group fixture items by emailId
   const byEmail = new Map<string, FixtureCargo[]>();
@@ -106,8 +115,13 @@ async function main() {
   for (const [emailId, cargoes] of byEmail) {
     const row = selectRow.get(emailId) as { result_json: string } | undefined;
     if (!row) {
-      console.error(`[backfill-815] MISSING_ROW emailId=${emailId}`);
-      missingRows++;
+      if (ALLOW_MISSING) {
+        console.log(`[backfill-815] SKIPPED-MISSING emailId=${emailId}`);
+        skippedMissing++;
+      } else {
+        console.error(`[backfill-815] MISSING_ROW emailId=${emailId}`);
+        missingRows++;
+      }
       continue;
     }
 
@@ -121,8 +135,13 @@ async function main() {
         const fp = fingerprint(c);
         target = items.find((it) => fingerprint(it) === fp);
         if (!target) {
-          console.error(`[backfill-815] AMBIGUOUS_MATCH emailId=${emailId} itemIndex=${c.itemIndex}`);
-          missingRows++;
+          if (ALLOW_MISSING) {
+            console.log(`[backfill-815] SKIPPED-AMBIGUOUS emailId=${emailId} itemIndex=${c.itemIndex}`);
+            skippedAmbiguous++;
+          } else {
+            console.error(`[backfill-815] AMBIGUOUS_MATCH emailId=${emailId} itemIndex=${c.itemIndex}`);
+            missingRows++;
+          }
           continue;
         }
       }
@@ -159,7 +178,7 @@ async function main() {
     }
   }
 
-  console.log(`[backfill-815] done — ${DRY ? 'would-update' : 'updated'}=${updates} skipped(already-correct)=${skipped} missing=${missingRows}`);
+  console.log(`[backfill-815] done — updated=${updates} skipped-already-correct=${skipped} skipped-missing=${skippedMissing} skipped-ambiguous=${skippedAmbiguous}`);
 
   if (missingRows > 0) {
     console.error(`[backfill-815] ABORT — ${missingRows} MISSING_ROW or AMBIGUOUS_MATCH; no writes performed`);
