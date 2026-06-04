@@ -786,6 +786,7 @@ export async function analyzePairs(
       consumptionMt: parseConsumption(vessel.consumption),
       loadPort,
       dischargePort,
+      vesselOpenPosition: cfValue(vessel.openPosition),
       calculatedAt: economicsCalcAt,
       resolvedFreight: {
         rate: resolvedFreight.value,

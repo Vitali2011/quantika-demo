@@ -190,6 +190,8 @@ export interface MatchEconomicsInput {
   consumptionMt: number;
   loadPort: string | null;
   dischargePort: string | null;
+  /** Vessel open position — for ballast leg war-risk. Pass null when unknown (skips ballast premium). */
+  vesselOpenPosition?: string | null;
   /** ISO 8601 timestamp; passed in so the result is deterministic/testable. */
   calculatedAt: string;
   /** Vessel value for the war-risk hull premium. Defaults to DEFAULT_VESSEL_VALUE_USD. */
@@ -228,10 +230,23 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
     input.consumptionMt,
   );
 
-  const war = calculateWarRiskPremium({
+  const warLaden = calculateWarRiskPremium({
     route: { fromPort: input.loadPort ?? '', toPort: input.dischargePort ?? '' },
     vesselValueUsd: input.vesselValueUsd ?? DEFAULT_VESSEL_VALUE_USD,
   });
+
+  const openPos = input.vesselOpenPosition ?? '';
+  const warBallast =
+    openPos && input.loadPort
+      ? calculateWarRiskPremium({
+          route: { fromPort: openPos, toPort: input.loadPort },
+          vesselValueUsd: input.vesselValueUsd ?? DEFAULT_VESSEL_VALUE_USD,
+        })
+      : { applicable: false, premiumUsd: 0, zones: [], zoneIds: [] as string[] };
+
+  const warCombinedTotal =
+    (warLaden.breakdown?.totalPremiumUsd ?? warLaden.premiumUsd) +
+    (warBallast.breakdown?.totalPremiumUsd ?? warBallast.premiumUsd);
 
   return {
     breakdown: {
@@ -239,12 +254,18 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
       bunkerPort: input.loadPort ?? '',
       euEtsAmount: tce.breakdown.ets_eur,
       euEtsApplicable: tce.breakdown.applicable.ets,
-      warRiskPremium: war.premiumUsd,
-      warRiskZones: war.zones,
-      warRiskTotal: war.breakdown?.totalPremiumUsd,
-      warRiskBreakdown: war.breakdown,
+      // BC aliases — laden-only — unchanged meaning for existing consumers
+      warRiskPremium: warLaden.premiumUsd,
+      warRiskZones: warLaden.zones,
+      warRiskTotal: warLaden.breakdown?.totalPremiumUsd,
+      warRiskBreakdown: warLaden.breakdown,
+      // Explicit named laden/ballast siblings
+      warRiskBreakdownLaden: warLaden.breakdown,
+      warRiskBreakdownBallast: warBallast.breakdown,
+      warRiskZonesBallast: warBallast.zones,
+      warRiskTotalCombined: warCombinedTotal,
     },
-    totalUsd: tce.breakdown.total_costs_usd + war.premiumUsd,
+    totalUsd: tce.breakdown.total_costs_usd + warCombinedTotal,
     calculatedAt: input.calculatedAt,
     dataFreshness: { bunker: 'estimated', eua: 'estimated' },
     tceUsdPerDay: tce.tce_usd_per_day,
