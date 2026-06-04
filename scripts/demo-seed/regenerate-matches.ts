@@ -34,7 +34,175 @@ import path from 'node:path';
 import { analyzePairs } from '@/lib/matching/pair-analyzer';
 import { parseLaycan } from '@/lib/sailing/date-parsing';
 import { getPortDistance } from '@/lib/sailing/port-distances';
+import { calculateReadinessGap, detectSpot } from '@/lib/sailing/readiness-gap';
 import { cfValue, type ParsedCargo, type ParsedVessel, type Match, type MatchWorksheet } from '@/lib/types';
+
+// ── --rebuild-worksheet exports ───────────────────────────────────────────────
+
+export interface RebuildRow {
+  matchId: number;
+  cargoId: string;
+  vesselId: string;
+  oldLaycanStart: string | null;
+  newLaycanStart: string | null;
+}
+
+export interface RebuildWorksheetSummary {
+  planned: number;
+  written: number;
+  rows: RebuildRow[];
+}
+
+/**
+ * For every seed match whose worksheet_json.readiness.laycanStart disagrees
+ * with the current parsed_results laycan, recompute readiness and update
+ * worksheet_json in-place. Does NOT touch laycan_start, distance_nm,
+ * fit_percent, or any other column.
+ *
+ * opts.dry=true → report planned rewrites, write nothing (for --dry-rebuild-worksheet).
+ */
+export async function rebuildWorksheets(
+  db: Database.Database,
+  opts: { dry?: boolean } = {},
+): Promise<RebuildWorksheetSummary> {
+  const { dry = false } = opts;
+
+  const frozen =
+    (db.prepare(`SELECT frozen_date f FROM demo_seed_meta WHERE id=1`).get() as { f?: string })?.f ??
+    '2026-05-28';
+  const today = new Date(frozen + 'T00:00:00.000Z');
+  const refYear = today.getUTCFullYear();
+
+  // Load all parsed_results into item-level maps
+  const cargoByKey = new Map<string, ParsedCargo>(); // key = emailId|itemIndex
+  const vesselByKey = new Map<string, ParsedVessel>();
+
+  for (const r of db
+    .prepare(
+      `SELECT gmail_message_id id, parse_type, result_json j FROM parsed_results WHERE parse_type IN ('cargo','vessel')`,
+    )
+    .all() as Array<{ id: string; parse_type: string; j: string }>) {
+    const raw = JSON.parse(r.j);
+    const items: Record<string, unknown>[] = Array.isArray(raw) ? raw : [raw];
+    items.forEach((it, idx) => {
+      it.emailId = r.id;
+      it.itemIndex = idx;
+      if (r.parse_type === 'cargo') {
+        const nl = normalizeLaycan(it.laycan);
+        if (nl !== it.laycan) it.laycan = nl;
+        cargoByKey.set(`${r.id}|${idx}`, it as unknown as ParsedCargo);
+      } else {
+        vesselByKey.set(`${r.id}|${idx}`, it as unknown as ParsedVessel);
+      }
+    });
+  }
+
+  // Check schema
+  const cols = db.prepare(`PRAGMA table_info(matches)`).all() as Array<{ name: string }>;
+  const hasWorksheetCol = cols.some((c) => c.name === 'worksheet_json');
+  const hasIdxCol = cols.some((c) => c.name === 'cargo_item_index');
+
+  if (!hasWorksheetCol) return { planned: 0, written: 0, rows: [] };
+
+  const selectSql = `
+    SELECT id, cargo_id, vessel_id,
+           ${hasIdxCol ? 'cargo_item_index, vessel_item_index,' : '0 AS cargo_item_index, 0 AS vessel_item_index,'}
+           laycan_start, distance_nm, fit_percent, worksheet_json
+    FROM matches
+    WHERE (user_id IS NULL OR user_id IN ('__demo_review__','__demo_insufficient__'))
+      AND worksheet_json IS NOT NULL
+  `;
+
+  const seedMatches = db.prepare(selectSql).all() as Array<{
+    id: number;
+    cargo_id: string;
+    vessel_id: string;
+    cargo_item_index: number;
+    vessel_item_index: number;
+    laycan_start: number | null;
+    distance_nm: number | null;
+    fit_percent: number | null;
+    worksheet_json: string;
+  }>;
+
+  const summary: RebuildWorksheetSummary = { planned: 0, written: 0, rows: [] };
+  const updateStmt = dry
+    ? null
+    : db.prepare(`UPDATE matches SET worksheet_json = ? WHERE id = ?`);
+
+  for (const row of seedMatches) {
+    let existingWs: MatchWorksheet | null = null;
+    try {
+      existingWs = JSON.parse(row.worksheet_json);
+    } catch {
+      continue;
+    }
+    if (!existingWs) continue;
+
+    const cargo = cargoByKey.get(`${row.cargo_id}|${row.cargo_item_index}`);
+    const vessel = vesselByKey.get(`${row.vessel_id}|${row.vessel_item_index}`);
+
+    if (!cargo) continue;
+
+    const normalizedLaycan = normalizeLaycan(cargo.laycan);
+    const vesselOpenDate = vessel ? cfValue(vessel.openDate) : null;
+
+    const freshReadiness = calculateReadinessGap(
+      {
+        openDate: vesselOpenDate,
+        openPosition: vessel ? cfValue(vessel.openPosition) : null,
+        speedLaden: vessel?.speedLaden ?? null,
+        dwtSummer: vessel ? (cfValue(vessel.dwtSummer) ?? null) : null,
+        isSpot: detectSpot(vesselOpenDate),
+      },
+      { laycan: normalizedLaycan, originPort: cfValue(cargo.originPort) },
+      { refYear, today },
+    );
+
+    const oldLaycanStart = existingWs.readiness?.laycanStart ?? null;
+    const newLaycanStart = freshReadiness.laycanStart;
+
+    if (oldLaycanStart === newLaycanStart) continue;
+
+    const rebuiltWs: MatchWorksheet = {
+      ...existingWs,
+      readiness: {
+        openDate: freshReadiness.openDate,
+        laycanStart: freshReadiness.laycanStart,
+        laycanEnd: freshReadiness.laycanEnd,
+        distanceNm: freshReadiness.distanceNm,
+        distanceExact: freshReadiness.distanceExact,
+        speedKn: freshReadiness.speedKn,
+        sailingDays: freshReadiness.sailingDays,
+        arrivalDate: freshReadiness.arrivalDate,
+        gapDays: freshReadiness.gapDays,
+        verdict: freshReadiness.verdict,
+        explanation: freshReadiness.explanation,
+        openPosition: vessel ? (cfValue(vessel.openPosition) ?? null) : null,
+      },
+    };
+
+    const rebuildRow: RebuildRow = {
+      matchId: row.id,
+      cargoId: row.cargo_id,
+      vesselId: row.vessel_id,
+      oldLaycanStart,
+      newLaycanStart,
+    };
+    summary.rows.push(rebuildRow);
+    summary.planned++;
+    console.log(
+      `[regen] planned REWRITE match ${row.id}: ${oldLaycanStart} → ${newLaycanStart}${dry ? ' (dry)' : ''}`,
+    );
+
+    if (!dry) {
+      updateStmt!.run(JSON.stringify(rebuiltWs), row.id);
+      summary.written++;
+    }
+  }
+
+  return summary;
+}
 
 function arg(k: string): string | undefined {
   const i = process.argv.indexOf(k);
@@ -70,6 +238,29 @@ function cargoTypeStr(cargo: ParsedCargo): string | null {
 }
 
 async function main() {
+  // --rebuild-worksheet / --dry-rebuild-worksheet: targeted worksheet rebuild mode.
+  // Does NOT re-run analyzePairs — only patches worksheet_json for seed matches
+  // whose readiness.laycanStart disagrees with the current parsed_results laycan.
+  const REBUILD_WORKSHEET =
+    process.argv.includes('--rebuild-worksheet') ||
+    process.argv.includes('--dry-rebuild-worksheet');
+  if (REBUILD_WORKSHEET) {
+    const isDry =
+      process.argv.includes('--dry-rebuild-worksheet') ||
+      (process.argv.includes('--rebuild-worksheet') && process.argv.includes('--dry'));
+    const dbPath = arg('--db') ?? path.resolve(process.cwd(), 'data/demo-seed.db');
+    console.log(`[regen] rebuild-worksheet mode — ${dbPath}${isDry ? ' (DRY)' : ''}`);
+    const db = new Database(dbPath, isDry ? { readonly: true } : {});
+    if (!isDry) db.pragma('journal_mode = WAL');
+    const result = await rebuildWorksheets(db, { dry: isDry });
+    console.log(
+      `[regen] rebuild-worksheet done: planned=${result.planned} written=${result.written}`,
+    );
+    if (isDry) console.log('[regen] DRY — no writes.');
+    db.close();
+    return;
+  }
+
   const dbPath = arg('--db') ?? path.resolve(process.cwd(), 'data/demo-seed.db');
   console.log(`[regen] Opening ${dbPath}${DRY ? ' (DRY — no writes)' : ''}`);
   const db = new Database(dbPath, DRY ? { readonly: true } : {});
@@ -309,4 +500,6 @@ async function main() {
   console.log(`[regen] verify main(NULL): ${v.n} rows, ${v.withfit} with fit`);
   db.close();
 }
-main().catch((e) => { console.error(e); process.exit(1); });
+if (require.main === module) {
+  main().catch((e) => { console.error(e); process.exit(1); });
+}
