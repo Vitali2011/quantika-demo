@@ -16,7 +16,7 @@ import { freightBadge, FREIGHT_BADGE_CLASSES } from '@/lib/matching/freight-badg
 import { useDemoNow } from '@/lib/clock-client';
 
 interface Props {
-  initialMatches: StoredMatch[];
+  initialMatches: (StoredMatch & { laycan_display?: string | null })[];
   isComputing?: boolean;
   cargoEmailIds?: string[];
   vesselEmailIds?: string[];
@@ -107,7 +107,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
   const toast = useToast();
 
   // Core state
-  const [matches, setMatches] = useState<StoredMatch[]>(initialMatches);
+  const [matches, setMatches] = useState<(StoredMatch & { laycan_display?: string | null })[]>(initialMatches);
 
   // Live SSE state (additive — does not touch cached-list flow)
   const { jobs, latestMatch, dismissMatch } = useLiveJobs();
@@ -1084,7 +1084,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                         {/* Laycan */}
                         <td className="py-[13px] px-3 text-right align-middle">
                           <span className="font-mono text-[12.5px] whitespace-nowrap text-ds-text-muted">
-                            {fmtLaycan(match.laycan_start, match.laycan_end)}
+                            {match.laycan_display ?? fmtLaycan(match.laycan_start, match.laycan_end)}
                           </span>
                         </td>
                         {/* Actions */}
