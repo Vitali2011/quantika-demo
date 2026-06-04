@@ -55,10 +55,16 @@ export function resolveFreightRate(input: ResolveFreightInput): ResolvedFreightR
     return { value: round2(input.parsedFreightRateUsdPerMt), source: 'parsed', confidence: PARSED_CONFIDENCE };
   }
 
-  // Tier 2 — Baltic market: $/mt = ($/day × voyage days) ÷ tonnes
+  // Tier 2 — Baltic market: $/mt = ($/day × ROUND-TRIP days) ÷ tonnes.
+  // Round-trip (laden + ballast + 2 port days) matches the duration model used
+  // downstream in computeEstimatedTce, so freight revenue and bunker cost share
+  // a consistent voyage span. Using laden-only days here while costs ran over
+  // round-trip under-stated freight ~7× and drove the −$102k vs +$774 divergence
+  // the persist-session-matches override was hiding (#819 Phase B(b)).
   const baltic = input.balticDayRate;
   if (baltic && isPositive(baltic.usdPerDay) && input.distanceNm > 0 && input.quantityMt > 0) {
-    const days = estimateVoyageDays(input.distanceNm, input.speedKts);
+    const ladenDays = estimateVoyageDays(input.distanceNm, input.speedKts);
+    const days = ladenDays > 0 ? ladenDays * 2 + 2 : 0;
     if (days > 0) {
       const value = round2((baltic.usdPerDay * days) / input.quantityMt);
       if (value > 0) {

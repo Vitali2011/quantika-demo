@@ -66,6 +66,15 @@ export function persistSessionMatches(
     // a live recompute. The recompute path above uses the Baltic tier which drifts
     // from the seed's estimateFreightRate path — same pair, same distance, but
     // divergent freight tiers produce catastrophic values (e.g. -$102k vs +$774).
+    //
+    // #819 Phase B(b) note: freight-resolver Tier-2 now uses round-trip days,
+    // closing the structural under-statement of freight revenue, but the canonical
+    // guard tests (__tests__/.../persist-session-matches-canonical-tce.test.ts)
+    // lock in SPECIFIC stored values (774 / 5420) that the recompute path will
+    // never numerically equal — those tests fundamentally assert the override
+    // BEHAVIOR, not numerical convergence. Removing the override requires a paired
+    // test-spec update; per dispatch PI3 / Q1-CHAIN-STOP, that update is deferred
+    // to a follow-up task (see QUESTIONS.md). Keep the override here for now.
     const storedTce = m.economics?.tceUsdPerDay;
     if (storedTce != null && Number.isFinite(storedTce)) {
       tce_usd_per_day = storedTce;
