@@ -82,6 +82,8 @@ export function MatchTabs({ match, vessel, cargo, cargoEmailId, matchDbId, store
             warRiskPremium={match.economics?.breakdown?.warRiskPremium ?? null}
             warRiskZones={match.economics?.breakdown?.warRiskZones ?? null}
             warRiskBreakdown={match.economics?.breakdown?.warRiskBreakdown ?? null}
+            warRiskBreakdownBallast={match.economics?.breakdown?.warRiskBreakdownBallast ?? null}
+            warRiskZonesBallast={match.economics?.breakdown?.warRiskZonesBallast ?? null}
             storedTceUsdPerDay={storedTceUsdPerDay}
           />
         )}

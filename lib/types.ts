@@ -55,8 +55,16 @@ export interface EconomicsBreakdown {
   warRiskZones: string[];              // e.g. ['Gulf of Guinea HRA']
   /** Hull + crew war bonus + P&I surcharge. Undefined when warRiskPremium is 0. */
   warRiskTotal?: number;
-  /** Full per-voyage war risk breakdown (issue #178). */
+  /** Full per-voyage war risk breakdown (issue #178). Laden-only alias of warRiskBreakdownLaden. */
   warRiskBreakdown?: import('./economics/war-risk').WarRiskBreakdown;
+  /** Laden voyage war-risk (load → discharge). Same as warRiskBreakdown — explicit name. */
+  warRiskBreakdownLaden?: import('./economics/war-risk').WarRiskBreakdown;
+  /** Ballast leg war-risk (open position → load). Undefined when openPosition is non-HRA or absent. */
+  warRiskBreakdownBallast?: import('./economics/war-risk').WarRiskBreakdown;
+  /** JWC zones touched by the ballast leg. */
+  warRiskZonesBallast?: string[];
+  /** Laden + ballast totalPremiumUsd. Reflected in EconomicsResult.totalUsd. */
+  warRiskTotalCombined?: number;
 }
 
 export interface EconomicsResult {

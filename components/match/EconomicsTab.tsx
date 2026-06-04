@@ -25,6 +25,8 @@ interface EconomicsTabProps {
   warRiskPremium?: number | null;
   warRiskZones?: string[] | null;
   warRiskBreakdown?: WarRiskBreakdown | null;
+  warRiskBreakdownBallast?: WarRiskBreakdown | null;
+  warRiskZonesBallast?: string[] | null;
   /** Stored canonical TCE from the DB row (list == detail invariant). */
   storedTceUsdPerDay?: number | null;
 }
@@ -60,7 +62,7 @@ function portLabel(locode: string): string {
   return PORT_NAMES[locode] ?? locode;
 }
 
-export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm, matchDbId, storedFreightRate, freightRateSource, warRiskPremium, warRiskZones, warRiskBreakdown, storedTceUsdPerDay }: EconomicsTabProps) {
+export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm, matchDbId, storedFreightRate, freightRateSource, warRiskPremium, warRiskZones, warRiskBreakdown, warRiskBreakdownBallast, warRiskZonesBallast, storedTceUsdPerDay }: EconomicsTabProps) {
   const [open, setOpen] = useState(false);
   const [bunkerPriceUsdPerMt, setBunkerPriceUsdPerMt] = useState('');
   const [overrideRate, setOverrideRate] = useState(storedFreightRate != null ? String(storedFreightRate) : '');
@@ -553,7 +555,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
       {/* JWC war-risk breakdown */}
       {warRiskPremium != null && warRiskPremium > 0 && warRiskBreakdown ? (
         <div data-testid="warrisk-section" className="rounded border border-orange-200 bg-orange-50 p-3 space-y-2">
-          <h3 className="text-xs font-semibold text-orange-900">JWC War Risk (per voyage)</h3>
+          <h3 className="text-xs font-semibold text-orange-900">JWC War Risk — Laden Voyage (per voyage)</h3>
           {warRiskZones && warRiskZones.length > 0 && (
             <div className="flex flex-wrap gap-1">
               {warRiskZones.map((zone) => (
@@ -596,6 +598,46 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
       ) : (
         <div data-testid="warrisk-none" className="rounded border border-gray-200 bg-gray-50 p-3 text-xs text-gray-500">
           No JWC war risk zones on this route
+        </div>
+      )}
+
+      {/* JWC war-risk — ballast reposition leg */}
+      {warRiskBreakdownBallast && warRiskBreakdownBallast.totalPremiumUsd > 0 && (
+        <div data-testid="warrisk-ballast-section" className="rounded border border-amber-200 bg-amber-50 p-3 space-y-2">
+          <h3 className="text-xs font-semibold text-amber-900">JWC War Risk — Ballast Reposition (per voyage)</h3>
+          {warRiskZonesBallast && warRiskZonesBallast.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {warRiskZonesBallast.map((zone) => (
+                <span key={zone} className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 text-xs">{zone}</span>
+              ))}
+            </div>
+          )}
+          <div className="space-y-1 text-xs">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Hull premium:</span>
+              <span data-testid="warrisk-ballast-hull" className="font-medium">
+                ${warRiskBreakdownBallast.hullPremiumUsd.toLocaleString('en-US')}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Crew war bonus:</span>
+              <span data-testid="warrisk-ballast-crew" className="font-medium">
+                ${warRiskBreakdownBallast.crewWarBonusUsd.toLocaleString('en-US')}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">P&amp;I surcharge:</span>
+              <span data-testid="warrisk-ballast-pi" className="font-medium">
+                ${warRiskBreakdownBallast.piSurchargeUsd.toLocaleString('en-US')}
+              </span>
+            </div>
+            <div className="flex justify-between pt-1 border-t border-amber-200">
+              <span className="text-gray-700 font-medium">Total:</span>
+              <span data-testid="warrisk-ballast-total" className="font-semibold text-amber-900">
+                ${warRiskBreakdownBallast.totalPremiumUsd.toLocaleString('en-US')}
+              </span>
+            </div>
+          </div>
         </div>
       )}
 
