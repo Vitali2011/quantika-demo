@@ -42,7 +42,7 @@ The Knowledge Layer introduces real data sources for sanctions screening, port d
   - Smoke test: POST `/api/match` with a clean entity returns `sanctions_hit: false`.
 - **Rollback (< 5 min):**
   1. Set `KNOWLEDGE_SANCTIONS_REAL=false` in `.env.production`.
-  2. Reload: `pm2 reload quantika-demo` or `systemctl restart quantika-demo`.
+  2. Restart: `pm2 restart quantika-demo --update-env` or `systemctl restart quantika-demo`.
   3. Verify: POST `/api/match` completes without 5xx; sanctions logic runs from fixtures.
 - **Phase 1 task:** C6
 
@@ -59,7 +59,7 @@ The Knowledge Layer introduces real data sources for sanctions screening, port d
   - Smoke: 5 known routes (e.g., Shanghai→Rotterdam, Dubai→Hamburg) within ±5% of historical baseline values.
 - **Rollback (< 5 min):**
   1. Set `KNOWLEDGE_LAYER_DISTANCES_ENABLED=false` in `.env.production`.
-  2. Reload: `pm2 reload quantika-demo` or `systemctl restart quantika-demo`.
+  2. Restart: `pm2 restart quantika-demo --update-env` or `systemctl restart quantika-demo`.
   3. Smoke check: POST `/api/match` returns distances based on Haversine (no 5xx, reasonable km values).
 - **Phase 1 task:** D7
 
@@ -76,7 +76,7 @@ The Knowledge Layer introduces real data sources for sanctions screening, port d
   - Regression: POST `/api/match` with a voyage through a safe corridor returns same or lower `war_risk_rate` as before.
 - **Rollback (< 5 min):**
   1. Set `KNOWLEDGE_WAR_RISK_FROM_DB=false` in `.env.production`.
-  2. Reload: `pm2 reload quantika-demo` or `systemctl restart quantika-demo`.
+  2. Restart: `pm2 restart quantika-demo --update-env` or `systemctl restart quantika-demo`.
   3. Verify: `/api/match` returns war-risk values from hardcoded logic (no 5xx).
 - **Phase 1 task:** E3
 
@@ -92,7 +92,7 @@ The Knowledge Layer introduces real data sources for sanctions screening, port d
   - At least 3 RAG smoke queries return relevant knowledge snippets.
 - **Rollback (< 5 min):**
   1. Set `KNOWLEDGE_LAYER_RAG_ENABLED=false` in `.env.production`.
-  2. Reload: `pm2 reload quantika-demo` or `systemctl restart quantika-demo`.
+  2. Restart: `pm2 restart quantika-demo --update-env` or `systemctl restart quantika-demo`.
   3. Verify: endpoints that use RAG fall back to non-RAG logic without errors.
 - **Phase 1 task:** Phase 2 (not scheduled)
 
@@ -126,13 +126,13 @@ Activate in this sequence after Phase 1 deploy. Each step assumes the previous o
 To disable all Knowledge Layer flags in one command:
 
 ```bash
-sed -i.bak -E 's/^(KNOWLEDGE_.*=)true/\1false/' /opt/quantika/.env.production && pm2 reload quantika-demo
+sed -i.bak -E 's/^(KNOWLEDGE_.*=)true/\1false/' /opt/quantika/.env.production && pm2 restart quantika-demo --update-env
 ```
 
 This creates a `.env.production.bak` backup before modification. To restore from backup:
 
 ```bash
-cp /opt/quantika/.env.production.bak /opt/quantika/.env.production && pm2 reload quantika-demo
+cp /opt/quantika/.env.production.bak /opt/quantika/.env.production && pm2 restart quantika-demo --update-env
 ```
 
 ---

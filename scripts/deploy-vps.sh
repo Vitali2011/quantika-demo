@@ -49,6 +49,9 @@ npx tsx scripts/migrate.ts
 echo "==> Seeding port-DA estimates ($SESSIONS_DB_PATH)..."
 npx tsx scripts/seed-port-da.ts
 
+echo "==> WAL checkpoint ($SESSIONS_DB_PATH) — flush WAL before restart..."
+sqlite3 "$SESSIONS_DB_PATH" "PRAGMA wal_checkpoint(TRUNCATE);" 2>/dev/null || true
+
 echo "==> Restarting PM2 (--update-env picks up .env.local changes)..."
 npx pm2 restart quantika-demo --update-env
 npx pm2 save
