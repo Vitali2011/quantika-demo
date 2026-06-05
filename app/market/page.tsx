@@ -265,17 +265,10 @@ export default function MarketPage() {
               <span className="text-slate-900">London 16:30 GMT</span>
             </p>
           </div>
-          {isStale ? (
-            <div className="flex items-center gap-2 font-mono text-[11.5px] uppercase tracking-widest text-slate-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-              Last sync: {latestDate}
-            </div>
-          ) : (
-            <div className="flex items-center gap-2 font-mono text-[11.5px] uppercase tracking-widest text-slate-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-600 animate-pulse" />
-              Live · synced
-            </div>
-          )}
+          <div className="flex items-center gap-2 font-mono text-[11.5px] uppercase tracking-widest text-slate-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+            {latestDate ? `Market data · demo snapshot as of ${latestDate}` : 'Market data · demo snapshot'}
+          </div>
         </header>
 
         {/* KPI Strip — Baltic indices + bunker + EUA */}
