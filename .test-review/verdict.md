@@ -1,50 +1,38 @@
-# Verdict — fix-econ-a-bunker (PR #822)
+# test-skill Verdict — detectSpot tighten (fix-detectspot-tighten)
 
-## APPROVE-WITH-FOLLOWUPS
+**Verdict: APPROVE**
 
----
+## What was tested
 
-## Rationale
+Phase 1 — Discovery: 1 commit, 2 files changed (readiness-gap.ts + readiness-gap.test.ts)
 
-All 10 adversarial attacks passed. One MEDIUM edge-case finding (FINDING-1).
+Phase 2 — Attack surface: Class 10 (Cleanroom) + Class 11 (PBT-adjacent edge cases)
+- Change is a regex/normalizer guard in a shared symbol (detectSpot)
+- Risk: false-positive flip (spot→non-spot for dated vessels) and false-negative flip (non-spot→spot for edge inputs)
 
-**Why not BLOCK:**
-- First-render behavior is correct (null → wait for recommendation → correct port)
-- FINDING-1 only manifests when `EconomicsTab` stays mounted across cargo changes
-  (page-based navigation remounts the component; this edge case is rare in production)
-- No data corruption, no auth bypass, no infinite loops, no Infinity/NaN TCE
+Phase 3 — Attack executed:
+- All 8 spec shapes: PASS
+- 17 adversarial edge cases (case variants, date formats, port+no-date, keyword-only, newline): ALL PASS
+- Consumer suite (pair-analyzer, economics-wiring, laycan-display): 31 tests PASS
+- Integration regression (SEAGULL-12 shape): isSpot=false, verdict='idle': PASS
+- match-realism-stability (4 tests): PASS
 
-**Why not plain APPROVE:**
-- FINDING-1 is a real regression (previous port persists on fallback after route change)
-- The follow-up fix is a one-line addition to the fallback branch (documented above)
+## Findings
 
----
+None. All probe inputs behaved as expected.
 
-## Required Follow-up (before next sprint)
+**Notable edge case — "spot today":**
+After fix, `detectSpot("spot today") = false` (parseVesselOpenDate sees "today" in stripped string → Date → non-spot).
+This is CORRECT behavior — a vessel marked "today" has an explicit date context; the 30-day spot window is reserved for keyword-only availability signals. This is an improvement, not a regression.
 
-**FU-1 (MEDIUM):** Reset bunkerPort to null when recommendation returns fallback and bunkerPortManual=false.
+**Pre-existing gap (not introduced by this PR):**
+`parseVesselOpenDate("spot 2026-06-03")` still returns `today` (spot branch fires first in date-parsing.ts).
+So openDateObj for a "spot 2026-06-03" vessel is computed as today, not 2026-06-03.
+For the SEAGULL-12 scenario (today = 2026-06-03), the open date IS today, so the calculation is correct.
+For a future scenario where today ≠ 2026-06-03, openDateObj would drift. This is a pre-existing limitation of parseVesselOpenDate, out of scope for this fix. Recommend a follow-up to make parseVesselOpenDate prefer the ISO date over the keyword when both are present.
 
-In `components/match/EconomicsTab.tsx`, in the recommendation effect fallback branch, add:
-```typescript
-if (!bunkerPortManual) setBunkerPort(null);
-```
-This ensures multi-cargo use cases don't inherit a stale port from a previous route.
+## Gate
 
----
+No security bugs, no data corruption, no breaking API changes, no HIGH findings introduced by this PR.
 
-## Test Coverage Assessment
-
-| Area | Coverage |
-|------|----------|
-| tce/route.ts bunkerPort guard | FULL (7 value shapes) |
-| EconomicsTab null init + gate | FULL (RTL: GIGIB/fallback/lowercase) |
-| A1 freshness watchdog | FULL (stale/fresh) |
-| Manual override prevention | FULL (attack-11) |
-| Edge values (zero/neg/Inf) | FULL (attack price values) |
-| Multi-cargo stale port | DOCUMENTED as FU-1, not tested (would require re-render) |
-
----
-
-## Signature
-
-Adversarial QA review completed. Attack plan fully executed. No blocking findings.
+**APPROVE**

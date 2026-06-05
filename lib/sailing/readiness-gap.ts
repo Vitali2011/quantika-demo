@@ -94,10 +94,16 @@ export function classifyVesselByDwt(dwt: number | null | undefined): VesselClass
   return dwt < 50000 ? 'handysize' : 'capesize';
 }
 
-/** Returns true when the raw open-date string signals the vessel is immediately available. */
+/** Returns true when the raw open-date string signals the vessel is immediately available.
+ *  A field with BOTH a spot/prompt keyword AND a parseable concrete date is a dated vessel —
+ *  the keyword is incidental to the date context. */
 export function detectSpot(raw: string | null | undefined): boolean {
   if (!raw || typeof raw !== 'string') return false;
-  return /\b(spot|prompt|promt)\b/i.test(raw.trim());
+  const trimmed = raw.trim();
+  if (!/\b(spot|prompt|promt)\b/i.test(trimmed)) return false;
+  // Strip keyword(s); if the remainder parses as a concrete date, this is a dated vessel.
+  const stripped = trimmed.replace(/\b(spot|prompt|promt)\b/gi, '').trim();
+  return !parseVesselOpenDate(stripped);
 }
 
 function isoDay(d: Date): string {
