@@ -300,21 +300,24 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
       missing.length === 0 && bunkerPort !== null && freightRateUsdPerMt != null && freightRateUsdPerMt > 0;
 
     const input = ready
-      ? buildCanonicalTceInputs({
-          vesselDwt: dwt,
-          speedKts,
-          consumptionMtPerDay,
-          distanceNm,
-          quantityMt,
-          freightRateUsdPerMt,
+      ? {
+          ...buildCanonicalTceInputs({
+            vesselDwt: dwt,
+            speedKts,
+            consumptionMtPerDay,
+            distanceNm,
+            quantityMt,
+            freightRateUsdPerMt,
+            bunkerPriceUsdPerMt: bunkerPriceUsdPerMt !== '' ? Number(bunkerPriceUsdPerMt) : 0,
+            euaPriceEur: euaData?.value,
+            vesselValueUsd: estimateVesselValueUsd(dwt),
+            originPort,
+            destinationPort,
+          }),
+          // bunkerPort + bunkerGrade are API-only fields for live price lookup
           bunkerPort,
           bunkerGrade,
-          bunkerPriceUsdPerMt: bunkerPriceUsdPerMt !== '' ? Number(bunkerPriceUsdPerMt) : 0,
-          euaPriceEur: euaData?.value,
-          vesselValueUsd: estimateVesselValueUsd(dwt),
-          originPort,
-          destinationPort,
-        })
+        }
       : null;
 
     return { ready, missing, input };

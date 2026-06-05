@@ -254,8 +254,6 @@ describe('persistSessionMatches — persisted list tce equals EconomicsTab detai
       quantityMt,
       freightRateUsdPerMt: storedFreightRate!,
       bunkerPriceUsdPerMt: 600,   // DEFAULT_BUNKER_USD_PER_MT from computeEstimatedTce
-      bunkerPort: null,
-      bunkerGrade: 'VLSFO',
       originPort: '',              // seed-path: empty ports → no war-risk, matches persist path
       destinationPort: '',
       euaPriceEur: 65,            // DEFAULT_EUA_EUR from computeEstimatedTce

@@ -11,8 +11,6 @@ export interface CanonicalTceInputArgs {
   quantityMt: number;
   freightRateUsdPerMt: number;
   bunkerPriceUsdPerMt: number;
-  bunkerPort: string | null;
-  bunkerGrade: 'VLSFO' | 'LSMGO' | 'HSFO380';
   originPort: string;
   destinationPort: string;
   euaPriceEur?: number;
@@ -42,8 +40,6 @@ export function buildCanonicalTceInputs(args: CanonicalTceInputArgs): VoyageInpu
       quantityMt: safeQty,
       freightRateUsdPerMt: args.freightRateUsdPerMt,
     },
-    bunkerPort: args.bunkerPort,
-    bunkerGrade: args.bunkerGrade,
     bunkerPriceUsdPerMt: args.bunkerPriceUsdPerMt,
     euaPriceEur: args.euaPriceEur ?? 0,
     durationDays,

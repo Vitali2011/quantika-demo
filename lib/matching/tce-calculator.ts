@@ -152,8 +152,6 @@ export function computeEstimatedTce(
     quantityMt: quantity_mt,
     freightRateUsdPerMt: freightRate.rate,
     bunkerPriceUsdPerMt: DEFAULT_BUNKER_USD_PER_MT,
-    bunkerPort: null,
-    bunkerGrade: 'VLSFO',
     originPort: '',
     destinationPort: '',
     euaPriceEur: DEFAULT_EUA_EUR,

@@ -53,8 +53,6 @@ describe('LIST tce_usd_per_day === DETAIL daily_tce_usd (parity, #819)', () => {
       quantityMt: s.quantityMt,
       freightRateUsdPerMt: freight.rate,
       bunkerPriceUsdPerMt: DEFAULT_BUNKER_USD_PER_MT,
-      bunkerPort: null,
-      bunkerGrade: 'VLSFO',
       originPort: '',
       destinationPort: '',
       euaPriceEur: DEFAULT_EUA_EUR,

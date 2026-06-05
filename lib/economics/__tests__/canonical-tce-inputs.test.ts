@@ -9,8 +9,6 @@ describe('buildCanonicalTceInputs', () => {
     quantityMt: 2500,
     freightRateUsdPerMt: 21.56,  // post-fix Tier-3 estimate
     bunkerPriceUsdPerMt: 600,
-    bunkerPort: 'istanbul',
-    bunkerGrade: 'VLSFO' as const,
     originPort: 'marmara',
     destinationPort: 'constanta',
   };
