@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "frozenDate": "2026-05-28",
+  "matches": [
+    {
+      "id": "GS-00-control-panamax",
+      "bugClass": "control",
+      "control": true,
+      "rationale": "clean long-haul panamax, profitable",
+      "inputs": {
+        "cargo": {
+          "ref": "ctl-c",
+          "qtyT": 50000,
+          "qtyMinT": 50000,
+          "qtyMaxT": 50000,
+          "loadPort": "CNSHA",
+          "dischPort": "NLRTM",
+          "laycanStart": "2026-10-01",
+          "laycanEnd": "2026-10-20",
+          "sourceEmail": "raw/ctl.json"
+        },
+        "vessel": {
+          "name": "MV CTL",
+          "dwt": 55000,
+          "speedKn": 14,
+          "consumptionT": 30,
+          "openPort": "Singapore",
+          "openDate": "2026-09-15",
+          "sourceEmail": "raw/ctl.json"
+        }
+      },
+      "expected": {
+        "weightT": { "value": 50000, "toleranceAbs": 0, "source": "stated" },
+        "distanceNm": { "value": 9000, "tolerancePct": 25, "source": "stub-wide" },
+        "tcePerDay": {
+          "value": 0,
+          "toleranceAbs": 9999999,
+          "tolerancePct": 99999,
+          "source": "stub-wide"
+        }
+      },
+      "inputHonesty": {
+        "speedKn": "stated",
+        "consumptionT": "stated",
+        "freightRate": "index",
+        "bunkerPrice": "external"
+      },
+      "engineMust": { "verdictNotGood": false },
+      "provenance": "stub control for harness wiring"
+    },
+    {
+      "id": "GS-07-absent-speed",
+      "bugClass": "absent-speed-est",
+      "control": false,
+      "rationale": "vessel email states NO speed -> engine must mark est., not pass 12 as fact",
+      "inputs": {
+        "cargo": {
+          "ref": "gap-c",
+          "qtyT": 30000,
+          "qtyMinT": 30000,
+          "qtyMaxT": 30000,
+          "loadPort": "CNSHA",
+          "dischPort": "NLRTM",
+          "laycanStart": "2026-10-01",
+          "laycanEnd": "2026-10-20",
+          "sourceEmail": "raw/gap.json"
+        },
+        "vessel": {
+          "name": "MV GAP",
+          "dwt": 35000,
+          "speedKn": null,
+          "consumptionT": null,
+          "openPort": "Singapore",
+          "openDate": "2026-09-15",
+          "sourceEmail": "raw/gap.json"
+        }
+      },
+      "expected": {
+        "weightT": { "value": 30000, "toleranceAbs": 0, "source": "stated" },
+        "distanceNm": { "value": 9000, "tolerancePct": 25, "source": "stub-wide" },
+        "tcePerDay": {
+          "value": 0,
+          "toleranceAbs": 9999999,
+          "tolerancePct": 99999,
+          "source": "stub-wide"
+        }
+      },
+      "inputHonesty": {
+        "speedKn": "DEFAULT",
+        "consumptionT": "DEFAULT",
+        "freightRate": "index",
+        "bunkerPrice": "external"
+      },
+      "engineMust": { "speedMarkedEst": true },
+      "provenance": "known-gap: engine has no est flag (see plan); it.failing until a fix adds it"
+    }
+  ]
+}
