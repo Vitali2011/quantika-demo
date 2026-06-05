@@ -42,7 +42,7 @@ export default function AboutPage() {
             {[
               { icon: '📧', title: 'Email parsing', desc: 'Extracts cargo specs, vessel details, and laycan windows from plain-text emails using LLMs trained on shipping industry language.' },
               { icon: '🤝', title: 'Smart matching', desc: 'Scores vessel-cargo pairs on DWT compatibility, route fit, laycan overlap, and TCE economics — ranked by overall match quality.' },
-              { icon: '📊', title: 'Market intelligence', desc: 'Live Baltic Exchange indices (BDI, BCI, BSI, BHSI), TCE estimates for major tradelanes, and bunker price feeds.' },
+              { icon: '📊', title: 'Market intelligence', desc: 'Baltic Exchange indices (BDI, BCI, BSI, BHSI), TCE estimates for major tradelanes, and bunker price feeds.' },
               { icon: '🔒', title: 'Compliance checks', desc: 'Automatic OFAC and EU sanctions screening on all counterparties before a fixture goes firm.' },
             ].map(({ icon, title, desc }) => (
               <li key={title} className="flex gap-3">

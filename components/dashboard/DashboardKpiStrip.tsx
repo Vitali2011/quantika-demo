@@ -9,6 +9,7 @@ interface DashboardKpiStripProps {
 
 export function DashboardKpiStrip({ openMatches, activeCargoes }: DashboardKpiStripProps) {
   return (
+    <div className="space-y-1">
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3" data-testid="kpi-strip">
       {/* Tile 1: Open Matches */}
       <Link
@@ -49,6 +50,8 @@ export function DashboardKpiStrip({ openMatches, activeCargoes }: DashboardKpiSt
 
       {/* Tile 4: HSS Med Rate */}
       <KpiCard label="HSS MED RATE" url="/api/market/benchmark?indicator=BHSI" unit="index" />
+    </div>
+      <p className="text-[10px] font-mono text-slate-400 text-right tracking-wide">demo data</p>
     </div>
   );
 }
