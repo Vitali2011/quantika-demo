@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { exchangeCodeForToken, fetchGmailProfile, getAuthUrl } from '@/lib/google';
+import { SESSION_TTL_MS } from '@/lib/constants';
 import { logger } from '@/lib/logger';
 import { createSession, updateSession } from '@/lib/session';
 import { generateCsrfToken } from '@/lib/csrf';
@@ -40,14 +41,14 @@ export async function GET(request: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 60,
+      maxAge: SESSION_TTL_MS / 1000,
       path: '/',
     });
     response.cookies.set('csrf_token', csrfToken, {
       httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 60 * 60,
+      maxAge: SESSION_TTL_MS / 1000,
       path: '/',
     });
     response.headers.set('X-CSRF-Token', csrfToken);

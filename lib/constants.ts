@@ -44,11 +44,10 @@ export const AI_MODEL_HEAVY = process.env.AI_MODEL_HEAVY || 'gpt-5.5';
 export const AI_MODEL_LIGHT = process.env.AI_MODEL_LIGHT || 'gpt-5.5';
 
 /**
- * Session time-to-live: 1 hour (3 600 000 ms).
+ * Session time-to-live: 8 hours (28 800 000 ms).
  *
- * - **Why 1 hour:** covers a typical single brokerage workflow end-to-end
- *   (email fetch → classify → parse → match → draft reply) with comfortable
- *   headroom. Shorter TTLs risk cutting off in-flight AI pipelines.
+ * - **Why 8 hours:** covers multi-session demo walkthroughs without session
+ *   expiry mid-demo. Eight hours matches a full business day of exploratory use.
  *
  * - **SQLite persistence & PM2 restarts:** sessions are stored in
  *   `data/sessions.db` rather than in-memory, so they survive a PM2 restart
@@ -56,10 +55,10 @@ export const AI_MODEL_LIGHT = process.env.AI_MODEL_LIGHT || 'gpt-5.5';
  *   remains accessible to the broker within the TTL window even after a restart.
  *
  * - **Disk usage:** each session row serialises full `SessionData` as JSON
- *   (emails, classifications, matches, …). Extending beyond 1 hour increases
+ *   (emails, classifications, matches, …). Extending beyond 8 hours increases
  *   `data/sessions.db` size proportionally — evaluate before raising the value.
  */
-export const SESSION_TTL_MS = 60 * 60 * 1000; // 1 hour — non-demo OAuth sessions
+export const SESSION_TTL_MS = 8 * 60 * 60 * 1000; // 8 hours — non-demo OAuth sessions
 // Demo sessions: default 30 days so session_id cookie and DB row outlive the demo_auth window.
 // Override via env for testing or custom deployments.
 export const DEMO_SESSION_TTL_MS =

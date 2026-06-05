@@ -4,6 +4,7 @@ import { getTrialState, startTrial } from '@/lib/trial';
 import { seedDemoForRegion } from '@/lib/onboarding/demo-seed';
 import { createSession } from '@/lib/session';
 import { Button } from '@/design-system/primitives';
+import { SESSION_TTL_MS } from '@/lib/constants';
 
 type Region = 'MENA' | 'Med' | 'WAFR';
 const VALID_REGIONS: Region[] = ['MENA', 'Med', 'WAFR'];
@@ -27,7 +28,7 @@ async function handleStart(formData: FormData) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 3600,
+      maxAge: SESSION_TTL_MS / 1000,
       path: '/',
     });
   }

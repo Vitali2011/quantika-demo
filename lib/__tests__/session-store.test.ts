@@ -5,6 +5,7 @@ import {
   SessionStore,
   MAX_SESSIONS,
 } from '../session-store';
+import { SESSION_TTL_MS } from '@/lib/constants';
 
 let tmpDir: string;
 let dbPath: string;
@@ -64,7 +65,7 @@ describe('getSession', () => {
 
     // Move Date.now into the future beyond TTL
     const realNow = Date.now;
-    const ttlMs = 60 * 60 * 1000;
+    const ttlMs = SESSION_TTL_MS;
     Date.now = () => realNow() + ttlMs + 1000;
 
     try {
@@ -107,7 +108,7 @@ describe('expireOldSessions', () => {
     const id2 = store.createSession('tok-2');
 
     const realNow = Date.now;
-    const ttlMs = 60 * 60 * 1000;
+    const ttlMs = SESSION_TTL_MS;
     Date.now = () => realNow() + ttlMs + 1000;
 
     store.expireOldSessions();
