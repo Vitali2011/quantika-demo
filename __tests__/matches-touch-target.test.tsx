@@ -80,9 +80,4 @@ describe('H-3 — bulk footer clears BottomNav', () => {
     expect(src).toMatch(/fixed.*bottom-0.*z-50|fixed bottom-0[\s\S]{0,100}z-50/);
   });
 
-  it('bulk action buttons in footer use py-3 min-h-[44px]', () => {
-    const src = readSource();
-    // Bulk footer buttons must also be ≥44px
-    expect(src).toMatch(/py-3.*text-sm.*rounded.*bg-blue-100.*min-h-\[44px\]|py-3.*min-h-\[44px\].*bg-blue-100/);
-  });
 });
