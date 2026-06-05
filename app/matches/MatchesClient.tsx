@@ -675,7 +675,12 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                 </p>
               </>
             ) : (
-              <p className="text-gray-500">No matches yet</p>
+              <>
+                <p className="text-gray-500">No matches yet</p>
+                <Link href="/email" className="mt-3 inline-block px-4 py-2 text-sm rounded bg-blue-600 text-white hover:bg-blue-700">
+                  Connect Gmail or drop an email
+                </Link>
+              </>
             )}
           </div>
         ) : density === 'cards' ? (
