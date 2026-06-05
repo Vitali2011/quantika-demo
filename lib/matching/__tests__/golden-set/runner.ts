@@ -1,0 +1,143 @@
+import { analyzePairs } from '@/lib/matching/pair-analyzer';
+import { buildMatchEconomics } from '@/lib/matching/tce-calculator';
+import { getPortDistance } from '@/lib/sailing/port-distances';
+import type { Match, ParsedCargo, ParsedVessel } from '@/lib/types';
+import type { GoldenRecord } from './schema';
+
+export interface GoldenActual {
+  distanceNm: number | null;
+  weightMt: number | null;
+  tceUsdPerDay: number | null;
+  bucket: 'main' | 'review' | 'insufficient' | 'blocked' | 'none';
+  matchLevel: string | null;
+}
+
+const cf = <T>(v: T) =>
+  v == null ? null : ({ value: v, confidence: 'confirmed' as const });
+
+function toCargo(r: GoldenRecord): ParsedCargo {
+  const c = r.inputs.cargo;
+  return {
+    emailId: c.ref,
+    itemIndex: 0,
+    originPort: cf(c.loadPort),
+    originCountry: null,
+    destinationPort: cf(c.dischPort),
+    destinationCountry: null,
+    cargoDescription: null,
+    weightMt: cf(c.qtyT),
+    weightMtMin: c.qtyMinT ?? c.qtyT,
+    weightMtMax: c.qtyMaxT ?? c.qtyT,
+    volumeCbm: null,
+    dimensions: null,
+    cargoType: 'BULK',
+    containerType: null,
+    quantity: c.qtyT,
+    incoterms: null,
+    preferredDates: null,
+    laycan: `${c.laycanStart} .. ${c.laycanEnd}`,
+    loadingRate: null,
+    dischargeRate: null,
+    commissionPercent: null,
+    commissionTerms: null,
+    specialRequirements: null,
+    stowageFactor: null,
+    missingInfo: [],
+  };
+}
+
+function toVessel(r: GoldenRecord): ParsedVessel {
+  const v = r.inputs.vessel;
+  return {
+    emailId: v.name,
+    itemIndex: 0,
+    vesselName: cf(v.name),
+    imo: null,
+    flag: null,
+    built: null,
+    classSociety: null,
+    pandi: null,
+    dwtSummer: cf(v.dwt),
+    dwcc: null,
+    draftMax: null,
+    loa: null,
+    beam: null,
+    grt: null,
+    nrt: null,
+    holdsCount: null,
+    hatchesCount: null,
+    grainCapacity: null,
+    grainCapacityUnit: null,
+    baleCapacity: null,
+    holdDimensions: null,
+    hatchDimensions: null,
+    tankTopStrength: null,
+    geared: false,
+    craneCapacity: null,
+    hatchType: null,
+    vesselType: 'Bulk Carrier',
+    openPosition: cf(v.openPort),
+    openDate: { value: v.openDate, confidence: 'confirmed' },
+    direction: null,
+    restrictions: [],
+    lastCargoes: null,
+    speedLaden: v.speedKn != null ? String(v.speedKn) : null,
+    speedBallast: null,
+    consumption: v.consumptionT != null ? `${v.consumptionT} mt` : null,
+    deckCapacity: null,
+    specialFeatures: [],
+    ciiRating: null,
+    verificationWarning: null,
+  };
+}
+
+export async function runGolden(r: GoldenRecord, today: Date): Promise<GoldenActual> {
+  const cargo = toCargo(r);
+  const vessel = toVessel(r);
+  const res = await analyzePairs([cargo], [vessel], async () => [], { today });
+
+  const findMatch = (arr: Match[]) =>
+    arr.find((m) => m.cargoEmailId === cargo.emailId && m.vesselEmailId === vessel.emailId);
+  const findBlocked = (arr: { cargoEmailId: string; vesselEmailId: string }[]) =>
+    arr.find((m) => m.cargoEmailId === cargo.emailId && m.vesselEmailId === vessel.emailId);
+
+  const mainMatch = findMatch(res.matches);
+  const reviewMatch = findMatch(res.lowConfidenceMatches);
+  const insufficientMatch = findMatch(res.insufficientData);
+  const blockedMatch = findBlocked(res.blockedMatches);
+
+  const m: Match | null = mainMatch ?? reviewMatch ?? insufficientMatch ?? null;
+  const bucket: GoldenActual['bucket'] = mainMatch
+    ? 'main'
+    : reviewMatch
+    ? 'review'
+    : insufficientMatch
+    ? 'insufficient'
+    : blockedMatch
+    ? 'blocked'
+    : 'none';
+
+  // laden distance (loadPort → dischPort) — same source pair-analyzer uses for economics
+  const ladenDist =
+    getPortDistance(r.inputs.cargo.loadPort, r.inputs.cargo.dischPort)?.nm ?? 0;
+
+  const econ = m?.economics ?? buildMatchEconomics({
+    cargoType: 'BULK',
+    distanceNm: ladenDist,
+    vesselDwt: r.inputs.vessel.dwt ?? 0,
+    quantityMt: r.inputs.cargo.qtyT ?? 0,
+    speedKts: r.inputs.vessel.speedKn ?? 12,
+    consumptionMt: r.inputs.vessel.consumptionT ?? 25,
+    loadPort: r.inputs.cargo.loadPort,
+    dischargePort: r.inputs.cargo.dischPort,
+    calculatedAt: today.toISOString(),
+  });
+
+  return {
+    distanceNm: ladenDist > 0 ? ladenDist : null,
+    weightMt: r.inputs.cargo.qtyT,
+    tceUsdPerDay: econ?.tceUsdPerDay ?? null,
+    bucket,
+    matchLevel: m?.matchLevel ?? null,
+  };
+}
