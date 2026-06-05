@@ -430,10 +430,10 @@ export default function CargoClient({ rows, total }: Props) {
             aria-label="AI parse input"
           />
           <button
-            onClick={() => setParseText('')}
-            className="relative z-10 h-[34px] px-4 rounded-[9px] bg-[#0f172a] text-white text-[13.5px] font-medium transition-all hover:-translate-y-px disabled:opacity-40"
+            disabled
+            title="Not available in demo"
+            className="relative z-10 h-[34px] px-4 rounded-[9px] bg-[#0f172a] text-white text-[13.5px] font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             style={{ boxShadow: '0 1px 0 rgba(255,255,255,0.06) inset, 0 1px 2px rgba(15,23,42,0.15)' }}
-            disabled={!parseText}
           >
             Parse
           </button>

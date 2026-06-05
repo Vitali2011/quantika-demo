@@ -90,15 +90,15 @@ export function QuoteTab({ cargoEmailId, confidence }: QuoteTabProps) {
       <div className="flex gap-2">
         <button
           className="rounded bg-blue-600 px-4 py-2 text-white text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed"
-          disabled={blockSend || !draft.trim()}
-          title={blockSend ? `${blockedFields.length} critical field(s) uncertain: ${blockedFields.join(', ')}` : undefined}
-          onClick={handleSendQuote}
+          disabled
+          title="Not available in demo"
         >
           Send Quote
         </button>
         <button
-          className="rounded border border-gray-200 px-4 py-2 text-sm"
-          onClick={handleSaveDraft}
+          className="rounded border border-gray-200 px-4 py-2 text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+          disabled
+          title="Not available in demo"
         >
           Save Draft
         </button>

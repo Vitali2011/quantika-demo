@@ -223,11 +223,17 @@ export default function VesselsClient({ rows, total }: Props) {
             </span>
           </h2>
           <div className="flex items-center gap-2.5">
-            <button className="h-[38px] px-3.5 rounded-[9px] border border-[#e2e8f0] bg-white text-[13.5px] font-medium text-[#0f172a] flex items-center gap-2 hover:border-[#cbd5e1] hover:bg-[#fafbfc] transition-all">
+            <button
+              disabled
+              title="Not available in demo"
+              className="h-[38px] px-3.5 rounded-[9px] border border-[#e2e8f0] bg-white text-[13.5px] font-medium text-[#0f172a] flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
               ⇪ Import CSV
             </button>
             <button
-              className="h-[38px] px-3.5 rounded-[9px] bg-[#0f172a] text-white text-[13.5px] font-medium flex items-center gap-2 transition-all hover:-translate-y-px"
+              disabled
+              title="Not available in demo"
+              className="h-[38px] px-3.5 rounded-[9px] bg-[#0f172a] text-white text-[13.5px] font-medium flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
               style={{ boxShadow: '0 1px 0 rgba(255,255,255,0.06) inset, 0 1px 2px rgba(15,23,42,0.15)' }}
             >
               + New vessel
