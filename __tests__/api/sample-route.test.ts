@@ -107,4 +107,23 @@ describe('POST /api/sample', () => {
     expect(session!.insufficientData).toBeDefined();
     expect(session!.insufficientData!.length).toBeGreaterThan(0);
   });
+
+  // B20b: per-IP rate limit
+  it('returns 429 after rate limit is exhausted for the same IP', async () => {
+    jest.resetModules();
+    const { POST } = await import('@/app/api/sample/route');
+    const ip = '1.2.3.4';
+    function makeIpReq(): NextRequest {
+      return new NextRequest('http://localhost/api/sample', {
+        method: 'POST',
+        headers: { 'x-forwarded-for': ip },
+      });
+    }
+    // Drive through the rate limit window (sampleRateLimiter allows 10/60s)
+    let lastRes: Awaited<ReturnType<typeof POST>> | null = null;
+    for (let i = 0; i < 11; i++) {
+      lastRes = await POST(makeIpReq());
+    }
+    expect(lastRes!.status).toBe(429);
+  });
 });
