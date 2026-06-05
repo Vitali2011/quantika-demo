@@ -246,8 +246,9 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
     if (!rawConsumption) missing.push('fuel consumption');
     if (!quantityMt) missing.push('cargo quantity');
 
+    const freightRateForCompare = currentRate ?? storedFreightRate ?? 0;
     return {
-      ready,
+      ready: ready && freightRateForCompare > 0,
       missing,
       origin,
       destination,
@@ -257,7 +258,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
         speedKts,
         consumptionMtPerDay: consumption,
       },
-      cargo: { quantityMt, freightRateUsdPerMt: currentRate ?? storedFreightRate ?? 0 },
+      cargo: { quantityMt, freightRateUsdPerMt: freightRateForCompare },
     };
   }, [cargo, vessel, currentRate, storedFreightRate]);
 
@@ -299,24 +300,37 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
     const ready =
       missing.length === 0 && bunkerPort !== null && freightRateUsdPerMt != null && freightRateUsdPerMt > 0;
 
-    const input = ready
+    // Build canonical inputs for durationDays and vessel/route/cargo normalisation.
+    // bunkerPriceUsdPerMt is omitted from the POST body when not user-entered so the
+    // API auto-resolves it from bunkerPort DB lookup (typeof 0 === 'number' would
+    // otherwise cause the API to treat $0 as a manual price → zero bunker cost).
+    const core = ready
+      ? buildCanonicalTceInputs({
+          vesselDwt: dwt,
+          speedKts,
+          consumptionMtPerDay,
+          distanceNm,
+          quantityMt,
+          freightRateUsdPerMt,
+          bunkerPriceUsdPerMt: 0,  // placeholder only; overridden below for POST body
+          euaPriceEur: euaData?.value,
+          vesselValueUsd: estimateVesselValueUsd(dwt),
+          originPort,
+          destinationPort,
+        })
+      : null;
+
+    const input = core
       ? {
-          ...buildCanonicalTceInputs({
-            vesselDwt: dwt,
-            speedKts,
-            consumptionMtPerDay,
-            distanceNm,
-            quantityMt,
-            freightRateUsdPerMt,
-            bunkerPriceUsdPerMt: bunkerPriceUsdPerMt !== '' ? Number(bunkerPriceUsdPerMt) : 0,
-            euaPriceEur: euaData?.value,
-            vesselValueUsd: estimateVesselValueUsd(dwt),
-            originPort,
-            destinationPort,
-          }),
-          // bunkerPort + bunkerGrade are API-only fields for live price lookup
+          vessel: core.vessel,
+          route: core.route,
+          cargo: core.cargo,
+          durationDays: core.durationDays,
+          euaPriceEur: core.euaPriceEur,
           bunkerPort,
           bunkerGrade,
+          // Only include bunkerPriceUsdPerMt when user-entered; absent → API auto-resolves
+          ...(bunkerPriceUsdPerMt !== '' ? { bunkerPriceUsdPerMt: Number(bunkerPriceUsdPerMt) } : {}),
         }
       : null;
 

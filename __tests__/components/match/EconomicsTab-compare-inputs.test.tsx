@@ -43,9 +43,16 @@ const fullCargo: ParsedCargo = {
 };
 
 describe('EconomicsTab — Compare button readiness', () => {
-  test('button enabled when vessel+cargo complete', async () => {
-    await act(async () => { render(<EconomicsTab vessel={fullVessel} cargo={fullCargo} />); });
+  test('button enabled when vessel+cargo complete with storedFreightRate', async () => {
+    // #819: compareInputs.ready requires freightRateUsdPerMt > 0 (dropped ?? 28 fallback)
+    await act(async () => { render(<EconomicsTab vessel={fullVessel} cargo={fullCargo} storedFreightRate={18} />); });
     expect(screen.getByTestId('open-route-compare')).not.toBeDisabled();
+  });
+
+  test('button disabled when vessel+cargo complete but no freight rate', async () => {
+    // Without storedFreightRate and no currentRate, freightRateForCompare=0 → button disabled
+    await act(async () => { render(<EconomicsTab vessel={fullVessel} cargo={fullCargo} />); });
+    expect(screen.getByTestId('open-route-compare')).toBeDisabled();
   });
 
   test('no missing-hint when compare ready', async () => {

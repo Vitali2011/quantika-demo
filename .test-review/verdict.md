@@ -1,38 +1,34 @@
-# test-skill Verdict — detectSpot tighten (fix-detectspot-tighten)
+# test-skill Verdict — claude/tce-list-detail-unify (#819)
 
 **Verdict: APPROVE**
 
 ## What was tested
 
-Phase 1 — Discovery: 1 commit, 2 files changed (readiness-gap.ts + readiness-gap.test.ts)
+- buildCanonicalTceInputs: 10 adversarial tests (negative/NaN/zero inputs) → all PASS
+- distanceFactor 0.7→1.0: honesty positive verified for 44101/44100-class
+- computeEstimatedTce delegation parity: PASS
+- session-buckets B(c) removal: dead-code confirmed (m.economics never set for bucket rows)
+- regenerate-matches INSERT column count: 25 cols = 25 values ✓
+- EconomicsTab bunker price: BUG-1 found and FIXED
+- compareInputs freight rate: BUG-2 found and FIXED
 
-Phase 2 — Attack surface: Class 10 (Cleanroom) + Class 11 (PBT-adjacent edge cases)
-- Change is a regex/normalizer guard in a shared symbol (detectSpot)
-- Risk: false-positive flip (spot→non-spot for dated vessels) and false-negative flip (non-spot→spot for edge inputs)
+## Bugs found and fixed in this session
 
-Phase 3 — Attack executed:
-- All 8 spec shapes: PASS
-- 17 adversarial edge cases (case variants, date formats, port+no-date, keyword-only, newline): ALL PASS
-- Consumer suite (pair-analyzer, economics-wiring, laycan-display): 31 tests PASS
-- Integration regression (SEAGULL-12 shape): isSpot=false, verdict='idle': PASS
-- match-realism-stability (4 tests): PASS
+### BUG-1 (HIGH → FIXED):
+`bunkerPriceUsdPerMt: 0` was always sent to /api/voyage/tce when user had no manual
+price. API treated `typeof 0 === 'number'` as manual price → bunker cost $0 → inflated TCE.
+Fix: explicit field spread only when user-entered; absent field → API auto-resolves from DB.
+Test: `__tests__/regression/economics-tab-bunker-price-zero.test.tsx` → now PASS.
 
-## Findings
+### BUG-2 (MEDIUM → FIXED):
+compareInputs `?? 0` fallback allowed modal to open with $0 freight revenue → shows
+all-loss voyage. Fix: gated compareInputs.ready on `freightRateForCompare > 0`.
+PI3: 1 existing test expectation updated (was asserting old ?? 28 behavior).
 
-None. All probe inputs behaved as expected.
+## Final test runs
 
-**Notable edge case — "spot today":**
-After fix, `detectSpot("spot today") = false` (parseVesselOpenDate sees "today" in stripped string → Date → non-spot).
-This is CORRECT behavior — a vessel marked "today" has an explicit date context; the 30-day spot window is reserved for keyword-only availability signals. This is an improvement, not a regression.
+- 88 suites, 917 tests → 917 PASS, 0 FAIL (after fixes)
+- TypeCheck: clean
 
-**Pre-existing gap (not introduced by this PR):**
-`parseVesselOpenDate("spot 2026-06-03")` still returns `today` (spot branch fires first in date-parsing.ts).
-So openDateObj for a "spot 2026-06-03" vessel is computed as today, not 2026-06-03.
-For the SEAGULL-12 scenario (today = 2026-06-03), the open date IS today, so the calculation is correct.
-For a future scenario where today ≠ 2026-06-03, openDateObj would drift. This is a pre-existing limitation of parseVesselOpenDate, out of scope for this fix. Recommend a follow-up to make parseVesselOpenDate prefer the ISO date over the keyword when both are present.
-
-## Gate
-
-No security bugs, no data corruption, no breaking API changes, no HIGH findings introduced by this PR.
-
-**APPROVE**
+## Pre-existing Issues
+None.
