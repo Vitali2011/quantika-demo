@@ -283,16 +283,169 @@ describe('rebuildWorksheets — stale worksheet rewrite (C2-live §1)', () => {
     const db = freshDb();
     insertMeta(db);
     insertParsedResults(db);
-    // Worksheet with CORRECT June 2 laycan already
+    // Worksheet with CORRECT June 2 laycan AND correct cargo fields (matches CARGO_PARSED)
     const freshWorksheet: MatchWorksheet = {
       ...STALE_WORKSHEET,
       readiness: { ...STALE_WORKSHEET.readiness, laycanStart: '2026-06-02', verdict: 'late' },
+      cargo: { ...STALE_WORKSHEET.cargo, dischargePort: 'Constanta' },
     };
     insertSeedMatch(db, { worksheet: freshWorksheet });
 
     const summary = await rebuildWorksheets(db, { dry: false });
     expect(summary.planned).toBe(0);
     expect(summary.written).toBe(0);
+  });
+});
+
+// ── Suite 1b: cross-item cargo contamination ─────────────────────────────────
+
+const MULTI_CARGO_EMAIL_ID = 'cargo-crossitem-test-01';
+
+// Item 0: Liverpool, 2720mt — the CORRECT item for the match
+const MULTI_CARGO_ITEM_0 = {
+  emailId: MULTI_CARGO_EMAIL_ID,
+  itemIndex: 0,
+  originPort: { value: 'Aliaga', confidence: 'confirmed', sourceText: 'aliaga' },
+  destinationPort: { value: 'Liverpool', confidence: 'confirmed', sourceText: 'liverpool' },
+  laycan: '2026-06-02 to 2026-06-07',
+  weightMt: { value: 2720, confidence: 'confirmed', sourceText: '2720 mt' },
+  cargoType: 'BREAK_BULK',
+  missingInfo: [],
+};
+
+// Item 1: Constanza, 6500mt — the WRONG item (source of contamination)
+const MULTI_CARGO_ITEM_1 = {
+  emailId: MULTI_CARGO_EMAIL_ID,
+  itemIndex: 1,
+  originPort: { value: 'Aliaga', confidence: 'confirmed', sourceText: 'aliaga' },
+  destinationPort: { value: 'Constanza', confidence: 'confirmed', sourceText: 'constanza' },
+  laycan: '2026-06-02 to 2026-06-07',
+  weightMt: { value: 6500, confidence: 'confirmed', sourceText: '6500 mt' },
+  cargoType: 'BREAK_BULK',
+  missingInfo: [],
+};
+
+/**
+ * Contaminated worksheet: item-0 match with item-1 cargo data in the cargo section.
+ * readiness.laycanStart is ALREADY CORRECT (2026-06-02) — only the cargo is contaminated.
+ * This is the exact scenario from the R2 recon finding on match 43245.
+ */
+const CROSS_ITEM_WORKSHEET: MatchWorksheet = {
+  readiness: {
+    ...STALE_WORKSHEET.readiness,
+    laycanStart: '2026-06-02',
+    laycanEnd: '2026-06-07',
+    verdict: 'late',
+  },
+  vessel: { ...STALE_WORKSHEET.vessel },
+  cargo: {
+    weightMt: 6500,         // WRONG — item-1 weight
+    cargoType: 'BREAK_BULK',
+    loadPort: 'Aliaga',
+    dischargePort: 'Constanza', // WRONG — item-1 discharge port
+  },
+  hardFilters: { ...STALE_WORKSHEET.hardFilters },
+};
+
+function insertMultiCargoData(db: Database.Database) {
+  const insert = db.prepare(
+    `INSERT INTO parsed_results (account_id, gmail_message_id, parse_type, parser_version, result_json)
+     VALUES ('', ?, ?, '1', ?)`,
+  );
+  insert.run(MULTI_CARGO_EMAIL_ID, 'cargo', JSON.stringify([MULTI_CARGO_ITEM_0, MULTI_CARGO_ITEM_1]));
+  insert.run(VESSEL_EMAIL_ID, 'vessel', JSON.stringify([VESSEL_PARSED]));
+}
+
+describe('rebuildWorksheets — cross-item cargo contamination', () => {
+  it('item-0 match with item-1 cargo in worksheet → rebuilt with correct item-0 cargo', async () => {
+    const db = freshDb();
+    insertMeta(db);
+    insertMultiCargoData(db);
+    const matchId = insertSeedMatch(db, {
+      cargoId: MULTI_CARGO_EMAIL_ID,
+      laycanStart: new Date('2026-06-02').getTime(),
+      worksheet: CROSS_ITEM_WORKSHEET,
+    });
+
+    const summary = await rebuildWorksheets(db, { dry: false });
+
+    expect(summary.planned).toBe(1);
+    expect(summary.written).toBe(1);
+
+    const row = db.prepare('SELECT worksheet_json FROM matches WHERE id = ?').get(matchId) as
+      | { worksheet_json: string }
+      | undefined;
+    expect(row).toBeDefined();
+    const ws = JSON.parse(row!.worksheet_json) as MatchWorksheet;
+
+    // Cargo section rebuilt from item-0 (not item-1)
+    expect(ws.cargo.dischargePort).toBe('Liverpool');
+    expect(ws.cargo.weightMt).toBe(2720);
+    expect(ws.cargo.cargoType).toBe('BREAK_BULK');
+    expect(ws.cargo.loadPort).toBe('Aliaga');
+  });
+
+  it('item-0 match with correct item-0 cargo → stays unchanged (planned=0)', async () => {
+    const db = freshDb();
+    insertMeta(db);
+    insertMultiCargoData(db);
+    const correctWorksheet: MatchWorksheet = {
+      ...CROSS_ITEM_WORKSHEET,
+      cargo: {
+        weightMt: 2720,
+        cargoType: 'BREAK_BULK',
+        loadPort: 'Aliaga',
+        dischargePort: 'Liverpool',
+      },
+    };
+    insertSeedMatch(db, {
+      cargoId: MULTI_CARGO_EMAIL_ID,
+      laycanStart: new Date('2026-06-02').getTime(),
+      worksheet: correctWorksheet,
+    });
+
+    const summary = await rebuildWorksheets(db, { dry: false });
+    expect(summary.planned).toBe(0);
+    expect(summary.written).toBe(0);
+  });
+
+  it('idempotent: second run after cargo fix → 0 planned rewrites', async () => {
+    const db = freshDb();
+    insertMeta(db);
+    insertMultiCargoData(db);
+    insertSeedMatch(db, {
+      cargoId: MULTI_CARGO_EMAIL_ID,
+      laycanStart: new Date('2026-06-02').getTime(),
+      worksheet: CROSS_ITEM_WORKSHEET,
+    });
+
+    const run1 = await rebuildWorksheets(db, { dry: false });
+    expect(run1.planned).toBe(1);
+
+    const run2 = await rebuildWorksheets(db, { dry: false });
+    expect(run2.planned).toBe(0);
+    expect(run2.written).toBe(0);
+  });
+
+  it('parity: vessel and hardFilters unchanged after cargo fix', async () => {
+    const db = freshDb();
+    insertMeta(db);
+    insertMultiCargoData(db);
+    const matchId = insertSeedMatch(db, {
+      cargoId: MULTI_CARGO_EMAIL_ID,
+      laycanStart: new Date('2026-06-02').getTime(),
+      worksheet: CROSS_ITEM_WORKSHEET,
+    });
+
+    await rebuildWorksheets(db, { dry: false });
+
+    const row = db.prepare('SELECT worksheet_json FROM matches WHERE id = ?').get(matchId) as
+      | { worksheet_json: string }
+      | undefined;
+    const ws = JSON.parse(row!.worksheet_json) as MatchWorksheet;
+
+    expect(ws.vessel).toEqual(CROSS_ITEM_WORKSHEET.vessel);
+    expect(ws.hardFilters).toEqual(CROSS_ITEM_WORKSHEET.hardFilters);
   });
 });
 

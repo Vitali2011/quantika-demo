@@ -162,7 +162,14 @@ export async function rebuildWorksheets(
     const oldLaycanStart = existingWs.readiness?.laycanStart ?? null;
     const newLaycanStart = freshReadiness.laycanStart;
 
-    if (oldLaycanStart === newLaycanStart) continue;
+    // Detect cross-item cargo contamination: wrong item's port/weight baked into worksheet
+    const actualDischargePort = cfValue(cargo.destinationPort) ?? null;
+    const actualWeightMt = cfValue(cargo.weightMt) ?? null;
+    const cargoMismatch =
+      actualDischargePort !== (existingWs.cargo?.dischargePort ?? null) ||
+      actualWeightMt !== (existingWs.cargo?.weightMt ?? null);
+
+    if (oldLaycanStart === newLaycanStart && !cargoMismatch) continue;
 
     const rebuiltWs: MatchWorksheet = {
       ...existingWs,
@@ -180,6 +187,12 @@ export async function rebuildWorksheets(
         explanation: freshReadiness.explanation,
         openPosition: vessel ? (cfValue(vessel.openPosition) ?? null) : null,
       },
+      cargo: {
+        weightMt: cfValue(cargo.weightMt) ?? null,
+        cargoType: cargoTypeStr(cargo),
+        loadPort: cfValue(cargo.originPort) ?? null,
+        dischargePort: cfValue(cargo.destinationPort) ?? null,
+      },
     };
 
     const rebuildRow: RebuildRow = {
@@ -192,7 +205,7 @@ export async function rebuildWorksheets(
     summary.rows.push(rebuildRow);
     summary.planned++;
     console.log(
-      `[regen] planned REWRITE match ${row.id}: ${oldLaycanStart} → ${newLaycanStart}${dry ? ' (dry)' : ''}`,
+      `[regen] planned REWRITE match ${row.id}: laycan ${oldLaycanStart} → ${newLaycanStart}${cargoMismatch ? ' + cargo' : ''}${dry ? ' (dry)' : ''}`,
     );
 
     if (!dry) {
