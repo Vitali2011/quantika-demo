@@ -1,14 +1,22 @@
 /**
- * PI2 behavioral tests — persistSessionMatches canonical TCE (#804 / #805).
+ * PI2 behavioral tests — persistSessionMatches canonical TCE contract (#819 Phase B(b)).
  *
- * Root: the persist path re-computed TCE via resolveFreightRate (Baltic tier)
- * while the seed used estimateFreightRate — same pair, divergent tiers,
- * −$102k vs +$774. Fix: prefer m.economics.tceUsdPerDay when present.
+ * History: the persist path used to PREFER `m.economics.tceUsdPerDay` over the live
+ * recompute as a hot-fix for a structural divergence between Baltic-tier and
+ * estimateFreightRate-tier (−$102k vs +$774 on the same pair). PR #824 fixed the
+ * root cause in freight-resolver Tier-2 (laden-only days → round-trip days), so the
+ * override became a redundant no-op and was removed in this PR.
  *
- * Covers:
- *   (1) sessionMatch carrying stored tce → list shows stored (not recomputed)
- *   (2) N sample matches: list-path tce === detail-path tce (same DB row)
- *   (3) sessionMatch with NO stored tce → recomputes (no regression for real users)
+ * Post-fix contract these tests guard:
+ *   (A) `tce_usd_per_day` is always the live recompute (no override branch).
+ *   (B) listMatches and getMatch return the SAME `tce_usd_per_day` for any given
+ *       match (single DB column → identical reads).
+ *   (C) sign(persisted tce) === sign(breakdown.net_voyage_usd) — the headline
+ *       and net-voyage cannot disagree in direction.
+ *
+ * Real value shapes exercised: profitable voyage (high Baltic day-rate),
+ * loss-making voyage (low Baltic day-rate), and N=3 distinct stored-economics
+ * sentinels all overridden by the live recompute.
  */
 
 import Database from 'better-sqlite3';
@@ -23,12 +31,20 @@ import migration044 from '@/lib/migrations/044-matches-item-index';
 import migration045 from '@/lib/migrations/045-matches-worksheet';
 import { persistSessionMatches } from '@/lib/matching/persist-session-matches';
 import { listMatches, getMatch } from '@/lib/matching/matches-repository';
+import { computeEstimatedTce, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
+import { resolveFreightRate } from '@/lib/matching/freight-resolver';
+import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
+import { getPortDistance } from '@/lib/sailing/port-distances';
+import { getBalticDayRate } from '@/lib/market/baltic-freight';
+import { cfValue } from '@/lib/types';
 import type { Match, ParsedCargo, ParsedVessel } from '@/lib/types';
 
-// Suppress Baltic-rate DB lookups — we control via m.economics.
+// Mock Baltic-rate DB lookups so each scenario can drive a deterministic day-rate.
 jest.mock('@/lib/market/baltic-freight', () => ({
   getBalticDayRate: jest.fn(() => ({ usdPerDay: 25000, date: '2026-06-01', indexCode: 'BHSI_TC' })),
 }));
+
+const mockBaltic = getBalticDayRate as unknown as jest.Mock;
 
 function freshDb(): Database.Database {
   const db = new Database(':memory:');
@@ -44,8 +60,13 @@ function freshDb(): Database.Database {
   return db;
 }
 
-const SESSION = 'test-session-123';
+const SESSION = 'test-session-canonical-tce';
 
+const PROFIT_BALTIC = { usdPerDay: 25000, date: '2026-06-01', indexCode: 'BHSI_TC' };
+const LOSS_BALTIC = { usdPerDay: 3000, date: '2026-06-01', indexCode: 'BHSI_TC' };
+
+// Voyage fixture: Odesa → Rotterdam, Handysize, GRAIN. Drives a real port distance
+// and a real round-trip duration so the live recompute is meaningful.
 const CARGO: ParsedCargo = {
   emailId: 'cargo-19d5de87',
   itemIndex: 0,
@@ -81,128 +102,154 @@ function makeMatch(overrides?: Partial<Match>): Match {
   };
 }
 
-// ── Test 1: stored tce is preferred over recompute ────────────────────────────
-
-describe('persistSessionMatches — prefer stored tce from m.economics', () => {
-  it('stores the seed tce, not the Baltic-recomputed value', () => {
-    const db = freshDb();
-    const canonicalTce = 774;
-
-    const matchWithStoredTce = makeMatch({
-      economics: {
-        breakdown: {
-          bunkerCost: 0, bunkerPort: '', euEtsAmount: 0,
-          euEtsApplicable: false, warRiskPremium: 0, warRiskZones: [],
-        },
-        totalUsd: 0,
-        calculatedAt: new Date(0).toISOString(),
-        dataFreshness: { bunker: 'seed', eua: 'seed' },
-        tceUsdPerDay: canonicalTce,
+function withStoredTce(tce: number | undefined, overrides?: Partial<Match>): Match {
+  return makeMatch({
+    economics: {
+      breakdown: {
+        bunkerCost: 0, bunkerPort: '', euEtsAmount: 0,
+        euEtsApplicable: false, warRiskPremium: 0, warRiskZones: [],
       },
-    });
+      totalUsd: 0,
+      calculatedAt: new Date(0).toISOString(),
+      dataFreshness: { bunker: 'seed', eua: 'seed' },
+      tceUsdPerDay: tce,
+    },
+    ...overrides,
+  });
+}
 
-    persistSessionMatches(db, SESSION, [matchWithStoredTce], [CARGO], [VESSEL]);
+/**
+ * Mirror persistSessionMatches' live recompute for a single (cargo, vessel) pair.
+ * Returns the SAME TceEstimate the SUT will derive — so tests can assert on
+ * `persisted === expected` (override removal proof) and on
+ * `sign(persisted) === sign(net_voyage)` (sign-agreement contract) without
+ * hard-coding values that would drift if port-distances or fixtures change.
+ */
+function expectedLive(
+  cargo: ParsedCargo,
+  vessel: ParsedVessel,
+  baltic: { usdPerDay: number; date: string; indexCode: string },
+): ReturnType<typeof computeEstimatedTce> | null {
+  const loadPort = cfValue(cargo.originPort);
+  const dischargePort = cfValue(cargo.destinationPort);
+  const dist = loadPort && dischargePort ? getPortDistance(loadPort, dischargePort) : null;
+  if (!dist || dist.nm <= 0) return null;
+
+  const vesselDwt = (cfValue(vessel.dwtSummer) ?? 0) as number;
+  const quantityMt = resolveCargoWeight(cargo) ?? 0;
+  const speedKts = parseLeadingNumber(vessel.speedLaden);
+  const consumptionMt = parseConsumption(vessel.consumption);
+  const cargoTypeStr =
+    typeof cargo.cargoType === 'object' && cargo.cargoType !== null && 'value' in cargo.cargoType
+      ? (cargo.cargoType as unknown as { value: string }).value
+      : (cargo.cargoType as string | null);
+
+  const resolved = resolveFreightRate({
+    cargoType: cargoTypeStr,
+    parsedFreightRateUsdPerMt: cargo.freightRateUsd ?? null,
+    vesselDwt,
+    quantityMt,
+    distanceNm: dist.nm,
+    speedKts,
+    balticDayRate: baltic,
+  });
+  return computeEstimatedTce(
+    { rate: resolved.value, source: resolved.source, confidence: resolved.confidence },
+    dist.nm, vesselDwt, quantityMt, speedKts, consumptionMt,
+  );
+}
+
+beforeEach(() => {
+  mockBaltic.mockReset();
+  mockBaltic.mockReturnValue(PROFIT_BALTIC);
+});
+
+// ── Group 1: storedTce override is GONE — live recompute always wins ──────────
+
+describe('persistSessionMatches — storedTce override removed (#819 B(b))', () => {
+  it('profitable voyage: stored sentinel ignored, live recompute persisted, sign agrees with net_voyage', () => {
+    const db = freshDb();
+    mockBaltic.mockReturnValue(PROFIT_BALTIC);
+
+    const expected = expectedLive(CARGO, VESSEL, PROFIT_BALTIC);
+    expect(expected).not.toBeNull();
+    expect(expected!.breakdown.net_voyage_usd).toBeGreaterThan(0);     // real profit, not noise
+    expect(expected!.tce_usd_per_day).toBeGreaterThan(0);              // sign agreement source
+
+    const SENTINEL = 99_999;                                            // value the live path could never produce
+    persistSessionMatches(db, SESSION, [withStoredTce(SENTINEL)], [CARGO], [VESSEL]);
 
     const rows = listMatches(db, { user_id: SESSION, sortBy: 'score', sortDir: 'desc' });
     expect(rows).toHaveLength(1);
-    expect(rows[0].tce_usd_per_day).toBe(canonicalTce);
+    expect(rows[0].tce_usd_per_day).not.toBe(SENTINEL);                 // override is gone
+    expect(rows[0].tce_usd_per_day).toBe(expected!.tce_usd_per_day);    // live recompute wins
+    expect(Math.sign(rows[0].tce_usd_per_day as number))
+      .toBe(Math.sign(expected!.breakdown.net_voyage_usd));             // sign agreement
   });
 
-  it('stored tce does not equal what the Baltic recompute would produce', () => {
-    // Verify the test has teeth: without the fix the Baltic tier (mocked at $25k/day)
-    // would produce a very different value.
+  it('loss-making voyage: stored sentinel ignored, live recompute persisted, sign agrees with net_voyage', () => {
     const db = freshDb();
+    mockBaltic.mockReturnValue(LOSS_BALTIC);
 
-    // Match WITHOUT stored economics — recompute path fires
-    const noStoredMatch = makeMatch();
-    persistSessionMatches(db, SESSION, [noStoredMatch], [CARGO], [VESSEL]);
+    const expected = expectedLive(CARGO, VESSEL, LOSS_BALTIC);
+    expect(expected).not.toBeNull();
+    expect(expected!.breakdown.net_voyage_usd).toBeLessThan(0);         // real loss, not noise
+    expect(expected!.tce_usd_per_day).toBeLessThan(0);
+
+    const SENTINEL = -1;                                                // same sign as live, different magnitude
+    persistSessionMatches(db, SESSION, [withStoredTce(SENTINEL)], [CARGO], [VESSEL]);
+
     const rows = listMatches(db, { user_id: SESSION, sortBy: 'score', sortDir: 'desc' });
-    const recomputedTce = rows[0].tce_usd_per_day;
-
-    expect(recomputedTce).not.toBeNull();
-    expect(recomputedTce).not.toBe(774);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].tce_usd_per_day).not.toBe(SENTINEL);                 // override is gone
+    expect(rows[0].tce_usd_per_day).toBe(expected!.tce_usd_per_day);    // live recompute wins
+    expect(Math.sign(rows[0].tce_usd_per_day as number))
+      .toBe(Math.sign(expected!.breakdown.net_voyage_usd));             // sign agreement (both negative)
   });
 });
 
-// ── Test 2: list-path tce === detail-path tce (same DB row) ──────────────────
+// ── Group 2: list_tce === detail_tce for the same DB row ──────────────────────
 
 describe('persistSessionMatches — list tce equals detail tce', () => {
-  it('GET /api/matches list and GET /api/matches/[id] detail return same tce_usd_per_day', () => {
+  it('GET list and GET detail return the same tce_usd_per_day for a single match', () => {
     const db = freshDb();
-    const canonicalTce = 5420;
+    mockBaltic.mockReturnValue(PROFIT_BALTIC);
 
-    const m1 = makeMatch({
-      economics: {
-        breakdown: {
-          bunkerCost: 0, bunkerPort: '', euEtsAmount: 0,
-          euEtsApplicable: false, warRiskPremium: 0, warRiskZones: [],
-        },
-        totalUsd: 0,
-        calculatedAt: new Date(0).toISOString(),
-        dataFreshness: { bunker: 'seed', eua: 'seed' },
-        tceUsdPerDay: canonicalTce,
-      },
-    });
-
-    persistSessionMatches(db, SESSION, [m1], [CARGO], [VESSEL]);
+    const expected = expectedLive(CARGO, VESSEL, PROFIT_BALTIC)!;
+    persistSessionMatches(db, SESSION, [withStoredTce(7777)], [CARGO], [VESSEL]);
 
     const listRows = listMatches(db, { user_id: SESSION, sortBy: 'score', sortDir: 'desc' });
     expect(listRows).toHaveLength(1);
-
     const listTce = listRows[0].tce_usd_per_day;
     const detailTce = getMatch(db, listRows[0].id)?.tce_usd_per_day;
 
-    expect(listTce).toBe(canonicalTce);
-    expect(detailTce).toBe(canonicalTce);
-    expect(listTce).toBe(detailTce);
+    expect(listTce).not.toBeNull();
+    expect(listTce).toBe(detailTce);                                    // contract A: same row, same value
+    expect(listTce).toBe(expected.tce_usd_per_day);                     // both reflect the live recompute
+    expect(Math.sign(listTce as number))
+      .toBe(Math.sign(expected.breakdown.net_voyage_usd));              // contract B: sign agreement
   });
 
-  it('N=3 sample matches: all list tce values equal their detail counterparts', () => {
+  it('N=3 matches with distinct stored sentinels: list_tce === detail_tce for each, all equal the live recompute', () => {
     const db = freshDb();
+    mockBaltic.mockReturnValue(PROFIT_BALTIC);
 
-    const tces = [774, -1200, 8900];
-    const matches = tces.map((tce, i) => ({
-      cargoEmailId: `cargo-${i}`,
-      cargoItemIndex: 0,
-      vesselEmailId: `vessel-${i}`,
-      vesselItemIndex: 0,
-      score: 80 - i * 5,
-      matchLevel: 'good' as const,
-      matchReasons: ['test'],
-      issues: [],
-      economics: {
-        breakdown: {
-          bunkerCost: 0, bunkerPort: '', euEtsAmount: 0,
-          euEtsApplicable: false, warRiskPremium: 0, warRiskZones: [],
-        },
-        totalUsd: 0,
-        calculatedAt: new Date(0).toISOString(),
-        dataFreshness: { bunker: 'seed', eua: 'seed' },
-        tceUsdPerDay: tce,
-      },
-    }));
+    const expected = expectedLive(CARGO, VESSEL, PROFIT_BALTIC)!;
+    const liveTce = expected.tce_usd_per_day;
 
-    // Minimal cargo/vessel sets — no port data → distanceResult=null → tce from economics
-    const cargos = tces.map((_, i) => ({
-      emailId: `cargo-${i}`,
-      itemIndex: 0,
-      originPort: null,
-      destinationPort: null,
-      weightMt: { value: 5000, confidence: 'confirmed' },
-      cargoType: 'GRAIN',
-      freightRateUsd: null,
-      missingInfo: [],
-    } as unknown as ParsedCargo));
-
-    const vessels = tces.map((_, i) => ({
-      emailId: `vessel-${i}`,
-      itemIndex: 0,
-      dwtSummer: { value: 28000, confidence: 'confirmed' },
-      speedLaden: '12 kn',
-      consumption: '22 mt/day',
-      restrictions: [],
-      specialFeatures: [],
-    } as unknown as ParsedVessel));
+    // Three matches against the same pair but with distinct stored-sentinel values
+    // that the old override would have surfaced — convergence to liveTce proves
+    // the override is gone and the list/detail paths agree.
+    const sentinels = [123, -456, 789_012];
+    const matches = sentinels.map((tce, i) =>
+      withStoredTce(tce, {
+        cargoEmailId: `cargo-${i}`,
+        vesselEmailId: `vessel-${i}`,
+        score: 80 - i * 5,
+      }),
+    );
+    const cargos = sentinels.map((_, i) => ({ ...CARGO, emailId: `cargo-${i}` } as ParsedCargo));
+    const vessels = sentinels.map((_, i) => ({ ...VESSEL, emailId: `vessel-${i}` } as ParsedVessel));
 
     persistSessionMatches(db, SESSION, matches, cargos, vessels);
 
@@ -211,46 +258,51 @@ describe('persistSessionMatches — list tce equals detail tce', () => {
 
     for (const row of listRows) {
       const detail = getMatch(db, row.id);
-      expect(detail?.tce_usd_per_day).toBe(row.tce_usd_per_day);
+      expect(detail?.tce_usd_per_day).toBe(row.tce_usd_per_day);        // contract A: same row, same value
+      expect(row.tce_usd_per_day).toBe(liveTce);                        // override removed → all converge to live
+      expect(row.tce_usd_per_day).not.toBe(123);
+      expect(row.tce_usd_per_day).not.toBe(-456);
+      expect(row.tce_usd_per_day).not.toBe(789_012);
+      expect(Math.sign(row.tce_usd_per_day as number))
+        .toBe(Math.sign(expected.breakdown.net_voyage_usd));            // contract B: sign agreement
     }
   });
 });
 
-// ── Test 3: no regression — real user (no stored tce) still recomputes ────────
+// ── Group 3: real-user paths (no stored economics) still recompute correctly ──
 
-describe('persistSessionMatches — recompute fallback for real sessions', () => {
-  it('recomputes tce when m.economics is absent (real non-demo session)', () => {
+describe('persistSessionMatches — live recompute for real sessions', () => {
+  it('no m.economics field: live recompute persisted with sign agreement', () => {
     const db = freshDb();
-    const noEconomicsMatch = makeMatch(); // no economics field
+    mockBaltic.mockReturnValue(PROFIT_BALTIC);
 
-    persistSessionMatches(db, SESSION, [noEconomicsMatch], [CARGO], [VESSEL]);
+    const expected = expectedLive(CARGO, VESSEL, PROFIT_BALTIC)!;
+    persistSessionMatches(db, SESSION, [makeMatch()], [CARGO], [VESSEL]);
 
     const rows = listMatches(db, { user_id: SESSION, sortBy: 'score', sortDir: 'desc' });
     expect(rows).toHaveLength(1);
-    // Should have a recomputed value (not null) since CARGO has valid port data → distance resolves
     expect(rows[0].tce_usd_per_day).not.toBeNull();
-    // And it won't be 774 — that's the seed canonical, not what the Baltic recompute gives
-    expect(typeof rows[0].tce_usd_per_day).toBe('number');
+    expect(rows[0].tce_usd_per_day).toBe(expected.tce_usd_per_day);
+    expect(Math.sign(rows[0].tce_usd_per_day as number))
+      .toBe(Math.sign(expected.breakdown.net_voyage_usd));
+    // list_tce === detail_tce holds on the recompute path too
+    expect(getMatch(db, rows[0].id)?.tce_usd_per_day).toBe(rows[0].tce_usd_per_day);
   });
 
-  it('recomputes tce when m.economics.tceUsdPerDay is null', () => {
+  it('m.economics.tceUsdPerDay undefined: live recompute persisted (no regression)', () => {
     const db = freshDb();
-    const nullTceMatch = makeMatch({
-      economics: {
-        breakdown: {
-          bunkerCost: 0, bunkerPort: '', euEtsAmount: 0,
-          euEtsApplicable: false, warRiskPremium: 0, warRiskZones: [],
-        },
-        totalUsd: 0,
-        calculatedAt: new Date(0).toISOString(),
-        dataFreshness: { bunker: 'seed', eua: 'seed' },
-        tceUsdPerDay: undefined,  // explicitly absent
-      },
-    });
+    mockBaltic.mockReturnValue(LOSS_BALTIC);
 
-    persistSessionMatches(db, SESSION, [nullTceMatch], [CARGO], [VESSEL]);
+    const expected = expectedLive(CARGO, VESSEL, LOSS_BALTIC)!;
+    expect(expected.breakdown.net_voyage_usd).toBeLessThan(0);
+
+    persistSessionMatches(db, SESSION, [withStoredTce(undefined)], [CARGO], [VESSEL]);
     const rows = listMatches(db, { user_id: SESSION, sortBy: 'score', sortDir: 'desc' });
-    // Falls through to recompute — value computed from port distance + Baltic
-    expect(rows[0].tce_usd_per_day).not.toBeNull();
+    expect(rows).toHaveLength(1);
+    expect(rows[0].tce_usd_per_day).toBe(expected.tce_usd_per_day);
+    expect(rows[0].tce_usd_per_day).toBeLessThan(0);
+    expect(Math.sign(rows[0].tce_usd_per_day as number))
+      .toBe(Math.sign(expected.breakdown.net_voyage_usd));
+    expect(getMatch(db, rows[0].id)?.tce_usd_per_day).toBe(rows[0].tce_usd_per_day);
   });
 });
