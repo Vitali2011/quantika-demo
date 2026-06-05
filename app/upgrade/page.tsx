@@ -40,6 +40,8 @@ const TRUST_QUOTE = {
 };
 
 async function UsageBanner() {
+  let daysLeft: number;
+  let pct: number;
   try {
     const cookieStore = await cookies();
     const sessionId = cookieStore.get('session_id')?.value;
@@ -47,29 +49,29 @@ async function UsageBanner() {
     const trial = await getTrialState(sessionId);
     if (!trial) return null;
     const elapsed = Math.floor((Date.now() - new Date(trial.started_at).getTime()) / 86400000);
-    const daysLeft = Math.max(0, 14 - elapsed);
-    const pct = Math.max(5, Math.min(100, (elapsed / 14) * 100));
-    return (
-      <div className="rounded-ds-md border border-ds-border bg-ds-surface px-4 py-3 flex items-center gap-4">
-        <div className="flex-1 space-y-1">
-          <p className="text-sm font-medium text-ds-text">Trial usage</p>
-          <div className="flex items-center gap-3">
-            <div className="flex-1 h-2 rounded-ds-full bg-ds-border overflow-hidden">
-              <div
-                className="h-full bg-ds-accent rounded-ds-full transition-all duration-ds-slow"
-                style={{ width: `${pct}%` }}
-              />
-            </div>
-            <span className="text-xs text-ds-text-muted shrink-0 tabular-nums">
-              {daysLeft}d left
-            </span>
-          </div>
-        </div>
-      </div>
-    );
+    daysLeft = Math.max(0, 14 - elapsed);
+    pct = Math.max(5, Math.min(100, (elapsed / 14) * 100));
   } catch {
     return null;
   }
+  return (
+    <div className="rounded-ds-md border border-ds-border bg-ds-surface px-4 py-3 flex items-center gap-4">
+      <div className="flex-1 space-y-1">
+        <p className="text-sm font-medium text-ds-text">Trial usage</p>
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-2 rounded-ds-full bg-ds-border overflow-hidden">
+            <div
+              className="h-full bg-ds-accent rounded-ds-full transition-all duration-ds-slow"
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+          <span className="text-xs text-ds-text-muted shrink-0 tabular-nums">
+            {daysLeft}d left
+          </span>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function UpgradePage() {

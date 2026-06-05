@@ -82,6 +82,21 @@ describe('useLiveJobs', () => {
     expect(result.current.latestMatch?.score).toBe(94);
   });
 
+  it('does not overwrite latestMatch when same match_id arrives again (dedup guard)', () => {
+    const { result } = renderHook(() => useLiveJobs());
+    const es = MockEventSource.instances[0];
+    act(() => {
+      es.emit('match-created', { match_id: 'm1', score: 94, vessel_name: 'MV Atlas' });
+    });
+    const firstMatch = result.current.latestMatch;
+    act(() => {
+      es.emit('match-created', { match_id: 'm1', score: 99, vessel_name: 'MV Atlas Updated' });
+    });
+    // State reference must be identical (no re-render triggered)
+    expect(result.current.latestMatch).toBe(firstMatch);
+    expect(result.current.latestMatch?.score).toBe(94);
+  });
+
   it('dismissMatch sets latestMatch to null', () => {
     const { result } = renderHook(() => useLiveJobs());
     const es = MockEventSource.instances[0];
