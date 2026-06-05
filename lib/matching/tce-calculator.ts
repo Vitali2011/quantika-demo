@@ -101,10 +101,13 @@ export function parseConsumption(s: unknown): number {
   return DEFAULT_CONSUMPTION_MT_PER_DAY;
 }
 
-// Longer voyages warrant higher rates per mt
+// Distance multiplier for Tier-3 fallback. Short coastal routes (<1000nm) firmed
+// to parity (1.0) — the legacy 0.7 was deep-sea suppression incorrectly applied
+// to dense Black-Sea / intra-Med traffic where port congestion + ballast
+// efficiency lift short-route per-mt rates. #819 honesty fix (founder Option A).
 function distanceFactor(nm: number): number {
   if (nm <= 0) return 1.0;
-  if (nm < 1000) return 0.7;
+  if (nm < 1000) return 1.0;
   if (nm < 3000) return 1.0;
   if (nm < 6000) return 1.3;
   return 1.6;
