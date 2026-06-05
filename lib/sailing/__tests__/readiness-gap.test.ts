@@ -165,12 +165,20 @@ describe('calculateReadinessGap — past-laycan vs recent vessel open (date-inde
 });
 
 describe('detectSpot', () => {
+  // Keyword-only → spot
   it('detects "spot"', () => expect(detectSpot('spot')).toBe(true));
   it('detects "SPOT" (case-insensitive)', () => expect(detectSpot('Open: Karasu, SPOT')).toBe(true));
   it('detects "prompt"', () => expect(detectSpot('prompt')).toBe(true));
   it('detects "promt" (common typo)', () => expect(detectSpot('promt')).toBe(true));
+  // No keyword → not spot
   it('does not match "5 Sep"', () => expect(detectSpot('5 Sep')).toBe(false));
   it('does not match null', () => expect(detectSpot(null)).toBe(false));
+  it('does not match ""', () => expect(detectSpot('')).toBe(false));
+  it('does not match ISO date without keyword', () => expect(detectSpot('2026-06-03')).toBe(false));
+  // Keyword + concrete date → dated vessel, NOT spot (regression for false-positive fix)
+  it('keyword + ISO date → false ("spot 2026-06-03")', () => expect(detectSpot('spot 2026-06-03')).toBe(false));
+  it('ISO date + keyword → false ("2026-07-04 prompt")', () => expect(detectSpot('2026-07-04 prompt')).toBe(false));
+  it('keyword + day+month → false ("spot 5 Sep")', () => expect(detectSpot('spot 5 Sep')).toBe(false));
 });
 
 // Reference: today = 2025-09-05, laycans Aug-Oct 2026 simulate the real-world bug:
@@ -226,6 +234,22 @@ describe('calculateReadinessGap — spot vessel fix', () => {
     );
     expect(r.verdict).toBe('ideal');   // gapDays ~9 → would be idle for non-spot, ideal for spot
     expect(r.isSpot).toBe(true);
+  });
+
+  it('keyword + ISO date in raw open → NOT spot (SEAGULL-12 regression)', () => {
+    // Vessel raw open "spot 2026-06-03": detectSpot must return false (dated vessel).
+    // Old behavior: detectSpot("spot 2026-06-03")=true → spot branch: 28d < 30d → 'ideal' (WRONG).
+    // New behavior: detectSpot strips keyword → parseVesselOpenDate("2026-06-03") succeeds → false.
+    // isSpot=false → classifyVerdict(28) → 'idle' (>5d).
+    const TODAY_SEAGULL = new Date('2026-06-03T00:00:00Z');
+    const r = calculateReadinessGap(
+      { openDate: 'spot 2026-06-03', openPosition: 'Karasu', speedLaden: null, dwtSummer: 5200 },
+      { laycan: '01-05 Jul', originPort: 'Karasu' },
+      { refYear: 2026, today: TODAY_SEAGULL },
+    );
+    expect(r.isSpot).toBe(false);
+    expect(r.gapDays).toBeGreaterThan(5);
+    expect(r.verdict).toBe('idle');
   });
 });
 
