@@ -19,3 +19,23 @@ export function estimateVoyageDays(
   const days = distanceNm / (speed * 24);
   return Math.max(1, Math.round(days));
 }
+
+/**
+ * Round-trip voyage duration for TCE/economics calculations.
+ *
+ * roundTripDays = ladenDays * 2 + 2 port days (load + discharge)
+ *
+ * Use for TCE denominator + bunker cost so freight (sold once per laden leg)
+ * and consumption (paid round-trip) share the same span. See #782 / #819.
+ * Returns 0 when distance is missing — caller MUST skip calculation rather
+ * than substitute a constant.
+ */
+export function estimateRoundTripDays(
+  distanceNm: number | null | undefined,
+  speedKnots: number | null | undefined,
+): number {
+  if (distanceNm == null || !Number.isFinite(distanceNm) || distanceNm <= 0) return 0;
+  const speed = speedKnots != null && Number.isFinite(speedKnots) && speedKnots > 0 ? speedKnots : 12;
+  const ladenDays = distanceNm / (speed * 24);
+  return ladenDays * 2 + 2;
+}

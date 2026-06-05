@@ -8,6 +8,7 @@ import { VoyageBreakdownChart } from '@/components/economics/VoyageBreakdownChar
 import { BunkerComparisonTable } from '@/components/economics/BunkerComparisonTable';
 import type { BunkerCandidateResult } from '@/lib/economics/bunker-comparison';
 import { estimateVoyageDays } from '@/lib/economics/voyage-days';
+import { buildCanonicalTceInputs } from '@/lib/economics/canonical-tce-inputs';
 import { estimateVesselValueUsd } from '@/lib/economics/vessel-value';
 import { resolveConsMtPerDay } from '@/lib/economics/vessel-consumption';
 import { freightBadge, FREIGHT_BADGE_CLASSES } from '@/lib/matching/freight-badge';
@@ -245,8 +246,9 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
     if (!rawConsumption) missing.push('fuel consumption');
     if (!quantityMt) missing.push('cargo quantity');
 
+    const freightRateForCompare = currentRate ?? storedFreightRate ?? 0;
     return {
-      ready,
+      ready: ready && freightRateForCompare > 0,
       missing,
       origin,
       destination,
@@ -256,7 +258,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
         speedKts,
         consumptionMtPerDay: consumption,
       },
-      cargo: { quantityMt, freightRateUsdPerMt: currentRate ?? storedFreightRate ?? 28 },
+      cargo: { quantityMt, freightRateUsdPerMt: freightRateForCompare },
     };
   }, [cargo, vessel, currentRate, storedFreightRate]);
 
@@ -280,8 +282,9 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
     const destinationPort = cargo?.destinationPort?.value ?? '';
     const quantityMt = resolveCargoWeight(cargo ?? null) ?? 0;
     const distanceNm = routeDistanceNm ?? 0;
-    const freightRateUsdPerMt = currentRate ?? storedFreightRate ?? 28;
-    const durationDays = estimateVoyageDays(distanceNm, speedKts);
+    // #819: drop ?? 28 — seed now persists freight_rate_usd_per_mt so storedFreightRate
+    // is non-null for canonical matches. null → "freight rate required" hint, not fabrication.
+    const freightRateUsdPerMt = currentRate ?? storedFreightRate ?? null;
 
     const missing: string[] = [];
     if (!originPort) missing.push('load port');
@@ -292,32 +295,47 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
     if (!distanceNm) missing.push('route distance');
     if (!quantityMt) missing.push('cargo quantity');
     if (!bunkerPort) missing.push('bunker port');
+    if (freightRateUsdPerMt == null || freightRateUsdPerMt <= 0) missing.push('freight rate');
 
     const ready =
-      missing.length === 0 &&
-      bunkerPort !== null &&
-      dwt > 0 &&
-      originPort.length > 0 &&
-      destinationPort.length > 0 &&
-      quantityMt > 0 &&
-      durationDays > 0;
+      missing.length === 0 && bunkerPort !== null && freightRateUsdPerMt != null && freightRateUsdPerMt > 0;
 
-    return {
-      ready,
-      missing,
-      input: ready
-        ? {
-            vessel: { dwt, valueUsd: estimateVesselValueUsd(dwt), speedKts, consumptionMtPerDay },
-            route: { originPort, destinationPort, distanceNm },
-            cargo: { quantityMt, freightRateUsdPerMt },
-            bunkerPort,
-            bunkerGrade,
-            ...(bunkerPriceUsdPerMt !== '' ? { bunkerPriceUsdPerMt: Number(bunkerPriceUsdPerMt) } : {}),
-            durationDays,
-          }
-        : null,
-    };
-  }, [vessel, cargo, routeDistanceNm, currentRate, storedFreightRate, bunkerPort, bunkerGrade, bunkerPriceUsdPerMt]);
+    // Build canonical inputs for durationDays and vessel/route/cargo normalisation.
+    // bunkerPriceUsdPerMt is omitted from the POST body when not user-entered so the
+    // API auto-resolves it from bunkerPort DB lookup (typeof 0 === 'number' would
+    // otherwise cause the API to treat $0 as a manual price → zero bunker cost).
+    const core = ready
+      ? buildCanonicalTceInputs({
+          vesselDwt: dwt,
+          speedKts,
+          consumptionMtPerDay,
+          distanceNm,
+          quantityMt,
+          freightRateUsdPerMt,
+          bunkerPriceUsdPerMt: 0,  // placeholder only; overridden below for POST body
+          euaPriceEur: euaData?.value,
+          vesselValueUsd: estimateVesselValueUsd(dwt),
+          originPort,
+          destinationPort,
+        })
+      : null;
+
+    const input = core
+      ? {
+          vessel: core.vessel,
+          route: core.route,
+          cargo: core.cargo,
+          durationDays: core.durationDays,
+          euaPriceEur: core.euaPriceEur,
+          bunkerPort,
+          bunkerGrade,
+          // Only include bunkerPriceUsdPerMt when user-entered; absent → API auto-resolves
+          ...(bunkerPriceUsdPerMt !== '' ? { bunkerPriceUsdPerMt: Number(bunkerPriceUsdPerMt) } : {}),
+        }
+      : null;
+
+    return { ready, missing, input };
+  }, [vessel, cargo, routeDistanceNm, currentRate, storedFreightRate, bunkerPort, bunkerGrade, bunkerPriceUsdPerMt, euaData]);
 
   useEffect(() => {
     if (!voyageInputData.ready || !voyageInputData.input) {

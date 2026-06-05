@@ -1,5 +1,6 @@
 import { calculateTCE, type TCEBreakdown } from '@/lib/economics/voyage-calculator';
 import { calculateWarRiskPremium } from '@/lib/economics/war-risk';
+import { buildCanonicalTceInputs } from '@/lib/economics/canonical-tce-inputs';
 import type { EconomicsResult } from '@/lib/types';
 
 // Ballpark base freight rates (USD/mt) per cargo class
@@ -101,10 +102,13 @@ export function parseConsumption(s: unknown): number {
   return DEFAULT_CONSUMPTION_MT_PER_DAY;
 }
 
-// Longer voyages warrant higher rates per mt
+// Distance multiplier for Tier-3 fallback. Short coastal routes (<1000nm) firmed
+// to parity (1.0) — the legacy 0.7 was deep-sea suppression incorrectly applied
+// to dense Black-Sea / intra-Med traffic where port congestion + ballast
+// efficiency lift short-route per-mt rates. #819 honesty fix (founder Option A).
 function distanceFactor(nm: number): number {
   if (nm <= 0) return 1.0;
-  if (nm < 1000) return 0.7;
+  if (nm < 1000) return 1.0;
   if (nm < 3000) return 1.0;
   if (nm < 6000) return 1.3;
   return 1.6;
@@ -140,38 +144,20 @@ export function computeEstimatedTce(
   speed_kts: number = DEFAULT_SPEED_KTS,
   consumption_mt_per_day: number = DEFAULT_CONSUMPTION_MT_PER_DAY,
 ): TceEstimate {
-  const safeDist = distance_nm > 0 ? distance_nm : 0;
-  const safeDwt = vessel_dwt > 0 ? vessel_dwt : 10000;
-  // Conservative estimate when cargo weight unknown: 65% of DWT avoids inflating freight revenue.
-  // Fit-breakdown already penalizes weight-not-stated; 90% fabricated a near-full load (#782).
-  const safeQty = quantity_mt > 0 ? quantity_mt : safeDwt * 0.65;
-  const safeSpeed = speed_kts > 0 ? speed_kts : DEFAULT_SPEED_KTS;
-  const safeCons = consumption_mt_per_day > 0 ? consumption_mt_per_day : DEFAULT_CONSUMPTION_MT_PER_DAY;
-  // Round-trip duration: laden + ballast (≈ same distance) + 2 port days (load + discharge).
-  // Laden-only divided full freight by 1–4 days → absurd $/day on short voyages (#782).
-  const ladenDays = safeDist > 0 ? safeDist / (safeSpeed * 24) : 0;
-  const durationDays = safeDist > 0 ? ladenDays * 2 + 2 : 10;
-
-  const result = calculateTCE({
-    vessel: {
-      dwt: safeDwt,
-      valueUsd: DEFAULT_VESSEL_VALUE_USD,
-      speedKts: safeSpeed,
-      consumptionMtPerDay: safeCons,
-    },
-    route: {
-      originPort: '',
-      destinationPort: '',
-      distanceNm: safeDist,
-    },
-    cargo: {
-      quantityMt: safeQty,
-      freightRateUsdPerMt: freightRate.rate,
-    },
+  const inputs = buildCanonicalTceInputs({
+    vesselDwt: vessel_dwt,
+    speedKts: speed_kts,
+    consumptionMtPerDay: consumption_mt_per_day,
+    distanceNm: distance_nm,
+    quantityMt: quantity_mt,
+    freightRateUsdPerMt: freightRate.rate,
     bunkerPriceUsdPerMt: DEFAULT_BUNKER_USD_PER_MT,
+    originPort: '',
+    destinationPort: '',
     euaPriceEur: DEFAULT_EUA_EUR,
-    durationDays,
+    vesselValueUsd: DEFAULT_VESSEL_VALUE_USD,
   });
+  const result = calculateTCE(inputs);
 
   return {
     tce_usd_per_day: result.daily_tce_usd,
@@ -269,5 +255,7 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
     calculatedAt: input.calculatedAt,
     dataFreshness: { bunker: 'estimated', eua: 'estimated' },
     tceUsdPerDay: tce.tce_usd_per_day,
+    freightRateUsdPerMt: tce.freight_rate_usd_per_mt,
+    freightRateSource: tce.freight_rate_source,
   };
 }

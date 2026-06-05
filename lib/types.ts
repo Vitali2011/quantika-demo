@@ -87,6 +87,10 @@ export interface EconomicsResult {
    * war-risk-inclusive daily P&L on HRA routes.
    */
   tceUsdPerDay?: number;
+  /** Freight rate (USD/mt) used to compute tceUsdPerDay. Persisted to matches table so detail page shows the same rate. */
+  freightRateUsdPerMt?: number;
+  /** Source tier that resolved the freight rate (manual/parsed/baltic/estimated). */
+  freightRateSource?: string;
 }
 
 // ── FuelEU Maritime (Spec γ-11) ──
