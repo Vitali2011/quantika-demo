@@ -62,13 +62,6 @@ function vesselInitials(vid: string): string {
   return (a + b).slice(0, 2);
 }
 
-function formatAge(ts: number): string {
-  const diff = Date.now() / 1000 - ts;
-  if (diff < 3600) return 'now';
-  if (diff < 86400) return new Date(ts * 1000).toTimeString().slice(0, 5);
-  return new Date(ts * 1000).toLocaleDateString('en-US', { weekday: 'short' });
-}
-
 // Defer Date.now() to post-mount: SSR and first client paint must produce
 // identical HTML, otherwise React #418 hydration mismatch fires when a match
 // sits near the 2-hour boundary (same fix pattern as SubsCountdown).
