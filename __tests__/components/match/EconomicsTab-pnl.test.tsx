@@ -221,6 +221,30 @@ describe('EconomicsTab — voyage P&L chart', () => {
     expect(body.vessel.valueUsd).toBe(13_000_000);
   });
 
+  it('uses round-trip durationDays (laden*2+2) for Black-Sea 400nm pair (#819)', async () => {
+    // estimateRoundTripDays(400, 12) ≈ 4.78 days
+    // estimateVoyageDays(400, 12) = max(1, round(1.39)) = 1 day  ← pre-fix (WRONG)
+    const bsVessel = { ...FULL_VESSEL, speedLaden: '12 kn', dwtSummer: { value: 3000, confidence: 'confirmed' as const } };
+    const bsCargo = { ...FULL_CARGO, weightMt: { value: 2500, confidence: 'confirmed' as const } };
+    await act(async () => {
+      render(
+        <EconomicsTab
+          vessel={bsVessel as any}
+          cargo={bsCargo as any}
+          routeDistanceNm={400}
+          storedFreightRate={25}
+          matchDbId={1}
+        />,
+      );
+    });
+    await waitFor(() => expect(screen.getByTestId('voyage-breakdown-chart')).toBeInTheDocument());
+    const tceCalls = mockFetch.mock.calls.filter(([url]: [string]) => (url as string).includes('/api/voyage/tce'));
+    const body = JSON.parse(tceCalls[0][1].body);
+    // round-trip: 400/(12*24)*2+2 ≈ 4.78 — must NOT be 1 (laden-only)
+    expect(body.durationDays).toBeGreaterThan(4);
+    expect(body.durationDays).toBeLessThan(6);
+  });
+
   it('INVARIANT: calculateTCE and VoyageInput not structurally changed', () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const fs = require('fs');
