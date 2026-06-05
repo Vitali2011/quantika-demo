@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 interface DismissableDemoBadgeProps {
   storageKey: string;
@@ -11,17 +11,13 @@ export function DismissableDemoBadge({
   storageKey,
   'data-testid': testId = 'demo-data-badge',
 }: DismissableDemoBadgeProps) {
-  const [dismissed, setDismissed] = useState(false);
-
-  useEffect(() => {
+  const [dismissed, setDismissed] = useState(() => {
     try {
-      if (localStorage.getItem(storageKey) === 'dismissed') {
-        setDismissed(true);
-      }
+      return localStorage.getItem(storageKey) === 'dismissed';
     } catch {
-      // localStorage unavailable (SSR guard, private browsing, etc.)
+      return false;
     }
-  }, [storageKey]);
+  });
 
   if (dismissed) return null;
 
