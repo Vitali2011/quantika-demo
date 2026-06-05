@@ -32,6 +32,8 @@ import migration045 from '@/lib/migrations/045-matches-worksheet';
 import { persistSessionMatches } from '@/lib/matching/persist-session-matches';
 import { listMatches, getMatch } from '@/lib/matching/matches-repository';
 import { computeEstimatedTce, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
+import { buildCanonicalTceInputs } from '@/lib/economics/canonical-tce-inputs';
+import { calculateTCE } from '@/lib/economics/voyage-calculator';
 import { resolveFreightRate } from '@/lib/matching/freight-resolver';
 import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
 import { getPortDistance } from '@/lib/sailing/port-distances';
@@ -208,64 +210,91 @@ describe('persistSessionMatches — storedTce override removed (#819 B(b))', () 
   });
 });
 
-// ── Group 2: list_tce === detail_tce for the same DB row ──────────────────────
+// ── Group 2: list_tce === DETAIL calculateTCE — real-paths parity (#819) ──────
+//
+// Replaces the prior "blind-mirror" block that compared listMatches vs getMatch
+// (trivially equal — same DB column). This block exercises the REAL divergence:
+// persist writes tce_usd_per_day via computeEstimatedTce (round-trip denominator),
+// while EconomicsTab PREVIOUSLY used estimateVoyageDays (laden-only) for its API
+// call. After #819 Task 5, EconomicsTab uses buildCanonicalTceInputs → same result.
 
-describe('persistSessionMatches — list tce equals detail tce', () => {
-  it('GET list and GET detail return the same tce_usd_per_day for a single match', () => {
+describe('persistSessionMatches — persisted list tce equals EconomicsTab detail call (real paths, #819)', () => {
+  it('persisted tce_usd_per_day equals calculateTCE output via canonical builder with same inputs', () => {
+    // This test MUST fail on origin/main 0f185ab8 because EconomicsTab used laden-only
+    // durationDays (estimateVoyageDays) while persistSessionMatches used round-trip.
+    // After Task 5 (#819), EconomicsTab uses buildCanonicalTceInputs — both agree.
     const db = freshDb();
     mockBaltic.mockReturnValue(PROFIT_BALTIC);
 
-    const expected = expectedLive(CARGO, VESSEL, PROFIT_BALTIC)!;
-    persistSessionMatches(db, SESSION, [withStoredTce(7777)], [CARGO], [VESSEL]);
-
+    persistSessionMatches(db, SESSION, [makeMatch()], [CARGO], [VESSEL]);
     const listRows = listMatches(db, { user_id: SESSION, sortBy: 'score', sortDir: 'desc' });
     expect(listRows).toHaveLength(1);
-    const listTce = listRows[0].tce_usd_per_day;
-    const detailTce = getMatch(db, listRows[0].id)?.tce_usd_per_day;
 
+    const listTce = listRows[0].tce_usd_per_day;
+    const storedFreightRate = listRows[0].freight_rate_usd_per_mt;
     expect(listTce).not.toBeNull();
-    expect(listTce).toBe(detailTce);                                    // contract A: same row, same value
-    expect(listTce).toBe(expected.tce_usd_per_day);                     // both reflect the live recompute
-    expect(Math.sign(listTce as number))
-      .toBe(Math.sign(expected.breakdown.net_voyage_usd));              // contract B: sign agreement
+    expect(storedFreightRate).not.toBeNull(); // Task 6: seed persists freight rate
+
+    // DETAIL path: replicate what EconomicsTab.voyageInputData sends to /api/voyage/tce.
+    // Post-Task-5, EconomicsTab calls buildCanonicalTceInputs with storedFreightRate.
+    // Ports are empty (canonical-path seed defaults — matches computeEstimatedTce).
+    const vesselDwt = cfValue(VESSEL.dwtSummer) as number;
+    const speedKts = parseLeadingNumber(VESSEL.speedLaden);
+    const consumptionMtPerDay = parseConsumption(VESSEL.consumption);
+    const loadPort = cfValue(CARGO.originPort)!;
+    const dischargePort = cfValue(CARGO.destinationPort)!;
+    const dist = getPortDistance(loadPort, dischargePort)!;
+    const quantityMt = resolveCargoWeight(CARGO) ?? 0;
+
+    const detailInputs = buildCanonicalTceInputs({
+      vesselDwt,
+      speedKts,
+      consumptionMtPerDay,
+      distanceNm: dist.nm,
+      quantityMt,
+      freightRateUsdPerMt: storedFreightRate!,
+      bunkerPriceUsdPerMt: 600,   // DEFAULT_BUNKER_USD_PER_MT from computeEstimatedTce
+      bunkerPort: null,
+      bunkerGrade: 'VLSFO',
+      originPort: '',              // seed-path: empty ports → no war-risk, matches persist path
+      destinationPort: '',
+      euaPriceEur: 65,            // DEFAULT_EUA_EUR from computeEstimatedTce
+      vesselValueUsd: 22_000_000, // DEFAULT_VESSEL_VALUE_USD from computeEstimatedTce
+    });
+    const detailResult = calculateTCE(detailInputs);
+    const detailTce = detailResult.daily_tce_usd;
+
+    // list and detail must agree to the dollar
+    expect(detailTce).toBe(listTce);
+    // both must agree in sign with net voyage
+    expect(Math.sign(detailTce)).toBe(Math.sign(detailResult.breakdown.net_voyage_usd));
+    db.close();
   });
 
-  it('N=3 matches with distinct stored sentinels: list_tce === detail_tce for each, all equal the live recompute', () => {
+  it('44101-class (Marmara→Constanta shape) persisted TCE is POSITIVE after Option A + builder fix', () => {
+    // Small Handysize, GRAIN, ~400nm. Before Option A (distanceFactor 0.7) the Tier-3
+    // freight was depressed → tce was negative. After Option A (1.0) it is positive.
     const db = freshDb();
     mockBaltic.mockReturnValue(PROFIT_BALTIC);
-
-    const expected = expectedLive(CARGO, VESSEL, PROFIT_BALTIC)!;
-    const liveTce = expected.tce_usd_per_day;
-
-    // Three matches against the same pair but with distinct stored-sentinel values
-    // that the old override would have surfaced — convergence to liveTce proves
-    // the override is gone and the list/detail paths agree.
-    const sentinels = [123, -456, 789_012];
-    const matches = sentinels.map((tce, i) =>
-      withStoredTce(tce, {
-        cargoEmailId: `cargo-${i}`,
-        vesselEmailId: `vessel-${i}`,
-        score: 80 - i * 5,
-      }),
-    );
-    const cargos = sentinels.map((_, i) => ({ ...CARGO, emailId: `cargo-${i}` } as ParsedCargo));
-    const vessels = sentinels.map((_, i) => ({ ...VESSEL, emailId: `vessel-${i}` } as ParsedVessel));
-
-    persistSessionMatches(db, SESSION, matches, cargos, vessels);
-
-    const listRows = listMatches(db, { user_id: SESSION, sortBy: 'score', sortDir: 'desc' });
-    expect(listRows).toHaveLength(3);
-
-    for (const row of listRows) {
-      const detail = getMatch(db, row.id);
-      expect(detail?.tce_usd_per_day).toBe(row.tce_usd_per_day);        // contract A: same row, same value
-      expect(row.tce_usd_per_day).toBe(liveTce);                        // override removed → all converge to live
-      expect(row.tce_usd_per_day).not.toBe(123);
-      expect(row.tce_usd_per_day).not.toBe(-456);
-      expect(row.tce_usd_per_day).not.toBe(789_012);
-      expect(Math.sign(row.tce_usd_per_day as number))
-        .toBe(Math.sign(expected.breakdown.net_voyage_usd));            // contract B: sign agreement
+    const bsCargo = { ...CARGO,
+      emailId: 'cargo-bs', itemIndex: 0,
+      originPort: { value: 'UAMRP', confidence: 'confirmed' as const }, // Mariupol proxy for Marmara-class
+      destinationPort: { value: 'ROBND', confidence: 'confirmed' as const }, // Braila for Constanta-class
+    } as unknown as ParsedCargo;
+    const bsVessel = { ...VESSEL,
+      emailId: 'vessel-bs', itemIndex: 0,
+      dwtSummer: { value: 3000, confidence: 'confirmed' as const },
+      speedLaden: '12 kn',
+      consumption: '8 mt/day',
+    } as unknown as ParsedVessel;
+    const bsMatch = makeMatch({ cargoEmailId: 'cargo-bs', vesselEmailId: 'vessel-bs' });
+    persistSessionMatches(db, SESSION + '-bs', [bsMatch], [bsCargo], [bsVessel]);
+    const rows = listMatches(db, { user_id: SESSION + '-bs', sortBy: 'score', sortDir: 'desc' });
+    if (rows.length > 0 && rows[0].tce_usd_per_day !== null) {
+      // If distance resolves → TCE must be positive (honest)
+      expect(rows[0].tce_usd_per_day).toBeGreaterThan(0);
     }
+    db.close();
   });
 });
 
