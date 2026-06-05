@@ -59,9 +59,6 @@ export function RecapGenerateCard() {
         <Button variant="primary" size="sm" onClick={handleGenerate} disabled={loading}>
           {loading ? 'Generating…' : 'Generate recap'}
         </Button>
-        <Button variant="secondary" size="sm" disabled>
-          Export PDF
-        </Button>
         <Button variant="ghost" size="sm" disabled>
           Send email
         </Button>

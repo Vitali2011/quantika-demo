@@ -7,7 +7,7 @@ import { NotificationsForm } from './_forms/NotificationsForm';
 
 const VALID_SECTIONS = [
   'profile', 'password', 'notifications', 'integrations',
-  'team', 'api', 'billing', 'payment', 'invoices', 'export', 'danger',
+  'team', 'api', 'billing', 'payment', 'invoices', 'danger',
 ] as const;
 
 type Section = (typeof VALID_SECTIONS)[number];
