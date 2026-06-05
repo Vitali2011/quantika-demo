@@ -250,7 +250,7 @@ export default async function MatchDetailPage({ params }: Props) {
             {/* Rich tabs — only when session match is still available */}
             {sessionMatch && (
               <>
-                {process.env.EXPLAIN_DEAL_ENABLED === 'true' && (
+                {process.env.NEXT_PUBLIC_EXPLAIN_DEAL_ENABLED === 'true' && (
                   <div className="flex flex-wrap items-center gap-2">
                     <ExplainDealModal
                       matchIndex={session.matches.indexOf(sessionMatch)}

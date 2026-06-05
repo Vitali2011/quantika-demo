@@ -116,12 +116,14 @@ export async function convertCurrency(
 }
 
 export function formatCurrencyAmount(amount: number, currency: string): string {
-  const formatted = amount.toLocaleString("en-US", {
+  const isNegative = amount < 0;
+  const formatted = Math.abs(amount).toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
-  if (currency === "USD") return `$${formatted}`;
-  return `${currency} ${formatted}`;
+  const sign = isNegative ? "-" : "";
+  if (currency === "USD") return `${sign}$${formatted}`;
+  return `${sign}${currency} ${formatted}`;
 }
 
 // Clear cache (for testing)

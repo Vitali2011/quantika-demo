@@ -1,4 +1,7 @@
+'use client';
+
 import type { ParsedVessel } from '@/lib/types';
+import { DismissableDemoBadge } from '@/components/ui/DismissableDemoBadge';
 
 interface PassportTabProps {
   vessel?: ParsedVessel;
@@ -10,23 +13,13 @@ interface CheckRow {
   missing?: boolean;
 }
 
-function DemoDataBadge() {
-  return (
-    <span
-      data-testid="passport-demo-badge"
-      className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800 border border-amber-300"
-    >
-      Demo data
-    </span>
-  );
-}
 
 export function PassportTab({ vessel }: PassportTabProps) {
   if (!vessel) {
     return (
       <div data-testid="tab-passport" className="text-sm text-gray-500">
         <div className="mb-2">
-          <DemoDataBadge />
+          <DismissableDemoBadge storageKey="demo-badge-passport" data-testid="passport-demo-badge" />
         </div>
         No vessel data available.
       </div>
@@ -44,7 +37,7 @@ export function PassportTab({ vessel }: PassportTabProps) {
   return (
     <div data-testid="tab-passport" className="space-y-2 text-sm">
       <div className="mb-2">
-        <DemoDataBadge />
+        <DismissableDemoBadge storageKey="demo-badge-passport" data-testid="passport-demo-badge" />
       </div>
       <div className="divide-y">
         {rows.map(({ label, value }) => (

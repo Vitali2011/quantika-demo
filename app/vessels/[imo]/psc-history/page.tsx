@@ -8,6 +8,7 @@
 'use client';
 
 import { use, useEffect, useState } from 'react';
+import { DismissableDemoBadge } from '@/components/ui/DismissableDemoBadge';
 
 interface PscRecord {
   id: string;
@@ -75,12 +76,7 @@ export default function PscHistoryPage({ params }: Props) {
       <div className="mx-auto max-w-7xl">
         <div className="mb-6 flex items-center gap-3">
           <h1 className="text-2xl font-bold">PSC Detention History</h1>
-          <span
-            data-testid="demo-data-badge"
-            className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800 ring-1 ring-inset ring-amber-200"
-          >
-            Demo data
-          </span>
+          <DismissableDemoBadge storageKey="demo-badge-psc" data-testid="demo-data-badge" />
         </div>
         <p className="mb-4 text-sm text-gray-500">IMO: {imo}</p>
 
