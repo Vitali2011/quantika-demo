@@ -7,16 +7,32 @@ name: Auto-rebase open [code-only] PRs on main push
 # BEHIND and stall indefinitely.
 #
 # This workflow fires on push to main, finds all open [code-only] PRs that
-# are BEHIND and have auto-merge enabled, calls GitHub's update-branch API
-# to merge main into them, then dispatches ci.yml via workflow_dispatch so
-# required checks run on the new HEAD commit and native auto-merge can fire.
+# are BEHIND and have auto-merge enabled, then calls GitHub's update-branch
+# API to merge main into them so native auto-merge can fire.
 #
-# Why workflow_dispatch instead of git-nudge-push:
-#   update-branch (and any git push) via GITHUB_TOKEN do not fire
-#   pull_request:synchronize events — GitHub's anti-recursion guard suppresses
-#   all workflow triggers from events created by GITHUB_TOKEN in a workflow.
-#   workflow_dispatch is exempt from this restriction: dispatching a *different*
-#   workflow (ci.yml) via GITHUB_TOKEN is explicitly allowed.
+# Why AUTO_REBASE_PAT (not GITHUB_TOKEN) for the update-branch call:
+#   Branch protection on main requires FOUR checks: Build, Test,
+#   "TypeCheck + Audit" (all from ci.yml) AND pre-merge-guard
+#   (pre-merge-guard.yml). ci.yml has a workflow_dispatch trigger;
+#   pre-merge-guard.yml fires ONLY on pull_request events — it has no
+#   workflow_dispatch path.
+#   A GITHUB_TOKEN push does NOT fire pull_request:synchronize (GitHub's
+#   anti-recursion guard suppresses workflow triggers from GITHUB_TOKEN
+#   events). So an update-branch via GITHUB_TOKEN leaves the rebased HEAD
+#   with ci.yml green but pre-merge-guard MISSING → the 4th required check
+#   is never reported → native auto-merge stays BLOCKED forever. (This file
+#   used to paper over that by nudging ci.yml via workflow_dispatch, but
+#   there is no way to nudge pre-merge-guard the same way — so the rebased
+#   PR stalled and the only fix was manual close+reopen.)
+#   AUTO_REBASE_PAT is a real-user token, exempt from the anti-recursion
+#   guard (same reason auto-merge.yml uses it for repository_dispatch). An
+#   update-branch authored by the PAT updates the PR head ref and DOES fire
+#   pull_request:synchronize, which triggers BOTH ci.yml AND
+#   pre-merge-guard.yml naturally — all 4 checks run on the new HEAD with no
+#   per-workflow nudge.
+#   ⚠ Do NOT revert this to GITHUB_TOKEN (or add a `|| GITHUB_TOKEN`
+#   fallback): it silently drops pre-merge-guard and re-blocks every
+#   auto-rebased PR.
 
 on:
   push:
@@ -26,7 +42,9 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  actions: write # required for gh workflow run (workflow_dispatch API)
+  # No `actions: write` needed: the update-branch push now self-triggers
+  # ci.yml + pre-merge-guard via pull_request:synchronize (see header), so
+  # there is no `gh workflow run` (workflow_dispatch) nudge anymore.
 
 concurrency:
   group: auto-rebase-prs
@@ -38,7 +56,10 @@ jobs:
     steps:
       - name: Update branch on all open [code-only] PRs that are BEHIND
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # PAT, not GITHUB_TOKEN: only a real-user push fires
+          # pull_request:synchronize, which is what makes pre-merge-guard
+          # (and ci.yml) run on the rebased HEAD. See header. No fallback.
+          GH_TOKEN: ${{ secrets.AUTO_REBASE_PAT }}
           REPO: ${{ github.repository }}
         run: |
           set -e
@@ -69,15 +90,12 @@ jobs:
                 continue
               fi
               echo "Updating PR #$num: $title (branch: $branch)"
+              # update-branch via the PAT updates the PR head ref → fires
+              # pull_request:synchronize → ci.yml (Build/Test/TypeCheck) AND
+              # pre-merge-guard.yml both re-run on the new HEAD. All 4 required
+              # checks satisfy themselves; no `gh workflow run` nudge needed.
               if gh api -X PUT "/repos/$REPO/pulls/$num/update-branch"; then
-                # update-branch returns 202 Accepted (async) — give GitHub a moment
-                # to complete the merge before dispatching CI on the new HEAD.
-                sleep 5
-                if gh workflow run ci.yml --repo "$REPO" --ref "$branch"; then
-                  echo "  CI dispatched for $branch"
-                else
-                  echo "  warn: could not dispatch CI for $branch — manual re-run may be needed"
-                fi
+                echo "  update-branch OK for #$num — synchronize will re-run all required checks"
               else
                 echo "  warn: update-branch failed (likely conflict or PR already up to date)"
               fi
