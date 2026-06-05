@@ -53,6 +53,7 @@ describe('middleware auth guard', () => {
       '/login',
       '/api/auth/login',
       '/api/auth/logout',
+      '/api/auth/google',
       '/favicon.ico',
       '/api/admin/cron-heartbeat',
       '/api/admin/market/upload-csv',
@@ -68,9 +69,13 @@ describe('middleware auth guard', () => {
       '/design',
       '/api/market/baltic-kpi',
       '/api/market/bunker-kpi',
+      '/api/market/eua-kpi',
+      '/api/market/tmi',
+      '/api/market/indices',
       '/api/market/benchmark',
       '/about',
       '/pricing',
+      '/api/sample',
       '/api/demo/rehydrate',
     ];
 

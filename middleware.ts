@@ -12,6 +12,8 @@ const AUTH_BYPASS_PATHS = new Set([
   '/login',
   '/api/auth/login',
   '/api/auth/logout',
+  // Google OAuth callback — Google GETs this with ?code=; must not redirect to /login (was #667)
+  '/api/auth/google',
   '/favicon.ico',
   '/api/health',
   // Cron heartbeat has its own X-Cron-Secret auth — must not be redirected to /login
@@ -38,8 +40,14 @@ const AUTH_BYPASS_PATHS = new Set([
   // Market KPI endpoints — public index data (BDI/BHSI/bunker prices), safe for anonymous
   '/api/market/baltic-kpi',
   '/api/market/bunker-kpi',
+  // EUA carbon price (KPI), TMI latest, and multi-index history — GET-only public commodity data, no PII
+  '/api/market/eua-kpi',
+  '/api/market/tmi',
+  '/api/market/indices',
   // benchmark endpoint is "Intentionally public" per route comment (no PII, commodity data only)
   '/api/market/benchmark',
+  // Demo onboarding: "Try Demo" POST creates a session and validates its own CSRF token — must not 401 first
+  '/api/sample',
   // Demo session re-hydration: has its own demo_auth verification; must not loop back to auth guard
   '/api/demo/rehydrate',
 ]);
