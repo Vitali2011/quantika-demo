@@ -347,3 +347,41 @@ describe('GET /api/market/indices — bunker and EUA history', () => {
     expect(json).toEqual([]);
   });
 });
+
+// ── B20a: days upper-bound clamp ─────────────────────────────────────────────
+
+describe('GET /api/market/indices — B20a days clamp', () => {
+  let db: Database.Database;
+
+  beforeEach(() => {
+    db = new Database(':memory:');
+    migration019.up(db);
+    migration027.up(db);
+    testDb = db;
+  });
+
+  afterEach(() => {
+    db.close();
+  });
+
+  it('accepts days=365 (upper bound) without error', async () => {
+    const { GET } = await import('@/app/api/market/indices/route');
+    const req = new Request('http://localhost/api/market/indices?name=bdi&days=365');
+    const res = await GET(req);
+    expect(res.status).toBe(200);
+  });
+
+  it('clamps days=9999 to 365 (returns 200, not 400)', async () => {
+    const { GET } = await import('@/app/api/market/indices/route');
+    const req = new Request('http://localhost/api/market/indices?name=bdi&days=9999');
+    const res = await GET(req);
+    expect(res.status).toBe(200);
+  });
+
+  it('clamps days=366 to 365 (returns 200, not 400)', async () => {
+    const { GET } = await import('@/app/api/market/indices/route');
+    const req = new Request('http://localhost/api/market/indices?name=bdi&days=366');
+    const res = await GET(req);
+    expect(res.status).toBe(200);
+  });
+});

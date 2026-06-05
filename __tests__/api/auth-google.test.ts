@@ -76,4 +76,29 @@ describe('GET /api/auth/google', () => {
     expect(res.status).toBe(307);
     expect(res.headers.get('location')).toContain('error=auth_failed');
   });
+
+  // B20c: open-redirect fix — redirect origin must NOT echo untrusted Host header
+  it('does NOT echo an arbitrary Host header into the redirect URL (open-redirect guard)', async () => {
+    process.env = { ...origEnv }; // no NEXT_PUBLIC_APP_URL
+    const { GET } = await import('@/app/api/auth/google/route');
+    const req = new NextRequest('http://localhost/api/auth/google?error=access_denied', {
+      headers: { host: 'evil.example.com' },
+    });
+    const res = await GET(req);
+    expect(res.status).toBe(307);
+    const location = res.headers.get('location') ?? '';
+    expect(location).not.toContain('evil.example.com');
+  });
+
+  it('uses NEXT_PUBLIC_APP_URL when set, ignores Host header', async () => {
+    process.env = { ...origEnv, NEXT_PUBLIC_APP_URL: 'https://app.quantika.org' };
+    const { GET } = await import('@/app/api/auth/google/route');
+    const req = new NextRequest('http://localhost/api/auth/google?error=access_denied', {
+      headers: { host: 'evil.example.com' },
+    });
+    const res = await GET(req);
+    const location = res.headers.get('location') ?? '';
+    expect(location).toContain('app.quantika.org');
+    expect(location).not.toContain('evil.example.com');
+  });
 });

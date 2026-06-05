@@ -64,3 +64,7 @@ export const loginRateLimiter = new RateLimiter({ windowMs: 60_000, maxRequests:
 // L-3: throttle credential-guessing against /api/admin/* shared-secret endpoints.
 // Admin tooling is low-frequency; cap at 10 attempts / 60s per IP.
 export const adminRateLimiter = new RateLimiter({ windowMs: 60_000, maxRequests: 10 });
+
+// B20b: prevent session-flooding on the public demo endpoint. 10 demo sessions
+// per IP per minute is generous for a human and easy to enforce.
+export const sampleRateLimiter = new RateLimiter({ windowMs: 60_000, maxRequests: 10 });

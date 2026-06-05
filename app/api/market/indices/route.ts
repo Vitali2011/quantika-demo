@@ -25,7 +25,7 @@ export async function GET(request: Request): Promise<NextResponse> {
     if (isNaN(parsed) || parsed <= 0) {
       return NextResponse.json({ error: 'days must be positive integer' }, { status: 400 });
     }
-    days = parsed;
+    days = Math.min(365, parsed);
   }
 
   const db = getStore().getDatabase();

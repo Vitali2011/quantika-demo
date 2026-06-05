@@ -175,4 +175,25 @@ describe('GET /api/analytics/roi', () => {
     expect(json.totalSavingsUsd).toBe(0);
     expect(json.roiMultiple).toBe(0);
   });
+
+  // B20a: days upper-bound clamp
+  it('clamps days=9999 to 365 — returns 200, not 400', async () => {
+    process.env.ROI_GUARANTEE_ENABLED = 'true';
+
+    const { GET } = await import('@/app/api/analytics/roi/route');
+    const req = new NextRequest('http://localhost:3000/api/analytics/roi?days=9999');
+    const res = await GET(req);
+
+    expect(res.status).toBe(200);
+  });
+
+  it('accepts days=365 without error', async () => {
+    process.env.ROI_GUARANTEE_ENABLED = 'true';
+
+    const { GET } = await import('@/app/api/analytics/roi/route');
+    const req = new NextRequest('http://localhost:3000/api/analytics/roi?days=365');
+    const res = await GET(req);
+
+    expect(res.status).toBe(200);
+  });
 });
