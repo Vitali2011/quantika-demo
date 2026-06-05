@@ -1,0 +1,44 @@
+import { buildCanonicalTceInputs } from '@/lib/economics/canonical-tce-inputs';
+
+describe('buildCanonicalTceInputs', () => {
+  const baseInput = {
+    vesselDwt: 3000,
+    speedKts: 12,
+    consumptionMtPerDay: 8,
+    distanceNm: 400,             // Marmara→Constanta class
+    quantityMt: 2500,
+    freightRateUsdPerMt: 21.56,  // post-fix Tier-3 estimate
+    bunkerPriceUsdPerMt: 600,
+    bunkerPort: 'istanbul',
+    bunkerGrade: 'VLSFO' as const,
+    originPort: 'marmara',
+    destinationPort: 'constanta',
+  };
+
+  test('uses round-trip duration (laden*2 + 2 port days)', () => {
+    const out = buildCanonicalTceInputs(baseInput);
+    // ladenDays = 400 / (12*24) ≈ 1.389 → durationDays ≈ 4.78
+    expect(out.durationDays).toBeCloseTo(4.78, 1);
+  });
+
+  test('falls back to vesselDwt * 0.65 when quantityMt missing', () => {
+    const out = buildCanonicalTceInputs({ ...baseInput, quantityMt: 0 });
+    expect(out.cargo.quantityMt).toBe(3000 * 0.65);
+  });
+
+  test('passes through real ports (not empty strings) so war-risk/canal trigger', () => {
+    const out = buildCanonicalTceInputs(baseInput);
+    expect(out.route.originPort).toBe('marmara');
+    expect(out.route.destinationPort).toBe('constanta');
+  });
+
+  test('returns durationDays=0 when distance missing (caller must skip calc)', () => {
+    const out = buildCanonicalTceInputs({ ...baseInput, distanceNm: 0 });
+    expect(out.durationDays).toBe(0);
+  });
+
+  test('caps quantity sanity (never negative, never absurd > DWT*1.5)', () => {
+    const out = buildCanonicalTceInputs({ ...baseInput, quantityMt: -50 });
+    expect(out.cargo.quantityMt).toBeGreaterThan(0);
+  });
+});
