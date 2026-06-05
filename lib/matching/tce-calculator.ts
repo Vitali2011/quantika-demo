@@ -257,5 +257,7 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
     calculatedAt: input.calculatedAt,
     dataFreshness: { bunker: 'estimated', eua: 'estimated' },
     tceUsdPerDay: tce.tce_usd_per_day,
+    freightRateUsdPerMt: tce.freight_rate_usd_per_mt,
+    freightRateSource: tce.freight_rate_source,
   };
 }

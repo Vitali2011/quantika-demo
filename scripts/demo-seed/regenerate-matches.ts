@@ -426,8 +426,9 @@ async function main() {
       (cargo_id, vessel_id, cargo_item_index, vessel_item_index, score, reason, status, user_id,
        created_at, updated_at, reason_structured, cargo_type, load_port, discharge_port,
        laycan_start, laycan_end, vessel_dwt, tce_usd_per_day, distance_nm, vessel_name, cargo_ref,
-       fit_percent, fit_breakdown${hasWorksheetCol ? ', worksheet_json' : ''})
-    VALUES (?, ?, ?, ?, ?, ?, 'shortlist', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?${hasWorksheetCol ? ', ?' : ''})
+       fit_percent, fit_breakdown,
+       freight_rate_usd_per_mt, freight_rate_source${hasWorksheetCol ? ', worksheet_json' : ''})
+    VALUES (?, ?, ?, ?, ?, ?, 'shortlist', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?${hasWorksheetCol ? ', ?' : ''})
   `);
 
   function buildWorksheet(m: Match, cargo: ParsedCargo | undefined, vessel: ParsedVessel | undefined): MatchWorksheet | null {
@@ -498,6 +499,8 @@ async function main() {
         cargo ? (cfValue(cargo.cargoDescription) || null) : null,
         m.fitPercent ?? null,
         m.fitBreakdown ? JSON.stringify(m.fitBreakdown) : null,
+        m.economics?.freightRateUsdPerMt ?? null,
+        m.economics?.freightRateSource ?? null,
       ];
       if (hasWorksheetCol) args.push(ws ? JSON.stringify(ws) : null);
       insert.run(...args);
