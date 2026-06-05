@@ -35,6 +35,7 @@ export function PublicLanding() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
           <Link
             href="/api/auth/google"
+            prefetch={false}
             className="inline-block px-8 py-3 bg-ds-accent text-ds-accent-fg font-semibold rounded-ds-lg hover:bg-ds-accent/90 transition-colors text-sm"
           >
             Connect Gmail →
