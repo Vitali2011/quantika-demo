@@ -4,7 +4,6 @@ import { useState, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import type { StoredMatch, MatchStatus } from '@/lib/matching/matches-repository';
-import { matchesToCsv } from '@/lib/matching/matches-csv';
 import { LiveStrip } from '@/design-system/patterns/LiveStrip';
 import { MatchToast } from '@/design-system/patterns/MatchToast';
 import { useLiveJobs } from '@/design-system/patterns/useLiveJobs';
@@ -261,19 +260,6 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
     // Clear selection after successful bulk action
     setSelectedIds(new Set());
     setBulkError(null);
-  }
-
-  // Export selected matches as CSV
-  function handleExportCsv() {
-    const selected = matches.filter((m) => selectedIds.has(m.id));
-    const csv = matchesToCsv(selected);
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `matches-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
   }
 
   // Toggle checkbox selection
@@ -1123,12 +1109,6 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
               <span className="text-xs text-red-600">{bulkError}</span>
             )}
             <div className="flex gap-2 ml-auto flex-wrap">
-              <button
-                onClick={handleExportCsv}
-                className="px-3 py-3 text-sm rounded bg-blue-100 text-blue-700 hover:bg-blue-200 min-h-[44px]"
-              >
-                Export CSV
-              </button>
               <button
                 onClick={() => handleBulkAction('saved')}
                 className="px-3 py-3 text-sm rounded bg-green-100 text-green-700 hover:bg-green-200 min-h-[44px]"
