@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { generateCsrfToken, validateCsrf } from '@/lib/csrf';
 import { CorpusNotFoundError, loadCorpus } from '@/lib/corpus/loader';
 import { createSession, updateSession } from '@/lib/session';
+import { SESSION_TTL_MS } from '@/lib/constants';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,14 +35,14 @@ export async function POST(request: NextRequest) {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
-    maxAge: 3600,
+    maxAge: SESSION_TTL_MS / 1000,
     path: '/',
   });
   response.cookies.set('csrf_token', csrfToken, {
     httpOnly: false,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
-    maxAge: 3600,
+    maxAge: SESSION_TTL_MS / 1000,
     path: '/',
   });
   response.headers.set('X-CSRF-Token', csrfToken);
