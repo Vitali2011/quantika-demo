@@ -19,11 +19,15 @@ export const GoldenRecordSchema = z.object({
     cargo: z.object({
       ref: z.string(), qtyT: z.number().nullable(),
       qtyMinT: z.number().nullable().optional(), qtyMaxT: z.number().nullable().optional(),
+      cargoType: z.string().optional(),            // engine CargoType MODE: BULK|BREAK_BULK|FCL|… (commodity → cargoDescription, default BULK)
       loadPort: z.string(), dischPort: z.string(),
       laycanStart: z.string(), laycanEnd: z.string(), sourceEmail: z.string(),
     }),
     vessel: z.object({
       name: z.string(), dwt: z.number().nullable(),
+      dwccT: z.number().nullable().optional(),     // cargo capacity (weight-range vs capacity test)
+      geared: z.boolean().optional(),              // has cranes (gear-gate for bagged/steel cargo)
+      craneCapacityT: z.number().nullable().optional(),
       speedKn: z.number().nullable(), consumptionT: z.number().nullable(),
       openPort: z.string(), openDate: z.string(), sourceEmail: z.string(),
     }),

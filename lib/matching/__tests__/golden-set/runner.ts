@@ -1,7 +1,7 @@
 import { analyzePairs } from '@/lib/matching/pair-analyzer';
 import { buildMatchEconomics } from '@/lib/matching/tce-calculator';
 import { getPortDistance } from '@/lib/sailing/port-distances';
-import type { Match, ParsedCargo, ParsedVessel } from '@/lib/types';
+import type { BlockedMatch, CargoType, Match, ParsedCargo, ParsedVessel } from '@/lib/types';
 import type { GoldenRecord } from './schema';
 
 export interface GoldenActual {
@@ -10,13 +10,14 @@ export interface GoldenActual {
   tceUsdPerDay: number | null;
   bucket: 'main' | 'review' | 'insufficient' | 'blocked' | 'none';
   matchLevel: string | null;
+  score: number | null;
+  reason: string | null;
 }
 
 const cf = <T>(v: T) =>
   v == null ? null : ({ value: v, confidence: 'confirmed' as const });
 
-function toCargo(r: GoldenRecord): ParsedCargo {
-  const c = r.inputs.cargo;
+export function buildCargo(c: GoldenRecord['inputs']['cargo']): ParsedCargo {
   return {
     emailId: c.ref,
     itemIndex: 0,
@@ -30,7 +31,7 @@ function toCargo(r: GoldenRecord): ParsedCargo {
     weightMtMax: c.qtyMaxT ?? c.qtyT,
     volumeCbm: null,
     dimensions: null,
-    cargoType: 'BULK',
+    cargoType: (c.cargoType ?? 'BULK') as CargoType,
     containerType: null,
     quantity: c.qtyT,
     incoterms: null,
@@ -46,8 +47,7 @@ function toCargo(r: GoldenRecord): ParsedCargo {
   };
 }
 
-function toVessel(r: GoldenRecord): ParsedVessel {
-  const v = r.inputs.vessel;
+export function buildVessel(v: GoldenRecord['inputs']['vessel']): ParsedVessel {
   return {
     emailId: v.name,
     itemIndex: 0,
@@ -58,7 +58,7 @@ function toVessel(r: GoldenRecord): ParsedVessel {
     classSociety: null,
     pandi: null,
     dwtSummer: cf(v.dwt),
-    dwcc: null,
+    dwcc: v.dwccT != null ? cf(v.dwccT) : null,
     draftMax: null,
     loa: null,
     beam: null,
@@ -72,8 +72,8 @@ function toVessel(r: GoldenRecord): ParsedVessel {
     holdDimensions: null,
     hatchDimensions: null,
     tankTopStrength: null,
-    geared: false,
-    craneCapacity: null,
+    geared: v.geared ?? false,
+    craneCapacity: v.craneCapacityT != null ? `${v.craneCapacityT} MT` : null,
     hatchType: null,
     vesselType: 'Bulk Carrier',
     openPosition: cf(v.openPort),
@@ -92,13 +92,13 @@ function toVessel(r: GoldenRecord): ParsedVessel {
 }
 
 export async function runGolden(r: GoldenRecord, today: Date): Promise<GoldenActual> {
-  const cargo = toCargo(r);
-  const vessel = toVessel(r);
+  const cargo = buildCargo(r.inputs.cargo);
+  const vessel = buildVessel(r.inputs.vessel);
   const res = await analyzePairs([cargo], [vessel], async () => [], { today });
 
   const findMatch = (arr: Match[]) =>
     arr.find((m) => m.cargoEmailId === cargo.emailId && m.vesselEmailId === vessel.emailId);
-  const findBlocked = (arr: { cargoEmailId: string; vesselEmailId: string }[]) =>
+  const findBlocked = (arr: BlockedMatch[]) =>
     arr.find((m) => m.cargoEmailId === cargo.emailId && m.vesselEmailId === vessel.emailId);
 
   const mainMatch = findMatch(res.matches);
@@ -122,7 +122,7 @@ export async function runGolden(r: GoldenRecord, today: Date): Promise<GoldenAct
     getPortDistance(r.inputs.cargo.loadPort, r.inputs.cargo.dischPort)?.nm ?? 0;
 
   const econ = m?.economics ?? buildMatchEconomics({
-    cargoType: 'BULK',
+    cargoType: r.inputs.cargo.cargoType ?? 'BULK',
     distanceNm: ladenDist,
     vesselDwt: r.inputs.vessel.dwt ?? 0,
     quantityMt: r.inputs.cargo.qtyT ?? 0,
@@ -139,5 +139,7 @@ export async function runGolden(r: GoldenRecord, today: Date): Promise<GoldenAct
     tceUsdPerDay: econ?.tceUsdPerDay ?? null,
     bucket,
     matchLevel: m?.matchLevel ?? null,
+    score: m?.score ?? null,
+    reason: blockedMatch?.filterReason ?? m?.issues?.[0] ?? m?.matchReasons?.[0] ?? null,
   };
 }
