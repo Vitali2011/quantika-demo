@@ -188,4 +188,16 @@ describe("formatCurrencyAmount", () => {
   it("AED format with currency prefix", () => {
     expect(formatCurrencyAmount(5000, "AED")).toBe("AED 5,000.00");
   });
+
+  it("negative USD: minus precedes dollar sign", () => {
+    expect(formatCurrencyAmount(-1100, "USD")).toBe("-$1,100.00");
+  });
+
+  it("negative EUR: minus precedes currency prefix", () => {
+    expect(formatCurrencyAmount(-1100, "EUR")).toBe("-EUR 1,100.00");
+  });
+
+  it("negative NOK: minus precedes currency prefix", () => {
+    expect(formatCurrencyAmount(-500.5, "NOK")).toBe("-NOK 500.50");
+  });
 });
