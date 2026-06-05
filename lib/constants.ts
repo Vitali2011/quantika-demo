@@ -55,7 +55,7 @@ export const AI_MODEL_LIGHT = process.env.AI_MODEL_LIGHT || 'gpt-5.5';
  *   remains accessible to the broker within the TTL window even after a restart.
  *
  * - **Disk usage:** each session row serialises full `SessionData` as JSON
- *   (emails, classifications, matches, …). Extending beyond 1 hour increases
+ *   (emails, classifications, matches, …). Extending beyond 8 hours increases
  *   `data/sessions.db` size proportionally — evaluate before raising the value.
  */
 export const SESSION_TTL_MS = 8 * 60 * 60 * 1000; // 8 hours — non-demo OAuth sessions
