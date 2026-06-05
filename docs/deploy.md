@@ -85,7 +85,7 @@ git tag -l --sort=-version:refname | head -5
 git checkout <prev-tag>
 npm ci
 npm run build
-pm2 reload quantika-demo
+pm2 restart quantika-demo --update-env
 
 # 3. Проверить что откат успешен
 curl https://demo.quantika.org/api/health
