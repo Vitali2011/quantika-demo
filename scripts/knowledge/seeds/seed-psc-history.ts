@@ -15,10 +15,31 @@
  * repeated runs converge on the same state.
  */
 
+import type Database from 'better-sqlite3';
 import { getStore } from '../../../lib/session-store';
 import { upsertInspection } from '../../../lib/market/psc-repository';
 import { PSC_FIXTURE, PSC_FIXTURE_IMOS } from '../../../lib/knowledge/sources/psc/fixture';
 
+/**
+ * Seed PSC detention history into an EXPLICIT db handle.
+ * Idempotent: DELETE-then-INSERT (converges to fixture on every call).
+ */
+export function seedPscHistoryWithDb(db: Database.Database): void {
+  const deleted = db.prepare('DELETE FROM psc_detention_history').run().changes;
+
+  for (const record of PSC_FIXTURE) {
+    upsertInspection(db, record);
+  }
+
+  const count =
+    db.prepare<[], { c: number }>('SELECT COUNT(*) as c FROM psc_detention_history').get()?.c ?? 0;
+  console.log(
+    `[seed-psc] ${PSC_FIXTURE.length} records across ${PSC_FIXTURE_IMOS.length} IMOs` +
+    ` (cleared ${deleted} old, table now ${count}).`,
+  );
+}
+
+/** CLI entrypoint — resolves DB via session-store (SESSIONS_DB_PATH). */
 export function seedPscHistory(opts: { dryRun?: boolean } = {}): void {
   const { dryRun = false } = opts;
 

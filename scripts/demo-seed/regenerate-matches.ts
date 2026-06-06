@@ -31,11 +31,50 @@
  */
 import Database from 'better-sqlite3';
 import path from 'node:path';
+import fs from 'node:fs';
 import { analyzePairs } from '@/lib/matching/pair-analyzer';
 import { parseLaycan } from '@/lib/sailing/date-parsing';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 import { calculateReadinessGap, detectSpot } from '@/lib/sailing/readiness-gap';
 import { cfValue, type ParsedCargo, type ParsedVessel, type Match, type MatchWorksheet } from '@/lib/types';
+import { seedCharterersWithDb } from '../knowledge/seeds/seed-charterers';
+import { seedPscHistoryWithDb } from '../knowledge/seeds/seed-psc-history';
+import { seedPortDa, type BaselinePort } from '../seed-port-da';
+
+// ── Phase 1: seed reference tables into the regen's own db handle ────────────
+
+/**
+ * Populate charterers, psc_detention_history, and port_da_estimates from
+ * committed offline sources into the SAME db handle that regenerate-matches
+ * already has open. Guarantees rows land in demo-seed.db, not sessions.db.
+ *
+ * Idempotent — safe to call on each regen run (each underlying seeder is
+ * already idempotent: charterers ON CONFLICT UPDATE, psc DELETE+reinsert,
+ * port_da INSERT OR REPLACE).
+ *
+ * NOTE: port_da gap-fill via LLM is SKIPPED here (no llmCaller passed) —
+ * the noopLlmCaller never calls the real API, so the seeding is deterministic
+ * and works offline. Only the baseline JSON rows are inserted.
+ */
+export async function seedReferenceTables(db: Database.Database): Promise<void> {
+  // 1. Charterers
+  seedCharterersWithDb(db);
+
+  // 2. PSC detention history
+  seedPscHistoryWithDb(db);
+
+  // 3. Port DA estimates — baseline only (no LLM gap-fill in regen context)
+  const baselinePath = path.resolve(__dirname, '../seed-data/port-da-base.json');
+  const baseline = JSON.parse(fs.readFileSync(baselinePath, 'utf8')) as BaselinePort[];
+  // Pass a no-op LLM caller so the function never makes real API calls.
+  const noopLlmCaller = async (): Promise<never> => { throw new Error('noop'); };
+  await seedPortDa(db, baseline, noopLlmCaller);
+
+  const chartCount = (db.prepare('SELECT COUNT(*) as n FROM charterers').get() as { n: number }).n;
+  const pscCount = (db.prepare('SELECT COUNT(*) as n FROM psc_detention_history').get() as { n: number }).n;
+  const daCount = (db.prepare('SELECT COUNT(*) as n FROM port_da_estimates').get() as { n: number }).n;
+  console.log(`[regen] reference tables seeded — charterers=${chartCount} psc=${pscCount} port_da=${daCount}`);
+}
 
 // ── --rebuild-worksheet exports ───────────────────────────────────────────────
 
@@ -278,6 +317,11 @@ async function main() {
   console.log(`[regen] Opening ${dbPath}${DRY ? ' (DRY — no writes)' : ''}`);
   const db = new Database(dbPath, DRY ? { readonly: true } : {});
   if (!DRY) db.pragma('journal_mode = WAL');
+
+  // ── Step 0: seed reference tables (charterers, psc, port_da) into THIS db ──
+  if (!DRY) {
+    await seedReferenceTables(db);
+  }
 
   const frozen = (db.prepare(`SELECT frozen_date f FROM demo_seed_meta WHERE id=1`).get() as { f?: string })?.f ?? '2026-05-28';
   const today = new Date(frozen + 'T00:00:00.000Z');
