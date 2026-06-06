@@ -798,5 +798,27 @@ export async function analyzePairs(
     if (econ) m.economics = econ;
   }
 
-  return { matches: mainMatches, lowConfidenceMatches, insufficientData, blockedMatches };
+  // ── Economic realism floor (founder profit rule; golden-set GS-shortleg-tce) ──
+  // A surfaced ("worth calling") match must not be a deadfreight pair: a cargo
+  // severely disproportionate to the vessel (low utilisation) — already flagged
+  // "SIZE: …" by applyBallastSizeCap above (utilisation-based, with a part-cargo
+  // exemption — the single source of truth for "deadfreight") — is a commercially
+  // weak match, demoted to manual review (never dropped, just out of the main list).
+  // Keyed off UTILISATION, deliberately NOT absolute TCE: the round-trip model
+  // computes TCE magnitude unreliably (it under/over-values pairs — e.g. a small
+  // ship's bunker is over-estimated — until reposition-aware TCE lands; see
+  // BASELINE-2026-06-06.md), so a $/day floor would falsely demote good pairs.
+  const mainKept: Match[] = [];
+  for (const m of mainMatches) {
+    const deadfreight = (m.issues ?? []).some((i) => i.startsWith('SIZE:'));
+    if (deadfreight) {
+      m.matchLevel = 'weak'; // a deadfreight pair is commercially weak → manual review
+      m.issues = [...(m.issues ?? []), 'Below-scale utilisation (deadfreight) — manual review'];
+      lowConfidenceMatches.push(m);
+      continue;
+    }
+    mainKept.push(m);
+  }
+
+  return { matches: mainKept, lowConfidenceMatches, insufficientData, blockedMatches };
 }

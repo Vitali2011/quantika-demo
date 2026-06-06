@@ -110,15 +110,20 @@ function isoDay(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
-function classifyVerdict(gapDays: number): ReadinessVerdict {
-  // gap < -1d     → vessel arrives too late, misses laycan start by > 24h
-  // gap [-1, 0.5) → tight — vessel cuts it fine, any delay misses laycan
-  // gap [0.5, 5]  → ideal — realistic arrival with small buffer
-  // gap > 5d      → idle — vessel must wait multiple days before laycan (commercially weak)
-  if (gapDays < -1) return 'late';
-  if (gapDays < 0.5) return 'tight';
-  if (gapDays <= 5) return 'ideal';
-  return 'idle';
+function classifyVerdict(gapDays: number, windowDays: number): ReadinessVerdict {
+  // gapDays = laycanSTART - arrival. windowDays = laycanEND - laycanSTART (>= 0).
+  // Laycan is a WINDOW [start, end]: a vessel arriving anywhere inside it is ON-TIME.
+  // 'late' fires only past the cancelling date (END), NOT >1d after the start. The old
+  // `gap < -1 → late` wrongly rejected vessels arriving mid-window (false negatives).
+  const w = Number.isFinite(windowDays) ? Math.max(0, windowDays) : 0;
+  if (gapDays < -1) {
+    // Arrives > 1 day after laycan START. On-time while still within the window
+    // (arrival before cancelling = start + window); late only past the cancelling date.
+    return gapDays < -1 - w ? 'late' : 'ideal';
+  }
+  if (gapDays < 0.5) return 'tight'; // arrives right at the start — cuts it fine
+  if (gapDays <= 5) return 'ideal'; // small buffer before laydays commence
+  return 'idle'; // waits multiple days before laycan even opens (commercially weak)
 }
 
 function buildExplanation(args: {
@@ -256,16 +261,25 @@ export function calculateReadinessGap(
   const arrival = new Date(arrivalMs);
   const gapMs = laycanRange.start.getTime() - arrivalMs;
   const gapDays = gapMs / 86_400_000;
+  // Laycan window length (days) — used so 'late' keys off the cancelling date (END),
+  // not the start. A vessel arriving inside [start, end] is on-time, not late.
+  const windowDays = Math.max(0, (laycanRange.end.getTime() - laycanRange.start.getTime()) / 86_400_000);
 
   // For non-spot vessels: standard verdict based on how long the owner must wait idle.
   // For spot vessels: owner departs today — the only question is physical feasibility.
   //   gapDays > SPOT_IDEAL_MAX_GAP_DAYS → 'idle' (owner won't hold unpaid 30+ days)
   //   gapDays >= 0.5  → arrives comfortably before laycan → 'ideal'
-  //   gapDays [-1, 0.5) → barely makes it → 'tight'
-  //   gapDays < -1    → even today's departure misses laycan → 'late'
+  //   within window   → on-time → 'tight'/'ideal'
+  //   arrival past cancelling (END) by >1d → 'late'
   const verdict: ReadinessVerdict = isSpot
-    ? (gapDays > SPOT_IDEAL_MAX_GAP_DAYS ? 'idle' : gapDays >= 0.5 ? 'ideal' : gapDays >= -1 ? 'tight' : 'late')
-    : classifyVerdict(gapDays);
+    ? (gapDays < -1 - windowDays
+        ? 'late'
+        : gapDays > SPOT_IDEAL_MAX_GAP_DAYS
+        ? 'idle'
+        : gapDays >= 0.5
+        ? 'ideal'
+        : 'tight')
+    : classifyVerdict(gapDays, windowDays);
 
   return {
     openDate: isoDay(openDateObj),

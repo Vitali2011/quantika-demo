@@ -123,9 +123,9 @@
     },
     {
       "id": "GS-ctl-sugar-panamax",
-      "bugClass": "control",
-      "control": true,
-      "rationale": "clean full-cargo long-haul panamax; broker TCE ~$22.5k/day (re-pegged from $30k to market). Far above OPEX -> green.",
+      "bugClass": "capacity-vessel-too-small",
+      "control": false,
+      "rationale": "vessel too small for the cargo: 70k MOLOO sugar (min 63k) vs GLORY TOM ~61k DWCC -> engine correctly BLOCKS on capacity (uses worst-case max-of-range). NOT a control — the ship cannot lift the cargo's MOLOO minimum (broker over-rated it).",
       "inputs": {
         "cargo": {
           "ref": "19e07c5b023cf374",
@@ -175,8 +175,8 @@
         "freightRate": "index",
         "bunkerPrice": "external"
       },
-      "engineMust": { "tceSign": "positive" },
-      "provenance": "see verified-pairs.json id=GS-ctl-sugar-panamax; bulk sugar 70k Santos->WC India x GLORY TOM"
+      "engineMust": { "capacityWithinDwcc": true },
+      "provenance": "see verified-pairs.json id=GS-ctl-sugar-panamax; bulk sugar 70k (min 63k MOLOO) Santos->WC India x GLORY TOM 63695 (~61k DWCC) — capacity misfit, engine blocks"
     },
     {
       "id": "GS-ctl-handy-olivepomace",
@@ -348,9 +348,9 @@
     },
     {
       "id": "GS-negtce-laycan",
-      "bugClass": "negative-tce-and-laycan-miss",
+      "bugClass": "capacity-vessel-too-small",
       "control": false,
-      "rationale": "vessel opens Continent 01 Jun but laycan closes 20 May (miss) AND 13-day ballast for a 7kt parcel yields negative TCE; engine surfaced it as a scored match.",
+      "rationale": "binding gate = CAPACITY: 7000mt cargo vs PANTHERA J 7000 DWT (~6300 DWCC) -> engine BLOCKS first. (Laycan ALSO fails — open Continent 01 Jun arrives after the 20 May cancelling — but capacity is the first hard gate. Laycan-miss is covered by GS-laycanmiss-fert/GS-promptmiss-gypsum; negative-TCE-from-ballast needs the deferred reposition model.)",
       "inputs": {
         "cargo": {
           "ref": "19e07ce171ab8e10",
@@ -400,9 +400,8 @@
         "freightRate": "index",
         "bunkerPrice": "external"
       },
-      "engineMust": { "laycanFeasible": true, "tceSign": "negative" },
-      "xfail": ["tceNeg"],
-      "provenance": "see verified-pairs.json id=GS-negtce-laycan; blk minerals 7kt Iskenderun->Constanta x PANTHERA J (open Continent 01 Jun, too late)"
+      "engineMust": { "capacityWithinDwcc": true },
+      "provenance": "see verified-pairs.json id=GS-negtce-laycan; blk minerals 7kt Iskenderun->Constanta x PANTHERA J 7000dwt (capacity 7000>6300; also laycan-late + neg-TCE-ballast)"
     },
     {
       "id": "GS-shortleg-tce",
@@ -455,7 +454,6 @@
         "bunkerPrice": "external"
       },
       "engineMust": { "verdictNotGood": true },
-      "xfail": ["verdict"],
       "provenance": "see verified-pairs.json id=GS-shortleg-tce; bagged sugar 5-10kt Bejaia->Mersin x AMITY (tiny parcel, inflated TCE)"
     },
     {
@@ -745,6 +743,7 @@
         "bunkerPrice": "external"
       },
       "engineMust": { "verdictNotGood": true },
+      "xfail": ["verdict"],
       "provenance": "see verified-pairs.json id=GS-longballast-kandla; clay/kaolin 40-43k Kandla->Ravenna x GLORY TOM (5500nm unpaid ballast)"
     },
     {

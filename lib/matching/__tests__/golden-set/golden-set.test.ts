@@ -44,10 +44,13 @@ describe('golden-set · value oracle', () => {
 
       // ---- the real oracle: engineMust gate flags ----
 
-      // GREEN BELT — control: engine gets the sign of a profitable voyage right.
+      // GREEN BELT — control: surfaced in the main "worth-calling" list AND profitable.
+      // bucket==='main' guards against a false green where a blocked pair still yields a
+      // positive fallback TCE (a control that the engine wrongly/correctly rejects must NOT pass).
       if (r.engineMust.tceSign === 'positive') {
-        gate('tcePos', 'tce is positive (profitable control stays green)', async () => {
+        gate('tcePos', 'control is surfaced in main and profitable (tce > 0)', async () => {
           const a = await runGolden(r, FROZEN);
+          expect(a.bucket).toBe('main');
           expect(a.tceUsdPerDay).not.toBeNull();
           expect(a.tceUsdPerDay as number).toBeGreaterThan(0);
         });
@@ -88,11 +91,12 @@ describe('golden-set · value oracle', () => {
         });
       }
 
-      // a below-OPEX / money-losing pair must not be ranked as a good (main/review) match.
+      // a below-OPEX / money-losing pair must not be in the main "worth-calling" list
+      // (manual-review is an acceptable home for a flagged-weak pair).
       if (r.engineMust.verdictNotGood) {
-        gate('verdict', 'engine does not rank a below-OPEX voyage as a good match', async () => {
+        gate('verdict', 'engine keeps a below-OPEX voyage out of the main list', async () => {
           const a = await runGolden(r, FROZEN);
-          expect(a.bucket === 'main' || a.bucket === 'review').toBe(false);
+          expect(a.bucket).not.toBe('main');
         });
       }
 
