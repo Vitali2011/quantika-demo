@@ -126,15 +126,19 @@ describe('parseConsumption', () => {
     expect(parseConsumption(-5)).toBe(DEFAULT);
   });
 
-  it('LADY ANITA scenario: consumption 180→3.7 flips TCE from extreme negative to positive', () => {
+  it('LADY ANITA scenario: parseConsumption extracts 3.7 (not grade 180); a leaked 180 is clamped downstream', () => {
     const freight = estimateFreightRate('GRAIN', 3000, 28000);
-    const badCons = 180; // what parseLeadingNumber("IFO 180 M/E 3.7MT/D") would return
     const goodCons = parseConsumption('Ballast: IFO 180 M/E 3.7MT/D');
-    const badTce = computeEstimatedTce(freight, 3000, 28000, 25000, 12, badCons);
-    const goodTce = computeEstimatedTce(freight, 3000, 28000, 25000, 12, goodCons);
+    // Parse defense: extract the real MT/D figure, not the fuel-grade "180".
     expect(goodCons).toBe(3.7);
+    const goodTce = computeEstimatedTce(freight, 3000, 28000, 25000, 12, goodCons);
     expect(goodTce.tce_usd_per_day).toBeGreaterThan(0);
-    expect(goodTce.tce_usd_per_day).toBeGreaterThan(badTce.tce_usd_per_day + 50_000);
+    // Downstream defense (economics-overhaul step 1): even if the grade 180 leaked through,
+    // resolveConsMtPerDay now clamps it to the DWT-class estimate (180 > class × 1.8), so it
+    // no longer drives an extreme-negative TCE. The real 3.7 still beats the clamped value
+    // (lower burn → higher TCE), but the divergence is bounded, not catastrophic.
+    const leakedTce = computeEstimatedTce(freight, 3000, 28000, 25000, 12, 180);
+    expect(goodTce.tce_usd_per_day).toBeGreaterThan(leakedTce.tce_usd_per_day);
   });
 });
 
