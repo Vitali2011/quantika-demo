@@ -79,6 +79,14 @@ floor) — it cannot land piecemeal, because reposition or canal ALONE sinks coa
 (per-leg Suez/Bosporus/Panama detection from the route + `quoteCanal`, DB-graceful) is the substantial
 sub-piece. DA (step 4) and band-tightening (step 6) follow.
 
+## **DONE (commit a73787bf, 2026-06-06)**: combo landed — golden 68/68, regression 1912/1912
+
+Steps 1–5 (class consumption + verified freight + reposition + Suez canal + economic floor) all landed.
+`GS-longballast-kandla` is now a green `it` (removed from `xfail`). No `it.failing` remain.
+
+Remaining: step 4 (port DA — needs live DB handle) and step 6 (tighten TCE/distance bands to broker
+centrals once TCE is fully reliable end-to-end in the demo pipeline, not just in the golden runner).
+
 ## Risks / notes
 
 - **Broad blast radius**: steps 1-4 shift EVERY demo match's TCE. Matching tests that assert
