@@ -1,5 +1,71 @@
 # Quantika Demo — ROADMAP (Текущее состояние)
 
+## 0. МАТЧИНГ — forward roadmap L1→L4 «к 100%» (2026-06-06 audit)
+
+> **Forward-часть** (что осталось), в отличие от changelog ниже. Источник: 3-агентный read-only аудит scoring-пайплайна 2026-06-06 (spine / economics-L2 / passport-L3), все три независимо сошлись. Планка фаундера = **L3** («практические 100%» на бесплатных данных).
+> **Контекст дня:** PR #841 (true-voyage TCE: ballast reposition + Suez canal + economic floor) merged + прод-реген применён — main-bucket neg-TCE **18→0**, avg **−$308→+$9,664/день**. См. state.md + `docs/superpowers/golden-set/`.
+>
+> **✅ Reality-verified 2026-06-06 (3 read-only агента, claim-vs-prod/code/PR):** прод HEAD = `0c564a29` (#841, deployed); demo-seed buckets = **main 69 / review 261 / insuf 60**; neg-TCE main = 0. **⚠️ §1-§3 НИЖЕ содержат стале-claims** (не правлены построчно — см. state.md за полной таблицей): prod HEAD `d3c62d0e`→#841; bucket-счётчики 28/126/571→69/261/60; §1.2 data-layer counts описывают `sessions.db`, а live = пустой demo-seed.db (см. ПРОД-БАГ); routes 50→**69**, pages 23→**35**; F5/F6/F7 (битые страницы) УЖЕ FIXED; Gate5-round-2 / 4-fix-WIP / #819 B(c) / rate-limiter `/api/parser/email` — ЗАКРЫТЫ (#781/#776/#777/#826/#829/#463/#835); baltic/bunker/eua не «stale CSV», а свежие (таймеры). Genuinely open: #589, eslint-10 (#754), tailwind-4, PWA, full-RTL, Quote-PDF, Stripe, dark-mode, partner-data калибровка, F8 Resend.
+
+### 🔴 ГЛАВНОЕ — структурный хвост (НЕ «данные»): ранжирование слепо к новой машинерии
+
+Движок считает **ДВА несвязанных числа на матч**:
+
+- **`m.score`** (старый `computeScoreBreakdown`: гео 20 / тип 20 / краны 15 / объём 15 / laycan 20 / dwt 10) → **рулит сортировкой главного списка + корзиной (main/review/insufficient) + matchLevel** (`pair-analyzer.ts:711, 588`). **Ноль экономики, ноль ветинга.**
+- **`fitPercent` + `fitBreakdown`** (util 23 / timing 18 / ballast 18 / classFit 11 / cargoType 7 / cranes 7 / volume 4 / **vetting 9** / draft 3) → **только отображение** (`pair-analyzer.ts:693`).
+
+Код фиксирует это намеренно: economics «Display-only … can never affect score, ranking, or bucketing» (`pair-analyzer.ts:741`). В сиде **0/425** строк имеют `score==fit_percent`; бывает `score=90` (топ, shortlisted) при `fit=54`, `tce=−1260/день`.
+
+**TCE (#841) влияет ТОЛЬКО на корзинный floor** (`pair-analyzer.ts:819-848` — ниже class-breakeven → review), но **не ранжирует внутри main и не входит в `m.score`**. Ветинг — то же (только в fit-%).
+
+→ **Высший рычаг: переключить ранжирование+бакетинг на `fitPercent`** (свернув в него true-voyage TCE + ветинг), а не гонять параллельный старый 6-факторный score. Это не «дописать данные» — **развилка дизайна, нужно решение фаундера** (brainstorm).
+
+### 🔴 ПРОД-БАГ (verified 2026-06-06): 11 reference/RAG-таблиц ПУСТЫ в живом demo-seed.db
+
+App в DEMO_MODE читает ВСЁ из `SESSIONS_DB_PATH=data/demo-seed.db` (`lib/db/index.ts:5-6`; retriever-sqlite `getDb()` без override; отдельного knowledge-DB нет). НО в живом demo-seed.db **пусты:** `charterers`=0, `port_da_estimates`=0, `psc_detention_history`=0, `port_distances`=0, `port_master`=0, `eca_zones`=0, `war_risk_zones`=0, `imsbc/igc/jwc/bimco_fts`=0. Данные живут в осиротевшем `data/sessions.db` (41MB, app его НЕ читает). Корень: seed-пайплайн пишет в demo-seed.db только МАТЧИ + таймер-таблицы (market/ofac/fx — те живые); reference/RAG туда не копировались, а DEMO_MODE-переключение (~May29) увело app на demo-seed.db. **Севериті:** ядро демо работает (matches — distance/TCE запечены в сид), но RAG/clauses, charterer-credit, PSC-история, ECA-топливо, runtime port-resolution = пустые. **Это ПРЕРЕКВИЗИТ для L3-данных:** «PSC→ветинг» и RAG бессмысленны, пока данные в неправильном файле. Фикс = разовая data-миграция sessions.db→demo-seed.db (Rule#22, обратимо, данные уже есть). Founder-gated.
+
+### Статус по уровням
+
+| Уровень | Цель | Статус | Что осталось |
+|---|---|---|---|
+| **L1 «не врёт»** | парсинг + корзины + гейты | 🟢 ~готов | `draft`-фактор в fit-% всегда conservative (display; hard-гейт работает отдельно) — мелочь |
+| **L2 «полезен»** | TCE+war-risk+фрахт в экономику И в score | 🟡 ядро #841 есть, проводки в score нет | port-DA, carbon, war-в-TCE, **TCE-в-ранкинг**, свежий фрахт, сужение полос |
+| **L3 «надёжен»** ← цель | passport/CII/IMSBC/чистота в score | 🟡 ветинг в fit-% есть, в score нет; данные голодают | PSC→ветинг, CII-данные, снос мёртвого паспорта, IMSBC/чистота-в-fit |
+| **L4 «pro»** | PSC-live/Baltic-live/FFA/credit | ⚪ платно, опц. | вне бесплатной планки |
+
+### Реально открытые хвосты — приоритезированы
+
+**🔧 Проводка готового (дёшево — логика/данные УЖЕ есть, надо подключить):**
+
+1. **TCE → ранжирование/fit** (L2, высший ROI) — главный список ранжировать с учётом денег; свернуть true-voyage TCE в `fitPercent` градиентом. Сейчас fit-cap бьёт только при `TCE<0` бинарно И кормится грубым `preFitTce` без ballast/canal (`fit-breakdown.ts:565`, `pair-analyzer.ts:688`).
+2. **PSC-детенции → ветинг** (L3, высший ROI) — `lib/market/psc-repository.ts` полностью построен (миграция 028 + сид + API), score его НЕ читает. Добавить 6-й суб-фактор в `computeVesselVetting`.
+3. **Port DA → TCE** (L2 «step 4») — `getPortDa` (`lib/port-da/repository.ts`) никогда не зовётся в `lib/matching/`; `daUsd=0` в каждом матче. Реальные деньги мимо. Нужен DB-handle в расчёт.
+4. **CII-данные в сид** (L3) — логика `scoreCii` живая, но `ciiRating` 0/90; `lib/imo/cii-lookup.ts` не зовётся в регене.
+5. **Carbon (ETS/FuelEU) → TCE** (L2) — `euLegPercent` / EU-флаги не прокинуты в `buildCanonicalTceInputs` → ETS=0 в матч-пути.
+6. **War-risk → per-day TCE** (L2) — сейчас только в `totalUsd` (отображение), не в `tceUsdPerDay` → даже floor его не видит.
+7. **Снести мёртвый `getVesselPassport`** (`lib/counterparty.ts` — хардкод Bahamas/DNV, зовёт только тест) — источник путаницы «passport не подключён».
+
+**🆕 Новое (нужен дизайн/данные, не проводка):**
+
+8. **Свежий фрахт** — Baltic = stale `static-seed` (price_date 2026-05-09). Live-фид = граница L4.
+9. **Сезонность / погода / ice-class** — в коде нет вообще. Низкий приоритет для L3.
+10. **Сужение golden-полос** (step 6) — когда TCE надёжен end-to-end, перепривязать TCE/distance-полосы к брокерским центрам (`verified-pairs.json`).
+
+### 🧹 Тех-долг (дивергенция регена)
+
+- **`scripts/demo-seed/real-matches.ts` + `build.ts` ОБА обходят `analyzePairs`** (6-арг `computeEstimatedTce`, без ballast/canal/floor) → дрейф от движка. **`regenerate-matches.ts` (→`analyzePairs`) = единственный канонический путь.** Карантин/снос обоих stale-скриптов (СНАЧАЛА проверить, что deploy/CI их не зовёт).
+- **Live `compute-matches.ts` пишет legacy laden-only TCE, а сид (`regenerate-matches.ts`) — true-voyage**: одна колонка `tce_usd_per_day`, два разных числа. Для демо ок (демо читает сид), но латентная нестыковка.
+
+### 📍 Рекомендуемый маршрут (порядок исполнения)
+
+1. **Прод-баг — data-миграция `sessions.db`→`demo-seed.db`** (быстро, обратимо) — оживляет L3-данные на проде, разблокирует п.PSC + RAG.
+2. **Тех-долг — свести 3 пути регена к 1 канону** (`regenerate-matches.ts`→`analyzePairs`) — снять риск ДО переделки скоринга.
+3. **🔑 Структурный шаг — рейтинг → `fitPercent`** (brainstorm → дизайн → exec) — разом включает L2 (TCE) + L3 (ветинг) в подбор. Главная работа.
+4. **Хвосты-проводки** (PSC→ветинг, port-DA/carbon→TCE, CII-данные в сид) поверх честного рейтинга.
+5. **L4** — позже, платно, по решению фаундера.
+
+---
+
 **Последний полный аудит:** 2026-05-17 (5-поточный код-аудит) + 2026-05-19 UI audit (Playwright+Chrome MCP) + **2026-05-19 ROADMAP reality audit** (claim vs prod sweep)
 **Последнее обновление:** 2026-06-05 (**ECON-CLUSTER #819/#820/#821 + BACKLOG #825/#826/#827 → прод, prod HEAD `0f185ab8`**). qa-walker нашёл 3 экономики-бага → конвейер recon→Opus-plan→exec: **#822** #820 bunker (убран жёсткий 'SGSIN'-дефолт в EconomicsTab+tce/route + race-fix; Med/BS хабы уже в `bunker_prices` via OilMonster cron); **#823** #821 laycan (`regenerate-matches --rebuild-worksheet` + persist-session-matches fail-closed recompute при laycan-disagreement); **#824** #819 TCE-знак (freight-resolver Tier-2 laden→round-trip denom fix — корень `-102k vs +774` дивергенции — + headline reads live `daily_tce_usd`). **Backlog:** **#826** (#819 cleanup — убран redundant storedTce-override + 6 canonical-tce тестов reframed под контракт list==detail/sign-agrees; freight-fix сделал live==stored convergent); **#825** (#82x cross-item worksheet rebuild по правильному item-index, DATA-affecting → prod-regen pending); **#827** (#82y detectSpot tighten — keyword AND нет concrete-date = не ложный spot). deps (qs/ws/brace/esbuild #465) уже merged 25 мая. **Prod-data-apply (Rule#22, founder-signed):** combined `regenerate-matches` + orphan-DELETE session-строк → 315→287, july_worksheets 11→0, neg_tce=125, buckets 34/193/60 целы, parity OK, health 200, backup `.bak-20260605T045322Z`. **УРОК:** #821 жил в session-UUID бакете (qa-walker session), regenerate его НЕ трогает → orphan-DELETE (как Variant B); `--dry` поймал 2 ошибки подряд (агент №1 прогнал regenerate БЕЗ `--rebuild-worksheet`→ложный GO; агент №2 нашёл session-UUID корень→NO-GO — не верь agent-GO без проверки симптома против реальности). **Предшествовало 06-04:** Variant B (broad weight-refresh 32 prod cargo, Rule22) + #814 laycan-guards + #813 polish + #816 war-risk ballast leg (все на проде). **OPEN:** #819 B(c) sibling-override `session-buckets.ts:63-67` (Tier-3, LOW — нужна convergence-recon перед удалением); #82x prod-regen (founder-signed). См. memory `project_quantika_seed_prod_apply_mechanics` (UPDATE 2026-06-05).
 **Обновление 2026-06-03:** 2026-06-03 (**4-FIX BROKER (#776) + 3 BACKLOG (#778/#779/#780) → прод, prod HEAD `d3c62d0e`, auto-deploy LIVE**). **#776** (Gate5 4-fix, main `9cfca018`): #1 табы→только «Матчи»; #2 EU-age cap≤55 «EU PSC age risk» (+ open-ended laycan «X onwards»/«From X»→forward-window); #3 даты onwards→окно (E2E 11→0 single-day); #4 порты — диакритик-фолд (`resolvePort` NFKD: Constanța/Aliağa) + 8 портов + vague→representative+amber (Вариант A). Прод-regen применён (Rule#22): main_bucket=28, visible(main∩fit≥60)=14, EU-cap 0→148, wsNULL=0. **3 backlog** (main `d3c62d0e`): **#778** ETS in/out-EU 50% coverage (intra=1/inout=0.5/extra=0 via `isEuCountry`, code-only); **#779** parse-prompt source_text exact-contiguous (re-parse корпуса = future-proofing, НЕ прогнан); **#780** distanceNm в regen (fold+`resolveVaguePort` в distance-lookup, board-NEUTRAL, nullDist_board 16→10). **Урок:** real-data verify поймал refYear-wiring баг (`real-matches` звал `computeFitBreakdown` без refYear → EU-cap молчал; unit-green пропустил) + ложную тревогу «доска 28→14» (bucket vs visible, снят 2nd-method). **🔴 OPEN — Gate5 round-2 (founder 2026-06-03), ветка `fix/gate5-eu-spot-pnl` off `d3c62d0e` (НЕ merged):** ✅ **#4-EU-by-country** (1986-судно→Monfalcone/IT показывало fit 70 без флага; `isEuropeanDischarge` детектил по region-map [пропускал named-EU, ловил non-EU Med Bejaia/DZ]; фикс = `isEuCountry(resolvePort(port).country)`; `ce468ed2`, 47/47, Dutch-Harbor guard цел); 🔄 **спот-даты** (`/cargo` показывает спот одним днём — `parseLaycan('Spot')`→today; фикс = метка «Spot» через `detectSpot`, корень `app/cargo/page.tsx:85`); 🔄 **Voyage P&L пусто** при отсутствии `cargo qty` (match 40098 weightMt пусто; фикс = «Missing: cargo quantity» в `EconomicsTab` вместо пустого блока). Доделать в новой сессии — детали `state.md` HANDOFF. FOLLOW-UPS: parse-recap.ts harden, Port-of-Call→Callao fuzzy.
