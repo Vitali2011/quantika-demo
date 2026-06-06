@@ -58,6 +58,27 @@ do NOT expect golden movement until then.
    centrals in `verified-pairs.json` with a real ±% band, and the distance band to ±3-5%
    (currently ±90% computability). Then the oracle guards magnitude, not just sign.
 
+## Proven recipe (measured 2026-06-06) — what actually separates coal from longballast
+
+Step 1 (class consumption) is **DONE + clean** (commit dbe1529b; golden 68/68, regression 1903/1903).
+A measured prototype then proved the exact combo that flips longballast green while keeping coal green
+— but it requires a PREREQUISITE the plan missed:
+
+- **PREREQUISITE — verified freight into the golden runner.** Without a DB the runner uses the crude
+  `estimateFreightRate` (~$31/t for coal), which is too low and sinks coal once reposition+canal land.
+  Feed the broker's verified $/mt (from `verified-pairs.json`) into the fixture → runner passes it as
+  the resolved freight. Then golden TCE reflects reality (coal ~$52/t, longballast ~$26/t).
+- With verified freight + reposition (Option B) + Suez dues, the measured outcome is clean:
+  - **coal** (freight $52, Cape route → NO canal): TCE ≈ **+$9.1k/day** → stays main ✓
+  - **longballast** (freight $26, Suez × 2 ≈ $500k + reposition): TCE ≈ **−$5.1k/day** → demoted ✓
+    The distinguisher is exactly the canal: coal pays none, longballast pays Suez twice.
+- Then a below-OPEX / negative-TCE floor (step 5) demotes longballast → `verdict` flips green.
+
+So the next LANDABLE unit is the **combo** (verified-freight-into-runner + reposition + Suez canal +
+floor) — it cannot land piecemeal, because reposition or canal ALONE sinks coal too. Canal wiring
+(per-leg Suez/Bosporus/Panama detection from the route + `quoteCanal`, DB-graceful) is the substantial
+sub-piece. DA (step 4) and band-tightening (step 6) follow.
+
 ## Risks / notes
 
 - **Broad blast radius**: steps 1-4 shift EVERY demo match's TCE. Matching tests that assert
