@@ -60,7 +60,13 @@ export const GoldenRecordSchema = z.object({
     spotNotIdealised: z.boolean().optional(),           // spot/prompt vessel w/o real position must not score as ideal
     portResolved: z.boolean().optional(),               // unknown port must flag, not score blind on null distance
     laycanFeasible: z.boolean().optional(),             // vessel can reach load port by cancelling date
+    draftWithinPortLimit: z.boolean().optional(),       // laden draft/LOA must fit the disch port (e.g. panamax cannot enter Douala river)
   }),
+  // assertion keys expected to STILL FAIL against the current engine (it.failing).
+  // Keys: 'tceNeg' | 'block' | 'spot' | 'verdict' | 'distance' | 'speedEst'.
+  // A gate present in engineMust but NOT listed here is asserted as a real (green) `it`
+  // because the live engine already enforces it. Empirically set from the baseline run.
+  xfail: z.array(z.string()).optional(),
   provenance: z.string(),
 });
 

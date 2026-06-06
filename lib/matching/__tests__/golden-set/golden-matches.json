@@ -1,42 +1,58 @@
 {
-  "version": 1,
-  "frozenDate": "2026-05-28",
+  "version": 2,
+  "frozenDate": "2026-05-10",
+  "note": "Variant A golden-set. Every record externally verified by Opus 20yr-broker sessions; full provenance + double-compute TCE in docs/superpowers/golden-set/verified-pairs.json (matched by id). Generic weight/distance/tce tests assert COMPUTABILITY + wide bands only — the engine systematically uses the ballast/short leg as voyage distance, inflating TCE 2.5-6x, so engine TCE is a mirage even for good controls. The real oracle = engineMust gate flags -> it.failing (red now, auto-flip green when the engine adds the gate). Controls assert tceSign positive (engine gets sign right) = the green belt.",
   "matches": [
     {
-      "id": "GS-00-control-panamax",
+      "id": "GS-ctl-panamax-brazil",
       "bugClass": "control",
       "control": true,
-      "rationale": "clean long-haul panamax, profitable",
+      "rationale": "long-haul geared fronthaul minor-bulk; broker TCE ~$15k/day, anchored to live ECSA ultramax fixture $17.5k/day+$750k BB. Profitable above OPEX -> green.",
       "inputs": {
         "cargo": {
-          "ref": "ctl-c",
-          "qtyT": 50000,
-          "qtyMinT": 50000,
-          "qtyMaxT": 50000,
-          "loadPort": "CNSHA",
-          "dischPort": "NLRTM",
-          "laycanStart": "2026-10-01",
-          "laycanEnd": "2026-10-20",
-          "sourceEmail": "raw/ctl.json"
+          "ref": "19e0977d3c8155ca",
+          "qtyT": 43000,
+          "qtyMinT": 30000,
+          "qtyMaxT": 47000,
+          "cargoType": "BULK",
+          "loadPort": "North Brazil",
+          "dischPort": "North China",
+          "loadCountry": "Brazil",
+          "dischCountry": "China",
+          "laycanStart": "2026-04-01",
+          "laycanEnd": "2026-04-10",
+          "sourceEmail": "raw/19e0977d3c8155ca.json"
         },
         "vessel": {
-          "name": "MV CTL",
-          "dwt": 55000,
-          "speedKn": 14,
-          "consumptionT": 30,
-          "openPort": "Singapore",
-          "openDate": "2026-09-15",
-          "sourceEmail": "raw/ctl.json"
+          "name": "MV GLORY TOM",
+          "dwt": 63695,
+          "dwccT": 62200,
+          "geared": true,
+          "craneCapacityT": 30,
+          "restrictions": ["No Ukraine ports", "No Black Sea Russia", "No USA"],
+          "grainCapacityCbm": 78771,
+          "speedKn": 13.5,
+          "consumptionT": 28.5,
+          "openPort": "Casablanca",
+          "openDate": "2026-03-10",
+          "sourceEmail": "raw/19d5e79432c6caf9.json"
         }
       },
       "expected": {
-        "weightT": { "value": 50000, "toleranceAbs": 0, "source": "stated" },
-        "distanceNm": { "value": 9000, "tolerancePct": 25, "source": "stub-wide" },
+        "weightT": {
+          "value": 43000,
+          "toleranceAbs": 0,
+          "source": "broker-intake (draft-limited 11.5m load port)"
+        },
+        "distanceNm": {
+          "value": 14772,
+          "tolerancePct": 90,
+          "source": "ports.com Cape route (engine mis-routes; wide band)"
+        },
         "tcePerDay": {
-          "value": 0,
-          "toleranceAbs": 9999999,
-          "tolerancePct": 99999,
-          "source": "stub-wide"
+          "value": 15000,
+          "toleranceAbs": 999999999,
+          "source": "broker central; computability-only band"
         }
       },
       "inputHonesty": {
@@ -45,44 +61,55 @@
         "freightRate": "index",
         "bunkerPrice": "external"
       },
-      "engineMust": { "verdictNotGood": false },
-      "provenance": "stub control for harness wiring"
+      "engineMust": { "tceSign": "positive" },
+      "provenance": "see verified-pairs.json id=GS-ctl-panamax-brazil; manganese ore 30-47k N.Brazil->N.China x GLORY TOM"
     },
     {
-      "id": "GS-07-absent-speed",
-      "bugClass": "absent-speed-est",
-      "control": false,
-      "rationale": "vessel email states NO speed -> engine must mark est., not pass 12 as fact",
+      "id": "GS-ctl-supra-coal",
+      "bugClass": "control",
+      "control": true,
+      "rationale": "correctly-sized geared/grab handymax for 22kt coal; broker TCE ~$8.5k/day, profitable-but-below-market. Above 30k-supra OPEX ~$6-7k -> green.",
       "inputs": {
         "cargo": {
-          "ref": "gap-c",
-          "qtyT": 30000,
-          "qtyMinT": 30000,
-          "qtyMaxT": 30000,
-          "loadPort": "CNSHA",
-          "dischPort": "NLRTM",
-          "laycanStart": "2026-10-01",
-          "laycanEnd": "2026-10-20",
-          "sourceEmail": "raw/gap.json"
+          "ref": "19e07c5000b8200e",
+          "qtyT": 22000,
+          "qtyMinT": 19800,
+          "qtyMaxT": 24200,
+          "cargoType": "BULK",
+          "loadPort": "Mtwara",
+          "dischPort": "Matadi",
+          "loadCountry": "Tanzania",
+          "dischCountry": "Democratic Republic of the Congo",
+          "laycanStart": "2026-06-01",
+          "laycanEnd": "2026-06-10",
+          "sourceEmail": "raw/19e07c5000b8200e.json"
         },
         "vessel": {
-          "name": "MV GAP",
-          "dwt": 35000,
+          "name": "AMITY",
+          "dwt": 29996,
+          "dwccT": null,
+          "geared": true,
+          "craneCapacityT": 30,
+          "restrictions": [],
+          "grainCapacityCbm": null,
           "speedKn": null,
           "consumptionT": null,
-          "openPort": "Singapore",
-          "openDate": "2026-09-15",
-          "sourceEmail": "raw/gap.json"
+          "openPort": "Bizerte",
+          "openDate": "2026-05-14",
+          "sourceEmail": "raw/19e07c68d1a6c54a.json"
         }
       },
       "expected": {
-        "weightT": { "value": 30000, "toleranceAbs": 0, "source": "stated" },
-        "distanceNm": { "value": 9000, "tolerancePct": 25, "source": "stub-wide" },
+        "weightT": { "value": 22000, "toleranceAbs": 0, "source": "stated +/-10%" },
+        "distanceNm": {
+          "value": 4050,
+          "tolerancePct": 90,
+          "source": "ports.com Dar->Matadi proxy + haversine"
+        },
         "tcePerDay": {
-          "value": 0,
-          "toleranceAbs": 9999999,
-          "tolerancePct": 99999,
-          "source": "stub-wide"
+          "value": 8500,
+          "toleranceAbs": 999999999,
+          "source": "broker central; computability-only band"
         }
       },
       "inputHonesty": {
@@ -91,8 +118,745 @@
         "freightRate": "index",
         "bunkerPrice": "external"
       },
-      "engineMust": { "speedMarkedEst": true },
-      "provenance": "known-gap: engine has no est flag (see plan); it.failing until a fix adds it"
+      "engineMust": { "tceSign": "positive" },
+      "provenance": "see verified-pairs.json id=GS-ctl-supra-coal; coal 22kt Mtwara->Matadi (grab req) x AMITY geared"
+    },
+    {
+      "id": "GS-ctl-sugar-panamax",
+      "bugClass": "control",
+      "control": true,
+      "rationale": "clean full-cargo long-haul panamax; broker TCE ~$22.5k/day (re-pegged from $30k to market). Far above OPEX -> green.",
+      "inputs": {
+        "cargo": {
+          "ref": "19e07c5b023cf374",
+          "qtyT": 70000,
+          "qtyMinT": 63000,
+          "qtyMaxT": 77000,
+          "cargoType": "BULK",
+          "loadPort": "Santos",
+          "dischPort": "Kandla",
+          "loadCountry": "Brazil",
+          "dischCountry": "India",
+          "laycanStart": "2026-07-07",
+          "laycanEnd": "2026-07-20",
+          "sourceEmail": "raw/19e07c5b023cf374.json"
+        },
+        "vessel": {
+          "name": "MV GLORY TOM",
+          "dwt": 63695,
+          "dwccT": 61000,
+          "geared": true,
+          "craneCapacityT": 30,
+          "restrictions": ["No Ukraine ports", "No Black Sea Russia", "No USA"],
+          "grainCapacityCbm": 78771,
+          "speedKn": 13.5,
+          "consumptionT": 28.5,
+          "openPort": "Casablanca",
+          "openDate": "2026-06-15",
+          "sourceEmail": "raw/19d5e79432c6caf9.json"
+        }
+      },
+      "expected": {
+        "weightT": { "value": 70000, "toleranceAbs": 0, "source": "stated 70k MOLOO" },
+        "distanceNm": {
+          "value": 9550,
+          "tolerancePct": 90,
+          "source": "ports.com Santos->Kandla via Cape"
+        },
+        "tcePerDay": {
+          "value": 22500,
+          "toleranceAbs": 999999999,
+          "source": "broker market-anchored central; computability-only band"
+        }
+      },
+      "inputHonesty": {
+        "speedKn": "stated",
+        "consumptionT": "stated",
+        "freightRate": "index",
+        "bunkerPrice": "external"
+      },
+      "engineMust": { "tceSign": "positive" },
+      "provenance": "see verified-pairs.json id=GS-ctl-sugar-panamax; bulk sugar 70k Santos->WC India x GLORY TOM"
+    },
+    {
+      "id": "GS-ctl-handy-olivepomace",
+      "bugClass": "control",
+      "control": true,
+      "rationale": "handysize boxlike geared, light agribulk (cube-limited), short ballast + real laden leg; broker TCE ~$10.75k/day. Above 18.9k-handy OPEX ~$5.5-7k -> green.",
+      "inputs": {
+        "cargo": {
+          "ref": "19e07d5b25766951",
+          "qtyT": 12000,
+          "qtyMinT": 12000,
+          "qtyMaxT": null,
+          "cargoType": "BULK",
+          "loadPort": "Sfax",
+          "dischPort": "Dakar",
+          "loadCountry": "Tunisia",
+          "dischCountry": "Senegal",
+          "stowageFactor": 58,
+          "laycanStart": "2026-05-20",
+          "laycanEnd": "2026-05-30",
+          "sourceEmail": "raw/19e07d5b25766951.json"
+        },
+        "vessel": {
+          "name": "MV LADY HATICE",
+          "dwt": 18930,
+          "dwccT": 18200,
+          "geared": true,
+          "craneCapacityT": null,
+          "restrictions": [],
+          "grainCapacityCbm": 21586,
+          "speedKn": null,
+          "consumptionT": null,
+          "openPort": "Agadir",
+          "openDate": "2026-05-18",
+          "sourceEmail": "raw/19e07d49ee39a1cc.json"
+        }
+      },
+      "expected": {
+        "weightT": { "value": 12000, "toleranceAbs": 0, "source": "stated min 12,000" },
+        "distanceNm": {
+          "value": 1507,
+          "tolerancePct": 90,
+          "source": "engine/board Sfax->Dakar via Gibraltar"
+        },
+        "tcePerDay": {
+          "value": 10750,
+          "toleranceAbs": 999999999,
+          "source": "broker central; computability-only band"
+        }
+      },
+      "inputHonesty": {
+        "speedKn": "DEFAULT",
+        "consumptionT": "DEFAULT",
+        "freightRate": "index",
+        "bunkerPrice": "external"
+      },
+      "engineMust": { "tceSign": "positive" },
+      "provenance": "see verified-pairs.json id=GS-ctl-handy-olivepomace; olive pomace 12kt Sfax->Dakar x LADY HATICE"
+    },
+    {
+      "id": "GS-restrict-ukraine",
+      "bugClass": "trading-restriction",
+      "control": false,
+      "rationale": "vessel body bans Ukraine AND EU; cargo loads Ukraine, dischs EU -> must HARD-block; engine scored ~55%.",
+      "inputs": {
+        "cargo": {
+          "ref": "19d5e751c0c212df",
+          "qtyT": 3000,
+          "qtyMinT": null,
+          "qtyMaxT": null,
+          "cargoType": "BULK",
+          "loadPort": "Chornomorsk",
+          "dischPort": "Marghera",
+          "loadCountry": "Ukraine",
+          "dischCountry": "Italy",
+          "laycanStart": "2026-05-01",
+          "laycanEnd": "2026-05-31",
+          "sourceEmail": "raw/19d5e751c0c212df.json"
+        },
+        "vessel": {
+          "name": "MV BARABULKA",
+          "dwt": 4916,
+          "dwccT": null,
+          "geared": false,
+          "craneCapacityT": null,
+          "restrictions": ["No Ukraine ports", "No EU ports"],
+          "grainCapacityCbm": 5083,
+          "speedKn": null,
+          "consumptionT": null,
+          "openPort": "Karasu",
+          "openDate": "2026-05-09",
+          "sourceEmail": "raw/19d5e74e4479a895.json"
+        }
+      },
+      "expected": {
+        "weightT": { "value": 3000, "toleranceAbs": 0, "source": "stated" },
+        "distanceNm": { "value": 1940, "tolerancePct": 90, "source": "ports.com sum-of-legs" },
+        "tcePerDay": {
+          "value": 0,
+          "toleranceAbs": 999999999,
+          "source": "moot (restriction overrides); computability-only"
+        }
+      },
+      "inputHonesty": {
+        "speedKn": "DEFAULT",
+        "consumptionT": "DEFAULT",
+        "freightRate": "index",
+        "bunkerPrice": "external"
+      },
+      "engineMust": { "tradingRestrictionEnforced": true },
+      "provenance": "see verified-pairs.json id=GS-restrict-ukraine; steel scrap Chornomorsk(UA)->Marghera(EU) x BARABULKA (no-UA/no-EU)"
+    },
+    {
+      "id": "GS-restrict-eu",
+      "bugClass": "trading-restriction",
+      "control": false,
+      "rationale": "vessel bans European ports; Ravenna+Koper = EU -> must block; engine scored 76.6% with a favorable-looking decoy TCE.",
+      "inputs": {
+        "cargo": {
+          "ref": "19e089f3dc5f3033",
+          "qtyT": 5293,
+          "qtyMinT": 4763.7,
+          "qtyMaxT": 5822.3,
+          "cargoType": "BULK",
+          "loadPort": "Bandirma",
+          "dischPort": "Ravenna",
+          "loadCountry": "Turkey",
+          "dischCountry": "Italy",
+          "laycanStart": "2026-02-09",
+          "laycanEnd": "2026-02-13",
+          "sourceEmail": "raw/19e089f3dc5f3033.json"
+        },
+        "vessel": {
+          "name": "MV SNAPPER",
+          "dwt": 8100,
+          "dwccT": null,
+          "geared": false,
+          "craneCapacityT": null,
+          "restrictions": ["no European ports for now"],
+          "grainCapacityCbm": null,
+          "speedKn": null,
+          "consumptionT": null,
+          "openPort": "Nemrut Bay",
+          "openDate": "2026-02-08",
+          "sourceEmail": "raw/19e0f531898504ce.json"
+        }
+      },
+      "expected": {
+        "weightT": { "value": 5293, "toleranceAbs": 0, "source": "stated +/-10%" },
+        "distanceNm": {
+          "value": 1531,
+          "tolerancePct": 90,
+          "source": "ports.com Bandirma->Ravenna"
+        },
+        "tcePerDay": {
+          "value": 13680,
+          "toleranceAbs": 999999999,
+          "source": "decoy on-paper TCE; computability-only"
+        }
+      },
+      "inputHonesty": {
+        "speedKn": "DEFAULT",
+        "consumptionT": "DEFAULT",
+        "freightRate": "index",
+        "bunkerPrice": "external"
+      },
+      "engineMust": { "tradingRestrictionEnforced": true },
+      "provenance": "see verified-pairs.json id=GS-restrict-eu; harmless minerals Bandirma->Ravenna(EU) x SNAPPER (no European ports)"
+    },
+    {
+      "id": "GS-negtce-laycan",
+      "bugClass": "negative-tce-and-laycan-miss",
+      "control": false,
+      "rationale": "vessel opens Continent 01 Jun but laycan closes 20 May (miss) AND 13-day ballast for a 7kt parcel yields negative TCE; engine surfaced it as a scored match.",
+      "inputs": {
+        "cargo": {
+          "ref": "19e07ce171ab8e10",
+          "qtyT": 7000,
+          "qtyMinT": 7000,
+          "qtyMaxT": 7000,
+          "cargoType": "BULK",
+          "loadPort": "Iskenderun",
+          "dischPort": "Constanta",
+          "loadCountry": "Turkey",
+          "dischCountry": "Romania",
+          "laycanStart": "2026-05-15",
+          "laycanEnd": "2026-05-20",
+          "sourceEmail": "raw/19e07ce171ab8e10.json"
+        },
+        "vessel": {
+          "name": "PANTHERA J",
+          "dwt": 7000,
+          "dwccT": null,
+          "geared": true,
+          "craneCapacityT": 150,
+          "restrictions": [],
+          "grainCapacityCbm": 9600,
+          "speedKn": 13,
+          "consumptionT": null,
+          "openPort": "Continent",
+          "openDate": "2026-06-01",
+          "sourceEmail": "raw/19d5e7455d073a74.json"
+        }
+      },
+      "expected": {
+        "weightT": { "value": 7000, "toleranceAbs": 0, "source": "stated" },
+        "distanceNm": {
+          "value": 1247,
+          "tolerancePct": 90,
+          "source": "ports.com Iskenderun->Constanta"
+        },
+        "tcePerDay": {
+          "value": -183,
+          "toleranceAbs": 999999999,
+          "source": "broker central (loss); computability-only"
+        }
+      },
+      "inputHonesty": {
+        "speedKn": "stated",
+        "consumptionT": "DEFAULT",
+        "freightRate": "index",
+        "bunkerPrice": "external"
+      },
+      "engineMust": { "laycanFeasible": true, "tceSign": "negative" },
+      "xfail": ["tceNeg"],
+      "provenance": "see verified-pairs.json id=GS-negtce-laycan; blk minerals 7kt Iskenderun->Constanta x PANTHERA J (open Continent 01 Jun, too late)"
+    },
+    {
+      "id": "GS-shortleg-tce",
+      "bugClass": "short-leg-inflated-tce",
+      "control": false,
+      "rationale": "29,996 DWT handymax carries a 5-10K parcel (17-33% DWT) over a short leg; per-laden-day TCE looks normal but true-voyage TCE is below OPEX. Engine reported $81,703/day.",
+      "inputs": {
+        "cargo": {
+          "ref": "19e089d15179ef31",
+          "qtyT": 7500,
+          "qtyMinT": 5000,
+          "qtyMaxT": 10000,
+          "cargoType": "BULK",
+          "loadPort": "Bejaia",
+          "dischPort": "Mersin",
+          "loadCountry": "Algeria",
+          "dischCountry": "Turkey",
+          "laycanStart": "2026-05-14",
+          "laycanEnd": "2026-05-20",
+          "sourceEmail": "raw/19e089d15179ef31.json"
+        },
+        "vessel": {
+          "name": "AMITY",
+          "dwt": 29996,
+          "dwccT": null,
+          "geared": true,
+          "craneCapacityT": 30,
+          "restrictions": [],
+          "grainCapacityCbm": null,
+          "speedKn": null,
+          "consumptionT": null,
+          "openPort": "Bizerte",
+          "openDate": "2026-05-14",
+          "sourceEmail": "raw/19e07c68d1a6c54a.json"
+        }
+      },
+      "expected": {
+        "weightT": { "value": 7500, "toleranceAbs": 0, "source": "mid of 5-10k range" },
+        "distanceNm": { "value": 1603, "tolerancePct": 90, "source": "ports.com Bejaia->Mersin" },
+        "tcePerDay": {
+          "value": 3300,
+          "toleranceAbs": 999999999,
+          "source": "broker thin/below-OPEX; computability-only"
+        }
+      },
+      "inputHonesty": {
+        "speedKn": "DEFAULT",
+        "consumptionT": "DEFAULT",
+        "freightRate": "index",
+        "bunkerPrice": "external"
+      },
+      "engineMust": { "verdictNotGood": true },
+      "xfail": ["verdict"],
+      "provenance": "see verified-pairs.json id=GS-shortleg-tce; bagged sugar 5-10kt Bejaia->Mersin x AMITY (tiny parcel, inflated TCE)"
+    },
+    {
+      "id": "GS-weightrange",
+      "bugClass": "weight-range-max",
+      "control": false,
+      "rationale": "qty is a pure range 4000-4800 (MOLOO); engine prices the MAX (4800) for util/TCE; 4800/29996 = 16% util -> negative true TCE.",
+      "inputs": {
+        "cargo": {
+          "ref": "19d5e75f7c50d8e8",
+          "qtyT": 4800,
+          "qtyMinT": 4000,
+          "qtyMaxT": 4800,
+          "cargoType": "BULK",
+          "loadPort": "Alexandria",
+          "dischPort": "Odessa",
+          "loadCountry": "Egypt",
+          "dischCountry": "Ukraine",
+          "laycanStart": "2026-05-01",
+          "laycanEnd": "2026-05-31",
+          "sourceEmail": "raw/19d5e75f7c50d8e8.json"
+        },
+        "vessel": {
+          "name": "AMITY",
+          "dwt": 29996,
+          "dwccT": null,
+          "geared": true,
+          "craneCapacityT": 30,
+          "restrictions": [],
+          "grainCapacityCbm": null,
+          "speedKn": null,
+          "consumptionT": null,
+          "openPort": "Bizerte",
+          "openDate": "2026-05-14",
+          "sourceEmail": "raw/19e07c68d1a6c54a.json"
+        }
+      },
+      "expected": {
+        "weightT": {
+          "value": 4800,
+          "toleranceAbs": 0,
+          "source": "max of range (engine behavior under test)"
+        },
+        "distanceNm": {
+          "value": 1393,
+          "tolerancePct": 90,
+          "source": "ports.com Alexandria->Odessa"
+        },
+        "tcePerDay": {
+          "value": -2678,
+          "toleranceAbs": 999999999,
+          "source": "broker central (loss); computability-only"
+        }
+      },
+      "inputHonesty": {
+        "speedKn": "DEFAULT",
+        "consumptionT": "DEFAULT",
+        "freightRate": "index",
+        "bunkerPrice": "external"
+      },
+      "engineMust": { "weightNotMax": true, "tceSign": "negative" },
+      "provenance": "see verified-pairs.json id=GS-weightrange; salt 4000-4800 Egypt Med->Odesa x AMITY (range priced at max)"
+    },
+    {
+      "id": "GS-cubic-overflow",
+      "bugClass": "capacity-overflow",
+      "control": false,
+      "rationale": "10,400 mt HRC EXCEEDS the smallest vessel PANTHERA J's 7,000 DWT (cannot lift) -> must block on deadweight; engine scored 54%.",
+      "inputs": {
+        "cargo": {
+          "ref": "19d5de87705baf9b",
+          "qtyT": 10400,
+          "qtyMinT": 10400,
+          "qtyMaxT": 10400,
+          "cargoType": "BULK",
+          "loadPort": "Karasu",
+          "dischPort": "Puerto Limon",
+          "loadCountry": "Turkey",
+          "dischCountry": "Costa Rica",
+          "laycanStart": "2026-06-01",
+          "laycanEnd": "2026-06-30",
+          "sourceEmail": "raw/19d5de87705baf9b.json"
+        },
+        "vessel": {
+          "name": "PANTHERA J",
+          "dwt": 7000,
+          "dwccT": 6750,
+          "geared": true,
+          "craneCapacityT": 150,
+          "restrictions": [],
+          "grainCapacityCbm": 9600,
+          "speedKn": 13,
+          "consumptionT": null,
+          "openPort": "Continent",
+          "openDate": "2026-06-01",
+          "sourceEmail": "raw/19d5e7455d073a74.json"
+        }
+      },
+      "expected": {
+        "weightT": { "value": 10400, "toleranceAbs": 0, "source": "stated HRC" },
+        "distanceNm": { "value": 7500, "tolerancePct": 90, "source": "composite ports.com legs" },
+        "tcePerDay": {
+          "value": 1200,
+          "toleranceAbs": 999999999,
+          "source": "broker thin (moot, over-capacity); computability-only"
+        }
+      },
+      "inputHonesty": {
+        "speedKn": "stated",
+        "consumptionT": "DEFAULT",
+        "freightRate": "index",
+        "bunkerPrice": "external"
+      },
+      "engineMust": { "capacityWithinDwcc": true },
+      "provenance": "see verified-pairs.json id=GS-cubic-overflow; HRC 10400 Karasu->Puerto Limon x PANTHERA J 7000 (cargo > DWT)"
+    },
+    {
+      "id": "GS-detectspot",
+      "bugClass": "detect-spot-null-position",
+      "control": false,
+      "rationale": "vessel open RED SEA SPOT PROMPT (no concrete date/port); ballast Red Sea->Black Sea longer than laden leg for a tiny 3000mt parcel -> below OPEX. Engine scored 62% on null distance.",
+      "inputs": {
+        "cargo": {
+          "ref": "19d5e751c0c212df",
+          "qtyT": 3000,
+          "qtyMinT": null,
+          "qtyMaxT": null,
+          "cargoType": "BULK",
+          "loadPort": "Chornomorsk",
+          "dischPort": "Marghera",
+          "loadCountry": "Ukraine",
+          "dischCountry": "Italy",
+          "laycanStart": "2026-05-01",
+          "laycanEnd": "2026-05-31",
+          "sourceEmail": "raw/19d5e751c0c212df.json"
+        },
+        "vessel": {
+          "name": "MV LADY ANITA",
+          "dwt": 5328,
+          "dwccT": null,
+          "geared": false,
+          "craneCapacityT": null,
+          "restrictions": [],
+          "grainCapacityCbm": 6800,
+          "speedKn": 10,
+          "consumptionT": null,
+          "openPort": "Red Sea",
+          "openDate": "spot",
+          "sourceEmail": "raw/19e07c4bb3fee039.json"
+        }
+      },
+      "expected": {
+        "weightT": { "value": 3000, "toleranceAbs": 0, "source": "stated" },
+        "distanceNm": {
+          "value": 1518,
+          "tolerancePct": 90,
+          "source": "NGA PUB 151 Odessa->Venezia"
+        },
+        "tcePerDay": {
+          "value": 86,
+          "toleranceAbs": 999999999,
+          "source": "broker central (below OPEX); computability-only"
+        }
+      },
+      "inputHonesty": {
+        "speedKn": "stated",
+        "consumptionT": "DEFAULT",
+        "freightRate": "index",
+        "bunkerPrice": "external"
+      },
+      "engineMust": { "spotNotIdealised": true },
+      "provenance": "see verified-pairs.json id=GS-detectspot; steel scrap 3000 Chornomorsk->Marghera x LADY ANITA (Red Sea spot prompt, null position)"
+    },
+    {
+      "id": "GS-laycanmiss-fert",
+      "bugClass": "laycan-miss",
+      "control": false,
+      "rationale": "capacity/gear/port FIT is good, but vessel opens Praia Mole (Brazil) -> ~3,800 nm ballast = arrives ~26-28 May, MISSES the 19-21 May laycan; long ballast also crushes TCE to ~$929/day. Engine surfaced it.",
+      "inputs": {
+        "cargo": {
+          "ref": "19e07ce84fc34a82",
+          "qtyT": 20000,
+          "qtyMinT": 20000,
+          "qtyMaxT": 20000,
+          "cargoType": "BULK",
+          "loadPort": "Jorf Lasfar",
+          "dischPort": "Yarimca",
+          "loadCountry": "Morocco",
+          "dischCountry": "Turkey",
+          "laycanStart": "2026-05-19",
+          "laycanEnd": "2026-05-21",
+          "sourceEmail": "raw/19e07ce84fc34a82.json"
+        },
+        "vessel": {
+          "name": "FAITH",
+          "dwt": 30116,
+          "dwccT": null,
+          "geared": true,
+          "craneCapacityT": 30,
+          "restrictions": [],
+          "grainCapacityCbm": null,
+          "speedKn": 12,
+          "consumptionT": null,
+          "openPort": "Praia Mole",
+          "openDate": "2026-05-15",
+          "sourceEmail": "raw/19e07c65c31852c7.json"
+        }
+      },
+      "expected": {
+        "weightT": { "value": 20000, "toleranceAbs": 0, "source": "stated" },
+        "distanceNm": {
+          "value": 2300,
+          "tolerancePct": 90,
+          "source": "ports.com Jorf Lasfar->Yarimca"
+        },
+        "tcePerDay": {
+          "value": 929,
+          "toleranceAbs": 999999999,
+          "source": "broker central (break-even-to-loss); computability-only"
+        }
+      },
+      "inputHonesty": {
+        "speedKn": "DEFAULT",
+        "consumptionT": "DEFAULT",
+        "freightRate": "index",
+        "bunkerPrice": "external"
+      },
+      "engineMust": { "laycanFeasible": true },
+      "provenance": "see verified-pairs.json id=GS-ctl-supra-fert; fertilizers 20kt Jorf Lasfar->Yarimca x FAITH (open Brazil, laycan miss)"
+    },
+    {
+      "id": "GS-longballast-kandla",
+      "bugClass": "long-ballast-inflated-tce",
+      "control": false,
+      "rationale": "vessel open Casablanca, load Kandla = ~5,500 nm unpaid ballast -> true TCE ~$2.75k/day (below panamax breakeven); draft@Kandla 10.5m caps intake below the 40k MOLOO floor. Engine reported $17,093/day (used the ballast leg as voyage distance).",
+      "inputs": {
+        "cargo": {
+          "ref": "19e07d0f8e19df79",
+          "qtyT": 39500,
+          "qtyMinT": 40000,
+          "qtyMaxT": 43000,
+          "cargoType": "BULK",
+          "loadPort": "Kandla",
+          "dischPort": "Ravenna",
+          "loadCountry": "India",
+          "dischCountry": "Italy",
+          "laycanStart": "2026-05-10",
+          "laycanEnd": "2026-06-30",
+          "sourceEmail": "raw/19e07d0f8e19df79.json"
+        },
+        "vessel": {
+          "name": "MV GLORY TOM",
+          "dwt": 63695,
+          "dwccT": 62200,
+          "geared": true,
+          "craneCapacityT": 30,
+          "restrictions": ["No Ukraine ports", "No Black Sea Russia", "No USA"],
+          "grainCapacityCbm": 78771,
+          "speedKn": 13.5,
+          "consumptionT": 28.5,
+          "openPort": "Casablanca",
+          "openDate": "2026-05-01",
+          "sourceEmail": "raw/19d5e79432c6caf9.json"
+        }
+      },
+      "expected": {
+        "weightT": {
+          "value": 39500,
+          "toleranceAbs": 0,
+          "source": "draft-capped intake (Kandla 10.5m)"
+        },
+        "distanceNm": {
+          "value": 5116,
+          "tolerancePct": 90,
+          "source": "ports.com Kandla->Ravenna via Suez (laden)"
+        },
+        "tcePerDay": {
+          "value": 2750,
+          "toleranceAbs": 999999999,
+          "source": "broker central (below OPEX); computability-only"
+        }
+      },
+      "inputHonesty": {
+        "speedKn": "stated",
+        "consumptionT": "stated",
+        "freightRate": "index",
+        "bunkerPrice": "external"
+      },
+      "engineMust": { "verdictNotGood": true },
+      "provenance": "see verified-pairs.json id=GS-longballast-kandla; clay/kaolin 40-43k Kandla->Ravenna x GLORY TOM (5500nm unpaid ballast)"
+    },
+    {
+      "id": "GS-promptmiss-gypsum",
+      "bugClass": "prompt-laycan-miss",
+      "control": false,
+      "rationale": "cargo is SPOT/PROMPT (posted 8 May); vessel opens ARA 04 Jun, ETA Safi ~9-10 Jun = ~30-day miss -> counterparty gone; TCE ~$5k only grazes MPP breakeven. Engine reported $9,564/day (ballast omitted).",
+      "inputs": {
+        "cargo": {
+          "ref": "19e089d960261c91",
+          "qtyT": 10000,
+          "qtyMinT": null,
+          "qtyMaxT": null,
+          "cargoType": "BULK",
+          "loadPort": "Safi",
+          "dischPort": "Cotonou",
+          "loadCountry": "Morocco",
+          "dischCountry": "Benin",
+          "laycanStart": "2026-05-08",
+          "laycanEnd": "2026-05-20",
+          "sourceEmail": "raw/19e089d960261c91.json"
+        },
+        "vessel": {
+          "name": "O7 GAJA",
+          "dwt": 12215,
+          "dwccT": null,
+          "geared": true,
+          "craneCapacityT": 240,
+          "restrictions": [],
+          "grainCapacityCbm": 18700,
+          "speedKn": null,
+          "consumptionT": null,
+          "openPort": "ARA",
+          "openDate": "2026-06-04",
+          "sourceEmail": "raw/19d5e7455d073a74.json"
+        }
+      },
+      "expected": {
+        "weightT": { "value": 10000, "toleranceAbs": 0, "source": "stated abt 10,000" },
+        "distanceNm": { "value": 1545, "tolerancePct": 90, "source": "engine/board Safi->Cotonou" },
+        "tcePerDay": {
+          "value": 5000,
+          "toleranceAbs": 999999999,
+          "source": "broker central (grazes breakeven); computability-only"
+        }
+      },
+      "inputHonesty": {
+        "speedKn": "DEFAULT",
+        "consumptionT": "DEFAULT",
+        "freightRate": "index",
+        "bunkerPrice": "external"
+      },
+      "engineMust": { "laycanFeasible": true },
+      "provenance": "see verified-pairs.json id=GS-promptmiss-gypsum; gypsum 10kt Safi->Cotonou (prompt) x O7 GAJA (open ARA 04 Jun)"
+    },
+    {
+      "id": "GS-portdraft-douala",
+      "bugClass": "port-draft-loa-gate",
+      "control": false,
+      "rationale": "laden 63,695 DWT panamax (LOA 200m, ~9.5-10.5m draft even at 47% intake) physically cannot transit Douala's tidal channel (~8.4m HW) or berth (8.0m / ~30k DWT max). Engine reported $27,564/day using the 1,897nm ballast leg as voyage distance.",
+      "inputs": {
+        "cargo": {
+          "ref": "19e0976ad0f58119",
+          "qtyT": 30000,
+          "qtyMinT": 30000,
+          "qtyMaxT": 30000,
+          "cargoType": "BULK",
+          "loadPort": "Egypt Mediterranean",
+          "dischPort": "Douala",
+          "loadCountry": "Egypt",
+          "dischCountry": "Cameroon",
+          "laycanStart": "2026-03-21",
+          "laycanEnd": "2026-03-30",
+          "sourceEmail": "raw/19e0976ad0f58119.json"
+        },
+        "vessel": {
+          "name": "MV GLORY TOM",
+          "dwt": 63695,
+          "dwccT": 62200,
+          "geared": true,
+          "craneCapacityT": 30,
+          "restrictions": ["No Ukraine ports", "No Black Sea Russia", "No USA"],
+          "grainCapacityCbm": 78771,
+          "speedKn": 13.5,
+          "consumptionT": 28.5,
+          "openPort": "Casablanca",
+          "openDate": "2026-03-05",
+          "sourceEmail": "raw/19d5e79432c6caf9.json"
+        }
+      },
+      "expected": {
+        "weightT": { "value": 30000, "toleranceAbs": 0, "source": "stated" },
+        "distanceNm": {
+          "value": 4900,
+          "tolerancePct": 90,
+          "source": "ports.com Alexandria->Douala (laden; engine used 1897nm ballast leg)"
+        },
+        "tcePerDay": {
+          "value": 10000,
+          "toleranceAbs": 999999999,
+          "source": "broker central hypothetical (gate fails first); computability-only"
+        }
+      },
+      "inputHonesty": {
+        "speedKn": "stated",
+        "consumptionT": "stated",
+        "freightRate": "index",
+        "bunkerPrice": "external"
+      },
+      "engineMust": { "draftWithinPortLimit": true },
+      "xfail": ["block"],
+      "provenance": "see verified-pairs.json id=GS-portdraft-douala; salt 30kt Egypt Med->Douala x GLORY TOM panamax (cannot enter Douala)"
     }
   ]
 }
