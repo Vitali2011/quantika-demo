@@ -30,6 +30,7 @@
  *   npx tsx scripts/demo-seed/regenerate-matches.ts [--db data/demo-seed.db] [--dry]
  */
 import Database from 'better-sqlite3';
+import * as sqliteVec from 'sqlite-vec';
 import path from 'node:path';
 import fs from 'node:fs';
 import { analyzePairs } from '@/lib/matching/pair-analyzer';
@@ -74,6 +75,91 @@ export async function seedReferenceTables(db: Database.Database): Promise<void> 
   const pscCount = (db.prepare('SELECT COUNT(*) as n FROM psc_detention_history').get() as { n: number }).n;
   const daCount = (db.prepare('SELECT COUNT(*) as n FROM port_da_estimates').get() as { n: number }).n;
   console.log(`[regen] reference tables seeded — charterers=${chartCount} psc=${pscCount} port_da=${daCount}`);
+}
+
+// ── Phase 2: seed RAG virtual tables into the regen's own db handle ──────────
+
+const RAG_VEC_TABLES = ['imsbc_vec', 'igc_vec', 'jwc_vec', 'bimco_vec'] as const;
+const RAG_FTS_TABLES = ['imsbc_fts', 'igc_fts', 'jwc_fts', 'bimco_fts'] as const;
+
+/**
+ * Populate the 8 RAG virtual tables (4 × vec0 + 4 × FTS5) from the committed
+ * offline reference artifact `data/knowledge/knowledge-ref.db` into the SAME
+ * db handle that regenerate-matches already has open. Guarantees rows land in
+ * demo-seed.db, not sessions.db.
+ *
+ * Idempotent: if a table already has rows (COUNT(*) > 0) it is skipped, so a
+ * re-run never duplicates. Tables that are empty in the reference (e.g., bimco
+ * when no embeddings have been ingested yet) are copied as empty — no error.
+ *
+ * MUST call sqliteVec.load(db) on the target handle before any vec0 access.
+ * The function does that internally so callers don't need to.
+ *
+ * @param db    - Target database handle (already open, writable).
+ * @param opts  - { dry?: boolean } — when dry=true the function returns without
+ *               writing (mirrors the --dry flag in main()).
+ */
+export async function seedRagTables(
+  db: Database.Database,
+  opts: { dry?: boolean } = {},
+): Promise<void> {
+  if (opts.dry) return;
+
+  // Load sqlite-vec extension on this handle (safe to call multiple times — idempotent).
+  sqliteVec.load(db);
+
+  const refDbPath = path.resolve(__dirname, '../../data/knowledge/knowledge-ref.db');
+  if (!fs.existsSync(refDbPath)) {
+    throw new Error(`[regen] knowledge-ref.db not found at ${refDbPath}. Cannot seed RAG tables.`);
+  }
+
+  // ATTACH the reference db read-only.
+  db.exec(`ATTACH DATABASE '${refDbPath}' AS src`);
+
+  try {
+    const counts: Record<string, number> = {};
+
+    // Copy vec0 tables via the virtual-table interface.
+    for (const table of RAG_VEC_TABLES) {
+      const { n } = db.prepare(`SELECT COUNT(*) as n FROM ${table}`).get() as { n: number };
+      if (n > 0) {
+        counts[table] = n;
+        continue; // already seeded — idempotent skip
+      }
+      const { n: srcN } = db.prepare(`SELECT COUNT(*) as n FROM src.${table}`).get() as { n: number };
+      if (srcN > 0) {
+        db.exec(
+          `INSERT INTO ${table}(embedding, content, metadata) SELECT embedding, content, metadata FROM src.${table}`,
+        );
+      }
+      const { n: destN } = db.prepare(`SELECT COUNT(*) as n FROM ${table}`).get() as { n: number };
+      counts[table] = destN;
+    }
+
+    // Copy FTS5 tables via the virtual-table interface.
+    for (const table of RAG_FTS_TABLES) {
+      const { n } = db.prepare(`SELECT COUNT(*) as n FROM ${table}`).get() as { n: number };
+      if (n > 0) {
+        counts[table] = n;
+        continue; // already seeded — idempotent skip
+      }
+      const { n: srcN } = db.prepare(`SELECT COUNT(*) as n FROM src.${table}`).get() as { n: number };
+      if (srcN > 0) {
+        db.exec(
+          `INSERT INTO ${table}(content, metadata) SELECT content, metadata FROM src.${table}`,
+        );
+      }
+      const { n: destN } = db.prepare(`SELECT COUNT(*) as n FROM ${table}`).get() as { n: number };
+      counts[table] = destN;
+    }
+
+    console.log(
+      `[regen] RAG tables seeded — ` +
+        [...RAG_VEC_TABLES, ...RAG_FTS_TABLES].map((t) => `${t}=${counts[t] ?? 0}`).join(' '),
+    );
+  } finally {
+    db.exec(`DETACH DATABASE src`);
+  }
 }
 
 // ── --rebuild-worksheet exports ───────────────────────────────────────────────
@@ -321,6 +407,7 @@ async function main() {
   // ── Step 0: seed reference tables (charterers, psc, port_da) into THIS db ──
   if (!DRY) {
     await seedReferenceTables(db);
+    await seedRagTables(db);
   }
 
   const frozen = (db.prepare(`SELECT frozen_date f FROM demo_seed_meta WHERE id=1`).get() as { f?: string })?.f ?? '2026-05-28';
