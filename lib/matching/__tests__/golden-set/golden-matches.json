@@ -823,6 +823,7 @@
         "vessel": {
           "name": "MV GLORY TOM",
           "dwt": 63695,
+          "draftMaxM": 13.3,
           "dwccT": 62200,
           "geared": true,
           "craneCapacityT": 30,
@@ -855,7 +856,6 @@
         "bunkerPrice": "external"
       },
       "engineMust": { "draftWithinPortLimit": true },
-      "xfail": ["block"],
       "provenance": "see verified-pairs.json id=GS-portdraft-douala; salt 30kt Egypt Med->Douala x GLORY TOM panamax (cannot enter Douala)"
     }
   ]

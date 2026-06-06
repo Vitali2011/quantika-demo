@@ -59,7 +59,7 @@ export function buildVessel(v: GoldenRecord['inputs']['vessel']): ParsedVessel {
     pandi: null,
     dwtSummer: cf(v.dwt),
     dwcc: v.dwccT != null ? cf(v.dwccT) : null,
-    draftMax: null,
+    draftMax: v.draftMaxM != null ? cf(v.draftMaxM) : null,
     loa: null,
     beam: null,
     grt: null,

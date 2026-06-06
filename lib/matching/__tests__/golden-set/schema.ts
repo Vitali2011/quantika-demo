@@ -29,6 +29,7 @@ export const GoldenRecordSchema = z.object({
     }),
     vessel: z.object({
       name: z.string(), dwt: z.number().nullable(),
+      draftMaxM: z.number().nullable().optional(), // summer draft (m) — feeds the port-draft gate (checkDraft)
       dwccT: z.number().nullable().optional(),     // cargo capacity (weight-range vs capacity test)
       geared: z.boolean().optional(),              // has cranes (gear-gate for bagged/steel cargo)
       craneCapacityT: z.number().nullable().optional(),
