@@ -18,6 +18,9 @@ const config = {
     '/tests/visual/',
     // R6 a11y specs (run via playwright.a11y.config.ts, not jest)
     '/tests/a11y/',
+    // golden-set helper MODULES (imported by golden-set.test.ts — not test suites themselves;
+    // next/jest's default testMatch otherwise treats every *.ts in __tests__ as a suite)
+    '/lib/matching/__tests__/golden-set/(schema|tolerance|runner)\\.ts$',
     ...(process.cwd().includes('/.wave/') ? [] : ['/.wave/']),
     ...(process.cwd().includes('/.claude/worktrees/') ? [] : ['/\\.claude/worktrees/']),
   ],
