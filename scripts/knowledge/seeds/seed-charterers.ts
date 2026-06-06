@@ -14,6 +14,7 @@
  */
 
 import { createHash } from 'crypto';
+import type Database from 'better-sqlite3';
 import { getStore } from '../../../lib/session-store';
 import { upsertCharterer } from '../../../lib/market/charterers-repository';
 
@@ -180,6 +181,35 @@ const DEMO_CHARTERERS: DemoCharterer[] = [
   },
 ];
 
+/**
+ * Seed charterers into an EXPLICIT db handle.
+ * Idempotent: ON CONFLICT(id) DO UPDATE (deterministic IDs from name).
+ */
+export function seedCharterersWithDb(db: Database.Database): void {
+  const byTier = { 'blue-chip': 0, second: 0, weak: 0 };
+
+  for (const c of DEMO_CHARTERERS) {
+    const id = deterministicId(c.name);
+
+    upsertCharterer(db, {
+      id,
+      name: c.name,
+      tier: c.tier,
+      payment_history: JSON.stringify(c.payment_history),
+      require_lc: c.require_lc,
+      notes: c.notes,
+    });
+
+    byTier[c.tier]++;
+  }
+
+  console.log(
+    `[seed-charterers] ${DEMO_CHARTERERS.length} charterers:` +
+    ` ${byTier['blue-chip']} blue-chip, ${byTier.second} second, ${byTier.weak} weak.`
+  );
+}
+
+/** CLI entrypoint — resolves DB via session-store (SESSIONS_DB_PATH). */
 export function seedCharterers(): void {
   const db = getStore().getDatabase();
 
