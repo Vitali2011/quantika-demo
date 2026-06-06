@@ -73,7 +73,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
   const [currentRate, setCurrentRate] = useState<number | null>(storedFreightRate ?? null);
   const [currentSource, setCurrentSource] = useState<string | null>(freightRateSource ?? null);
   const [resetting, setResetting] = useState(false);
-  const [bunkerPort, setBunkerPort] = useState<BunkerPort | null>(null);
+  const [bunkerPort, setBunkerPort] = useState<BunkerPort | null>('NLRTM');
   const [bunkerGrade, setBunkerGrade] = useState<BunkerGrade>('VLSFO');
   const [bunkerPortManual, setBunkerPortManual] = useState(false);
   const [bunkerReco, setBunkerReco] = useState<{ port: string; priceUsdPerMt: number; recommendation: string } | null>(null);

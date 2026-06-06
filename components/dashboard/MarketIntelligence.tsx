@@ -39,6 +39,7 @@ export function MarketIntelligence({ noActiveDeals }: MarketIntelligenceProps) {
           unit="EUR/tCO₂"
         />
       </div>
+      <p className="text-[10px] font-mono text-slate-400 text-right tracking-wide">demo data</p>
       {noActiveDeals && (
         <p className="text-sm text-gray-500 text-center py-2">
           No active deals yet.{' '}

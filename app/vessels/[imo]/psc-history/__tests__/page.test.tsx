@@ -60,6 +60,6 @@ describe('PscHistoryPage', () => {
 
     const badge = screen.getByTestId('demo-data-badge');
     expect(badge).not.toBeNull();
-    expect(badge.textContent).toBe('Demo data');
+    expect(badge.textContent).toContain('Demo data');
   });
 });

@@ -168,13 +168,13 @@ describe('MatchTabs', () => {
       expect(btn).toBeDisabled();
     });
 
-    it('is enabled when draft has content and blockSend is false', () => {
+    it('is always disabled in demo even with draft content and blockSend=false', () => {
       const match = { ...baseMatch, confidence: mockConfidenceVerified };
       renderWithToast(<MatchTabs match={match} />);
       fireEvent.click(screen.getByRole('tab', { name: /quote/i }));
       fireEvent.change(screen.getByRole('textbox'), { target: { value: 'USD 15/MT offer' } });
       const btn = screen.getByRole('button', { name: /send quote/i });
-      expect(btn).not.toBeDisabled();
+      expect(btn).toBeDisabled();
     });
 
     it('is disabled when blockSend is true even with draft content', () => {

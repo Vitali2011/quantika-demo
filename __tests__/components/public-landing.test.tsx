@@ -10,6 +10,13 @@ jest.mock('@/components/market/LiveStrip', () => ({
   LiveStrip: () => <div data-testid="live-strip-stub" />,
 }));
 
+// Capture prefetch prop so the guard test can assert it
+jest.mock('next/link', () => {
+  return function MockLink({ children, href, prefetch, ...rest }: { children: React.ReactNode; href: string; prefetch?: boolean; [key: string]: unknown }) {
+    return <a href={href} data-prefetch={String(prefetch)} {...rest}>{children}</a>;
+  };
+});
+
 import { PublicLanding } from '@/components/PublicLanding';
 
 describe('PublicLanding', () => {
@@ -40,5 +47,12 @@ describe('PublicLanding', () => {
   it('renders market strip placeholder', () => {
     render(<PublicLanding />);
     expect(screen.getByTestId('live-strip-stub')).toBeInTheDocument();
+  });
+
+  it('Connect Gmail link has prefetch=false to prevent CORS-blocked RSC prefetch on /api/ route', () => {
+    render(<PublicLanding />);
+    const link = screen.getByRole('link', { name: /Connect Gmail/i });
+    expect(link).toHaveAttribute('data-prefetch', 'false');
+    expect(link).toHaveAttribute('href', '/api/auth/google');
   });
 });

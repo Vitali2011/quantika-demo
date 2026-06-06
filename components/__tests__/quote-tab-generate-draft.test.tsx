@@ -111,11 +111,11 @@ describe('QuoteTab — Generate Draft button (fix #351)', () => {
     expect(sendBtn).toBeDisabled();
   });
 
-  it('Send Quote is enabled after draft textarea is filled', () => {
+  it('Send Quote remains disabled in demo even after draft textarea is filled', () => {
     mockFetchResponses('');
     renderWithToast(<QuoteTab cargoEmailId="email-001" />);
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'USD 15/MT' } });
     const sendBtn = screen.getByRole('button', { name: /send quote/i });
-    expect(sendBtn).not.toBeDisabled();
+    expect(sendBtn).toBeDisabled();
   });
 });

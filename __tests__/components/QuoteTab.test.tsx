@@ -40,41 +40,30 @@ beforeEach(() => {
 });
 
 describe('QuoteTab — Save Draft + Send Quote handlers', () => {
-  it('Save Draft click shows "Сохранено" toast', async () => {
-    const user = userEvent.setup();
+  it('Save Draft is disabled in demo', () => {
     renderQuoteTab();
-
-    await user.click(screen.getByRole('button', { name: 'Save Draft' }));
-
-    await waitFor(() =>
-      expect(screen.getByRole('status')).toHaveTextContent('Сохранено')
-    );
+    expect(screen.getByRole('button', { name: 'Save Draft' })).toBeDisabled();
   });
 
-  it('Save Draft persists draft text to sessionStorage', async () => {
+  it('Save Draft does not write to sessionStorage (button disabled in demo)', async () => {
     const user = userEvent.setup();
     renderQuoteTab({ cargoEmailId: 'email-42' });
 
     const textarea = screen.getByRole('textbox');
     await user.type(textarea, 'Rate: $15,000/day');
 
-    await user.click(screen.getByRole('button', { name: 'Save Draft' }));
-
-    expect(sessionStorage.getItem('quote_draft_email-42')).toBe('Rate: $15,000/day');
+    // Button is disabled — click is a no-op; sessionStorage must remain empty.
+    expect(sessionStorage.getItem('quote_draft_email-42')).toBeNull();
   });
 
-  it('Send Quote click shows "Отправлено" toast when draft is non-empty', async () => {
+  it('Send Quote is always disabled in demo regardless of draft content', async () => {
     const user = userEvent.setup();
     renderQuoteTab();
 
     const textarea = screen.getByRole('textbox');
     await user.type(textarea, 'Demo quote text');
 
-    await user.click(screen.getByRole('button', { name: 'Send Quote' }));
-
-    await waitFor(() =>
-      expect(screen.getByRole('status')).toHaveTextContent('Отправлено')
-    );
+    expect(screen.getByRole('button', { name: 'Send Quote' })).toBeDisabled();
   });
 
   it('Send Quote is disabled when draft is empty', () => {

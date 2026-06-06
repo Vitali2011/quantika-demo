@@ -46,7 +46,7 @@ HEARTBEAT_URL="${HEARTBEAT_URL:-http://localhost:3000/api/admin/cron-heartbeat}"
 declare -a SOURCES=(
   "${APP_DIR}/.env.local"
   "/root/.config/gcp/quantika-vertex-ai.json"
-  "${APP_DIR}/data/quantika.db"
+  "${APP_DIR}/data/quantika.db"   # deadlines DB (check-deadlines.ts); RAG corpus now lives in sessions.db
   "${APP_DIR}/data/sessions.db"
 )
 # Add uploads dir only if it exists (not present in all envs)

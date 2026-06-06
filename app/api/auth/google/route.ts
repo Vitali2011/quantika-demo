@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { exchangeCodeForToken, fetchGmailProfile, getAuthUrl } from '@/lib/google';
+import { SESSION_TTL_MS } from '@/lib/constants';
 import { logger } from '@/lib/logger';
 import { createSession, updateSession } from '@/lib/session';
 import { generateCsrfToken } from '@/lib/csrf';
+import { getRequestBaseUrl } from '@/lib/auth/redirect-url';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -11,7 +13,7 @@ export async function GET(request: NextRequest) {
   const error = searchParams.get('error');
 
   if (error) {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `https://${request.headers.get('host')}`;
+    const baseUrl = getRequestBaseUrl(request);
     return NextResponse.redirect(new URL('/?error=access_denied', baseUrl));
   }
 
@@ -33,20 +35,20 @@ export async function GET(request: NextRequest) {
     }
     const csrfToken = generateCsrfToken();
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `https://${request.headers.get('host')}`;
+    const baseUrl = getRequestBaseUrl(request);
     const response = NextResponse.redirect(new URL('/processing', baseUrl));
     response.cookies.set('session_id', sessionId, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 60,
+      maxAge: SESSION_TTL_MS / 1000,
       path: '/',
     });
     response.cookies.set('csrf_token', csrfToken, {
       httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 60 * 60,
+      maxAge: SESSION_TTL_MS / 1000,
       path: '/',
     });
     response.headers.set('X-CSRF-Token', csrfToken);
@@ -54,7 +56,7 @@ export async function GET(request: NextRequest) {
     return response;
   } catch (err) {
     logger.error({ err }, 'OAuth error');
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `https://${request.headers.get('host')}`;
+    const baseUrl = getRequestBaseUrl(request);
     return NextResponse.redirect(new URL('/?error=auth_failed', baseUrl));
   }
 }

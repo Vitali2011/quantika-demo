@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
       if (parsed < 0) {
         return NextResponse.json({ error: "Invalid days parameter: cannot be negative" }, { status: 400 });
       }
-      days = parsed;
+      days = Math.min(365, parsed);
     }
 
     // Seed minimal demo data if the table is empty

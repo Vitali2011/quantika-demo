@@ -20,6 +20,7 @@ async function main(): Promise<void> {
   const rawDir = path.resolve(get('--raw-dir') ?? '.private/raw-emails');
   const frozenDate = get('--frozen-date') ?? new Date().toISOString().slice(0, 10);
   const model = get('--model') ?? 'claude-opus-4-8';
+  const demoWindowDays = parseInt(get('--window') ?? '14', 10);
   const manifestPath = path.resolve('scripts/demo-seed/manifest.json');
   const outDb = path.resolve('data/demo-seed.db');
 
@@ -164,7 +165,7 @@ async function main(): Promise<void> {
 
   // 3. Analyze (offsets + merge reconcile anonymization)
   console.log('[seed-all] 3/5 analyze (date offsets)…');
-  const manifest = await analyze({ rawDir, frozenDate, demoWindowDays: 14, seedAnonymization: rec.anonymization });
+  const manifest = await analyze({ rawDir, frozenDate, demoWindowDays, seedAnonymization: rec.anonymization });
   fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
 
   // 4. Build

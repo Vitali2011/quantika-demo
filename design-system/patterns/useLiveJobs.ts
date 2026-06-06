@@ -46,7 +46,10 @@ export function useLiveJobs() {
 
       es.addEventListener('match-created', (ev) => {
         const data = JSON.parse((ev as MessageEvent).data) as Omit<NewMatch, 'createdAt'>;
-        setLatestMatch({ ...data, createdAt: Date.now() });
+        setLatestMatch((prev) => {
+          if (prev?.match_id === data.match_id) return prev;
+          return { ...data, createdAt: Date.now() };
+        });
       });
 
       es.onerror = () => {

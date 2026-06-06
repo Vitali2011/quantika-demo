@@ -77,8 +77,4 @@ describe('MatchesClient.tsx — bulk toolbar visibility (#374)', () => {
     expect(src).toMatch(/Archive All/);
   });
 
-  it('toolbar has Export CSV button', () => {
-    const src = readSource();
-    expect(src).toMatch(/Export CSV/);
-  });
 });

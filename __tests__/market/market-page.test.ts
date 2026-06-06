@@ -98,7 +98,7 @@ describe('MarketPage — sync badge staleness', () => {
     jest.restoreAllMocks();
   });
 
-  it('shows LAST SYNC badge (not Live · synced) when data is >24h old', async () => {
+  it('shows demo snapshot badge (not Last sync / Live · synced) when data is >24h old', async () => {
     const staleDate = new Date(Date.now() - 17 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
     const staleData = [{ index_date: staleDate, value: 500, unit: 'points', source: 'test' }];
 
@@ -109,13 +109,14 @@ describe('MarketPage — sync badge staleness', () => {
     render(React.createElement(MarketPage));
 
     await waitFor(() => {
-      expect(screen.getByText(/last sync:/i)).toBeInTheDocument();
+      expect(screen.getByText(/demo snapshot/i)).toBeInTheDocument();
     });
 
     expect(screen.queryByText(/live · synced/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/last sync:/i)).not.toBeInTheDocument();
   });
 
-  it('shows Live · synced badge when data is <24h old', async () => {
+  it('shows demo snapshot badge (not Live · synced) when data is <24h old', async () => {
     const freshDate = new Date().toISOString().slice(0, 10);
     const freshData = [{ index_date: freshDate, value: 500, unit: 'points', source: 'test' }];
 
@@ -126,15 +127,16 @@ describe('MarketPage — sync badge staleness', () => {
     render(React.createElement(MarketPage));
 
     await waitFor(() => {
-      expect(screen.getByText(/live · synced/i)).toBeInTheDocument();
+      expect(screen.getByText(/demo snapshot/i)).toBeInTheDocument();
     });
 
+    expect(screen.queryByText(/live · synced/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/last sync:/i)).not.toBeInTheDocument();
   });
 
-  it('#545 — LAST SYNC shows BDI period date when BDI is older than market_indices data', async () => {
+  it('#545 — demo snapshot shows BDI period date when BDI is older than market_indices data', async () => {
     // BDI period is 17 days old; market_indices data (bhsi/tmi/drewry) is 5 days old.
-    // The LAST SYNC label must show the older BDI date (min across all sources).
+    // The demo snapshot label must show the older BDI date (min across all sources).
     const bdiDate = new Date(Date.now() - 17 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
     const indicesDate = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
@@ -156,13 +158,13 @@ describe('MarketPage — sync badge staleness', () => {
     render(React.createElement(MarketPage));
 
     await waitFor(() => {
-      expect(screen.getByText(/last sync:/i)).toBeInTheDocument();
+      expect(screen.getByText(/demo snapshot/i)).toBeInTheDocument();
     });
 
     // The label should show bdiDate, not indicesDate
-    expect(screen.getByText(/last sync:/i).textContent).toContain(bdiDate);
+    expect(screen.getByText(/demo snapshot/i).textContent).toContain(bdiDate);
     // Check badge text specifically — indicesDate may appear in chart table rows (not in the badge)
-    expect(screen.getByText(/last sync:/i).textContent).not.toContain(indicesDate);
+    expect(screen.getByText(/demo snapshot/i).textContent).not.toContain(indicesDate);
   });
 });
 

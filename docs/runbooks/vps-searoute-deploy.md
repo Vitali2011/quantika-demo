@@ -152,7 +152,7 @@ Disable distance auto-resolution without touching the Python service:
 # In /root/work/quantika-demo/.env.local on VPS:
 KNOWLEDGE_LAYER_DISTANCES_ENABLED=false
 
-pm2 restart quantika-demo   # picks up new env
+pm2 restart quantika-demo --update-env   # picks up new env
 ```
 
 To also stop the searoute service:
