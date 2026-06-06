@@ -44,6 +44,8 @@ export function buildCargo(c: GoldenRecord['inputs']['cargo']): ParsedCargo {
     specialRequirements: null,
     stowageFactor: c.stowageFactor != null ? String(c.stowageFactor) : null,
     missingInfo: [],
+    // Broker-verified freight rate — feeds resolvedFreight tier-1 in pair-analyzer and fallback buildMatchEconomics
+    freightRateUsd: c.freightRateUsdPerMt ?? null,
   };
 }
 
@@ -121,6 +123,7 @@ export async function runGolden(r: GoldenRecord, today: Date): Promise<GoldenAct
   const ladenDist =
     getPortDistance(r.inputs.cargo.loadPort, r.inputs.cargo.dischPort)?.nm ?? 0;
 
+  const verifiedFreight = r.inputs.cargo.freightRateUsdPerMt;
   const econ = m?.economics ?? buildMatchEconomics({
     cargoType: r.inputs.cargo.cargoType ?? 'BULK',
     distanceNm: ladenDist,
@@ -130,7 +133,11 @@ export async function runGolden(r: GoldenRecord, today: Date): Promise<GoldenAct
     consumptionMt: r.inputs.vessel.consumptionT ?? 25,
     loadPort: r.inputs.cargo.loadPort,
     dischargePort: r.inputs.cargo.dischPort,
+    vesselOpenPosition: r.inputs.vessel.openPort,
     calculatedAt: today.toISOString(),
+    resolvedFreight: verifiedFreight != null
+      ? { rate: verifiedFreight, source: 'manual', confidence: 1 }
+      : undefined,
   });
 
   return {

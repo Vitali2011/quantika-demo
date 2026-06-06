@@ -25,6 +25,7 @@ export const GoldenRecordSchema = z.object({
       dischCountry: z.string().nullable().optional(),
       volumeCbm: z.number().nullable().optional(),     // cubic/stowage-factor overflow test (break-bulk/steel)
       stowageFactor: z.number().nullable().optional(),
+      freightRateUsdPerMt: z.number().nullable().optional(), // broker-verified $/mt — feeds resolvedFreight tier-1 in runner
       laycanStart: z.string(), laycanEnd: z.string(), sourceEmail: z.string(),
     }),
     vessel: z.object({

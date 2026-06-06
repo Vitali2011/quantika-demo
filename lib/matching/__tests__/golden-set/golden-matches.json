@@ -80,6 +80,7 @@
           "dischPort": "Matadi",
           "loadCountry": "Tanzania",
           "dischCountry": "Democratic Republic of the Congo",
+          "freightRateUsdPerMt": 52,
           "laycanStart": "2026-06-01",
           "laycanEnd": "2026-06-10",
           "sourceEmail": "raw/19e07c5000b8200e.json"
@@ -700,6 +701,7 @@
           "dischPort": "Ravenna",
           "loadCountry": "India",
           "dischCountry": "Italy",
+          "freightRateUsdPerMt": 26,
           "laycanStart": "2026-05-10",
           "laycanEnd": "2026-06-30",
           "sourceEmail": "raw/19e07d0f8e19df79.json"
@@ -743,7 +745,6 @@
         "bunkerPrice": "external"
       },
       "engineMust": { "verdictNotGood": true },
-      "xfail": ["verdict"],
       "provenance": "see verified-pairs.json id=GS-longballast-kandla; clay/kaolin 40-43k Kandla->Ravenna x GLORY TOM (5500nm unpaid ballast)"
     },
     {

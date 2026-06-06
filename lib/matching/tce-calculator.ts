@@ -1,6 +1,7 @@
 import { calculateTCE, type TCEBreakdown } from '@/lib/economics/voyage-calculator';
 import { calculateWarRiskPremium } from '@/lib/economics/war-risk';
 import { buildCanonicalTceInputs } from '@/lib/economics/canonical-tce-inputs';
+import { quoteSuez } from '@/lib/economics/canals/index';
 import type { EconomicsResult } from '@/lib/types';
 
 // Ballpark base freight rates (USD/mt) per cargo class
@@ -143,6 +144,8 @@ export function computeEstimatedTce(
   quantity_mt: number,
   speed_kts: number = DEFAULT_SPEED_KTS,
   consumption_mt_per_day: number = DEFAULT_CONSUMPTION_MT_PER_DAY,
+  ballast_distance_nm?: number,
+  canal_usd?: number,
 ): TceEstimate {
   const inputs = buildCanonicalTceInputs({
     vesselDwt: vessel_dwt,
@@ -156,6 +159,8 @@ export function computeEstimatedTce(
     destinationPort: '',
     euaPriceEur: DEFAULT_EUA_EUR,
     vesselValueUsd: DEFAULT_VESSEL_VALUE_USD,
+    ballastDistanceNm: ballast_distance_nm,
+    canalUsd: canal_usd,
   });
   const result = calculateTCE(inputs);
 
@@ -167,6 +172,53 @@ export function computeEstimatedTce(
   };
 }
 
+// ── Suez transit detection (overhaul step 3) ─────────────────────────────────
+// Classify a port into a geographic basin for routing decisions.
+// Returns 'indian' for Indian subcontinent / Persian Gulf / Red Sea,
+// 'eastafrica' for East African coast, 'med' for Mediterranean / Black Sea,
+// 'atlantic' for Atlantic-facing European / N-African ports, 'westafrica' for
+// West African ports (reached via Cape, not Suez), and 'unknown' otherwise.
+type _PortBasin = 'indian' | 'eastafrica' | 'med' | 'atlantic' | 'westafrica' | 'unknown';
+
+function _classifyPortBasin(port: string | null | undefined): _PortBasin {
+  if (!port) return 'unknown';
+  const p = port.toLowerCase().trim();
+  if (/kandla|mundra|mumbai|nhava|chennai|kolkata|karachi|kakinada|kochi|cochin|colombo|tuticorin|bandar.?abb?as?|dubai|abu.?dhabi|fujairah|sohar|muscat|salalah|jebel.?ali|ruwais|jeddah|yanbu|aqaba|djibouti|aden|berbera/.test(p)) return 'indian';
+  if (/mtwara|mombasa|dar.?es.?salaam|tanga|nacala|beira|maputo|quelimane|zanzibar/.test(p)) return 'eastafrica';
+  if (/matadi|boma|pointe.?noire|cotonou|lome|abidjan|dakar|conakry|freetown|banjul|monrovia|tema|lagos|apapa|tincan|bonny|warri|port.?harcourt|douala/.test(p)) return 'westafrica';
+  if (/ravenna|marghera|venice|trieste|genoa|la.?spezia|livorno|naples|taranto|bari|brindisi|catania|palermo|messina|augusta|trapani|pozzallo|bizerte|skikda|oran|algiers|tunis|sfax|bejaia|annaba|casablanca|jorf|safi|tangier|tanger|agadir|barcelona|valencia|algeciras|gibraltar|marseille|toulon|sete|fos|savona|vado|civitavecchia|piraeus|thessaloniki|izmir|aliaga|iskenderun|mersin|antalya|derince|izmit|istanbul|marmara|bandirma|karasu|constanta|varna|burgas|novorossiysk|odessa|odesa|chornomorsk|mykolaiv|kherson|yuzhne|suez|port.?said|alexandria|damietta|limassol|larnaca|haifa|ashdod|beirut|lattakia|tartus/.test(p)) return 'med';
+  if (/rotterdam|amsterdam|antwerp|zeebrugge|ghent|dunkirk|le.?havre|rouen|brest|la.?pallice|bayonne|bilbao|santander|gijon|aviles|vigo|oporto|porto|lisbon|setubal|figueira|hamburg|bremerhaven|bremen|wilhelmshaven|emden|rostock|lubeck|gdansk|gdynia|szczecin|felixstowe|southampton|london|tilbury|teesport|sunderland|newcastle|immingham|grimsby|hull|liverpool|birkenhead|belfast|dublin|greenore|cork|oslo|gothenburg|goteborg|stavanger|bergen|haugesund|halsvik|aarhus|copenhagen|helsingborg|stockholm|helsinki|tallinn|riga|klaipeda/.test(p)) return 'atlantic';
+  return 'unknown';
+}
+
+// A route transits Suez if one port is "east of Suez" (Indian Ocean / East Africa)
+// and the other is "west of Suez" (Mediterranean / Atlantic). West-Africa ports are
+// reached via Cape so they do NOT trigger Suez even when paired with East-Africa.
+function _routeTransitsSuez(portA: string | null | undefined, portB: string | null | undefined): boolean {
+  if (!portA || !portB) return false;
+  const basinA = _classifyPortBasin(portA);
+  const basinB = _classifyPortBasin(portB);
+  const eastOfSuez = new Set<_PortBasin>(['indian', 'eastafrica']);
+  const westOfSuez = new Set<_PortBasin>(['med', 'atlantic']);
+  return (eastOfSuez.has(basinA) && westOfSuez.has(basinB)) ||
+         (eastOfSuez.has(basinB) && westOfSuez.has(basinA));
+}
+
+// Derive approximate net tonnage from DWT (bulker convention: NT ≈ DWT × 0.65).
+const NT_DWT_RATIO = 0.65;
+
+// Quote Suez dues for a leg (laden or ballast). Returns 0 on any error (DB missing, etc.)
+// so the caller gracefully degrades without the exact tariff rather than throwing.
+function _quoteSuezSafe(vesselDwt: number, laden: boolean): number {
+  try {
+    const vesselNt = Math.round(vesselDwt * NT_DWT_RATIO);
+    const quote = quoteSuez({ vesselDwt, vesselNt, vesselType: 'bulker', laden });
+    return typeof quote.totalUsd === 'number' ? quote.totalUsd : 0;
+  } catch {
+    return 0;
+  }
+}
+
 export interface MatchEconomicsInput {
   cargoType: string | null;
   distanceNm: number;
@@ -176,7 +228,7 @@ export interface MatchEconomicsInput {
   consumptionMt: number;
   loadPort: string | null;
   dischargePort: string | null;
-  /** Vessel open position — for ballast leg war-risk. Pass null when unknown (skips ballast premium). */
+  /** Vessel open position — for ballast leg war-risk AND Suez detection. Null → skip ballast canal. */
   vesselOpenPosition?: string | null;
   /** ISO 8601 timestamp; passed in so the result is deterministic/testable. */
   calculatedAt: string;
@@ -188,6 +240,9 @@ export interface MatchEconomicsInput {
    * so existing callers/tests are unaffected.
    */
   resolvedFreight?: FreightRateEstimate | null;
+  /** Ballast reposition distance in nm (open→load port). Enables single-voyage span calculation
+   *  and ballast-leg Suez detection. Unknown → legacy round-trip (backward-compatible). */
+  ballastDistanceNm?: number | null;
 }
 
 /**
@@ -207,6 +262,24 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
 
   const freight =
     input.resolvedFreight ?? estimateFreightRate(input.cargoType, input.distanceNm, input.vesselDwt);
+
+  // ── Canal detection (overhaul step 3) ──────────────────────────────────────
+  // Detect Suez transit for laden and ballast legs using port basin geometry
+  // (no DB required). Quote dues and pass as canalUsd to calculateTCE.
+  let canalUsd = 0;
+  const ladenTransitsSuez = _routeTransitsSuez(input.loadPort, input.dischargePort);
+  if (ladenTransitsSuez && input.vesselDwt > 0) {
+    canalUsd += _quoteSuezSafe(input.vesselDwt, true);
+  }
+  const ballastNm = input.ballastDistanceNm;
+  const ballastOpenPos = input.vesselOpenPosition;
+  if (ballastNm != null && ballastNm > 0 && ballastOpenPos && input.loadPort) {
+    const ballastTransitsSuez = _routeTransitsSuez(ballastOpenPos, input.loadPort);
+    if (ballastTransitsSuez && input.vesselDwt > 0) {
+      canalUsd += _quoteSuezSafe(input.vesselDwt, false);
+    }
+  }
+
   const tce = computeEstimatedTce(
     freight,
     input.distanceNm,
@@ -214,6 +287,8 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
     input.quantityMt,
     input.speedKts,
     input.consumptionMt,
+    ballastNm ?? undefined,
+    canalUsd > 0 ? canalUsd : undefined,
   );
 
   const warLaden = calculateWarRiskPremium({

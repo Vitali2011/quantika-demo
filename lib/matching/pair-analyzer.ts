@@ -778,6 +778,14 @@ export async function analyzePairs(
       speedKts: ecoSpeed,
       balticDayRate: db ? getBalticDayRate(db, ecoDwt) : null,
     });
+    // Ballast reposition distance: open position → load port (overhaul step 2).
+    // Used by buildMatchEconomics for single-voyage span + ballast-leg Suez detection.
+    const openPosition = cfValue(vessel.openPosition);
+    const ballastResult = openPosition && loadPort
+      ? getPortDistance(openPosition, loadPort)
+      : null;
+    const ballastDistanceNm = ballastResult?.nm ?? null;
+
     const econ = buildMatchEconomics({
       cargoType,
       distanceNm: distanceResult.nm,
@@ -787,27 +795,27 @@ export async function analyzePairs(
       consumptionMt: parseConsumption(vessel.consumption),
       loadPort,
       dischargePort,
-      vesselOpenPosition: cfValue(vessel.openPosition),
+      vesselOpenPosition: openPosition,
       calculatedAt: economicsCalcAt,
       resolvedFreight: {
         rate: resolvedFreight.value,
         source: resolvedFreight.source,
         confidence: resolvedFreight.confidence,
       },
+      ballastDistanceNm,
     });
     if (econ) m.economics = econ;
   }
 
-  // ── Economic realism floor (founder profit rule; golden-set GS-shortleg-tce) ──
-  // A surfaced ("worth calling") match must not be a deadfreight pair: a cargo
-  // severely disproportionate to the vessel (low utilisation) — already flagged
-  // "SIZE: …" by applyBallastSizeCap above (utilisation-based, with a part-cargo
-  // exemption — the single source of truth for "deadfreight") — is a commercially
-  // weak match, demoted to manual review (never dropped, just out of the main list).
-  // Keyed off UTILISATION, deliberately NOT absolute TCE: the round-trip model
-  // computes TCE magnitude unreliably (it under/over-values pairs — e.g. a small
-  // ship's bunker is over-estimated — until reposition-aware TCE lands; see
-  // BASELINE-2026-06-06.md), so a $/day floor would falsely demote good pairs.
+  // ── Economic realism floor (founder profit rule; golden-set GS-longballast-kandla) ──
+  // A surfaced ("worth calling") match must clear its vessel-class cash breakeven.
+  // With reposition-aware TCE (overhaul steps 1-3 landed), the $/day figure now
+  // includes ballast leg bunkers + Suez canal dues — making below-breakeven long-ballast
+  // voyages visible. A pair whose true-voyage TCE < class breakeven is demoted to
+  // manual review (never dropped).
+  // Breakevens (conservative floor, $/day): coaster/small ≤$1.5k, handysize ≤$3k,
+  // supra/handymax ≤$5.5k, panamax ≤$7.5k. Unknown DWT → skip floor (conservative).
+  // Legacy: if economics not computed (distance unknown), skip the floor.
   const mainKept: Match[] = [];
   for (const m of mainMatches) {
     const deadfreight = (m.issues ?? []).some((i) => i.startsWith('SIZE:'));
@@ -816,6 +824,25 @@ export async function analyzePairs(
       m.issues = [...(m.issues ?? []), 'Below-scale utilisation (deadfreight) — manual review'];
       lowConfidenceMatches.push(m);
       continue;
+    }
+    const floorTce = m.economics?.tceUsdPerDay;
+    if (typeof floorTce === 'number') {
+      const floorVessel = vessels.find(
+        (v) => v.emailId === m.vesselEmailId && v.itemIndex === m.vesselItemIndex,
+      );
+      const floorDwt = floorVessel ? (cfValue(floorVessel.dwtSummer) ?? 0) : 0;
+      if (floorDwt > 0) {
+        const breakeven = floorDwt <= 15_000 ? 1_500
+          : floorDwt <= 40_000 ? 3_000
+          : floorDwt <= 65_000 ? 5_500
+          : 7_500;
+        if (floorTce < breakeven) {
+          m.matchLevel = 'weak';
+          m.issues = [...(m.issues ?? []), 'Below-breakeven economics (true-voyage TCE) — manual review'];
+          lowConfidenceMatches.push(m);
+          continue;
+        }
+      }
     }
     mainKept.push(m);
   }

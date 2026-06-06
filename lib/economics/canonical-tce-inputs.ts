@@ -16,6 +16,11 @@ export interface CanonicalTceInputArgs {
   destinationPort: string;
   euaPriceEur?: number;
   vesselValueUsd?: number;
+  /** Ballast reposition distance (open→load port, nm). When provided, uses single-voyage
+   *  span (ballast + laden + 2 port days) instead of legacy round-trip. (overhaul step 2.) */
+  ballastDistanceNm?: number;
+  /** Pre-computed canal dues (USD) — Suez/Panama/Bosporus for both legs combined. */
+  canalUsd?: number;
 }
 
 export function buildCanonicalTceInputs(args: CanonicalTceInputArgs): VoyageInput {
@@ -27,7 +32,19 @@ export function buildCanonicalTceInputs(args: CanonicalTceInputArgs): VoyageInpu
   // is also caught as implausible by resolveConsMtPerDay (> class × 1.8). Missing/zero
   // → class estimate from DWT. (economics-overhaul step 1.)
   const safeCons = resolveConsMtPerDay(args.consumptionMtPerDay, safeDwt);
-  const durationDays = estimateRoundTripDays(safeDist, safeSpeed);
+
+  // Voyage span: if ballastDistanceNm is known, use single-voyage (ballast+laden+2 port days)
+  // so the unpaid reposition leg is reflected in the TCE denominator (overhaul step 2, Option A).
+  // Unknown ballast → legacy round-trip (backward-compatible for all existing callers).
+  let durationDays: number;
+  if (args.ballastDistanceNm != null && args.ballastDistanceNm > 0 && safeDist > 0) {
+    const ballastDays = args.ballastDistanceNm / (safeSpeed * 24);
+    const ladenDays = safeDist / (safeSpeed * 24);
+    durationDays = ballastDays + ladenDays + 2;
+  } else {
+    durationDays = estimateRoundTripDays(safeDist, safeSpeed);
+  }
+
   return {
     vessel: {
       dwt: safeDwt,
@@ -47,5 +64,6 @@ export function buildCanonicalTceInputs(args: CanonicalTceInputArgs): VoyageInpu
     bunkerPriceUsdPerMt: args.bunkerPriceUsdPerMt,
     euaPriceEur: args.euaPriceEur ?? 0,
     durationDays,
+    canalUsd: args.canalUsd,
   };
 }
