@@ -21,6 +21,10 @@ export const GoldenRecordSchema = z.object({
       qtyMinT: z.number().nullable().optional(), qtyMaxT: z.number().nullable().optional(),
       cargoType: z.string().optional(),            // engine CargoType MODE: BULK|BREAK_BULK|FCL|… (commodity → cargoDescription, default BULK)
       loadPort: z.string(), dischPort: z.string(),
+      loadCountry: z.string().nullable().optional(),   // for trading-restriction gate (e.g. Ukraine, EU member)
+      dischCountry: z.string().nullable().optional(),
+      volumeCbm: z.number().nullable().optional(),     // cubic/stowage-factor overflow test (break-bulk/steel)
+      stowageFactor: z.number().nullable().optional(),
       laycanStart: z.string(), laycanEnd: z.string(), sourceEmail: z.string(),
     }),
     vessel: z.object({
@@ -28,6 +32,8 @@ export const GoldenRecordSchema = z.object({
       dwccT: z.number().nullable().optional(),     // cargo capacity (weight-range vs capacity test)
       geared: z.boolean().optional(),              // has cranes (gear-gate for bagged/steel cargo)
       craneCapacityT: z.number().nullable().optional(),
+      restrictions: z.array(z.string()).optional(),    // stated trading limits (e.g. "No Ukraine", "no EU") — restriction gate
+      grainCapacityCbm: z.number().nullable().optional(), // cubic capacity for volume-fit
       speedKn: z.number().nullable(), consumptionT: z.number().nullable(),
       openPort: z.string(), openDate: z.string(), sourceEmail: z.string(),
     }),
@@ -47,6 +53,13 @@ export const GoldenRecordSchema = z.object({
     tceSign: z.enum(['positive', 'negative']).optional(),
     verdictNotGood: z.boolean().optional(),
     weightNotMax: z.boolean().optional(),
+    // gates from the 3-round matching-principles research (see matching-principles-research.md)
+    tradingRestrictionEnforced: z.boolean().optional(), // vessel's stated "no X" → must BLOCK a cargo to X
+    volumeFits: z.boolean().optional(),                 // cargo cubic (vol/SF) must fit hold capacity, not just weight
+    capacityWithinDwcc: z.boolean().optional(),         // qty (correct point of range) ≤ DWCC, voyage-adjusted
+    spotNotIdealised: z.boolean().optional(),           // spot/prompt vessel w/o real position must not score as ideal
+    portResolved: z.boolean().optional(),               // unknown port must flag, not score blind on null distance
+    laycanFeasible: z.boolean().optional(),             // vessel can reach load port by cancelling date
   }),
   provenance: z.string(),
 });
