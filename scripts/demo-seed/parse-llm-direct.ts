@@ -35,7 +35,10 @@ import { truncateText } from '@/lib/utils';
 
 const DEFAULT_RAW = '.private/raw-emails';
 const DEFAULT_CLASSIFY_BATCH = 15;
-const LLM_TIMEOUT_MS = 120_000;
+// Per-call LLM timeout. claude-cli nested in a configured Claude Code env carries
+// ~250-350s/call boot+cache overhead, so a local seed run needs a higher ceiling —
+// override with SEED_LLM_TIMEOUT_MS (default 120s preserved for API providers/CI).
+const LLM_TIMEOUT_MS = Number(process.env.SEED_LLM_TIMEOUT_MS) || 120_000;
 
 let SEED_MODEL = 'claude-opus-4-8';
 // Per-call USD ceiling for claude-cli. Each nested `claude --print` pays ~$0.12

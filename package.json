@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "test": "jest",
+    "golden": "jest --testPathPatterns 'lib/matching/__tests__/golden-set/.*\\.test\\.ts'",
     "test:regression": "jest --testPathPattern=tests/regression --forceExit",
     "test:regression:prod": "jest --testPathPattern='tests/regression/test-tc' --silent",
     "test:smoke": "playwright test --config=__tests__/e2e/playwright.config.smoke.ts",
