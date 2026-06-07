@@ -407,7 +407,7 @@ export function listMatches(db: Database.Database, opts: ListMatchesOptions): St
 
   const allowedSortBy =
     sortBy === 'created_at' ? 'created_at'
-    : sortBy === 'fit_percent' ? (hasFitColumns(db) ? 'COALESCE(fit_percent, -1)' : (() => { throw new Error('fit_percent sort requested but fit_percent column is absent — run migration 042'); })())
+    : sortBy === 'fit_percent' ? (hasFitColumns(db) ? 'COALESCE(fit_percent, -1)' : (console.warn('[matches-repository] fit_percent sort requested but column absent — falling back to score (run migration 042)'), 'score'))
     : 'score';
   const allowedSortDir = sortDir === 'asc' ? 'ASC' : 'DESC';
 
