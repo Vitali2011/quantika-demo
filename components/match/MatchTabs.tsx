@@ -75,7 +75,7 @@ export function MatchTabs({ match, vessel, cargo, cargoEmailId, matchDbId, store
             commissionPercent={cargo?.commissionPercent}
             vessel={vessel}
             cargo={cargo}
-            routeDistanceNm={match.readiness?.distanceNm ?? storedDistanceNm ?? null}
+            routeDistanceNm={storedDistanceNm ?? null}
             matchDbId={matchDbId}
             storedFreightRate={storedFreightRate}
             freightRateSource={freightRateSource}

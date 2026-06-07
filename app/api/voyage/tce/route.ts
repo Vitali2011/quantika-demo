@@ -362,6 +362,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     daysInHra: data.daysInHra,
     canalUsd,
     daUsd,
+    excludeWarRiskFromDailyTce: true,
   };
 
   const result = calculateTCE(tceInput);

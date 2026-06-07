@@ -261,6 +261,7 @@ function computeMatchEconomicsFor(
   vessels: readonly ParsedVessel[],
   db: Database.Database | null | undefined,
   calcAt: string,
+  bunkerPriceUsdPerMt?: number,
 ): EconomicsResult | undefined {
   const cargo = cargos.find(
     (c) => c.emailId === m.cargoEmailId && c.itemIndex === m.cargoItemIndex,
@@ -325,6 +326,7 @@ function computeMatchEconomicsFor(
     },
     ballastDistanceNm,
     daUsd,
+    bunkerPriceUsdPerMt,
   });
 
   return econ ?? undefined;
@@ -338,7 +340,7 @@ export async function analyzePairs(
   cargos: ParsedCargo[],
   vessels: ParsedVessel[],
   aiScorer: AiScorer,
-  options?: { refYear?: number; today?: Date; db?: Database.Database },
+  options?: { refYear?: number; today?: Date; db?: Database.Database; bunkerPriceUsdPerMt?: number },
 ): Promise<AnalyzePairsResult> {
   if (cargos.length === 0 || vessels.length === 0) {
     return { matches: [], lowConfidenceMatches: [], insufficientData: [], blockedMatches: [] };
@@ -348,6 +350,7 @@ export async function analyzePairs(
   const currentYear = today.getUTCFullYear();
   const refYear = options?.refYear ?? currentYear;
   const db = options?.db;
+  const bunkerPriceUsdPerMt = options?.bunkerPriceUsdPerMt;
 
   // O(n²) pair analysis loop
   const analyses: PairAnalysis[] = [];
@@ -770,7 +773,7 @@ export async function analyzePairs(
       const analysis = analysisMap.get(
         pairKey(m.cargoEmailId, m.cargoItemIndex, m.vesselEmailId, m.vesselItemIndex),
       );
-      const econ = computeMatchEconomicsFor(m, cargos, vessels, db, economicsCalcAt);
+      const econ = computeMatchEconomicsFor(m, cargos, vessels, db, economicsCalcAt, bunkerPriceUsdPerMt);
       if (econ) m.economics = econ;
       const imo = vessel.imo;
       const detentionCount = db && imo

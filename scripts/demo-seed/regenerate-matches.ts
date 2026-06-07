@@ -42,6 +42,7 @@ import { seedCharterersWithDb } from '../knowledge/seeds/seed-charterers';
 import { seedPscHistoryWithDb } from '../knowledge/seeds/seed-psc-history';
 import { seedPortDa, type BaselinePort } from '../seed-port-da';
 import { lookupCii } from '@/lib/imo/cii-lookup';
+import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
 
 // ── CII hydration helper ──────────────────────────────────────────────────────
 
@@ -489,7 +490,10 @@ async function main() {
   console.log(`[regen] CII hydrated for ${vessels.filter((v) => v.ciiRating != null).length}/${vessels.length} vessels`);
 
   // ── 2. Run the real engine (no LLM — deterministic gates + sweep + fit) ──
-  const result = await analyzePairs(cargos, vessels, async () => [], { refYear, today, db });
+  const bunkerRow = getLatestBunkerPrice(db, 'NLRTM', 'VLSFO');
+  const bunkerPriceUsdPerMt = bunkerRow?.price_usd_per_mt ?? 600;
+  console.log(`[regen] bunker price: ${bunkerPriceUsdPerMt} USD/mt (${bunkerRow ? 'live' : 'fallback'})`);
+  const result = await analyzePairs(cargos, vessels, async () => [], { refYear, today, db, bunkerPriceUsdPerMt });
 
   // ── 3. Dedup each bucket to one match per (cargo email, vessel email) pair,
   //        keeping the highest fit (then score). Drop cleanliness blockSend from main.
