@@ -58,6 +58,31 @@ export async function hydrateCiiRatings(vessels: ParsedVessel[]): Promise<void> 
   }
 }
 
+// ── Lane #1: invalidate stale demo sessions after regen ──────────────────────
+
+/**
+ * After a regen replaces the master/sentinel buckets, the pre-regen per-session
+ * copies + their session blobs are stale. Wipe both so the next login re-hydrates
+ * from the fresh NULL bucket (buildDemoSessionBlob reads only `WHERE user_id IS NULL`).
+ * deleteOrphanSessionMatches can't help — demo sessions have a ~30-day TTL, so they're
+ * never "orphans" during the regen window.
+ *
+ * Founder decision: invalidate ALL sessions. demo-seed.db (== SESSIONS_DB_PATH in
+ * DEMO_MODE) holds only demo sessions; no real/non-demo sessions live here.
+ */
+export function invalidateLiveSessions(db: Database.Database): void {
+  const matchDel = db
+    .prepare(
+      `DELETE FROM matches WHERE user_id IS NOT NULL
+         AND user_id NOT IN ('__demo_review__','__demo_insufficient__')`,
+    )
+    .run();
+  const sessionDel = db.prepare(`DELETE FROM sessions`).run();
+  console.log(
+    `[regen] invalidated stale demo state · cleared ${matchDel.changes} session match copies · expired ${sessionDel.changes} sessions`,
+  );
+}
+
 // ── Phase 1: seed reference tables into the regen's own db handle ────────────
 
 /**
@@ -667,6 +692,10 @@ async function main() {
     console.log(`[regen] deleted ${del.changes} old seed rows · wrote main=${a} review=${b} insufficient=${c}`);
   });
   tx();
+
+  // Lane #1: wipe stale per-session copies + session blobs so the next login
+  // re-hydrates from the fresh master bucket just written above.
+  invalidateLiveSessions(db);
 
   // verify
   const v = db.prepare(`SELECT COUNT(*) n, SUM(fit_percent IS NOT NULL) withfit FROM matches WHERE user_id IS NULL`).get() as { n: number; withfit: number };
