@@ -163,3 +163,40 @@ describe('computeVesselVetting — score ordering', () => {
     expect(bad.score).toBeLessThan(unknownVessel.score);
   });
 });
+
+describe('computeVesselVetting — PSC sub-factor (optional)', () => {
+  it('detentionCount omitted → still 5 factors (backward-compatible)', () => {
+    const result = computeVesselVetting(makeVesselFields(), { refYear: REF_YEAR });
+    expect(result.factors).toHaveLength(5);
+    expect(result.factors.some((f) => f.key === 'psc')).toBe(false);
+  });
+
+  it('detentionCount=0 → 6 factors, psc verdict ok, no badge', () => {
+    const result = computeVesselVetting(makeVesselFields(), { refYear: REF_YEAR, detentionCount: 0 });
+    expect(result.factors).toHaveLength(6);
+    const psc = result.factors.find((f) => f.key === 'psc');
+    expect(psc?.verdict).toBe('ok');
+    expect(result.badges.some((b) => /detention|PSC/i.test(b))).toBe(false);
+  });
+
+  it('detentionCount=1 → psc caution + badge', () => {
+    const result = computeVesselVetting(makeVesselFields(), { refYear: REF_YEAR, detentionCount: 1 });
+    const psc = result.factors.find((f) => f.key === 'psc');
+    expect(psc?.verdict).toBe('caution');
+    expect(result.badges.some((b) => /detention|PSC/i.test(b))).toBe(true);
+  });
+
+  it('detentionCount>=2 → psc warn, lower score than caution', () => {
+    const warn = computeVesselVetting(makeVesselFields(), { refYear: REF_YEAR, detentionCount: 2 });
+    const caution = computeVesselVetting(makeVesselFields(), { refYear: REF_YEAR, detentionCount: 1 });
+    const psc = warn.factors.find((f) => f.key === 'psc');
+    expect(psc?.verdict).toBe('warn');
+    expect(warn.score).toBeLessThan(caution.score);
+  });
+
+  it('a detention lowers overall vetting vs a clean PSC record', () => {
+    const clean = computeVesselVetting(makeVesselFields({ flag: 'Marshall Islands', classSociety: 'DNV', built: 2018, pandi: 'Gard', ciiRating: 'B' }), { refYear: REF_YEAR, detentionCount: 0 });
+    const detained = computeVesselVetting(makeVesselFields({ flag: 'Marshall Islands', classSociety: 'DNV', built: 2018, pandi: 'Gard', ciiRating: 'B' }), { refYear: REF_YEAR, detentionCount: 2 });
+    expect(detained.score).toBeLessThan(clean.score);
+  });
+});
