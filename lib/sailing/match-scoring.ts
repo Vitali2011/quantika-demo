@@ -246,8 +246,9 @@ export interface BallastSizeCapInput {
 export function applyBallastSizeCap(input: BallastSizeCapInput): Match {
   const { match, distanceNm, vesselDwt, vesselDwcc, cargoWeightMax, cargoDescription } = input;
 
-  // Only a 'good'-tier match (score ≥ 70) can be capped; never raise a lower tier.
-  if (match.score < 70) return match;
+  // Only a 'good'-tier match can be capped; never raise a lower tier.
+  // matchLevel is now derived from fitPercent (not score), so use matchLevel as the guard.
+  if (match.matchLevel !== 'good') return match;
 
   const newIssues: string[] = [];
 

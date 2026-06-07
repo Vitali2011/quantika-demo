@@ -57,6 +57,9 @@ jest.mock('@/lib/sailing/match-scoring', () => ({
   deriveMatchLevel: jest.fn().mockImplementation((score: number) =>
     score > 70 ? 'good' : score > 40 ? 'possible' : 'weak',
   ),
+  deriveMatchLevelFromFit: jest.fn().mockImplementation((fit: number) =>
+    fit >= 70 ? 'good' : fit >= 60 ? 'possible' : 'weak',
+  ),
   applyBallastSizeCap: jest.fn().mockImplementation((input) => input.match),
   isPartCargo: jest.fn().mockReturnValue(false),
   BALLAST_GOOD_MAX_NM: { handysize: 1500, supramax: 2000, panamax: 2500, capesize: 4000 },
