@@ -317,4 +317,25 @@ describe('buildMatchEconomics', () => {
     expect(econ!.breakdown.warRiskPremium).toBeGreaterThan(0);
     expect(econ!.breakdown.warRiskBreakdown!.totalPremiumUsd).toBeGreaterThan(0);
   });
+
+  it('daUsd lowers tceUsdPerDay and raises totalUsd vs zero-DA baseline', () => {
+    const baseCase = {
+      cargoType: 'BULK',
+      distanceNm: 1200,
+      vesselDwt: 30000,
+      quantityMt: 28000,
+      speedKts: 12,
+      consumptionMt: 22,
+      loadPort: 'constanta',
+      dischargePort: 'alexandria',
+      calculatedAt: '2026-06-07T00:00:00.000Z',
+    };
+    const noDa = buildMatchEconomics({ ...baseCase });
+    const withDa = buildMatchEconomics({ ...baseCase, daUsd: 40000 });
+    expect(noDa).not.toBeNull();
+    expect(withDa).not.toBeNull();
+    // DA is a cost → total goes up, per-day TCE goes down.
+    expect(withDa!.totalUsd).toBeGreaterThan(noDa!.totalUsd);
+    expect(withDa!.tceUsdPerDay!).toBeLessThan(noDa!.tceUsdPerDay!);
+  });
 });

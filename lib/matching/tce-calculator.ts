@@ -146,6 +146,7 @@ export function computeEstimatedTce(
   consumption_mt_per_day: number = DEFAULT_CONSUMPTION_MT_PER_DAY,
   ballast_distance_nm?: number,
   canal_usd?: number,
+  da_usd?: number,
 ): TceEstimate {
   const inputs = buildCanonicalTceInputs({
     vesselDwt: vessel_dwt,
@@ -161,6 +162,7 @@ export function computeEstimatedTce(
     vesselValueUsd: DEFAULT_VESSEL_VALUE_USD,
     ballastDistanceNm: ballast_distance_nm,
     canalUsd: canal_usd,
+    daUsd: da_usd,
   });
   const result = calculateTCE(inputs);
 
@@ -243,6 +245,8 @@ export interface MatchEconomicsInput {
   /** Ballast reposition distance in nm (open→load port). Enables single-voyage span calculation
    *  and ballast-leg Suez detection. Unknown → legacy round-trip (backward-compatible). */
   ballastDistanceNm?: number | null;
+  /** Pre-resolved port disbursement total (USD), load + discharge. Unknown/zero → omitted. */
+  daUsd?: number | null;
 }
 
 /**
@@ -289,6 +293,7 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
     input.consumptionMt,
     ballastNm ?? undefined,
     canalUsd > 0 ? canalUsd : undefined,
+    input.daUsd != null && input.daUsd > 0 ? input.daUsd : undefined,
   );
 
   const warLaden = calculateWarRiskPremium({
