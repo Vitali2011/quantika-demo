@@ -160,6 +160,18 @@ export function deriveMatchLevel(score: number): MatchLevel {
   return 'weak';
 }
 
+/**
+ * Derive matchLevel from fitPercent (spec §3.4).
+ * Thresholds: fit ≥70 → 'good'; fit ≥60 → 'possible'; else 'weak'.
+ * Matches the main floor (fit ≥60) and surfaces the broker-facing view.
+ * Safety demotions (ballast cap, deadfreight, floor) run after and may lower the level.
+ */
+export function deriveMatchLevelFromFit(fit: number): MatchLevel {
+  if (fit >= 70) return 'good';
+  if (fit >= 60) return 'possible';
+  return 'weak';
+}
+
 // ────────────────────────────────────────────────────────────────────────────
 // Ballast + size realism cap (Wave C — levers 3 + 4, handover 2026-05-30)
 //

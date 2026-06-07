@@ -12,7 +12,7 @@ import type {
 import { cfValue, isRange } from '@/lib/types';
 import { computeMatchConfidence } from '@/lib/confidence';
 import { calculateReadinessGap, detectSpot } from '@/lib/sailing/readiness-gap';
-import { applyReadinessScoring, computeScoreBreakdown, deriveMatchLevel, applyBallastSizeCap } from '@/lib/sailing/match-scoring';
+import { applyReadinessScoring, computeScoreBreakdown, deriveMatchLevel, applyBallastSizeCap, deriveMatchLevelFromFit } from '@/lib/sailing/match-scoring';
 import { computeFitBreakdown } from '@/lib/sailing/fit-breakdown';
 import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
 import { runHardFilters } from '@/lib/sailing/match-filters';
@@ -771,6 +771,8 @@ export async function analyzePairs(
       });
       m.fitPercent = fb.fitPercent;
       m.fitBreakdown = fb;
+      // Derive matchLevel from fitPercent (spec §3.4); safety demotions below may lower it.
+      m.matchLevel = deriveMatchLevelFromFit(m.fitPercent);
     }
     // ── Hold cleanliness (L5C-matrix) ─────────────────────────────────────────
     if (cargo && vessel) {
@@ -778,7 +780,7 @@ export async function analyzePairs(
     }
   }
 
-  matches.sort((a, b) => b.score - a.score);
+  matches.sort((a, b) => (b.fitPercent ?? 0) - (a.fitPercent ?? 0));
 
   // ── Realism partition (handover 2026-05-30, levers 1 + 2 + 5) ──────────────
   // Split the scored, non-blocked pairs into three buckets so the main list
