@@ -41,11 +41,11 @@ describe('seedPortDa — verification', () => {
     await seedPortDa(db, baseline, mockLlmCaller);
   });
 
-  it('has exactly 39 unique port_codes after seed', () => {
+  it('has exactly 54 unique port_codes after seed', () => {
     const row = db.prepare<[], { count: number }>(
       'SELECT COUNT(DISTINCT port_code) AS count FROM port_da_estimates',
     ).get();
-    expect(row!.count).toBe(39);
+    expect(row!.count).toBe(54);
   });
 
   it('all rows have confidence within {verified, estimated, low}', () => {
