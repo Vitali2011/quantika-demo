@@ -336,6 +336,6 @@ describe('buildMatchEconomics', () => {
     expect(withDa).not.toBeNull();
     // DA is a cost → total goes up, per-day TCE goes down.
     expect(withDa!.totalUsd).toBeGreaterThan(noDa!.totalUsd);
-    expect(withDa!.tceUsdPerDay).toBeLessThan(noDa!.tceUsdPerDay);
+    expect(withDa!.tceUsdPerDay!).toBeLessThan(noDa!.tceUsdPerDay!);
   });
 });
