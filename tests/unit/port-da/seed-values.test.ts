@@ -144,3 +144,51 @@ describe('spec-betafix-03 — voyage-calculator integration', () => {
     expect(result.breakdown.da_usd).toBe(0);
   });
 });
+
+describe('wave4-portda — 15 new demo ports + small-vessel bracket coverage', () => {
+  let db: Database.Database;
+
+  beforeAll(async () => {
+    db = new Database(':memory:');
+    runMigrations(db, allMigrations);
+    await seedPortDa(db, baseline, mockLlmCaller);
+  });
+
+  afterAll(() => db.close());
+
+  it('TRALI at 8 000 DWT hits small-vessel bracket with total ~30 800', () => {
+    const r = getPortDa({ portCode: 'TRALI', vesselDwt: 8000 }, db);
+    expect(r).not.toBeNull();
+    expect(r!.totalFixedUsd).toBe(30_800);
+  });
+
+  it('ROCND at 25 000 DWT hits handysize bracket with total 66 000', () => {
+    const r = getPortDa({ portCode: 'ROCND', vesselDwt: 25000 }, db);
+    expect(r).not.toBeNull();
+    expect(r!.totalFixedUsd).toBe(66_000);
+  });
+
+  it('GBLIV at 50 000 DWT hits large bracket with total 129 000', () => {
+    const r = getPortDa({ portCode: 'GBLIV', vesselDwt: 50000 }, db);
+    expect(r).not.toBeNull();
+    expect(r!.totalFixedUsd).toBe(129_000);
+  });
+
+  it('seeded DB has 54 distinct port_codes after adding 15 new ports', () => {
+    const row = db.prepare<[], { count: number }>(
+      'SELECT COUNT(DISTINCT port_code) AS count FROM port_da_estimates',
+    ).get();
+    expect(row!.count).toBe(54);
+  });
+
+  it('all new ports have a small-vessel bracket (1 000–9 999)', () => {
+    const newPorts = ['TRALI','TRMAR','ROCND','GRTHI','ITMNF','TRISK',
+                      'UAREN','UAODS','UAIZM','BGVAR','SOBBO','GBLIV',
+                      'ITRAN','GEPTI','GEBUS'];
+    for (const code of newPorts) {
+      const r = getPortDa({ portCode: code, vesselDwt: 5000 }, db);
+      expect(r).not.toBeNull();
+      expect(r!.totalFixedUsd).toBeGreaterThan(0);
+    }
+  });
+});

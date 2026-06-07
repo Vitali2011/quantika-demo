@@ -4,6 +4,17 @@
     "port_name": "Lagos Apapa",
     "brackets": [
       {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 27500,
+        "pilotage_usd": 14900,
+        "tugs_usd": 12700,
+        "stevedoring_usd_per_mt": 9.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
         "port_dues_usd": 50000,
@@ -32,6 +43,17 @@
     "port_name": "Port of Mersin",
     "brackets": [
       {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 15100,
+        "pilotage_usd": 8200,
+        "tugs_usd": 6900,
+        "stevedoring_usd_per_mt": 6.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
         "port_dues_usd": 27500,
@@ -59,6 +81,17 @@
     "port_code": "AEJEA",
     "port_name": "Jebel Ali",
     "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 21400,
+        "pilotage_usd": 11600,
+        "tugs_usd": 9800,
+        "stevedoring_usd_per_mt": 6.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
@@ -121,6 +154,17 @@
     "port_name": "Khalifa Port",
     "brackets": [
       {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 19800,
+        "pilotage_usd": 10700,
+        "tugs_usd": 9100,
+        "stevedoring_usd_per_mt": 5.8,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
         "port_dues_usd": 36000,
@@ -148,6 +192,17 @@
     "port_code": "SAJED",
     "port_name": "Jeddah Islamic Port",
     "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 18700,
+        "pilotage_usd": 10100,
+        "tugs_usd": 8600,
+        "stevedoring_usd_per_mt": 5.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
@@ -210,6 +265,17 @@
     "port_name": "King Abdul Aziz Port Dammam",
     "brackets": [
       {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 17000,
+        "pilotage_usd": 9200,
+        "tugs_usd": 7900,
+        "stevedoring_usd_per_mt": 5.2,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
         "port_dues_usd": 31000,
@@ -237,6 +303,17 @@
     "port_code": "OMSOH",
     "port_name": "Port of Sohar",
     "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 16000,
+        "pilotage_usd": 8600,
+        "tugs_usd": 7300,
+        "stevedoring_usd_per_mt": 5.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
@@ -266,6 +343,17 @@
     "port_name": "Port of Salalah",
     "brackets": [
       {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 15100,
+        "pilotage_usd": 8200,
+        "tugs_usd": 6900,
+        "stevedoring_usd_per_mt": 4.8,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
         "port_dues_usd": 27500,
@@ -293,6 +381,17 @@
     "port_code": "JOAQJ",
     "port_name": "Port of Aqaba",
     "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 13800,
+        "pilotage_usd": 7400,
+        "tugs_usd": 6300,
+        "stevedoring_usd_per_mt": 4.6,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
@@ -322,6 +421,17 @@
     "port_name": "Alexandria",
     "brackets": [
       {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 15100,
+        "pilotage_usd": 8200,
+        "tugs_usd": 6900,
+        "stevedoring_usd_per_mt": 4.4,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
         "port_dues_usd": 27500,
@@ -349,6 +459,17 @@
     "port_code": "EGPSD",
     "port_name": "Port Said",
     "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 14300,
+        "pilotage_usd": 7700,
+        "tugs_usd": 6600,
+        "stevedoring_usd_per_mt": 4.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
@@ -378,6 +499,17 @@
     "port_name": "Port of Beirut",
     "brackets": [
       {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 13200,
+        "pilotage_usd": 7200,
+        "tugs_usd": 6100,
+        "stevedoring_usd_per_mt": 4.2,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
         "port_dues_usd": 24000,
@@ -405,6 +537,17 @@
     "port_code": "GHTEM",
     "port_name": "Tema Port",
     "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 19200,
+        "pilotage_usd": 10400,
+        "tugs_usd": 8900,
+        "stevedoring_usd_per_mt": 6.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
@@ -434,6 +577,17 @@
     "port_name": "Tin Can Island",
     "brackets": [
       {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 26100,
+        "pilotage_usd": 14100,
+        "tugs_usd": 12000,
+        "stevedoring_usd_per_mt": 8.8,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
         "port_dues_usd": 47500,
@@ -461,6 +615,17 @@
     "port_code": "BJCOO",
     "port_name": "Port of Cotonou",
     "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 17900,
+        "pilotage_usd": 9700,
+        "tugs_usd": 8200,
+        "stevedoring_usd_per_mt": 6.3,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
@@ -490,6 +655,17 @@
     "port_name": "Port of Dakar",
     "brackets": [
       {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 17000,
+        "pilotage_usd": 9200,
+        "tugs_usd": 7900,
+        "stevedoring_usd_per_mt": 6.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
         "port_dues_usd": 31000,
@@ -517,6 +693,17 @@
     "port_code": "CIABJ",
     "port_name": "Port of Abidjan",
     "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 17900,
+        "pilotage_usd": 9700,
+        "tugs_usd": 8200,
+        "stevedoring_usd_per_mt": 6.1,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
@@ -546,6 +733,17 @@
     "port_name": "Pointe-Noire",
     "brackets": [
       {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 19200,
+        "pilotage_usd": 10400,
+        "tugs_usd": 8900,
+        "stevedoring_usd_per_mt": 6.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
         "port_dues_usd": 35000,
@@ -573,6 +771,17 @@
     "port_code": "AOLAD",
     "port_name": "Port of Luanda",
     "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 21400,
+        "pilotage_usd": 11600,
+        "tugs_usd": 9800,
+        "stevedoring_usd_per_mt": 7.2,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
@@ -602,6 +811,17 @@
     "port_name": "Walvis Bay",
     "brackets": [
       {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 15100,
+        "pilotage_usd": 8200,
+        "tugs_usd": 6900,
+        "stevedoring_usd_per_mt": 5.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
         "port_dues_usd": 27500,
@@ -629,6 +849,17 @@
     "port_code": "CMDLA",
     "port_name": "Port of Douala",
     "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 19800,
+        "pilotage_usd": 10700,
+        "tugs_usd": 9100,
+        "stevedoring_usd_per_mt": 7.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
@@ -658,6 +889,17 @@
     "port_name": "Port of Genoa",
     "brackets": [
       {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 25300,
+        "pilotage_usd": 13600,
+        "tugs_usd": 11700,
+        "stevedoring_usd_per_mt": 8.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
         "port_dues_usd": 46000,
@@ -685,6 +927,17 @@
     "port_code": "ESALG",
     "port_name": "Port of Algeciras",
     "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 22600,
+        "pilotage_usd": 12200,
+        "tugs_usd": 10400,
+        "stevedoring_usd_per_mt": 7.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
@@ -714,6 +967,17 @@
     "port_name": "Port of Piraeus",
     "brackets": [
       {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 21400,
+        "pilotage_usd": 11600,
+        "tugs_usd": 9800,
+        "stevedoring_usd_per_mt": 7.2,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
         "port_dues_usd": 39000,
@@ -741,6 +1005,17 @@
     "port_code": "ESVLC",
     "port_name": "Port of Valencia",
     "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 23400,
+        "pilotage_usd": 12700,
+        "tugs_usd": 10700,
+        "stevedoring_usd_per_mt": 7.8,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
@@ -770,6 +1045,17 @@
     "port_name": "Port of Barcelona",
     "brackets": [
       {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 24200,
+        "pilotage_usd": 13100,
+        "tugs_usd": 11100,
+        "stevedoring_usd_per_mt": 8.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
         "port_dues_usd": 44000,
@@ -797,6 +1083,17 @@
     "port_code": "FRMRS",
     "port_name": "Port of Marseille",
     "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 24800,
+        "pilotage_usd": 13400,
+        "tugs_usd": 11400,
+        "stevedoring_usd_per_mt": 8.2,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
@@ -826,6 +1123,17 @@
     "port_name": "Port of Trieste",
     "brackets": [
       {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 23400,
+        "pilotage_usd": 12700,
+        "tugs_usd": 10700,
+        "stevedoring_usd_per_mt": 7.9,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
         "port_dues_usd": 42500,
@@ -853,6 +1161,17 @@
     "port_code": "CYLMS",
     "port_name": "Limassol",
     "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 17000,
+        "pilotage_usd": 9200,
+        "tugs_usd": 7900,
+        "stevedoring_usd_per_mt": 6.2,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
@@ -882,6 +1201,17 @@
     "port_name": "Malta Marsaxlokk",
     "brackets": [
       {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 16500,
+        "pilotage_usd": 8900,
+        "tugs_usd": 7600,
+        "stevedoring_usd_per_mt": 6.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
         "port_dues_usd": 30000,
@@ -909,6 +1239,17 @@
     "port_code": "NLRTM",
     "port_name": "Port of Rotterdam",
     "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 24800,
+        "pilotage_usd": 13400,
+        "tugs_usd": 11400,
+        "stevedoring_usd_per_mt": 7.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
@@ -971,6 +1312,17 @@
     "port_name": "Port of Antwerp",
     "brackets": [
       {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 23400,
+        "pilotage_usd": 12700,
+        "tugs_usd": 10700,
+        "stevedoring_usd_per_mt": 7.4,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
         "port_dues_usd": 42500,
@@ -1032,6 +1384,17 @@
     "port_name": "Port of Durban",
     "brackets": [
       {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 20600,
+        "pilotage_usd": 11100,
+        "tugs_usd": 9500,
+        "stevedoring_usd_per_mt": 6.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
         "port_dues_usd": 37500,
@@ -1059,6 +1422,17 @@
     "port_code": "SGSIN",
     "port_name": "Port of Singapore",
     "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 19200,
+        "pilotage_usd": 10400,
+        "tugs_usd": 8900,
+        "stevedoring_usd_per_mt": 6.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
@@ -1121,6 +1495,17 @@
     "port_name": "Suez Port",
     "brackets": [
       {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 13800,
+        "pilotage_usd": 7400,
+        "tugs_usd": 6300,
+        "stevedoring_usd_per_mt": 4.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
         "port_dues_usd": 25000,
@@ -1148,6 +1533,17 @@
     "port_code": "AEDXB",
     "port_name": "Port Rashid Dubai",
     "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 16500,
+        "pilotage_usd": 8900,
+        "tugs_usd": 7600,
+        "stevedoring_usd_per_mt": 5.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
@@ -1177,6 +1573,17 @@
     "port_name": "Aqaba (alt code)",
     "brackets": [
       {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 12400,
+        "pilotage_usd": 6700,
+        "tugs_usd": 5700,
+        "stevedoring_usd_per_mt": 4.4,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
         "port_dues_usd": 22500,
@@ -1205,6 +1612,17 @@
     "port_name": "Port of Misurata",
     "brackets": [
       {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 16500,
+        "pilotage_usd": 8900,
+        "tugs_usd": 7600,
+        "stevedoring_usd_per_mt": 5.8,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
         "port_dues_usd": 30000,
@@ -1232,6 +1650,17 @@
     "port_code": "AUPHE",
     "port_name": "Port Hedland",
     "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 49500,
+        "pilotage_usd": 26400,
+        "tugs_usd": 22600,
+        "stevedoring_usd_per_mt": 3.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
       {
         "vessel_dwt_min": 65001,
         "vessel_dwt_max": 90000,
@@ -1264,6 +1693,591 @@
         "cargo_type": "general",
         "confidence": "estimated",
         "source": "broker-research-2026-05"
+      }
+    ]
+  },
+  {
+    "port_code": "TRALI",
+    "port_name": "Aliaga / Nemrut Bay",
+    "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 15400,
+        "pilotage_usd": 8300,
+        "tugs_usd": 7100,
+        "stevedoring_usd_per_mt": 6.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 10000,
+        "vessel_dwt_max": 40000,
+        "port_dues_usd": 28000,
+        "pilotage_usd": 15100,
+        "tugs_usd": 12900,
+        "stevedoring_usd_per_mt": 6.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 40001,
+        "vessel_dwt_max": 65000,
+        "port_dues_usd": 42000,
+        "pilotage_usd": 22600,
+        "tugs_usd": 19400,
+        "stevedoring_usd_per_mt": 6.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      }
+    ]
+  },
+  {
+    "port_code": "TRMAR",
+    "port_name": "Marmara (incl. Hereke)",
+    "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 16000,
+        "pilotage_usd": 8600,
+        "tugs_usd": 7300,
+        "stevedoring_usd_per_mt": 6.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 10000,
+        "vessel_dwt_max": 40000,
+        "port_dues_usd": 29000,
+        "pilotage_usd": 15700,
+        "tugs_usd": 13300,
+        "stevedoring_usd_per_mt": 6.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 40001,
+        "vessel_dwt_max": 65000,
+        "port_dues_usd": 43500,
+        "pilotage_usd": 23600,
+        "tugs_usd": 20000,
+        "stevedoring_usd_per_mt": 6.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      }
+    ]
+  },
+  {
+    "port_code": "ROCND",
+    "port_name": "Constanta",
+    "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 18200,
+        "pilotage_usd": 9800,
+        "tugs_usd": 8400,
+        "stevedoring_usd_per_mt": 6.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 10000,
+        "vessel_dwt_max": 40000,
+        "port_dues_usd": 33000,
+        "pilotage_usd": 17800,
+        "tugs_usd": 15200,
+        "stevedoring_usd_per_mt": 6.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 40001,
+        "vessel_dwt_max": 65000,
+        "port_dues_usd": 49500,
+        "pilotage_usd": 26700,
+        "tugs_usd": 22800,
+        "stevedoring_usd_per_mt": 5.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      }
+    ]
+  },
+  {
+    "port_code": "GRTHI",
+    "port_name": "Thisvi",
+    "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 19800,
+        "pilotage_usd": 10700,
+        "tugs_usd": 9100,
+        "stevedoring_usd_per_mt": 6.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 10000,
+        "vessel_dwt_max": 40000,
+        "port_dues_usd": 36000,
+        "pilotage_usd": 19400,
+        "tugs_usd": 16600,
+        "stevedoring_usd_per_mt": 6.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 40001,
+        "vessel_dwt_max": 65000,
+        "port_dues_usd": 54000,
+        "pilotage_usd": 29100,
+        "tugs_usd": 24900,
+        "stevedoring_usd_per_mt": 5.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      }
+    ]
+  },
+  {
+    "port_code": "ITMNF",
+    "port_name": "Monfalcone",
+    "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 22000,
+        "pilotage_usd": 11900,
+        "tugs_usd": 10100,
+        "stevedoring_usd_per_mt": 6.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 10000,
+        "vessel_dwt_max": 40000,
+        "port_dues_usd": 40000,
+        "pilotage_usd": 21600,
+        "tugs_usd": 18400,
+        "stevedoring_usd_per_mt": 6.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 40001,
+        "vessel_dwt_max": 65000,
+        "port_dues_usd": 60000,
+        "pilotage_usd": 32400,
+        "tugs_usd": 27600,
+        "stevedoring_usd_per_mt": 6.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      }
+    ]
+  },
+  {
+    "port_code": "TRISK",
+    "port_name": "Iskenderun",
+    "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 14600,
+        "pilotage_usd": 7900,
+        "tugs_usd": 6700,
+        "stevedoring_usd_per_mt": 6.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 10000,
+        "vessel_dwt_max": 40000,
+        "port_dues_usd": 26500,
+        "pilotage_usd": 14300,
+        "tugs_usd": 12200,
+        "stevedoring_usd_per_mt": 6.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 40001,
+        "vessel_dwt_max": 65000,
+        "port_dues_usd": 39800,
+        "pilotage_usd": 21400,
+        "tugs_usd": 18300,
+        "stevedoring_usd_per_mt": 6.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      }
+    ]
+  },
+  {
+    "port_code": "UAREN",
+    "port_name": "Reni (Danube)",
+    "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 9900,
+        "pilotage_usd": 5300,
+        "tugs_usd": 4600,
+        "stevedoring_usd_per_mt": 5.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 10000,
+        "vessel_dwt_max": 40000,
+        "port_dues_usd": 18000,
+        "pilotage_usd": 9700,
+        "tugs_usd": 8300,
+        "stevedoring_usd_per_mt": 5.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 40001,
+        "vessel_dwt_max": 65000,
+        "port_dues_usd": 27000,
+        "pilotage_usd": 14600,
+        "tugs_usd": 12400,
+        "stevedoring_usd_per_mt": 5.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      }
+    ]
+  },
+  {
+    "port_code": "UAODS",
+    "port_name": "Odesa",
+    "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 13200,
+        "pilotage_usd": 7200,
+        "tugs_usd": 6100,
+        "stevedoring_usd_per_mt": 6.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 10000,
+        "vessel_dwt_max": 40000,
+        "port_dues_usd": 24000,
+        "pilotage_usd": 13000,
+        "tugs_usd": 11000,
+        "stevedoring_usd_per_mt": 6.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 40001,
+        "vessel_dwt_max": 65000,
+        "port_dues_usd": 36000,
+        "pilotage_usd": 19500,
+        "tugs_usd": 16500,
+        "stevedoring_usd_per_mt": 5.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      }
+    ]
+  },
+  {
+    "port_code": "UAIZM",
+    "port_name": "Izmail (Danube)",
+    "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 9600,
+        "pilotage_usd": 5200,
+        "tugs_usd": 4400,
+        "stevedoring_usd_per_mt": 5.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 10000,
+        "vessel_dwt_max": 40000,
+        "port_dues_usd": 17500,
+        "pilotage_usd": 9500,
+        "tugs_usd": 8000,
+        "stevedoring_usd_per_mt": 5.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 40001,
+        "vessel_dwt_max": 65000,
+        "port_dues_usd": 26200,
+        "pilotage_usd": 14200,
+        "tugs_usd": 12000,
+        "stevedoring_usd_per_mt": 5.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      }
+    ]
+  },
+  {
+    "port_code": "BGVAR",
+    "port_name": "Varna",
+    "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 17000,
+        "pilotage_usd": 9200,
+        "tugs_usd": 7900,
+        "stevedoring_usd_per_mt": 6.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 10000,
+        "vessel_dwt_max": 40000,
+        "port_dues_usd": 31000,
+        "pilotage_usd": 16700,
+        "tugs_usd": 14300,
+        "stevedoring_usd_per_mt": 6.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 40001,
+        "vessel_dwt_max": 65000,
+        "port_dues_usd": 46500,
+        "pilotage_usd": 25000,
+        "tugs_usd": 21400,
+        "stevedoring_usd_per_mt": 5.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      }
+    ]
+  },
+  {
+    "port_code": "SOBBO",
+    "port_name": "Berbera",
+    "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 17600,
+        "pilotage_usd": 9500,
+        "tugs_usd": 8100,
+        "stevedoring_usd_per_mt": 6.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 10000,
+        "vessel_dwt_max": 40000,
+        "port_dues_usd": 32000,
+        "pilotage_usd": 17300,
+        "tugs_usd": 14700,
+        "stevedoring_usd_per_mt": 6.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 40001,
+        "vessel_dwt_max": 65000,
+        "port_dues_usd": 48000,
+        "pilotage_usd": 26000,
+        "tugs_usd": 22000,
+        "stevedoring_usd_per_mt": 6.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      }
+    ]
+  },
+  {
+    "port_code": "GBLIV",
+    "port_name": "Liverpool",
+    "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 23700,
+        "pilotage_usd": 12800,
+        "tugs_usd": 10900,
+        "stevedoring_usd_per_mt": 7.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 10000,
+        "vessel_dwt_max": 40000,
+        "port_dues_usd": 43000,
+        "pilotage_usd": 23200,
+        "tugs_usd": 19800,
+        "stevedoring_usd_per_mt": 7.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 40001,
+        "vessel_dwt_max": 65000,
+        "port_dues_usd": 64500,
+        "pilotage_usd": 34800,
+        "tugs_usd": 29700,
+        "stevedoring_usd_per_mt": 6.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      }
+    ]
+  },
+  {
+    "port_code": "ITRAN",
+    "port_name": "Ravenna",
+    "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 22600,
+        "pilotage_usd": 12200,
+        "tugs_usd": 10400,
+        "stevedoring_usd_per_mt": 6.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 10000,
+        "vessel_dwt_max": 40000,
+        "port_dues_usd": 41000,
+        "pilotage_usd": 22100,
+        "tugs_usd": 18900,
+        "stevedoring_usd_per_mt": 6.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 40001,
+        "vessel_dwt_max": 65000,
+        "port_dues_usd": 61500,
+        "pilotage_usd": 33200,
+        "tugs_usd": 28400,
+        "stevedoring_usd_per_mt": 6.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      }
+    ]
+  },
+  {
+    "port_code": "GEPTI",
+    "port_name": "Poti",
+    "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 13800,
+        "pilotage_usd": 7400,
+        "tugs_usd": 6300,
+        "stevedoring_usd_per_mt": 5.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 10000,
+        "vessel_dwt_max": 40000,
+        "port_dues_usd": 25000,
+        "pilotage_usd": 13500,
+        "tugs_usd": 11500,
+        "stevedoring_usd_per_mt": 5.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 40001,
+        "vessel_dwt_max": 65000,
+        "port_dues_usd": 37500,
+        "pilotage_usd": 20200,
+        "tugs_usd": 17200,
+        "stevedoring_usd_per_mt": 5.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      }
+    ]
+  },
+  {
+    "port_code": "GEBUS",
+    "port_name": "Batumi",
+    "brackets": [
+      {
+        "vessel_dwt_min": 1000,
+        "vessel_dwt_max": 9999,
+        "port_dues_usd": 14300,
+        "pilotage_usd": 7700,
+        "tugs_usd": 6600,
+        "stevedoring_usd_per_mt": 5.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 10000,
+        "vessel_dwt_max": 40000,
+        "port_dues_usd": 26000,
+        "pilotage_usd": 14000,
+        "tugs_usd": 12000,
+        "stevedoring_usd_per_mt": 5.5,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
+      },
+      {
+        "vessel_dwt_min": 40001,
+        "vessel_dwt_max": 65000,
+        "port_dues_usd": 39000,
+        "pilotage_usd": 21000,
+        "tugs_usd": 18000,
+        "stevedoring_usd_per_mt": 5.0,
+        "cargo_type": "general",
+        "confidence": "estimated",
+        "source": "manual-2026-06"
       }
     ]
   }
