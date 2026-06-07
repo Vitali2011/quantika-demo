@@ -7,9 +7,11 @@
 >
 > **✅ Reality-verified 2026-06-06 (3 read-only агента, claim-vs-prod/code/PR):** прод HEAD = `0c564a29` (#841, deployed); demo-seed buckets = **main 69 / review 261 / insuf 60**; neg-TCE main = 0. **⚠️ §1-§3 НИЖЕ содержат стале-claims** (не правлены построчно — см. state.md за полной таблицей): prod HEAD `d3c62d0e`→#841; bucket-счётчики 28/126/571→69/261/60; §1.2 data-layer counts описывают `sessions.db`, а live = пустой demo-seed.db (см. ПРОД-БАГ); routes 50→**69**, pages 23→**35**; F5/F6/F7 (битые страницы) УЖЕ FIXED; Gate5-round-2 / 4-fix-WIP / #819 B(c) / rate-limiter `/api/parser/email` — ЗАКРЫТЫ (#781/#776/#777/#826/#829/#463/#835); baltic/bunker/eua не «stale CSV», а свежие (таймеры). Genuinely open: #589, eslint-10 (#754), tailwind-4, PWA, full-RTL, Quote-PDF, Stripe, dark-mode, partner-data калибровка, F8 Resend.
 
-### 🔴 ГЛАВНОЕ — структурный хвост (НЕ «данные»): ранжирование слепо к новой машинерии
+### ✅ ГЛАВНОЕ — структурный хвост ЗАКРЫТ 2026-06-07 (#846, prod-regen applied+verified)
 
-Движок считает **ДВА несвязанных числа на матч**:
+> **DONE end-to-end** (brainstorm→spec→plan→dispatch→CI-fix→merge→prod-regen). `fitPercent` теперь движок ранжирования+matchLevel+бакетинга (было `score`); true-voyage TCE свёрнут в fit двусторонним градиентом ~18пт (новый `economics`-фактор, кормится ballast+Suez TCE посчитанным ДО fit; бинарный cap TCE<0→40 удалён); below-breakeven floor сохранён; downstream выровнен (DB `ORDER BY fit_percent` / extension top-3 / owner default `'fit'`). Прод-реген: **main 69→93**, neg-TCE 0, minfit 60.9, avg $9650, max $36k; user-сессии целы. Spec/plan: `docs/superpowers/{specs,plans}/2026-06-07-ranking-fitpercent*`. **Ниже — историческая постановка проблемы (что было ДО #846).**
+
+Движок считал **ДВА несвязанных числа на матч**:
 
 - **`m.score`** (старый `computeScoreBreakdown`: гео 20 / тип 20 / краны 15 / объём 15 / laycan 20 / dwt 10) → **рулит сортировкой главного списка + корзиной (main/review/insufficient) + matchLevel** (`pair-analyzer.ts:711, 588`). **Ноль экономики, ноль ветинга.**
 - **`fitPercent` + `fitBreakdown`** (util 23 / timing 18 / ballast 18 / classFit 11 / cargoType 7 / cranes 7 / volume 4 / **vetting 9** / draft 3) → **только отображение** (`pair-analyzer.ts:693`).
@@ -18,7 +20,7 @@
 
 **TCE (#841) влияет ТОЛЬКО на корзинный floor** (`pair-analyzer.ts:819-848` — ниже class-breakeven → review), но **не ранжирует внутри main и не входит в `m.score`**. Ветинг — то же (только в fit-%).
 
-→ **Высший рычаг: переключить ранжирование+бакетинг на `fitPercent`** (свернув в него true-voyage TCE + ветинг), а не гонять параллельный старый 6-факторный score. Это не «дописать данные» — **развилка дизайна, нужно решение фаундера** (brainstorm).
+→ **Высший рычаг: переключить ранжирование+бакетинг на `fitPercent`** — ✅ **СДЕЛАНО #846** (2026-06-07). fitPercent ранжирует+бакетит; TCE свёрнут двусторонним градиентом; старый `score` больше не ранкер (считается для панели-разбивки; физический снос `computeScoreBreakdown` — отдельный хвост #7).
 
 ### ✅ ПРОД-БАГ — ЗАКРЫТ 2026-06-07 (Phase 1+2, durable, applied + functionally verified)
 
@@ -35,15 +37,15 @@
 | Уровень | Цель | Статус | Что осталось |
 |---|---|---|---|
 | **L1 «не врёт»** | парсинг + корзины + гейты | 🟢 ~готов | `draft`-фактор в fit-% всегда conservative (display; hard-гейт работает отдельно) — мелочь |
-| **L2 «полезен»** | TCE+war-risk+фрахт в экономику И в score | 🟡 ядро #841 есть, проводки в score нет | port-DA, carbon, war-в-TCE, **TCE-в-ранкинг**, свежий фрахт, сужение полос |
-| **L3 «надёжен»** ← цель | passport/CII/IMSBC/чистота в score | 🟡 ветинг в fit-% есть, в score нет; данные голодают | PSC→ветинг, CII-данные, снос мёртвого паспорта, IMSBC/чистота-в-fit |
+| **L2 «полезен»** | TCE+war-risk+фрахт в экономику И в ранкинг | 🟢 ядро #841 + **TCE-в-ранкинг #846** | port-DA, carbon, war-в-per-day-TCE, свежий фрахт, сужение полос |
+| **L3 «надёжен»** ← цель | passport/CII/IMSBC/чистота в ранкинг | 🟡 ветинг в fit И в ранкинге (#846); данные частично голодают | PSC→ветинг, CII-данные, снос мёртвого паспорта, IMSBC/чистота-в-fit |
 | **L4 «pro»** | PSC-live/Baltic-live/FFA/credit | ⚪ платно, опц. | вне бесплатной планки |
 
 ### Реально открытые хвосты — приоритезированы
 
 **🔧 Проводка готового (дёшево — логика/данные УЖЕ есть, надо подключить):**
 
-1. **TCE → ранжирование/fit** (L2, высший ROI) — главный список ранжировать с учётом денег; свернуть true-voyage TCE в `fitPercent` градиентом. Сейчас fit-cap бьёт только при `TCE<0` бинарно И кормится грубым `preFitTce` без ballast/canal (`fit-breakdown.ts:565`, `pair-analyzer.ts:688`).
+1. ~~**TCE → ранжирование/fit** (L2, высший ROI)~~ — ✅ **СДЕЛАНО #846** (2026-06-07): fitPercent = ранкер; true-voyage TCE свёрнут двусторонним градиентом ~18пт (новый `economics`-фактор в `computeFitBreakdown`, кормится ballast+Suez TCE посчитанным ДО fit; бинарный cap TCE<0→40 удалён). Прод-реген applied (main 69→93, neg-TCE 0).
 2. **PSC-детенции → ветинг** (L3, высший ROI) — `lib/market/psc-repository.ts` полностью построен (миграция 028 + сид + API), score его НЕ читает. Добавить 6-й суб-фактор в `computeVesselVetting`.
 3. **Port DA → TCE** (L2 «step 4») — `getPortDa` (`lib/port-da/repository.ts`) никогда не зовётся в `lib/matching/`; `daUsd=0` в каждом матче. Реальные деньги мимо. Нужен DB-handle в расчёт.
 4. **CII-данные в сид** (L3) — логика `scoreCii` живая, но `ciiRating` 0/90; `lib/imo/cii-lookup.ts` не зовётся в регене.
@@ -117,8 +119,8 @@
 
 1. ✅ **Прод-баг — durable seed reference+RAG в demo-seed.db** (#842+#843, 2026-06-07) — СДЕЛАНО, applied+verified. Оживило L3-данные на проде.
 2. 🟡 **Тех-долг — свести 3 пути регена к 1 канону** — ЧАСТИЧНО: `regenerate-matches.ts` теперь сидит reference+RAG (канон богаче). Остаток: `real-matches.ts`+`build.ts` всё ещё обходят `analyzePairs` (6-арг TCE) → карантин/снос (СНАЧАЛА проверить, что deploy/CI их не зовёт).
-3. **🔑 Структурный шаг — рейтинг → `fitPercent`** (brainstorm → дизайн → exec) — разом включает L2 (TCE) + L3 (ветинг) в подбор. **Главная работа. ← СЛЕДУЮЩИЙ. Делать со свежим контекстом (это развилка дизайна, не механика).**
-4. **Хвосты-проводки** (PSC→ветинг, port-DA/carbon→TCE, CII-данные в сид) поверх честного рейтинга.
+3. ✅ **Структурный шаг — рейтинг → `fitPercent`** (#846, 2026-06-07) — СДЕЛАНО end-to-end, prod-regen applied+verified. fitPercent = движок ранжирования+matchLevel+бакетинга; TCE свёрнут двусторонним градиентом ~18пт. main 69→93, neg-TCE 0.
+4. **🔑 Хвосты-проводки** ← **СЛЕДУЮЩИЙ** (дёшево, поверх честного рейтинга): PSC→ветинг (6-й суб-фактор), port-DA→TCE, CII-в-сид, carbon/war→per-day-TCE; снос мёртвого `getVesselPassport`/параллельного `score`. См. §«WIRING BACKLOG» (P0/P1 карта file:line).
 5. **L4** — позже, платно, по решению фаундера.
 
 ---
