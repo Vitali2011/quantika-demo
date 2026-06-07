@@ -69,6 +69,9 @@ export interface VoyageInput {
   daUsd?: number;
   /** ECA zones for bunker split calculation. If undefined, no ECA split. */
   ecaZones?: EcaZone[];
+  /** When true, war-risk premium is excluded from per-day TCE but still reported in breakdown.
+   *  Use on the detail path to match stored TCE (which uses empty ports → $0 war risk). */
+  excludeWarRiskFromDailyTce?: boolean;
 }
 
 export interface TCEBreakdown {
@@ -200,7 +203,12 @@ export function calculateTCE(input: VoyageInput): TCEResult {
   const totalCosts = bunkerUsd + canalUsd + daUsd + warRiskUsd + etsUsd;
   const netVoyage = grossFreight - totalCosts;
   const safeDuration = duration > 0 ? duration : ESTIMATED_DAYS_FALLBACK;
-  const dailyTce = duration > 0 ? Math.round(netVoyage / safeDuration) : 0;
+  // When excludeWarRiskFromDailyTce is set, omit war-risk from the per-day numerator
+  // so stored (empty ports → $0) and detail (real ports) produce the same TCE.
+  const dailyNetVoyage = input.excludeWarRiskFromDailyTce
+    ? grossFreight - (bunkerUsd + canalUsd + daUsd + etsUsd)
+    : netVoyage;
+  const dailyTce = duration > 0 ? Math.round(dailyNetVoyage / safeDuration) : 0;
 
   const breakdown: TCEBreakdown = {
     bunker_usd: bunkerUsd,

@@ -147,6 +147,7 @@ export function computeEstimatedTce(
   ballast_distance_nm?: number,
   canal_usd?: number,
   da_usd?: number,
+  bunkerPriceUsdPerMt: number = DEFAULT_BUNKER_USD_PER_MT,
 ): TceEstimate {
   const inputs = buildCanonicalTceInputs({
     vesselDwt: vessel_dwt,
@@ -155,7 +156,7 @@ export function computeEstimatedTce(
     distanceNm: distance_nm,
     quantityMt: quantity_mt,
     freightRateUsdPerMt: freightRate.rate,
-    bunkerPriceUsdPerMt: DEFAULT_BUNKER_USD_PER_MT,
+    bunkerPriceUsdPerMt,
     originPort: '',
     destinationPort: '',
     euaPriceEur: DEFAULT_EUA_EUR,
@@ -247,6 +248,8 @@ export interface MatchEconomicsInput {
   ballastDistanceNm?: number | null;
   /** Pre-resolved port disbursement total (USD), load + discharge. Unknown/zero → omitted. */
   daUsd?: number | null;
+  /** Live bunker price (USD/mt). Defaults to DEFAULT_BUNKER_USD_PER_MT (600) when omitted. */
+  bunkerPriceUsdPerMt?: number | null;
 }
 
 /**
@@ -294,6 +297,7 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
     ballastNm ?? undefined,
     canalUsd > 0 ? canalUsd : undefined,
     input.daUsd != null && input.daUsd > 0 ? input.daUsd : undefined,
+    input.bunkerPriceUsdPerMt != null ? input.bunkerPriceUsdPerMt : undefined,
   );
 
   const warLaden = calculateWarRiskPremium({

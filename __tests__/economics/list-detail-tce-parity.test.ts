@@ -4,6 +4,8 @@
  * Root-cause verified: before Tasks 1-6, computeEstimatedTce had the correct round-trip
  * denominator BUT EconomicsTab used laden-only estimateVoyageDays → DETAIL diverged.
  * After this wave: both go through buildCanonicalTceInputs → they agree to the dollar.
+ *
+ * Extended (fix-list-vs-detail A+B+C): real ports + live bunker + war-risk-exclude row.
  */
 import { buildCanonicalTceInputs } from '@/lib/economics/canonical-tce-inputs';
 import { calculateTCE } from '@/lib/economics/voyage-calculator';
@@ -81,5 +83,41 @@ describe('LIST tce_usd_per_day === DETAIL daily_tce_usd (parity, #819)', () => {
       s.distanceNm, s.vesselDwt, s.quantityMt, s.speedKts, s.consumptionMtPerDay,
     );
     expect(tce.tce_usd_per_day).toBeGreaterThan(0);
+  });
+
+  test('SEAGULL71-like Marmara→Constanta — real ports + live bunker(766) + war-risk-exclude: list==detail', () => {
+    // Acceptance row: SEAGULL71 proxy — real HRA ports, live bunker, excludeWarRisk flag on detail path.
+    // LIST path uses computeEstimatedTce with empty ports (war-risk $0) + live bunker
+    // DETAIL path uses calculateTCE with real ports + excludeWarRiskFromDailyTce=true + same live bunker
+    const LIVE_BUNKER = 766;
+    const s = { vesselDwt: 3000, speedKts: 12, consumptionMtPerDay: 8, distanceNm: 254, quantityMt: 2500 };
+    const freight = estimateFreightRate('GRAIN', s.distanceNm, s.vesselDwt);
+
+    // LIST: live bunker, empty ports (war-risk $0 by design)
+    const list = computeEstimatedTce(
+      { rate: freight.rate, source: freight.source, confidence: freight.confidence },
+      s.distanceNm, s.vesselDwt, s.quantityMt, s.speedKts, s.consumptionMtPerDay,
+      undefined, undefined, undefined, LIVE_BUNKER,
+    );
+
+    // DETAIL: real ports, same live bunker, war-risk excluded from per-day
+    const detailInputs = buildCanonicalTceInputs({
+      vesselDwt: s.vesselDwt,
+      speedKts: s.speedKts,
+      consumptionMtPerDay: s.consumptionMtPerDay,
+      distanceNm: s.distanceNm,
+      quantityMt: s.quantityMt,
+      freightRateUsdPerMt: freight.rate,
+      bunkerPriceUsdPerMt: LIVE_BUNKER,
+      originPort: 'Marmara',
+      destinationPort: 'Constanta',
+      euaPriceEur: DEFAULT_EUA_EUR,
+      vesselValueUsd: DEFAULT_VESSEL_VALUE_USD,
+    });
+    const detail = calculateTCE({ ...detailInputs, excludeWarRiskFromDailyTce: true });
+
+    expect(detail.daily_tce_usd).toBe(list.tce_usd_per_day);
+    // Sanity: war-risk IS computed and surfaced in breakdown
+    expect(detail.breakdown.war_risk_usd).toBeGreaterThanOrEqual(0);
   });
 });
