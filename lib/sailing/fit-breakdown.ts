@@ -42,21 +42,22 @@ import { isEuCountry } from '@/lib/validation/sanctions';
 
 // ── Weights — sum to 100. Tunable per anchor calibration. ──────────────────
 //
-// L3 vetting added (weight 9). Existing 8 factors scaled × (91/100) to keep
-// total = 100. Anchor thresholds preserved — LOW pairs hit caps before linear
-// sum matters; HIGH slabs pair gains 5.4 pts from unknown vetting → still ≥88.
-//   util 23 · timing 18 · ballast 18 · classFit 11 · cargoType 7 · cranes 7
-//   volume 4 · draft 3 · vetting 9 = 100
+// Economics factor added (weight 18). Existing 9 factors scaled ×82/100 and
+// rounded so total = 100. Anchor thresholds preserved — LOW pairs hit caps
+// before linear sum matters.
+//   util 19 · timing 15 · ballast 15 · classFit 9 · cargoType 6 · cranes 6
+//   volume 3 · draft 2 · vetting 7 · economics 18 = 100
 export const FIT_WEIGHTS: Record<FitFactor, number> = {
-  utilisation: 23,
-  timing: 18,
-  ballast: 18,
-  classFit: 11,
-  cargoType: 7,
-  cranes: 7,
-  volume: 4,
-  draft: 3,
-  vetting: 9,
+  utilisation: 19,
+  timing: 15,
+  ballast: 15,
+  classFit: 9,
+  cargoType: 6,
+  cranes: 6,
+  volume: 3,
+  draft: 2,
+  vetting: 7,
+  economics: 18,
 };
 
 const TOTAL_WEIGHT = Object.values(FIT_WEIGHTS).reduce((a, b) => a + b, 0);
@@ -429,6 +430,64 @@ export function scoreVetting(vessel: ParsedVessel, refYear?: number): FitBreakdo
   };
 }
 
+/** Economics — smooth gradient based on TCE vs class-normalised breakeven.
+ *  Neutral (0.5) at class breakeven; profit above → toward 1; loss below → toward 0.
+ *  null/undefined TCE → 0.5 (no reward, no penalty). NOT a binary cap.
+ *
+ *  Breakeven thresholds match pair-analyzer.ts:835-838:
+ *    DWT ≤ 15 000  → $1 500 /day
+ *    DWT ≤ 40 000  → $3 000 /day
+ *    DWT ≤ 65 000  → $5 500 /day
+ *    DWT  > 65 000 → $7 500 /day
+ */
+function clamp01(x: number): number {
+  return Math.min(1, Math.max(0, x));
+}
+
+function economicsNorm(tceUsdPerDay: number | null | undefined, vesselDwt: number): number {
+  if (tceUsdPerDay == null || !Number.isFinite(tceUsdPerDay) || !(vesselDwt > 0)) return 0.5;
+  const breakeven = vesselDwt <= 15_000 ? 1_500
+    : vesselDwt <= 40_000 ? 3_000
+    : vesselDwt <= 65_000 ? 5_500
+    : 7_500;
+  const scale = Math.max(breakeven, 1);
+  return clamp01(0.5 + 0.5 * Math.tanh((tceUsdPerDay - breakeven) / scale));
+}
+
+export function scoreEconomics(
+  tceUsdPerDay: number | null | undefined,
+  vesselDwt: number | null | undefined,
+): FitBreakdownComponent {
+  const w = FIT_WEIGHTS.economics;
+  const dwt = vesselDwt ?? 0;
+  const norm = economicsNorm(tceUsdPerDay, dwt);
+  const score = Math.round(w * norm);
+  let rationale: string;
+  if (tceUsdPerDay == null) {
+    rationale = 'TCE not available — economics scored neutral.';
+  } else if (!(dwt > 0)) {
+    rationale = 'Vessel DWT not stated — economics scored neutral.';
+  } else {
+    const breakeven = dwt <= 15_000 ? 1_500
+      : dwt <= 40_000 ? 3_000
+      : dwt <= 65_000 ? 5_500
+      : 7_500;
+    const diff = tceUsdPerDay - breakeven;
+    if (diff >= 0) {
+      rationale = `TCE $${Math.round(tceUsdPerDay).toLocaleString('en-US')}/day — $${Math.round(diff).toLocaleString('en-US')}/day above class breakeven.`;
+    } else {
+      rationale = `TCE $${Math.round(tceUsdPerDay).toLocaleString('en-US')}/day — $${Math.round(Math.abs(diff)).toLocaleString('en-US')}/day below class breakeven.`;
+    }
+  }
+  return {
+    factor: 'economics',
+    label: 'Economics (TCE)',
+    weight: w,
+    score,
+    rationale,
+  };
+}
+
 // ────────────────────────────────────────────────────────────────────────────
 // Top-level — composes all components, applies sanctions, returns fit-%.
 // ────────────────────────────────────────────────────────────────────────────
@@ -488,8 +547,8 @@ export interface FitBreakdownInput {
   hardFilters: MatchHardFilters | undefined;
   /** Calendar year used for vessel-age arithmetic. If absent, age is treated as unknown. */
   refYear?: number;
-  /** Pre-computed TCE $/day for the economic cap. Absent/undefined → no cap (conservative). */
-  tceUsdPerDay?: number;
+  /** Pre-computed TCE $/day fed into the economics gradient factor. Absent/undefined → no cap (conservative). */
+  tceUsdPerDay?: number | null;
 }
 
 export function computeFitBreakdown(input: FitBreakdownInput): FitBreakdown {
@@ -512,6 +571,7 @@ export function computeFitBreakdown(input: FitBreakdownInput): FitBreakdown {
     scoreVolume(cargoWtMax, desc, vessel.grainCapacity, cargo.stowageFactor),
     scoreDraft(hardFilters),
     scoreVetting(vessel, refYear),
+    scoreEconomics(tceUsdPerDay, dwt),
   ];
 
   const rawSum = components.reduce((a, c) => a + c.score, 0);
@@ -559,15 +619,9 @@ export function computeFitBreakdown(input: FitBreakdownInput): FitBreakdown {
       ceiling: 55,
     });
   }
-  // Economic cap (C3 #783): a voyage that loses money cannot rank as a good match.
-  // tce < 0 → ceiling 40 (clearly below the 60 main-board floor → lands in Review).
-  // Absent/undefined → NO cap (conservative-on-missing).
-  if (tceUsdPerDay != null && tceUsdPerDay < 0) {
-    caps.push({
-      reason: `voyage loses money (TCE −$${Math.abs(Math.round(tceUsdPerDay)).toLocaleString('en-US')}/day) — uneconomic`,
-      ceiling: 40,
-    });
-  }
+  // NOTE: the binary tce<0 → ceiling 40 cap has been REMOVED (Task 1).
+  // Economics is now represented as a smooth gradient via scoreEconomics above.
+  // The hard money-loser floor is enforced by pair-analyzer.ts bucket routing.
 
   let appliedCap: { reason: string; ceiling: number } | null = null;
   for (const c of caps) {

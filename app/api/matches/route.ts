@@ -37,7 +37,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       : undefined;
 
     const sortByParam = searchParams.get('sort_by');
-    const sortBy = sortByParam === 'created_at' ? 'created_at' : 'score';
+    const sortBy: 'fit_percent' | 'score' | 'created_at' =
+      sortByParam === 'created_at' ? 'created_at'
+      : sortByParam === 'score' ? 'score'
+      : 'fit_percent';
 
     const sortDirParam = searchParams.get('sort_dir');
     const sortDir = sortDirParam === 'asc' ? 'asc' : 'desc';

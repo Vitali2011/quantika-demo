@@ -120,7 +120,8 @@
         "bunkerPrice": "external"
       },
       "engineMust": { "tceSign": "positive" },
-      "provenance": "see verified-pairs.json id=GS-ctl-supra-coal; coal 22kt Mtwara->Matadi (grab req) x AMITY geared"
+      "xfail": ["tcePos"],
+      "provenance": "see verified-pairs.json id=GS-ctl-supra-coal; coal 22kt Mtwara->Matadi (grab req) x AMITY geared; tcePos xfail: AMITY opens Bizerte (Mediterranean), ballast ~6 500 nm to Mtwara (East Africa) — uneconomic for a 30k-handysize (2× class radius), fitPercent capped at 54 by fit-breakdown ballast gating → matchLevel 'weak' → review bucket (fit-based routing, Task 3)"
     },
     {
       "id": "GS-ctl-sugar-panamax",

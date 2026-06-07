@@ -31,7 +31,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     : session.matches;
 
   const topMatches = cargoMatches
-    .sort((a, b) => b.score - a.score)
+    .sort((a, b) => (b.fitPercent ?? b.score) - (a.fitPercent ?? a.score))
     .slice(0, 3)
     .map(m => {
       const vessel = session.parsedVessels?.find(

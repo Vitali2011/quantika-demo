@@ -48,10 +48,33 @@ jest.mock('@/lib/sailing/match-scoring', () => ({
   // (real engine). Here it is a passthrough so the bucket/sort contracts under
   // test are unaffected by the cap.
   applyBallastSizeCap: jest.fn().mockImplementation((input) => input.match),
+  // Task 3: fit-based matchLevel routing
+  deriveMatchLevelFromFit: jest.fn().mockImplementation((fit: number) =>
+    fit >= 70 ? 'good' : fit >= 60 ? 'possible' : 'weak',
+  ),
   // fit-loop 2026-05-31: fit-breakdown.ts imports these — surfaced here so the
   // bucket/sort contracts under test still resolve the new fit-% wiring.
   isPartCargo: jest.fn().mockReturnValue(false),
   BALLAST_GOOD_MAX_NM: { handysize: 1500, supramax: 2000, panamax: 2500, capesize: 4000 },
+}));
+
+// fit-breakdown mock: fitPercent mapped from cargo emailId for bucket/sort tests.
+// Default 75 (above fit floor) — individual tests override via jest.requireMock.
+const FIT_PERCENT_MAP: Record<string, number> = {};
+jest.mock('@/lib/sailing/fit-breakdown', () => ({
+  computeFitBreakdown: jest.fn().mockImplementation(({ cargo }: { cargo: { emailId: string } }) => {
+    const fit = FIT_PERCENT_MAP[cargo.emailId] ?? 75;
+    return {
+      components: [],
+      totalWeight: 100,
+      fitPercent: fit,
+      partCargo: false,
+      vesselClass: 'handysize',
+      sanctionsPenalty: 0,
+      appliedCap: null,
+      inputs: { distanceNm: 500, gapDays: 5, verdict: 'ideal', utilisation: null, vesselDwt: null, cargoWtMax: null },
+    };
+  }),
 }));
 
 jest.mock('@/lib/sailing/date-parsing', () => ({
@@ -207,14 +230,20 @@ describe('analyzePairs', () => {
     expect(result.matches[0].vesselEmailId).toBe(vessel.emailId);
   });
 
-  // NEW CONTRACT (handover 2026-05-30, lever 1): the main `matches` list keeps
-  // only good/possible pairs, sorted by score desc. A `weak` pair (score 30) is no
-  // longer in the main list — it moves to `lowConfidenceMatches` ("manual review").
-  it('sorts good/possible matches by score descending; weak drops to lowConfidenceMatches', async () => {
-    const cargo1 = makeCargo('cargo-1', 0);
-    const cargo2 = makeCargo('cargo-2', 0);
-    const cargo3 = makeCargo('cargo-3', 0);
+  // NEW CONTRACT (Task 3, 2026-06-07): the main `matches` list keeps only fit≥60
+  // pairs (possible/good by fitPercent), sorted by fitPercent desc.
+  // A weak pair (fitPercent < 60) is no longer in the main list — it moves to
+  // `lowConfidenceMatches` ("manual review"). Sort is fitPercent-based (not score).
+  it('sorts good/possible matches by fitPercent descending; fitPercent<60 drops to lowConfidenceMatches', async () => {
+    const cargo1 = makeCargo('cargo-1', 0); // fitPercent = 55 → weak → lowConfidence
+    const cargo2 = makeCargo('cargo-2', 0); // fitPercent = 80 → good  → main (first)
+    const cargo3 = makeCargo('cargo-3', 0); // fitPercent = 65 → possible → main (second)
     const vessel = makeVessel();
+
+    // Configure fitPercent per cargo emailId (Task 3: matchLevel derives from fitPercent)
+    FIT_PERCENT_MAP['cargo-1'] = 55;
+    FIT_PERCENT_MAP['cargo-2'] = 80;
+    FIT_PERCENT_MAP['cargo-3'] = 65;
 
     const rawMatches: RawMatch[] = [
       { cargo_email_id: 'cargo-1', cargo_item_index: 0, vessel_email_id: 'vessel-1', vessel_item_index: 0, score: 30 },
@@ -222,7 +251,7 @@ describe('analyzePairs', () => {
       { cargo_email_id: 'cargo-3', cargo_item_index: 0, vessel_email_id: 'vessel-1', vessel_item_index: 0, score: 60 },
     ];
 
-    // Override computeScoreBreakdown to return the LLM score so we can test ordering
+    // Override computeScoreBreakdown so scores propagate through the legacy pipeline
     const { computeScoreBreakdown } = jest.requireMock('@/lib/sailing/match-scoring');
     computeScoreBreakdown.mockImplementation(({ match }: { match: { score: number } }) => ({
       components: [],
@@ -231,21 +260,17 @@ describe('analyzePairs', () => {
       sanctionsAdjustment: 0,
       finalScore: match.score,
     }));
-    const { deriveMatchLevel } = jest.requireMock('@/lib/sailing/match-scoring');
-    deriveMatchLevel.mockImplementation((score: number) =>
-      score > 70 ? 'good' : score > 40 ? 'possible' : 'weak',
-    );
 
     const aiScorer: AiScorer = jest.fn().mockResolvedValue(rawMatches);
     const result = await analyzePairs([cargo1, cargo2, cargo3], [vessel], aiScorer);
 
-    // Main list: only good (80) + possible (60), sorted desc.
+    // Main list: good (fit=80) + possible (fit=65), sorted by fitPercent desc.
     expect(result.matches).toHaveLength(2);
-    expect(result.matches[0].score).toBe(80);
-    expect(result.matches[1].score).toBe(60);
-    // Weak (30) preserved in the low-confidence bucket, not lost.
+    expect(result.matches[0].fitPercent).toBe(80);
+    expect(result.matches[1].fitPercent).toBe(65);
+    // fitPercent<60 (fit=55) preserved in the low-confidence bucket, not lost.
     expect(result.lowConfidenceMatches).toHaveLength(1);
-    expect(result.lowConfidenceMatches[0].score).toBe(30);
+    expect(result.lowConfidenceMatches[0].fitPercent).toBe(55);
   });
 
   it('calls aiScorer exactly once even with multiple cargos and vessels', async () => {
