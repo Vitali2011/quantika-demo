@@ -53,7 +53,7 @@ export async function hydrateCiiRatings(vessels: ParsedVessel[]): Promise<void> 
     if (vessel.ciiRating != null) continue;
     const imo = vessel.imo;
     if (!imo) continue;
-    const { rating } = await lookupCii(imo);
+    const { rating } = await lookupCii(imo, { callLlm: async () => 'unknown' });
     vessel.ciiRating = rating === 'unknown' ? null : rating;
   }
 }
