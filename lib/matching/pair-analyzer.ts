@@ -23,6 +23,7 @@ import { checkSanctions } from '@/lib/validation/sanctions';
 import { enrichReasons } from '@/lib/matching/reason-enricher';
 import { applyHoldCleanliness } from '@/lib/matching/hold-cleanliness';
 import { buildMatchEconomics, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
+import { getLatestEuaPrice } from '@/lib/market/eua-repository';
 import { resolveFreightRate } from '@/lib/matching/freight-resolver';
 import { getBalticDayRate } from '@/lib/market/baltic-freight';
 import { sumMatchPortDaUsd } from '@/lib/port-da/match-da';
@@ -308,6 +309,7 @@ function computeMatchEconomicsFor(
   // Unknown ports / no db → 0 (graceful), matching the voyage detail page.
   const daUsd = db ? sumMatchPortDaUsd([loadPort, dischargePort], ecoDwt, cargoType, db) : 0;
 
+  const liveEuaRow = db ? getLatestEuaPrice(db, 'spot') : null;
   const econ = buildMatchEconomics({
     cargoType,
     distanceNm: distanceResult.nm,
@@ -327,6 +329,7 @@ function computeMatchEconomicsFor(
     ballastDistanceNm,
     daUsd,
     bunkerPriceUsdPerMt,
+    euaPriceEur: liveEuaRow?.price_eur_per_tco2 ?? undefined,
   });
 
   return econ ?? undefined;
