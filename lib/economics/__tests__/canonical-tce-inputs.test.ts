@@ -39,4 +39,14 @@ describe('buildCanonicalTceInputs', () => {
     const out = buildCanonicalTceInputs({ ...baseInput, quantityMt: -50 });
     expect(out.cargo.quantityMt).toBeGreaterThan(0);
   });
+
+  test('threads daUsd through to VoyageInput', () => {
+    const out = buildCanonicalTceInputs({ ...baseInput, daUsd: 45_000 });
+    expect(out.daUsd).toBe(45_000);
+  });
+
+  test('daUsd is undefined when not provided (back-compat)', () => {
+    const out = buildCanonicalTceInputs(baseInput);
+    expect(out.daUsd).toBeUndefined();
+  });
 });

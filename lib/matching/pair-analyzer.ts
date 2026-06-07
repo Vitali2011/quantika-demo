@@ -25,6 +25,7 @@ import { applyHoldCleanliness } from '@/lib/matching/hold-cleanliness';
 import { buildMatchEconomics, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
 import { resolveFreightRate } from '@/lib/matching/freight-resolver';
 import { getBalticDayRate } from '@/lib/market/baltic-freight';
+import { sumMatchPortDaUsd } from '@/lib/port-da/match-da';
 import type Database from 'better-sqlite3';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 import { formatNumber } from '@/lib/utils';
@@ -296,6 +297,11 @@ function computeMatchEconomicsFor(
     : null;
   const ballastDistanceNm = ballastResult?.nm ?? null;
 
+  // Port disbursement (DA): load + discharge fixed costs from getPortDa.
+  // db is the match-path handle (already used above for getBalticDayRate).
+  // Unknown ports / no db → 0 (graceful), matching the voyage detail page.
+  const daUsd = db ? sumMatchPortDaUsd([loadPort, dischargePort], ecoDwt, cargoType, db) : 0;
+
   const econ = buildMatchEconomics({
     cargoType,
     distanceNm: distanceResult.nm,
@@ -313,6 +319,7 @@ function computeMatchEconomicsFor(
       confidence: resolvedFreight.confidence,
     },
     ballastDistanceNm,
+    daUsd,
   });
 
   return econ ?? undefined;

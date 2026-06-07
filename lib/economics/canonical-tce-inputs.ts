@@ -21,6 +21,8 @@ export interface CanonicalTceInputArgs {
   ballastDistanceNm?: number;
   /** Pre-computed canal dues (USD) — Suez/Panama/Bosporus for both legs combined. */
   canalUsd?: number;
+  /** Pre-computed port disbursement total (USD) — load + discharge fixed costs. */
+  daUsd?: number;
 }
 
 export function buildCanonicalTceInputs(args: CanonicalTceInputArgs): VoyageInput {
@@ -65,5 +67,6 @@ export function buildCanonicalTceInputs(args: CanonicalTceInputArgs): VoyageInpu
     euaPriceEur: args.euaPriceEur ?? 0,
     durationDays,
     canalUsd: args.canalUsd,
+    daUsd: args.daUsd,
   };
 }
