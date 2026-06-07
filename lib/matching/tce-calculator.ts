@@ -2,6 +2,9 @@ import { calculateTCE, type TCEBreakdown } from '@/lib/economics/voyage-calculat
 import { calculateWarRiskPremium } from '@/lib/economics/war-risk';
 import { buildCanonicalTceInputs } from '@/lib/economics/canonical-tce-inputs';
 import { quoteSuez } from '@/lib/economics/canals/index';
+import { quoteBosporus } from '@/lib/economics/canals/bosporus';
+import { resolvePort } from '@/lib/ports/resolve';
+import { isEuCountry } from '@/lib/validation/sanctions';
 import type { EconomicsResult } from '@/lib/types';
 
 // Ballpark base freight rates (USD/mt) per cargo class
@@ -148,6 +151,10 @@ export function computeEstimatedTce(
   canal_usd?: number,
   da_usd?: number,
   bunkerPriceUsdPerMt: number = DEFAULT_BUNKER_USD_PER_MT,
+  euLegPercent?: number,
+  originEu?: boolean,
+  destEu?: boolean,
+  euaPriceEur?: number,
 ): TceEstimate {
   const inputs = buildCanonicalTceInputs({
     vesselDwt: vessel_dwt,
@@ -159,11 +166,14 @@ export function computeEstimatedTce(
     bunkerPriceUsdPerMt,
     originPort: '',
     destinationPort: '',
-    euaPriceEur: DEFAULT_EUA_EUR,
+    euaPriceEur: euaPriceEur ?? DEFAULT_EUA_EUR,
     vesselValueUsd: DEFAULT_VESSEL_VALUE_USD,
     ballastDistanceNm: ballast_distance_nm,
     canalUsd: canal_usd,
     daUsd: da_usd,
+    euLegPercent,
+    originEu,
+    destEu,
   });
   const result = calculateTCE(inputs);
 
@@ -175,13 +185,11 @@ export function computeEstimatedTce(
   };
 }
 
-// ── Suez transit detection (overhaul step 3) ─────────────────────────────────
-// Classify a port into a geographic basin for routing decisions.
-// Returns 'indian' for Indian subcontinent / Persian Gulf / Red Sea,
-// 'eastafrica' for East African coast, 'med' for Mediterranean / Black Sea,
-// 'atlantic' for Atlantic-facing European / N-African ports, 'westafrica' for
-// West African ports (reached via Cape, not Suez), and 'unknown' otherwise.
-type _PortBasin = 'indian' | 'eastafrica' | 'med' | 'atlantic' | 'westafrica' | 'unknown';
+// ── Basin classification (Suez + Bosporus transit detection) ─────────────────
+// 'blacksea' is distinct from 'med' so Bosporus detection works: a route from
+// 'med' to 'blacksea' (or vice-versa) transits the Bosporus strait.
+// For Suez purposes, 'blacksea' is treated as 'westOfSuez' (same as 'med').
+type _PortBasin = 'indian' | 'eastafrica' | 'med' | 'blacksea' | 'atlantic' | 'westafrica' | 'unknown';
 
 function _classifyPortBasin(port: string | null | undefined): _PortBasin {
   if (!port) return 'unknown';
@@ -189,22 +197,33 @@ function _classifyPortBasin(port: string | null | undefined): _PortBasin {
   if (/kandla|mundra|mumbai|nhava|chennai|kolkata|karachi|kakinada|kochi|cochin|colombo|tuticorin|bandar.?abb?as?|dubai|abu.?dhabi|fujairah|sohar|muscat|salalah|jebel.?ali|ruwais|jeddah|yanbu|aqaba|djibouti|aden|berbera/.test(p)) return 'indian';
   if (/mtwara|mombasa|dar.?es.?salaam|tanga|nacala|beira|maputo|quelimane|zanzibar/.test(p)) return 'eastafrica';
   if (/matadi|boma|pointe.?noire|cotonou|lome|abidjan|dakar|conakry|freetown|banjul|monrovia|tema|lagos|apapa|tincan|bonny|warri|port.?harcourt|douala/.test(p)) return 'westafrica';
-  if (/ravenna|marghera|venice|trieste|genoa|la.?spezia|livorno|naples|taranto|bari|brindisi|catania|palermo|messina|augusta|trapani|pozzallo|bizerte|skikda|oran|algiers|tunis|sfax|bejaia|annaba|casablanca|jorf|safi|tangier|tanger|agadir|barcelona|valencia|algeciras|gibraltar|marseille|toulon|sete|fos|savona|vado|civitavecchia|piraeus|thessaloniki|izmir|aliaga|iskenderun|mersin|antalya|derince|izmit|istanbul|marmara|bandirma|karasu|constanta|varna|burgas|novorossiysk|odessa|odesa|chornomorsk|mykolaiv|kherson|yuzhne|suez|port.?said|alexandria|damietta|limassol|larnaca|haifa|ashdod|beirut|lattakia|tartus/.test(p)) return 'med';
+  // Black Sea ports — must precede the `med` branch (Bosporus/Dardanelles required to reach Med).
+  if (/constanta|varna|burgas|novorossiysk|novorossiisk|odessa|odesa|chornomorsk|mykolaiv|mykolayiv|kherson|sevastopol|yuzhne|yuzhny|pivdennyi|reni|izmail|poti|batumi|giurgiulest|karasu/.test(p)) return 'blacksea';
+  if (/ravenna|marghera|venice|trieste|genoa|la.?spezia|livorno|naples|taranto|bari|brindisi|catania|palermo|messina|augusta|trapani|pozzallo|bizerte|skikda|oran|algiers|tunis|sfax|bejaia|annaba|casablanca|jorf|safi|tangier|tanger|agadir|barcelona|valencia|algeciras|gibraltar|marseille|toulon|sete|fos|savona|vado|civitavecchia|piraeus|thessaloniki|izmir|aliaga|iskenderun|mersin|antalya|derince|izmit|istanbul|marmara|bandirma|suez|port.?said|alexandria|damietta|limassol|larnaca|haifa|ashdod|beirut|lattakia|tartus/.test(p)) return 'med';
   if (/rotterdam|amsterdam|antwerp|zeebrugge|ghent|dunkirk|le.?havre|rouen|brest|la.?pallice|bayonne|bilbao|santander|gijon|aviles|vigo|oporto|porto|lisbon|setubal|figueira|hamburg|bremerhaven|bremen|wilhelmshaven|emden|rostock|lubeck|gdansk|gdynia|szczecin|felixstowe|southampton|london|tilbury|teesport|sunderland|newcastle|immingham|grimsby|hull|liverpool|birkenhead|belfast|dublin|greenore|cork|oslo|gothenburg|goteborg|stavanger|bergen|haugesund|halsvik|aarhus|copenhagen|helsingborg|stockholm|helsinki|tallinn|riga|klaipeda/.test(p)) return 'atlantic';
   return 'unknown';
 }
 
 // A route transits Suez if one port is "east of Suez" (Indian Ocean / East Africa)
-// and the other is "west of Suez" (Mediterranean / Atlantic). West-Africa ports are
-// reached via Cape so they do NOT trigger Suez even when paired with East-Africa.
+// and the other is "west of Suez" (Mediterranean / Atlantic / Black Sea). West-Africa
+// ports are reached via Cape so they do NOT trigger Suez even when paired with East-Africa.
 function _routeTransitsSuez(portA: string | null | undefined, portB: string | null | undefined): boolean {
   if (!portA || !portB) return false;
   const basinA = _classifyPortBasin(portA);
   const basinB = _classifyPortBasin(portB);
   const eastOfSuez = new Set<_PortBasin>(['indian', 'eastafrica']);
-  const westOfSuez = new Set<_PortBasin>(['med', 'atlantic']);
+  // blacksea is reachable from Indian Ocean via Suez + Bosporus, so it is west-of-Suez.
+  const westOfSuez = new Set<_PortBasin>(['med', 'atlantic', 'blacksea']);
   return (eastOfSuez.has(basinA) && westOfSuez.has(basinB)) ||
          (eastOfSuez.has(basinB) && westOfSuez.has(basinA));
+}
+
+// A route transits the Bosporus if one endpoint is on the Med/Marmara side and the
+// other is on the Black Sea side. Intra-Med and intra-BlackSea routes do not transit.
+function _routeTransitsBosporus(portA: string | null | undefined, portB: string | null | undefined): boolean {
+  const a = _classifyPortBasin(portA);
+  const b = _classifyPortBasin(portB);
+  return (a === 'med' && b === 'blacksea') || (a === 'blacksea' && b === 'med');
 }
 
 // Derive approximate net tonnage from DWT (bulker convention: NT ≈ DWT × 0.65).
@@ -220,6 +239,33 @@ function _quoteSuezSafe(vesselDwt: number, laden: boolean): number {
   } catch {
     return 0;
   }
+}
+
+// Quote Bosporus dues for one transit (bulker convention). Returns 0 on any error.
+function _quoteBosporusSafe(vesselDwt: number): number {
+  try {
+    const vesselNt = Math.round(vesselDwt * NT_DWT_RATIO);
+    const q = quoteBosporus({ vesselDwt, vesselNt, vesselType: 'bulker' });
+    return Number.isFinite(q?.totalUsd) ? q.totalUsd : 0;
+  } catch {
+    return 0;
+  }
+}
+
+// ── Exported helpers for detail-path parity (app/api/voyage/tce/route.ts) ────
+// Single source of truth: both stored (list) and detail paths use these functions.
+export const classifyPortBasin = _classifyPortBasin;
+export const routeTransitsBosporus = _routeTransitsBosporus;
+export const quoteBosporusSafe = _quoteBosporusSafe;
+
+/** Derive EU-ETS coverage flags from port names. Used by both the stored match path
+ *  and the detail route to guarantee identical euLegPercent/originEu/destEu. */
+export function deriveEtsCoverage(loadPort?: string | null, dischargePort?: string | null) {
+  const rl = loadPort ? resolvePort(loadPort) : null;
+  const rd = dischargePort ? resolvePort(dischargePort) : null;
+  const originEu = isEuCountry(rl?.country ?? null);
+  const destEu = isEuCountry(rd?.country ?? null);
+  return { originEu, destEu, euLegPercent: (originEu || destEu) ? 1.0 : 0 };
 }
 
 export interface MatchEconomicsInput {
@@ -250,6 +296,8 @@ export interface MatchEconomicsInput {
   daUsd?: number | null;
   /** Live bunker price (USD/mt). Defaults to DEFAULT_BUNKER_USD_PER_MT (600) when omitted. */
   bunkerPriceUsdPerMt?: number | null;
+  /** Live EUA spot price (EUR/tCO2). Defaults to DEFAULT_EUA_EUR (65) when omitted. */
+  euaPriceEur?: number | null;
 }
 
 /**
@@ -270,22 +318,34 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
   const freight =
     input.resolvedFreight ?? estimateFreightRate(input.cargoType, input.distanceNm, input.vesselDwt);
 
-  // ── Canal detection (overhaul step 3) ──────────────────────────────────────
-  // Detect Suez transit for laden and ballast legs using port basin geometry
-  // (no DB required). Quote dues and pass as canalUsd to calculateTCE.
+  // ── Canal detection ───────────────────────────────────────────────────────────
+  // Detect Suez and Bosporus transits using port basin geometry (no DB required).
   let canalUsd = 0;
   const ladenTransitsSuez = _routeTransitsSuez(input.loadPort, input.dischargePort);
   if (ladenTransitsSuez && input.vesselDwt > 0) {
     canalUsd += _quoteSuezSafe(input.vesselDwt, true);
   }
+  const ladenTransitsBosporus = _routeTransitsBosporus(input.loadPort, input.dischargePort);
+  if (ladenTransitsBosporus && input.vesselDwt > 0) {
+    canalUsd += _quoteBosporusSafe(input.vesselDwt);
+  }
   const ballastNm = input.ballastDistanceNm;
   const ballastOpenPos = input.vesselOpenPosition;
   if (ballastNm != null && ballastNm > 0 && ballastOpenPos && input.loadPort) {
-    const ballastTransitsSuez = _routeTransitsSuez(ballastOpenPos, input.loadPort);
-    if (ballastTransitsSuez && input.vesselDwt > 0) {
+    if (_routeTransitsSuez(ballastOpenPos, input.loadPort) && input.vesselDwt > 0) {
       canalUsd += _quoteSuezSafe(input.vesselDwt, false);
     }
+    if (_routeTransitsBosporus(ballastOpenPos, input.loadPort) && input.vesselDwt > 0) {
+      canalUsd += _quoteBosporusSafe(input.vesselDwt);
+    }
   }
+
+  // ── EU-ETS coverage derivation ────────────────────────────────────────────────
+  // Convention MUST match app/api/voyage/tce/route.ts:307-327.
+  const { originEu, destEu, euLegPercent } = deriveEtsCoverage(input.loadPort, input.dischargePort);
+  const euaPriceEur = (input.euaPriceEur != null && input.euaPriceEur > 0)
+    ? input.euaPriceEur
+    : DEFAULT_EUA_EUR;
 
   const tce = computeEstimatedTce(
     freight,
@@ -298,6 +358,10 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
     canalUsd > 0 ? canalUsd : undefined,
     input.daUsd != null && input.daUsd > 0 ? input.daUsd : undefined,
     input.bunkerPriceUsdPerMt != null ? input.bunkerPriceUsdPerMt : undefined,
+    euLegPercent,
+    originEu,
+    destEu,
+    euaPriceEur,
   );
 
   const warLaden = calculateWarRiskPremium({
@@ -324,6 +388,8 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
       bunkerPort: input.loadPort ?? '',
       euEtsAmount: tce.breakdown.ets_eur,
       euEtsApplicable: tce.breakdown.applicable.ets,
+      canal_usd: tce.breakdown.canal_usd,
+      ets_usd: tce.breakdown.ets_usd,
       // BC aliases — laden-only — unchanged meaning for existing consumers
       warRiskPremium: warLaden.premiumUsd,
       warRiskZones: warLaden.zones,

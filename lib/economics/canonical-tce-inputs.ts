@@ -23,6 +23,11 @@ export interface CanonicalTceInputArgs {
   canalUsd?: number;
   /** Pre-computed port disbursement total (USD) — load + discharge fixed costs. */
   daUsd?: number;
+  /** EU leg percentage (0–1). 1.0 when either endpoint is EU. coverageFactor (0.5/1.0) handled in ets.ts. */
+  euLegPercent?: number;
+  /** EU ETS endpoint flags. Passed to calculateTCE for coverageFactor derivation. */
+  originEu?: boolean;
+  destEu?: boolean;
 }
 
 export function buildCanonicalTceInputs(args: CanonicalTceInputArgs): VoyageInput {
@@ -68,5 +73,8 @@ export function buildCanonicalTceInputs(args: CanonicalTceInputArgs): VoyageInpu
     durationDays,
     canalUsd: args.canalUsd,
     daUsd: args.daUsd,
+    euLegPercent: args.euLegPercent,
+    originEu: args.originEu,
+    destEu: args.destEu,
   };
 }
