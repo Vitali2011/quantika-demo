@@ -427,7 +427,7 @@ export const QUARANTINE_PAIRS: Array<{ loadPort: string; dischargePort: string; 
   { loadPort: 'Thisvi', dischargePort: 'Monfalcone', vesselDwtMin: 17000, vesselDwtMax: 21000 },
 ];
 
-export function isMatchQuarantined(m: Pick<Match, 'loadPort' | 'dischargePort' | 'vesselDwt'>): boolean {
+export function isMatchQuarantined(m: { loadPort: string | null; dischargePort: string | null; vesselDwt: number | null }): boolean {
   return QUARANTINE_PAIRS.some(
     (q) =>
       m.loadPort?.toLowerCase() === q.loadPort.toLowerCase() &&
@@ -435,6 +435,14 @@ export function isMatchQuarantined(m: Pick<Match, 'loadPort' | 'dischargePort' |
       (m.vesselDwt ?? 0) >= q.vesselDwtMin &&
       (m.vesselDwt ?? 0) <= q.vesselDwtMax,
   );
+}
+
+function matchToQuarantineInput(m: Match) {
+  return {
+    loadPort: m.worksheet?.cargo.loadPort ?? null,
+    dischargePort: m.worksheet?.cargo.dischargePort ?? null,
+    vesselDwt: m.worksheet?.vessel.dwtSummer ?? null,
+  };
 }
 
 async function main() {
@@ -598,8 +606,8 @@ async function main() {
   const MAIN_FIT_FLOOR = Number(arg('--fit-floor') ?? 60);
   const INSUF_CAP = Number(arg('--insuf-cap') ?? 60);
   const mainAll = dedup(result.matches.filter((m) => m.confidence?.blockSend !== true));
-  const mainClean = mainAll.filter((m) => (m.fitPercent ?? 0) >= MAIN_FIT_FLOOR && !isMatchQuarantined(m));
-  const demoted = mainAll.filter((m) => (m.fitPercent ?? 0) < MAIN_FIT_FLOOR || isMatchQuarantined(m));
+  const mainClean = mainAll.filter((m) => (m.fitPercent ?? 0) >= MAIN_FIT_FLOOR && !isMatchQuarantined(matchToQuarantineInput(m)));
+  const demoted = mainAll.filter((m) => (m.fitPercent ?? 0) < MAIN_FIT_FLOOR || isMatchQuarantined(matchToQuarantineInput(m)));
   const review = dedup([...result.lowConfidenceMatches, ...demoted]);
   const insufficient = dedup(result.insufficientData)
     .sort((a, b) => b.score - a.score)
