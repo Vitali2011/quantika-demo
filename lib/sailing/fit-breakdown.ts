@@ -62,6 +62,15 @@ export const FIT_WEIGHTS: Record<FitFactor, number> = {
 
 const TOTAL_WEIGHT = Object.values(FIT_WEIGHTS).reduce((a, b) => a + b, 0);
 
+// Charterer credit-tier penalty (founder-calibrated; DEFAULT). Counterparty-side,
+// kept OUT of vessel vetting. weak → soft fit hit; second/blue-chip → none.
+// STRONGER: { weak: 8, second: 3 }. SOFTER: { weak: 2, second: 0 }.
+export const CHARTERER_TIER_PENALTY: Record<'blue-chip' | 'second' | 'weak', number> = {
+  'blue-chip': 0,
+  second: 0,
+  weak: 4,
+};
+
 // ────────────────────────────────────────────────────────────────────────────
 // Component scorers — each returns score normalised to [0, weight].
 // Conservative on missing data: returns 60% of weight + "unknown" rationale.
@@ -408,14 +417,14 @@ export function scoreDraft(hardFilters: MatchHardFilters | undefined): FitBreakd
  *  When refYear is absent and built is set, age falls back to unknown (neutral).
  *  unknown ≠ penalty — consistent with UNKNOWN_SHARE pattern above.
  */
-export function scoreVetting(vessel: ParsedVessel, refYear?: number): FitBreakdownComponent {
+export function scoreVetting(vessel: ParsedVessel, refYear?: number, detentionCount?: number): FitBreakdownComponent {
   const w = FIT_WEIGHTS.vetting;
   // If refYear not provided, treat age as unknown by zeroing built temporarily.
   const effectiveVessel = refYear != null
     ? vessel
     : { ...vessel, built: null };
   const effectiveRefYear = refYear ?? 0;
-  const result = computeVesselVetting(effectiveVessel, { refYear: effectiveRefYear });
+  const result = computeVesselVetting(effectiveVessel, { refYear: effectiveRefYear, detentionCount });
   const rationale = result.badges.length > 0
     ? `Items to confirm before fixing: ${result.badges.join(', ')}.`
     : result.factors.every((f) => f.verdict === 'unknown')
@@ -549,10 +558,14 @@ export interface FitBreakdownInput {
   refYear?: number;
   /** Pre-computed TCE $/day fed into the economics gradient factor. Absent/undefined → no cap (conservative). */
   tceUsdPerDay?: number | null;
+  /** PSC detentions in lookback window (resolved upstream where db is in scope). Absent → PSC factor omitted (neutral). */
+  detentionCount?: number;
+  /** Charterer credit tier (counterparty side). Absent/null → no penalty (unknown = neutral). */
+  chartererTier?: 'blue-chip' | 'second' | 'weak' | null;
 }
 
 export function computeFitBreakdown(input: FitBreakdownInput): FitBreakdown {
-  const { cargo, vessel, readiness, sanctions, hardFilters, refYear, tceUsdPerDay } = input;
+  const { cargo, vessel, readiness, sanctions, hardFilters, refYear, tceUsdPerDay, detentionCount, chartererTier } = input;
   const desc = cfValue(cargo.cargoDescription);
   const partCargo = isPartCargo(desc);
 
@@ -570,7 +583,7 @@ export function computeFitBreakdown(input: FitBreakdownInput): FitBreakdown {
     scoreCranes(vessel.geared, cfValue(cargo.originPort)),
     scoreVolume(cargoWtMax, desc, vessel.grainCapacity, cargo.stowageFactor),
     scoreDraft(hardFilters),
-    scoreVetting(vessel, refYear),
+    scoreVetting(vessel, refYear, detentionCount),
     scoreEconomics(tceUsdPerDay, dwt),
   ];
 
@@ -578,7 +591,8 @@ export function computeFitBreakdown(input: FitBreakdownInput): FitBreakdown {
   // Sanctions adjustment — MEDIUM trims 8 pts off (matches legacy -10 from
   // scoreBreakdown, scaled to the smaller dynamic range broker views).
   const sanctionsPenalty = sanctions?.risk === 'MEDIUM' ? 8 : 0;
-  let fit = rawSum - sanctionsPenalty;
+  const chartererPenalty = chartererTier ? CHARTERER_TIER_PENALTY[chartererTier] : 0;
+  let fit = rawSum - sanctionsPenalty - chartererPenalty;
 
   // ── Gating caps — broker-reality overrides the linear sum. ────────────────
   // A single killing factor (late, gross under-util, uneconomic ballast) makes
@@ -639,6 +653,7 @@ export function computeFitBreakdown(input: FitBreakdownInput): FitBreakdown {
     partCargo,
     vesselClass: classifyVesselByDwt(dwt),
     sanctionsPenalty,
+    chartererPenalty,
     appliedCap,
     inputs: {
       distanceNm: readiness?.distanceNm ?? null,
