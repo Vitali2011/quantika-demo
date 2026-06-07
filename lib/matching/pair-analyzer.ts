@@ -7,6 +7,7 @@ import type {
   BlockedMatch,
   ParsedCargo,
   ParsedVessel,
+  EconomicsResult,
 } from '@/lib/types';
 import { cfValue, isRange } from '@/lib/types';
 import { computeMatchConfidence } from '@/lib/confidence';
@@ -21,7 +22,7 @@ import { validateDates, isLaycanValid } from '@/lib/sailing/date-sanity';
 import { checkSanctions } from '@/lib/validation/sanctions';
 import { enrichReasons } from '@/lib/matching/reason-enricher';
 import { applyHoldCleanliness } from '@/lib/matching/hold-cleanliness';
-import { buildMatchEconomics, estimateFreightRate, computeEstimatedTce, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
+import { buildMatchEconomics, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
 import { resolveFreightRate } from '@/lib/matching/freight-resolver';
 import { getBalticDayRate } from '@/lib/market/baltic-freight';
 import type Database from 'better-sqlite3';
@@ -236,6 +237,85 @@ function buildAnalysisMap(pairs: PairAnalysis[]): Map<string, PairAnalysis> {
     map.set(pairKey(p.cargoEmailId, p.cargoItemIndex, p.vesselEmailId, p.vesselItemIndex), p);
   }
   return map;
+}
+
+/**
+ * Pure helper — build the EconomicsResult for a single match.
+ *
+ * Moves the enrichment-loop body (formerly pair-analyzer.ts:749-808) into a
+ * reusable function so it can be called in the pre-fit loop (before sort/partition)
+ * and the result fed into computeFitBreakdown as the real true-voyage TCE.
+ *
+ * Returns undefined when essential data is missing (no cargo/vessel, no resolvable
+ * port distance) — never throws, never fabricates.
+ */
+function computeMatchEconomicsFor(
+  m: Match,
+  cargos: readonly ParsedCargo[],
+  vessels: readonly ParsedVessel[],
+  db: Database.Database | null | undefined,
+  calcAt: string,
+): EconomicsResult | undefined {
+  const cargo = cargos.find(
+    (c) => c.emailId === m.cargoEmailId && c.itemIndex === m.cargoItemIndex,
+  );
+  const vessel = vessels.find(
+    (v) => v.emailId === m.vesselEmailId && v.itemIndex === m.vesselItemIndex,
+  );
+  if (!cargo || !vessel) return undefined;
+
+  const loadPort = cfValue(cargo.originPort);
+  const dischargePort = cfValue(cargo.destinationPort);
+  const distanceResult =
+    loadPort && dischargePort ? getPortDistance(loadPort, dischargePort) : null;
+  if (!distanceResult || !(distanceResult.nm > 0)) return undefined;
+
+  const cargoType =
+    typeof cargo.cargoType === 'object' && cargo.cargoType !== null && 'value' in cargo.cargoType
+      ? (cargo.cargoType as unknown as { value: string }).value
+      : (cargo.cargoType as string | null);
+
+  const ecoDwt = cfValue(vessel.dwtSummer) ?? 0;
+  const ecoQty = resolveCargoWeight(cargo) ?? 0;
+  const ecoSpeed = parseLeadingNumber(vessel.speedLaden);
+  const resolvedFreight = resolveFreightRate({
+    cargoType,
+    parsedFreightRateUsdPerMt: cargo.freightRateUsd ?? null,
+    vesselDwt: ecoDwt,
+    quantityMt: ecoQty,
+    distanceNm: distanceResult.nm,
+    speedKts: ecoSpeed,
+    balticDayRate: db ? getBalticDayRate(db, ecoDwt) : null,
+  });
+
+  // Ballast reposition distance: open position → load port.
+  // Used by buildMatchEconomics for single-voyage span + ballast-leg Suez detection.
+  const openPosition = cfValue(vessel.openPosition);
+  const ballastResult = openPosition && loadPort
+    ? getPortDistance(openPosition, loadPort)
+    : null;
+  const ballastDistanceNm = ballastResult?.nm ?? null;
+
+  const econ = buildMatchEconomics({
+    cargoType,
+    distanceNm: distanceResult.nm,
+    vesselDwt: ecoDwt,
+    quantityMt: ecoQty,
+    speedKts: ecoSpeed,
+    consumptionMt: parseConsumption(vessel.consumption),
+    loadPort,
+    dischargePort,
+    vesselOpenPosition: openPosition,
+    calculatedAt: calcAt,
+    resolvedFreight: {
+      rate: resolvedFreight.value,
+      source: resolvedFreight.source,
+      confidence: resolvedFreight.confidence,
+    },
+    ballastDistanceNm,
+  });
+
+  return econ ?? undefined;
 }
 
 /**
@@ -651,6 +731,10 @@ export async function analyzePairs(
     }
   }
 
+  // economicsCalcAt is shared across the pre-fit loop so all pairs in the same
+  // session report the same calculatedAt timestamp (deterministic / testable).
+  const economicsCalcAt = new Date().toISOString();
+
   // Attach confidence summary to each match (spec α-02)
   for (const m of matches) {
     const cargo = cargos.find(
@@ -665,31 +749,17 @@ export async function analyzePairs(
     // ── Broker-facing fit-% + breakdown (fit-loop 2026-05-31) ───────────────
     // Continuous, per-factor, date-independent. Additive — does not replace
     // legacy `score`/`matchLevel`, only surfaces a transparent broker view.
+    //
+    // True-voyage TCE (Task 2): economics are computed here — before sort/partition —
+    // so the real ballast+canal TCE feeds into computeFitBreakdown for every pair,
+    // including those that end up in lowConfidenceMatches. The old crude preFitTce
+    // (laden-only, no ballast/canal) is replaced by econ?.tceUsdPerDay.
     if (cargo && vessel) {
       const analysis = analysisMap.get(
         pairKey(m.cargoEmailId, m.cargoItemIndex, m.vesselEmailId, m.vesselItemIndex),
       );
-      // Pre-fit TCE for economic cap (C3 #783): cheap arithmetic, no LLM.
-      // Missing distance → undefined → no cap (conservative).
-      let preFitTce: number | undefined;
-      const preFitLoadPort = cfValue(cargo.originPort);
-      const preFitDischargePort = cfValue(cargo.destinationPort);
-      const preFitDist = preFitLoadPort && preFitDischargePort
-        ? getPortDistance(preFitLoadPort, preFitDischargePort) : null;
-      if (preFitDist && preFitDist.nm > 0) {
-        const preFitCargoType =
-          typeof cargo.cargoType === 'object' && cargo.cargoType !== null && 'value' in cargo.cargoType
-            ? (cargo.cargoType as unknown as { value: string }).value
-            : (cargo.cargoType as string | null);
-        const preFitDwt = cfValue(vessel.dwtSummer) ?? 0;
-        const preFitQty = cfValue(cargo.weightMt) ?? 0;
-        const preFitSpeed = parseLeadingNumber(vessel.speedLaden);
-        const preFitCons = parseConsumption(vessel.consumption);
-        const freightEst = estimateFreightRate(preFitCargoType, preFitDist.nm, preFitDwt);
-        preFitTce = computeEstimatedTce(
-          freightEst, preFitDist.nm, preFitDwt, preFitQty, preFitSpeed, preFitCons,
-        ).tce_usd_per_day;
-      }
+      const econ = computeMatchEconomicsFor(m, cargos, vessels, db, economicsCalcAt);
+      if (econ) m.economics = econ;
       const fb = computeFitBreakdown({
         cargo,
         vessel,
@@ -697,7 +767,7 @@ export async function analyzePairs(
         sanctions: analysis?.sanctions,
         hardFilters: analysis?.hardFilters,
         refYear,
-        tceUsdPerDay: preFitTce,
+        tceUsdPerDay: econ?.tceUsdPerDay ?? null,
       });
       m.fitPercent = fb.fitPercent;
       m.fitBreakdown = fb;
@@ -736,75 +806,6 @@ export async function analyzePairs(
     } else {
       mainMatches.push(m);
     }
-  }
-
-  // ── Economics enrichment (spec L2 #5 + #6) ─────────────────────────────────
-  // Display-only: computed AFTER the realism partition so it can never affect
-  // score, ranking, or bucketing. Only good/possible main matches get economics.
-  // Distance is the laden voyage (load → discharge) via getPortDistance — the same
-  // source compute-matches.ts uses to persist tce_usd_per_day, so the per-day
-  // figure here equals the persisted column. JWC war-risk (#6) is folded in by
-  // buildMatchEconomics. No data → economics stays undefined (never throws).
-  const economicsCalcAt = new Date().toISOString();
-  for (const m of mainMatches) {
-    const cargo = cargos.find(
-      (c) => c.emailId === m.cargoEmailId && c.itemIndex === m.cargoItemIndex,
-    );
-    const vessel = vessels.find(
-      (v) => v.emailId === m.vesselEmailId && v.itemIndex === m.vesselItemIndex,
-    );
-    if (!cargo || !vessel) continue;
-
-    const loadPort = cfValue(cargo.originPort);
-    const dischargePort = cfValue(cargo.destinationPort);
-    const distanceResult =
-      loadPort && dischargePort ? getPortDistance(loadPort, dischargePort) : null;
-    if (!distanceResult || !(distanceResult.nm > 0)) continue;
-
-    const cargoType =
-      typeof cargo.cargoType === 'object' && cargo.cargoType !== null && 'value' in cargo.cargoType
-        ? (cargo.cargoType as unknown as { value: string }).value
-        : (cargo.cargoType as string | null);
-
-    const ecoDwt = cfValue(vessel.dwtSummer) ?? 0;
-    const ecoQty = resolveCargoWeight(cargo) ?? 0;
-    const ecoSpeed = parseLeadingNumber(vessel.speedLaden);
-    const resolvedFreight = resolveFreightRate({
-      cargoType,
-      parsedFreightRateUsdPerMt: cargo.freightRateUsd ?? null,
-      vesselDwt: ecoDwt,
-      quantityMt: ecoQty,
-      distanceNm: distanceResult.nm,
-      speedKts: ecoSpeed,
-      balticDayRate: db ? getBalticDayRate(db, ecoDwt) : null,
-    });
-    // Ballast reposition distance: open position → load port (overhaul step 2).
-    // Used by buildMatchEconomics for single-voyage span + ballast-leg Suez detection.
-    const openPosition = cfValue(vessel.openPosition);
-    const ballastResult = openPosition && loadPort
-      ? getPortDistance(openPosition, loadPort)
-      : null;
-    const ballastDistanceNm = ballastResult?.nm ?? null;
-
-    const econ = buildMatchEconomics({
-      cargoType,
-      distanceNm: distanceResult.nm,
-      vesselDwt: ecoDwt,
-      quantityMt: ecoQty,
-      speedKts: ecoSpeed,
-      consumptionMt: parseConsumption(vessel.consumption),
-      loadPort,
-      dischargePort,
-      vesselOpenPosition: openPosition,
-      calculatedAt: economicsCalcAt,
-      resolvedFreight: {
-        rate: resolvedFreight.value,
-        source: resolvedFreight.source,
-        confidence: resolvedFreight.confidence,
-      },
-      ballastDistanceNm,
-    });
-    if (econ) m.economics = econ;
   }
 
   // ── Economic realism floor (founder profit rule; golden-set GS-longballast-kandla) ──
