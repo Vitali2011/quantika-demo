@@ -34,12 +34,14 @@
 
 ### Статус по уровням
 
+> **Ground-truth recon 2026-06-07** (4 read-only субагента, claim-vs-code на main `a674ff09`): L1 🟢 подтверждён; ядро L2 (#846) real, но money-входы (port-DA/bunker/ETS/war-в-per-day) = 0/константа → ранкинг де-факто по фрахт+бункер+канал+span; L3 каркас стоит, 3 провода (PSC/charterer/CII) built-but-not-called = «провести, не строить»; L4 untouched, НО live-скраперы Baltic/bunker/EUA УЖЕ существуют (демо заморожено на static-seed). Поправки вшиты в строки ниже.
+
 | Уровень | Цель | Статус | Что осталось |
 |---|---|---|---|
-| **L1 «не врёт»** | парсинг + корзины + гейты | 🟢 ~готов | `draft`-фактор в fit-% всегда conservative (display; hard-гейт работает отдельно) — мелочь |
+| **L1 «не врёт»** | парсинг + корзины + гейты | 🟢 готов | `draft`-фактор — живой data-driven pass/fail (вес 2/100), НЕ «display-only» (поправка recon); gap = неимплементированная «marginal ±0.5m» полоса из docstring — мелочь |
 | **L2 «полезен»** | TCE+war-risk+фрахт в экономику И в ранкинг | 🟢 ядро #841 + **TCE-в-ранкинг #846** | port-DA, carbon, war-в-per-day-TCE, свежий фрахт, сужение полос |
-| **L3 «надёжен»** ← цель | passport/CII/IMSBC/чистота в ранкинг | 🟡 ветинг в fit И в ранкинге (#846); данные частично голодают | PSC→ветинг, CII-данные, снос мёртвого паспорта, IMSBC/чистота-в-fit |
-| **L4 «pro»** | PSC-live/Baltic-live/FFA/credit | ⚪ платно, опц. | вне бесплатной планки |
+| **L3 «надёжен»** ← цель | passport/CII/IMSBC/чистота в ранкинг | 🟡 ветинг в fit И в ранкинге (#846, вес 7); данные частично голодают | PSC→ветинг, charterer-тир→fit, CII-данные, снос мёртвого паспорта, IMSBC/чистота-в-fit (PSC/charterer/CII — все built-but-not-called) |
+| **L4 «pro»** | PSC-live/Baltic-live(лицензия)/FFA/credit | ⚪ платно, опц. | вне бесплатной планки; NB (recon): free-mirror скрейпы Baltic/bunker/EUA УЖЕ в коде (см. хвост #8) — разморозка ≠ L4 |
 
 ### Реально открытые хвосты — приоритезированы
 
@@ -55,7 +57,7 @@
 
 **🆕 Новое (нужен дизайн/данные, не проводка):**
 
-8. **Свежий фрахт** — Baltic = stale `static-seed` (price_date 2026-05-09). Live-фид = граница L4.
+8. **Свежий фрахт** — Baltic/bunker/EUA в demo-seed = static-seed (Baltic/bunker 2026-05-09, eua 05-04). **ПОПРАВКА recon 2026-06-07:** живой стек скраперов+systemd-таймеров УЖЕ существует (`lib/market/handybulk-scraper.ts`, `lib/knowledge/{bunker,eua}/*`, `ops/systemd/*.timer`) — скрейпит бесплатные публ. зеркала (handybulk/tradingeconomics), НЕ Baltic-Exchange-лицензию. Демо заморожено → таймеры по застывшим часам не бьют. Значит «свежие цены в демо» = разморозка/прогон скрейпа (дёшево), НЕ платная подписка. Платная Baltic-Exchange-лицензия = граница L4.
 9. **Сезонность / погода / ice-class** — в коде нет вообще. Низкий приоритет для L3.
 10. **Сужение golden-полос** (step 6) — когда TCE надёжен end-to-end, перепривязать TCE/distance-полосы к брокерским центрам (`verified-pairs.json`).
 
@@ -69,7 +71,7 @@
 |---|---|---|---|---|
 | charterers (кредит-тир, 13) | нет | нет | `charterers-repository.ts:18 getCharterer()` построен, не зовётся. Вшить тир-штраф (weak→−N) при `computeFitBreakdown` (`pair-analyzer.ts:693`); `db` уже в scope (`options.db`). | **P0** |
 | psc_detention_history (16) | нет | нет | `computeVesselVetting` (`vessel-vetting.ts:122`) = 5 факторов без PSC; `psc-repository.ts:96 getDetentionCount()` построен, не зовётся. Добавить 6-й суб-фактор. | **P0** |
-| CII-рейтинг | нет | да (вес 9, но данных нет) | `scoreCii` живой, но `ciiRating` ~0/90 (LLM-парс пуст); `cii-lookup.ts:68 lookupCii()` зовётся только на vessel-странице. Обогащать в `analyzePairs` (`pair-analyzer.ts:259`) по IMO. | **P0** |
+| CII-рейтинг | нет | да (вес 7, но данных нет) | `scoreCii` живой, но `ciiRating` ~0/90 (LLM-парс пуст); `cii-lookup.ts:68 lookupCii()` зовётся только на vessel-странице. Обогащать в `analyzePairs` (`pair-analyzer.ts:259`) по IMO. | **P0** |
 | ofac_entities (санкции-DB) | частично | — | `checkSanctions` (`sanctions.ts:272`) юзает хардкод флаг/порт-карты, НЕ живую `ofac_entities`. Добавить name-lookup по IMO/owner. | P1 |
 | flag/class/age | нет | да (вшито в scoreVetting) | в fit есть; в `m.score` вет-компонента нет (`match-scoring.ts:459`). | P2 |
 
