@@ -141,7 +141,10 @@ describe('scoreBallast — class-aware continuous', () => {
 });
 
 describe('computeFitBreakdown — anchor scorecard', () => {
-  it('ANCHOR-HIGH: slabs-like (util 99%, 205nm, geared, ideal timing) → fit ≥ 88', () => {
+  it('ANCHOR-HIGH: slabs-like (util 99%, 205nm, geared, ideal timing) → fit ≥ 80', () => {
+    // NOTE: threshold updated from 88 → 80 after Task 1 (economics factor added,
+    // weights rescaled ×82/100). Without explicit TCE the economics component
+    // scores neutral (9/18 = 9 pts). The anchor is still clearly HIGH.
     const cargo = makeCargo({
       cargoDescription: { value: 'steel slabs', confidence: 'confirmed' },
       cargoType: 'BREAK_BULK',
@@ -155,7 +158,7 @@ describe('computeFitBreakdown — anchor scorecard', () => {
     });
     const readiness: MatchReadiness = { ...READY_IDEAL, distanceNm: 205 };
     const fb = computeFitBreakdown({ cargo, vessel, readiness, sanctions: SANCTIONS_OK, hardFilters: HF_PASS });
-    expect(fb.fitPercent).toBeGreaterThanOrEqual(88);
+    expect(fb.fitPercent).toBeGreaterThanOrEqual(80);
   });
 
   it('ANCHOR-HIGH: wheat-like (util 75%, 580nm) → fit ∈ [70, 85]', () => {
@@ -257,6 +260,7 @@ describe('computeFitBreakdown — anchor scorecard', () => {
   it('SCORE-INVARIANT: rationale text changes must not shift any numeric score', () => {
     // Fixed fixture — changing only rationale/why strings in fit-breakdown.ts
     // must leave every component.score and fitPercent bit-for-bit identical.
+    // NOTE: scores updated in Task 1 (economics factor added, weights ×82/100).
     const cargo = makeCargo({
       cargoDescription: { value: 'steel slabs', confidence: 'confirmed' },
       cargoType: 'BREAK_BULK',
@@ -273,25 +277,27 @@ describe('computeFitBreakdown — anchor scorecard', () => {
     const readiness: MatchReadiness = { ...READY_IDEAL, distanceNm: 205 };
     const fb = computeFitBreakdown({ cargo, vessel, readiness, sanctions: SANCTIONS_OK, hardFilters: HF_PASS });
 
-    expect(fb.fitPercent).toBe(91.8);
+    expect(fb.fitPercent).toBe(84.5);
     expect(fb.components.map((c) => ({ factor: c.factor, score: c.score }))).toEqual([
-      { factor: 'utilisation', score: 23 },
-      { factor: 'timing',      score: 18 },
-      { factor: 'ballast',     score: 14 },
-      { factor: 'classFit',    score: 11 },
-      { factor: 'cargoType',   score: 7 },
-      { factor: 'cranes',      score: 7 },
-      { factor: 'volume',      score: 3.4 },
-      { factor: 'draft',       score: 3 },
-      { factor: 'vetting',     score: 5.4 },
+      { factor: 'utilisation', score: 19 },
+      { factor: 'timing',      score: 15 },
+      { factor: 'ballast',     score: 11.7 },
+      { factor: 'classFit',    score: 9 },
+      { factor: 'cargoType',   score: 6 },
+      { factor: 'cranes',      score: 6 },
+      { factor: 'volume',      score: 2.6 },
+      { factor: 'draft',       score: 2 },
+      { factor: 'vetting',     score: 4.2 },
+      { factor: 'economics',   score: 9 },
     ]);
   });
 
-  it('breakdown lists all eight factors with non-null rationale', () => {
+  it('breakdown lists all ten factors with non-null rationale', () => {
+    // NOTE: updated from 9 → 10 in Task 1 (economics factor added).
     const cargo = makeCargo();
     const vessel = makeVessel();
     const fb = computeFitBreakdown({ cargo, vessel, readiness: READY_IDEAL, sanctions: SANCTIONS_OK, hardFilters: HF_PASS });
-    expect(fb.components).toHaveLength(9);
+    expect(fb.components).toHaveLength(10);
     for (const c of fb.components) {
       expect(typeof c.label).toBe('string');
       expect(typeof c.rationale).toBe('string');
@@ -433,14 +439,18 @@ describe('computeFitBreakdown — economic cap (C3 #783)', () => {
   });
   const readiness580: MatchReadiness = { ...READY_IDEAL, distanceNm: 580 };
 
-  it('negative TCE → capped ≤ 40, appliedCap reason mentions loss/uneconomic', () => {
+  it('negative TCE → economics gradient (no binary cap), lower than neutral but > 40', () => {
+    // NOTE: Task 1 removed the binary tce<0 → ceiling 40 cap.
+    // Now economics is a smooth gradient — negative TCE lowers the score
+    // but does NOT trigger appliedCap. Hard money-loser exclusion is done
+    // by pair-analyzer.ts bucket routing (floor), not by a cap here.
     const fb = computeFitBreakdown({
       cargo: cargo75, vessel: makeVessel(), readiness: readiness580,
       sanctions: SANCTIONS_OK, hardFilters: HF_PASS,
       tceUsdPerDay: -5000,
     });
-    expect(fb.fitPercent).toBeLessThanOrEqual(40);
-    expect(fb.appliedCap?.reason).toMatch(/loss|uneconomic|TCE/i);
+    expect(fb.fitPercent).toBeGreaterThan(40);
+    expect(fb.appliedCap).toBeNull();
   });
 
   it('undefined TCE (absent) → NO cap, fit unchanged vs no-TCE baseline', () => {
@@ -486,7 +496,9 @@ describe('computeFitBreakdown — economic cap (C3 #783)', () => {
     expect(fb.fitPercent).toBeGreaterThan(40);
   });
 
-  it('large-positive TCE (20 000 $/day) → NO cap, fit unchanged', () => {
+  it('large-positive TCE (20 000 $/day) → NO cap, fit HIGHER than neutral baseline', () => {
+    // NOTE: Task 1 — economics is now a gradient reward, not just a penalty cap.
+    // Large positive TCE rewards the pair with near-maximum economics score (≈18).
     const baseline = computeFitBreakdown({
       cargo: cargo75, vessel: makeVessel(), readiness: readiness580,
       sanctions: SANCTIONS_OK, hardFilters: HF_PASS,
@@ -496,10 +508,14 @@ describe('computeFitBreakdown — economic cap (C3 #783)', () => {
       sanctions: SANCTIONS_OK, hardFilters: HF_PASS,
       tceUsdPerDay: 20000,
     });
-    expect(fb.fitPercent).toBe(baseline.fitPercent);
+    expect(fb.fitPercent).toBeGreaterThan(baseline.fitPercent);
+    expect(fb.appliedCap).toBeNull();
   });
 
-  it('economic cap + EU-age cap: lowest ceiling wins (econ 40 < EU 55)', () => {
+  it('negative TCE + EU-age cap: EU-age cap still applies, economics is gradient', () => {
+    // NOTE: Task 1 removed the binary tce<0 ceiling cap.
+    // EU-age cap (ceiling 55) still applies for 25yr+ vessel discharging in EU.
+    // Negative TCE lowers fit via gradient economics — no separate cap.
     const cargoEU = makeCargo({ destinationPort: { value: 'Constanța', confidence: 'confirmed' } });
     const vesselOld = makeVessel({ built: 1999 }); // 27yr @ refYear 2026
     const fb = computeFitBreakdown({
@@ -507,6 +523,8 @@ describe('computeFitBreakdown — economic cap (C3 #783)', () => {
       sanctions: SANCTIONS_OK, hardFilters: HF_PASS,
       refYear: 2026, tceUsdPerDay: -3000,
     });
-    expect(fb.fitPercent).toBeLessThanOrEqual(40);
+    // EU-age cap (ceiling 55) should still be applied
+    expect(fb.fitPercent).toBeLessThanOrEqual(55);
+    expect(fb.appliedCap?.reason).toMatch(/EU discharge|EU PSC/i);
   });
 });

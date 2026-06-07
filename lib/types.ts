@@ -519,7 +519,8 @@ export type FitFactor =
   | 'cranes'
   | 'volume'
   | 'draft'
-  | 'vetting';
+  | 'vetting'
+  | 'economics';
 
 export interface FitBreakdownComponent {
   factor: FitFactor;
