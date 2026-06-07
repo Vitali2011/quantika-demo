@@ -57,6 +57,57 @@
 9. **Сезонность / погода / ice-class** — в коде нет вообще. Низкий приоритет для L3.
 10. **Сужение golden-полос** (step 6) — когда TCE надёжен end-to-end, перепривязать TCE/distance-полосы к брокерским центрам (`verified-pairs.json`).
 
+### 🔌 WIRING BACKLOG — что ДОЛЖНО черпать из БД, но не черпает (аудит 2026-06-07, 4 read-only субагента)
+
+> Phase 1+2 оживили данные (charterers/PSC/port_da/RAG живы в demo-seed.db), но потребители во многих местах «не подключены к розетке». Карта пробелов — подключать по приоритету, чтобы не забыть. **P0** = влияет на подбор (L3-цель); **P1** = деньги/демо-эффект; **P2-P4** = polish/maintenance.
+
+**A. Данные → СКОРИНГ / РАНКИНГ / ВЕТИНГ** (висят в display; движок ранжирует БЕЗ них)
+
+| Источник | В `m.score`? | В `fit`/vetting? | Пробел → куда подключить (file:line) | P |
+|---|---|---|---|---|
+| charterers (кредит-тир, 13) | нет | нет | `charterers-repository.ts:18 getCharterer()` построен, не зовётся. Вшить тир-штраф (weak→−N) при `computeFitBreakdown` (`pair-analyzer.ts:693`); `db` уже в scope (`options.db`). | **P0** |
+| psc_detention_history (16) | нет | нет | `computeVesselVetting` (`vessel-vetting.ts:122`) = 5 факторов без PSC; `psc-repository.ts:96 getDetentionCount()` построен, не зовётся. Добавить 6-й суб-фактор. | **P0** |
+| CII-рейтинг | нет | да (вес 9, но данных нет) | `scoreCii` живой, но `ciiRating` ~0/90 (LLM-парс пуст); `cii-lookup.ts:68 lookupCii()` зовётся только на vessel-странице. Обогащать в `analyzePairs` (`pair-analyzer.ts:259`) по IMO. | **P0** |
+| ofac_entities (санкции-DB) | частично | — | `checkSanctions` (`sanctions.ts:272`) юзает хардкод флаг/порт-карты, НЕ живую `ofac_entities`. Добавить name-lookup по IMO/owner. | P1 |
+| flag/class/age | нет | да (вшито в scoreVetting) | в fit есть; в `m.score` вет-компонента нет (`match-scoring.ts:459`). | P2 |
+
+**B. Данные → ЭКОНОМИКА / TCE** (match-list TCE кормится 0/константой → искажает деньги + корзинный floor)
+
+⚠️ **Два пути TCE:** detail-страница (`/api/voyage/tce` → EconomicsTab/VoyageBreakdownChart) УЖЕ считает port-DA и рисует «Disbursement». Пробелы ниже — в **match-LIST** TCE (`buildMatchEconomics`→persisted `matches.tce_usd_per_day`), который РАНЖИРУЕТ и бакетит. Классическая list≠detail дивергенция.
+
+| Источник | В match-list TCE сейчас | Пробел → file:line | P |
+|---|---|---|---|
+| port_da (94) | **daUsd=0 всегда** | `buildMatchEconomics` (`tce-calculator.ts:260`) не зовёт `getPortDa`; нет `daUsd` в `CanonicalTceInputArgs` (`canonical-tce-inputs.ts:7`). $30-80k/рейс мимо; `db` в scope. | **P1 (высший по деньгам)** |
+| bunker VLSFO | **константа $600/mt** (`tce-calculator.ts:27`) | `getLatestBunkerPrice()` есть, не зовётся из матчинга. | P2 |
+| EUA/ETS | **euLegPercent=0 → ETS=0 всегда** | EU-порт детект не делается; `getLatestEuaPrice()` не зовётся. | P2 |
+| ECA-топливо | **bypassed** | `calculateTCE` имеет ECA-логику (`voyage-calculator.ts:129`), но match-путь не передаёт `ecaZones` → 100% open-ocean VLSFO даже на North-Sea. | P2 |
+| war-risk | константа `JWC_HRA_ZONES`, не таблица (`war-risk.ts:43`) | `war_risk_zones` не читается. Maintenance, не bug сегодня. | P3 |
+| canal | Suez ✓, Panama/Bosporus нет | `buildMatchEconomics` детектит только Suez (`tce-calculator.ts:266`). | P3 |
+| FuelEU | не подключён вообще | `lib/economics/fueleu.ts` есть, не зовётся. | P4 |
+
+**C. Данные → AI-GROUNDING (RAG)**
+
+Работает: parse-cargo→imsbc (`:117`), draft-quote→imsbc+igc (`:56,:82`), match→igc (`:62`), compare-routes→jwc (`:105`), /clauses→bimco (raw SQL).
+
+| Пробел | Корпус | file:line | P |
+|---|---|---|---|
+| **bimco — orphan в LLM** (45 клауз, только raw-поиск, ни в одном LLM-промпте) | bimco | `draft-quote` = естественный дом для инъекции клауз | **P1** |
+| explain-deal «Key Risks» без grounding (LLM-приоры) | imsbc+jwc | `explain-deal/route.ts:268` | P1 |
+| imsbc-check = static JSON 74 vs RAG 116 (неизвестный груз→neutral) | imsbc | `lib/sailing/imsbc-check.ts` | P2 |
+| match-narrative без IMSBC для bulk (coal/ore) | imsbc | `match/route.ts:62` | P2 |
+
+**D. Данные → UI** (живо в БД+API, но невидимо в демо — это и есть Gate5 «не вижу в UI»)
+
+| Данные | Пробел UI (file:line) | P |
+|---|---|---|
+| **RAG (imsbc/igc/jwc)** | backend-only, retrieved-текст нигде не показан; нет панели «Cargo Safety / IMSBC». Минимум: сохранять top-чанк на `ParsedCargo` + collapsible на cargo/match. | **P1 (демо-эффект)** |
+| charterer-тир | НЕ на match-детали/cargo-карточке (`match/[id]/page.tsx`), только отдельная `/charterers` стр. | P1 |
+| /clauses (bimco) | работает, но НЕ в TopNav — только Cmd-K → визитёр не найдёт | P2 |
+| PSC-линк | нет в match `VesselsTab` (есть на vessel-детали + /psc) | P2 |
+| port-DA | ✅ полностью wired в detail (Voyage P&L «Disbursement»); не хватает только «нет DA для порта»-хинта | — |
+
+**Сводка ROI:** P0 = вшить charterer-тир + PSC + CII в подбор (это и есть L3-цель, ядро #3-структурного). По деньгам P1 = port-DA в match-list TCE. По демо-эффекту P1 = вывести RAG/charterer в UI карточек. Самое дешёвое «висит готовое» = bimco→draft-quote (корпус есть, дом есть). **NB:** многие P0/P1 естественно делаются ВНУТРИ #3-структурного (рейтинг→fitPercent), т.к. оба про «вшить данные в подбор».
+
 ### 🧹 Тех-долг (дивергенция регена)
 
 - **`scripts/demo-seed/real-matches.ts` + `build.ts` ОБА обходят `analyzePairs`** (6-арг `computeEstimatedTce`, без ballast/canal/floor) → дрейф от движка. **`regenerate-matches.ts` (→`analyzePairs`) = единственный канонический путь.** Карантин/снос обоих stale-скриптов (СНАЧАЛА проверить, что deploy/CI их не зовёт).
