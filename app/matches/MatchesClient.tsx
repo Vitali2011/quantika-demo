@@ -121,12 +121,12 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
   const [expandedFitBreakdown, setExpandedFitBreakdown] = useState<number | null>(null);
   const [showModal, setShowModal] = useState<{ action: string; count: number } | null>(null);
   const [bulkError, setBulkError] = useState<string | null>(null);
-  const [sortBy, setSortBy] = useState<SortBy>(() => isOwner ? 'tce' : 'fit');
+  const [sortBy, setSortBy] = useState<SortBy>(() => 'fit');
   // Derived-state-during-render resets sort on mode switch without cascading renders.
   const [prevIsOwner, setPrevIsOwner] = useState(isOwner);
   if (prevIsOwner !== isOwner) {
     setPrevIsOwner(isOwner);
-    setSortBy(isOwner ? 'tce' : 'fit');
+    setSortBy('fit');
   }
 
   // CD design state

@@ -64,7 +64,7 @@ export interface CreateMatchInput {
 
 export interface ListMatchesOptions {
   status?: MatchStatus;
-  sortBy: 'score' | 'created_at';
+  sortBy: 'fit_percent' | 'score' | 'created_at';
   sortDir: 'asc' | 'desc';
   limit?: number;
   offset?: number;
@@ -405,7 +405,10 @@ export function listMatches(db: Database.Database, opts: ListMatchesOptions): St
     user_id,
   } = opts;
 
-  const allowedSortBy = sortBy === 'created_at' ? 'created_at' : 'score';
+  const allowedSortBy =
+    sortBy === 'created_at' ? 'created_at'
+    : sortBy === 'fit_percent' && hasFitColumns(db) ? 'COALESCE(fit_percent, -1)'
+    : 'score';
   const allowedSortDir = sortDir === 'asc' ? 'ASC' : 'DESC';
 
   // Shared helper to build non-status conditions (used for both paths below).
