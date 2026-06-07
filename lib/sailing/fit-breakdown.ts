@@ -445,7 +445,7 @@ function clamp01(x: number): number {
 }
 
 function economicsNorm(tceUsdPerDay: number | null | undefined, vesselDwt: number): number {
-  if (tceUsdPerDay == null || !(vesselDwt > 0)) return 0.5;
+  if (tceUsdPerDay == null || !Number.isFinite(tceUsdPerDay) || !(vesselDwt > 0)) return 0.5;
   const breakeven = vesselDwt <= 15_000 ? 1_500
     : vesselDwt <= 40_000 ? 3_000
     : vesselDwt <= 65_000 ? 5_500
@@ -547,8 +547,8 @@ export interface FitBreakdownInput {
   hardFilters: MatchHardFilters | undefined;
   /** Calendar year used for vessel-age arithmetic. If absent, age is treated as unknown. */
   refYear?: number;
-  /** Pre-computed TCE $/day for the economic cap. Absent/undefined → no cap (conservative). */
-  tceUsdPerDay?: number;
+  /** Pre-computed TCE $/day fed into the economics gradient factor. Absent/undefined → no cap (conservative). */
+  tceUsdPerDay?: number | null;
 }
 
 export function computeFitBreakdown(input: FitBreakdownInput): FitBreakdown {
