@@ -97,6 +97,20 @@ function scorePandi(pandi: string | null): VettingFactor {
   return { key: 'pandi', label: 'P&I insurance', verdict: 'caution', rationale: `${pandi} — not an IG P&I club` };
 }
 
+/** PSC detention history — detentions in the lookback window are the single
+ *  strongest port-state-control trust signal. 0 → clean; 1 → caution; ≥2 → warn.
+ *  Caller supplies the count (resolved from psc_detention_history by IMO upstream,
+ *  where the db handle lives) — this module stays pure / db-free. */
+function scorePsc(detentionCount: number): VettingFactor {
+  if (detentionCount <= 0) {
+    return { key: 'psc', label: 'PSC detentions', verdict: 'ok', rationale: 'No port-state-control detentions on record in the lookback window.' };
+  }
+  if (detentionCount === 1) {
+    return { key: 'psc', label: 'PSC detentions', verdict: 'caution', rationale: '1 PSC detention in the lookback window — elevated inspection risk.' };
+  }
+  return { key: 'psc', label: 'PSC detentions', verdict: 'warn', rationale: `${detentionCount} PSC detentions in the lookback window — high inspection / off-hire risk.` };
+}
+
 function scoreCii(ciiRating: 'A' | 'B' | 'C' | 'D' | 'E' | null | undefined): VettingFactor {
   if (ciiRating == null) {
     return { key: 'cii', label: 'CII rating', verdict: 'unknown', rationale: 'CII rating not recorded' };
@@ -121,9 +135,9 @@ function scoreCii(ciiRating: 'A' | 'B' | 'C' | 'D' | 'E' | null | undefined): Ve
  */
 export function computeVesselVetting(
   vessel: Pick<ParsedVessel, 'flag' | 'built' | 'classSociety' | 'pandi' | 'ciiRating'>,
-  opts: { refYear: number },
+  opts: { refYear: number; detentionCount?: number },
 ): VesselVettingResult {
-  const { refYear } = opts;
+  const { refYear, detentionCount } = opts;
 
   const factors: VettingFactor[] = [
     scoreFlag(vessel.flag),
@@ -132,6 +146,11 @@ export function computeVesselVetting(
     scorePandi(vessel.pandi),
     scoreCii(vessel.ciiRating),
   ];
+  // PSC is optional: only included when the caller supplies a count (db-resolved).
+  // Absent → 5 factors, preserving every existing caller's behaviour.
+  if (detentionCount != null) {
+    factors.push(scorePsc(detentionCount));
+  }
 
   const avgShare =
     factors.reduce((sum, f) => sum + VETTING_VERDICT_SHARE[f.verdict], 0) / factors.length;

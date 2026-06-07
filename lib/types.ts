@@ -545,6 +545,8 @@ export interface FitBreakdown {
   vesselClass: string;
   /** Pts deducted for MEDIUM sanctions risk (HIGH/blocking is filtered upstream). */
   sanctionsPenalty: number;
+  /** Pts deducted for weak charterer credit tier (counterparty-side penalty). */
+  chartererPenalty?: number;
   /** Killing-factor cap that lowered the headline fitPercent below the linear sum
    *  (e.g. 'late' verdict → cap 38). Null when no cap applied. */
   appliedCap: { reason: string; ceiling: number } | null;

@@ -28,6 +28,8 @@ import { getBalticDayRate } from '@/lib/market/baltic-freight';
 import { sumMatchPortDaUsd } from '@/lib/port-da/match-da';
 import type Database from 'better-sqlite3';
 import { getPortDistance } from '@/lib/sailing/port-distances';
+import { getDetentionCount } from '@/lib/market/psc-repository';
+import { resolveChartererTier } from '@/lib/matching/charterer-tier';
 import { formatNumber } from '@/lib/utils';
 import { LLMTimeoutError } from '@/lib/openai';
 import { now } from '@/lib/clock';
@@ -65,6 +67,9 @@ export type AiScorer = (payload: {
  * (penalised, possibly weak) and ≥3-week idle is bucketed.
  */
 export const IDLE_HARD_MAX_GAP_DAYS = 21;
+
+// PSC detention lookback for the vetting signal: 3 years before refYear.
+const PSC_LOOKBACK_YEARS = 3;
 
 /** Outcome of the matching pipeline: the main "worth calling" list plus the
  *  preserved side-buckets (no pair is ever dropped — see the partition below). */
@@ -767,6 +772,11 @@ export async function analyzePairs(
       );
       const econ = computeMatchEconomicsFor(m, cargos, vessels, db, economicsCalcAt);
       if (econ) m.economics = econ;
+      const imo = vessel.imo;
+      const detentionCount = db && imo
+        ? getDetentionCount(db, imo, `${refYear - PSC_LOOKBACK_YEARS}-01-01`)
+        : undefined; // no db/IMO → leave PSC neutral (omit factor)
+      const chartererTier = db ? resolveChartererTier(db, cargo) : null;
       const fb = computeFitBreakdown({
         cargo,
         vessel,
@@ -775,6 +785,8 @@ export async function analyzePairs(
         hardFilters: analysis?.hardFilters,
         refYear,
         tceUsdPerDay: econ?.tceUsdPerDay ?? null,
+        detentionCount,
+        chartererTier,
       });
       m.fitPercent = fb.fitPercent;
       m.fitBreakdown = fb;

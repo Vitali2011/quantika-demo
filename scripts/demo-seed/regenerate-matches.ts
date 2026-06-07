@@ -41,6 +41,22 @@ import { cfValue, type ParsedCargo, type ParsedVessel, type Match, type MatchWor
 import { seedCharterersWithDb } from '../knowledge/seeds/seed-charterers';
 import { seedPscHistoryWithDb } from '../knowledge/seeds/seed-psc-history';
 import { seedPortDa, type BaselinePort } from '../seed-port-da';
+import { lookupCii } from '@/lib/imo/cii-lookup';
+
+// ── CII hydration helper ──────────────────────────────────────────────────────
+
+/** Hydrate vessel.ciiRating from the static cii.json dataset by IMO (offline,
+ *  no LLM). 'unknown'/no-IMO → leave null (neutral). Never overwrites an
+ *  existing rating. Mutates the vessels in place. */
+export async function hydrateCiiRatings(vessels: ParsedVessel[]): Promise<void> {
+  for (const vessel of vessels) {
+    if (vessel.ciiRating != null) continue;
+    const imo = vessel.imo;
+    if (!imo) continue;
+    const { rating } = await lookupCii(imo);
+    vessel.ciiRating = rating === 'unknown' ? null : rating;
+  }
+}
 
 // ── Phase 1: seed reference tables into the regen's own db handle ────────────
 
@@ -443,6 +459,9 @@ async function main() {
     if (changed && !DRY) { updateParsed.run(JSON.stringify(items), r.id, r.parse_type); normalizedRows++; }
   }
   console.log(`[regen] frozen=${frozen} refYear=${refYear} · cargos=${cargos.length} vessels=${vessels.length} · normalized parsed rows=${normalizedRows}`);
+
+  await hydrateCiiRatings(vessels);
+  console.log(`[regen] CII hydrated for ${vessels.filter((v) => v.ciiRating != null).length}/${vessels.length} vessels`);
 
   // ── 2. Run the real engine (no LLM — deterministic gates + sweep + fit) ──
   const result = await analyzePairs(cargos, vessels, async () => [], { refYear, today, db });

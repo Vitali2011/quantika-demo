@@ -8,6 +8,7 @@ import {
   scoreBallast,
   scoreUtilisation,
   scoreTiming,
+  scoreVetting,
 } from '../fit-breakdown';
 import type { MatchReadiness, MatchSanctions, MatchHardFilters, ParsedCargo, ParsedVessel } from '@/lib/types';
 
@@ -526,5 +527,54 @@ describe('computeFitBreakdown — economic cap (C3 #783)', () => {
     // EU-age cap (ceiling 55) should still be applied
     expect(fb.fitPercent).toBeLessThanOrEqual(55);
     expect(fb.appliedCap?.reason).toMatch(/EU discharge|EU PSC/i);
+  });
+});
+
+describe('scoreVetting — PSC pass-through', () => {
+  it('detentions lower the vetting component score', () => {
+    const vessel = makeVessel({ flag: 'Marshall Islands', classSociety: 'DNV', built: 2018, pandi: 'Gard', ciiRating: 'B' });
+    const clean = scoreVetting(vessel, 2026, 0);
+    const detained = scoreVetting(vessel, 2026, 2);
+    expect(detained.score).toBeLessThan(clean.score);
+    expect(detained.factor).toBe('vetting');
+  });
+
+  it('omitting detentionCount preserves legacy 5-factor behaviour', () => {
+    const vessel = makeVessel({ flag: 'Marshall Islands', classSociety: 'DNV', built: 2018, pandi: 'Gard', ciiRating: 'B' });
+    const legacy = scoreVetting(vessel, 2026);
+    const zero = scoreVetting(vessel, 2026, 0);
+    // legacy (no PSC factor) scores at least as high as zero-detention (PSC ok adds a 6th 1.0 share)
+    expect(legacy.score).toBeGreaterThanOrEqual(zero.score - 0.01);
+  });
+});
+
+describe('computeFitBreakdown — charterer credit-tier penalty', () => {
+  function baseFitInput() {
+    return {
+      cargo: makeCargo(),
+      vessel: makeVessel({ built: 2018, flag: 'Marshall Islands', classSociety: 'DNV', pandi: 'Gard', ciiRating: 'B' }),
+      readiness: READY_IDEAL,
+      sanctions: SANCTIONS_OK,
+      hardFilters: HF_PASS,
+      refYear: 2026,
+    };
+  }
+
+  it('weak tier lowers fitPercent vs no tier (default −4)', () => {
+    const withTier = computeFitBreakdown({ ...baseFitInput(), chartererTier: 'weak' });
+    const without = computeFitBreakdown({ ...baseFitInput() });
+    expect(withTier.fitPercent).toBeLessThan(without.fitPercent);
+    expect(without.fitPercent - withTier.fitPercent).toBeCloseTo(4, 0);
+  });
+
+  it('blue-chip / second / undefined → no penalty', () => {
+    const blue = computeFitBreakdown({ ...baseFitInput(), chartererTier: 'blue-chip' });
+    const none = computeFitBreakdown({ ...baseFitInput() });
+    expect(blue.fitPercent).toBe(none.fitPercent);
+  });
+
+  it('still exactly 10 components (penalty is not a component)', () => {
+    const fb = computeFitBreakdown({ ...baseFitInput(), chartererTier: 'weak' });
+    expect(fb.components).toHaveLength(10);
   });
 });
