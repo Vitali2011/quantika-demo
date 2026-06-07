@@ -1022,3 +1022,16 @@ describe('getPortDistance — Phase D1 hand-curated corridor pairs', () => {
     });
   });
 });
+
+describe('vague Ukraine discharge resolves to Black-Sea-plausible distance', () => {
+  it('Iskenderun → "Port of Call Ukraine" resolves to a Black-Sea-plausible distance (< 1500nm), not 7811', () => {
+    const d = getPortDistance('Iskenderun', 'Port of Call Ukraine');
+    expect(d).not.toBeNull();
+    expect(d!.nm).toBeGreaterThan(400);   // real Iskenderun→Odesa ≈ 760nm
+    expect(d!.nm).toBeLessThan(1500);     // hard ceiling — 7811 is the bug
+  });
+
+  it('"Ukraine" alone resolves to a Black-Sea representative port', () => {
+    expect(normalizePortName('Ukraine')).toBe('Odesa');
+  });
+});

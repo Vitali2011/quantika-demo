@@ -110,6 +110,10 @@ const PORT_ALIASES: Record<string, KnownPort> = {
   'reni': 'Izmail',             // Reni is a nearby Danube port, use Izmail as proxy
   'izmail / reni': 'Izmail',
   'izmayil': 'Izmail',
+  // Vague country/region discharge labels → representative Black Sea port (avoids fuzzy mis-resolution).
+  // "Port of Call Ukraine" → stripPortPrefix → "Call Ukraine" → parts → 'ukraine' → Odesa.
+  'ukraine': 'Odesa',
+  'call ukraine': 'Odesa',
   'yuzhny': 'Yuzhny',
   'pivdennyi': 'Yuzhny',        // Ukrainian name for Yuzhny port
   'pivdenniy': 'Yuzhny',
