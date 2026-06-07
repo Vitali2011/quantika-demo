@@ -773,6 +773,22 @@ export async function analyzePairs(
       m.fitBreakdown = fb;
       // Derive matchLevel from fitPercent (spec §3.4); safety demotions below may lower it.
       m.matchLevel = deriveMatchLevelFromFit(m.fitPercent);
+      // Safety demotion: ballast + size cap may lower the fit-derived level.
+      // Must run AFTER the fit-based level assignment so demotions are not overwritten.
+      if (m.matchLevel === 'good') {
+        const capResult = applyBallastSizeCap({
+          match: m,
+          distanceNm: analysis?.readiness?.distanceNm ?? null,
+          vesselDwt: cfValue(vessel.dwtSummer),
+          vesselDwcc: cfValue(vessel.dwcc),
+          cargoWeightMax: cargo.weightMtMax ?? cfValue(cargo.weightMt),
+          cargoDescription: cfValue(cargo.cargoDescription),
+        });
+        // Only copy matchLevel and issues — capResult is a shallow copy so fitPercent/
+        // fitBreakdown are not preserved there; m already holds the correct fit data.
+        m.matchLevel = capResult.matchLevel;
+        m.issues = capResult.issues;
+      }
     }
     // ── Hold cleanliness (L5C-matrix) ─────────────────────────────────────────
     if (cargo && vessel) {
