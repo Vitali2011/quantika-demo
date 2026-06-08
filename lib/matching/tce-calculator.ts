@@ -155,6 +155,7 @@ export function computeEstimatedTce(
   originEu?: boolean,
   destEu?: boolean,
   euaPriceEur?: number,
+  excludeWarRiskFromDailyTce?: boolean,
 ): TceEstimate {
   const inputs = buildCanonicalTceInputs({
     vesselDwt: vessel_dwt,
@@ -175,7 +176,7 @@ export function computeEstimatedTce(
     originEu,
     destEu,
   });
-  const result = calculateTCE(inputs);
+  const result = calculateTCE({ ...inputs, excludeWarRiskFromDailyTce });
 
   return {
     tce_usd_per_day: result.daily_tce_usd,
@@ -298,6 +299,10 @@ export interface MatchEconomicsInput {
   bunkerPriceUsdPerMt?: number | null;
   /** Live EUA spot price (EUR/tCO2). Defaults to DEFAULT_EUA_EUR (65) when omitted. */
   euaPriceEur?: number | null;
+  /** When true, war-risk premium is excluded from the per-day TCE numerator.
+   *  The detail page sets this true (app/api/voyage/tce/route.ts:373) so that
+   *  stored TCE and live TCE agree on war-zone routes. Defaults to true. */
+  excludeWarRiskFromDailyTce?: boolean;
 }
 
 /**
@@ -362,6 +367,11 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
     originEu,
     destEu,
     euaPriceEur,
+    // Default false = legacy behaviour (war risk INCLUDED in daily-TCE headline) for callers
+    // that don't set the flag. Callers that want the canonical "exclude" convention must pass
+    // excludeWarRiskFromDailyTce: true explicitly — stored-match-economics.ts (line ~144) and
+    // app/api/voyage/tce/route.ts:373 already do so; golden-set runner must also opt in.
+    input.excludeWarRiskFromDailyTce ?? false,
   );
 
   const warLaden = calculateWarRiskPremium({

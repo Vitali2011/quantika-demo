@@ -7,10 +7,20 @@
  *
  * Extended (fix-list-vs-detail A+B+C): real ports + live bunker + war-risk-exclude row.
  * Extended (L2): EU + BlackSea parity rows (#856 — ETS + Bosporus wiring).
+ * Extended (Workstream A5): computeStoredMatchEconomics tce_usd_per_day ≡ calculateTCE
+ *   daily_tce_usd — the founder's list↔detail parity guard. DA is summed INDEPENDENTLY
+ *   via sumMatchPortDaUsd so a DA bug in the helper would be caught (not circular).
  */
+import Database from 'better-sqlite3';
 import { buildCanonicalTceInputs } from '@/lib/economics/canonical-tce-inputs';
 import { calculateTCE } from '@/lib/economics/voyage-calculator';
-import { computeEstimatedTce, buildMatchEconomics, estimateFreightRate, deriveEtsCoverage, routeTransitsBosporus, quoteBosporusSafe } from '@/lib/matching/tce-calculator';
+import { computeEstimatedTce, buildMatchEconomics, estimateFreightRate, deriveEtsCoverage, routeTransitsBosporus, quoteBosporusSafe, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
+import { computeStoredMatchEconomics } from '@/lib/matching/stored-match-economics';
+import { sumMatchPortDaUsd } from '@/lib/port-da/match-da';
+import { getPortDistance } from '@/lib/sailing/port-distances';
+import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
+import { cfValue } from '@/lib/types';
+import type { ParsedCargo, ParsedVessel } from '@/lib/types';
 
 interface Sample {
   name: string;
@@ -197,5 +207,197 @@ describe('L2 parity: EU + BlackSea routes — list (buildMatchEconomics) == deta
     const detail = calculateTCE({ ...detailInputs, excludeWarRiskFromDailyTce: true });
 
     expect(detail.daily_tce_usd).toBe(list.tceUsdPerDay);
+  });
+});
+
+// ── Workstream A5: stored match helper ↔ live detail engine parity ────────────
+//
+// Guards the founder's exact bug: tce shown on /matches LIST diverged from the
+// tce shown on /match/[id] DETAIL because two separate formulas were used.
+// After A3/A4 (shared helper), the stored value and the live detail engine MUST
+// agree to ±$1 for the same voyage inputs.
+//
+// Independence requirement: DA is computed via sumMatchPortDaUsd DIRECTLY (not
+// borrowed from stored.tce_breakdown.da_usd) so a DA bug in the helper is
+// caught rather than masked by circular reuse.
+
+/** Minimal DB with known port DA figures for Hamburg and Singapore. */
+function makeParityDb(): Database.Database {
+  const db = new Database(':memory:');
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS port_da_estimates (
+      port_code TEXT,
+      vessel_dwt_min INTEGER,
+      vessel_dwt_max INTEGER,
+      port_dues_usd REAL,
+      pilotage_usd REAL,
+      tugs_usd REAL,
+      stevedoring_usd_per_mt REAL DEFAULT 0,
+      cargo_type TEXT DEFAULT 'general',
+      confidence TEXT DEFAULT 'estimated',
+      source TEXT DEFAULT 'test'
+    );
+  `);
+  db.prepare(`
+    INSERT INTO port_da_estimates
+      (port_code, vessel_dwt_min, vessel_dwt_max, port_dues_usd, pilotage_usd, tugs_usd,
+       stevedoring_usd_per_mt, cargo_type, confidence, source)
+    VALUES
+      ('DEHAM', 0, 200000, 20000, 8000, 5000, 0, 'bulk', 'estimated', 'test'),
+      ('SGSIN', 0, 200000, 18000, 7000, 5000, 0, 'bulk', 'estimated', 'test'),
+      ('DEHAM', 0, 200000, 20000, 8000, 5000, 0, 'general', 'estimated', 'test'),
+      ('SGSIN', 0, 200000, 18000, 7000, 5000, 0, 'general', 'estimated', 'test')
+  `).run();
+  return db;
+}
+
+const PARITY_CARGO: ParsedCargo = {
+  emailId: 'parity-cargo-a5',
+  itemIndex: 0,
+  originPort: { value: 'Hamburg', confidence: 'confirmed' },
+  destinationPort: { value: 'Singapore', confidence: 'confirmed' },
+  cargoType: 'BULK',
+  laycan: '1-15 Aug 2025',
+  freightRateUsd: 25,
+  cargoDescription: null,
+  weightMt: { value: 50000, confidence: 'confirmed' },
+  weightMtMin: null,
+  weightMtMax: null,
+  volumeCbm: null,
+  dimensions: null,
+  containerType: null,
+  quantity: null,
+  incoterms: null,
+  preferredDates: null,
+  loadingRate: null,
+  dischargeRate: null,
+  commissionPercent: null,
+  commissionTerms: null,
+  specialRequirements: null,
+  stowageFactor: null,
+  missingInfo: [],
+  originCountry: null,
+  destinationCountry: null,
+} as ParsedCargo;
+
+const PARITY_VESSEL: ParsedVessel = {
+  emailId: 'parity-vessel-a5',
+  itemIndex: 0,
+  dwtSummer: { value: 55000, confidence: 'confirmed' },
+  vesselName: null,
+  imo: null,
+  flag: null,
+  built: null,
+  classSociety: null,
+  pandi: null,
+  dwcc: null,
+  draftMax: null,
+  loa: null,
+  beam: null,
+  grt: null,
+  nrt: null,
+  holdsCount: null,
+  hatchesCount: null,
+  grainCapacity: null,
+  grainCapacityUnit: null,
+  baleCapacity: null,
+  holdDimensions: null,
+  hatchDimensions: null,
+  tankTopStrength: null,
+  geared: null,
+  craneCapacity: null,
+  hatchType: null,
+  vesselType: null,
+  openPosition: { value: 'Hamburg', confidence: 'confirmed' },
+  openDate: null,
+  direction: null,
+  restrictions: [],
+  lastCargoes: null,
+  speedLaden: '13',
+  speedBallast: null,
+  consumption: '28',
+  deckCapacity: null,
+  specialFeatures: [],
+} as ParsedVessel;
+
+describe('Workstream A5: stored list TCE ↔ live detail TCE parity (CI guard)', () => {
+  it('computeStoredMatchEconomics tce_usd_per_day equals calculateTCE daily_tce_usd ±$1 (independent DA)', () => {
+    const db = makeParityDb();
+
+    // ── STORED (list) path ────────────────────────────────────────────────────
+    const stored = computeStoredMatchEconomics({ cargo: PARITY_CARGO, vessel: PARITY_VESSEL, db });
+    expect(stored.tce_usd_per_day).not.toBeNull();
+    const storedTce = stored.tce_usd_per_day!;
+
+    // ── DETAIL path — independent oracle ─────────────────────────────────────
+    // Mirrors app/api/voyage/tce/route.ts convention (excludeWarRiskFromDailyTce: true).
+    // DA is summed INDEPENDENTLY via sumMatchPortDaUsd — NOT borrowed from stored.tce_breakdown.
+    const loadPort = cfValue(PARITY_CARGO.originPort)!;
+    const dischargePort = cfValue(PARITY_CARGO.destinationPort)!;
+    const dist = getPortDistance(loadPort, dischargePort)!;
+    const openPosition = cfValue(PARITY_VESSEL.openPosition);
+    const ballastResult = openPosition ? getPortDistance(openPosition, loadPort) : null;
+    const ballastDistanceNm = ballastResult?.nm ?? undefined;
+
+    const vesselDwt = (cfValue(PARITY_VESSEL.dwtSummer) ?? 0) as number;
+    const quantityMt = resolveCargoWeight(PARITY_CARGO) ?? 0;
+    const speedKts = parseLeadingNumber(PARITY_VESSEL.speedLaden);
+    const consumptionMtPerDay = parseConsumption(PARITY_VESSEL.consumption);
+
+    // DA computed independently from DB — same mechanism the detail API uses.
+    // A DA bug in computeStoredMatchEconomics would cause daUsd to differ → parity fails.
+    const cargoTypeStr = typeof PARITY_CARGO.cargoType === 'string'
+      ? PARITY_CARGO.cargoType
+      : (PARITY_CARGO.cargoType as unknown as { value: string })?.value ?? null;
+    const daUsd = sumMatchPortDaUsd([loadPort, dischargePort], vesselDwt, cargoTypeStr, db);
+
+    // Canal: Bosporus detection (Hamburg→Singapore does not transit Bosporus, $0)
+    const canalUsd = routeTransitsBosporus(loadPort, dischargePort)
+      ? quoteBosporusSafe(vesselDwt)
+      : 0;
+
+    // ETS coverage
+    const { originEu, destEu, euLegPercent } = deriveEtsCoverage(loadPort, dischargePort);
+
+    const canonicalInputs = buildCanonicalTceInputs({
+      vesselDwt,
+      speedKts,
+      consumptionMtPerDay,
+      distanceNm: dist.nm,
+      quantityMt,
+      freightRateUsdPerMt: stored.freight_rate_usd_per_mt!,
+      bunkerPriceUsdPerMt: 600, // DEFAULT_BUNKER_USD_PER_MT (matches helper default)
+      originPort: loadPort,
+      destinationPort: dischargePort,
+      euaPriceEur: 65, // DEFAULT_EUA_EUR
+      vesselValueUsd: 22_000_000, // DEFAULT_VESSEL_VALUE_USD
+      ballastDistanceNm,
+      canalUsd: canalUsd > 0 ? canalUsd : undefined,
+      daUsd: daUsd > 0 ? daUsd : undefined,
+      euLegPercent,
+      originEu,
+      destEu,
+    });
+
+    const detailResult = calculateTCE({
+      ...canonicalInputs,
+      excludeWarRiskFromDailyTce: true,
+    });
+    const detailTce = detailResult.daily_tce_usd;
+
+    // ── Parity assertion ±$1 ──────────────────────────────────────────────────
+    const delta = Math.abs(storedTce - detailTce);
+    console.log(`[A5 parity] stored=${storedTce} detail=${detailTce} delta=${delta}`);
+    expect(delta).toBeLessThanOrEqual(1);
+
+    db.close();
+  });
+
+  it('DA is non-zero and contributes to stored breakdown (smoke: DA was actually included)', () => {
+    const db = makeParityDb();
+    const stored = computeStoredMatchEconomics({ cargo: PARITY_CARGO, vessel: PARITY_VESSEL, db });
+    expect(stored.tce_breakdown).not.toBeNull();
+    expect(stored.tce_breakdown!.da_usd).toBeGreaterThan(0);
+    db.close();
   });
 });

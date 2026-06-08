@@ -1,13 +1,10 @@
 import type Database from 'better-sqlite3';
 import { cfValue } from '@/lib/types';
 import type { Match, ParsedCargo, ParsedVessel } from '@/lib/types';
-import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
 import { createMatch } from '@/lib/matching/matches-repository';
 import { parseLaycan } from '@/lib/sailing/date-parsing';
 import { getPortDistance } from '@/lib/sailing/port-distances';
-import { computeEstimatedTce, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
-import { resolveFreightRate } from '@/lib/matching/freight-resolver';
-import { getBalticDayRate } from '@/lib/market/baltic-freight';
+import { computeStoredMatchEconomics } from '@/lib/matching/stored-match-economics';
 import { calculateReadinessGap, detectSpot } from '@/lib/sailing/readiness-gap';
 
 export function persistSessionMatches(
@@ -35,32 +32,15 @@ export function persistSessionMatches(
           ? (cargo.cargoType as unknown as { value: string }).value
           : cargo.cargoType as string)
       : null;
-    const quantityMt = resolveCargoWeight(cargo) ?? 0;
-    const speedKts = vessel ? parseLeadingNumber(vessel.speedLaden) : 0;
-    const consumptionMt = vessel ? parseConsumption(vessel.consumption) : 0;
 
-    let tce_usd_per_day: number | null = null;
-    let freight_rate_usd_per_mt: number | null = null;
-    let freight_rate_source: string | null = null;
-
-    if (distanceResult && distanceResult.nm > 0) {
-      const resolved = resolveFreightRate({
-        cargoType: cargoTypeStr,
-        parsedFreightRateUsdPerMt: cargo?.freightRateUsd ?? null,
-        vesselDwt,
-        quantityMt,
-        distanceNm: distanceResult.nm,
-        speedKts,
-        balticDayRate: getBalticDayRate(db, vesselDwt),
-      });
-      const tceEst = computeEstimatedTce(
-        { rate: resolved.value, source: resolved.source, confidence: resolved.confidence },
-        distanceResult.nm, vesselDwt, quantityMt, speedKts, consumptionMt,
-      );
-      tce_usd_per_day = tceEst.tce_usd_per_day;
-      freight_rate_usd_per_mt = tceEst.freight_rate_usd_per_mt;
-      freight_rate_source = tceEst.freight_rate_source;
-    }
+    // Economics via shared helper — includes port-DA, canal, and war-risk convention
+    // (excludeWarRiskFromDailyTce:true) so stored TCE matches the detail page.
+    const eco = cargo && vessel
+      ? computeStoredMatchEconomics({ cargo, vessel, db })
+      : { tce_usd_per_day: null, freight_rate_usd_per_mt: null, freight_rate_source: null };
+    const tce_usd_per_day = eco.tce_usd_per_day;
+    const freight_rate_usd_per_mt = eco.freight_rate_usd_per_mt;
+    const freight_rate_source = eco.freight_rate_source;
 
     // Fail-closed: if the cargo laycan in parsedCargos disagrees with the stored
     // worksheet laycan, recompute readiness rather than carrying stale data verbatim.

@@ -90,3 +90,43 @@ describe('calculateTCE — guards', () => {
     expect(result.daily_tce_usd).toBe(0);
   });
 });
+
+describe('calculateTCE — B1 derivation inputs (transparent math)', () => {
+  const B1_INPUT: VoyageInput = {
+    vessel: { dwt: 55000, valueUsd: 18_000_000, speedKts: 13, consumptionMtPerDay: 28 },
+    route: { originPort: 'rotterdam', destinationPort: 'singapore', distanceNm: 9000 },
+    cargo: { quantityMt: 50000, freightRateUsdPerMt: 30 },
+    bunkerPriceUsdPerMt: 550,
+    euaPriceEur: 65,
+    durationDays: 20,
+    canalUsd: 0,
+    daUsd: 60000,
+  };
+
+  it('exposes freight_rate_usd_per_mt and quantity_mt in breakdown', () => {
+    const { breakdown } = calculateTCE(B1_INPUT);
+    expect(breakdown.freight_rate_usd_per_mt).toBe(30);
+    expect(breakdown.quantity_mt).toBe(50000);
+  });
+
+  it('gross_freight_usd === quantity_mt * freight_rate_usd_per_mt', () => {
+    const { breakdown } = calculateTCE(B1_INPUT);
+    expect(breakdown.gross_freight_usd).toBe(breakdown.quantity_mt * breakdown.freight_rate_usd_per_mt);
+  });
+
+  it('net_voyage_usd === gross_freight_usd - total_costs_usd', () => {
+    const { breakdown } = calculateTCE(B1_INPUT);
+    expect(breakdown.net_voyage_usd).toBe(breakdown.gross_freight_usd - breakdown.total_costs_usd);
+  });
+
+  it('exposes duration_days in breakdown', () => {
+    const { breakdown } = calculateTCE(B1_INPUT);
+    expect(breakdown.duration_days).toBe(20);
+  });
+
+  it('exposes bunker_consumption_mt_per_day and bunker_price_usd_per_mt', () => {
+    const { breakdown } = calculateTCE(B1_INPUT);
+    expect(breakdown.bunker_consumption_mt_per_day).toBe(28);
+    expect(breakdown.bunker_price_usd_per_mt).toBe(550);
+  });
+});
