@@ -59,6 +59,7 @@ export async function computeEconomics(input: EconomicsInput): Promise<Economics
   // Determine recommended bunker port and cost
   const bunkerPort = splitResult.bunkerPlan[0]?.port ?? route.fromPort;
   const cheapestPrice = bunkerPrices.get(bunkerPort);
+  // TODO(W9): estimatedDays=20 hardcoded — parameterize when this fn gets a real route caller.
   const estimatedDays = 20;
   const bunkerCost = cheapestPrice
     ? Math.round(cheapestPrice.vlsfo * consumptionMtPerDay * estimatedDays)
