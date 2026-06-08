@@ -367,6 +367,8 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
     originEu,
     destEu,
     euaPriceEur,
+    // Canonical convention: war risk shown in breakdown but excluded from daily-TCE headline;
+    // matches app/api/voyage/tce/route.ts:373 and stored-match-economics.ts.
     input.excludeWarRiskFromDailyTce ?? true,
   );
 
