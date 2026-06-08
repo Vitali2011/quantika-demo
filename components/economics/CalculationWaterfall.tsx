@@ -19,6 +19,7 @@ interface Props {
 
 /** Broker convention: negatives render as `-$X`, not `$-X` (matches VoyageBreakdownChart). */
 function fmtUsd(n: number): string {
+  if (n === 0) return '$0'; // guards both 0 and -0
   return n < 0
     ? `-$${Math.abs(n).toLocaleString('en-US')}`
     : `$${n.toLocaleString('en-US')}`;
@@ -87,7 +88,7 @@ export function CalculationWaterfall({ breakdown }: Props) {
             className="text-xs text-gray-400 pl-4"
             data-testid="bunker-caption"
           >
-            расход {bunker_consumption_mt_per_day} т/день · {duration_days} дн · цена ${bunker_price_usd_per_mt}/т
+            расход {bunker_consumption_mt_per_day} т/день · {duration_days.toFixed(1)} дн · цена ${bunker_price_usd_per_mt}/т
           </div>
         </div>
 
@@ -165,10 +166,24 @@ export function CalculationWaterfall({ breakdown }: Props) {
         <span data-testid="net-voyage">{fmtUsd(net_voyage_usd)}</span>
       </div>
 
+      {/* ── TCE BASIS (war-risk add-back when excluded from TCE) ─── */}
+      {war_risk_usd > 0 && (
+        <>
+          <div className="flex justify-between text-gray-600 text-xs" data-testid="tce-basis-addback">
+            <span>+ Военный риск возвращён в базу TCE</span>
+            <span>{fmtUsd(war_risk_usd)}</span>
+          </div>
+          <div className="flex justify-between font-semibold" data-testid="tce-basis">
+            <span>= Чистыми для TCE</span>
+            <span>{fmtUsd(net_voyage_usd + war_risk_usd)}</span>
+          </div>
+        </>
+      )}
+
       {/* ── ДЛИНА РЕЙСА ──────────────────────────────────── */}
       <div className="flex justify-between text-gray-600" data-testid="duration-days">
         <span>÷ Длина рейса</span>
-        <span>{duration_days} дней</span>
+        <span>{duration_days.toFixed(1)} дней</span>
       </div>
 
       {/* ── ЗАРАБОТОК В ДЕНЬ (TCE) ───────────────────────── */}
