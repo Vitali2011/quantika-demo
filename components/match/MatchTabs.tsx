@@ -32,9 +32,11 @@ interface MatchTabsProps {
   ballastDistanceNm?: number | null;
   /** True when stored TCE was computed with class-aware consumption estimate. */
   consumptionEstimated?: boolean | null;
+  /** ISO date of the Baltic TC rate used for the stored TCE (W6a staleness badge). */
+  balticRateAsOf?: string | null;
 }
 
-export function MatchTabs({ match, vessel, cargo, cargoEmailId, matchDbId, storedFreightRate, freightRateSource, storedDistanceNm, storedTceUsdPerDay, ballastDistanceNm, consumptionEstimated }: MatchTabsProps) {
+export function MatchTabs({ match, vessel, cargo, cargoEmailId, matchDbId, storedFreightRate, freightRateSource, storedDistanceNm, storedTceUsdPerDay, ballastDistanceNm, consumptionEstimated, balticRateAsOf }: MatchTabsProps) {
   const [activeTab, setActiveTab] = useState<TabId>('vessels');
   const uid = useId();
 
@@ -92,6 +94,7 @@ export function MatchTabs({ match, vessel, cargo, cargoEmailId, matchDbId, store
             storedTceUsdPerDay={storedTceUsdPerDay}
             ballastDistanceNm={ballastDistanceNm}
             consumptionEstimated={consumptionEstimated}
+            balticRateAsOf={balticRateAsOf}
           />
         )}
         {activeTab === 'passport' && (

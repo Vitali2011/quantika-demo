@@ -11,6 +11,7 @@ import Database from 'better-sqlite3';
 import migration019 from '@/lib/migrations/019-port-master-baltic-indices';
 import migration043 from '@/lib/migrations/043-baltic-tc-dayrates-seed';
 import { balticIndexCodeForDwt, getBalticDayRate } from '@/lib/market/baltic-freight';
+import { deriveTier } from '@/lib/data-quality/derive';
 
 describe('balticIndexCodeForDwt', () => {
   it('handysize/handymax (<45000) → BHSI_TC', () => {
@@ -68,5 +69,18 @@ describe('getBalticDayRate', () => {
   it('returns null when no day-rate row matches', () => {
     db.prepare(`DELETE FROM baltic_indices`).run();
     expect(getBalticDayRate(db, 50000)).toBeNull();
+  });
+
+  // W6a — I12: Baltic TC staleness
+  it('returns source field from the DB row (static-seed from mig043)', () => {
+    const r = getBalticDayRate(db, 50000);
+    expect(r!.source).toBe('static-seed');
+  });
+
+  it('static-seed rate is stale after 14 days (deriveTier returns stale)', () => {
+    const r = getBalticDayRate(db, 50000);
+    // date = '2026-05-09' from migration043; today is 2026-06-08 → 30 days > 14
+    const tier = deriveTier({ source: r!.source, asOf: r!.date, staleAfterDays: 14 });
+    expect(tier).toBe('stale');
   });
 });

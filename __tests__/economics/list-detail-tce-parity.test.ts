@@ -350,7 +350,7 @@ describe('Workstream A5: stored list TCE ↔ live detail TCE parity (CI guard)',
     const cargoTypeStr = typeof PARITY_CARGO.cargoType === 'string'
       ? PARITY_CARGO.cargoType
       : (PARITY_CARGO.cargoType as unknown as { value: string })?.value ?? null;
-    const daUsd = sumMatchPortDaUsd([loadPort, dischargePort], vesselDwt, cargoTypeStr, db);
+    const daUsd = sumMatchPortDaUsd([loadPort, dischargePort], vesselDwt, cargoTypeStr, db).totalUsd;
 
     // Canal: Bosporus detection (Hamburg→Singapore does not transit Bosporus, $0)
     const canalUsd = routeTransitsBosporus(loadPort, dischargePort)

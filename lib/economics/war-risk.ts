@@ -131,9 +131,13 @@ export interface WarRiskResult {
   zoneIds: string[];
   /** Defined only when applicable=true. */
   breakdown?: WarRiskBreakdown;
+  /** ISO date of the JWC rate schedule in use (W6a staleness badge). Set when applicable=true. */
+  rateDate?: string;
 }
 
 const VESSEL_VALUE_FALLBACK_USD = 8_000_000;
+/** JWC 2024-26 rate schedule effective date. Used for staleness labelling (W6a). */
+export const JWC_RATE_DATE = '2024-01-01';
 
 /**
  * GoG (Gulf of Guinea) LOCODE set — known HRA ports matched by LOCODE
@@ -244,5 +248,6 @@ export function calculateWarRiskPremium(input: WarRiskInput): WarRiskResult {
     zones: matchedZones.map(z => z.name),
     zoneIds: matchedZones.map(z => z.id),
     breakdown,
+    rateDate: JWC_RATE_DATE,
   };
 }

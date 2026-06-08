@@ -10,7 +10,7 @@ import { sumMatchPortDaUsd } from '@/lib/port-da/match-da';
 // exact parity bug.  The fixture is now corrected to cargo_type='general' (matching
 // port-da-base.json), and cargoType is passed to sumMatchPortDaUsd but is deliberately
 // ignored inside (port infra costs are cargo-agnostic — see match-da.ts comment).
-function makeDb(): Database.Database {
+function makeDb(opts?: { altConfidence?: string }): Database.Database {
   const db = new Database(':memory:');
   db.exec(`
     CREATE TABLE port_da_estimates (
@@ -25,7 +25,7 @@ function makeDb(): Database.Database {
   // Constanta (ROCND): 10k + 5k + 3k = 18k fixed (cargo_type='general' — the only
   // type in the real seed; sumMatchPortDaUsd ignores the cargoType argument and
   // resolves against 'general' for parity with the detail route).
-  ins.run('ROCND', 0, 100000, 10000, 5000, 3000, 2, 'general', 'verified', 'seed');
+  ins.run('ROCND', 0, 100000, 10000, 5000, 3000, 2, 'general', opts?.altConfidence ?? 'verified', 'seed');
   // Marmara (TRMAR): 8k + 4k + 2k = 14k fixed
   ins.run('TRMAR', 0, 100000, 8000, 4000, 2000, 2, 'general', 'verified', 'seed');
   return db;
@@ -36,29 +36,58 @@ describe('sumMatchPortDaUsd', () => {
     const db = makeDb();
     // cargoType='bulk' is accepted in the signature but ignored inside — DA resolves
     // against 'general' rows regardless, matching the detail-route behaviour.
-    const total = sumMatchPortDaUsd(['constanta', 'marmara'], 30000, 'bulk', db);
-    expect(total).toBe(18000 + 14000);
+    const result = sumMatchPortDaUsd(['constanta', 'marmara'], 30000, 'bulk', db);
+    expect(result.totalUsd).toBe(18000 + 14000);
     db.close();
   });
 
   test('unknown port contributes 0, known port still counts', () => {
     const db = makeDb();
-    const total = sumMatchPortDaUsd(['constanta', 'no-such-port-xyz'], 30000, 'bulk', db);
-    expect(total).toBe(18000);
+    const result = sumMatchPortDaUsd(['constanta', 'no-such-port-xyz'], 30000, 'bulk', db);
+    expect(result.totalUsd).toBe(18000);
     db.close();
   });
 
   test('returns 0 when no ports resolve (never crashes, never fakes)', () => {
     const db = makeDb();
-    const total = sumMatchPortDaUsd(['no-such-port-xyz', 'also-fake'], 30000, 'bulk', db);
-    expect(total).toBe(0);
+    const result = sumMatchPortDaUsd(['no-such-port-xyz', 'also-fake'], 30000, 'bulk', db);
+    expect(result.totalUsd).toBe(0);
     db.close();
   });
 
   test('null/empty port names are skipped', () => {
     const db = makeDb();
-    const total = sumMatchPortDaUsd(['constanta', null, ''], 30000, 'bulk', db);
-    expect(total).toBe(18000);
+    const result = sumMatchPortDaUsd(['constanta', null, ''], 30000, 'bulk', db);
+    expect(result.totalUsd).toBe(18000);
+    db.close();
+  });
+
+  // W6a: confidence provenance — I7
+  test('confidence is verified when all ports are verified', () => {
+    const db = makeDb();
+    const result = sumMatchPortDaUsd(['constanta', 'marmara'], 30000, 'bulk', db);
+    expect(result.confidence).toBe('verified');
+    db.close();
+  });
+
+  test('confidence is estimated when any port is estimated (min-confidence aggregation)', () => {
+    const db = makeDb({ altConfidence: 'estimated' }); // ROCND is estimated, TRMAR is verified
+    const result = sumMatchPortDaUsd(['constanta', 'marmara'], 30000, 'bulk', db);
+    expect(result.confidence).toBe('estimated');
+    db.close();
+  });
+
+  test('confidence is low when any port is low', () => {
+    const db = makeDb({ altConfidence: 'low' }); // ROCND is low
+    const result = sumMatchPortDaUsd(['constanta', 'marmara'], 30000, 'bulk', db);
+    expect(result.confidence).toBe('low');
+    db.close();
+  });
+
+  test('confidence is verified when no ports resolve (no data = not flagging nonexistent estimates)', () => {
+    const db = makeDb();
+    const result = sumMatchPortDaUsd(['no-such-port-xyz'], 30000, 'bulk', db);
+    expect(result.confidence).toBe('verified');
     db.close();
   });
 });

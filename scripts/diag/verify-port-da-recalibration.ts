@@ -90,7 +90,8 @@ async function main(): Promise<void> {
   }
 
   // ── Compute DA via LIST path (sumMatchPortDaUsd) ────────────────────────────
-  const listDA = sumMatchPortDaUsd([LOAD_PORT, DISCHARGE_PORT], VESSEL_DWT, CARGO_TYPE, db);
+  const listDAResult = sumMatchPortDaUsd([LOAD_PORT, DISCHARGE_PORT], VESSEL_DWT, CARGO_TYPE, db);
+  const listDA = listDAResult.totalUsd;
 
   // ── Compute DA via DETAIL path (getPortDa per port, 'general' default) ──────
   const iskResolved = db.prepare<[string, number, number, string], { port_dues_usd: number; pilotage_usd: number; tugs_usd: number }>(

@@ -19,7 +19,7 @@ export interface ResolveFreightInput {
    * Tier 2 — per-vessel-class Baltic timecharter day-rate ($/day), resolved by the
    * caller from `baltic_indices` (keeps this function pure / DB-free). null → skip tier.
    */
-  balticDayRate?: { usdPerDay: number; date: string; indexCode: string } | null;
+  balticDayRate?: { usdPerDay: number; date: string; indexCode: string; source?: string } | null;
   /**
    * Ballast reposition distance (open position → load port, nm). When provided, tier-2
    * uses single-voyage span (ballastDays + ladenDays + 2) instead of round-trip, keeping
@@ -34,6 +34,8 @@ export interface ResolvedFreightRate {
   confidence: number;
   /** Baltic index date, present only when source === 'baltic'. */
   balticDate?: string;
+  /** Baltic rate source string (e.g. 'static-seed'), present only when source === 'baltic'. */
+  balticSource?: string;
 }
 
 const PARSED_CONFIDENCE = 0.9;
@@ -80,7 +82,7 @@ export function resolveFreightRate(input: ResolveFreightInput): ResolvedFreightR
     if (days > 0) {
       const value = round2((baltic.usdPerDay * days) / input.quantityMt);
       if (value > 0) {
-        return { value, source: 'baltic', confidence: BALTIC_CONFIDENCE, balticDate: baltic.date };
+        return { value, source: 'baltic', confidence: BALTIC_CONFIDENCE, balticDate: baltic.date, balticSource: baltic.source };
       }
     }
   }

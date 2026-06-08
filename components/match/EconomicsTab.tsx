@@ -16,6 +16,8 @@ import { parseConsumption } from '@/lib/matching/parse-vessel-fields';
 import { freightBadge, FREIGHT_BADGE_CLASSES } from '@/lib/matching/freight-badge';
 import type { WarRiskBreakdown } from '@/lib/economics/war-risk';
 import type { TCEBreakdown } from '@/lib/economics/voyage-calculator';
+import { DataQualityBadge } from '@/components/data-quality/DataQualityBadge';
+import { deriveTier } from '@/lib/data-quality/derive';
 
 interface EconomicsTabProps {
   commissionPercent?: number | null;
@@ -38,6 +40,8 @@ interface EconomicsTabProps {
   ballastDistanceNm?: number | null;
   /** True when stored TCE was computed with class-aware consumption estimate. */
   consumptionEstimated?: boolean | null;
+  /** ISO date of the Baltic TC rate used for the stored TCE (W6a staleness badge). */
+  balticRateAsOf?: string | null;
 }
 
 function parseLeadingNumber(s: string | null | undefined): number {
@@ -71,7 +75,7 @@ function portLabel(locode: string): string {
   return PORT_NAMES[locode] ?? locode;
 }
 
-export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm, matchDbId, storedFreightRate, freightRateSource, warRiskPremium, warRiskZones, warRiskBreakdown, warRiskBreakdownBallast, warRiskZonesBallast, storedTceUsdPerDay, ballastDistanceNm, consumptionEstimated }: EconomicsTabProps) {
+export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm, matchDbId, storedFreightRate, freightRateSource, warRiskPremium, warRiskZones, warRiskBreakdown, warRiskBreakdownBallast, warRiskZonesBallast, storedTceUsdPerDay, ballastDistanceNm, consumptionEstimated, balticRateAsOf }: EconomicsTabProps) {
   const [open, setOpen] = useState(false);
   const [bunkerPriceUsdPerMt, setBunkerPriceUsdPerMt] = useState('');
   const [overrideRate, setOverrideRate] = useState(storedFreightRate != null ? String(storedFreightRate) : '');
@@ -728,6 +732,17 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
                 <span className="ml-1 text-amber-600 text-xs">(assumed consumption)</span>
               </div>
             )}
+            {/* W6a: Baltic TC staleness badge */}
+            {freightRateSource === 'baltic' && balticRateAsOf && (() => {
+              const tier = deriveTier({ source: 'static-seed', asOf: balticRateAsOf, staleAfterDays: 14 });
+              return tier !== 'live' ? (
+                <div data-testid="baltic-stale-badge" className="mt-2 rounded border border-red-200 bg-red-50 p-3 text-xs flex items-center gap-1">
+                  <span className="text-gray-600">Baltic TC rate:</span>
+                  <DataQualityBadge tier={tier} asOf={balticRateAsOf} />
+                  <span className="text-gray-500">(static seed — no live feed)</span>
+                </div>
+              ) : null;
+            })()}
           </>
         ) : null}
       </div>
