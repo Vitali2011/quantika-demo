@@ -31,7 +31,7 @@ import migration044 from '@/lib/migrations/044-matches-item-index';
 import migration045 from '@/lib/migrations/045-matches-worksheet';
 import { persistSessionMatches } from '@/lib/matching/persist-session-matches';
 import { listMatches, getMatch } from '@/lib/matching/matches-repository';
-import { computeEstimatedTce, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
+import { parseLeadingNumber, parseConsumption, deriveEtsCoverage, routeTransitsBosporus, quoteBosporusSafe } from '@/lib/matching/tce-calculator';
 import { buildCanonicalTceInputs } from '@/lib/economics/canonical-tce-inputs';
 import { calculateTCE } from '@/lib/economics/voyage-calculator';
 import { computeStoredMatchEconomics } from '@/lib/matching/stored-match-economics';
@@ -122,10 +122,15 @@ function withStoredTce(tce: number | undefined, overrides?: Partial<Match>): Mat
 }
 
 /**
- * Mirror persistSessionMatches' live recompute for a single (cargo, vessel) pair.
- * Uses computeStoredMatchEconomics (the shared helper post-A3/A4) so assertions
- * stay aligned with the SUT. No port_da_estimates table in this test fixture →
- * DA=0 (graceful), but excludeWarRiskFromDailyTce:true (new convention) applies.
+ * Independent oracle for persistSessionMatches' live recompute.
+ *
+ * Computes the expected TCE via buildCanonicalTceInputs → calculateTCE (the terminal
+ * engine) with excludeWarRiskFromDailyTce: true — the canonical convention.
+ * Does NOT call computeStoredMatchEconomics so a bug in the helper would surface as a
+ * real mismatch rather than being masked by circular reuse (RC1 anti-pattern).
+ *
+ * No port_da_estimates table in this fixture → DA=0, which matches how the SUT behaves
+ * when the table is absent (sumMatchPortDaUsd returns 0 gracefully).
  */
 function expectedLive(
   cargo: ParsedCargo,
@@ -133,11 +138,81 @@ function expectedLive(
   _baltic: { usdPerDay: number; date: string; indexCode: string },
   db: Database.Database,
 ): { tce_usd_per_day: number | null; breakdown: { net_voyage_usd: number } } | null {
-  const result = computeStoredMatchEconomics({ cargo, vessel, db });
-  if (result.tce_usd_per_day === null || !result.tce_breakdown) return null;
+  const loadPort = cfValue(cargo.originPort);
+  const dischargePort = cfValue(cargo.destinationPort);
+  if (!loadPort || !dischargePort) return null;
+
+  const distResult = getPortDistance(loadPort, dischargePort);
+  if (!distResult || !(distResult.nm > 0)) return null;
+
+  const vesselDwt = (cfValue(vessel.dwtSummer) ?? 0) as number;
+  const quantityMt = resolveCargoWeight(cargo) ?? 0;
+  const speedKts = parseLeadingNumber(vessel.speedLaden);
+  const consumptionMtPerDay = parseConsumption(vessel.consumption);
+
+  // Ballast reposition distance (open position → load port)
+  const openPosition = cfValue(vessel.openPosition);
+  const ballastResult = openPosition ? getPortDistance(openPosition, loadPort) : null;
+  const ballastDistanceNm = ballastResult?.nm ?? undefined;
+
+  // Resolve cargo type (handles both plain string and ConfidenceField object)
+  const cargoType =
+    typeof cargo.cargoType === 'object' && cargo.cargoType !== null && 'value' in cargo.cargoType
+      ? (cargo.cargoType as unknown as { value: string }).value
+      : (cargo.cargoType as string | null);
+
+  // DA = 0: no port_da_estimates table in this test fixture (same as SUT behaviour)
+  const daUsd = 0;
+
+  // Baltic rate from the mock (same mock the SUT reads through)
+  const balticRate = getBalticDayRate(db, vesselDwt);
+
+  const resolvedFreight = resolveFreightRate({
+    cargoType,
+    parsedFreightRateUsdPerMt: cargo.freightRateUsd ?? null,
+    vesselDwt,
+    quantityMt,
+    distanceNm: distResult.nm,
+    speedKts,
+    balticDayRate: balticRate,
+  });
+
+  // Canal: Bosporus transit for Black Sea routes
+  const canalUsd = routeTransitsBosporus(loadPort, dischargePort)
+    ? quoteBosporusSafe(vesselDwt)
+    : 0;
+
+  // EU ETS coverage
+  const { originEu, destEu, euLegPercent } = deriveEtsCoverage(loadPort, dischargePort);
+
+  const canonicalInputs = buildCanonicalTceInputs({
+    vesselDwt,
+    speedKts,
+    consumptionMtPerDay,
+    distanceNm: distResult.nm,
+    quantityMt,
+    freightRateUsdPerMt: resolvedFreight.value,
+    bunkerPriceUsdPerMt: 600, // DEFAULT_BUNKER_USD_PER_MT (matches helper default)
+    originPort: loadPort,
+    destinationPort: dischargePort,
+    euaPriceEur: 65, // DEFAULT_EUA_EUR
+    vesselValueUsd: 22_000_000, // DEFAULT_VESSEL_VALUE_USD
+    ballastDistanceNm,
+    canalUsd: canalUsd > 0 ? canalUsd : undefined,
+    daUsd: daUsd > 0 ? daUsd : undefined,
+    euLegPercent,
+    originEu,
+    destEu,
+  });
+
+  const tceResult = calculateTCE({
+    ...canonicalInputs,
+    excludeWarRiskFromDailyTce: true,
+  });
+
   return {
-    tce_usd_per_day: result.tce_usd_per_day,
-    breakdown: { net_voyage_usd: result.tce_breakdown.net_voyage_usd },
+    tce_usd_per_day: tceResult.daily_tce_usd,
+    breakdown: { net_voyage_usd: tceResult.breakdown.net_voyage_usd },
   };
 }
 
