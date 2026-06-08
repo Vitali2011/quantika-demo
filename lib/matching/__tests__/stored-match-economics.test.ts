@@ -108,6 +108,27 @@ describe('computeStoredMatchEconomics — single source of truth', () => {
     expect(result.tce_breakdown).toBeNull();
   });
 
+  it('returns ballast_distance_nm in the result for open=Piraeus/load=Odessa/laden=Rotterdam', () => {
+    const result = computeStoredMatchEconomics({
+      cargo: {
+        emailId: 'c4', itemIndex: 0,
+        originPort: { value: 'Odessa', confidence: 'confirmed', source_text: 'Odessa' },
+        destinationPort: { value: 'Rotterdam', confidence: 'confirmed', source_text: 'Rotterdam' },
+        cargoType: 'GRAIN', freightRateUsd: 30,
+        weightMt: { value: 50000, confidence: 'confirmed', source_text: '50000' },
+      } as any,
+      vessel: {
+        emailId: 'v4', itemIndex: 0,
+        dwtSummer: { value: 50000, confidence: 'confirmed', source_text: '50000' },
+        speedLaden: '13',
+        consumption: '26',
+        openPosition: { value: 'Piraeus', confidence: 'confirmed', source_text: 'Piraeus' },
+      } as any,
+    });
+    expect(result.ballast_distance_nm).not.toBeNull();
+    expect(result.ballast_distance_nm).toBeGreaterThan(0);
+  });
+
   it('works without db (gracefully degrades to zero DA)', () => {
     const result = computeStoredMatchEconomics({
       cargo: {

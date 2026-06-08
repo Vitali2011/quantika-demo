@@ -81,8 +81,7 @@ export interface EconomicsResult {
   };
   /**
    * Headline Time-Charter-Equivalent ($/day). Additive (spec L2 #5): present when
-   * economics is computed in the matching pipeline (buildMatchEconomics); absent
-   * for the legacy /api/economics shape.
+   * economics is computed in the matching pipeline (buildMatchEconomics).
    *
    * NOTE: pre-war-risk. Mirrors the persisted `tce_usd_per_day` column, which the
    * TCE engine computes with blanked route ports → the JWC premium is NOT folded

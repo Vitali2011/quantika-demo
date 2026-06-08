@@ -119,12 +119,14 @@ export default async function MatchDetailPage({ params }: Props) {
   };
 
   // Ballast reposition distance: open position → load port (nm).
-  // Mirrors stored-match-economics.ts so DETAIL uses the same single-voyage
-  // duration as LIST (fixes SEAGULL-41: list $9,084 ≠ detail $4,473 bug).
+  // Stored-first: prefer the persisted value so detail TCE matches list TCE even
+  // after session expiry (I5 fix). Falls back to session re-derivation for legacy
+  // rows written before migration 047 that have null stored value.
   const ballastDistanceNm =
-    vessel && cargo
+    storedMatch.ballast_distance_nm ??
+    (vessel && cargo
       ? (getPortDistance(cfValue(vessel.openPosition) ?? '', cfValue(cargo.originPort) ?? '')?.nm ?? null)
-      : null;
+      : null);
 
   return (
     <main className="min-h-screen bg-ds-bg">

@@ -20,6 +20,12 @@ export interface ResolveFreightInput {
    * caller from `baltic_indices` (keeps this function pure / DB-free). null → skip tier.
    */
   balticDayRate?: { usdPerDay: number; date: string; indexCode: string } | null;
+  /**
+   * Ballast reposition distance (open position → load port, nm). When provided, tier-2
+   * uses single-voyage span (ballastDays + ladenDays + 2) instead of round-trip, keeping
+   * the freight denominator consistent with the TCE formula (I6 fix).
+   */
+  ballastDistanceNm?: number | null;
 }
 
 export interface ResolvedFreightRate {
@@ -55,16 +61,22 @@ export function resolveFreightRate(input: ResolveFreightInput): ResolvedFreightR
     return { value: round2(input.parsedFreightRateUsdPerMt), source: 'parsed', confidence: PARSED_CONFIDENCE };
   }
 
-  // Tier 2 — Baltic market: $/mt = ($/day × ROUND-TRIP days) ÷ tonnes.
-  // Round-trip (laden + ballast + 2 port days) matches the duration model used
-  // downstream in computeEstimatedTce, so freight revenue and bunker cost share
-  // a consistent voyage span. Using laden-only days here while costs ran over
-  // round-trip under-stated freight ~7× and drove the −$102k vs +$774 divergence
-  // the persist-session-matches override was hiding (#819 Phase B(b)).
+  // Tier 2 — Baltic market: $/mt = ($/day × voyage days) ÷ tonnes.
+  // When ballastDistanceNm is known, uses single-voyage span (ballastDays + ladenDays + 2
+  // port days) so the freight denominator matches the TCE formula denominator (I6 fix).
+  // Without ballastDistanceNm, falls back to round-trip (laden*2 + 2) which keeps
+  // parity with the pre-ballast TCE model (#819 Phase B(b)).
   const baltic = input.balticDayRate;
   if (baltic && isPositive(baltic.usdPerDay) && input.distanceNm > 0 && input.quantityMt > 0) {
     const ladenDays = estimateVoyageDays(input.distanceNm, input.speedKts);
-    const days = ladenDays > 0 ? ladenDays * 2 + 2 : 0;
+    let days: number;
+    if (ladenDays > 0 && input.ballastDistanceNm != null && input.ballastDistanceNm > 0) {
+      const safeSpeed = input.speedKts != null && input.speedKts > 0 ? input.speedKts : 12;
+      const ballastDays = input.ballastDistanceNm / (safeSpeed * 24);
+      days = ballastDays + ladenDays + 2;
+    } else {
+      days = ladenDays > 0 ? ladenDays * 2 + 2 : 0;
+    }
     if (days > 0) {
       const value = round2((baltic.usdPerDay * days) / input.quantityMt);
       if (value > 0) {
