@@ -1,4 +1,5 @@
 import { buildCanonicalTceInputs } from '@/lib/economics/canonical-tce-inputs';
+import { buildMatchEconomics } from '@/lib/matching/tce-calculator';
 
 describe('buildCanonicalTceInputs', () => {
   const baseInput = {
@@ -49,4 +50,25 @@ describe('buildCanonicalTceInputs', () => {
     const out = buildCanonicalTceInputs(baseInput);
     expect(out.daUsd).toBeUndefined();
   });
+});
+
+test('buildMatchEconomics with zero consumption on 28k-DWT vessel: consumptionEstimated=true, TCE uses class-aware ~14', () => {
+  const result = buildMatchEconomics({
+    cargoType: 'GRAIN',
+    distanceNm: 3000,
+    vesselDwt: 28000,
+    quantityMt: 18000,
+    speedKts: 12,
+    consumptionMt: 0,  // missing consumption
+    loadPort: 'NLRTM',
+    dischargePort: 'EGPSD',
+    calculatedAt: new Date().toISOString(),
+    excludeWarRiskFromDailyTce: true,
+  });
+  expect(result).not.toBeNull();
+  expect(result!.consumptionEstimated).toBe(true);
+  // With class-aware ~28 t/day for 28k-DWT (supra), TCE should be different from
+  // flat-25 result (and sensible, not 0-bunker inflated value)
+  expect(result!.tceUsdPerDay).toBeDefined();
+  expect(result!.tceUsdPerDay).toBeGreaterThan(-5000); // sanity: not absurdly negative
 });

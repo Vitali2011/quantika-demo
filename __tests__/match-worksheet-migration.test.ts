@@ -34,9 +34,9 @@ describe('migration 045 — worksheet_json column', () => {
     expect(row.worksheet_json).toBeNull();
   });
 
-  it('migration 045 version is 45 and is the last in allMigrations', () => {
+  it('migration 046 version is 46 and is the last in allMigrations', () => {
     const last = allMigrations[allMigrations.length - 1];
-    expect(last.version).toBe(45);
-    expect(last.name).toBe('matches-worksheet');
+    expect(last.version).toBe(46);
+    expect(last.name).toBe('matches-consumption-estimated');
   });
 });

@@ -1,3 +1,5 @@
+import { FALLBACK_EUA_EUR_PER_TCO2 } from '@/lib/constants';
+
 // IMO/BIMCO emission factors tCO2/t fuel — Fourth IMO GHG Study 2020 + BIMCO Allowance Clause 2022
 // DEMO: interim values for demonstration purposes; production use requires verified source data.
 const CF_BY_FUEL: Record<string, number> = {
@@ -24,7 +26,7 @@ export function phaseIn(year: number): number {
   return 1.0;
 }
 
-const FALLBACK_EUA_PRICE = 87.5; // EUR/tCO2
+// FALLBACK_EUA_EUR_PER_TCO2 imported from lib/constants — single source of truth (W7).
 
 export interface EuEtsInput {
   distanceNm: number;
@@ -100,5 +102,5 @@ export async function fetchEuaPrice(): Promise<EuaPriceResult> {
   } catch {
     // fallthrough to constant
   }
-  return { price: FALLBACK_EUA_PRICE, fetched_at: new Date().toISOString() };
+  return { price: FALLBACK_EUA_EUR_PER_TCO2, fetched_at: new Date().toISOString() };
 }
