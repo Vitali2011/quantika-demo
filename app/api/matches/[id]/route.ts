@@ -9,10 +9,87 @@ import {
 } from '@/lib/matching/matches-repository';
 import { fromMatchSlug } from '@/lib/matching/match-slug';
 import type { MatchStatus } from '@/lib/matching/matches-repository';
-import { computeEstimatedTce } from '@/lib/matching/tce-calculator';
-import { resolveFreightRate } from '@/lib/matching/freight-resolver';
+import type { FreightRateSource } from '@/lib/matching/tce-calculator';
+import { computeStoredMatchEconomics } from '@/lib/matching/stored-match-economics';
+import type { ParsedCargo, ParsedVessel } from '@/lib/types';
+import type { StoredMatch } from '@/lib/matching/matches-repository';
 
 export const dynamic = 'force-dynamic';
+
+function buildCargoProxy(m: StoredMatch): ParsedCargo {
+  const cf = <T>(v: T | null) => (v != null ? { value: v, confidence: 'interpreted' as const } : null);
+  return {
+    emailId: m.cargo_id,
+    itemIndex: m.cargo_item_index ?? 0,
+    originPort: cf(m.load_port),
+    destinationPort: cf(m.discharge_port),
+    cargoType: (m.cargo_type ?? null) as unknown as 'BULK',
+    cargoDescription: null,
+    weightMt: null,
+    weightMtMin: null,
+    weightMtMax: null,
+    volumeCbm: null,
+    dimensions: null,
+    containerType: null,
+    quantity: null,
+    incoterms: null,
+    preferredDates: null,
+    laycan: null,
+    loadingRate: null,
+    dischargeRate: null,
+    commissionPercent: null,
+    commissionTerms: null,
+    freightRateUsd: null,
+    specialRequirements: null,
+    stowageFactor: null,
+    missingInfo: [],
+    originCountry: null,
+    destinationCountry: null,
+  };
+}
+
+function buildVesselProxy(m: StoredMatch): ParsedVessel {
+  const cf = <T>(v: T | null) => (v != null ? { value: v, confidence: 'interpreted' as const } : null);
+  return {
+    emailId: m.vessel_id,
+    itemIndex: m.vessel_item_index ?? 0,
+    vesselName: cf(m.vessel_name),
+    imo: null,
+    flag: null,
+    built: null,
+    classSociety: null,
+    pandi: null,
+    dwtSummer: cf(m.vessel_dwt),
+    dwcc: null,
+    draftMax: null,
+    loa: null,
+    beam: null,
+    grt: null,
+    nrt: null,
+    holdsCount: null,
+    hatchesCount: null,
+    grainCapacity: null,
+    grainCapacityUnit: null,
+    baleCapacity: null,
+    holdDimensions: null,
+    hatchDimensions: null,
+    tankTopStrength: null,
+    geared: null,
+    craneCapacity: null,
+    hatchType: null,
+    vesselType: null,
+    openPosition: null,
+    openDate: null,
+    direction: null,
+    restrictions: [],
+    lastCargoes: null,
+    speedLaden: null,
+    speedBallast: null,
+    consumption: null,
+    deckCapacity: null,
+    specialFeatures: [],
+  };
+}
 
 const VALID_STATUSES: MatchStatus[] = ['shortlist', 'saved', 'dismissed', 'archived'];
 
@@ -100,30 +177,20 @@ export async function PATCH(
       );
     }
 
-    // Reset-to-auto path (Wave #7): clear a sticky manual override and recompute the
-    // automatic rate from the stored match fields. Without the original email/quantity
-    // context the waterfall resolves to the estimate tier; parsed/baltic re-apply on
-    // the next full recompute.
+    // Reset-to-auto path: clear a sticky manual override and recompute via the
+    // canonical economics path (port distance, DA, canal, ETS, excludeWarRisk).
+    // Proxy cargo/vessel from stored columns — no freightOverrideUsdPerMt so
+    // resolveFreightRate falls through to estimated/baltic tier naturally.
     if (reset_freight_rate === true) {
-      const resolved = resolveFreightRate({
-        cargoType: existing.cargo_type,
-        vesselDwt: existing.vessel_dwt ?? 0,
-        quantityMt: 0,
-        distanceNm: existing.distance_nm ?? 0,
-      });
-      const tceEst = computeEstimatedTce(
-        { rate: resolved.value, source: resolved.source, confidence: resolved.confidence },
-        existing.distance_nm ?? 0,
-        existing.vessel_dwt ?? 0,
-        0,
-      );
-      const updated = updateMatchFreightRate(
+      const eco = computeStoredMatchEconomics({
+        cargo: buildCargoProxy(existing),
+        vessel: buildVesselProxy(existing),
         db,
-        id,
-        resolved.value,
-        tceEst.tce_usd_per_day,
-        resolved.source,
-      );
+      });
+      const rate = eco.freight_rate_usd_per_mt ?? existing.freight_rate_usd_per_mt ?? 0;
+      const tce = eco.tce_usd_per_day ?? existing.tce_usd_per_day ?? 0;
+      const source = (eco.freight_rate_source ?? 'estimated') as FreightRateSource;
+      const updated = updateMatchFreightRate(db, id, rate, tce, source);
       return NextResponse.json(updated, { status: 200 });
     }
 
@@ -136,14 +203,14 @@ export async function PATCH(
           { status: 400 }
         );
       }
-      const freightEst = { rate, source: 'manual' as const, confidence: 1.0 };
-      const tceEst = computeEstimatedTce(
-        freightEst,
-        existing.distance_nm ?? 0,
-        existing.vessel_dwt ?? 0,
-        0,
-      );
-      const updated = updateMatchFreightRate(db, id, rate, tceEst.tce_usd_per_day, 'manual');
+      const eco = computeStoredMatchEconomics({
+        cargo: buildCargoProxy(existing),
+        vessel: buildVesselProxy(existing),
+        db,
+        freightOverrideUsdPerMt: rate,
+      });
+      const tce = eco.tce_usd_per_day ?? existing.tce_usd_per_day ?? 0;
+      const updated = updateMatchFreightRate(db, id, rate, tce, 'manual');
       return NextResponse.json(updated, { status: 200 });
     }
 

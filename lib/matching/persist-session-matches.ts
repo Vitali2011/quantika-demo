@@ -105,6 +105,7 @@ export function persistSessionMatches(
       reason: m.matchReasons[0] ?? '',
       status: 'shortlist',
       user_id: sessionId,
+      // TODO(W5): reason_structured still uses legacy scoreBreakdown; W5 refactors to fitBreakdown
       reason_structured: m.scoreBreakdown ? JSON.stringify(m.scoreBreakdown) : null,
       cargo_type: cargoTypeStr,
       load_port: loadPort,

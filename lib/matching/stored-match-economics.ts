@@ -38,6 +38,13 @@ export interface StoredMatchEconomicsInput {
   db?: Database.Database;
   calculatedAt?: Date;
   bunkerPriceUsdPerMt?: number;
+  /**
+   * Sticky manual freight rate override ($/mt). When set, passed as tier-0
+   * manualRateUsdPerMt to resolveFreightRate — wins over all other tiers.
+   * Used by PATCH /api/matches/[id] so freight edits go through the canonical
+   * economics path (not the stripped computeEstimatedTce). Closes I4.
+   */
+  freightOverrideUsdPerMt?: number | null;
 }
 
 export interface StoredMatchEconomicsResult {
@@ -99,6 +106,7 @@ export function computeStoredMatchEconomics(
     distanceNm: distanceResult.nm,
     speedKts: ecoSpeed,
     balticDayRate: db ? getBalticDayRate(db, ecoDwt) : null,
+    manualRateUsdPerMt: input.freightOverrideUsdPerMt ?? undefined,
   });
 
   // Ballast reposition distance: open position → load port.

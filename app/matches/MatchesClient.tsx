@@ -13,6 +13,7 @@ import { useToast } from '@/components/ui/toast';
 import { fmtLaycan, isLaycanExpired } from '@/lib/utils/fmt-laycan';
 import { freightBadge, FREIGHT_BADGE_CLASSES } from '@/lib/matching/freight-badge';
 import { useDemoNow } from '@/lib/clock-client';
+import { fitDisplay } from '@/lib/matching/fit-display';
 
 interface Props {
   initialMatches: (StoredMatch & { laycan_display?: string | null })[];
@@ -321,14 +322,15 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
         (cargoTypes.length === 0 || cargoTypes.includes(m.cargo_type ?? '')) &&
         (quickFilter === 'all' ||
           (quickFilter === 'fresh' && isFreshMatch(m, clientNow)) ||
-          (quickFilter === 'score80' && effectiveScore(m, clientNow) >= 80) ||
+          (quickFilter === 'score80' && (m.fit_percent ?? effectiveScore(m, clientNow)) >= 80) ||
           (quickFilter === 'dwt50_60' && m.vessel_dwt != null && m.vessel_dwt >= 50000 && m.vessel_dwt <= 60000))
     )
     .sort((a, b) => {
       if (sortBy === 'freshness') return b.created_at - a.created_at;
       if (sortBy === 'tce') return (b.tce_usd_per_day ?? 0) - (a.tce_usd_per_day ?? 0);
-      if (sortBy === 'fit') return (b.fit_percent ?? 0) - (a.fit_percent ?? 0);
-      return b.score - a.score;
+      // Both 'fit' and legacy 'score' sort by fit_percent; use score as tie-break
+      const fitDiff = (b.fit_percent ?? b.score) - (a.fit_percent ?? a.score);
+      return fitDiff !== 0 ? fitDiff : b.score - a.score;
     });
 
   // Update status filter and persist to URL
@@ -431,7 +433,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                           )}
                         </div>
                         <div className="text-right flex-none">
-                          <div className="text-lg font-bold text-blue-600">{match.score}%</div>
+                          {(() => { const fd = fitDisplay(match, clientNow); return <div className="text-lg font-bold text-blue-600">{fd.value}{fd.label}</div>; })()}
                           <div className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 capitalize">
                             {match.status}
                           </div>
@@ -458,7 +460,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
             {([
               { id: 'all' as QuickFilter, label: 'All', count: allChipCount },
               { id: 'fresh' as QuickFilter, label: 'Fresh', count: undefined },
-              { id: 'score80' as QuickFilter, label: 'Score 80+', count: undefined },
+              { id: 'score80' as QuickFilter, label: 'Fit 80+', count: undefined },
               { id: 'dwt50_60' as QuickFilter, label: 'DWT 50–60k', count: undefined },
             ]).map(({ id, label, count }) => (
               <button
