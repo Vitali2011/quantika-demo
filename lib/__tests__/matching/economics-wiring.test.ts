@@ -75,7 +75,12 @@ jest.mock('@/lib/sailing/date-sanity', () => ({
   isLaycanValid: jest.fn().mockReturnValue({ valid: true }),
 }));
 
+// Preserve real exports (isEuCountry, EU_COUNTRIES, …) — the L2 ETS path
+// (deriveEtsCoverage → isEuCountry) is now reached via buildMatchEconomics, so a
+// bare stub would make isEuCountry undefined at runtime. Only checkSanctions is
+// overridden to keep scoring deterministic.
 jest.mock('@/lib/validation/sanctions', () => ({
+  ...jest.requireActual('@/lib/validation/sanctions'),
   checkSanctions: jest.fn().mockReturnValue({ risk: 'NONE', blocking: false }),
 }));
 

@@ -309,7 +309,18 @@ function computeMatchEconomicsFor(
   // Unknown ports / no db → 0 (graceful), matching the voyage detail page.
   const daUsd = db ? sumMatchPortDaUsd([loadPort, dischargePort], ecoDwt, cargoType, db) : 0;
 
-  const liveEuaRow = db ? getLatestEuaPrice(db, 'spot') : null;
+  // Live EUA spot for ETS costing. Missing table / query error → null (graceful),
+  // matching the daUsd + canal-quote convention above; buildMatchEconomics then
+  // falls back to its DEFAULT_EUA_EUR. Match path must not throw on a DB without
+  // the eua_prices table (test/in-memory handles, pre-seed environments).
+  let liveEuaRow: ReturnType<typeof getLatestEuaPrice> = null;
+  if (db) {
+    try {
+      liveEuaRow = getLatestEuaPrice(db, 'spot');
+    } catch {
+      liveEuaRow = null;
+    }
+  }
   const econ = buildMatchEconomics({
     cargoType,
     distanceNm: distanceResult.nm,
