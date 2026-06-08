@@ -24,8 +24,11 @@ const SIZE_CLASSES = {
 export function CiiRatingBadge({ rating, year, source, size = 'small' }: CiiRatingBadgeProps) {
   const colorClass = RATING_COLORS[rating];
   const sizeClass = SIZE_CLASSES[size];
-  const label = rating === 'unknown' ? 'CII ?' : `CII ${rating}`;
-  const tooltip = `CII rating ${rating} (${year}, source: ${source})`;
+  const isEstimated = source === 'llm-fallback';
+  const label = rating === 'unknown' ? 'CII ?' : isEstimated ? `CII ${rating}*` : `CII ${rating}`;
+  const tooltip = isEstimated
+    ? `CII rating ${rating}* (${year}, Estimated by AI)`
+    : `CII rating ${rating} (${year}, source: ${source})`;
 
   return (
     <span
