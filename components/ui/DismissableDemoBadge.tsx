@@ -5,11 +5,13 @@ import { useState } from 'react';
 interface DismissableDemoBadgeProps {
   storageKey: string;
   'data-testid'?: string;
+  label?: string;
 }
 
 export function DismissableDemoBadge({
   storageKey,
   'data-testid': testId = 'demo-data-badge',
+  label = 'Demo data',
 }: DismissableDemoBadgeProps) {
   const [dismissed, setDismissed] = useState(() => {
     try {
@@ -35,7 +37,7 @@ export function DismissableDemoBadge({
       data-testid={testId}
       className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800 ring-1 ring-inset ring-amber-200"
     >
-      Demo data
+      {label}
       <button
         type="button"
         data-testid="dismiss-demo-badge"

@@ -5,6 +5,7 @@ import type { ParsedVessel } from '@/lib/types';
 import type { CiiRating } from '@/lib/imo/cii-lookup';
 import { safeRender } from '@/lib/ui-render';
 import { CiiRatingBadge } from '@/components/vessel/CiiRatingBadge';
+import { DismissableDemoBadge } from '@/components/ui/DismissableDemoBadge';
 import { checkCompatibility, parseLastCargoes } from '@/lib/cargo/l5c-matrix';
 
 interface VesselsTabProps {
@@ -73,13 +74,21 @@ export function VesselsTab({ vessel, newCargo }: VesselsTabProps) {
 
   return (
     <div data-testid="tab-vessels" className="space-y-3 text-sm">
+      <div className="flex flex-wrap gap-2">
+        <DismissableDemoBadge storageKey="demo-badge-psc" data-testid="psc-demo-badge" />
+        <DismissableDemoBadge
+          storageKey="demo-badge-charterers"
+          data-testid="charterers-demo-badge"
+          label="Charterer data · Illustrative"
+        />
+      </div>
       {!vessel ? (
         <p className="text-gray-500">No vessel data available.</p>
       ) : ciiRejectedRating ? (
         /* Reject card for CII D/E */
         <div data-testid="cii-reject-card" className="rounded-lg border-2 border-orange-400 bg-orange-50 p-4 space-y-3">
           <div className="flex items-center gap-3">
-            <CiiRatingBadge rating={ciiRejectedRating} year={2025} source="imo-public" size="medium" />
+            <CiiRatingBadge rating={ciiRejectedRating} year={2025} source={vessel.ciiSource ?? 'imo-public'} size="medium" />
             <p className="font-semibold text-orange-800">
               CII rating D/E exceeds chartering policy threshold
             </p>
