@@ -9,6 +9,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import type { RouteCompareResult } from '@/lib/economics/route-decision';
 import { PriceSourceBadge } from '@/components/economics/PriceSourceBadge';
+import { DEFAULT_BUNKER_USD_PER_MT, FALLBACK_EUA_EUR_PER_TCO2 } from '@/lib/constants';
 
 type PriceSource = {
   value: number;
@@ -41,7 +42,7 @@ interface Props {
   bunkerPriceManual?: number;
 }
 
-const DEFAULT_MARKET = { bunkerPriceUsdPerMt: 620, euaPriceEur: 75 };
+const DEFAULT_MARKET = { bunkerPriceUsdPerMt: DEFAULT_BUNKER_USD_PER_MT, euaPriceEur: FALLBACK_EUA_EUR_PER_TCO2 };
 
 function fmtUsd(n: number): string {
   return `$${Math.round(n).toLocaleString('en-US')}`;

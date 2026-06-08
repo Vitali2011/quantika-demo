@@ -109,15 +109,24 @@ export const STATUS_CONFIG: Record<string, { label: string; color: string; emoji
 
 export const CALENDLY_URL = 'https://wa.me/971528429812';
 
+// ── W7: Canonical fallback constants (closes I8, I9) ──
+// Single source of truth; all modules import from here. Live DB fetch unchanged.
+
+/** Bunker price fallback when no live feed value is available (USD/MT). Canonical = 600. */
+export const DEFAULT_BUNKER_USD_PER_MT = 600;
+
+/** EUA price fallback when EEX fetch fails (EUR/tCO2). ets.ts is module-of-record → 87.5. */
+export const FALLBACK_EUA_EUR_PER_TCO2 = 87.5;
+
 // ── TZ-015: Bunker Defaults by Vessel Class ──
 
 export type VesselClassName = "handysize" | "supramax" | "panamax" | "capesize";
 
 export const BUNKER_DEFAULTS: Record<VesselClassName, { speed: number; consumption: number; bunkerPrice: number }> = {
-  handysize:  { speed: 12.5, consumption: 22, bunkerPrice: 550 },
-  supramax:   { speed: 13.5, consumption: 28, bunkerPrice: 550 },
-  panamax:    { speed: 14.0, consumption: 32, bunkerPrice: 550 },
-  capesize:   { speed: 14.5, consumption: 45, bunkerPrice: 550 },
+  handysize:  { speed: 12.5, consumption: 22, bunkerPrice: DEFAULT_BUNKER_USD_PER_MT },
+  supramax:   { speed: 13.5, consumption: 28, bunkerPrice: DEFAULT_BUNKER_USD_PER_MT },
+  panamax:    { speed: 14.0, consumption: 32, bunkerPrice: DEFAULT_BUNKER_USD_PER_MT },
+  capesize:   { speed: 14.5, consumption: 45, bunkerPrice: DEFAULT_BUNKER_USD_PER_MT },
 };
 
 export const VESSEL_CLASS: Record<VesselClassName, { minDwt: number; maxDwt: number }> = {

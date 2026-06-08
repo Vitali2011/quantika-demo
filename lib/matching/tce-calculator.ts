@@ -8,6 +8,7 @@ import { resolveVaguePort } from '@/lib/ports/resolve-vague';
 import { isEuCountry } from '@/lib/validation/sanctions';
 import type { EconomicsResult } from '@/lib/types';
 import { parseLeadingNumber, parseConsumption, DEFAULT_CONSUMPTION_MT_PER_DAY } from './parse-vessel-fields';
+import { DEFAULT_BUNKER_USD_PER_MT, FALLBACK_EUA_EUR_PER_TCO2 } from '@/lib/constants';
 
 // Re-export pure parsers for existing server callers (e.g. session-buckets.ts).
 // They live in parse-vessel-fields.ts (no server deps) so client components can
@@ -34,8 +35,6 @@ const BASE_RATES: Record<string, number> = {
 };
 
 const BASE_RATE_FALLBACK = 22;
-const DEFAULT_BUNKER_USD_PER_MT = 600;
-const DEFAULT_EUA_EUR = 65;
 const DEFAULT_SPEED_KTS = 12;
 const DEFAULT_VESSEL_VALUE_USD = 22_000_000;
 
@@ -122,7 +121,7 @@ export function computeEstimatedTce(
     bunkerPriceUsdPerMt,
     originPort: '',
     destinationPort: '',
-    euaPriceEur: euaPriceEur ?? DEFAULT_EUA_EUR,
+    euaPriceEur: euaPriceEur ?? FALLBACK_EUA_EUR_PER_TCO2,
     vesselValueUsd: DEFAULT_VESSEL_VALUE_USD,
     ballastDistanceNm: ballast_distance_nm,
     canalUsd: canal_usd,
@@ -266,7 +265,7 @@ export interface MatchEconomicsInput {
   daUsd?: number | null;
   /** Live bunker price (USD/mt). Defaults to DEFAULT_BUNKER_USD_PER_MT (600) when omitted. */
   bunkerPriceUsdPerMt?: number | null;
-  /** Live EUA spot price (EUR/tCO2). Defaults to DEFAULT_EUA_EUR (65) when omitted. */
+  /** Live EUA spot price (EUR/tCO2). Defaults to FALLBACK_EUA_EUR_PER_TCO2 (87.5) when omitted. */
   euaPriceEur?: number | null;
   /** When true, war-risk premium is excluded from the per-day TCE numerator.
    *  The detail page sets this true (app/api/voyage/tce/route.ts:373) so that
@@ -319,7 +318,7 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
   const { originEu, destEu, euLegPercent } = deriveEtsCoverage(input.loadPort, input.dischargePort);
   const euaPriceEur = (input.euaPriceEur != null && input.euaPriceEur > 0)
     ? input.euaPriceEur
-    : DEFAULT_EUA_EUR;
+    : FALLBACK_EUA_EUR_PER_TCO2;
 
   const tce = computeEstimatedTce(
     freight,
