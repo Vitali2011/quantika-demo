@@ -2,6 +2,11 @@
 
 ## 0. МАТЧИНГ — forward roadmap L1→L4 «к 100%» (2026-06-06 audit)
 
+> **✅✅ DONE 2026-06-08 — WAVE #5 + L2 ECONOMICS LIVE НА ПРОДЕ** (оркестратор-day автоном, prod HEAD = `653569c9`):
+> - **WAVE #5** (#854/#855/#856): (1) stale-sessions — `invalidateLiveSessions` в реггене само-чистит сессии → визитёр видит свежий мастер (закрыл «volna не видна на демо»); (2) port-DA демо-порты 39→54 + small-vessel bracket → Disbursement ожил; (3) list==detail паритет — distance-баг (ballast vs laden), live-бункер в stored, war-risk флагом из per-day детали. Прод: main 93→68 (честный live-бункер $766 vs frozen $600), neg-TCE 0, корзины 68/263/60.
+> - **L2 economics** (#857): ETS/Carbon (EU-порт детект → углерод-сбор, live EUA €77, заменил stale DEFAULT_EUA_EUR=65) + Bosporus (basin `blacksea` + `_routeTransitsBosporus` → `quoteBosporus` $6k/transit) проведены в match-list TCE; паритет list==detail держится 10/10 (detail тоже считает через ЭКСПОРТ хелперов); +2 distance-аномалии починены (Iskenderun→Ukraine 7811nm + широкий vague-port класс «X (unspecified)»→Callao→представительный порт). **Прод: main 68→73, avg TCE $7717→$7133, neg-TCE 0, garbage-distance в main 9→0.** Бэкап `bak-l2-20260608`. 5 fix-раундов (типы/build/тесты/distance/vague).
+> - **ОСТАЛОСЬ (forward ниже):** **ECA-топливо** (отложено — `eca_zones` пуста + нет route-polygon intersection + эффект мал); **L3 data-follow-up** (`cii.json` пуст + `cargo.chartererName` в парсер → ветинг «кусает», следующий логичный шаг); **FuelEU** P4; war-risk в per-day = founder выбрал breakdown-only (НЕ open); 9 null-distance матчей в main (vague unresolvable — честный null). Polish-бэклог: Stripe/PWA/Arabic-RTL/Quote-PDF/dark-mode. Полные детали: memory `matching-improvement-roadmap`.
+
 > **Forward-часть** (что осталось), в отличие от changelog ниже. Источник: 3-агентный read-only аудит scoring-пайплайна 2026-06-06 (spine / economics-L2 / passport-L3), все три независимо сошлись. Планка фаундера = **L3** («практические 100%» на бесплатных данных).
 > **Контекст дня:** PR #841 (true-voyage TCE: ballast reposition + Suez canal + economic floor) merged + прод-реген применён — main-bucket neg-TCE **18→0**, avg **−$308→+$9,664/день**. См. state.md + `docs/superpowers/golden-set/`.
 >
