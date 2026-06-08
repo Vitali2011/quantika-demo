@@ -69,3 +69,51 @@ describe('CalculationWaterfall — DA DataQualityBadge (W6a)', () => {
     expect(badge).toBeInTheDocument();
   });
 });
+
+describe('CalculationWaterfall — qafix M1/M2/L1', () => {
+  it('M1: duration_days renders with one decimal place, not raw float', () => {
+    // 12.133333 → toFixed(1) = "12.1" (unambiguous rounding)
+    const bd = makeBreakdown({ duration_days: 12.133333333333333 });
+    render(<CalculationWaterfall breakdown={bd} />);
+    const durationEl = screen.getByTestId('duration-days');
+    expect(durationEl).not.toHaveTextContent('12.133');
+    expect(durationEl).toHaveTextContent('12.1');
+  });
+
+  it('M1: bunker caption shows duration with one decimal', () => {
+    const bd = makeBreakdown({ duration_days: 12.133333333333333 });
+    render(<CalculationWaterfall breakdown={bd} />);
+    const caption = screen.getByTestId('bunker-caption');
+    expect(caption).not.toHaveTextContent('12.133');
+    expect(caption).toHaveTextContent('12.1');
+  });
+
+  it('M2: tce-basis row present and shows net+warRisk when war_risk_usd>0', () => {
+    // daily_tce = (net_voyage + war_risk) / duration = (122000 + 10000) / 15 = 8800
+    const bd = makeBreakdown({
+      war_risk_usd: 10000,
+      net_voyage_usd: 122000,
+      daily_tce_usd: 8800,
+      total_costs_usd: 78000,
+      duration_days: 15,
+    });
+    render(<CalculationWaterfall breakdown={bd} />);
+    const tceBasis = screen.getByTestId('tce-basis');
+    expect(tceBasis).toHaveTextContent('$132,000');
+    // final daily TCE must match
+    expect(screen.getByTestId('daily-tce')).toHaveTextContent('$8,800');
+  });
+
+  it('M2: no tce-basis row when war_risk_usd=0 (math already reconciles)', () => {
+    const bd = makeBreakdown({ war_risk_usd: 0, net_voyage_usd: 132000, daily_tce_usd: 8800, duration_days: 15 });
+    render(<CalculationWaterfall breakdown={bd} />);
+    expect(screen.queryByTestId('tce-basis')).toBeNull();
+  });
+
+  it('L1: war_risk_usd=0 does not render negative-zero display', () => {
+    render(<CalculationWaterfall breakdown={makeBreakdown({ war_risk_usd: 0 })} />);
+    const warRiskRow = screen.getByTestId('cost-war-risk');
+    expect(warRiskRow).not.toHaveTextContent('$-0');
+    expect(warRiskRow).not.toHaveTextContent('-$0');
+  });
+});
