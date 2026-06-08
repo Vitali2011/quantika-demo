@@ -1,12 +1,39 @@
 import type Database from 'better-sqlite3';
 import { cfValue } from '@/lib/types';
-import type { Match, ParsedCargo, ParsedVessel } from '@/lib/types';
+import type { Match, ParsedCargo, ParsedVessel, FitBreakdown } from '@/lib/types';
 import { createMatch } from '@/lib/matching/matches-repository';
 import { parseLaycan } from '@/lib/sailing/date-parsing';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 import { computeStoredMatchEconomics } from '@/lib/matching/stored-match-economics';
 import { calculateReadinessGap, detectSpot } from '@/lib/sailing/readiness-gap';
 import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
+import { scoreEconomics } from '@/lib/sailing/fit-breakdown';
+
+/**
+ * Replace the economics component in a seed FitBreakdown with a fresh scoreEconomics
+ * computed from the live TCE, then recalculate fitPercent.
+ * Other components (timing, utilisation, etc.) and penalties/caps from the seed are
+ * kept intact — only the economics contribution is updated.
+ */
+function patchEconomicsComponent(
+  breakdown: FitBreakdown,
+  liveTce: number | null,
+  vesselDwt: number,
+): FitBreakdown {
+  const freshEcon = scoreEconomics(liveTce, vesselDwt);
+  const components = breakdown.components.map((c) =>
+    c.factor === 'economics' ? freshEcon : c,
+  );
+  const rawSum = components.reduce((a, c) => a + c.score, 0);
+  const sanctionsPenalty = breakdown.sanctionsPenalty ?? 0;
+  const chartererPenalty = breakdown.chartererPenalty ?? 0;
+  let fit = rawSum - sanctionsPenalty - chartererPenalty;
+  if (breakdown.appliedCap !== null && fit > breakdown.appliedCap.ceiling) {
+    fit = breakdown.appliedCap.ceiling;
+  }
+  const fitPercent = Math.max(0, Math.min(100, Math.round(fit * 10) / 10));
+  return { ...breakdown, components, fitPercent };
+}
 
 export function persistSessionMatches(
   db: Database.Database,
@@ -53,6 +80,16 @@ export function persistSessionMatches(
     const freight_rate_usd_per_mt = eco.freight_rate_usd_per_mt;
     const freight_rate_source = eco.freight_rate_source;
     const consumption_estimated = eco.consumption_estimated ? 1 : null;
+
+    // Recompute economics fit component with live TCE — the seed fitBreakdown bakes
+    // the economics score from regen-time TCE. Live tce_usd_per_day differs when
+    // bunker price changed since regen. Replace only the economics component; all
+    // other components (timing, utilisation, etc.) are geometry/readiness-based
+    // and do not depend on bunker price.
+    const liveFitBreakdown = m.fitBreakdown && tce_usd_per_day != null
+      ? patchEconomicsComponent(m.fitBreakdown, tce_usd_per_day, vesselDwt)
+      : m.fitBreakdown;
+    const liveFitPercent = liveFitBreakdown?.fitPercent ?? m.fitPercent;
 
     // Fail-closed: if the cargo laycan in parsedCargos disagrees with the stored
     // worksheet laycan, recompute readiness rather than carrying stale data verbatim.
@@ -119,8 +156,8 @@ export function persistSessionMatches(
       freight_rate_source,
       vessel_name: vessel ? (cfValue(vessel.vesselName) || null) : null,
       cargo_ref: cargo ? (cfValue(cargo.cargoDescription) || null) : null,
-      fit_percent: m.fitPercent ?? null,
-      fit_breakdown: m.fitBreakdown ? JSON.stringify(m.fitBreakdown) : null,
+      fit_percent: liveFitPercent ?? null,
+      fit_breakdown: liveFitBreakdown ? JSON.stringify(liveFitBreakdown) : null,
       cargo_item_index: m.cargoItemIndex,
       vessel_item_index: m.vesselItemIndex,
       worksheet_json: worksheetJson,
