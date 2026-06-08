@@ -128,3 +128,37 @@ describe('resolveFreightRate — tier-2 math gives sane $/mt', () => {
     expect(r.source).toBe('estimated');
   });
 });
+
+describe('resolveFreightRate — tier-2 ballast-aware duration', () => {
+  it('uses ballastDays+ladenDays+2 when ballastDistanceNm provided', () => {
+    const ballastNm = 800;
+    const r = resolveFreightRate({
+      ...base,
+      balticDayRate: balticInput,
+      ballastDistanceNm: ballastNm,
+    });
+    expect(r.source).toBe('baltic');
+    const safeSpeed = base.speedKts!;
+    const ladenDays = estimateVoyageDays(base.distanceNm, safeSpeed);
+    const ballastDays = ballastNm / (safeSpeed * 24);
+    const expectedDays = ballastDays + ladenDays + 2;
+    const expectedRate = Math.round((balticInput.usdPerDay * expectedDays) / base.quantityMt * 100) / 100;
+    expect(r.value).toBeCloseTo(expectedRate, 2);
+    // Confirm it differs from round-trip
+    const roundTripDays = ladenDays * 2 + 2;
+    const roundTripRate = Math.round((balticInput.usdPerDay * roundTripDays) / base.quantityMt * 100) / 100;
+    expect(r.value).not.toBeCloseTo(roundTripRate, 2);
+  });
+
+  it('falls back to round-trip when ballastDistanceNm is null', () => {
+    const r = resolveFreightRate({
+      ...base,
+      balticDayRate: balticInput,
+      ballastDistanceNm: null,
+    });
+    const ladenDays = estimateVoyageDays(base.distanceNm, base.speedKts);
+    const days = ladenDays * 2 + 2;
+    const expectedRate = Math.round((balticInput.usdPerDay * days) / base.quantityMt * 100) / 100;
+    expect(r.value).toBeCloseTo(expectedRate, 2);
+  });
+});
