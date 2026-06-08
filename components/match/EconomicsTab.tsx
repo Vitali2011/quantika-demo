@@ -81,7 +81,6 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
   const [resetting, setResetting] = useState(false);
   const [bunkerPort, setBunkerPort] = useState<BunkerPort | null>('NLRTM');
   const [bunkerGrade, setBunkerGrade] = useState<BunkerGrade>('VLSFO');
-  const [bunkerPortManual, setBunkerPortManual] = useState(false);
   const [bunkerReco, setBunkerReco] = useState<{ port: string; priceUsdPerMt: number; recommendation: string } | null>(null);
   const [bunkerFallback, setBunkerFallback] = useState<string | null>(null);
   const [bunkerCandidates, setBunkerCandidates] = useState<BunkerCandidateResult[]>([]);
@@ -495,7 +494,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
         <div className="flex gap-2 mt-2">
           <select
             value={bunkerPort ?? ''}
-            onChange={(e) => { setBunkerPort(e.target.value); setBunkerPortManual(true); }}
+            onChange={(e) => { setBunkerPort(e.target.value); }}
             aria-label="Bunker port"
             className="flex-1 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-400"
           >
