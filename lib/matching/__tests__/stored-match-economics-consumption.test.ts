@@ -58,7 +58,7 @@ test('computeStoredMatchEconomics: null consumption → consumptionEstimated=tru
 
 test('computeStoredMatchEconomics: explicit consumption → consumptionEstimated=false', () => {
   const db = seedDb();
-  const vesselWithCons = { ...vesselWithNoConsumption, consumption: { value: '22 mt/day', confidence: 'confirmed' as const } };
+  const vesselWithCons = { ...vesselWithNoConsumption, consumption: '22 mt/day' };
   const result = computeStoredMatchEconomics({ cargo: baseCargo, vessel: vesselWithCons, db });
   expect(result.consumption_estimated).toBeFalsy();
   expect(result.tce_usd_per_day).not.toBeNull();
