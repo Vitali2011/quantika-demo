@@ -67,32 +67,30 @@ describe('buildPassportInsert', () => {
 });
 
 describe('buildEconomicsInsert', () => {
-  it('formats TCE / bunker / war / ETS from voyage breakdown', async () => {
+  it('formats TCE and freight rate from GET /api/matches/[id] (W9 shape)', async () => {
     const fetcher = jest.fn().mockResolvedValue({
-      voyageId: 'V-1',
-      breakdown: {
-        bunker_usd: 800000,
-        war_risk_usd: 25000,
-        ets_usd: 15000,
-        ets_eur: 14000,
-        canal_usd: 0,
-        da_usd: 60000,
-        gross_freight_usd: 1500000,
-        total_costs_usd: 900000,
-        net_voyage_usd: 600000,
-        daily_tce_usd: 18500,
-        applicable: { bunker: true, canal: false, da: true, war_risk: true, ets: true },
-      },
+      tce_usd_per_day: 18500,
+      freight_rate_usd_per_mt: 28.5,
+      load_port: 'Houston',
+      discharge_port: 'Rotterdam',
     });
     const out = await buildEconomicsInsert('V-1', { fetcher });
     expect(out.html).toContain('TCE');
     expect(out.html).toContain('18,500');
-    expect(out.html).toContain('800,000');
+    expect(out.html).toContain('28.5');
+    expect(out.html).toContain('Houston');
+    expect(out.html).toContain('Rotterdam');
     expect(out.plain).toContain('TCE');
-    expect(out.plain).toContain('18500');
-    expect(out.plain).toContain('Bunker');
-    expect(out.plain).toContain('War');
-    expect(out.plain).toContain('ETS');
+    expect(out.plain).toContain('18,500');
+    expect(out.plain).toContain('Houston');
+    expect(out.plain).toContain('Rotterdam');
+  });
+
+  it('shows fallback when tce_usd_per_day is null', async () => {
+    const fetcher = jest.fn().mockResolvedValue({ tce_usd_per_day: null, freight_rate_usd_per_mt: null, load_port: null, discharge_port: null });
+    const out = await buildEconomicsInsert('M-99', { fetcher });
+    expect(out.html).toContain('M-99');
+    expect(out.plain).toContain('n/a');
   });
 });
 
