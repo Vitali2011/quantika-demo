@@ -57,7 +57,7 @@ const FIXTURE_BREAKDOWN: TCEBreakdown = {
 
 // ── Helper to create a ConfidenceField<T> ──
 function cf<T>(value: T): ConfidenceField<T> {
-  return { value, confidence: 'high', source: 'test', raw: String(value) };
+  return { value, confidence: 'confirmed' };
 }
 
 // ── Minimal props that make voyageInputData.ready = true ──
@@ -143,7 +143,7 @@ function setupFetch(breakdown: TCEBreakdown) {
     }
     return Promise.resolve({ ok: false, json: () => Promise.resolve({}) });
   });
-  global.fetch = mockFetch as typeof global.fetch;
+  global.fetch = mockFetch as unknown as typeof fetch;
   return mockFetch;
 }
 
