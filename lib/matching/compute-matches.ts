@@ -85,7 +85,7 @@ export async function computeAndPersistMatches(
     // (excludeWarRiskFromDailyTce:true) so stored TCE matches the detail page.
     const eco = cargo && vessel
       ? computeStoredMatchEconomics({ cargo, vessel, db, bunkerPriceUsdPerMt })
-      : { tce_usd_per_day: null, freight_rate_usd_per_mt: null, freight_rate_source: null, consumption_estimated: false };
+      : { tce_usd_per_day: null, freight_rate_usd_per_mt: null, freight_rate_source: null, consumption_estimated: false, ballast_distance_nm: null };
     const tce_usd_per_day = eco.tce_usd_per_day;
     const freight_rate_usd_per_mt = eco.freight_rate_usd_per_mt;
     const freight_rate_source = eco.freight_rate_source;
@@ -112,6 +112,7 @@ export async function computeAndPersistMatches(
       vessel_name: vessel ? (cfValue(vessel.vesselName) || null) : null,
       cargo_ref: cargo ? (cfValue(cargo.cargoDescription) || null) : null,
       consumption_estimated,
+      ballast_distance_nm: eco.ballast_distance_nm ?? null,
     });
   }
 

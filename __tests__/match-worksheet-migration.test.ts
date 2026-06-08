@@ -34,9 +34,11 @@ describe('migration 045 — worksheet_json column', () => {
     expect(row.worksheet_json).toBeNull();
   });
 
-  it('migration 046 version is 46 and is the last in allMigrations', () => {
+  it('migration 046 (consumption-estimated) and 047 (ballast-distance) both in allMigrations; 047 is last', () => {
+    const m46 = allMigrations.find((m) => m.version === 46);
+    expect(m46?.name).toBe('matches-consumption-estimated');
     const last = allMigrations[allMigrations.length - 1];
-    expect(last.version).toBe(46);
-    expect(last.name).toBe('matches-consumption-estimated');
+    expect(last.version).toBe(47);
+    expect(last.name).toBe('matches-ballast-distance');
   });
 });
