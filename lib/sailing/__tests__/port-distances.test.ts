@@ -130,6 +130,14 @@ describe('normalizePortName', () => {
   it('handles multi-port ranges by taking first', () => {
     expect(normalizePortName('Bay of Biscay (Bayonne/Bilbao range)')).toBe('Bayonne');
   });
+
+  it('"Port of Call, Ukraine (unspecified)" resolves to Odesa (vague-ukraine guard)', () => {
+    expect(normalizePortName('Port of Call, Ukraine (unspecified)')).toBe('Odesa');
+  });
+
+  it('"Port of Call, Ukraine" (no parenthetical) resolves to Odesa', () => {
+    expect(normalizePortName('Port of Call, Ukraine')).toBe('Odesa');
+  });
 });
 
 describe('getPortDistance', () => {
@@ -194,6 +202,12 @@ describe('getPortDistance', () => {
     // (No way to construct this with current 15 ports — all have coords.
     //  Phase 5 with JSON-loaded ports may have null-coord entries.)
     expect(getPortDistance('Karasu', 'Karasu')).not.toBeNull();
+  });
+
+  it('Iskenderun → "Port of Call, Ukraine (unspecified)" < 2000nm (not 7811nm Callao)', () => {
+    const d = getPortDistance('Iskenderun', 'Port of Call, Ukraine (unspecified)');
+    expect(d).not.toBeNull();
+    expect(d!.nm).toBeLessThan(2000);
   });
 });
 

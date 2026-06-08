@@ -1220,6 +1220,14 @@ export function normalizePortName(raw: string | null | undefined): string | null
     if (entry?.name) return normalizePortName(entry.name);
   }
 
+  // Early vague-Ukraine guard: "Port of Call, Ukraine (unspecified)" is a broker
+  // shorthand that stripCountry/stripPortPrefix degrades to 'Call' → Callao (Peru).
+  // Catch it here before stripping removes the country token.
+  const lowerRaw = trimmedRaw.toLowerCase();
+  if (lowerRaw.includes('ukraine') && /port[\s-]*of[\s-]*call|unspecified/i.test(raw)) {
+    return 'Odesa';
+  }
+
   // Capture parenthetical hints BEFORE stripping (used as fallback if primary name fails)
   const parenHints = extractParenHints(raw);
   let s = stripCountry(stripParenthetical(raw)).trim();
