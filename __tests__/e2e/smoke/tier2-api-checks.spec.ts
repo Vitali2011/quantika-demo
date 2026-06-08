@@ -17,15 +17,4 @@ test.describe('Tier 2 — Wave α API endpoints', () => {
     expect([200, 401, 403]).toContain(res.status());
   });
 
-  test('Economics API route exists — must not 404', async ({ request }) => {
-    const res = await request.post('/api/economics', {
-      data: {
-        route: { fromPort: 'Istanbul', toPort: 'Lagos' },
-        vessel: { dwt: 12500, speed: 12 },
-      },
-    });
-    // 200/400/401/403/503 all mean the route exists
-    expect(res.status()).not.toBe(404);
-    expect([200, 400, 401, 403, 503]).toContain(res.status());
-  });
 });

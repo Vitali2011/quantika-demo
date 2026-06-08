@@ -33,7 +33,7 @@ npx playwright show-report playwright-report
 | 1 | `tier1-health.spec.ts` | `/api/health`, homepage load, `/onboarding` selectors, WhatsApp webhook security, lang/dir |
 | 2 | `tier2-onboarding-flow.spec.ts` | Onboarding UI renders; region pick → session bootstrap → redirect → trial banner |
 | 2 | `tier2-match-detail.spec.ts` | Dashboard without 5xx; match tabs + confidence border (skips if no matches in demo) |
-| 2 | `tier2-api-checks.spec.ts` | `/api/market/benchmark`, `/api/audit`, `/api/economics` all non-404 |
+| 2 | `tier2-api-checks.spec.ts` | `/api/market/benchmark`, `/api/audit` all non-404 |
 
 Tier 2 match tests skip when demo data has no matches yet. This is expected on a fresh session.
 
