@@ -5,6 +5,7 @@ import type { ParsedVessel, ParsedCargo } from '@/lib/types';
 import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
 import { RouteCompareModal } from '@/components/economics/RouteCompareModal';
 import { VoyageBreakdownChart } from '@/components/economics/VoyageBreakdownChart';
+import { CalculationWaterfall } from '@/components/economics/CalculationWaterfall';
 import { BunkerComparisonTable } from '@/components/economics/BunkerComparisonTable';
 import type { BunkerCandidateResult } from '@/lib/economics/bunker-comparison';
 import { estimateVoyageDays } from '@/lib/economics/voyage-days';
@@ -87,6 +88,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
   const [voyageLoading, setVoyageLoading] = useState(false);
   const [voyageError, setVoyageError] = useState<string | null>(null);
   const [approxPorts, setApproxPorts] = useState<Array<{ side: string; input: string; resolvedTo: string }>>([]);
+  const [showCalc, setShowCalc] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -679,6 +681,20 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
                 </p>
               )}
               <VoyageBreakdownChart breakdown={voyageBreakdown} />
+              <div className="mt-2">
+                <button
+                  data-testid="show-calc-toggle"
+                  className="text-xs text-blue-600 hover:underline"
+                  onClick={() => setShowCalc((v) => !v)}
+                >
+                  {showCalc ? 'Скрыть расчёт' : 'Показать расчёт'}
+                </button>
+                {showCalc && (
+                  <div className="mt-3 rounded border border-gray-200 bg-gray-50 p-3">
+                    <CalculationWaterfall breakdown={voyageBreakdown} />
+                  </div>
+                )}
+              </div>
             </>
           ) : null
         ) : voyageInputData.missing.length > 0 ? (
