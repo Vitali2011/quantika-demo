@@ -55,6 +55,8 @@ export interface StoredMatchEconomicsResult {
   economics: EconomicsResult | null;
   /** Inner TCEBreakdown — exposes da_usd (port disbursements) and other line items. */
   tce_breakdown: TCEBreakdown | null;
+  /** True when vessel consumption was absent and class-aware fallback fired. */
+  consumption_estimated: boolean;
 }
 
 /**
@@ -77,6 +79,7 @@ export function computeStoredMatchEconomics(
     distance_nm: null,
     economics: null,
     tce_breakdown: null,
+    consumption_estimated: false,
   };
 
   const loadPort = cfValue(cargo.originPort);
@@ -127,6 +130,12 @@ export function computeStoredMatchEconomics(
     }
   }
 
+  // Use fallback=0 so that absent consumption triggers resolveConsMtPerDay class-aware
+  // fallback inside buildCanonicalTceInputs (via computeEstimatedTce). The old flat-25
+  // default was fabricated; passing 0 lets the vessel-class estimator run instead.
+  const rawCons = parseConsumption(vessel.consumption, 0);
+  const consumptionEstimated = rawCons <= 0;
+
   // excludeWarRiskFromDailyTce: true — matches detail-page convention so
   // stored list TCE == live detail TCE (war-risk is shown as a separate line).
   const econ = buildMatchEconomics({
@@ -135,7 +144,7 @@ export function computeStoredMatchEconomics(
     vesselDwt: ecoDwt,
     quantityMt: ecoQty,
     speedKts: ecoSpeed,
-    consumptionMt: parseConsumption(vessel.consumption),
+    consumptionMt: rawCons,
     loadPort,
     dischargePort,
     vesselOpenPosition: openPosition,
@@ -180,7 +189,7 @@ export function computeStoredMatchEconomics(
       ecoDwt,
       ecoQty,
       ecoSpeed,
-      parseConsumption(vessel.consumption),
+      parseConsumption(vessel.consumption, 0),  // was parseConsumption(vessel.consumption)
       ballastDistanceNm ?? undefined,
       canalUsd > 0 ? canalUsd : undefined,
       daUsd > 0 ? daUsd : undefined,
@@ -203,5 +212,6 @@ export function computeStoredMatchEconomics(
     distance_nm: distanceResult.nm,
     economics: econ,
     tce_breakdown,
+    consumption_estimated: consumptionEstimated,
   };
 }

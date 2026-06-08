@@ -95,6 +95,10 @@ export interface EconomicsResult {
   freightRateUsdPerMt?: number;
   /** Source tier that resolved the freight rate (manual/parsed/baltic/estimated). */
   freightRateSource?: string;
+  /** Set when vessel consumption was absent/zero and class-aware fallback fired. */
+  consumptionEstimated?: boolean;
+  /** Set when cargo quantity was absent/zero and DWT×0.65 fallback fired. */
+  qtyEstimated?: boolean;
 }
 
 // ── FuelEU Maritime (Spec γ-11) ──

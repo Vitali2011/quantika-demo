@@ -386,5 +386,7 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
     tceUsdPerDay: tce.tce_usd_per_day,
     freightRateUsdPerMt: tce.freight_rate_usd_per_mt,
     freightRateSource: tce.freight_rate_source,
+    consumptionEstimated: input.consumptionMt <= 0 ? true : undefined,
+    qtyEstimated: input.quantityMt <= 0 ? true : undefined,
   };
 }
