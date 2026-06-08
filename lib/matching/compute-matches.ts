@@ -1,7 +1,6 @@
 import type Database from 'better-sqlite3';
 import type { ParsedCargo, ParsedVessel } from '@/lib/types';
 import { cfValue } from '@/lib/types';
-import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
 import { analyzePairs, type AiScorer, type RawMatch } from '@/lib/matching/pair-analyzer';
 import { createMatch, listMatches } from '@/lib/matching/matches-repository';
 import { callAiJson } from '@/lib/ai-provider';
@@ -9,9 +8,7 @@ import { MATCH_PROMPT } from '@/lib/prompts';
 import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { parseLaycan } from '@/lib/sailing/date-parsing';
 import { getPortDistance } from '@/lib/sailing/port-distances';
-import { computeEstimatedTce, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
-import { resolveFreightRate } from '@/lib/matching/freight-resolver';
-import { getBalticDayRate } from '@/lib/market/baltic-freight';
+import { computeStoredMatchEconomics } from '@/lib/matching/stored-match-economics';
 
 /**
  * Compute matches for a session and persist them to the DB.
@@ -72,34 +69,16 @@ export async function computeAndPersistMatches(
     const loadPort = cargo ? cfValue(cargo.originPort) : null;
     const dischargePort = cargo ? cfValue(cargo.destinationPort) : null;
     const distanceResult = loadPort && dischargePort ? getPortDistance(loadPort, dischargePort) : null;
-
     const vesselDwt = vessel ? (cfValue(vessel.dwtSummer) ?? 0) : 0;
-    const quantityMt = resolveCargoWeight(cargo) ?? 0;
-    const speedKts = vessel ? parseLeadingNumber(vessel.speedLaden) : 0;
-    const consumptionMt = vessel ? parseConsumption(vessel.consumption) : 0;
 
-    let tce_usd_per_day: number | null = null;
-    let freight_rate_usd_per_mt: number | null = null;
-    let freight_rate_source: string | null = null;
-
-    if (distanceResult && distanceResult.nm > 0) {
-      const resolved = resolveFreightRate({
-        cargoType,
-        parsedFreightRateUsdPerMt: cargo?.freightRateUsd ?? null,
-        vesselDwt,
-        quantityMt,
-        distanceNm: distanceResult.nm,
-        speedKts,
-        balticDayRate: getBalticDayRate(db, vesselDwt),
-      });
-      const tceEst = computeEstimatedTce(
-        { rate: resolved.value, source: resolved.source, confidence: resolved.confidence },
-        distanceResult.nm, vesselDwt, quantityMt, speedKts, consumptionMt,
-      );
-      tce_usd_per_day = tceEst.tce_usd_per_day;
-      freight_rate_usd_per_mt = tceEst.freight_rate_usd_per_mt;
-      freight_rate_source = tceEst.freight_rate_source;
-    }
+    // Economics via shared helper — includes port-DA, canal, and war-risk convention
+    // (excludeWarRiskFromDailyTce:true) so stored TCE matches the detail page.
+    const eco = cargo && vessel
+      ? computeStoredMatchEconomics({ cargo, vessel, db })
+      : { tce_usd_per_day: null, freight_rate_usd_per_mt: null, freight_rate_source: null };
+    const tce_usd_per_day = eco.tce_usd_per_day;
+    const freight_rate_usd_per_mt = eco.freight_rate_usd_per_mt;
+    const freight_rate_source = eco.freight_rate_source;
 
     createMatch(db, {
       cargo_id: m.cargoEmailId,
