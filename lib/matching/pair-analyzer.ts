@@ -22,13 +22,9 @@ import { validateDates, isLaycanValid } from '@/lib/sailing/date-sanity';
 import { checkSanctions } from '@/lib/validation/sanctions';
 import { enrichReasons } from '@/lib/matching/reason-enricher';
 import { applyHoldCleanliness } from '@/lib/matching/hold-cleanliness';
-import { buildMatchEconomics, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
-import { getLatestEuaPrice } from '@/lib/market/eua-repository';
-import { resolveFreightRate } from '@/lib/matching/freight-resolver';
-import { getBalticDayRate } from '@/lib/market/baltic-freight';
-import { sumMatchPortDaUsd } from '@/lib/port-da/match-da';
 import type Database from 'better-sqlite3';
 import { getPortDistance } from '@/lib/sailing/port-distances';
+import { computeStoredMatchEconomics } from '@/lib/matching/stored-match-economics';
 import { getDetentionCount } from '@/lib/market/psc-repository';
 import { resolveChartererTier } from '@/lib/matching/charterer-tier';
 import { formatNumber } from '@/lib/utils';
@@ -278,72 +274,15 @@ function computeMatchEconomicsFor(
     loadPort && dischargePort ? getPortDistance(loadPort, dischargePort) : null;
   if (!distanceResult || !(distanceResult.nm > 0)) return undefined;
 
-  const cargoType =
-    typeof cargo.cargoType === 'object' && cargo.cargoType !== null && 'value' in cargo.cargoType
-      ? (cargo.cargoType as unknown as { value: string }).value
-      : (cargo.cargoType as string | null);
-
-  const ecoDwt = cfValue(vessel.dwtSummer) ?? 0;
-  const ecoQty = resolveCargoWeight(cargo) ?? 0;
-  const ecoSpeed = parseLeadingNumber(vessel.speedLaden);
-  const resolvedFreight = resolveFreightRate({
-    cargoType,
-    parsedFreightRateUsdPerMt: cargo.freightRateUsd ?? null,
-    vesselDwt: ecoDwt,
-    quantityMt: ecoQty,
-    distanceNm: distanceResult.nm,
-    speedKts: ecoSpeed,
-    balticDayRate: db ? getBalticDayRate(db, ecoDwt) : null,
-  });
-
-  // Ballast reposition distance: open position → load port.
-  // Used by buildMatchEconomics for single-voyage span + ballast-leg Suez detection.
-  const openPosition = cfValue(vessel.openPosition);
-  const ballastResult = openPosition && loadPort
-    ? getPortDistance(openPosition, loadPort)
-    : null;
-  const ballastDistanceNm = ballastResult?.nm ?? null;
-
-  // Port disbursement (DA): load + discharge fixed costs from getPortDa.
-  // db is the match-path handle (already used above for getBalticDayRate).
-  // Unknown ports / no db → 0 (graceful), matching the voyage detail page.
-  const daUsd = db ? sumMatchPortDaUsd([loadPort, dischargePort], ecoDwt, cargoType, db) : 0;
-
-  // Live EUA spot for ETS costing. Missing table / query error → null (graceful),
-  // matching the daUsd + canal-quote convention above; buildMatchEconomics then
-  // falls back to its DEFAULT_EUA_EUR. Match path must not throw on a DB without
-  // the eua_prices table (test/in-memory handles, pre-seed environments).
-  let liveEuaRow: ReturnType<typeof getLatestEuaPrice> = null;
-  if (db) {
-    try {
-      liveEuaRow = getLatestEuaPrice(db, 'spot');
-    } catch {
-      liveEuaRow = null;
-    }
-  }
-  const econ = buildMatchEconomics({
-    cargoType,
-    distanceNm: distanceResult.nm,
-    vesselDwt: ecoDwt,
-    quantityMt: ecoQty,
-    speedKts: ecoSpeed,
-    consumptionMt: parseConsumption(vessel.consumption),
-    loadPort,
-    dischargePort,
-    vesselOpenPosition: openPosition,
-    calculatedAt: calcAt,
-    resolvedFreight: {
-      rate: resolvedFreight.value,
-      source: resolvedFreight.source,
-      confidence: resolvedFreight.confidence,
-    },
-    ballastDistanceNm,
-    daUsd,
+  const result = computeStoredMatchEconomics({
+    cargo,
+    vessel,
+    db: db ?? undefined,
+    calculatedAt: new Date(calcAt),
     bunkerPriceUsdPerMt,
-    euaPriceEur: liveEuaRow?.price_eur_per_tco2 ?? undefined,
   });
 
-  return econ ?? undefined;
+  return result.economics ?? undefined;
 }
 
 /**
