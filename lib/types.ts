@@ -95,6 +95,12 @@ export interface EconomicsResult {
   freightRateUsdPerMt?: number;
   /** Source tier that resolved the freight rate (manual/parsed/baltic/estimated). */
   freightRateSource?: string;
+  /** Set when vessel consumption was absent/zero and class-aware fallback fired. */
+  consumptionEstimated?: boolean;
+  /** Set when cargo quantity was absent/zero and DWT×0.65 fallback fired. */
+  qtyEstimated?: boolean;
+  /** Data-quality channel — per-field provenance (W5). Map key = field name. */
+  dataQuality?: Record<string, import('./data-quality/types').DataQuality>;
 }
 
 // ── FuelEU Maritime (Spec γ-11) ──

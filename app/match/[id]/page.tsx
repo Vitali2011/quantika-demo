@@ -283,6 +283,7 @@ export default async function MatchDetailPage({ params }: Props) {
                   storedDistanceNm={storedMatch.distance_nm}
                   storedTceUsdPerDay={storedMatch.tce_usd_per_day}
                   ballastDistanceNm={ballastDistanceNm}
+                  consumptionEstimated={storedMatch.consumption_estimated === 1}
                 />
 
                 {cargo && cargoEmail && (

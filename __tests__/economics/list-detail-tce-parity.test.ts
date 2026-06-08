@@ -12,6 +12,7 @@
  *   via sumMatchPortDaUsd so a DA bug in the helper would be caught (not circular).
  */
 import Database from 'better-sqlite3';
+import { DEFAULT_BUNKER_USD_PER_MT as _DEFAULT_BUNKER, FALLBACK_EUA_EUR_PER_TCO2 } from '@/lib/constants';
 import { buildCanonicalTceInputs } from '@/lib/economics/canonical-tce-inputs';
 import { calculateTCE } from '@/lib/economics/voyage-calculator';
 import { computeEstimatedTce, buildMatchEconomics, estimateFreightRate, deriveEtsCoverage, routeTransitsBosporus, quoteBosporusSafe, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
@@ -52,9 +53,9 @@ const SAMPLES: Sample[] = [
   { name: 'Long-haul Santos→Qingdao',   vesselDwt: 82000, speedKts: 14, consumptionMtPerDay: 32, distanceNm: 11200, quantityMt: 75000, cargoType: 'GRAIN' },
 ];
 
-// Constants matching computeEstimatedTce defaults (see tce-calculator.ts)
-const DEFAULT_BUNKER_USD_PER_MT = 600;
-const DEFAULT_EUA_EUR = 65;
+// Constants matching computeEstimatedTce defaults — imported from lib/constants (W7)
+const DEFAULT_BUNKER_USD_PER_MT = _DEFAULT_BUNKER;  // 600
+const DEFAULT_EUA_EUR = FALLBACK_EUA_EUR_PER_TCO2;  // 87.5 (was 65, unified W7)
 const DEFAULT_VESSEL_VALUE_USD = 22_000_000;
 
 describe('LIST tce_usd_per_day === DETAIL daily_tce_usd (parity, #819)', () => {
@@ -369,7 +370,7 @@ describe('Workstream A5: stored list TCE ↔ live detail TCE parity (CI guard)',
       bunkerPriceUsdPerMt: 600, // DEFAULT_BUNKER_USD_PER_MT (matches helper default)
       originPort: loadPort,
       destinationPort: dischargePort,
-      euaPriceEur: 65, // DEFAULT_EUA_EUR
+      euaPriceEur: FALLBACK_EUA_EUR_PER_TCO2, // 87.5 — was 65, unified W7
       vesselValueUsd: 22_000_000, // DEFAULT_VESSEL_VALUE_USD
       ballastDistanceNm,
       canalUsd: canalUsd > 0 ? canalUsd : undefined,
@@ -518,7 +519,7 @@ describe('A5-ballast: openPosition ≠ loadPort — stored LIST ↔ detail TCE p
       bunkerPriceUsdPerMt: 600, // DEFAULT_BUNKER_USD_PER_MT
       originPort: loadPort,
       destinationPort: dischargePort,
-      euaPriceEur: 65,          // DEFAULT_EUA_EUR
+      euaPriceEur: FALLBACK_EUA_EUR_PER_TCO2, // 87.5 — was 65, unified W7
       vesselValueUsd: 22_000_000,
       ballastDistanceNm,        // ← THE FIX: single-voyage duration
     });
@@ -560,7 +561,7 @@ describe('A5-ballast: openPosition ≠ loadPort — stored LIST ↔ detail TCE p
       bunkerPriceUsdPerMt: 600,
       originPort: loadPort,
       destinationPort: dischargePort,
-      euaPriceEur: 65,
+      euaPriceEur: FALLBACK_EUA_EUR_PER_TCO2, // 87.5 — was 65, unified W7
       vesselValueUsd: 22_000_000,
       // ballastDistanceNm intentionally omitted
     });
