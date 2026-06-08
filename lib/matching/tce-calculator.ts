@@ -367,9 +367,11 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
     originEu,
     destEu,
     euaPriceEur,
-    // Canonical convention: war risk shown in breakdown but excluded from daily-TCE headline;
-    // matches app/api/voyage/tce/route.ts:373 and stored-match-economics.ts.
-    input.excludeWarRiskFromDailyTce ?? true,
+    // Default false = legacy behaviour (war risk INCLUDED in daily-TCE headline) for callers
+    // that don't set the flag. Callers that want the canonical "exclude" convention must pass
+    // excludeWarRiskFromDailyTce: true explicitly — stored-match-economics.ts (line ~144) and
+    // app/api/voyage/tce/route.ts:373 already do so; golden-set runner must also opt in.
+    input.excludeWarRiskFromDailyTce ?? false,
   );
 
   const warLaden = calculateWarRiskPremium({

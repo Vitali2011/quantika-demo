@@ -146,6 +146,10 @@ export function computeStoredMatchEconomics(
 
   if (!econ) return nullResult;
 
+  // NOTE: second computeEstimatedTce call — buildMatchEconomics returns EconomicsBreakdown,
+  // not TCEBreakdown. Same inputs as above so values agree; if buildMatchEconomics's
+  // canal/EUA/DA handling changes, keep this call in sync (or lift TCEBreakdown into EconomicsResult).
+  //
   // The inner TCEBreakdown is not exposed on EconomicsResult.breakdown
   // (which is EconomicsBreakdown). We re-derive it using the same inputs so
   // callers (tests, A5 parity) can inspect da_usd, canal_usd, etc.
