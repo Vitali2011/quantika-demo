@@ -57,8 +57,14 @@ export async function computeAndPersistMatches(
   const cargoMap = new Map(cargos.map((c) => [`${c.emailId}|${c.itemIndex}`, c]));
   const vesselMap = new Map(vessels.map((v) => [`${v.emailId}|${v.itemIndex}`, v]));
 
-  const bunkerRow = getLatestBunkerPrice(db, 'NLRTM', 'VLSFO');
-  const bunkerPriceUsdPerMt = bunkerRow?.price_usd_per_mt;
+  // Live bunker price (NLRTM/VLSFO) for list↔detail parity. Resilient to a missing
+  // bunker_prices table (e.g. minimal test DBs) — falls through to the helper default.
+  let bunkerPriceUsdPerMt: number | undefined;
+  try {
+    bunkerPriceUsdPerMt = getLatestBunkerPrice(db, 'NLRTM', 'VLSFO')?.price_usd_per_mt;
+  } catch {
+    bunkerPriceUsdPerMt = undefined;
+  }
 
   for (const m of matches) {
     const cargo = cargoMap.get(`${m.cargoEmailId}|${m.cargoItemIndex}`);

@@ -12,7 +12,7 @@ import { estimateVoyageDays } from '@/lib/economics/voyage-days';
 import { buildCanonicalTceInputs } from '@/lib/economics/canonical-tce-inputs';
 import { estimateVesselValueUsd } from '@/lib/economics/vessel-value';
 import { resolveConsMtPerDay } from '@/lib/economics/vessel-consumption';
-import { parseConsumption } from '@/lib/matching/tce-calculator';
+import { parseConsumption } from '@/lib/matching/parse-vessel-fields';
 import { freightBadge, FREIGHT_BADGE_CLASSES } from '@/lib/matching/freight-badge';
 import type { WarRiskBreakdown } from '@/lib/economics/war-risk';
 import type { TCEBreakdown } from '@/lib/economics/voyage-calculator';

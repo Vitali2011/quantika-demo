@@ -18,8 +18,15 @@ export function persistSessionMatches(
   const cargoMap = new Map(parsedCargos.map((c) => [`${c.emailId}|${c.itemIndex}`, c]));
   const vesselMap = new Map(parsedVessels.map((v) => [`${v.emailId}|${v.itemIndex}`, v]));
 
-  const bunkerRow = getLatestBunkerPrice(db, 'NLRTM', 'VLSFO');
-  const bunkerPriceUsdPerMt = bunkerRow?.price_usd_per_mt;
+  // Live bunker price (NLRTM/VLSFO) so the stored list TCE matches the detail page,
+  // which auto-resolves the same baseline. Resilient to a missing bunker_prices table
+  // (e.g. minimal test DBs) — falls through to the helper's default rather than throwing.
+  let bunkerPriceUsdPerMt: number | undefined;
+  try {
+    bunkerPriceUsdPerMt = getLatestBunkerPrice(db, 'NLRTM', 'VLSFO')?.price_usd_per_mt;
+  } catch {
+    bunkerPriceUsdPerMt = undefined;
+  }
 
   for (const m of sessionMatches) {
     const cargo = cargoMap.get(`${m.cargoEmailId}|${m.cargoItemIndex}`);
