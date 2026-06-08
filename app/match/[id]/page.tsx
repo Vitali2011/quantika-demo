@@ -17,6 +17,7 @@ import { MatchWorksheet } from '@/components/match/MatchWorksheet';
 import type { MatchWorksheet as MatchWorksheetType } from '@/lib/types';
 import { cfValue } from '@/lib/types';
 import { getPortDistance } from '@/lib/sailing/port-distances';
+import { effectiveScore } from '@/lib/utils/effective-score';
 
 interface Props { params: Promise<{ id: string }>; }
 
@@ -128,6 +129,9 @@ export default async function MatchDetailPage({ params }: Props) {
       ? (getPortDistance(cfValue(vessel.openPosition) ?? '', cfValue(cargo.originPort) ?? '')?.nm ?? null)
       : null);
 
+  // eslint-disable-next-line react-hooks/purity -- Server Component; Date.now() runs once per request, not in client render
+  const now = Date.now();
+
   return (
     <main className="min-h-screen bg-ds-bg">
       <AnalyticsTracker event="detail_viewed" properties={{ type: 'match' }} />
@@ -172,7 +176,7 @@ export default async function MatchDetailPage({ params }: Props) {
                 aria-label={`Match score: ${storedMatch.score}`}
               >
                 <span className="font-mono text-3xl sm:text-4xl font-semibold leading-none">
-                  {storedMatch.score}
+                  {effectiveScore(storedMatch, now)}
                 </span>
                 <span className="text-xs font-medium opacity-60 mt-0.5">score</span>
               </div>

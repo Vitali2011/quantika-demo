@@ -82,6 +82,7 @@ const longRouteMatch: StoredMatch = {
   freight_rate_source: null,
   vessel_name: 'MV Test',
   cargo_ref: null,
+  fit_percent: 75,
 };
 
 describe('MatchesClient — route cell overflow (#route-col-overflow)', () => {

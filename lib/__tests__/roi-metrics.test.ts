@@ -462,6 +462,29 @@ describe('roi-metrics', () => {
       expect(() => getRoiSummary(db, 99, NaN)).toThrow(RangeError);
       expect(() => getRoiSummary(db, 99, NaN)).toThrow(/days.*finite/i);
     });
+
+    // RED test (Wave 8 I11): cohort window matches days param — no day-91 ghost
+    // Bug: getRoiSummary(days=30) hardcodes getCohortData(3 months), so a 60-day-old
+    // voyage appears in cohorts even though it's excluded from totalVoyages.
+    it('cohorts exclude voyages outside days window (I11 — no ghost)', () => {
+      // Voyage from 60 days ago: outside 30-day summary window but inside 3-month cohort window
+      const ghostDate = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      const ghostCohort = ghostDate.substring(0, 7);
+      upsertRoiMetrics(db, {
+        id: 'roi-ghost',
+        voyage_id: 'v-ghost',
+        deal_date: ghostDate,
+        cohort_month: ghostCohort,
+        freight_usd: null, bunker_cost_usd: null, demurrage_usd: null, despatch_usd: null,
+        tce_actual_usd: 35000, tce_baseline_usd: 30000,
+      });
+      const summary = getRoiSummary(db, 99, 30);
+      // 60-day voyage is outside the 30-day window → not in totalVoyages
+      expect(summary.totalVoyages).toBe(0);
+      // Cohorts must also NOT contain this ghost month (window should be consistent)
+      const cohortMonths = summary.cohorts.map((c) => c.month);
+      expect(cohortMonths).not.toContain(ghostCohort);
+    });
   });
 
   describe('getCohortData', () => {
