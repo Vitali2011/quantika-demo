@@ -20,6 +20,7 @@
  */
 
 import Database from 'better-sqlite3';
+import { FALLBACK_EUA_EUR_PER_TCO2 } from '@/lib/constants';
 import migration032 from '@/lib/migrations/032-matches';
 import migration033 from '@/lib/migrations/033-matches-score-breakdown';
 import migration034 from '@/lib/migrations/034-matches-unique-constraint';
@@ -195,7 +196,7 @@ function expectedLive(
     bunkerPriceUsdPerMt: 600, // DEFAULT_BUNKER_USD_PER_MT (matches helper default)
     originPort: loadPort,
     destinationPort: dischargePort,
-    euaPriceEur: 65, // DEFAULT_EUA_EUR
+    euaPriceEur: FALLBACK_EUA_EUR_PER_TCO2, // 87.5 — was 65, unified W7
     vesselValueUsd: 22_000_000, // DEFAULT_VESSEL_VALUE_USD
     ballastDistanceNm,
     canalUsd: canalUsd > 0 ? canalUsd : undefined,
