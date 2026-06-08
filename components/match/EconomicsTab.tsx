@@ -31,6 +31,10 @@ interface EconomicsTabProps {
   warRiskZonesBallast?: string[] | null;
   /** Stored canonical TCE from the DB row (list == detail invariant). */
   storedTceUsdPerDay?: number | null;
+  /** Ballast reposition distance (open position → load port, nm). When provided,
+   *  buildCanonicalTceInputs uses single-voyage span (ballast+laden+2 port days)
+   *  matching the stored LIST TCE. Omit when open position is unknown → round-trip. */
+  ballastDistanceNm?: number | null;
 }
 
 function parseLeadingNumber(s: string | null | undefined): number {
@@ -64,7 +68,7 @@ function portLabel(locode: string): string {
   return PORT_NAMES[locode] ?? locode;
 }
 
-export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm, matchDbId, storedFreightRate, freightRateSource, warRiskPremium, warRiskZones, warRiskBreakdown, warRiskBreakdownBallast, warRiskZonesBallast, storedTceUsdPerDay }: EconomicsTabProps) {
+export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm, matchDbId, storedFreightRate, freightRateSource, warRiskPremium, warRiskZones, warRiskBreakdown, warRiskBreakdownBallast, warRiskZonesBallast, storedTceUsdPerDay, ballastDistanceNm }: EconomicsTabProps) {
   const [open, setOpen] = useState(false);
   const [bunkerPriceUsdPerMt, setBunkerPriceUsdPerMt] = useState('');
   const [overrideRate, setOverrideRate] = useState(storedFreightRate != null ? String(storedFreightRate) : '');
@@ -319,6 +323,9 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
           vesselValueUsd: estimateVesselValueUsd(dwt),
           originPort,
           destinationPort,
+          // Single-voyage duration: ballast reposition (open→load) + laden + 2 port days.
+          // Mirrors stored-match-economics.ts so DETAIL TCE == LIST TCE (SEAGULL-41 fix).
+          ballastDistanceNm: ballastDistanceNm ?? undefined,
         })
       : null;
 
@@ -338,7 +345,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
       : null;
 
     return { ready, missing, input };
-  }, [vessel, cargo, routeDistanceNm, currentRate, storedFreightRate, bunkerPort, bunkerGrade, bunkerPriceUsdPerMt, euaData]);
+  }, [vessel, cargo, routeDistanceNm, currentRate, storedFreightRate, bunkerPort, bunkerGrade, bunkerPriceUsdPerMt, euaData, ballastDistanceNm]);
 
   useEffect(() => {
     if (!voyageInputData.ready || !voyageInputData.input) {

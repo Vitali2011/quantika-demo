@@ -16,6 +16,7 @@ import { MatchDetailPanel, MatchDetailMobileSheet } from '@/components/match/Mat
 import { MatchWorksheet } from '@/components/match/MatchWorksheet';
 import type { MatchWorksheet as MatchWorksheetType } from '@/lib/types';
 import { cfValue } from '@/lib/types';
+import { getPortDistance } from '@/lib/sailing/port-distances';
 
 interface Props { params: Promise<{ id: string }>; }
 
@@ -116,6 +117,14 @@ export default async function MatchDetailPage({ params }: Props) {
     fitPercent: storedMatch.fit_percent ?? null,
     fitBreakdown: storedMatch.fit_breakdown ?? null,
   };
+
+  // Ballast reposition distance: open position → load port (nm).
+  // Mirrors stored-match-economics.ts so DETAIL uses the same single-voyage
+  // duration as LIST (fixes SEAGULL-41: list $9,084 ≠ detail $4,473 bug).
+  const ballastDistanceNm =
+    vessel && cargo
+      ? (getPortDistance(cfValue(vessel.openPosition) ?? '', cfValue(cargo.originPort) ?? '')?.nm ?? null)
+      : null;
 
   return (
     <main className="min-h-screen bg-ds-bg">
@@ -269,6 +278,7 @@ export default async function MatchDetailPage({ params }: Props) {
                   freightRateSource={storedMatch.freight_rate_source}
                   storedDistanceNm={storedMatch.distance_nm}
                   storedTceUsdPerDay={storedMatch.tce_usd_per_day}
+                  ballastDistanceNm={ballastDistanceNm}
                 />
 
                 {cargo && cargoEmail && (

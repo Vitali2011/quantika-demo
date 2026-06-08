@@ -401,3 +401,177 @@ describe('Workstream A5: stored list TCE ↔ live detail TCE parity (CI guard)',
     db.close();
   });
 });
+
+// ── A5-ballast: openPosition ≠ loadPort parity ───────────────────────────────
+//
+// Guards the SEAGULL 41 Nemrut Bay→Liverpool bug: LIST used single-voyage
+// (ballast+laden+2 port days) but DETAIL fell back to round-trip because
+// EconomicsTab did not pass ballastDistanceNm to buildCanonicalTceInputs.
+//
+// This test proves: when the detail path IS given ballastDistanceNm (the fix),
+// stored TCE ≡ detail TCE to ±$1.  Without the prop the two diverge (~2x diff).
+
+describe('A5-ballast: openPosition ≠ loadPort — stored LIST ↔ detail TCE parity (CI guard for SEAGULL-41 bug)', () => {
+  // Match: vessel open in Bourgas (Bulgaria), load in Nemrut Bay (TR), discharge in Liverpool (UK).
+  // Mirrors the prod case where openPosition ≠ loadPort so ballast reposition matters.
+
+  const BALLAST_CARGO: ParsedCargo = {
+    emailId: 'ballast-cargo-a5',
+    itemIndex: 0,
+    originPort: { value: 'Nemrut Bay', confidence: 'confirmed' },
+    destinationPort: { value: 'Liverpool', confidence: 'confirmed' },
+    cargoType: 'BULK',
+    laycan: '1-15 Jul 2026',
+    freightRateUsd: 33,
+    cargoDescription: null,
+    weightMt: { value: 2774, confidence: 'confirmed' },
+    weightMtMin: null,
+    weightMtMax: null,
+    volumeCbm: null,
+    dimensions: null,
+    containerType: null,
+    quantity: null,
+    incoterms: null,
+    preferredDates: null,
+    loadingRate: null,
+    dischargeRate: null,
+    commissionPercent: null,
+    commissionTerms: null,
+    specialRequirements: null,
+    stowageFactor: null,
+    missingInfo: [],
+    originCountry: null,
+    destinationCountry: null,
+  } as ParsedCargo;
+
+  const BALLAST_VESSEL: ParsedVessel = {
+    emailId: 'ballast-vessel-a5',
+    itemIndex: 0,
+    dwtSummer: { value: 5000, confidence: 'confirmed' },
+    vesselName: null,
+    imo: null,
+    flag: null,
+    built: null,
+    classSociety: null,
+    pandi: null,
+    dwcc: null,
+    draftMax: null,
+    loa: null,
+    beam: null,
+    grt: null,
+    nrt: null,
+    holdsCount: null,
+    hatchesCount: null,
+    grainCapacity: null,
+    grainCapacityUnit: null,
+    baleCapacity: null,
+    holdDimensions: null,
+    hatchDimensions: null,
+    tankTopStrength: null,
+    geared: null,
+    craneCapacity: null,
+    hatchType: null,
+    vesselType: null,
+    // Vessel is open in Bourgas — NOT at the load port Nemrut Bay
+    openPosition: { value: 'Bourgas', confidence: 'confirmed' },
+    openDate: null,
+    direction: null,
+    restrictions: [],
+    lastCargoes: null,
+    speedLaden: '12',
+    speedBallast: null,
+    consumption: '10',
+    deckCapacity: null,
+    specialFeatures: [],
+  } as ParsedVessel;
+
+  it('STORED TCE (single-voyage) ≡ DETAIL TCE when ballastDistanceNm is passed to buildCanonicalTceInputs (±$1)', () => {
+    // ── STORED (list) path ────────────────────────────────────────────────────
+    const stored = computeStoredMatchEconomics({ cargo: BALLAST_CARGO, vessel: BALLAST_VESSEL });
+    expect(stored.tce_usd_per_day).not.toBeNull();
+    const storedTce = stored.tce_usd_per_day!;
+
+    // ── DETAIL path — WITH ballastDistanceNm (the fix) ───────────────────────
+    const loadPort = cfValue(BALLAST_CARGO.originPort)!;
+    const dischargePort = cfValue(BALLAST_CARGO.destinationPort)!;
+    const dist = getPortDistance(loadPort, dischargePort)!;
+    expect(dist).not.toBeNull();
+
+    const openPosition = cfValue(BALLAST_VESSEL.openPosition)!;
+    const ballastResult = getPortDistance(openPosition, loadPort);
+    const ballastDistanceNm = ballastResult?.nm ?? undefined;
+    // Sanity: ballast distance must be > 0 (Bourgas ≠ Nemrut Bay)
+    expect(ballastDistanceNm).toBeGreaterThan(0);
+
+    const vesselDwt = (cfValue(BALLAST_VESSEL.dwtSummer) ?? 0) as number;
+    const quantityMt = resolveCargoWeight(BALLAST_CARGO) ?? 0;
+    const speedKts = parseLeadingNumber(BALLAST_VESSEL.speedLaden);
+    const consumptionMtPerDay = parseConsumption(BALLAST_VESSEL.consumption);
+
+    const canonicalInputs = buildCanonicalTceInputs({
+      vesselDwt,
+      speedKts,
+      consumptionMtPerDay,
+      distanceNm: dist.nm,
+      quantityMt,
+      freightRateUsdPerMt: stored.freight_rate_usd_per_mt!,
+      bunkerPriceUsdPerMt: 600, // DEFAULT_BUNKER_USD_PER_MT
+      originPort: loadPort,
+      destinationPort: dischargePort,
+      euaPriceEur: 65,          // DEFAULT_EUA_EUR
+      vesselValueUsd: 22_000_000,
+      ballastDistanceNm,        // ← THE FIX: single-voyage duration
+    });
+
+    const detailResult = calculateTCE({
+      ...canonicalInputs,
+      excludeWarRiskFromDailyTce: true,
+    });
+    const detailTce = detailResult.daily_tce_usd;
+
+    const delta = Math.abs(storedTce - detailTce);
+    console.log(`[A5-ballast parity] stored=${storedTce.toFixed(2)} detail=${detailTce.toFixed(2)} delta=${delta.toFixed(2)} ballastNm=${ballastDistanceNm}`);
+    expect(delta).toBeLessThanOrEqual(1);
+  });
+
+  it('WITHOUT ballastDistanceNm the detail path diverges (proves the bug existed)', () => {
+    // This test confirms that omitting ballastDistanceNm → round-trip → different TCE.
+    // (Documents the pre-fix behaviour — delta must be > 1.)
+    const stored = computeStoredMatchEconomics({ cargo: BALLAST_CARGO, vessel: BALLAST_VESSEL });
+    const storedTce = stored.tce_usd_per_day!;
+
+    const loadPort = cfValue(BALLAST_CARGO.originPort)!;
+    const dischargePort = cfValue(BALLAST_CARGO.destinationPort)!;
+    const dist = getPortDistance(loadPort, dischargePort)!;
+
+    const vesselDwt = (cfValue(BALLAST_VESSEL.dwtSummer) ?? 0) as number;
+    const quantityMt = resolveCargoWeight(BALLAST_CARGO) ?? 0;
+    const speedKts = parseLeadingNumber(BALLAST_VESSEL.speedLaden);
+    const consumptionMtPerDay = parseConsumption(BALLAST_VESSEL.consumption);
+
+    // NO ballastDistanceNm → falls back to estimateRoundTripDays
+    const canonicalInputs = buildCanonicalTceInputs({
+      vesselDwt,
+      speedKts,
+      consumptionMtPerDay,
+      distanceNm: dist.nm,
+      quantityMt,
+      freightRateUsdPerMt: stored.freight_rate_usd_per_mt!,
+      bunkerPriceUsdPerMt: 600,
+      originPort: loadPort,
+      destinationPort: dischargePort,
+      euaPriceEur: 65,
+      vesselValueUsd: 22_000_000,
+      // ballastDistanceNm intentionally omitted
+    });
+
+    const detailResult = calculateTCE({
+      ...canonicalInputs,
+      excludeWarRiskFromDailyTce: true,
+    });
+    const delta = Math.abs(storedTce - detailResult.daily_tce_usd);
+    console.log(`[A5-ballast no-ballast] stored=${storedTce.toFixed(2)} detail=${detailResult.daily_tce_usd.toFixed(2)} delta=${delta.toFixed(2)}`);
+    // Without the ballast prop, detail uses round-trip → diverges significantly
+    expect(delta).toBeGreaterThan(1);
+  });
+});
