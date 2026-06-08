@@ -123,9 +123,10 @@ export function computeStoredMatchEconomics(
   });
 
   // Port disbursement (DA): load + discharge fixed costs.
-  const daUsd = db
+  const daResult = db
     ? sumMatchPortDaUsd([loadPort, dischargePort], ecoDwt, cargoType, db)
-    : 0;
+    : { totalUsd: 0, confidence: 'verified' as const };
+  const daUsd = daResult.totalUsd;
 
   // Live EUA spot price — graceful fallback when table is absent.
   let liveEuaRow: ReturnType<typeof getLatestEuaPrice> = null;

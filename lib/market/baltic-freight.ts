@@ -11,6 +11,8 @@ export interface BalticDayRate {
   usdPerDay: number;
   date: string;
   indexCode: string;
+  /** Source identifier from the DB row (e.g. 'static-seed'). Used for staleness labelling. */
+  source: string;
 }
 
 /**
@@ -39,7 +41,7 @@ export function getBalticDayRate(db: Database.Database, dwt: number): BalticDayR
     for (const code of codes) {
       const row = getLatestBalticIndex(db, code);
       if (row && Number.isFinite(row.value) && row.value > 0) {
-        return { usdPerDay: row.value, date: row.price_date, indexCode: row.index_code };
+        return { usdPerDay: row.value, date: row.price_date, indexCode: row.index_code, source: row.source };
       }
     }
     return null;

@@ -1,9 +1,27 @@
 import type Database from 'better-sqlite3';
 import { getPortDa } from './repository';
 import { resolvePort } from '@/lib/ports/resolve';
+import type { PortDaBreakdown } from './types';
+
+/** Confidence ordering for min-aggregation: lower index = lower confidence */
+const CONFIDENCE_ORDER: PortDaBreakdown['confidence'][] = ['low', 'estimated', 'verified'];
+
+function minConfidence(
+  a: PortDaBreakdown['confidence'],
+  b: PortDaBreakdown['confidence'],
+): PortDaBreakdown['confidence'] {
+  return CONFIDENCE_ORDER.indexOf(a) <= CONFIDENCE_ORDER.indexOf(b) ? a : b;
+}
+
+export interface PortDaSumResult {
+  totalUsd: number;
+  /** Minimum confidence across all resolved ports. 'verified' when no ports resolved. */
+  confidence: PortDaBreakdown['confidence'];
+}
 
 /**
  * Sum port disbursement (fixed) cost across a set of match-path port NAMES.
+ * Returns {totalUsd, confidence} — W6a surfaces the confidence via DataQualityBadge.
  *
  * Mirrors the detail-page resolveDaUsd (app/api/voyage/tce/route.ts) so the
  * match-LIST TCE and the voyage detail page agree: both sum getPortDa().totalFixedUsd
@@ -30,8 +48,10 @@ export function sumMatchPortDaUsd(
   vesselDwt: number,
   _cargoType: string | null | undefined,
   db: Database.Database,
-): number {
+): PortDaSumResult {
   let total = 0;
+  let confidence: PortDaBreakdown['confidence'] = 'verified';
+  let anyResolved = false;
   for (const name of portNames) {
     if (!name) continue;
     try {
@@ -41,10 +61,14 @@ export function sumMatchPortDaUsd(
       // cargo type).  This mirrors resolveDaUsd in the detail route and guarantees
       // list DA == detail DA for the same (port, dwt) pair.
       const da = getPortDa({ port: resolved, vesselDwt }, db);
-      if (da) total += da.totalFixedUsd;
+      if (da) {
+        total += da.totalFixedUsd;
+        confidence = anyResolved ? minConfidence(confidence, da.confidence) : da.confidence;
+        anyResolved = true;
+      }
     } catch {
       // Unresolvable port / lookup failure → 0 contribution (matches detail page).
     }
   }
-  return total;
+  return { totalUsd: total, confidence: anyResolved ? confidence : 'verified' };
 }

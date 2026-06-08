@@ -10,6 +10,8 @@
 
 import * as React from 'react';
 import type { TCEBreakdown } from '@/lib/economics/voyage-calculator';
+import { DataQualityBadge } from '@/components/data-quality/DataQualityBadge';
+import { deriveTier } from '@/lib/data-quality/derive';
 
 interface Props {
   breakdown: TCEBreakdown;
@@ -39,7 +41,13 @@ export function CalculationWaterfall({ breakdown }: Props) {
     net_voyage_usd,
     daily_tce_usd,
     applicable,
+    da_quality,
+    war_risk_rate_date,
   } = breakdown;
+
+  const warRiskRateTier = war_risk_rate_date && war_risk_usd > 0
+    ? deriveTier({ asOf: war_risk_rate_date, staleAfterDays: 90 })
+    : null;
 
   return (
     <div className="space-y-4 text-sm font-mono" data-testid="calculation-waterfall">
@@ -97,14 +105,31 @@ export function CalculationWaterfall({ breakdown }: Props) {
 
         {/* Портовые сборы (DA) */}
         <div className="flex justify-between" data-testid="cost-da">
-          <span>⚓ Портовые сборы</span>
+          <span>
+            ⚓ Портовые сборы
+            {da_quality && da_quality.tier !== 'live' && (
+              <span className="ml-1">
+                <DataQualityBadge tier={da_quality.tier} asOf={da_quality.asOf} />
+              </span>
+            )}
+          </span>
           <span>{fmtUsd(-da_usd)}</span>
         </div>
 
         {/* Военный риск */}
         <div className="space-y-0.5" data-testid="cost-war-risk">
           <div className="flex justify-between">
-            <span>⚔️ Военный риск</span>
+            <span>
+              ⚔️ Военный риск
+              {warRiskRateTier && warRiskRateTier !== 'live' && (
+                <span
+                  data-testid="war-risk-rate-badge"
+                  className="ml-1"
+                >
+                  <DataQualityBadge tier={warRiskRateTier} asOf={war_risk_rate_date} />
+                </span>
+              )}
+            </span>
             <span>{fmtUsd(-war_risk_usd)}</span>
           </div>
           <div

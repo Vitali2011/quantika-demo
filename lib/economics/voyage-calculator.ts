@@ -26,6 +26,7 @@ import { calculateEuEts } from './ets';
 import { calculateEcaFuelPortion } from '@/lib/knowledge/eca/adapter';
 import type { EcaZone } from '@/lib/knowledge/eca/parser';
 import type { ResolvedPort } from '@/lib/ports/resolve';
+import type { DataQuality } from '@/lib/data-quality/types';
 
 const EUR_TO_USD = 1.08; // approximate conversion (matches index.ts)
 const ESTIMATED_DAYS_FALLBACK = 1; // for safety in non-finite cases
@@ -67,6 +68,8 @@ export interface VoyageInput {
   canalUsd?: number;
   /** Pre-computed DA total (origin + destination) USD. */
   daUsd?: number;
+  /** Data quality for the DA figure (confidence/staleness from port_da_estimates). */
+  daQuality?: DataQuality;
   /** ECA zones for bunker split calculation. If undefined, no ECA split. */
   ecaZones?: EcaZone[];
   /** When true, war-risk premium is excluded from per-day TCE but still reported in breakdown.
@@ -100,6 +103,10 @@ export interface TCEBreakdown {
     war_risk: boolean;
     ets: boolean;
   };
+  /** W6a: DataQuality for the DA line (sourced from port_da_estimates confidence). */
+  da_quality?: DataQuality;
+  /** W6a: ISO date of the war-risk rate schedule (for staleness badge). */
+  war_risk_rate_date?: string;
 }
 
 export interface TCEResult {
@@ -242,6 +249,8 @@ export function calculateTCE(input: VoyageInput): TCEResult {
       war_risk: warRiskApplicable,
       ets: etsApplicable,
     },
+    ...(input.daQuality != null ? { da_quality: input.daQuality } : {}),
+    ...(warRiskApplicable && warResult.rateDate ? { war_risk_rate_date: warResult.rateDate } : {}),
   };
 
   return {

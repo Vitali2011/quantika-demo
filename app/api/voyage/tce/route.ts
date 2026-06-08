@@ -13,6 +13,8 @@ import { z } from 'zod';
 import { calculateTCE, type VoyageInput } from '@/lib/economics/voyage-calculator';
 import { quoteCanal, type CanalCode, type SuezInput, type CanalInput } from '@/lib/economics/canals/index';
 import { getPortDa } from '@/lib/port-da/repository';
+import type { DataQuality } from '@/lib/data-quality/types';
+import { deriveTier } from '@/lib/data-quality/derive';
 import { resolvePort, type ResolvedPort } from '@/lib/ports/resolve';
 import { resolveVaguePort } from '@/lib/ports/resolve-vague';
 import { getDistance } from '@/lib/knowledge/distances/lookup';
@@ -121,13 +123,21 @@ function resolveCanalUsd(body: z.infer<typeof VoyageInputSchema>): number {
   }
 }
 
-function resolveDaUsd(
+interface DaResolution {
+  totalUsd: number;
+  quality?: DataQuality;
+}
+
+function resolveDaWithQuality(
   body: z.infer<typeof VoyageInputSchema>,
   originResolved: ResolvedPort,
   destinationResolved: ResolvedPort,
-): number {
-  if (typeof body.daUsd === 'number') return body.daUsd;
+): DaResolution {
+  if (typeof body.daUsd === 'number') return { totalUsd: body.daUsd };
   let total = 0;
+  let minConfidenceRank = 2; // 0=low,1=estimated,2=verified
+  const CONFIDENCE_RANK: Record<string, number> = { low: 0, estimated: 1, verified: 2 };
+  let anyResolved = false;
   for (const port of [originResolved, destinationResolved]) {
     try {
       const da = getPortDa({
@@ -135,12 +145,21 @@ function resolveDaUsd(
         vesselDwt: body.vessel.dwt,
         cargoType: body.cargoType,
       });
-      if (da) total += da.totalFixedUsd;
+      if (da) {
+        total += da.totalFixedUsd;
+        const rank = CONFIDENCE_RANK[da.confidence] ?? 1;
+        if (!anyResolved || rank < minConfidenceRank) minConfidenceRank = rank;
+        anyResolved = true;
+      }
     } catch {
       // skip — fall through to 0 contribution
     }
   }
-  return total;
+  if (!anyResolved) return { totalUsd: total };
+  const RANK_TO_CONFIDENCE = ['low', 'estimated', 'verified'] as const;
+  const confidence = RANK_TO_CONFIDENCE[minConfidenceRank] ?? 'verified';
+  const tier = deriveTier({ source: confidence, verifiedSources: ['verified'] });
+  return { totalUsd: total, quality: { tier, source: confidence } };
 }
 
 /**
@@ -262,7 +281,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       }
     }
   }
-  const daUsd = resolveDaUsd(data, originResolved, destinationResolved);
+  const daResolution = resolveDaWithQuality(data, originResolved, destinationResolved);
+  const daUsd = daResolution.totalUsd;
 
   // Resolve distance (explicit or auto-resolve if flag enabled)
   const distanceResult = await resolveDistanceNm(data, originResolved, destinationResolved);
@@ -393,6 +413,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     daysInHra: data.daysInHra,
     canalUsd,
     daUsd,
+    daQuality: daResolution.quality,
     excludeWarRiskFromDailyTce: true,
   };
 

@@ -75,7 +75,7 @@ export async function fetchUpdatedRates(
     ...row,
     valid_from: getToday(),
     valid_to: null,
-    source: `llm:refresh-${getToday()}`,
+    source: `manual-${getToday()}`,
   }));
 }
 
