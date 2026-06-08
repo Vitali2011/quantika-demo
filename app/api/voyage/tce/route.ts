@@ -20,7 +20,7 @@ import { getStore } from '@/lib/session-store';
 import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
 import { getLatestEuaPrice } from '@/lib/market/eua-repository';
 import { isEuCountry } from '@/lib/validation/sanctions';
-import { routeTransitsBosporus, quoteBosporusSafe } from '@/lib/matching/tce-calculator';
+import { routeTransitsBosporus, quoteBosporusSafe, routeTransitsSuez, quoteSuezSafe } from '@/lib/matching/tce-calculator';
 
 const LOCODE_RE = /^[A-Za-z]{5}$/;
 
@@ -63,6 +63,8 @@ const VoyageInputSchema = z.object({
         z.enum(['bulker', 'tanker', 'container', 'general', 'mpp']),
       )
       .optional(),
+    /** Open position for ballast-leg canal detection. Optional — absent means no ballast canal. */
+    openPosition: z.string().optional(),
   }),
   route: z.object({
     originPort: z.string(),
@@ -237,6 +239,21 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   if (typeof data.canalUsd !== 'number' && !data.route.viaSuez && !data.route.viaCanal) {
     if (routeTransitsBosporus(originResolved.portName, destinationResolved.portName)) {
       canalUsd += quoteBosporusSafe(data.vessel.dwt);
+    }
+    if (routeTransitsSuez(originResolved.portName, destinationResolved.portName)) {
+      canalUsd += quoteSuezSafe(data.vessel.dwt, true);
+    }
+    // Ballast leg canal: open position → load port (parity with stored-match path).
+    const openPosition = data.vessel.openPosition;
+    if (openPosition) {
+      const openR = resolvePortOrPassthrough(openPosition);
+      const openName = openR?.port.portName ?? openPosition;
+      if (routeTransitsBosporus(openName, originResolved.portName)) {
+        canalUsd += quoteBosporusSafe(data.vessel.dwt);
+      }
+      if (routeTransitsSuez(openName, originResolved.portName)) {
+        canalUsd += quoteSuezSafe(data.vessel.dwt, false); // ballast = unladen
+      }
     }
   }
   const daUsd = resolveDaUsd(data, originResolved, destinationResolved);
