@@ -2,6 +2,8 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
+import { getStore } from '@/lib/session-store';
+import { countQualifyingMatches } from '@/lib/matching/count-qualifying';
 import { Card, Button } from '@/design-system/primitives';
 import {
   MINUTES_SAVED_PER_RATE_REQUEST,
@@ -21,13 +23,16 @@ export default async function SummaryPage() {
 
   const { parsedCargos, parsedVessels, parsedFixtureRecaps, matches, recaps, commissionSummary, processedEmails, emails } = session;
 
+  const db = getStore().getDatabase();
+  const qualifyingMatchCount = countQualifyingMatches(db, { user_id: sessionId });
+
   const unanswered = processedEmails.filter(p => p.status === 'NEEDS_ACTION').length;
   const documents = processedEmails.filter(p => p.type === 'DOCUMENT').length;
 
   const minSaved =
     parsedCargos.length * MINUTES_SAVED_PER_RATE_REQUEST +
     recaps.length * MINUTES_SAVED_PER_RECAP +
-    matches.length * MINUTES_SAVED_PER_MATCHING;
+    qualifyingMatchCount * MINUTES_SAVED_PER_MATCHING;
   const hoursSaved = (minSaved / 60).toFixed(1);
 
   const commissionTotal = commissionSummary?.totalByCurrency
@@ -59,8 +64,8 @@ export default async function SummaryPage() {
               <strong>{parsedFixtureRecaps.length}</strong>
             </Link>
             <Link href="/dashboard" className="flex justify-between text-sm hover:underline cursor-pointer text-ds-text">
-              <span>🔗 Cargo-vessel matches identified</span>
-              <strong>{matches.length}</strong>
+              <span>🔗 Qualifying matches (fit ≥60%)</span>
+              <strong>{qualifyingMatchCount}</strong>
             </Link>
             <div className="flex justify-between text-sm text-ds-text">
               <span>⚠️ Unanswered for more than 48 hours</span>
@@ -85,9 +90,9 @@ export default async function SummaryPage() {
         <Card padding="lg">
           <h2 className="text-base font-semibold text-ds-text mb-3">💰 Estimated impact</h2>
           <div className="space-y-3 text-sm">
-            {matches.length > 0 && (
+            {qualifyingMatchCount > 0 && (
               <p>
-                <strong className="text-ds-text">{matches.length} {matches.length === 1 ? 'match' : 'matches'} found automatically</strong>
+                <strong className="text-ds-text">{qualifyingMatchCount} qualifying {qualifyingMatchCount === 1 ? 'match' : 'matches'} found automatically</strong>
                 <br /><span className="text-ds-text-muted">normally takes 2-4 hours of manual search</span>
               </p>
             )}

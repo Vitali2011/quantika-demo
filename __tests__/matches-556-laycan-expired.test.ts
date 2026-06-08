@@ -196,9 +196,14 @@ describe('app/matches/MatchesClient.tsx — expired-laycan guards (#556)', () =>
     expect(fnBody).toMatch(/isLaycanExpired/);
   });
 
-  it('has effectiveScore function that caps at 70', () => {
-    expect(clientSrc()).toMatch(/function effectiveScore/);
-    expect(clientSrc()).toMatch(/Math\.min.*score.*70|70.*score.*Math\.min/);
+  it('imports effectiveScore from shared lib/utils/effective-score (W8: moved to shared util)', () => {
+    // effectiveScore is now defined in lib/utils/effective-score.ts and imported
+    expect(clientSrc()).toMatch(/effectiveScore/);
+    // Verify the shared util exists and the cap still applies (behavioral)
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { effectiveScore: fn } = require('@/lib/utils/effective-score') as { effectiveScore: (m: { score: number; laycan_end: number | null; laycan_start: number | null }, nowMs: number) => number };
+    expect(typeof fn).toBe('function');
+    expect(fn({ score: 92, laycan_end: Date.now() - 1000, laycan_start: null }, Date.now())).toBe(70);
   });
 
   it('table score display uses effectiveScore, not raw match.score', () => {

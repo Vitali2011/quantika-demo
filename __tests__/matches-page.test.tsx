@@ -239,21 +239,21 @@ describe('app/matches/MatchesClient.tsx — type imports', () => {
 // #789 — render-side fit_percent >= 60 floor (structural + behavioral)
 // ──────────────────────────────────────────────────────────────────────────────
 
-describe('MatchesClient.tsx — fit_percent floor (#789)', () => {
-  it('filtered pipeline has fit_percent >= 60 guard in source', () => {
+describe('MatchesClient.tsx — fit_percent floor (#789, W8-I10 null=exclude)', () => {
+  it('filtered pipeline has fit_percent != null && >= 60 guard in source (null excluded)', () => {
     const src = readSource(clientPath);
-    expect(src).toMatch(/fit_percent\s*==\s*null\s*\|\|\s*m\.fit_percent\s*>=\s*60/);
+    expect(src).toMatch(/fit_percent\s*!=\s*null\s*&&\s*m\.fit_percent\s*>=\s*60/);
   });
 
-  it('behavioral: match with fit_percent=42 is excluded; null and 60+ pass through', () => {
+  it('behavioral: match with fit_percent=42 excluded; null excluded; 60+ pass through', () => {
     const fitFloor = (m: { fit_percent: number | null }) =>
-      m.fit_percent == null || m.fit_percent >= 60;
+      m.fit_percent != null && m.fit_percent >= 60;
 
     expect(fitFloor({ fit_percent: 42 })).toBe(false);
     expect(fitFloor({ fit_percent: 59 })).toBe(false);
     expect(fitFloor({ fit_percent: 60 })).toBe(true);
     expect(fitFloor({ fit_percent: 85 })).toBe(true);
-    expect(fitFloor({ fit_percent: null })).toBe(true);
+    expect(fitFloor({ fit_percent: null })).toBe(false);
   });
 });
 
@@ -322,13 +322,13 @@ describe('MatchesClient.tsx — All-pill count uses fit floor (#807 L1)', () => 
     expect(src).toMatch(/allChipCount[\s\S]{0,300}fit_percent/);
   });
 
-  it('behavioral: allChipCount floor excludes sub-60 matches', () => {
+  it('behavioral: allChipCount floor excludes sub-60 and null matches (W8-I10)', () => {
     const allChipFilter = (m: { fit_percent: number | null; status: string | null }) =>
-      (m.fit_percent == null || m.fit_percent >= 60);
+      (m.fit_percent != null && m.fit_percent >= 60);
 
     expect(allChipFilter({ fit_percent: 42, status: null })).toBe(false);
     expect(allChipFilter({ fit_percent: 59, status: null })).toBe(false);
     expect(allChipFilter({ fit_percent: 60, status: null })).toBe(true);
-    expect(allChipFilter({ fit_percent: null, status: null })).toBe(true);
+    expect(allChipFilter({ fit_percent: null, status: null })).toBe(false);
   });
 });

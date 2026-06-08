@@ -6,6 +6,7 @@ import { getSession } from '@/lib/session';
 import { getStore } from '@/lib/session-store';
 import { listMatches, type StoredMatch } from '@/lib/matching/matches-repository';
 import { persistSessionMatches } from '@/lib/matching/persist-session-matches';
+import { countQualifyingMatches } from '@/lib/matching/count-qualifying';
 import { toBucketRows } from '@/lib/matching/session-buckets';
 import MatchesClient from './MatchesClient';
 import { resolveLaycanDisplay } from '@/lib/utils/laycan-display';
@@ -99,7 +100,7 @@ export default async function MatchesPage() {
     -1_000_000,
   );
 
-  const qualifyingCount = matches.filter((m) => (m.fit_percent ?? 0) >= 60).length;
+  const qualifyingCount = countQualifyingMatches(db, { user_id: sessionId! });
 
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-12">
