@@ -36,6 +36,8 @@ interface EconomicsTabProps {
    *  buildCanonicalTceInputs uses single-voyage span (ballast+laden+2 port days)
    *  matching the stored LIST TCE. Omit when open position is unknown → round-trip. */
   ballastDistanceNm?: number | null;
+  /** True when stored TCE was computed with class-aware consumption estimate. */
+  consumptionEstimated?: boolean | null;
 }
 
 function parseLeadingNumber(s: string | null | undefined): number {
@@ -69,7 +71,7 @@ function portLabel(locode: string): string {
   return PORT_NAMES[locode] ?? locode;
 }
 
-export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm, matchDbId, storedFreightRate, freightRateSource, warRiskPremium, warRiskZones, warRiskBreakdown, warRiskBreakdownBallast, warRiskZonesBallast, storedTceUsdPerDay, ballastDistanceNm }: EconomicsTabProps) {
+export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm, matchDbId, storedFreightRate, freightRateSource, warRiskPremium, warRiskZones, warRiskBreakdown, warRiskBreakdownBallast, warRiskZonesBallast, storedTceUsdPerDay, ballastDistanceNm, consumptionEstimated }: EconomicsTabProps) {
   const [open, setOpen] = useState(false);
   const [bunkerPriceUsdPerMt, setBunkerPriceUsdPerMt] = useState('');
   const [overrideRate, setOverrideRate] = useState(storedFreightRate != null ? String(storedFreightRate) : '');
@@ -712,9 +714,21 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
             </>
           ) : null
         ) : voyageInputData.missing.length > 0 ? (
-          <p data-testid="voyage-missing-hint" className="text-xs text-gray-500">
-            Missing: {voyageInputData.missing.join(', ')}
-          </p>
+          <>
+            <p data-testid="voyage-missing-hint" className="text-xs text-gray-500">
+              Missing: {voyageInputData.missing.join(', ')}
+            </p>
+            {/* Stored TCE headline when consumption is estimated */}
+            {storedTceUsdPerDay != null && consumptionEstimated && (
+              <div data-testid="stored-tce-badge" className="mt-2 rounded border border-amber-200 bg-amber-50 p-3 text-xs">
+                <span className="text-gray-600">TCE (est.):</span>{' '}
+                <span data-testid="stored-tce-value" className="font-medium text-amber-900">
+                  ${storedTceUsdPerDay.toLocaleString('en-US')}/day
+                </span>
+                <span className="ml-1 text-amber-600 text-xs">(assumed consumption)</span>
+              </div>
+            )}
+          </>
         ) : null}
       </div>
 

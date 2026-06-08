@@ -48,10 +48,11 @@ export function persistSessionMatches(
     // (excludeWarRiskFromDailyTce:true) so stored TCE matches the detail page.
     const eco = cargo && vessel
       ? computeStoredMatchEconomics({ cargo, vessel, db, bunkerPriceUsdPerMt })
-      : { tce_usd_per_day: null, freight_rate_usd_per_mt: null, freight_rate_source: null };
+      : { tce_usd_per_day: null, freight_rate_usd_per_mt: null, freight_rate_source: null, consumption_estimated: false };
     const tce_usd_per_day = eco.tce_usd_per_day;
     const freight_rate_usd_per_mt = eco.freight_rate_usd_per_mt;
     const freight_rate_source = eco.freight_rate_source;
+    const consumption_estimated = eco.consumption_estimated ? 1 : null;
 
     // Fail-closed: if the cargo laycan in parsedCargos disagrees with the stored
     // worksheet laycan, recompute readiness rather than carrying stale data verbatim.
@@ -122,6 +123,7 @@ export function persistSessionMatches(
       cargo_item_index: m.cargoItemIndex,
       vessel_item_index: m.vesselItemIndex,
       worksheet_json: worksheetJson,
+      consumption_estimated,
     });
   }
 }

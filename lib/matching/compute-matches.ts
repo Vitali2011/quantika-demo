@@ -85,10 +85,11 @@ export async function computeAndPersistMatches(
     // (excludeWarRiskFromDailyTce:true) so stored TCE matches the detail page.
     const eco = cargo && vessel
       ? computeStoredMatchEconomics({ cargo, vessel, db, bunkerPriceUsdPerMt })
-      : { tce_usd_per_day: null, freight_rate_usd_per_mt: null, freight_rate_source: null };
+      : { tce_usd_per_day: null, freight_rate_usd_per_mt: null, freight_rate_source: null, consumption_estimated: false };
     const tce_usd_per_day = eco.tce_usd_per_day;
     const freight_rate_usd_per_mt = eco.freight_rate_usd_per_mt;
     const freight_rate_source = eco.freight_rate_source;
+    const consumption_estimated = eco.consumption_estimated ? 1 : null;
 
     createMatch(db, {
       cargo_id: m.cargoEmailId,
@@ -110,6 +111,7 @@ export async function computeAndPersistMatches(
       freight_rate_source,
       vessel_name: vessel ? (cfValue(vessel.vesselName) || null) : null,
       cargo_ref: cargo ? (cfValue(cargo.cargoDescription) || null) : null,
+      consumption_estimated,
     });
   }
 
