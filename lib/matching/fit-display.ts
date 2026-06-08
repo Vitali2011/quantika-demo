@@ -1,11 +1,5 @@
 import { StoredMatch } from './matches-repository';
-
-function isLaycanExpired(laycan_end: number | null, laycan_start: number | null, nowMs: number): boolean {
-  // matches MatchesClient.tsx logic — expired if laycan_end is past
-  if (!laycan_end && !laycan_start) return false;
-  const end = laycan_end ?? laycan_start!;
-  return nowMs > end;
-}
+import { isLaycanExpired } from '../utils/fmt-laycan';
 
 function effectiveScore(m: Pick<StoredMatch, 'score' | 'laycan_end' | 'laycan_start'>, nowMs: number): number {
   if (nowMs === 0) return m.score;

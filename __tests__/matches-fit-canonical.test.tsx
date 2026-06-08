@@ -59,6 +59,15 @@ describe('MatchesClient.tsx — card density uses fitDisplay (I1)', () => {
     expect(result.value).toBe(72);
     expect(result.label).toBe('%');
   });
+
+  it('fitDisplay behavioral: expired laycan caps score at 70 when fit_percent is null', () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { fitDisplay } = require(fitDisplayPath) as { fitDisplay: (m: {score: number; fit_percent: number | null | undefined; laycan_end: number | null; laycan_start: number | null}, nowMs: number) => {value: number; label: string} };
+    const expiredEnd = Date.now() - 86_400_000; // 1 day ago
+    const result = fitDisplay({ score: 85, fit_percent: null, laycan_end: expiredEnd, laycan_start: null }, Date.now());
+    expect(result.value).toBe(70);
+    expect(result.label).toBe('%');
+  });
 });
 
 // ===== Step 2: Filter fix =====
