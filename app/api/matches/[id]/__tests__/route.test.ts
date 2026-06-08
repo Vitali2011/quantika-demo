@@ -370,7 +370,9 @@ describe('PATCH /api/matches/[id] — freight rate override + reset (Wave #7)', 
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.freight_rate_source).toBe('estimated');
-    const est = estimateFreightRate('GRAIN', 3000, 50000);
+    // Canonical path uses port distance (NLRTM→DEHAM ≈ 250nm), not stored 3000nm.
+    // estimateFreightRate('GRAIN', 250, 50000) is the new expected rate.
+    const est = estimateFreightRate('GRAIN', 250, 50000);
     expect(body.freight_rate_usd_per_mt).toBe(est.rate);
     expect(body.freight_rate_usd_per_mt).not.toBe(99);
     expect(Number.isFinite(body.tce_usd_per_day)).toBe(true);
