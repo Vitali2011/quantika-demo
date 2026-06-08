@@ -1,11 +1,5 @@
 import { StoredMatch } from './matches-repository';
-import { isLaycanExpired } from '../utils/fmt-laycan';
-
-function effectiveScore(m: Pick<StoredMatch, 'score' | 'laycan_end' | 'laycan_start'>, nowMs: number): number {
-  if (nowMs === 0) return m.score;
-  if (isLaycanExpired(m.laycan_end, m.laycan_start, nowMs)) return Math.min(m.score, 70);
-  return m.score;
-}
+import { effectiveScore } from '../utils/effective-score';
 
 export interface FitDisplay { value: number; label: string; }
 

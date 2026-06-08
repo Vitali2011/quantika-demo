@@ -14,6 +14,7 @@ import { MorningHeader } from '@/components/dashboard/MorningHeader';
 import { Badge } from '@/design-system/primitives';
 import { persistSessionMatches } from '@/lib/matching/persist-session-matches';
 import { listMatches } from '@/lib/matching/matches-repository';
+import { countQualifyingMatches } from '@/lib/matching/count-qualifying';
 import { RoiSummaryTile } from '@/components/dashboard/RoiSummaryTile';
 
 const PRIORITY_ORDER: Record<PriorityLevel, number> = { urgent: 0, attention: 1, ok: 2 };
@@ -82,6 +83,7 @@ export default async function DashboardPage() {
   }
   const storedMatches = listMatches(db, { user_id: sessionId!, sortBy: 'score', sortDir: 'desc' });
   const matchIdMap = new Map(storedMatches.map((sm) => [`${sm.cargo_id}|${sm.vessel_id}`, sm.id]));
+  const openMatchCount = countQualifyingMatches(db, { user_id: sessionId! });
 
   const priorityCards = goodMatches
     .map((match, i) => {
@@ -134,7 +136,7 @@ export default async function DashboardPage() {
 
         {/* ── 4 KPI tiles ────────────────────────────────────────── */}
         <DashboardKpiStrip
-          openMatches={goodMatches.length}
+          openMatches={openMatchCount}
           activeCargoes={cargoRows.length}
         />
 

@@ -153,8 +153,9 @@ export function getRoiSummary(
   const totalCost = platformCostUsdPerVoyage * totalVoyages;
   const roiMultiple = totalCost > 0 ? totalSavingsUsd / totalCost : 0;
 
-  // Get cohorts (default 3 months)
-  const cohorts = getCohortData(db, 3);
+  // Get cohorts using the same window as totalVoyages (convert days → months)
+  const cohortMonths = days === 0 ? 0 : Math.ceil(days / 30);
+  const cohorts = getCohortData(db, cohortMonths);
 
   return {
     totalVoyages,

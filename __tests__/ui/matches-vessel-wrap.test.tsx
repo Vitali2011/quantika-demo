@@ -80,6 +80,7 @@ const longVesselMatch: StoredMatch = {
   freight_rate_source: null,
   vessel_name: LONG_VESSEL,
   cargo_ref: null,
+  fit_percent: 75,
 };
 
 describe('MatchesClient — long vessel name wraps (#662)', () => {

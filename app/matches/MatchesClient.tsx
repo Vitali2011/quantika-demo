@@ -14,6 +14,7 @@ import { fmtLaycan, isLaycanExpired } from '@/lib/utils/fmt-laycan';
 import { freightBadge, FREIGHT_BADGE_CLASSES } from '@/lib/matching/freight-badge';
 import { useDemoNow } from '@/lib/clock-client';
 import { fitDisplay } from '@/lib/matching/fit-display';
+import { effectiveScore } from '@/lib/utils/effective-score';
 
 interface Props {
   initialMatches: (StoredMatch & { laycan_display?: string | null })[];
@@ -69,17 +70,6 @@ function isFreshMatch(m: StoredMatch, now: number): boolean {
   if (now === 0) return false; // pre-mount sentinel → no fresh badge in SSR
   if (isLaycanExpired(m.laycan_end, m.laycan_start, now)) return false;
   return now - m.created_at < 7200000;
-}
-
-// Display score is capped at 70 for expired laycans — the stored score reflects
-// conditions at match-creation time, but once the cargo window has passed the
-// match is no longer actionable at the original confidence level.
-function effectiveScore(m: StoredMatch, nowMs: number): number {
-  if (nowMs === 0) return m.score;
-  if (isLaycanExpired(m.laycan_end, m.laycan_start, nowMs)) {
-    return Math.min(m.score, 70);
-  }
-  return m.score;
 }
 
 function fmtDwt(v: number | null): string {
@@ -298,12 +288,12 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
 
   // Mode-based count for "All" chip: charterer sees cargo-side, owner sees vessel-side
   const modeFiltered = filterMatchesByMode(matches, isOwner, cargoEmailIds, vesselEmailIds);
-  const floorFilteredCount = modeFiltered.filter((m) => m.fit_percent == null || m.fit_percent >= 60).length;
+  const floorFilteredCount = modeFiltered.filter((m) => m.fit_percent != null && m.fit_percent >= 60).length;
 
   // All-chip count: mode + status + advanced filters + fit floor (same floor as visible list)
   const allChipCount = modeFiltered.filter(
     (m) =>
-      (m.fit_percent == null || m.fit_percent >= 60) &&
+      (m.fit_percent != null && m.fit_percent >= 60) &&
       (!filterStatus || m.status === filterStatus) &&
       (cargoTypes.length === 0 || cargoTypes.includes(m.cargo_type ?? ''))
   ).length;
@@ -316,8 +306,8 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
         (isOwner
           ? vesselEmailIds.length === 0 || vesselEmailIds.includes(m.vessel_id)
           : cargoEmailIds.length === 0 || cargoEmailIds.includes(m.cargo_id)) &&
-        // render-side fit floor: hide sub-60% fit matches (#789)
-        (m.fit_percent == null || m.fit_percent >= 60) &&
+        // render-side fit floor: hide sub-60% and null-fit matches (#789, W8-I10)
+        (m.fit_percent != null && m.fit_percent >= 60) &&
         (!filterStatus || m.status === filterStatus) &&
         (cargoTypes.length === 0 || cargoTypes.includes(m.cargo_type ?? '')) &&
         (quickFilter === 'all' ||
