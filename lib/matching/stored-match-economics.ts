@@ -57,6 +57,8 @@ export interface StoredMatchEconomicsResult {
   tce_breakdown: TCEBreakdown | null;
   /** True when vessel consumption was absent and class-aware fallback fired. */
   consumption_estimated: boolean;
+  /** Ballast reposition distance (open position → load port, nm). Persisted so detail reads stored value on session expiry. */
+  ballast_distance_nm: number | null;
 }
 
 /**
@@ -80,6 +82,7 @@ export function computeStoredMatchEconomics(
     economics: null,
     tce_breakdown: null,
     consumption_estimated: false,
+    ballast_distance_nm: null,
   };
 
   const loadPort = cfValue(cargo.originPort);
@@ -98,6 +101,15 @@ export function computeStoredMatchEconomics(
   const ecoDwt = cfValue(vessel.dwtSummer) ?? 0;
   const ecoQty = resolveCargoWeight(cargo) ?? 0;
   const ecoSpeed = parseLeadingNumber(vessel.speedLaden);
+
+  // Ballast reposition distance: open position → load port.
+  // Computed before resolveFreightRate so tier-2 Baltic conversion uses the same
+  // single-voyage denominator as the TCE formula (I6 fix).
+  const openPosition = cfValue(vessel.openPosition);
+  const ballastResult =
+    openPosition && loadPort ? getPortDistance(openPosition, loadPort) : null;
+  const ballastDistanceNm = ballastResult?.nm ?? null;
+
   const resolvedFreight = resolveFreightRate({
     cargoType,
     parsedFreightRateUsdPerMt: cargo.freightRateUsd ?? null,
@@ -107,13 +119,8 @@ export function computeStoredMatchEconomics(
     speedKts: ecoSpeed,
     balticDayRate: db ? getBalticDayRate(db, ecoDwt) : null,
     manualRateUsdPerMt: input.freightOverrideUsdPerMt ?? undefined,
+    ballastDistanceNm,
   });
-
-  // Ballast reposition distance: open position → load port.
-  const openPosition = cfValue(vessel.openPosition);
-  const ballastResult =
-    openPosition && loadPort ? getPortDistance(openPosition, loadPort) : null;
-  const ballastDistanceNm = ballastResult?.nm ?? null;
 
   // Port disbursement (DA): load + discharge fixed costs.
   const daUsd = db
@@ -213,5 +220,6 @@ export function computeStoredMatchEconomics(
     economics: econ,
     tce_breakdown,
     consumption_estimated: consumptionEstimated,
+    ballast_distance_nm: ballastDistanceNm,
   };
 }

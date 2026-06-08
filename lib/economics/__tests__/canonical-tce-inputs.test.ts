@@ -50,6 +50,26 @@ describe('buildCanonicalTceInputs', () => {
     const out = buildCanonicalTceInputs(baseInput);
     expect(out.daUsd).toBeUndefined();
   });
+
+  test('ballastDistanceNm known: uses ballast+laden+2 not round-trip', () => {
+    // Piraeus→Odessa ballast ≈ 800nm, Odessa→Rotterdam laden ≈ 2900nm, speed 13kts
+    const ballastNm = 800;
+    const ladenNm = 2900;
+    const speedKts = 13;
+    const out = buildCanonicalTceInputs({
+      ...baseInput,
+      distanceNm: ladenNm,
+      speedKts,
+      ballastDistanceNm: ballastNm,
+    });
+    const ballastDays = ballastNm / (speedKts * 24);
+    const ladenDays = ladenNm / (speedKts * 24);
+    const expected = ballastDays + ladenDays + 2;
+    expect(out.durationDays).toBeCloseTo(expected, 2);
+    // Confirm it's NOT the round-trip
+    const roundTrip = ladenDays * 2 + 2;
+    expect(out.durationDays).not.toBeCloseTo(roundTrip, 1);
+  });
 });
 
 test('buildMatchEconomics with zero consumption on 28k-DWT vessel: consumptionEstimated=true, TCE uses class-aware ~14', () => {
