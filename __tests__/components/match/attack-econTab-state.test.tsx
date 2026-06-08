@@ -30,7 +30,7 @@ const FULL_CARGO = {
   weightMt: { value: 45_000, confidence: 'confirmed' as const },
 };
 
-test('Attack 11: manual port selection prevents recommendation override', async () => {
+test('Attack 11: recommendation is advisory — headline port not auto-overridden; manual selection persists', async () => {
   let recoCallCount = 0;
   const fetchMock = jest.fn((url: string | Request) => {
     const u = typeof url === 'string' ? url : url.toString();
@@ -65,27 +65,25 @@ test('Attack 11: manual port selection prevents recommendation override', async 
     );
   });
 
-  // Wait for recommendation to fire and set GIGIB
-  await waitFor(() => {
-    const portSelect = screen.getByLabelText('Bunker port') as HTMLSelectElement;
-    expect(portSelect.value).toBe('GIGIB');
-  });
-
-  // User manually selects NLRTM
+  // Recommendation returns GIGIB, but the headline bunker port STAYS at the NLRTM baseline:
+  // the recommendation is advisory and must NOT auto-override the headline (PR #863 parity).
+  await waitFor(() => expect(screen.getByLabelText('Bunker port')).toBeInTheDocument());
   const portSelect = screen.getByLabelText('Bunker port') as HTMLSelectElement;
-  await act(async () => {
-    fireEvent.change(portSelect, { target: { value: 'NLRTM' } });
-  });
   expect(portSelect.value).toBe('NLRTM');
 
-  // Even if recommendation fires again (grade change triggers re-fetch), NLRTM should persist
+  // User can still manually select a different port (manual control preserved).
+  await act(async () => {
+    fireEvent.change(portSelect, { target: { value: 'GIGIB' } });
+  });
+  expect(portSelect.value).toBe('GIGIB');
+
+  // Grade change re-fires the recommendation, but it never overrides the user's manual choice.
   const gradeSelect = screen.getByLabelText('Bunker grade') as HTMLSelectElement;
   await act(async () => {
     fireEvent.change(gradeSelect, { target: { value: 'MGO' } });
   });
-  // After grade change, recommendation re-fires but bunkerPortManual=true → should not override NLRTM
   await waitFor(() => {
     const ps = screen.getByLabelText('Bunker port') as HTMLSelectElement;
-    expect(ps.value).toBe('NLRTM');
+    expect(ps.value).toBe('GIGIB');
   });
 });

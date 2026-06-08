@@ -37,17 +37,23 @@ const FUEL_GRADE_RE = /\b(?:IFO|VLSFO|LSMGO|MGO|HFO|HSFO)\s*\d+(?:\/\d+)?\b|M\/E
  * (e.g. 180 from "IFO 180 M/E 3.7MT/D") rather than the actual MT/day figure.
  * This function looks for an explicit MT/D unit first; if absent it strips grade
  * tokens before falling back to a leading-number heuristic. Strings with no
- * recoverable consumption figure return DEFAULT_CONSUMPTION_MT_PER_DAY.
+ * recoverable consumption figure return `fallback` (default
+ * DEFAULT_CONSUMPTION_MT_PER_DAY for server estimation; callers that need to
+ * DETECT absence — e.g. the detail page's "missing fuel consumption" hint —
+ * pass fallback=0 so an absent figure is falsy rather than a fabricated default).
  */
-export function parseConsumption(s: unknown): number {
-  if (s == null) return DEFAULT_CONSUMPTION_MT_PER_DAY;
-  if (typeof s === 'number') return Number.isFinite(s) && s > 0 ? s : DEFAULT_CONSUMPTION_MT_PER_DAY;
+export function parseConsumption(
+  s: unknown,
+  fallback: number = DEFAULT_CONSUMPTION_MT_PER_DAY,
+): number {
+  if (s == null) return fallback;
+  if (typeof s === 'number') return Number.isFinite(s) && s > 0 ? s : fallback;
   if (typeof s === 'object' && 'value' in (s as Record<string, unknown>)) {
-    return parseConsumption((s as { value: unknown }).value);
+    return parseConsumption((s as { value: unknown }).value, fallback);
   }
-  if (typeof s !== 'string') return DEFAULT_CONSUMPTION_MT_PER_DAY;
+  if (typeof s !== 'string') return fallback;
   const str = s.trim();
-  if (!str) return DEFAULT_CONSUMPTION_MT_PER_DAY;
+  if (!str) return fallback;
 
   const mtd = str.match(MT_PER_DAY_RE);
   if (mtd) return Number(mtd[1]);
@@ -57,5 +63,5 @@ export function parseConsumption(s: unknown): number {
   const m = stripped.match(/(\d+(?:\.\d+)?)/);
   if (m) return Number(m[1]);
 
-  return DEFAULT_CONSUMPTION_MT_PER_DAY;
+  return fallback;
 }

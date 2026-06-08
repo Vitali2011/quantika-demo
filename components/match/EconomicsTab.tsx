@@ -115,7 +115,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
   const recoTo = cargo?.destinationPort?.value;
   const recoDwt = vessel?.dwtSummer?.value ?? 0;
   const recoSpeed = parseLeadingNumber(vessel?.speedLaden);
-  const recoCons = resolveConsMtPerDay(parseConsumption(vessel?.consumption), recoDwt);
+  const recoCons = resolveConsMtPerDay(parseConsumption(vessel?.consumption, 0), recoDwt);
   const recoVoyageDays = useMemo(
     () => estimateVoyageDays(routeDistanceNm, recoSpeed),
     [routeDistanceNm, recoSpeed],
@@ -234,7 +234,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
     const destination = cargo?.destinationPort?.value ?? '';
     const dwt = vessel?.dwtSummer?.value ?? 0;
     const speedKts = parseLeadingNumber(vessel?.speedLaden);
-    const rawConsumption = parseConsumption(vessel?.consumption);
+    const rawConsumption = parseConsumption(vessel?.consumption, 0);
     const consumption = resolveConsMtPerDay(rawConsumption, dwt);
     const quantityMt = resolveCargoWeight(cargo ?? null) ?? 0;
 
@@ -284,7 +284,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
   const voyageInputData = useMemo(() => {
     const dwt = vessel?.dwtSummer?.value ?? 0;
     const speedKts = parseLeadingNumber(vessel?.speedLaden);
-    const rawConsumptionMtPerDay = parseConsumption(vessel?.consumption);
+    const rawConsumptionMtPerDay = parseConsumption(vessel?.consumption, 0);
     const consumptionMtPerDay = resolveConsMtPerDay(rawConsumptionMtPerDay, dwt);
     const originPort = cargo?.originPort?.value ?? '';
     const destinationPort = cargo?.destinationPort?.value ?? '';

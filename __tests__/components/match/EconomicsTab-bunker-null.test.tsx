@@ -1,14 +1,19 @@
 /**
  * @jest-environment jsdom
  *
- * A2.1 RTL behavioral tests — bunkerPort default-state and recommendation-driven override.
+ * A2.1 RTL behavioral tests — bunkerPort default-state and recommendation handling.
+ *
+ * CONTRACT CHANGE (PR #863, list↔detail parity): the bunker recommendation is now
+ * ADVISORY — it shows a savings note/comparison but no longer overrides the headline
+ * bunker port. The headline voyage TCE always computes at the baseline NLRTM/VLSFO so it
+ * matches the stored LIST TCE (which is fixed at NLRTM). Previously the recommendation
+ * auto-overrode the port to GIGIB/sgsin — that silent override made detail≠list.
  *
  * PI2 behavioral: renders EconomicsTab via RTL, asserts against DOM + captured fetch calls.
- * Real value shapes per task fix: bunkerPort initializes to 'NLRTM' instead of null.
  *  - Initial render (bunkerPort='NLRTM'): P&L fires immediately with default Rotterdam
- *  - Recommendation returns GIGIB: P&L fires with bunkerPort='GIGIB' (API overrides default)
- *  - Recommendation fallback (port=null): P&L still fires with 'NLRTM' (fallback to default)
- *  - bunkerPort='sgsin' lowercase from recommendation: P&L fires with 'sgsin' (API normalises)
+ *  - Recommendation returns GIGIB: headline STAYS 'NLRTM' (advisory, no override)
+ *  - Recommendation fallback (port=null): P&L still fires with 'NLRTM'
+ *  - Recommendation lowercase 'sgsin': headline STAYS 'NLRTM' (no override)
  */
 import '@testing-library/jest-dom';
 import { render, screen, act, waitFor } from '@testing-library/react';
@@ -73,7 +78,7 @@ function makeGlobalFetch(recoPort: string | null, recoPriceUsdPerMt: number | nu
 
 afterEach(() => jest.restoreAllMocks());
 
-test('P&L fires immediately with default NLRTM, then updates to recommendation GIGIB', async () => {
+test('headline stays NLRTM even when recommendation returns GIGIB (advisory only, parity with list)', async () => {
   global.fetch = makeGlobalFetch('GIGIB');
   await act(async () => {
     render(
@@ -91,14 +96,10 @@ test('P&L fires immediately with default NLRTM, then updates to recommendation G
   const tceCalls = allCalls.filter(([u]: [string]) => (u as string).includes('/api/voyage/tce'));
   expect(tceCalls.length).toBeGreaterThanOrEqual(1);
 
-  // First TCE call uses default NLRTM (bunkerPort initializes to NLRTM)
-  const firstBody = JSON.parse(tceCalls[0][1].body);
-  expect(firstBody.bunkerPort).toBe('NLRTM');
-
-  // After recommendation resolves, final TCE call uses GIGIB (API overrides)
-  if (tceCalls.length > 1) {
-    const finalBody = JSON.parse(tceCalls[tceCalls.length - 1][1].body);
-    expect(finalBody.bunkerPort).toBe('GIGIB');
+  // EVERY TCE call uses the baseline NLRTM. The GIGIB recommendation is advisory and must
+  // NOT override the headline bunker port (else detail TCE ≠ list TCE). (PR #863 parity.)
+  for (const call of tceCalls) {
+    expect(JSON.parse(call[1].body).bunkerPort).toBe('NLRTM');
   }
 });
 
@@ -129,7 +130,7 @@ test('P&L fires with default NLRTM even when recommendation returns fallback (po
   expect(body.bunkerPort).toBe('NLRTM');
 });
 
-test('P&L updates to lowercase recommendation port as-sent (API normalises)', async () => {
+test('recommendation port (lowercase sgsin) does not override headline — stays NLRTM (parity)', async () => {
   global.fetch = makeGlobalFetch('sgsin'); // lowercase from recommendation
   await act(async () => {
     render(
@@ -147,13 +148,8 @@ test('P&L updates to lowercase recommendation port as-sent (API normalises)', as
   const tceCalls = allCalls.filter(([u]: [string]) => (u as string).includes('/api/voyage/tce'));
   expect(tceCalls.length).toBeGreaterThanOrEqual(1);
 
-  // First TCE call uses default NLRTM
-  const firstBody = JSON.parse(tceCalls[0][1].body);
-  expect(firstBody.bunkerPort).toBe('NLRTM');
-
-  // After recommendation resolves with lowercase sgsin, subsequent call uses sgsin
-  if (tceCalls.length > 1) {
-    const finalBody = JSON.parse(tceCalls[tceCalls.length - 1][1].body);
-    expect(finalBody.bunkerPort).toBe('sgsin');
+  // The recommendation (even a lowercase port) is advisory — the headline stays NLRTM.
+  for (const call of tceCalls) {
+    expect(JSON.parse(call[1].body).bunkerPort).toBe('NLRTM');
   }
 });
