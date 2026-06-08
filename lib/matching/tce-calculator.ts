@@ -388,5 +388,8 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
     freightRateSource: tce.freight_rate_source,
     consumptionEstimated: input.consumptionMt <= 0 ? true : undefined,
     qtyEstimated: input.quantityMt <= 0 ? true : undefined,
+    dataQuality: input.consumptionMt <= 0
+      ? { consumption: { tier: 'estimated' as const, source: 'class-estimate' } }
+      : undefined,
   };
 }
