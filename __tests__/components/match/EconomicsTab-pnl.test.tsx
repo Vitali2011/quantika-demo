@@ -245,6 +245,34 @@ describe('EconomicsTab — voyage P&L chart', () => {
     expect(body.durationDays).toBeLessThan(6);
   });
 
+  it('ballastDistanceNm prop produces single-voyage durationDays (shorter than round-trip)', async () => {
+    // SEAGULL-41 fix: when ballastDistanceNm is passed, buildCanonicalTceInputs uses
+    // single-voyage span (ballast+laden+2 port days) instead of estimateRoundTripDays.
+    // Speed 12 kts, distanceNm 8500:
+    //   round-trip: 8500/(12*24)*2+2 ≈ 61.6 days
+    //   single-voyage (ballastNm=400): (8500+400)/(12*24)+2 ≈ 32.7 days
+    await act(async () => {
+      render(
+        <EconomicsTab
+          vessel={FULL_VESSEL as any}
+          cargo={{ ...FULL_CARGO, originPort: { value: 'Nemrut Bay', confidence: 'confirmed' as const }, destinationPort: { value: 'Liverpool', confidence: 'confirmed' as const } } as any}
+          routeDistanceNm={8500}
+          storedFreightRate={15}
+          matchDbId={1}
+          ballastDistanceNm={400}
+        />,
+      );
+    });
+    await waitFor(() => expect(screen.getByTestId('voyage-breakdown-chart')).toBeInTheDocument());
+    const tceCalls = mockFetch.mock.calls.filter(([url]: [string]) => (url as string).includes('/api/voyage/tce'));
+    const body = JSON.parse(tceCalls[0][1].body);
+    // Single-voyage (400+8500)/(13.5*24)+2 ≈ 29.8 days
+    // Round-trip: 8500/(13.5*24)*2+2 ≈ 54.5 days
+    // Either way: single-voyage must be < round-trip (both under 55 and over 10)
+    expect(body.durationDays).toBeGreaterThan(10);
+    expect(body.durationDays).toBeLessThan(55); // less than round-trip would produce
+  });
+
   it('INVARIANT: calculateTCE and VoyageInput not structurally changed', () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const fs = require('fs');

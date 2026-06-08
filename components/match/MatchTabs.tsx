@@ -27,9 +27,12 @@ interface MatchTabsProps {
   freightRateSource?: string | null;
   storedDistanceNm?: number | null;
   storedTceUsdPerDay?: number | null;
+  /** Ballast reposition distance (open position → load port, nm). Passed to EconomicsTab
+   *  so the detail view uses single-voyage duration — matching the stored LIST TCE. */
+  ballastDistanceNm?: number | null;
 }
 
-export function MatchTabs({ match, vessel, cargo, cargoEmailId, matchDbId, storedFreightRate, freightRateSource, storedDistanceNm, storedTceUsdPerDay }: MatchTabsProps) {
+export function MatchTabs({ match, vessel, cargo, cargoEmailId, matchDbId, storedFreightRate, freightRateSource, storedDistanceNm, storedTceUsdPerDay, ballastDistanceNm }: MatchTabsProps) {
   const [activeTab, setActiveTab] = useState<TabId>('vessels');
   const uid = useId();
 
@@ -85,6 +88,7 @@ export function MatchTabs({ match, vessel, cargo, cargoEmailId, matchDbId, store
             warRiskBreakdownBallast={match.economics?.breakdown?.warRiskBreakdownBallast ?? null}
             warRiskZonesBallast={match.economics?.breakdown?.warRiskZonesBallast ?? null}
             storedTceUsdPerDay={storedTceUsdPerDay}
+            ballastDistanceNm={ballastDistanceNm}
           />
         )}
         {activeTab === 'passport' && (
