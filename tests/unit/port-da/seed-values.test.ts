@@ -39,66 +39,71 @@ describe('spec-betafix-03 — Port DA seed acceptance', () => {
     await seedPortDa(db, baseline, mockLlmCaller);
   });
 
-  it('Lagos NGAPP DA for 30k DWT is >= $90k and <= $150k', () => {
+  // RC1 note (2026-06-08 recalibration): thresholds below reflect de-inflated values
+  // (port_dues÷2, pilotage÷6, tugs÷2.5).  The old thresholds encoded the LLM-fabricated
+  // 2-3× inflation.  The new floors are set ~10% below each port's actual recalibrated
+  // total for robustness against future fine-tuning while still guarding against
+  // accidentally zeroing out a port or regressing to the old inflated data.
+  it('Lagos NGAPP DA for 30k DWT is >= $32k and <= $60k', () => {
     const r = getPortDa({ portCode: 'NGAPP', vesselDwt: 30000 }, db);
     expect(r).not.toBeNull();
-    expect(r!.totalFixedUsd).toBeGreaterThanOrEqual(90_000);
-    expect(r!.totalFixedUsd).toBeLessThanOrEqual(150_000);
+    expect(r!.totalFixedUsd).toBeGreaterThanOrEqual(32_000);
+    expect(r!.totalFixedUsd).toBeLessThanOrEqual(60_000);
   });
 
-  it('Rotterdam NLRTM DA for 35k DWT is >= $80k', () => {
+  it('Rotterdam NLRTM DA for 35k DWT is >= $28k', () => {
     const r = getPortDa({ portCode: 'NLRTM', vesselDwt: 35000 }, db);
     expect(r).not.toBeNull();
-    expect(r!.totalFixedUsd).toBeGreaterThanOrEqual(80_000);
+    expect(r!.totalFixedUsd).toBeGreaterThanOrEqual(28_000);
   });
 
-  it('Antwerp BEANR DA for 30k DWT is >= $75k', () => {
+  it('Antwerp BEANR DA for 30k DWT is >= $26k', () => {
     const r = getPortDa({ portCode: 'BEANR', vesselDwt: 30000 }, db);
     expect(r).not.toBeNull();
-    expect(r!.totalFixedUsd).toBeGreaterThanOrEqual(75_000);
+    expect(r!.totalFixedUsd).toBeGreaterThanOrEqual(26_000);
   });
 
-  it('Singapore SGSIN DA for 35k DWT is between $60k and $90k', () => {
+  it('Singapore SGSIN DA for 35k DWT is between $20k and $40k', () => {
     const r = getPortDa({ portCode: 'SGSIN', vesselDwt: 35000 }, db);
     expect(r).not.toBeNull();
-    expect(r!.totalFixedUsd).toBeGreaterThanOrEqual(60_000);
-    expect(r!.totalFixedUsd).toBeLessThanOrEqual(90_000);
+    expect(r!.totalFixedUsd).toBeGreaterThanOrEqual(20_000);
+    expect(r!.totalFixedUsd).toBeLessThanOrEqual(40_000);
   });
 
-  it('Durban ZADUR DA for 30k DWT is >= $65k', () => {
+  it('Durban ZADUR DA for 30k DWT is >= $23k', () => {
     const r = getPortDa({ portCode: 'ZADUR', vesselDwt: 30000 }, db);
     expect(r).not.toBeNull();
-    expect(r!.totalFixedUsd).toBeGreaterThanOrEqual(65_000);
+    expect(r!.totalFixedUsd).toBeGreaterThanOrEqual(23_000);
   });
 
-  it('Suez EGSUZ DA for 30k DWT is >= $40k', () => {
+  it('Suez EGSUZ DA for 30k DWT is >= $15k', () => {
     const r = getPortDa({ portCode: 'EGSUZ', vesselDwt: 30000 }, db);
     expect(r).not.toBeNull();
-    expect(r!.totalFixedUsd).toBeGreaterThanOrEqual(40_000);
+    expect(r!.totalFixedUsd).toBeGreaterThanOrEqual(15_000);
   });
 
-  it('Dubai AEDXB DA for 30k DWT is >= $50k', () => {
+  it('Dubai AEDXB DA for 30k DWT is >= $18k', () => {
     const r = getPortDa({ portCode: 'AEDXB', vesselDwt: 30000 }, db);
     expect(r).not.toBeNull();
-    expect(r!.totalFixedUsd).toBeGreaterThanOrEqual(50_000);
+    expect(r!.totalFixedUsd).toBeGreaterThanOrEqual(18_000);
   });
 
-  it('Mersin TRMER DA for 30k DWT is >= $45k', () => {
+  it('Mersin TRMER DA for 30k DWT is >= $17k', () => {
     const r = getPortDa({ portCode: 'TRMER', vesselDwt: 30000 }, db);
     expect(r).not.toBeNull();
-    expect(r!.totalFixedUsd).toBeGreaterThanOrEqual(45_000);
+    expect(r!.totalFixedUsd).toBeGreaterThanOrEqual(17_000);
   });
 
-  it('Aqaba JOAQB DA for 30k DWT is >= $40k', () => {
+  it('Aqaba JOAQB DA for 30k DWT is >= $14k', () => {
     const r = getPortDa({ portCode: 'JOAQB', vesselDwt: 30000 }, db);
     expect(r).not.toBeNull();
-    expect(r!.totalFixedUsd).toBeGreaterThanOrEqual(40_000);
+    expect(r!.totalFixedUsd).toBeGreaterThanOrEqual(14_000);
   });
 
-  it('Misurata LYMRA DA for 30k DWT is >= $50k', () => {
+  it('Misurata LYMRA DA for 30k DWT is >= $18k', () => {
     const r = getPortDa({ portCode: 'LYMRA', vesselDwt: 30000 }, db);
     expect(r).not.toBeNull();
-    expect(r!.totalFixedUsd).toBeGreaterThanOrEqual(50_000);
+    expect(r!.totalFixedUsd).toBeGreaterThanOrEqual(18_000);
   });
 
   it('Unknown UNLOCODE returns null fallback (not a thrown error)', () => {
@@ -156,22 +161,24 @@ describe('wave4-portda — 15 new demo ports + small-vessel bracket coverage', (
 
   afterAll(() => db.close());
 
-  it('TRALI at 8 000 DWT hits small-vessel bracket with total ~30 800', () => {
+  // RC1 note (2026-06-08 recalibration): exact totals updated to reflect de-inflated
+  // values (port_dues÷2, pilotage÷6, tugs÷2.5, rounded to nearest $100).
+  it('TRALI at 8 000 DWT hits small-vessel bracket with total 11 900', () => {
     const r = getPortDa({ portCode: 'TRALI', vesselDwt: 8000 }, db);
     expect(r).not.toBeNull();
-    expect(r!.totalFixedUsd).toBe(30_800);
+    expect(r!.totalFixedUsd).toBe(11_900);
   });
 
-  it('ROCND at 25 000 DWT hits handysize bracket with total 66 000', () => {
+  it('ROCND at 25 000 DWT hits handysize bracket with total 25 600', () => {
     const r = getPortDa({ portCode: 'ROCND', vesselDwt: 25000 }, db);
     expect(r).not.toBeNull();
-    expect(r!.totalFixedUsd).toBe(66_000);
+    expect(r!.totalFixedUsd).toBe(25_600);
   });
 
-  it('GBLIV at 50 000 DWT hits large bracket with total 129 000', () => {
+  it('GBLIV at 50 000 DWT hits large bracket with total 50 000', () => {
     const r = getPortDa({ portCode: 'GBLIV', vesselDwt: 50000 }, db);
     expect(r).not.toBeNull();
-    expect(r!.totalFixedUsd).toBe(129_000);
+    expect(r!.totalFixedUsd).toBe(50_000);
   });
 
   it('seeded DB has 54 distinct port_codes after adding 15 new ports', () => {

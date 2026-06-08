@@ -6,35 +6,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 27500,
-        "pilotage_usd": 14900,
-        "tugs_usd": 12700,
-        "stevedoring_usd_per_mt": 9.0,
+        "port_dues_usd": 13800,
+        "pilotage_usd": 2500,
+        "tugs_usd": 5100,
+        "stevedoring_usd_per_mt": 9,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 50000,
-        "pilotage_usd": 27000,
-        "tugs_usd": 23000,
-        "stevedoring_usd_per_mt": 9.0,
+        "port_dues_usd": 25000,
+        "pilotage_usd": 4500,
+        "tugs_usd": 9200,
+        "stevedoring_usd_per_mt": 9,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 75000,
-        "pilotage_usd": 40500,
-        "tugs_usd": 34500,
+        "port_dues_usd": 37500,
+        "pilotage_usd": 6800,
+        "tugs_usd": 13800,
         "stevedoring_usd_per_mt": 8.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -45,35 +45,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 15100,
-        "pilotage_usd": 8200,
-        "tugs_usd": 6900,
+        "port_dues_usd": 7600,
+        "pilotage_usd": 1400,
+        "tugs_usd": 2800,
         "stevedoring_usd_per_mt": 6.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 27500,
-        "pilotage_usd": 14900,
-        "tugs_usd": 12600,
+        "port_dues_usd": 13800,
+        "pilotage_usd": 2500,
+        "tugs_usd": 5000,
         "stevedoring_usd_per_mt": 6.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 41200,
-        "pilotage_usd": 22300,
-        "tugs_usd": 19000,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 20600,
+        "pilotage_usd": 3700,
+        "tugs_usd": 7600,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -84,68 +84,68 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 21400,
-        "pilotage_usd": 11600,
-        "tugs_usd": 9800,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 10700,
+        "pilotage_usd": 1900,
+        "tugs_usd": 3900,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 39000,
-        "pilotage_usd": 21100,
-        "tugs_usd": 17900,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 19500,
+        "pilotage_usd": 3500,
+        "tugs_usd": 7200,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 58500,
-        "pilotage_usd": 31600,
-        "tugs_usd": 26900,
+        "port_dues_usd": 29300,
+        "pilotage_usd": 5300,
+        "tugs_usd": 10800,
         "stevedoring_usd_per_mt": 5.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 65001,
         "vessel_dwt_max": 90000,
-        "port_dues_usd": 88000,
-        "pilotage_usd": 47000,
-        "tugs_usd": 40000,
-        "stevedoring_usd_per_mt": 5.0,
+        "port_dues_usd": 44000,
+        "pilotage_usd": 7800,
+        "tugs_usd": 16000,
+        "stevedoring_usd_per_mt": 5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "broker-research-2026-05"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 90001,
         "vessel_dwt_max": 150000,
-        "port_dues_usd": 116000,
-        "pilotage_usd": 62000,
-        "tugs_usd": 53000,
+        "port_dues_usd": 58000,
+        "pilotage_usd": 10300,
+        "tugs_usd": 21200,
         "stevedoring_usd_per_mt": 4.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "broker-research-2026-05"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 150001,
         "vessel_dwt_max": 200000,
-        "port_dues_usd": 148000,
-        "pilotage_usd": 80000,
-        "tugs_usd": 68000,
-        "stevedoring_usd_per_mt": 4.0,
+        "port_dues_usd": 74000,
+        "pilotage_usd": 13300,
+        "tugs_usd": 27200,
+        "stevedoring_usd_per_mt": 4,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "broker-research-2026-05"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -156,35 +156,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 19800,
-        "pilotage_usd": 10700,
-        "tugs_usd": 9100,
+        "port_dues_usd": 9900,
+        "pilotage_usd": 1800,
+        "tugs_usd": 3600,
         "stevedoring_usd_per_mt": 5.8,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 36000,
-        "pilotage_usd": 19400,
-        "tugs_usd": 16600,
+        "port_dues_usd": 18000,
+        "pilotage_usd": 3200,
+        "tugs_usd": 6600,
         "stevedoring_usd_per_mt": 5.8,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 54000,
-        "pilotage_usd": 29200,
-        "tugs_usd": 24800,
+        "port_dues_usd": 27000,
+        "pilotage_usd": 4900,
+        "tugs_usd": 9900,
         "stevedoring_usd_per_mt": 5.3,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -195,68 +195,68 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 18700,
-        "pilotage_usd": 10100,
-        "tugs_usd": 8600,
+        "port_dues_usd": 9400,
+        "pilotage_usd": 1700,
+        "tugs_usd": 3400,
         "stevedoring_usd_per_mt": 5.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 34000,
-        "pilotage_usd": 18400,
-        "tugs_usd": 15600,
+        "port_dues_usd": 17000,
+        "pilotage_usd": 3100,
+        "tugs_usd": 6200,
         "stevedoring_usd_per_mt": 5.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 51000,
-        "pilotage_usd": 27500,
-        "tugs_usd": 23500,
-        "stevedoring_usd_per_mt": 5.0,
+        "port_dues_usd": 25500,
+        "pilotage_usd": 4600,
+        "tugs_usd": 9400,
+        "stevedoring_usd_per_mt": 5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 65001,
         "vessel_dwt_max": 90000,
-        "port_dues_usd": 82000,
-        "pilotage_usd": 44000,
-        "tugs_usd": 38000,
+        "port_dues_usd": 41000,
+        "pilotage_usd": 7300,
+        "tugs_usd": 15200,
         "stevedoring_usd_per_mt": 5.2,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "broker-research-2026-05"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 90001,
         "vessel_dwt_max": 150000,
-        "port_dues_usd": 108000,
-        "pilotage_usd": 58000,
-        "tugs_usd": 49000,
+        "port_dues_usd": 54000,
+        "pilotage_usd": 9700,
+        "tugs_usd": 19600,
         "stevedoring_usd_per_mt": 4.7,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "broker-research-2026-05"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 150001,
         "vessel_dwt_max": 200000,
-        "port_dues_usd": 138000,
-        "pilotage_usd": 74000,
-        "tugs_usd": 63000,
+        "port_dues_usd": 69000,
+        "pilotage_usd": 12300,
+        "tugs_usd": 25200,
         "stevedoring_usd_per_mt": 4.2,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "broker-research-2026-05"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -267,35 +267,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 17000,
-        "pilotage_usd": 9200,
-        "tugs_usd": 7900,
+        "port_dues_usd": 8500,
+        "pilotage_usd": 1500,
+        "tugs_usd": 3200,
         "stevedoring_usd_per_mt": 5.2,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 31000,
-        "pilotage_usd": 16700,
-        "tugs_usd": 14300,
+        "port_dues_usd": 15500,
+        "pilotage_usd": 2800,
+        "tugs_usd": 5700,
         "stevedoring_usd_per_mt": 5.2,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 46500,
-        "pilotage_usd": 25100,
-        "tugs_usd": 21400,
+        "port_dues_usd": 23300,
+        "pilotage_usd": 4200,
+        "tugs_usd": 8600,
         "stevedoring_usd_per_mt": 4.8,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -306,35 +306,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 16000,
-        "pilotage_usd": 8600,
-        "tugs_usd": 7300,
-        "stevedoring_usd_per_mt": 5.0,
+        "port_dues_usd": 8000,
+        "pilotage_usd": 1400,
+        "tugs_usd": 2900,
+        "stevedoring_usd_per_mt": 5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 29000,
-        "pilotage_usd": 15700,
-        "tugs_usd": 13300,
-        "stevedoring_usd_per_mt": 5.0,
+        "port_dues_usd": 14500,
+        "pilotage_usd": 2600,
+        "tugs_usd": 5300,
+        "stevedoring_usd_per_mt": 5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 43500,
-        "pilotage_usd": 23500,
-        "tugs_usd": 20000,
+        "port_dues_usd": 21800,
+        "pilotage_usd": 3900,
+        "tugs_usd": 8000,
         "stevedoring_usd_per_mt": 4.6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -345,35 +345,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 15100,
-        "pilotage_usd": 8200,
-        "tugs_usd": 6900,
+        "port_dues_usd": 7600,
+        "pilotage_usd": 1400,
+        "tugs_usd": 2800,
         "stevedoring_usd_per_mt": 4.8,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 27500,
-        "pilotage_usd": 14900,
-        "tugs_usd": 12600,
+        "port_dues_usd": 13800,
+        "pilotage_usd": 2500,
+        "tugs_usd": 5000,
         "stevedoring_usd_per_mt": 4.8,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 41200,
-        "pilotage_usd": 22300,
-        "tugs_usd": 19000,
+        "port_dues_usd": 20600,
+        "pilotage_usd": 3700,
+        "tugs_usd": 7600,
         "stevedoring_usd_per_mt": 4.4,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -384,35 +384,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 13800,
-        "pilotage_usd": 7400,
-        "tugs_usd": 6300,
+        "port_dues_usd": 6900,
+        "pilotage_usd": 1200,
+        "tugs_usd": 2500,
         "stevedoring_usd_per_mt": 4.6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 25000,
-        "pilotage_usd": 13500,
-        "tugs_usd": 11500,
+        "port_dues_usd": 12500,
+        "pilotage_usd": 2300,
+        "tugs_usd": 4600,
         "stevedoring_usd_per_mt": 4.6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 37500,
-        "pilotage_usd": 20200,
-        "tugs_usd": 17300,
+        "port_dues_usd": 18800,
+        "pilotage_usd": 3400,
+        "tugs_usd": 6900,
         "stevedoring_usd_per_mt": 4.2,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -423,35 +423,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 15100,
-        "pilotage_usd": 8200,
-        "tugs_usd": 6900,
+        "port_dues_usd": 7600,
+        "pilotage_usd": 1400,
+        "tugs_usd": 2800,
         "stevedoring_usd_per_mt": 4.4,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 27500,
-        "pilotage_usd": 14900,
-        "tugs_usd": 12600,
+        "port_dues_usd": 13800,
+        "pilotage_usd": 2500,
+        "tugs_usd": 5000,
         "stevedoring_usd_per_mt": 4.4,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 41200,
-        "pilotage_usd": 22300,
-        "tugs_usd": 19000,
-        "stevedoring_usd_per_mt": 4.0,
+        "port_dues_usd": 20600,
+        "pilotage_usd": 3700,
+        "tugs_usd": 7600,
+        "stevedoring_usd_per_mt": 4,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -462,35 +462,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 14300,
-        "pilotage_usd": 7700,
-        "tugs_usd": 6600,
+        "port_dues_usd": 7200,
+        "pilotage_usd": 1300,
+        "tugs_usd": 2600,
         "stevedoring_usd_per_mt": 4.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 26000,
-        "pilotage_usd": 14000,
-        "tugs_usd": 12000,
+        "port_dues_usd": 13000,
+        "pilotage_usd": 2300,
+        "tugs_usd": 4800,
         "stevedoring_usd_per_mt": 4.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 39000,
-        "pilotage_usd": 21100,
-        "tugs_usd": 17900,
+        "port_dues_usd": 19500,
+        "pilotage_usd": 3500,
+        "tugs_usd": 7200,
         "stevedoring_usd_per_mt": 4.1,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -501,35 +501,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 13200,
-        "pilotage_usd": 7200,
-        "tugs_usd": 6100,
+        "port_dues_usd": 6600,
+        "pilotage_usd": 1200,
+        "tugs_usd": 2400,
         "stevedoring_usd_per_mt": 4.2,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 24000,
-        "pilotage_usd": 13000,
-        "tugs_usd": 11000,
+        "port_dues_usd": 12000,
+        "pilotage_usd": 2200,
+        "tugs_usd": 4400,
         "stevedoring_usd_per_mt": 4.2,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 36000,
-        "pilotage_usd": 19400,
-        "tugs_usd": 16600,
+        "port_dues_usd": 18000,
+        "pilotage_usd": 3200,
+        "tugs_usd": 6600,
         "stevedoring_usd_per_mt": 3.9,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -540,35 +540,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 19200,
-        "pilotage_usd": 10400,
-        "tugs_usd": 8900,
+        "port_dues_usd": 9600,
+        "pilotage_usd": 1700,
+        "tugs_usd": 3600,
         "stevedoring_usd_per_mt": 6.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 35000,
-        "pilotage_usd": 18900,
-        "tugs_usd": 16100,
+        "port_dues_usd": 17500,
+        "pilotage_usd": 3200,
+        "tugs_usd": 6400,
         "stevedoring_usd_per_mt": 6.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 52500,
-        "pilotage_usd": 28400,
-        "tugs_usd": 24100,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 26300,
+        "pilotage_usd": 4700,
+        "tugs_usd": 9600,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -579,35 +579,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 26100,
-        "pilotage_usd": 14100,
-        "tugs_usd": 12000,
+        "port_dues_usd": 13100,
+        "pilotage_usd": 2400,
+        "tugs_usd": 4800,
         "stevedoring_usd_per_mt": 8.8,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 47500,
-        "pilotage_usd": 25600,
-        "tugs_usd": 21900,
+        "port_dues_usd": 23800,
+        "pilotage_usd": 4300,
+        "tugs_usd": 8800,
         "stevedoring_usd_per_mt": 8.8,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 71200,
-        "pilotage_usd": 38500,
-        "tugs_usd": 32800,
+        "port_dues_usd": 35600,
+        "pilotage_usd": 6400,
+        "tugs_usd": 13100,
         "stevedoring_usd_per_mt": 8.3,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -618,35 +618,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 17900,
-        "pilotage_usd": 9700,
-        "tugs_usd": 8200,
+        "port_dues_usd": 9000,
+        "pilotage_usd": 1600,
+        "tugs_usd": 3300,
         "stevedoring_usd_per_mt": 6.3,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 32500,
-        "pilotage_usd": 17600,
-        "tugs_usd": 14900,
+        "port_dues_usd": 16300,
+        "pilotage_usd": 2900,
+        "tugs_usd": 6000,
         "stevedoring_usd_per_mt": 6.3,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 48800,
-        "pilotage_usd": 26300,
-        "tugs_usd": 22400,
+        "port_dues_usd": 24400,
+        "pilotage_usd": 4400,
+        "tugs_usd": 9000,
         "stevedoring_usd_per_mt": 5.8,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -657,35 +657,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 17000,
-        "pilotage_usd": 9200,
-        "tugs_usd": 7900,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 8500,
+        "pilotage_usd": 1500,
+        "tugs_usd": 3200,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 31000,
-        "pilotage_usd": 16700,
-        "tugs_usd": 14300,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 15500,
+        "pilotage_usd": 2800,
+        "tugs_usd": 5700,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 46500,
-        "pilotage_usd": 25100,
-        "tugs_usd": 21400,
+        "port_dues_usd": 23300,
+        "pilotage_usd": 4200,
+        "tugs_usd": 8600,
         "stevedoring_usd_per_mt": 5.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -696,35 +696,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 17900,
-        "pilotage_usd": 9700,
-        "tugs_usd": 8200,
+        "port_dues_usd": 9000,
+        "pilotage_usd": 1600,
+        "tugs_usd": 3300,
         "stevedoring_usd_per_mt": 6.1,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 32500,
-        "pilotage_usd": 17600,
-        "tugs_usd": 14900,
+        "port_dues_usd": 16300,
+        "pilotage_usd": 2900,
+        "tugs_usd": 6000,
         "stevedoring_usd_per_mt": 6.1,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 48800,
-        "pilotage_usd": 26300,
-        "tugs_usd": 22400,
+        "port_dues_usd": 24400,
+        "pilotage_usd": 4400,
+        "tugs_usd": 9000,
         "stevedoring_usd_per_mt": 5.6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -735,35 +735,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 19200,
-        "pilotage_usd": 10400,
-        "tugs_usd": 8900,
+        "port_dues_usd": 9600,
+        "pilotage_usd": 1700,
+        "tugs_usd": 3600,
         "stevedoring_usd_per_mt": 6.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 35000,
-        "pilotage_usd": 18900,
-        "tugs_usd": 16100,
+        "port_dues_usd": 17500,
+        "pilotage_usd": 3200,
+        "tugs_usd": 6400,
         "stevedoring_usd_per_mt": 6.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 52500,
-        "pilotage_usd": 28400,
-        "tugs_usd": 24100,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 26300,
+        "pilotage_usd": 4700,
+        "tugs_usd": 9600,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -774,35 +774,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 21400,
-        "pilotage_usd": 11600,
-        "tugs_usd": 9800,
+        "port_dues_usd": 10700,
+        "pilotage_usd": 1900,
+        "tugs_usd": 3900,
         "stevedoring_usd_per_mt": 7.2,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 39000,
-        "pilotage_usd": 21100,
-        "tugs_usd": 17900,
+        "port_dues_usd": 19500,
+        "pilotage_usd": 3500,
+        "tugs_usd": 7200,
         "stevedoring_usd_per_mt": 7.2,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 58500,
-        "pilotage_usd": 31600,
-        "tugs_usd": 26900,
+        "port_dues_usd": 29300,
+        "pilotage_usd": 5300,
+        "tugs_usd": 10800,
         "stevedoring_usd_per_mt": 6.8,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -813,35 +813,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 15100,
-        "pilotage_usd": 8200,
-        "tugs_usd": 6900,
+        "port_dues_usd": 7600,
+        "pilotage_usd": 1400,
+        "tugs_usd": 2800,
         "stevedoring_usd_per_mt": 5.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 27500,
-        "pilotage_usd": 14900,
-        "tugs_usd": 12600,
+        "port_dues_usd": 13800,
+        "pilotage_usd": 2500,
+        "tugs_usd": 5000,
         "stevedoring_usd_per_mt": 5.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 41200,
-        "pilotage_usd": 22300,
-        "tugs_usd": 19000,
-        "stevedoring_usd_per_mt": 5.0,
+        "port_dues_usd": 20600,
+        "pilotage_usd": 3700,
+        "tugs_usd": 7600,
+        "stevedoring_usd_per_mt": 5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -852,35 +852,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 19800,
-        "pilotage_usd": 10700,
-        "tugs_usd": 9100,
-        "stevedoring_usd_per_mt": 7.0,
+        "port_dues_usd": 9900,
+        "pilotage_usd": 1800,
+        "tugs_usd": 3600,
+        "stevedoring_usd_per_mt": 7,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 36000,
-        "pilotage_usd": 19400,
-        "tugs_usd": 16600,
-        "stevedoring_usd_per_mt": 7.0,
+        "port_dues_usd": 18000,
+        "pilotage_usd": 3200,
+        "tugs_usd": 6600,
+        "stevedoring_usd_per_mt": 7,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 54000,
-        "pilotage_usd": 29200,
-        "tugs_usd": 24800,
+        "port_dues_usd": 27000,
+        "pilotage_usd": 4900,
+        "tugs_usd": 9900,
         "stevedoring_usd_per_mt": 6.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -891,35 +891,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 25300,
-        "pilotage_usd": 13600,
-        "tugs_usd": 11700,
-        "stevedoring_usd_per_mt": 8.0,
+        "port_dues_usd": 12700,
+        "pilotage_usd": 2300,
+        "tugs_usd": 4700,
+        "stevedoring_usd_per_mt": 8,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 46000,
-        "pilotage_usd": 24800,
-        "tugs_usd": 21200,
-        "stevedoring_usd_per_mt": 8.0,
+        "port_dues_usd": 23000,
+        "pilotage_usd": 4100,
+        "tugs_usd": 8500,
+        "stevedoring_usd_per_mt": 8,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 69000,
-        "pilotage_usd": 37300,
-        "tugs_usd": 31700,
+        "port_dues_usd": 34500,
+        "pilotage_usd": 6200,
+        "tugs_usd": 12700,
         "stevedoring_usd_per_mt": 7.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -930,35 +930,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 22600,
-        "pilotage_usd": 12200,
-        "tugs_usd": 10400,
+        "port_dues_usd": 11300,
+        "pilotage_usd": 2000,
+        "tugs_usd": 4200,
         "stevedoring_usd_per_mt": 7.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 41000,
-        "pilotage_usd": 22100,
-        "tugs_usd": 18900,
+        "port_dues_usd": 20500,
+        "pilotage_usd": 3700,
+        "tugs_usd": 7600,
         "stevedoring_usd_per_mt": 7.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 61500,
-        "pilotage_usd": 33200,
-        "tugs_usd": 28300,
-        "stevedoring_usd_per_mt": 7.0,
+        "port_dues_usd": 30800,
+        "pilotage_usd": 5500,
+        "tugs_usd": 11300,
+        "stevedoring_usd_per_mt": 7,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -969,35 +969,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 21400,
-        "pilotage_usd": 11600,
-        "tugs_usd": 9800,
+        "port_dues_usd": 10700,
+        "pilotage_usd": 1900,
+        "tugs_usd": 3900,
         "stevedoring_usd_per_mt": 7.2,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 39000,
-        "pilotage_usd": 21100,
-        "tugs_usd": 17900,
+        "port_dues_usd": 19500,
+        "pilotage_usd": 3500,
+        "tugs_usd": 7200,
         "stevedoring_usd_per_mt": 7.2,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 58500,
-        "pilotage_usd": 31600,
-        "tugs_usd": 26900,
+        "port_dues_usd": 29300,
+        "pilotage_usd": 5300,
+        "tugs_usd": 10800,
         "stevedoring_usd_per_mt": 6.8,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -1008,35 +1008,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 23400,
-        "pilotage_usd": 12700,
-        "tugs_usd": 10700,
+        "port_dues_usd": 11700,
+        "pilotage_usd": 2100,
+        "tugs_usd": 4300,
         "stevedoring_usd_per_mt": 7.8,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 42500,
-        "pilotage_usd": 23000,
-        "tugs_usd": 19500,
+        "port_dues_usd": 21300,
+        "pilotage_usd": 3800,
+        "tugs_usd": 7800,
         "stevedoring_usd_per_mt": 7.8,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 63800,
-        "pilotage_usd": 34400,
-        "tugs_usd": 29300,
+        "port_dues_usd": 31900,
+        "pilotage_usd": 5700,
+        "tugs_usd": 11700,
         "stevedoring_usd_per_mt": 7.3,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -1047,35 +1047,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 24200,
-        "pilotage_usd": 13100,
-        "tugs_usd": 11100,
-        "stevedoring_usd_per_mt": 8.0,
+        "port_dues_usd": 12100,
+        "pilotage_usd": 2200,
+        "tugs_usd": 4400,
+        "stevedoring_usd_per_mt": 8,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 44000,
-        "pilotage_usd": 23800,
-        "tugs_usd": 20200,
-        "stevedoring_usd_per_mt": 8.0,
+        "port_dues_usd": 22000,
+        "pilotage_usd": 4000,
+        "tugs_usd": 8100,
+        "stevedoring_usd_per_mt": 8,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 66000,
-        "pilotage_usd": 35600,
-        "tugs_usd": 30400,
+        "port_dues_usd": 33000,
+        "pilotage_usd": 5900,
+        "tugs_usd": 12200,
         "stevedoring_usd_per_mt": 7.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -1086,35 +1086,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 24800,
-        "pilotage_usd": 13400,
-        "tugs_usd": 11400,
+        "port_dues_usd": 12400,
+        "pilotage_usd": 2200,
+        "tugs_usd": 4600,
         "stevedoring_usd_per_mt": 8.2,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 45000,
-        "pilotage_usd": 24300,
-        "tugs_usd": 20700,
+        "port_dues_usd": 22500,
+        "pilotage_usd": 4100,
+        "tugs_usd": 8300,
         "stevedoring_usd_per_mt": 8.2,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 67500,
-        "pilotage_usd": 36400,
-        "tugs_usd": 31100,
+        "port_dues_usd": 33800,
+        "pilotage_usd": 6100,
+        "tugs_usd": 12400,
         "stevedoring_usd_per_mt": 7.7,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -1125,35 +1125,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 23400,
-        "pilotage_usd": 12700,
-        "tugs_usd": 10700,
+        "port_dues_usd": 11700,
+        "pilotage_usd": 2100,
+        "tugs_usd": 4300,
         "stevedoring_usd_per_mt": 7.9,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 42500,
-        "pilotage_usd": 23000,
-        "tugs_usd": 19500,
+        "port_dues_usd": 21300,
+        "pilotage_usd": 3800,
+        "tugs_usd": 7800,
         "stevedoring_usd_per_mt": 7.9,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 63800,
-        "pilotage_usd": 34400,
-        "tugs_usd": 29300,
+        "port_dues_usd": 31900,
+        "pilotage_usd": 5700,
+        "tugs_usd": 11700,
         "stevedoring_usd_per_mt": 7.4,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -1164,35 +1164,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 17000,
-        "pilotage_usd": 9200,
-        "tugs_usd": 7900,
+        "port_dues_usd": 8500,
+        "pilotage_usd": 1500,
+        "tugs_usd": 3200,
         "stevedoring_usd_per_mt": 6.2,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 31000,
-        "pilotage_usd": 16700,
-        "tugs_usd": 14300,
+        "port_dues_usd": 15500,
+        "pilotage_usd": 2800,
+        "tugs_usd": 5700,
         "stevedoring_usd_per_mt": 6.2,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 46500,
-        "pilotage_usd": 25100,
-        "tugs_usd": 21400,
+        "port_dues_usd": 23300,
+        "pilotage_usd": 4200,
+        "tugs_usd": 8600,
         "stevedoring_usd_per_mt": 5.7,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -1203,35 +1203,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 16500,
-        "pilotage_usd": 8900,
-        "tugs_usd": 7600,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 8300,
+        "pilotage_usd": 1500,
+        "tugs_usd": 3000,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 30000,
-        "pilotage_usd": 16200,
-        "tugs_usd": 13800,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 15000,
+        "pilotage_usd": 2700,
+        "tugs_usd": 5500,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 45000,
-        "pilotage_usd": 24300,
-        "tugs_usd": 20700,
+        "port_dues_usd": 22500,
+        "pilotage_usd": 4100,
+        "tugs_usd": 8300,
         "stevedoring_usd_per_mt": 5.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -1242,68 +1242,68 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 24800,
-        "pilotage_usd": 13400,
-        "tugs_usd": 11400,
+        "port_dues_usd": 12400,
+        "pilotage_usd": 2200,
+        "tugs_usd": 4600,
         "stevedoring_usd_per_mt": 7.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 45000,
-        "pilotage_usd": 24300,
-        "tugs_usd": 20700,
+        "port_dues_usd": 22500,
+        "pilotage_usd": 4100,
+        "tugs_usd": 8300,
         "stevedoring_usd_per_mt": 7.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 67500,
-        "pilotage_usd": 36400,
-        "tugs_usd": 31100,
-        "stevedoring_usd_per_mt": 7.0,
+        "port_dues_usd": 33800,
+        "pilotage_usd": 6100,
+        "tugs_usd": 12400,
+        "stevedoring_usd_per_mt": 7,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 65001,
         "vessel_dwt_max": 90000,
-        "port_dues_usd": 110000,
-        "pilotage_usd": 60000,
-        "tugs_usd": 50000,
-        "stevedoring_usd_per_mt": 5.0,
+        "port_dues_usd": 55000,
+        "pilotage_usd": 10000,
+        "tugs_usd": 20000,
+        "stevedoring_usd_per_mt": 5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "broker-research-2026-05"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 90001,
         "vessel_dwt_max": 150000,
-        "port_dues_usd": 145000,
-        "pilotage_usd": 78000,
-        "tugs_usd": 67000,
+        "port_dues_usd": 72500,
+        "pilotage_usd": 13000,
+        "tugs_usd": 26800,
         "stevedoring_usd_per_mt": 4.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "broker-research-2026-05"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 150001,
         "vessel_dwt_max": 200000,
-        "port_dues_usd": 185000,
-        "pilotage_usd": 100000,
-        "tugs_usd": 86000,
-        "stevedoring_usd_per_mt": 4.0,
+        "port_dues_usd": 92500,
+        "pilotage_usd": 16700,
+        "tugs_usd": 34400,
+        "stevedoring_usd_per_mt": 4,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "broker-research-2026-05"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -1314,68 +1314,68 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 23400,
-        "pilotage_usd": 12700,
-        "tugs_usd": 10700,
+        "port_dues_usd": 11700,
+        "pilotage_usd": 2100,
+        "tugs_usd": 4300,
         "stevedoring_usd_per_mt": 7.4,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 42500,
-        "pilotage_usd": 23000,
-        "tugs_usd": 19500,
+        "port_dues_usd": 21300,
+        "pilotage_usd": 3800,
+        "tugs_usd": 7800,
         "stevedoring_usd_per_mt": 7.4,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 63800,
-        "pilotage_usd": 34400,
-        "tugs_usd": 29300,
+        "port_dues_usd": 31900,
+        "pilotage_usd": 5700,
+        "tugs_usd": 11700,
         "stevedoring_usd_per_mt": 6.9,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 65001,
         "vessel_dwt_max": 90000,
-        "port_dues_usd": 105000,
-        "pilotage_usd": 57000,
-        "tugs_usd": 49000,
+        "port_dues_usd": 52500,
+        "pilotage_usd": 9500,
+        "tugs_usd": 19600,
         "stevedoring_usd_per_mt": 5.2,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "broker-research-2026-05"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 90001,
         "vessel_dwt_max": 150000,
-        "port_dues_usd": 140000,
-        "pilotage_usd": 75000,
-        "tugs_usd": 64000,
+        "port_dues_usd": 70000,
+        "pilotage_usd": 12500,
+        "tugs_usd": 25600,
         "stevedoring_usd_per_mt": 4.6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "broker-research-2026-05"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 150001,
         "vessel_dwt_max": 200000,
-        "port_dues_usd": 178000,
-        "pilotage_usd": 96000,
-        "tugs_usd": 82000,
+        "port_dues_usd": 89000,
+        "pilotage_usd": 16000,
+        "tugs_usd": 32800,
         "stevedoring_usd_per_mt": 4.1,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "broker-research-2026-05"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -1386,35 +1386,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 20600,
-        "pilotage_usd": 11100,
-        "tugs_usd": 9500,
+        "port_dues_usd": 10300,
+        "pilotage_usd": 1900,
+        "tugs_usd": 3800,
         "stevedoring_usd_per_mt": 6.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 37500,
-        "pilotage_usd": 20200,
-        "tugs_usd": 17300,
+        "port_dues_usd": 18800,
+        "pilotage_usd": 3400,
+        "tugs_usd": 6900,
         "stevedoring_usd_per_mt": 6.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 56200,
-        "pilotage_usd": 30400,
-        "tugs_usd": 25900,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 28100,
+        "pilotage_usd": 5100,
+        "tugs_usd": 10400,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -1425,68 +1425,68 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 19200,
-        "pilotage_usd": 10400,
-        "tugs_usd": 8900,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 9600,
+        "pilotage_usd": 1700,
+        "tugs_usd": 3600,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 35000,
-        "pilotage_usd": 18900,
-        "tugs_usd": 16100,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 17500,
+        "pilotage_usd": 3200,
+        "tugs_usd": 6400,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 52500,
-        "pilotage_usd": 28400,
-        "tugs_usd": 24100,
+        "port_dues_usd": 26300,
+        "pilotage_usd": 4700,
+        "tugs_usd": 9600,
         "stevedoring_usd_per_mt": 5.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 65001,
         "vessel_dwt_max": 90000,
-        "port_dues_usd": 95000,
-        "pilotage_usd": 51000,
-        "tugs_usd": 44000,
+        "port_dues_usd": 47500,
+        "pilotage_usd": 8500,
+        "tugs_usd": 17600,
         "stevedoring_usd_per_mt": 4.8,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "broker-research-2026-05"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 90001,
         "vessel_dwt_max": 150000,
-        "port_dues_usd": 125000,
-        "pilotage_usd": 67000,
-        "tugs_usd": 57000,
+        "port_dues_usd": 62500,
+        "pilotage_usd": 11200,
+        "tugs_usd": 22800,
         "stevedoring_usd_per_mt": 4.3,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "broker-research-2026-05"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 150001,
         "vessel_dwt_max": 200000,
-        "port_dues_usd": 160000,
-        "pilotage_usd": 86000,
-        "tugs_usd": 73000,
+        "port_dues_usd": 80000,
+        "pilotage_usd": 14300,
+        "tugs_usd": 29200,
         "stevedoring_usd_per_mt": 3.8,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "broker-research-2026-05"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -1497,35 +1497,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 13800,
-        "pilotage_usd": 7400,
-        "tugs_usd": 6300,
+        "port_dues_usd": 6900,
+        "pilotage_usd": 1200,
+        "tugs_usd": 2500,
         "stevedoring_usd_per_mt": 4.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 25000,
-        "pilotage_usd": 13500,
-        "tugs_usd": 11500,
+        "port_dues_usd": 12500,
+        "pilotage_usd": 2300,
+        "tugs_usd": 4600,
         "stevedoring_usd_per_mt": 4.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 37500,
-        "pilotage_usd": 20200,
-        "tugs_usd": 17300,
+        "port_dues_usd": 18800,
+        "pilotage_usd": 3400,
+        "tugs_usd": 6900,
         "stevedoring_usd_per_mt": 4.1,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -1536,35 +1536,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 16500,
-        "pilotage_usd": 8900,
-        "tugs_usd": 7600,
+        "port_dues_usd": 8300,
+        "pilotage_usd": 1500,
+        "tugs_usd": 3000,
         "stevedoring_usd_per_mt": 5.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 30000,
-        "pilotage_usd": 16200,
-        "tugs_usd": 13800,
+        "port_dues_usd": 15000,
+        "pilotage_usd": 2700,
+        "tugs_usd": 5500,
         "stevedoring_usd_per_mt": 5.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 45000,
-        "pilotage_usd": 24300,
-        "tugs_usd": 20700,
-        "stevedoring_usd_per_mt": 5.0,
+        "port_dues_usd": 22500,
+        "pilotage_usd": 4100,
+        "tugs_usd": 8300,
+        "stevedoring_usd_per_mt": 5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -1575,35 +1575,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 12400,
-        "pilotage_usd": 6700,
-        "tugs_usd": 5700,
+        "port_dues_usd": 6200,
+        "pilotage_usd": 1100,
+        "tugs_usd": 2300,
         "stevedoring_usd_per_mt": 4.4,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 22500,
-        "pilotage_usd": 12200,
-        "tugs_usd": 10300,
+        "port_dues_usd": 11300,
+        "pilotage_usd": 2000,
+        "tugs_usd": 4100,
         "stevedoring_usd_per_mt": 4.4,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 33800,
-        "pilotage_usd": 18200,
-        "tugs_usd": 15500,
-        "stevedoring_usd_per_mt": 4.0,
+        "port_dues_usd": 16900,
+        "pilotage_usd": 3000,
+        "tugs_usd": 6200,
+        "stevedoring_usd_per_mt": 4,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -1614,35 +1614,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 16500,
-        "pilotage_usd": 8900,
-        "tugs_usd": 7600,
+        "port_dues_usd": 8300,
+        "pilotage_usd": 1500,
+        "tugs_usd": 3000,
         "stevedoring_usd_per_mt": 5.8,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 30000,
-        "pilotage_usd": 16200,
-        "tugs_usd": 13800,
+        "port_dues_usd": 15000,
+        "pilotage_usd": 2700,
+        "tugs_usd": 5500,
         "stevedoring_usd_per_mt": 5.8,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 45000,
-        "pilotage_usd": 24300,
-        "tugs_usd": 20700,
+        "port_dues_usd": 22500,
+        "pilotage_usd": 4100,
+        "tugs_usd": 8300,
         "stevedoring_usd_per_mt": 5.3,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -1653,46 +1653,46 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 49500,
-        "pilotage_usd": 26400,
-        "tugs_usd": 22600,
+        "port_dues_usd": 24800,
+        "pilotage_usd": 4400,
+        "tugs_usd": 9000,
         "stevedoring_usd_per_mt": 3.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 65001,
         "vessel_dwt_max": 90000,
-        "port_dues_usd": 90000,
-        "pilotage_usd": 48000,
-        "tugs_usd": 41000,
+        "port_dues_usd": 45000,
+        "pilotage_usd": 8000,
+        "tugs_usd": 16400,
         "stevedoring_usd_per_mt": 3.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "broker-research-2026-05"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 90001,
         "vessel_dwt_max": 150000,
-        "port_dues_usd": 118000,
-        "pilotage_usd": 63000,
-        "tugs_usd": 54000,
-        "stevedoring_usd_per_mt": 3.0,
+        "port_dues_usd": 59000,
+        "pilotage_usd": 10500,
+        "tugs_usd": 21600,
+        "stevedoring_usd_per_mt": 3,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "broker-research-2026-05"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 150001,
         "vessel_dwt_max": 200000,
-        "port_dues_usd": 150000,
-        "pilotage_usd": 81000,
-        "tugs_usd": 69000,
+        "port_dues_usd": 75000,
+        "pilotage_usd": 13500,
+        "tugs_usd": 27600,
         "stevedoring_usd_per_mt": 2.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "broker-research-2026-05"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -1703,35 +1703,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 15400,
-        "pilotage_usd": 8300,
-        "tugs_usd": 7100,
+        "port_dues_usd": 7700,
+        "pilotage_usd": 1400,
+        "tugs_usd": 2800,
         "stevedoring_usd_per_mt": 6.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 28000,
-        "pilotage_usd": 15100,
-        "tugs_usd": 12900,
+        "port_dues_usd": 14000,
+        "pilotage_usd": 2500,
+        "tugs_usd": 5200,
         "stevedoring_usd_per_mt": 6.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 42000,
-        "pilotage_usd": 22600,
-        "tugs_usd": 19400,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 21000,
+        "pilotage_usd": 3800,
+        "tugs_usd": 7800,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -1742,35 +1742,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 16000,
-        "pilotage_usd": 8600,
-        "tugs_usd": 7300,
+        "port_dues_usd": 8000,
+        "pilotage_usd": 1400,
+        "tugs_usd": 2900,
         "stevedoring_usd_per_mt": 6.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 29000,
-        "pilotage_usd": 15700,
-        "tugs_usd": 13300,
+        "port_dues_usd": 14500,
+        "pilotage_usd": 2600,
+        "tugs_usd": 5300,
         "stevedoring_usd_per_mt": 6.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 43500,
-        "pilotage_usd": 23600,
-        "tugs_usd": 20000,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 21800,
+        "pilotage_usd": 3900,
+        "tugs_usd": 8000,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -1781,35 +1781,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 18200,
-        "pilotage_usd": 9800,
-        "tugs_usd": 8400,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 9100,
+        "pilotage_usd": 1600,
+        "tugs_usd": 3400,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 33000,
-        "pilotage_usd": 17800,
-        "tugs_usd": 15200,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 16500,
+        "pilotage_usd": 3000,
+        "tugs_usd": 6100,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 49500,
-        "pilotage_usd": 26700,
-        "tugs_usd": 22800,
+        "port_dues_usd": 24800,
+        "pilotage_usd": 4500,
+        "tugs_usd": 9100,
         "stevedoring_usd_per_mt": 5.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -1820,35 +1820,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 19800,
-        "pilotage_usd": 10700,
-        "tugs_usd": 9100,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 9900,
+        "pilotage_usd": 1800,
+        "tugs_usd": 3600,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 36000,
-        "pilotage_usd": 19400,
-        "tugs_usd": 16600,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 18000,
+        "pilotage_usd": 3200,
+        "tugs_usd": 6600,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 54000,
-        "pilotage_usd": 29100,
-        "tugs_usd": 24900,
+        "port_dues_usd": 27000,
+        "pilotage_usd": 4900,
+        "tugs_usd": 10000,
         "stevedoring_usd_per_mt": 5.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -1859,35 +1859,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 22000,
-        "pilotage_usd": 11900,
-        "tugs_usd": 10100,
+        "port_dues_usd": 11000,
+        "pilotage_usd": 2000,
+        "tugs_usd": 4000,
         "stevedoring_usd_per_mt": 6.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 40000,
-        "pilotage_usd": 21600,
-        "tugs_usd": 18400,
+        "port_dues_usd": 20000,
+        "pilotage_usd": 3600,
+        "tugs_usd": 7400,
         "stevedoring_usd_per_mt": 6.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 60000,
-        "pilotage_usd": 32400,
-        "tugs_usd": 27600,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 30000,
+        "pilotage_usd": 5400,
+        "tugs_usd": 11000,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -1898,35 +1898,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 14600,
-        "pilotage_usd": 7900,
-        "tugs_usd": 6700,
+        "port_dues_usd": 7300,
+        "pilotage_usd": 1300,
+        "tugs_usd": 2700,
         "stevedoring_usd_per_mt": 6.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 26500,
-        "pilotage_usd": 14300,
-        "tugs_usd": 12200,
+        "port_dues_usd": 13300,
+        "pilotage_usd": 2400,
+        "tugs_usd": 4900,
         "stevedoring_usd_per_mt": 6.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 39800,
-        "pilotage_usd": 21400,
-        "tugs_usd": 18300,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 19900,
+        "pilotage_usd": 3600,
+        "tugs_usd": 7300,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -1937,35 +1937,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 9900,
-        "pilotage_usd": 5300,
-        "tugs_usd": 4600,
+        "port_dues_usd": 5000,
+        "pilotage_usd": 900,
+        "tugs_usd": 1800,
         "stevedoring_usd_per_mt": 5.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 18000,
-        "pilotage_usd": 9700,
-        "tugs_usd": 8300,
+        "port_dues_usd": 9000,
+        "pilotage_usd": 1600,
+        "tugs_usd": 3300,
         "stevedoring_usd_per_mt": 5.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 27000,
-        "pilotage_usd": 14600,
-        "tugs_usd": 12400,
-        "stevedoring_usd_per_mt": 5.0,
+        "port_dues_usd": 13500,
+        "pilotage_usd": 2400,
+        "tugs_usd": 5000,
+        "stevedoring_usd_per_mt": 5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -1976,35 +1976,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 13200,
-        "pilotage_usd": 7200,
-        "tugs_usd": 6100,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 6600,
+        "pilotage_usd": 1200,
+        "tugs_usd": 2400,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 24000,
-        "pilotage_usd": 13000,
-        "tugs_usd": 11000,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 12000,
+        "pilotage_usd": 2200,
+        "tugs_usd": 4400,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 36000,
-        "pilotage_usd": 19500,
-        "tugs_usd": 16500,
+        "port_dues_usd": 18000,
+        "pilotage_usd": 3300,
+        "tugs_usd": 6600,
         "stevedoring_usd_per_mt": 5.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -2015,35 +2015,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 9600,
-        "pilotage_usd": 5200,
-        "tugs_usd": 4400,
+        "port_dues_usd": 4800,
+        "pilotage_usd": 900,
+        "tugs_usd": 1800,
         "stevedoring_usd_per_mt": 5.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 17500,
-        "pilotage_usd": 9500,
-        "tugs_usd": 8000,
+        "port_dues_usd": 8800,
+        "pilotage_usd": 1600,
+        "tugs_usd": 3200,
         "stevedoring_usd_per_mt": 5.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 26200,
-        "pilotage_usd": 14200,
-        "tugs_usd": 12000,
-        "stevedoring_usd_per_mt": 5.0,
+        "port_dues_usd": 13100,
+        "pilotage_usd": 2400,
+        "tugs_usd": 4800,
+        "stevedoring_usd_per_mt": 5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -2054,35 +2054,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 17000,
-        "pilotage_usd": 9200,
-        "tugs_usd": 7900,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 8500,
+        "pilotage_usd": 1500,
+        "tugs_usd": 3200,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 31000,
-        "pilotage_usd": 16700,
-        "tugs_usd": 14300,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 15500,
+        "pilotage_usd": 2800,
+        "tugs_usd": 5700,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 46500,
-        "pilotage_usd": 25000,
-        "tugs_usd": 21400,
+        "port_dues_usd": 23300,
+        "pilotage_usd": 4200,
+        "tugs_usd": 8600,
         "stevedoring_usd_per_mt": 5.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -2093,35 +2093,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 17600,
-        "pilotage_usd": 9500,
-        "tugs_usd": 8100,
+        "port_dues_usd": 8800,
+        "pilotage_usd": 1600,
+        "tugs_usd": 3200,
         "stevedoring_usd_per_mt": 6.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 32000,
-        "pilotage_usd": 17300,
-        "tugs_usd": 14700,
+        "port_dues_usd": 16000,
+        "pilotage_usd": 2900,
+        "tugs_usd": 5900,
         "stevedoring_usd_per_mt": 6.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 48000,
-        "pilotage_usd": 26000,
-        "tugs_usd": 22000,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 24000,
+        "pilotage_usd": 4300,
+        "tugs_usd": 8800,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -2132,35 +2132,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 23700,
-        "pilotage_usd": 12800,
-        "tugs_usd": 10900,
-        "stevedoring_usd_per_mt": 7.0,
+        "port_dues_usd": 11900,
+        "pilotage_usd": 2100,
+        "tugs_usd": 4400,
+        "stevedoring_usd_per_mt": 7,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 43000,
-        "pilotage_usd": 23200,
-        "tugs_usd": 19800,
-        "stevedoring_usd_per_mt": 7.0,
+        "port_dues_usd": 21500,
+        "pilotage_usd": 3900,
+        "tugs_usd": 7900,
+        "stevedoring_usd_per_mt": 7,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 64500,
-        "pilotage_usd": 34800,
-        "tugs_usd": 29700,
+        "port_dues_usd": 32300,
+        "pilotage_usd": 5800,
+        "tugs_usd": 11900,
         "stevedoring_usd_per_mt": 6.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -2171,35 +2171,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 22600,
-        "pilotage_usd": 12200,
-        "tugs_usd": 10400,
+        "port_dues_usd": 11300,
+        "pilotage_usd": 2000,
+        "tugs_usd": 4200,
         "stevedoring_usd_per_mt": 6.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 41000,
-        "pilotage_usd": 22100,
-        "tugs_usd": 18900,
+        "port_dues_usd": 20500,
+        "pilotage_usd": 3700,
+        "tugs_usd": 7600,
         "stevedoring_usd_per_mt": 6.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 61500,
-        "pilotage_usd": 33200,
-        "tugs_usd": 28400,
-        "stevedoring_usd_per_mt": 6.0,
+        "port_dues_usd": 30800,
+        "pilotage_usd": 5500,
+        "tugs_usd": 11400,
+        "stevedoring_usd_per_mt": 6,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -2210,35 +2210,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 13800,
-        "pilotage_usd": 7400,
-        "tugs_usd": 6300,
+        "port_dues_usd": 6900,
+        "pilotage_usd": 1200,
+        "tugs_usd": 2500,
         "stevedoring_usd_per_mt": 5.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 25000,
-        "pilotage_usd": 13500,
-        "tugs_usd": 11500,
+        "port_dues_usd": 12500,
+        "pilotage_usd": 2300,
+        "tugs_usd": 4600,
         "stevedoring_usd_per_mt": 5.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 37500,
-        "pilotage_usd": 20200,
-        "tugs_usd": 17200,
-        "stevedoring_usd_per_mt": 5.0,
+        "port_dues_usd": 18800,
+        "pilotage_usd": 3400,
+        "tugs_usd": 6900,
+        "stevedoring_usd_per_mt": 5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   },
@@ -2249,35 +2249,35 @@
       {
         "vessel_dwt_min": 1000,
         "vessel_dwt_max": 9999,
-        "port_dues_usd": 14300,
-        "pilotage_usd": 7700,
-        "tugs_usd": 6600,
+        "port_dues_usd": 7200,
+        "pilotage_usd": 1300,
+        "tugs_usd": 2600,
         "stevedoring_usd_per_mt": 5.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 10000,
         "vessel_dwt_max": 40000,
-        "port_dues_usd": 26000,
-        "pilotage_usd": 14000,
-        "tugs_usd": 12000,
+        "port_dues_usd": 13000,
+        "pilotage_usd": 2300,
+        "tugs_usd": 4800,
         "stevedoring_usd_per_mt": 5.5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       },
       {
         "vessel_dwt_min": 40001,
         "vessel_dwt_max": 65000,
-        "port_dues_usd": 39000,
-        "pilotage_usd": 21000,
-        "tugs_usd": 18000,
-        "stevedoring_usd_per_mt": 5.0,
+        "port_dues_usd": 19500,
+        "pilotage_usd": 3500,
+        "tugs_usd": 7200,
+        "stevedoring_usd_per_mt": 5,
         "cargo_type": "general",
         "confidence": "estimated",
-        "source": "manual-2026-06"
+        "source": "recalibrated-2026-06-08 (VDA/DPWorld/Marlo benchmarks)"
       }
     ]
   }
