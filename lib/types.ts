@@ -273,6 +273,8 @@ export interface ParsedVessel {
    * post-processes subject as a backup when LLM omits the field.
    */
   ciiRating?: 'A' | 'B' | 'C' | 'D' | 'E' | null;
+  /** Source of the CII rating — set when lookup was performed. */
+  ciiSource?: 'imo-public' | 'llm-fallback' | 'cache' | null;
   /**
    * Human-readable warning about external-registry verification — e.g.
    * "Name mismatch: Equasis says X, email says Y" or "IMO not found in Equasis registry".
