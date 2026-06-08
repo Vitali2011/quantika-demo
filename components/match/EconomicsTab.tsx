@@ -158,14 +158,16 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
                 }
               : null,
           );
-          if (!bunkerPortManual) {
-            setBunkerPort(data.port);
-          }
+          // NOTE: We intentionally do NOT auto-set bunkerPort here.
+          // The headline voyage TCE must stay on the baseline port (NLRTM/VLSFO) so it
+          // matches the stored LIST TCE (which is always computed at NLRTM). The
+          // recommendation is advisory — shown as savings + comparison table — and the
+          // user can still switch the bunker port manually via the dropdown.
         }
       })
       .catch(() => {});
     return () => { cancelled = true; };
-  }, [recoFrom, recoTo, bunkerGrade, bunkerPortManual, recoDwt, recoSpeed, recoCons, recoVoyageDays]);
+  }, [recoFrom, recoTo, bunkerGrade, recoDwt, recoSpeed, recoCons, recoVoyageDays]);
 
   const handleOverrideSubmit = useCallback(async () => {
     if (!matchDbId) return;
