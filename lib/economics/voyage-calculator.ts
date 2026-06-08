@@ -87,6 +87,12 @@ export interface TCEBreakdown {
   total_costs_usd: number;
   net_voyage_usd: number;
   daily_tce_usd: number;
+  /** B1 — derivation inputs for transparent math waterfall */
+  freight_rate_usd_per_mt: number;
+  quantity_mt: number;
+  duration_days: number;
+  bunker_consumption_mt_per_day: number;
+  bunker_price_usd_per_mt: number;
   applicable: {
     bunker: boolean;
     canal: boolean;
@@ -223,6 +229,12 @@ export function calculateTCE(input: VoyageInput): TCEResult {
     total_costs_usd: totalCosts,
     net_voyage_usd: netVoyage,
     daily_tce_usd: dailyTce,
+    /** B1 — derivation inputs for transparent math waterfall */
+    freight_rate_usd_per_mt: rate,
+    quantity_mt: quantity,
+    duration_days: duration,
+    bunker_consumption_mt_per_day: consumption,
+    bunker_price_usd_per_mt: bunkerPrice,
     applicable: {
       bunker: bunkerApplicable,
       canal: canalApplicable,
