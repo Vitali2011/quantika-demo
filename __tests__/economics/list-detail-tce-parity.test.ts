@@ -6,11 +6,11 @@
  * After this wave: both go through buildCanonicalTceInputs → they agree to the dollar.
  *
  * Extended (fix-list-vs-detail A+B+C): real ports + live bunker + war-risk-exclude row.
+ * Extended (L2): EU + BlackSea parity rows (#856 — ETS + Bosporus wiring).
  */
 import { buildCanonicalTceInputs } from '@/lib/economics/canonical-tce-inputs';
 import { calculateTCE } from '@/lib/economics/voyage-calculator';
-import { computeEstimatedTce } from '@/lib/matching/tce-calculator';
-import { estimateFreightRate } from '@/lib/matching/tce-calculator';
+import { computeEstimatedTce, buildMatchEconomics, estimateFreightRate, deriveEtsCoverage, routeTransitsBosporus, quoteBosporusSafe } from '@/lib/matching/tce-calculator';
 
 interface Sample {
   name: string;
@@ -20,6 +20,19 @@ interface Sample {
   distanceNm: number;
   quantityMt: number;
   cargoType: string;
+}
+
+interface ParitySampleL2 {
+  name: string;
+  loadPort: string;
+  dischargePort: string;
+  vesselDwt: number;
+  speedKts: number;
+  consumptionMtPerDay: number;
+  distanceNm: number;
+  quantityMt: number;
+  cargoType: string;
+  euaPriceEur: number;
 }
 
 const SAMPLES: Sample[] = [
@@ -119,5 +132,70 @@ describe('LIST tce_usd_per_day === DETAIL daily_tce_usd (parity, #819)', () => {
     expect(detail.daily_tce_usd).toBe(list.tce_usd_per_day);
     // Sanity: war-risk IS computed and surfaced in breakdown
     expect(detail.breakdown.war_risk_usd).toBeGreaterThanOrEqual(0);
+  });
+});
+
+describe('L2 parity: EU + BlackSea routes — list (buildMatchEconomics) == detail (route inputs)', () => {
+  const L2_SAMPLES: ParitySampleL2[] = [
+    // Intra-EU: both GR + IT → coverageFactor 1.0, no Bosporus
+    { name: 'Thisvi(GR)→Monfalcone(IT) intra-EU',
+      loadPort: 'Thisvi', dischargePort: 'Monfalcone',
+      vesselDwt: 18930, speedKts: 12, consumptionMtPerDay: 18,
+      distanceNm: 708, quantityMt: 15000, cargoType: 'GRAIN', euaPriceEur: 77 },
+    // BlackSea+EU: Reni(UA) non-EU + Constanta(RO) EU → coverageFactor 0.5, no Bosporus (intra-BS)
+    { name: 'Reni(UA)→Constanta(RO) one-EU + intra-BlackSea',
+      loadPort: 'Reni', dischargePort: 'Constanta',
+      vesselDwt: 5000, speedKts: 12, consumptionMtPerDay: 10,
+      distanceNm: 590, quantityMt: 4000, cargoType: 'GRAIN', euaPriceEur: 77 },
+    // Med→BlackSea+EU: Piraeus(GR, EU) → Constanta(RO, EU) — Bosporus transit + intra-EU coverage 1.0
+    { name: 'Piraeus(GR)→Constanta(RO) Bosporus+intra-EU',
+      loadPort: 'Piraeus', dischargePort: 'Constanta',
+      vesselDwt: 5000, speedKts: 12, consumptionMtPerDay: 10,
+      distanceNm: 650, quantityMt: 4000, cargoType: 'GRAIN', euaPriceEur: 77 },
+  ];
+
+  test.each(L2_SAMPLES)('$name — list and detail agree to the dollar', (s) => {
+    const freight = estimateFreightRate(s.cargoType, s.distanceNm, s.vesselDwt);
+
+    // LIST path: buildMatchEconomics (what pair-analyzer uses for tce_usd_per_day)
+    const list = buildMatchEconomics({
+      cargoType: s.cargoType,
+      distanceNm: s.distanceNm,
+      vesselDwt: s.vesselDwt,
+      quantityMt: s.quantityMt,
+      speedKts: s.speedKts,
+      consumptionMt: s.consumptionMtPerDay,
+      loadPort: s.loadPort,
+      dischargePort: s.dischargePort,
+      calculatedAt: '2026-06-08T00:00:00.000Z',
+      euaPriceEur: s.euaPriceEur,
+    })!;
+
+    // DETAIL path: same exported helpers → same coverage + same canal → same TCE
+    const { originEu, destEu, euLegPercent } = deriveEtsCoverage(s.loadPort, s.dischargePort);
+    const detailCanalUsd = routeTransitsBosporus(s.loadPort, s.dischargePort)
+      ? quoteBosporusSafe(s.vesselDwt)
+      : 0;
+    const detailInputs = buildCanonicalTceInputs({
+      vesselDwt: s.vesselDwt,
+      speedKts: s.speedKts,
+      consumptionMtPerDay: s.consumptionMtPerDay,
+      distanceNm: s.distanceNm,
+      quantityMt: s.quantityMt,
+      freightRateUsdPerMt: freight.rate,
+      bunkerPriceUsdPerMt: DEFAULT_BUNKER_USD_PER_MT,
+      originPort: s.loadPort,
+      destinationPort: s.dischargePort,
+      euaPriceEur: s.euaPriceEur,
+      vesselValueUsd: DEFAULT_VESSEL_VALUE_USD,
+      euLegPercent,
+      originEu,
+      destEu,
+      canalUsd: detailCanalUsd > 0 ? detailCanalUsd : undefined,
+    });
+    // excludeWarRiskFromDailyTce matches buildMatchEconomics (which uses empty ports → $0 war risk)
+    const detail = calculateTCE({ ...detailInputs, excludeWarRiskFromDailyTce: true });
+
+    expect(detail.daily_tce_usd).toBe(list.tceUsdPerDay);
   });
 });

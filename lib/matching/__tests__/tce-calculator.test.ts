@@ -29,6 +29,7 @@ import {
   parseLeadingNumber,
   parseConsumption,
   buildMatchEconomics,
+  deriveEtsCoverage,
 } from '@/lib/matching/tce-calculator';
 
 describe('parseLeadingNumber', () => {
@@ -296,8 +297,16 @@ describe('buildMatchEconomics', () => {
     expect(Number.isFinite(econ!.tceUsdPerDay!)).toBe(true);
 
     const freight = estimateFreightRate(base.cargoType, base.distanceNm, base.vesselDwt);
+    // base route Rotterdam→Hamburg: both EU ports → EU-ETS applies to the full leg.
+    // buildMatchEconomics derives this coverage internally (deriveEtsCoverage); the
+    // reference must pass the SAME ETS inputs or it lags behind by the ETS cost
+    // (~$5.5k/day here: 31117 no-ETS vs 25587 with-ETS). The invariant under test is
+    // path parity, not a fixed number — so mirror the derivation, don't hardcode.
+    const ets = deriveEtsCoverage(base.loadPort, base.dischargePort);
     const tce = computeEstimatedTce(
       freight, base.distanceNm, base.vesselDwt, base.quantityMt, base.speedKts, base.consumptionMt,
+      undefined, undefined, undefined, undefined,
+      ets.euLegPercent, ets.originEu, ets.destEu,
     );
     // Per-day TCE must match the value compute-matches.ts persists to the DB column.
     expect(econ!.tceUsdPerDay).toBe(tce.tce_usd_per_day);

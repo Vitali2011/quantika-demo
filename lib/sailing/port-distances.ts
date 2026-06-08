@@ -110,6 +110,10 @@ const PORT_ALIASES: Record<string, KnownPort> = {
   'reni': 'Izmail',             // Reni is a nearby Danube port, use Izmail as proxy
   'izmail / reni': 'Izmail',
   'izmayil': 'Izmail',
+  // Vague country/region discharge labels → representative Black Sea port (avoids fuzzy mis-resolution).
+  // "Port of Call Ukraine" → stripPortPrefix → "Call Ukraine" → parts → 'ukraine' → Odesa.
+  'ukraine': 'Odesa',
+  'call ukraine': 'Odesa',
   'yuzhny': 'Yuzhny',
   'pivdennyi': 'Yuzhny',        // Ukrainian name for Yuzhny port
   'pivdenniy': 'Yuzhny',
@@ -1180,13 +1184,15 @@ function fuzzyMatchPort(query: string): string | null {
 /**
  * Extract parenthetical hint tokens from a raw port name.
  * Example: "Hereke (Marmara)" → ["marmara"]; "Bay of Biscay (Bayonne/Bilbao range)" → ["bayonne", "bilbao"].
- * Filters out 2-letter country codes (e.g. "TR", "EG") and noise words ("range", "cluster", "region", "area").
+ * Filters out 2-letter country codes (e.g. "TR", "EG") and noise words ("range", "cluster", "region", "area",
+ * "port", "unspecified") — the last two appear in broker vague descriptors like "(port unspecified)" and
+ * must not be used as port-name hints (they fuzzy-match "Portland" via fuzzysort prefix matching).
  */
 function extractParenHints(raw: string): string[] {
   const hints: string[] = [];
   const pat = /\(([^)]+)\)/g;
   let m: RegExpExecArray | null;
-  const noise = /\b(range|cluster|region|area)\b/gi;
+  const noise = /\b(range|cluster|region|area|port|unspecified)\b/gi;
   while ((m = pat.exec(raw)) !== null) {
     const content = m[1].replace(noise, '').trim();
     if (!content) continue;
@@ -1215,6 +1221,19 @@ export function normalizePortName(raw: string | null | undefined): string | null
     const entry = portMaster.byUnlocode(trimmedRaw);
     if (entry?.name) return normalizePortName(entry.name);
   }
+
+  // Early vague-Ukraine guard: "Port of Call, Ukraine (unspecified)" is a broker
+  // shorthand that stripCountry/stripPortPrefix degrades to 'Call' → Callao (Peru).
+  // Catch it here before stripping removes the country token.
+  const lowerRaw = trimmedRaw.toLowerCase();
+  if (lowerRaw.includes('ukraine') && /port[\s-]*of[\s-]*call|unspecified/i.test(raw)) {
+    return 'Odesa';
+  }
+
+  // Vague-unknown descriptor guard (mirrors resolveVaguePort UNKNOWN_RE).
+  // "Port of Call (unspecified)" strips to "Call" → fuzzysort prefix-matches "callao" → Callao (Peru).
+  // Return null here so the fuzzy path never fires; caller should use resolveVaguePort for vague strings.
+  if (/\b(port\s+of\s+call|tbs|to\s+be\s+specified|unnamed)\b/i.test(trimmedRaw)) return null;
 
   // Capture parenthetical hints BEFORE stripping (used as fallback if primary name fails)
   const parenHints = extractParenHints(raw);

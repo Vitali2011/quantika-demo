@@ -130,6 +130,14 @@ describe('normalizePortName', () => {
   it('handles multi-port ranges by taking first', () => {
     expect(normalizePortName('Bay of Biscay (Bayonne/Bilbao range)')).toBe('Bayonne');
   });
+
+  it('"Port of Call, Ukraine (unspecified)" resolves to Odesa (vague-ukraine guard)', () => {
+    expect(normalizePortName('Port of Call, Ukraine (unspecified)')).toBe('Odesa');
+  });
+
+  it('"Port of Call, Ukraine" (no parenthetical) resolves to Odesa', () => {
+    expect(normalizePortName('Port of Call, Ukraine')).toBe('Odesa');
+  });
 });
 
 describe('getPortDistance', () => {
@@ -194,6 +202,12 @@ describe('getPortDistance', () => {
     // (No way to construct this with current 15 ports — all have coords.
     //  Phase 5 with JSON-loaded ports may have null-coord entries.)
     expect(getPortDistance('Karasu', 'Karasu')).not.toBeNull();
+  });
+
+  it('Iskenderun → "Port of Call, Ukraine (unspecified)" < 2000nm (not 7811nm Callao)', () => {
+    const d = getPortDistance('Iskenderun', 'Port of Call, Ukraine (unspecified)');
+    expect(d).not.toBeNull();
+    expect(d!.nm).toBeLessThan(2000);
   });
 });
 
@@ -1020,5 +1034,64 @@ describe('getPortDistance — Phase D1 hand-curated corridor pairs', () => {
     it('Odesa → Vasto = Vasto → Odesa', () => {
       expect(getPortDistance('Odesa', 'Vasto')).toEqual(getPortDistance('Vasto', 'Odesa'));
     });
+  });
+});
+
+describe('vague Ukraine discharge resolves to Black-Sea-plausible distance', () => {
+  it('Iskenderun → "Port of Call Ukraine" resolves to a Black-Sea-plausible distance (< 1500nm), not 7811', () => {
+    const d = getPortDistance('Iskenderun', 'Port of Call Ukraine');
+    expect(d).not.toBeNull();
+    expect(d!.nm).toBeGreaterThan(400);   // real Iskenderun→Odesa ≈ 760nm
+    expect(d!.nm).toBeLessThan(1500);     // hard ceiling — 7811 is the bug
+  });
+
+  it('"Ukraine" alone resolves to a Black-Sea representative port', () => {
+    expect(normalizePortName('Ukraine')).toBe('Odesa');
+  });
+});
+
+describe('vague-unknown port strings do not fuzzy-match distant real ports (fix-l2-r5)', () => {
+  // Root bug: "Port of Call (unspecified)" → strips to "Call" → fuzzysort prefix-matches
+  // "callao" (Callao, Peru) → Damietta↔Callao = 7688nm in the MAIN match bucket.
+  it('normalizePortName("Port of Call (unspecified)") → null, not Callao', () => {
+    expect(normalizePortName('Port of Call (unspecified)')).toBeNull();
+  });
+
+  it('normalizePortName("Port of Call") → null, not Callao', () => {
+    expect(normalizePortName('Port of Call')).toBeNull();
+  });
+
+  // Root bug: "Greece (port unspecified)" → paren hint "port" → fuzzysort prefix-matches
+  // "portland" → getPortDistance(Iskenderun, Portland) = 5105nm.
+  it('normalizePortName("Greece (port unspecified)") → null, not Portland', () => {
+    expect(normalizePortName('Greece (port unspecified)')).toBeNull();
+  });
+
+  it('normalizePortName("Egypt (port unspecified)") → null, not Portland', () => {
+    expect(normalizePortName('Egypt (port unspecified)')).toBeNull();
+  });
+
+  // Behavioral: vague unknown discharge → getPortDistance returns null (no bogus 7000+nm distance)
+  it('getPortDistance("Damietta", "Port of Call (unspecified)") → null (was 7688nm via Callao)', () => {
+    expect(getPortDistance('Damietta', 'Port of Call (unspecified)')).toBeNull();
+  });
+
+  it('getPortDistance("Iskenderun", "Greece (port unspecified)") → not 5105nm (was Portland via paren-hint "port")', () => {
+    const d = getPortDistance('Iskenderun', 'Greece (port unspecified)');
+    // Before fix: paren hint "port" → fuzzy → Portland → 5105nm (wrong continent).
+    // After fix: "port" is noise word, hint discarded; centroid fallback gives ~600nm (correct region).
+    expect(d?.nm ?? 0).toBeLessThan(4000);
+  });
+
+  // Regression: Ukraine-specific guard still works (must come before the UNKNOWN_RE guard)
+  it('"Port of Call, Ukraine (unspecified)" still resolves to Odesa (Ukraine guard unchanged)', () => {
+    expect(normalizePortName('Port of Call, Ukraine (unspecified)')).toBe('Odesa');
+  });
+
+  // Regression: real port name lookups still work (direct alias + fuzzy not broken by new guards)
+  it('real port names with aliases still resolve correctly', () => {
+    expect(normalizePortName('Aliaga')).toBe('Aliaga');
+    expect(normalizePortName('Odessa')).toBe('Odesa');          // alias → Odesa
+    expect(normalizePortName('Novorossisk')).toBe('Novorossiysk'); // alias → Novorossiysk
   });
 });

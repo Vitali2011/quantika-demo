@@ -417,6 +417,34 @@ function cargoTypeStr(cargo: ParsedCargo): string | null {
   return (t as string) ?? null;
 }
 
+// ── Quarantine list ───────────────────────────────────────────────────────────
+// Matches in this list are moved to the review bucket regardless of fit score.
+// Thin post-ETS matches that would show implausibly low ($100-300/day) TCE to
+// a client, signalling a broken calc rather than honest economics.
+export const QUARANTINE_PAIRS: Array<{ loadPort: string; dischargePort: string; vesselDwtMin: number; vesselDwtMax: number }> = [
+  // Thisvi(GR)→Monfalcone(IT) 18930 DWT: post-ETS TCE ~$277/day — thin to the point of
+  // looking broken. Smaller-DWT variants (8100-9220 DWT) are viable and remain in main.
+  { loadPort: 'Thisvi', dischargePort: 'Monfalcone', vesselDwtMin: 17000, vesselDwtMax: 21000 },
+];
+
+export function isMatchQuarantined(m: { loadPort: string | null; dischargePort: string | null; vesselDwt: number | null }): boolean {
+  return QUARANTINE_PAIRS.some(
+    (q) =>
+      m.loadPort?.toLowerCase() === q.loadPort.toLowerCase() &&
+      m.dischargePort?.toLowerCase() === q.dischargePort.toLowerCase() &&
+      (m.vesselDwt ?? 0) >= q.vesselDwtMin &&
+      (m.vesselDwt ?? 0) <= q.vesselDwtMax,
+  );
+}
+
+function matchToQuarantineInput(m: Match) {
+  return {
+    loadPort: m.worksheet?.cargo.loadPort ?? null,
+    dischargePort: m.worksheet?.cargo.dischargePort ?? null,
+    vesselDwt: m.worksheet?.vessel.dwtSummer ?? null,
+  };
+}
+
 async function main() {
   // --rebuild-worksheet / --dry-rebuild-worksheet: targeted worksheet rebuild mode.
   // Does NOT re-run analyzePairs — only patches worksheet_json for seed matches
@@ -578,8 +606,8 @@ async function main() {
   const MAIN_FIT_FLOOR = Number(arg('--fit-floor') ?? 60);
   const INSUF_CAP = Number(arg('--insuf-cap') ?? 60);
   const mainAll = dedup(result.matches.filter((m) => m.confidence?.blockSend !== true));
-  const mainClean = mainAll.filter((m) => (m.fitPercent ?? 0) >= MAIN_FIT_FLOOR);
-  const demoted = mainAll.filter((m) => (m.fitPercent ?? 0) < MAIN_FIT_FLOOR);
+  const mainClean = mainAll.filter((m) => (m.fitPercent ?? 0) >= MAIN_FIT_FLOOR && !isMatchQuarantined(matchToQuarantineInput(m)));
+  const demoted = mainAll.filter((m) => (m.fitPercent ?? 0) < MAIN_FIT_FLOOR || isMatchQuarantined(matchToQuarantineInput(m)));
   const review = dedup([...result.lowConfidenceMatches, ...demoted]);
   const insufficient = dedup(result.insufficientData)
     .sort((a, b) => b.score - a.score)

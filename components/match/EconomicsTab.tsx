@@ -327,6 +327,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
           cargo: core.cargo,
           durationDays: core.durationDays,
           euaPriceEur: core.euaPriceEur,
+          includeEuETS: true,   // parity: let route auto-derive EU coverage (same as stored match path)
           bunkerPort,
           bunkerGrade,
           // Only include bunkerPriceUsdPerMt when user-entered; absent → API auto-resolves

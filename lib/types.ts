@@ -65,6 +65,10 @@ export interface EconomicsBreakdown {
   warRiskZonesBallast?: string[];
   /** Laden + ballast totalPremiumUsd. Reflected in EconomicsResult.totalUsd. */
   warRiskTotalCombined?: number;
+  /** Canal dues (Suez + Bosporus combined, USD). Zero if no canal transit. */
+  canal_usd?: number;
+  /** EU ETS cost in USD (converted from EUR). Zero if non-EU route. */
+  ets_usd?: number;
 }
 
 export interface EconomicsResult {

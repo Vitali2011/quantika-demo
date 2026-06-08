@@ -20,6 +20,7 @@ import { getStore } from '@/lib/session-store';
 import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
 import { getLatestEuaPrice } from '@/lib/market/eua-repository';
 import { isEuCountry } from '@/lib/validation/sanctions';
+import { routeTransitsBosporus, quoteBosporusSafe } from '@/lib/matching/tce-calculator';
 
 const LOCODE_RE = /^[A-Za-z]{5}$/;
 
@@ -230,7 +231,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     approximatePorts.push({ side: 'destination', input: data.route.destinationPort, resolvedTo: destinationResolved.portName });
   }
 
-  const canalUsd = resolveCanalUsd(data);
+  let canalUsd = resolveCanalUsd(data);
+  // Auto-derive Bosporus dues when body.canalUsd is absent (parity with stored match path).
+  // Suez is left to explicit body.canalUsd / viaSuez to avoid double-charge on existing callers.
+  if (typeof data.canalUsd !== 'number' && !data.route.viaSuez && !data.route.viaCanal) {
+    if (routeTransitsBosporus(originResolved.portName, destinationResolved.portName)) {
+      canalUsd += quoteBosporusSafe(data.vessel.dwt);
+    }
+  }
   const daUsd = resolveDaUsd(data, originResolved, destinationResolved);
 
   // Resolve distance (explicit or auto-resolve if flag enabled)
