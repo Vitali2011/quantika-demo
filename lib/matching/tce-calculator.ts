@@ -4,8 +4,15 @@ import { buildCanonicalTceInputs } from '@/lib/economics/canonical-tce-inputs';
 import { quoteSuez } from '@/lib/economics/canals/index';
 import { quoteBosporus } from '@/lib/economics/canals/bosporus';
 import { resolvePort } from '@/lib/ports/resolve';
+import { resolveVaguePort } from '@/lib/ports/resolve-vague';
 import { isEuCountry } from '@/lib/validation/sanctions';
 import type { EconomicsResult } from '@/lib/types';
+import { parseLeadingNumber, parseConsumption, DEFAULT_CONSUMPTION_MT_PER_DAY } from './parse-vessel-fields';
+
+// Re-export pure parsers for existing server callers (e.g. session-buckets.ts).
+// They live in parse-vessel-fields.ts (no server deps) so client components can
+// import them without pulling better-sqlite3 into the client bundle.
+export { parseLeadingNumber, parseConsumption };
 
 // Ballpark base freight rates (USD/mt) per cargo class
 const BASE_RATES: Record<string, number> = {
@@ -30,7 +37,6 @@ const BASE_RATE_FALLBACK = 22;
 const DEFAULT_BUNKER_USD_PER_MT = 600;
 const DEFAULT_EUA_EUR = 65;
 const DEFAULT_SPEED_KTS = 12;
-const DEFAULT_CONSUMPTION_MT_PER_DAY = 25;
 const DEFAULT_VESSEL_VALUE_USD = 22_000_000;
 
 /**
@@ -53,57 +59,6 @@ export interface TceEstimate {
   freight_rate_source: FreightRateSource;
   /** Full deterministic voyage breakdown (additive, spec L2 #5). */
   breakdown: TCEBreakdown;
-}
-
-// Parse a leading number from strings like "12.5 knots", "25 mt/day", a raw
-// number (LLM-parsed fields can arrive as numbers, not strings), or a
-// ConfidenceField object ({ value, confidence, source_text }). Real/demo parsed
-// data stores speed/consumption as any of these despite the string typing, so
-// tolerate all rather than throw on `.match`.
-export function parseLeadingNumber(s: unknown): number {
-  if (s == null) return 0;
-  if (typeof s === 'number') return Number.isFinite(s) ? s : 0;
-  if (typeof s === 'object' && 'value' in (s as Record<string, unknown>)) {
-    return parseLeadingNumber((s as { value: unknown }).value);
-  }
-  if (typeof s !== 'string') return 0;
-  const m = s.match(/(\d+(?:\.\d+)?)/);
-  return m ? Number(m[1]) : 0;
-}
-
-// Matches an explicit MT/D unit: "3.7MT/D", "14 mt/day", "25 t/day"
-const MT_PER_DAY_RE = /(\d+(?:\.\d+)?)\s*(?:MT\/?D|mt\/?day|t\/day)/i;
-// Fuel-grade tokens that appear before the actual consumption figure
-const FUEL_GRADE_RE = /\b(?:IFO|VLSFO|LSMGO|MGO|HFO|HSFO)\s*\d+(?:\/\d+)?\b|M\/E|A\/E/gi;
-
-/**
- * Parse a fuel-consumption field, skipping fuel-grade tokens like "IFO 180".
- *
- * parseLeadingNumber grabs the first digit sequence, which is the grade number
- * (e.g. 180 from "IFO 180 M/E 3.7MT/D") rather than the actual MT/day figure.
- * This function looks for an explicit MT/D unit first; if absent it strips grade
- * tokens before falling back to a leading-number heuristic. Strings with no
- * recoverable consumption figure return DEFAULT_CONSUMPTION_MT_PER_DAY.
- */
-export function parseConsumption(s: unknown): number {
-  if (s == null) return DEFAULT_CONSUMPTION_MT_PER_DAY;
-  if (typeof s === 'number') return Number.isFinite(s) && s > 0 ? s : DEFAULT_CONSUMPTION_MT_PER_DAY;
-  if (typeof s === 'object' && 'value' in (s as Record<string, unknown>)) {
-    return parseConsumption((s as { value: unknown }).value);
-  }
-  if (typeof s !== 'string') return DEFAULT_CONSUMPTION_MT_PER_DAY;
-  const str = s.trim();
-  if (!str) return DEFAULT_CONSUMPTION_MT_PER_DAY;
-
-  const mtd = str.match(MT_PER_DAY_RE);
-  if (mtd) return Number(mtd[1]);
-
-  // Strip fuel-grade tokens then try a plain leading number
-  const stripped = str.replace(FUEL_GRADE_RE, ' ').replace(/\s+/g, ' ').trim();
-  const m = stripped.match(/(\d+(?:\.\d+)?)/);
-  if (m) return Number(m[1]);
-
-  return DEFAULT_CONSUMPTION_MT_PER_DAY;
 }
 
 // Distance multiplier for Tier-3 fallback. Short coastal routes (<1000nm) firmed
@@ -202,6 +157,18 @@ function _classifyPortBasin(port: string | null | undefined): _PortBasin {
   if (/constanta|varna|burgas|novorossiysk|novorossiisk|odessa|odesa|chornomorsk|mykolaiv|mykolayiv|kherson|sevastopol|yuzhne|yuzhny|pivdennyi|reni|izmail|poti|batumi|giurgiulest|karasu/.test(p)) return 'blacksea';
   if (/ravenna|marghera|venice|trieste|genoa|la.?spezia|livorno|naples|taranto|bari|brindisi|catania|palermo|messina|augusta|trapani|pozzallo|bizerte|skikda|oran|algiers|tunis|sfax|bejaia|annaba|casablanca|jorf|safi|tangier|tanger|agadir|barcelona|valencia|algeciras|gibraltar|marseille|toulon|sete|fos|savona|vado|civitavecchia|piraeus|thessaloniki|izmir|aliaga|iskenderun|mersin|antalya|derince|izmit|istanbul|marmara|bandirma|suez|port.?said|alexandria|damietta|limassol|larnaca|haifa|ashdod|beirut|lattakia|tartus/.test(p)) return 'med';
   if (/rotterdam|amsterdam|antwerp|zeebrugge|ghent|dunkirk|le.?havre|rouen|brest|la.?pallice|bayonne|bilbao|santander|gijon|aviles|vigo|oporto|porto|lisbon|setubal|figueira|hamburg|bremerhaven|bremen|wilhelmshaven|emden|rostock|lubeck|gdansk|gdynia|szczecin|felixstowe|southampton|london|tilbury|teesport|sunderland|newcastle|immingham|grimsby|hull|liverpool|birkenhead|belfast|dublin|greenore|cork|oslo|gothenburg|goteborg|stavanger|bergen|haugesund|halsvik|aarhus|copenhagen|helsingborg|stockholm|helsinki|tallinn|riga|klaipeda/.test(p)) return 'atlantic';
+  // Fallback: try resolving the port name to its canonical name and re-classify.
+  // This handles aliases like "Nemrut Bay" → resolves to "Aliaga" (med),
+  // "Hereke" → "Marmara" (med), so canal detection works on vague port strings.
+  const resolved = resolvePort(port);
+  if (resolved && resolved.portName !== port) {
+    return _classifyPortBasin(resolved.portName);
+  }
+  // Second fallback: try vague descriptor resolution ("Eastern Central Greece" → Piraeus).
+  const vague = resolveVaguePort(port);
+  if (vague && vague.portName !== port) {
+    return _classifyPortBasin(vague.portName);
+  }
   return 'unknown';
 }
 
@@ -258,12 +225,14 @@ function _quoteBosporusSafe(vesselDwt: number): number {
 export const classifyPortBasin = _classifyPortBasin;
 export const routeTransitsBosporus = _routeTransitsBosporus;
 export const quoteBosporusSafe = _quoteBosporusSafe;
+export const routeTransitsSuez = _routeTransitsSuez;
+export const quoteSuezSafe = _quoteSuezSafe;
 
 /** Derive EU-ETS coverage flags from port names. Used by both the stored match path
  *  and the detail route to guarantee identical euLegPercent/originEu/destEu. */
 export function deriveEtsCoverage(loadPort?: string | null, dischargePort?: string | null) {
-  const rl = loadPort ? resolvePort(loadPort) : null;
-  const rd = dischargePort ? resolvePort(dischargePort) : null;
+  const rl = loadPort ? (resolvePort(loadPort) ?? resolveVaguePort(loadPort)) : null;
+  const rd = dischargePort ? (resolvePort(dischargePort) ?? resolveVaguePort(dischargePort)) : null;
   const originEu = isEuCountry(rl?.country ?? null);
   const destEu = isEuCountry(rd?.country ?? null);
   return { originEu, destEu, euLegPercent: (originEu || destEu) ? 1.0 : 0 };

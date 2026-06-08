@@ -12,6 +12,7 @@ import { estimateVoyageDays } from '@/lib/economics/voyage-days';
 import { buildCanonicalTceInputs } from '@/lib/economics/canonical-tce-inputs';
 import { estimateVesselValueUsd } from '@/lib/economics/vessel-value';
 import { resolveConsMtPerDay } from '@/lib/economics/vessel-consumption';
+import { parseConsumption } from '@/lib/matching/parse-vessel-fields';
 import { freightBadge, FREIGHT_BADGE_CLASSES } from '@/lib/matching/freight-badge';
 import type { WarRiskBreakdown } from '@/lib/economics/war-risk';
 import type { TCEBreakdown } from '@/lib/economics/voyage-calculator';
@@ -80,7 +81,6 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
   const [resetting, setResetting] = useState(false);
   const [bunkerPort, setBunkerPort] = useState<BunkerPort | null>('NLRTM');
   const [bunkerGrade, setBunkerGrade] = useState<BunkerGrade>('VLSFO');
-  const [bunkerPortManual, setBunkerPortManual] = useState(false);
   const [bunkerReco, setBunkerReco] = useState<{ port: string; priceUsdPerMt: number; recommendation: string } | null>(null);
   const [bunkerFallback, setBunkerFallback] = useState<string | null>(null);
   const [bunkerCandidates, setBunkerCandidates] = useState<BunkerCandidateResult[]>([]);
@@ -115,7 +115,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
   const recoTo = cargo?.destinationPort?.value;
   const recoDwt = vessel?.dwtSummer?.value ?? 0;
   const recoSpeed = parseLeadingNumber(vessel?.speedLaden);
-  const recoCons = resolveConsMtPerDay(parseLeadingNumber(vessel?.consumption), recoDwt);
+  const recoCons = resolveConsMtPerDay(parseConsumption(vessel?.consumption, 0), recoDwt);
   const recoVoyageDays = useMemo(
     () => estimateVoyageDays(routeDistanceNm, recoSpeed),
     [routeDistanceNm, recoSpeed],
@@ -157,14 +157,16 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
                 }
               : null,
           );
-          if (!bunkerPortManual) {
-            setBunkerPort(data.port);
-          }
+          // NOTE: We intentionally do NOT auto-set bunkerPort here.
+          // The headline voyage TCE must stay on the baseline port (NLRTM/VLSFO) so it
+          // matches the stored LIST TCE (which is always computed at NLRTM). The
+          // recommendation is advisory — shown as savings + comparison table — and the
+          // user can still switch the bunker port manually via the dropdown.
         }
       })
       .catch(() => {});
     return () => { cancelled = true; };
-  }, [recoFrom, recoTo, bunkerGrade, bunkerPortManual, recoDwt, recoSpeed, recoCons, recoVoyageDays]);
+  }, [recoFrom, recoTo, bunkerGrade, recoDwt, recoSpeed, recoCons, recoVoyageDays]);
 
   const handleOverrideSubmit = useCallback(async () => {
     if (!matchDbId) return;
@@ -232,7 +234,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
     const destination = cargo?.destinationPort?.value ?? '';
     const dwt = vessel?.dwtSummer?.value ?? 0;
     const speedKts = parseLeadingNumber(vessel?.speedLaden);
-    const rawConsumption = parseLeadingNumber(vessel?.consumption);
+    const rawConsumption = parseConsumption(vessel?.consumption, 0);
     const consumption = resolveConsMtPerDay(rawConsumption, dwt);
     const quantityMt = resolveCargoWeight(cargo ?? null) ?? 0;
 
@@ -282,7 +284,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
   const voyageInputData = useMemo(() => {
     const dwt = vessel?.dwtSummer?.value ?? 0;
     const speedKts = parseLeadingNumber(vessel?.speedLaden);
-    const rawConsumptionMtPerDay = parseLeadingNumber(vessel?.consumption);
+    const rawConsumptionMtPerDay = parseConsumption(vessel?.consumption, 0);
     const consumptionMtPerDay = resolveConsMtPerDay(rawConsumptionMtPerDay, dwt);
     const originPort = cargo?.originPort?.value ?? '';
     const destinationPort = cargo?.destinationPort?.value ?? '';
@@ -329,9 +331,14 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
         })
       : null;
 
+    const openPosition = vessel?.openPosition?.value ?? undefined;
     const input = core
       ? {
-          vessel: core.vessel,
+          vessel: {
+            ...core.vessel,
+            // Pass open position for ballast-leg canal detection (parity with stored-match path).
+            ...(openPosition ? { openPosition } : {}),
+          },
           route: core.route,
           cargo: core.cargo,
           durationDays: core.durationDays,
@@ -487,7 +494,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
         <div className="flex gap-2 mt-2">
           <select
             value={bunkerPort ?? ''}
-            onChange={(e) => { setBunkerPort(e.target.value); setBunkerPortManual(true); }}
+            onChange={(e) => { setBunkerPort(e.target.value); }}
             aria-label="Bunker port"
             className="flex-1 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-400"
           >

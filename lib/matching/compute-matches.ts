@@ -9,6 +9,7 @@ import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { parseLaycan } from '@/lib/sailing/date-parsing';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 import { computeStoredMatchEconomics } from '@/lib/matching/stored-match-economics';
+import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
 
 /**
  * Compute matches for a session and persist them to the DB.
@@ -56,6 +57,15 @@ export async function computeAndPersistMatches(
   const cargoMap = new Map(cargos.map((c) => [`${c.emailId}|${c.itemIndex}`, c]));
   const vesselMap = new Map(vessels.map((v) => [`${v.emailId}|${v.itemIndex}`, v]));
 
+  // Live bunker price (NLRTM/VLSFO) for list↔detail parity. Resilient to a missing
+  // bunker_prices table (e.g. minimal test DBs) — falls through to the helper default.
+  let bunkerPriceUsdPerMt: number | undefined;
+  try {
+    bunkerPriceUsdPerMt = getLatestBunkerPrice(db, 'NLRTM', 'VLSFO')?.price_usd_per_mt;
+  } catch {
+    bunkerPriceUsdPerMt = undefined;
+  }
+
   for (const m of matches) {
     const cargo = cargoMap.get(`${m.cargoEmailId}|${m.cargoItemIndex}`);
     const vessel = vesselMap.get(`${m.vesselEmailId}|${m.vesselItemIndex}`);
@@ -74,7 +84,7 @@ export async function computeAndPersistMatches(
     // Economics via shared helper — includes port-DA, canal, and war-risk convention
     // (excludeWarRiskFromDailyTce:true) so stored TCE matches the detail page.
     const eco = cargo && vessel
-      ? computeStoredMatchEconomics({ cargo, vessel, db })
+      ? computeStoredMatchEconomics({ cargo, vessel, db, bunkerPriceUsdPerMt })
       : { tce_usd_per_day: null, freight_rate_usd_per_mt: null, freight_rate_source: null };
     const tce_usd_per_day = eco.tce_usd_per_day;
     const freight_rate_usd_per_mt = eco.freight_rate_usd_per_mt;

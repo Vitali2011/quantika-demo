@@ -20,7 +20,8 @@ import { getStore } from '@/lib/session-store';
 import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
 import { getLatestEuaPrice } from '@/lib/market/eua-repository';
 import { isEuCountry } from '@/lib/validation/sanctions';
-import { routeTransitsBosporus, quoteBosporusSafe } from '@/lib/matching/tce-calculator';
+import { routeTransitsBosporus, quoteBosporusSafe, routeTransitsSuez, quoteSuezSafe } from '@/lib/matching/tce-calculator';
+import { getPortDistance } from '@/lib/sailing/port-distances';
 
 const LOCODE_RE = /^[A-Za-z]{5}$/;
 
@@ -63,6 +64,8 @@ const VoyageInputSchema = z.object({
         z.enum(['bulker', 'tanker', 'container', 'general', 'mpp']),
       )
       .optional(),
+    /** Open position for ballast-leg canal detection. Optional — absent means no ballast canal. */
+    openPosition: z.string().optional(),
   }),
   route: z.object({
     originPort: z.string(),
@@ -232,11 +235,31 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   let canalUsd = resolveCanalUsd(data);
-  // Auto-derive Bosporus dues when body.canalUsd is absent (parity with stored match path).
-  // Suez is left to explicit body.canalUsd / viaSuez to avoid double-charge on existing callers.
+  // Auto-derive Bosporus + Suez dues (laden and ballast legs) when no explicit canal inputs are
+  // provided — parity with the stored-match path. Explicit canalUsd/viaSuez/viaCanal skip this
+  // block (no double-charge).
   if (typeof data.canalUsd !== 'number' && !data.route.viaSuez && !data.route.viaCanal) {
     if (routeTransitsBosporus(originResolved.portName, destinationResolved.portName)) {
       canalUsd += quoteBosporusSafe(data.vessel.dwt);
+    }
+    if (routeTransitsSuez(originResolved.portName, destinationResolved.portName)) {
+      canalUsd += quoteSuezSafe(data.vessel.dwt, true);
+    }
+    // Ballast leg canal: open position → load port (parity with stored-match path).
+    // Guard on a resolvable ballast distance > 0 and dwt > 0, mirroring buildMatchEconomics.
+    const openPosition = data.vessel.openPosition;
+    if (openPosition && data.vessel.dwt > 0) {
+      const openR = resolvePortOrPassthrough(openPosition);
+      const openName = openR?.port.portName ?? openPosition;
+      const ballastLeg = getPortDistance(openName, originResolved.portName);
+      if (ballastLeg && ballastLeg.nm > 0) {
+        if (routeTransitsBosporus(openName, originResolved.portName)) {
+          canalUsd += quoteBosporusSafe(data.vessel.dwt);
+        }
+        if (routeTransitsSuez(openName, originResolved.portName)) {
+          canalUsd += quoteSuezSafe(data.vessel.dwt, false); // ballast = unladen
+        }
+      }
     }
   }
   const daUsd = resolveDaUsd(data, originResolved, destinationResolved);
