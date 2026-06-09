@@ -578,3 +578,57 @@ describe('computeFitBreakdown — charterer credit-tier penalty', () => {
     expect(fb.components).toHaveLength(10);
   });
 });
+
+describe('#865 — fit-breakdown uses nominal cargo weight for display scoring', () => {
+  function cargoWithRange(nominal: number, max: number): ParsedCargo {
+    return makeCargo({
+      weightMt: { value: nominal, confidence: 'confirmed' },
+      weightMtMin: Math.round(nominal * 0.98),
+      weightMtMax: max,
+    });
+  }
+
+  it('class-fit rationale shows nominal weight (2720), not weightMtMax (2774)', () => {
+    const input = {
+      cargo: cargoWithRange(2720, 2774),
+      vessel: makeVessel({ dwtSummer: { value: 3178, confidence: 'confirmed' }, dwcc: null, grainCapacity: 7000 }),
+      readiness: READY_IDEAL,
+      sanctions: SANCTIONS_OK,
+      hardFilters: HF_PASS,
+      refYear: 2026,
+    };
+    const fit = computeFitBreakdown(input);
+    const classFit = fit.components.find(c => c.factor === 'classFit');
+    expect(classFit?.rationale).toContain('2720');
+    expect(classFit?.rationale).not.toContain('2774');
+  });
+
+  it('divergence tracks per-match option % (10% case): nominal 2800 not 3080', () => {
+    const input = {
+      cargo: cargoWithRange(2800, 3080),
+      // Vessel DWT 3200 so the vessel-dwt number never collides with the max weight (3080)
+      vessel: makeVessel({ dwtSummer: { value: 3200, confidence: 'confirmed' }, dwcc: null, grainCapacity: 7000 }),
+      readiness: READY_IDEAL,
+      sanctions: SANCTIONS_OK,
+      hardFilters: HF_PASS,
+      refYear: 2026,
+    };
+    const fit = computeFitBreakdown(input);
+    const classFit = fit.components.find(c => c.factor === 'classFit');
+    expect(classFit?.rationale).toContain('cargo 2800 mt');
+    expect(classFit?.rationale).not.toContain('cargo 3080 mt');
+  });
+
+  it('keeps worst-case in inputs.cargoWtMax for transparency', () => {
+    const input = {
+      cargo: cargoWithRange(2720, 2774),
+      vessel: makeVessel({ dwtSummer: { value: 3178, confidence: 'confirmed' }, dwcc: null, grainCapacity: 7000 }),
+      readiness: READY_IDEAL,
+      sanctions: SANCTIONS_OK,
+      hardFilters: HF_PASS,
+      refYear: 2026,
+    };
+    const fit = computeFitBreakdown(input);
+    expect(fit.inputs.cargoWtMax).toBe(2774);
+  });
+});
