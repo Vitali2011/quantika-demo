@@ -77,9 +77,9 @@ export type KnownPort = typeof KNOWN_PORTS[number];
 
 /**
  * Aliases map alternative spellings / former names / range phrasing to canonical.
- * Keys must be lowercase; values must be elements of KNOWN_PORTS.
+ * Keys must be lowercase; values are canonical port names (KNOWN_PORTS or port-master.json names).
  */
-const PORT_ALIASES: Record<string, KnownPort> = {
+const PORT_ALIASES: Record<string, string> = {
   // Black Sea
   'karasu': 'Karasu',
   'istanbul': 'Istanbul',
@@ -327,6 +327,9 @@ const PORT_ALIASES: Record<string, KnownPort> = {
   'koh sichang': 'Bangkok',     // Ko Si Chang anchorage — Gulf of Thailand, Bangkok proxy
   'ko sichang': 'Bangkok',
   'ko si chang': 'Bangkok',
+  'koh sri chang': 'Bangkok',   // variant spelling — Gulf of Thailand, Bangkok proxy (portgap)
+  'puerto limon': 'Puerto Limón',   // accent-less broker spelling → existing CRLIO entry (portgap)
+  'puerto limón': 'Puerto Limón',   // self-alias: deterministic round-trip for getPortMaster (portgap)
   // East Asia
   'hong kong': 'HongKong',
   'hongkong': 'HongKong',
