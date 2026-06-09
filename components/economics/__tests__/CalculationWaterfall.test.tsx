@@ -85,7 +85,7 @@ describe('CalculationWaterfall', () => {
     expect(etsNote).toBeInTheDocument();
   });
 
-  it('shows "Чистыми за рейс" with net_voyage_usd', () => {
+  it('shows "Net voyage earnings" with net_voyage_usd', () => {
     render(<CalculationWaterfall breakdown={FIXTURE} />);
     expect(screen.getByTestId('net-voyage')).toHaveTextContent('1,116,340');
   });
