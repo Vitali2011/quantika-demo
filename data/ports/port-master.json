@@ -9778,5 +9778,7 @@
     "aliases": [
       "Yarımca"
     ]
-  }
+  },
+  { "unlocode": "LRMRV", "name": "Monrovia", "country": "LR", "lat": 6.317, "lon": -10.8, "maxDraftM": 11.0, "hasShoreCranes": true, "berthType": "deep-sea", "note": "Liberia, Freeport of Monrovia (portgap)" },
+  { "unlocode": "SARSK", "name": "Ras el Khair", "country": "SA", "lat": 27.033, "lon": 49.083, "maxDraftM": 18.0, "hasShoreCranes": true, "berthType": "terminal", "note": "Saudi Arabian Gulf industrial port (portgap)" }
 ]
