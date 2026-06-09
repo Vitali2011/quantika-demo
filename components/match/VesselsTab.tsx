@@ -142,7 +142,7 @@ export function VesselsTab({ vessel, newCargo }: VesselsTabProps) {
             {vessel.baleCapacity != null && (
               <div>
                 <span className="text-gray-500">Bale Capacity</span>
-                <p className="font-medium">{vessel.baleCapacity.toLocaleString('en-US')} CBM</p>
+                <p className="font-medium">{vessel.baleCapacity.toLocaleString('en-US')} {vessel.grainCapacityUnit?.toUpperCase() ?? 'CBM'}</p>
               </div>
             )}
             {vessel.craneCapacity && (
