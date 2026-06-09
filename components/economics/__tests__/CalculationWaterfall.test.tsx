@@ -3,7 +3,7 @@
  *
  * B2 — CalculationWaterfall presentational component tests.
  *
- * Asserts the approved Russian-label waterfall layout renders correctly:
+ * Asserts the approved English-label waterfall layout renders correctly:
  *   revenue → each cost line (negative) → net voyage → ÷ days → daily TCE.
  */
 import React from 'react';
@@ -40,23 +40,23 @@ const FIXTURE: TCEBreakdown = {
 };
 
 describe('CalculationWaterfall', () => {
-  it('shows "Выручка" section with gross_freight_usd', () => {
+  it('shows "Revenue" section with gross_freight_usd', () => {
     render(<CalculationWaterfall breakdown={FIXTURE} />);
-    expect(screen.getByText(/Выручка за рейс/)).toBeInTheDocument();
+    expect(screen.getByText(/Revenue per voyage/)).toBeInTheDocument();
     // gross freight formatted as $1,500,000
     expect(screen.getByTestId('gross-freight')).toHaveTextContent('1,500,000');
   });
 
-  it('shows bunker cost row with negative value and расход/цена caption', () => {
+  it('shows bunker cost row with negative value and consumption/price caption', () => {
     render(<CalculationWaterfall breakdown={FIXTURE} />);
     const bunkerRow = screen.getByTestId('cost-bunker');
     expect(bunkerRow).toBeInTheDocument();
     // negative format: -$308,000
     expect(bunkerRow).toHaveTextContent('-$308,000');
-    // caption contains расход and цена
+    // caption contains consumption and price
     const caption = screen.getByTestId('bunker-caption');
-    expect(caption.textContent).toMatch(/расход/);
-    expect(caption.textContent).toMatch(/цена/);
+    expect(caption.textContent).toMatch(/consumption/);
+    expect(caption.textContent).toMatch(/price/);
   });
 
   it('shows DA cost row with negative value', () => {
@@ -65,12 +65,12 @@ describe('CalculationWaterfall', () => {
     expect(daRow).toHaveTextContent('-$60,000');
   });
 
-  it('shows war risk row with "не влияет на $/день" caption', () => {
+  it('shows war risk row with "does not affect $/day" caption', () => {
     render(<CalculationWaterfall breakdown={FIXTURE} />);
     const warRow = screen.getByTestId('cost-war-risk');
     expect(warRow).toBeInTheDocument();
     const caption = screen.getByTestId('war-risk-caption');
-    expect(caption.textContent).toMatch(/не влияет на/);
+    expect(caption.textContent).toMatch(/does not affect/);
   });
 
   it('shows canal zero-note when canal is 0', () => {
@@ -90,14 +90,14 @@ describe('CalculationWaterfall', () => {
     expect(screen.getByTestId('net-voyage')).toHaveTextContent('1,116,340');
   });
 
-  it('shows "÷ N дней" with duration_days', () => {
+  it('shows "÷ N days" with duration_days', () => {
     render(<CalculationWaterfall breakdown={FIXTURE} />);
     const durationRow = screen.getByTestId('duration-days');
     expect(durationRow.textContent).toMatch(/20/);
-    expect(durationRow.textContent).toMatch(/дн/);
+    expect(durationRow.textContent).toMatch(/days/);
   });
 
-  it('shows "Заработок в день" with daily_tce_usd', () => {
+  it('shows "Daily TCE" with daily_tce_usd', () => {
     render(<CalculationWaterfall breakdown={FIXTURE} />);
     const tceRow = screen.getByTestId('daily-tce');
     expect(tceRow).toHaveTextContent('55,817');
