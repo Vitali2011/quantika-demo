@@ -128,7 +128,14 @@ function preNormalizeRawVessel(item: RawVesselItem): RawVesselItem {
 
   // CBFT→CBM: grain/bale capacity unit conversion
   for (const k of ['grain_capacity', 'bale_capacity']) {
-    if (k in out) out[k] = convertCbftToCbm(out[k]);
+    if (k in out) {
+      const before = out[k];
+      out[k] = convertCbftToCbm(out[k]);
+      // If ConfidenceField was converted, the value is now CBM → relabel unit defensively
+      if (k === 'grain_capacity' && out[k] !== before && isConfField(out[k])) {
+        out['grain_capacity_unit'] = 'cbm';
+      }
+    }
   }
 
   // BUILT_FROM_DATE: null out when source_text contains a month name

@@ -632,3 +632,26 @@ describe('#865 — fit-breakdown uses nominal cargo weight for display scoring',
     expect(fit.inputs.cargoWtMax).toBe(2774);
   });
 });
+
+describe('#884 — HRC cargo on corrected-capacity YUCATAN vessel is a comfortable volume fit', () => {
+  it('#884: HRC 3000 MT on 3994 CBM vessel: volume component shows comfortable fit, not overflow', () => {
+    // STOWAGE_FACTORS.hrc = 0.45 → 3000 × 0.45 = 1350 m³ / 3994 CBM ≈ 34% → comfortable
+    // Before fix: sf=1.35 → 3000 × 1.35 = 4050 > 3994 → "overflows the holds"
+    const input = {
+      cargo: makeCargo({
+        cargoDescription: { value: 'Hot Rolled Coils (HRC)', confidence: 'confirmed' },
+        weightMt: { value: 3000, confidence: 'confirmed' },
+        weightMtMax: 3000,
+      }),
+      vessel: makeVessel({ grainCapacity: 3994 }),
+      readiness: READY_IDEAL,
+      sanctions: SANCTIONS_OK,
+      hardFilters: HF_PASS,
+      refYear: 2026,
+    };
+    const fit = computeFitBreakdown(input);
+    const vol = fit.components.find(c => c.factor === 'volume');
+    expect(vol?.rationale).not.toContain('overflows');
+    expect(vol?.rationale).toContain('comfortable');
+  });
+});

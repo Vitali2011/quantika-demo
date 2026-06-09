@@ -91,6 +91,8 @@ export const STOWAGE_FACTORS: Record<string, number> = {
   coal:       1.30,
   iron:       0.35,
   steel:      0.45,
+  hrc:        0.45,
+  coil:       0.45,
   scrap:      1.50,
   bauxite:    0.80,
   gypsum:     0.90,

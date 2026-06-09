@@ -191,6 +191,35 @@ describe('STOWAGE_FACTORS', () => {
     expect(STOWAGE_FACTORS.cement).toBeDefined();
     expect(STOWAGE_FACTORS.fertilizer).toBeDefined();
   });
+
+  it('#884: hrc and coil have steel-band stowage factor (~0.45)', () => {
+    expect(STOWAGE_FACTORS.hrc).toBe(0.45);
+    expect(STOWAGE_FACTORS.coil).toBe(0.45);
+  });
+});
+
+describe('#884 — HRC cargo no false overflow', () => {
+  it('HRC 3200 MT on 3994 CBM vessel passes volume check (sf 0.45, not default 1.35)', () => {
+    // Before fix: 3200 × 1.35 = 4320 > 3994 × 1.05 = 4194 → fail
+    // After fix:  3200 × 0.45 = 1440 ≤ 4194 → pass
+    const r = checkVolume({
+      weightMt: 3200,
+      cargoDescription: 'Hot Rolled Coils (HRC)',
+      stowageFactor: null,
+      grainCapacity: 3994,
+    });
+    expect(r.pass).toBe(true);
+  });
+
+  it('#884: "coil" keyword resolves to steel-coil stowage factor, not default 1.35', () => {
+    const r = checkVolume({
+      weightMt: 3200,
+      cargoDescription: 'steel coils',
+      stowageFactor: null,
+      grainCapacity: 3994,
+    });
+    expect(r.pass).toBe(true);
+  });
 });
 
 describe('checkCargoVesselCompat', () => {
