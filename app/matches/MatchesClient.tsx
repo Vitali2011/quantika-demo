@@ -8,6 +8,7 @@ import { LiveStrip } from '@/design-system/patterns/LiveStrip';
 import { MatchToast } from '@/design-system/patterns/MatchToast';
 import { useLiveJobs } from '@/design-system/patterns/useLiveJobs';
 import { useMode } from '@/design-system/patterns/useMode';
+import { fmtTce } from '@/lib/utils/fmt-tce';
 import { filterMatchesByMode } from '@/lib/matching/mode-filter';
 import { useToast } from '@/components/ui/toast';
 import { fmtLaycan, isLaycanExpired } from '@/lib/utils/fmt-laycan';
@@ -75,11 +76,6 @@ function isFreshMatch(m: StoredMatch, now: number): boolean {
 function fmtDwt(v: number | null): string {
   if (v == null) return '—';
   return Math.round(v / 1000) + 'k';
-}
-
-function fmtTce(v: number | null): string {
-  if (v == null) return '—';
-  return '$' + (v / 1000).toFixed(1) + 'k';
 }
 
 
