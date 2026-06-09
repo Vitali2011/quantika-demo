@@ -8,7 +8,7 @@ export interface CiiResult {
   imo: string;
   rating: CiiRating;
   year: number;
-  source: 'imo-public' | 'llm-fallback' | 'cache';
+  source: 'imo-public' | 'llm-fallback';
   fetchedAt: string;
 }
 

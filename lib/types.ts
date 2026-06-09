@@ -274,7 +274,7 @@ export interface ParsedVessel {
    */
   ciiRating?: 'A' | 'B' | 'C' | 'D' | 'E' | null;
   /** Source of the CII rating — set when lookup was performed. */
-  ciiSource?: 'imo-public' | 'llm-fallback' | 'cache' | null;
+  ciiSource?: 'imo-public' | 'llm-fallback' | null;
   /**
    * Human-readable warning about external-registry verification — e.g.
    * "Name mismatch: Equasis says X, email says Y" or "IMO not found in Equasis registry".

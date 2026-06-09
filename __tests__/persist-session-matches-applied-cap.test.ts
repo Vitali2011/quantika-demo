@@ -35,13 +35,23 @@ describe('patchEconomicsComponent — appliedCap guard', () => {
     expect(result.fitPercent).toBeLessThanOrEqual(100);
   });
 
-  it('still applies cap correctly when appliedCap is a real object', () => {
+  it('cap fires and clamps to ceiling when rawSum > ceiling', () => {
+    // scoreEconomics(50000 tce, 50000 dwt) = 18; timing score = 15; rawSum = 33
+    // ceiling 20 < 33 → cap fires → fitPercent must be exactly 20
     const fb = baseFb({
-      appliedCap: { ceiling: 50, reason: 'PSC detention' } as unknown as null,
+      appliedCap: { ceiling: 20, reason: 'PSC detention' } as unknown as null,
     });
-    // economics score + timing = likely >50 → cap should apply
     const result = patchEconomicsComponent(fb, 50000, 50000);
-    expect(result.fitPercent).toBeLessThanOrEqual(50);
+    expect(result.fitPercent).toBe(20);
+  });
+
+  it('cap present but does NOT fire when rawSum < ceiling', () => {
+    // rawSum = 33; ceiling 40 > 33 → cap does not clamp → fitPercent must be exactly 33
+    const fb = baseFb({
+      appliedCap: { ceiling: 40, reason: 'PSC detention' } as unknown as null,
+    });
+    const result = patchEconomicsComponent(fb, 50000, 50000);
+    expect(result.fitPercent).toBe(33);
   });
 
   it('no cap applied when appliedCap is null', () => {

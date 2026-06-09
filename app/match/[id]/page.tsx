@@ -145,7 +145,7 @@ export default async function MatchDetailPage({ params }: Props) {
   // Resolve source WITHOUT a live LLM call (stub returns 'unknown' — we use only .source,
   // the badge rating comes from restrictions). Dataset hit → imo-public; miss → llm-fallback.
   const hasCiiDorE = !!vessel?.restrictions?.some((r) => typeof r === 'string' && /\bCII\s+rating\s+[DE]\b/i.test(r));
-  let ciiSource: 'imo-public' | 'llm-fallback' | 'cache' | undefined;
+  let ciiSource: 'imo-public' | 'llm-fallback' | undefined;
   if (vessel?.imo && hasCiiDorE) {
     ciiSource = (await lookupCii(vessel.imo, { callLlm: async () => 'unknown' })).source;
   }
