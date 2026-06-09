@@ -1,5 +1,5 @@
 /**
- * CalculationWaterfall — "Показать расчёт" expandable transparent-math panel.
+ * CalculationWaterfall — "Show calculation" expandable transparent-math panel.
  *
  * Pure presentational component. Renders the approved waterfall layout:
  *   ВЫРУЧКА ЗА РЕЙС → МИНУС РАСХОДЫ → ЧИСТЫМИ ЗА РЕЙС → ÷ дней → ЗАРАБОТОК В ДЕНЬ

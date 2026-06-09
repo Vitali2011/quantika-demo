@@ -98,4 +98,14 @@ describe('POST /api/help/ask', () => {
     // json().catch(() => ({})) → query undefined → 400
     expect(res.status).toBe(400);
   });
+
+  it('canned fallback answer is English-only (no Cyrillic) and contains stable EN token', async () => {
+    const { POST } = await import('@/app/api/help/ask/route');
+    const req = await makeRequest({ query: 'how to connect Gmail' });
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+    const body = await res.json() as { answer: string; sources: unknown[] };
+    expect(/[Ѐ-ӿ]/.test(body.answer)).toBe(false);
+    expect(body.answer).toMatch(/parse emails/i);
+  });
 });

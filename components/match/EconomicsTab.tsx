@@ -707,7 +707,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
                   className="text-xs text-blue-600 hover:underline"
                   onClick={() => setShowCalc((v) => !v)}
                 >
-                  {showCalc ? 'Скрыть расчёт' : 'Показать расчёт'}
+                  {showCalc ? 'Hide calculation' : 'Show calculation'}
                 </button>
                 {showCalc && (
                   <div className="mt-3 rounded border border-gray-200 bg-gray-50 p-3">
