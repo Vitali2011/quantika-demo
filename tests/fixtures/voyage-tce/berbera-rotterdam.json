@@ -1,4 +1,5 @@
 {
+  "_comment": "war_risk = totalPremiumUsd (hull+crew+P&I) per war-risk.ts:128 spec",
   "input": {
     "vessel": {
       "dwt": 35000,
@@ -28,12 +29,12 @@
     "bunker_usd": 229680,
     "canal_usd": 280000,
     "da_usd": 90000,
-    "war_risk_usd": 15000,
+    "war_risk_usd": 45000,
     "ets_eur": 49911.84,
     "ets_usd": 53905,
     "gross_freight_usd": 875000,
-    "total_costs_usd": 668585,
-    "net_voyage_usd": 206415,
-    "daily_tce_usd": 11468
+    "total_costs_usd": 698585,
+    "net_voyage_usd": 176415,
+    "daily_tce_usd": 9801
   }
 }
