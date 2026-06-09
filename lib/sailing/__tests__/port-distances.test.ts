@@ -1,4 +1,5 @@
 import { getPortDistance, normalizePortName, KNOWN_PORTS } from '../port-distances';
+import { getPortMaster } from '../port-master';
 
 describe('normalizePortName — fuzzy length-ratio guard (Phase B)', () => {
   it('"Vasto" resolves to canonical Vasto, NOT Vladivostok (Phase C1)', () => {
@@ -1093,5 +1094,23 @@ describe('vague-unknown port strings do not fuzzy-match distant real ports (fix-
     expect(normalizePortName('Aliaga')).toBe('Aliaga');
     expect(normalizePortName('Odessa')).toBe('Odesa');          // alias → Odesa
     expect(normalizePortName('Novorossisk')).toBe('Novorossiysk'); // alias → Novorossiysk
+  });
+});
+
+describe('portgap: absent/aliased ports resolve to non-null distance', () => {
+  it('Monrovia resolves via new JSON entry', () => {
+    expect(getPortMaster('Monrovia')).not.toBeNull();
+    expect(getPortDistance('Kakinada Anchorage', 'Monrovia')?.nm).toBeGreaterThan(0);
+  });
+  it('Ras el Khair resolves via new JSON entry', () => {
+    expect(getPortMaster('Ras el Khair')).not.toBeNull();
+    expect(getPortDistance('Ras el Khair', 'Shuaiba')?.nm).toBeGreaterThan(0);
+  });
+  it('Puerto Limon (no accent) resolves to existing CRLIO via alias', () => {
+    expect(normalizePortName('Puerto Limon')).toBe('Puerto Limón');
+    expect(getPortDistance('Karasu', 'Puerto Limon')?.nm).toBeGreaterThan(0);
+  });
+  it('Koh Sri Chang resolves via Bangkok alias', () => {
+    expect(getPortDistance('Koh Sri Chang', 'Conakry')?.nm).toBeGreaterThan(0);
   });
 });
