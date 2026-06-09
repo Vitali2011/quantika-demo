@@ -28,7 +28,7 @@ export function patchEconomicsComponent(
   const sanctionsPenalty = breakdown.sanctionsPenalty ?? 0;
   const chartererPenalty = breakdown.chartererPenalty ?? 0;
   let fit = rawSum - sanctionsPenalty - chartererPenalty;
-  if (breakdown.appliedCap !== null && fit > breakdown.appliedCap.ceiling) {
+  if (breakdown.appliedCap != null && fit > breakdown.appliedCap.ceiling) {
     fit = breakdown.appliedCap.ceiling;
   }
   const fitPercent = Math.max(0, Math.min(100, Math.round(fit * 10) / 10));

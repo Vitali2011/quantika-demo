@@ -73,9 +73,10 @@ export async function lookupCii(imo: string, opts: LookupOpts = {}): Promise<Cii
     return { imo, rating: 'unknown', year: 2025, source: 'imo-public', fetchedAt: new Date().toISOString() };
   }
 
-  // Cache hit
+  // Cache hit — return stored result with its original source intact (preserves 'llm-fallback'
+  // so CiiRatingBadge.isEstimated stays true for AI-estimated ratings on revisit).
   const cached = getCiiCached(imo, cacheDir);
-  if (cached) return { ...cached, source: 'cache' };
+  if (cached) return cached;
 
   // Static dataset
   const datasetRating = lookupInDataset(imo);
