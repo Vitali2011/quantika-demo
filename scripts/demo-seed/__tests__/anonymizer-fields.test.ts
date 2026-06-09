@@ -90,4 +90,26 @@ describe('sanitizeContactTokensFromLocations — unit', () => {
     expect((result[0] as Record<string, unknown>).originPort).toBeNull();
     expect((result[0] as Record<string, unknown>).destinationPort).toBeNull();
   });
+
+  // Regression #885-F1: AGENT N tokens must be sanitized the same as CONTACT N
+  it('clears AGENT N from openPosition string (regression #885)', async () => {
+    const { sanitizeContactTokensFromLocations } = await import('../build');
+    const items = [{ openPosition: 'AGENT 3', dwtSummer: 12000 }];
+    const result = sanitizeContactTokensFromLocations(items);
+    expect((result[0] as Record<string, unknown>).openPosition).toBeNull();
+  });
+
+  it('does NOT clear "AGENT NAME" (non-numeric) from openPosition — no over-match', async () => {
+    const { sanitizeContactTokensFromLocations } = await import('../build');
+    const items = [{ openPosition: 'AGENT NAME', dwtSummer: 12000 }];
+    const result = sanitizeContactTokensFromLocations(items);
+    expect((result[0] as Record<string, unknown>).openPosition).toBe('AGENT NAME');
+  });
+
+  it('does NOT clear "AGENT 3 extra" (trailing text) from openPosition — no over-match', async () => {
+    const { sanitizeContactTokensFromLocations } = await import('../build');
+    const items = [{ openPosition: 'AGENT 3 extra', dwtSummer: 12000 }];
+    const result = sanitizeContactTokensFromLocations(items);
+    expect((result[0] as Record<string, unknown>).openPosition).toBe('AGENT 3 extra');
+  });
 });
