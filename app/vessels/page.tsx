@@ -94,7 +94,7 @@ export default async function VesselsPage() {
 }
 
 /** Keep one row per content key, preferring a row that already has a match. */
-function dedupRows<T extends { status: 'open' | 'match' }>(rows: T[], key: (r: T) => string): T[] {
+export function dedupRows<T extends { status: 'open' | 'match' }>(rows: T[], key: (r: T) => string): T[] {
   const seen = new Map<string, T>();
   for (const r of rows) {
     const k = key(r);
