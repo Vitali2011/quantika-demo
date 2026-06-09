@@ -15,6 +15,7 @@ const SECTIONS = [
   { id: 'billing',       label: 'Billing' },
   { id: 'payment',       label: 'Payment' },
   { id: 'invoices',      label: 'Invoices' },
+  { id: 'export',        label: 'Export' },
   { id: 'danger',        label: 'Danger zone', danger: true },
 ] as readonly { id: string; label: string; danger?: boolean }[];
 

@@ -47,7 +47,16 @@ export default async function VesselsPage() {
     );
   }
 
-  const rows: VesselRow[] = session.parsedVessels.map((vessel) => {
+  // Pre-sort newest-open-date first so name-keyed dedup keeps the freshest snapshot.
+  const sortedParsedVessels = [...session.parsedVessels].sort((a, b) => {
+    const va = a.openDate?.value;
+    const vb = b.openDate?.value;
+    const da = typeof va === 'string' ? va : '';
+    const db = typeof vb === 'string' ? vb : '';
+    return db.localeCompare(da);
+  });
+
+  const rows: VesselRow[] = sortedParsedVessels.map((vessel) => {
     const email = session.emails.find((e) => e.id === vessel.emailId);
     const hasMatch = session.matches.some((m) => m.vesselEmailId === vessel.emailId);
     const vesselName = cfValue(vessel.vesselName) ?? 'Unknown vessel';
@@ -71,14 +80,13 @@ export default async function VesselsPage() {
     };
   });
 
-  // Collapse re-circulated duplicate vessels: the demo corpus carries the same
-  // vessel as items across several circular emails. Key on identity (name +
-  // open position + open date); a vessel at a genuinely different position/date
-  // stays as a separate row. Unknown-named rows are never collapsed (keyed by id).
-  // Prefer the row that already has a match so matched vessels stay visible.
+  // Collapse re-circulated duplicate vessels: the same vessel can appear across
+  // several circular emails with different position/date snapshots. Key on name
+  // only; the pre-sort above ensures we keep the freshest snapshot. Unknown-named
+  // rows are never collapsed (keyed by id). Matched rows still win over open rows.
   const dedupedVessels = dedupRows(rows, (r) =>
     r.vesselName && r.vesselName !== 'Unknown vessel'
-      ? `${r.vesselName}|${r.openPosition ?? ''}|${r.openDate ?? ''}`
+      ? r.vesselName
       : r.id,
   );
 
