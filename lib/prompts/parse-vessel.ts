@@ -262,6 +262,8 @@ GRAIN/BALE CAPACITY UNITS:
   ✓ grain_capacity=3963 from "GRAIN 140,000CBFT" (140000 ÷ 35.315 ≈ 3963 cbm), confidence='interpreted', source_text="GRAIN 140,000CBFT"
   When source says "CBM" or "cbm" → use the number directly.
   "GRAIN/BALE 3000/2950 CBM" → grain_capacity=3000, bale_capacity=2950
+  ALWAYS set grain_capacity_unit="cbm" — the value you output is already in CBM regardless of source unit.
+  NEVER set grain_capacity_unit="cbft" — conversion to CBM must happen before output.
 
 GRAIN CAPACITY ANTI-FABRICATION:
   Extract grain_capacity ONLY from text explicitly labeled "grain", "grain cap", "grain cubic", "GKC", or "GRAIN/BALE X/Y" format.

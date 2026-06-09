@@ -59,6 +59,7 @@ const vesselItemSchema = {
     loa: confidenceFieldNumber,
     beam: confidenceFieldNumber,
     grain_capacity: { type: Type.NUMBER, nullable: true },
+    grain_capacity_unit: { type: Type.STRING, nullable: true },
     bale_capacity: { type: Type.NUMBER, nullable: true },
     holds_count: { type: Type.NUMBER, nullable: true },
     hatches_count: { type: Type.NUMBER, nullable: true },

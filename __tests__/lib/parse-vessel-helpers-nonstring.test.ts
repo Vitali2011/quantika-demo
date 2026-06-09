@@ -7,6 +7,38 @@
 import { parseVesselAIResponse } from '@/lib/parsing/parse-vessel-helpers';
 
 // parse-vessel-helpers reads no external I/O — no mocks needed
+
+describe('#884 — grain_capacity_unit relabel on cbft→cbm conversion', () => {
+  it('ConfidenceField grain_capacity with cuft source sets grainCapacityUnit to cbm after converting', () => {
+    // Simulates legacy parse path where grain_capacity arrives as ConfidenceField (not plain NUMBER)
+    const raw = JSON.stringify({
+      vessel_name: 'MV YUCATAN',
+      imo: '9367841',
+      grain_capacity: { value: 141050, confidence: 'interpreted', source_text: 'G/B 141050,3 cuft' },
+      bale_capacity:  { value: 141050, confidence: 'interpreted', source_text: 'G/B 141050,3 cuft' },
+      grain_capacity_unit: null,
+    });
+    const vessels = parseVesselAIResponse(raw, 'test-email');
+    expect(vessels).toHaveLength(1);
+    // Value must be converted (÷35.315): 141050 / 35.314667 ≈ 3994
+    expect(vessels[0].grainCapacity).toBe(3994);
+    // Unit must be relabelled to cbm — this is the #884 fix
+    expect(vessels[0].grainCapacityUnit).toBe('cbm');
+  });
+
+  it('#884: grain_capacity_unit="cbm" from schema is preserved as-is (no double-convert)', () => {
+    const raw = JSON.stringify({
+      vessel_name: 'MV TEST',
+      imo: '1234567',
+      grain_capacity: 3994,
+      grain_capacity_unit: 'cbm',
+    });
+    const vessels = parseVesselAIResponse(raw, 'test-email');
+    expect(vessels[0].grainCapacity).toBe(3994);
+    expect(vessels[0].grainCapacityUnit).toBe('cbm');
+  });
+});
+
 describe('parseVesselAIResponse — non-string restrictions filter', () => {
   const emailId = 'test-email-id';
 
