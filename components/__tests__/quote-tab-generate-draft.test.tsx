@@ -100,7 +100,7 @@ describe('QuoteTab — Generate Draft button (fix #351)', () => {
     fireEvent.click(screen.getByRole('button', { name: /generate/i }));
 
     await waitFor(() => {
-      expect(screen.getByText('Service unavailable')).toBeInTheDocument();
+      expect(screen.getByText('Service unavailable', { selector: 'p' })).toBeInTheDocument();
     });
   });
 

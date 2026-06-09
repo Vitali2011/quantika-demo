@@ -42,11 +42,13 @@ export function QuoteTab({ cargoEmailId, confidence }: QuoteTabProps) {
         method: 'POST',
         body: JSON.stringify({ emailId: cargoEmailId }),
       });
-      const data = await res.json() as { draft?: string; error?: string };
-      if (!res.ok) throw new Error(data.error ?? 'Failed to generate draft');
+      const data = await res.json() as { draft?: string; error?: string; message?: string };
+      if (!res.ok) throw new Error(data.message ?? data.error ?? 'Failed to generate draft');
       setDraft(data.draft ?? '');
     } catch (err) {
-      setGenerateError(err instanceof Error ? err.message : 'Failed to generate draft');
+      const msg = err instanceof Error ? err.message : 'Failed to generate draft';
+      setGenerateError(msg);
+      toast.error(msg);
     } finally {
       setGenerating(false);
     }
