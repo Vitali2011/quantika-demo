@@ -76,3 +76,28 @@ describe('POST /api/ai/draft-quote — greeting #812', () => {
     expect(addressLine).toBe('Address the reply to: Alice Cooper');
   });
 });
+
+describe('POST /api/ai/draft-quote — error handling', () => {
+  it('returns 500 JSON with error:ai_error when callAiText throws a generic Error', async () => {
+    mockRequireSession.mockReturnValue({ session: sessionWith({ from: 'a@b.com', fromName: 'Alice' }), sessionId: 'sid' });
+    mockCallAiText.mockRejectedValueOnce(new Error('Gemini credentials missing'));
+
+    const res = await POST(makeReq({ emailId: 'e1' }));
+    expect(res.status).toBe(500);
+    const body = await res.json() as { error: string; message: string };
+    expect(body.error).toBe('ai_error');
+    expect(body.message).toBe('Gemini credentials missing');
+  });
+
+  it('returns 504 JSON with error:ai_timeout when callAiText throws LLMTimeoutError', async () => {
+    mockRequireSession.mockReturnValue({ session: sessionWith({ from: 'a@b.com', fromName: 'Alice' }), sessionId: 'sid' });
+    const { LLMTimeoutError } = await import('@/lib/openai');
+    mockCallAiText.mockRejectedValueOnce(new LLMTimeoutError('AI call timed out after 30s'));
+
+    const res = await POST(makeReq({ emailId: 'e1' }));
+    expect(res.status).toBe(504);
+    const body = await res.json() as { error: string; retryable: boolean };
+    expect(body.error).toBe('ai_timeout');
+    expect(body.retryable).toBe(true);
+  });
+});
