@@ -1,6 +1,8 @@
 import Database from 'better-sqlite3';
 import { buildDemoSessionBlob } from '../hydrate-demo-session';
 import { logger } from '@/lib/logger';
+import { calculateWarRiskPremium } from '@/lib/economics/war-risk';
+import { estimateVesselValueUsd } from '@/lib/economics/vessel-value';
 
 function makeSeedDb(): Database.Database {
   const db = new Database(':memory:');
@@ -103,6 +105,90 @@ describe('buildDemoSessionBlob', () => {
       vesselEmailId: 'e2', vesselItemIndex: 1,
       score: 77, fitPercent: 72.5,
     });
+    db.close();
+  });
+
+  it('#883: HRA route (Nemrut Bay → Berbera) yields warRiskPremium matching oracle', () => {
+    const db = new Database(':memory:');
+    db.exec(`
+      CREATE TABLE emails (
+        account_id TEXT, gmail_message_id TEXT, thread_id TEXT, from_addr TEXT,
+        from_name TEXT, from_email TEXT, to_addr TEXT, subject TEXT, date TEXT,
+        body TEXT, snippet TEXT, label_ids TEXT, fetched_at INTEGER
+      );
+      CREATE TABLE parsed_results (
+        account_id TEXT, gmail_message_id TEXT, parse_type TEXT, parser_version TEXT,
+        result_json TEXT, parsed_at INTEGER
+      );
+      CREATE TABLE matches (
+        id INTEGER PRIMARY KEY, cargo_id TEXT, vessel_id TEXT, score INTEGER,
+        reason TEXT, status TEXT, user_id TEXT, created_at INTEGER, updated_at INTEGER,
+        reason_structured TEXT,
+        tce_usd_per_day REAL, load_port TEXT, discharge_port TEXT, vessel_dwt INTEGER
+      );
+    `);
+    db.prepare(`INSERT INTO emails (account_id, gmail_message_id, thread_id, from_addr, to_addr, subject, date, body, snippet, label_ids, fetched_at)
+      VALUES ('demo','e1','t1','a@demo.local','me@demo.local','Cargo','2026-05-20','b','s','[]',0)`).run();
+    db.prepare(`INSERT INTO emails (account_id, gmail_message_id, thread_id, from_addr, to_addr, subject, date, body, snippet, label_ids, fetched_at)
+      VALUES ('demo','e2','t2','b@demo.local','me@demo.local','Vessel','2026-05-21','b','s','[]',0)`).run();
+    db.prepare(`INSERT INTO parsed_results (account_id, gmail_message_id, parse_type, parser_version, result_json, parsed_at)
+      VALUES ('demo','e1','cargo','v1','[{"emailId":"e1","itemIndex":0}]',0)`).run();
+    db.prepare(`INSERT INTO parsed_results (account_id, gmail_message_id, parse_type, parser_version, result_json, parsed_at)
+      VALUES ('demo','e2','vessel','v1','[{"emailId":"e2","itemIndex":0}]',0)`).run();
+    db.prepare(`INSERT INTO matches (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at, reason_structured, tce_usd_per_day, load_port, discharge_port, vessel_dwt)
+      VALUES ('e1','e2',90,'HRA route','shortlist',NULL,0,0,NULL,12000,'Nemrut Bay','Berbera',3176)`).run();
+
+    const blob = buildDemoSessionBlob(db);
+    const oracle = calculateWarRiskPremium({
+      route: { fromPort: 'Nemrut Bay', toPort: 'Berbera' },
+      vesselValueUsd: estimateVesselValueUsd(3176),
+    });
+
+    // UI rounds 666.96 → "$667"; test parity with exact oracle value
+    expect(oracle.premiumUsd).toBeCloseTo(667, 0);
+    const bd = blob.matches[0].economics!.breakdown;
+    expect(bd.warRiskPremium).toBe(oracle.premiumUsd);
+    expect(bd.warRiskZones).toEqual(expect.arrayContaining(['Red Sea / Bab al-Mandeb HRA']));
+    expect(bd.warRiskBreakdown).toBeDefined();
+    expect(bd.warRiskBreakdown!.hullPremiumUsd).toBe(oracle.premiumUsd);
+    db.close();
+  });
+
+  it('#883: non-HRA route (Rotterdam → Hamburg) yields warRiskPremium 0 + no breakdown', () => {
+    const db = new Database(':memory:');
+    db.exec(`
+      CREATE TABLE emails (
+        account_id TEXT, gmail_message_id TEXT, thread_id TEXT, from_addr TEXT,
+        from_name TEXT, from_email TEXT, to_addr TEXT, subject TEXT, date TEXT,
+        body TEXT, snippet TEXT, label_ids TEXT, fetched_at INTEGER
+      );
+      CREATE TABLE parsed_results (
+        account_id TEXT, gmail_message_id TEXT, parse_type TEXT, parser_version TEXT,
+        result_json TEXT, parsed_at INTEGER
+      );
+      CREATE TABLE matches (
+        id INTEGER PRIMARY KEY, cargo_id TEXT, vessel_id TEXT, score INTEGER,
+        reason TEXT, status TEXT, user_id TEXT, created_at INTEGER, updated_at INTEGER,
+        reason_structured TEXT,
+        tce_usd_per_day REAL, load_port TEXT, discharge_port TEXT, vessel_dwt INTEGER
+      );
+    `);
+    db.prepare(`INSERT INTO emails (account_id, gmail_message_id, thread_id, from_addr, to_addr, subject, date, body, snippet, label_ids, fetched_at)
+      VALUES ('demo','e1','t1','a@demo.local','me@demo.local','Cargo','2026-05-20','b','s','[]',0)`).run();
+    db.prepare(`INSERT INTO emails (account_id, gmail_message_id, thread_id, from_addr, to_addr, subject, date, body, snippet, label_ids, fetched_at)
+      VALUES ('demo','e2','t2','b@demo.local','me@demo.local','Vessel','2026-05-21','b','s','[]',0)`).run();
+    db.prepare(`INSERT INTO parsed_results (account_id, gmail_message_id, parse_type, parser_version, result_json, parsed_at)
+      VALUES ('demo','e1','cargo','v1','[{"emailId":"e1","itemIndex":0}]',0)`).run();
+    db.prepare(`INSERT INTO parsed_results (account_id, gmail_message_id, parse_type, parser_version, result_json, parsed_at)
+      VALUES ('demo','e2','vessel','v1','[{"emailId":"e2","itemIndex":0}]',0)`).run();
+    db.prepare(`INSERT INTO matches (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at, reason_structured, tce_usd_per_day, load_port, discharge_port, vessel_dwt)
+      VALUES ('e1','e2',85,'Non-HRA route','shortlist',NULL,0,0,NULL,10000,'Rotterdam','Hamburg',50000)`).run();
+
+    const blob = buildDemoSessionBlob(db);
+    const bd = blob.matches[0].economics!.breakdown;
+    expect(bd.warRiskPremium).toBe(0);
+    expect(bd.warRiskZones).toEqual([]);
+    expect(bd.warRiskBreakdown).toBeUndefined();
     db.close();
   });
 
