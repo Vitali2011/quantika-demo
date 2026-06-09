@@ -66,6 +66,12 @@ export function CalculationWaterfall({ breakdown }: Props) {
             ${freight_rate_usd_per_mt}/MT × {quantity_mt.toLocaleString('en-US')} MT
           </span>
         </div>
+        <div
+          className="text-xs text-gray-400 pl-4"
+          data-testid="freight-qty-disclosure"
+        >
+          max quantity incl. cargo option
+        </div>
         <div className="flex justify-between font-semibold border-b border-gray-200 pb-1">
           <span>= Revenue</span>
           <span data-testid="gross-freight">{fmtUsd(gross_freight_usd)}</span>

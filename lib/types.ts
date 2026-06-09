@@ -445,6 +445,7 @@ export interface MatchWorksheet {
   };
   cargo: {
     weightMt: number | null;
+    weightMtEffective?: number | null;  // worst-case (resolveCargoWeight) for util% gating
     cargoType: string | null;
     loadPort: string | null;
     dischargePort: string | null;
