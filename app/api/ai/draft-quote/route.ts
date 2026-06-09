@@ -125,6 +125,7 @@ Generate a professional draft quote email.`;
         { status: 504 },
       );
     }
-    throw err;
+    const message = err instanceof Error ? err.message : 'AI draft generation failed';
+    return NextResponse.json({ error: 'ai_error', message }, { status: 500 });
   }
 }
