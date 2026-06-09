@@ -31,9 +31,10 @@ export function MatchWorksheet({ worksheet }: Props) {
   const { readiness: r, vessel: v, cargo: c, hardFilters: hf } = worksheet;
 
   const capacityMt = v.dwcc ?? v.dwtSummer;
+  const utilWeight = c.weightMtEffective ?? c.weightMt;  // worst-case when present; graceful fallback
   const util =
-    capacityMt != null && capacityMt > 0 && c.weightMt != null
-      ? Math.round((c.weightMt / capacityMt) * 100)
+    capacityMt != null && capacityMt > 0 && utilWeight != null
+      ? Math.round((utilWeight / capacityMt) * 100)
       : null;
 
   const transitChain = (() => {
@@ -65,9 +66,13 @@ export function MatchWorksheet({ worksheet }: Props) {
     {
       label: '⚖️ Weight',
       vessel: v.dwtSummer != null ? `${v.dwtSummer.toLocaleString('en-US')} DWT${v.dwcc != null ? ` / ${v.dwcc.toLocaleString('en-US')} DWCC` : ''}` : '—',
-      cargoPort: c.weightMt != null ? `${c.weightMt.toLocaleString('en-US')} mt` : '—',
+      cargoPort: c.weightMt != null
+          ? (c.weightMtEffective != null && c.weightMtEffective !== c.weightMt
+              ? `${c.weightMt.toLocaleString('en-US')} mt (${c.weightMtEffective.toLocaleString('en-US')} max w/ option)`
+              : `${c.weightMt.toLocaleString('en-US')} mt`)
+          : '—',
       verdict: util != null
-        ? `${util}% utilisation${util >= 85 ? ' ✅' : util >= 70 ? ' ⚠️' : ' ❌'}`
+        ? `${util}% utilisation${util > 100 ? ' ❌' : util >= 85 ? ' ✅' : util >= 70 ? ' ⚠️' : ' ❌'}`
         : verdictBadge(hf.volume.pass, hf.volume.reason),
     },
     {

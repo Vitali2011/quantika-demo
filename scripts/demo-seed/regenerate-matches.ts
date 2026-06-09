@@ -43,6 +43,7 @@ import { seedPscHistoryWithDb } from '../knowledge/seeds/seed-psc-history';
 import { seedPortDa, type BaselinePort } from '../seed-port-da';
 import { lookupCii } from '@/lib/imo/cii-lookup';
 import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
+import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
 
 // ── CII hydration helper ──────────────────────────────────────────────────────
 
@@ -356,6 +357,7 @@ export async function rebuildWorksheets(
       },
       cargo: {
         weightMt: cfValue(cargo.weightMt) ?? null,
+        weightMtEffective: resolveCargoWeight(cargo) ?? null,
         cargoType: cargoTypeStr(cargo),
         loadPort: cfValue(cargo.originPort) ?? null,
         dischargePort: cfValue(cargo.destinationPort) ?? null,
