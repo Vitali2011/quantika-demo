@@ -83,6 +83,7 @@ export default async function DashboardPage() {
   }
   const storedMatches = listMatches(db, { user_id: sessionId!, sortBy: 'score', sortDir: 'desc' });
   const matchIdMap = new Map(storedMatches.map((sm) => [`${sm.cargo_id}|${sm.vessel_id}`, sm.id]));
+  const storedByKey = new Map(storedMatches.map((sm) => [`${sm.cargo_id}|${sm.vessel_id}`, sm]));
   const openMatchCount = countQualifyingMatches(db, { user_id: sessionId! });
 
   const priorityCards = goodMatches
@@ -103,10 +104,11 @@ export default async function DashboardPage() {
   const freshMatchesData = goodMatches
     .filter((m) => matchIdMap.get(`${m.cargoEmailId}|${m.vesselEmailId}`) != null)
     .map((m) => ({
+      id: matchIdMap.get(`${m.cargoEmailId}|${m.vesselEmailId}`)!,
       score: m.score,
+      fit_percent: storedByKey.get(`${m.cargoEmailId}|${m.vesselEmailId}`)?.fit_percent ?? null,
       matchLevel: m.matchLevel,
       matchReasons: m.matchReasons,
-      id: matchIdMap.get(`${m.cargoEmailId}|${m.vesselEmailId}`)!,
     }));
 
   const rawName = session.accountId?.split('@')[0] ?? '';
