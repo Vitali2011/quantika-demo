@@ -750,9 +750,6 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                             ) : (
                               <div className="text-lg font-bold text-blue-600">{effectiveScore(match, clientNow)}%</div>
                             )}
-                            {match.fit_percent != null && (
-                              <div className="text-xs text-gray-400 font-mono">score {effectiveScore(match, clientNow)}</div>
-                            )}
                             <div className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 capitalize">
                               {match.status}
                             </div>
