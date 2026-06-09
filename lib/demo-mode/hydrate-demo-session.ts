@@ -5,6 +5,8 @@ import { buildProcessedEmails } from '@/lib/classification-service';
 import { deriveMatchLevel } from '@/lib/sailing/match-scoring';
 import { deleteOrphanSessionMatches } from '@/lib/matching/matches-repository';
 import { logger } from '@/lib/logger';
+import { calculateWarRiskPremium } from '@/lib/economics/war-risk';
+import { estimateVesselValueUsd } from '@/lib/economics/vessel-value';
 import type {
   Email, Classification, ParsedCargo, ParsedVessel, ParsedFixtureRecap, Match, ScoreBreakdown, SessionData,
 } from '@/lib/types';
@@ -29,6 +31,9 @@ interface MatchRow {
   cargo_item_index: number | null; vessel_item_index: number | null;
   worksheet_json: string | null;
   tce_usd_per_day: number | null;
+  load_port: string | null;
+  discharge_port: string | null;
+  vessel_dwt: number | null;
 }
 
 function safeJsonArray<T>(json: string, ctx: string): T[] {
@@ -98,7 +103,11 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
     ? 'worksheet_json'
     : 'NULL as worksheet_json';
   const tceCol = colNames.has('tce_usd_per_day') ? 'tce_usd_per_day' : 'NULL as tce_usd_per_day';
-  const selectCols = `cargo_id, vessel_id, score, reason, reason_structured, ${fitCols}, ${idxCols}, ${worksheetCol}, ${tceCol}`;
+  const portCols = colNames.has('load_port')
+    ? 'load_port, discharge_port'
+    : 'NULL as load_port, NULL as discharge_port';
+  const dwtCol = colNames.has('vessel_dwt') ? 'vessel_dwt' : 'NULL as vessel_dwt';
+  const selectCols = `cargo_id, vessel_id, score, reason, reason_structured, ${fitCols}, ${idxCols}, ${worksheetCol}, ${tceCol}, ${portCols}, ${dwtCol}`;
 
   // Only the seeded snapshot rows (user_id IS NULL). Per-session copies that
   // persistSessionMatches writes (user_id = sessionId) must NOT be re-read here,
@@ -120,6 +129,16 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
   function rowsToMatches(rows: MatchRow[]): Match[] {
     return rows.map((r) => {
       const tce = r.tce_usd_per_day;
+      // #883: compute demo war-risk from seeded ports + dwt, mirroring the live
+      // /api/voyage/tce path (estimateVesselValueUsd(dwt), NOT DEFAULT 22M) so the
+      // banner premium matches the P&L line. calculateWarRiskPremium is pure/sync.
+      const warRisk =
+        r.load_port && r.discharge_port
+          ? calculateWarRiskPremium({
+              route: { fromPort: r.load_port, toPort: r.discharge_port },
+              vesselValueUsd: estimateVesselValueUsd(r.vessel_dwt ?? 0),
+            })
+          : null;
       // Carry the seed-computed TCE into economics.tceUsdPerDay so
       // persistSessionMatches can prefer it over a live recompute.
       const economics: import('@/lib/types').EconomicsResult | undefined =
@@ -127,7 +146,11 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
           ? {
               breakdown: {
                 bunkerCost: 0, bunkerPort: '', euEtsAmount: 0,
-                euEtsApplicable: false, warRiskPremium: 0, warRiskZones: [],
+                euEtsApplicable: false,
+                warRiskPremium: warRisk?.premiumUsd ?? 0,
+                warRiskZones: warRisk?.zones ?? [],
+                warRiskBreakdown: warRisk?.applicable ? warRisk.breakdown : undefined,
+                warRiskTotal: warRisk?.breakdown?.totalPremiumUsd,
               },
               totalUsd: 0,
               calculatedAt: new Date(0).toISOString(),

@@ -234,4 +234,29 @@ describe('EconomicsTab — "Показать расчёт" toggle (B3)', () => {
     fireEvent.click(toggle);
     expect(screen.queryByTestId('calculation-waterfall')).not.toBeInTheDocument();
   });
+
+  it('toggle button text is English-only (no Cyrillic) — collapsed: "Show calculation", expanded: "Hide calculation"', async () => {
+    setupFetch(FIXTURE_BREAKDOWN);
+
+    render(
+      <EconomicsTab
+        vessel={vessel}
+        cargo={cargo}
+        routeDistanceNm={9000}
+        storedFreightRate={28}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('voyage-breakdown-chart')).toBeInTheDocument();
+    }, { timeout: 3000 });
+
+    const toggle = screen.getByTestId('show-calc-toggle');
+    expect(toggle.textContent).toBe('Show calculation');
+    expect(/[Ѐ-ӿ]/.test(toggle.textContent ?? '')).toBe(false);
+
+    fireEvent.click(toggle);
+    expect(toggle.textContent).toBe('Hide calculation');
+    expect(/[Ѐ-ӿ]/.test(toggle.textContent ?? '')).toBe(false);
+  });
 });

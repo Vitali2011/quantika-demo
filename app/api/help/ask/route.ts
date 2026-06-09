@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
   } catch { /* fall through to canned answer */ }
 
   return NextResponse.json({
-    answer: 'Quantika умеет парсить email, считать TCE, генерить recap. Конкретный гайд скоро появится в docs.',
+    answer: 'Quantika can parse emails, calculate TCE, and generate voyage recaps. A detailed guide is coming soon in docs.',
     sources: [{ title: 'Quick start', url: '/docs/quickstart' }],
   });
 }
