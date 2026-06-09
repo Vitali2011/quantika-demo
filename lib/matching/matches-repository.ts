@@ -586,14 +586,21 @@ export function updateMatchFreightRate(
   freight_rate_usd_per_mt: number,
   tce_usd_per_day: number,
   source: FreightRateSource = 'manual',
+  fit?: { fit_percent: number; fit_breakdown: string } | null,
 ): StoredMatch {
   const existing = getMatch(db, id);
   if (!existing) throw new Error(`Match not found: ${id}`);
 
   const now = Date.now();
-  db.prepare(
-    `UPDATE matches SET freight_rate_usd_per_mt = ?, freight_rate_source = ?, tce_usd_per_day = ?, updated_at = ? WHERE id = ?`
-  ).run(freight_rate_usd_per_mt, source, tce_usd_per_day, now, id);
+  if (fit != null) {
+    db.prepare(
+      `UPDATE matches SET freight_rate_usd_per_mt = ?, freight_rate_source = ?, tce_usd_per_day = ?, fit_percent = ?, fit_breakdown = ?, updated_at = ? WHERE id = ?`
+    ).run(freight_rate_usd_per_mt, source, tce_usd_per_day, fit.fit_percent, fit.fit_breakdown, now, id);
+  } else {
+    db.prepare(
+      `UPDATE matches SET freight_rate_usd_per_mt = ?, freight_rate_source = ?, tce_usd_per_day = ?, updated_at = ? WHERE id = ?`
+    ).run(freight_rate_usd_per_mt, source, tce_usd_per_day, now, id);
+  }
 
   return getMatch(db, id) as StoredMatch;
 }

@@ -19,7 +19,15 @@ import migration033 from '@/lib/migrations/033-matches-score-breakdown';
 import migration034 from '@/lib/migrations/034-matches-unique-constraint';
 import migration035 from '@/lib/migrations/035-matches-tce-distance';
 import migration036 from '@/lib/migrations/036-matches-freight-rate';
+import migration037 from '@/lib/migrations/037-add-user-preferred-mode';
+import migration038 from '@/lib/migrations/038-jobs-progress';
+import migration039 from '@/lib/migrations/039-demo-seed-meta';
+import migration040 from '@/lib/migrations/040-counter-offers';
+import migration041 from '@/lib/migrations/041-matches-vessel-name';
+import migration042 from '@/lib/migrations/042-matches-fit';
 import { createMatch } from '@/lib/matching/matches-repository';
+import { patchEconomicsComponent } from '@/lib/matching/persist-session-matches';
+import type { FitBreakdown } from '@/lib/types';
 import { requireSession } from '@/lib/session';
 
 let testDb: Database.Database;
@@ -46,6 +54,12 @@ function freshDb(): Database.Database {
   migration034.up(db);
   migration035.up(db);
   migration036.up(db);
+  migration037.up(db);
+  migration038.up(db);
+  migration039.up(db);
+  migration040.up(db);
+  migration041.up(db);
+  migration042.up(db);
   return db;
 }
 
@@ -156,5 +170,44 @@ describe('PATCH /api/matches/[id] — freight rate override', () => {
     const match = seedMatch(testDb);
     const res = await doPatch(match.id, { freight_rate_usd_per_mt: 25 });
     expect(res.status).toBe(503);
+  });
+
+  it('PATCH freight override recomputes fit_percent via canonical patchEconomicsComponent', async () => {
+    const db = testDb;
+    const fb: FitBreakdown = {
+      fitPercent: 70,
+      components: [
+        { factor: 'economics', score: 9, weight: 18, rationale: 'seed', tier: 'neutral' },
+        { factor: 'timing', score: 20, weight: 20, rationale: 'seed', tier: 'good' },
+      ],
+      sanctionsPenalty: 0,
+      chartererPenalty: 0,
+      appliedCap: null,
+    } as unknown as FitBreakdown;
+
+    const match = createMatch(db, {
+      cargo_id: 'cargo-test',
+      vessel_id: 'vessel-test-fit',
+      score: 80,
+      reason: 'r',
+      user_id: SESSION_ID,
+      distance_nm: 3000,
+      vessel_dwt: 50000,
+      load_port: 'UAODS',
+      discharge_port: 'NLRTM',
+      fit_percent: 70,
+      fit_breakdown: JSON.stringify(fb),
+    });
+
+    mockRequireSession.mockReturnValue({ sessionId: SESSION_ID });
+    const res = await doPatch(match.id, { freight_rate_usd_per_mt: 25 });
+    expect(res.status).toBe(200);
+
+    const row = db
+      .prepare('SELECT fit_percent, fit_breakdown, tce_usd_per_day FROM matches WHERE id = ?')
+      .get(match.id) as { fit_percent: number; fit_breakdown: string; tce_usd_per_day: number };
+    const expected = patchEconomicsComponent(fb, row.tce_usd_per_day, 50000).fitPercent;
+    expect(row.fit_percent).toBeCloseTo(expected, 5);
+    expect(row.fit_breakdown).not.toBeNull();
   });
 });

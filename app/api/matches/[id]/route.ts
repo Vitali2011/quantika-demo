@@ -11,8 +11,9 @@ import { fromMatchSlug } from '@/lib/matching/match-slug';
 import type { MatchStatus } from '@/lib/matching/matches-repository';
 import type { FreightRateSource } from '@/lib/matching/tce-calculator';
 import { computeStoredMatchEconomics } from '@/lib/matching/stored-match-economics';
-import type { ParsedCargo, ParsedVessel } from '@/lib/types';
+import type { ParsedCargo, ParsedVessel, FitBreakdown } from '@/lib/types';
 import type { StoredMatch } from '@/lib/matching/matches-repository';
+import { patchEconomicsComponent } from '@/lib/matching/persist-session-matches';
 
 export const dynamic = 'force-dynamic';
 
@@ -89,6 +90,14 @@ function buildVesselProxy(m: StoredMatch): ParsedVessel {
     deckCapacity: null,
     specialFeatures: [],
   };
+}
+
+function recomputeFit(existing: StoredMatch, tce: number | null): { fit_percent: number; fit_breakdown: string } | null {
+  if (tce == null || !Number.isFinite(tce) || !existing.fit_breakdown) return null;
+  let parsed: FitBreakdown;
+  try { parsed = JSON.parse(existing.fit_breakdown) as FitBreakdown; } catch { return null; }
+  const patched = patchEconomicsComponent(parsed, tce, existing.vessel_dwt ?? 0);
+  return { fit_percent: patched.fitPercent, fit_breakdown: JSON.stringify(patched) };
 }
 
 const VALID_STATUSES: MatchStatus[] = ['shortlist', 'saved', 'dismissed', 'archived'];
@@ -190,7 +199,8 @@ export async function PATCH(
       const rate = eco.freight_rate_usd_per_mt ?? existing.freight_rate_usd_per_mt ?? 0;
       const tce = eco.tce_usd_per_day ?? existing.tce_usd_per_day ?? 0;
       const source = (eco.freight_rate_source ?? 'estimated') as FreightRateSource;
-      const updated = updateMatchFreightRate(db, id, rate, tce, source);
+      const fit = recomputeFit(existing, eco.tce_usd_per_day ?? null);
+      const updated = updateMatchFreightRate(db, id, rate, tce, source, fit);
       return NextResponse.json(updated, { status: 200 });
     }
 
@@ -210,7 +220,8 @@ export async function PATCH(
         freightOverrideUsdPerMt: rate,
       });
       const tce = eco.tce_usd_per_day ?? existing.tce_usd_per_day ?? 0;
-      const updated = updateMatchFreightRate(db, id, rate, tce, 'manual');
+      const fit = recomputeFit(existing, eco.tce_usd_per_day ?? null);
+      const updated = updateMatchFreightRate(db, id, rate, tce, 'manual', fit);
       return NextResponse.json(updated, { status: 200 });
     }
 

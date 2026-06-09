@@ -3,6 +3,7 @@ import { Card, Pill } from '@/design-system/primitives';
 
 export interface FreshMatchItem {
   score: number;
+  fit_percent?: number | null;
   matchLevel: string;
   matchReasons: string[];
   id: number;
@@ -57,10 +58,10 @@ export function DashboardFreshMatches({ matches }: DashboardFreshMatchesProps) {
                 <Card padding="sm" interactive>
                   <div className="flex items-center gap-3">
                     <Pill
-                      variant={scoreToPillVariant(match.score)}
+                      variant={scoreToPillVariant(match.fit_percent ?? match.score)}
                       className="shrink-0 tabular-nums"
                     >
-                      {match.score}
+                      {match.fit_percent != null ? `${Math.round(match.fit_percent)}% fit` : match.score}
                     </Pill>
                     <p className="text-sm text-ds-text truncate flex-1">{reason}</p>
                     <span className="text-ds-text-subtle text-sm shrink-0" aria-hidden>

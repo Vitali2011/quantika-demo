@@ -19,6 +19,7 @@ import { cfValue } from '@/lib/types';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 import { effectiveScore } from '@/lib/utils/effective-score';
 import { getBalticDayRate } from '@/lib/market/baltic-freight';
+import { lookupCii } from '@/lib/imo/cii-lookup';
 
 interface Props { params: Promise<{ id: string }>; }
 
@@ -138,6 +139,17 @@ export default async function MatchDetailPage({ params }: Props) {
   const balticRateAsOf = storedMatch.freight_rate_source === 'baltic' && vessel
     ? (getBalticDayRate(db, cfValue(vessel.dwtSummer) ?? 0)?.date ?? null)
     : null;
+
+  // CII provenance for the disclosure asterisk: the badge only renders for a D/E
+  // restriction, and only an llm-fallback source should show "Estimated by AI".
+  // Resolve source WITHOUT a live LLM call (stub returns 'unknown' — we use only .source,
+  // the badge rating comes from restrictions). Dataset hit → imo-public; miss → llm-fallback.
+  const hasCiiDorE = !!vessel?.restrictions?.some((r) => typeof r === 'string' && /\bCII\s+rating\s+[DE]\b/i.test(r));
+  let ciiSource: 'imo-public' | 'llm-fallback' | 'cache' | undefined;
+  if (vessel?.imo && hasCiiDorE) {
+    ciiSource = (await lookupCii(vessel.imo, { callLlm: async () => 'unknown' })).source;
+  }
+  const vesselWithCii = vessel && ciiSource ? { ...vessel, ciiSource } : vessel;
 
   return (
     <main className="min-h-screen bg-ds-bg">
@@ -283,7 +295,7 @@ export default async function MatchDetailPage({ params }: Props) {
 
                 <MatchTabs
                   match={sessionMatch}
-                  vessel={vessel}
+                  vessel={vesselWithCii}
                   cargo={cargo}
                   cargoEmailId={effectiveCargoEmailId}
                   matchDbId={storedMatch.id}
