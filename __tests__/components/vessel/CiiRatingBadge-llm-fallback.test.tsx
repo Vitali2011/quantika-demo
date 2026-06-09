@@ -29,12 +29,6 @@ describe('CiiRatingBadge — llm-fallback asterisk', () => {
     expect(badge.textContent).toBe('CII D');
   });
 
-  it('does NOT add asterisk for cache source', () => {
-    render(<CiiRatingBadge rating="C" year={2025} source="cache" />);
-    const badge = screen.getByTestId('cii-rating-badge');
-    expect(badge.textContent).toBe('CII C');
-  });
-
   it('tooltip contains "Estimated by AI" for llm-fallback', () => {
     render(<CiiRatingBadge rating="D" year={2025} source="llm-fallback" />);
     const badge = screen.getByTestId('cii-rating-badge');

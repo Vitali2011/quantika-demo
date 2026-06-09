@@ -46,7 +46,7 @@ describe('lookupCii — cache', () => {
     // Second call — must come from cache
     const second = await lookupCii(DEMO_IMO, { cacheDir, callLlm });
 
-    expect(second.source).toBe('cache');
+    expect(second.source).toBe('imo-public'); // original source preserved; not overwritten to 'cache'
     expect(second.rating).toBe('D');
     expect(llmCalls).toBe(0); // LLM never called since dataset hit
   });
@@ -84,9 +84,9 @@ describe('lookupCii — LLM fallback', () => {
     expect(result.source).toBe('llm-fallback');
     expect(llmCalls).toBe(1);
 
-    // Second call should hit cache, not LLM
+    // Second call should hit cache, not LLM — original source preserved
     const cached = await lookupCii(UNKNOWN_IMO, { cacheDir, callLlm });
-    expect(cached.source).toBe('cache');
+    expect(cached.source).toBe('llm-fallback'); // not 'cache' — badge disclosure stays on revisit
     expect(llmCalls).toBe(1);
   });
 
