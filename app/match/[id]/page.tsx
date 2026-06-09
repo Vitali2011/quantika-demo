@@ -312,7 +312,7 @@ export default async function MatchDetailPage({ params }: Props) {
                   <SourceAttributionSection
                     fields={[
                       ...(cargo.cargoDescription ? [{ label: 'Cargo', value: cargo.cargoDescription }] : []),
-                      ...(cargo.weightMt ? [{ label: 'Weight', value: { ...cargo.weightMt, value: cargo.weightMtMax ?? cfValue(cargo.weightMt) } }] : []),
+                      ...(cargo.weightMt ? [{ label: 'Weight', value: cargo.weightMt }] : []),
                       ...(cargo.originPort ? [{ label: 'Load Port', value: cargo.originPort }] : []),
                       ...(cargo.destinationPort ? [{ label: 'Discharge Port', value: cargo.destinationPort }] : []),
                       ...(laycanDisplay

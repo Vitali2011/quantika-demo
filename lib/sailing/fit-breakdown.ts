@@ -569,19 +569,20 @@ export function computeFitBreakdown(input: FitBreakdownInput): FitBreakdown {
   const desc = cfValue(cargo.cargoDescription);
   const partCargo = isPartCargo(desc);
 
-  const cargoWtMax = resolveCargoWeight(cargo);
+  const cargoWtMax = resolveCargoWeight(cargo);                  // worst-case: caps + overload gate (#792) + transparency
+  const cargoWtNominal = cfValue(cargo.weightMt) ?? cargoWtMax;  // nominal: display-facing scoring (#865)
   const dwt = cfValue(vessel.dwtSummer);
   const dwcc = cfValue(vessel.dwcc);
   const capacity = dwcc != null && dwcc > 0 ? dwcc : dwt;
 
   const components: FitBreakdownComponent[] = [
-    scoreUtilisation(cargoWtMax, capacity, partCargo),
+    scoreUtilisation(cargoWtNominal, capacity, partCargo),
     scoreTiming(readiness),
     scoreBallast(readiness?.distanceNm ?? null, dwt),
-    scoreClassFit(cargoWtMax, dwt, partCargo),
+    scoreClassFit(cargoWtNominal, dwt, partCargo),
     scoreCargoTypeQuality(cargo.cargoType, vessel.vesselType, vessel.lastCargoes),
     scoreCranes(vessel.geared, cfValue(cargo.originPort)),
-    scoreVolume(cargoWtMax, desc, vessel.grainCapacity, cargo.stowageFactor),
+    scoreVolume(cargoWtNominal, desc, vessel.grainCapacity, cargo.stowageFactor),
     scoreDraft(hardFilters),
     scoreVetting(vessel, refYear, detentionCount),
     scoreEconomics(tceUsdPerDay, dwt),
