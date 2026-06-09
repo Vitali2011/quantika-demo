@@ -15,7 +15,7 @@ import { scoreEconomics } from '@/lib/sailing/fit-breakdown';
  * Other components (timing, utilisation, etc.) and penalties/caps from the seed are
  * kept intact — only the economics contribution is updated.
  */
-function patchEconomicsComponent(
+export function patchEconomicsComponent(
   breakdown: FitBreakdown,
   liveTce: number | null,
   vesselDwt: number,
