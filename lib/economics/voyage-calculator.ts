@@ -191,7 +191,10 @@ export function calculateTCE(input: VoyageInput): TCEResult {
     vesselValueUsd: valueUsd,
     daysInHra,
   });
-  const warRiskUsd = Math.round(warResult.premiumUsd);
+  // Intentional spec change: war-risk.ts:128 designates breakdown.totalPremiumUsd as the full
+  // per-voyage cost (hull + crew bonus + P&I). premiumUsd is hull-only, kept for backward compat.
+  // REVERSIBLE: change back to warResult.premiumUsd to revert to hull-only convention.
+  const warRiskUsd = Math.round(warResult.breakdown?.totalPremiumUsd ?? warResult.premiumUsd);
   // βf-04: gate on calculator-reported applicability, not USD > 0.
   // A matched HRA zone is "applicable" even if (in degenerate edge cases)
   // the rounded premium were zero — so downstream UI surfaces the warning.
