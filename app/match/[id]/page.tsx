@@ -17,7 +17,6 @@ import { MatchWorksheet } from '@/components/match/MatchWorksheet';
 import type { MatchWorksheet as MatchWorksheetType } from '@/lib/types';
 import { cfValue } from '@/lib/types';
 import { getPortDistance } from '@/lib/sailing/port-distances';
-import { effectiveScore } from '@/lib/utils/effective-score';
 import { getBalticDayRate } from '@/lib/market/baltic-freight';
 import { lookupCii } from '@/lib/imo/cii-lookup';
 
@@ -130,9 +129,6 @@ export default async function MatchDetailPage({ params }: Props) {
     (vessel && cargo
       ? (getPortDistance(cfValue(vessel.openPosition) ?? '', cfValue(cargo.originPort) ?? '')?.nm ?? null)
       : null);
-
-  // eslint-disable-next-line react-hooks/purity -- Server Component; Date.now() runs once per request, not in client render
-  const now = Date.now();
 
   // W6a: Baltic TC staleness badge. When the stored freight rate came from the Baltic
   // tier-2 waterfall, surface the rate's price_date so EconomicsTab can show a stale badge.
