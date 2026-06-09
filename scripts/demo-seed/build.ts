@@ -155,7 +155,7 @@ function redactEmails(text: string): string {
 // name that happens to also be a port name (e.g. "Istanbul" → "CONTACT 3"), the JSON-level
 // replacement corrupts the structured field. Sanitize after anonymization.
 const LOCATION_FIELDS = ['openPosition', 'originPort', 'destinationPort'] as const;
-const CONTACT_TOKEN_RE = /^CONTACT\s+\d+$/i;
+const CONTACT_TOKEN_RE = /^(CONTACT|AGENT)\s+\d+$/i;
 
 export function sanitizeContactTokensFromLocations(items: unknown[]): unknown[] {
   return items.map((item) => {

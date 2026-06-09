@@ -247,6 +247,25 @@ describe('MatchesClient — mode-aware column headers (#630)', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Source analysis: MatchesClient — owner-mode default sort (#885 fix #3)
+// Owner default = TCE/day; charterer default = Fit %.
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('MatchesClient — owner vs charterer default sort (#885)', () => {
+  const src = fs.readFileSync(path.join(ROOT, 'app/matches/MatchesClient.tsx'), 'utf8');
+
+  it('initial sortBy is isOwner-conditional, not hardcoded fit', () => {
+    // Must have isOwner ternary inside useState initializer
+    expect(src).toMatch(/useState<SortBy>\s*\(\s*\(\s*\)\s*=>\s*isOwner\s*\?\s*'tce'\s*:\s*'fit'\s*\)/);
+  });
+
+  it('mode-switch reset is isOwner-conditional (not hardcoded fit)', () => {
+    // The setSortBy inside the derived-state-during-render block must branch on isOwner
+    expect(src).toMatch(/setSortBy\s*\(\s*isOwner\s*\?\s*'tce'\s*:\s*'fit'\s*\)/);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Source analysis: AIBar — reads mode from useMode hook (H3 regression, #630)
 // ─────────────────────────────────────────────────────────────────────────────
 

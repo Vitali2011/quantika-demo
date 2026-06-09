@@ -7,7 +7,7 @@ import { NotificationsForm } from './_forms/NotificationsForm';
 
 const VALID_SECTIONS = [
   'profile', 'password', 'notifications', 'integrations',
-  'team', 'api', 'billing', 'payment', 'invoices', 'danger',
+  'team', 'api', 'billing', 'payment', 'invoices', 'export', 'danger',
 ] as const;
 
 type Section = (typeof VALID_SECTIONS)[number];
@@ -155,6 +155,35 @@ function ApiSection() {
   );
 }
 
+function ExportSection() {
+  return (
+    <div className="space-y-6" data-testid="settings-export">
+      <div>
+        <h2 className="text-base font-semibold text-ds-text">Export your data</h2>
+        <p className="text-sm text-ds-text-muted mt-0.5">Download a copy of your Quantika data.</p>
+      </div>
+      <Card padding="md">
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm font-medium text-ds-text">All data (CSV)</p>
+            <p className="text-xs text-ds-text-muted mt-0.5">Vessels, cargoes, matches and economics in CSV format.</p>
+          </div>
+          <Button variant="secondary" size="sm" disabled>Export CSV</Button>
+        </div>
+      </Card>
+      <Card padding="md">
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm font-medium text-ds-text">All data (JSON)</p>
+            <p className="text-xs text-ds-text-muted mt-0.5">Full structured export including confidence fields.</p>
+          </div>
+          <Button variant="secondary" size="sm" disabled>Export JSON</Button>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
 function DangerSection() {
   return (
     <div className="space-y-6" data-testid="settings-danger">
@@ -203,6 +232,7 @@ export default async function SettingsSectionPage({
     case 'password':      return <PasswordSection />;
     case 'notifications': return <NotificationsSection />;
     case 'api':           return <ApiSection />;
+    case 'export':        return <ExportSection />;
     case 'danger':        return <DangerSection />;
     default:              return <ComingSoonSection section={section} />;
   }
