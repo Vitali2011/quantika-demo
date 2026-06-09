@@ -23,6 +23,7 @@ const config = {
     '/lib/matching/__tests__/golden-set/(schema|tolerance|runner)\\.ts$',
     ...(process.cwd().includes('/.wave/') ? [] : ['/.wave/']),
     ...(process.cwd().includes('/.claude/worktrees/') ? [] : ['/\\.claude/worktrees/']),
+    ...(process.cwd().includes('/.worktrees/') ? [] : ['/\\.worktrees/']),
   ],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   transform: {
