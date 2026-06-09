@@ -242,10 +242,14 @@ describe('POST /api/ai/draft-quote', () => {
     expect(body.retryable).toBe(true);
   });
 
-  it('re-throws non-timeout errors', async () => {
+  it('returns 500 JSON with error:ai_error for non-timeout errors', async () => {
     mockGetSession.mockReturnValue(baseSession);
     mockCallAiText.mockRejectedValue(new Error('unexpected error'));
     const req = makeRequest({ emailId: 'email-1' }, 'session-1');
-    await expect(POST(req)).rejects.toThrow('unexpected error');
+    const res = await POST(req);
+    expect(res.status).toBe(500);
+    const body = await res.json();
+    expect(body.error).toBe('ai_error');
+    expect(body.message).toBe('unexpected error');
   });
 });

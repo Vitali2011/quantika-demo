@@ -88,3 +88,44 @@ describe('QuoteTab — Save Draft + Send Quote handlers', () => {
     expect(screen.getByRole('button', { name: 'Send Quote' })).toBeDisabled();
   });
 });
+
+describe('QuoteTab — generateDraft error shows toast', () => {
+  it('calls toast.error with the error message when API returns non-ok', async () => {
+    const { csrfFetch } = await import('@/lib/csrf-client');
+    (csrfFetch as jest.Mock).mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ error: 'ai_error', message: 'Gemini credentials missing' }),
+    });
+
+    const user = userEvent.setup();
+    const { getByRole, findAllByText } = renderQuoteTab({ cargoEmailId: 'email-1' });
+
+    await user.click(getByRole('button', { name: 'Generate' }));
+
+    // Toast renders the error message in the DOM (toast + inline error both show it)
+    const matches = await findAllByText('Gemini credentials missing');
+    expect(matches.length).toBeGreaterThanOrEqual(1);
+    // Verify at least one is from the toast (data-variant="error")
+    const toastEl = matches.find(el => el.closest('[data-variant="error"]'));
+    expect(toastEl).toBeTruthy();
+  });
+
+  it('shows inline error text when API returns non-ok', async () => {
+    const { csrfFetch } = await import('@/lib/csrf-client');
+    (csrfFetch as jest.Mock).mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ error: 'ai_error', message: 'AI draft generation failed' }),
+    });
+
+    const user = userEvent.setup();
+    renderQuoteTab({ cargoEmailId: 'email-1' });
+
+    await user.click(screen.getByRole('button', { name: 'Generate' }));
+
+    await waitFor(() => {
+      // Inline error paragraph shows the message
+      const errorEl = screen.getByText('AI draft generation failed', { selector: 'p' });
+      expect(errorEl).toBeInTheDocument();
+    });
+  });
+});
