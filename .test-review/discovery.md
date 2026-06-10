@@ -1,30 +1,31 @@
-# Discovery — fix-econ-a-bunker (PR #822)
+# Phase 1 — Discovery (2026-06-09, Round 2)
 
-## Commits
-- ec9dcf12 fix(economics): remove SGSIN default — gate P&L on bunker-rec response (#820)
-- 8dbd3973 docs(plan): econ-cluster fix plan (plan doc only)
+## Context
+Round 2 cold QA. Round 1 (2026-06-08) found M1/M2/L1 as MEDIUM/LOW gate-relevant issues and H1 as PRE-EXISTING HIGH.
+PRs merged after Round 1:
+- #877: fix(waterfall): M1 duration float→1dp, M2 TCE-basis reconcile, L1 negative-zero guard
+- #878: fix(fit): recompute economics component from live TCE after computeStoredMatchEconomics (H1)
 
-## Changed Source Files (3)
-1. `app/api/voyage/bunker-recommendation/route.ts` — A1: freshness watchdog (log-only)
-2. `app/api/voyage/tce/route.ts` — A2.2: 400 on missing bunkerPort (removes SGSIN ?? default)
-3. `components/match/EconomicsTab.tsx` — A2.1: useState null + gate voyageInputData on bunkerPort != null
+## Commits in scope (main as of 2026-06-09 tip = 24fb6917)
+- 24fb6917 fix(fit): recompute economics component from live TCE after computeStoredMatchEconomics (H1) (#878)
+- 967ad0a1 fix(waterfall): M1 duration float→1dp, M2 TCE-basis reconcile, L1 negative-zero guard (#877)
+- e2cacec8 feat(w6a): surface economics provenance — DA confidence badge, Baltic-TC staleness, canal tag rename, war-risk rate date (I7/I12) (#876)
+- c17b7af9 feat(w6b): surface CII llm-fallback disclosure, PSC/charterers demo banners (#875)
+- b548d034 feat(counts): canonical match-count + ROI window + effectiveScore shared util (W8, closes I10, I11) (#873)
 
-## Key Behavior Changes
-- `tce/route.ts`: `(data.bunkerPort ?? 'SGSIN').toUpperCase()` → explicit 400 when bunkerPort absent
-- `EconomicsTab`: initial bunkerPort=null; P&L call gated; port set from recommendation response
-- `bunker-recommendation`: stale price warning (read-only, log-only)
+## Files changed by #877 + #878 (primary targets)
+- components/economics/CalculationWaterfall.tsx (M1/M2/L1)
+- lib/matching/persist-session-matches.ts (H1: recompute after computeStoredMatchEconomics)
+- __tests__/economics/persist-session-matches-fit-recompute.test.ts (H1 regression test)
+- components/economics/CalculationWaterfall.test.tsx (M1/M2/L1 regression tests)
 
-## New Tests Added
-- `bunker-freshness-watchdog.test.ts` — A1 stale/fresh price logging (PI2 route handler)
-- `tce-missing-bunker-port.test.ts` — A2.2 400/200/422 value shapes
-- `EconomicsTab-bunker-null.test.tsx` — A2.1 RTL: GIGIB not SGSIN, fallback gates P&L
+## UI files changed (latest waves) → Browser E2E Gate ACTIVE
+- components/economics/CalculationWaterfall.tsx
+- lib/matching/persist-session-matches.ts (affects Passport tab TCE display)
 
-## Modified Tests (setup, not assertions)
-- `EconomicsTab-pnl.test.tsx` — added bunker-recommendation mock to setupFetch
-- `EconomicsTab-cons-clamp.test.tsx` — changed fallback mock → valid port mock
-- `tce-auto-bunker.test.ts` — 1 assertion change: SGSIN default test → 400 required
-
-## What Existing Tests Cover
-- Basin filter, eff-split, candidates, consumption/DWT clamp, reco adversarial
-- TCE backward-compat, EUA auto-derive, ETS auto-derive
-- EconomicsTab: bunker-hint, bunker-route-aware, EUA, war-risk, compare-inputs, P&L
+## Verification targets
+1. H1: Passport tab economics $ == live TCE displayed on match card; fit% not inflated for below-breakeven
+2. M1: CalculationWaterfall duration_days shown as "X.X дней" (1dp), not raw float
+3. M2: war-risk line in waterfall reconciles: total_tce = base_tce - war_risk/days
+4. L1: No "$-0" anywhere in economics display
+5. Fresh sweep: /matches list, cards, filter, /match/[id] tabs, dashboard counts, vetting badges

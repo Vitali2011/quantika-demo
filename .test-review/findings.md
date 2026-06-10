@@ -1,36 +1,51 @@
-# test-skill Findings — claude/tce-list-detail-unify (#819)
+# test-skill findings — 2026-06-09 (Round 2)
 
-## HIGH findings (gate-relevant)
+## Round 1 Followups — Verified Fixed
 
-### BUG-1: bunkerPriceUsdPerMt=0 always sent when user has no manual price
+### ✓ FIXED: H1 — fit_breakdown economics component now uses live TCE
+- PR #878: patchEconomicsComponent() replaces only economics component with scoreEconomics(liveTce, dwt)
+- Browser: Passport TCE = Header TCE (delta=0 on tested matches: $2,230, $27,152)
+- Economics penalty working: avg fit% neg-TCE (60%) < avg fit% pos-TCE (70%)
+- Regression: 140/140 tests pass
 
-**Severity:** HIGH — introduced by this PR (Task 5)
-**File:** `components/match/EconomicsTab.tsx`
-**Root cause:** `buildCanonicalTceInputs` always gets `bunkerPriceUsdPerMt: 0` when user hasn't entered a price. The VoyageInput result always has `bunkerPriceUsdPerMt: 0`. The POST body includes `"bunkerPriceUsdPerMt": 0`. API: `typeof 0 === 'number'` → TRUE → uses $0 as manual bunker price → bunker cost = $0 → inflated TCE.
+### ✓ FIXED: M1 — CalculationWaterfall duration shown 1dp
+- PR #877: `duration_days.toFixed(1)` in duration-days row and bunker-caption
+- Browser (match/54117): "÷ Длина рейса **7.2 дней**", bunker caption "· **7.2 дн** ·" — no raw float
+- Regression: 140/140 tests pass
 
-**Test:** `__tests__/regression/economics-tab-bunker-price-zero.test.tsx` — FAILS (bunkerPriceUsdPerMt is 0 in body)
+### ✓ FIXED: M2 — waterfall war-risk math reconciliation
+- PR #877: "Чистыми для TCE" addback row renders when war_risk_usd > 0
+- Code fix correct: `{war_risk_usd > 0 && (<div data-testid="tce-basis-addback">...)}`
+- Browser unverifiable: no HRA routes with war_risk>0 in demo seed (all 73 matches have war_risk_usd=0)
+- Regression: 140/140 tests pass
 
-**Fix:** Override `bunkerPriceUsdPerMt` in the spread after buildCanonicalTceInputs:
-```typescript
-...(bunkerPriceUsdPerMt !== '' ? { bunkerPriceUsdPerMt: Number(bunkerPriceUsdPerMt) } : {}),
-```
-(restore old conditional spread for this specific field)
+### ✓ FIXED: L1 — no $-0 in CalculationWaterfall
+- PR #877: `fmtUsd` guards `n === 0 → '$0'`
+- Browser: strict $-0 absent on all tested pages (matches list + 4 match detail pages)
+- Regression: 140/140 tests pass
 
----
+## Findings (gate-relevant, introduced by recent changes)
+**NONE**
 
-## MEDIUM findings (informational)
+## Fresh Sweep — No New Issues
+- /matches list: 73 matches, body 6418 chars, 0 console errors, 0 hydration errors
+- Fit% values: [86, 82, 82, 81, 80, 80, 79, 76] — reasonable spread for top matches
+- Vetting badges: PSC=35 HTML refs, charterer=110 (demo banners) — present
+- Dashboard (/dashboard): functional, body 1395 chars
+- Match detail (/match/[id]): Economics + Passport tabs functional
+- Deployed version: confirmed `sentry-release=24fb6917` (correct)
 
-### BUG-2: compareInputs.cargo.freightRateUsdPerMt=0 when no rate available
-**Severity:** MEDIUM — UX regression. Old: `?? 28`, New: `?? 0`. Route comparison modal shows all-loss with $0 freight revenue when no rate available. Fix: gate compareInputs.ready on freightRateUsdPerMt > 0.
+## Pre-existing Issues (informational, do not affect gate)
+### B18e (pre-existing): fmtTce sign format
+- File: app/matches/MatchesClient.tsx:80-83
+- `fmtTce(-800)` → `$-0.8k` (should be `-$0.8k`); small negatives: `$-0.0k`
+- Last modified: commit b548d034 (PR #873, 2026-06-07), NOT introduced by #877/#878
+- Documented in BUGFIX-HANDOFF-2026-06-05.md as B18e
+- Gate impact: none (pre-existing, not a regression)
 
----
+## Browser E2E Gate
+PASS — 0 console errors, 0 hydration errors
+All pages functional. Screenshots: /tmp/pw-final-matches.png, /tmp/pw-wf-54117.png, /tmp/pw-pp-54117.png, /tmp/pw-neg-tce-passport.png
 
-## Pre-existing Issues (not introduced by this PR)
-None.
-
-## Coverage Summary
-- buildCanonicalTceInputs adversarial: 10 tests PASS
-- distanceFactor 0.7→1.0: existing tests cover
-- session-buckets B(c): dead-code traced, no regression
-- regenerate-matches INSERT: column count verified (25 cols, 25 values)
-- EconomicsTab bunker price: BUG-1 HIGH FAIL
+## Verdict
+APPROVE
