@@ -10,7 +10,8 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import * as child_process from 'node:child_process';
 
-import { needsPayoutPatch, applyPayoutPatch } from '../backfill-payout';
+import { Type } from '@google/genai';
+import { needsPayoutPatch, applyPayoutPatch, PAYOUT_SCHEMA } from '../backfill-payout';
 
 const SCRIPT_PATH = path.resolve(__dirname, '../backfill-payout.ts');
 const REPO_ROOT = path.resolve(__dirname, '../../..');
@@ -158,6 +159,25 @@ describe('applyPayoutPatch', () => {
   });
 });
 
+// ─── Schema structure ─────────────────────────────────────────────────────────
+
+describe('PAYOUT_SCHEMA', () => {
+  it('uses Type.OBJECT at top level (Gemini SDK style)', () => {
+    expect(PAYOUT_SCHEMA.type).toBe(Type.OBJECT);
+  });
+
+  it('payout_condition uses Type.STRING with nullable:true (not array syntax)', () => {
+    const field = PAYOUT_SCHEMA.properties.payout_condition;
+    expect(field.type).toBe(Type.STRING);
+    expect(field.nullable).toBe(true);
+    expect(Array.isArray(field.type)).toBe(false);
+  });
+
+  it('required includes payout_condition', () => {
+    expect(PAYOUT_SCHEMA.required).toContain('payout_condition');
+  });
+});
+
 // ─── Integration (subprocess) ────────────────────────────────────────────────
 
 describe('backfill-payout (subprocess)', () => {
@@ -279,5 +299,41 @@ describe('backfill-payout (subprocess)', () => {
     const output = stdout + stderr;
     expect(exitCode).toBe(0);
     expect(output).toMatch(/MISSING-EMAIL/);
+  });
+
+  it('continues processing remaining rows after a fixture lookup produces null (allSettled behaviour)', () => {
+    // Three rows — first gets null payout (no fixture entry), second and third get values.
+    // Verifies that all rows are processed even when one returns null (not an error, but confirms no early abort).
+    createTestDb(dbPath, [
+      { emailId: 'rowA', items: [{ emailId: 'rowA' }] },
+      { emailId: 'rowB', items: [{ emailId: 'rowB' }] },
+      { emailId: 'rowC', items: [{ emailId: 'rowC' }] },
+    ]);
+
+    const fixturePath = path.join(tmpDir, 'fixture.json');
+    // rowA deliberately absent from fixture → null; rowB and rowC present
+    fs.writeFileSync(fixturePath, JSON.stringify({ rowB: 'LC at sight', rowC: 'CAD' }));
+
+    const { stdout, stderr, exitCode } = runScript(dbPath, [
+      '--apply',
+      '--mock-payout-fixture',
+      fixturePath,
+    ]);
+    expect(exitCode).toBe(0);
+
+    const db = new Database(dbPath, { readonly: true });
+    const getItem = (id: string) => {
+      const row = db
+        .prepare(`SELECT result_json FROM parsed_results WHERE gmail_message_id=? AND parse_type='cargo'`)
+        .get(id) as { result_json: string };
+      return JSON.parse(row.result_json)[0] as Record<string, unknown>;
+    };
+    expect(getItem('rowA')['payoutCondition']).toBeNull();
+    expect(getItem('rowB')['payoutCondition']).toBe('LC at sight');
+    expect(getItem('rowC')['payoutCondition']).toBe('CAD');
+    db.close();
+
+    const output = stdout + stderr;
+    expect(output).toMatch(/patched=3/i);
   });
 });

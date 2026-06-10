@@ -24,10 +24,10 @@
 import Database from 'better-sqlite3';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import 'dotenv/config';
 import dotenv from 'dotenv';
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local'), override: false });
 
+import { Type } from '@google/genai';
 import pLimit from 'p-limit';
 import { callAiJson } from '@/lib/ai-provider';
 
@@ -37,13 +37,10 @@ Return JSON with exactly one field: payout_condition.
 Field definition:
 - payout_condition: payment / payout terms stated in the email — e.g. "100% freight payable on completion of discharge", "freight payable within 3 banking days after completion", "LC at sight", "CAD (cash against documents)", "payment 95/5". Capture the verbatim condition as a plain STRING. Return null if the email states no payment/payout condition. Do NOT infer — extract only when explicitly written.`;
 
-const PAYOUT_SCHEMA: Record<string, unknown> = {
-  type: 'object',
+export const PAYOUT_SCHEMA = {
+  type: Type.OBJECT,
   properties: {
-    payout_condition: {
-      type: ['string', 'null'],
-      description: 'Verbatim payment/payout condition from the email, or null.',
-    },
+    payout_condition: { type: Type.STRING, nullable: true },
   },
   required: ['payout_condition'],
 };
@@ -163,19 +160,27 @@ async function main(): Promise<void> {
   let patchedItems = 0;
   let skippedAlreadyCorrect = rows.length - toProcess.length;
   let skippedMissingEmail = 0;
+  const failedRows: string[] = [];
 
   const limit = pLimit(CONCURRENCY);
 
-  await Promise.all(
-    target.map((row, i) =>
+  const results = await Promise.allSettled(
+    target.map((row) =>
       limit(async () => {
         const items: ParsedItem[] = JSON.parse(row.result_json);
 
         // Read email body
         const emailRow = selectEmail.get(row.account_id, row.gmail_message_id);
-        if (!emailRow || !emailRow.body) {
+        if (!emailRow) {
           console.log(
             `[backfill-payout] MISSING-EMAIL account=${row.account_id} emailId=${row.gmail_message_id} — skipping`,
+          );
+          skippedMissingEmail++;
+          return;
+        }
+        if (!emailRow.body) {
+          console.log(
+            `[backfill-payout] EMPTY-BODY account=${row.account_id} emailId=${row.gmail_message_id} — skipping`,
           );
           skippedMissingEmail++;
           return;
@@ -205,8 +210,17 @@ async function main(): Promise<void> {
     ),
   );
 
+  for (let idx = 0; idx < results.length; idx++) {
+    const r = results[idx];
+    if (r.status === 'rejected') {
+      const emailId = target[idx].gmail_message_id;
+      console.error(`[backfill-payout] ROW-ERROR emailId=${emailId}:`, r.reason);
+      failedRows.push(emailId);
+    }
+  }
+
   console.log(
-    `[backfill-payout] done — patched=${patchedRows} skipped-already-correct=${skippedAlreadyCorrect} skipped-missing-email=${skippedMissingEmail} items_patched=${patchedItems}`,
+    `[backfill-payout] done — patched=${patchedRows} skipped-already-correct=${skippedAlreadyCorrect} skipped-missing-email=${skippedMissingEmail} items_patched=${patchedItems}${failedRows.length ? ` failed=${failedRows.length} failed-ids=${failedRows.join(',')}` : ''}`,
   );
 
   db.close();
