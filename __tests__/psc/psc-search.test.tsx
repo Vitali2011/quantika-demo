@@ -214,5 +214,22 @@ describe('PscSearchForm', () => {
         expect(screen.queryByText(/IMO must be exactly 7 digits/i)).not.toBeInTheDocument();
       });
     });
+
+    it('submits search when Enter is pressed (form submit)', async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockPscRecords,
+      });
+
+      render(<PscSearchForm />);
+      const input = screen.getByRole('textbox');
+      fireEvent.change(input, { target: { value: '1234567' } });
+
+      fireEvent.submit(input.closest('form')!);
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith('/api/vessels/1234567/psc-history');
+      });
+    });
   });
 });
