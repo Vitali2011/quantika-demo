@@ -1,8 +1,14 @@
 import Database from 'better-sqlite3';
 import migration048 from '@/lib/migrations/048-ai-quote-jobs';
+import migration049 from '@/lib/migrations/049-quote-jobs-match-id';
 import { enqueueQuoteJob, claimNextJob } from '@/lib/quote-jobs/store';
 
-function db() { const d = new Database(':memory:'); migration048.up(d); return d; }
+function db() {
+  const d = new Database(':memory:');
+  migration048.up(d);
+  migration049.up(d);
+  return d;
+}
 
 // Simulate the race condition: job is already 'processing' (Process A claimed it).
 // Without the outer `AND status='queued'` guard, Process B can UPDATE the row again.

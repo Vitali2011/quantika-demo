@@ -112,6 +112,7 @@ export function MatchTabs({ match, vessel, cargo, cargoEmailId, matchDbId, store
           <QuoteTab
             cargoEmailId={cargoEmailId}
             confidence={match.confidence}
+            matchId={matchDbId?.toString()}
           />
         )}
         {activeTab === 'emails' && (

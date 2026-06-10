@@ -12,12 +12,13 @@ import { useQuoteJob } from '@/lib/quote-jobs/use-quote-job';
 interface QuoteTabProps {
   cargoEmailId?: string;
   confidence?: MatchConfidence;
+  matchId?: string;
 }
 
-export function QuoteTab({ cargoEmailId, confidence }: QuoteTabProps) {
+export function QuoteTab({ cargoEmailId, confidence, matchId }: QuoteTabProps) {
   const toast = useToast();
   const { state, draft: hookDraft, error: hookError, start, retry } =
-    useQuoteJob(cargoEmailId, (msg) => toast.error(msg));
+    useQuoteJob(cargoEmailId, (msg) => toast.error(msg), matchId);
   const [draft, setDraft] = useState('');
   const [prevHookDraft, setPrevHookDraft] = useState('');
   const [benchmark, setBenchmark] = useState<MarketBenchmark | null | 'loading'>('loading');

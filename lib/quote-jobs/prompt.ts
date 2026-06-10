@@ -1,13 +1,19 @@
+import type Database from 'better-sqlite3';
 import { DRAFT_QUOTE_SYSTEM_PROMPT } from '@/lib/prompts';
 import { resolveSenderName } from '@/lib/utils/resolve-sender-name';
+import { buildMatchQuoteContext } from './match-context';
 
 interface BuildArgs {
   parsedCargo: { emailId: string; cargoType?: string; cargoDescription?: unknown };
   email?: { id: string; from?: string | null; fromName?: string | null; subject?: string | null; body?: string | null };
   ragEnabled: boolean;
+  /** When provided, appends a MATCH ECONOMICS block to the user prompt with real numbers. */
+  matchId?: string;
+  /** Database instance needed to resolve match numbers (required when matchId is set). */
+  db?: Database.Database;
 }
 
-export async function buildQuotePrompt({ parsedCargo, email, ragEnabled }: BuildArgs): Promise<{ system: string; user: string }> {
+export async function buildQuotePrompt({ parsedCargo, email, ragEnabled, matchId, db }: BuildArgs): Promise<{ system: string; user: string }> {
   const fromName = resolveSenderName({ fromName: email?.fromName, from: email?.from });
 
   const ragContextParts: string[] = [];
@@ -40,7 +46,7 @@ export async function buildQuotePrompt({ parsedCargo, email, ragEnabled }: Build
     ? `${DRAFT_QUOTE_SYSTEM_PROMPT}\n\n${ragContextParts.join('\n')}`
     : DRAFT_QUOTE_SYSTEM_PROMPT;
 
-  const user = `
+  let user = `
 Parsed cargo inquiry data:
 ${JSON.stringify(parsedCargo, null, 2)}
 
@@ -52,6 +58,16 @@ Body: ${email?.body?.slice(0, 1500) || ''}
 Address the reply to: ${fromName}
 
 Generate a professional draft quote email.`;
+
+  // Append match economics block when matchId + db are available.
+  // System prompt (DRAFT_QUOTE_SYSTEM_PROMPT) is not edited — its [RATE TO BE CONFIRMED]
+  // literal is suppressed by the block's own instruction when an offered rate is present.
+  if (matchId && db) {
+    const ctx = await buildMatchQuoteContext(db, matchId);
+    if (ctx) {
+      user = user + '\n\n' + ctx.block;
+    }
+  }
 
   return { system, user };
 }

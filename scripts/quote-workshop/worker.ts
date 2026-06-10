@@ -52,7 +52,7 @@ async function main() {
     heartbeatJob(db, job.id);
 
     try {
-      const { system, user } = await buildQuotePrompt({ parsedCargo, email, ragEnabled: isRagEnabled() });
+      const { system, user } = await buildQuotePrompt({ parsedCargo, email, ragEnabled: isRagEnabled(), matchId: job.match_id ?? undefined, db });
       // NOTE: callClaudeCliRaw is synchronous (spawnSync) and will block the event loop.
       // Heartbeat before and after is the best we can do without async subprocess.
       const { text } = callClaudeCliRaw(system, user, MODEL, { maxBudgetUsd: BUDGET, timeoutMs: 85_000 });
