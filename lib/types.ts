@@ -561,6 +561,10 @@ export interface FitBreakdownComponent {
   score: number;
   /** Human-readable why the score is what it is — visible to the broker. */
   rationale: string;
+  /** Short structured numbers shown in grey brackets next to the % (Task G).
+   *  Read-only display of values the scorer already computed. Optional →
+   *  backward-compatible with stored fit_breakdown JSON (no migration). */
+  bracketData?: string;
 }
 
 export interface FitBreakdown {

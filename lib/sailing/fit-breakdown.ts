@@ -89,6 +89,8 @@ function unknown(factor: FitFactor, label: string, why: string): FitBreakdownCom
   };
 }
 
+const fmt = (n: number) => Math.round(n).toLocaleString('en-US');
+
 /** Utilisation — continuous curve over cargo/vessel-capacity ratio.
  *  Anchor: ~88–98% util = peak. <50% non-part-cargo = sharp drop (deadfreight).
  *  Part-cargo exemption: low util is normal in handysize/breakbulk parcels,
@@ -145,6 +147,7 @@ export function scoreUtilisation(
     weight: w,
     score: Math.round(w * share * 10) / 10,
     rationale: utilizationRationale,
+    bracketData: `${fmt(cargoWtMax)} / ${fmt(vesselCapacity)} mt`,
   };
 }
 
@@ -163,6 +166,7 @@ export function scoreTiming(readiness: MatchReadiness | undefined): FitBreakdown
   }
   let share: number;
   let why: string;
+  let timingBracket: string | undefined;
   switch (verdict) {
     case 'ideal':
       share = 1.0;
@@ -177,11 +181,13 @@ export function scoreTiming(readiness: MatchReadiness | undefined): FitBreakdown
       const d = Math.abs(gapDays ?? 5);
       share = d <= 5 ? 0.65 : d <= 14 ? 0.45 : d <= 30 ? 0.25 : 0.1;
       why = `Ship would sit idle ~${Math.round(d)} days before laycan — owner carrying-cost risk.`;
+      timingBracket = `${Math.round(d)}d idle`;
       break;
     }
     case 'late':
       share = 0.05;
       why = 'Ship arrives after the laycan ends — would miss the window.';
+      timingBracket = 'late';
       break;
     default:
       share = UNKNOWN_SHARE;
@@ -193,6 +199,7 @@ export function scoreTiming(readiness: MatchReadiness | undefined): FitBreakdown
     weight: w,
     score: Math.round(w * share * 10) / 10,
     rationale: why,
+    bracketData: timingBracket,
   };
 }
 
@@ -235,6 +242,7 @@ export function scoreBallast(
     weight: w,
     score: Math.round(w * Math.max(0, share) * 10) / 10,
     rationale: ballastRationale,
+    bracketData: `~${fmt(distanceNm)} nm`,
   };
 }
 
@@ -280,6 +288,7 @@ export function scoreClassFit(
     weight: w,
     score: Math.round(w * share * 10) / 10,
     rationale: `Ship ${vesselDwt} dwt vs cargo ${cargoWtMax} mt (ratio ${ratio.toFixed(2)}) — ${classFitSuffix}.`,
+    bracketData: `${fmt(vesselDwt)} / ${fmt(cargoWtMax)} mt`,
   };
 }
 
@@ -343,7 +352,7 @@ export function scoreCranes(
 ): FitBreakdownComponent {
   const w = FIT_WEIGHTS.cranes;
   if (geared === true) {
-    return { factor: 'cranes', label: 'Cranes', weight: w, score: w, rationale: 'Ship is geared — no dependence on shore cranes.' };
+    return { factor: 'cranes', label: 'Cranes', weight: w, score: w, rationale: 'Ship is geared — no dependence on shore cranes.', bracketData: 'geared' };
   }
   if (geared === false) {
     const loadCranes = portHasShoreCranes(loadPort);
@@ -351,14 +360,14 @@ export function scoreCranes(
     const loadName = loadPort ?? 'load port';
     const dischName = dischargePort ?? 'discharge port';
     if (loadCranes === false && dischCranes === false) {
-      return { factor: 'cranes', label: 'Cranes', weight: w, score: 0, rationale: 'Ship is gearless and neither load nor discharge port has cranes — not workable.' };
+      return { factor: 'cranes', label: 'Cranes', weight: w, score: 0, rationale: 'Ship is gearless and neither load nor discharge port has cranes — not workable.', bracketData: 'gearless — no cranes' };
     }
     if (loadCranes === true || dischCranes === true) {
       let where: string;
       if (loadCranes === true && dischCranes === true) where = `both ports (${loadName} and ${dischName}) have shore cranes`;
       else if (dischCranes === true) where = `discharge port (${dischName}) has shore cranes`;
       else where = `load port (${loadName}) has shore cranes`;
-      return { factor: 'cranes', label: 'Cranes', weight: w, score: Math.round(w * 0.85 * 10) / 10, rationale: `Ship is gearless, but ${where} — workable.` };
+      return { factor: 'cranes', label: 'Cranes', weight: w, score: Math.round(w * 0.85 * 10) / 10, rationale: `Ship is gearless, but ${where} — workable.`, bracketData: 'gearless — port cranes ✓' };
     }
     return { factor: 'cranes', label: 'Cranes', weight: w, score: Math.round(w * 0.55 * 10) / 10, rationale: 'Ship is gearless; crane availability at load/discharge not yet confirmed.' };
   }
@@ -404,6 +413,7 @@ export function scoreVolume(
     weight: w,
     score: Math.round(w * share * 10) / 10,
     rationale: why,
+    bracketData: `${Math.round(ratio * 100)}% of grain`,
   };
 }
 
@@ -446,6 +456,7 @@ export function scoreVetting(vessel: ParsedVessel, refYear?: number, detentionCo
     weight: w,
     score: Math.round(w * result.score * 10) / 10,
     rationale,
+    bracketData: detentionCount != null ? `${detentionCount} detentions` : undefined,
   };
 }
 
@@ -474,6 +485,7 @@ export function scoreEconomics(
   const norm = economicsNorm(tceUsdPerDay, dwt);
   const score = Math.round(w * norm);
   let rationale: string;
+  let economicsBracket: string | undefined;
   if (tceUsdPerDay == null) {
     rationale = 'TCE not available — economics scored neutral.';
   } else if (!(dwt > 0)) {
@@ -486,6 +498,7 @@ export function scoreEconomics(
     } else {
       rationale = `TCE $${Math.round(tceUsdPerDay).toLocaleString('en-US')}/day — $${Math.round(Math.abs(diff)).toLocaleString('en-US')}/day below class breakeven.`;
     }
+    economicsBracket = `$${fmt(tceUsdPerDay)} / $${fmt(breakeven)} BE`;
   }
   return {
     factor: 'economics',
@@ -493,6 +506,7 @@ export function scoreEconomics(
     weight: w,
     score,
     rationale,
+    bracketData: economicsBracket,
   };
 }
 
