@@ -76,6 +76,19 @@ describe('EmailsTab', () => {
     );
     expect(screen.queryByText(/Payout condition/i)).not.toBeInTheDocument();
   });
+
+  it('strips <SENDER N> anonymization tokens from rendered bodies', () => {
+    render(
+      <EmailsTab
+        cargoEmailBody="From: <SENDER 1> re: 25000mt clinker"
+        vesselEmailBody="Regards, <SENDER 2> open Izmir"
+      />
+    );
+    expect(screen.queryByText(/<SENDER 1>/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/<SENDER 2>/)).not.toBeInTheDocument();
+    expect(screen.getByText(/25000mt clinker/)).toBeInTheDocument();
+    expect(screen.getByText(/open Izmir/)).toBeInTheDocument();
+  });
 });
 
 describe('MatchTabs — Emails tab (PI2 behavioral)', () => {

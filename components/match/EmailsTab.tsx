@@ -1,5 +1,7 @@
 'use client';
 
+import { decodeHtmlEntities, sanitizeEmailBody } from '@/lib/utils';
+
 interface EmailsTabProps {
   cargoEmailBody?: string | null;
   vesselEmailBody?: string | null;
@@ -14,7 +16,7 @@ function EmailBlock({ title, body }: { title: string; body?: string | null }) {
         {title}
       </summary>
       {body
-        ? <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-words px-3 py-2 text-xs text-ds-text-muted font-mono">{body}</pre>
+        ? <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-words px-3 py-2 text-xs text-ds-text-muted font-mono">{sanitizeEmailBody(decodeHtmlEntities(body).replace(/\r\n/g, '\n').replace(/\r/g, '\n'))}</pre>
         : <p className="px-3 py-2 text-xs text-ds-text-subtle">Email body not available for this match.</p>}
     </details>
   );
