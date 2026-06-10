@@ -42,6 +42,6 @@ describe('getDb WAL + busy_timeout (H5)', () => {
     const dbPath = path.join(tmpDir, 'busy.db');
     const db = getDb(dbPath);
     const timeout = db.pragma('busy_timeout', { simple: true }) as number;
-    expect(timeout).toBeGreaterThan(0);
+    expect(timeout).toBe(5000);
   });
 });
