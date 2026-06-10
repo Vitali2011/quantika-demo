@@ -119,6 +119,10 @@ export default function ClausesPage() {
                 <option value="GENCON 2022">GENCON 2022</option>
                 <option value="HEAVYCON">HEAVYCON</option>
                 <option value="PROJECTCON">PROJECTCON</option>
+                <option value="NYPE 1946">NYPE 1946</option>
+                <option value="SHELLVOY 6">SHELLVOY 6</option>
+                <option value="BALTIME">BALTIME</option>
+                <option value="CONGENBILL">CONGENBILL</option>
               </select>
             </div>
 
