@@ -30,6 +30,10 @@
 | `lib/quote-jobs/ensure-worker.ts` | Spawn the detached worker if none alive (single-flight via lock file) | Create |
 | `scripts/quote-workshop/worker.ts` | Standalone serial queue drainer; calls `callClaudeCliRaw`; notifies Next | Create |
 | `package.json` | Add `quote:workshop` script | Modify |
+| `lib/migrations/049-quote-jobs-match-id.ts` | Add nullable `match_id` to `ai_quote_jobs` | Create (Stage 10b) |
+| `lib/quote-jobs/match-context.ts` | `buildMatchQuoteContext` — numbers-only economics block + derived indicative band | Create (Stage 10b) |
+| `lib/api-schemas.ts` | `DraftQuoteBodySchema` + optional `matchId` | Modify (Stage 10b) |
+| `components/match/MatchTabs.tsx` / `app/match/[id]/page.tsx` | Thread `matchId` → `QuoteTab` | Modify (Stage 10b) |
 | `.env.local.example` | Document new env vars | Modify |
 | `scripts/deploy-vps.sh` / docs | Prod provisioning notes | Doc only (Stage 9) |
 
@@ -1272,6 +1276,231 @@ git commit -m "docs(quote): document workshop env vars + claude-cli model/budget
 
 ---
 
+### Stage 10b (M): Match-aware justified rate (founder decision)
+
+**Why:** when a quote is generated **from the match page**, the draft should propose a **justified, indicative rate** built from the match's real numbers — vessel (name/type/DWT), computed economics (TCE, breakeven freight), and a market benchmark — instead of falling back to `[RATE TO BE CONFIRMED]` when the client gave no rate. From the **cargo page** (`DraftQuoteCard`, no match context) behaviour stays exactly as today (the Stage 6 `[RATE TO BE CONFIRMED]` path is untouched). This stage is **value-bearing** — the rate is a number a partner will see — so it ends with a mandatory **VALUE_CHECK** step that proves the drafted rate derives from the inputs for a concrete match.
+
+**Design (additive — does NOT rewrite Stages 4/6/8/9):**
+- `buildQuotePrompt` (Stage 6) gains an **optional** `matchId`. When absent → identical output to Stage 6 (cargo path unchanged). When present → a deterministic `MATCH ECONOMICS & MARKET DATA` block + a rate-justification instruction is appended to the **user** prompt only (the global `DRAFT_QUOTE_SYSTEM_PROMPT` in `lib/prompts/draft.ts` is **not** edited — no literal removed).
+- The numbers come from `getMatch(db, id)` (`lib/matching/matches-repository.ts:398`, `StoredMatch`: `vessel_name`, `vessel_dwt`, `load_port`, `discharge_port`, `tce_usd_per_day`, `freight_rate_usd_per_mt`, `freight_rate_source`, `distance_nm`) plus `getCurrentBenchmark('TOEPFER_TMI')` (`lib/market/benchmark.ts:23`, `MarketBenchmark.value` in USD/day, `.period`). matchId may be numeric or slug — resolve with `getMatch`/`getMatchBySlug` exactly as `app/match/[id]/page.tsx:43-50` does.
+- **Indicative band (computed in code, never invented by the model):** `offeredRate = freight_rate_usd_per_mt`; `marketLow = offeredRate * (1 - INDICATIVE_SPREAD_PCT)`, `marketHigh = offeredRate * (1 + INDICATIVE_SPREAD_PCT)`, `INDICATIVE_SPREAD_PCT = 0.05` (named constant, documented). The builder passes `offeredRate`, `marketLow`, `marketHigh`, `tce_usd_per_day`, and the benchmark verbatim. The prompt instruction: *"Use ONLY the numbers in the MATCH ECONOMICS block — do NOT invent or round to a different rate. Present the offered rate as **indicative** (e.g. 'we can offer USD X.XX/mt, indicative; market range for this route USD LOW–HIGH/mt'). Do NOT output `[RATE TO BE CONFIRMED]` when an offered rate is present."*
+- **Threading matchId to the worker:** the job row needs the id. Migration **049** adds a nullable `match_id TEXT` column to `ai_quote_jobs` (Stage 4's migration 048 is left untouched). `enqueueQuoteJob` accepts an optional `matchId`; the worker passes `job.match_id` into `buildQuotePrompt`.
+- **Dedupe key stays `(session_id, email_id)`** (Stage 5). A match-page quote and a cargo-page quote for the same email dedupe together; for the demo that is acceptable — note it, do not change the key.
+- **UI plumbing:** `useQuoteJob(emailId, matchId?)` includes `matchId` in the enqueue POST body. `QuoteTab` gains a `matchId` prop threaded `app/match/[id]/page.tsx → MatchTabs → QuoteTab`. `DraftQuoteCard` is **not** changed — it never passes `matchId`.
+
+**Files:**
+- Create: `lib/migrations/049-quote-jobs-match-id.ts`; Modify: `lib/migrations/index.ts` (register 049)
+- Create: `lib/quote-jobs/match-context.ts` (`buildMatchQuoteContext(db, matchId)` → structured block + band) + test
+- Modify: `lib/quote-jobs/prompt.ts` (optional `matchId` + `db`), `lib/quote-jobs/store.ts` (`QuoteJob.match_id`, `enqueueQuoteJob` optional `matchId`)
+- Modify: `app/api/ai/draft-quote/route.ts` (read `matchId` from body, pass to enqueue), `lib/api-schemas.ts` (`DraftQuoteBodySchema` + optional `matchId`)
+- Modify: `scripts/quote-workshop/worker.ts` (pass `job.match_id` to `buildQuotePrompt`)
+- Modify: `lib/quote-jobs/use-quote-job.ts`, `components/match/QuoteTab.tsx`, `components/match/MatchTabs.tsx`, `app/match/[id]/page.tsx` (thread `matchId`)
+- Tests: `lib/migrations/__tests__/049-quote-jobs-match-id.test.ts`, `lib/quote-jobs/__tests__/match-context.test.ts`, extend `lib/quote-jobs/__tests__/prompt.test.ts`, `lib/quote-jobs/__tests__/store.test.ts`, `app/api/ai/draft-quote/__tests__/draft-quote.test.ts`, `components/__tests__/quote-tab-generate-draft.test.tsx`
+
+> **PI3 boundary:** this stage **adds** a conditional branch — it must NOT weaken any existing assertion. The Stage 6 prompt tests (no-match path → no economics block, `[RATE TO BE CONFIRMED]` rule intact) and the `DraftQuoteCard` tests (no `matchId` in body) must keep passing unchanged. If wiring `matchId` through forces rewriting > 5 existing expectation blocks → STOP, report `PLAN UPDATE NEEDED`. **Pre-removal grep is N/A** — no literal/env/export/route is removed (the `[RATE TO BE CONFIRMED]` string in `lib/prompts/draft.ts` stays exactly).
+
+- [ ] **Step 1: Write the failing tests**
+
+```ts
+// lib/migrations/__tests__/049-quote-jobs-match-id.test.ts
+import Database from 'better-sqlite3';
+import migration048 from '@/lib/migrations/048-ai-quote-jobs';
+import migration049 from '@/lib/migrations/049-quote-jobs-match-id';
+
+it('adds a nullable match_id column to ai_quote_jobs', () => {
+  const db = new Database(':memory:');
+  migration048.up(db); migration049.up(db);
+  const cols = (db.prepare(`PRAGMA table_info(ai_quote_jobs)`).all() as { name: string }[]).map(c => c.name);
+  expect(cols).toContain('match_id');
+  // existing rows / inserts without match_id still work (nullable)
+  expect(() => db.prepare(`INSERT INTO ai_quote_jobs (id,session_id,email_id,status) VALUES ('j','s','e','queued')`).run()).not.toThrow();
+});
+```
+
+```ts
+// lib/quote-jobs/__tests__/match-context.test.ts
+import Database from 'better-sqlite3';
+import { buildMatchQuoteContext, INDICATIVE_SPREAD_PCT } from '@/lib/quote-jobs/match-context';
+
+// seed a StoredMatch row (vessel_name, vessel_dwt, load/discharge_port, tce_usd_per_day,
+// freight_rate_usd_per_mt, distance_nm) into an in-memory matches table, then:
+it('returns a block carrying ONLY the match numbers + a derived band', async () => {
+  const ctx = await buildMatchQuoteContext(db, '54332'); // numeric id
+  expect(ctx).not.toBeNull();
+  expect(ctx!.block).toContain('MATCH ECONOMICS');
+  expect(ctx!.offeredRate).toBeCloseTo(18.00, 2);
+  expect(ctx!.marketLow).toBeCloseTo(18.00 * (1 - INDICATIVE_SPREAD_PCT), 2);
+  expect(ctx!.marketHigh).toBeCloseTo(18.00 * (1 + INDICATIVE_SPREAD_PCT), 2);
+  expect(ctx!.block).toContain('indicative');        // labels the rate
+  expect(ctx!.block).toMatch(/use only/i);           // anti-hallucination instruction
+});
+
+it('returns null for an unknown match (caller falls back to the cargo path)', async () => {
+  expect(await buildMatchQuoteContext(db, '999999')).toBeNull();
+});
+```
+
+```ts
+// extend lib/quote-jobs/__tests__/prompt.test.ts
+it('injects the match economics block + indicative-rate instruction when matchId is given', async () => {
+  const { user } = await buildQuotePrompt({ parsedCargo: cargo as any, email: email as any, ragEnabled: false, matchId: '54332', db });
+  expect(user).toContain('MATCH ECONOMICS');
+  expect(user).toMatch(/indicative/i);
+  expect(user).not.toContain('[RATE TO BE CONFIRMED]'); // suppressed when an offered rate exists
+});
+
+it('matchId omitted → byte-identical to the Stage 6 cargo path (no economics block)', async () => {
+  const { user } = await buildQuotePrompt({ parsedCargo: cargo as any, email: email as any, ragEnabled: false });
+  expect(user).not.toContain('MATCH ECONOMICS');
+});
+```
+
+```ts
+// extend lib/quote-jobs/__tests__/store.test.ts
+it('persists match_id when enqueued from a match', () => {
+  const d = db();
+  const job = enqueueQuoteJob(d, { sessionId: 's1', emailId: 'e1', matchId: '54332' });
+  expect(getQuoteJob(d, job.id)?.match_id).toBe('54332');
+});
+```
+
+```tsx
+// extend app/api/ai/draft-quote/__tests__/draft-quote.test.ts
+it('forwards matchId from the body into the enqueued job', async () => {
+  const r = await POST(reqWithSession({ emailId: 'e1', matchId: '54332' }));
+  expect(r.status).toBe(202);
+  // assert the store received matchId (spy on enqueueQuoteJob or read the row)
+});
+// extend components/__tests__/quote-tab-generate-draft.test.tsx
+it('QuoteTab includes matchId in the enqueue POST body', async () => {
+  render(<QuoteTab cargoEmailId="e1" matchId="54332" />);
+  fireEvent.click(screen.getByRole('button', { name: /generate/i }));
+  await waitFor(() => expect(csrfFetch).toHaveBeenCalled());
+  const body = JSON.parse((csrfFetch as jest.Mock).mock.calls[0][1].body);
+  expect(body.matchId).toBe('54332');
+});
+```
+
+- [ ] **Step 2: Run tests to verify they fail** — `npx jest lib/migrations/__tests__/049-quote-jobs-match-id.test.ts lib/quote-jobs/__tests__/match-context.test.ts lib/quote-jobs/__tests__/prompt.test.ts lib/quote-jobs/__tests__/store.test.ts --maxWorkers=1 --no-coverage` → FAIL (module/column/field not found).
+
+- [ ] **Step 3a: Migration 049**
+
+```ts
+// lib/migrations/049-quote-jobs-match-id.ts
+import type { Migration } from './types';
+const migration049: Migration = {
+  version: 49,
+  name: '049-quote-jobs-match-id',
+  up(db)  { db.exec(`ALTER TABLE ai_quote_jobs ADD COLUMN match_id TEXT`); },
+  down(db){ db.exec(`ALTER TABLE ai_quote_jobs DROP COLUMN match_id`); }, // SQLite ≥3.35 (same baseline as Stage 5 RETURNING)
+};
+export default migration049;
+```
+Register in `lib/migrations/index.ts` after `migration048`.
+
+- [ ] **Step 3b: `match-context.ts` (numbers-only block + derived band)**
+
+```ts
+// lib/quote-jobs/match-context.ts
+import type Database from 'better-sqlite3';
+import { getMatch, getMatchBySlug } from '@/lib/matching/matches-repository';
+import { getCurrentBenchmark } from '@/lib/market/benchmark';
+
+export const INDICATIVE_SPREAD_PCT = 0.05; // ±5% band around the computed freight rate
+
+export interface MatchQuoteContext {
+  block: string; offeredRate: number; marketLow: number; marketHigh: number;
+}
+
+/** Returns a numbers-only economics block for a match, or null if the match / its rate is unavailable. */
+export async function buildMatchQuoteContext(db: Database.Database, matchId: string): Promise<MatchQuoteContext | null> {
+  const m = /^\d+$/.test(matchId) ? getMatch(db, Number(matchId)) : getMatchBySlug(db, matchId);
+  if (!m || m.freight_rate_usd_per_mt == null) return null; // no offered rate → caller keeps the [RATE TO BE CONFIRMED] path
+  const offeredRate = m.freight_rate_usd_per_mt;
+  const marketLow = offeredRate * (1 - INDICATIVE_SPREAD_PCT);
+  const marketHigh = offeredRate * (1 + INDICATIVE_SPREAD_PCT);
+  const tmi = await getCurrentBenchmark('TOEPFER_TMI').catch(() => null);
+  const block = [
+    '=== MATCH ECONOMICS & MARKET DATA (use ONLY these numbers — do NOT invent or re-round a rate) ===',
+    `Vessel: ${m.vessel_name ?? 'n/a'} (DWT ${m.vessel_dwt ?? 'n/a'})`,
+    `Route: ${m.load_port ?? 'n/a'} → ${m.discharge_port ?? 'n/a'} (${m.distance_nm ?? 'n/a'} nm)`,
+    `Computed TCE: USD ${m.tce_usd_per_day ?? 'n/a'}/day (freight source: ${m.freight_rate_source ?? 'n/a'})`,
+    `Offered freight rate (INDICATIVE): USD ${offeredRate.toFixed(2)}/mt`,
+    `Indicative market range for this route: USD ${marketLow.toFixed(2)}–${marketHigh.toFixed(2)}/mt`,
+    tmi ? `Market benchmark (Toepfer TMI ${tmi.period}): USD ${tmi.value}/day TCE` : '',
+    'Present the offered rate as INDICATIVE; cite the market range. Do NOT output [RATE TO BE CONFIRMED] when an offered rate is present.',
+    '====================================================================================',
+  ].filter(Boolean).join('\n');
+  return { block, offeredRate, marketLow, marketHigh };
+}
+```
+
+- [ ] **Step 3c: `prompt.ts` — optional matchId**
+
+Extend `BuildArgs` with `matchId?: string` and `db?: Database.Database`. After assembling the existing `user` string (Stage 6), if `matchId && db`, fetch `buildMatchQuoteContext(db, matchId)`; when non-null, append `\n\n${ctx.block}` to `user`. When null (unknown match or no offered rate) → leave `user` unchanged (cargo behaviour). **No change to the `system` prompt.**
+
+- [ ] **Step 3d: `store.ts` + route + schema + worker wiring**
+- `QuoteJob` gains `match_id: string | null`; `enqueueQuoteJob(db, { sessionId, emailId, matchId? }, opts)` writes `match_id` (INSERT column + dedupe SELECT unchanged).
+- `DraftQuoteBodySchema` (`lib/api-schemas.ts`): add `matchId: z.string().optional()`.
+- `route.ts`: `const { emailId, matchId } = parsed.data;` → `enqueueQuoteJob(getStore().getDb(), { sessionId, emailId, matchId });`.
+- `worker.ts`: `buildQuotePrompt({ parsedCargo, email, ragEnabled: isRagEnabled(), matchId: job.match_id ?? undefined, db });`.
+
+- [ ] **Step 3e: UI threading**
+- `useQuoteJob(emailId?, matchId?)` → include `matchId` in the enqueue body.
+- `QuoteTab` props gain `matchId?: string`; pass to `useQuoteJob`. Thread `matchId` from `app/match/[id]/page.tsx` (the resolved id) → `MatchTabs` → `QuoteTab`.
+- `DraftQuoteCard` unchanged (never passes `matchId` → cargo path).
+
+- [ ] **Step 4: Run tests to verify they pass** — `npx jest lib/migrations lib/quote-jobs app/api/ai/draft-quote components/__tests__/quote-tab-generate-draft.test.tsx components/request/__tests__/draft-quote-card.test.tsx --maxWorkers=1 --no-coverage` → PASS (incl. unchanged no-match prompt test + unchanged DraftQuoteCard tests).
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add lib/migrations/049-quote-jobs-match-id.ts lib/migrations/index.ts lib/quote-jobs/match-context.ts \
+  lib/quote-jobs/prompt.ts lib/quote-jobs/store.ts app/api/ai/draft-quote/route.ts lib/api-schemas.ts \
+  scripts/quote-workshop/worker.ts lib/quote-jobs/use-quote-job.ts components/match/QuoteTab.tsx \
+  components/match/MatchTabs.tsx app/match/[id]/page.tsx \
+  lib/migrations/__tests__/049-quote-jobs-match-id.test.ts lib/quote-jobs/__tests__/match-context.test.ts \
+  lib/quote-jobs/__tests__/prompt.test.ts lib/quote-jobs/__tests__/store.test.ts \
+  app/api/ai/draft-quote/__tests__/draft-quote.test.ts components/__tests__/quote-tab-generate-draft.test.tsx
+git commit -m "feat(quote): match-aware indicative rate — vessel+economics+benchmark into draft (no invented rates)"
+```
+
+- [ ] **Step 6: VALUE_CHECK (MANDATORY — value-bearing rate a partner sees)**
+
+This stage emits a rate number to a partner, so an automated string-passes check is **not** sufficient — the drafted rate must be proven to derive from the match inputs for a **concrete** match. At execution time, against a DB seeded with match `54332`:
+
+```bash
+# 1. Read the source-of-truth numbers for the match:
+#    offeredRate = freight_rate_usd_per_mt, tce = tce_usd_per_day  (from getMatch(db,54332))
+# 2. Generate a REAL draft via the worker path for an enqueued match-aware job (matchId=54332).
+# 3. Extract the rate the model wrote and assert it equals offeredRate AND lies within
+#    [offeredRate*0.95, offeredRate*1.05]; assert the draft does NOT contain "[RATE TO BE CONFIRMED]".
+npm run quote:workshop   # drains the seeded match-aware job → writes result
+```
+
+```ts
+// value-check assertion (run as a tsx/jest one-off; cite the concrete numbers in the report)
+const m = getMatch(db, 54332);                          // e.g. freight_rate_usd_per_mt = 18.00, tce = 12450
+const draft = getQuoteJob(db, jobId)!.result!;
+const rate = Number(draft.match(/USD\s+(\d+\.\d{2})\s*\/mt/i)?.[1]);
+assert(rate === m.freight_rate_usd_per_mt, `drafted rate ${rate} != match ${m.freight_rate_usd_per_mt}`);
+assert(rate >= m.freight_rate_usd_per_mt*0.95 && rate <= m.freight_rate_usd_per_mt*1.05, 'rate outside indicative band');
+assert(!/\[RATE TO BE CONFIRMED\]/.test(draft), 'placeholder leaked despite economics present');
+```
+
+Then emit the verdict (orchestrator tool — do NOT hunt for the script; the orchestrator runs it from your `.done`, or call it by bare name if explicitly told it is on PATH):
+
+```bash
+value-check-emit.sh <pr> PASS "match=54332 offered=USD18.00/mt drafted=USD18.00/mt band=17.10-18.90 tce=12450/day no-placeholder"
+```
+
+A draft whose rate is invented, out of band, or that still shows `[RATE TO BE CONFIRMED]` despite an offered rate present → emit `FAIL`, do not proceed to Stage 11.
+
+**Verification:** all new + extended test files green; `npx tsc --noEmit` clean; Step 6 VALUE_CHECK = PASS with the concrete numbers cited.
+**Rollback:** `git revert <sha>`; on a live DB run `migration049.down(db)`. The cargo path and Stages 4–10 are unaffected — reverting only removes the optional match block (jobs simply stop carrying `match_id`).
+
+---
+
 ### Stage 11 (M): PROD provisioning (outreach-vps) + deploy gate
 
 **Files:** ops/docs only — `docs/superpowers/plans/2026-06-10-draft-quote-claude-cli-workshop.md` (this runbook section) + any prod deploy notes file. No app-code change.
@@ -1329,6 +1558,9 @@ Manual gate (browser-driven, per orchestrator rule — no curl-only outage claim
 3. Expect: button → "Generating…", then either the drafted quote renders OR a FRIENDLY
    error toast + Retry button. MUST NOT show "Unexpected end of JSON input" or "Unexpected token '<'".
 4. Wait ≥3 s for hydration; confirm document.body.innerText contains the draft or the friendly message.
+5. Match-aware (Stage 10b): when the draft renders for a match WITH a computed freight rate,
+   it MUST show an INDICATIVE rate + market range (not "[RATE TO BE CONFIRMED]"), and the rate
+   MUST match the match's freight_rate_usd_per_mt (re-confirms the Stage 10b VALUE_CHECK in prod).
 ```
 
 Gate passes only when all three matches show the async flow with no raw SyntaxError. If the CLI auth is missing on prod, the job ends `error` and the UI shows the friendly retry message (graceful) — fix auth (Step 2) and re-run the gate.
@@ -1369,6 +1601,7 @@ Run each with `--maxWorkers=1 --ci --forceExit --no-coverage` (VPS: never parall
 | 7 | `lib/jobs/__tests__/event-emitter-quote.test.ts`, `app/api/internal/__tests__/quote-event.test.ts`, `app/api/ai/draft-quote/__tests__/status.test.ts`, `__tests__/middleware-auth.test.ts` | real subscribe/emit; real route `POST/GET` |
 | 8 | `app/api/ai/draft-quote/__tests__/draft-quote.test.ts`, `lib/quote-jobs/__tests__/ensure-worker.test.ts` | real route `POST` → 202 {jobId}; injected-spawn single-flight |
 | 9 | `lib/quote-jobs/__tests__/use-quote-job.test.tsx`, both component suites | hook state machine with mocked EventSource + polling |
+| 10b | `lib/migrations/__tests__/049-quote-jobs-match-id.test.ts`, `lib/quote-jobs/__tests__/match-context.test.ts`, extended `prompt`/`store`/`draft-quote`/`quote-tab` tests | real migration up/down; real `buildMatchQuoteContext` on seeded match; matchId threaded enqueue→store→prompt; `matchId` in QuoteTab POST body. **+ VALUE_CHECK** (Step 6): real drafted rate for match `54332` proven to equal/derive from `freight_rate_usd_per_mt` + band, no placeholder leak |
 
 ---
 
@@ -1380,6 +1613,7 @@ Run each with `--maxWorkers=1 --ci --forceExit --no-coverage` (VPS: never parall
 - (3) UI async flow (progress, result, retry, error) — Stage 9. ✅
 - (4) Provider wiring (claude-cli only in script, env out of Next, model justification, --max-budget-usd semantics) — Stages 8 + 10. ✅
 - (5) PROD provisioning (verify/install CLI + auth on outreach-vps, systemd/pm2 env, NEXT_PUBLIC rebuild rules, deploy-gate partner repro) — Stage 11. ✅
+- (8) Match-aware justified rate (founder decision): optional `matchId` into `buildQuotePrompt`; vessel+economics+benchmark numbers injected; indicative-rate label; ONLY-provided-numbers / no-invented-rate instruction; cargo path unchanged; **VALUE_CHECK** on a concrete match — Stage 10b. ✅
 - (6) Concurrency (serialize, depth, dedupe, stale-TTL) — Stage 5 + summary table. ✅
 - (7) TDD test list per stage + jest worktree isolation — every stage + test inventory. ✅
 
