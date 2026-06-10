@@ -11,7 +11,7 @@ import { QueueFullError } from '@/lib/quote-jobs/store';
 jest.mock('@/lib/quote-jobs/store', () => {
   const { QueueFullError: ActualQueueFullError } = jest.requireActual('@/lib/quote-jobs/store') as { QueueFullError: typeof import('@/lib/quote-jobs/store').QueueFullError };
   return {
-    enqueueQuoteJob: jest.fn(() => ({ id: 'job-uuid-123', status: 'queued', session_id: 'session-1', email_id: 'email-1', result: null, error: null, attempts: 0, created_at: Date.now(), updated_at: Date.now() })),
+    enqueueQuoteJob: jest.fn(() => ({ id: 'job-uuid-123', status: 'queued', session_id: 'session-1', email_id: 'email-1', match_id: null, result: null, error: null, attempts: 0, created_at: Date.now(), updated_at: Date.now() })),
     QueueFullError: ActualQueueFullError,
   };
 });
@@ -133,7 +133,7 @@ describe('POST /api/ai/draft-quote', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     // Reset enqueueQuoteJob to default success behaviour
-    mockEnqueueQuoteJob.mockReturnValue({ id: 'job-uuid-123', status: 'queued', session_id: 'session-1', email_id: 'email-1', result: null, error: null, attempts: 0, created_at: Date.now(), updated_at: Date.now() });
+    mockEnqueueQuoteJob.mockReturnValue({ id: 'job-uuid-123', status: 'queued', session_id: 'session-1', email_id: 'email-1', match_id: null, result: null, error: null, attempts: 0, created_at: Date.now(), updated_at: Date.now() });
   });
 
   // ── Auth / validation ──────────────────────────────────────────────────────
@@ -188,5 +188,16 @@ describe('POST /api/ai/draft-quote', () => {
     const body = await res.json();
     expect(body.error).toBe('queue_full');
     expect(body.retryable).toBe(true);
+  });
+
+  it('forwards matchId from the body into the enqueued job', async () => {
+    mockGetSession.mockReturnValue(baseSession);
+    const req = makeRequest({ emailId: 'email-1', matchId: '54332' }, 'session-1');
+    const res = await POST(req);
+    expect(res.status).toBe(202);
+    expect(mockEnqueueQuoteJob).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ emailId: 'email-1', matchId: '54332' }),
+    );
   });
 });

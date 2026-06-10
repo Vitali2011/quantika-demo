@@ -27,6 +27,7 @@ const POLL_INTERVAL_MS = 3_000;
 export function useQuoteJob(
   emailId?: string,
   onError?: (msg: string) => void,
+  matchId?: string,
 ): UseQuoteJobResult {
   const [state, setState] = useState<QuoteJobUiState>('idle');
   const [draft, setDraft] = useState('');
@@ -150,9 +151,11 @@ export function useQuoteJob(
     setError('');
 
     try {
+      const body: Record<string, string> = { emailId };
+      if (matchId) body.matchId = matchId;
       const res = await csrfFetch('/api/ai/draft-quote', {
         method: 'POST',
-        body: JSON.stringify({ emailId }),
+        body: JSON.stringify(body),
       });
       const data = await parseJsonResponse<{ jobId: string }>(res);
       subscribeToSse(data.jobId);
@@ -166,7 +169,7 @@ export function useQuoteJob(
     }
   // subscribeToSse / startPolling close over stable refs — no extra deps needed
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [emailId]);
+  }, [emailId, matchId]);
 
   const retry = useCallback(async () => {
     cleanup();

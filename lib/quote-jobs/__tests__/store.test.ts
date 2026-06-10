@@ -1,11 +1,17 @@
 import Database from 'better-sqlite3';
 import migration048 from '@/lib/migrations/048-ai-quote-jobs';
+import migration049 from '@/lib/migrations/049-quote-jobs-match-id';
 import {
   enqueueQuoteJob, getQuoteJob, claimNextJob, completeJob, failJob, reapStaleJobs,
   heartbeatJob, QueueFullError, countQueued,
 } from '@/lib/quote-jobs/store';
 
-function db() { const d = new Database(':memory:'); migration048.up(d); return d; }
+function db() {
+  const d = new Database(':memory:');
+  migration048.up(d);
+  migration049.up(d);
+  return d;
+}
 
 it('enqueues a queued job and finds it by id', () => {
   const d = db();
@@ -87,4 +93,16 @@ it('heartbeatJob keeps a processing job safe from the reaper', () => {
   // Reaper with a short TTL should NOT reap (updated_at just refreshed)
   expect(reapStaleJobs(d, 300_000)).toBe(0);
   expect(getQuoteJob(d, a.id)?.status).toBe('processing');
+});
+
+it('persists match_id when enqueued from a match', () => {
+  const d = db();
+  const job = enqueueQuoteJob(d, { sessionId: 's1', emailId: 'e1', matchId: '54332' });
+  expect(getQuoteJob(d, job.id)?.match_id).toBe('54332');
+});
+
+it('match_id defaults to null when not provided', () => {
+  const d = db();
+  const job = enqueueQuoteJob(d, { sessionId: 's1', emailId: 'e2' });
+  expect(getQuoteJob(d, job.id)?.match_id).toBeNull();
 });
