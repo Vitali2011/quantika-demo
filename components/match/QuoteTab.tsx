@@ -8,6 +8,7 @@ import type { MarketBenchmark } from '@/lib/types';
 import { formatBenchmarkReference } from '@/lib/market/benchmark';
 import { csrfFetch } from '@/lib/csrf-client';
 import { useToast } from '@/components/ui/toast';
+import { parseJsonResponse } from '@/lib/http/parse-json-response';
 
 interface QuoteTabProps {
   cargoEmailId?: string;
@@ -42,8 +43,7 @@ export function QuoteTab({ cargoEmailId, confidence }: QuoteTabProps) {
         method: 'POST',
         body: JSON.stringify({ emailId: cargoEmailId }),
       });
-      const data = await res.json() as { draft?: string; error?: string; message?: string };
-      if (!res.ok) throw new Error(data.message ?? data.error ?? 'Failed to generate draft');
+      const data = await parseJsonResponse<{ draft?: string }>(res);
       setDraft(data.draft ?? '');
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to generate draft';
