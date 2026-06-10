@@ -8,6 +8,7 @@ import { MATCH_PROMPT } from '@/lib/prompts';
 import { analyzePairs, AiScorer, RawMatch } from '@/lib/matching/pair-analyzer';
 import { getStore } from '@/lib/session-store';
 import { isRagEnabled } from '@/lib/knowledge/flags';
+import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
 import type { Match } from '@/lib/types';
 
 /** Demo match IDs — must stay in sync with /api/sample/route.ts */
@@ -102,6 +103,26 @@ export async function POST(request: NextRequest) {
   };
 
   try {
+    const sessionDb = getStore().getDatabase();
+
+    // Live bunker price (NLRTM/VLSFO) for board-demote floor check (H3 fix).
+    // Null only when the DB row is genuinely missing — warn and use 600 explicitly
+    // so the floor check still runs deterministically (no silent fallback).
+    // try/catch: bunker_prices table may be absent in minimal/test DBs.
+    let bunkerPriceUsdPerMt: number;
+    try {
+      const bunkerRow = getLatestBunkerPrice(sessionDb, 'NLRTM', 'VLSFO');
+      if (bunkerRow !== null) {
+        bunkerPriceUsdPerMt = bunkerRow.price_usd_per_mt;
+      } else {
+        console.warn('[match] bunker price not found for NLRTM/VLSFO — board-demote floor uses DEFAULT_BUNKER=600');
+        bunkerPriceUsdPerMt = 600;
+      }
+    } catch {
+      console.warn('[match] bunker_prices table unavailable — board-demote floor uses DEFAULT_BUNKER=600');
+      bunkerPriceUsdPerMt = 600;
+    }
+
     const {
       matches,
       blockedMatches,
@@ -110,7 +131,8 @@ export async function POST(request: NextRequest) {
     } = await analyzePairs(parsedCargos, parsedVessels, aiScorer, {
       refYear,
       today,
-      db: getStore().getDatabase(),
+      db: sessionDb,
+      bunkerPriceUsdPerMt,
     });
 
     // Idempotency guard: if this is a sample-data session, preserve the demo
