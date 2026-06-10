@@ -721,7 +721,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
                 </button>
                 {showCalc && (
                   <div className="mt-3 rounded border border-gray-200 bg-gray-50 p-3">
-                    <CalculationWaterfall breakdown={voyageBreakdown} />
+                    <CalculationWaterfall breakdown={voyageBreakdown} warRiskBreakdown={warRiskBreakdown} />
                   </div>
                 )}
               </div>
