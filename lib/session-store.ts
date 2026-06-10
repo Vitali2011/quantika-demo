@@ -40,7 +40,8 @@ export class SessionStore {
     this.db = new Database(dbPath);
     // Load sqlite-vec extension BEFORE migrations (required for migration 018 vec0 tables)
     sqliteVec.load(this.db);
-    this.db.pragma('journal_mode = WAL');
+    const walMode = this.db.pragma('journal_mode = WAL', { simple: true }) as string;
+    if (walMode !== 'wal') console.warn('[SessionStore] WAL not enabled for', dbPath, '— got', walMode);
     this.db.pragma('busy_timeout = 5000');
     // Enforce FK constraints (SQLite default is OFF). Required for migrations
     // that declare REFERENCES (e.g., 013 knowledge_sync_log → knowledge_sources)

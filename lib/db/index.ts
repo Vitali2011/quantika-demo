@@ -30,7 +30,8 @@ export function getDb(dbPath: string = DEFAULT_DB_PATH): Database.Database {
 
   const db = new Database(resolved);
   sqliteVec.load(db);
-  db.pragma('journal_mode = WAL');
+  const walMode = db.pragma('journal_mode = WAL', { simple: true }) as string;
+  if (walMode !== 'wal') console.warn('[getDb] WAL not enabled for', resolved, '— got', walMode);
   db.pragma('busy_timeout = 5000');
   _cache.set(resolved, db);
   return db;
