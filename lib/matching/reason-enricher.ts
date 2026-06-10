@@ -26,6 +26,7 @@ const ENRICHMENT_RULES: Array<{
     enrich: (ctx) => {
       if (ctx.craneCapacity) return `Vessel geared (${ctx.craneCapacity})`;
       if (ctx.vesselDwt) return `Vessel geared on ${formatNumber(ctx.vesselDwt)} DWT carrier`;
+      // TODO(I-MIN follow-up): gearless+discharge-crane enrichment needs ctx.dischargeHasCranes
       return null;
     },
   },
