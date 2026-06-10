@@ -1,7 +1,7 @@
 // Pure TypeScript — NO React imports
 import type { Match } from './types';
 import type { EconomicsResult } from './types';
-import type { EconomicsInput } from './economics/index';
+import type { EconomicsInput } from './types';
 
 /**
  * Economics enrichment hook — spec α-08.
