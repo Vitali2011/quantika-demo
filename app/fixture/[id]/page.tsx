@@ -75,7 +75,7 @@ export default async function FixtureDetailPage({ params }: Props) {
         <div>
           <Badge>FIXTURE RECAP</Badge>
           <h1 className="text-lg sm:text-xl font-bold mt-2 text-ds-text">{email.subject}</h1>
-          <p className="text-sm text-ds-text-muted">From: {email.from} · {formatDate(email.date)}</p>
+          <p className="text-sm text-ds-text-muted">From: {email.fromName ?? email.from} · {formatDate(email.date)}</p>
         </div>
 
         <Card padding="md">
