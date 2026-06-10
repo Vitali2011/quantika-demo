@@ -56,7 +56,6 @@ export function useQuoteJob(
     }
   }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => cleanup, []);
 
   function handleTerminal(newState: 'done' | 'error', result?: string, errorMsg?: string) {
@@ -81,7 +80,7 @@ export function useQuoteJob(
     const doPoll = async () => {
       if (isTerminalRef.current) return;
       try {
-        const res = await fetch(
+        const res = await csrfFetch(
           `/api/ai/draft-quote/status?jobId=${encodeURIComponent(jobId)}`,
         );
         if (!res.ok) return;
