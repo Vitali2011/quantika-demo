@@ -511,6 +511,7 @@ Extract per inquiry item:
   ✓ commission_percent={value:4, confidence:"confirmed", source_text:"4 ttl"}, commission_terms="4% TTL; Gcn 3.75% TTL"
   "Gcn" preceding a commission may mean "General cargo" or reference the Gencon form — capture verbatim.
 - commission_terms: e.g. "TTL BENDS", "address commission", "ADDCOMPUS", "pus"
+- payout_condition: payment / payout terms stated in the email — e.g. "100% freight payable on completion of discharge", "freight payable within 3 banking days after completion", "LC at sight", "CAD (cash against documents)", "payment 95/5". Capture the verbatim condition as a plain STRING. Null if the email states no payment/payout condition. Do NOT infer — extract only when explicitly written.
 - freight_rate_usd: freight rate in USD per metric ton if EXPLICITLY stated in the email.
   RULES:
   - Extract ONLY when a specific dollar amount per MT/ton is written (e.g. "$18/MT", "USD 22 pmt", "18.50 usd/mt", "frt usd 20/mt").
