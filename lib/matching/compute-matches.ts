@@ -47,8 +47,14 @@ export async function computeAndPersistMatches(
   // table (e.g. minimal test DBs) — falls through to the helper default.
   let bunkerPriceUsdPerMt: number | undefined;
   try {
-    bunkerPriceUsdPerMt = getLatestBunkerPrice(db, 'NLRTM', 'VLSFO')?.price_usd_per_mt;
+    const bunkerRow = getLatestBunkerPrice(db, 'NLRTM', 'VLSFO');
+    if (bunkerRow !== null) {
+      bunkerPriceUsdPerMt = bunkerRow.price_usd_per_mt;
+    } else {
+      console.warn('[compute-matches] bunker price not found for NLRTM/VLSFO — board-demote floor uses helper default');
+    }
   } catch {
+    console.warn('[compute-matches] bunker_prices table unavailable — board-demote floor uses helper default');
     bunkerPriceUsdPerMt = undefined;
   }
 
