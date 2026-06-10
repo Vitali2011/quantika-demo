@@ -100,7 +100,7 @@ Route checks `Number.isInteger(vesselDwt)`. `vessel_dwt=12345.5` is not tested.
 ### LOW-1: economics.test.ts — In-process cache not tested
 **File:** `__tests__/api/economics.test.ts:74-91`
 
-The 15-minute `Map` cache is a meaningful production behavior (avoids redundant compute). It is never tested. Same request twice should call `computeEconomics` exactly once.
+The 15-minute `Map` cache is a meaningful production behavior (avoids redundant compute). It is never tested. Same request twice should call `computeEconomics` exactly once. _(Note: `computeEconomics` in `lib/economics/index.ts` removed in Wave 2 dead-code purge — this LOW finding is no longer applicable.)_
 
 ---
 
