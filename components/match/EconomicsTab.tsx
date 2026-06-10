@@ -294,7 +294,11 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
     const consumptionMtPerDay = resolveConsMtPerDay(rawConsumptionMtPerDay, dwt);
     const originPort = cargo?.originPort?.value ?? '';
     const destinationPort = cargo?.destinationPort?.value ?? '';
-    const quantityMt = resolveCargoWeight(cargo ?? null) ?? 0;
+    const rawQuantityMt = resolveCargoWeight(cargo ?? null) ?? 0;
+    // Bug H: when qty=0 but DWT is known, apply the same DWT×0.65 fallback the list
+    // path uses — so P&L is consistent with the stored TCE (same number, disclosed).
+    const qtyEstimated = rawQuantityMt === 0 && dwt > 0;
+    const quantityMt = qtyEstimated ? dwt * 0.65 : rawQuantityMt;
     const distanceNm = routeDistanceNm ?? 0;
     // #819: drop ?? 28 — seed now persists freight_rate_usd_per_mt so storedFreightRate
     // is non-null for canonical matches. null → "freight rate required" hint, not fabrication.
@@ -307,7 +311,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
     if (!speedKts) missing.push('vessel speed');
     if (!rawConsumptionMtPerDay) missing.push('fuel consumption');
     if (!distanceNm) missing.push('route distance');
-    if (!quantityMt) missing.push('cargo quantity');
+    if (!rawQuantityMt && !qtyEstimated) missing.push('cargo quantity');
     if (!bunkerPort) missing.push('bunker port');
     if (freightRateUsdPerMt == null || freightRateUsdPerMt <= 0) missing.push('freight rate');
 
@@ -357,7 +361,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
         }
       : null;
 
-    return { ready, missing, input };
+    return { ready, missing, input, qtyEstimated };
   }, [vessel, cargo, routeDistanceNm, currentRate, storedFreightRate, bunkerPort, bunkerGrade, bunkerPriceUsdPerMt, euaData, ballastDistanceNm]);
 
   useEffect(() => {
@@ -505,7 +509,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
             className="flex-1 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-400"
           >
             {(bunkerCandidates.length > 0
-              ? Array.from(new Map(bunkerCandidates.map(c => [c.port, c])).values()).map(c => c.port)
+              ? Array.from(new Set(['NLRTM', ...Array.from(new Map(bunkerCandidates.map(c => [c.port, c])).values()).map(c => c.port)]))
               : BUNKER_PORTS.map(p => p.value)
             ).map((code) => (
               <option key={code} value={code}>
@@ -699,6 +703,12 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
                   ⚠ Approximate port{approxPorts.length > 1 ? 's' : ''} — P&amp;L estimated:{' '}
                   {approxPorts.map((a) => `${a.input} → ${a.resolvedTo}`).join('; ')}. Confirm before fixing.
                 </p>
+              )}
+              {voyageInputData.qtyEstimated && (
+                <div data-testid="qty-estimated-badge" className="mb-2 rounded border border-amber-200 bg-amber-50 p-2 text-xs">
+                  <span className="font-medium text-amber-700">est.</span>{' '}
+                  <span className="text-gray-600">Cargo quantity unknown — estimated at DWT × 0.65</span>
+                </div>
               )}
               <VoyageBreakdownChart breakdown={voyageBreakdown} />
               <div className="mt-2">
