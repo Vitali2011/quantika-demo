@@ -1,3 +1,5 @@
+export const QUOTE_UPDATE_EVENT = 'quote-update' as const;
+
 type JobUpdateData = {
   id: string;
   status: string;
@@ -14,9 +16,18 @@ type MatchCreatedData = {
   cargo_summary?: string;
 };
 
+type QuoteUpdateData = {
+  id: string;
+  status: 'queued' | 'processing' | 'done' | 'error';
+  email_id: string;
+  result?: string;
+  error?: string;
+};
+
 type Event =
   | { type: 'job-update'; data: JobUpdateData }
-  | { type: 'match-created'; data: MatchCreatedData };
+  | { type: 'match-created'; data: MatchCreatedData }
+  | { type: typeof QUOTE_UPDATE_EVENT; data: QuoteUpdateData };
 
 type Handler = (e: Event) => void;
 
@@ -49,4 +60,8 @@ export function emitJobUpdate(userId: string, data: JobUpdateData): void {
 
 export function emitMatchCreated(userId: string, data: MatchCreatedData): void {
   emit(userId, { type: 'match-created', data });
+}
+
+export function emitQuoteUpdate(userId: string, data: QuoteUpdateData): void {
+  emit(userId, { type: QUOTE_UPDATE_EVENT, data });
 }
