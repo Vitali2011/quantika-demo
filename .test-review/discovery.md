@@ -1,30 +1,30 @@
-# Discovery — fix-econ-a-bunker (PR #822)
+# Discovery — c1-bunker-patch (PR #901)
 
-## Commits
-- ec9dcf12 fix(economics): remove SGSIN default — gate P&L on bunker-rec response (#820)
-- 8dbd3973 docs(plan): econ-cluster fix plan (plan doc only)
+## Commits on branch (above main)
 
-## Changed Source Files (3)
-1. `app/api/voyage/bunker-recommendation/route.ts` — A1: freshness watchdog (log-only)
-2. `app/api/voyage/tce/route.ts` — A2.2: 400 on missing bunkerPort (removes SGSIN ?? default)
-3. `components/match/EconomicsTab.tsx` — A2.1: useState null + gate voyageInputData on bunkerPort != null
+```
+66c78246 fix(c1-bunker-patch): fetch live NLRTM/VLSFO price in PATCH handler, pass to both computeStoredMatchEconomics calls
+ba0223b6 test(c1-bunker-patch): RED — PATCH freight paths must use live bunker price
+```
+
+## Changed Source Files
+
+1. `app/api/matches/[id]/route.ts` — PATCH handler; adds bunker price fetch + passes to `computeStoredMatchEconomics`
+2. `__tests__/api/matches-id-freight-bunker.test.ts` — new regression test (115 lines), TDD red-first
 
 ## Key Behavior Changes
-- `tce/route.ts`: `(data.bunkerPort ?? 'SGSIN').toUpperCase()` → explicit 400 when bunkerPort absent
-- `EconomicsTab`: initial bunkerPort=null; P&L call gated; port set from recommendation response
-- `bunker-recommendation`: stale price warning (read-only, log-only)
 
-## New Tests Added
-- `bunker-freshness-watchdog.test.ts` — A1 stale/fresh price logging (PI2 route handler)
-- `tce-missing-bunker-port.test.ts` — A2.2 400/200/422 value shapes
-- `EconomicsTab-bunker-null.test.tsx` — A2.1 RTL: GIGIB not SGSIN, fallback gates P&L
+**Before:** `computeStoredMatchEconomics` called WITHOUT `bunkerPriceUsdPerMt`; always used `DEFAULT_BUNKER_USD_PER_MT = 600`.
 
-## Modified Tests (setup, not assertions)
-- `EconomicsTab-pnl.test.tsx` — added bunker-recommendation mock to setupFetch
-- `EconomicsTab-cons-clamp.test.tsx` — changed fallback mock → valid port mock
-- `tce-auto-bunker.test.ts` — 1 assertion change: SGSIN default test → 400 required
+**After:**
+- `getLatestBunkerPrice(db, 'NLRTM', 'VLSFO')` is called after the 404 guard, wrapped in try/catch.
+- Result passed as `bunkerPriceUsdPerMt` to both `reset_freight_rate` and `freight_rate_usd_per_mt` paths.
+- On error (e.g. missing table), falls through to `undefined`, which triggers the `DEFAULT_BUNKER_USD_PER_MT = 600` fallback inside `computeStoredMatchEconomics`.
 
-## What Existing Tests Cover
-- Basin filter, eff-split, candidates, consumption/DWT clamp, reco adversarial
-- TCE backward-compat, EUA auto-derive, ETS auto-derive
-- EconomicsTab: bunker-hint, bunker-route-aware, EUA, war-risk, compare-inputs, P&L
+## New Test Structure
+
+`__tests__/api/matches-id-freight-bunker.test.ts`:
+- Mocks `computeStoredMatchEconomics` to spy on call arguments
+- Seeds `bunker_prices` row: NLRTM/VLSFO = 791 USD/mt
+- Two behavioral tests: `freight_rate_usd_per_mt` path + `reset_freight_rate` path
+- Both assert `bunkerPriceUsdPerMt: 791` is passed through
