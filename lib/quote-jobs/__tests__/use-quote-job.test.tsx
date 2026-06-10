@@ -155,14 +155,12 @@ describe('useQuoteJob', () => {
   it('falls back to polling status endpoint when no SSE event arrives (fake timers)', async () => {
     jest.useFakeTimers();
 
-    (csrfFetch as jest.Mock).mockResolvedValueOnce(enqueueResponse('j5'));
-
-    // Mock the poll fetch
-    const pollResponse = {
-      ok: true,
-      json: async () => ({ status: 'done', result: 'Polled draft.' }),
-    };
-    global.fetch = jest.fn().mockResolvedValue(pollResponse) as jest.Mock;
+    (csrfFetch as jest.Mock)
+      .mockResolvedValueOnce(enqueueResponse('j5'))       // enqueue POST
+      .mockResolvedValueOnce({                            // status GET poll
+        ok: true,
+        json: async () => ({ status: 'done', result: 'Polled draft.' }),
+      });
 
     const { result } = renderHook(() => useQuoteJob('e5'));
 
@@ -180,6 +178,44 @@ describe('useQuoteJob', () => {
     expect(result.current.state).toBe('done');
     expect(result.current.draft).toBe('Polled draft.');
 
+    jest.useRealTimers();
+  });
+
+  it('polling fallback delivers draft via csrfFetch when SSE absent (CSRF-protected /api/ai/* endpoint)', async () => {
+    // Regression test for prod bug #58639:
+    // doPoll was calling plain fetch() on /api/ai/draft-quote/status — a CSRF-protected
+    // endpoint under /api/ai/*. Middleware returns 403 without X-CSRF-Token header.
+    // !res.ok silently swallowed the 403, so the hook never delivered the draft.
+    // Fix: use csrfFetch (adds X-CSRF-Token header) in doPoll.
+    jest.useFakeTimers();
+
+    (csrfFetch as jest.Mock)
+      .mockResolvedValueOnce(enqueueResponse('j-csrf'))          // enqueue POST
+      .mockResolvedValueOnce({                                    // status GET poll
+        ok: true,
+        json: async () => ({ status: 'done', result: 'CSRF-safe draft.' }),
+      });
+
+    // Intentionally do NOT mock global.fetch — if the hook calls plain fetch(),
+    // it throws/rejects, gets silently caught, and the hook stays in 'queued'.
+    const savedFetch = global.fetch;
+    (global as unknown as Record<string, unknown>).fetch = undefined;
+
+    const { result } = renderHook(() => useQuoteJob('e-csrf'));
+    await act(async () => { await result.current.start(); });
+    expect(result.current.state).toBe('queued');
+
+    // Advance past 8s SSE timeout → startPolling fires → immediate doPoll
+    await act(async () => {
+      jest.advanceTimersByTime(8_001);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(result.current.state).toBe('done');
+    expect(result.current.draft).toBe('CSRF-safe draft.');
+
+    (global as unknown as Record<string, unknown>).fetch = savedFetch;
     jest.useRealTimers();
   });
 
