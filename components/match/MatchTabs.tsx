@@ -7,14 +7,16 @@ import { VesselsTab } from './VesselsTab';
 import { EconomicsTab } from './EconomicsTab';
 import { PassportTab } from './PassportTab';
 import { QuoteTab } from './QuoteTab';
+import { EmailsTab } from './EmailsTab';
 
-type TabId = 'vessels' | 'economics' | 'passport' | 'quote';
+type TabId = 'vessels' | 'economics' | 'passport' | 'quote' | 'emails';
 
 const TABS: { id: TabId; label: string }[] = [
   { id: 'vessels', label: 'Vessels' },
   { id: 'economics', label: 'Economics' },
   { id: 'passport', label: 'Passport' },
   { id: 'quote', label: 'Quote' },
+  { id: 'emails', label: 'Emails' },
 ];
 
 interface MatchTabsProps {
@@ -34,9 +36,15 @@ interface MatchTabsProps {
   consumptionEstimated?: boolean | null;
   /** ISO date of the Baltic TC rate used for the stored TCE (W6a staleness badge). */
   balticRateAsOf?: string | null;
+  /** Raw body of the cargo source email (Emails tab). */
+  cargoEmailBody?: string | null;
+  /** Raw body of the vessel source email (Emails tab). */
+  vesselEmailBody?: string | null;
+  /** Payout condition extracted from cargo email (Task D — optional). */
+  payoutCondition?: string | null;
 }
 
-export function MatchTabs({ match, vessel, cargo, cargoEmailId, matchDbId, storedFreightRate, freightRateSource, storedDistanceNm, storedTceUsdPerDay, ballastDistanceNm, consumptionEstimated, balticRateAsOf }: MatchTabsProps) {
+export function MatchTabs({ match, vessel, cargo, cargoEmailId, matchDbId, storedFreightRate, freightRateSource, storedDistanceNm, storedTceUsdPerDay, ballastDistanceNm, consumptionEstimated, balticRateAsOf, cargoEmailBody, vesselEmailBody, payoutCondition }: MatchTabsProps) {
   const [activeTab, setActiveTab] = useState<TabId>('vessels');
   const uid = useId();
 
@@ -104,6 +112,13 @@ export function MatchTabs({ match, vessel, cargo, cargoEmailId, matchDbId, store
           <QuoteTab
             cargoEmailId={cargoEmailId}
             confidence={match.confidence}
+          />
+        )}
+        {activeTab === 'emails' && (
+          <EmailsTab
+            cargoEmailBody={cargoEmailBody}
+            vesselEmailBody={vesselEmailBody}
+            payoutCondition={payoutCondition}
           />
         )}
       </div>
