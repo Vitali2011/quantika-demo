@@ -52,7 +52,7 @@ export function PscSearchForm() {
 
   return (
     <div className="space-y-6">
-      <div className="flex gap-2">
+      <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>
         <input
           type="text"
           value={imo}
@@ -62,13 +62,13 @@ export function PscSearchForm() {
           aria-label="IMO number"
         />
         <button
-          onClick={handleSearch}
+          type="submit"
           disabled={loading}
           className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 touch-target"
         >
           {loading ? 'Searching…' : 'Search'}
         </button>
-      </div>
+      </form>
 
       {error && (
         <p className="text-sm text-red-600" role="alert">

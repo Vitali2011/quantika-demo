@@ -162,10 +162,9 @@ describe('EconomicsTab — voyage P&L chart', () => {
     expect(screen.getByTestId('voyage-missing-hint')).toHaveTextContent(/route distance/i);
   });
 
-  // Gate5 P&L: cargo weightMt absent (match 40098 Thisvi→Monfalcone) gave an EMPTY
-  // "Voyage P&L" block because voyageInputData.missing never listed cargo quantity —
-  // ready=false + missing=[] → render fell through to null. Must show the hint.
-  it('shows missing-hint when cargo quantity absent (no empty block)', async () => {
+  // Bug H fix: when cargo weightMt absent, DWT×0.65 fallback runs (same as list path).
+  // P&L renders with an est. badge disclosing the assumed quantity — no missing-qty block.
+  it('when cargo quantity absent — P&L renders with est. badge (DWT×0.65 fallback)', async () => {
     const noQty = { ...FULL_CARGO, weightMt: undefined };
     await act(async () => {
       render(
@@ -174,12 +173,14 @@ describe('EconomicsTab — voyage P&L chart', () => {
           cargo={noQty as any}
           routeDistanceNm={8500}
           storedFreightRate={15}
+          matchDbId={1}
         />,
       );
     });
-    expect(screen.getByTestId('voyage-missing-hint')).toBeInTheDocument();
-    expect(screen.getByTestId('voyage-missing-hint')).toHaveTextContent(/cargo quantity/i);
-    expect(screen.queryByTestId('voyage-breakdown-chart')).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.getByTestId('qty-estimated-badge')).toBeInTheDocument());
+    expect(screen.getByTestId('qty-estimated-badge')).toHaveTextContent(/est\./i);
+    expect(screen.getByTestId('voyage-breakdown-chart')).toBeInTheDocument();
+    expect(screen.queryByTestId('voyage-missing-hint')).not.toBeInTheDocument();
   });
 
   it('shows missing-hint when load/discharge ports absent (no empty block)', async () => {
