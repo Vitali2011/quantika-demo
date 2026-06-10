@@ -40,6 +40,8 @@ export class SessionStore {
     this.db = new Database(dbPath);
     // Load sqlite-vec extension BEFORE migrations (required for migration 018 vec0 tables)
     sqliteVec.load(this.db);
+    this.db.pragma('journal_mode = WAL');
+    this.db.pragma('busy_timeout = 5000');
     // Enforce FK constraints (SQLite default is OFF). Required for migrations
     // that declare REFERENCES (e.g., 013 knowledge_sync_log → knowledge_sources)
     // to actually reject orphan inserts at runtime.
