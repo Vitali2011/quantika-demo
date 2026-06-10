@@ -17,13 +17,49 @@
  * Spec: gamma-09
  */
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getStore } from '@/lib/session-store';
+import { requireSession } from '@/lib/session';
+import { aiRateLimiter } from '@/lib/rate-limit';
 
-export async function GET(request: Request) {
+/**
+ * Detect FTS5 operator syntax that causes SQLITE_ERROR when unescaped.
+ * Bare operators like NEAR(, *prefix, and dangling AND/OR/NOT are rejected with 400.
+ */
+function isMalformedFts5Query(q: string): boolean {
+  return (
+    /NEAR\s*\(/i.test(q) ||
+    /^\s*\*/.test(q) ||
+    /^\s*(AND|OR|NOT)\b/i.test(q)
+  );
+}
+
+/**
+ * Escape a plain-text query for safe FTS5 MATCH binding (phrase match).
+ * Mirrors lib/knowledge/embeddings/retriever-sqlite.ts.
+ */
+function escapeFts5Query(q: string): string {
+  return `"${q.replace(/"/g, '""')}"`;
+}
+
+export async function GET(request: NextRequest) {
   // Feature flag check
   if (process.env.BIMCO_RAG_ENABLED !== 'true') {
     return NextResponse.json({ error: 'BIMCO RAG not enabled' }, { status: 503 });
+  }
+
+  // Session auth check
+  const authResult = requireSession(request);
+  if (authResult instanceof NextResponse) return authResult;
+
+  // Rate limit check
+  const { sessionId } = authResult;
+  const rateResult = aiRateLimiter.check(sessionId);
+  if (!rateResult.allowed) {
+    return NextResponse.json(
+      { error: 'Rate limit exceeded' },
+      { status: 429, headers: { 'Retry-After': String(Math.ceil(rateResult.retryAfterMs / 1000)) } },
+    );
   }
 
   try {
@@ -42,24 +78,28 @@ export async function GET(request: Request) {
       }
     }
 
+    // Reject malformed FTS5 operators before they reach SQLite
+    if (query && query.trim() !== '' && isMalformedFts5Query(query)) {
+      return NextResponse.json({ error: 'Invalid search query' }, { status: 400 });
+    }
+
     // Get database
     const store = getStore();
     const db = store.getDatabase();
 
-    // Build FTS5 query
+    // Build FTS5 query — escape to phrase match, preventing FTS5 syntax injection
     let sql: string;
     let params: any[];
 
     if (cpFilter && cpFilter.trim() !== '') {
       // Filter by charter party
-      // Use FTS5 MATCH for content and JSON_EXTRACT for metadata filtering
       sql = `
         SELECT content, metadata
         FROM bimco_fts
         WHERE content MATCH ?
         LIMIT ?
       `;
-      params = [query || '*', limit];
+      params = [query ? escapeFts5Query(query) : '*', limit];
     } else if (query && query.trim() !== '') {
       // Search without charter party filter
       sql = `
@@ -68,7 +108,7 @@ export async function GET(request: Request) {
         WHERE content MATCH ?
         LIMIT ?
       `;
-      params = [query, limit];
+      params = [escapeFts5Query(query), limit];
     } else {
       // No query — return all clauses
       sql = `
