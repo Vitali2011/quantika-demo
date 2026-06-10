@@ -158,10 +158,12 @@ describe('app/match/[id]/page.tsx — FIT% hero circle (#fit-primary)', () => {
     expect(src).toMatch(/Math\.round.*fit_percent|fit_percent.*Math\.round/);
   });
 
-  it('hero falls back to storedMatch.score + "score" when fit_percent is null', () => {
+  it('hero shows no pill when fit_percent is null (Option A: score label removed)', () => {
     const src = readSource(pagePath);
-    // null branch still has "score" JSX text label
-    expect(src).toMatch(/>score</);
+    // Option A: score fallback pill removed; no ">score<" label in source
+    expect(src).not.toMatch(/>score</);
+    // The fit pill path still exists
+    expect(src).toMatch(/fit_percent.*!=.*null[\s\S]{0,50}&&/);
   });
 });
 

@@ -3,7 +3,7 @@
  *
  * B2 — CalculationWaterfall presentational component tests.
  *
- * Asserts the approved Russian-label waterfall layout renders correctly:
+ * Asserts the approved English-label waterfall layout renders correctly:
  *   revenue → each cost line (negative) → net voyage → ÷ days → daily TCE.
  */
 import React from 'react';
@@ -11,6 +11,7 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { CalculationWaterfall } from '../CalculationWaterfall';
 import type { TCEBreakdown } from '@/lib/economics/voyage-calculator';
+import type { WarRiskBreakdown } from '@/lib/economics/war-risk';
 
 const FIXTURE: TCEBreakdown = {
   // derivation inputs (B1)
@@ -40,23 +41,23 @@ const FIXTURE: TCEBreakdown = {
 };
 
 describe('CalculationWaterfall', () => {
-  it('shows "Выручка" section with gross_freight_usd', () => {
+  it('shows "Revenue" section with gross_freight_usd', () => {
     render(<CalculationWaterfall breakdown={FIXTURE} />);
-    expect(screen.getByText(/Выручка за рейс/)).toBeInTheDocument();
+    expect(screen.getByText(/Revenue per voyage/)).toBeInTheDocument();
     // gross freight formatted as $1,500,000
     expect(screen.getByTestId('gross-freight')).toHaveTextContent('1,500,000');
   });
 
-  it('shows bunker cost row with negative value and расход/цена caption', () => {
+  it('shows bunker cost row with negative value and consumption/price caption', () => {
     render(<CalculationWaterfall breakdown={FIXTURE} />);
     const bunkerRow = screen.getByTestId('cost-bunker');
     expect(bunkerRow).toBeInTheDocument();
     // negative format: -$308,000
     expect(bunkerRow).toHaveTextContent('-$308,000');
-    // caption contains расход and цена
+    // caption contains consumption and price
     const caption = screen.getByTestId('bunker-caption');
-    expect(caption.textContent).toMatch(/расход/);
-    expect(caption.textContent).toMatch(/цена/);
+    expect(caption.textContent).toMatch(/consumption/);
+    expect(caption.textContent).toMatch(/price/);
   });
 
   it('shows DA cost row with negative value', () => {
@@ -65,12 +66,12 @@ describe('CalculationWaterfall', () => {
     expect(daRow).toHaveTextContent('-$60,000');
   });
 
-  it('shows war risk row with "не влияет на $/день" caption', () => {
+  it('shows war risk row with "does not affect $/day" caption', () => {
     render(<CalculationWaterfall breakdown={FIXTURE} />);
     const warRow = screen.getByTestId('cost-war-risk');
     expect(warRow).toBeInTheDocument();
     const caption = screen.getByTestId('war-risk-caption');
-    expect(caption.textContent).toMatch(/не влияет на/);
+    expect(caption.textContent).toMatch(/does not affect/);
   });
 
   it('shows canal zero-note when canal is 0', () => {
@@ -85,19 +86,19 @@ describe('CalculationWaterfall', () => {
     expect(etsNote).toBeInTheDocument();
   });
 
-  it('shows "Чистыми за рейс" with net_voyage_usd', () => {
+  it('shows "Net voyage earnings" with net_voyage_usd', () => {
     render(<CalculationWaterfall breakdown={FIXTURE} />);
     expect(screen.getByTestId('net-voyage')).toHaveTextContent('1,116,340');
   });
 
-  it('shows "÷ N дней" with duration_days', () => {
+  it('shows "÷ N days" with duration_days', () => {
     render(<CalculationWaterfall breakdown={FIXTURE} />);
     const durationRow = screen.getByTestId('duration-days');
     expect(durationRow.textContent).toMatch(/20/);
-    expect(durationRow.textContent).toMatch(/дн/);
+    expect(durationRow.textContent).toMatch(/days/);
   });
 
-  it('shows "Заработок в день" with daily_tce_usd', () => {
+  it('shows "Daily TCE" with daily_tce_usd', () => {
     render(<CalculationWaterfall breakdown={FIXTURE} />);
     const tceRow = screen.getByTestId('daily-tce');
     expect(tceRow).toHaveTextContent('55,817');
@@ -113,5 +114,61 @@ describe('CalculationWaterfall', () => {
     const canalRow = screen.getByTestId('cost-canal');
     expect(canalRow).toHaveTextContent('-$45,000');
     expect(screen.queryByTestId('canal-zero-note')).not.toBeInTheDocument();
+  });
+
+  it('renders Hull/Crew/P&I sub-breakdown under war risk when warRiskBreakdown provided', () => {
+    const warBreakdown: WarRiskBreakdown = {
+      hullPremiumUsd: 667,
+      crewWarBonusUsd: 10_000,
+      piSurchargeUsd: 20_000,
+      totalPremiumUsd: 30_667,
+    };
+    render(<CalculationWaterfall breakdown={{ ...FIXTURE, war_risk_usd: 30_667 }} warRiskBreakdown={warBreakdown} />);
+    const breakdown = screen.getByTestId('war-risk-breakdown');
+    expect(breakdown).toBeInTheDocument();
+    expect(screen.getByTestId('war-risk-hull')).toHaveTextContent('$667');
+    expect(screen.getByTestId('war-risk-crew')).toHaveTextContent('$10,000');
+    expect(screen.getByTestId('war-risk-pi')).toHaveTextContent('$20,000');
+    // total shown in main row
+    const warRow = screen.getByTestId('cost-war-risk');
+    expect(warRow).toHaveTextContent('-$30,667');
+  });
+
+  it('does not render war-risk sub-breakdown when warRiskBreakdown is absent', () => {
+    render(<CalculationWaterfall breakdown={FIXTURE} />);
+    expect(screen.queryByTestId('war-risk-breakdown')).not.toBeInTheDocument();
+  });
+
+  it('hull + crew + P&I rendered amounts sum exactly to war-risk total (sub-sum invariant)', () => {
+    const warBreakdown: WarRiskBreakdown = {
+      hullPremiumUsd: 666.7,   // fractional — rounds to 667
+      crewWarBonusUsd: 10_000,
+      piSurchargeUsd: 20_000,
+      totalPremiumUsd: 30_666.7, // rounds to 30667; war_risk_usd=13500 differs → catches wrong source
+    };
+    render(
+      <CalculationWaterfall
+        breakdown={{ ...FIXTURE, war_risk_usd: 13_500 }}
+        warRiskBreakdown={warBreakdown}
+      />,
+    );
+    const parseAmt = (el: HTMLElement) =>
+      parseInt((el.textContent ?? '').replace(/[$,\-]/g, ''), 10);
+    const hull = parseAmt(screen.getByTestId('war-risk-hull'));
+    const crew = parseAmt(screen.getByTestId('war-risk-crew'));
+    const pi = parseAmt(screen.getByTestId('war-risk-pi'));
+    const total = parseAmt(screen.getByTestId('war-risk-total'));
+    expect(hull + crew + pi).toBe(total);
+  });
+
+  it('does not render war-risk sub-breakdown when totalPremiumUsd is 0', () => {
+    const zeroBreakdown: WarRiskBreakdown = {
+      hullPremiumUsd: 0,
+      crewWarBonusUsd: 0,
+      piSurchargeUsd: 0,
+      totalPremiumUsd: 0,
+    };
+    render(<CalculationWaterfall breakdown={FIXTURE} warRiskBreakdown={zeroBreakdown} />);
+    expect(screen.queryByTestId('war-risk-breakdown')).not.toBeInTheDocument();
   });
 });

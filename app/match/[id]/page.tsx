@@ -17,7 +17,6 @@ import { MatchWorksheet } from '@/components/match/MatchWorksheet';
 import type { MatchWorksheet as MatchWorksheetType } from '@/lib/types';
 import { cfValue } from '@/lib/types';
 import { getPortDistance } from '@/lib/sailing/port-distances';
-import { effectiveScore } from '@/lib/utils/effective-score';
 import { getBalticDayRate } from '@/lib/market/baltic-freight';
 import { lookupCii } from '@/lib/imo/cii-lookup';
 
@@ -131,9 +130,6 @@ export default async function MatchDetailPage({ params }: Props) {
       ? (getPortDistance(cfValue(vessel.openPosition) ?? '', cfValue(cargo.originPort) ?? '')?.nm ?? null)
       : null);
 
-  // eslint-disable-next-line react-hooks/purity -- Server Component; Date.now() runs once per request, not in client render
-  const now = Date.now();
-
   // W6a: Baltic TC staleness badge. When the stored freight rate came from the Baltic
   // tier-2 waterfall, surface the rate's price_date so EconomicsTab can show a stale badge.
   const balticRateAsOf = storedMatch.freight_rate_source === 'baltic' && vessel
@@ -169,7 +165,7 @@ export default async function MatchDetailPage({ params }: Props) {
 
           <div className="flex items-center gap-4 sm:gap-6">
             {/* Score / Fit pill */}
-            {storedMatch.fit_percent != null ? (() => {
+            {storedMatch.fit_percent != null && (() => {
               const fitPct = Math.round(storedMatch.fit_percent!);
               const fitColor = fitPct >= 85
                 ? 'bg-emerald-100 text-emerald-800'
@@ -188,18 +184,7 @@ export default async function MatchDetailPage({ params }: Props) {
                   <span className="text-xs font-medium opacity-60 mt-0.5">fit</span>
                 </div>
               );
-            })() : (
-              <div
-                className="flex-shrink-0 flex flex-col items-center justify-center rounded-full bg-ds-accent-soft text-ds-accent-soft-fg w-20 h-20 sm:w-24 sm:h-24"
-                data-testid="score-pill"
-                aria-label={`Match score: ${storedMatch.score}`}
-              >
-                <span className="font-mono text-3xl sm:text-4xl font-semibold leading-none">
-                  {effectiveScore(storedMatch, now)}
-                </span>
-                <span className="text-xs font-medium opacity-60 mt-0.5">score</span>
-              </div>
-            )}
+            })()}
 
             {/* Headline + meta */}
             <div className="min-w-0 flex-1">

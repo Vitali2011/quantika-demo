@@ -33,6 +33,9 @@ function openDb(): Database.Database {
     fs.mkdirSync(dir, { recursive: true });
   }
   const db = new Database(DEFAULT_DB_PATH);
+  const walMode = db.pragma('journal_mode = WAL', { simple: true }) as string;
+  if (walMode !== 'wal') console.warn('[getCanalDb] WAL not enabled for', DEFAULT_DB_PATH, '— got', walMode);
+  db.pragma('busy_timeout = 5000');
   db.pragma('foreign_keys = ON');
   db.exec(CANAL_TARIFFS_SCHEMA);
   seedIfEmpty(db);

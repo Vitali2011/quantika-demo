@@ -41,6 +41,23 @@ export async function computeAndPersistMatches(
     return result.matches ?? [];
   };
 
+  // Live bunker price (NLRTM/VLSFO) for list↔detail parity. Fetched before
+  // analyzePairs so the board-demote floor check uses the same live price as the
+  // stored tce_usd_per_day column (H3 fix). Resilient to a missing bunker_prices
+  // table (e.g. minimal test DBs) — falls through to the helper default.
+  let bunkerPriceUsdPerMt: number | undefined;
+  try {
+    const bunkerRow = getLatestBunkerPrice(db, 'NLRTM', 'VLSFO');
+    if (bunkerRow !== null) {
+      bunkerPriceUsdPerMt = bunkerRow.price_usd_per_mt;
+    } else {
+      console.warn('[compute-matches] bunker price not found for NLRTM/VLSFO — board-demote floor uses helper default');
+    }
+  } catch {
+    console.warn('[compute-matches] bunker_prices table unavailable — board-demote floor uses helper default');
+    bunkerPriceUsdPerMt = undefined;
+  }
+
   // Realism buckets (handover 2026-05-30, point 2): we intentionally take ONLY the
   // main `matches` here. The auto-precompute → DB path is a curated *shortlist*, and
   // the matches table has no column for the lowConfidenceMatches / insufficientData
@@ -49,22 +66,13 @@ export async function computeAndPersistMatches(
   // path computes the same partition and persists all buckets to the session
   // (see app/api/ai/match/route.ts + its route tests). So this path shows the
   // shortlist; the full bucketed list is served live.
-  // Pass db so the economics-enrichment loop in analyzePairs can resolve the same
-  // Baltic tier-2 rate the persisted tce_usd_per_day column uses → match.economics
-  // stays consistent with the DB column on the auto-precompute path (code-review #2).
-  const { matches } = await analyzePairs(cargos, vessels, aiScorer, { db });
+  // Pass db and bunkerPriceUsdPerMt so analyzePairs board-demote floor check uses
+  // the live bunker price (H3), and the Baltic tier-2 rate stays consistent with
+  // the persisted tce_usd_per_day column (code-review #2).
+  const { matches } = await analyzePairs(cargos, vessels, aiScorer, { db, bunkerPriceUsdPerMt });
 
   const cargoMap = new Map(cargos.map((c) => [`${c.emailId}|${c.itemIndex}`, c]));
   const vesselMap = new Map(vessels.map((v) => [`${v.emailId}|${v.itemIndex}`, v]));
-
-  // Live bunker price (NLRTM/VLSFO) for list↔detail parity. Resilient to a missing
-  // bunker_prices table (e.g. minimal test DBs) — falls through to the helper default.
-  let bunkerPriceUsdPerMt: number | undefined;
-  try {
-    bunkerPriceUsdPerMt = getLatestBunkerPrice(db, 'NLRTM', 'VLSFO')?.price_usd_per_mt;
-  } catch {
-    bunkerPriceUsdPerMt = undefined;
-  }
 
   for (const m of matches) {
     const cargo = cargoMap.get(`${m.cargoEmailId}|${m.cargoItemIndex}`);

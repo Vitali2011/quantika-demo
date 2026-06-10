@@ -5,6 +5,7 @@
 
 import Database from 'better-sqlite3';
 import * as sqliteVec from 'sqlite-vec';
+import { NextRequest } from 'next/server';
 import migration029 from '@/lib/migrations/029-bimco-rag';
 import { BIMCO_FIXTURE_CLAUSES } from '@/lib/knowledge/sources/bimco/fixture';
 
@@ -14,6 +15,14 @@ jest.mock('@/lib/session-store', () => ({
   getStore: jest.fn(() => ({
     getDatabase: () => testDb,
   })),
+}));
+
+jest.mock('@/lib/session', () => ({
+  requireSession: jest.fn(() => ({ session: {}, sessionId: 'test-session' })),
+}));
+
+jest.mock('@/lib/rate-limit', () => ({
+  aiRateLimiter: { check: jest.fn(() => ({ allowed: true, retryAfterMs: 0 })) },
 }));
 
 // Mock environment variable for feature flag
@@ -43,8 +52,8 @@ describe('GET /api/knowledge/clauses', () => {
     process.env.BIMCO_RAG_ENABLED = 'false';
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=laytime');
-    const res = await GET(req);
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=laytime');
+    const res = await GET(req as any);
 
     expect(res.status).toBe(503);
     const json = await res.json();
@@ -62,8 +71,8 @@ describe('GET /api/knowledge/clauses', () => {
     );
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=laytime');
-    const res = await GET(req);
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=laytime');
+    const res = await GET(req as any);
 
     expect(res.status).toBe(200);
     const json = await res.json();
@@ -76,8 +85,8 @@ describe('GET /api/knowledge/clauses', () => {
     process.env.BIMCO_RAG_ENABLED = 'true';
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses');
-    const res = await GET(req);
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses');
+    const res = await GET(req as any);
 
     // Should either return 200 with all results or 400 for missing param
     expect([200, 400]).toContain(res.status);
@@ -94,8 +103,8 @@ describe('GET /api/knowledge/clauses', () => {
     );
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=');
-    const res = await GET(req);
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=');
+    const res = await GET(req as any);
 
     expect(res.status).toBe(200);
   });
@@ -105,8 +114,8 @@ describe('GET /api/knowledge/clauses', () => {
     process.env.BIMCO_RAG_ENABLED = 'true';
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=test&limit=-1');
-    const res = await GET(req);
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=test&limit=-1');
+    const res = await GET(req as any);
 
     // Should not crash, either clamps to valid value or returns 400
     expect([200, 400]).toContain(res.status);
@@ -117,8 +126,8 @@ describe('GET /api/knowledge/clauses', () => {
     process.env.BIMCO_RAG_ENABLED = 'true';
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=test&limit=invalid');
-    const res = await GET(req);
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=test&limit=invalid');
+    const res = await GET(req as any);
 
     // Should not crash
     expect([200, 400]).toContain(res.status);
@@ -137,8 +146,8 @@ describe('GET /api/knowledge/clauses', () => {
     }
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=test&limit=1000');
-    const res = await GET(req);
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=test&limit=1000');
+    const res = await GET(req as any);
 
     expect(res.status).toBe(200);
     const json = await res.json();
@@ -157,8 +166,8 @@ describe('GET /api/knowledge/clauses', () => {
     );
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=test&cp=INVALID');
-    const res = await GET(req);
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=test&cp=INVALID');
+    const res = await GET(req as any);
 
     expect(res.status).toBe(200);
     const json = await res.json();
@@ -180,8 +189,8 @@ describe('GET /api/knowledge/clauses', () => {
     );
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=clause&cp=GENCON+2022');
-    const res = await GET(req);
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=clause&cp=GENCON+2022');
+    const res = await GET(req as any);
 
     expect(res.status).toBe(200);
     const json = await res.json();
@@ -198,10 +207,10 @@ describe('GET /api/knowledge/clauses', () => {
     process.env.BIMCO_RAG_ENABLED = 'true';
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request("http://localhost:3000/api/knowledge/clauses?q='; DROP TABLE bimco_fts; --");
+    const req = new NextRequest("http://localhost:3000/api/knowledge/clauses?q='; DROP TABLE bimco_fts; --");
 
     // Should not throw or drop the table
-    await expect(GET(req)).resolves.not.toThrow();
+    await expect(GET(req as any)).resolves.not.toThrow();
 
     // Verify table still exists
     const tables = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='bimco_fts'").all();
@@ -222,8 +231,8 @@ describe('GET /api/knowledge/clauses', () => {
     );
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=test');
-    const res = await GET(req);
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=test');
+    const res = await GET(req as any);
 
     expect(res.status).toBe(200);
     const json = await res.json();
@@ -258,8 +267,8 @@ describe('GET /api/knowledge/clauses', () => {
     }
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=laytime');
-    const res = await GET(req);
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=laytime');
+    const res = await GET(req as any);
 
     expect(res.status).toBe(200);
     const json = await res.json();
@@ -294,8 +303,8 @@ describe('GET /api/knowledge/clauses', () => {
     }
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=cargo&cp=GENCON+2022');
-    const res = await GET(req);
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=cargo&cp=GENCON+2022');
+    const res = await GET(req as any);
 
     expect(res.status).toBe(200);
     const json = await res.json();
@@ -304,6 +313,38 @@ describe('GET /api/knowledge/clauses', () => {
     for (const result of json.results) {
       const meta = JSON.parse(result.metadata);
       expect(meta.charterParty).toBe('GENCON 2022');
+    }
+  });
+
+  // TC-API-14: Behavioral — NYPE 1946 charter party filter returns only NYPE 1946 clauses
+  it('returns only NYPE 1946 clauses when cp=NYPE+1946 with fixture data', async () => {
+    process.env.BIMCO_RAG_ENABLED = 'true';
+
+    const stmt = db.prepare('INSERT INTO bimco_fts (content, metadata) VALUES (?, ?)');
+    for (const clause of BIMCO_FIXTURE_CLAUSES) {
+      stmt.run(
+        clause.text,
+        JSON.stringify({
+          source: 'bimco',
+          charterParty: clause.charterParty,
+          clauseNumber: clause.clauseNumber,
+          title: clause.title,
+          id: clause.id,
+        }),
+      );
+    }
+
+    const { GET } = await import('@/app/api/knowledge/clauses/route');
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=charterer&cp=NYPE+1946');
+    const res = await GET(req);
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.results.length).toBeGreaterThanOrEqual(1);
+
+    for (const result of json.results) {
+      const meta = JSON.parse(result.metadata);
+      expect(meta.charterParty).toBe('NYPE 1946');
     }
   });
 });

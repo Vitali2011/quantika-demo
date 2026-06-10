@@ -55,6 +55,17 @@ function safeJsonObject<T>(json: string | null): T | undefined {
   }
 }
 
+function dedupByKey<T extends { emailId: string; itemIndex: number }>(items: T[]): T[] {
+  const seen = new Set<string>();
+  const out: T[] = [];
+  for (const it of items) {
+    const k = `${it.emailId}|${it.itemIndex}`;
+    if (seen.has(k)) continue;
+    seen.add(k); out.push(it);
+  }
+  return out;
+}
+
 export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
   const emailRows = db.prepare(
     `SELECT gmail_message_id, thread_id, from_addr, from_name, from_email,
@@ -89,6 +100,14 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
       case 'vessel': parsedVessels.push(...safeJsonArray<ParsedVessel>(row.result_json, 'vessel')); break;
       case 'recap': parsedFixtureRecaps.push(...safeJsonArray<ParsedFixtureRecap>(row.result_json, 'recap')); break;
       case 'classify': classifications.push(...safeJsonArray<Classification>(row.result_json, 'classify')); break;
+    }
+  }
+
+  const dedupedVessels = dedupByKey(parsedVessels);
+  const dedupedCargos  = dedupByKey(parsedCargos);
+  for (const v of dedupedVessels) {
+    if (v.grainCapacityUnit && v.grainCapacityUnit !== 'cbm') {
+      v.grainCapacityUnit = 'cbm';
     }
   }
 
@@ -180,13 +199,13 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
   const lowConfidenceMatches = rowsToMatches(reviewRows);
   const insufficientData = rowsToMatches(insufficientRows);
 
-  const processedEmails = buildProcessedEmails(emails, classifications, parsedCargos, parsedVessels);
+  const processedEmails = buildProcessedEmails(emails, classifications, dedupedCargos, dedupedVessels);
 
   return {
     emails,
     classifications,
-    parsedCargos,
-    parsedVessels,
+    parsedCargos: dedupedCargos,
+    parsedVessels: dedupedVessels,
     parsedFixtureRecaps,
     processedEmails,
     matches,

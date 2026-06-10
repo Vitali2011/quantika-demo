@@ -45,6 +45,21 @@ export interface AuditEntry {
 
 // ── Economics Engine ──
 
+export interface EconomicsInput {
+  route: {
+    fromPort: string;
+    toPort: string;
+    viaCanal?: string;
+    intermediatePorts?: string[];
+  };
+  vesselValueUsd: number;
+  daysInHra: number;
+  distanceNm: number;
+  euLegPercent: number; // 0.0–1.0
+  vlsfoBurnMt: number;
+  consumptionMtPerDay: number;
+}
+
 export interface EconomicsBreakdown {
   bunkerCost: number;                  // USD
   bunkerPort: string;                  // recommended bunkering hub
@@ -445,6 +460,7 @@ export interface MatchWorksheet {
   };
   cargo: {
     weightMt: number | null;
+    weightMtEffective?: number | null;  // worst-case (resolveCargoWeight) for util% gating
     cargoType: string | null;
     loadPort: string | null;
     dischargePort: string | null;

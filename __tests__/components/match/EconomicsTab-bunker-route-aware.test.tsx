@@ -81,13 +81,18 @@ test('bunker dropdown shows route candidates when API returns them', async () =>
   expect(options).not.toContain('SGSIN');
 });
 
-test('bunker dropdown defaults to recommended (candidates[0]) port', async () => {
+// Bug G fix: NLRTM is always included in options so the selected default (Rotterdam/NLRTM)
+// is visible in the dropdown even when route-specific candidates arrive.
+test('bunker dropdown includes NLRTM so selected value (Rotterdam) is visible', async () => {
   await act(async () => {
     render(<EconomicsTab vessel={vessel} cargo={cargo} />);
   });
 
   const portSelect = screen.getByLabelText('Bunker port') as HTMLSelectElement;
-  expect(portSelect.value).toBe('ESCEU');
+  const options = Array.from(portSelect.options).map(o => o.value);
+  expect(options).toContain('NLRTM');
+  // NLRTM is selected (baseline state for list==detail parity)
+  expect(portSelect.value).toBe('NLRTM');
 });
 
 test('Ceuta label renders as "Ceuta" not raw locode', async () => {
