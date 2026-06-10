@@ -50,6 +50,8 @@ const AUTH_BYPASS_PATHS = new Set([
   '/api/sample',
   // Demo session re-hydration: has its own demo_auth verification; must not loop back to auth guard
   '/api/demo/rehydrate',
+  // Internal worker callback for quote-update SSE events — has its own x-internal-token auth
+  '/api/internal/quote-event',
 ]);
 
 const AUTH_BYPASS_PREFIXES = ['/_next/static', '/_next/image', '/_next/webpack'];

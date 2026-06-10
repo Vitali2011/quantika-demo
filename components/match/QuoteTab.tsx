@@ -6,9 +6,8 @@ import { ConfidenceBadge } from './ConfidenceBadge';
 import type { MatchConfidence } from '@/lib/confidence';
 import type { MarketBenchmark } from '@/lib/types';
 import { formatBenchmarkReference } from '@/lib/market/benchmark';
-import { csrfFetch } from '@/lib/csrf-client';
 import { useToast } from '@/components/ui/toast';
-import { parseJsonResponse } from '@/lib/http/parse-json-response';
+import { useQuoteJob } from '@/lib/quote-jobs/use-quote-job';
 
 interface QuoteTabProps {
   cargoEmailId?: string;
@@ -16,43 +15,20 @@ interface QuoteTabProps {
 }
 
 export function QuoteTab({ cargoEmailId, confidence }: QuoteTabProps) {
-  const [draft, setDraft] = useState('');
-  const [generating, setGenerating] = useState(false);
-  const [generateError, setGenerateError] = useState('');
-  const [benchmark, setBenchmark] = useState<MarketBenchmark | null | 'loading'>('loading');
-  const blockSend = confidence?.blockSend ?? false;
-  const blockedFields = confidence?.blockedFields ?? [];
   const toast = useToast();
+  const { state, draft: hookDraft, error: hookError, start, retry } =
+    useQuoteJob(cargoEmailId, (msg) => toast.error(msg));
+  const [draft, setDraft] = useState('');
+  const [prevHookDraft, setPrevHookDraft] = useState('');
+  const [benchmark, setBenchmark] = useState<MarketBenchmark | null | 'loading'>('loading');
 
-  function handleSaveDraft() {
-    const key = `quote_draft_${cargoEmailId ?? 'no-id'}`;
-    sessionStorage.setItem(key, draft);
-    toast.success('Сохранено');
+  // Sync generated draft into textarea without useEffect (derived-state pattern)
+  if (hookDraft !== prevHookDraft) {
+    setPrevHookDraft(hookDraft);
+    setDraft(hookDraft);
   }
 
-  function handleSendQuote() {
-    toast.success('Отправлено');
-  }
-
-  async function generateDraft() {
-    if (!cargoEmailId) return;
-    setGenerating(true);
-    setGenerateError('');
-    try {
-      const res = await csrfFetch('/api/ai/draft-quote', {
-        method: 'POST',
-        body: JSON.stringify({ emailId: cargoEmailId }),
-      });
-      const data = await parseJsonResponse<{ draft?: string }>(res);
-      setDraft(data.draft ?? '');
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to generate draft';
-      setGenerateError(msg);
-      toast.error(msg);
-    } finally {
-      setGenerating(false);
-    }
-  }
+  const generating = state === 'queued' || state === 'processing';
 
   useEffect(() => {
     fetch('/api/market/benchmark?indicator=TOEPFER_TMI')
@@ -71,15 +47,23 @@ export function QuoteTab({ cargoEmailId, confidence }: QuoteTabProps) {
         <div className="flex items-center gap-2">
           <label className="block text-xs font-medium text-gray-600">Draft Quote</label>
           <button
-            onClick={generateDraft}
+            onClick={start}
             disabled={generating || !cargoEmailId}
             className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-700 hover:bg-gray-200 disabled:opacity-50"
           >
             {generating ? 'Generating…' : 'Generate'}
           </button>
+          {state === 'error' && (
+            <button
+              onClick={retry}
+              className="rounded bg-red-50 px-2 py-0.5 text-xs text-red-700 hover:bg-red-100"
+            >
+              Retry
+            </button>
+          )}
         </div>
-        {generateError && (
-          <p className="text-xs text-red-600">{generateError}</p>
+        {hookError && state === 'error' && (
+          <p className="text-xs text-red-600">{hookError}</p>
         )}
         <textarea
           className="w-full rounded border border-gray-200 p-3 text-sm resize-y min-h-[120px]"

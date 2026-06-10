@@ -1,13 +1,25 @@
 /**
- * Tests for draft-quote route — γv-05
- * Verifies: shim delegation, both providers (openai/gemini), PII sanitization, error paths
+ * Tests for draft-quote route — Stage 8 async enqueue
+ * Verifies: auth/validation guards (preserved), 202 enqueue success, 429 queue-full
  */
 import { POST } from '@/app/api/ai/draft-quote/route';
 import { NextRequest } from 'next/server';
 import { Email, SessionData, ParsedCargo } from '@/lib/types';
+import { QueueFullError } from '@/lib/quote-jobs/store';
 
-// Mock the ai-provider shim (NOT lib/openai directly)
-jest.mock('@/lib/ai-provider');
+// Mock the quote-jobs/store module
+jest.mock('@/lib/quote-jobs/store', () => {
+  const { QueueFullError: ActualQueueFullError } = jest.requireActual('@/lib/quote-jobs/store') as { QueueFullError: typeof import('@/lib/quote-jobs/store').QueueFullError };
+  return {
+    enqueueQuoteJob: jest.fn(() => ({ id: 'job-uuid-123', status: 'queued', session_id: 'session-1', email_id: 'email-1', result: null, error: null, attempts: 0, created_at: Date.now(), updated_at: Date.now() })),
+    QueueFullError: ActualQueueFullError,
+  };
+});
+
+// Mock ensure-worker to no-op
+jest.mock('@/lib/quote-jobs/ensure-worker', () => ({
+  ensureWorker: jest.fn(),
+}));
 
 jest.mock('@/lib/session', () => {
   const { NextResponse } = jest.requireActual('next/server');
@@ -31,19 +43,19 @@ jest.mock('@/lib/csrf', () => ({
   validateCsrf: jest.fn().mockReturnValue(true),
 }));
 
-// Mock session-store for ai-provider audit (it writes to DB)
+// Mock session-store — provide a fake db (enqueueQuoteJob is mocked at module level anyway)
 jest.mock('@/lib/session-store', () => ({
   getStore: jest.fn(() => ({
-    getDatabase: jest.fn(() => ({
-      prepare: jest.fn(() => ({ run: jest.fn() })),
+    getDb: jest.fn(() => ({
+      prepare: jest.fn(() => ({ run: jest.fn(), get: jest.fn() })),
     })),
   })),
 }));
 
-import { callAiText } from '@/lib/ai-provider';
+import { enqueueQuoteJob } from '@/lib/quote-jobs/store';
 import { getSession } from '@/lib/session';
 
-const mockCallAiText = callAiText as jest.MockedFunction<typeof callAiText>;
+const mockEnqueueQuoteJob = enqueueQuoteJob as jest.MockedFunction<typeof enqueueQuoteJob>;
 const mockGetSession = getSession as jest.MockedFunction<typeof getSession>;
 
 function makeRequest(body: unknown, sessionId?: string): NextRequest {
@@ -120,6 +132,8 @@ const baseSession: SessionData = {
 describe('POST /api/ai/draft-quote', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Reset enqueueQuoteJob to default success behaviour
+    mockEnqueueQuoteJob.mockReturnValue({ id: 'job-uuid-123', status: 'queued', session_id: 'session-1', email_id: 'email-1', result: null, error: null, attempts: 0, created_at: Date.now(), updated_at: Date.now() });
   });
 
   // ── Auth / validation ──────────────────────────────────────────────────────
@@ -153,103 +167,26 @@ describe('POST /api/ai/draft-quote', () => {
     expect(body.error).toBe('Parsed request not found');
   });
 
-  // ── Core: shim delegation ─────────────────────────────────────────────────
+  // ── Success path: async enqueue ───────────────────────────────────────────
 
-  it('calls callAiText from ai-provider shim (not lib/openai) with DRAFT_QUOTE scope', async () => {
+  it('returns 202 {jobId} and enqueues a job', async () => {
     mockGetSession.mockReturnValue(baseSession);
-    mockCallAiText.mockResolvedValue('Draft quote text here');
     const req = makeRequest({ emailId: 'email-1' }, 'session-1');
     const res = await POST(req);
-    expect(res.status).toBe(200);
-
-    // Must call the shim's callAiText with 'DRAFT_QUOTE' as first argument
-    expect(mockCallAiText).toHaveBeenCalledTimes(1);
-    const [scope] = mockCallAiText.mock.calls[0];
-    expect(scope).toBe('DRAFT_QUOTE');
-  });
-
-  it('returns { draft } in response body', async () => {
-    mockGetSession.mockReturnValue(baseSession);
-    mockCallAiText.mockResolvedValue('Your draft quote is ready');
-    const req = makeRequest({ emailId: 'email-1' }, 'session-1');
-    const res = await POST(req);
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(202);
     const body = await res.json();
-    expect(body).toEqual({ draft: 'Your draft quote is ready' });
+    expect(typeof body.jobId).toBe('string');
+    expect(body.status).toBe('queued');
   });
 
-  // ── Gemini provider rollback ───────────────────────────────────────────────
-
-  it('uses gemini when DRAFT_QUOTE_PROVIDER=gemini (shim handles routing)', async () => {
-    // The route just calls callAiText(scope, ...) — the shim handles provider selection.
-    // We verify that the mock is called regardless of provider (shim is mocked as a unit).
+  it('returns 429 when queue is full', async () => {
     mockGetSession.mockReturnValue(baseSession);
-    mockCallAiText.mockResolvedValue('Gemini draft quote');
+    mockEnqueueQuoteJob.mockImplementation(() => { throw new QueueFullError(20); });
     const req = makeRequest({ emailId: 'email-1' }, 'session-1');
     const res = await POST(req);
-    expect(res.status).toBe(200);
-    expect(mockCallAiText).toHaveBeenCalledWith(
-      'DRAFT_QUOTE',
-      expect.any(String), // system prompt
-      expect.any(String), // user prompt
-      expect.objectContaining({ timeoutMs: expect.any(Number) }),
-    );
-  });
-
-  // ── Prompt content: PII / sender name ─────────────────────────────────────
-
-  it('includes sender name in user prompt', async () => {
-    mockGetSession.mockReturnValue(baseSession);
-    mockCallAiText.mockResolvedValue('Draft');
-    const req = makeRequest({ emailId: 'email-1' }, 'session-1');
-    await POST(req);
-    const [, , userPrompt] = mockCallAiText.mock.calls[0];
-    expect(userPrompt).toContain('John Smith');
-  });
-
-  it('includes parsedCargo JSON in user prompt', async () => {
-    mockGetSession.mockReturnValue(baseSession);
-    mockCallAiText.mockResolvedValue('Draft');
-    const req = makeRequest({ emailId: 'email-1' }, 'session-1');
-    await POST(req);
-    const [, , userPrompt] = mockCallAiText.mock.calls[0];
-    expect(userPrompt).toContain('Shanghai');
-    expect(userPrompt).toContain('Rotterdam');
-  });
-
-  it('falls back sender name to email local part when no display name', async () => {
-    const emailNoName = { ...baseEmail, from: 'plain@acme.com', fromName: null };
-    mockGetSession.mockReturnValue({ ...baseSession, emails: [emailNoName] });
-    mockCallAiText.mockResolvedValue('Draft');
-    const req = makeRequest({ emailId: 'email-1' }, 'session-1');
-    await POST(req);
-    const [, , userPrompt] = mockCallAiText.mock.calls[0];
-    // Should not contain raw email address in the "address to" line, but local part is fine
-    expect(userPrompt).toContain('plain');
-  });
-
-  // ── Timeout error handling ─────────────────────────────────────────────────
-
-  it('returns 504 with retryable flag on LLMTimeoutError', async () => {
-    const { LLMTimeoutError } = jest.requireActual('@/lib/openai') as { LLMTimeoutError: new (msg: string) => Error };
-    mockGetSession.mockReturnValue(baseSession);
-    mockCallAiText.mockRejectedValue(new LLMTimeoutError('timed out'));
-    const req = makeRequest({ emailId: 'email-1' }, 'session-1');
-    const res = await POST(req);
-    expect(res.status).toBe(504);
+    expect(res.status).toBe(429);
     const body = await res.json();
-    expect(body.error).toBe('ai_timeout');
+    expect(body.error).toBe('queue_full');
     expect(body.retryable).toBe(true);
-  });
-
-  it('returns 500 JSON with error:ai_error for non-timeout errors', async () => {
-    mockGetSession.mockReturnValue(baseSession);
-    mockCallAiText.mockRejectedValue(new Error('unexpected error'));
-    const req = makeRequest({ emailId: 'email-1' }, 'session-1');
-    const res = await POST(req);
-    expect(res.status).toBe(500);
-    const body = await res.json();
-    expect(body.error).toBe('ai_error');
-    expect(body.message).toBe('unexpected error');
   });
 });

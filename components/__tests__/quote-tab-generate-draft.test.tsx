@@ -1,15 +1,16 @@
 /**
  * @jest-environment jsdom
  *
- * PI2 — #351: QuoteTab "Generate" button must POST to /api/ai/draft-quote
- * and populate the draft textarea with the returned text.
+ * PI2 — #351: QuoteTab "Generate" button must enqueue a job and display the
+ * draft delivered via SSE quote-update event.
  */
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { QuoteTab } from '@/components/match/QuoteTab';
 import { ToastProvider } from '@/components/ui/toast/toast-context';
 import { ToastContainer } from '@/components/ui/toast/toast-container';
+import { QUOTE_UPDATE_EVENT } from '@/lib/jobs/event-emitter';
 
 function renderWithToast(ui: React.ReactElement) {
   return render(
@@ -17,7 +18,41 @@ function renderWithToast(ui: React.ReactElement) {
   );
 }
 
-function mockFetchResponses(draftText: string) {
+// ── Mock EventSource (not in jsdom) ─────────────────────────────────────────
+
+interface FakeEsInstance {
+  fire: (type: string, data: unknown) => void;
+}
+let lastMockEs: FakeEsInstance | null = null;
+
+class FakeEventSource {
+  private _listeners: Record<string, Array<(e: { data: string }) => void>> = {};
+  constructor(_url: string) {
+    lastMockEs = {
+      fire: (type, data) => {
+        (this._listeners[type] ?? []).forEach(h =>
+          h({ data: JSON.stringify(data) }),
+        );
+      },
+    };
+  }
+  addEventListener(type: string, handler: (e: { data: string }) => void) {
+    if (!this._listeners[type]) this._listeners[type] = [];
+    this._listeners[type].push(handler);
+  }
+  removeEventListener() {}
+  close() {}
+}
+
+beforeAll(() => {
+  (global as unknown as Record<string, unknown>).EventSource = FakeEventSource;
+});
+
+// ── Fetch mock helpers ───────────────────────────────────────────────────────
+
+const TEST_JOB_ID = 'test-job-1';
+
+function mockFetchResponses() {
   global.fetch = jest.fn().mockImplementation((url: string) => {
     if (String(url).includes('/api/market/benchmark')) {
       return Promise.resolve({
@@ -28,9 +63,12 @@ function mockFetchResponses(draftText: string) {
     if (String(url).includes('/api/ai/draft-quote')) {
       return Promise.resolve({
         ok: true,
-        status: 200,
-        headers: { get: (k: string) => k.toLowerCase().includes('content-type') ? 'application/json' : null },
-        json: async () => ({ draft: draftText }),
+        status: 202,
+        headers: {
+          get: (k: string) =>
+            k.toLowerCase().includes('content-type') ? 'application/json' : null,
+        },
+        json: async () => ({ jobId: TEST_JOB_ID, status: 'queued' }),
       } as unknown as Response);
     }
     return Promise.resolve({ ok: false, json: async () => ({}) } as Response);
@@ -39,17 +77,20 @@ function mockFetchResponses(draftText: string) {
 
 afterEach(() => {
   jest.restoreAllMocks();
+  lastMockEs = null;
 });
 
-describe('QuoteTab — Generate Draft button (fix #351)', () => {
+// ── Tests ─────────────────────────────────────────────────────────────────────
+
+describe('QuoteTab — Generate Draft button (async job flow)', () => {
   it('shows Generate button when cargoEmailId is provided', () => {
-    mockFetchResponses('');
+    mockFetchResponses();
     renderWithToast(<QuoteTab cargoEmailId="email-001" />);
     expect(screen.getByRole('button', { name: /generate/i })).toBeInTheDocument();
   });
 
   it('shows Generate button as disabled when cargoEmailId is absent', () => {
-    mockFetchResponses('');
+    mockFetchResponses();
     renderWithToast(<QuoteTab />);
     const btn = screen.getByRole('button', { name: /generate/i });
     expect(btn).toBeInTheDocument();
@@ -57,8 +98,7 @@ describe('QuoteTab — Generate Draft button (fix #351)', () => {
   });
 
   it('POSTs to /api/ai/draft-quote with emailId on click', async () => {
-    const draftText = 'Dear Captain, we offer USD 15/MT for the cargo.';
-    mockFetchResponses(draftText);
+    mockFetchResponses();
     renderWithToast(<QuoteTab cargoEmailId="email-abc" />);
 
     fireEvent.click(screen.getByRole('button', { name: /generate/i }));
@@ -74,26 +114,40 @@ describe('QuoteTab — Generate Draft button (fix #351)', () => {
     });
   });
 
-  it('populates the draft textarea with the API response', async () => {
+  it('populates the draft textarea after SSE quote-update event (PI2 behavioral)', async () => {
     const draftText = 'Dear Captain, we offer USD 15/MT for the cargo.';
-    mockFetchResponses(draftText);
+    mockFetchResponses();
     renderWithToast(<QuoteTab cargoEmailId="email-abc" />);
 
     fireEvent.click(screen.getByRole('button', { name: /generate/i }));
 
+    // Wait for POST to complete and EventSource to be created
+    await waitFor(() => expect(lastMockEs).not.toBeNull());
+
+    // Fire SSE done event — this is what delivers the draft to the UI
+    act(() => {
+      lastMockEs!.fire(QUOTE_UPDATE_EVENT, {
+        id: TEST_JOB_ID,
+        status: 'done',
+        result: draftText,
+      });
+    });
+
     await waitFor(() => {
-      const textarea = screen.getByRole('textbox');
-      expect(textarea).toHaveValue(draftText);
+      expect(screen.getByRole('textbox')).toHaveValue(draftText);
     });
   });
 
-  it('shows error message when API fails', async () => {
+  it('shows error message when POST fails', async () => {
     global.fetch = jest.fn().mockImplementation((url: string) => {
       if (String(url).includes('/api/ai/draft-quote')) {
         return Promise.resolve({
           ok: false,
           status: 500,
-          headers: { get: (k: string) => k.toLowerCase().includes('content-type') ? 'application/json' : null },
+          headers: {
+            get: (k: string) =>
+              k.toLowerCase().includes('content-type') ? 'application/json' : null,
+          },
           json: async () => ({ error: 'Service unavailable' }),
         } as unknown as Response);
       }
@@ -108,15 +162,34 @@ describe('QuoteTab — Generate Draft button (fix #351)', () => {
     });
   });
 
+  it('shows Retry button after error', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      status: 500,
+      headers: {
+        get: (k: string) =>
+          k.toLowerCase().includes('content-type') ? 'application/json' : null,
+      },
+      json: async () => ({ error: 'ai_error', message: 'Failed' }),
+    } as unknown as Response);
+
+    renderWithToast(<QuoteTab cargoEmailId="email-abc" />);
+    fireEvent.click(screen.getByRole('button', { name: /generate/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument();
+    });
+  });
+
   it('Send Quote is disabled when draft textarea is empty', () => {
-    mockFetchResponses('');
+    mockFetchResponses();
     renderWithToast(<QuoteTab cargoEmailId="email-001" />);
     const sendBtn = screen.getByRole('button', { name: /send quote/i });
     expect(sendBtn).toBeDisabled();
   });
 
   it('Send Quote remains disabled in demo even after draft textarea is filled', () => {
-    mockFetchResponses('');
+    mockFetchResponses();
     renderWithToast(<QuoteTab cargoEmailId="email-001" />);
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'USD 15/MT' } });
     const sendBtn = screen.getByRole('button', { name: /send quote/i });
@@ -129,7 +202,10 @@ describe('QuoteTab — Generate Draft button (fix #351)', () => {
         return Promise.resolve({
           ok: false,
           status: 504,
-          headers: { get: (k: string) => k.toLowerCase().includes('content-type') ? 'application/json' : null },
+          headers: {
+            get: (k: string) =>
+              k.toLowerCase().includes('content-type') ? 'application/json' : null,
+          },
           json: async () => { throw new SyntaxError('Unexpected end of JSON input'); },
         } as unknown as Response);
       }
@@ -151,7 +227,10 @@ describe('QuoteTab — Generate Draft button (fix #351)', () => {
         return Promise.resolve({
           ok: false,
           status: 502,
-          headers: { get: (k: string) => k.toLowerCase().includes('content-type') ? 'text/html' : null },
+          headers: {
+            get: (k: string) =>
+              k.toLowerCase().includes('content-type') ? 'text/html' : null,
+          },
           json: async () => { throw new SyntaxError("Unexpected token '<'"); },
         } as unknown as Response);
       }

@@ -3,7 +3,7 @@ import { resolveSenderName } from '@/lib/utils/resolve-sender-name';
 
 interface BuildArgs {
   parsedCargo: { emailId: string; cargoType?: string; cargoDescription?: unknown };
-  email?: { id: string; from?: string; fromName?: string; subject?: string; body?: string };
+  email?: { id: string; from?: string | null; fromName?: string | null; subject?: string | null; body?: string | null };
   ragEnabled: boolean;
 }
 
