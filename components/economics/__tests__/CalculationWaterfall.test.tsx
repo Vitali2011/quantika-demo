@@ -11,6 +11,7 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { CalculationWaterfall } from '../CalculationWaterfall';
 import type { TCEBreakdown } from '@/lib/economics/voyage-calculator';
+import type { WarRiskBreakdown } from '@/lib/economics/war-risk';
 
 const FIXTURE: TCEBreakdown = {
   // derivation inputs (B1)
@@ -113,5 +114,39 @@ describe('CalculationWaterfall', () => {
     const canalRow = screen.getByTestId('cost-canal');
     expect(canalRow).toHaveTextContent('-$45,000');
     expect(screen.queryByTestId('canal-zero-note')).not.toBeInTheDocument();
+  });
+
+  it('renders Hull/Crew/P&I sub-breakdown under war risk when warRiskBreakdown provided', () => {
+    const warBreakdown: WarRiskBreakdown = {
+      hullPremiumUsd: 667,
+      crewWarBonusUsd: 10_000,
+      piSurchargeUsd: 20_000,
+      totalPremiumUsd: 30_667,
+    };
+    render(<CalculationWaterfall breakdown={{ ...FIXTURE, war_risk_usd: 30_667 }} warRiskBreakdown={warBreakdown} />);
+    const breakdown = screen.getByTestId('war-risk-breakdown');
+    expect(breakdown).toBeInTheDocument();
+    expect(screen.getByTestId('war-risk-hull')).toHaveTextContent('$667');
+    expect(screen.getByTestId('war-risk-crew')).toHaveTextContent('$10,000');
+    expect(screen.getByTestId('war-risk-pi')).toHaveTextContent('$20,000');
+    // total shown in main row
+    const warRow = screen.getByTestId('cost-war-risk');
+    expect(warRow).toHaveTextContent('-$30,667');
+  });
+
+  it('does not render war-risk sub-breakdown when warRiskBreakdown is absent', () => {
+    render(<CalculationWaterfall breakdown={FIXTURE} />);
+    expect(screen.queryByTestId('war-risk-breakdown')).not.toBeInTheDocument();
+  });
+
+  it('does not render war-risk sub-breakdown when totalPremiumUsd is 0', () => {
+    const zeroBreakdown: WarRiskBreakdown = {
+      hullPremiumUsd: 0,
+      crewWarBonusUsd: 0,
+      piSurchargeUsd: 0,
+      totalPremiumUsd: 0,
+    };
+    render(<CalculationWaterfall breakdown={FIXTURE} warRiskBreakdown={zeroBreakdown} />);
+    expect(screen.queryByTestId('war-risk-breakdown')).not.toBeInTheDocument();
   });
 });
