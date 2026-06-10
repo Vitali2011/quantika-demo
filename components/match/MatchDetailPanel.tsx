@@ -133,7 +133,7 @@ function PanelContent({
       {/* Fit Breakdown */}
       {fitPercent != null && (() => {
         const fbData = fitBreakdown ? (() => { try { return JSON.parse(fitBreakdown); } catch { return null; } })() : null;
-        const components: Array<{ label: string; weight: number; score: number; rationale: string }> =
+        const components: Array<{ label: string; weight: number; score: number; rationale: string; bracketData?: string }> =
           fbData?.components ?? [];
         const fitPct = Math.round(fitPercent);
         const fitColor = fitPct >= 85 ? 'text-emerald-600' : fitPct >= 60 ? 'text-amber-600' : 'text-slate-500';
@@ -151,7 +151,12 @@ function PanelContent({
                   {components.map((c, i) => (
                     <div key={i} className="space-y-0.5">
                       <div className="flex justify-between text-xs">
-                        <span className="font-medium text-ds-text">{c.label}</span>
+                        <span className="font-medium text-ds-text">
+                          {c.label}
+                          {c.bracketData && (
+                            <span className="ml-1 font-mono text-[10px] text-ds-text-subtle">[{c.bracketData}]</span>
+                          )}
+                        </span>
                         <span className={`font-mono ${Math.round(c.score / c.weight * 100) >= 60 ? 'text-emerald-600' : 'text-slate-400'}`}>
                           {Math.round(c.score / c.weight * 100)}%
                         </span>
