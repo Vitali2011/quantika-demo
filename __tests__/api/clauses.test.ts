@@ -314,4 +314,36 @@ describe('GET /api/knowledge/clauses', () => {
       expect(meta.charterParty).toBe('GENCON 2022');
     }
   });
+
+  // TC-API-14: Behavioral — NYPE 1946 charter party filter returns only NYPE 1946 clauses
+  it('returns only NYPE 1946 clauses when cp=NYPE+1946 with fixture data', async () => {
+    process.env.BIMCO_RAG_ENABLED = 'true';
+
+    const stmt = db.prepare('INSERT INTO bimco_fts (content, metadata) VALUES (?, ?)');
+    for (const clause of BIMCO_FIXTURE_CLAUSES) {
+      stmt.run(
+        clause.text,
+        JSON.stringify({
+          source: 'bimco',
+          charterParty: clause.charterParty,
+          clauseNumber: clause.clauseNumber,
+          title: clause.title,
+          id: clause.id,
+        }),
+      );
+    }
+
+    const { GET } = await import('@/app/api/knowledge/clauses/route');
+    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=charterer&cp=NYPE+1946');
+    const res = await GET(req);
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.results.length).toBeGreaterThanOrEqual(1);
+
+    for (const result of json.results) {
+      const meta = JSON.parse(result.metadata);
+      expect(meta.charterParty).toBe('NYPE 1946');
+    }
+  });
 });

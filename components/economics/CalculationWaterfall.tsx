@@ -10,11 +10,13 @@
 
 import * as React from 'react';
 import type { TCEBreakdown } from '@/lib/economics/voyage-calculator';
+import type { WarRiskBreakdown } from '@/lib/economics/war-risk';
 import { DataQualityBadge } from '@/components/data-quality/DataQualityBadge';
 import { deriveTier } from '@/lib/data-quality/derive';
 
 interface Props {
   breakdown: TCEBreakdown;
+  warRiskBreakdown?: WarRiskBreakdown | null;
 }
 
 /** Broker convention: negatives render as `-$X`, not `$-X` (matches VoyageBreakdownChart). */
@@ -25,7 +27,7 @@ function fmtUsd(n: number): string {
     : `$${n.toLocaleString('en-US')}`;
 }
 
-export function CalculationWaterfall({ breakdown }: Props) {
+export function CalculationWaterfall({ breakdown, warRiskBreakdown }: Props) {
   const {
     freight_rate_usd_per_mt,
     quantity_mt,
@@ -137,8 +139,25 @@ export function CalculationWaterfall({ breakdown }: Props) {
                 </span>
               )}
             </span>
-            <span>{fmtUsd(-war_risk_usd)}</span>
+            <span data-testid="war-risk-total">
+              {warRiskBreakdown && warRiskBreakdown.totalPremiumUsd > 0
+                ? fmtUsd(-Math.round(warRiskBreakdown.totalPremiumUsd))
+                : fmtUsd(-war_risk_usd)}
+            </span>
           </div>
+          {warRiskBreakdown && warRiskBreakdown.totalPremiumUsd > 0 && (
+            <div
+              className="text-xs text-gray-400 pl-4"
+              data-testid="war-risk-breakdown"
+            >
+              Hull premium{' '}
+              <span data-testid="war-risk-hull">${Math.round(warRiskBreakdown.hullPremiumUsd).toLocaleString('en-US')}</span>
+              {' · '}Crew war bonus{' '}
+              <span data-testid="war-risk-crew">${Math.round(warRiskBreakdown.crewWarBonusUsd).toLocaleString('en-US')}</span>
+              {' · '}P&amp;I surcharge{' '}
+              <span data-testid="war-risk-pi">${Math.round(warRiskBreakdown.piSurchargeUsd).toLocaleString('en-US')}</span>
+            </div>
+          )}
           <div
             className="text-xs text-gray-400 pl-4"
             data-testid="war-risk-caption"
