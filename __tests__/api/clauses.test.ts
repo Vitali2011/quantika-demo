@@ -16,6 +16,14 @@ jest.mock('@/lib/session-store', () => ({
   })),
 }));
 
+jest.mock('@/lib/session', () => ({
+  requireSession: jest.fn(() => ({ session: {}, sessionId: 'test-session' })),
+}));
+
+jest.mock('@/lib/rate-limit', () => ({
+  aiRateLimiter: { check: jest.fn(() => ({ allowed: true, retryAfterMs: 0 })) },
+}));
+
 // Mock environment variable for feature flag
 const originalEnv = process.env;
 
@@ -44,7 +52,7 @@ describe('GET /api/knowledge/clauses', () => {
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
     const req = new Request('http://localhost:3000/api/knowledge/clauses?q=laytime');
-    const res = await GET(req);
+    const res = await GET(req as any);
 
     expect(res.status).toBe(503);
     const json = await res.json();
@@ -63,7 +71,7 @@ describe('GET /api/knowledge/clauses', () => {
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
     const req = new Request('http://localhost:3000/api/knowledge/clauses?q=laytime');
-    const res = await GET(req);
+    const res = await GET(req as any);
 
     expect(res.status).toBe(200);
     const json = await res.json();
@@ -77,7 +85,7 @@ describe('GET /api/knowledge/clauses', () => {
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
     const req = new Request('http://localhost:3000/api/knowledge/clauses');
-    const res = await GET(req);
+    const res = await GET(req as any);
 
     // Should either return 200 with all results or 400 for missing param
     expect([200, 400]).toContain(res.status);
@@ -95,7 +103,7 @@ describe('GET /api/knowledge/clauses', () => {
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
     const req = new Request('http://localhost:3000/api/knowledge/clauses?q=');
-    const res = await GET(req);
+    const res = await GET(req as any);
 
     expect(res.status).toBe(200);
   });
@@ -106,7 +114,7 @@ describe('GET /api/knowledge/clauses', () => {
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
     const req = new Request('http://localhost:3000/api/knowledge/clauses?q=test&limit=-1');
-    const res = await GET(req);
+    const res = await GET(req as any);
 
     // Should not crash, either clamps to valid value or returns 400
     expect([200, 400]).toContain(res.status);
@@ -118,7 +126,7 @@ describe('GET /api/knowledge/clauses', () => {
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
     const req = new Request('http://localhost:3000/api/knowledge/clauses?q=test&limit=invalid');
-    const res = await GET(req);
+    const res = await GET(req as any);
 
     // Should not crash
     expect([200, 400]).toContain(res.status);
@@ -138,7 +146,7 @@ describe('GET /api/knowledge/clauses', () => {
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
     const req = new Request('http://localhost:3000/api/knowledge/clauses?q=test&limit=1000');
-    const res = await GET(req);
+    const res = await GET(req as any);
 
     expect(res.status).toBe(200);
     const json = await res.json();
@@ -158,7 +166,7 @@ describe('GET /api/knowledge/clauses', () => {
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
     const req = new Request('http://localhost:3000/api/knowledge/clauses?q=test&cp=INVALID');
-    const res = await GET(req);
+    const res = await GET(req as any);
 
     expect(res.status).toBe(200);
     const json = await res.json();
@@ -181,7 +189,7 @@ describe('GET /api/knowledge/clauses', () => {
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
     const req = new Request('http://localhost:3000/api/knowledge/clauses?q=clause&cp=GENCON+2022');
-    const res = await GET(req);
+    const res = await GET(req as any);
 
     expect(res.status).toBe(200);
     const json = await res.json();
@@ -201,7 +209,7 @@ describe('GET /api/knowledge/clauses', () => {
     const req = new Request("http://localhost:3000/api/knowledge/clauses?q='; DROP TABLE bimco_fts; --");
 
     // Should not throw or drop the table
-    await expect(GET(req)).resolves.not.toThrow();
+    await expect(GET(req as any)).resolves.not.toThrow();
 
     // Verify table still exists
     const tables = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='bimco_fts'").all();
@@ -223,7 +231,7 @@ describe('GET /api/knowledge/clauses', () => {
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
     const req = new Request('http://localhost:3000/api/knowledge/clauses?q=test');
-    const res = await GET(req);
+    const res = await GET(req as any);
 
     expect(res.status).toBe(200);
     const json = await res.json();
@@ -259,7 +267,7 @@ describe('GET /api/knowledge/clauses', () => {
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
     const req = new Request('http://localhost:3000/api/knowledge/clauses?q=laytime');
-    const res = await GET(req);
+    const res = await GET(req as any);
 
     expect(res.status).toBe(200);
     const json = await res.json();
@@ -295,7 +303,7 @@ describe('GET /api/knowledge/clauses', () => {
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
     const req = new Request('http://localhost:3000/api/knowledge/clauses?q=cargo&cp=GENCON+2022');
-    const res = await GET(req);
+    const res = await GET(req as any);
 
     expect(res.status).toBe(200);
     const json = await res.json();
