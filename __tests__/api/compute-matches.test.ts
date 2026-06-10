@@ -193,4 +193,42 @@ describe('computeAndPersistMatches', () => {
       expect.objectContaining({ bunkerPriceUsdPerMt: 791 }),
     );
   });
+
+  it('obs: warns when bunker price row is null (observability parity with route.ts)', async () => {
+    getLatestBunkerPrice.mockReturnValueOnce(null);
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const { computeAndPersistMatches } = await import('@/lib/matching/compute-matches');
+    await computeAndPersistMatches(
+      [{ emailId: 'cargo-warn', itemIndex: 0 } as never],
+      [{ emailId: 'vessel-warn', itemIndex: 0 } as never],
+      'sess-warn-null',
+      db,
+    );
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('bunker price not found for NLRTM/VLSFO'),
+    );
+    warnSpy.mockRestore();
+  });
+
+  it('obs: warns when bunker_prices table throws (observability parity with route.ts)', async () => {
+    getLatestBunkerPrice.mockImplementationOnce(() => {
+      throw new Error('no such table: bunker_prices');
+    });
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const { computeAndPersistMatches } = await import('@/lib/matching/compute-matches');
+    await computeAndPersistMatches(
+      [{ emailId: 'cargo-warn2', itemIndex: 0 } as never],
+      [{ emailId: 'vessel-warn2', itemIndex: 0 } as never],
+      'sess-warn-throw',
+      db,
+    );
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('bunker_prices table unavailable'),
+    );
+    warnSpy.mockRestore();
+  });
 });
