@@ -16,13 +16,13 @@ export async function POST(request: NextRequest) {
   try { raw = await request.json(); } catch { return NextResponse.json({ error: 'Invalid request body' }, { status: 400 }); }
   const parsed = DraftQuoteBodySchema.safeParse(raw);
   if (!parsed.success) return NextResponse.json({ error: 'Invalid request body', details: parsed.error.format() }, { status: 400 });
-  const { emailId } = parsed.data;
+  const { emailId, matchId } = parsed.data;
 
   const parsedCargo = session.parsedCargos.find(r => r.emailId === emailId);
   if (!parsedCargo) return NextResponse.json({ error: 'Parsed request not found' }, { status: 404 });
 
   try {
-    const job = enqueueQuoteJob(getStore().getDb(), { sessionId, emailId });
+    const job = enqueueQuoteJob(getStore().getDb(), { sessionId, emailId, matchId });
     ensureWorker();
     return NextResponse.json({ jobId: job.id, status: job.status }, { status: 202 });
   } catch (err) {

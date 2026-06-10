@@ -7,6 +7,7 @@ export interface QuoteJob {
   id: string;
   session_id: string;
   email_id: string;
+  match_id: string | null;
   status: QuoteJobStatus;
   result: string | null;
   error: string | null;
@@ -31,7 +32,7 @@ export function getQuoteJob(db: Database.Database, id: string): QuoteJob | undef
 
 export function enqueueQuoteJob(
   db: Database.Database,
-  input: { sessionId: string; emailId: string },
+  input: { sessionId: string; emailId: string; matchId?: string },
   opts: { maxDepth?: number } = {},
 ): QuoteJob {
   const existing = db.prepare(
@@ -46,8 +47,8 @@ export function enqueueQuoteJob(
 
   const id = randomUUID();
   const r = db.prepare(
-    `INSERT OR IGNORE INTO ai_quote_jobs (id, session_id, email_id, status) VALUES (?,?,?,'queued')`,
-  ).run(id, input.sessionId, input.emailId);
+    `INSERT OR IGNORE INTO ai_quote_jobs (id, session_id, email_id, status, match_id) VALUES (?,?,?,'queued',?)`,
+  ).run(id, input.sessionId, input.emailId, input.matchId ?? null);
 
   if (r.changes === 0) {
     // Concurrent enqueue won the race; return their in-flight row

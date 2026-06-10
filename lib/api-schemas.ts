@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const DraftQuoteBodySchema = z.object({
   emailId: z.string().min(1),
+  matchId: z.string().optional(),
 });
 
 export type DraftQuoteBody = z.infer<typeof DraftQuoteBodySchema>;

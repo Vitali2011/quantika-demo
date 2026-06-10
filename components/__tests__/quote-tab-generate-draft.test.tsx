@@ -245,4 +245,34 @@ describe('QuoteTab — Generate Draft button (async job flow)', () => {
       expect(errP?.textContent?.toLowerCase()).toMatch(/unavailable/);
     });
   });
+
+  it('includes matchId in the enqueue POST body when matchId prop is set', async () => {
+    mockFetchResponses();
+    renderWithToast(<QuoteTab cargoEmailId="e1" matchId="54332" />);
+    fireEvent.click(screen.getByRole('button', { name: /generate/i }));
+    await waitFor(() => {
+      const calls = (global.fetch as jest.Mock).mock.calls;
+      const draftCall = calls.find((c: unknown[]) =>
+        typeof c[0] === 'string' && (c[0] as string).includes('/api/ai/draft-quote'),
+      );
+      expect(draftCall).toBeTruthy();
+      const sentBody = JSON.parse((draftCall![1] as { body: string }).body);
+      expect(sentBody.matchId).toBe('54332');
+    });
+  });
+
+  it('omits matchId from body when matchId prop is absent', async () => {
+    mockFetchResponses();
+    renderWithToast(<QuoteTab cargoEmailId="email-abc" />);
+    fireEvent.click(screen.getByRole('button', { name: /generate/i }));
+    await waitFor(() => {
+      const calls = (global.fetch as jest.Mock).mock.calls;
+      const draftCall = calls.find((c: unknown[]) =>
+        typeof c[0] === 'string' && (c[0] as string).includes('/api/ai/draft-quote'),
+      );
+      expect(draftCall).toBeTruthy();
+      const sentBody = JSON.parse((draftCall![1] as { body: string }).body);
+      expect(sentBody.matchId).toBeUndefined();
+    });
+  });
 });
