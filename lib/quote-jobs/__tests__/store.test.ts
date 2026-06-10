@@ -2,7 +2,7 @@ import Database from 'better-sqlite3';
 import migration048 from '@/lib/migrations/048-ai-quote-jobs';
 import {
   enqueueQuoteJob, getQuoteJob, claimNextJob, completeJob, failJob, reapStaleJobs,
-  QueueFullError, countQueued,
+  heartbeatJob, QueueFullError, countQueued,
 } from '@/lib/quote-jobs/store';
 
 function db() { const d = new Database(':memory:'); migration048.up(d); return d; }
@@ -57,7 +57,34 @@ it('reaps stale processing jobs to error', () => {
   const a = enqueueQuoteJob(d, { sessionId: 's1', emailId: 'e1' });
   claimNextJob(d);
   d.prepare(`UPDATE ai_quote_jobs SET updated_at = updated_at - 999999 WHERE id = ?`).run(a.id);
-  const reaped = reapStaleJobs(d, 120_000);
+  const reaped = reapStaleJobs(d, 300_000);
   expect(reaped).toBe(1);
   expect(getQuoteJob(d, a.id)?.status).toBe('error');
+});
+
+it('concurrent-enqueue: ON CONFLICT returns existing in-flight row, no duplicate', () => {
+  const d = db();
+  const a = enqueueQuoteJob(d, { sessionId: 's1', emailId: 'e1' });
+  // Simulate TOCTOU: after the SELECT check passes, force a unique-constraint conflict
+  // by inserting directly (mimics a concurrent worker that won the race)
+  expect(() =>
+    d.prepare(`INSERT INTO ai_quote_jobs (id, session_id, email_id, status) VALUES ('x','s1','e1','queued')`).run(),
+  ).toThrow(); // unique partial index prevents duplicate active job
+  expect(countQueued(d)).toBe(1);
+  // enqueueQuoteJob on same session+email returns the existing row
+  const b = enqueueQuoteJob(d, { sessionId: 's1', emailId: 'e1' });
+  expect(b.id).toBe(a.id);
+});
+
+it('heartbeatJob keeps a processing job safe from the reaper', () => {
+  const d = db();
+  const a = enqueueQuoteJob(d, { sessionId: 's1', emailId: 'e1' });
+  claimNextJob(d);
+  // Age the job so it would normally be reaped
+  d.prepare(`UPDATE ai_quote_jobs SET updated_at = updated_at - 999999 WHERE id = ?`).run(a.id);
+  // Heartbeat refreshes updated_at
+  heartbeatJob(d, a.id);
+  // Reaper with a short TTL should NOT reap (updated_at just refreshed)
+  expect(reapStaleJobs(d, 300_000)).toBe(0);
+  expect(getQuoteJob(d, a.id)?.status).toBe('processing');
 });

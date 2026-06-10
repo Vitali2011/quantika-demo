@@ -19,10 +19,12 @@ const migration048: Migration = {
       );
       CREATE INDEX IF NOT EXISTS idx_quote_jobs_status ON ai_quote_jobs(status, created_at);
       CREATE INDEX IF NOT EXISTS idx_quote_jobs_session_email ON ai_quote_jobs(session_id, email_id, status);
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_quote_jobs_active_dedupe ON ai_quote_jobs(session_id, email_id) WHERE status IN ('queued','processing');
     `);
   },
   down(db) {
     db.exec(`
+      DROP INDEX IF EXISTS idx_quote_jobs_active_dedupe;
       DROP INDEX IF EXISTS idx_quote_jobs_session_email;
       DROP INDEX IF EXISTS idx_quote_jobs_status;
       DROP TABLE IF EXISTS ai_quote_jobs;

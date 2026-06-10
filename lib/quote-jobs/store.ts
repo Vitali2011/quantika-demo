@@ -45,9 +45,18 @@ export function enqueueQuoteJob(
   if (depth >= max) throw new QueueFullError(depth);
 
   const id = randomUUID();
-  db.prepare(
-    `INSERT INTO ai_quote_jobs (id, session_id, email_id, status) VALUES (?,?,?,'queued')`,
+  const r = db.prepare(
+    `INSERT OR IGNORE INTO ai_quote_jobs (id, session_id, email_id, status) VALUES (?,?,?,'queued')`,
   ).run(id, input.sessionId, input.emailId);
+
+  if (r.changes === 0) {
+    // Concurrent enqueue won the race; return their in-flight row
+    return db.prepare(
+      `SELECT * FROM ai_quote_jobs WHERE session_id=? AND email_id=? AND status IN ('queued','processing')
+       ORDER BY created_at DESC LIMIT 1`,
+    ).get(input.sessionId, input.emailId) as QuoteJob;
+  }
+
   return getQuoteJob(db, id)!;
 }
 
@@ -56,9 +65,16 @@ export function claimNextJob(db: Database.Database): QuoteJob | null {
     `UPDATE ai_quote_jobs
        SET status='processing', attempts = attempts + 1, updated_at = strftime('%s','now') * 1000
      WHERE id = (SELECT id FROM ai_quote_jobs WHERE status='queued' ORDER BY created_at LIMIT 1)
+       AND status = 'queued'
      RETURNING *`,
   ).get() as QuoteJob | undefined;
   return row ?? null;
+}
+
+export function heartbeatJob(db: Database.Database, id: string): void {
+  db.prepare(
+    `UPDATE ai_quote_jobs SET updated_at = strftime('%s','now') * 1000 WHERE id = ? AND status = 'processing'`,
+  ).run(id);
 }
 
 export function completeJob(db: Database.Database, id: string, result: string): void {
@@ -73,7 +89,7 @@ export function failJob(db: Database.Database, id: string, error: string): void 
   ).run(error.slice(0, 500), id);
 }
 
-export function reapStaleJobs(db: Database.Database, ttlMs = 120_000): number {
+export function reapStaleJobs(db: Database.Database, ttlMs = 300_000): number {
   const cutoff = `strftime('%s','now') * 1000 - ${Number(ttlMs)}`;
   const r = db.prepare(
     `UPDATE ai_quote_jobs SET status='error', error='stale: worker did not finish in time',
