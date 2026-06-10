@@ -139,7 +139,11 @@ export function CalculationWaterfall({ breakdown, warRiskBreakdown }: Props) {
                 </span>
               )}
             </span>
-            <span>{fmtUsd(-war_risk_usd)}</span>
+            <span data-testid="war-risk-total">
+              {warRiskBreakdown && warRiskBreakdown.totalPremiumUsd > 0
+                ? fmtUsd(-Math.round(warRiskBreakdown.totalPremiumUsd))
+                : fmtUsd(-war_risk_usd)}
+            </span>
           </div>
           {warRiskBreakdown && warRiskBreakdown.totalPremiumUsd > 0 && (
             <div
@@ -147,11 +151,11 @@ export function CalculationWaterfall({ breakdown, warRiskBreakdown }: Props) {
               data-testid="war-risk-breakdown"
             >
               Hull premium{' '}
-              <span data-testid="war-risk-hull">${warRiskBreakdown.hullPremiumUsd.toLocaleString('en-US')}</span>
+              <span data-testid="war-risk-hull">${Math.round(warRiskBreakdown.hullPremiumUsd).toLocaleString('en-US')}</span>
               {' · '}Crew war bonus{' '}
-              <span data-testid="war-risk-crew">${warRiskBreakdown.crewWarBonusUsd.toLocaleString('en-US')}</span>
+              <span data-testid="war-risk-crew">${Math.round(warRiskBreakdown.crewWarBonusUsd).toLocaleString('en-US')}</span>
               {' · '}P&amp;I surcharge{' '}
-              <span data-testid="war-risk-pi">${warRiskBreakdown.piSurchargeUsd.toLocaleString('en-US')}</span>
+              <span data-testid="war-risk-pi">${Math.round(warRiskBreakdown.piSurchargeUsd).toLocaleString('en-US')}</span>
             </div>
           )}
           <div

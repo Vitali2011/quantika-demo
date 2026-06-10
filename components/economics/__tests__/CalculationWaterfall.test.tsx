@@ -139,6 +139,28 @@ describe('CalculationWaterfall', () => {
     expect(screen.queryByTestId('war-risk-breakdown')).not.toBeInTheDocument();
   });
 
+  it('hull + crew + P&I rendered amounts sum exactly to war-risk total (sub-sum invariant)', () => {
+    const warBreakdown: WarRiskBreakdown = {
+      hullPremiumUsd: 666.7,   // fractional — rounds to 667
+      crewWarBonusUsd: 10_000,
+      piSurchargeUsd: 20_000,
+      totalPremiumUsd: 30_666.7, // rounds to 30667; war_risk_usd=13500 differs → catches wrong source
+    };
+    render(
+      <CalculationWaterfall
+        breakdown={{ ...FIXTURE, war_risk_usd: 13_500 }}
+        warRiskBreakdown={warBreakdown}
+      />,
+    );
+    const parseAmt = (el: HTMLElement) =>
+      parseInt((el.textContent ?? '').replace(/[$,\-]/g, ''), 10);
+    const hull = parseAmt(screen.getByTestId('war-risk-hull'));
+    const crew = parseAmt(screen.getByTestId('war-risk-crew'));
+    const pi = parseAmt(screen.getByTestId('war-risk-pi'));
+    const total = parseAmt(screen.getByTestId('war-risk-total'));
+    expect(hull + crew + pi).toBe(total);
+  });
+
   it('does not render war-risk sub-breakdown when totalPremiumUsd is 0', () => {
     const zeroBreakdown: WarRiskBreakdown = {
       hullPremiumUsd: 0,
