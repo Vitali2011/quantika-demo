@@ -5,6 +5,7 @@
 
 import Database from 'better-sqlite3';
 import * as sqliteVec from 'sqlite-vec';
+import { NextRequest } from 'next/server';
 import migration029 from '@/lib/migrations/029-bimco-rag';
 import { BIMCO_FIXTURE_CLAUSES } from '@/lib/knowledge/sources/bimco/fixture';
 
@@ -51,7 +52,7 @@ describe('GET /api/knowledge/clauses', () => {
     process.env.BIMCO_RAG_ENABLED = 'false';
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=laytime');
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=laytime');
     const res = await GET(req as any);
 
     expect(res.status).toBe(503);
@@ -70,7 +71,7 @@ describe('GET /api/knowledge/clauses', () => {
     );
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=laytime');
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=laytime');
     const res = await GET(req as any);
 
     expect(res.status).toBe(200);
@@ -84,7 +85,7 @@ describe('GET /api/knowledge/clauses', () => {
     process.env.BIMCO_RAG_ENABLED = 'true';
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses');
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses');
     const res = await GET(req as any);
 
     // Should either return 200 with all results or 400 for missing param
@@ -102,7 +103,7 @@ describe('GET /api/knowledge/clauses', () => {
     );
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=');
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=');
     const res = await GET(req as any);
 
     expect(res.status).toBe(200);
@@ -113,7 +114,7 @@ describe('GET /api/knowledge/clauses', () => {
     process.env.BIMCO_RAG_ENABLED = 'true';
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=test&limit=-1');
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=test&limit=-1');
     const res = await GET(req as any);
 
     // Should not crash, either clamps to valid value or returns 400
@@ -125,7 +126,7 @@ describe('GET /api/knowledge/clauses', () => {
     process.env.BIMCO_RAG_ENABLED = 'true';
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=test&limit=invalid');
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=test&limit=invalid');
     const res = await GET(req as any);
 
     // Should not crash
@@ -145,7 +146,7 @@ describe('GET /api/knowledge/clauses', () => {
     }
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=test&limit=1000');
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=test&limit=1000');
     const res = await GET(req as any);
 
     expect(res.status).toBe(200);
@@ -165,7 +166,7 @@ describe('GET /api/knowledge/clauses', () => {
     );
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=test&cp=INVALID');
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=test&cp=INVALID');
     const res = await GET(req as any);
 
     expect(res.status).toBe(200);
@@ -188,7 +189,7 @@ describe('GET /api/knowledge/clauses', () => {
     );
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=clause&cp=GENCON+2022');
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=clause&cp=GENCON+2022');
     const res = await GET(req as any);
 
     expect(res.status).toBe(200);
@@ -206,7 +207,7 @@ describe('GET /api/knowledge/clauses', () => {
     process.env.BIMCO_RAG_ENABLED = 'true';
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request("http://localhost:3000/api/knowledge/clauses?q='; DROP TABLE bimco_fts; --");
+    const req = new NextRequest("http://localhost:3000/api/knowledge/clauses?q='; DROP TABLE bimco_fts; --");
 
     // Should not throw or drop the table
     await expect(GET(req as any)).resolves.not.toThrow();
@@ -230,7 +231,7 @@ describe('GET /api/knowledge/clauses', () => {
     );
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=test');
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=test');
     const res = await GET(req as any);
 
     expect(res.status).toBe(200);
@@ -266,7 +267,7 @@ describe('GET /api/knowledge/clauses', () => {
     }
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=laytime');
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=laytime');
     const res = await GET(req as any);
 
     expect(res.status).toBe(200);
@@ -302,7 +303,7 @@ describe('GET /api/knowledge/clauses', () => {
     }
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=cargo&cp=GENCON+2022');
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=cargo&cp=GENCON+2022');
     const res = await GET(req as any);
 
     expect(res.status).toBe(200);
@@ -334,7 +335,7 @@ describe('GET /api/knowledge/clauses', () => {
     }
 
     const { GET } = await import('@/app/api/knowledge/clauses/route');
-    const req = new Request('http://localhost:3000/api/knowledge/clauses?q=charterer&cp=NYPE+1946');
+    const req = new NextRequest('http://localhost:3000/api/knowledge/clauses?q=charterer&cp=NYPE+1946');
     const res = await GET(req);
 
     expect(res.status).toBe(200);
