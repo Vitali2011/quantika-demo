@@ -296,7 +296,7 @@ export default async function MatchDetailPage({ params }: Props) {
                   balticRateAsOf={balticRateAsOf}
                   cargoEmailBody={cargoEmail?.body ?? null}
                   vesselEmailBody={vesselEmail?.body ?? null}
-                  payoutCondition={null}
+                  payoutCondition={cargo?.payoutCondition ?? null}
                 />
 
                 {cargo && cargoEmail && (

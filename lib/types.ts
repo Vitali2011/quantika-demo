@@ -225,6 +225,9 @@ export interface ParsedCargo {
   dischargeRate: string | null;
   commissionPercent: number | null;
   commissionTerms: string | null;
+  /** Payment / payout condition stated in the cargo email (e.g. "100% on
+   *  completion of discharge", "LC at sight"). Null when not mentioned. */
+  payoutCondition?: string | null;
   freightRateUsd?: number | null;
   specialRequirements: string | null;
   stowageFactor: string | null;
