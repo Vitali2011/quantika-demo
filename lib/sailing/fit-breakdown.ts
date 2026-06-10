@@ -334,24 +334,33 @@ export function scoreCargoTypeQuality(
   };
 }
 
-/** Cranes — geared vessel is always 100%; gearless depends on port crane availability. */
+/** Cranes — geared vessel is always 100%; gearless depends on shore cranes at
+ *  EITHER cargo-handling end (load and/or discharge). Names which end has them. */
 export function scoreCranes(
   geared: boolean | null | undefined,
   loadPort: string | null,
+  dischargePort: string | null,
 ): FitBreakdownComponent {
   const w = FIT_WEIGHTS.cranes;
   if (geared === true) {
     return { factor: 'cranes', label: 'Cranes', weight: w, score: w, rationale: 'Ship is geared — no dependence on shore cranes.' };
   }
   if (geared === false) {
-    const portCranes = portHasShoreCranes(loadPort);
-    if (portCranes === true) {
-      return { factor: 'cranes', label: 'Cranes', weight: w, score: Math.round(w * 0.85 * 10) / 10, rationale: 'Ship is gearless, but the port has shore cranes — workable.' };
+    const loadCranes = portHasShoreCranes(loadPort);
+    const dischCranes = portHasShoreCranes(dischargePort);
+    const loadName = loadPort ?? 'load port';
+    const dischName = dischargePort ?? 'discharge port';
+    if (loadCranes === false && dischCranes === false) {
+      return { factor: 'cranes', label: 'Cranes', weight: w, score: 0, rationale: 'Ship is gearless and neither load nor discharge port has cranes — not workable.' };
     }
-    if (portCranes === false) {
-      return { factor: 'cranes', label: 'Cranes', weight: w, score: 0, rationale: 'Ship is gearless and the port has no cranes — not workable.' };
+    if (loadCranes === true || dischCranes === true) {
+      let where: string;
+      if (loadCranes === true && dischCranes === true) where = `both ports (${loadName} and ${dischName}) have shore cranes`;
+      else if (dischCranes === true) where = `discharge port (${dischName}) has shore cranes`;
+      else where = `load port (${loadName}) has shore cranes`;
+      return { factor: 'cranes', label: 'Cranes', weight: w, score: Math.round(w * 0.85 * 10) / 10, rationale: `Ship is gearless, but ${where} — workable.` };
     }
-    return { factor: 'cranes', label: 'Cranes', weight: w, score: Math.round(w * 0.55 * 10) / 10, rationale: 'Ship is gearless; port crane availability not yet confirmed.' };
+    return { factor: 'cranes', label: 'Cranes', weight: w, score: Math.round(w * 0.55 * 10) / 10, rationale: 'Ship is gearless; crane availability at load/discharge not yet confirmed.' };
   }
   return unknown('cranes', 'Cranes', 'Vessel gear status not stated, scored conservatively.');
 }
@@ -571,7 +580,7 @@ export function computeFitBreakdown(input: FitBreakdownInput): FitBreakdown {
     scoreBallast(readiness?.distanceNm ?? null, dwt),
     scoreClassFit(cargoWtNominal, dwt, partCargo),
     scoreCargoTypeQuality(cargo.cargoType, vessel.vesselType, vessel.lastCargoes),
-    scoreCranes(vessel.geared, cfValue(cargo.originPort)),
+    scoreCranes(vessel.geared, cfValue(cargo.originPort), cfValue(cargo.destinationPort)),
     scoreVolume(cargoWtNominal, desc, vessel.grainCapacity, cargo.stowageFactor),
     scoreDraft(hardFilters),
     scoreVetting(vessel, refYear, detentionCount),
