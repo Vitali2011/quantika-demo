@@ -19,12 +19,14 @@ export function QuoteTab({ cargoEmailId, confidence }: QuoteTabProps) {
   const { state, draft: hookDraft, error: hookError, start, retry } =
     useQuoteJob(cargoEmailId, (msg) => toast.error(msg));
   const [draft, setDraft] = useState('');
+  const [prevHookDraft, setPrevHookDraft] = useState('');
   const [benchmark, setBenchmark] = useState<MarketBenchmark | null | 'loading'>('loading');
 
-  // Sync generated draft into editable textarea
-  useEffect(() => {
-    if (hookDraft) setDraft(hookDraft);
-  }, [hookDraft]);
+  // Sync generated draft into textarea without useEffect (derived-state pattern)
+  if (hookDraft !== prevHookDraft) {
+    setPrevHookDraft(hookDraft);
+    setDraft(hookDraft);
+  }
 
   const generating = state === 'queued' || state === 'processing';
 
