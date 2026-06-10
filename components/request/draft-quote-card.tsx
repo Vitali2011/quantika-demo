@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Copy, Check } from 'lucide-react';
 import { csrfFetch } from '@/lib/csrf-client';
+import { useToast } from '@/components/ui/toast';
+import { parseJsonResponse } from '@/lib/http/parse-json-response';
 
 interface DraftQuoteCardProps {
   emailId: string;
@@ -18,6 +20,7 @@ export function DraftQuoteCard({ emailId }: DraftQuoteCardProps) {
   const [copied, setCopied] = useState<'quote' | 'reply' | null>(null);
   const [quoteError, setQuoteError] = useState('');
   const [replyError, setReplyError] = useState('');
+  const toast = useToast();
 
   async function generateQuote() {
     setLoadingQuote(true);
@@ -27,11 +30,12 @@ export function DraftQuoteCard({ emailId }: DraftQuoteCardProps) {
         method: 'POST',
         body: JSON.stringify({ emailId }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to generate quote');
-      setQuoteDraft(data.draft || '');
+      const data = await parseJsonResponse<{ draft?: string }>(res);
+      setQuoteDraft(data.draft ?? '');
     } catch (err) {
-      setQuoteError(err instanceof Error ? err.message : 'Failed to generate quote');
+      const msg = err instanceof Error ? err.message : 'Failed to generate quote';
+      setQuoteError(msg);
+      toast.error(msg);
     } finally {
       setLoadingQuote(false);
     }
@@ -45,11 +49,12 @@ export function DraftQuoteCard({ emailId }: DraftQuoteCardProps) {
         method: 'POST',
         body: JSON.stringify({ emailId }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to generate reply');
-      setReplyDraft(data.draft || '');
+      const data = await parseJsonResponse<{ draft?: string }>(res);
+      setReplyDraft(data.draft ?? '');
     } catch (err) {
-      setReplyError(err instanceof Error ? err.message : 'Failed to generate reply');
+      const msg = err instanceof Error ? err.message : 'Failed to generate reply';
+      setReplyError(msg);
+      toast.error(msg);
     } finally {
       setLoadingReply(false);
     }

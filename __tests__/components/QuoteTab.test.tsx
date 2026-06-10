@@ -94,6 +94,8 @@ describe('QuoteTab — generateDraft error shows toast', () => {
     const { csrfFetch } = await import('@/lib/csrf-client');
     (csrfFetch as jest.Mock).mockResolvedValueOnce({
       ok: false,
+      status: 500,
+      headers: { get: () => 'application/json' },
       json: async () => ({ error: 'ai_error', message: 'Gemini credentials missing' }),
     });
 
@@ -114,6 +116,8 @@ describe('QuoteTab — generateDraft error shows toast', () => {
     const { csrfFetch } = await import('@/lib/csrf-client');
     (csrfFetch as jest.Mock).mockResolvedValueOnce({
       ok: false,
+      status: 500,
+      headers: { get: () => 'application/json' },
       json: async () => ({ error: 'ai_error', message: 'AI draft generation failed' }),
     });
 
