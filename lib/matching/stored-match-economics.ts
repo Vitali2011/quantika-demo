@@ -118,7 +118,8 @@ export function computeStoredMatchEconomics(
     quantityMt: ecoQty,
     distanceNm: distanceResult.nm,
     speedKts: ecoSpeed,
-    balticDayRate: db ? getBalticDayRate(db, ecoDwt) : null,
+    // Unknown DWT → skip per-class Baltic tier; tier-3 estimate is class-neutral floor (#null-dwt-baltic).
+    balticDayRate: db && ecoDwt > 0 ? getBalticDayRate(db, ecoDwt) : null,
     manualRateUsdPerMt: input.freightOverrideUsdPerMt ?? undefined,
     ballastDistanceNm,
   });
