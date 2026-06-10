@@ -14,6 +14,7 @@ import { computeStoredMatchEconomics } from '@/lib/matching/stored-match-economi
 import type { ParsedCargo, ParsedVessel, FitBreakdown } from '@/lib/types';
 import type { StoredMatch } from '@/lib/matching/matches-repository';
 import { patchEconomicsComponent } from '@/lib/matching/persist-session-matches';
+import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
 
 export const dynamic = 'force-dynamic';
 
@@ -186,6 +187,16 @@ export async function PATCH(
       );
     }
 
+    // Live bunker price (NLRTM/VLSFO) so PATCH recomputed TCE matches the list,
+    // which uses the same price via persist-session-matches. Resilient to a missing
+    // bunker_prices table — falls through to the helper's DEFAULT_BUNKER_USD_PER_MT.
+    let bunkerPriceUsdPerMt: number | undefined;
+    try {
+      bunkerPriceUsdPerMt = getLatestBunkerPrice(db, 'NLRTM', 'VLSFO')?.price_usd_per_mt;
+    } catch {
+      bunkerPriceUsdPerMt = undefined;
+    }
+
     // Reset-to-auto path: clear a sticky manual override and recompute via the
     // canonical economics path (port distance, DA, canal, ETS, excludeWarRisk).
     // Proxy cargo/vessel from stored columns — no freightOverrideUsdPerMt so
@@ -195,6 +206,7 @@ export async function PATCH(
         cargo: buildCargoProxy(existing),
         vessel: buildVesselProxy(existing),
         db,
+        bunkerPriceUsdPerMt,
       });
       const rate = eco.freight_rate_usd_per_mt ?? existing.freight_rate_usd_per_mt ?? 0;
       const tce = eco.tce_usd_per_day ?? existing.tce_usd_per_day ?? 0;
@@ -218,6 +230,7 @@ export async function PATCH(
         vessel: buildVesselProxy(existing),
         db,
         freightOverrideUsdPerMt: rate,
+        bunkerPriceUsdPerMt,
       });
       const tce = eco.tce_usd_per_day ?? existing.tce_usd_per_day ?? 0;
       const fit = recomputeFit(existing, eco.tce_usd_per_day ?? null);

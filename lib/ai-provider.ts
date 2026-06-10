@@ -673,6 +673,7 @@ async function callGeminiVision(
   user: string,
   images: ImageInput[],
   model: string,
+  opts?: AiOpts,
 ): Promise<{ text: string; usage?: Usage }> {
   assertGeminiEnv();
   const { GoogleGenAI } = require('@google/genai') as {
@@ -681,7 +682,7 @@ async function callGeminiVision(
         generateContent: (params: {
           model: string;
           contents: Array<{ role: string; parts: unknown[] }>;
-          config?: { systemInstruction?: string };
+          config?: { systemInstruction?: string; abortSignal?: AbortSignal };
         }) => Promise<{ text: string; usageMetadata?: GeminiUsageMetadata }>;
       };
     };
@@ -700,13 +701,34 @@ async function callGeminiVision(
     })),
   ];
 
-  const response = await ai.models.generateContent({
-    model,
-    contents: [{ role: 'user', parts }],
-    config: { systemInstruction: system },
+  const { controller, cleanup, timeoutMs } = buildAbortController(opts);
+  let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutHandle = setTimeout(
+      () => reject(new openaiLib.LLMTimeoutError(`Gemini vision timed out after ${timeoutMs}ms`)),
+      timeoutMs,
+    );
   });
 
-  return { text: response.text ?? '', usage: extractGeminiUsage(response.usageMetadata) };
+  try {
+    const response = await Promise.race([
+      ai.models.generateContent({
+        model,
+        contents: [{ role: 'user', parts }],
+        config: { systemInstruction: system, abortSignal: controller.signal },
+      }),
+      timeoutPromise,
+    ]);
+    return { text: response.text ?? '', usage: extractGeminiUsage(response.usageMetadata) };
+  } catch (err) {
+    if (controller.signal.aborted && !(err instanceof openaiLib.LLMTimeoutError)) {
+      throw new openaiLib.LLMTimeoutError(`Gemini vision aborted after ${timeoutMs}ms`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutHandle);
+    cleanup();
+  }
 }
 
 interface BedrockUsage {
@@ -795,14 +817,21 @@ async function callBedrockText(
 async function callBedrockAudio(
   audioBuffer: Buffer,
   model: string,
+  opts?: AiOpts,
 ): Promise<{ text: string; usage?: Usage }> {
   assertBedrockEnv();
   const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime') as {
-    BedrockRuntimeClient: new (opts: { region: string; credentials: { accessKeyId: string; secretAccessKey: string } }) => {
-      send: (cmd: unknown) => Promise<{ body: Uint8Array }>;
+    BedrockRuntimeClient: new (opts: {
+      region: string;
+      credentials: { accessKeyId: string; secretAccessKey: string };
+      requestHandler?: { requestTimeout?: number };
+    }) => {
+      send: (cmd: unknown, options?: { abortSignal?: AbortSignal }) => Promise<{ body: Uint8Array }>;
     };
     InvokeModelCommand: new (opts: { modelId: string; contentType: string; accept: string; body: string }) => unknown;
   };
+
+  const { controller, cleanup, timeoutMs } = buildAbortController(opts);
 
   const client = new BedrockRuntimeClient({
     region: process.env.AWS_REGION!,
@@ -810,6 +839,7 @@ async function callBedrockAudio(
       accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
     },
+    requestHandler: { requestTimeout: timeoutMs },
   });
 
   const audioBase64 = audioBuffer.toString('base64');
@@ -832,10 +862,84 @@ async function callBedrockAudio(
     body: JSON.stringify(payload),
   });
 
-  const response = await client.send(cmd);
-  const decoded = new TextDecoder().decode(response.body);
-  const parsed = JSON.parse(decoded) as { content: Array<{ text?: string }>; usage?: BedrockUsage };
-  return { text: parsed.content?.[0]?.text ?? '', usage: extractBedrockUsage(parsed.usage) };
+  try {
+    const response = await client.send(cmd, { abortSignal: controller.signal });
+    const decoded = new TextDecoder().decode(response.body);
+    const parsed = JSON.parse(decoded) as { content: Array<{ text?: string }>; usage?: BedrockUsage };
+    return { text: parsed.content?.[0]?.text ?? '', usage: extractBedrockUsage(parsed.usage) };
+  } catch (err) {
+    if (controller.signal.aborted && !(err instanceof openaiLib.LLMTimeoutError)) {
+      throw new openaiLib.LLMTimeoutError(`Bedrock audio aborted after ${timeoutMs}ms`);
+    }
+    throw err;
+  } finally {
+    cleanup();
+  }
+}
+
+async function callBedrockVision(
+  prompt: string,
+  images: ImageInput[],
+  model: string,
+  opts?: AiOpts,
+): Promise<{ text: string; usage?: Usage }> {
+  assertBedrockEnv();
+  const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime') as {
+    BedrockRuntimeClient: new (opts: {
+      region: string;
+      credentials: { accessKeyId: string; secretAccessKey: string };
+      requestHandler?: { requestTimeout?: number };
+    }) => {
+      send: (cmd: unknown, options?: { abortSignal?: AbortSignal }) => Promise<{ body: Uint8Array }>;
+    };
+    InvokeModelCommand: new (opts: { modelId: string; contentType: string; accept: string; body: string }) => unknown;
+  };
+
+  const { controller, cleanup, timeoutMs } = buildAbortController(opts);
+
+  const client = new BedrockRuntimeClient({
+    region: process.env.AWS_REGION!,
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    },
+    requestHandler: { requestTimeout: timeoutMs },
+  });
+
+  const content: Array<{ type: string; source?: { type: string; media_type: string; data: string }; text?: string }> = [
+    { type: 'text', text: prompt },
+    ...images.map((img) => ({
+      type: 'image',
+      source: { type: 'base64', media_type: img.mimeType, data: img.data },
+    })),
+  ];
+
+  const payload = {
+    anthropic_version: 'bedrock-2023-05-31',
+    max_tokens: 4096,
+    messages: [{ role: 'user', content }],
+  };
+
+  const cmd = new InvokeModelCommand({
+    modelId: model,
+    contentType: 'application/json',
+    accept: 'application/json',
+    body: JSON.stringify(payload),
+  });
+
+  try {
+    const response = await client.send(cmd, { abortSignal: controller.signal });
+    const decoded = new TextDecoder().decode(response.body);
+    const parsed = JSON.parse(decoded) as { content: Array<{ text?: string }>; usage?: BedrockUsage };
+    return { text: parsed.content?.[0]?.text ?? '', usage: extractBedrockUsage(parsed.usage) };
+  } catch (err) {
+    if (controller.signal.aborted && !(err instanceof openaiLib.LLMTimeoutError)) {
+      throw new openaiLib.LLMTimeoutError(`Bedrock vision aborted after ${timeoutMs}ms`);
+    }
+    throw err;
+  } finally {
+    cleanup();
+  }
 }
 
 // ─── Public callAi* functions ─────────────────────────────────────────────────
@@ -1000,54 +1104,15 @@ export async function callAiVision(
     let result: string;
     switch (provider) {
       case 'gemini': {
-        const r = await callGeminiVision('', prompt, images, model);
+        const r = await callGeminiVision('', prompt, images, model, opts);
         usage = r.usage;
         result = r.text;
         break;
       }
       case 'bedrock': {
-        assertBedrockEnv();
-        const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime') as {
-          BedrockRuntimeClient: new (opts: { region: string; credentials: { accessKeyId: string; secretAccessKey: string } }) => {
-            send: (cmd: unknown) => Promise<{ body: Uint8Array }>;
-          };
-          InvokeModelCommand: new (opts: { modelId: string; contentType: string; accept: string; body: string }) => unknown;
-        };
-
-        const client = new BedrockRuntimeClient({
-          region: process.env.AWS_REGION!,
-          credentials: {
-            accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-          },
-        });
-
-        const content: Array<{ type: string; source?: { type: string; media_type: string; data: string }; text?: string }> = [
-          { type: 'text', text: prompt },
-          ...images.map((img) => ({
-            type: 'image',
-            source: { type: 'base64', media_type: img.mimeType, data: img.data },
-          })),
-        ];
-
-        const payload = {
-          anthropic_version: 'bedrock-2023-05-31',
-          max_tokens: 4096,
-          messages: [{ role: 'user', content }],
-        };
-
-        const cmd = new InvokeModelCommand({
-          modelId: model,
-          contentType: 'application/json',
-          accept: 'application/json',
-          body: JSON.stringify(payload),
-        });
-
-        const response = await client.send(cmd);
-        const decoded = new TextDecoder().decode(response.body);
-        const parsed = JSON.parse(decoded) as { content: Array<{ text?: string }>; usage?: BedrockUsage };
-        usage = extractBedrockUsage(parsed.usage);
-        result = parsed.content?.[0]?.text ?? '';
+        const r = await callBedrockVision(prompt, images, model, opts);
+        usage = r.usage;
+        result = r.text;
         break;
       }
       case 'openai':
@@ -1110,7 +1175,7 @@ export async function callAiAudio(
     let result: string;
     switch (provider) {
       case 'bedrock': {
-        const r = await callBedrockAudio(audioBuffer, model);
+        const r = await callBedrockAudio(audioBuffer, model, opts);
         usage = r.usage;
         result = r.text;
         break;
@@ -1123,6 +1188,7 @@ export async function callAiAudio(
               generateContent: (params: {
                 model: string;
                 contents: Array<{ role: string; parts: unknown[] }>;
+                config?: { abortSignal?: AbortSignal };
               }) => Promise<{ text: string; usageMetadata?: GeminiUsageMetadata }>;
             };
           };
@@ -1135,18 +1201,41 @@ export async function callAiAudio(
         });
 
         const audioBase64 = audioBuffer.toString('base64');
-        const response = await ai.models.generateContent({
-          model,
-          contents: [{
-            role: 'user',
-            parts: [
-              { text: 'Transcribe the following audio.' },
-              { inlineData: { data: audioBase64, mimeType: 'audio/mp4' } },
-            ],
-          }],
+        const { controller: audioCtrl, cleanup: audioCleanup, timeoutMs: audioTimeout } = buildAbortController(opts);
+        let audioTimeoutHandle: ReturnType<typeof setTimeout> | undefined;
+        const audioTimeoutPromise = new Promise<never>((_, reject) => {
+          audioTimeoutHandle = setTimeout(
+            () => reject(new openaiLib.LLMTimeoutError(`Gemini audio timed out after ${audioTimeout}ms`)),
+            audioTimeout,
+          );
         });
-        usage = extractGeminiUsage(response.usageMetadata);
-        result = response.text ?? '';
+
+        try {
+          const response = await Promise.race([
+            ai.models.generateContent({
+              model,
+              contents: [{
+                role: 'user',
+                parts: [
+                  { text: 'Transcribe the following audio.' },
+                  { inlineData: { data: audioBase64, mimeType: 'audio/mp4' } },
+                ],
+              }],
+              config: { abortSignal: audioCtrl.signal },
+            }),
+            audioTimeoutPromise,
+          ]);
+          usage = extractGeminiUsage(response.usageMetadata);
+          result = response.text ?? '';
+        } catch (audioErr) {
+          if (audioCtrl.signal.aborted && !(audioErr instanceof openaiLib.LLMTimeoutError)) {
+            throw new openaiLib.LLMTimeoutError(`Gemini audio aborted after ${audioTimeout}ms`);
+          }
+          throw audioErr;
+        } finally {
+          clearTimeout(audioTimeoutHandle);
+          audioCleanup();
+        }
         break;
       }
       case 'openai':
