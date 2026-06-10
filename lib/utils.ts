@@ -59,6 +59,7 @@ export function sanitizeEmailBody(body: string): string {
     .replace(/<file:\/\/\/[^>]*>/gi, '')
     .replace(/<mailto:([^>]+)>/gi, '$1')
     .replace(/<(https?:\/\/[^>]+)>/gi, '$1')
+    .replace(/<(?:SENDER|CONTACT|BROKER|AGENT)\s+\d+>/gi, '')
     .replace(/^.*(AVG|Avast|Norton|Kaspersky|ESET|McAfee).*virus.*$/gim, '')
     .replace(/^[ \t]*\+{3,}[ \t]*$/gm, '')
     .replace(/\n{3,}/g, '\n\n')
