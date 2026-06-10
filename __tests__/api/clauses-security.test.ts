@@ -113,3 +113,156 @@ describe('GET /api/knowledge/clauses — security (C2)', () => {
     expect(res.status).toBe(429);
   });
 });
+
+describe('adversarial — cold QA', () => {
+  let db: Database.Database;
+
+  beforeAll(() => {
+    process.env.BIMCO_RAG_ENABLED = 'true';
+  });
+
+  beforeEach(() => {
+    db = new Database(':memory:');
+    sqliteVec.load(db);
+    migration029.up(db);
+    testDb = db;
+
+    // Insert searchable fixture row
+    db.prepare('INSERT INTO bimco_fts (content, metadata) VALUES (?, ?)').run(
+      'Laytime shall commence upon NOR tender. Cargo demurrage rates apply.',
+      JSON.stringify({ charterParty: 'GENCON 2022', clauseNumber: '8' }),
+    );
+
+    // Default: authenticated, rate limit allowed
+    mockRequireSession.mockReturnValue(AUTHED);
+    mockRateCheck.mockReturnValue({ allowed: true, retryAfterMs: 0 });
+  });
+
+  afterEach(() => {
+    db.close();
+    jest.clearAllMocks();
+  });
+
+  // ADV-01: q=OR+laytime — OR at start of query (leading boolean operator)
+  // Regex /^\s*(AND|OR|NOT)\b/i should catch this → 400 not 500
+  it('ADV-01: returns 400 for q=OR+laytime (leading OR operator)', async () => {
+    const res = await GET(makeRequest('?q=OR+laytime'));
+    expect(res.status).toBe(400);
+    const json = await res.json();
+    expect(json.error).toMatch(/invalid/i);
+  });
+
+  // ADV-02: q=NOT+laytime — NOT at start (covered by regex?)
+  it('ADV-02: returns 400 for q=NOT+laytime (leading NOT operator)', async () => {
+    const res = await GET(makeRequest('?q=NOT+laytime'));
+    expect(res.status).toBe(400);
+  });
+
+  // ADV-03: q=%22unclosed — URL-encoded unclosed double-quote
+  // escapeFts5Query wraps in quotes and doubles internal quotes
+  // Input: '"unclosed' -> escaped: '"""unclosed"' -> FTS5 sees: empty-phrase + unclosed-phrase
+  // Should NOT throw SQLITE_ERROR after escaping
+  it('ADV-03: does NOT crash (500) for unclosed double-quote q=%22unclosed', async () => {
+    // The escaped form: '"unclosed' -> '"""unclosed"' — valid FTS5 phrase
+    const res = await GET(makeRequest('?q=%22unclosed'));
+    // Should be 200 (phrase match, no results since no literal '"unclosed' in DB)
+    // or at worst 400, never 500
+    expect(res.status).not.toBe(500);
+    // If 200, results should be empty (no match for literal quote+unclosed)
+    if (res.status === 200) {
+      const json = await res.json();
+      expect(Array.isArray(json.results)).toBe(true);
+    }
+  });
+
+  // ADV-04: q= (empty string) — should return all clauses (200), not 400 or 500
+  it('ADV-04: returns 200 for empty q (returns all clauses)', async () => {
+    const res = await GET(makeRequest('?q='));
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(Array.isArray(json.results)).toBe(true);
+  });
+
+  // ADV-05: q=laytime+OR+cargo — mid-query OR
+  // isMalformedFts5Query only checks leading operators (^\s*(AND|OR|NOT)\b)
+  // "laytime OR cargo" starts with laytime, NOT blocked by validator
+  // escapeFts5Query wraps it: '"laytime OR cargo"' — FTS5 phrase match (literal)
+  // SQLite FTS5: inside quotes, OR is treated as literal text, not operator
+  // Should return 200, matching rows with literal "laytime OR cargo" (none in fixture)
+  it('ADV-05: q=laytime+OR+cargo passes validation (mid-OR is phrase-matched after escaping)', async () => {
+    const res = await GET(makeRequest('?q=laytime+OR+cargo'));
+    // escapeFts5Query makes this a phrase match for literal "laytime OR cargo"
+    // Not blocked (validator only checks leading operators)
+    // Escaping prevents SQLITE_ERROR — should be 200 with empty results
+    expect(res.status).not.toBe(500);
+    // 200 is expected (phrase match for literal text, no crash)
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(Array.isArray(json.results)).toBe(true);
+    // Fixture row does NOT contain the literal string "laytime OR cargo"
+    // (it contains "Laytime" and "Cargo" separately)
+    expect(json.results).toHaveLength(0);
+  });
+
+  // ADV-06: Auth check ordering — 503 fires BEFORE auth when flag is disabled
+  // This is an INFO LEAK: unauthenticated caller learns BIMCO_RAG_ENABLED=false
+  // Not an auth BYPASS (endpoint is disabled), but information disclosure
+  it('ADV-06: INFO-LEAK — unauthenticated caller gets 503 (not 401) when flag is disabled', async () => {
+    const savedEnv = process.env.BIMCO_RAG_ENABLED;
+    process.env.BIMCO_RAG_ENABLED = 'false';
+
+    // Simulate unauthenticated: requireSession returns 401 NextResponse
+    mockRequireSession.mockReturnValueOnce(
+      NextResponse.json({ error: 'No session' }, { status: 401 }),
+    );
+
+    const res = await GET(makeRequest('?q=laytime'));
+    // Route checks flag FIRST, so unauthenticated caller gets 503 not 401
+    // This reveals flag status to unauthenticated callers
+    expect(res.status).toBe(503); // INFO LEAK: flag check before auth
+    // Note: this is a LOW severity finding (no data exposed, endpoint disabled)
+
+    process.env.BIMCO_RAG_ENABLED = savedEnv;
+  });
+
+  // ADV-07: Rate limit key uses sessionId — verify empty sessionId never reaches check
+  // requireSession must reject empty/missing cookie before rate-limit
+  it('ADV-07: requireSession rejects missing cookie (401) before rate-limit check', async () => {
+    mockRequireSession.mockReturnValueOnce(
+      NextResponse.json({ error: 'No session' }, { status: 401 }),
+    );
+
+    const res = await GET(makeRequest('?q=laytime'));
+    expect(res.status).toBe(401);
+    // Rate limiter must NOT have been called (session was rejected before rate limit)
+    expect(mockRateCheck).not.toHaveBeenCalled();
+  });
+
+  // ADV-08: laytime* (trailing wildcard) — not a leading operator, passes validator
+  // After escapeFts5Query: '"laytime*"' — In FTS5, * within a phrase IS a prefix wildcard
+  // Should not error (FTS5 handles phrase wildcards)
+  it('ADV-08: q=laytime* (trailing wildcard) does not crash after escaping', async () => {
+    const res = await GET(makeRequest('?q=laytime*'));
+    // * inside phrase quotes is valid FTS5 prefix match
+    expect(res.status).not.toBe(500);
+  });
+
+  // ADV-09: CSRF — /api/knowledge/clauses is NOT in /api/ai/ prefix
+  // Middleware CSRF check only applies to /api/ai/ and /api/emails/
+  // This endpoint has NO CSRF protection — only session + rate limit
+  // Analytical finding: documented but not an actionable bug (no state mutation on GET)
+  it('ADV-09: endpoint is GET-only and does not mutate state (CSRF not required)', async () => {
+    // GET endpoints with no mutation don't require CSRF by convention
+    // This test documents the absence of CSRF as intentional (GET = safe method)
+    const res = await GET(makeRequest('?q=laytime'));
+    expect(res.status).toBe(200); // confirms endpoint is functional as GET
+  });
+
+  // ADV-10: very long query string — no length validation in route
+  it('ADV-10: very long query (5000 chars) does not crash — either 200 or 400', async () => {
+    const longQuery = 'a'.repeat(5000);
+    const res = await GET(makeRequest(`?q=${encodeURIComponent(longQuery)}`));
+    // Should not throw — catch block returns 500 only on unexpected errors
+    expect(res.status).not.toBe(500);
+  });
+});
