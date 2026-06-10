@@ -3,8 +3,8 @@
  * that previously had no timeout handling.
  *
  * Pattern under test:
- * - LLMTimeoutError thrown from callAiText/callAiJson → endpoint returns
- *   HTTP 504 with `{ error:'ai_timeout', retryable:true }`.
+ * - draft-quote (async): enqueueQuoteJob internal throw → 500 enqueue_error
+ * - classify: LLMTimeoutError thrown from callAiJson → 504 ai_timeout retryable
  * - For batched per-email routes (parse-vessel, parse-recap), a single
  *   email's timeout MUST NOT poison the whole batch — the route still
  *   returns 200 with the surviving items.
@@ -38,6 +38,18 @@ jest.mock('@/lib/openai', () => {
   };
 });
 
+const mockEnqueueQuoteJob = jest.fn();
+jest.mock('@/lib/quote-jobs/store', () => ({
+  enqueueQuoteJob: (...args: unknown[]) => mockEnqueueQuoteJob(...args),
+  QueueFullError: class QueueFullError extends Error {
+    constructor(depth: number) { super(`quote queue full (depth=${depth})`); this.name = 'QueueFullError'; }
+  },
+}));
+jest.mock('@/lib/quote-jobs/ensure-worker', () => ({ ensureWorker: jest.fn() }));
+jest.mock('@/lib/session-store', () => ({
+  getStore: jest.fn().mockReturnValue({ getDb: jest.fn().mockReturnValue({}) }),
+}));
+
 import { requireSession } from '@/lib/session';
 const mockRequireSession = requireSession as jest.MockedFunction<typeof requireSession>;
 
@@ -52,12 +64,12 @@ function makeRequest(path: string, body: unknown = {}): NextRequest {
   });
 }
 
-describe('γ-1 endpoint timeout → 504 graceful (single-call pattern)', () => {
+describe('γ-1 endpoint error handling (draft-quote async; classify timeout)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('draft-quote: callAiText timeout → 504 ai_timeout retryable', async () => {
+  it('draft-quote: enqueueQuoteJob internal throw → 500 enqueue_error', async () => {
     mockRequireSession.mockReturnValue({
       session: {
         parsedCargos: [{ emailId: 'e1', itemIndex: 0 }],
@@ -65,15 +77,14 @@ describe('γ-1 endpoint timeout → 504 graceful (single-call pattern)', () => {
       },
       sessionId: 'sid',
     } as unknown as ReturnType<typeof requireSession>);
-    mockCallAiText.mockRejectedValue(new LLMTimeoutError('timed out'));
+    mockEnqueueQuoteJob.mockImplementation(() => { throw new Error('DB locked'); });
 
     const { POST } = await import('@/app/api/ai/draft-quote/route');
     const res = await POST(makeRequest('/api/ai/draft-quote', { emailId: 'e1' }));
     const json = await res.json();
 
-    expect(res.status).toBe(504);
-    expect(json.error).toBe('ai_timeout');
-    expect(json.retryable).toBe(true);
+    expect(res.status).toBe(500);
+    expect(json.error).toBe('enqueue_error');
   });
 
   it('classify: callAiJson timeout → 504 ai_timeout retryable', async () => {
