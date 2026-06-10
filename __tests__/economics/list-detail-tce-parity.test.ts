@@ -15,6 +15,8 @@ import Database from 'better-sqlite3';
 import { DEFAULT_BUNKER_USD_PER_MT as _DEFAULT_BUNKER, FALLBACK_EUA_EUR_PER_TCO2 } from '@/lib/constants';
 import { buildCanonicalTceInputs } from '@/lib/economics/canonical-tce-inputs';
 import { calculateTCE } from '@/lib/economics/voyage-calculator';
+import { calculateWarRiskPremium } from '@/lib/economics/war-risk';
+import { estimateVesselValueUsd } from '@/lib/economics/vessel-value';
 import { computeEstimatedTce, buildMatchEconomics, estimateFreightRate, deriveEtsCoverage, routeTransitsBosporus, quoteBosporusSafe, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
 import { computeStoredMatchEconomics } from '@/lib/matching/stored-match-economics';
 import { sumMatchPortDaUsd } from '@/lib/port-da/match-da';
@@ -574,5 +576,97 @@ describe('A5-ballast: openPosition ≠ loadPort — stored LIST ↔ detail TCE p
     console.log(`[A5-ballast no-ballast] stored=${storedTce.toFixed(2)} detail=${detailResult.daily_tce_usd.toFixed(2)} delta=${delta.toFixed(2)}`);
     // Without the ballast prop, detail uses round-trip → diverges significantly
     expect(delta).toBeGreaterThan(1);
+  });
+});
+
+// ── H1: vessel-value unification — stored path must use estimateVesselValueUsd(dwt) ─────────────
+//
+// Bug: stored-match-economics called buildMatchEconomics without vesselValueUsd, so it fell
+// back to DEFAULT_VESSEL_VALUE_USD=22M. The detail page (EconomicsTab) already called
+// estimateVesselValueUsd(dwt), causing warRiskPremium + totalUsd to diverge by $4k–$10k on HRA
+// routes. Fix: pass vesselValueUsd: estimateVesselValueUsd(ecoDwt) to buildMatchEconomics.
+//
+// Fixture: Jeddah (Red Sea HRA) → Singapore, DWT=30000 → estimateVesselValueUsd=8_400_000 ≠ 22M.
+// The two oracles must differ by >$100 to make the test meaningful.
+describe('H1: stored war-risk uses estimateVesselValueUsd(dwt) not 22M (Wave 2 stage 4)', () => {
+  const DWT = 30000;                    // estimateVesselValueUsd(30000) = 8_400_000
+  const LOAD_PORT = 'Jeddah';           // Red Sea / Bab al-Mandeb HRA
+  const DISCH_PORT = 'Singapore';
+
+  const HRA_CARGO: ParsedCargo = {
+    emailId: 'h1-cargo-01',
+    itemIndex: 0,
+    originPort: { value: LOAD_PORT, confidence: 'confirmed' },
+    destinationPort: { value: DISCH_PORT, confidence: 'confirmed' },
+    cargoType: 'BULK',
+    laycan: '1-20 Aug 2026',
+    freightRateUsd: 30,
+    cargoDescription: null,
+    weightMt: { value: DWT * 0.85, confidence: 'confirmed' }, // typical fill ~85%
+    weightMtMin: null, weightMtMax: null,
+    volumeCbm: null, dimensions: null, containerType: null, quantity: null,
+    incoterms: null, preferredDates: null, loadingRate: null, dischargeRate: null,
+    commissionPercent: null, commissionTerms: null, specialRequirements: null,
+    stowageFactor: null, missingInfo: [],
+    originCountry: null, destinationCountry: null,
+  } as ParsedCargo;
+
+  const HRA_VESSEL: ParsedVessel = {
+    emailId: 'h1-vessel-01',
+    itemIndex: 0,
+    dwtSummer: { value: DWT, confidence: 'confirmed' },
+    vesselName: null, imo: null, flag: null, built: null, classSociety: null,
+    pandi: null, dwcc: null, draftMax: null, loa: null, beam: null, grt: null, nrt: null,
+    holdsCount: null, hatchesCount: null, grainCapacity: null, grainCapacityUnit: null,
+    baleCapacity: null, holdDimensions: null, hatchDimensions: null, tankTopStrength: null,
+    geared: null, craneCapacity: null, hatchType: null, vesselType: null,
+    openPosition: { value: LOAD_PORT, confidence: 'confirmed' }, // open at load port → no ballast leg
+    openDate: null, direction: null, restrictions: [],
+    lastCargoes: null,
+    speedLaden: '13',
+    speedBallast: null,
+    consumption: '22',
+    deckCapacity: null,
+    specialFeatures: [],
+  } as ParsedVessel;
+
+  it('warRiskPremium matches estimateVesselValueUsd oracle (fails before H1 fix)', () => {
+    const result = computeStoredMatchEconomics({ cargo: HRA_CARGO, vessel: HRA_VESSEL });
+
+    // Sanity: distance resolved and economics populated
+    expect(result.economics).not.toBeNull();
+    expect(result.distance_nm).toBeGreaterThan(0);
+
+    const oracleEstimate = calculateWarRiskPremium({
+      route: { fromPort: LOAD_PORT, toPort: DISCH_PORT },
+      vesselValueUsd: estimateVesselValueUsd(DWT),
+    });
+    const oracle22M = calculateWarRiskPremium({
+      route: { fromPort: LOAD_PORT, toPort: DISCH_PORT },
+      vesselValueUsd: 22_000_000,
+    });
+
+    // Sanity: both oracles produce non-zero war-risk (confirms route is HRA)
+    expect(oracleEstimate.premiumUsd).toBeGreaterThan(0);
+    // The two oracles must differ meaningfully (makes this test discriminating)
+    expect(Math.abs(oracle22M.premiumUsd - oracleEstimate.premiumUsd)).toBeGreaterThan(100);
+
+    // MAIN ASSERTION: stored path uses estimateVesselValueUsd(dwt), not 22M.
+    // Before H1 fix: stored uses 22M → this assertion fails.
+    // After H1 fix: stored uses estimateVesselValueUsd(DWT) → passes.
+    expect(result.economics!.breakdown.warRiskPremium).toBeCloseTo(oracleEstimate.premiumUsd, 0);
+  });
+
+  it('totalUsd includes war-risk from estimateVesselValueUsd oracle after fix', () => {
+    const result = computeStoredMatchEconomics({ cargo: HRA_CARGO, vessel: HRA_VESSEL });
+    expect(result.economics).not.toBeNull();
+
+    const oracle = calculateWarRiskPremium({
+      route: { fromPort: LOAD_PORT, toPort: DISCH_PORT },
+      vesselValueUsd: estimateVesselValueUsd(DWT),
+    });
+    // economics.totalUsd includes war-risk (added to freight revenue net of costs)
+    // After fix: totalUsd reflects correct vessel-class premium, not inflated 22M
+    expect(result.economics!.breakdown.warRiskPremium).toBeCloseTo(oracle.premiumUsd, 0);
   });
 });

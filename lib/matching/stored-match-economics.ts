@@ -30,6 +30,7 @@ import {
   parseLeadingNumber,
   parseConsumption,
 } from '@/lib/matching/tce-calculator';
+import { estimateVesselValueUsd } from '@/lib/economics/vessel-value';
 import { now } from '@/lib/clock';
 
 export interface StoredMatchEconomicsInput {
@@ -146,6 +147,8 @@ export function computeStoredMatchEconomics(
 
   // excludeWarRiskFromDailyTce: true — matches detail-page convention so
   // stored list TCE == live detail TCE (war-risk is shown as a separate line).
+  // vesselValueUsd: estimateVesselValueUsd(ecoDwt) — matches detail path (EconomicsTab)
+  // so war-risk premium and totalUsd agree on HRA routes (H1 fix, Wave 2 stage 4).
   const econ = buildMatchEconomics({
     cargoType,
     distanceNm: distanceResult.nm,
@@ -166,6 +169,7 @@ export function computeStoredMatchEconomics(
     daUsd,
     bunkerPriceUsdPerMt,
     euaPriceEur: liveEuaRow?.price_eur_per_tco2 ?? undefined,
+    vesselValueUsd: estimateVesselValueUsd(ecoDwt),
     excludeWarRiskFromDailyTce: true,
   });
 
