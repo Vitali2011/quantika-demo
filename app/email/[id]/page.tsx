@@ -94,7 +94,7 @@ export default async function EmailDetailPage({ params }: Props) {
         <div>
           <h1 className="text-lg font-bold">{email.subject}</h1>
           <p className="text-sm text-muted-foreground">
-            From: {email.from} · {formatDate(email.date)}
+            From: {email.fromName ?? email.from} · {formatDate(email.date)}
           </p>
         </div>
         {legendItems.length > 0 && (
