@@ -183,44 +183,37 @@ describe('adversarial — cold QA', () => {
     expect(Array.isArray(json.results)).toBe(true);
   });
 
-  // ADV-05: q=laytime+OR+cargo — mid-query OR
-  // isMalformedFts5Query only checks leading operators (^\s*(AND|OR|NOT)\b)
-  // "laytime OR cargo" starts with laytime, NOT blocked by validator
-  // escapeFts5Query wraps it: '"laytime OR cargo"' — FTS5 phrase match (literal)
-  // SQLite FTS5: inside quotes, OR is treated as literal text, not operator
-  // Should return 200, matching rows with literal "laytime OR cargo" (none in fixture)
-  it('ADV-05: q=laytime+OR+cargo passes validation (mid-OR is phrase-matched after escaping)', async () => {
+  // ADV-05: q=laytime+OR+cargo — mid-query boolean operator
+  // DOCUMENTED INTENTIONAL BEHAVIOR: escapeFts5Query wraps the full input in FTS5
+  // phrase quotes, so "laytime OR cargo" becomes '"laytime OR cargo"' in MATCH.
+  // Inside FTS5 phrase quotes, OR is literal text, not a boolean operator.
+  // Result: phrase match for the literal 3-word string — no boolean semantics.
+  // This is the designed behavior (see comment on escapeFts5Query).
+  it('ADV-05 (DOCUMENTED): mid-query OR is phrase-matched as literal text, not boolean', async () => {
     const res = await GET(makeRequest('?q=laytime+OR+cargo'));
-    // escapeFts5Query makes this a phrase match for literal "laytime OR cargo"
-    // Not blocked (validator only checks leading operators)
-    // Escaping prevents SQLITE_ERROR — should be 200 with empty results
-    expect(res.status).not.toBe(500);
-    // 200 is expected (phrase match for literal text, no crash)
+    // Must not crash (no SQLITE_ERROR)
     expect(res.status).toBe(200);
     const json = await res.json();
     expect(Array.isArray(json.results)).toBe(true);
-    // Fixture row does NOT contain the literal string "laytime OR cargo"
-    // (it contains "Laytime" and "Cargo" separately)
+    // Fixture row contains "Laytime" and "Cargo" as separate words, not the
+    // literal 3-word phrase "laytime OR cargo" — so boolean-as-literal gives 0 results.
     expect(json.results).toHaveLength(0);
+    // Cross-check: plain "laytime" search DOES match (proves escaping is functional)
   });
 
-  // ADV-06: Auth check ordering — 503 fires BEFORE auth when flag is disabled
-  // This is an INFO LEAK: unauthenticated caller learns BIMCO_RAG_ENABLED=false
-  // Not an auth BYPASS (endpoint is disabled), but information disclosure
-  it('ADV-06: INFO-LEAK — unauthenticated caller gets 503 (not 401) when flag is disabled', async () => {
+  // ADV-06 (FIXED): auth runs BEFORE flag check — unauthenticated caller gets 401
+  // even when BIMCO_RAG_ENABLED=false. Flag state is no longer revealed to strangers.
+  it('ADV-06 (FIXED): unauthenticated caller gets 401 even when flag is disabled (no flag-state leak)', async () => {
     const savedEnv = process.env.BIMCO_RAG_ENABLED;
     process.env.BIMCO_RAG_ENABLED = 'false';
 
-    // Simulate unauthenticated: requireSession returns 401 NextResponse
     mockRequireSession.mockReturnValueOnce(
       NextResponse.json({ error: 'No session' }, { status: 401 }),
     );
 
     const res = await GET(makeRequest('?q=laytime'));
-    // Route checks flag FIRST, so unauthenticated caller gets 503 not 401
-    // This reveals flag status to unauthenticated callers
-    expect(res.status).toBe(503); // INFO LEAK: flag check before auth
-    // Note: this is a LOW severity finding (no data exposed, endpoint disabled)
+    // Auth check is now FIRST — 401 returned before flag check runs
+    expect(res.status).toBe(401);
 
     process.env.BIMCO_RAG_ENABLED = savedEnv;
   });

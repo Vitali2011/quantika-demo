@@ -37,20 +37,24 @@ function isMalformedFts5Query(q: string): boolean {
 /**
  * Escape a plain-text query for safe FTS5 MATCH binding (phrase match).
  * Mirrors lib/knowledge/embeddings/retriever-sqlite.ts.
+ *
+ * INTENTIONAL: mid-query boolean operators (e.g. "laytime OR cargo") become
+ * literal text inside FTS5 phrase quotes — not boolean operators. All queries
+ * are phrase-matched. Boolean search is not supported by design (simpler, safer).
  */
 function escapeFts5Query(q: string): string {
   return `"${q.replace(/"/g, '""')}"`;
 }
 
 export async function GET(request: NextRequest) {
-  // Feature flag check
+  // Auth first — unauthenticated callers always get 401, not flag-state leakage
+  const authResult = requireSession(request);
+  if (authResult instanceof NextResponse) return authResult;
+
+  // Feature flag check (after auth so flag state is not revealed to strangers)
   if (process.env.BIMCO_RAG_ENABLED !== 'true') {
     return NextResponse.json({ error: 'BIMCO RAG not enabled' }, { status: 503 });
   }
-
-  // Session auth check
-  const authResult = requireSession(request);
-  if (authResult instanceof NextResponse) return authResult;
 
   // Rate limit check
   const { sessionId } = authResult;
