@@ -7,39 +7,27 @@ import { Loader2, Copy, Check } from 'lucide-react';
 import { csrfFetch } from '@/lib/csrf-client';
 import { useToast } from '@/components/ui/toast';
 import { parseJsonResponse } from '@/lib/http/parse-json-response';
+import { useQuoteJob } from '@/lib/quote-jobs/use-quote-job';
 
 interface DraftQuoteCardProps {
   emailId: string;
 }
 
 export function DraftQuoteCard({ emailId }: DraftQuoteCardProps) {
-  const [quoteDraft, setQuoteDraft] = useState('');
+  const toast = useToast();
+  const {
+    state: quoteState,
+    draft: quoteDraft,
+    error: quoteError,
+    start: startQuote,
+    retry: retryQuote,
+  } = useQuoteJob(emailId, (msg) => toast.error(msg));
   const [replyDraft, setReplyDraft] = useState('');
-  const [loadingQuote, setLoadingQuote] = useState(false);
   const [loadingReply, setLoadingReply] = useState(false);
   const [copied, setCopied] = useState<'quote' | 'reply' | null>(null);
-  const [quoteError, setQuoteError] = useState('');
   const [replyError, setReplyError] = useState('');
-  const toast = useToast();
 
-  async function generateQuote() {
-    setLoadingQuote(true);
-    setQuoteError('');
-    try {
-      const res = await csrfFetch('/api/ai/draft-quote', {
-        method: 'POST',
-        body: JSON.stringify({ emailId }),
-      });
-      const data = await parseJsonResponse<{ draft?: string }>(res);
-      setQuoteDraft(data.draft ?? '');
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to generate quote';
-      setQuoteError(msg);
-      toast.error(msg);
-    } finally {
-      setLoadingQuote(false);
-    }
-  }
+  const loadingQuote = quoteState === 'queued' || quoteState === 'processing';
 
   async function generateReply() {
     setLoadingReply(true);
@@ -68,12 +56,19 @@ export function DraftQuoteCard({ emailId }: DraftQuoteCardProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-3">
-        <Button onClick={generateQuote} disabled={loadingQuote} variant="default">
+      <div className="flex gap-3 flex-wrap items-center">
+        <Button onClick={startQuote} disabled={loadingQuote} variant="default">
           {loadingQuote ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
           Draft Quote
         </Button>
-        {quoteError && <p className="text-sm text-red-600">{quoteError}</p>}
+        {quoteState === 'error' && (
+          <Button onClick={retryQuote} variant="outline" size="sm">
+            Retry
+          </Button>
+        )}
+        {quoteError && quoteState === 'error' && (
+          <p className="text-sm text-red-600">{quoteError}</p>
+        )}
         <Button onClick={generateReply} disabled={loadingReply} variant="outline">
           {loadingReply ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
           Ask Client for Missing Info
@@ -93,7 +88,7 @@ export function DraftQuoteCard({ emailId }: DraftQuoteCardProps) {
             <textarea
               className="w-full min-h-[200px] text-sm font-mono bg-muted rounded p-3 resize-y border-0 focus:ring-2 focus:ring-offset-2 outline-none"
               value={quoteDraft}
-              onChange={e => setQuoteDraft(e.target.value)}
+              onChange={() => {/* read-only in async flow */}}
             />
           </CardContent>
         </Card>
