@@ -15,8 +15,6 @@ import { Badge } from '@/design-system/primitives';
 import { persistSessionMatches } from '@/lib/matching/persist-session-matches';
 import { listMatches } from '@/lib/matching/matches-repository';
 import { countQualifyingMatches } from '@/lib/matching/count-qualifying';
-import { RoiSummaryTile } from '@/components/dashboard/RoiSummaryTile';
-
 const PRIORITY_ORDER: Record<PriorityLevel, number> = { urgent: 0, attention: 1, ok: 2 };
 
 export default async function DashboardPage() {
@@ -177,11 +175,6 @@ export default async function DashboardPage() {
             </div>
             <span className="text-ds-text-subtle text-sm">→</span>
           </Link>
-        )}
-
-        {/* ── ROI Summary (feature flag) ──────────────────────────── */}
-        {process.env.NEXT_PUBLIC_ROI_GUARANTEE_ENABLED === 'true' && (
-          <RoiSummaryTile />
         )}
 
       </div>

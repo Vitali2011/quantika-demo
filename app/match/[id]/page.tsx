@@ -70,6 +70,9 @@ export default async function MatchDetailPage({ params }: Props) {
   const cargoEmail = sessionMatch
     ? session.emails.find((e) => e.id === sessionMatch.cargoEmailId)
     : undefined;
+  const vesselEmail = sessionMatch
+    ? session.emails.find((e) => e.id === sessionMatch.vesselEmailId)
+    : undefined;
 
   const badgeCfg = sessionMatch
     ? (MATCH_LEVEL_BADGE[sessionMatch.matchLevel] ?? MATCH_LEVEL_BADGE.possible)
@@ -291,6 +294,9 @@ export default async function MatchDetailPage({ params }: Props) {
                   ballastDistanceNm={ballastDistanceNm}
                   consumptionEstimated={storedMatch.consumption_estimated === 1}
                   balticRateAsOf={balticRateAsOf}
+                  cargoEmailBody={cargoEmail?.body ?? null}
+                  vesselEmailBody={vesselEmail?.body ?? null}
+                  payoutCondition={null}
                 />
 
                 {cargo && cargoEmail && (

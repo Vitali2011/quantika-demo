@@ -28,8 +28,10 @@ function mockFetchResponses(draftText: string) {
     if (String(url).includes('/api/ai/draft-quote')) {
       return Promise.resolve({
         ok: true,
+        status: 200,
+        headers: { get: (k: string) => k.toLowerCase().includes('content-type') ? 'application/json' : null },
         json: async () => ({ draft: draftText }),
-      } as Response);
+      } as unknown as Response);
     }
     return Promise.resolve({ ok: false, json: async () => ({}) } as Response);
   });
@@ -90,8 +92,10 @@ describe('QuoteTab — Generate Draft button (fix #351)', () => {
       if (String(url).includes('/api/ai/draft-quote')) {
         return Promise.resolve({
           ok: false,
+          status: 500,
+          headers: { get: (k: string) => k.toLowerCase().includes('content-type') ? 'application/json' : null },
           json: async () => ({ error: 'Service unavailable' }),
-        } as Response);
+        } as unknown as Response);
       }
       return Promise.resolve({ ok: false, json: async () => ({}) } as Response);
     });
@@ -117,5 +121,49 @@ describe('QuoteTab — Generate Draft button (fix #351)', () => {
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'USD 15/MT' } });
     const sendBtn = screen.getByRole('button', { name: /send quote/i });
     expect(sendBtn).toBeDisabled();
+  });
+
+  it('shows a friendly message (not raw SyntaxError) when the response body is empty', async () => {
+    global.fetch = jest.fn().mockImplementation((url: string) => {
+      if (String(url).includes('/api/ai/draft-quote')) {
+        return Promise.resolve({
+          ok: false,
+          status: 504,
+          headers: { get: (k: string) => k.toLowerCase().includes('content-type') ? 'application/json' : null },
+          json: async () => { throw new SyntaxError('Unexpected end of JSON input'); },
+        } as unknown as Response);
+      }
+      return Promise.resolve({ ok: false, json: async () => ({}) } as Response);
+    });
+    renderWithToast(<QuoteTab cargoEmailId="e1" />);
+    fireEvent.click(screen.getByRole('button', { name: /generate/i }));
+    await waitFor(() => {
+      const errP = document.querySelector('p.text-red-600');
+      expect(errP).not.toBeNull();
+      expect(errP?.textContent).not.toContain('Unexpected end of JSON input');
+      expect(errP?.textContent?.toLowerCase()).toMatch(/timed out/);
+    });
+  });
+
+  it('shows a friendly message (not raw SyntaxError) when response is HTML', async () => {
+    global.fetch = jest.fn().mockImplementation((url: string) => {
+      if (String(url).includes('/api/ai/draft-quote')) {
+        return Promise.resolve({
+          ok: false,
+          status: 502,
+          headers: { get: (k: string) => k.toLowerCase().includes('content-type') ? 'text/html' : null },
+          json: async () => { throw new SyntaxError("Unexpected token '<'"); },
+        } as unknown as Response);
+      }
+      return Promise.resolve({ ok: false, json: async () => ({}) } as Response);
+    });
+    renderWithToast(<QuoteTab cargoEmailId="e1" />);
+    fireEvent.click(screen.getByRole('button', { name: /generate/i }));
+    await waitFor(() => {
+      const errP = document.querySelector('p.text-red-600');
+      expect(errP).not.toBeNull();
+      expect(errP?.textContent).not.toContain('Unexpected token');
+      expect(errP?.textContent?.toLowerCase()).toMatch(/unavailable/);
+    });
   });
 });
