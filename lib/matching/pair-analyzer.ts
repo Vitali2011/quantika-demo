@@ -30,6 +30,7 @@ import { resolveChartererTier } from '@/lib/matching/charterer-tier';
 import { formatNumber } from '@/lib/utils';
 import { LLMTimeoutError } from '@/lib/openai';
 import { now } from '@/lib/clock';
+import { breakevenTceByDwt } from '../economics/breakeven-thresholds';
 
 export interface RawMatch {
   cargo_email_id?: string;
@@ -826,10 +827,7 @@ export async function analyzePairs(
       );
       const floorDwt = floorVessel ? (cfValue(floorVessel.dwtSummer) ?? 0) : 0;
       if (floorDwt > 0) {
-        const breakeven = floorDwt <= 15_000 ? 1_500
-          : floorDwt <= 40_000 ? 3_000
-          : floorDwt <= 65_000 ? 5_500
-          : 7_500;
+        const breakeven = breakevenTceByDwt(floorDwt);
         if (floorTce < breakeven) {
           m.matchLevel = 'weak';
           m.issues = [...(m.issues ?? []), 'Below-breakeven economics (true-voyage TCE) — manual review'];

@@ -32,6 +32,7 @@ import type {
 } from '@/lib/types';
 import { cfValue } from '@/lib/types';
 import { resolveCargoWeight } from './cargo-weight';
+import { breakevenTceByDwt } from '../economics/breakeven-thresholds';
 import { computeVesselVetting } from './vessel-vetting';
 import { classifyVesselByDwt } from './readiness-gap';
 import { BALLAST_GOOD_MAX_NM, isPartCargo } from './match-scoring';
@@ -443,11 +444,6 @@ export function scoreVetting(vessel: ParsedVessel, refYear?: number, detentionCo
  *  Neutral (0.5) at class breakeven; profit above → toward 1; loss below → toward 0.
  *  null/undefined TCE → 0.5 (no reward, no penalty). NOT a binary cap.
  *
- *  Breakeven thresholds match pair-analyzer.ts:835-838:
- *    DWT ≤ 15 000  → $1 500 /day
- *    DWT ≤ 40 000  → $3 000 /day
- *    DWT ≤ 65 000  → $5 500 /day
- *    DWT  > 65 000 → $7 500 /day
  */
 function clamp01(x: number): number {
   return Math.min(1, Math.max(0, x));
@@ -455,10 +451,7 @@ function clamp01(x: number): number {
 
 function economicsNorm(tceUsdPerDay: number | null | undefined, vesselDwt: number): number {
   if (tceUsdPerDay == null || !Number.isFinite(tceUsdPerDay) || !(vesselDwt > 0)) return 0.5;
-  const breakeven = vesselDwt <= 15_000 ? 1_500
-    : vesselDwt <= 40_000 ? 3_000
-    : vesselDwt <= 65_000 ? 5_500
-    : 7_500;
+  const breakeven = breakevenTceByDwt(vesselDwt);
   const scale = Math.max(breakeven, 1);
   return clamp01(0.5 + 0.5 * Math.tanh((tceUsdPerDay - breakeven) / scale));
 }
@@ -477,10 +470,7 @@ export function scoreEconomics(
   } else if (!(dwt > 0)) {
     rationale = 'Vessel DWT not stated — economics scored neutral.';
   } else {
-    const breakeven = dwt <= 15_000 ? 1_500
-      : dwt <= 40_000 ? 3_000
-      : dwt <= 65_000 ? 5_500
-      : 7_500;
+    const breakeven = breakevenTceByDwt(dwt);
     const diff = tceUsdPerDay - breakeven;
     if (diff >= 0) {
       rationale = `TCE $${Math.round(tceUsdPerDay).toLocaleString('en-US')}/day — $${Math.round(diff).toLocaleString('en-US')}/day above class breakeven.`;
