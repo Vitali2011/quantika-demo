@@ -15,6 +15,7 @@
 
 import { getPortMaster, portCanHandleDraft, portHasShoreCranes } from './port-master';
 import { CargoType, Range, isRange } from '../types';
+import { estimateLadenDraft } from './laden-draft';
 import { checkImsbcLoadability } from './imsbc-check';
 import { checkVoyageRestriction, VoyageRestrictionResult } from './voyage-restriction';
 import { isPortInHra } from '../economics/war-risk';
@@ -25,6 +26,10 @@ export interface FilterResult {
   reason?: string;
   /** Layer C: soft warning — pass=true but requires user confirmation (e.g. gearless+breakbulk+unverified cranes). */
   warning?: boolean;
+  /** M4: estimated laden draft used in this check (metres). Present when cargo/DWT were available. */
+  estimatedLadenDraftM?: number;
+  /** M4: port draft limit used in this check (metres). Present when port is known and laden check ran. */
+  portLimitM?: number;
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -37,6 +42,34 @@ export function checkDraft(port: string | null | undefined, vesselDraftM: number
     return { pass: false, reason: r.reason };
   }
   return { pass: true };
+}
+
+/**
+ * Draft check using the laden estimate when available; falls back to static draft.
+ * Conservative: if estimate is null (unknown cargo/DWT), delegates to checkDraft.
+ * Populates estimatedLadenDraftM and portLimitM on the result for scorer use (M4).
+ */
+function checkDraftLaden(
+  port: string | null | undefined,
+  staticDraftM: number | null | undefined,
+  estimate: ReturnType<typeof estimateLadenDraft>,
+  cargoTons?: number | null,
+): FilterResult {
+  if (estimate == null) {
+    return checkDraft(port, staticDraftM);
+  }
+  const r = portCanHandleDraft(port, estimate.ladenDraftM);
+  const portLimitM = r.portDraftM ?? undefined;
+  if (!r.ok) {
+    const cargoNote = cargoTons != null ? `, from ${Math.round(cargoTons)}t cargo` : '';
+    return {
+      pass: false,
+      reason: `estimated laden draft ${estimate.ladenDraftM}m exceeds port max ${r.portDraftM}m (approximate${cargoNote})`,
+      estimatedLadenDraftM: estimate.ladenDraftM,
+      portLimitM,
+    };
+  }
+  return { pass: true, estimatedLadenDraftM: estimate.ladenDraftM, portLimitM };
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -496,7 +529,10 @@ export interface HardFilterResult {
 }
 
 export function runHardFilters(input: HardFilterInput): HardFilterResult {
-  const draft = checkDraft(input.originPort, input.draftMax);
+  // Use max cargo for conservative (heaviest) laden estimate — consistent with checkCargoWeight/checkVolume
+  const effectiveCargoTons = isRange<number>(input.weightMt) ? input.weightMt.max : input.weightMt;
+  const laden = estimateLadenDraft(input.dwtSummer, effectiveCargoTons);
+  const draft = checkDraftLaden(input.originPort, input.draftMax, laden, effectiveCargoTons);
   const crane = checkCrane(input.originPort, input.geared, input.cargoType);
   const volume = checkVolume({
     weightMt: input.weightMt,
@@ -508,7 +544,7 @@ export function runHardFilters(input: HardFilterInput): HardFilterResult {
     cargoType: input.cargoType,
     vesselType: input.vesselType,
   });
-  const destDraft = checkDraft(input.destinationPort ?? null, input.draftMax);
+  const destDraft = checkDraftLaden(input.destinationPort ?? null, input.draftMax, laden, effectiveCargoTons);
   const destCrane = checkCrane(input.destinationPort ?? null, input.geared, input.cargoType);
   const cargoWeight = checkCargoWeight({
     weightMt: input.weightMt,
