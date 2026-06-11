@@ -211,3 +211,20 @@ describe('port-master Phase G1 — Vado Ligure ITVDL (new entry)', () => {
     expect(r.ok).toBe(false);
   });
 });
+
+describe('port-master TRNEM alias — Nemrut Limani Bay → TRALI (Aliaga)', () => {
+  it('TRNEM UNLOCODE alias resolves to Aliaga entry', () => {
+    const m = getPortMaster('TRNEM');
+    expect(m).not.toBeNull();
+    expect(m!.unlocode).toBe('TRALI');
+  });
+
+  it('TRNEM and Aliaga resolve to same entry', () => {
+    expect(getPortMaster('TRNEM')).toEqual(getPortMaster('Aliaga'));
+  });
+
+  it('TRNEM entry has correct maxDraftM (14 m)', () => {
+    const m = getPortMaster('TRNEM');
+    expect(m!.maxDraftM).toBe(14);
+  });
+});

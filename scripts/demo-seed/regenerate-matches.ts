@@ -44,6 +44,8 @@ import { seedPortDa, type BaselinePort } from '../seed-port-da';
 import { lookupCii } from '@/lib/imo/cii-lookup';
 import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
 import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
+import { deriveBucketReason } from '@/lib/matching/bucket-reason';
+import { breakevenTceByDwt } from '@/lib/economics/breakeven-thresholds';
 
 // ── CII hydration helper ──────────────────────────────────────────────────────
 
@@ -447,6 +449,59 @@ function matchToQuarantineInput(m: Match) {
   };
 }
 
+/** Build the worksheet object for a regen match, carrying the full filter passport.
+ *  Mirrors the live path in persist-session-matches.ts: full hardFilters (all gates),
+ *  sanctions, and bucketReason derived at persist-time. */
+export function buildWorksheet(m: Match, cargo: ParsedCargo | undefined, vessel: ParsedVessel | undefined): MatchWorksheet | null {
+  if (!m.readiness) return null;
+  const vesselDwt = vessel ? (cfValue(vessel.dwtSummer) ?? null) : null;
+  const bucketReason = deriveBucketReason({
+    verdict: m.readiness.verdict ?? 'unknown',
+    gapDays: m.readiness.gapDays ?? null,
+    matchLevel: m.matchLevel,
+    tceUsdPerDay: m.economics?.tceUsdPerDay ?? null,
+    vesselDwt,
+    issues: m.issues ?? [],
+  });
+  return {
+    readiness: {
+      ...m.readiness,
+      openPosition: vessel ? (cfValue(vessel.openPosition) ?? null) : null,
+    },
+    vessel: {
+      draftMax: vessel ? (cfValue(vessel.draftMax) ?? null) : null,
+      grainCapacity: vessel?.grainCapacity ?? null,
+      grainCapacityUnit: vessel?.grainCapacityUnit ?? null,
+      geared: vessel?.geared ?? null,
+      vesselType: vessel?.vesselType ?? null,
+      flag: vessel?.flag ?? null,
+      built: vessel?.built ?? null,
+      pandi: vessel?.pandi ?? null,
+      classSociety: vessel?.classSociety ?? null,
+      lastCargoes: vessel?.lastCargoes ?? null,
+      dwtSummer: vesselDwt,
+      dwcc: vessel ? (cfValue(vessel.dwcc) ?? null) : null,
+    },
+    cargo: {
+      weightMt: cargo ? (cfValue(cargo.weightMt) ?? null) : null,
+      cargoType: cargo ? cargoTypeStr(cargo) : null,
+      loadPort: cargo ? (cfValue(cargo.originPort) ?? null) : null,
+      dischargePort: cargo ? (cfValue(cargo.destinationPort) ?? null) : null,
+    },
+    hardFilters: m.hardFilters ?? {
+      draft: { pass: true },
+      crane: { pass: true },
+      volume: { pass: true },
+      cargoVessel: { pass: true },
+      destDraft: { pass: true },
+      destCrane: { pass: true },
+      cargoWeight: { pass: true },
+    },
+    sanctions: m.sanctions,
+    bucketReason,
+  };
+}
+
 async function main() {
   // --rebuild-worksheet / --dry-rebuild-worksheet: targeted worksheet rebuild mode.
   // Does NOT re-run analyzePairs — only patches worksheet_json for seed matches
@@ -627,8 +682,9 @@ async function main() {
 
   // ── 4. Write: replace the seed buckets (NULL + sentinels). Orphan per-session
   //        UUID copies are left for the app's deleteOrphanSessionMatches to prune. ──
-  const hasWorksheetCol = (db.prepare(`PRAGMA table_info(matches)`).all() as Array<{name:string}>)
-    .some((c) => c.name === 'worksheet_json');
+  const _matchesCols = (db.prepare(`PRAGMA table_info(matches)`).all() as Array<{name:string}>);
+  const hasWorksheetCol = _matchesCols.some((c) => c.name === 'worksheet_json');
+  const hasBreakevenCol = _matchesCols.some((c) => c.name === 'breakeven_tce_usd_per_day');
 
   const insert = db.prepare(`
     INSERT OR IGNORE INTO matches
@@ -636,44 +692,9 @@ async function main() {
        created_at, updated_at, reason_structured, cargo_type, load_port, discharge_port,
        laycan_start, laycan_end, vessel_dwt, tce_usd_per_day, distance_nm, vessel_name, cargo_ref,
        fit_percent, fit_breakdown,
-       freight_rate_usd_per_mt, freight_rate_source${hasWorksheetCol ? ', worksheet_json' : ''})
-    VALUES (?, ?, ?, ?, ?, ?, 'shortlist', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?${hasWorksheetCol ? ', ?' : ''})
+       freight_rate_usd_per_mt, freight_rate_source${hasWorksheetCol ? ', worksheet_json' : ''}${hasBreakevenCol ? ', breakeven_tce_usd_per_day' : ''})
+    VALUES (?, ?, ?, ?, ?, ?, 'shortlist', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?${hasWorksheetCol ? ', ?' : ''}${hasBreakevenCol ? ', ?' : ''})
   `);
-
-  function buildWorksheet(m: Match, cargo: ParsedCargo | undefined, vessel: ParsedVessel | undefined): MatchWorksheet | null {
-    if (!m.readiness) return null;
-    return {
-      readiness: {
-        ...m.readiness,
-        openPosition: vessel ? (cfValue(vessel.openPosition) ?? null) : null,
-      },
-      vessel: {
-        draftMax: vessel ? (cfValue(vessel.draftMax) ?? null) : null,
-        grainCapacity: vessel?.grainCapacity ?? null,
-        grainCapacityUnit: vessel?.grainCapacityUnit ?? null,
-        geared: vessel?.geared ?? null,
-        vesselType: vessel?.vesselType ?? null,
-        flag: vessel?.flag ?? null,
-        built: vessel?.built ?? null,
-        pandi: vessel?.pandi ?? null,
-        classSociety: vessel?.classSociety ?? null,
-        lastCargoes: vessel?.lastCargoes ?? null,
-        dwtSummer: vessel ? (cfValue(vessel.dwtSummer) ?? null) : null,
-        dwcc: vessel ? (cfValue(vessel.dwcc) ?? null) : null,
-      },
-      cargo: {
-        weightMt: cargo ? (cfValue(cargo.weightMt) ?? null) : null,
-        cargoType: cargo ? cargoTypeStr(cargo) : null,
-        loadPort: cargo ? (cfValue(cargo.originPort) ?? null) : null,
-        dischargePort: cargo ? (cfValue(cargo.destinationPort) ?? null) : null,
-      },
-      hardFilters: {
-        draft: m.hardFilters?.draft ?? { pass: true },
-        crane: m.hardFilters?.crane ?? { pass: true },
-        volume: m.hardFilters?.volume ?? { pass: true },
-      },
-    };
-  }
 
   function writeBucket(matches: Match[], userId: string | null): number {
     let n = 0;
@@ -684,6 +705,7 @@ async function main() {
       const dischargePort = cargo ? cfValue(cargo.destinationPort) : null;
       const lay = cargo ? parseLaycan(cargo.laycan, refYear) : null;
       const voyage = loadPort && dischargePort ? getPortDistance(loadPort, dischargePort) : null;
+      const vesselDwt = vessel ? (cfValue(vessel.dwtSummer) ?? null) : null;
       const ws = buildWorksheet(m, cargo, vessel);
       const args: Array<string | number | null> = [
         m.cargoEmailId, m.vesselEmailId, m.cargoItemIndex, m.vesselItemIndex,
@@ -694,7 +716,7 @@ async function main() {
         loadPort, dischargePort,
         lay ? lay.start.getTime() : null,
         lay ? lay.end.getTime() : null,
-        vessel ? (cfValue(vessel.dwtSummer) ?? null) : null,
+        vesselDwt,
         // #819 Phase B(b): stored tce_usd_per_day MUST come from the live
         // voyage-calculator path (buildMatchEconomics via pair-analyzer) so the
         // seed bucket and persistSessionMatches recompute agree numerically.
@@ -712,6 +734,7 @@ async function main() {
         m.economics?.freightRateSource ?? null,
       ];
       if (hasWorksheetCol) args.push(ws ? JSON.stringify(ws) : null);
+      if (hasBreakevenCol) args.push(vesselDwt ? breakevenTceByDwt(vesselDwt) : null);
       insert.run(...args);
       n++;
     }

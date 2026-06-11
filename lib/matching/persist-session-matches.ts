@@ -5,6 +5,8 @@ import { createMatch } from '@/lib/matching/matches-repository';
 import { parseLaycan } from '@/lib/sailing/date-parsing';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 import { computeStoredMatchEconomics } from '@/lib/matching/stored-match-economics';
+import { deriveBucketReason } from '@/lib/matching/bucket-reason';
+import { breakevenTceByDwt } from '@/lib/economics/breakeven-thresholds';
 import { calculateReadinessGap, detectSpot } from '@/lib/sailing/readiness-gap';
 import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
 import { scoreEconomics } from '@/lib/sailing/fit-breakdown';
@@ -95,7 +97,20 @@ export function persistSessionMatches(
     // worksheet laycan, recompute readiness rather than carrying stale data verbatim.
     // This catches seed rows whose worksheet_json was built against a pre-normalization
     // July laycan while parsed_results now has the correct June string (#821).
-    let worksheetJson: string | null = m.worksheet ? JSON.stringify(m.worksheet) : null;
+    const bucketReason = m.worksheet
+      ? deriveBucketReason({
+          verdict: m.worksheet.readiness?.verdict ?? 'unknown',
+          gapDays: m.worksheet.readiness?.gapDays ?? null,
+          matchLevel: m.matchLevel,
+          tceUsdPerDay: tce_usd_per_day,
+          vesselDwt: vesselDwt || null,
+          issues: m.issues ?? [],
+        })
+      : undefined;
+    const worksheetForPersist = m.worksheet
+      ? { ...m.worksheet, hardFilters: m.hardFilters ?? m.worksheet.hardFilters, sanctions: m.sanctions, bucketReason }
+      : null;
+    let worksheetJson: string | null = worksheetForPersist ? JSON.stringify(worksheetForPersist) : null;
     if (m.worksheet && cargo && laycan) {
       const storedLaycanStart = m.worksheet.readiness?.laycanStart ?? null;
       const freshLaycanStart = laycan.start.toISOString().slice(0, 10);
@@ -116,7 +131,7 @@ export function persistSessionMatches(
           ` stored=${storedLaycanStart} fresh=${freshLaycanStart}`,
         );
         worksheetJson = JSON.stringify({
-          ...m.worksheet,
+          ...worksheetForPersist,
           readiness: {
             openDate: freshReadiness.openDate,
             laycanStart: freshReadiness.laycanStart,
@@ -163,6 +178,7 @@ export function persistSessionMatches(
       worksheet_json: worksheetJson,
       consumption_estimated,
       ballast_distance_nm: eco.ballast_distance_nm ?? null,
+      breakeven_tce_usd_per_day: vesselDwt ? breakevenTceByDwt(vesselDwt) : null,
     });
   }
 }

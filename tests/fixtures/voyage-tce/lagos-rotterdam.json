@@ -29,12 +29,12 @@
     "bunker_usd": 235200,
     "canal_usd": 0,
     "da_usd": 75000,
-    "war_risk_usd": 29000,
+    "war_risk_usd": 155000,
     "ets_eur": 49407.68,
     "ets_usd": 53360,
     "gross_freight_usd": 1500000,
-    "total_costs_usd": 392560,
-    "net_voyage_usd": 1107440,
-    "daily_tce_usd": 79103
+    "total_costs_usd": 518560,
+    "net_voyage_usd": 981440,
+    "daily_tce_usd": 70103
   }
 }

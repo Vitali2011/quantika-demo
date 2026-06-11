@@ -17,6 +17,10 @@ interface Props {
   weightMt?: number | null;
   /** Vessel stated max draft — shown in static-check fallback. */
   statedMaxDraftM?: number | null;
+  /** Live port-master limit for load port — shown when check.portLimitM is null (display only, doesn't affect stored verdict). */
+  loadPortLimit?: number | null;
+  /** Live port-master limit for discharge port — shown when check.portLimitM is null (display only, doesn't affect stored verdict). */
+  dischargePortLimit?: number | null;
 }
 
 interface PortRowProps {
@@ -25,9 +29,11 @@ interface PortRowProps {
   check: HardFilterCheck;
   statedMaxDraftM: number | null | undefined;
   hasEstimate: boolean;
+  /** Live port-master limit — used when check.portLimitM is null (display-only, no verdict change). */
+  livePortLimit?: number | null;
 }
 
-function PortRow({ portLabel, roleLabel, check, statedMaxDraftM, hasEstimate }: PortRowProps) {
+function PortRow({ portLabel, roleLabel, check, statedMaxDraftM, hasEstimate, livePortLimit }: PortRowProps) {
   if (!hasEstimate) {
     const draftRef = statedMaxDraftM != null ? `${statedMaxDraftM} m` : '—';
     const icon = check.pass ? '✓' : '✗';
@@ -40,6 +46,15 @@ function PortRow({ portLabel, roleLabel, check, statedMaxDraftM, hasEstimate }: 
   }
 
   if (check.portLimitM == null) {
+    if (livePortLimit != null) {
+      const icon = check.pass ? '✓' : '✗';
+      const verdict = check.pass ? 'clears' : 'exceeds';
+      return (
+        <div className={`text-xs ${check.pass ? 'text-emerald-600' : 'text-red-500'}`}>
+          {roleLabel} {portLabel}: limit {livePortLimit.toFixed(1)} m (live ref.) → {icon} {verdict}
+        </div>
+      );
+    }
     return (
       <div className="text-xs text-ds-text-muted">
         {roleLabel} {portLabel}: limit unknown → pass (no data)
@@ -64,14 +79,22 @@ export function DraftCalcBreakdown({
   dwtSummer,
   weightMt,
   statedMaxDraftM,
+  loadPortLimit,
+  dischargePortLimit,
 }: Props) {
   const [open, setOpen] = useState(false);
 
-  const est = draftCheck.estimatedLadenDraftM;
+  // Use stored estimate when available; for pre-M4 stored matches it may be absent even
+  // when vessel DWT and cargo weight are live on the worksheet — compute on the fly then.
+  // Display-only: gate pass/fail comes from the persisted HardFilterCheck.pass, not recomputed.
+  let est = draftCheck.estimatedLadenDraftM;
+  if (est == null && dwtSummer != null && weightMt != null && dwtSummer > 0 && weightMt > 0) {
+    const fullLoad = 0.4991 * Math.pow(dwtSummer, 0.2991);
+    const ratio = Math.min(weightMt / dwtSummer, 1);
+    est = Math.ceil(fullLoad * Math.pow(ratio, 0.3) * 10) / 10;
+  }
   const hasEstimate = est != null;
 
-  // Intermediate display steps — mirrors lib/sailing/laden-draft.ts empirical formula.
-  // Display only; gate verdict comes from persisted HardFilterCheck, not recomputed here.
   let fullLoadDraftM: number | null = null;
   let rawDraftM: number | null = null;
   if (hasEstimate && dwtSummer != null && weightMt != null && dwtSummer > 0 && weightMt > 0) {
@@ -79,8 +102,6 @@ export function DraftCalcBreakdown({
     const ratio = Math.min(weightMt / dwtSummer, 1);
     rawDraftM = fullLoadDraftM * Math.pow(ratio, 0.3);
   }
-
-  const bothPass = draftCheck.pass && (destDraftCheck == null || destDraftCheck.pass);
 
   return (
     <div className="mt-1">
@@ -126,6 +147,7 @@ export function DraftCalcBreakdown({
               check={draftCheck}
               statedMaxDraftM={statedMaxDraftM}
               hasEstimate={hasEstimate}
+              livePortLimit={loadPortLimit}
             />
             {destDraftCheck != null ? (
               <PortRow
@@ -134,17 +156,28 @@ export function DraftCalcBreakdown({
                 check={destDraftCheck}
                 statedMaxDraftM={statedMaxDraftM}
                 hasEstimate={hasEstimate}
+                livePortLimit={dischargePortLimit}
               />
             ) : (
               <div className="text-xs text-ds-text-muted">
-                Discharge port {dischargePort ?? '(unknown)'}: check data unavailable
+                Discharge port {dischargePort ?? '(unknown)'}: limit unknown → pass (no data)
               </div>
             )}
           </div>
 
-          {/* Worst-of-two verdict */}
-          <div className={`text-xs font-medium ${bothPass ? 'text-emerald-600' : 'text-red-500'}`}>
-            {bothPass ? '✓ Clears both ports' : '✗ Fails one or more ports (worst-of-two)'}
+          {/* Worst-of-two verdict — only claim "both" when discharge data is present */}
+          <div className={`text-xs font-medium ${
+            !draftCheck.pass || (destDraftCheck != null && !destDraftCheck.pass)
+              ? 'text-red-500'
+              : destDraftCheck != null
+                ? 'text-emerald-600'
+                : 'text-ds-text-muted'
+          }`}>
+            {!draftCheck.pass || (destDraftCheck != null && !destDraftCheck.pass)
+              ? '✗ Fails one or more ports (worst-of-two)'
+              : destDraftCheck != null
+                ? '✓ Clears both ports'
+                : '✓ Load port clears · discharge: no data'}
           </div>
         </div>
       )}
