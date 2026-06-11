@@ -54,12 +54,6 @@ const TEST_JOB_ID = 'test-job-1';
 
 function mockFetchResponses() {
   global.fetch = jest.fn().mockImplementation((url: string) => {
-    if (String(url).includes('/api/market/benchmark')) {
-      return Promise.resolve({
-        ok: false,
-        json: async () => null,
-      } as Response);
-    }
     if (String(url).includes('/api/ai/draft-quote')) {
       return Promise.resolve({
         ok: true,
@@ -274,5 +268,17 @@ describe('QuoteTab — Generate Draft button (async job flow)', () => {
       const sentBody = JSON.parse((draftCall![1] as { body: string }).body);
       expect(sentBody.matchId).toBeUndefined();
     });
+  });
+
+  it('does not render a Benchmark section', () => {
+    mockFetchResponses();
+    renderWithToast(<QuoteTab cargoEmailId="email-001" />);
+    expect(screen.queryByText(/benchmark/i)).not.toBeInTheDocument();
+  });
+
+  it('does not render an Audit Trail section', () => {
+    mockFetchResponses();
+    renderWithToast(<QuoteTab cargoEmailId="email-001" />);
+    expect(screen.queryByText(/audit trail/i)).not.toBeInTheDocument();
   });
 });
