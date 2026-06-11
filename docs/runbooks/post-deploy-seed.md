@@ -42,21 +42,17 @@ ssh -i ~/.ssh/your_admin_key root@185.249.225.169 \
   "cd /root/quantika-demo && bash scripts/ops/post-deploy-seed.sh"
 ```
 
-## VPS integration — action required
+## VPS integration
 
-To run the seed automatically after each deploy, inline the seed call inside
-`/root/deploy-quantika-demo.sh` on `outreach-vps`, after the health check and
-before the final `exit 0`:
+The deploy script already runs idempotent seed guards (roi_metrics, fx_rates)
+and the served-DB migration after every successful deploy — no manual wiring
+needed.
 
-```bash
-# --- add after health check ---
-echo "[deploy] Running post-deploy seed guard..."
-(cd /root/quantika-demo && bash scripts/ops/post-deploy-seed.sh) \
-  || echo "[deploy] WARN: seed guard failed — check manually"
-```
-
-This edit must be made **directly on the VPS** — `/root/deploy-quantika-demo.sh`
-is not tracked in the repository.
+Since #940 the script IS tracked in the repository:
+`ops/scripts/deploy-quantika-demo.sh` is the canonical source, and the
+installed copy `/root/deploy-quantika-demo.sh` self-updates from `origin/main`
+on every run. **Do not hand-edit it on the VPS** — any direct edit is silently
+overwritten by the next deploy. Change it via PR instead.
 
 ## When to run manually
 

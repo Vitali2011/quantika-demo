@@ -14,6 +14,12 @@
 #   T4: health check fails after restart — instant swap-back rollback, exit 1.
 #   T5: / smoke fails (health 200 but pages broken) — rollback too, exit 1.
 #   T6: --rollback with .old artifacts present — instant swap-back, no rebuild.
+#   T7: mv of build .next into live FAILS mid-flip — previous artifacts are
+#       restored and the service restarted (review FINDING-001: must not exit
+#       leaving live dir without .next).
+#   T8: same for the node_modules mv (second swap step) — full inverse restore.
+#   T9: --rollback refuses .old artifacts from a stale generation
+#       (.rollback-sha mismatch) and falls back to rebuild (FINDING-002).
 #
 # Run: bash scripts/ops/tests/deploy-quantika-demo-unit.sh
 # All external commands (git/npm/npx/systemctl/curl/flock/sleep) are PATH-mocked;
@@ -99,6 +105,17 @@ EOF
 cat > "$MOCKBIN/flock" <<'EOF'
 #!/bin/bash
 exit 0
+EOF
+# mv passthrough with injectable failures for the two flip steps
+cat > "$MOCKBIN/mv" <<'EOF'
+#!/bin/bash
+if [ "${FAIL_MV_BUILD_NEXT:-0}" = "1" ]; then
+  case "$*" in *"/build/.next "*) echo "mv: injected .next failure" >&2; exit 1 ;; esac
+fi
+if [ "${FAIL_MV_BUILD_NM:-0}" = "1" ]; then
+  case "$*" in *"/build/node_modules "*) echo "mv: injected node_modules failure" >&2; exit 1 ;; esac
+fi
+exec /bin/mv "$@"
 EOF
 cat > "$MOCKBIN/sleep" <<'EOF'
 #!/bin/bash
@@ -204,6 +221,10 @@ grep -q 'curl.*localhost:3000/$' "$CMDLOG" \
   && pass "T1: / smoke-checked after restart" \
   || fail "T1: no smoke curl of / found"
 
+[[ "$(cat "$SANDBOX/repo/.next.old/.rollback-sha" 2>/dev/null)" == "prevsha1111111111111111111111111111111111" ]] \
+  && pass "T1: .old generation stamped with PREV_SHA (.rollback-sha)" \
+  || fail "T1: .rollback-sha marker missing or wrong"
+
 # ── T2: build failure → live untouched, no restart ──────────────────────────
 
 setup_dirs
@@ -279,6 +300,7 @@ setup_dirs
 mkdir -p "$SANDBOX/repo/.next.old" "$SANDBOX/repo/node_modules.old"
 echo "live-older" > "$SANDBOX/repo/.next.old/marker"
 echo "nm-older" > "$SANDBOX/repo/node_modules.old/marker"
+echo "rollbacktarget444444444444444444444444444" > "$SANDBOX/repo/.next.old/.rollback-sha"
 echo "rollbacktarget444444444444444444444444444" > "$SANDBOX/home/.last-deployed-sha-quantika-demo.bak"
 DEPLOY_ARG="--rollback" run_deploy
 
@@ -297,6 +319,66 @@ grep -q "npm run build" "$CMDLOG" \
 grep -q "git reset --hard rollbacktarget444444444444444444444444444" "$CMDLOG" \
   && pass "T6: --rollback reset live repo to backed-up SHA" \
   || fail "T6: --rollback did not git reset to backup SHA"
+
+# ── T7: mv of build .next fails mid-flip → restore + restart, never bare exit ─
+
+setup_dirs
+run_deploy FAIL_MV_BUILD_NEXT=1
+
+[[ $RC -eq 1 ]] \
+  && pass "T7: mid-flip .next mv failure exits 1 after restore" \
+  || fail "T7: expected rc=1, got rc=$RC"
+
+[[ "$(cat "$SANDBOX/repo/.next/marker" 2>/dev/null)" == "live-old" ]] \
+  && pass "T7: previous .next restored after failed flip" \
+  || fail "T7: live dir left without working .next (marker=$(cat "$SANDBOX/repo/.next/marker" 2>/dev/null))"
+
+grep -q "systemctl restart" "$CMDLOG" \
+  && pass "T7: service restarted after restore" \
+  || fail "T7: no restart after failed flip — server left on yanked files"
+
+grep -q "FLIP FAILED" "$SANDBOX/out.txt" \
+  && pass "T7: flip failure reported loudly" \
+  || fail "T7: no FLIP FAILED message in output"
+
+# ── T8: node_modules mv fails (second swap step) → full inverse restore ──────
+
+setup_dirs
+run_deploy FAIL_MV_BUILD_NM=1
+
+[[ $RC -eq 1 ]] \
+  && pass "T8: mid-flip node_modules mv failure exits 1 after restore" \
+  || fail "T8: expected rc=1, got rc=$RC"
+
+[[ "$(cat "$SANDBOX/repo/.next/marker" 2>/dev/null)" == "live-old" ]] \
+  && pass "T8: .next rolled back too (no new-.next/old-node_modules mismatch)" \
+  || fail "T8: .next left at new build while node_modules is old (marker=$(cat "$SANDBOX/repo/.next/marker" 2>/dev/null))"
+
+[[ "$(cat "$SANDBOX/repo/node_modules/marker" 2>/dev/null)" == "nm-old" ]] \
+  && pass "T8: node_modules restored" \
+  || fail "T8: node_modules wrong after failed flip"
+
+grep -q "systemctl restart" "$CMDLOG" \
+  && pass "T8: service restarted after restore" \
+  || fail "T8: no restart after failed flip"
+
+# ── T9: --rollback with stale-generation .old → rebuild, not blind swap ──────
+
+setup_dirs
+mkdir -p "$SANDBOX/repo/.next.old" "$SANDBOX/repo/node_modules.old"
+echo "live-older" > "$SANDBOX/repo/.next.old/marker"
+echo "nm-older" > "$SANDBOX/repo/node_modules.old/marker"
+echo "DIFFERENT-generation-sha-555555555555555" > "$SANDBOX/repo/.next.old/.rollback-sha"
+echo "rollbacktarget444444444444444444444444444" > "$SANDBOX/home/.last-deployed-sha-quantika-demo.bak"
+DEPLOY_ARG="--rollback" run_deploy
+
+grep -q "npm run build" "$CMDLOG" \
+  && pass "T9: stale .old generation → rebuild path taken" \
+  || fail "T9: stale .old swapped in blindly (no rebuild in CMDLOG)"
+
+[[ "$(cat "$SANDBOX/repo/.next/marker" 2>/dev/null)" != "live-older" ]] \
+  && pass "T9: stale .next.old NOT swapped in" \
+  || fail "T9: stale-generation .next.old ended up live"
 
 # ── Results ──────────────────────────────────────────────────────────────────
 

@@ -21,8 +21,10 @@
 #   immediately by systemctl restart. Old artifacts stay as .next.old /
 #   node_modules.old for instant no-rebuild rollback.
 #
-# Exit codes: 0 deploy OK · 1 deploy failed but rollback restored prod ·
-#             2 rollback also failed (manual intervention).
+# Exit codes: 0 deploy OK · 2 prod left broken (manual intervention needed) ·
+#             1 anything else — deploy refused or failed; read the log to see
+#             whether prod was left untouched (pre-flip failures: lock, fetch,
+#             npm ci, build, BUILD_ID) or restored by rollback (post-flip).
 set -uo pipefail
 
 REPO_DIR="${QD_REPO_DIR:-/root/quantika-demo}"
@@ -100,17 +102,52 @@ smoke_root() {
   return 1
 }
 
+# Move a saved $1.old back into place (current $1, if any, parked as $1.failed).
+# Returns 1 if there is no $1.old to restore.
+restore_artifact() {
+  [[ -d "$REPO_DIR/$1.old" ]] || return 1
+  rm -rf "$REPO_DIR/$1.failed"
+  if [[ -e "$REPO_DIR/$1" ]]; then
+    mv "$REPO_DIR/$1" "$REPO_DIR/$1.failed" || return 1
+  fi
+  mv "$REPO_DIR/$1.old" "$REPO_DIR/$1"
+}
+
 # Swap previously-saved .old artifacts back into the live dir (instant rollback).
-# Returns 1 if .old artifacts are missing (caller falls back to rebuild).
+# $1 (optional): SHA the .old generation must belong to — recorded at flip time
+# in .next.old/.rollback-sha. Guards --rollback against swapping in a stale
+# generation after a deploy that failed pre-flip (which rewrites SHA_BACKUP
+# without producing new .old artifacts). Returns 1 → caller rebuilds instead.
 swap_back_old() {
   [[ -d "$REPO_DIR/.next.old" && -d "$REPO_DIR/node_modules.old" ]] || return 1
+  if [[ -n "${1:-}" ]]; then
+    local gen
+    gen=$(cat "$REPO_DIR/.next.old/.rollback-sha" 2>/dev/null || echo "")
+    if [[ "$gen" != "$1" ]]; then
+      log ".old artifacts are generation '${gen:-unknown}', need $1 — rebuilding instead"
+      return 1
+    fi
+  fi
   log "instant rollback: swapping .next.old + node_modules.old back in"
-  rm -rf "$REPO_DIR/.next.failed" "$REPO_DIR/node_modules.failed"
-  mv "$REPO_DIR/.next" "$REPO_DIR/.next.failed" 2>/dev/null || true
-  mv "$REPO_DIR/.next.old" "$REPO_DIR/.next" || fail "swap-back .next failed"
-  mv "$REPO_DIR/node_modules" "$REPO_DIR/node_modules.failed" 2>/dev/null || true
-  mv "$REPO_DIR/node_modules.old" "$REPO_DIR/node_modules" || fail "swap-back node_modules failed"
+  restore_artifact .next || fail "swap-back .next failed"
+  restore_artifact node_modules || fail "swap-back node_modules failed"
   return 0
+}
+
+# A mv failed mid-flip: the live dir may be missing artifacts RIGHT NOW.
+# Restore whatever .old exists, restart, and report honestly — exiting without
+# a restore here would leave prod 500ing indefinitely (#940 review FINDING-001).
+flip_failed() {
+  log "FLIP FAILED ($1) — restoring previous artifacts immediately"
+  git reset --hard "$PREV_SHA" || log "WARN: git reset to PREV_SHA failed"
+  restore_artifact .next || log "WARN: no .next.old to restore"
+  restore_artifact node_modules || log "WARN: no node_modules.old to restore"
+  if restart_and_health; then
+    log "restore OK — prod back on $PREV_SHA after failed flip"
+    exit 1
+  fi
+  log "RESTORE FAILED after mid-flip error — prod broken, MANUAL INTERVENTION!"
+  exit 2
 }
 
 # ── Manual rollback path ─────────────────────────────────────────────────────
@@ -118,12 +155,13 @@ if [[ "$ARG1" == "--rollback" ]]; then
   TARGET_SHA=$(cat "$SHA_BACKUP" 2>/dev/null) || fail "no SHA_BACKUP found at $SHA_BACKUP"
   log "ROLLBACK to $TARGET_SHA"
   git reset --hard "$TARGET_SHA" || fail "rollback git reset failed"
-  if ! swap_back_old; then
+  if ! swap_back_old "$TARGET_SHA"; then
     log "no .old artifacts — rebuilding previous version in place (slow path)"
     npm ci || log "WARN: npm ci on rollback failed (continuing)"
     NODE_OPTIONS='--max-old-space-size=8192' npm run build || fail "rollback build failed"
   fi
   if restart_and_health; then
+    echo "$TARGET_SHA" > "$SHA_FILE"
     log "rollback OK — /health=200 on $TARGET_SHA"
     exit 1
   else
@@ -136,7 +174,7 @@ fi
 GITHUB_SHA="$ARG1"
 log "deploy SHA=$GITHUB_SHA"
 
-PREV_SHA=$(git rev-parse HEAD)
+PREV_SHA=$(git rev-parse HEAD) && [[ -n "$PREV_SHA" ]] || fail "cannot resolve current HEAD"
 echo "$PREV_SHA" > "$SHA_BACKUP"
 log "PREV_SHA=$PREV_SHA saved to $SHA_BACKUP"
 
@@ -171,9 +209,11 @@ git reset --hard "$TARGET_SHA" || fail "live git reset failed"
 log "flip: swapping .next + node_modules..."
 rm -rf "$REPO_DIR/.next.old" "$REPO_DIR/node_modules.old" "$REPO_DIR/.next.failed" "$REPO_DIR/node_modules.failed"
 mv "$REPO_DIR/.next" "$REPO_DIR/.next.old" 2>/dev/null || true
-mv "$BUILD_DIR/.next" "$REPO_DIR/.next" || fail "swap .next failed — manual restore: mv $REPO_DIR/.next.old $REPO_DIR/.next"
+# Record which generation .old belongs to — validated by --rollback (stale-gen guard).
+echo "$PREV_SHA" > "$REPO_DIR/.next.old/.rollback-sha" 2>/dev/null || true
+mv "$BUILD_DIR/.next" "$REPO_DIR/.next" || flip_failed "mv build .next into live"
 mv "$REPO_DIR/node_modules" "$REPO_DIR/node_modules.old" 2>/dev/null || true
-mv "$BUILD_DIR/node_modules" "$REPO_DIR/node_modules" || fail "swap node_modules failed — manual restore: mv $REPO_DIR/node_modules.old $REPO_DIR/node_modules; mv $REPO_DIR/.next.old $REPO_DIR/.next"
+mv "$BUILD_DIR/node_modules" "$REPO_DIR/node_modules" || flip_failed "mv build node_modules into live"
 
 log "restart + health + smoke..."
 if ! { restart_and_health && smoke_root; }; then

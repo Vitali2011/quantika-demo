@@ -48,7 +48,10 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # 30: first staged-build run bootstraps a build-dir clone + cold npm ci
+    # (~11-13 min), and the rollback-rebuild fallback path can exceed 15 —
+    # an SSH cut mid-rollback is the worst possible moment to be killed.
+    timeout-minutes: 30
     steps:
       - name: Setup SSH key + known_hosts
         run: |
@@ -72,8 +75,9 @@ jobs:
       # health check, before exit). See docs/runbooks/post-deploy-seed.md for manual run
       # instructions and the VPS integration note.
       #
-      # Post-deploy verify: DB checks (schema migrations, fx_rates, env vars) also run
-      # inside /root/deploy-quantika-demo.sh via scripts/ops/verify-deploy.sh.
+      # Post-deploy verify: DB checks (schema migrations, fx_rates, env vars) are
+      # available as scripts/ops/verify-deploy.sh — run manually on the VPS (see
+      # docs/runbooks/post-deploy-seed.md); the deploy script does NOT invoke it.
       # HTTP checks (4-5) run here from CI against the public URL.
       - name: Post-deploy verify (HTTP health)
         env:

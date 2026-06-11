@@ -2,10 +2,17 @@
 
 ## VPS Deploy Notes
 
-- `NEXT_PUBLIC_*` переменные запекаются в бандл при `npm run build` (уже включён в deploy-vps.sh).
+- Прод (outreach-vps 185.249.225.169) — **systemd unit `quantika-demo`**
+  (`systemctl restart/status quantika-demo`, `journalctl -u quantika-demo`).
+  pm2 на проде НЕТ; legacy `scripts/deploy-vps.sh` (pm2) — не прод-путь.
+- Деплой: GH workflow `deploy.yml` → `/root/deploy-quantika-demo.sh` —
+  self-updating копия канонического `ops/scripts/deploy-quantika-demo.sh`
+  (staged build в `/root/quantika-demo-build` + атомный swap; см. #940).
+  Менять только через PR — ручные правки на VPS затираются self-update'ом.
+- `NEXT_PUBLIC_*` переменные запекаются в бандл при `npm run build`.
   Изменение `.env.local` без rebuild не обновит клиентские флаги.
-- После изменения `.env.local` на VPS: `pm2 restart quantika-demo --update-env`
-  (НЕ `pm2 reload` — он не перечитывает env).
+- После изменения `.env.local` на проде: `systemctl restart quantika-demo`
+  (EnvironmentFile перечитывается на старте сервиса).
 - Новые страницы дают «client reference manifest does not exist» до полного `npm run build`.
 
 ## Доступные скиллы (quantika-specific)
