@@ -33,6 +33,7 @@ export interface StoredMatch {
   worksheet_json?: string | null;
   consumption_estimated?: number | null;
   ballast_distance_nm?: number | null;
+  breakeven_tce_usd_per_day?: number | null;
   /** Per-cargo rank by fit_percent desc (present only when listMatches called with topPerCargo). */
   cargo_rank?: number;
 }
@@ -64,6 +65,7 @@ export interface CreateMatchInput {
   worksheet_json?: string | null;
   consumption_estimated?: number | null;
   ballast_distance_nm?: number | null;
+  breakeven_tce_usd_per_day?: number | null;
 }
 
 export interface ListMatchesOptions {
@@ -136,6 +138,11 @@ function hasBallastDistanceColumn(db: Database.Database): boolean {
   return cols.some((c) => c.name === 'ballast_distance_nm');
 }
 
+function hasBreakevenColumn(db: Database.Database): boolean {
+  const cols = db.prepare(`PRAGMA table_info(matches)`).all() as Array<{ name: string }>;
+  return cols.some((c) => c.name === 'breakeven_tce_usd_per_day');
+}
+
 export function createMatch(db: Database.Database, input: CreateMatchInput): StoredMatch {
   const now = Date.now();
   const status: MatchStatus = input.status ?? 'shortlist';
@@ -173,6 +180,9 @@ export function createMatch(db: Database.Database, input: CreateMatchInput): Sto
     // Ballast distance column (migration 047) — conditional for same reason.
     const withBallast = hasBallastDistanceColumn(db);
     const ballast_distance_nm = input.ballast_distance_nm ?? null;
+    // Breakeven floor column (migration 050) — conditional for same reason.
+    const withBreakeven = hasBreakevenColumn(db);
+    const breakeven_tce_usd_per_day = input.breakeven_tce_usd_per_day ?? null;
 
     const stmt = db.prepare(
       `INSERT OR IGNORE INTO matches
@@ -180,8 +190,8 @@ export function createMatch(db: Database.Database, input: CreateMatchInput): Sto
           reason_structured, cargo_type, load_port, discharge_port,
           laycan_start, laycan_end, vessel_dwt, tce_usd_per_day, distance_nm,
           freight_rate_usd_per_mt, freight_rate_source, vessel_name, cargo_ref,
-          fit_percent, fit_breakdown${withIdx ? ', cargo_item_index, vessel_item_index' : ''}${withWorksheet ? ', worksheet_json' : ''}${withConsEst ? ', consumption_estimated' : ''}${withBallast ? ', ballast_distance_nm' : ''})
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?${withIdx ? ', ?, ?' : ''}${withWorksheet ? ', ?' : ''}${withConsEst ? ', ?' : ''}${withBallast ? ', ?' : ''})`
+          fit_percent, fit_breakdown${withIdx ? ', cargo_item_index, vessel_item_index' : ''}${withWorksheet ? ', worksheet_json' : ''}${withConsEst ? ', consumption_estimated' : ''}${withBallast ? ', ballast_distance_nm' : ''}${withBreakeven ? ', breakeven_tce_usd_per_day' : ''})
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?${withIdx ? ', ?, ?' : ''}${withWorksheet ? ', ?' : ''}${withConsEst ? ', ?' : ''}${withBallast ? ', ?' : ''}${withBreakeven ? ', ?' : ''})`
     );
     const args: Array<string | number | null> = [
       input.cargo_id,
@@ -212,6 +222,7 @@ export function createMatch(db: Database.Database, input: CreateMatchInput): Sto
     if (withWorksheet) args.push(worksheet_json);
     if (withConsEst) args.push(consumption_estimated);
     if (withBallast) args.push(ballast_distance_nm);
+    if (withBreakeven) args.push(breakeven_tce_usd_per_day);
     result = stmt.run(...args);
   } else if (hasVesselNameColumns(db)) {
     const reason_structured = input.reason_structured ?? null;

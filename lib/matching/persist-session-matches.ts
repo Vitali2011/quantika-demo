@@ -6,6 +6,7 @@ import { parseLaycan } from '@/lib/sailing/date-parsing';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 import { computeStoredMatchEconomics } from '@/lib/matching/stored-match-economics';
 import { deriveBucketReason } from '@/lib/matching/bucket-reason';
+import { breakevenTceByDwt } from '@/lib/economics/breakeven-thresholds';
 import { calculateReadinessGap, detectSpot } from '@/lib/sailing/readiness-gap';
 import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
 import { scoreEconomics } from '@/lib/sailing/fit-breakdown';
@@ -177,6 +178,7 @@ export function persistSessionMatches(
       worksheet_json: worksheetJson,
       consumption_estimated,
       ballast_distance_nm: eco.ballast_distance_nm ?? null,
+      breakeven_tce_usd_per_day: vesselDwt ? breakevenTceByDwt(vesselDwt) : null,
     });
   }
 }

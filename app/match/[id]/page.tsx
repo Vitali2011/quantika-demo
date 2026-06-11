@@ -121,6 +121,7 @@ export default async function MatchDetailPage({ params }: Props) {
     hasSessionMatch: !!sessionMatch,
     fitPercent: storedMatch.fit_percent ?? null,
     fitBreakdown: storedMatch.fit_breakdown ?? null,
+    bucketReason: worksheet?.bucketReason,
   };
 
   // Ballast reposition distance: open position → load port (nm).
@@ -297,6 +298,7 @@ export default async function MatchDetailPage({ params }: Props) {
                   cargoEmailBody={cargoEmail?.body ?? null}
                   vesselEmailBody={vesselEmail?.body ?? null}
                   payoutCondition={cargo?.payoutCondition ?? null}
+                  storedBreakevenTce={storedMatch.breakeven_tce_usd_per_day}
                 />
 
                 {cargo && cargoEmail && (
