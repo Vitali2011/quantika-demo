@@ -18,3 +18,12 @@ test('unknown source → no winner highlighted, no crash', () => {
   fireEvent.click(screen.getByTestId('freight-waterfall-toggle'));
   expect(screen.queryByTestId('freight-tier-baltic')).toHaveAttribute('data-winner', 'false');
 });
+
+test('source=custom (unknown string) → no tier highlighted, no crash', () => {
+  render(<FreightWaterfall source="custom" rateUsdPerMt={10} />);
+  fireEvent.click(screen.getByTestId('freight-waterfall-toggle'));
+  expect(screen.getByTestId('freight-tier-manual')).toHaveAttribute('data-winner', 'false');
+  expect(screen.getByTestId('freight-tier-parsed')).toHaveAttribute('data-winner', 'false');
+  expect(screen.getByTestId('freight-tier-baltic')).toHaveAttribute('data-winner', 'false');
+  expect(screen.getByTestId('freight-tier-estimated')).toHaveAttribute('data-winner', 'false');
+});

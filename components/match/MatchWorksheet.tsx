@@ -2,6 +2,8 @@ import type { MatchWorksheet as MatchWorksheetType } from '@/lib/types';
 import React from 'react';
 import { DraftCalcBreakdown } from './DraftCalcBreakdown';
 import { AllChecksAccordion } from './AllChecksAccordion';
+import { ReadinessDisclosure } from './ReadinessDisclosure';
+import { ImsbcDisclosure } from './ImsbcDisclosure';
 import { getPortMaster } from '@/lib/sailing/port-master';
 
 interface Props {
@@ -60,6 +62,7 @@ export function MatchWorksheet({ worksheet }: Props) {
       verdict: r.verdict !== 'unknown'
         ? `${readinessLabel(r.verdict)}${r.gapDays != null ? ` (${r.gapDays}d gap)` : ''}`
         : '— Unknown timing',
+      detail: <ReadinessDisclosure readiness={r} />,
     },
     {
       label: '📍 Where / Transit',
@@ -175,6 +178,7 @@ export function MatchWorksheet({ worksheet }: Props) {
       {hf && (
         <div className="px-3 pb-3 pt-1">
           <AllChecksAccordion hardFilters={hf} />
+          <ImsbcDisclosure imsbc={hf.imsbc} />
         </div>
       )}
     </div>

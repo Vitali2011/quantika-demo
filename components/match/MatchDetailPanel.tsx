@@ -8,6 +8,7 @@ import { csrfFetch } from '@/lib/csrf-client';
 import { CounterModal } from './CounterModal';
 import { BucketReasonCard } from './BucketReasonCard';
 import type { BucketReason } from '@/lib/matching/bucket-reason';
+import { UtilisationChartererDisclosure } from './UtilisationChartererDisclosure';
 
 export interface MatchDetailPanelProps {
   matchDbId: number;
@@ -238,6 +239,9 @@ function PanelContent({
           </Card>
         );
       })()}
+
+      {/* Utilisation & charterer detail */}
+      <UtilisationChartererDisclosure fitBreakdown={fitBreakdown} />
     </div>
   );
 }
