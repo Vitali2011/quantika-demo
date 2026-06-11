@@ -31,6 +31,7 @@ import {
   buildMatchEconomics,
   deriveEtsCoverage,
 } from '@/lib/matching/tce-calculator';
+import { DEFAULT_BUNKER_USD_PER_MT } from '@/lib/constants';
 
 describe('parseLeadingNumber', () => {
   it('parses "12.5 knots"', () => {
@@ -132,13 +133,13 @@ describe('parseConsumption', () => {
     const goodCons = parseConsumption('Ballast: IFO 180 M/E 3.7MT/D');
     // Parse defense: extract the real MT/D figure, not the fuel-grade "180".
     expect(goodCons).toBe(3.7);
-    const goodTce = computeEstimatedTce(freight, 3000, 28000, 25000, 12, goodCons);
+    const goodTce = computeEstimatedTce(freight, 3000, 28000, 25000, 12, goodCons, undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT);
     expect(goodTce.tce_usd_per_day).toBeGreaterThan(0);
     // Downstream defense (economics-overhaul step 1): even if the grade 180 leaked through,
     // resolveConsMtPerDay now clamps it to the DWT-class estimate (180 > class × 1.8), so it
     // no longer drives an extreme-negative TCE. The real 3.7 still beats the clamped value
     // (lower burn → higher TCE), but the divergence is bounded, not catastrophic.
-    const leakedTce = computeEstimatedTce(freight, 3000, 28000, 25000, 12, 180);
+    const leakedTce = computeEstimatedTce(freight, 3000, 28000, 25000, 12, 180, undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT);
     expect(goodTce.tce_usd_per_day).toBeGreaterThan(leakedTce.tce_usd_per_day);
   });
 });
@@ -203,37 +204,37 @@ describe('estimateFreightRate', () => {
 describe('computeEstimatedTce', () => {
   it('returns a finite tce_usd_per_day', () => {
     const est = estimateFreightRate('BULK', 3000, 50000);
-    const result = computeEstimatedTce(est, 3000, 50000, 45000, 12, 25);
+    const result = computeEstimatedTce(est, 3000, 50000, 45000, 12, 25, undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT);
     expect(Number.isFinite(result.tce_usd_per_day)).toBe(true);
   });
 
   it('passes through manual source', () => {
     const manual = { rate: 30, source: 'manual' as const, confidence: 1.0 };
-    const result = computeEstimatedTce(manual, 3000, 50000, 45000);
+    const result = computeEstimatedTce(manual, 3000, 50000, 45000, undefined, undefined, undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT);
     expect(result.freight_rate_source).toBe('manual');
     expect(result.freight_rate_usd_per_mt).toBe(30);
   });
 
   it('passes through waterfall sources (parsed / baltic) unchanged (Wave #7)', () => {
-    const parsed = computeEstimatedTce({ rate: 18, source: 'parsed', confidence: 0.9 }, 3000, 50000, 45000);
+    const parsed = computeEstimatedTce({ rate: 18, source: 'parsed', confidence: 0.9 }, 3000, 50000, 45000, undefined, undefined, undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT);
     expect(parsed.freight_rate_source).toBe('parsed');
     expect(parsed.freight_rate_usd_per_mt).toBe(18);
 
-    const baltic = computeEstimatedTce({ rate: 3.6, source: 'baltic', confidence: 0.5 }, 3000, 50000, 45000);
+    const baltic = computeEstimatedTce({ rate: 3.6, source: 'baltic', confidence: 0.5 }, 3000, 50000, 45000, undefined, undefined, undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT);
     expect(baltic.freight_rate_source).toBe('baltic');
     expect(baltic.freight_rate_usd_per_mt).toBe(3.6);
   });
 
   it('zero distance uses 10-day fallback and still returns finite TCE', () => {
     const est = estimateFreightRate('BULK', 0, 50000);
-    const result = computeEstimatedTce(est, 0, 50000, 45000);
+    const result = computeEstimatedTce(est, 0, 50000, 45000, undefined, undefined, undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT);
     expect(Number.isFinite(result.tce_usd_per_day)).toBe(true);
   });
 
   it('zero quantity uses conservative dwt*0.65 fallback — lower freight than stated 45k qty', () => {
     const est = estimateFreightRate('BULK', 3000, 50000);
-    const withZeroQty = computeEstimatedTce(est, 3000, 50000, 0);
-    const withFullQty = computeEstimatedTce(est, 3000, 50000, 45000);
+    const withZeroQty = computeEstimatedTce(est, 3000, 50000, 0, undefined, undefined, undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT);
+    const withFullQty = computeEstimatedTce(est, 3000, 50000, 45000, undefined, undefined, undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT);
     // Finite result with conservative fallback (50000 * 0.65 = 32500 < 45000).
     expect(Number.isFinite(withZeroQty.tce_usd_per_day)).toBe(true);
     // Conservative load → lower TCE than explicitly stated 45k cargo.
@@ -245,7 +246,7 @@ describe('computeEstimatedTce', () => {
     const est = estimateFreightRate('BULK', 3000, 50000);
     // Round-trip: ladenDays(3000nm,12kts)=10.42 × 2 + 2portDays = 22.83 days.
     // Laden-only would give 10.42 days → $/day ~2.2× higher (~$97k).
-    const roundTrip = computeEstimatedTce(est, 3000, 50000, 45000, 12, 25);
+    const roundTrip = computeEstimatedTce(est, 3000, 50000, 45000, 12, 25, undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT);
     // Verify round-trip TCE is substantially below what laden-only would give.
     // Laden-only net/$97k → round-trip net/22.83d = ~$36k — below the $50k threshold.
     expect(roundTrip.tce_usd_per_day).toBeLessThan(50_000);
@@ -255,7 +256,7 @@ describe('computeEstimatedTce', () => {
   // PI2 behavioral: SEAGULL 71-like case — 8.1k DWT small handysize, short voyage (#782 part b).
   it('SEAGULL 71 scenario — 8.1k DWT, 700nm laden — TCE in plausible handysize range', () => {
     const freight = estimateFreightRate('GRAIN', 700, 8100);
-    const result = computeEstimatedTce(freight, 700, 8100, 0, 12, 8);
+    const result = computeEstimatedTce(freight, 700, 8100, 0, 12, 8, undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT);
     // With round-trip duration (2×700nm + 2 port days) and conservative weight (8100×0.65=5265mt),
     // TCE must be below $20k/day (old laden-only was ~$53k, clearly wrong for a small handysize).
     expect(result.tce_usd_per_day).toBeLessThan(20_000);
@@ -266,9 +267,27 @@ describe('computeEstimatedTce', () => {
   it('higher freight rate → higher TCE', () => {
     const low = { rate: 10, source: 'estimated' as const, confidence: 0.6 };
     const high = { rate: 40, source: 'estimated' as const, confidence: 0.6 };
-    const tce_low = computeEstimatedTce(low, 3000, 50000, 45000).tce_usd_per_day;
-    const tce_high = computeEstimatedTce(high, 3000, 50000, 45000).tce_usd_per_day;
+    const tce_low = computeEstimatedTce(low, 3000, 50000, 45000, undefined, undefined, undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT).tce_usd_per_day;
+    const tce_high = computeEstimatedTce(high, 3000, 50000, 45000, undefined, undefined, undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT).tce_usd_per_day;
     expect(tce_high).toBeGreaterThan(tce_low);
+  });
+
+  // Stage 9 behavioral: bunkerPriceUsdPerMt is now required — undefined throws, not silently defaults.
+  it('Stage 9: throws when bunkerPriceUsdPerMt is undefined — no silent fallback', () => {
+    const est = estimateFreightRate('BULK', 3000, 50000);
+    expect(() => {
+      computeEstimatedTce(est, 3000, 50000, 45000, undefined, undefined, undefined, undefined, undefined, undefined);
+    }).toThrow('computeEstimatedTce: bunkerPriceUsdPerMt is required since Stage 9');
+  });
+
+  // Stage 9 behavioral: vessel value now uses estimateVesselValueUsd(dwt), not hardcoded 22M.
+  it('Stage 9: vessel value uses DWT-based estimate (not 22M hardcode) — non-HRA TCE unchanged', () => {
+    const est = estimateFreightRate('BULK', 3000, 50000);
+    // Rotterdam→Hamburg is non-HRA: war-risk = 0 regardless of vessel value.
+    // TCE must be finite and equal whether we pass 22M or estimateVesselValueUsd(50000)=13M.
+    const result = computeEstimatedTce(est, 3000, 50000, 45000, 12, 25, undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT);
+    expect(Number.isFinite(result.tce_usd_per_day)).toBe(true);
+    expect(result.tce_usd_per_day).toBeGreaterThan(0);
   });
 });
 
@@ -305,7 +324,7 @@ describe('buildMatchEconomics', () => {
     const ets = deriveEtsCoverage(base.loadPort, base.dischargePort);
     const tce = computeEstimatedTce(
       freight, base.distanceNm, base.vesselDwt, base.quantityMt, base.speedKts, base.consumptionMt,
-      undefined, undefined, undefined, undefined,
+      undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT,
       ets.euLegPercent, ets.originEu, ets.destEu,
     );
     // Per-day TCE must match the value compute-matches.ts persists to the DB column.
@@ -348,9 +367,9 @@ describe('buildMatchEconomics', () => {
     expect(withDa!.tceUsdPerDay!).toBeLessThan(noDa!.tceUsdPerDay!);
   });
 
-  // Stage 8 behavioral: buildMatchEconomics delegates directly to computeTce —
-  // no computeEstimatedTce deprecation warning emitted when bunker not supplied.
-  it('Stage 8: no deprecation warn when bunkerPriceUsdPerMt omitted — direct computeTce path', () => {
+  // Stage 9: buildMatchEconomics uses DEFAULT_BUNKER when omitted; no deprecation warn emitted
+  // (warn was removed in Stage 9 — computeEstimatedTce now throws on undefined bunker).
+  it('Stage 9: buildMatchEconomics with omitted bunker produces finite TCE, no console.warn', () => {
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const econ = buildMatchEconomics({
       cargoType: 'BULK',
@@ -362,14 +381,11 @@ describe('buildMatchEconomics', () => {
       loadPort: 'Rotterdam',
       dischargePort: 'Singapore',
       calculatedAt: '2026-06-11T00:00:00.000Z',
-      // bunkerPriceUsdPerMt omitted → DEFAULT_BUNKER_USD_PER_MT applied without warning
     });
     expect(econ).not.toBeNull();
     expect(Number.isFinite(econ!.tceUsdPerDay!)).toBe(true);
     expect(econ!.tceUsdPerDay).toBeGreaterThan(0);
-    expect(warnSpy).not.toHaveBeenCalledWith(
-      expect.stringContaining('computeEstimatedTce: bunkerPriceUsdPerMt not supplied'),
-    );
+    expect(warnSpy).not.toHaveBeenCalled();
     warnSpy.mockRestore();
   });
 });

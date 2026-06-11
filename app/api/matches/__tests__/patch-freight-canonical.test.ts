@@ -22,6 +22,7 @@ import migration036 from '@/lib/migrations/036-matches-freight-rate';
 import migration042 from '@/lib/migrations/042-matches-fit';
 import migration044 from '@/lib/migrations/044-matches-item-index';
 import { computeEstimatedTce } from '@/lib/matching/tce-calculator';
+import { DEFAULT_BUNKER_USD_PER_MT } from '@/lib/constants';
 import { computeStoredMatchEconomics } from '@/lib/matching/stored-match-economics';
 import type { ParsedCargo, ParsedVessel } from '@/lib/types';
 import { requireSession } from '@/lib/session';
@@ -204,6 +205,7 @@ describe('WAVE 3 — PATCH uses canonical computeStoredMatchEconomics', () => {
       STORED_DISTANCE,
       VESSEL_DWT,
       0,
+      undefined, undefined, undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT,
     ).tce_usd_per_day;
     expect(body.tce_usd_per_day).not.toBeCloseTo(oldTce, 0);
   });
@@ -224,6 +226,7 @@ describe('WAVE 3 — PATCH uses canonical computeStoredMatchEconomics', () => {
       STORED_DISTANCE,
       VESSEL_DWT,
       0,
+      undefined, undefined, undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT,
     ).tce_usd_per_day;
     expect(body.tce_usd_per_day).not.toBeCloseTo(oldEstTce, 0);
   });

@@ -18,6 +18,7 @@ import { parseLaycan, parseVesselOpenDate } from '@/lib/sailing/date-parsing';
 import { computeFitBreakdown } from '@/lib/sailing/fit-breakdown';
 import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
 import { computeEstimatedTce, estimateFreightRate, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
+import { DEFAULT_BUNKER_USD_PER_MT } from '@/lib/constants';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 import { shiftBodyDates, shiftMonthYear, shiftIsoDate } from './date-utils';
 import type { MatchReadiness } from '@/lib/types';
@@ -786,6 +787,7 @@ export async function build(opts: BuildOptions): Promise<void> {
             // Compute TCE
             const qty = resolveCargoWeight(cargo as never) ?? 0;
             const freightRate = estimateFreightRate(unwrapStr(cargo.cargoType), distanceNm ?? 0, v.dwt);
+            // TODO: wire live bunker price (NLRTM VLSFO) when DB row is available in seed context.
             const tceResult = computeEstimatedTce(
               freightRate,
               distanceNm ?? 0,
@@ -793,6 +795,7 @@ export async function build(opts: BuildOptions): Promise<void> {
               qty,
               speedKn,
               parseConsumption(v.vesselItem.consumption),
+              undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT,
             );
 
             best.set(key, {
