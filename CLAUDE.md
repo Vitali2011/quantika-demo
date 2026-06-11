@@ -23,6 +23,27 @@
   ISR или Server Component кешированием.
 - `/taste-skill` — minimalist editorial preset. **Использовать ТОЛЬКО для marketing / landing страниц** (/about, /pricing). Для data-dense pages (matches, compare-routes, dashboard) использовать `/frontend-design`. Подробнее: SKILL.md «Scope Override».
 
+## Свежие доки вместо памяти модели (анти-«устаревший API»)
+
+Проект на **Next.js 16 + React 19** — новее катоффа знаний модели. Память модели
+про Next.js 14/15 здесь не источник истины.
+
+Перед написанием кода, который трогает нестабильные/новые API — **сверься со свежей
+документацией через WebFetch** (не пиши по памяти):
+
+- App Router, route handlers, server actions, middleware → `https://nextjs.org/docs/app`
+- `'use cache'`, PPR, ISR, кеширование → `https://nextjs.org/docs/app/building-your-application/caching`
+- React 19 (use, Actions, ref-as-prop) → `https://react.dev/reference/react`
+- shadcn/ui компоненты → `https://ui.shadcn.com/docs/components/<component>`
+
+Правило срабатывания: если API появился/менялся в Next 15+ или React 19, или есть
+малейшее сомнение в сигнатуре — сначала WebFetch нужной страницы доков, потом код.
+Для стабильных API (fs, fetch, обычный JSX) — не нужно, не трать контекст.
+
+Субагентам в планах (writing-plans / subagent-driven-development) включать строку:
+«Before using Next.js/React APIs introduced or changed after v14 — WebFetch the
+relevant nextjs.org/react.dev docs page first».
+
 ## Path-scoped rules
 
 Перед редактированием модулей с историей регрессий — прочитать соответствующий файл:
