@@ -68,6 +68,14 @@ describe('CalculationWaterfall — DA DataQualityBadge (W6a)', () => {
     const badge = screen.getByTestId('war-risk-rate-badge');
     expect(badge).toBeInTheDocument();
   });
+
+  it('W6a: no war-risk stale badge when war_risk_rate_date is fresh (within 90 days)', () => {
+    // Use a date clearly within 90 days of test execution (2026-04-12 = ~60 days before 2026-06-11)
+    const breakdown = makeBreakdown({ war_risk_usd: 5000, war_risk_rate_date: '2026-04-12' });
+    render(<CalculationWaterfall breakdown={breakdown} />);
+    // tier='live' → badge suppressed (CalculationWaterfall only shows badge when tier !== 'live')
+    expect(screen.queryByTestId('war-risk-rate-badge')).toBeNull();
+  });
 });
 
 describe('CalculationWaterfall — qafix M1/M2/L1', () => {
