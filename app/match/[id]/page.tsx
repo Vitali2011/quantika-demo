@@ -121,6 +121,7 @@ export default async function MatchDetailPage({ params }: Props) {
     hasSessionMatch: !!sessionMatch,
     fitPercent: storedMatch.fit_percent ?? null,
     fitBreakdown: storedMatch.fit_breakdown ?? null,
+    bucketReason: worksheet?.bucketReason,
   };
 
   // Ballast reposition distance: open position → load port (nm).
