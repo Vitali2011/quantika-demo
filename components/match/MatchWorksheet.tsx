@@ -1,4 +1,6 @@
 import type { MatchWorksheet as MatchWorksheetType } from '@/lib/types';
+import React from 'react';
+import { DraftCalcBreakdown } from './DraftCalcBreakdown';
 
 interface Props {
   worksheet: MatchWorksheetType | null;
@@ -48,7 +50,7 @@ export function MatchWorksheet({ worksheet }: Props) {
     return parts.length > 0 ? parts.join(' → ') : '—';
   })();
 
-  const rows: Array<{ label: string; vessel: string; cargoPort: string; verdict: string }> = [
+  const rows: Array<{ label: string; vessel: string; cargoPort: string; verdict: string; detail?: React.ReactNode }> = [
     {
       label: '⏱ Time',
       vessel: [r.openDate ? `free ${r.openDate}` : null, r.openPosition ? `@ ${r.openPosition}` : null].filter(Boolean).join(' ') || '—',
@@ -103,6 +105,17 @@ export function MatchWorksheet({ worksheet }: Props) {
       vessel: v.draftMax != null ? `${v.draftMax} m` : '—',
       cargoPort: hf.draft.reason ? hf.draft.reason : '—',
       verdict: verdictBadge(hf.draft.pass, hf.draft.reason),
+      detail: (
+        <DraftCalcBreakdown
+          loadPort={c.loadPort}
+          dischargePort={c.dischargePort}
+          draftCheck={hf.draft}
+          destDraftCheck={hf.destDraft}
+          dwtSummer={v.dwtSummer}
+          weightMt={c.weightMtEffective ?? c.weightMt}
+          statedMaxDraftM={v.draftMax}
+        />
+      ),
     },
     {
       label: '🛡 Quality',
@@ -137,12 +150,21 @@ export function MatchWorksheet({ worksheet }: Props) {
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={row.label} className="border-t border-ds-border hover:bg-ds-bg/50">
-              <td className="py-2 px-3 font-medium text-ds-text-muted whitespace-nowrap">{row.label}</td>
-              <td className="py-2 px-3 text-ds-text">{row.vessel}</td>
-              <td className="py-2 px-3 text-ds-text">{row.cargoPort}</td>
-              <td className="py-2 px-3 text-ds-text">{row.verdict}</td>
-            </tr>
+            <React.Fragment key={row.label}>
+              <tr className="border-t border-ds-border hover:bg-ds-bg/50">
+                <td className="py-2 px-3 font-medium text-ds-text-muted whitespace-nowrap">{row.label}</td>
+                <td className="py-2 px-3 text-ds-text">{row.vessel}</td>
+                <td className="py-2 px-3 text-ds-text">{row.cargoPort}</td>
+                <td className="py-2 px-3 text-ds-text">{row.verdict}</td>
+              </tr>
+              {row.detail && (
+                <tr className="border-t border-ds-border/40 bg-ds-bg/30">
+                  <td colSpan={4} className="px-3 pb-2">
+                    {row.detail}
+                  </td>
+                </tr>
+              )}
+            </React.Fragment>
           ))}
         </tbody>
       </table>

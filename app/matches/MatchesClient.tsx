@@ -16,6 +16,8 @@ import { freightBadge, FREIGHT_BADGE_CLASSES } from '@/lib/matching/freight-badg
 import { useDemoNow } from '@/lib/clock-client';
 import { fitDisplay } from '@/lib/matching/fit-display';
 import { effectiveScore } from '@/lib/utils/effective-score';
+import { DraftCalcBreakdown } from '@/components/match/DraftCalcBreakdown';
+import type { MatchWorksheet } from '@/lib/types';
 
 interface Props {
   initialMatches: (StoredMatch & { laycan_display?: string | null })[];
@@ -828,6 +830,8 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                         let fb: { components: Array<{ factor: string; label: string; weight: number; score: number; rationale: string }> } | null = null;
                         try { fb = JSON.parse(match.fit_breakdown as string); } catch { fb = null; }
                         if (!fb || !Array.isArray(fb.components)) return null;
+                        let ws: MatchWorksheet | null = null;
+                        try { ws = match.worksheet_json ? JSON.parse(match.worksheet_json) as MatchWorksheet : null; } catch { ws = null; }
                         return (
                           <div className="mt-2 space-y-2 border-t pt-2">
                             <h4 className="text-xs font-semibold text-emerald-700">Fit Breakdown</h4>
@@ -847,6 +851,17 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                                 </div>
                                 {c.rationale && (
                                   <p className="text-xs text-gray-500">{c.rationale}</p>
+                                )}
+                                {c.factor === 'draft' && ws && (
+                                  <DraftCalcBreakdown
+                                    loadPort={ws.cargo.loadPort}
+                                    dischargePort={ws.cargo.dischargePort}
+                                    draftCheck={ws.hardFilters.draft}
+                                    destDraftCheck={ws.hardFilters.destDraft}
+                                    dwtSummer={ws.vessel.dwtSummer}
+                                    weightMt={ws.cargo.weightMtEffective ?? ws.cargo.weightMt}
+                                    statedMaxDraftM={ws.vessel.draftMax}
+                                  />
                                 )}
                               </div>
                             ))}
