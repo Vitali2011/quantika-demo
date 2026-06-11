@@ -95,7 +95,10 @@ export function persistSessionMatches(
     // worksheet laycan, recompute readiness rather than carrying stale data verbatim.
     // This catches seed rows whose worksheet_json was built against a pre-normalization
     // July laycan while parsed_results now has the correct June string (#821).
-    let worksheetJson: string | null = m.worksheet ? JSON.stringify(m.worksheet) : null;
+    const worksheetForPersist = m.worksheet
+      ? { ...m.worksheet, hardFilters: m.hardFilters ?? m.worksheet.hardFilters, sanctions: m.sanctions }
+      : null;
+    let worksheetJson: string | null = worksheetForPersist ? JSON.stringify(worksheetForPersist) : null;
     if (m.worksheet && cargo && laycan) {
       const storedLaycanStart = m.worksheet.readiness?.laycanStart ?? null;
       const freshLaycanStart = laycan.start.toISOString().slice(0, 10);
@@ -116,7 +119,7 @@ export function persistSessionMatches(
           ` stored=${storedLaycanStart} fresh=${freshLaycanStart}`,
         );
         worksheetJson = JSON.stringify({
-          ...m.worksheet,
+          ...worksheetForPersist,
           readiness: {
             openDate: freshReadiness.openDate,
             laycanStart: freshReadiness.laycanStart,
