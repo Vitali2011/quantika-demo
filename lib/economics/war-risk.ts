@@ -22,6 +22,7 @@ export interface HraZone {
  * for the full per-voyage cost.
  */
 import type { ResolvedPort } from '@/lib/ports/resolve';
+import { loadJwcRates } from './war-risk-rates';
 
 export const CREW_WAR_BONUS_PER_PERSON_USD = 500;
 export const DEFAULT_CREW_COUNT = 20;
@@ -133,6 +134,8 @@ export interface WarRiskResult {
   breakdown?: WarRiskBreakdown;
   /** ISO date of the JWC rate schedule in use (W6a staleness badge). Set when applicable=true. */
   rateDate?: string;
+  /** Whether the rate came from the knowledge-base YAML or fell back to hardcoded zone value. */
+  rateSource?: 'knowledge' | 'hardcoded';
 }
 
 const VESSEL_VALUE_FALLBACK_USD = 8_000_000;
@@ -225,8 +228,14 @@ export function calculateWarRiskPremium(input: WarRiskInput): WarRiskResult {
     a.premiumPercentPerTransit >= b.premiumPercentPerTransit ? a : b,
   );
 
+  // Load live rates; fall back to zone's hardcoded rate
+  const rates = loadJwcRates();
+  const effectiveRate = rates?.byCalcZoneId[dominantZone.id] ?? dominantZone.premiumPercentPerTransit;
+  const rateDate = rates?.effectiveFrom ?? JWC_RATE_DATE;
+  const rateSource: 'knowledge' | 'hardcoded' = rates?.byCalcZoneId[dominantZone.id] != null ? 'knowledge' : 'hardcoded';
+
   // Per-voyage hull war premium = vessel_value × percent (NOT divided by 365).
-  const hullPremium = value * dominantZone.premiumPercentPerTransit;
+  const hullPremium = value * effectiveRate;
   const premiumUsd = Math.round(hullPremium * 100) / 100;
 
   const crewCount =
@@ -248,6 +257,7 @@ export function calculateWarRiskPremium(input: WarRiskInput): WarRiskResult {
     zones: matchedZones.map(z => z.name),
     zoneIds: matchedZones.map(z => z.id),
     breakdown,
-    rateDate: JWC_RATE_DATE,
+    rateDate,
+    rateSource,
   };
 }

@@ -267,8 +267,8 @@ describe('ATTACK-6 — War-risk: NaN, Constanta, Bab al-Mandeb, hyphen ports', (
       vesselValueUsd: 0,
       daysInHra: 5,
     });
-    // fallback 8_000_000 * 0.0005 = 4000
-    expect(result.premiumUsd).toBe(4000);
+    // fallback 8_000_000 * 0.005 (GoG live JWC 0.50%) = 40_000
+    expect(result.premiumUsd).toBe(40000);
     expect(result.zones).toContain('Gulf of Guinea HRA');
   });
 

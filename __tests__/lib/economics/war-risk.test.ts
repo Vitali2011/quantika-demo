@@ -196,8 +196,8 @@ describe('WarRiskBreakdown — crew war bonus + P&I surcharge (issue #178)', () 
         route: { fromPort: 'Rotterdam', toPort: 'Lagos' },
         vesselValueUsd: 8_000_000,
       });
-      // Hull = 8M × 0.0005 = $4,000 (unchanged)
-      expect(result.premiumUsd).toBeCloseTo(4_000, -1);
+      // Hull = 8M × 0.005 = $40,000 (live JWC GoG rate; #war-risk-v2-value-shift)
+      expect(result.premiumUsd).toBeCloseTo(40_000, -1);
       // Total is higher
       expect(result.breakdown!.totalPremiumUsd).toBeGreaterThan(result.premiumUsd);
     });

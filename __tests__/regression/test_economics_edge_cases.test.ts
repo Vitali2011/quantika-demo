@@ -212,8 +212,8 @@ describe('calculateWarRiskPremium — adversarial', () => {
       daysInHra: 0,
     });
     expect(result.zones).toContain('Gulf of Guinea HRA');
-    // per-voyage: 10_000_000 * 0.0005 = 5000
-    expect(result.premiumUsd).toBe(5000);
+    // per-voyage: 10_000_000 * 0.005 (GoG live JWC 0.50%) = 50_000
+    expect(result.premiumUsd).toBe(50000);
     expect(result.premiumUsd).toBeGreaterThan(0);
   });
 
@@ -225,7 +225,8 @@ describe('calculateWarRiskPremium — adversarial', () => {
       daysInHra: -5,
     });
     expect(result.zones).toContain('Gulf of Guinea HRA');
-    expect(result.premiumUsd).toBe(5000);
+    // per-voyage: 10_000_000 * 0.005 (GoG live JWC 0.50%) = 50_000
+    expect(result.premiumUsd).toBe(50000);
   });
 
   // H14: vesselValueUsd = 0 — code uses industry fallback ($8M) per spec-betafix-04.
@@ -238,8 +239,8 @@ describe('calculateWarRiskPremium — adversarial', () => {
     });
     // Zone should still be matched since port was recognised
     expect(result.zones).toContain('Gulf of Guinea HRA');
-    // Fallback: 8_000_000 * 0.0005 = 4000
-    expect(result.premiumUsd).toBe(4000);
+    // Fallback: 8_000_000 * 0.005 (GoG live JWC 0.50%) = 40_000
+    expect(result.premiumUsd).toBe(40000);
   });
 
   // H15: negative vesselValueUsd — no validation, produces negative premium
@@ -337,14 +338,14 @@ describe('calculateWarRiskPremium — adversarial', () => {
 
   // H19: premium math precision — per-voyage model (spec-betafix-04).
   // Rate is per-transit, NOT per-day. daysInHra is informational only.
-  it('premium math: Black Sea 0.10%, $20M vessel — per-voyage rate applied', () => {
+  it('premium math: Black Sea 0.65%, $20M vessel — per-voyage rate applied', () => {
     const result = calculateWarRiskPremium({
       route: { fromPort: 'Odessa', toPort: 'Istanbul' },
       vesselValueUsd: 20_000_000,
       daysInHra: 2,
     });
-    // per-voyage: 20_000_000 * (0.10 / 100) = 20_000_000 * 0.001 = 20_000
-    const expected = Math.round(20_000_000 * 0.001 * 100) / 100;
+    // per-voyage: 20_000_000 * (0.65 / 100) = 20_000_000 * 0.0065 = 130_000 (live JWC black-sea rate)
+    const expected = Math.round(20_000_000 * 0.0065 * 100) / 100;
     expect(result.premiumUsd).toBe(expected);
     expect(result.zones).toContain('Black Sea Russia/Ukraine HRA');
   });
