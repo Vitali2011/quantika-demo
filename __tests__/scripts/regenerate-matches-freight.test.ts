@@ -100,7 +100,7 @@ function makeMatch(overrides: Partial<Match> = {}): Match {
     vesselEmailId: 'vessel-1',
     vesselItemIndex: 0,
     score: 85,
-    matchLevel: 'strong',
+    matchLevel: 'good',
     matchReasons: [],
     issues: [],
     readiness: BASE_READINESS,
@@ -198,7 +198,7 @@ describe('breakeven_tce_usd_per_day — persisted via createMatch (#959)', () =>
       });
       const rows = listMatches(db, { user_id: null, sortBy: 'score', sortDir: 'desc' });
       expect(rows).toHaveLength(1);
-      expect((rows[0] as Record<string, unknown>).breakeven_tce_usd_per_day).toBe(5500);
+      expect((rows[0] as unknown as Record<string, unknown>).breakeven_tce_usd_per_day).toBe(5500);
     } finally {
       db.close();
     }
