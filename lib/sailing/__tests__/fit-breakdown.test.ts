@@ -9,6 +9,7 @@ import {
   scoreUtilisation,
   scoreTiming,
   scoreVetting,
+  scoreDraft,
 } from '../fit-breakdown';
 import type { MatchReadiness, MatchSanctions, MatchHardFilters, ParsedCargo, ParsedVessel } from '@/lib/types';
 
@@ -653,5 +654,13 @@ describe('#884 — HRC cargo on corrected-capacity YUCATAN vessel is a comfortab
     const vol = fit.components.find(c => c.factor === 'volume');
     expect(vol?.rationale).not.toContain('overflows');
     expect(vol?.rationale).toContain('comfortable');
+  });
+
+  it('S1: scoreDraft pass-branch uses honest wording (stated max draft, laden not computed)', () => {
+    const result = scoreDraft({ draft: { pass: true } } as MatchHardFilters);
+    expect(result.rationale).toBe(
+      "Vessel's maximum stated draft is within the port's limit. Actual laden draft not computed.",
+    );
+    expect(result.score).toBe(FIT_WEIGHTS.draft);
   });
 });
