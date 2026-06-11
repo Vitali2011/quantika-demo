@@ -44,6 +44,36 @@
 «Before using Next.js/React APIs introduced or changed after v14 — WebFetch the
 relevant nextjs.org/react.dev docs page first».
 
+## RTK — токен-компрессия вывода команд (trial)
+
+<!-- rtk-instructions v2 (condensed) -->
+
+Установлен `rtk` (Rust Token Killer): префиксуй им шумные команды — он сжимает
+вывод на 60–90% до попадания в контекст. Без фильтра — прозрачный passthrough,
+всегда безопасен. В цепочках `&&` префиксуй каждую команду.
+
+Где обязательно (самый шумный вывод):
+
+```bash
+rtk jest / rtk vitest      # только failures (-99%)
+rtk next build             # route metrics (-87%)
+rtk tsc / rtk lint         # ошибки, сгруппированы по файлам (-83%)
+rtk git diff / show        # компактный diff (-80%)
+rtk git status / log / add / commit / push
+rtk gh pr view / checks / run list (-80%)
+rtk npm run <script> / rtk npx <cmd>
+rtk curl <url>             # компактный HTTP (-70%)
+```
+
+Где НЕ нужно: команды с коротким выводом и когда нужен точный сырой вывод
+(парсинг SHA, json для скриптов — или используй `rtk proxy <cmd>`).
+⚠️ Финальная диагностика warnings/ошибок для отчёта — СЫРОЙ вывод (`rtk proxy`
+или без rtk): компрессия скрывает file:line детали (A/B 2026-06-11: rtk-агент
+отрапортовал «проблем нет» там, где без rtk нашлось 5 реальных stale-директив).
+Статистика экономии: `rtk gain`.
+
+<!-- /rtk-instructions -->
+
 ## Path-scoped rules
 
 Перед редактированием модулей с историей регрессий — прочитать соответствующий файл:

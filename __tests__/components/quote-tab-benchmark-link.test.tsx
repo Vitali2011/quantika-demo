@@ -1,12 +1,11 @@
 /**
  * @jest-environment jsdom
  *
- * PI2 — #360: benchmark source link must not navigate to /match/static-seed (404).
- * When sourceUrl is a non-HTTP value (e.g. 'static-seed'), no anchor should render.
- * When sourceUrl is a real HTTP URL, the anchor renders with the correct href.
+ * PI2 — #360 follow-up: Benchmark section removed entirely (ui-quote-cleanup).
+ * These tests confirm no benchmark UI renders regardless of fetch outcome.
  */
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { QuoteTab } from '@/components/match/QuoteTab';
 import { ToastProvider } from '@/components/ui/toast/toast-context';
@@ -18,52 +17,28 @@ function renderWithToast(ui: React.ReactElement) {
   );
 }
 
-function mockFetch(sourceUrl: string) {
-  global.fetch = jest.fn().mockResolvedValue({
-    ok: true,
-    json: async () => ({
-      indicator: 'TOEPFER_TMI',
-      value: 12683,
-      unit: 'USD/day',
-      period: '2026-05-09',
-      sourceUrl,
-      fetchedAt: new Date().toISOString(),
-    }),
-  } as Response);
-}
+beforeEach(() => {
+  global.fetch = jest.fn().mockResolvedValue({ ok: false, json: async () => ({}) } as Response);
+});
 
 afterEach(() => {
   jest.restoreAllMocks();
 });
 
-describe('QuoteTab benchmark source link (PI2 — #360)', () => {
-  it('does NOT render an anchor when sourceUrl is "static-seed"', async () => {
-    mockFetch('static-seed');
+describe('QuoteTab — Benchmark section removed (ui-quote-cleanup)', () => {
+  it('does not render Benchmark heading', () => {
     renderWithToast(<QuoteTab />);
-
-    await waitFor(() => {
-      expect(screen.queryByText('source')).not.toBeInTheDocument();
-    });
+    expect(screen.queryByText(/benchmark/i)).not.toBeInTheDocument();
   });
 
-  it('does NOT render an anchor when sourceUrl is a relative path', async () => {
-    mockFetch('/some/relative/path');
+  it('does not render a source link', () => {
     renderWithToast(<QuoteTab />);
-
-    await waitFor(() => {
-      expect(screen.queryByText('source')).not.toBeInTheDocument();
-    });
+    expect(screen.queryByText('source')).not.toBeInTheDocument();
   });
 
-  it('renders anchor with correct href when sourceUrl is a valid https URL', async () => {
-    const realUrl = 'https://heavyliftpfi.com/market-data/';
-    mockFetch(realUrl);
+  it('does not fetch /api/market/benchmark', () => {
     renderWithToast(<QuoteTab />);
-
-    await waitFor(() => {
-      const link = screen.getByText('source');
-      expect(link).toBeInTheDocument();
-      expect(link).toHaveAttribute('href', realUrl);
-    });
+    const calls = (global.fetch as jest.Mock).mock.calls.map((c: unknown[]) => String(c[0]));
+    expect(calls.some(u => u.includes('/api/market/benchmark'))).toBe(false);
   });
 });

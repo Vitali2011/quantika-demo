@@ -56,7 +56,7 @@ test.describe('Task 3.3h — Match detail: Economics + FuelEU + Quote', () => {
       console.info('[match-economics] FuelEU tile absent — feature flag likely off');
     }
 
-    // Quote tab — verify Draft Quote textarea + Save Draft button.
+    // Quote tab — verify Draft Quote textarea + Copy button.
     const quoteTab = page
       .getByRole('tab', { name: /Quote/i })
       .or(page.getByText(/^Quote$/i).first());
@@ -65,6 +65,6 @@ test.describe('Task 3.3h — Match detail: Economics + FuelEU + Quote', () => {
     const quotePanel = page.locator('[data-testid="tab-quote"]');
     await expect(quotePanel).toBeVisible({ timeout: 5_000 });
     await expect(quotePanel.getByText(/Draft Quote/i).first()).toBeVisible();
-    await expect(page.getByRole('button', { name: /Save Draft/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Copy/i })).toBeVisible();
   });
 });

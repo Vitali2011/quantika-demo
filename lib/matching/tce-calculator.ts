@@ -1,6 +1,7 @@
-import { calculateTCE, type TCEBreakdown } from '@/lib/economics/voyage-calculator';
+import { type TCEBreakdown } from '@/lib/economics/voyage-calculator';
 import { calculateWarRiskPremium } from '@/lib/economics/war-risk';
-import { buildCanonicalTceInputs } from '@/lib/economics/canonical-tce-inputs';
+import { computeTce } from '@/lib/economics/compute-tce';
+import { resolveConsMtPerDay } from '@/lib/economics/vessel-consumption';
 import { quoteSuez } from '@/lib/economics/canals/index';
 import { quoteBosporus } from '@/lib/economics/canals/bosporus';
 import { resolvePort } from '@/lib/ports/resolve';
@@ -104,36 +105,47 @@ export function computeEstimatedTce(
   ballast_distance_nm?: number,
   canal_usd?: number,
   da_usd?: number,
-  bunkerPriceUsdPerMt: number = DEFAULT_BUNKER_USD_PER_MT,
+  bunkerPriceUsdPerMt?: number,
   euLegPercent?: number,
   originEu?: boolean,
   destEu?: boolean,
   euaPriceEur?: number,
   excludeWarRiskFromDailyTce?: boolean,
 ): TceEstimate {
-  const inputs = buildCanonicalTceInputs({
-    vesselDwt: vessel_dwt,
-    speedKts: speed_kts,
-    consumptionMtPerDay: consumption_mt_per_day,
-    distanceNm: distance_nm,
-    quantityMt: quantity_mt,
+  const resolvedBunker = bunkerPriceUsdPerMt ?? DEFAULT_BUNKER_USD_PER_MT;
+  if (bunkerPriceUsdPerMt === undefined) {
+    // Stage 7 deprecation warn — default will be removed in Stage 9.
+    console.warn(
+      `computeEstimatedTce: bunkerPriceUsdPerMt not supplied — falling back to DEFAULT_BUNKER_USD_PER_MT (${DEFAULT_BUNKER_USD_PER_MT}). Pass an explicit price; this fallback will be removed in Stage 9.`,
+    );
+  }
+
+  const safeDwt = vessel_dwt > 0 ? vessel_dwt : 10_000;
+  const safeSpeed = speed_kts > 0 ? speed_kts : 12;
+  const safeQty = quantity_mt > 0 ? quantity_mt : safeDwt * 0.65;
+  const safeConsumption = resolveConsMtPerDay(consumption_mt_per_day, safeDwt);
+
+  const result = computeTce({
+    dwt: safeDwt,
+    valueUsd: DEFAULT_VESSEL_VALUE_USD,
+    speedKts: safeSpeed,
+    consumptionMtPerDay: safeConsumption,
     freightRateUsdPerMt: freightRate.rate,
-    bunkerPriceUsdPerMt,
-    originPort: '',
-    destinationPort: '',
-    euaPriceEur: euaPriceEur ?? FALLBACK_EUA_EUR_PER_TCO2,
-    vesselValueUsd: DEFAULT_VESSEL_VALUE_USD,
+    quantityMt: safeQty,
+    distanceNm: distance_nm > 0 ? distance_nm : 0,
     ballastDistanceNm: ballast_distance_nm,
-    canalUsd: canal_usd,
-    daUsd: da_usd,
+    bunkerPriceUsdPerMt: resolvedBunker,
+    euaPriceEur: euaPriceEur ?? FALLBACK_EUA_EUR_PER_TCO2,
+    canalUsd: canal_usd ?? 0,
+    daUsd: da_usd ?? 0,
     euLegPercent,
     originEu,
     destEu,
+    excludeWarRiskFromDailyTce,
   });
-  const result = calculateTCE({ ...inputs, excludeWarRiskFromDailyTce });
 
   return {
-    tce_usd_per_day: result.daily_tce_usd,
+    tce_usd_per_day: result.tceUsdPerDay,
     freight_rate_usd_per_mt: freightRate.rate,
     freight_rate_source: freightRate.source,
     breakdown: result.breakdown,
