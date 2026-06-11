@@ -387,7 +387,7 @@ async function main(): Promise<void> {
             dwcc: cfValue(vessel.dwcc),
           },
           cargo: { weightMt: cfValue(cargo.weightMt), weightMtEffective: resolveCargoWeight(cargo) ?? null, cargoType, loadPort, dischargePort },
-          hardFilters: { draft: hf.checks.draft, crane: hf.checks.crane, volume: hf.checks.volume },
+          hardFilters: { draft: hf.checks.draft, crane: hf.checks.crane, volume: hf.checks.volume, destDraft: hf.checks.destDraft },
         }),
         bucket,
         readinessVerdict: readiness.verdict,

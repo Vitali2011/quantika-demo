@@ -476,6 +476,8 @@ export interface MatchWorksheet {
     draft: HardFilterCheck;
     crane: HardFilterCheck;
     volume: HardFilterCheck;
+    /** M4: destination (discharge) port draft check — optional, absent in pre-M4 persisted data. */
+    destDraft?: HardFilterCheck;
   };
 }
 
