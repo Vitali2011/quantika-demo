@@ -1,6 +1,7 @@
-import type { MatchWorksheet as MatchWorksheetType } from '@/lib/types';
+import type { MatchWorksheet as MatchWorksheetType, MatchHardFilters } from '@/lib/types';
 import React from 'react';
 import { DraftCalcBreakdown } from './DraftCalcBreakdown';
+import { AllChecksAccordion } from './AllChecksAccordion';
 
 interface Props {
   worksheet: MatchWorksheetType | null;
@@ -168,6 +169,11 @@ export function MatchWorksheet({ worksheet }: Props) {
           ))}
         </tbody>
       </table>
+      {hf && (
+        <div className="px-3 pb-3 pt-1">
+          <AllChecksAccordion hardFilters={hf as MatchHardFilters} />
+        </div>
+      )}
     </div>
   );
 }
