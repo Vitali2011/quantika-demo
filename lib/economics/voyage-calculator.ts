@@ -1,35 +1,23 @@
 /**
- * Voyage Calculator — TCE (Time Charter Equivalent) aggregation.
+ * Voyage Calculator — calculateTCE adapter.
  *
- * Aggregates all voyage cost components into a daily TCE figure:
- *   bunker + canal + DA + war risk + ETS  →  total cost
- *   (gross_freight - total_cost) / durationDays  →  daily TCE
+ * Stage 6: calculateTCE is now a thin adapter. The computation body lives in
+ * lib/economics/compute-tce.ts (computeTce). This file preserves the public
+ * API surface (VoyageInput, TCEBreakdown, TCEResult, calculateTCE) unchanged
+ * so all existing callers require no modification.
  *
- * Design:
- *   `calculateTCE` is a pure synchronous function. It accepts already-resolved
- *   canal_usd and da_usd numbers (which the API layer fetches from
- *   `lib/economics/canals/*` and `lib/port-da/repository`). This keeps the
- *   core aggregator deterministic and DB-free for unit tests, while still
- *   "using existing modules" via the integration boundary.
- *
- * NaN/Infinity guards: any non-finite numeric input collapses to 0 and the
- * cost component is flagged inapplicable. We never throw, never emit NaN.
- *
- * Input Contract:
- *   durationDays <= 0       → daily_tce_usd = 0 (not Infinity)
- *   any non-finite money    → that field becomes 0
- *   euLegPercent ∈ (0, 1]   → ETS applied, otherwise 0
+ * NaN/Infinity guards: safeNum collapses non-finite inputs to 0 before
+ * delegating. computeTce applies the same guard internally.
  */
 
-import { calculateWarRiskPremium } from './war-risk';
-import { calculateEuEts } from './ets';
-import { calculateEcaFuelPortion } from '@/lib/knowledge/eca/adapter';
+import { computeTce } from './compute-tce';
 import type { EcaZone } from '@/lib/knowledge/eca/parser';
 import type { ResolvedPort } from '@/lib/ports/resolve';
 import type { DataQuality } from '@/lib/data-quality/types';
 
-const EUR_TO_USD = 1.08; // approximate conversion (matches index.ts)
-const ESTIMATED_DAYS_FALLBACK = 1; // for safety in non-finite cases
+function safeNum(n: unknown): number {
+  return typeof n === 'number' && Number.isFinite(n) ? n : 0;
+}
 
 export interface VoyageInput {
   vessel: {
@@ -117,150 +105,48 @@ export interface TCEResult {
   bunker_open_mt?: number;
 }
 
-function safeNum(n: unknown): number {
-  return typeof n === 'number' && Number.isFinite(n) ? n : 0;
-}
-
 export function calculateTCE(input: VoyageInput): TCEResult {
-  const consumption = safeNum(input.vessel?.consumptionMtPerDay);
-  const duration = safeNum(input.durationDays);
-  const bunkerPrice = safeNum(input.bunkerPriceUsdPerMt);
-  const distance = safeNum(input.route?.distanceNm);
-  const quantity = safeNum(input.cargo?.quantityMt);
-  const rate = safeNum(input.cargo?.freightRateUsdPerMt);
-  const valueUsd = safeNum(input.vessel?.valueUsd);
-  const euLegPercent = safeNum(input.euLegPercent);
-  const euaPrice = safeNum(input.euaPriceEur);
-  const daysInHraRaw = input.daysInHra;
-  const daysInHra = typeof daysInHraRaw === 'number' && Number.isFinite(daysInHraRaw)
-    ? daysInHraRaw
-    : duration;
-
-  // ── Bunker ────────────────────────────────────────────────────────────
-  const totalBunkerMt = consumption * duration;
-  const bunkerUsd = Math.round(totalBunkerMt * bunkerPrice);
-  const bunkerApplicable = bunkerUsd > 0;
-
-  // ── ECA Bunker Split (Phase 1) ───────────────────────────────────────
-  let bunkerEcaMt: number | undefined;
-  let bunkerOpenMt: number | undefined;
-  let ecaCalculated = false;
-
-  if (
-    input.ecaZones &&
-    input.ecaZones.length > 0 &&
-    input.route?.resolvedOrigin &&
-    input.route?.resolvedDest &&
-    totalBunkerMt > 0
-  ) {
-    try {
-      const ecaPortion = calculateEcaFuelPortion(
-        { lat: input.route.resolvedOrigin.lat, lon: input.route.resolvedOrigin.lon },
-        { lat: input.route.resolvedDest.lat, lon: input.route.resolvedDest.lon },
-        input.ecaZones
-      );
-
-      // Guard: clamp ecaPortion to [0, 1] range (defensive)
-      const safePortion = Math.max(0, Math.min(1, ecaPortion));
-      bunkerEcaMt = totalBunkerMt * safePortion;
-      bunkerOpenMt = totalBunkerMt * (1 - safePortion);
-      ecaCalculated = true;
-    } catch {
-      // If ECA calculation fails, fall back to 100% open-ocean
-      bunkerEcaMt = 0;
-      bunkerOpenMt = totalBunkerMt;
-      ecaCalculated = true;
-    }
-  }
-
-  // ── Canal (pre-resolved) ──────────────────────────────────────────────
-  const canalUsd = Math.round(safeNum(input.canalUsd));
-  const canalApplicable = canalUsd > 0;
-
-  // ── Disbursement Account (pre-resolved) ───────────────────────────────
-  const daUsd = Math.round(safeNum(input.daUsd));
-  const daApplicable = daUsd > 0;
-
-  // ── War risk ──────────────────────────────────────────────────────────
-  const warResult = calculateWarRiskPremium({
-    route: {
-      fromPort: input.route?.originPort ?? '',
-      toPort: input.route?.destinationPort ?? '',
-      viaCanal: input.route?.viaSuez ? 'suez' : input.route?.viaCanal,
-    },
-    vesselValueUsd: valueUsd,
-    daysInHra,
-  });
-  // Intentional spec change: war-risk.ts:128 designates breakdown.totalPremiumUsd as the full
-  // per-voyage cost (hull + crew bonus + P&I). premiumUsd is hull-only, kept for backward compat.
-  // REVERSIBLE: change back to warResult.premiumUsd to revert to hull-only convention.
-  const warRiskUsd = Math.round(warResult.breakdown?.totalPremiumUsd ?? warResult.premiumUsd);
-  // βf-04: gate on calculator-reported applicability, not USD > 0.
-  // A matched HRA zone is "applicable" even if (in degenerate edge cases)
-  // the rounded premium were zero — so downstream UI surfaces the warning.
-  const warRiskApplicable = warResult.applicable;
-
-  // ── EU ETS ────────────────────────────────────────────────────────────
-  const vlsfoBurnMt = totalBunkerMt;
-  const etsResult = calculateEuEts({
-    distanceNm: distance,
-    euLegPercent,
-    vlsfoBurnMt,
-    euaPrice,
+  const result = computeTce({
+    // Vessel
+    dwt: safeNum(input.vessel?.dwt),
+    valueUsd: safeNum(input.vessel?.valueUsd),
+    speedKts: safeNum(input.vessel?.speedKts),
+    consumptionMtPerDay: safeNum(input.vessel?.consumptionMtPerDay),
+    // Cargo & route
+    distanceNm: safeNum(input.route?.distanceNm),
+    freightRateUsdPerMt: safeNum(input.cargo?.freightRateUsdPerMt),
+    quantityMt: safeNum(input.cargo?.quantityMt),
+    // Prices
+    bunkerPriceUsdPerMt: safeNum(input.bunkerPriceUsdPerMt),
+    euaPriceEur: safeNum(input.euaPriceEur),
+    // Pre-resolved costs
+    canalUsd: safeNum(input.canalUsd),
+    daUsd: safeNum(input.daUsd),
+    // EU ETS
+    euLegPercent: input.euLegPercent,
     originEu: input.originEu,
     destEu: input.destEu,
+    // War risk — port names for zone detection
+    daysInHra: input.daysInHra,
+    excludeWarRiskFromDailyTce: input.excludeWarRiskFromDailyTce,
+    originPort: input.route?.originPort,
+    destinationPort: input.route?.destinationPort,
+    viaCanal: input.route?.viaSuez ? 'suez' : input.route?.viaCanal,
+    // ECA
+    ecaZones: input.ecaZones,
+    resolvedOrigin: input.route?.resolvedOrigin,
+    resolvedDest: input.route?.resolvedDest,
+    // Metadata
+    daQuality: input.daQuality,
+    // VoyageInput callers supply durationDays directly; override internal computation.
+    overrideDurationDays: input.durationDays,
   });
-  const etsEur = etsResult.amountEur;
-  const etsUsd = Math.round(etsEur * EUR_TO_USD);
-  const etsApplicable = etsResult.applicable;
-
-  // ── Aggregation ───────────────────────────────────────────────────────
-  const grossFreight = Math.round(quantity * rate);
-  const totalCosts = bunkerUsd + canalUsd + daUsd + warRiskUsd + etsUsd;
-  const netVoyage = grossFreight - totalCosts;
-  const safeDuration = duration > 0 ? duration : ESTIMATED_DAYS_FALLBACK;
-  // When excludeWarRiskFromDailyTce is set, omit war-risk from the per-day numerator
-  // so stored (empty ports → $0) and detail (real ports) produce the same TCE.
-  const dailyNetVoyage = input.excludeWarRiskFromDailyTce
-    ? grossFreight - (bunkerUsd + canalUsd + daUsd + etsUsd)
-    : netVoyage;
-  const dailyTce = duration > 0 ? Math.round(dailyNetVoyage / safeDuration) : 0;
-
-  const breakdown: TCEBreakdown = {
-    bunker_usd: bunkerUsd,
-    bunker_eca_mt: ecaCalculated ? bunkerEcaMt : undefined,
-    bunker_open_mt: ecaCalculated ? bunkerOpenMt : undefined,
-    canal_usd: canalUsd,
-    da_usd: daUsd,
-    war_risk_usd: warRiskUsd,
-    ets_eur: Math.round(etsEur * 100) / 100,
-    ets_usd: etsUsd,
-    gross_freight_usd: grossFreight,
-    total_costs_usd: totalCosts,
-    net_voyage_usd: netVoyage,
-    daily_tce_usd: dailyTce,
-    /** B1 — derivation inputs for transparent math waterfall */
-    freight_rate_usd_per_mt: rate,
-    quantity_mt: quantity,
-    duration_days: duration,
-    bunker_consumption_mt_per_day: consumption,
-    bunker_price_usd_per_mt: bunkerPrice,
-    applicable: {
-      bunker: bunkerApplicable,
-      canal: canalApplicable,
-      da: daApplicable,
-      war_risk: warRiskApplicable,
-      ets: etsApplicable,
-    },
-    ...(input.daQuality != null ? { da_quality: input.daQuality } : {}),
-    ...(warRiskApplicable && warResult.rateDate ? { war_risk_rate_date: warResult.rateDate } : {}),
-  };
 
   return {
-    breakdown,
-    total_usd: totalCosts,
-    daily_tce_usd: dailyTce,
-    bunker_eca_mt: ecaCalculated ? bunkerEcaMt : undefined,
-    bunker_open_mt: ecaCalculated ? bunkerOpenMt : undefined,
+    breakdown: result.breakdown,
+    total_usd: result.breakdown.total_costs_usd,
+    daily_tce_usd: result.tceUsdPerDay,
+    bunker_eca_mt: result.breakdown.bunker_eca_mt,
+    bunker_open_mt: result.breakdown.bunker_open_mt,
   };
 }

@@ -366,7 +366,7 @@ describe('computeTce — behavioral invariants', () => {
     expect(result.durationDays).not.toBe(roundTrip);
   });
 
-  test('excludeWarRiskFromDailyTce=true lowers tceUsdPerDay versus false when war_risk_usd > 0', () => {
+  test('excludeWarRiskFromDailyTce: non-HRA route → equal tceUsdPerDay regardless of flag (war_risk_usd=0)', () => {
     // Without excludeWarRisk and with zero war-risk (no HRA ports), both should be equal
     const withFlag = computeTce({ ...base, excludeWarRiskFromDailyTce: true });
     const withoutFlag = computeTce({ ...base, excludeWarRiskFromDailyTce: false });
