@@ -347,4 +347,29 @@ describe('buildMatchEconomics', () => {
     expect(withDa!.totalUsd).toBeGreaterThan(noDa!.totalUsd);
     expect(withDa!.tceUsdPerDay!).toBeLessThan(noDa!.tceUsdPerDay!);
   });
+
+  // Stage 8 behavioral: buildMatchEconomics delegates directly to computeTce —
+  // no computeEstimatedTce deprecation warning emitted when bunker not supplied.
+  it('Stage 8: no deprecation warn when bunkerPriceUsdPerMt omitted — direct computeTce path', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const econ = buildMatchEconomics({
+      cargoType: 'BULK',
+      distanceNm: 5000,
+      vesselDwt: 50000,
+      quantityMt: 40000,
+      speedKts: 13,
+      consumptionMt: 22,
+      loadPort: 'Rotterdam',
+      dischargePort: 'Singapore',
+      calculatedAt: '2026-06-11T00:00:00.000Z',
+      // bunkerPriceUsdPerMt omitted → DEFAULT_BUNKER_USD_PER_MT applied without warning
+    });
+    expect(econ).not.toBeNull();
+    expect(Number.isFinite(econ!.tceUsdPerDay!)).toBe(true);
+    expect(econ!.tceUsdPerDay).toBeGreaterThan(0);
+    expect(warnSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining('computeEstimatedTce: bunkerPriceUsdPerMt not supplied'),
+    );
+    warnSpy.mockRestore();
+  });
 });

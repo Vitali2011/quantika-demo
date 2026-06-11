@@ -332,27 +332,36 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
     ? input.euaPriceEur
     : FALLBACK_EUA_EUR_PER_TCO2;
 
-  const tce = computeEstimatedTce(
-    freight,
-    input.distanceNm,
-    input.vesselDwt,
-    input.quantityMt,
-    input.speedKts,
-    input.consumptionMt,
-    ballastNm ?? undefined,
-    canalUsd > 0 ? canalUsd : undefined,
-    input.daUsd != null && input.daUsd > 0 ? input.daUsd : undefined,
-    input.bunkerPriceUsdPerMt != null ? input.bunkerPriceUsdPerMt : undefined,
+  // Stage 8: call computeTce directly — same guards as computeEstimatedTce internals.
+  // No originPort/destinationPort: war risk is $0 in the TCE numerator (computed
+  // separately below for the breakdown display). ECA-split not wired: stored path
+  // did not compute it before Stage 8; not adding new behaviour (qa-937 MEDIUM-2).
+  const safeDwt = input.vesselDwt > 0 ? input.vesselDwt : 10_000;
+  const safeSpeed = input.speedKts > 0 ? input.speedKts : DEFAULT_SPEED_KTS;
+  const safeQty = input.quantityMt > 0 ? input.quantityMt : safeDwt * 0.65;
+  const safeConsumption = resolveConsMtPerDay(input.consumptionMt, safeDwt);
+  const resolvedBunker = input.bunkerPriceUsdPerMt != null
+    ? input.bunkerPriceUsdPerMt
+    : DEFAULT_BUNKER_USD_PER_MT;
+
+  const tce = computeTce({
+    dwt: safeDwt,
+    valueUsd: DEFAULT_VESSEL_VALUE_USD,
+    speedKts: safeSpeed,
+    consumptionMtPerDay: safeConsumption,
+    freightRateUsdPerMt: freight.rate,
+    quantityMt: safeQty,
+    distanceNm: input.distanceNm > 0 ? input.distanceNm : 0,
+    ballastDistanceNm: ballastNm ?? undefined,
+    bunkerPriceUsdPerMt: resolvedBunker,
+    euaPriceEur,
+    canalUsd,
+    daUsd: input.daUsd != null && input.daUsd > 0 ? input.daUsd : 0,
     euLegPercent,
     originEu,
     destEu,
-    euaPriceEur,
-    // Default false = legacy behaviour (war risk INCLUDED in daily-TCE headline) for callers
-    // that don't set the flag. Callers that want the canonical "exclude" convention must pass
-    // excludeWarRiskFromDailyTce: true explicitly — stored-match-economics.ts (line ~144) and
-    // app/api/voyage/tce/route.ts:373 already do so; golden-set runner must also opt in.
-    input.excludeWarRiskFromDailyTce ?? false,
-  );
+    excludeWarRiskFromDailyTce: input.excludeWarRiskFromDailyTce ?? false,
+  });
 
   const warLaden = calculateWarRiskPremium({
     route: { fromPort: input.loadPort ?? '', toPort: input.dischargePort ?? '' },
@@ -394,9 +403,9 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
     totalUsd: tce.breakdown.total_costs_usd + warCombinedTotal,
     calculatedAt: input.calculatedAt,
     dataFreshness: { bunker: 'estimated', eua: 'estimated' },
-    tceUsdPerDay: tce.tce_usd_per_day,
-    freightRateUsdPerMt: tce.freight_rate_usd_per_mt,
-    freightRateSource: tce.freight_rate_source,
+    tceUsdPerDay: tce.tceUsdPerDay,
+    freightRateUsdPerMt: freight.rate,
+    freightRateSource: freight.source,
     consumptionEstimated: input.consumptionMt <= 0 ? true : undefined,
     qtyEstimated: input.quantityMt <= 0 ? true : undefined,
     dataQuality: input.consumptionMt <= 0
