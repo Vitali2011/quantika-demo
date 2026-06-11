@@ -2,6 +2,29 @@ import { loadPortMasterFromJson, clearPortMasterCache } from '@/lib/sailing/port
 import { getPortMaster } from '@/lib/sailing/port-master';
 import type { PortMaster } from '@/lib/sailing/port-master';
 
+// Stage 3 behavioral spot-checks: curated ports in real port-master.json
+describe('Stage 3 — curated terminalOperator in production port-master', () => {
+  it('Singapore has PSA International as terminalOperator', () => {
+    const entry = getPortMaster('Singapore');
+    expect(entry).toBeTruthy();
+    expect(entry!.terminalOperator).toBe('PSA International');
+    expect(entry!.craneDataAsOf).toBe('2025-Q4');
+  });
+
+  it('Rotterdam has terminalOperator set', () => {
+    const entry = getPortMaster('Rotterdam');
+    expect(entry).toBeTruthy();
+    expect(entry!.terminalOperator).toBeTruthy();
+    expect(entry!.craneDataAsOf).toBe('2025-Q4');
+  });
+
+  it('Constanta has DP World Constanta as terminalOperator', () => {
+    const entry = getPortMaster('Constanta');
+    expect(entry).toBeTruthy();
+    expect(entry!.terminalOperator).toBe('DP World Constanta');
+  });
+});
+
 const BASE_ENTRY: PortMaster = {
   unlocode: 'ROCND',
   name: 'Constanta',

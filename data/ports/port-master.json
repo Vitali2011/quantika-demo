@@ -66,7 +66,9 @@
     ],
     "craneSWL": 50,
     "craneType": "gantry",
-    "craneDataAsOf": "WPI-2025"
+    "craneDataAsOf": "2025-Q4",
+    "terminalOperator": "DP World Constanta",
+    "sourceNote": "operator: DP World Constanta \u2014 port authority site, checked 2025-10"
   },
   {
     "unlocode": "BGVAR",
@@ -99,7 +101,9 @@
     "berthType": "deep-sea",
     "craneSWL": 100,
     "craneType": "gantry",
-    "craneDataAsOf": "WPI-2025"
+    "craneDataAsOf": "2025-Q4",
+    "terminalOperator": "NCSP Group",
+    "sourceNote": "operator: NCSP Group \u2014 port authority site, checked 2025-10"
   },
   {
     "unlocode": "GRPIR",
@@ -117,7 +121,9 @@
     ],
     "craneSWL": 50,
     "craneType": "gantry",
-    "craneDataAsOf": "WPI-2025"
+    "craneDataAsOf": "2025-Q4",
+    "terminalOperator": "Piraeus Port Authority (COSCO)",
+    "sourceNote": "operator: Piraeus Port Authority (COSCO) \u2014 port authority site, checked 2025-10"
   },
   {
     "unlocode": "TRALI",
@@ -192,7 +198,9 @@
     ],
     "craneSWL": 50,
     "craneType": "gantry",
-    "craneDataAsOf": "WPI-2025"
+    "craneDataAsOf": "2025-Q4",
+    "terminalOperator": "Marsa Maroc",
+    "sourceNote": "operator: Marsa Maroc \u2014 port authority site, checked 2025-10"
   },
   {
     "unlocode": "FRBAY",
@@ -235,7 +243,8 @@
     ],
     "craneSWL": 100,
     "craneType": "gantry",
-    "craneDataAsOf": "WPI-2025"
+    "craneDataAsOf": "2025-Q4",
+    "terminalOperator": "Port of Rotterdam Authority"
   },
   {
     "unlocode": "BEANR",
@@ -265,7 +274,8 @@
     ],
     "craneSWL": 100,
     "craneType": "gantry",
-    "craneDataAsOf": "WPI-2025"
+    "craneDataAsOf": "2025-Q4",
+    "terminalOperator": "Port of Antwerp-Bruges"
   },
   {
     "unlocode": "DEHAM",
@@ -294,7 +304,8 @@
     ],
     "craneSWL": 100,
     "craneType": "gantry",
-    "craneDataAsOf": "WPI-2025"
+    "craneDataAsOf": "2025-Q4",
+    "terminalOperator": "HHLA"
   },
   {
     "unlocode": "DEBRV",
@@ -401,11 +412,12 @@
     ],
     "craneSWL": 50,
     "craneType": "gantry",
-    "craneDataAsOf": "WPI-2025"
+    "craneDataAsOf": "2025-Q4",
+    "terminalOperator": "APM Terminals Algeciras"
   },
   {
     "unlocode": "PLGDN",
-    "name": "Gdańsk",
+    "name": "Gda\u0144sk",
     "country": "PL",
     "lat": 54.352,
     "lon": 18.646,
@@ -501,7 +513,9 @@
     "aliases": [
       "Port of Singapore",
       "PSA Singapore"
-    ]
+    ],
+    "terminalOperator": "PSA International",
+    "craneDataAsOf": "2025-Q4"
   },
   {
     "unlocode": "HKHKG",
@@ -625,7 +639,8 @@
     ],
     "craneSWL": 100,
     "craneType": "gantry",
-    "craneDataAsOf": "WPI-2025"
+    "craneDataAsOf": "2025-Q4",
+    "terminalOperator": "Port Houston"
   },
   {
     "unlocode": "USLAX",
@@ -1487,7 +1502,7 @@
   },
   {
     "unlocode": "ESGIJ",
-    "name": "Gijón",
+    "name": "Gij\u00f3n",
     "country": "ES",
     "lat": 43.533,
     "lon": -5.667,
@@ -1504,14 +1519,14 @@
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
-    "sourceNote": "Port of Gijón",
+    "sourceNote": "Port of Gij\u00f3n",
     "craneSWL": 50,
     "craneType": "gantry",
     "craneDataAsOf": "WPI-2025"
   },
   {
     "unlocode": "ESCAD",
-    "name": "Cádiz",
+    "name": "C\u00e1diz",
     "country": "ES",
     "lat": 36.529,
     "lon": -6.285,
@@ -1528,7 +1543,7 @@
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
-    "sourceNote": "Port of Cádiz",
+    "sourceNote": "Port of C\u00e1diz",
     "craneSWL": 50,
     "craneType": "gantry",
     "craneDataAsOf": "WPI-2025"
@@ -1632,7 +1647,7 @@
   },
   {
     "unlocode": "PTLEI",
-    "name": "Leixões",
+    "name": "Leix\u00f5es",
     "country": "PT",
     "lat": 41.183,
     "lon": -8.683,
@@ -1649,7 +1664,7 @@
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "Port of Leixões",
+    "sourceNote": "Port of Leix\u00f5es",
     "craneSWL": 50,
     "craneType": "gantry",
     "craneDataAsOf": "WPI-2025"
@@ -1679,7 +1694,7 @@
   },
   {
     "unlocode": "PTSET",
-    "name": "Setúbal",
+    "name": "Set\u00fabal",
     "country": "PT",
     "lat": 38.533,
     "lon": -8.9,
@@ -1697,7 +1712,7 @@
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
-    "sourceNote": "Port of Setúbal guide",
+    "sourceNote": "Port of Set\u00fabal guide",
     "craneSWL": 25,
     "craneType": "gantry",
     "craneDataAsOf": "WPI-2025"
@@ -1740,7 +1755,7 @@
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
-    "sourceNote": "Spanish North African enclave bunker hub — alt to Gibraltar Strait",
+    "sourceNote": "Spanish North African enclave bunker hub \u2014 alt to Gibraltar Strait",
     "craneSWL": 25,
     "craneType": "mobile",
     "craneDataAsOf": "WPI-2025"
@@ -2254,7 +2269,7 @@
   },
   {
     "unlocode": "HRPLE",
-    "name": "Ploče",
+    "name": "Plo\u010de",
     "country": "HR",
     "lat": 43.05,
     "lon": 17.433,
@@ -3002,7 +3017,7 @@
   },
   {
     "unlocode": "PLSWI",
-    "name": "Świnoujście",
+    "name": "\u015awinouj\u015bcie",
     "country": "PL",
     "lat": 53.9,
     "lon": 14.25,
@@ -3045,7 +3060,7 @@
   },
   {
     "unlocode": "DELBC",
-    "name": "Lübeck",
+    "name": "L\u00fcbeck",
     "country": "DE",
     "lat": 53.865,
     "lon": 10.683,
@@ -3083,7 +3098,7 @@
   },
   {
     "unlocode": "LVLPX",
-    "name": "Liepāja",
+    "name": "Liep\u0101ja",
     "country": "LV",
     "lat": 56.517,
     "lon": 21.017,
@@ -3486,7 +3501,7 @@
   },
   {
     "unlocode": "SEMMA",
-    "name": "Malmö",
+    "name": "Malm\u00f6",
     "country": "SE",
     "lat": 55.6,
     "lon": 13,
@@ -3554,7 +3569,7 @@
   },
   {
     "unlocode": "SELLA",
-    "name": "Luleå",
+    "name": "Lule\u00e5",
     "country": "SE",
     "lat": 65.583,
     "lon": 22.15,
@@ -3569,11 +3584,11 @@
     "tidal": false,
     "icePort": true,
     "dataConfidence": "medium",
-    "sourceNote": "Port of Luleå"
+    "sourceNote": "Port of Lule\u00e5"
   },
   {
     "unlocode": "SEUME",
-    "name": "Umeå",
+    "name": "Ume\u00e5",
     "country": "SE",
     "lat": 63.833,
     "lon": 20.25,
@@ -3590,11 +3605,11 @@
     "tidal": false,
     "icePort": true,
     "dataConfidence": "medium",
-    "sourceNote": "Port of Umeå"
+    "sourceNote": "Port of Ume\u00e5"
   },
   {
     "unlocode": "SESOO",
-    "name": "Söderhamn",
+    "name": "S\u00f6derhamn",
     "country": "SE",
     "lat": 61.3,
     "lon": 17.07,
@@ -3609,7 +3624,7 @@
     "tidal": false,
     "icePort": true,
     "dataConfidence": "low",
-    "sourceNote": "Söderhamn harbour"
+    "sourceNote": "S\u00f6derhamn harbour"
   },
   {
     "unlocode": "SEHEL",
@@ -3635,7 +3650,7 @@
   },
   {
     "unlocode": "SENRK",
-    "name": "Norrköping",
+    "name": "Norrk\u00f6ping",
     "country": "SE",
     "lat": 58.6,
     "lon": 16.183,
@@ -3653,7 +3668,7 @@
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
-    "sourceNote": "Port of Norrköping",
+    "sourceNote": "Port of Norrk\u00f6ping",
     "craneSWL": 100,
     "craneType": "gantry",
     "craneDataAsOf": "WPI-2025"
@@ -3767,7 +3782,7 @@
   },
   {
     "unlocode": "NOTOS",
-    "name": "Tromsø",
+    "name": "Troms\u00f8",
     "country": "NO",
     "lat": 69.667,
     "lon": 18.967,
@@ -3784,7 +3799,7 @@
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
-    "sourceNote": "Port of Tromsø web"
+    "sourceNote": "Port of Troms\u00f8 web"
   },
   {
     "unlocode": "NOTRD",
@@ -4931,7 +4946,7 @@
   },
   {
     "unlocode": "MVMLE",
-    "name": "Malé",
+    "name": "Mal\u00e9",
     "country": "MV",
     "lat": 4.167,
     "lon": 73.5,
@@ -4947,7 +4962,7 @@
     "tidal": false,
     "icePort": false,
     "dataConfidence": "low",
-    "sourceNote": "Malé port profile"
+    "sourceNote": "Mal\u00e9 port profile"
   },
   {
     "unlocode": "MYXPQ",
@@ -6853,7 +6868,7 @@
   },
   {
     "unlocode": "TGLFW",
-    "name": "Lomé",
+    "name": "Lom\u00e9",
     "country": "TG",
     "lat": 6.125,
     "lon": 1.227,
@@ -6870,7 +6885,7 @@
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
-    "sourceNote": "Lomé Port Aut."
+    "sourceNote": "Lom\u00e9 Port Aut."
   },
   {
     "unlocode": "BJCOO",
@@ -6918,7 +6933,7 @@
       "Tin Can Island",
       "TCICTL"
     ],
-    "note": "Tin Can Island Container Terminal — separate from Apapa (NGAPP) port complex",
+    "note": "Tin Can Island Container Terminal \u2014 separate from Apapa (NGAPP) port complex",
     "craneSWL": 100,
     "craneType": "floating",
     "craneDataAsOf": "WPI-2025"
@@ -7506,7 +7521,7 @@
   },
   {
     "unlocode": "RELPT",
-    "name": "Réunion",
+    "name": "R\u00e9union",
     "country": "RE",
     "lat": -20.933,
     "lon": 55.317,
@@ -8283,7 +8298,7 @@
   },
   {
     "unlocode": "CASEI",
-    "name": "Sept-Îles",
+    "name": "Sept-\u00celes",
     "country": "CA",
     "lat": 50.2,
     "lon": -66.383,
@@ -8298,7 +8313,7 @@
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
-    "sourceNote": "Sept-Îles port guide",
+    "sourceNote": "Sept-\u00celes port guide",
     "craneSWL": 100,
     "craneType": "gantry",
     "craneDataAsOf": "WPI-2025"
@@ -8463,7 +8478,7 @@
   },
   {
     "unlocode": "PAONX",
-    "name": "Colón",
+    "name": "Col\u00f3n",
     "country": "PA",
     "lat": 9.35,
     "lon": -79.867,
@@ -8506,7 +8521,7 @@
   },
   {
     "unlocode": "CRLIO",
-    "name": "Puerto Limón",
+    "name": "Puerto Lim\u00f3n",
     "country": "CR",
     "lat": 10,
     "lon": -83.033,
@@ -8525,7 +8540,7 @@
   },
   {
     "unlocode": "HNPCR",
-    "name": "Puerto Cortés",
+    "name": "Puerto Cort\u00e9s",
     "country": "HN",
     "lat": 15.85,
     "lon": -87.96,
@@ -8973,7 +8988,7 @@
   },
   {
     "unlocode": "BRBEL",
-    "name": "Belém",
+    "name": "Bel\u00e9m",
     "country": "BR",
     "lat": -1.45,
     "lon": -48.483,
@@ -8990,14 +9005,14 @@
     "tidal": true,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "CDP Belém",
+    "sourceNote": "CDP Bel\u00e9m",
     "craneSWL": 100,
     "craneType": "gantry",
     "craneDataAsOf": "WPI-2025"
   },
   {
     "unlocode": "BRITQ",
-    "name": "São Luís",
+    "name": "S\u00e3o Lu\u00eds",
     "country": "BR",
     "lat": -29.117,
     "lon": -56.55,
@@ -9063,7 +9078,7 @@
   },
   {
     "unlocode": "BRVIX",
-    "name": "Vitória",
+    "name": "Vit\u00f3ria",
     "country": "BR",
     "lat": -20.317,
     "lon": -40.317,
@@ -9080,14 +9095,14 @@
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
-    "sourceNote": "Port of Vitória",
+    "sourceNote": "Port of Vit\u00f3ria",
     "craneSWL": 25,
     "craneType": "gantry",
     "craneDataAsOf": "WPI-2025"
   },
   {
     "unlocode": "BRPNG",
-    "name": "Paranaguá",
+    "name": "Paranagu\u00e1",
     "country": "BR",
     "lat": -25.5,
     "lon": -48.517,
@@ -9105,14 +9120,14 @@
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
-    "sourceNote": "APPA/Porto de Paranaguá",
+    "sourceNote": "APPA/Porto de Paranagu\u00e1",
     "craneSWL": 100,
     "craneType": "gantry",
     "craneDataAsOf": "WPI-2025"
   },
   {
     "unlocode": "BRITJ",
-    "name": "Itajaí",
+    "name": "Itaja\u00ed",
     "country": "BR",
     "lat": -26.9,
     "lon": -48.65,
@@ -9129,7 +9144,7 @@
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
-    "sourceNote": "Porto de Itajaí",
+    "sourceNote": "Porto de Itaja\u00ed",
     "craneSWL": 50,
     "craneType": "floating",
     "craneDataAsOf": "WPI-2025"
@@ -9317,7 +9332,7 @@
   },
   {
     "unlocode": "ARBHI",
-    "name": "Bahía Blanca",
+    "name": "Bah\u00eda Blanca",
     "country": "AR",
     "lat": -38.717,
     "lon": -62.283,
@@ -9341,7 +9356,7 @@
   },
   {
     "unlocode": "ARQQN",
-    "name": "Quequén",
+    "name": "Quequ\u00e9n",
     "country": "AR",
     "lat": -38.533,
     "lon": -58.7,
@@ -9481,7 +9496,7 @@
   },
   {
     "unlocode": "CLVAP",
-    "name": "Valparaíso",
+    "name": "Valpara\u00edso",
     "country": "CL",
     "lat": -33.033,
     "lon": -71.633,
@@ -9496,7 +9511,7 @@
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "Port of Valparaíso/TPS",
+    "sourceNote": "Port of Valpara\u00edso/TPS",
     "craneSWL": 100,
     "craneType": "gantry",
     "craneDataAsOf": "WPI-2025"
@@ -9617,7 +9632,7 @@
   },
   {
     "unlocode": "ECPBO",
-    "name": "Puerto Bolívar",
+    "name": "Puerto Bol\u00edvar",
     "country": "EC",
     "lat": -3.267,
     "lon": -79.983,
@@ -9632,7 +9647,7 @@
     "tidal": true,
     "icePort": false,
     "dataConfidence": "medium",
-    "sourceNote": "Puerto Bolívar terminal"
+    "sourceNote": "Puerto Bol\u00edvar terminal"
   },
   {
     "unlocode": "ECGYE",
@@ -9728,7 +9743,7 @@
   },
   {
     "unlocode": "ESLCG",
-    "name": "A Coruña",
+    "name": "A Coru\u00f1a",
     "country": "ES",
     "lat": 43.367,
     "lon": -8.383,
@@ -9799,7 +9814,7 @@
   },
   {
     "unlocode": "ISREY",
-    "name": "Reykjavík",
+    "name": "Reykjav\u00edk",
     "country": "IS",
     "lat": 64.15,
     "lon": -21.95,
@@ -9816,7 +9831,7 @@
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "Faxaflóahafnir"
+    "sourceNote": "Faxafl\u00f3ahafnir"
   },
   {
     "unlocode": "ISAKU",
@@ -9854,7 +9869,7 @@
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "Ukrainian Danube port authority — grain/steel exports, shore cranes available",
+    "sourceNote": "Ukrainian Danube port authority \u2014 grain/steel exports, shore cranes available",
     "craneSWL": 50,
     "craneType": "gantry",
     "craneDataAsOf": "WPI-2025"
@@ -9876,7 +9891,7 @@
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "Ukrainian Danube port — grain/general cargo, shore cranes",
+    "sourceNote": "Ukrainian Danube port \u2014 grain/general cargo, shore cranes",
     "craneSWL": 50,
     "craneType": "gantry",
     "craneDataAsOf": "WPI-2025"
@@ -9899,7 +9914,7 @@
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "Turkish Marmara port on Gulf of Izmit — steel/container/general cargo hub, cranes",
+    "sourceNote": "Turkish Marmara port on Gulf of Izmit \u2014 steel/container/general cargo hub, cranes",
     "craneSWL": 25,
     "craneType": "gantry",
     "craneDataAsOf": "WPI-2025"
@@ -9921,7 +9936,7 @@
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "Turkish Mediterranean port — general cargo + cruise, shore cranes",
+    "sourceNote": "Turkish Mediterranean port \u2014 general cargo + cruise, shore cranes",
     "craneSWL": 25,
     "craneType": "gantry",
     "craneDataAsOf": "WPI-2025"
@@ -9950,7 +9965,7 @@
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "Nigerian Ports Authority — Apapa Port Complex"
+    "sourceNote": "Nigerian Ports Authority \u2014 Apapa Port Complex"
   },
   {
     "unlocode": "GHTEM",
@@ -10204,7 +10219,7 @@
       "La Luz",
       "Puerto de La Luz"
     ],
-    "note": "Canary Islands transshipment hub, major bunkering port — common Atlantic/WAfr cargo waypoint (Phase E5)",
+    "note": "Canary Islands transshipment hub, major bunkering port \u2014 common Atlantic/WAfr cargo waypoint (Phase E5)",
     "craneSWL": 100,
     "craneType": "gantry",
     "craneDataAsOf": "WPI-2025"
@@ -10346,7 +10361,7 @@
       "Porto di Savona"
     ],
     "_note": "Savona Alti Fondali berths max 14.5m. For Vado Ligure SECH terminal (separate port ITVDL), see that entry.",
-    "note": "Italian Ligurian coast; RORO, container, bulk — common Western Med cargo origin (Phase E5)",
+    "note": "Italian Ligurian coast; RORO, container, bulk \u2014 common Western Med cargo origin (Phase E5)",
     "craneSWL": 100,
     "craneType": "gantry",
     "craneDataAsOf": "WPI-2025"
@@ -10405,7 +10420,7 @@
       "Porto de Figueira da Foz",
       "Figuera De Foz"
     ],
-    "_note": "Conservative 5.5m for inner cargo berths (Costa do Sol, Penedo da Saudade). Bar reaches 6.5m at HW spring tides, but inner berths cap at 4.9-6.1m. Tidal — large vessels schedule around HW.",
+    "_note": "Conservative 5.5m for inner cargo berths (Costa do Sol, Penedo da Saudade). Bar reaches 6.5m at HW spring tides, but inner berths cap at 4.9-6.1m. Tidal \u2014 large vessels schedule around HW.",
     "note": "Portuguese river port on Mondego; forest products/pulp/grain; tidal access (Phase E5)",
     "craneSWL": 50,
     "craneType": "mobile",
@@ -10634,7 +10649,7 @@
     "maxDraftM": 11,
     "hasShoreCranes": true,
     "berthType": "deep-sea",
-    "note": "Valletta — central Med bunkering hub",
+    "note": "Valletta \u2014 central Med bunkering hub",
     "craneSWL": 100,
     "craneType": "gantry",
     "craneDataAsOf": "WPI-2025"
@@ -10694,7 +10709,7 @@
     "berthType": "river",
     "note": "Danube/Prut, Moldova free port",
     "aliases": [
-      "Giurgiulești",
+      "Giurgiule\u0219ti",
       "Giurgiuleshti"
     ]
   },
@@ -10731,7 +10746,7 @@
     "berthType": "deep-sea",
     "note": "Gulf of Izmit (Korfez)",
     "aliases": [
-      "Yarımca"
+      "Yar\u0131mca"
     ],
     "craneSWL": 50,
     "craneType": "gantry",
