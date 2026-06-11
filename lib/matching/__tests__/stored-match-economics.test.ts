@@ -156,4 +156,36 @@ describe('computeStoredMatchEconomics — single source of truth', () => {
     expect(result.tce_breakdown).not.toBeNull();
     expect(result.tce_breakdown!.da_usd).toBe(0);
   });
+
+  // Stage 8 behavioral: computeStoredMatchEconomics delegates breakdown derivation
+  // directly to computeTce — no computeEstimatedTce deprecation warning emitted.
+  it('Stage 8: no deprecation warn when bunkerPriceUsdPerMt omitted — direct computeTce for breakdown', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const result = computeStoredMatchEconomics({
+      cargo: {
+        emailId: 's8-c',
+        itemIndex: 0,
+        originPort: { value: 'Rotterdam', confidence: 'confirmed', source_text: 'Rotterdam' },
+        destinationPort: { value: 'Singapore', confidence: 'confirmed', source_text: 'Singapore' },
+        cargoType: 'BULK',
+        freightRateUsd: 30,
+        weightMt: { value: 55000, confidence: 'confirmed', source_text: '55000' },
+      } as any,
+      vessel: {
+        emailId: 's8-v',
+        itemIndex: 0,
+        dwtSummer: { value: 55000, confidence: 'confirmed', source_text: '55000' },
+        speedLaden: '13',
+        consumption: '26',
+        openPosition: null,
+      } as any,
+      // bunkerPriceUsdPerMt not supplied → DEFAULT applied without computeEstimatedTce warn
+    });
+    expect(result.tce_usd_per_day).not.toBeNull();
+    expect(result.tce_breakdown).not.toBeNull();
+    expect(warnSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining('computeEstimatedTce: bunkerPriceUsdPerMt not supplied'),
+    );
+    warnSpy.mockRestore();
+  });
 });
