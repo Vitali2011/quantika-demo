@@ -56,7 +56,10 @@ function checkDraftLaden(
   cargoTons?: number | null,
 ): FilterResult {
   if (estimate == null) {
-    return checkDraft(port, staticDraftM);
+    const r = portCanHandleDraft(port, staticDraftM);
+    const portLimitM = r.portDraftM ?? undefined;
+    if (!r.ok) return { pass: false, reason: r.reason, portLimitM };
+    return { pass: true, portLimitM };
   }
   const r = portCanHandleDraft(port, estimate.ladenDraftM);
   const portLimitM = r.portDraftM ?? undefined;

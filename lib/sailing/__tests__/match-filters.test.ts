@@ -667,4 +667,48 @@ describe('runHardFilters — laden-draft gate (M3)', () => {
     expect(r.checks.destDraft.estimatedLadenDraftM).toBeCloseTo(12.9, 1);
     expect(r.checks.destDraft.portLimitM).toBe(12.5);
   });
+
+  it('fallback portLimitM: estimate=null (unknown cargo) → portLimitM still populated from port data', () => {
+    // Option C: checkDraftLaden fallback path now returns portLimitM even when estimate is null
+    const r = runHardFilters({
+      cargoType: 'BULK',
+      originPort: 'Rotterdam',    // maxDraftM=24
+      destinationPort: 'Alexandria', // maxDraftM=12.5
+      weightMt: null,             // unknown → estimate=null → fallback path
+      cargoDescription: 'grain',
+      stowageFactor: null,
+      vesselType: 'bulk carrier',
+      geared: true,
+      draftMax: 11.0,
+      grainCapacity: 70000,
+      dwtSummer: 58000,
+      dwcc: null,
+    });
+    expect(r.checks.draft.pass).toBe(true);
+    expect(r.checks.destDraft.pass).toBe(true);
+    // portLimitM must be populated even in the estimate=null fallback path
+    expect(r.checks.draft.portLimitM).toBe(24);
+    expect(r.checks.destDraft.portLimitM).toBe(12.5);
+  });
+
+  it('fallback portLimitM: estimate=null, unknown port → portLimitM stays null (graceful)', () => {
+    const r = runHardFilters({
+      cargoType: 'BULK',
+      originPort: 'PortAtlantis',
+      destinationPort: 'PortAtlantis',
+      weightMt: null,
+      cargoDescription: 'grain',
+      stowageFactor: null,
+      vesselType: 'bulk carrier',
+      geared: true,
+      draftMax: 11.0,
+      grainCapacity: 70000,
+      dwtSummer: 58000,
+      dwcc: null,
+    });
+    expect(r.checks.draft.pass).toBe(true);
+    expect(r.checks.destDraft.pass).toBe(true);
+    expect(r.checks.draft.portLimitM).toBeUndefined();
+    expect(r.checks.destDraft.portLimitM).toBeUndefined();
+  });
 });
