@@ -260,7 +260,9 @@ describe('checkCargoVesselCompat', () => {
 // ────────────────────────────────────────────────────────────────────────────
 
 describe('runHardFilters — destination port draft', () => {
-  it('fails when vessel draft exceeds destination port max draft', () => {
+  it('lightly-loaded vessel (3000t on 10k DWT): laden ~5.5m within Mykolaiv 10.5m — passes despite static 12m max draft', () => {
+    // PI3 re-derive (M3): laden = 0.4991×10000^0.2991 × (0.3)^0.3 ≈ 7.85×0.697 ≈ 5.5m < 10.5m → pass
+    // static draftMax=12.0 would have failed pre-M3; laden-gate correctly passes
     const r = runHardFilters({
       cargoType: 'BULK',
       originPort: 'Mykolaiv',
@@ -270,15 +272,14 @@ describe('runHardFilters — destination port draft', () => {
       stowageFactor: null,
       vesselType: 'bulk carrier',
       geared: true,
-      draftMax: 12.0,   // exceeds Mykolaiv maxDraftM=10.5
+      draftMax: 12.0,
       grainCapacity: 6000,
       dwtSummer: 10000,
       dwcc: null,
     });
-    expect(r.pass).toBe(false);
-    expect(r.checks.destDraft.pass).toBe(false);
-    expect(r.checks.destDraft.reason).toMatch(/draft/i);
-    expect(r.failures.some((f) => /draft/i.test(f))).toBe(true);
+    expect(r.checks.destDraft.pass).toBe(true);
+    expect(r.checks.draft.pass).toBe(true);
+    expect(r.pass).toBe(true);
   });
 
   it('fails when vessel draft exceeds destination port max but origin port is fine', () => {
@@ -554,5 +555,116 @@ describe('runHardFilters — IMSBC integration', () => {
     });
     expect(r.pass).toBe(true);
     expect(r.checks.imsbc.pass).toBe(true);
+  });
+});
+
+// ────────────────────────────────────────────────────────────────────────────
+// M3: laden-draft gate — checkDraftLaden wired into runHardFilters
+// Hand-derived: 58k DWT + 52k cargo → fullLoad≈13.27m → laden≈12.84m → ceil→12.9m
+// Alexandria maxDraftM=12.5m, Rotterdam=24m, Mykolaiv=10.5m
+// ────────────────────────────────────────────────────────────────────────────
+
+describe('runHardFilters — laden-draft gate (M3)', () => {
+  it('catches overdraft: static passes (11m < 12.5m) but laden 12.9m > Alexandria 12.5m → fail', () => {
+    // Research §5 worked example: Handymax 58k DWT, 52k grain, 12.5m discharge limit
+    const r = runHardFilters({
+      cargoType: 'BULK',
+      originPort: 'Rotterdam',    // 24m limit — origin passes
+      destinationPort: 'Alexandria', // 12.5m limit — laden 12.9m fails
+      weightMt: 52000,
+      cargoDescription: 'grain',
+      stowageFactor: null,
+      vesselType: 'bulk carrier',
+      geared: true,
+      draftMax: 11.0,             // static 11m would pass Alexandria 12.5m
+      grainCapacity: 70000,
+      dwtSummer: 58000,
+      dwcc: null,
+    });
+    expect(r.pass).toBe(false);
+    expect(r.checks.destDraft.pass).toBe(false);
+    expect(r.checks.destDraft.reason).toMatch(/laden.*draft|draft.*laden/i);
+    expect(r.checks.destDraft.reason).toMatch(/12\.[5-9]|13/);
+    expect(r.failures.some((f) => /laden|estimated/i.test(f))).toBe(true);
+  });
+
+  it('fallback: cargo unknown → static check → passes (static 11m < 12.5m Alexandria)', () => {
+    const r = runHardFilters({
+      cargoType: 'BULK',
+      originPort: 'Rotterdam',
+      destinationPort: 'Alexandria',
+      weightMt: null,              // no cargo weight → estimateLadenDraft returns null
+      cargoDescription: 'grain',
+      stowageFactor: null,
+      vesselType: 'bulk carrier',
+      geared: true,
+      draftMax: 11.0,
+      grainCapacity: 70000,
+      dwtSummer: 58000,
+      dwcc: null,
+    });
+    expect(r.checks.destDraft.pass).toBe(true);
+  });
+
+  it('unknown port → passes gracefully (unchanged)', () => {
+    const r = runHardFilters({
+      cargoType: 'BULK',
+      originPort: 'PortAtlantis',
+      destinationPort: 'PortAtlantis',
+      weightMt: 52000,
+      cargoDescription: 'grain',
+      stowageFactor: null,
+      vesselType: 'bulk carrier',
+      geared: true,
+      draftMax: 11.0,
+      grainCapacity: 70000,
+      dwtSummer: 58000,
+      dwcc: null,
+    });
+    expect(r.checks.draft.pass).toBe(true);
+    expect(r.checks.destDraft.pass).toBe(true);
+  });
+
+  it('destDraft fails on tighter dest port: Rotterdam→Mykolaiv, laden 12.9m > 10.5m', () => {
+    const r = runHardFilters({
+      cargoType: 'BULK',
+      originPort: 'Rotterdam',      // 24m — origin passes
+      destinationPort: 'Mykolaiv',  // 10.5m — laden 12.9m fails
+      weightMt: 52000,
+      cargoDescription: 'grain',
+      stowageFactor: null,
+      vesselType: 'bulk carrier',
+      geared: true,
+      draftMax: 11.0,               // static would pass Mykolaiv at 10.5m… but wait no: 11>10.5
+      grainCapacity: 70000,
+      dwtSummer: 58000,
+      dwcc: null,
+    });
+    // static 11m already fails Mykolaiv (10.5m) but the laden check reason differs
+    expect(r.checks.destDraft.pass).toBe(false);
+    expect(r.checks.draft.pass).toBe(true);   // Rotterdam passes laden 12.9m < 24m
+  });
+
+  it('FilterResult carries estimatedLadenDraftM and portLimitM when laden check used', () => {
+    const r = runHardFilters({
+      cargoType: 'BULK',
+      originPort: 'Rotterdam',
+      destinationPort: 'Alexandria',
+      weightMt: 52000,
+      cargoDescription: 'grain',
+      stowageFactor: null,
+      vesselType: 'bulk carrier',
+      geared: true,
+      draftMax: 11.0,
+      grainCapacity: 70000,
+      dwtSummer: 58000,
+      dwcc: null,
+    });
+    // origin Rotterdam passes with laden estimate
+    expect(r.checks.draft.estimatedLadenDraftM).toBeCloseTo(12.9, 1);
+    expect(r.checks.draft.portLimitM).toBe(24);
+    // dest Alexandria fails with laden estimate
+    expect(r.checks.destDraft.estimatedLadenDraftM).toBeCloseTo(12.9, 1);
+    expect(r.checks.destDraft.portLimitM).toBe(12.5);
   });
 });
