@@ -6,6 +6,7 @@ import {
   createMatch,
 } from '@/lib/matching/matches-repository';
 import type { MatchStatus } from '@/lib/matching/matches-repository';
+import { attachPortLimits } from '@/lib/matching/attach-port-limits';
 
 export const dynamic = 'force-dynamic';
 
@@ -109,7 +110,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       user_id: sessionId,
     });
 
-    return NextResponse.json({ matches }, { status: 200 });
+    // Attach live port-master draft limits server-side (keeps the port corpus out of
+    // the /matches client bundle — same enrichment as the RSC page, qa-956).
+    return NextResponse.json({ matches: attachPortLimits(matches) }, { status: 200 });
   } catch {
     return NextResponse.json(
       { error: 'Internal server error' },
