@@ -200,4 +200,43 @@ describe('DraftCalcBreakdown', () => {
     expect(body.textContent).toContain('2,720');
     expect(body.textContent).toContain('approximate, conservative');
   });
+
+  it('live-limit load: portLimitM null + loadPortLimit provided → shows live limit with source note', () => {
+    const noStoredLimit: HardFilterCheck = { pass: true, estimatedLadenDraftM: 11.2 };
+    setup({
+      loadPort: 'Nemrut Bay',
+      dischargePort: 'Berbera',
+      draftCheck: noStoredLimit,
+      destDraftCheck: { pass: true, estimatedLadenDraftM: 11.2 },
+      dwtSummer: 58000,
+      weightMt: 52000,
+      loadPortLimit: 14,
+      dischargePortLimit: 17,
+    });
+    fireEvent.click(screen.getByTestId('draft-calc-toggle'));
+    const body = screen.getByTestId('draft-calc-body');
+    // Should show live limits, not "limit unknown"
+    expect(body.textContent).not.toContain('limit unknown');
+    expect(body.textContent).toContain('14.0 m');
+    expect(body.textContent).toContain('17.0 m');
+    // Should indicate source is live directory
+    expect(body.textContent).toContain('live ref.');
+  });
+
+  it('live-limit both null: loadPortLimit null → "limit unknown → pass (no data)"', () => {
+    const noStoredLimit: HardFilterCheck = { pass: true, estimatedLadenDraftM: 11.2 };
+    setup({
+      loadPort: 'Tanjung Pelepas',
+      dischargePort: null,
+      draftCheck: noStoredLimit,
+      destDraftCheck: { pass: true, estimatedLadenDraftM: 11.2 },
+      dwtSummer: 58000,
+      weightMt: 52000,
+      loadPortLimit: null,
+      dischargePortLimit: null,
+    });
+    fireEvent.click(screen.getByTestId('draft-calc-toggle'));
+    const body = screen.getByTestId('draft-calc-body');
+    expect(body.textContent).toContain('limit unknown → pass (no data)');
+  });
 });

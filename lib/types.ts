@@ -472,13 +472,13 @@ export interface MatchWorksheet {
     loadPort: string | null;
     dischargePort: string | null;
   };
-  hardFilters: {
-    draft: HardFilterCheck;
-    crane: HardFilterCheck;
-    volume: HardFilterCheck;
-    /** M4: destination (discharge) port draft check — optional, absent in pre-M4 persisted data. */
-    destDraft?: HardFilterCheck;
-  };
+  /** Full hard-filter result set (all 14 gates) — persisted for the all-checks accordion.
+   *  Optional gates absent in pre-this-PR persisted data render with a neutral "not evaluated" state. */
+  hardFilters: Pick<MatchHardFilters, 'draft' | 'crane' | 'volume'> & Partial<Omit<MatchHardFilters, 'draft' | 'crane' | 'volume'>>;
+  /** Sanctions screening result — persisted for the sanctions disclosure. Absent pre-this-PR. */
+  sanctions?: MatchSanctions;
+  /** Realism-bucket placement + reason (derived at persist time). Absent pre-this-PR. */
+  bucketReason?: import('./matching/bucket-reason').BucketReason;
 }
 
 export interface Match {
