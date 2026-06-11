@@ -42,9 +42,11 @@ interface MatchTabsProps {
   vesselEmailBody?: string | null;
   /** Payout condition extracted from cargo email (Task D — optional). */
   payoutCondition?: string | null;
+  /** DWT-tiered breakeven TCE floor (persisted, migration 050). */
+  storedBreakevenTce?: number | null;
 }
 
-export function MatchTabs({ match, vessel, cargo, cargoEmailId, matchDbId, storedFreightRate, freightRateSource, storedDistanceNm, storedTceUsdPerDay, ballastDistanceNm, consumptionEstimated, balticRateAsOf, cargoEmailBody, vesselEmailBody, payoutCondition }: MatchTabsProps) {
+export function MatchTabs({ match, vessel, cargo, cargoEmailId, matchDbId, storedFreightRate, freightRateSource, storedDistanceNm, storedTceUsdPerDay, ballastDistanceNm, consumptionEstimated, balticRateAsOf, cargoEmailBody, vesselEmailBody, payoutCondition, storedBreakevenTce }: MatchTabsProps) {
   const [activeTab, setActiveTab] = useState<TabId>('vessels');
   const uid = useId();
 
@@ -103,6 +105,7 @@ export function MatchTabs({ match, vessel, cargo, cargoEmailId, matchDbId, store
             ballastDistanceNm={ballastDistanceNm}
             consumptionEstimated={consumptionEstimated}
             balticRateAsOf={balticRateAsOf}
+            storedBreakevenTce={storedBreakevenTce}
           />
         )}
         {activeTab === 'passport' && (

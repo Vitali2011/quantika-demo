@@ -18,6 +18,7 @@ import type { WarRiskBreakdown } from '@/lib/economics/war-risk';
 import type { TCEBreakdown } from '@/lib/economics/voyage-calculator';
 import { DataQualityBadge } from '@/components/data-quality/DataQualityBadge';
 import { deriveTier } from '@/lib/data-quality/derive';
+import { FreightWaterfall } from './FreightWaterfall';
 
 interface EconomicsTabProps {
   commissionPercent?: number | null;
@@ -42,6 +43,8 @@ interface EconomicsTabProps {
   consumptionEstimated?: boolean | null;
   /** ISO date of the Baltic TC rate used for the stored TCE (W6a staleness badge). */
   balticRateAsOf?: string | null;
+  /** DWT-tiered breakeven TCE floor (persisted, migration 050). */
+  storedBreakevenTce?: number | null;
 }
 
 function parseLeadingNumber(s: string | null | undefined): number {
@@ -75,7 +78,7 @@ function portLabel(locode: string): string {
   return PORT_NAMES[locode] ?? locode;
 }
 
-export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm, matchDbId, storedFreightRate, freightRateSource, warRiskPremium, warRiskZones, warRiskBreakdown, warRiskBreakdownBallast, warRiskZonesBallast, storedTceUsdPerDay, ballastDistanceNm, consumptionEstimated, balticRateAsOf }: EconomicsTabProps) {
+export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm, matchDbId, storedFreightRate, freightRateSource, warRiskPremium, warRiskZones, warRiskBreakdown, warRiskBreakdownBallast, warRiskZonesBallast, storedTceUsdPerDay, ballastDistanceNm, consumptionEstimated, balticRateAsOf, storedBreakevenTce }: EconomicsTabProps) {
   const [open, setOpen] = useState(false);
   const [bunkerPriceUsdPerMt, setBunkerPriceUsdPerMt] = useState('');
   const [overrideRate, setOverrideRate] = useState(storedFreightRate != null ? String(storedFreightRate) : '');
@@ -475,6 +478,9 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
         </div>
       )}
 
+      {/* Freight source waterfall — how the rate was derived */}
+      <FreightWaterfall source={freightRateSource ?? null} rateUsdPerMt={storedFreightRate ?? null} />
+
       {commissionPercent != null && (
         <div>
           <span className="text-gray-500">Commission</span>
@@ -740,6 +746,20 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
                   ${storedTceUsdPerDay.toLocaleString('en-US')}/day
                 </span>
                 <span className="ml-1 text-amber-600 text-xs">(assumed consumption)</span>
+              </div>
+            )}
+            {/* Breakeven floor vs persisted TCE */}
+            {storedBreakevenTce != null && (
+              <div className="flex justify-between text-xs text-ds-text-muted mt-2" data-testid="breakeven-line">
+                <span>Breakeven floor (size-tiered)</span>
+                <span className="font-mono">
+                  ${storedBreakevenTce.toLocaleString('en-US')}/day
+                  {storedTceUsdPerDay != null && (
+                    <span className={storedTceUsdPerDay >= storedBreakevenTce ? 'text-emerald-600 ml-1' : 'text-red-500 ml-1'}>
+                      {storedTceUsdPerDay >= storedBreakevenTce ? '✓ above' : '✗ below'}
+                    </span>
+                  )}
+                </span>
               </div>
             )}
             {/* W6a: Baltic TC staleness badge */}
