@@ -154,7 +154,7 @@ function PanelContent({
                         <span className="font-medium text-ds-text">
                           {c.label}
                           {c.bracketData && (
-                            <span className="ml-1 font-mono text-[10px] text-ds-text-subtle">[{c.bracketData}]</span>
+                            <span className="ml-1 font-mono text-xs text-ds-text-subtle">[{c.bracketData}]</span>
                           )}
                         </span>
                         <span className={`font-mono ${Math.round(c.score / c.weight * 100) >= 60 ? 'text-emerald-600' : 'text-slate-400'}`}>
@@ -168,7 +168,7 @@ function PanelContent({
                         />
                       </div>
                       {c.rationale && (
-                        <p className="text-[11px] text-ds-text-muted leading-relaxed">{c.rationale}</p>
+                        <p className="text-xs text-ds-text-muted leading-relaxed">{c.rationale}</p>
                       )}
                     </div>
                   ))}
