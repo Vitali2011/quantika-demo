@@ -175,21 +175,6 @@ describe('QuoteTab — Generate Draft button (async job flow)', () => {
     });
   });
 
-  it('Send Quote is disabled when draft textarea is empty', () => {
-    mockFetchResponses();
-    renderWithToast(<QuoteTab cargoEmailId="email-001" />);
-    const sendBtn = screen.getByRole('button', { name: /send quote/i });
-    expect(sendBtn).toBeDisabled();
-  });
-
-  it('Send Quote remains disabled in demo even after draft textarea is filled', () => {
-    mockFetchResponses();
-    renderWithToast(<QuoteTab cargoEmailId="email-001" />);
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'USD 15/MT' } });
-    const sendBtn = screen.getByRole('button', { name: /send quote/i });
-    expect(sendBtn).toBeDisabled();
-  });
-
   it('shows a friendly message (not raw SyntaxError) when the response body is empty', async () => {
     global.fetch = jest.fn().mockImplementation((url: string) => {
       if (String(url).includes('/api/ai/draft-quote')) {

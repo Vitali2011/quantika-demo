@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { ConfidenceBadge } from './ConfidenceBadge';
 import type { MatchConfidence } from '@/lib/confidence';
 import { useToast } from '@/components/ui/toast';
@@ -18,6 +18,8 @@ export function QuoteTab({ cargoEmailId, confidence, matchId }: QuoteTabProps) {
     useQuoteJob(cargoEmailId, (msg) => toast.error(msg), matchId);
   const [draft, setDraft] = useState('');
   const [prevHookDraft, setPrevHookDraft] = useState('');
+  const [copied, setCopied] = useState(false);
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Sync generated draft into textarea without useEffect (derived-state pattern)
   if (hookDraft !== prevHookDraft) {
@@ -26,6 +28,26 @@ export function QuoteTab({ cargoEmailId, confidence, matchId }: QuoteTabProps) {
   }
 
   const generating = state === 'queued' || state === 'processing';
+
+  async function handleCopy() {
+    if (!draft) return;
+    try {
+      await navigator.clipboard.writeText(draft);
+    } catch {
+      // fallback for http
+      const ta = document.createElement('textarea');
+      ta.value = draft;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    setCopied(true);
+    if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+    copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+  }
 
   return (
     <div data-testid="tab-quote" className="flex flex-col gap-2 text-sm">
@@ -61,22 +83,12 @@ export function QuoteTab({ cargoEmailId, confidence, matchId }: QuoteTabProps) {
           value={draft}
           onChange={e => setDraft(e.target.value)}
         />
-      </div>
-
-      <div className="flex gap-2">
         <button
-          className="rounded bg-blue-600 px-4 py-2 text-white text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed"
-          disabled
-          title="Not available in demo"
+          onClick={handleCopy}
+          disabled={!draft}
+          className="self-start rounded bg-gray-100 px-3 py-1 text-xs text-gray-700 hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          Send Quote
-        </button>
-        <button
-          className="rounded border border-gray-200 px-4 py-2 text-sm disabled:opacity-40 disabled:cursor-not-allowed"
-          disabled
-          title="Not available in demo"
-        >
-          Save Draft
+          {copied ? 'Copied ✓' : 'Copy'}
         </button>
       </div>
     </div>
