@@ -316,8 +316,11 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
   }
   const ballastNm = input.ballastDistanceNm;
   const ballastOpenPos = input.vesselOpenPosition;
+  const ballastTransitsSuez = ballastNm != null && ballastNm > 0 && !!ballastOpenPos && !!input.loadPort
+    ? _routeTransitsSuez(ballastOpenPos, input.loadPort)
+    : false;
   if (ballastNm != null && ballastNm > 0 && ballastOpenPos && input.loadPort) {
-    if (_routeTransitsSuez(ballastOpenPos, input.loadPort) && input.vesselDwt > 0) {
+    if (ballastTransitsSuez && input.vesselDwt > 0) {
       canalUsd += _quoteSuezSafe(input.vesselDwt, false);
     }
     if (_routeTransitsBosporus(ballastOpenPos, input.loadPort) && input.vesselDwt > 0) {
@@ -364,7 +367,11 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
   });
 
   const warLaden = calculateWarRiskPremium({
-    route: { fromPort: input.loadPort ?? '', toPort: input.dischargePort ?? '' },
+    route: {
+      fromPort: input.loadPort ?? '',
+      toPort: input.dischargePort ?? '',
+      viaCanal: ladenTransitsSuez ? 'suez' : undefined,
+    },
     vesselValueUsd: input.vesselValueUsd ?? estimateVesselValueUsd(safeDwt),
   });
 
@@ -372,7 +379,11 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
   const warBallast =
     openPos && input.loadPort
       ? calculateWarRiskPremium({
-          route: { fromPort: openPos, toPort: input.loadPort },
+          route: {
+            fromPort: openPos,
+            toPort: input.loadPort,
+            viaCanal: ballastTransitsSuez ? 'suez' : undefined,
+          },
           vesselValueUsd: input.vesselValueUsd ?? estimateVesselValueUsd(safeDwt),
         })
       : { applicable: false, premiumUsd: 0, zones: [], zoneIds: [] as string[] };

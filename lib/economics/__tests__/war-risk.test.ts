@@ -1,4 +1,5 @@
 import { calculateWarRiskPremium, JWC_HRA_ZONES } from '../war-risk';
+import { __resetRateCacheForTest, loadJwcRates } from '../war-risk-rates';
 
 describe('JWC_HRA_ZONES', () => {
   it('contains at least 4 HRA zones with per-transit premium > 0', () => {
@@ -31,30 +32,30 @@ describe('calculateWarRiskPremium (per-voyage rate model — βf-04)', () => {
     expect(result.zones).toHaveLength(0);
   });
 
-  it('Gulf of Guinea HRA: $8M vessel → ~$4,000 (0.05% per transit)', () => {
+  it('Gulf of Guinea HRA: $8M vessel → ~$40,000 (0.50% per transit, live rate)', () => {
     const result = calculateWarRiskPremium({
       route: { fromPort: 'Rotterdam', toPort: 'Lagos' },
       vesselValueUsd: 8_000_000,
       daysInHra: 5,
     });
     expect(result.applicable).toBe(true);
-    expect(result.premiumUsd).toBeGreaterThanOrEqual(3_500);
-    expect(result.premiumUsd).toBeLessThanOrEqual(5_000);
+    expect(result.premiumUsd).toBeGreaterThanOrEqual(37_000);
+    expect(result.premiumUsd).toBeLessThanOrEqual(43_000);
     expect(result.zones.some(z => /guinea/i.test(z))).toBe(true);
   });
 
-  it('Red Sea / Bab al-Mandeb (Suez transit): $10M vessel → ~$7,500 (0.075%)', () => {
+  it('Red Sea / Bab al-Mandeb (Suez transit): $10M vessel → ~$20,000 (0.20% live rate)', () => {
     const result = calculateWarRiskPremium({
       route: { fromPort: 'Rotterdam', toPort: 'Singapore', viaCanal: 'Suez' },
       vesselValueUsd: 10_000_000,
       daysInHra: 1,
     });
     expect(result.applicable).toBe(true);
-    expect(result.premiumUsd).toBeGreaterThanOrEqual(7_000);
-    expect(result.premiumUsd).toBeLessThanOrEqual(9_000);
+    expect(result.premiumUsd).toBeGreaterThanOrEqual(18_000);
+    expect(result.premiumUsd).toBeLessThanOrEqual(22_000);
   });
 
-  it('Black Sea HRA when any port is in Russia/Ukraine area: $12M → $12,000 (0.10%)', () => {
+  it('Black Sea HRA when any port is in Russia/Ukraine area: $12M → $78,000 (0.65% live rate)', () => {
     const result = calculateWarRiskPremium({
       route: { fromPort: 'Odessa', toPort: 'Rotterdam' },
       vesselValueUsd: 12_000_000,
@@ -62,7 +63,7 @@ describe('calculateWarRiskPremium (per-voyage rate model — βf-04)', () => {
     });
     expect(result.applicable).toBe(true);
     expect(result.zones.some(z => /black sea/i.test(z))).toBe(true);
-    expect(result.premiumUsd).toBeCloseTo(12_000, -1);
+    expect(result.premiumUsd).toBeCloseTo(78_000, -1);
   });
 
   it('premium scales with vessel value (per-voyage, days-independent)', () => {
@@ -99,8 +100,8 @@ describe('calculateWarRiskPremium (per-voyage rate model — βf-04)', () => {
       daysInHra: 1,
     });
     expect(result.applicable).toBe(true);
-    // 8M × 0.05% = $4,000
-    expect(result.premiumUsd).toBeCloseTo(4_000, -1);
+    // 8M × 0.50% (live GoG rate) = $40,000
+    expect(result.premiumUsd).toBeCloseTo(40_000, -1);
   });
 
   it('detects Suez transit via canal hint even without HRA port name', () => {
@@ -112,5 +113,70 @@ describe('calculateWarRiskPremium (per-voyage rate model — βf-04)', () => {
     expect(result.applicable).toBe(true);
     expect(result.zones.length).toBeGreaterThan(0);
     expect(result.premiumUsd).toBeGreaterThan(0);
+  });
+});
+
+describe('calculateWarRiskPremium — live rates (Stage 2)', () => {
+  beforeEach(() => {
+    __resetRateCacheForTest();
+  });
+
+  afterEach(() => {
+    __resetRateCacheForTest();
+  });
+
+  it('Red Sea $8M → hull uses 0.20% live rate → premiumUsd === 16,000, rateDate === 2026-03-12, rateSource === knowledge', () => {
+    const result = calculateWarRiskPremium({
+      route: { fromPort: 'Rotterdam', toPort: 'Aden', viaCanal: 'Suez' },
+      vesselValueUsd: 8_000_000,
+      daysInHra: 1,
+    });
+    expect(result.applicable).toBe(true);
+    // 8_000_000 × 0.002 = 16_000
+    expect(result.premiumUsd).toBe(16_000);
+    expect(result.rateDate).toBe('2026-03-12');
+    expect(result.rateSource).toBe('knowledge');
+  });
+
+  it('Gulf of Guinea $8M → hull uses 0.50% live rate → premiumUsd === 40,000', () => {
+    const result = calculateWarRiskPremium({
+      route: { fromPort: 'Rotterdam', toPort: 'Lagos' },
+      vesselValueUsd: 8_000_000,
+      daysInHra: 5,
+    });
+    expect(result.applicable).toBe(true);
+    // 8_000_000 × 0.005 = 40_000
+    expect(result.premiumUsd).toBe(40_000);
+    expect(result.rateSource).toBe('knowledge');
+  });
+
+  it('Persian Gulf $8M → hull uses 0.75% live rate → premiumUsd ≈ 60,000', () => {
+    const result = calculateWarRiskPremium({
+      route: { fromPort: 'Rotterdam', toPort: 'Bandar Abbas' },
+      vesselValueUsd: 8_000_000,
+      daysInHra: 2,
+    });
+    expect(result.applicable).toBe(true);
+    // 8_000_000 × 0.0075 = 60_000 (allow ±1)
+    expect(result.premiumUsd).toBeGreaterThanOrEqual(59_999);
+    expect(result.premiumUsd).toBeLessThanOrEqual(60_001);
+    expect(result.rateSource).toBe('knowledge');
+  });
+
+  it('loader-unavailable fallback: YAML not found → rateDate === 2024-01-01, rateSource === hardcoded', () => {
+    // Force the rate loader to see a missing file so _cache becomes null.
+    // loadJwcRates() with a non-existent path catches the ENOENT and sets _cache = null.
+    loadJwcRates('/tmp/__nonexistent_jwc_rates_test__.yaml');
+
+    const result = calculateWarRiskPremium({
+      route: { fromPort: 'Rotterdam', toPort: 'Aden', viaCanal: 'Suez' },
+      vesselValueUsd: 8_000_000,
+      daysInHra: 1,
+    });
+    expect(result.applicable).toBe(true);
+    expect(result.rateDate).toBe('2024-01-01');
+    expect(result.rateSource).toBe('hardcoded');
+    // 8_000_000 × 0.00075 (hardcoded Red Sea fallback) = 6_000
+    expect(result.premiumUsd).toBeCloseTo(6_000, -1);
   });
 });
