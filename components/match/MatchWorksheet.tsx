@@ -1,6 +1,7 @@
 import type { MatchWorksheet as MatchWorksheetType } from '@/lib/types';
 import React from 'react';
 import { DraftCalcBreakdown } from './DraftCalcBreakdown';
+import { AllChecksAccordion } from './AllChecksAccordion';
 import { getPortMaster } from '@/lib/sailing/port-master';
 
 interface Props {
@@ -171,6 +172,11 @@ export function MatchWorksheet({ worksheet }: Props) {
           ))}
         </tbody>
       </table>
+      {hf && (
+        <div className="px-3 pb-3 pt-1">
+          <AllChecksAccordion hardFilters={hf} />
+        </div>
+      )}
     </div>
   );
 }
