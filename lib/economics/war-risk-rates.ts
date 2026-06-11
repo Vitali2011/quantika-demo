@@ -9,7 +9,12 @@ export interface JwcRates {
   source: 'knowledge';
 }
 
-/** YAML zone_id → one or more calc zone IDs */
+/**
+ * YAML zone_id → one or more calc zone IDs (HraZone.id in war-risk.ts).
+ * strait-of-hormuz (YAML 2.25%) is intentionally NOT mapped — no separate calc
+ * sub-zone exists in v2; Hormuz transits fall under persian-gulf-hra (0.75%).
+ * Tracked as future enhancement in the war-risk-v2 plan.
+ */
 const ZONE_MAP: Record<string, string[]> = {
   'red-sea':                          ['red-sea-hra'],
   'gulf-of-guinea':                   ['gulf-of-guinea'],
