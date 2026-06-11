@@ -155,7 +155,7 @@ describe('DraftCalcBreakdown', () => {
     expect(body.textContent).toContain('approximate, conservative');
   });
 
-  it('no destDraftCheck → shows "check data unavailable" for discharge port', () => {
+  it('no destDraftCheck → shows neutral "limit unknown → pass (no data)" for discharge port', () => {
     setup({
       loadPort: 'Gdańsk',
       dischargePort: 'Cape Town',
@@ -165,6 +165,39 @@ describe('DraftCalcBreakdown', () => {
     fireEvent.click(screen.getByTestId('draft-calc-toggle'));
     const body = screen.getByTestId('draft-calc-body');
     expect(body.textContent).toContain('Discharge port Cape Town');
-    expect(body.textContent).toContain('check data unavailable');
+    expect(body.textContent).toContain('limit unknown → pass (no data)');
+  });
+
+  it('no destDraftCheck + load passes → verdict is neutral, NOT green "Clears both ports"', () => {
+    setup({
+      loadPort: 'Gdańsk',
+      dischargePort: 'Liverpool',
+      draftCheck: DRAFT_PASS,
+      dwtSummer: 3178,
+      weightMt: 2720,
+      statedMaxDraftM: 5.51,
+    });
+    fireEvent.click(screen.getByTestId('draft-calc-toggle'));
+    const body = screen.getByTestId('draft-calc-body');
+    expect(body.textContent).not.toContain('Clears both ports');
+    expect(body.textContent).toContain('discharge: no data');
+  });
+
+  it('stored gate without estimatedLadenDraftM, DWT+cargo available → formula renders with numbers', () => {
+    setup({
+      loadPort: 'Szczecin',
+      dischargePort: 'Liverpool',
+      draftCheck: DRAFT_NO_ESTIMATE,   // { pass: true } — no estimatedLadenDraftM stored
+      dwtSummer: 3178,
+      weightMt: 2720,
+      statedMaxDraftM: 5.51,
+    });
+    fireEvent.click(screen.getByTestId('draft-calc-toggle'));
+    const body = screen.getByTestId('draft-calc-body');
+    // Formula must render with real DWT/cargo numbers, not fallback "unknown" message
+    expect(body.textContent).not.toContain('cargo weight / DWT unknown');
+    expect(body.textContent).toContain('3,178');
+    expect(body.textContent).toContain('2,720');
+    expect(body.textContent).toContain('approximate, conservative');
   });
 });
