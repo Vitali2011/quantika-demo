@@ -36,7 +36,7 @@ import { breakevenTceByDwt } from '../economics/breakeven-thresholds';
 import { computeVesselVetting } from './vessel-vetting';
 import { classifyVesselByDwt } from './readiness-gap';
 import { BALLAST_GOOD_MAX_NM, isPartCargo } from './match-scoring';
-import { portHasShoreCranes } from './port-master';
+import { portHasShoreCranes, getPortMaster } from './port-master';
 import { STOWAGE_FACTORS } from './match-filters';
 import { resolvePort } from '@/lib/ports/resolve';
 import { isEuCountry } from '@/lib/validation/sanctions';
@@ -343,6 +343,22 @@ export function scoreCargoTypeQuality(
   };
 }
 
+/** Build crane detail clause appended to gearless rationale strings.
+ *  Returns empty string if the port has no SWL/operator data (no dangling disclaimer). */
+function craneSuffix(portName: string | null): string {
+  if (!portName) return '';
+  const master = getPortMaster(portName);
+  if (!master) return '';
+  const { craneSWL, terminalOperator, craneDataAsOf } = master;
+  if (craneSWL === undefined && !terminalOperator) return '';
+  const parts: string[] = [];
+  if (craneSWL !== undefined) parts.push(`SWL ${craneSWL} t`);
+  if (terminalOperator) parts.push(`operator ${terminalOperator}`);
+  if (craneDataAsOf) parts.push(`data ${craneDataAsOf}`);
+  parts.push('confirm with port agent');
+  return ` (${parts.join(', ')})`;
+}
+
 /** Cranes — geared vessel is always 100%; gearless depends on shore cranes at
  *  EITHER cargo-handling end (load and/or discharge). Names which end has them. */
 export function scoreCranes(
@@ -364,10 +380,20 @@ export function scoreCranes(
     }
     if (loadCranes === true || dischCranes === true) {
       let where: string;
-      if (loadCranes === true && dischCranes === true) where = `both ports (${loadName} and ${dischName}) have shore cranes`;
-      else if (dischCranes === true) where = `discharge port (${dischName}) has shore cranes`;
-      else where = `load port (${loadName}) has shore cranes`;
-      return { factor: 'cranes', label: 'Cranes', weight: w, score: Math.round(w * 0.85 * 10) / 10, rationale: `Ship is gearless, but ${where} — workable.`, bracketData: 'gearless — port cranes ✓' };
+      let cranePort: string | null;
+      if (loadCranes === true && dischCranes === true) {
+        where = `both ports (${loadName} and ${dischName}) have shore cranes`;
+        // Use discharge port for enrichment when both have cranes
+        cranePort = dischargePort;
+      } else if (dischCranes === true) {
+        where = `discharge port (${dischName}) has shore cranes`;
+        cranePort = dischargePort;
+      } else {
+        where = `load port (${loadName}) has shore cranes`;
+        cranePort = loadPort;
+      }
+      const suffix = craneSuffix(cranePort);
+      return { factor: 'cranes', label: 'Cranes', weight: w, score: Math.round(w * 0.85 * 10) / 10, rationale: `Ship is gearless, but ${where}${suffix} — workable.`, bracketData: 'gearless — port cranes ✓' };
     }
     return { factor: 'cranes', label: 'Cranes', weight: w, score: Math.round(w * 0.55 * 10) / 10, rationale: 'Ship is gearless; crane availability at load/discharge not yet confirmed.' };
   }
