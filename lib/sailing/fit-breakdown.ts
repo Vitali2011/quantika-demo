@@ -427,7 +427,7 @@ export function scoreDraft(hardFilters: MatchHardFilters | undefined): FitBreakd
     return unknown('draft', 'Draft / port headroom', 'Draft check not performed, scored conservatively.');
   }
   if (draftCheck.pass) {
-    return { factor: 'draft', label: 'Draft / port headroom', weight: w, score: w, rationale: "Loaded ship sits within the port's draft limit." };
+    return { factor: 'draft', label: 'Draft / port headroom', weight: w, score: w, rationale: "Vessel's maximum stated draft is within the port's limit. Actual laden draft not computed." };
   }
   return { factor: 'draft', label: 'Draft / port headroom', weight: w, score: 0, rationale: `Ship draws too much for the port${draftCheck.reason ? ` — ${draftCheck.reason}` : ''}.` };
 }
