@@ -477,6 +477,8 @@ export interface MatchWorksheet {
   hardFilters: MatchHardFilters;
   /** Sanctions screening result — persisted for the sanctions disclosure. Absent pre-this-PR. */
   sanctions?: MatchSanctions;
+  /** Realism-bucket placement + reason (derived at persist time). Absent pre-this-PR. */
+  bucketReason?: import('./matching/bucket-reason').BucketReason;
 }
 
 export interface Match {

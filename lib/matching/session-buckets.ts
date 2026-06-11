@@ -6,6 +6,7 @@ import { parseLaycan } from '@/lib/sailing/date-parsing';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 import { estimateFreightRate, computeEstimatedTce, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
 import { DEFAULT_BUNKER_USD_PER_MT } from '@/lib/constants';
+import { deriveBucketReason } from '@/lib/matching/bucket-reason';
 
 /**
  * Convert the session-only realism buckets (`lowConfidenceMatches` /
@@ -66,6 +67,20 @@ export function toBucketRows(
       freight_rate_source = tceEst.freight_rate_source;
     }
 
+    const bucketReason = m.worksheet
+      ? deriveBucketReason({
+          verdict: m.worksheet.readiness?.verdict ?? 'unknown',
+          gapDays: m.worksheet.readiness?.gapDays ?? null,
+          matchLevel: m.matchLevel,
+          tceUsdPerDay: tce_usd_per_day,
+          vesselDwt: vesselDwt || null,
+          issues: m.issues ?? [],
+        })
+      : undefined;
+    const worksheetJson = m.worksheet
+      ? JSON.stringify({ ...m.worksheet, bucketReason })
+      : null;
+
     const row: StoredMatch = {
       id: idStart - i,
       cargo_id: m.cargoEmailId,
@@ -89,6 +104,7 @@ export function toBucketRows(
       freight_rate_source,
       vessel_name: null,
       cargo_ref: null,
+      worksheet_json: worksheetJson,
     };
     return row;
   });
