@@ -44,9 +44,11 @@ interface MatchTabsProps {
   payoutCondition?: string | null;
   /** DWT-tiered breakeven TCE floor (persisted, migration 050). */
   storedBreakevenTce?: number | null;
+  /** Serialised fit_breakdown JSON for the vetting accordion. */
+  fitBreakdown?: string | null;
 }
 
-export function MatchTabs({ match, vessel, cargo, cargoEmailId, matchDbId, storedFreightRate, freightRateSource, storedDistanceNm, storedTceUsdPerDay, ballastDistanceNm, consumptionEstimated, balticRateAsOf, cargoEmailBody, vesselEmailBody, payoutCondition, storedBreakevenTce }: MatchTabsProps) {
+export function MatchTabs({ match, vessel, cargo, cargoEmailId, matchDbId, storedFreightRate, freightRateSource, storedDistanceNm, storedTceUsdPerDay, ballastDistanceNm, consumptionEstimated, balticRateAsOf, cargoEmailBody, vesselEmailBody, payoutCondition, storedBreakevenTce, fitBreakdown }: MatchTabsProps) {
   const [activeTab, setActiveTab] = useState<TabId>('vessels');
   const uid = useId();
 
@@ -85,7 +87,7 @@ export function MatchTabs({ match, vessel, cargo, cargoEmailId, matchDbId, store
         className="p-4"
       >
         {activeTab === 'vessels' && (
-          <VesselsTab vessel={vessel} newCargo={cargo?.cargoDescription?.value ?? undefined} />
+          <VesselsTab vessel={vessel} newCargo={cargo?.cargoDescription?.value ?? undefined} fitBreakdown={fitBreakdown} />
         )}
         {activeTab === 'economics' && (
           <EconomicsTab

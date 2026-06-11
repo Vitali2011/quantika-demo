@@ -299,6 +299,7 @@ export default async function MatchDetailPage({ params }: Props) {
                   vesselEmailBody={vesselEmail?.body ?? null}
                   payoutCondition={cargo?.payoutCondition ?? null}
                   storedBreakevenTce={storedMatch.breakeven_tce_usd_per_day}
+                  fitBreakdown={storedMatch.fit_breakdown ?? null}
                 />
 
                 {cargo && cargoEmail && (
