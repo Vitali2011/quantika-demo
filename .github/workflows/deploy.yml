@@ -19,7 +19,9 @@ name: Deploy to prod
 #
 # SSH to outreach-vps under deploy-only key, invokes /root/deploy.sh
 # dispatcher which routes to /root/deploy-quantika-demo.sh.
-# Health check + auto-rollback live in deploy-quantika-demo.sh (60s window).
+# That script is a self-updating copy of ops/scripts/deploy-quantika-demo.sh
+# (canonical source in this repo — edit it there, ships via PR).
+# Staged build + atomic swap + health/smoke + auto-rollback live in that script.
 #
 # Concurrency group (cancel-in-progress: false) behaviour:
 #   Only ONE deploy runs at a time. While a deploy is in-flight, GitHub keeps
@@ -46,7 +48,10 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # 30: first staged-build run bootstraps a build-dir clone + cold npm ci
+    # (~11-13 min), and the rollback-rebuild fallback path can exceed 15 —
+    # an SSH cut mid-rollback is the worst possible moment to be killed.
+    timeout-minutes: 30
     steps:
       - name: Setup SSH key + known_hosts
         run: |
@@ -70,8 +75,9 @@ jobs:
       # health check, before exit). See docs/runbooks/post-deploy-seed.md for manual run
       # instructions and the VPS integration note.
       #
-      # Post-deploy verify: DB checks (schema migrations, fx_rates, env vars) also run
-      # inside /root/deploy-quantika-demo.sh via scripts/ops/verify-deploy.sh.
+      # Post-deploy verify: DB checks (schema migrations, fx_rates, env vars) are
+      # available as scripts/ops/verify-deploy.sh — run manually on the VPS (see
+      # docs/runbooks/post-deploy-seed.md); the deploy script does NOT invoke it.
       # HTTP checks (4-5) run here from CI against the public URL.
       - name: Post-deploy verify (HTTP health)
         env:
@@ -80,7 +86,7 @@ jobs:
           BASE_URL="https://demo.quantika.org"
           echo "[verify] GET ${BASE_URL}/api/health"
           curl -fsS --max-time 15 "${BASE_URL}/api/health" \
-            || { echo "[verify] FAIL: /api/health did not return 200 — check VPS: pm2 status quantika-demo"; exit 1; }
+            || { echo "[verify] FAIL: /api/health did not return 200 — check VPS: systemctl status quantika-demo / journalctl -u quantika-demo"; exit 1; }
           echo "[verify] /api/health OK"
 
           if [[ -n "${ADMIN_TOKEN:-}" ]]; then
