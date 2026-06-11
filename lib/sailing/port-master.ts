@@ -57,6 +57,14 @@ export interface PortMaster {
   sourceNote?: string;
   /** Alternative names / variants used for fuzzy name lookup (e.g. "Antwerpen", "Anvers"). */
   aliases?: string[];
+  /** Max crane safe-working-load in tonnes (from World Port Index / NGA Pub 150). */
+  craneSWL?: number;
+  /** Shore-crane type, when known. */
+  craneType?: 'mobile' | 'gantry' | 'floating' | 'STS';
+  /** Terminal operator company name (manual curation, top-20 demo ports). */
+  terminalOperator?: string;
+  /** As-of date for crane/operator data, e.g. "2025-Q4" or "WPI-2025". */
+  craneDataAsOf?: string;
 }
 
 /** Lookup port master data. Returns null for unknown ports (not an error — caller decides). */
