@@ -25,44 +25,31 @@ describe('computeEstimatedTce — bunkerPriceUsdPerMt param (Fix B)', () => {
     expect(ratio).toBeCloseTo(766 / 600, 1);
   });
 
-  test('omitting bunkerPriceUsdPerMt uses the 600 default', () => {
-    const withDefault = computeEstimatedTce(FREIGHT, 254, 44000, 35000);
-    const with600 = computeEstimatedTce(FREIGHT, 254, 44000, 35000, 12, 25, undefined, undefined, undefined, 600);
-    expect(withDefault.tce_usd_per_day).toBe(with600.tce_usd_per_day);
+  // Stage 9: omitting bunkerPriceUsdPerMt now throws instead of silently defaulting to 600.
+  test('Stage 9: omitting bunkerPriceUsdPerMt throws (no silent default)', () => {
+    expect(() => computeEstimatedTce(FREIGHT, 254, 44000, 35000)).toThrow(
+      'computeEstimatedTce: bunkerPriceUsdPerMt is required since Stage 9',
+    );
   });
 });
 
-describe('computeEstimatedTce — Stage 7 deprecation warn (bunker fallback)', () => {
-  let warnSpy: jest.SpyInstance;
-
-  beforeEach(() => {
-    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
-  });
-
-  afterEach(() => {
+describe('computeEstimatedTce — Stage 9 explicit bunker required (no deprecation warn)', () => {
+  test('passing explicit bunkerPriceUsdPerMt produces finite TCE, no console.warn', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const result = computeEstimatedTce(FREIGHT, 254, 44000, 35000, 12, 25, undefined, undefined, undefined, 600);
+    expect(Number.isFinite(result.tce_usd_per_day)).toBe(true);
+    expect(warnSpy).not.toHaveBeenCalled();
     warnSpy.mockRestore();
   });
 
-  test('omitting bunkerPriceUsdPerMt fires console.warn with Stage 9 mention', () => {
-    computeEstimatedTce(FREIGHT, 254, 44000, 35000);
-    expect(warnSpy).toHaveBeenCalledTimes(1);
-    expect(warnSpy.mock.calls[0][0]).toMatch(/Stage 9/);
-    expect(warnSpy.mock.calls[0][0]).toMatch(/DEFAULT_BUNKER_USD_PER_MT/);
-  });
-
-  test('passing explicit bunkerPriceUsdPerMt suppresses the warn', () => {
-    computeEstimatedTce(FREIGHT, 254, 44000, 35000, 12, 25, undefined, undefined, undefined, 600);
-    expect(warnSpy).not.toHaveBeenCalled();
-  });
-
-  test('result with fallback equals result with explicit DEFAULT_BUNKER_USD_PER_MT', () => {
+  test('explicit 600 matches DEFAULT_BUNKER_USD_PER_MT value (no drift)', () => {
     const { DEFAULT_BUNKER_USD_PER_MT } = require('@/lib/constants');
-    const withFallback = computeEstimatedTce(FREIGHT, 254, 44000, 35000);
-    const withExplicit = computeEstimatedTce(
+    const with600 = computeEstimatedTce(FREIGHT, 254, 44000, 35000, 12, 25, undefined, undefined, undefined, 600);
+    const withConst = computeEstimatedTce(
       FREIGHT, 254, 44000, 35000, 12, 25, undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT,
     );
-    expect(withFallback.tce_usd_per_day).toBe(withExplicit.tce_usd_per_day);
-    expect(withFallback.breakdown.bunker_usd).toBe(withExplicit.breakdown.bunker_usd);
+    expect(with600.tce_usd_per_day).toBe(withConst.tce_usd_per_day);
+    expect(with600.breakdown.bunker_usd).toBe(withConst.breakdown.bunker_usd);
   });
 });
 

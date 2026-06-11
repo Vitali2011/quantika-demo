@@ -68,6 +68,7 @@ describe('LIST tce_usd_per_day === DETAIL daily_tce_usd (parity, #819)', () => {
     const list = computeEstimatedTce(
       { rate: freight.rate, source: freight.source, confidence: freight.confidence },
       s.distanceNm, s.vesselDwt, s.quantityMt, s.speedKts, s.consumptionMtPerDay,
+      undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT,
     );
 
     // DETAIL path: buildCanonicalTceInputs → calculateTCE
@@ -97,6 +98,7 @@ describe('LIST tce_usd_per_day === DETAIL daily_tce_usd (parity, #819)', () => {
     const tce = computeEstimatedTce(
       { rate: freight.rate, source: freight.source, confidence: freight.confidence },
       s.distanceNm, s.vesselDwt, s.quantityMt, s.speedKts, s.consumptionMtPerDay,
+      undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT,
     );
     expect(tce.tce_usd_per_day).toBeGreaterThan(0); // no phantom −$1k (pre-fix Tier-3 depressed)
   });
@@ -107,6 +109,7 @@ describe('LIST tce_usd_per_day === DETAIL daily_tce_usd (parity, #819)', () => {
     const tce = computeEstimatedTce(
       { rate: freight.rate, source: freight.source, confidence: freight.confidence },
       s.distanceNm, s.vesselDwt, s.quantityMt, s.speedKts, s.consumptionMtPerDay,
+      undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT,
     );
     expect(tce.tce_usd_per_day).toBeGreaterThan(0);
   });

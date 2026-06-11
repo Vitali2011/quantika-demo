@@ -5,6 +5,7 @@ import type { StoredMatch } from '@/lib/matching/matches-repository';
 import { parseLaycan } from '@/lib/sailing/date-parsing';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 import { estimateFreightRate, computeEstimatedTce, parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
+import { DEFAULT_BUNKER_USD_PER_MT } from '@/lib/constants';
 
 /**
  * Convert the session-only realism buckets (`lowConfidenceMatches` /
@@ -55,7 +56,11 @@ export function toBucketRows(
     let freight_rate_source: string | null = null;
     if (distanceResult && distanceResult.nm > 0) {
       const freightEst = estimateFreightRate(cargoType, distanceResult.nm, vesselDwt);
-      const tceEst = computeEstimatedTce(freightEst, distanceResult.nm, vesselDwt, quantityMt, speedKts, consumptionMt);
+      // TODO: wire live bunker price (NLRTM VLSFO) when DB access is available here.
+      const tceEst = computeEstimatedTce(
+        freightEst, distanceResult.nm, vesselDwt, quantityMt, speedKts, consumptionMt,
+        undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT,
+      );
       tce_usd_per_day = tceEst.tce_usd_per_day;
       freight_rate_usd_per_mt = tceEst.freight_rate_usd_per_mt;
       freight_rate_source = tceEst.freight_rate_source;

@@ -7,6 +7,7 @@ import { quoteBosporus } from '@/lib/economics/canals/bosporus';
 import { resolvePort } from '@/lib/ports/resolve';
 import { resolveVaguePort } from '@/lib/ports/resolve-vague';
 import { isEuCountry } from '@/lib/validation/sanctions';
+import { estimateVesselValueUsd } from '@/lib/economics/vessel-value';
 import type { EconomicsResult } from '@/lib/types';
 import { parseLeadingNumber, parseConsumption, DEFAULT_CONSUMPTION_MT_PER_DAY } from './parse-vessel-fields';
 import { DEFAULT_BUNKER_USD_PER_MT, FALLBACK_EUA_EUR_PER_TCO2 } from '@/lib/constants';
@@ -37,7 +38,6 @@ const BASE_RATES: Record<string, number> = {
 
 const BASE_RATE_FALLBACK = 22;
 const DEFAULT_SPEED_KTS = 12;
-const DEFAULT_VESSEL_VALUE_USD = 22_000_000;
 
 /**
  * Freight-rate provenance for the resolveFreightRate waterfall (Wave #7, L2 #7).
@@ -112,13 +112,13 @@ export function computeEstimatedTce(
   euaPriceEur?: number,
   excludeWarRiskFromDailyTce?: boolean,
 ): TceEstimate {
-  const resolvedBunker = bunkerPriceUsdPerMt ?? DEFAULT_BUNKER_USD_PER_MT;
   if (bunkerPriceUsdPerMt === undefined) {
-    // Stage 7 deprecation warn — default will be removed in Stage 9.
-    console.warn(
-      `computeEstimatedTce: bunkerPriceUsdPerMt not supplied — falling back to DEFAULT_BUNKER_USD_PER_MT (${DEFAULT_BUNKER_USD_PER_MT}). Pass an explicit price; this fallback will be removed in Stage 9.`,
+    throw new Error(
+      'computeEstimatedTce: bunkerPriceUsdPerMt is required since Stage 9. ' +
+      'Pass DEFAULT_BUNKER_USD_PER_MT explicitly for callers without a live price.',
     );
   }
+  const resolvedBunker = bunkerPriceUsdPerMt;
 
   const safeDwt = vessel_dwt > 0 ? vessel_dwt : 10_000;
   const safeSpeed = speed_kts > 0 ? speed_kts : 12;
@@ -127,7 +127,7 @@ export function computeEstimatedTce(
 
   const result = computeTce({
     dwt: safeDwt,
-    valueUsd: DEFAULT_VESSEL_VALUE_USD,
+    valueUsd: estimateVesselValueUsd(safeDwt),
     speedKts: safeSpeed,
     consumptionMtPerDay: safeConsumption,
     freightRateUsdPerMt: freightRate.rate,
@@ -262,7 +262,7 @@ export interface MatchEconomicsInput {
   vesselOpenPosition?: string | null;
   /** ISO 8601 timestamp; passed in so the result is deterministic/testable. */
   calculatedAt: string;
-  /** Vessel value for the war-risk hull premium. Defaults to DEFAULT_VESSEL_VALUE_USD. */
+  /** Vessel value for the war-risk hull premium. Defaults to estimateVesselValueUsd(dwt) when omitted. */
   vesselValueUsd?: number;
   /**
    * Pre-resolved freight rate from the Wave #7 waterfall (manual/parsed/baltic/estimate).
@@ -346,7 +346,7 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
 
   const tce = computeTce({
     dwt: safeDwt,
-    valueUsd: DEFAULT_VESSEL_VALUE_USD,
+    valueUsd: input.vesselValueUsd ?? estimateVesselValueUsd(safeDwt),
     speedKts: safeSpeed,
     consumptionMtPerDay: safeConsumption,
     freightRateUsdPerMt: freight.rate,
@@ -365,7 +365,7 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
 
   const warLaden = calculateWarRiskPremium({
     route: { fromPort: input.loadPort ?? '', toPort: input.dischargePort ?? '' },
-    vesselValueUsd: input.vesselValueUsd ?? DEFAULT_VESSEL_VALUE_USD,
+    vesselValueUsd: input.vesselValueUsd ?? estimateVesselValueUsd(safeDwt),
   });
 
   const openPos = input.vesselOpenPosition ?? '';
@@ -373,7 +373,7 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
     openPos && input.loadPort
       ? calculateWarRiskPremium({
           route: { fromPort: openPos, toPort: input.loadPort },
-          vesselValueUsd: input.vesselValueUsd ?? DEFAULT_VESSEL_VALUE_USD,
+          vesselValueUsd: input.vesselValueUsd ?? estimateVesselValueUsd(safeDwt),
         })
       : { applicable: false, premiumUsd: 0, zones: [], zoneIds: [] as string[] };
 

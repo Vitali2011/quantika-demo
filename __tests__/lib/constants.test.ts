@@ -20,19 +20,25 @@ describe('centralized constants (W7)', () => {
   });
 });
 
-// PI2 behavioral: prove fallback parity — no default value drift between modules
-describe('fallback parity — PI2 behavioral (W7)', () => {
-  it('computeEstimatedTce with no bunkerPriceUsdPerMt == with DEFAULT_BUNKER_USD_PER_MT', async () => {
-    // Dynamic import to avoid pulling server deps at compile time
+// Stage 9: computeEstimatedTce requires explicit bunker — omitting throws, no silent fallback.
+describe('Stage 9 — explicit bunker required (W9)', () => {
+  it('computeEstimatedTce with explicit DEFAULT_BUNKER_USD_PER_MT produces finite TCE', async () => {
     const { computeEstimatedTce } = await import('@/lib/matching/tce-calculator');
     const freight = { rate: 20, source: 'estimated' as const, confidence: 0.5 };
-    const withDefault = computeEstimatedTce(freight, 3000, 50000, 45000);
     const withExplicit = computeEstimatedTce(
       freight, 3000, 50000, 45000,
       12, 25, undefined, undefined, undefined,
       DEFAULT_BUNKER_USD_PER_MT,
     );
-    expect(withDefault.tce_usd_per_day).toBe(withExplicit.tce_usd_per_day);
+    expect(Number.isFinite(withExplicit.tce_usd_per_day)).toBe(true);
+  });
+
+  it('computeEstimatedTce without bunkerPriceUsdPerMt throws (no silent 600 fallback)', async () => {
+    const { computeEstimatedTce } = await import('@/lib/matching/tce-calculator');
+    const freight = { rate: 20, source: 'estimated' as const, confidence: 0.5 };
+    expect(() => computeEstimatedTce(freight, 3000, 50000, 45000)).toThrow(
+      'computeEstimatedTce: bunkerPriceUsdPerMt is required since Stage 9',
+    );
   });
 
   it('RouteCompareModal DEFAULT_MARKET bunker == DEFAULT_BUNKER_USD_PER_MT (source code grep)', async () => {

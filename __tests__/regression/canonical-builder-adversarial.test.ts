@@ -131,7 +131,7 @@ describe('parity: computeEstimatedTce === buildCanonicalTceInputs→calculateTCE
     const freight = estimateFreightRate('GRAIN', 400, 3000);
     const fromCompute = computeEstimatedTce(
       { rate: freight.rate, source: freight.source, confidence: freight.confidence },
-      400, 3000, 2500, 12, 8,
+      400, 3000, 2500, 12, 8, undefined, undefined, undefined, 600,
     );
 
     const fromBuilder = calculateTCE(buildCanonicalTceInputs({
