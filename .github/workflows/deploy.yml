@@ -19,7 +19,9 @@ name: Deploy to prod
 #
 # SSH to outreach-vps under deploy-only key, invokes /root/deploy.sh
 # dispatcher which routes to /root/deploy-quantika-demo.sh.
-# Health check + auto-rollback live in deploy-quantika-demo.sh (60s window).
+# That script is a self-updating copy of ops/scripts/deploy-quantika-demo.sh
+# (canonical source in this repo — edit it there, ships via PR).
+# Staged build + atomic swap + health/smoke + auto-rollback live in that script.
 #
 # Concurrency group (cancel-in-progress: false) behaviour:
 #   Only ONE deploy runs at a time. While a deploy is in-flight, GitHub keeps
@@ -80,7 +82,7 @@ jobs:
           BASE_URL="https://demo.quantika.org"
           echo "[verify] GET ${BASE_URL}/api/health"
           curl -fsS --max-time 15 "${BASE_URL}/api/health" \
-            || { echo "[verify] FAIL: /api/health did not return 200 — check VPS: pm2 status quantika-demo"; exit 1; }
+            || { echo "[verify] FAIL: /api/health did not return 200 — check VPS: systemctl status quantika-demo / journalctl -u quantika-demo"; exit 1; }
           echo "[verify] /api/health OK"
 
           if [[ -n "${ADMIN_TOKEN:-}" ]]; then
