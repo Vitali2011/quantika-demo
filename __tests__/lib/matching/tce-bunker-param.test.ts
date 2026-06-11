@@ -32,6 +32,40 @@ describe('computeEstimatedTce — bunkerPriceUsdPerMt param (Fix B)', () => {
   });
 });
 
+describe('computeEstimatedTce — Stage 7 deprecation warn (bunker fallback)', () => {
+  let warnSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+  });
+
+  afterEach(() => {
+    warnSpy.mockRestore();
+  });
+
+  test('omitting bunkerPriceUsdPerMt fires console.warn with Stage 9 mention', () => {
+    computeEstimatedTce(FREIGHT, 254, 44000, 35000);
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy.mock.calls[0][0]).toMatch(/Stage 9/);
+    expect(warnSpy.mock.calls[0][0]).toMatch(/DEFAULT_BUNKER_USD_PER_MT/);
+  });
+
+  test('passing explicit bunkerPriceUsdPerMt suppresses the warn', () => {
+    computeEstimatedTce(FREIGHT, 254, 44000, 35000, 12, 25, undefined, undefined, undefined, 600);
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  test('result with fallback equals result with explicit DEFAULT_BUNKER_USD_PER_MT', () => {
+    const { DEFAULT_BUNKER_USD_PER_MT } = require('@/lib/constants');
+    const withFallback = computeEstimatedTce(FREIGHT, 254, 44000, 35000);
+    const withExplicit = computeEstimatedTce(
+      FREIGHT, 254, 44000, 35000, 12, 25, undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT,
+    );
+    expect(withFallback.tce_usd_per_day).toBe(withExplicit.tce_usd_per_day);
+    expect(withFallback.breakdown.bunker_usd).toBe(withExplicit.breakdown.bunker_usd);
+  });
+});
+
 describe('buildMatchEconomics — bunkerPriceUsdPerMt propagation (Fix B)', () => {
   const BASE = {
     cargoType: 'GRAIN',
