@@ -2,7 +2,8 @@
 # verify-deploy.sh
 #
 # Post-deploy health check for quantika-demo.
-# Runs on the VPS after deploy + restart; called from /root/deploy-quantika-demo.sh.
+# Run MANUALLY on the VPS after deploy + restart (the deploy script does not
+# invoke it — it needs env not guaranteed there; see docs/runbooks/post-deploy-seed.md).
 #
 # Exit 0 = healthy. Exit 1 + clear message = broken.
 #
