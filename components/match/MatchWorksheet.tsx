@@ -2,6 +2,7 @@ import type { MatchWorksheet as MatchWorksheetType } from '@/lib/types';
 import React from 'react';
 import { DraftCalcBreakdown } from './DraftCalcBreakdown';
 import { AllChecksAccordion } from './AllChecksAccordion';
+import { getPortMaster } from '@/lib/sailing/port-master';
 
 interface Props {
   worksheet: MatchWorksheetType | null;
@@ -115,6 +116,8 @@ export function MatchWorksheet({ worksheet }: Props) {
           dwtSummer={v.dwtSummer}
           weightMt={c.weightMtEffective ?? c.weightMt}
           statedMaxDraftM={v.draftMax}
+          loadPortLimit={getPortMaster(c.loadPort)?.maxDraftM ?? null}
+          dischargePortLimit={getPortMaster(c.dischargePort)?.maxDraftM ?? null}
         />
       ),
     },

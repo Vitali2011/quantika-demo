@@ -17,6 +17,7 @@ import { useDemoNow } from '@/lib/clock-client';
 import { fitDisplay } from '@/lib/matching/fit-display';
 import { effectiveScore } from '@/lib/utils/effective-score';
 import { DraftCalcBreakdown } from '@/components/match/DraftCalcBreakdown';
+import { getPortMaster } from '@/lib/sailing/port-master';
 import type { MatchWorksheet } from '@/lib/types';
 
 interface Props {
@@ -861,6 +862,8 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                                     dwtSummer={ws.vessel.dwtSummer}
                                     weightMt={ws.cargo.weightMtEffective ?? ws.cargo.weightMt}
                                     statedMaxDraftM={ws.vessel.draftMax}
+                                    loadPortLimit={getPortMaster(ws.cargo.loadPort)?.maxDraftM ?? null}
+                                    dischargePortLimit={getPortMaster(ws.cargo.dischargePort)?.maxDraftM ?? null}
                                   />
                                 )}
                               </div>

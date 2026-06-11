@@ -17,6 +17,10 @@ interface Props {
   weightMt?: number | null;
   /** Vessel stated max draft — shown in static-check fallback. */
   statedMaxDraftM?: number | null;
+  /** Live port-master limit for load port — shown when check.portLimitM is null (display only, doesn't affect stored verdict). */
+  loadPortLimit?: number | null;
+  /** Live port-master limit for discharge port — shown when check.portLimitM is null (display only, doesn't affect stored verdict). */
+  dischargePortLimit?: number | null;
 }
 
 interface PortRowProps {
@@ -25,9 +29,11 @@ interface PortRowProps {
   check: HardFilterCheck;
   statedMaxDraftM: number | null | undefined;
   hasEstimate: boolean;
+  /** Live port-master limit — used when check.portLimitM is null (display-only, no verdict change). */
+  livePortLimit?: number | null;
 }
 
-function PortRow({ portLabel, roleLabel, check, statedMaxDraftM, hasEstimate }: PortRowProps) {
+function PortRow({ portLabel, roleLabel, check, statedMaxDraftM, hasEstimate, livePortLimit }: PortRowProps) {
   if (!hasEstimate) {
     const draftRef = statedMaxDraftM != null ? `${statedMaxDraftM} m` : '—';
     const icon = check.pass ? '✓' : '✗';
@@ -40,6 +46,15 @@ function PortRow({ portLabel, roleLabel, check, statedMaxDraftM, hasEstimate }: 
   }
 
   if (check.portLimitM == null) {
+    if (livePortLimit != null) {
+      const icon = check.pass ? '✓' : '✗';
+      const verdict = check.pass ? 'clears' : 'exceeds';
+      return (
+        <div className={`text-xs ${check.pass ? 'text-emerald-600' : 'text-red-500'}`}>
+          {roleLabel} {portLabel}: limit {livePortLimit.toFixed(1)} m (live ref.) → {icon} {verdict}
+        </div>
+      );
+    }
     return (
       <div className="text-xs text-ds-text-muted">
         {roleLabel} {portLabel}: limit unknown → pass (no data)
@@ -64,6 +79,8 @@ export function DraftCalcBreakdown({
   dwtSummer,
   weightMt,
   statedMaxDraftM,
+  loadPortLimit,
+  dischargePortLimit,
 }: Props) {
   const [open, setOpen] = useState(false);
 
@@ -130,6 +147,7 @@ export function DraftCalcBreakdown({
               check={draftCheck}
               statedMaxDraftM={statedMaxDraftM}
               hasEstimate={hasEstimate}
+              livePortLimit={loadPortLimit}
             />
             {destDraftCheck != null ? (
               <PortRow
@@ -138,6 +156,7 @@ export function DraftCalcBreakdown({
                 check={destDraftCheck}
                 statedMaxDraftM={statedMaxDraftM}
                 hasEstimate={hasEstimate}
+                livePortLimit={dischargePortLimit}
               />
             ) : (
               <div className="text-xs text-ds-text-muted">
