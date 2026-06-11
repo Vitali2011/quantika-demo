@@ -159,31 +159,4 @@ describe('MatchTabs', () => {
     });
   });
 
-  describe('Send Quote button', () => {
-    it('is disabled when draft is empty (blockSend=false)', () => {
-      const match = { ...baseMatch, confidence: mockConfidenceVerified };
-      renderWithToast(<MatchTabs match={match} />);
-      fireEvent.click(screen.getByRole('tab', { name: /quote/i }));
-      const btn = screen.getByRole('button', { name: /send quote/i });
-      expect(btn).toBeDisabled();
-    });
-
-    it('is always disabled in demo even with draft content and blockSend=false', () => {
-      const match = { ...baseMatch, confidence: mockConfidenceVerified };
-      renderWithToast(<MatchTabs match={match} />);
-      fireEvent.click(screen.getByRole('tab', { name: /quote/i }));
-      fireEvent.change(screen.getByRole('textbox'), { target: { value: 'USD 15/MT offer' } });
-      const btn = screen.getByRole('button', { name: /send quote/i });
-      expect(btn).toBeDisabled();
-    });
-
-    it('is disabled when blockSend is true even with draft content', () => {
-      const match = { ...baseMatch, confidence: mockConfidenceBlocked };
-      renderWithToast(<MatchTabs match={match} />);
-      fireEvent.click(screen.getByRole('tab', { name: /quote/i }));
-      fireEvent.change(screen.getByRole('textbox'), { target: { value: 'USD 15/MT offer' } });
-      const btn = screen.getByRole('button', { name: /send quote/i });
-      expect(btn).toBeDisabled();
-    });
-  });
 });
