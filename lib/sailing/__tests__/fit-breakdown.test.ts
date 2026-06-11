@@ -663,4 +663,41 @@ describe('#884 — HRC cargo on corrected-capacity YUCATAN vessel is a comfortab
     );
     expect(result.score).toBe(FIT_WEIGHTS.draft);
   });
+
+  // M4: laden-figure-aware rationale variants
+  it('M4: scoreDraft pass with laden estimate → rationale shows numbers and (approximate, conservative)', () => {
+    const hf = {
+      ...HF_PASS,
+      draft: { pass: true, estimatedLadenDraftM: 12.9, portLimitM: 24.0 },
+    } as MatchHardFilters;
+    const result = scoreDraft(hf);
+    expect(result.rationale).toContain('12.9');
+    expect(result.rationale).toContain('24.0');
+    expect(result.rationale).toMatch(/approximate.*conservative|conservative.*approximate/i);
+    expect(result.score).toBe(FIT_WEIGHTS.draft);
+  });
+
+  it('M4: scoreDraft pass with no laden estimate → falls back to S1 honest wording', () => {
+    const hf = { ...HF_PASS, draft: { pass: true } } as MatchHardFilters;
+    const result = scoreDraft(hf);
+    expect(result.rationale).toBe(
+      "Vessel's maximum stated draft is within the port's limit. Actual laden draft not computed.",
+    );
+  });
+
+  it('M4: scoreDraft fail propagates laden-based reason from M3', () => {
+    const hf = {
+      ...HF_PASS,
+      draft: {
+        pass: false,
+        reason: 'estimated laden draft 12.9m exceeds port max 12.5m (approximate, from 52000t cargo)',
+        estimatedLadenDraftM: 12.9,
+        portLimitM: 12.5,
+      },
+    } as MatchHardFilters;
+    const result = scoreDraft(hf);
+    expect(result.score).toBe(0);
+    expect(result.rationale).toContain('laden');
+    expect(result.rationale).toContain('12.9');
+  });
 });

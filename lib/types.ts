@@ -414,6 +414,10 @@ export interface HardFilterCheck {
   reason?: string;
   /** Layer C: soft warning — pass=true but requires user confirmation (e.g. gearless+breakbulk+unverified cranes). */
   warning?: boolean;
+  /** M4: estimated laden draft used in this check (metres). Present when cargo/DWT were available. */
+  estimatedLadenDraftM?: number;
+  /** M4: port draft limit used in this check (metres). Present when port is known and laden check ran. */
+  portLimitM?: number;
 }
 
 export interface MatchHardFilters {
