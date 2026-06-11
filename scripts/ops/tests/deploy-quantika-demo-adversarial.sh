@@ -443,7 +443,7 @@ YML_DIFF_COUNT=$(printf '%s' "$YML_DIFF" | grep -c . || true)
 #   - health-fail hint string (pm2 → systemctl)
 #   - timeout-minutes 15 → 30 (FINDING-006: first staged run + rollback-rebuild
 #     exceed 15; an SSH cut mid-rollback must not happen)
-UNEXPECTED=$(printf '%s' "$YML_DIFF" | grep -vE 'check VPS|timeout-minutes' || true)
+UNEXPECTED=$(printf '%s' "$YML_DIFF" | grep -vE 'check VPS|timeout-minutes: (15|30)$' || true)
 if [[ "$YML_DIFF_COUNT" -eq 0 ]]; then
   pass "A6: deploy.yml functionally identical to main"
 elif [[ -z "$UNEXPECTED" ]]; then

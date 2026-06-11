@@ -59,3 +59,6 @@ overwritten by the next deploy. Change it via PR instead.
 - After first deploy to a fresh VPS instance
 - After a database reset or migration that drops `roi_metrics` or `fx_rates`
 - When the ROI guarantee or multi-currency features show "no data" errors
+
+For deeper post-deploy DB/env checks (schema version, fx_rates rows, required
+env vars, health endpoints) run `bash scripts/ops/verify-deploy.sh` on the VPS.
