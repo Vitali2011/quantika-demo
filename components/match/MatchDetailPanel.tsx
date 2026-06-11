@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { csrfFetch } from '@/lib/csrf-client';
 import { CounterModal } from './CounterModal';
+import { BucketReasonCard } from './BucketReasonCard';
+import type { BucketReason } from '@/lib/matching/bucket-reason';
 
 export interface MatchDetailPanelProps {
   matchDbId: number;
@@ -25,6 +27,7 @@ export interface MatchDetailPanelProps {
   hasSessionMatch: boolean;
   fitPercent?: number | null;
   fitBreakdown?: string | null;
+  bucketReason?: BucketReason;
 }
 
 function PanelContent({
@@ -34,6 +37,7 @@ function PanelContent({
   hasSessionMatch,
   fitPercent,
   fitBreakdown,
+  bucketReason,
 }: MatchDetailPanelProps) {
   const [declining, setDeclining] = useState(false);
   const [declineError, setDeclineError] = useState<string | null>(null);
@@ -88,6 +92,9 @@ function PanelContent({
           </p>
         </CardContent>
       </Card>
+
+      {/* Bucket reason — why this match is in main/lowConfidence/etc. */}
+      <BucketReasonCard bucketReason={bucketReason} />
 
       {/* Quick Actions */}
       <Card size="sm">

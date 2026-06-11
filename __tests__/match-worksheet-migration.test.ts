@@ -39,9 +39,9 @@ describe('migration 045 — worksheet_json column', () => {
     expect(m46?.name).toBe('matches-consumption-estimated');
     const m47 = allMigrations.find((m) => m.version === 47);
     expect(m47?.name).toBe('matches-ballast-distance');
-    // updated from 48→49: branch adds migration 049-quote-jobs-match-id (PR #914 stage 10b)
+    // updated from 49→50: branch adds migration 050-matches-breakeven (logic-accordions stage 3)
     const last = allMigrations[allMigrations.length - 1];
-    expect(last.version).toBe(49);
-    expect(last.name).toBe('049-quote-jobs-match-id');
+    expect(last.version).toBe(50);
+    expect(last.name).toBe('050-matches-breakeven');
   });
 });
