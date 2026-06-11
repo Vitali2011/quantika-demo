@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
 import type { MatchHardFilters, HardFilterCheck } from '@/lib/types';
+import { LogicDisclosure } from './LogicDisclosure';
 
 const GATE_LABELS: Array<{ key: keyof MatchHardFilters; label: string }> = [
   { key: 'draft', label: 'Draft (load port)' },
@@ -28,39 +27,28 @@ function verdict(check: HardFilterCheck): { icon: string; cls: string; label: st
 }
 
 export function AllChecksAccordion({ hardFilters }: { hardFilters: Partial<MatchHardFilters> }) {
-  const [open, setOpen] = useState(false);
   const rows = GATE_LABELS
     .map((g) => ({ ...g, check: hardFilters[g.key] }))
     .filter((r): r is typeof r & { check: HardFilterCheck } => r.check != null);
   const failCount = rows.filter((r) => !r.check.pass && !r.check.warning).length;
   const warnCount = rows.filter((r) => r.check.warning).length;
+  const label = `All checks (${rows.length}) · ${failCount > 0 ? `${failCount} fail` : 'all pass'}${warnCount > 0 ? ` · ${warnCount} warn` : ''}`;
 
   return (
-    <div className="mt-2">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1 text-xs text-ds-text-muted hover:text-ds-text transition-colors"
-        aria-expanded={open}
-        data-testid="all-checks-toggle"
-      >
-        {open ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-        All checks ({rows.length}) · {failCount > 0 ? `${failCount} fail` : 'all pass'}{warnCount > 0 ? ` · ${warnCount} warn` : ''}
-      </button>
-      {open && (
-        <ul className="mt-1.5 pl-3 border-l-2 border-ds-border space-y-1" data-testid="all-checks-body">
-          {rows.map(({ key, label, check }) => {
-            const v = verdict(check);
-            return (
-              <li key={String(key)} className="flex items-baseline justify-between gap-3 text-xs">
-                <span className="text-ds-text">{label}</span>
-                <span className={`shrink-0 ${v.cls}`}>
-                  {v.icon} {check.reason ?? v.label}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-    </div>
+    <LogicDisclosure label={label} testId="all-checks">
+      <ul className="space-y-1">
+        {rows.map(({ key, label: gateLbl, check }) => {
+          const v = verdict(check);
+          return (
+            <li key={String(key)} className="flex items-baseline justify-between gap-3 text-xs">
+              <span className="text-ds-text">{gateLbl}</span>
+              <span className={`shrink-0 ${v.cls}`}>
+                {v.icon} {check.reason ?? v.label}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </LogicDisclosure>
   );
 }
