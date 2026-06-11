@@ -27,7 +27,7 @@ function verdict(check: HardFilterCheck): { icon: string; cls: string; label: st
   return { icon: '✗', cls: 'text-red-500', label: 'Fail' };
 }
 
-export function AllChecksAccordion({ hardFilters }: { hardFilters: MatchHardFilters }) {
+export function AllChecksAccordion({ hardFilters }: { hardFilters: Partial<MatchHardFilters> }) {
   const [open, setOpen] = useState(false);
   const rows = GATE_LABELS
     .map((g) => ({ ...g, check: hardFilters[g.key] }))

@@ -474,7 +474,7 @@ export interface MatchWorksheet {
   };
   /** Full hard-filter result set (all 14 gates) — persisted for the all-checks accordion.
    *  Optional gates absent in pre-this-PR persisted data render with a neutral "not evaluated" state. */
-  hardFilters: MatchHardFilters;
+  hardFilters: Partial<MatchHardFilters>;
   /** Sanctions screening result — persisted for the sanctions disclosure. Absent pre-this-PR. */
   sanctions?: MatchSanctions;
   /** Realism-bucket placement + reason (derived at persist time). Absent pre-this-PR. */
