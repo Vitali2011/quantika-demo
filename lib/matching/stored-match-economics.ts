@@ -25,11 +25,13 @@ import { resolveFreightRate } from '@/lib/matching/freight-resolver';
 import { getBalticDayRate } from '@/lib/market/baltic-freight';
 import {
   buildMatchEconomics,
-  computeEstimatedTce,
   deriveEtsCoverage,
   parseLeadingNumber,
   parseConsumption,
 } from '@/lib/matching/tce-calculator';
+import { computeTce } from '@/lib/economics/compute-tce';
+import { resolveConsMtPerDay } from '@/lib/economics/vessel-consumption';
+import { DEFAULT_BUNKER_USD_PER_MT, FALLBACK_EUA_EUR_PER_TCO2 } from '@/lib/constants';
 import { estimateVesselValueUsd } from '@/lib/economics/vessel-value';
 import { now } from '@/lib/clock';
 
@@ -141,8 +143,8 @@ export function computeStoredMatchEconomics(
   }
 
   // Use fallback=0 so that absent consumption triggers resolveConsMtPerDay class-aware
-  // fallback inside buildCanonicalTceInputs (via computeEstimatedTce). The old flat-25
-  // default was fabricated; passing 0 lets the vessel-class estimator run instead.
+  // fallback (applied inside buildMatchEconomics and the breakdown re-derivation below).
+  // The old flat-25 default was fabricated; passing 0 lets the vessel-class estimator run.
   const rawCons = parseConsumption(vessel.consumption, 0);
   const consumptionEstimated = rawCons <= 0;
 
@@ -176,44 +178,45 @@ export function computeStoredMatchEconomics(
 
   if (!econ) return nullResult;
 
-  // NOTE: second computeEstimatedTce call — buildMatchEconomics returns EconomicsBreakdown,
-  // not TCEBreakdown. Same inputs as above so values agree; if buildMatchEconomics's
-  // canal/EUA/DA handling changes, keep this call in sync (or lift TCEBreakdown into EconomicsResult).
-  //
-  // The inner TCEBreakdown is not exposed on EconomicsResult.breakdown
-  // (which is EconomicsBreakdown). We re-derive it using the same inputs so
-  // callers (tests, A5 parity) can inspect da_usd, canal_usd, etc.
+  // Stage 8: re-derive TCEBreakdown via computeTce directly — same guards as
+  // computeEstimatedTce internals; no originPort/destinationPort (war_risk_usd=$0
+  // in breakdown, war-risk displayed from econ.breakdown). ECA-split not wired:
+  // stored path did not compute it before Stage 8 (qa-937 MEDIUM-2, no new behaviour).
   //
   // NOTE: tce_usd_per_day is always taken from econ.tceUsdPerDay (the authoritative value).
-  // This separate computeEstimatedTce call is read-only re-derivation for the breakdown.
+  // This re-derivation is read-only so callers (tests, A5 parity) can inspect da_usd, etc.
   let tce_breakdown: TCEBreakdown | null = null;
   try {
     const { originEu, destEu, euLegPercent } = deriveEtsCoverage(loadPort, dischargePort);
-    const euaPriceEur = liveEuaRow?.price_eur_per_tco2 ?? undefined;
+    const euaForBreakdown = (liveEuaRow?.price_eur_per_tco2 != null && liveEuaRow.price_eur_per_tco2 > 0)
+      ? liveEuaRow.price_eur_per_tco2
+      : FALLBACK_EUA_EUR_PER_TCO2;
     // Canal detection is internal to buildMatchEconomics; reuse the value it computed.
-    const canalUsd = econ.breakdown.canal_usd ?? 0;
-    const tceEst = computeEstimatedTce(
-      {
-        rate: resolvedFreight.value,
-        source: resolvedFreight.source,
-        confidence: resolvedFreight.confidence,
-      },
-      distanceResult.nm,
-      ecoDwt,
-      ecoQty,
-      ecoSpeed,
-      parseConsumption(vessel.consumption, 0),  // was parseConsumption(vessel.consumption)
-      ballastDistanceNm ?? undefined,
-      canalUsd > 0 ? canalUsd : undefined,
-      daUsd > 0 ? daUsd : undefined,
-      bunkerPriceUsdPerMt,
+    const canalUsdBk = econ.breakdown.canal_usd ?? 0;
+    const resolvedBunkerBk = bunkerPriceUsdPerMt ?? DEFAULT_BUNKER_USD_PER_MT;
+    const safeDwtBk = ecoDwt > 0 ? ecoDwt : 10_000;
+    const safeSpeedBk = ecoSpeed > 0 ? ecoSpeed : 12;
+    const safeQtyBk = ecoQty > 0 ? ecoQty : safeDwtBk * 0.65;
+    const safeConsBk = resolveConsMtPerDay(rawCons, safeDwtBk);
+    const bkResult = computeTce({
+      dwt: safeDwtBk,
+      valueUsd: estimateVesselValueUsd(ecoDwt),
+      speedKts: safeSpeedBk,
+      consumptionMtPerDay: safeConsBk,
+      freightRateUsdPerMt: resolvedFreight.value,
+      quantityMt: safeQtyBk,
+      distanceNm: distanceResult.nm,
+      ballastDistanceNm: ballastDistanceNm ?? undefined,
+      bunkerPriceUsdPerMt: resolvedBunkerBk,
+      euaPriceEur: euaForBreakdown,
+      canalUsd: canalUsdBk,
+      daUsd: daUsd > 0 ? daUsd : 0,
       euLegPercent,
       originEu,
       destEu,
-      euaPriceEur,
-      true, // excludeWarRiskFromDailyTce
-    );
-    tce_breakdown = tceEst.breakdown;
+      excludeWarRiskFromDailyTce: true,
+    });
+    tce_breakdown = bkResult.breakdown;
   } catch {
     tce_breakdown = null;
   }
