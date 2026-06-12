@@ -1,39 +1,65 @@
-# Attack Plan: feat/wave-c-engine-logic
+# Attack Plan: feat/wave-a-phantom-features
 
-Branch: feat/wave-c-engine-logic
-HEAD: 13029428
-Generated: 2026-06-12
+Branch: feat/wave-a-phantom-features
+HEAD: 534e72a5
+**Generated:** 2026-06-12
+**Diff base:** 40966379..HEAD (12 commits, 68 files)
 
-Priorities per brief: cross-path-consistency (matches writers), data-contract
-(migration 051 on existing DBs), displayed-value-provenance (dashboard maps, slug,
-bucket keys).
+## Changed Files → Classes
 
-## A. Attack items
+- `lib/matching/charterer-tier.ts` (normalizeName + lookup): **normalizer + validator** → property-based (HIGH)
+- `scripts/demo-seed/charterer-extract.ts` (2 regexes + cleanCapturedName + patchResultJson): **parser + normalizer + data-contract** → property-based + adversarial corpus (HIGH)
+- `scripts/demo-seed/seed-charterers.ts` / `backfill-charterer.ts`: **data-contract** → idempotency / --dry replay / shape-through-consumer / upsert-conflict (HIGH)
+- `lib/parsing/parse-cargo-ai.ts` + `lib/schemas/parse-cargo.ts` + `lib/prompts/parse-cargo.ts`: **parser + project-rule ai-provider** → contract tests + schema↔prompt↔normalizer parity (HIGH)
+- `lib/market/psc-repository.ts` (hasInspectionData) + `lib/matching/pair-analyzer.ts:733`: **cross-path-consistency + conditional-ui-liveness** (HIGH)
+- `lib/knowledge/sources/psc/fixture.ts` + `lib/sample-data/imo/cii.json`: **data-contract** → fleet-intersection + duplicate/shape checks (MEDIUM)
+- `lib/economics/compute-tce.ts` + `voyage-calculator.ts`: **env-parity (flag) + derived-value (totalCosts/dailyTce)** → bit-identical-flag-off + share/rounding properties (HIGH)
+- `components/match/EconomicsTab.tsx` + `components/economics/CalculationWaterfall.tsx`: **displayed-value-provenance + conditional-ui-liveness** (HIGH — trust: a cost line) 
+- `app/matches/MatchesClient.tsx`: **ui-route + comparator (derived ordering)** → property-based comparator + wiring + protected-pin re-run (HIGH)
+- A.6 deletions: **blast-radius** → tsc + grep + runtime-reference sweep (MEDIUM)
+- `.env.local.example`: **env-parity** → documented/bake-time/default-off (MEDIUM)
+- Test repins (10 files): **sanctioned-check** → verify each maps to §1–§5, no expectation drift beyond sanction (MEDIUM)
 
-| # | Target | Technique | Sev if hit |
-|---|--------|-----------|------------|
-| A1 | Baseline parity: run tests/regression + named pre-existing suites on base e9070fe2 AND branch; diff failure signatures. Carve-in: imsbc/economics/ballast suites overlap branch blast radius | differential run | gate |
-| A2 | Migration 051 data-contract on a prod-shaped DB: build DB via full chain to 050 + rows (item idx 0), then apply 051; assert old index dropped, new index live, second-item insert works, dup rejected, down() dedups; runner records version | integration test | CRITICAL |
-| A3 | IMSBC `GROUP_A_RESTRICTION_RE` false positives: "no cargo restrictions — concentrates welcome", "no DG; TML certificate available", 40-char window bridging across clauses/sentences; false negatives: "cannot load concentrates", "concentrates not accepted" | regex fuzz table | MEDIUM |
-| A4 | Cross-writer consistency: api/matches POST (no item idx) vs persist (item idx) on same pair — duplicate-ish rows? regen pass-2 contentKey vs new index — INSERT clash? | code trace + test | HIGH |
-| A5 | computeTce clamp asymmetry: negative quantityMt / negative distance / negative duration → negative or garbage economics that C.8 claims to fix for rate only | unit probes | LOW-MED |
-| A6 | toBucketRows drops item indices → MatchesClient bucket key `\|0\|` collides for two same-pair items in review bucket (C.4 demotes BOTH items of a dirty-hold pair → likeliest collision); "item-aware key" claim is a no-op for bucket feed | repro test | MEDIUM |
-| A7 | durationDays: Infinity via JSON `1e999` passes `.positive()` (no `.finite()`); NaN rejected? | API probe | LOW |
-| A8 | getMatchBySlug determinism: null fit_percent rows, ties; slug consumers (cargo/vessel pages) now linking two visible item matches to one detail row | unit + trace | LOW-MED |
-| A9 | refreshComputedColumns on legacy DB (no item cols) and on 051 DB: cross-item clobber gone; user_id NULL branch params order | covered by branch tests + read | HIGH if broken |
-| A10 | Readiness C.7 boundary lattice: w=0, w=1, exact midpoint, gapDays=-1 exact, spot in-window unchanged, 'late' boundary unchanged; non-monotonic tight→ideal bump at window start (pre-existing?) | unit probes | MEDIUM |
-| A11 | C.6 fallback: 35–50k gap still handysize; 65k boundary; VESSEL_CLASS overlap at 65k (supramax maxDwt 65000 AND panamax minDwt 65000 — Object.entries order decides); 100k exact | unit probes | LOW |
-| A12 | Suez quote: totalUsd excludes war-risk — verify no production caller passes vesselValueUsd (grep), and no OTHER test/consumer reads totalUsd expecting war-risk inside (war-risk-v2 #957 chain) | grep + targeted suites | MEDIUM |
-| A13 | NT 0.65: Suez branch of canal route — any residual 0.6; voyage route compare-routes endpoint NT | grep | LOW |
-| A14 | Bosporus edge: port classifying to 'unknown' basin via resolvePort recursion; Istanbul (med) ↔ Izmit; basin regex overlap (e.g. 'suez' in med list vs Suez transit) — behavior change only for blacksea↔{atlantic,indian,eastafrica,westafrica} | unit probes | LOW |
-| A15 | Typecheck + full targeted battery (lib/matching, lib/sailing, lib/economics, __tests__/api, tests/unit/economics, tests/regression, __tests__/hold-cleanliness, lib/__tests__/matching) | gate | gate |
-| A16 | Hidden stale pins: repo-wide grep for tests asserting 0.6 NT / capesize-95k / totalUsd+warRisk / whole-window-ideal that branch missed | grep | MEDIUM |
+## Ordered Attack Sequence
 
-## B. Execution notes
+1. **HIGH — FuelEU flag-off bit-identity + math** (`compute-tce.ts`): flag-off deep-equality vs main behavior (numbers identical, only new keys added); share rule one-end=0.5/intra=1 incl. `originEu=true,destEu=undefined`; rounding ×2 invariant claim; duration/consumption guards; review new test quality (env leak between tests).
+2. **HIGH — FuelEU displayed-value-provenance / liveness**: tile binds `breakdown.fueleu_usd` (exact field); legacy persisted breakdown WITHOUT the field (cast `as TCEBreakdown`) renders no tile, no NaN, waterfall total stays consistent; trace feed end-to-end: EconomicsTab fetch(includeEuETS:true) → route originEu/destEu → computeTce flag branch; stored path (stored-match-economics deriveEtsCoverage) flag-sensitivity documented for Deploy Gate; `TceInputs.fuelType` dead-input note; data-integrity-check interplay with worksheet_json lacking fueleu_usd.
+3. **HIGH — PSC no-data semantics, cross-path** (`pair-analyzer` + siblings): unit semantics no-rows→undefined / rows-clean→0 / detained→count; lookback edge (old rows only → hasInspectionData true → "0 detentions" shown — is that honest per spec?); sibling writers of fit_percent (patch-fit.ts, real-matches.ts) never pass detentionCount/chartererTier — assess half-landed divergence vs pre-existing; vetting UI surface: neutral factor text + bracketData absence.
+4. **HIGH — charterer resolver + extraction properties**: normalizeName idempotency/charset (Cyrillic, diacritics: "Møller" vs "Moller" mismatch class), ambiguous duplicate normalized names (first-wins nondeterminism — listCharterers order), tier resolution wired through analyzePairs to chartererPenalty and the UtilisationChartererDisclosure feed (`fb.chartererPenalty`); seeded-name↔corpus parity ("Huaya" vs parser-extracted "Huaya Maritime" → silent no-match risk).
+5. **HIGH — seeds/backfill data-contract**: seed idempotency (2× converge), upsert collision with pre-existing same NAME different id (UNIQUE constraint), DELETE-marker scope (non-marker rows survive); backfill --dry writes nothing (readonly handle), --apply 2× = 0 patches, root-shape preservation (array vs bare object vs `{items:[...]}` reality in local db), multi-item/multi-charterer email semantics, shape-through-consumer: patched result_json parses through regenerate-matches' own reader.
+6. **HIGH — sorting comparator + wiring**: property: comparator consistency (sign-antisymmetry a/b swap; null-sink invariant both dirs; no NaN for null fields), per-column correctness, fit/score null-guard followup (b268b2e8) actually fixes synthetic rows; header click toggles + mode reset + dropdown DEFAULT_DIR; protected `__tests__/matches-sort.test.tsx` stays green; `aria-sort` only on active col.
+7. **MEDIUM — A.6 blast-radius**: `tsc --noEmit` clean; no runtime/script/cron/package.json references to deleted modules; migration 011 still registered (verified in Phase 2 — confirm in findings); demo-scenario 13 narrative stale ref (cosmetic note).
+8. **MEDIUM — env-parity**: FUELEU_ENABLED runtime-only (server) → restart needed, no rebuild; NEXT_PUBLIC_FUELEU_ENABLED zero readers (doc-only — flag in Deploy Gate); CHARTERER_CREDIT_ENABLED not gating scoring (per plan — confirm no accidental gate added); SUBS_TIMER_V2 readers all gone; `.env.local.example` parity.
+9. **MEDIUM — fixture/cii data-contract**: new fixture IMOs ∈ demo fleet (local db parsed_results vessels); cii.json no duplicate IMOs, consumer reads (ciiRating lookup) tolerate 17 records; PSC fixture ids unique.
+10. **MEDIUM — sanctioned-check of 10 repinned test files**: each rewrite traces to §1–§5; no unsanctioned expectation change (esp. economics fixtures only ADD fueleu fields, never change expected numbers).
 
-- tests/regression runs need `--testPathIgnorePatterns "/node_modules/"`.
-- tsc via `NODE_OPTIONS=--max-old-space-size=8192 npx tsc --noEmit`.
-- NO full `npm test`.
-- New tests land in `tests/regression/` as `<feature>-<class>.test.ts`, pinned-behavior
-  style ([FINDING]/[BEHAVIOR] markers), kept green.
-- LLM creds dead → network-credential failures are environmental.
+## Cross-Cutting Classes Applied
+
+- **cross-path-consistency**: detentionCount/chartererTier producers (#3, #4) — value changed in analyzePairs; enumerate ALL fit_percent writers: analyzePairs (compute-matches, ai/match route, regenerate-matches) + patch-fit + real-matches. Blast-radius rule applies: PR changes how detention factor is produced → every fit producer in scope.
+- **displayed-value-provenance**: FuelEU tile/waterfall binding + total consistency (#2); sort indicator binding `sortBy`/`sortDir` → aria-sort + footer label (#6).
+- **conditional-ui-liveness**: FuelEU tile (`fueleu_usd > 0`) — feed live only when server flag on AND EU leg AND route sets originEu/destEu (#2); charterer penalty line (`chartererPenalty > 0` in UtilisationChartererDisclosure) — feed live only after seed+backfill+regen (#4); "0 detentions" bracketData now only with data (#3).
+
+## Project Rules Applied
+
+- `.claude/rules/ai-provider.md` → Gemini structured-output: `charterer_name` added to responseSchema (lib/schemas/parse-cargo.ts) — attack: schema↔RawCargoItem↔prompt parity test; missing-field-in-schema would silently drop the value (history: Gemini wraps/drops without schema). Item in #4/SA-1.
+- `.claude/rules/admin-api.md` → intersects nothing in this diff.
+- `.claude/rules/retriever.md` → intersects nothing in this diff.
+
+## Sub-agent dispatch (Phase 3, ≤4 parallel)
+
+- **SA-1 charterer-data**: items 4 (extraction/resolver properties), 5 (seeds/backfill), parser contract + schema parity.
+- **SA-2 economics**: items 1, 2 (FuelEU math + provenance + env interplay), part of 8.
+- **SA-3 matching/PSC**: item 3 (+fit drift quantification, sibling-path assessment, vetting UI surface), item 9.
+- **SA-4 sorting+sweeps**: items 6, 7, 8, 10.
+
+## Skipped (why)
+
+- `docs/**`, plan doc: docs-only.
+- `scripts/__tests__/data-integrity-check.test.ts` walk-up resolver: test-infra, LOW — covered by baseline run (green) + meta-check in #2 (script's breakdown expectations).
+- Deleted test files: covered by #7 blast-radius + sanctioned §4.
+
+## Coverage Notes
+
+- No auth/html-sanitizer/db-migration/concurrent signals in this diff.
+- No browser E2E planned: no dev server required; all UI checks via RTL/jsdom + source binding reads → Step 1.5 freshness N/A (no running-app evidence will be cited).
+- llm-caller: prompt change is additive instruction text; no snapshot infrastructure for prompts exists — parity test covers the contract instead.

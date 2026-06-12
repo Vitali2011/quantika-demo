@@ -1,3 +1,6 @@
+// @ts-nocheck
+// AUTO-EXTRACTED by test-skill review: lib/economics/compute-tce.ts at merge-base 40966379 (main).
+// Relative imports rewritten to @/ alias. DO NOT EDIT.
 /**
  * Canonical TCE / economics computation entry-point.
  *
@@ -16,9 +19,8 @@
  * in voyage-calculator.ts that maps VoyageInput → TceInputs and delegates here.
  */
 
-import { calculateWarRiskPremium } from './war-risk';
-import { calculateEuEts } from './ets';
-import { calculateFuelEu, FUEL_GHG_INTENSITY } from './fueleu';
+import { calculateWarRiskPremium } from '@/lib/economics/war-risk';
+import { calculateEuEts } from '@/lib/economics/ets';
 import { calculateEcaFuelPortion } from '@/lib/knowledge/eca/adapter';
 import { estimateRoundTripDays } from '@/lib/economics/voyage-days';
 import type { TCEBreakdown } from '@/lib/economics/voyage-calculator';
@@ -64,9 +66,6 @@ export interface TceInputs {
   euLegPercent?: number;
   originEu?: boolean;
   destEu?: boolean;
-
-  /** Fuel type for FuelEU GHG intensity (key of FUEL_GHG_INTENSITY). Default 'vlsfo'. */
-  fuelType?: string;
 
   // War risk
   /** Days in HRA zone. When absent: defaults to durationDays. */
@@ -223,36 +222,15 @@ export function computeTce(inputs: TceInputs): TceResult {
   const etsUsd = Math.round(etsEur * EUR_TO_USD);
   const etsApplicable = etsResult.applicable;
 
-  // ── FuelEU Maritime (audit A.5, flag-gated) ───────────────────────────
-  // Scope per Reg. 2023/1805: 100% of energy intra-EU, 50% when one endpoint is EU.
-  // Rides the same originEu/destEu detection as EU ETS (set by the voyage API
-  // only when includeEuETS) — both are EU-scope costs.
-  let fueleuUsd = 0;
-  const anyEuEnd = inputs.originEu === true || inputs.destEu === true;
-  if (process.env.FUELEU_ENABLED === 'true' && anyEuEnd && duration > 0 && consumption > 0) {
-    const share = inputs.originEu && inputs.destEu ? 1 : 0.5;
-    // Unknown fuelType would make calculateFuelEu throw — fall back to vlsfo
-    // instead of failing the whole TCE computation (QA F-002).
-    const fuelType =
-      inputs.fuelType && FUEL_GHG_INTENSITY[inputs.fuelType] ? inputs.fuelType : 'vlsfo';
-    const fe = calculateFuelEu({
-      fuelType,
-      consumptionMtPerDay: consumption,
-      voyageDays: duration,
-    });
-    fueleuUsd = Math.round(fe.penaltyUsd * share);
-  }
-  const fueleuApplicable = fueleuUsd > 0;
-
   // ── Aggregation ───────────────────────────────────────────────────────
   const grossFreight = Math.round(quantity * rate);
-  const totalCosts = bunkerUsd + canalUsd + daUsd + warRiskUsd + etsUsd + fueleuUsd;
+  const totalCosts = bunkerUsd + canalUsd + daUsd + warRiskUsd + etsUsd;
   const netVoyage = grossFreight - totalCosts;
   const safeDuration = duration > 0 ? duration : ESTIMATED_DAYS_FALLBACK;
   // When excludeWarRiskFromDailyTce is set, omit war-risk from the per-day numerator
   // so stored (empty ports → $0) and detail (real ports) produce the same TCE.
   const dailyNetVoyage = inputs.excludeWarRiskFromDailyTce
-    ? grossFreight - (bunkerUsd + canalUsd + daUsd + etsUsd + fueleuUsd)
+    ? grossFreight - (bunkerUsd + canalUsd + daUsd + etsUsd)
     : netVoyage;
   const dailyTce = duration > 0 ? Math.round(dailyNetVoyage / safeDuration) : 0;
 
@@ -265,7 +243,6 @@ export function computeTce(inputs: TceInputs): TceResult {
     war_risk_usd: warRiskUsd,
     ets_eur: Math.round(etsEur * 100) / 100,
     ets_usd: etsUsd,
-    fueleu_usd: fueleuUsd,
     gross_freight_usd: grossFreight,
     total_costs_usd: totalCosts,
     net_voyage_usd: netVoyage,
@@ -282,7 +259,6 @@ export function computeTce(inputs: TceInputs): TceResult {
       da: daApplicable,
       war_risk: warRiskApplicable,
       ets: etsApplicable,
-      fueleu: fueleuApplicable,
     },
     ...(inputs.daQuality != null ? { da_quality: inputs.daQuality } : {}),
     ...(warRiskApplicable && warResult.rateDate ? { war_risk_rate_date: warResult.rateDate } : {}),
