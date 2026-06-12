@@ -117,8 +117,7 @@ function scoreCargoTypeMatch(input: CargoTypeScoreInput): { points: number; reas
     }
 
     case 'FCL':
-    case 'LCL':
-    case 'CONTAINER': {
+    case 'LCL': {
       if (cat === 'container' && CONTAINER_KEYWORDS.some(k => lcLower.includes(k))) {
         return { points: 20, reason: 'container vessel with confirmed container history' };
       }
