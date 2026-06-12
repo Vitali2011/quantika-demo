@@ -82,7 +82,7 @@ const VoyageInputSchema = z.object({
   }),
   bunkerPriceUsdPerMt: z.number().optional(),
   euaPriceEur: z.number().optional(),
-  durationDays: z.number(),
+  durationDays: z.number().positive('durationDays must be > 0'),
   euLegPercent: z.number().optional(),
   daysInHra: z.number().optional(),
   canalUsd: z.number().optional(),
