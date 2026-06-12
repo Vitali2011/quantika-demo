@@ -485,10 +485,15 @@ export function getMatchBySlug(
   vesselId: string,
   userId: string,
 ): StoredMatch | null {
+  // fit_percent exists since migration 042 — legacy DBs (route tests build
+  // 032-036 schemas) sort by score only, same repository convention as the
+  // hasFitColumns insert branches. Unguarded ORDER BY 500'd the slug route.
+  const orderBy = hasFitColumns(db)
+    ? 'ORDER BY COALESCE(fit_percent, -1) DESC, score DESC, id ASC'
+    : 'ORDER BY score DESC, id ASC';
   const row = db
     .prepare(
-      `SELECT * FROM matches WHERE cargo_id = ? AND vessel_id = ? AND user_id = ?
-       ORDER BY COALESCE(fit_percent, -1) DESC, score DESC, id ASC LIMIT 1`,
+      `SELECT * FROM matches WHERE cargo_id = ? AND vessel_id = ? AND user_id = ? ${orderBy} LIMIT 1`,
     )
     .get(cargoId, vesselId, userId) as StoredMatch | undefined;
   return row ?? null;

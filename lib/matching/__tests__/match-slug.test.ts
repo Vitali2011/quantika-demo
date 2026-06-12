@@ -59,3 +59,19 @@ describe('getMatchBySlug — multiple item rows per pair', () => {
     expect(resolved?.cargo_item_index).toBe(1);
   });
 });
+
+/** CI 2026-06-12 regression: route tests build legacy 032-036 schemas (no
+ *  fit_percent column) — an unguarded ORDER BY fit_percent made the slug
+ *  route 500 (app/api/matches/[id]/__tests__/route.test.ts). Repository
+ *  convention: column presence guards (hasFitColumns). */
+describe('getMatchBySlug — legacy schema without fit columns', () => {
+  it('resolves by score on a 032-036 schema instead of throwing', () => {
+    const db = new Database(':memory:');
+    runMigrations(db, allMigrations.filter((m) => m.version >= 32 && m.version <= 36));
+    createMatch(db, { cargo_id: 'cargo-l1', vessel_id: 'vessel-l1', score: 70, reason: 'r', user_id: 'sess-1' });
+
+    const resolved = getMatchBySlug(db, 'cargo-l1', 'vessel-l1', 'sess-1');
+    expect(resolved?.cargo_id).toBe('cargo-l1');
+    expect(resolved?.score).toBe(70);
+  });
+});
