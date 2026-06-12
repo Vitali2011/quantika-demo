@@ -404,15 +404,18 @@ export function createMatch(db: Database.Database, input: CreateMatchInput): Sto
   }
 
   if (result.changes === 0) {
-    // Duplicate silently ignored by UNIQUE constraint — return the existing row.
-    const existing = db
-      .prepare(
-        `SELECT * FROM matches
+    // Duplicate silently ignored by UNIQUE constraint — return the existing row
+    // (item-aware since migration 051; legacy DBs without item columns keep the
+    // coarse pair lookup).
+    const withIdx = hasItemIndexColumns(db);
+    const sql = `SELECT * FROM matches
          WHERE cargo_id = ? AND vessel_id = ?
            AND (user_id = ? OR (user_id IS NULL AND ? IS NULL))
-         LIMIT 1`,
-      )
-      .get(input.cargo_id, input.vessel_id, user_id, user_id) as StoredMatch | undefined;
+           ${withIdx ? 'AND cargo_item_index = ? AND vessel_item_index = ?' : ''}
+         LIMIT 1`;
+    const params: Array<string | number | null> = [input.cargo_id, input.vessel_id, user_id, user_id];
+    if (withIdx) params.push(input.cargo_item_index ?? 0, input.vessel_item_index ?? 0);
+    const existing = db.prepare(sql).get(...params) as StoredMatch | undefined;
     return existing!;
   }
 
@@ -443,10 +446,6 @@ function refreshComputedColumns(
     input.fit_percent ?? null, input.fit_breakdown ?? null,
     now,
   ];
-  if (hasItemIndexColumns(db)) {
-    sets.push('cargo_item_index = ?', 'vessel_item_index = ?');
-    args.push(input.cargo_item_index ?? 0, input.vessel_item_index ?? 0);
-  }
   if (hasWorksheetColumn(db)) {
     // Null-preserving: worksheet_json's only producers are demo hydrate / seed
     // regen — the live engine never attaches worksheets, so a null here means
@@ -457,12 +456,18 @@ function refreshComputedColumns(
   if (hasConsumptionEstimatedColumn(db)) { sets.push('consumption_estimated = ?'); args.push(input.consumption_estimated ?? null); }
   if (hasBallastDistanceColumn(db)) { sets.push('ballast_distance_nm = ?'); args.push(input.ballast_distance_nm ?? null); }
   if (hasBreakevenColumn(db)) { sets.push('breakeven_tce_usd_per_day = ?'); args.push(input.breakeven_tce_usd_per_day ?? null); }
+  // Item indices are part of the row's identity since migration 051 — never
+  // SET them; the WHERE targets exactly one item row so a refresh for item N
+  // cannot clobber item M of the same email pair (audit C.5).
   const user_id = input.user_id !== undefined ? input.user_id : null;
+  const withIdx = hasItemIndexColumns(db);
   args.push(input.cargo_id, input.vessel_id, user_id, user_id);
+  if (withIdx) args.push(input.cargo_item_index ?? 0, input.vessel_item_index ?? 0);
   db.prepare(
     `UPDATE matches SET ${sets.join(', ')}
      WHERE cargo_id = ? AND vessel_id = ?
-       AND ((user_id IS NULL AND ? IS NULL) OR user_id = ?)`,
+       AND ((user_id IS NULL AND ? IS NULL) OR user_id = ?)
+       ${withIdx ? 'AND cargo_item_index = ? AND vessel_item_index = ?' : ''}`,
   ).run(...args);
 }
 
@@ -471,6 +476,9 @@ export function getMatch(db: Database.Database, id: number): StoredMatch | null 
   return row ?? null;
 }
 
+/** Resolve a slug (cargo_id + vessel_id + user) to a match. Since migration 051
+ *  several item rows may share the pair — return the best by fit, then score
+ *  (deterministic; the slug format predates item-level matches). */
 export function getMatchBySlug(
   db: Database.Database,
   cargoId: string,
@@ -479,7 +487,8 @@ export function getMatchBySlug(
 ): StoredMatch | null {
   const row = db
     .prepare(
-      `SELECT * FROM matches WHERE cargo_id = ? AND vessel_id = ? AND user_id = ? LIMIT 1`,
+      `SELECT * FROM matches WHERE cargo_id = ? AND vessel_id = ? AND user_id = ?
+       ORDER BY COALESCE(fit_percent, -1) DESC, score DESC, id ASC LIMIT 1`,
     )
     .get(cargoId, vesselId, userId) as StoredMatch | undefined;
   return row ?? null;

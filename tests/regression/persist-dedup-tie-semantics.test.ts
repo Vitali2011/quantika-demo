@@ -1,20 +1,19 @@
 /**
- * test-skill ATTACK-2 (merger precedence, commit c2e2c1a2 first-wins dedup).
- * Branch: claude/compassionate-jennings-cb6e62 · HEAD: dded0315
+ * REWRITTEN 2026-06-12: founder decision (audit C.5) — uniqueness is per item
+ * pair; the 044-era one-per-email-pair semantics this test pinned are retired.
  *
- * The dedup comment promises "Keep the first (best) per unique key" and relies
- * on pair-analyzer's sort (b.fitPercent ?? 0) - (a.fitPercent ?? 0). Two
- * residual tie cases exist where "first" is NOT guaranteed "best":
- *   1. equal fitPercent, different score — stable sort keeps pair-iteration
- *      order; dedup ignores score entirely (regen's own dedup breaks ties by
- *      score; this one does not).
- *   2. fitPercent undefined on both (cargo/vessel lookup miss) — both sort as
- *      0; array order decides.
- *
- * Verdict-relevant context: legacy INSERT OR IGNORE kept the array-first row
- * in exactly the same way, so the tie choice is PRE-EXISTING semantics, not a
- * regression introduced by the dedup. These tests PIN the current contract so
- * a future caller passing unsorted matches sees it explicitly.
+ * Originally test-skill ATTACK-2 (merger precedence, commit c2e2c1a2): pinned
+ * the array-first tie choice of the persist dedup. Since migration 051 the
+ * dedup key is the ITEM pair (cargoEmailId|cargoItemIndex|vesselEmailId|
+ * vesselItemIndex), so different items of the same email pair are NOT
+ * duplicates anymore — both persist. The tie pins below now exercise
+ * duplicates of the SAME item pair, where the contract is unchanged:
+ *   1. equal fitPercent, different score — array-first wins; dedup ignores
+ *      score entirely (regen's own dedup breaks ties by score; this one
+ *      does not).
+ *   2. fitPercent undefined on both — both sort as 0; array order decides.
+ * Legacy INSERT OR IGNORE kept the array-first row the same way, so the tie
+ * choice remains PRE-EXISTING semantics, pinned for visibility.
  */
 import Database from 'better-sqlite3';
 import migration032 from '@/lib/migrations/032-matches';
@@ -29,6 +28,7 @@ import migration045 from '@/lib/migrations/045-matches-worksheet';
 import migration046 from '@/lib/migrations/046-matches-consumption-estimated';
 import migration047 from '@/lib/migrations/047-matches-ballast-distance';
 import migration050 from '@/lib/migrations/050-matches-breakeven';
+import migration051 from '@/lib/migrations/051-matches-item-unique';
 import { persistSessionMatches } from '@/lib/matching/persist-session-matches';
 import { listMatches } from '@/lib/matching/matches-repository';
 import type { Match, ParsedCargo, ParsedVessel } from '@/lib/types';
@@ -47,6 +47,7 @@ function makeDb(): Database.Database {
   migration046.up(db);
   migration047.up(db);
   migration050.up(db);
+  migration051.up(db);
   return db;
 }
 
@@ -79,11 +80,21 @@ function m(overrides: Partial<Match>): Match {
   } as unknown as Match;
 }
 
-describe('persistSessionMatches dedup — tie semantics are array-first (legacy parity, pinned)', () => {
-  it('equal fitPercent: array-first wins even when the second has the higher score', () => {
+describe('persistSessionMatches dedup — item-aware key, ties stay array-first (audit C.5)', () => {
+  it('different item indices of the same email pair are NOT duplicates — both persist', () => {
     const db = makeDb();
-    const first = m({ cargoItemIndex: 0, score: 40, fitPercent: 60, matchReasons: ['first'] });
-    const second = m({ cargoItemIndex: 1, score: 90, fitPercent: 60, matchReasons: ['second'] });
+    const item0 = m({ cargoItemIndex: 0, score: 40, fitPercent: 60, matchReasons: ['item0'] });
+    const item1 = m({ cargoItemIndex: 1, score: 90, fitPercent: 60, matchReasons: ['item1'] });
+    persistSessionMatches(db, 'sess-1', [item0, item1], [CARGO0, CARGO1], [VESSEL]);
+    const rows = listMatches(db, { user_id: 'sess-1', sortBy: 'score', sortDir: 'desc' });
+    expect(rows).toHaveLength(2);
+    expect(rows.map((r) => r.cargo_item_index).sort()).toEqual([0, 1]);
+  });
+
+  it('equal fitPercent, SAME item pair: array-first wins even when the second has the higher score', () => {
+    const db = makeDb();
+    const first = m({ score: 40, fitPercent: 60, matchReasons: ['first'] });
+    const second = m({ score: 90, fitPercent: 60, matchReasons: ['second'] });
     persistSessionMatches(db, 'sess-1', [first, second], [CARGO0, CARGO1], [VESSEL]);
     const rows = listMatches(db, { user_id: 'sess-1', sortBy: 'score', sortDir: 'desc' });
     expect(rows).toHaveLength(1);
@@ -95,10 +106,10 @@ describe('persistSessionMatches dedup — tie semantics are array-first (legacy 
     expect(rows[0].score).toBe(40);
   });
 
-  it('undefined fitPercent on both duplicates: array-first wins', () => {
+  it('undefined fitPercent on both duplicates of the SAME item pair: array-first wins', () => {
     const db = makeDb();
-    const first = m({ cargoItemIndex: 0, score: 30, matchReasons: ['first-nofit'] });
-    const second = m({ cargoItemIndex: 1, score: 80, matchReasons: ['second-nofit'] });
+    const first = m({ score: 30, matchReasons: ['first-nofit'] });
+    const second = m({ score: 80, matchReasons: ['second-nofit'] });
     persistSessionMatches(db, 'sess-1', [first, second], [CARGO0, CARGO1], [VESSEL]);
     const rows = listMatches(db, { user_id: 'sess-1', sortBy: 'score', sortDir: 'desc' });
     expect(rows).toHaveLength(1);

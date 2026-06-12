@@ -2,8 +2,9 @@
  * createMatch refreshComputed flag (audit B.6).
  *
  * persistSessionMatches recomputes live economics on every render, but the
- * INSERT OR IGNORE against the unique (cargo_id, vessel_id, COALESCE(user_id,''))
- * index silently discards the recomputed values for existing rows. The opt-in
+ * INSERT OR IGNORE against the unique (cargo_id, vessel_id, COALESCE(user_id,''),
+ * cargo_item_index, vessel_item_index) index (migration 051) silently discards
+ * the recomputed values for existing rows. The opt-in
  * refreshComputed flag updates the engine-computed columns in place — NEVER
  * touching status (user action), created_at, or identity columns.
  *
@@ -24,6 +25,7 @@ import migration045 from '@/lib/migrations/045-matches-worksheet';
 import migration046 from '@/lib/migrations/046-matches-consumption-estimated';
 import migration047 from '@/lib/migrations/047-matches-ballast-distance';
 import migration050 from '@/lib/migrations/050-matches-breakeven';
+import migration051 from '@/lib/migrations/051-matches-item-unique';
 import { createMatch, listMatches } from '@/lib/matching/matches-repository';
 import { persistSessionMatches } from '@/lib/matching/persist-session-matches';
 import type { Match, ParsedCargo, ParsedVessel } from '@/lib/types';
@@ -42,6 +44,7 @@ function makeDb(): Database.Database {
   migration046.up(db);
   migration047.up(db);
   migration050.up(db);
+  migration051.up(db);
   return db;
 }
 
@@ -124,15 +127,17 @@ describe('createMatch refreshComputed (audit B.6)', () => {
 });
 
 /**
- * Regression guard for the refreshComputed interaction with duplicate email
- * pairs (multi-item emails). The engine dedups items by 4-tuple, but the DB
- * unique index is (cargo_id, vessel_id, user_id) — so two matches for the SAME
- * email pair with different item indices both reach createMatch. Matches arrive
- * sorted by fitPercent DESC; INSERT OR IGNORE used to freeze the FIRST (best)
- * row, but refreshComputed turned the later duplicate into an UPDATE → the
- * LAST (worst) silently won. persistSessionMatches must dedup first-wins.
+ * REWRITTEN 2026-06-12: founder decision (audit C.5) — uniqueness is per item
+ * pair; the 044-era one-per-email-pair semantics this test pinned are retired.
+ *
+ * Two matches for the SAME email pair with different item indices are now two
+ * DISTINCT rows (migration 051 widened the unique index to include the item
+ * indices). First-wins dedup survives only for duplicates of the SAME item
+ * pair: engine output arrives sorted by fitPercent DESC, so the first (best)
+ * duplicate persists and refreshComputed must not demote it to a worse later
+ * copy.
  */
-describe('persistSessionMatches — duplicate email pair keeps the BEST match (first-wins)', () => {
+describe('persistSessionMatches — item-aware dedup (audit C.5)', () => {
   // Same cargo email with two items, both matched against the same vessel.
   const DUP_CARGO_ITEM0 = {
     emailId: 'cargo-dup', itemIndex: 0,
@@ -173,7 +178,7 @@ describe('persistSessionMatches — duplicate email pair keeps the BEST match (f
     } as unknown as Match;
   }
 
-  it('persists the first (best) duplicate; refreshComputed must not demote it to the worse one', () => {
+  it('persists BOTH item rows of the same email pair, each with its own values', () => {
     const db = makeDb();
     const better = makeEngineMatch();
     const worse = makeEngineMatch({
@@ -187,10 +192,32 @@ describe('persistSessionMatches — duplicate email pair keeps the BEST match (f
     );
 
     const rows = listMatches(db, { user_id: 'sess-1', sortBy: 'score', sortDir: 'desc' });
-    expect(rows).toHaveLength(1);                 // unique index collapses the pair
+    expect(rows).toHaveLength(2);                 // one row PER ITEM pair (051)
+    expect(rows[0].score).toBe(80);
+    expect(rows[0].cargo_item_index).toBe(0);
+    expect(rows[0].reason).toBe('better item');
+    expect(rows[1].score).toBe(40);
+    expect(rows[1].cargo_item_index).toBe(1);
+    expect(rows[1].reason).toBe('worse item');
+  });
+
+  it('SAME item pair emitted twice: first (best) wins; refreshComputed must not demote it', () => {
+    const db = makeDb();
+    const better = makeEngineMatch();
+    const worse = makeEngineMatch({
+      score: 40, fitPercent: 40, matchReasons: ['worse duplicate'], // same item pair 0|0
+    });
+
+    persistSessionMatches(
+      db, 'sess-1', [better, worse],
+      [DUP_CARGO_ITEM0, DUP_CARGO_ITEM1], [DUP_VESSEL],
+    );
+
+    const rows = listMatches(db, { user_id: 'sess-1', sortBy: 'score', sortDir: 'desc' });
+    expect(rows).toHaveLength(1);                 // duplicate item pair collapses
     expect(rows[0].score).toBe(80);               // best score survives
     expect(rows[0].fit_percent).toBe(80);         // best fit survives
-    expect(rows[0].cargo_item_index).toBe(0);     // identity of the best item, not the last
+    expect(rows[0].cargo_item_index).toBe(0);
     expect(rows[0].reason).toBe('better item');
   });
 });
