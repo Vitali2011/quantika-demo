@@ -257,11 +257,12 @@ describe('applyBallastSizeCap — tier & score invariants', () => {
     expect(out).toBe(m); // returns the SAME object (early return), no copy, no issue
   });
 
-  it('[BEHAVIOR] inconsistent input: score 65 but matchLevel "good" → guard uses SCORE not level, returns as-is', () => {
-    // The cap gate is `match.score < 70`, NOT `matchLevel`. A malformed match with
-    // score 65 but level 'good' is returned untouched — it never gets re-derived to 'possible'.
-    // In the real pipeline the wiring gates on matchLevel==='good' first, so a 65/'good'
-    // mismatch could slip past the wiring filter yet be ignored by the function => no demotion.
+  it('[BEHAVIOR] inconsistent input: score 65 but matchLevel "good" → level-gate processes it, demotes to possible', () => {
+    // Re-pinned after #846: the cap gate is now `matchLevel !== 'good'` (match-scoring.ts:251),
+    // NOT `score < 70` — matchLevel is derived from fitPercent, so level is the source of truth.
+    // A malformed 65/'good' input passes the level gate, both levers fire, and the match IS
+    // demoted: score stays min(65, 69) = 65, matchLevel re-derived from score → 'possible'.
+    // (Pre-#846 behavior — returned untouched via score<70 early-return — no longer holds.)
     const out = applyBallastSizeCap({
       match: mkMatch(65, 'good'),
       distanceNm: 9999,
@@ -270,8 +271,11 @@ describe('applyBallastSizeCap — tier & score invariants', () => {
       cargoWeightMax: 10,
       cargoDescription: null,
     });
-    expect(out.matchLevel).toBe('good'); // unchanged — score<70 early-return
-    expect(out.score).toBe(65);
+    expect(out.matchLevel).toBe('possible'); // demoted — level-gate passed, levers fired
+    expect(out.score).toBe(65); // min(65, GOOD_CAP_SCORE=69) — unchanged numerically
+    const issues = out.issues ?? [];
+    expect(issues.some((i) => i.startsWith('BALLAST:'))).toBe(true);
+    expect(issues.some((i) => i.startsWith('SIZE:'))).toBe(true);
   });
 
   it('both ballast AND size trigger → score capped once to 69, BOTH issues present', () => {

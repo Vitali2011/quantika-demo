@@ -74,10 +74,28 @@ function istanbulOnlyFetcher(html: string) {
 const NOW_DEMO = new Date('2026-06-02T00:00:00.000Z');
 
 // ---------------------------------------------------------------------------
-// B1: Per-port prices bypass range validation
+// B1: Per-port prices ARE range-validated (guard of the fix)
+//
+// History: these tests were authored as "DEMONSTRATES BUG" red pins during the
+// pre-merge cold-QA of the per-port feature branch, but the range check shipped
+// in the same squash (#768, oilmonster-adapter.ts: per-port RANGE_VLSFO guard
+// "keeping last-good"). The bypass never existed on main — the pins were born
+// inverted. Rewritten 2026-06-12 to lock the shipped behavior instead.
 // ---------------------------------------------------------------------------
 
-describe('B1 — per-port prices bypass range validation [BUG]', () => {
+/** Istanbul serves the given HTML; Piraeus stays valid so the refresh has at
+ *  least one good row and does not hit the zero-rows-written throw. */
+function istanbulBadPiraeusGoodFetcher(istanbulHtml: string) {
+  const piraeusHtml = makePortHtml('889.25', '2026-05-26')
+    .replace('Istanbul VLSFO Price', 'Piraeus VLSFO Price');
+  return jest.fn((url: string) => {
+    if (url.includes('istanbul')) return Promise.resolve(istanbulHtml);
+    if (url.includes('piraeus')) return Promise.resolve(piraeusHtml);
+    return Promise.resolve('<html><body><p>no price tables here</p></body></html>');
+  });
+}
+
+describe('B1 — per-port prices are range-validated (fixed in #768)', () => {
   let db: Database.Database;
   let warnSpy: jest.SpyInstance;
 
@@ -90,40 +108,46 @@ describe('B1 — per-port prices bypass range validation [BUG]', () => {
     warnSpy.mockRestore();
   });
 
-  it('DEMONSTRATES BUG: per-port Istanbul price 99999.00 is inserted without range check', async () => {
-    // The main table has RANGE_VLSFO = [200, 2000] and rejects prices outside this range.
-    // Per-port upserts have NO range validation — a clearly wrong price is blindly inserted.
+  it('per-port Istanbul price 99999.00 (above 2000 cap) is rejected with a warn, not inserted', async () => {
+    const outrageousHtml = makePortHtml('99999.00', '2026-05-25');
+    const fetcher = istanbulBadPiraeusGoodFetcher(outrageousHtml);
+
+    await refreshOilMonster(db, fetcher, { now: NOW_DEMO });
+
+    expect(getLatestBunkerPrice(db, 'TRIST', 'VLSFO')).toBeNull();
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('out of range'));
+  });
+
+  it('per-port Istanbul price 1.00 (below 200 floor) is rejected, not inserted', async () => {
+    const lowPriceHtml = makePortHtml('1.00', '2026-05-25');
+    const fetcher = istanbulBadPiraeusGoodFetcher(lowPriceHtml);
+
+    await refreshOilMonster(db, fetcher, { now: NOW_DEMO });
+
+    expect(getLatestBunkerPrice(db, 'TRIST', 'VLSFO')).toBeNull();
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('out of range'));
+  });
+
+  it('out-of-range price on ALL per-port sources → zero-rows throw (no silent empty refresh)', async () => {
+    // With Piraeus also failing, an out-of-range Istanbul leaves nothing to write:
+    // refreshOilMonster must throw loudly rather than report success with 0 rows.
     const outrageousHtml = makePortHtml('99999.00', '2026-05-25');
     const fetcher = istanbulOnlyFetcher(outrageousHtml);
 
-    // This should ideally reject the price (range check). Currently it inserts 99999.00.
-    await refreshOilMonster(db, fetcher, { now: NOW_DEMO });
-
-    const row = getLatestBunkerPrice(db, 'TRIST', 'VLSFO');
-    // CURRENT BEHAVIOR (BUG): price is inserted without range validation
-    // EXPECTED BEHAVIOR: should warn and skip (like main table does for out-of-range)
-    expect(row).not.toBeNull();
-    expect(row!.price_usd_per_mt).toBe(99999.00); // Bug: this extreme value is accepted
-  });
-
-  it('DEMONSTRATES BUG: per-port Istanbul price 1.00 (below 200 floor) is inserted', async () => {
-    // Main table would reject 1.00 (< 200). Per-port does not.
-    const lowPriceHtml = makePortHtml('1.00', '2026-05-25');
-    const fetcher = istanbulOnlyFetcher(lowPriceHtml);
-
-    await refreshOilMonster(db, fetcher, { now: NOW_DEMO });
-
-    const row = getLatestBunkerPrice(db, 'TRIST', 'VLSFO');
-    expect(row).not.toBeNull();
-    expect(row!.price_usd_per_mt).toBe(1.00); // Bug: too-low price accepted
+    await expect(refreshOilMonster(db, fetcher, { now: NOW_DEMO }))
+      .rejects.toThrow('zero rows written');
+    expect(getLatestBunkerPrice(db, 'TRIST', 'VLSFO')).toBeNull();
   });
 });
 
 // ---------------------------------------------------------------------------
-// B2: ROCND proxy also bypasses range validation
+// B2: ROCND proxy respects range validation (guard of the fix)
+// Same born-inverted history as B1 — see the B1 header. The adapter rejects an
+// out-of-range Istanbul before it ever reaches the proxy derivation, and the
+// proxy price itself is range-checked too (#768).
 // ---------------------------------------------------------------------------
 
-describe('B2 — ROCND proxy bypasses range validation [BUG]', () => {
+describe('B2 — ROCND proxy respects range validation (fixed in #768)', () => {
   let db: Database.Database;
   let warnSpy: jest.SpyInstance;
 
@@ -136,17 +160,16 @@ describe('B2 — ROCND proxy bypasses range validation [BUG]', () => {
     warnSpy.mockRestore();
   });
 
-  it('DEMONSTRATES BUG: ROCND proxy = Istanbul(99999) + 40 is inserted without range check', async () => {
+  it('out-of-range Istanbul (99999) never reaches the ROCND proxy — no proxy row derived', async () => {
+    // Istanbul 99999 is rejected by the per-port range guard (continue), so
+    // istanbulResult stays null and the Constanta proxy is not derived at all —
+    // no 100039.00 (99999+40) row can appear.
     const outrageousHtml = makePortHtml('99999.00', '2026-05-25');
-    const fetcher = istanbulOnlyFetcher(outrageousHtml);
+    const fetcher = istanbulBadPiraeusGoodFetcher(outrageousHtml);
 
     await refreshOilMonster(db, fetcher, { now: NOW_DEMO });
 
-    const rocndRow = getLatestBunkerPrice(db, 'ROCND', 'VLSFO');
-    expect(rocndRow).not.toBeNull();
-    // Bug: ROCND proxy = 99999 + 40 = 100039 — obviously wrong, no range check
-    expect(rocndRow!.price_usd_per_mt).toBe(100039.00);
-    expect(rocndRow!.source).toBe('oilmonster-proxy');
+    expect(getLatestBunkerPrice(db, 'ROCND', 'VLSFO')).toBeNull();
   });
 
   it('ROCND proxy arithmetic: Istanbul=947.00 → ROCND=987.00 (exact, no float drift)', async () => {
@@ -165,10 +188,13 @@ describe('B2 — ROCND proxy bypasses range validation [BUG]', () => {
 });
 
 // ---------------------------------------------------------------------------
-// B3: Parser requires <i> arrow icon (fragile HTML dependency)
+// B3: Parser tolerates the <i> arrow icon being absent
+// Same born-inverted history as B1: the shipped regex (#768) is
+// `>\s*([\d,]+\.\d{2})` — the `\s*` spans the newline left behind when the
+// arrow icon is removed, so the hypothesized fragility never existed on main.
 // ---------------------------------------------------------------------------
 
-describe('B3 — parser fragility: requires <i> arrow icon before price', () => {
+describe('B3 — parser tolerates missing <i> arrow icon before price', () => {
   it('parses price when <i> arrow icon is present (current format)', () => {
     // The current format used by OilMonster — arrow icon before price number
     const html = `<div class="scrapitemprice">
@@ -178,16 +204,15 @@ describe('B3 — parser fragility: requires <i> arrow icon before price', () => 
     expect(result.vlsfo).toBe(947.00);
   });
 
-  it('DEMONSTRATES FRAGILITY: throws StructureChangedError when arrow icon is absent', () => {
-    // If OilMonster removes the <i> arrow icon, the price would be on a new line
-    // after the div opening tag. The regex [\s\S]*?>(price)<span> requires a '>'
-    // immediately before the price digits. Without <i></i>, there's a newline.
+  it('parses price when arrow icon is absent (newline between div tag and price)', () => {
+    // Without <i></i> the price sits on a new line after the div opening tag;
+    // the regex's `>\s*` consumes that newline and the price still parses.
     const htmlWithoutArrow = `<div class="scrapitemprice">
 947.00<span>$US/MT</span></div>
 <span>Price Date : <span class="cblue">2026-05-25</span></span>`;
 
-    // This documents that removing the arrow icon BREAKS the parser silently
-    expect(() => parseOilMonsterPortHtml(htmlWithoutArrow)).toThrow(OilMonsterStructureChangedError);
+    const result = parseOilMonsterPortHtml(htmlWithoutArrow);
+    expect(result.vlsfo).toBe(947.00);
   });
 
   it('parses correctly when arrow icon on same line (no newline)', () => {

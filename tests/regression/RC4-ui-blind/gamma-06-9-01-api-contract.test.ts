@@ -4,6 +4,15 @@
 // Spec: gamma-06-sof-parser
 // DO NOT DELETE — see references/regression_lock_workflow.md
 
+// parseSof is wrapped in a jest.fn passthrough at module level: ts-jest emits
+// non-configurable ESM exports, so jest.spyOn inside a test body throws
+// "Cannot redefine property: parseSof". The wrapper keeps real behavior for all
+// tests; the 500-contract test overrides it with mockImplementationOnce.
+jest.mock("@/lib/laytime/sof-parser", () => {
+  const actual = jest.requireActual("@/lib/laytime/sof-parser");
+  return { ...actual, parseSof: jest.fn(actual.parseSof) };
+});
+
 import { POST } from "@/app/api/laytime/parse-sof/route";
 import * as sofParser from "@/lib/laytime/sof-parser";
 import { NextRequest } from "next/server";
@@ -46,9 +55,11 @@ describe("regression gamma-06-9-01: API response contract verification", () => {
     expect(data).not.toHaveProperty("commencedAt");
   });
 
-  it("500 response must have .error and .details fields", async () => {
-    // Force a parse error via jest.spyOn (jest.mock inside test body is not hoisted)
-    const spy = jest.spyOn(sofParser, "parseSof").mockImplementationOnce(() => {
+  it("500 response must have .error field and must NOT reflect raw error details", async () => {
+    // Re-pinned after L-8 hardening (#686): the route logs server-side and returns a
+    // generic {error} body — `.details` (raw error reflection) was removed deliberately.
+    // This now pins the L-8 invariant: internal error text never reaches the client.
+    (sofParser.parseSof as jest.Mock).mockImplementationOnce(() => {
       throw new Error("Forced error");
     });
 
@@ -58,10 +69,9 @@ describe("regression gamma-06-9-01: API response contract verification", () => {
 
     expect(response.status).toBe(500);
     expect(data).toHaveProperty("error");
-    expect(data).toHaveProperty("details");
-    expect(typeof data.details).toBe("string");
-
-    spy.mockRestore();
+    expect(typeof data.error).toBe("string");
+    expect(data).not.toHaveProperty("details");
+    expect(JSON.stringify(data)).not.toContain("Forced error");
   });
 
   it("200 response must have SofParseResult shape, NOT .error field", async () => {
