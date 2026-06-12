@@ -246,3 +246,31 @@ describe('checkImsbcLoadability — unknown cargo (neutral)', () => {
     expect(r.verdict).toBe('ok');
   });
 });
+
+describe('Group A vs liquefaction-restricted vessel (audit C.3)', () => {
+  // Group A cargo confirmed from imsbc-groups.json ("nickel ore": group A).
+  const GROUP_A_CARGO = 'nickel ore';
+
+  it.each([
+    ['no concentrates'],
+    ['No liquefiable cargoes'],
+    ['NO GROUP A CARGOES'],
+    ['no nickel ore'],
+    ['no TML cargoes'],
+  ])('restriction "%s" → incompatible', (restriction) => {
+    const r = checkImsbcLoadability(GROUP_A_CARGO, { restrictions: [restriction] });
+    expect(r.group).toBe('A');
+    expect(r.verdict).toBe('incompatible');
+  });
+
+  it('Group A without matching restriction stays caution (TML cert required)', () => {
+    const r = checkImsbcLoadability(GROUP_A_CARGO, { restrictions: ['no DG'] });
+    expect(r.verdict).toBe('caution');
+  });
+
+  it('Group C cargo unaffected by liquefaction restrictions', () => {
+    // 'grain' is not an IMSBC key — 'wheat' is the confirmed Group C entry.
+    const r = checkImsbcLoadability('wheat', { restrictions: ['no concentrates'] });
+    expect(r.verdict).toBe('ok');
+  });
+});

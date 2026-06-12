@@ -1,7 +1,8 @@
 /**
  * IMSBC Code group lookup — structural per-cargo hazard classification.
  *
- * Group A: liquefaction risk — TML certificate required at loading.
+ * Group A: liquefaction risk — TML certificate required at loading;
+ *          incompatible if vessel explicitly restricts liquefiable/Group A cargoes.
  * Group B: chemical hazard — IMDG class applies, special handling required.
  * Group C: neither Group A nor B — no special bulk-carrier restriction.
  * unknown: cargo not in the IMSBC table — neutral (not a block, not a caution).
@@ -10,7 +11,9 @@
  *   - Pure functions; no IO, no side effects. JSON loaded lazily once at first call.
  *   - Date-independent: verdict never depends on wall-clock.
  *   - Group alone is NOT an incompatibility (coal, iron ore ship constantly).
- *   - incompatible only when vessel explicitly restricts dangerous-goods carriage.
+ *   - incompatible only when vessel explicitly restricts the cargo's hazard
+ *     class: dangerous-goods carriage (Group B) or liquefiable/Group A
+ *     cargoes (Group A, audit C.3).
  *   - unknown cargo → ok/neutral (fail-safe: no data ≠ can't carry).
  */
 
@@ -210,7 +213,7 @@ let _cargoes: Record<string, ImsbcEntry> | null = null;
 
 function getCargoes(): Record<string, ImsbcEntry> {
   if (!_cargoes) {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+     
     const data = require('../cargo/imsbc-groups.json') as typeof imsbcData;
     _cargoes = data.cargoes as unknown as Record<string, ImsbcEntry>;
   }
@@ -267,11 +270,18 @@ function resolveKey(desc: string): string | null {
 // Vessel restriction patterns that indicate DG cargo is prohibited.
 const DG_RESTRICTION_RE = /\bno\b.{0,40}(?:dg\b|dangerous\s+goods?\b|hazmat\b|hazardous\b|self[- ]heat(?:ing)?\b|group\s*b\b|class\s*[45]\b)/i;
 
+// Vessel restriction patterns indicating IMSBC Group A (liquefaction-risk)
+// cargoes are prohibited: "no concentrates", "no liquefiable cargoes",
+// "no Group A", "no nickel ore", "no TML cargoes". (Audit C.3 — Group A
+// previously never hard-blocked, even on explicitly restricted vessels.)
+const GROUP_A_RESTRICTION_RE = /\bno\b.{0,40}(?:concentrates?\b|liquef\w+|group\s*a\b|nickel\s+ore\b|tml\b)/i;
+
 /**
  * Check whether a cargo is loadable on a vessel per IMSBC Code.
  *
  * - Group C or unknown cargo → ok (no restriction).
- * - Group A → caution (TML certificate required).
+ * - Group A → caution (TML certificate required) unless vessel explicitly
+ *   restricts liquefiable/Group A cargoes → incompatible.
  * - Group B → caution unless vessel explicitly restricts DG → incompatible.
  */
 export function checkImsbcLoadability(
@@ -306,6 +316,15 @@ export function checkImsbcLoadability(
   }
 
   if (group === 'A') {
+    const restrictions = vessel?.restrictions ?? [];
+    if (restrictions.some((r) => GROUP_A_RESTRICTION_RE.test(r))) {
+      return {
+        group: 'A',
+        verdict: 'incompatible',
+        requirements,
+        rationale: `IMSBC Group A (liquefaction risk) — vessel restrictions prohibit liquefiable/Group A cargoes`,
+      };
+    }
     return {
       group: 'A',
       verdict: 'caution',
