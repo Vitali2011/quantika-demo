@@ -2,24 +2,23 @@
  * test-skill ATTACK-4 (displayed-value-provenance / half-landed producer, audit B.3).
  * Branch: claude/compassionate-jennings-cb6e62 · HEAD: dded0315
  *
- * B.3 switched toBucketRows to an economics-first read. The plan modeled
- * m.economics as the full engine triple (tce + freightRate + freightSource) —
- * but the demo hydrate producer (lib/demo-mode/hydrate-demo-session.ts
- * rowsToMatches, OUT of this diff) builds economics with ONLY tceUsdPerDay;
- * its SQL does not even SELECT the freight columns from the seed.
+ * HISTORY: this file originally PINNED the QA FINDING-002 pre-fix behavior —
+ * the demo hydrate producer (lib/demo-mode/hydrate-demo-session.ts
+ * rowsToMatches) built economics with ONLY tceUsdPerDay (its SQL did not even
+ * SELECT the freight columns), so toBucketRows produced mixed-provenance rows:
+ * canonical TCE + NULL freight_rate_usd_per_mt + NULL freight_rate_source →
+ * freightBadge(null) rendered "≈ Estimate" (dimmed) over a canonical value,
+ * and the seed-resolved rate was dropped on the floor.
  *
- * Result on HEAD for hydrated demo bucket rows with resolvable ports:
- *   tce_usd_per_day        = seed/canonical value   (improvement)
- *   freight_rate_usd_per_mt = NULL                  (pre-B.3: estimate value)
- *   freight_rate_source     = NULL                  (pre-B.3: 'estimated')
- * MatchesClient renders freightBadge(null) → "≈ Estimate", dimmed — same badge
- * tone as before, but now attached to a canonical TCE, and the row's rate that
- * regen DID resolve (possibly baltic) is dropped on the floor by the producer.
- *
- * These tests PIN the introduced row shape (mixed provenance) so the follow-up
- * (teach hydrate to carry freight fields, or fall back to the estimate triple
- * when economics is partial) has a red/green anchor.
+ * UPDATED when FINDING-002 was fixed: hydrate now SELECTs
+ * freight_rate_usd_per_mt / freight_rate_source and carries them into
+ * economics, so these tests assert the FIXED behavior — the seed freight pair
+ * survives the full producer chain (seed row → buildDemoSessionBlob →
+ * toBucketRows), the same chain /matches uses for bucket tabs
+ * (app/matches/page.tsx → toBucketRows(session.lowConfidenceMatches, …)).
  */
+import Database from 'better-sqlite3';
+import { buildDemoSessionBlob } from '@/lib/demo-mode/hydrate-demo-session';
 import { toBucketRows } from '@/lib/matching/session-buckets';
 import type { Match, ParsedCargo, ParsedVessel } from '@/lib/types';
 
@@ -54,35 +53,79 @@ const VESSEL = {
   consumption: '28',
 } as unknown as ParsedVessel;
 
-describe('toBucketRows with the HYDRATE-shaped partial economics object (tce only)', () => {
-  // What hydrate-demo-session.ts rowsToMatches actually produces: economics
-  // exists, carries tceUsdPerDay, has NO freightRateUsdPerMt/freightRateSource.
-  const hydrated = makeMatch({
-    economics: {
-      breakdown: {
-        bunkerCost: 0, bunkerPort: '', euEtsAmount: 0, euEtsApplicable: false,
-        warRiskPremium: 0, warRiskZones: [],
-      },
-      totalUsd: 0,
-      calculatedAt: new Date(0).toISOString(),
-      dataFreshness: { bunker: 'seed', eua: 'seed' },
-      tceUsdPerDay: 7777,
-    } as unknown as Match['economics'],
+/** Minimal demo-seed DB: schema mirrors lib/demo-mode/__tests__ fixtures; the
+ *  freight columns are present (migration 036 shape) so the hydrate SELECT
+ *  guard takes the real-column branch. Ports left NULL to keep war-risk out. */
+function makeSeedDb(row: {
+  tce: number | null;
+  freightRate: number | null;
+  freightSource: string | null;
+}): Database.Database {
+  const db = new Database(':memory:');
+  db.exec(`
+    CREATE TABLE emails (
+      account_id TEXT, gmail_message_id TEXT, thread_id TEXT, from_addr TEXT,
+      from_name TEXT, from_email TEXT, to_addr TEXT, subject TEXT, date TEXT,
+      body TEXT, snippet TEXT, label_ids TEXT, fetched_at INTEGER
+    );
+    CREATE TABLE parsed_results (
+      account_id TEXT, gmail_message_id TEXT, parse_type TEXT, parser_version TEXT,
+      result_json TEXT, parsed_at INTEGER
+    );
+    CREATE TABLE matches (
+      id INTEGER PRIMARY KEY, cargo_id TEXT, vessel_id TEXT, score INTEGER,
+      reason TEXT, status TEXT, user_id TEXT, created_at INTEGER, updated_at INTEGER,
+      reason_structured TEXT,
+      tce_usd_per_day REAL, freight_rate_usd_per_mt REAL, freight_rate_source TEXT
+    );
+  `);
+  // Realism-bucket sentinel row — the exact producer FINDING-002 is about:
+  // buildDemoSessionBlob reads it into blob.lowConfidenceMatches, which
+  // app/matches/page.tsx feeds to toBucketRows.
+  db.prepare(`INSERT INTO matches (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at, reason_structured, tce_usd_per_day, freight_rate_usd_per_mt, freight_rate_source)
+    VALUES ('c1','v1',50,'review bucket','potential','__demo_review__',0,0,NULL,?,?,?)`)
+    .run(row.tce, row.freightRate, row.freightSource);
+  return db;
+}
+
+describe('hydrate carries the seed freight pair into bucket-row economics (QA FINDING-002 fixed)', () => {
+  it('buildDemoSessionBlob economics carries the full triple (tce + freight rate + source) from the seed row', () => {
+    const db = makeSeedDb({ tce: 7777, freightRate: 24.5, freightSource: 'baltic' });
+    const blob = buildDemoSessionBlob(db);
+    db.close();
+
+    expect(blob.lowConfidenceMatches).toHaveLength(1);
+    const eco = blob.lowConfidenceMatches![0].economics!;
+    expect(eco.tceUsdPerDay).toBe(7777);
+    // Pre-fix these were undefined (the SELECT dropped the columns).
+    expect(eco.freightRateUsdPerMt).toBe(24.5);
+    expect(eco.freightRateSource).toBe('baltic');
   });
 
-  it('keeps the canonical seed TCE (engine-first read works)', () => {
-    const [row] = toBucketRows([hydrated], [CARGO], [VESSEL]);
+  it('end-to-end: hydrated bucket row keeps canonical TCE AND the seed freight rate/source through toBucketRows', () => {
+    const db = makeSeedDb({ tce: 7777, freightRate: 24.5, freightSource: 'baltic' });
+    const blob = buildDemoSessionBlob(db);
+    db.close();
+
+    const [row] = toBucketRows(blob.lowConfidenceMatches!, [CARGO], [VESSEL]);
     expect(row.tce_usd_per_day).toBe(7777);
+    // Pre-fix (pinned here): freight_rate_usd_per_mt = NULL, freight_rate_source
+    // = NULL even though the seed had resolved a rate → freightBadge(null)
+    // rendered "≈ Estimate" dimmed over a canonical TCE.
+    expect(row.freight_rate_usd_per_mt).toBe(24.5);
+    expect(row.freight_rate_source).toBe('baltic');
   });
 
-  it('PINS the introduced mixed-provenance shape: freight fields are NULL even though ports resolve (pre-B.3 they carried the estimate triple)', () => {
-    const [row] = toBucketRows([hydrated], [CARGO], [VESSEL]);
-    // Documented HEAD behavior (MEDIUM finding in .test-review/findings.md):
-    // canonical TCE + null rate + null source → freightBadge(null) renders
-    // "≈ Estimate" (dimmed) over a canonical number, and the seed-resolved
-    // rate is lost. If a follow-up teaches the hydrate producer to carry
-    // freight fields (or adds a partial-economics fallback here), flip these
-    // expectations to non-null.
+  it('residual data gap: seed row with TCE but genuinely NULL freight columns still yields NULL freight (no fabricated provenance)', () => {
+    const db = makeSeedDb({ tce: 7777, freightRate: null, freightSource: null });
+    const blob = buildDemoSessionBlob(db);
+    db.close();
+
+    const [row] = toBucketRows(blob.lowConfidenceMatches!, [CARGO], [VESSEL]);
+    // Canonical TCE blocks the estimate fallback (by design — economics-first
+    // read), and there is no seed rate to carry: freight stays NULL. This is a
+    // seed data gap, not the FINDING-002 producer drop.
+    expect(row.tce_usd_per_day).toBe(7777);
     expect(row.freight_rate_usd_per_mt).toBeNull();
     expect(row.freight_rate_source).toBeNull();
   });

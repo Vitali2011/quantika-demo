@@ -447,7 +447,13 @@ function refreshComputedColumns(
     sets.push('cargo_item_index = ?', 'vessel_item_index = ?');
     args.push(input.cargo_item_index ?? 0, input.vessel_item_index ?? 0);
   }
-  if (hasWorksheetColumn(db)) { sets.push('worksheet_json = ?'); args.push(input.worksheet_json ?? null); }
+  if (hasWorksheetColumn(db)) {
+    // Null-preserving: worksheet_json's only producers are demo hydrate / seed
+    // regen — the live engine never attaches worksheets, so a null here means
+    // "this writer has no worksheet", never "clear the worksheet" (QA FINDING-001).
+    sets.push('worksheet_json = COALESCE(?, worksheet_json)');
+    args.push(input.worksheet_json ?? null);
+  }
   if (hasConsumptionEstimatedColumn(db)) { sets.push('consumption_estimated = ?'); args.push(input.consumption_estimated ?? null); }
   if (hasBallastDistanceColumn(db)) { sets.push('ballast_distance_nm = ?'); args.push(input.ballast_distance_nm ?? null); }
   if (hasBreakevenColumn(db)) { sets.push('breakeven_tce_usd_per_day = ?'); args.push(input.breakeven_tce_usd_per_day ?? null); }
