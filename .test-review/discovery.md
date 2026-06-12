@@ -1,106 +1,97 @@
-# Discovery: feat/wave-a-phantom-features
+# Discovery: feat/wave-d-revive-cleanup
 
-Branch: feat/wave-a-phantom-features
-HEAD: 534e72a5
+Branch: feat/wave-d-revive-cleanup
+HEAD: 7bb062ec
 Date: 2026-06-12
-Commits: 12 — "docs(plan): wave A — phantom features + matches column sorting" ... "test(matches): repin header-shape tests to headerCols config form (sorting feature, sanctioned wave-A §5)"
-Diff base: 40966379 (merge-base with main, confirmed)
+Base: 7499056d (merge-base with main, verified)
+Commits: 8 — "docs(plan): wave D" ... "fix(vessel): built>=1900 sanity floor for passport age"
+Diff: 87 files, +904 / −6633
 
-## Changed Files (68 files, +2369/-2810)
+## Changed Files (grouped)
 
-### A.6 — deadlines no-op deletion (commit ead34725 + bb1be0b8)
-- Deleted: `scripts/check-deadlines.ts`, `lib/deadlines/` (cta.ts, escalation-policy.ts, subs-guardian.ts), `lib/db/queries/dispatches.ts`, `components/deadlines/SubsCountdown.tsx`, `components/deals/SubsCountdownWidget.tsx`, plus ~14 test files (`__tests__/deadlines/*`, `__tests__/cron/deadline-idempotency*`, `tests/deadlines/*`, `tests/regression/*gamma-08*`, `tests/regression/test_check_deadlines_auto_exec.test.ts`, `scripts/__tests__/check-deadlines-demo.test.ts`, SubsCountdown component tests, `__tests__/regression/RC-subs-countdown-import.test.tsx`)
-- Modified: `__tests__/regression/hydration-418.test.tsx` (removed #404 SubsCountdownWidget SSR block), `docs/wave-beta/CRON.md`, `docs/runbooks/wave-gamma-flag-activation.md`, `.env.local.example` (SUBS_TIMER_V2 flags removed)
+### Revive — vessel passport (T5)
+- `lib/counterparty.ts` (M, +129/−129): `getVesselPassport(imo)` (fake constants, async, cached) DELETED; `buildVesselPassport(db, vessel, refYear)` ADDED (sync, real data). `VesselPassport` fields all became optional; `pi.club` `string|null`→`string`. New imports: `hasInspectionData`/`getDetentionCount` (psc-repository); removed: shadow-fleet, opensanctions imports.
+- `components/vessel/VesselPassportPanel.tsx` (A, 87): presentational card; renders null when no fields.
+- `app/vessel/[id]/page.tsx` (M, +11): `getStore().getDatabase()`, `refYear = new Date().getFullYear()`, `passports = vessels.map(...)`, panel mounted after Specs.
+- `lib/__tests__/counterparty-passport.test.ts` (M, rewrite — sanctioned §4): 8 tests on in-memory db + migration028.
+- `components/vessel/__tests__/VesselPassportPanel.test.tsx` (A, 66).
 
-### A.1 — charterer tier activation (bb5bcde4, f7bb5c83, eeda9ce0)
-- `lib/types.ts`: ParsedCargo + `chartererName?: string | null`
-- `lib/parsing/parse-cargo-ai.ts`: RawCargoItem + `charterer_name`; parseCargoAIResponse maps trim-or-null
-- `lib/prompts/parse-cargo.ts`: prompt field instruction added
-- `lib/schemas/parse-cargo.ts`: Gemini responseSchema + `charterer_name: {STRING, nullable}`
-- `lib/matching/charterer-tier.ts`: resolveChartererTier now live — normalizeName (lowercase, non-alnum→space, trim) lookup over listCharterers(db)
-- New: `scripts/demo-seed/seed-charterers.ts` (CHARTERER_FIXTURE 3 rows: GRAIN TRADER A=blue-chip, GRAIN TRADER B=second, Huaya=weak+require_lc; DELETE-by-notes-marker + upsert; --dry-run; --db)
-- New: `scripts/demo-seed/charterer-extract.ts` (2 regexes + STOPWORDS + cleanCapturedName + extractChartererNames + patchResultJson)
-- New: `scripts/demo-seed/backfill-charterer.ts` (--dry default / --apply; joins emails by account_id+gmail_message_id; patches result_json items lacking chartererName)
-- New tests: `lib/matching/__tests__/charterer-tier.test.ts`, `__tests__/parsing/parse-cargo-charterer.test.ts`, `scripts/demo-seed/__tests__/charterer-extract.test.ts`, `scripts/demo-seed/__tests__/seed-charterers.test.ts`, `lib/schemas/__tests__/parse-cargo.test.ts` (+13)
+### Revive — lastcargoes fallback (T4)
+- `lib/parsing/parse-vessel-helpers.ts` (M, +3/−1): `parseVesselAIResponse(raw, emailId, subject?, emailBody?)` — in lastCargoes IIFE: `if (!lc) return emailBody ? extractLastCargoesFromBody(emailBody) : null;` (emailBody param pre-existed for built-fallback).
+- `app/api/ai/parse-vessel/route.ts` (M, +1/−1): now passes `email.body` as 4th arg.
+- `scripts/demo-seed/backfill-lastcargoes.ts` (A, 120): --dry default, --apply; joins emails via account_id+gmail_message_id; readonly db handle in dry mode.
+- `scripts/demo-seed/lastcargoes-patch.ts` (A, 40): `patchResultJsonLastCargoes` — root shape array-or-bare-object; patches items where lastCargoes null/undefined.
+- `scripts/demo-seed/__tests__/backfill-lastcargoes.test.ts` (A, 58), `lib/__tests__/parse-vessel-lastcargoes.test.ts` (A, 46).
 
-### A.2 — honest PSC no-data (3a81b074)
-- `lib/market/psc-repository.ts`: new `hasInspectionData(db, imo)` (COUNT(*) all rows, empty-imo guard)
-- `lib/matching/pair-analyzer.ts:733`: detentionCount gated by `db && imo && hasInspectionData(db, imo)`; else undefined (was: `db && imo` → 0)
-- `lib/knowledge/sources/psc/fixture.ts`: 5 IMOs replaced (9322180→8887296, 9478999→9166510, 9512345→9191101, 9156789→9125085, 9734567→9238363); 16 records, same structure
-- `lib/sample-data/imo/cii.json`: reformatted + 5 new IMO records appended (old 12 kept, total 17)
-- New test: `lib/matching/__tests__/psc-no-data-neutral.test.ts`; repins: `lib/market/__tests__/psc-repository.test.ts` (+2 tests), `lib/matching/__tests__/vetting-wiring.test.ts` (IMO repins + live-resolver rewrite), `__tests__/api/vessels-psc-history.test.ts` (IMO repins)
+### Revive — ROI report (T6)
+- `app/reports/roi/page.tsx` (A, 74): session gate (cookies session_id → getSession), `getStore().getDb()` → `getRoiSummary(db, 99, 90)` → `safeGenerateRoiReport`, try/catch → "ROI report unavailable" body. No-session → "No ROI data" + upload CTA.
+- `lib/email/templates/roi-report.ts` (M, +18): `safeGenerateRoiReport` non-throwing wrapper added; `generateRoiReportEmail` untouched.
+- `app/dashboard/page.tsx` (M, +12): Link card to /reports/roi ("ROI report / 90-day savings summary preview").
+- `lib/__tests__/roi-report-preview.test.ts` (A, 52).
 
-### A.5 — FuelEU cost line (ac22018d)
-- `lib/economics/compute-tce.ts`: new optional TceInputs.fuelType; FuelEU block gated `process.env.FUELEU_ENABLED === 'true' && anyEuEnd && duration>0 && consumption>0`; share intra-EU=1 / one-end=0.5; `fueleuUsd = Math.round(fe.penaltyUsd * share)`; added to totalCosts AND both dailyNetVoyage branches; breakdown fields `fueleu_usd`, `applicable.fueleu`
-- `lib/economics/voyage-calculator.ts`: TCEBreakdown interface + `fueleu_usd: number` (REQUIRED) + `applicable.fueleu: boolean` (REQUIRED)
-- `components/match/EconomicsTab.tsx`: fueleu-section tile, renders when `voyageBreakdown.fueleu_usd > 0`
-- `components/economics/CalculationWaterfall.tsx`: destructures fueleu_usd; cost-fueleu row when `> 0`
-- `.env.local.example`: FUELEU_ENABLED description rewritten (γ-11 → audit A.5)
-- New test: `lib/economics/__tests__/compute-tce-fueleu.test.ts` (83 lines); fixture repins (+fueleu_usd:0/+applicable.fueleu:false) in CalculationWaterfall tests ×2, EconomicsTab tests ×2, voyage-breakdown-chart test
+### Deletion pack 1 (09e024da)
+- `lib/knowledge/jwc/{adapter,parser}.ts`, `lib/economics/split-bunker.ts` + test, `app/matches/demo-data.ts`, `lib/utils/format-port-name.ts` + test, `lib/ais/index.ts` (barrel), 4 env-flag lines in `.env.local.example` (OPENSANCTIONS_API_KEY, KNOWLEDGE_WAR_RISK_FROM_DB, MULTI_CURRENCY_V2_ENABLED + NEXT_PUBLIC_), `case 'CONTAINER':` single line in `lib/sailing/match-scoring.ts` (FCL/LCL kept), 5 @deprecated props in MatchDetailPanel + 2 test fixtures.
 
-### Sorting (1e44432e, b268b2e8, 534e72a5)
-- `app/matches/MatchesClient.tsx`: SortBy extended (+cargo_type, vessel_name, route, dwt, laycan); SortDir; DEFAULT_DIR; exported compareMatches (null-sink-to-end; fit/score: fit_percent??score with null guards, score tie-break); sortDir state + mode-switch reset; headerCols {label, key} config per mode; th → button with data-testid `th-sort-<key>`, aria-sort, ↓/↑ indicator; dropdown +5 options with DEFAULT_DIR on change
-- New test: `__tests__/matches-sort-headers.test.tsx`; repins: `__tests__/matches-table-layout.test.tsx`, `__tests__/mode-aware-content.test.ts` (string-array regex → headerCols extraction)
-- NOT in diff (protected): `__tests__/matches-sort.test.tsx` (#350/#528 source-regex pins — dropdown testids + `.sort(` in filtered block)
+### Deletion pack 2 (8d81190c)
+- mobile trio + `lib/mobile/haptics.ts` + `tests/components/mobile/*` + `tests/e2e/mobile.spec.ts` + voice-notes; dashboard inbox cluster (8 components) + their tests + barrel `components/dashboard/index.ts`; `__tests__/components/dashboard-market-intelligence.test.tsx`; MarketIntelligence describe excised from `__tests__/market-snapshot-label.test.tsx`; DashboardInboxSection describe excised from `DashboardSections.test.tsx`; LandingPageClient, connect-gmail-button, activation-tracker, EmailUploadCTA, ApprovePlanModal + test.
 
-### Infra
-- `scripts/__tests__/data-integrity-check.test.ts`: walk-up tsx resolver (32d0a10b)
+### jwc legacy scraper seeder (f1159c36, RESCOPED)
+- `lib/knowledge/sources/jwc/{adapter,scraper,chunker,types}.ts` + `scripts/knowledge-jwc-embed.ts` + npm script `knowledge:jwc` + 14 tests (incl. 5 spec19 RC1/RC5/RC6 scraper-sanitizer suites, jwc-chunker, jwc-rag-scraper, adapter-truncation, tests/regression/test_jwc_id_path_collision).
+- KEPT (verified on HEAD): jwc_vec/jwc_fts in ALLOWED lists (pipeline.ts:80-81, retriever-sqlite.ts:25-26, retriever-vertex.ts:20 + VERTEX_ENGINE_JWC:31), bootstrap.ts jwc entry (vector_table jwc_vec), regenerate-matches.ts RAG-copy lists (:127-128), compare-routes route untouched, `lib/knowledge/sources/jwc-yaml/` + `scripts/knowledge-jwc-yaml-seed.ts` + npm `knowledge:jwc-yaml`, `.claude/rules/retriever.md` untouched.
 
 ## Stated Scope
 
-Source: `docs/superpowers/plans/2026-06-12-wave-a-phantom-features.md`
-In scope: A.1 (parser field + live resolver + seed + backfill), A.2 (honest no-data + fleet-aligned fixture), A.5 (FuelEU behind FUELEU_ENABLED), A.6 (delete deadlines no-op), /matches column sorting.
-Out of scope (founder decision, "не трогать"): A.3 equasis-stub, A.4 jwc_vec/bimco, A.7 getVesselPassport, MULTI_CURRENCY_V2.
+Source: `docs/superpowers/plans/2026-06-12-wave-d-revive-and-cleanup.md` (incl. Task 3 RESCOPE addendum).
+In scope: revive ×3 (passport T5, lastcargoes T4, ROI T6) + delete-list (T1/T2) + jwc legacy seeder only (T3 rescoped).
+Out of scope / KEEP: bimco_*, jwc RAG layer (allowed-lists, bootstrap, regen copy, retriever.md), FCL/LCL branch, live dashboard-4 components, migration 018.
+Sanctioned spec changes §1-6: tests of deleted modules deleted; MatchDetailPanel fixtures lose 5 props; jwc-pinned allowlist tests (moot after rescope); counterparty-passport.test rewrite; new lastcargoes parser cases without touching existing expectations; any other failing test = BLOCKED.
 
-## Specs Covered (invariants, verbatim-relevant)
+## Specs Covered — invariants (verbatim-extracted)
 
-From the plan §Sanctioned + tasks:
-1. (A.2) Vessels with no psc_detention_history rows get `detentionCount: undefined` (neutral), NOT "0 detentions". Vessels WITH rows get the real windowed count (0 allowed = "checked, clean").
-2. (A.1) resolveChartererTier: normalized-name lookup; null when no chartererName / unknown name / empty needle.
-3. (A.5) `TCEBreakdown` gains `fueleu_usd` + `applicable.fueleu`; **when `FUELEU_ENABLED !== 'true'` behavior must be BIT-IDENTICAL to old** — any broken old snapshot = implementation bug, not a snapshot to update.
-4. (A.5) Scope rule: 100% energy intra-EU, 50% one-EU-end. Plan test asserts intra == oneEnd × 2.
-5. (A.6) Full deletion of check-deadlines + lib/deadlines + their tests; keep migration 011 registered.
-6. (Sorting) Existing 4 dropdown options + their data-testid preserved; `.sort(` stays in filtered block (#350); null/undefined sink to END regardless of direction; per-column DEFAULT_DIR (numeric/date desc-first except laycan asc; text asc).
-7. Any OTHER failing test = BLOCKED; rewriting expectations to fit implementation forbidden.
-8. (Plan T5 Step 6) `app/api/voyage/tce/route.ts` intentionally unchanged — FuelEU rides originEu/destEu set only when includeEuETS. No NEXT_PUBLIC_FUELEU_ENABLED reads in code (tile is data-driven).
-9. (Plan T3) seed-charterers idempotent (DELETE by notes marker + upsert); backfill idempotent (skip non-null chartererName, second --apply = 0 changes); backfill --dry default.
-
-## Key bindings/feeds traced in discovery (facts for Phase 2)
-
-- ONLY production caller of getDetentionCount/hasInspectionData/resolveChartererTier: `lib/matching/pair-analyzer.ts:733-736` (analyzePairs). analyzePairs callers: `lib/matching/compute-matches.ts:74`, `app/api/ai/match/route.ts:131`, `scripts/demo-seed/regenerate-matches.ts:581`, research/golden scripts.
-- SIBLING fit paths NOT via analyzePairs: `scripts/demo-seed/patch-fit.ts:375` and `scripts/demo-seed/real-matches.ts` call computeFitBreakdown directly and pass NO detentionCount/chartererTier (greps confirm zero occurrences in those files).
-- FuelEU UI feed: EconomicsTab fetches /api/voyage/tce with `includeEuETS: true` hardwired (line 359) → route sets originEu/destEu (route.ts:413-414) → live path feeds fueleu_usd. Stored path: `lib/matching/stored-match-economics.ts:190` derives originEu/destEu via deriveEtsCoverage → stored TCE also flag-sensitive.
-- `TceInputs.fuelType` has NO producer anywhere (always defaults 'vlsfo'); `calculateFuelEu` THROWS on unknown fuelType (fueleu.ts:76-77).
-- StoredMatch (lib/matching/matches-repository.ts): `created_at: number`, `laycan_start: number | null`, `vessel_dwt/tce_usd_per_day: number | null`, `cargo_type/vessel_name/load_port/discharge_port: string | null` — comparator arithmetic type-consistent at TS level.
-- A.6 leftover references: `lib/sample-data/demo-scenarios/13-subs-deadline-2h-warning.json` narrative still cites `scripts/check-deadlines.ts`; `app/matches/MatchesClient.tsx:131` comment cites SubsCountdown. Code references: none found (grep lib/ app/ components/ scripts/ package.json ops/ .github/).
-- FUELEU_ENABLED readers: only `lib/economics/compute-tce.ts:232`. NEXT_PUBLIC_FUELEU_ENABLED: zero code readers (env example only).
+- Passport: «null-поля → честные undefined/null, НИКАКИХ дефолтов-фейков»; «psc.detentions3y = imo && hasInspectionData ? getDetentionCount(...) : undefined (паттерн A.2!)»; «age = vessel.built ? refYear - vessel.built : undefined»; sync, no network/LLM; cii NOT resolved here; built>=1900 floor (followup commit).
+- Lastcargoes: «вызов extractLastCargoesFromBody только когда поле пустое»; «item С last_cargoes → fallback НЕ перезаписывает»; backfill «существующее значение не трогается; повторный прогон 0 изменений»; --dry default.
+- ROI: «невалидные числа → понятная ошибка, не краш»; «честно лейблить»; no send mechanisms; link from dashboard (sanctioned by plan — «достаточно ссылки с дашборда»).
+- Deletions: per-item grep of zero live importers (A.6 discipline); jwc surgical KEEP-list above.
 
 ## Project Rules (inventory for Phase 2)
 
-- `.claude/rules/ai-provider.md` — INTERSECTS: diff touches `lib/schemas/parse-cargo.ts` (Gemini responseSchema) + `lib/prompts/parse-cargo.ts`; rule's Gemini structured-output anti-pattern is directly relevant (schema must carry the new field — it does; verify schema↔prompt↔normalizer parity).
-- `.claude/rules/admin-api.md` — no intersection (no app/api/admin, no middleware changes).
-- `.claude/rules/retriever.md` — no intersection (lib/knowledge/sources/psc is not embeddings/retriever scope).
+- `.claude/rules/retriever.md` — path scope `lib/knowledge/embeddings/retriever*`: NOT in diff (verified — no embeddings files changed). Rule mentions jwc_vec allowlist; allowlist unchanged on HEAD ⇒ rule still accurate. Intersection = verify-only.
+- `.claude/rules/ai-provider.md` — `lib/ai-provider.ts` not in diff. parse-vessel route touched 1 line (arg pass-through), no LLM-call changes.
+- `.claude/rules/admin-api.md` — no admin routes in diff. New route `app/reports/roi` is a page, not /api/admin.
 
-## Existing Test Coverage (Baseline, run on HEAD 534e72a5)
+## Existing Test Coverage (relevant baseline)
 
-- `npx jest lib/matching lib/market lib/economics lib/schemas --silent`: 85 suites / 793 tests — BASELINE OK
-- matches+parser+psc-api file batch (7 suites incl. protected matches-sort.test.tsx): 94 tests — BASELINE OK
-- `scripts/demo-seed scripts/__tests__/data-integrity-check components/economics components/match`: 66 suites / 468 tests — BASELINE OK
-- Known: 8 pre-existing red regression suites on main (per controller brief) — not re-run here; tests/regression needs `--testPathIgnorePatterns "/node_modules/"`; full `npm test` FORBIDDEN (kills worker).
+- `app/api/ai/__tests__/parse-vessel.test.ts` — existing parseVesselAIResponse expectations (must be untouched per §5).
+- `lib/__tests__/parse-vessel-built.test.ts` — emailBody param pre-existing (built fallback).
+- `__tests__/dashboard/no-roi-tile.test.tsx` — guard: dashboard must not import RoiSummaryTile / ROI_GUARANTEE_ENABLED; tile + /api/analytics/roi deleted; data layer survives. New dashboard Link does not violate the literal assertions.
+- `lib/__tests__/roi-metrics.test.ts`, `roi-metrics-migration.test.ts`, `roi-report-email.test.ts` — untouched.
+- Baseline run: deferred to Phase 3 Step 1 (targeted suites only — full npm test forbidden by project convention).
 
-## Local data note
+## Mechanical reference-sweep results (raw facts)
 
-`data/demo-seed.db` is a WORKING COPY already mutated by this branch's seed scripts (charterers=3, psc=16 rows, 1 backfilled chartererName) — its state = post-apply target shape (controller brief). Reading allowed.
+- getVesselPassport / format-port-name / split-bunker module / demo-data / activation-tracker / EmailUploadCTA / ApprovePlanModal / LandingPageClient / connect-gmail-button: ZERO surviving references (only a comment in the rewritten test).
+- mobile/haptics/voice-notes/BottomSheet/FabVoice/SwipeCard/InboxBreakdown/MarketIntelligence/PriorityCard/TrafficLight/ActionPanel/EmailCard/EmailSection: ZERO surviving references.
+- `splitBunkerSavings` consumer survives: `lib/explain-deal-validator.ts:123` + type field `lib/types.ts:66` — producer module deleted; need producer-history check (pre-existing-dead vs introduced-dead).
+- `from '@/lib/ais'` barrel imports: ZERO. `@/components/dashboard` barrel imports: ZERO.
+- Deleted lib jwc modules: remaining "knowledge/jwc" hits are all `data/knowledge/jwc/*.yaml` DATA paths (war-risk-rates, validate-data-files, 3 tests) — different namespace, intact.
+- `scripts/knowledge/refresh.ts:27` slug 'jwc' → dynamic `./sources/jwc` — `scripts/knowledge/sources/` never contained jwc (git log empty) ⇒ pre-existing stub, documented in RESCOPE addendum.
+- `jest.config.mjs:15` still ignores `/tests/e2e/mobile\.spec\.ts$` — file deleted this PR (stale config line).
+- `parseVesselAIResponse` callers: route.ts ✓body, `scripts/build-sample-data.ts:246` ✓body, `scripts/demo-seed/parse-llm-direct.ts:147` ✓body, `scripts/progonq/run-match.ts:75` — NO body passed (4th arg absent).
+- New `process.env` reads in diff: NONE (only plan-doc text). Dead-flag reads (OPENSANCTIONS_API_KEY, KNOWLEDGE_WAR_RISK_FROM_DB, MULTI_CURRENCY_V2*): ZERO in code.
+- `getStore().getDb()` (line 95) and `.getDatabase()` (line 204) both return `this.db` — same handle, naming drift only.
+- Migrations 028 (psc-history) + 030 (roi_metrics) both in `allMigrations`, run at session-store boot ⇒ tables exist on the page DB.
+- MatchDetailPanel live caller: `app/match/[id]/page.tsx` only.
+- `knowledge:jwc` npm script removed; no other package.json script references deleted files.
 
-## Red Flags (raw, no classification)
+## Red Flags (for Phase 2)
 
-- `TCEBreakdown.fueleu_usd` added as REQUIRED (not optional) — legacy persisted breakdowns (worksheet_json in demo-seed.db) lack the field; UI reads `voyageBreakdown.fueleu_usd > 0` (undefined-safe at runtime, but any consumer doing arithmetic/validation on the field is suspect).
-- `compareMatches` freshness branch has no null guard (`b.created_at - a.created_at`) — created_at typed non-null; verify DB reality.
-- Plan's intra-EU test invariant `intra == oneEnd*2` interacts with `Math.round(penalty*share)` — rounding order could violate exact ×2 for odd cents.
-- patch-fit.ts / real-matches.ts compute fitBreakdown without detentionCount/chartererTier — divergent sibling write paths for fit_percent.
-- seed-charterers `upsertCharterer` conflict semantics unverified (name UNIQUE per migration 026 — collision with pre-existing same-name row with different id?).
-- `patchResultJson` assumes root = array | single-item-object; if any result_json root is `{items:[...]}`, the root object itself gets chartererName injected (shape corruption).
-- backfill-charterer extracts ONE name per email (first match) and applies to ALL items in the email lacking chartererName — multi-cargo emails with different charterers per item get first charterer applied to every item.
-- charterer-extract CHARTERER_ACCOUNT_RE bare-"account X" form could false-positive on CP boilerplate not in STOPWORDS.
-- cii.json grew 5 records; consumers of cii.json unverified (duplicate IMO check, shape check).
-- demo-scenario 13 JSON narrative references deleted scripts/check-deadlines.ts (doc-level; check if a scenario runner executes it).
+- `scripts/progonq/run-match.ts:75` — only parseVesselAIResponse caller not passing body (possible half-landed fallback wiring; check if body is in scope there).
+- `patchResultJsonLastCargoes` root-shape assumption (array | bare item) — if any historical result_json root is `{items:[...]}` wrapper, patch writes lastCargoes onto the WRAPPER. Local frozen demo-seed.db available for shape census.
+- Multi-vessel email: one body-wide L/C string applied to every item lacking lastCargoes (live + backfill consistent, but mis-attribution risk in multi-vessel emails — spec-sanctioned per T4 Step 2 test).
+- lastCargoes IIFE: fallback fires only on `!lc` BEFORE object/array unwrap; `{value: null}` or `[]` roots skip the fallback (returns null/'' without trying body).
+- `buildVesselPassport` called in page render loop — any throw (db edge) = page 500; psc lookup gated on `vessel.imo` truthiness + hasInspectionData.
+- VesselPassportPanel renders `sanctions`/`shadowFleet` rows but builder NEVER sets them (dead-feed candidate — intentional per code comment; verify no other producer).
+- jest.config stale ignore line for deleted mobile.spec.
+- `refYear = new Date().getFullYear()` vs frozen demo data (built 2008 → age drifts with wall clock; honest by design?).
+- ROI page renders honest zero ("No voyages recorded") per template test; roi_metrics seeded only via scripts/seed-roi-metrics.ts — empty on a fresh session ⇒ zero-body path is the COMMON path.
+- no-roi-tile guard passes literally; new Link is a navigation card, not a tile with numbers — spirit question to classify in Phase 2.

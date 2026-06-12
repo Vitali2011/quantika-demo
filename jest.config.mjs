@@ -12,7 +12,6 @@ const config = {
     '/__tests__/e2e/',
     '/tests/regression/',
     // β-14 Playwright specs (run via `npm run test:e2e`, not jest)
-    '/tests/e2e/mobile\\.spec\\.ts$',
     '/tests/e2e/kpi-timeout\\.spec\\.ts$',
     // R1 visual regression specs (run via playwright, not jest)
     '/tests/visual/',
