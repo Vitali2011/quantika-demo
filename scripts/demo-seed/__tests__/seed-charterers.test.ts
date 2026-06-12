@@ -86,6 +86,24 @@ describe('seedCharterersWithDb', () => {
     db.close();
   });
 
+  // qa-smoke F4: marker renamed (internal jargon leaked to UI) — old-marker rows must still be cleaned
+  it('removes rows seeded under the LEGACY demo marker (pre-rename migration)', () => {
+    const db = makeDb();
+    db.prepare(
+      `INSERT INTO charterers (id, name, tier, payment_history, require_lc, notes)
+       VALUES ('legacy-demo', 'LEGACY DEMO', 'second', '[]', 0, 'demo-universe rating (audit A.1)')`,
+    ).run();
+    seedCharterersWithDb(db);
+    const legacy = db.prepare(`SELECT 1 FROM charterers WHERE id = 'legacy-demo'`).get();
+    expect(legacy).toBeUndefined();
+    db.close();
+  });
+
+  // qa-smoke F4: notes surface in the demo UI — must be broker-friendly, no internal audit jargon
+  it('demo notes marker contains no internal jargon (audit refs)', () => {
+    expect(DEMO_NOTES).not.toMatch(/audit|demo-universe/i);
+  });
+
   it('does not touch rows without the demo notes marker', () => {
     const db = makeDb();
     db.prepare(

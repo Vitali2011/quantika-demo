@@ -61,7 +61,9 @@ const TH_STYLE: React.CSSProperties = {
 const HEADERS: { label: string; align: 'left' | 'right' }[] = [
   { label: 'Name',               align: 'left'  },
   { label: 'Email',              align: 'left'  },
-  { label: 'Last Contact',       align: 'right' },
+  // qa-smoke F1: column renders require_lc (Yes/No), not a contact date —
+  // header renamed to match the value actually shown.
+  { label: 'L/C Required',       align: 'right' },
   { label: 'Last Email Snippet', align: 'left'  },
   { label: 'Status',             align: 'left'  },
 ];

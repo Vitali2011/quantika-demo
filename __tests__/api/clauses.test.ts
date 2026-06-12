@@ -284,6 +284,59 @@ describe('GET /api/knowledge/clauses', () => {
     expect(typeof meta.charterParty).toBe('string');
   });
 
+  // qa-smoke F2: chunked clauses must be deduplicated by clause number + charter party
+  it('returns a multi-chunk clause only once (dedup by clauseNumber + charterParty)', async () => {
+    process.env.BIMCO_RAG_ENABLED = 'true';
+
+    const stmt = db.prepare('INSERT INTO bimco_fts (content, metadata) VALUES (?, ?)');
+    // 3 chunks of the SAME clause (gencon2022 clause 8)
+    for (let chunk = 0; chunk < 3; chunk++) {
+      stmt.run(
+        `Laytime chunk ${chunk}: laytime shall commence upon tender of NOR`,
+        JSON.stringify({ charterParty: 'GENCON 2022', clauseNumber: '8', chunkIndex: chunk }),
+      );
+    }
+    // A different clause that also mentions laytime — must survive dedup
+    stmt.run(
+      'Laytime exceptions per clause 9',
+      JSON.stringify({ charterParty: 'GENCON 2022', clauseNumber: '9' }),
+    );
+
+    const { GET } = await import('@/app/api/knowledge/clauses/route');
+    const res = await GET(new NextRequest('http://localhost:3000/api/knowledge/clauses?q=laytime') as any);
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    const keys = json.results.map((r: any) => {
+      const m = JSON.parse(r.metadata);
+      return `${m.charterParty}::${m.clauseNumber}`;
+    });
+    expect(keys.filter((k: string) => k === 'GENCON 2022::8')).toHaveLength(1);
+    expect(keys).toContain('GENCON 2022::9');
+  });
+
+  // qa-smoke F3: multi-word query must return superset-or-equal of single-word results
+  it('multi-word query "ice clause" returns at least the results of "ice"', async () => {
+    process.env.BIMCO_RAG_ENABLED = 'true';
+
+    const stmt = db.prepare('INSERT INTO bimco_fts (content, metadata) VALUES (?, ?)');
+    stmt.run(
+      'Should the vessel be prevented by ice from reaching the port',
+      JSON.stringify({ charterParty: 'GENCON 2022', clauseNumber: '18' }),
+    );
+    stmt.run(
+      'Ice navigation: the master may deviate when ice conditions threaten',
+      JSON.stringify({ charterParty: 'NYPE 1946', clauseNumber: '21' }),
+    );
+
+    const { GET } = await import('@/app/api/knowledge/clauses/route');
+    const single = await (await GET(new NextRequest('http://localhost:3000/api/knowledge/clauses?q=ice') as any)).json();
+    const multi = await (await GET(new NextRequest('http://localhost:3000/api/knowledge/clauses?q=ice+clause') as any)).json();
+
+    expect(single.results.length).toBeGreaterThan(0);
+    expect(multi.results.length).toBeGreaterThanOrEqual(single.results.length);
+  });
+
   // TC-API-13: Behavioral — fixture data + cp filter returns only matching charter party
   it('returns only GENCON 2022 clauses when cp=GENCON+2022 with fixture data', async () => {
     process.env.BIMCO_RAG_ENABLED = 'true';

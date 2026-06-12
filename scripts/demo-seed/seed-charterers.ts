@@ -30,7 +30,11 @@ import * as path from 'node:path';
 
 import { upsertCharterer, type ChartererRow } from '@/lib/market/charterers-repository';
 
-export const DEMO_NOTES = 'demo-universe rating (audit A.1)';
+// qa-smoke F4: marker is shown in the demo UI (list snippet + detail Notes) —
+// must read broker-friendly, no internal audit jargon.
+export const DEMO_NOTES = 'Demo rating — illustrative credit profile';
+// Previous marker (pre-rename) — rows seeded under it must still be cleaned.
+export const LEGACY_DEMO_NOTES = 'demo-universe rating (audit A.1)';
 
 export const CHARTERER_FIXTURE: Omit<ChartererRow, 'created_at'>[] = [
   {
@@ -75,7 +79,9 @@ export function seedCharterersWithDb(
   db: Database.Database,
 ): { deleted: number; inserted: number; adopted: number } {
   const run = db.transaction(() => {
-    const deleted = db.prepare(`DELETE FROM charterers WHERE notes = ?`).run(DEMO_NOTES).changes;
+    const deleted = db
+      .prepare(`DELETE FROM charterers WHERE notes IN (?, ?)`)
+      .run(DEMO_NOTES, LEGACY_DEMO_NOTES).changes; // qa-smoke F4: also migrate old-marker rows
     let adopted = 0;
     const byName = db.prepare(`SELECT id FROM charterers WHERE name = ?`);
     for (const row of CHARTERER_FIXTURE) {
@@ -125,7 +131,7 @@ function main(): void {
       .all() as Array<{ id: string; name: string; tier: string; notes: string | null }>;
     console.log(`[seed-charterers] existing rows: ${existing.length}`);
     for (const r of existing) {
-      console.log(`  · ${r.id} | ${r.name} | tier=${r.tier}${r.notes === DEMO_NOTES ? ' [demo — will be reseeded]' : ''}`);
+      console.log(`  · ${r.id} | ${r.name} | tier=${r.tier}${r.notes === DEMO_NOTES || r.notes === LEGACY_DEMO_NOTES ? ' [demo — will be reseeded]' : ''}`);
     }
     for (const row of CHARTERER_FIXTURE) {
       const clash = existing.find((r) => r.name === row.name && r.id !== row.id);
