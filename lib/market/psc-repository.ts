@@ -87,6 +87,18 @@ export function upsertInspection(
   });
 }
 
+/** Any inspection rows at all for this IMO (detained or clean)?
+ *  Distinguishes "checked, zero detentions" from "no PSC data" (audit A.2). */
+export function hasInspectionData(db: Database.Database, imo: string): boolean {
+  if (!imo) return false;
+  const row = db
+    .prepare<[string], { c: number }>(
+      `SELECT COUNT(*) as c FROM psc_detention_history WHERE imo = ?`,
+    )
+    .get(imo);
+  return (row?.c ?? 0) > 0;
+}
+
 /**
  * Input Contract:
  * - imo: empty ("", null, undefined) → return 0

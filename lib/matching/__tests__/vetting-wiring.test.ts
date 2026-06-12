@@ -110,14 +110,14 @@ describe('vetting wiring — PSC detentions lower fit (behavioral)', () => {
   afterEach(() => db.close());
 
   it('getDetentionCount fires on a fixture IMO within the 3yr window', () => {
-    expect(getDetentionCount(db, '9478999', '2023-01-01')).toBeGreaterThanOrEqual(2);
-    expect(getDetentionCount(db, '9156789', '2023-01-01')).toBe(0); // clean IMO
+    expect(getDetentionCount(db, '9166510', '2023-01-01')).toBeGreaterThanOrEqual(2);
+    expect(getDetentionCount(db, '9125085', '2023-01-01')).toBe(0); // clean IMO
   });
 
   it('same vessel with a detained IMO scores lower fit than with a clean IMO', async () => {
     const cargo = makeMatchableCargo();
-    const detainedVessel = makeMatchableVessel({ imo: '9478999', emailId: 'vessel-detained' });
-    const cleanVessel = makeMatchableVessel({ imo: '9156789', emailId: 'vessel-clean' });
+    const detainedVessel = makeMatchableVessel({ imo: '9166510', emailId: 'vessel-detained' });
+    const cleanVessel = makeMatchableVessel({ imo: '9125085', emailId: 'vessel-clean' });
 
     const rDetained = await analyzePairs(
       [cargo],
