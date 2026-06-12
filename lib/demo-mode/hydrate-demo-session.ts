@@ -31,6 +31,8 @@ interface MatchRow {
   cargo_item_index: number | null; vessel_item_index: number | null;
   worksheet_json: string | null;
   tce_usd_per_day: number | null;
+  freight_rate_usd_per_mt: number | null;
+  freight_rate_source: string | null;
   load_port: string | null;
   discharge_port: string | null;
   vessel_dwt: number | null;
@@ -122,11 +124,14 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
     ? 'worksheet_json'
     : 'NULL as worksheet_json';
   const tceCol = colNames.has('tce_usd_per_day') ? 'tce_usd_per_day' : 'NULL as tce_usd_per_day';
+  const freightCols = colNames.has('freight_rate_usd_per_mt')
+    ? 'freight_rate_usd_per_mt, freight_rate_source'
+    : 'NULL as freight_rate_usd_per_mt, NULL as freight_rate_source';
   const portCols = colNames.has('load_port')
     ? 'load_port, discharge_port'
     : 'NULL as load_port, NULL as discharge_port';
   const dwtCol = colNames.has('vessel_dwt') ? 'vessel_dwt' : 'NULL as vessel_dwt';
-  const selectCols = `cargo_id, vessel_id, score, reason, reason_structured, ${fitCols}, ${idxCols}, ${worksheetCol}, ${tceCol}, ${portCols}, ${dwtCol}`;
+  const selectCols = `cargo_id, vessel_id, score, reason, reason_structured, ${fitCols}, ${idxCols}, ${worksheetCol}, ${tceCol}, ${freightCols}, ${portCols}, ${dwtCol}`;
 
   // Only the seeded snapshot rows (user_id IS NULL). Per-session copies that
   // persistSessionMatches writes (user_id = sessionId) must NOT be re-read here,
@@ -160,6 +165,9 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
           : null;
       // Carry the seed-computed TCE into economics.tceUsdPerDay so
       // persistSessionMatches can prefer it over a live recompute.
+      // Also carry the seed freight pair (QA FINDING-002): toBucketRows reads
+      // the economics triple, so a tce-only object would render canonical TCE
+      // with a NULL rate/source → "≈ Estimate" badge over a canonical value.
       const economics: import('@/lib/types').EconomicsResult | undefined =
         tce != null && Number.isFinite(tce)
           ? {
@@ -175,6 +183,8 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
               calculatedAt: new Date(0).toISOString(),
               dataFreshness: { bunker: 'seed', eua: 'seed' },
               tceUsdPerDay: tce,
+              freightRateUsdPerMt: r.freight_rate_usd_per_mt ?? undefined,
+              freightRateSource: r.freight_rate_source ?? undefined,
             }
           : undefined;
       return {

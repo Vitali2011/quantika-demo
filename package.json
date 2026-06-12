@@ -44,6 +44,7 @@
     "seed:parse": "AI_PROVIDER=claude-cli tsx scripts/demo-seed/parse-llm-direct.ts",
     "seed:reconcile": "AI_PROVIDER=claude-cli tsx scripts/demo-seed/reconcile.ts",
     "seed:build": "tsx scripts/demo-seed/build.ts",
+    "seed:regen": "tsx scripts/demo-seed/regenerate-matches.ts",
     "seed:validate": "tsx scripts/demo-seed/validators.ts",
     "seed:all": "AI_PROVIDER=claude-cli tsx scripts/demo-seed/seed-all.ts",
     "quote:workshop": "tsx scripts/quote-workshop/worker.ts"

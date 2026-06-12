@@ -25,7 +25,7 @@ async function main(): Promise<void> {
   const outDb = path.resolve('data/demo-seed.db');
 
   // 1. Clerk (separate process so AI_PROVIDER env is unambiguous)
-  console.log('[seed-all] 1/5 parse (Opus clerk)…');
+  console.log('[seed-all] 1/6 parse (Opus clerk)…');
   const parse = spawnSync(
     'npx',
     ['tsx', 'scripts/demo-seed/parse-llm-direct.ts', '--raw-dir', rawDir, '--model', model],
@@ -34,7 +34,7 @@ async function main(): Promise<void> {
   if (parse.status !== 0) throw new Error('parse step failed');
 
   // 2. Analyst
-  console.log('[seed-all] 2/5 reconcile (Opus analyst)…');
+  console.log('[seed-all] 2/6 reconcile (Opus analyst)…');
   const rec = await reconcile({ rawDir, model });
 
   // H1/M7: Add real person names from originalSender to brokers map so they get
@@ -164,12 +164,12 @@ async function main(): Promise<void> {
   expandBucket(rec.anonymization.brokers);
 
   // 3. Analyze (offsets + merge reconcile anonymization)
-  console.log('[seed-all] 3/5 analyze (date offsets)…');
+  console.log('[seed-all] 3/6 analyze (date offsets)…');
   const manifest = await analyze({ rawDir, frozenDate, demoWindowDays, seedAnonymization: rec.anonymization });
   fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
 
   // 4. Build
-  console.log('[seed-all] 4/5 build…');
+  console.log('[seed-all] 4/6 build…');
   const forbidden = [
     ...Object.keys(rec.anonymization.vessels),
     ...Object.keys(rec.anonymization.charterers),
@@ -180,8 +180,21 @@ async function main(): Promise<void> {
   ].filter((s) => s.length >= 3);
   await build({ rawDir, manifestPath, outDb, forbiddenSubstrings: forbidden });
 
-  // 5. Validate + summary
-  console.log('[seed-all] 5/5 validate…');
+  // 5. Canonical matches (audit B.4/B.5): build()'s matches stage is a bootstrap
+  // heuristic (base-60 score, flat bunker). Replace it through the REAL engine —
+  // regenerate-matches runs analyzePairs with a deterministic offline scorer
+  // (no LLM) and rewrites the seed buckets in canonical row shape, so
+  // `npm run seed:all` now produces the same matches as the manual regen.
+  console.log('[seed-all] 5/6 regenerate matches (real engine)…');
+  const regen = spawnSync(
+    'npx',
+    ['tsx', 'scripts/demo-seed/regenerate-matches.ts', '--db', outDb],
+    { stdio: 'inherit', env: process.env },
+  );
+  if (regen.status !== 0) throw new Error('regenerate-matches step failed');
+
+  // 6. Validate + summary
+  console.log('[seed-all] 6/6 validate…');
   const res = validateDb(outDb);
   const cache = loadLlmCacheIfAny(rawDir);
   if (!cache) throw new Error('[seed-all] llm-cache missing after parse step');
