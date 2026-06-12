@@ -10,7 +10,7 @@ import { isEuCountry } from '@/lib/validation/sanctions';
 import { estimateVesselValueUsd } from '@/lib/economics/vessel-value';
 import type { EconomicsResult } from '@/lib/types';
 import { parseLeadingNumber, parseConsumption, DEFAULT_CONSUMPTION_MT_PER_DAY } from './parse-vessel-fields';
-import { DEFAULT_BUNKER_USD_PER_MT, FALLBACK_EUA_EUR_PER_TCO2 } from '@/lib/constants';
+import { DEFAULT_BUNKER_USD_PER_MT, FALLBACK_EUA_EUR_PER_TCO2, NT_DWT_RATIO } from '@/lib/constants';
 
 // Re-export pure parsers for existing server callers (e.g. session-buckets.ts).
 // They live in parse-vessel-fields.ts (no server deps) so client components can
@@ -197,16 +197,20 @@ function _routeTransitsSuez(portA: string | null | undefined, portB: string | nu
          (eastOfSuez.has(basinB) && westOfSuez.has(basinA));
 }
 
-// A route transits the Bosporus if one endpoint is on the Med/Marmara side and the
-// other is on the Black Sea side. Intra-Med and intra-BlackSea routes do not transit.
+// A route transits the Bosporus when exactly one endpoint lies inside the Black
+// Sea and the other is a known basin outside it (med, atlantic, indian,
+// eastafrica, westafrica — every exit from the Black Sea passes the strait).
+// Intra-Med, intra-BlackSea and unknown-basin routes do not transit. (Audit C.1:
+// the old med↔blacksea-only rule dropped the Bosporus fee on Black Sea ↔
+// east-of-Suez voyages — Novorossiysk→Mumbai paid Suez but not Bosporus.)
 function _routeTransitsBosporus(portA: string | null | undefined, portB: string | null | undefined): boolean {
   const a = _classifyPortBasin(portA);
   const b = _classifyPortBasin(portB);
-  return (a === 'med' && b === 'blacksea') || (a === 'blacksea' && b === 'med');
+  if (a === 'unknown' || b === 'unknown') return false;
+  return (a === 'blacksea') !== (b === 'blacksea');
 }
 
-// Derive approximate net tonnage from DWT (bulker convention: NT ≈ DWT × 0.65).
-const NT_DWT_RATIO = 0.65;
+// NT ≈ DWT × NT_DWT_RATIO (canonical, lib/constants.ts — audit C.8).
 
 // Quote Suez dues for a leg (laden or ballast). Returns 0 on any error (DB missing, etc.)
 // so the caller gracefully degrades without the exact tariff rather than throwing.

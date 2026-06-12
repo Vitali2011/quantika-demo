@@ -82,7 +82,16 @@ describe('war risk integration', () => {
       daysInHra: 2,
     });
     expect(result.warRiskUsd).toBeGreaterThan(0);
-    expect(result.totalUsd).toBeGreaterThan(result.baseFeeUsd + result.scntFeeUsd);
+    // audit C.8: totalUsd no longer folds war-risk in (was: totalUsd > baseFee + scntFee).
+    // warRiskUsd is informational-only; totalUsd = SCNT dues.
+    expect(result.totalUsd).toBe(result.scntFeeUsd);
+  });
+
+  it('reports warRiskUsd separately, never inside totalUsd (audit C.8 latent double-count)', () => {
+    const q = quoteSuez({ vesselDwt: 50000, vesselNt: 32500, vesselType: 'bulker', laden: true,
+      vesselValueUsd: 15_000_000, daysInHra: 5 });
+    expect(q.warRiskUsd).toBeGreaterThan(0); // war-risk still quoted for visibility
+    expect(q.totalUsd).toBe(q.scntFeeUsd);
   });
 
   it('war_risk_zone set but daysInHra=0 → warRiskUsd === 0', () => {

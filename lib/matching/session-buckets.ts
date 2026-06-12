@@ -93,6 +93,10 @@ export function toBucketRows(
       id: idStart - i,
       cargo_id: m.cargoEmailId,
       vessel_id: m.vesselEmailId,
+      // Item identity (audit C.5 / QA F1): two items of one email pair are
+      // distinct bucket cards — without these the UI key collapsed to |0|.
+      cargo_item_index: m.cargoItemIndex ?? 0,
+      vessel_item_index: m.vesselItemIndex ?? 0,
       score: Math.max(0, Math.min(100, Math.round(m.score))),
       reason: m.matchReasons[0] ?? '',
       status: 'shortlist',

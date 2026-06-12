@@ -14,6 +14,7 @@
 import {
   FIT_WEIGHTS,
   computeFitBreakdown,
+  scoreEconomics,
 } from '../fit-breakdown';
 import type { MatchReadiness, MatchSanctions, MatchHardFilters, ParsedCargo, ParsedVessel } from '@/lib/types';
 
@@ -254,6 +255,13 @@ describe('economics score — gradient mapping', () => {
     // very large loss → tanh approaches -1 → norm approaches 0 → score ≥ 0
     const score = econScore(-100_000, 5200);
     expect(score).toBeGreaterThanOrEqual(0);
+  });
+
+  it('economics score rounds to 0.1 like every other factor (audit C.8)', () => {
+    // dwt 50,000 → supramax breakeven 5,500; TCE 14,200 → norm ≈ 0.9594
+    // → 18 × norm = 17.27 → 17.3 at 0.1 precision (was Math.round → 17).
+    const c = scoreEconomics(14200, 50000);
+    expect(c.score).toBeCloseTo(17.3, 10);
   });
 });
 

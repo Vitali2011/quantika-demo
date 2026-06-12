@@ -580,8 +580,9 @@ async function main() {
   console.log(`[regen] bunker price: ${bunkerPriceUsdPerMt} USD/mt (${bunkerRow ? 'live' : 'fallback'})`);
   const result = await analyzePairs(cargos, vessels, async () => [], { refYear, today, db, bunkerPriceUsdPerMt });
 
-  // ── 3. Dedup each bucket to one match per (cargo email, vessel email) pair,
-  //        keeping the highest fit (then score). Drop cleanliness blockSend from main.
+  // ── 3. Dedup each bucket: one match per ITEM pair, then collapse cross-email
+  //        content dupes — keeping the highest fit (then score). Drop cleanliness
+  //        blockSend from main.
   const cargoMap = new Map(cargos.map((c) => [`${c.emailId}|${c.itemIndex}`, c]));
   const vesselMap = new Map(vessels.map((v) => [`${v.emailId}|${v.itemIndex}`, v]));
 
@@ -612,13 +613,19 @@ async function main() {
     }
     return [...best.values()];
   }
-  // Pass 1: one match per (cargo email, vessel email) — REQUIRED by the unique
-  // index (cargo_id, vessel_id, user_id); picks the best item combo per pair.
+  // Pass 1: one match per ITEM pair — the engine already emits unique item
+  // pairs (pair-analyzer dedupes by pairKey), this guards against accidental
+  // dupes only. Since migration 051 the unique index is item-aware, so two
+  // items of the same email legitimately produce two board rows (audit C.5,
+  // founder 2026-06-12 — replaces the old one-per-email-pair collapse).
   // Pass 2: collapse cross-email content dupes (re-circulated vessel/cargo).
-  // Order matters: after pass 1 every survivor has a distinct email pair, so
-  // pass 2 never leaves two rows sharing (cargo_id, vessel_id) → no INSERT clash.
+  // Survivors may share (cargo_id, vessel_id) with distinct item indices —
+  // INSERT OR IGNORE is safe under idx_matches_unique_pair_item.
   function dedup(matches: Match[]): Match[] {
-    return bestBy(bestBy(matches, (m) => `${m.cargoEmailId}|${m.vesselEmailId}`), contentKey);
+    return bestBy(
+      bestBy(matches, (m) => `${m.cargoEmailId}|${m.cargoItemIndex}|${m.vesselEmailId}|${m.vesselItemIndex}`),
+      contentKey,
+    );
   }
 
   // Broker-facing one-line note: tier headline + the weakest 1-2 factors, so the
@@ -672,11 +679,11 @@ async function main() {
 
   const fits = (arr: Match[]) => arr.map((m) => m.fitPercent ?? 0).filter((n) => n > 0).sort((a, b) => a - b);
   const fm = fits(mainClean);
-  console.log(`[regen] BUCKETS (deduped to email-pair · main floor fit>=${MAIN_FIT_FLOOR}):`);
+  console.log(`[regen] BUCKETS (deduped per item-pair + content · main floor fit>=${MAIN_FIT_FLOOR}):`);
   console.log(`  main (NULL):            ${mainClean.length}  · fit min ${fm[0]?.toFixed(0)} med ${fm[Math.floor(fm.length/2)]?.toFixed(0)} max ${fm[fm.length-1]?.toFixed(0)} · ≥80:${fm.filter(x=>x>=80).length} ≥70:${fm.filter(x=>x>=70).length}`);
   console.log(`  review (__demo_review__):       ${review.length}  (engine-low ${dedup(result.lowConfidenceMatches).length} + demoted sub-floor ${demoted.length})`);
   console.log(`  insufficient (__demo_insufficient__): ${insufficient.length}`);
-  console.log(`  (dropped main cleanliness-blocked: ${result.matches.filter((m) => m.confidence?.blockSend === true).length}; engine blocked total: ${result.blockedMatches.length})`);
+  console.log(`  (cleanliness-blocked are engine-demoted to review since audit C.4; blockSend safety-net dropped from main: ${result.matches.filter((m) => m.confidence?.blockSend === true).length}; engine blocked total: ${result.blockedMatches.length})`);
 
   if (DRY) { db.close(); console.log('[regen] DRY — no writes.'); return; }
 

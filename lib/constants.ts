@@ -118,6 +118,11 @@ export const DEFAULT_BUNKER_USD_PER_MT = 600;
 /** EUA price fallback when EEX fetch fails (EUR/tCO2). ets.ts is module-of-record → 87.5. */
 export const FALLBACK_EUA_EUR_PER_TCO2 = 87.5;
 
+/** Net-tonnage approximation from DWT (bulker convention: NT ≈ DWT × 0.65).
+ *  Single source — canal SCNT quoting in both the stored-match path and the
+ *  detail/canal API routes (audit C.8: routes used 0.6 vs engine 0.65). */
+export const NT_DWT_RATIO = 0.65;
+
 // ── TZ-015: Bunker Defaults by Vessel Class ──
 
 export type VesselClassName = "handysize" | "supramax" | "panamax" | "capesize";

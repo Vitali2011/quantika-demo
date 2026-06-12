@@ -80,8 +80,13 @@ export default async function DashboardPage() {
     persistSessionMatches(db, sessionId!, matches, session.parsedCargos, session.parsedVessels);
   }
   const storedMatches = listMatches(db, { user_id: sessionId!, sortBy: 'score', sortDir: 'desc' });
-  const matchIdMap = new Map(storedMatches.map((sm) => [`${sm.cargo_id}|${sm.vessel_id}`, sm.id]));
-  const storedByKey = new Map(storedMatches.map((sm) => [`${sm.cargo_id}|${sm.vessel_id}`, sm]));
+  // Item-aware key (audit C.5, migration 051): two items of the same email pair
+  // are distinct rows — a 2-part (cargo_id, vessel_id) key would collapse them.
+  // ?? 0 covers StoredMatch's optional item columns (pre-044 rows).
+  const storedKey = (cargoId: string, cargoIdx: number | null | undefined, vesselId: string, vesselIdx: number | null | undefined) =>
+    `${cargoId}|${cargoIdx ?? 0}|${vesselId}|${vesselIdx ?? 0}`;
+  const matchIdMap = new Map(storedMatches.map((sm) => [storedKey(sm.cargo_id, sm.cargo_item_index, sm.vessel_id, sm.vessel_item_index), sm.id]));
+  const storedByKey = new Map(storedMatches.map((sm) => [storedKey(sm.cargo_id, sm.cargo_item_index, sm.vessel_id, sm.vessel_item_index), sm]));
   const openMatchCount = countQualifyingMatches(db, { user_id: sessionId! });
 
   const priorityCards = goodMatches
@@ -93,18 +98,18 @@ export default async function DashboardPage() {
       const priority = classifyPriority({ confidence: match.confidence, readinessGap });
       const matchSummary = match.matchReasons[0] || `Match #${i + 1}`;
       const keyInsight = match.readiness?.explanation || `Level: ${match.matchLevel}`;
-      const dbId = matchIdMap.get(`${match.cargoEmailId}|${match.vesselEmailId}`);
+      const dbId = matchIdMap.get(storedKey(match.cargoEmailId, match.cargoItemIndex, match.vesselEmailId, match.vesselItemIndex));
       const href = dbId != null ? `/match/${dbId}` : '/matches';
       return { priority, matchSummary, keyInsight, href };
     })
     .sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority]);
 
   const freshMatchesData = goodMatches
-    .filter((m) => matchIdMap.get(`${m.cargoEmailId}|${m.vesselEmailId}`) != null)
+    .filter((m) => matchIdMap.get(storedKey(m.cargoEmailId, m.cargoItemIndex, m.vesselEmailId, m.vesselItemIndex)) != null)
     .map((m) => ({
-      id: matchIdMap.get(`${m.cargoEmailId}|${m.vesselEmailId}`)!,
+      id: matchIdMap.get(storedKey(m.cargoEmailId, m.cargoItemIndex, m.vesselEmailId, m.vesselItemIndex))!,
       score: m.score,
-      fit_percent: storedByKey.get(`${m.cargoEmailId}|${m.vesselEmailId}`)?.fit_percent ?? null,
+      fit_percent: storedByKey.get(storedKey(m.cargoEmailId, m.cargoItemIndex, m.vesselEmailId, m.vesselItemIndex))?.fit_percent ?? null,
       matchLevel: m.matchLevel,
       matchReasons: m.matchReasons,
     }));

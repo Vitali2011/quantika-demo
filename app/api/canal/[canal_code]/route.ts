@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { quoteCanal } from '@/lib/economics/canals/index';
 import type { CanalCode, SuezInput, CanalInput } from '@/lib/economics/canals/index';
+import { NT_DWT_RATIO } from '@/lib/constants';
 
 export const dynamic = 'force-dynamic';
 
@@ -81,10 +82,10 @@ export async function GET(
     }
   }
 
-  // Non-Suez canals: vessel_nt optional (defaults to vesselDwt × 0.6)
+  // Non-Suez canals: vessel_nt optional (defaults to vesselDwt × 0.65, canonical NT_DWT_RATIO)
   const vesselNt = rawNt
-    ? (parsePositiveFinite(rawNt, 'vessel_nt') ?? Math.round(vesselDwt * 0.6))
-    : Math.round(vesselDwt * 0.6);
+    ? (parsePositiveFinite(rawNt, 'vessel_nt') ?? Math.round(vesselDwt * NT_DWT_RATIO))
+    : Math.round(vesselDwt * NT_DWT_RATIO);
 
   const input: CanalInput = { vesselDwt, vesselNt, vesselType };
   try {

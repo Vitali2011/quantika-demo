@@ -17,7 +17,9 @@
  * Ballast discount: laden rate × 0.70
  *
  * War-risk: if the tariff row has war_risk_zone set and vesselValueUsd +
- * daysInHra are provided, calculateWarRiskPremium() is invoked and added.
+ * daysInHra are provided, calculateWarRiskPremium() is invoked and reported
+ * as warRiskUsd (informational; excluded from totalUsd — the TCE chain
+ * prices war-risk itself, audit C.8).
  *
  * Input Contract:
  *   vesselNt, vesselDwt  must be finite > 0     → RangeError
@@ -91,7 +93,10 @@ export function quoteSuez(input: SuezInput): SuezQuote {
     }
   }
 
-  const totalUsd = scntFeeUsd + warRiskUsd;
+  // War-risk is quoted for visibility only — NOT folded into totalUsd. The TCE
+  // chain (computeTce) prices war-risk itself; summing it here double-counted
+  // for any caller passing vesselValueUsd (audit C.8, latent).
+  const totalUsd = scntFeeUsd;
 
   return {
     scnt,

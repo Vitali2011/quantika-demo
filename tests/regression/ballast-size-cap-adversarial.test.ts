@@ -175,12 +175,13 @@ describe('applyBallastSizeCap — numeric edges (lever 3 ballast)', () => {
     expect((out.issues ?? []).some((i) => i.startsWith('BALLAST:'))).toBe(false);
   });
 
-  it('[BEHAVIOR] 95000 DWT (kamsarmax/post-panamax) → classified capesize → LOOSEST 4000nm cap', () => {
-    // CONCERN: classifyVesselByDwt has a gap 90001..99999 that falls through to capesize.
-    // A ~95k DWT vessel gets the 4000nm cap (capesize), so a 3500nm ballast survives as good.
-    // Pre-existing classifier behavior, not introduced by this PR — flagged for awareness.
+  it('[FIXED] 95000 DWT (kamsarmax/post-panamax) → classified panamax → 2500nm cap demotes 3500nm ballast', () => {
+    // audit C.6: the classifier gap 90001..99999 used to fall through to capesize
+    // (loosest 4000nm cap), so a 3500nm ballast survived as 'good'. The gap now
+    // resolves to panamax (2500nm radius) and this pair is demoted.
     const out = applyBallastSizeCap(capInput({ distanceNm: 3500, vesselDwt: 95000 }));
-    expect(out.matchLevel).toBe('good');
+    expect(out.matchLevel).toBe('possible');
+    expect((out.issues ?? []).some((i) => i.startsWith('BALLAST:'))).toBe(true);
   });
 });
 

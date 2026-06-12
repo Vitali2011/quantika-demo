@@ -515,7 +515,7 @@ export function scoreEconomics(
   const w = FIT_WEIGHTS.economics;
   const dwt = vesselDwt ?? 0;
   const norm = economicsNorm(tceUsdPerDay, dwt);
-  const score = Math.round(w * norm);
+  const score = Math.round(w * norm * 10) / 10;
   let rationale: string;
   let economicsBracket: string | undefined;
   if (tceUsdPerDay == null) {

@@ -1,94 +1,128 @@
-# Findings: claude/compassionate-jennings-cb6e62
+# Findings: feat/wave-c-engine-logic
 
-Branch: claude/compassionate-jennings-cb6e62
-HEAD: dded0315
-**Phase 3 completed:** 2026-06-12
-**Attack plan executed:** 7 items (3 HIGH, 2 MEDIUM, 2 LOW/static) — all executed or statically closed; 1 runtime sub-step skipped with note (regen `--dry`, db placeholder)
-**Sub-agents dispatched:** 0 (single-agent run; attacks executed sequentially by severity)
-**Baseline:** 549 tests green on HEAD before attacks (lib/matching + scripts/demo-seed + compute-matches/persist/race suites). Full `npm test` not run (environment constraint — targeted suites only).
-**Browser freshness (Step 1.5):** N/A — no browser/E2E attacks executed; all UI impact verified at the binding level (skill principle #8), no running app consulted.
+Branch: feat/wave-c-engine-logic
+HEAD: 13029428
+Phase 3 completed: 2026-06-12
 
-## Tests Added
+All sanctioned spec changes C.1-C.8 verified implemented correctly (see discovery.md);
+none re-reported below. Findings are defects in or around the new code.
 
-- `tests/regression/persist-refresh-worksheet-clobber.test.ts` — 2 tests (cross-path-consistency, B.6) — **1 FAILS on HEAD (FINDING-001), control passes**
-- `tests/regression/write-path-value-parity.test.ts` — 1 test (value-level parity hardening, B.2) — passes
-- `tests/regression/persist-dedup-tie-semantics.test.ts` — 2 tests (merger tie semantics, c2e2c1a2) — pass (pin legacy contract)
-- `tests/regression/bucket-hydrate-freight-provenance.test.ts` — 3 tests (provenance, B.3 half-landing) — pass (pin introduced shape + control)
+## F1 - MEDIUM - Item-aware bucket React key is a no-op: feed never carries item indices
 
-## Failures Found
+Files: lib/matching/session-buckets.ts:92-117 (feed), app/matches/MatchesClient.tsx:393 (binding)
+Class: displayed-value-provenance / half-landed C.5 consumer.
 
-### FINDING-001 [HIGH]
-**Title**: `refreshComputed` clobbers `worksheet_json` (and the bucketReason inside it) when the refresh source carries no worksheet — demo board loses comparison tables after one `/processing` visit
-**File**: `lib/matching/matches-repository.ts:454` (`worksheet_json = ?` SET with `input.worksheet_json ?? null`) × `lib/matching/persist-session-matches.ts:197` (`refreshComputed: true`)
-**Repro**: `tests/regression/persist-refresh-worksheet-clobber.test.ts` — "worksheet_json survives a re-persist from engine output"
-**Failure**:
-```
-persistSessionMatches(hydrated match WITH worksheet)  -> worksheet_json = '{...}'   OK
-persistSessionMatches(engine match, NO worksheet)     -> worksheet_json = NULL      FAIL
-Expected: non-null (campaign goal: "renders identically regardless of which path last touched it")
-Actual:   null — refreshComputedColumns ran SET worksheet_json = NULL
-```
-**Production chain (every link verified on disk, all out-of-diff)**:
-1. Demo login → `lib/demo-mode/hydrate-demo-session.ts:192` attaches `m.worksheet` from seed `worksheet_json`.
-2. First `/matches` or `/dashboard` render → session rows persisted WITH worksheets.
-3. User opens `/processing` → pipeline auto-runs on mount (`app/processing/page.tsx:178`, no condition) → `POST /api/ai/match` → `updateSession({ matches: engineOutput })` (`app/api/ai/match/route.ts:163`); `lib/matching/pair-analyzer.ts` contains zero `worksheet` producers (admitted by the in-diff NOTE in `compute-matches.ts:111-113`).
-4. Next render → `persistSessionMatches` + `refreshComputed: true` → `UPDATE … SET worksheet_json = NULL` on every hydrated session row.
-**Consumers losing data**: `/match/[id]` cargo↔vessel comparison table (`app/match/[id]/page.tsx:82` — "without it the detail table is blank", per the plan's own ground truth), laycan_display rebase (`app/matches/page.tsx:63`), bucket-reason card (`app/matches/MatchesClient.tsx:835`).
-**Severity**: HIGH — regression in the campaign's spec-documented goal; user-visible data loss on the primary demo surface; persists for the session lifetime (per-session copy; next login re-hydrates).
-**Pre-existing on main**: **No — introduced by this PR.** On `004edba2` the second persist is a pure `INSERT OR IGNORE` no-op (the UPDATE path `refreshComputedColumns` is added by this diff), so the hydrated row's worksheet survived. The campaign created the demotion path by half-landing the refresh: it refreshes from a source (engine output) that cannot supply everything the row already has. Carve-out + blast-radius doctrine both apply (the PR changes how matches rows are written; every feeder of that path is in-scope).
-**Fix hint**: in `refreshComputedColumns`, make null-preserving writes for columns whose only live producer on the refresh path can be absent — e.g. `worksheet_json = COALESCE(?, worksheet_json)` (or skip the SET when `input.worksheet_json == null`). Engine always supplies score/fit/reason/scoreBreakdown, so those stay unconditional. Alternatively: attach worksheets to engine output (closes the gap at the producer; the in-diff NOTE already flags the asymmetry).
+The branch rewrote the bucket <li> key to cargo_id|cargo_item_index??0|vessel_id|vessel_item_index??0
+with a comment claiming items of one email pair now get distinct keys. But review/insufficient
+tabs render rows from toBucketRows, which builds StoredMatch objects WITHOUT
+cargo_item_index/vessel_item_index -> every row degrades to |0| -> two items of the
+same email pair collide exactly as the old 2-part key did. The collision predates the
+branch, but the branch's stated fix for it is ineffective (half-landed-change carve-in),
+and C.4 makes the trigger common: hold-cleanliness demotes ALL items of a dirty-hold
+vessel pair to 'weak' -> they co-occupy the review bucket.
 
-### FINDING-002 [MEDIUM]
-**Title**: B.3 economics-first read × hydrate's partial economics object → hydrated demo bucket rows carry canonical TCE with NULL freight rate/source; "≈ Estimate" (dimmed) badge renders over a canonical value and the regen-resolved rate is dropped
-**File**: `lib/matching/session-buckets.ts:62-64` (economics-first read) × `lib/demo-mode/hydrate-demo-session.ts:163-179` (producer builds `economics` with ONLY `tceUsdPerDay`; its `selectCols` at :114-129 doesn't even SELECT the freight columns regen wrote)
-**Repro (pinning)**: `tests/regression/bucket-hydrate-freight-provenance.test.ts`
-**Behavior delta**: pre-B.3 these rows carried the self-consistent estimate triple (`tce≈est`, `rate=est`, `source='estimated'`); post-B.3 they carry `tce=canonical`, `rate=NULL`, `source=NULL`. `freightBadge(null)` falls back to "≈ Estimate / rate not confirmed" + dims the TCE (`lib/matching/freight-badge.ts:40-47`) — same badge tone as before, now over a canonical number; the freight value itself is not rendered on bucket cards today (`MatchesClient.tsx:738-742` renders only TCE + badge).
-**Severity**: MEDIUM — provenance mislabel in the honest direction (under-claims confidence) on a demo-only surface; no rendered number contradicts its label more than before; TCE numeric consistency actually improves (bucket tab now agrees with regen/seed).
-**Pre-existing on main**: No — the inconsistency is created by this PR's read-path change against an unchanged producer (half-landed). Counted as MEDIUM, follow-up: teach `rowsToMatches` to carry `freightRateUsdPerMt`/`freightRateSource` (and SELECT them), or fall back to the estimate triple when economics is partial.
+Impact: React duplicate-key warning + mis-recycled DOM between two distinct bucket cards.
+No data corruption.
+Repro: tests/regression/session-buckets-item-key.test.ts (pinned [BEHAVIOR], green - flips when fixed).
+Fix direction: toBucketRows sets cargo_item_index: m.cargoItemIndex ?? 0 and vessel likewise,
+or key by row.id (synthetic negative ids are already unique; main list at :696 already keys by id).
 
-## LOW / informational
+## F2 - LOW-MEDIUM - GROUP_A_RESTRICTION_RE over-blocks acceptance/unrelated phrasing
 
-### FINDING-003 [LOW — pre-existing semantics, pinned]
-**Title**: first-wins dedup tie cases are array-order, not score-aware
-**File**: `lib/matching/persist-session-matches.ts:64-70`
-**Notes**: equal-`fitPercent` (or both-undefined) duplicates keep the array-first match even when the later one has a higher score; regen's sibling dedup (`regenerate-matches.ts` step 3) breaks ties by fit THEN score. Legacy `INSERT OR IGNORE` made exactly the same array-first choice, so this is **pre-existing semantics**, not introduced — does not gate. Pinned in `tests/regression/persist-dedup-tie-semantics.test.ts` so the contract is explicit for future callers.
+File: lib/sailing/imsbc-check.ts:279 (new regex, this branch)
+Class: input-fuzz / regex.
 
-### FINDING-004 [LOW — noted]
-**Title**: `refreshComputed` silently ignored in legacy (pre-fit) schema branches of `createMatch`
-**File**: `lib/matching/matches-repository.ts:240+` (hasVesselNameColumns/hasFreightRateColumns/hasM3/base branches)
-**Notes**: only the `hasFitColumns` branch honors the flag; any DB without migration 042 silently keeps fossilized rows. All real DBs (prod, demo-seed, session stores) have the full chain; the helper's doc comment states the restriction. No action required; surfacing for completeness.
+The negative lookahead guards only the IMMEDIATE word after "no", and the .{0,40}? gap
+freely crosses clause/sentence boundaries. Confirmed false positives (verdict
+incompatible -> checkImsbc hard gate -> pair removed from the board):
+- "no cargo restrictions, concentrates welcome" (acceptance)
+- "no DG cargoes. TML certificate on board" (DG-only ban + TML cert, bridges across the sentence)
+- "no grabs, holds suitable for concentrates" (gear statement)
+Confirmed false negatives (conservative miss, stays caution): "cannot carry concentrates",
+"concentrates not accepted".
 
-## Items That Passed (attack succeeded, no bug found)
+Impact: lost matches on vessels that explicitly accept Group A; tail-case phrasings, but
+vessel restrictions are free-text parses so clause-mixing is realistic. DG_RESTRICTION_RE
+has the same structural weakness (pre-existing); the NEW surface here is introduced by this branch.
+Repro: tests/regression/imsbc-groupA-regex-phrasing.test.ts (pinned).
+Fix direction: clause-bound the gap ([^.;]{0,40}?) and widen the lookahead (grabs?,
+cargo\s+restrictions), or require the hazard token in the same clause.
 
-- **Value-level write-path parity (B.2, hardened)** — `tests/regression/write-path-value-parity.test.ts`: precompute and session-persist write IDENTICAL VALUES for all 24 deterministic columns (stronger than the campaign's null-parity + 3-value check). Includes score clamping/rounding, reason text, laycan epoch, breakeven, item indexes, status.
-- **refresh column/arg coupling audit** — manual count: 18 base SET entries ↔ 18 base args; conditional pushes in identical order (idx 2, worksheet 1, consEst 1, ballast 1, breakeven 1); WHERE appends 4 args matching 4 placeholders. Campaign's own tests cover the NULL-user boundary in both directions.
-- **B.6 user_id boundary + status/created_at preservation** — covered by the campaign's `matches-repository-refresh.test.ts` (4 tests, green; `tick()` makes the created_at assertion load-bearing).
-- **B.4 seed-all↔regen contract (static)** — `regenerate-matches.ts:516/529` parses `--db` (seed-all passes it); regen scorer is `async () => []` (line 581 — no LLM despite `AI_PROVIDER=claude-cli` env passthrough); failure → non-zero status → seed-all throws; `validateDb` after regen asserts only LOW_MATCH_COUNT (regen verify logs its own row/fit counts). Step renumbering 1/6..6/6 consistent in the diff.
-- **B.1 reason_structured fix (static + binding)** — `reasonStructured: string | null` widened (`real-matches.ts:190`); single writer now `null` (line 382); bound at :463 (better-sqlite3 accepts null). UI claim verified: `MatchesClient.tsx:876` guards on `match.reason_structured &&`; the NaN mechanism (`comp.points / comp.max` at :893-898 over FitBreakdown components that lack points/max) is real, so nulling is the correct minimal fix. Regen (the canonical seeder) writes the legacy-shaped `scoreBreakdown` — shape contract preserved.
-- **toBucketRows ↔ regen writeBucket read parity (B.3)** — `regenerate-matches.ts:727-735` reads the same `m.economics?.{tceUsdPerDay,freightRateUsdPerMt,freightRateSource}` triple.
-- **Fit badge provenance** — board binds `match.fit_percent` (`MatchesClient.tsx:749-751,994-996`), never raw `score`; B.2 giving the precompute path `fit_percent` makes the badge light for precompute-only rows (was the "—" fallback).
-- **tsc surface** — `npx tsc --noEmit`: 0 errors on HEAD.
-- **Project rules pack** — ai-provider/admin-api/retriever rule scopes intersect nothing in this diff; the new parity tests mock `callAiJson` test-side only (no provider-chain changes).
+## F3 - LOW - C.8 clamp asymmetry: negative quantityMt still yields negative gross freight
 
-## Blocked Items
+File: lib/economics/compute-tce.ts:136-138
+rate is clamped >=0 (audit C.8), quantity is not: computeTce({quantityMt: -50000,
+freightRateUsdPerMt: 20, ...}) -> gross_freight_usd < 0 (verified by probe). Same
+nonsense-input class the audit fix targets. One-liner: Math.max(0, safeNum(inputs.quantityMt)).
 
-- **Regen `--dry` replay against the committed seed** (plan Task 4 Step 7 / Task 6 Step 3): `data/demo-seed.db` in this worktree is a **0-byte placeholder** — the dry-run cannot exercise the real corpus here. The plan itself anticipated absence ("skip with a note"). Wiring is covered by unit tests + static checks above; the real replay belongs to the deploy/seed-apply session (see Deploy Gate).
+## F4 - LOW - durationDays accepts Infinity: .positive() without .finite()
 
-## Classification Concerns
+File: app/api/voyage/tce/route.ts:86
+Raw JSON {"durationDays":1e999} parses to Infinity, passes z.number().positive(),
+returns HTTP 200 with degenerate economics (verified: status 200). C.2's "no silent $0
+voyage" is closed for 0/negative but not non-finite. distanceNm next to it has the
+identical pre-existing hole. Unreachable from the UI (duration computed >= 2); only
+hand-crafted requests. Fix: .positive().finite() on both fields.
 
-- (none — Phase 2 classifications held up in execution)
+## F5 - INFO - Slug links cannot address the new second item rows
 
-## Coverage Gaps
+app/cargo/[id]/page.tsx:341, app/vessel/[id]/page.tsx:213,
+components/dashboard/ActionPanel.tsx:65 link via toMatchSlug(cargoEmailId, vesselEmailId),
+item-blind. Two visible item matches link to ONE detail URL; getMatchBySlug now
+deterministically returns the best-fit row, so the lesser item's card opens the best
+item's detail. NOT a regression (pre-051 only one row existed - same landing), and the
+dashboard priority-card path was correctly made item-aware (links /match/<dbId>).
+Follow-up: extend the slug with item indices or prefer db-id links on cargo/vessel pages.
 
-- Full `npm test` not run (forbidden in this environment — kills the worker); 549-test targeted baseline + 8 new regression tests instead.
-- No browser E2E: no markup changed in this diff; all UI claims verified by reading bindings. A post-merge qa-walker pass should eyeball the demo board worksheet/bucket tabs once FINDING-001 is fixed.
-- seed:all not executed end-to-end (needs LLM cache + raw corpus); contract verified statically.
-- Concurrency: no new async window (better-sqlite3 synchronous, refresh runs in the same call frame as the failed INSERT); existing `__tests__/matches-persist-race.test.ts` green — no new race test written.
+## F6 - INFO - Stale regen console copy after C.4/C.5
 
-## Upstream meta-note (for the implementation chain)
+scripts/demo-seed/regenerate-matches.ts:683 log header still says "deduped to email-pair";
+the "dropped main cleanliness-blocked" counter (:687) is now structurally 0 because C.4
+demotes those pairs to lowConfidenceMatches before regen ever sees result.matches.
+Logs only, no behavior impact.
 
-The campaign's own parity test runs both write paths over the SAME engine output — it structurally cannot catch FINDING-001, which needs SEQUENTIAL persists with DIFFERENT-shaped sources (hydrated → engine). When testing an in-place refresh, always include a "refresh from a poorer source" case: the refresh contract is not only "new values land" but "absent values don't erase".
+## F7 - INFO - Seed-builder writers keep one-per-email-pair semantics
 
-## max_examples Reductions
+scripts/demo-seed/build.ts:710-752 (comment + best map keyed cargo_id|vesselId),
+patch-fit.ts:357, real-matches.ts:91 - local-only seed tools not in the plan's writer
+list. Their output remains VALID under the finer index (coarser uniqueness is compatible),
+just produces fewer matches than founder C.5 intent. Update when next touched. The
+canonical prod write paths (persist, compute-matches, regen, hydrate) are all item-aware; verified.
 
-- N/A (fast-check not in repo; example-based adversarial fixtures used).
+## Verified non-findings (attack surface cleared)
+
+- Migration 051 data-contract: prod-shaped DB (chain to 050 + NULL-user seed rows +
+  sentinel buckets + session rows, all item idx 0) upgrades in place: coarse index dropped
+  (name matches 034 exactly), unique item-aware index created, zero row loss, second-item
+  insert unlocked, same-item dup still ignored, COALESCE(NULL user) branch enforced,
+  runner records v51, down() dedups to MIN(rowid).
+  Test: tests/regression/matches-item-unique-migration-051-prodshape.test.ts.
+  Prod invocation point confirmed: lib/session-store.ts:51 runs the chain at store init.
+- refreshComputedColumns cross-item clobber: removed SET of identity columns + item-aware
+  WHERE verified by branch tests - green.
+- Cross-writer consistency: persist (item-aware dedup), compute-matches (passes indices),
+  regen (explicit item columns + item-aware pass-1), hydrate-demo-session (reads
+  cargo_item_index ?? 0 into Match) - all agree. api/matches POST defaults to item 0
+  (pre-existing manual path, consistent).
+- C.1 wiring: one exported helper feeds both buildMatchEconomics (laden+ballast) and the
+  detail route (laden+ballast legs, route.ts:263/277) - list/detail parity holds. Basin
+  lattice probed: blacksea to med/atlantic/indian/eastafrica/westafrica charge;
+  intra-basin/unknown do not; Suez+Bosporus co-charge on blacksea-indian as intended.
+- C.6: explicit-range boundaries (65k -> supramax via entry order, 90k -> panamax) and
+  fallback edges (14999, 42k, 90001, 99999, 450k) all correct; breakevenTceByDwt is
+  pure-DWT (no class hole); ballast radius + bunker defaults consume the fixed classifier.
+- C.7: lattice probed - midpoint exact -> ideal (strict > w/2), depth 6/10 -> tight, last
+  in-window day -> tight, past cancelling -> late, w=0 unchanged, spot branch untouched;
+  new "into the laycan window" explanation only for non-spot gapDays < -1.
+- C.8 Suez: no production caller passes vesselValueUsd (grep: only _quoteSuezSafe + canal
+  router; both API routes build SuezInput without it) -> totalUsd change latent-only as
+  claimed; scntFeeUsd already contains base_fee so totalUsd=scntFeeUsd is complete dues;
+  no remaining test couples totalUsd to warRiskUsd (suites green).
+- NT 0.65: no residual dwt*0.6 anywhere in app/lib/components (last 0.6 hit is an
+  unrelated freight-confidence constant, tce-calculator.ts:93).
+- Pre-existing failures parity: 8 suites / 16 tests fail IDENTICALLY on base e9070fe2 and
+  branch (suite lists byte-identical; branch adds 1 passing test). Blast-radius carve-in
+  checked: the economics failures live in calculateWarRiskPremium/calculateEuEts
+  (untouched), imsbc_section_size_cap is the knowledge-scraper fetch cap (untouched),
+  ballast :273 failure is the score-65 guard pin with identical signature pre/post.
+  None carve in.
