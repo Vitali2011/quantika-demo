@@ -157,6 +157,11 @@ function buildExplanation(args: {
         ? `${spotPrefix}${arrStr} → ${gap}d before ${lcStr} — can sail immediately, ideal.`
         : `Vessel ${openStr} → ${arrStr} → ${gap}d before ${lcStr} — clean window.`;
     case 'tight':
+      // Two tight shapes (audit C.7): arrival AT the window start (gapDays >= -1)
+      // vs deep INTO the window, close to the cancelling date (gapDays < -1).
+      if (!isSpot && gapDays != null && gapDays < -1) {
+        return `Vessel ${openStr} → ${arrStr} → ${gap}d into the laycan window — close to cancelling, tight timing.`;
+      }
       return isSpot
         ? `${spotPrefix}${arrStr} → cuts it fine for ${lcStr} — tight but feasible.`
         : `Vessel ${openStr} → ${arrStr} → arrives right at ${lcStr} — tight timing.`;
