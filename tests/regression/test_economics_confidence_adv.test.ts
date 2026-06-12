@@ -7,6 +7,16 @@
  * DO NOT edit feature code. Document bugs via failing assertions.
  */
 
+// War-risk-v2 (#957) loads live JWC rates from data/knowledge/jwc/*.yaml — those
+// change over time by design and would re-break exact premium pins on every rates
+// update. Mock the knowledge layer to null → calculateWarRiskPremium falls back to
+// the hardcoded per-zone constants in war-risk.ts, which these tests pin exactly.
+// The live-rate path has its own coverage: lib/economics/__tests__/war-risk-rates.test.ts.
+jest.mock('@/lib/economics/war-risk-rates', () => ({
+  loadJwcRates: () => null,
+  __resetRateCacheForTest: () => {},
+}));
+
 import { calculateEuEts } from '@/lib/economics/ets';
 import { calculateWarRiskPremium } from '@/lib/economics/war-risk';
 import { mapConfidenceToLevel, computeMatchConfidence } from '@/lib/confidence';
