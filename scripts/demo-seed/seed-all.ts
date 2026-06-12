@@ -180,7 +180,7 @@ async function main(): Promise<void> {
   ].filter((s) => s.length >= 3);
   await build({ rawDir, manifestPath, outDb, forbiddenSubstrings: forbidden });
 
-  // Canonical matches (audit B.4/B.5): build()'s matches stage is a bootstrap
+  // 5. Canonical matches (audit B.4/B.5): build()'s matches stage is a bootstrap
   // heuristic (base-60 score, flat bunker). Replace it through the REAL engine —
   // regenerate-matches runs analyzePairs with a deterministic offline scorer
   // (no LLM) and rewrites the seed buckets in canonical row shape, so
@@ -193,7 +193,7 @@ async function main(): Promise<void> {
   );
   if (regen.status !== 0) throw new Error('regenerate-matches step failed');
 
-  // 5. Validate + summary
+  // 6. Validate + summary
   console.log('[seed-all] 6/6 validate…');
   const res = validateDb(outDb);
   const cache = loadLlmCacheIfAny(rawDir);
