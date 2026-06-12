@@ -31,6 +31,19 @@ describe('classifyVesselByDwt', () => {
   });
 });
 
+describe('classifyVesselByDwt gap handling (audit C.6)', () => {
+  it.each([
+    [25000, 'handysize'], [45000, 'handysize'], [55000, 'supramax'],
+    [80000, 'panamax'],
+    [95000, 'panamax'],   // the 90–100k hole used to fall through to capesize
+    [99999, 'panamax'],
+    [100000, 'capesize'], [450000, 'capesize'],
+    [null, 'handysize'],
+  ])('%s → %s', (dwt, cls) => {
+    expect(classifyVesselByDwt(dwt as number | null)).toBe(cls);
+  });
+});
+
 describe('calculateReadinessGap — Mustafa case', () => {
   it('Open Karasu 5 Sep → Mykolaiv 15-25 Sep laycan → verdict idle', () => {
     const r = calculateReadinessGap(

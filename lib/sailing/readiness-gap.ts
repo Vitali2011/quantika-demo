@@ -90,8 +90,13 @@ export function classifyVesselByDwt(dwt: number | null | undefined): VesselClass
   for (const [name, range] of Object.entries(VESSEL_CLASS)) {
     if (dwt >= range.minDwt && dwt <= range.maxDwt) return name as VesselClassName;
   }
-  // Gap between handysize (≤35k) and supramax (50k+) — lean handysize for demo
-  return dwt < 50000 ? 'handysize' : 'capesize';
+  // Gaps between class ranges: <50k leans handysize (demo corpus skew);
+  // 90–100k post-panamax economics sit closer to panamax than capesize
+  // (audit C.6 — the old ≥50k fallback sent 90–100k to capesize: 45mt/day
+  // consumption + capesize ballast radius for a baby-cape hull).
+  if (dwt < 50000) return 'handysize';
+  if (dwt < 100000) return 'panamax';
+  return 'capesize';
 }
 
 /** Returns true when the raw open-date string signals the vessel is immediately available.
