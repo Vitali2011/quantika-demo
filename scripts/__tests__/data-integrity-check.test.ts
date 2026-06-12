@@ -13,14 +13,17 @@ import Database from 'better-sqlite3';
 import * as sqliteVec from 'sqlite-vec';
 
 const SCRIPT = path.resolve(__dirname, '../data-integrity-check.ts');
-// Worktrees share node_modules with the repo root (4 levels up from scripts/__tests__/).
-// Direct checkouts have node_modules 2 levels up. Try both.
+// Walk up from __dirname to find the nearest node_modules/.bin/tsx
+// (worktrees share node_modules with the parent repo at varying depths —
+// same resolver as migrate-charterers-xss.test.ts).
 function findTsx(): string {
-  const candidates = [
-    path.resolve(__dirname, '../../node_modules/.bin/tsx'),
-    path.resolve(__dirname, '../../../../node_modules/.bin/tsx'),
-  ];
-  return candidates.find(p => fs.existsSync(p)) ?? candidates[0];
+  let dir = __dirname;
+  while (dir !== path.parse(dir).root) {
+    const candidate = path.join(dir, 'node_modules', '.bin', 'tsx');
+    if (fs.existsSync(candidate)) return candidate;
+    dir = path.dirname(dir);
+  }
+  return 'tsx';
 }
 const TSX = findTsx();
 
