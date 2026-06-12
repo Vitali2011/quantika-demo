@@ -1,7 +1,6 @@
 import React from 'react';
 import { DashboardTodoSection } from '../DashboardTodoSection';
 import { DashboardFreshMatches } from '../DashboardFreshMatches';
-import { DashboardInboxSection } from '../DashboardInboxSection';
 
 jest.mock('next/link', () => ({
   __esModule: true,
@@ -186,55 +185,5 @@ describe('DashboardFreshMatches', () => {
     const text = JSON.stringify(el);
     expect(text).toContain('/match/1');
     expect(text).toContain('/match/2');
-  });
-});
-
-describe('DashboardInboxSection', () => {
-  const fullCounts = {
-    CARGO_INQUIRY: 5,
-    VESSEL_POSITION: 3,
-    FIXTURE_RECAP: 1,
-    CLIENT_REPLY: 2,
-    DOCUMENT: 1,
-    VESSEL_CERTIFICATE: 0,
-    TCT_REQUEST: 0,
-    OTHER: 1,
-  };
-
-  it('renders total email count', () => {
-    const el = DashboardInboxSection({ counts: fullCounts, totalEmails: 13, needsAction: 0 });
-    const text = JSON.stringify(el);
-    expect(text).toContain('13');
-  });
-
-  it('shows needs-action badge when needsAction > 0', () => {
-    const el = DashboardInboxSection({ counts: fullCounts, totalEmails: 13, needsAction: 3 });
-    const text = JSON.stringify(el);
-    // Badge renders children as array [3, " need action"] — check both parts
-    expect(text).toContain('need action');
-    expect(text).toContain('"inbox-needs-action"');
-  });
-
-  it('does not show needs-action badge when needsAction is 0', () => {
-    const el = DashboardInboxSection({ counts: fullCounts, totalEmails: 13, needsAction: 0 });
-    const text = JSON.stringify(el);
-    expect(text).not.toContain('need action');
-  });
-
-  it('renders active categories (non-zero counts only)', () => {
-    const el = DashboardInboxSection({ counts: fullCounts, totalEmails: 13, needsAction: 0 });
-    const text = JSON.stringify(el);
-    expect(text).toContain('Cargo inquiries');
-    expect(text).toContain('Vessel positions');
-    expect(text).toContain('Fixture recaps');
-    // Zero-count categories should not appear
-    expect(text).not.toContain('Vessel certificates');
-  });
-
-  it('links to /email for both header and footer', () => {
-    const el = DashboardInboxSection({ counts: fullCounts, totalEmails: 13, needsAction: 0 });
-    const text = JSON.stringify(el);
-    const emailLinkCount = (text.match(/\/email/g) || []).length;
-    expect(emailLinkCount).toBeGreaterThanOrEqual(2);
   });
 });

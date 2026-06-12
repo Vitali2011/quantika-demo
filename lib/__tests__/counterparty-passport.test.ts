@@ -1,66 +1,96 @@
-import { getVesselPassport } from '../counterparty';
+// audit D — buildVesselPassport: real passport from parsed fields + local registries.
+// Sync, no network/LLM. Replaces the old fake getVesselPassport (constants).
+import Database from 'better-sqlite3';
+import { buildVesselPassport } from '../counterparty';
 import type { VesselPassport } from '../counterparty';
+import migration028 from '../migrations/028-psc-history';
+import { upsertInspection } from '../market/psc-repository';
+import type { ParsedVessel } from '../types';
 
-jest.mock('../sanctions/opensanctions', () => ({
-  checkVesselSanctions: jest.fn().mockResolvedValue({
-    sanctioned: false,
-    matches: [],
-    sources: [],
-  }),
-}));
+const REF_YEAR = 2026;
 
-describe('getVesselPassport', () => {
-  it('returns a VesselPassport for a valid IMO', async () => {
-    const passport: VesselPassport = await getVesselPassport('9074729');
-    expect(passport).toMatchObject({
-      imo: '9074729',
-    });
-    expect(passport).toHaveProperty('flag');
-    expect(passport).toHaveProperty('class');
-    expect(passport).toHaveProperty('pi');
-    expect(passport).toHaveProperty('sanctions');
-    expect(passport).toHaveProperty('shadowFleet');
+const vessel = (overrides: Partial<ParsedVessel> = {}): ParsedVessel =>
+  ({
+    imo: '8887296',
+    flag: 'Malta',
+    classSociety: 'DNV',
+    pandi: 'Gard',
+    built: 2008,
+    restrictions: [],
+    specialFeatures: [],
+    ...overrides,
+  } as unknown as ParsedVessel);
+
+describe('buildVesselPassport (audit D)', () => {
+  let db: Database.Database;
+
+  beforeEach(() => {
+    db = new Database(':memory:');
+    migration028.up(db);
   });
 
-  it('passport.class.isIacs reflects isIacs check', async () => {
-    const passport = await getVesselPassport('9074729');
-    expect(typeof passport.class.isIacs).toBe('boolean');
+  afterEach(() => db.close());
+
+  it('builds passport from parsed fields + local registries', () => {
+    const p: VesselPassport = buildVesselPassport(db, vessel(), REF_YEAR);
+    expect(p.imo).toBe('8887296');
+    expect(p.flag).toEqual({ country: 'Malta', parisMou: 'white' });
+    expect(p.class).toEqual({ society: 'DNV', isIacs: true });
+    expect(p.pi).toEqual({ club: 'Gard', isIg: true });
+    expect(p.age).toBe(REF_YEAR - 2008);
   });
 
-  it('passport.pi.isIg reflects isIgClub check', async () => {
-    const passport = await getVesselPassport('9074729');
-    expect(typeof passport.pi.isIg).toBe('boolean');
+  it('vessel without imo → psc undefined, no crash', () => {
+    const p = buildVesselPassport(db, vessel({ imo: null }), REF_YEAR);
+    expect(p.imo).toBeUndefined();
+    expect(p.psc).toBeUndefined();
+    expect(p.flag?.country).toBe('Malta');
   });
 
-  it('passport.sanctions.sanctioned is false when checkVesselSanctions returns no positive matches', async () => {
-    const passport = await getVesselPassport('9074729');
-    expect(passport.sanctions.sanctioned).toBe(false);
+  it('no PSC rows for imo → psc undefined (NOT {detentions3y: 0}) — wave-A honest semantics', () => {
+    const p = buildVesselPassport(db, vessel(), REF_YEAR);
+    expect(p.psc).toBeUndefined();
   });
 
-  it('passport.shadowFleet.riskLevel is one of the valid values', async () => {
-    const passport = await getVesselPassport('9074729');
-    expect(['none', 'low', 'medium', 'high']).toContain(passport.shadowFleet.riskLevel);
+  it('PSC rows exist → detentions3y = detention count over 3y window', () => {
+    // 2 detentions inside the window, 1 outside, 1 clean inspection inside
+    upsertInspection(db, { id: 'i1', imo: '8887296', inspection_date: '2024-06-01', port: 'Hamburg', authority: 'paris-mou', deficiencies: 5, detained: true, source_url: null });
+    upsertInspection(db, { id: 'i2', imo: '8887296', inspection_date: '2025-01-15', port: 'Rotterdam', authority: 'paris-mou', deficiencies: 3, detained: true, source_url: null });
+    upsertInspection(db, { id: 'i3', imo: '8887296', inspection_date: '2020-03-01', port: 'Antwerp', authority: 'paris-mou', deficiencies: 7, detained: true, source_url: null });
+    upsertInspection(db, { id: 'i4', imo: '8887296', inspection_date: '2025-05-05', port: 'Gdansk', authority: 'paris-mou', deficiencies: 0, detained: false, source_url: null });
+
+    const p = buildVesselPassport(db, vessel(), REF_YEAR);
+    expect(p.psc).toEqual({ detentions3y: 2 });
   });
 
-  it('is idempotent — second call for same IMO returns same shape', async () => {
-    const p1 = await getVesselPassport('9074729');
-    const p2 = await getVesselPassport('9074729');
-    expect(p1.imo).toBe(p2.imo);
-    expect(p1.sanctions.sanctioned).toBe(p2.sanctions.sanctioned);
+  it('clean inspections only → psc present with detentions3y 0 (data exists, honest zero)', () => {
+    upsertInspection(db, { id: 'i1', imo: '8887296', inspection_date: '2025-05-05', port: 'Gdansk', authority: 'paris-mou', deficiencies: 0, detained: false, source_url: null });
+    const p = buildVesselPassport(db, vessel(), REF_YEAR);
+    expect(p.psc).toEqual({ detentions3y: 0 });
   });
 
-  it('sanctions.sanctioned is true when checkVesselSanctions reports a hit', async () => {
-    const { checkVesselSanctions } = jest.requireMock('../sanctions/opensanctions') as {
-      checkVesselSanctions: jest.Mock;
-    };
-    checkVesselSanctions.mockResolvedValueOnce({
-      sanctioned: true,
-      matches: [{ id: 'Q1', caption: 'Test', score: 0.95, datasets: ['us_ofac_sdn'], properties: {} }],
-      sources: ['us_ofac_sdn'],
-    });
+  it('null classSociety/pandi/flag/built → fields omitted, never fake defaults', () => {
+    const p = buildVesselPassport(
+      db,
+      vessel({ flag: null, classSociety: null, pandi: null, built: null }),
+      REF_YEAR,
+    );
+    expect(p.flag).toBeUndefined();
+    expect(p.class).toBeUndefined();
+    expect(p.pi).toBeUndefined();
+    expect(p.age).toBeUndefined();
+    // no fake constants from the old stub
+    expect(JSON.stringify(p)).not.toContain('Bahamas');
+  });
 
-    const passport = await getVesselPassport('9999999');
-    expect(passport.sanctions.sanctioned).toBe(true);
-    expect(passport.sanctions.sources).toContain('us_ofac_sdn');
+  it('unknown Paris MoU flag → parisMou omitted, country kept', () => {
+    const p = buildVesselPassport(db, vessel({ flag: 'Atlantis' }), REF_YEAR);
+    expect(p.flag).toEqual({ country: 'Atlantis' });
+  });
+
+  it('sanctions and shadowFleet are NOT fabricated (no sync local source)', () => {
+    const p = buildVesselPassport(db, vessel(), REF_YEAR);
+    expect(p.sanctions).toBeUndefined();
+    expect(p.shadowFleet).toBeUndefined();
   });
 });

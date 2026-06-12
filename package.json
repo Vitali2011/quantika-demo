@@ -23,7 +23,6 @@
     "knowledge:status": "npx tsx scripts/knowledge/status.ts",
     "knowledge:refresh": "npx tsx scripts/knowledge/refresh.ts",
     "knowledge:imsbc": "npx tsx scripts/knowledge-imsbc-embed.ts",
-    "knowledge:jwc": "npx tsx scripts/knowledge-jwc-embed.ts",
     "knowledge:jwc-yaml": "npx tsx scripts/knowledge-jwc-yaml-seed.ts",
     "knowledge:igc": "npx tsx scripts/knowledge-igc-embed.ts",
     "knowledge:unlocode": "npx tsx scripts/knowledge-unlocode-seed.ts",

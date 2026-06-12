@@ -14,16 +14,6 @@ export interface MatchDetailPanelProps {
   matchDbId: number;
   score: number;
   status: string;
-  /** @deprecated no longer rendered — kept for test fixture compatibility */
-  loadPort?: string | null;
-  /** @deprecated no longer rendered — kept for test fixture compatibility */
-  dischargePort?: string | null;
-  /** @deprecated no longer rendered — kept for test fixture compatibility */
-  cargoType?: string | null;
-  /** @deprecated no longer rendered — kept for test fixture compatibility */
-  vesselDwt?: number | null;
-  /** @deprecated no longer rendered — kept for test fixture compatibility */
-  laycanDisplay?: string | null;
   cargoEmailId?: string;
   hasSessionMatch: boolean;
   fitPercent?: number | null;

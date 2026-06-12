@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
         if (err instanceof LLMTimeoutError) return;
         throw err;
       }
-      const items = parseVesselAIResponse(raw, email.id, email.subject);
+      const items = parseVesselAIResponse(raw, email.id, email.subject, email.body);
       const corrected = applyGearedFallback(items, email.body);
       allParsed.push(...corrected);
     }))

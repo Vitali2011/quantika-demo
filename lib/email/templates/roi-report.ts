@@ -69,3 +69,21 @@ Quantika Team`;
 
   return { subject, body };
 }
+
+// audit D revive: ROI report surface
+/**
+ * Non-throwing wrapper for UI surfaces (/reports/roi preview page):
+ * invalid summary (NaN/Infinity) → readable error instead of a crash.
+ */
+export type SafeRoiReport =
+  | { ok: true; subject: string; body: string }
+  | { ok: false; error: string };
+
+export function safeGenerateRoiReport(summary: RoiSummary): SafeRoiReport {
+  try {
+    const { subject, body } = generateRoiReportEmail(summary);
+    return { ok: true, subject, body };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : 'Invalid ROI summary' };
+  }
+}

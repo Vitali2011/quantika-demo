@@ -1,92 +1,79 @@
-# Findings: feat/wave-a-phantom-features
+# Findings: feat/wave-d-revive-cleanup
 
-Branch: feat/wave-a-phantom-features
-HEAD: 534e72a5
+Branch: feat/wave-d-revive-cleanup
+HEAD: 7bb062ec
 **Phase 3 completed:** 2026-06-12
-**Attack plan executed:** 10 items (6 HIGH, 4 MEDIUM) — all executed
-**Sub-agents dispatched:** 0 (no Task tool in this session — orchestrator executed all four groups itself, severity order preserved)
-**Browser freshness (Step 1.5):** N/A — no browser/E2E attacks run; all UI evidence is RTL/jsdom + source-binding reads, no running-app claims made.
+**Attack plan executed:** 5 tracks (4 HIGH, 1 MEDIUM) — all executed
+**Sub-agents dispatched:** 0 (no Task tool in this session; tracks executed sequentially with parallel background Bash — within the ≤4 cap)
 
-## Tests Added (48 tests, all green on HEAD)
+## Tests Added (tests/regression/, run with --testPathIgnorePatterns "/node_modules/")
 
-- `tests/regression/wave-a-fueleu-economics.test.ts` — 24 tests: bit-identity vs main@40966379 (dynamic import of the merge-base compute-tce, 9-case input matrix × flag-unset/flag-false), flag-string strictness, share-rule edges, compliant-fuel sign, latent fuelType crash. Fixture: `tests/regression/wave-a-fixtures/compute-tce-main-40966379.ts` (auto-extracted, @ts-nocheck).
-- `tests/regression/wave-a-fueleu-ui-provenance.test.tsx` — 7 tests: legacy persisted breakdown (no fueleu key) renders safely, fueleu row binding + single-count total, EconomicsTab source binding (data-driven, no env gate, includeEuETS feed).
-- `tests/regression/wave-a-psc-charterer-crosspath.test.ts` — 11 tests: checked-clean "0 detentions" preserved, lookback-window edge, fit-drift direction, charterer penalty end-to-end (−4 exact through analyzePairs), name-mismatch silence, resolver ambiguity/Cyrillic edges, seeder UNIQUE(name) crash repro, fixture consistency.
-- `tests/regression/wave-a-sorting-comparator.test.tsx` — 6 tests: comparator antisymmetry property (300 random pairs × 9 keys × 2 dirs, seeded PRNG), generic null-sink tail invariant, both-null fit guard (b268b2e8), dropdown→laycan behavioral + footer label, aria-sort provenance (single active header), DEFAULT_DIR totality.
+- tests/regression/wave-d-lastcargoes-fallback.test.ts — 12 tests (parser: LLM-wins ordering, wrapper edges, garbage tolerance, extractor invariants)
+- tests/regression/wave-d-lastcargoes-patch.test.ts — 8 tests (data-contract/merger: no-clobber, idempotency, shape preservation, loud failure on malformed JSON)
+- tests/regression/wave-d-passport-provenance.test.tsx — 13 tests (provenance/liveness: builder feed edges, exact panel bindings, honest-PSC, dead-feed honesty)
+
+All 33 PASS on HEAD 7bb062ec.
+
+## Baseline & smokes (raw facts)
+
+- Targeted baseline: 95 suites / 1582 tests PASS (parse-vessel, counterparty-passport, components/vessel, components/match, components/dashboard, roi suites incl. no-roi-tile guard, market-snapshot-label, backfill test, lib/sailing).
+- tsc --noEmit (8GB): clean exit 0 — zero surviving type-level references to any deleted module.
+- backfill-lastcargoes DRY on local frozen demo-seed.db (2026-05-10): 50 vessel rows → rows-patched=0, already-set=1, no-lc-in-body=49, missing-email=0. Non-destructive; readonly db handle in dry mode.
+- knowledge-jwc-yaml-seed --dry-run: works — "7 zones → 7 chunks (not stored)". Canonical seeder unaffected by scraper deletion.
+- demo-seed.db census: all 50 vessel result_json roots are ARRAYS of camelCase parsed items; all already contain a lastCargoes key. The {items:[...]} wrapper-root risk does NOT materialize; patch convention (array | bare object) matches reality.
+- jwc RAG layer intact on HEAD: jwc_vec/jwc_fts in all ALLOWED lists (pipeline.ts:80-81, retriever-sqlite.ts:25-26, retriever-vertex.ts:20+31), bootstrap entry kept, regenerate-matches RAG-copy lists (:127-128), compare-routes untouched, __tests__/e2e/rag-visual-verification.spec.ts T02 untouched and inside playwright testDir.
+- Dead env flags: zero process.env reads anywhere; removal is example-file-only. NO new env reads introduced.
+- ROI page session gate byte-pattern-identical to /dashboard. Migrations 028+030 in allMigrations (boot) — tables guaranteed. getDb()/getDatabase() same handle.
+- CargoType has no 'CONTAINER' member (lib/types.ts:159) — deleted case unreachable; FCL/LCL preserved (green baseline).
 
 ## Failures Found
 
-### FINDING-001 [MEDIUM]
-**Title**: seed-charterers crashes on pre-existing same-name/different-id row; --dry-run cannot predict it
-**File**: `scripts/demo-seed/seed-charterers.ts::seedCharterersWithDb` + `lib/market/charterers-repository.ts::upsertCharterer`
-**Repro**: `tests/regression/wave-a-psc-charterer-crosspath.test.ts :: seedCharterersWithDb throws UNIQUE(name) when "Huaya" exists under another id`
-**Failure**:
-```
-Pre-state: charterers row (id='ui-12345', name='Huaya') — e.g. created via /charterers UI (NewChartererModal)
-seedCharterersWithDb(db) → SqliteError: UNIQUE constraint failed: charterers.name
-```
-upsertCharterer is `ON CONFLICT(id) DO UPDATE` but migration 026 has `name TEXT NOT NULL UNIQUE`; the DELETE step only clears demo-marker rows, so a founder-created same-name row survives and the INSERT hits the name constraint. `--dry-run` returns BEFORE opening the DB (prints the fixture only), so the planned prod protocol "--dry → числа → apply" gives zero warning of this crash.
-**Severity**: MEDIUM — loud crash, no corruption; NOTE: DELETE runs before the throw and there is NO transaction → a failed run leaves demo rows removed but fixture not inserted (partially-applied until rerun).
-**Pre-existing on main**: upsertCharterer is pre-existing; the SEEDER and its prod-apply protocol are introduced by this PR → the operational sharp edge is introduced. Does not block (no data loss; rerun after manual cleanup converges).
-**Fix hint**: wrap DELETE+upserts in a transaction AND pre-delete by normalized name (or upsert keyed by name); make --dry-run open the DB readonly and print the actual would-delete/would-insert/conflict diff.
+### FINDING-001 [LOW]
+**Title**: jest.config.mjs keeps an ignore pattern for a file this PR deletes
+**File**: jest.config.mjs:15 — '/tests/e2e/mobile\.spec\.ts$'
+**Failure**: tests/e2e/mobile.spec.ts deleted in this PR; ignore line now dead config.
+**Severity**: LOW — cosmetic; pattern never matches.
+**Pre-existing on main**: No — residue introduced by the deletion.
+**Fix hint**: drop the line in a follow-up.
 
 ### FINDING-002 [LOW]
-**Title**: latent crash path — computeTce throws on unknown fuelType inside the enabled FuelEU branch
-**File**: `lib/economics/compute-tce.ts:232-238` (via `lib/economics/fueleu.ts:76-77` throw)
-**Repro**: `tests/regression/wave-a-fueleu-economics.test.ts :: computeTce throws when flag on + EU leg + garbage fuelType`
-**Failure**: `computeTce({...eu, fuelType: 'lsmgo-0.1'})` with FUELEU_ENABLED=true → `Error: Unknown fuel type: lsmgo-0.1`. Flag off → same input harmless.
-**Severity**: LOW — `TceInputs.fuelType` has NO producer anywhere today (grep: route, stored-match-economics, canonical-tce-inputs — none set it; always defaults 'vlsfo'). Becomes a 500-shaped landmine the day someone wires a fuel-type selector.
-**Pre-existing on main**: No — field and branch introduced here. Not blocking (unreachable today, documented by regression test).
-**Fix hint**: validate/fallback inside the branch: `FUEL_GHG_INTENSITY[inputs.fuelType] ? inputs.fuelType : 'vlsfo'`, or try/catch the calculateFuelEu call like the ECA block above does.
+**Title**: progonq eval harness parses vessels without email body — fallback never exercised in evals
+**File**: scripts/progonq/run-match.ts:75 — parseVesselAIResponse(raw, sc.id, subject) (4th arg absent)
+**Failure**: 3 of 4 callers pass email.body (live route, build-sample-data, parse-llm-direct); the golden-set eval harness does not → eval parse behavior diverges from prod for lastCargoes (and pre-existing built) fallback.
+**Severity**: LOW — eval-only script, no prod data path; corpus feeds reference_output (already-parsed), fallback relevance marginal. Eval-fidelity gap, NOT a half-landed write path (all write paths — live parse + backfill — covered).
+**Pre-existing on main**: Partially (built-fallback had the same gap); lastcargoes widens it.
+**Fix hint**: pass sc.input?.body ?? null as 4th arg if corpus carries bodies.
 
-### FINDING-003 [LOW]
-**Title**: resolver tie semantics — duplicate normalized names resolve to alphabetically-first row, not worst/best tier
-**File**: `lib/matching/charterer-tier.ts:18-27` (listCharterers ORDER BY name ASC, BINARY collation)
-**Repro**: `wave-a-psc-charterer-crosspath.test.ts :: ambiguity` — rows 'HUAYA.'(blue-chip) + 'huaya'(weak) → 'Huaya' resolves blue-chip ('HUAYA.' < 'huaya' in binary order, uppercase first).
-**Severity**: LOW — spec is silent on ties; UNIQUE(name) makes exact dupes impossible, only normalized-collision aliases hit this. Deterministic but surprising (letter case decides the tier).
-**Pre-existing on main**: No — resolver introduced here. Not blocking.
-**Fix hint**: if aliases ever get seeded, prefer worst-tier-wins or reject normalized duplicates in the seeder (fixture consistency test added covers the shipped fixture).
-
-### FINDING-004 [LOW]
-**Title**: non-Latin chartererName silently neutral; parser-extracted long forms don't match seeded short names
-**File**: `lib/matching/charterer-tier.ts::normalizeName` (`[^a-z0-9]+` after toLowerCase strips ALL non-ASCII)
-**Repro**: `wave-a-psc-charterer-crosspath.test.ts` — 'Хуая' → needle '' → null even when an identical DB row exists; 'Huaya Maritime' (live-LLM-parse plausible form) ≠ seeded 'Huaya' → null.
-**Severity**: LOW — demo corpus is Latin and the backfill uses the same regex as the fixture sweep (corpus-consistent: local replay shows exactly 1 binding, 'huaya', which DOES match). Live Gmail parses post-deploy may extract longer forms → silent neutral fit (no penalty), which is the documented fallback, not a wrong number.
-**Pre-existing on main**: No — introduced here. Not blocking.
-**Fix hint**: follow-up — alias column or normalized-prefix match; keep neutral fallback.
-
-### FINDING-005 [LOW] (test-bug, mine — visible per skill rule)
-**Title**: -0 vs 0 in my antisymmetry assertion
-**Note**: `compareMatches` legitimately returns `-0` for equal rows (`(b-a)*flip`); `Object.is(-0, 0)` is false so my first assertion draft failed. This is a bug in the TEST, not the PR — Array.sort treats -0 as 0. Fixed in `wave-a-sorting-comparator.test.tsx` (sign normalization), left on record as a false-positive trail.
-
-## Blocked Items
-
-- (none) — all 10 attack plan items executed.
+### FINDING-003 [LOW / test-bug trail]
+**Title**: reviewer's initial pin of {value: null} wrapper was wrong — actual behavior is BETTER
+**File**: tests/regression/wave-d-lastcargoes-fallback.test.ts
+**Failure**: first version expected String(null) → "null" (skip-fallback); HEAD routes the emptied wrapper to the fallback. Test-bug, not a PR bug; corrected test pins the good behavior.
 
 ## Items That Passed (attack succeeded, no bug found)
 
-- **A.5 bit-identity (sanctioned §3)**: 9-case matrix (EU/non-EU/intra-EU, ETS-priced, war-risk route, zero consumption/duration, exclude-war-risk branch, odd-number rounding) — flag-unset AND flag='false' outputs numerically identical to main@40966379 computeTce; only `fueleu_usd`/`applicable.fueleu` keys added. Flag strictness: 'TRUE', '1', ' true ', 'yes' do NOT enable.
-- **A.5 share rule**: originEu-only (destEu undefined) gets 0.5 share; `originEu+destEu=false` ≡ originEu-only; intra-EU = 2× one-end (implementer's exact-×2 case holds for their even fixture; general half-share verified within $1 rounding). Compliant fuel (lng) → 0, never negative; monotonic in consumption.
-- **A.5 UI provenance/liveness**: CalculationWaterfall with LEGACY breakdown (no fueleu keys) → no crash, no row, no NaN, totals intact; fueleu_usd>0 → dedicated '-$7,345' row, displayed total binds breakdown.total_costs_usd exactly once (no UI double-count); fueleu_usd=0 → no row. EconomicsTab: gate AND value both bind `voyageBreakdown.fueleu_usd`; NO `NEXT_PUBLIC_FUELEU`/`process.env.FUELEU` in the component; fetch passes `includeEuETS: true` → route sets originEu/destEu → feed is LIVE (no dead-feed).
-- **A.2 semantics**: checked-clean (rows, 0 detained) still shows "0 detentions"; detained-outside-window shows windowed "0 detentions" (documented semantics); no-data vessel fit ≤ checked-clean fit (removing the fake 'ok' factor never raises fit). Implementer's no-data/detained cases confirmed.
-- **A.2 data**: all 5 new PSC fixture IMOs (8887296, 9166510, 9191101, 9125085, 9238363) present in the demo fleet (local db vessel parse — old 5 IMOs were indeed phantom); cii.json 17 records, all unique, fixture5 ⊆ cii; PSC fixture ids unique.
-- **A.1 end-to-end**: cargo.chartererName='Huaya' through analyzePairs → `fitBreakdown.chartererPenalty === 4`, fit exactly 4.0 below the anonymous pair; blue-chip → 0. UI feed chain live: MatchDetailPanel → UtilisationChartererDisclosure parses fit_breakdown JSON → renders "Charterer tier penalty −4" when >0. regenerate-matches casts result_json items wholesale (`it as unknown as ParsedCargo`) → backfilled chartererName survives into the engine on the regen path.
-- **A.1 backfill replay (real corpus)**: `backfill-charterer` dry on the post-apply working copy: 87 cargo rows, 1 already-set ('huaya'), 0 would-patch, 0 missing-email → idempotent; --dry opens DB readonly (write stmt not even prepared). All 87 result_json roots are arrays → the bare-object/`{items:}` shape concern unreachable in this corpus (convention matches regenerate-matches' own `Array.isArray(raw) ? raw : [raw]`).
-- **A.1 parser contract**: charterer_name present in ALL THREE places (prompt instruction, Gemini responseSchema `lib/schemas/parse-cargo.ts`, RawCargoItem) + ParsedCargo.chartererName — ai-provider rule's "schema must carry the field" satisfied; mapping trims, nulls whitespace-only/absent/non-string.
-- **Sorting**: comparator antisymmetric + self-zero + NaN-free over 300 random pairs × 9 keys × 2 dirs (with nulls); null rows form contiguous tail for every column/direction; both-null fit rows safe (b268b2e8 verified); dropdown laycan → earliest-first + "ranked by Laycan" footer; aria-sort lights exactly one header and toggles desc→asc; DEFAULT_DIR total over SortBy. Protected `__tests__/matches-sort.test.tsx` (#350/#528) green on HEAD.
-- **A.6 blast radius**: `tsc --noEmit` exit 0; zero code references to check-deadlines/lib-deadlines/SubsCountdown/queries-dispatches outside docs+one JSON narrative+one comment; demo-scenarios route only serves JSON (no import of deleted script); migration 011 still registered in `lib/migrations/index.ts`; package.json/ops/.github clean.
-- **Repins sanctioned**: all 10 repinned test files map to sanctioned §1–§5; economics fixtures only ADD `fueleu_usd: 0`/`applicable.fueleu: false` — no expected number changed anywhere.
-- **Baseline**: 158 suites / 1355 tests green across all touched areas on HEAD (lib/matching, lib/market, lib/economics, lib/schemas, matches+parser+psc-api batch, scripts/demo-seed, components).
+- LLM-wins ordering: string / confidence-wrapped / array values win over body regex; fallback can never overwrite. 6/6.
+- Patch no-clobber + idempotency: non-null never overwritten; second run 0 + byte-stable; siblings byte-identical; root shape preserved; malformed JSON throws loudly. 8/8.
+- Passport provenance: empty-string imo safe; built floor 1899/1900 exact; future-built omitted; built=refYear → age 0 rendered; NaN safe; per-imo PSC feed; honest 0 with in-data/out-of-window detentions; psc undefined when no rows; sanctions/shadowFleet never fabricated. Panel binds exact fields; empty/imo-only passport renders nothing; Paris MoU badge literal. 13/13.
+- Existing parse-vessel fixture expectations unchanged (calls without body identical).
+- Deletion sweep: zero surviving references (imports, barrels, dynamic-import strings, package.json scripts, jest/playwright configs except FINDING-001) for ALL deleted files; tsc clean.
+- env-parity discharged; no prod env action required.
+- .claude/rules/retriever.md vs HEAD allowlists mutually accurate (jwc kept per RESCOPE); retriever*/pipeline NOT touched — confirmed.
+- no-roi-tile guard passes literally (green baseline). Spirit: removed tile auto-rendered numbers + ROI_GUARANTEE flag; new element is a navigation link to an honest session-gated preview page — explicitly sanctioned by the plan («достаточно ссылки с дашборда», founder decision). No conflict.
+- ROI zero-rows honesty: empty roi_metrics → "No voyages recorded"; RangeError unreachable with constants (99, 90); any compute/db throw → readable "ROI report unavailable", not a 500.
 
-## Pre-existing Issues (informational, not gate-relevant)
+## Pre-existing Issues (informational, do not gate)
 
-- **Sibling fit-writers ignore PSC/charterer factors**: `scripts/demo-seed/patch-fit.ts:375` and `scripts/demo-seed/real-matches.ts` call computeFitBreakdown WITHOUT detentionCount/chartererTier. Pre-existing on main (they never passed these; on main analyzePairs gave fake-0 to EVERY vessel, so the structural divergence existed for every pair — this PR actually REDUCES it: no-data vessels now agree across paths). Residual: for the 5 seeded IMOs / named-charterer cargos, running patch-fit would strip the vetting/charterer deltas. The active prod regen path (regenerate-matches → analyzePairs) is consistent. Follow-up: align or retire those tools before next use.
-- `applicable.ets` gates on calculator-applicability while `applicable.fueleu` gates on USD>0 — minor semantic inconsistency, no observable impact (UI gates on >0 anyway).
-- Stale doc crumbs: `lib/sample-data/demo-scenarios/13-subs-deadline-2h-warning.json` narrative still cites deleted `scripts/check-deadlines.ts`; `app/matches/MatchesClient.tsx:131` comment cites SubsCountdown. Cosmetic.
+- lib/explain-deal-validator.ts:123 + lib/types.ts:66 — splitBunkerSavings consumer/type with NO producer; identical on base 7499056d (split-bunker.ts was not wired even on main). Dead residue, backlog.
+- scripts/knowledge/refresh.ts:27 slug 'jwc' (+ bootstrap.ts:53 refresh_command) → ./sources/jwc never existed under scripts/knowledge/sources/ (git history empty) — pre-existing stub, documented in RESCOPE.
+- lastCargoes [] empty-array wrapper yields '' and skips body fallback (truthy gate) — pre-existing output shape; pinned in regression tests.
 
-## Coverage Gaps (what we couldn't test)
+## Coverage Gaps
 
-- Live LLM parse of charterer_name (prompt effectiveness): dev LLM is down (2026-06-11); contract verified at schema/normalizer level only. Prompt phrasing untested against real model output.
-- Browser E2E of /matches sorting on a built app: not run (jsdom behavioral only). Post-deploy smoke should click two headers.
-- Prod env/data application (flags, seeds on outreach-vps): outside the merge boundary by definition → Deploy Gate.
-- localeCompare collation is environment-dependent for exotic vessel names (jsdom ICU vs prod node ICU) — cosmetic ordering only, not asserted.
+- No browser E2E: no built-from-HEAD server; ad-hoc stale-build run risks phantoms (Step 1.5). Post-deploy smoke delegated to Deploy Gate / qa-walker.
+- Full npm test not run — forbidden by convention; baseline = targeted 95-suite battery.
+- Multi-vessel emails: one body-wide L/C applied to every item lacking last_cargoes (live + backfill consistent) — possible cross-vessel mis-attribution; semantics spec-sanctioned (plan T4 Step 2), not filed.
+- Prod backfill impact unknown from here (local snapshot says ~0; prod differs) — Deploy Gate item per plan T7 formula.
+
+## Blocked Items
+
+- (none)
