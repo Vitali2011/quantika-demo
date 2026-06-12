@@ -92,9 +92,19 @@ export function compareMatches(a: StoredMatch, b: StoredMatch, sortBy: SortBy, d
   if (sortBy === 'cargo_type') return str(a.cargo_type, b.cargo_type);
   if (sortBy === 'vessel_name') return str(a.vessel_name, b.vessel_name);
   if (sortBy === 'route') return str(a.load_port, b.load_port) || str(a.discharge_port, b.discharge_port);
-  // Both 'fit' and legacy 'score' sort by fit_percent (score fallback); score as tie-break
-  const fitDiff = ((b.fit_percent ?? b.score) - (a.fit_percent ?? a.score)) * flip;
-  return fitDiff !== 0 ? fitDiff : (b.score - a.score) * flip;
+  // Both 'fit' and legacy 'score' sort by fit_percent (score fallback); score as tie-break.
+  // Null-guards before arithmetic — synthetic/legacy rows may lack both fields (NaN otherwise).
+  const aFit = a.fit_percent ?? a.score;
+  const bFit = b.fit_percent ?? b.score;
+  if (aFit == null && bFit == null) return 0;
+  if (aFit == null) return 1;
+  if (bFit == null) return -1;
+  const fitDiff = (bFit - aFit) * flip;
+  if (fitDiff !== 0) return fitDiff;
+  if (a.score == null && b.score == null) return 0;
+  if (a.score == null) return 1;
+  if (b.score == null) return -1;
+  return (b.score - a.score) * flip;
 }
 
 function scoreClass(score: number): string {
