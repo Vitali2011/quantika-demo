@@ -3,7 +3,7 @@
  * real-matches.ts — seed demo-seed.db with REAL cargo↔vessel pairs.
  *
  * LEGACY SEEDER — superseded by regenerate-matches.ts
- * (npx tsx scripts/demo-seed/regenerate-matches.ts), which rebuilds matches
+ * (npm run seed:regen), which rebuilds matches
  * through the real engine (analyzePairs) and writes the full canonical row
  * shape. Keep this script only for bootstrap/debug; do not extend its row shape.
  *
@@ -378,7 +378,7 @@ async function main(): Promise<void> {
         // ({points, max} components + vagueRegionAdjustment); this script has
         // no ScoreBreakdown, and stringifying the FitBreakdown here rendered
         // NaN% bars. NULL hides the legacy panel; the fit panel reads the
-        // fit_breakdown column written below.
+        // fit_breakdown column written above.
         reasonStructured: null,
         // worksheet_json drives the cargo↔vessel comparison table (MatchWorksheet.tsx).
         // Mirror lib/types.ts MatchWorksheet shape; without it the detail table is blank.
