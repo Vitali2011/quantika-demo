@@ -19,6 +19,7 @@ function makeBreakdown(overrides?: Partial<TCEBreakdown>): TCEBreakdown {
     war_risk_usd: 0,
     ets_eur: 0,
     ets_usd: 0,
+    fueleu_usd: 0, // audit A.5: new breakdown field
     gross_freight_usd: 200000,
     total_costs_usd: 68000,
     net_voyage_usd: 132000,
@@ -28,7 +29,7 @@ function makeBreakdown(overrides?: Partial<TCEBreakdown>): TCEBreakdown {
     duration_days: 15,
     bunker_consumption_mt_per_day: 14,
     bunker_price_usd_per_mt: 595,
-    applicable: { bunker: true, canal: false, da: true, war_risk: false, ets: false },
+    applicable: { bunker: true, canal: false, da: true, war_risk: false, ets: false, fueleu: false }, // audit A.5: new breakdown field
     ...overrides,
   };
 }

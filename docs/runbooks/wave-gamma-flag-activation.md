@@ -1,6 +1,6 @@
 # Wave γ — Feature Flag Activation Runbook
 
-> **Scope:** γ-05 LAYTIME_ENGINE_ENABLED · γ-09 BIMCO_RAG_ENABLED · γ-08 SUBS_TIMER_V2_ENABLED
+> **Scope:** γ-05 LAYTIME_ENGINE_ENABLED · γ-09 BIMCO_RAG_ENABLED (γ-08 removed 2026-06-12, audit A.6)
 >
 > **Verified:** 2026-05-17 · Branch `orchestrator/wave-gamma-verify`
 >
@@ -28,9 +28,9 @@ POST `/api/laytime/calculate` and POST `/api/laytime/parse-sof`, plus the `/layt
 
 ### Flag names
 
-| Env var | Scope |
-|---|---|
-| `LAYTIME_ENGINE_ENABLED` | Server (route guard) |
+| Env var                              | Scope                |
+| ------------------------------------ | -------------------- |
+| `LAYTIME_ENGINE_ENABLED`             | Server (route guard) |
 | `NEXT_PUBLIC_LAYTIME_ENGINE_ENABLED` | Client (page render) |
 
 Both must be `true`. Setting only the server flag enables the API but shows the "Feature Not Enabled" page.
@@ -104,9 +104,9 @@ GET `/api/knowledge/clauses` (FTS5 full-text search across GENCON 2022, HEAVYCON
 
 ### Flag names
 
-| Env var | Scope |
-|---|---|
-| `BIMCO_RAG_ENABLED` | Server (route guard) |
+| Env var                         | Scope                |
+| ------------------------------- | -------------------- |
+| `BIMCO_RAG_ENABLED`             | Server (route guard) |
 | `NEXT_PUBLIC_BIMCO_RAG_ENABLED` | Client (page render) |
 
 ### Prerequisites — seed BIMCO data
@@ -194,85 +194,31 @@ Schedule via cron or pm2 ecosystem if needed after activation.
 
 ## 3 · γ-08 SUBS_TIMER_V2_ENABLED
 
-### What it enables
-
-`SubsCountdownWidget` in the dashboard — timezone-aware banking-day countdown to subs deadline with charterer-tier grace indicator (blue-chip gets +1 banking day).
-
-### Flag names
-
-| Env var | Scope |
-|---|---|
-| `SUBS_TIMER_V2_ENABLED` | Server (available for SSR checks if needed) |
-| `NEXT_PUBLIC_SUBS_TIMER_V2_ENABLED` | Client (widget render gate) |
-
-The widget gates on `NEXT_PUBLIC_SUBS_TIMER_V2_ENABLED` exclusively — it is a client component (`'use client'`). The server-side `SUBS_TIMER_V2_ENABLED` is available for future SSR logic.
-
-### Activation
-
-```bash
-# .env.local
-SUBS_TIMER_V2_ENABLED=true
-NEXT_PUBLIC_SUBS_TIMER_V2_ENABLED=true
-
-npm run build && pm2 restart quantika-demo --update-env
-```
-
-### Smoke test
-
-```bash
-# 1. Confirm widget appears in dashboard HTML
-curl -s https://demo.quantika.org/dashboard \
-  --cookie "session=<cookie>" | grep -q "subs-countdown" && echo "widget present"
-
-# 2. Manual UI check — open /dashboard, look for countdown badge near deal cards
-# Widget renders: "Xd Yh remaining" or "EXPIRED" or grace indicator
-
-# 3. Confirm flag-off hides widget (sanity before enable)
-# When NEXT_PUBLIC_SUBS_TIMER_V2_ENABLED=false: widget returns null, no DOM node
-```
-
-> Widget is purely client-side with no backend API call. There is no server endpoint to smoke-test beyond the dashboard page load.
-
-### Rollback
-
-```bash
-SUBS_TIMER_V2_ENABLED=false
-NEXT_PUBLIC_SUBS_TIMER_V2_ENABLED=false
-
-npm run build && pm2 restart quantika-demo --update-env
-```
-
-Widget returns `null` and disappears from dashboard. No state stored server-side; no data loss.
-
-### Code paths
-
-- Widget: `components/deals/SubsCountdownWidget.tsx:25`
-- Dashboard integration: `app/dashboard/page.tsx:168`
-- Core lib: `lib/deadlines/subs-guardian.ts` (`normalizeDeadline`, `getChartererGraceDays`)
-- Tests: `components/deals/__tests__/SubsCountdownWidget.test.tsx`, `__tests__/regression/RC-subs-countdown-import.test.tsx`
-- Regression: `tests/regression/RC1-fail-open/gamma-08-A-03-widget-empty-deadline.test.tsx`, `tests/regression/RC4-ui-blind/gamma-08-A-01-widget-timezone-unused.test.tsx`
+> Removed 2026-06-12 (audit A.6, issue #180 closed as won't-build). The subs-deadline
+> feature (widget, `lib/deadlines/`, `scripts/check-deadlines.ts`, both flags) was
+> deleted — the widget was never mounted and the guardian had no data source.
 
 ---
 
 ## Activation order recommendation
 
-No hard dependency between the three flags, but recommended order:
+No hard dependency between the two remaining flags, but recommended order:
 
-1. **γ-08 SUBS_TIMER_V2_ENABLED** — pure client widget, lowest risk, no DB prerequisite
-2. **γ-05 LAYTIME_ENGINE_ENABLED** — API + UI, all compute is in-process, no DB prerequisite
-3. **γ-09 BIMCO_RAG_ENABLED** — requires seed step first; run `seed-bimco-clauses.ts` before setting flag
+1. **γ-05 LAYTIME_ENGINE_ENABLED** — API + UI, all compute is in-process, no DB prerequisite
+2. **γ-09 BIMCO_RAG_ENABLED** — requires seed step first; run `seed-bimco-clauses.ts` before setting flag
 
-Can activate all three in a single `.env.local` edit + one `npm run build` cycle.
+Can activate both in a single `.env.local` edit + one `npm run build` cycle.
 
 ---
 
 ## Test evidence summary
 
-| Flag | Test suites | Tests | Result |
-|---|---|---|---|
-| γ-05 LAYTIME_ENGINE_ENABLED | 4 | 91 | PASS |
-| γ-09 BIMCO_RAG_ENABLED | 6 | 58 | PASS |
-| γ-08 SUBS_TIMER_V2_ENABLED | 6 | 88 | PASS |
-| Regression (gamma-07/08/09, RC-bimco, RC-subs) | 2 | 10 | PASS |
+| Flag                                           | Test suites | Tests | Result |
+| ---------------------------------------------- | ----------- | ----- | ------ |
+| γ-05 LAYTIME_ENGINE_ENABLED                    | 4           | 91    | PASS   |
+| γ-09 BIMCO_RAG_ENABLED                         | 6           | 58    | PASS   |
+| Regression (gamma-07/08/09, RC-bimco, RC-subs) | 2           | 10    | PASS   |
+
+(γ-08 row removed 2026-06-12 — feature deleted, audit A.6.)
 
 Verified with `LAYTIME_ENGINE_ENABLED=true NEXT_PUBLIC_LAYTIME_ENGINE_ENABLED=true npx jest --testPathPatterns="laytime" --forceExit --no-coverage` (and equivalents for other flags) on branch `orchestrator/wave-gamma-verify`.

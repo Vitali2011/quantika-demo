@@ -1,128 +1,92 @@
-# Findings: feat/wave-c-engine-logic
+# Findings: feat/wave-a-phantom-features
 
-Branch: feat/wave-c-engine-logic
-HEAD: 13029428
-Phase 3 completed: 2026-06-12
+Branch: feat/wave-a-phantom-features
+HEAD: 534e72a5
+**Phase 3 completed:** 2026-06-12
+**Attack plan executed:** 10 items (6 HIGH, 4 MEDIUM) — all executed
+**Sub-agents dispatched:** 0 (no Task tool in this session — orchestrator executed all four groups itself, severity order preserved)
+**Browser freshness (Step 1.5):** N/A — no browser/E2E attacks run; all UI evidence is RTL/jsdom + source-binding reads, no running-app claims made.
 
-All sanctioned spec changes C.1-C.8 verified implemented correctly (see discovery.md);
-none re-reported below. Findings are defects in or around the new code.
+## Tests Added (48 tests, all green on HEAD)
 
-## F1 - MEDIUM - Item-aware bucket React key is a no-op: feed never carries item indices
+- `tests/regression/wave-a-fueleu-economics.test.ts` — 24 tests: bit-identity vs main@40966379 (dynamic import of the merge-base compute-tce, 9-case input matrix × flag-unset/flag-false), flag-string strictness, share-rule edges, compliant-fuel sign, latent fuelType crash. Fixture: `tests/regression/wave-a-fixtures/compute-tce-main-40966379.ts` (auto-extracted, @ts-nocheck).
+- `tests/regression/wave-a-fueleu-ui-provenance.test.tsx` — 7 tests: legacy persisted breakdown (no fueleu key) renders safely, fueleu row binding + single-count total, EconomicsTab source binding (data-driven, no env gate, includeEuETS feed).
+- `tests/regression/wave-a-psc-charterer-crosspath.test.ts` — 11 tests: checked-clean "0 detentions" preserved, lookback-window edge, fit-drift direction, charterer penalty end-to-end (−4 exact through analyzePairs), name-mismatch silence, resolver ambiguity/Cyrillic edges, seeder UNIQUE(name) crash repro, fixture consistency.
+- `tests/regression/wave-a-sorting-comparator.test.tsx` — 6 tests: comparator antisymmetry property (300 random pairs × 9 keys × 2 dirs, seeded PRNG), generic null-sink tail invariant, both-null fit guard (b268b2e8), dropdown→laycan behavioral + footer label, aria-sort provenance (single active header), DEFAULT_DIR totality.
 
-Files: lib/matching/session-buckets.ts:92-117 (feed), app/matches/MatchesClient.tsx:393 (binding)
-Class: displayed-value-provenance / half-landed C.5 consumer.
+## Failures Found
 
-The branch rewrote the bucket <li> key to cargo_id|cargo_item_index??0|vessel_id|vessel_item_index??0
-with a comment claiming items of one email pair now get distinct keys. But review/insufficient
-tabs render rows from toBucketRows, which builds StoredMatch objects WITHOUT
-cargo_item_index/vessel_item_index -> every row degrades to |0| -> two items of the
-same email pair collide exactly as the old 2-part key did. The collision predates the
-branch, but the branch's stated fix for it is ineffective (half-landed-change carve-in),
-and C.4 makes the trigger common: hold-cleanliness demotes ALL items of a dirty-hold
-vessel pair to 'weak' -> they co-occupy the review bucket.
+### FINDING-001 [MEDIUM]
+**Title**: seed-charterers crashes on pre-existing same-name/different-id row; --dry-run cannot predict it
+**File**: `scripts/demo-seed/seed-charterers.ts::seedCharterersWithDb` + `lib/market/charterers-repository.ts::upsertCharterer`
+**Repro**: `tests/regression/wave-a-psc-charterer-crosspath.test.ts :: seedCharterersWithDb throws UNIQUE(name) when "Huaya" exists under another id`
+**Failure**:
+```
+Pre-state: charterers row (id='ui-12345', name='Huaya') — e.g. created via /charterers UI (NewChartererModal)
+seedCharterersWithDb(db) → SqliteError: UNIQUE constraint failed: charterers.name
+```
+upsertCharterer is `ON CONFLICT(id) DO UPDATE` but migration 026 has `name TEXT NOT NULL UNIQUE`; the DELETE step only clears demo-marker rows, so a founder-created same-name row survives and the INSERT hits the name constraint. `--dry-run` returns BEFORE opening the DB (prints the fixture only), so the planned prod protocol "--dry → числа → apply" gives zero warning of this crash.
+**Severity**: MEDIUM — loud crash, no corruption; NOTE: DELETE runs before the throw and there is NO transaction → a failed run leaves demo rows removed but fixture not inserted (partially-applied until rerun).
+**Pre-existing on main**: upsertCharterer is pre-existing; the SEEDER and its prod-apply protocol are introduced by this PR → the operational sharp edge is introduced. Does not block (no data loss; rerun after manual cleanup converges).
+**Fix hint**: wrap DELETE+upserts in a transaction AND pre-delete by normalized name (or upsert keyed by name); make --dry-run open the DB readonly and print the actual would-delete/would-insert/conflict diff.
 
-Impact: React duplicate-key warning + mis-recycled DOM between two distinct bucket cards.
-No data corruption.
-Repro: tests/regression/session-buckets-item-key.test.ts (pinned [BEHAVIOR], green - flips when fixed).
-Fix direction: toBucketRows sets cargo_item_index: m.cargoItemIndex ?? 0 and vessel likewise,
-or key by row.id (synthetic negative ids are already unique; main list at :696 already keys by id).
+### FINDING-002 [LOW]
+**Title**: latent crash path — computeTce throws on unknown fuelType inside the enabled FuelEU branch
+**File**: `lib/economics/compute-tce.ts:232-238` (via `lib/economics/fueleu.ts:76-77` throw)
+**Repro**: `tests/regression/wave-a-fueleu-economics.test.ts :: computeTce throws when flag on + EU leg + garbage fuelType`
+**Failure**: `computeTce({...eu, fuelType: 'lsmgo-0.1'})` with FUELEU_ENABLED=true → `Error: Unknown fuel type: lsmgo-0.1`. Flag off → same input harmless.
+**Severity**: LOW — `TceInputs.fuelType` has NO producer anywhere today (grep: route, stored-match-economics, canonical-tce-inputs — none set it; always defaults 'vlsfo'). Becomes a 500-shaped landmine the day someone wires a fuel-type selector.
+**Pre-existing on main**: No — field and branch introduced here. Not blocking (unreachable today, documented by regression test).
+**Fix hint**: validate/fallback inside the branch: `FUEL_GHG_INTENSITY[inputs.fuelType] ? inputs.fuelType : 'vlsfo'`, or try/catch the calculateFuelEu call like the ECA block above does.
 
-## F2 - LOW-MEDIUM - GROUP_A_RESTRICTION_RE over-blocks acceptance/unrelated phrasing
+### FINDING-003 [LOW]
+**Title**: resolver tie semantics — duplicate normalized names resolve to alphabetically-first row, not worst/best tier
+**File**: `lib/matching/charterer-tier.ts:18-27` (listCharterers ORDER BY name ASC, BINARY collation)
+**Repro**: `wave-a-psc-charterer-crosspath.test.ts :: ambiguity` — rows 'HUAYA.'(blue-chip) + 'huaya'(weak) → 'Huaya' resolves blue-chip ('HUAYA.' < 'huaya' in binary order, uppercase first).
+**Severity**: LOW — spec is silent on ties; UNIQUE(name) makes exact dupes impossible, only normalized-collision aliases hit this. Deterministic but surprising (letter case decides the tier).
+**Pre-existing on main**: No — resolver introduced here. Not blocking.
+**Fix hint**: if aliases ever get seeded, prefer worst-tier-wins or reject normalized duplicates in the seeder (fixture consistency test added covers the shipped fixture).
 
-File: lib/sailing/imsbc-check.ts:279 (new regex, this branch)
-Class: input-fuzz / regex.
+### FINDING-004 [LOW]
+**Title**: non-Latin chartererName silently neutral; parser-extracted long forms don't match seeded short names
+**File**: `lib/matching/charterer-tier.ts::normalizeName` (`[^a-z0-9]+` after toLowerCase strips ALL non-ASCII)
+**Repro**: `wave-a-psc-charterer-crosspath.test.ts` — 'Хуая' → needle '' → null even when an identical DB row exists; 'Huaya Maritime' (live-LLM-parse plausible form) ≠ seeded 'Huaya' → null.
+**Severity**: LOW — demo corpus is Latin and the backfill uses the same regex as the fixture sweep (corpus-consistent: local replay shows exactly 1 binding, 'huaya', which DOES match). Live Gmail parses post-deploy may extract longer forms → silent neutral fit (no penalty), which is the documented fallback, not a wrong number.
+**Pre-existing on main**: No — introduced here. Not blocking.
+**Fix hint**: follow-up — alias column or normalized-prefix match; keep neutral fallback.
 
-The negative lookahead guards only the IMMEDIATE word after "no", and the .{0,40}? gap
-freely crosses clause/sentence boundaries. Confirmed false positives (verdict
-incompatible -> checkImsbc hard gate -> pair removed from the board):
-- "no cargo restrictions, concentrates welcome" (acceptance)
-- "no DG cargoes. TML certificate on board" (DG-only ban + TML cert, bridges across the sentence)
-- "no grabs, holds suitable for concentrates" (gear statement)
-Confirmed false negatives (conservative miss, stays caution): "cannot carry concentrates",
-"concentrates not accepted".
+### FINDING-005 [LOW] (test-bug, mine — visible per skill rule)
+**Title**: -0 vs 0 in my antisymmetry assertion
+**Note**: `compareMatches` legitimately returns `-0` for equal rows (`(b-a)*flip`); `Object.is(-0, 0)` is false so my first assertion draft failed. This is a bug in the TEST, not the PR — Array.sort treats -0 as 0. Fixed in `wave-a-sorting-comparator.test.tsx` (sign normalization), left on record as a false-positive trail.
 
-Impact: lost matches on vessels that explicitly accept Group A; tail-case phrasings, but
-vessel restrictions are free-text parses so clause-mixing is realistic. DG_RESTRICTION_RE
-has the same structural weakness (pre-existing); the NEW surface here is introduced by this branch.
-Repro: tests/regression/imsbc-groupA-regex-phrasing.test.ts (pinned).
-Fix direction: clause-bound the gap ([^.;]{0,40}?) and widen the lookahead (grabs?,
-cargo\s+restrictions), or require the hazard token in the same clause.
+## Blocked Items
 
-## F3 - LOW - C.8 clamp asymmetry: negative quantityMt still yields negative gross freight
+- (none) — all 10 attack plan items executed.
 
-File: lib/economics/compute-tce.ts:136-138
-rate is clamped >=0 (audit C.8), quantity is not: computeTce({quantityMt: -50000,
-freightRateUsdPerMt: 20, ...}) -> gross_freight_usd < 0 (verified by probe). Same
-nonsense-input class the audit fix targets. One-liner: Math.max(0, safeNum(inputs.quantityMt)).
+## Items That Passed (attack succeeded, no bug found)
 
-## F4 - LOW - durationDays accepts Infinity: .positive() without .finite()
+- **A.5 bit-identity (sanctioned §3)**: 9-case matrix (EU/non-EU/intra-EU, ETS-priced, war-risk route, zero consumption/duration, exclude-war-risk branch, odd-number rounding) — flag-unset AND flag='false' outputs numerically identical to main@40966379 computeTce; only `fueleu_usd`/`applicable.fueleu` keys added. Flag strictness: 'TRUE', '1', ' true ', 'yes' do NOT enable.
+- **A.5 share rule**: originEu-only (destEu undefined) gets 0.5 share; `originEu+destEu=false` ≡ originEu-only; intra-EU = 2× one-end (implementer's exact-×2 case holds for their even fixture; general half-share verified within $1 rounding). Compliant fuel (lng) → 0, never negative; monotonic in consumption.
+- **A.5 UI provenance/liveness**: CalculationWaterfall with LEGACY breakdown (no fueleu keys) → no crash, no row, no NaN, totals intact; fueleu_usd>0 → dedicated '-$7,345' row, displayed total binds breakdown.total_costs_usd exactly once (no UI double-count); fueleu_usd=0 → no row. EconomicsTab: gate AND value both bind `voyageBreakdown.fueleu_usd`; NO `NEXT_PUBLIC_FUELEU`/`process.env.FUELEU` in the component; fetch passes `includeEuETS: true` → route sets originEu/destEu → feed is LIVE (no dead-feed).
+- **A.2 semantics**: checked-clean (rows, 0 detained) still shows "0 detentions"; detained-outside-window shows windowed "0 detentions" (documented semantics); no-data vessel fit ≤ checked-clean fit (removing the fake 'ok' factor never raises fit). Implementer's no-data/detained cases confirmed.
+- **A.2 data**: all 5 new PSC fixture IMOs (8887296, 9166510, 9191101, 9125085, 9238363) present in the demo fleet (local db vessel parse — old 5 IMOs were indeed phantom); cii.json 17 records, all unique, fixture5 ⊆ cii; PSC fixture ids unique.
+- **A.1 end-to-end**: cargo.chartererName='Huaya' through analyzePairs → `fitBreakdown.chartererPenalty === 4`, fit exactly 4.0 below the anonymous pair; blue-chip → 0. UI feed chain live: MatchDetailPanel → UtilisationChartererDisclosure parses fit_breakdown JSON → renders "Charterer tier penalty −4" when >0. regenerate-matches casts result_json items wholesale (`it as unknown as ParsedCargo`) → backfilled chartererName survives into the engine on the regen path.
+- **A.1 backfill replay (real corpus)**: `backfill-charterer` dry on the post-apply working copy: 87 cargo rows, 1 already-set ('huaya'), 0 would-patch, 0 missing-email → idempotent; --dry opens DB readonly (write stmt not even prepared). All 87 result_json roots are arrays → the bare-object/`{items:}` shape concern unreachable in this corpus (convention matches regenerate-matches' own `Array.isArray(raw) ? raw : [raw]`).
+- **A.1 parser contract**: charterer_name present in ALL THREE places (prompt instruction, Gemini responseSchema `lib/schemas/parse-cargo.ts`, RawCargoItem) + ParsedCargo.chartererName — ai-provider rule's "schema must carry the field" satisfied; mapping trims, nulls whitespace-only/absent/non-string.
+- **Sorting**: comparator antisymmetric + self-zero + NaN-free over 300 random pairs × 9 keys × 2 dirs (with nulls); null rows form contiguous tail for every column/direction; both-null fit rows safe (b268b2e8 verified); dropdown laycan → earliest-first + "ranked by Laycan" footer; aria-sort lights exactly one header and toggles desc→asc; DEFAULT_DIR total over SortBy. Protected `__tests__/matches-sort.test.tsx` (#350/#528) green on HEAD.
+- **A.6 blast radius**: `tsc --noEmit` exit 0; zero code references to check-deadlines/lib-deadlines/SubsCountdown/queries-dispatches outside docs+one JSON narrative+one comment; demo-scenarios route only serves JSON (no import of deleted script); migration 011 still registered in `lib/migrations/index.ts`; package.json/ops/.github clean.
+- **Repins sanctioned**: all 10 repinned test files map to sanctioned §1–§5; economics fixtures only ADD `fueleu_usd: 0`/`applicable.fueleu: false` — no expected number changed anywhere.
+- **Baseline**: 158 suites / 1355 tests green across all touched areas on HEAD (lib/matching, lib/market, lib/economics, lib/schemas, matches+parser+psc-api batch, scripts/demo-seed, components).
 
-File: app/api/voyage/tce/route.ts:86
-Raw JSON {"durationDays":1e999} parses to Infinity, passes z.number().positive(),
-returns HTTP 200 with degenerate economics (verified: status 200). C.2's "no silent $0
-voyage" is closed for 0/negative but not non-finite. distanceNm next to it has the
-identical pre-existing hole. Unreachable from the UI (duration computed >= 2); only
-hand-crafted requests. Fix: .positive().finite() on both fields.
+## Pre-existing Issues (informational, not gate-relevant)
 
-## F5 - INFO - Slug links cannot address the new second item rows
+- **Sibling fit-writers ignore PSC/charterer factors**: `scripts/demo-seed/patch-fit.ts:375` and `scripts/demo-seed/real-matches.ts` call computeFitBreakdown WITHOUT detentionCount/chartererTier. Pre-existing on main (they never passed these; on main analyzePairs gave fake-0 to EVERY vessel, so the structural divergence existed for every pair — this PR actually REDUCES it: no-data vessels now agree across paths). Residual: for the 5 seeded IMOs / named-charterer cargos, running patch-fit would strip the vetting/charterer deltas. The active prod regen path (regenerate-matches → analyzePairs) is consistent. Follow-up: align or retire those tools before next use.
+- `applicable.ets` gates on calculator-applicability while `applicable.fueleu` gates on USD>0 — minor semantic inconsistency, no observable impact (UI gates on >0 anyway).
+- Stale doc crumbs: `lib/sample-data/demo-scenarios/13-subs-deadline-2h-warning.json` narrative still cites deleted `scripts/check-deadlines.ts`; `app/matches/MatchesClient.tsx:131` comment cites SubsCountdown. Cosmetic.
 
-app/cargo/[id]/page.tsx:341, app/vessel/[id]/page.tsx:213,
-components/dashboard/ActionPanel.tsx:65 link via toMatchSlug(cargoEmailId, vesselEmailId),
-item-blind. Two visible item matches link to ONE detail URL; getMatchBySlug now
-deterministically returns the best-fit row, so the lesser item's card opens the best
-item's detail. NOT a regression (pre-051 only one row existed - same landing), and the
-dashboard priority-card path was correctly made item-aware (links /match/<dbId>).
-Follow-up: extend the slug with item indices or prefer db-id links on cargo/vessel pages.
+## Coverage Gaps (what we couldn't test)
 
-## F6 - INFO - Stale regen console copy after C.4/C.5
-
-scripts/demo-seed/regenerate-matches.ts:683 log header still says "deduped to email-pair";
-the "dropped main cleanliness-blocked" counter (:687) is now structurally 0 because C.4
-demotes those pairs to lowConfidenceMatches before regen ever sees result.matches.
-Logs only, no behavior impact.
-
-## F7 - INFO - Seed-builder writers keep one-per-email-pair semantics
-
-scripts/demo-seed/build.ts:710-752 (comment + best map keyed cargo_id|vesselId),
-patch-fit.ts:357, real-matches.ts:91 - local-only seed tools not in the plan's writer
-list. Their output remains VALID under the finer index (coarser uniqueness is compatible),
-just produces fewer matches than founder C.5 intent. Update when next touched. The
-canonical prod write paths (persist, compute-matches, regen, hydrate) are all item-aware; verified.
-
-## Verified non-findings (attack surface cleared)
-
-- Migration 051 data-contract: prod-shaped DB (chain to 050 + NULL-user seed rows +
-  sentinel buckets + session rows, all item idx 0) upgrades in place: coarse index dropped
-  (name matches 034 exactly), unique item-aware index created, zero row loss, second-item
-  insert unlocked, same-item dup still ignored, COALESCE(NULL user) branch enforced,
-  runner records v51, down() dedups to MIN(rowid).
-  Test: tests/regression/matches-item-unique-migration-051-prodshape.test.ts.
-  Prod invocation point confirmed: lib/session-store.ts:51 runs the chain at store init.
-- refreshComputedColumns cross-item clobber: removed SET of identity columns + item-aware
-  WHERE verified by branch tests - green.
-- Cross-writer consistency: persist (item-aware dedup), compute-matches (passes indices),
-  regen (explicit item columns + item-aware pass-1), hydrate-demo-session (reads
-  cargo_item_index ?? 0 into Match) - all agree. api/matches POST defaults to item 0
-  (pre-existing manual path, consistent).
-- C.1 wiring: one exported helper feeds both buildMatchEconomics (laden+ballast) and the
-  detail route (laden+ballast legs, route.ts:263/277) - list/detail parity holds. Basin
-  lattice probed: blacksea to med/atlantic/indian/eastafrica/westafrica charge;
-  intra-basin/unknown do not; Suez+Bosporus co-charge on blacksea-indian as intended.
-- C.6: explicit-range boundaries (65k -> supramax via entry order, 90k -> panamax) and
-  fallback edges (14999, 42k, 90001, 99999, 450k) all correct; breakevenTceByDwt is
-  pure-DWT (no class hole); ballast radius + bunker defaults consume the fixed classifier.
-- C.7: lattice probed - midpoint exact -> ideal (strict > w/2), depth 6/10 -> tight, last
-  in-window day -> tight, past cancelling -> late, w=0 unchanged, spot branch untouched;
-  new "into the laycan window" explanation only for non-spot gapDays < -1.
-- C.8 Suez: no production caller passes vesselValueUsd (grep: only _quoteSuezSafe + canal
-  router; both API routes build SuezInput without it) -> totalUsd change latent-only as
-  claimed; scntFeeUsd already contains base_fee so totalUsd=scntFeeUsd is complete dues;
-  no remaining test couples totalUsd to warRiskUsd (suites green).
-- NT 0.65: no residual dwt*0.6 anywhere in app/lib/components (last 0.6 hit is an
-  unrelated freight-confidence constant, tce-calculator.ts:93).
-- Pre-existing failures parity: 8 suites / 16 tests fail IDENTICALLY on base e9070fe2 and
-  branch (suite lists byte-identical; branch adds 1 passing test). Blast-radius carve-in
-  checked: the economics failures live in calculateWarRiskPremium/calculateEuEts
-  (untouched), imsbc_section_size_cap is the knowledge-scraper fetch cap (untouched),
-  ballast :273 failure is the score-65 guard pin with identical signature pre/post.
-  None carve in.
+- Live LLM parse of charterer_name (prompt effectiveness): dev LLM is down (2026-06-11); contract verified at schema/normalizer level only. Prompt phrasing untested against real model output.
+- Browser E2E of /matches sorting on a built app: not run (jsdom behavioral only). Post-deploy smoke should click two headers.
+- Prod env/data application (flags, seeds on outreach-vps): outside the merge boundary by definition → Deploy Gate.
+- localeCompare collation is environment-dependent for exotic vessel names (jsdom ICU vs prod node ICU) — cosmetic ordering only, not asserted.

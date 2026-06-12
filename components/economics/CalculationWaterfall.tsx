@@ -40,6 +40,7 @@ export function CalculationWaterfall({ breakdown, warRiskBreakdown }: Props) {
     da_usd,
     war_risk_usd,
     ets_usd,
+    fueleu_usd,
     total_costs_usd,
     net_voyage_usd,
     daily_tce_usd,
@@ -175,6 +176,14 @@ export function CalculationWaterfall({ breakdown, warRiskBreakdown }: Props) {
         ) : (
           <div className="text-xs text-gray-400 pl-4" data-testid="ets-zero-note">
             🌍 EU Carbon — $0 (no EU ports on route)
+          </div>
+        )}
+
+        {/* FuelEU Maritime GHG penalty (audit A.5) — render only when present */}
+        {fueleu_usd > 0 && (
+          <div className="flex justify-between" data-testid="cost-fueleu">
+            <span>🌿 FuelEU Maritime</span>
+            <span>{fmtUsd(-fueleu_usd)}</span>
           </div>
         )}
 

@@ -225,6 +225,8 @@ export interface ParsedCargo {
   dischargeRate: string | null;
   commissionPercent: number | null;
   commissionTerms: string | null;
+  /** Charterer/account name as written in the email (audit A.1). Plain string — feeds resolveChartererTier. */
+  chartererName?: string | null;
   /** Payment / payout condition stated in the cargo email (e.g. "100% on
    *  completion of discharge", "LC at sight"). Null when not mentioned. */
   payoutCondition?: string | null;

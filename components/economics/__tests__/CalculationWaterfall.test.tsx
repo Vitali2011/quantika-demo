@@ -28,6 +28,7 @@ const FIXTURE: TCEBreakdown = {
   war_risk_usd: 13_500,
   ets_eur: 2000,
   ets_usd: 2160,
+  fueleu_usd: 0, // audit A.5: new breakdown field
   total_costs_usd: 383_660,
   net_voyage_usd: 1_116_340,
   daily_tce_usd: 55_817,
@@ -37,6 +38,7 @@ const FIXTURE: TCEBreakdown = {
     da: true,
     war_risk: true,
     ets: false,
+    fueleu: false, // audit A.5: new breakdown field
   },
 };
 

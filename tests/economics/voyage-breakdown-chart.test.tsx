@@ -13,6 +13,7 @@ const sample: TCEBreakdown = {
   war_risk_usd: 10000,
   ets_eur: 30000,
   ets_usd: 32400,
+  fueleu_usd: 0, // audit A.5: new breakdown field
   gross_freight_usd: 800000,
   freight_rate_usd_per_mt: 16,
   quantity_mt: 50000,
@@ -22,7 +23,7 @@ const sample: TCEBreakdown = {
   total_costs_usd: 442400,
   net_voyage_usd: 357600,
   daily_tce_usd: 17880,
-  applicable: { bunker: true, canal: true, da: true, war_risk: true, ets: true },
+  applicable: { bunker: true, canal: true, da: true, war_risk: true, ets: true, fueleu: false }, // audit A.5: new breakdown field
 };
 
 describe('VoyageBreakdownChart', () => {

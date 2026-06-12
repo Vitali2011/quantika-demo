@@ -1,89 +1,87 @@
 VERDICT: APPROVE-WITH-FOLLOWUPS
-Branch: feat/wave-c-engine-logic
-HEAD: 13029428
-Base: main e9070fe2
-Date: 2026-06-12 (test-skill v0.4.2, adversarial, cold-start)
+Branch: feat/wave-a-phantom-features
+HEAD: 534e72a5
 
-# Test Review Verdict: wave C engine-logic (audit C.1-C.8)
+# Test Review Verdict: wave A — phantom features + matches column sorting
 
-## Severity gate
+**Date:** 2026-06-12
+**Reviewer:** test-skill (cold-start, no feature-session context)
+**Diff reviewed:** 40966379..534e72a5 (12 commits, 68 files, +2369/-2810)
 
-- CRITICAL: none.
-- HIGH introduced: none.
-- MEDIUM: F1 (bucket React key item-awareness is a no-op - toBucketRows feed gap;
-  UI-only, deterministic repro, collision itself pre-existing).
-- LOW-MEDIUM/LOW: F2 (new Group A regex false positives), F3 (quantity clamp asymmetry),
-  F4 (Infinity durationDays).
-- INFO: F5 (item-blind slugs), F6 (stale regen logs), F7 (seed-builder writers).
+## Summary
 
-No blocker per gate (CRITICAL, or HIGH introduced). Pre-existing failures: 8 suites / 16
-tests byte-identical base vs branch; blast-radius carve-in examined for the economics /
-imsbc / ballast suites - none of those failures touch values this branch changes.
+- Tests added: 48 (1 seeded-random property, 9 bit-identity matrix cases ×2 flag states, 13 RTL/behavioral, other contract/adversarial) in 4 suites under `tests/regression/wave-a-*`
+- Bugs found: 5 (0 CRITICAL, 0 HIGH, 1 MEDIUM, 3 LOW, 1 test-bug)
+- Pre-existing bugs noted: 2 (+2 cosmetic doc crumbs) — do not block
+- Attack plan: 10/10 items executed; baseline 158 suites / 1355 tests green on HEAD; `tsc --noEmit` clean
 
-## Evidence
+## Findings
 
-- All 8 sanctioned changes verified implemented (not trusted from the plan): code read +
-  suites green: lib/matching 88 suites/1663 tests, lib/economics + tests/unit/economics +
-  canal/voyage/hold/realism 28 suites/299, __tests__ economics/matching/migration 49
-  suites/378, tests/regression 56 suites: 722 passed / 16 pre-existing failed.
-- tsc --noEmit clean.
-- 3 new regression suites added by review (14 tests, green):
-  - tests/regression/matches-item-unique-migration-051-prodshape.test.ts (data-contract:
-    in-place upgrade of a prod-shaped 050 DB, zero loss, index swap, down() dedup)
-  - tests/regression/session-buckets-item-key.test.ts (F1 pin)
-  - tests/regression/imsbc-groupA-regex-phrasing.test.ts (F2 pin + guard locks)
-- 23 scratch probes (readiness lattice, class boundaries, basin lattice, clamp asymmetry,
-  Infinity duration) executed and removed; results folded into findings.
+### CRITICAL (blocks merge)
 
-## Followups (non-blocking, ordered)
+- (none)
 
-1. F1: populate item indices in toBucketRows OR key bucket <li> by row.id (one-line).
-2. F2: clause-bound GROUP_A_RESTRICTION_RE gap + widen acceptance lookahead.
-3. F3: clamp negative quantityMt in computeTce (parity with rate clamp).
-4. F4: .finite() on durationDays and distanceNm zod fields.
-5. F5: item-aware slug format or db-id links on cargo/vessel pages.
-6. F6/F7: stale regen log copy; seed-builder one-per-pair dedup comment - on next touch.
+### HIGH (blocks merge if new)
 
-## Deploy Gate (check after merge+deploy, before declaring done)
+- (none) — the three cross-cutting classes specifically came back clean:
+  - displayed-value-provenance: FuelEU tile/waterfall bind `breakdown.fueleu_usd` exactly; total binds `total_costs_usd` (computed upstream, no UI re-add); legacy persisted breakdowns w/o the key render safely.
+  - conditional-ui-liveness: FuelEU feed LIVE (EconomicsTab sends `includeEuETS: true` → route sets originEu/destEu → flag branch); charterer penalty feed LIVE (analyzePairs → fit_breakdown.chartererPenalty → UtilisationChartererDisclosure "−4" line); honest-PSC neutral verified at engine level, checked-clean "0 detentions" preserved.
+  - cross-path-consistency: single production call site for detentionCount/chartererTier (pair-analyzer); all board paths (compute-matches, ai/match route, regenerate-matches) go through analyzePairs; regenerate-matches' wholesale item cast carries backfilled chartererName. Sibling seed-tools divergence is pre-existing and REDUCED by this PR (see Pre-existing).
+  - sanctioned §3 bit-identity: verified against the literal main@40966379 computeTce over a 9-case matrix — flag off ⇒ numerically identical, only new keys added.
 
-1. Migration 051 auto-runs at service start (lib/session-store.ts:51) on BOTH prod DBs
-   (sessions.db, demo-seed.db at /root/quantika-demo/data/). Verify post-restart:
-   `SELECT version FROM schema_migrations ORDER BY version DESC LIMIT 1` = 51 and
-   PRAGMA index_list('matches') shows idx_matches_unique_pair_item (unique) and NOT
-   idx_matches_unique_cargo_vessel_user. journalctl for migration errors on first boot.
-2. Stored prod matches are STALE relative to C.1/C.3/C.4/C.6/C.7/C.8 until regen: Bosporus
-   fees missing on Black Sea exits, hold-blocked pairs still on main board, 90-100k DWT
-   capesize economics, back-of-window 'ideal' verdicts, integer economics factor.
-   Founder-authorized prod regen required (--dry first per protocol; expect material
-   diffs: Bosporus fee per leg shifts TCE on every Black Sea route; small coasters can
-   drop below breakeven - the realism-bucket fixture rewrite in this branch demonstrates).
-3. After regen: match count may INCREASE (second items unlocked); smoke /matches (no 500,
-   no React duplicate-key console spam on review tab - F1 risk), /match/<slug> resolves,
-   dashboard priority cards link to per-item /match/<id>.
-4. No NEXT_PUBLIC_* changes - no env/rebuild coupling beyond standard build.
+### MEDIUM (follow-up OK)
 
-## Attack plan execution
+- **FINDING-001: seed-charterers crashes on same-name/different-id pre-existing row; --dry-run can't predict it; no transaction → partial apply on failure**
+  - File: `scripts/demo-seed/seed-charterers.ts` (+ `upsertCharterer` ON CONFLICT(id) vs name UNIQUE in migration 026)
+  - Repro: `tests/regression/wave-a-psc-charterer-crosspath.test.ts`
+  - Fix hint: transaction around DELETE+upserts; pre-delete/upsert by normalized name; make --dry-run open the DB and print the real would-change diff.
+  - Why not HIGH: loud crash, no silent corruption; recoverable by rerun; touches only the prod-apply step (T7), not the merged runtime.
 
-Executed: A1 (base/branch differential), A2 (migration data-contract test), A3 (regex
-fuzz), A4 (cross-writer trace incl. unplanned writers build.ts/patch-fit/real-matches/
-hydrate-demo-session/api-matches-POST), A5 (clamp probes), A6 (bucket key repro), A7
-(Infinity probe), A8 (slug trace), A9 (clobber - via branch tests + code read), A10
-(readiness lattice), A11 (class boundaries), A12 (Suez caller grep + suites), A13 (NT
-grep), A14 (basin lattice), A15 (tsc + battery), A16 (stale-pin sweep via full battery).
-Skipped: none. Browser-level verification of /matches multi-item rendering skipped
-(no preview env; covered by Deploy Gate item 3).
+### LOW / Test-bugs
+
+- **FINDING-002**: latent crash — `computeTce` throws on unknown `fuelType` when FUELEU_ENABLED + EU leg (`fueleu.ts` throw). No producer sets fuelType today (always 'vlsfo'). Fix hint: validate/fallback or try/catch like the ECA block.
+- **FINDING-003**: resolver tie on normalized-duplicate names → alphabetically-first (binary collation) wins; letter case decides tier. Spec silent; shipped fixture has no collisions (test pins that).
+- **FINDING-004**: non-Latin chartererName → silent neutral; live-LLM long forms ("Huaya Maritime") won't match seeded "Huaya". Corpus-consistent today (backfill shares the regex; 1/1 binding matches). Follow-up: alias/prefix matching.
+- **FINDING-005** (test-bug, mine): `-0` vs `0` Object.is in my antisymmetry assertion — comparator returning `-0` is fine for Array.sort; test fixed, noted for the false-positive trail.
+
+## Pre-existing Issues (informational, not gate-relevant)
+
+- `scripts/demo-seed/patch-fit.ts` / `real-matches.ts` compute fitBreakdown without detentionCount/chartererTier — pre-existing (on main the divergence existed for EVERY vessel; this PR narrows it to data-having vessels). Running patch-fit after the seeds would strip vetting/charterer deltas — align or retire before next use.
+- `applicable.fueleu` gates on USD>0 while `applicable.ets` uses calculator-applicability — cosmetic inconsistency.
+- Stale doc crumbs: demo-scenario 13 narrative cites deleted check-deadlines.ts; MatchesClient.tsx:131 comment cites SubsCountdown.
+
+## Coverage Gaps (what we couldn't test)
+
+- Live LLM extraction of charterer_name (dev LLM down 2026-06-11) — schema/normalizer contract verified, prompt effectiveness not.
+- No browser E2E against a built app (jsdom only) — post-deploy smoke should click sort headers and open an EU-voyage detail.
+- localeCompare collation environment-dependence — cosmetic.
+- Concurrency / auth / migration classes: no signals in this diff, not deployed.
+
+## Deploy Gate (NOT covered by this review — verify before declaring "prod works")
+
+This review covered the pre-merge DIFF only. The wave's value is mostly DATA+ENV — nothing below happens by merging:
+
+- [ ] **Env on prod** (`/root/quantika-demo` .env.local): `FUELEU_ENABLED=true` is a SERVER runtime flag — `systemctl restart quantika-demo` re-reads it, no rebuild needed for the cost line. `NEXT_PUBLIC_FUELEU_ENABLED` has ZERO code readers (doc-only). `NEXT_PUBLIC_CHARTERER_CREDIT_ENABLED=true` IS bake-time → requires rebuild-deploy to affect /charterers pages. NOTE: the scoring path is NOT flag-gated — charterer penalties go live from DATA alone after regen, regardless of flags.
+- [ ] **Seeds on prod db** `/root/quantika-demo/data/demo-seed.db` (требует формулы «разрешаю запись на outreach-vps»):
+  - `seed-charterers --db <prod-path>`: FIRST run `SELECT id,name FROM charterers` — a same-name row under another id will CRASH the seeder mid-apply (FINDING-001).
+  - `seed-psc-history`: targets `SESSIONS_DB_PATH` (defaults to `data/sessions.db` relative to cwd!) — export it explicitly to the demo-seed path or rows land in the wrong DB silently.
+  - `backfill-charterer --db <prod-path> --dry` → expect ~1 row ("huaya") → `--apply`.
+- [ ] **Regen** `regenerate-matches --dry` → числа фаундеру → apply. Required to surface: charterer −4, honest PSC neutral, FuelEU in stored TCE. Sequencing: flip FUELEU_ENABLED and regen in the same window — freight-edit PATCHes in between produce mixed-state board TCE (edited rows include FuelEU, others don't).
+- [ ] **Post-apply counts**: charterers=3, psc_detention_history=16, parsed_results with chartererName=1 (local working copy is the reference shape).
+- [ ] **Post-deploy smoke** (qa-walker): /matches header click ×2 (order flips, ↓/↑ indicator, footer "ranked by …"); EU-voyage match detail → FuelEU tile + waterfall line; vessel WITHOUT psc rows → vetting neutral, no "0 detentions"; vessel 9166510 → detentions visible; Huaya match → "Charterer tier penalty −4"; bundle-grep `th-sort-dwt`, `fueleu_usd`.
+- [ ] Fresh build from the merged commit via deploy.yml (staged build + atomic swap, #940) — NEXT_PUBLIC flags bake at build.
+
+## Verdict
+
+⚠️ **APPROVE-WITH-FOLLOWUPS** — see MEDIUM finding above (seed-charterers transaction + name-aware upsert + real dry-run); merge is allowed. Follow-up candidates beyond the gate: FINDING-002 fuelType fallback, FINDING-004 alias matching, patch-fit/real-matches alignment, stale doc crumbs.
 
 ---
 
-## Controller addendum — followups resolved (HEAD 4ddb9b63)
+## Controller addendum (post-verdict, 2026-06-12)
 
-All five findings fixed on-branch before merge, QA pin tests flipped to desired behaviour:
+Followups consumed on branch before merge:
+- F-001 (MEDIUM) — seed-charterers: transactional DELETE+INSERT, same-name/different-id rows ADOPTED in place (id preserved, rating aligned), --dry-run now opens the DB read-only and reports clashes. QA pin flipped to adopt semantics (wave-a-psc-charterer-crosspath.test.ts).
+- F-002 (LOW) — compute-tce: unknown fuelType falls back to vlsfo instead of throwing. QA pin flipped (wave-a-fueleu-economics.test.ts).
+- F-003/F-004 (LOW) — accepted as documented behavior (fixture collision-free, corpus-consistent binding); pinned by QA tests, revisit if live-LLM corpus diverges.
 
-- F1: toBucketRows emits cargo_item_index/vessel_item_index (session-buckets.ts) AND MatchesClient keys bucket rows by unique row id (tests/regression/session-buckets-item-key.test.ts flipped, green).
-- F2: GROUP_A_RESTRICTION_RE window clause-bounded ([^.;,]) + cannot/can't carry|load|accept verbs; comma-list miss documented as conservative [BEHAVIOR] pin (tests/regression/imsbc-groupA-regex-phrasing.test.ts flipped, green).
-- F3: quantityMt clamped to >= 0 in computeTce (test added).
-- F4: durationDays + distanceNm get .finite() — JSON 1e999/Infinity now 400 (test added).
-- F5: regen log copy updated (item-pair dedup wording; cleanliness counter explained per audit C.4).
-- F6/F7 (INFO): recorded as wave follow-ups, not blocking — slug links item-blind (deterministic-best), legacy seed-builder writers keep coarse semantics (superseded by regen step 5/6).
-
-Verdict effective: APPROVE (followups consumed). Deploy Gate section unchanged — items 1-3 remain mandatory post-deploy.
+**Verdict effective: APPROVE (followups consumed).**

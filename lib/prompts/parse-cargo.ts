@@ -511,6 +511,10 @@ Extract per inquiry item:
   ✓ commission_percent={value:4, confidence:"confirmed", source_text:"4 ttl"}, commission_terms="4% TTL; Gcn 3.75% TTL"
   "Gcn" preceding a commission may mean "General cargo" or reference the Gencon form — capture verbatim.
 - commission_terms: e.g. "TTL BENDS", "address commission", "ADDCOMPUS", "pus"
+- charterer_name: name of the charterer/account if stated (phrases like "Acct: X",
+  "Account X", "Chtrs: X", "Charterers: X", "for charterer X", "c/o X"). The literal
+  company name only, trimmed. null when the email does not name the charterer.
+  Do NOT guess from the sender signature.
 - payout_condition: payment / payout terms stated in the email — e.g. "100% freight payable on completion of discharge", "freight payable within 3 banking days after completion", "LC at sight", "CAD (cash against documents)", "payment 95/5". Capture the verbatim condition as a plain STRING. Null if the email states no payment/payout condition. Do NOT infer — extract only when explicitly written.
 - freight_rate_usd: freight rate in USD per metric ton if EXPLICITLY stated in the email.
   RULES:

@@ -4,6 +4,7 @@ import {
   getDetentionHistory,
   upsertInspection,
   getDetentionCount,
+  hasInspectionData,
   type PscRecord,
 } from '../psc-repository';
 
@@ -294,6 +295,29 @@ describe('psc-repository', () => {
       .get('p1');
 
     expect(row.deficiencies).toBe(0);
+  });
+
+  // RED test: hasInspectionData distinguishes "no PSC data" from "checked, clean" (audit A.2)
+  it('hasInspectionData: false on empty table, true after any inspection row (audit A.2)', () => {
+    expect(hasInspectionData(db, '9540015')).toBe(false);
+    upsertInspection(db, {
+      id: 'i1',
+      imo: '9540015',
+      inspection_date: '2025-03-01',
+      port: 'Rotterdam',
+      authority: 'paris-mou',
+      deficiencies: 2,
+      detained: false,
+      source_url: null,
+    });
+    expect(hasInspectionData(db, '9540015')).toBe(true); // clean inspection still counts as DATA
+    expect(getDetentionCount(db, '9540015', '2024-01-01')).toBe(0); // checked, zero detentions — legit
+  });
+
+  // boundary: empty imo → false, no SQL roundtrip (audit A.2)
+  it('hasInspectionData returns false for empty imo', () => {
+    expect(hasInspectionData(db, '')).toBe(false);
+    expect(hasInspectionData(db, null as any)).toBe(false);
   });
 
   // RED test (boundary): NaN deficiencies → guard with Number.isFinite, default to 0
