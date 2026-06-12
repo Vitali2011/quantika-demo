@@ -194,19 +194,33 @@ describe('MatchesClient — mode-aware filtering wiring', () => {
 describe('MatchesClient — mode-aware column headers (#630)', () => {
   const src = fs.readFileSync(path.join(ROOT, 'app/matches/MatchesClient.tsx'), 'utf8');
 
+  // Headers moved from string arrays to headerCols {label, key} config (sorting feature,
+  // audit-wave-A §5) — same invariants asserted via extraction of the two branches.
+  const headerBranches = () => {
+    const m = src.match(/const headerCols[\s\S]*?isOwner\s*\?\s*\[([\s\S]*?)\]\s*:\s*\[([\s\S]*?)\];/);
+    const labels = (s: string) => [...s.matchAll(/label: '([^']*)'/g)].map((x) => x[1]);
+    return m ? { owner: labels(m[1]), charterer: labels(m[2]) } : null;
+  };
+
   it('column headers array is mode-conditional (not hardcoded)', () => {
     // Must contain isOwner conditional with two header arrays, not one static array
-    expect(src).toMatch(/isOwner[\s\S]*?FIT %.*Cargo[\s\S]*?FIT %.*Vessel|FIT %.*Vessel[\s\S]*?FIT %.*Cargo/);
+    const branches = headerBranches();
+    expect(branches).not.toBeNull();
+    expect(branches!.owner).not.toEqual(branches!.charterer);
   });
 
   it('charterer headers have Vessel before Cargo', () => {
     // In charterer branch: FIT % | Vessel | ... | Cargo
-    expect(src).toMatch(/'FIT %',\s*'Vessel',.*?'Cargo'/);
+    const { charterer } = headerBranches()!;
+    expect(charterer.indexOf('Vessel')).toBeGreaterThan(charterer.indexOf('FIT %'));
+    expect(charterer.indexOf('Vessel')).toBeLessThan(charterer.indexOf('Cargo'));
   });
 
   it('owner headers have Cargo before Vessel', () => {
     // In owner branch: FIT % | Cargo | ... | Vessel
-    expect(src).toMatch(/'FIT %',\s*'Cargo',.*?'Vessel'/);
+    const { owner } = headerBranches()!;
+    expect(owner.indexOf('Cargo')).toBeGreaterThan(owner.indexOf('FIT %'));
+    expect(owner.indexOf('Cargo')).toBeLessThan(owner.indexOf('Vessel'));
   });
 
   it('column 2 cell is mode-conditional (vessel vs cargo)', () => {
@@ -225,15 +239,15 @@ describe('MatchesClient — mode-aware column headers (#630)', () => {
   });
 
   it('owner header array has exactly 8 columns', () => {
-    // Extract the owner header array and count entries (#807 M1: Score→FIT %)
-    const ownerMatch = src.match(/'FIT %',\s*'Cargo',\s*'Route',\s*'DWT',\s*'TCE \/ day',\s*'Vessel',\s*'Laycan',\s*''/);
-    expect(ownerMatch).not.toBeNull();
+    // (#807 M1: Score→FIT %) — full ordered label sequence of the owner branch
+    const { owner } = headerBranches()!;
+    expect(owner).toEqual(['FIT %', 'Cargo', 'Route', 'DWT', 'TCE / day', 'Vessel', 'Laycan', '']);
   });
 
   it('charterer header array has exactly 8 columns', () => {
-    // Extract the charterer header array and count entries (#807 M1: Score→FIT %)
-    const chartererMatch = src.match(/'FIT %',\s*'Vessel',\s*'Route',\s*'DWT',\s*'TCE \/ day',\s*'Cargo',\s*'Laycan',\s*''/);
-    expect(chartererMatch).not.toBeNull();
+    // (#807 M1: Score→FIT %) — full ordered label sequence of the charterer branch
+    const { charterer } = headerBranches()!;
+    expect(charterer).toEqual(['FIT %', 'Vessel', 'Route', 'DWT', 'TCE / day', 'Cargo', 'Laycan', '']);
   });
 
   it('sortBy reset does NOT reset filter chips (cargoTypes, route, etc.)', () => {
