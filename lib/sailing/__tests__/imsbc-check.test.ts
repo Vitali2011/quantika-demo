@@ -319,3 +319,26 @@ describe('dual-hazard Group B concentrates vs liquefaction-restricted vessel (au
     },
   );
 });
+
+describe('acceptance phrasing does NOT trigger the liquefaction block (QA 2026-06-12)', () => {
+  // "no more/less than TML" is how acceptance conditions read in position
+  // lists — a vessel explicitly AGREEING to carry Group A must not hard-block.
+  it.each([
+    ['moisture content no more than TML'],
+    ['group A accepted provided moisture no more than TML'],
+    ['no restrictions on concentrates'],
+    ['no liquefied petroleum gas'],
+    ['TML certificate available'],
+    ['last cargo concentrates'],
+  ])('restriction "%s" keeps Group A caution', (restriction) => {
+    const r = checkImsbcLoadability('nickel ore', { restrictions: [restriction] });
+    expect(r.group).toBe('A');
+    expect(r.verdict).toBe('caution');
+  });
+
+  it('prohibition clauses still block after the guards', () => {
+    for (const restriction of ['no concentrates', 'No liquefiable cargoes', 'no TML cargoes', 'no cargoes prone to liquefaction']) {
+      expect(checkImsbcLoadability('nickel ore', { restrictions: [restriction] }).verdict).toBe('incompatible');
+    }
+  });
+});

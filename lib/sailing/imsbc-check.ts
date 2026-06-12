@@ -213,7 +213,6 @@ let _cargoes: Record<string, ImsbcEntry> | null = null;
 
 function getCargoes(): Record<string, ImsbcEntry> {
   if (!_cargoes) {
-     
     const data = require('../cargo/imsbc-groups.json') as typeof imsbcData;
     _cargoes = data.cargoes as unknown as Record<string, ImsbcEntry>;
   }
@@ -274,7 +273,11 @@ const DG_RESTRICTION_RE = /\bno\b.{0,40}(?:dg\b|dangerous\s+goods?\b|hazmat\b|ha
 // cargoes are prohibited: "no concentrates", "no liquefiable cargoes",
 // "no Group A", "no nickel ore", "no TML cargoes". (Audit C.3 — Group A
 // previously never hard-blocked, even on explicitly restricted vessels.)
-const GROUP_A_RESTRICTION_RE = /\bno\b.{0,40}(?:concentrates?\b|liquef\w+|group\s*a\b|nickel\s+ore\b|tml\b)/i;
+// Guards (QA 2026-06-12): `no` followed by more/less/restriction is acceptance
+// phrasing, not prohibition — "moisture no more than TML", "no restrictions on
+// concentrates" must NOT block. `liquefia/liquefact` (not bare `liquef`) keeps
+// "no liquefied petroleum gas" from matching a dry-bulk liquefaction ban.
+const GROUP_A_RESTRICTION_RE = /\bno\b(?!\s+(?:more|less|restrictions?)\b).{0,40}?(?:concentrates?\b|liquefia\w*|liquefact\w*|group\s*a\b|nickel\s+ore\b|\btml\b)/i;
 
 /**
  * Check whether a cargo is loadable on a vessel per IMSBC Code.
