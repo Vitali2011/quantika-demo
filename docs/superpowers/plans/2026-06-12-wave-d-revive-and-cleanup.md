@@ -144,3 +144,22 @@ it('no PSC rows → detentions3y undefined (not 0)', ...);
 - Placeholders: «читать файл фактом» оставлено только там, где код переменный и grep/чтение прописаны шагом (T3 Step 1, T4 Step 1, T6 Step 1). ✓
 - Surgical: bimco\_\* явно помечен KEEP в каждом jwc-шаге; FCL/LCL ветка сохраняется при удалении CONTAINER; живые dashboard-4 не трогаются. ✓
 - Риски: (1) e2e/mobile.spec + DashboardSections.test — смешанное содержимое, прописано «вырезать точечно»; (2) sources/jwc-адаптеры могут быть импортированы war-risk — Step 1 гейтит удаление; (3) backfill-lastcargoes меняет вход hold-cleanliness → реген сдвинет доску — числа через --dry до формулы.
+
+---
+
+## Task 3 RESCOPE (controller, 2026-06-12, после BLOCKED-эскалации исполнителя)
+
+Премисса «jwc_vec мёртв» — ВТОРАЯ ошибка аудита (после bimco_fts): jwc_vec ЖИВОЙ —
+`app/api/voyage/compare-routes/route.ts:105-110` ретривит топ-3 JWC-бюллетеня в LLM-промпт
+рекомендации маршрута (Red Sea/Black Sea/Persian Gulf), UI RouteCompareModal зовёт эндпоинт,
+e2e rag-visual-verification T02 пинит jwcCitations, прод засеян (jwc_vec=7) с включённым RAG.
+RAG-слой jwc НЕ трогаем (allowed-списки, bootstrap, regen-копия, retriever.md — всё остаётся).
+
+Выполненный суженный скоуп (опция c): удалён ЛЕГАСИ-СИДЕР-ДУБЛИКАТ — scraper-путь
+`lib/knowledge/sources/jwc/` (adapter+scraper+chunker+types, 633 LOC) + `scripts/knowledge-jwc-embed.ts`
+
+- npm `knowledge:jwc` + 14 его тестов (вкл. spec19-секьюрити санитайзера скрейпера —
+  тестировали только удалённый код). Канонический сидер остаётся: `lib/knowledge/sources/jwc-yaml/`
+  (npm `knowledge:jwc-yaml`, авторитетный локальный YAML JWLA-033, не импортирует scraper-трио).
+  `scripts/knowledge/refresh.ts` slug 'jwc' — был и остаётся заглушкой (модуль ./sources/jwc
+  не существует; динамический импорт, tsc не ловит) — не трогаем.
