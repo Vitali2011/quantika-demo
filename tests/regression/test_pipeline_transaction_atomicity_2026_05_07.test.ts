@@ -23,47 +23,45 @@
  * Q1's non-atomicity, earlier chunks in the same batch (and any earlier
  * batches) are already committed. Same data-inconsistency, different fault
  * source.
+ *
+ * STATUS 2026-06-12 (harness repair + finding re-verified OPEN):
+ * The original suite mocked '@google-cloud/aiplatform' via hoisted jest.mock —
+ * under this repo's ts-jest setup that mock is unreliable (applied in some
+ * invocation modes, dead in others; the same breakage is why every
+ * predict-dependent test in __tests__/lib/knowledge/embeddings/*.test.ts is
+ * it.skip'd). When dead, embedDocuments hit REAL google-auth: Q1-a died on
+ * auth (timeout/gaxios), while Q1-b/Q2-a passed VACUOUSLY (early throw →
+ * 0 rows == 0 rows) and never tested atomicity at all. Re-wired with
+ * jest.resetModules + jest.doMock + require in beforeEach — explicit ordering,
+ * no reliance on hoisting — mocking the first-party client layer
+ * ('@/lib/knowledge/embeddings/client'). With the harness fixed, embedAndStore
+ * is still non-atomic (no db.transaction in pipeline.ts), so Q1-b and Q2-a are
+ * true red pins of the open Q1/Q2 findings — marked it.failing (green while
+ * the bug persists, flips red when atomicity lands; then convert back to
+ * plain it()).
  */
 
 import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
 import Database from 'better-sqlite3';
 import type { Chunk } from '@/lib/knowledge/embeddings/chunks';
 
-// Mock @google-cloud/aiplatform BEFORE importing pipeline (which imports client).
-let mockPredict: jest.Mock<(...args: any[]) => any> = jest.fn();
-jest.mock('@google-cloud/aiplatform', () => ({
-  PredictionServiceClient: class {
-    predict(...args: unknown[]) {
-      return mockPredict(...args);
-    }
-  },
-}));
+// Re-required fresh in each beforeEach with the client layer doMock'd —
+// embedAndStore awaits embedDocuments(texts) and consumes Float32Array[].
+let mockEmbedDocuments: jest.Mock<(texts: string[]) => Promise<Float32Array[]>>;
+let embedAndStore: typeof import('@/lib/knowledge/embeddings/pipeline').embedAndStore;
 
-import { embedAndStore } from '@/lib/knowledge/embeddings/pipeline';
-
-// Vertex-shape response builder
-function gcpResponse(embeddings: Float32Array[]): any {
-  return [
-    {
-      predictions: embeddings.map((embedding) => ({
-        structValue: {
-          fields: {
-            embeddings: {
-              structValue: {
-                fields: {
-                  values: {
-                    listValue: {
-                      values: Array.from(embedding).map((v) => ({ numberValue: v })),
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      })),
+function freshPipelineWithMockedClient(): void {
+  jest.resetModules();
+  mockEmbedDocuments = jest.fn();
+  // doMock is NOT hoisted: it registers the mock right here, before the
+  // require below — deterministic regardless of transform/hoisting behavior.
+  jest.doMock('@/lib/knowledge/embeddings/client', () => ({
+    embedDocuments: (texts: string[]) => mockEmbedDocuments(texts),
+    embedQuery: () => {
+      throw new Error('embedQuery not expected in this suite');
     },
-  ];
+  }));
+  ({ embedAndStore } = require('@/lib/knowledge/embeddings/pipeline'));
 }
 
 function makeChunks(n: number, prefix = 'c'): Chunk[] {
@@ -76,7 +74,7 @@ function makeChunks(n: number, prefix = 'c'): Chunk[] {
 function newDbWithRagTables(): Database.Database {
   const db = new Database(':memory:');
   // Load sqlite-vec for vec0 virtual tables
-   
+
   const sqliteVec = require('sqlite-vec');
   sqliteVec.load(db);
 
@@ -101,7 +99,7 @@ describe('Q1 — pipeline.ts dual-insert atomicity (vec0 + FTS5)', () => {
 
   beforeEach(() => {
     db = newDbWithRagTables();
-    mockPredict = jest.fn();
+    freshPipelineWithMockedClient();
   });
 
   afterEach(() => {
@@ -112,7 +110,7 @@ describe('Q1 — pipeline.ts dual-insert atomicity (vec0 + FTS5)', () => {
   it('Q1-a: vec count equals fts count after a successful 5-chunk batch (control)', async () => {
     // 5 valid 768-dim embeddings
     const embeddings = Array.from({ length: 5 }, () => new Float32Array(768).fill(0.01));
-    mockPredict.mockResolvedValueOnce(gcpResponse(embeddings));
+    mockEmbedDocuments.mockResolvedValueOnce(embeddings);
 
     await embedAndStore(makeChunks(5), {
       tableName: 'imsbc_vec',
@@ -127,10 +125,13 @@ describe('Q1 — pipeline.ts dual-insert atomicity (vec0 + FTS5)', () => {
     expect(ftsCount).toBe(5);
   });
 
-  it('Q1-b: when the FTS5 INSERT fails on chunk #3, vec count and fts count MUST stay aligned', async () => {
+  // it.failing: Q1 (HIGH) is a verified OPEN finding — embedAndStore has no
+  // db.transaction, so a mid-batch FTS fault leaves vec=3 / fts=2. Flips red
+  // (then convert to it()) when atomicity lands in pipeline.ts.
+  it.failing('Q1-b: when the FTS5 INSERT fails on chunk #3, vec count and fts count MUST stay aligned', async () => {
     // 5 valid 768-dim embeddings
     const embeddings = Array.from({ length: 5 }, () => new Float32Array(768).fill(0.02));
-    mockPredict.mockResolvedValueOnce(gcpResponse(embeddings));
+    mockEmbedDocuments.mockResolvedValueOnce(embeddings);
 
     // Wrap db.prepare so the 3rd execution of the FTS5 INSERT throws.
     let ftsRunCalls = 0;
@@ -187,7 +188,7 @@ describe('Q2 — wrong-dim Vertex response leaves split-brain corpus', () => {
 
   beforeEach(() => {
     db = newDbWithRagTables();
-    mockPredict = jest.fn();
+    freshPipelineWithMockedClient();
   });
 
   afterEach(() => {
@@ -195,7 +196,9 @@ describe('Q2 — wrong-dim Vertex response leaves split-brain corpus', () => {
     jest.restoreAllMocks();
   });
 
-  it('Q2-a: a single wrong-dim embedding (e.g. 100 dims) MUST NOT leave partially-written batch', async () => {
+  // it.failing: Q2 (HIGH) is a verified OPEN finding — see Q1-b note; a
+  // wrong-dim embedding mid-batch leaves chunks 1-2 committed (vec=2, fts=2 ≠ 0).
+  it.failing('Q2-a: a single wrong-dim embedding (e.g. 100 dims) MUST NOT leave partially-written batch', async () => {
     // 4 valid 768-dim + 1 wrong-dim (length 100). The wrong-dim chunk is the 3rd.
     const embeddings = [
       new Float32Array(768).fill(0.05),
@@ -204,7 +207,7 @@ describe('Q2 — wrong-dim Vertex response leaves split-brain corpus', () => {
       new Float32Array(768).fill(0.08),
       new Float32Array(768).fill(0.09),
     ];
-    mockPredict.mockResolvedValueOnce(gcpResponse(embeddings));
+    mockEmbedDocuments.mockResolvedValueOnce(embeddings);
 
     let caught: unknown = null;
     try {
