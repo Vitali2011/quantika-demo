@@ -423,6 +423,28 @@ describe('calculateReadinessGap — vague-region UX (Phase C2)', () => {
   });
 });
 
+describe('back-of-window arrival rates tight (audit C.7)', () => {
+  // classifyVerdict is module-private — drive it through calculateReadinessGap.
+  // Vessel open AT the load port (same port → distance 0) with openDate D arrives ~D.
+  // Laycan 2026-10-01..2026-10-11 (window 10d): arrival 10-03 (depth 2d, front
+  // half) → ideal; arrival 10-09 (depth 8d, back half) → tight; 10-13 → late.
+  const cargo = { laycan: '2026-10-01 .. 2026-10-11', originPort: 'Rotterdam' };
+  const vessel = (open: string) => ({
+    openDate: open, openPosition: 'Rotterdam', speedLaden: '13 kn', dwtSummer: 55000,
+  });
+  const opts = { refYear: 2026, today: new Date('2026-09-01T00:00:00Z') };
+
+  it('front half of window stays ideal', () => {
+    expect(calculateReadinessGap(vessel('2026-10-03'), cargo, opts).verdict).toBe('ideal');
+  });
+  it('back half of window is tight', () => {
+    expect(calculateReadinessGap(vessel('2026-10-09'), cargo, opts).verdict).toBe('tight');
+  });
+  it('past cancelling stays late', () => {
+    expect(calculateReadinessGap(vessel('2026-10-13'), cargo, opts).verdict).toBe('late');
+  });
+});
+
 describe('calculateReadinessGap — date-independence (broker-loop 2026-05-31)', () => {
   // Scoring/отсев must NOT depend on wall-clock today. Two runs with very different
   // `today` values, holding refYear and inputs constant, must yield identical

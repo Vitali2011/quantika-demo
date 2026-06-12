@@ -112,14 +112,15 @@ function isoDay(d: Date): string {
 
 function classifyVerdict(gapDays: number, windowDays: number): ReadinessVerdict {
   // gapDays = laycanSTART - arrival. windowDays = laycanEND - laycanSTART (>= 0).
-  // Laycan is a WINDOW [start, end]: a vessel arriving anywhere inside it is ON-TIME.
-  // 'late' fires only past the cancelling date (END), NOT >1d after the start. The old
-  // `gap < -1 → late` wrongly rejected vessels arriving mid-window (false negatives).
+  // Laycan is a WINDOW [start, end]: a vessel arriving anywhere inside it is
+  // ON-TIME, but the deeper into the window it lands, the less slack remains
+  // before the cancelling date. Front half → 'ideal'; back half → 'tight'
+  // (audit C.7 — previously the whole window rated 'ideal' up to cancelling).
+  // 'late' fires only past the cancelling date (END), NOT >1d after the start.
   const w = Number.isFinite(windowDays) ? Math.max(0, windowDays) : 0;
   if (gapDays < -1) {
-    // Arrives > 1 day after laycan START. On-time while still within the window
-    // (arrival before cancelling = start + window); late only past the cancelling date.
-    return gapDays < -1 - w ? 'late' : 'ideal';
+    if (gapDays < -1 - w) return 'late'; // past the cancelling date
+    return -gapDays > w / 2 ? 'tight' : 'ideal'; // back half of the window cuts it fine
   }
   if (gapDays < 0.5) return 'tight'; // arrives right at the start — cuts it fine
   if (gapDays <= 5) return 'ideal'; // small buffer before laydays commence
