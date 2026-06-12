@@ -57,7 +57,19 @@ export function persistSessionMatches(
     bunkerPriceUsdPerMt = undefined;
   }
 
-  for (const m of sessionMatches) {
+  // Engine matches arrive sorted by fitPercent DESC; with refreshComputed a
+  // later duplicate (same email pair, different item index) would overwrite
+  // the better earlier row (last-wins). Keep the first (best) per unique key —
+  // mirrors the INSERT OR IGNORE first-wins semantics this loop had before B.6.
+  const seenPairs = new Set<string>();
+  const dedupedMatches = sessionMatches.filter((m) => {
+    const k = `${m.cargoEmailId}|${m.vesselEmailId}`;
+    if (seenPairs.has(k)) return false;
+    seenPairs.add(k);
+    return true;
+  });
+
+  for (const m of dedupedMatches) {
     const cargo = cargoMap.get(`${m.cargoEmailId}|${m.cargoItemIndex}`);
     const vessel = vesselMap.get(`${m.vesselEmailId}|${m.vesselItemIndex}`);
     const laycan = cargo ? parseLaycan(cargo.laycan) : null;
