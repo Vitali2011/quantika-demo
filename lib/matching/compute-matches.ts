@@ -108,6 +108,9 @@ export async function computeAndPersistMatches(
     // analyzePairs with this same db + live bunker price, so its economics
     // component is already live. No stale-laycan worksheet rebuild either —
     // the worksheet derives from the same parsed data this call received.
+    // NOTE: m.worksheet is currently absent on engine output (only demo
+    // hydrate/regen attach worksheets), so this block is forward-parity; the
+    // demo-hydrated gap on existing rows is closed by refreshComputed (B.6).
     const bucketReason = m.worksheet
       ? deriveBucketReason({
           verdict: m.worksheet.readiness?.verdict ?? 'unknown',

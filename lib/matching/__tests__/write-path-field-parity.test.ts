@@ -152,6 +152,7 @@ const PARITY_COLUMNS = [
   'tce_usd_per_day', 'distance_nm', 'freight_rate_usd_per_mt',
   'freight_rate_source', 'vessel_name', 'cargo_ref', 'fit_percent',
   'fit_breakdown', 'worksheet_json', 'breakeven_tce_usd_per_day',
+  'ballast_distance_nm', 'consumption_estimated',
 ] as const;
 
 it('precompute and session-persist write the same column set for the same match', async () => {
