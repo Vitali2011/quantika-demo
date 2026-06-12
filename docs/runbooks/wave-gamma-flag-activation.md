@@ -1,6 +1,6 @@
 # Wave γ — Feature Flag Activation Runbook
 
-> **Scope:** γ-05 LAYTIME_ENGINE_ENABLED · γ-09 BIMCO_RAG_ENABLED · γ-08 SUBS_TIMER_V2_ENABLED
+> **Scope:** γ-05 LAYTIME_ENGINE_ENABLED · γ-09 BIMCO_RAG_ENABLED (γ-08 removed 2026-06-12, audit A.6)
 >
 > **Verified:** 2026-05-17 · Branch `orchestrator/wave-gamma-verify`
 >
@@ -217,7 +217,8 @@ Can activate both in a single `.env.local` edit + one `npm run build` cycle.
 | ---------------------------------------------- | ----------- | ----- | ------ |
 | γ-05 LAYTIME_ENGINE_ENABLED                    | 4           | 91    | PASS   |
 | γ-09 BIMCO_RAG_ENABLED                         | 6           | 58    | PASS   |
-| γ-08 SUBS_TIMER_V2_ENABLED                     | 6           | 88    | PASS   |
 | Regression (gamma-07/08/09, RC-bimco, RC-subs) | 2           | 10    | PASS   |
+
+(γ-08 row removed 2026-06-12 — feature deleted, audit A.6.)
 
 Verified with `LAYTIME_ENGINE_ENABLED=true NEXT_PUBLIC_LAYTIME_ENGINE_ENABLED=true npx jest --testPathPatterns="laytime" --forceExit --no-coverage` (and equivalents for other flags) on branch `orchestrator/wave-gamma-verify`.
